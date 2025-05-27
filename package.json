@@ -1,0 +1,47 @@
+{
+  "name": "freshplan-sales-tool",
+  "version": "1.0.0",
+  "description": "Professionelles Verkaufstool für die Lebensmittelbranche mit interaktivem Rabatt-Demonstrator",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx serve .",
+    "dev": "npx live-server --port=8080",
+    "test": "echo \"No tests implemented yet\"",
+    "lint": "eslint *.js",
+    "format": "prettier --write \"**/*.{js,html,css,json,md}\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/IhrUsername/freshplan-sales-tool.git"
+  },
+  "keywords": [
+    "sales-tool",
+    "discount-calculator",
+    "pdf-generation",
+    "customer-management",
+    "b2b",
+    "food-industry",
+    "freshfoodz"
+  ],
+  "author": "Freshfoodz GmbH",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/IhrUsername/freshplan-sales-tool/issues"
+  },
+  "homepage": "https://github.com/IhrUsername/freshplan-sales-tool#readme",
+  "devDependencies": {
+    "eslint": "^8.57.0",
+    "live-server": "^1.2.2",
+    "prettier": "^3.2.5",
+    "serve": "^14.2.1"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead",
+    "not ie 11"
+  ]
+}
