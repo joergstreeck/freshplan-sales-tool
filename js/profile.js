@@ -1,264 +1,261 @@
-// =============================
-// FreshPlan Customer Profile
-// =============================
+/**
+ * FreshPlan Profile Manager Module
+ */
 
-// Generate customer profile
-function generateCustomerProfile() {
-    const savedData = FreshPlan.storage.getItem(FreshPlan.config.storageKeys.customerData);
-    
-    if (!savedData) {
-        document.getElementById('profileOverview').style.display = 'none';
-        document.getElementById('profileEmpty').style.display = 'block';
-        return;
+export class ProfileManager {
+    constructor() {
+        this.profileData = {
+            customerPotential: '',
+            currentSituation: '',
+            goals: '',
+            arguments: [],
+            strategy: '',
+            nextSteps: '',
+            completed: false
+        };
     }
     
-    FreshPlan.state.customerData = JSON.parse(savedData);
+    initialize() {
+        this.setupForm();
+        this.loadSavedData();
+    }
     
-    document.getElementById('profileOverview').style.display = 'block';
-    document.getElementById('profileEmpty').style.display = 'none';
-    
-    // Generate profile sections
-    generateBasicInfo();
-    generatePotentialAnalysis();
-    generateSalesStrategy();
-    generateKeyArguments();
-    generateNextSteps();
-}
-
-// Generate basic info
-function generateBasicInfo() {
-    const container = document.getElementById('profileBasicInfo');
-    const typeText = FreshPlan.state.customerData.customerType === 'chain' ? 'Kette/Gruppe' : 'Einzelstandort';
-    const industryText = getIndustryName(FreshPlan.state.customerData.industry);
-    
-    container.innerHTML = `
-        <div class="profile-info-item"><strong>Firma:</strong> ${FreshPlan.state.customerData.companyName}</div>
-        <div class="profile-info-item"><strong>Typ:</strong> ${typeText}</div>
-        <div class="profile-info-item"><strong>Branche:</strong> ${industryText}</div>
-        <div class="profile-info-item"><strong>Kontakt:</strong> ${FreshPlan.state.customerData.contactName}</div>
-        <div class="profile-info-item"><strong>Position:</strong> ${FreshPlan.state.customerData.contactPosition || 'N/A'}</div>
-        <div class="profile-info-item"><strong>E-Mail:</strong> ${FreshPlan.state.customerData.contactEmail}</div>
-        <div class="profile-info-item"><strong>Telefon:</strong> ${FreshPlan.state.customerData.contactPhone}</div>
-        <div class="profile-info-item"><strong>Standort:</strong> ${FreshPlan.state.customerData.zipCode} ${FreshPlan.state.customerData.city}</div>
-    `;
-}
-
-// Generate potential analysis
-function generatePotentialAnalysis() {
-    const container = document.getElementById('profilePotential');
-    const targetRevenue = FreshPlan.state.customerData.targetRevenue || 0;
-    const discount = calculateCustomerDiscount();
-    const savings = targetRevenue * (discount / 100);
-    
-    container.innerHTML = `
-        <div class="potential-metrics">
-            <div class="metric-item">
-                <span>${getTranslation('profile.targetVolume')}:</span>
-                <span class="metric-value">${formatCurrency(targetRevenue)}</span>
-            </div>
-            <div class="metric-item">
-                <span>${getTranslation('profile.savingsPotential')}:</span>
-                <span class="metric-value">${formatCurrency(savings)}</span>
-            </div>
-            <div class="metric-item">
-                <span>${getTranslation('profile.contractValue')}:</span>
-                <span class="metric-value">${formatCurrency(targetRevenue - savings)}</span>
-            </div>
-        </div>
-    `;
-    
-    // Add vending potential if interested
-    if (FreshPlan.state.customerData.vendingInterest) {
-        const vendingConfig = FreshPlan.config.vending;
-        const vendingRevenue = FreshPlan.state.customerData.vendingLocations * 
-                              FreshPlan.state.customerData.vendingDaily * 
-                              vendingConfig.avgPrice * 
-                              vendingConfig.operatingDays;
-        container.innerHTML += `
-            <div class="info-box" style="margin-top: 1rem;">
-                <h4>Vending-Potenzial</h4>
-                <p>Zusätzliches Umsatzpotenzial: ${formatCurrency(vendingRevenue)}/Jahr</p>
+    setupForm() {
+        const profilePanel = document.getElementById('profile');
+        if (!profilePanel) return;
+        
+        profilePanel.innerHTML = `
+            <div class="profile-container">
+                <h2 class="section-title" data-i18n="profile.title">Kundenprofil</h2>
+                
+                <form id="profileForm" class="profile-form">
+                    <div class="form-section">
+                        <h3 class="form-section-title" data-i18n="profile.customerPotential">Kundenpotenzial</h3>
+                        <div class="form-group">
+                            <textarea id="customerPotential" name="customerPotential" rows="4" 
+                                placeholder="Beschreiben Sie das Potenzial dieses Kunden..."></textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <h3 class="form-section-title" data-i18n="profile.currentSituation">Aktuelle Situation</h3>
+                        <div class="form-group">
+                            <textarea id="currentSituation" name="currentSituation" rows="4"
+                                placeholder="Wie ist die aktuelle Situation des Kunden?"></textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <h3 class="form-section-title" data-i18n="profile.goals">Ziele & Bedürfnisse</h3>
+                        <div class="form-group">
+                            <textarea id="goals" name="goals" rows="4"
+                                placeholder="Welche Ziele und Bedürfnisse hat der Kunde?"></textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <h3 class="form-section-title" data-i18n="profile.arguments">Verkaufsargumente</h3>
+                        <div class="arguments-list" id="argumentsList">
+                            <!-- Arguments will be rendered here -->
+                        </div>
+                        <button type="button" class="btn btn-secondary" id="addArgumentBtn">
+                            <span data-i18n="common.add">+ Argument hinzufügen</span>
+                        </button>
+                    </div>
+                    
+                    <div class="form-section">
+                        <h3 class="form-section-title" data-i18n="profile.strategy">Strategie</h3>
+                        <div class="form-group">
+                            <textarea id="strategy" name="strategy" rows="4"
+                                placeholder="Welche Verkaufsstrategie verfolgen Sie?"></textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <h3 class="form-section-title" data-i18n="profile.nextSteps">Nächste Schritte</h3>
+                        <div class="form-group">
+                            <textarea id="nextSteps" name="nextSteps" rows="4"
+                                placeholder="Was sind die nächsten konkreten Schritte?"></textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" id="profileResetBtn">
+                            <span data-i18n="common.reset">Zurücksetzen</span>
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <span data-i18n="common.save">Speichern</span>
+                        </button>
+                    </div>
+                </form>
             </div>
         `;
-    }
-}
-
-// Generate sales strategy
-function generateSalesStrategy() {
-    const container = document.getElementById('profileStrategy');
-    const strategy = getIndustryStrategy(FreshPlan.state.customerData.industry);
-    
-    container.innerHTML = `
-        <div class="strategy-grid">
-            <div class="strategy-section">
-                <h4>${getTranslation('profile.decisionCriteria')}</h4>
-                <ul>${strategy.criteria.map(c => `<li>${c}</li>`).join('')}</ul>
-            </div>
-            <div class="strategy-section">
-                <h4>${getTranslation('profile.painPoints')}</h4>
-                <ul>${strategy.painPoints.map(p => `<li>${p}</li>`).join('')}</ul>
-            </div>
-            <div class="strategy-section">
-                <h4>${getTranslation('profile.opportunities')}</h4>
-                <ul>${strategy.opportunities.map(o => `<li>${o}</li>`).join('')}</ul>
-            </div>
-            <div class="strategy-section">
-                <h4>${getTranslation('profile.competitiveAdvantage')}</h4>
-                <ul>${strategy.advantages.map(a => `<li>${a}</li>`).join('')}</ul>
-            </div>
-        </div>
-    `;
-}
-
-// Generate key arguments
-function generateKeyArguments() {
-    const container = document.getElementById('profileArguments');
-    const arguments = getKeyArguments();
-    
-    container.innerHTML = `
-        <div class="arguments-list">
-            ${arguments.map((arg, index) => `
-                <div class="argument-item">
-                    <div class="argument-number">${index + 1}</div>
-                    <div>
-                        <strong>${arg.title}</strong>
-                        <p>${arg.description}</p>
-                    </div>
-                </div>
-            `).join('')}
-        </div>
-    `;
-}
-
-// Generate next steps
-function generateNextSteps() {
-    const container = document.getElementById('profileNextSteps');
-    
-    container.innerHTML = `
-        <div class="steps-timeline">
-            <div class="step-item active">
-                <div class="step-marker">1</div>
-                <div class="step-content">
-                    <strong>Erstkontakt</strong><br>
-                    <small>Bedarfsanalyse</small>
-                </div>
-            </div>
-            <div class="step-item">
-                <div class="step-marker">2</div>
-                <div class="step-content">
-                    <strong>Demo</strong><br>
-                    <small>Rabatt-Demonstrator</small>
-                </div>
-            </div>
-            <div class="step-item">
-                <div class="step-marker">3</div>
-                <div class="step-content">
-                    <strong>Angebot</strong><br>
-                    <small>Individualisiert</small>
-                </div>
-            </div>
-            <div class="step-item">
-                <div class="step-marker">4</div>
-                <div class="step-content">
-                    <strong>Verhandlung</strong><br>
-                    <small>Konditionen</small>
-                </div>
-            </div>
-            <div class="step-item">
-                <div class="step-marker">5</div>
-                <div class="step-content">
-                    <strong>Abschluss</strong><br>
-                    <small>Vertragsunterzeichnung</small>
-                </div>
-            </div>
-        </div>
         
-        <div class="info-box" style="margin-top: 2rem;">
-            <h4>Empfohlene nächste Aktion</h4>
-            <p>${getRecommendedAction()}</p>
-        </div>
-    `;
-}
-
-// Get industry strategy
-function getIndustryStrategy(industry) {
-    const strategies = {
-        hotel: {
-            criteria: ['Qualität & Frische', 'Flexibilität bei Bestellmengen', 'Zuverlässige Lieferung'],
-            painPoints: ['Schwankende Auslastung', 'Hohe Personalkosten', 'Food Waste'],
-            opportunities: ['Cook&Fresh für Room Service', 'Flexible Kombi-Bestellungen', 'Frühstücks-Komplettlösungen'],
-            advantages: ['12 Monate Preisstabilität', 'Keine Mindestabnahme', 'Rabatte ab 5.000€']
-        },
-        altenheim: {
-            criteria: ['Konsistenzanpassung', 'Diätformen-Vielfalt', 'Einfache Zubereitung'],
-            painPoints: ['Fachkräftemangel Küche', 'Steigende Lebensmittelkosten', 'Hygiene-Anforderungen'],
-            opportunities: ['Komplette Menülinien', 'Konsistenz-angepasste Produkte', 'Notfall-Vorrat'],
-            advantages: ['MDK-konforme Produkte', 'Transparente Allergenkennzeichnung', 'Schulungsangebote']
-        },
-        krankenhaus: {
-            criteria: ['Hygiene & Sicherheit', 'Kosteneffizienz', 'Patientenzufriedenheit'],
-            painPoints: ['Kostendruck', 'Unterschiedliche Kostformen', 'Personal-Engpässe'],
-            opportunities: ['Wahlleistung Premium-Menüs', 'Outsourcing Wochenend-Küche', 'Mitarbeiter-Catering'],
-            advantages: ['HACCP-zertifiziert', 'Individuelle Portionierung', 'Notfall-Lieferservice']
-        },
-        betriebsrestaurant: {
-            criteria: ['Attraktive Preise', 'Abwechslung', 'Moderne Gerichte'],
-            painPoints: ['Mitarbeiterzufriedenheit', 'Subventionsdruck', 'Trend-Anforderungen'],
-            opportunities: ['Vending als Ergänzung', 'Aktionswochen', 'Gesundheitsprogramme'],
-            advantages: ['Mengenrabatte optimal nutzen', 'Trend-Produkte im Portfolio', 'Marketing-Unterstützung']
-        },
-        restaurant: {
-            criteria: ['Konstante Qualität', 'Faire Preise', 'Innovations-Partner'],
-            painPoints: ['Personalmangel', 'Schwankende Gästezahlen', 'Margendruck'],
-            opportunities: ['Sous-Vide Premiumprodukte', 'Saisonale Spezialitäten', 'Convenience ohne Kompromisse'],
-            advantages: ['Kalkulationssicherheit', 'Kleine Verpackungseinheiten', 'Inspiration & Rezepte']
-        }
-    };
+        this.setupEventListeners();
+        this.renderArguments();
+    }
     
-    return strategies[industry] || strategies.restaurant;
-}
-
-// Get key arguments
-function getKeyArguments() {
-    return [
-        {
-            title: 'Garantierte Preisstabilität',
-            description: '12 Monate keine Preiserhöhung - volle Planungssicherheit für Ihr Budget'
-        },
-        {
-            title: 'Keine Mindestabnahme',
-            description: 'Bestellen Sie nur was Sie brauchen - das Zielvolumen ist unverbindlich'
-        },
-        {
-            title: 'Transparentes Rabattsystem',
-            description: 'Je mehr Sie bestellen, desto mehr sparen Sie - bis zu 13% Gesamtrabatt möglich'
-        },
-        {
-            title: 'Flexibilität bei Großbestellungen',
-            description: 'Kombi-Lieferungen ab 30.000€ - teilen Sie auf 2 Termine auf'
-        },
-        {
-            title: 'Persönlicher Ansprechpartner',
-            description: 'Ihr dedizierter Betreuer kennt Ihre Bedürfnisse und ist immer erreichbar'
-        }
-    ];
-}
-
-// Get recommended action
-function getRecommendedAction() {
-    const revenue = FreshPlan.state.customerData.targetRevenue || 0;
-    const isChain = FreshPlan.state.customerData.customerType === 'chain';
+    setupEventListeners() {
+        const form = document.getElementById('profileForm');
+        if (!form) return;
+        
+        // Form submission
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            this.saveData();
+        });
+        
+        // Add argument button
+        document.getElementById('addArgumentBtn')?.addEventListener('click', () => {
+            this.addArgument();
+        });
+        
+        // Reset button
+        document.getElementById('profileResetBtn')?.addEventListener('click', () => {
+            this.resetForm();
+        });
+        
+        // Auto-save on input
+        form.querySelectorAll('textarea').forEach(textarea => {
+            textarea.addEventListener('input', () => {
+                this.autoSave();
+            });
+        });
+    }
     
-    if (revenue >= 50000) {
-        return 'Vereinbaren Sie einen Vor-Ort-Termin zur Bestandsaufnahme und Großkunden-Beratung.';
-    } else if (isChain) {
-        return 'Präsentieren Sie die Vorteile der Kettenbündelung mit zentraler Abrechnung.';
-    } else if (revenue >= 15000) {
-        return 'Führen Sie eine Live-Demo des Rabatt-Systems durch und zeigen Sie das Einsparpotenzial.';
-    } else {
-        return 'Starten Sie mit einer Testbestellung und bauen Sie das Vertrauen schrittweise auf.';
+    addArgument() {
+        const argument = {
+            id: Date.now(),
+            text: ''
+        };
+        
+        this.profileData.arguments.push(argument);
+        this.renderArguments();
+    }
+    
+    renderArguments() {
+        const argumentsList = document.getElementById('argumentsList');
+        if (!argumentsList) return;
+        
+        argumentsList.innerHTML = this.profileData.arguments.map((arg, index) => `
+            <div class="argument-item" data-id="${arg.id}">
+                <div class="argument-number">${index + 1}</div>
+                <div class="argument-content">
+                    <input type="text" value="${arg.text}" 
+                           placeholder="Verkaufsargument eingeben..."
+                           onchange="window.profileManager.updateArgument(${arg.id}, this.value)">
+                </div>
+                <button type="button" class="btn btn-sm btn-secondary" 
+                        onclick="window.profileManager.removeArgument(${arg.id})">
+                    ×
+                </button>
+            </div>
+        `).join('');
+    }
+    
+    updateArgument(id, text) {
+        const argument = this.profileData.arguments.find(a => a.id === id);
+        if (argument) {
+            argument.text = text;
+            this.autoSave();
+        }
+    }
+    
+    removeArgument(id) {
+        this.profileData.arguments = this.profileData.arguments.filter(a => a.id !== id);
+        this.renderArguments();
+        this.autoSave();
+    }
+    
+    autoSave() {
+        // Debounced auto-save
+        if (this.autoSaveTimeout) {
+            clearTimeout(this.autoSaveTimeout);
+        }
+        
+        this.autoSaveTimeout = setTimeout(() => {
+            this.saveData(true);
+        }, 1000);
+    }
+    
+    saveData(isAutoSave = false) {
+        const form = document.getElementById('profileForm');
+        if (!form) return;
+        
+        // Collect form data
+        const formData = new FormData(form);
+        
+        for (const [key, value] of formData.entries()) {
+            if (this.profileData.hasOwnProperty(key)) {
+                this.profileData[key] = value;
+            }
+        }
+        
+        // Check if profile is completed
+        this.profileData.completed = !!(
+            this.profileData.customerPotential &&
+            this.profileData.currentSituation &&
+            this.profileData.goals &&
+            this.profileData.arguments.length > 0 &&
+            this.profileData.strategy &&
+            this.profileData.nextSteps
+        );
+        
+        // Save to app state and localStorage
+        window.appState.profileData = this.profileData;
+        localStorage.setItem('profileData', JSON.stringify(this.profileData));
+        
+        if (!isAutoSave) {
+            window.FreshPlan.showNotification('Profil gespeichert', 'success');
+        }
+        
+        // Update progress
+        window.FreshPlan.updateProgressBar();
+    }
+    
+    loadSavedData() {
+        const savedData = localStorage.getItem('profileData');
+        if (savedData) {
+            this.profileData = JSON.parse(savedData);
+            
+            // Update form
+            const form = document.getElementById('profileForm');
+            if (form) {
+                for (const [key, value] of Object.entries(this.profileData)) {
+                    if (key !== 'arguments' && key !== 'completed') {
+                        const field = form.elements[key];
+                        if (field) {
+                            field.value = value;
+                        }
+                    }
+                }
+            }
+            
+            // Render arguments
+            this.renderArguments();
+        }
+    }
+    
+    resetForm() {
+        if (confirm('Möchten Sie wirklich alle Profilangaben zurücksetzen?')) {
+            this.profileData = {
+                customerPotential: '',
+                currentSituation: '',
+                goals: '',
+                arguments: [],
+                strategy: '',
+                nextSteps: '',
+                completed: false
+            };
+            
+            document.getElementById('profileForm')?.reset();
+            this.renderArguments();
+            
+            // Clear saved data
+            localStorage.removeItem('profileData');
+            window.appState.profileData = {};
+            
+            window.FreshPlan.updateProgressBar();
+        }
     }
 }
-
-// Export functions
-window.generateCustomerProfile = generateCustomerProfile;

@@ -1,161 +1,98 @@
-// =============================
-// FreshPlan Configuration
-// =============================
+/**
+ * FreshPlan Configuration
+ */
 
-// Error Handler
-window.addEventListener('error', function(e) {
-    console.warn('Fehler aufgefangen:', e.message);
-    return true; // Verhindert Standard-Fehlerbehandlung
-});
-
-// In-Memory Storage for Claude.ai Environment
-const memoryStorage = {
-    data: {},
-    getItem: function(key) {
-        return this.data[key] || null;
-    },
-    setItem: function(key, value) {
-        this.data[key] = value;
-        return true;
-    },
-    removeItem: function(key) {
-        delete this.data[key];
-    }
-};
-
-// Use memoryStorage instead of localStorage
-const storage = memoryStorage;
-
-// Global Configuration
-const config = {
-    // Storage Keys
-    storageKeys: {
-        customerData: 'freshplanCustomerData',
-        settings: 'freshplanSettings',
-        autosave: 'freshplanAutosave'
-    },
+export const config = {
+    // App Version
+    version: '1.0.0',
     
-    // Discount Rules
-    discountRules: {
-        base: [
-            { min: 75000, discount: 10 },
-            { min: 50000, discount: 9 },
-            { min: 30000, discount: 8 },
-            { min: 15000, discount: 6 },
-            { min: 5000, discount: 3 },
-            { min: 0, discount: 0 }
-        ],
-        earlyBooking: [
-            { min: 30, max: 44, discount: 3 },
-            { min: 15, max: 29, discount: 2 },
-            { min: 10, max: 14, discount: 1 },
-            { min: 0, max: 9, discount: 0 }
-        ],
-        pickup: {
-            minOrderValue: 5000,
-            discount: 2
-        },
-        maxTotalDiscount: 15
-    },
-    
-    // Industry Configurations
-    industries: {
-        hotel: {
-            name: 'Hotel',
-            avgPrices: {
-                roomService: 25,
-                breakfast: 8,
-                restaurant: 35
-            },
-            utilization: {
-                roomService: 0.1,
-                restaurant: 0.6
-            }
-        },
-        altenheim: {
-            name: 'Alten-/Pflegeheim',
-            avgPrices: {
-                standard: 4.5,
-                special: 5.5
-            },
-            ratios: {
-                standard: 0.7,
-                special: 0.3
-            }
-        },
-        krankenhaus: {
-            name: 'Krankenhaus/Klinik',
-            avgPrices: {
-                standard: 12,
-                private: 25,
-                staff: 6
-            },
-            staffRatio: 2.5
-        },
-        betriebsrestaurant: {
-            name: 'Betriebsrestaurant',
-            avgPrice: 7.5,
-            operatingDays: 250
-        },
-        restaurant: {
-            name: 'Restaurant/Caterer',
-            avgPrices: {
-                regular: 8,
-                event: 20
-            },
-            operatingDays: 310,
-            eventsPerYear: 52
+    // API Endpoints (if needed in future)
+    api: {
+        baseUrl: '',
+        endpoints: {
+            customers: '/api/customers',
+            orders: '/api/orders',
+            products: '/api/products'
         }
     },
     
-    // Vending Configuration
-    vending: {
-        avgPrice: 10,
-        operatingDays: 250
+    // Discount Configuration
+    discounts: {
+        base: [
+            { min: 0, max: 4999, rate: 0 },
+            { min: 5000, max: 9999, rate: 3 },
+            { min: 10000, max: 19999, rate: 6 },
+            { min: 20000, max: 49999, rate: 9 },
+            { min: 50000, max: Infinity, rate: 12 }
+        ],
+        leadTime: [
+            { min: 0, max: 6, rate: 0 },
+            { min: 7, max: 13, rate: 1 },
+            { min: 14, max: 29, rate: 2 },
+            { min: 30, max: Infinity, rate: 3 }
+        ],
+        pickup: 2,
+        chain: 3,
+        maxTotal: 20
     },
     
-    // Debounce Delays
-    debounce: {
-        calculation: 150,
-        autosave: 1000,
-        validation: 300
+    // Default Values
+    defaults: {
+        orderValue: 15000,
+        leadTime: 14,
+        currency: 'EUR',
+        language: 'de'
     },
     
-    // Animation Durations
-    animation: {
-        fast: 300,
-        medium: 500,
-        slow: 1000
+    // Validation Rules
+    validation: {
+        email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+        phone: /^[\d\s\-\+\(\)]+$/,
+        postalCode: /^\d{5}$/,
+        minOrderValue: 0,
+        maxOrderValue: 1000000,
+        minLeadTime: 0,
+        maxLeadTime: 365
     },
     
-    // Message Display Duration
-    messageDuration: 3000
-};
-
-// Global State
-const state = {
-    currentLang: 'de',
-    customerData: {},
-    discountCalculation: {},
-    chainLocations: [],
-    calculatedRevenue: 0,
-    generatedPdf: null,
-    autosaveTimer: null,
-    tabProgress: {
-        demonstrator: false,
-        customer: false,
-        profile: false,
-        offer: false
+    // Storage Keys
+    storage: {
+        prefix: 'freshplan_',
+        keys: {
+            calculator: 'calculatorData',
+            customer: 'customerData',
+            profile: 'profileData',
+            settings: 'settings',
+            language: 'preferredLanguage'
+        }
     },
-    uploadedDocuments: {
-        partnership: null,
-        rabatt: null,
-        agb: null
+    
+    // UI Configuration
+    ui: {
+        animationDuration: 300,
+        autoSaveDelay: 1000,
+        notificationDuration: 5000,
+        debounceDelay: 250,
+        throttleDelay: 100
+    },
+    
+    // Feature Flags
+    features: {
+        pdfExport: true,
+        dataImportExport: true,
+        multiLanguage: true,
+        autoSave: true,
+        offlineMode: true
+    },
+    
+    // Company Information
+    company: {
+        name: 'FreshFoodz GmbH',
+        website: 'https://www.freshfoodz.de',
+        support: 'support@freshfoodz.de',
+        phone: '+49 123 456789'
     }
 };
 
-// Export for use in other modules
-window.FreshPlan = window.FreshPlan || {};
-window.FreshPlan.config = config;
-window.FreshPlan.state = state;
-window.FreshPlan.storage = storage;
+// Export as default
+export default config;

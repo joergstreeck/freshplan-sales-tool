@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Navigation Test</title>
+</head>
+<body>
+    <h1>Navigation Debug Test</h1>
+    <div id="output"></div>
+    
+    <script type="module">
+        const output = document.getElementById('output');
+        
+        async function testNavigation() {
+            try {
+                // Import the app
+                const { default: app } = await import('./src/main.ts');
+                
+                // Wait a bit for initialization
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                // Check if app is initialized
+                output.innerHTML += `<p>App initialized: ${app.isInitialized()}</p>`;
+                
+                // Get TabNavigationModule
+                const tabModule = app.getModule('tabs');
+                output.innerHTML += `<p>TabNavigationModule exists: ${!!tabModule}</p>`;
+                
+                // Check DOM elements
+                const navButtons = document.querySelectorAll('.nav-tab');
+                output.innerHTML += `<p>Navigation buttons found: ${navButtons.length}</p>`;
+                
+                // Check event listeners
+                navButtons.forEach((button, index) => {
+                    output.innerHTML += `<p>Button ${index}: ${button.textContent} - data-tab="${button.dataset.tab}"</p>`;
+                });
+                
+                // Try clicking a button
+                if (navButtons.length > 1) {
+                    output.innerHTML += `<p>Clicking second tab...</p>`;
+                    navButtons[1].click();
+                    
+                    // Check if tab changed
+                    setTimeout(() => {
+                        const activeTab = document.querySelector('.nav-tab.active');
+                        output.innerHTML += `<p>Active tab after click: ${activeTab?.dataset.tab}</p>`;
+                    }, 100);
+                }
+                
+            } catch (error) {
+                output.innerHTML += `<p style="color: red;">Error: ${error.message}</p>`;
+                console.error(error);
+            }
+        }
+        
+        // Run test when page loads
+        window.addEventListener('DOMContentLoaded', testNavigation);
+    </script>
+</body>
+</html>

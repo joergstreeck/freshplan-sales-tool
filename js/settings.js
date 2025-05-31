@@ -1,133 +1,261 @@
-// =============================
-// FreshPlan Settings Management
-// =============================
+/**
+ * FreshPlan Settings Manager Module
+ */
 
-// Load settings
-function loadSettings() {
-    const settings = FreshPlan.storage.getItem(FreshPlan.config.storageKeys.settings);
-    if (settings) {
-        const data = JSON.parse(settings);
-        
-        // Apply settings to fields
-        if (data.defaultSalesperson) {
-            Object.keys(data.defaultSalesperson).forEach(key => {
-                const field = document.getElementById(key);
-                if (field) field.value = data.defaultSalesperson[key];
-            });
-        }
-        
-        if (data.monday) {
-            if (data.monday.token) document.getElementById('mondayToken').value = data.monday.token;
-            if (data.monday.boardId) document.getElementById('mondayBoardId').value = data.monday.boardId;
-        }
-        
-        if (data.email) {
-            if (data.email.server) document.getElementById('smtpServer').value = data.email.server;
-            if (data.email.email) document.getElementById('smtpEmail').value = data.email.email;
-            if (data.email.password) document.getElementById('smtpPassword').value = data.email.password;
-        }
-        
-        if (data.xentral) {
-            if (data.xentral.url) document.getElementById('xentralUrl').value = data.xentral.url;
-            if (data.xentral.key) document.getElementById('xentralKey').value = data.xentral.key;
-        }
+export class SettingsManager {
+    constructor() {
+        this.settings = {
+            language: 'de',
+            currency: 'EUR',
+            salesperson: {
+                name: '',
+                email: '',
+                phone: ''
+            }
+        };
     }
-}
-
-// Load default salesperson
-function loadDefaultSalesperson() {
-    const settings = FreshPlan.storage.getItem(FreshPlan.config.storageKeys.settings);
-    if (settings) {
-        const data = JSON.parse(settings);
-        if (data.defaultSalesperson) {
-            const nameField = document.getElementById('salespersonName');
-            const emailField = document.getElementById('salespersonEmail');
-            const phoneField = document.getElementById('salespersonPhone');
-            const mobileField = document.getElementById('salespersonMobile');
+    
+    initialize() {
+        this.setupForm();
+        this.loadSettings();
+    }
+    
+    setupForm() {
+        const settingsPanel = document.getElementById('settings');
+        if (!settingsPanel) return;
+        
+        settingsPanel.innerHTML = `
+            <div class="settings-container">
+                <h2 class="section-title" data-i18n="settings.title">Einstellungen</h2>
+                
+                <form id="settingsForm" class="settings-form">
+                    <div class="form-section">
+                        <h3 class="form-section-title" data-i18n="settings.general">Allgemein</h3>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="settingsLanguage" data-i18n="settings.language">Sprache</label>
+                                <select id="settingsLanguage" name="language">
+                                    <option value="de">Deutsch</option>
+                                    <option value="en">English</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="currency" data-i18n="settings.currency">Währung</label>
+                                <select id="currency" name="currency">
+                                    <option value="EUR">EUR (€)</option>
+                                    <option value="CHF">CHF</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <h3 class="form-section-title" data-i18n="settings.salesPerson">Verkäufer</h3>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="salespersonName" data-i18n="settings.name">Name</label>
+                                <input type="text" id="salespersonName" name="salespersonName">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="salespersonEmail" data-i18n="settings.email">E-Mail</label>
+                                <input type="email" id="salespersonEmail" name="salespersonEmail">
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="salespersonPhone" data-i18n="settings.phone">Telefon</label>
+                                <input type="tel" id="salespersonPhone" name="salespersonPhone">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <h3 class="form-section-title" data-i18n="settings.exportImport">Export/Import</h3>
+                        
+                        <div class="export-import-actions">
+                            <button type="button" class="btn btn-secondary" id="exportDataBtn">
+                                <span data-i18n="settings.exportData">Daten exportieren</span>
+                            </button>
+                            
+                            <div class="import-container">
+                                <input type="file" id="importFile" accept=".json" style="display: none;">
+                                <button type="button" class="btn btn-secondary" id="importDataBtn">
+                                    <span data-i18n="settings.importData">Daten importieren</span>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="form-help">
+                            <div class="form-help-icon">i</div>
+                            <div>
+                                Exportieren Sie alle Ihre Daten als JSON-Datei oder importieren Sie zuvor exportierte Daten.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" id="settingsResetBtn">
+                            <span data-i18n="common.reset">Zurücksetzen</span>
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <span data-i18n="common.save">Speichern</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        `;
+        
+        this.setupEventListeners();
+    }
+    
+    setupEventListeners() {
+        const form = document.getElementById('settingsForm');
+        if (!form) return;
+        
+        // Form submission
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            this.saveSettings();
+        });
+        
+        // Language change
+        document.getElementById('settingsLanguage')?.addEventListener('change', (e) => {
+            this.updateLanguage(e.target.value);
+        });
+        
+        // Export button
+        document.getElementById('exportDataBtn')?.addEventListener('click', () => {
+            this.exportData();
+        });
+        
+        // Import button
+        document.getElementById('importDataBtn')?.addEventListener('click', () => {
+            document.getElementById('importFile')?.click();
+        });
+        
+        // Import file change
+        document.getElementById('importFile')?.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                this.importData(file);
+            }
+        });
+        
+        // Reset button
+        document.getElementById('settingsResetBtn')?.addEventListener('click', () => {
+            this.resetSettings();
+        });
+    }
+    
+    updateLanguage(lang) {
+        this.settings.language = lang;
+        window.appState.language = lang;
+        
+        // Update main language selector
+        const mainLangSelect = document.getElementById('languageSelect');
+        if (mainLangSelect) {
+            mainLangSelect.value = lang;
+        }
+        
+        // Update page language
+        import('./utils.js').then(module => {
+            module.updatePageLanguage(lang);
+        });
+    }
+    
+    saveSettings() {
+        const form = document.getElementById('settingsForm');
+        if (!form) return;
+        
+        // Collect form data
+        const formData = new FormData(form);
+        
+        this.settings.language = formData.get('language');
+        this.settings.currency = formData.get('currency');
+        this.settings.salesperson = {
+            name: formData.get('salespersonName'),
+            email: formData.get('salespersonEmail'),
+            phone: formData.get('salespersonPhone')
+        };
+        
+        // Save to app state and localStorage
+        window.appState.settings = this.settings;
+        localStorage.setItem('settings', JSON.stringify(this.settings));
+        
+        window.FreshPlan.showNotification('Einstellungen gespeichert', 'success');
+    }
+    
+    loadSettings() {
+        const savedSettings = localStorage.getItem('settings');
+        if (savedSettings) {
+            this.settings = JSON.parse(savedSettings);
             
-            if (nameField && !nameField.value && data.defaultSalesperson.defaultSalespersonName) {
-                nameField.value = data.defaultSalesperson.defaultSalespersonName;
-            }
-            if (emailField && !emailField.value && data.defaultSalesperson.defaultSalespersonEmail) {
-                emailField.value = data.defaultSalesperson.defaultSalespersonEmail;
-            }
-            if (phoneField && !phoneField.value && data.defaultSalesperson.defaultSalespersonPhone) {
-                phoneField.value = data.defaultSalesperson.defaultSalespersonPhone;
-            }
-            if (mobileField && !mobileField.value && data.defaultSalesperson.defaultSalespersonMobile) {
-                mobileField.value = data.defaultSalesperson.defaultSalespersonMobile;
+            // Update form
+            const form = document.getElementById('settingsForm');
+            if (form) {
+                form.elements['language'].value = this.settings.language;
+                form.elements['currency'].value = this.settings.currency;
+                form.elements['salespersonName'].value = this.settings.salesperson.name || '';
+                form.elements['salespersonEmail'].value = this.settings.salesperson.email || '';
+                form.elements['salespersonPhone'].value = this.settings.salesperson.phone || '';
             }
         }
     }
-}
-
-// Save settings
-function saveSettings() {
-    const settings = {
-        defaultSalesperson: {
-            defaultSalespersonName: document.getElementById('defaultSalespersonName').value,
-            defaultSalespersonEmail: document.getElementById('defaultSalespersonEmail').value,
-            defaultSalespersonPhone: document.getElementById('defaultSalespersonPhone').value,
-            defaultSalespersonMobile: document.getElementById('defaultSalespersonMobile').value
-        },
-        monday: {
-            token: document.getElementById('mondayToken').value,
-            boardId: document.getElementById('mondayBoardId').value
-        },
-        email: {
-            server: document.getElementById('smtpServer').value,
-            email: document.getElementById('smtpEmail').value,
-            password: document.getElementById('smtpPassword').value
-        },
-        xentral: {
-            url: document.getElementById('xentralUrl').value,
-            key: document.getElementById('xentralKey').value
+    
+    resetSettings() {
+        if (confirm('Möchten Sie wirklich alle Einstellungen zurücksetzen?')) {
+            this.settings = {
+                language: 'de',
+                currency: 'EUR',
+                salesperson: {
+                    name: '',
+                    email: '',
+                    phone: ''
+                }
+            };
+            
+            document.getElementById('settingsForm')?.reset();
+            
+            // Clear saved settings
+            localStorage.removeItem('settings');
+            window.appState.settings = {};
+            
+            // Reset language
+            this.updateLanguage('de');
         }
-    };
-    
-    FreshPlan.storage.setItem(FreshPlan.config.storageKeys.settings, JSON.stringify(settings));
-    showMessage(getTranslation('messages.settingsSaved'), 'success');
-}
-
-// Test Monday.com connection
-function testMondayConnection() {
-    const token = document.getElementById('mondayToken').value;
-    
-    if (!token) {
-        showMessage(getTranslation('messages.missingAPIToken'), 'error');
-        return;
     }
     
-    // Simulate API test
-    showMessage('Teste Verbindung...', 'success');
-    
-    setTimeout(() => {
-        // In a real implementation, this would make an actual API call
-        showMessage(getTranslation('messages.connectionSuccess'), 'success');
-    }, 1000);
-}
-
-// Sync price lists
-function syncPriceLists() {
-    const url = document.getElementById('xentralUrl').value;
-    const key = document.getElementById('xentralKey').value;
-    
-    if (!url || !key) {
-        showMessage(getTranslation('messages.missingXentralData'), 'error');
-        return;
+    exportData() {
+        import('./utils.js').then(module => {
+            module.exportData();
+            window.FreshPlan.showNotification('Daten wurden exportiert', 'success');
+        });
     }
     
-    showMessage(getTranslation('messages.syncInProgress'), 'success');
-    
-    setTimeout(() => {
-        // In a real implementation, this would sync with Xentral
-        showMessage(getTranslation('messages.syncSuccess'), 'success');
-    }, 2000);
+    importData(file) {
+        import('./utils.js').then(module => {
+            module.importData(file)
+                .then(data => {
+                    window.FreshPlan.showNotification('Daten wurden importiert', 'success');
+                    
+                    // Reload all modules
+                    window.calculator?.loadSavedData();
+                    window.customerManager?.loadSavedData();
+                    window.profileManager?.loadSavedData();
+                    this.loadSettings();
+                    
+                    // Update UI
+                    window.FreshPlan.updateProgressBar();
+                })
+                .catch(error => {
+                    window.FreshPlan.showError('Fehler beim Importieren der Daten');
+                    console.error('Import error:', error);
+                });
+        });
+    }
 }
-
-// Export functions
-window.loadSettings = loadSettings;
-window.loadDefaultSalesperson = loadDefaultSalesperson;
-window.saveSettings = saveSettings;
-window.testMondayConnection = testMondayConnection;
-window.syncPriceLists = syncPriceLists;

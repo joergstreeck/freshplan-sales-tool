@@ -1,0 +1,1374 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FreshPlan Sales Tool</title>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary-blue: #004f7b;
+            --primary-green: #94c456;
+            --dark-green: #7fb040;
+            --warning: #ff9800;
+            --danger: #f44336;
+            --bg-light: #f8f9fa;
+            --text-dark: #333;
+            --text-light: #666;
+            --border-light: #e0e0e0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+        
+        /* Header */
+        .header {
+            background: white;
+            color: var(--primary-blue);
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+        
+        .header-btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .header-btn-save {
+            background: var(--primary-green);
+            color: white;
+        }
+        
+        .header-btn-save:hover {
+            background: var(--dark-green);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(148, 196, 86, 0.3);
+        }
+        
+        .header-btn-clear {
+            background: transparent;
+            color: var(--primary-blue);
+            border: 2px solid var(--primary-blue);
+        }
+        
+        .header-btn-clear:hover {
+            background: var(--primary-blue);
+            color: white;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .logo h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+        }
+        
+        .logo-tagline {
+            font-size: 0.875rem;
+            color: var(--primary-green);
+            font-weight: 500;
+        }
+        
+        /* Navigation */
+        .nav {
+            background: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .nav-tabs {
+            display: flex;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .nav-tab {
+            padding: 1rem 2rem;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 1rem;
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+            color: var(--text-dark);
+        }
+        
+        .nav-tab:hover {
+            background: var(--bg-light);
+        }
+        
+        .nav-tab.active {
+            color: var(--primary-blue);
+            border-bottom-color: var(--primary-green);
+            font-weight: 600;
+        }
+        
+        /* Container */
+        .container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        
+        /* Tab Panels */
+        .tab-panel {
+            display: none;
+        }
+        
+        .tab-panel.active {
+            display: block;
+        }
+        
+        /* Calculator Tab */
+        .demonstrator-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+        
+        .calculator-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        }
+        
+        .section-title {
+            color: var(--primary-blue);
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .slider-group {
+            margin-bottom: 2rem;
+        }
+        
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        
+        .slider-value {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--primary-green);
+            background: rgba(148, 196, 86, 0.1);
+            padding: 0.25rem 0.75rem;
+            border-radius: 6px;
+        }
+        
+        .slider {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #e0e0e0;
+            outline: none;
+            -webkit-appearance: none;
+        }
+        
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary-green);
+            cursor: pointer;
+            border: 2px solid white;
+            box-shadow: 0 2px 8px rgba(148, 196, 86, 0.3);
+        }
+        
+        .slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary-green);
+            cursor: pointer;
+            border: 2px solid white;
+            box-shadow: 0 2px 8px rgba(148, 196, 86, 0.3);
+        }
+        
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            font-weight: 500;
+            margin-bottom: 2rem;
+        }
+        
+        .checkbox {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+        
+        /* Results */
+        .results-container {
+            background: var(--bg-light);
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-top: 2rem;
+        }
+        
+        .result-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .result-item {
+            text-align: center;
+            padding: 1rem;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid rgba(0,0,0,0.06);
+        }
+        
+        .result-label {
+            display: block;
+            font-size: 0.875rem;
+            color: var(--text-light);
+            margin-bottom: 0.5rem;
+        }
+        
+        .result-value {
+            display: block;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+        }
+        
+        .total-discount {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, var(--primary-green), #7fb069);
+            color: white;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+        }
+        
+        .total-value {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+        
+        .savings-display {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        
+        .savings-item {
+            text-align: center;
+            padding: 1rem;
+            background: white;
+            border-radius: 8px;
+        }
+        
+        .savings-item.highlight {
+            background: var(--primary-blue);
+            color: white;
+        }
+        
+        .savings-value {
+            display: block;
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-top: 0.5rem;
+        }
+        
+        /* Info Section */
+        .info-section {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        
+        .info-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        }
+        
+        .info-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .info-header h3 {
+            color: var(--primary-blue);
+            font-size: 1.25rem;
+        }
+        
+        /* Customer Form */
+        .customer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .alert-box {
+            background: rgba(255, 152, 0, 0.1);
+            border: 1px solid rgba(255, 152, 0, 0.3);
+            color: var(--text-dark);
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            display: none;
+        }
+        
+        .alert-box.show {
+            display: block;
+        }
+        
+        .alert-content h3 {
+            color: var(--warning);
+            margin-bottom: 0.5rem;
+        }
+        
+        .alert-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .customer-form {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        }
+        
+        .form-section {
+            margin-bottom: 2rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--border-light);
+        }
+        
+        .form-section:last-of-type {
+            border-bottom: none;
+        }
+        
+        .form-section-title {
+            color: var(--primary-blue);
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .form-group label {
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-dark);
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 0.75rem;
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-green);
+            box-shadow: 0 0 0 3px rgba(148, 196, 86, 0.1);
+        }
+        
+        /* Buttons */
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .btn-primary {
+            background: var(--primary-green);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--dark-green);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(148, 196, 86, 0.3);
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+        
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border-light);
+        }
+        
+        /* Credit Status */
+        .credit-status {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+        
+        .status-item {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid var(--border-light);
+        }
+        
+        .status-label {
+            display: block;
+            font-size: 0.875rem;
+            color: var(--text-light);
+            margin-bottom: 0.25rem;
+        }
+        
+        .status-value {
+            display: block;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .demonstrator-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .result-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav-tabs {
+                overflow-x: auto;
+            }
+            
+            .nav-tab {
+                padding: 1rem;
+                font-size: 0.875rem;
+            }
+        }
+        
+        /* Example items hover effect */
+        .example-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(148, 196, 86, 0.3);
+            border-color: var(--primary-green) !important;
+            background: rgba(148, 196, 86, 0.05) !important;
+        }
+        
+        /* Responsive examples */
+        @media (max-width: 768px) {
+            .examples-container {
+                grid-template-columns: 1fr !important;
+                gap: 0.5rem !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <img src="./assets/images/logo.png" alt="FreshFoodz Logo" style="height: 50px; margin-right: 1rem;">
+                <div>
+                    <h1>FreshPlan</h1>
+                    <span class="logo-tagline">So einfach, schnell und lecker!</span>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button class="header-btn header-btn-clear" onclick="handleClearForm()">
+                    Formular leeren
+                </button>
+                <button class="header-btn header-btn-save" onclick="handleSaveForm()">
+                    Speichern
+                </button>
+            </div>
+        </div>
+    </header>
+    
+    <nav class="nav">
+        <div class="nav-tabs">
+            <button class="nav-tab active" data-tab="calculator">Rabattrechner</button>
+            <button class="nav-tab" data-tab="customer">Kundendaten</button>
+            <button class="nav-tab" data-tab="creditcheck">Bonitätsprüfung</button>
+            <button class="nav-tab" data-tab="profile">Profil</button>
+            <button class="nav-tab" data-tab="offer">Angebot</button>
+            <button class="nav-tab" data-tab="settings">Einstellungen</button>
+        </div>
+    </nav>
+    
+    <div class="container">
+        <!-- Rabattrechner Tab -->
+        <div id="calculator" class="tab-panel active">
+            <div class="demonstrator-container">
+                <!-- Linke Spalte - Rechner -->
+                <div class="calculator-section">
+                    <h2 class="section-title">FreshPlan Rabattrechner</h2>
+                    
+                    <!-- Bestellwert Slider -->
+                    <div class="slider-group">
+                        <label class="slider-label">
+                            <span>Bestellwert</span>
+                            <span id="orderValueDisplay" class="slider-value">€15.000</span>
+                        </label>
+                        <input type="range" id="orderValue" class="slider" 
+                               min="0" max="100000" step="500" value="15000"
+                               oninput="updateCalculator()">
+                    </div>
+                    
+                    <!-- Vorlaufzeit Slider -->
+                    <div class="slider-group">
+                        <label class="slider-label">
+                            <span>Vorlaufzeit</span>
+                            <span id="leadTimeDisplay" class="slider-value">14 Tage</span>
+                        </label>
+                        <input type="range" id="leadTime" class="slider" 
+                               min="0" max="45" step="1" value="14"
+                               oninput="updateCalculator()">
+                    </div>
+                    
+                    <!-- Optionen -->
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="pickupToggle" class="checkbox" onchange="updateCalculator()">
+                        <span>Abholung (Mindestbestellwert: 5.000€ netto)</span>
+                    </label>
+                    
+                    <!-- Ergebnisse -->
+                    <div class="results-container">
+                        <div class="result-grid">
+                            <div class="result-item">
+                                <span class="result-label">Basisrabatt</span>
+                                <span id="baseDiscount" class="result-value">6%</span>
+                            </div>
+                            <div class="result-item">
+                                <span class="result-label">Frühbucher</span>
+                                <span id="earlyDiscount" class="result-value">1%</span>
+                            </div>
+                            <div class="result-item">
+                                <span class="result-label">Abholung</span>
+                                <span id="pickupDiscount" class="result-value">0%</span>
+                            </div>
+                        </div>
+                        
+                        <div class="total-discount">
+                            <span>Gesamtrabatt</span>
+                            <span id="totalDiscount" class="total-value">7%</span>
+                        </div>
+                        
+                        <div class="savings-display">
+                            <div class="savings-item">
+                                <span>Ersparnis</span>
+                                <span id="discountAmount" class="savings-value">€1.050</span>
+                            </div>
+                            <div class="savings-item highlight">
+                                <span>Endpreis</span>
+                                <span id="finalPrice" class="savings-value">€13.950</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Rechte Spalte - Informationen -->
+                <div class="info-section">
+                    <div class="info-card">
+                        <div class="info-header">
+                            <h3>FreshPlan-Rabattsystem</h3>
+                        </div>
+                        <div class="info-content" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                            <div>
+                                <h4 style="font-size: 0.875rem; margin-bottom: 0.5rem; color: var(--primary-blue);">Basisrabatt</h4>
+                                <table style="width: 100%; font-size: 0.813rem; border-collapse: collapse;">
+                                    <tr style="border-bottom: 1px solid var(--border-light);">
+                                        <td style="padding: 0.25rem 0;">ab 5.000€</td>
+                                        <td style="text-align: right; font-weight: 600;">3%</td>
+                                    </tr>
+                                    <tr style="border-bottom: 1px solid var(--border-light);">
+                                        <td style="padding: 0.25rem 0;">ab 10.000€</td>
+                                        <td style="text-align: right; font-weight: 600;">4%</td>
+                                    </tr>
+                                    <tr style="border-bottom: 1px solid var(--border-light);">
+                                        <td style="padding: 0.25rem 0;">ab 15.000€</td>
+                                        <td style="text-align: right; font-weight: 600;">6%</td>
+                                    </tr>
+                                    <tr style="border-bottom: 1px solid var(--border-light);">
+                                        <td style="padding: 0.25rem 0;">ab 30.000€</td>
+                                        <td style="text-align: right; font-weight: 600;">8%</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 0.25rem 0;">ab 50.000€</td>
+                                        <td style="text-align: right; font-weight: 600;">10%</td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div>
+                                <h4 style="font-size: 0.875rem; margin-bottom: 0.5rem; color: var(--primary-blue);">Zusatzrabatte</h4>
+                                <table style="width: 100%; font-size: 0.813rem; border-collapse: collapse;">
+                                    <tr style="border-bottom: 1px solid var(--border-light);">
+                                        <td style="padding: 0.25rem 0;">14 Tage</td>
+                                        <td style="text-align: right; font-weight: 600;">1%</td>
+                                    </tr>
+                                    <tr style="border-bottom: 1px solid var(--border-light);">
+                                        <td style="padding: 0.25rem 0;">21 Tage</td>
+                                        <td style="text-align: right; font-weight: 600;">2%</td>
+                                    </tr>
+                                    <tr style="border-bottom: 1px solid var(--border-light);">
+                                        <td style="padding: 0.25rem 0;">30+ Tage</td>
+                                        <td style="text-align: right; font-weight: 600;">3%</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 0.25rem 0;">Abholung</td>
+                                        <td style="text-align: right; font-weight: 600;">2%</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                        <div style="text-align: center; margin-top: 0.75rem; padding-top: 0.75rem; border-top: 2px solid var(--primary-green);">
+                            <strong style="color: var(--primary-green); font-size: 0.9rem;">Maximaler Gesamtrabatt: 15%</strong>
+                        </div>
+                    </div>
+                    
+                    <div class="info-card">
+                        <div class="info-header">
+                            <h3>Kettenkundenregelung</h3>
+                        </div>
+                        <p>Für Unternehmen mit mehreren Standorten (z.B. Hotel- oder Klinikgruppen):</p>
+                        <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+                            <li><strong>Option A:</strong> Bestellungen verschiedener Standorte innerhalb einer Woche werden zusammengerechnet</li>
+                            <li><strong>Option B:</strong> Zentrale Bestellung mit Mehrfachauslieferung</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="info-card" style="background: rgba(148, 196, 86, 0.1); border: 1px solid rgba(148, 196, 86, 0.3);">
+                        <div class="info-header">
+                            <h3 style="color: var(--primary-green);">Beispielszenarien</h3>
+                        </div>
+                        <div class="examples-container" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 1rem;">
+                            <div class="example-item" onclick="loadExample('hotel')" style="cursor: pointer; padding: 1rem; background: white; border-radius: 8px; transition: all 0.3s; border: 2px solid var(--border-light); text-align: center;">
+                                <h4 style="color: var(--primary-blue); margin-bottom: 0.5rem; font-size: 1rem;">🏨 Hotelkette</h4>
+                                <p style="margin: 0.25rem 0; font-size: 0.813rem; color: var(--text-dark);">35.000 €</p>
+                                <p style="margin: 0.25rem 0; font-size: 0.813rem; color: var(--text-dark);">21 Tage • Abholung</p>
+                                <p style="margin: 0.5rem 0 0 0; color: var(--primary-green); font-weight: 700; font-size: 1.1rem;">12% Rabatt</p>
+                            </div>
+                            <div class="example-item" onclick="loadExample('klinik')" style="cursor: pointer; padding: 1rem; background: white; border-radius: 8px; transition: all 0.3s; border: 2px solid var(--border-light); text-align: center;">
+                                <h4 style="color: var(--primary-blue); margin-bottom: 0.5rem; font-size: 1rem;">🏥 Klinikgruppe</h4>
+                                <p style="margin: 0.25rem 0; font-size: 0.813rem; color: var(--text-dark);">65.000 €</p>
+                                <p style="margin: 0.25rem 0; font-size: 0.813rem; color: var(--text-dark);">30 Tage • Lieferung</p>
+                                <p style="margin: 0.5rem 0 0 0; color: var(--primary-green); font-weight: 700; font-size: 1.1rem;">13% Rabatt</p>
+                            </div>
+                            <div class="example-item" onclick="loadExample('restaurant')" style="cursor: pointer; padding: 1rem; background: white; border-radius: 8px; transition: all 0.3s; border: 2px solid var(--border-light); text-align: center;">
+                                <h4 style="color: var(--primary-blue); margin-bottom: 0.5rem; font-size: 1rem;">🍽️ Restaurant</h4>
+                                <p style="margin: 0.25rem 0; font-size: 0.813rem; color: var(--text-dark);">8.500 €</p>
+                                <p style="margin: 0.25rem 0; font-size: 0.813rem; color: var(--text-dark);">14 Tage • Abholung</p>
+                                <p style="margin: 0.5rem 0 0 0; color: var(--primary-green); font-weight: 700; font-size: 1.1rem;">6% Rabatt</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Kundendaten Tab -->
+        <div id="customer" class="tab-panel">
+            <div class="customer-container">
+                <form id="customerForm" class="customer-form">
+                    <h2 class="section-title">Kundendaten erfassen</h2>
+                    
+                    <!-- Grunddaten -->
+                    <div class="form-section">
+                        <h3 class="form-section-title">Grunddaten</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="companyName">Firmenname*</label>
+                                <input type="text" id="companyName" name="companyName" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="legalForm">Rechtsform*</label>
+                                <select id="legalForm" name="legalForm" required>
+                                    <option value="">Bitte wählen</option>
+                                    <option value="gmbh">GmbH</option>
+                                    <option value="ag">AG</option>
+                                    <option value="gbr">GbR</option>
+                                    <option value="einzelunternehmen">Einzelunternehmen</option>
+                                    <option value="kg">KG</option>
+                                    <option value="ohg">OHG</option>
+                                    <option value="ug">UG</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="customerType">Kundentyp*</label>
+                                <select id="customerType" name="customerType" required>
+                                    <option value="">Bitte wählen</option>
+                                    <option value="neukunde">Neukunde</option>
+                                    <option value="bestandskunde">Bestandskunde</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="industry">Branche*</label>
+                                <select id="industry" name="industry" required>
+                                    <option value="">Bitte wählen</option>
+                                    <option value="hotel">Hotel</option>
+                                    <option value="krankenhaus">Krankenhaus</option>
+                                    <option value="altenheim">Altenheim</option>
+                                    <option value="betriebsrestaurant">Betriebsrestaurant</option>
+                                    <option value="restaurant">Restaurant</option>
+                                    <option value="kette">Kette</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="chainCustomer">Kettenkunde</label>
+                                <select id="chainCustomer" name="chainCustomer">
+                                    <option value="nein">Nein</option>
+                                    <option value="ja">Ja</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="customerNumber">Kundennummer (intern)</label>
+                                <input type="text" id="customerNumber" name="customerNumber">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Adressdaten -->
+                    <div class="form-section">
+                        <h3 class="form-section-title">Adressdaten</h3>
+                        <div class="form-row">
+                            <div class="form-group" style="grid-column: span 2;">
+                                <label for="street">Straße und Hausnummer*</label>
+                                <input type="text" id="street" name="street" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="postalCode">PLZ*</label>
+                                <input type="text" id="postalCode" name="postalCode" required pattern="[0-9]{5}" maxlength="5">
+                            </div>
+                            <div class="form-group">
+                                <label for="city">Ort*</label>
+                                <input type="text" id="city" name="city" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Ansprechpartner -->
+                    <div class="form-section">
+                        <h3 class="form-section-title">Ansprechpartner</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="contactName">Name*</label>
+                                <input type="text" id="contactName" name="contactName" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="contactPosition">Position</label>
+                                <input type="text" id="contactPosition" name="contactPosition">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="contactPhone">Telefon*</label>
+                                <input type="tel" id="contactPhone" name="contactPhone" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="contactEmail">E-Mail*</label>
+                                <input type="email" id="contactEmail" name="contactEmail" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Geschäftsdaten -->
+                    <div class="form-section">
+                        <h3 class="form-section-title">Geschäftsdaten</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="expectedVolume">Erwartetes Jahresvolumen (€)*</label>
+                                <input type="text" id="expectedVolume" name="expectedVolume" required placeholder="z.B. 500.000" onblur="formatCurrency(this)">
+                            </div>
+                            <div class="form-group">
+                                <label for="paymentMethod">Zahlungsart*</label>
+                                <select id="paymentMethod" name="paymentMethod" required>
+                                    <option value="">Bitte wählen</option>
+                                    <option value="vorkasse">Vorkasse</option>
+                                    <option value="bar">Barzahlung</option>
+                                    <option value="rechnung">Rechnung (30 Tage netto)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Zusatzinformationen -->
+                    <div class="form-section">
+                        <h3 class="form-section-title">Zusatzinformationen</h3>
+                        <div class="form-row">
+                            <div class="form-group" style="grid-column: span 2;">
+                                <label for="notes">Notizen</label>
+                                <textarea id="notes" name="notes" rows="3" placeholder="Interne Notizen zum Kunden..."></textarea>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="customField1">Freifeld 1</label>
+                                <input type="text" id="customField1" name="customField1">
+                            </div>
+                            <div class="form-group">
+                                <label for="customField2">Freifeld 2</label>
+                                <input type="text" id="customField2" name="customField2">
+                            </div>
+                        </div>
+                    </div>
+                    
+                </form>
+            </div>
+        </div>
+        
+        <!-- Bonitätsprüfung Tab -->
+        <div id="creditcheck" class="tab-panel">
+            <div style="background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.06);">
+                <h2 class="section-title">Bonitätsprüfung</h2>
+                
+                <div class="form-section">
+                    <p style="margin-bottom: 1.5rem;">Die Bonitätsprüfung ist nur für <strong>Neukunden</strong> relevant, die auf Rechnung zahlen möchten.</p>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="creditCustomerName">Kundenname</label>
+                            <input type="text" id="creditCustomerName" placeholder="Kunde aus Kundendaten wählen">
+                        </div>
+                        <div class="form-group">
+                            <label for="creditLimit">Kreditlimit/Offene Posten (€)</label>
+                            <input type="text" id="creditLimit" placeholder="Wird automatisch berechnet" readonly style="background: #f5f5f5;">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="registrationNumber">Handelsregisternummer*</label>
+                            <input type="text" id="registrationNumber" name="registrationNumber" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="vatId">USt-IdNr.*</label>
+                            <input type="text" id="vatId" name="vatId" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="companySize">Unternehmensgröße*</label>
+                            <select id="companySize" name="companySize" required>
+                                <option value="">Bitte wählen</option>
+                                <option value="klein">Klein (bis 50 Mitarbeiter)</option>
+                                <option value="mittel">Mittel (50-250 Mitarbeiter)</option>
+                                <option value="gross">Groß (über 250 Mitarbeiter)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="paymentHistory">Bisherige Zahlungserfahrungen</label>
+                            <select id="paymentHistory" name="paymentHistory">
+                                <option value="">Keine Angabe</option>
+                                <option value="neukunde">Neukunde - keine Erfahrungen</option>
+                                <option value="gut">Gut - pünktliche Zahlung</option>
+                                <option value="mittel">Mittel - gelegentliche Verzögerungen</option>
+                                <option value="schlecht">Schlecht - häufige Mahnungen</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div style="background: var(--bg-light); padding: 1.5rem; border-radius: 10px; margin: 1.5rem 0;">
+                        <h3 style="font-size: 1.1rem; margin-bottom: 1rem;">Prüfungsstatus</h3>
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;">
+                            <div style="text-align: center;">
+                                <span style="display: block; font-size: 0.875rem; color: var(--text-light);">Status</span>
+                                <span style="display: block; font-size: 1.25rem; font-weight: 700; color: var(--text-dark);">Nicht geprüft</span>
+                            </div>
+                            <div style="text-align: center;">
+                                <span style="display: block; font-size: 0.875rem; color: var(--text-light);">Kreditlimit</span>
+                                <span style="display: block; font-size: 1.25rem; font-weight: 700; color: var(--text-dark);">-</span>
+                            </div>
+                            <div style="text-align: center;">
+                                <span style="display: block; font-size: 0.875rem; color: var(--text-light);">Bewertung</span>
+                                <span style="display: block; font-size: 1.25rem; font-weight: 700; color: var(--text-dark);">-</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; gap: 1rem; justify-content: center;">
+                        <button class="btn btn-primary" onclick="startCreditCheck()">
+                            Bonitätsprüfung starten
+                        </button>
+                        <button class="btn btn-secondary" onclick="requestManagementApproval()">
+                            Anfrage an Geschäftsleitung
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Andere Tabs -->
+        <div id="profile" class="tab-panel">
+            <div style="background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.06);">
+                <h2 class="section-title">Kundenprofil</h2>
+                <p>Hier werden die Kundenprofile angezeigt und verwaltet.</p>
+            </div>
+        </div>
+        
+        <div id="offer" class="tab-panel">
+            <div style="background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.06);">
+                <h2 class="section-title">Angebot erstellen</h2>
+                <p>Hier können Sie PDF-Angebote für Ihre Kunden erstellen.</p>
+            </div>
+        </div>
+        
+        <div id="settings" class="tab-panel">
+            <div style="background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.06);">
+                <h2 class="section-title">Einstellungen</h2>
+                <p>Hier können Sie Ihre persönlichen Daten und Standardwerte anpassen.</p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Tab Navigation with auto-save
+        document.querySelectorAll('.nav-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                const currentPanel = document.querySelector('.tab-panel.active');
+                const tabName = this.getAttribute('data-tab');
+                
+                // Auto-save only if all required fields are filled
+                if (currentPanel && currentPanel.id === 'customer' && formChanged) {
+                    const form = document.getElementById('customerForm');
+                    const requiredFields = form.querySelectorAll('[required]');
+                    let allFieldsFilled = true;
+                    
+                    requiredFields.forEach(field => {
+                        if (!field.value || field.value.trim() === '') {
+                            allFieldsFilled = false;
+                        }
+                    });
+                    
+                    if (allFieldsFilled) {
+                        saveFormData(); // Auto-save silently if all fields are complete
+                    }
+                }
+                
+                // Remove active class from all tabs and panels
+                document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+                
+                // Add active class to clicked tab and corresponding panel
+                this.classList.add('active');
+                document.getElementById(tabName).classList.add('active');
+                
+                // Load data to credit check if switching to that tab
+                if (tabName === 'creditcheck') {
+                    loadDataToCreditCheck();
+                }
+            });
+        });
+        
+        // Calculator Functions
+        function updateCalculator() {
+            const orderValue = parseInt(document.getElementById('orderValue').value);
+            const leadTime = parseInt(document.getElementById('leadTime').value);
+            const pickup = document.getElementById('pickupToggle').checked;
+            
+            // Update displays
+            document.getElementById('orderValueDisplay').textContent = '€' + orderValue.toLocaleString('de-DE');
+            document.getElementById('leadTimeDisplay').textContent = leadTime + ' Tage';
+            
+            // Calculate discounts
+            let baseDiscount = 0;
+            if (orderValue >= 50000) baseDiscount = 10;
+            else if (orderValue >= 30000) baseDiscount = 8;
+            else if (orderValue >= 15000) baseDiscount = 6;
+            else if (orderValue >= 10000) baseDiscount = 4;
+            else if (orderValue >= 5000) baseDiscount = 3;
+            
+            let earlyDiscount = 0;
+            if (leadTime >= 30) earlyDiscount = 3;
+            else if (leadTime >= 21) earlyDiscount = 2;
+            else if (leadTime >= 14) earlyDiscount = 1;
+            
+            let pickupDiscount = pickup ? 2 : 0;
+            
+            let totalDiscount = Math.min(baseDiscount + earlyDiscount + pickupDiscount, 15);
+            
+            // Update UI
+            document.getElementById('baseDiscount').textContent = baseDiscount + '%';
+            document.getElementById('earlyDiscount').textContent = earlyDiscount + '%';
+            document.getElementById('pickupDiscount').textContent = pickupDiscount + '%';
+            document.getElementById('totalDiscount').textContent = totalDiscount + '%';
+            
+            // Calculate savings
+            const discountAmount = orderValue * (totalDiscount / 100);
+            const finalPrice = orderValue - discountAmount;
+            
+            document.getElementById('discountAmount').textContent = '€' + discountAmount.toLocaleString('de-DE');
+            document.getElementById('finalPrice').textContent = '€' + finalPrice.toLocaleString('de-DE');
+        }
+        
+        // Format currency inputs
+        function formatCurrency(input) {
+            let value = input.value.replace(/[^\d]/g, '');
+            if (value) {
+                value = parseInt(value).toLocaleString('de-DE');
+                input.value = value;
+            }
+        }
+        
+        // Calculate credit limit based on annual volume
+        function calculateCreditLimit(volumeValue) {
+            if (volumeValue) {
+                const annualVolume = parseInt(volumeValue.replace(/\./g, '') || 0);
+                if (annualVolume > 0) {
+                    // Monthly volume (30 days payment term)
+                    const monthlyVolume = annualVolume / 12;
+                    // Round up to nearest 5000
+                    const creditLimit = Math.ceil(monthlyVolume / 5000) * 5000;
+                    return creditLimit;
+                }
+            }
+            return 0;
+        }
+        
+        // Auto-save functionality
+        let formChanged = false;
+        
+        // Track form changes and validate fields
+        document.getElementById('customerForm').addEventListener('change', function(e) {
+            formChanged = true;
+            
+            // Remove error styling when field is filled
+            if (e.target.hasAttribute('required') && e.target.value) {
+                e.target.style.borderColor = '';
+            }
+        });
+        
+        // Also track input events for real-time validation
+        document.getElementById('customerForm').addEventListener('input', function(e) {
+            if (e.target.hasAttribute('required') && e.target.value) {
+                e.target.style.borderColor = '';
+            }
+        });
+        
+        // Save form data to localStorage
+        function saveFormData() {
+            const formData = new FormData(document.getElementById('customerForm'));
+            const data = {};
+            formData.forEach((value, key) => {
+                data[key] = value;
+            });
+            localStorage.setItem('customerData', JSON.stringify(data));
+            formChanged = false;
+        }
+        
+        // Load form data from localStorage
+        function loadFormData() {
+            const savedData = localStorage.getItem('customerData');
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                Object.keys(data).forEach(key => {
+                    const element = document.getElementById(key);
+                    if (element) {
+                        element.value = data[key];
+                    }
+                });
+            }
+        }
+        
+        // Credit Check for new tab
+        function startCreditCheck() {
+            const volumeInput = document.getElementById('creditLimit');
+            const volume = volumeInput ? volumeInput.value.replace(/\./g, '') : '';
+            
+            if (!volume || volume === '0') {
+                alert('Bitte füllen Sie zuerst die Kundendaten aus und berechnen Sie das Kreditlimit.');
+                return;
+            }
+            
+            alert('Bonitätsprüfung wird durchgeführt...');
+            
+            // Simulate credit check
+            setTimeout(() => {
+                const numericVolume = parseInt(volume);
+                const statusElements = document.querySelectorAll('#creditcheck .form-section span');
+                
+                if (numericVolume < 5000) {
+                    statusElements[1].textContent = 'Abgelehnt';
+                    statusElements[1].style.color = 'var(--danger)';
+                    statusElements[3].textContent = '€0';
+                    statusElements[5].textContent = 'Unzureichend';
+                    alert('Bonitätsprüfung abgelehnt: Mindestbestellwert von 5.000€ nicht erreicht.');
+                } else if (numericVolume > 50000) {
+                    statusElements[1].textContent = 'Prüfung';
+                    statusElements[1].style.color = 'var(--warning)';
+                    statusElements[3].textContent = '€25.000';
+                    statusElements[5].textContent = 'Prüfung erforderlich';
+                    alert('Bonitätsprüfung erfordert manuelle Überprüfung bei diesem Volumen.');
+                } else {
+                    statusElements[1].textContent = 'Genehmigt';
+                    statusElements[1].style.color = 'var(--primary-green)';
+                    statusElements[3].textContent = '€' + numericVolume.toLocaleString('de-DE');
+                    statusElements[5].textContent = 'Gut';
+                    alert('Bonitätsprüfung erfolgreich!');
+                }
+            }, 2000);
+        }
+        
+        // Management Request
+        function requestManagementApproval() {
+            alert('Anfrage wurde an die Geschäftsleitung gesendet. Sie erhalten eine Antwort innerhalb von 24 Stunden.');
+        }
+        
+        // Handle save from header button
+        function handleSaveForm() {
+            const activePanel = document.querySelector('.tab-panel.active');
+            
+            // Only save if we're on customer form
+            if (activePanel && activePanel.id === 'customer') {
+                const form = document.getElementById('customerForm');
+                const requiredFields = form.querySelectorAll('[required]');
+                let allFieldsFilled = true;
+                let emptyFields = [];
+                
+                requiredFields.forEach(field => {
+                    if (!field.value || field.value.trim() === '') {
+                        allFieldsFilled = false;
+                        field.style.borderColor = 'var(--danger)';
+                        const label = form.querySelector(`label[for="${field.id}"]`);
+                        emptyFields.push(label ? label.textContent.replace('*', '') : field.id);
+                    } else {
+                        field.style.borderColor = '';
+                    }
+                });
+                
+                if (!allFieldsFilled) {
+                    alert('Bitte füllen Sie alle Pflichtfelder aus:\n\n' + emptyFields.join('\n'));
+                    return;
+                }
+                
+                saveFormData();
+                alert('Daten wurden erfolgreich gespeichert!');
+            } else {
+                alert('Aktuell gibt es auf dieser Seite nichts zu speichern.');
+            }
+        }
+        
+        // Handle clear from header button
+        function handleClearForm() {
+            const activePanel = document.querySelector('.tab-panel.active');
+            
+            if (activePanel && activePanel.id === 'customer') {
+                if (confirm('Möchten Sie wirklich alle Daten löschen?')) {
+                    document.getElementById('customerForm').reset();
+                    localStorage.removeItem('customerData');
+                    formChanged = false;
+                    // Remove any error styling
+                    document.querySelectorAll('#customerForm [required]').forEach(field => {
+                        field.style.borderColor = '';
+                    });
+                }
+            } else {
+                alert('Diese Funktion ist nur im Kundendaten-Bereich verfügbar.');
+            }
+        }
+        
+        // Form Submission
+        document.getElementById('customerForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const customerType = document.getElementById('customerType').value;
+            const volume = document.getElementById('expectedVolume').value;
+            
+            if (customerType === 'neukunde' && parseInt(volume) >= 5000) {
+                const creditStatus = document.getElementById('creditStatus').textContent;
+                if (creditStatus === 'Nicht geprüft') {
+                    alert('Bitte führen Sie zuerst eine Bonitätsprüfung durch.');
+                    return;
+                }
+            }
+            
+            alert('Kundendaten wurden erfolgreich gespeichert!');
+        });
+        
+        // Load example scenarios
+        function loadExample(type) {
+            let orderValue, leadTime, pickup;
+            
+            switch(type) {
+                case 'hotel':
+                    orderValue = 35000;
+                    leadTime = 21;
+                    pickup = true;
+                    break;
+                case 'klinik':
+                    orderValue = 65000;
+                    leadTime = 30;
+                    pickup = false;
+                    break;
+                case 'restaurant':
+                    orderValue = 8500;
+                    leadTime = 14;
+                    pickup = true;
+                    break;
+            }
+            
+            // Set values
+            document.getElementById('orderValue').value = orderValue;
+            document.getElementById('leadTime').value = leadTime;
+            document.getElementById('pickupToggle').checked = pickup;
+            
+            // Update calculator
+            updateCalculator();
+            
+            // Smooth scroll to calculator
+            document.getElementById('calculator').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+        
+        // Load customer data to credit check tab
+        function loadDataToCreditCheck() {
+            const savedData = localStorage.getItem('customerData');
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                
+                // Set customer name
+                const creditCustomerName = document.getElementById('creditCustomerName');
+                if (creditCustomerName && data.companyName) {
+                    creditCustomerName.value = data.companyName;
+                }
+                
+                // Calculate and set credit limit
+                const creditLimitInput = document.getElementById('creditLimit');
+                if (creditLimitInput && data.expectedVolume) {
+                    const creditLimit = calculateCreditLimit(data.expectedVolume);
+                    creditLimitInput.value = creditLimit.toLocaleString('de-DE');
+                }
+            }
+        }
+        
+        // Warn on page close if there are unsaved changes
+        window.addEventListener('beforeunload', function(e) {
+            if (formChanged) {
+                // Check if we're on customer form
+                const activePanel = document.querySelector('.tab-panel.active');
+                if (activePanel && activePanel.id === 'customer') {
+                    // Check required fields
+                    const form = document.getElementById('customerForm');
+                    const requiredFields = form.querySelectorAll('[required]');
+                    let missingFields = [];
+                    
+                    requiredFields.forEach(field => {
+                        if (!field.value || field.value.trim() === '') {
+                            const label = form.querySelector(`label[for="${field.id}"]`);
+                            missingFields.push(label ? label.textContent.replace('*', '') : field.id);
+                        }
+                    });
+                    
+                    if (missingFields.length > 0) {
+                        // Can't save because required fields are missing
+                        e.preventDefault();
+                        e.returnValue = 'Sie haben unausgefüllte Pflichtfelder. Die Daten können nicht gespeichert werden. Möchten Sie die Seite trotzdem verlassen?';
+                        return e.returnValue;
+                    }
+                }
+                
+                // All fields filled - offer to save
+                e.preventDefault();
+                e.returnValue = 'Sie haben ungespeicherte Änderungen. Möchten Sie die Seite wirklich verlassen?';
+                return e.returnValue;
+            }
+        });
+        
+        // Initialize calculator and load saved data on page load
+        updateCalculator();
+        loadFormData();
+    </script>
+</body>
+</html>

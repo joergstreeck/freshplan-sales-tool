@@ -1,0 +1,3164 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FreshPlan Sales Tool</title>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary-blue: #004f7b;
+            --primary-green: #94c456;
+            --dark-green: #7fb040;
+            --warning: #ff9800;
+            --danger: #f44336;
+            --bg-light: #f8f9fa;
+            --text-dark: #333;
+            --text-light: #666;
+            --border-light: #e0e0e0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+        
+        /* Header */
+        .header {
+            background: white;
+            color: var(--primary-blue);
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+        
+        .header-btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .header-btn-save {
+            background: var(--primary-green);
+            color: white;
+        }
+        
+        .header-btn-save:hover {
+            background: var(--dark-green);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(148, 196, 86, 0.3);
+        }
+        
+        .header-btn-clear {
+            background: transparent;
+            color: var(--primary-blue);
+            border: 2px solid var(--primary-blue);
+        }
+        
+        .header-btn-clear:hover {
+            background: var(--primary-blue);
+            color: white;
+        }
+        
+        .header-select {
+            padding: 0.5rem 1rem;
+            border: 2px solid var(--border-light);
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            background: white;
+            color: var(--primary-blue);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .header-select:hover {
+            border-color: var(--primary-green);
+        }
+        
+        .header-select:focus {
+            outline: none;
+            border-color: var(--primary-green);
+            box-shadow: 0 0 0 3px rgba(148, 196, 86, 0.1);
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .logo h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+        }
+        
+        .logo-tagline {
+            font-size: 0.875rem;
+            color: var(--primary-green);
+            font-weight: 500;
+        }
+        
+        /* Navigation */
+        .nav {
+            background: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .nav-tabs {
+            display: flex;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .nav-tab {
+            padding: 1rem 2rem;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 1rem;
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+            color: var(--text-dark);
+        }
+        
+        .nav-tab:hover {
+            background: var(--bg-light);
+        }
+        
+        .nav-tab.active {
+            color: var(--primary-blue);
+            border-bottom-color: var(--primary-green);
+            font-weight: 600;
+        }
+        
+        /* Container */
+        .container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        
+        /* Tab Panels */
+        .tab-panel {
+            display: none;
+        }
+        
+        .tab-panel.active {
+            display: block;
+        }
+        
+        /* Calculator Tab */
+        .demonstrator-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+        
+        .calculator-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        }
+        
+        .section-title {
+            color: var(--primary-blue);
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .slider-group {
+            margin-bottom: 2rem;
+        }
+        
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        
+        .slider-value {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--primary-green);
+            background: rgba(148, 196, 86, 0.1);
+            padding: 0.25rem 0.75rem;
+            border-radius: 6px;
+        }
+        
+        .slider {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #e0e0e0;
+            outline: none;
+            -webkit-appearance: none;
+        }
+        
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary-green);
+            cursor: pointer;
+            border: 2px solid white;
+            box-shadow: 0 2px 8px rgba(148, 196, 86, 0.3);
+        }
+        
+        .slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary-green);
+            cursor: pointer;
+            border: 2px solid white;
+            box-shadow: 0 2px 8px rgba(148, 196, 86, 0.3);
+        }
+        
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            font-weight: 500;
+            margin-bottom: 2rem;
+        }
+        
+        .checkbox {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+        
+        /* Results */
+        .results-container {
+            background: var(--bg-light);
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-top: 2rem;
+        }
+        
+        .result-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .result-item {
+            text-align: center;
+            padding: 1rem;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid rgba(0,0,0,0.06);
+        }
+        
+        .result-label {
+            display: block;
+            font-size: 0.875rem;
+            color: var(--text-light);
+            margin-bottom: 0.5rem;
+        }
+        
+        .result-value {
+            display: block;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+        }
+        
+        .total-discount {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, var(--primary-green), #7fb069);
+            color: white;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+        }
+        
+        .total-value {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+        
+        .savings-display {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        
+        .savings-item {
+            text-align: center;
+            padding: 1rem;
+            background: white;
+            border-radius: 8px;
+        }
+        
+        .savings-item.highlight {
+            background: var(--primary-blue);
+            color: white;
+        }
+        
+        .savings-value {
+            display: block;
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-top: 0.5rem;
+        }
+        
+        /* Info Section */
+        .info-section {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        
+        .info-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        }
+        
+        .info-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .info-header h3 {
+            color: var(--primary-blue);
+            font-size: 1.25rem;
+        }
+        
+        /* Customer Form */
+        .customer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .alert-box {
+            background: rgba(255, 152, 0, 0.1);
+            border: 1px solid rgba(255, 152, 0, 0.3);
+            color: var(--text-dark);
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            display: none;
+        }
+        
+        .alert-box.show {
+            display: block;
+        }
+        
+        .alert-content h3 {
+            color: var(--warning);
+            margin-bottom: 0.5rem;
+        }
+        
+        .alert-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .customer-form {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        }
+        
+        .form-section {
+            margin-bottom: 2rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--border-light);
+        }
+        
+        .form-section:last-of-type {
+            border-bottom: none;
+        }
+        
+        .form-section-title {
+            color: var(--primary-blue);
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .form-group label {
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-dark);
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 0.75rem;
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-green);
+            box-shadow: 0 0 0 3px rgba(148, 196, 86, 0.1);
+        }
+        
+        /* Buttons */
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .btn-primary {
+            background: var(--primary-green);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--dark-green);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(148, 196, 86, 0.3);
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+        
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border-light);
+        }
+        
+        /* Credit Status */
+        .credit-status {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+        
+        .status-item {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid var(--border-light);
+        }
+        
+        .status-label {
+            display: block;
+            font-size: 0.875rem;
+            color: var(--text-light);
+            margin-bottom: 0.25rem;
+        }
+        
+        .status-value {
+            display: block;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .demonstrator-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .result-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav-tabs {
+                overflow-x: auto;
+            }
+            
+            .nav-tab {
+                padding: 1rem;
+                font-size: 0.875rem;
+            }
+        }
+        
+        /* Example items hover effect */
+        .example-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(148, 196, 86, 0.3);
+            border-color: var(--primary-green) !important;
+            background: rgba(148, 196, 86, 0.05) !important;
+        }
+        
+        /* Responsive examples */
+        @media (max-width: 768px) {
+            .examples-container {
+                grid-template-columns: 1fr !important;
+                gap: 0.5rem !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <img src="./assets/images/logo.png" alt="FreshFoodz Logo" style="height: 50px; margin-right: 1rem;">
+                <div>
+                    <h1>FreshPlan</h1>
+                    <span class="logo-tagline" data-i18n="tagline">So einfach, schnell und lecker!</span>
+                </div>
+            </div>
+            <div class="header-actions">
+                <select id="languageSelect" class="header-select" onchange="changeLanguage(this.value)">
+                    <option value="de" data-i18n="languageDE">Deutsch</option>
+                    <option value="en" data-i18n="languageEN">English</option>
+                </select>
+                <button class="header-btn header-btn-clear" onclick="handleClearForm()">
+                    <span data-i18n="clearForm">Formular leeren</span>
+                </button>
+                <button class="header-btn header-btn-save" onclick="handleSaveForm()">
+                    <span data-i18n="save">Speichern</span>
+                </button>
+            </div>
+        </div>
+    </header>
+    
+    <nav class="nav">
+        <div class="nav-tabs">
+            <button class="nav-tab active" data-tab="calculator" data-i18n="calculator">Rabattrechner</button>
+            <button class="nav-tab" data-tab="customer" data-i18n="customer">Kundendaten</button>
+            <button class="nav-tab" data-tab="locations" data-i18n="locations" style="display: none;">Standorte</button>
+            <button class="nav-tab" data-tab="locationdetails" data-i18n="locationDetails" style="display: none;">Standort-Details</button>
+            <button class="nav-tab" data-tab="creditcheck" data-i18n="creditcheck">Bonitätsprüfung</button>
+            <button class="nav-tab" data-tab="profile" data-i18n="profile">Profil</button>
+            <button class="nav-tab" data-tab="offer" data-i18n="offer">Angebot</button>
+            <button class="nav-tab" data-tab="settings" data-i18n="settings">Einstellungen</button>
+        </div>
+    </nav>
+    
+    <div class="container">
+        <!-- Rabattrechner Tab -->
+        <div id="calculator" class="tab-panel active">
+            <div class="demonstrator-container">
+                <!-- Linke Spalte - Rechner -->
+                <div class="calculator-section">
+                    <h2 class="section-title" data-i18n="calculatorTitle">FreshPlan Rabattrechner</h2>
+                    
+                    <!-- Bestellwert Slider -->
+                    <div class="slider-group">
+                        <label class="slider-label">
+                            <span data-i18n="orderValue">Bestellwert</span>
+                            <span id="orderValueDisplay" class="slider-value">€15.000</span>
+                        </label>
+                        <input type="range" id="orderValue" class="slider" 
+                               min="0" max="100000" step="500" value="15000"
+                               oninput="updateCalculator()">
+                    </div>
+                    
+                    <!-- Vorlaufzeit Slider -->
+                    <div class="slider-group">
+                        <label class="slider-label">
+                            <span data-i18n="leadTime">Vorlaufzeit</span>
+                            <span id="leadTimeDisplay" class="slider-value">14 Tage</span>
+                        </label>
+                        <input type="range" id="leadTime" class="slider" 
+                               min="0" max="45" step="1" value="14"
+                               oninput="updateCalculator()">
+                    </div>
+                    
+                    <!-- Optionen -->
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="pickupToggle" class="checkbox" onchange="updateCalculator()">
+                        <span data-i18n="pickup">Abholung (Mindestbestellwert: 5.000€ netto)</span>
+                    </label>
+                    
+                    <!-- Ergebnisse -->
+                    <div class="results-container">
+                        <div class="result-grid">
+                            <div class="result-item">
+                                <span class="result-label" data-i18n="baseDiscount">Basisrabatt</span>
+                                <span id="baseDiscount" class="result-value">6%</span>
+                            </div>
+                            <div class="result-item">
+                                <span class="result-label" data-i18n="earlyDiscount">Frühbucher</span>
+                                <span id="earlyDiscount" class="result-value">1%</span>
+                            </div>
+                            <div class="result-item">
+                                <span class="result-label" data-i18n="pickupDiscount">Abholung</span>
+                                <span id="pickupDiscount" class="result-value">0%</span>
+                            </div>
+                        </div>
+                        
+                        <div class="total-discount">
+                            <span data-i18n="totalDiscount">Gesamtrabatt</span>
+                            <span id="totalDiscount" class="total-value">7%</span>
+                        </div>
+                        
+                        <div class="savings-display">
+                            <div class="savings-item">
+                                <span data-i18n="savings">Ersparnis</span>
+                                <span id="discountAmount" class="savings-value">€1.050</span>
+                            </div>
+                            <div class="savings-item highlight">
+                                <span data-i18n="finalPrice">Endpreis</span>
+                                <span id="finalPrice" class="savings-value">€13.950</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Rechte Spalte - Informationen -->
+                <div class="info-section">
+                    <div class="info-card">
+                        <div class="info-header">
+                            <h3 data-i18n="discountSystem">FreshPlan-Rabattsystem</h3>
+                        </div>
+                        <div class="info-content" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                            <div>
+                                <h4 style="font-size: 0.875rem; margin-bottom: 0.5rem; color: var(--primary-blue);" data-i18n="baseDiscount">Basisrabatt</h4>
+                                <table style="width: 100%; font-size: 0.813rem; border-collapse: collapse;">
+                                    <tr style="border-bottom: 1px solid var(--border-light);">
+                                        <td style="padding: 0.25rem 0 0.25rem 0; width: auto;" data-i18n="from">ab</td>
+                                        <td style="text-align: right; padding: 0.25rem 0 0.25rem 0.25rem; font-family: monospace; width: 4rem;">5.000€</td>
+                                        <td style="text-align: right; font-weight: 600; padding: 0.25rem 0 0.25rem 1rem;">3%</td>
+                                    </tr>
+                                    <tr style="border-bottom: 1px solid var(--border-light);">
+                                        <td style="padding: 0.25rem 0 0.25rem 0;" data-i18n="from">ab</td>
+                                        <td style="text-align: right; padding: 0.25rem 0 0.25rem 0.25rem; font-family: monospace;">15.000€</td>
+                                        <td style="text-align: right; font-weight: 600; padding: 0.25rem 0 0.25rem 1rem;">6%</td>
+                                    </tr>
+                                    <tr style="border-bottom: 1px solid var(--border-light);">
+                                        <td style="padding: 0.25rem 0 0.25rem 0;" data-i18n="from">ab</td>
+                                        <td style="text-align: right; padding: 0.25rem 0 0.25rem 0.25rem; font-family: monospace;">30.000€</td>
+                                        <td style="text-align: right; font-weight: 600; padding: 0.25rem 0 0.25rem 1rem;">8%</td>
+                                    </tr>
+                                    <tr style="border-bottom: 1px solid var(--border-light);">
+                                        <td style="padding: 0.25rem 0 0.25rem 0;" data-i18n="from">ab</td>
+                                        <td style="text-align: right; padding: 0.25rem 0 0.25rem 0.25rem; font-family: monospace;">50.000€</td>
+                                        <td style="text-align: right; font-weight: 600; padding: 0.25rem 0 0.25rem 1rem;">9%</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 0.25rem 0 0.25rem 0;" data-i18n="from">ab</td>
+                                        <td style="text-align: right; padding: 0.25rem 0 0.25rem 0.25rem; font-family: monospace;">75.000€</td>
+                                        <td style="text-align: right; font-weight: 600; padding: 0.25rem 0 0.25rem 1rem;">10%</td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div>
+                                <h4 style="font-size: 0.875rem; margin-bottom: 0.5rem; color: var(--primary-blue);" data-i18n="earlyBookingDiscount">Frühbucherrabatt</h4>
+                                <table style="width: 100%; font-size: 0.813rem; border-collapse: collapse;">
+                                    <tr style="border-bottom: 1px solid var(--border-light);">
+                                        <td style="padding: 0.25rem 0;" data-i18n="from10days">ab 10 Tage</td>
+                                        <td style="text-align: right; font-weight: 600;">1%</td>
+                                    </tr>
+                                    <tr style="border-bottom: 1px solid var(--border-light);">
+                                        <td style="padding: 0.25rem 0;" data-i18n="from15days">ab 15 Tage</td>
+                                        <td style="text-align: right; font-weight: 600;">2%</td>
+                                    </tr>
+                                    <tr style="border-bottom: 1px solid var(--border-light);">
+                                        <td style="padding: 0.25rem 0;" data-i18n="from30days">ab 30 Tage</td>
+                                        <td style="text-align: right; font-weight: 600;">3%</td>
+                                    </tr>
+                                    <tr style="border-bottom: 1px solid var(--border-light);">
+                                        <td style="padding: 0.25rem 0;">&nbsp;</td>
+                                        <td style="text-align: right; font-weight: 600;">&nbsp;</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 0.25rem 0;" data-i18n="pickup">Abholung</td>
+                                        <td style="text-align: right; font-weight: 600;">2%</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                        <div style="text-align: center; margin-top: 0.75rem; padding-top: 0.75rem; border-top: 2px solid var(--primary-green);">
+                            <strong style="color: var(--primary-green); font-size: 0.9rem;" data-i18n="maxTotalDiscount">Maximaler Gesamtrabatt: 15%</strong>
+                        </div>
+                    </div>
+                    
+                    <div class="info-card">
+                        <div class="info-header">
+                            <h3 data-i18n="chainCustomerRegulation">Kettenkundenregelung</h3>
+                        </div>
+                        <p data-i18n="chainCustomerDesc">Für Unternehmen mit mehreren Standorten (z.B. Hotel- oder Klinikgruppen):</p>
+                        <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+                            <li><strong data-i18n="optionA">Option A:</strong> <span data-i18n="optionADesc">Bestellungen verschiedener Standorte innerhalb einer Woche werden zusammengerechnet</span></li>
+                            <li><strong data-i18n="optionB">Option B:</strong> <span data-i18n="optionBDesc">Zentrale Bestellung mit Mehrfachauslieferung</span></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="info-card" style="background: rgba(148, 196, 86, 0.1); border: 1px solid rgba(148, 196, 86, 0.3);">
+                        <div class="info-header">
+                            <h3 style="color: var(--primary-green);" data-i18n="exampleScenarios">Beispielszenarien</h3>
+                        </div>
+                        <div class="examples-container" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 1rem;">
+                            <div class="example-item" onclick="loadExample('hotel')" style="cursor: pointer; padding: 1rem; background: white; border-radius: 8px; transition: all 0.3s; border: 2px solid var(--border-light); text-align: center;">
+                                <h4 style="color: var(--primary-blue); margin-bottom: 0.5rem; font-size: 1rem;">🏨 <span data-i18n="hotelChain">Hotelkette</span></h4>
+                                <p style="margin: 0.25rem 0; font-size: 0.813rem; color: var(--text-dark);">35.000 €</p>
+                                <p style="margin: 0.25rem 0; font-size: 0.813rem; color: var(--text-dark);"><span data-i18n="21days">21 Tage</span> • <span data-i18n="pickup">Abholung</span></p>
+                                <p style="margin: 0.5rem 0 0 0; color: var(--primary-green); font-weight: 700; font-size: 1.1rem;">12% <span data-i18n="discount">Rabatt</span></p>
+                            </div>
+                            <div class="example-item" onclick="loadExample('klinik')" style="cursor: pointer; padding: 1rem; background: white; border-radius: 8px; transition: all 0.3s; border: 2px solid var(--border-light); text-align: center;">
+                                <h4 style="color: var(--primary-blue); margin-bottom: 0.5rem; font-size: 1rem;">🏥 <span data-i18n="clinicGroup">Klinikgruppe</span></h4>
+                                <p style="margin: 0.25rem 0; font-size: 0.813rem; color: var(--text-dark);">65.000 €</p>
+                                <p style="margin: 0.25rem 0; font-size: 0.813rem; color: var(--text-dark);"><span data-i18n="30days">30 Tage</span> • <span data-i18n="delivery">Lieferung</span></p>
+                                <p style="margin: 0.5rem 0 0 0; color: var(--primary-green); font-weight: 700; font-size: 1.1rem;">12% <span data-i18n="discount">Rabatt</span></p>
+                            </div>
+                            <div class="example-item" onclick="loadExample('restaurant')" style="cursor: pointer; padding: 1rem; background: white; border-radius: 8px; transition: all 0.3s; border: 2px solid var(--border-light); text-align: center;">
+                                <h4 style="color: var(--primary-blue); margin-bottom: 0.5rem; font-size: 1rem;">🍽️ <span data-i18n="restaurant">Restaurant</span></h4>
+                                <p style="margin: 0.25rem 0; font-size: 0.813rem; color: var(--text-dark);">8.500 €</p>
+                                <p style="margin: 0.25rem 0; font-size: 0.813rem; color: var(--text-dark);"><span data-i18n="14days">14 Tage</span> • <span data-i18n="pickup">Abholung</span></p>
+                                <p style="margin: 0.5rem 0 0 0; color: var(--primary-green); font-weight: 700; font-size: 1.1rem;">6% <span data-i18n="discount">Rabatt</span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Kundendaten Tab -->
+        <div id="customer" class="tab-panel">
+            <div class="customer-container">
+                <form id="customerForm" class="customer-form">
+                    <h2 class="section-title" data-i18n="customerTitle">Kundendaten erfassen</h2>
+                    
+                    <!-- Grunddaten -->
+                    <div class="form-section">
+                        <h3 class="form-section-title" data-i18n="basicData">Grunddaten</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="companyName" data-i18n="companyName">Firmenname*</label>
+                                <input type="text" id="companyName" name="companyName" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="legalForm" data-i18n="legalForm">Rechtsform*</label>
+                                <select id="legalForm" name="legalForm" required>
+                                    <option value="" data-i18n="pleaseSelect">Bitte wählen</option>
+                                    <option value="gmbh" data-i18n="legalFormGmbH">GmbH</option>
+                                    <option value="ag" data-i18n="legalFormAG">AG</option>
+                                    <option value="gbr" data-i18n="legalFormGbR">GbR</option>
+                                    <option value="einzelunternehmen" data-i18n="legalFormEinzel">Einzelunternehmen</option>
+                                    <option value="kg" data-i18n="legalFormKG">KG</option>
+                                    <option value="ohg" data-i18n="legalFormOHG">OHG</option>
+                                    <option value="ug" data-i18n="legalFormUG">UG</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="customerType" data-i18n="customerType">Kundentyp*</label>
+                                <select id="customerType" name="customerType" required>
+                                    <option value="" data-i18n="pleaseSelect">Bitte wählen</option>
+                                    <option value="neukunde" data-i18n="newCustomer">Neukunde</option>
+                                    <option value="bestandskunde" data-i18n="existingCustomer">Bestandskunde</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="industry" data-i18n="industry">Branche*</label>
+                                <select id="industry" name="industry" required>
+                                    <option value="" data-i18n="pleaseSelect">Bitte wählen</option>
+                                    <option value="hotel" data-i18n="industryHotel">Hotel</option>
+                                    <option value="krankenhaus" data-i18n="industryHospital">Klinik</option>
+                                    <option value="seniorenresidenz" data-i18n="industryNursingHome">Seniorenresidenz</option>
+                                    <option value="betriebsrestaurant" data-i18n="industryCafeteria">Betriebsrestaurant</option>
+                                    <option value="restaurant" data-i18n="industryRestaurant">Restaurant</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="chainCustomer" data-i18n="chainCustomer">Kettenkunde</label>
+                                <select id="chainCustomer" name="chainCustomer">
+                                    <option value="nein" data-i18n="no">Nein</option>
+                                    <option value="ja" data-i18n="yes">Ja</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="customerNumber" data-i18n="customerNumberInternal">Kundennummer (intern)</label>
+                                <input type="text" id="customerNumber" name="customerNumber">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Adressdaten -->
+                    <div class="form-section">
+                        <h3 class="form-section-title" data-i18n="addressData">Adressdaten</h3>
+                        <div class="form-row">
+                            <div class="form-group" style="grid-column: span 2;">
+                                <label for="street" data-i18n="streetAndNumber">Straße und Hausnummer*</label>
+                                <input type="text" id="street" name="street" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="postalCode" data-i18n="postalCode">PLZ*</label>
+                                <input type="text" id="postalCode" name="postalCode" required pattern="[0-9]{5}" maxlength="5">
+                            </div>
+                            <div class="form-group">
+                                <label for="city" data-i18n="city">Ort*</label>
+                                <input type="text" id="city" name="city" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Ansprechpartner -->
+                    <div class="form-section">
+                        <h3 class="form-section-title" data-i18n="contactPerson">Ansprechpartner</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="contactName" data-i18n="contactName">Name*</label>
+                                <input type="text" id="contactName" name="contactName" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="contactPosition" data-i18n="contactPosition">Position</label>
+                                <input type="text" id="contactPosition" name="contactPosition">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="contactPhone" data-i18n="contactPhone">Telefon*</label>
+                                <input type="tel" id="contactPhone" name="contactPhone" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="contactEmail" data-i18n="contactEmail">E-Mail*</label>
+                                <input type="email" id="contactEmail" name="contactEmail" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Geschäftsdaten -->
+                    <div class="form-section">
+                        <h3 class="form-section-title" data-i18n="businessData">Geschäftsdaten</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="expectedVolume" data-i18n="expectedAnnualVolume">Erwartetes Jahresvolumen (€)*</label>
+                                <input type="text" id="expectedVolume" name="expectedVolume" required placeholder="z.B. 500.000" data-i18n-placeholder="volumePlaceholder" onblur="formatCurrency(this)">
+                            </div>
+                            <div class="form-group">
+                                <label for="paymentMethod" data-i18n="paymentMethod">Zahlungsart*</label>
+                                <select id="paymentMethod" name="paymentMethod" required>
+                                    <option value="" data-i18n="pleaseSelect">Bitte wählen</option>
+                                    <option value="vorkasse" data-i18n="paymentPrepayment">Vorkasse</option>
+                                    <option value="bar" data-i18n="paymentCash">Barzahlung</option>
+                                    <option value="rechnung" data-i18n="paymentInvoice">Rechnung (30 Tage netto)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Zusatzinformationen -->
+                    <div class="form-section">
+                        <h3 class="form-section-title" data-i18n="additionalInfo">Zusatzinformationen</h3>
+                        <div class="form-row">
+                            <div class="form-group" style="grid-column: span 2;">
+                                <label for="notes" data-i18n="notes">Notizen</label>
+                                <textarea id="notes" name="notes" rows="3" placeholder="Interne Notizen zum Kunden..." data-i18n-placeholder="notesPlaceholder"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="customField1" data-i18n="customField1">Freifeld 1</label>
+                                <input type="text" id="customField1" name="customField1">
+                            </div>
+                            <div class="form-group">
+                                <label for="customField2" data-i18n="customField2">Freifeld 2</label>
+                                <input type="text" id="customField2" name="customField2">
+                            </div>
+                        </div>
+                    </div>
+                    
+                </form>
+            </div>
+        </div>
+        
+        <!-- Standorte Tab (nur für Kettenkunden) -->
+        <div id="locations" class="tab-panel">
+            <div class="customer-container">
+                <div class="customer-form">
+                    <h2 class="section-title" data-i18n="locationsTitle">Standortverwaltung</h2>
+                    
+                    <!-- Übersicht -->
+                    <div class="form-section">
+                        <h3 class="form-section-title" data-i18n="locationOverview">Kettenübersicht</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="totalLocations" data-i18n="totalLocations">Gesamtanzahl Standorte</label>
+                                <input type="number" id="totalLocations" name="totalLocations" min="0" value="0" readonly style="background: #f5f5f5;">
+                            </div>
+                            <div class="form-group">
+                                <label for="locationsManagementType" data-i18n="managementType">Verwaltungstyp</label>
+                                <select id="locationsManagementType" name="locationsManagementType">
+                                    <option value="zentral" data-i18n="centralManagement">Zentrale Verwaltung</option>
+                                    <option value="dezentral" data-i18n="decentralManagement">Dezentrale Verwaltung</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Branchenspezifische Sektion (dynamisch) -->
+                    <div id="industrySpecificSection" class="form-section">
+                        <!-- Wird dynamisch gefüllt basierend auf der Branche -->
+                    </div>
+                    
+                    <!-- Detaillierte Erfassung -->
+                    <div class="form-section">
+                        <h3 class="form-section-title" data-i18n="detailedCapture">Detaillierte Erfassung</h3>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="detailedLocations" name="detailedLocations" class="checkbox" onchange="toggleLocationDetailsTab(this.checked)">
+                            <span data-i18n="captureDetailsLabel">Standorte detailliert erfassen</span>
+                        </label>
+                        <p style="font-size: 0.875rem; color: var(--text-light); margin-left: 28px; margin-top: 0.5rem;" data-i18n="captureDetailsDesc">
+                            Erfassen Sie jeden Standort einzeln mit Adresse, Ansprechpartner und spezifischen Eigenschaften.
+                        </p>
+                    </div>
+                    
+                    <!-- Vending-Konzept -->
+                    <div class="form-section">
+                        <h3 class="form-section-title" data-i18n="vendingConcept">Vending-Konzept</h3>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="vendingInterest" name="vendingInterest" class="checkbox">
+                            <span data-i18n="vendingInterestLabel">Interesse an Freshfoodz-Vending?</span>
+                        </label>
+                        <div id="vendingDetails" style="display: none; margin-top: 1rem;">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="vendingLocations" data-i18n="vendingLocations">Anzahl Standorte mit Vending</label>
+                                    <input type="number" id="vendingLocations" name="vendingLocations" min="0" max="999">
+                                </div>
+                                <div class="form-group">
+                                    <label for="vendingType" data-i18n="vendingType">Automatentyp</label>
+                                    <select id="vendingType" name="vendingType">
+                                        <option value="" data-i18n="pleaseSelect">Bitte wählen</option>
+                                        <option value="snack" data-i18n="vendingSnack">Snack-Automat</option>
+                                        <option value="fresh" data-i18n="vendingFresh">Frische-Automat</option>
+                                        <option value="kombi" data-i18n="vendingCombi">Kombi-Automat</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Keine Form Actions hier - Speichern erfolgt über Header -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- Standort-Details Tab (nur wenn detaillierte Erfassung aktiviert) -->
+        <div id="locationdetails" class="tab-panel">
+            <div class="customer-container">
+                <div class="customer-form">
+                    <h2 class="section-title" data-i18n="locationDetailsTitle">Detaillierte Standorterfassung</h2>
+                    
+                    <!-- Toolbar -->
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                        <div>
+                            <span data-i18n="totalLocationsDetail">Erfasste Standorte:</span>
+                            <strong id="detailLocationCount">0</strong> / <strong id="detailLocationTotal">0</strong>
+                        </div>
+                        <button type="button" class="btn btn-primary" onclick="addLocationDetail()">
+                            <span data-i18n="addLocation">+ Standort hinzufügen</span>
+                        </button>
+                    </div>
+                    
+                    <!-- Synchronisierungs-Warnung -->
+                    <div id="syncWarning" class="alert-box" style="display: none; margin-bottom: 1.5rem;">
+                        <div class="alert-content">
+                            <h3 data-i18n="syncWarningTitle">⚠️ Abweichung erkannt</h3>
+                            <p data-i18n="syncWarningText">Die Anzahl und Kategorien der erfassten Standorte stimmen nicht mit den Angaben auf der Haupt-Standortseite überein.</p>
+                            <div id="syncWarningDetails" style="margin-top: 0.5rem;"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Standort-Liste -->
+                    <div id="locationDetailsList">
+                        <!-- Standorte werden hier dynamisch eingefügt -->
+                    </div>
+                    
+                    <!-- Keine Standorte Nachricht -->
+                    <div id="noLocationsMessage" style="text-align: center; padding: 3rem; color: var(--text-light);">
+                        <p data-i18n="noLocationsYet">Noch keine Standorte erfasst.</p>
+                        <p data-i18n="clickAddLocation">Klicken Sie auf "Standort hinzufügen" um zu beginnen.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Bonitätsprüfung Tab -->
+        <div id="creditcheck" class="tab-panel">
+            <div style="background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.06);">
+                <h2 class="section-title" data-i18n="creditCheckTitle">Bonitätsprüfung</h2>
+                
+                <div class="form-section">
+                    <p style="margin-bottom: 1.5rem;" data-i18n="creditCheckDescription">Die Bonitätsprüfung ist nur für <strong data-i18n="newCustomers">Neukunden</strong> relevant, die auf Rechnung zahlen möchten.</p>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="creditCustomerName" data-i18n="customerName">Kundenname</label>
+                            <input type="text" id="creditCustomerName" placeholder="Kunde aus Kundendaten wählen">
+                        </div>
+                        <div class="form-group">
+                            <label for="creditLimit" data-i18n="creditLimitLabel">Kreditlimit/Offene Posten (€)</label>
+                            <input type="text" id="creditLimit" placeholder="Wird automatisch berechnet" readonly style="background: #f5f5f5;">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="registrationNumber" data-i18n="registrationNumber">Handelsregisternummer*</label>
+                            <input type="text" id="registrationNumber" name="registrationNumber" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="vatId" data-i18n="vatId">USt-IdNr.*</label>
+                            <input type="text" id="vatId" name="vatId" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="companySize" data-i18n="companySize">Unternehmensgröße*</label>
+                            <select id="companySize" name="companySize" required>
+                                <option value="" data-i18n="pleaseSelect">Bitte wählen</option>
+                                <option value="klein" data-i18n="companySizeSmall">Klein (bis 50 Mitarbeiter)</option>
+                                <option value="mittel" data-i18n="companySizeMedium">Mittel (50-250 Mitarbeiter)</option>
+                                <option value="gross" data-i18n="companySizeLarge">Groß (über 250 Mitarbeiter)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="paymentHistory" data-i18n="paymentHistory">Bisherige Zahlungserfahrungen</label>
+                            <select id="paymentHistory" name="paymentHistory">
+                                <option value="" data-i18n="paymentHistoryNoInfo">Keine Angabe</option>
+                                <option value="neukunde" data-i18n="paymentHistoryNew">Neukunde - keine Erfahrungen</option>
+                                <option value="gut" data-i18n="paymentHistoryGood">Gut - pünktliche Zahlung</option>
+                                <option value="mittel" data-i18n="paymentHistoryMedium">Mittel - gelegentliche Verzögerungen</option>
+                                <option value="schlecht" data-i18n="paymentHistoryBad">Schlecht - häufige Mahnungen</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div style="background: var(--bg-light); padding: 1.5rem; border-radius: 10px; margin: 1.5rem 0;">
+                        <h3 style="font-size: 1.1rem; margin-bottom: 1rem;" data-i18n="checkStatus">Prüfungsstatus</h3>
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;">
+                            <div style="text-align: center;">
+                                <span style="display: block; font-size: 0.875rem; color: var(--text-light);" data-i18n="status">Status</span>
+                                <span style="display: block; font-size: 1.25rem; font-weight: 700; color: var(--text-dark);" data-i18n="notChecked">Nicht geprüft</span>
+                            </div>
+                            <div style="text-align: center;">
+                                <span style="display: block; font-size: 0.875rem; color: var(--text-light);" data-i18n="creditLimit">Kreditlimit</span>
+                                <span style="display: block; font-size: 1.25rem; font-weight: 700; color: var(--text-dark);">-</span>
+                            </div>
+                            <div style="text-align: center;">
+                                <span style="display: block; font-size: 0.875rem; color: var(--text-light);" data-i18n="rating">Bewertung</span>
+                                <span style="display: block; font-size: 1.25rem; font-weight: 700; color: var(--text-dark);">-</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; gap: 1rem; justify-content: center;">
+                        <button class="btn btn-primary" onclick="startCreditCheck()">
+                            <span data-i18n="startCreditCheck">Bonitätsprüfung starten</span>
+                        </button>
+                        <button class="btn btn-secondary" onclick="requestManagementApproval()">
+                            <span data-i18n="requestManagement">Anfrage an Geschäftsleitung</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Andere Tabs -->
+        <div id="profile" class="tab-panel">
+            <div style="background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.06);">
+                <h2 class="section-title" data-i18n="profileTitle">Kundenprofil</h2>
+                <p data-i18n="profileDescription">Hier werden die Kundenprofile angezeigt und verwaltet.</p>
+            </div>
+        </div>
+        
+        <div id="offer" class="tab-panel">
+            <div style="background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.06);">
+                <h2 class="section-title" data-i18n="offerTitle">Angebot erstellen</h2>
+                <p data-i18n="offerDescription">Hier können Sie PDF-Angebote für Ihre Kunden erstellen.</p>
+            </div>
+        </div>
+        
+        <div id="settings" class="tab-panel">
+            <div style="background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.06);">
+                <h2 class="section-title" data-i18n="settingsTitle">Einstellungen</h2>
+                <p data-i18n="settingsDescription">Hier können Sie Ihre persönlichen Daten und Standardwerte anpassen.</p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Translations
+        const translations = {
+            de: {
+                // Header
+                clearForm: 'Formular leeren',
+                save: 'Speichern',
+                
+                // Navigation
+                calculator: 'Rabattrechner',
+                customer: 'Kundendaten',
+                locations: 'Standorte',
+                locationDetails: 'Standort-Details',
+                creditcheck: 'Bonitätsprüfung',
+                profile: 'Profil',
+                offer: 'Angebot',
+                settings: 'Einstellungen',
+                
+                // Calculator
+                calculatorTitle: 'FreshPlan Rabattrechner',
+                orderValue: 'Bestellwert',
+                leadTime: 'Vorlaufzeit',
+                days: 'Tage',
+                pickup: 'Abholung (Mindestbestellwert: 5.000€ netto)',
+                baseDiscount: 'Basisrabatt',
+                earlyDiscount: 'Frühbucher',
+                pickupDiscount: 'Abholung',
+                totalDiscount: 'Gesamtrabatt',
+                savings: 'Ersparnis',
+                finalPrice: 'Endpreis',
+                
+                // Customer
+                customerTitle: 'Kundendaten erfassen',
+                basicData: 'Grunddaten',
+                companyName: 'Firmenname*',
+                legalForm: 'Rechtsform*',
+                customerType: 'Kundentyp*',
+                industry: 'Branche*',
+                chainCustomer: 'Kettenkunde',
+                customerNumberInternal: 'Kundennummer (intern)',
+                addressData: 'Adressdaten',
+                streetAndNumber: 'Straße und Hausnummer*',
+                postalCode: 'PLZ*',
+                city: 'Ort*',
+                contactPerson: 'Ansprechpartner',
+                contactName: 'Name*',
+                contactPosition: 'Position',
+                contactPhone: 'Telefon*',
+                contactEmail: 'E-Mail*',
+                businessData: 'Geschäftsdaten',
+                expectedAnnualVolume: 'Erwartetes Jahresvolumen (€)*',
+                paymentMethod: 'Zahlungsart*',
+                additionalInfo: 'Zusatzinformationen',
+                notes: 'Notizen',
+                customField1: 'Freifeld 1',
+                customField2: 'Freifeld 2',
+                pleaseSelect: 'Bitte wählen',
+                yes: 'Ja',
+                no: 'Nein',
+                volumePlaceholder: 'z.B. 500.000',
+                notesPlaceholder: 'Interne Notizen zum Kunden...',
+                
+                // Profile, Offer, Settings pages
+                profileTitle: 'Kundenprofil',
+                profileDescription: 'Hier werden die Kundenprofile angezeigt und verwaltet.',
+                offerTitle: 'Angebot erstellen',
+                offerDescription: 'Hier können Sie PDF-Angebote für Ihre Kunden erstellen.',
+                settingsTitle: 'Einstellungen',
+                settingsDescription: 'Hier können Sie Ihre persönlichen Daten und Standardwerte anpassen.',
+                
+                // Credit check
+                creditCheckDescription: 'Die Bonitätsprüfung ist nur für {newCustomers} relevant, die auf Rechnung zahlen möchten.',
+                newCustomers: 'Neukunden',
+                customerName: 'Kundenname',
+                creditLimitLabel: 'Kreditlimit/Offene Posten (€)',
+                registrationNumber: 'Handelsregisternummer*',
+                vatId: 'USt-IdNr.*',
+                companySize: 'Unternehmensgröße*',
+                paymentHistory: 'Bisherige Zahlungserfahrungen',
+                checkStatus: 'Prüfungsstatus',
+                status: 'Status',
+                notChecked: 'Nicht geprüft',
+                creditLimit: 'Kreditlimit',
+                rating: 'Bewertung',
+                
+                // Languages
+                languageDE: 'Deutsch',
+                languageEN: 'English',
+                
+                // Legal forms
+                legalFormGmbH: 'GmbH',
+                legalFormAG: 'AG',
+                legalFormGbR: 'GbR',
+                legalFormEinzel: 'Einzelunternehmen',
+                legalFormKG: 'KG',
+                legalFormOHG: 'OHG',
+                legalFormUG: 'UG',
+                
+                // Customer types
+                newCustomer: 'Neukunde',
+                existingCustomer: 'Bestandskunde',
+                
+                // Industries
+                industryHotel: 'Hotel',
+                industryHospital: 'Klinik',
+                industryNursingHome: 'Seniorenresidenz',
+                industryCafeteria: 'Betriebsrestaurant',
+                industryRestaurant: 'Restaurant',
+                
+                // Payment methods
+                paymentPrepayment: 'Vorkasse',
+                paymentCash: 'Barzahlung',
+                paymentInvoice: 'Rechnung (30 Tage netto)',
+                
+                // Company sizes
+                companySizeSmall: 'Klein (bis 50 Mitarbeiter)',
+                companySizeMedium: 'Mittel (50-250 Mitarbeiter)',
+                companySizeLarge: 'Groß (über 250 Mitarbeiter)',
+                
+                // Payment history
+                paymentHistoryNoInfo: 'Keine Angabe',
+                paymentHistoryNew: 'Neukunde - keine Erfahrungen',
+                paymentHistoryGood: 'Gut - pünktliche Zahlung',
+                paymentHistoryMedium: 'Mittel - gelegentliche Verzögerungen',
+                paymentHistoryBad: 'Schlecht - häufige Mahnungen',
+                
+                // Locations
+                locationsTitle: 'Standortverwaltung',
+                locationsDescription: 'Verwalten Sie hier die Standorte Ihrer Kundenkette.',
+                locationOverview: 'Kettenübersicht',
+                totalLocations: 'Gesamtanzahl Standorte*',
+                managementType: 'Verwaltungstyp',
+                centralManagement: 'Zentrale Verwaltung',
+                decentralManagement: 'Dezentrale Verwaltung',
+                vendingConcept: 'Vending-Konzept',
+                vendingInterestLabel: 'Interesse an Freshfoodz-Vending?',
+                vendingLocations: 'Anzahl Standorte mit Vending',
+                vendingType: 'Automatentyp',
+                vendingSnack: 'Snack-Automat',
+                vendingFresh: 'Frische-Automat',
+                vendingCombi: 'Kombi-Automat',
+                backToCustomer: 'Zurück zu Kundendaten',
+                saveLocations: 'Standorte speichern',
+                locationsSaved: 'Standortdaten wurden gespeichert!',
+                
+                // Hotel specific
+                hotelCategories: 'Hotel-Kategorisierung',
+                smallHotels: 'Klein (bis 50 Zimmer)',
+                mediumHotels: 'Mittel (51-150 Zimmer)',
+                largeHotels: 'Groß (über 150 Zimmer)',
+                hotels: 'Hotels',
+                hotelServices: 'Services',
+                breakfastService: 'Frühstücksservice',
+                restaurantService: 'Restaurant à la carte',
+                roomService: 'Room Service',
+                banquetService: 'Bankett/Veranstaltungen',
+                ofHotels: 'von {0} Hotels',
+                
+                // Clinic specific
+                clinicCategories: 'Klinik-Kategorisierung',
+                smallClinics: 'Klein (bis 150 Betten)',
+                mediumClinics: 'Mittel (151-400 Betten)',
+                largeClinics: 'Groß (über 400 Betten)',
+                clinics: 'Kliniken',
+                privatePatientShare: 'Anteil Privatpatienten',
+                clinicServices: 'Services',
+                premiumMeals: 'Patientenverpflegung',
+                staffCatering: 'Mitarbeiterverpflegung',
+                ofClinics: 'von {0} Kliniken',
+                
+                // Cafeteria specific
+                cafeteriaCategories: 'Betriebsrestaurant-Kategorisierung',
+                smallCafeterias: 'Klein (bis 200 MA)',
+                mediumCafeterias: 'Mittel (201-500 MA)',
+                largeCafeterias: 'Groß (über 500 MA)',
+                cafeteriaServices: 'Serviceumfang',
+                cafeteriaBreakfast: 'Frühstück',
+                cafeteriaLunch: 'Mittagessen',
+                cafeteriaDinner: 'Abendessen',
+                ofLocations: 'von {0} Standorten',
+                
+                // Generic
+                locationDetails: 'Standort-Details',
+                noSpecificFields: 'Für diese Branche gibt es keine spezifischen Felder.',
+                
+                // Senior Residence specific
+                seniorResidenceCategories: 'Seniorenresidenz-Kategorisierung',
+                smallSeniorResidences: 'Klein (bis 50 Bewohner)',
+                mediumSeniorResidences: 'Mittel (51-150 Bewohner)',
+                largeSeniorResidences: 'Groß (über 150 Bewohner)',
+                residences: 'Residenzen',
+                careLevel: 'Pflegeschwerpunkt',
+                careMixed: 'Gemischt',
+                careAssisted: 'Betreutes Wohnen',
+                careNursing: 'Vollpflege',
+                seniorResidenceServices: 'Verpflegung',
+                fullCatering: 'Vollverpflegung',
+                partialCatering: 'Teilverpflegung',
+                specialDiet: 'Sonderkostform',
+                
+                // Restaurant specific
+                restaurantCategories: 'Restaurant-Kategorisierung',
+                smallRestaurants: 'Klein (bis 50 Sitzplätze)',
+                mediumRestaurants: 'Mittel (51-150 Sitzplätze)',
+                largeRestaurants: 'Groß (über 150 Sitzplätze)',
+                restaurants: 'Restaurants',
+                restaurantServices: 'Services',
+                alaCarte: 'À la carte',
+                banquetEvents: 'Bankett/Veranstaltungen',
+                
+                // Detailed capture
+                detailedCapture: 'Detaillierte Erfassung',
+                captureDetailsLabel: 'Standorte detailliert erfassen',
+                captureDetailsDesc: 'Erfassen Sie jeden Standort einzeln mit Adresse, Ansprechpartner und spezifischen Eigenschaften.',
+                locationDetailsTitle: 'Detaillierte Standorterfassung',
+                totalLocationsDetail: 'Erfasste Standorte:',
+                addLocation: '+ Standort hinzufügen',
+                noLocationsYet: 'Noch keine Standorte erfasst.',
+                clickAddLocation: 'Klicken Sie auf "Standort hinzufügen" um zu beginnen.',
+                location: 'Standort',
+                remove: 'Entfernen',
+                locationName: 'Standortname*',
+                locationSize: 'Größenkategorie*',
+                sizeSmall: 'Klein',
+                sizeMedium: 'Mittel',
+                sizeLarge: 'Groß',
+                address: 'Adresse',
+                specificProperties: 'Spezifische Eigenschaften',
+                roomCount: 'Anzahl Zimmer',
+                hasBreakfast: 'Frühstücksservice',
+                hasRestaurant: 'Restaurant',
+                bedCount: 'Anzahl Betten',
+                departments: 'Fachabteilungen',
+                residentCount: 'Anzahl Bewohner',
+                confirmRemoveLocation: 'Möchten Sie diesen Standort wirklich entfernen?',
+                syncWarningTitle: '⚠️ Abweichung erkannt',
+                syncWarningText: 'Die Anzahl und Kategorien der erfassten Standorte stimmen nicht mit den Angaben auf der Haupt-Standortseite überein.',
+                tooManyDetails: 'Sie haben {0} Standorte erfasst, aber nur {1} Standorte insgesamt angegeben.',
+                categoryMismatch: 'Die Verteilung der Größenkategorien stimmt nicht überein.',
+                
+                // Info
+                discountSystem: 'FreshPlan-Rabattsystem',
+                chainCustomerRegulation: 'Kettenkundenregelung',
+                exampleScenarios: 'Beispielszenarien',
+                additionalDiscounts: 'Zusatzrabatte',
+                maxTotalDiscount: 'Maximaler Gesamtrabatt: 15%',
+                creditCheckTitle: 'Bonitätsprüfung',
+                startCreditCheck: 'Bonitätsprüfung starten',
+                requestManagement: 'Anfrage an Geschäftsleitung',
+                
+                // Chain customer
+                chainCustomerDesc: 'Für Unternehmen mit mehreren Standorten (z.B. Hotel- oder Klinikgruppen):',
+                optionA: 'Option A:',
+                optionADesc: 'Bestellungen verschiedener Standorte innerhalb einer Woche werden zusammengerechnet',
+                optionB: 'Option B:',
+                optionBDesc: 'Zentrale Bestellung mit Mehrfachauslieferung',
+                
+                // Examples
+                hotelChain: 'Hotelkette',
+                clinicGroup: 'Klinikgruppe',
+                restaurant: 'Restaurant',
+                discount: 'Rabatt',
+                delivery: 'Lieferung',
+                pickupTable: 'Abholung',
+                
+                // Discount thresholds
+                from5000: 'ab 5.000€',
+                from10000: 'ab 10.000€',
+                from15000: 'ab 15.000€',
+                from30000: 'ab 30.000€',
+                from50000: 'ab 50.000€',
+                '14days': '14 Tage',
+                '21days': '21 Tage',
+                '30days': '30 Tage',
+                '30plusDays': '30+ Tage',
+                
+                // Messages
+                tagline: 'So einfach, schnell und lecker!',
+                saveSuccess: 'Daten wurden erfolgreich gespeichert!',
+                fillRequired: 'Bitte füllen Sie alle Pflichtfelder aus:',
+                confirmClear: 'Möchten Sie wirklich alle Daten löschen?',
+                nothingToSave: 'Aktuell gibt es auf dieser Seite nichts zu speichern.',
+                clearOnlyCustomer: 'Diese Funktion ist nur im Kundendaten-Bereich verfügbar.',
+                creditCheckRunning: 'Bonitätsprüfung wird durchgeführt...',
+                fillCustomerFirst: 'Bitte füllen Sie zuerst die Kundendaten aus und berechnen Sie das Kreditlimit.',
+                managementRequestSent: 'Anfrage wurde an die Geschäftsleitung gesendet. Sie erhalten eine Antwort innerhalb von 24 Stunden.'
+            },
+            en: {
+                // Header
+                clearForm: 'Clear Form',
+                save: 'Save',
+                
+                // Navigation
+                calculator: 'Discount Calculator',
+                customer: 'Customer Data',
+                locations: 'Locations',
+                locationDetails: 'Location Details',
+                creditcheck: 'Credit Check',
+                profile: 'Profile',
+                offer: 'Offer',
+                settings: 'Settings',
+                
+                // Calculator
+                calculatorTitle: 'FreshPlan Discount Calculator',
+                orderValue: 'Order Value',
+                leadTime: 'Lead Time',
+                days: 'Days',
+                pickup: 'Pickup (Minimum order: €5,000 net)',
+                baseDiscount: 'Base Discount',
+                earlyDiscount: 'Early Bird',
+                pickupDiscount: 'Pickup',
+                totalDiscount: 'Total Discount',
+                savings: 'Savings',
+                finalPrice: 'Final Price',
+                
+                // Customer
+                customerTitle: 'Customer Data Entry',
+                basicData: 'Basic Data',
+                companyName: 'Company Name*',
+                legalForm: 'Legal Form*',
+                customerType: 'Customer Type*',
+                industry: 'Industry*',
+                chainCustomer: 'Chain Customer',
+                customerNumberInternal: 'Customer Number (internal)',
+                addressData: 'Address Data',
+                streetAndNumber: 'Street and Number*',
+                postalCode: 'Postal Code*',
+                city: 'City*',
+                contactPerson: 'Contact Person',
+                contactName: 'Name*',
+                contactPosition: 'Position',
+                contactPhone: 'Phone*',
+                contactEmail: 'Email*',
+                businessData: 'Business Data',
+                expectedAnnualVolume: 'Expected Annual Volume (€)*',
+                paymentMethod: 'Payment Method*',
+                additionalInfo: 'Additional Information',
+                notes: 'Notes',
+                customField1: 'Custom Field 1',
+                customField2: 'Custom Field 2',
+                pleaseSelect: 'Please select',
+                yes: 'Yes',
+                no: 'No',
+                volumePlaceholder: 'e.g. 500,000',
+                notesPlaceholder: 'Internal notes about the customer...',
+                
+                // Profile, Offer, Settings pages
+                profileTitle: 'Customer Profile',
+                profileDescription: 'Customer profiles are displayed and managed here.',
+                offerTitle: 'Create Offer',
+                offerDescription: 'Here you can create PDF offers for your customers.',
+                settingsTitle: 'Settings',
+                settingsDescription: 'Here you can adjust your personal data and default values.',
+                
+                // Credit check
+                creditCheckDescription: 'The credit check is only relevant for {newCustomers} who want to pay by invoice.',
+                newCustomers: 'new customers',
+                customerName: 'Customer Name',
+                creditLimitLabel: 'Credit Limit/Open Items (€)',
+                registrationNumber: 'Commercial Register Number*',
+                vatId: 'VAT ID*',
+                companySize: 'Company Size*',
+                paymentHistory: 'Previous Payment Experience',
+                checkStatus: 'Check Status',
+                status: 'Status',
+                notChecked: 'Not Checked',
+                creditLimit: 'Credit Limit',
+                rating: 'Rating',
+                
+                // Languages
+                languageDE: 'German',
+                languageEN: 'English',
+                
+                // Legal forms
+                legalFormGmbH: 'Ltd.',
+                legalFormAG: 'Inc.',
+                legalFormGbR: 'Partnership',
+                legalFormEinzel: 'Sole Proprietorship',
+                legalFormKG: 'Limited Partnership',
+                legalFormOHG: 'General Partnership',
+                legalFormUG: 'Mini-Ltd.',
+                
+                // Customer types
+                newCustomer: 'New Customer',
+                existingCustomer: 'Existing Customer',
+                
+                // Industries
+                industryHotel: 'Hotel',
+                industryHospital: 'Hospital',
+                industryNursingHome: 'Senior Residence',
+                industryCafeteria: 'Company Restaurant',
+                industryRestaurant: 'Restaurant',
+                
+                // Payment methods
+                paymentPrepayment: 'Prepayment',
+                paymentCash: 'Cash Payment',
+                paymentInvoice: 'Invoice (30 days net)',
+                
+                // Company sizes
+                companySizeSmall: 'Small (up to 50 employees)',
+                companySizeMedium: 'Medium (50-250 employees)',
+                companySizeLarge: 'Large (over 250 employees)',
+                
+                // Payment history
+                paymentHistoryNoInfo: 'No Information',
+                paymentHistoryNew: 'New Customer - No Experience',
+                paymentHistoryGood: 'Good - Punctual Payment',
+                paymentHistoryMedium: 'Medium - Occasional Delays',
+                paymentHistoryBad: 'Poor - Frequent Reminders',
+                
+                // Locations
+                locationsTitle: 'Location Management',
+                locationsDescription: 'Manage your customer chain locations here.',
+                locationOverview: 'Chain Overview',
+                totalLocations: 'Total Number of Locations*',
+                managementType: 'Management Type',
+                centralManagement: 'Central Management',
+                decentralManagement: 'Decentralized Management',
+                vendingConcept: 'Vending Concept',
+                vendingInterestLabel: 'Interest in Freshfoodz Vending?',
+                vendingLocations: 'Number of Locations with Vending',
+                vendingType: 'Machine Type',
+                vendingSnack: 'Snack Machine',
+                vendingFresh: 'Fresh Food Machine',
+                vendingCombi: 'Combination Machine',
+                backToCustomer: 'Back to Customer Data',
+                saveLocations: 'Save Locations',
+                locationsSaved: 'Location data has been saved!',
+                
+                // Hotel specific
+                hotelCategories: 'Hotel Categorization',
+                smallHotels: 'Small (up to 50 rooms)',
+                mediumHotels: 'Medium (51-150 rooms)',
+                largeHotels: 'Large (over 150 rooms)',
+                hotels: 'Hotels',
+                hotelServices: 'Services',
+                breakfastService: 'Breakfast Service',
+                restaurantService: 'Restaurant à la carte',
+                roomService: 'Room Service',
+                banquetService: 'Banquet/Events',
+                ofHotels: 'of {0} hotels',
+                
+                // Clinic specific
+                clinicCategories: 'Clinic Categorization',
+                smallClinics: 'Small (up to 150 beds)',
+                mediumClinics: 'Medium (151-400 beds)',
+                largeClinics: 'Large (over 400 beds)',
+                clinics: 'Clinics',
+                privatePatientShare: 'Private Patient Share',
+                clinicServices: 'Services',
+                premiumMeals: 'Premium Meal Options Available',
+                staffCatering: 'Staff Catering',
+                ofClinics: 'of {0} clinics',
+                
+                // Cafeteria specific
+                cafeteriaCategories: 'Company Restaurant Categorization',
+                smallCafeterias: 'Small (up to 200 employees)',
+                mediumCafeterias: 'Medium (201-500 employees)',
+                largeCafeterias: 'Large (over 500 employees)',
+                cafeteriaServices: 'Service Scope',
+                cafeteriaBreakfast: 'Breakfast',
+                cafeteriaLunch: 'Lunch',
+                cafeteriaDinner: 'Dinner',
+                ofLocations: 'of {0} locations',
+                
+                // Generic
+                locationDetails: 'Location Details',
+                noSpecificFields: 'There are no specific fields for this industry.',
+                
+                // Senior Residence specific
+                seniorResidenceCategories: 'Senior Residence Categorization',
+                smallSeniorResidences: 'Small (up to 50 residents)',
+                mediumSeniorResidences: 'Medium (51-150 residents)',
+                largeSeniorResidences: 'Large (over 150 residents)',
+                residences: 'Residences',
+                careLevel: 'Care Focus',
+                careMixed: 'Mixed',
+                careAssisted: 'Assisted Living',
+                careNursing: 'Full Care',
+                seniorResidenceServices: 'Catering',
+                fullCatering: 'Full Catering',
+                partialCatering: 'Partial Catering',
+                specialDiet: 'Special Dietary Requirements',
+                
+                // Restaurant specific
+                restaurantCategories: 'Restaurant Categorization',
+                smallRestaurants: 'Small (up to 50 seats)',
+                mediumRestaurants: 'Medium (51-150 seats)',
+                largeRestaurants: 'Large (over 150 seats)',
+                restaurants: 'Restaurants',
+                restaurantServices: 'Services',
+                alaCarte: 'À la carte',
+                banquetEvents: 'Banquet/Events',
+                
+                // Detailed capture
+                detailedCapture: 'Detailed Capture',
+                captureDetailsLabel: 'Capture locations in detail',
+                captureDetailsDesc: 'Capture each location individually with address, contact person and specific properties.',
+                locationDetailsTitle: 'Detailed Location Capture',
+                totalLocationsDetail: 'Captured locations:',
+                addLocation: '+ Add Location',
+                noLocationsYet: 'No locations captured yet.',
+                clickAddLocation: 'Click "Add Location" to begin.',
+                location: 'Location',
+                remove: 'Remove',
+                locationName: 'Location Name*',
+                locationSize: 'Size Category*',
+                sizeSmall: 'Small',
+                sizeMedium: 'Medium',
+                sizeLarge: 'Large',
+                address: 'Address',
+                specificProperties: 'Specific Properties',
+                roomCount: 'Number of Rooms',
+                hasBreakfast: 'Breakfast Service',
+                hasRestaurant: 'Restaurant',
+                bedCount: 'Number of Beds',
+                departments: 'Departments',
+                residentCount: 'Number of Residents',
+                confirmRemoveLocation: 'Do you really want to remove this location?',
+                syncWarningTitle: '⚠️ Discrepancy detected',
+                syncWarningText: 'The number and categories of captured locations do not match the information on the main locations page.',
+                tooManyDetails: 'You have captured {0} locations, but only specified {1} total locations.',
+                categoryMismatch: 'The distribution of size categories does not match.',
+                
+                // Info
+                discountSystem: 'FreshPlan Discount System',
+                chainCustomerRegulation: 'Chain Customer Regulation',
+                exampleScenarios: 'Example Scenarios',
+                additionalDiscounts: 'Additional Discounts',
+                maxTotalDiscount: 'Maximum Total Discount: 15%',
+                creditCheckTitle: 'Credit Check',
+                startCreditCheck: 'Start Credit Check',
+                requestManagement: 'Request to Management',
+                
+                // Chain customer
+                chainCustomerDesc: 'For companies with multiple locations (e.g. hotel or clinic groups):',
+                optionA: 'Option A:',
+                optionADesc: 'Orders from different locations within one week are combined',
+                optionB: 'Option B:',
+                optionBDesc: 'Central order with multiple deliveries',
+                
+                // Examples
+                hotelChain: 'Hotel Chain',
+                clinicGroup: 'Clinic Group',
+                restaurant: 'Restaurant',
+                discount: 'Discount',
+                delivery: 'Delivery',
+                pickupTable: 'Pickup',
+                
+                // Discount thresholds
+                from5000: 'from €5,000',
+                from10000: 'from €10,000',
+                from15000: 'from €15,000',
+                from30000: 'from €30,000',
+                from50000: 'from €50,000',
+                '14days': '14 Days',
+                '21days': '21 Days',
+                '30days': '30 Days',
+                '30plusDays': '30+ Days',
+                
+                // Messages
+                tagline: 'So easy, fast and delicious!',
+                saveSuccess: 'Data saved successfully!',
+                fillRequired: 'Please fill in all required fields:',
+                confirmClear: 'Do you really want to delete all data?',
+                nothingToSave: 'Nothing to save on this page.',
+                clearOnlyCustomer: 'This function is only available in the customer data section.',
+                creditCheckRunning: 'Credit check in progress...',
+                fillCustomerFirst: 'Please fill in customer data first and calculate the credit limit.',
+                managementRequestSent: 'Request sent to management. You will receive a response within 24 hours.'
+            }
+        };
+        
+        let currentLanguage = localStorage.getItem('language') || 'de';
+        
+        // Language change function
+        function changeLanguage(lang) {
+            currentLanguage = lang;
+            localStorage.setItem('language', lang);
+            updatePageLanguage();
+        }
+        
+        // Update all elements with data-i18n attribute
+        function updatePageLanguage() {
+            // Update text content
+            document.querySelectorAll('[data-i18n]').forEach(element => {
+                const key = element.getAttribute('data-i18n');
+                const keys = key.split('.');
+                let translation = translations[currentLanguage];
+                
+                for (const k of keys) {
+                    translation = translation[k];
+                    if (!translation) break;
+                }
+                
+                if (translation) {
+                    element.textContent = translation;
+                }
+            });
+            
+            // Update placeholders
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(element => {
+                const key = element.getAttribute('data-i18n-placeholder');
+                const translation = t(key);
+                if (translation && translation !== key) {
+                    element.placeholder = translation;
+                }
+            });
+            
+            // Update language selector
+            document.getElementById('languageSelect').value = currentLanguage;
+        }
+        
+        // Helper function to get translation
+        function t(key) {
+            const keys = key.split('.');
+            let translation = translations[currentLanguage];
+            
+            for (const k of keys) {
+                translation = translation[k];
+                if (!translation) return key;
+            }
+            
+            return translation;
+        }
+        
+        // Tab Navigation with auto-save
+        document.querySelectorAll('.nav-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                const currentPanel = document.querySelector('.tab-panel.active');
+                const tabName = this.getAttribute('data-tab');
+                
+                // Auto-save only if all required fields are filled
+                if (currentPanel && currentPanel.id === 'customer' && formChanged) {
+                    const form = document.getElementById('customerForm');
+                    const requiredFields = form.querySelectorAll('[required]');
+                    let allFieldsFilled = true;
+                    
+                    requiredFields.forEach(field => {
+                        if (!field.value || field.value.trim() === '') {
+                            allFieldsFilled = false;
+                        }
+                    });
+                    
+                    if (allFieldsFilled) {
+                        saveFormData(); // Auto-save silently if all fields are complete
+                    }
+                }
+                
+                // Remove active class from all tabs and panels
+                document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+                
+                // Add active class to clicked tab and corresponding panel
+                this.classList.add('active');
+                document.getElementById(tabName).classList.add('active');
+                
+                // Load data to credit check if switching to that tab
+                if (tabName === 'creditcheck') {
+                    loadDataToCreditCheck();
+                }
+                
+                // Update location fields when switching to locations tab
+                if (tabName === 'locations') {
+                    updateLocationIndustryFields();
+                }
+                
+                // Check synchronization when switching to location details tab
+                if (tabName === 'locationdetails') {
+                    const total = document.getElementById('totalLocations')?.value || '0';
+                    document.getElementById('detailLocationTotal').textContent = total;
+                    checkLocationSynchronization();
+                }
+            });
+        });
+        
+        // Calculator Functions
+        function updateCalculator() {
+            const orderValue = parseInt(document.getElementById('orderValue').value);
+            const leadTime = parseInt(document.getElementById('leadTime').value);
+            const pickup = document.getElementById('pickupToggle').checked;
+            
+            // Update displays
+            document.getElementById('orderValueDisplay').textContent = '€' + orderValue.toLocaleString('de-DE');
+            document.getElementById('leadTimeDisplay').textContent = leadTime + ' ' + t('days');
+            
+            // Update lead time display with translation
+            const leadTimeEl = document.getElementById('leadTimeDisplay');
+            if (!leadTimeEl.hasAttribute('data-i18n-manual')) {
+                leadTimeEl.setAttribute('data-i18n-manual', 'true');
+            }
+            
+            // Calculate discounts
+            let baseDiscount = 0;
+            if (orderValue >= 75000) baseDiscount = 10;
+            else if (orderValue >= 50000) baseDiscount = 9;
+            else if (orderValue >= 30000) baseDiscount = 8;
+            else if (orderValue >= 15000) baseDiscount = 6;
+            else if (orderValue >= 5000) baseDiscount = 3;
+            
+            let earlyDiscount = 0;
+            if (leadTime >= 30) earlyDiscount = 3;
+            else if (leadTime >= 15) earlyDiscount = 2;
+            else if (leadTime >= 10) earlyDiscount = 1;
+            
+            let pickupDiscount = (pickup && orderValue >= 5000) ? 2 : 0;
+            
+            let totalDiscount = Math.min(baseDiscount + earlyDiscount + pickupDiscount, 15);
+            
+            // Update UI
+            document.getElementById('baseDiscount').textContent = baseDiscount + '%';
+            document.getElementById('earlyDiscount').textContent = earlyDiscount + '%';
+            document.getElementById('pickupDiscount').textContent = pickupDiscount + '%';
+            document.getElementById('totalDiscount').textContent = totalDiscount + '%';
+            
+            // Calculate savings
+            const discountAmount = orderValue * (totalDiscount / 100);
+            const finalPrice = orderValue - discountAmount;
+            
+            document.getElementById('discountAmount').textContent = '€' + discountAmount.toLocaleString('de-DE');
+            document.getElementById('finalPrice').textContent = '€' + finalPrice.toLocaleString('de-DE');
+        }
+        
+        // Format currency inputs
+        function formatCurrency(input) {
+            let value = input.value.replace(/[^\d]/g, '');
+            if (value) {
+                value = parseInt(value).toLocaleString('de-DE');
+                input.value = value;
+            }
+        }
+        
+        // Calculate credit limit based on annual volume
+        function calculateCreditLimit(volumeValue) {
+            if (volumeValue) {
+                const annualVolume = parseInt(volumeValue.replace(/\./g, '') || 0);
+                if (annualVolume > 0) {
+                    // Monthly volume (30 days payment term)
+                    const monthlyVolume = annualVolume / 12;
+                    // Round up to nearest 5000
+                    const creditLimit = Math.ceil(monthlyVolume / 5000) * 5000;
+                    return creditLimit;
+                }
+            }
+            return 0;
+        }
+        
+        // Auto-save functionality
+        let formChanged = false;
+        
+        // Track form changes and validate fields
+        document.getElementById('customerForm').addEventListener('change', function(e) {
+            formChanged = true;
+            
+            // Remove error styling when field is filled
+            if (e.target.hasAttribute('required') && e.target.value) {
+                e.target.style.borderColor = '';
+            }
+            
+            // Handle chain customer selection
+            if (e.target.id === 'chainCustomer') {
+                toggleLocationsTab(e.target.value === 'ja');
+            }
+            
+            // Handle industry change
+            if (e.target.id === 'industry') {
+                updateLocationIndustryFields();
+            }
+        });
+        
+        // Also track input events for real-time validation
+        document.getElementById('customerForm').addEventListener('input', function(e) {
+            if (e.target.hasAttribute('required') && e.target.value) {
+                e.target.style.borderColor = '';
+            }
+        });
+        
+        // Save form data to localStorage
+        function saveFormData() {
+            const formData = new FormData(document.getElementById('customerForm'));
+            const data = {};
+            formData.forEach((value, key) => {
+                data[key] = value;
+            });
+            localStorage.setItem('customerData', JSON.stringify(data));
+            formChanged = false;
+        }
+        
+        // Load form data from localStorage
+        function loadFormData() {
+            const savedData = localStorage.getItem('customerData');
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                Object.keys(data).forEach(key => {
+                    const element = document.getElementById(key);
+                    if (element) {
+                        element.value = data[key];
+                    }
+                });
+                
+                // Check if chain customer to show/hide locations tab
+                if (data.chainCustomer === 'ja') {
+                    toggleLocationsTab(true);
+                }
+            }
+        }
+        
+        // Credit Check for new tab
+        function startCreditCheck() {
+            const volumeInput = document.getElementById('creditLimit');
+            const volume = volumeInput ? volumeInput.value.replace(/\./g, '') : '';
+            
+            if (!volume || volume === '0') {
+                alert(t('fillCustomerFirst'));
+                return;
+            }
+            
+            alert(t('creditCheckRunning'));
+            
+            // Simulate credit check
+            setTimeout(() => {
+                const numericVolume = parseInt(volume);
+                const statusElements = document.querySelectorAll('#creditcheck .form-section span');
+                
+                if (numericVolume < 5000) {
+                    statusElements[1].textContent = 'Abgelehnt';
+                    statusElements[1].style.color = 'var(--danger)';
+                    statusElements[3].textContent = '€0';
+                    statusElements[5].textContent = 'Unzureichend';
+                    alert('Bonitätsprüfung abgelehnt: Mindestbestellwert von 5.000€ nicht erreicht.');
+                } else if (numericVolume > 50000) {
+                    statusElements[1].textContent = 'Prüfung';
+                    statusElements[1].style.color = 'var(--warning)';
+                    statusElements[3].textContent = '€25.000';
+                    statusElements[5].textContent = 'Prüfung erforderlich';
+                    alert('Bonitätsprüfung erfordert manuelle Überprüfung bei diesem Volumen.');
+                } else {
+                    statusElements[1].textContent = 'Genehmigt';
+                    statusElements[1].style.color = 'var(--primary-green)';
+                    statusElements[3].textContent = '€' + numericVolume.toLocaleString('de-DE');
+                    statusElements[5].textContent = 'Gut';
+                    alert('Bonitätsprüfung erfolgreich!');
+                }
+            }, 2000);
+        }
+        
+        // Management Request
+        function requestManagementApproval() {
+            alert(t('managementRequestSent'));
+        }
+        
+        // Handle save from header button
+        function handleSaveForm() {
+            const activePanel = document.querySelector('.tab-panel.active');
+            
+            // Only save if we're on customer form
+            if (activePanel && activePanel.id === 'customer') {
+                const form = document.getElementById('customerForm');
+                const requiredFields = form.querySelectorAll('[required]');
+                let allFieldsFilled = true;
+                let emptyFields = [];
+                
+                requiredFields.forEach(field => {
+                    if (!field.value || field.value.trim() === '') {
+                        allFieldsFilled = false;
+                        field.style.borderColor = 'var(--danger)';
+                        const label = form.querySelector(`label[for="${field.id}"]`);
+                        emptyFields.push(label ? label.textContent.replace('*', '') : field.id);
+                    } else {
+                        field.style.borderColor = '';
+                    }
+                });
+                
+                if (!allFieldsFilled) {
+                    alert(t('fillRequired') + '\n\n' + emptyFields.join('\n'));
+                    return;
+                }
+                
+                saveFormData();
+                alert(t('saveSuccess'));
+            } else {
+                alert(t('nothingToSave'));
+            }
+        }
+        
+        // Handle clear from header button
+        function handleClearForm() {
+            const activePanel = document.querySelector('.tab-panel.active');
+            
+            if (activePanel && activePanel.id === 'customer') {
+                if (confirm(t('confirmClear'))) {
+                    document.getElementById('customerForm').reset();
+                    localStorage.removeItem('customerData');
+                    formChanged = false;
+                    // Remove any error styling
+                    document.querySelectorAll('#customerForm [required]').forEach(field => {
+                        field.style.borderColor = '';
+                    });
+                }
+            } else {
+                alert(t('clearOnlyCustomer'));
+            }
+        }
+        
+        // Form Submission
+        document.getElementById('customerForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const customerType = document.getElementById('customerType').value;
+            const volume = document.getElementById('expectedVolume').value;
+            
+            if (customerType === 'neukunde' && parseInt(volume) >= 5000) {
+                const creditStatus = document.getElementById('creditStatus').textContent;
+                if (creditStatus === 'Nicht geprüft') {
+                    alert('Bitte führen Sie zuerst eine Bonitätsprüfung durch.');
+                    return;
+                }
+            }
+            
+            alert('Kundendaten wurden erfolgreich gespeichert!');
+        });
+        
+        // Load example scenarios
+        function loadExample(type) {
+            let orderValue, leadTime, pickup;
+            
+            switch(type) {
+                case 'hotel':
+                    orderValue = 35000;
+                    leadTime = 21;
+                    pickup = true;
+                    break;
+                case 'klinik':
+                    orderValue = 65000;
+                    leadTime = 30;
+                    pickup = false;
+                    break;
+                case 'restaurant':
+                    orderValue = 8500;
+                    leadTime = 14;
+                    pickup = true;
+                    break;
+            }
+            
+            // Set values
+            document.getElementById('orderValue').value = orderValue;
+            document.getElementById('leadTime').value = leadTime;
+            document.getElementById('pickupToggle').checked = pickup;
+            
+            // Update calculator
+            updateCalculator();
+            
+            // Smooth scroll to calculator
+            document.getElementById('calculator').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+        
+        // Load customer data to credit check tab
+        function loadDataToCreditCheck() {
+            const savedData = localStorage.getItem('customerData');
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                
+                // Set customer name
+                const creditCustomerName = document.getElementById('creditCustomerName');
+                if (creditCustomerName && data.companyName) {
+                    creditCustomerName.value = data.companyName;
+                }
+                
+                // Calculate and set credit limit
+                const creditLimitInput = document.getElementById('creditLimit');
+                if (creditLimitInput && data.expectedVolume) {
+                    const creditLimit = calculateCreditLimit(data.expectedVolume);
+                    creditLimitInput.value = creditLimit.toLocaleString('de-DE');
+                }
+            }
+        }
+        
+        // Warn on page close if there are unsaved changes
+        window.addEventListener('beforeunload', function(e) {
+            if (formChanged) {
+                // Check if we're on customer form
+                const activePanel = document.querySelector('.tab-panel.active');
+                if (activePanel && activePanel.id === 'customer') {
+                    // Check required fields
+                    const form = document.getElementById('customerForm');
+                    const requiredFields = form.querySelectorAll('[required]');
+                    let missingFields = [];
+                    
+                    requiredFields.forEach(field => {
+                        if (!field.value || field.value.trim() === '') {
+                            const label = form.querySelector(`label[for="${field.id}"]`);
+                            missingFields.push(label ? label.textContent.replace('*', '') : field.id);
+                        }
+                    });
+                    
+                    if (missingFields.length > 0) {
+                        // Can't save because required fields are missing
+                        e.preventDefault();
+                        e.returnValue = 'Sie haben unausgefüllte Pflichtfelder. Die Daten können nicht gespeichert werden. Möchten Sie die Seite trotzdem verlassen?';
+                        return e.returnValue;
+                    }
+                }
+                
+                // All fields filled - offer to save
+                e.preventDefault();
+                e.returnValue = 'Sie haben ungespeicherte Änderungen. Möchten Sie die Seite wirklich verlassen?';
+                return e.returnValue;
+            }
+        });
+        
+        // Check for untranslated texts
+        function checkForUntranslatedTexts() {
+            const untranslated = [];
+            const elementsToCheck = [
+                'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+                'label', 'button', 'span', 'p', 'strong',
+                'option', 'td', 'th'
+            ];
+            
+            elementsToCheck.forEach(tagName => {
+                const elements = document.querySelectorAll(tagName);
+                elements.forEach(el => {
+                    // Skip if element has data-i18n or is inside an element with data-i18n
+                    if (el.hasAttribute('data-i18n') || el.closest('[data-i18n]')) {
+                        return;
+                    }
+                    
+                    // Skip if element contains only numbers, symbols or is empty
+                    const text = el.textContent.trim();
+                    if (!text || /^[0-9%€\s\-\+\.]+$/.test(text)) {
+                        return;
+                    }
+                    
+                    // Skip if element contains child elements with data-i18n
+                    if (el.querySelector('[data-i18n]')) {
+                        return;
+                    }
+                    
+                    // Skip script and style elements
+                    if (el.closest('script') || el.closest('style')) {
+                        return;
+                    }
+                    
+                    // Check if this is visible text that should be translated
+                    if (text.length > 1 && text !== 'FreshPlan') {
+                        untranslated.push({
+                            element: el,
+                            text: text,
+                            tag: tagName,
+                            path: getElementPath(el)
+                        });
+                    }
+                });
+            });
+            
+            if (untranslated.length > 0) {
+                console.warn('⚠️ Found', untranslated.length, 'untranslated texts:');
+                untranslated.forEach(item => {
+                    console.log(`- ${item.tag}: "${item.text.substring(0, 50)}..." at ${item.path}`);
+                });
+            } else {
+                console.log('✅ All texts are properly translated!');
+            }
+            
+            return untranslated;
+        }
+        
+        // Helper function to get element path
+        function getElementPath(element) {
+            const path = [];
+            while (element && element.nodeType === Node.ELEMENT_NODE) {
+                let selector = element.tagName.toLowerCase();
+                if (element.id) {
+                    selector += '#' + element.id;
+                    path.unshift(selector);
+                    break;
+                } else if (element.className) {
+                    selector += '.' + element.className.split(' ').join('.');
+                }
+                path.unshift(selector);
+                element = element.parentNode;
+            }
+            return path.join(' > ');
+        }
+        
+        // Initialize calculator and load saved data on page load
+        updateCalculator();
+        loadFormData();
+        updatePageLanguage();
+        
+        // Fix initial lead time display
+        const leadTime = parseInt(document.getElementById('leadTime').value);
+        document.getElementById('leadTimeDisplay').textContent = leadTime + ' ' + t('days');
+        
+        // Add vending checkbox listener
+        document.getElementById('vendingInterest')?.addEventListener('change', function(e) {
+            document.getElementById('vendingDetails').style.display = e.target.checked ? 'block' : 'none';
+        });
+        
+        // Function to toggle locations tab visibility
+        function toggleLocationsTab(show) {
+            const locationsTab = document.querySelector('.nav-tab[data-tab="locations"]');
+            const locationDetailsTab = document.querySelector('.nav-tab[data-tab="locationdetails"]');
+            
+            if (show) {
+                locationsTab.style.display = '';
+            } else {
+                locationsTab.style.display = 'none';
+                locationDetailsTab.style.display = 'none';
+                // If locations or details tab is active, switch to customer tab
+                if (locationsTab.classList.contains('active') || locationDetailsTab.classList.contains('active')) {
+                    document.querySelector('.nav-tab[data-tab="customer"]').click();
+                }
+                // Uncheck detailed locations if hiding
+                const detailedCheckbox = document.getElementById('detailedLocations');
+                if (detailedCheckbox) detailedCheckbox.checked = false;
+            }
+        }
+        
+        // Function to toggle location details tab visibility
+        function toggleLocationDetailsTab(show) {
+            const detailsTab = document.querySelector('.nav-tab[data-tab="locationdetails"]');
+            
+            if (show) {
+                detailsTab.style.display = '';
+                // Update total count
+                const total = document.getElementById('totalLocations')?.value || '0';
+                document.getElementById('detailLocationTotal').textContent = total;
+            } else {
+                detailsTab.style.display = 'none';
+                // If details tab is active, switch to locations tab
+                if (detailsTab.classList.contains('active')) {
+                    document.querySelector('.nav-tab[data-tab="locations"]').click();
+                }
+            }
+        }
+        
+        // Check initial chain customer status
+        const chainCustomerSelect = document.getElementById('chainCustomer');
+        if (chainCustomerSelect) {
+            toggleLocationsTab(chainCustomerSelect.value === 'ja');
+        }
+        
+        // Function to update industry-specific fields in locations tab
+        function updateLocationIndustryFields() {
+            const industry = document.getElementById('industry')?.value;
+            const section = document.getElementById('industrySpecificSection');
+            if (!section) return;
+            
+            let html = '';
+            
+            switch(industry) {
+                case 'hotel':
+                    html = `
+                        <h3 class="form-section-title" data-i18n="hotelCategories">Hotel-Kategorisierung</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label data-i18n="smallHotels">Klein (bis 50 Zimmer)</label>
+                                <input type="number" id="smallHotels" name="smallHotels" min="0" value="0" oninput="updateTotalLocations()"> <span data-i18n="hotels">Hotels</span>
+                            </div>
+                            <div class="form-group">
+                                <label data-i18n="mediumHotels">Mittel (51-150 Zimmer)</label>
+                                <input type="number" id="mediumHotels" name="mediumHotels" min="0" value="0" oninput="updateTotalLocations()"> <span data-i18n="hotels">Hotels</span>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label data-i18n="largeHotels">Groß (über 150 Zimmer)</label>
+                                <input type="number" id="largeHotels" name="largeHotels" min="0" value="0" oninput="updateTotalLocations()"> <span data-i18n="hotels">Hotels</span>
+                            </div>
+                            <div class="form-group">
+                                <!-- Platzhalter für Balance -->
+                            </div>
+                        </div>
+                        <h4 style="margin-top: 1.5rem; margin-bottom: 1rem; color: var(--primary-blue);" data-i18n="hotelServices">Services</h4>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label data-i18n="breakfastService">Frühstücksservice</label>
+                                <input type="number" id="hotelBreakfast" name="hotelBreakfast" min="0" max="999"> <span>von <span id="totalHotelsCount">0</span> Hotels</span>
+                            </div>
+                            <div class="form-group">
+                                <label data-i18n="restaurantService">Restaurant à la carte</label>
+                                <input type="number" id="hotelRestaurant" name="hotelRestaurant" min="0" max="999"> <span>von <span id="totalHotelsCount2">0</span> Hotels</span>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label data-i18n="roomService">Room Service</label>
+                                <input type="number" id="hotelRoomService" name="hotelRoomService" min="0" max="999"> <span>von <span id="totalHotelsCount3">0</span> Hotels</span>
+                            </div>
+                            <div class="form-group">
+                                <label data-i18n="banquetService">Bankett/Veranstaltungen</label>
+                                <input type="number" id="hotelBanquet" name="hotelBanquet" min="0" max="999"> <span>von <span id="totalHotelsCount4">0</span> Hotels</span>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                    
+                case 'krankenhaus':
+                    html = `
+                        <h3 class="form-section-title" data-i18n="clinicCategories">Klinik-Kategorisierung</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label data-i18n="smallClinics">Klein (bis 150 Betten)</label>
+                                <input type="number" id="smallClinics" name="smallClinics" min="0" value="0" oninput="updateTotalLocations()"> <span data-i18n="clinics">Kliniken</span>
+                            </div>
+                            <div class="form-group">
+                                <label data-i18n="mediumClinics">Mittel (151-400 Betten)</label>
+                                <input type="number" id="mediumClinics" name="mediumClinics" min="0" value="0" oninput="updateTotalLocations()"> <span data-i18n="clinics">Kliniken</span>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label data-i18n="largeClinics">Groß (über 400 Betten)</label>
+                                <input type="number" id="largeClinics" name="largeClinics" min="0" value="0" oninput="updateTotalLocations()"> <span data-i18n="clinics">Kliniken</span>
+                            </div>
+                            <div class="form-group">
+                                <label data-i18n="privatePatientShare">Anteil Privatpatienten</label>
+                                <input type="range" id="privatePatientShare" name="privatePatientShare" min="0" max="100" value="15" class="slider">
+                                <span id="privatePatientDisplay">15%</span>
+                            </div>
+                        </div>
+                        <h4 style="margin-top: 1.5rem; margin-bottom: 1rem; color: var(--primary-blue);" data-i18n="clinicServices">Services</h4>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label data-i18n="premiumMeals">Patientenverpflegung</label>
+                                <input type="number" id="clinicPremiumMeals" name="clinicPremiumMeals" min="0" max="999"> <span>von <span id="totalClinicsCount">0</span> Kliniken</span>
+                            </div>
+                            <div class="form-group">
+                                <label data-i18n="staffCatering">Mitarbeiterverpflegung</label>
+                                <input type="number" id="clinicStaffCatering" name="clinicStaffCatering" min="0" max="999"> <span>von <span id="totalClinicsCount2">0</span> Kliniken</span>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                    
+                case 'seniorenresidenz':
+                    html = `
+                        <h3 class="form-section-title" data-i18n="seniorResidenceCategories">Seniorenresidenz-Kategorisierung</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label data-i18n="smallSeniorResidences">Klein (bis 50 Bewohner)</label>
+                                <input type="number" id="smallSeniorResidences" name="smallSeniorResidences" min="0" value="0" oninput="updateTotalLocations()"> <span data-i18n="residences">Residenzen</span>
+                            </div>
+                            <div class="form-group">
+                                <label data-i18n="mediumSeniorResidences">Mittel (51-150 Bewohner)</label>
+                                <input type="number" id="mediumSeniorResidences" name="mediumSeniorResidences" min="0" value="0" oninput="updateTotalLocations()"> <span data-i18n="residences">Residenzen</span>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label data-i18n="largeSeniorResidences">Groß (über 150 Bewohner)</label>
+                                <input type="number" id="largeSeniorResidences" name="largeSeniorResidences" min="0" value="0" oninput="updateTotalLocations()"> <span data-i18n="residences">Residenzen</span>
+                            </div>
+                            <div class="form-group">
+                                <label data-i18n="careLevel">Pflegeschwerpunkt</label>
+                                <select id="careLevel" name="careLevel">
+                                    <option value="mixed" data-i18n="careMixed">Gemischt</option>
+                                    <option value="assisted" data-i18n="careAssisted">Betreutes Wohnen</option>
+                                    <option value="nursing" data-i18n="careNursing">Vollpflege</option>
+                                </select>
+                            </div>
+                        </div>
+                        <h4 style="margin-top: 1.5rem; margin-bottom: 1rem; color: var(--primary-blue);" data-i18n="seniorResidenceServices">Verpflegung</h4>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label data-i18n="fullCatering">Vollverpflegung</label>
+                                <input type="number" id="seniorFullCatering" name="seniorFullCatering" min="0" max="999"> <span>von <span id="totalSeniorResidencesCount">0</span> Residenzen</span>
+                            </div>
+                            <div class="form-group">
+                                <label data-i18n="partialCatering">Teilverpflegung</label>
+                                <input type="number" id="seniorPartialCatering" name="seniorPartialCatering" min="0" max="999"> <span>von <span id="totalSeniorResidencesCount2">0</span> Residenzen</span>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label data-i18n="specialDiet">Sonderkostform</label>
+                                <input type="number" id="seniorSpecialDiet" name="seniorSpecialDiet" min="0" max="999"> <span>von <span id="totalSeniorResidencesCount3">0</span> Residenzen</span>
+                            </div>
+                            <div class="form-group">
+                                <!-- Platzhalter -->
+                            </div>
+                        </div>
+                    `;
+                    break;
+                    
+                case 'restaurant':
+                    html = `
+                        <h3 class="form-section-title" data-i18n="restaurantCategories">Restaurant-Kategorisierung</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label data-i18n="smallRestaurants">Klein (bis 50 Sitzplätze)</label>
+                                <input type="number" id="smallRestaurants" name="smallRestaurants" min="0" value="0" oninput="updateTotalLocations()"> <span data-i18n="restaurants">Restaurants</span>
+                            </div>
+                            <div class="form-group">
+                                <label data-i18n="mediumRestaurants">Mittel (51-150 Sitzplätze)</label>
+                                <input type="number" id="mediumRestaurants" name="mediumRestaurants" min="0" value="0" oninput="updateTotalLocations()"> <span data-i18n="restaurants">Restaurants</span>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label data-i18n="largeRestaurants">Groß (über 150 Sitzplätze)</label>
+                                <input type="number" id="largeRestaurants" name="largeRestaurants" min="0" value="0" oninput="updateTotalLocations()"> <span data-i18n="restaurants">Restaurants</span>
+                            </div>
+                            <div class="form-group">
+                                <!-- Platzhalter -->
+                            </div>
+                        </div>
+                        <h4 style="margin-top: 1.5rem; margin-bottom: 1rem; color: var(--primary-blue);" data-i18n="restaurantServices">Services</h4>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label data-i18n="alaCarte">À la carte</label>
+                                <input type="number" id="restaurantAlaCarte" name="restaurantAlaCarte" min="0" max="999"> <span>von <span id="totalRestaurantsCount">0</span> Restaurants</span>
+                            </div>
+                            <div class="form-group">
+                                <label data-i18n="banquetEvents">Bankett/Veranstaltungen</label>
+                                <input type="number" id="restaurantBanquet" name="restaurantBanquet" min="0" max="999"> <span>von <span id="totalRestaurantsCount2">0</span> Restaurants</span>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                    
+                case 'betriebsrestaurant':
+                    html = `
+                        <h3 class="form-section-title" data-i18n="cafeteriaCategories">Betriebsrestaurant-Kategorisierung</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label data-i18n="smallCafeterias">Klein (bis 200 MA)</label>
+                                <input type="number" id="smallCafeterias" name="smallCafeterias" min="0" value="0" oninput="updateTotalLocations()"> <span data-i18n="locations">Standorte</span>
+                            </div>
+                            <div class="form-group">
+                                <label data-i18n="mediumCafeterias">Mittel (201-500 MA)</label>
+                                <input type="number" id="mediumCafeterias" name="mediumCafeterias" min="0" value="0" oninput="updateTotalLocations()"> <span data-i18n="locations">Standorte</span>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label data-i18n="largeCafeterias">Groß (über 500 MA)</label>
+                                <input type="number" id="largeCafeterias" name="largeCafeterias" min="0" value="0" oninput="updateTotalLocations()"> <span data-i18n="locations">Standorte</span>
+                            </div>
+                            <div class="form-group">
+                                <!-- Platzhalter -->
+                            </div>
+                        </div>
+                        <h4 style="margin-top: 1.5rem; margin-bottom: 1rem; color: var(--primary-blue);" data-i18n="cafeteriaServices">Serviceumfang</h4>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label data-i18n="cafeteriaBreakfast">Frühstück</label>
+                                <input type="number" id="cafeteriaBreakfast" name="cafeteriaBreakfast" min="0" max="999"> <span>von <span id="totalCafeteriasCount">0</span> Standorten</span>
+                            </div>
+                            <div class="form-group">
+                                <label data-i18n="cafeteriaLunch">Mittagessen</label>
+                                <input type="number" id="cafeteriaLunch" name="cafeteriaLunch" min="0" max="999"> <span>von <span id="totalCafeteriasCount2">0</span> Standorten</span>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label data-i18n="cafeteriaDinner">Abendessen</label>
+                                <input type="number" id="cafeteriaDinner" name="cafeteriaDinner" min="0" max="999"> <span>von <span id="totalCafeteriasCount3">0</span> Standorten</span>
+                            </div>
+                            <div class="form-group">
+                                <!-- Platzhalter -->
+                            </div>
+                        </div>
+                    `;
+                    break;
+                    
+                default:
+                    html = `
+                        <h3 class="form-section-title" data-i18n="locationDetails">Standort-Details</h3>
+                        <p data-i18n="noSpecificFields">Für diese Branche gibt es keine spezifischen Felder.</p>
+                    `;
+            }
+            
+            section.innerHTML = html;
+            
+            // Update translations for new elements
+            updatePageLanguage();
+            
+            // Add event listeners for dynamic calculations
+            setTimeout(() => {
+                updateTotalLocations();
+                
+                if (industry === 'hotel') {
+                    updateHotelTotals();
+                } else if (industry === 'krankenhaus') {
+                    updateClinicTotals();
+                    document.getElementById('privatePatientShare')?.addEventListener('input', function(e) {
+                        document.getElementById('privatePatientDisplay').textContent = e.target.value + '%';
+                    });
+                } else if (industry === 'seniorenresidenz') {
+                    updateSeniorResidenceTotals();
+                } else if (industry === 'restaurant') {
+                    updateRestaurantTotals();
+                } else if (industry === 'betriebsrestaurant') {
+                    updateCafeteriaTotals();
+                }
+            }, 100);
+        }
+        
+        // Update total locations based on category inputs
+        function updateTotalLocations() {
+            const industry = document.getElementById('industry')?.value;
+            let total = 0;
+            
+            switch(industry) {
+                case 'hotel':
+                    total = parseInt(document.getElementById('smallHotels')?.value || 0) +
+                            parseInt(document.getElementById('mediumHotels')?.value || 0) +
+                            parseInt(document.getElementById('largeHotels')?.value || 0);
+                    break;
+                case 'krankenhaus':
+                    total = parseInt(document.getElementById('smallClinics')?.value || 0) +
+                            parseInt(document.getElementById('mediumClinics')?.value || 0) +
+                            parseInt(document.getElementById('largeClinics')?.value || 0);
+                    break;
+                case 'seniorenresidenz':
+                    total = parseInt(document.getElementById('smallSeniorResidences')?.value || 0) +
+                            parseInt(document.getElementById('mediumSeniorResidences')?.value || 0) +
+                            parseInt(document.getElementById('largeSeniorResidences')?.value || 0);
+                    break;
+                case 'restaurant':
+                    total = parseInt(document.getElementById('smallRestaurants')?.value || 0) +
+                            parseInt(document.getElementById('mediumRestaurants')?.value || 0) +
+                            parseInt(document.getElementById('largeRestaurants')?.value || 0);
+                    break;
+                case 'betriebsrestaurant':
+                    total = parseInt(document.getElementById('smallCafeterias')?.value || 0) +
+                            parseInt(document.getElementById('mediumCafeterias')?.value || 0) +
+                            parseInt(document.getElementById('largeCafeterias')?.value || 0);
+                    break;
+            }
+            
+            // Update the total locations field
+            const totalField = document.getElementById('totalLocations');
+            if (totalField) {
+                totalField.value = total;
+            }
+            
+            // Update the service counters
+            updateServiceCounters();
+        }
+        
+        // Update hotel totals
+        function updateHotelTotals() {
+            const total = parseInt(document.getElementById('totalLocations')?.value || 0);
+            
+            ['totalHotelsCount', 'totalHotelsCount2', 'totalHotelsCount3', 'totalHotelsCount4'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = total;
+            });
+        }
+        
+        // Update clinic totals
+        function updateClinicTotals() {
+            const total = parseInt(document.getElementById('totalLocations')?.value || 0);
+            
+            ['totalClinicsCount', 'totalClinicsCount2'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = total;
+            });
+        }
+        
+        // Update cafeteria totals
+        function updateCafeteriaTotals() {
+            const total = parseInt(document.getElementById('totalLocations')?.value || 0);
+            
+            ['totalCafeteriasCount', 'totalCafeteriasCount2', 'totalCafeteriasCount3'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = total;
+            });
+        }
+        
+        // Update senior residence totals
+        function updateSeniorResidenceTotals() {
+            const total = parseInt(document.getElementById('totalLocations')?.value || 0);
+            
+            ['totalSeniorResidencesCount', 'totalSeniorResidencesCount2', 'totalSeniorResidencesCount3'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = total;
+            });
+        }
+        
+        // Update restaurant totals
+        function updateRestaurantTotals() {
+            const total = parseInt(document.getElementById('totalLocations')?.value || 0);
+            
+            ['totalRestaurantsCount', 'totalRestaurantsCount2'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = total;
+            });
+        }
+        
+        // Update all service counters
+        function updateServiceCounters() {
+            const industry = document.getElementById('industry')?.value;
+            
+            switch(industry) {
+                case 'hotel':
+                    updateHotelTotals();
+                    break;
+                case 'krankenhaus':
+                    updateClinicTotals();
+                    break;
+                case 'seniorenresidenz':
+                    updateSeniorResidenceTotals();
+                    break;
+                case 'restaurant':
+                    updateRestaurantTotals();
+                    break;
+                case 'betriebsrestaurant':
+                    updateCafeteriaTotals();
+                    break;
+            }
+        }
+        
+        // Navigate back to customer tab
+        function goToCustomerTab() {
+            document.querySelector('.nav-tab[data-tab="customer"]').click();
+        }
+        
+        // Save location data
+        function saveLocationData() {
+            // TODO: Implement save logic
+            alert(t('locationsSaved'));
+        }
+        
+        // Location details counter
+        let locationDetailsCounter = 0;
+        
+        // Add new location detail
+        function addLocationDetail() {
+            locationDetailsCounter++;
+            const locationId = 'location_' + locationDetailsCounter;
+            const industry = document.getElementById('industry')?.value || 'default';
+            
+            // Hide no locations message
+            document.getElementById('noLocationsMessage').style.display = 'none';
+            
+            // Create location element
+            const locationHtml = `
+                <div class="form-section" id="${locationId}" style="background: var(--bg-light); padding: 1.5rem; margin-bottom: 1rem; border-radius: 8px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <h4 style="margin: 0; cursor: pointer;" onclick="toggleLocationCollapse('${locationId}')">
+                            <span id="${locationId}_toggle" style="display: inline-block; width: 20px;">▼</span>
+                            <span data-i18n="location">Standort</span> ${locationDetailsCounter}
+                            <span id="${locationId}_name" style="color: var(--text-light); font-weight: normal;"></span>
+                        </h4>
+                        <button type="button" class="btn btn-secondary" style="padding: 0.25rem 0.75rem; font-size: 0.875rem;" onclick="removeLocationDetail('${locationId}')">
+                            <span data-i18n="remove">Entfernen</span>
+                        </button>
+                    </div>
+                    
+                    <div id="${locationId}_content">
+                        <!-- Basis-Informationen -->
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label data-i18n="locationName">Standortname*</label>
+                                <input type="text" id="${locationId}_locname" onchange="updateLocationName('${locationId}')" required>
+                            </div>
+                            <div class="form-group">
+                                <label data-i18n="locationSize">Größenkategorie*</label>
+                                <select id="${locationId}_size" required>
+                                    <option value="" data-i18n="pleaseSelect">Bitte wählen</option>
+                                    <option value="klein" data-i18n="sizeSmall">Klein</option>
+                                    <option value="mittel" data-i18n="sizeMedium">Mittel</option>
+                                    <option value="gross" data-i18n="sizeLarge">Groß</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <!-- Adresse -->
+                        <h5 style="margin-top: 1.5rem; margin-bottom: 1rem; color: var(--primary-blue);" data-i18n="address">Adresse</h5>
+                        <div class="form-row">
+                            <div class="form-group" style="grid-column: span 2;">
+                                <label data-i18n="streetAndNumber">Straße und Hausnummer*</label>
+                                <input type="text" id="${locationId}_street" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label data-i18n="postalCode">PLZ*</label>
+                                <input type="text" id="${locationId}_plz" pattern="[0-9]{5}" maxlength="5" required>
+                            </div>
+                            <div class="form-group">
+                                <label data-i18n="city">Ort*</label>
+                                <input type="text" id="${locationId}_city" required>
+                            </div>
+                        </div>
+                        
+                        <!-- Ansprechpartner -->
+                        <h5 style="margin-top: 1.5rem; margin-bottom: 1rem; color: var(--primary-blue);" data-i18n="contactPerson">Ansprechpartner</h5>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label data-i18n="contactName">Name</label>
+                                <input type="text" id="${locationId}_contact">
+                            </div>
+                            <div class="form-group">
+                                <label data-i18n="contactPhone">Telefon</label>
+                                <input type="tel" id="${locationId}_phone">
+                            </div>
+                        </div>
+                        
+                        ${getIndustrySpecificFields(industry, locationId)}
+                    </div>
+                </div>
+            `;
+            
+            // Add to list
+            document.getElementById('locationDetailsList').insertAdjacentHTML('beforeend', locationHtml);
+            
+            // Update counter
+            updateLocationDetailsCount();
+            
+            // Update translations
+            updatePageLanguage();
+        }
+        
+        // Get industry specific fields for location details
+        function getIndustrySpecificFields(industry, locationId) {
+            let html = '<h5 style="margin-top: 1.5rem; margin-bottom: 1rem; color: var(--primary-blue);" data-i18n="specificProperties">Spezifische Eigenschaften</h5>';
+            
+            switch(industry) {
+                case 'hotel':
+                    html += `
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label data-i18n="roomCount">Anzahl Zimmer</label>
+                                <input type="number" id="${locationId}_rooms" min="0">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label data-i18n="hotelServices">Spezifische Eigenschaften</label>
+                                <div>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="${locationId}_breakfast">
+                                        <span>Frühstücksservice</span>
+                                    </label>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="${locationId}_restaurant">
+                                        <span>Restaurant à la carte</span>
+                                    </label>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="${locationId}_roomservice">
+                                        <span>Room Service</span>
+                                    </label>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="${locationId}_bankett">
+                                        <span>Bankett/Veranstaltungen</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Bemerkungen</label>
+                                <textarea id="${locationId}_bemerkungen" rows="3" placeholder="Wünsche und Besonderheiten"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Interesse an Freshfoodz-Vending?</label>
+                                <input type="text" id="${locationId}_vending" placeholder="Standortangabe">
+                            </div>
+                        </div>
+                    `;
+                    break;
+                    
+                case 'krankenhaus':
+                    html += `
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label data-i18n="bedCount">Anzahl Betten</label>
+                                <input type="number" id="${locationId}_beds" min="0">
+                            </div>
+                            <div class="form-group">
+                                <label data-i18n="privatePatientPercentage">Anteil Privatpatienten (%)</label>
+                                <input type="number" id="${locationId}_privatepercent" min="0" max="100">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label data-i18n="hospitalServices">Services</label>
+                                <div>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="${locationId}_wahlleistung">
+                                        <span>Patientenverpflegung</span>
+                                    </label>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="${locationId}_mitarbeiterverpflegung">
+                                        <span>Mitarbeiterverpflegung</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Bemerkungen</label>
+                                <textarea id="${locationId}_bemerkungen" rows="3" placeholder="Wünsche und Besonderheiten"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Interesse an Freshfoodz-Vending?</label>
+                                <input type="text" id="${locationId}_vending" placeholder="Standortangabe">
+                            </div>
+                        </div>
+                    `;
+                    break;
+                    
+                case 'seniorenresidenz':
+                    html += `
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label data-i18n="residentCount">Anzahl Bewohner</label>
+                                <input type="number" id="${locationId}_residents" min="0">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label data-i18n="seniorServices">Verpflegung</label>
+                                <div>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="${locationId}_vollverpflegung">
+                                        <span>Vollverpflegung</span>
+                                    </label>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="${locationId}_teilverpflegung">
+                                        <span>Teilverpflegung</span>
+                                    </label>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="${locationId}_sonderkostform">
+                                        <span>Sonderkostform</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Bemerkungen</label>
+                                <textarea id="${locationId}_bemerkungen" rows="3" placeholder="Wünsche und Besonderheiten"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Interesse an Freshfoodz-Vending?</label>
+                                <input type="text" id="${locationId}_vending" placeholder="Standortangabe">
+                            </div>
+                        </div>
+                    `;
+                    break;
+                    
+                case 'betriebsrestaurant':
+                    html += `
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label data-i18n="employeeCount">Anzahl Mitarbeiter</label>
+                                <input type="number" id="${locationId}_employees" min="0">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label data-i18n="companyServices">Serviceumfang</label>
+                                <div>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="${locationId}_fruehstueck">
+                                        <span>Frühstück</span>
+                                    </label>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="${locationId}_mittagessen">
+                                        <span>Mittagessen</span>
+                                    </label>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="${locationId}_abendessen">
+                                        <span>Abendessen</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Bemerkungen</label>
+                                <textarea id="${locationId}_bemerkungen" rows="3" placeholder="Wünsche und Besonderheiten"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Interesse an Freshfoodz-Vending?</label>
+                                <input type="text" id="${locationId}_vending" placeholder="Standortangabe">
+                            </div>
+                        </div>
+                    `;
+                    break;
+                    
+                case 'restaurant':
+                    html += `
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label data-i18n="seatCount">Anzahl Sitzplätze</label>
+                                <input type="number" id="${locationId}_seats" min="0">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label data-i18n="restaurantServices">Services</label>
+                                <div>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="${locationId}_alacarte">
+                                        <span>À la carte</span>
+                                    </label>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="${locationId}_bankett">
+                                        <span>Bankett/Veranstaltungen</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Bemerkungen</label>
+                                <textarea id="${locationId}_bemerkungen" rows="3" placeholder="Wünsche und Besonderheiten"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Interesse an Freshfoodz-Vending?</label>
+                                <input type="text" id="${locationId}_vending" placeholder="Standortangabe">
+                            </div>
+                        </div>
+                    `;
+                    break;
+                    
+                default:
+                    html += '<p style="color: var(--text-light);" data-i18n="noSpecificFields">Keine branchenspezifischen Felder verfügbar.</p>';
+            }
+            
+            return html;
+        }
+        
+        // Toggle location collapse
+        function toggleLocationCollapse(locationId) {
+            const content = document.getElementById(locationId + '_content');
+            const toggle = document.getElementById(locationId + '_toggle');
+            
+            if (content.style.display === 'none') {
+                content.style.display = 'block';
+                toggle.textContent = '▼';
+            } else {
+                content.style.display = 'none';
+                toggle.textContent = '▶';
+            }
+        }
+        
+        // Update location name display
+        function updateLocationName(locationId) {
+            const nameInput = document.getElementById(locationId + '_locname');
+            const nameDisplay = document.getElementById(locationId + '_name');
+            if (nameInput && nameDisplay) {
+                nameDisplay.textContent = nameInput.value ? ' - ' + nameInput.value : '';
+            }
+        }
+        
+        // Remove location detail
+        function removeLocationDetail(locationId) {
+            if (confirm(t('confirmRemoveLocation'))) {
+                document.getElementById(locationId).remove();
+                updateLocationDetailsCount();
+                
+                // Show no locations message if empty
+                if (document.getElementById('locationDetailsList').children.length === 0) {
+                    document.getElementById('noLocationsMessage').style.display = 'block';
+                }
+            }
+        }
+        
+        // Update location details count
+        function updateLocationDetailsCount() {
+            const count = document.getElementById('locationDetailsList').children.length;
+            document.getElementById('detailLocationCount').textContent = count;
+            
+            // Check synchronization
+            checkLocationSynchronization();
+        }
+        
+        // Check if detailed locations match main page
+        function checkLocationSynchronization() {
+            const industry = document.getElementById('industry')?.value;
+            const totalFromMain = parseInt(document.getElementById('totalLocations')?.value || 0);
+            const detailCount = document.getElementById('locationDetailsList').children.length;
+            
+            // Basic count check
+            let hasWarning = false;
+            let warningDetails = [];
+            
+            if (detailCount > totalFromMain) {
+                hasWarning = true;
+                warningDetails.push(t('tooManyDetails').replace('{0}', detailCount).replace('{1}', totalFromMain));
+            }
+            
+            // Category distribution check
+            if (detailCount > 0 && detailCount <= totalFromMain) {
+                const categoryCounts = getDetailedCategoryCounts();
+                const mainCategoryCounts = getMainCategoryCounts(industry);
+                
+                if (categoryCounts.klein > mainCategoryCounts.klein ||
+                    categoryCounts.mittel > mainCategoryCounts.mittel ||
+                    categoryCounts.gross > mainCategoryCounts.gross) {
+                    hasWarning = true;
+                    warningDetails.push(t('categoryMismatch'));
+                }
+            }
+            
+            // Show/hide warning
+            const warningEl = document.getElementById('syncWarning');
+            if (hasWarning) {
+                warningEl.style.display = 'block';
+                document.getElementById('syncWarningDetails').innerHTML = warningDetails.join('<br>');
+            } else {
+                warningEl.style.display = 'none';
+            }
+        }
+        
+        // Get category counts from detailed locations
+        function getDetailedCategoryCounts() {
+            const counts = { klein: 0, mittel: 0, gross: 0 };
+            const locations = document.getElementById('locationDetailsList').children;
+            
+            for (let loc of locations) {
+                const sizeSelect = loc.querySelector('[id$="_size"]');
+                if (sizeSelect) {
+                    const size = sizeSelect.value;
+                    if (size in counts) counts[size]++;
+                }
+            }
+            
+            return counts;
+        }
+        
+        // Get category counts from main page
+        function getMainCategoryCounts(industry) {
+            const counts = { klein: 0, mittel: 0, gross: 0 };
+            
+            switch(industry) {
+                case 'hotel':
+                    counts.klein = parseInt(document.getElementById('smallHotels')?.value || 0);
+                    counts.mittel = parseInt(document.getElementById('mediumHotels')?.value || 0);
+                    counts.gross = parseInt(document.getElementById('largeHotels')?.value || 0);
+                    break;
+                case 'krankenhaus':
+                    counts.klein = parseInt(document.getElementById('smallClinics')?.value || 0);
+                    counts.mittel = parseInt(document.getElementById('mediumClinics')?.value || 0);
+                    counts.gross = parseInt(document.getElementById('largeClinics')?.value || 0);
+                    break;
+                case 'seniorenresidenz':
+                    counts.klein = parseInt(document.getElementById('smallSeniorResidences')?.value || 0);
+                    counts.mittel = parseInt(document.getElementById('mediumSeniorResidences')?.value || 0);
+                    counts.gross = parseInt(document.getElementById('largeSeniorResidences')?.value || 0);
+                    break;
+                case 'restaurant':
+                    counts.klein = parseInt(document.getElementById('smallRestaurants')?.value || 0);
+                    counts.mittel = parseInt(document.getElementById('mediumRestaurants')?.value || 0);
+                    counts.gross = parseInt(document.getElementById('largeRestaurants')?.value || 0);
+                    break;
+                case 'betriebsrestaurant':
+                    counts.klein = parseInt(document.getElementById('smallCafeterias')?.value || 0);
+                    counts.mittel = parseInt(document.getElementById('mediumCafeterias')?.value || 0);
+                    counts.gross = parseInt(document.getElementById('largeCafeterias')?.value || 0);
+                    break;
+            }
+            
+            return counts;
+        }
+        
+        // Run translation check in development
+        setTimeout(() => {
+            console.log('=== Translation Check Started ===');
+            const untranslated = checkForUntranslatedTexts();
+            
+            // Also make function globally available
+            window.checkTranslations = checkForUntranslatedTexts;
+            
+            // Show visual indicator if there are untranslated texts
+            if (untranslated.length > 0) {
+                const indicator = document.createElement('div');
+                indicator.style.cssText = 'position: fixed; bottom: 20px; right: 20px; background: #ff9800; color: white; padding: 10px 20px; border-radius: 5px; font-size: 14px; z-index: 9999; cursor: pointer;';
+                indicator.textContent = `⚠️ ${untranslated.length} untranslated texts found`;
+                indicator.onclick = () => {
+                    console.log('Untranslated texts:', untranslated);
+                    indicator.remove();
+                };
+                document.body.appendChild(indicator);
+                
+                // Auto-remove after 10 seconds
+                setTimeout(() => indicator.remove(), 10000);
+            }
+        }, 1500);
+    </script>
+</body>
+</html>

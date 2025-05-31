@@ -1,0 +1,131 @@
+{
+  "de": {
+    "common": {
+      "appName": "FreshPlan",
+      "tagline": "So einfach, schnell und lecker!",
+      "save": "Speichern",
+      "cancel": "Abbrechen",
+      "clear": "Löschen",
+      "loading": "Wird geladen...",
+      "error": "Fehler",
+      "success": "Erfolgreich",
+      "warning": "Warnung"
+    },
+    "navigation": {
+      "calculator": "Rabattrechner",
+      "customer": "Kundendaten",
+      "profile": "Profil",
+      "offer": "Angebot",
+      "settings": "Einstellungen"
+    },
+    "calculator": {
+      "title": "FreshPlan Rabattrechner",
+      "orderValue": "Bestellwert",
+      "leadTime": "Vorlaufzeit",
+      "pickup": "Selbstabholung",
+      "baseDiscount": "Basisrabatt",
+      "earlyDiscount": "Frühbucher",
+      "pickupDiscount": "Abholung",
+      "totalDiscount": "Gesamtrabatt",
+      "savings": "Ersparnis",
+      "finalPrice": "Endpreis",
+      "minOrderWarning": "Mindestbestellwert: 5.000€ netto",
+      "maxDiscountInfo": "Maximaler Gesamtrabatt: 15%"
+    },
+    "customer": {
+      "title": "Kundendaten erfassen",
+      "newCustomerAlert": {
+        "title": "Neukunde - Zahlungsart beachten!",
+        "message": "Neukunden werden nur gegen Vorkasse, Barzahlung oder nach Freigabe durch die Geschäftsleitung beliefert.",
+        "creditCheckButton": "Bonitätsprüfung anfragen",
+        "managementButton": "Anfrage an Geschäftsleitung"
+      },
+      "sections": {
+        "basicData": "Grunddaten",
+        "registrationData": "Registrierungsdaten",
+        "address": "Anschrift",
+        "contact": "Ansprechpartner",
+        "businessData": "Geschäftsdaten",
+        "creditCheck": "Bonitätsprüfung"
+      },
+      "fields": {
+        "companyName": "Firmenname",
+        "legalForm": "Rechtsform",
+        "customerType": "Kundentyp",
+        "industry": "Branche",
+        "registrationNumber": "Handelsregisternummer",
+        "vatId": "USt-ID",
+        "customerNumber": "Kundennummer (intern)",
+        "companySize": "Unternehmensgröße",
+        "street": "Straße und Hausnummer",
+        "postalCode": "PLZ",
+        "city": "Stadt",
+        "contactName": "Name",
+        "contactPosition": "Position",
+        "contactEmail": "E-Mail",
+        "contactPhone": "Telefon",
+        "expectedVolume": "Erwartetes Auftragsvolumen (€)",
+        "paymentTerms": "Zahlungsziel (Tage)",
+        "paymentHistory": "Bisherige Zahlungserfahrungen"
+      },
+      "creditStatus": {
+        "status": "Status",
+        "limit": "Kreditlimit",
+        "rating": "Bewertung",
+        "notChecked": "Nicht geprüft",
+        "approved": "Genehmigt",
+        "rejected": "Abgelehnt",
+        "review": "Prüfung erforderlich"
+      },
+      "actions": {
+        "saveAndContinue": "Speichern und weiter",
+        "clearForm": "Formular leeren"
+      }
+    },
+    "messages": {
+      "creditCheck": {
+        "inProgress": "Bonitätsprüfung wird durchgeführt...",
+        "success": "Bonitätsprüfung erfolgreich!",
+        "rejected": "Bonitätsprüfung abgelehnt: {reason}",
+        "reviewRequired": "Bonitätsprüfung erfordert manuelle Überprüfung bei diesem Volumen."
+      },
+      "management": {
+        "requestSent": "Anfrage wurde an die Geschäftsleitung gesendet. Sie erhalten eine Antwort innerhalb von 24 Stunden."
+      },
+      "validation": {
+        "required": "Dieses Feld ist erforderlich",
+        "invalidEmail": "Bitte geben Sie eine gültige E-Mail-Adresse ein",
+        "invalidPhone": "Bitte geben Sie eine gültige Telefonnummer ein",
+        "invalidPostalCode": "Bitte geben Sie eine gültige Postleitzahl ein (5 Ziffern)",
+        "fillRequired": "Bitte füllen Sie alle erforderlichen Felder aus"
+      },
+      "confirm": {
+        "clearForm": "Möchten Sie wirklich alle Daten löschen?",
+        "unsavedChanges": "Es gibt ungespeicherte Änderungen. Möchten Sie fortfahren?"
+      },
+      "success": {
+        "dataSaved": "Kundendaten wurden erfolgreich gespeichert!",
+        "formCleared": "Formular wurde geleert"
+      }
+    },
+    "info": {
+      "chainCustomers": {
+        "title": "Kettenkundenregelung",
+        "description": "Für Unternehmen mit mehreren Standorten (z.B. Hotel- oder Klinikgruppen):",
+        "optionA": "Bestellungen verschiedener Standorte innerhalb einer Woche werden zusammengerechnet",
+        "optionB": "Zentrale Bestellung mit Mehrfachauslieferung"
+      },
+      "combiOrder": {
+        "title": "Kombi-Bestellung ab 30.000€",
+        "description": "Großbestellungen können auf 2 Liefertermine innerhalb von 4 Wochen aufgeteilt werden."
+      },
+      "importantNotes": {
+        "title": "Wichtige Hinweise",
+        "payment": "Zahlung: Sofort nach Rechnungserhalt",
+        "newCustomers": "Neukunden: Nur Vorkasse oder Bar",
+        "complaints": "Reklamation: Innerhalb 24 Stunden",
+        "packaging": "Leergut: Rückgabe binnen 14 Tagen"
+      }
+    }
+  }
+}

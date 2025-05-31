@@ -1,0 +1,129 @@
+{
+  "freshplan": {
+    "rabattSystem": {
+      "basisrabatt": [
+        {
+          "von": 0,
+          "bis": 4999,
+          "rabatt": 0,
+          "beschreibung": "unter 5.000 EUR"
+        },
+        {
+          "von": 5000,
+          "bis": 14999,
+          "rabatt": 3,
+          "beschreibung": "5.000 - 14.999 EUR"
+        },
+        {
+          "von": 15000,
+          "bis": 29999,
+          "rabatt": 6,
+          "beschreibung": "15.000 - 29.999 EUR"
+        },
+        {
+          "von": 30000,
+          "bis": 49999,
+          "rabatt": 8,
+          "beschreibung": "30.000 - 49.999 EUR"
+        },
+        {
+          "von": 50000,
+          "bis": 74999,
+          "rabatt": 9,
+          "beschreibung": "50.000 - 74.999 EUR"
+        },
+        {
+          "von": 75000,
+          "bis": null,
+          "rabatt": 10,
+          "beschreibung": "ab 75.000 EUR"
+        }
+      ],
+      "fruehbucherrabatt": [
+        {
+          "vonTage": 10,
+          "bisTage": 14,
+          "rabatt": 1,
+          "beschreibung": "10 - 14 Tage"
+        },
+        {
+          "vonTage": 15,
+          "bisTage": 29,
+          "rabatt": 2,
+          "beschreibung": "15 - 29 Tage"
+        },
+        {
+          "vonTage": 30,
+          "bisTage": 44,
+          "rabatt": 3,
+          "beschreibung": "30 - 44 Tage"
+        }
+      ],
+      "abholrabatt": {
+        "rabatt": 2,
+        "mindestbestellwert": 5000,
+        "bedingung": "Abholung im definierten Zeitfenster"
+      },
+      "kombiBestellung": {
+        "mindestbestellwert": 30000,
+        "maxLiefertermine": 2,
+        "zeitraum": "4 Wochen",
+        "mengenAnpassung": 15,
+        "beschreibung": "Großbestellungen können auf zwei Liefertermine aufgeteilt werden"
+      },
+      "kettenkundenOptionen": {
+        "optionA": {
+          "name": "Standort-Bündelung",
+          "beschreibung": "Abrufe verschiedener Standorte innerhalb einer Kalenderwoche werden gemeinsam rabattiert"
+        },
+        "optionB": {
+          "name": "Zentrale Bestellung",
+          "beschreibung": "Zentraler Abruf mit Mehrfachauslieferung gilt als eine rabattfähige Bestellung"
+        }
+      }
+    },
+    "partnerschaftsvereinbarung": {
+      "typ": "Einkaufsabsichtserklärung",
+      "laufzeit": {
+        "standard": 12,
+        "einheit": "Monate",
+        "verlaengerung": "automatisch",
+        "kuendigungsfrist": 3
+      },
+      "preisgarantie": {
+        "gueltigkeitsdauer": "Vertragslaufzeit",
+        "anpassungsschwelle": 5,
+        "index": "Verbraucherpreisindex für Nahrungsmittel",
+        "ankuendigungsfrist": 4,
+        "beschreibung": "Preisanpassung nur bei Indexsteigerung über 5%, dann nur um den übersteigenden Anteil"
+      },
+      "rechtliches": {
+        "abnahmeverpflichtung": false,
+        "zielvolumen": "Absichtserklärung",
+        "schriftform": true,
+        "vertraulichkeit": true,
+        "gerichtsstand": "Sitz der Freshfoodz GmbH"
+      }
+    },
+    "unternehmensdaten": {
+      "name": "Freshfoodz GmbH",
+      "adresse": {
+        "strasse": "Plauener Str. 163-165",
+        "plz": "13053",
+        "ort": "Berlin"
+      }
+    },
+    "begriffe": {
+      "kettenkunden": "Unternehmen mit mehreren Standorten (z.B. Hotel- oder Klinikgruppen)",
+      "freshplanArtikel": "Produkte aus dem aktuellen Produktportfolio mit Preisstabilitätsgarantie",
+      "qualifizierteBestellung": "Bestellung, die Mindestvoraussetzungen für Rabatte erfüllt",
+      "vorlaufzeit": "Zeitraum zwischen schriftlicher Bestellfreigabe und gewünschtem Lieferdatum"
+    },
+    "maximalrabatte": {
+      "basisrabatt": 10,
+      "fruehbucher": 3,
+      "abholung": 2,
+      "gesamtMaximal": 15
+    }
+  }
+}

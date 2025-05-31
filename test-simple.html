@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Navigation Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .nav-tabs {
+            display: flex;
+            gap: 20px;
+            border-bottom: 2px solid #ccc;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .nav-tab {
+            padding: 10px 20px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+        .nav-tab:hover {
+            color: #004f7b;
+        }
+        .nav-tab.active {
+            color: #004f7b;
+            border-bottom-color: #004f7b;
+        }
+        .tab-panel {
+            display: none;
+            padding: 20px;
+            background: #f5f5f5;
+            border-radius: 5px;
+        }
+        .tab-panel.active {
+            display: block;
+        }
+        #log {
+            margin-top: 30px;
+            padding: 20px;
+            background: #333;
+            color: white;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .log-entry {
+            margin: 5px 0;
+        }
+        .log-error { color: #ff6b6b; }
+        .log-success { color: #51cf66; }
+        .log-info { color: #74c0fc; }
+    </style>
+</head>
+<body>
+    <h1>Simple Navigation Test</h1>
+    
+    <nav class="nav-container">
+        <div class="nav-tabs" role="tablist">
+            <button class="nav-tab active" data-tab="demonstrator" role="tab" aria-selected="true">
+                Demonstrator
+            </button>
+            <button class="nav-tab" data-tab="customer" role="tab" aria-selected="false">
+                Kundendaten
+            </button>
+            <button class="nav-tab" data-tab="profile" role="tab" aria-selected="false">
+                Profil
+            </button>
+            <button class="nav-tab" data-tab="offer" role="tab" aria-selected="false">
+                Angebot
+            </button>
+            <button class="nav-tab" data-tab="settings" role="tab" aria-selected="false">
+                Einstellungen
+            </button>
+        </div>
+    </nav>
+
+    <main class="main-container">
+        <div class="tab-panels">
+            <div id="demonstrator" class="tab-panel active" role="tabpanel">
+                <h2>Demonstrator Tab</h2>
+                <p>This is the demonstrator content.</p>
+            </div>
+            <div id="customer" class="tab-panel" role="tabpanel">
+                <h2>Customer Tab</h2>
+                <p>This is the customer content.</p>
+            </div>
+            <div id="profile" class="tab-panel" role="tabpanel">
+                <h2>Profile Tab</h2>
+                <p>This is the profile content.</p>
+            </div>
+            <div id="offer" class="tab-panel" role="tabpanel">
+                <h2>Offer Tab</h2>
+                <p>This is the offer content.</p>
+            </div>
+            <div id="settings" class="tab-panel" role="tabpanel">
+                <h2>Settings Tab</h2>
+                <p>This is the settings content.</p>
+            </div>
+        </div>
+    </main>
+
+    <div id="log">
+        <h3>Event Log:</h3>
+    </div>
+
+    <script>
+        const log = document.getElementById('log');
+        
+        function addLog(message, type = 'info') {
+            const entry = document.createElement('div');
+            entry.className = `log-entry log-${type}`;
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            log.appendChild(entry);
+            log.scrollTop = log.scrollHeight;
+        }
+
+        // Simple tab navigation
+        document.addEventListener('DOMContentLoaded', () => {
+            addLog('DOM loaded', 'success');
+            
+            const navButtons = document.querySelectorAll('.nav-tab');
+            const tabPanels = document.querySelectorAll('.tab-panel');
+            
+            addLog(`Found ${navButtons.length} nav buttons and ${tabPanels.length} tab panels`, 'info');
+            
+            navButtons.forEach((button, index) => {
+                addLog(`Button ${index}: ${button.textContent.trim()} (data-tab="${button.dataset.tab}")`, 'info');
+                
+                button.addEventListener('click', function(e) {
+                    const targetTab = this.dataset.tab;
+                    addLog(`Click detected on tab: ${targetTab}`, 'success');
+                    
+                    // Remove active from all buttons and panels
+                    navButtons.forEach(btn => {
+                        btn.classList.remove('active');
+                        btn.setAttribute('aria-selected', 'false');
+                    });
+                    tabPanels.forEach(panel => {
+                        panel.classList.remove('active');
+                    });
+                    
+                    // Add active to clicked button and corresponding panel
+                    this.classList.add('active');
+                    this.setAttribute('aria-selected', 'true');
+                    
+                    const targetPanel = document.getElementById(targetTab);
+                    if (targetPanel) {
+                        targetPanel.classList.add('active');
+                        addLog(`Switched to tab: ${targetTab}`, 'success');
+                    } else {
+                        addLog(`Panel not found for tab: ${targetTab}`, 'error');
+                    }
+                });
+            });
+            
+            addLog('Event listeners attached', 'success');
+        });
+
+        // Test the app module loading
+        setTimeout(() => {
+            addLog('Testing module import...', 'info');
+            
+            import('./src/main.ts')
+                .then(() => {
+                    addLog('Module imported successfully', 'success');
+                    
+                    // Check if app is available
+                    if (window.FreshPlan || window.FreshPlanApp) {
+                        addLog('App found in window', 'success');
+                    } else {
+                        addLog('App not found in window', 'error');
+                    }
+                })
+                .catch(error => {
+                    addLog(`Module import failed: ${error.message}`, 'error');
+                });
+        }, 1000);
+    </script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+FreshPlan Configuration Backup
+==============================
+Datum: Fr 30 Mai 2025 19:39:11 CEST
+Version: 7d0758a
+Branch: main
+
+Gesicherte Dateien:
+- ui.config.json: UI/Design-Einstellungen
+- business-rules.config.json: Geschäftslogik und Rabatte
+- text-content.config.json: Alle Texte und Übersetzungen
+- freshplan-complete.html: Funktionierende Standalone-Version
+
+Wiederherstellung:
+cp backups/[BACKUP_FOLDER]/* config/
