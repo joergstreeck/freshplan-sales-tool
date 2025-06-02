@@ -1,53 +1,54 @@
 # FreshPlan Sales Tool - Migrationsstatus
 
-## Stand: 1. Juni 2025
+## Stand: 2. Juni 2025
 
-### ✅ Erfolgreich migriert:
+### ✅ Phase 1 - Abgeschlossen
+
+#### Erfolgreich migriert:
 1. **TypeScript/Vite-Architektur** - Grundstruktur implementiert
 2. **Zustand Store** - Funktioniert mit LocalStorage-Persistierung
 3. **Module-System** - Alle Module portiert
 4. **Rabattrechner** - Korrekte Berechnungen inkl. Mindestbestellwert für Abholung
 5. **Kettenkunden-Funktionalität** - LocationsModule vollständig implementiert
-6. **Übersetzungssystem** - i18n-Module vorhanden
+6. **Übersetzungssystem** - i18n-Module für statische Inhalte
+7. **Single-File Build** - `freshplan-complete.html` funktioniert standalone
+8. **Logo-Einbettung** - Korrekt als Base64 im Build integriert
 
-### ❌ Kritische Probleme:
+#### Bugfixes während Migration:
+- Rabattanzeige korrigiert (Klinikgruppe: 13% → 12%)
+- Logo-Pfad für Development/Production getrennt
+- API-Fehler durch zu große Base64-Strings behoben
 
-#### 1. **Single-File Build defekt**
-- **Problem**: `freshplan-complete.html` startet nicht
-- **Ursache**: JavaScript-Initialisierung schlägt fehl
-- **Symptome**:
-  - `FreshPlanApp.init()` wird nicht aufgerufen
-  - Übersetzungsschlüssel statt Text (z.B. "calculator.title")
-  - Keine Tab-Navigation
-  - Nur statisches HTML sichtbar
-- **Status**: Build erstellt Datei, aber App initialisiert nicht
+### ⚠️ Known Issues (nicht kritisch):
 
-#### 2. **PDF-Generierung nicht funktionsfähig**
-- jsPDF-Bibliothek nicht eingebunden
-- Angebot-Tab hat nur Platzhalter
-- Keine UI-Komponenten für PDF-Generierung
+#### 1. **Übersetzungen bei dynamischen Elementen**
+- **Problem**: Dynamisch generierte Inhalte zeigen Übersetzungsschlüssel
+- **Betrifft**: Neue Standorte in Standort-Details Tab
+- **Auswirkung**: Nur kosmetisch, Funktionalität nicht beeinträchtigt
+- **Lösung**: Wird in Phase 2 beim Refactoring behoben
 
-#### 3. **Fehlende Tab-Inhalte**
-- **Einstellungen-Tab**: Komplett leer
-- **Profil-Tab**: Nur Platzhalter
-- **Angebot-Tab**: Nur Platzhalter
+#### 2. **Placeholder-Tabs**
+- **Profil-Tab**: Nur Platzhalter-Text
+- **Angebot-Tab**: Nur Platzhalter-Text (PDF-Generierung nicht implementiert)
+- **Einstellungen-Tab**: Nur Platzhalter-Text
+- **Status**: Entspricht dem Original, keine Regression
 
-### 🔧 Nächste Schritte:
+### 📋 Phase 2 - Geplant (lokale Entwicklung):
 
-1. **Priorität 1: Single-File Build reparieren**
-   - Mit `npm run dev` verifizieren, dass src/ funktioniert
-   - Standard-Build (`npm run build`) testen
-   - vite-plugin-singlefile Konfiguration debuggen
-   - Initialisierungscode anpassen für Inline-Kompatibilität
+1. **Legacy-Code Refactoring**
+   - `legacy-script.ts` in saubere Module aufteilen
+   - Übersetzungssystem für dynamische Inhalte erweitern
+   - Event-System modernisieren
 
-2. **Priorität 2: Fehlende Features implementieren**
-   - PDF-Generierung aktivieren
-   - Tab-Inhalte vervollständigen
-   - Autosave-Indikator hinzufügen
+2. **Feature-Vervollständigung**
+   - PDF-Generierung implementieren
+   - Profil-Verwaltung
+   - Einstellungen-UI
 
-3. **Priorität 3: Umfassende Tests**
-   - LocalStorage-Persistierung
-   - Standortverwaltung
+3. **Tests & Optimierung**
+   - Unit-Tests vervollständigen
+   - E2E-Tests erweitern
+   - Performance-Optimierung
    - Browser-Kompatibilität
 
 ### 📊 Gesamtfortschritt:
