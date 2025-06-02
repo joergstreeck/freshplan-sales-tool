@@ -39,5 +39,23 @@
   },
   "autosave": {
     "saving": "Speichern..."
+  },
+  "common": {
+    "remove": "Entfernen",
+    "pleaseSelect": "Bitte wählen"
+  },
+  "locationDetails": {
+    "locationTitle": "Standort",
+    "locationName": "Standortname*",
+    "category": "Kategorie",
+    "mainLocation": "Hauptstandort",
+    "branch": "Filiale",
+    "externalOffice": "Außenstelle",
+    "streetAndNumber": "Straße und Hausnummer*",
+    "postalCode": "PLZ*",
+    "city": "Ort*",
+    "contactName": "Ansprechpartner Name",
+    "contactPhone": "Telefon",
+    "contactEmail": "E-Mail"
   }
 }
