@@ -6,14 +6,22 @@
 import Module from '../core/Module';
 import { useStore } from '../store';
 import type { TabName } from '../types';
+import { TAB_EVENTS } from '../constants/events';
+
+// Re-export TAB_EVENTS for backward compatibility
+export { TAB_EVENTS };
 
 export default class TabNavigationModule extends Module {
+  private legacyMode: boolean = false;
   private tabButtons: Map<TabName, HTMLElement> = new Map();
   private tabPanels: Map<TabName, HTMLElement> = new Map();
   private progressBar: HTMLElement | null = null;
 
   constructor() {
     super('tabs');
+    
+    // Check if we're in legacy mode (called from legacy-script.ts)
+    this.legacyMode = !!(window as any).__LEGACY_SCRIPT_ACTIVE;
   }
 
   async setup(): Promise<void> {
@@ -55,6 +63,22 @@ export default class TabNavigationModule extends Module {
         this.switchTab(tab, false); // Don't push to history
       }
     });
+    
+    // Listen for legacy tab switch events (Phase 3.2.1)
+    if (this.legacyMode) {
+      this.on(window as any, TAB_EVENTS.SWITCH, (e: CustomEvent) => {
+        const { tab, source } = e.detail;
+        
+        // Only handle if from legacy source and valid tab
+        if (source === 'legacy' && tab && this.isValidTab(tab)) {
+          // Prevent recursive events
+          if (!e.defaultPrevented) {
+            e.preventDefault();
+            this.switchTab(tab);
+          }
+        }
+      });
+    }
   }
 
   subscribeToState(): void {
@@ -112,6 +136,26 @@ export default class TabNavigationModule extends Module {
     
     if (tab === currentTab) return;
     
+    // Emit before switch event (can be cancelled)
+    const beforeSwitchEvent = new CustomEvent(TAB_EVENTS.BEFORE_SWITCH, {
+      detail: { tab, previousTab: currentTab },
+      cancelable: true
+    });
+    
+    // Emit on module
+    this.emit(TAB_EVENTS.BEFORE_SWITCH, { tab, previousTab: currentTab });
+    
+    // Also emit on window for legacy compatibility
+    if (this.legacyMode || (window as any).__LEGACY_LISTENERS) {
+      window.dispatchEvent(beforeSwitchEvent);
+      
+      // Check if event was cancelled
+      if (beforeSwitchEvent.defaultPrevented) {
+        console.log(`[TabNavigationModule] Tab switch to '${tab}' was cancelled`);
+        return;
+      }
+    }
+    
     // Update state
     useStore.getState().setCurrentTab(tab);
     
@@ -122,8 +166,16 @@ export default class TabNavigationModule extends Module {
       window.history.pushState({ tab }, '', url);
     }
     
-    // Emit event
-    this.emit('switched', tab);
+    // Emit events for both new and legacy systems
+    this.emit('switched', tab); // Original event
+    this.emit(TAB_EVENTS.SWITCHED, { tab, previousTab: currentTab }); // New standardized event
+    
+    // Also emit on window for legacy compatibility
+    if (this.legacyMode || (window as any).__LEGACY_LISTENERS) {
+      window.dispatchEvent(new CustomEvent(TAB_EVENTS.SWITCHED, {
+        detail: { tab, previousTab: currentTab }
+      }));
+    }
     
     // Analytics
     this.trackTabSwitch(tab);
@@ -197,6 +249,16 @@ export default class TabNavigationModule extends Module {
       this.dom.addClass(this.progressBar, 'medium');
     } else {
       this.dom.addClass(this.progressBar, 'low');
+    }
+    
+    // Emit progress update event
+    this.emit(TAB_EVENTS.PROGRESS_UPDATE, { progress, steps: this.getProgressSteps() });
+    
+    // Also emit on window for legacy compatibility
+    if (this.legacyMode || (window as any).__LEGACY_LISTENERS) {
+      window.dispatchEvent(new CustomEvent(TAB_EVENTS.PROGRESS_UPDATE, {
+        detail: { progress, steps: this.getProgressSteps() }
+      }));
     }
   }
 
@@ -284,12 +346,102 @@ export default class TabNavigationModule extends Module {
 
   navigateTo(tab: TabName): void {
     if (this.isValidTab(tab)) {
+      // Check if tab is accessible
+      if (!this.isTabAccessible(tab)) {
+        // Emit access denied event
+        const reason = this.getAccessDeniedReason(tab);
+        this.emit(TAB_EVENTS.ACCESS_DENIED, { tab, reason });
+        
+        // Also emit on window for legacy compatibility
+        if (this.legacyMode || (window as any).__LEGACY_LISTENERS) {
+          window.dispatchEvent(new CustomEvent(TAB_EVENTS.ACCESS_DENIED, {
+            detail: { tab, reason }
+          }));
+        }
+        
+        console.warn(`[TabNavigationModule] Access denied to tab '${tab}': ${reason}`);
+        return;
+      }
+      
       this.switchTab(tab);
     }
+  }
+  
+  // Backward compatible methods with deprecation warnings
+  
+  /**
+   * @deprecated Use navigateTo() instead
+   */
+  showTab(tabId: string): void {
+    console.warn('[TabNavigationModule] showTab() is deprecated. Use navigateTo() instead.');
+    
+    // Convert legacy tab IDs if needed
+    const mappedTab = this.mapLegacyTabId(tabId);
+    if (mappedTab && this.isValidTab(mappedTab)) {
+      this.navigateTo(mappedTab);
+    }
+  }
+  
+  /**
+   * @deprecated Use getCurrentTab() instead
+   */
+  getActiveTab(): string {
+    console.warn('[TabNavigationModule] getActiveTab() is deprecated. Use getCurrentTab() instead.');
+    return this.getCurrentTab();
+  }
+  
+  /**
+   * @deprecated Use module event system instead
+   */
+  onTabChange(callback: (tab: string) => void): () => void {
+    console.warn('[TabNavigationModule] onTabChange() is deprecated. Use module event system instead.');
+    
+    // Create wrapper for legacy callback
+    const handler = (event: CustomEvent) => {
+      callback(event.detail.tab);
+    };
+    
+    // Listen to both module events and window events
+    this.on(window as any, TAB_EVENTS.SWITCHED, handler);
+    
+    // Return unsubscribe function
+    return () => {
+      window.removeEventListener(TAB_EVENTS.SWITCHED, handler as any);
+    };
+  }
+  
+  /**
+   * Maps legacy tab IDs to current TabName types
+   */
+  private mapLegacyTabId(tabId: string): TabName | null {
+    const mapping: Record<string, TabName> = {
+      'demonstrator': 'demonstrator',
+      'calculator': 'demonstrator', // Legacy alias
+      'customer': 'customer',
+      'profile': 'profile',
+      'offer': 'offer',
+      'settings': 'settings'
+    };
+    
+    return mapping[tabId] || null;
   }
 
   getProgress(): number {
     return this.calculateProgress();
+  }
+  
+  /**
+   * Get detailed progress steps information
+   */
+  getProgressSteps(): Record<string, boolean> {
+    const state = useStore.getState();
+    return {
+      calculatorUsed: state.calculator.calculation !== null,
+      customerDataEntered: !!(state.customer.data && state.customer.data.companyName),
+      customerDataValid: state.customer.isValid && !state.customer.isDirty,
+      profileGenerated: state.profile.data !== null,
+      settingsConfigured: !!(state.settings.salesperson.name && state.settings.salesperson.email)
+    };
   }
 
   isTabAccessible(tab: TabName): boolean {
@@ -318,11 +470,43 @@ export default class TabNavigationModule extends Module {
         return false;
     }
   }
+  
+  /**
+   * Get reason why tab access is denied
+   */
+  private getAccessDeniedReason(tab: TabName): string {
+    const state = useStore.getState();
+    
+    switch (tab) {
+      case 'profile':
+        if (!state.customer.data || !state.customer.data.companyName) {
+          return 'Kundendaten müssen zuerst eingegeben werden';
+        }
+        break;
+        
+      case 'offer':
+        if (state.profile.data === null) {
+          return 'Kundenprofil muss zuerst generiert werden';
+        }
+        break;
+    }
+    
+    return 'Zugriff verweigert';
+  }
 
+  /**
+   * Enable legacy mode for backward compatibility
+   */
+  enableLegacyMode(): void {
+    this.legacyMode = true;
+    (window as any).__LEGACY_LISTENERS = true;
+  }
+  
   /**
    * Cleanup module resources
    */
   cleanup(): void {
     // Module cleanup is handled by base class
+    delete (window as any).__LEGACY_LISTENERS;
   }
 }

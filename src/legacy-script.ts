@@ -1,10 +1,12 @@
 /**
  * Legacy JavaScript code from reference-original.html
  * Phase 1b - Direct port of original functionality
+ * Phase 3.2.1 - Adding event bridge for tab navigation
  */
 
 import { LocationDetail, createLocationDetailCard } from './templates/locationDetailsTemplates';
 import { getIndustryLocationFields } from './templates/industryLocationTemplates';
+import { TAB_EVENTS } from './constants/events';
 
 // Make functions available globally for inline onclick handlers
 declare global {
@@ -24,6 +26,8 @@ declare global {
 }
 
 export function initLegacyScript(): void {
+  // Mark legacy script as active for TabNavigationModule
+  (window as any).__LEGACY_SCRIPT_ACTIVE = true;
   // Translations
   const translations: Record<string, Record<string, string>> = {
     de: {
@@ -585,14 +589,43 @@ export function initLegacyScript(): void {
   // Initialize current language
   let currentLanguage = 'de';
   
-  // Initialize tab functionality
+  // Initialize tab functionality with event bridge
   function initTabs() {
     const tabs = document.querySelectorAll('.nav-tab');
     const panels = document.querySelectorAll('.tab-panel');
     
+    // Set up event bridge to listen for tab events from modules
+    window.addEventListener(TAB_EVENTS.SWITCHED, (event: any) => {
+      const { tab: newTab } = event.detail;
+      
+      // Update UI to reflect tab change from module
+      tabs.forEach(t => t.classList.remove('active'));
+      panels.forEach(p => p.classList.remove('active'));
+      
+      const targetButton = document.querySelector(`.nav-tab[data-tab="${newTab}"]`);
+      const targetPanel = document.getElementById(newTab);
+      
+      if (targetButton) {
+        targetButton.classList.add('active');
+      }
+      if (targetPanel) {
+        targetPanel.classList.add('active');
+      }
+    });
+    
     tabs.forEach(tab => {
       tab.addEventListener('click', () => {
         const targetTab = tab.getAttribute('data-tab');
+        const currentTab = document.querySelector('.nav-tab.active')?.getAttribute('data-tab');
+        
+        // Emit event for modules to listen to
+        window.dispatchEvent(new CustomEvent(TAB_EVENTS.SWITCH, {
+          detail: { 
+            tab: targetTab, 
+            previousTab: currentTab,
+            source: 'legacy'
+          }
+        }));
         
         // Update active states
         tabs.forEach(t => t.classList.remove('active'));
@@ -606,6 +639,15 @@ export function initLegacyScript(): void {
         
         // Update URL hash
         window.location.hash = targetTab!;
+        
+        // Emit switched event
+        window.dispatchEvent(new CustomEvent(TAB_EVENTS.SWITCHED, {
+          detail: { 
+            tab: targetTab, 
+            previousTab: currentTab,
+            source: 'legacy'
+          }
+        }));
       });
     });
     
@@ -1519,12 +1561,52 @@ export function initLegacyScript(): void {
     }
   }
   
+  // Set up legacy tab navigation helpers
+  function setupLegacyTabHelpers() {
+    // Helper to programmatically switch tabs (for backward compatibility)
+    (window as any).switchToTab = (tabName: string) => {
+      console.warn('[Legacy] switchToTab() is deprecated. Use TabNavigationModule.navigateTo() instead.');
+      const tabButton = document.querySelector(`.nav-tab[data-tab="${tabName}"]`) as HTMLElement;
+      if (tabButton) {
+        tabButton.click();
+      }
+    };
+    
+    // Helper to get current tab
+    (window as any).getCurrentTab = () => {
+      const activeTab = document.querySelector('.nav-tab.active');
+      return activeTab?.getAttribute('data-tab') || 'demonstrator';
+    };
+    
+    // Helper to listen for tab changes
+    (window as any).onTabChange = (callback: (tab: string) => void) => {
+      const handler = (event: any) => {
+        callback(event.detail.tab);
+      };
+      window.addEventListener(TAB_EVENTS.SWITCHED, handler);
+      
+      // Return unsubscribe function
+      return () => {
+        window.removeEventListener(TAB_EVENTS.SWITCHED, handler);
+      };
+    };
+  }
+  
   // Initialize everything when DOM is ready
   initTabs();
+  setupLegacyTabHelpers();
   updateCalculator();
   loadSavedData();
   initChainCustomer();
   initVendingInterest();
   initPaymentWarning();
   renderLocationDetails();
+  
+  // Clean up when script is unloaded
+  (window as any).__LEGACY_SCRIPT_CLEANUP = () => {
+    delete (window as any).__LEGACY_SCRIPT_ACTIVE;
+    delete (window as any).switchToTab;
+    delete (window as any).getCurrentTab;
+    delete (window as any).onTabChange;
+  };
 }
