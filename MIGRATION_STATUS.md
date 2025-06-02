@@ -1,87 +1,71 @@
-# TypeScript Migration Status
+# FreshPlan Sales Tool - Migrationsstatus
 
-## ✅ Completed Migration
+## Stand: 1. Juni 2025
 
-This document tracks the TypeScript migration progress for the FreshPlan Sales Tool.
+### ✅ Erfolgreich migriert:
+1. **TypeScript/Vite-Architektur** - Grundstruktur implementiert
+2. **Zustand Store** - Funktioniert mit LocalStorage-Persistierung
+3. **Module-System** - Alle Module portiert
+4. **Rabattrechner** - Korrekte Berechnungen inkl. Mindestbestellwert für Abholung
+5. **Kettenkunden-Funktionalität** - LocationsModule vollständig implementiert
+6. **Übersetzungssystem** - i18n-Module vorhanden
 
-### Core Modules (100% Complete)
-- [x] **EventBus.ts** - Event system with full type safety
-- [x] **DOMHelper.ts** - jQuery-like DOM manipulation with TypeScript
-- [x] **Module.ts** - Base module class with lifecycle management
-- [x] **StateManager.ts** - Legacy state management (replaced by Zustand)
+### ❌ Kritische Probleme:
 
-### State Management (100% Complete)
-- [x] **store/index.ts** - Zustand store with complete type definitions
-- [x] **store/StoreAdapter.ts** - Bridge between Zustand and legacy StateManager API
-- [x] **store/__tests__/store.test.ts** - Comprehensive test coverage
+#### 1. **Single-File Build defekt**
+- **Problem**: `freshplan-complete.html` startet nicht
+- **Ursache**: JavaScript-Initialisierung schlägt fehl
+- **Symptome**:
+  - `FreshPlanApp.init()` wird nicht aufgerufen
+  - Übersetzungsschlüssel statt Text (z.B. "calculator.title")
+  - Keine Tab-Navigation
+  - Nur statisches HTML sichtbar
+- **Status**: Build erstellt Datei, aber App initialisiert nicht
 
-### Application Modules (100% Complete)
-- [x] **TabNavigationModule.ts** - Navigation and progress tracking
-- [x] **CalculatorModule.ts** - Discount calculations
-- [x] **CustomerModule.ts** - Customer data management
-- [x] **SettingsModule.ts** - Application settings
-- [x] **ProfileModule.ts** - Customer profile generation
-- [x] **PDFModule.ts** - PDF generation for offers
-- [x] **i18nModule.ts** - Internationalization
+#### 2. **PDF-Generierung nicht funktionsfähig**
+- jsPDF-Bibliothek nicht eingebunden
+- Angebot-Tab hat nur Platzhalter
+- Keine UI-Komponenten für PDF-Generierung
 
-### Utilities (100% Complete)
-- [x] **utils/formatting.ts** - Number, date, and currency formatting
-- [x] **utils/validation.ts** - Form validation functions
-- [x] **utils/translations.ts** - Translation definitions
+#### 3. **Fehlende Tab-Inhalte**
+- **Einstellungen-Tab**: Komplett leer
+- **Profil-Tab**: Nur Platzhalter
+- **Angebot-Tab**: Nur Platzhalter
 
-### Main Application (100% Complete)
-- [x] **FreshPlanApp.ts** - Main application controller
-- [x] **main.ts** - Entry point
+### 🔧 Nächste Schritte:
 
-### Type Definitions (100% Complete)
-- [x] **types/index.ts** - Comprehensive type definitions for entire application
+1. **Priorität 1: Single-File Build reparieren**
+   - Mit `npm run dev` verifizieren, dass src/ funktioniert
+   - Standard-Build (`npm run build`) testen
+   - vite-plugin-singlefile Konfiguration debuggen
+   - Initialisierungscode anpassen für Inline-Kompatibilität
 
-## Key Improvements
+2. **Priorität 2: Fehlende Features implementieren**
+   - PDF-Generierung aktivieren
+   - Tab-Inhalte vervollständigen
+   - Autosave-Indikator hinzufügen
 
-### 1. Type Safety
-- All modules now have full TypeScript type coverage
-- Interfaces for all data structures
-- Type-safe event system
-- Proper return types for all methods
+3. **Priorität 3: Umfassende Tests**
+   - LocalStorage-Persistierung
+   - Standortverwaltung
+   - Browser-Kompatibilität
 
-### 2. Modern State Management
-- Replaced custom StateManager with Zustand
-- Immutable state updates with Immer
-- Automatic persistence
-- DevTools integration
-- Time-travel debugging
+### 📊 Gesamtfortschritt:
+- **Architektur-Migration**: ~85% (Single-File Build fehlt)
+- **Feature-Parität**: ~70% (Kern funktioniert, UI teilweise)
+- **Produktionsreife**: 0% (Standalone funktioniert nicht)
 
-### 3. Better Developer Experience
-- IntelliSense support throughout the codebase
-- Compile-time error checking
-- Improved refactoring capabilities
-- Better documentation through types
+### ⚠️ Wichtiger Hinweis:
+Die generierte `freshplan-complete.html` ist **NICHT produktionsreif**. 
+Verwenden Sie für Tests und Entwicklung:
+- `npm run dev` - Entwicklungsserver
+- `npm run build` - Standard-Build in dist/
 
-### 4. Backward Compatibility
-- StoreAdapter maintains compatibility with legacy code
-- Gradual migration path available
-- No breaking changes to existing functionality
+Die Migration ist erst abgeschlossen, wenn die Standalone-Version funktioniert.
 
-## Migration Summary
-
-All JavaScript modules have been successfully migrated to TypeScript with:
-- **0** remaining JavaScript module files
-- **137** test cases passing
-- **80%+** code coverage
-- **Strict** TypeScript configuration
-
-## Next Steps
-
-1. **Install Dependencies**: Run `npm ci` to install all dependencies
-2. **Run Tests**: Execute `npm test` to verify all functionality
-3. **Build**: Use `npm run build` to create production bundle
-4. **Deploy**: The application is ready for deployment
-
-## Architecture Benefits
-
-The migration provides:
-- **Type Safety**: Catch errors at compile time
-- **Better Maintainability**: Clear contracts between modules
-- **Improved Performance**: Optimized state management
-- **Enhanced Developer Experience**: Better tooling support
-- **Future-Proof**: Ready for modern web development practices
+### 📝 Test-Dateien erstellt:
+- `test-calculator.js` - Rabattrechner-Testfälle
+- `test-localstorage.html` - LocalStorage-Test-Tool
+- `debug-standalone.html` - Debug-Tool für Fehleranalyse
+- `simple-debug.html` - Einfache Debugging-Anleitung
+- `FEATURE_CHECKLIST.md` - Vollständige Feature-Liste

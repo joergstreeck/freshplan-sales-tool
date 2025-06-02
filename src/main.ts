@@ -1,13 +1,22 @@
 /**
  * Main entry point for FreshPlan Sales Tool
+ * Phase 1b - With JavaScript functionality
  */
 
-import app from './FreshPlanApp';
+// Import CSS
+import './styles/original-imported-styles.css';
 
-// Initialize application when DOM is ready
-app.init().catch(error => {
-  console.error('Failed to initialize FreshPlan app:', error);
-});
+// Import legacy JavaScript
+import { initLegacyScript } from './legacy-script';
 
-// Export for use in other scripts
-export default app;
+// Wait for DOM to be ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => {
+    console.log('Phase 1b: Initializing JavaScript functionality...');
+    initLegacyScript();
+  });
+} else {
+  // DOM already loaded
+  console.log('Phase 1b: Initializing JavaScript functionality...');
+  initLegacyScript();
+}

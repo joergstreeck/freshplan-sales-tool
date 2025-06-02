@@ -3,1446 +3,657 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="FreshPlan Sales Tool - Professionelles Rabattsystem für Großkunden">
-    <meta name="theme-color" content="#004f7b">
-    
     <title>FreshPlan Sales Tool</title>
     
-    <!-- Preconnect to external domains -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    
-    <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-    <link rel="alternate icon" href="/favicon.ico">
-    
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@700&family=Poppins:wght@400;500;700&display=swap" rel="stylesheet">
-    
-    <!-- Styles -->
-    <link rel="stylesheet" href="./css/variables.css">
-    <link rel="stylesheet" href="./css/layout.css">
-    <link rel="stylesheet" href="./css/components.css">
-    <link rel="stylesheet" href="./css/header-logo.css">
-    <link rel="stylesheet" href="./css/calculator.css">
-    <link rel="stylesheet" href="./css/forms.css">
-    <link rel="stylesheet" href="./css/notifications.css">
-    <link rel="stylesheet" href="./css/responsive.css">
-    
-    <!-- Critical CSS (will be inlined by Vite in production) -->
-    <style>
-        /* Critical inline styles for faster initial render */
-        body {
-            margin: 0;
-            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #f5f5f5;
-            color: #333;
-        }
-        
-        /* Loading screen */
-        .app-loading {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: white;
-            z-index: 9999;
-        }
-        
-        .app-loading-content {
-            text-align: center;
-        }
-        
-        .app-loading-spinner {
-            width: 50px;
-            height: 50px;
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #004f7b;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        .app-loading-text {
-            color: #666;
-            font-size: 16px;
-        }
-        
-        /* Hide app content until loaded */
-        #app:not(.loaded) {
-            display: none;
-        }
-        
-        /* Hidden class */
-        .hidden {
-            display: none !important;
-        }
-        
-        /* Collapsible sections */
-        .location-detail {
-            background: white;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            margin-bottom: 1rem;
-            padding: 1rem;
-        }
-        
-        .location-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-            cursor: pointer;
-        }
-        
-        .location-header h4 {
-            margin: 0;
-            color: #004f7b;
-        }
-        
-        .location-actions {
-            display: flex;
-            gap: 0.5rem;
-        }
-        
-        .btn-icon {
-            padding: 0.5rem;
-            border: none;
-            background: none;
-            cursor: pointer;
-            color: #666;
-            transition: color 0.2s;
-        }
-        
-        .btn-icon:hover {
-            color: #004f7b;
-        }
-        
-        .btn-icon.danger:hover {
-            color: #f44336;
-        }
-        
-        .location-content {
-            display: none;
-        }
-        
-        .location-detail.expanded .location-content {
-            display: block;
-        }
-        
-        .chevron-icon {
-            transition: transform 0.3s;
-        }
-        
-        .location-detail.expanded .chevron-icon {
-            transform: rotate(180deg);
-        }
-    </style>
+    <!-- Vite Module Script -->
+    <script type="module" src="/src/main.ts"></script>
 </head>
 <body>
-    <!-- Loading Screen -->
-    <div id="loading" class="app-loading">
-        <div class="app-loading-content">
-            <div class="app-loading-spinner"></div>
-            <div class="app-loading-text">FreshPlan wird geladen...</div>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <img src="/assets/images/logo.png" alt="FreshFoodz Logo" style="height: 50px; margin-right: 1rem;">
+                <div>
+                    <h1>FreshPlan</h1>
+                    <span class="logo-tagline" data-i18n="tagline">So einfach, schnell und lecker!</span>
+                </div>
+            </div>
+            <div class="header-actions">
+                <select id="languageSelect" class="header-select" onchange="changeLanguage(this.value)">
+                    <option value="de" data-i18n="languageDE">Deutsch</option>
+                    <option value="en" data-i18n="languageEN">English</option>
+                </select>
+                <button class="header-btn header-btn-clear" onclick="handleClearForm()">
+                    <span data-i18n="clearForm">Formular leeren</span>
+                </button>
+                <button class="header-btn header-btn-save" onclick="handleSaveForm()">
+                    <span data-i18n="save">Speichern</span>
+                </button>
+            </div>
         </div>
-    </div>
+    </header>
 
-    <!-- Main App Container -->
-    <div id="app">
-        <!-- Header -->
-        <header class="header">
-            <div class="header-container">
-                <div class="header-content">
-                    <div class="logo">
-                        <img src="/assets/images/logo.png" alt="FreshFoodz Logo" class="logo-img">
-                        <div class="logo-text-container">
-                            <h1 class="logo-text">FreshPlan</h1>
-                            <span class="logo-tagline" data-i18n="common.tagline">So einfach, schnell und lecker!</span>
+    <nav class="nav">
+        <div class="nav-tabs">
+            <button class="nav-tab active" data-tab="calculator" role="tab" aria-selected="true">
+                <span data-i18n="calculator">Rabattrechner</span>
+            </button>
+            <button class="nav-tab" data-tab="customer" role="tab" aria-selected="false">
+                <span data-i18n="customer">Kundendaten</span>
+            </button>
+            <button class="nav-tab" data-tab="locations" role="tab" aria-selected="false" style="display: none;">
+                <span data-i18n="locations">Standorte</span>
+            </button>
+            <button class="nav-tab" data-tab="locationdetails" role="tab" aria-selected="false" style="display: none;">
+                <span data-i18n="locationDetails">Standort-Details</span>
+            </button>
+            <button class="nav-tab" data-tab="creditcheck" role="tab" aria-selected="false">
+                <span data-i18n="creditcheck">Bonitätsprüfung</span>
+            </button>
+            <button class="nav-tab" data-tab="profile" role="tab" aria-selected="false">
+                <span data-i18n="profile">Profil</span>
+            </button>
+            <button class="nav-tab" data-tab="offer" role="tab" aria-selected="false">
+                <span data-i18n="offer">Angebot</span>
+            </button>
+            <button class="nav-tab" data-tab="settings" role="tab" aria-selected="false">
+                <span data-i18n="settings">Einstellungen</span>
+            </button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Calculator Tab -->
+        <div id="calculator" class="tab-panel active">
+            <div class="demonstrator-container">
+                <!-- Calculator Section -->
+                <div class="calculator-section">
+                    <h2 class="section-title" data-i18n="calculatorTitle">FreshPlan Rabattrechner</h2>
+                    
+                    <!-- Order Value Slider -->
+                    <div class="slider-group">
+                        <div class="slider-label">
+                            <span data-i18n="orderValue">Bestellwert</span>
+                            <span class="slider-value" id="orderValueDisplay">€15.000</span>
+                        </div>
+                        <input type="range" id="orderValue" class="slider" 
+                               min="1000" max="100000" step="1000" value="15000" 
+                               oninput="updateCalculator()">
+                    </div>
+                    
+                    <!-- Lead Time Slider -->
+                    <div class="slider-group">
+                        <div class="slider-label">
+                            <span data-i18n="leadTime">Vorlaufzeit</span>
+                            <span class="slider-value" id="leadTimeDisplay">14 Tage</span>
+                        </div>
+                        <input type="range" id="leadTime" class="slider" 
+                               min="1" max="30" step="1" value="14" 
+                               oninput="updateCalculator()">
+                    </div>
+                    
+                    <!-- Pickup Checkbox -->
+                    <div class="checkbox-label">
+                        <input type="checkbox" id="pickupToggle" class="checkbox" onchange="updateCalculator()">
+                        <span data-i18n="pickup">Abholung (Mindestbestellwert: 5.000€ netto)</span>
+                    </div>
+                    
+                    <!-- Results -->
+                    <div class="results-container">
+                        <div class="result-grid">
+                            <div class="result-item">
+                                <span class="result-label" data-i18n="baseDiscount">Basisrabatt</span>
+                                <span class="result-value" id="baseDiscount">6%</span>
+                            </div>
+                            <div class="result-item">
+                                <span class="result-label" data-i18n="earlyDiscount">Frühbucher</span>
+                                <span class="result-value" id="earlyDiscount">1%</span>
+                            </div>
+                            <div class="result-item">
+                                <span class="result-label" data-i18n="pickupDiscount">Abholung</span>
+                                <span class="result-value" id="pickupDiscount">0%</span>
+                            </div>
+                        </div>
+                        
+                        <div class="total-discount">
+                            <span data-i18n="totalDiscount">Gesamtrabatt</span>
+                            <span class="total-value" id="totalDiscount">7%</span>
+                        </div>
+                        
+                        <div class="savings-display">
+                            <div class="savings-item">
+                                <span data-i18n="savings">Ersparnis</span>
+                                <span class="savings-value" id="discountAmount">€1.050</span>
+                            </div>
+                            <div class="savings-item highlight">
+                                <span data-i18n="finalPrice">Endpreis</span>
+                                <span class="savings-value" id="finalPrice">€13.950</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Info Section -->
+                <div class="info-section">
+                    <!-- Discount System Info -->
+                    <div class="info-card">
+                        <div class="info-header">
+                            <h3 data-i18n="discountSystem">FreshPlan-Rabattsystem</h3>
+                        </div>
+                        <div class="info-content" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                            <div>
+                                <h4 style="font-size: 0.875rem; margin-bottom: 0.5rem; color: var(--primary-blue);" data-i18n="baseDiscount">Basisrabatt</h4>
+                                <table style="width: 100%; font-size: 0.813rem; border-collapse: collapse;">
+                                    <tr style="border-bottom: 1px solid var(--border-light);">
+                                        <td style="padding: 0.25rem 0 0.25rem 0; width: auto;" data-i18n="from">ab</td>
+                                        <td style="text-align: right; padding: 0.25rem 0 0.25rem 0.25rem; font-family: monospace; width: 4rem;">5.000€</td>
+                                        <td style="text-align: right; font-weight: 600; padding: 0.25rem 0 0.25rem 1rem;">3%</td>
+                                    </tr>
+                                    <tr style="border-bottom: 1px solid var(--border-light);">
+                                        <td style="padding: 0.25rem 0 0.25rem 0;" data-i18n="from">ab</td>
+                                        <td style="text-align: right; padding: 0.25rem 0 0.25rem 0.25rem; font-family: monospace;">15.000€</td>
+                                        <td style="text-align: right; font-weight: 600; padding: 0.25rem 0 0.25rem 1rem;">6%</td>
+                                    </tr>
+                                    <tr style="border-bottom: 1px solid var(--border-light);">
+                                        <td style="padding: 0.25rem 0 0.25rem 0;" data-i18n="from">ab</td>
+                                        <td style="text-align: right; padding: 0.25rem 0 0.25rem 0.25rem; font-family: monospace;">30.000€</td>
+                                        <td style="text-align: right; font-weight: 600; padding: 0.25rem 0 0.25rem 1rem;">8%</td>
+                                    </tr>
+                                    <tr style="border-bottom: 1px solid var(--border-light);">
+                                        <td style="padding: 0.25rem 0 0.25rem 0;" data-i18n="from">ab</td>
+                                        <td style="text-align: right; padding: 0.25rem 0 0.25rem 0.25rem; font-family: monospace;">50.000€</td>
+                                        <td style="text-align: right; font-weight: 600; padding: 0.25rem 0 0.25rem 1rem;">9%</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 0.25rem 0 0.25rem 0;" data-i18n="from">ab</td>
+                                        <td style="text-align: right; padding: 0.25rem 0 0.25rem 0.25rem; font-family: monospace;">75.000€</td>
+                                        <td style="text-align: right; font-weight: 600; padding: 0.25rem 0 0.25rem 1rem;">10%</td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div>
+                                <h4 style="font-size: 0.875rem; margin-bottom: 0.5rem; color: var(--primary-blue);" data-i18n="earlyBookingDiscount">Frühbucherrabatt</h4>
+                                <table style="width: 100%; font-size: 0.813rem; border-collapse: collapse;">
+                                    <tr style="border-bottom: 1px solid var(--border-light);">
+                                        <td style="padding: 0.25rem 0;" data-i18n="from10days">ab 10 Tage</td>
+                                        <td style="text-align: right; font-weight: 600;">1%</td>
+                                    </tr>
+                                    <tr style="border-bottom: 1px solid var(--border-light);">
+                                        <td style="padding: 0.25rem 0;" data-i18n="from15days">ab 15 Tage</td>
+                                        <td style="text-align: right; font-weight: 600;">2%</td>
+                                    </tr>
+                                    <tr style="border-bottom: 1px solid var(--border-light);">
+                                        <td style="padding: 0.25rem 0;" data-i18n="from30days">ab 30 Tage</td>
+                                        <td style="text-align: right; font-weight: 600;">3%</td>
+                                    </tr>
+                                    <tr style="border-bottom: 1px solid var(--border-light);">
+                                        <td style="padding: 0.25rem 0;">&nbsp;</td>
+                                        <td style="text-align: right; font-weight: 600;">&nbsp;</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 0.25rem 0;" data-i18n="pickup">Abholung</td>
+                                        <td style="text-align: right; font-weight: 600;">2%</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                        <div style="text-align: center; margin-top: 0.75rem; padding-top: 0.75rem; border-top: 2px solid var(--primary-green);">
+                            <strong style="color: var(--primary-green); font-size: 0.9rem;" data-i18n="maxTotalDiscount">Maximaler Gesamtrabatt: 15%</strong>
                         </div>
                     </div>
                     
-                    <!-- Language Switcher -->
-                    <div class="lang-switcher">
-                        <select id="languageSelect" class="lang-select">
-                            <option value="de">Deutsch</option>
-                            <option value="en">Englisch</option>
-                        </select>
+                    <!-- Chain Customer Info -->
+                    <div class="info-card">
+                        <div class="info-header">
+                            <h3 data-i18n="chainCustomerRegulation">Kettenkundenregelung</h3>
+                        </div>
+                        <p data-i18n="chainCustomerDesc">Für Unternehmen mit mehreren Standorten (z.B. Hotel- oder Klinikgruppen):</p>
+                        <ul style="margin-left: 1rem;">
+                            <li><strong data-i18n="optionA">Option A:</strong> <span data-i18n="optionADesc">Bestellungen verschiedener Standorte innerhalb einer Woche werden zusammengerechnet</span></li>
+                            <li><strong data-i18n="optionB">Option B:</strong> <span data-i18n="optionBDesc">Zentrale Bestellung mit Mehrfachauslieferung</span></li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Example Scenarios -->
+                    <div class="info-card" style="background: rgba(148, 196, 86, 0.1); border: 1px solid rgba(148, 196, 86, 0.3);">
+                        <div class="info-header">
+                            <h3 style="color: var(--primary-green);" data-i18n="exampleScenarios">Beispielszenarien</h3>
+                        </div>
+                        <div class="examples-container" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 1rem;">
+                            <div class="example-item" onclick="loadExample('hotel')" style="cursor: pointer; padding: 1rem; background: white; border-radius: 8px; transition: all 0.3s; border: 2px solid var(--border-light); text-align: center;">
+                                <h4 style="color: var(--primary-blue); margin-bottom: 0.5rem; font-size: 1rem;">🏨 <span data-i18n="hotelChain">Hotelkette</span></h4>
+                                <p style="margin: 0.25rem 0; font-size: 0.813rem; color: var(--text-dark);">35.000 €</p>
+                                <p style="margin: 0.25rem 0; font-size: 0.813rem; color: var(--text-dark);"><span data-i18n="21days">21 Tage</span> • <span data-i18n="pickup">Abholung</span></p>
+                                <p style="margin: 0.5rem 0 0 0; color: var(--primary-green); font-weight: 700; font-size: 1.1rem;">12% <span data-i18n="discount">Rabatt</span></p>
+                            </div>
+                            <div class="example-item" onclick="loadExample('klinik')" style="cursor: pointer; padding: 1rem; background: white; border-radius: 8px; transition: all 0.3s; border: 2px solid var(--border-light); text-align: center;">
+                                <h4 style="color: var(--primary-blue); margin-bottom: 0.5rem; font-size: 1rem;">🏥 <span data-i18n="clinicGroup">Klinikgruppe</span></h4>
+                                <p style="margin: 0.25rem 0; font-size: 0.813rem; color: var(--text-dark);">65.000 €</p>
+                                <p style="margin: 0.25rem 0; font-size: 0.813rem; color: var(--text-dark);"><span data-i18n="30days">30 Tage</span> • <span data-i18n="delivery">Lieferung</span></p>
+                                <p style="margin: 0.5rem 0 0 0; color: var(--primary-green); font-weight: 700; font-size: 1.1rem;">12% <span data-i18n="discount">Rabatt</span></p>
+                            </div>
+                            <div class="example-item" onclick="loadExample('restaurant')" style="cursor: pointer; padding: 1rem; background: white; border-radius: 8px; transition: all 0.3s; border: 2px solid var(--border-light); text-align: center;">
+                                <h4 style="color: var(--primary-blue); margin-bottom: 0.5rem; font-size: 1rem;">🍽️ <span data-i18n="restaurant">Restaurant</span></h4>
+                                <p style="margin: 0.25rem 0; font-size: 0.813rem; color: var(--text-dark);">8.500 €</p>
+                                <p style="margin: 0.25rem 0; font-size: 0.813rem; color: var(--text-dark);"><span data-i18n="14days">14 Tage</span> • <span data-i18n="pickup">Abholung</span></p>
+                                <p style="margin: 0.5rem 0 0 0; color: var(--primary-green); font-weight: 700; font-size: 1.1rem;">6% <span data-i18n="discount">Rabatt</span></p>
+                            </div>
+                        </div>
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <!-- Customer Tab -->
+        <div id="customer" class="tab-panel">
+            <div class="customer-container">
+                <h2 class="section-title" data-i18n="customerTitle">Kundendaten erfassen</h2>
                 
-                <!-- Progress Bar -->
-                <div class="progress-container">
-                    <div class="progress-bar"></div>
-                </div>
-            </div>
-        </header>
-
-        <!-- Navigation -->
-        <nav class="nav-container">
-            <div class="nav-tabs" role="tablist">
-                <button class="nav-tab active" data-tab="demonstrator" role="tab" aria-selected="true">
-                    <span data-i18n="nav.demonstrator">Rabattrechner</span>
-                </button>
-                <button class="nav-tab" data-tab="customer" role="tab" aria-selected="false">
-                    <span data-i18n="nav.customer">Kundendaten</span>
-                </button>
-                <button class="nav-tab hidden" id="locationsTab" data-tab="locations" role="tab" aria-selected="false">
-                    <span data-i18n="nav.locations">Standorte</span>
-                </button>
-                <button class="nav-tab hidden" id="locationDetailsTab" data-tab="locationDetails" role="tab" aria-selected="false">
-                    <span data-i18n="nav.locationDetails">Standort-Details</span>
-                </button>
-                <button class="nav-tab" data-tab="profile" role="tab" aria-selected="false">
-                    <span data-i18n="nav.profile">Profil</span>
-                </button>
-                <button class="nav-tab" data-tab="offer" role="tab" aria-selected="false">
-                    <span data-i18n="nav.offer">Angebot</span>
-                </button>
-                <button class="nav-tab" data-tab="settings" role="tab" aria-selected="false">
-                    <span data-i18n="nav.settings">Einstellungen</span>
-                </button>
-            </div>
-        </nav>
-
-        <!-- Main Content -->
-        <main class="main-container">
-            <!-- Tab Panels -->
-            <div class="tab-panels">
-                <!-- Demonstrator Tab -->
-                <div id="demonstrator" class="tab-panel active" role="tabpanel">
-                    <div class="demonstrator-container">
-                        <!-- Left Column - Calculator -->
-                        <div class="calculator-section">
-                            <h2 class="section-title" data-i18n="calculator.title">FreshPlan Rabattrechner</h2>
-                            
-                            <!-- Order Value Slider -->
-                            <div class="slider-group">
-                            <label class="slider-label">
-                                <span data-i18n="calculator.orderValue">Bestellwert</span>
-                                <span id="orderValueDisplay" class="slider-value">€15.000</span>
-                            </label>
-                            <input type="range" id="orderValue" class="slider" 
-                                   min="0" max="100000" step="500" value="15000">
-                        </div>
-
-                        <!-- Lead Time Slider -->
-                        <div class="slider-group">
-                            <label class="slider-label">
-                                <span data-i18n="calculator.leadTime">Vorlaufzeit</span>
-                                <span id="leadTimeDisplay" class="slider-value">14 Tage</span>
-                            </label>
-                            <input type="range" id="leadTime" class="slider" 
-                                   min="0" max="45" step="1" value="14">
-                        </div>
-
-                        <!-- Options -->
-                        <div class="options-group">
-                            <label class="checkbox-label">
-                                <input type="checkbox" id="pickupToggle" class="checkbox">
-                                <span data-i18n="calculator.pickup">Selbstabholung</span>
-                            </label>
-                        </div>
-
-                        <!-- Results -->
-                        <div class="results-container">
-                            <div class="result-grid">
-                                <div class="result-item">
-                                    <span class="result-label" data-i18n="calculator.baseDiscount">Basisrabatt</span>
-                                    <span id="baseDiscount" class="result-value">6%</span>
-                                </div>
-                                <div class="result-item">
-                                    <span class="result-label" data-i18n="calculator.earlyDiscount">Frühbucher</span>
-                                    <span id="earlyDiscount" class="result-value">1%</span>
-                                </div>
-                                <div class="result-item">
-                                    <span class="result-label" data-i18n="calculator.pickupDiscount">Abholung</span>
-                                    <span id="pickupDiscount" class="result-value">0%</span>
-                                </div>
+                <form id="customerForm" class="customer-form">
+                    <!-- Basic Data Section -->
+                    <div class="form-section">
+                        <h3 class="form-section-title" data-i18n="basicData">Grunddaten</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="companyName" data-i18n="companyName">Firmenname*</label>
+                                <input type="text" id="companyName" name="companyName" required>
                             </div>
-                            
-                            <div class="total-discount">
-                                <span data-i18n="calculator.totalDiscount">Gesamtrabatt</span>
-                                <span id="totalDiscount" class="total-value">7%</span>
-                            </div>
-                            
-                            <div class="savings-display">
-                                <div class="savings-item">
-                                    <span data-i18n="calculator.savings">Ersparnis</span>
-                                    <span id="discountAmount" class="savings-value">€1.050</span>
-                                </div>
-                                <div class="savings-item highlight">
-                                    <span data-i18n="calculator.finalPrice">Endpreis</span>
-                                    <span id="finalPrice" class="savings-value">€13.950</span>
-                                </div>
+                            <div class="form-group">
+                                <label for="legalForm" data-i18n="legalForm">Rechtsform*</label>
+                                <select id="legalForm" name="legalForm" required>
+                                    <option value="" data-i18n="pleaseSelect">Bitte wählen</option>
+                                    <option value="gmbh" data-i18n="legalFormGmbH">GmbH</option>
+                                    <option value="ag" data-i18n="legalFormAG">AG</option>
+                                    <option value="gbr" data-i18n="legalFormGbR">GbR</option>
+                                    <option value="einzelunternehmen" data-i18n="legalFormEinzel">Einzelunternehmen</option>
+                                    <option value="kg" data-i18n="legalFormKG">KG</option>
+                                    <option value="ohg" data-i18n="legalFormOHG">OHG</option>
+                                    <option value="ug" data-i18n="legalFormUG">UG</option>
+                                </select>
                             </div>
                         </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="customerType" data-i18n="customerType">Kundentyp*</label>
+                                <select id="customerType" name="customerType" required>
+                                    <option value="" data-i18n="pleaseSelect">Bitte wählen</option>
+                                    <option value="neukunde" data-i18n="newCustomer">Neukunde</option>
+                                    <option value="bestandskunde" data-i18n="existingCustomer">Bestandskunde</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="industry" data-i18n="industry">Branche*</label>
+                                <select id="industry" name="industry" required>
+                                    <option value="" data-i18n="pleaseSelect">Bitte wählen</option>
+                                    <option value="hotel" data-i18n="industryHotel">Hotel</option>
+                                    <option value="krankenhaus" data-i18n="industryHospital">Klinik</option>
+                                    <option value="seniorenresidenz" data-i18n="industryNursingHome">Seniorenresidenz</option>
+                                    <option value="betriebsrestaurant" data-i18n="industryCafeteria">Betriebsrestaurant</option>
+                                    <option value="restaurant" data-i18n="industryRestaurant">Restaurant</option>
+                                </select>
+                            </div>
                         </div>
-                        
-                        <!-- Right Column - Information -->
-                        <div class="info-section">
-                            <!-- RabattPlan Info -->
-                            <div class="info-card modern">
-                                <div class="info-header">
-                                    <svg class="info-icon" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
-                                        <path d="M12 8V12M12 16H12.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                                    </svg>
-                                    <h3>FreshPlan-Rabattsystem</h3>
-                                </div>
-                                <div class="info-content" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-                                    <div>
-                                        <h4 style="font-size: 0.875rem; margin-bottom: 0.5rem; color: var(--primary-blue);">Basisrabatt</h4>
-                                        <table style="width: 100%; font-size: 0.813rem; border-collapse: collapse;">
-                                            <tr style="border-bottom: 1px solid var(--border-light);">
-                                                <td style="padding: 0.25rem 0; width: 20%;">ab</td>
-                                                <td style="text-align: right; padding: 0.25rem 0; width: 50%; font-family: monospace;">&nbsp;&nbsp;5.000€</td>
-                                                <td style="text-align: right; font-weight: 600; padding: 0.25rem 0; width: 30%;">3%</td>
-                                            </tr>
-                                            <tr style="border-bottom: 1px solid var(--border-light);">
-                                                <td style="padding: 0.25rem 0;">ab</td>
-                                                <td style="text-align: right; padding: 0.25rem 0; font-family: monospace;">&nbsp;10.000€</td>
-                                                <td style="text-align: right; font-weight: 600; padding: 0.25rem 0;">4%</td>
-                                            </tr>
-                                            <tr style="border-bottom: 1px solid var(--border-light);">
-                                                <td style="padding: 0.25rem 0;">ab</td>
-                                                <td style="text-align: right; padding: 0.25rem 0; font-family: monospace;">&nbsp;15.000€</td>
-                                                <td style="text-align: right; font-weight: 600; padding: 0.25rem 0;">6%</td>
-                                            </tr>
-                                            <tr style="border-bottom: 1px solid var(--border-light);">
-                                                <td style="padding: 0.25rem 0;">ab</td>
-                                                <td style="text-align: right; padding: 0.25rem 0; font-family: monospace;">&nbsp;30.000€</td>
-                                                <td style="text-align: right; font-weight: 600; padding: 0.25rem 0;">8%</td>
-                                            </tr>
-                                            <tr style="border-bottom: 1px solid var(--border-light);">
-                                                <td style="padding: 0.25rem 0;">ab</td>
-                                                <td style="text-align: right; padding: 0.25rem 0; font-family: monospace;">&nbsp;50.000€</td>
-                                                <td style="text-align: right; font-weight: 600; padding: 0.25rem 0;">9%</td>
-                                            </tr>
-                                            <tr>
-                                                <td style="padding: 0.25rem 0;">ab</td>
-                                                <td style="text-align: right; padding: 0.25rem 0; font-family: monospace;">&nbsp;75.000€</td>
-                                                <td style="text-align: right; font-weight: 600; padding: 0.25rem 0;">10%</td>
-                                            </tr>
-                                        </table>
-                                    </div>
-                                    <div>
-                                        <h4 style="font-size: 0.875rem; margin-bottom: 0.5rem; color: var(--primary-blue);">Zusatzrabatte</h4>
-                                        <table style="width: 100%; font-size: 0.813rem; border-collapse: collapse;">
-                                            <tr style="border-bottom: 1px solid var(--border-light);">
-                                                <td style="padding: 0.25rem 0;">10-14 Tage</td>
-                                                <td style="text-align: right; font-weight: 600;">1%</td>
-                                            </tr>
-                                            <tr style="border-bottom: 1px solid var(--border-light);">
-                                                <td style="padding: 0.25rem 0;">15-29 Tage</td>
-                                                <td style="text-align: right; font-weight: 600;">2%</td>
-                                            </tr>
-                                            <tr style="border-bottom: 1px solid var(--border-light);">
-                                                <td style="padding: 0.25rem 0;">30+ Tage</td>
-                                                <td style="text-align: right; font-weight: 600;">3%</td>
-                                            </tr>
-                                            <tr>
-                                                <td style="padding: 0.25rem 0;">Abholung</td>
-                                                <td style="text-align: right; font-weight: 600;">2%</td>
-                                            </tr>
-                                        </table>
-                                    </div>
-                                </div>
-                                <div style="text-align: center; margin-top: 0.75rem; padding-top: 0.75rem; border-top: 2px solid var(--primary-green);">
-                                    <strong style="color: var(--primary-green); font-size: 0.9rem;">Maximaler Gesamtrabatt: 15%</strong>
-                                </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="chainCustomer" data-i18n="chainCustomer">Kettenkunde</label>
+                                <select id="chainCustomer" name="chainCustomer">
+                                    <option value="nein" data-i18n="no">Nein</option>
+                                    <option value="ja" data-i18n="yes">Ja</option>
+                                </select>
                             </div>
-                            
-                            <!-- Scenarios -->
-                            <div class="scenarios-container">
-                                <h3 data-i18n="calculator.scenarios">Beispielszenarien</h3>
-                                <div class="scenario-grid">
-                                    <div class="scenario-card" data-scenario="spontan">
-                                        <h4 data-i18n="calculator.scenario1">Kleinbestellung</h4>
-                                        <p>€8.000 · 5 Tage</p>
-                                        <div class="scenario-result">
-                                            <span class="scenario-discount">3%</span>
-                                            <span class="scenario-saving">€240 gespart</span>
-                                        </div>
-                                    </div>
-                                    <div class="scenario-card" data-scenario="geplant">
-                                        <h4 data-i18n="calculator.scenario2">Geplante Bestellung</h4>
-                                        <p>€32.000 · 16 Tage</p>
-                                        <div class="scenario-result">
-                                            <span class="scenario-discount">10%</span>
-                                            <span class="scenario-saving">€3.200 gespart</span>
-                                        </div>
-                                    </div>
-                                    <div class="scenario-card" data-scenario="optimal">
-                                        <h4 data-i18n="calculator.scenario3">Optimale Bestellung</h4>
-                                        <p>€50.000 · 30 Tage · Abholung</p>
-                                        <div class="scenario-result">
-                                            <span class="scenario-discount">14%</span>
-                                            <span class="scenario-saving">€7.000 gespart</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Kettenkunden Info -->
-                            <div class="chain-info-card modern">
-                                <div class="chain-header">
-                                    <svg class="chain-icon" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                        <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                                        <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                                    </svg>
-                                    <h3>Kettenkundenregelung</h3>
-                                </div>
-                                <p class="chain-text">
-                                    Für Unternehmen mit mehreren Standorten (z.B. Hotel- oder Klinikgruppen):
-                                </p>
-                                <ul class="chain-options">
-                                    <li><strong>Option A:</strong> Bestellungen verschiedener Standorte innerhalb einer Woche werden zusammengerechnet</li>
-                                    <li><strong>Option B:</strong> Zentrale Bestellung mit Mehrfachauslieferung</li>
-                                </ul>
-                            </div>
-                            
-                            <!-- Kombi-Bestellung Info -->
-                            <div class="combi-info-card modern">
-                                <div class="combi-header">
-                                    <svg class="combi-icon" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                        <rect x="3" y="3" width="7" height="7" stroke="currentColor" stroke-width="2"/>
-                                        <rect x="14" y="3" width="7" height="7" stroke="currentColor" stroke-width="2"/>
-                                        <rect x="3" y="14" width="7" height="7" stroke="currentColor" stroke-width="2"/>
-                                        <rect x="14" y="14" width="7" height="7" stroke="currentColor" stroke-width="2"/>
-                                    </svg>
-                                    <h3>Kombi-Bestellung ab 30.000€</h3>
-                                </div>
-                                <p class="combi-text">
-                                    Großbestellungen können auf 2 Liefertermine innerhalb von 4 Wochen aufgeteilt werden.
-                                </p>
-                            </div>
-                            
-                            <!-- Wichtige AGB-Hinweise -->
-                            <div class="agb-info-card modern">
-                                <div class="agb-header">
-                                    <svg class="agb-icon" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                        <path d="M9 11H15M9 15H15M12 3L2 8V13C2 18 6.5 21 12 21C17.5 21 22 18 22 13V8L12 3Z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                                    </svg>
-                                    <h3>Wichtige Hinweise</h3>
-                                </div>
-                                <ul class="agb-list">
-                                    <li><strong>Zahlung:</strong> Sofort nach Rechnungserhalt</li>
-                                    <li><strong>Neukunden:</strong> Nur Vorkasse oder Bar</li>
-                                    <li><strong>Reklamation:</strong> Innerhalb 24 Stunden</li>
-                                    <li><strong>Leergut:</strong> Rückgabe binnen 14 Tagen</li>
-                                </ul>
+                            <div class="form-group">
+                                <label for="customerNumber" data-i18n="customerNumberInternal">Kundennummer (intern)</label>
+                                <input type="text" id="customerNumber" name="customerNumber">
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- Customer Tab -->
-                <div id="customer" class="tab-panel" role="tabpanel">
-                    <div class="customer-container">
-                        <!-- Neukunden-Warnung -->
-                        <div id="newCustomerAlert" class="alert-box warning hidden">
-                            <svg class="alert-icon" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                <path d="M12 9V13M12 17H12.01M12 3L2 20H22L12 3Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
-                            <div class="alert-content">
-                                <h3>Neukunde - Zahlungsart beachten!</h3>
-                                <p>Neukunden werden nur gegen <strong>Vorkasse</strong>, <strong>Barzahlung</strong> oder nach <strong>Freigabe durch die Geschäftsleitung</strong> beliefert.</p>
-                                <div class="alert-actions">
-                                    <button type="button" class="btn btn-secondary" id="requestCreditCheck">
-                                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-                                            <path d="M8 2a6 6 0 1 0 0 12A6 6 0 0 0 8 2zM7 5h2v5H7V5zm0 6h2v2H7v-2z"/>
-                                        </svg>
-                                        Bonitätsprüfung anfragen
-                                    </button>
-                                    <button type="button" class="btn btn-primary" id="requestManagement">
-                                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-                                            <path d="M2 2a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H2zm6 2.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5z"/>
-                                        </svg>
-                                        Anfrage an Geschäftsleitung
-                                    </button>
-                                </div>
+                    <!-- Address Data Section -->
+                    <div class="form-section">
+                        <h3 class="form-section-title" data-i18n="addressData">Adressdaten</h3>
+                        <div class="form-row">
+                            <div class="form-group" style="grid-column: span 2;">
+                                <label for="street" data-i18n="streetAndNumber">Straße und Hausnummer*</label>
+                                <input type="text" id="street" name="street" required>
                             </div>
                         </div>
-
-                        <form id="customerForm" class="customer-form">
-                            <h2 class="section-title">Kundendaten erfassen</h2>
-                            
-                            <!-- Grunddaten -->
-                            <div class="form-section">
-                                <h3 class="form-section-title">Grunddaten</h3>
-                                <div class="form-row">
-                                    <div class="form-group">
-                                        <label for="companyName">Firmenname*</label>
-                                        <input type="text" id="companyName" name="companyName" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="legalForm">Rechtsform*</label>
-                                        <select id="legalForm" name="legalForm" required>
-                                            <option value="">Bitte wählen</option>
-                                            <option value="gmbh">GmbH</option>
-                                            <option value="ag">AG</option>
-                                            <option value="gbr">GbR</option>
-                                            <option value="einzelunternehmen">Einzelunternehmen</option>
-                                            <option value="kg">KG</option>
-                                            <option value="ohg">OHG</option>
-                                            <option value="ug">UG</option>
-                                            <option value="sonstige">Sonstige</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                
-                                <div class="form-row">
-                                    <div class="form-group">
-                                        <label for="customerType">Kundentyp*</label>
-                                        <select id="customerType" name="customerType" required>
-                                            <option value="">Bitte wählen</option>
-                                            <option value="neukunde">Neukunde</option>
-                                            <option value="bestandskunde">Bestandskunde</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="industry">Branche*</label>
-                                        <select id="industry" name="industry" required>
-                                            <option value="">Bitte wählen</option>
-                                            <option value="hotel">Hotel</option>
-                                            <option value="krankenhaus">Krankenhaus</option>
-                                            <option value="seniorenresidenz">Seniorenresidenz</option>
-                                            <option value="betriebsrestaurant">Betriebsrestaurant</option>
-                                            <option value="restaurant">Restaurant</option>
-                                        </select>
-                                    </div>
-                                </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="postalCode" data-i18n="postalCode">PLZ*</label>
+                                <input type="text" id="postalCode" name="postalCode" required maxlength="5">
                             </div>
-
-                            <!-- Registrierungsdaten -->
-                            <div class="form-section">
-                                <h3 class="form-section-title">Registrierungsdaten</h3>
-                                <div class="form-row">
-                                    <div class="form-group">
-                                        <label for="handelsregister">Handelsregisternummer</label>
-                                        <input type="text" id="handelsregister" name="handelsregister" placeholder="z.B. HRB 12345">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="ustId">USt-ID*</label>
-                                        <input type="text" id="ustId" name="ustId" required placeholder="DE123456789">
-                                    </div>
-                                </div>
-                                
-                                <div class="form-row">
-                                    <div class="form-group">
-                                        <label for="customerNumber">Kundennummer (intern)</label>
-                                        <input type="text" id="customerNumber" name="customerNumber" placeholder="Wird automatisch vergeben">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="companySize">Unternehmensgröße</label>
-                                        <select id="companySize" name="companySize">
-                                            <option value="">Bitte wählen</option>
-                                            <option value="klein">1-10 Mitarbeiter</option>
-                                            <option value="mittel">11-50 Mitarbeiter</option>
-                                            <option value="gross">51-250 Mitarbeiter</option>
-                                            <option value="konzern">&gt;250 Mitarbeiter</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                
-                                <div class="form-row">
-                                    <div class="form-group">
-                                        <label for="chainCustomer">Kettenkunde</label>
-                                        <select id="chainCustomer" name="chainCustomer">
-                                            <option value="nein">Nein</option>
-                                            <option value="ja">Ja</option>
-                                        </select>
-                                    </div>
-                                </div>
+                            <div class="form-group">
+                                <label for="city" data-i18n="city">Ort*</label>
+                                <input type="text" id="city" name="city" required>
                             </div>
-
-                            <!-- Anschrift -->
-                            <div class="form-section">
-                                <h3 class="form-section-title">Anschrift</h3>
-                                <div class="form-group">
-                                    <label for="street">Straße und Hausnummer*</label>
-                                    <input type="text" id="street" name="street" required>
-                                </div>
-                                <div class="form-row">
-                                    <div class="form-group">
-                                        <label for="postalCode">PLZ*</label>
-                                        <input type="text" id="postalCode" name="postalCode" required pattern="[0-9]{5}">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="city">Stadt*</label>
-                                        <input type="text" id="city" name="city" required>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Ansprechpartner -->
-                            <div class="form-section">
-                                <h3 class="form-section-title">Ansprechpartner</h3>
-                                <div class="form-row">
-                                    <div class="form-group">
-                                        <label for="contactName">Name*</label>
-                                        <input type="text" id="contactName" name="contactName" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="contactPosition">Position</label>
-                                        <input type="text" id="contactPosition" name="contactPosition" placeholder="z.B. Geschäftsführer">
-                                    </div>
-                                </div>
-                                <div class="form-row">
-                                    <div class="form-group">
-                                        <label for="contactEmail">E-Mail*</label>
-                                        <input type="email" id="contactEmail" name="contactEmail" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="contactPhone">Telefon*</label>
-                                        <input type="tel" id="contactPhone" name="contactPhone" required>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Geschäftsdaten -->
-                            <div class="form-section">
-                                <h3 class="form-section-title">Geschäftsdaten</h3>
-                                <div class="form-row">
-                                    <div class="form-group">
-                                        <label for="expectedVolume">Erwartetes Auftragsvolumen (€)*</label>
-                                        <input type="number" id="expectedVolume" name="expectedVolume" required min="0" step="100">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="paymentTerms">Zahlungsziel (Tage)</label>
-                                        <select id="paymentTerms" name="paymentTerms">
-                                            <option value="0">Sofort (Vorkasse/Bar)</option>
-                                            <option value="14">14 Tage</option>
-                                            <option value="30">30 Tage</option>
-                                            <option value="60">60 Tage</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label for="paymentHistory">Bisherige Zahlungserfahrungen</label>
-                                    <textarea id="paymentHistory" name="paymentHistory" rows="3" placeholder="Optional: Beschreiben Sie bisherige Erfahrungen"></textarea>
-                                </div>
-                            </div>
-
-                            <!-- Bonitätsprüfung -->
-                            <div class="form-section credit-check-section">
-                                <h3 class="form-section-title">Bonitätsprüfung</h3>
-                                <div id="creditCheckStatus" class="credit-status">
-                                    <div class="status-item">
-                                        <span class="status-label">Status:</span>
-                                        <span class="status-value" id="creditStatus">Nicht geprüft</span>
-                                    </div>
-                                    <div class="status-item">
-                                        <span class="status-label">Kreditlimit:</span>
-                                        <span class="status-value" id="creditLimit">-</span>
-                                    </div>
-                                    <div class="status-item">
-                                        <span class="status-label">Bewertung:</span>
-                                        <span class="status-value" id="creditRating">-</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Aktionen -->
-                            <div class="form-actions">
-                                <button type="submit" class="btn btn-primary">
-                                    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-                                        <path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/>
-                                    </svg>
-                                    Speichern und weiter
-                                </button>
-                                <button type="button" class="btn btn-secondary" id="clearForm">
-                                    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-                                        <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
-                                        <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1z"/>
-                                    </svg>
-                                    Formular leeren
-                                </button>
-                            </div>
-                        </form>
+                        </div>
                     </div>
-                </div>
 
-                <!-- Profile Tab -->
-                <div id="profile" class="tab-panel" role="tabpanel">
-                    <!-- Profil-Inhalt wird hier eingefügt -->
-                </div>
-
-                <!-- Offer Tab -->
-                <div id="offer" class="tab-panel" role="tabpanel">
-                    <!-- Angebots-Inhalt wird hier eingefügt -->
-                </div>
-
-                <!-- Settings Tab -->
-                <div id="settings" class="tab-panel" role="tabpanel">
-                    <!-- Einstellungen-Inhalt wird hier eingefügt -->
-                </div>
-
-                <!-- Locations Tab -->
-                <div id="locations" class="tab-panel" role="tabpanel">
-                    <div class="customer-container">
-                        <div class="customer-form">
-                            <h2 class="section-title">Standorte erfassen</h2>
-                            
-                            <div class="form-section">
-                                <h3 class="form-section-title">Übersicht</h3>
-                                <div class="form-row">
-                                    <div class="form-group">
-                                        <label for="totalLocations">Anzahl Standorte gesamt</label>
-                                        <input type="number" id="totalLocations" name="totalLocations" min="0" value="0" readonly>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="selectedIndustry">Branche</label>
-                                        <input type="text" id="selectedIndustry" readonly style="background: #f5f5f5;">
-                                    </div>
-                                </div>
+                    <!-- Contact Person Section -->
+                    <div class="form-section">
+                        <h3 class="form-section-title" data-i18n="contactPerson">Ansprechpartner</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="contactName" data-i18n="contactName">Name*</label>
+                                <input type="text" id="contactName" name="contactName" required>
                             </div>
-                            
-                            <div id="industrySpecificFields" class="form-section">
-                                <!-- Dynamically populated based on industry -->
+                            <div class="form-group">
+                                <label for="contactPosition" data-i18n="contactPosition">Position</label>
+                                <input type="text" id="contactPosition" name="contactPosition">
                             </div>
-                            
-                            <div class="form-section">
-                                <h3 class="form-section-title">Vending-Konzept</h3>
-                                <div class="form-row">
-                                    <div class="form-group">
-                                        <label for="vendingMachines">Anzahl Automaten</label>
-                                        <input type="number" id="vendingMachines" name="vendingMachines" min="0" value="0">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="vendingType">Automatentyp</label>
-                                        <select id="vendingType" name="vendingType">
-                                            <option value="">Bitte wählen</option>
-                                            <option value="snack">Snackautomaten</option>
-                                            <option value="drink">Getränkeautomaten</option>
-                                            <option value="fresh">Frischeautomaten</option>
-                                            <option value="kombi">Kombiautomaten</option>
-                                        </select>
-                                    </div>
-                                </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="contactPhone" data-i18n="contactPhone">Telefon*</label>
+                                <input type="tel" id="contactPhone" name="contactPhone" required>
                             </div>
-                            
-                            <div class="form-section">
+                            <div class="form-group">
+                                <label for="contactEmail" data-i18n="contactEmail">E-Mail*</label>
+                                <input type="email" id="contactEmail" name="contactEmail" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Business Data Section -->
+                    <div class="form-section">
+                        <h3 class="form-section-title" data-i18n="businessData">Geschäftsdaten</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="expectedVolume" data-i18n="expectedAnnualVolume">Erwartetes Jahresvolumen (€)*</label>
+                                <input type="text" id="expectedVolume" name="expectedVolume" required 
+                                       placeholder="z.B. 500.000" data-i18n-placeholder="volumePlaceholder"
+                                       oninput="formatCurrency(this)">
+                            </div>
+                            <div class="form-group">
+                                <label for="paymentMethod" data-i18n="paymentMethod">Zahlungsart*</label>
+                                <select id="paymentMethod" name="paymentMethod" required>
+                                    <option value="" data-i18n="pleaseSelect">Bitte wählen</option>
+                                    <option value="vorkasse" data-i18n="paymentPrepayment">Vorkasse</option>
+                                    <option value="barzahlung" data-i18n="paymentCash">Barzahlung</option>
+                                    <option value="rechnung" data-i18n="paymentInvoice">Rechnung (30 Tage netto)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Additional Info Section -->
+                    <div class="form-section">
+                        <h3 class="form-section-title" data-i18n="additionalInfo">Zusatzinformationen</h3>
+                        <div class="form-row">
+                            <div class="form-group" style="grid-column: span 2;">
+                                <label for="notes" data-i18n="notes">Notizen</label>
+                                <textarea id="notes" name="notes" rows="3" 
+                                         placeholder="Interne Notizen zum Kunden..." 
+                                         data-i18n-placeholder="notesPlaceholder"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="customField1" data-i18n="customField1">Freifeld 1</label>
+                                <input type="text" id="customField1" name="customField1">
+                            </div>
+                            <div class="form-group">
+                                <label for="customField2" data-i18n="customField2">Freifeld 2</label>
+                                <input type="text" id="customField2" name="customField2">
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Locations Tab -->
+        <div id="locations" class="tab-panel">
+            <div class="customer-container">
+                <h2 class="section-title" data-i18n="locationsTitle">Standortverwaltung</h2>
+                
+                <div class="customer-form">
+                    <!-- Basic Location Info -->
+                    <div class="form-section">
+                        <h3 class="form-section-title" data-i18n="locationOverview">Kettenübersicht</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="totalLocations" data-i18n="totalLocations">Gesamtanzahl Standorte</label>
+                                <input type="number" id="totalLocations" name="totalLocations" min="0" value="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="locationsManagementType" data-i18n="managementType">Verwaltungstyp</label>
+                                <select id="locationsManagementType" name="locationsManagementType">
+                                    <option value="zentral" data-i18n="centralManagement">Zentrale Verwaltung</option>
+                                    <option value="dezentral" data-i18n="decentralManagement">Dezentrale Verwaltung</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Industry Specific Fields -->
+                    <div id="industrySpecificSection">
+                        <!-- Will be populated by JavaScript based on selected industry -->
+                    </div>
+
+                    <!-- Detailed Capture Section -->
+                    <div class="form-section">
+                        <h3 class="form-section-title" data-i18n="detailedCapture">Detaillierte Erfassung</h3>
+                        <div class="form-row">
+                            <div class="form-group" style="grid-column: span 2;">
                                 <label class="checkbox-label">
-                                    <input type="checkbox" id="captureDetailsToggle" class="checkbox">
-                                    <span>Standorte detailliert erfassen</span>
+                                    <input type="checkbox" id="detailedLocations" name="detailedLocations" 
+                                           onchange="toggleLocationDetailsTab(this.checked)">
+                                    <span data-i18n="captureDetailsLabel">Standorte detailliert erfassen</span>
+                                </label>
+                                <p style="font-size: 0.875rem; color: var(--text-light); margin-top: 0.5rem;">
+                                    <span data-i18n="captureDetailsDesc">Erfassen Sie jeden Standort einzeln mit Adresse, Ansprechpartner und spezifischen Eigenschaften.</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Vending Concept Section -->
+                    <div class="form-section">
+                        <h3 class="form-section-title" data-i18n="vendingConcept">Vending-Konzept</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="vendingInterest" name="vendingInterest">
+                                    <span data-i18n="vendingInterestLabel">Interesse an Freshfoodz-Vending?</span>
                                 </label>
                             </div>
                         </div>
-                    </div>
-                </div>
-
-                <!-- Location Details Tab -->
-                <div id="locationDetails" class="tab-panel" role="tabpanel">
-                    <div class="customer-container">
-                        <div class="customer-form">
-                            <h2 class="section-title">Standort-Details</h2>
-                            
-                            <div id="syncWarning" class="alert-box warning hidden">
-                                <svg class="alert-icon" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                    <path d="M12 9V13M12 17H12.01M12 3L2 20H22L12 3Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                </svg>
-                                <div class="alert-content">
-                                    <h3>Synchronisierung erforderlich</h3>
-                                    <p id="syncMessage"></p>
+                        <div id="vendingDetails" style="display: none;">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="vendingLocations" data-i18n="vendingLocations">Anzahl Standorte mit Vending</label>
+                                    <input type="number" id="vendingLocations" name="vendingLocations" min="0" value="0">
                                 </div>
-                            </div>
-                            
-                            <div class="form-actions" style="margin-bottom: 2rem;">
-                                <button type="button" class="btn btn-primary" onclick="addLocationDetail()">
-                                    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-                                        <path d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2z"/>
-                                    </svg>
-                                    Standort hinzufügen
-                                </button>
-                            </div>
-                            
-                            <div id="locationDetailsList">
-                                <!-- Dynamically populated location details -->
+                                <div class="form-group">
+                                    <label for="vendingType" data-i18n="vendingType">Automatentyp</label>
+                                    <select id="vendingType" name="vendingType">
+                                        <option value="" data-i18n="pleaseSelect">Bitte wählen</option>
+                                        <option value="snack" data-i18n="vendingSnack">Snack-Automat</option>
+                                        <option value="fresh" data-i18n="vendingFresh">Frische-Automat</option>
+                                        <option value="combi" data-i18n="vendingCombi">Kombi-Automat</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </main>
+        </div>
 
-        <!-- Notifications Container -->
-        <div id="notifications" class="notifications-container"></div>
-    </div>
-
-    <!-- External Libraries -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
-    
-    <!-- Main Application Script -->
-    <script type="module" src="./src/main.ts"></script>
-    
-    <!-- Chain Customer Functionality -->
-    <script>
-        // Location details counter
-        let locationDetailsCounter = 0;
-        
-        // Chain customer change handler
-        document.getElementById('chainCustomer').addEventListener('change', function(e) {
-            const isChain = e.target.value === 'ja';
-            document.getElementById('locationsTab').classList.toggle('hidden', !isChain);
-            
-            if (isChain) {
-                // Load industry to locations tab
-                const industry = document.getElementById('industry').value;
-                document.getElementById('selectedIndustry').value = getIndustryLabel(industry);
-                updateLocationIndustryFields(industry);
-            }
-        });
-        
-        // Capture details toggle handler
-        document.getElementById('captureDetailsToggle').addEventListener('change', function(e) {
-            document.getElementById('locationDetailsTab').classList.toggle('hidden', !e.target.checked);
-            if (e.target.checked) {
-                checkLocationSynchronization();
-            }
-        });
-        
-        // Update calculator with chain discount
-        function updateCalculator() {
-            const orderValue = parseInt(document.getElementById('orderValue').value);
-            const leadTime = parseInt(document.getElementById('leadTime').value);
-            const pickup = document.getElementById('pickupToggle').checked;
-            
-            // Update displays
-            document.getElementById('orderValueDisplay').textContent = '€' + orderValue.toLocaleString('de-DE');
-            document.getElementById('leadTimeDisplay').textContent = leadTime + ' Tage';
-            
-            // Calculate discounts
-            let baseDiscount = 0;
-            if (orderValue >= 75000) baseDiscount = 10;
-            else if (orderValue >= 50000) baseDiscount = 9;
-            else if (orderValue >= 30000) baseDiscount = 8;
-            else if (orderValue >= 15000) baseDiscount = 6;
-            else if (orderValue >= 5000) baseDiscount = 3;
-            
-            let earlyDiscount = 0;
-            if (leadTime >= 30) earlyDiscount = 3;
-            else if (leadTime >= 15) earlyDiscount = 2;
-            else if (leadTime >= 10) earlyDiscount = 1;
-            
-            let pickupDiscount = pickup ? 2 : 0;
-            
-            let totalDiscount = Math.min(baseDiscount + earlyDiscount + pickupDiscount, 15);
-            
-            // Update UI
-            document.getElementById('baseDiscount').textContent = baseDiscount + '%';
-            document.getElementById('earlyDiscount').textContent = earlyDiscount + '%';
-            document.getElementById('pickupDiscount').textContent = pickupDiscount + '%';
-            document.getElementById('totalDiscount').textContent = totalDiscount + '%';
-            
-            // Calculate savings
-            const discountAmount = orderValue * (totalDiscount / 100);
-            const finalPrice = orderValue - discountAmount;
-            
-            document.getElementById('discountAmount').textContent = '€' + discountAmount.toLocaleString('de-DE');
-            document.getElementById('finalPrice').textContent = '€' + finalPrice.toLocaleString('de-DE');
-        }
-        
-        // Add event listeners to calculator inputs
-        document.getElementById('orderValue').addEventListener('input', updateCalculator);
-        document.getElementById('leadTime').addEventListener('input', updateCalculator);
-        document.getElementById('pickupToggle').addEventListener('change', updateCalculator);
-        
-        // Initialize calculator
-        updateCalculator();
-        
-        // Get industry label
-        function getIndustryLabel(value) {
-            const labels = {
-                'hotel': 'Hotel',
-                'krankenhaus': 'Krankenhaus',
-                'seniorenresidenz': 'Seniorenresidenz',
-                'betriebsrestaurant': 'Betriebsrestaurant',
-                'restaurant': 'Restaurant'
-            };
-            return labels[value] || '';
-        }
-        
-        // Update location industry fields
-        function updateLocationIndustryFields(industry) {
-            const container = document.getElementById('industrySpecificFields');
-            let html = '<h3 class="form-section-title">Branchenspezifische Angaben</h3>';
-            
-            switch(industry) {
-                case 'hotel':
-                    html += `
+        <!-- Location Details Tab -->
+        <div id="locationdetails" class="tab-panel">
+            <div class="customer-container">
+                <h2 class="section-title" data-i18n="locationDetailsTitle">Detaillierte Standorterfassung</h2>
+                
+                <div class="customer-form">
+                    <!-- Summary -->
+                    <div class="form-section">
                         <div class="form-row">
                             <div class="form-group">
-                                <label>Kleine Hotels (bis 50 Zimmer)</label>
-                                <input type="number" id="smallHotels" min="0" value="0" onchange="updateTotalLocations()">
+                                <p><span data-i18n="totalLocationsDetail">Erfasste Standorte:</span> <strong id="detailLocationCount">0</strong></p>
+                                <p><span data-i18n="totalLocations">Gesamtanzahl Standorte:</span> <strong id="detailLocationTotal">0</strong></p>
                             </div>
                             <div class="form-group">
-                                <label>Mittlere Hotels (51-150 Zimmer)</label>
-                                <input type="number" id="mediumHotels" min="0" value="0" onchange="updateTotalLocations()">
+                                <button type="button" class="btn btn-primary" onclick="addLocationDetail()">
+                                    <span data-i18n="addLocation">+ Standort hinzufügen</span>
+                                </button>
                             </div>
-                            <div class="form-group">
-                                <label>Große Hotels (über 150 Zimmer)</label>
-                                <input type="number" id="largeHotels" min="0" value="0" onchange="updateTotalLocations()">
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Hotels mit Frühstück</label>
-                                <input type="number" id="hotelBreakfast" min="0" value="0">
-                            </div>
-                            <div class="form-group">
-                                <label>Hotels mit Restaurant</label>
-                                <input type="number" id="hotelRestaurant" min="0" value="0">
-                            </div>
-                            <div class="form-group">
-                                <label>Hotels mit Bar</label>
-                                <input type="number" id="hotelBar" min="0" value="0">
-                            </div>
-                        </div>
-                    `;
-                    break;
-                case 'krankenhaus':
-                    html += `
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Kleine Kliniken (bis 200 Betten)</label>
-                                <input type="number" id="smallClinics" min="0" value="0" onchange="updateTotalLocations()">
-                            </div>
-                            <div class="form-group">
-                                <label>Mittlere Kliniken (201-500 Betten)</label>
-                                <input type="number" id="mediumClinics" min="0" value="0" onchange="updateTotalLocations()">
-                            </div>
-                            <div class="form-group">
-                                <label>Große Kliniken (über 500 Betten)</label>
-                                <input type="number" id="largeClinics" min="0" value="0" onchange="updateTotalLocations()">
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Durchschnittlicher Privatpatientenanteil (%)</label>
-                                <input type="number" id="privatePatientPercentage" min="0" max="100" value="0">
-                            </div>
-                        </div>
-                    `;
-                    break;
-                case 'seniorenresidenz':
-                    html += `
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Kleine Einrichtungen (bis 50 Bewohner)</label>
-                                <input type="number" id="smallSenior" min="0" value="0" onchange="updateTotalLocations()">
-                            </div>
-                            <div class="form-group">
-                                <label>Mittlere Einrichtungen (51-100 Bewohner)</label>
-                                <input type="number" id="mediumSenior" min="0" value="0" onchange="updateTotalLocations()">
-                            </div>
-                            <div class="form-group">
-                                <label>Große Einrichtungen (über 100 Bewohner)</label>
-                                <input type="number" id="largeSenior" min="0" value="0" onchange="updateTotalLocations()">
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Einrichtungen mit Vollverpflegung</label>
-                                <input type="number" id="seniorFullCatering" min="0" value="0">
-                            </div>
-                            <div class="form-group">
-                                <label>Einrichtungen mit Teilverpflegung</label>
-                                <input type="number" id="seniorPartialCatering" min="0" value="0">
-                            </div>
-                            <div class="form-group">
-                                <label>Einrichtungen mit Sonderkostform</label>
-                                <input type="number" id="seniorSpecialDiet" min="0" value="0">
-                            </div>
-                        </div>
-                    `;
-                    break;
-                case 'betriebsrestaurant':
-                    html += `
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Kleine Betriebe (bis 100 Mitarbeiter)</label>
-                                <input type="number" id="smallCompany" min="0" value="0" onchange="updateTotalLocations()">
-                            </div>
-                            <div class="form-group">
-                                <label>Mittlere Betriebe (101-500 Mitarbeiter)</label>
-                                <input type="number" id="mediumCompany" min="0" value="0" onchange="updateTotalLocations()">
-                            </div>
-                            <div class="form-group">
-                                <label>Große Betriebe (über 500 Mitarbeiter)</label>
-                                <input type="number" id="largeCompany" min="0" value="0" onchange="updateTotalLocations()">
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Betriebe mit Frühstücksangebot</label>
-                                <input type="number" id="companyBreakfast" min="0" value="0">
-                            </div>
-                            <div class="form-group">
-                                <label>Betriebe mit Mittagessen</label>
-                                <input type="number" id="companyLunch" min="0" value="0">
-                            </div>
-                            <div class="form-group">
-                                <label>Betriebe mit Abendservice</label>
-                                <input type="number" id="companyDinner" min="0" value="0">
-                            </div>
-                        </div>
-                    `;
-                    break;
-                case 'restaurant':
-                    html += `
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Kleine Restaurants (bis 50 Plätze)</label>
-                                <input type="number" id="smallRestaurant" min="0" value="0" onchange="updateTotalLocations()">
-                            </div>
-                            <div class="form-group">
-                                <label>Mittlere Restaurants (51-150 Plätze)</label>
-                                <input type="number" id="mediumRestaurant" min="0" value="0" onchange="updateTotalLocations()">
-                            </div>
-                            <div class="form-group">
-                                <label>Große Restaurants (über 150 Plätze)</label>
-                                <input type="number" id="largeRestaurant" min="0" value="0" onchange="updateTotalLocations()">
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Restaurants mit à la carte</label>
-                                <input type="number" id="restaurantAlaCarte" min="0" value="0">
-                            </div>
-                            <div class="form-group">
-                                <label>Restaurants mit Bankettservice</label>
-                                <input type="number" id="restaurantBanquet" min="0" value="0">
-                            </div>
-                        </div>
-                    `;
-                    break;
-            }
-            
-            container.innerHTML = html;
-        }
-        
-        // Update total locations
-        function updateTotalLocations() {
-            const industry = document.getElementById('industry').value;
-            let total = 0;
-            
-            // Get all number inputs in the industry specific fields
-            const inputs = document.querySelectorAll('#industrySpecificFields input[type="number"]');
-            inputs.forEach(input => {
-                if (input.id.includes('small') || input.id.includes('medium') || input.id.includes('large')) {
-                    total += parseInt(input.value) || 0;
-                }
-            });
-            
-            document.getElementById('totalLocations').value = total;
-            
-            // Check synchronization if detail capture is enabled
-            if (document.getElementById('captureDetailsToggle').checked) {
-                checkLocationSynchronization();
-            }
-        }
-        
-        // Add location detail
-        function addLocationDetail() {
-            locationDetailsCounter++;
-            const locationId = 'location_' + locationDetailsCounter;
-            const industry = document.getElementById('industry').value;
-            const container = document.getElementById('locationDetailsList');
-            
-            const locationHtml = `
-                <div class="location-detail" id="${locationId}">
-                    <div class="location-header" onclick="toggleLocation('${locationId}')">
-                        <h4>Standort ${locationDetailsCounter}</h4>
-                        <div class="location-actions">
-                            <button type="button" class="btn-icon" onclick="toggleLocation('${locationId}'); event.stopPropagation();">
-                                <svg class="chevron-icon" width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-                                    <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/>
-                                </svg>
-                            </button>
-                            <button type="button" class="btn-icon danger" onclick="removeLocation('${locationId}'); event.stopPropagation();">
-                                <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-                                    <path d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"/>
-                                </svg>
-                            </button>
                         </div>
                     </div>
-                    <div class="location-content">
-                        <div class="form-section">
-                            <h3 class="form-section-title">Adresse</h3>
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label>Standortname</label>
-                                    <input type="text" id="${locationId}_name" placeholder="z.B. Hotel Zentrum">
-                                </div>
-                                <div class="form-group">
-                                    <label>Straße und Hausnummer</label>
-                                    <input type="text" id="${locationId}_street">
-                                </div>
+
+                    <!-- Sync Warning -->
+                    <div id="syncWarning" class="alert-box" style="display: none;">
+                        <div class="alert-content">
+                            <h3 data-i18n="syncWarningTitle">⚠️ Abweichung erkannt</h3>
+                            <p data-i18n="syncWarningText">Die Anzahl und Kategorien der erfassten Standorte stimmen nicht mit den Angaben auf der Haupt-Standortseite überein.</p>
+                            <div id="syncWarningDetails"></div>
+                        </div>
+                    </div>
+
+                    <!-- No Locations Message -->
+                    <div id="noLocationsMessage" class="form-section" style="text-align: center; padding: 2rem;">
+                        <p data-i18n="noLocationsYet">Noch keine Standorte erfasst.</p>
+                        <p data-i18n="clickAddLocation">Klicken Sie auf "Standort hinzufügen" um zu beginnen.</p>
+                    </div>
+
+                    <!-- Location Details List -->
+                    <div id="locationDetailsList">
+                        <!-- Location details will be added dynamically -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Credit Check Tab -->
+        <div id="creditcheck" class="tab-panel">
+            <div class="customer-container">
+                <h2 class="section-title" data-i18n="creditCheckTitle">Bonitätsprüfung</h2>
+                
+                <div class="alert-box show">
+                    <div class="alert-content">
+                        <h3 data-i18n="newCustomers">Neukunden</h3>
+                        <p data-i18n="creditCheckDescription">Die Bonitätsprüfung ist nur für <strong>Neukunden</strong> relevant, die auf Rechnung zahlen möchten.</p>
+                    </div>
+                </div>
+                
+                <div class="customer-form">
+                    <!-- Customer Info -->
+                    <div class="form-section">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="creditCustomerName" data-i18n="customerName">Kundenname</label>
+                                <input type="text" id="creditCustomerName" name="creditCustomerName" readonly>
                             </div>
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label>PLZ</label>
-                                    <input type="text" id="${locationId}_zip" pattern="[0-9]{5}" maxlength="5">
-                                </div>
-                                <div class="form-group">
-                                    <label>Ort</label>
-                                    <input type="text" id="${locationId}_city">
-                                </div>
+                            <div class="form-group">
+                                <label for="creditLimit" data-i18n="creditLimitLabel">Kreditlimit/Offene Posten (€)</label>
+                                <input type="text" id="creditLimit" name="creditLimit" 
+                                       oninput="formatCurrency(this)">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Company Details -->
+                    <div class="form-section">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="registrationNumber" data-i18n="registrationNumber">Handelsregisternummer*</label>
+                                <input type="text" id="registrationNumber" name="registrationNumber" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="vatId" data-i18n="vatId">USt-IdNr.*</label>
+                                <input type="text" id="vatId" name="vatId" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="companySize" data-i18n="companySize">Unternehmensgröße*</label>
+                                <select id="companySize" name="companySize" required>
+                                    <option value="" data-i18n="pleaseSelect">Bitte wählen</option>
+                                    <option value="small" data-i18n="companySizeSmall">Klein (bis 50 Mitarbeiter)</option>
+                                    <option value="medium" data-i18n="companySizeMedium">Mittel (50-250 Mitarbeiter)</option>
+                                    <option value="large" data-i18n="companySizeLarge">Groß (über 250 Mitarbeiter)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="paymentHistory" data-i18n="paymentHistory">Bisherige Zahlungserfahrungen</label>
+                                <select id="paymentHistory" name="paymentHistory">
+                                    <option value="no-info" data-i18n="paymentHistoryNoInfo">Keine Angabe</option>
+                                    <option value="new" data-i18n="paymentHistoryNew">Neukunde - keine Erfahrungen</option>
+                                    <option value="good" data-i18n="paymentHistoryGood">Gut - pünktliche Zahlung</option>
+                                    <option value="medium" data-i18n="paymentHistoryMedium">Mittel - gelegentliche Verzögerungen</option>
+                                    <option value="bad" data-i18n="paymentHistoryBad">Schlecht - häufige Mahnungen</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Credit Status -->
+                    <div class="form-section">
+                        <h3 class="form-section-title" data-i18n="checkStatus">Prüfungsstatus</h3>
+                        <div class="credit-status">
+                            <div class="status-item">
+                                <span class="status-label" data-i18n="status">Status</span>
+                                <span class="status-value" data-i18n="notChecked">Nicht geprüft</span>
+                            </div>
+                            <div class="status-item">
+                                <span class="status-label" data-i18n="creditLimit">Kreditlimit</span>
+                                <span class="status-value">-</span>
+                            </div>
+                            <div class="status-item">
+                                <span class="status-label" data-i18n="rating">Bewertung</span>
+                                <span class="status-value">-</span>
                             </div>
                         </div>
                         
-                        <div class="form-section">
-                            <h3 class="form-section-title">Ansprechpartner</h3>
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label>Name</label>
-                                    <input type="text" id="${locationId}_contact">
-                                </div>
-                                <div class="form-group">
-                                    <label>Telefon</label>
-                                    <input type="tel" id="${locationId}_phone">
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="form-section">
-                            <h3 class="form-section-title">Branchenspezifische Angaben</h3>
-                            ${getLocationIndustryFields(industry, locationId)}
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-primary" onclick="startCreditCheck()">
+                                <span data-i18n="startCreditCheck">Bonitätsprüfung starten</span>
+                            </button>
+                            <button type="button" class="btn btn-secondary" onclick="requestManagementApproval()">
+                                <span data-i18n="requestManagement">Anfrage an Geschäftsleitung</span>
+                            </button>
                         </div>
                     </div>
                 </div>
-            `;
-            
-            container.insertAdjacentHTML('beforeend', locationHtml);
-            checkLocationSynchronization();
-        }
-        
-        // Get location industry fields
-        function getLocationIndustryFields(industry, locationId) {
-            switch(industry) {
-                case 'hotel':
-                    return `
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Größenkategorie</label>
-                                <select id="${locationId}_size">
-                                    <option value="">Bitte wählen</option>
-                                    <option value="small">Klein (bis 50 Zimmer)</option>
-                                    <option value="medium">Mittel (51-150 Zimmer)</option>
-                                    <option value="large">Groß (über 150 Zimmer)</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Anzahl Zimmer</label>
-                                <input type="number" id="${locationId}_rooms" min="1">
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Services</label>
-                                <div>
-                                    <label class="checkbox-label">
-                                        <input type="checkbox" id="${locationId}_breakfast">
-                                        <span>Frühstücksservice</span>
-                                    </label>
-                                    <label class="checkbox-label">
-                                        <input type="checkbox" id="${locationId}_restaurant">
-                                        <span>Restaurant à la carte</span>
-                                    </label>
-                                    <label class="checkbox-label">
-                                        <input type="checkbox" id="${locationId}_roomservice">
-                                        <span>Room Service</span>
-                                    </label>
-                                    <label class="checkbox-label">
-                                        <input type="checkbox" id="${locationId}_banquet">
-                                        <span>Bankett/Veranstaltungen</span>
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                case 'krankenhaus':
-                    return `
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Größenkategorie</label>
-                                <select id="${locationId}_size">
-                                    <option value="">Bitte wählen</option>
-                                    <option value="small">Klein (bis 150 Betten)</option>
-                                    <option value="medium">Mittel (151-400 Betten)</option>
-                                    <option value="large">Groß (über 400 Betten)</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Anzahl Betten</label>
-                                <input type="number" id="${locationId}_beds" min="1">
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Privatpatientenanteil (%)</label>
-                                <input type="number" id="${locationId}_private" min="0" max="100">
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Services</label>
-                                <div>
-                                    <label class="checkbox-label">
-                                        <input type="checkbox" id="${locationId}_wahlleistung">
-                                        <span>Wahlleistung Essen möglich</span>
-                                    </label>
-                                    <label class="checkbox-label">
-                                        <input type="checkbox" id="${locationId}_mitarbeiterverpflegung">
-                                        <span>Mitarbeiterverpflegung</span>
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                case 'seniorenresidenz':
-                    return `
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Größenkategorie</label>
-                                <select id="${locationId}_size">
-                                    <option value="">Bitte wählen</option>
-                                    <option value="small">Klein (bis 50 Bewohner)</option>
-                                    <option value="medium">Mittel (51-100 Bewohner)</option>
-                                    <option value="large">Groß (über 100 Bewohner)</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Anzahl Bewohner</label>
-                                <input type="number" id="${locationId}_residents" min="1">
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Services</label>
-                                <div>
-                                    <label class="checkbox-label">
-                                        <input type="checkbox" id="${locationId}_vollverpflegung">
-                                        <span>Vollverpflegung</span>
-                                    </label>
-                                    <label class="checkbox-label">
-                                        <input type="checkbox" id="${locationId}_teilverpflegung">
-                                        <span>Teilverpflegung</span>
-                                    </label>
-                                    <label class="checkbox-label">
-                                        <input type="checkbox" id="${locationId}_sonderkostform">
-                                        <span>Sonderkostform</span>
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                case 'betriebsrestaurant':
-                    return `
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Größenkategorie</label>
-                                <select id="${locationId}_size">
-                                    <option value="">Bitte wählen</option>
-                                    <option value="small">Klein (bis 200 MA)</option>
-                                    <option value="medium">Mittel (201-500 MA)</option>
-                                    <option value="large">Groß (über 500 MA)</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Anzahl Mitarbeiter</label>
-                                <input type="number" id="${locationId}_employees" min="1">
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Services</label>
-                                <div>
-                                    <label class="checkbox-label">
-                                        <input type="checkbox" id="${locationId}_fruehstueck">
-                                        <span>Frühstück</span>
-                                    </label>
-                                    <label class="checkbox-label">
-                                        <input type="checkbox" id="${locationId}_mittagessen">
-                                        <span>Mittagessen</span>
-                                    </label>
-                                    <label class="checkbox-label">
-                                        <input type="checkbox" id="${locationId}_abendessen">
-                                        <span>Abendessen</span>
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                case 'restaurant':
-                    return `
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Größenkategorie</label>
-                                <select id="${locationId}_size">
-                                    <option value="">Bitte wählen</option>
-                                    <option value="small">Klein (bis 50 Plätze)</option>
-                                    <option value="medium">Mittel (51-150 Plätze)</option>
-                                    <option value="large">Groß (über 150 Plätze)</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Anzahl Plätze</label>
-                                <input type="number" id="${locationId}_seats" min="1">
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Services</label>
-                                <div>
-                                    <label class="checkbox-label">
-                                        <input type="checkbox" id="${locationId}_alacarte">
-                                        <span>À la carte</span>
-                                    </label>
-                                    <label class="checkbox-label">
-                                        <input type="checkbox" id="${locationId}_bankett">
-                                        <span>Bankett/Veranstaltungen</span>
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                default:
-                    return '<p>Keine branchenspezifischen Felder verfügbar.</p>';
-            }
-        }
-        
-        // Toggle location detail
-        function toggleLocation(locationId) {
-            document.getElementById(locationId).classList.toggle('expanded');
-        }
-        
-        // Remove location
-        function removeLocation(locationId) {
-            if (confirm('Möchten Sie diesen Standort wirklich löschen?')) {
-                document.getElementById(locationId).remove();
-                checkLocationSynchronization();
-            }
-        }
-        
-        // Check location synchronization
-        function checkLocationSynchronization() {
-            const mainTotal = parseInt(document.getElementById('totalLocations').value) || 0;
-            const detailCount = document.querySelectorAll('.location-detail').length;
-            const syncWarning = document.getElementById('syncWarning');
-            const syncMessage = document.getElementById('syncMessage');
-            
-            if (mainTotal === 0 && detailCount === 0) {
-                syncWarning.classList.add('hidden');
-                return;
-            }
-            
-            if (detailCount > mainTotal) {
-                syncMessage.textContent = `Sie haben ${detailCount} Standorte erfasst, aber nur ${mainTotal} Standorte in der Übersicht angegeben.`;
-                syncWarning.classList.remove('hidden');
-            } else if (detailCount < mainTotal) {
-                syncMessage.textContent = `Sie haben ${mainTotal} Standorte in der Übersicht angegeben, aber erst ${detailCount} detailliert erfasst.`;
-                syncWarning.classList.remove('hidden');
-            } else {
-                // Check category distribution
-                const categoryCounts = getDetailedCategoryCounts();
-                const mainCounts = getMainCategoryCounts();
-                
-                let mismatch = false;
-                for (const size in mainCounts) {
-                    if (categoryCounts[size] !== mainCounts[size]) {
-                        mismatch = true;
-                        break;
-                    }
-                }
-                
-                if (mismatch) {
-                    syncMessage.textContent = 'Die Größenkategorien der erfassten Standorte stimmen nicht mit der Übersicht überein.';
-                    syncWarning.classList.remove('hidden');
-                } else {
-                    syncWarning.classList.add('hidden');
-                }
-            }
-        }
-        
-        // Get detailed category counts
-        function getDetailedCategoryCounts() {
-            const counts = { small: 0, medium: 0, large: 0 };
-            document.querySelectorAll('.location-detail').forEach(location => {
-                const sizeSelect = location.querySelector('select[id$="_size"]');
-                if (sizeSelect && sizeSelect.value) {
-                    counts[sizeSelect.value]++;
-                }
-            });
-            return counts;
-        }
-        
-        // Get main category counts
-        function getMainCategoryCounts() {
-            const industry = document.getElementById('industry').value;
-            const counts = { small: 0, medium: 0, large: 0 };
-            
-            switch(industry) {
-                case 'hotel':
-                    counts.small = parseInt(document.getElementById('smallHotels')?.value) || 0;
-                    counts.medium = parseInt(document.getElementById('mediumHotels')?.value) || 0;
-                    counts.large = parseInt(document.getElementById('largeHotels')?.value) || 0;
-                    break;
-                case 'krankenhaus':
-                    counts.small = parseInt(document.getElementById('smallClinics')?.value) || 0;
-                    counts.medium = parseInt(document.getElementById('mediumClinics')?.value) || 0;
-                    counts.large = parseInt(document.getElementById('largeClinics')?.value) || 0;
-                    break;
-                case 'seniorenresidenz':
-                    counts.small = parseInt(document.getElementById('smallSenior')?.value) || 0;
-                    counts.medium = parseInt(document.getElementById('mediumSenior')?.value) || 0;
-                    counts.large = parseInt(document.getElementById('largeSenior')?.value) || 0;
-                    break;
-                case 'betriebsrestaurant':
-                    counts.small = parseInt(document.getElementById('smallCompany')?.value) || 0;
-                    counts.medium = parseInt(document.getElementById('mediumCompany')?.value) || 0;
-                    counts.large = parseInt(document.getElementById('largeCompany')?.value) || 0;
-                    break;
-                case 'restaurant':
-                    counts.small = parseInt(document.getElementById('smallRestaurant')?.value) || 0;
-                    counts.medium = parseInt(document.getElementById('mediumRestaurant')?.value) || 0;
-                    counts.large = parseInt(document.getElementById('largeRestaurant')?.value) || 0;
-                    break;
-            }
-            
-            return counts;
-        }
-        
-        // Override tab switching to check locations
-        const originalTabHandler = document.querySelectorAll('.nav-tab');
-        originalTabHandler.forEach(tab => {
-            tab.addEventListener('click', function() {
-                const tabName = this.getAttribute('data-tab');
-                
-                // Update selected industry when switching to locations tab
-                if (tabName === 'locations') {
-                    const industry = document.getElementById('industry').value;
-                    document.getElementById('selectedIndustry').value = getIndustryLabel(industry);
-                    updateLocationIndustryFields(industry);
-                }
-                
-                // Check synchronization when switching to location details
-                if (tabName === 'locationDetails') {
-                    checkLocationSynchronization();
-                }
-            });
-        });
-    </script>
+            </div>
+        </div>
+
+        <!-- Profile Tab -->
+        <div id="profile" class="tab-panel">
+            <div class="customer-container">
+                <h2 class="section-title" data-i18n="profileTitle">Kundenprofil</h2>
+                <div class="customer-form">
+                    <div class="form-section">
+                        <p data-i18n="profileDescription">Hier werden die Kundenprofile angezeigt und verwaltet.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Offer Tab -->
+        <div id="offer" class="tab-panel">
+            <div class="customer-container">
+                <h2 class="section-title" data-i18n="offerTitle">Angebot erstellen</h2>
+                <div class="customer-form">
+                    <div class="form-section">
+                        <p data-i18n="offerDescription">Hier können Sie PDF-Angebote für Ihre Kunden erstellen.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Tab -->
+        <div id="settings" class="tab-panel">
+            <div class="customer-container">
+                <h2 class="section-title" data-i18n="settingsTitle">Einstellungen</h2>
+                <div class="customer-form">
+                    <div class="form-section">
+                        <p data-i18n="settingsDescription">Hier können Sie Ihre persönlichen Daten und Standardwerte anpassen.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

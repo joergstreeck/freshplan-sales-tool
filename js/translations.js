@@ -28,7 +28,9 @@ export const translations = {
             customer: 'Kundendaten',
             profile: 'Profil',
             offer: 'Angebot',
-            settings: 'Einstellungen'
+            settings: 'Einstellungen',
+            locations: 'Standorte',
+            locationDetails: 'Standortdetails'
         },
         calculator: {
             title: 'FreshPlan Rabattrechner',
@@ -84,6 +86,19 @@ export const translations = {
             exportImport: 'Export/Import',
             exportData: 'Daten exportieren',
             importData: 'Daten importieren'
+        },
+        info: {
+            chain: {
+                title: 'Kettenrabatt',
+                description: 'Rabatt für Ketten und Filialisten'
+            },
+            pickup: {
+                title: 'Abholrabatt',
+                description: 'Rabatt bei Selbstabholung (ab 5.000€ netto)'
+            },
+            scale: {
+                title: 'Mengenrabatt'
+            }
         }
     },
     en: {
@@ -111,7 +126,9 @@ export const translations = {
             customer: 'Customer Data',
             profile: 'Profile',
             offer: 'Offer',
-            settings: 'Settings'
+            settings: 'Settings',
+            locations: 'Locations',
+            locationDetails: 'Location Details'
         },
         calculator: {
             title: 'FreshPlan Discount Calculator',
@@ -167,6 +184,19 @@ export const translations = {
             exportImport: 'Export/Import',
             exportData: 'Export Data',
             importData: 'Import Data'
+        },
+        info: {
+            chain: {
+                title: 'Chain Discount',
+                description: 'Discount for chains and multi-location businesses'
+            },
+            pickup: {
+                title: 'Pickup Discount',
+                description: 'Discount for self-pickup (from 5,000€ net)'
+            },
+            scale: {
+                title: 'Volume Discount'
+            }
         }
     }
 };
