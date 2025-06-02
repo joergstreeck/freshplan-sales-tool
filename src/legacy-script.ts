@@ -3,6 +3,8 @@
  * Phase 1b - Direct port of original functionality
  */
 
+import { LocationDetail, createLocationDetailCard } from './templates/locationDetailsTemplates';
+
 // Make functions available globally for inline onclick handlers
 declare global {
   interface Window {
@@ -834,7 +836,7 @@ export function initLegacyScript(): void {
   }
   
   // Location details functionality
-  let locationDetailsList: any[] = [];
+  let locationDetailsList: LocationDetail[] = [];
   
   function addLocationDetail() {
     const newLocation = {
@@ -874,63 +876,10 @@ export function initLegacyScript(): void {
     } else {
       if (noLocationsMessage) noLocationsMessage.style.display = 'none';
       
-      container.innerHTML = locationDetailsList.map(location => `
-        <div class="location-detail-card" data-location-id="${location.id}">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-            <h4 style="margin: 0;">Standort ${locationDetailsList.indexOf(location) + 1}</h4>
-            <button type="button" class="btn btn-danger btn-sm" onclick="removeLocationDetail(${location.id})">
-              Entfernen
-            </button>
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label>Standortname*</label>
-              <input type="text" class="location-name" value="${location.name}" data-field="name">
-            </div>
-            <div class="form-group">
-              <label>Kategorie</label>
-              <select class="location-category" data-field="category">
-                <option value="">Bitte wählen</option>
-                <option value="hauptstandort" ${location.category === 'hauptstandort' ? 'selected' : ''}>Hauptstandort</option>
-                <option value="filiale" ${location.category === 'filiale' ? 'selected' : ''}>Filiale</option>
-                <option value="aussenstelle" ${location.category === 'aussenstelle' ? 'selected' : ''}>Außenstelle</option>
-              </select>
-            </div>
-          </div>
-          <div class="form-row">
-            <div class="form-group" style="grid-column: span 2;">
-              <label>Straße und Hausnummer*</label>
-              <input type="text" class="location-street" value="${location.street}" data-field="street">
-            </div>
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label>PLZ*</label>
-              <input type="text" class="location-postalcode" value="${location.postalCode}" data-field="postalCode" maxlength="5">
-            </div>
-            <div class="form-group">
-              <label>Ort*</label>
-              <input type="text" class="location-city" value="${location.city}" data-field="city">
-            </div>
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label>Ansprechpartner Name</label>
-              <input type="text" class="location-contact-name" value="${location.contactName}" data-field="contactName">
-            </div>
-            <div class="form-group">
-              <label>Telefon</label>
-              <input type="tel" class="location-contact-phone" value="${location.contactPhone}" data-field="contactPhone">
-            </div>
-          </div>
-          <div class="form-row">
-            <div class="form-group" style="grid-column: span 2;">
-              <label>E-Mail</label>
-              <input type="email" class="location-contact-email" value="${location.contactEmail}" data-field="contactEmail">
-            </div>
-          </div>
-        </div>
-      `).join('');
+      // Use template functions to generate HTML with i18n support
+      container.innerHTML = locationDetailsList
+        .map((location, index) => createLocationDetailCard(location, index + 1))
+        .join('');
       
       // Add event listeners for input changes
       container.querySelectorAll('input, select').forEach(input => {
@@ -941,7 +890,7 @@ export function initLegacyScript(): void {
           const field = target.getAttribute('data-field')!;
           const location = locationDetailsList.find(loc => loc.id === locationId);
           if (location) {
-            location[field] = target.value;
+            (location as any)[field] = target.value;
           }
         });
       });
