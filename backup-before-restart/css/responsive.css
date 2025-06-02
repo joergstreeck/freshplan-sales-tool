@@ -1,0 +1,382 @@
+/* ============================= */
+/* FreshPlan Responsive Styles   */
+/* ============================= */
+
+/* Tablet Styles (768px and below) */
+@media (max-width: 768px) {
+    /* Layout Adjustments */
+    .header-container {
+        flex-direction: column;
+        gap: var(--spacing-md);
+    }
+    
+    .nav-tabs {
+        gap: var(--spacing-md);
+        font-size: var(--font-size-sm);
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .main-container {
+        padding: 0 var(--spacing-md);
+    }
+    
+    /* Grid Adjustments */
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+    
+    .demonstrator-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .profile-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .strategy-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .customer-type-selector {
+        flex-direction: column;
+    }
+    
+    /* Component Adjustments */
+    .card {
+        padding: var(--spacing-lg);
+    }
+    
+    .card-title {
+        font-size: var(--font-size-xl);
+    }
+    
+    .value-display {
+        font-size: var(--font-size-2xl);
+    }
+    
+    .savings-amount {
+        font-size: var(--font-size-3xl);
+    }
+    
+    .scenario-savings {
+        font-size: var(--font-size-xl);
+    }
+    
+    /* Modal Adjustments */
+    .modal-content {
+        width: 95%;
+        margin: 5% auto;
+        padding: var(--spacing-lg);
+    }
+    
+    .pdf-preview-frame {
+        height: 400px;
+    }
+    
+    /* Timeline Adjustment */
+    .steps-timeline {
+        flex-direction: column;
+        gap: var(--spacing-md);
+    }
+    
+    .steps-timeline:before {
+        display: none;
+    }
+    
+    /* Chain Management */
+    .size-category {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-sm);
+    }
+    
+    .service-row {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-sm);
+    }
+    
+    /* Tooltip Adjustments */
+    .tooltip .tooltiptext {
+        width: 200px;
+        margin-left: -100px;
+    }
+}
+
+/* Mobile Styles (576px and below) */
+@media (max-width: 576px) {
+    /* Typography Adjustments */
+    html {
+        font-size: 14px;
+    }
+    
+    /* Header Adjustments */
+    .logo {
+        font-size: var(--font-size-xl);
+    }
+    
+    .logo::before {
+        font-size: 1.5rem;
+    }
+    
+    .nav-tabs {
+        gap: var(--spacing-sm);
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: var(--spacing-sm);
+    }
+    
+    .nav-tab {
+        padding: var(--spacing-xs) var(--spacing-sm);
+        font-size: var(--font-size-sm);
+    }
+    
+    /* Container Adjustments */
+    .main-container {
+        margin: var(--spacing-md) auto;
+    }
+    
+    /* Button Adjustments */
+    .btn {
+        padding: var(--spacing-sm) var(--spacing-md);
+        font-size: var(--font-size-sm);
+        width: 100%;
+        justify-content: center;
+    }
+    
+    /* Form Adjustments */
+    .form-group {
+        margin-bottom: var(--spacing-md);
+    }
+    
+    /* Demo Adjustments */
+    .demo-controls,
+    .demo-results {
+        padding: var(--spacing-md);
+    }
+    
+    /* Scenario Grid */
+    .scenario-grid {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-sm);
+    }
+    
+    .scenario-card {
+        padding: var(--spacing-md);
+    }
+    
+    /* Info Box */
+    .info-box {
+        padding: var(--spacing-sm);
+        font-size: var(--font-size-sm);
+    }
+    
+    /* Language Switcher */
+    .lang-btn {
+        padding: var(--spacing-xs) var(--spacing-sm);
+        font-size: var(--font-size-sm);
+    }
+    
+    /* Autosave Indicator */
+    .autosave-indicator {
+        bottom: 10px;
+        right: 10px;
+        font-size: var(--font-size-sm);
+        padding: var(--spacing-xs) var(--spacing-sm);
+    }
+    
+    /* Toggle Switch */
+    .toggle-switch {
+        width: 50px;
+        height: 25px;
+    }
+    
+    .toggle-slider:before {
+        height: 18px;
+        width: 18px;
+        left: 3px;
+        bottom: 3px;
+    }
+    
+    input:checked + .toggle-slider:before {
+        transform: translateX(25px);
+    }
+    
+    /* Slider */
+    .slider::-webkit-slider-thumb,
+    .slider::-moz-range-thumb {
+        width: 20px;
+        height: 20px;
+    }
+    
+    /* Profile Components */
+    .argument-item {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .argument-number {
+        width: 25px;
+        height: 25px;
+        font-size: var(--font-size-sm);
+    }
+    
+    /* Step Timeline */
+    .step-marker {
+        width: 35px;
+        height: 35px;
+        font-size: var(--font-size-sm);
+    }
+    
+    /* Modal */
+    .modal-content {
+        margin: 10% auto;
+        max-height: 80vh;
+    }
+    
+    .modal-header h2 {
+        font-size: var(--font-size-xl);
+    }
+    
+    /* Calculation Modal */
+    .calc-result {
+        padding: var(--spacing-md);
+    }
+    
+    .calc-breakdown {
+        padding: var(--spacing-sm);
+    }
+    
+    .calc-line {
+        font-size: var(--font-size-sm);
+        flex-direction: column;
+        text-align: center;
+        gap: var(--spacing-xs);
+    }
+}
+
+/* Large Desktop Styles (1400px and above) */
+@media (min-width: 1400px) {
+    /* Container can use full width */
+    .header-container,
+    .main-container {
+        padding: 0 var(--spacing-xxl);
+    }
+    
+    /* Larger scenario grid */
+    .scenario-grid {
+        grid-template-columns: repeat(5, 1fr);
+    }
+}
+
+/* Print Styles */
+@media print {
+    /* Hide non-essential elements */
+    .header,
+    .nav-tabs,
+    .language-switcher,
+    .autosave-indicator,
+    .btn,
+    .toggle-switch,
+    .slider-container,
+    .help-icon,
+    .tooltip {
+        display: none !important;
+    }
+    
+    /* Reset backgrounds */
+    body {
+        background: white;
+    }
+    
+    .card {
+        box-shadow: none;
+        border: 1px solid #ddd;
+        page-break-inside: avoid;
+    }
+    
+    /* Ensure content fits on page */
+    .main-container {
+        max-width: 100%;
+        margin: 0;
+        padding: 0;
+    }
+    
+    /* Show all tab content for printing */
+    .tab-content {
+        display: block !important;
+        page-break-before: always;
+    }
+    
+    .tab-content:first-of-type {
+        page-break-before: auto;
+    }
+    
+    /* Adjust font sizes for print */
+    body {
+        font-size: 12pt;
+    }
+    
+    h1, h2, h3 {
+        page-break-after: avoid;
+    }
+}
+
+/* Hover Effects - Disabled on Touch Devices */
+@media (hover: none) {
+    .scenario-card:hover {
+        transform: none;
+        box-shadow: var(--shadow-md);
+    }
+    
+    .type-option:hover {
+        border-color: #e0e0e0;
+    }
+    
+    .nav-tab:hover {
+        color: inherit;
+    }
+}
+
+/* High DPI Displays */
+@media (-webkit-min-device-pixel-ratio: 2),
+       (min-resolution: 192dpi) {
+    /* Sharper borders and shadows */
+    .card {
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    
+    input, select, textarea {
+        border-width: 0.5px;
+    }
+}
+
+/* Landscape Mode for Mobile */
+@media (max-width: 768px) and (orientation: landscape) {
+    .header {
+        position: relative;
+    }
+    
+    .nav-tabs {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+    }
+    
+    .modal-content {
+        margin: 2% auto;
+        max-height: 90vh;
+    }
+}
+
+/* Accessibility - Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* Dark Mode Support (Future Enhancement) */
+@media (prefers-color-scheme: dark) {
+    /* Dark mode styles can be added here */
+}
