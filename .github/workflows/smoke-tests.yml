@@ -25,6 +25,14 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+      - name: Show Playwright config path(s)
+        run: |
+          echo "--- repo configs ---"
+          git ls-files | grep playwright.config.ts || true
+          echo "--- working directory ---"
+          pwd
+          echo "--- e2e directory check ---"
+          ls -la e2e/ || echo "e2e directory not found!"
       - uses: actions/setup-node@v4
         with:
           node-version: 20
