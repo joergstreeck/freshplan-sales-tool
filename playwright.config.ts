@@ -7,14 +7,15 @@ export default defineConfig({
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : undefined,
   reporter: [
-    ['html'],
+    ['list'],
+    [process.env.CI ? 'github' : 'html'],
     ['json', { outputFile: 'test-results/results.json' }],
     ['junit', { outputFile: 'test-results/junit.xml' }],
   ],
   
   use: {
     baseURL: 'http://localhost:3000',
-    trace: 'on-first-retry',
+    trace: process.env.CI ? 'retain-on-failure' : 'on-first-retry',
     screenshot: 'only-on-failure',
     video: process.env.CI ? 'retain-on-failure' : 'off',
     // Viewport for consistent cross-browser testing
@@ -92,10 +93,10 @@ export default defineConfig({
   }),
 
   webServer: {
-    command: 'npm run dev',
+    command: process.env.CI ? 'npm run preview:ci' : 'npm run dev',
     port: 3000,
-    reuseExistingServer: true,   // <<< NEU – verhindert den Konflikt
-    timeout: 120000,
+    reuseExistingServer: !process.env.CI,  // Preview in CI immer neu, Dev lokal reused
+    timeout: 60000,  // 60s reicht, weil preview in <1s da ist
     // Mehr Details für CI debugging
     stdout: 'pipe',
     stderr: 'pipe',

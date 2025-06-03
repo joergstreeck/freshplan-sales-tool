@@ -38,6 +38,8 @@ jobs:
           node-version: 20
           cache: "npm"
       - run: npm ci
+      - name: Build application for CI
+        run: npm run build:ci
       - run: npx playwright install --with-deps ${{ matrix.browser }}
       - name: Debug - List e2e directory
         run: |

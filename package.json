@@ -6,8 +6,10 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
+    "build:ci": "vite build --base=/",
     "build:standalone": "tsc && vite build --config vite.config.standalone.ts && mv dist-standalone/index.html freshplan-complete.html",
     "preview": "vite preview",
+    "preview:ci": "vite preview --port 3000",
     "test": "vitest",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest --coverage",
