@@ -34,7 +34,7 @@ jobs:
           npx playwright install-deps ${{ matrix.browser }}
       
       - name: Run tests on ${{ matrix.browser }}
-        run: npx playwright test --project=${{ matrix.browser }} healthcheck customer-phase2-basic-mini backup-smoke customer-core-a customer-core-b --config=playwright.config.minimal.ts
+        run: npx playwright test --project=${{ matrix.browser }} healthcheck customer-phase2-basic-mini backup-smoke customer-core-a customer-core-b customer-advanced --config=playwright.config.minimal.ts
         continue-on-error: ${{ matrix.browser == 'firefox' }}
       
       - name: Upload results on failure
