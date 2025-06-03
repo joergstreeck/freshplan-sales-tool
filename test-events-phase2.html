@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Phase 2 Event Test</title>
+</head>
+<body>
+    <h1>Phase 2 Event Test</h1>
+    <div id="events" style="border: 1px solid #ccc; padding: 10px; margin: 20px 0;">
+        <h3>Captured Events:</h3>
+        <ul id="event-list"></ul>
+    </div>
+    <button id="test-save">Test Save Event</button>
+    <button id="open-app">Open App in Phase 2</button>
+    
+    <script>
+        const eventList = document.getElementById('event-list');
+        
+        // Listen for all customer events
+        ['customer:saved', 'customer:cleared', 'customer:creditCheckRequired'].forEach(eventName => {
+            window.addEventListener(eventName, (e) => {
+                const li = document.createElement('li');
+                li.textContent = `${new Date().toLocaleTimeString()}: ${eventName} - ${JSON.stringify(e.detail)}`;
+                eventList.appendChild(li);
+                console.log(`🎯 Event captured: ${eventName}`, e.detail);
+            });
+        });
+        
+        // Test button
+        document.getElementById('test-save').addEventListener('click', () => {
+            window.dispatchEvent(new CustomEvent('customer:saved', {
+                detail: { data: { test: true } }
+            }));
+        });
+        
+        // Open app button
+        document.getElementById('open-app').addEventListener('click', () => {
+            window.open('/?phase2=true', '_blank');
+        });
+    </script>
+</body>
+</html>

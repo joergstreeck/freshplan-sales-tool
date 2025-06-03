@@ -1,26 +1,130 @@
 /**
  * Legacy JavaScript code from reference-original.html
  * Phase 1b - Direct port of original functionality
+ * Phase 3.2.1 - Adding event bridge for tab navigation
  */
+
+import { LocationDetail, createLocationDetailCard } from './templates/locationDetailsTemplates';
+import { getIndustryLocationFields } from './templates/industryLocationTemplates';
+import { TAB_EVENTS } from './constants/events';
 
 // Make functions available globally for inline onclick handlers
 declare global {
   interface Window {
-    updateCalculator: () => void;
-    changeLanguage: (lang: string) => void;
-    handleClearForm: () => void;
-    handleSaveForm: () => void;
-    loadExample: (type: string) => void;
-    formatCurrency: (input: HTMLInputElement) => void;
-    toggleLocationDetailsTab: (show: boolean) => void;
-    addLocationDetail: () => void;
-    startCreditCheck: () => void;
-    requestManagementApproval: () => void;
-    updateTotalLocations: () => void;
+    updateCalculator?: () => void;
+    changeLanguage?: (lang: string) => void;
+    handleClearForm?: () => void;
+    handleSaveForm?: () => void;
+    loadExample?: (type: string) => void;
+    formatCurrency?: (input: HTMLInputElement) => void;
+    toggleLocationDetailsTab?: (show: boolean) => void;
+    addLocationDetail?: () => void;
+    startCreditCheck?: () => void;
+    requestManagementApproval?: () => void;
+    updateTotalLocations?: () => void;
+  }
+}
+
+// Initialize tab functionality with event bridge
+// Extracted to be callable independently for phase2
+function initTabs() {
+  const tabs = document.querySelectorAll('.nav-tab');
+  const panels = document.querySelectorAll('.tab-panel');
+  
+  // Set up event bridge to listen for tab events from modules
+  window.addEventListener(TAB_EVENTS.SWITCHED, (event: any) => {
+    const { tab: newTab } = event.detail;
+    
+    // Update UI to reflect tab change from module
+    tabs.forEach(t => t.classList.remove('active'));
+    panels.forEach(p => p.classList.remove('active'));
+    
+    const targetButton = document.querySelector(`.nav-tab[data-tab="${newTab}"]`);
+    const targetPanel = document.getElementById(newTab);
+    
+    if (targetButton) {
+      targetButton.classList.add('active');
+    }
+    if (targetPanel) {
+      targetPanel.classList.add('active');
+    }
+  });
+  
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      const targetTab = tab.getAttribute('data-tab');
+      const currentTab = document.querySelector('.nav-tab.active')?.getAttribute('data-tab');
+      
+      // Emit event for modules to listen to
+      window.dispatchEvent(new CustomEvent(TAB_EVENTS.SWITCH, {
+        detail: { 
+          tab: targetTab, 
+          previousTab: currentTab,
+          source: 'legacy'
+        }
+      }));
+      
+      // Update active states
+      tabs.forEach(t => t.classList.remove('active'));
+      panels.forEach(p => p.classList.remove('active'));
+      
+      tab.classList.add('active');
+      const targetPanel = document.getElementById(targetTab!);
+      if (targetPanel) {
+        targetPanel.classList.add('active');
+      }
+      
+      // Update URL hash
+      window.location.hash = targetTab!;
+      
+      // Emit switched event
+      window.dispatchEvent(new CustomEvent(TAB_EVENTS.SWITCHED, {
+        detail: { 
+          tab: targetTab, 
+          previousTab: currentTab,
+          source: 'legacy'
+        }
+      }));
+    });
+  });
+  
+  // Handle initial hash
+  if (window.location.hash) {
+    const hashTab = window.location.hash.substring(1);
+    const hashButton = document.querySelector(`.nav-tab[data-tab="${hashTab}"]`);
+    if (hashButton) {
+      (hashButton as HTMLElement).click();
+    }
   }
 }
 
 export function initLegacyScript(): void {
+  // Phase 2 Check - Early Return Pattern
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.has('phase2') || 
+      (import.meta.env.VITE_FORCE_PHASE2 === 'true')) {
+    console.log('🔄 Legacy script disabled - Phase 2 CustomerModule active');
+    
+    // Remove all onclick attributes AND handlers to prevent legacy interference
+    document.querySelectorAll('[onclick]').forEach(element => {
+      console.log(`🧹 Removing onclick from: ${element.className || element.tagName}`);
+      (element as HTMLElement).onclick = null; // Remove handler from registry
+      element.removeAttribute('onclick'); // Remove attribute
+    });
+    
+    // Still need to initialize tab navigation for phase2
+    initTabs();
+    
+    // Optional: Emit event for monitoring
+    window.dispatchEvent(new CustomEvent('legacy:skipped', { 
+      detail: { module: 'customer', reason: 'phase2' } 
+    }));
+    
+    return;
+  }
+
+  // Mark legacy script as active for TabNavigationModule
+  (window as any).__LEGACY_SCRIPT_ACTIVE = true;
   // Translations
   const translations: Record<string, Record<string, string>> = {
     de: {
@@ -169,7 +273,23 @@ export function initLegacyScript(): void {
       syncWarningTitle: '⚠️ Abweichung erkannt',
       syncWarningText: 'Die Anzahl und Kategorien der erfassten Standorte stimmen nicht mit den Angaben auf der Haupt-Standortseite überein.',
       noLocationsYet: 'Noch keine Standorte erfasst.',
-      clickAddLocation: 'Klicken Sie auf "Standort hinzufügen" um zu beginnen.',
+      clickAddLocation: 'Klicken Sie auf den Button oben um zu beginnen.',
+      
+      // Location details form fields (from de.json)
+      'locationDetails.locationTitle': 'Standort',
+      'locationDetails.locationName': 'Standortname*',
+      'locationDetails.category': 'Kategorie',
+      'locationDetails.mainLocation': 'Hauptstandort',
+      'locationDetails.branch': 'Filiale',
+      'locationDetails.externalOffice': 'Außenstelle',
+      'locationDetails.streetAndNumber': 'Straße und Hausnummer*',
+      'locationDetails.postalCode': 'PLZ*',
+      'locationDetails.city': 'Ort*',
+      'locationDetails.contactName': 'Ansprechpartner Name',
+      'locationDetails.contactPhone': 'Telefon',
+      'locationDetails.contactEmail': 'E-Mail',
+      'common.remove': 'Entfernen',
+      'common.pleaseSelect': 'Bitte wählen',
       
       // Credit check
       creditCheckTitle: 'Bonitätsprüfung',
@@ -213,7 +333,76 @@ export function initLegacyScript(): void {
       nothingToSave: 'Aktuell gibt es auf dieser Seite nichts zu speichern.',
       confirmClear: 'Möchten Sie wirklich alle Daten löschen?',
       clearOnlyCustomer: 'Die Funktion "Formular leeren" ist nur im Kundendaten-Tab verfügbar.',
-      confirmRemoveLocation: 'Möchten Sie diesen Standort wirklich entfernen?'
+      confirmRemoveLocation: 'Möchten Sie diesen Standort wirklich entfernen?',
+      
+      // Industry-specific location fields
+      'locations.services': 'Services',
+      
+      // Hotel
+      'locations.hotel.categorization': 'Hotel-Kategorisierung',
+      'locations.hotel.small': 'Klein (bis 50 Zimmer)',
+      'locations.hotel.medium': 'Mittel (51-150 Zimmer)',
+      'locations.hotel.large': 'Groß (über 150 Zimmer)',
+      'locations.hotel.unit': 'Hotels',
+      'locations.hotel.breakfast': 'Frühstücksservice',
+      'locations.hotel.restaurant': 'Restaurant à la carte',
+      'locations.hotel.roomService': 'Room Service',
+      'locations.hotel.banquet': 'Bankett/Veranstaltungen',
+      'locations.hotel.ofPrefix': 'von',
+      
+      // Clinic
+      'locations.clinic.categorization': 'Klinik-Kategorisierung',
+      'locations.clinic.small': 'Klein (bis 150 Betten)',
+      'locations.clinic.medium': 'Mittel (151-400 Betten)',
+      'locations.clinic.large': 'Groß (über 400 Betten)',
+      'locations.clinic.unit': 'Kliniken',
+      'locations.clinic.privatePatientShare': 'Anteil Privatpatienten',
+      'locations.clinic.patientCatering': 'Patientenverpflegung',
+      'locations.clinic.staffCatering': 'Mitarbeiterverpflegung',
+      'locations.clinic.ofPrefix': 'von',
+      
+      // Senior Residence
+      'locations.senior.categorization': 'Seniorenresidenz-Kategorisierung',
+      'locations.senior.small': 'Klein (bis 50 Bewohner)',
+      'locations.senior.medium': 'Mittel (51-150 Bewohner)',
+      'locations.senior.large': 'Groß (über 150 Bewohner)',
+      'locations.senior.unit': 'Residenzen',
+      'locations.senior.careFocus': 'Pflegeschwerpunkt',
+      'locations.senior.careMixed': 'Gemischt',
+      'locations.senior.careAssisted': 'Betreutes Wohnen',
+      'locations.senior.careNursing': 'Vollpflege',
+      'locations.senior.catering': 'Verpflegung',
+      'locations.senior.fullCatering': 'Vollverpflegung',
+      'locations.senior.partialCatering': 'Teilverpflegung',
+      'locations.senior.specialDiet': 'Sonderkostform',
+      'locations.senior.ofPrefix': 'von',
+      
+      // Restaurant
+      'locations.restaurant.categorization': 'Restaurant-Kategorisierung',
+      'locations.restaurant.small': 'Klein (bis 50 Sitzplätze)',
+      'locations.restaurant.medium': 'Mittel (51-150 Sitzplätze)',
+      'locations.restaurant.large': 'Groß (über 150 Sitzplätze)',
+      'locations.restaurant.unit': 'Restaurants',
+      'locations.restaurant.alaCarte': 'À la carte',
+      'locations.restaurant.banquet': 'Bankett/Veranstaltungen',
+      'locations.restaurant.ofPrefix': 'von',
+      
+      // Cafeteria
+      'locations.cafeteria.categorization': 'Betriebsrestaurant-Kategorisierung',
+      'locations.cafeteria.small': 'Klein (bis 200 MA)',
+      'locations.cafeteria.medium': 'Mittel (201-500 MA)',
+      'locations.cafeteria.large': 'Groß (über 500 MA)',
+      'locations.cafeteria.unit': 'Standorte',
+      'locations.cafeteria.serviceScope': 'Serviceumfang',
+      'locations.cafeteria.breakfast': 'Frühstück',
+      'locations.cafeteria.lunch': 'Mittagessen',
+      'locations.cafeteria.dinner': 'Abendessen',
+      'locations.cafeteria.ofPrefix': 'von',
+      
+      // Common nested keys for i18nModule compatibility
+      'common.addLocation': '+ Standort hinzufügen',
+      'common.clearForm': 'Formular leeren',
+      'common.save': 'Speichern'
     },
     en: {
       // Header
@@ -361,7 +550,23 @@ export function initLegacyScript(): void {
       syncWarningTitle: '⚠️ Discrepancy Detected',
       syncWarningText: 'The number and categories of captured locations do not match the information on the main location page.',
       noLocationsYet: 'No locations captured yet.',
-      clickAddLocation: 'Click "Add Location" to begin.',
+      clickAddLocation: 'Click the button above to begin.',
+      
+      // Location details form fields (from de.json)
+      'locationDetails.locationTitle': 'Location',
+      'locationDetails.locationName': 'Location Name*',
+      'locationDetails.category': 'Category',
+      'locationDetails.mainLocation': 'Main Location',
+      'locationDetails.branch': 'Branch',
+      'locationDetails.externalOffice': 'External Office',
+      'locationDetails.streetAndNumber': 'Street and Number*',
+      'locationDetails.postalCode': 'Postal Code*',
+      'locationDetails.city': 'City*',
+      'locationDetails.contactName': 'Contact Name',
+      'locationDetails.contactPhone': 'Phone',
+      'locationDetails.contactEmail': 'Email',
+      'common.remove': 'Remove',
+      'common.pleaseSelect': 'Please select',
       
       // Credit check
       creditCheckTitle: 'Credit Check',
@@ -405,46 +610,81 @@ export function initLegacyScript(): void {
       nothingToSave: 'Nothing to save on this page.',
       confirmClear: 'Do you really want to delete all data?',
       clearOnlyCustomer: 'The "Clear Form" function is only available in the Customer Data tab.',
-      confirmRemoveLocation: 'Do you really want to remove this location?'
+      confirmRemoveLocation: 'Do you really want to remove this location?',
+      
+      // Industry-specific location fields
+      'locations.services': 'Services',
+      
+      // Hotel
+      'locations.hotel.categorization': 'Hotel Categorization',
+      'locations.hotel.small': 'Small (up to 50 rooms)',
+      'locations.hotel.medium': 'Medium (51-150 rooms)',
+      'locations.hotel.large': 'Large (over 150 rooms)',
+      'locations.hotel.unit': 'Hotels',
+      'locations.hotel.breakfast': 'Breakfast Service',
+      'locations.hotel.restaurant': 'Restaurant à la carte',
+      'locations.hotel.roomService': 'Room Service',
+      'locations.hotel.banquet': 'Banquet/Events',
+      'locations.hotel.ofPrefix': 'of',
+      
+      // Clinic
+      'locations.clinic.categorization': 'Clinic Categorization',
+      'locations.clinic.small': 'Small (up to 150 beds)',
+      'locations.clinic.medium': 'Medium (151-400 beds)',
+      'locations.clinic.large': 'Large (over 400 beds)',
+      'locations.clinic.unit': 'Clinics',
+      'locations.clinic.privatePatientShare': 'Private Patient Share',
+      'locations.clinic.patientCatering': 'Patient Catering',
+      'locations.clinic.staffCatering': 'Staff Catering',
+      'locations.clinic.ofPrefix': 'of',
+      
+      // Senior Residence
+      'locations.senior.categorization': 'Senior Residence Categorization',
+      'locations.senior.small': 'Small (up to 50 residents)',
+      'locations.senior.medium': 'Medium (51-150 residents)',
+      'locations.senior.large': 'Large (over 150 residents)',
+      'locations.senior.unit': 'Residences',
+      'locations.senior.careFocus': 'Care Focus',
+      'locations.senior.careMixed': 'Mixed',
+      'locations.senior.careAssisted': 'Assisted Living',
+      'locations.senior.careNursing': 'Full Care',
+      'locations.senior.catering': 'Catering',
+      'locations.senior.fullCatering': 'Full Catering',
+      'locations.senior.partialCatering': 'Partial Catering',
+      'locations.senior.specialDiet': 'Special Diet',
+      'locations.senior.ofPrefix': 'of',
+      
+      // Restaurant
+      'locations.restaurant.categorization': 'Restaurant Categorization',
+      'locations.restaurant.small': 'Small (up to 50 seats)',
+      'locations.restaurant.medium': 'Medium (51-150 seats)',
+      'locations.restaurant.large': 'Large (over 150 seats)',
+      'locations.restaurant.unit': 'Restaurants',
+      'locations.restaurant.alaCarte': 'À la carte',
+      'locations.restaurant.banquet': 'Banquet/Events',
+      'locations.restaurant.ofPrefix': 'of',
+      
+      // Cafeteria
+      'locations.cafeteria.categorization': 'Cafeteria Categorization',
+      'locations.cafeteria.small': 'Small (up to 200 employees)',
+      'locations.cafeteria.medium': 'Medium (201-500 employees)',
+      'locations.cafeteria.large': 'Large (over 500 employees)',
+      'locations.cafeteria.unit': 'Locations',
+      'locations.cafeteria.serviceScope': 'Service Scope',
+      'locations.cafeteria.breakfast': 'Breakfast',
+      'locations.cafeteria.lunch': 'Lunch',
+      'locations.cafeteria.dinner': 'Dinner',
+      'locations.cafeteria.ofPrefix': 'of',
+      
+      // Common nested keys for i18nModule compatibility
+      'common.addLocation': '+ Add Location',
+      'common.clearForm': 'Clear Form',
+      'common.save': 'Save'
     }
   };
   
   // Initialize current language
   let currentLanguage = 'de';
-  
-  // Initialize tab functionality
-  function initTabs() {
-    const tabs = document.querySelectorAll('.nav-tab');
-    const panels = document.querySelectorAll('.tab-panel');
-    
-    tabs.forEach(tab => {
-      tab.addEventListener('click', () => {
-        const targetTab = tab.getAttribute('data-tab');
-        
-        // Update active states
-        tabs.forEach(t => t.classList.remove('active'));
-        panels.forEach(p => p.classList.remove('active'));
-        
-        tab.classList.add('active');
-        const targetPanel = document.getElementById(targetTab!);
-        if (targetPanel) {
-          targetPanel.classList.add('active');
-        }
-        
-        // Update URL hash
-        window.location.hash = targetTab!;
-      });
-    });
-    
-    // Handle initial hash
-    if (window.location.hash) {
-      const hashTab = window.location.hash.substring(1);
-      const hashButton = document.querySelector(`.nav-tab[data-tab="${hashTab}"]`);
-      if (hashButton) {
-        (hashButton as HTMLElement).click();
-      }
-    }
-  }
   
   // Calculator functionality
   function updateCalculator() {
@@ -524,13 +764,53 @@ export function initLegacyScript(): void {
     updateCalculator();
   }
   
+  // Helper function to translate elements within a container
+  function translateElements(container: Element) {
+    container.querySelectorAll('[data-i18n]').forEach(element => {
+      const key = element.getAttribute('data-i18n');
+      if (key) {
+        // Support nested keys like "locationDetails.locationName"
+        const keys = key.split('.');
+        let value: any = translations[currentLanguage];
+        
+        for (const k of keys) {
+          if (value && typeof value === 'object' && k in value) {
+            value = value[k];
+          } else {
+            value = translations[currentLanguage][key]; // Fallback to direct key
+            break;
+          }
+        }
+        
+        if (typeof value === 'string') {
+          element.innerHTML = value;
+        }
+      }
+    });
+  }
+  
   // Language change functionality
   function changeLanguage(lang: string) {
     currentLanguage = lang;
     document.querySelectorAll('[data-i18n]').forEach(element => {
       const key = element.getAttribute('data-i18n');
-      if (key && translations[lang] && translations[lang][key]) {
-        element.innerHTML = translations[lang][key];
+      if (key) {
+        // Support nested keys like "common.addLocation"
+        const keys = key.split('.');
+        let value: any = translations[lang];
+        
+        for (const k of keys) {
+          if (value && typeof value === 'object' && k in value) {
+            value = value[k];
+          } else {
+            value = translations[lang][key]; // Fallback to direct key
+            break;
+          }
+        }
+        
+        if (typeof value === 'string') {
+          element.innerHTML = value;
+        }
       }
     });
     
@@ -834,7 +1114,7 @@ export function initLegacyScript(): void {
   }
   
   // Location details functionality
-  let locationDetailsList: any[] = [];
+  let locationDetailsList: LocationDetail[] = [];
   
   function addLocationDetail() {
     const newLocation = {
@@ -874,63 +1154,13 @@ export function initLegacyScript(): void {
     } else {
       if (noLocationsMessage) noLocationsMessage.style.display = 'none';
       
-      container.innerHTML = locationDetailsList.map(location => `
-        <div class="location-detail-card" data-location-id="${location.id}">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-            <h4 style="margin: 0;">Standort ${locationDetailsList.indexOf(location) + 1}</h4>
-            <button type="button" class="btn btn-danger btn-sm" onclick="removeLocationDetail(${location.id})">
-              Entfernen
-            </button>
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label>Standortname*</label>
-              <input type="text" class="location-name" value="${location.name}" data-field="name">
-            </div>
-            <div class="form-group">
-              <label>Kategorie</label>
-              <select class="location-category" data-field="category">
-                <option value="">Bitte wählen</option>
-                <option value="hauptstandort" ${location.category === 'hauptstandort' ? 'selected' : ''}>Hauptstandort</option>
-                <option value="filiale" ${location.category === 'filiale' ? 'selected' : ''}>Filiale</option>
-                <option value="aussenstelle" ${location.category === 'aussenstelle' ? 'selected' : ''}>Außenstelle</option>
-              </select>
-            </div>
-          </div>
-          <div class="form-row">
-            <div class="form-group" style="grid-column: span 2;">
-              <label>Straße und Hausnummer*</label>
-              <input type="text" class="location-street" value="${location.street}" data-field="street">
-            </div>
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label>PLZ*</label>
-              <input type="text" class="location-postalcode" value="${location.postalCode}" data-field="postalCode" maxlength="5">
-            </div>
-            <div class="form-group">
-              <label>Ort*</label>
-              <input type="text" class="location-city" value="${location.city}" data-field="city">
-            </div>
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label>Ansprechpartner Name</label>
-              <input type="text" class="location-contact-name" value="${location.contactName}" data-field="contactName">
-            </div>
-            <div class="form-group">
-              <label>Telefon</label>
-              <input type="tel" class="location-contact-phone" value="${location.contactPhone}" data-field="contactPhone">
-            </div>
-          </div>
-          <div class="form-row">
-            <div class="form-group" style="grid-column: span 2;">
-              <label>E-Mail</label>
-              <input type="email" class="location-contact-email" value="${location.contactEmail}" data-field="contactEmail">
-            </div>
-          </div>
-        </div>
-      `).join('');
+      // Use template functions to generate HTML with i18n support
+      container.innerHTML = locationDetailsList
+        .map((location, index) => createLocationDetailCard(location, index + 1))
+        .join('');
+      
+      // Apply translations to newly added elements
+      translateElements(container);
       
       // Add event listeners for input changes
       container.querySelectorAll('input, select').forEach(input => {
@@ -941,7 +1171,7 @@ export function initLegacyScript(): void {
           const field = target.getAttribute('data-field')!;
           const location = locationDetailsList.find(loc => loc.id === locationId);
           if (location) {
-            location[field] = target.value;
+            (location as any)[field] = target.value;
           }
         });
       });
@@ -1001,6 +1231,20 @@ export function initLegacyScript(): void {
   
   // Function to update industry-specific fields in locations tab
   function updateLocationIndustryFields() {
+    const industry = (document.getElementById('industry') as HTMLSelectElement)?.value;
+    const section = document.getElementById('industrySpecificSection');
+    if (!section) return;
+    
+    // Use template function to get HTML with i18n support
+    const html = getIndustryLocationFields(industry);
+    section.innerHTML = html;
+    
+    // Apply translations to newly added elements
+    translateElements(section);
+  }
+  
+  // Legacy implementation kept for reference but not used
+  /* function updateLocationIndustryFieldsLegacy() {
     const industry = (document.getElementById('industry') as HTMLSelectElement)?.value;
     const section = document.getElementById('industrySpecificSection');
     if (!section) return;
@@ -1228,7 +1472,7 @@ export function initLegacyScript(): void {
     }
     
     section.innerHTML = html;
-  }
+  } */
   
   // Function to update total locations count
   function updateTotalLocations() {
@@ -1342,12 +1586,52 @@ export function initLegacyScript(): void {
     }
   }
   
+  // Set up legacy tab navigation helpers
+  function setupLegacyTabHelpers() {
+    // Helper to programmatically switch tabs (for backward compatibility)
+    (window as any).switchToTab = (tabName: string) => {
+      console.warn('[Legacy] switchToTab() is deprecated. Use TabNavigationModule.navigateTo() instead.');
+      const tabButton = document.querySelector(`.nav-tab[data-tab="${tabName}"]`) as HTMLElement;
+      if (tabButton) {
+        tabButton.click();
+      }
+    };
+    
+    // Helper to get current tab
+    (window as any).getCurrentTab = () => {
+      const activeTab = document.querySelector('.nav-tab.active');
+      return activeTab?.getAttribute('data-tab') || 'demonstrator';
+    };
+    
+    // Helper to listen for tab changes
+    (window as any).onTabChange = (callback: (tab: string) => void) => {
+      const handler = (event: any) => {
+        callback(event.detail.tab);
+      };
+      window.addEventListener(TAB_EVENTS.SWITCHED, handler);
+      
+      // Return unsubscribe function
+      return () => {
+        window.removeEventListener(TAB_EVENTS.SWITCHED, handler);
+      };
+    };
+  }
+  
   // Initialize everything when DOM is ready
   initTabs();
+  setupLegacyTabHelpers();
   updateCalculator();
   loadSavedData();
   initChainCustomer();
   initVendingInterest();
   initPaymentWarning();
   renderLocationDetails();
+  
+  // Clean up when script is unloaded
+  (window as any).__LEGACY_SCRIPT_CLEANUP = () => {
+    delete (window as any).__LEGACY_SCRIPT_ACTIVE;
+    delete (window as any).switchToTab;
+    delete (window as any).getCurrentTab;
+    delete (window as any).onTabChange;
+  };
 }

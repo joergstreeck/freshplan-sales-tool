@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Browser-Kompatibilitätstest - CustomerModuleV2</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .header {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .browser-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 15px;
+            background: #e8f4f8;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+        .browser-icon {
+            font-size: 48px;
+        }
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .test-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-card h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        .test-item {
+            display: flex;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .test-item:last-child {
+            border-bottom: none;
+        }
+        .status {
+            margin-left: auto;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .status.pass {
+            background: #d4edda;
+            color: #155724;
+        }
+        .status.fail {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .status.warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+        .status.pending {
+            background: #e2e3e5;
+            color: #383d41;
+        }
+        .test-form {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        input, select, button {
+            margin: 5px;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .console-output {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+            margin-top: 10px;
+        }
+        .log-entry {
+            margin: 2px 0;
+        }
+        .log-error {
+            color: #ff6b6b;
+        }
+        .log-success {
+            color: #51cf66;
+        }
+        .log-warning {
+            color: #ffd93d;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Browser-Kompatibilitätstest - CustomerModuleV2</h1>
+        <div class="browser-info">
+            <div class="browser-icon" id="browserIcon">🌐</div>
+            <div>
+                <div><strong>Browser:</strong> <span id="browserName">Erkenne...</span></div>
+                <div><strong>Version:</strong> <span id="browserVersion">...</span></div>
+                <div><strong>Engine:</strong> <span id="browserEngine">...</span></div>
+                <div><strong>User Agent:</strong> <span id="userAgent" style="font-size: 12px;">...</span></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="test-grid">
+        <!-- JavaScript Feature Tests -->
+        <div class="test-card">
+            <h3>JavaScript Features</h3>
+            <div class="test-item">
+                <span>ES6 Module Support</span>
+                <span class="status pending" id="test-modules">Testing...</span>
+            </div>
+            <div class="test-item">
+                <span>Async/Await</span>
+                <span class="status pending" id="test-async">Testing...</span>
+            </div>
+            <div class="test-item">
+                <span>Promise</span>
+                <span class="status pending" id="test-promise">Testing...</span>
+            </div>
+            <div class="test-item">
+                <span>LocalStorage</span>
+                <span class="status pending" id="test-localstorage">Testing...</span>
+            </div>
+            <div class="test-item">
+                <span>Event Target</span>
+                <span class="status pending" id="test-events">Testing...</span>
+            </div>
+            <div class="test-item">
+                <span>Class Syntax</span>
+                <span class="status pending" id="test-classes">Testing...</span>
+            </div>
+            <div class="test-item">
+                <span>Map/Set</span>
+                <span class="status pending" id="test-mapset">Testing...</span>
+            </div>
+            <div class="test-item">
+                <span>Object.entries</span>
+                <span class="status pending" id="test-objectentries">Testing...</span>
+            </div>
+        </div>
+
+        <!-- DOM API Tests -->
+        <div class="test-card">
+            <h3>DOM APIs</h3>
+            <div class="test-item">
+                <span>querySelector</span>
+                <span class="status pending" id="test-querySelector">Testing...</span>
+            </div>
+            <div class="test-item">
+                <span>classList</span>
+                <span class="status pending" id="test-classList">Testing...</span>
+            </div>
+            <div class="test-item">
+                <span>dataset</span>
+                <span class="status pending" id="test-dataset">Testing...</span>
+            </div>
+            <div class="test-item">
+                <span>CustomEvent</span>
+                <span class="status pending" id="test-customEvent">Testing...</span>
+            </div>
+            <div class="test-item">
+                <span>FormData</span>
+                <span class="status pending" id="test-formData">Testing...</span>
+            </div>
+            <div class="test-item">
+                <span>MutationObserver</span>
+                <span class="status pending" id="test-mutationObserver">Testing...</span>
+            </div>
+        </div>
+
+        <!-- CSS Feature Tests -->
+        <div class="test-card">
+            <h3>CSS Features</h3>
+            <div class="test-item">
+                <span>CSS Grid</span>
+                <span class="status pending" id="test-grid">Testing...</span>
+            </div>
+            <div class="test-item">
+                <span>CSS Flexbox</span>
+                <span class="status pending" id="test-flexbox">Testing...</span>
+            </div>
+            <div class="test-item">
+                <span>CSS Variables</span>
+                <span class="status pending" id="test-cssvars">Testing...</span>
+            </div>
+            <div class="test-item">
+                <span>CSS Transforms</span>
+                <span class="status pending" id="test-transforms">Testing...</span>
+            </div>
+            <div class="test-item">
+                <span>CSS Transitions</span>
+                <span class="status pending" id="test-transitions">Testing...</span>
+            </div>
+        </div>
+
+        <!-- Performance Tests -->
+        <div class="test-card">
+            <h3>Performance APIs</h3>
+            <div class="test-item">
+                <span>Performance.now()</span>
+                <span class="status pending" id="test-performance">Testing...</span>
+            </div>
+            <div class="test-item">
+                <span>RequestAnimationFrame</span>
+                <span class="status pending" id="test-raf">Testing...</span>
+            </div>
+            <div class="test-item">
+                <span>IntersectionObserver</span>
+                <span class="status pending" id="test-intersection">Testing...</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Interactive Module Test -->
+    <div class="test-form test-card">
+        <h3>CustomerModuleV2 Funktionstest</h3>
+        <p>Teste die Kernfunktionen des Moduls direkt:</p>
+        
+        <form id="testForm">
+            <input type="text" id="companyName" placeholder="Firmenname" required>
+            <input type="email" id="email" placeholder="E-Mail" required>
+            <input type="text" id="postalCode" placeholder="PLZ" maxlength="5" pattern="[0-9]{5}" required>
+            <select id="customerStatus">
+                <option value="bestandskunde">Bestandskunde</option>
+                <option value="neukunde">Neukunde</option>
+            </select>
+            <select id="paymentMethod">
+                <option value="vorkasse">Vorkasse</option>
+                <option value="rechnung">Rechnung</option>
+            </select>
+            <button type="button" onclick="testSave()">Speichern testen</button>
+            <button type="button" onclick="testLoad()">Laden testen</button>
+            <button type="button" onclick="testClear()">Löschen testen</button>
+        </form>
+        
+        <div class="console-output" id="console">
+            <div class="log-entry">Browser-Kompatibilitätstest gestartet...</div>
+        </div>
+    </div>
+
+    <script>
+        // Browser Detection
+        function detectBrowser() {
+            const ua = navigator.userAgent;
+            let browserName = 'Unknown';
+            let browserVersion = '';
+            let browserEngine = '';
+            let icon = '🌐';
+
+            if (ua.includes('Firefox/')) {
+                browserName = 'Mozilla Firefox';
+                browserVersion = ua.match(/Firefox\/(\d+\.\d+)/)?.[1] || '';
+                browserEngine = 'Gecko';
+                icon = '🦊';
+            } else if (ua.includes('Edg/')) {
+                browserName = 'Microsoft Edge';
+                browserVersion = ua.match(/Edg\/(\d+\.\d+)/)?.[1] || '';
+                browserEngine = 'Blink';
+                icon = '🌊';
+            } else if (ua.includes('Chrome/') && !ua.includes('Edg/')) {
+                browserName = 'Google Chrome';
+                browserVersion = ua.match(/Chrome\/(\d+\.\d+)/)?.[1] || '';
+                browserEngine = 'Blink';
+                icon = '🔵';
+            } else if (ua.includes('Safari/') && !ua.includes('Chrome/')) {
+                browserName = 'Safari';
+                browserVersion = ua.match(/Version\/(\d+\.\d+)/)?.[1] || '';
+                browserEngine = 'WebKit';
+                icon = '🧭';
+            }
+
+            document.getElementById('browserIcon').textContent = icon;
+            document.getElementById('browserName').textContent = browserName;
+            document.getElementById('browserVersion').textContent = browserVersion;
+            document.getElementById('browserEngine').textContent = browserEngine;
+            document.getElementById('userAgent').textContent = ua;
+        }
+
+        function updateTestStatus(testId, status) {
+            const element = document.getElementById(testId);
+            if (element) {
+                element.className = 'status ' + status;
+                element.textContent = status.charAt(0).toUpperCase() + status.slice(1);
+            }
+        }
+
+        function log(message, type = 'info') {
+            const console = document.getElementById('console');
+            const entry = document.createElement('div');
+            entry.className = 'log-entry log-' + type;
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            console.appendChild(entry);
+            console.scrollTop = console.scrollHeight;
+        }
+
+        // Feature Tests
+        async function runFeatureTests() {
+            // ES6 Modules
+            try {
+                // Check if dynamic import is supported
+                if (typeof import === 'function') {
+                    updateTestStatus('test-modules', 'pass');
+                } else {
+                    updateTestStatus('test-modules', 'fail');
+                }
+            } catch (e) {
+                updateTestStatus('test-modules', 'fail');
+            }
+
+            // Async/Await
+            try {
+                await Promise.resolve();
+                updateTestStatus('test-async', 'pass');
+            } catch (e) {
+                updateTestStatus('test-async', 'fail');
+            }
+
+            // Promise
+            if (typeof Promise !== 'undefined') {
+                updateTestStatus('test-promise', 'pass');
+            } else {
+                updateTestStatus('test-promise', 'fail');
+            }
+
+            // LocalStorage
+            try {
+                localStorage.setItem('test', 'test');
+                localStorage.removeItem('test');
+                updateTestStatus('test-localstorage', 'pass');
+            } catch (e) {
+                updateTestStatus('test-localstorage', 'fail');
+            }
+
+            // EventTarget
+            if (typeof EventTarget !== 'undefined') {
+                updateTestStatus('test-events', 'pass');
+            } else {
+                updateTestStatus('test-events', 'fail');
+            }
+
+            // Classes
+            try {
+                class TestClass {}
+                new TestClass();
+                updateTestStatus('test-classes', 'pass');
+            } catch (e) {
+                updateTestStatus('test-classes', 'fail');
+            }
+
+            // Map/Set
+            if (typeof Map !== 'undefined' && typeof Set !== 'undefined') {
+                updateTestStatus('test-mapset', 'pass');
+            } else {
+                updateTestStatus('test-mapset', 'fail');
+            }
+
+            // Object.entries
+            if (typeof Object.entries === 'function') {
+                updateTestStatus('test-objectentries', 'pass');
+            } else {
+                updateTestStatus('test-objectentries', 'fail');
+            }
+
+            // DOM APIs
+            if (typeof document.querySelector === 'function') {
+                updateTestStatus('test-querySelector', 'pass');
+            } else {
+                updateTestStatus('test-querySelector', 'fail');
+            }
+
+            // classList
+            const div = document.createElement('div');
+            if (div.classList) {
+                updateTestStatus('test-classList', 'pass');
+            } else {
+                updateTestStatus('test-classList', 'fail');
+            }
+
+            // dataset
+            if (div.dataset !== undefined) {
+                updateTestStatus('test-dataset', 'pass');
+            } else {
+                updateTestStatus('test-dataset', 'fail');
+            }
+
+            // CustomEvent
+            try {
+                new CustomEvent('test');
+                updateTestStatus('test-customEvent', 'pass');
+            } catch (e) {
+                updateTestStatus('test-customEvent', 'fail');
+            }
+
+            // FormData
+            if (typeof FormData !== 'undefined') {
+                updateTestStatus('test-formData', 'pass');
+            } else {
+                updateTestStatus('test-formData', 'fail');
+            }
+
+            // MutationObserver
+            if (typeof MutationObserver !== 'undefined') {
+                updateTestStatus('test-mutationObserver', 'pass');
+            } else {
+                updateTestStatus('test-mutationObserver', 'fail');
+            }
+
+            // CSS Features
+            const testEl = document.createElement('div');
+            document.body.appendChild(testEl);
+
+            // Grid
+            testEl.style.display = 'grid';
+            if (window.getComputedStyle(testEl).display === 'grid') {
+                updateTestStatus('test-grid', 'pass');
+            } else {
+                updateTestStatus('test-grid', 'fail');
+            }
+
+            // Flexbox
+            testEl.style.display = 'flex';
+            if (window.getComputedStyle(testEl).display === 'flex') {
+                updateTestStatus('test-flexbox', 'pass');
+            } else {
+                updateTestStatus('test-flexbox', 'fail');
+            }
+
+            // CSS Variables
+            testEl.style.setProperty('--test-var', 'test');
+            if (testEl.style.getPropertyValue('--test-var') === 'test') {
+                updateTestStatus('test-cssvars', 'pass');
+            } else {
+                updateTestStatus('test-cssvars', 'fail');
+            }
+
+            // Transforms
+            testEl.style.transform = 'translateX(10px)';
+            if (testEl.style.transform) {
+                updateTestStatus('test-transforms', 'pass');
+            } else {
+                updateTestStatus('test-transforms', 'fail');
+            }
+
+            // Transitions
+            testEl.style.transition = 'all 0.3s';
+            if (testEl.style.transition) {
+                updateTestStatus('test-transitions', 'pass');
+            } else {
+                updateTestStatus('test-transitions', 'fail');
+            }
+
+            document.body.removeChild(testEl);
+
+            // Performance APIs
+            if (typeof performance !== 'undefined' && typeof performance.now === 'function') {
+                updateTestStatus('test-performance', 'pass');
+            } else {
+                updateTestStatus('test-performance', 'fail');
+            }
+
+            if (typeof requestAnimationFrame === 'function') {
+                updateTestStatus('test-raf', 'pass');
+            } else {
+                updateTestStatus('test-raf', 'fail');
+            }
+
+            if (typeof IntersectionObserver !== 'undefined') {
+                updateTestStatus('test-intersection', 'pass');
+            } else {
+                updateTestStatus('test-intersection', 'warning');
+            }
+        }
+
+        // Module functionality tests
+        window.testSave = function() {
+            try {
+                const data = {
+                    companyName: document.getElementById('companyName').value,
+                    email: document.getElementById('email').value,
+                    postalCode: document.getElementById('postalCode').value,
+                    customerStatus: document.getElementById('customerStatus').value,
+                    paymentMethod: document.getElementById('paymentMethod').value
+                };
+
+                // Validate
+                if (!data.companyName) {
+                    log('Fehler: Firmenname ist Pflichtfeld', 'error');
+                    return;
+                }
+
+                if (!data.email.includes('@')) {
+                    log('Fehler: Ungültige E-Mail-Adresse', 'error');
+                    return;
+                }
+
+                if (!/^\d{5}$/.test(data.postalCode)) {
+                    log('Fehler: PLZ muss 5 Ziffern haben', 'error');
+                    return;
+                }
+
+                // Check payment warning
+                if (data.customerStatus === 'neukunde' && data.paymentMethod === 'rechnung') {
+                    log('Warnung: Bonitätsprüfung erforderlich für Neukunde + Rechnung', 'warning');
+                }
+
+                // Save to localStorage
+                const existingData = JSON.parse(localStorage.getItem('freshplanData') || '{}');
+                existingData.customer = data;
+                localStorage.setItem('freshplanData', JSON.stringify(existingData));
+
+                log('Erfolgreich gespeichert: ' + data.companyName, 'success');
+            } catch (error) {
+                log('Fehler beim Speichern: ' + error.message, 'error');
+            }
+        };
+
+        window.testLoad = function() {
+            try {
+                const data = JSON.parse(localStorage.getItem('freshplanData') || '{}');
+                if (data.customer) {
+                    document.getElementById('companyName').value = data.customer.companyName || '';
+                    document.getElementById('email').value = data.customer.email || '';
+                    document.getElementById('postalCode').value = data.customer.postalCode || '';
+                    document.getElementById('customerStatus').value = data.customer.customerStatus || 'bestandskunde';
+                    document.getElementById('paymentMethod').value = data.customer.paymentMethod || 'vorkasse';
+                    log('Daten geladen: ' + data.customer.companyName, 'success');
+                } else {
+                    log('Keine gespeicherten Daten gefunden', 'warning');
+                }
+            } catch (error) {
+                log('Fehler beim Laden: ' + error.message, 'error');
+            }
+        };
+
+        window.testClear = function() {
+            try {
+                if (confirm('Wirklich alle Daten löschen?')) {
+                    const data = JSON.parse(localStorage.getItem('freshplanData') || '{}');
+                    delete data.customer;
+                    localStorage.setItem('freshplanData', JSON.stringify(data));
+                    document.getElementById('testForm').reset();
+                    log('Daten gelöscht', 'success');
+                }
+            } catch (error) {
+                log('Fehler beim Löschen: ' + error.message, 'error');
+            }
+        };
+
+        // Run tests on load
+        detectBrowser();
+        runFeatureTests();
+        log('Tests abgeschlossen. Prüfe die Ergebnisse oben.', 'success');
+    </script>
+</body>
+</html>
