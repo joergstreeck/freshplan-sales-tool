@@ -21,6 +21,7 @@ jobs:
       matrix:
         browser: [chromium, firefox]
         # webkit excluded due to macOS 12 compatibility issues
+        # Testing CI pipeline with email throttling
 
     steps:
       - uses: actions/checkout@v4
