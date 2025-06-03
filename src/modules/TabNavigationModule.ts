@@ -66,8 +66,8 @@ export default class TabNavigationModule extends Module {
     
     // Listen for legacy tab switch events (Phase 3.2.1)
     if (this.legacyMode) {
-      this.on(window as any, TAB_EVENTS.SWITCH, (e: CustomEvent) => {
-        const { tab, source } = e.detail;
+      this.on(window as any, TAB_EVENTS.SWITCH, ((e: Event) => {
+        const { tab, source } = (e as CustomEvent).detail;
         
         // Only handle if from legacy source and valid tab
         if (source === 'legacy' && tab && this.isValidTab(tab)) {
@@ -77,7 +77,7 @@ export default class TabNavigationModule extends Module {
             this.switchTab(tab);
           }
         }
-      });
+      }) as EventListener);
     }
   }
 
@@ -397,12 +397,12 @@ export default class TabNavigationModule extends Module {
     console.warn('[TabNavigationModule] onTabChange() is deprecated. Use module event system instead.');
     
     // Create wrapper for legacy callback
-    const handler = (event: CustomEvent) => {
-      callback(event.detail.tab);
+    const handler = (event: Event) => {
+      callback((event as CustomEvent).detail.tab);
     };
     
     // Listen to both module events and window events
-    this.on(window as any, TAB_EVENTS.SWITCHED, handler);
+    this.on(window as any, TAB_EVENTS.SWITCHED, handler as EventListener);
     
     // Return unsubscribe function
     return () => {
