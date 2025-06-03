@@ -2,10 +2,10 @@ import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
   testDir: './e2e',
-  fullyParallel: false,  // No parallelism
+  fullyParallel: true,  // Enable parallelism
   forbidOnly: !!process.env.CI,
-  retries: 0,  // No retries
-  workers: 1,  // Single worker
+  retries: process.env.CI ? 1 : 0,  // 1 retry in CI for stability
+  workers: 2,  // 2 workers for parallel execution
   reporter: [['list']],
   
   use: {
