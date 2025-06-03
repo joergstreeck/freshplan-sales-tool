@@ -6,6 +6,13 @@ on:
       - "src/**"
       - "e2e/**"
       - ".github/workflows/smoke-tests.yml"
+  push:
+    branches:
+      - ci-mail-throttle  # Für Testzwecke
+    paths:
+      - "src/**"
+      - "e2e/**"
+      - ".github/workflows/smoke-tests.yml"
 
 jobs:
   playwright:
