@@ -4,6 +4,10 @@ on:
   push:
     branches:
       - ci-minimal-working
+      - main
+  schedule:
+    # Täglich um 2 Uhr nachts (UTC)
+    - cron: '0 2 * * *'
   workflow_dispatch:
 
 jobs:
@@ -41,8 +45,16 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: test-results
+          name: test-results-${{ matrix.browser }}
           path: |
             playwright-report/
             test-results/
           retention-days: 3
+      
+      - name: Upload HTML report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-${{ matrix.browser }}
+          path: playwright-report/
+          retention-days: 7

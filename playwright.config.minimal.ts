@@ -6,7 +6,10 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0,  // 1 retry in CI for stability
   workers: 2,  // 2 workers for parallel execution
-  reporter: [['list']],
+  reporter: [
+    ['list'],
+    ['html', { open: 'never' }]
+  ],
   
   use: {
     baseURL: 'http://localhost:3000',
