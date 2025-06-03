@@ -37,7 +37,7 @@ jobs:
           retention-days: 7
       
       - name: Send failure notification
-        if: failure()
+        if: failure() && github.run_attempt == 1
         uses: dawidd6/action-send-mail@v3
         with:
           server_address: ${{ secrets.MAIL_SERVER }}
