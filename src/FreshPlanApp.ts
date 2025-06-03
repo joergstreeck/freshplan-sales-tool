@@ -103,6 +103,9 @@ class FreshPlanApp {
       this.initialized = true;
       this.events.emit('app:initialized');
       
+      // Set global ready flag for tests
+      (window as any).__FP_APP_READY__ = true;
+      
       console.log('✅ FreshPlan App initialized successfully!');
       
     } catch (error) {

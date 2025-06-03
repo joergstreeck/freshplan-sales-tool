@@ -14,9 +14,32 @@ test.describe('CustomerModuleV2 Phase 2 - Basic Smoke Tests', () => {
     // Navigate with phase2 flag
     await page.goto('/?phase2=true');
     
-    // Wait for app initialization
+    // Wait for app initialization - try multiple strategies
     await page.waitForLoadState('networkidle');
-    await page.waitForTimeout(3000); // 3s für CI Vite-Start
+    
+    // Wait for app to be loaded (with multiple fallbacks)
+    const appReady = await Promise.race([
+      // Strategy 1: Wait for loaded class
+      page.waitForSelector('#app.loaded', { timeout: 30000 }).then(() => 'loaded-class'),
+      
+      // Strategy 2: Wait for global ready flag
+      page.waitForFunction(() => (window as any).__FP_APP_READY__ === true, { timeout: 30000 }).then(() => 'global-flag'),
+      
+      // Strategy 3: Wait 5s and check if app is visible
+      page.waitForTimeout(5000).then(async () => {
+        const appVisible = await page.locator('#app').isVisible();
+        const loadingHidden = await page.locator('#loading').isHidden().catch(() => true);
+        if (appVisible && loadingHidden) {
+          return 'visible-fallback';
+        }
+        throw new Error('App not ready after 5s');
+      })
+    ]).catch(err => {
+      console.error('All app ready strategies failed:', err);
+      throw new Error('App failed to initialize');
+    });
+    
+    console.log(`App ready via: ${appReady}`);
     
     // Navigate to customer tab
     await page.click('[data-tab="customer"]');
