@@ -28,7 +28,7 @@ jobs:
         run: npx playwright install --with-deps chromium
       
       - name: Run backup smoke tests
-        run: npm run test:e2e -- "e2e/backup-smoke.spec.ts" --reporter=list
+        run: npx playwright test e2e/backup-smoke.spec.ts --reporter=list
       
       - name: Upload test results
         uses: actions/upload-artifact@v4
