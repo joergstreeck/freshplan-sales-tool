@@ -15,7 +15,8 @@ import FreshPlanApp from './FreshPlanApp';
 
 // Check if we're in Phase 2 mode
 const urlParams = new URLSearchParams(window.location.search);
-const isPhase2 = urlParams.get('phase2') === 'true';
+const isPhase2 = urlParams.get('phase2') === 'true' || 
+                (import.meta.env.VITE_FORCE_PHASE2 === 'true');
 
 // Wait for DOM to be ready
 if (document.readyState === 'loading') {
