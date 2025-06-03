@@ -6,28 +6,106 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : undefined,
-  reporter: 'html',
+  reporter: [
+    ['html'],
+    ['json', { outputFile: 'test-results/results.json' }],
+    ['junit', { outputFile: 'test-results/junit.xml' }],
+  ],
   
   use: {
     baseURL: 'http://localhost:3000',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
+    video: process.env.CI ? 'retain-on-failure' : 'off',
+    // Viewport for consistent cross-browser testing
+    viewport: { width: 1280, height: 720 },
+    // Longer timeouts for CI
+    actionTimeout: process.env.CI ? 30000 : 10000,
+    navigationTimeout: process.env.CI ? 30000 : 10000,
   },
 
   projects: [
     {
       name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
+      use: { 
+        ...devices['Desktop Chrome'],
+        channel: 'chrome',
+      },
     },
     {
       name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
+      use: { 
+        ...devices['Desktop Firefox'],
+        // Firefox-specific settings
+        launchOptions: {
+          firefoxUserPrefs: {
+            // Disable Firefox's smooth scrolling for more consistent tests
+            'general.smoothScroll': false,
+          },
+        },
+      },
+    },
+    {
+      name: 'webkit',
+      use: { 
+        ...devices['Desktop Safari'],
+        // WebKit-specific settings for better CI compatibility
+        launchOptions: {
+          args: ['--no-sandbox'],
+        },
+      },
+    },
+    // Mobile testing (optional)
+    {
+      name: 'mobile-chrome',
+      use: { ...devices['Pixel 5'] },
+    },
+    {
+      name: 'mobile-safari',
+      use: { ...devices['iPhone 12'] },
     },
   ],
+
+  // Filter projects for smoke tests
+  ...(process.env.SMOKE_TEST && {
+    projects: [
+      {
+        name: 'chromium',
+        use: { 
+          ...devices['Desktop Chrome'],
+          channel: 'chrome',
+        },
+      },
+      {
+        name: 'firefox',
+        use: { 
+          ...devices['Desktop Firefox'],
+        },
+      },
+      {
+        name: 'webkit',
+        use: { 
+          ...devices['Desktop Safari'],
+        },
+      },
+    ],
+  }),
 
   webServer: {
     command: 'npm run dev',
     port: 3000,
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: true,   // <<< NEU – verhindert den Konflikt
+    timeout: 120000,
+  },
+
+  // Test output settings
+  outputDir: 'test-results/',
+  
+  // Global test timeout
+  timeout: process.env.CI ? 60000 : 30000,
+  
+  // Expect timeout
+  expect: {
+    timeout: process.env.CI ? 10000 : 5000,
   },
 });
