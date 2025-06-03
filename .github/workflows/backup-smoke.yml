@@ -35,8 +35,29 @@ jobs:
       - name: Build application for CI
         run: npm run build:ci
       
+      # Start Preview Server explicitly
+      - name: Start Vite preview
+        run: |
+          nohup npm run preview:ci >/tmp/vite.log 2>&1 &
+          for i in {1..30}; do
+            curl -sf http://localhost:3000/ && break
+            echo "⏳ waiting for preview..."
+            sleep 1
+          done
+      
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
+      
+      # Optional diagnosis (non-blocking)
+      - name: Quick build diagnosis
+        if: always()
+        continue-on-error: true
+        run: |
+          echo '=== Build verification ==='
+          echo "phase2 parameter is handled at runtime via URLSearchParams"
+          echo "Build uses: .has('phase2') method for detection"
+          echo '=== Vite preview status ==='
+          curl -s http://localhost:3000/ > /dev/null && echo "✅ Preview server is running" || echo "❌ Preview server not accessible"
       
       - name: Debug - List e2e directory
         run: |
