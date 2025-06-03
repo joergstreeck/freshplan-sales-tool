@@ -47,7 +47,8 @@ jobs:
           password: ${{ secrets.MAIL_PASSWORD }}
           subject: ⚠️ Smoke Tests Failed - ${{ github.repository }} - ${{ matrix.browser }}
           to: j.streeck@z-catering.de
-          from: FreshPlan CI <noreply@freshplan.de>
+          from: ${{ secrets.MAIL_USERNAME }}
+          from_name: FreshPlan CI
           body: |
             Smoke-Test-Job fehlgeschlagen!
             
