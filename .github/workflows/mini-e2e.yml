@@ -25,11 +25,13 @@ jobs:
       - name: Build
         run: npm run build:ci
       
-      - name: Install Playwright
-        run: npx playwright install --with-deps chromium
+      - name: Install Playwright Chromium only
+        run: |
+          npx playwright install chromium
+          npx playwright install-deps chromium
       
-      - name: Run healthcheck
-        run: npx playwright test healthcheck.spec.ts --config=playwright.config.minimal.ts
+      - name: Run minimal tests
+        run: npx playwright test healthcheck customer-phase2-basic-mini --config=playwright.config.minimal.ts
       
       - name: Upload results on failure
         if: failure()
