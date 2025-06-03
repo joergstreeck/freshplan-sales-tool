@@ -36,3 +36,7 @@ test-results/
 *.tmp
 *.temp
 .cache/
+
+# Archive & Backups
+.archive/
+*.bak
