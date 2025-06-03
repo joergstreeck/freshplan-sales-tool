@@ -1,0 +1,67 @@
+name: Backup Smoke Tests
+
+on:
+  schedule:
+    # Täglich um 02:00 UTC
+    - cron: '0 2 * * *'
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  backup-verification:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+      
+      - name: Build application
+        run: npm run build
+      
+      - name: Run backup smoke tests
+        run: npx playwright test e2e/backup-smoke.spec.ts --reporter=list
+      
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: backup-smoke-results
+          path: playwright-report/
+          retention-days: 7
+      
+      - name: Send failure notification
+        if: failure()
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: ${{ secrets.MAIL_SERVER }}
+          server_port: ${{ secrets.MAIL_PORT }}
+          secure: ${{ secrets.MAIL_SECURE }}
+          username: ${{ secrets.MAIL_USERNAME }}
+          password: ${{ secrets.MAIL_PASSWORD }}
+          subject: ⚠️ Backup Smoke Tests Failed - ${{ github.repository }}
+          to: j.streeck@z-catering.de
+          from: FreshPlan CI <noreply@freshplan.de>
+          body: |
+            Backup-Verifikations-Tests fehlgeschlagen!
+            
+            Repository: ${{ github.repository }}
+            Workflow: ${{ github.workflow }}
+            Trigger: ${{ github.event_name }}
+            Zeit: ${{ github.event.repository.updated_at }}
+            
+            Details: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+            
+            Dies könnte auf ein Problem mit dem Backup oder der Anwendung hinweisen.
+            Bitte überprüfen!

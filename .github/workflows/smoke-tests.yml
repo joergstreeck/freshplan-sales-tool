@@ -1,0 +1,60 @@
+name: Smoke Tests
+
+on:
+  pull_request:
+    paths:
+      - "src/**"
+      - "e2e/**"
+      - ".github/workflows/smoke-tests.yml"
+
+jobs:
+  playwright:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        browser: [chromium, firefox]
+        # webkit excluded due to macOS 12 compatibility issues
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+      - run: npm ci
+      - run: npx playwright install --with-deps
+      - name: Run smoke-suite on ${{ matrix.browser }}
+        run: |
+          npm run build             # kurzer Compile-Check
+          npx playwright test e2e/customer-phase2-basic.spec.ts \
+            --project=${{ matrix.browser }} --reporter=line
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-results-${{ matrix.browser }}
+          path: playwright-report/
+          retention-days: 7
+      
+      - name: Send failure notification
+        if: failure()
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: ${{ secrets.MAIL_SERVER }}
+          server_port: ${{ secrets.MAIL_PORT }}
+          secure: ${{ secrets.MAIL_SECURE }}
+          username: ${{ secrets.MAIL_USERNAME }}
+          password: ${{ secrets.MAIL_PASSWORD }}
+          subject: ⚠️ Smoke Tests Failed - ${{ github.repository }} - ${{ matrix.browser }}
+          to: j.streeck@z-catering.de
+          from: FreshPlan CI <noreply@freshplan.de>
+          body: |
+            Smoke-Test-Job fehlgeschlagen!
+            
+            Repository: ${{ github.repository }}
+            Browser: ${{ matrix.browser }}
+            Workflow: ${{ github.workflow }}
+            Commit: ${{ github.event.head_commit.message }}
+            Author: ${{ github.event.head_commit.author.name }}
+            
+            Details: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
