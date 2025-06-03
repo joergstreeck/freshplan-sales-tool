@@ -31,7 +31,7 @@ jobs:
         run: npm run build
       
       - name: Run backup smoke tests
-        run: npx playwright test e2e/backup-smoke.spec.ts --reporter=list
+        run: npm run test:e2e -- e2e/backup-smoke.spec.ts --reporter=list
       
       - name: Upload test results
         uses: actions/upload-artifact@v4
