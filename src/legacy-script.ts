@@ -11,21 +11,117 @@ import { TAB_EVENTS } from './constants/events';
 // Make functions available globally for inline onclick handlers
 declare global {
   interface Window {
-    updateCalculator: () => void;
-    changeLanguage: (lang: string) => void;
-    handleClearForm: () => void;
-    handleSaveForm: () => void;
-    loadExample: (type: string) => void;
-    formatCurrency: (input: HTMLInputElement) => void;
-    toggleLocationDetailsTab: (show: boolean) => void;
-    addLocationDetail: () => void;
-    startCreditCheck: () => void;
-    requestManagementApproval: () => void;
-    updateTotalLocations: () => void;
+    updateCalculator?: () => void;
+    changeLanguage?: (lang: string) => void;
+    handleClearForm?: () => void;
+    handleSaveForm?: () => void;
+    loadExample?: (type: string) => void;
+    formatCurrency?: (input: HTMLInputElement) => void;
+    toggleLocationDetailsTab?: (show: boolean) => void;
+    addLocationDetail?: () => void;
+    startCreditCheck?: () => void;
+    requestManagementApproval?: () => void;
+    updateTotalLocations?: () => void;
+  }
+}
+
+// Initialize tab functionality with event bridge
+// Extracted to be callable independently for phase2
+function initTabs() {
+  const tabs = document.querySelectorAll('.nav-tab');
+  const panels = document.querySelectorAll('.tab-panel');
+  
+  // Set up event bridge to listen for tab events from modules
+  window.addEventListener(TAB_EVENTS.SWITCHED, (event: any) => {
+    const { tab: newTab } = event.detail;
+    
+    // Update UI to reflect tab change from module
+    tabs.forEach(t => t.classList.remove('active'));
+    panels.forEach(p => p.classList.remove('active'));
+    
+    const targetButton = document.querySelector(`.nav-tab[data-tab="${newTab}"]`);
+    const targetPanel = document.getElementById(newTab);
+    
+    if (targetButton) {
+      targetButton.classList.add('active');
+    }
+    if (targetPanel) {
+      targetPanel.classList.add('active');
+    }
+  });
+  
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      const targetTab = tab.getAttribute('data-tab');
+      const currentTab = document.querySelector('.nav-tab.active')?.getAttribute('data-tab');
+      
+      // Emit event for modules to listen to
+      window.dispatchEvent(new CustomEvent(TAB_EVENTS.SWITCH, {
+        detail: { 
+          tab: targetTab, 
+          previousTab: currentTab,
+          source: 'legacy'
+        }
+      }));
+      
+      // Update active states
+      tabs.forEach(t => t.classList.remove('active'));
+      panels.forEach(p => p.classList.remove('active'));
+      
+      tab.classList.add('active');
+      const targetPanel = document.getElementById(targetTab!);
+      if (targetPanel) {
+        targetPanel.classList.add('active');
+      }
+      
+      // Update URL hash
+      window.location.hash = targetTab!;
+      
+      // Emit switched event
+      window.dispatchEvent(new CustomEvent(TAB_EVENTS.SWITCHED, {
+        detail: { 
+          tab: targetTab, 
+          previousTab: currentTab,
+          source: 'legacy'
+        }
+      }));
+    });
+  });
+  
+  // Handle initial hash
+  if (window.location.hash) {
+    const hashTab = window.location.hash.substring(1);
+    const hashButton = document.querySelector(`.nav-tab[data-tab="${hashTab}"]`);
+    if (hashButton) {
+      (hashButton as HTMLElement).click();
+    }
   }
 }
 
 export function initLegacyScript(): void {
+  // Phase 2 Check - Early Return Pattern
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('phase2') === 'true') {
+    console.log('🔄 Legacy script disabled - Phase 2 CustomerModule active');
+    
+    // Remove all onclick attributes AND handlers to prevent legacy interference
+    document.querySelectorAll('[onclick]').forEach(element => {
+      console.log(`🧹 Removing onclick from: ${element.className || element.tagName}`);
+      (element as HTMLElement).onclick = null; // Remove handler from registry
+      element.removeAttribute('onclick'); // Remove attribute
+    });
+    
+    // Still need to initialize tab navigation for phase2
+    initTabs();
+    
+    // Optional: Emit event for monitoring
+    window.dispatchEvent(new CustomEvent('legacy:skipped', { 
+      detail: { module: 'customer', reason: 'phase2' } 
+    }));
+    
+    return;
+  }
+
   // Mark legacy script as active for TabNavigationModule
   (window as any).__LEGACY_SCRIPT_ACTIVE = true;
   // Translations
@@ -588,78 +684,6 @@ export function initLegacyScript(): void {
   
   // Initialize current language
   let currentLanguage = 'de';
-  
-  // Initialize tab functionality with event bridge
-  function initTabs() {
-    const tabs = document.querySelectorAll('.nav-tab');
-    const panels = document.querySelectorAll('.tab-panel');
-    
-    // Set up event bridge to listen for tab events from modules
-    window.addEventListener(TAB_EVENTS.SWITCHED, (event: any) => {
-      const { tab: newTab } = event.detail;
-      
-      // Update UI to reflect tab change from module
-      tabs.forEach(t => t.classList.remove('active'));
-      panels.forEach(p => p.classList.remove('active'));
-      
-      const targetButton = document.querySelector(`.nav-tab[data-tab="${newTab}"]`);
-      const targetPanel = document.getElementById(newTab);
-      
-      if (targetButton) {
-        targetButton.classList.add('active');
-      }
-      if (targetPanel) {
-        targetPanel.classList.add('active');
-      }
-    });
-    
-    tabs.forEach(tab => {
-      tab.addEventListener('click', () => {
-        const targetTab = tab.getAttribute('data-tab');
-        const currentTab = document.querySelector('.nav-tab.active')?.getAttribute('data-tab');
-        
-        // Emit event for modules to listen to
-        window.dispatchEvent(new CustomEvent(TAB_EVENTS.SWITCH, {
-          detail: { 
-            tab: targetTab, 
-            previousTab: currentTab,
-            source: 'legacy'
-          }
-        }));
-        
-        // Update active states
-        tabs.forEach(t => t.classList.remove('active'));
-        panels.forEach(p => p.classList.remove('active'));
-        
-        tab.classList.add('active');
-        const targetPanel = document.getElementById(targetTab!);
-        if (targetPanel) {
-          targetPanel.classList.add('active');
-        }
-        
-        // Update URL hash
-        window.location.hash = targetTab!;
-        
-        // Emit switched event
-        window.dispatchEvent(new CustomEvent(TAB_EVENTS.SWITCHED, {
-          detail: { 
-            tab: targetTab, 
-            previousTab: currentTab,
-            source: 'legacy'
-          }
-        }));
-      });
-    });
-    
-    // Handle initial hash
-    if (window.location.hash) {
-      const hashTab = window.location.hash.substring(1);
-      const hashButton = document.querySelector(`.nav-tab[data-tab="${hashTab}"]`);
-      if (hashButton) {
-        (hashButton as HTMLElement).click();
-      }
-    }
-  }
   
   // Calculator functionality
   function updateCalculator() {

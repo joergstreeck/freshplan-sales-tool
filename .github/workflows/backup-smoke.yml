@@ -64,7 +64,6 @@ jobs:
           subject: ⚠️ Backup Smoke Tests Failed - ${{ github.repository }}
           to: j.streeck@z-catering.de
           from: ${{ secrets.MAIL_USERNAME }}
-          from_name: FreshPlan CI
           body: |
             Backup-Verifikations-Tests fehlgeschlagen!
             

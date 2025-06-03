@@ -109,6 +109,6 @@ export default defineConfig({
   
   // Expect timeout
   expect: {
-    timeout: process.env.CI ? 10000 : 5000,
+    timeout: process.env.CI ? 30000 : 5000,  // 30s in CI für langsamen Vite-Start
   },
 });

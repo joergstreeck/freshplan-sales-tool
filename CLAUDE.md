@@ -1,9 +1,19 @@
 # Arbeitsrichtlinien für Claude im FreshPlan Sales Tool Projekt
 
+## 0. Grundlegende Arbeitsphilosophie
+
+**🎯 UNSERE DEVISE: GRÜNDLICHKEIT GEHT VOR SCHNELLIGKEIT**
+
+- Jede Implementierung muss gründlich getestet werden
+- Keine Quick-Fixes oder Workarounds ohne Dokumentation
+- Denke immer an die zukünftigen Integrationen und Erweiterungen
+- Was wir jetzt richtig machen, erspart uns später Arbeit
+- Siehe `VISION_AND_ROADMAP.md` für die langfristige Ausrichtung des Projekts
+
 ## 1. Projektübersicht und Ziele
 
 **Projektname:** FreshPlan Sales Tool
-**Hauptziel:** Entwicklung eines modernen, robusten und benutzerfreundlichen Verkaufstools.
+**Hauptziel:** Entwicklung eines modernen, robusten und benutzerfreundlichen Verkaufstools mit starkem Fundament für zukünftige Integrationen.
 **Aktuelle Phase:** Phase 2 - Refactoring und Stabilisierung. Fokus auf Code-Qualität, Testabdeckung und Vorbereitung für zukünftige Features.
 **Wichtigstes aktuelles Ziel:** Sicherstellung eines stabilen Standalone-Builds (`npm run build:standalone`) und Behebung der "Known Issues".
 
@@ -14,6 +24,12 @@
 3.  **Inkrementell Arbeiten:** Implementiere in kleinen, nachvollziehbaren Schritten. Teste häufig.
 4.  **Fokus:** Konzentriere dich auf die aktuelle Aufgabe. Vermeide Scope Creep.
 5.  **Claude-Protokoll:** Führe ein Markdown-Protokoll über deine Schritte, Entscheidungen und Testergebnisse für die aktuelle Aufgabe.
+6.  **Gründlichkeit:** Führe IMMER umfassende Tests durch:
+    - Unit-Tests für alle neuen Funktionen
+    - Integration-Tests für Modul-Interaktionen
+    - Manuelle Tests in verschiedenen Browsern
+    - Performance-Tests bei größeren Änderungen
+    - Dokumentiere alle Testergebnisse
 
 ## 3. Wichtige Befehle und Werkzeuge
 
@@ -56,7 +72,23 @@
 * **Übersetzung dynamischer Tabs:** Ein bekanntes Problem. Workaround wird in Phase 2 gesucht.
 * **Performance bei großen Datenmengen:** Bei der Verarbeitung sehr vieler Positionen im Calculator kann es zu Verzögerungen kommen. Optimierungen sind für spätere Phasen geplant.
 
-## 6. Plan für Phase 2 (Refactoring)
+## 6. Test-Standards und Qualitätssicherung
+
+**WICHTIG: Keine Implementierung ohne ausreichende Tests!**
+
+### Minimale Test-Anforderungen:
+1. **Unit-Tests**: Mindestens 80% Coverage für neue Module
+2. **Integration-Tests**: Alle Modul-Interaktionen müssen getestet werden
+3. **Browser-Tests**: Chrome, Firefox, Safari (mindestens)
+4. **Performance-Tests**: Bei kritischen Komponenten
+5. **Manuelle Tests**: Vollständige User-Flows durchspielen
+
+### Test-Dokumentation:
+- Erstelle immer einen Test-Report
+- Dokumentiere gefundene Probleme
+- Notiere Edge-Cases und Limitierungen
+
+## 7. Plan für Phase 2 (Refactoring)
 
 (Basierend auf dem Plan, den wir mit Gemini entwickelt haben)
 
@@ -77,3 +109,14 @@
 **Block D: Dokumentation und Abschluss**
     9. Technische Dokumentation aktualisieren.
     10. Finale Testrunde und Stabilitätsprüfung.
+
+## 8. Zukunftsorientierung
+
+**Denke bei jeder Implementierung an:**
+- Skalierbarkeit für große Datenmengen
+- Erweiterbarkeit für neue Features
+- Integration mit externen Systemen (Monday.com, Klenty, etc.)
+- Wartbarkeit des Codes
+- Performance-Optimierung
+
+Siehe `VISION_AND_ROADMAP.md` für Details zu geplanten Integrationen und Features.

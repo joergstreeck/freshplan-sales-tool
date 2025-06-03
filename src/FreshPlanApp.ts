@@ -18,10 +18,14 @@ import PDFModule from './modules/PDFModule';
 import i18nModule from './modules/i18nModule';
 import LocationsModule from './modules/LocationsModule';
 
+// Phase 2 modules (optional)
+import CustomerModuleV2 from './modules/CustomerModuleV2';
+import { observeCustomerFormReady } from './utils/domReadyObserver';
+
 interface ModuleMap {
   tabs: TabNavigationModule;
   calculator: CalculatorModule;
-  customer: CustomerModule;
+  customer: CustomerModule | CustomerModuleV2;
   settings: SettingsModule;
   profile: ProfileModule;
   pdf: PDFModule;
@@ -139,7 +143,35 @@ class FreshPlanApp {
     // Core modules
     this.registerModule('tabs', new TabNavigationModule());
     this.registerModule('calculator', new CalculatorModule());
-    this.registerModule('customer', new CustomerModule());
+    
+    // Use Phase 2 CustomerModuleV2 if enabled
+    const useV2 = new URLSearchParams(window.location.search).get('phase2') === 'true';
+    if (useV2) {
+      console.log('🔄 Using CustomerModuleV2 (Phase 2) with DOM Observer');
+      console.log('📍 Current URL:', window.location.href);
+      console.log('📍 Customer form exists:', !!document.getElementById('customerForm'));
+      
+      // Register module only when customer form is ready
+      observeCustomerFormReady(() => {
+        console.log('🎯 DOM Observer callback fired - initializing CustomerModuleV2');
+        const customerModule = new CustomerModuleV2();
+        this.registerModule('customer', customerModule);
+        console.log('📦 CustomerModuleV2 registered');
+        
+        // Initialize the module after registration
+        customerModule.setup().then(() => {
+          console.log('🔧 CustomerModuleV2 setup complete, binding events...');
+          customerModule.bindEvents();
+          customerModule.subscribeToState();
+          console.log('✅ CustomerModuleV2 fully initialized');
+        }).catch(error => {
+          console.error('❌ CustomerModuleV2 initialization failed:', error);
+        });
+      });
+    } else {
+      this.registerModule('customer', new CustomerModule());
+    }
+    
     this.registerModule('settings', new SettingsModule());
     this.registerModule('profile', new ProfileModule());
     this.registerModule('pdf', new PDFModule());

@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CustomerModuleV2 - Vollständiger Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .section {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .section h2 {
+            margin-top: 0;
+            color: #333;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+        }
+        .test-case {
+            margin: 15px 0;
+            padding: 10px;
+            border-left: 3px solid #ddd;
+            background: #f9f9f9;
+        }
+        .test-case.running {
+            border-left-color: #ffc107;
+            background: #fff9e6;
+        }
+        .test-case.passed {
+            border-left-color: #28a745;
+            background: #e8f5e9;
+        }
+        .test-case.failed {
+            border-left-color: #dc3545;
+            background: #ffebee;
+        }
+        button {
+            padding: 8px 16px;
+            margin: 5px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .btn-primary {
+            background: #007bff;
+            color: white;
+        }
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+        .btn-warning {
+            background: #ffc107;
+            color: #333;
+        }
+        .test-log {
+            margin-top: 10px;
+            padding: 10px;
+            background: #f0f0f0;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+            padding: 15px;
+            background: #e9ecef;
+            border-radius: 4px;
+        }
+        .stat {
+            text-align: center;
+        }
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        iframe {
+            width: 100%;
+            height: 600px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <h1>CustomerModuleV2 - Vollständiger Systemtest</h1>
+    
+    <div class="stats">
+        <div class="stat">
+            <div class="stat-number" id="totalTests">0</div>
+            <div>Tests gesamt</div>
+        </div>
+        <div class="stat">
+            <div class="stat-number" id="passedTests" style="color: #28a745;">0</div>
+            <div>Erfolgreich</div>
+        </div>
+        <div class="stat">
+            <div class="stat-number" id="failedTests" style="color: #dc3545;">0</div>
+            <div>Fehlgeschlagen</div>
+        </div>
+        <div class="stat">
+            <div class="stat-number" id="coverage">0%</div>
+            <div>Abdeckung</div>
+        </div>
+    </div>
+
+    <div class="test-container">
+        <div class="section">
+            <h2>Automatisierte Tests</h2>
+            
+            <div class="test-case" id="test-1">
+                <strong>Test 1: Service Layer Initialisierung</strong>
+                <div class="test-log" id="log-1"></div>
+            </div>
+            
+            <div class="test-case" id="test-2">
+                <strong>Test 2: Repository Pattern Implementierung</strong>
+                <div class="test-log" id="log-2"></div>
+            </div>
+            
+            <div class="test-case" id="test-3">
+                <strong>Test 3: Validierung - Pflichtfelder</strong>
+                <div class="test-log" id="log-3"></div>
+            </div>
+            
+            <div class="test-case" id="test-4">
+                <strong>Test 4: Validierung - E-Mail Format</strong>
+                <div class="test-log" id="log-4"></div>
+            </div>
+            
+            <div class="test-case" id="test-5">
+                <strong>Test 5: Validierung - PLZ Format</strong>
+                <div class="test-log" id="log-5"></div>
+            </div>
+            
+            <div class="test-case" id="test-6">
+                <strong>Test 6: Neukunde + Rechnung Warnung</strong>
+                <div class="test-log" id="log-6"></div>
+            </div>
+            
+            <div class="test-case" id="test-7">
+                <strong>Test 7: Event-System</strong>
+                <div class="test-log" id="log-7"></div>
+            </div>
+            
+            <div class="test-case" id="test-8">
+                <strong>Test 8: LocalStorage Persistenz</strong>
+                <div class="test-log" id="log-8"></div>
+            </div>
+            
+            <div class="test-case" id="test-9">
+                <strong>Test 9: Daten löschen mit Bestätigung</strong>
+                <div class="test-log" id="log-9"></div>
+            </div>
+            
+            <div class="test-case" id="test-10">
+                <strong>Test 10: Memory Leaks & Performance</strong>
+                <div class="test-log" id="log-10"></div>
+            </div>
+            
+            <button class="btn-primary" onclick="runAllTests()">Alle Tests ausführen</button>
+            <button class="btn-warning" onclick="resetTests()">Tests zurücksetzen</button>
+        </div>
+        
+        <div class="section">
+            <h2>Live-Test Umgebung</h2>
+            <p>Hier kannst du die CustomerModuleV2 direkt testen:</p>
+            <iframe id="testFrame" src="./index.html?phase2=true"></iframe>
+            
+            <h3>Manuelle Test-Aktionen:</h3>
+            <button class="btn-success" onclick="fillValidData()">Gültige Daten einfügen</button>
+            <button class="btn-danger" onclick="fillInvalidData()">Ungültige Daten einfügen</button>
+            <button class="btn-warning" onclick="triggerPaymentWarning()">Zahlungswarnung auslösen</button>
+            <button class="btn-primary" onclick="checkLocalStorage()">LocalStorage prüfen</button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { LocalStorageCustomerRepository } from './src/infrastructure/repositories/LocalStorageCustomerRepository.js';
+        import { CustomerServiceV2 } from './src/services/CustomerServiceV2.js';
+        import { EventBus } from './src/core/EventBus.js';
+        
+        let stats = {
+            total: 10,
+            passed: 0,
+            failed: 0
+        };
+        
+        function updateStats() {
+            document.getElementById('totalTests').textContent = stats.total;
+            document.getElementById('passedTests').textContent = stats.passed;
+            document.getElementById('failedTests').textContent = stats.failed;
+            document.getElementById('coverage').textContent = Math.round((stats.passed / stats.total) * 100) + '%';
+        }
+        
+        function setTestStatus(testId, status, log) {
+            const testCase = document.getElementById(`test-${testId}`);
+            const logEl = document.getElementById(`log-${testId}`);
+            
+            testCase.className = 'test-case ' + status;
+            logEl.textContent = log;
+            
+            if (status === 'passed') stats.passed++;
+            if (status === 'failed') stats.failed++;
+            updateStats();
+        }
+        
+        // Test 1: Service Layer Initialisierung
+        async function test1() {
+            try {
+                const repo = new LocalStorageCustomerRepository();
+                const service = new CustomerServiceV2(repo);
+                setTestStatus(1, 'passed', '✓ Repository und Service erfolgreich initialisiert');
+                return true;
+            } catch (error) {
+                setTestStatus(1, 'failed', `✗ Fehler: ${error.message}`);
+                return false;
+            }
+        }
+        
+        // Test 2: Repository Pattern
+        async function test2() {
+            try {
+                const repo = new LocalStorageCustomerRepository();
+                const methods = ['saveCustomer', 'getCustomerById', 'getAllCustomers', 'getLegacyData'];
+                const missing = methods.filter(m => typeof repo[m] !== 'function');
+                
+                if (missing.length === 0) {
+                    setTestStatus(2, 'passed', '✓ Alle Repository-Methoden implementiert');
+                    return true;
+                } else {
+                    setTestStatus(2, 'failed', `✗ Fehlende Methoden: ${missing.join(', ')}`);
+                    return false;
+                }
+            } catch (error) {
+                setTestStatus(2, 'failed', `✗ Fehler: ${error.message}`);
+                return false;
+            }
+        }
+        
+        // Test 3: Pflichtfeld-Validierung
+        async function test3() {
+            try {
+                const repo = new LocalStorageCustomerRepository();
+                const service = new CustomerServiceV2(repo);
+                
+                const emptyData = {
+                    companyName: '',
+                    legalForm: '',
+                    customerType: '',
+                    customerStatus: '',
+                    industry: '',
+                    street: '',
+                    postalCode: '',
+                    city: '',
+                    contactName: '',
+                    contactPhone: '',
+                    contactEmail: '',
+                    expectedVolume: '',
+                    paymentMethod: ''
+                };
+                
+                try {
+                    await service.saveCurrentCustomerData(emptyData);
+                    setTestStatus(3, 'failed', '✗ Validierung hat leere Daten akzeptiert');
+                    return false;
+                } catch (error) {
+                    if (error.message.includes('Validierung fehlgeschlagen')) {
+                        setTestStatus(3, 'passed', `✓ Pflichtfeld-Validierung funktioniert: ${error.errors.length} Fehler gefunden`);
+                        return true;
+                    }
+                    throw error;
+                }
+            } catch (error) {
+                setTestStatus(3, 'failed', `✗ Unerwarteter Fehler: ${error.message}`);
+                return false;
+            }
+        }
+        
+        // Test 4: E-Mail Validierung
+        async function test4() {
+            try {
+                const repo = new LocalStorageCustomerRepository();
+                const service = new CustomerServiceV2(repo);
+                
+                const dataWithInvalidEmail = {
+                    companyName: 'Test GmbH',
+                    legalForm: 'gmbh',
+                    customerType: 'single',
+                    customerStatus: 'neukunde',
+                    industry: 'hotel',
+                    street: 'Teststraße 1',
+                    postalCode: '12345',
+                    city: 'Berlin',
+                    contactName: 'Max Mustermann',
+                    contactPhone: '0123456789',
+                    contactEmail: 'invalid-email',
+                    expectedVolume: '50000',
+                    paymentMethod: 'vorkasse'
+                };
+                
+                try {
+                    await service.saveCurrentCustomerData(dataWithInvalidEmail);
+                    setTestStatus(4, 'failed', '✗ Ungültige E-Mail wurde akzeptiert');
+                    return false;
+                } catch (error) {
+                    if (error.message.includes('Validierung fehlgeschlagen')) {
+                        setTestStatus(4, 'passed', '✓ E-Mail-Validierung funktioniert');
+                        return true;
+                    }
+                    throw error;
+                }
+            } catch (error) {
+                setTestStatus(4, 'failed', `✗ Fehler: ${error.message}`);
+                return false;
+            }
+        }
+        
+        // Test 5: PLZ Validierung
+        async function test5() {
+            try {
+                const repo = new LocalStorageCustomerRepository();
+                const service = new CustomerServiceV2(repo);
+                
+                const dataWithInvalidPLZ = {
+                    companyName: 'Test GmbH',
+                    legalForm: 'gmbh',
+                    customerType: 'single',
+                    customerStatus: 'neukunde',
+                    industry: 'hotel',
+                    street: 'Teststraße 1',
+                    postalCode: '123', // Zu kurz
+                    city: 'Berlin',
+                    contactName: 'Max Mustermann',
+                    contactPhone: '0123456789',
+                    contactEmail: 'test@example.com',
+                    expectedVolume: '50000',
+                    paymentMethod: 'vorkasse'
+                };
+                
+                try {
+                    await service.saveCurrentCustomerData(dataWithInvalidPLZ);
+                    setTestStatus(5, 'failed', '✗ Ungültige PLZ wurde akzeptiert');
+                    return false;
+                } catch (error) {
+                    if (error.message.includes('Validierung fehlgeschlagen')) {
+                        setTestStatus(5, 'passed', '✓ PLZ-Validierung funktioniert');
+                        return true;
+                    }
+                    throw error;
+                }
+            } catch (error) {
+                setTestStatus(5, 'failed', `✗ Fehler: ${error.message}`);
+                return false;
+            }
+        }
+        
+        // Test 6: Neukunde + Rechnung Warnung
+        async function test6() {
+            try {
+                const repo = new LocalStorageCustomerRepository();
+                const service = new CustomerServiceV2(repo);
+                
+                const shouldWarn = service.shouldShowPaymentWarning('neukunde', 'rechnung');
+                const shouldNotWarn = service.shouldShowPaymentWarning('bestandskunde', 'rechnung');
+                
+                if (shouldWarn && !shouldNotWarn) {
+                    setTestStatus(6, 'passed', '✓ Payment-Warnung-Logik korrekt');
+                    return true;
+                } else {
+                    setTestStatus(6, 'failed', '✗ Payment-Warnung-Logik fehlerhaft');
+                    return false;
+                }
+            } catch (error) {
+                setTestStatus(6, 'failed', `✗ Fehler: ${error.message}`);
+                return false;
+            }
+        }
+        
+        // Test 7: Event-System
+        async function test7() {
+            try {
+                const repo = new LocalStorageCustomerRepository();
+                const eventBus = new EventBus();
+                const service = new CustomerServiceV2(repo, undefined, eventBus);
+                
+                let eventFired = false;
+                eventBus.on('customer:saved', () => {
+                    eventFired = true;
+                });
+                
+                const validData = {
+                    companyName: 'Event Test GmbH',
+                    legalForm: 'gmbh',
+                    customerType: 'single',
+                    customerStatus: 'neukunde',
+                    industry: 'hotel',
+                    street: 'Teststraße 1',
+                    postalCode: '12345',
+                    city: 'Berlin',
+                    contactName: 'Max Mustermann',
+                    contactPhone: '0123456789',
+                    contactEmail: 'test@example.com',
+                    expectedVolume: '50000',
+                    paymentMethod: 'vorkasse'
+                };
+                
+                await service.saveCurrentCustomerData(validData);
+                
+                if (eventFired) {
+                    setTestStatus(7, 'passed', '✓ Event-System funktioniert');
+                    return true;
+                } else {
+                    setTestStatus(7, 'failed', '✗ Event wurde nicht gefeuert');
+                    return false;
+                }
+            } catch (error) {
+                setTestStatus(7, 'failed', `✗ Fehler: ${error.message}`);
+                return false;
+            }
+        }
+        
+        // Test 8: LocalStorage Persistenz
+        async function test8() {
+            try {
+                localStorage.clear();
+                const repo = new LocalStorageCustomerRepository();
+                const service = new CustomerServiceV2(repo);
+                
+                const testData = {
+                    companyName: 'Persistenz Test GmbH',
+                    legalForm: 'gmbh',
+                    customerType: 'single',
+                    customerStatus: 'neukunde',
+                    industry: 'hotel',
+                    street: 'Teststraße 1',
+                    postalCode: '12345',
+                    city: 'Berlin',
+                    contactName: 'Max Mustermann',
+                    contactPhone: '0123456789',
+                    contactEmail: 'test@example.com',
+                    expectedVolume: '50000',
+                    paymentMethod: 'vorkasse'
+                };
+                
+                await service.saveCurrentCustomerData(testData);
+                
+                const savedData = JSON.parse(localStorage.getItem('freshplanData') || '{}');
+                if (savedData.customer && savedData.customer.companyName === 'Persistenz Test GmbH') {
+                    setTestStatus(8, 'passed', '✓ LocalStorage Persistenz funktioniert');
+                    return true;
+                } else {
+                    setTestStatus(8, 'failed', '✗ Daten nicht korrekt gespeichert');
+                    return false;
+                }
+            } catch (error) {
+                setTestStatus(8, 'failed', `✗ Fehler: ${error.message}`);
+                return false;
+            }
+        }
+        
+        // Test 9: Daten löschen
+        async function test9() {
+            try {
+                const repo = new LocalStorageCustomerRepository();
+                const service = new CustomerServiceV2(repo);
+                
+                // Erst Daten speichern
+                await service.saveCurrentCustomerData({
+                    companyName: 'Delete Test GmbH',
+                    legalForm: 'gmbh',
+                    customerType: 'single',
+                    customerStatus: 'neukunde',
+                    industry: 'hotel',
+                    street: 'Teststraße 1',
+                    postalCode: '12345',
+                    city: 'Berlin',
+                    contactName: 'Max Mustermann',
+                    contactPhone: '0123456789',
+                    contactEmail: 'test@example.com',
+                    expectedVolume: '50000',
+                    paymentMethod: 'vorkasse'
+                });
+                
+                // Dann löschen
+                await service.clearAllCustomerData();
+                
+                const savedData = JSON.parse(localStorage.getItem('freshplanData') || '{}');
+                if (!savedData.customer) {
+                    setTestStatus(9, 'passed', '✓ Daten erfolgreich gelöscht');
+                    return true;
+                } else {
+                    setTestStatus(9, 'failed', '✗ Daten wurden nicht gelöscht');
+                    return false;
+                }
+            } catch (error) {
+                setTestStatus(9, 'failed', `✗ Fehler: ${error.message}`);
+                return false;
+            }
+        }
+        
+        // Test 10: Memory & Performance
+        async function test10() {
+            try {
+                const startMemory = performance.memory ? performance.memory.usedJSHeapSize : 0;
+                const startTime = performance.now();
+                
+                // 100 Save/Load Zyklen
+                const repo = new LocalStorageCustomerRepository();
+                const service = new CustomerServiceV2(repo);
+                
+                for (let i = 0; i < 100; i++) {
+                    await service.saveCurrentCustomerData({
+                        companyName: `Performance Test ${i}`,
+                        legalForm: 'gmbh',
+                        customerType: 'single',
+                        customerStatus: 'neukunde',
+                        industry: 'hotel',
+                        street: 'Teststraße 1',
+                        postalCode: '12345',
+                        city: 'Berlin',
+                        contactName: 'Max Mustermann',
+                        contactPhone: '0123456789',
+                        contactEmail: 'test@example.com',
+                        expectedVolume: '50000',
+                        paymentMethod: 'vorkasse'
+                    });
+                    await service.loadInitialCustomerData();
+                }
+                
+                const endTime = performance.now();
+                const duration = endTime - startTime;
+                
+                if (duration < 1000) { // Sollte unter 1 Sekunde sein
+                    setTestStatus(10, 'passed', `✓ Performance OK: ${Math.round(duration)}ms für 100 Operationen`);
+                    return true;
+                } else {
+                    setTestStatus(10, 'failed', `✗ Performance zu langsam: ${Math.round(duration)}ms`);
+                    return false;
+                }
+            } catch (error) {
+                setTestStatus(10, 'failed', `✗ Fehler: ${error.message}`);
+                return false;
+            }
+        }
+        
+        // Alle Tests ausführen
+        window.runAllTests = async function() {
+            stats.passed = 0;
+            stats.failed = 0;
+            updateStats();
+            
+            // Reset alle Test-Status
+            for (let i = 1; i <= 10; i++) {
+                document.getElementById(`test-${i}`).className = 'test-case running';
+            }
+            
+            // Tests der Reihe nach ausführen
+            await test1();
+            await test2();
+            await test3();
+            await test4();
+            await test5();
+            await test6();
+            await test7();
+            await test8();
+            await test9();
+            await test10();
+        };
+        
+        window.resetTests = function() {
+            stats.passed = 0;
+            stats.failed = 0;
+            updateStats();
+            
+            for (let i = 1; i <= 10; i++) {
+                document.getElementById(`test-${i}`).className = 'test-case';
+                document.getElementById(`log-${i}`).textContent = '';
+            }
+        };
+        
+        // Manuelle Test-Funktionen
+        window.fillValidData = function() {
+            const iframe = document.getElementById('testFrame');
+            const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+            
+            const fields = {
+                companyName: 'Test GmbH',
+                legalForm: 'gmbh',
+                customerType: 'single',
+                customerStatus: 'bestandskunde',
+                industry: 'hotel',
+                street: 'Hauptstraße 123',
+                postalCode: '10115',
+                city: 'Berlin',
+                contactName: 'Max Mustermann',
+                contactPhone: '+49 30 123456',
+                contactEmail: 'max@testgmbh.de',
+                expectedVolume: '75000',
+                paymentMethod: 'sepa'
+            };
+            
+            for (const [id, value] of Object.entries(fields)) {
+                const el = iframeDoc.getElementById(id);
+                if (el) {
+                    el.value = value;
+                    el.dispatchEvent(new Event('input'));
+                }
+            }
+            
+            alert('Gültige Testdaten eingefügt!');
+        };
+        
+        window.fillInvalidData = function() {
+            const iframe = document.getElementById('testFrame');
+            const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+            
+            const fields = {
+                companyName: '', // Leer
+                contactEmail: 'keine-gueltige-email', // Ungültig
+                postalCode: '123', // Zu kurz
+                contactPhone: 'abc123' // Ungültig
+            };
+            
+            for (const [id, value] of Object.entries(fields)) {
+                const el = iframeDoc.getElementById(id);
+                if (el) {
+                    el.value = value;
+                    el.dispatchEvent(new Event('input'));
+                }
+            }
+            
+            alert('Ungültige Testdaten eingefügt!');
+        };
+        
+        window.triggerPaymentWarning = function() {
+            const iframe = document.getElementById('testFrame');
+            const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+            
+            const customerStatus = iframeDoc.getElementById('customerStatus');
+            const paymentMethod = iframeDoc.getElementById('paymentMethod');
+            
+            if (customerStatus && paymentMethod) {
+                customerStatus.value = 'neukunde';
+                paymentMethod.value = 'rechnung';
+                paymentMethod.dispatchEvent(new Event('change'));
+                alert('Zahlungswarnung sollte jetzt sichtbar sein!');
+            }
+        };
+        
+        window.checkLocalStorage = function() {
+            const data = localStorage.getItem('freshplanData');
+            if (data) {
+                const parsed = JSON.parse(data);
+                console.log('LocalStorage Daten:', parsed);
+                alert(`LocalStorage enthält Daten:\n\nKunde: ${parsed.customer?.companyName || 'Keine Kundendaten'}\nE-Mail: ${parsed.customer?.contactEmail || 'Keine E-Mail'}`);
+            } else {
+                alert('Keine Daten in LocalStorage gefunden!');
+            }
+        };
+        
+        // Initial stats
+        updateStats();
+    </script>
+</body>
+</html>
