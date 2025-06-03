@@ -6,6 +6,7 @@
 import EventBus from './EventBus';
 import StateManager, { type StateChangeEvent } from './StateManager';
 import DOMHelper from './DOMHelper';
+import { DebugLogger } from '../utils/debug';
 import type { ModuleConfig, Notification } from '../types';
 
 export type ModuleState = Record<string, any>;
@@ -234,8 +235,42 @@ export default abstract class Module implements ModuleLifecycle {
     handler?: (e: Event) => void,
     options?: AddEventListenerOptions
   ): void {
-    const unsubscribe = this.dom.on(target, event, selectorOrHandler, handler, options);
-    this.eventHandlers.push(unsubscribe);
+    // Debug logging
+    DebugLogger.log(this.name, `Binding event ${event}`, {
+      target: typeof target === 'string' ? target : (target as any).constructor.name,
+      hasHandler: !!handler || typeof selectorOrHandler === 'function'
+    });
+    
+    // Implement event binding directly since DOMHelper doesn't have an 'on' method
+    let cleanup: CleanupFn;
+    
+    if (typeof target === 'string') {
+      // Selector-based event binding
+      const selector = target;
+      const actualHandler = typeof selectorOrHandler === 'function' ? selectorOrHandler : handler!;
+      
+      const delegatedHandler = (e: Event) => {
+        const targetElement = e.target as Element;
+        const matchedElement = targetElement.closest(selector);
+        if (matchedElement) {
+          actualHandler.call(matchedElement, e);
+        }
+      };
+      
+      document.addEventListener(event, delegatedHandler, options);
+      cleanup = () => document.removeEventListener(event, delegatedHandler, options);
+    } else {
+      // Direct element binding
+      const element = target as Element;
+      const actualHandler = typeof selectorOrHandler === 'function' ? selectorOrHandler : handler!;
+      
+      element.addEventListener(event, actualHandler as EventListener, options);
+      cleanup = () => element.removeEventListener(event, actualHandler as EventListener, options);
+    }
+    
+    this.eventHandlers.push(cleanup);
+    
+    DebugLogger.log(this.name, `Event ${event} bound successfully`);
   }
 
   /**

@@ -39,5 +39,88 @@
   },
   "autosave": {
     "saving": "Speichern..."
+  },
+  "common": {
+    "remove": "Entfernen",
+    "pleaseSelect": "Bitte wählen"
+  },
+  "addLocation": "+ Standort hinzufügen",
+  "locationDetails": {
+    "locationTitle": "Standort",
+    "locationName": "Standortname*",
+    "category": "Kategorie",
+    "mainLocation": "Hauptstandort",
+    "branch": "Filiale",
+    "externalOffice": "Außenstelle",
+    "streetAndNumber": "Straße und Hausnummer*",
+    "postalCode": "PLZ*",
+    "city": "Ort*",
+    "contactName": "Ansprechpartner Name",
+    "contactPhone": "Telefon",
+    "contactEmail": "E-Mail"
+  },
+  "locations": {
+    "services": "Services",
+    "hotel": {
+      "categorization": "Hotel-Kategorisierung",
+      "small": "Klein (bis 50 Zimmer)",
+      "medium": "Mittel (51-150 Zimmer)",
+      "large": "Groß (über 150 Zimmer)",
+      "unit": "Hotels",
+      "breakfast": "Frühstücksservice",
+      "restaurant": "Restaurant à la carte",
+      "roomService": "Room Service",
+      "banquet": "Bankett/Veranstaltungen",
+      "ofPrefix": "von"
+    },
+    "clinic": {
+      "categorization": "Klinik-Kategorisierung",
+      "small": "Klein (bis 150 Betten)",
+      "medium": "Mittel (151-400 Betten)",
+      "large": "Groß (über 400 Betten)",
+      "unit": "Kliniken",
+      "privatePatientShare": "Anteil Privatpatienten",
+      "patientCatering": "Patientenverpflegung",
+      "staffCatering": "Mitarbeiterverpflegung",
+      "ofPrefix": "von"
+    },
+    "senior": {
+      "categorization": "Seniorenresidenz-Kategorisierung",
+      "small": "Klein (bis 50 Bewohner)",
+      "medium": "Mittel (51-150 Bewohner)",
+      "large": "Groß (über 150 Bewohner)",
+      "unit": "Residenzen",
+      "careFocus": "Pflegeschwerpunkt",
+      "careMixed": "Gemischt",
+      "careAssisted": "Betreutes Wohnen",
+      "careNursing": "Vollpflege",
+      "catering": "Verpflegung",
+      "fullCatering": "Vollverpflegung",
+      "partialCatering": "Teilverpflegung",
+      "specialDiet": "Sonderkostform",
+      "ofPrefix": "von"
+    },
+    "restaurant": {
+      "categorization": "Restaurant-Kategorisierung",
+      "small": "Klein (bis 50 Sitzplätze)",
+      "medium": "Mittel (51-150 Sitzplätze)",
+      "large": "Groß (über 150 Sitzplätze)",
+      "unit": "Restaurants",
+      "alaCarte": "À la carte",
+      "banquet": "Bankett/Veranstaltungen",
+      "ofPrefix": "von"
+    },
+    "cafeteria": {
+      "categorization": "Betriebsrestaurant-Kategorisierung",
+      "small": "Klein (bis 200 MA)",
+      "medium": "Mittel (201-500 MA)",
+      "large": "Groß (über 500 MA)",
+      "unit": "Standorte",
+      "serviceScope": "Serviceumfang",
+      "breakfast": "Frühstück",
+      "lunch": "Mittagessen",  
+      "dinner": "Abendessen",
+      "ofPrefix": "von"
+    }
   }
 }

@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phase 2 Debug Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .panel {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .console {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 12px;
+            height: 300px;
+            overflow-y: auto;
+        }
+        .log-entry {
+            margin: 2px 0;
+            padding: 2px 0;
+        }
+        .log-success { color: #4ec9b0; }
+        .log-error { color: #f48771; }
+        .log-warning { color: #dcdcaa; }
+        .log-info { color: #9cdcfe; }
+        .log-debug { color: #858585; }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        .btn-primary {
+            background: #007bff;
+            color: white;
+        }
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+        .btn-warning {
+            background: #ffc107;
+            color: #212529;
+        }
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        .status-ok { background: #28a745; }
+        .status-error { background: #dc3545; }
+        .status-pending { background: #ffc107; }
+        iframe {
+            width: 100%;
+            height: 600px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+        }
+        .test-list {
+            margin: 10px 0;
+        }
+        .test-item {
+            padding: 8px;
+            margin: 5px 0;
+            border-left: 3px solid #ddd;
+            background: #f8f9fa;
+        }
+        .test-item.success {
+            border-left-color: #28a745;
+            background: #d4edda;
+        }
+        .test-item.error {
+            border-left-color: #dc3545;
+            background: #f8d7da;
+        }
+        code {
+            background: #f1f1f1;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <h1>Phase 2 CustomerModuleV2 Debug Test</h1>
+    
+    <div class="dashboard">
+        <div class="panel">
+            <h2>🔧 Debug Controls</h2>
+            
+            <h3>1. Enable Debug Logging</h3>
+            <button class="btn-warning" onclick="enableDebug()">Enable FP_DEBUG_EVENTS</button>
+            <button class="btn-secondary" onclick="disableDebug()">Disable Debug</button>
+            
+            <h3>2. Test Actions</h3>
+            <button class="btn-primary" onclick="openPhase2()">Open App with ?phase2=true</button>
+            <button class="btn-success" onclick="testEventListeners()">Test Event Listeners</button>
+            <button class="btn-danger" onclick="checkLegacyFunctions()">Check Legacy Functions</button>
+            
+            <h3>3. Event Bus Monitor</h3>
+            <button class="btn-primary" onclick="setupEventMonitor()">Start Event Monitor</button>
+            <div id="eventStatus">
+                <span class="status-indicator status-pending"></span>
+                <span>Not monitoring</span>
+            </div>
+            
+            <h3>4. DOM Observer Status</h3>
+            <div id="observerStatus">
+                <span class="status-indicator status-pending"></span>
+                <span>Not checked</span>
+            </div>
+            
+            <h3>5. Test Results</h3>
+            <div class="test-list" id="testResults"></div>
+        </div>
+        
+        <div class="panel">
+            <h2>📋 Live Console</h2>
+            <button onclick="clearConsole()" style="float: right; font-size: 12px;">Clear</button>
+            <div class="console" id="console"></div>
+        </div>
+    </div>
+    
+    <div class="panel" style="margin-top: 20px;">
+        <h2>🌐 App Frame (?phase2=true)</h2>
+        <iframe id="appFrame" src="about:blank"></iframe>
+    </div>
+
+    <script>
+        // Console output
+        const consoleEl = document.getElementById('console');
+        const resultsEl = document.getElementById('testResults');
+        
+        function log(message, type = 'info') {
+            const entry = document.createElement('div');
+            entry.className = 'log-entry log-' + type;
+            const timestamp = new Date().toLocaleTimeString();
+            entry.textContent = `[${timestamp}] ${message}`;
+            consoleEl.appendChild(entry);
+            consoleEl.scrollTop = consoleEl.scrollHeight;
+            
+            // Also log to real console
+            console.log(`[Test] ${message}`);
+        }
+        
+        function addTestResult(test, success, details = '') {
+            const item = document.createElement('div');
+            item.className = 'test-item ' + (success ? 'success' : 'error');
+            item.innerHTML = `
+                <strong>${success ? '✓' : '✗'} ${test}</strong>
+                ${details ? '<br><small>' + details + '</small>' : ''}
+            `;
+            resultsEl.appendChild(item);
+        }
+        
+        function clearConsole() {
+            consoleEl.innerHTML = '';
+            resultsEl.innerHTML = '';
+        }
+        
+        // Debug functions
+        function enableDebug() {
+            localStorage.setItem('FP_DEBUG_EVENTS', 'true');
+            log('Debug logging enabled. Refresh app to see detailed logs.', 'success');
+            addTestResult('Debug Mode', true, 'FP_DEBUG_EVENTS = true');
+        }
+        
+        function disableDebug() {
+            localStorage.removeItem('FP_DEBUG_EVENTS');
+            log('Debug logging disabled.', 'warning');
+        }
+        
+        // Open app
+        function openPhase2() {
+            const frame = document.getElementById('appFrame');
+            frame.src = '/?phase2=true';
+            log('Loading app with ?phase2=true...', 'info');
+            
+            frame.onload = () => {
+                log('App loaded. Waiting for initialization...', 'info');
+                
+                setTimeout(() => {
+                    // Check if legacy is disabled
+                    try {
+                        const legacyActive = frame.contentWindow.__LEGACY_SCRIPT_ACTIVE;
+                        if (legacyActive) {
+                            log('⚠️ Legacy script is still active!', 'error');
+                            addTestResult('Legacy Script Disabled', false, '__LEGACY_SCRIPT_ACTIVE = true');
+                        } else {
+                            log('✓ Legacy script is disabled', 'success');
+                            addTestResult('Legacy Script Disabled', true, '__LEGACY_SCRIPT_ACTIVE = undefined');
+                        }
+                    } catch (e) {
+                        log('Error checking legacy status: ' + e.message, 'error');
+                    }
+                    
+                    // Check for DOM Observer logs
+                    checkDOMObserver();
+                    
+                    // Auto-setup event monitor
+                    setupEventMonitor();
+                }, 2000);
+            };
+        }
+        
+        // Check DOM Observer
+        function checkDOMObserver() {
+            const frame = document.getElementById('appFrame');
+            if (!frame.contentWindow) return;
+            
+            // Check console for observer messages
+            const statusEl = document.getElementById('observerStatus');
+            
+            // Look for observer logs
+            try {
+                // Check if customer form exists
+                const customerForm = frame.contentDocument.querySelector('#customerForm, .customer-form');
+                if (customerForm) {
+                    log('✓ Customer form found in DOM', 'success');
+                    statusEl.innerHTML = '<span class="status-indicator status-ok"></span>Form exists';
+                    addTestResult('DOM Observer', true, 'Customer form detected');
+                } else {
+                    log('⚠️ Customer form not found', 'warning');
+                    statusEl.innerHTML = '<span class="status-indicator status-error"></span>Form missing';
+                    addTestResult('DOM Observer', false, 'Customer form not in DOM');
+                }
+            } catch (e) {
+                log('Error checking DOM: ' + e.message, 'error');
+            }
+        }
+        
+        // Test event listeners
+        async function testEventListeners() {
+            const frame = document.getElementById('appFrame');
+            if (!frame.contentWindow) {
+                log('App frame not loaded', 'error');
+                return;
+            }
+            
+            try {
+                // Navigate to customer tab
+                log('Navigating to customer tab...', 'info');
+                const customerTab = frame.contentDocument.querySelector('[data-tab="customer"]');
+                if (customerTab) {
+                    customerTab.click();
+                    await new Promise(r => setTimeout(r, 500));
+                }
+                
+                // Test save button
+                log('Testing save button...', 'info');
+                const saveBtn = frame.contentDocument.querySelector('.header-btn-save');
+                if (saveBtn) {
+                    // Add direct listener to verify element exists
+                    let directListenerFired = false;
+                    saveBtn.addEventListener('click', () => {
+                        directListenerFired = true;
+                        log('✓ Direct event listener fired!', 'success');
+                    });
+                    
+                    // Simulate click
+                    saveBtn.click();
+                    
+                    await new Promise(r => setTimeout(r, 100));
+                    
+                    if (directListenerFired) {
+                        addTestResult('Save Button Click', true, 'Direct listener works');
+                    } else {
+                        addTestResult('Save Button Click', false, 'No event fired');
+                    }
+                } else {
+                    log('Save button not found', 'error');
+                    addTestResult('Save Button', false, 'Element not found');
+                }
+                
+                // Test clear button
+                log('Testing clear button...', 'info');
+                const clearBtn = frame.contentDocument.querySelector('.header-btn-clear');
+                if (clearBtn) {
+                    let clearListenerFired = false;
+                    clearBtn.addEventListener('click', () => {
+                        clearListenerFired = true;
+                        log('✓ Clear button direct listener fired!', 'success');
+                    });
+                    
+                    clearBtn.click();
+                    await new Promise(r => setTimeout(r, 100));
+                    
+                    addTestResult('Clear Button Click', clearListenerFired, 
+                        clearListenerFired ? 'Direct listener works' : 'No event fired');
+                } else {
+                    log('Clear button not found', 'error');
+                    addTestResult('Clear Button', false, 'Element not found');
+                }
+                
+            } catch (e) {
+                log('Error testing event listeners: ' + e.message, 'error');
+            }
+        }
+        
+        // Check legacy functions
+        function checkLegacyFunctions() {
+            const frame = document.getElementById('appFrame');
+            if (!frame.contentWindow) {
+                log('App frame not loaded', 'error');
+                return;
+            }
+            
+            const legacyFunctions = [
+                'updateCalculator',
+                'handleSaveForm',
+                'handleClearForm',
+                'changeLanguage',
+                'switchTab'
+            ];
+            
+            let foundCount = 0;
+            legacyFunctions.forEach(func => {
+                if (typeof frame.contentWindow[func] === 'function') {
+                    log(`⚠️ Legacy function found: window.${func}`, 'warning');
+                    foundCount++;
+                } else {
+                    log(`✓ Legacy function not found: window.${func}`, 'debug');
+                }
+            });
+            
+            if (foundCount === 0) {
+                log('✓ No legacy functions in global scope', 'success');
+                addTestResult('Legacy Functions Removed', true, 'All legacy functions undefined');
+            } else {
+                log(`⚠️ Found ${foundCount} legacy functions`, 'error');
+                addTestResult('Legacy Functions Removed', false, `${foundCount} functions still present`);
+            }
+        }
+        
+        // Event monitor
+        function setupEventMonitor() {
+            const frame = document.getElementById('appFrame');
+            if (!frame.contentWindow) {
+                log('App frame not loaded', 'error');
+                return;
+            }
+            
+            const statusEl = document.getElementById('eventStatus');
+            statusEl.innerHTML = '<span class="status-indicator status-ok"></span>Monitoring events...';
+            
+            // Monitor customer events
+            const events = [
+                'customer:saved',
+                'customer:cleared',
+                'customer:creditCheckRequired',
+                'legacy:skipped'
+            ];
+            
+            events.forEach(eventName => {
+                frame.contentWindow.addEventListener(eventName, (e) => {
+                    log(`🎯 Event captured: ${eventName}`, 'success');
+                    if (e.detail) {
+                        log(`   Details: ${JSON.stringify(e.detail)}`, 'debug');
+                    }
+                    addTestResult(`Event: ${eventName}`, true, 'Event fired successfully');
+                });
+            });
+            
+            log('Event monitor started. Listening for: ' + events.join(', '), 'info');
+        }
+        
+        // Auto-start
+        window.onload = () => {
+            log('Debug test page ready. Click "Open App" to start.', 'info');
+            
+            // Check if debug is already enabled
+            if (localStorage.getItem('FP_DEBUG_EVENTS') === 'true') {
+                log('Debug mode is already enabled', 'info');
+            }
+        };
+    </script>
+</body>
+</html>

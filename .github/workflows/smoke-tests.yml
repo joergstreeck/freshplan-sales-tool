@@ -1,0 +1,129 @@
+name: Smoke Tests
+
+on:
+  pull_request:
+    paths:
+      - "src/**"
+      - "e2e/**"
+      - ".github/workflows/smoke-tests.yml"
+  push:
+    branches:
+      - ci-mail-throttle  # Für Testzwecke
+    paths:
+      - "src/**"
+      - "e2e/**"
+      - ".github/workflows/smoke-tests.yml"
+
+jobs:
+  playwright:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30  # Increase from default 6 hours to prevent cancellation
+    strategy:
+      fail-fast: false  # Continue other browsers if one fails
+      matrix:
+        browser: [chromium, firefox]
+        # webkit excluded due to macOS 12 compatibility issues
+        # Testing CI pipeline with email throttling
+
+    steps:
+      - uses: actions/checkout@v4
+      
+      # Cache for faster runs
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/ms-playwright
+            ~/.npm
+            node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+      
+      - name: Show Playwright config path(s)
+        run: |
+          echo "--- repo configs ---"
+          git ls-files | grep playwright.config.ts || true
+          echo "--- working directory ---"
+          pwd
+          echo "--- e2e directory check ---"
+          ls -la e2e/ || echo "e2e directory not found!"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+      - run: npm ci
+      - name: Build application for CI
+        run: npm run build:ci
+      
+      # Build diagnosis (static files only)
+      - name: Diagnose build output
+        if: always()
+        continue-on-error: true  # Don't fail the pipeline on diagnosis errors
+        run: |
+          echo '=== Build completed ==='
+          echo "Build artifacts in dist/ directory"
+          ls -la dist/ | head -10 || true
+          
+          echo '=== Main JS bundle ==='
+          MAIN_JS=$(find dist/assets -name "*.js" -type f | head -1)
+          if [ -n "$MAIN_JS" ]; then
+            echo "Checking $MAIN_JS for phase2 detection..."
+            grep -E "(has\(\"phase2\"\)|CustomerModuleV2|initLegacyScript)" "$MAIN_JS" | head -5 || true
+          fi
+          
+          echo '=== Preview server will be started by Playwright ==='
+          echo "phase2 parameter is handled at runtime via URLSearchParams"
+          echo "Build uses: .has('phase2') method for detection"
+      
+      - run: npx playwright install --with-deps ${{ matrix.browser }}
+      - name: Debug - List e2e directory
+        run: |
+          echo "Current directory: $(pwd)"
+          echo "Contents of e2e directory:"
+          ls -la e2e/
+          echo "Looking for test file:"
+          ls -la e2e/customer-phase2-basic.spec.ts || echo "File not found!"
+      - name: Run Playwright tests on ${{ matrix.browser }}
+        run: npx playwright test --project=${{ matrix.browser }} --reporter=line
+      # Upload diagnosis artifacts
+      - name: Upload build diagnosis
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: build-diagnosis-${{ matrix.browser }}
+          path: |
+            ci_index.html
+            /tmp/vite.log
+          retention-days: 7
+      
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-results-${{ matrix.browser }}
+          path: playwright-report/
+          retention-days: 7
+      
+      - name: Send failure notification
+        if: failure() && github.run_attempt == 1
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: ${{ secrets.MAIL_SERVER }}
+          server_port: ${{ secrets.MAIL_PORT }}
+          secure: ${{ secrets.MAIL_SECURE }}
+          username: ${{ secrets.MAIL_USERNAME }}
+          password: ${{ secrets.MAIL_PASSWORD }}
+          subject: ⚠️ Smoke Tests Failed - ${{ github.repository }} - ${{ matrix.browser }}
+          to: j.streeck@z-catering.de
+          from: ${{ secrets.MAIL_USERNAME }}
+          body: |
+            Smoke-Test-Job fehlgeschlagen!
+            
+            Repository: ${{ github.repository }}
+            Browser: ${{ matrix.browser }}
+            Workflow: ${{ github.workflow }}
+            Commit: ${{ github.event.head_commit.message }}
+            Author: ${{ github.event.head_commit.author.name }}
+            
+            Details: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}

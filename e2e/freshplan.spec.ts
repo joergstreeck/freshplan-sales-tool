@@ -4,7 +4,7 @@ test.describe('FreshPlan Sales Tool', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
     // Wait for app to load
-    await page.waitForSelector('#app.loaded', { timeout: 10000 });
+    await page.waitForSelector('#app.loaded', { timeout: 30000 }); // 30s für langsamen CI-Start
   });
 
   test.describe('Navigation', () => {

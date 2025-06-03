@@ -1,54 +1,122 @@
-# CLAUDE.md
+# Arbeitsrichtlinien für Claude im FreshPlan Sales Tool Projekt
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+## 0. Grundlegende Arbeitsphilosophie
 
-# FreshPlan Sales Tool - Migrationskontext & Arbeitsanweisungen
+**🎯 UNSERE DEVISE: GRÜNDLICHKEIT GEHT VOR SCHNELLIGKEIT**
 
-## 0. Kommunikationssprache
+- Jede Implementierung muss gründlich getestet werden
+- Keine Quick-Fixes oder Workarounds ohne Dokumentation
+- Denke immer an die zukünftigen Integrationen und Erweiterungen
+- Was wir jetzt richtig machen, erspart uns später Arbeit
+- Siehe `VISION_AND_ROADMAP.md` für die langfristige Ausrichtung des Projekts
 
-- **Bitte antworte und kommuniziere während unserer gesamten Interaktion ausschließlich auf Deutsch.**
+## 1. Projektübersicht und Ziele
 
-## 1. Primäre Referenzdatei ("Goldene Referenz")
+**Projektname:** FreshPlan Sales Tool
+**Hauptziel:** Entwicklung eines modernen, robusten und benutzerfreundlichen Verkaufstools mit starkem Fundament für zukünftige Integrationen.
+**Aktuelle Phase:** Phase 2 - Refactoring und Stabilisierung. Fokus auf Code-Qualität, Testabdeckung und Vorbereitung für zukünftige Features.
+**Wichtigstes aktuelles Ziel:** Sicherstellung eines stabilen Standalone-Builds (`npm run build:standalone`) und Behebung der "Known Issues".
 
-- **Datei:** `/Users/joergstreeck/freshplan-sales-tool/GOLDEN_REFERENCE.html`
-  - Dies ist eine exakte Kopie der ursprünglichen, funktionierenden `freshplan-complete.html`.
-  - Sie ist die **alleinige und verbindliche Vorlage** für HTML-Struktur, CSS-Styling und die initiale JavaScript-Logik für Phase 1 der Migration (1:1-Portierung).
-- **GitHub-Ursprung (Information für Jörg Streeck):** Der Inhalt dieser Datei stammt aus dem ursprünglichen GitHub-Repository-Stand des Projekts `https://github.com/joergstreeck/freshplan-sales-tool`. Du, Claude Code, hast vollen Zugriff auf dieses Repository, um bei Bedarf den genauen Commit/Branch für die `GOLDEN_REFERENCE.html` und zugehörige Original-Assets zu verifizieren/abzurufen.
+## 2. Kommunikation und Vorgehensweise
 
-## 2. Zielarchitektur
+1.  **Sprache:** Deutsch.
+2.  **Proaktivität:** Fasse dein Verständnis zusammen und frage nach, bevor du codest. Bei Unklarheiten oder Alternativen, stelle diese zur Diskussion.
+3.  **Inkrementell Arbeiten:** Implementiere in kleinen, nachvollziehbaren Schritten. Teste häufig.
+4.  **Fokus:** Konzentriere dich auf die aktuelle Aufgabe. Vermeide Scope Creep.
+5.  **Claude-Protokoll:** Führe ein Markdown-Protokoll über deine Schritte, Entscheidungen und Testergebnisse für die aktuelle Aufgabe.
+6.  **Gründlichkeit:** Führe IMMER umfassende Tests durch:
+    - Unit-Tests für alle neuen Funktionen
+    - Integration-Tests für Modul-Interaktionen
+    - Manuelle Tests in verschiedenen Browsern
+    - Performance-Tests bei größeren Änderungen
+    - Dokumentiere alle Testergebnisse
 
-- **Basis:** Vite mit TypeScript.
-- **Einstiegspunkt HTML:** `index.html` im Root-Verzeichnis.
-- **Einstiegspunkt TypeScript:** `src/main.ts`.
-- **Struktur:** Modulare Aufteilung gemäß dem `src/`-Verzeichnis (Module, Services, Store, Utils etc.).
-- **CSS:** Externalisiert nach `src/styles/original-imported-styles.css` (1:1 Kopie des CSS aus `GOLDEN_REFERENCE.html`) und importiert in `src/main.ts`.
-- **Build für Standalone:** `npm run build:standalone` erzeugt eine `freshplan-complete.html` mittels `vite-plugin-singlefile`.
+## 3. Wichtige Befehle und Werkzeuge
 
-## 3. Aktueller Projektstand (Beginn Logo-Einbettung in Phase 1b)
+* `npm install`: Dependencies installieren (einmalig nach Clone oder bei neuen Dependencies).
+* `npm run dev`: Startet den Vite-Dev-Server für die Hauptanwendung.
+* `npm run build`: Erstellt einen Production-Build der Hauptanwendung.
+* `npm run build:standalone`: Erstellt einen Production-Build der Standalone-Version (wichtig!).
+* `npm run test`: Führt Vitest Unit- und Integrationstests aus.
+* `npm run coverage`: Erstellt einen Test-Coverage-Bericht.
+* `npm run lint`: Überprüft den Code mit ESLint.
+* `npm run format`: Formatiert den Code mit Prettier.
+* `npm run check`: Führt `lint`, `format` und TypeScript-Typüberprüfung aus.
+* **Git:** Committe regelmäßig mit klaren Commit-Messages (z.B. "Refactor: CalculatorModule optimiert"). Arbeite im aktuellen Feature-Branch.
 
-- **Phase 1a (HTML/CSS 1:1-Portierung):** Abgeschlossen und von Jörg Streeck visuell für alle Tabs als korrekt bestätigt.
-- **Phase 1b (Original-JavaScript 1:1 als Wrapper in `src/legacy-script.ts` portiert):** Weitgehend abgeschlossen. Folgende Bereiche wurden im `dev`-Modus positiv getestet und entsprechen dem Verhalten der `GOLDEN_REFERENCE.html`:
-    - Rabattrechner-Logik.
-    - Kundendaten-Tab Kernfunktionen (inkl. sofortiger Neukunden-Warnung und Pflichtfeld-Validierung).
-    - Standort-Tab branchenspezifische Felder und Gesamtanzahl-Logik für alle 5 Branchen.
-    - Standort-Details-Tab Funktionalität (Hinzufügen, Löschen mit Bestätigung, Synchronisationswarnung).
-    - Bonitätsprüfung-Tab (Demo-Verhalten als für Phase 1b ausreichend akzeptiert).
-    - LocalStorage-Persistenz für Rabattrechner, Kundendaten, Standortübersicht und Standort-Details als korrekt implementiert analysiert und von Jörg Streeck positiv getestet.
-    - Tab-Navigation und Sprachumschaltung (mit bekannter Lücke bei dynamischen Standort-Details, die dem Originalverhalten entspricht).
-    - Die Tabs "Profil", "Angebot", "Einstellungen" sind reine Platzhalter (gemäß Original).
+## 4. Architektur und Code-Struktur
 
-## 4. Unmittelbare nächste Aufgabe
+* **Build-System:** Vite für Entwicklung und Build-Prozesse. Vitest für Tests.
+* **Sprache:** TypeScript.
+* **UI:** Direktes DOM-Management über `DOMHelper.ts` und spezifische UI-Module. Kein externes UI-Framework.
+* **State Management:** `StateManager.ts` (Legacy: `StateManagerLegacy.ts` soll abgelöst werden).
+* **Modularität:** Code ist in Modulen organisiert (siehe `src/modules/`). Basisklasse `src/core/Module.ts`.
+* **Projektstruktur:**
+    * `src/`: Haupt-Quellcode.
+        * `core/`: Kernfunktionalitäten (DOMHelper, EventBus, Module, StateManager).
+        * `modules/`: Anwendungsmodule (Calculator, Customer, i18n, PDF, etc.).
+        * `services/`: Backend-Interaktionen, externe Dienste.
+        * `store/`: Zustandsspeicher-Logik (Redux-ähnlich, aber vereinfacht).
+        * `styles/`: CSS-Dateien.
+        * `assets/`: Statische Dateien wie Logos.
+        * `locales/`: Übersetzungsdateien (z.B. `de.json`).
+    * `public/`: Statische Assets, die direkt kopiert werden.
+    * `config/`: Konfigurationsdateien für das Tool.
+    * `e2e/`: Playwright End-to-End Tests.
+* **Logo-Handling:** Das Logo wird über CSS (`header-logo.css`) eingebunden und ist in `src/assets/` zu finden. Die dynamische Anpassung erfolgt ggf. über CSS-Variablen oder JavaScript je nach Konfiguration.
+* **Architektur-Dokumente:** `ARCHITECTURE.md`, `DASHBOARD_ARCHITECTURE.md`.
 
-- **Einbettung des optimierten Logos:** Das optimierte Logo `Freshfoodzlogo.png` (ca. 19KB, Pfad im Projekt z.B. `public/assets/images/Freshfoodzlogo.png` oder `/Users/joergstreeck/freshplan-sales-tool/dist-standalone/assets/images/Freshfoodzlogo.png` - bitte den korrekten Pfad für die Kodierung verwenden) soll als Base64-String in die `index.html`-Vorlage eingebettet werden. Ersetze dabei den aktuellen Pfad oder Platzhalter im `src`-Attribut des Logo-`<img>`-Tags.
-- **Ziel:** Eine via `npm run build:standalone` generierte `freshplan-complete.html`, die das Logo korrekt anzeigt und ansonsten voll funktionsfähig ist (entsprechend dem Abschluss von Phase 1b).
+## 5. Bekannte Probleme (Known Issues) und Workarounds
 
-## 5. Langfristiger Migrationsplan
+* Siehe `KNOWN_ISSUES.md` für eine aktuelle Liste.
+* **Übersetzung dynamischer Tabs:** Ein bekanntes Problem. Workaround wird in Phase 2 gesucht.
+* **Performance bei großen Datenmengen:** Bei der Verarbeitung sehr vieler Positionen im Calculator kann es zu Verzögerungen kommen. Optimierungen sind für spätere Phasen geplant.
 
-- Der 10-Punkte-Plan (strikte 1:1-Portierung in Phase 1, dann schrittweise Modernisierung des Codes aus `legacy-script.ts` zu sauberen TypeScript-Modulen in Phase 2) bleibt gültig.
+## 6. Test-Standards und Qualitätssicherung
 
-## 6. Wichtige Referenzdokumente im Projekt
+**WICHTIG: Keine Implementierung ohne ausreichende Tests!**
 
-- `FEATURE_CHECKLIST.md`
-- `MIGRATION_STATUS.md`
-- `Anlage 1 FreshPlan Rabattsystem fu_r Endkunden.pdf`
-- `FRESH-FOODZ_CI.md`
+### Minimale Test-Anforderungen:
+1. **Unit-Tests**: Mindestens 80% Coverage für neue Module
+2. **Integration-Tests**: Alle Modul-Interaktionen müssen getestet werden
+3. **Browser-Tests**: Chrome, Firefox, Safari (mindestens)
+4. **Performance-Tests**: Bei kritischen Komponenten
+5. **Manuelle Tests**: Vollständige User-Flows durchspielen
+
+### Test-Dokumentation:
+- Erstelle immer einen Test-Report
+- Dokumentiere gefundene Probleme
+- Notiere Edge-Cases und Limitierungen
+
+## 7. Plan für Phase 2 (Refactoring)
+
+(Basierend auf dem Plan, den wir mit Gemini entwickelt haben)
+
+**Block A: Vorbereitende Maßnahmen und kritische Fixes**
+    1. `CLAUDE.md` Finalisieren und Anwenden. (Dieser Schritt ist hiermit abgeschlossen, sobald die Datei gespeichert ist)
+    2. Übersetzungsproblem dynamische Tabs lösen.
+
+**Block B: Kernkomponenten Refactoring**
+    3. State Management Konsolidierung (`StateManager.ts` vs. `StateManagerLegacy.ts`).
+    4. CalculatorModule Konsolidierung (`CalculatorModule.ts`, `V2`, `V3`).
+    5. Refactoring `DOMHelper.ts` und UI-Interaktionen.
+
+**Block C: Allgemeine Code-Qualität und Testabdeckung**
+    6. Verbesserung der Testabdeckung (Allgemein).
+    7. Code-Review und Konsistenz.
+    8. Entfernung von Altlasten (Legacy Code).
+
+**Block D: Dokumentation und Abschluss**
+    9. Technische Dokumentation aktualisieren.
+    10. Finale Testrunde und Stabilitätsprüfung.
+
+## 8. Zukunftsorientierung
+
+**Denke bei jeder Implementierung an:**
+- Skalierbarkeit für große Datenmengen
+- Erweiterbarkeit für neue Features
+- Integration mit externen Systemen (Monday.com, Klenty, etc.)
+- Wartbarkeit des Codes
+- Performance-Optimierung
+
+Siehe `VISION_AND_ROADMAP.md` für Details zu geplanten Integrationen und Features.

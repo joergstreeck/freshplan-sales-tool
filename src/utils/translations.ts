@@ -560,7 +560,9 @@ export const translations: Record<Language, any> = {
       sort: 'Sortieren',
       required: 'Pflichtfeld',
       optional: 'Optional',
-      tagline: 'So einfach, schnell und lecker!'
+      tagline: 'So einfach, schnell und lecker!',
+      clearForm: 'Formular leeren',
+      addLocation: '+ Standort hinzufügen'
     },
     validation: {
       required: 'Dieses Feld ist erforderlich',
@@ -839,7 +841,9 @@ export const translations: Record<Language, any> = {
       sort: 'Sort',
       required: 'Required',
       optional: 'Optional',
-      tagline: 'So easy, fast and delicious!'
+      tagline: 'So easy, fast and delicious!',
+      clearForm: 'Clear Form',
+      addLocation: '+ Add Location'
     },
     validation: {
       required: 'This field is required',

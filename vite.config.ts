@@ -136,6 +136,8 @@ export default defineConfig({
   
   // Environment variables
   define: {
-    __APP_VERSION__: JSON.stringify(process.env.npm_package_version)
+    __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
+    // Force Phase2 in CI builds
+    'import.meta.env.VITE_FORCE_PHASE2': JSON.stringify(process.env.CI === 'true')
   }
 });
