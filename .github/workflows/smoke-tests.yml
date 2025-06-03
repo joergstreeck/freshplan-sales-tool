@@ -17,7 +17,9 @@ on:
 jobs:
   playwright:
     runs-on: ubuntu-latest
+    timeout-minutes: 30  # Increase from default 6 hours to prevent cancellation
     strategy:
+      fail-fast: false  # Continue other browsers if one fails
       matrix:
         browser: [chromium, firefox]
         # webkit excluded due to macOS 12 compatibility issues

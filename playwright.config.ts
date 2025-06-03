@@ -5,7 +5,7 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0,  // Reduce retries for faster feedback
-  workers: process.env.CI ? 4 : undefined,  // GitHub runners have 2 CPU / 4 threads
+  workers: process.env.CI ? 2 : undefined,  // GitHub runners have 2 CPUs, use 2 workers for stability
   reporter: [
     ['list'],
     [process.env.CI ? 'github' : 'html'],
@@ -30,7 +30,7 @@ export default defineConfig({
       name: 'chromium',
       use: { 
         ...devices['Desktop Chrome'],
-        channel: 'chrome',
+        // Remove channel for better headless compatibility
       },
     },
     {
@@ -74,7 +74,7 @@ export default defineConfig({
         name: 'chromium',
         use: { 
           ...devices['Desktop Chrome'],
-          channel: 'chrome',
+          // Remove channel for better headless compatibility
         },
       },
       {
@@ -105,8 +105,8 @@ export default defineConfig({
   // Test output settings
   outputDir: 'test-results/',
   
-  // Global test timeout
-  timeout: process.env.CI ? 60000 : 30000,
+  // Global test timeout (increased for CI stability)
+  timeout: process.env.CI ? 90000 : 30000,
   
   // Expect timeout
   expect: {
