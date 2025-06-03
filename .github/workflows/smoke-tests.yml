@@ -56,38 +56,25 @@ jobs:
       - name: Build application for CI
         run: npm run build:ci
       
-      # Start Preview Server explicitly
-      - name: Start Vite preview
-        run: |
-          nohup npm run preview:ci >/tmp/vite.log 2>&1 &
-          for i in {1..30}; do
-            curl -sf http://localhost:3000/ && break
-            echo "⏳ waiting for preview..."
-            sleep 1
-          done
-      
-      # Diagnose Build Output
+      # Build diagnosis (static files only)
       - name: Diagnose build output
         if: always()
         continue-on-error: true  # Don't fail the pipeline on diagnosis errors
         run: |
-          echo '=== Index.html ==='
-          curl -s http://localhost:3000/ > ci_index.html
-          grep -E -i "(phase2|legacy|customer-module)" ci_index.html || true
+          echo '=== Build completed ==='
+          echo "Build artifacts in dist/ directory"
+          ls -la dist/ | head -10 || true
           
-          echo '=== First JS chunk ==='
-          CHUNK=$(grep -oE '/assets/[^"]+\.js' ci_index.html | head -1)
-          echo "Chunk path: $CHUNK"
-          curl -s "http://localhost:3000${CHUNK}" | \
-            grep -E "(has\(\"phase2\"\)|CustomerModuleV2|initLegacyScript)" | head -20 || true
+          echo '=== Main JS bundle ==='
+          MAIN_JS=$(find dist/assets -name "*.js" -type f | head -1)
+          if [ -n "$MAIN_JS" ]; then
+            echo "Checking $MAIN_JS for phase2 detection..."
+            grep -E "(has\(\"phase2\"\)|CustomerModuleV2|initLegacyScript)" "$MAIN_JS" | head -5 || true
+          fi
           
-          echo '=== URL-Parameter passthrough ==='
-          # Note: phase2 is a runtime URL parameter, not in HTML source
+          echo '=== Preview server will be started by Playwright ==='
           echo "phase2 parameter is handled at runtime via URLSearchParams"
           echo "Build uses: .has('phase2') method for detection"
-          
-          echo '=== Vite preview log ==='
-          tail -20 /tmp/vite.log || true
       
       - run: npx playwright install --with-deps ${{ matrix.browser }}
       - name: Debug - List e2e directory
