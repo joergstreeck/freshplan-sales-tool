@@ -10,6 +10,9 @@ jobs:
   test:
     runs-on: ubuntu-latest
     timeout-minutes: 10  # Max 10 minutes
+    strategy:
+      matrix:
+        browser: [chromium, firefox]
     
     steps:
       - uses: actions/checkout@v4
@@ -25,13 +28,14 @@ jobs:
       - name: Build
         run: npm run build:ci
       
-      - name: Install Playwright Chromium only
+      - name: Install Playwright ${{ matrix.browser }}
         run: |
-          npx playwright install chromium
-          npx playwright install-deps chromium
+          npx playwright install ${{ matrix.browser }}
+          npx playwright install-deps ${{ matrix.browser }}
       
-      - name: Run minimal tests
-        run: npx playwright test healthcheck customer-phase2-basic-mini backup-smoke --config=playwright.config.minimal.ts
+      - name: Run tests on ${{ matrix.browser }}
+        run: npx playwright test --project=${{ matrix.browser }} healthcheck customer-phase2-basic-mini backup-smoke --config=playwright.config.minimal.ts
+        continue-on-error: ${{ matrix.browser == 'firefox' }}
       
       - name: Upload results on failure
         if: failure()
