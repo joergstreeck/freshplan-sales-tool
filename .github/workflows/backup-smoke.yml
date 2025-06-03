@@ -27,8 +27,14 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
       
-      - name: Run backup smoke tests
-        run: npx playwright test e2e/backup-smoke.spec.ts --reporter=list
+      - name: Debug - List e2e directory
+        run: |
+          echo "Current directory: $(pwd)"
+          echo "Contents of e2e directory:"
+          ls -la e2e/
+      
+      - name: Run Playwright tests
+        run: npx playwright test --project=chromium --reporter=list
       
       - name: Upload test results
         uses: actions/upload-artifact@v4
