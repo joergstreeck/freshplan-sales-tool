@@ -25,6 +25,19 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+      
+      # Cache for faster runs
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/ms-playwright
+            ~/.npm
+            node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+      
       - name: Show Playwright config path(s)
         run: |
           echo "--- repo configs ---"
@@ -40,6 +53,38 @@ jobs:
       - run: npm ci
       - name: Build application for CI
         run: npm run build:ci
+      
+      # Start Preview Server explicitly
+      - name: Start Vite preview
+        run: |
+          nohup npm run preview:ci >/tmp/vite.log 2>&1 &
+          for i in {1..30}; do
+            curl -sf http://localhost:3000/ && break
+            echo "⏳ waiting for preview..."
+            sleep 1
+          done
+      
+      # Diagnose Build Output
+      - name: Diagnose build output
+        if: always()
+        run: |
+          echo '=== Index.html ==='
+          curl -s http://localhost:3000/ > ci_index.html
+          grep -E -i "(phase2|legacy|customer-module)" ci_index.html || true
+          
+          echo '=== First JS chunk ==='
+          CHUNK=$(grep -oE '/assets/[^"]+\.js' ci_index.html | head -1)
+          echo "Chunk path: $CHUNK"
+          curl -s "http://localhost:3000${CHUNK}" | \
+            grep -E "(legacyInit|isV2|CustomerModuleV2)" | head -20 || true
+          
+          echo '=== URL-Parameter passthrough ==='
+          curl -s "http://localhost:3000/?phase2=true" | \
+            grep -c "phase2" || echo "0 occurrences of phase2"
+          
+          echo '=== Vite preview log ==='
+          tail -20 /tmp/vite.log || true
+      
       - run: npx playwright install --with-deps ${{ matrix.browser }}
       - name: Debug - List e2e directory
         run: |
@@ -50,6 +95,17 @@ jobs:
           ls -la e2e/customer-phase2-basic.spec.ts || echo "File not found!"
       - name: Run Playwright tests on ${{ matrix.browser }}
         run: npx playwright test --project=${{ matrix.browser }} --reporter=line
+      # Upload diagnosis artifacts
+      - name: Upload build diagnosis
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: build-diagnosis-${{ matrix.browser }}
+          path: |
+            ci_index.html
+            /tmp/vite.log
+          retention-days: 7
+      
       - name: Upload test results
         uses: actions/upload-artifact@v4
         if: always()

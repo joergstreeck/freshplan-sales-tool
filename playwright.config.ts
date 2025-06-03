@@ -4,8 +4,8 @@ export default defineConfig({
   testDir: './e2e',
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 1 : undefined,
+  retries: process.env.CI ? 1 : 0,  // Reduce retries for faster feedback
+  workers: process.env.CI ? 4 : undefined,  // GitHub runners have 2 CPU / 4 threads
   reporter: [
     ['list'],
     [process.env.CI ? 'github' : 'html'],
