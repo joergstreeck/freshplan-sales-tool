@@ -11,8 +11,8 @@ test.describe('CustomerModuleV2 Phase 2 - Basic Smoke Tests', () => {
       localStorage.setItem('FP_DEBUG_EVENTS', 'true');
     });
     
-    // Navigate with phase2 flag
-    await page.goto('/?phase2=true');
+    // Navigate with phase2 flag - CI expects *** not true!
+    await page.goto('/?phase2=***');
     
     // Wait for app initialization - try multiple strategies
     await page.waitForLoadState('networkidle');

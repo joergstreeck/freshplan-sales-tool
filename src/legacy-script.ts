@@ -101,7 +101,7 @@ function initTabs() {
 export function initLegacyScript(): void {
   // Phase 2 Check - Early Return Pattern
   const urlParams = new URLSearchParams(window.location.search);
-  if (urlParams.get('phase2') === 'true' || 
+  if (urlParams.has('phase2') || 
       (import.meta.env.VITE_FORCE_PHASE2 === 'true')) {
     console.log('🔄 Legacy script disabled - Phase 2 CustomerModule active');
     

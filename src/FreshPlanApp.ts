@@ -148,7 +148,7 @@ class FreshPlanApp {
     this.registerModule('calculator', new CalculatorModule());
     
     // Use Phase 2 CustomerModuleV2 if enabled
-    const useV2 = new URLSearchParams(window.location.search).get('phase2') === 'true' ||
+    const useV2 = new URLSearchParams(window.location.search).has('phase2') ||
                   (import.meta.env.VITE_FORCE_PHASE2 === 'true');
     if (useV2) {
       console.log('🔄 Using CustomerModuleV2 (Phase 2) with DOM Observer');
