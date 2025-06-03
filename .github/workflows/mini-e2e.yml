@@ -31,7 +31,7 @@ jobs:
           npx playwright install-deps chromium
       
       - name: Run minimal tests
-        run: npx playwright test healthcheck customer-phase2-basic-mini --config=playwright.config.minimal.ts
+        run: npx playwright test healthcheck customer-phase2-basic-mini backup-smoke --config=playwright.config.minimal.ts
       
       - name: Upload results on failure
         if: failure()
