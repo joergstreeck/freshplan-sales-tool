@@ -27,8 +27,10 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
       
-      - name: Build application
-        run: npm run build
+      - name: Start dev server
+        run: |
+          npm run dev &
+          npx wait-on http://localhost:3000
       
       - name: Run backup smoke tests
         run: npm run test:e2e -- e2e/backup-smoke.spec.ts --reporter=list
