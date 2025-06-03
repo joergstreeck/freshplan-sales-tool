@@ -6,6 +6,8 @@ Ein professionelles Verkaufstool für die Lebensmittelbranche mit interaktivem R
 ![Version](https://img.shields.io/badge/version-1.0.0-green.svg)
 ![HTML5](https://img.shields.io/badge/HTML5-E34F26?logo=html5&logoColor=white)
 ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?logo=javascript&logoColor=black)
+[![Backup Status](https://github.com/joergstreeck/freshplan-sales-tool/workflows/Backup%20Smoke%20Tests/badge.svg)](https://github.com/joergstreeck/freshplan-sales-tool/actions/workflows/backup-smoke.yml)
+[![Smoke Tests](https://github.com/joergstreeck/freshplan-sales-tool/workflows/Smoke%20Tests/badge.svg)](https://github.com/joergstreeck/freshplan-sales-tool/actions/workflows/smoke-tests.yml)
 
 ## 🚀 Features
 
