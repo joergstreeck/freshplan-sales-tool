@@ -67,6 +67,7 @@ jobs:
       # Diagnose Build Output
       - name: Diagnose build output
         if: always()
+        continue-on-error: true  # Don't fail the pipeline on diagnosis errors
         run: |
           echo '=== Index.html ==='
           curl -s http://localhost:3000/ > ci_index.html
@@ -76,11 +77,12 @@ jobs:
           CHUNK=$(grep -oE '/assets/[^"]+\.js' ci_index.html | head -1)
           echo "Chunk path: $CHUNK"
           curl -s "http://localhost:3000${CHUNK}" | \
-            grep -E "(legacyInit|isV2|CustomerModuleV2)" | head -20 || true
+            grep -E "(has\(\"phase2\"\)|CustomerModuleV2|initLegacyScript)" | head -20 || true
           
           echo '=== URL-Parameter passthrough ==='
-          curl -s "http://localhost:3000/?phase2=true" | \
-            grep -c "phase2" || echo "0 occurrences of phase2"
+          # Note: phase2 is a runtime URL parameter, not in HTML source
+          echo "phase2 parameter is handled at runtime via URLSearchParams"
+          echo "Build uses: .has('phase2') method for detection"
           
           echo '=== Vite preview log ==='
           tail -20 /tmp/vite.log || true
