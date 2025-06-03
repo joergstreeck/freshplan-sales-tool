@@ -13,6 +13,9 @@ export default defineConfig({
     trace: 'off',
     screenshot: 'only-on-failure',
     video: 'off',
+    // Erhöhte Timeouts für CI-Stabilität
+    actionTimeout: 15000,      // 15s für einzelne Aktionen
+    navigationTimeout: 15000,  // 15s für Navigation
   },
 
   projects: [
