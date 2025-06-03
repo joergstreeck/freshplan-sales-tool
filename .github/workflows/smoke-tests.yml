@@ -23,11 +23,6 @@ jobs:
           cache: "npm"
       - run: npm ci
       - run: npx playwright install --with-deps ${{ matrix.browser }}
-      - name: Start dev server
-        run: |
-          npm run dev &
-          npx wait-on http://localhost:3000
-      
       - name: Run smoke-suite on ${{ matrix.browser }}
         run: |
           npm run test:e2e -- e2e/customer-phase2-basic.spec.ts \
