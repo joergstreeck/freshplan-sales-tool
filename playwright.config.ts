@@ -96,6 +96,9 @@ export default defineConfig({
     port: 3000,
     reuseExistingServer: true,   // <<< NEU – verhindert den Konflikt
     timeout: 120000,
+    // Mehr Details für CI debugging
+    stdout: 'pipe',
+    stderr: 'pipe',
   },
 
   // Test output settings
