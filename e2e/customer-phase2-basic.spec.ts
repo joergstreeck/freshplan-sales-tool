@@ -2,6 +2,10 @@ import { test, expect } from '@playwright/test';
 
 test.describe('CustomerModuleV2 Phase 2 - Basic Smoke Tests', () => {
   test.beforeEach(async ({ page }) => {
+    // Log console messages
+    page.on('console', msg => console.log('[Browser]', msg.type(), msg.text()));
+    page.on('pageerror', err => console.error('[PageError]', err));
+    
     // Enable debug logging
     await page.addInitScript(() => {
       localStorage.setItem('FP_DEBUG_EVENTS', 'true');
@@ -48,6 +52,17 @@ test.describe('CustomerModuleV2 Phase 2 - Basic Smoke Tests', () => {
   });
 
   test('Save button should respond to clicks', async ({ page }) => {
+    // Debug: Check what options are available
+    console.log('=== Debugging Select Options ===');
+    const legalFormOptions = await page.locator('#legalForm').innerHTML();
+    console.log('LegalForm options:', legalFormOptions);
+    
+    const customerTypeOptions = await page.locator('#customerType').innerHTML();
+    console.log('CustomerType options:', customerTypeOptions);
+    
+    const industryOptions = await page.locator('#industry').innerHTML();
+    console.log('Industry options:', industryOptions);
+    
     // Fill ALL required fields to avoid validation errors
     await page.fill('#companyName', 'Smoke Test GmbH');
     await page.selectOption('#legalForm', 'gmbh');
@@ -157,6 +172,13 @@ test.describe('CustomerModuleV2 Phase 2 - Basic Smoke Tests', () => {
       });
     });
     
+    // Debug: Log available options
+    const customerTypeHTML = await page.locator('#customerType').innerHTML();
+    console.log('CustomerType select options:', customerTypeHTML);
+    
+    // Wait for options to be available
+    await page.waitForSelector('#customerType option', { timeout: 5000 });
+    
     // Select Neukunde (using customerType for compatibility)
     await page.selectOption('#customerType', 'neukunde');
     
@@ -170,6 +192,13 @@ test.describe('CustomerModuleV2 Phase 2 - Basic Smoke Tests', () => {
       }
       await dialog.accept();
     });
+    
+    // Debug: Log payment method options
+    const paymentMethodHTML = await page.locator('#paymentMethod').innerHTML();
+    console.log('PaymentMethod select options:', paymentMethodHTML);
+    
+    // Wait for payment options
+    await page.waitForSelector('#paymentMethod option', { timeout: 5000 });
     
     // Select Rechnung - should trigger warning
     await page.selectOption('#paymentMethod', 'rechnung');
