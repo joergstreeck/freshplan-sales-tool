@@ -95,7 +95,7 @@ export default defineConfig({
   webServer: {
     command: process.env.CI ? 'npm run preview:ci' : 'npm run dev',
     port: 3000,
-    reuseExistingServer: !process.env.CI,  // Preview in CI immer neu, Dev lokal reused
+    reuseExistingServer: true,  // Always reuse if server is already running
     timeout: 60000,  // 60s reicht, weil preview in <1s da ist
     // Mehr Details für CI debugging
     stdout: 'pipe',
