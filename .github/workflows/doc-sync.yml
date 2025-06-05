@@ -1,0 +1,115 @@
+# .github/workflows/doc-sync.yml
+name: Generate HTML docs
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '**.md'
+      - '!README.md'       # ← optional, wenn README nicht konvertiert werden muss
+      - '!node_modules/**'
+      - '!frontend/node_modules/**'
+      - '!backend/target/**'
+
+jobs:
+  build-docs:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install Pandoc
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y pandoc
+
+      - name: Convert Markdown → HTML
+        run: |
+          mkdir -p .generated-html
+          
+          # Convert specific documentation files
+          for file in CLAUDE.md WAY_OF_WORKING.md VISION_AND_ROADMAP.md; do
+            if [ -f "$file" ]; then
+              echo "Converting $file..."
+              pandoc "$file" \
+                --standalone \
+                --metadata title="${file%.md} Documentation" \
+                --toc \
+                --toc-depth=3 \
+                --css="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.2.0/github-markdown-min.css" \
+                -o ".generated-html/${file%.md}.html"
+            fi
+          done
+          
+          # Add GitHub markdown styling wrapper
+          for html in .generated-html/*.html; do
+            if [ -f "$html" ]; then
+              echo "Styling $html..."
+              cat > temp.html << 'EOF'
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.2.0/github-markdown-min.css">
+    <style>
+        .markdown-body {
+            box-sizing: border-box;
+            min-width: 200px;
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 45px;
+        }
+        @media (max-width: 767px) {
+            .markdown-body { padding: 15px; }
+        }
+        pre {
+            background-color: #f6f8fa;
+            border-radius: 6px;
+            padding: 16px;
+            overflow: auto;
+        }
+        code {
+            background-color: rgba(175,184,193,0.2);
+            padding: 0.2em 0.4em;
+            border-radius: 3px;
+            font-size: 85%;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 1em 0;
+        }
+        table th, table td {
+            border: 1px solid #dfe2e5;
+            padding: 6px 13px;
+        }
+        table tr:nth-child(2n) {
+            background-color: #f6f8fa;
+        }
+        h1, h2 {
+            border-bottom: 1px solid #d1d9e0;
+            padding-bottom: .3em;
+        }
+    </style>
+</head>
+<body>
+    <article class="markdown-body">
+EOF
+              # Extract body content and append
+              sed -n '/<body>/,/<\/body>/p' "$html" | sed '1d;$d' >> temp.html
+              echo '    </article></body></html>' >> temp.html
+              mv temp.html "$html"
+            fi
+          done
+
+      - name: Commit & push generated HTML
+        uses: EndBug/add-and-commit@v9
+        with:
+          author_name: 'docs-bot'
+          author_email: 'bot@freshplan.dev'
+          message: 'docs: auto-generate HTML versions [skip ci]'
+          add: '.generated-html/*.html'
+          default_author: github_actions
