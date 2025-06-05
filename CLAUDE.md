@@ -87,6 +87,81 @@ frontend/
 
 ### Code-Standards im Detail:
 
+#### Code-Lesbarkeit und Zeilenlänge:
+
+**Warum kurze Zeilen?**
+- **Bessere Lesbarkeit**: Kurze Zeilen lassen sich schneller erfassen und verstehen
+- **Vergleichbarkeit**: In Code-Review-Tools oder bei der Versionskontrolle sind kurze Zeilen einfacher zu vergleichen
+- **Kompatibilität**: Viele Editoren und Monitore zeigen lange Zeilen nicht vollständig an
+
+**Empfehlungen zur Zeilenlänge:**
+- **Standard**: Maximale Zeilenlänge von 80 bis 120 Zeichen
+- **Java**: 100 Zeichen (Google Java Style Guide)
+- **TypeScript/JavaScript**: 80-100 Zeichen
+- **Markdown**: 80 Zeichen für bessere Diff-Ansichten
+
+**Praktische Tipps:**
+
+1. **Zeilenumbrüche nutzen:**
+```java
+// Schlecht (zu lang)
+if (user.isActive() && user.hasPermission("admin") && user.getLastLogin().isAfter(yesterday) && user.getDepartment().equals("IT")) {
+
+// Gut (umgebrochen)
+if (user.isActive()
+        && user.hasPermission("admin")
+        && user.getLastLogin().isAfter(yesterday)
+        && user.getDepartment().equals("IT")) {
+```
+
+2. **Hilfsvariablen verwenden:**
+```java
+// Schlecht
+if (userRepository.findByEmail(email).isPresent() && userRepository.findByEmail(email).get().isActive()) {
+
+// Gut
+Optional<User> userOpt = userRepository.findByEmail(email);
+boolean isActiveUser = userOpt.isPresent() && userOpt.get().isActive();
+if (isActiveUser) {
+```
+
+3. **Funktionen auslagern:**
+```java
+// Schlecht
+if (user.getAge() >= 18 && user.hasVerifiedEmail() && user.getCountry().equals("DE") && !user.isBlocked()) {
+
+// Gut
+if (isEligibleForService(user)) {
+
+private boolean isEligibleForService(User user) {
+    return user.getAge() >= 18
+            && user.hasVerifiedEmail()
+            && user.getCountry().equals("DE")
+            && !user.isBlocked();
+}
+```
+
+4. **Method Chaining aufteilen:**
+```java
+// Schlecht
+UserResponse response = userService.findById(id).map(mapper::toResponse).orElseThrow(() -> new UserNotFoundException(id));
+
+// Gut
+UserResponse response = userService
+        .findById(id)
+        .map(mapper::toResponse)
+        .orElseThrow(() -> new UserNotFoundException(id));
+```
+
+5. **Lange Parameter-Listen:**
+```java
+// Schlecht
+public UserResponse createUser(String username, String firstName, String lastName, String email, String department, boolean isActive) {
+
+// Gut - Builder Pattern oder Request Object
+public UserResponse createUser(CreateUserRequest request) {
+```
+
 #### Naming Conventions:
 - **Klassen**: PascalCase, beschreibende Nomen (`UserService`, `OrderRepository`)
 - **Interfaces**: PascalCase, KEIN "I" Präfix (`UserRepository`, nicht `IUserRepository`)

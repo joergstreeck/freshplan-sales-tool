@@ -53,6 +53,48 @@ Bei jedem Commit verpflichten wir uns zu:
 | Konstanten | UPPER_SNAKE_CASE | `MAX_RETRY_ATTEMPTS` |
 | Packages | lowercase, Singular | `user`, `order` |
 
+### Code-Lesbarkeit und Zeilenlänge
+
+**Maximale Zeilenlänge**: 80-120 Zeichen
+
+**Warum?**
+- Bessere Lesbarkeit und schnelleres Erfassen
+- Einfacherer Code-Review und Diff-Ansichten
+- Kompatibilität mit allen Bildschirmen
+
+**Best Practices:**
+
+1. **Zeilenumbrüche bei langen Bedingungen:**
+```java
+// ❌ Schlecht
+if (user.isActive() && user.hasPermission("admin") && user.getLastLogin().isAfter(yesterday)) {
+
+// ✅ Gut
+if (user.isActive()
+        && user.hasPermission("admin")
+        && user.getLastLogin().isAfter(yesterday)) {
+```
+
+2. **Hilfsvariablen für Klarheit:**
+```java
+// ❌ Schlecht
+if (userRepository.findByEmail(email).isPresent() && userRepository.findByEmail(email).get().isActive()) {
+
+// ✅ Gut
+Optional<User> userOpt = userRepository.findByEmail(email);
+boolean isActiveUser = userOpt.isPresent() && userOpt.get().isActive();
+if (isActiveUser) {
+```
+
+3. **Method Chaining aufteilen:**
+```java
+// ✅ Gut
+UserResponse response = userService
+        .findById(id)
+        .map(mapper::toResponse)
+        .orElseThrow(() -> new UserNotFoundException(id));
+```
+
 ### Code-Standards
 
 ```java
