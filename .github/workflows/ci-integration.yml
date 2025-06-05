@@ -99,9 +99,9 @@ jobs:
       - name: Start Backend (background)
         run: |
           # First ensure it's compiled
-          ./mvnw -B compile
+          mvn -B compile
           # Then start in dev mode
-          ./mvnw -B quarkus:dev -Dquarkus.http.host=0.0.0.0 &
+          mvn -B quarkus:dev -Dquarkus.http.host=0.0.0.0 &
           # Give it time to start
           sleep 30
         working-directory: ./backend
