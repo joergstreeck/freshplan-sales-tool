@@ -166,17 +166,36 @@ jobs:
           echo "=== Backend logs on failure ==="
           cd backend
           cat backend.log || true
-          echo "=== Check if process is running ==="
-          ps aux | grep quarkus || true
-          echo "=== Check port 8080 ==="
-          netstat -tlnp 2>/dev/null | grep 8080 || true
+          echo "=== Frontend logs on failure ==="
+          cd ../frontend
+          cat frontend.log || true
+          echo "=== Check if processes are running ==="
+          ps aux | grep -E 'quarkus|vite|node' || true
+          echo "=== Check ports ==="
+          netstat -tlnp 2>/dev/null | grep -E '8080|4173|5173' || true
       
-      - name: Run Playwright tests
+      - name: Start Frontend Preview Server
         run: |
           cd frontend
+          # Start preview server in background
+          npm run preview > frontend.log 2>&1 &
+          # Wait for it to be ready
+          echo "Waiting for frontend preview server..."
+          for i in {1..20}; do
+            if curl -f http://localhost:4173 2>/dev/null; then
+              echo "Frontend is ready!"
+              break
+            fi
+            echo "Attempt $i/20 - Frontend not ready yet..."
+            sleep 2
+          done
+          
+      - name: Run Playwright tests
+        run: |
           # Set API URL for tests
           export VITE_API_URL=http://localhost:8080
-          npx playwright test --project=chromium
+          export CI=true
+          cd frontend && npx playwright test --config=playwright.config.ci.ts --project=chromium
       
       - name: Upload test results
         uses: actions/upload-artifact@v4
