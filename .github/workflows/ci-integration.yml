@@ -82,16 +82,31 @@ jobs:
         run: cd frontend && npx playwright install --with-deps chromium
       
       - name: Start Backend (background)
-        run: ./mvnw -B compile quarkus:dev &
+        run: |
+          # First ensure it's compiled
+          ./mvnw -B compile
+          # Then start in dev mode
+          ./mvnw -B quarkus:dev -Dquarkus.http.host=0.0.0.0 &
+          # Give it time to start
+          sleep 30
         working-directory: ./backend
         shell: bash
+        env:
+          KEYCLOAK_CLIENT_SECRET: secret
       
       - name: Wait for Backend
         run: |
-          echo "Waiting for backend to start..."
-          sleep 10
-          curl -f --retry 20 --retry-delay 3 --retry-connrefused http://localhost:8080/q/health/ready
-          echo "Backend is ready!"
+          echo "Waiting for backend to be ready..."
+          for i in {1..30}; do
+            if curl -f http://localhost:8080/q/health/ready 2>/dev/null; then
+              echo "Backend is ready!"
+              exit 0
+            fi
+            echo "Attempt $i/30 - Backend not ready yet..."
+            sleep 2
+          done
+          echo "Backend failed to start!"
+          exit 1
         env:
           KEYCLOAK_CLIENT_SECRET: secret
       
