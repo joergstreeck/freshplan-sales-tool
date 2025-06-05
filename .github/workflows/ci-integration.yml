@@ -119,6 +119,7 @@ jobs:
             -Dquarkus.security.users.embedded.plain-text=true \
             -Dquarkus.security.users.embedded.users.test=test \
             -Dquarkus.security.users.embedded.roles.test=user \
+            -Dquarkus.analytics.disabled=true \
             > backend.log 2>&1 &
           # Give it time to start
           sleep 45
@@ -137,8 +138,15 @@ jobs:
         run: |
           echo "Waiting for backend to be ready..."
           for i in {1..30}; do
+            # Try multiple endpoints
             if curl -f http://localhost:8080/q/health/ready 2>/dev/null; then
-              echo "Backend is ready!"
+              echo "Backend is ready (health check)!"
+              exit 0
+            elif curl -f http://localhost:8080/api/ping 2>/dev/null; then
+              echo "Backend is ready (ping endpoint)!"
+              exit 0
+            elif curl -f http://localhost:8080/q/health 2>/dev/null; then
+              echo "Backend is ready (basic health)!"
               exit 0
             fi
             echo "Attempt $i/30 - Backend not ready yet..."
