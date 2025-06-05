@@ -26,7 +26,8 @@
     "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,css,md}\"",
     "format:check": "prettier --check \"src/**/*.{ts,tsx,js,jsx,json,css,md}\"",
     "clean": "rm -rf dist coverage",
-    "serve": "python3 simple-server.py"
+    "serve": "python3 simple-server.py",
+    "prepare": "husky"
   },
   "dependencies": {
     "immer": "^10.1.1",

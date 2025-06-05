@@ -11,7 +11,8 @@
     "prepare": "husky",
     "format": "prettier --write 'src/**/*.{ts,tsx,css,md}'",
     "type-check": "tsc --noEmit",
-    "lint-staged": "lint-staged"
+    "lint-staged": "lint-staged",
+    "format:check": "prettier --check 'src/**/*.{ts,tsx,css,md}'"
   },
   "dependencies": {
     "react": "^19.1.0",
