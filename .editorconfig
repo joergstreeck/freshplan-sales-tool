@@ -1,0 +1,41 @@
+# .editorconfig (Projekt-Root) – Team-weite IDE-Settings
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+indent_style = space
+indent_size = 2
+max_line_length = 100
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# Markdown files
+[*.md]
+max_line_length = 80
+trim_trailing_whitespace = false
+
+# Java files
+[*.java]
+indent_size = 4
+continuation_indent_size = 8
+
+# YAML files
+[*.{yml,yaml}]
+indent_size = 2
+
+# JSON files
+[*.json]
+indent_size = 2
+
+# Shell scripts
+[*.sh]
+end_of_line = lf
+
+# Windows scripts
+[*.{cmd,bat}]
+end_of_line = crlf
+
+# Makefiles
+[Makefile]
+indent_style = tab
