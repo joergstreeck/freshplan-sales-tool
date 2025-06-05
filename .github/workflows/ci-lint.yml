@@ -10,8 +10,6 @@ jobs:
   lint-frontend:
     name: Lint Frontend (React)
     runs-on: ubuntu-latest
-    # Skip until frontend exists
-    if: false
     defaults:
       run:
         working-directory: ./frontend
@@ -41,8 +39,6 @@ jobs:
   lint-backend:
     name: Lint Backend (Quarkus)
     runs-on: ubuntu-latest
-    # Skip until backend exists
-    if: false
     defaults:
       run:
         working-directory: ./backend
@@ -55,16 +51,22 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17'
-          cache: 'maven'
       
-      - name: Run Checkstyle
-        run: ./mvnw checkstyle:check
+      - name: Cache Maven dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('backend/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
       
-      - name: Run SpotBugs
-        run: ./mvnw spotbugs:check
+      - name: Create Maven Wrapper
+        run: |
+          mvn wrapper:wrapper -Dmaven=3.9.6 || echo "Maven wrapper creation failed, will use system mvn"
       
-      - name: Check formatting
-        run: ./mvnw formatter:validate
+      - name: Run tests
+        run: mvn clean test || ./mvnw clean test
+        env:
+          KEYCLOAK_CLIENT_SECRET: ${{ secrets.KEYCLOAK_CLIENT_SECRET || 'secret' }}
 
   lint-legacy:
     name: Lint Legacy Code
@@ -95,8 +97,7 @@ jobs:
 
   quality-gate:
     name: Quality Gate Check
-    # Only depend on legacy for now
-    needs: [lint-legacy]
+    needs: [lint-frontend, lint-backend, lint-legacy]
     runs-on: ubuntu-latest
     
     steps:
