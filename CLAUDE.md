@@ -265,6 +265,262 @@ git commit -m "feat(user): Add user creation endpoint
 - **Pair Programming** für komplexe Features
 - **Knowledge Sharing** in Team-Sessions
 
+## 0.2 DevOps & Release-Management
+
+### Branch- & Release-Strategie:
+| Thema | Empfehlung | Nutzen |
+|-------|------------|--------|
+| Branching | Trunk-based mit short-lived feature branches (max. 24h offen) | Weniger Merge-Konflikte, kontinuierliche Integration |
+| Commit-Konvention | Conventional Commits + Commitlint | Automatische CHANGELOGs & Releases |
+| Releases | SemVer + GitHub Actions Release-Workflow | Klare Versionierung, Hot-fix-Pfad |
+
+### Release-Workflow:
+```bash
+# Feature fertig? Merge to main
+git checkout main && git pull
+git merge --no-ff feature/user-management
+
+# Release vorbereiten
+npm version minor  # oder major/patch
+git push && git push --tags
+
+# GitHub Action erstellt automatisch:
+# - Release Notes aus Commits
+# - Docker Images mit Tags
+# - Deployment zu Stage
+```
+
+### Dokumentation & Wissenstransfer:
+- **ADRs** (Architecture Decision Records) für alle wichtigen Entscheidungen
+  - Template: `/docs/adr/template.md`
+  - Automatisierung: `adr-tools` → PR-Kommentar mit Diff
+- **Onboarding-Playbook**: 90-Minuten "Tour de Codebase"
+  - README mit Links zu Key-Files
+  - Architektur-Diagramme (C4 Model)
+  - Video-Walkthrough für neue Teammitglieder
+- **Tech Radar**: Bewertung neuer Libraries/Tools
+  - Adopt / Trial / Assess / Hold
+  - Quartalsweise Review
+
+## 0.3 Security & Compliance
+
+### Security-Standards:
+| Ebene | Regel | Automatisierung |
+|-------|-------|-----------------|
+| Dependencies | Snyk + Dependabot, auto-merge wenn CVSS < 4 | CI-Gate |
+| Secrets | GitHub Secrets → env-subst in Docker | Keine Secrets im Code |
+| API Security | OWASP Top 10 Check | ZAP-Docker nightly |
+| Code Quality | SonarCloud Security Hotspots | PR-Block bei kritisch |
+
+### Security-Checkliste:
+```yaml
+# .github/workflows/security.yml
+- Dependency Check (Snyk)
+- SAST (SonarCloud)
+- Container Scan (Trivy)
+- API Security Test (OWASP ZAP)
+- Secret Scanning (GitGuardian)
+```
+
+### Compliance:
+- **DSGVO**: Personenbezogene Daten verschlüsselt
+- **Audit-Log**: Alle kritischen Operationen
+- **Data Retention**: Automatisches Löschen nach X Tagen
+
+## 0.4 Observability & Performance
+
+### Golden Signals:
+- **Latency**: < 200ms P95 für API Calls
+- **Traffic**: Requests per Second
+- **Errors**: < 0.1% Error Rate
+- **Saturation**: CPU/Memory < 80%
+
+### Monitoring Stack:
+```yaml
+# OpenTelemetry → CloudWatch/X-Ray Pipeline
+- Distributed Tracing (Jaeger-kompatibel)
+- Metrics (Prometheus-Format)
+- Logs (strukturiert, JSON)
+- Real User Monitoring (RUM)
+```
+
+### Performance Budgets:
+
+#### Frontend:
+- **Bundle Size**: ≤ 200 KB initial (gzipped)
+- **LCP**: ≤ 2.5s (mobile 3G)
+- **FID**: ≤ 100ms
+- **CLS**: ≤ 0.1
+- **Lighthouse Score**: ≥ 90
+
+#### Backend:
+- **API Response**: P95 < 200ms
+- **Database Queries**: < 50ms
+- **Memory per Request**: < 50MB
+- **Startup Time**: < 10s
+
+### Performance-Gates:
+```bash
+# Lighthouse CI als GitHub Check
+lighthouse:
+  assertions:
+    categories:performance: ["error", {"minScore": 0.9}]
+    first-contentful-paint: ["error", {"maxNumericValue": 2000}]
+    interactive: ["error", {"maxNumericValue": 5000}]
+```
+
+## 0.5 Testing-Pyramide
+
+### Test-Strategie:
+| Stufe | Coverage-Ziel | Technologie | Scope |
+|-------|---------------|-------------|-------|
+| Unit | 80% Lines/Functions | JUnit 5 + Mockito / Vitest | Business Logic |
+| Integration | 100% API Endpoints | RestAssured / MSW | API Contracts |
+| E2E | Critical User Journeys | Playwright | Happy Paths |
+| Performance | Key Transactions | k6 / Artillery | Load Testing |
+| Security | OWASP Top 10 | ZAP / Burp | Penetration |
+
+### Test-Patterns:
+```java
+// Given-When-Then für BDD
+@Test
+void createUser_withValidData_shouldReturnCreatedUser() {
+    // Given
+    var request = validUserRequest();
+    
+    // When
+    var response = userService.createUser(request);
+    
+    // Then
+    assertThat(response).satisfies(user -> {
+        assertThat(user.getId()).isNotNull();
+        assertThat(user.getUsername()).isEqualTo("john.doe");
+    });
+}
+```
+
+## 0.6 Frontend Excellence
+
+### Design System:
+- **Storybook** als Living Style Guide
+  - Alle Components isoliert entwickeln
+  - Visual Regression Tests
+  - Auto-Deploy zu Chromatic
+- **Accessibility (A11Y)**:
+  - `eslint-plugin-jsx-a11y`
+  - `axe-core` in CI
+  - WCAG 2.1 AA Compliance
+- **Component Structure**:
+  ```
+  components/
+  └── Button/
+      ├── Button.tsx         # Component
+      ├── Button.test.tsx    # Tests
+      ├── Button.stories.tsx # Storybook
+      ├── Button.module.css  # Styles
+      └── index.ts          # Export
+  ```
+
+### State Management:
+- **React Query** für Server State
+- **Zustand** für Client State (wenn nötig)
+- **Context** nur für Cross-Cutting Concerns
+
+## 0.7 Infrastructure as Code
+
+### AWS CDK Setup:
+```typescript
+// infrastructure/cdk/lib/freshplan-stack.ts
+export class FreshPlanStack extends Stack {
+  constructor(scope: Construct, id: string, props?: StackProps) {
+    super(scope, id, props);
+    
+    // ECS Fargate für Backend
+    const backend = new ApplicationLoadBalancedFargateService(...);
+    
+    // CloudFront für Frontend
+    const frontend = new CloudFrontWebDistribution(...);
+    
+    // RDS PostgreSQL
+    const database = new DatabaseInstance(...);
+  }
+}
+```
+
+### Policy as Code:
+- **Open Policy Agent** für Security Rules
+- **AWS Config Rules** für Compliance
+- **Drift Detection** täglich
+
+### Disaster Recovery:
+- **RTO**: 4 Stunden
+- **RPO**: 1 Stunde
+- **Backups**: Automated Snapshots
+- **Runbooks**: Dokumentierte Prozesse
+
+## 0.8 Team-Rituale & Workflows
+
+### Development Workflow:
+1. **Monday**: Sprint Planning & Backlog Grooming
+2. **Daily**: 15-min Standup (blocker-focused)
+3. **Wednesday**: Tech Debt Review (1h)
+4. **Friday**: Refactoring Slot (2h) + Demos
+5. **Retrospective**: Alle 2 Wochen
+
+### Code Review Process:
+```yaml
+PR-Checklist:
+  - [ ] Tests grün + Coverage ≥ 80%
+  - [ ] Keine Security Warnings
+  - [ ] Performance Budget eingehalten
+  - [ ] Dokumentation aktualisiert
+  - [ ] Screenshots bei UI-Änderungen
+  - [ ] Changelog Entry (wenn public API)
+```
+
+### Knowledge Management:
+- **ADR Reviews**: Quartalsweise
+- **Tech Talks**: Jeden 2. Freitag
+- **Pair Programming**: Min. 4h/Woche
+- **Documentation Days**: 1x/Monat
+
+### Incident Response:
+1. **Detect**: Monitoring Alert
+2. **Triage**: Severity 1-4
+3. **Respond**: Runbook befolgen
+4. **Resolve**: Fix + Deploy
+5. **Review**: Blameless Postmortem
+
+## 0.9 Tooling & Automation
+
+### Development Tools:
+- **IDE**: IntelliJ IDEA / VS Code mit Extensions
+- **API Testing**: Insomnia / Postman
+- **DB Client**: DBeaver / TablePlus
+- **Git GUI**: GitKraken / SourceTree (optional)
+
+### CI/CD Pipeline:
+```yaml
+# Stages
+1. Lint & Format Check
+2. Unit Tests + Coverage
+3. Build & Package
+4. Integration Tests
+5. Security Scans
+6. Deploy to Stage
+7. E2E Tests
+8. Performance Tests
+9. Deploy to Production (manual approval)
+```
+
+### Automation:
+- **Dependabot**: Weekly Updates
+- **Renovate**: Grouped Updates
+- **Release Please**: Automated Releases
+- **Mergify**: Auto-merge bei grünen Checks
+
+Diese Standards stellen sicher, dass FreshPlan 2.0 auf Enterprise-Niveau entwickelt wird - mit der Qualität, die erfahrene Entwickler erwarten und sofort verstehen.
+
 ## 1. Projektübersicht und Ziele
 
 **Projektname:** FreshPlan Sales Tool 2.0
