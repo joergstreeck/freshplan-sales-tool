@@ -85,10 +85,11 @@ jobs:
         run: |
           cd backend
           # Start in dev mode with test profile
-          mvn quarkus:dev -Dquarkus.profile=test &
+          mvn -B compile quarkus:dev -Dquarkus.profile=test -DskipTests &
           echo $! > ../backend.pid
-          # Wait for backend to be ready
-          timeout 60s bash -c 'until curl -f http://localhost:8080/q/health/ready; do sleep 2; done'
+          # Wait for backend to be ready with retries
+          sleep 10
+          curl -f --retry 15 --retry-delay 3 --retry-connrefused http://localhost:8080/q/health/ready
         env:
           KEYCLOAK_CLIENT_SECRET: secret
       
