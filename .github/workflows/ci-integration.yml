@@ -56,6 +56,21 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     
+    services:
+      postgres:
+        image: postgres:15-alpine
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_DB: freshplan
+          POSTGRES_USER: freshplan
+          POSTGRES_PASSWORD: freshplan
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    
     steps:
       - uses: actions/checkout@v4
       
@@ -93,6 +108,7 @@ jobs:
         shell: bash
         env:
           KEYCLOAK_CLIENT_SECRET: secret
+          QUARKUS_DATASOURCE_JDBC_URL: jdbc:postgresql://localhost:5432/freshplan
       
       - name: Wait for Backend
         run: |
