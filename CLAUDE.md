@@ -10,12 +10,33 @@
 - Was wir jetzt richtig machen, erspart uns später Arbeit
 - Siehe `VISION_AND_ROADMAP.md` für die langfristige Ausrichtung des Projekts
 
+### Unser Code-Qualitäts-Versprechen
+
+**Wir verpflichten uns, bei jedem Commit auf:**
+
+**Sauberkeit**
+- Klare Modul-Grenzen, sprechende Namen, keine toten Pfade
+
+**Robustheit**
+- Unit-, Integrations- und E2E-Tests, defensives Error-Handling
+
+**Wartbarkeit**
+- SOLID, DRY, CI-Checks, lückenlose Docs & ADRs
+
+**Transparenz**
+- Unklarheiten sofort kanalisieren → Issue / Stand-up
+
 ## 1. Projektübersicht und Ziele
 
-**Projektname:** FreshPlan Sales Tool
-**Hauptziel:** Entwicklung eines modernen, robusten und benutzerfreundlichen Verkaufstools mit starkem Fundament für zukünftige Integrationen.
-**Aktuelle Phase:** Phase 2 - Refactoring und Stabilisierung. Fokus auf Code-Qualität, Testabdeckung und Vorbereitung für zukünftige Features.
-**Wichtigstes aktuelles Ziel:** Sicherstellung eines stabilen Standalone-Builds (`npm run build:standalone`) und Behebung der "Known Issues".
+**Projektname:** FreshPlan Sales Tool 2.0
+**Hauptziel:** Migration zu einer cloud-nativen Enterprise-Lösung mit React + Quarkus + Keycloak + PostgreSQL auf AWS.
+**Aktuelle Phase:** Sprint 0 - Walking Skeleton (Monorepo Setup, Auth-Integration, erste API)
+**Stack-Entscheidung:** 
+- Frontend: React + TypeScript + Vite
+- Backend: Quarkus (Java)
+- Auth: Keycloak
+- DB: PostgreSQL
+- Cloud: AWS (ECS, RDS, S3, CloudFront)
 
 ## 2. Kommunikation und Vorgehensweise
 
@@ -33,38 +54,60 @@
 
 ## 3. Wichtige Befehle und Werkzeuge
 
-* `npm install`: Dependencies installieren (einmalig nach Clone oder bei neuen Dependencies).
-* `npm run dev`: Startet den Vite-Dev-Server für die Hauptanwendung.
-* `npm run build`: Erstellt einen Production-Build der Hauptanwendung.
-* `npm run build:standalone`: Erstellt einen Production-Build der Standalone-Version (wichtig!).
-* `npm run test`: Führt Vitest Unit- und Integrationstests aus.
-* `npm run coverage`: Erstellt einen Test-Coverage-Bericht.
-* `npm run lint`: Überprüft den Code mit ESLint.
-* `npm run format`: Formatiert den Code mit Prettier.
-* `npm run check`: Führt `lint`, `format` und TypeScript-Typüberprüfung aus.
-* **Git:** Committe regelmäßig mit klaren Commit-Messages (z.B. "Refactor: CalculatorModule optimiert"). Arbeite im aktuellen Feature-Branch.
+### Legacy (im `/legacy` Ordner):
+* `npm install`: Dependencies installieren
+* `npm run dev`: Vite-Dev-Server für Legacy-App
+* `npm run build:standalone`: Production-Build der Standalone-Version
+* `npm run test`: Vitest Unit- und Integrationstests
 
-## 4. Architektur und Code-Struktur
+### Frontend (React - im `/frontend` Ordner):
+* `npm install`: Dependencies installieren
+* `npm run dev`: Vite-Dev-Server für React-App
+* `npm run build`: Production-Build
+* `npm run test`: Vitest + React Testing Library
+* `npm run lint`: ESLint mit React-Rules
 
-* **Build-System:** Vite für Entwicklung und Build-Prozesse. Vitest für Tests.
-* **Sprache:** TypeScript.
-* **UI:** Direktes DOM-Management über `DOMHelper.ts` und spezifische UI-Module. Kein externes UI-Framework.
-* **State Management:** `StateManager.ts` (Legacy: `StateManagerLegacy.ts` soll abgelöst werden).
-* **Modularität:** Code ist in Modulen organisiert (siehe `src/modules/`). Basisklasse `src/core/Module.ts`.
-* **Projektstruktur:**
-    * `src/`: Haupt-Quellcode.
-        * `core/`: Kernfunktionalitäten (DOMHelper, EventBus, Module, StateManager).
-        * `modules/`: Anwendungsmodule (Calculator, Customer, i18n, PDF, etc.).
-        * `services/`: Backend-Interaktionen, externe Dienste.
-        * `store/`: Zustandsspeicher-Logik (Redux-ähnlich, aber vereinfacht).
-        * `styles/`: CSS-Dateien.
-        * `assets/`: Statische Dateien wie Logos.
-        * `locales/`: Übersetzungsdateien (z.B. `de.json`).
-    * `public/`: Statische Assets, die direkt kopiert werden.
-    * `config/`: Konfigurationsdateien für das Tool.
-    * `e2e/`: Playwright End-to-End Tests.
-* **Logo-Handling:** Das Logo wird über CSS (`header-logo.css`) eingebunden und ist in `src/assets/` zu finden. Die dynamische Anpassung erfolgt ggf. über CSS-Variablen oder JavaScript je nach Konfiguration.
-* **Architektur-Dokumente:** `ARCHITECTURE.md`, `DASHBOARD_ARCHITECTURE.md`.
+### Backend (Quarkus - im `/backend` Ordner):
+* `./mvnw quarkus:dev`: Development Mode mit Hot-Reload
+* `./mvnw test`: Unit-Tests
+* `./mvnw package`: Build JAR
+* `./mvnw package -Pnative`: Native Build (GraalVM)
+
+### Git-Konventionen:
+* Conventional Commits: `feat:`, `fix:`, `chore:`, `docs:`
+* Branch-Naming: `feature/`, `bugfix/`, `hotfix/`
+* PR vor Merge, mindestens 1 Review
+
+## 4. Architektur und Code-Struktur (Monorepo)
+
+### Neue Struktur ab Sprint 0:
+```
+freshplan-sales-tool/
+├── /legacy              # Alter Code (eingefroren als legacy-1.0.0)
+├── /frontend            # React SPA
+│   ├── src/
+│   │   ├── components/
+│   │   ├── contexts/    # AuthContext, etc.
+│   │   ├── hooks/
+│   │   ├── pages/
+│   │   └── services/
+│   └── package.json
+├── /backend             # Quarkus API
+│   ├── src/main/java/
+│   ├── src/main/resources/
+│   └── pom.xml
+├── /infrastructure      # Docker, K8s, AWS CDK
+├── /docs               # ADRs, API-Docs
+└── /.github/workflows  # CI/CD Pipelines
+```
+
+### Tech-Stack:
+* **Frontend:** React 18 + TypeScript + Vite + MUI + React Query
+* **Backend:** Quarkus + RESTEasy Reactive + Hibernate ORM + Flyway
+* **Auth:** Keycloak mit OIDC
+* **Database:** PostgreSQL mit Row-Level Security
+* **Testing:** Vitest (Unit), Playwright (E2E), RestAssured (API)
+* **CI/CD:** GitHub Actions + SonarCloud + AWS
 
 ## 5. Bekannte Probleme (Known Issues) und Workarounds
 
@@ -88,27 +131,26 @@
 - Dokumentiere gefundene Probleme
 - Notiere Edge-Cases und Limitierungen
 
-## 7. Plan für Phase 2 (Refactoring)
+## 7. Aktueller Sprint: Sprint 0 - Walking Skeleton
 
-(Basierend auf dem Plan, den wir mit Gemini entwickelt haben)
+### Heutige Ziele (Tag 1):
+1. **09:00-09:05:** Legacy einfrieren (Tag `legacy-1.0.0`)
+2. **09:05-09:30:** Monorepo-Struktur anlegen
+3. **09:30-12:30:** Skeleton-PRs (Frontend + Backend)
+4. **12:30-15:00:** CI/CD-Pipeline
+5. **15:00-Ende:** Walking Skeleton verbinden (React → /api/ping → DB)
 
-**Block A: Vorbereitende Maßnahmen und kritische Fixes**
-    1. `CLAUDE.md` Finalisieren und Anwenden. (Dieser Schritt ist hiermit abgeschlossen, sobald die Datei gespeichert ist)
-    2. Übersetzungsproblem dynamische Tabs lösen.
+### Definition of Done für Sprint 0:
+- [ ] User kann sich via Keycloak einloggen
+- [ ] Geschützte Route `/calculator` nur mit Auth erreichbar
+- [ ] API-Call `/api/ping` liefert DB-Timestamp
+- [ ] E2E-Test läuft grün in GitHub Actions
+- [ ] Alle Teammitglieder können lokal entwickeln
 
-**Block B: Kernkomponenten Refactoring**
-    3. State Management Konsolidierung (`StateManager.ts` vs. `StateManagerLegacy.ts`).
-    4. CalculatorModule Konsolidierung (`CalculatorModule.ts`, `V2`, `V3`).
-    5. Refactoring `DOMHelper.ts` und UI-Interaktionen.
-
-**Block C: Allgemeine Code-Qualität und Testabdeckung**
-    6. Verbesserung der Testabdeckung (Allgemein).
-    7. Code-Review und Konsistenz.
-    8. Entfernung von Altlasten (Legacy Code).
-
-**Block D: Dokumentation und Abschluss**
-    9. Technische Dokumentation aktualisieren.
-    10. Finale Testrunde und Stabilitätsprüfung.
+### Nächste Sprints (Preview):
+- **Sprint 1:** Erste Features migrieren (Calculator, Customer-Liste)
+- **Sprint 2:** API-Integration, Repository-Pattern
+- **Sprint 3:** Vollständige Feature-Parität mit Legacy
 
 ## 8. Zukunftsorientierung
 
