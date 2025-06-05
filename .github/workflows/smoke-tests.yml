@@ -52,9 +52,21 @@ jobs:
         with:
           node-version: 20
           cache: "npm"
-      - run: npm ci
+          cache-dependency-path: legacy/package-lock.json
+      
+      - name: Debug - Check directories
+        run: |
+          echo "=== Root directory ==="
+          ls -la
+          echo "=== Legacy directory ==="
+          ls -la legacy/
+          echo "=== Package files ==="
+          find . -name "package*.json" -type f | grep -v node_modules
+      
+      - run: cd legacy && npm ci
+      
       - name: Build application for CI
-        run: npm run build:ci
+        run: cd legacy && npm run build:ci
       
       # Build diagnosis (static files only)
       - name: Diagnose build output
@@ -62,11 +74,11 @@ jobs:
         continue-on-error: true  # Don't fail the pipeline on diagnosis errors
         run: |
           echo '=== Build completed ==='
-          echo "Build artifacts in dist/ directory"
-          ls -la dist/ | head -10 || true
+          echo "Build artifacts in legacy/dist/ directory"
+          ls -la legacy/dist/ | head -10 || true
           
           echo '=== Main JS bundle ==='
-          MAIN_JS=$(find dist/assets -name "*.js" -type f | head -1)
+          MAIN_JS=$(find legacy/dist/assets -name "*.js" -type f 2>/dev/null | head -1)
           if [ -n "$MAIN_JS" ]; then
             echo "Checking $MAIN_JS for phase2 detection..."
             grep -E "(has\(\"phase2\"\)|CustomerModuleV2|initLegacyScript)" "$MAIN_JS" | head -5 || true
@@ -76,16 +88,20 @@ jobs:
           echo "phase2 parameter is handled at runtime via URLSearchParams"
           echo "Build uses: .has('phase2') method for detection"
       
-      - run: npx playwright install --with-deps ${{ matrix.browser }}
+      - run: cd legacy && npx playwright install --with-deps ${{ matrix.browser }}
+      
       - name: Debug - List e2e directory
         run: |
           echo "Current directory: $(pwd)"
-          echo "Contents of e2e directory:"
-          ls -la e2e/
-          echo "Looking for test file:"
-          ls -la e2e/customer-phase2-basic.spec.ts || echo "File not found!"
+          echo "Contents of root e2e directory:"
+          ls -la e2e/ || echo "Root e2e not found"
+          echo "Contents of legacy e2e directory:"
+          ls -la legacy/e2e/ || echo "Legacy e2e not found"
+          echo "Looking for test files:"
+          find . -name "*.spec.ts" -type f | grep -E "(e2e|test)" | head -10
+      
       - name: Run Playwright tests on ${{ matrix.browser }}
-        run: npx playwright test --project=${{ matrix.browser }} --reporter=line
+        run: cd legacy && npx playwright test --project=${{ matrix.browser }} --reporter=line
       # Upload diagnosis artifacts
       - name: Upload build diagnosis
         uses: actions/upload-artifact@v4
@@ -106,7 +122,8 @@ jobs:
           retention-days: 7
       
       - name: Send failure notification
-        if: failure() && github.run_attempt == 1
+        if: failure() && github.run_attempt == 1 && secrets.MAIL_USERNAME != ''
+        continue-on-error: true
         uses: dawidd6/action-send-mail@v3
         with:
           server_address: ${{ secrets.MAIL_SERVER }}

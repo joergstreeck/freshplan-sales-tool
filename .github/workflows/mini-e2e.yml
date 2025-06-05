@@ -25,20 +25,22 @@ jobs:
         with:
           node-version: 20
           cache: 'npm'
+          cache-dependency-path: legacy/package-lock.json
       
       - name: Install dependencies
-        run: npm ci
+        run: cd legacy && npm ci
       
       - name: Build
-        run: npm run build:ci
+        run: cd legacy && npm run build:ci
       
       - name: Install Playwright ${{ matrix.browser }}
         run: |
+          cd legacy
           npx playwright install ${{ matrix.browser }}
           npx playwright install-deps ${{ matrix.browser }}
       
       - name: Run tests on ${{ matrix.browser }}
-        run: npx playwright test --project=${{ matrix.browser }} healthcheck customer-phase2-basic-mini backup-smoke customer-core-a customer-core-b customer-advanced --config=playwright.config.minimal.ts
+        run: cd legacy && npx playwright test --project=${{ matrix.browser }} healthcheck customer-phase2-basic-mini backup-smoke customer-core-a customer-core-b customer-advanced --config=playwright.config.minimal.ts
         continue-on-error: false
       
       - name: Upload results on failure
