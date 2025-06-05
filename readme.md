@@ -44,7 +44,7 @@ Ein professionelles Verkaufstool für die Lebensmittelbranche mit interaktivem R
 ## 🛠️ Installation
 
 ### Standalone (Keine Installation erforderlich)
-1. Datei `freshplan-sales-tool.html` herunterladen
+1. Datei `index.html` herunterladen
 2. In einem modernen Browser öffnen (Chrome, Firefox, Safari, Edge)
 3. Fertig! Das Tool läuft vollständig im Browser
 
