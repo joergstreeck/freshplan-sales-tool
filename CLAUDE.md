@@ -26,6 +26,245 @@
 **Transparenz**
 - Unklarheiten sofort kanalisieren → Issue / Stand-up
 
+## 0.1 Best Practices und Architektur-Standards
+
+**ABSOLUTES ZIEL: Code, den jeder Entwickler sofort versteht - KEINE KOMPROMISSE!**
+
+### Grundprinzipien:
+1. **Clean Code** - Lesbarkeit geht vor Cleverness
+2. **SOLID Principles** - Jede Klasse hat EINE klare Verantwortung
+3. **DRY** - Don't Repeat Yourself, aber nicht auf Kosten der Klarheit
+4. **KISS** - Keep It Simple, Stupid
+5. **YAGNI** - You Aren't Gonna Need It (keine vorzeitige Abstraktion)
+
+### Backend-Architektur (Quarkus/Java):
+```
+backend/
+├── api/                          # REST Layer (Controllers)
+│   ├── resources/               # REST Endpoints (@Path)
+│   └── exception/               # Exception Handling
+│       └── mapper/             # JAX-RS Exception Mappers
+├── domain/                      # Business Domain (Core)
+│   └── [aggregate]/            # z.B. user, order, product
+│       ├── entity/             # JPA Entities
+│       ├── repository/         # Data Access Layer
+│       ├── service/            # Business Logic
+│       │   ├── dto/           # Request/Response DTOs
+│       │   ├── exception/     # Domain Exceptions
+│       │   └── mapper/        # Entity-DTO Mapping
+│       └── validation/         # Domain Validators
+├── infrastructure/              # Technical Details
+│   ├── config/                 # Configuration Classes
+│   ├── security/               # Security Implementation
+│   └── persistence/            # DB-specific Code
+└── shared/                      # Shared Utilities
+    ├── constants/              # Global Constants
+    └── util/                   # Utility Classes
+```
+
+### Frontend-Architektur (React/TypeScript):
+```
+frontend/
+├── components/                  # Reusable UI Components
+│   ├── common/                 # Generic (Button, Input, etc.)
+│   └── domain/                 # Domain-specific Components
+├── features/                    # Feature-based Organization
+│   └── [feature]/              # z.B. users, orders
+│       ├── components/         # Feature Components
+│       ├── hooks/              # Custom Hooks
+│       ├── services/           # API Services
+│       ├── types/              # TypeScript Types
+│       └── utils/              # Feature Utilities
+├── layouts/                     # Page Layouts
+├── pages/                       # Route Pages
+├── services/                    # Global Services
+│   ├── api/                    # API Client
+│   └── auth/                   # Auth Service
+├── store/                       # State Management
+├── types/                       # Global Types
+└── utils/                       # Global Utilities
+```
+
+### Code-Standards im Detail:
+
+#### Naming Conventions:
+- **Klassen**: PascalCase, beschreibende Nomen (`UserService`, `OrderRepository`)
+- **Interfaces**: PascalCase, KEIN "I" Präfix (`UserRepository`, nicht `IUserRepository`)
+- **Methoden**: camelCase, Verben (`createUser`, `findByEmail`)
+- **Variablen**: camelCase, beschreibend (`userEmail`, nicht nur `email`)
+- **Konstanten**: UPPER_SNAKE_CASE (`MAX_RETRY_ATTEMPTS`)
+- **Dateien**: Wie die Hauptklasse (`UserService.java`, `UserList.tsx`)
+- **Packages/Folders**: lowercase, Singular (`user`, nicht `users`)
+
+#### JavaDoc/JSDoc Standards:
+```java
+/**
+ * Service layer for User management operations.
+ * 
+ * This service encapsulates the business logic for user management,
+ * providing a clean API for user operations while handling validation,
+ * error cases, and data transformation.
+ * 
+ * @author FreshPlan Team
+ * @since 2.0.0
+ */
+@ApplicationScoped
+@Transactional
+public class UserService {
+    // Inline-Kommentare NUR wenn der Code nicht selbsterklärend ist
+    // Bevorzuge aussagekräftige Methoden-/Variablennamen
+}
+```
+
+#### Error Handling Best Practices:
+```java
+// Domain Exception mit klarer Bedeutung
+public class UserNotFoundException extends RuntimeException {
+    // Immer mit aussagekräftiger Message
+    public UserNotFoundException(String userId) {
+        super("User not found with ID: " + userId);
+    }
+}
+
+// Exception Mapper für konsistente API Responses
+@Provider
+public class UserNotFoundExceptionMapper 
+    implements ExceptionMapper<UserNotFoundException> {
+    // Einheitliches Error Response Format
+}
+```
+
+#### DTO Design:
+```java
+// Immutable DTOs mit Builder Pattern
+public final class UserResponse {
+    private final UUID id;
+    private final String username;
+    // ... andere fields
+    
+    // Private constructor
+    private UserResponse(Builder builder) { /*...*/ }
+    
+    // Nur Getter, keine Setter
+    public UUID getId() { return id; }
+    
+    // Builder für flexible Objekterstellung
+    public static Builder builder() { return new Builder(); }
+}
+```
+
+#### Repository Pattern:
+```java
+@ApplicationScoped
+public class UserRepository implements PanacheRepositoryBase<User, UUID> {
+    // Klare, aussagekräftige Methodennamen
+    public Optional<User> findByUsername(String username) {
+        // Defensive Programming - null checks
+        if (username == null || username.isBlank()) {
+            return Optional.empty();
+        }
+        return find("username", username).firstResultOptional();
+    }
+}
+```
+
+#### Service Layer:
+```java
+@ApplicationScoped
+@Transactional
+public class UserService {
+    // Constructor Injection (nicht @Inject auf Fields)
+    private final UserRepository repository;
+    private final UserMapper mapper;
+    
+    @Inject
+    public UserService(UserRepository repository, UserMapper mapper) {
+        this.repository = repository;
+        this.mapper = mapper;
+    }
+    
+    // Business Logic mit klaren Transaktionsgrenzen
+    public UserResponse createUser(CreateUserRequest request) {
+        // 1. Validation
+        // 2. Business Rules
+        // 3. Persistence
+        // 4. Response Mapping
+    }
+}
+```
+
+#### Testing Standards:
+```java
+// Test-Struktur
+class UserServiceTest {
+    @Test
+    void createUser_withValidData_shouldReturnCreatedUser() {
+        // Arrange
+        var request = CreateUserRequest.builder()
+            .username("john.doe")
+            .build();
+        
+        // Act
+        var result = userService.createUser(request);
+        
+        // Assert
+        assertThat(result)
+            .isNotNull()
+            .extracting(UserResponse::getUsername)
+            .isEqualTo("john.doe");
+    }
+}
+```
+
+#### Security Best Practices:
+- **Keine Hardcoded Secrets** - Nutze Environment Variables
+- **Input Validation** auf allen Ebenen (DTO, Service, Repository)
+- **Prepared Statements** automatisch durch JPA/Panache
+- **@RolesAllowed** für Authorization
+- **CORS** nur für erlaubte Origins
+
+#### Performance Considerations:
+- **Lazy Loading** für Collections (`@OneToMany(fetch = FetchType.LAZY)`)
+- **Pagination** für alle Listen (`Page`, `Pageable`)
+- **Query Optimization** mit Named Queries
+- **Caching** wo sinnvoll (`@CacheResult`)
+- **Database Indexes** in Flyway Migrations
+
+### Git Workflow & Code Review:
+```bash
+# Feature Branch erstellen
+git checkout -b feature/user-management
+
+# Atomic Commits mit klaren Messages
+git commit -m "feat(user): Add user creation endpoint
+
+- Implement POST /api/users
+- Add validation for email uniqueness
+- Include unit and integration tests"
+
+# Pull Request Checklist:
+# - [ ] Tests sind grün
+# - [ ] Code Coverage > 80%
+# - [ ] JavaDoc/JSDoc komplett
+# - [ ] Keine TODO-Kommentare
+# - [ ] Security-Check durchgeführt
+# - [ ] Performance akzeptabel
+```
+
+### Metriken für Code-Qualität:
+- **Test Coverage**: Minimum 80% für neue Features
+- **Cyclomatic Complexity**: Max 10 pro Methode
+- **Method Length**: Max 20 Zeilen (ideal < 10)
+- **Class Length**: Max 200 Zeilen
+- **Package Dependencies**: Keine zirkulären Abhängigkeiten
+
+### Continuous Improvement:
+- **Code Reviews** sind Lernmöglichkeiten
+- **Refactoring** ist Teil jeder Story
+- **Tech Debt** wird dokumentiert und priorisiert
+- **Pair Programming** für komplexe Features
+- **Knowledge Sharing** in Team-Sessions
+
 ## 1. Projektübersicht und Ziele
 
 **Projektname:** FreshPlan Sales Tool 2.0
