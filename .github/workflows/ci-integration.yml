@@ -107,13 +107,24 @@ jobs:
         run: |
           # First ensure it's compiled
           mvn -B compile
-          # Then start in dev mode with more logging
-          mvn -B quarkus:dev -Dquarkus.http.host=0.0.0.0 > backend.log 2>&1 &
+          # Then start in dev mode with test profile and more logging
+          mvn -B quarkus:dev \
+            -Dquarkus.http.host=0.0.0.0 \
+            -Dquarkus.datasource.devservices.enabled=false \
+            -Dquarkus.datasource.jdbc.url=jdbc:postgresql://localhost:5432/freshplan \
+            -Dquarkus.datasource.username=freshplan \
+            -Dquarkus.datasource.password=freshplan \
+            -Dquarkus.oidc.enabled=false \
+            -Dquarkus.security.users.embedded.enabled=true \
+            -Dquarkus.security.users.embedded.plain-text=true \
+            -Dquarkus.security.users.embedded.users.test=test \
+            -Dquarkus.security.users.embedded.roles.test=user \
+            > backend.log 2>&1 &
           # Give it time to start
-          sleep 30
-          # Show last 50 lines of log for debugging
+          sleep 45
+          # Show last 100 lines of log for debugging
           echo "=== Backend startup log ==="
-          tail -n 50 backend.log || true
+          tail -n 100 backend.log || true
         working-directory: ./backend
         shell: bash
         env:
@@ -136,7 +147,7 @@ jobs:
           echo "Backend failed to start!"
           # Show more logs for debugging
           echo "=== Full backend log ==="
-          cat backend.log || true
+          cat backend/backend.log || true
           exit 1
         env:
           KEYCLOAK_CLIENT_SECRET: secret
