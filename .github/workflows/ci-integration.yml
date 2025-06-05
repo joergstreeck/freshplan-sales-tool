@@ -87,6 +87,13 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
       
+      - name: Cache Maven dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('backend/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+      
       - name: Install frontend dependencies
         run: cd frontend && npm ci
       
@@ -100,15 +107,20 @@ jobs:
         run: |
           # First ensure it's compiled
           mvn -B compile
-          # Then start in dev mode
-          mvn -B quarkus:dev -Dquarkus.http.host=0.0.0.0 &
+          # Then start in dev mode with more logging
+          mvn -B quarkus:dev -Dquarkus.http.host=0.0.0.0 > backend.log 2>&1 &
           # Give it time to start
           sleep 30
+          # Show last 50 lines of log for debugging
+          echo "=== Backend startup log ==="
+          tail -n 50 backend.log || true
         working-directory: ./backend
         shell: bash
         env:
           KEYCLOAK_CLIENT_SECRET: secret
           QUARKUS_DATASOURCE_JDBC_URL: jdbc:postgresql://localhost:5432/freshplan
+          QUARKUS_OIDC_ENABLED: false
+          QUARKUS_SECURITY_USERS_EMBEDDED_ENABLED: true
       
       - name: Wait for Backend
         run: |
@@ -122,9 +134,23 @@ jobs:
             sleep 2
           done
           echo "Backend failed to start!"
+          # Show more logs for debugging
+          echo "=== Full backend log ==="
+          cat backend.log || true
           exit 1
         env:
           KEYCLOAK_CLIENT_SECRET: secret
+      
+      - name: Debug Backend Failure
+        if: failure()
+        run: |
+          echo "=== Backend logs on failure ==="
+          cd backend
+          cat backend.log || true
+          echo "=== Check if process is running ==="
+          ps aux | grep quarkus || true
+          echo "=== Check port 8080 ==="
+          netstat -tlnp 2>/dev/null | grep 8080 || true
       
       - name: Run Playwright tests
         run: |
