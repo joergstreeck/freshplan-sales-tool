@@ -1,4 +1,6 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+/* eslint-disable react-refresh/only-export-components */
+import { createContext, useContext, useState } from 'react';
+import type { ReactNode } from 'react';
 
 interface User {
   id: string;

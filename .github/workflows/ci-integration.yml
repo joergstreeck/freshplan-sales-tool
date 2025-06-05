@@ -1,0 +1,223 @@
+name: CI - Integration Tests
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  backend-integration:
+    name: Backend Integration Tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./backend
+    
+    services:
+      postgres:
+        image: postgres:15-alpine
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_DB: freshplan
+          POSTGRES_USER: freshplan
+          POSTGRES_PASSWORD: freshplan
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+      
+      - name: Cache Maven dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('backend/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+      
+      - name: Run integration tests
+        run: mvn verify -DskipUnitTests
+        env:
+          KEYCLOAK_CLIENT_SECRET: ${{ secrets.KEYCLOAK_CLIENT_SECRET || 'secret' }}
+          QUARKUS_DATASOURCE_JDBC_URL: jdbc:postgresql://localhost:5432/freshplan
+
+  e2e-smoke:
+    name: E2E Smoke Test
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    
+    services:
+      postgres:
+        image: postgres:15-alpine
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_DB: freshplan
+          POSTGRES_USER: freshplan
+          POSTGRES_PASSWORD: freshplan
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+      
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+      
+      - name: Cache Maven dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('backend/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+      
+      - name: Install frontend dependencies
+        run: cd frontend && npm ci
+      
+      - name: Build frontend
+        run: cd frontend && VITE_API_URL=http://localhost:8080 npm run build
+      
+      - name: Install Playwright
+        run: cd frontend && npx playwright install --with-deps chromium
+      
+      - name: Start Backend (background)
+        run: |
+          # First ensure it's compiled
+          mvn -B compile
+          # Then start in dev mode with test profile and more logging
+          mvn -B quarkus:dev \
+            -Dquarkus.http.host=0.0.0.0 \
+            -Dquarkus.datasource.devservices.enabled=false \
+            -Dquarkus.datasource.jdbc.url=jdbc:postgresql://localhost:5432/freshplan \
+            -Dquarkus.datasource.username=freshplan \
+            -Dquarkus.datasource.password=freshplan \
+            -Dquarkus.oidc.enabled=false \
+            -Dquarkus.security.users.embedded.enabled=true \
+            -Dquarkus.security.users.embedded.plain-text=true \
+            -Dquarkus.security.users.embedded.users.test=test \
+            -Dquarkus.security.users.embedded.roles.test=user \
+            -Dquarkus.analytics.disabled=true \
+            -Dquarkus.http.cors=true \
+            -Dquarkus.http.cors.origins=http://localhost:4173,http://localhost:5173 \
+            -Dquarkus.http.cors.methods=GET,POST,PUT,DELETE,OPTIONS \
+            -Dquarkus.http.cors.headers=accept,authorization,content-type \
+            > backend.log 2>&1 &
+          # Give it time to start
+          sleep 45
+          # Show last 100 lines of log for debugging
+          echo "=== Backend startup log ==="
+          tail -n 100 backend.log || true
+        working-directory: ./backend
+        shell: bash
+        env:
+          KEYCLOAK_CLIENT_SECRET: secret
+          QUARKUS_DATASOURCE_JDBC_URL: jdbc:postgresql://localhost:5432/freshplan
+          QUARKUS_OIDC_ENABLED: false
+          QUARKUS_SECURITY_USERS_EMBEDDED_ENABLED: true
+      
+      - name: Wait for Backend
+        run: |
+          echo "Waiting for backend to be ready..."
+          for i in {1..30}; do
+            # Try multiple endpoints
+            if curl -f http://localhost:8080/q/health/ready 2>/dev/null; then
+              echo "Backend is ready (health check)!"
+              exit 0
+            elif curl -f http://localhost:8080/api/ping 2>/dev/null; then
+              echo "Backend is ready (ping endpoint)!"
+              exit 0
+            elif curl -f http://localhost:8080/q/health 2>/dev/null; then
+              echo "Backend is ready (basic health)!"
+              exit 0
+            fi
+            echo "Attempt $i/30 - Backend not ready yet..."
+            sleep 2
+          done
+          echo "Backend failed to start!"
+          # Show more logs for debugging
+          echo "=== Full backend log ==="
+          cat backend/backend.log || true
+          exit 1
+        env:
+          KEYCLOAK_CLIENT_SECRET: secret
+      
+      - name: Debug Backend Failure
+        if: failure()
+        run: |
+          echo "=== Backend logs on failure ==="
+          cd backend
+          cat backend.log || true
+          echo "=== Frontend logs on failure ==="
+          cd ../frontend
+          cat frontend.log || true
+          echo "=== Check if processes are running ==="
+          ps aux | grep -E 'quarkus|vite|node' || true
+          echo "=== Check ports ==="
+          netstat -tlnp 2>/dev/null | grep -E '8080|4173|5173' || true
+      
+      - name: Start Frontend Preview Server
+        run: |
+          cd frontend
+          # Start preview server in background
+          npm run preview > frontend.log 2>&1 &
+          # Wait for it to be ready
+          echo "Waiting for frontend preview server..."
+          for i in {1..20}; do
+            if curl -f http://localhost:4173 2>/dev/null; then
+              echo "Frontend is ready!"
+              break
+            fi
+            echo "Attempt $i/20 - Frontend not ready yet..."
+            sleep 2
+          done
+          
+      - name: Run Playwright tests
+        run: |
+          # Set API URL for tests
+          export VITE_API_URL=http://localhost:8080
+          export CI=true
+          cd frontend && npx playwright test --config=playwright.config.ci.ts --project=chromium
+      
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report
+          path: frontend/playwright-report/
+          retention-days: 30
+      
+      - name: Cleanup
+        if: always()
+        run: |
+          pkill -f quarkus:dev || true
+
+  integration-success:
+    name: Integration Tests Success
+    needs: [backend-integration, e2e-smoke]
+    runs-on: ubuntu-latest
+    steps:
+      - name: All integration tests passed
+        run: echo "✅ All integration tests passed!"

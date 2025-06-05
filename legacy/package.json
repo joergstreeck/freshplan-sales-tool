@@ -27,7 +27,8 @@
     "format:check": "prettier --check \"src/**/*.{ts,tsx,js,jsx,json,css,md}\"",
     "clean": "rm -rf dist coverage",
     "serve": "python3 simple-server.py",
-    "prepare": "husky"
+    "prepare": "husky || true",
+    "check": "npm run lint && npm run type-check"
   },
   "dependencies": {
     "immer": "^10.1.1",
