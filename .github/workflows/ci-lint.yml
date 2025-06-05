@@ -10,6 +10,8 @@ jobs:
   lint-frontend:
     name: Lint Frontend (React)
     runs-on: ubuntu-latest
+    # Skip until frontend exists
+    if: false
     defaults:
       run:
         working-directory: ./frontend
@@ -39,6 +41,8 @@ jobs:
   lint-backend:
     name: Lint Backend (Quarkus)
     runs-on: ubuntu-latest
+    # Skip until backend exists
+    if: false
     defaults:
       run:
         working-directory: ./backend
@@ -91,7 +95,8 @@ jobs:
 
   quality-gate:
     name: Quality Gate Check
-    needs: [lint-frontend, lint-backend, lint-legacy]
+    # Only depend on legacy for now
+    needs: [lint-legacy]
     runs-on: ubuntu-latest
     
     steps:
