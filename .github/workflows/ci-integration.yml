@@ -46,14 +46,7 @@ jobs:
           restore-keys: ${{ runner.os }}-m2
       
       - name: Run integration tests
-        run: |
-          # Create wrapper if missing
-          if [ ! -f mvnw ]; then
-            mvn wrapper:wrapper -Dmaven=3.9.6
-            chmod +x mvnw
-          fi
-          # Run integration tests only
-          ./mvnw verify -DskipUnitTests
+        run: mvn verify -DskipUnitTests
         env:
           KEYCLOAK_CLIENT_SECRET: ${{ secrets.KEYCLOAK_CLIENT_SECRET || 'secret' }}
           QUARKUS_DATASOURCE_JDBC_URL: jdbc:postgresql://localhost:5432/freshplan
@@ -91,13 +84,8 @@ jobs:
       - name: Start Backend (mock mode)
         run: |
           cd backend
-          # Create wrapper if missing
-          if [ ! -f mvnw ]; then
-            mvn wrapper:wrapper -Dmaven=3.9.6
-            chmod +x mvnw
-          fi
           # Start in dev mode with test profile
-          ./mvnw quarkus:dev -Dquarkus.profile=test &
+          mvn quarkus:dev -Dquarkus.profile=test &
           echo $! > ../backend.pid
           # Wait for backend to be ready
           timeout 60s bash -c 'until curl -f http://localhost:8080/q/health/ready; do sleep 2; done'

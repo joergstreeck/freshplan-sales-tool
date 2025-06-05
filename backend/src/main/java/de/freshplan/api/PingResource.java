@@ -33,7 +33,7 @@ public class PingResource {
         Map<String, Object> response = new HashMap<>();
         response.put("message", "pong");
         response.put("timestamp", Instant.now().toString());
-        response.put("user", jwt.getPreferredUserName());
+        response.put("user", jwt.getName());
         
         // Optional: DB-Check
         try (Connection conn = dataSource.getConnection();

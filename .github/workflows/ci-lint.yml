@@ -64,7 +64,7 @@ jobs:
           mvn wrapper:wrapper -Dmaven=3.9.6 || echo "Maven wrapper creation failed, will use system mvn"
       
       - name: Run tests
-        run: mvn clean test || ./mvnw clean test
+        run: mvn clean test
         env:
           KEYCLOAK_CLIENT_SECRET: ${{ secrets.KEYCLOAK_CLIENT_SECRET || 'secret' }}
 
@@ -86,7 +86,7 @@ jobs:
           cache-dependency-path: legacy/package-lock.json
       
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --ignore-scripts
       
       - name: Run ESLint
         run: npm run lint
