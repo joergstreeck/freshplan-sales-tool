@@ -81,15 +81,17 @@ jobs:
       - name: Install Playwright
         run: cd frontend && npx playwright install --with-deps chromium
       
-      - name: Start Backend (mock mode)
+      - name: Start Backend (background)
+        run: ./mvnw -B compile quarkus:dev &
+        working-directory: ./backend
+        shell: bash
+      
+      - name: Wait for Backend
         run: |
-          cd backend
-          # Start in dev mode with test profile
-          mvn -B compile quarkus:dev -Dquarkus.profile=test -DskipTests &
-          echo $! > ../backend.pid
-          # Wait for backend to be ready with retries
+          echo "Waiting for backend to start..."
           sleep 10
-          curl -f --retry 15 --retry-delay 3 --retry-connrefused http://localhost:8080/q/health/ready
+          curl -f --retry 20 --retry-delay 3 --retry-connrefused http://localhost:8080/q/health/ready
+          echo "Backend is ready!"
         env:
           KEYCLOAK_CLIENT_SECRET: secret
       
@@ -111,9 +113,7 @@ jobs:
       - name: Cleanup
         if: always()
         run: |
-          if [ -f backend.pid ]; then
-            kill $(cat backend.pid) || true
-          fi
+          pkill -f quarkus:dev || true
 
   integration-success:
     name: Integration Tests Success
