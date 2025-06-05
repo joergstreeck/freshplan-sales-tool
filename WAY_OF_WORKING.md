@@ -182,6 +182,27 @@ void createUser_withValidData_shouldReturnCreatedUser() {
 }
 ```
 
+### Feature Flag Governance
+
+**Trunk-based Development = Feature Flags sind PFLICHT!**
+
+#### Namenskonvention
+```
+ff_<ticket-nr>_<kurzer-name>
+Beispiel: ff_FRESH-123_user_export
+```
+
+#### Regeln
+- **Sunset Date**: Max. 30 Tage nach Erstellung
+- **Owner**: Team/Person muss definiert sein
+- **Metrics**: Jedes Flag braucht Monitoring
+- **Cleanup**: Automatische Removal PRs
+
+#### CI-Enforcement
+- Flags > 30 Tage: ⚠️ Warning
+- Flags > 60 Tage: ❌ Build Failure
+- Ungenutztes Flag: 🤖 Auto-PR zur Entfernung
+
 ---
 
 ## Security & Compliance
@@ -255,6 +276,23 @@ Stages:
 - **Pair Programming**: Min. 4h/Woche
 - **Tech Talks**: Jeden 2. Freitag
 - **Documentation Day**: 1x/Monat
+
+### Incident Management
+
+#### Severity Matrix
+
+| Level | Impact | Beispiele | Response | Eskalation |
+|-------|--------|-----------|----------|------------|
+| **SEV-1** | Totalausfall | Login down, Datenverlust, Security Breach | < 15 Min | CTO + On-Call |
+| **SEV-2** | Major Feature | Payment kaputt, API > 5s, Keine Orders | < 1 Std | Team Lead |
+| **SEV-3** | Minor Feature | PDF fehlt, Firefox Bug, Slow Query | < 4 Std | Team Slack |
+| **SEV-4** | Kosmetik | Typo, Logging, Warnings | Sprint | Jira Ticket |
+
+#### On-Call
+- Rotation: 1 Woche (Mo-So)
+- Erreichbar: 30 Min
+- Backup: Immer definiert
+- Ausgleich: 1 Tag/Woche
 
 ---
 

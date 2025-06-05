@@ -399,6 +399,49 @@ void createUser_withValidData_shouldReturnCreatedUser() {
 }
 ```
 
+### Feature Flag Governance:
+
+**Trunk-based Development erfordert strikte Feature Flag Disziplin!**
+
+#### Namenskonvention:
+```
+ff_<ticket-nr>_<kurzer-name>
+Beispiel: ff_FRESH-123_user_export
+```
+
+#### Feature Flag Manifest:
+```java
+@FeatureFlag(
+    name = "ff_FRESH-123_user_export",
+    description = "Enable user data export functionality",
+    ticket = "FRESH-123",
+    owner = "user-team",
+    createdDate = "2025-01-06",
+    sunsetDate = "2025-02-06", // PFLICHT: Max 30 Tage!
+    defaultValue = false
+)
+```
+
+#### CI-Gates für Feature Flags:
+1. **Naming Convention Check**: Regex-Validation im Build
+2. **Age Check**: Flags > 30 Tage → Build Warning
+3. **Sunset Enforcement**: Flags > 60 Tage → Build Failure
+4. **Usage Analysis**: Unused Flags → Automatic Removal PR
+
+#### Feature Flag Lifecycle:
+```yaml
+1. Create: ff_TICKET_feature + Sunset Date
+2. Test: Gradual Rollout (1% → 10% → 50% → 100%)
+3. Monitor: Metrics & Error Rates per Flag State
+4. Remove: Automated PR when 100% + 7 days stable
+```
+
+#### Anti-Patterns vermeiden:
+- ❌ Permanente Feature Flags (werden zu Tech Debt)
+- ❌ Verschachtelte Flags (if flag1 && flag2)
+- ❌ Business Logic in Flags (nur Ein/Aus)
+- ❌ Flags ohne Metriken
+
 ## 0.6 Frontend Excellence
 
 ### Design System:
@@ -486,10 +529,33 @@ PR-Checklist:
 
 ### Incident Response:
 1. **Detect**: Monitoring Alert
-2. **Triage**: Severity 1-4
+2. **Triage**: Severity 1-4 (siehe Matrix)
 3. **Respond**: Runbook befolgen
 4. **Resolve**: Fix + Deploy
 5. **Review**: Blameless Postmortem
+
+### Incident Severity Matrix:
+
+| Severity | Impact | Beispiele | Response Time | Eskalation |
+|----------|---------|-----------|---------------|------------|
+| **SEV-1** | Komplettausfall Produktion | - Keine User können sich einloggen<br>- Datenverlust droht<br>- Sicherheitslücke aktiv ausgenutzt | < 15 Min | CTO + On-Call sofort |
+| **SEV-2** | Teilausfall / Major Feature | - Zahlungsprozess defekt<br>- Performance < 50%<br>- Keine neuen Aufträge möglich | < 1 Std | Team Lead + On-Call |
+| **SEV-3** | Minor Feature / Degradation | - PDF-Export fehlt<br>- Einzelne API langsam<br>- UI-Glitch in Firefox | < 4 Std | Team in Slack |
+| **SEV-4** | Cosmetic / Low Impact | - Typo in UI<br>- Log-Spam<br>- Nicht-kritische Warnings | Next Sprint | Ticket in Backlog |
+
+### Eskalations-Pfade:
+```
+SEV-1: @on-call → Team Lead → CTO → CEO
+SEV-2: @on-call → Team Lead → Engineering Manager
+SEV-3: Team Channel → Team Lead
+SEV-4: Jira Ticket → Sprint Planning
+```
+
+### On-Call Rotation:
+- **Primär**: 1 Woche Rotation (Mo-So)
+- **Backup**: Immer verfügbar
+- **Erreichbarkeit**: Handy + Laptop in 30 Min
+- **Kompensation**: 1 Tag Ausgleich pro Woche
 
 ## 0.9 Tooling & Automation
 
