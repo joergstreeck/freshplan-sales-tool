@@ -15,9 +15,7 @@ createRoot(document.getElementById('root')!).render(
       <AuthProvider>
         <Routes>
           <Route path="/" element={<App />} />
-          {isTestMode && (
-            <Route path="/login-bypass" element={<LoginBypassPage />} />
-          )}
+          {isTestMode && <Route path="/login-bypass" element={<LoginBypassPage />} />}
         </Routes>
       </AuthProvider>
     </BrowserRouter>

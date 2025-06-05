@@ -31,17 +31,11 @@ function App() {
       </div>
       <h1>FreshPlan 2.0</h1>
       <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
+        <button onClick={() => setCount(count => count + 1)}>count is {count}</button>
         <button onClick={handlePing} style={{ marginLeft: '10px' }}>
           Ping API
         </button>
-        {pingResult && (
-          <pre style={{ textAlign: 'left', marginTop: '20px' }}>
-            {pingResult}
-          </pre>
-        )}
+        {pingResult && <pre style={{ textAlign: 'left', marginTop: '20px' }}>{pingResult}</pre>}
       </div>
       <p className="read-the-docs">Sprint 0 - Walking Skeleton</p>
     </>
