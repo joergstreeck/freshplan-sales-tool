@@ -1,7 +1,6 @@
 package de.freshplan.domain.user.repository;
 
 import de.freshplan.domain.user.entity.User;
-import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -24,7 +23,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @since 2.0.0
  */
 @QuarkusTest
-@TestTransaction
 class UserRepositoryTest {
     
     @Inject
