@@ -8,7 +8,8 @@ release.properties
 dependency-reduced-pom.xml
 buildNumber.properties
 .mvn/timing.properties
-.mvn/wrapper/maven-wrapper.jar
+# maven-wrapper.jar should be committed
+# .mvn/wrapper/maven-wrapper.jar
 
 # Gradle (in case of migration)
 .gradle
