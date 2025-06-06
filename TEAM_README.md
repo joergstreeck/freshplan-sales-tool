@@ -1,4 +1,4 @@
-# Testing Team Workspace
+# Team BACK - Testing Workspace
 
 ## Quick Start
 ```bash
@@ -71,6 +71,6 @@ Bei Problemen: "Strategie der kleinen Schritte"
 - Test isolieren → minimieren → debuggen
 
 ## Kontakt
-- Lead: Testing Team
-- Slack: #freshplan-testing
+- Lead: Team BACK (@Max)
+- Slack: #team-back
 - Dashboard: [CI/CD Status](link)
