@@ -46,7 +46,44 @@
 
 ---
 
+## 🚨 WICHTIGE NACHRICHT VON JÖRG - 15:45
+
+### An alle Teams: Klarheit vor Code!
+
+**WICHTIG:** Bei JEGLICHEN Unklarheiten bezüglich:
+- API Endpoints (Naming, Parameter, Response-Format)
+- Vorhandene Architektur in unserem Unternehmen
+- Business-Logik oder Prozesse
+- Integration mit bestehenden Systemen
+- Security-Anforderungen
+- Performance-Erwartungen
+
+**BITTE ZUERST FRAGEN!** 
+
+❌ NICHT einfach programmieren und hoffen, dass es richtig ist
+✅ IMMER nachfragen und Klarheit schaffen
+
+**Warum:** Das Projekt ist zu komplex für Annahmen. Falsche Entscheidungen kosten uns später viel Zeit.
+
+**Wie fragen:**
+1. Dokumentiert eure Frage hier im TEAM_SYNC_LOG
+2. Markiert mit "❓ FRAGE AN JÖRG:"
+3. Wartet auf Antwort bevor ihr weitermacht
+
+Ich beantworte ALLE Fragen gerne! Lieber einmal zu viel gefragt als in die falsche Richtung entwickelt.
+
+---
+
 ## Blockers & Help Needed
 <!-- Team-übergreifende Probleme hier rein -->
+
+### 15:50 - Team FRONT
+- ✅ Nachricht von Jörg verstanden
+- 📝 Werde alle Unklarheiten hier dokumentieren bevor ich code
+
+❓ **FRAGE AN JÖRG:** Bevor ich mit dem React Setup starte:
+1. Sollen wir Material-UI (MUI) verwenden oder ein anderes UI Framework?
+2. Gibt es bestehende Design-Guidelines oder Farb-Schemas von FreshPlan?
+3. Soll die neue React-App später die Legacy-App komplett ersetzen oder parallel laufen?
 
 ---
