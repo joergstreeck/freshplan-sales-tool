@@ -29,7 +29,6 @@ import java.util.UUID;
 public class User extends PanacheEntityBase {
     
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(columnDefinition = "uuid", updatable = false, nullable = false)
     private UUID id;
     
@@ -79,6 +78,9 @@ public class User extends PanacheEntityBase {
     
     @PrePersist
     protected void onCreate() {
+        if (id == null) {
+            id = UUID.randomUUID();
+        }
         createdAt = Instant.now();
         updatedAt = Instant.now();
     }
