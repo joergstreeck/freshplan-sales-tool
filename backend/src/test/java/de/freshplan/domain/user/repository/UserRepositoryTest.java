@@ -4,6 +4,7 @@ import de.freshplan.domain.user.entity.User;
 import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -32,6 +33,7 @@ class UserRepositoryTest {
     private User testUser;
     
     @BeforeEach
+    @Transactional
     void setUp() {
         // Clear any existing data
         userRepository.deleteAll();
