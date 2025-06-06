@@ -290,7 +290,8 @@ public class UserResource {
                         Response.Status.BAD_REQUEST.getStatusCode(),
                         "Bad Request",
                         "email parameter missing",
-                        "/api/users/search"
+                        "/api/users/search",
+                        null
                     ))
                     .build();
         }

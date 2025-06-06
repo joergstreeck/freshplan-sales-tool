@@ -22,6 +22,7 @@ public class ValidationExceptionMapper
                     Response.Status.BAD_REQUEST.getStatusCode(),
                     "Bad Request",
                     "Validation failed",
+                    null,
                     null
                 ))
                 .build();
