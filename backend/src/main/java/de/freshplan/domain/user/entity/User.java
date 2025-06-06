@@ -2,6 +2,7 @@ package de.freshplan.domain.user.entity;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
+import org.hibernate.annotations.GenericGenerator;
 import java.time.Instant;
 import java.util.Objects;
 import java.util.UUID;
@@ -29,7 +30,8 @@ import java.util.UUID;
 public class User extends PanacheEntityBase {
     
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @GeneratedValue(generator = "uuid2")
+    @GenericGenerator(name = "uuid2", strategy = "uuid2")
     @Column(columnDefinition = "uuid", updatable = false, nullable = false)
     private UUID id;
     

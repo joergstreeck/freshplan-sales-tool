@@ -2,6 +2,7 @@ package de.freshplan.domain.user.repository;
 
 import de.freshplan.domain.user.entity.User;
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.TestTransaction;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,6 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @since 2.0.0
  */
 @QuarkusTest
+@TestTransaction
 class UserRepositoryTest {
     
     @Inject
@@ -31,7 +33,6 @@ class UserRepositoryTest {
     private User testUser;
     
     @BeforeEach
-    @Transactional
     void setUp() {
         // Clear any existing data
         userRepository.deleteAll();
@@ -47,7 +48,6 @@ class UserRepositoryTest {
     }
     
     @Test
-    @Transactional
     void testFindByUsername_ExistingUser_ShouldReturn() {
         // When
         Optional<User> found = userRepository
@@ -62,6 +62,7 @@ class UserRepositoryTest {
     }
     
     @Test
+    @Transactional
     void testFindByUsername_NonExistingUser_ShouldReturnEmpty() {
         // When
         Optional<User> found = userRepository
@@ -72,6 +73,7 @@ class UserRepositoryTest {
     }
     
     @Test
+    @Transactional
     void testFindByEmail_ExistingUser_ShouldReturn() {
         // When
         Optional<User> found = userRepository
@@ -84,6 +86,7 @@ class UserRepositoryTest {
     }
     
     @Test
+    @Transactional
     void testFindByEmail_NonExistingUser_ShouldReturnEmpty() {
         // When
         Optional<User> found = userRepository
@@ -94,6 +97,7 @@ class UserRepositoryTest {
     }
     
     @Test
+    @Transactional
     void testExistsByUsername_ExistingUser_ShouldReturnTrue() {
         // When
         boolean exists = userRepository
@@ -104,6 +108,7 @@ class UserRepositoryTest {
     }
     
     @Test
+    @Transactional
     void testExistsByUsername_NonExistingUser_ShouldReturnFalse() {
         // When
         boolean exists = userRepository
@@ -114,6 +119,7 @@ class UserRepositoryTest {
     }
     
     @Test
+    @Transactional
     void testExistsByEmail_ExistingUser_ShouldReturnTrue() {
         // When
         boolean exists = userRepository
@@ -124,6 +130,7 @@ class UserRepositoryTest {
     }
     
     @Test
+    @Transactional
     void testExistsByEmail_NonExistingUser_ShouldReturnFalse() {
         // When
         boolean exists = userRepository
@@ -134,6 +141,7 @@ class UserRepositoryTest {
     }
     
     @Test
+    @Transactional
     void testExistsByUsernameAndIdNot_DifferentUser_ShouldReturnTrue() {
         // Given
         User anotherUser = createAndPersistUser(
@@ -155,6 +163,7 @@ class UserRepositoryTest {
     }
     
     @Test
+    @Transactional
     void testExistsByUsernameAndIdNot_SameUser_ShouldReturnFalse() {
         // When
         boolean exists = userRepository
@@ -168,6 +177,7 @@ class UserRepositoryTest {
     }
     
     @Test
+    @Transactional
     void testExistsByEmailAndIdNot_DifferentUser_ShouldReturnTrue() {
         // Given
         User anotherUser = createAndPersistUser(
@@ -189,6 +199,7 @@ class UserRepositoryTest {
     }
     
     @Test
+    @Transactional
     void testExistsByEmailAndIdNot_SameUser_ShouldReturnFalse() {
         // When
         boolean exists = userRepository
@@ -202,6 +213,7 @@ class UserRepositoryTest {
     }
     
     @Test
+    @Transactional
     void testFindAllActive_ShouldReturnOnlyEnabledUsers() {
         // Given
         User disabledUser = createAndPersistUser(
@@ -236,6 +248,7 @@ class UserRepositoryTest {
     }
     
     @Test
+    @Transactional
     void testPersistAndFlush_ShouldGenerateId() {
         // Given
         User newUser = new User(
@@ -256,6 +269,7 @@ class UserRepositoryTest {
     }
     
     @Test
+    @Transactional
     void testUpdate_ShouldUpdateTimestamp() throws InterruptedException {
         // Given
         // Lade den User innerhalb des Tests neu, um sicherzustellen, dass er "managed" ist
@@ -274,6 +288,7 @@ class UserRepositoryTest {
     }
     
     @Test
+    @Transactional
     void testDelete_ShouldRemoveUser() {
         // Given
         UUID userId = testUser.getId();
@@ -291,6 +306,7 @@ class UserRepositoryTest {
     }
     
     @Test
+    @Transactional
     void testListAll_ShouldReturnAllUsers() {
         // Given
         createAndPersistUser(
@@ -314,6 +330,7 @@ class UserRepositoryTest {
     }
     
     @Test
+    @Transactional
     void testCount_ShouldReturnCorrectCount() {
         // Given
         createAndPersistUser(
