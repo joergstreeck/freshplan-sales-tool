@@ -90,6 +90,18 @@ public class UserService {
         User user = userRepository.findByIdOptional(id)
                 .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + id));
         
+        // Check if any data has actually changed
+        boolean hasChanges = !user.getUsername().equals(request.getUsername()) ||
+                            !user.getFirstName().equals(request.getFirstName()) ||
+                            !user.getLastName().equals(request.getLastName()) ||
+                            !user.getEmail().equals(request.getEmail()) ||
+                            user.isEnabled() != request.getEnabled();
+        
+        if (!hasChanges) {
+            LOG.debugf("No changes detected for user ID: %s. Skipping update.", id);
+            return userMapper.toResponse(user);
+        }
+        
         // Check username uniqueness if changed
         if (!user.getUsername().equals(request.getUsername()) &&
             userRepository.existsByUsernameExcluding(request.getUsername(), id)) {
