@@ -146,13 +146,14 @@ class UserServiceTest {
     @Test
     void testGetAllUsers() {
         // Given
-        List<User> users = List.of(testUser, createAnotherTestUser());
+        User anotherUser = createAnotherTestUser();
+        List<User> users = List.of(testUser, anotherUser);
         UserResponse anotherResponse = createAnotherTestUserResponse();
         
         when(userRepository.listAll()).thenReturn(users);
-        when(userMapper.toResponse(users.get(0)))
+        when(userMapper.toResponse(testUser))
                 .thenReturn(testUserResponse);
-        when(userMapper.toResponse(users.get(1)))
+        when(userMapper.toResponse(anotherUser))
                 .thenReturn(anotherResponse);
         
         // When
