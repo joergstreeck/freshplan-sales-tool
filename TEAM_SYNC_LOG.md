@@ -362,3 +362,98 @@ Diese Regel wurde auch in CLAUDE.md dokumentiert.
 - 🎯 Werde GitHub CLI einrichten für CI-Monitoring
 - 💪 Bereit für selbstständiges CI-Debugging
 
+### 00:34 - Team BACK - CI MONITORING SETUP
+
+🚀 **Setze proaktive CI-Überwachung auf:**
+- GitHub CLI (gh) wird installiert...
+- Danke Team FRONT für die Anleitung\!
+- Ab jetzt: Automatisches CI-Debugging ohne Wartezeiten
+
+📝 Neuer Workflow dokumentiert in CLAUDE.md
+
+### 00:40 - Team FRONT - CI SETUP
+- ✅ GitHub CLI installiert (v2.74.0)
+- ⏸️ Warte auf gh auth login von Jörg
+- 📝 Sobald auth fertig → CI-Monitoring startet!
+
+### 00:38 - Team BACK - GH INSTALLIERT
+
+✅ **GitHub CLI v2.74.0 installiert\!**
+
+⏸️ **Warte auf Authentifizierung:**
+- Jörg muss 'gh auth login' ausführen
+- Danach kann ich CI-Logs selbst abrufen
+- Bereit für autonomes CI-Debugging\!
+
+### 00:45 - Team FRONT - AUTH CHECK
+- 🔍 Versuche CI-Status zu checken
+- ❓ gh auth noch nicht in meinem Terminal aktiv
+- 📝 Brauche entweder `gh auth login` oder `export GH_TOKEN=...`
+- ⏸️ Warte auf Auth-Setup
+
+### 01:05 - Team BACK - CI CLEANUP
+
+🧹 **CI Cleanup durchgeführt:**
+- Problematische debug-backend.yml entfernt
+- Verwende jetzt nur noch Workflows mit direktem Maven
+- backend-ci.yml und debug-backend-simple.yml bleiben
+- Commit: 575b5dc
+
+🎯 Nächster Schritt: CI sollte jetzt grün werden\!
+
+### 01:10 - Team FRONT - IT ANTWORTEN ERHALTEN
+
+📝 **IT-Antworten zusammengefasst:**
+1. **UI**: Kein Framework, nur React + CSS
+2. **Architektur**: Soll Legacy ersetzen; Online-App nutzt NextJS
+3. **Auth**: Separater Keycloak mit Login-Page & Redirect
+
+❓ **Rückfragen an IT gestellt:**
+- CSS von Legacy übernehmen oder neu?
+- Sales Tool auch mit NextJS oder Vite reicht?
+- Keycloak Config Details (URL, Realm, Client-ID)?
+
+⏸️ Warte auf Klärung bevor React-Setup
+
+### 01:15 - Team FRONT
+- ✅ Detaillierte Rückfragen an IT geschickt
+- 📋 Fragen zu: CSS/Design, Tech-Stack, Keycloak-Config, Deployment, Browser-Support
+- ⏸️ Nutze Wartezeit für Vorbereitung
+
+### 01:17 - Team BACK - CI CHECK
+
+🔴 **CI immer noch rot - bin dran\!**
+- Hole neue Logs...
+
+### 01:25 - WICHTIGE INFO VON JÖRG
+
+## 📌 ChatGPT hat KEINEN Dateizugriff!
+
+**An alle Teams:**
+
+ChatGPT kann unsere Dateien NICHT lesen. Bei Anfragen an ChatGPT müsst ihr:
+
+1. **Relevanten Code/Config kopieren** und in die Frage einfügen
+2. **Kontext mitliefern** - was ist das Problem, was wurde schon versucht
+3. **Spezifisch sein** - nicht "schau dir mal an" sondern konkrete Codeblöcke zeigen
+
+**Beispiel RICHTIG:**
+```
+[Front] Ich habe diesen Keycloak-Setup:
+```typescript
+const keycloak = new Keycloak({
+  url: 'http://localhost:8180',
+  realm: 'freshplan-realm',
+  clientId: 'freshplan-frontend'
+});
+```
+Problem: Token-Refresh funktioniert nicht. Was ist Best Practice?
+```
+
+**Beispiel FALSCH:**
+"Schau dir mal unsere Keycloak-Config an"
+
+### 01:27 - Team FRONT
+- ✅ Verstanden! Werde bei ChatGPT-Fragen immer Code/Context mitliefern
+- 📝 Das erklärt, warum er manchmal "raten" muss
+
