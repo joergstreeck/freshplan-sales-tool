@@ -4,6 +4,8 @@ import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
 import org.hibernate.annotations.GenericGenerator;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -56,6 +58,14 @@ public class User extends PanacheEntityBase {
     @Column(name = "updated_at", nullable = false)
     private Instant updatedAt;
     
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(
+        name = "user_roles", 
+        joinColumns = @JoinColumn(name = "user_id")
+    )
+    @Column(name = "role")
+    private List<String> roles = new ArrayList<>();
+    
     /**
      * Default constructor required by JPA.
      */
@@ -77,6 +87,7 @@ public class User extends PanacheEntityBase {
         this.lastName = Objects.requireNonNull(lastName, "Last name cannot be null");
         this.email = Objects.requireNonNull(email, "Email cannot be null");
         this.enabled = true; // New users are enabled by default
+        this.roles.add("sales"); // Default role per PHASE2_KICKOFF.md
     }
     
     @PrePersist
@@ -161,6 +172,44 @@ public class User extends PanacheEntityBase {
     
     public Instant getUpdatedAt() {
         return updatedAt;
+    }
+    
+    public List<String> getRoles() {
+        return new ArrayList<>(roles); // Return defensive copy
+    }
+    
+    public void setRoles(List<String> roles) {
+        this.roles = roles != null ? new ArrayList<>(roles) : new ArrayList<>();
+    }
+    
+    /**
+     * Adds a role to this user.
+     * 
+     * @param role the role to add
+     */
+    public void addRole(String role) {
+        if (role != null && !roles.contains(role)) {
+            roles.add(role);
+        }
+    }
+    
+    /**
+     * Removes a role from this user.
+     * 
+     * @param role the role to remove
+     */
+    public void removeRole(String role) {
+        roles.remove(role);
+    }
+    
+    /**
+     * Checks if the user has a specific role.
+     * 
+     * @param role the role to check
+     * @return true if the user has the role, false otherwise
+     */
+    public boolean hasRole(String role) {
+        return roles.contains(role);
     }
     
     @Override

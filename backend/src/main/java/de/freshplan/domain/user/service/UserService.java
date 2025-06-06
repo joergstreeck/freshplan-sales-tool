@@ -4,12 +4,15 @@ import de.freshplan.domain.user.entity.User;
 import de.freshplan.domain.user.repository.UserRepository;
 import de.freshplan.domain.user.service.dto.CreateUserRequest;
 import de.freshplan.domain.user.service.dto.UpdateUserRequest;
+import de.freshplan.domain.user.service.dto.UpdateUserRolesRequest;
 import de.freshplan.domain.user.service.dto.UserResponse;
 import de.freshplan.domain.user.service.exception.DuplicateEmailException;
 import de.freshplan.domain.user.service.exception.DuplicateUsernameException;
+import de.freshplan.domain.user.service.exception.InvalidRoleException;
 import de.freshplan.domain.user.service.exception.UserAlreadyExistsException;
 import de.freshplan.domain.user.service.exception.UserNotFoundException;
 import de.freshplan.domain.user.service.mapper.UserMapper;
+import de.freshplan.domain.user.service.validation.RoleValidator;
 import io.quarkus.panache.common.Page;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -326,5 +329,37 @@ public class UserService {
      */
     public long countEnabledUsers() {
         return userRepository.countEnabled();
+    }
+    
+    /**
+     * Updates the roles of a user.
+     * 
+     * @param id the user ID
+     * @param request the roles update request
+     * @return the updated user response
+     * @throws UserNotFoundException if user not found
+     * @throws InvalidRoleException if any role is invalid
+     */
+    public UserResponse updateUserRoles(@NotNull UUID id, @Valid @NotNull UpdateUserRolesRequest request) {
+        LOG.debugf("Updating roles for user with ID: %s", id);
+        
+        User user = userRepository.findByIdOptional(id)
+                .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + id));
+        
+        // Validate all roles
+        List<String> normalizedRoles = RoleValidator.normalizeRoles(request.getRoles());
+        
+        for (String role : normalizedRoles) {
+            if (!RoleValidator.isValidRole(role)) {
+                throw new InvalidRoleException(role);
+            }
+        }
+        
+        // Update user roles
+        user.setRoles(normalizedRoles);
+        userRepository.flush();
+        
+        LOG.infof("User roles updated successfully for ID: %s. New roles: %s", id, normalizedRoles);
+        return userMapper.toResponse(user);
     }
 }
