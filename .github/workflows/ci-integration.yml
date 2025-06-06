@@ -46,7 +46,7 @@ jobs:
           restore-keys: ${{ runner.os }}-m2
       
       - name: Run integration tests
-        run: ./mvnw -B clean verify -Pgreen
+        run: mvn -B clean verify -Pgreen
         env:
           CI_GREEN: true
           KEYCLOAK_CLIENT_SECRET: ${{ secrets.KEYCLOAK_CLIENT_SECRET || 'secret' }}
