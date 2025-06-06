@@ -209,7 +209,6 @@ class UserRepositoryTest {
             "disabled@freshplan.de"
         );
         disabledUser.disable();
-        userRepository.persist(disabledUser);
         
         User enabledUser = createAndPersistUser(
             "enabled.user",
@@ -259,7 +258,6 @@ class UserRepositoryTest {
         
         // When
         testUser.setFirstName("Jonathan");
-        userRepository.persist(testUser);
         userRepository.flush();
         
         // Then
