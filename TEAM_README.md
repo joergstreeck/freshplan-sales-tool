@@ -1,4 +1,4 @@
-# Frontend Team Workspace
+# Team FRONT Workspace
 
 ## Quick Start
 ```bash
@@ -53,6 +53,6 @@ npm run build
 - Figma: [Design Files](link)
 
 ## Kontakt
-- Lead: Frontend Team
-- Slack: #freshplan-frontend
+- Lead: Team FRONT (@Sophie)
+- Slack: #team-front
 - Wiki: [Frontend Guidelines](../docs/)
