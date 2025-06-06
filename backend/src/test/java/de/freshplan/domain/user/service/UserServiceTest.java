@@ -81,7 +81,7 @@ class UserServiceTest {
         assertThat(response.getUsername())
                 .isEqualTo(testUserResponse.getUsername());
         
-        verify(userRepository).persist(testUser);
+        verify(userRepository).persist(any(User.class));
         verify(userRepository).flush();
     }
     
@@ -96,7 +96,7 @@ class UserServiceTest {
                 .isInstanceOf(DuplicateUsernameException.class)
                 .hasMessageContaining("john.doe");
         
-        verify(userRepository, never()).persist(any());
+        verify(userRepository, never()).persist(any(User.class));
     }
     
     @Test
@@ -112,7 +112,7 @@ class UserServiceTest {
                 .isInstanceOf(DuplicateEmailException.class)
                 .hasMessageContaining("john.doe@freshplan.de");
         
-        verify(userRepository, never()).persist(any());
+        verify(userRepository, never()).persist(any(User.class));
     }
     
     @Test

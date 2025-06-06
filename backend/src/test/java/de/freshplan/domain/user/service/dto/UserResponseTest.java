@@ -9,6 +9,7 @@ import java.time.Instant;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.within;
 
 /**
  * Unit tests for UserResponse DTO.
@@ -88,9 +89,9 @@ class UserResponseTest {
         
         // Timestamps might lose precision in serialization
         assertThat(deserialized.getCreatedAt())
-                .isCloseTo(now, org.assertj.core.data.Offset.offset(1000L));
+                .isCloseTo(now, within(1, java.time.temporal.ChronoUnit.SECONDS));
         assertThat(deserialized.getUpdatedAt())
-                .isCloseTo(now, org.assertj.core.data.Offset.offset(1000L));
+                .isCloseTo(now, within(1, java.time.temporal.ChronoUnit.SECONDS));
     }
     
     @Test

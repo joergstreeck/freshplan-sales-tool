@@ -129,6 +129,39 @@ public class UserRepository implements PanacheRepositoryBase<User, UUID> {
     }
     
     /**
+     * Checks if a username already exists, excluding a specific user.
+     * Alias for existsByUsernameExcluding for backward compatibility.
+     * 
+     * @param username the username to check
+     * @param excludeUserId the user ID to exclude from the check
+     * @return true if username exists for another user, false otherwise
+     */
+    public boolean existsByUsernameAndIdNot(String username, UUID excludeUserId) {
+        return existsByUsernameExcluding(username, excludeUserId);
+    }
+    
+    /**
+     * Checks if an email already exists, excluding a specific user.
+     * Alias for existsByEmailExcluding for backward compatibility.
+     * 
+     * @param email the email to check
+     * @param excludeUserId the user ID to exclude from the check
+     * @return true if email exists for another user, false otherwise
+     */
+    public boolean existsByEmailAndIdNot(String email, UUID excludeUserId) {
+        return existsByEmailExcluding(email, excludeUserId);
+    }
+    
+    /**
+     * Finds all active (enabled) users.
+     * 
+     * @return list of all enabled users
+     */
+    public List<User> findAllActive() {
+        return find("enabled = true", Sort.by("lastName", "firstName")).list();
+    }
+    
+    /**
      * Searches for users by a search term.
      * Searches in username, first name, last name, and email.
      * 

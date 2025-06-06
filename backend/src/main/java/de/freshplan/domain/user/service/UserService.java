@@ -5,6 +5,8 @@ import de.freshplan.domain.user.repository.UserRepository;
 import de.freshplan.domain.user.service.dto.CreateUserRequest;
 import de.freshplan.domain.user.service.dto.UpdateUserRequest;
 import de.freshplan.domain.user.service.dto.UserResponse;
+import de.freshplan.domain.user.service.exception.DuplicateEmailException;
+import de.freshplan.domain.user.service.exception.DuplicateUsernameException;
 import de.freshplan.domain.user.service.exception.UserAlreadyExistsException;
 import de.freshplan.domain.user.service.exception.UserNotFoundException;
 import de.freshplan.domain.user.service.mapper.UserMapper;
@@ -57,12 +59,12 @@ public class UserService {
         
         // Check for existing username
         if (userRepository.existsByUsername(request.getUsername())) {
-            throw new UserAlreadyExistsException("Username already exists: " + request.getUsername());
+            throw new DuplicateUsernameException(request.getUsername());
         }
         
         // Check for existing email
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new UserAlreadyExistsException("Email already exists: " + request.getEmail());
+            throw new DuplicateEmailException(request.getEmail());
         }
         
         // Create and persist user
@@ -91,13 +93,13 @@ public class UserService {
         // Check username uniqueness if changed
         if (!user.getUsername().equals(request.getUsername()) &&
             userRepository.existsByUsernameExcluding(request.getUsername(), id)) {
-            throw new UserAlreadyExistsException("Username already exists: " + request.getUsername());
+            throw new DuplicateUsernameException(request.getUsername());
         }
         
         // Check email uniqueness if changed
         if (!user.getEmail().equals(request.getEmail()) &&
             userRepository.existsByEmailExcluding(request.getEmail(), id)) {
-            throw new UserAlreadyExistsException("Email already exists: " + request.getEmail());
+            throw new DuplicateEmailException(request.getEmail());
         }
         
         // Update user
@@ -248,6 +250,88 @@ public class UserService {
         userRepository.delete(user);
         
         LOG.infof("User deleted successfully with ID: %s", id);
+    }
+    
+    /**
+     * Retrieves a user by ID.
+     * Alias for getUser for backward compatibility.
+     * 
+     * @param id the user ID
+     * @return the user response
+     * @throws UserNotFoundException if user not found
+     */
+    public UserResponse getUserById(@NotNull UUID id) {
+        return getUser(id);
+    }
+    
+    /**
+     * Retrieves all users.
+     * 
+     * @return list of all user responses
+     */
+    public List<UserResponse> getAllUsers() {
+        LOG.debug("Retrieving all users");
+        
+        List<User> users = userRepository.listAll();
+        
+        return users.stream()
+                .map(userMapper::toResponse)
+                .collect(Collectors.toList());
+    }
+    
+    /**
+     * Finds a user by email.
+     * 
+     * @param email the email address
+     * @return Optional containing the user response if found
+     */
+    public java.util.Optional<UserResponse> findByEmail(String email) {
+        LOG.debugf("Finding user by email: %s", email);
+        
+        return userRepository.findByEmail(email)
+                .map(userMapper::toResponse);
+    }
+    
+    /**
+     * Enables a user and returns the updated user.
+     * 
+     * @param id the user ID
+     * @return the updated user response
+     * @throws UserNotFoundException if user not found
+     */
+    public UserResponse enableUser(@NotNull UUID id) {
+        LOG.debugf("Enabling user with ID: %s", id);
+        
+        User user = userRepository.findByIdOptional(id)
+                .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + id));
+        
+        user.enable();
+        userRepository.persist(user);
+        userRepository.flush();
+        
+        LOG.infof("User enabled successfully with ID: %s", id);
+        return userMapper.toResponse(user);
+    }
+    
+    /**
+     * Disables a user and returns the updated user.
+     * 
+     * @param id the user ID
+     * @return the updated user response
+     * @throws UserNotFoundException if user not found
+     */
+    public UserResponse disableUser(@NotNull UUID id) {
+        LOG.debugf("Disabling user with ID: %s", id);
+        
+        User user = userRepository.findByIdOptional(id)
+                .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + id));
+        
+        user.disable();
+        userRepository.persist(user);
+        userRepository.flush();
+        
+        LOG.infof("User disabled successfully with ID: %s", id);
+        return userMapper.toResponse(user);
     }
     
     /**
