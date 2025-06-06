@@ -151,17 +151,23 @@ class UserServiceTest {
         UserResponse anotherResponse = createAnotherTestUserResponse();
         
         when(userRepository.listAll()).thenReturn(users);
-        // Use argument matchers to handle the stream mapping
+        
+        // Use Answer to return different responses based on the input user
         when(userMapper.toResponse(any(User.class)))
-                .thenReturn(testUserResponse)
-                .thenReturn(anotherResponse);
+                .thenAnswer(invocation -> {
+                    User user = invocation.getArgument(0);
+                    if (user.getUsername().equals(testUser.getUsername())) {
+                        return testUserResponse;
+                    } else {
+                        return anotherResponse;
+                    }
+                });
         
         // When
         List<UserResponse> responses = userService.getAllUsers();
         
         // Then
         assertThat(responses).hasSize(2);
-        // Don't check exact order since stream processing might vary
         assertThat(responses).containsExactlyInAnyOrder(
                 testUserResponse, 
                 anotherResponse
