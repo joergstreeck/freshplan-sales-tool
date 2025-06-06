@@ -104,7 +104,7 @@ public class UserService {
         
         // Update user
         userMapper.updateEntity(user, request);
-        userRepository.persist(user);
+        // User is already managed, no need to persist
         
         LOG.infof("User updated successfully with ID: %s", id);
         return userMapper.toResponse(user);
@@ -270,7 +270,7 @@ public class UserService {
                 .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + id));
         
         user.enable();
-        userRepository.persist(user);
+        // User is already managed, no need to persist
         userRepository.flush();
         
         LOG.infof("User enabled successfully with ID: %s", id);
@@ -291,7 +291,7 @@ public class UserService {
                 .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + id));
         
         user.disable();
-        userRepository.persist(user);
+        // User is already managed, no need to persist
         userRepository.flush();
         
         LOG.infof("User disabled successfully with ID: %s", id);

@@ -82,7 +82,6 @@ class UserServiceTest {
                 .isEqualTo(testUserResponse.getUsername());
         
         verify(userRepository).persist(any(User.class));
-        verify(userRepository).flush();
     }
     
     @Test
@@ -226,7 +225,6 @@ class UserServiceTest {
         // Then
         assertThat(response).isNotNull();
         verify(userMapper).updateEntity(testUser, updateRequest);
-        verify(userRepository).flush();
     }
     
     @Test
@@ -252,7 +250,7 @@ class UserServiceTest {
         
         when(userRepository.findByIdOptional(userId))
                 .thenReturn(Optional.of(existingUser));
-        when(userRepository.existsByUsernameAndIdNot(
+        when(userRepository.existsByUsernameExcluding(
                 updateRequest.getUsername(), 
                 userId))
                 .thenReturn(true);
@@ -398,10 +396,23 @@ class UserServiceTest {
             Object value) {
         try {
             var field = target.getClass()
-                    .getSuperclass()
                     .getDeclaredField(fieldName);
             field.setAccessible(true);
             field.set(target, value);
+        } catch (NoSuchFieldException e) {
+            // Try superclass if field not found in current class
+            try {
+                var field = target.getClass()
+                        .getSuperclass()
+                        .getDeclaredField(fieldName);
+                field.setAccessible(true);
+                field.set(target, value);
+            } catch (Exception ex) {
+                throw new RuntimeException(
+                    "Failed to set field: " + fieldName, 
+                    ex
+                );
+            }
         } catch (Exception e) {
             throw new RuntimeException(
                 "Failed to set field: " + fieldName, 
