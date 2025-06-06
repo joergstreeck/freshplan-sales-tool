@@ -48,6 +48,7 @@ jobs:
           QUARKUS_DATASOURCE_USERNAME: freshplan
           QUARKUS_DATASOURCE_PASSWORD: freshplan
           QUARKUS_DATASOURCE_JDBC_URL: jdbc:postgresql://localhost:5432/freshplan_test
+          QUARKUS_DATASOURCE_DEVSERVICES_ENABLED: false
           
       - name: Generate test report
         uses: dorny/test-reporter@v1
