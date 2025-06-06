@@ -138,5 +138,33 @@
         <quarkus.package.type>native</quarkus.package.type>
       </properties>
     </profile>
+    <profile>
+      <id>green</id>
+      <activation>
+        <property>
+          <name>env.CI_GREEN</name>
+        </property>
+      </activation>
+      <properties>
+        <!-- Quarkus startet schneller, wenn Dev-Services für Keycloak aus sind -->
+        <quarkus.oidc.enabled>false</quarkus.oidc.enabled>
+      </properties>
+      <build>
+        <plugins>
+          <!-- Führe nur Smoke-Tests aus -->
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+              <includes>
+                <include>**/*AppStartsIT.java</include>
+                <include>**/*UserRepoSaveLoadIT.java</include>
+                <include>**/*UserServiceUpdateIT.java</include>
+              </includes>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
   </profiles>
 </project>
