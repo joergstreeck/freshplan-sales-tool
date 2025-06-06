@@ -474,9 +474,35 @@ void createUser_withValidData_shouldReturnCreatedUser() {
 }
 ```
 
+### CI-Monitoring und Automatisches Debugging
+
+**NEU: Proaktive CI-Überwachung durch Claude** 🤖
+
+Wenn die CI rot ist:
+1. **Claude holt sich selbstständig die Logs** via GitHub CLI
+2. **Analysiert den Fehler** und versucht eigenständig zu fixen
+3. **Pusht die Lösung** und überwacht erneut
+4. **Eskaliert nur bei:** 
+   - Komplexen Problemen die mehrere Versuche erfordern
+   - Architektur-Entscheidungen
+   - Unklarheiten über Business-Logik
+
+```bash
+# Claude's CI-Workflow
+gh run list --branch <branch> --status failure --limit 1
+gh run view <RUN_ID> --log-failed
+# Analyse → Fix → Push → Repeat
+```
+
+**Vorteile:**
+- ✅ Schnellere Fixes (keine Wartezeit)
+- ✅ Jörg wird nur bei echten Problemen involviert
+- ✅ CI bleibt häufiger grün
+- ✅ Teams können sich auf Features konzentrieren
+
 ### CI-Debugging-Strategie: "Strategie der kleinen Schritte"
 
-**Wenn die CI nach mehreren Versuchen immer noch fehlschlägt:**
+**Wenn die CI nach mehreren automatischen Versuchen immer noch fehlschlägt:**
 
 #### 1. Minimierung des Fehlerbereichs
 ```bash

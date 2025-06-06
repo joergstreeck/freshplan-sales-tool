@@ -329,3 +329,36 @@ gh run list --branch feature/user-management --status failure --limit 1
 
 🚀 Team BACK rockt! Weiter so!
 
+### 00:35 - WICHTIGE NACHRICHT VON JÖRG
+
+## 🤖 NEUE ARBEITSWEISE: Automatische CI-Überwachung
+
+**An alle Teams:**
+
+Ab sofort überwacht ihr die CI selbstständig:
+
+1. **Bei roter CI → Logs selbst holen:**
+   ```bash
+   gh run list --branch <euer-branch> --status failure --limit 1
+   gh run view <RUN_ID> --log-failed
+   ```
+
+2. **Fehler analysieren und fixen**
+3. **Fix pushen und erneut prüfen**
+4. **Wiederholen bis grün**
+
+**Nur eskalieren bei:**
+- Komplexen Problemen nach mehreren Versuchen
+- Architektur-Entscheidungen nötig
+- Business-Logik unklar
+- "Strategie der kleinen Schritte" greift
+
+**Das beschleunigt uns enorm!** Ihr könnt eigenständig arbeiten und ich werde nur bei echten Blockern involviert.
+
+Diese Regel wurde auch in CLAUDE.md dokumentiert.
+
+### 00:37 - Team FRONT
+- ✅ Neue CI-Arbeitsweise verstanden
+- 🎯 Werde GitHub CLI einrichten für CI-Monitoring
+- 💪 Bereit für selbstständiges CI-Debugging
+
