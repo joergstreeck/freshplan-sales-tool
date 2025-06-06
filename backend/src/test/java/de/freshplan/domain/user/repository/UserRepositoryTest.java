@@ -24,31 +24,30 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @since 2.0.0
  */
 @QuarkusTest
-@TestTransaction
 class UserRepositoryTest {
     
     @Inject
     UserRepository userRepository;
     
-    private User testUser;
-    
     @BeforeEach
+    @Transactional
     void setUp() {
         // Clear any existing data
         userRepository.deleteAll();
         userRepository.flush();
-        
-        // Create test user
-        testUser = createAndPersistUser(
+    }
+    
+    @Test
+    @Transactional
+    void testFindByUsername_ExistingUser_ShouldReturn() {
+        // Given
+        User user = createAndPersistUser(
             "john.doe",
             "John",
             "Doe",
             "john.doe@freshplan.de"
         );
-    }
-    
-    @Test
-    void testFindByUsername_ExistingUser_ShouldReturn() {
+        
         // When
         Optional<User> found = userRepository
                 .findByUsername("john.doe");
@@ -75,6 +74,14 @@ class UserRepositoryTest {
     @Test
     @Transactional
     void testFindByEmail_ExistingUser_ShouldReturn() {
+        // Given
+        User user = createAndPersistUser(
+            "john.doe",
+            "John",
+            "Doe",
+            "john.doe@freshplan.de"
+        );
+        
         // When
         Optional<User> found = userRepository
                 .findByEmail("john.doe@freshplan.de");
@@ -99,6 +106,14 @@ class UserRepositoryTest {
     @Test
     @Transactional
     void testExistsByUsername_ExistingUser_ShouldReturnTrue() {
+        // Given
+        createAndPersistUser(
+            "john.doe",
+            "John",
+            "Doe",
+            "john.doe@freshplan.de"
+        );
+        
         // When
         boolean exists = userRepository
                 .existsByUsername("john.doe");
@@ -121,6 +136,14 @@ class UserRepositoryTest {
     @Test
     @Transactional
     void testExistsByEmail_ExistingUser_ShouldReturnTrue() {
+        // Given
+        createAndPersistUser(
+            "john.doe",
+            "John",
+            "Doe",
+            "john.doe@freshplan.de"
+        );
+        
         // When
         boolean exists = userRepository
                 .existsByEmail("john.doe@freshplan.de");
@@ -144,6 +167,12 @@ class UserRepositoryTest {
     @Transactional
     void testExistsByUsernameAndIdNot_DifferentUser_ShouldReturnTrue() {
         // Given
+        User firstUser = createAndPersistUser(
+            "john.doe",
+            "John",
+            "Doe",
+            "john.doe@freshplan.de"
+        );
         User anotherUser = createAndPersistUser(
             "jane.smith",
             "Jane",
@@ -165,11 +194,19 @@ class UserRepositoryTest {
     @Test
     @Transactional
     void testExistsByUsernameAndIdNot_SameUser_ShouldReturnFalse() {
+        // Given
+        User user = createAndPersistUser(
+            "john.doe",
+            "John",
+            "Doe",
+            "john.doe@freshplan.de"
+        );
+        
         // When
         boolean exists = userRepository
                 .existsByUsernameAndIdNot(
                     "john.doe", 
-                    testUser.getId()
+                    user.getId()
                 );
         
         // Then
@@ -180,6 +217,12 @@ class UserRepositoryTest {
     @Transactional
     void testExistsByEmailAndIdNot_DifferentUser_ShouldReturnTrue() {
         // Given
+        User firstUser = createAndPersistUser(
+            "john.doe",
+            "John",
+            "Doe",
+            "john.doe@freshplan.de"
+        );
         User anotherUser = createAndPersistUser(
             "jane.smith",
             "Jane",
@@ -201,11 +244,19 @@ class UserRepositoryTest {
     @Test
     @Transactional
     void testExistsByEmailAndIdNot_SameUser_ShouldReturnFalse() {
+        // Given
+        User user = createAndPersistUser(
+            "john.doe",
+            "John",
+            "Doe",
+            "john.doe@freshplan.de"
+        );
+        
         // When
         boolean exists = userRepository
                 .existsByEmailAndIdNot(
                     "john.doe@freshplan.de", 
-                    testUser.getId()
+                    user.getId()
                 );
         
         // Then
@@ -216,6 +267,13 @@ class UserRepositoryTest {
     @Transactional
     void testFindAllActive_ShouldReturnOnlyEnabledUsers() {
         // Given
+        User enabledUser1 = createAndPersistUser(
+            "john.doe",
+            "John",
+            "Doe",
+            "john.doe@freshplan.de"
+        );
+        
         User disabledUser = createAndPersistUser(
             "disabled.user",
             "Disabled",
@@ -227,7 +285,7 @@ class UserRepositoryTest {
         userToDisable.disable();
         userRepository.flush(); // Speichere die Änderung
         
-        createAndPersistUser(
+        User enabledUser2 = createAndPersistUser(
             "enabled.user",
             "Enabled",
             "User",
@@ -238,7 +296,7 @@ class UserRepositoryTest {
         List<User> activeUsers = userRepository.findAllActive();
         
         // Then
-        assertThat(activeUsers).hasSize(2); // testUser + enabledUser
+        assertThat(activeUsers).hasSize(2); // john.doe + enabled.user
         assertThat(activeUsers)
                 .extracting(User::getUsername)
                 .containsExactlyInAnyOrder(
@@ -272,18 +330,22 @@ class UserRepositoryTest {
     @Transactional
     void testUpdate_ShouldUpdateTimestamp() throws InterruptedException {
         // Given
-        // Lade den User innerhalb des Tests neu, um sicherzustellen, dass er "managed" ist
-        User userToUpdate = userRepository.findById(testUser.getId());
-        var originalUpdatedAt = userToUpdate.getUpdatedAt();
+        User user = createAndPersistUser(
+            "john.doe",
+            "John",
+            "Doe",
+            "john.doe@freshplan.de"
+        );
+        var originalUpdatedAt = user.getUpdatedAt();
         Thread.sleep(100); // Nötig, um einen Zeitunterschied sicherzustellen
 
         // When
-        userToUpdate.setFirstName("Jonathan");
+        user.setFirstName("Jonathan");
         userRepository.flush(); // Änderungen in die DB schreiben
 
         // Then
         // Lade den User erneut, um den von der DB aktualisierten Zeitstempel zu prüfen
-        User updatedUser = userRepository.findById(testUser.getId());
+        User updatedUser = userRepository.findById(user.getId());
         assertThat(updatedUser.getUpdatedAt()).isAfter(originalUpdatedAt);
     }
     
@@ -291,7 +353,13 @@ class UserRepositoryTest {
     @Transactional
     void testDelete_ShouldRemoveUser() {
         // Given
-        UUID userId = testUser.getId();
+        User user = createAndPersistUser(
+            "john.doe",
+            "John",
+            "Doe",
+            "john.doe@freshplan.de"
+        );
+        UUID userId = user.getId();
         // Stelle sicher, dass der User existiert, bevor wir ihn löschen
         assertThat(userRepository.findByIdOptional(userId)).isPresent();
         
@@ -321,12 +389,18 @@ class UserRepositoryTest {
             "Two",
             "user2@freshplan.de"
         );
+        createAndPersistUser(
+            "user3",
+            "User",
+            "Three",
+            "user3@freshplan.de"
+        );
         
         // When
         List<User> allUsers = userRepository.listAll();
         
         // Then
-        assertThat(allUsers).hasSize(3); // testUser + 2 new users
+        assertThat(allUsers).hasSize(3); // 3 users
     }
     
     @Test
@@ -334,17 +408,23 @@ class UserRepositoryTest {
     void testCount_ShouldReturnCorrectCount() {
         // Given
         createAndPersistUser(
-            "extra.user",
-            "Extra",
+            "user1",
             "User",
-            "extra@freshplan.de"
+            "One",
+            "user1@freshplan.de"
+        );
+        createAndPersistUser(
+            "user2",
+            "User",
+            "Two",
+            "user2@freshplan.de"
         );
         
         // When
         long count = userRepository.count();
         
         // Then
-        assertThat(count).isEqualTo(2); // testUser + extra user
+        assertThat(count).isEqualTo(2); // 2 users
     }
     
     // Helper methods
