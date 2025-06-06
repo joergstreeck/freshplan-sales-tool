@@ -200,42 +200,6 @@ public class UserService {
     }
     
     /**
-     * Enables a user account.
-     * 
-     * @param id the user ID
-     * @throws UserNotFoundException if user not found
-     */
-    public void enableUser(@NotNull UUID id) {
-        LOG.debugf("Enabling user with ID: %s", id);
-        
-        User user = userRepository.findByIdOptional(id)
-                .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + id));
-        
-        user.enable();
-        userRepository.persist(user);
-        
-        LOG.infof("User enabled successfully with ID: %s", id);
-    }
-    
-    /**
-     * Disables a user account.
-     * 
-     * @param id the user ID
-     * @throws UserNotFoundException if user not found
-     */
-    public void disableUser(@NotNull UUID id) {
-        LOG.debugf("Disabling user with ID: %s", id);
-        
-        User user = userRepository.findByIdOptional(id)
-                .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + id));
-        
-        user.disable();
-        userRepository.persist(user);
-        
-        LOG.infof("User disabled successfully with ID: %s", id);
-    }
-    
-    /**
      * Deletes a user.
      * 
      * @param id the user ID
