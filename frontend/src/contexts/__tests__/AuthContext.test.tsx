@@ -8,9 +8,7 @@ function TestComponent() {
   return (
     <div>
       <span data-testid="user">{user ? user.name : 'no-user'}</span>
-      <span data-testid="auth">
-        {isAuthenticated ? 'authenticated' : 'not-authenticated'}
-      </span>
+      <span data-testid="auth">{isAuthenticated ? 'authenticated' : 'not-authenticated'}</span>
     </div>
   );
 }

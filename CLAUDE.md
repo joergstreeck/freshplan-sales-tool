@@ -26,6 +26,642 @@
 **Transparenz**
 - Unklarheiten sofort kanalisieren → Issue / Stand-up
 
+## 0.1 Best Practices und Architektur-Standards
+
+**ABSOLUTES ZIEL: Code, den jeder Entwickler sofort versteht - KEINE KOMPROMISSE!**
+
+### Grundprinzipien:
+1. **Clean Code** - Lesbarkeit geht vor Cleverness
+2. **SOLID Principles** - Jede Klasse hat EINE klare Verantwortung
+3. **DRY** - Don't Repeat Yourself, aber nicht auf Kosten der Klarheit
+4. **KISS** - Keep It Simple, Stupid
+5. **YAGNI** - You Aren't Gonna Need It (keine vorzeitige Abstraktion)
+
+### Backend-Architektur (Quarkus/Java):
+```
+backend/
+├── api/                          # REST Layer (Controllers)
+│   ├── resources/               # REST Endpoints (@Path)
+│   └── exception/               # Exception Handling
+│       └── mapper/             # JAX-RS Exception Mappers
+├── domain/                      # Business Domain (Core)
+│   └── [aggregate]/            # z.B. user, order, product
+│       ├── entity/             # JPA Entities
+│       ├── repository/         # Data Access Layer
+│       ├── service/            # Business Logic
+│       │   ├── dto/           # Request/Response DTOs
+│       │   ├── exception/     # Domain Exceptions
+│       │   └── mapper/        # Entity-DTO Mapping
+│       └── validation/         # Domain Validators
+├── infrastructure/              # Technical Details
+│   ├── config/                 # Configuration Classes
+│   ├── security/               # Security Implementation
+│   └── persistence/            # DB-specific Code
+└── shared/                      # Shared Utilities
+    ├── constants/              # Global Constants
+    └── util/                   # Utility Classes
+```
+
+### Frontend-Architektur (React/TypeScript):
+```
+frontend/
+├── components/                  # Reusable UI Components
+│   ├── common/                 # Generic (Button, Input, etc.)
+│   └── domain/                 # Domain-specific Components
+├── features/                    # Feature-based Organization
+│   └── [feature]/              # z.B. users, orders
+│       ├── components/         # Feature Components
+│       ├── hooks/              # Custom Hooks
+│       ├── services/           # API Services
+│       ├── types/              # TypeScript Types
+│       └── utils/              # Feature Utilities
+├── layouts/                     # Page Layouts
+├── pages/                       # Route Pages
+├── services/                    # Global Services
+│   ├── api/                    # API Client
+│   └── auth/                   # Auth Service
+├── store/                       # State Management
+├── types/                       # Global Types
+└── utils/                       # Global Utilities
+```
+
+### Code-Standards im Detail:
+
+#### Code-Lesbarkeit und Zeilenlänge:
+
+**Warum kurze Zeilen?**
+- **Bessere Lesbarkeit**: Kurze Zeilen lassen sich schneller erfassen und verstehen
+- **Vergleichbarkeit**: In Code-Review-Tools oder bei der Versionskontrolle sind kurze Zeilen einfacher zu vergleichen
+- **Kompatibilität**: Viele Editoren und Monitore zeigen lange Zeilen nicht vollständig an
+
+**Empfehlungen zur Zeilenlänge:**
+- **Standard**: Maximale Zeilenlänge von 80 bis 120 Zeichen
+- **Java**: 100 Zeichen (Google Java Style Guide)
+- **TypeScript/JavaScript**: 80-100 Zeichen
+- **Markdown**: 80 Zeichen für bessere Diff-Ansichten
+
+**Praktische Tipps:**
+
+1. **Zeilenumbrüche nutzen:**
+```java
+// Schlecht (zu lang)
+if (user.isActive() && user.hasPermission("admin") && user.getLastLogin().isAfter(yesterday) && user.getDepartment().equals("IT")) {
+
+// Gut (umgebrochen)
+if (user.isActive()
+        && user.hasPermission("admin")
+        && user.getLastLogin().isAfter(yesterday)
+        && user.getDepartment().equals("IT")) {
+```
+
+2. **Hilfsvariablen verwenden:**
+```java
+// Schlecht
+if (userRepository.findByEmail(email).isPresent() && userRepository.findByEmail(email).get().isActive()) {
+
+// Gut
+Optional<User> userOpt = userRepository.findByEmail(email);
+boolean isActiveUser = userOpt.isPresent() && userOpt.get().isActive();
+if (isActiveUser) {
+```
+
+3. **Funktionen auslagern:**
+```java
+// Schlecht
+if (user.getAge() >= 18 && user.hasVerifiedEmail() && user.getCountry().equals("DE") && !user.isBlocked()) {
+
+// Gut
+if (isEligibleForService(user)) {
+
+private boolean isEligibleForService(User user) {
+    return user.getAge() >= 18
+            && user.hasVerifiedEmail()
+            && user.getCountry().equals("DE")
+            && !user.isBlocked();
+}
+```
+
+4. **Method Chaining aufteilen:**
+```java
+// Schlecht
+UserResponse response = userService.findById(id).map(mapper::toResponse).orElseThrow(() -> new UserNotFoundException(id));
+
+// Gut
+UserResponse response = userService
+        .findById(id)
+        .map(mapper::toResponse)
+        .orElseThrow(() -> new UserNotFoundException(id));
+```
+
+5. **Lange Parameter-Listen:**
+```java
+// Schlecht
+public UserResponse createUser(String username, String firstName, String lastName, String email, String department, boolean isActive) {
+
+// Gut - Builder Pattern oder Request Object
+public UserResponse createUser(CreateUserRequest request) {
+```
+
+#### Naming Conventions:
+- **Klassen**: PascalCase, beschreibende Nomen (`UserService`, `OrderRepository`)
+- **Interfaces**: PascalCase, KEIN "I" Präfix (`UserRepository`, nicht `IUserRepository`)
+- **Methoden**: camelCase, Verben (`createUser`, `findByEmail`)
+- **Variablen**: camelCase, beschreibend (`userEmail`, nicht nur `email`)
+- **Konstanten**: UPPER_SNAKE_CASE (`MAX_RETRY_ATTEMPTS`)
+- **Dateien**: Wie die Hauptklasse (`UserService.java`, `UserList.tsx`)
+- **Packages/Folders**: lowercase, Singular (`user`, nicht `users`)
+
+#### JavaDoc/JSDoc Standards:
+```java
+/**
+ * Service layer for User management operations.
+ * 
+ * This service encapsulates the business logic for user management,
+ * providing a clean API for user operations while handling validation,
+ * error cases, and data transformation.
+ * 
+ * @author FreshPlan Team
+ * @since 2.0.0
+ */
+@ApplicationScoped
+@Transactional
+public class UserService {
+    // Inline-Kommentare NUR wenn der Code nicht selbsterklärend ist
+    // Bevorzuge aussagekräftige Methoden-/Variablennamen
+}
+```
+
+#### Error Handling Best Practices:
+```java
+// Domain Exception mit klarer Bedeutung
+public class UserNotFoundException extends RuntimeException {
+    // Immer mit aussagekräftiger Message
+    public UserNotFoundException(String userId) {
+        super("User not found with ID: " + userId);
+    }
+}
+
+// Exception Mapper für konsistente API Responses
+@Provider
+public class UserNotFoundExceptionMapper 
+    implements ExceptionMapper<UserNotFoundException> {
+    // Einheitliches Error Response Format
+}
+```
+
+#### DTO Design:
+```java
+// Immutable DTOs mit Builder Pattern
+public final class UserResponse {
+    private final UUID id;
+    private final String username;
+    // ... andere fields
+    
+    // Private constructor
+    private UserResponse(Builder builder) { /*...*/ }
+    
+    // Nur Getter, keine Setter
+    public UUID getId() { return id; }
+    
+    // Builder für flexible Objekterstellung
+    public static Builder builder() { return new Builder(); }
+}
+```
+
+#### Repository Pattern:
+```java
+@ApplicationScoped
+public class UserRepository implements PanacheRepositoryBase<User, UUID> {
+    // Klare, aussagekräftige Methodennamen
+    public Optional<User> findByUsername(String username) {
+        // Defensive Programming - null checks
+        if (username == null || username.isBlank()) {
+            return Optional.empty();
+        }
+        return find("username", username).firstResultOptional();
+    }
+}
+```
+
+#### Service Layer:
+```java
+@ApplicationScoped
+@Transactional
+public class UserService {
+    // Constructor Injection (nicht @Inject auf Fields)
+    private final UserRepository repository;
+    private final UserMapper mapper;
+    
+    @Inject
+    public UserService(UserRepository repository, UserMapper mapper) {
+        this.repository = repository;
+        this.mapper = mapper;
+    }
+    
+    // Business Logic mit klaren Transaktionsgrenzen
+    public UserResponse createUser(CreateUserRequest request) {
+        // 1. Validation
+        // 2. Business Rules
+        // 3. Persistence
+        // 4. Response Mapping
+    }
+}
+```
+
+#### Testing Standards:
+```java
+// Test-Struktur
+class UserServiceTest {
+    @Test
+    void createUser_withValidData_shouldReturnCreatedUser() {
+        // Arrange
+        var request = CreateUserRequest.builder()
+            .username("john.doe")
+            .build();
+        
+        // Act
+        var result = userService.createUser(request);
+        
+        // Assert
+        assertThat(result)
+            .isNotNull()
+            .extracting(UserResponse::getUsername)
+            .isEqualTo("john.doe");
+    }
+}
+```
+
+#### Security Best Practices:
+- **Keine Hardcoded Secrets** - Nutze Environment Variables
+- **Input Validation** auf allen Ebenen (DTO, Service, Repository)
+- **Prepared Statements** automatisch durch JPA/Panache
+- **@RolesAllowed** für Authorization
+- **CORS** nur für erlaubte Origins
+
+#### Performance Considerations:
+- **Lazy Loading** für Collections (`@OneToMany(fetch = FetchType.LAZY)`)
+- **Pagination** für alle Listen (`Page`, `Pageable`)
+- **Query Optimization** mit Named Queries
+- **Caching** wo sinnvoll (`@CacheResult`)
+- **Database Indexes** in Flyway Migrations
+
+### Git Workflow & Code Review:
+```bash
+# Feature Branch erstellen
+git checkout -b feature/user-management
+
+# Atomic Commits mit klaren Messages
+git commit -m "feat(user): Add user creation endpoint
+
+- Implement POST /api/users
+- Add validation for email uniqueness
+- Include unit and integration tests"
+
+# Pull Request Checklist:
+# - [ ] Tests sind grün
+# - [ ] Code Coverage > 80%
+# - [ ] JavaDoc/JSDoc komplett
+# - [ ] Keine TODO-Kommentare
+# - [ ] Security-Check durchgeführt
+# - [ ] Performance akzeptabel
+```
+
+### Metriken für Code-Qualität:
+- **Test Coverage**: Minimum 80% für neue Features
+- **Cyclomatic Complexity**: Max 10 pro Methode
+- **Method Length**: Max 20 Zeilen (ideal < 10)
+- **Class Length**: Max 200 Zeilen
+- **Package Dependencies**: Keine zirkulären Abhängigkeiten
+
+### Continuous Improvement:
+- **Code Reviews** sind Lernmöglichkeiten
+- **Refactoring** ist Teil jeder Story
+- **Tech Debt** wird dokumentiert und priorisiert
+- **Pair Programming** für komplexe Features
+- **Knowledge Sharing** in Team-Sessions
+
+## 0.2 DevOps & Release-Management
+
+### Branch- & Release-Strategie:
+| Thema | Empfehlung | Nutzen |
+|-------|------------|--------|
+| Branching | Trunk-based mit short-lived feature branches (max. 24h offen) | Weniger Merge-Konflikte, kontinuierliche Integration |
+| Commit-Konvention | Conventional Commits + Commitlint | Automatische CHANGELOGs & Releases |
+| Releases | SemVer + GitHub Actions Release-Workflow | Klare Versionierung, Hot-fix-Pfad |
+
+### Release-Workflow:
+```bash
+# Feature fertig? Merge to main
+git checkout main && git pull
+git merge --no-ff feature/user-management
+
+# Release vorbereiten
+npm version minor  # oder major/patch
+git push && git push --tags
+
+# GitHub Action erstellt automatisch:
+# - Release Notes aus Commits
+# - Docker Images mit Tags
+# - Deployment zu Stage
+```
+
+### Dokumentation & Wissenstransfer:
+- **ADRs** (Architecture Decision Records) für alle wichtigen Entscheidungen
+  - Template: `/docs/adr/template.md`
+  - Automatisierung: `adr-tools` → PR-Kommentar mit Diff
+- **Onboarding-Playbook**: 90-Minuten "Tour de Codebase"
+  - README mit Links zu Key-Files
+  - Architektur-Diagramme (C4 Model)
+  - Video-Walkthrough für neue Teammitglieder
+- **Tech Radar**: Bewertung neuer Libraries/Tools
+  - Adopt / Trial / Assess / Hold
+  - Quartalsweise Review
+
+## 0.3 Security & Compliance
+
+### Security-Standards:
+| Ebene | Regel | Automatisierung |
+|-------|-------|-----------------|
+| Dependencies | Snyk + Dependabot, auto-merge wenn CVSS < 4 | CI-Gate |
+| Secrets | GitHub Secrets → env-subst in Docker | Keine Secrets im Code |
+| API Security | OWASP Top 10 Check | ZAP-Docker nightly |
+| Code Quality | SonarCloud Security Hotspots | PR-Block bei kritisch |
+
+### Security-Checkliste:
+```yaml
+# .github/workflows/security.yml
+- Dependency Check (Snyk)
+- SAST (SonarCloud)
+- Container Scan (Trivy)
+- API Security Test (OWASP ZAP)
+- Secret Scanning (GitGuardian)
+```
+
+### Compliance:
+- **DSGVO**: Personenbezogene Daten verschlüsselt
+- **Audit-Log**: Alle kritischen Operationen
+- **Data Retention**: Automatisches Löschen nach X Tagen
+
+## 0.4 Observability & Performance
+
+### Golden Signals:
+- **Latency**: < 200ms P95 für API Calls
+- **Traffic**: Requests per Second
+- **Errors**: < 0.1% Error Rate
+- **Saturation**: CPU/Memory < 80%
+
+### Monitoring Stack:
+```yaml
+# OpenTelemetry → CloudWatch/X-Ray Pipeline
+- Distributed Tracing (Jaeger-kompatibel)
+- Metrics (Prometheus-Format)
+- Logs (strukturiert, JSON)
+- Real User Monitoring (RUM)
+```
+
+### Performance Budgets:
+
+#### Frontend:
+- **Bundle Size**: ≤ 200 KB initial (gzipped)
+- **LCP**: ≤ 2.5s (mobile 3G)
+- **FID**: ≤ 100ms
+- **CLS**: ≤ 0.1
+- **Lighthouse Score**: ≥ 90
+
+#### Backend:
+- **API Response**: P95 < 200ms
+- **Database Queries**: < 50ms
+- **Memory per Request**: < 50MB
+- **Startup Time**: < 10s
+
+### Performance-Gates:
+```bash
+# Lighthouse CI als GitHub Check
+lighthouse:
+  assertions:
+    categories:performance: ["error", {"minScore": 0.9}]
+    first-contentful-paint: ["error", {"maxNumericValue": 2000}]
+    interactive: ["error", {"maxNumericValue": 5000}]
+```
+
+## 0.5 Testing-Pyramide
+
+### Test-Strategie:
+| Stufe | Coverage-Ziel | Technologie | Scope |
+|-------|---------------|-------------|-------|
+| Unit | 80% Lines/Functions | JUnit 5 + Mockito / Vitest | Business Logic |
+| Integration | 100% API Endpoints | RestAssured / MSW | API Contracts |
+| E2E | Critical User Journeys | Playwright | Happy Paths |
+| Performance | Key Transactions | k6 / Artillery | Load Testing |
+| Security | OWASP Top 10 | ZAP / Burp | Penetration |
+
+### Test-Patterns:
+```java
+// Given-When-Then für BDD
+@Test
+void createUser_withValidData_shouldReturnCreatedUser() {
+    // Given
+    var request = validUserRequest();
+    
+    // When
+    var response = userService.createUser(request);
+    
+    // Then
+    assertThat(response).satisfies(user -> {
+        assertThat(user.getId()).isNotNull();
+        assertThat(user.getUsername()).isEqualTo("john.doe");
+    });
+}
+```
+
+### Feature Flag Governance:
+
+**Trunk-based Development erfordert strikte Feature Flag Disziplin!**
+
+#### Namenskonvention:
+```
+ff_<ticket-nr>_<kurzer-name>
+Beispiel: ff_FRESH-123_user_export
+```
+
+#### Feature Flag Manifest:
+```java
+@FeatureFlag(
+    name = "ff_FRESH-123_user_export",
+    description = "Enable user data export functionality",
+    ticket = "FRESH-123",
+    owner = "user-team",
+    createdDate = "2025-01-06",
+    sunsetDate = "2025-02-06", // PFLICHT: Max 30 Tage!
+    defaultValue = false
+)
+```
+
+#### CI-Gates für Feature Flags:
+1. **Naming Convention Check**: Regex-Validation im Build
+2. **Age Check**: Flags > 30 Tage → Build Warning
+3. **Sunset Enforcement**: Flags > 60 Tage → Build Failure
+4. **Usage Analysis**: Unused Flags → Automatic Removal PR
+
+#### Feature Flag Lifecycle:
+```yaml
+1. Create: ff_TICKET_feature + Sunset Date
+2. Test: Gradual Rollout (1% → 10% → 50% → 100%)
+3. Monitor: Metrics & Error Rates per Flag State
+4. Remove: Automated PR when 100% + 7 days stable
+```
+
+#### Anti-Patterns vermeiden:
+- ❌ Permanente Feature Flags (werden zu Tech Debt)
+- ❌ Verschachtelte Flags (if flag1 && flag2)
+- ❌ Business Logic in Flags (nur Ein/Aus)
+- ❌ Flags ohne Metriken
+
+## 0.6 Frontend Excellence
+
+### Design System:
+- **Storybook** als Living Style Guide
+  - Alle Components isoliert entwickeln
+  - Visual Regression Tests
+  - Auto-Deploy zu Chromatic
+- **Accessibility (A11Y)**:
+  - `eslint-plugin-jsx-a11y`
+  - `axe-core` in CI
+  - WCAG 2.1 AA Compliance
+- **Component Structure**:
+  ```
+  components/
+  └── Button/
+      ├── Button.tsx         # Component
+      ├── Button.test.tsx    # Tests
+      ├── Button.stories.tsx # Storybook
+      ├── Button.module.css  # Styles
+      └── index.ts          # Export
+  ```
+
+### State Management:
+- **React Query** für Server State
+- **Zustand** für Client State (wenn nötig)
+- **Context** nur für Cross-Cutting Concerns
+
+## 0.7 Infrastructure as Code
+
+### AWS CDK Setup:
+```typescript
+// infrastructure/cdk/lib/freshplan-stack.ts
+export class FreshPlanStack extends Stack {
+  constructor(scope: Construct, id: string, props?: StackProps) {
+    super(scope, id, props);
+    
+    // ECS Fargate für Backend
+    const backend = new ApplicationLoadBalancedFargateService(...);
+    
+    // CloudFront für Frontend
+    const frontend = new CloudFrontWebDistribution(...);
+    
+    // RDS PostgreSQL
+    const database = new DatabaseInstance(...);
+  }
+}
+```
+
+### Policy as Code:
+- **Open Policy Agent** für Security Rules
+- **AWS Config Rules** für Compliance
+- **Drift Detection** täglich
+
+### Disaster Recovery:
+- **RTO**: 4 Stunden
+- **RPO**: 1 Stunde
+- **Backups**: Automated Snapshots
+- **Runbooks**: Dokumentierte Prozesse
+
+## 0.8 Team-Rituale & Workflows
+
+### Development Workflow:
+1. **Monday**: Sprint Planning & Backlog Grooming
+2. **Daily**: 15-min Standup (blocker-focused)
+3. **Wednesday**: Tech Debt Review (1h)
+4. **Friday**: Refactoring Slot (2h) + Demos
+5. **Retrospective**: Alle 2 Wochen
+
+### Code Review Process:
+```yaml
+PR-Checklist:
+  - [ ] Tests grün + Coverage ≥ 80%
+  - [ ] Keine Security Warnings
+  - [ ] Performance Budget eingehalten
+  - [ ] Dokumentation aktualisiert
+  - [ ] Screenshots bei UI-Änderungen
+  - [ ] Changelog Entry (wenn public API)
+```
+
+### Knowledge Management:
+- **ADR Reviews**: Quartalsweise
+- **Tech Talks**: Jeden 2. Freitag
+- **Pair Programming**: Min. 4h/Woche
+- **Documentation Days**: 1x/Monat
+
+### Incident Response:
+1. **Detect**: Monitoring Alert
+2. **Triage**: Severity 1-4 (siehe Matrix)
+3. **Respond**: Runbook befolgen
+4. **Resolve**: Fix + Deploy
+5. **Review**: Blameless Postmortem
+
+### Incident Severity Matrix:
+
+| Severity | Impact | Beispiele | Response Time | Eskalation |
+|----------|---------|-----------|---------------|------------|
+| **SEV-1** | Komplettausfall Produktion | - Keine User können sich einloggen<br>- Datenverlust droht<br>- Sicherheitslücke aktiv ausgenutzt | < 15 Min | CTO + On-Call sofort |
+| **SEV-2** | Teilausfall / Major Feature | - Zahlungsprozess defekt<br>- Performance < 50%<br>- Keine neuen Aufträge möglich | < 1 Std | Team Lead + On-Call |
+| **SEV-3** | Minor Feature / Degradation | - PDF-Export fehlt<br>- Einzelne API langsam<br>- UI-Glitch in Firefox | < 4 Std | Team in Slack |
+| **SEV-4** | Cosmetic / Low Impact | - Typo in UI<br>- Log-Spam<br>- Nicht-kritische Warnings | Next Sprint | Ticket in Backlog |
+
+### Eskalations-Pfade:
+```
+SEV-1: @on-call → Team Lead → CTO → CEO
+SEV-2: @on-call → Team Lead → Engineering Manager
+SEV-3: Team Channel → Team Lead
+SEV-4: Jira Ticket → Sprint Planning
+```
+
+### On-Call Rotation:
+- **Primär**: 1 Woche Rotation (Mo-So)
+- **Backup**: Immer verfügbar
+- **Erreichbarkeit**: Handy + Laptop in 30 Min
+- **Kompensation**: 1 Tag Ausgleich pro Woche
+
+## 0.9 Tooling & Automation
+
+### Development Tools:
+- **IDE**: IntelliJ IDEA / VS Code mit Extensions
+- **API Testing**: Insomnia / Postman
+- **DB Client**: DBeaver / TablePlus
+- **Git GUI**: GitKraken / SourceTree (optional)
+
+### CI/CD Pipeline:
+```yaml
+# Stages
+1. Lint & Format Check
+2. Unit Tests + Coverage
+3. Build & Package
+4. Integration Tests
+5. Security Scans
+6. Deploy to Stage
+7. E2E Tests
+8. Performance Tests
+9. Deploy to Production (manual approval)
+```
+
+### Automation:
+- **Dependabot**: Weekly Updates
+- **Renovate**: Grouped Updates
+- **Release Please**: Automated Releases
+- **Mergify**: Auto-merge bei grünen Checks
+
+Diese Standards stellen sicher, dass FreshPlan 2.0 auf Enterprise-Niveau entwickelt wird - mit der Qualität, die erfahrene Entwickler erwarten und sofort verstehen.
+
 ## 1. Projektübersicht und Ziele
 
 **Projektname:** FreshPlan Sales Tool 2.0

@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FreshPlan Way of Working</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: #24292f;
+            background-color: #ffffff;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 45px;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            margin-top: 24px;
+            margin-bottom: 16px;
+            font-weight: 600;
+            line-height: 1.25;
+        }
+        h1 {
+            font-size: 2em;
+            border-bottom: 1px solid #d1d9e0;
+            padding-bottom: .3em;
+        }
+        h2 {
+            font-size: 1.5em;
+            border-bottom: 1px solid #d1d9e0;
+            padding-bottom: .3em;
+        }
+        h3 {
+            font-size: 1.25em;
+        }
+        code {
+            background-color: rgba(175,184,193,0.2);
+            padding: 0.2em 0.4em;
+            border-radius: 3px;
+            font-size: 85%;
+            font-family: ui-monospace, SFMono-Regular, 'SF Mono', Consolas, 'Liberation Mono', Menlo, monospace;
+        }
+        pre {
+            background-color: #f6f8fa;
+            border-radius: 6px;
+            padding: 16px;
+            overflow: auto;
+            font-size: 85%;
+            line-height: 1.45;
+        }
+        pre code {
+            background-color: transparent;
+            padding: 0;
+            font-size: 100%;
+        }
+        blockquote {
+            margin: 0;
+            padding: 0 1em;
+            color: #57606a;
+            border-left: 0.25em solid #d1d9e0;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 16px 0;
+        }
+        table th,
+        table td {
+            padding: 6px 13px;
+            border: 1px solid #d1d9e0;
+        }
+        table tr:nth-child(2n) {
+            background-color: #f6f8fa;
+        }
+        a {
+            color: #0969da;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        strong {
+            font-weight: 600;
+        }
+        ul, ol {
+            padding-left: 2em;
+            margin-top: 0;
+            margin-bottom: 16px;
+        }
+        li {
+            margin-top: 0.25em;
+        }
+        hr {
+            height: 0.25em;
+            padding: 0;
+            margin: 24px 0;
+            background-color: #d1d9e0;
+            border: 0;
+        }
+        .good {
+            color: #1a7f37;
+        }
+        .bad {
+            color: #d1242f;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <p><h1>The FreshPlan Way - Unser Weg zu exzellenter Software</h1></p><p>> <strong>"Code, den jeder Entwickler sofort versteht - KEINE KOMPROMISSE!"</strong></p><p><h2>🎯 Unsere Mission</h2></p><p>Wir entwickeln FreshPlan 2.0 als moderne, cloud-native Enterprise-Lösung mit höchsten Qualitätsstandards. Dieses Dokument definiert unsere Arbeitsweise und ist für ALLE Projektbeteiligten verbindlich.</p><p><h2>📋 Inhaltsverzeichnis</h2></p><p>1. <a href="#grundprinzipien">Grundprinzipien</a>
+2. <a href="#code-qualität">Code-Qualität</a>
+3. <a href="#architektur">Architektur</a>
+4. <a href="#development-workflow">Development Workflow</a>
+5. <a href="#testing">Testing</a>
+6. <a href="#security--compliance">Security & Compliance</a>
+7. <a href="#devops--releases">DevOps & Releases</a>
+8. <a href="#team-rituale">Team-Rituale</a>
+9. <a href="#aktueller-projektstatus">Aktueller Projektstatus</a></p><p>---</p><p><h2>Grundprinzipien</h2></p><p><h3>Die 5 Säulen unserer Entwicklung</h3></p><p>1. <strong>Clean Code</strong> - Lesbarkeit geht vor Cleverness
+2. <strong>SOLID Principles</strong> - Jede Klasse hat EINE klare Verantwortung
+3. <strong>Test-Driven</strong> - Kein Code ohne Tests
+4. <strong>Security-First</strong> - Sicherheit von Anfang an
+5. <strong>Performance-Aware</strong> - Geschwindigkeit ist ein Feature</p><p><h3>Unser Qualitätsversprechen</h3></p><p>Bei jedem Commit verpflichten wir uns zu:</p><p>- <strong>Sauberkeit</strong>: Klare Modul-Grenzen, sprechende Namen, keine toten Pfade
+- <strong>Robustheit</strong>: Umfassende Tests, defensives Error-Handling
+- <strong>Wartbarkeit</strong>: SOLID, DRY, CI-Checks, lückenlose Dokumentation
+- <strong>Transparenz</strong>: Unklarheiten sofort ansprechen</p><p>---</p><p><h2>Code-Qualität</h2></p><p><h3>Naming Conventions</h3></p><p><tr><td>Element</td><td>Convention</td><td>Beispiel</td></tr>
+<tr><td>---------</td><td>------------</td><td>----------</td></tr>
+<tr><td>Klassen</td><td>PascalCase</td><td><code>UserService</code>, <code>OrderRepository</code></td></tr>
+<tr><td>Methoden</td><td>camelCase (Verben)</td><td><code>createUser</code>, <code>findByEmail</code></td></tr>
+<tr><td>Variablen</td><td>camelCase (beschreibend)</td><td><code>userEmail</code>, <code>totalAmount</code></td></tr>
+<tr><td>Konstanten</td><td>UPPER_SNAKE_CASE</td><td><code>MAX_RETRY_ATTEMPTS</code></td></tr>
+<tr><td>Packages</td><td>lowercase, Singular</td><td><code>user</code>, <code>order</code></td></tr></p><p><h3>Code-Lesbarkeit und Zeilenlänge</h3></p><p><strong>Maximale Zeilenlänge</strong>: 80-120 Zeichen</p><p><strong>Warum?</strong>
+- Bessere Lesbarkeit und schnelleres Erfassen
+- Einfacherer Code-Review und Diff-Ansichten
+- Kompatibilität mit allen Bildschirmen</p><p><strong>Best Practices:</strong></p><p>1. <strong>Zeilenumbrüche bei langen Bedingungen:</strong>
+<pre><code class="language-java">// ❌ Schlecht
+if (user.isActive() &amp;&amp; user.hasPermission(&quot;admin&quot;) &amp;&amp; user.getLastLogin().isAfter(yesterday)) {</p><p>// ✅ Gut
+if (user.isActive()
+        &amp;&amp; user.hasPermission(&quot;admin&quot;)
+        &amp;&amp; user.getLastLogin().isAfter(yesterday)) {</code></pre></p><p>2. <strong>Hilfsvariablen für Klarheit:</strong>
+<pre><code class="language-java">// ❌ Schlecht
+if (userRepository.findByEmail(email).isPresent() &amp;&amp; userRepository.findByEmail(email).get().isActive()) {</p><p>// ✅ Gut
+Optional&lt;User&gt; userOpt = userRepository.findByEmail(email);
+boolean isActiveUser = userOpt.isPresent() &amp;&amp; userOpt.get().isActive();
+if (isActiveUser) {</code></pre></p><p>3. <strong>Method Chaining aufteilen:</strong>
+<pre><code class="language-java">// ✅ Gut
+UserResponse response = userService
+        .findById(id)
+        .map(mapper::toResponse)
+        .orElseThrow(() -&gt; new UserNotFoundException(id));</code></pre></p><p><h3>Code-Standards</h3></p><p><pre><code class="language-java">/**
+ * Service layer for User management operations.
+ * 
+ * Clear purpose, clean API, comprehensive docs.
+ * 
+ * @since 2.0.0
+ */
+@ApplicationScoped
+@Transactional
+public class UserService {
+    // Constructor Injection only
+    private final UserRepository repository;
+    
+    // Clear method names, single responsibility
+    public UserResponse createUser(CreateUserRequest request) {
+        // 1. Validate
+        // 2. Apply business rules
+        // 3. Persist
+        // 4. Return response
+    }
+}</code></pre></p><p><h3>Metriken</h3></p><p>- <strong>Test Coverage</strong>: ≥ 80% für neue Features
+- <strong>Cyclomatic Complexity</strong>: ≤ 10 pro Methode
+- <strong>Method Length</strong>: ≤ 20 Zeilen
+- <strong>Class Length</strong>: ≤ 200 Zeilen</p><p>---</p><p><h2>Architektur</h2></p><p><h3>Backend (Quarkus/Java)</h3></p><p><pre><code class="language-">backend/
+├── api/                    # REST Layer
+│   └── exception/         # Exception Handling
+├── domain/                # Business Domain
+│   └── [aggregate]/      # z.B. user, order
+│       ├── entity/       # JPA Entities
+│       ├── repository/   # Data Access
+│       ├── service/      # Business Logic
+│       │   ├── dto/     # DTOs
+│       │   └── mapper/  # Mappings
+│       └── validation/   # Validators
+└── infrastructure/        # Technical Details</code></pre></p><p><h3>Frontend (React/TypeScript)</h3></p><p><pre><code class="language-">frontend/
+├── components/            # Reusable UI
+│   ├── common/           # Generic
+│   └── domain/           # Domain-specific
+├── features/             # Feature Modules
+│   └── [feature]/       
+│       ├── components/   
+│       ├── hooks/        
+│       └── services/     
+├── pages/                # Route Pages
+└── services/             # Global Services</code></pre></p><p>---</p><p><h2>Development Workflow</h2></p><p><h3>Branch-Strategie</h3></p><p>- <strong>Trunk-based Development</strong>: Feature Branches max. 24h
+- <strong>Branch Naming</strong>: <code>feature/</code>, <code>bugfix/</code>, <code>hotfix/</code>
+- <strong>Commit Convention</strong>: <a href="https://www.conventionalcommits.org/">Conventional Commits</a></p><p><pre><code class="language-bash">&lt;h1&gt;Beispiel Workflow&lt;/h1&gt;
+git checkout -b feature/user-management
+&lt;h1&gt;... Entwicklung ...&lt;/h1&gt;
+git commit -m &quot;feat(user): Add email validation&quot;
+git push origin feature/user-management
+&lt;h1&gt;Create Pull Request&lt;/h1&gt;</code></pre></p><p><h3>Pull Request Checklist</h3></p><p>- [ ] Tests sind grün (Coverage ≥ 80%)
+- [ ] Keine Security Warnings
+- [ ] Performance Budget eingehalten
+- [ ] Dokumentation aktualisiert
+- [ ] Code Review durch min. 1 Person
+- [ ] Screenshots bei UI-Änderungen</p><p>---</p><p><h2>Testing</h2></p><p><h3>Testing-Pyramide</h3></p><p><tr><td>Level</td><td>Coverage</td><td>Tools</td><td>Focus</td></tr>
+<tr><td>-------</td><td>----------</td><td>-------</td><td>-------</td></tr>
+<tr><td>Unit</td><td>80%</td><td>JUnit/Vitest</td><td>Business Logic</td></tr>
+<tr><td>Integration</td><td>100% API</td><td>RestAssured</td><td>Contracts</td></tr>
+<tr><td>E2E</td><td>Happy Paths</td><td>Playwright</td><td>User Journeys</td></tr>
+<tr><td>Performance</td><td>Critical</td><td>k6</td><td>Load Testing</td></tr></p><p><h3>Test-Pattern</h3></p><p><pre><code class="language-java">@Test
+void createUser_withValidData_shouldReturnCreatedUser() {
+    // Given - Arrange
+    var request = validUserRequest();
+    
+    // When - Act
+    var response = userService.createUser(request);
+    
+    // Then - Assert
+    assertThat(response)
+        .isNotNull()
+        .hasFieldOrPropertyWithValue(&quot;username&quot;, &quot;john.doe&quot;);
+}</code></pre></p><p><h3>Feature Flag Governance</h3></p><p><strong>Trunk-based Development = Feature Flags sind PFLICHT!</strong></p><p>#### Namenskonvention
+<pre><code class="language-">ff_&lt;ticket-nr&gt;_&lt;kurzer-name&gt;
+Beispiel: ff_FRESH-123_user_export</code></pre></p><p>#### Regeln
+- <strong>Sunset Date</strong>: Max. 30 Tage nach Erstellung
+- <strong>Owner</strong>: Team/Person muss definiert sein
+- <strong>Metrics</strong>: Jedes Flag braucht Monitoring
+- <strong>Cleanup</strong>: Automatische Removal PRs</p><p>#### CI-Enforcement
+- Flags > 30 Tage: ⚠️ Warning
+- Flags > 60 Tage: ❌ Build Failure
+- Ungenutztes Flag: 🤖 Auto-PR zur Entfernung</p><p>---</p><p><h2>Security & Compliance</h2></p><p><h3>Security-Standards</h3></p><p><tr><td>Bereich</td><td>Maßnahme</td><td>Tool</td></tr>
+<tr><td>---------</td><td>----------</td><td>------</td></tr>
+<tr><td>Dependencies</td><td>Vulnerability Scanning</td><td>Snyk/Dependabot</td></tr>
+<tr><td>Code</td><td>SAST Analysis</td><td>SonarCloud</td></tr>
+<tr><td>API</td><td>OWASP Top 10</td><td>ZAP</td></tr>
+<tr><td>Secrets</td><td>Secret Scanning</td><td>GitGuardian</td></tr></p><p><h3>Compliance</h3></p><p>- <strong>DSGVO</strong>: Verschlüsselung personenbezogener Daten
+- <strong>Audit-Trail</strong>: Logging aller kritischen Operationen
+- <strong>Data Retention</strong>: Automatische Löschfristen</p><p>---</p><p><h2>DevOps & Releases</h2></p><p><h3>CI/CD Pipeline</h3></p><p><pre><code class="language-yaml">Stages:
+1. Lint &amp; Format
+2. Unit Tests
+3. Build
+4. Integration Tests
+5. Security Scan
+6. Deploy Stage
+7. E2E Tests
+8. Performance Tests
+9. Deploy Production (manual)</code></pre></p><p><h3>Release-Strategie</h3></p><p>- <strong>Versioning</strong>: <a href="https://semver.org/">Semantic Versioning</a>
+- <strong>Releases</strong>: Automated via GitHub Actions
+- <strong>Rollback</strong>: Immer möglich binnen 5 Minuten</p><p><h3>Performance Budgets</h3></p><p>#### Frontend
+- Bundle Size: ≤ 200KB (gzipped)
+- LCP: ≤ 2.5s
+- Lighthouse Score: ≥ 90</p><p>#### Backend
+- API Response: P95 < 200ms
+- Startup Time: < 10s</p><p>---</p><p><h2>Team-Rituale</h2></p><p><h3>Wöchentlicher Rhythmus</h3></p><p><tr><td>Tag</td><td>Aktivität</td><td>Dauer</td></tr>
+<tr><td>-----</td><td>-----------</td><td>-------</td></tr>
+<tr><td>Montag</td><td>Sprint Planning</td><td>2h</td></tr>
+<tr><td>Täglich</td><td>Standup</td><td>15min</td></tr>
+<tr><td>Mittwoch</td><td>Tech Debt Review</td><td>1h</td></tr>
+<tr><td>Freitag</td><td>Refactoring + Demo</td><td>3h</td></tr></p><p><h3>Knowledge Sharing</h3></p><p>- <strong>Pair Programming</strong>: Min. 4h/Woche
+- <strong>Tech Talks</strong>: Jeden 2. Freitag
+- <strong>Documentation Day</strong>: 1x/Monat</p><p><h3>Incident Management</h3></p><p>#### Severity Matrix</p><p><tr><td>Level</td><td>Impact</td><td>Beispiele</td><td>Response</td><td>Eskalation</td></tr>
+<tr><td>-------</td><td>--------</td><td>-----------</td><td>----------</td><td>------------</td></tr>
+<tr><td><strong>SEV-1</strong></td><td>Totalausfall</td><td>Login down, Datenverlust, Security Breach</td><td>< 15 Min</td><td>CTO + On-Call</td></tr>
+<tr><td><strong>SEV-2</strong></td><td>Major Feature</td><td>Payment kaputt, API > 5s, Keine Orders</td><td>< 1 Std</td><td>Team Lead</td></tr>
+<tr><td><strong>SEV-3</strong></td><td>Minor Feature</td><td>PDF fehlt, Firefox Bug, Slow Query</td><td>< 4 Std</td><td>Team Slack</td></tr>
+<tr><td><strong>SEV-4</strong></td><td>Kosmetik</td><td>Typo, Logging, Warnings</td><td>Sprint</td><td>Jira Ticket</td></tr></p><p>#### On-Call
+- Rotation: 1 Woche (Mo-So)
+- Erreichbar: 30 Min
+- Backup: Immer definiert
+- Ausgleich: 1 Tag/Woche</p><p>---</p><p><h2>Aktueller Projektstatus</h2></p><p><h3>Sprint 1: User Management (Aktuell)</h3></p><p><strong>Zeitraum</strong>: 06.01. - 09.01.2025</p><p><strong>Ziele</strong>:
+- [x] User Entity & Repository
+- [ ] REST API für User CRUD
+- [ ] Frontend User-Liste
+- [ ] Keycloak Integration
+- [ ] E2E Tests</p><p><strong>Team</strong>:
+- Backend: [Name]
+- Frontend: [Name]
+- DevOps: [Name]</p><p><h3>Nächste Sprints</h3></p><p>- <strong>Sprint 2</strong>: Customer Management Migration
+- <strong>Sprint 3</strong>: Calculator Feature
+- <strong>Sprint 4</strong>: PDF Generation</p><p><h3>Metriken Dashboard</h3></p><p><tr><td>Metrik</td><td>Aktuell</td><td>Ziel</td></tr>
+<tr><td>--------</td><td>---------</td><td>------</td></tr>
+<tr><td>Test Coverage</td><td>0%</td><td>80%</td></tr>
+<tr><td>Tech Debt Ratio</td><td>0%</td><td><5%</td></tr>
+<tr><td>Build Zeit</td><td>-</td><td><5min</td></tr>
+<tr><td>Deploy Zeit</td><td>-</td><td><10min</td><td></p><p>---</p><p><h2>📝 Änderungshistorie</h2></p><p></td><td>Datum</td><td>Version</td><td>Änderung</td><td>Autor</td></tr>
+<tr><td>-------</td><td>---------</td><td>----------</td><td>-------</td></tr>
+<tr><td>06.01.2025</td><td>1.0</td><td>Initial Version</td><td>Team</td></tr></p><p>---</p><p><h2>🤝 Commitment</h2></p><p>Mit meiner Arbeit am FreshPlan-Projekt verpflichte ich mich, diese Standards einzuhalten und kontinuierlich zur Verbesserung beizutragen.</p><p><strong>"Wir bauen Software, auf die wir stolz sind!"</strong> 🚀</p>
+    </div>
+</body>
+</html>

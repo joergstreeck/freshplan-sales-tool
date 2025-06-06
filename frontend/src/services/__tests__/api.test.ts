@@ -24,16 +24,13 @@ describe('ApiService', () => {
 
       const result = await ApiService.ping('test-token');
 
-      expect(global.fetch).toHaveBeenCalledWith(
-        'http://localhost:8080/api/ping',
-        {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: 'Bearer test-token',
-          },
-        }
-      );
+      expect(global.fetch).toHaveBeenCalledWith('http://localhost:8080/api/ping', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer test-token',
+        },
+      });
 
       expect(result).toEqual(mockResponse);
     });
@@ -51,15 +48,12 @@ describe('ApiService', () => {
 
       await ApiService.ping();
 
-      expect(global.fetch).toHaveBeenCalledWith(
-        'http://localhost:8080/api/ping',
-        {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        }
-      );
+      expect(global.fetch).toHaveBeenCalledWith('http://localhost:8080/api/ping', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
     });
 
     it('should throw error on non-ok response', async () => {
@@ -69,9 +63,7 @@ describe('ApiService', () => {
         statusText: 'Unauthorized',
       } as Response);
 
-      await expect(ApiService.ping()).rejects.toThrow(
-        'API Error: 401 Unauthorized'
-      );
+      await expect(ApiService.ping()).rejects.toThrow('API Error: 401 Unauthorized');
     });
   });
 });

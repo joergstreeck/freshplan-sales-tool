@@ -1,0 +1,55 @@
+name: Deploy Documentation
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'WAY_OF_WORKING.html'
+      - 'WAY_OF_WORKING.md'
+      - '.github/workflows/deploy-docs.yml'
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+      
+      - name: Create docs directory
+        run: |
+          mkdir -p docs
+          cp WAY_OF_WORKING.html docs/index.html
+          cp WAY_OF_WORKING.md docs/
+          
+          # Create a simple landing page
+          cat > docs/README.md << EOF
+          # FreshPlan Documentation
+          
+          - [Way of Working (HTML)](./index.html)
+          - [Way of Working (Markdown)](./WAY_OF_WORKING.md)
+          EOF
+      
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./docs
+      
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

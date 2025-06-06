@@ -1,5 +1,7 @@
 # FreshPlan 2.0 - Enterprise Sales Platform
 
+> **📖 Bitte zuerst lesen: [Way of Working](WAY_OF_WORKING.md) - Unsere verbindlichen Entwicklungsstandards**
+
 ## 🏗️ Monorepo Structure
 
 ```
