@@ -3,6 +3,7 @@ package de.freshplan.domain.user.entity;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.UpdateTimestamp;
 import java.time.Instant;
 import java.util.Objects;
 import java.util.UUID;
@@ -53,6 +54,7 @@ public class User extends PanacheEntityBase {
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
     
+    @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
     private Instant updatedAt;
     
@@ -87,7 +89,7 @@ public class User extends PanacheEntityBase {
     
     @PreUpdate
     protected void onUpdate() {
-        updatedAt = Instant.now();
+        // updatedAt is now handled by @UpdateTimestamp
     }
     
     /**
