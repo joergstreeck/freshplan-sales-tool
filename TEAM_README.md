@@ -1,4 +1,4 @@
-# Backend Team Workspace
+# Team BACK Workspace
 
 ## Quick Start
 ```bash
@@ -39,6 +39,6 @@ cd backend
 ```
 
 ## Kontakt
-- Lead: Backend Team
-- Slack: #freshplan-backend
+- Lead: Team BACK (@Max)
+- Slack: #team-back
 - Wiki: [Backend Architecture](../docs/adr/)
