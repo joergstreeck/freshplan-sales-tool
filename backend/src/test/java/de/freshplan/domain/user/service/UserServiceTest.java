@@ -155,29 +155,15 @@ class UserServiceTest {
         when(userMapper.toResponse(any(User.class)))
                 .thenAnswer(invocation -> {
                     User user = invocation.getArgument(0);
-                    System.out.println("Mock called with user: " + user.getUsername());
                     if (user.getUsername().equals("john.doe")) {
-                        System.out.println("  -> Returning testUserResponse");
                         return testUserResponse;
                     } else {
-                        System.out.println("  -> Returning anotherResponse");
                         return anotherResponse;
                     }
                 });
         
         // When
         List<UserResponse> responses = userService.getAllUsers();
-        
-        // Debug output
-        System.out.println("=== DEBUG testGetAllUsers ===");
-        System.out.println("Expected testUserResponse: " + testUserResponse);
-        System.out.println("Expected anotherResponse: " + anotherResponse);
-        System.out.println("Actual responses size: " + responses.size());
-        for (int i = 0; i < responses.size(); i++) {
-            System.out.println("Response[" + i + "]: " + responses.get(i));
-        }
-        System.out.println("Are they the same object? " + (responses.get(0) == responses.get(1)));
-        System.out.println("===========================");
         
         // Then
         assertThat(responses).hasSize(2);

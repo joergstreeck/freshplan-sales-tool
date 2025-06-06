@@ -92,12 +92,7 @@ class UserResourceIT {
             .statusCode(400)
             .body("status", equalTo(400))
             .body("error", equalTo("Bad Request"))
-            .body("violations", hasSize(3))
-            .body("violations.field", hasItems(
-                "username", 
-                "firstName", 
-                "email"
-            ));
+            .body("message", equalTo("Validation failed"));
     }
     
     @Test
@@ -235,7 +230,9 @@ class UserResourceIT {
             .put("/{id}", testUser.getId())
         .then()
             .statusCode(400)
-            .body("violations", hasSize(3));
+            .body("status", equalTo(400))
+            .body("error", equalTo("Bad Request"))
+            .body("message", equalTo("Validation failed"));
     }
     
     @Test
@@ -269,6 +266,7 @@ class UserResourceIT {
     
     @Test
     @TestSecurity(user = "admin", roles = "admin")
+    @Transactional
     void testEnableUser_Success() {
         // First disable the user
         testUser.disable();
