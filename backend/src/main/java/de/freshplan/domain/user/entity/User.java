@@ -46,7 +46,7 @@ public class User extends PanacheEntityBase {
     private String email;
     
     @Column(nullable = false)
-    private boolean enabled = true;
+    private boolean enabled = false;
     
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
@@ -74,6 +74,7 @@ public class User extends PanacheEntityBase {
         this.firstName = Objects.requireNonNull(firstName, "First name cannot be null");
         this.lastName = Objects.requireNonNull(lastName, "Last name cannot be null");
         this.email = Objects.requireNonNull(email, "Email cannot be null");
+        this.enabled = true; // New users are enabled by default
     }
     
     @PrePersist
