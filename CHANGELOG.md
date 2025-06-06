@@ -5,6 +5,18 @@ Alle bemerkenswerten Änderungen an diesem Projekt werden in dieser Datei dokume
 Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/),
 und dieses Projekt hält sich an [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.0-T2-green] - 2025-01-06
+
+### Added
+- **Expand-Path T-2** ✅ - Service-Layer Tests aktiviert
+  - UserServiceTest mit Mock-basierten Unit-Tests erfolgreich integriert
+  - Gesamt: ~30 Tests (17 aus T-1 + ~13 Service-Tests)
+  - CI bleibt weiterhin stabil grün
+
+### Technical
+- Maven Profile `green` erweitert um `**/*Service*Test.java` und `**/*Service*IT.java`
+- Service-Tests nutzen Mockito für isolierte Unit-Tests
+
 ## [2.0.0-T1-green] - 2025-01-06
 
 ### Added
