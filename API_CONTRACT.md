@@ -34,7 +34,7 @@ interface UserResponse {
   lastName: string;
   email: string;
   enabled: boolean;
-  roles?: string[];     // NEU in Sprint 1!
+  roles: string[];      // ⚠️ BREAKING CHANGE: Jetzt IMMER vorhanden!
   createdAt: string;    // ISO 8601
   updatedAt: string;    // ISO 8601
 }
@@ -90,10 +90,11 @@ PUT /api/users/{id}/enable
 PUT /api/users/{id}/disable
 Response: 204 | 404
 
-// Assign Roles (🚧 Team BACK heute)
+// Assign Roles ✅ FERTIG
 PUT /api/users/{id}/roles
-Request: { roles: string[] }
+Request: { roles: string[] }  // Erlaubt: "admin", "manager", "user"
 Response: UserResponse | 404
+Authorization: Bearer token mit "admin" Rolle erforderlich!
 ```
 
 ## Error Responses
@@ -119,4 +120,4 @@ interface ErrorResponse {
 
 ---
 
-**Letzte Änderung:** 2025-01-06 - Initial Contract
+**Letzte Änderung:** 2025-01-06 23:20 - Team BACK: Roles Endpoint fertig, UserResponse.roles jetzt Pflichtfeld

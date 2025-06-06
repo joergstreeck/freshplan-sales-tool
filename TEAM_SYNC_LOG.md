@@ -87,3 +87,42 @@ Ich beantworte ALLE Fragen gerne! Lieber einmal zu viel gefragt als in die falsc
 3. Soll die neue React-App später die Legacy-App komplett ersetzen oder parallel laufen?
 
 ---
+
+### 23:08 - Team BACK
+- ✅ Keycloak Dev-Realm konfiguriert (freshplan-realm.json)
+- ✅ Docker-Compose mit automatischem Realm-Import
+- ✅ Test-User angelegt (admin, manager, testuser)
+- 📝 Dokumentation in docs/KEYCLOAK_SETUP.md erstellt
+- 🚧 Als nächstes: /api/users/{id}/roles Endpoint
+
+### 23:15 - Team FRONT
+- ✅ CI/Logo gefunden in `/legacy/assets/images/`
+- 📝 Farben: Primary Green #94C456, Primary Dark #004F7B
+- ⏸️ Warte auf IT-Antwort zu: UI Framework, Architektur-Strategie
+- 📢 Jörg hat Antworten bei IT angefragt
+
+### 23:20 - Team BACK
+- ✅ PUT /api/users/{id}/roles Endpoint fertiggestellt
+- ⚠️ BREAKING CHANGE: UserResponse hat jetzt 'roles' Feld (string[])
+- 📝 Erlaubte Rollen: 'admin', 'manager', 'user'
+- 🔒 Nur Admins können Rollen zuweisen (@RolesAllowed)
+- ✅ Umfassende Tests geschrieben (Unit + Integration)
+
+### 23:25 - TEAM UPDATE von Jörg
+
+**ChatGPT ist jetzt dabei!** 🎉
+
+ChatGPT betreut BEIDE Teams parallel als:
+- **Berater**: Architektur-Reviews, API-Design (<1h Antwortzeit)
+- **Debug-Buddy**: Fehleranalyse, Debug-Strategien (sofort)
+- **Doku-Co-Author**: ADRs, READMEs, CI-Workflows (1-2h)
+- **Facilitator**: Sprint-Planung, Integration, Retros
+
+**Wichtig**: Bei Fragen an ChatGPT immer [Front] oder [Back] angeben!
+
+### 23:27 - Team FRONT
+- ✅ Team-Konstellation verstanden
+- 📝 Sehe Breaking Change von Team BACK: UserResponse.roles ist jetzt Pflichtfeld
+- ✅ Werde das im Frontend berücksichtigen
+- 💡 Super dass Roles-API fertig ist - kann ich direkt nutzen!
+
