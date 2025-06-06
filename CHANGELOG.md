@@ -5,6 +5,18 @@ Alle bemerkenswerten Änderungen an diesem Projekt werden in dieser Datei dokume
 Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/),
 und dieses Projekt hält sich an [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.0-T1-green] - 2025-01-06
+
+### Added
+- **Expand-Path T-1** ✅ - Repository-Schicht Tests aktiviert
+  - UserRepositoryTest mit 14 Tests erfolgreich integriert
+  - Gesamt: 17 Tests (3 Green Path + 14 Repository)
+  - CI bleibt stabil grün
+
+### Technical
+- Maven Profile `green` erweitert um `**/*RepositoryTest.java`
+- Alle Repository-Tests laufen ohne Anpassungen durch
+
 ## [2.0.0-beta-green] - 2025-01-06
 
 ### Added
