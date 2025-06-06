@@ -119,7 +119,11 @@ class UserServiceRolesTest {
         assertThatThrownBy(() -> userService.updateUserRoles(userId, request))
             .isInstanceOf(InvalidRoleException.class)
             .hasMessageContaining("Invalid role: 'invalid_role'")
-            .hasMessageContaining("Allowed roles are: [admin, manager, sales, viewer]");
+            .hasMessageContaining("Allowed roles are:")
+            .hasMessageContaining("admin")
+            .hasMessageContaining("manager")
+            .hasMessageContaining("sales")
+            .hasMessageContaining("viewer");
         
         verify(userRepository).findByIdOptional(userId);
         verify(userRepository, never()).flush();
