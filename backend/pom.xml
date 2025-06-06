@@ -167,6 +167,9 @@
                 <include>**/*UserServiceUpdateIT.java</include>
                 <!-- T-1: Repository Layer Tests -->
                 <include>**/*RepositoryTest.java</include>
+                <!-- T-2: Service Layer Tests -->
+                <include>**/*Service*Test.java</include>
+                <include>**/*Service*IT.java</include>
               </includes>
             </configuration>
           </plugin>
