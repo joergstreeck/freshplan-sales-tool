@@ -1,10 +1,12 @@
 package de.freshplan.greenpath;
 
+import de.freshplan.domain.user.repository.UserRepository;
 import de.freshplan.domain.user.service.UserService;
 import de.freshplan.domain.user.service.dto.CreateUserRequest;
 import de.freshplan.domain.user.service.dto.UpdateUserRequest;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
+import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 
@@ -20,6 +22,12 @@ class UserServiceUpdateIT {
     @Inject
     UserService svc;
     
+    @Inject
+    UserRepository repo;
+    
+    @Inject
+    EntityManager em;
+    
     @Test
     @Transactional
     void update() {
@@ -30,7 +38,11 @@ class UserServiceUpdateIT {
                 .email("user@test.com")
                 .build();
         var created = svc.createUser(createReq);
-        var before = created.getUpdatedAt();
+        
+        em.flush(); // erzwingt DB-Write (PrePersist ausgeführt)
+        em.clear(); // trennt Entity vom Kontext
+        
+        var before = repo.findById(created.getId()).getUpdatedAt(); // frische Version
         
         var updateReq = UpdateUserRequest.builder()
                 .username("user")
@@ -41,6 +53,11 @@ class UserServiceUpdateIT {
                 .build();
         var updated = svc.updateUser(created.getId(), updateReq);
         
-        assertThat(updated.getUpdatedAt()).isAfter(before);
+        em.flush(); // PreUpdate ausgeführt
+        em.clear();
+        
+        var after = repo.findById(updated.getId()).getUpdatedAt();
+        
+        assertThat(after).isAfter(before);
     }
 }
