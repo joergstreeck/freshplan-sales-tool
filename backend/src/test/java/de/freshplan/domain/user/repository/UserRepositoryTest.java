@@ -208,9 +208,12 @@ class UserRepositoryTest {
             "User",
             "disabled@freshplan.de"
         );
-        disabledUser.disable();
+        // Lade den User neu, um ihn zu ändern
+        User userToDisable = userRepository.findById(disabledUser.getId());
+        userToDisable.disable();
+        userRepository.flush(); // Speichere die Änderung
         
-        User enabledUser = createAndPersistUser(
+        createAndPersistUser(
             "enabled.user",
             "Enabled",
             "User",
@@ -253,30 +256,35 @@ class UserRepositoryTest {
     @Test
     void testUpdate_ShouldUpdateTimestamp() throws InterruptedException {
         // Given
-        var originalUpdatedAt = testUser.getUpdatedAt();
-        Thread.sleep(100); // Ensure time difference
-        
+        // Lade den User innerhalb des Tests neu, um sicherzustellen, dass er "managed" ist
+        User userToUpdate = userRepository.findById(testUser.getId());
+        var originalUpdatedAt = userToUpdate.getUpdatedAt();
+        Thread.sleep(100); // Nötig, um einen Zeitunterschied sicherzustellen
+
         // When
-        testUser.setFirstName("Jonathan");
-        userRepository.flush();
-        
+        userToUpdate.setFirstName("Jonathan");
+        userRepository.flush(); // Änderungen in die DB schreiben
+
         // Then
-        assertThat(testUser.getUpdatedAt())
-                .isAfter(originalUpdatedAt);
+        // Lade den User erneut, um den von der DB aktualisierten Zeitstempel zu prüfen
+        User updatedUser = userRepository.findById(testUser.getId());
+        assertThat(updatedUser.getUpdatedAt()).isAfter(originalUpdatedAt);
     }
     
     @Test
     void testDelete_ShouldRemoveUser() {
         // Given
         UUID userId = testUser.getId();
+        // Stelle sicher, dass der User existiert, bevor wir ihn löschen
+        assertThat(userRepository.findByIdOptional(userId)).isPresent();
         
         // When
-        userRepository.delete(testUser);
+        // Verwende deleteById, um Probleme mit "detached" Objekten zu vermeiden
+        userRepository.deleteById(userId);
         userRepository.flush();
         
         // Then
-        Optional<User> found = userRepository
-                .findByIdOptional(userId);
+        Optional<User> found = userRepository.findByIdOptional(userId);
         assertThat(found).isEmpty();
     }
     
