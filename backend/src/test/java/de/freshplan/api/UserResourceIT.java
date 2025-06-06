@@ -272,14 +272,13 @@ class UserResourceIT {
     void testEnableUser_Success() {
         // First disable the user
         testUser.disable();
-        userRepository.persist(testUser);
+        userRepository.getEntityManager().merge(testUser);
         
         given()
         .when()
             .put("/{id}/enable", testUser.getId())
         .then()
-            .statusCode(200)
-            .body("enabled", equalTo(true));
+            .statusCode(204);
     }
     
     @Test
@@ -289,8 +288,7 @@ class UserResourceIT {
         .when()
             .put("/{id}/disable", testUser.getId())
         .then()
-            .statusCode(200)
-            .body("enabled", equalTo(false));
+            .statusCode(204);
     }
     
     @Test

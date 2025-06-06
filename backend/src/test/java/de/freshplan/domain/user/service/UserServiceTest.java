@@ -151,10 +151,16 @@ class UserServiceTest {
         UserResponse anotherResponse = createAnotherTestUserResponse();
         
         when(userRepository.listAll()).thenReturn(users);
-        when(userMapper.toResponse(testUser))
-                .thenReturn(testUserResponse);
-        when(userMapper.toResponse(anotherUser))
-                .thenReturn(anotherResponse);
+        // Use Answer to create different responses based on input
+        when(userMapper.toResponse(any(User.class)))
+                .thenAnswer(invocation -> {
+                    User user = invocation.getArgument(0);
+                    if (user.getUsername().equals("john.doe")) {
+                        return testUserResponse;
+                    } else {
+                        return anotherResponse;
+                    }
+                });
         
         // When
         List<UserResponse> responses = userService.getAllUsers();
