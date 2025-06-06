@@ -146,14 +146,21 @@ class UserServiceTest {
     @Test
     void testGetAllUsers() {
         // Given
-        List<User> users = List.of(testUser, createAnotherTestUser());
+        User anotherUser = createAnotherTestUser();
+        List<User> users = List.of(testUser, anotherUser);
         UserResponse anotherResponse = createAnotherTestUserResponse();
         
         when(userRepository.listAll()).thenReturn(users);
-        when(userMapper.toResponse(users.get(0)))
-                .thenReturn(testUserResponse);
-        when(userMapper.toResponse(users.get(1)))
-                .thenReturn(anotherResponse);
+        // Use Answer to create different responses based on input
+        when(userMapper.toResponse(any(User.class)))
+                .thenAnswer(invocation -> {
+                    User user = invocation.getArgument(0);
+                    if (user.getUsername().equals("john.doe")) {
+                        return testUserResponse;
+                    } else {
+                        return anotherResponse;
+                    }
+                });
         
         // When
         List<UserResponse> responses = userService.getAllUsers();

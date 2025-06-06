@@ -253,6 +253,55 @@ public class UserResource {
     }
     
     /**
+     * Searches for users by email.
+     * 
+     * @param email the email to search for
+     * @return the user if found
+     */
+    @GET
+    @Path("/search")
+    @Operation(summary = "Search user by email", 
+               description = "Searches for a user by email address")
+    @APIResponses({
+        @APIResponse(
+            responseCode = "200",
+            description = "User found",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                             schema = @Schema(implementation = UserResponse.class))
+        ),
+        @APIResponse(
+            responseCode = "400",
+            description = "Email parameter missing",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                             schema = @Schema(implementation = ErrorResponse.class))
+        ),
+        @APIResponse(
+            responseCode = "404",
+            description = "User not found"
+        )
+    })
+    public Response searchByEmail(
+            @Parameter(description = "Email address to search", required = true)
+            @QueryParam("email") String email) {
+        
+        if (email == null || email.isBlank()) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(new ErrorResponse(
+                        Response.Status.BAD_REQUEST.getStatusCode(),
+                        "Bad Request",
+                        "email parameter missing",
+                        "/api/users/search",
+                        null
+                    ))
+                    .build();
+        }
+        
+        return userService.findByEmail(email)
+                .map(user -> Response.ok(user).build())
+                .orElse(Response.status(Response.Status.NOT_FOUND).build());
+    }
+    
+    /**
      * Enables a user account.
      * 
      * @param id the user ID

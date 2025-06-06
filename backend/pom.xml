@@ -170,6 +170,11 @@
                 <!-- T-2: Service Layer Tests -->
                 <include>**/*Service*Test.java</include>
                 <include>**/*Service*IT.java</include>
+                <!-- T-3: REST Controller Tests -->
+                <include>**/*Resource*Test.java</include>
+                <include>**/*Resource*IT.java</include>
+                <include>**/*Controller*Test.java</include>
+                <include>**/*Controller*IT.java</include>
               </includes>
             </configuration>
           </plugin>
