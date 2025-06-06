@@ -33,24 +33,50 @@ class UserRepositoryTest {
     @BeforeEach
     @Transactional
     void setUp() {
+        System.out.println("\n>>> UserRepositoryTest.setUp() starting");
+        System.out.println(">>> Current thread: " + Thread.currentThread().getName());
+        
         // Clear any existing data
+        long countBefore = userRepository.count();
+        System.out.println(">>> Users before deleteAll: " + countBefore);
         userRepository.deleteAll();
+        userRepository.flush();
+        long countAfter = userRepository.count();
+        System.out.println(">>> Users after deleteAll: " + countAfter);
         
         // Create test user
+        System.out.println(">>> Creating test user...");
         testUser = createAndPersistUser(
             "john.doe",
             "John",
             "Doe",
             "john.doe@freshplan.de"
         );
+        System.out.println(">>> Test user created with ID: " + testUser.getId());
+        
+        // Verify it's in the database
+        long finalCount = userRepository.count();
+        System.out.println(">>> Total users after setUp: " + finalCount);
+        System.out.println(">>> UserRepositoryTest.setUp() finished\n");
     }
     
     @Test
     @Transactional
     void testFindByUsername_ExistingUser_ShouldReturn() {
+        System.out.println(">>> testFindByUsername starting");
+        System.out.println(">>> testUser ID: " + testUser.getId());
+        System.out.println(">>> Current user count: " + userRepository.count());
+        
+        // List all users to debug
+        userRepository.listAll().forEach(u -> 
+            System.out.println(">>> Found user: " + u.getUsername() + " with ID: " + u.getId())
+        );
+        
         // When
         Optional<User> found = userRepository
                 .findByUsername("john.doe");
+        
+        System.out.println(">>> findByUsername result present: " + found.isPresent());
         
         // Then
         assertThat(found).isPresent();
@@ -336,14 +362,24 @@ class UserRepositoryTest {
             String firstName,
             String lastName,
             String email) {
+        System.out.println(">>> createAndPersistUser called for: " + username);
         User user = new User(username, firstName, lastName, email);
+        System.out.println(">>> User created, ID before persist: " + user.getId());
+        
         userRepository.persist(user);
+        System.out.println(">>> After persist, before flush - ID: " + user.getId());
+        
         userRepository.flush();
+        System.out.println(">>> After flush - ID: " + user.getId());
         
         // Verify the user was actually persisted with an ID
         if (user.getId() == null) {
             throw new IllegalStateException("User ID is null after persist and flush!");
         }
+        
+        // Double-check by reloading
+        Optional<User> reloaded = userRepository.findById(user.getId());
+        System.out.println(">>> Reloaded user present: " + reloaded.isPresent());
         
         return user;
     }

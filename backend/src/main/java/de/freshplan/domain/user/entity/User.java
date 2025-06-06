@@ -78,11 +78,15 @@ public class User extends PanacheEntityBase {
     
     @PrePersist
     protected void onCreate() {
+        System.out.println(">>> User.onCreate() called!");
+        System.out.println(">>> ID before generation: " + id);
         if (id == null) {
             id = UUID.randomUUID();
+            System.out.println(">>> Generated new UUID: " + id);
         }
         createdAt = Instant.now();
         updatedAt = Instant.now();
+        System.out.println(">>> User.onCreate() finished - ID: " + id);
     }
     
     @PreUpdate
