@@ -92,7 +92,7 @@ Response: 204 | 404
 
 // Assign Roles ✅ FERTIG
 PUT /api/users/{id}/roles
-Request: { roles: string[] }  // Erlaubt: "admin", "manager", "user"
+Request: { roles: string[] }  // Erlaubt: "admin", "manager", "sales", "viewer"
 Response: UserResponse | 404
 Authorization: Bearer token mit "admin" Rolle erforderlich!
 ```
