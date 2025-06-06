@@ -46,6 +46,7 @@ class UserRepositoryTest {
     }
     
     @Test
+    @Transactional
     void testFindByUsername_ExistingUser_ShouldReturn() {
         // When
         Optional<User> found = userRepository
@@ -338,6 +339,12 @@ class UserRepositoryTest {
         User user = new User(username, firstName, lastName, email);
         userRepository.persist(user);
         userRepository.flush();
+        
+        // Verify the user was actually persisted with an ID
+        if (user.getId() == null) {
+            throw new IllegalStateException("User ID is null after persist and flush!");
+        }
+        
         return user;
     }
 }

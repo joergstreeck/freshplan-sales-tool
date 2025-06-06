@@ -69,7 +69,10 @@ public class UserService {
         
         // Create and persist user
         User user = userMapper.toEntity(request);
+        LOG.debugf("User before persist - ID: %s", user.getId());
         userRepository.persist(user);
+        userRepository.flush();
+        LOG.debugf("User after persist and flush - ID: %s", user.getId());
         
         LOG.infof("User created successfully with ID: %s", user.getId());
         return userMapper.toResponse(user);
