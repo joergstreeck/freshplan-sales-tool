@@ -88,14 +88,14 @@ class UserServiceRolesTest {
     void updateUserRoles_withMixedCaseRoles_shouldNormalize() {
         // Given
         UpdateUserRolesRequest request = new UpdateUserRolesRequest();
-        request.setRoles(List.of("ADMIN", "Manager", "USER"));
+        request.setRoles(List.of("ADMIN", "Manager", "SALES"));
         
         when(userRepository.findByIdOptional(userId)).thenReturn(Optional.of(testUser));
         when(userMapper.toResponse(testUser)).thenReturn(
             UserResponse.builder()
                 .id(userId)
                 .username("john.doe")
-                .roles(List.of("admin", "manager", "user"))
+                .roles(List.of("admin", "manager", "sales"))
                 .build()
         );
         
@@ -103,8 +103,8 @@ class UserServiceRolesTest {
         UserResponse response = userService.updateUserRoles(userId, request);
         
         // Then
-        assertThat(response.getRoles()).containsExactlyInAnyOrder("admin", "manager", "user");
-        assertThat(testUser.getRoles()).containsExactlyInAnyOrder("admin", "manager", "user");
+        assertThat(response.getRoles()).containsExactlyInAnyOrder("admin", "manager", "sales");
+        assertThat(testUser.getRoles()).containsExactlyInAnyOrder("admin", "manager", "sales");
     }
     
     @Test
@@ -119,7 +119,7 @@ class UserServiceRolesTest {
         assertThatThrownBy(() -> userService.updateUserRoles(userId, request))
             .isInstanceOf(InvalidRoleException.class)
             .hasMessageContaining("Invalid role: 'invalid_role'")
-            .hasMessageContaining("Allowed roles are: [admin, manager, user]");
+            .hasMessageContaining("Allowed roles are: [admin, manager, sales, viewer]");
         
         verify(userRepository).findByIdOptional(userId);
         verify(userRepository, never()).flush();
@@ -146,14 +146,14 @@ class UserServiceRolesTest {
     void updateUserRoles_withSingleRole_shouldUpdateSuccessfully() {
         // Given
         UpdateUserRolesRequest request = new UpdateUserRolesRequest();
-        request.setRoles(List.of("user"));
+        request.setRoles(List.of("sales"));
         
         when(userRepository.findByIdOptional(userId)).thenReturn(Optional.of(testUser));
         when(userMapper.toResponse(testUser)).thenReturn(
             UserResponse.builder()
                 .id(userId)
                 .username("john.doe")
-                .roles(List.of("user"))
+                .roles(List.of("sales"))
                 .build()
         );
         
@@ -161,22 +161,22 @@ class UserServiceRolesTest {
         UserResponse response = userService.updateUserRoles(userId, request);
         
         // Then
-        assertThat(response.getRoles()).containsExactly("user");
-        assertThat(testUser.getRoles()).containsExactly("user");
+        assertThat(response.getRoles()).containsExactly("sales");
+        assertThat(testUser.getRoles()).containsExactly("sales");
     }
     
     @Test
     void updateUserRoles_withDuplicateRoles_shouldDeduplicateInEntity() {
         // Given
         UpdateUserRolesRequest request = new UpdateUserRolesRequest();
-        request.setRoles(List.of("admin", "admin", "user"));
+        request.setRoles(List.of("admin", "admin", "sales"));
         
         when(userRepository.findByIdOptional(userId)).thenReturn(Optional.of(testUser));
         when(userMapper.toResponse(testUser)).thenReturn(
             UserResponse.builder()
                 .id(userId)
                 .username("john.doe")
-                .roles(List.of("admin", "user"))
+                .roles(List.of("admin", "sales"))
                 .build()
         );
         

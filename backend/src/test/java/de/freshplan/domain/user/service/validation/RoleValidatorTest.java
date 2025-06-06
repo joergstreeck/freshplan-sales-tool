@@ -21,7 +21,7 @@ class RoleValidatorTest {
     @Test
     void areValidRoles_withValidRoles_shouldReturnTrue() {
         // Given
-        List<String> roles = List.of("admin", "manager", "user");
+        List<String> roles = List.of("admin", "manager", "sales");
         
         // When
         boolean result = RoleValidator.areValidRoles(roles);
@@ -63,7 +63,7 @@ class RoleValidatorTest {
     @Test
     void areValidRoles_withNullInList_shouldReturnFalse() {
         // Given
-        List<String> roles = Arrays.asList("admin", null, "user");
+        List<String> roles = Arrays.asList("admin", null, "sales");
         
         // When
         boolean result = RoleValidator.areValidRoles(roles);
@@ -73,7 +73,7 @@ class RoleValidatorTest {
     }
     
     @ParameterizedTest
-    @ValueSource(strings = {"admin", "manager", "user", "ADMIN", "Manager", "USER"})
+    @ValueSource(strings = {"admin", "manager", "sales", "viewer", "ADMIN", "Manager", "SALES", "VIEWER"})
     void isValidRole_withValidRoles_shouldReturnTrue(String role) {
         // When
         boolean result = RoleValidator.isValidRole(role);
@@ -109,8 +109,8 @@ class RoleValidatorTest {
         
         // Then
         assertThat(allowedRoles)
-            .hasSize(3)
-            .containsExactlyInAnyOrder("admin", "manager", "user");
+            .hasSize(4)
+            .containsExactlyInAnyOrder("admin", "manager", "sales", "viewer");
     }
     
     @Test
@@ -118,7 +118,7 @@ class RoleValidatorTest {
         // Given & When & Then
         assertThat(RoleValidator.normalizeRole("ADMIN")).isEqualTo("admin");
         assertThat(RoleValidator.normalizeRole("Manager")).isEqualTo("manager");
-        assertThat(RoleValidator.normalizeRole("user")).isEqualTo("user");
+        assertThat(RoleValidator.normalizeRole("sales")).isEqualTo("sales");
         assertThat(RoleValidator.normalizeRole("")).isEqualTo("");
     }
     
@@ -134,7 +134,7 @@ class RoleValidatorTest {
     @Test
     void normalizeRoles_shouldNormalizeAllRoles() {
         // Given
-        List<String> roles = List.of("ADMIN", "Manager", "USER");
+        List<String> roles = List.of("ADMIN", "Manager", "SALES");
         
         // When
         List<String> normalized = RoleValidator.normalizeRoles(roles);
@@ -142,7 +142,7 @@ class RoleValidatorTest {
         // Then
         assertThat(normalized)
             .hasSize(3)
-            .containsExactly("admin", "manager", "user");
+            .containsExactly("admin", "manager", "sales");
     }
     
     @Test
@@ -157,7 +157,7 @@ class RoleValidatorTest {
     @Test
     void normalizeRoles_withNullValues_shouldNormalizeToNull() {
         // Given
-        List<String> roles = Arrays.asList("ADMIN", null, "user");
+        List<String> roles = Arrays.asList("ADMIN", null, "sales");
         
         // When
         List<String> normalized = RoleValidator.normalizeRoles(roles);
@@ -165,6 +165,6 @@ class RoleValidatorTest {
         // Then
         assertThat(normalized)
             .hasSize(3)
-            .containsExactly("admin", null, "user");
+            .containsExactly("admin", null, "sales");
     }
 }

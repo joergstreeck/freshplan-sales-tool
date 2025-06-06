@@ -74,7 +74,7 @@ class UpdateUserRolesRequestTest {
     @Test
     void builder_shouldCreateValidRequest() {
         // Given
-        List<String> roles = List.of("admin", "user");
+        List<String> roles = List.of("admin", "sales");
         
         // When
         UpdateUserRolesRequest request = UpdateUserRolesRequest.builder()
@@ -101,7 +101,7 @@ class UpdateUserRolesRequestTest {
     void setRoles_shouldUpdateRoles() {
         // Given
         UpdateUserRolesRequest request = new UpdateUserRolesRequest();
-        List<String> roles = List.of("admin", "manager", "user");
+        List<String> roles = List.of("admin", "manager", "sales");
         
         // When
         request.setRoles(roles);

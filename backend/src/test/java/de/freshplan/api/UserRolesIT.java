@@ -130,7 +130,7 @@ class UserRolesIT {
     @TestSecurity(user = "admin", roles = {"admin"})
     void updateUserRoles_withMixedCase_shouldNormalize() {
         UpdateUserRolesRequest request = new UpdateUserRolesRequest();
-        request.setRoles(List.of("ADMIN", "Manager", "USER"));
+        request.setRoles(List.of("ADMIN", "Manager", "SALES"));
         
         given()
             .contentType(ContentType.JSON)
@@ -140,7 +140,7 @@ class UserRolesIT {
             .then()
             .statusCode(200)
             .body("roles", hasSize(3))
-            .body("roles", containsInAnyOrder("admin", "manager", "user"));
+            .body("roles", containsInAnyOrder("admin", "manager", "sales"));
     }
     
     @Test
