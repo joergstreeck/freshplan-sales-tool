@@ -17,7 +17,7 @@ cd backend
 |----------|--------|
 | `POST /api/users` | ✅ |
 | `GET /api/users/search` | ✅ |
-| `PUT /api/users/{id}/roles` | 🚧 |
+| `PUT /api/users/{id}/roles` | ✅ |
 | `GET /api/users/{id}/permissions` | 📋 |
 | `POST /api/auth/refresh` | 📋 |
 

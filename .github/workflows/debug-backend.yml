@@ -31,7 +31,7 @@ jobs:
       - name: Fix mvnw permissions and show Maven version
         run: |
           chmod +x mvnw
-          sh ./mvnw -version
+          bash ./mvnw -version
         working-directory: backend
         
       - name: List backend source files
@@ -45,23 +45,23 @@ jobs:
       - name: Show pom.xml dependencies
         run: |
           echo "=== Dependencies ==="
-          sh ./mvnw dependency:tree | grep -E "(hibernate-validator|mockito|junit)" || true
+          bash ./mvnw dependency:tree | grep -E "(hibernate-validator|mockito|junit)" || true
         working-directory: backend
         
       - name: Compile main sources with debug
-        run: sh ./mvnw compile -X
+        run: bash ./mvnw compile -X
         working-directory: backend
         continue-on-error: true
         
       - name: Compile test sources with debug
-        run: sh ./mvnw test-compile -X
+        run: bash ./mvnw test-compile -X
         working-directory: backend
         continue-on-error: true
         
       - name: Run single test with debug
         run: |
           echo "=== Running UserMapperTest ==="
-          sh ./mvnw test -Dtest=UserMapperTest -X
+          bash ./mvnw test -Dtest=UserMapperTest -X
         working-directory: backend
         continue-on-error: true
         
