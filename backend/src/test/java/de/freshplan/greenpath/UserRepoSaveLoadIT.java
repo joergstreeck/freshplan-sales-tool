@@ -22,7 +22,7 @@ class UserRepoSaveLoadIT {
     @Test
     @Transactional
     void saveLoad() {
-        var u = new User("u", "U", "U", "u@test.de");
+        var u = new User("testuser", "Test", "User", "test@example.com");
         repo.persistAndFlush(u);
         assertThat(repo.findById(u.getId())).isNotNull();
     }

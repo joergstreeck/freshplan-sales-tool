@@ -24,19 +24,19 @@ class UserServiceUpdateIT {
     @Transactional
     void update() {
         var createReq = CreateUserRequest.builder()
-                .username("u")
-                .firstName("U")
-                .lastName("U")
-                .email("u@test")
+                .username("user")
+                .firstName("Test")
+                .lastName("User")
+                .email("user@test.com")
                 .build();
         var created = svc.createUser(createReq);
         var before = created.getUpdatedAt();
         
         var updateReq = UpdateUserRequest.builder()
-                .username("u")
-                .firstName("U")
-                .lastName("U")
-                .email("u2@test")
+                .username("user")
+                .firstName("Test")
+                .lastName("User")
+                .email("user2@test.com")
                 .enabled(true)
                 .build();
         var updated = svc.updateUser(created.getId(), updateReq);
