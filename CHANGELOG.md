@@ -5,6 +5,26 @@ Alle bemerkenswerten Änderungen an diesem Projekt werden in dieser Datei dokume
 Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/),
 und dieses Projekt hält sich an [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.0-T3-green] - 2025-01-06
+
+### Added
+- **Expand-Path T-3** ✅ - REST Controller Tests aktiviert
+  - UserResourceTest und UserResourceIT mit vollständiger API-Test-Coverage
+  - Search-Endpoint `/api/users/search?email=` implementiert
+  - Gesamt: 55 Tests (alle grün!)
+  - CI bleibt weiterhin stabil grün
+
+### Fixed
+- Mock-Setup in UserServiceTest mit Answer-Pattern für unterschiedliche Responses
+- Transaction-Handling in UserResourceIT mit @Transactional
+- REST-konforme Status-Codes (204 No Content für enable/disable)
+- ValidationExceptionMapper für konsistente Validation-Error-Responses
+
+### Technical
+- Maven Profile `green` erweitert um `**/*Resource*Test.java` und `**/*Resource*IT.java`
+- @UpdateTimestamp Annotation eliminiert manuelle Timestamp-Updates
+- ErrorResponse-Konstruktor mit korrekten Parametern
+
 ## [2.0.0-T2-green] - 2025-01-06
 
 ### Added
