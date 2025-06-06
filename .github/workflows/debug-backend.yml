@@ -28,8 +28,10 @@ jobs:
       - name: Show Java version
         run: java -version
         
-      - name: Show Maven version
-        run: ./mvnw -version
+      - name: Fix mvnw permissions and show Maven version
+        run: |
+          chmod +x mvnw
+          sh ./mvnw -version
         working-directory: backend
         
       - name: List backend source files
@@ -43,23 +45,23 @@ jobs:
       - name: Show pom.xml dependencies
         run: |
           echo "=== Dependencies ==="
-          ./mvnw dependency:tree | grep -E "(hibernate-validator|mockito|junit)" || true
+          sh ./mvnw dependency:tree | grep -E "(hibernate-validator|mockito|junit)" || true
         working-directory: backend
         
       - name: Compile main sources with debug
-        run: ./mvnw compile -X
+        run: sh ./mvnw compile -X
         working-directory: backend
         continue-on-error: true
         
       - name: Compile test sources with debug
-        run: ./mvnw test-compile -X
+        run: sh ./mvnw test-compile -X
         working-directory: backend
         continue-on-error: true
         
       - name: Run single test with debug
         run: |
           echo "=== Running UserMapperTest ==="
-          ./mvnw test -Dtest=UserMapperTest -X
+          sh ./mvnw test -Dtest=UserMapperTest -X
         working-directory: backend
         continue-on-error: true
         
