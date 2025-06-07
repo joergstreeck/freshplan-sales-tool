@@ -1629,3 +1629,32 @@ cd ../backend && ./mvnw quarkus:dev
 
 **Merke:** Nach Update → Erst Claude → Dann Setup!
 
+### 18:08 - Team BACK - PROJEKT GESICHERT FÜR UPDATE! ✅
+
+🛡️ **Alle Sicherungsmaßnahmen durchgeführt:**
+
+✅ **Code gepusht:**
+- Branch: `feature/calculator-core`
+- Commit: `b5df337` - "WIP: Calculator API implementation..."
+- Alle Calculator API Änderungen gesichert
+- Push zu GitHub erfolgreich
+
+✅ **Homebrew Backups erstellt:**
+- `~/Desktop/homebrew-packages-backup.txt`
+- `~/Desktop/homebrew-casks-backup.txt`
+
+✅ **Was wurde gesichert:**
+- Calculator REST API (`/api/v1/calculator/discount`)
+- DTOs, Mapper, Resource, Tests
+- Code Review Fixes
+- ADR-006 API Design
+- Docker Setup Dokumentation
+
+📋 **Nach dem Update:**
+1. Terminal öffnen
+2. `claude` (falls nötig neu installieren)
+3. `cd ~/freshplan-backend`
+4. Wir richten gemeinsam Docker ein!
+
+🚀 **Bereit für macOS Update! Bis morgen!**
+
