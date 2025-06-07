@@ -370,3 +370,25 @@ Diese Regel wurde auch in CLAUDE.md dokumentiert.
 - Worktree CI: Fehlgeschlagen (sekundärer Workflow)
 - **WICHTIG für alle Teams**: Bei Änderungen an Testfiles bitte im Log dokumentieren\!
 
+
+### 03:08 - Team BACK - CODE REVIEW ABGESCHLOSSEN
+
+✅ **Alle Code-Issues aus Review behoben:**
+
+**Major Issues gefixt:**
+- Zeilenlänge auf max. 120 Zeichen gekürzt
+- @Transactional zu updateUserRoles() hinzugefügt
+- Migration Script: Kein Default 'sales' mehr, nur gezielte Zuweisung
+
+**Minor Issues gefixt:**
+- JavaDoc Kommentare korrigiert (sales statt user)
+- UpdateUserRolesRequest ist jetzt immutable
+- RoleValidator.normalizeAndValidateRoles() konsolidiert Logik
+- Verwirrenden boolean Constructor entfernt
+
+📊 **CI Status:**
+- Backend CI (Haupt-Test): ✅ GRÜN
+- Worktree CI: ❌ ROT (bekanntes Problem)
+
+🎯 **PR #15 ist bereit zum Merge\!**
+

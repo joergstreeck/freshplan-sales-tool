@@ -1,5 +1,7 @@
 package de.freshplan.domain.user.service.dto;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.util.Collections;
@@ -21,23 +23,18 @@ public class UpdateUserRolesRequest {
     private final List<String> roles;
     
     /**
-     * Default constructor for JSON deserialization.
-     */
-    public UpdateUserRolesRequest() {
-        this.roles = Collections.emptyList();
-    }
-    
-    /**
      * Creates a new request with the given roles.
+     * Used by Jackson for JSON deserialization.
      * 
      * @param roles the list of roles to assign
      */
-    public UpdateUserRolesRequest(List<String> roles) {
-        this.roles = roles != null ? List.copyOf(roles) : Collections.emptyList();
+    @JsonCreator
+    public UpdateUserRolesRequest(@JsonProperty("roles") List<String> roles) {
+        this.roles = roles != null ? List.copyOf(roles) : null;
     }
     
     public List<String> getRoles() {
-        return Collections.unmodifiableList(roles);
+        return roles;
     }
     
     /**

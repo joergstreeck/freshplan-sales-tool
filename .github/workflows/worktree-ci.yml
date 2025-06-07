@@ -34,7 +34,7 @@ jobs:
           
       - name: Run backend tests
         working-directory: backend
-        run: ./mvnw -Pgreen clean verify
+        run: mvn -Pgreen clean verify
 
   frontend:
     name: Frontend Tests
@@ -96,11 +96,11 @@ jobs:
         run: |
           echo "🧪 Running expanded test coverage..."
           cd backend
-          ./mvnw -Pgreen clean verify
+          mvn -Pgreen clean verify
           
       - name: Coverage Report
         if: always()
         run: |
           cd backend
-          ./mvnw jacoco:report
+          mvn jacoco:report
           echo "📊 Coverage report generated"
