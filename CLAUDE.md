@@ -862,6 +862,50 @@ npm run security:audit
 
 **Diese Regel ist VERPFLICHTEND und wird bei jedem Sprint-Ende automatisch ausgeführt!**
 
+### 🔒 Doppelte Sicherheit: Two-Pass Review
+
+**NEUE REGEL (ab 07.01.2025):** Nach der Beseitigung aller Fehler aus dem ersten Review wird der Code ein weiteres Mal in gleicher Weise geprüft.
+
+#### Two-Pass Review Prozess:
+
+**1. Pass - Initial Review:**
+- Vollständige Prüfung nach allen Kriterien
+- Dokumentation aller Findings
+- Behebung aller kritischen und wichtigen Issues
+
+**2. Pass - Verification Review:**
+- Erneute vollständige Prüfung
+- Verifizierung dass alle Fixes korrekt sind
+- Prüfung auf neue Issues durch die Fixes
+- Finale Freigabe nur wenn BEIDE Reviews grün sind
+
+#### Warum Two-Pass Review?
+
+1. **Fixes können neue Probleme einführen**
+2. **Übersehene Issues werden erkannt**
+3. **Höhere Code-Qualität garantiert**
+4. **Reduziert Production-Bugs signifikant**
+
+#### Review-Report für Two-Pass:
+
+```markdown
+# Two-Pass Review Report - [Feature]
+
+## Pass 1: Initial Review
+- Findings: X kritisch, Y wichtig
+- Status: ❌ Issues gefunden
+
+## Fixes Applied
+- [Liste der durchgeführten Fixes]
+
+## Pass 2: Verification Review  
+- Neue Issues: [Anzahl]
+- Status: ✅ Alle Tests bestanden
+- Finale Freigabe: JA/NEIN
+```
+
+**Merke: "Vertrauen ist gut, doppelte Kontrolle ist besser!"**
+
 ## 1. Projektübersicht und Ziele
 
 **Projektname:** FreshPlan Sales Tool 2.0

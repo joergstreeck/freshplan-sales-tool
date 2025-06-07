@@ -17,7 +17,9 @@ export function LoginBypassPage() {
     const testPassword = import.meta.env.VITE_TEST_USER_PASSWORD;
 
     if (!testEmail || !testPassword) {
-      console.error('Test credentials not configured');
+      if (import.meta.env.DEV) {
+        console.error('Test credentials not configured');
+      }
       return;
     }
 

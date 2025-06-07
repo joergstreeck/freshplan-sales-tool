@@ -26,6 +26,63 @@ Diese Regel wurde von Jörg am 07.01.2025 eingeführt, nachdem ein gründlicher 
 - 📝 Vor kritischen Deployments
 - 📝 Nach Pair Programming Sessions
 
+## 🔒 NEU: Two-Pass Review System (Doppelte Sicherheit)
+
+**Ab 07.01.2025 gilt:** Jeder Code Review besteht aus ZWEI Durchgängen!
+
+### Warum Two-Pass Review?
+Nach der Erfahrung vom heutigen Frontend-Review ist klar: **Fixes können neue Probleme einführen!**
+
+### Der Two-Pass Prozess:
+
+#### 🔍 Pass 1: Initial Review
+1. Vollständige Prüfung aller Kriterien
+2. Dokumentation aller Findings
+3. Priorisierung der Issues
+4. **Fixes implementieren**
+
+#### 🔍 Pass 2: Verification Review
+1. **Komplette Wiederholung** der Prüfung
+2. Verifizierung dass alle Fixes korrekt sind
+3. Prüfung auf **neue Issues durch die Fixes**
+4. Erst wenn Pass 2 grün → Freigabe
+
+### Two-Pass Template:
+```markdown
+# Two-Pass Review - [Feature Name]
+**Datum Pass 1:** [YYYY-MM-DD]
+**Datum Pass 2:** [YYYY-MM-DD]
+
+## 🔍 Pass 1: Initial Review
+### Findings:
+- Kritisch: X
+- Wichtig: Y
+- Minor: Z
+
+### Top Issues:
+1. [Issue + Fix]
+2. [Issue + Fix]
+
+## 🛠️ Fixes Applied
+- [Commit Hash] - [Beschreibung]
+- [Commit Hash] - [Beschreibung]
+
+## 🔍 Pass 2: Verification Review
+### Neue Issues gefunden:
+- [ ] Keine neuen Issues ✅
+- [ ] X neue Issues gefunden ❌
+
+### Fix-Verification:
+- [ ] Alle Fixes korrekt implementiert
+- [ ] Keine Regression eingeführt
+- [ ] Tests laufen grün
+
+## ✅ Finale Freigabe
+- [ ] Pass 1: Complete
+- [ ] Pass 2: Complete
+- [ ] Ready to Merge: JA/NEIN
+```
+
 ## Review-Checkliste
 
 ### 1. 📏 Programmierregeln-Compliance
