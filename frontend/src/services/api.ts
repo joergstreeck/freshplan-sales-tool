@@ -1,14 +1,8 @@
 // API Service for backend communication
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+import type { PingResponse, ApiError } from '../types/api';
 
-export interface PingResponse {
-  message: string;
-  timestamp: string;
-  user?: string;
-  dbTime?: string;
-  dbStatus?: string;
-}
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
 
 export class ApiService {
   static async ping(token?: string): Promise<PingResponse> {
@@ -26,7 +20,12 @@ export class ApiService {
     });
 
     if (!response.ok) {
-      throw new Error(`API Error: ${response.status} ${response.statusText}`);
+      const error: ApiError = {
+        code: `HTTP_${response.status}`,
+        message: response.statusText || 'API request failed',
+        details: { status: response.status },
+      };
+      throw error;
     }
 
     return response.json();

@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import reactLogo from './assets/react.svg';
-import viteLogo from '/vite.svg';
-import './App.css';
+import { Link } from 'react-router-dom';
 import { ApiService } from './services/api';
 import { useAuth } from './contexts/AuthContext';
+import { Button } from './components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './components/ui/card';
 
 function App() {
   const [count, setCount] = useState(0);
@@ -11,8 +11,13 @@ function App() {
   const { token } = useAuth();
 
   const handlePing = async () => {
+    if (!token) {
+      setPingResult('Error: Not authenticated. Please login first.');
+      return;
+    }
+
     try {
-      const result = await ApiService.ping(token || 'test-token');
+      const result = await ApiService.ping(token);
       setPingResult(JSON.stringify(result, null, 2));
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
@@ -21,25 +26,65 @@ function App() {
   };
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <div className="min-h-screen bg-background p-8">
+      <div className="mx-auto max-w-4xl space-y-8">
+        <div className="text-center">
+          <h1 className="text-4xl font-bold text-foreground mb-2">FreshPlan 2.0</h1>
+          <p className="text-muted-foreground">Sprint 0 - Walking Skeleton</p>
+        </div>
+
+        <div className="grid gap-6 md:grid-cols-3">
+          <Card>
+            <CardHeader>
+              <CardTitle>Counter Test</CardTitle>
+              <CardDescription>Test React State Management</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <p className="text-2xl font-mono">{count}</p>
+                <Button onClick={() => setCount(count => count + 1)}>Count is {count}</Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>API Test</CardTitle>
+              <CardDescription>Test Backend Connection</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <Button onClick={handlePing} variant="secondary">
+                  Ping API
+                </Button>
+                {pingResult && (
+                  <pre className="bg-muted p-4 rounded-md text-sm overflow-auto max-h-32">
+                    {pingResult}
+                  </pre>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>User Management</CardTitle>
+              <CardDescription>Sprint 1 Feature Implementation</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <p className="text-sm text-muted-foreground">
+                  React Query + React Hook Form + Zod + Zustand
+                </p>
+                <Button asChild>
+                  <Link to="/users">Benutzerverwaltung öffnen</Link>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </div>
-      <h1>FreshPlan 2.0</h1>
-      <div className="card">
-        <button onClick={() => setCount(count => count + 1)}>count is {count}</button>
-        <button onClick={handlePing} style={{ marginLeft: '10px' }}>
-          Ping API
-        </button>
-        {pingResult && <pre style={{ textAlign: 'left', marginTop: '20px' }}>{pingResult}</pre>}
-      </div>
-      <p className="read-the-docs">Sprint 0 - Walking Skeleton</p>
-    </>
+    </div>
   );
 }
 

@@ -63,7 +63,11 @@ describe('ApiService', () => {
         statusText: 'Unauthorized',
       } as Response);
 
-      await expect(ApiService.ping()).rejects.toThrow('API Error: 401 Unauthorized');
+      await expect(ApiService.ping()).rejects.toMatchObject({
+        code: 'HTTP_401',
+        message: 'Unauthorized',
+        details: { status: 401 },
+      });
     });
   });
 });

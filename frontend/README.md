@@ -2,7 +2,7 @@
 
 ## 🚀 React + TypeScript + Vite
 
-This frontend application is built with modern web technologies for the FreshPlan 2.0 Enterprise Sales Platform.
+Frontend-Anwendung für die FreshPlan 2.0 Enterprise Sales Platform.
 
 ### Tech Stack
 
