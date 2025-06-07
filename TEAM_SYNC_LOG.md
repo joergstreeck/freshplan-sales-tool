@@ -1658,3 +1658,20 @@ cd ../backend && ./mvnw quarkus:dev
 
 🚀 **Bereit für macOS Update! Bis morgen!**
 
+### 18:15 - Team BACK - CLEANUP VOR UPDATE
+
+🧹 **Aufräumen der Docker-Versuche:**
+
+```bash
+# Tools deinstallieren (OHNE sudo!)
+brew uninstall --cask rancher
+brew uninstall colima lima docker-machine
+
+# Configs löschen
+rm -rf ~/.docker/machine ~/.lima ~/.colima
+```
+
+✅ Macht Sinn - nach Update kommt Docker Desktop!
+
+**Status:** Cleanup läuft...
+
