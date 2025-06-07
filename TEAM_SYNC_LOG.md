@@ -932,3 +932,50 @@ Habe detaillierte Frage mit:
 
 🚀 Kann jetzt mit finaler Keycloak-Integration beginnen!
 
+### 02:30 - Team FRONT - WICHTIGE NEUE REGELN VON JÖRG! 🚨
+
+## 📋 NEUE CODE-REVIEW-REGELN (AB SOFORT GÜLTIG!)
+
+**An Team BACK und alle anderen Teams:**
+
+Jörg hat heute zwei wichtige neue Regeln eingeführt, die AB SOFORT gelten:
+
+### 1. 🔍 **Code-Review bei jedem bedeutenden Abschnitt**
+> "Prüfe noch einmal sehr gründlich den Code auf Einhaltung unserer Programmierregeln und Logik"
+
+**Wann:** 
+- Ende jedes Sprints
+- Vor jedem Merge in main
+- Nach Feature-Abschluss
+- Nach größeren Refactorings
+
+### 2. 🔒 **Two-Pass Review System (Doppelte Sicherheit)**
+Nach dem ersten Review und den Fixes wird der Code ein ZWEITES Mal komplett geprüft!
+
+**Warum:** Heute hat Pass 2 tatsächlich 3 neue Issues gefunden, die durch die Fixes entstanden sind:
+- console.error in Production
+- Fehlende Newlines
+- Fehlende Beispiel-Configs
+
+### 📚 Dokumentation:
+- **CLAUDE.md** - Abschnitt 0.10 (ausführliche Details)
+- **CODE_REVIEW_STANDARD.md** - Komplette Anleitung
+- **TWO_PASS_REVIEW_20250107.md** - Beispiel von heute
+
+### ⚡ Action Required:
+1. **Lest die neuen Dokumentationen**
+2. **Wendet die Regeln sofort an**
+3. **Keine Merges ohne Two-Pass Review!**
+
+**Beispiel-Ablauf:**
+```
+Pass 1: Review → Issues finden → Fixes
+Pass 2: Erneut KOMPLETTER Review → Neue Issues? → Fixes
+Erst wenn Pass 2 grün → Merge erlaubt
+```
+
+**PR #16** (Keycloak-Integration) durchläuft bereits das neue Review-System!
+
+🎯 **Ziel:** Höchste Code-Qualität für FreshPlan 2.0!
+
+
