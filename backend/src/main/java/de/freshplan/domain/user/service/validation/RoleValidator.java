@@ -17,6 +17,7 @@ public class RoleValidator {
     /**
      * Set of allowed role values.
      * Based on PHASE2_KICKOFF.md specifications.
+     * Matches Keycloak realm configuration.
      */
     private static final Set<String> ALLOWED_ROLES = Set.of(
         "admin", 
