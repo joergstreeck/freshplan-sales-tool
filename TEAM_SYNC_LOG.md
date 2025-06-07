@@ -392,3 +392,72 @@ Diese Regel wurde auch in CLAUDE.md dokumentiert.
 
 🎯 **PR #15 ist bereit zum Merge\!**
 
+
+### 03:33 - Team BACK - ZWEITE CODE REVIEW ABGESCHLOSSEN
+
+🔍 **Zweite Code-Review durchgeführt nach den Fixes:**
+
+**Gefundene Issues und behoben:**
+1. ✅ Worktree CI Maven Wrapper Problem gefixt (./mvnw → mvn)
+2. ✅ UpdateUserRolesRequest JSON Deserialisierung Problem behoben
+   - @JsonCreator mit @JsonProperty für korrekte Jackson-Integration
+   - Default Constructor entfernt (verursachte Validation-Konflikte)
+3. ✅ Test-Erwartung angepasst (@NotNull greift vor @Size)
+
+📋 **Erkenntnisse:**
+- Doppelte Code-Review war essentiell\! Hätte sonst JSON-Deserialisierung Problem übersehen
+- UpdateUserRolesRequest war nicht richtig immutable implementiert
+- Test-Validation Reihenfolge war nicht korrekt verstanden
+
+🎯 **Status:** Alle Issues aus beiden Reviews sind jetzt behoben. 
+PR ist bereit zum Merge sobald CI grün ist\!
+
+
+### 03:44 - Team BACK - DEBUGGING STRATEGIE
+
+🚨 **Problem:** Worktree CI blockiert PR Merge (required check)
+
+📋 **Bisher versucht:**
+1. Maven Wrapper → Maven direkt (mvnw → mvn)
+2. Maven Setup Action hinzugefügt
+3. Mehrere Push-Versuche ohne systematische Analyse
+
+❓ **FRAGE AN JÖRG:**
+**Soll ich das Worktree CI Problem systematisch debuggen oder gibt es eine schnellere Lösung?**
+
+**Optionen:**
+1. **Worktree CI als non-required markieren** (GitHub Settings)
+2. **Worktree CI temporär disablen** (Workflow-Datei)
+3. **Systematisches Debugging** mit kleinen Schritten
+4. **ChatGPT konsultieren** für Maven/GitHub Actions Expertise
+
+**Mein Vorschlag:** Option 1 oder 2 - das Worktree CI ist experimentell und sollte den Hauptentwicklungsflow nicht blockieren.
+
+**Wartend auf Entscheidung bevor weitere Versuche...**
+
+
+### 03:57 - Team BACK - CHATGPT EMPFEHLUNG ERHALTEN
+
+✅ **ChatGPT Strategische Empfehlung:**
+- **Sofort:** Required-Flag für experimentelle Worktree CI entfernen
+- **Grund:** Experimentelle Workflows dürfen Hauptentwicklung nicht blockieren
+- **Langfristig:** Worktree CI stabilisieren, dann wieder als required setzen
+
+🎯 **AKTION BENÖTIGT VON JÖRG:**
+GitHub Settings → Branch Protection → "Worktree CI / Backend Tests" deaktivieren
+
+📋 **Follow-up Tasks nach Merge:**
+1. Issue erstellen: "Stabilisiere Worktree CI"
+2. Workflow refactoring mit ChatGPTs Empfehlungen:
+   - Nur actions/setup-java (Temurin) verwenden
+   - Maven im Repo-Root ausführen: ./mvnw -pl backend -am -Pgreen verify
+   - Services für PostgreSQL hinzufügen falls nötig
+3. ADR-005 schreiben: Worktree CI Scope & Policy
+
+💡 **ChatGPT Key Insights:**
+- setup-java installiert bereits Maven (kein extra setup-maven nötig)
+- mvnw Problem: multiModuleProjectDirectory bei Unterordner-Ausführung
+- Experimental Workflows: informational, nicht blockierend
+
+**Status: WARTE AUF GITHUB SETTINGS ÄNDERUNG**
+
