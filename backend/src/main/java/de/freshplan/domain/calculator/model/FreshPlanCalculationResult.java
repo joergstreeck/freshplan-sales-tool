@@ -29,10 +29,6 @@ public final class FreshPlanCalculationResult {
     private final BigDecimal totalDiscountAmount;
     
     private final BigDecimal finalNetValue;
-    private final BigDecimal vatAmount;
-    private final BigDecimal finalGrossValue;
-    
-    private static final BigDecimal VAT_RATE = new BigDecimal("0.19"); // 19% German VAT
     private static final BigDecimal SELF_PICKUP_DISCOUNT_RATE = new BigDecimal("0.02"); // 2%
     private static final BigDecimal MIN_ORDER_FOR_PICKUP_DISCOUNT = new BigDecimal("5000"); // €5,000
     private static final BigDecimal MAX_TOTAL_DISCOUNT = new BigDecimal("0.15"); // 15% maximum
@@ -79,17 +75,9 @@ public final class FreshPlanCalculationResult {
             .multiply(totalDiscountRate)
             .setScale(2, RoundingMode.HALF_UP);
         
-        // Calculate final values
+        // Calculate final net value (B2B - no VAT calculation)
         this.finalNetValue = orderValueNet
             .subtract(totalDiscountAmount)
-            .setScale(2, RoundingMode.HALF_UP);
-        
-        this.vatAmount = finalNetValue
-            .multiply(VAT_RATE)
-            .setScale(2, RoundingMode.HALF_UP);
-        
-        this.finalGrossValue = finalNetValue
-            .add(vatAmount)
             .setScale(2, RoundingMode.HALF_UP);
     }
     
@@ -110,14 +98,12 @@ public final class FreshPlanCalculationResult {
     public BigDecimal getTotalDiscountAmount() { return totalDiscountAmount; }
     
     public BigDecimal getFinalNetValue() { return finalNetValue; }
-    public BigDecimal getVatAmount() { return vatAmount; }
-    public BigDecimal getFinalGrossValue() { return finalGrossValue; }
     
     @Override
     public String toString() {
         return String.format(
-            "FreshPlanCalculationResult{orderValue=€%.2f, totalDiscount=%.1f%%, finalGross=€%.2f}",
-            orderValueNet, totalDiscountRate.multiply(BigDecimal.valueOf(100)), finalGrossValue
+            "FreshPlanCalculationResult{orderValue=€%.2f, totalDiscount=%.1f%%, finalNet=€%.2f}",
+            orderValueNet, totalDiscountRate.multiply(BigDecimal.valueOf(100)), finalNetValue
         );
     }
 }

@@ -74,10 +74,8 @@ class FreshPlanCalculatorServiceTest {
         assertThat(result.getSelfPickupDiscountAmount()).isEqualTo(new BigDecimal("1200.00")); // 60000 * 0.02
         assertThat(result.getTotalDiscountAmount()).isEqualTo(new BigDecimal("7800.00")); // Total discount
         
-        // Final values
+        // Final net value (B2B - no VAT)
         assertThat(result.getFinalNetValue()).isEqualTo(new BigDecimal("52200.00")); // 60000 - 7800
-        assertThat(result.getVatAmount()).isEqualTo(new BigDecimal("9918.00")); // 52200 * 0.19
-        assertThat(result.getFinalGrossValue()).isEqualTo(new BigDecimal("62118.00")); // 52200 + 9918
     }
     
     @Test
