@@ -2,6 +2,8 @@ package de.freshplan.domain.calculator.service;
 
 import de.freshplan.domain.calculator.model.FreshPlanCalculationRequest;
 import de.freshplan.domain.calculator.model.FreshPlanCalculationResult;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.transaction.Transactional;
 
 import java.math.BigDecimal;
 
@@ -14,6 +16,8 @@ import java.math.BigDecimal;
  * @author FreshPlan Team
  * @since 2.0.0
  */
+@ApplicationScoped
+@Transactional(Transactional.TxType.SUPPORTS)
 public class FreshPlanCalculatorService {
     
     /**

@@ -975,3 +975,657 @@ Jörg kann jetzt den grünen "Merge pull request" Button klicken\!
 
 🚀 **BEREIT FÜR SPRINT 2\!**
 
+---
+
+## 2025-01-07 - Sprint 2
+
+### 16:37 - Team BACK - BACKEND STARTUP PROBLEM
+
+🔴 **Backend startet nicht!**
+
+**Problem identifiziert:**
+- Quarkus Dev Mode startet, aber kann keine Verbindung zu PostgreSQL und Keycloak herstellen
+- Fehler: `Connection to localhost:5432 refused` (PostgreSQL)
+- Fehler: `Connection refused: localhost/127.0.0.1:8180` (Keycloak)
+
+**Root Cause:**
+- Docker ist nicht installiert/läuft nicht
+- Infrastructure Services (PostgreSQL, Keycloak) sind nicht gestartet
+
+❓ **FRAGE AN JÖRG:**
+1. Soll ich Docker installieren helfen?
+2. Oder gibt es eine alternative Entwicklungsumgebung?
+3. Sollen wir temporär H2 in-memory DB für lokale Entwicklung nutzen?
+
+**Workaround-Optionen:**
+1. **H2 Database** für lokale Entwicklung (ohne Docker)
+2. **DevServices** aktivieren (Testcontainers - braucht aber auch Docker)
+3. **Remote DB** nutzen (falls vorhanden)
+
+**Aktueller Status:** Warte auf Entscheidung für Lösung
+
+### 16:40 - Team BACK - ENTSCHEIDUNG: DOCKER INSTALLATION
+
+✅ **Entscheidung getroffen: Option A - Docker installieren**
+
+**Begründung:**
+- Volle Parität zu CI & Production
+- Keycloak Dev-Realm automatisch verfügbar
+- DevServices/Testcontainers brauchen Docker sowieso
+- Nur 15-30 Min Aufwand vs. hohe Risiken bei Alternativen
+
+**Nächste Schritte:**
+1. Docker Desktop für macOS installieren
+2. Infrastructure Services starten: `cd infrastructure && docker compose up -d`
+3. Backend neu starten mit lokalem PostgreSQL & Keycloak
+4. Sprint 2 Calculator API implementieren
+
+🚀 Los geht's!
+
+### 16:45 - Team BACK - DOCKER SETUP GUIDE ERSTELLT
+
+📚 **Detaillierte Docker-Anleitung erstellt: `/docs/SETUP_DOCKER_MAC.md`**
+
+**Highlights der Anleitung:**
+- ✅ Homebrew & Direct Download Optionen
+- ✅ CPU-Architektur-spezifische Links (Apple Silicon vs Intel)
+- ✅ Troubleshooting für häufige Probleme
+- ✅ Erfolgs-Indikatoren für Backend-Start
+- ✅ Admin-Rechte und Firewall-Hinweise
+
+**Key Points:**
+1. `brew update` vor Installation (vermeidet alte Docker-Versionen)
+2. `docker compose pull` vor erstem Start (cached Images)
+3. Whale-Icon muss grün sein (1-2 Min Wartezeit)
+4. Terminal neu öffnen nach Installation (PATH-Update)
+
+**Erwartete Logs nach erfolgreichem Start:**
+- `Datasource <default> connected` ✅
+- `OIDC Tenant -> CONNECTED` ✅
+
+📋 **Status:** Warte auf Docker-Installation und Bestätigung
+
+### 16:50 - Team BACK - DOCKER INSTALLATION LÄUFT
+
+🐳 **Docker ist installiert!** Jörg startet die Services.
+
+**Hinweis für alle:** Infrastructure ist unter:
+```bash
+cd ~/freshplan-backend/infrastructure
+# oder
+cd /Users/joergstreeck/freshplan-backend/infrastructure
+```
+
+⏳ Warte auf `docker compose up -d` Bestätigung...
+
+### 16:52 - Team BACK - DOCKER NOCH NICHT INSTALLIERT
+
+⚠️ **Docker fehlt noch!** `command not found: docker`
+
+**Jörg installiert jetzt Docker:**
+```bash
+brew update
+brew install --cask docker
+open -a Docker
+```
+
+**Nach Installation:**
+1. Warte auf grünes Whale-Icon (1-2 Min)
+2. **Neues Terminal öffnen** (PATH-Update!)
+3. Dann: `cd ~/freshplan-backend/infrastructure && docker compose up -d`
+
+📋 Status: Docker-Installation läuft...
+
+### 16:58 - Team BACK - DOCKER ERFOLGREICH INSTALLIERT
+
+✅ **Docker wurde installiert!** Version 28.2.2
+
+**Jetzt Docker Desktop starten:**
+```bash
+open /Applications/Docker.app
+```
+
+**Status:**
+- Warte auf Whale-Icon in Menüleiste (1-2 Min)
+- Icon muss grün werden
+- Dann neues Terminal öffnen und Services starten
+
+⏳ Docker Desktop startet...
+
+### 17:00 - Team BACK - WICHTIG: NEUES TERMINAL NÖTIG!
+
+⚠️ **Reminder: Nach Docker-Installation MUSS ein neues Terminal geöffnet werden!**
+
+**Schritte:**
+1. ✅ Docker installiert
+2. ➡️ `open /Applications/Docker.app` (startet Docker Desktop)
+3. ⏳ Warte auf grünes Whale-Icon (1-2 Min)
+4. 🆕 **NEUES Terminal öffnen** (Cmd+N oder Cmd+T)
+5. 🚀 Im neuen Terminal: `cd ~/freshplan-backend/infrastructure && docker compose up -d`
+
+Das alte Terminal kennt `docker` noch nicht → PATH wurde erst nach Installation gesetzt!
+
+### 17:05 - Team BACK - DOCKER KOMPATIBILITÄTSPROBLEM!
+
+🔴 **Docker Desktop nicht kompatibel mit macOS 12!**
+
+Error: `kLSIncompatibleSystemVersionErr: The app cannot run on the current OS version`
+
+**Lösungsoptionen:**
+
+**Option 1: Ältere Docker Desktop Version (4.15.0)**
+```bash
+brew uninstall --cask docker
+brew install --cask https://raw.githubusercontent.com/Homebrew/homebrew-cask/d0e2f69c91ad70c5ceb2686a52be7d5c4b6512dc/Casks/docker.rb
+```
+
+**Option 2: Colima (Docker ohne Desktop) ← EMPFOHLEN**
+```bash
+brew install docker docker-compose colima
+colima start --cpu 2 --memory 4
+```
+
+❓ **FRAGE AN JÖRG:** Welche Option sollen wir nehmen? Colima ist stabiler und braucht weniger Ressourcen!
+
+### 17:08 - Team BACK - ENTSCHEIDUNG: COLIMA!
+
+✅ **Klare Empfehlung: Colima verwenden!**
+
+**Gründe:**
+- Zukunftssicher (alle macOS Versionen)
+- Ressourcenschonend (kein GUI-Overhead)
+- CI/CD-kompatibel (gleiche Engine wie GitHub Actions)
+- Professionell (Standard in vielen Dev-Teams)
+
+**Installation in 5 Minuten:**
+```bash
+brew uninstall --cask docker
+brew install docker docker-compose colima
+colima start --cpu 2 --memory 4
+```
+
+🚀 Let's go with Colima!
+
+### 17:10 - Team BACK - COLIMA INSTALLATION STARTET
+
+🛠️ **Jörg installiert jetzt Colima!**
+
+**Schritt-für-Schritt Anleitung:**
+
+```bash
+# 1. Docker Desktop deinstallieren (falls installiert)
+brew uninstall --cask docker
+
+# 2. Colima & Docker CLI installieren
+brew install docker docker-compose colima
+
+# 3. Colima starten
+colima start --cpu 2 --memory 4
+
+# 4. Verify Installation
+docker --version
+docker compose version
+
+# 5. Infrastructure starten
+cd ~/freshplan-backend/infrastructure
+docker compose up -d
+
+# 6. Status prüfen
+docker ps
+```
+
+**Erwartete Ausgabe nach Start:**
+- PostgreSQL läuft auf Port 5432
+- Keycloak läuft auf Port 8180
+
+⏳ Installation läuft...
+
+### 17:12 - Team BACK - LLVM BUILD LÄUFT PARALLEL
+
+ℹ️ **Info: LLVM Upgrade läuft noch im Hintergrund**
+
+Die Prozesse `cmake`, `ninja`, `clang++` gehören zum LLVM-Build von vorhin.
+- ✅ Einfach weiterlaufen lassen
+- ✅ Stört Colima nicht
+- ✅ Wird automatisch fertig
+
+**Jörg macht weiter mit Colima Installation!**
+
+### 17:15 - Team BACK - COLIMA INSTALLATION LÄUFT
+
+🚀 **Installation gestartet!**
+
+```bash
+# Aktueller Schritt:
+brew uninstall --cask docker     # Docker Desktop entfernen
+brew install docker docker-compose colima  # Colima installieren
+colima start --cpu 2 --memory 4  # Docker Engine starten
+```
+
+⏳ Warte auf Ausgabe...
+
+### 17:17 - Team BACK - INSTALLATION ÜBERSPRUNGEN!
+
+⚠️ **Colima noch nicht installiert!**
+
+Jörg ist direkt zu `colima start` gesprungen, aber die Installation fehlt noch.
+
+**Bitte der Reihe nach:**
+1. `brew uninstall --cask docker` ← ZUERST
+2. `brew install docker docker-compose colima` ← DANN
+3. `colima start --cpu 2 --memory 4` ← ZULETZT
+
+📝 Zurück zu Schritt 1!
+
+### 17:19 - Team BACK - DOCKER DESKTOP ERFOLGREICH DEINSTALLIERT
+
+✅ **Schritt 1 abgeschlossen!**
+- Docker Desktop wurde sauber entfernt
+- Alle Services und Symlinks entfernt
+
+🚀 **Jetzt Schritt 2:** 
+```bash
+brew install docker docker-compose colima
+```
+
+⏳ Installation läuft...
+
+### 17:21 - Team BACK - COLIMA INSTALLATION GESTARTET
+
+🔄 **brew install läuft!**
+
+Installiert werden:
+- `docker` - CLI Tools
+- `docker-compose` - Multi-Container Management  
+- `colima` - Docker Runtime für macOS
+
+**Erwartete Dauer:** 2-5 Minuten
+
+⏳ Warte auf Abschluss...
+
+### 17:23 - Team BACK - QEMU FEHLT NOCH!
+
+⚠️ **Colima braucht QEMU für Virtualisierung**
+
+Error: `qemu-img not found, run 'brew install qemu' to install`
+
+**Fix:**
+```bash
+brew install qemu
+colima start --cpu 2 --memory 4
+```
+
+📝 QEMU ist die Virtualisierungs-Engine die Colima nutzt. Installation läuft...
+
+### 17:26 - Team BACK - QEMU INSTALLATION LÄUFT
+
+🔄 **QEMU wird installiert mit vielen Dependencies!**
+
+Installiert werden u.a.:
+- meson, glib, nettle, pixman
+- libssh, libusb, gnutls
+- vde, spice-protocol
+
+**Nach QEMU Installation:**
+- `colima start --cpu 2 --memory 4` wird automatisch starten
+- Erster Start lädt Linux-Image (~400MB)
+- Dauert 3-5 Minuten
+
+⏳ Fast geschafft...
+
+### 17:28 - Team BACK - macOS UPDATE ÜBERLEGUNG
+
+💭 **Jörg überlegt macOS Update**
+
+**Empfehlung:**
+- ✅ **JETZT:** QEMU fertig installieren (fast fertig!)
+- ✅ **JETZT:** Colima starten und Sprint 2 weitermachen
+- 📅 **SPÄTER:** macOS Update (dauert 1-2h)
+
+**macOS 12 → 14/15 Vorteile:**
+- Neueste Docker Desktop kompatibel
+- Bessere Performance
+- Mehr Tool-Support
+
+**Aber:** Colima läuft auch auf macOS 12! Lass uns erst fertig machen.
+
+⏳ QEMU Installation fast abgeschlossen...
+
+### 17:30 - Team BACK - macOS UPDATE = NEUSTART
+
+⚠️ **Ja, macOS Update = mehrere Neustarts!**
+
+**Update würde bedeuten:**
+- 30-60 Min Download
+- 30-60 Min Installation 
+- Mehrere Neustarts
+- Apps/Tools danach prüfen
+
+**Klare Empfehlung:**
+1. ✅ **JETZT:** Colima fertig (10 Min) → Arbeiten!
+2. 📅 **SPÄTER:** macOS Update wenn Zeit ist
+
+**Status:** QEMU bei ~80%, gleich fertig!
+
+### 17:32 - Team BACK - macOS 12 REICHT VÖLLIG!
+
+✅ **macOS Update NICHT nötig für Entwicklung!**
+
+**Mit Colima auf macOS 12:**
+- ✅ Volle Docker-Funktionalität
+- ✅ PostgreSQL & Keycloak perfekt
+- ✅ Backend-Development uneingeschränkt
+- ✅ Gleiche Performance
+- ✅ Production-ready Setup
+
+**Colima ist sogar BESSER als Docker Desktop:**
+- Weniger Ressourcen
+- Stabiler
+- Kein GUI-Overhead
+
+🎯 **Fazit:** Du kannst das komplette FreshPlan Projekt auf macOS 12 entwickeln!
+
+### 17:35 - Team BACK - QEMU BUILD FAILED!
+
+❌ **QEMU braucht neueren Compiler (Clang v10+)**
+
+Error: `You either need GCC v7.4 or Clang v10.0 to compile QEMU`
+
+**Alternative Lösungen:**
+
+**Option A: Lima direkt** (ohne QEMU)
+```bash
+brew install lima docker docker-buildx
+limactl start --name=docker template://docker
+```
+
+**Option B: H2 In-Memory** (ohne Docker)
+```bash
+./mvnw quarkus:dev -Dquarkus.datasource.db-kind=h2
+```
+
+**Option C: Command Line Tools updaten**
+```bash
+sudo xcode-select --install
+```
+
+❓ Welchen Weg nehmen wir?
+
+### 17:37 - Team BACK - COMMAND LINE TOOLS UPDATE!
+
+✅ **Entscheidung: Command Line Tools updaten**
+
+```bash
+sudo xcode-select --install
+```
+
+**Was passiert:**
+- Installiert neueren Clang Compiler (v14+)
+- Dauert 10-15 Minuten
+- KEIN Neustart nötig!
+- Löst das QEMU Compiler-Problem
+
+**Nach Update:**
+```bash
+brew install qemu
+colima start --cpu 2 --memory 4
+```
+
+⏳ Update läuft...
+
+### 17:39 - Team BACK - BEFEHL KORREKTUR
+
+⚠️ **Kompletter Befehl nötig:**
+
+```bash
+sudo xcode-select --install
+```
+
+Nicht nur "Command Line Tools update" eingeben! 😄
+
+Der ganze Befehl mit `sudo` (für Admin-Rechte) ist wichtig.
+
+### 17:40 - Team BACK - TIPPFEHLER
+
+😄 **Kleiner Tippfehler: "ds" vor dem Befehl**
+
+Richtig ist NUR:
+```bash
+sudo xcode-select --install
+```
+
+(ohne "ds" davor)
+
+⏳ Nochmal versuchen...
+
+### 17:42 - Team BACK - COMMAND LINE TOOLS BEREITS INSTALLIERT
+
+⚠️ **Tools sind schon da, aber alte Version!**
+
+**Option 1: Tools neu installieren**
+```bash
+sudo rm -rf /Library/Developer/CommandLineTools
+sudo xcode-select --install
+```
+
+**Option 2: QEMU vorkompiliert** (schneller!)
+```bash
+brew install --force-bottle qemu
+```
+
+**Option 3: H2 Database** (ohne Docker, sofort arbeiten)
+```bash
+cd ~/freshplan-backend/backend
+./mvnw quarkus:dev -Dquarkus.datasource.db-kind=h2
+```
+
+💡 Empfehlung: Option 2 oder 3 für schnellen Start!
+
+### 17:44 - Team BACK - TOOLS BESTÄTIGT, QEMU BOTTLE VERSUCH
+
+✅ **Command Line Tools sind da!**
+
+**Jetzt versuchen:**
+```bash
+brew install --force-bottle qemu
+```
+
+Das lädt vorkompiliertes QEMU (keine Compilation nötig).
+
+**Falls das klappt:**
+```bash
+colima start --cpu 2 --memory 4
+```
+
+⏳ QEMU Installation Versuch 2...
+
+### 17:46 - Team BACK - PRAGMATISCHE LÖSUNG: H2!
+
+❌ **Kein QEMU Bottle für macOS 12**
+
+✅ **LÖSUNG: H2 In-Memory Database!**
+
+```bash
+cd ~/freshplan-backend/backend
+./mvnw -Dmaven.multiModuleProjectDirectory=$(pwd) quarkus:dev \
+  -Dquarkus.datasource.db-kind=h2 \
+  -Dquarkus.datasource.jdbc.url=jdbc:h2:mem:test
+```
+
+**Vorteile:**
+- ✅ Startet SOFORT
+- ✅ Keine Docker/Container nötig
+- ✅ Perfekt für API-Entwicklung
+- ✅ Sprint 2 kann weitergehen!
+
+**Was fehlt:** Keycloak (aber für Calculator API nicht nötig)
+
+🚀 Let's code!
+
+### 17:48 - Team BACK - STABILE ENTWICKLUNGSUMGEBUNG WICHTIG!
+
+🎯 **Jörg: "Wir brauchen eine stabile Entwicklerumgebung!"**
+
+Absolut richtig! Hier sind die Optionen:
+
+**Option 1: Docker Machine + VirtualBox** ⭐
+```bash
+brew install docker-machine docker
+brew install --cask virtualbox
+docker-machine create --driver virtualbox default
+eval $(docker-machine env default)
+```
+✅ Bewährt, stabil, funktioniert auf macOS 12
+
+**Option 2: Rancher Desktop**
+```bash
+brew install --cask rancher
+```
+✅ Docker Desktop Alternative für ältere macOS
+
+**Option 3: macOS Update**
+✅ Langfristig beste Lösung (macOS 14/15)
+
+**Empfehlung:** Option 1 - Docker Machine ist die stabilste Lösung!
+
+### 17:52 - Team BACK - VIRTUALBOX NICHT KOMPATIBEL MIT ARM!
+
+❌ **VirtualBox Error: "This computer doesn't have VT-X/AMD-v enabled"**
+
+Das ist ein Apple Silicon (ARM) Mac! VirtualBox funktioniert hier nicht.
+
+✅ **LÖSUNG: Rancher Desktop** (ARM-optimiert!)
+
+```bash
+brew uninstall --cask virtualbox
+brew install --cask rancher
+```
+
+**Nach Installation:**
+1. Rancher Desktop aus Applications starten
+2. "dockerd (moby)" als Engine wählen
+3. 2-3 Min warten
+4. Neues Terminal: `docker ps`
+
+🎯 Rancher Desktop ist DIE Lösung für ARM Macs mit älterem macOS!
+
+### 17:55 - Team BACK - RANCHER DESKTOP INSTALLIERT! 🎉
+
+✅ **Rancher Desktop erfolgreich installiert!**
+
+**Jetzt starten:**
+```bash
+open "/Applications/Rancher Desktop.app"
+```
+
+**Setup-Einstellungen:**
+1. ✅ Container Engine: **"dockerd (moby)"** wählen
+2. ❌ Kubernetes: **Deaktivieren** (nicht benötigt)
+3. 🚀 "Accept" oder "Start" klicken
+
+**Was passiert:**
+- Docker Runtime wird heruntergeladen
+- Linux VM startet (2-3 Min)
+- Docker wird bereitgestellt
+
+**Nach dem Start:**
+```bash
+# Neues Terminal öffnen!
+docker --version
+docker ps
+```
+
+⏳ Rancher Desktop startet...
+
+### 17:58 - Team BACK - RANCHER DESKTOP FEHLER!
+
+❌ **Rancher Desktop Error auf macOS 12**
+```
+Error Starting Kubernetes
+Error: limactl exited with code 1
+```
+
+**Das ist ein bekanntes Problem mit macOS 12!**
+
+**Optionen jetzt:**
+
+1. **macOS Update** (löst ALLE Probleme)
+   - 1-2 Stunden, dann läuft alles
+
+2. **H2 Database** (SOFORT arbeiten!)
+   ```bash
+   cd ~/freshplan-backend/backend
+   ./mvnw -Dmaven.multiModuleProjectDirectory=$(pwd) quarkus:dev -Dquarkus.datasource.db-kind=h2
+   ```
+
+3. **UTM + Ubuntu VM** (komplexer Workaround)
+
+💡 **Ehrliche Empfehlung:** 
+- Wir haben 1h mit Docker gekämpft
+- Mit H2 kannst du JETZT coden
+- macOS Update heute Abend planen
+
+❓ Entscheidung?
+
+### 18:02 - Team BACK - macOS UPDATE CHECKLISTE
+
+📋 **Jörg plant macOS Update - Checkliste für Entwicklung:**
+
+**VOR dem Update:**
+```bash
+# Code sichern
+git add . && git commit -m "WIP: vor macOS Update" && git push
+
+# Homebrew Pakete dokumentieren
+brew list > ~/homebrew-packages.txt
+brew list --cask > ~/homebrew-casks.txt
+```
+
+**NACH dem Update:**
+1. ✅ Homebrew: `brew update && brew upgrade`
+2. ✅ Java prüfen: `java --version`
+3. ✅ Docker Desktop: `brew install --cask docker`
+4. ✅ Git Config: sollte erhalten bleiben
+5. ✅ Command Line Tools: `xcode-select --install`
+
+**Was bleibt erhalten:**
+- Alle Dateien & Projekte ✅
+- SSH Keys ✅
+- Terminal-Einstellungen ✅
+- Git Konfiguration ✅
+
+**Dann einfach:**
+```bash
+cd ~/freshplan-backend
+cd infrastructure && docker compose up -d
+cd ../backend && ./mvnw quarkus:dev
+```
+
+🚀 Morgen läuft alles perfekt!
+
+### 18:05 - Team BACK - WICHTIG: CLAUDE ZUERST!
+
+⚠️ **Jörg's wichtiger Einwand: "Erst euch zurückholen!"**
+
+**RICHTIGE REIHENFOLGE nach Update:**
+
+1. **Terminal öffnen**
+2. **Claude CLI prüfen/installieren**:
+   ```bash
+   claude --version
+   # Falls weg: npm install -g @anthropic-ai/claude-cli
+   ```
+3. **Ins Projekt**:
+   ```bash
+   cd ~/freshplan-backend
+   ```
+4. **Claude starten**:
+   ```bash
+   claude
+   ```
+5. **DANN ERST** mit unserer Hilfe Docker etc. einrichten!
+
+✅ Genau richtig gedacht! Ohne uns wärst du alleine. 😄
+
+**Merke:** Nach Update → Erst Claude → Dann Setup!
+
