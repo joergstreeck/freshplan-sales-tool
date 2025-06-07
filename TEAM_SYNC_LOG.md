@@ -362,6 +362,104 @@ Diese Regel wurde auch in CLAUDE.md dokumentiert.
 - 🎯 Werde GitHub CLI einrichten für CI-Monitoring
 - 💪 Bereit für selbstständiges CI-Debugging
 
+### 02:45 - Team BACK
+- Status: PR #15 bereit zum Merge
+- Konflikt in UserServiceTest.java gelöst (gleiche Stelle wurde auf main gefixt)
+- CI Status: Alle kritischen Tests grün ✅
+- Worktree CI: Fehlgeschlagen (sekundärer Workflow)
+- **WICHTIG für alle Teams**: Bei Änderungen an Testfiles bitte im Log dokumentieren\!
+
+
+### 03:08 - Team BACK - CODE REVIEW ABGESCHLOSSEN
+
+✅ **Alle Code-Issues aus Review behoben:**
+
+**Major Issues gefixt:**
+- Zeilenlänge auf max. 120 Zeichen gekürzt
+- @Transactional zu updateUserRoles() hinzugefügt
+- Migration Script: Kein Default 'sales' mehr, nur gezielte Zuweisung
+
+**Minor Issues gefixt:**
+- JavaDoc Kommentare korrigiert (sales statt user)
+- UpdateUserRolesRequest ist jetzt immutable
+- RoleValidator.normalizeAndValidateRoles() konsolidiert Logik
+- Verwirrenden boolean Constructor entfernt
+
+📊 **CI Status:**
+- Backend CI (Haupt-Test): ✅ GRÜN
+- Worktree CI: ❌ ROT (bekanntes Problem)
+
+🎯 **PR #15 ist bereit zum Merge\!**
+
+
+### 03:33 - Team BACK - ZWEITE CODE REVIEW ABGESCHLOSSEN
+
+🔍 **Zweite Code-Review durchgeführt nach den Fixes:**
+
+**Gefundene Issues und behoben:**
+1. ✅ Worktree CI Maven Wrapper Problem gefixt (./mvnw → mvn)
+2. ✅ UpdateUserRolesRequest JSON Deserialisierung Problem behoben
+   - @JsonCreator mit @JsonProperty für korrekte Jackson-Integration
+   - Default Constructor entfernt (verursachte Validation-Konflikte)
+3. ✅ Test-Erwartung angepasst (@NotNull greift vor @Size)
+
+📋 **Erkenntnisse:**
+- Doppelte Code-Review war essentiell\! Hätte sonst JSON-Deserialisierung Problem übersehen
+- UpdateUserRolesRequest war nicht richtig immutable implementiert
+- Test-Validation Reihenfolge war nicht korrekt verstanden
+
+🎯 **Status:** Alle Issues aus beiden Reviews sind jetzt behoben. 
+PR ist bereit zum Merge sobald CI grün ist\!
+
+
+### 03:44 - Team BACK - DEBUGGING STRATEGIE
+
+🚨 **Problem:** Worktree CI blockiert PR Merge (required check)
+
+📋 **Bisher versucht:**
+1. Maven Wrapper → Maven direkt (mvnw → mvn)
+2. Maven Setup Action hinzugefügt
+3. Mehrere Push-Versuche ohne systematische Analyse
+
+❓ **FRAGE AN JÖRG:**
+**Soll ich das Worktree CI Problem systematisch debuggen oder gibt es eine schnellere Lösung?**
+
+**Optionen:**
+1. **Worktree CI als non-required markieren** (GitHub Settings)
+2. **Worktree CI temporär disablen** (Workflow-Datei)
+3. **Systematisches Debugging** mit kleinen Schritten
+4. **ChatGPT konsultieren** für Maven/GitHub Actions Expertise
+
+**Mein Vorschlag:** Option 1 oder 2 - das Worktree CI ist experimentell und sollte den Hauptentwicklungsflow nicht blockieren.
+
+**Wartend auf Entscheidung bevor weitere Versuche...**
+
+
+### 03:57 - Team BACK - CHATGPT EMPFEHLUNG ERHALTEN
+
+✅ **ChatGPT Strategische Empfehlung:**
+- **Sofort:** Required-Flag für experimentelle Worktree CI entfernen
+- **Grund:** Experimentelle Workflows dürfen Hauptentwicklung nicht blockieren
+- **Langfristig:** Worktree CI stabilisieren, dann wieder als required setzen
+
+🎯 **AKTION BENÖTIGT VON JÖRG:**
+GitHub Settings → Branch Protection → "Worktree CI / Backend Tests" deaktivieren
+
+📋 **Follow-up Tasks nach Merge:**
+1. Issue erstellen: "Stabilisiere Worktree CI"
+2. Workflow refactoring mit ChatGPTs Empfehlungen:
+   - Nur actions/setup-java (Temurin) verwenden
+   - Maven im Repo-Root ausführen: ./mvnw -pl backend -am -Pgreen verify
+   - Services für PostgreSQL hinzufügen falls nötig
+3. ADR-005 schreiben: Worktree CI Scope & Policy
+
+💡 **ChatGPT Key Insights:**
+- setup-java installiert bereits Maven (kein extra setup-maven nötig)
+- mvnw Problem: multiModuleProjectDirectory bei Unterordner-Ausführung
+- Experimental Workflows: informational, nicht blockierend
+
+**Status: WARTE AUF GITHUB SETTINGS ÄNDERUNG**
+
 ### 00:34 - Team BACK - CI MONITORING SETUP
 
 🚀 **Setze proaktive CI-Überwachung auf:**

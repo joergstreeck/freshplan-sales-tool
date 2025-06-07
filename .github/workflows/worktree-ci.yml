@@ -25,6 +25,11 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
           
+      - name: Set up Maven
+        uses: stCarolas/setup-maven@v5
+        with:
+          maven-version: '3.9.6'
+          
       - name: Cache Maven packages
         uses: actions/cache@v3
         with:
@@ -34,7 +39,7 @@ jobs:
           
       - name: Run backend tests
         working-directory: backend
-        run: ./mvnw -Pgreen clean verify
+        run: mvn -Pgreen clean verify
 
   frontend:
     name: Frontend Tests
@@ -87,6 +92,11 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
           
+      - name: Set up Maven
+        uses: stCarolas/setup-maven@v5
+        with:
+          maven-version: '3.9.6'
+          
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -96,11 +106,11 @@ jobs:
         run: |
           echo "🧪 Running expanded test coverage..."
           cd backend
-          ./mvnw -Pgreen clean verify
+          mvn -Pgreen clean verify
           
       - name: Coverage Report
         if: always()
         run: |
           cd backend
-          ./mvnw jacoco:report
+          mvn jacoco:report
           echo "📊 Coverage report generated"

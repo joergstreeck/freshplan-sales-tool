@@ -3,6 +3,7 @@ package de.freshplan.domain.user.service.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -22,6 +23,7 @@ public final class UserResponse {
     private final String lastName;
     private final String email;
     private final boolean enabled;
+    private final List<String> roles;
     
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
     private final Instant createdAt;
@@ -38,6 +40,7 @@ public final class UserResponse {
      * @param lastName the last name
      * @param email the email address
      * @param enabled the enabled status
+     * @param roles the user's roles
      * @param createdAt the creation timestamp
      * @param updatedAt the last update timestamp
      */
@@ -48,6 +51,7 @@ public final class UserResponse {
             String lastName,
             String email,
             boolean enabled,
+            List<String> roles,
             Instant createdAt,
             Instant updatedAt) {
         this.id = id;
@@ -56,6 +60,7 @@ public final class UserResponse {
         this.lastName = lastName;
         this.email = email;
         this.enabled = enabled;
+        this.roles = roles;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
@@ -95,6 +100,11 @@ public final class UserResponse {
         return firstName + " " + lastName;
     }
     
+    @JsonProperty("roles")
+    public List<String> getRoles() {
+        return roles;
+    }
+    
     @JsonProperty("createdAt")
     public Instant getCreatedAt() {
         return createdAt;
@@ -119,6 +129,7 @@ public final class UserResponse {
         private String lastName;
         private String email;
         private boolean enabled;
+        private List<String> roles;
         private Instant createdAt;
         private Instant updatedAt;
         
@@ -152,6 +163,11 @@ public final class UserResponse {
             return this;
         }
         
+        public Builder roles(List<String> roles) {
+            this.roles = roles;
+            return this;
+        }
+        
         public Builder createdAt(Instant createdAt) {
             this.createdAt = createdAt;
             return this;
@@ -164,7 +180,7 @@ public final class UserResponse {
         
         public UserResponse build() {
             return new UserResponse(id, username, firstName, lastName, email, 
-                                  enabled, createdAt, updatedAt);
+                                  enabled, roles, createdAt, updatedAt);
         }
     }
 }

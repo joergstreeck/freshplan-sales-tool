@@ -129,7 +129,7 @@ class UserResourceIT {
     }
     
     @Test
-    @TestSecurity(user = "user", roles = "user")
+    @TestSecurity(user = "sales", roles = "sales")
     void testCreateUser_Forbidden_ShouldReturn403() {
         given()
             .contentType(ContentType.JSON)

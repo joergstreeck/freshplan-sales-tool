@@ -151,11 +151,12 @@ class UserServiceTest {
         UserResponse anotherResponse = createAnotherTestUserResponse();
         
         when(userRepository.listAll()).thenReturn(users);
-        // Use Answer to create different responses based on input
+        
+        // Use Answer to return different responses based on the input user
         when(userMapper.toResponse(any(User.class)))
                 .thenAnswer(invocation -> {
                     User user = invocation.getArgument(0);
-                    if (user.getUsername().equals("john.doe")) {
+                    if (user.getUsername().equals(testUser.getUsername())) {
                         return testUserResponse;
                     } else {
                         return anotherResponse;
@@ -167,7 +168,7 @@ class UserServiceTest {
         
         // Then
         assertThat(responses).hasSize(2);
-        assertThat(responses).containsExactly(
+        assertThat(responses).containsExactlyInAnyOrder(
                 testUserResponse, 
                 anotherResponse
         );

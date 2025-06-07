@@ -1,58 +1,46 @@
-# Team FRONT Workspace
+# Team BACK Workspace
 
 ## Quick Start
 ```bash
-cd frontend
-npm ci
-npm run dev
+cd backend
+./mvnw quarkus:dev
 ```
 
-## Aktueller Sprint – React Migration
-- [ ] Calculator Module portieren
-- [ ] Customer Module migrieren
-- [ ] API Integration Layer
-- [ ] Keycloak Auth Context
+## Aktueller Sprint – User Management API
+- [x] User CRUD Endpoints  
+- [x] Repository Pattern mit Panache
+- [x] PUT /api/users/{id}/roles implementiert
+- [x] Role Validation (admin, manager, sales, viewer)
+- [x] PostgreSQL Migration (V3__add_user_roles.sql)
+- [x] Comprehensive Test Coverage
 
-## Migration Status
+## API Endpoints (Sprint 1)
+```bash
+# User Management
+GET    /api/users           # List all users
+GET    /api/users/{id}      # Get user by ID  
+POST   /api/users           # Create new user
+PUT    /api/users/{id}      # Update user
+DELETE /api/users/{id}      # Delete user
+PUT    /api/users/{id}/roles # Update user roles (NEW!)
 
-| Legacy Module | React Component | Status |
-|--------------|-----------------|--------|
-| Calculator | CalculatorForm | 🚧 |
-| Customer | CustomerList | 📋 |
-| Profile | UserProfile | 📋 |
-| Settings | AppSettings | 📋 |
+# System
+GET    /api/ping            # Health check
+```
 
 ## Development
 ```bash
-# Dev Server
-npm run dev
+# Dev Mode mit Hot-Reload
+./mvnw quarkus:dev
 
-# Tests
-npm test
+# Alle Tests
+./mvnw test
 
-# E2E Tests
-npm run test:e2e
-
-# Build
-npm run build
+# Nur Backend Tests
+./mvnw -Pgreen clean verify
 ```
 
-## API Integration
-- Base URL: `http://localhost:8080/api`
-- Auth: Keycloak OIDC
-- Client: React Query + Axios
-
-## Team-Rituale
-- Daily Sync: 09:00 CET (10 min)
-- UI Review: Do 15:00 CET
-- Siehe `.github/TEAM_SYNC.yml`
-
-## Design System
-- Component Library: MUI v5
-- Storybook: `npm run storybook`
-- Figma: [Design Files](link)
-
 ## Kontakt
-- Lead: Team FRONT (@Sophie)
-- Slack: #team-front
-- Wiki: [Frontend Guidelines](../docs/)
+- Lead: Team BACK (@Max)
+- Slack: #team-back
+- Wiki: [Backend Architecture](../docs/adr/)

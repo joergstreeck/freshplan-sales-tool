@@ -34,12 +34,15 @@ services:
       KC_METRICS_ENABLED: true
       KC_HTTP_ENABLED: true
       KC_HOSTNAME_STRICT: false
+      KEYCLOAK_IMPORT: /tmp/freshplan-realm.json
     ports:
       - "8180:8080"
+    volumes:
+      - ./keycloak/freshplan-realm.json:/opt/keycloak/data/import/freshplan-realm.json
     depends_on:
       db:
         condition: service_healthy
-    command: start-dev
+    command: start-dev --import-realm
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/health/ready"]
       interval: 10s

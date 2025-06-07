@@ -4,6 +4,7 @@ import de.freshplan.api.exception.mapper.ErrorResponse;
 import de.freshplan.domain.user.service.UserService;
 import de.freshplan.domain.user.service.dto.CreateUserRequest;
 import de.freshplan.domain.user.service.dto.UpdateUserRequest;
+import de.freshplan.domain.user.service.dto.UpdateUserRolesRequest;
 import de.freshplan.domain.user.service.dto.UserResponse;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
@@ -357,5 +358,54 @@ public class UserResource {
             @PathParam("id") UUID id) {
         userService.disableUser(id);
         return Response.noContent().build();
+    }
+    
+    /**
+     * Updates the roles of a user.
+     * 
+     * @param id the user ID
+     * @param request the roles update request
+     * @return updated user data with new roles
+     */
+    @PUT
+    @Path("/{id}/roles")
+    @RolesAllowed("admin")
+    @Operation(summary = "Update user roles", 
+               description = "Updates the roles assigned to a user. "
+                          + "Only admins can perform this operation.")
+    @APIResponses({
+        @APIResponse(
+            responseCode = "200",
+            description = "User roles updated successfully",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                             schema = @Schema(implementation = UserResponse.class))
+        ),
+        @APIResponse(
+            responseCode = "400",
+            description = "Invalid role specified",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                             schema = @Schema(implementation = ErrorResponse.class))
+        ),
+        @APIResponse(
+            responseCode = "404",
+            description = "User not found",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                             schema = @Schema(implementation = ErrorResponse.class))
+        ),
+        @APIResponse(
+            responseCode = "403",
+            description = "Forbidden - only admins can update roles",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                             schema = @Schema(implementation = ErrorResponse.class))
+        )
+    })
+    public UserResponse updateUserRoles(
+            @Parameter(description = "User ID", required = true) 
+            @PathParam("id") UUID id,
+            @Valid @RequestBody(required = true, 
+                              description = "Role update data containing array of roles "
+                                        + "(admin, manager, sales, viewer)") 
+            UpdateUserRolesRequest request) {
+        return userService.updateUserRoles(id, request);
     }
 }
