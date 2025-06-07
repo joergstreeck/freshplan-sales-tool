@@ -6,33 +6,35 @@ cd backend
 ./mvnw quarkus:dev
 ```
 
-## Aktueller Sprint – User Management
-- [ ] OIDC-Integration mit Keycloak
-- [ ] User CRUD API erweitern  
-- [ ] Row-Level Security
+## Aktueller Sprint – User Management API
+- [x] User CRUD Endpoints  
+- [x] Repository Pattern mit Panache
+- [x] PUT /api/users/{id}/roles implementiert
+- [x] Role Validation (admin, manager, sales, viewer)
+- [x] PostgreSQL Migration (V3__add_user_roles.sql)
+- [x] Comprehensive Test Coverage
 
-## API-Status
-
-| Endpoint | Status |
-|----------|--------|
-| `POST /api/users` | ✅ |
-| `GET /api/users/search` | ✅ |
-| `PUT /api/users/{id}/roles` | ✅ |
-| `GET /api/users/{id}/permissions` | 📋 |
-| `POST /api/auth/refresh` | 📋 |
-
-## Team-Rituale
-- Daily Sync: 09:00 CET (10 min)
-- API Review: Mi 14:00 CET
-- Siehe `.github/TEAM_SYNC.yml`
-
-## Wichtige Befehle
+## API Endpoints (Sprint 1)
 ```bash
-# Dev Server mit Keycloak
-./mvnw quarkus:dev -Dquarkus.keycloak.devservices.enabled=true
+# User Management
+GET    /api/users           # List all users
+GET    /api/users/{id}      # Get user by ID  
+POST   /api/users           # Create new user
+PUT    /api/users/{id}      # Update user
+DELETE /api/users/{id}      # Delete user
+PUT    /api/users/{id}/roles # Update user roles (NEW!)
 
-# Tests mit Debug
-./mvnw test -Dtest.debug=true
+# System
+GET    /api/ping            # Health check
+```
+
+## Development
+```bash
+# Dev Mode mit Hot-Reload
+./mvnw quarkus:dev
+
+# Alle Tests
+./mvnw test
 
 # Nur Backend Tests
 ./mvnw -Pgreen clean verify

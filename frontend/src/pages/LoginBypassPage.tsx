@@ -12,7 +12,16 @@ export function LoginBypassPage() {
 
   useEffect(() => {
     // Simulate login for E2E tests
-    login('e2e@test.de', 'test-password');
+    // SECURITY: Never use hardcoded credentials!
+    const testEmail = import.meta.env.VITE_TEST_USER_EMAIL;
+    const testPassword = import.meta.env.VITE_TEST_USER_PASSWORD;
+
+    if (!testEmail || !testPassword) {
+      console.error('Test credentials not configured');
+      return;
+    }
+
+    login(testEmail, testPassword);
 
     // Navigate to main app after "login"
     setTimeout(() => {

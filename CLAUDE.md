@@ -763,6 +763,105 @@ SEV-4: Jira Ticket → Sprint Planning
 
 Diese Standards stellen sicher, dass FreshPlan 2.0 auf Enterprise-Niveau entwickelt wird - mit der Qualität, die erfahrene Entwickler erwarten und sofort verstehen.
 
+## 0.10 Code-Review-Regel: Gründliche Überprüfung bei jedem bedeutenden Abschnitt
+
+### 🔍 **GOLDENE REGEL: Nach jedem bedeutenden Entwicklungsschritt**
+
+**Bei jedem bedeutenden Abschnitt gilt:**
+> "Prüfe noch einmal sehr gründlich den Code auf Einhaltung unserer Programmierregeln und Logik"
+
+**Definition "bedeutender Abschnitt":**
+- Abschluss eines Features
+- Ende eines Sprints
+- Vor jedem Merge in main
+- Nach größeren Refactorings
+- Bei Architektur-Änderungen
+- Nach Integration externer Services
+
+### Prüfkriterien für Code Reviews:
+
+#### 1. **Programmierregeln-Compliance** ✓
+- [ ] Zeilenlänge eingehalten (80-100 Zeichen)
+- [ ] Naming Conventions befolgt
+- [ ] Proper Error Handling implementiert
+- [ ] JavaDoc/JSDoc vorhanden
+- [ ] DRY-Prinzip beachtet
+- [ ] SOLID-Prinzipien eingehalten
+
+#### 2. **Security-Check** 🔒
+- [ ] Keine hardcoded Credentials
+- [ ] Input Validation vorhanden
+- [ ] Keine SQL-Injection-Anfälligkeit
+- [ ] XSS-Protection implementiert
+- [ ] CORS korrekt konfiguriert
+
+#### 3. **Test-Coverage** 🧪
+- [ ] Unit Tests ≥ 80%
+- [ ] Integration Tests vorhanden
+- [ ] Edge Cases abgedeckt
+- [ ] Error Cases getestet
+- [ ] Performance Tests (wenn relevant)
+
+#### 4. **Logik-Überprüfung** 🧠
+- [ ] Business Logic korrekt implementiert
+- [ ] Keine Race Conditions
+- [ ] Transaktionsgrenzen richtig gesetzt
+- [ ] State Management konsistent
+- [ ] Keine Memory Leaks
+
+#### 5. **Performance** ⚡
+- [ ] Keine N+1 Queries
+- [ ] Lazy Loading wo sinnvoll
+- [ ] Caching-Strategie implementiert
+- [ ] Bundle Size im Budget
+- [ ] Keine blockierenden Operationen
+
+### Review-Prozess:
+
+```bash
+# 1. Automatisierte Checks
+npm run lint
+npm run test:coverage
+npm run security:audit
+
+# 2. Manuelle Code-Inspektion
+# Verwende die Checkliste oben
+
+# 3. Dokumentiere Findings
+# Erstelle REVIEW_REPORT_<datum>.md
+
+# 4. Behebe kritische Issues sofort
+# Plane mittelfristige Verbesserungen
+```
+
+### Review-Report Template:
+
+```markdown
+# Code Review Report - [Feature/Sprint Name]
+**Datum:** [YYYY-MM-DD]
+**Reviewer:** Claude
+**Scope:** [Beschreibung]
+
+## Zusammenfassung
+- Kritische Issues: X
+- Wichtige Issues: Y
+- Verbesserungsvorschläge: Z
+
+## Kritische Findings
+1. [Issue mit Code-Beispiel und Fix]
+
+## Compliance-Status
+- [ ] Programmierregeln: X%
+- [ ] Security: ✓/✗
+- [ ] Test Coverage: X%
+- [ ] Performance: ✓/✗
+
+## Nächste Schritte
+1. ...
+```
+
+**Diese Regel ist VERPFLICHTEND und wird bei jedem Sprint-Ende automatisch ausgeführt!**
+
 ## 1. Projektübersicht und Ziele
 
 **Projektname:** FreshPlan Sales Tool 2.0
@@ -777,7 +876,7 @@ Diese Standards stellen sicher, dass FreshPlan 2.0 auf Enterprise-Niveau entwick
 
 ## 2. Kommunikation und Vorgehensweise
 
-1.  **Sprache:** Deutsch.
+1.  **Sprache:** Deutsch (IMMER - auch bei komprimierten Antworten oder Status-Updates).
 2.  **Proaktivität:** Fasse dein Verständnis zusammen und frage nach, bevor du codest. Bei Unklarheiten oder Alternativen, stelle diese zur Diskussion.
 3.  **Inkrementell Arbeiten:** Implementiere in kleinen, nachvollziehbaren Schritten. Teste häufig.
 4.  **Fokus:** Konzentriere dich auf die aktuelle Aufgabe. Vermeide Scope Creep.
@@ -788,6 +887,7 @@ Diese Standards stellen sicher, dass FreshPlan 2.0 auf Enterprise-Niveau entwick
     - Manuelle Tests in verschiedenen Browsern
     - Performance-Tests bei größeren Änderungen
     - Dokumentiere alle Testergebnisse
+7.  **Zusammenfassungen:** Auch bei Status-Updates, Zusammenfassungen oder kurzen Antworten IMMER auf Deutsch antworten. Die Tendenz bei komprimierten Inhalten ins Englische zu verfallen ist ein bekanntes Problem und muss aktiv vermieden werden.
 
 ## 3. Wichtige Befehle und Werkzeuge
 
@@ -899,3 +999,37 @@ freshplan-sales-tool/
 - Performance-Optimierung
 
 Siehe `VISION_AND_ROADMAP.md` für Details zu geplanten Integrationen und Features.
+
+## 9. Sprint 1 Status und Erfolge
+
+### Team FRONT - Production-Ready Keycloak Integration ✅
+
+**Erfolgreich abgeschlossen am 07.01.2025:**
+
+1. **Keycloak-Integration für Production:**
+   - ✅ Frontend konfiguriert für auth.z-catering.de
+   - ✅ Runtime-Konfiguration implementiert (Docker-ready)
+   - ✅ Automatisches Token-Refresh mit Axios Interceptors
+   - ✅ React Query für optimales Caching
+
+2. **Docker-Setup erstellt:**
+   - ✅ Multi-Stage Dockerfile mit Nginx
+   - ✅ Runtime-Konfiguration ohne Rebuilds
+   - ✅ docker-compose.yml für lokales Testing
+   - ✅ Optimierte Nginx-Konfiguration für SPAs
+
+3. **Komponenten implementiert:**
+   - ✅ UserList mit neuen Rollen (admin, manager, sales, viewer)
+   - ✅ ErrorBoundary für globale Fehlerbehandlung
+   - ✅ UserListSkeleton für Loading-States
+   - ✅ Keycloak-Provider mit Auto-Refresh
+
+4. **CI/CD Pipeline:**
+   - ✅ GitHub Actions Workflow für Frontend
+   - ✅ Automatische Tests mit Vitest
+   - ✅ Build-Artefakte werden gespeichert
+
+**Nächste Schritte:**
+- Warten auf Keycloak-Realm-Erstellung auf auth.z-catering.de
+- Legacy-Features migrieren (Calculator, Customer-Module)
+- CSS/Design aus Legacy-App übernehmen
