@@ -2,13 +2,14 @@ package de.freshplan.domain.user.service.dto;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import java.util.Collections;
 import java.util.List;
 
 /**
  * Request DTO for updating user roles.
  * 
  * This class validates that roles are provided and contain only
- * allowed values: admin, manager, user.
+ * allowed values: admin, manager, sales, viewer.
  * 
  * @author FreshPlan Team
  * @since 2.0.0
@@ -17,13 +18,13 @@ public class UpdateUserRolesRequest {
     
     @NotNull(message = "Roles list cannot be null")
     @Size(min = 1, message = "At least one role must be specified")
-    private List<String> roles;
+    private final List<String> roles;
     
     /**
      * Default constructor for JSON deserialization.
      */
     public UpdateUserRolesRequest() {
-        // Required for JSON binding
+        this.roles = Collections.emptyList();
     }
     
     /**
@@ -32,15 +33,11 @@ public class UpdateUserRolesRequest {
      * @param roles the list of roles to assign
      */
     public UpdateUserRolesRequest(List<String> roles) {
-        this.roles = roles;
+        this.roles = roles != null ? List.copyOf(roles) : Collections.emptyList();
     }
     
     public List<String> getRoles() {
-        return roles;
-    }
-    
-    public void setRoles(List<String> roles) {
-        this.roles = roles;
+        return Collections.unmodifiableList(roles);
     }
     
     /**

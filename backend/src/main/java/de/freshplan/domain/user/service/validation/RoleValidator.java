@@ -92,4 +92,31 @@ public class RoleValidator {
                 .map(RoleValidator::normalizeRole)
                 .toList();
     }
+    
+    /**
+     * Normalizes and validates a list of roles.
+     * This method combines normalization and validation in one step.
+     * 
+     * @param roles the roles to normalize and validate
+     * @return list of normalized and validated roles
+     * @throws de.freshplan.domain.user.service.exception.InvalidRoleException if any role is invalid
+     */
+    public static List<String> normalizeAndValidateRoles(List<String> roles) {
+        if (roles == null || roles.isEmpty()) {
+            throw new IllegalArgumentException("Roles list cannot be null or empty");
+        }
+        
+        return roles.stream()
+                .map(role -> {
+                    if (role == null) {
+                        throw new de.freshplan.domain.user.service.exception.InvalidRoleException("null");
+                    }
+                    String normalized = role.toLowerCase();
+                    if (!ALLOWED_ROLES.contains(normalized)) {
+                        throw new de.freshplan.domain.user.service.exception.InvalidRoleException(role);
+                    }
+                    return normalized;
+                })
+                .toList();
+    }
 }

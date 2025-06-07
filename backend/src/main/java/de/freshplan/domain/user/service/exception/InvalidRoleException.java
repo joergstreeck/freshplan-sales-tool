@@ -20,12 +20,4 @@ public class InvalidRoleException extends RuntimeException {
                            role, RoleValidator.getAllowedRoles()));
     }
     
-    /**
-     * Creates a new exception with a custom message.
-     * 
-     * @param message the error message
-     */
-    public InvalidRoleException(String message, boolean custom) {
-        super(message);
-    }
 }

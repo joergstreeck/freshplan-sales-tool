@@ -340,20 +340,15 @@ public class UserService {
      * @throws UserNotFoundException if user not found
      * @throws InvalidRoleException if any role is invalid
      */
+    @Transactional
     public UserResponse updateUserRoles(@NotNull UUID id, @Valid @NotNull UpdateUserRolesRequest request) {
         LOG.debugf("Updating roles for user with ID: %s", id);
         
         User user = userRepository.findByIdOptional(id)
                 .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + id));
         
-        // Validate all roles
-        List<String> normalizedRoles = RoleValidator.normalizeRoles(request.getRoles());
-        
-        for (String role : normalizedRoles) {
-            if (!RoleValidator.isValidRole(role)) {
-                throw new InvalidRoleException(role);
-            }
-        }
+        // Normalize and validate all roles in one step
+        List<String> normalizedRoles = RoleValidator.normalizeAndValidateRoles(request.getRoles());
         
         // Update user roles
         user.setRoles(normalizedRoles);

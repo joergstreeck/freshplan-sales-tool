@@ -362,3 +362,11 @@ Diese Regel wurde auch in CLAUDE.md dokumentiert.
 - 🎯 Werde GitHub CLI einrichten für CI-Monitoring
 - 💪 Bereit für selbstständiges CI-Debugging
 
+
+### 02:45 - Team BACK
+- Status: PR #15 bereit zum Merge
+- Konflikt in UserServiceTest.java gelöst (gleiche Stelle wurde auf main gefixt)
+- CI Status: Alle kritischen Tests grün ✅
+- Worktree CI: Fehlgeschlagen (sekundärer Workflow)
+- **WICHTIG für alle Teams**: Bei Änderungen an Testfiles bitte im Log dokumentieren\!
+

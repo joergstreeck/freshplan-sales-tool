@@ -61,8 +61,9 @@ class UserServiceRolesTest {
     @Test
     void updateUserRoles_withValidRoles_shouldUpdateSuccessfully() {
         // Given
-        UpdateUserRolesRequest request = new UpdateUserRolesRequest();
-        request.setRoles(List.of("admin", "manager"));
+        UpdateUserRolesRequest request = UpdateUserRolesRequest.builder()
+                .roles(List.of("admin", "manager"))
+                .build();
         
         when(userRepository.findByIdOptional(userId)).thenReturn(Optional.of(testUser));
         when(userMapper.toResponse(testUser)).thenReturn(
@@ -87,8 +88,9 @@ class UserServiceRolesTest {
     @Test
     void updateUserRoles_withMixedCaseRoles_shouldNormalize() {
         // Given
-        UpdateUserRolesRequest request = new UpdateUserRolesRequest();
-        request.setRoles(List.of("ADMIN", "Manager", "SALES"));
+        UpdateUserRolesRequest request = UpdateUserRolesRequest.builder()
+                .roles(List.of("ADMIN", "Manager", "SALES"))
+                .build();
         
         when(userRepository.findByIdOptional(userId)).thenReturn(Optional.of(testUser));
         when(userMapper.toResponse(testUser)).thenReturn(
@@ -110,8 +112,9 @@ class UserServiceRolesTest {
     @Test
     void updateUserRoles_withInvalidRole_shouldThrowException() {
         // Given
-        UpdateUserRolesRequest request = new UpdateUserRolesRequest();
-        request.setRoles(List.of("admin", "invalid_role"));
+        UpdateUserRolesRequest request = UpdateUserRolesRequest.builder()
+                .roles(List.of("admin", "invalid_role"))
+                .build();
         
         when(userRepository.findByIdOptional(userId)).thenReturn(Optional.of(testUser));
         
@@ -132,8 +135,9 @@ class UserServiceRolesTest {
     @Test
     void updateUserRoles_withNonExistentUser_shouldThrowException() {
         // Given
-        UpdateUserRolesRequest request = new UpdateUserRolesRequest();
-        request.setRoles(List.of("admin"));
+        UpdateUserRolesRequest request = UpdateUserRolesRequest.builder()
+                .roles(List.of("admin"))
+                .build();
         
         when(userRepository.findByIdOptional(userId)).thenReturn(Optional.empty());
         
@@ -149,8 +153,9 @@ class UserServiceRolesTest {
     @Test
     void updateUserRoles_withSingleRole_shouldUpdateSuccessfully() {
         // Given
-        UpdateUserRolesRequest request = new UpdateUserRolesRequest();
-        request.setRoles(List.of("sales"));
+        UpdateUserRolesRequest request = UpdateUserRolesRequest.builder()
+                .roles(List.of("sales"))
+                .build();
         
         when(userRepository.findByIdOptional(userId)).thenReturn(Optional.of(testUser));
         when(userMapper.toResponse(testUser)).thenReturn(
@@ -172,8 +177,9 @@ class UserServiceRolesTest {
     @Test
     void updateUserRoles_withDuplicateRoles_shouldDeduplicateInEntity() {
         // Given
-        UpdateUserRolesRequest request = new UpdateUserRolesRequest();
-        request.setRoles(List.of("admin", "admin", "sales"));
+        UpdateUserRolesRequest request = UpdateUserRolesRequest.builder()
+                .roles(List.of("admin", "admin", "sales"))
+                .build();
         
         when(userRepository.findByIdOptional(userId)).thenReturn(Optional.of(testUser));
         when(userMapper.toResponse(testUser)).thenReturn(

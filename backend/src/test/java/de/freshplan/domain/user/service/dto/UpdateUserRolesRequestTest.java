@@ -31,8 +31,9 @@ class UpdateUserRolesRequestTest {
     @Test
     void validation_withValidRoles_shouldPass() {
         // Given
-        UpdateUserRolesRequest request = new UpdateUserRolesRequest();
-        request.setRoles(List.of("admin", "manager"));
+        UpdateUserRolesRequest request = UpdateUserRolesRequest.builder()
+                .roles(List.of("admin", "manager"))
+                .build();
         
         // When
         Set<ConstraintViolation<UpdateUserRolesRequest>> violations = validator.validate(request);
@@ -44,8 +45,9 @@ class UpdateUserRolesRequestTest {
     @Test
     void validation_withNullRoles_shouldFail() {
         // Given
-        UpdateUserRolesRequest request = new UpdateUserRolesRequest();
-        request.setRoles(null);
+        UpdateUserRolesRequest request = UpdateUserRolesRequest.builder()
+                .roles(null)
+                .build();
         
         // When
         Set<ConstraintViolation<UpdateUserRolesRequest>> violations = validator.validate(request);
@@ -53,14 +55,15 @@ class UpdateUserRolesRequestTest {
         // Then
         assertThat(violations).hasSize(1);
         assertThat(violations.iterator().next().getMessage())
-            .isEqualTo("Roles list cannot be null");
+            .isEqualTo("At least one role must be specified");
     }
     
     @Test
     void validation_withEmptyRoles_shouldFail() {
         // Given
-        UpdateUserRolesRequest request = new UpdateUserRolesRequest();
-        request.setRoles(List.of());
+        UpdateUserRolesRequest request = UpdateUserRolesRequest.builder()
+                .roles(List.of())
+                .build();
         
         // When
         Set<ConstraintViolation<UpdateUserRolesRequest>> violations = validator.validate(request);
@@ -98,15 +101,18 @@ class UpdateUserRolesRequestTest {
     }
     
     @Test
-    void setRoles_shouldUpdateRoles() {
+    void getRoles_shouldReturnUnmodifiableList() {
         // Given
-        UpdateUserRolesRequest request = new UpdateUserRolesRequest();
-        List<String> roles = List.of("admin", "manager", "sales");
+        List<String> originalRoles = List.of("admin", "manager");
+        UpdateUserRolesRequest request = UpdateUserRolesRequest.builder()
+                .roles(originalRoles)
+                .build();
         
         // When
-        request.setRoles(roles);
+        List<String> retrievedRoles = request.getRoles();
         
         // Then
-        assertThat(request.getRoles()).isEqualTo(roles);
+        assertThat(retrievedRoles).isEqualTo(originalRoles);
+        assertThat(retrievedRoles).isUnmodifiable();
     }
 }

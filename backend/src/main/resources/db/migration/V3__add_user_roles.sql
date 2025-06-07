@@ -16,7 +16,8 @@ SELECT id,
     CASE 
         WHEN username = 'admin' THEN 'admin'
         WHEN username = 'manager' THEN 'manager'
-        ELSE 'sales'  -- Default role for sales representatives
+        WHEN username = 'sales' THEN 'sales'
+        ELSE 'viewer'  -- Default role for other users
     END
 FROM app_user;
 

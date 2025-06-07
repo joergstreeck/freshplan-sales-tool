@@ -46,8 +46,9 @@ class UserRolesIT {
     @Test
     @TestSecurity(user = "admin", roles = {"admin"})
     void updateUserRoles_withValidRoles_shouldUpdateSuccessfully() {
-        UpdateUserRolesRequest request = new UpdateUserRolesRequest();
-        request.setRoles(List.of("admin", "manager"));
+        UpdateUserRolesRequest request = UpdateUserRolesRequest.builder()
+                .roles(List.of("admin", "manager"))
+                .build();
         
         given()
             .contentType(ContentType.JSON)
@@ -64,8 +65,9 @@ class UserRolesIT {
     @Test
     @TestSecurity(user = "admin", roles = {"admin"})
     void updateUserRoles_withInvalidRole_shouldReturn400() {
-        UpdateUserRolesRequest request = new UpdateUserRolesRequest();
-        request.setRoles(List.of("admin", "invalid_role"));
+        UpdateUserRolesRequest request = UpdateUserRolesRequest.builder()
+                .roles(List.of("admin", "invalid_role"))
+                .build();
         
         given()
             .contentType(ContentType.JSON)
@@ -81,8 +83,9 @@ class UserRolesIT {
     @Test
     @TestSecurity(user = "admin", roles = {"admin"})
     void updateUserRoles_withEmptyRoles_shouldReturn400() {
-        UpdateUserRolesRequest request = new UpdateUserRolesRequest();
-        request.setRoles(List.of());
+        UpdateUserRolesRequest request = UpdateUserRolesRequest.builder()
+                .roles(List.of())
+                .build();
         
         given()
             .contentType(ContentType.JSON)
@@ -96,8 +99,9 @@ class UserRolesIT {
     @Test
     @TestSecurity(user = "admin", roles = {"admin"})
     void updateUserRoles_withNonExistentUser_shouldReturn404() {
-        UpdateUserRolesRequest request = new UpdateUserRolesRequest();
-        request.setRoles(List.of("admin"));
+        UpdateUserRolesRequest request = UpdateUserRolesRequest.builder()
+                .roles(List.of("admin"))
+                .build();
         
         UUID nonExistentId = UUID.randomUUID();
         
@@ -114,8 +118,9 @@ class UserRolesIT {
     @Test
     @TestSecurity(user = "manager", roles = {"manager"})
     void updateUserRoles_asNonAdmin_shouldReturn403() {
-        UpdateUserRolesRequest request = new UpdateUserRolesRequest();
-        request.setRoles(List.of("admin"));
+        UpdateUserRolesRequest request = UpdateUserRolesRequest.builder()
+                .roles(List.of("admin"))
+                .build();
         
         given()
             .contentType(ContentType.JSON)
@@ -129,8 +134,9 @@ class UserRolesIT {
     @Test
     @TestSecurity(user = "admin", roles = {"admin"})
     void updateUserRoles_withMixedCase_shouldNormalize() {
-        UpdateUserRolesRequest request = new UpdateUserRolesRequest();
-        request.setRoles(List.of("ADMIN", "Manager", "SALES"));
+        UpdateUserRolesRequest request = UpdateUserRolesRequest.builder()
+                .roles(List.of("ADMIN", "Manager", "SALES"))
+                .build();
         
         given()
             .contentType(ContentType.JSON)
@@ -145,8 +151,9 @@ class UserRolesIT {
     
     @Test
     void updateUserRoles_withoutAuthentication_shouldReturn401() {
-        UpdateUserRolesRequest request = new UpdateUserRolesRequest();
-        request.setRoles(List.of("admin"));
+        UpdateUserRolesRequest request = UpdateUserRolesRequest.builder()
+                .roles(List.of("admin"))
+                .build();
         
         given()
             .contentType(ContentType.JSON)

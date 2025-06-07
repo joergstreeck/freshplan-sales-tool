@@ -371,7 +371,8 @@ public class UserResource {
     @Path("/{id}/roles")
     @RolesAllowed("admin")
     @Operation(summary = "Update user roles", 
-               description = "Updates the roles assigned to a user. Only admins can perform this operation.")
+               description = "Updates the roles assigned to a user. "
+                          + "Only admins can perform this operation.")
     @APIResponses({
         @APIResponse(
             responseCode = "200",
@@ -402,7 +403,8 @@ public class UserResource {
             @Parameter(description = "User ID", required = true) 
             @PathParam("id") UUID id,
             @Valid @RequestBody(required = true, 
-                              description = "Role update data containing array of roles (admin, manager, user)") 
+                              description = "Role update data containing array of roles "
+                                        + "(admin, manager, sales, viewer)") 
             UpdateUserRolesRequest request) {
         return userService.updateUserRoles(id, request);
     }
