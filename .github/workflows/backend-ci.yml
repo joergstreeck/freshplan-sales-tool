@@ -40,16 +40,23 @@ jobs:
           distribution: 'temurin'
           cache: maven
           
+      - name: Wait for PostgreSQL
+        run: |
+          until pg_isready -h localhost -p 5432; do
+            echo "Waiting for PostgreSQL..."
+            sleep 2
+          done
+          
       - name: Run tests
-        run: mvn clean test
         working-directory: backend
-        env:
-          QUARKUS_DATASOURCE_DB_KIND: postgresql
-          QUARKUS_DATASOURCE_USERNAME: freshplan
-          QUARKUS_DATASOURCE_PASSWORD: freshplan
-          QUARKUS_DATASOURCE_JDBC_URL: jdbc:postgresql://localhost:5432/freshplan_test
-          QUARKUS_DATASOURCE_DEVSERVICES_ENABLED: "false"
-          QUARKUS_DEVSERVICES_ENABLED: "false"
+        run: |
+          mvn -B clean test \
+            -Dquarkus.datasource.jdbc.url=jdbc:postgresql://localhost:5432/freshplan_test \
+            -Dquarkus.datasource.username=freshplan \
+            -Dquarkus.datasource.password=freshplan \
+            -Dquarkus.datasource.db-kind=postgresql \
+            -Dquarkus.datasource.devservices.enabled=false \
+            -Dquarkus.devservices.enabled=false
           
       - name: Generate test report
         uses: dorny/test-reporter@v1
