@@ -46,8 +46,9 @@ jobs:
           restore-keys: ${{ runner.os }}-m2
       
       - name: Run integration tests
-        run: mvn verify -DskipUnitTests
+        run: mvn -B clean verify -Pgreen
         env:
+          CI_GREEN: true
           KEYCLOAK_CLIENT_SECRET: ${{ secrets.KEYCLOAK_CLIENT_SECRET || 'secret' }}
           QUARKUS_DATASOURCE_JDBC_URL: jdbc:postgresql://localhost:5432/freshplan
 

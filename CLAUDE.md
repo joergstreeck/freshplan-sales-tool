@@ -474,6 +474,107 @@ void createUser_withValidData_shouldReturnCreatedUser() {
 }
 ```
 
+### CI-Monitoring und Automatisches Debugging
+
+**NEU: Proaktive CI-Überwachung durch Claude** 🤖
+
+Wenn die CI rot ist:
+1. **Claude holt sich selbstständig die Logs** via GitHub CLI
+2. **Analysiert den Fehler** und versucht eigenständig zu fixen
+3. **Pusht die Lösung** und überwacht erneut
+4. **Eskaliert nur bei:** 
+   - Komplexen Problemen die mehrere Versuche erfordern
+   - Architektur-Entscheidungen
+   - Unklarheiten über Business-Logik
+
+```bash
+# Claude's CI-Workflow
+gh run list --branch <branch> --status failure --limit 1
+gh run view <RUN_ID> --log-failed
+# Analyse → Fix → Push → Repeat
+```
+
+**Vorteile:**
+- ✅ Schnellere Fixes (keine Wartezeit)
+- ✅ Jörg wird nur bei echten Problemen involviert
+- ✅ CI bleibt häufiger grün
+- ✅ Teams können sich auf Features konzentrieren
+
+### CI-Debugging-Strategie: "Strategie der kleinen Schritte"
+
+**Wenn die CI nach mehreren automatischen Versuchen immer noch fehlschlägt:**
+
+#### 1. Minimierung des Fehlerbereichs
+```bash
+# Beispiel: Test isoliert ausführen
+./mvnw test -Dtest=UserServiceTest#testGetAllUsers
+
+# Mit Debug-Output
+./mvnw test -Dtest=UserServiceTest#testGetAllUsers -X
+```
+
+#### 2. Schrittweise Vereinfachung
+```java
+@Test
+void debugTest() {
+    // Schritt 1: Minimaler Test
+    System.out.println("=== DEBUG: Test startet ===");
+    assertThat(1).isEqualTo(1);
+    
+    // Schritt 2: Eine Komponente hinzufügen
+    System.out.println("=== DEBUG: Repository-Mock ===");
+    when(repository.findAll()).thenReturn(List.of());
+    
+    // Schritt 3: Schrittweise erweitern
+    System.out.println("=== DEBUG: Service-Aufruf ===");
+    var result = service.getAllUsers();
+    System.out.println("=== DEBUG: Result size: " + result.size());
+}
+```
+
+#### 3. Debug-Output Best Practices
+```java
+// Strukturierter Debug-Output
+private void debugLog(String phase, Object data) {
+    System.out.printf("=== DEBUG [%s]: %s ===%n", 
+        phase, 
+        data != null ? data.toString() : "null"
+    );
+}
+
+// In Tests verwenden
+debugLog("BEFORE", testUser);
+var result = service.updateUser(testUser);
+debugLog("AFTER", result);
+```
+
+#### 4. CI-spezifisches Debugging
+```yaml
+# .github/workflows/ci.yml
+- name: Run failing test with debug
+  if: failure()
+  run: |
+    echo "=== Rerunning failed test with debug ==="
+    ./mvnw test -Dtest=FailingTest -X
+    echo "=== Environment Info ==="
+    java -version
+    ./mvnw --version
+```
+
+#### 5. Systematisches Vorgehen
+1. **Isolieren**: Einzelnen Test ausführen
+2. **Minimieren**: Test auf Kern-Assertion reduzieren
+3. **Debug-Output**: An kritischen Stellen einfügen
+4. **Schrittweise erweitern**: Eine Zeile nach der anderen
+5. **Vergleichen**: Lokal vs. CI Environment
+6. **Dokumentieren**: Findings für Team festhalten
+
+#### Anti-Patterns vermeiden:
+- ❌ Blind try-catch ohne Logging
+- ❌ System.out.println ohne Kontext
+- ❌ Große Code-Blöcke auf einmal ändern
+- ❌ Debug-Output in Production-Code vergessen
+
 ### Feature Flag Governance:
 
 **Trunk-based Development erfordert strikte Feature Flag Disziplin!**
