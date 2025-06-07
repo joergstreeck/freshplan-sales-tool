@@ -55,7 +55,7 @@ class UpdateUserRolesRequestTest {
         // Then
         assertThat(violations).hasSize(1);
         assertThat(violations.iterator().next().getMessage())
-            .isEqualTo("At least one role must be specified");
+            .isEqualTo("Roles list cannot be null");
     }
     
     @Test
