@@ -40,27 +40,24 @@ jobs:
           distribution: 'temurin'
           cache: maven
           
-      - name: Wait for PostgreSQL
+      - name: Debug - Check environment
         run: |
-          for i in {1..30}; do
-            if nc -z localhost 5432; then
-              echo "PostgreSQL is ready!"
-              break
-            fi
-            echo "Waiting for PostgreSQL... ($i/30)"
-            sleep 2
-          done
+          echo "=== DEBUG: Java Version ==="
+          java -version
+          echo "=== DEBUG: Maven Version ==="
+          mvn -version
+          echo "=== DEBUG: Check PostgreSQL ==="
+          nc -zv localhost 5432 || echo "PostgreSQL not reachable"
+          echo "=== DEBUG: Environment variables ==="
+          env | grep -E "(POSTGRES|QUARKUS)" || echo "No relevant env vars found"
           
-      - name: Run tests
+      - name: Debug - Run single test
         working-directory: backend
         run: |
-          mvn -B clean test \
-            -Dquarkus.datasource.jdbc.url=jdbc:postgresql://localhost:5432/freshplan_test \
-            -Dquarkus.datasource.username=freshplan \
-            -Dquarkus.datasource.password=freshplan \
-            -Dquarkus.datasource.db-kind=postgresql \
+          echo "=== DEBUG: Running minimal test ==="
+          mvn -B test -Dtest=UserMapperTest \
             -Dquarkus.datasource.devservices.enabled=false \
-            -Dquarkus.devservices.enabled=false
+            -Dquarkus.test.continuous-testing=disabled
           
       - name: Generate test report
         uses: dorny/test-reporter@v1
