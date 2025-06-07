@@ -15,7 +15,8 @@ function App() {
       const result = await ApiService.ping(token || 'test-token');
       setPingResult(JSON.stringify(result, null, 2));
     } catch (error) {
-      setPingResult(`Error: ${error}`);
+      const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
+      setPingResult(`Error: ${errorMessage}`);
     }
   };
 

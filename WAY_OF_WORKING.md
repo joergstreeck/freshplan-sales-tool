@@ -2,6 +2,13 @@
 
 > **"Code, den jeder Entwickler sofort versteht - KEINE KOMPROMISSE!"**
 
+## 🔍 NEU: Code-Review-Regel (ab 07.01.2025)
+
+**GOLDENE REGEL:** Bei jedem bedeutenden Entwicklungsabschnitt gilt:
+> "Prüfe noch einmal sehr gründlich den Code auf Einhaltung unserer Programmierregeln und Logik"
+
+Diese Regel ist **VERPFLICHTEND** und wird automatisch bei jedem Sprint-Ende durchgeführt. Details siehe CLAUDE.md Abschnitt 0.10.
+
 ## 🎯 Unsere Mission
 
 Wir entwickeln FreshPlan 2.0 als moderne, cloud-native Enterprise-Lösung mit höchsten Qualitätsstandards. Dieses Dokument definiert unsere Arbeitsweise und ist für ALLE Projektbeteiligten verbindlich.
