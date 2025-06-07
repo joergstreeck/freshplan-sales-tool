@@ -40,29 +40,15 @@ jobs:
           distribution: 'temurin'
           cache: maven
           
-      - name: Debug - Check environment
-        run: |
-          echo "=== DEBUG: Java Version ==="
-          java -version
-          echo "=== DEBUG: Maven Version ==="
-          mvn -version
-          echo "=== DEBUG: Check PostgreSQL ==="
-          nc -zv localhost 5432 || echo "PostgreSQL not reachable"
-          echo "=== DEBUG: Environment variables ==="
-          env | grep -E "(POSTGRES|QUARKUS)" || echo "No relevant env vars found"
-          
-      - name: Debug - Run single test
+      - name: Run tests
         working-directory: backend
         run: |
-          echo "=== DEBUG: Running minimal test ==="
-          mvn -B test -Dtest=UserMapperTest \
+          mvn -B clean test \
+            -Dquarkus.datasource.jdbc.url=jdbc:postgresql://localhost:5432/freshplan_test \
+            -Dquarkus.datasource.username=freshplan \
+            -Dquarkus.datasource.password=freshplan \
+            -Dquarkus.datasource.db-kind=postgresql \
             -Dquarkus.datasource.devservices.enabled=false \
-            -Dquarkus.test.continuous-testing=disabled
+            -Dquarkus.devservices.enabled=false
           
-      - name: Generate test report
-        uses: dorny/test-reporter@v1
-        if: success() || failure()
-        with:
-          name: Backend Test Results
-          path: backend/target/surefire-reports/*.xml
-          reporter: java-junit
+      # Test reporter removed - causes permission issues
