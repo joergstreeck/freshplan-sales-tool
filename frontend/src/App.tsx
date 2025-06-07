@@ -33,16 +33,37 @@ function App() {
           <p className="text-muted-foreground">Sprint 0 - Walking Skeleton</p>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-3">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           <Card>
             <CardHeader>
-              <CardTitle>Counter Test</CardTitle>
-              <CardDescription>Test React State Management</CardDescription>
+              <CardTitle>Calculator</CardTitle>
+              <CardDescription>Rabatt-Kalkulator für Großhandelsbestellungen</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                <p className="text-2xl font-mono">{count}</p>
-                <Button onClick={() => setCount(count => count + 1)}>Count is {count}</Button>
+                <p className="text-sm text-muted-foreground">
+                  Legacy Migration: 4 Rabatttypen, bis zu 15% Gesamtrabatt
+                </p>
+                <Button asChild>
+                  <Link to="/calculator">Rabatt berechnen</Link>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>User Management</CardTitle>
+              <CardDescription>Sprint 1 Feature Implementation</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <p className="text-sm text-muted-foreground">
+                  React Query + React Hook Form + Zod + Zustand
+                </p>
+                <Button asChild>
+                  <Link to="/users">Benutzerverwaltung öffnen</Link>
+                </Button>
               </div>
             </CardContent>
           </Card>
@@ -68,17 +89,13 @@ function App() {
 
           <Card>
             <CardHeader>
-              <CardTitle>User Management</CardTitle>
-              <CardDescription>Sprint 1 Feature Implementation</CardDescription>
+              <CardTitle>Counter Test</CardTitle>
+              <CardDescription>Test React State Management</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                <p className="text-sm text-muted-foreground">
-                  React Query + React Hook Form + Zod + Zustand
-                </p>
-                <Button asChild>
-                  <Link to="/users">Benutzerverwaltung öffnen</Link>
-                </Button>
+                <p className="text-2xl font-mono">{count}</p>
+                <Button onClick={() => setCount(count => count + 1)}>Count is {count}</Button>
               </div>
             </CardContent>
           </Card>

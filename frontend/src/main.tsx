@@ -5,6 +5,7 @@ import './styles/globals.css';
 import App from './App.tsx';
 import { LoginBypassPage } from './pages/LoginBypassPage.tsx';
 import { UsersPage } from './pages/UsersPage.tsx';
+import { CalculatorPage } from './pages/CalculatorPage.tsx';
 import { AppProviders } from './app/providers.tsx';
 
 // Only include login bypass in development mode
@@ -22,6 +23,7 @@ createRoot(rootElement).render(
       <Routes>
         <Route path="/" element={<App />} />
         <Route path="/users" element={<UsersPage />} />
+        <Route path="/calculator" element={<CalculatorPage />} />
         {isDevelopmentMode && <Route path="/login-bypass" element={<LoginBypassPage />} />}
       </Routes>
     </AppProviders>

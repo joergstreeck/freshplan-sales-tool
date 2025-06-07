@@ -22,6 +22,13 @@ Object.defineProperty(window, 'matchMedia', {
   })),
 });
 
+// Mock für ResizeObserver (needed for Radix UI components)
+global.ResizeObserver = vi.fn().mockImplementation(() => ({
+  observe: vi.fn(),
+  unobserve: vi.fn(),
+  disconnect: vi.fn(),
+}));
+
 // Mock für import.meta.env
 Object.defineProperty(import.meta, 'env', {
   value: {
