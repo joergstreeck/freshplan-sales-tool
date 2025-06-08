@@ -4,6 +4,9 @@ import { ApiService } from './services/api';
 import { useAuth } from './contexts/AuthContext';
 import { Button } from './components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './components/ui/card';
+import './styles/legacy/typography.css';
+import './styles/legacy/layout.css';
+import './styles/app.css';
 
 function App() {
   const [count, setCount] = useState(0);
@@ -26,76 +29,87 @@ function App() {
   };
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f5f5f5', padding: '2rem' }}>
-      <div style={{ maxWidth: '1024px', margin: '0 auto' }}>
-        <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-          <h1 style={{ fontSize: '2.5rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>FreshPlan 2.0</h1>
-          <p style={{ color: '#666' }}>Sprint 0 - Walking Skeleton</p>
+    <div className="app-container">
+      <div className="content-wrapper">
+        <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
+          <h1 className="main-title">FreshPlan 2.0</h1>
+          <p className="subtitle">Ihr digitales Verkaufstool</p>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1.5rem' }}>
+        <div className="card-grid">
           <Card>
             <CardHeader>
-              <CardTitle>FreshPlan Sales Tool</CardTitle>
-              <CardDescription>Das komplette Verkaufstool mit allen Features</CardDescription>
+              <CardTitle>FreshPlan Verkaufstool</CardTitle>
+              <CardDescription>Komplette Verwaltung für Kunden und Angebote</CardDescription>
             </CardHeader>
             <CardContent>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                <p style={{ fontSize: '0.875rem', color: '#666' }}>
+              <div className="card-actions">
+                <p className="card-text">
                   Kundendaten, Standorte, Kalkulator - Alles in einem Tool
                 </p>
-                <Button asChild>
-                  <Link to="/legacy-tool">FreshPlan Tool öffnen</Link>
-                </Button>
+                <div className="card-button-wrapper">
+                  <Button asChild>
+                    <Link to="/legacy-tool">FreshPlan Tool öffnen</Link>
+                  </Button>
+                </div>
               </div>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader>
-              <CardTitle>User Management</CardTitle>
-              <CardDescription>Sprint 1 Feature Implementation</CardDescription>
+              <CardTitle>Benutzerverwaltung</CardTitle>
+              <CardDescription>Verwalten Sie Benutzer und Zugriffsrechte</CardDescription>
             </CardHeader>
             <CardContent>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                <p style={{ fontSize: '0.875rem', color: '#666' }}>
-                  React Query + React Hook Form + Zod + Zustand
+              <div className="card-actions">
+                <p className="card-text">
+                  Moderne Benutzerverwaltung mit Rollen und Rechten
                 </p>
-                <Button asChild>
-                  <Link to="/users">Benutzerverwaltung öffnen</Link>
-                </Button>
+                <div className="card-button-wrapper">
+                  <Button asChild>
+                    <Link to="/users">Benutzerverwaltung öffnen</Link>
+                  </Button>
+                </div>
               </div>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader>
-              <CardTitle>API Test</CardTitle>
-              <CardDescription>Test Backend Connection</CardDescription>
+              <CardTitle>API Verbindungstest</CardTitle>
+              <CardDescription>Prüfen Sie die Backend-Verbindung</CardDescription>
             </CardHeader>
             <CardContent>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                <Button onClick={handlePing} variant="secondary">
-                  Ping API
-                </Button>
-                {pingResult && (
-                  <pre style={{ background: '#e0e0e0', padding: '1rem', borderRadius: '0.5rem', fontSize: '0.875rem', overflow: 'auto', maxHeight: '8rem' }}>
-                    {pingResult}
-                  </pre>
-                )}
+              <div className="card-actions">
+                <p className="card-text">
+                  Testen Sie die Verbindung zum Backend-Server
+                </p>
+                <div className="card-button-wrapper">
+                  <Button onClick={handlePing}>
+                    Verbindung testen
+                  </Button>
+                  {pingResult && (
+                    <pre className="code-block" style={{ marginTop: 'var(--spacing-md)' }}>
+                      {pingResult}
+                    </pre>
+                  )}
+                </div>
               </div>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader>
-              <CardTitle>Counter Test</CardTitle>
-              <CardDescription>Test React State Management</CardDescription>
+              <CardTitle>Zähler Demo</CardTitle>
+              <CardDescription>Einfache Demonstration der Interaktivität</CardDescription>
             </CardHeader>
             <CardContent>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                <p style={{ fontSize: '1.5rem', fontFamily: 'monospace' }}>{count}</p>
-                <Button onClick={() => setCount(count => count + 1)}>Count is {count}</Button>
+              <div className="card-actions">
+                <div className="counter-display">Zählerstand: {count}</div>
+                <div className="card-button-wrapper">
+                  <Button onClick={() => setCount(count => count + 1)}>Zähler erhöhen</Button>
+                </div>
               </div>
             </CardContent>
           </Card>

@@ -11,6 +11,9 @@
     margin-bottom: var(--spacing-xl);
     border: 1px solid rgba(0, 0, 0, 0.05);
     transition: all var(--transition-fast);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
 }
 
 .card:hover {
@@ -22,9 +25,10 @@
 }
 
 .card-title {
-    font-size: var(--font-size-2xl);
+    font-family: var(--font-heading);
+    font-size: var(--font-size-xl);
     font-weight: var(--font-weight-bold);
-    color: var(--text-dark);
+    color: var(--primary-blue);
     margin-bottom: var(--spacing-sm);
     position: relative;
     padding-bottom: var(--spacing-md);
@@ -49,6 +53,9 @@
 
 .card-content {
     margin-top: var(--spacing-md);
+    flex: 1;
+    display: flex;
+    flex-direction: column;
 }
 
 .card-footer {
