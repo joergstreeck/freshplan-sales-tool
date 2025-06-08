@@ -1,26 +1,33 @@
 import * as React from 'react';
+import { Slot } from '@radix-ui/react-slot';
 import '../../styles/legacy/forms.css';
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'ghost';
-  size?: 'default' | 'sm' | 'lg';
+  variant?: 'default' | 'secondary' | 'ghost' | 'destructive' | 'outline' | 'link';
+  size?: 'default' | 'sm' | 'lg' | 'icon';
   asChild?: boolean;
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className = '', variant = 'primary', size = 'default', children, ...props }, ref) => {
-    // Map variants to our CSS classes
-    const variantClasses = {
-      primary: 'btn btn-primary',
-      secondary: 'btn btn-secondary',
-      ghost: 'btn btn-ghost'
+  ({ className = '', variant = 'default', size = 'default', asChild = false, children, ...props }, ref) => {
+    const Comp = asChild ? Slot : 'button';
+    
+    // Map shadcn variants to our CSS classes
+    const variantClasses: Record<string, string> = {
+      default: 'btn btn-primary',
+      secondary: 'btn btn-secondary', 
+      ghost: 'btn btn-ghost',
+      destructive: 'btn btn-primary', // Use primary for destructive
+      outline: 'btn btn-secondary',   // Use secondary for outline
+      link: 'btn btn-ghost'           // Use ghost for link
     };
 
-    // Size modifiers (we'll add these to our CSS if needed)
-    const sizeClasses = {
+    // Size modifiers
+    const sizeClasses: Record<string, string> = {
       default: '',
       sm: 'btn-sm',
-      lg: 'btn-lg'
+      lg: 'btn-lg',
+      icon: 'btn-sm'  // Use small for icon
     };
 
     const classes = [
@@ -30,13 +37,13 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     ].filter(Boolean).join(' ');
 
     return (
-      <button
+      <Comp
         className={classes}
         ref={ref}
         {...props}
       >
         {children}
-      </button>
+      </Comp>
     );
   }
 );
