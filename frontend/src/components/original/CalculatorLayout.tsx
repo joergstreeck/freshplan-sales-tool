@@ -14,25 +14,22 @@ export function CalculatorLayout({ leftContent, rightContent }: CalculatorLayout
   const [orderValue, setOrderValue] = useState(15000);
   const [leadTime, setLeadTime] = useState(14);
 
-  const handleSliderChange = (value: number, setter: (val: number) => void) => {
-    setter(value);
-  };
-
   return (
     <div className="customer-container">
       <h2 className="section-title">FreshPlan Rabattrechner</h2>
-      
+
       <div className="demonstrator-container">
         {/* Linke Seite - Kalkulator */}
         <div className="calculator-section">
           {leftContent || (
             <div>
-              
               {/* Bestellwert Slider */}
               <div className="form-group">
                 <div className="slider-label-container">
                   <label htmlFor="orderValue">Bestellwert</label>
-                  <span className="slider-value-display">€{orderValue.toLocaleString('de-DE')}</span>
+                  <span className="slider-value-display">
+                    €{orderValue.toLocaleString('de-DE')}
+                  </span>
                 </div>
                 {/* Barrierefreier Custom Slider mit Radix UI */}
                 <CustomSlider
@@ -45,7 +42,7 @@ export function CalculatorLayout({ leftContent, rightContent }: CalculatorLayout
                   aria-label="Bestellwert"
                 />
               </div>
-              
+
               {/* Vorlaufzeit Slider */}
               <div className="form-group">
                 <div className="slider-label-container">
@@ -63,7 +60,7 @@ export function CalculatorLayout({ leftContent, rightContent }: CalculatorLayout
                   aria-label="Vorlaufzeit in Tagen"
                 />
               </div>
-              
+
               {/* Abholung Checkbox */}
               <div className="form-group checkbox-group">
                 <label className="checkbox-label">
@@ -71,7 +68,7 @@ export function CalculatorLayout({ leftContent, rightContent }: CalculatorLayout
                   <span>Abholung (Mindestbestellwert: 5.000€ netto)</span>
                 </label>
               </div>
-              
+
               {/* Results Container - Grauer Bereich */}
               <div className="calculator-results-container">
                 {/* Result Grid */}
@@ -89,13 +86,13 @@ export function CalculatorLayout({ leftContent, rightContent }: CalculatorLayout
                     <span className="calculator-result-value">0%</span>
                   </div>
                 </div>
-                
+
                 {/* Total Discount */}
                 <div className="total-discount">
                   <span>Gesamtrabatt</span>
                   <span className="total-value">7%</span>
                 </div>
-                
+
                 {/* Savings Display */}
                 <div className="savings-display">
                   <div className="savings-item">
@@ -108,90 +105,77 @@ export function CalculatorLayout({ leftContent, rightContent }: CalculatorLayout
                   </div>
                 </div>
               </div>
-              
+
               {/* Maximaler Gesamtrabatt */}
-              <div className="max-discount-info">
-                Maximaler Gesamtrabatt: 15%
-              </div>
+              <div className="max-discount-info">Maximaler Gesamtrabatt: 15%</div>
             </div>
           )}
         </div>
-        
+
         {/* Rechte Seite - Info */}
-        <div className="info-section" style={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '0.875rem',
-          height: '100%',
-          justifyContent: 'space-between'
-        }}>
+        <div className="info-section">
           {rightContent || (
             <>
               {/* 1. Rabattsystem Details */}
-              <div className="info-card" style={{
-                background: 'white',
-                padding: '1.75rem',
-                borderRadius: '12px',
-                boxShadow: '0 2px 12px rgba(0, 0, 0, 0.06)'
-              }}>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+              <div className="info-card">
+                <div className="rabattsystem-grid">
                   {/* Basisrabatt - 3 Spalten Tabelle */}
                   <div>
-                    <h4 style={{ color: '#004F7B', fontSize: '0.875rem', fontFamily: 'Antonio, sans-serif', fontWeight: 700, marginBottom: '0.5rem' }}>Basisrabatt</h4>
-                    <table style={{ width: '100%', fontSize: '0.875rem', fontFamily: 'Poppins, sans-serif', borderCollapse: 'collapse' }}>
+                    <h3>Basisrabatt</h3>
+                    <table className="rabatt-table">
                       <tbody>
                         <tr>
-                          <td style={{ padding: '0.25rem 0' }}>ab</td>
-                          <td style={{ padding: '0.25rem 0.5rem', textAlign: 'right', width: '80px' }}>5.000€</td>
-                          <td style={{ padding: '0.25rem 0', textAlign: 'right', color: '#94c456', fontWeight: '600' }}>3%</td>
+                          <td>ab</td>
+                          <td className="value-column">5.000€</td>
+                          <td className="percent-column">3%</td>
                         </tr>
                         <tr>
-                          <td style={{ padding: '0.25rem 0' }}>ab</td>
-                          <td style={{ padding: '0.25rem 0.5rem', textAlign: 'right', width: '80px' }}>15.000€</td>
-                          <td style={{ padding: '0.25rem 0', textAlign: 'right', color: '#94c456', fontWeight: '600' }}>6%</td>
+                          <td>ab</td>
+                          <td className="value-column">15.000€</td>
+                          <td className="percent-column">6%</td>
                         </tr>
                         <tr>
-                          <td style={{ padding: '0.25rem 0' }}>ab</td>
-                          <td style={{ padding: '0.25rem 0.5rem', textAlign: 'right', width: '80px' }}>30.000€</td>
-                          <td style={{ padding: '0.25rem 0', textAlign: 'right', color: '#94c456', fontWeight: '600' }}>8%</td>
+                          <td>ab</td>
+                          <td className="value-column">30.000€</td>
+                          <td className="percent-column">8%</td>
                         </tr>
                         <tr>
-                          <td style={{ padding: '0.25rem 0' }}>ab</td>
-                          <td style={{ padding: '0.25rem 0.5rem', textAlign: 'right', width: '80px' }}>50.000€</td>
-                          <td style={{ padding: '0.25rem 0', textAlign: 'right', color: '#94c456', fontWeight: '600' }}>9%</td>
+                          <td>ab</td>
+                          <td className="value-column">50.000€</td>
+                          <td className="percent-column">9%</td>
                         </tr>
                         <tr>
-                          <td style={{ padding: '0.25rem 0' }}>ab</td>
-                          <td style={{ padding: '0.25rem 0.5rem', textAlign: 'right', width: '80px' }}>75.000€</td>
-                          <td style={{ padding: '0.25rem 0', textAlign: 'right', color: '#94c456', fontWeight: '600' }}>10%</td>
+                          <td>ab</td>
+                          <td className="value-column">75.000€</td>
+                          <td className="percent-column">10%</td>
                         </tr>
                       </tbody>
                     </table>
                   </div>
                   {/* Frühbucherrabatt - 2 Spalten Tabelle */}
                   <div>
-                    <h4 style={{ color: '#004F7B', fontSize: '0.875rem', fontFamily: 'Antonio, sans-serif', fontWeight: 700, marginBottom: '0.5rem' }}>Frühbucherrabatt</h4>
-                    <table style={{ width: '100%', fontSize: '0.875rem', fontFamily: 'Poppins, sans-serif', borderCollapse: 'collapse' }}>
+                    <h3>Frühbucherrabatt</h3>
+                    <table className="rabatt-table">
                       <tbody>
                         <tr>
-                          <td style={{ padding: '0.25rem 0' }}>ab 10 Tage</td>
-                          <td style={{ padding: '0.25rem 0', textAlign: 'right', color: '#94c456', fontWeight: '600' }}>1%</td>
+                          <td>ab 10 Tage</td>
+                          <td className="percent-column">1%</td>
                         </tr>
                         <tr>
-                          <td style={{ padding: '0.25rem 0' }}>ab 15 Tage</td>
-                          <td style={{ padding: '0.25rem 0', textAlign: 'right', color: '#94c456', fontWeight: '600' }}>2%</td>
+                          <td>ab 15 Tage</td>
+                          <td className="percent-column">2%</td>
                         </tr>
                         <tr>
-                          <td style={{ padding: '0.25rem 0' }}>ab 30 Tage</td>
-                          <td style={{ padding: '0.25rem 0', textAlign: 'right', color: '#94c456', fontWeight: '600' }}>3%</td>
+                          <td>ab 30 Tage</td>
+                          <td className="percent-column">3%</td>
                         </tr>
                         <tr>
-                          <td style={{ padding: '0.25rem 0' }}>&nbsp;</td>
-                          <td style={{ padding: '0.25rem 0' }}>&nbsp;</td>
+                          <td>&nbsp;</td>
+                          <td>&nbsp;</td>
                         </tr>
                         <tr>
-                          <td style={{ padding: '0.25rem 0' }}>Abholung</td>
-                          <td style={{ padding: '0.25rem 0', textAlign: 'right', color: '#94c456', fontWeight: '600' }}>2%</td>
+                          <td>Abholung</td>
+                          <td className="percent-column">2%</td>
                         </tr>
                       </tbody>
                     </table>
@@ -200,115 +184,58 @@ export function CalculatorLayout({ leftContent, rightContent }: CalculatorLayout
               </div>
 
               {/* 2. Kettenkundenregelung */}
-              <div className="info-card" style={{
-                background: 'white',
-                padding: '1.75rem',
-                borderRadius: '12px',
-                boxShadow: '0 2px 12px rgba(0, 0, 0, 0.06)'
-              }}>
-                <h3 style={{ color: '#004F7B', fontSize: '1.125rem', fontFamily: 'Antonio, sans-serif', fontWeight: 700, marginBottom: '1rem' }}>Kettenkundenregelung</h3>
-                <p style={{ color: '#666', marginBottom: '1rem', fontSize: '0.875rem', fontFamily: 'Poppins, sans-serif' }}>
-                  Für Unternehmen mit mehreren Standorten (z.B. Hotel- oder Klinikgruppen):
-                </p>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                  <div style={{ 
-                    padding: '0.75rem',
-                    background: '#f8f9fa',
-                    borderRadius: '6px',
-                    fontSize: '0.875rem'
-                  }}>
-                    <div>
-                      <strong style={{ color: '#004F7B', fontFamily: 'Poppins, sans-serif' }}>Option A:</strong> <span style={{ fontFamily: 'Poppins, sans-serif' }}>Bestellungen verschiedener Standorte innerhalb einer</span>
-                      <div style={{ paddingLeft: '4.5rem', fontFamily: 'Poppins, sans-serif' }}>Woche werden zusammengerechnet</div>
-                    </div>
+              <div className="info-card">
+                <h3>Kettenkundenregelung</h3>
+                <p>Für Unternehmen mit mehreren Standorten (z.B. Hotel- oder Klinikgruppen):</p>
+                <div className="option-container">
+                  <div className="option-box">
+                    <strong className="option-label">Option A:</strong>{' '}
+                    <span className="option-text">
+                      Bestellungen verschiedener Standorte innerhalb einer
+                    </span>
+                    <div className="option-indent">Woche werden zusammengerechnet</div>
                   </div>
-                  <div style={{ 
-                    padding: '0.75rem',
-                    background: '#f8f9fa',
-                    borderRadius: '6px',
-                    fontSize: '0.875rem'
-                  }}>
-                    <strong style={{ color: '#004F7B', fontFamily: 'Poppins, sans-serif' }}>Option B:</strong> <span style={{ fontFamily: 'Poppins, sans-serif' }}>Zentrale Bestellung mit Mehrfachauslieferung</span>
+                  <div className="option-box">
+                    <strong className="option-label">Option B:</strong>{' '}
+                    <span className="option-text">
+                      Zentrale Bestellung mit Mehrfachauslieferung
+                    </span>
                   </div>
                 </div>
               </div>
 
               {/* 3. Beispielszenarien */}
-              <div className="info-card" style={{
-                background: 'linear-gradient(135deg, rgba(148, 196, 86, 0.1), rgba(0, 79, 123, 0.05))',
-                padding: '1.75rem',
-                borderRadius: '12px',
-                boxShadow: '0 2px 12px rgba(0, 0, 0, 0.06)'
-              }}>
-                <h3 style={{ color: '#004F7B', fontSize: '1.125rem', fontFamily: 'Antonio, sans-serif', fontWeight: 700, marginBottom: '1rem' }}>Beispielszenarien</h3>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.75rem' }}>
+              <div className="info-card gradient">
+                <h3>Beispielszenarien</h3>
+                <div className="scenario-grid">
                   {/* Hotelkette */}
-                  <div style={{
-                    background: 'white',
-                    padding: '0.75rem',
-                    borderRadius: '8px',
-                    cursor: 'pointer',
-                    transition: 'all 0.3s',
-                    border: '1px solid transparent',
-                    fontFamily: 'Poppins, sans-serif',
-                    textAlign: 'center'
-                  }}>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
-                      <span style={{ fontSize: '1.25rem' }}>🏨</span>
-                      <strong style={{ color: '#333' }}>Hotelkette</strong>
+                  <div className="scenario-card">
+                    <div className="scenario-header">
+                      <span className="scenario-icon">🏨</span>
+                      <strong className="scenario-title">Hotelkette</strong>
                     </div>
-                    <div style={{ fontSize: '0.75rem', color: '#666' }}>
-                      35.000 € • 21 Tage • Abholung
-                    </div>
-                    <div style={{ fontSize: '0.875rem', color: '#94c456', fontWeight: '600', marginTop: '0.25rem' }}>
-                      12% Rabatt
-                    </div>
+                    <div className="scenario-details">35.000 € • 21 Tage • Abholung</div>
+                    <div className="scenario-discount">12% Rabatt</div>
                   </div>
-                  
+
                   {/* Klinikgruppe */}
-                  <div style={{
-                    background: 'white',
-                    padding: '0.75rem',
-                    borderRadius: '8px',
-                    cursor: 'pointer',
-                    transition: 'all 0.3s',
-                    border: '1px solid transparent',
-                    fontFamily: 'Poppins, sans-serif',
-                    textAlign: 'center'
-                  }}>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
-                      <span style={{ fontSize: '1.25rem' }}>🏥</span>
-                      <strong style={{ color: '#333' }}>Klinikgruppe</strong>
+                  <div className="scenario-card">
+                    <div className="scenario-header">
+                      <span className="scenario-icon">🏥</span>
+                      <strong className="scenario-title">Klinikgruppe</strong>
                     </div>
-                    <div style={{ fontSize: '0.75rem', color: '#666' }}>
-                      65.000 € • 30 Tage • Lieferung
-                    </div>
-                    <div style={{ fontSize: '0.875rem', color: '#94c456', fontWeight: '600', marginTop: '0.25rem' }}>
-                      12% Rabatt
-                    </div>
+                    <div className="scenario-details">65.000 € • 30 Tage • Lieferung</div>
+                    <div className="scenario-discount">12% Rabatt</div>
                   </div>
-                  
+
                   {/* Restaurant */}
-                  <div style={{
-                    background: 'white',
-                    padding: '0.75rem',
-                    borderRadius: '8px',
-                    cursor: 'pointer',
-                    transition: 'all 0.3s',
-                    border: '1px solid transparent',
-                    fontFamily: 'Poppins, sans-serif',
-                    textAlign: 'center'
-                  }}>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
-                      <span style={{ fontSize: '1.25rem' }}>🍽️</span>
-                      <strong style={{ color: '#333' }}>Restaurant</strong>
+                  <div className="scenario-card">
+                    <div className="scenario-header">
+                      <span className="scenario-icon">🍽️</span>
+                      <strong className="scenario-title">Restaurant</strong>
                     </div>
-                    <div style={{ fontSize: '0.75rem', color: '#666' }}>
-                      8.500 € • 14 Tage • Abholung
-                    </div>
-                    <div style={{ fontSize: '0.875rem', color: '#94c456', fontWeight: '600', marginTop: '0.25rem' }}>
-                      6% Rabatt
-                    </div>
+                    <div className="scenario-details">8.500 € • 14 Tage • Abholung</div>
+                    <div className="scenario-discount">6% Rabatt</div>
                   </div>
                 </div>
               </div>

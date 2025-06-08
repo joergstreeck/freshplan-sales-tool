@@ -4,13 +4,15 @@ import { Navigation } from './Navigation';
 import { CalculatorLayout } from './CalculatorLayout';
 import { CustomerForm } from './CustomerForm';
 import { LocationsForm } from './LocationsForm';
+import '../../styles/legacy/variables.css';
+import '../../styles/legacy/design-system.css';
+import '../../styles/legacy/typography.css';
 import '../../styles/legacy/layout.css';
 import '../../styles/legacy/responsive.css';
 
 export function LegacyApp() {
   const [activeTab, setActiveTab] = useState('calculator');
   const [customerIndustry, setCustomerIndustry] = useState('');
-  const [showLocationDetails, setShowLocationDetails] = useState(false);
 
   const handleTabChange = (tabId: string) => {
     setActiveTab(tabId);
@@ -24,10 +26,7 @@ export function LegacyApp() {
         return <CustomerForm onIndustryChange={setCustomerIndustry} />;
       case 'locations':
         return (
-          <LocationsForm 
-            customerIndustry={customerIndustry} 
-            onDetailedLocationsChange={setShowLocationDetails}
-          />
+          <LocationsForm customerIndustry={customerIndustry} onDetailedLocationsChange={() => {}} />
         );
       case 'creditcheck':
         return (
