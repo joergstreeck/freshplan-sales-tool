@@ -2,8 +2,14 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ApiService } from './services/api';
 import { useAuth } from './contexts/AuthContext';
-import { Button } from './components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './components/ui/card';
+import { Button } from './components/ui/button-transition';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from './components/ui/card-transition';
 import './styles/legacy/typography.css';
 import './styles/legacy/layout.css';
 import './styles/app.css';
@@ -63,9 +69,7 @@ function App() {
             </CardHeader>
             <CardContent>
               <div className="card-actions">
-                <p className="card-text">
-                  Moderne Benutzerverwaltung mit Rollen und Rechten
-                </p>
+                <p className="card-text">Moderne Benutzerverwaltung mit Rollen und Rechten</p>
                 <div className="card-button-wrapper">
                   <Button asChild>
                     <Link to="/users">Benutzerverwaltung öffnen</Link>
@@ -82,13 +86,9 @@ function App() {
             </CardHeader>
             <CardContent>
               <div className="card-actions">
-                <p className="card-text">
-                  Testen Sie die Verbindung zum Backend-Server
-                </p>
+                <p className="card-text">Testen Sie die Verbindung zum Backend-Server</p>
                 <div className="card-button-wrapper">
-                  <Button onClick={handlePing}>
-                    Verbindung testen
-                  </Button>
+                  <Button onClick={handlePing}>Verbindung testen</Button>
                   {pingResult && (
                     <pre className="code-block" style={{ marginTop: 'var(--spacing-md)' }}>
                       {pingResult}

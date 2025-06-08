@@ -10,7 +10,7 @@ import {
   type User,
 } from '../api/userSchemas';
 import { useCreateUser, useUpdateUser } from '../api/userQueries';
-import { Button } from '../../../components/ui/button';
+import { Button } from '../../../components/ui/button-transition';
 import { Input } from '../../../components/ui/input';
 import {
   Card,
@@ -18,7 +18,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from '../../../components/ui/card';
+} from '../../../components/ui/card-transition';
 
 interface UserFormProps {
   user?: User; // If provided, form is in edit mode
