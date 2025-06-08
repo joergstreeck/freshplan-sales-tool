@@ -26,18 +26,17 @@ export function TestHeaderNavPage() {
 
   return (
     <>
-      <Header 
+      <Header
         onLanguageChange={handleLanguageChange}
         onClearForm={handleClearForm}
         onSave={handleSave}
       />
-      <Navigation 
-        activeTab={activeTab}
-        onTabChange={handleTabChange}
-      />
+      <Navigation activeTab={activeTab} onTabChange={handleTabChange} />
       <div style={{ padding: '2rem', maxWidth: '1400px', margin: '0 auto' }}>
         <h2>Header & Navigation Test</h2>
-        <p>Aktiver Tab: <strong>{activeTab}</strong></p>
+        <p>
+          Aktiver Tab: <strong>{activeTab}</strong>
+        </p>
         <p>Klicken Sie auf die Tabs um zwischen ihnen zu wechseln.</p>
       </div>
     </>

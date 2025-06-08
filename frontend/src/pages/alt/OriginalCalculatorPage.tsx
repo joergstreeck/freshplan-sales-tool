@@ -9,11 +9,7 @@ export function OriginalCalculatorPage() {
       <header className="header">
         <div className="header-content">
           <div className="logo-container">
-            <img 
-              src="/freshfoodzlogo.png" 
-              alt="FreshPlan Logo" 
-              className="logo"
-            />
+            <img src="/freshfoodzlogo.png" alt="FreshPlan Logo" className="logo" />
           </div>
           <div className="tagline">So einfach, schnell und lecker!</div>
         </div>

@@ -1,8 +1,11 @@
 import { Header } from '../components/original/Header';
+import { Navigation } from '../components/original/Navigation';
+import { CalculatorLayout } from '../components/original/CalculatorLayout';
 import '../styles/legacy/variables.css';
 import '../styles/legacy/header-logo.css';
+import '../styles/legacy/calculator.css';
 
-export function TestHeaderPage() {
+export function TestCalculatorLayoutPage() {
   const handleLanguageChange = (lang: string) => {
     console.log('Language changed to:', lang);
   };
@@ -15,17 +18,19 @@ export function TestHeaderPage() {
     console.log('Save clicked');
   };
 
+  const handleTabChange = (tab: string) => {
+    console.log('Tab changed to:', tab);
+  };
+
   return (
-    <div style={{ minHeight: '100vh', background: '#f5f5f5' }}>
-      <Header 
+    <div style={{ minHeight: '100vh', background: '#f5f7fa' }}>
+      <Header
         onLanguageChange={handleLanguageChange}
         onClearForm={handleClearForm}
         onSave={handleSave}
       />
-      <div style={{ padding: '2rem', textAlign: 'center' }}>
-        <h2>Header Test</h2>
-        <p>Dies ist eine Test-Seite um den Header zu überprüfen.</p>
-      </div>
+      <Navigation activeTab="calculator" onTabChange={handleTabChange} />
+      <CalculatorLayout />
     </div>
   );
 }
