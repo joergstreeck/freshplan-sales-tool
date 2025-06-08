@@ -1,6 +1,12 @@
 import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button-transition';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card-transition';
 import { calculatorApi } from '@/features/calculator/api/calculatorApi';
 import type { CalculatorInput } from '@/features/calculator/api/calculatorSchemas';
 

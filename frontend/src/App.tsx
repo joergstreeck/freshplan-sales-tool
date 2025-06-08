@@ -2,8 +2,17 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ApiService } from './services/api';
 import { useAuth } from './contexts/AuthContext';
-import { Button } from './components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './components/ui/card';
+import { Button } from './components/ui/button-transition';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from './components/ui/card-transition';
+import './styles/legacy/typography.css';
+import './styles/legacy/layout.css';
+import './styles/app.css';
 
 function App() {
   const [count, setCount] = useState(0);
@@ -26,76 +35,81 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-background p-8">
-      <div className="mx-auto max-w-4xl space-y-8">
-        <div className="text-center">
-          <h1 className="text-4xl font-bold text-foreground mb-2">FreshPlan 2.0</h1>
-          <p className="text-muted-foreground">Sprint 0 - Walking Skeleton</p>
+    <div className="app-container">
+      <div className="content-wrapper">
+        <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
+          <h1 className="main-title">FreshPlan 2.0</h1>
+          <p className="subtitle">Ihr digitales Verkaufstool</p>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <div className="card-grid">
           <Card>
             <CardHeader>
-              <CardTitle>Calculator</CardTitle>
-              <CardDescription>Rabatt-Kalkulator für Großhandelsbestellungen</CardDescription>
+              <CardTitle>FreshPlan Verkaufstool</CardTitle>
+              <CardDescription>Komplette Verwaltung für Kunden und Angebote</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                <p className="text-sm text-muted-foreground">
-                  Legacy Migration: 4 Rabatttypen, bis zu 15% Gesamtrabatt
+              <div className="card-actions">
+                <p className="card-text">
+                  Kundendaten, Standorte, Kalkulator - Alles in einem Tool
                 </p>
-                <Button asChild>
-                  <Link to="/calculator">Rabatt berechnen</Link>
-                </Button>
+                <div className="card-button-wrapper">
+                  <Button asChild>
+                    <Link to="/legacy-tool">FreshPlan Tool öffnen</Link>
+                  </Button>
+                </div>
               </div>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader>
-              <CardTitle>User Management</CardTitle>
-              <CardDescription>Sprint 1 Feature Implementation</CardDescription>
+              <CardTitle>Benutzerverwaltung</CardTitle>
+              <CardDescription>Verwalten Sie Benutzer und Zugriffsrechte</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                <p className="text-sm text-muted-foreground">
-                  React Query + React Hook Form + Zod + Zustand
-                </p>
-                <Button asChild>
-                  <Link to="/users">Benutzerverwaltung öffnen</Link>
-                </Button>
+              <div className="card-actions">
+                <p className="card-text">Moderne Benutzerverwaltung mit Rollen und Rechten</p>
+                <div className="card-button-wrapper">
+                  <Button asChild>
+                    <Link to="/users">Benutzerverwaltung öffnen</Link>
+                  </Button>
+                </div>
               </div>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader>
-              <CardTitle>API Test</CardTitle>
-              <CardDescription>Test Backend Connection</CardDescription>
+              <CardTitle>API Verbindungstest</CardTitle>
+              <CardDescription>Prüfen Sie die Backend-Verbindung</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                <Button onClick={handlePing} variant="secondary">
-                  Ping API
-                </Button>
-                {pingResult && (
-                  <pre className="bg-muted p-4 rounded-md text-sm overflow-auto max-h-32">
-                    {pingResult}
-                  </pre>
-                )}
+              <div className="card-actions">
+                <p className="card-text">Testen Sie die Verbindung zum Backend-Server</p>
+                <div className="card-button-wrapper">
+                  <Button onClick={handlePing}>Verbindung testen</Button>
+                  {pingResult && (
+                    <pre className="code-block" style={{ marginTop: 'var(--spacing-md)' }}>
+                      {pingResult}
+                    </pre>
+                  )}
+                </div>
               </div>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader>
-              <CardTitle>Counter Test</CardTitle>
-              <CardDescription>Test React State Management</CardDescription>
+              <CardTitle>Zähler Demo</CardTitle>
+              <CardDescription>Einfache Demonstration der Interaktivität</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                <p className="text-2xl font-mono">{count}</p>
-                <Button onClick={() => setCount(count => count + 1)}>Count is {count}</Button>
+              <div className="card-actions">
+                <div className="counter-display">Zählerstand: {count}</div>
+                <div className="card-button-wrapper">
+                  <Button onClick={() => setCount(count => count + 1)}>Zähler erhöhen</Button>
+                </div>
               </div>
             </CardContent>
           </Card>

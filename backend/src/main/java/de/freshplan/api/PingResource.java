@@ -1,5 +1,7 @@
 package de.freshplan.api;
 
+import io.quarkus.security.Authenticated;
+import jakarta.annotation.security.PermitAll;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -25,6 +27,7 @@ public class PingResource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
+    @PermitAll
     public Response ping() {
         Map<String, Object> response = new HashMap<>();
         response.put("message", "pong");

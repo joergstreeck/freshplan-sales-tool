@@ -5,7 +5,7 @@ import './styles/globals.css';
 import App from './App.tsx';
 import { LoginBypassPage } from './pages/LoginBypassPage.tsx';
 import { UsersPage } from './pages/UsersPage.tsx';
-import { CalculatorPage } from './pages/CalculatorPage.tsx';
+import { LegacyToolPage } from './pages/LegacyToolPage.tsx';
 import { IntegrationTestPage } from './pages/IntegrationTestPage.tsx';
 import { AppProviders } from './app/providers.tsx';
 
@@ -57,7 +57,7 @@ enableMocking().then(() => {
         <Routes>
           <Route path="/" element={<App />} />
           <Route path="/users" element={<UsersPage />} />
-          <Route path="/calculator" element={<CalculatorPage />} />
+          <Route path="/legacy-tool" element={<LegacyToolPage />} />
           {isDevelopmentMode && <Route path="/login-bypass" element={<LoginBypassPage />} />}
           {isDevelopmentMode && (
             <Route path="/integration-test" element={<IntegrationTestPage />} />

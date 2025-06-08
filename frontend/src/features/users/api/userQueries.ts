@@ -1,11 +1,13 @@
 // React Query hooks for User API
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { httpClient } from '../../../shared/lib/apiClient';
-import {
+import type {
   User,
   CreateUserData,
   UpdateUserData,
   UserFilter,
+} from './userSchemas';
+import {
   UserSchema,
   CreateUserSchema,
   UpdateUserSchema,
@@ -136,12 +138,13 @@ export const useToggleUserStatus = () => {
   return useMutation({
     mutationFn: async ({ id, enabled }: { id: string; enabled: boolean }) => {
       const endpoint = enabled ? `/api/users/${id}/enable` : `/api/users/${id}/disable`;
-      const response = await httpClient.put<User>(endpoint);
-      return UserSchema.parse(response.data);
+      await httpClient.put(endpoint);
+      // The endpoints return 204 No Content, so we return the id and new status
+      return { id, enabled };
     },
-    onSuccess: updatedUser => {
-      // Update caches
-      queryClient.setQueryData(userKeys.detail(updatedUser.id), updatedUser);
+    onSuccess: ({ id }) => {
+      // Invalidate caches to refetch updated data
+      queryClient.invalidateQueries({ queryKey: userKeys.detail(id) });
       queryClient.invalidateQueries({ queryKey: userKeys.lists() });
     },
     onError: error => {

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useUsers, useDeleteUser, useToggleUserStatus } from '../api/userQueries';
 import { useUserStore } from '../store/userStore';
-import { Button } from '../../../components/ui/button';
+import { Button } from '../../../components/ui/button-transition';
 import { Input } from '../../../components/ui/input';
 import {
   Card,
@@ -9,7 +9,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from '../../../components/ui/card';
+} from '../../../components/ui/card-transition';
 import type { User, UserFilter } from '../api/userSchemas';
 
 export const UserTable = () => {

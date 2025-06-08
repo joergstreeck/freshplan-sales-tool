@@ -1,5 +1,11 @@
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button-transition';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card-transition';
 import { useCalculatorStore } from '../store/calculatorStore';
 import { PREDEFINED_SCENARIOS, SCENARIO_DESCRIPTIONS } from '../api/calculatorSchemas';
 import { formatCurrency, formatDays } from '@/utils/formatting';

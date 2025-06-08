@@ -1,0 +1,153 @@
+/* Original Slider Styles aus Legacy */
+.slider {
+  width: 100%;
+  height: 6px;
+  border-radius: 50px;
+  background: linear-gradient(
+    to right,
+    #94c456 0%,
+    #94c456 var(--progress, 0%),
+    #e0e0e0 var(--progress, 0%),
+    #e0e0e0 100%
+  );
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+  position: relative;
+  cursor: pointer;
+}
+
+/* Wichtig für Safari/Chrome - entfernt Default-Styles */
+.slider::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 6px;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+}
+
+.slider::-moz-range-track {
+  width: 100%;
+  height: 6px;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+}
+
+/* Slider Thumb (Knopf) */
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #94c456;
+  cursor: pointer;
+  margin-top: -7px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+  border: none;
+}
+
+.slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #94c456;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+  border: none;
+}
+
+.slider::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+  box-shadow: 0 3px 12px rgba(148, 196, 86, 0.4);
+}
+
+.slider::-moz-range-thumb:hover {
+  transform: scale(1.15);
+  box-shadow: 0 3px 12px rgba(148, 196, 86, 0.4);
+}
+
+/* Focus styles */
+.slider:focus {
+  outline: none;
+}
+
+.slider:focus::-webkit-slider-thumb {
+  box-shadow:
+    0 0 0 3px rgba(148, 196, 86, 0.2),
+    0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.slider:focus::-moz-range-thumb {
+  box-shadow:
+    0 0 0 3px rgba(148, 196, 86, 0.2),
+    0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* ============================= */
+/* Radix UI Slider Styles        */
+/* ============================= */
+
+/* Slider Root Container */
+.custom-slider-root {
+  position: relative;
+  display: flex;
+  align-items: center;
+  user-select: none;
+  touch-action: none;
+  width: 100%;
+  height: 20px;
+  cursor: pointer;
+}
+
+/* Slider Track (Background) */
+.custom-slider-track {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 100%;
+  height: 4px;
+  background-color: var(--color-gray-200, #e0e0e0);
+  border-radius: 2px;
+}
+
+/* Slider Range (Filled Part) */
+.custom-slider-range {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background-color: var(--primary-green);
+  border-radius: 2px;
+}
+
+/* Slider Thumb (Handle) */
+.custom-slider-thumb {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 20px;
+  height: 20px;
+  background-color: var(--primary-green);
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  transition: box-shadow 0.3s ease;
+  outline: none;
+}
+
+/* Hover State */
+.custom-slider-thumb:hover {
+  box-shadow: 0 3px 12px rgba(148, 196, 86, 0.4);
+}
+
+/* Focus State */
+.custom-slider-thumb:focus {
+  box-shadow:
+    0 0 0 3px rgba(148, 196, 86, 0.2),
+    0 2px 8px rgba(0, 0, 0, 0.2);
+}

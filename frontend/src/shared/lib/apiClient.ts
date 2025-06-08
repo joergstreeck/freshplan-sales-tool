@@ -49,10 +49,14 @@ class ApiClient {
         throw error;
       }
 
-      const data = await response.json();
+      // Handle 204 No Content responses
+      let data: T | null = null;
+      if (response.status !== 204 && response.headers.get('content-length') !== '0') {
+        data = await response.json();
+      }
 
       return {
-        data,
+        data: data as T,
         status: response.status,
         statusText: response.statusText,
       };
@@ -72,6 +76,13 @@ class ApiClient {
   }
 
   private getAuthToken(): string | null {
+    // For development: Check localStorage for mock token
+    if (import.meta.env.DEV) {
+      const token = localStorage.getItem('auth-token');
+      if (token) {
+        return token;
+      }
+    }
     // TODO: Integrate with AuthContext once Keycloak is ready
     return null;
   }
