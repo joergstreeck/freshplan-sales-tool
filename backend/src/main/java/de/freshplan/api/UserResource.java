@@ -1,6 +1,7 @@
 package de.freshplan.api;
 
 import de.freshplan.api.exception.mapper.ErrorResponse;
+import io.quarkus.arc.profile.UnlessBuildProfile;
 import de.freshplan.domain.user.service.UserService;
 import de.freshplan.domain.user.service.dto.CreateUserRequest;
 import de.freshplan.domain.user.service.dto.UpdateUserRequest;
@@ -42,6 +43,7 @@ import java.util.UUID;
 @Consumes(MediaType.APPLICATION_JSON)
 @Tag(name = "User Management", description = "Operations for managing users")
 @RolesAllowed("admin")
+@UnlessBuildProfile("dev")
 public class UserResource {
     
     private final UserService userService;

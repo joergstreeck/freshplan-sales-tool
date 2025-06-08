@@ -25,8 +25,8 @@ export class ApiError extends Error {
 
 class CalculatorApi {
   private getAuthToken(): string | null {
-    // Get token from localStorage or auth context
-    return localStorage.getItem('auth_token');
+    // Get token from localStorage (same key as in LoginBypassPage)
+    return localStorage.getItem('auth-token');
   }
 
   private async request<T>(endpoint: string, options?: RequestInit): Promise<T> {

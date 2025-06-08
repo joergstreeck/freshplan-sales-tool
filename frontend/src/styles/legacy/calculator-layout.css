@@ -1,0 +1,257 @@
+/* ============================= */
+/* Calculator Layout Styles      */
+/* ============================= */
+
+/* Container */
+.demonstrator-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    align-items: stretch;
+}
+
+/* Form Group Spacing for Calculator */
+.calculator-section .form-group {
+    margin-bottom: 1.5rem;
+}
+
+.calculator-section .form-group.checkbox-group {
+    margin-bottom: 2rem;
+}
+
+/* Calculator Section */
+.calculator-section {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+/* Info Section */
+.info-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.875rem;
+    height: 100%;
+    justify-content: space-between;
+}
+
+/* Info Cards */
+.info-card {
+    background: white;
+    padding: 1.75rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+}
+
+.info-card.gradient {
+    background: linear-gradient(135deg, rgba(148, 196, 86, 0.1), rgba(0, 79, 123, 0.05));
+}
+
+/* Checkbox Label Styling */
+.calculator-section .checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.calculator-section .checkbox {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+
+/* Total Discount */
+.total-discount {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    background: #94c456;
+    color: white;
+    border-radius: 10px;
+    margin-bottom: 1rem;
+}
+
+.total-value {
+    font-size: 2rem;
+    font-weight: 700;
+    font-family: var(--font-body);
+}
+
+/* Savings Display */
+.savings-display {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.savings-item {
+    text-align: center;
+    padding: 1rem;
+    background: white;
+    border-radius: 8px;
+}
+
+.savings-item.highlight {
+    background: #004F7B;
+    color: white;
+}
+
+.savings-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-family: var(--font-body);
+}
+
+.savings-value {
+    display: block;
+    font-size: 1.25rem;
+    font-weight: 700;
+    font-family: var(--font-body);
+}
+
+/* Max Discount Info */
+.max-discount-info {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e0e0e0;
+    text-align: center;
+    color: #94c456;
+    font-weight: 600;
+    font-size: 1rem;
+    font-family: var(--font-body);
+}
+
+/* Tables */
+.info-table {
+    width: 100%;
+    font-size: 0.875rem;
+    font-family: var(--font-body);
+    border-collapse: collapse;
+}
+
+.info-table td {
+    padding: 0.25rem 0;
+}
+
+.info-table .value-cell {
+    padding: 0.25rem 0.5rem;
+    text-align: right;
+    width: 80px;
+}
+
+.info-table .percent-cell {
+    padding: 0.25rem 0;
+    text-align: right;
+    color: #94c456;
+    font-weight: 600;
+}
+
+/* Chain Customer Options */
+.chain-option {
+    padding: 0.75rem;
+    background: #f8f9fa;
+    border-radius: 6px;
+    font-size: 0.875rem;
+}
+
+.chain-option strong {
+    color: #004F7B;
+    font-family: var(--font-body);
+}
+
+.chain-option-text {
+    font-family: var(--font-body);
+}
+
+.chain-option-indent {
+    padding-left: 4.5rem;
+    font-family: var(--font-body);
+}
+
+/* Scenario Cards */
+.scenario-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+}
+
+.scenario-card {
+    background: white;
+    padding: 0.75rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+    border: 1px solid transparent;
+    font-family: var(--font-body);
+    text-align: center;
+}
+
+.scenario-card:hover {
+    border-color: #94c456;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.scenario-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 0.25rem;
+}
+
+.scenario-icon {
+    font-size: 1.25rem;
+}
+
+.scenario-title {
+    color: #333;
+    font-weight: 600;
+}
+
+.scenario-details {
+    font-size: 0.75rem;
+    color: #666;
+}
+
+.scenario-discount {
+    font-size: 0.875rem;
+    color: #94c456;
+    font-weight: 600;
+    margin-top: 0.25rem;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .demonstrator-container {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+    
+    .scenario-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .calculator-section {
+        padding: 1.5rem;
+    }
+    
+    .info-card {
+        padding: 1.25rem;
+    }
+    
+    .total-discount {
+        padding: 1rem;
+    }
+    
+    .total-value {
+        font-size: 1.5rem;
+    }
+}

@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FreshPlan Team Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@400;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-blue: #004F7B;
+            --primary-green: #94C456;
+            --dark-green: #7FB040;
+            --text-dark: #333333;
+            --text-light: #666666;
+            --border-light: #E0E0E0;
+            --bg-light: #F5F5F5;
+            --success: #4CAF50;
+            --warning: #FF9800;
+            --danger: #F44336;
+            --info: #2196F3;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg-light);
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        /* Header */
+        .header {
+            background: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo img {
+            height: 40px;
+        }
+
+        .logo h1 {
+            font-family: 'Antonio', sans-serif;
+            color: var(--primary-blue);
+            font-size: 2rem;
+        }
+
+        .last-update {
+            font-size: 0.875rem;
+            color: var(--text-light);
+        }
+
+        /* Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Dashboard Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        @media (max-width: 1024px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Cards */
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        }
+
+        .card h2 {
+            font-family: 'Antonio', sans-serif;
+            color: var(--primary-blue);
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card h3 {
+            font-family: 'Antonio', sans-serif;
+            color: var(--primary-blue);
+            font-size: 1.2rem;
+            margin-bottom: 0.75rem;
+            margin-top: 1.5rem;
+        }
+
+        /* Status Indicators */
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 0.5rem;
+        }
+
+        .status-green { background: var(--success); }
+        .status-yellow { background: var(--warning); }
+        .status-red { background: var(--danger); }
+
+        /* Progress Bar */
+        .progress-bar {
+            background: var(--bg-light);
+            border-radius: 8px;
+            height: 24px;
+            overflow: hidden;
+            margin: 0.5rem 0;
+        }
+
+        .progress-fill {
+            background: var(--primary-green);
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 0.5rem;
+            color: white;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: width 0.3s ease;
+        }
+
+        /* Priority Tags */
+        .priority {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 16px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-right: 0.5rem;
+        }
+
+        .priority-high {
+            background: rgba(244, 67, 54, 0.1);
+            color: var(--danger);
+        }
+
+        .priority-medium {
+            background: rgba(255, 152, 0, 0.1);
+            color: var(--warning);
+        }
+
+        .priority-low {
+            background: rgba(76, 175, 80, 0.1);
+            color: var(--success);
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        th {
+            background: var(--bg-light);
+            padding: 0.75rem;
+            text-align: left;
+            font-weight: 600;
+            color: var(--text-dark);
+            border-bottom: 2px solid var(--border-light);
+        }
+
+        td {
+            padding: 0.75rem;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        /* Quick Links */
+        .quick-links {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .quick-link {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem;
+            background: var(--bg-light);
+            border-radius: 8px;
+            text-decoration: none;
+            color: var(--text-dark);
+            transition: all 0.3s ease;
+        }
+
+        .quick-link:hover {
+            background: var(--primary-green);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .quick-link-icon {
+            font-size: 1.5rem;
+        }
+
+        /* Metrics Grid */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .metrics-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .metric {
+            background: var(--bg-light);
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+        }
+
+        .metric-label {
+            font-size: 0.875rem;
+            color: var(--text-light);
+        }
+
+        /* Timeline */
+        .timeline {
+            margin-top: 1rem;
+        }
+
+        .timeline-item {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .timeline-date {
+            font-weight: 600;
+            color: var(--primary-blue);
+            min-width: 80px;
+        }
+
+        .timeline-content {
+            flex: 1;
+        }
+
+        /* Team Section */
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .team-member {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: var(--bg-light);
+            border-radius: 8px;
+        }
+
+        .team-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: var(--primary-green);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+        }
+
+        /* Auto-refresh indicator */
+        .auto-refresh {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--primary-blue);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 24px;
+            font-size: 0.875rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <img src="/freshfoodzlogo.png" alt="FreshFoodz Logo">
+                <h1>FreshPlan Team Dashboard</h1>
+            </div>
+            <div class="last-update">
+                Zuletzt aktualisiert: <span id="lastUpdate">08.01.2025, 14:30 Uhr</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Sprint Status -->
+        <div class="card">
+            <h2>
+                <span class="status-dot status-green"></span>
+                Sprint Status: Sprint 1 - Walking Skeleton
+            </h2>
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: 75%;">75%</div>
+            </div>
+            <p><strong>Deadline:</strong> 15.01.2025 (noch 7 Tage)</p>
+            
+            <h3>Sprint-Fortschritt nach Bereichen</h3>
+            <div style="margin-left: 1rem;">
+                <div style="margin-bottom: 0.5rem;">
+                    <strong>Backend:</strong>
+                    <div class="progress-bar" style="height: 16px;">
+                        <div class="progress-fill" style="width: 80%;">80%</div>
+                    </div>
+                </div>
+                <div style="margin-bottom: 0.5rem;">
+                    <strong>Frontend:</strong>
+                    <div class="progress-bar" style="height: 16px;">
+                        <div class="progress-fill" style="width: 60%;">60%</div>
+                    </div>
+                </div>
+                <div style="margin-bottom: 0.5rem;">
+                    <strong>Testing:</strong>
+                    <div class="progress-bar" style="height: 16px;">
+                        <div class="progress-fill" style="width: 35%; background: var(--warning);">35%</div>
+                    </div>
+                </div>
+                <div>
+                    <strong>Dokumentation:</strong>
+                    <div class="progress-bar" style="height: 16px;">
+                        <div class="progress-fill" style="width: 100%;">100%</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Grid -->
+        <div class="dashboard-grid">
+            <!-- Aktuelle Prioritäten -->
+            <div class="card">
+                <h2>🎯 Aktuelle Prioritäten</h2>
+                <div style="margin-bottom: 1rem;">
+                    <span class="priority priority-high">HOCH</span>
+                    <strong>Calculator-Feature vollständig migrieren</strong>
+                    <p style="margin-left: 3.5rem; color: var(--text-light); font-size: 0.875rem;">
+                        Frontend-Team • Deadline: 10.01.2025
+                    </p>
+                </div>
+                <div style="margin-bottom: 1rem;">
+                    <span class="priority priority-high">HOCH</span>
+                    <strong>Keycloak Production-Anbindung</strong>
+                    <p style="margin-left: 3.5rem; color: var(--text-light); font-size: 0.875rem;">
+                        DevOps-Team • Wartet auf Credentials
+                    </p>
+                </div>
+                <div style="margin-bottom: 1rem;">
+                    <span class="priority priority-medium">MITTEL</span>
+                    <strong>Customer-Module Migration</strong>
+                    <p style="margin-left: 3.5rem; color: var(--text-light); font-size: 0.875rem;">
+                        Frontend-Team • Start nach Calculator
+                    </p>
+                </div>
+                <div>
+                    <span class="priority priority-low">NIEDRIG</span>
+                    <strong>Performance-Optimierung</strong>
+                    <p style="margin-left: 3.5rem; color: var(--text-light); font-size: 0.875rem;">
+                        Alle Teams • Sprint 2
+                    </p>
+                </div>
+            </div>
+
+            <!-- Blocker & Probleme -->
+            <div class="card">
+                <h2>⚠️ Aktuelle Blocker</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Problem</th>
+                            <th>Impact</th>
+                            <th>Workaround</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="status-dot status-red"></span>Keycloak Prod</td>
+                            <td>Login blockiert</td>
+                            <td><a href="/login-bypass">LoginBypassPage</a></td>
+                        </tr>
+                        <tr>
+                            <td><span class="status-dot status-yellow"></span>Calculator-Logik</td>
+                            <td>Rabatte falsch</td>
+                            <td><a href="/legacy/calculator.js">Legacy analysieren</a></td>
+                        </tr>
+                        <tr>
+                            <td><span class="status-dot status-yellow"></span>CI sporadisch rot</td>
+                            <td>Deploys verzögert</td>
+                            <td>Manuell retriggern</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Metriken -->
+        <div class="card">
+            <h2>📊 Projekt-Metriken</h2>
+            <div class="metrics-grid">
+                <div class="metric">
+                    <div class="metric-value">45%</div>
+                    <div class="metric-label">Frontend Coverage</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-value">78%</div>
+                    <div class="metric-label">Backend Coverage</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-value">23h</div>
+                    <div class="metric-label">Tech Debt</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-value">12</div>
+                    <div class="metric-label">Offene Issues</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Entwicklungszeit Tracking -->
+        <div class="card">
+            <h2>⏱️ Entwicklungszeit-Tracking</h2>
+            <div class="dashboard-grid">
+                <div>
+                    <h3>Diese Woche (KW 2)</h3>
+                    <div class="metrics-grid" style="grid-template-columns: repeat(2, 1fr);">
+                        <div class="metric">
+                            <div class="metric-value">19.5h</div>
+                            <div class="metric-label">Woche Total</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value">5.5h</div>
+                            <div class="metric-label">Heute</div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 1rem;">
+                        <h4 style="font-size: 0.875rem; color: var(--text-dark); margin-bottom: 0.5rem;">Tagesübersicht:</h4>
+                        <table style="width: 100%; font-size: 0.875rem;">
+                            <tr>
+                                <td><strong>Mo 06.01.:</strong></td>
+                                <td>8h</td>
+                                <td style="color: var(--text-light);">Calculator API</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Di 07.01.:</strong></td>
+                                <td>6h</td>
+                                <td style="color: var(--text-light);">Two-Pass Review</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Mi 08.01.:</strong></td>
+                                <td>5.5h</td>
+                                <td style="color: var(--text-light);">Design System</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <div>
+                    <h3>Projekt-Gesamtzeit</h3>
+                    <div style="background: var(--bg-light); padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                            <strong>Legacy-Phase (Mai-Juni):</strong>
+                            <span>~80h</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                            <strong>Sprint 0 (Walking Skeleton):</strong>
+                            <span>~40h</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                            <strong>Sprint 1 (aktuell):</strong>
+                            <span>78h</span>
+                        </div>
+                        <div style="border-top: 2px solid var(--primary-blue); padding-top: 0.5rem; margin-top: 0.5rem;">
+                            <div style="display: flex; justify-content: space-between;">
+                                <strong style="color: var(--primary-blue);">GESAMT:</strong>
+                                <strong style="color: var(--primary-blue);">~198h</strong>
+                            </div>
+                        </div>
+                    </div>
+                    <p style="font-size: 0.875rem; color: var(--text-light); margin-bottom: 1rem;">
+                        Das entspricht etwa <strong>25 Personentagen</strong> über 7-8 Monate verteilt
+                    </p>
+                    
+                    <h4 style="font-size: 0.875rem; margin-bottom: 0.5rem;">Sprint 1 Budget:</h4>
+                    <div class="progress-bar" style="height: 24px;">
+                        <div class="progress-fill" style="width: 65%;">
+                            <span>78h / 120h</span>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 1.5rem;">
+                        <h4 style="font-size: 0.875rem; color: var(--text-dark); margin-bottom: 0.5rem;">Zeitverteilung nach Bereich:</h4>
+                        <div style="display: grid; gap: 0.5rem;">
+                            <div style="display: flex; justify-content: space-between; padding: 0.5rem; background: var(--bg-light); border-radius: 4px;">
+                                <span>Frontend</span>
+                                <strong>32h (41%)</strong>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; padding: 0.5rem; background: var(--bg-light); border-radius: 4px;">
+                                <span>Backend</span>
+                                <strong>28h (36%)</strong>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; padding: 0.5rem; background: var(--bg-light); border-radius: 4px;">
+                                <span>DevOps/Infra</span>
+                                <strong>10h (13%)</strong>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; padding: 0.5rem; background: var(--bg-light); border-radius: 4px;">
+                                <span>Dokumentation</span>
+                                <strong>8h (10%)</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dokumenten-Navigation -->
+        <div class="dashboard-grid">
+            <!-- Entwickler-Ressourcen -->
+            <div class="card">
+                <h2>📚 Entwickler-Ressourcen</h2>
+                <h3>Quick Start</h3>
+                <div class="quick-links">
+                    <a href="DEVELOPMENT_SETUP.md" class="quick-link">
+                        <span class="quick-link-icon">🚀</span>
+                        <span>Projekt Setup</span>
+                    </a>
+                    <a href="frontend/src/styles/DESIGN_SYSTEM.md" class="quick-link">
+                        <span class="quick-link-icon">🎨</span>
+                        <span>Design System</span>
+                    </a>
+                    <a href="API_CONTRACT.md" class="quick-link">
+                        <span class="quick-link-icon">🔌</span>
+                        <span>API Docs</span>
+                    </a>
+                    <a href="CODE_REVIEW_STANDARD.md" class="quick-link">
+                        <span class="quick-link-icon">👀</span>
+                        <span>Review Guide</span>
+                    </a>
+                </div>
+
+                <h3>Nach Aufgabentyp</h3>
+                <table>
+                    <tr>
+                        <td><strong>Neues Feature</strong></td>
+                        <td>
+                            <a href="DEVELOPMENT_HANDBOOK.md">Standards</a> • 
+                            <a href="frontend/src/styles/DESIGN_SYSTEM.md">UI/UX</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>Bug Fix</strong></td>
+                        <td>
+                            <a href="KNOWN_ISSUES.md">Known Issues</a> • 
+                            <a href="CI_DEBUGGING_STRATEGY.md">Debug Guide</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>Testing</strong></td>
+                        <td>
+                            <a href="frontend/README.md#testing">Frontend Tests</a> • 
+                            <a href="backend/README.md#testing">Backend Tests</a>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <!-- Team & Kommunikation -->
+            <div class="card">
+                <h2>👥 Team & Kommunikation</h2>
+                <h3>Team-Zuständigkeiten</h3>
+                <div class="team-grid">
+                    <div class="team-member">
+                        <div class="team-avatar">JG</div>
+                        <div>
+                            <strong>Jörg (Product Owner)</strong><br>
+                            <span style="font-size: 0.875rem; color: var(--text-light);">Gesamt-Verantwortung</span>
+                        </div>
+                    </div>
+                    <div class="team-member">
+                        <div class="team-avatar">FT</div>
+                        <div>
+                            <strong>Frontend Team</strong><br>
+                            <span style="font-size: 0.875rem; color: var(--text-light);">React, Calculator, UI</span>
+                        </div>
+                    </div>
+                    <div class="team-member">
+                        <div class="team-avatar">BT</div>
+                        <div>
+                            <strong>Backend Team</strong><br>
+                            <span style="font-size: 0.875rem; color: var(--text-light);">Quarkus, API, DB</span>
+                        </div>
+                    </div>
+                    <div class="team-member">
+                        <div class="team-avatar">DO</div>
+                        <div>
+                            <strong>DevOps Team</strong><br>
+                            <span style="font-size: 0.875rem; color: var(--text-light);">CI/CD, Keycloak, AWS</span>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Wichtige Links</h3>
+                <div class="quick-links">
+                    <a href="https://github.com/freshfoodz/freshplan" class="quick-link" target="_blank">
+                        <span class="quick-link-icon">📦</span>
+                        <span>GitHub Repo</span>
+                    </a>
+                    <a href="https://github.com/freshfoodz/freshplan/actions" class="quick-link" target="_blank">
+                        <span class="quick-link-icon">🔄</span>
+                        <span>CI/CD Pipeline</span>
+                    </a>
+                    <a href="https://staging.freshplan.de" class="quick-link" target="_blank">
+                        <span class="quick-link-icon">🌐</span>
+                        <span>Staging</span>
+                    </a>
+                    <a href="TEAM_SYNC_LOG.md" class="quick-link">
+                        <span class="quick-link-icon">📝</span>
+                        <span>Team Sync Log</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Timeline -->
+        <div class="card">
+            <h2>📅 Wichtige Termine & Updates</h2>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-date">10.01.2025</div>
+                    <div class="timeline-content">
+                        <strong>Review mit Stakeholdern</strong><br>
+                        <span style="color: var(--text-light);">Demo Calculator & Customer Module</span>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-date">15.01.2025</div>
+                    <div class="timeline-content">
+                        <strong>Sprint 1 Ende</strong><br>
+                        <span style="color: var(--text-light);">Walking Skeleton komplett</span>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-date">20.01.2025</div>
+                    <div class="timeline-content">
+                        <strong>Go-Live Beta Version</strong><br>
+                        <span style="color: var(--text-light);">Erste Kunden testen</span>
+                    </div>
+                </div>
+            </div>
+
+            <h3>Letzte wichtige Änderungen</h3>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-date">08.01.2025</div>
+                    <div class="timeline-content">
+                        <span class="status-dot status-green"></span>
+                        Design System auf CSS-Klassen umgestellt - keine Inline-Styles mehr!
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-date">07.01.2025</div>
+                    <div class="timeline-content">
+                        <span class="status-dot status-green"></span>
+                        Two-Pass Review Prozess eingeführt für höhere Code-Qualität
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-date">06.01.2025</div>
+                    <div class="timeline-content">
+                        <span class="status-dot status-green"></span>
+                        Calculator API implementiert und getestet
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Auto-refresh indicator -->
+    <div class="auto-refresh">
+        🔄 Auto-Refresh alle 5 Minuten
+    </div>
+
+    <script>
+        // Auto-refresh alle 5 Minuten
+        setTimeout(() => {
+            location.reload();
+        }, 5 * 60 * 1000);
+
+        // Aktuelle Zeit anzeigen
+        function updateTime() {
+            const now = new Date();
+            const options = { 
+                year: 'numeric', 
+                month: '2-digit', 
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+            };
+            document.getElementById('lastUpdate').textContent = 
+                now.toLocaleDateString('de-DE', options).replace(',', '') + ' Uhr';
+        }
+        updateTime();
+
+        // Progress-Animationen
+        window.addEventListener('load', () => {
+            const progressBars = document.querySelectorAll('.progress-fill');
+            progressBars.forEach(bar => {
+                const width = bar.style.width;
+                bar.style.width = '0';
+                setTimeout(() => {
+                    bar.style.width = width;
+                }, 100);
+            });
+        });
+    </script>
+</body>
+</html>

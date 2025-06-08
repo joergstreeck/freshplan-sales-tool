@@ -1,0 +1,184 @@
+{
+  "sprint": {
+    "name": "Sprint 1 - Walking Skeleton",
+    "progress": 75,
+    "deadline": "15.01.2025",
+    "startDate": "01.01.2025"
+  },
+  "progress": {
+    "backend": 80,
+    "frontend": 60,
+    "testing": 35,
+    "documentation": 100
+  },
+  "priorities": [
+    {
+      "level": "high",
+      "title": "Calculator-Feature vollständig migrieren",
+      "team": "Frontend-Team",
+      "deadline": "10.01.2025"
+    },
+    {
+      "level": "high", 
+      "title": "Keycloak Production-Anbindung",
+      "team": "DevOps-Team",
+      "status": "Wartet auf Credentials"
+    },
+    {
+      "level": "medium",
+      "title": "Customer-Module Migration", 
+      "team": "Frontend-Team",
+      "status": "Start nach Calculator"
+    },
+    {
+      "level": "low",
+      "title": "Performance-Optimierung",
+      "team": "Alle Teams",
+      "status": "Sprint 2"
+    }
+  ],
+  "blockers": [
+    {
+      "severity": "critical",
+      "title": "Keycloak Prod",
+      "impact": "Login blockiert",
+      "workaround": "LoginBypassPage",
+      "link": "/login-bypass"
+    },
+    {
+      "severity": "warning",
+      "title": "Calculator-Logik", 
+      "impact": "Rabatte falsch",
+      "workaround": "Legacy analysieren",
+      "link": "/legacy/calculator.js"
+    },
+    {
+      "severity": "warning",
+      "title": "CI sporadisch rot",
+      "impact": "Deploys verzögert", 
+      "workaround": "Manuell retriggern"
+    }
+  ],
+  "upcomingDates": [
+    {
+      "date": "10.01.2025",
+      "title": "Review mit Stakeholdern",
+      "description": "Demo Calculator & Customer Module"
+    },
+    {
+      "date": "15.01.2025",
+      "title": "Sprint 1 Ende",
+      "description": "Walking Skeleton komplett"
+    },
+    {
+      "date": "20.01.2025",
+      "title": "Go-Live Beta Version",
+      "description": "Erste Kunden testen"
+    }
+  ],
+  "recentChanges": [
+    {
+      "date": "08.01.2025",
+      "description": "Design System auf CSS-Klassen umgestellt - keine Inline-Styles mehr!",
+      "status": "success"
+    },
+    {
+      "date": "07.01.2025",
+      "description": "Two-Pass Review Prozess eingeführt für höhere Code-Qualität",
+      "status": "success"
+    },
+    {
+      "date": "06.01.2025", 
+      "description": "Calculator API implementiert und getestet",
+      "status": "success"
+    }
+  ],
+  "timeTracking": {
+    "currentWeek": {
+      "weekNumber": 2,
+      "totalHours": 19.5,
+      "todayHours": 5.5,
+      "days": [
+        {
+          "date": "06.01.2025",
+          "day": "Mo",
+          "hours": 8,
+          "description": "Calculator API"
+        },
+        {
+          "date": "07.01.2025", 
+          "day": "Di",
+          "hours": 6,
+          "description": "Two-Pass Review"
+        },
+        {
+          "date": "08.01.2025",
+          "day": "Mi", 
+          "hours": 5.5,
+          "description": "Design System"
+        }
+      ]
+    },
+    "sprint": {
+      "totalBudget": 120,
+      "usedHours": 78,
+      "distribution": {
+        "frontend": 32,
+        "backend": 28,
+        "devops": 10,
+        "documentation": 8
+      }
+    },
+    "projectTotal": {
+      "phases": [
+        {
+          "name": "Legacy-Phase (Single-Page Tool)",
+          "period": "Mai-Juni 2024",
+          "hours": 80,
+          "description": "HTML/JS Tool Entwicklung + Vite Migration"
+        },
+        {
+          "name": "Sprint 0 (Walking Skeleton)",
+          "period": "Juni 2024",
+          "hours": 40,
+          "description": "Monorepo Setup, React + Quarkus"
+        },
+        {
+          "name": "Sprint 1 (Feature Migration)",
+          "period": "Januar 2025",
+          "hours": 78,
+          "description": "User Management, Calculator, Design System"
+        }
+      ],
+      "totalHours": 198,
+      "totalDays": 25,
+      "timespan": "7-8 Monate"
+    }
+  },
+  "teamMembers": [
+    {
+      "initials": "JG",
+      "name": "Jörg",
+      "role": "Product Owner",
+      "responsibility": "Gesamt-Verantwortung"
+    },
+    {
+      "initials": "FT",
+      "name": "Frontend Team",
+      "role": "Frontend Team", 
+      "responsibility": "React, Calculator, UI"
+    },
+    {
+      "initials": "BT",
+      "name": "Backend Team",
+      "role": "Backend Team",
+      "responsibility": "Quarkus, API, DB"
+    },
+    {
+      "initials": "DO",
+      "name": "DevOps Team",
+      "role": "DevOps Team",
+      "responsibility": "CI/CD, Keycloak, AWS"
+    }
+  ]
+}
