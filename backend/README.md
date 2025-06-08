@@ -1,5 +1,7 @@
 # FreshPlan 2.0 - Backend (Quarkus)
 
+**📅 Aktuelles Datum: <!-- AUTO_DATE --> (System: 08.06.2025)**
+
 ## 🚀 Quarkus REST API
 
 Enterprise-grade backend for the FreshPlan 2.0 Sales Platform.
@@ -79,6 +81,86 @@ docker build -f src/main/docker/Dockerfile.jvm -t freshplan/backend .
 - `QUARKUS_OIDC_AUTH_SERVER_URL` - Override Keycloak URL
 
 ### Team
+
+- Backend Team + ChatGPT AI Assistant
+
+## 📚 Wichtige Dokumentation für Backend-Entwickler
+
+### Essenzielle Docs (auch ohne Root-Zugriff)
+
+#### 🏗️ Architektur & Standards
+- **Domain-Driven Design**: Package-Struktur nach Domänen (users, calculator)
+- **REST API Standards**: JAX-RS Annotations, konsistente Responses
+- **Java Code Standards**: 
+  - Max. 100 Zeichen pro Zeile
+  - JavaDoc für alle public APIs
+  - SOLID Principles
+
+#### 🔧 Setup & Development
+- **Local Development**:
+  ```bash
+  # PostgreSQL & Keycloak starten
+  cd ../infrastructure && ./start-local-env.sh
+  
+  # Backend mit Hot-Reload
+  ./mvnw quarkus:dev
+  ```
+- **Test-Daten**: DevDataInitializer erstellt 6 Test-User
+- **Dev-Endpoints**: `/api/dev/users` für Mock-JWT-Tokens
+
+#### 🌐 API Dokumentation
+- **OpenAPI/Swagger**: http://localhost:8080/q/swagger-ui
+- **Endpoints**:
+  ```
+  GET    /api/ping              # Health Check
+  GET    /api/users             # List Users (Auth required)
+  POST   /api/users             # Create User
+  PUT    /api/users/{id}        # Update User
+  DELETE /api/users/{id}        # Delete User
+  POST   /api/calculator        # Calculator Service
+  ```
+
+#### 🧪 Testing
+- **Unit Tests**: `./mvnw test`
+- **Integration Tests**: `*IT.java` Dateien
+- **Test Coverage**: Min. 80% für neue Features
+- **Mock JWT**: Siehe `DevUserResource` für Test-Tokens
+
+#### ⚠️ Known Issues
+- Keycloak Mock-Mode: Nur für Development
+- H2 Console: Deaktiviert in Production
+- CORS: Nur localhost:5173 erlaubt
+
+#### 🚀 Deployment
+- **JVM Build**: `./mvnw clean package`
+- **Native Build**: `./mvnw package -Pnative`
+- **Docker**: `docker build -f src/main/docker/Dockerfile.jvm`
+
+### Wo finde ich was? (Backend-Perspektive)
+```
+backend/
+├── src/main/java/de/freshplan/
+│   ├── api/              # REST Resources
+│   ├── domain/           # Business Logic
+│   │   ├── user/         # User Domain
+│   │   └── calculator/   # Calculator Domain
+│   └── infrastructure/   # Technical Services
+├── src/main/resources/
+│   ├── application.properties
+│   └── db/migration/     # Flyway Scripts
+└── src/test/             # Tests
+```
+
+### Support & Hilfe
+- **Team Chat**: Slack #backend-dev
+- **API Changes**: Immer API_CONTRACT.md updaten
+- **DB Changes**: Flyway Migration erstellen
+
+## 📖 Quick Links (Backend-spezifisch)
+
+- [Database Guide](./DATABASE_GUIDE.md) - Schema, Migrations, JPA Tipps
+- [API Testing Guide](./API_TESTING.md) - curl, HTTPie, Postman Examples
+- [Test Coverage Report](./TEST_COVERAGE_REPORT.md) - Aktuelle Test-Abdeckung
 - Backend Team + ChatGPT AI Assistant
 
 ### Sprint 0 Status
