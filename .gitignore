@@ -25,6 +25,7 @@ build/
 coverage/
 test-results/
 playwright-report/
+test-artifacts-backup/
 
 # Temporary files
 *.tmp
