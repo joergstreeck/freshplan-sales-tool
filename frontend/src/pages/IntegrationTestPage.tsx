@@ -7,8 +7,8 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card-transition';
-import { calculatorApi } from '@/features/calculator/api/calculatorApi';
-import type { CalculatorInput } from '@/features/calculator/api/calculatorSchemas';
+import { calculatorApi } from '@/features/calculator/calculatorApi';
+import type { CalculatorInput } from '@/features/calculator/calculatorSchemas';
 
 export function IntegrationTestPage() {
   const [results, setResults] = useState<

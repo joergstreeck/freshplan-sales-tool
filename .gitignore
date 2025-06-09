@@ -10,6 +10,8 @@ Thumbs.db
 # Dependencies
 node_modules/
 target/
+venv/
+.venv/
 
 # Build outputs
 dist/
@@ -25,11 +27,78 @@ build/
 coverage/
 test-results/
 playwright-report/
+test-artifacts-backup/
 
 # Temporary files
 *.tmp
 *.swp
 *~
+/temp/*
+!/temp/README.md
+
+# Logs
+*.log
+frontend.log
+backend.log
+
+# Backup files
+*_backup.txt
+*.backup
+*.bak
+.archive/
+*-backup-*/
+freshplan-backup-*/
+
+# Temporary HTML files
+index-minimal.html
+test.html
+
 # Maven (lokal heruntergeladen)
 apache-maven-*/
 *.tar.gz
+
+# Deprecated/Old files
+*.old
+*.deprecated
+
+# Development tools cache
+.vite/
+*.tsbuildinfo
+
+# OS generated files
+.DS_Store?
+.Spotlight-V100
+.Trashes
+Icon?
+ehthumbs.db
+Thumbs.db
+
+# Editor backup files
+*~
+*.swp
+*.swo
+
+# Package manager locks (optional - keep only one)
+# pnpm-lock.yaml
+# yarn.lock
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by tools like istanbul
+coverage/
+*.lcov
+
+# IDEs and editors
+.vscode/settings.json
+.vscode/launch.json
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# Temporary folders
+tmp/
+temp/
