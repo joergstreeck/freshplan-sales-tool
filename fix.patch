@@ -1,0 +1,207 @@
+ diff --git a/frontend/.env b/frontend/.env
+  index 1234567..abcdefg 100644
+  --- a/frontend/.env
+  +++ b/frontend/.env
+  @@ -1,2 +1,2 @@
+   VITE_KEYCLOAK_URL=http://localhost:8180
+  -VITE_API_URL=http://localhost:8090
+  +VITE_API_URL=http://localhost:8080
+  diff --git a/frontend/vite.config.ts b/frontend/vite.config.ts
+  index 1234567..abcdefg 100644
+  --- a/frontend/vite.config.ts
+  +++ b/frontend/vite.config.ts
+  @@ -15,7 +15,7 @@ export default defineConfig({
+       port: 5173,
+       proxy: {
+         '/api': {
+  -        target: 'http://localhost:8090',
+  +        target: 'http://localhost:8080',
+           changeOrigin: true,
+         },
+       },
+  @@ -24,7 +24,7 @@ export default defineConfig({
+       environment: 'jsdom',
+       globals: true,
+       setupFiles: './src/test/setup.ts',
+  -    exclude: ['tests/**', 'node_modules/**', 'dist/**'],
+  +    exclude: ['tests/**', 'node_modules/**', 'dist/**', 'src/temp/**'],
+       coverage: {
+         provider: 'v8',
+         reporter: ['text', 'json', 'html'],
+  diff --git a/frontend/src/services/api.ts b/frontend/src/services/api.ts
+  index 1234567..abcdefg 100644
+  --- a/frontend/src/services/api.ts
+  +++ b/frontend/src/services/api.ts
+  @@ -2,7 +2,7 @@
+
+   import type { PingResponse, ApiError } from '../api-types';
+
+  -const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8090';
+  +const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+
+   export class ApiService {
+     static async ping(token?: string): Promise<PingResponse> {
+  diff --git a/frontend/src/main.tsx b/frontend/src/main.tsx
+  index 1234567..abcdefg 100644
+  --- a/frontend/src/main.tsx
+  +++ b/frontend/src/main.tsx
+  @@ -15,7 +15,7 @@ async function checkBackendConnection() {
+     console.log('🔍 Checking backend connection...');
+
+     try {
+  -    const response = await fetch('http://localhost:8090/api/ping', {
+  +    const response = await fetch('http://localhost:8080/api/ping', {
+         method: 'GET',
+         headers: {
+           'Content-Type': 'application/json',
+  diff --git a/frontend/src/features/users/api/userSchemas.ts b/frontend/src/features/users/api/userSchemas.ts
+  index 1234567..abcdefg 100644
+  --- a/frontend/src/features/users/api/userSchemas.ts
+  +++ b/frontend/src/features/users/api/userSchemas.ts
+  @@ -2,7 +2,7 @@
+   import { z } from 'zod';
+
+   // User roles enum
+  -export const UserRole = z.enum(['admin', 'manager', 'sales', 'viewer']);
+  +export const UserRole = z.enum(['admin', 'manager', 'sales']);
+
+   // Base User schema matching backend API
+   export const UserSchema = z.object({
+  diff --git a/frontend/src/pages/LoginBypassPage.tsx b/frontend/src/pages/LoginBypassPage.tsx
+  index 1234567..abcdefg 100644
+  --- a/frontend/src/pages/LoginBypassPage.tsx
+  +++ b/frontend/src/pages/LoginBypassPage.tsx
+  @@ -25,8 +25,6 @@ export function LoginBypassPage() {
+           'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Im1vY2sta2V5LWlkIn0.eyJleHAiOjE5OTk5OT
+  k5OTksImlhdCI6MTYwOTQ1OTIwMCwianRpIjoibW9jay1qdGktbWFuYWdlciIsImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3
+  Q6ODE4MC9yZWFsbXMvZnJlc2hwbGFuIiwiYXVkIjoiZnJlc2hwbGFuLWJhY2tlbmQiLCJzdWIiOiJtb2NrLW1hbmFnZX
+  ItdXNlciIsInR5cCI6IkJlYXJlciIsImF6cCI6ImZyZXNocGxhbi1iYWNrZW5kIiwic2Vzc2lvbl9zdGF0ZSI6Im1vY2
+  stc2Vzc2lvbiIsInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJtYW5hZ2VyIl19LCJyZXNvdXJjZV9hY2Nlc3MiOnsiZn
+  Jlc2hwbGFuLWJhY2tlbmQiOnsicm9sZXMiOlsibWFuYWdlciJdfX0sInNjb3BlIjoib3BlbmlkIGVtYWlsIHByb2ZpbG
+  UiLCJzaWQiOiJtb2NrLXNpZCIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJuYW1lIjoiTWFuYWdlciBVc2VyIiwicHJlZm
+  VycmVkX3VzZXJuYW1lIjoibWFuYWdlciIsImdpdmVuX25hbWUiOiJNYW5hZ2VyIiwiZmFtaWx5X25hbWUiOiJVc2VyIi
+  wiZW1haWwiOiJtYW5hZ2VyQGZyZXNocGxhbi5kZSJ9.mock-signature',
+         sales:
+           'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Im1vY2sta2V5LWlkIn0.eyJleHAiOjE5OTk5OT
+  k5OTksImlhdCI6MTYwOTQ1OTIwMCwianRpIjoibW9jay1qdGktc2FsZXMiLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0Oj
+  gxODAvcmVhbG1zL2ZyZXNocGxhbiIsImF1ZCI6ImZyZXNocGxhbi1iYWNrZW5kIiwic3ViIjoibW9jay1zYWxlcy11c2
+  VyIiwidHlwIjoiQmVhcmVyIiwiYXpwIjoiZnJlc2hwbGFuLWJhY2tlbmQiLCJzZXNzaW9uX3N0YXRlIjoibW9jay1zZX
+  NzaW9uIiwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbInNhbGVzIl19LCJyZXNvdXJjZV9hY2Nlc3MiOnsiZnJlc2hwbG
+  FuLWJhY2tlbmQiOnsicm9sZXMiOlsic2FsZXMiXX19LCJzY29wZSI6Im9wZW5pZCBlbWFpbCBwcm9maWxlIiwic2lkIj
+  oibW9jay1zaWQiLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwibmFtZSI6IlNhbGVzIFVzZXIiLCJwcmVmZXJyZWRfdXNlcm
+  5hbWUiOiJzYWxlcyIsImdpdmVuX25hbWUiOiJTYWxlcyIsImZhbWlseV9uYW1lIjoiVXNlciIsImVtYWlsIjoic2FsZX
+  NAZnJlc2hwbGFuLmRlIn0.mock-signature',
+  -      viewer:
+  -        'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Im1vY2sta2V5LWlkIn0.eyJleHAiOjE5OTk5OT
+  k5OTksImlhdCI6MTYwOTQ1OTIwMCwianRpIjoibW9jay1qdGktdmlld2VyIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdD
+  o4MTgwL3JlYWxtcy9mcmVzaHBsYW4iLCJhdWQiOiJmcmVzaHBsYW4tYmFja2VuZCIsInN1YiI6Im1vY2stdmlld2VyLX
+  VzZXIiLCJ0eXAiOiJCZWFyZXIiLCJhenAiOiJmcmVzaHBsYW4tYmFja2VuZCIsInNlc3Npb25fc3RhdGUiOiJtb2NrLX
+  Nlc3Npb24iLCJyZWFsbV9hY2Nlc3MiOnsicm9sZXMiOlsidmlld2VyIl19LCJyZXNvdXJjZV9hY2Nlc3MiOnsiZnJlc2
+  hwbGFuLWJhY2tlbmQiOnsicm9sZXMiOlsidmlld2VyIl19fSwic2NvcGUiOiJvcGVuaWQgZW1haWwgcHJvZmlsZSIsIn
+  NpZCI6Im1vY2stc2lkIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsIm5hbWUiOiJWaWV3ZXIgVXNlciIsInByZWZlcnJlZF
+  91c2VybmFtZSI6InZpZXdlciIsImdpdmVuX25hbWUiOiJWaWV3ZXIiLCJmYW1pbHlfbmFtZSI6IlVzZXIiLCJlbWFpbC
+  I6InZpZXdlckBmcmVzaHBsYW4uZGUifQ.mock-signature',
+       };
+
+       const mockUsers = {
+  @@ -45,11 +43,6 @@ export function LoginBypassPage() {
+           email: 'sales@freshplan.de',
+           roles: ['sales'],
+         },
+  -      viewer: {
+  -        id: 'mock-viewer-user',
+  -        username: 'viewer',
+  -        email: 'viewer@freshplan.de',
+  -        roles: ['viewer'],
+  -      },
+       };
+
+       // Store in localStorage for API client
+  @@ -77,9 +70,6 @@ export function LoginBypassPage() {
+                 <Button onClick={() => mockLogin('sales')} variant="secondary">
+                   Login as Sales
+                 </Button>
+  -              <Button onClick={() => mockLogin('viewer')} variant="secondary">
+  -                Login as Viewer
+  -              </Button>
+               </div>
+               <div className="mt-4 text-sm text-muted-foreground">
+                 <p>Roles:</p>
+                 <ul className="list-disc list-inside mt-2">
+                   <li>
+  -                  <strong>Admin</strong>: Full access to all features
+  +                  <strong>Admin</strong>: Vollzugriff auf alle Funktionen, User-Verwaltung
+                   </li>
+                   <li>
+  -                  <strong>Manager</strong>: Can manage users and view reports
+  +                  <strong>Manager</strong>: Geschäftsleitung, alle Berichte, Credit Checks
+                   </li>
+                   <li>
+  -                  <strong>Sales</strong>: Can create and manage orders
+  -                </li>
+  -                <li>
+  -                  <strong>Viewer</strong>: Read-only access
+  +                  <strong>Sales</strong>: Verkäufer, Kunden anlegen, Kalkulationen
+                   </li>
+                 </ul>
+               </div>
+  diff --git a/frontend/src/pages/LoginBypassPage.test.tsx 
+  b/frontend/src/pages/LoginBypassPage.test.tsx
+  index 1234567..abcdefg 100644
+  --- a/frontend/src/pages/LoginBypassPage.test.tsx
+  +++ b/frontend/src/pages/LoginBypassPage.test.tsx
+  @@ -69,7 +69,6 @@ describe('LoginBypassPage', () => {
+       expect(screen.getByRole('button', { name: /login as admin/i })).toBeInTheDocument();
+       expect(screen.getByRole('button', { name: /login as manager/i })).toBeInTheDocument();
+       expect(screen.getByRole('button', { name: /login as sales/i })).toBeInTheDocument();
+  -    expect(screen.getByRole('button', { name: /login as viewer/i })).toBeInTheDocument();
+     });
+
+     it('displays role descriptions', () => {
+  @@ -80,10 +79,9 @@ describe('LoginBypassPage', () => {
+       );
+
+       // Check for role descriptions in the list
+  -    expect(screen.getByText(/Full access to all features/)).toBeInTheDocument();
+  -    expect(screen.getByText(/Can manage users and view reports/)).toBeInTheDocument();
+  -    expect(screen.getByText(/Can create and manage orders/)).toBeInTheDocument();
+  -    expect(screen.getByText(/Read-only access/)).toBeInTheDocument();
+  +    expect(screen.getByText(/Vollzugriff auf alle Funktionen/)).toBeInTheDocument();
+  +    expect(screen.getByText(/Geschäftsleitung, alle Berichte/)).toBeInTheDocument();
+  +    expect(screen.getByText(/Verkäufer, Kunden anlegen/)).toBeInTheDocument();
+     });
+
+     it('sets localStorage and redirects when admin button is clicked', () => {
+  diff --git a/frontend/src/services/__tests__/api.test.ts 
+  b/frontend/src/services/__tests__/api.test.ts
+  index 1234567..abcdefg 100644
+  --- a/frontend/src/services/__tests__/api.test.ts
+  +++ b/frontend/src/services/__tests__/api.test.ts
+  @@ -25,7 +25,7 @@ describe('ApiService', () => {
+
+         const result = await ApiService.ping('test-token');
+
+  -      expect(global.fetch).toHaveBeenCalledWith('http://localhost:8090/api/ping', {
+  +      expect(global.fetch).toHaveBeenCalledWith('http://localhost:8080/api/ping', {
+           method: 'GET',
+           headers: {
+             'Content-Type': 'application/json',
+  @@ -49,7 +49,7 @@ describe('ApiService', () => {
+
+         await ApiService.ping();
+
+  -      expect(global.fetch).toHaveBeenCalledWith('http://localhost:8090/api/ping', {
+  +      expect(global.fetch).toHaveBeenCalledWith('http://localhost:8080/api/ping', {
+           method: 'GET',
+           headers: {
+             'Content-Type': 'application/json',
+  diff --git a/frontend/src/test/setup.ts b/frontend/src/test/setup.ts
+  index 1234567..abcdefg 100644
+  --- a/frontend/src/test/setup.ts
+  +++ b/frontend/src/test/setup.ts
+  @@ -35,7 +35,7 @@ Object.defineProperty(import.meta, 'env', {
+       DEV: true,
+       PROD: false,
+       MODE: 'test',
+  -    VITE_API_URL: 'http://localhost:8080/api',
+  +    VITE_API_URL: 'http://localhost:8080',

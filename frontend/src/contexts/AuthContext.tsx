@@ -25,7 +25,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // Initialisierung mit Development Auto-Login
   const [user, setUser] = useState<User | null>(() => {
-    if (import.meta.env.DEV) {
+    if (import.meta.env.DEV && typeof window !== 'undefined' && !import.meta.env.VITEST) {
       const mockUser = {
         id: 'mock-admin-user',
         name: 'Admin User',
@@ -39,7 +39,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return null;
   });
 
-  const [token, setToken] = useState<string | null>(import.meta.env.DEV ? mockToken : null);
+  const [token, setToken] = useState<string | null>(() => {
+    if (import.meta.env.DEV && typeof window !== 'undefined' && !import.meta.env.VITEST) {
+      return mockToken;
+    }
+    return null;
+  });
 
   const login = async (email: string, password: string) => {
     // TODO: Implement Keycloak login

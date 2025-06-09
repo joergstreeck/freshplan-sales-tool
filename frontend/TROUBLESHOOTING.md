@@ -14,8 +14,8 @@
 
 ```typescript
 // In src/features/users/api/userSchemas.ts
-export const UserRole = z.enum(['admin', 'manager', 'sales', 'viewer']);
-// 'viewer' fehlte vorher!
+export const UserRole = z.enum(['admin', 'manager', 'sales']);
+// Nur diese drei Rollen sind verfügbar!
 ```
 
 ### 2. Auto-Login funktioniert nicht

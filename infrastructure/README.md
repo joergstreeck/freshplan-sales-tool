@@ -1,6 +1,6 @@
 # FreshPlan 2.0 - Infrastructure
 
-**📅 Aktuelles Datum: <!-- AUTO_DATE --> (System: 08.06.2025)**
+**📅 Aktuelles Datum: 09.06.2025 (System: 09.06.2025)**
 
 ## 🚧 Sprint 0 - Setup in Progress
 

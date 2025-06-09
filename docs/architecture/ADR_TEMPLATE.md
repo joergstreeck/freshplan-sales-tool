@@ -1,6 +1,6 @@
 # ADR-NNN: [kurzer Titel der Entscheidung]
 
-**📅 Aktuelles Datum: <!-- AUTO_DATE --> (System: 08.06.2025)**
+**📅 Aktuelles Datum: 09.06.2025 (System: 09.06.2025)**
 
 **Status:** [draft | proposed | accepted | superseded | deprecated]
 **Date:** YYYY-MM-DD

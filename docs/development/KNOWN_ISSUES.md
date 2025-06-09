@@ -1,6 +1,6 @@
 # Known Issues - FreshPlan 2.0
 
-**📅 Aktuelles Datum: <!-- AUTO_DATE --> (System: 08.06.2025)**
+**📅 Aktuelles Datum: 09.06.2025 (System: 09.06.2025)**
 
 **Letzte Aktualisierung:** 08.06.2025
 

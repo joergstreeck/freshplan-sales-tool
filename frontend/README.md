@@ -1,6 +1,6 @@
 # FreshPlan 2.0 - Frontend (React)
 
-**📅 Aktuelles Datum: <!-- AUTO_DATE --> (System: 08.06.2025)**
+**📅 Aktuelles Datum: 09.06.2025 (System: 09.06.2025)**
 
 ## 🚀 React + TypeScript + Vite
 
@@ -145,7 +145,7 @@ npm run test:ui     # Interactive UI
 
 #### ⚠️ Known Issues
 
-- Users-Page: Rolle 'viewer' muss in Zod Schema sein
+- Users-Page: Zod Schema muss mit Backend-Rollen übereinstimmen
 - Auto-Login in Dev: Token muss in localStorage
 - Hot Reload: Manchmal Neustart nötig
 

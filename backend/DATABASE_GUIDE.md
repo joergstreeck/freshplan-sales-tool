@@ -31,7 +31,7 @@ CREATE TABLE user_roles (
     PRIMARY KEY (user_id, role)
 );
 
--- Erlaubte Rollen: admin, manager, sales, viewer
+-- Erlaubte Rollen: admin, manager, sales
 ```
 
 ## 🔄 Flyway Migrations

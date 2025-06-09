@@ -1,6 +1,6 @@
 # Frontend-Backend Spezifikation für FreshPlan Sales Tool
 
-**📅 Aktuelles Datum: <!-- AUTO_DATE --> (System: 08.06.2025)**
+**📅 Aktuelles Datum: 09.06.2025 (System: 09.06.2025)**
 
 ## 1. Backend-Berechnungen und Business-Logik
 

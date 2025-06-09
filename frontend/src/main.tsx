@@ -7,7 +7,7 @@ import { LoginBypassPage } from './pages/LoginBypassPage.tsx';
 import { UsersPage } from './pages/UsersPage.tsx';
 import { LegacyToolPage } from './pages/LegacyToolPage.tsx';
 import { IntegrationTestPage } from './pages/IntegrationTestPage.tsx';
-import { AppProviders } from './providers.tsx';
+import { AppProviders } from './app/providers.tsx';
 
 // Only include login bypass in development mode
 // SECURITY: Never include this route in production builds!

@@ -31,7 +31,6 @@ Für die lokale Entwicklung ohne Keycloak-Setup:
    - **Admin**: Vollzugriff auf alle Features
    - **Manager**: Kann User verwalten und Reports einsehen
    - **Sales**: Kann Bestellungen erstellen und verwalten
-   - **Viewer**: Nur Lesezugriff
 
 ## Test-User
 
@@ -42,7 +41,6 @@ Das System erstellt automatisch folgende Test-User:
 | admin | admin@freshplan.de | admin |
 | manager | manager@freshplan.de | manager |
 | sales | sales@freshplan.de | sales |
-| viewer | viewer@freshplan.de | viewer |
 | max.mustermann | max@example.com | sales |
 | erika.musterfrau | erika@example.com | sales |
 

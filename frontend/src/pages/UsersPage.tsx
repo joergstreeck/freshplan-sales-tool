@@ -1,8 +1,7 @@
 // Users management page
-import { UserTable } from '../features/users/UserTable';
-import { UserForm } from '../features/users/UserForm';
-import { useUser } from '../features/users/userQueries';
-import { useUserStore } from '../features/users/userStore';
+import { UserTable, UserForm } from '../features/users/components';
+import { useUser } from '../features/users/api/userQueries';
+import { useUserStore } from '../features/users/store/userStore';
 
 export const UsersPage = () => {
   const { isCreateModalOpen, isEditModalOpen, selectedUserId, closeCreateModal, closeEditModal } =

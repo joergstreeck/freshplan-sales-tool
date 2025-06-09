@@ -14,7 +14,7 @@ Dieses Dokument beschreibt die langfristige Vision und die geplante zukünftige 
 Die strategische Weiterentwicklung sieht ein vollwertiges, API-zentriertes System vor, bestehend aus:
 
 * **Frontend (Weiterentwicklung des aktuellen Tools):** Die bewährte Benutzeroberfläche für die Verkäufer, refaktorisiert zu sauberen TypeScript-Modulen.
-* **Zentrales Backend:** Übernimmt Datenhaltung, komplexe Geschäftslogik, Rechteverwaltung und Integrationen. (Technologie z.B. Node.js + Express).
+* **Zentrales Backend:** Übernimmt Datenhaltung, komplexe Geschäftslogik, Rechteverwaltung und Integrationen. (Technologie: Quarkus mit Java).
 * **Datenbank (z.B. PostgreSQL):** Für die persistente und zentrale Speicherung aller relevanten Daten.
 * **Externe API-Anbindungen:**
     * Warenkreditversicherer (z.B. Allianz) für Bonitätsprüfungen.
@@ -26,7 +26,7 @@ Visualisierung der Zielarchitektur:
 ```
 Frontend (Vite + TypeScript + HTML)
             ⇅ API
-Backend (Node.js + Express + DB)
+Backend (Quarkus + Java + DB)
             ⇅ APIs
 ┌────────────┬────────────┬────────────┬────────────┐
 │ PostgreSQL │ Allianz API│ Xentral ERP│ Auth-Server│
@@ -44,10 +44,10 @@ Um eine zukunftsfähige und wartbare API-Schnittstelle zu gewährleisten, werden
 ## 3. Geplante Kernfunktionen für FreshPlan 2.0 (Backend-gestützt)
 
 * **Zentrale Datenhaltung:** Alle Kunden-, Angebots-, Vertrags-, Standortdaten etc.
-* **Rechte- und Rollenverwaltung** (Beispiele):
-    * Verkäufer: Sieht nur eigene Kunden/Angebote, startet Bonitätsprüfungen, eigene Dashboards.
-    * Vertriebsleiter: Erweiterte Sichten auf Teams/Gebiete.
-    * Geschäftsleitung: Vollständige Einsicht, alle Dashboards, Administrationsfunktionen.
+* **Rechte- und Rollenverwaltung** (3 Rollen):
+    * sales: Verkäufer - eigene Kunden/Angebote, Kalkulationen, Bonitätsprüfungen
+    * manager: Geschäftsleitung - erweiterte Sichten, alle Berichte, Credit Checks
+    * admin: Software-Administration - User-Verwaltung, Systemkonfiguration
 * **Bonitätsprüfungen:** Direkte Anbindung an Anbieter wie Allianz.
 * **Dashboards:** Individuelle und aggregierte Ansichten für Verkäufer und Management.
 * **Vertragsverwaltung:** Zentrale Speicherung und Abrufbarkeit von Vertragsdokumenten.

@@ -56,7 +56,7 @@ Body: {
   email: string,
   firstName: string,
   lastName: string,
-  roles: string[],     // ['admin', 'manager', 'sales', 'viewer']
+  roles: string[],     // ['admin', 'manager', 'sales']
   enabled: boolean
 }
 Response: User

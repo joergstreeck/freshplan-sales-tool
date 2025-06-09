@@ -69,7 +69,6 @@ describe('LoginBypassPage', () => {
     expect(screen.getByRole('button', { name: /login as admin/i })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /login as manager/i })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /login as sales/i })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /login as viewer/i })).toBeInTheDocument();
   });
 
   it('displays role descriptions', () => {
@@ -80,10 +79,9 @@ describe('LoginBypassPage', () => {
     );
 
     // Check for role descriptions in the list
-    expect(screen.getByText(/Full access to all features/)).toBeInTheDocument();
-    expect(screen.getByText(/Can manage users and view reports/)).toBeInTheDocument();
-    expect(screen.getByText(/Can create and manage orders/)).toBeInTheDocument();
-    expect(screen.getByText(/Read-only access/)).toBeInTheDocument();
+    expect(screen.getByText(/Vollzugriff auf alle Funktionen/)).toBeInTheDocument();
+    expect(screen.getByText(/Geschäftsleitung, alle Berichte/)).toBeInTheDocument();
+    expect(screen.getByText(/Verkäufer, Kunden anlegen/)).toBeInTheDocument();
   });
 
   it('sets localStorage and redirects when admin button is clicked', () => {

@@ -1,6 +1,6 @@
 # FreshPlan 2.0 Dokumentation
 
-**📅 Aktuelles Datum: <!-- AUTO_DATE --> (System: 08.06.2025)**
+**📅 Aktuelles Datum: 09.06.2025 (System: 09.06.2025)**
 
 Willkommen zur zentralen Dokumentation des FreshPlan Sales Tool 2.0 Projekts.
 

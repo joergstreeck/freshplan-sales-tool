@@ -1,6 +1,6 @@
 # FreshPlan Sales Tool - Vision & Zukünftige Architektur (FreshPlan 2.0)
 
-**📅 Aktuelles Datum: <!-- AUTO_DATE --> (System: 08.06.2025)**
+**📅 Aktuelles Datum: 09.06.2025 (System: 09.06.2025)**
 
 Dieses Dokument beschreibt die langfristige Vision und die geplante zukünftige Architektur für das FreshPlan Sales Tool. Es dient als Leitfaden für alle aktuellen und zukünftigen Entwicklungsentscheidungen, um Skalierbarkeit, Robustheit und Zukunftsfähigkeit sicherzustellen. Diese Vision ist als lebendiges Dokument gedacht und soll bei Bedarf um neue Ideen und Anforderungen erweitert werden.
 
