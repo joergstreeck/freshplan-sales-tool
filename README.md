@@ -1,5 +1,7 @@
 # FreshPlan 2.0 - Enterprise Sales Platform
 
+**📅 Aktuelles Datum: 09.06.2025 (System: 09.06.2025)**
+
 > **📖 Bitte zuerst lesen: [Way of Working](WAY_OF_WORKING.md) - Unsere verbindlichen Entwicklungsstandards**
 
 ## 🏗️ Monorepo Structure
@@ -55,10 +57,12 @@ npm run dev
 
 ## 📚 Documentation
 
-- [Technical Roadmap](./FRESHPLAN_2.0_TECHNICAL_ROADMAP.md)
-- [Migration Plan](./WEB_APP_MIGRATION_PLAN.md)
+- [Technical Roadmap](./docs/technical/FRESHPLAN_2.0_TECHNICAL_ROADMAP.md)
+- [Migration Plan](./docs/technical/WEB_APP_MIGRATION_PLAN.md)
 - [Architecture Decisions](./docs/adr/)
 - [Vision & Roadmap](./VISION_AND_ROADMAP.md)
+- [API Contract](./docs/technical/API_CONTRACT.md)
+- [Team Setup](./docs/team/TEAM_SETUP.md)
 
 ## 🤝 Team & AI Collaboration
 

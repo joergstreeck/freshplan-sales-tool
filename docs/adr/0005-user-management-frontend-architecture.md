@@ -19,7 +19,7 @@ Nach erfolgreichem Tailwind + shadcn/ui Setup beginnen wir mit Sprint 1 Features
 **Frontend Requirements:**
 - User Dashboard mit Liste aller Users
 - Create/Edit User Forms mit Validation
-- Role Management (admin, manager, sales, viewer)
+- Role Management (admin, manager, sales)
 - Search & Filter Funktionalität
 - Responsive Design für Desktop + Mobile
 - Accessibility compliance

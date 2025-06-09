@@ -24,8 +24,6 @@ export function LoginBypassPage() {
         'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Im1vY2sta2V5LWlkIn0.eyJleHAiOjE5OTk5OTk5OTksImlhdCI6MTYwOTQ1OTIwMCwianRpIjoibW9jay1qdGktbWFuYWdlciIsImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6ODE4MC9yZWFsbXMvZnJlc2hwbGFuIiwiYXVkIjoiZnJlc2hwbGFuLWJhY2tlbmQiLCJzdWIiOiJtb2NrLW1hbmFnZXItdXNlciIsInR5cCI6IkJlYXJlciIsImF6cCI6ImZyZXNocGxhbi1iYWNrZW5kIiwic2Vzc2lvbl9zdGF0ZSI6Im1vY2stc2Vzc2lvbiIsInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJtYW5hZ2VyIl19LCJyZXNvdXJjZV9hY2Nlc3MiOnsiZnJlc2hwbGFuLWJhY2tlbmQiOnsicm9sZXMiOlsibWFuYWdlciJdfX0sInNjb3BlIjoib3BlbmlkIGVtYWlsIHByb2ZpbGUiLCJzaWQiOiJtb2NrLXNpZCIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJuYW1lIjoiTWFuYWdlciBVc2VyIiwicHJlZmVycmVkX3VzZXJuYW1lIjoibWFuYWdlciIsImdpdmVuX25hbWUiOiJNYW5hZ2VyIiwiZmFtaWx5X25hbWUiOiJVc2VyIiwiZW1haWwiOiJtYW5hZ2VyQGZyZXNocGxhbi5kZSJ9.mock-signature',
       sales:
         'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Im1vY2sta2V5LWlkIn0.eyJleHAiOjE5OTk5OTk5OTksImlhdCI6MTYwOTQ1OTIwMCwianRpIjoibW9jay1qdGktc2FsZXMiLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgxODAvcmVhbG1zL2ZyZXNocGxhbiIsImF1ZCI6ImZyZXNocGxhbi1iYWNrZW5kIiwic3ViIjoibW9jay1zYWxlcy11c2VyIiwidHlwIjoiQmVhcmVyIiwiYXpwIjoiZnJlc2hwbGFuLWJhY2tlbmQiLCJzZXNzaW9uX3N0YXRlIjoibW9jay1zZXNzaW9uIiwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbInNhbGVzIl19LCJyZXNvdXJjZV9hY2Nlc3MiOnsiZnJlc2hwbGFuLWJhY2tlbmQiOnsicm9sZXMiOlsic2FsZXMiXX19LCJzY29wZSI6Im9wZW5pZCBlbWFpbCBwcm9maWxlIiwic2lkIjoibW9jay1zaWQiLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwibmFtZSI6IlNhbGVzIFVzZXIiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJzYWxlcyIsImdpdmVuX25hbWUiOiJTYWxlcyIsImZhbWlseV9uYW1lIjoiVXNlciIsImVtYWlsIjoic2FsZXNAZnJlc2hwbGFuLmRlIn0.mock-signature',
-      viewer:
-        'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Im1vY2sta2V5LWlkIn0.eyJleHAiOjE5OTk5OTk5OTksImlhdCI6MTYwOTQ1OTIwMCwianRpIjoibW9jay1qdGktdmlld2VyIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MTgwL3JlYWxtcy9mcmVzaHBsYW4iLCJhdWQiOiJmcmVzaHBsYW4tYmFja2VuZCIsInN1YiI6Im1vY2stdmlld2VyLXVzZXIiLCJ0eXAiOiJCZWFyZXIiLCJhenAiOiJmcmVzaHBsYW4tYmFja2VuZCIsInNlc3Npb25fc3RhdGUiOiJtb2NrLXNlc3Npb24iLCJyZWFsbV9hY2Nlc3MiOnsicm9sZXMiOlsidmlld2VyIl19LCJyZXNvdXJjZV9hY2Nlc3MiOnsiZnJlc2hwbGFuLWJhY2tlbmQiOnsicm9sZXMiOlsidmlld2VyIl19fSwic2NvcGUiOiJvcGVuaWQgZW1haWwgcHJvZmlsZSIsInNpZCI6Im1vY2stc2lkIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsIm5hbWUiOiJWaWV3ZXIgVXNlciIsInByZWZlcnJlZF91c2VybmFtZSI6InZpZXdlciIsImdpdmVuX25hbWUiOiJWaWV3ZXIiLCJmYW1pbHlfbmFtZSI6IlVzZXIiLCJlbWFpbCI6InZpZXdlckBmcmVzaHBsYW4uZGUifQ.mock-signature',
     };
 
     const mockUsers = {
@@ -46,12 +44,6 @@ export function LoginBypassPage() {
         username: 'sales',
         email: 'sales@freshplan.de',
         roles: ['sales'],
-      },
-      viewer: {
-        id: 'mock-viewer-user',
-        username: 'viewer',
-        email: 'viewer@freshplan.de',
-        roles: ['viewer'],
       },
     };
 
@@ -85,24 +77,18 @@ export function LoginBypassPage() {
               <Button onClick={() => mockLogin('sales')} variant="secondary">
                 Login as Sales
               </Button>
-              <Button onClick={() => mockLogin('viewer')} variant="outline">
-                Login as Viewer
-              </Button>
             </div>
             <div className="mt-4 text-sm text-muted-foreground">
               <p>Roles:</p>
               <ul className="list-disc list-inside mt-2">
                 <li>
-                  <strong>Admin</strong>: Full access to all features
+                  <strong>Admin</strong>: Vollzugriff auf alle Funktionen, User-Verwaltung
                 </li>
                 <li>
-                  <strong>Manager</strong>: Can manage users and view reports
+                  <strong>Manager</strong>: Geschäftsleitung, alle Berichte, Credit Checks
                 </li>
                 <li>
-                  <strong>Sales</strong>: Can create and manage orders
-                </li>
-                <li>
-                  <strong>Viewer</strong>: Read-only access
+                  <strong>Sales</strong>: Verkäufer, Kunden anlegen, Kalkulationen
                 </li>
               </ul>
             </div>

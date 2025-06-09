@@ -1,6 +1,6 @@
 // API Service for backend communication
 
-import type { PingResponse, ApiError } from '../types/api';
+import type { PingResponse, ApiError } from '../api-types';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
 

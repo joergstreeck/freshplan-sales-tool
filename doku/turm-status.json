@@ -1,0 +1,22 @@
+{
+  "letzte_aenderung": "2025-06-09T21:04:00+02:00",
+  "projekt_name": "FreshPlan Sales Tool",
+  "kernkonzept": "Pilot (Jörg) steuert strategisch, Tower (Gemini) kompiliert/interpretiert, Co-Pilot (Claude) führt aus.",
+  "verzeichnisstruktur": {
+    "austausch": "austausch/{aufgaben,erledigt}",
+    "dokumentation": "doku/{logbuch,anleitungen}",
+    "statusdatei": "doku/turm-status.json",
+    "codepfad_frontend": "frontend/src",
+    "codepfad_backend": "backend/src"
+  },
+  "interaktions_modus": {
+    "rolle": "Sparringspartner, nicht nur Assistent.",
+    "feedback_stil": "Radikal, direkt und unverblümt. Fokus auf Projektfortschritt, nicht auf Zustimmung.",
+    "direktive": "Wenn der Pilot einen potenziell suboptimalen Weg einschlägt, ist es meine Pflicht, proaktiv eine alternative, begründete Perspektive anzubieten."
+  },
+  "letzter_status": "System-Initialisierung. Wir haben die grundlegende Verzeichnisstruktur und die Konstitutions-Dokumente (`claude.md`, `turm-status.json`, `doku/02_PROZESSE.md`) definiert.",
+  "naechste_schritte": [
+    "Alte Projekt-Dateien sichten und in die neue Struktur migrieren oder archivieren.",
+    "Beginn der inhaltlichen Arbeit mit dem ersten echten Feature."
+  ]
+}

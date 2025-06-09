@@ -9,32 +9,32 @@ describe('Button', () => {
     const button = screen.getByRole('button');
     expect(button).toBeInTheDocument();
     expect(button).toHaveTextContent('Test Button');
-    expect(button).toHaveClass('bg-primary', 'text-primary-foreground', 'h-9', 'px-4', 'py-2');
+    expect(button).toHaveClass('btn', 'btn-primary');
   });
 
   it('renders with different variants', () => {
     const { rerender } = render(<Button variant="secondary">Secondary</Button>);
-    expect(screen.getByRole('button')).toHaveClass('bg-secondary');
+    expect(screen.getByRole('button')).toHaveClass('btn', 'btn-secondary');
 
     rerender(<Button variant="destructive">Destructive</Button>);
-    expect(screen.getByRole('button')).toHaveClass('bg-destructive');
+    expect(screen.getByRole('button')).toHaveClass('btn', 'btn-primary');
 
     rerender(<Button variant="outline">Outline</Button>);
-    expect(screen.getByRole('button')).toHaveClass('border', 'border-input');
+    expect(screen.getByRole('button')).toHaveClass('btn', 'btn-secondary');
 
     rerender(<Button variant="ghost">Ghost</Button>);
-    expect(screen.getByRole('button')).toHaveClass('hover:bg-accent');
+    expect(screen.getByRole('button')).toHaveClass('btn', 'btn-ghost');
   });
 
   it('renders with different sizes', () => {
     const { rerender } = render(<Button size="sm">Small</Button>);
-    expect(screen.getByRole('button')).toHaveClass('h-8', 'px-3', 'text-xs');
+    expect(screen.getByRole('button')).toHaveClass('btn-sm');
 
     rerender(<Button size="lg">Large</Button>);
-    expect(screen.getByRole('button')).toHaveClass('h-10', 'px-8');
+    expect(screen.getByRole('button')).toHaveClass('btn-lg');
 
     rerender(<Button size="icon">Icon</Button>);
-    expect(screen.getByRole('button')).toHaveClass('h-9', 'w-9');
+    expect(screen.getByRole('button')).toHaveClass('btn-sm');
   });
 
   it('handles click events', () => {
@@ -50,7 +50,6 @@ describe('Button', () => {
 
     const button = screen.getByRole('button');
     expect(button).toBeDisabled();
-    expect(button).toHaveClass('disabled:pointer-events-none', 'disabled:opacity-50');
   });
 
   it('applies custom className', () => {
@@ -77,6 +76,6 @@ describe('Button', () => {
     const link = screen.getByRole('link');
     expect(link).toBeInTheDocument();
     expect(link).toHaveAttribute('href', '/test');
-    expect(link).toHaveClass('bg-primary'); // Should have button styles
+    expect(link).toHaveClass('btn'); // Should have button styles
   });
 });

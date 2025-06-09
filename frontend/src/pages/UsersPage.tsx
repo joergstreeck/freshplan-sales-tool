@@ -8,9 +8,7 @@ export const UsersPage = () => {
     useUserStore();
 
   // Fetch user data when editing
-  const { data: selectedUser } = useUser(selectedUserId || '', {
-    enabled: isEditModalOpen && !!selectedUserId,
-  });
+  const { data: selectedUser } = useUser(selectedUserId || '');
 
   const handleFormSuccess = () => {
     // Close modals on successful form submission

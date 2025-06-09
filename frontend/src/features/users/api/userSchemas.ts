@@ -2,7 +2,7 @@
 import { z } from 'zod';
 
 // User roles enum
-export const UserRole = z.enum(['admin', 'manager', 'sales', 'viewer']);
+export const UserRole = z.enum(['admin', 'manager', 'sales']);
 
 // Base User schema matching backend API
 export const UserSchema = z.object({
@@ -54,7 +54,7 @@ export const getAllRoles = (): UserRoleType[] => {
 };
 
 // Default values
-export const DEFAULT_USER_ROLE: UserRoleType = 'viewer';
+export const DEFAULT_USER_ROLE: UserRoleType = 'sales';
 
 export const EMPTY_USER_FILTER: UserFilter = {};
 

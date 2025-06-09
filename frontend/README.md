@@ -1,5 +1,7 @@
 # FreshPlan 2.0 - Frontend (React)
 
+**📅 Aktuelles Datum: 09.06.2025 (System: 09.06.2025)**
+
 ## 🚀 React + TypeScript + Vite
 
 Frontend-Anwendung für die FreshPlan 2.0 Enterprise Sales Platform.
@@ -103,3 +105,79 @@ npm run test:ui     # Interactive UI
 - 🚧 Keycloak integration (pending)
 - 🚧 Material-UI setup (pending)
 - 🚧 API client setup (pending)
+
+## 📚 Wichtige Dokumentation für Frontend-Entwickler
+
+### Essenzielle Docs (auch ohne Root-Zugriff)
+
+#### 🏗️ Architektur & Standards
+
+- **Frontend Design System**: [src/styles/DESIGN_SYSTEM.md](./src/styles/DESIGN_SYSTEM.md)
+- **Component Architecture**: Siehe [Architecture Decision Records](../docs/architecture/0004-frontend-design-system.md) _(wenn Zugriff)_
+- **Code Standards**: TypeScript Strict Mode, ESLint Rules in `.eslintrc`
+
+#### 🔧 Setup & Development
+
+- **Local Development Setup**:
+  ```bash
+  npm install
+  npm run dev
+  # Backend läuft auf http://localhost:8080
+  # Frontend läuft auf http://localhost:5173
+  ```
+- **Environment Variables**: Siehe `.env.example`
+- **Mock Service Worker**: Für Backend-unabhängige Entwicklung in `src/mocks/`
+
+#### 🌐 API Integration
+
+- **API Endpoints**:
+  - Users: `GET/POST/PUT/DELETE /api/users`
+  - Calculator: `POST /api/calculator/calculate`
+  - Auth: Keycloak auf Port 8180
+- **API Client**: `src/shared/lib/apiClient.ts`
+- **React Query**: Für Server State Management
+
+#### 🧪 Testing
+
+- **Unit Tests**: `npm run test`
+- **Component Tests**: `*.test.tsx` Dateien
+- **E2E Tests**: Playwright in `/tests` _(wenn Zugriff)_
+
+#### ⚠️ Known Issues
+
+- Users-Page: Zod Schema muss mit Backend-Rollen übereinstimmen
+- Auto-Login in Dev: Token muss in localStorage
+- Hot Reload: Manchmal Neustart nötig
+
+#### 🚀 Deployment
+
+- Build: `npm run build`
+- Preview: `npm run preview`
+- Docker: Siehe `Dockerfile`
+
+### Wo finde ich was? (Frontend-Perspektive)
+
+```
+frontend/
+├── src/
+│   ├── features/      # Feature-Module (users, calculator)
+│   ├── components/    # Wiederverwendbare UI-Komponenten
+│   ├── pages/         # Route-Pages
+│   ├── contexts/      # React Contexts (Auth)
+│   ├── shared/        # Geteilte Utils (API Client)
+│   └── styles/        # CSS und Design System
+├── public/            # Statische Assets
+└── tests/             # E2E Tests
+```
+
+### Support & Hilfe
+
+- **Team Chat**: Slack #frontend-dev
+- **Code Reviews**: PR Template beachten
+- **Probleme**: Issue in GitHub erstellen
+
+## 📖 Quick Links (Frontend-spezifisch)
+
+- [Troubleshooting Guide](./TROUBLESHOOTING.md) - Häufige Probleme & Lösungen
+- [API Cheatsheet](./API_CHEATSHEET.md) - Backend API Quick Reference
+- [Design System](./src/styles/DESIGN_SYSTEM.md) - UI Standards & Components

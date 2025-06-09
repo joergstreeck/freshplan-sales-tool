@@ -1,0 +1,87 @@
+{
+  "project": {
+    "name": "FreshPlan Sales Tool",
+    "version": "2.0.0",
+    "startDate": "2025-05-01",
+    "lastMajorChange": "2025-06-08",
+    "lastMajorChangeDescription": "Backend komplett reorganisiert - flache Struktur"
+  },
+  "currentState": {
+    "sprint": 2,
+    "sprintName": "User Management & Calculator Migration",
+    "sprintProgress": 40,
+    "lastUpdated": "09.06.2025"
+  },
+  "techStack": {
+    "frontend": {
+      "framework": "React",
+      "language": "TypeScript",
+      "bundler": "Vite",
+      "stateManagement": "Zustand",
+      "testing": "Vitest"
+    },
+    "backend": {
+      "framework": "Quarkus",
+      "language": "Java",
+      "version": "3.7.1",
+      "database": "PostgreSQL",
+      "orm": "Hibernate with Panache"
+    },
+    "auth": "Keycloak",
+    "deployment": "AWS (planned)"
+  },
+  "architecture": {
+    "pattern": "Monorepo",
+    "backendStructure": "FLAT (seit 08.06.2025)",
+    "frontendStructure": "Feature-based"
+  },
+  "roles": [
+    {
+      "id": "admin",
+      "name": "Administrator",
+      "permissions": [
+        "user_management",
+        "system_config"
+      ]
+    },
+    {
+      "id": "manager",
+      "name": "Geschäftsleitung",
+      "permissions": [
+        "all_reports",
+        "credit_checks",
+        "team_view"
+      ]
+    },
+    {
+      "id": "sales",
+      "name": "Verkäufer",
+      "permissions": [
+        "own_customers",
+        "calculations",
+        "offers"
+      ]
+    }
+  ],
+  "metrics": {
+    "codeCoverage": {
+      "frontend": 45,
+      "backend": 78
+    },
+    "openIssues": {
+      "total": 12,
+      "critical": 3
+    },
+    "techDebt": {
+      "hours": 23
+    },
+    "lastCIStatus": "green"
+  },
+  "importantPaths": {
+    "masterBriefing": "MASTER_BRIEFING.md",
+    "claudeRules": "CLAUDE.md",
+    "apiContract": "API_CONTRACT.md",
+    "knownIssues": "docs/development/KNOWN_ISSUES.md",
+    "teamDashboard": "TEAM_DASHBOARD.html"
+  }
+}

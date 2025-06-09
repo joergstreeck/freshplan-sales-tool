@@ -155,7 +155,7 @@ describe('UserForm', () => {
         email: 'test@example.com',
         firstName: 'Test',
         lastName: 'User',
-        roles: ['viewer'], // Default role
+        roles: ['sales'], // Default role
         enabled: true,
       });
     });

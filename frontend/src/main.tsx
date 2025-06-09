@@ -58,6 +58,7 @@ enableMocking().then(() => {
           <Route path="/" element={<App />} />
           <Route path="/users" element={<UsersPage />} />
           <Route path="/legacy-tool" element={<LegacyToolPage />} />
+          {/* Login Bypass temporär reaktiviert - Auto-Login Problem */}
           {isDevelopmentMode && <Route path="/login-bypass" element={<LoginBypassPage />} />}
           {isDevelopmentMode && (
             <Route path="/integration-test" element={<IntegrationTestPage />} />

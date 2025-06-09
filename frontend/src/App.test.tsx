@@ -31,30 +31,33 @@ describe('App', () => {
     renderWithRouter(<App />);
 
     expect(screen.getByText('FreshPlan 2.0')).toBeInTheDocument();
-    expect(screen.getByText('Sprint 0 - Walking Skeleton')).toBeInTheDocument();
+    expect(screen.getByText('Ihr digitales Verkaufstool')).toBeInTheDocument();
   });
 
-  it('renders all three cards', () => {
+  it('renders all four cards', () => {
     renderWithRouter(<App />);
 
-    expect(screen.getByText('Counter Test')).toBeInTheDocument();
-    expect(screen.getByText('API Test')).toBeInTheDocument();
-    expect(screen.getByText('User Management')).toBeInTheDocument();
+    expect(screen.getByText('FreshPlan Verkaufstool')).toBeInTheDocument();
+    expect(screen.getByText('Benutzerverwaltung')).toBeInTheDocument();
+    expect(screen.getByText('API Verbindungstest')).toBeInTheDocument();
+    expect(screen.getByText('Zähler Demo')).toBeInTheDocument();
   });
 
   it('increments counter when button is clicked', () => {
     renderWithRouter(<App />);
 
-    const button = screen.getByRole('button', { name: /count is 0/i });
+    expect(screen.getByText('Zählerstand: 0')).toBeInTheDocument();
+
+    const button = screen.getByRole('button', { name: /zähler erhöhen/i });
     fireEvent.click(button);
 
-    expect(screen.getByRole('button', { name: /count is 1/i })).toBeInTheDocument();
+    expect(screen.getByText('Zählerstand: 1')).toBeInTheDocument();
   });
 
   it('shows error when ping is clicked without authentication', async () => {
     renderWithRouter(<App />);
 
-    const pingButton = screen.getByRole('button', { name: /ping api/i });
+    const pingButton = screen.getByRole('button', { name: /verbindung testen/i });
     fireEvent.click(pingButton);
 
     await waitFor(() => {
@@ -77,7 +80,7 @@ describe('App', () => {
 
     renderWithRouter(<App />);
 
-    const pingButton = screen.getByRole('button', { name: /ping api/i });
+    const pingButton = screen.getByRole('button', { name: /verbindung testen/i });
     fireEvent.click(pingButton);
 
     await waitFor(() => {
@@ -97,7 +100,7 @@ describe('App', () => {
 
     renderWithRouter(<App />);
 
-    const pingButton = screen.getByRole('button', { name: /ping api/i });
+    const pingButton = screen.getByRole('button', { name: /verbindung testen/i });
     fireEvent.click(pingButton);
 
     await waitFor(() => {

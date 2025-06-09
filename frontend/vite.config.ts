@@ -11,11 +11,20 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  server: {
+    port: 5173,
+    proxy: {
+      '/api': {
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+      },
+    },
+  },
   test: {
     environment: 'jsdom',
     globals: true,
     setupFiles: './src/test/setup.ts',
-    exclude: ['tests/**', 'node_modules/**', 'dist/**'],
+    exclude: ['tests/**', 'node_modules/**', 'dist/**', 'src/temp/**'],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
