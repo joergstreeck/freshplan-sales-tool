@@ -1,5 +1,51 @@
 # Arbeitsrichtlinien für Claude im FreshPlan Sales Tool Projekt
 
+**📅 Aktuelles Datum: <!-- AUTO_DATE --> (System: 08.06.2025)**
+
+## 🚨 KRITISCHE REGELN (IMMER LESEN!)
+
+### Die 16 wichtigsten Regeln für Claude:
+
+1. **REPOSITORY SAUBER HALTEN:** VOR JEDEM GIT PUSH/COMMIT muss `./scripts/quick-cleanup.sh` ausgeführt werden!
+2. **SPRACHE:** IMMER Deutsch - auch bei kurzen Antworten, Status-Updates, Zusammenfassungen!
+3. **GRÜNDLICHKEIT:** Gründlichkeit geht VOR Schnelligkeit - keine Quick-Fixes ohne Dokumentation
+4. **TESTS:** KEINE Implementierung ohne Tests (Unit ≥80%, Integration, Browser-Tests)
+5. **DOKUMENTATION:** Strukturiert ablegen in `docs/claude-work/` mit Datum + Kategorie
+6. **CODE-REVIEW:** Nach JEDEM bedeutenden Abschnitt + Two-Pass Review durchführen
+7. **ARCHITEKTUR:** Strikte Trennung - Backend: domain/api/infrastructure, Frontend: features/components
+8. **ZEILENLÄNGE:** Max. 80-100 Zeichen - nutze Umbrüche und Hilfsvariablen
+9. **KEINE NEUEN DATEIEN:** IMMER bestehende Dateien editieren statt neue erstellen
+10. **CLEAN CODE:** SOLID, DRY, KISS - Code muss selbsterklärend sein
+11. **SECURITY:** Keine Hardcoded Secrets, Input Validation überall, CORS korrekt
+12. **PROAKTIVITÄT:** Fasse Verständnis zusammen und frage BEVOR du codest
+13. **INKREMENTELL:** Kleine, nachvollziehbare Schritte - teste häufig
+14. **CI GRÜN HALTEN:** Bei roter CI selbstständig debuggen mit GitHub CLI
+15. **NAMING:** PascalCase für Klassen, camelCase für Methoden, UPPER_SNAKE für Konstanten
+16. **PERFORMANCE:** Bundle ≤200KB, API <200ms P95, keine N+1 Queries
+
+### 🔍 Quick Reference - Direkt zu den Details:
+- [0. Grundlegende Arbeitsphilosophie](#0-grundlegende-arbeitsphilosophie)
+- [0.1 Best Practices und Architektur](#01-best-practices-und-architektur-standards)
+- [0.10 Code-Review-Regel](#010-code-review-regel-gründliche-überprüfung-bei-jedem-bedeutenden-abschnitt)
+- [2. Kommunikation und Vorgehensweise](#2-kommunikation-und-vorgehensweise)
+- [10. Claude's Dokumentations-Ablagestruktur](#10-claudes-dokumentations-ablagestruktur)
+
+---
+
+<!-- Link-Definitionen für einfache Wartung -->
+[vision]: ./VISION_AND_ROADMAP.md
+[way-of-working]: ./WAY_OF_WORKING.md
+[api-contract]: ./docs/technical/API_CONTRACT.md
+[backend-guide]: ./docs/technical/BACKEND_START_GUIDE.md
+[frontend-spec]: ./docs/technical/FRONTEND_BACKEND_SPECIFICATION.md
+[known-issues]: ./docs/KNOWN_ISSUES.md
+[adr-template]: ./docs/adr/ADR_TEMPLATE.md
+[team-setup]: ./docs/team/TEAM_SETUP.md
+[development-setup]: ./docs/team/DEVELOPMENT_SETUP.md
+[code-review-standard]: ./docs/guides/CODE_REVIEW_STANDARD.md
+[keycloak-setup]: ./docs/guides/KEYCLOAK_SETUP.md
+[documentation-structure]: ./docs/DOCUMENTATION_STRUCTURE.md
+
 ## 0. Grundlegende Arbeitsphilosophie
 
 **🎯 UNSERE DEVISE: GRÜNDLICHKEIT GEHT VOR SCHNELLIGKEIT**
@@ -8,7 +54,7 @@
 - Keine Quick-Fixes oder Workarounds ohne Dokumentation
 - Denke immer an die zukünftigen Integrationen und Erweiterungen
 - Was wir jetzt richtig machen, erspart uns später Arbeit
-- Siehe `VISION_AND_ROADMAP.md` für die langfristige Ausrichtung des Projekts
+- Siehe [Vision und Roadmap][vision] für die langfristige Ausrichtung des Projekts
 
 ### Unser Code-Qualitäts-Versprechen
 
@@ -307,6 +353,9 @@ class UserServiceTest {
 
 ### Git Workflow & Code Review:
 ```bash
+# WICHTIG: VOR JEDEM COMMIT/PUSH Repository säubern!
+./scripts/quick-cleanup.sh
+
 # Feature Branch erstellen
 git checkout -b feature/user-management
 
@@ -317,7 +366,12 @@ git commit -m "feat(user): Add user creation endpoint
 - Add validation for email uniqueness
 - Include unit and integration tests"
 
+# VOR PUSH: Nochmals säubern!
+./scripts/quick-cleanup.sh
+git push origin feature/user-management
+
 # Pull Request Checklist:
+# - [ ] Repository mit quick-cleanup.sh gesäubert ✅
 # - [ ] Tests sind grün
 # - [ ] Code Coverage > 80%
 # - [ ] JavaDoc/JSDoc komplett
@@ -367,7 +421,7 @@ git push && git push --tags
 
 ### Dokumentation & Wissenstransfer:
 - **ADRs** (Architecture Decision Records) für alle wichtigen Entscheidungen
-  - Template: `/docs/adr/template.md`
+  - Template: [ADR Template][adr-template]
   - Automatisierung: `adr-tools` → PR-Kommentar mit Diff
 - **Onboarding-Playbook**: 90-Minuten "Tour de Codebase"
   - README mit Links zu Key-Files
@@ -992,7 +1046,7 @@ freshplan-sales-tool/
 
 ## 5. Bekannte Probleme (Known Issues) und Workarounds
 
-* Siehe `KNOWN_ISSUES.md` für eine aktuelle Liste.
+* Siehe [Known Issues][known-issues] für eine aktuelle Liste.
 * **Übersetzung dynamischer Tabs:** Ein bekanntes Problem. Workaround wird in Phase 2 gesucht.
 * **Performance bei großen Datenmengen:** Bei der Verarbeitung sehr vieler Positionen im Calculator kann es zu Verzögerungen kommen. Optimierungen sind für spätere Phasen geplant.
 
@@ -1042,7 +1096,7 @@ freshplan-sales-tool/
 - Wartbarkeit des Codes
 - Performance-Optimierung
 
-Siehe `VISION_AND_ROADMAP.md` für Details zu geplanten Integrationen und Features.
+Siehe [Vision und Roadmap][vision] für Details zu geplanten Integrationen und Features.
 
 ## 9. Sprint 1 Status und Erfolge
 
@@ -1077,3 +1131,41 @@ Siehe `VISION_AND_ROADMAP.md` für Details zu geplanten Integrationen und Featur
 - Warten auf Keycloak-Realm-Erstellung auf auth.z-catering.de
 - Legacy-Features migrieren (Calculator, Customer-Module)
 - CSS/Design aus Legacy-App übernehmen
+
+## 10. Claude's Dokumentations-Ablagestruktur
+
+**🚨 VERBINDLICHE REGEL: Strukturierte Dokumentationsablage**
+
+Ab sofort gilt für ALLE von Claude erstellten Dokumentationen:
+
+### Ablagestruktur:
+```
+docs/claude-work/
+├── daily-work/YYYY-MM-DD/      # Tägliche Arbeit
+├── implementations/             # Umgesetzte Features
+├── reviews/                     # Code-Reviews
+├── proposals/                   # Vorschläge
+├── maintenance/                 # Wartungsarbeiten
+└── learning/                    # Erkenntnisse
+```
+
+### Namenskonvention:
+`YYYY-MM-DD_<KATEGORIE>_<BESCHREIBUNG>.md`
+
+Beispiel: `2025-06-08_IMPL_dynamic-links.md`
+
+### Kategorien:
+- `IMPL_` - Implementation
+- `FIX_` - Bug-Fix  
+- `REVIEW_` - Review/Analyse
+- `CLEANUP_` - Aufräumarbeiten
+- `PROPOSAL_` - Vorschlag
+
+### ⚠️ Wichtig:
+- **NIEMALS** Dokumente direkt in `/docs/` ablegen!
+- **IMMER** Datum und Kategorie im Namen
+- **IMMER** in passenden Unterordner ablegen
+
+Vollständige Dokumentation: [Claude Documentation Structure][claude-doc-structure]
+
+[claude-doc-structure]: ./docs/CLAUDE_DOCUMENTATION_STRUCTURE.md

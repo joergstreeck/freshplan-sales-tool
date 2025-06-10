@@ -1,16 +1,15 @@
 // Users management page
-import { UserTable, UserForm } from '../features/users/components';
-import { useUser } from '../features/users/api/userQueries';
-import { useUserStore } from '../features/users/store/userStore';
+import { UserTable } from '../features/users/UserTable';
+import { UserForm } from '../features/users/UserForm';
+import { useUser } from '../features/users/userQueries';
+import { useUserStore } from '../features/users/userStore';
 
 export const UsersPage = () => {
   const { isCreateModalOpen, isEditModalOpen, selectedUserId, closeCreateModal, closeEditModal } =
     useUserStore();
 
   // Fetch user data when editing
-  const { data: selectedUser } = useUser(selectedUserId || '', {
-    enabled: isEditModalOpen && !!selectedUserId,
-  });
+  const { data: selectedUser } = useUser(selectedUserId || '');
 
   const handleFormSuccess = () => {
     // Close modals on successful form submission
