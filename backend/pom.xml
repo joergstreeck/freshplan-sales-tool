@@ -128,6 +128,7 @@
           <systemPropertyVariables>
             <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
             <maven.home>${maven.home}</maven.home>
+            <quarkus.profile>test</quarkus.profile>
           </systemPropertyVariables>
         </configuration>
       </plugin>
