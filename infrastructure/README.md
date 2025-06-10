@@ -1,5 +1,7 @@
 # FreshPlan 2.0 - Infrastructure
 
+**📅 Aktuelles Datum: <!-- AUTO_DATE --> (System: 08.06.2025)**
+
 ## 🚧 Sprint 0 - Setup in Progress
 
 This directory will contain infrastructure as code and deployment configurations.
