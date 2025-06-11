@@ -71,7 +71,7 @@ export const translations = {
             customerPotential: 'Kundenpotenzial',
             currentSituation: 'Aktuelle Situation',
             goals: 'Ziele & Bedürfnisse',
-            arguments: 'Verkaufsargumente',
+            keyArguments: 'Verkaufsargumente',
             strategy: 'Strategie',
             nextSteps: 'Nächste Schritte'
         },
@@ -169,7 +169,7 @@ export const translations = {
             customerPotential: 'Customer Potential',
             currentSituation: 'Current Situation',
             goals: 'Goals & Needs',
-            arguments: 'Sales Arguments',
+            keyArguments: 'Sales Arguments',
             strategy: 'Strategy',
             nextSteps: 'Next Steps'
         },
