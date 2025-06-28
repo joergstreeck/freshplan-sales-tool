@@ -1,9 +1,10 @@
-import { ReactNode, useState } from 'react';
+import { ReactNode, useState, useEffect } from 'react';
 import '../../styles/legacy/calculator.css';
 import '../../styles/legacy/slider.css';
 import '../../styles/legacy/calculator-components.css';
 import '../../styles/legacy/calculator-layout.css';
 import { CustomSlider } from './CustomSlider';
+import { useCalculateDiscount } from '../../features/calculator/api/calculatorQueries';
 
 interface CalculatorLayoutProps {
   leftContent?: ReactNode;
@@ -13,6 +14,38 @@ interface CalculatorLayoutProps {
 export function CalculatorLayout({ leftContent, rightContent }: CalculatorLayoutProps) {
   const [orderValue, setOrderValue] = useState(15000);
   const [leadTime, setLeadTime] = useState(14);
+  const [pickup, setPickup] = useState(false);
+  const calculateDiscount = useCalculateDiscount();
+
+  // Berechnung auslösen bei Änderungen
+  useEffect(() => {
+    calculateDiscount.mutate({
+      orderValue,
+      leadTime,
+      pickup,
+      chain: false, // TODO: Kettenkundenrabatt implementieren
+    });
+  }, [orderValue, leadTime, pickup]);
+
+  // Handler für Beispielszenarien
+  const applyScenario = (
+    scenarioOrderValue: number,
+    scenarioLeadTime: number,
+    scenarioPickup: boolean
+  ) => {
+    setOrderValue(scenarioOrderValue);
+    setLeadTime(scenarioLeadTime);
+    setPickup(scenarioPickup);
+  };
+
+  // Ergebnisse aus der API
+  const result = calculateDiscount.data;
+  const baseDiscount = result?.baseDiscount || 0;
+  const earlyBooking = result?.earlyDiscount || 0;
+  const pickupDiscount = result?.pickupDiscount || 0;
+  const totalDiscount = result?.totalDiscount || 0;
+  const savings = result?.savingsAmount || 0;
+  const finalPrice = result?.finalPrice || orderValue;
 
   return (
     <div className="customer-container">
@@ -55,7 +88,7 @@ export function CalculatorLayout({ leftContent, rightContent }: CalculatorLayout
                   value={leadTime}
                   onValueChange={setLeadTime}
                   min={1}
-                  max={30}
+                  max={50}
                   step={1}
                   aria-label="Vorlaufzeit in Tagen"
                 />
@@ -64,7 +97,12 @@ export function CalculatorLayout({ leftContent, rightContent }: CalculatorLayout
               {/* Abholung Checkbox */}
               <div className="form-group checkbox-group">
                 <label className="checkbox-label">
-                  <input type="checkbox" className="checkbox" />
+                  <input
+                    type="checkbox"
+                    className="checkbox"
+                    checked={pickup}
+                    onChange={e => setPickup(e.target.checked)}
+                  />
                   <span>Abholung (Mindestbestellwert: 5.000€ netto)</span>
                 </label>
               </div>
@@ -75,33 +113,35 @@ export function CalculatorLayout({ leftContent, rightContent }: CalculatorLayout
                 <div className="calculator-result-grid">
                   <div className="calculator-result-item">
                     <span className="calculator-result-label">Basisrabatt</span>
-                    <span className="calculator-result-value">6%</span>
+                    <span className="calculator-result-value">{baseDiscount}%</span>
                   </div>
                   <div className="calculator-result-item">
                     <span className="calculator-result-label">Frühbucher</span>
-                    <span className="calculator-result-value">1%</span>
+                    <span className="calculator-result-value">{earlyBooking}%</span>
                   </div>
                   <div className="calculator-result-item">
                     <span className="calculator-result-label">Abholung</span>
-                    <span className="calculator-result-value">0%</span>
+                    <span className="calculator-result-value">{pickupDiscount}%</span>
                   </div>
                 </div>
 
                 {/* Total Discount */}
                 <div className="total-discount">
                   <span>Gesamtrabatt</span>
-                  <span className="total-value">7%</span>
+                  <span className="total-value">{totalDiscount}%</span>
                 </div>
 
                 {/* Savings Display */}
                 <div className="savings-display">
                   <div className="savings-item">
                     <span>Ersparnis</span>
-                    <span className="savings-value">€1.050</span>
+                    <span className="savings-value">€{savings.toFixed(2).replace('.', ',')}</span>
                   </div>
                   <div className="savings-item highlight">
                     <span>Endpreis</span>
-                    <span className="savings-value">€13.950</span>
+                    <span className="savings-value">
+                      €{finalPrice.toFixed(2).replace('.', ',')}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -209,7 +249,7 @@ export function CalculatorLayout({ leftContent, rightContent }: CalculatorLayout
                 <h3>Beispielszenarien</h3>
                 <div className="scenario-grid">
                   {/* Hotelkette */}
-                  <div className="scenario-card">
+                  <div className="scenario-card" onClick={() => applyScenario(35000, 21, true)}>
                     <div className="scenario-header">
                       <span className="scenario-icon">🏨</span>
                       <strong className="scenario-title">Hotelkette</strong>
@@ -219,7 +259,7 @@ export function CalculatorLayout({ leftContent, rightContent }: CalculatorLayout
                   </div>
 
                   {/* Klinikgruppe */}
-                  <div className="scenario-card">
+                  <div className="scenario-card" onClick={() => applyScenario(65000, 30, false)}>
                     <div className="scenario-header">
                       <span className="scenario-icon">🏥</span>
                       <strong className="scenario-title">Klinikgruppe</strong>
@@ -229,7 +269,7 @@ export function CalculatorLayout({ leftContent, rightContent }: CalculatorLayout
                   </div>
 
                   {/* Restaurant */}
-                  <div className="scenario-card">
+                  <div className="scenario-card" onClick={() => applyScenario(8500, 14, true)}>
                     <div className="scenario-header">
                       <span className="scenario-icon">🍽️</span>
                       <strong className="scenario-title">Restaurant</strong>

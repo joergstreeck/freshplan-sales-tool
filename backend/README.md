@@ -8,7 +8,7 @@ Enterprise-grade backend for the FreshPlan 2.0 Sales Platform.
 
 ### Tech Stack
 - **Quarkus 3.7.1** - Supersonic Subatomic Java
-- **Java 17** - LTS Version
+- **Java 17** - LTS Version ⚠️ **REQUIRED - Tests fail with Java 24**
 - **RESTEasy Reactive** - Non-blocking REST endpoints
 - **Hibernate ORM with Panache** - Simplified ORM
 - **PostgreSQL** - Primary database
@@ -19,8 +19,20 @@ Enterprise-grade backend for the FreshPlan 2.0 Sales Platform.
 ### Prerequisites
 
 1. **Docker** (for local infrastructure)
-2. **Java 17** (for development)
+2. **Java 17** (REQUIRED - ByteBuddy in Quarkus 3.7.1 doesn't support Java 24)
 3. **Maven 3.9+** (or use included `./mvnw`)
+
+⚠️ **Java Version Hinweis:**
+```bash
+# Prüfe deine Java Version
+java -version
+
+# Falls Java 24 installiert ist, wechsle zu Java 17:
+export JAVA_HOME=$(/usr/libexec/java_home -v 17)
+
+# Oder installiere Java 17:
+brew install openjdk@17
+```
 
 ### Quick Start
 

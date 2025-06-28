@@ -12,24 +12,28 @@ import java.util.List;
 @ApplicationScoped
 public class CalculatorService {
     
-    // Business rules from legacy configuration
+    // Business rules from FreshPlan documentation (freshplan_summary.md)
+    // Basisrabatt je Einzelbestellung (netto)
     private static final List<DiscountRule> BASE_RULES = Arrays.asList(
-        new DiscountRule(50000, 10),
-        new DiscountRule(30000, 8),
-        new DiscountRule(15000, 6),
-        new DiscountRule(10000, 4),
-        new DiscountRule(5000, 3),
-        new DiscountRule(0, 0)
+        new DiscountRule(75000, 10),  // ab 75.000 EUR: 10%
+        new DiscountRule(50000, 9),   // 50.000 - 74.999 EUR: 9%
+        new DiscountRule(30000, 8),   // 30.000 - 49.999 EUR: 8%
+        new DiscountRule(15000, 6),   // 15.000 - 29.999 EUR: 6%
+        new DiscountRule(5000, 3),    // 5.000 - 14.999 EUR: 3%
+        new DiscountRule(0, 0)        // unter 5.000 EUR: 0%
     );
     
+    // Frühbucherrabatt (zusätzlich) - korrigiert: ab 30 Tage nach oben offen
     private static final List<EarlyBookingRule> EARLY_BOOKING_RULES = Arrays.asList(
-        new EarlyBookingRule(30, 3),
-        new EarlyBookingRule(21, 2),
-        new EarlyBookingRule(14, 1),
-        new EarlyBookingRule(0, 0)
+        new EarlyBookingRule(30, 3),  // ab 30 Tage: +3%
+        new EarlyBookingRule(15, 2),  // 15 - 29 Tage: +2%
+        new EarlyBookingRule(10, 1),  // 10 - 14 Tage: +1%
+        new EarlyBookingRule(0, 0)    // unter 10 Tage: 0%
     );
     
     private static final double PICKUP_DISCOUNT = 2.0;
+    // Mindestbestellwert für Abholrabatt
+    private static final double PICKUP_MIN_ORDER_VALUE = 5000.0;
     private static final double MAX_TOTAL_DISCOUNT = 15.0;
     
     /**
@@ -39,7 +43,11 @@ public class CalculatorService {
         // Calculate individual discounts
         double baseDiscount = calculateBaseDiscount(request.getOrderValue());
         double earlyDiscount = calculateEarlyBookingDiscount(request.getLeadTime());
-        double pickupDiscount = request.getPickup() ? PICKUP_DISCOUNT : 0;
+        // Abholrabatt nur ab Mindestbestellwert von 5.000 EUR
+        double pickupDiscount = calculatePickupDiscount(
+            request.getPickup(), 
+            request.getOrderValue()
+        );
         double chainDiscount = 0; // Chain discount logic can be added later
         
         // Calculate total discount (capped at maximum)
@@ -83,6 +91,13 @@ public class CalculatorService {
             if (leadTime >= rule.days) {
                 return rule.discount;
             }
+        }
+        return 0;
+    }
+    
+    private double calculatePickupDiscount(boolean pickup, double orderValue) {
+        if (pickup && orderValue >= PICKUP_MIN_ORDER_VALUE) {
+            return PICKUP_DISCOUNT;
         }
         return 0;
     }
