@@ -30,12 +30,10 @@ class CalculatorApi {
   }
 
   private async request<T>(endpoint: string, options?: RequestInit): Promise<T> {
-    const token = this.getAuthToken();
-
+    // Calculator API doesn't need authentication (@PermitAll in backend)
     const response = await fetch(`${API_URL}/api/calculator${endpoint}`, {
       headers: {
         'Content-Type': 'application/json',
-        ...(token && { Authorization: `Bearer ${token}` }),
         ...options?.headers,
       },
       ...options,

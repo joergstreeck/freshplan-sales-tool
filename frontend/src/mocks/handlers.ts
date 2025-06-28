@@ -1,5 +1,5 @@
 import { http, HttpResponse } from 'msw';
-import { calculatorHandlers } from './calculatorHandlers';
+// import { calculatorHandlers } from './calculatorHandlers';
 
 export const handlers = [
   // Mock API endpoints
@@ -11,6 +11,6 @@ export const handlers = [
     });
   }),
 
-  // Calculator API handlers
-  ...calculatorHandlers,
+  // Calculator API handlers - DEAKTIVIERT, verwende echtes Backend
+  // ...calculatorHandlers,
 ];

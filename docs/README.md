@@ -1,42 +1,79 @@
-# FreshPlan 2.0 - Dokumentation
+# FreshPlan 2.0 Dokumentation
 
-## 📚 Verfügbare Dokumente
+**📅 Aktuelles Datum: <!-- AUTO_DATE --> (System: 08.06.2025)**
 
-### Way of Working
-Unsere verbindlichen Entwicklungsstandards und Arbeitsweisen.
+Willkommen zur zentralen Dokumentation des FreshPlan Sales Tool 2.0 Projekts.
 
-- **[Online Version (HTML)](https://joergstreeck.github.io/freshplan-sales-tool/)** - Immer aktuell
-- **[PDF Download](https://joergstreeck.github.io/freshplan-sales-tool/WAY_OF_WORKING.html)** - Drucken mit Cmd+P
-- **[Markdown Source](../WAY_OF_WORKING.md)** - Für Entwickler
+## 📚 Dokumentationsstruktur
 
-### Weitere Dokumentation
+### 🏗️ `/architecture` - Architektur-Entscheidungen
+Architecture Decision Records (ADRs) und technische Entscheidungen.
 
-- **[Architecture](ARCHITECTURE.md)** - System-Architektur
-- **[Vision & Roadmap](../VISION_AND_ROADMAP.md)** - Produktvision
-- **[Claude Guidelines](../CLAUDE.md)** - AI-Partner Richtlinien
+### 💼 `/business` - Business-Dokumentation
+AGBs, Rabattsysteme und geschäftliche Vereinbarungen.
 
-## 🔄 Dokumente aktuell halten
+### 🔧 `/reference` - Technische Referenz
+- API Contracts
+- Backend/Frontend Spezifikationen
+- Technische Standards
+- Code Guidelines
 
-### Automatisch
-Bei Änderungen an `WAY_OF_WORKING.md`:
-```bash
-npm run update-docs
-```
+### 🏃 `/sprints` - Sprint-Dokumentation
+Sprint-Zusammenfassungen und Planungen.
 
-### Manuell
-1. Markdown in `WAY_OF_WORKING.md` bearbeiten
-2. HTML mit Script aktualisieren
-3. Commit & Push
-4. GitHub Pages deployed automatisch
+### 👨‍💻 `/development` - Entwickler-Dokumentation
+- Code Review Reports
+- CI/CD Guides
+- Known Issues
+- Team Sync Logs
 
-## 📊 Status
+### 🚀 `/setup` - Setup-Anleitungen
+- Development Setup
+- Keycloak Setup
+- GitHub Project Setup
+- Team Setup
 
-- **Letzte Aktualisierung**: ${new Date().toLocaleDateString('de-DE')}
-- **Version**: 1.0
-- **Sprint**: Sprint 1 - User Management
+## ⚠️ Wichtige Hinweise
 
-## 🔗 Quick Links
+### Dokumentations-Konflikte
+Siehe [DOCUMENTATION_CONFLICTS.md](./DOCUMENTATION_CONFLICTS.md) für eine Übersicht über gefundene Widersprüche und Konsolidierungsbedarf.
 
-- [GitHub Repository](https://github.com/joergstreeck/freshplan-sales-tool)
-- [Project Board](https://github.com/joergstreeck/freshplan-sales-tool/projects)
-- [CI/CD Status](https://github.com/joergstreeck/freshplan-sales-tool/actions)
+### Aktualität
+- Dokumente sollten immer mit Datum und Version versehen sein
+- Bei Änderungen bitte das `lastUpdated` Feld aktualisieren
+- Veraltete Dokumente mit `DEPRECATED` markieren
+
+## 🔍 Quick Links
+
+### Für neue Entwickler
+1. [Team Setup](./team/TEAM_SETUP.md)
+2. [Development Setup](./team/DEVELOPMENT_SETUP.md)
+3. [Backend Start Guide](./technical/BACKEND_START_GUIDE.md)
+
+### Architektur
+- [Technical Roadmap](./technical/FRESHPLAN_2.0_TECHNICAL_ROADMAP.md)
+- [Frontend/Backend Specification](./technical/FRONTEND_BACKEND_SPECIFICATION.md)
+- [API Contract](./technical/API_CONTRACT.md)
+
+### Aktueller Status
+- Siehe neueste Sprint-Dokumente in `/sprints`
+- Code Review Reports in `/sprints/reviews`
+
+## 📝 Dokumentations-Standards
+
+1. **Markdown** für alle technischen Dokumente
+2. **Klare Struktur** mit Überschriften
+3. **Versionierung** in Dokument-Header
+4. **Datum** der letzten Aktualisierung
+5. **Status** (DRAFT, CURRENT, DEPRECATED)
+
+## 🔄 Beitragen
+
+Bei Änderungen an der Dokumentation:
+1. Prüfe auf Widersprüche mit anderen Dokumenten
+2. Aktualisiere verlinkte Dokumente
+3. Füge Änderung zum CHANGELOG hinzu
+4. Markiere veraltete Informationen
+
+---
+*Letzte Aktualisierung: 08.01.2025*
