@@ -3,7 +3,7 @@
 -- Sprint 1: User Management MVP
 
 CREATE TABLE IF NOT EXISTS app_user (
-    id           UUID         DEFAULT RANDOM_UUID() PRIMARY KEY,
+    id           UUID         PRIMARY KEY,
     username     VARCHAR(60)  UNIQUE NOT NULL,
     first_name   VARCHAR(60)  NOT NULL,
     last_name    VARCHAR(60)  NOT NULL,
