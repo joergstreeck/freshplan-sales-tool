@@ -1,6 +1,7 @@
-import { StrictMode } from 'react';
+import { StrictMode, Suspense } from 'react';
 import { createRoot } from 'react-dom/client';
 import { Routes, Route } from 'react-router-dom';
+import './i18n'; // i18n vor allen anderen Imports!
 import './styles/globals.css';
 import App from './App.tsx';
 import { LoginBypassPage } from './pages/LoginBypassPage.tsx';
@@ -53,18 +54,20 @@ if (!rootElement) {
 enableMocking().then(() => {
   createRoot(rootElement).render(
     <StrictMode>
-      <AppProviders>
-        <Routes>
-          <Route path="/" element={<App />} />
-          <Route path="/users" element={<UsersPage />} />
-          <Route path="/legacy-tool" element={<LegacyToolPage />} />
-          {/* Login Bypass temporär reaktiviert - Auto-Login Problem */}
-          {isDevelopmentMode && <Route path="/login-bypass" element={<LoginBypassPage />} />}
-          {isDevelopmentMode && (
-            <Route path="/integration-test" element={<IntegrationTestPage />} />
-          )}
-        </Routes>
-      </AppProviders>
+      <Suspense fallback={<div>Loading...</div>}>
+        <AppProviders>
+          <Routes>
+            <Route path="/" element={<App />} />
+            <Route path="/users" element={<UsersPage />} />
+            <Route path="/legacy-tool" element={<LegacyToolPage />} />
+            {/* Login Bypass temporär reaktiviert - Auto-Login Problem */}
+            {isDevelopmentMode && <Route path="/login-bypass" element={<LoginBypassPage />} />}
+            {isDevelopmentMode && (
+              <Route path="/integration-test" element={<IntegrationTestPage />} />
+            )}
+          </Routes>
+        </AppProviders>
+      </Suspense>
     </StrictMode>
   );
 });

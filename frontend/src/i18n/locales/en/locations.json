@@ -1,0 +1,98 @@
+{
+  "title": "Location Management",
+  "sections": {
+    "overview": "Chain Overview",
+    "detailed": "Detailed Registration",
+    "vending": "Vending Concept"
+  },
+  "fields": {
+    "totalLocations": "Total Number of Locations",
+    "managementType": "Management Type",
+    "detailedCapture": "Register locations in detail",
+    "detailedHelpText": "Register each location individually with address, contact person and specific properties.",
+    "vendingInterest": "Interested in Freshfoodz Vending?",
+    "vendingLocations": "Number of locations with vending",
+    "vendingType": "Machine type"
+  },
+  "managementTypes": {
+    "central": "Central Management",
+    "decentral": "Decentral Management"
+  },
+  "vendingTypes": {
+    "placeholder": "Please select",
+    "snack": "Snack Machine",
+    "fresh": "Fresh Food Machine",
+    "combi": "Combination Machine"
+  },
+  "hotel": {
+    "title": "Hotel Categorization",
+    "small": "Small (up to 50 rooms)",
+    "medium": "Medium (51-150 rooms)",
+    "large": "Large (over 150 rooms)",
+    "services": "Services",
+    "breakfast": "Breakfast Service",
+    "restaurant": "Restaurant à la carte",
+    "roomService": "Room Service",
+    "banquet": "Banquet/Events",
+    "placeholder": "Number of hotels",
+    "of": "of",
+    "hotels": "hotels"
+  },
+  "clinic": {
+    "title": "Clinic Categorization",
+    "small": "Small (up to 150 beds)",
+    "medium": "Medium (151-400 beds)",
+    "large": "Large (over 400 beds)",
+    "privatePatients": "Share of private patients",
+    "services": "Services",
+    "patientCatering": "Patient Catering",
+    "staffCatering": "Staff Catering",
+    "placeholder": "Number of clinics",
+    "of": "of",
+    "clinics": "clinics"
+  },
+  "seniorResidence": {
+    "title": "Senior Residence Categorization",
+    "small": "Small (up to 50 residents)",
+    "medium": "Medium (51-150 residents)",
+    "large": "Large (over 150 residents)",
+    "careLevel": "Care Focus",
+    "careLevels": {
+      "mixed": "Mixed",
+      "assisted": "Assisted Living",
+      "nursing": "Full Care"
+    },
+    "catering": "Catering",
+    "fullCatering": "Full Catering",
+    "partialCatering": "Partial Catering",
+    "specialDiet": "Special Diet",
+    "placeholder": "Number of residences",
+    "of": "of",
+    "residences": "residences"
+  },
+  "restaurant": {
+    "title": "Restaurant Categorization",
+    "small": "Small (up to 50 seats)",
+    "medium": "Medium (51-150 seats)",
+    "large": "Large (over 150 seats)",
+    "services": "Services",
+    "alaCarte": "À la carte",
+    "banquet": "Banquet/Events",
+    "placeholder": "Number of restaurants",
+    "of": "of",
+    "restaurants": "restaurants"
+  },
+  "cafeteria": {
+    "title": "Cafeteria Categorization",
+    "small": "Small (up to 200 employees)",
+    "medium": "Medium (201-500 employees)",
+    "large": "Large (over 500 employees)",
+    "serviceScope": "Service Scope",
+    "breakfast": "Breakfast",
+    "lunch": "Lunch",
+    "dinner": "Dinner",
+    "placeholder": "Number of locations",
+    "of": "of",
+    "locations": "locations"
+  }
+}

@@ -1,0 +1,98 @@
+{
+  "title": "Standortverwaltung",
+  "sections": {
+    "overview": "Kettenübersicht",
+    "detailed": "Detaillierte Erfassung",
+    "vending": "Vending-Konzept"
+  },
+  "fields": {
+    "totalLocations": "Gesamtanzahl Standorte",
+    "managementType": "Verwaltungstyp",
+    "detailedCapture": "Standorte detailliert erfassen",
+    "detailedHelpText": "Erfassen Sie jeden Standort einzeln mit Adresse, Ansprechpartner und spezifischen Eigenschaften.",
+    "vendingInterest": "Interesse an Freshfoodz-Vending?",
+    "vendingLocations": "Anzahl Standorte mit Vending",
+    "vendingType": "Automatentyp"
+  },
+  "managementTypes": {
+    "central": "Zentrale Verwaltung",
+    "decentral": "Dezentrale Verwaltung"
+  },
+  "vendingTypes": {
+    "placeholder": "Bitte wählen",
+    "snack": "Snack-Automat",
+    "fresh": "Frische-Automat",
+    "combi": "Kombi-Automat"
+  },
+  "hotel": {
+    "title": "Hotel-Kategorisierung",
+    "small": "Klein (bis 50 Zimmer)",
+    "medium": "Mittel (51-150 Zimmer)",
+    "large": "Groß (über 150 Zimmer)",
+    "services": "Services",
+    "breakfast": "Frühstücksservice",
+    "restaurant": "Restaurant à la carte",
+    "roomService": "Room Service",
+    "banquet": "Bankett/Veranstaltungen",
+    "placeholder": "Anzahl Hotels",
+    "of": "von",
+    "hotels": "Hotels"
+  },
+  "clinic": {
+    "title": "Klinik-Kategorisierung",
+    "small": "Klein (bis 150 Betten)",
+    "medium": "Mittel (151-400 Betten)",
+    "large": "Groß (über 400 Betten)",
+    "privatePatients": "Anteil Privatpatienten",
+    "services": "Services",
+    "patientCatering": "Patientenverpflegung",
+    "staffCatering": "Mitarbeiterverpflegung",
+    "placeholder": "Anzahl Kliniken",
+    "of": "von",
+    "clinics": "Kliniken"
+  },
+  "seniorResidence": {
+    "title": "Seniorenresidenz-Kategorisierung",
+    "small": "Klein (bis 50 Bewohner)",
+    "medium": "Mittel (51-150 Bewohner)",
+    "large": "Groß (über 150 Bewohner)",
+    "careLevel": "Pflegeschwerpunkt",
+    "careLevels": {
+      "mixed": "Gemischt",
+      "assisted": "Betreutes Wohnen",
+      "nursing": "Vollpflege"
+    },
+    "catering": "Verpflegung",
+    "fullCatering": "Vollverpflegung",
+    "partialCatering": "Teilverpflegung",
+    "specialDiet": "Sonderkostform",
+    "placeholder": "Anzahl Residenzen",
+    "of": "von",
+    "residences": "Residenzen"
+  },
+  "restaurant": {
+    "title": "Restaurant-Kategorisierung",
+    "small": "Klein (bis 50 Sitzplätze)",
+    "medium": "Mittel (51-150 Sitzplätze)",
+    "large": "Groß (über 150 Sitzplätze)",
+    "services": "Services",
+    "alaCarte": "À la carte",
+    "banquet": "Bankett/Veranstaltungen",
+    "placeholder": "Anzahl Restaurants",
+    "of": "von",
+    "restaurants": "Restaurants"
+  },
+  "cafeteria": {
+    "title": "Betriebsrestaurant-Kategorisierung",
+    "small": "Klein (bis 200 MA)",
+    "medium": "Mittel (201-500 MA)",
+    "large": "Groß (über 500 MA)",
+    "serviceScope": "Serviceumfang",
+    "breakfast": "Frühstück",
+    "lunch": "Mittagessen",
+    "dinner": "Abendessen",
+    "placeholder": "Anzahl Standorte",
+    "of": "von",
+    "locations": "Standorten"
+  }
+}

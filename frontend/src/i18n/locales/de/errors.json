@@ -1,0 +1,44 @@
+{
+  "general": {
+    "title": "Ein Fehler ist aufgetreten",
+    "unexpected": "Ein unerwarteter Fehler ist aufgetreten",
+    "tryAgain": "Bitte versuchen Sie es später erneut",
+    "contactSupport": "Sollte das Problem weiterhin bestehen, kontaktieren Sie bitte den Support",
+    "backToHome": "Zurück zur Startseite",
+    "reload": "Seite neu laden"
+  },
+  "api": {
+    "networkError": "Netzwerkfehler - Bitte überprüfen Sie Ihre Internetverbindung",
+    "serverError": "Serverfehler - Der Server ist momentan nicht erreichbar",
+    "unauthorized": "Nicht autorisiert - Bitte melden Sie sich erneut an",
+    "forbidden": "Zugriff verweigert - Sie haben keine Berechtigung für diese Aktion",
+    "notFound": "Nicht gefunden - Die angeforderte Ressource existiert nicht",
+    "timeout": "Zeitüberschreitung - Die Anfrage dauerte zu lange",
+    "badRequest": "Ungültige Anfrage - Bitte überprüfen Sie Ihre Eingaben"
+  },
+  "validation": {
+    "required": "{{field}} ist erforderlich",
+    "email": "Bitte geben Sie eine gültige E-Mail-Adresse ein",
+    "phone": "Bitte geben Sie eine gültige Telefonnummer ein",
+    "zipCode": "Bitte geben Sie eine gültige Postleitzahl ein",
+    "number": "Bitte geben Sie eine gültige Zahl ein",
+    "min": "Der Wert muss mindestens {{min}} sein",
+    "max": "Der Wert darf maximal {{max}} sein",
+    "minLength": "Mindestens {{min}} Zeichen erforderlich",
+    "maxLength": "Maximal {{max}} Zeichen erlaubt",
+    "pattern": "Das Format ist ungültig"
+  },
+  "auth": {
+    "loginFailed": "Anmeldung fehlgeschlagen",
+    "invalidCredentials": "Ungültige Anmeldedaten",
+    "sessionExpired": "Ihre Sitzung ist abgelaufen. Bitte melden Sie sich erneut an",
+    "logoutFailed": "Abmeldung fehlgeschlagen"
+  },
+  "business": {
+    "customerNotFound": "Kunde nicht gefunden",
+    "orderNotFound": "Auftrag nicht gefunden",
+    "duplicateCustomerNumber": "Diese Kundennummer existiert bereits",
+    "invalidOrderValue": "Ungültiger Bestellwert",
+    "minimumOrderValue": "Mindestbestellwert nicht erreicht"
+  }
+}

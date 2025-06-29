@@ -1,0 +1,51 @@
+{
+  "title": "FreshPlan Rabattrechner",
+  "sliders": {
+    "orderValue": "Bestellwert",
+    "leadTime": "Vorlaufzeit",
+    "leadTimeDays_one": "{{count}} Tag",
+    "leadTimeDays_other": "{{count}} Tage"
+  },
+  "checkboxes": {
+    "pickup": "Abholung (Mindestbestellwert: {{minValue}} netto)",
+    "chainCustomer": "Kettenkunde"
+  },
+  "results": {
+    "discountOverview": "Rabattübersicht",
+    "baseDiscount": "Basisrabatt",
+    "earlyBooking": "Frühbucher",
+    "pickupDiscount": "Abholung",
+    "chainDiscount": "Kettenkunde",
+    "totalDiscount": "Gesamtrabatt",
+    "savings": "Ersparnis",
+    "finalPrice": "Endpreis",
+    "grossPrice": "Bruttopreis",
+    "netPrice": "Nettopreis"
+  },
+  "scenarios": {
+    "title": "Beispielszenarien",
+    "subtitle": "Klicken Sie auf ein Szenario, um die Werte automatisch einzustellen",
+    "hotel": "Hotelkette",
+    "hotelDescription": "30.000€ Bestellwert, 30 Tage Vorlauf",
+    "clinic": "Klinikgruppe",
+    "clinicDescription": "15.000€ Bestellwert, 14 Tage Vorlauf",
+    "restaurant": "Restaurant",
+    "restaurantDescription": "5.000€ Bestellwert, 7 Tage Vorlauf, Abholung"
+  },
+  "info": {
+    "maxDiscount": "Maximaler Gesamtrabatt: {{max}}%",
+    "chainCustomerInfo": "Als Kettenkunde erhalten Sie automatisch den maximalen Gesamtrabatt von {{max}}%",
+    "pickupMinimum": "Abholrabatt ab {{minValue}} Bestellwert",
+    "earlyBookingInfo": "Je früher Sie bestellen, desto mehr sparen Sie!"
+  },
+  "calculator": {
+    "calculate": "Berechnen",
+    "orderValuePlaceholder": "Bestellwert eingeben",
+    "leadTimePlaceholder": "Vorlaufzeit in Tagen",
+    "deliveryOptions": {
+      "pickup": "Abholung",
+      "delivery": "Lieferung",
+      "both": "Beides"
+    }
+  }
+}

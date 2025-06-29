@@ -1,0 +1,64 @@
+{
+  "buttons": {
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "delete": "Löschen",
+    "edit": "Bearbeiten",
+    "back": "Zurück",
+    "next": "Weiter",
+    "close": "Schließen",
+    "confirm": "Bestätigen",
+    "create": "Erstellen",
+    "update": "Aktualisieren",
+    "add": "Hinzufügen",
+    "new": "Neu",
+    "actions": "Aktionen",
+    "logout": "Logout",
+    "continue": "Weiter",
+    "clear": "Formular leeren"
+  },
+  "labels": {
+    "name": "Name",
+    "email": "E-Mail",
+    "phone": "Telefon",
+    "address": "Adresse",
+    "date": "Datum",
+    "status": "Status",
+    "description": "Beschreibung",
+    "type": "Typ",
+    "required": "Erforderlich",
+    "optional": "Optional",
+    "search": "Suchen",
+    "filter": "Filtern",
+    "yes": "Ja",
+    "no": "Nein"
+  },
+  "messages": {
+    "loading": "Wird geladen...",
+    "saving": "Wird gespeichert...",
+    "success": "Erfolgreich gespeichert",
+    "error": "Ein Fehler ist aufgetreten",
+    "confirmDelete": "Möchten Sie diesen Eintrag wirklich löschen?",
+    "noData": "Keine Daten vorhanden",
+    "welcome": "Willkommen bei FreshPlan",
+    "welcomeBack": "Willkommen zurück, {{name}}!",
+    "comingSoon": "Kommt bald...",
+    "featureComingSoon": "{{feature}} - Kommt bald..."
+  },
+  "validation": {
+    "required": "Dieses Feld ist erforderlich",
+    "invalidEmail": "Ungültige E-Mail-Adresse",
+    "minLength": "Mindestens {{min}} Zeichen erforderlich",
+    "maxLength": "Maximal {{max}} Zeichen erlaubt",
+    "invalidNumber": "Ungültige Zahl",
+    "minValue": "Mindestwert: {{min}}",
+    "maxValue": "Maximalwert: {{max}}"
+  },
+  "formats": {
+    "currency": "{{value}} €",
+    "percent": "{{value}}%",
+    "date": "DD.MM.YYYY",
+    "time": "HH:mm",
+    "dateTime": "DD.MM.YYYY HH:mm"
+  }
+}

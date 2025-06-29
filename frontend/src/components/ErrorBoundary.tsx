@@ -10,19 +10,6 @@ interface State {
   error: Error | null;
 }
 
-/**
- * Error Boundary Component für globale Fehlerbehandlung.
- *
- * Fängt JavaScript-Fehler in der Komponenten-Hierarchie ab,
- * loggt sie und zeigt eine Fallback-UI an.
- *
- * @example
- * ```tsx
- * <ErrorBoundary>
- *   <App />
- * </ErrorBoundary>
- * ```
- */
 export class ErrorBoundary extends Component<Props, State> {
   public state: State = {
     hasError: false,
@@ -35,51 +22,43 @@ export class ErrorBoundary extends Component<Props, State> {
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     console.error('Uncaught error:', error, errorInfo);
-
-    // Hier könnte ein Error-Reporting-Service integriert werden
-    // z.B. Sentry, LogRocket, etc.
   }
 
   public render() {
     if (this.state.hasError) {
+      if (this.props.fallback) {
+        return this.props.fallback;
+      }
+
       return (
-        this.props.fallback || (
-          <div
+        <div
+          style={{
+            padding: '2rem',
+            textAlign: 'center',
+            backgroundColor: '#fee',
+            borderRadius: '8px',
+            margin: '2rem',
+          }}
+        >
+          <h2 style={{ color: '#c00' }}>Oops, something went wrong!</h2>
+          <p style={{ color: '#666' }}>
+            {this.state.error?.message || 'An unexpected error occurred'}
+          </p>
+          <button
+            onClick={() => window.location.reload()}
             style={{
-              padding: '50px',
-              textAlign: 'center',
-              fontFamily: 'system-ui, sans-serif',
+              marginTop: '1rem',
+              padding: '0.5rem 1rem',
+              backgroundColor: '#004f7b',
+              color: 'white',
+              border: 'none',
+              borderRadius: '4px',
+              cursor: 'pointer',
             }}
           >
-            <h1>Etwas ist schiefgelaufen</h1>
-            <p>Ein unerwarteter Fehler ist aufgetreten.</p>
-            {import.meta.env.DEV && this.state.error && (
-              <details style={{ marginTop: '20px', textAlign: 'left' }}>
-                <summary>Fehlerdetails (nur in Entwicklung)</summary>
-                <pre
-                  style={{
-                    background: '#f4f4f4',
-                    padding: '10px',
-                    overflow: 'auto',
-                  }}
-                >
-                  {this.state.error.toString()}
-                  {this.state.error.stack}
-                </pre>
-              </details>
-            )}
-            <button
-              onClick={() => window.location.reload()}
-              style={{
-                marginTop: '20px',
-                padding: '10px 20px',
-                cursor: 'pointer',
-              }}
-            >
-              Seite neu laden
-            </button>
-          </div>
-        )
+            Reload Page
+          </button>
+        </div>
       );
     }
 

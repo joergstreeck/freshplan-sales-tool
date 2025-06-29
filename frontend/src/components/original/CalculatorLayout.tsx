@@ -1,4 +1,7 @@
 import { ReactNode, useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useLanguage } from '../../i18n/hooks';
+import { formatCurrency } from '../../i18n/formatters';
 import '../../styles/legacy/calculator.css';
 import '../../styles/legacy/slider.css';
 import '../../styles/legacy/calculator-components.css';
@@ -12,6 +15,8 @@ interface CalculatorLayoutProps {
 }
 
 export function CalculatorLayout({ leftContent, rightContent }: CalculatorLayoutProps) {
+  const { t } = useTranslation('calculator');
+  const { currentLanguage } = useLanguage();
   const [orderValue, setOrderValue] = useState(15000);
   const [leadTime, setLeadTime] = useState(14);
   const [pickup, setPickup] = useState(false);
@@ -25,7 +30,7 @@ export function CalculatorLayout({ leftContent, rightContent }: CalculatorLayout
       pickup,
       chain: false, // TODO: Kettenkundenrabatt implementieren
     });
-  }, [orderValue, leadTime, pickup]);
+  }, [orderValue, leadTime, pickup, calculateDiscount]);
 
   // Handler für Beispielszenarien
   const applyScenario = (
@@ -49,7 +54,7 @@ export function CalculatorLayout({ leftContent, rightContent }: CalculatorLayout
 
   return (
     <div className="customer-container">
-      <h2 className="section-title">FreshPlan Rabattrechner</h2>
+      <h2 className="section-title">{t('title')}</h2>
 
       <div className="demonstrator-container">
         {/* Linke Seite - Kalkulator */}
@@ -59,9 +64,9 @@ export function CalculatorLayout({ leftContent, rightContent }: CalculatorLayout
               {/* Bestellwert Slider */}
               <div className="form-group">
                 <div className="slider-label-container">
-                  <label htmlFor="orderValue">Bestellwert</label>
+                  <label htmlFor="orderValue">{t('sliders.orderValue')}</label>
                   <span className="slider-value-display">
-                    €{orderValue.toLocaleString('de-DE')}
+                    {formatCurrency(orderValue, currentLanguage)}
                   </span>
                 </div>
                 {/* Barrierefreier Custom Slider mit Radix UI */}
@@ -72,15 +77,17 @@ export function CalculatorLayout({ leftContent, rightContent }: CalculatorLayout
                   min={1000}
                   max={100000}
                   step={1000}
-                  aria-label="Bestellwert"
+                  aria-label={t('sliders.orderValue')}
                 />
               </div>
 
               {/* Vorlaufzeit Slider */}
               <div className="form-group">
                 <div className="slider-label-container">
-                  <label htmlFor="leadTime">Vorlaufzeit</label>
-                  <span className="slider-value-display">{leadTime} Tage</span>
+                  <label htmlFor="leadTime">{t('sliders.leadTime')}</label>
+                  <span className="slider-value-display">
+                    {t('sliders.leadTimeDays', { count: leadTime })}
+                  </span>
                 </div>
                 {/* Barrierefreier Custom Slider mit Radix UI */}
                 <CustomSlider
@@ -90,7 +97,7 @@ export function CalculatorLayout({ leftContent, rightContent }: CalculatorLayout
                   min={1}
                   max={50}
                   step={1}
-                  aria-label="Vorlaufzeit in Tagen"
+                  aria-label={t('sliders.leadTime')}
                 />
               </div>
 
@@ -103,7 +110,9 @@ export function CalculatorLayout({ leftContent, rightContent }: CalculatorLayout
                     checked={pickup}
                     onChange={e => setPickup(e.target.checked)}
                   />
-                  <span>Abholung (Mindestbestellwert: 5.000€ netto)</span>
+                  <span>
+                    {t('checkboxes.pickup', { minValue: formatCurrency(5000, currentLanguage) })}
+                  </span>
                 </label>
               </div>
 
@@ -112,42 +121,44 @@ export function CalculatorLayout({ leftContent, rightContent }: CalculatorLayout
                 {/* Result Grid */}
                 <div className="calculator-result-grid">
                   <div className="calculator-result-item">
-                    <span className="calculator-result-label">Basisrabatt</span>
+                    <span className="calculator-result-label">{t('results.baseDiscount')}</span>
                     <span className="calculator-result-value">{baseDiscount}%</span>
                   </div>
                   <div className="calculator-result-item">
-                    <span className="calculator-result-label">Frühbucher</span>
+                    <span className="calculator-result-label">{t('results.earlyBooking')}</span>
                     <span className="calculator-result-value">{earlyBooking}%</span>
                   </div>
                   <div className="calculator-result-item">
-                    <span className="calculator-result-label">Abholung</span>
+                    <span className="calculator-result-label">{t('results.pickupDiscount')}</span>
                     <span className="calculator-result-value">{pickupDiscount}%</span>
                   </div>
                 </div>
 
                 {/* Total Discount */}
                 <div className="total-discount">
-                  <span>Gesamtrabatt</span>
+                  <span>{t('results.totalDiscount')}</span>
                   <span className="total-value">{totalDiscount}%</span>
                 </div>
 
                 {/* Savings Display */}
                 <div className="savings-display">
                   <div className="savings-item">
-                    <span>Ersparnis</span>
-                    <span className="savings-value">€{savings.toFixed(2).replace('.', ',')}</span>
+                    <span>{t('results.savings')}</span>
+                    <span className="savings-value">
+                      {formatCurrency(savings, currentLanguage)}
+                    </span>
                   </div>
                   <div className="savings-item highlight">
-                    <span>Endpreis</span>
+                    <span>{t('results.finalPrice')}</span>
                     <span className="savings-value">
-                      €{finalPrice.toFixed(2).replace('.', ',')}
+                      {formatCurrency(finalPrice, currentLanguage)}
                     </span>
                   </div>
                 </div>
               </div>
 
               {/* Maximaler Gesamtrabatt */}
-              <div className="max-discount-info">Maximaler Gesamtrabatt: 15%</div>
+              <div className="max-discount-info">{t('info.maxDiscount', { max: 15 })}</div>
             </div>
           )}
         </div>
@@ -161,32 +172,32 @@ export function CalculatorLayout({ leftContent, rightContent }: CalculatorLayout
                 <div className="rabattsystem-grid">
                   {/* Basisrabatt - 3 Spalten Tabelle */}
                   <div>
-                    <h3>Basisrabatt</h3>
+                    <h3>{t('results.baseDiscount')}</h3>
                     <table className="rabatt-table">
                       <tbody>
                         <tr>
-                          <td>ab</td>
-                          <td className="value-column">5.000€</td>
+                          <td>{currentLanguage === 'de' ? 'ab' : 'from'}</td>
+                          <td className="value-column">{formatCurrency(5000, currentLanguage)}</td>
                           <td className="percent-column">3%</td>
                         </tr>
                         <tr>
-                          <td>ab</td>
-                          <td className="value-column">15.000€</td>
+                          <td>{currentLanguage === 'de' ? 'ab' : 'from'}</td>
+                          <td className="value-column">{formatCurrency(15000, currentLanguage)}</td>
                           <td className="percent-column">6%</td>
                         </tr>
                         <tr>
-                          <td>ab</td>
-                          <td className="value-column">30.000€</td>
+                          <td>{currentLanguage === 'de' ? 'ab' : 'from'}</td>
+                          <td className="value-column">{formatCurrency(30000, currentLanguage)}</td>
                           <td className="percent-column">8%</td>
                         </tr>
                         <tr>
-                          <td>ab</td>
-                          <td className="value-column">50.000€</td>
+                          <td>{currentLanguage === 'de' ? 'ab' : 'from'}</td>
+                          <td className="value-column">{formatCurrency(50000, currentLanguage)}</td>
                           <td className="percent-column">9%</td>
                         </tr>
                         <tr>
-                          <td>ab</td>
-                          <td className="value-column">75.000€</td>
+                          <td>{currentLanguage === 'de' ? 'ab' : 'from'}</td>
+                          <td className="value-column">{formatCurrency(75000, currentLanguage)}</td>
                           <td className="percent-column">10%</td>
                         </tr>
                       </tbody>
@@ -194,19 +205,19 @@ export function CalculatorLayout({ leftContent, rightContent }: CalculatorLayout
                   </div>
                   {/* Frühbucherrabatt - 2 Spalten Tabelle */}
                   <div>
-                    <h3>Frühbucherrabatt</h3>
+                    <h3>{t('results.earlyBooking')}</h3>
                     <table className="rabatt-table">
                       <tbody>
                         <tr>
-                          <td>ab 10 Tage</td>
+                          <td>{currentLanguage === 'de' ? 'ab 10 Tage' : 'from 10 days'}</td>
                           <td className="percent-column">1%</td>
                         </tr>
                         <tr>
-                          <td>ab 15 Tage</td>
+                          <td>{currentLanguage === 'de' ? 'ab 15 Tage' : 'from 15 days'}</td>
                           <td className="percent-column">2%</td>
                         </tr>
                         <tr>
-                          <td>ab 30 Tage</td>
+                          <td>{currentLanguage === 'de' ? 'ab 30 Tage' : 'from 30 days'}</td>
                           <td className="percent-column">3%</td>
                         </tr>
                         <tr>
@@ -214,7 +225,7 @@ export function CalculatorLayout({ leftContent, rightContent }: CalculatorLayout
                           <td>&nbsp;</td>
                         </tr>
                         <tr>
-                          <td>Abholung</td>
+                          <td>{t('results.pickupDiscount')}</td>
                           <td className="percent-column">2%</td>
                         </tr>
                       </tbody>
@@ -225,20 +236,38 @@ export function CalculatorLayout({ leftContent, rightContent }: CalculatorLayout
 
               {/* 2. Kettenkundenregelung */}
               <div className="info-card">
-                <h3>Kettenkundenregelung</h3>
-                <p>Für Unternehmen mit mehreren Standorten (z.B. Hotel- oder Klinikgruppen):</p>
+                <h3>
+                  {currentLanguage === 'de' ? 'Kettenkundenregelung' : 'Chain Customer Policy'}
+                </h3>
+                <p>
+                  {currentLanguage === 'de'
+                    ? 'Für Unternehmen mit mehreren Standorten (z.B. Hotel- oder Klinikgruppen):'
+                    : 'For companies with multiple locations (e.g. hotel or clinic groups):'}
+                </p>
                 <div className="option-container">
                   <div className="option-box">
-                    <strong className="option-label">Option A:</strong>{' '}
+                    <strong className="option-label">
+                      {currentLanguage === 'de' ? 'Option A:' : 'Option A:'}
+                    </strong>{' '}
                     <span className="option-text">
-                      Bestellungen verschiedener Standorte innerhalb einer
+                      {currentLanguage === 'de'
+                        ? 'Bestellungen verschiedener Standorte innerhalb einer'
+                        : 'Orders from different locations within one'}
                     </span>
-                    <div className="option-indent">Woche werden zusammengerechnet</div>
+                    <div className="option-indent">
+                      {currentLanguage === 'de'
+                        ? 'Woche werden zusammengerechnet'
+                        : 'week are combined'}
+                    </div>
                   </div>
                   <div className="option-box">
-                    <strong className="option-label">Option B:</strong>{' '}
+                    <strong className="option-label">
+                      {currentLanguage === 'de' ? 'Option B:' : 'Option B:'}
+                    </strong>{' '}
                     <span className="option-text">
-                      Zentrale Bestellung mit Mehrfachauslieferung
+                      {currentLanguage === 'de'
+                        ? 'Zentrale Bestellung mit Mehrfachauslieferung'
+                        : 'Central order with multiple deliveries'}
                     </span>
                   </div>
                 </div>
@@ -246,36 +275,66 @@ export function CalculatorLayout({ leftContent, rightContent }: CalculatorLayout
 
               {/* 3. Beispielszenarien */}
               <div className="info-card gradient">
-                <h3>Beispielszenarien</h3>
+                <h3>{t('scenarios.title')}</h3>
                 <div className="scenario-grid">
                   {/* Hotelkette */}
                   <div className="scenario-card" onClick={() => applyScenario(35000, 21, true)}>
                     <div className="scenario-header">
                       <span className="scenario-icon">🏨</span>
-                      <strong className="scenario-title">Hotelkette</strong>
+                      <strong className="scenario-title">{t('scenarios.hotel')}</strong>
                     </div>
-                    <div className="scenario-details">35.000 € • 21 Tage • Abholung</div>
-                    <div className="scenario-discount">12% Rabatt</div>
+                    <div className="scenario-content">
+                      <div className="scenario-details">
+                        {formatCurrency(35000, currentLanguage)}
+                        <span className="separator">•</span>
+                        21 {currentLanguage === 'de' ? 'Tage' : 'days'}
+                        <span className="separator">•</span>
+                        {t('calculator.deliveryOptions.pickup')}
+                      </div>
+                      <div className="scenario-discount">
+                        12% {currentLanguage === 'de' ? 'Rabatt' : 'discount'}
+                      </div>
+                    </div>
                   </div>
 
                   {/* Klinikgruppe */}
                   <div className="scenario-card" onClick={() => applyScenario(65000, 30, false)}>
                     <div className="scenario-header">
                       <span className="scenario-icon">🏥</span>
-                      <strong className="scenario-title">Klinikgruppe</strong>
+                      <strong className="scenario-title">{t('scenarios.clinic')}</strong>
                     </div>
-                    <div className="scenario-details">65.000 € • 30 Tage • Lieferung</div>
-                    <div className="scenario-discount">12% Rabatt</div>
+                    <div className="scenario-content">
+                      <div className="scenario-details">
+                        {formatCurrency(65000, currentLanguage)}
+                        <span className="separator">•</span>
+                        30 {currentLanguage === 'de' ? 'Tage' : 'days'}
+                        <span className="separator">•</span>
+                        {t('calculator.deliveryOptions.delivery')}
+                      </div>
+                      <div className="scenario-discount">
+                        12% {currentLanguage === 'de' ? 'Rabatt' : 'discount'}
+                      </div>
+                    </div>
                   </div>
 
                   {/* Restaurant */}
                   <div className="scenario-card" onClick={() => applyScenario(8500, 14, true)}>
                     <div className="scenario-header">
                       <span className="scenario-icon">🍽️</span>
-                      <strong className="scenario-title">Restaurant</strong>
+                      <strong className="scenario-title">{t('scenarios.restaurant')}</strong>
                     </div>
-                    <div className="scenario-details">8.500 € • 14 Tage • Abholung</div>
-                    <div className="scenario-discount">6% Rabatt</div>
+                    <div className="scenario-content">
+                      <div className="scenario-details">
+                        {formatCurrency(8500, currentLanguage)}
+                        <span className="separator">•</span>
+                        14 {currentLanguage === 'de' ? 'Tage' : 'days'}
+                        <span className="separator">•</span>
+                        {t('calculator.deliveryOptions.pickup')}
+                      </div>
+                      <div className="scenario-discount">
+                        6% {currentLanguage === 'de' ? 'Rabatt' : 'discount'}
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>

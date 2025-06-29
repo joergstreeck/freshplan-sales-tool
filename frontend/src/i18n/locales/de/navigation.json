@@ -1,0 +1,41 @@
+{
+  "tabs": {
+    "calculator": "Rabattrechner",
+    "customer": "Kundendaten",
+    "customers": "Kunden",
+    "locations": "Standorte",
+    "detailedLocations": "Detaillierte Standorte",
+    "creditcheck": "Bonitätsprüfung",
+    "profile": "Profil",
+    "offer": "Angebot",
+    "orders": "Aufträge",
+    "offers": "Angebote",
+    "products": "Artikel",
+    "users": "Benutzer",
+    "settings": "Einstellungen",
+    "help": "Hilfe",
+    "dashboard": "Dashboard",
+    "reports": "Berichte"
+  },
+  "menu": {
+    "profile": "Profil",
+    "logout": "Abmelden",
+    "settings": "Einstellungen",
+    "language": "Sprache",
+    "switchLanguage": "Sprache wechseln",
+    "german": "Deutsch",
+    "english": "English"
+  },
+  "breadcrumb": {
+    "home": "Start",
+    "calculator": "Rabattrechner",
+    "customers": "Kundenverwaltung",
+    "newCustomer": "Neuer Kunde",
+    "editCustomer": "Kunde bearbeiten"
+  },
+  "header": {
+    "tagline": "So einfach, schnell und lecker!",
+    "title": "FreshPlan",
+    "welcomeBack": "Willkommen zurück"
+  }
+}

@@ -1,0 +1,64 @@
+{
+  "buttons": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "back": "Back",
+    "next": "Next",
+    "close": "Close",
+    "confirm": "Confirm",
+    "create": "Create",
+    "update": "Update",
+    "add": "Add",
+    "new": "New",
+    "actions": "Actions",
+    "logout": "Logout",
+    "continue": "Continue",
+    "clear": "Clear Form"
+  },
+  "labels": {
+    "name": "Name",
+    "email": "Email",
+    "phone": "Phone",
+    "address": "Address",
+    "date": "Date",
+    "status": "Status",
+    "description": "Description",
+    "type": "Type",
+    "required": "Required",
+    "optional": "Optional",
+    "search": "Search",
+    "filter": "Filter",
+    "yes": "Yes",
+    "no": "No"
+  },
+  "messages": {
+    "loading": "Loading...",
+    "saving": "Saving...",
+    "success": "Successfully saved",
+    "error": "An error occurred",
+    "confirmDelete": "Are you sure you want to delete this item?",
+    "noData": "No data available",
+    "welcome": "Welcome to FreshPlan",
+    "welcomeBack": "Welcome back, {{name}}!",
+    "comingSoon": "Coming soon...",
+    "featureComingSoon": "{{feature}} - Coming soon..."
+  },
+  "validation": {
+    "required": "This field is required",
+    "invalidEmail": "Invalid email address",
+    "minLength": "At least {{min}} characters required",
+    "maxLength": "Maximum {{max}} characters allowed",
+    "invalidNumber": "Invalid number",
+    "minValue": "Minimum value: {{min}}",
+    "maxValue": "Maximum value: {{max}}"
+  },
+  "formats": {
+    "currency": "€{{value}}",
+    "percent": "{{value}}%",
+    "date": "MM/DD/YYYY",
+    "time": "HH:mm",
+    "dateTime": "MM/DD/YYYY HH:mm"
+  }
+}

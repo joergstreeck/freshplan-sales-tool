@@ -1,0 +1,30 @@
+{
+  "title": "Detailed Location Capture",
+  "capturedLocations": "Captured Locations:",
+  "totalLocations": "Total Number of Locations:",
+  "addLocation": "+ Add Location",
+  "syncWarning": {
+    "title": "⚠️ Discrepancy Detected",
+    "text": "The number and categories of captured locations do not match the information on the main location page.",
+    "details": "You have captured {{captured}} locations, but specified {{total}} locations in total."
+  },
+  "noLocationsYet": "No locations captured yet.",
+  "clickAddLocation": "Click the button above to begin.",
+  "location": "Location",
+  "remove": "Remove",
+  "confirmRemove": "Do you really want to remove this location?",
+  "locationName": "Location Name",
+  "category": "Category",
+  "pleaseSelect": "Please select",
+  "categories": {
+    "mainLocation": "Main Location",
+    "branch": "Branch",
+    "externalOffice": "External Office"
+  },
+  "streetAndNumber": "Street and Number",
+  "postalCode": "Postal Code",
+  "city": "City",
+  "contactName": "Contact Name",
+  "contactPhone": "Phone",
+  "contactEmail": "Email"
+}
