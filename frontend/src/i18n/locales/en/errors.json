@@ -1,0 +1,44 @@
+{
+  "general": {
+    "title": "An error occurred",
+    "unexpected": "An unexpected error occurred",
+    "tryAgain": "Please try again later",
+    "contactSupport": "If the problem persists, please contact support",
+    "backToHome": "Back to home",
+    "reload": "Reload page"
+  },
+  "api": {
+    "networkError": "Network error - Please check your internet connection",
+    "serverError": "Server error - The server is currently unavailable",
+    "unauthorized": "Unauthorized - Please sign in again",
+    "forbidden": "Access denied - You don't have permission for this action",
+    "notFound": "Not found - The requested resource doesn't exist",
+    "timeout": "Timeout - The request took too long",
+    "badRequest": "Invalid request - Please check your input"
+  },
+  "validation": {
+    "required": "{{field}} is required",
+    "email": "Please enter a valid email address",
+    "phone": "Please enter a valid phone number",
+    "zipCode": "Please enter a valid ZIP code",
+    "number": "Please enter a valid number",
+    "min": "The value must be at least {{min}}",
+    "max": "The value must be at most {{max}}",
+    "minLength": "At least {{min}} characters required",
+    "maxLength": "Maximum {{max}} characters allowed",
+    "pattern": "Invalid format"
+  },
+  "auth": {
+    "loginFailed": "Login failed",
+    "invalidCredentials": "Invalid credentials",
+    "sessionExpired": "Your session has expired. Please sign in again",
+    "logoutFailed": "Logout failed"
+  },
+  "business": {
+    "customerNotFound": "Customer not found",
+    "orderNotFound": "Order not found",
+    "duplicateCustomerNumber": "This customer number already exists",
+    "invalidOrderValue": "Invalid order value",
+    "minimumOrderValue": "Minimum order value not reached"
+  }
+}

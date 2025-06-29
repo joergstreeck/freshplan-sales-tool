@@ -146,19 +146,25 @@
 .scenario-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 0.75rem;
+  gap: 1rem;
+  width: 100%;
 }
 
 /* Scenario Cards */
 .scenario-card {
   background: white;
-  padding: 0.75rem;
+  padding: 1rem;
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.3s;
-  border: 1px solid transparent;
+  border: 1px solid #e0e0e0;
   font-family: var(--font-body);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   text-align: center;
+  gap: 0.5rem;
+  min-height: 120px;
 }
 
 .scenario-card:hover {
@@ -172,27 +178,42 @@
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  margin-bottom: 0.25rem;
 }
 
 .scenario-icon {
-  font-size: 1.25rem;
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.scenario-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  width: 100%;
 }
 
 .scenario-title {
-  color: #333;
-  font-weight: 600;
+  color: var(--primary-blue);
+  font-weight: 700;
+  font-size: 0.875rem;
+  margin: 0;
+  white-space: nowrap;
 }
 
 .scenario-details {
-  font-size: 0.75rem;
+  font-size: 0.8125rem;
   color: #666;
+  line-height: 1.4;
+}
+
+.scenario-details .separator {
+  margin: 0 0.25rem;
 }
 
 .scenario-discount {
-  font-size: 0.875rem;
+  font-size: 1rem;
   color: var(--primary-green);
-  font-weight: 600;
+  font-weight: 700;
   margin-top: 0.25rem;
 }
 
@@ -320,58 +341,9 @@
   font-family: var(--font-body);
 }
 
-/* Scenario Cards */
-.scenario-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 0.75rem;
-}
+/* Scenario Cards - Duplikat entfernt, siehe Zeile 145 */
 
-.scenario-card {
-  background: white;
-  padding: 0.75rem;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.3s;
-  border: 1px solid transparent;
-  font-family: var(--font-body);
-  text-align: center;
-}
-
-.scenario-card:hover {
-  border-color: #94c456;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.scenario-header {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  margin-bottom: 0.25rem;
-}
-
-.scenario-icon {
-  font-size: 1.25rem;
-}
-
-.scenario-title {
-  color: #333;
-  font-weight: 600;
-}
-
-.scenario-details {
-  font-size: 0.75rem;
-  color: #666;
-}
-
-.scenario-discount {
-  font-size: 0.875rem;
-  color: #94c456;
-  font-weight: 600;
-  margin-top: 0.25rem;
-}
+/* Duplikate entfernt - siehe Zeilen 164-204 für aktuelle Styles */
 
 /* Responsive Design */
 @media (max-width: 1024px) {

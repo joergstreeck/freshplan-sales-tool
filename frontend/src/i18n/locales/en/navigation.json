@@ -1,0 +1,41 @@
+{
+  "tabs": {
+    "calculator": "Discount Calculator",
+    "customer": "Customer Data",
+    "customers": "Customers",
+    "locations": "Locations",
+    "detailedLocations": "Detailed Locations",
+    "creditcheck": "Credit Check",
+    "profile": "Profile",
+    "offer": "Offer",
+    "orders": "Orders",
+    "offers": "Offers",
+    "products": "Products",
+    "users": "Users",
+    "settings": "Settings",
+    "help": "Help",
+    "dashboard": "Dashboard",
+    "reports": "Reports"
+  },
+  "menu": {
+    "profile": "Profile",
+    "logout": "Sign out",
+    "settings": "Settings",
+    "language": "Language",
+    "switchLanguage": "Switch Language",
+    "german": "Deutsch",
+    "english": "English"
+  },
+  "breadcrumb": {
+    "home": "Home",
+    "calculator": "Discount Calculator",
+    "customers": "Customer Management",
+    "newCustomer": "New Customer",
+    "editCustomer": "Edit Customer"
+  },
+  "header": {
+    "tagline": "So easy, fast and delicious!",
+    "title": "FreshPlan",
+    "welcomeBack": "Welcome back"
+  }
+}

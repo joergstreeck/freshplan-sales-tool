@@ -1,0 +1,131 @@
+{
+  "title": "Customer Management",
+  "newCustomer": "New Customer",
+  "editCustomer": "Edit Customer",
+  "customerList": "Customer List",
+  "searchPlaceholder": "Search customer...",
+  "noCustomers": "No customers found",
+  "formTitle": "Enter Customer Data",
+  "sections": {
+    "basicData": "Basic Data",
+    "addressData": "Address Data",
+    "contactData": "Contact Person",
+    "businessData": "Business Data",
+    "billingData": "Billing Data",
+    "deliveryData": "Delivery Data",
+    "additionalData": "Additional Information"
+  },
+  "fields": {
+    "salutation": "Salutation",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "company": "Company",
+    "companyName": "Company Name",
+    "legalForm": "Legal Form",
+    "customerType": "Customer Type",
+    "industry": "Industry",
+    "chainCustomer": "Chain Customer",
+    "customerNumberInternal": "Customer Number (internal)",
+    "street": "Street",
+    "streetAndNumber": "Street and House Number",
+    "houseNumber": "House Number",
+    "zipCode": "ZIP Code",
+    "postalCode": "Postal Code",
+    "city": "City",
+    "country": "Country",
+    "contactName": "Name",
+    "contactPosition": "Position",
+    "contactPhone": "Phone",
+    "phone": "Phone",
+    "mobile": "Mobile",
+    "fax": "Fax",
+    "email": "Email",
+    "contactEmail": "Email",
+    "website": "Website",
+    "expectedVolume": "Expected Order Volume (net p.a.)",
+    "paymentMethod": "Payment Method",
+    "taxId": "Tax ID",
+    "vatId": "VAT ID",
+    "customerNumber": "Customer Number",
+    "notes": "Notes",
+    "isActive": "Active",
+    "isChainCustomer": "Chain Customer",
+    "preferredDeliveryTime": "Preferred Delivery Time",
+    "specialInstructions": "Special Instructions",
+    "customField1": "Custom Field 1",
+    "customField2": "Custom Field 2"
+  },
+  "salutations": {
+    "mr": "Mr.",
+    "mrs": "Mrs.",
+    "company": "Company",
+    "diverse": "Diverse"
+  },
+  "actions": {
+    "save": "Save Customer",
+    "cancel": "Cancel",
+    "delete": "Delete Customer",
+    "edit": "Edit",
+    "view": "View",
+    "createOrder": "Create Order",
+    "showOrders": "Show Orders"
+  },
+  "messages": {
+    "createSuccess": "Customer created successfully",
+    "updateSuccess": "Customer updated successfully",
+    "deleteSuccess": "Customer deleted successfully",
+    "deleteConfirm": "Are you sure you want to delete this customer?",
+    "loadError": "Error loading customers",
+    "saveError": "Error saving customer"
+  },
+  "table": {
+    "customerNumber": "Cust. No.",
+    "name": "Name",
+    "company": "Company",
+    "city": "City",
+    "phone": "Phone",
+    "email": "Email",
+    "status": "Status",
+    "actions": "Actions"
+  },
+  "status": {
+    "active": "Active",
+    "inactive": "Inactive",
+    "chainCustomer": "Chain Customer"
+  },
+  "options": {
+    "pleaseSelect": "Please select",
+    "yes": "Yes",
+    "no": "No",
+    "legalForms": {
+      "gmbh": "LLC (GmbH)",
+      "ag": "Corporation (AG)",
+      "gbr": "Civil Law Partnership (GbR)",
+      "einzelunternehmen": "Sole Proprietorship",
+      "kg": "Limited Partnership (KG)",
+      "ohg": "General Partnership (OHG)",
+      "ug": "Entrepreneurial Company (UG)"
+    },
+    "customerTypes": {
+      "neukunde": "New Customer",
+      "bestandskunde": "Existing Customer"
+    },
+    "industries": {
+      "hotel": "Hotel",
+      "krankenhaus": "Hospital",
+      "seniorenresidenz": "Senior Residence",
+      "betriebsrestaurant": "Company Restaurant",
+      "restaurant": "Restaurant"
+    },
+    "paymentMethods": {
+      "invoice": "Invoice (net 30 days)",
+      "directDebit": "Direct Debit",
+      "prepayment": "Prepayment",
+      "cash": "Cash Payment"
+    }
+  },
+  "placeholders": {
+    "expectedVolume": "e.g. 500,000",
+    "notes": "Internal notes about the customer..."
+  }
+}

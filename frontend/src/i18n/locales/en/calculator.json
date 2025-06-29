@@ -1,0 +1,51 @@
+{
+  "title": "FreshPlan Discount Calculator",
+  "sliders": {
+    "orderValue": "Order Value",
+    "leadTime": "Lead Time",
+    "leadTimeDays_one": "{{count}} day",
+    "leadTimeDays_other": "{{count}} days"
+  },
+  "checkboxes": {
+    "pickup": "Pickup (Minimum order: {{minValue}} net)",
+    "chainCustomer": "Chain Customer"
+  },
+  "results": {
+    "discountOverview": "Discount Overview",
+    "baseDiscount": "Base Discount",
+    "earlyBooking": "Early Booking",
+    "pickupDiscount": "Pickup",
+    "chainDiscount": "Chain Customer",
+    "totalDiscount": "Total Discount",
+    "savings": "Savings",
+    "finalPrice": "Final Price",
+    "grossPrice": "Gross Price",
+    "netPrice": "Net Price"
+  },
+  "scenarios": {
+    "title": "Example Scenarios",
+    "subtitle": "Click on a scenario to automatically set the values",
+    "hotel": "Hotel-Chain",
+    "hotelDescription": "€30,000 order value, 30 days lead time",
+    "clinic": "Clinic-Group",
+    "clinicDescription": "€15,000 order value, 14 days lead time",
+    "restaurant": "Restaurant",
+    "restaurantDescription": "€5,000 order value, 7 days lead time, pickup"
+  },
+  "info": {
+    "maxDiscount": "Maximum total discount: {{max}}%",
+    "chainCustomerInfo": "As a chain customer, you automatically receive the maximum total discount of {{max}}%",
+    "pickupMinimum": "Pickup discount from {{minValue}} order value",
+    "earlyBookingInfo": "The earlier you order, the more you save!"
+  },
+  "calculator": {
+    "calculate": "Calculate",
+    "orderValuePlaceholder": "Enter order value",
+    "leadTimePlaceholder": "Lead time in days",
+    "deliveryOptions": {
+      "pickup": "Pickup",
+      "delivery": "Delivery",
+      "both": "Both"
+    }
+  }
+}

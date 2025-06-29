@@ -1,0 +1,131 @@
+{
+  "title": "Kundenverwaltung",
+  "newCustomer": "Neuer Kunde",
+  "editCustomer": "Kunde bearbeiten",
+  "customerList": "Kundenliste",
+  "searchPlaceholder": "Kunde suchen...",
+  "noCustomers": "Keine Kunden gefunden",
+  "formTitle": "Kundendaten erfassen",
+  "sections": {
+    "basicData": "Grunddaten",
+    "addressData": "Adressdaten",
+    "contactData": "Ansprechpartner",
+    "businessData": "Geschäftsdaten",
+    "billingData": "Rechnungsdaten",
+    "deliveryData": "Lieferdaten",
+    "additionalData": "Zusatzinformationen"
+  },
+  "fields": {
+    "salutation": "Anrede",
+    "firstName": "Vorname",
+    "lastName": "Nachname",
+    "company": "Firma",
+    "companyName": "Firmenname",
+    "legalForm": "Rechtsform",
+    "customerType": "Kundentyp",
+    "industry": "Branche",
+    "chainCustomer": "Kettenkunde",
+    "customerNumberInternal": "Kundennummer (intern)",
+    "street": "Straße",
+    "streetAndNumber": "Straße und Hausnummer",
+    "houseNumber": "Hausnummer",
+    "zipCode": "PLZ",
+    "postalCode": "PLZ",
+    "city": "Stadt",
+    "country": "Land",
+    "contactName": "Name",
+    "contactPosition": "Position",
+    "contactPhone": "Telefon",
+    "phone": "Telefon",
+    "mobile": "Mobil",
+    "fax": "Fax",
+    "email": "E-Mail",
+    "contactEmail": "E-Mail",
+    "website": "Webseite",
+    "expectedVolume": "Erwartetes Auftragsvolumen (netto p.a.)",
+    "paymentMethod": "Zahlungsart",
+    "taxId": "Steuernummer",
+    "vatId": "USt-IdNr.",
+    "customerNumber": "Kundennummer",
+    "notes": "Notizen",
+    "isActive": "Aktiv",
+    "isChainCustomer": "Kettenkunde",
+    "preferredDeliveryTime": "Bevorzugte Lieferzeit",
+    "specialInstructions": "Besondere Anweisungen",
+    "customField1": "Zusatzfeld 1",
+    "customField2": "Zusatzfeld 2"
+  },
+  "salutations": {
+    "mr": "Herr",
+    "mrs": "Frau",
+    "company": "Firma",
+    "diverse": "Divers"
+  },
+  "actions": {
+    "save": "Kunde speichern",
+    "cancel": "Abbrechen",
+    "delete": "Kunde löschen",
+    "edit": "Bearbeiten",
+    "view": "Anzeigen",
+    "createOrder": "Auftrag erstellen",
+    "showOrders": "Aufträge anzeigen"
+  },
+  "messages": {
+    "createSuccess": "Kunde erfolgreich erstellt",
+    "updateSuccess": "Kunde erfolgreich aktualisiert",
+    "deleteSuccess": "Kunde erfolgreich gelöscht",
+    "deleteConfirm": "Möchten Sie diesen Kunden wirklich löschen?",
+    "loadError": "Fehler beim Laden der Kunden",
+    "saveError": "Fehler beim Speichern des Kunden"
+  },
+  "table": {
+    "customerNumber": "Kd.-Nr.",
+    "name": "Name",
+    "company": "Firma",
+    "city": "Stadt",
+    "phone": "Telefon",
+    "email": "E-Mail",
+    "status": "Status",
+    "actions": "Aktionen"
+  },
+  "status": {
+    "active": "Aktiv",
+    "inactive": "Inaktiv",
+    "chainCustomer": "Kettenkunde"
+  },
+  "options": {
+    "pleaseSelect": "Bitte wählen",
+    "yes": "Ja",
+    "no": "Nein",
+    "legalForms": {
+      "gmbh": "GmbH",
+      "ag": "AG",
+      "gbr": "GbR",
+      "einzelunternehmen": "Einzelunternehmen",
+      "kg": "KG",
+      "ohg": "OHG",
+      "ug": "UG"
+    },
+    "customerTypes": {
+      "neukunde": "Neukunde",
+      "bestandskunde": "Bestandskunde"
+    },
+    "industries": {
+      "hotel": "Hotel",
+      "krankenhaus": "Klinik",
+      "seniorenresidenz": "Seniorenresidenz",
+      "betriebsrestaurant": "Betriebsrestaurant",
+      "restaurant": "Restaurant"
+    },
+    "paymentMethods": {
+      "invoice": "Rechnung (30 Tage netto)",
+      "directDebit": "Lastschrift",
+      "prepayment": "Vorkasse",
+      "cash": "Barzahlung"
+    }
+  },
+  "placeholders": {
+    "expectedVolume": "z.B. 500.000",
+    "notes": "Interne Notizen zum Kunden..."
+  }
+}

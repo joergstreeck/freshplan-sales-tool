@@ -17,8 +17,8 @@ Die CalculatorLayout-Komponente wurde so angepasst, dass sie die Backend-API fü
 - Dynamische Anzeige der API-Ergebnisse statt statischer Werte
 
 ### 2. CORS-Konfiguration korrigiert
-- Port 5174 entfernt (war falsch dokumentiert)
 - Nur Port 5173 für Frontend konfiguriert
+- Frontend läuft standardmäßig auf Port 5173
 
 ## Test-Anleitung
 

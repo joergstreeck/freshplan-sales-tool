@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { LanguageSwitchLegacy } from './LanguageSwitchLegacy';
 import '../../styles/legacy/header-logo.css';
 
 interface HeaderProps {
@@ -8,52 +9,26 @@ interface HeaderProps {
 }
 
 export function Header({ onLanguageChange, onClearForm, onSave }: HeaderProps) {
-  const [language, setLanguage] = useState('de');
-
-  const handleLanguageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const newLang = e.target.value;
-    setLanguage(newLang);
-    onLanguageChange(newLang);
-  };
+  const { t } = useTranslation(['navigation', 'common']);
 
   return (
     <header className="header">
       <div className="header-container">
         <div className="header-content">
           <div className="logo">
-            <img 
-              src="/freshfoodzlogo.png" 
-              alt="FreshFoodz Logo" 
-              className="logo-img"
-            />
+            <img src="/freshfoodzlogo.png" alt="FreshFoodz Logo" className="logo-img" />
             <div className="logo-text-container">
               <h1 className="logo-text">FreshPlan</h1>
-              <span className="logo-tagline" data-i18n="tagline">
-                So einfach, schnell und lecker!
-              </span>
+              <span className="logo-tagline">{t('navigation:header.tagline')}</span>
             </div>
           </div>
           <div className="header-actions">
-            <select 
-              id="languageSelect" 
-              className="header-select" 
-              value={language}
-              onChange={handleLanguageChange}
-            >
-              <option value="de" data-i18n="languageDE">Deutsch</option>
-              <option value="en" data-i18n="languageEN">English</option>
-            </select>
-            <button 
-              className="header-btn header-btn-clear" 
-              onClick={onClearForm}
-            >
-              <span data-i18n="common.clearForm">Formular leeren</span>
+            <LanguageSwitchLegacy onLanguageChange={onLanguageChange} />
+            <button className="header-btn header-btn-clear" onClick={onClearForm}>
+              <span>{t('common:buttons.clear')}</span>
             </button>
-            <button 
-              className="header-btn header-btn-save" 
-              onClick={onSave}
-            >
-              <span data-i18n="common.save">Speichern</span>
+            <button className="header-btn header-btn-save" onClick={onSave}>
+              <span>{t('common:buttons.save')}</span>
             </button>
           </div>
         </div>

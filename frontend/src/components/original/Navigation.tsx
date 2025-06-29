@@ -1,29 +1,37 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import '../../styles/legacy/header-logo.css';
 
 interface NavigationProps {
   activeTab?: string;
   onTabChange: (tab: string) => void;
+  showLocations?: boolean;
+  showDetailedLocations?: boolean;
 }
 
 interface Tab {
   id: string;
-  label: string;
-  dataI18n: string;
 }
 
 // Tabs in der richtigen Reihenfolge wie im Original
 const tabs: Tab[] = [
-  { id: 'calculator', label: 'Rabattrechner', dataI18n: 'calculator' },
-  { id: 'customer', label: 'Kundendaten', dataI18n: 'customer' },
-  { id: 'locations', label: 'Standorte', dataI18n: 'locations' },
-  { id: 'creditcheck', label: 'Bonitätsprüfung', dataI18n: 'creditcheck' },
-  { id: 'profile', label: 'Profil', dataI18n: 'profile' },
-  { id: 'offer', label: 'Angebot', dataI18n: 'offer' },
-  { id: 'settings', label: 'Einstellungen', dataI18n: 'settings' }
+  { id: 'calculator' },
+  { id: 'customer' },
+  { id: 'locations' },
+  { id: 'detailedLocations' },
+  { id: 'creditcheck' },
+  { id: 'profile' },
+  { id: 'offer' },
+  { id: 'settings' },
 ];
 
-export function Navigation({ activeTab = 'calculator', onTabChange }: NavigationProps) {
+export function Navigation({
+  activeTab = 'calculator',
+  onTabChange,
+  showLocations = false,
+  showDetailedLocations = false,
+}: NavigationProps) {
+  const { t } = useTranslation('navigation');
   const [currentTab, setCurrentTab] = useState(activeTab);
 
   useEffect(() => {
@@ -35,10 +43,21 @@ export function Navigation({ activeTab = 'calculator', onTabChange }: Navigation
     onTabChange(tabId);
   };
 
+  // Filter tabs based on showLocations and showDetailedLocations
+  const visibleTabs = tabs.filter(tab => {
+    if (tab.id === 'locations') {
+      return showLocations;
+    }
+    if (tab.id === 'detailedLocations') {
+      return showDetailedLocations && showLocations;
+    }
+    return true;
+  });
+
   return (
-    <nav className="nav">
-      <div className="nav-tabs">
-        {tabs.map((tab) => (
+    <nav className="nav" aria-label="Main navigation">
+      <div className="nav-tabs" role="tablist">
+        {visibleTabs.map(tab => (
           <button
             key={tab.id}
             className={`nav-tab ${currentTab === tab.id ? 'active' : ''}`}
@@ -47,7 +66,7 @@ export function Navigation({ activeTab = 'calculator', onTabChange }: Navigation
             aria-selected={currentTab === tab.id}
             onClick={() => handleTabClick(tab.id)}
           >
-            <span data-i18n={tab.dataI18n}>{tab.label}</span>
+            <span>{t(`tabs.${tab.id}`)}</span>
           </button>
         ))}
       </div>

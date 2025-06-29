@@ -1,0 +1,30 @@
+{
+  "title": "Detaillierte Standorterfassung",
+  "capturedLocations": "Erfasste Standorte:",
+  "totalLocations": "Gesamtanzahl Standorte:",
+  "addLocation": "+ Standort hinzufügen",
+  "syncWarning": {
+    "title": "⚠️ Abweichung erkannt",
+    "text": "Die Anzahl und Kategorien der erfassten Standorte stimmen nicht mit den Angaben auf der Haupt-Standortseite überein.",
+    "details": "Sie haben {{captured}} Standorte erfasst, aber {{total}} Standorte insgesamt angegeben."
+  },
+  "noLocationsYet": "Noch keine Standorte erfasst.",
+  "clickAddLocation": "Klicken Sie auf den Button oben um zu beginnen.",
+  "location": "Standort",
+  "remove": "Entfernen",
+  "confirmRemove": "Möchten Sie diesen Standort wirklich entfernen?",
+  "locationName": "Standortname",
+  "category": "Kategorie",
+  "pleaseSelect": "Bitte wählen",
+  "categories": {
+    "mainLocation": "Hauptstandort",
+    "branch": "Filiale",
+    "externalOffice": "Außenstelle"
+  },
+  "streetAndNumber": "Straße und Hausnummer",
+  "postalCode": "PLZ",
+  "city": "Ort",
+  "contactName": "Ansprechpartner Name",
+  "contactPhone": "Telefon",
+  "contactEmail": "E-Mail"
+}
