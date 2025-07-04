@@ -30,7 +30,7 @@ export function CalculatorLayout({ leftContent, rightContent }: CalculatorLayout
       pickup,
       chain: false, // TODO: Kettenkundenrabatt implementieren
     });
-  }, [orderValue, leadTime, pickup, calculateDiscount]);
+  }, [orderValue, leadTime, pickup]); // calculateDiscount.mutate ist stabil
 
   // Handler für Beispielszenarien
   const applyScenario = (
@@ -64,40 +64,40 @@ export function CalculatorLayout({ leftContent, rightContent }: CalculatorLayout
               {/* Bestellwert Slider */}
               <div className="form-group">
                 <div className="slider-label-container">
-                  <label htmlFor="orderValue">{t('sliders.orderValue')}</label>
+                  <span id="orderValue-label">{t('sliders.orderValue')}</span>
                   <span className="slider-value-display">
                     {formatCurrency(orderValue, currentLanguage)}
                   </span>
                 </div>
                 {/* Barrierefreier Custom Slider mit Radix UI */}
                 <CustomSlider
-                  id="orderValue"
                   value={orderValue}
                   onValueChange={setOrderValue}
                   min={1000}
                   max={100000}
                   step={1000}
                   aria-label={t('sliders.orderValue')}
+                  aria-labelledby="orderValue-label"
                 />
               </div>
 
               {/* Vorlaufzeit Slider */}
               <div className="form-group">
                 <div className="slider-label-container">
-                  <label htmlFor="leadTime">{t('sliders.leadTime')}</label>
+                  <span id="leadTime-label">{t('sliders.leadTime')}</span>
                   <span className="slider-value-display">
                     {t('sliders.leadTimeDays', { count: leadTime })}
                   </span>
                 </div>
                 {/* Barrierefreier Custom Slider mit Radix UI */}
                 <CustomSlider
-                  id="leadTime"
                   value={leadTime}
                   onValueChange={setLeadTime}
                   min={1}
                   max={50}
                   step={1}
                   aria-label={t('sliders.leadTime')}
+                  aria-labelledby="leadTime-label"
                 />
               </div>
 

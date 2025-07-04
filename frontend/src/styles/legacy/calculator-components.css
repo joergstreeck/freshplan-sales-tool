@@ -4,230 +4,235 @@
 
 /* Slider Label Container */
 .slider-label-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 0.5rem;
-    font-weight: 500;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.slider-label-container > span:first-child {
+  font-weight: 500;
+  color: #333;
 }
 
 /* Slider Value Display */
 .slider-value-display {
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: #94c456;
-    background: rgba(148, 196, 86, 0.1);
-    padding: 0.25rem 0.75rem;
-    border-radius: 6px;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #94c456;
+  background: rgba(148, 196, 86, 0.1);
+  padding: 0.25rem 0.75rem;
+  border-radius: 6px;
 }
 
 /* Results Container */
 .calculator-results-container {
-    background: #f8f9fa;
-    padding: 1.5rem;
-    border-radius: 10px;
-    margin-top: 2rem;
+  background: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 10px;
+  margin-top: 2rem;
 }
 
 /* Result Grid */
 .calculator-result-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1rem;
-    margin-bottom: 1.5rem;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
 }
 
 /* Result Item */
 .calculator-result-item {
-    text-align: center;
-    padding: 1rem;
-    background: white;
-    border-radius: 8px;
-    border: 1px solid rgba(0, 0, 0, 0.06);
-    font-family: 'Poppins', sans-serif;
+  text-align: center;
+  padding: 1rem;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  font-family: 'Poppins', sans-serif;
 }
 
 .calculator-result-label {
-    display: block;
-    font-size: 0.875rem;
-    color: #666;
-    margin-bottom: 0.5rem;
+  display: block;
+  font-size: 0.875rem;
+  color: #666;
+  margin-bottom: 0.5rem;
 }
 
 .calculator-result-value {
-    display: block;
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: #004F7B;
+  display: block;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #004f7b;
 }
 
 /* Total Discount Bar */
 .calculator-total-discount {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1.5rem;
-    background: #94c456;
-    color: white;
-    border-radius: 10px;
-    margin-bottom: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  background: #94c456;
+  color: white;
+  border-radius: 10px;
+  margin-bottom: 1rem;
 }
 
 .calculator-total-value {
-    font-size: 2rem;
-    font-weight: 700;
-    font-family: 'Poppins', sans-serif;
+  font-size: 2rem;
+  font-weight: 700;
+  font-family: 'Poppins', sans-serif;
 }
 
 /* Savings Display */
 .calculator-savings-display {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
 }
 
 .calculator-savings-item {
-    text-align: center;
-    padding: 1rem;
-    background: white;
-    border-radius: 8px;
+  text-align: center;
+  padding: 1rem;
+  background: white;
+  border-radius: 8px;
 }
 
 .calculator-savings-item.highlight {
-    background: #004F7B;
-    color: white;
+  background: #004f7b;
+  color: white;
 }
 
 .calculator-savings-value {
-    display: block;
-    font-size: 1.25rem;
-    font-weight: 700;
-    font-family: 'Poppins', sans-serif;
+  display: block;
+  font-size: 1.25rem;
+  font-weight: 700;
+  font-family: 'Poppins', sans-serif;
 }
 
 /* Max Discount Info */
 .calculator-max-discount {
-    margin-top: 1.5rem;
-    padding-top: 1.5rem;
-    border-top: 1px solid #e0e0e0;
-    text-align: center;
-    color: #94c456;
-    font-weight: 600;
-    font-size: 1rem;
-    font-family: 'Poppins', sans-serif;
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e0e0e0;
+  text-align: center;
+  color: #94c456;
+  font-weight: 600;
+  font-size: 1rem;
+  font-family: 'Poppins', sans-serif;
 }
 
 /* Info Cards (Right Side) */
 .calculator-info-card {
-    background: white;
-    padding: 1.75rem;
-    border-radius: 12px;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  background: white;
+  padding: 1.75rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
 }
 
 .calculator-info-card.gradient {
-    background: linear-gradient(135deg, rgba(148, 196, 86, 0.1), rgba(0, 79, 123, 0.05));
+  background: linear-gradient(135deg, rgba(148, 196, 86, 0.1), rgba(0, 79, 123, 0.05));
 }
 
 .calculator-info-title {
-    color: #004F7B;
-    font-size: 1.125rem;
-    font-weight: 700;
-    font-family: 'Antonio', sans-serif;
-    margin-bottom: 1rem;
+  color: #004f7b;
+  font-size: 1.125rem;
+  font-weight: 700;
+  font-family: 'Antonio', sans-serif;
+  margin-bottom: 1rem;
 }
 
 /* Discount Tables */
 .calculator-discount-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1.5rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
 }
 
 .calculator-discount-table {
-    width: 100%;
-    font-size: 0.875rem;
-    font-family: 'Poppins', sans-serif;
-    border-collapse: collapse;
+  width: 100%;
+  font-size: 0.875rem;
+  font-family: 'Poppins', sans-serif;
+  border-collapse: collapse;
 }
 
 .calculator-discount-table td {
-    padding: 0.25rem 0;
+  padding: 0.25rem 0;
 }
 
 .calculator-discount-table td:nth-child(2) {
-    padding: 0.25rem 0.5rem;
-    text-align: right;
-    width: 80px;
+  padding: 0.25rem 0.5rem;
+  text-align: right;
+  width: 80px;
 }
 
 .calculator-discount-table td:last-child {
-    text-align: right;
-    color: #94c456;
-    font-weight: 600;
+  text-align: right;
+  color: #94c456;
+  font-weight: 600;
 }
 
 /* Chain Customer Options */
 .calculator-chain-option {
-    padding: 0.75rem;
-    background: #f8f9fa;
-    border-radius: 6px;
-    font-size: 0.875rem;
-    margin-bottom: 0.75rem;
+  padding: 0.75rem;
+  background: #f8f9fa;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  margin-bottom: 0.75rem;
 }
 
 .calculator-chain-option:last-child {
-    margin-bottom: 0;
+  margin-bottom: 0;
 }
 
 .calculator-chain-option strong {
-    color: #004F7B;
-    font-family: 'Poppins', sans-serif;
+  color: #004f7b;
+  font-family: 'Poppins', sans-serif;
 }
 
 /* Scenario Cards */
 .calculator-scenario-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 0.75rem;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
 }
 
 .calculator-scenario-card {
-    background: white;
-    padding: 0.75rem;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.3s;
-    border: 1px solid transparent;
-    font-family: 'Poppins', sans-serif;
-    text-align: center;
+  background: white;
+  padding: 0.75rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s;
+  border: 1px solid transparent;
+  font-family: 'Poppins', sans-serif;
+  text-align: center;
 }
 
 .calculator-scenario-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .calculator-scenario-header {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    margin-bottom: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 0.25rem;
 }
 
 .calculator-scenario-emoji {
-    font-size: 1.25rem;
+  font-size: 1.25rem;
 }
 
 .calculator-scenario-details {
-    font-size: 0.75rem;
-    color: #666;
+  font-size: 0.75rem;
+  color: #666;
 }
 
 .calculator-scenario-discount {
-    font-size: 0.875rem;
-    color: #94c456;
-    font-weight: 600;
-    margin-top: 0.25rem;
+  font-size: 0.875rem;
+  color: #94c456;
+  font-weight: 600;
+  margin-top: 0.25rem;
 }

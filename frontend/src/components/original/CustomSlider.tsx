@@ -6,8 +6,8 @@ interface CustomSliderProps {
   min: number;
   max: number;
   step?: number;
-  id?: string;
   'aria-label'?: string;
+  'aria-labelledby'?: string;
 }
 
 export function CustomSlider({
@@ -16,8 +16,8 @@ export function CustomSlider({
   min,
   max,
   step = 1,
-  id,
   'aria-label': ariaLabel,
+  'aria-labelledby': ariaLabelledBy,
 }: CustomSliderProps) {
   const percentage = ((value - min) / (max - min)) * 100;
 
@@ -29,8 +29,8 @@ export function CustomSlider({
       min={min}
       max={max}
       step={step}
-      id={id}
       aria-label={ariaLabel}
+      aria-labelledby={ariaLabelledBy}
     >
       <Slider.Track className="custom-slider-track">
         <Slider.Range className="custom-slider-range" style={{ width: `${percentage}%` }} />
