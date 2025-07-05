@@ -2,7 +2,7 @@
 
 .app-container {
     min-height: 100vh;
-    background: var(--bg-light);
+    background: var(--color-background);
     padding: var(--spacing-xl);
 }
 
@@ -15,14 +15,18 @@
     font-family: var(--font-heading);
     font-size: 3rem;
     font-weight: 700;
-    color: var(--primary-blue);
+    background: var(--bg-gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-fill-color: transparent;
     margin-bottom: var(--spacing-sm);
 }
 
 .subtitle {
     font-family: var(--font-body);
     font-size: var(--font-size-lg);
-    color: var(--text-light);
+    color: var(--color-text-light);
 }
 
 .card-grid {

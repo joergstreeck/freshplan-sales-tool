@@ -66,6 +66,23 @@ function App() {
 
             <Card>
               <CardHeader>
+                <CardTitle>Kundenverwaltung</CardTitle>
+                <CardDescription>Verwalten Sie Ihre Kunden und Partner</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="card-actions">
+                  <p className="card-text">Übersichtliche Kundenliste mit Status und Risikobewertung</p>
+                  <div className="card-button-wrapper">
+                    <Button asChild>
+                      <Link to="/customers">Kundenverwaltung öffnen</Link>
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
                 <CardTitle>Benutzerverwaltung</CardTitle>
                 <CardDescription>Verwalten Sie Benutzer und Zugriffsrechte</CardDescription>
               </CardHeader>
