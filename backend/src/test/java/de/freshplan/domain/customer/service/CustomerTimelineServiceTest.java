@@ -269,7 +269,7 @@ class CustomerTimelineServiceTest {
         when(timelineRepository.searchByCustomerIdAndText(
                 eq(customerId), eq(searchText), any(Page.class)))
                 .thenReturn(events);
-        when(timelineRepository.count(anyString(), any()))
+        when(timelineRepository.count(anyString(), any(Object[].class)))
                 .thenReturn(1L);
         when(timelineMapper.toResponse(timelineEvent))
                 .thenReturn(timelineResponse);
