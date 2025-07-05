@@ -6,7 +6,6 @@ import de.freshplan.domain.customer.repository.CustomerTimelineRepository;
 import de.freshplan.domain.customer.service.dto.timeline.*;
 import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.TestTransaction;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import jakarta.inject.Inject;
@@ -45,11 +44,12 @@ class CustomerTimelineResourceIT {
     @BeforeEach
     @Transactional
     void setUp() {
-        // Clean up
+        // Clean up database
         timelineRepository.deleteAll();
         customerRepository.deleteAll();
-        
-        // Create test customer
+    }
+    
+    private void createTestCustomer() {
         testCustomer = new Customer();
         testCustomer.setCustomerNumber("IT-TEST-001");
         testCustomer.setCompanyName("Integration Test Company");
@@ -59,8 +59,9 @@ class CustomerTimelineResourceIT {
         testCustomer.setCreatedAt(LocalDateTime.now());
         testCustomer.setCreatedBy("test");
         customerRepository.persist(testCustomer);
-        
-        // Create test event
+    }
+    
+    private void createTestEvent() {
         testEvent = new CustomerTimelineEvent();
         testEvent.setCustomer(testCustomer);
         testEvent.setEventType("NOTE");
@@ -73,11 +74,44 @@ class CustomerTimelineResourceIT {
         timelineRepository.persist(testEvent);
     }
     
+    @Transactional
+    UUID createTestCustomerInTransaction() {
+        Customer customer = new Customer();
+        customer.setCustomerNumber("IT-TEST-001");
+        customer.setCompanyName("Integration Test Company");
+        customer.setStatus(CustomerStatus.AKTIV);
+        customer.setCustomerType(CustomerType.UNTERNEHMEN);
+        customer.setIndustry(Industry.SONSTIGE);
+        customer.setCreatedAt(LocalDateTime.now());
+        customer.setCreatedBy("test");
+        customerRepository.persist(customer);
+        return customer.getId();
+    }
+    
+    @Transactional
+    UUID createTestEventInTransaction(UUID customerId) {
+        Customer customer = customerRepository.findById(customerId);
+        CustomerTimelineEvent event = new CustomerTimelineEvent();
+        event.setCustomer(customer);
+        event.setEventType("NOTE");
+        event.setTitle("Test Note");
+        event.setDescription("Test Description");
+        event.setCategory(EventCategory.NOTE);
+        event.setImportance(ImportanceLevel.MEDIUM);
+        event.setPerformedBy("testuser");
+        event.setEventDate(LocalDateTime.now());
+        timelineRepository.persist(event);
+        return event.getId();
+    }
+    
     @Test
-    @TestTransaction
     void getTimeline_shouldReturnPaginatedEvents() {
+        // Create test data in separate transactions
+        UUID customerId = createTestCustomerInTransaction();
+        UUID eventId = createTestEventInTransaction(customerId);
+        
         Response response = given()
-                .pathParam("customerId", testCustomer.getId())
+                .pathParam("customerId", customerId)
                 .queryParam("page", 0)
                 .queryParam("size", 10)
                 .when()
@@ -102,8 +136,10 @@ class CustomerTimelineResourceIT {
     }
     
     @Test
-    @TestTransaction
+    @Transactional
     void getTimeline_withCategoryFilter_shouldReturnFilteredEvents() {
+        createTestCustomer();
+        createTestEvent();
         // Create additional event with different category
         CustomerTimelineEvent communicationEvent = new CustomerTimelineEvent();
         communicationEvent.setCustomer(testCustomer);
@@ -132,8 +168,10 @@ class CustomerTimelineResourceIT {
     }
     
     @Test
-    @TestTransaction
+    @Transactional
     void getTimeline_withSearchText_shouldReturnMatchingEvents() {
+        createTestCustomer();
+        createTestEvent();
         Response response = given()
                 .pathParam("customerId", testCustomer.getId())
                 .queryParam("search", "Test")
@@ -161,8 +199,9 @@ class CustomerTimelineResourceIT {
     }
     
     @Test
-    @TestTransaction
+    @Transactional
     void createEvent_withValidData_shouldCreateTimelineEvent() {
+        createTestCustomer();
         CreateTimelineEventRequest request = CreateTimelineEventRequest.builder()
                 .eventType("MEETING")
                 .title("Customer Meeting")
@@ -201,8 +240,9 @@ class CustomerTimelineResourceIT {
     }
     
     @Test
-    @TestTransaction
+    @Transactional
     void createNote_withValidData_shouldCreateNoteEvent() {
+        createTestCustomer();
         CreateNoteRequest request = new CreateNoteRequest(
                 "Customer prefers email communication",
                 "salesrep"
@@ -229,8 +269,9 @@ class CustomerTimelineResourceIT {
     }
     
     @Test
-    @TestTransaction
+    @Transactional
     void createCommunication_withValidData_shouldCreateCommunicationEvent() {
+        createTestCustomer();
         CreateCommunicationRequest request = CreateCommunicationRequest.builder()
                 .channel("email")
                 .direction("outbound")
@@ -282,8 +323,9 @@ class CustomerTimelineResourceIT {
     }
     
     @Test
-    @TestTransaction
+    @Transactional
     void getFollowUps_shouldReturnEventsRequiringFollowUp() {
+        createTestCustomer();
         // Create event with follow-up
         CustomerTimelineEvent followUpEvent = new CustomerTimelineEvent();
         followUpEvent.setCustomer(testCustomer);
@@ -311,8 +353,9 @@ class CustomerTimelineResourceIT {
     }
     
     @Test
-    @TestTransaction
+    @Transactional
     void getOverdueFollowUps_shouldReturnOverdueEvents() {
+        createTestCustomer();
         // Create overdue follow-up
         CustomerTimelineEvent overdueEvent = new CustomerTimelineEvent();
         overdueEvent.setCustomer(testCustomer);
@@ -339,8 +382,9 @@ class CustomerTimelineResourceIT {
     }
     
     @Test
-    @TestTransaction
+    @Transactional
     void getRecentCommunications_shouldReturnRecentCommunicationEvents() {
+        createTestCustomer();
         // Create recent communication
         CustomerTimelineEvent recentComm = CustomerTimelineEvent.createCommunicationEvent(
                 testCustomer,
@@ -364,8 +408,10 @@ class CustomerTimelineResourceIT {
     }
     
     @Test
-    @TestTransaction
+    @Transactional
     void getTimelineSummary_shouldReturnSummaryStatistics() {
+        createTestCustomer();
+        createTestEvent();
         // Create various events
         for (int i = 0; i < 3; i++) {
             CustomerTimelineEvent event = new CustomerTimelineEvent();
@@ -392,8 +438,10 @@ class CustomerTimelineResourceIT {
     }
     
     @Test
-    @TestTransaction
+    @Transactional
     void updateEvent_withValidData_shouldUpdateTimelineEvent() {
+        createTestCustomer();
+        createTestEvent();
         UpdateTimelineEventRequest request = new UpdateTimelineEventRequest();
         request.setTitle("Updated Title");
         request.setDescription("Updated Description");
@@ -421,18 +469,21 @@ class CustomerTimelineResourceIT {
     }
     
     @Test
-    @TestTransaction
+    @Transactional
     void completeFollowUp_shouldMarkAsCompleted() {
-        // Create event with follow-up
+        createTestCustomer();
+        createTestEvent();
+        // Update event with follow-up
         testEvent.setRequiresFollowUp(true);
         testEvent.setFollowUpDate(LocalDateTime.now().plusDays(1));
         testEvent.setFollowUpCompleted(false);
-        timelineRepository.persist(testEvent);
+        // No persist needed - entity is already persisted and managed
         
         given()
                 .pathParam("customerId", testCustomer.getId())
                 .pathParam("eventId", testEvent.getId())
                 .queryParam("completedBy", "manager")
+                .contentType(ContentType.JSON)
                 .when()
                 .post("/events/{eventId}/complete-follow-up")
                 .then()
@@ -444,8 +495,10 @@ class CustomerTimelineResourceIT {
     }
     
     @Test
-    @TestTransaction
+    @Transactional
     void deleteEvent_shouldSoftDeleteEvent() {
+        createTestCustomer();
+        createTestEvent();
         given()
                 .pathParam("customerId", testCustomer.getId())
                 .pathParam("eventId", testEvent.getId())
