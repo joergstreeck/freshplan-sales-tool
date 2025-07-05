@@ -5,7 +5,9 @@
 :root {
     /* Brand Colors - CI-konform */
     --color-primary: #94C456;  /* Freshfoodz Primärgrün */
-    --color-primary-dark: #004F7B;  /* Freshfoodz Dunkelblau */
+    --color-primary-dark: #7BA942;  /* Dunkleres Grün für Hover-States */
+    --color-secondary: #004F7B;  /* Freshfoodz Dunkelblau */
+    --color-secondary-dark: #003A5A;  /* Dunkleres Blau für Hover-States */
     --color-white: #FFFFFF;
     --color-black: #000000;
     

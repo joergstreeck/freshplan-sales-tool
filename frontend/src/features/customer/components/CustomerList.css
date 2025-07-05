@@ -1,0 +1,348 @@
+/* CustomerList Component Styles - FreshPlan CI */
+
+.customer-list-container {
+  width: 100%;
+  padding: var(--spacing-xl);
+  background-color: var(--color-background);
+  min-height: 100vh;
+}
+
+/* Header */
+.customer-list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-xl);
+  padding-bottom: var(--spacing-lg);
+  border-bottom: 2px solid var(--color-primary);
+}
+
+.customer-list-header h1 {
+  font-family: var(--font-heading);
+  font-size: var(--font-size-3xl);
+  color: var(--color-secondary);
+  margin: 0;
+  font-weight: var(--font-weight-bold);
+}
+
+.customer-list-stats {
+  display: flex;
+  gap: var(--spacing-lg);
+}
+
+.stat-item {
+  font-family: var(--font-body);
+  font-size: var(--font-size-base);
+  color: var(--color-text);
+}
+
+.stat-item strong {
+  color: var(--color-primary);
+  font-size: var(--font-size-xl);
+  margin-right: var(--spacing-xs);
+}
+
+/* Table Wrapper */
+.customer-list-table-wrapper {
+  background: var(--color-white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  margin-bottom: var(--spacing-xl);
+}
+
+/* Table */
+.customer-list-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-body);
+}
+
+.customer-list-table thead {
+  background: var(--bg-gradient-primary);
+  color: var(--color-white);
+}
+
+.customer-list-table th {
+  padding: var(--spacing-md) var(--spacing-lg);
+  text-align: left;
+  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  position: relative;
+}
+
+.customer-list-table th.sortable {
+  cursor: pointer;
+  user-select: none;
+  transition: opacity var(--transition-fast);
+}
+
+.customer-list-table th.sortable:hover {
+  opacity: 0.8;
+}
+
+.customer-list-table th.sortable.sorted::after {
+  content: ' ↓';
+  position: absolute;
+  right: var(--spacing-sm);
+}
+
+.customer-list-table tbody tr {
+  border-bottom: 1px solid var(--border-light);
+  transition: background-color var(--transition-fast);
+}
+
+.customer-list-table tbody tr:hover {
+  background-color: var(--color-primary-light);
+}
+
+.customer-list-table tbody tr.at-risk {
+  background-color: rgba(244, 67, 54, 0.05);
+}
+
+.customer-list-table tbody tr.at-risk:hover {
+  background-color: rgba(244, 67, 54, 0.1);
+}
+
+.customer-list-table td {
+  padding: var(--spacing-md) var(--spacing-lg);
+  font-size: var(--font-size-sm);
+  color: var(--color-text);
+}
+
+/* Specific Column Styles */
+.customer-number {
+  font-family: monospace;
+  color: var(--color-text-light);
+  font-size: var(--font-size-xs);
+}
+
+.company-name {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.company-name strong {
+  color: var(--color-secondary);
+  font-weight: var(--font-weight-medium);
+}
+
+.trading-name {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-light);
+  font-style: italic;
+}
+
+.currency {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Status Badge */
+.status-badge {
+  display: inline-block;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-white);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Risk Indicator */
+.risk-indicator {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  min-width: 120px;
+}
+
+.risk-bar {
+  height: 6px;
+  background-color: #4CAF50;
+  border-radius: var(--radius-sm);
+  transition: width var(--transition-medium);
+  flex: 1;
+  max-width: 60px;
+}
+
+.risk-score {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-light);
+  font-weight: var(--font-weight-medium);
+  min-width: 35px;
+  text-align: right;
+}
+
+/* Pagination */
+.customer-list-pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-lg);
+  background: var(--color-white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+}
+
+.pagination-info {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-light);
+}
+
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.pagination-button {
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: var(--color-primary);
+  color: var(--color-white);
+  border: none;
+  border-radius: var(--radius-md);
+  font-family: var(--font-body);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.pagination-button:hover:not(:disabled) {
+  background: var(--color-primary-dark);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.pagination-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pagination-current {
+  padding: 0 var(--spacing-lg);
+  font-size: var(--font-size-sm);
+  color: var(--color-text);
+  font-weight: var(--font-weight-medium);
+}
+
+/* Loading State */
+.customer-list-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  gap: var(--spacing-lg);
+}
+
+.customer-list-loading p {
+  font-size: var(--font-size-lg);
+  color: var(--color-text-light);
+}
+
+/* Error State */
+.customer-list-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  text-align: center;
+  padding: var(--spacing-xl);
+}
+
+.error-icon {
+  font-size: 4rem;
+  margin-bottom: var(--spacing-lg);
+}
+
+.customer-list-error h3 {
+  font-family: var(--font-heading);
+  font-size: var(--font-size-2xl);
+  color: var(--danger);
+  margin-bottom: var(--spacing-md);
+}
+
+.customer-list-error p {
+  font-size: var(--font-size-base);
+  color: var(--color-text-light);
+  max-width: 500px;
+}
+
+/* Empty State */
+.customer-list-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  text-align: center;
+  padding: var(--spacing-xl);
+}
+
+.empty-icon {
+  font-size: 4rem;
+  margin-bottom: var(--spacing-lg);
+  opacity: 0.5;
+}
+
+.customer-list-empty h3 {
+  font-family: var(--font-heading);
+  font-size: var(--font-size-2xl);
+  color: var(--color-text);
+  margin-bottom: var(--spacing-md);
+}
+
+.customer-list-empty p {
+  font-size: var(--font-size-base);
+  color: var(--color-text-light);
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .customer-list-container {
+    padding: var(--spacing-lg);
+  }
+  
+  .customer-list-table {
+    font-size: var(--font-size-sm);
+  }
+  
+  .customer-list-table th,
+  .customer-list-table td {
+    padding: var(--spacing-sm) var(--spacing-md);
+  }
+}
+
+@media (max-width: 768px) {
+  .customer-list-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-md);
+  }
+  
+  .customer-list-table-wrapper {
+    overflow-x: auto;
+  }
+  
+  .customer-list-table {
+    min-width: 800px;
+  }
+  
+  .customer-list-pagination {
+    flex-direction: column;
+    gap: var(--spacing-md);
+  }
+  
+  .pagination-controls {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}

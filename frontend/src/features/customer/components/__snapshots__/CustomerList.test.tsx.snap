@@ -1,0 +1,281 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`CustomerList Snapshot Tests > should match snapshot for error state 1`] = `
+<div>
+  <div
+    class="customer-list-error"
+  >
+    <div
+      class="error-icon"
+    >
+      ⚠️
+    </div>
+    <h3>
+      Fehler beim Laden der Kundendaten
+    </h3>
+    <p>
+      Network error
+    </p>
+  </div>
+</div>
+`;
+
+exports[`CustomerList Snapshot Tests > should match snapshot for loaded state 1`] = `
+<div>
+  <div
+    class="customer-list-container"
+  >
+    <div
+      class="customer-list-header"
+    >
+      <h1>
+        Kundenliste
+      </h1>
+      <div
+        class="customer-list-stats"
+      >
+        <span
+          class="stat-item"
+        >
+          <strong>
+            2
+          </strong>
+           Kunden gesamt
+        </span>
+      </div>
+    </div>
+    <div
+      class="customer-list-table-wrapper"
+    >
+      <table
+        class="customer-list-table"
+      >
+        <thead>
+          <tr>
+            <th
+              class="sortable "
+            >
+              Kundennummer
+            </th>
+            <th
+              class="sortable sorted"
+            >
+              Firmenname
+            </th>
+            <th>
+              Typ
+            </th>
+            <th>
+              Branche
+            </th>
+            <th
+              class="sortable "
+            >
+              Status
+            </th>
+            <th>
+              Jahresumsatz
+            </th>
+            <th
+              class="sortable "
+            >
+              Letzter Kontakt
+            </th>
+            <th>
+              Risiko
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            class=""
+          >
+            <td
+              class="customer-number"
+            >
+              CUST001
+            </td>
+            <td
+              class="company-name"
+            >
+              <strong>
+                Test Company GmbH
+              </strong>
+              <span
+                class="trading-name"
+              >
+                Test Trading
+              </span>
+            </td>
+            <td>
+              Unternehmen
+            </td>
+            <td>
+              Restaurant
+            </td>
+            <td>
+              <span
+                class="status-badge"
+                style="background-color: rgb(76, 175, 80);"
+              >
+                Aktiv
+              </span>
+            </td>
+            <td
+              class="currency"
+            >
+              50.000,00 €
+            </td>
+            <td>
+              -
+            </td>
+            <td>
+              <div
+                class="risk-indicator"
+              >
+                <div
+                  class="risk-bar"
+                  style="width: 20%; background-color: rgb(76, 175, 80);"
+                />
+                <span
+                  class="risk-score"
+                >
+                  20
+                  %
+                </span>
+              </div>
+            </td>
+          </tr>
+          <tr
+            class="at-risk"
+          >
+            <td
+              class="customer-number"
+            >
+              CUST002
+            </td>
+            <td
+              class="company-name"
+            >
+              <strong>
+                Risk Company AG
+              </strong>
+            </td>
+            <td>
+              Unternehmen
+            </td>
+            <td>
+              Hotel
+            </td>
+            <td>
+              <span
+                class="status-badge"
+                style="background-color: rgb(244, 67, 54);"
+              >
+                Risiko
+              </span>
+            </td>
+            <td
+              class="currency"
+            >
+              100.000,00 €
+            </td>
+            <td>
+              -
+            </td>
+            <td>
+              <div
+                class="risk-indicator"
+              >
+                <div
+                  class="risk-bar"
+                  style="width: 80%; background-color: rgb(244, 67, 54);"
+                />
+                <span
+                  class="risk-score"
+                >
+                  80
+                  %
+                </span>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div
+      class="customer-list-pagination"
+    >
+      <div
+        class="pagination-info"
+      >
+        Zeige 
+        1
+         - 
+        2
+         von 
+        2
+         Einträgen
+      </div>
+      <div
+        class="pagination-controls"
+      >
+        <button
+          class="pagination-button"
+          disabled=""
+        >
+          Erste
+        </button>
+        <button
+          class="pagination-button"
+          disabled=""
+        >
+          Zurück
+        </button>
+        <span
+          class="pagination-current"
+        >
+          Seite 
+          1
+           von 
+          1
+        </span>
+        <button
+          class="pagination-button"
+          disabled=""
+        >
+          Weiter
+        </button>
+        <button
+          class="pagination-button"
+          disabled=""
+        >
+          Letzte
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`CustomerList Snapshot Tests > should match snapshot for loading state 1`] = `
+<div>
+  <div
+    class="customer-list-loading"
+  >
+    <div
+      class="flex flex-col items-center justify-center p-4"
+    >
+      <div
+        aria-label="Loading"
+        class="w-8 h-8 border-4 border-gray-200 
+          border-t-blue-600 rounded-full animate-spin"
+        role="status"
+      />
+    </div>
+    <p>
+      Kundendaten werden geladen...
+    </p>
+  </div>
+</div>
+`;
