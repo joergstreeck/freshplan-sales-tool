@@ -28,10 +28,13 @@ public class CustomerTimelineRepository implements PanacheRepositoryBase<Custome
     
     /**
      * Finds all timeline events for a specific customer with pagination.
+     * Uses explicit JOIN FETCH to avoid N+1 query problem.
      */
     public List<CustomerTimelineEvent> findByCustomerId(UUID customerId, Page page) {
-        return find("customer.id = :customerId and isDeleted = false", 
-                   Sort.by("eventDate").descending().and("createdAt").descending(),
+        return find("SELECT e FROM CustomerTimelineEvent e " +
+                   "LEFT JOIN FETCH e.customer c " +
+                   "WHERE c.id = :customerId and e.isDeleted = false " +
+                   "ORDER BY e.eventDate DESC, e.createdAt DESC", 
                    Parameters.with("customerId", customerId))
                 .page(page)
                 .list();
@@ -39,20 +42,25 @@ public class CustomerTimelineRepository implements PanacheRepositoryBase<Custome
     
     /**
      * Counts all non-deleted timeline events for a customer.
+     * Uses customer_id field directly to avoid JOIN.
      */
     public long countByCustomerId(UUID customerId) {
-        return count("customer.id = :customerId and isDeleted = false",
+        return count("customer_id = :customerId and isDeleted = false",
                     Parameters.with("customerId", customerId));
     }
     
     /**
      * Finds timeline events by category for a customer.
+     * Uses explicit JOIN FETCH to avoid N+1 query problem.
      */
     public List<CustomerTimelineEvent> findByCustomerIdAndCategory(
             UUID customerId, EventCategory category, Page page) {
         
-        return find("customer.id = :customerId and category = :category and isDeleted = false",
-                   Sort.by("eventDate").descending(),
+        return find("SELECT e FROM CustomerTimelineEvent e " +
+                   "LEFT JOIN FETCH e.customer c " +
+                   "WHERE c.id = :customerId and e.category = :category " +
+                   "and e.isDeleted = false " +
+                   "ORDER BY e.eventDate DESC",
                    Parameters.with("customerId", customerId)
                            .and("category", category))
                 .page(page)
@@ -147,15 +155,18 @@ public class CustomerTimelineRepository implements PanacheRepositoryBase<Custome
     
     /**
      * Searches timeline events by text in title or description.
+     * Uses explicit JOIN FETCH to avoid N+1 query problem.
      */
     public List<CustomerTimelineEvent> searchByCustomerIdAndText(
             UUID customerId, String searchText, Page page) {
         
         String likePattern = "%" + searchText.toLowerCase() + "%";
         
-        return find("customer.id = :customerId and isDeleted = false and " +
-                   "(lower(title) like :search or lower(description) like :search)",
-                   Sort.by("eventDate").descending(),
+        return find("SELECT e FROM CustomerTimelineEvent e " +
+                   "LEFT JOIN FETCH e.customer c " +
+                   "WHERE c.id = :customerId and e.isDeleted = false and " +
+                   "(lower(e.title) like :search or lower(e.description) like :search) " +
+                   "ORDER BY e.eventDate DESC",
                    Parameters.with("customerId", customerId)
                            .and("search", likePattern))
                 .page(page)

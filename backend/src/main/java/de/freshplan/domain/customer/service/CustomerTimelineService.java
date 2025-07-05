@@ -53,11 +53,13 @@ public class CustomerTimelineService {
             @NotNull UUID customerId, 
             @Valid @NotNull CreateTimelineEventRequest request) {
         
-        LOG.infof("Creating timeline event for customer %s: %s", customerId, request.getEventType());
+        LOG.infof("Creating timeline event for customer %s: %s", 
+                customerId, request.getEventType());
         
-        // Verify customer exists
+        // Verify customer exists - in same transaction for consistency
         Customer customer = customerRepository.findByIdOptional(customerId)
-                .orElseThrow(() -> new CustomerNotFoundException(customerId.toString()));
+                .orElseThrow(() -> new CustomerNotFoundException(
+                        customerId.toString()));
         
         // Create event entity
         CustomerTimelineEvent event = new CustomerTimelineEvent();
@@ -146,7 +148,8 @@ public class CustomerTimelineService {
                 customerId, request.getChannel());
         
         Customer customer = customerRepository.findByIdOptional(customerId)
-                .orElseThrow(() -> new CustomerNotFoundException(customerId.toString()));
+                .orElseThrow(() -> new CustomerNotFoundException(
+                        customerId.toString()));
         
         CustomerTimelineEvent event = CustomerTimelineEvent.createCommunicationEvent(
                 customer,
@@ -182,14 +185,19 @@ public class CustomerTimelineService {
             String category,
             String search) {
         
-        LOG.debugf("Getting timeline for customer %s, page %d, size %d", customerId, page, size);
+        // Enforce maximum page size for performance
+        int maxSize = 100;
+        int actualSize = Math.min(size, maxSize);
+        
+        LOG.debugf("Getting timeline for customer %s, page %d, size %d", 
+                customerId, page, actualSize);
         
         // Verify customer exists
         if (!customerRepository.findByIdOptional(customerId).isPresent()) {
             throw new CustomerNotFoundException(customerId.toString());
         }
         
-        Page pageRequest = Page.of(page, size);
+        Page pageRequest = Page.of(page, actualSize);
         List<CustomerTimelineEvent> events;
         long totalElements;
         
