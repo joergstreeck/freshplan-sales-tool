@@ -15,6 +15,21 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_PASSWORD: freshplan
+          POSTGRES_USER: freshplan
+          POSTGRES_DB: freshplan
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
       
@@ -27,6 +42,8 @@ jobs:
           
       - name: Run tests
         working-directory: backend
+        env:
+          DATABASE_URL: postgresql://freshplan:freshplan@localhost:5432/freshplan
         run: |
           mvn -B clean test \
             -Dquarkus.profile=test \
