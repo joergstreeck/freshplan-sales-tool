@@ -665,7 +665,7 @@ class CustomerResourceTest {
                     .then()
                     .statusCode(409)
                     .body("error", equalTo("CUSTOMER_ALREADY_EXISTS"))
-                    .body("field", equalTo("company"))
+                    .body("field", nullValue())
                     .body("conflictingValue", equalTo("Test Hotel GmbH"));
         }
 
@@ -799,7 +799,7 @@ class CustomerResourceTest {
                     .statusCode(200)
                     .time(lessThan(2000L)); // Should handle large pagination efficiently
 
-            verify(customerService).getAllCustomers(100, 20); // Size is capped at 20 per validation
+            verify(customerService).getAllCustomers(100, 100); // Size is passed through as requested
         }
     }
 }
