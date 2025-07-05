@@ -2,8 +2,8 @@ import { StrictMode, Suspense } from 'react';
 import { createRoot } from 'react-dom/client';
 import { Routes, Route } from 'react-router-dom';
 import './i18n'; // i18n vor allen anderen Imports!
-import './index.css'; // FreshPlan CI Design System
-import './styles/globals.css';
+import './styles/globals.css'; // Legacy base styles
+import './index.css'; // FreshPlan CI Design System (überschreibt Legacy)
 import './styles/variables-mapping.css'; // Map legacy variables to new FreshPlan CI
 import App from './App.tsx';
 import { LoginBypassPage } from './pages/LoginBypassPage.tsx';

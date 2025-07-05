@@ -20,7 +20,7 @@
 .customer-list-header h1 {
   font-family: var(--font-heading);
   font-size: var(--font-size-3xl);
-  color: var(--color-primary-dark);
+  color: var(--color-secondary);
   margin: 0;
   font-weight: var(--font-weight-bold);
 }
@@ -127,7 +127,7 @@
 }
 
 .company-name strong {
-  color: var(--color-primary-dark);
+  color: var(--color-secondary);
   font-weight: var(--font-weight-medium);
 }
 

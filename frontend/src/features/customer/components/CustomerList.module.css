@@ -1,0 +1,484 @@
+/**
+ * CustomerList Component Styles
+ * 
+ * Verwendet BEM-Methodologie für bessere Wartbarkeit:
+ * Block: customer-list
+ * Element: customer-list__element
+ * Modifier: customer-list--modifier
+ * 
+ * @component CustomerList
+ * @version 2.0.0
+ */
+
+/* Import Design Tokens */
+@import '../../../styles/design-tokens.css';
+
+/* ========================================
+   BLOCK: Customer List Container
+   ======================================== */
+.customerList {
+  width: 100%;
+  min-height: 100vh;
+  padding: var(--space-8);
+  background-color: var(--gray-50);
+}
+
+/* ========================================
+   ELEMENT: Header Section
+   ======================================== */
+.customerList__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-8);
+  padding-bottom: var(--space-6);
+  border-bottom: var(--border-2) solid var(--fresh-green-500);
+}
+
+.customerList__title {
+  font-family: var(--font-display);
+  font-size: var(--text-3xl);
+  font-weight: var(--font-bold);
+  color: var(--fresh-blue-500);
+  margin: 0;
+  line-height: var(--leading-tight);
+}
+
+.customerList__stats {
+  display: flex;
+  gap: var(--space-6);
+}
+
+.customerList__statItem {
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  color: var(--gray-700);
+}
+
+.customerList__statValue {
+  font-size: var(--text-xl);
+  font-weight: var(--font-semibold);
+  color: var(--fresh-green-500);
+  margin-right: var(--space-2);
+}
+
+/* ========================================
+   ELEMENT: Table Section
+   ======================================== */
+.customerList__tableWrapper {
+  background: white;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+  margin-bottom: var(--space-8);
+}
+
+.customerList__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-sans);
+}
+
+/* Table Header */
+.customerList__tableHeader {
+  background: linear-gradient(
+    135deg, 
+    var(--fresh-green-500) 0%, 
+    var(--fresh-green-600) 100%
+  );
+}
+
+.customerList__th {
+  padding: var(--space-4) var(--space-6);
+  text-align: left;
+  font-weight: var(--font-medium);
+  font-size: var(--text-sm);
+  color: white;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wide);
+  white-space: nowrap;
+  position: relative;
+}
+
+/* Sortable Headers */
+.customerList__th--sortable {
+  cursor: pointer;
+  user-select: none;
+  transition: opacity var(--duration-150) var(--ease-out);
+}
+
+.customerList__th--sortable:hover {
+  opacity: 0.8;
+}
+
+.customerList__th--sorted::after {
+  content: ' ↓';
+  position: absolute;
+  right: var(--space-2);
+}
+
+/* Table Body */
+.customerList__tr {
+  border-bottom: var(--border-1) solid var(--gray-200);
+  transition: background-color var(--duration-150) var(--ease-out);
+}
+
+.customerList__tr:hover {
+  background-color: var(--fresh-green-50);
+}
+
+.customerList__tr--atRisk {
+  background-color: rgba(244, 67, 54, 0.05);
+}
+
+.customerList__tr--atRisk:hover {
+  background-color: rgba(244, 67, 54, 0.1);
+}
+
+.customerList__td {
+  padding: var(--space-4) var(--space-6);
+  font-size: var(--text-sm);
+  color: var(--gray-800);
+}
+
+/* ========================================
+   ELEMENT: Customer Data Cells
+   ======================================== */
+.customerList__customerNumber {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--gray-600);
+  font-variant-numeric: tabular-nums;
+}
+
+.customerList__companyInfo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.customerList__companyName {
+  font-weight: var(--font-medium);
+  color: var(--fresh-blue-500);
+}
+
+.customerList__tradingName {
+  font-size: var(--text-xs);
+  color: var(--gray-600);
+  font-style: italic;
+}
+
+.customerList__currency {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  font-weight: var(--font-medium);
+}
+
+/* ========================================
+   ELEMENT: Status Badge
+   ======================================== */
+.customerList__statusBadge {
+  display: inline-block;
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-full);
+  font-size: var(--text-xs);
+  font-weight: var(--font-medium);
+  color: white;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wide);
+}
+
+/* Status Modifiers */
+.customerList__statusBadge--lead {
+  background-color: var(--color-info);
+}
+
+.customerList__statusBadge--prospect {
+  background-color: var(--color-warning);
+}
+
+.customerList__statusBadge--active {
+  background-color: var(--color-success);
+}
+
+.customerList__statusBadge--risk {
+  background-color: var(--color-danger);
+}
+
+.customerList__statusBadge--inactive {
+  background-color: var(--gray-500);
+}
+
+.customerList__statusBadge--archived {
+  background-color: var(--gray-700);
+}
+
+/* ========================================
+   ELEMENT: Risk Indicator
+   ======================================== */
+.customerList__riskIndicator {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 120px;
+}
+
+.customerList__riskBar {
+  height: 6px;
+  border-radius: var(--radius-sm);
+  transition: width var(--duration-300) var(--ease-out);
+  flex: 1;
+  max-width: 60px;
+  position: relative;
+  background-color: var(--gray-200);
+  overflow: hidden;
+}
+
+.customerList__riskBar::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background-color: var(--color-success);
+  transition: width var(--duration-300) var(--ease-out);
+}
+
+/* Risk Level Modifiers */
+.customerList__riskBar--low::after {
+  width: 20%;
+  background-color: var(--color-success);
+}
+
+.customerList__riskBar--medium::after {
+  width: 50%;
+  background-color: var(--color-warning);
+}
+
+.customerList__riskBar--high::after {
+  width: 80%;
+  background-color: var(--color-danger);
+}
+
+.customerList__riskBar--critical::after {
+  width: 100%;
+  background-color: var(--color-danger);
+}
+
+.customerList__riskScore {
+  font-size: var(--text-xs);
+  font-weight: var(--font-medium);
+  color: var(--gray-600);
+  min-width: 35px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ========================================
+   ELEMENT: Pagination
+   ======================================== */
+.customerList__pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-6);
+  background: white;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.customerList__paginationInfo {
+  font-size: var(--text-sm);
+  color: var(--gray-600);
+}
+
+.customerList__paginationControls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.customerList__paginationButton {
+  padding: var(--space-2) var(--space-4);
+  background: var(--fresh-green-500);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  cursor: pointer;
+  transition: all var(--duration-150) var(--ease-out);
+}
+
+.customerList__paginationButton:hover:not(:disabled) {
+  background: var(--fresh-green-600);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
+.customerList__paginationButton:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: var(--shadow-xs);
+}
+
+.customerList__paginationButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.customerList__paginationCurrent {
+  padding: 0 var(--space-6);
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: var(--gray-800);
+}
+
+/* ========================================
+   ELEMENT: Loading State
+   ======================================== */
+.customerList__loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  gap: var(--space-6);
+}
+
+.customerList__loadingText {
+  font-size: var(--text-lg);
+  color: var(--gray-600);
+}
+
+/* ========================================
+   ELEMENT: Error State
+   ======================================== */
+.customerList__error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  text-align: center;
+  padding: var(--space-8);
+}
+
+.customerList__errorIcon {
+  font-size: 4rem;
+  margin-bottom: var(--space-6);
+  color: var(--color-danger);
+}
+
+.customerList__errorTitle {
+  font-family: var(--font-display);
+  font-size: var(--text-2xl);
+  font-weight: var(--font-semibold);
+  color: var(--color-danger);
+  margin-bottom: var(--space-4);
+}
+
+.customerList__errorMessage {
+  font-size: var(--text-base);
+  color: var(--gray-600);
+  max-width: var(--max-width-lg);
+  line-height: var(--leading-relaxed);
+}
+
+/* ========================================
+   ELEMENT: Empty State
+   ======================================== */
+.customerList__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  text-align: center;
+  padding: var(--space-8);
+}
+
+.customerList__emptyIcon {
+  font-size: 4rem;
+  margin-bottom: var(--space-6);
+  opacity: 0.5;
+  color: var(--gray-500);
+}
+
+.customerList__emptyTitle {
+  font-family: var(--font-display);
+  font-size: var(--text-2xl);
+  font-weight: var(--font-semibold);
+  color: var(--gray-800);
+  margin-bottom: var(--space-4);
+}
+
+.customerList__emptyMessage {
+  font-size: var(--text-base);
+  color: var(--gray-600);
+  line-height: var(--leading-relaxed);
+}
+
+/* ========================================
+   RESPONSIVE DESIGN
+   ======================================== */
+
+/* Tablet */
+@media (max-width: 1024px) {
+  .customerList {
+    padding: var(--space-6);
+  }
+  
+  .customerList__table {
+    font-size: var(--text-sm);
+  }
+  
+  .customerList__th,
+  .customerList__td {
+    padding: var(--space-3) var(--space-4);
+  }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .customerList {
+    padding: var(--space-4);
+  }
+  
+  .customerList__header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-4);
+  }
+  
+  .customerList__tableWrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .customerList__table {
+    min-width: 800px;
+  }
+  
+  .customerList__pagination {
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+  
+  .customerList__paginationControls {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}
+
+/* Mobile Small */
+@media (max-width: 475px) {
+  .customerList__title {
+    font-size: var(--text-2xl);
+  }
+  
+  .customerList__stats {
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+}
