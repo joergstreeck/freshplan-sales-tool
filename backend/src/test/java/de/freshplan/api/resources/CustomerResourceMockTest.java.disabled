@@ -1,0 +1,295 @@
+package de.freshplan.api.resources;
+
+import de.freshplan.domain.customer.entity.CustomerStatus;
+import de.freshplan.domain.customer.entity.CustomerType;
+import de.freshplan.domain.customer.entity.Industry;
+import de.freshplan.domain.customer.service.CustomerService;
+import de.freshplan.domain.customer.service.dto.*;
+import io.quarkus.test.InjectMock;
+import io.quarkus.test.junit.QuarkusTest;
+import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.UUID;
+
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
+
+/**
+ * Mock Tests für CustomerResource REST API.
+ * 
+ * Diese Tests mocken den Service Layer und testen nur die REST-Schicht.
+ * Für echte Integration Tests siehe CustomerResourceIntegrationTest.
+ * 
+ * @author FreshPlan Team
+ * @since 2.0.0
+ */
+@QuarkusTest
+public class CustomerResourceMockTest {
+    
+    @InjectMock
+    CustomerService customerService;
+    
+    private static final String BASE_PATH = "/api/customers";
+    
+    @BeforeEach
+    void setUp() {
+        RestAssured.basePath = BASE_PATH;
+        Mockito.reset(customerService);
+    }
+    
+    // ========== CRUD OPERATIONS TESTS ==========
+    
+    @Test
+    void createCustomer_withValidData_shouldReturn201() {
+        // Given
+        CustomerResponse mockResponse = createMockCustomerResponse();
+        when(customerService.createCustomer(any(CreateCustomerRequest.class), anyString()))
+            .thenReturn(mockResponse);
+        
+        CreateCustomerRequest request = createValidCustomerRequest();
+        
+        // When & Then
+        given()
+            .contentType(ContentType.JSON)
+            .body(request)
+            .when()
+            .post()
+            .then()
+            .statusCode(201)
+            .body("id", equalTo(mockResponse.id()))
+            .body("companyName", equalTo(mockResponse.companyName()))
+            .body("customerNumber", equalTo(mockResponse.customerNumber()))
+            .body("status", equalTo(mockResponse.status().toString()));
+        
+        verify(customerService).createCustomer(any(CreateCustomerRequest.class), eq("system"));
+    }
+    
+    @Test
+    void getCustomer_withValidId_shouldReturn200() {
+        // Given
+        UUID customerId = UUID.randomUUID();
+        CustomerResponse mockResponse = createMockCustomerResponse();
+        when(customerService.getCustomer(customerId)).thenReturn(mockResponse);
+        
+        // When & Then
+        given()
+            .when()
+            .get("/{id}", customerId)
+            .then()
+            .statusCode(200)
+            .body("id", equalTo(mockResponse.id()))
+            .body("companyName", equalTo(mockResponse.companyName()));
+        
+        verify(customerService).getCustomer(customerId);
+    }
+    
+    @Test
+    void updateCustomer_withValidData_shouldReturn200() {
+        // Given
+        UUID customerId = UUID.randomUUID();
+        CustomerResponse mockResponse = createMockCustomerResponse();
+        when(customerService.updateCustomer(eq(customerId), any(UpdateCustomerRequest.class), anyString()))
+            .thenReturn(mockResponse);
+        
+        UpdateCustomerRequest request = UpdateCustomerRequest.builder()
+            .companyName("Updated Company")
+            .build();
+        
+        // When & Then
+        given()
+            .contentType(ContentType.JSON)
+            .body(request)
+            .when()
+            .put("/{id}", customerId)
+            .then()
+            .statusCode(200)
+            .body("id", equalTo(mockResponse.id()));
+        
+        verify(customerService).updateCustomer(eq(customerId), any(UpdateCustomerRequest.class), eq("system"));
+    }
+    
+    @Test
+    void deleteCustomer_shouldReturn204() {
+        // Given
+        UUID customerId = UUID.randomUUID();
+        doNothing().when(customerService).deleteCustomer(customerId, "system", "Test deletion");
+        
+        // When & Then
+        given()
+            .queryParam("reason", "Test deletion")
+            .when()
+            .delete("/{id}", customerId)
+            .then()
+            .statusCode(204);
+        
+        verify(customerService).deleteCustomer(customerId, "system", "Test deletion");
+    }
+    
+    @Test
+    void restoreCustomer_shouldReturn200() {
+        // Given
+        UUID customerId = UUID.randomUUID();
+        CustomerResponse mockResponse = createMockCustomerResponse();
+        when(customerService.restoreCustomer(customerId, "system")).thenReturn(mockResponse);
+        
+        // When & Then
+        given()
+            .when()
+            .put("/{id}/restore", customerId)
+            .then()
+            .statusCode(200)
+            .body("id", equalTo(mockResponse.id()));
+        
+        verify(customerService).restoreCustomer(customerId, "system");
+    }
+    
+    // ========== LIST & SEARCH OPERATIONS TESTS ==========
+    
+    @Test
+    void getAllCustomers_withPagination_shouldReturn200() {
+        // Given
+        CustomerListResponse mockResponse = new CustomerListResponse(
+            List.of(createMockCustomerResponse()),
+            0, 20, 1L, 1, true, true
+        );
+        when(customerService.getAllCustomers(0, 20)).thenReturn(mockResponse);
+        
+        // When & Then
+        given()
+            .queryParam("page", 0)
+            .queryParam("size", 20)
+            .when()
+            .get()
+            .then()
+            .statusCode(200)
+            .body("content", hasSize(1))
+            .body("page", equalTo(0))
+            .body("size", equalTo(20))
+            .body("totalElements", equalTo(1));
+        
+        verify(customerService).getAllCustomers(0, 20);
+    }
+    
+    @Test
+    void searchCustomers_withQuery_shouldReturn200() {
+        // Given
+        CustomerListResponse mockResponse = new CustomerListResponse(
+            List.of(createMockCustomerResponse()),
+            0, 20, 1L, 1, true, true
+        );
+        when(customerService.searchCustomers("Test", 0, 20)).thenReturn(mockResponse);
+        
+        // When & Then
+        given()
+            .queryParam("q", "Test")
+            .when()
+            .get("/search")
+            .then()
+            .statusCode(200)
+            .body("content", hasSize(1));
+        
+        verify(customerService).searchCustomers("Test", 0, 20);
+    }
+    
+    @Test
+    void searchCustomers_withoutQuery_shouldReturn400() {
+        // When & Then
+        given()
+            .when()
+            .get("/search")
+            .then()
+            .statusCode(400)
+            .body(containsString("Search query"));
+        
+        verifyNoInteractions(customerService);
+    }
+    
+    // ========== ANALYTICS & DASHBOARD TESTS ==========
+    
+    @Test
+    void getDashboardData_shouldReturn200() {
+        // Given
+        CustomerDashboardResponse mockResponse = new CustomerDashboardResponse(
+            100L, 80L, 10L, 5L, 15L,
+            null, null, null
+        );
+        when(customerService.getDashboardData()).thenReturn(mockResponse);
+        
+        // When & Then
+        given()
+            .when()
+            .get("/dashboard")
+            .then()
+            .statusCode(200)
+            .body("totalCustomers", equalTo(100))
+            .body("activeCustomers", equalTo(80));
+        
+        verify(customerService).getDashboardData();
+    }
+    
+    // ========== HELPER METHODS ==========
+    
+    private CustomerResponse createMockCustomerResponse() {
+        return new CustomerResponse(
+            UUID.randomUUID().toString(),
+            "KD-2025-00001",
+            "Test Company GmbH",
+            "Test Trading",
+            "GmbH",
+            CustomerType.UNTERNEHMEN,
+            Industry.HOTEL,
+            null,
+            null,
+            null,
+            List.of(),
+            false,
+            CustomerStatus.LEAD,
+            null,
+            null,
+            new BigDecimal("100000.00"),
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            false,
+            null,
+            null,
+            null,
+            null,
+            null
+        );
+    }
+    
+    private CreateCustomerRequest createValidCustomerRequest() {
+        return new CreateCustomerRequest(
+            "Test Company GmbH",
+            "Test Trading Name",
+            "GmbH",
+            CustomerType.UNTERNEHMEN,
+            Industry.HOTEL,
+            null,
+            null,
+            null,
+            null,
+            null,
+            new BigDecimal("100000.00"),
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+        );
+    }
+}
