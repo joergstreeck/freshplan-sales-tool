@@ -1,0 +1,64 @@
+/* Map legacy variables to new FreshPlan CI variables */
+:root {
+  /* Legacy to New Variable Mapping */
+  --font-family-primary: var(--font-body);
+  --font-family-secondary: var(--font-heading);
+  
+  /* Legacy Colors to FreshPlan Colors */
+  --primary-green: var(--color-primary);
+  --primary-blue: var(--color-secondary);
+  --bg-light: var(--color-background);
+  --bg-white: var(--color-white);
+  --text-dark: var(--color-text);
+  --text-light: var(--color-text-light);
+  --text-white: var(--color-white);
+  --border-light: var(--border-light);
+  
+  /* Legacy Status Colors */
+  --success: var(--color-success);
+  --warning: var(--color-warning);
+  --danger: var(--color-danger);
+  --info: var(--color-info);
+  
+  /* Legacy Font Sizes */
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 1.5rem;
+  
+  /* Legacy Font Weights */
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-bold: 700;
+  
+  /* Legacy Line Heights */
+  --line-height-tight: 1.2;
+  --line-height-normal: 1.5;
+  --line-height-loose: 1.75;
+  
+  /* Legacy Spacing (matching new system) */
+  --spacing-xs: var(--spacing-xs);
+  --spacing-sm: var(--spacing-sm);
+  --spacing-md: var(--spacing-md);
+  --spacing-lg: var(--spacing-lg);
+  --spacing-xl: var(--spacing-xl);
+  
+  /* Legacy Radius */
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+  
+  /* Legacy Layout */
+  --container-max-width: 1400px;
+  --container-padding: var(--spacing-xl);
+  
+  /* Legacy Transitions */
+  --transition-fast: var(--transition-fast);
+  --transition-medium: var(--transition-medium);
+  
+  /* Legacy Gradients */
+  --gradient-primary: var(--bg-gradient-primary);
+  --gradient-secondary: var(--bg-gradient-secondary);
+}
