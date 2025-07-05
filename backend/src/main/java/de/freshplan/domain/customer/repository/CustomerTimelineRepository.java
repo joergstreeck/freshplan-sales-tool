@@ -42,10 +42,10 @@ public class CustomerTimelineRepository implements PanacheRepositoryBase<Custome
     
     /**
      * Counts all non-deleted timeline events for a customer.
-     * Uses customer_id field directly to avoid JOIN.
+     * Uses customer.id field to maintain consistency with entity mapping.
      */
     public long countByCustomerId(UUID customerId) {
-        return count("customer_id = :customerId and isDeleted = false",
+        return count("customer.id = :customerId and isDeleted = false",
                     Parameters.with("customerId", customerId));
     }
     
