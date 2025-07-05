@@ -217,10 +217,12 @@ public class CustomerTimelineEvent extends PanacheEntityBase {
      * Checks if this event is overdue for follow-up.
      */
     public boolean isFollowUpOverdue() {
-        return Boolean.TRUE.equals(requiresFollowUp) && 
-               !Boolean.TRUE.equals(followUpCompleted) &&
-               followUpDate != null && 
-               followUpDate.isBefore(LocalDateTime.now());
+        boolean isRequired = Boolean.TRUE.equals(requiresFollowUp);
+        boolean isNotCompleted = !Boolean.TRUE.equals(followUpCompleted);
+        boolean hasDate = followUpDate != null;
+        boolean isOverdue = hasDate && followUpDate.isBefore(LocalDateTime.now());
+        
+        return isRequired && isNotCompleted && isOverdue;
     }
     
     /**

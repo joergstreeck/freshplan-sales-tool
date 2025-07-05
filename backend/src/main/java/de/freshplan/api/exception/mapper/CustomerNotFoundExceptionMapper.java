@@ -22,14 +22,23 @@ public class CustomerNotFoundExceptionMapper implements ExceptionMapper<Customer
     @Override
     public Response toResponse(CustomerNotFoundException exception) {
         // Create structured error response
-        Map<String, Object> errorResponse = Map.of(
-            "error", "CUSTOMER_NOT_FOUND",
-            "message", exception.getMessage(),
-            "timestamp", LocalDateTime.now().toString(),
-            "status", 404,
-            "customerId", exception.getCustomerId() != null ? 
-                exception.getCustomerId().toString() : null
-        );
+        Map<String, Object> errorResponse;
+        if (exception.getCustomerId() != null) {
+            errorResponse = Map.of(
+                "error", "CUSTOMER_NOT_FOUND",
+                "message", exception.getMessage(),
+                "timestamp", LocalDateTime.now().toString(),
+                "status", 404,
+                "customerId", exception.getCustomerId().toString()
+            );
+        } else {
+            errorResponse = Map.of(
+                "error", "CUSTOMER_NOT_FOUND",
+                "message", exception.getMessage(),
+                "timestamp", LocalDateTime.now().toString(),
+                "status", 404
+            );
+        }
         
         return Response
             .status(Response.Status.NOT_FOUND)
