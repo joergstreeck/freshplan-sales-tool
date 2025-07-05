@@ -1138,6 +1138,16 @@ Siehe [Vision und Roadmap][vision] für Details zu geplanten Integrationen und F
 
 Ab sofort gilt für ALLE von Claude erstellten Dokumentationen:
 
+### 🔒 KRITISCHE DOKUMENTE - NIEMALS LÖSCHEN:
+- `/docs/TRIGGER_TEXTS.md` - Offizielle Trigger-Texte für Übergaben
+- `/docs/STANDARDUBERGABE_NEU.md` - Hauptprozess-Dokument
+- `/docs/STANDARDUBERGABE_KOMPAKT.md` - Quick Reference
+- `/docs/STANDARDUBERGABE.md` - Troubleshooting Guide
+- `/docs/CLAUDE.md` - Diese Arbeitsrichtlinien
+- `/docs/CRM_COMPLETE_MASTER_PLAN.md` - Aktueller Masterplan
+
+**Backup:** `./scripts/backup-critical-docs.sh` regelmäßig ausführen!
+
 ### Ablagestruktur:
 ```
 docs/claude-work/

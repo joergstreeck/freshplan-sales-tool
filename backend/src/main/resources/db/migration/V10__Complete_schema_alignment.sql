@@ -5,24 +5,13 @@
 -- This migration ensures all entity columns exist in the database
 -- Run this after V9 to complete the schema alignment
 
--- Ensure customer_addresses has all columns from CustomerAddress entity
-ALTER TABLE customer_addresses 
-ALTER COLUMN country TYPE VARCHAR(3),
-ALTER COLUMN country SET DEFAULT 'DEU';
+-- For H2 compatibility, we need separate ALTER statements
+-- H2 doesn't support ALTER COLUMN TYPE syntax
+-- Since we're changing from VARCHAR(100) to VARCHAR(3), we need to drop and recreate
+ALTER TABLE customer_addresses DROP COLUMN IF EXISTS country;
+ALTER TABLE customer_addresses ADD COLUMN country VARCHAR(3) DEFAULT 'DEU';
 
--- The remaining columns that might be missing
--- Using IF NOT EXISTS to make it idempotent
-DO $$ 
-BEGIN
-    -- Check and add latitude column
-    IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
-                   WHERE table_name='customer_addresses' AND column_name='latitude') THEN
-        ALTER TABLE customer_addresses ADD COLUMN latitude DOUBLE PRECISION;
-    END IF;
-    
-    -- Check and add longitude column
-    IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
-                   WHERE table_name='customer_addresses' AND column_name='longitude') THEN
-        ALTER TABLE customer_addresses ADD COLUMN longitude DOUBLE PRECISION;
-    END IF;
-END $$;
+-- Add missing columns if they don't exist
+-- H2 doesn't support DO blocks, so we use ALTER TABLE ADD COLUMN IF NOT EXISTS
+ALTER TABLE customer_addresses ADD COLUMN IF NOT EXISTS latitude DOUBLE PRECISION;
+ALTER TABLE customer_addresses ADD COLUMN IF NOT EXISTS longitude DOUBLE PRECISION;

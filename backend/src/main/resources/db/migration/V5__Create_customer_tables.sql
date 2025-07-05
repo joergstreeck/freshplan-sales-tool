@@ -196,29 +196,29 @@ CREATE TABLE IF NOT EXISTS customer_timeline_events (
     updated_by VARCHAR(100)
 );
 
--- 8. Create indexes for performance
-CREATE INDEX idx_customer_status ON customers(status) WHERE is_deleted = FALSE;
+-- 8. Create indexes for performance (H2 compatible - no WHERE clauses)
+CREATE INDEX idx_customer_status ON customers(status);
 CREATE INDEX idx_customer_deleted ON customers(is_deleted);
-CREATE INDEX idx_customer_parent ON customers(parent_customer_id) WHERE parent_customer_id IS NOT NULL;
-CREATE INDEX idx_customer_risk_score ON customers(risk_score) WHERE is_deleted = FALSE;
-CREATE INDEX idx_customer_last_contact ON customers(last_contact_date) WHERE is_deleted = FALSE;
+CREATE INDEX idx_customer_parent ON customers(parent_customer_id);
+CREATE INDEX idx_customer_risk_score ON customers(risk_score);
+CREATE INDEX idx_customer_last_contact ON customers(last_contact_date);
 
-CREATE INDEX idx_contact_customer ON customer_contacts(customer_id) WHERE is_deleted = FALSE;
-CREATE INDEX idx_contact_primary ON customer_contacts(customer_id, is_primary) WHERE is_deleted = FALSE AND is_primary = TRUE;
-CREATE INDEX idx_contact_email ON customer_contacts(email) WHERE is_deleted = FALSE;
+CREATE INDEX idx_contact_customer ON customer_contacts(customer_id);
+CREATE INDEX idx_contact_primary ON customer_contacts(customer_id, is_primary);
+CREATE INDEX idx_contact_email ON customer_contacts(email);
 
-CREATE INDEX idx_location_customer ON customer_locations(customer_id) WHERE is_deleted = FALSE;
-CREATE INDEX idx_location_main ON customer_locations(customer_id, is_main_location) WHERE is_deleted = FALSE AND is_main_location = TRUE;
+CREATE INDEX idx_location_customer ON customer_locations(customer_id);
+CREATE INDEX idx_location_main ON customer_locations(customer_id, is_main_location);
 
-CREATE INDEX idx_address_location ON customer_addresses(location_id) WHERE is_deleted = FALSE;
-CREATE INDEX idx_address_type ON customer_addresses(location_id, address_type) WHERE is_deleted = FALSE;
+CREATE INDEX idx_address_location ON customer_addresses(location_id);
+CREATE INDEX idx_address_type ON customer_addresses(location_id, address_type);
 
-CREATE INDEX idx_timeline_customer ON customer_timeline_events(customer_id) WHERE is_deleted = FALSE;
-CREATE INDEX idx_timeline_date ON customer_timeline_events(event_date DESC) WHERE is_deleted = FALSE;
-CREATE INDEX idx_timeline_category ON customer_timeline_events(category) WHERE is_deleted = FALSE;
-CREATE INDEX idx_timeline_importance ON customer_timeline_events(importance) WHERE is_deleted = FALSE;
+CREATE INDEX idx_timeline_customer ON customer_timeline_events(customer_id);
+CREATE INDEX idx_timeline_date ON customer_timeline_events(event_date);
+CREATE INDEX idx_timeline_category ON customer_timeline_events(category);
+CREATE INDEX idx_timeline_importance ON customer_timeline_events(importance);
 
--- 9. Insert default contact roles
+-- 9. Insert default contact roles (PostgreSQL compatible - use gen_random_uuid())
 INSERT INTO contact_roles (id, role_name, description, is_decision_maker_role, hierarchy_level) VALUES
     (gen_random_uuid(), 'Geschäftsführer', 'Geschäftsführung', true, 1),
     (gen_random_uuid(), 'Einkaufsleiter', 'Leitung Einkauf', true, 2),
@@ -230,10 +230,10 @@ INSERT INTO contact_roles (id, role_name, description, is_decision_maker_role, h
     (gen_random_uuid(), 'IT-Verantwortlicher', 'IT-Administration', false, 3),
     (gen_random_uuid(), 'Qualitätsmanager', 'Qualitätssicherung', false, 2);
 
--- 10. Add comments for documentation
-COMMENT ON TABLE customers IS 'Main customer entity with full CRM capabilities';
-COMMENT ON TABLE customer_contacts IS 'Contact persons associated with customers';
-COMMENT ON TABLE customer_locations IS 'Physical locations/sites of customers';
-COMMENT ON TABLE customer_addresses IS 'Addresses for customer locations';
-COMMENT ON TABLE customer_timeline_events IS 'Activity and change history for customers';
-COMMENT ON TABLE contact_roles IS 'Predefined roles for customer contacts';
+-- 10. Comments removed for H2 compatibility
+-- customers: Main customer entity with full CRM capabilities
+-- customer_contacts: Contact persons associated with customers
+-- customer_locations: Physical locations/sites of customers  
+-- customer_addresses: Addresses for customer locations
+-- customer_timeline_events: Activity and change history for customers
+-- contact_roles: Predefined roles for customer contacts
