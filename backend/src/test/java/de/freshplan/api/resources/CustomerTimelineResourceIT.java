@@ -38,8 +38,6 @@ class CustomerTimelineResourceIT {
     @Inject
     CustomerTimelineRepository timelineRepository;
     
-    private Customer testCustomer;
-    private CustomerTimelineEvent testEvent;
     
     @BeforeEach
     @Transactional
@@ -49,30 +47,6 @@ class CustomerTimelineResourceIT {
         customerRepository.deleteAll();
     }
     
-    private void createTestCustomer() {
-        testCustomer = new Customer();
-        testCustomer.setCustomerNumber("IT-TEST-001");
-        testCustomer.setCompanyName("Integration Test Company");
-        testCustomer.setStatus(CustomerStatus.AKTIV);
-        testCustomer.setCustomerType(CustomerType.UNTERNEHMEN);
-        testCustomer.setIndustry(Industry.SONSTIGE);
-        testCustomer.setCreatedAt(LocalDateTime.now());
-        testCustomer.setCreatedBy("test");
-        customerRepository.persist(testCustomer);
-    }
-    
-    private void createTestEvent() {
-        testEvent = new CustomerTimelineEvent();
-        testEvent.setCustomer(testCustomer);
-        testEvent.setEventType("NOTE");
-        testEvent.setTitle("Test Note");
-        testEvent.setDescription("Test Description");
-        testEvent.setCategory(EventCategory.NOTE);
-        testEvent.setImportance(ImportanceLevel.MEDIUM);
-        testEvent.setPerformedBy("testuser");
-        testEvent.setEventDate(LocalDateTime.now());
-        timelineRepository.persist(testEvent);
-    }
     
     @Transactional
     UUID createTestCustomerInTransaction() {
@@ -99,6 +73,86 @@ class CustomerTimelineResourceIT {
         event.setCategory(EventCategory.NOTE);
         event.setImportance(ImportanceLevel.MEDIUM);
         event.setPerformedBy("testuser");
+        event.setEventDate(LocalDateTime.now());
+        timelineRepository.persist(event);
+        return event.getId();
+    }
+    
+    @Transactional
+    UUID createCommunicationEventInTransaction(UUID customerId) {
+        Customer customer = customerRepository.findById(customerId);
+        CustomerTimelineEvent event = new CustomerTimelineEvent();
+        event.setCustomer(customer);
+        event.setEventType("CALL");
+        event.setTitle("Phone Call");
+        event.setCategory(EventCategory.PHONE_CALL);
+        event.setImportance(ImportanceLevel.HIGH);
+        event.setPerformedBy("salesrep");
+        event.setEventDate(LocalDateTime.now());
+        timelineRepository.persist(event);
+        return event.getId();
+    }
+    
+    @Transactional
+    UUID createFollowUpEventInTransaction(UUID customerId) {
+        Customer customer = customerRepository.findById(customerId);
+        CustomerTimelineEvent followUpEvent = new CustomerTimelineEvent();
+        followUpEvent.setCustomer(customer);
+        followUpEvent.setEventType("CALL");
+        followUpEvent.setTitle("Sales Call");
+        followUpEvent.setCategory(EventCategory.PHONE_CALL);
+        followUpEvent.setImportance(ImportanceLevel.HIGH);
+        followUpEvent.setPerformedBy("salesrep");
+        followUpEvent.setRequiresFollowUp(true);
+        followUpEvent.setFollowUpDate(LocalDateTime.now().plusDays(2));
+        followUpEvent.setFollowUpNotes("Send proposal");
+        followUpEvent.setEventDate(LocalDateTime.now());
+        timelineRepository.persist(followUpEvent);
+        return followUpEvent.getId();
+    }
+    
+    @Transactional
+    UUID createOverdueFollowUpEventInTransaction(UUID customerId) {
+        Customer customer = customerRepository.findById(customerId);
+        CustomerTimelineEvent overdueEvent = new CustomerTimelineEvent();
+        overdueEvent.setCustomer(customer);
+        overdueEvent.setEventType("EMAIL");
+        overdueEvent.setTitle("Email Communication");
+        overdueEvent.setCategory(EventCategory.EMAIL);
+        overdueEvent.setImportance(ImportanceLevel.HIGH);
+        overdueEvent.setPerformedBy("salesrep");
+        overdueEvent.setRequiresFollowUp(true);
+        overdueEvent.setFollowUpDate(LocalDateTime.now().minusDays(1)); // Overdue
+        overdueEvent.setFollowUpCompleted(false);
+        overdueEvent.setEventDate(LocalDateTime.now().minusDays(3));
+        timelineRepository.persist(overdueEvent);
+        return overdueEvent.getId();
+    }
+    
+    @Transactional
+    UUID createRecentCommunicationEventInTransaction(UUID customerId) {
+        Customer customer = customerRepository.findById(customerId);
+        CustomerTimelineEvent recentComm = CustomerTimelineEvent.createCommunicationEvent(
+                customer,
+                "teams",
+                "inbound",
+                "Customer inquiry about new products",
+                "support"
+        );
+        timelineRepository.persist(recentComm);
+        return recentComm.getId();
+    }
+    
+    @Transactional
+    UUID createVariousCommunicationEventInTransaction(UUID customerId, int index) {
+        Customer customer = customerRepository.findById(customerId);
+        CustomerTimelineEvent event = new CustomerTimelineEvent();
+        event.setCustomer(customer);
+        event.setEventType("COMM_" + index);
+        event.setTitle("Communication " + index);
+        event.setCategory(EventCategory.COMMUNICATION);
+        event.setImportance(ImportanceLevel.MEDIUM);
+        event.setPerformedBy("user" + index);
         event.setEventDate(LocalDateTime.now());
         timelineRepository.persist(event);
         return event.getId();
@@ -136,23 +190,14 @@ class CustomerTimelineResourceIT {
     }
     
     @Test
-    @Transactional
     void getTimeline_withCategoryFilter_shouldReturnFilteredEvents() {
-        createTestCustomer();
-        createTestEvent();
-        // Create additional event with different category
-        CustomerTimelineEvent communicationEvent = new CustomerTimelineEvent();
-        communicationEvent.setCustomer(testCustomer);
-        communicationEvent.setEventType("CALL");
-        communicationEvent.setTitle("Phone Call");
-        communicationEvent.setCategory(EventCategory.PHONE_CALL);
-        communicationEvent.setImportance(ImportanceLevel.HIGH);
-        communicationEvent.setPerformedBy("salesrep");
-        communicationEvent.setEventDate(LocalDateTime.now());
-        timelineRepository.persist(communicationEvent);
+        // Create test data in separate transactions
+        UUID customerId = createTestCustomerInTransaction();
+        UUID eventId = createTestEventInTransaction(customerId);
+        UUID communicationEventId = createCommunicationEventInTransaction(customerId);
         
         Response response = given()
-                .pathParam("customerId", testCustomer.getId())
+                .pathParam("customerId", customerId)
                 .queryParam("category", "PHONE_CALL")
                 .when()
                 .get()
@@ -168,12 +213,13 @@ class CustomerTimelineResourceIT {
     }
     
     @Test
-    @Transactional
     void getTimeline_withSearchText_shouldReturnMatchingEvents() {
-        createTestCustomer();
-        createTestEvent();
+        // Create test data in separate transactions
+        UUID customerId = createTestCustomerInTransaction();
+        UUID eventId = createTestEventInTransaction(customerId);
+        
         Response response = given()
-                .pathParam("customerId", testCustomer.getId())
+                .pathParam("customerId", customerId)
                 .queryParam("search", "Test")
                 .when()
                 .get()
@@ -199,9 +245,10 @@ class CustomerTimelineResourceIT {
     }
     
     @Test
-    @Transactional
     void createEvent_withValidData_shouldCreateTimelineEvent() {
-        createTestCustomer();
+        // Create test data in separate transaction
+        UUID customerId = createTestCustomerInTransaction();
+        
         CreateTimelineEventRequest request = CreateTimelineEventRequest.builder()
                 .eventType("MEETING")
                 .title("Customer Meeting")
@@ -213,7 +260,7 @@ class CustomerTimelineResourceIT {
                 .build();
         
         Response response = given()
-                .pathParam("customerId", testCustomer.getId())
+                .pathParam("customerId", customerId)
                 .contentType(ContentType.JSON)
                 .body(request)
                 .when()
@@ -240,16 +287,17 @@ class CustomerTimelineResourceIT {
     }
     
     @Test
-    @Transactional
     void createNote_withValidData_shouldCreateNoteEvent() {
-        createTestCustomer();
+        // Create test data in separate transaction
+        UUID customerId = createTestCustomerInTransaction();
+        
         CreateNoteRequest request = new CreateNoteRequest(
                 "Customer prefers email communication",
                 "salesrep"
         );
         
         Response response = given()
-                .pathParam("customerId", testCustomer.getId())
+                .pathParam("customerId", customerId)
                 .contentType(ContentType.JSON)
                 .body(request)
                 .when()
@@ -269,9 +317,10 @@ class CustomerTimelineResourceIT {
     }
     
     @Test
-    @Transactional
     void createCommunication_withValidData_shouldCreateCommunicationEvent() {
-        createTestCustomer();
+        // Create test data in separate transaction
+        UUID customerId = createTestCustomerInTransaction();
+        
         CreateCommunicationRequest request = CreateCommunicationRequest.builder()
                 .channel("email")
                 .direction("outbound")
@@ -285,7 +334,7 @@ class CustomerTimelineResourceIT {
                 .build();
         
         Response response = given()
-                .pathParam("customerId", testCustomer.getId())
+                .pathParam("customerId", customerId)
                 .contentType(ContentType.JSON)
                 .body(request)
                 .when()
@@ -309,11 +358,14 @@ class CustomerTimelineResourceIT {
     
     @Test
     void createEvent_withInvalidData_shouldReturn400() {
+        // Create test data in separate transaction
+        UUID customerId = createTestCustomerInTransaction();
+        
         CreateTimelineEventRequest request = new CreateTimelineEventRequest();
         // Missing required fields
         
         given()
-                .pathParam("customerId", testCustomer.getId())
+                .pathParam("customerId", customerId)
                 .contentType(ContentType.JSON)
                 .body(request)
                 .when()
@@ -323,25 +375,13 @@ class CustomerTimelineResourceIT {
     }
     
     @Test
-    @Transactional
     void getFollowUps_shouldReturnEventsRequiringFollowUp() {
-        createTestCustomer();
-        // Create event with follow-up
-        CustomerTimelineEvent followUpEvent = new CustomerTimelineEvent();
-        followUpEvent.setCustomer(testCustomer);
-        followUpEvent.setEventType("CALL");
-        followUpEvent.setTitle("Sales Call");
-        followUpEvent.setCategory(EventCategory.PHONE_CALL);
-        followUpEvent.setImportance(ImportanceLevel.HIGH);
-        followUpEvent.setPerformedBy("salesrep");
-        followUpEvent.setRequiresFollowUp(true);
-        followUpEvent.setFollowUpDate(LocalDateTime.now().plusDays(2));
-        followUpEvent.setFollowUpNotes("Send proposal");
-        followUpEvent.setEventDate(LocalDateTime.now());
-        timelineRepository.persist(followUpEvent);
+        // Create test data in separate transaction
+        UUID customerId = createTestCustomerInTransaction();
+        UUID followUpEventId = createFollowUpEventInTransaction(customerId);
         
         given()
-                .pathParam("customerId", testCustomer.getId())
+                .pathParam("customerId", customerId)
                 .when()
                 .get("/follow-ups")
                 .then()
@@ -353,25 +393,13 @@ class CustomerTimelineResourceIT {
     }
     
     @Test
-    @Transactional
     void getOverdueFollowUps_shouldReturnOverdueEvents() {
-        createTestCustomer();
-        // Create overdue follow-up
-        CustomerTimelineEvent overdueEvent = new CustomerTimelineEvent();
-        overdueEvent.setCustomer(testCustomer);
-        overdueEvent.setEventType("EMAIL");
-        overdueEvent.setTitle("Email Communication");
-        overdueEvent.setCategory(EventCategory.EMAIL);
-        overdueEvent.setImportance(ImportanceLevel.HIGH);
-        overdueEvent.setPerformedBy("salesrep");
-        overdueEvent.setRequiresFollowUp(true);
-        overdueEvent.setFollowUpDate(LocalDateTime.now().minusDays(1)); // Overdue
-        overdueEvent.setFollowUpCompleted(false);
-        overdueEvent.setEventDate(LocalDateTime.now().minusDays(3));
-        timelineRepository.persist(overdueEvent);
+        // Create test data in separate transaction
+        UUID customerId = createTestCustomerInTransaction();
+        UUID overdueEventId = createOverdueFollowUpEventInTransaction(customerId);
         
         given()
-                .pathParam("customerId", testCustomer.getId())
+                .pathParam("customerId", customerId)
                 .when()
                 .get("/follow-ups/overdue")
                 .then()
@@ -382,21 +410,13 @@ class CustomerTimelineResourceIT {
     }
     
     @Test
-    @Transactional
     void getRecentCommunications_shouldReturnRecentCommunicationEvents() {
-        createTestCustomer();
-        // Create recent communication
-        CustomerTimelineEvent recentComm = CustomerTimelineEvent.createCommunicationEvent(
-                testCustomer,
-                "teams",
-                "inbound",
-                "Customer inquiry about new products",
-                "support"
-        );
-        timelineRepository.persist(recentComm);
+        // Create test data in separate transaction
+        UUID customerId = createTestCustomerInTransaction();
+        UUID recentCommId = createRecentCommunicationEventInTransaction(customerId);
         
         given()
-                .pathParam("customerId", testCustomer.getId())
+                .pathParam("customerId", customerId)
                 .queryParam("days", 7)
                 .when()
                 .get("/communications/recent")
@@ -408,25 +428,17 @@ class CustomerTimelineResourceIT {
     }
     
     @Test
-    @Transactional
     void getTimelineSummary_shouldReturnSummaryStatistics() {
-        createTestCustomer();
-        createTestEvent();
-        // Create various events
+        // Create test data in separate transaction
+        UUID customerId = createTestCustomerInTransaction();
+        UUID eventId = createTestEventInTransaction(customerId);
+        // Create 3 communication events
         for (int i = 0; i < 3; i++) {
-            CustomerTimelineEvent event = new CustomerTimelineEvent();
-            event.setCustomer(testCustomer);
-            event.setEventType("COMM_" + i);
-            event.setTitle("Communication " + i);
-            event.setCategory(EventCategory.COMMUNICATION);
-            event.setImportance(ImportanceLevel.MEDIUM);
-            event.setPerformedBy("user" + i);
-            event.setEventDate(LocalDateTime.now());
-            timelineRepository.persist(event);
+            createVariousCommunicationEventInTransaction(customerId, i);
         }
         
         given()
-                .pathParam("customerId", testCustomer.getId())
+                .pathParam("customerId", customerId)
                 .when()
                 .get("/summary")
                 .then()
@@ -438,10 +450,11 @@ class CustomerTimelineResourceIT {
     }
     
     @Test
-    @Transactional
     void updateEvent_withValidData_shouldUpdateTimelineEvent() {
-        createTestCustomer();
-        createTestEvent();
+        // Create test data in separate transaction
+        UUID customerId = createTestCustomerInTransaction();
+        UUID eventId = createTestEventInTransaction(customerId);
+        
         UpdateTimelineEventRequest request = new UpdateTimelineEventRequest();
         request.setTitle("Updated Title");
         request.setDescription("Updated Description");
@@ -449,8 +462,8 @@ class CustomerTimelineResourceIT {
         request.setUpdatedBy("manager");
         
         given()
-                .pathParam("customerId", testCustomer.getId())
-                .pathParam("eventId", testEvent.getId())
+                .pathParam("customerId", customerId)
+                .pathParam("eventId", eventId)
                 .contentType(ContentType.JSON)
                 .body(request)
                 .when()
@@ -463,25 +476,20 @@ class CustomerTimelineResourceIT {
                 .body("importance", is("CRITICAL"));
         
         // Verify in database
-        CustomerTimelineEvent updated = timelineRepository.findById(testEvent.getId());
+        CustomerTimelineEvent updated = timelineRepository.findById(eventId);
         assertThat(updated.getTitle()).isEqualTo("Updated Title");
         assertThat(updated.getImportance()).isEqualTo(ImportanceLevel.CRITICAL);
     }
     
     @Test
-    @Transactional
     void completeFollowUp_shouldMarkAsCompleted() {
-        createTestCustomer();
-        createTestEvent();
-        // Update event with follow-up
-        testEvent.setRequiresFollowUp(true);
-        testEvent.setFollowUpDate(LocalDateTime.now().plusDays(1));
-        testEvent.setFollowUpCompleted(false);
-        // No persist needed - entity is already persisted and managed
+        // Create test data in separate transaction
+        UUID customerId = createTestCustomerInTransaction();
+        UUID eventId = createFollowUpEventInTransaction(customerId);
         
         given()
-                .pathParam("customerId", testCustomer.getId())
-                .pathParam("eventId", testEvent.getId())
+                .pathParam("customerId", customerId)
+                .pathParam("eventId", eventId)
                 .queryParam("completedBy", "manager")
                 .contentType(ContentType.JSON)
                 .when()
@@ -490,18 +498,19 @@ class CustomerTimelineResourceIT {
                 .statusCode(204);
         
         // Verify in database
-        CustomerTimelineEvent updated = timelineRepository.findById(testEvent.getId());
+        CustomerTimelineEvent updated = timelineRepository.findById(eventId);
         assertThat(updated.getFollowUpCompleted()).isTrue();
     }
     
     @Test
-    @Transactional
     void deleteEvent_shouldSoftDeleteEvent() {
-        createTestCustomer();
-        createTestEvent();
+        // Create test data in separate transaction
+        UUID customerId = createTestCustomerInTransaction();
+        UUID eventId = createTestEventInTransaction(customerId);
+        
         given()
-                .pathParam("customerId", testCustomer.getId())
-                .pathParam("eventId", testEvent.getId())
+                .pathParam("customerId", customerId)
+                .pathParam("eventId", eventId)
                 .queryParam("deletedBy", "admin")
                 .when()
                 .delete("/events/{eventId}")
@@ -509,7 +518,7 @@ class CustomerTimelineResourceIT {
                 .statusCode(204);
         
         // Verify soft delete in database
-        CustomerTimelineEvent deleted = timelineRepository.findById(testEvent.getId());
+        CustomerTimelineEvent deleted = timelineRepository.findById(eventId);
         assertThat(deleted.getIsDeleted()).isTrue();
         assertThat(deleted.getDeletedBy()).isEqualTo("admin");
         assertThat(deleted.getDeletedAt()).isNotNull();

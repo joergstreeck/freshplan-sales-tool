@@ -1,0 +1,26 @@
+#!/bin/bash
+
+echo "🔒 Pre-commit hook: Checking critical docs..."
+
+# Ensure critical docs are always included
+./scripts/ensure-critical-docs-in-git.sh
+
+# Check if any critical doc is being deleted
+CRITICAL_FILES=(
+    "CLAUDE.md"
+    "docs/STANDARDUBERGABE_NEU.md"
+    "docs/STANDARDUBERGABE_KOMPAKT.md"
+    "docs/STANDARDUBERGABE.md"
+    "docs/TRIGGER_TEXTS.md"
+    "docs/CRM_COMPLETE_MASTER_PLAN.md"
+)
+
+for file in "${CRITICAL_FILES[@]}"; do
+    if git diff --cached --name-status | grep -E "^D.*$file"; then
+        echo "❌ ERROR: Attempting to delete critical file: $file"
+        echo "Critical documentation files cannot be deleted!"
+        exit 1
+    fi
+done
+
+echo "✅ Critical docs check passed"
