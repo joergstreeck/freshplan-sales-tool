@@ -16,7 +16,6 @@ export function FocusListColumn() {
     viewMode, 
     setViewMode, 
     filterTags,
-    addFilterTag,
     removeFilterTag,
     clearFilterTags,
     setFilterTags,
