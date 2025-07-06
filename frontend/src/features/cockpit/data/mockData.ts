@@ -11,7 +11,7 @@ export const mockTasks: PriorityTask[] = [
     type: 'call',
     customerName: 'Müller GmbH',
     priority: 'high',
-    completed: false,
+    completed: false
   },
   {
     id: '2',
@@ -19,7 +19,7 @@ export const mockTasks: PriorityTask[] = [
     type: 'email',
     customerName: 'Schmidt AG',
     priority: 'high',
-    completed: false,
+    completed: false
   },
   {
     id: '3',
@@ -27,8 +27,8 @@ export const mockTasks: PriorityTask[] = [
     type: 'appointment',
     customerName: 'FreshFood GmbH',
     priority: 'medium',
-    completed: false,
-  },
+    completed: false
+  }
 ];
 
 export const mockTriageItems: TriageItem[] = [
@@ -37,17 +37,17 @@ export const mockTriageItems: TriageItem[] = [
     from: 'info@neuekunden.de',
     subject: 'Anfrage Catering-Service',
     content: 'Sehr geehrte Damen und Herren, wir sind auf der Suche nach...',
-    receivedAt: new Date('2025-01-15T09:00:00Z'),
+    receivedAt: new Date(),
     type: 'email',
-    processed: false,
+    processed: false
   },
   {
     id: 't2',
     from: 'bestellung@restaurant-xyz.de',
     subject: 'Interesse an Ihrem Angebot',
     content: 'Guten Tag, wir haben Ihre Webseite gesehen und würden gerne...',
-    receivedAt: new Date('2025-01-15T09:00:00Z'),
+    receivedAt: new Date(),
     type: 'email',
-    processed: false,
-  },
+    processed: false
+  }
 ];

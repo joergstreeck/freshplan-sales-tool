@@ -1,6 +1,6 @@
 /**
  * Mein Tag - Spalte 1 des Sales Cockpit
- *
+ * 
  * Zeigt proaktiv die wichtigsten Aufgaben, Termine und KI-gestützte Alarme
  * Beinhaltet die Triage-Inbox für nicht zugeordnete Kommunikation
  */
@@ -52,7 +52,7 @@ export function MyDayColumn() {
     if (!date) return '';
     return new Intl.DateTimeFormat('de-DE', {
       hour: '2-digit',
-      minute: '2-digit',
+      minute: '2-digit'
     }).format(date);
   };
 
@@ -69,13 +69,13 @@ export function MyDayColumn() {
       <div className="column-header">
         <h2 className="column-title">Mein Tag</h2>
         <div className="column-actions">
-          <button className="btn-icon" title="Aktualisieren" aria-label="Aufgaben aktualisieren">
+          <button 
+            className="btn-icon" 
+            title="Aktualisieren"
+            aria-label="Aufgaben aktualisieren"
+          >
             <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-              <path
-                fillRule="evenodd"
-                d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"
-                clipRule="evenodd"
-              />
+              <path fillRule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clipRule="evenodd"/>
             </svg>
           </button>
         </div>
@@ -88,18 +88,12 @@ export function MyDayColumn() {
           <div className="ai-content">
             <h3 className="ai-title">Nächste beste Aktion</h3>
             <p className="ai-text">
-              Rufen Sie <strong>Müller GmbH</strong> an - das Angebot läuft heute ab und die
-              Abschlusswahrscheinlichkeit liegt bei 85%.
+              Rufen Sie <strong>Müller GmbH</strong> an - das Angebot läuft heute ab 
+              und die Abschlusswahrscheinlichkeit liegt bei 85%.
             </p>
-            <button
-              className="ai-action-btn"
-              onClick={() => {
-                // TODO: Implement phone call functionality
-                console.log('AI suggested action: Call customer');
-              }}
-            >
+            <button className="ai-action-btn" type="button">
               <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-                <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
+                <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/>
               </svg>
               Jetzt anrufen
             </button>
@@ -115,9 +109,13 @@ export function MyDayColumn() {
                 <span className="task-icon">{getTaskIcon(task.type)}</span>
                 <div className="task-content">
                   <h4 className="task-title">{task.title}</h4>
-                  {task.customerName && <span className="task-customer">{task.customerName}</span>}
+                  {task.customerName && (
+                    <span className="task-customer">{task.customerName}</span>
+                  )}
                 </div>
-                {task.dueDate && <span className="task-time">{formatTime(task.dueDate)}</span>}
+                {task.dueDate && (
+                  <span className="task-time">{formatTime(task.dueDate)}</span>
+                )}
               </div>
             ))}
           </div>
@@ -125,28 +123,29 @@ export function MyDayColumn() {
 
         {/* Triage-Inbox */}
         <section className="triage-section">
-          <button
-            className="triage-toggle"
-            onClick={toggleTriageInbox}
-            aria-expanded={showTriageInbox}
-            aria-label={showTriageInbox ? 'Triage-Inbox ausblenden' : 'Triage-Inbox anzeigen'}
-          >
-            <h3 className="section-title">Triage-Inbox ({triageItems.length})</h3>
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-              className={`toggle-icon ${showTriageInbox ? 'expanded' : ''}`}
+          <div className="section-header">
+            <h3 className="section-title">
+              Triage-Inbox ({triageItems.length})
+            </h3>
+            <button 
+              className="btn-icon"
+              onClick={toggleTriageInbox}
+              aria-expanded={showTriageInbox}
+              aria-label={showTriageInbox ? 'Triage-Inbox ausblenden' : 'Triage-Inbox anzeigen'}
+              type="button"
             >
-              <path
-                fillRule="evenodd"
-                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                clipRule="evenodd"
-              />
-            </svg>
-          </button>
-
+              <svg 
+                width="20" 
+                height="20" 
+                viewBox="0 0 20 20" 
+                fill="currentColor"
+                className={`toggle-icon ${showTriageInbox ? 'expanded' : ''}`}
+              >
+                <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd"/>
+              </svg>
+            </button>
+          </div>
+          
           {showTriageInbox && (
             <div className="triage-list">
               {triageItems.map(item => (
@@ -156,31 +155,17 @@ export function MyDayColumn() {
                     <span className="triage-time">
                       {new Date(item.receivedAt).toLocaleTimeString('de-DE', {
                         hour: '2-digit',
-                        minute: '2-digit',
+                        minute: '2-digit'
                       })}
                     </span>
                   </div>
                   <h4 className="triage-subject">{item.subject}</h4>
-                  {item.content && <p className="triage-preview">{item.content}</p>}
+                  {item.content && (
+                    <p className="triage-preview">{item.content}</p>
+                  )}
                   <div className="triage-actions">
-                    <button
-                      className="triage-action"
-                      onClick={() => {
-                        // TODO: Implement assign to customer functionality
-                        console.log('Assign to customer:', item.id);
-                      }}
-                    >
-                      Zuordnen
-                    </button>
-                    <button
-                      className="triage-action"
-                      onClick={() => {
-                        // TODO: Implement create lead functionality
-                        console.log('Create lead from:', item.id);
-                      }}
-                    >
-                      Als Lead
-                    </button>
+                    <button className="triage-action">Zuordnen</button>
+                    <button className="triage-action">Als Lead</button>
                   </div>
                 </div>
               ))}

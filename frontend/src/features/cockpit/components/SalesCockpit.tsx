@@ -1,6 +1,6 @@
 /**
  * Sales Cockpit - Die revolutionäre 3-Spalten-Oberfläche
- *
+ * 
  * Implementiert die Vision aus dem CRM_COMPLETE_MASTER_PLAN V4:
  * - Spalte 1: Mein Tag (Übersicht & Prioritäten)
  * - Spalte 2: Fokus-Liste (Dynamischer Arbeitsvorrat)
@@ -16,7 +16,12 @@ import { CockpitHeader } from './CockpitHeader';
 import './SalesCockpit.css';
 
 export function SalesCockpit() {
-  const { activeColumn, isMobileMenuOpen, isCompactMode, setActiveColumn } = useCockpitStore();
+  const { 
+    activeColumn, 
+    isMobileMenuOpen,
+    isCompactMode,
+    setActiveColumn 
+  } = useCockpitStore();
 
   // Keyboard navigation
   useEffect(() => {
@@ -41,62 +46,41 @@ export function SalesCockpit() {
   }, [setActiveColumn]);
 
   return (
-    <div className={`sales-cockpit ${isCompactMode ? 'compact-mode' : ''}`} data-testid="sales-cockpit">
+    <div className={`sales-cockpit ${isCompactMode ? 'compact-mode' : ''}`}>
       <CockpitHeader />
-
+      
       <main className="cockpit-main">
-        <div className={`cockpit-columns ${isMobileMenuOpen ? 'mobile-menu-open' : ''}`}>
+        <div 
+        className={`cockpit-columns ${
+          isMobileMenuOpen ? 'mobile-menu-open' : ''
+        }`}
+      >
           {/* Spalte 1: Mein Tag */}
-          <div
-            className={`cockpit-column column-my-day ${activeColumn === 'my-day' ? 'active' : ''}`}
+          <div 
+            className={`cockpit-column column-my-day ${
+              activeColumn === 'my-day' ? 'active' : ''
+            }`}
             onClick={() => setActiveColumn('my-day')}
-            onKeyDown={e => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                setActiveColumn('my-day');
-              }
-            }}
-            role="button"
-            tabIndex={0}
-            aria-label="Mein Tag Spalte"
           >
             <MyDayColumn />
           </div>
 
           {/* Spalte 2: Fokus-Liste */}
-          <div
+          <div 
             className={`cockpit-column column-focus-list ${
               activeColumn === 'focus-list' ? 'active' : ''
             }`}
             onClick={() => setActiveColumn('focus-list')}
-            onKeyDown={e => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                setActiveColumn('focus-list');
-              }
-            }}
-            role="button"
-            tabIndex={0}
-            aria-label="Fokus-Liste Spalte"
           >
             <FocusListColumn />
           </div>
 
           {/* Spalte 3: Aktions-Center */}
-          <div
+          <div 
             className={`cockpit-column column-action-center ${
               activeColumn === 'action-center' ? 'active' : ''
             }`}
             onClick={() => setActiveColumn('action-center')}
-            onKeyDown={e => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                setActiveColumn('action-center');
-              }
-            }}
-            role="button"
-            tabIndex={0}
-            aria-label="Aktions-Center Spalte"
           >
             <ActionCenterColumn />
           </div>
