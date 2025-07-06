@@ -22,234 +22,234 @@ import org.jboss.logging.Logger;
 
 /**
  * Service layer for Profile management operations.
- * 
+ *
  * @author FreshPlan Team
  * @since 1.0.0
  */
 @ApplicationScoped
 @Transactional
 public class ProfileService {
-    
-    private static final Logger LOG = Logger.getLogger(ProfileService.class);
-    
-    @Inject
-    ProfileRepository profileRepository;
-    
-    @Inject
-    ProfileMapper profileMapper;
-    
-    /**
-     * Create a new profile.
-     * 
-     * @param request the create request
-     * @return the created profile response
-     * @throws DuplicateProfileException if profile already exists
-     */
-    public ProfileResponse createProfile(CreateProfileRequest request) {
-        LOG.debugf("Creating profile for customer: %s", request.getCustomerId());
-        
-        // Check for duplicate
-        if (profileRepository.existsByCustomerId(request.getCustomerId())) {
-            LOG.warnf("Duplicate profile attempt for customer: %s", 
-                    request.getCustomerId());
-            throw new DuplicateProfileException(request.getCustomerId());
-        }
-        
-        // Create and persist profile
-        Profile profile = profileMapper.toEntity(request);
-        // TODO: Get user from security context when auth is implemented
-        profile.setCreatedBy("system");
-        profile.setUpdatedBy("system");
-        
-        profileRepository.persist(profile);
-        
-        LOG.infof("Profile created successfully for customer: %s with ID: %s", 
-                request.getCustomerId(), profile.getId());
-        
-        return profileMapper.toResponse(profile);
+
+  private static final Logger LOG = Logger.getLogger(ProfileService.class);
+
+  @Inject ProfileRepository profileRepository;
+
+  @Inject ProfileMapper profileMapper;
+
+  /**
+   * Create a new profile.
+   *
+   * @param request the create request
+   * @return the created profile response
+   * @throws DuplicateProfileException if profile already exists
+   */
+  public ProfileResponse createProfile(CreateProfileRequest request) {
+    LOG.debugf("Creating profile for customer: %s", request.getCustomerId());
+
+    // Check for duplicate
+    if (profileRepository.existsByCustomerId(request.getCustomerId())) {
+      LOG.warnf("Duplicate profile attempt for customer: %s", request.getCustomerId());
+      throw new DuplicateProfileException(request.getCustomerId());
     }
-    
-    /**
-     * Get profile by ID.
-     * 
-     * @param id the profile ID
-     * @return the profile response
-     * @throws ProfileNotFoundException if not found
-     */
-    public ProfileResponse getProfile(UUID id) {
-        Profile profile = profileRepository.findByIdOptional(id)
-                .orElseThrow(() -> new ProfileNotFoundException(id));
-        
-        return profileMapper.toResponse(profile);
+
+    // Create and persist profile
+    Profile profile = profileMapper.toEntity(request);
+    // TODO: Get user from security context when auth is implemented
+    profile.setCreatedBy("system");
+    profile.setUpdatedBy("system");
+
+    profileRepository.persist(profile);
+
+    LOG.infof(
+        "Profile created successfully for customer: %s with ID: %s",
+        request.getCustomerId(), profile.getId());
+
+    return profileMapper.toResponse(profile);
+  }
+
+  /**
+   * Get profile by ID.
+   *
+   * @param id the profile ID
+   * @return the profile response
+   * @throws ProfileNotFoundException if not found
+   */
+  public ProfileResponse getProfile(UUID id) {
+    Profile profile =
+        profileRepository.findByIdOptional(id).orElseThrow(() -> new ProfileNotFoundException(id));
+
+    return profileMapper.toResponse(profile);
+  }
+
+  /**
+   * Get profile by customer ID.
+   *
+   * @param customerId the customer ID
+   * @return the profile response
+   * @throws ProfileNotFoundException if not found
+   */
+  public ProfileResponse getProfileByCustomerId(String customerId) {
+    Profile profile =
+        profileRepository
+            .findByCustomerId(customerId)
+            .orElseThrow(() -> new ProfileNotFoundException(customerId));
+
+    return profileMapper.toResponse(profile);
+  }
+
+  /**
+   * Update an existing profile.
+   *
+   * @param id the profile ID
+   * @param request the update request
+   * @return the updated profile response
+   * @throws ProfileNotFoundException if not found
+   */
+  public ProfileResponse updateProfile(UUID id, UpdateProfileRequest request) {
+    Profile profile =
+        profileRepository.findByIdOptional(id).orElseThrow(() -> new ProfileNotFoundException(id));
+
+    // Update profile
+    profileMapper.updateEntity(profile, request);
+    // TODO: Get user from security context when auth is implemented
+    profile.setUpdatedBy("system");
+    profile.setUpdatedAt(LocalDateTime.now());
+
+    profileRepository.persist(profile);
+
+    return profileMapper.toResponse(profile);
+  }
+
+  /**
+   * Delete a profile.
+   *
+   * @param id the profile ID
+   * @throws ProfileNotFoundException if not found
+   */
+  public void deleteProfile(UUID id) {
+    Profile profile =
+        profileRepository.findByIdOptional(id).orElseThrow(() -> new ProfileNotFoundException(id));
+
+    profileRepository.delete(profile);
+  }
+
+  /**
+   * Get all profiles.
+   *
+   * @return list of all profile responses
+   */
+  public List<ProfileResponse> getAllProfiles() {
+    return profileRepository.listAll().stream()
+        .map(profileMapper::toResponse)
+        .collect(Collectors.toList());
+  }
+
+  /**
+   * Check if a profile exists for a customer ID.
+   *
+   * @param customerId the customer ID
+   * @return true if exists, false otherwise
+   */
+  public boolean profileExists(String customerId) {
+    return profileRepository.existsByCustomerId(customerId);
+  }
+
+  /**
+   * Export profile as PDF.
+   *
+   * @param id the profile ID
+   * @return PDF content as byte array
+   * @throws ProfileNotFoundException if not found
+   */
+  public byte[] exportProfileAsPdf(UUID id) {
+    Profile profile =
+        profileRepository.findByIdOptional(id).orElseThrow(() -> new ProfileNotFoundException(id));
+
+    // Generate HTML content
+    String html = generateProfileHtml(profile);
+
+    // Convert HTML to PDF
+    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+    HtmlConverter.convertToPdf(html, outputStream);
+
+    return outputStream.toByteArray();
+  }
+
+  /**
+   * Generate HTML content for profile PDF.
+   *
+   * @param profile the profile entity
+   * @return HTML string
+   */
+  private String generateProfileHtml(Profile profile) {
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
+
+    StringBuilder html = new StringBuilder();
+    html.append("<!DOCTYPE html>");
+    html.append("<html>");
+    html.append("<head>");
+    html.append("<meta charset='UTF-8'/>");
+    html.append("<style>");
+    html.append("body { font-family: Arial, sans-serif; margin: 40px; }");
+    html.append("h1 { color: #333; border-bottom: 2px solid #333; }");
+    html.append("h2 { color: #666; margin-top: 30px; }");
+    html.append(".info-block { margin: 20px 0; }");
+    html.append(".label { font-weight: bold; }");
+    html.append(".footer { margin-top: 50px; font-size: 12px; color: #999; }");
+    html.append("</style>");
+    html.append("</head>");
+    html.append("<body>");
+
+    // Header
+    html.append("<h1>Kundenprofil</h1>");
+    html.append("<div class='info-block'>");
+    html.append("<span class='label'>Kundennummer:</span> ");
+    html.append(profile.getCustomerId());
+    html.append("</div>");
+
+    // Company Info
+    if (profile.getCompanyInfo() != null) {
+      html.append("<h2>Firmendaten</h2>");
+      html.append("<div class='info-block'>");
+      html.append(profile.getCompanyInfo());
+      html.append("</div>");
     }
-    
-    /**
-     * Get profile by customer ID.
-     * 
-     * @param customerId the customer ID
-     * @return the profile response
-     * @throws ProfileNotFoundException if not found
-     */
-    public ProfileResponse getProfileByCustomerId(String customerId) {
-        Profile profile = profileRepository.findByCustomerId(customerId)
-                .orElseThrow(() -> new ProfileNotFoundException(customerId));
-        
-        return profileMapper.toResponse(profile);
+
+    // Contact Info
+    if (profile.getContactInfo() != null) {
+      html.append("<h2>Kontaktdaten</h2>");
+      html.append("<div class='info-block'>");
+      html.append(profile.getContactInfo());
+      html.append("</div>");
     }
-    
-    /**
-     * Update an existing profile.
-     * 
-     * @param id the profile ID
-     * @param request the update request
-     * @return the updated profile response
-     * @throws ProfileNotFoundException if not found
-     */
-    public ProfileResponse updateProfile(UUID id, UpdateProfileRequest request) {
-        Profile profile = profileRepository.findByIdOptional(id)
-                .orElseThrow(() -> new ProfileNotFoundException(id));
-        
-        // Update profile
-        profileMapper.updateEntity(profile, request);
-        // TODO: Get user from security context when auth is implemented
-        profile.setUpdatedBy("system");
-        profile.setUpdatedAt(LocalDateTime.now());
-        
-        profileRepository.persist(profile);
-        
-        return profileMapper.toResponse(profile);
+
+    // Financial Info
+    if (profile.getFinancialInfo() != null) {
+      html.append("<h2>Finanzdaten</h2>");
+      html.append("<div class='info-block'>");
+      html.append(profile.getFinancialInfo());
+      html.append("</div>");
     }
-    
-    /**
-     * Delete a profile.
-     * 
-     * @param id the profile ID
-     * @throws ProfileNotFoundException if not found
-     */
-    public void deleteProfile(UUID id) {
-        Profile profile = profileRepository.findByIdOptional(id)
-                .orElseThrow(() -> new ProfileNotFoundException(id));
-        
-        profileRepository.delete(profile);
+
+    // Notes
+    if (profile.getNotes() != null && !profile.getNotes().isBlank()) {
+      html.append("<h2>Notizen</h2>");
+      html.append("<div class='info-block'>");
+      html.append(profile.getNotes());
+      html.append("</div>");
     }
-    
-    /**
-     * Get all profiles.
-     * 
-     * @return list of all profile responses
-     */
-    public List<ProfileResponse> getAllProfiles() {
-        return profileRepository.listAll().stream()
-                .map(profileMapper::toResponse)
-                .collect(Collectors.toList());
-    }
-    
-    /**
-     * Check if a profile exists for a customer ID.
-     * 
-     * @param customerId the customer ID
-     * @return true if exists, false otherwise
-     */
-    public boolean profileExists(String customerId) {
-        return profileRepository.existsByCustomerId(customerId);
-    }
-    
-    /**
-     * Export profile as PDF.
-     * 
-     * @param id the profile ID
-     * @return PDF content as byte array
-     * @throws ProfileNotFoundException if not found
-     */
-    public byte[] exportProfileAsPdf(UUID id) {
-        Profile profile = profileRepository.findByIdOptional(id)
-                .orElseThrow(() -> new ProfileNotFoundException(id));
-        
-        // Generate HTML content
-        String html = generateProfileHtml(profile);
-        
-        // Convert HTML to PDF
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        HtmlConverter.convertToPdf(html, outputStream);
-        
-        return outputStream.toByteArray();
-    }
-    
-    /**
-     * Generate HTML content for profile PDF.
-     * 
-     * @param profile the profile entity
-     * @return HTML string
-     */
-    private String generateProfileHtml(Profile profile) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
-        
-        StringBuilder html = new StringBuilder();
-        html.append("<!DOCTYPE html>");
-        html.append("<html>");
-        html.append("<head>");
-        html.append("<meta charset='UTF-8'/>");
-        html.append("<style>");
-        html.append("body { font-family: Arial, sans-serif; margin: 40px; }");
-        html.append("h1 { color: #333; border-bottom: 2px solid #333; }");
-        html.append("h2 { color: #666; margin-top: 30px; }");
-        html.append(".info-block { margin: 20px 0; }");
-        html.append(".label { font-weight: bold; }");
-        html.append(".footer { margin-top: 50px; font-size: 12px; color: #999; }");
-        html.append("</style>");
-        html.append("</head>");
-        html.append("<body>");
-        
-        // Header
-        html.append("<h1>Kundenprofil</h1>");
-        html.append("<div class='info-block'>");
-        html.append("<span class='label'>Kundennummer:</span> ");
-        html.append(profile.getCustomerId());
-        html.append("</div>");
-        
-        // Company Info
-        if (profile.getCompanyInfo() != null) {
-            html.append("<h2>Firmendaten</h2>");
-            html.append("<div class='info-block'>");
-            html.append(profile.getCompanyInfo());
-            html.append("</div>");
-        }
-        
-        // Contact Info
-        if (profile.getContactInfo() != null) {
-            html.append("<h2>Kontaktdaten</h2>");
-            html.append("<div class='info-block'>");
-            html.append(profile.getContactInfo());
-            html.append("</div>");
-        }
-        
-        // Financial Info
-        if (profile.getFinancialInfo() != null) {
-            html.append("<h2>Finanzdaten</h2>");
-            html.append("<div class='info-block'>");
-            html.append(profile.getFinancialInfo());
-            html.append("</div>");
-        }
-        
-        // Notes
-        if (profile.getNotes() != null && !profile.getNotes().isBlank()) {
-            html.append("<h2>Notizen</h2>");
-            html.append("<div class='info-block'>");
-            html.append(profile.getNotes());
-            html.append("</div>");
-        }
-        
-        // Footer
-        html.append("<div class='footer'>");
-        html.append("Erstellt am: ");
-        html.append(profile.getCreatedAt().format(formatter));
-        html.append(" | Letzte Änderung: ");
-        html.append(profile.getUpdatedAt().format(formatter));
-        html.append("</div>");
-        
-        html.append("</body>");
-        html.append("</html>");
-        
-        return html.toString();
-    }
+
+    // Footer
+    html.append("<div class='footer'>");
+    html.append("Erstellt am: ");
+    html.append(profile.getCreatedAt().format(formatter));
+    html.append(" | Letzte Änderung: ");
+    html.append(profile.getUpdatedAt().format(formatter));
+    html.append("</div>");
+
+    html.append("</body>");
+    html.append("</html>");
+
+    return html.toString();
+  }
 }
