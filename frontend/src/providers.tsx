@@ -16,6 +16,7 @@ import { IntegrationTestPage } from './pages/IntegrationTestPage';
 import CustomersPage from './pages/CustomersPage';
 import { SalesCockpit } from './features/cockpit/components/SalesCockpit';
 import { SalesCockpitDebug } from './features/cockpit/components/SalesCockpitDebug';
+import { SalesCockpitSimple } from './features/cockpit/components/SalesCockpitSimple';
 import { CockpitPage } from './pages/CockpitPage';
 
 interface AppProvidersProps {
@@ -47,6 +48,7 @@ export const AppProviders = ({ children }: AppProvidersProps) => {
               <Route path="/cockpit" element={<CockpitPage />} />
               <Route path="/cockpit-direct" element={<SalesCockpit />} />
               <Route path="/cockpit-debug" element={<SalesCockpitDebug />} />
+              <Route path="/cockpit-simple" element={<SalesCockpitSimple />} />
               <Route path="/users" element={<UsersPage />} />
               <Route path="/customers" element={<CustomersPage />} />
               <Route path="/legacy-tool" element={<LegacyToolPage />} />

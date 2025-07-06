@@ -64,11 +64,14 @@ export function SalesCockpit() {
   }, [setActiveColumn]);
 
   return (
-    <div className={`sales-cockpit ${isCompactMode ? 'compact-mode' : ''}`}>
-      <h1>Sales Cockpit Debug</h1>
-      <p>UserId: {userId || 'No userId'}</p>
-      <p>Loading: {isLoading ? 'Yes' : 'No'}</p>
-      <p>Error: {isError ? error?.message : 'No error'}</p>
+    <div className={`sales-cockpit ${isCompactMode ? 'compact-mode' : ''}`} style={{ minHeight: '100vh', backgroundColor: '#f0f0f0' }}>
+      <div style={{ padding: '20px', backgroundColor: 'white', border: '2px solid red' }}>
+        <h1 style={{ color: 'black', fontSize: '24px' }}>Sales Cockpit Debug</h1>
+        <p style={{ color: 'blue' }}>UserId: {userId || 'No userId'}</p>
+        <p style={{ color: 'green' }}>Loading: {isLoading ? 'Yes' : 'No'}</p>
+        <p style={{ color: 'red' }}>Error: {isError ? error?.message : 'No error'}</p>
+        <p style={{ color: 'purple' }}>Data available: {dashboardData ? 'YES' : 'NO'}</p>
+      </div>
       <CockpitHeader />
       
       {/* Dashboard Statistiken */}
