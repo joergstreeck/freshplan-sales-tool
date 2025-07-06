@@ -16,7 +16,7 @@ vi.mock('../../contexts/KeycloakContext', () => ({
 
 // Mock für Button-Komponente
 vi.mock('../ui/button', () => ({
-  Button: ({ children, onClick, className }: any) => (
+  Button: ({ children, onClick, className }: { children: React.ReactNode; onClick: () => void; className: string }) => (
     <button onClick={onClick} className={className}>
       {children}
     </button>

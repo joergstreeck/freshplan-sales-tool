@@ -87,7 +87,7 @@ export const KeycloakProvider: React.FC<KeycloakProviderProps> = ({ children }) 
             clearUserInfo();
           };
         }
-      } catch (error) {
+      } catch {
         // Auth initialization failed
       } finally {
         setIsLoading(false);
