@@ -4,13 +4,7 @@
  * Ruft aggregierte Dashboard-Daten vom Backend-for-Frontend ab
  */
 import { httpClient } from '../../../lib/apiClient';
-import type { 
-  SalesCockpitDashboard,
-  DashboardTask,
-  RiskCustomer,
-  DashboardStatistics,
-  DashboardAlert
-} from '../types/salesCockpit';
+import type { SalesCockpitDashboard } from '../types/salesCockpit';
 
 class SalesCockpitService {
   /**
