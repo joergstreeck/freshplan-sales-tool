@@ -23,7 +23,7 @@ apiClient.interceptors.request.use(
 
     if (token) {
       // Check if token needs refresh (with 5 minute buffer)
-      const needsRefresh = authUtils.isTokenExpired();
+      const needsRefresh = authUtils.isTokenExpired(300); // 5 minute buffer
       if (needsRefresh) {
         try {
           await authUtils.updateToken(300); // 5 minute buffer

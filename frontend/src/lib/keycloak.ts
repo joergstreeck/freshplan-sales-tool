@@ -97,5 +97,5 @@ export const authUtils = {
       return false;
     }
   },
-  isTokenExpired: () => (keycloak.isTokenExpired ? keycloak.isTokenExpired() : true),
+  isTokenExpired: (minValidity?: number) => (keycloak.isTokenExpired ? keycloak.isTokenExpired(minValidity) : true),
 };

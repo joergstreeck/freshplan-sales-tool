@@ -151,13 +151,22 @@ describe('Keycloak Configuration', () => {
       expect(authUtils.updateToken).toHaveBeenCalledWith(30);
     });
 
-    it('sollte isTokenExpired aufrufen', () => {
+    it('sollte isTokenExpired ohne Parameter aufrufen', () => {
       (authUtils.isTokenExpired as ReturnType<typeof vi.fn>).mockReturnValue(true);
 
       const result = authUtils.isTokenExpired();
 
       expect(result).toBe(true);
       expect(authUtils.isTokenExpired).toHaveBeenCalled();
+    });
+
+    it('sollte isTokenExpired mit minValidity Parameter aufrufen', () => {
+      (authUtils.isTokenExpired as ReturnType<typeof vi.fn>).mockReturnValue(false);
+
+      const result = authUtils.isTokenExpired(300);
+
+      expect(result).toBe(false);
+      expect(authUtils.isTokenExpired).toHaveBeenCalledWith(300);
     });
   });
 });
