@@ -916,49 +916,71 @@ npm run security:audit
 
 **Diese Regel ist VERPFLICHTEND und wird bei jedem Sprint-Ende automatisch ausgeführt!**
 
-### 🔒 Doppelte Sicherheit: Two-Pass Review
+### 🔒 Der neue Two-Pass Review: Pflicht & Kür
 
-**NEUE REGEL (ab 07.01.2025):** Nach der Beseitigung aller Fehler aus dem ersten Review wird der Code ein weiteres Mal in gleicher Weise geprüft.
+**VERBESSERTE REGEL (ab 06.07.2025):** Unser Two-Pass-Review trennt maschinelle Hygiene von strategischer Qualität.
 
 #### Two-Pass Review Prozess:
 
-**1. Pass - Initial Review:**
-- Vollständige Prüfung nach allen Kriterien
-- Dokumentation aller Findings
-- Behebung aller kritischen und wichtigen Issues
+**Pass 1: Die "Pflicht" – Automatische Code-Hygiene**
+- **Was:** Reine Code-Formatierung (Einrückungen, Leerzeichen, Imports)
+- **Wer:** Claude führt automatisch `./mvnw spotless:apply` aus
+- **Aufwand:** NULL für das Team - vollautomatisch!
+- **Ergebnis:** Separater Commit für Formatierung
 
-**2. Pass - Verification Review:**
-- Erneute vollständige Prüfung
-- Verifizierung dass alle Fixes korrekt sind
-- Prüfung auf neue Issues durch die Fixes
-- Finale Freigabe nur wenn BEIDE Reviews grün sind
+**Pass 2: Die "Kür" – Strategische Code-Qualität**
+- **Was:** Alles, was wirklich zählt:
+  - 🏛️ **Architektur:** Folgt der Code unserer Vision?
+  - 🧠 **Logik:** Tut es was es soll laut Master Plan?
+  - 📖 **Wartbarkeit:** Versteht es ein neuer Entwickler?
+  - 💡 **Philosophie:** Lebt es unsere Prinzipien?
+- **Wer:** Claude analysiert, Jörg entscheidet bei strategischen Fragen
+- **Fokus:** Das, was Software wirklich gut macht
 
-#### Warum Two-Pass Review?
+#### Der neue Ablauf:
 
-1. **Fixes können neue Probleme einführen**
-2. **Übersehene Issues werden erkannt**
-3. **Höhere Code-Qualität garantiert**
-4. **Reduziert Production-Bugs signifikant**
+```bash
+# 1. Claude führt Pass 1 aus (automatisch)
+cd backend && ./mvnw spotless:apply
 
-#### Review-Report für Two-Pass:
+# 2. Bei Änderungen: Separater Commit
+git add -u && git commit -m "chore: apply Spotless formatting"
 
-```markdown
-# Two-Pass Review Report - [Feature]
-
-## Pass 1: Initial Review
-- Findings: X kritisch, Y wichtig
-- Status: ❌ Issues gefunden
-
-## Fixes Applied
-- [Liste der durchgeführten Fixes]
-
-## Pass 2: Verification Review  
-- Neue Issues: [Anzahl]
-- Status: ✅ Alle Tests bestanden
-- Finale Freigabe: JA/NEIN
+# 3. Pass 2: Strategische Review (siehe Template)
 ```
 
-**Merke: "Vertrauen ist gut, doppelte Kontrolle ist besser!"**
+#### Review-Report Template (nur für Pass 2):
+
+```markdown
+# Strategic Code Review - [Feature]
+
+## 🏛️ Architektur-Check
+- [ ] Schichtenarchitektur eingehalten?
+- [ ] Findings: ...
+
+## 🧠 Logik-Check  
+- [ ] Master Plan umgesetzt?
+- [ ] Findings: ...
+
+## 📖 Wartbarkeit
+- [ ] Selbsterklärende Namen?
+- [ ] Findings: ...
+
+## 💡 Philosophie
+- [ ] Unsere Prinzipien gelebt?
+- [ ] Findings: ...
+
+## 🎯 Strategische Fragen für Jörg
+1. [Frage mit Kontext]
+```
+
+**Die Vorteile:**
+- ✅ Keine Formatierungs-Diskussionen mehr
+- ✅ Fokus auf wichtige Dinge
+- ✅ Konsistenter Code automatisch
+- ✅ Bessere Software durch strategischen Fokus
+
+**Details:** Siehe `/docs/claude-work/daily-work/2025-07-06/2025-07-06_PROCESS_two-pass-review-neu.md`
 
 ## 1. Projektübersicht und Ziele
 

@@ -6,6 +6,9 @@
  */
 
 import { useCockpitStore } from '../../../store/cockpitStore';
+import { useDashboardData } from '../hooks/useSalesCockpit';
+import { ActivityTimeline } from './ActivityTimeline';
+import { MOCK_USER_ID } from '../../../lib/constants';
 import './ActionCenterColumn.css';
 
 const AVAILABLE_PROCESSES = [
@@ -22,6 +25,16 @@ export function ActionCenterColumn() {
     setActiveProcess,
     selectCustomer 
   } = useCockpitStore();
+  
+  // TODO: Echte userId verwenden, sobald Auth implementiert ist
+  // Für jetzt verwenden wir eine Mock-User-ID
+  // Diese ID wird im Backend als Test-User erkannt
+  
+  // Lade Dashboard-Daten vom BFF
+  const { data: dashboardData, isLoading, error } = useDashboardData(
+    MOCK_USER_ID,
+    !!selectedCustomer // Nur laden wenn ein Kunde ausgewählt ist
+  );
 
 
   if (!selectedCustomer) {
@@ -145,25 +158,15 @@ export function ActionCenterColumn() {
           </div>
         </section>
 
-        {/* Activity Timeline Preview */}
+        {/* Activity Timeline mit echten Daten vom BFF */}
         <section className="timeline-preview">
-          <h3 className="section-title">Letzte Aktivitäten</h3>
-          <div className="timeline-items">
-            <div className="timeline-item">
-              <span className="timeline-icon">📧</span>
-              <div className="timeline-content">
-                <p className="timeline-text">E-Mail gesendet: Angebot Q1-2025</p>
-                <span className="timeline-date">Vor 2 Tagen</span>
-              </div>
-            </div>
-            <div className="timeline-item">
-              <span className="timeline-icon">📞</span>
-              <div className="timeline-content">
-                <p className="timeline-text">Telefonat: Budget-Besprechung</p>
-                <span className="timeline-date">Vor 1 Woche</span>
-              </div>
-            </div>
-          </div>
+          <h3 className="section-title">Aktivitäten & Aufgaben</h3>
+          <ActivityTimeline
+            tasks={dashboardData?.todaysTasks || []}
+            alerts={dashboardData?.alerts || []}
+            loading={isLoading}
+            error={error}
+          />
         </section>
       </div>
     </div>
