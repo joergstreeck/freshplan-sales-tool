@@ -59,20 +59,7 @@ enableMocking().then(() => {
   createRoot(rootElement).render(
     <StrictMode>
       <Suspense fallback={<div>Loading...</div>}>
-        <AppProviders>
-          <Routes>
-            <Route path="/" element={<App />} />
-            <Route path="/cockpit" element={<SalesCockpit />} />
-            <Route path="/users" element={<UsersPage />} />
-            <Route path="/customers" element={<CustomersPage />} />
-            <Route path="/legacy-tool" element={<LegacyToolPage />} />
-            {/* Login Bypass temporär reaktiviert - Auto-Login Problem */}
-            {isDevelopmentMode && <Route path="/login-bypass" element={<LoginBypassPage />} />}
-            {isDevelopmentMode && (
-              <Route path="/integration-test" element={<IntegrationTestPage />} />
-            )}
-          </Routes>
-        </AppProviders>
+        <AppProviders />
       </Suspense>
     </StrictMode>
   );
