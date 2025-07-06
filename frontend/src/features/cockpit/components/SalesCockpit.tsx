@@ -19,25 +19,30 @@ import { DashboardStats } from './DashboardStats';
 import './SalesCockpit.css';
 
 export function SalesCockpit() {
-  const { 
-    activeColumn, 
-    isMobileMenuOpen,
-    isCompactMode,
-    setActiveColumn 
-  } = useCockpitStore();
+  console.log('SalesCockpit rendering...');
   
-  const { userId } = useAuth();
-  
-  // Hole Dashboard-Daten für Header-Statistiken
-  const { 
-    data: dashboardData, 
-    isLoading, 
-    isError, 
-    error 
-  } = useDashboardData(userId || null);
+  try {
+    const { 
+      activeColumn, 
+      isMobileMenuOpen,
+      isCompactMode,
+      setActiveColumn 
+    } = useCockpitStore();
+    
+    const { userId } = useAuth();
+    console.log('Auth userId:', userId);
+    
+    // Hole Dashboard-Daten für Header-Statistiken
+    const { 
+      data: dashboardData, 
+      isLoading, 
+      isError, 
+      error 
+    } = useDashboardData(userId || null);
+    console.log('Dashboard data:', { isLoading, isError, data: dashboardData });
 
-  // Keyboard navigation
-  useEffect(() => {
+    // Keyboard navigation
+    useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
       if (e.altKey) {
         switch (e.key) {
@@ -60,6 +65,10 @@ export function SalesCockpit() {
 
   return (
     <div className={`sales-cockpit ${isCompactMode ? 'compact-mode' : ''}`}>
+      <h1>Sales Cockpit Debug</h1>
+      <p>UserId: {userId || 'No userId'}</p>
+      <p>Loading: {isLoading ? 'Yes' : 'No'}</p>
+      <p>Error: {isError ? error?.message : 'No error'}</p>
       <CockpitHeader />
       
       {/* Dashboard Statistiken */}
@@ -119,4 +128,13 @@ export function SalesCockpit() {
       </div>
     </div>
   );
+  } catch (err) {
+    console.error('SalesCockpit render error:', err);
+    return (
+      <div style={{ padding: '20px', color: 'red' }}>
+        <h1>Error in SalesCockpit</h1>
+        <pre>{err instanceof Error ? err.message : 'Unknown error'}</pre>
+      </div>
+    );
+  }
 }

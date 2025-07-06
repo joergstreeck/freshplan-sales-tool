@@ -15,6 +15,8 @@ import { LegacyToolPage } from './pages/LegacyToolPage';
 import { IntegrationTestPage } from './pages/IntegrationTestPage';
 import CustomersPage from './pages/CustomersPage';
 import { SalesCockpit } from './features/cockpit/components/SalesCockpit';
+import { SalesCockpitDebug } from './features/cockpit/components/SalesCockpitDebug';
+import { CockpitPage } from './pages/CockpitPage';
 
 interface AppProvidersProps {
   children?: ReactNode;
@@ -42,7 +44,9 @@ export const AppProviders = ({ children }: AppProvidersProps) => {
           <AuthWrapper>
             <Routes>
               <Route path="/" element={<App />} />
-              <Route path="/cockpit" element={<SalesCockpit />} />
+              <Route path="/cockpit" element={<CockpitPage />} />
+              <Route path="/cockpit-direct" element={<SalesCockpit />} />
+              <Route path="/cockpit-debug" element={<SalesCockpitDebug />} />
               <Route path="/users" element={<UsersPage />} />
               <Route path="/customers" element={<CustomersPage />} />
               <Route path="/legacy-tool" element={<LegacyToolPage />} />
