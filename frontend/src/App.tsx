@@ -47,6 +47,25 @@ function App() {
           <div className="card-grid">
             <Card>
               <CardHeader>
+                <CardTitle>Sales Command Center</CardTitle>
+                <CardDescription>Die neue intelligente 3-Spalten-Oberfläche</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="card-actions">
+                  <p className="card-text">
+                    Revolutionäres Sales Cockpit mit KI-Unterstützung
+                  </p>
+                  <div className="card-button-wrapper">
+                    <Button asChild className="btn-primary">
+                      <Link to="/cockpit">Sales Cockpit öffnen 🚀</Link>
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
                 <CardTitle>FreshPlan Verkaufstool</CardTitle>
                 <CardDescription>Komplette Verwaltung für Kunden und Angebote</CardDescription>
               </CardHeader>
