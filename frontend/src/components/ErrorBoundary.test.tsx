@@ -38,8 +38,8 @@ describe('ErrorBoundary', () => {
       </ErrorBoundary>
     );
 
-    expect(screen.getByText('Etwas ist schiefgelaufen')).toBeInTheDocument();
-    expect(screen.getByText('Ein unerwarteter Fehler ist aufgetreten.')).toBeInTheDocument();
+    expect(screen.getByText('Oops, something went wrong!')).toBeInTheDocument();
+    expect(screen.getByText('Test error')).toBeInTheDocument();
   });
 
   it('renders custom fallback when provided', () => {

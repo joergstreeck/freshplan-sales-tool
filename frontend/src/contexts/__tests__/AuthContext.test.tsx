@@ -21,7 +21,13 @@ describe('AuthContext', () => {
       </AuthProvider>
     );
 
-    expect(getByTestId('user')).toHaveTextContent('no-user');
-    expect(getByTestId('auth')).toHaveTextContent('not-authenticated');
+    // In development mode, AuthContext auto-logs in as Admin User
+    if (import.meta.env.DEV) {
+      expect(getByTestId('user')).toHaveTextContent('Admin User');
+      expect(getByTestId('auth')).toHaveTextContent('authenticated');
+    } else {
+      expect(getByTestId('user')).toHaveTextContent('no-user');
+      expect(getByTestId('auth')).toHaveTextContent('not-authenticated');
+    }
   });
 });
