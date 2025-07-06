@@ -24,7 +24,9 @@ export default defineConfig({
   ],
 
   webServer: {
-    command: 'npm run preview',
+    command: process.env.CI 
+      ? 'npx serve dist -l 5173' 
+      : 'npm run preview',
     port: 5173,
     reuseExistingServer: !process.env.CI,
     timeout: 120 * 1000, // 2 minutes timeout for CI
