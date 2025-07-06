@@ -15,7 +15,7 @@ export interface Customer {
 
 export interface PriorityTask {
   id: string;
-  type: 'alert' | 'appointment' | 'call' | 'todo';
+  type: 'alert' | 'appointment' | 'call' | 'todo' | 'email';
   title: string;
   description?: string;
   customerId?: string;

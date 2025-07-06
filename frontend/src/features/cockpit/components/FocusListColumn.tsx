@@ -8,7 +8,7 @@
 import { useState } from 'react';
 import { useCockpitStore } from '../../../store/cockpitStore';
 import { CustomerList } from '../../../features/customer/components/CustomerList';
-import type { Customer } from '../types';
+import type { Customer, SavedView } from '../types';
 import './FocusListColumn.css';
 
 export function FocusListColumn() {
@@ -18,16 +18,49 @@ export function FocusListColumn() {
     filterTags,
     addFilterTag,
     removeFilterTag,
+    clearFilterTags,
     searchQuery,
     setSearchQuery,
     selectCustomer
   } = useCockpitStore();
 
-  const [savedViews] = useState([
-    { id: '1', name: 'Aktive Kunden', count: 42 },
-    { id: '2', name: 'Neue Leads', count: 8 },
-    { id: '3', name: 'Risiko-Kunden', count: 3 },
-    { id: '4', name: 'Diese Woche', count: 15 }
+  const [savedViews] = useState<SavedView[]>([
+    { 
+      id: '1', 
+      name: 'Aktive Kunden', 
+      count: 42,
+      filters: {
+        status: ['active'],
+        tags: ['aktiv']
+      }
+    },
+    { 
+      id: '2', 
+      name: 'Neue Leads', 
+      count: 8,
+      filters: {
+        status: ['prospect'],
+        tags: ['neu', 'lead']
+      }
+    },
+    { 
+      id: '3', 
+      name: 'Risiko-Kunden', 
+      count: 3,
+      filters: {
+        status: ['active'],
+        tags: ['risiko', 'achtung']
+      }
+    },
+    { 
+      id: '4', 
+      name: 'Diese Woche', 
+      count: 15,
+      filters: {
+        lastContactDays: 7,
+        tags: ['aktuell']
+      }
+    }
   ]);
 
   const handleCustomerSelect = (customer: Customer) => {
@@ -36,6 +69,26 @@ export function FocusListColumn() {
       companyName: customer.companyName,
       status: customer.status
     });
+  };
+
+  const applySavedView = (view: SavedView) => {
+    // Clear existing filters first
+    clearFilterTags();
+    setSearchQuery('');
+    
+    // Apply new filters from saved view
+    if (view.filters.tags) {
+      view.filters.tags.forEach(tag => addFilterTag(tag));
+    }
+    
+    // Apply search query if present
+    if (view.filters.search) {
+      setSearchQuery(view.filters.search);
+    }
+    
+    // TODO: Apply other filters (status, lastContactDays, revenueRange)
+    // These would require extending the store to support more filter types
+    // For now, we focus on tags and search which are already implemented
   };
 
   return (
@@ -116,7 +169,8 @@ export function FocusListColumn() {
             ))}
             <button
               className="btn-text btn-sm"
-              onClick={() => filterTags.forEach(tag => removeFilterTag(tag))}
+              onClick={clearFilterTags}
+              type="button"
             >
               Alle entfernen
             </button>
@@ -131,7 +185,9 @@ export function FocusListColumn() {
               <button
                 key={view.id}
                 className="saved-view-btn"
-                onClick={() => addFilterTag(view.name)}
+                onClick={() => applySavedView(view)}
+                type="button"
+                title={`Filter anwenden: ${view.name}`}
               >
                 <span className="view-name">{view.name}</span>
                 <span className="view-count">{view.count}</span>

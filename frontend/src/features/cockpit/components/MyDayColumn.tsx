@@ -91,7 +91,7 @@ export function MyDayColumn() {
               Rufen Sie <strong>Müller GmbH</strong> an - das Angebot läuft heute ab 
               und die Abschlusswahrscheinlichkeit liegt bei 85%.
             </p>
-            <button className="ai-action-btn">
+            <button className="ai-action-btn" type="button">
               <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
                 <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/>
               </svg>
@@ -123,25 +123,28 @@ export function MyDayColumn() {
 
         {/* Triage-Inbox */}
         <section className="triage-section">
-          <button 
-            className="triage-toggle"
-            onClick={toggleTriageInbox}
-            aria-expanded={showTriageInbox}
-            aria-label={showTriageInbox ? 'Triage-Inbox ausblenden' : 'Triage-Inbox anzeigen'}
-          >
+          <div className="section-header">
             <h3 className="section-title">
               Triage-Inbox ({triageItems.length})
             </h3>
-            <svg 
-              width="20" 
-              height="20" 
-              viewBox="0 0 20 20" 
-              fill="currentColor"
-              className={`toggle-icon ${showTriageInbox ? 'expanded' : ''}`}
+            <button 
+              className="btn-icon"
+              onClick={toggleTriageInbox}
+              aria-expanded={showTriageInbox}
+              aria-label={showTriageInbox ? 'Triage-Inbox ausblenden' : 'Triage-Inbox anzeigen'}
+              type="button"
             >
-              <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd"/>
-            </svg>
-          </button>
+              <svg 
+                width="20" 
+                height="20" 
+                viewBox="0 0 20 20" 
+                fill="currentColor"
+                className={`toggle-icon ${showTriageInbox ? 'expanded' : ''}`}
+              >
+                <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd"/>
+              </svg>
+            </button>
+          </div>
           
           {showTriageInbox && (
             <div className="triage-list">
