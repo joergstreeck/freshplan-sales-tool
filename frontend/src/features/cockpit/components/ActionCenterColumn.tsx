@@ -8,6 +8,7 @@
 import { useCockpitStore } from '../../../store/cockpitStore';
 import { useDashboardData } from '../hooks/useSalesCockpit';
 import { ActivityTimeline } from './ActivityTimeline';
+import { DashboardStats } from './DashboardStats';
 import { MOCK_USER_ID } from '../../../lib/constants';
 import './ActionCenterColumn.css';
 
@@ -30,10 +31,10 @@ export function ActionCenterColumn() {
   // Für jetzt verwenden wir eine Mock-User-ID
   // Diese ID wird im Backend als Test-User erkannt
   
-  // Lade Dashboard-Daten vom BFF
+  // Lade Dashboard-Daten vom BFF (immer, für Statistiken und globale Tasks)
   const { data: dashboardData, isLoading, error } = useDashboardData(
     MOCK_USER_ID,
-    !!selectedCustomer // Nur laden wenn ein Kunde ausgewählt ist
+    true // Immer laden für Dashboard-Statistiken
   );
 
 
@@ -45,12 +46,34 @@ export function ActionCenterColumn() {
         </div>
         
         <div className="column-content">
+          {/* Dashboard Statistiken */}
+          {dashboardData && (
+            <DashboardStats 
+              statistics={dashboardData.statistics}
+              loading={isLoading}
+              error={error}
+            />
+          )}
+          
+          {/* Activity Timeline für globale Tasks und Alerts */}
+          {dashboardData && (
+            <div className="global-activities">
+              <h3 className="section-title">Heutige Aufgaben & Alerts</h3>
+              <ActivityTimeline 
+                tasks={dashboardData.todaysTasks}
+                alerts={dashboardData.alerts}
+                loading={isLoading}
+                error={error}
+              />
+            </div>
+          )}
+          
           <div className="column-empty">
             <div className="column-empty-icon">👈</div>
             <h3 className="column-empty-title">Kein Kunde ausgewählt</h3>
             <p className="column-empty-description">
               Wählen Sie einen Kunden aus der Fokus-Liste aus, 
-              um mit der Bearbeitung zu beginnen.
+              um mit kundenspezifischen Aktionen zu beginnen.
             </p>
           </div>
         </div>
@@ -76,6 +99,15 @@ export function ActionCenterColumn() {
       </div>
 
       <div className="column-content">
+        {/* Dashboard Statistiken */}
+        {dashboardData && (
+          <DashboardStats 
+            statistics={dashboardData.statistics}
+            loading={isLoading}
+            error={error}
+          />
+        )}
+
         {/* Customer Header */}
         <div className="customer-header">
           <h3 className="customer-name">{selectedCustomer.companyName}</h3>
