@@ -1,0 +1,339 @@
+/**
+ * Sales Cockpit Styles
+ * 
+ * Responsive 3-Spalten-Layout basierend auf FreshPlan Design System
+ * Mobile-First Approach mit progressiver Verbesserung
+ */
+
+@import '../../../styles/freshplan-design-system.css';
+
+/* ========================================
+   BASE LAYOUT
+   ======================================== */
+
+.sales-cockpit {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background-color: var(--gray-50);
+  overflow: hidden;
+}
+
+/* ========================================
+   MAIN CONTENT AREA
+   ======================================== */
+
+.cockpit-main {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+}
+
+.cockpit-columns {
+  display: grid;
+  height: 100%;
+  transition: transform var(--duration-300) var(--ease-out);
+}
+
+/* ========================================
+   MOBILE LAYOUT (Default)
+   ======================================== */
+
+/* Mobile: Show only active column */
+@media (max-width: 767px) {
+  .cockpit-columns {
+    grid-template-columns: 100vw 100vw 100vw;
+    overflow-x: hidden;
+  }
+  
+  /* Position columns based on active state */
+  .cockpit-columns:has(.column-my-day.active) {
+    transform: translateX(0);
+  }
+  
+  .cockpit-columns:has(.column-focus-list.active) {
+    transform: translateX(-100vw);
+  }
+  
+  .cockpit-columns:has(.column-action-center.active) {
+    transform: translateX(-200vw);
+  }
+  
+  .mobile-nav-hints {
+    display: none;
+  }
+}
+
+/* ========================================
+   TABLET LAYOUT
+   ======================================== */
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .cockpit-columns {
+    grid-template-columns: 300px 1fr;
+    gap: 0;
+  }
+  
+  /* Hide action center on tablet, show as overlay when active */
+  .column-action-center {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: calc(100% - 300px);
+    transform: translateX(100%);
+    transition: transform var(--duration-300) var(--ease-out);
+    z-index: var(--z-10);
+  }
+  
+  .column-action-center.active {
+    transform: translateX(0);
+  }
+  
+  /* Always show my-day on tablet */
+  .column-my-day {
+    display: block !important;
+  }
+}
+
+/* ========================================
+   DESKTOP LAYOUT
+   ======================================== */
+
+@media (min-width: 1024px) {
+  .cockpit-columns {
+    grid-template-columns: minmax(280px, 320px) minmax(400px, 1fr) minmax(400px, 640px);
+    gap: 0;
+  }
+  
+  /* Compact mode adjustments */
+  .compact-mode .cockpit-columns {
+    grid-template-columns: 240px 1fr 480px;
+  }
+}
+
+/* Large Desktop */
+@media (min-width: 1536px) {
+  .cockpit-columns {
+    grid-template-columns: 360px 1fr 720px;
+  }
+}
+
+/* ========================================
+   COLUMN STYLES
+   ======================================== */
+
+.cockpit-column {
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+  border-right: 1px solid var(--gray-200);
+  overflow: hidden;
+  position: relative;
+  transition: all var(--duration-200) var(--ease-out);
+}
+
+.cockpit-column:last-child {
+  border-right: none;
+}
+
+/* Column hover effects (desktop only) */
+@media (min-width: 1024px) {
+  .cockpit-column:hover {
+    box-shadow: var(--shadow-sm);
+  }
+  
+  .cockpit-column.active {
+    box-shadow: var(--shadow-md);
+    z-index: var(--z-10);
+  }
+}
+
+/* ========================================
+   COLUMN HEADERS
+   ======================================== */
+
+.column-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4);
+  border-bottom: 2px solid var(--gray-100);
+  background-color: var(--gray-50);
+  min-height: 64px;
+}
+
+.column-title {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: var(--font-semibold);
+  color: var(--fresh-blue-500);
+  margin: 0;
+}
+
+.column-actions {
+  display: flex;
+  gap: var(--space-2);
+}
+
+/* ========================================
+   COLUMN CONTENT
+   ======================================== */
+
+.column-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-4);
+}
+
+/* Custom scrollbar */
+.column-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.column-content::-webkit-scrollbar-track {
+  background: var(--gray-100);
+}
+
+.column-content::-webkit-scrollbar-thumb {
+  background: var(--gray-400);
+  border-radius: var(--radius-full);
+}
+
+.column-content::-webkit-scrollbar-thumb:hover {
+  background: var(--gray-500);
+}
+
+/* ========================================
+   MOBILE NAVIGATION
+   ======================================== */
+
+.mobile-nav-hints {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: var(--fresh-blue-500);
+  color: white;
+  padding: var(--space-2);
+  font-size: var(--text-xs);
+  justify-content: space-around;
+  z-index: var(--z-sticky);
+}
+
+@media (max-width: 767px) {
+  .mobile-nav-hints {
+    display: flex;
+  }
+}
+
+/* ========================================
+   COLUMN-SPECIFIC STYLES
+   ======================================== */
+
+/* Mein Tag Column */
+.column-my-day {
+  background-color: var(--fresh-green-50);
+}
+
+.column-my-day .column-header {
+  background-color: var(--fresh-green-100);
+  border-bottom-color: var(--fresh-green-200);
+}
+
+/* Focus List Column */
+.column-focus-list {
+  /* Default white background */
+}
+
+/* Action Center Column */
+.column-action-center {
+  background-color: var(--gray-50);
+}
+
+/* ========================================
+   RESPONSIVE UTILITIES
+   ======================================== */
+
+/* Hide elements on mobile */
+@media (max-width: 767px) {
+  .desktop-only {
+    display: none !important;
+  }
+}
+
+/* Hide elements on desktop */
+@media (min-width: 768px) {
+  .mobile-only {
+    display: none !important;
+  }
+}
+
+/* ========================================
+   ANIMATIONS
+   ======================================== */
+
+@keyframes slideInFromRight {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInFromLeft {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+/* Column transitions */
+.cockpit-column {
+  animation-duration: var(--duration-300);
+  animation-timing-function: var(--ease-out);
+}
+
+/* ========================================
+   LOADING STATES
+   ======================================== */
+
+.column-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--gray-500);
+}
+
+.column-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  text-align: center;
+  color: var(--gray-500);
+  padding: var(--space-8);
+}
+
+.column-empty-icon {
+  font-size: var(--text-4xl);
+  margin-bottom: var(--space-4);
+  opacity: 0.3;
+}
+
+.column-empty-title {
+  font-size: var(--text-lg);
+  font-weight: var(--font-medium);
+  margin-bottom: var(--space-2);
+}
+
+.column-empty-description {
+  font-size: var(--text-sm);
+  color: var(--gray-400);
+}

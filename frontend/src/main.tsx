@@ -11,6 +11,7 @@ import { UsersPage } from './pages/UsersPage.tsx';
 import { LegacyToolPage } from './pages/LegacyToolPage.tsx';
 import { IntegrationTestPage } from './pages/IntegrationTestPage.tsx';
 import CustomersPage from './pages/CustomersPage.tsx';
+import { SalesCockpit } from './features/cockpit/components/SalesCockpit.tsx';
 import { AppProviders } from './providers.tsx';
 
 // Only include login bypass in development mode
@@ -61,6 +62,7 @@ enableMocking().then(() => {
         <AppProviders>
           <Routes>
             <Route path="/" element={<App />} />
+            <Route path="/cockpit" element={<SalesCockpit />} />
             <Route path="/users" element={<UsersPage />} />
             <Route path="/customers" element={<CustomersPage />} />
             <Route path="/legacy-tool" element={<LegacyToolPage />} />
