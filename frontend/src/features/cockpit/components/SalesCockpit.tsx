@@ -62,17 +62,6 @@ export function SalesCockpit() {
     <div className={`sales-cockpit ${isCompactMode ? 'compact-mode' : ''}`}>
       <CockpitHeader />
       
-      {/* Dashboard Statistiken */}
-      {dashboardData?.statistics && (
-        <div className="cockpit-stats-container">
-          <DashboardStats 
-            statistics={dashboardData.statistics}
-            loading={isLoading}
-            error={isError ? error : null}
-          />
-        </div>
-      )}
-      
       <main className="cockpit-main">
         <div 
         className={`cockpit-columns ${

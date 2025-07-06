@@ -6,6 +6,9 @@
  */
 
 import { useCockpitStore } from '../../../store/cockpitStore';
+import { useAuth } from '../../../hooks/useAuth';
+import { useDashboardData } from '../hooks/useSalesCockpit';
+import { DashboardStats } from './DashboardStats';
 import './ActionCenterColumn.css';
 
 export function ActionCenterColumn() {
@@ -15,6 +18,14 @@ export function ActionCenterColumn() {
     setActiveProcess,
     selectCustomer 
   } = useCockpitStore();
+  
+  const { userId } = useAuth();
+  const { 
+    data: dashboardData, 
+    isLoading, 
+    isError, 
+    error 
+  } = useDashboardData(userId || null);
 
   const processes = [
     { id: 'new-customer', name: 'Neukunden-Akquise', icon: '🎯' },
@@ -31,6 +42,17 @@ export function ActionCenterColumn() {
         </div>
         
         <div className="column-content">
+          {/* Dashboard Statistiken */}
+          {dashboardData?.statistics && (
+            <div className="action-stats-section">
+              <DashboardStats 
+                statistics={dashboardData.statistics}
+                loading={isLoading}
+                error={isError ? error : null}
+              />
+            </div>
+          )}
+          
           <div className="column-empty">
             <div className="column-empty-icon">👈</div>
             <h3 className="column-empty-title">Kein Kunde ausgewählt</h3>
@@ -62,6 +84,17 @@ export function ActionCenterColumn() {
       </div>
 
       <div className="column-content">
+        {/* Dashboard Statistiken */}
+        {dashboardData?.statistics && (
+          <div className="action-stats-section">
+            <DashboardStats 
+              statistics={dashboardData.statistics}
+              loading={isLoading}
+              error={isError ? error : null}
+            />
+          </div>
+        )}
+        
         {/* Customer Header */}
         <div className="customer-header">
           <h3 className="customer-name">{selectedCustomer.companyName}</h3>
