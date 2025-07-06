@@ -56,6 +56,7 @@ interface CockpitState {
   addFilterTag: (tag: string) => void;
   removeFilterTag: (tag: string) => void;
   clearFilterTags: () => void;
+  setFilterTags: (tags: string[]) => void;
   setSearchQuery: (query: string) => void;
   
   // Aktions-Center Actions
@@ -121,6 +122,7 @@ export const useCockpitStore = create<CockpitState>()(
           filterTags: state.filterTags.filter(t => t !== tag)
         })),
         clearFilterTags: () => set({ filterTags: [] }),
+        setFilterTags: (tags) => set({ filterTags: tags }),
         setSearchQuery: (query) => set({ searchQuery: query }),
         
         // Aktions-Center Actions

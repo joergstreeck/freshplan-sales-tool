@@ -170,6 +170,19 @@ describe('cockpitStore', () => {
       
       expect(result.current.filterTags).toHaveLength(0);
     });
+
+    it('sollte Filter Tags als Array setzen', () => {
+      const { result } = renderHook(() => useCockpitStore());
+      
+      const newTags = ['aktiv', 'neu', 'lead'];
+      
+      act(() => {
+        result.current.setFilterTags(newTags);
+      });
+      
+      expect(result.current.filterTags).toEqual(newTags);
+      expect(result.current.filterTags).toHaveLength(3);
+    });
   });
 
   describe('Search', () => {

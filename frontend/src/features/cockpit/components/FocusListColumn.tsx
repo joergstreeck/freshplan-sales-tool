@@ -19,16 +19,17 @@ export function FocusListColumn() {
     addFilterTag,
     removeFilterTag,
     clearFilterTags,
+    setFilterTags,
     searchQuery,
     setSearchQuery,
     selectCustomer
   } = useCockpitStore();
 
   const [savedViews] = useState([
-    { id: '1', name: 'Aktive Kunden', count: 42 },
-    { id: '2', name: 'Neue Leads', count: 8 },
-    { id: '3', name: 'Risiko-Kunden', count: 3 },
-    { id: '4', name: 'Diese Woche', count: 15 }
+    { id: '1', name: 'Aktive Kunden', count: 42, filters: { status: ['active'], tags: ['aktiv'] } },
+    { id: '2', name: 'Neue Leads', count: 8, filters: { status: ['lead'], tags: ['neu', 'lead'] } },
+    { id: '3', name: 'Risiko-Kunden', count: 3, filters: { status: ['active'], tags: ['risiko'] } },
+    { id: '4', name: 'Diese Woche', count: 15, filters: { tags: ['diese-woche'] } }
   ]);
 
   const handleCustomerSelect = (customer: Customer) => {
@@ -133,9 +134,11 @@ export function FocusListColumn() {
                 key={view.id}
                 className="saved-view-btn"
                 onClick={() => {
-                  // TODO: Implement proper saved view filters
-                  // view.filters should be applied here
-                  addFilterTag(view.name);
+                  // Apply the saved view's filters
+                  if (view.filters && view.filters.tags) {
+                    setFilterTags(view.filters.tags);
+                  }
+                  // TODO: Also apply status filters when status filtering is implemented
                 }}
               >
                 <span className="view-name">{view.name}</span>
