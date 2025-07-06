@@ -46,6 +46,30 @@ public class CustomerRepository implements PanacheRepositoryBase<Customer, UUID>
     return find("isDeleted = true", Sort.by("deletedAt").descending()).page(page).list();
   }
 
+  // ========== RISK CUSTOMER QUERIES ==========
+
+  /**
+   * Findet alle aktiven Kunden ohne kürzlichen Kontakt (Risiko-Kunden).
+   *
+   * @param thresholdDate Der Schwellwert für den letzten Kontakt
+   * @return Liste von Kunden ohne Kontakt seit dem Schwellwert
+   */
+  public List<Customer> findActiveCustomersWithoutRecentContact(LocalDateTime thresholdDate) {
+    String query = "status = ?1 AND (lastContactDate IS NULL OR lastContactDate < ?2)";
+    return find(query, CustomerStatus.AKTIV, thresholdDate).list();
+  }
+
+  /**
+   * Zählt alle aktiven Kunden ohne kürzlichen Kontakt (Risiko-Kunden).
+   *
+   * @param thresholdDate Der Schwellwert für den letzten Kontakt
+   * @return Anzahl der Kunden ohne Kontakt seit dem Schwellwert
+   */
+  public long countActiveCustomersWithoutRecentContact(LocalDateTime thresholdDate) {
+    String query = "status = ?1 AND (lastContactDate IS NULL OR lastContactDate < ?2)";
+    return count(query, CustomerStatus.AKTIV, thresholdDate);
+  }
+
   // ========== UNIQUE CONSTRAINTS ==========
 
   /** Find customer by customer number (active only). */

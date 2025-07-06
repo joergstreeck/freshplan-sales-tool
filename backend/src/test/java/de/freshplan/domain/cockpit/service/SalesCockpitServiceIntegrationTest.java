@@ -9,6 +9,7 @@ import de.freshplan.domain.customer.entity.CustomerType;
 import de.freshplan.domain.customer.repository.CustomerRepository;
 import de.freshplan.domain.user.entity.User;
 import de.freshplan.domain.user.repository.UserRepository;
+import de.freshplan.domain.user.service.exception.UserNotFoundException;
 import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
@@ -90,7 +91,7 @@ class SalesCockpitServiceIntegrationTest {
 
     // When & Then
     assertThrows(
-        IllegalArgumentException.class,
+        UserNotFoundException.class,
         () -> {
           salesCockpitService.getDashboardData(unknownUserId);
         });

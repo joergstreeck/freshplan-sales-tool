@@ -6,6 +6,7 @@ import de.freshplan.domain.customer.entity.CustomerStatus;
 import de.freshplan.domain.customer.repository.CustomerRepository;
 import de.freshplan.domain.user.entity.User;
 import de.freshplan.domain.user.repository.UserRepository;
+import de.freshplan.domain.user.service.exception.UserNotFoundException;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -64,7 +65,7 @@ public class SalesCockpitService {
     // Benutzer validieren
     User user = userRepository.findById(userId);
     if (user == null) {
-      throw new IllegalArgumentException("User not found: " + userId);
+      throw new UserNotFoundException("User not found: " + userId);
     }
 
     SalesCockpitDashboard dashboard = new SalesCockpitDashboard();
@@ -132,9 +133,8 @@ public class SalesCockpitService {
     LocalDateTime riskThreshold = LocalDateTime.now().minusDays(RISK_THRESHOLD_LOW_DAYS);
 
     // Finde Kunden ohne kürzlichen Kontakt
-    String query = "status = ?1 AND (lastContactDate IS NULL " + "OR lastContactDate < ?2)";
     List<Customer> customersAtRisk =
-        customerRepository.find(query, CustomerStatus.AKTIV, riskThreshold).list();
+        customerRepository.findActiveCustomersWithoutRecentContact(riskThreshold);
 
     return customersAtRisk.stream().map(this::mapToRiskCustomer).collect(Collectors.toList());
   }
@@ -188,9 +188,8 @@ public class SalesCockpitService {
 
     // Risiko-Kunden
     LocalDateTime riskThreshold = LocalDateTime.now().minusDays(RISK_THRESHOLD_LOW_DAYS);
-    String riskQuery = "status = ?1 AND (lastContactDate IS NULL " + "OR lastContactDate < ?2)";
     stats.setCustomersAtRisk(
-        (int) customerRepository.count(riskQuery, CustomerStatus.AKTIV, riskThreshold));
+        (int) customerRepository.countActiveCustomersWithoutRecentContact(riskThreshold));
 
     // Temporäre Mock-Werte bis Task-Modul implementiert ist
     // Feature-Flag: ff_FRESH-001_task_module_integration
@@ -210,6 +209,8 @@ public class SalesCockpitService {
     List<DashboardAlert> alerts = new ArrayList<>();
 
     // Alert für Kunden mit hohem Umsatzpotential ohne kürzlichen Kontakt
+    // TODO: Sobald Umsatzfelder verfügbar sind, nach actualRevenue oder potentialRevenue filtern
+    // Aktuell: Alle aktiven Kunden ohne Kontakt in den letzten 30 Tagen
     List<Customer> highValueCustomers =
         customerRepository
             .find(

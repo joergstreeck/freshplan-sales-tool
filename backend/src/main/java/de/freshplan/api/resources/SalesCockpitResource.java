@@ -2,6 +2,7 @@ package de.freshplan.api.resources;
 
 import de.freshplan.domain.cockpit.service.SalesCockpitService;
 import de.freshplan.domain.cockpit.service.dto.SalesCockpitDashboard;
+import de.freshplan.domain.user.service.exception.UserNotFoundException;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
@@ -15,6 +16,7 @@ import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
+import org.jboss.logging.Logger;
 
 /**
  * REST Resource für das Sales Cockpit Backend-for-Frontend (BFF).
@@ -31,6 +33,8 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 @Consumes(MediaType.APPLICATION_JSON)
 @ApplicationScoped
 public class SalesCockpitResource {
+
+  private static final Logger LOG = Logger.getLogger(SalesCockpitResource.class);
 
   private final SalesCockpitService salesCockpitService;
 
@@ -89,15 +93,14 @@ public class SalesCockpitResource {
 
       return Response.ok(dashboard).build();
 
+    } catch (UserNotFoundException e) {
+      // Benutzer nicht gefunden
+      return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
     } catch (IllegalArgumentException e) {
-      // Benutzer nicht gefunden oder ungültige Parameter
-      if (e.getMessage().contains("not found")) {
-        return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
-      } else {
-        return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
-      }
+      // Ungültige Parameter
+      return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
     } catch (RuntimeException e) {
-      // Unerwarteter Laufzeitfehler
+      LOG.errorf(e, "Internal server error while fetching dashboard data for userId: %s", userId);
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
           .entity("Internal server error occurred")
           .build();
