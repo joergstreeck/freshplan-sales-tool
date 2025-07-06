@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Unregister Service Worker</title>
+</head>
+<body>
+    <h1>Service Worker Cleanup</h1>
+    <p>This page will unregister all service workers.</p>
+    <script>
+        // Unregister all service workers
+        navigator.serviceWorker.getRegistrations().then(function(registrations) {
+            for(let registration of registrations) {
+                registration.unregister().then(function(success) {
+                    console.log('Service worker unregistered:', success);
+                });
+            }
+            // Clear caches
+            caches.keys().then(function(names) {
+                for (let name of names) {
+                    caches.delete(name);
+                }
+            });
+            alert('All service workers have been unregistered. Please close this tab and refresh your app.');
+        });
+    </script>
+</body>
+</html>

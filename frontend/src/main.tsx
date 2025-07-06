@@ -20,6 +20,10 @@ const isDevelopmentMode = import.meta.env.DEV && import.meta.env.MODE !== 'produ
 
 // Enable MSW for development if backend is not available
 async function enableMocking() {
+  // TEMPORARILY DISABLED - MSW is interfering with routing
+  return;
+  
+  /*
   if (!import.meta.env.DEV) {
     return;
   }
@@ -47,6 +51,7 @@ async function enableMocking() {
       url: '/mockServiceWorker.js',
     },
   });
+  */
 }
 
 const rootElement = document.getElementById('root');
