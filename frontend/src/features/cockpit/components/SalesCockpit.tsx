@@ -19,27 +19,22 @@ import { DashboardStats } from './DashboardStats';
 import './SalesCockpit.css';
 
 export function SalesCockpit() {
-  console.log('SalesCockpit rendering...');
+  const { 
+    activeColumn, 
+    isMobileMenuOpen,
+    isCompactMode,
+    setActiveColumn 
+  } = useCockpitStore();
   
-  try {
-    const { 
-      activeColumn, 
-      isMobileMenuOpen,
-      isCompactMode,
-      setActiveColumn 
-    } = useCockpitStore();
-    
-    const { userId } = useAuth();
-    console.log('Auth userId:', userId);
-    
-    // Hole Dashboard-Daten für Header-Statistiken
-    const { 
-      data: dashboardData, 
-      isLoading, 
-      isError, 
-      error 
-    } = useDashboardData(userId || null);
-    console.log('Dashboard data:', { isLoading, isError, data: dashboardData });
+  const { userId } = useAuth();
+  
+  // Hole Dashboard-Daten für Header-Statistiken
+  const { 
+    data: dashboardData, 
+    isLoading, 
+    isError, 
+    error 
+  } = useDashboardData(userId || null);
 
     // Keyboard navigation
     useEffect(() => {
@@ -64,14 +59,7 @@ export function SalesCockpit() {
   }, [setActiveColumn]);
 
   return (
-    <div className={`sales-cockpit ${isCompactMode ? 'compact-mode' : ''}`} style={{ minHeight: '100vh', backgroundColor: '#f0f0f0' }}>
-      <div style={{ padding: '20px', backgroundColor: 'white', border: '2px solid red' }}>
-        <h1 style={{ color: 'black', fontSize: '24px' }}>Sales Cockpit Debug</h1>
-        <p style={{ color: 'blue' }}>UserId: {userId || 'No userId'}</p>
-        <p style={{ color: 'green' }}>Loading: {isLoading ? 'Yes' : 'No'}</p>
-        <p style={{ color: 'red' }}>Error: {isError ? error?.message : 'No error'}</p>
-        <p style={{ color: 'purple' }}>Data available: {dashboardData ? 'YES' : 'NO'}</p>
-      </div>
+    <div className={`sales-cockpit ${isCompactMode ? 'compact-mode' : ''}`}>
       <CockpitHeader />
       
       {/* Dashboard Statistiken */}
@@ -131,13 +119,4 @@ export function SalesCockpit() {
       </div>
     </div>
   );
-  } catch (err) {
-    console.error('SalesCockpit render error:', err);
-    return (
-      <div style={{ padding: '20px', color: 'red' }}>
-        <h1>Error in SalesCockpit</h1>
-        <pre>{err instanceof Error ? err.message : 'Unknown error'}</pre>
-      </div>
-    );
-  }
 }
