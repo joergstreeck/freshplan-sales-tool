@@ -50,7 +50,7 @@ export enum CustomerType {
   EINZELUNTERNEHMEN = 'EINZELUNTERNEHMEN',
   FILIALE = 'FILIALE',
   OEFFENTLICH = 'OEFFENTLICH',
-  SONSTIGES = 'SONSTIGES'
+  SONSTIGES = 'SONSTIGES',
 }
 
 export enum Industry {
@@ -63,7 +63,7 @@ export enum Industry {
   BILDUNG = 'BILDUNG',
   GESUNDHEIT = 'GESUNDHEIT',
   EINZELHANDEL = 'EINZELHANDEL',
-  SONSTIGES = 'SONSTIGES'
+  SONSTIGES = 'SONSTIGES',
 }
 
 export enum Classification {
@@ -71,7 +71,7 @@ export enum Classification {
   B_KUNDE = 'B_KUNDE',
   C_KUNDE = 'C_KUNDE',
   NEUKUNDE = 'NEUKUNDE',
-  VIP = 'VIP'
+  VIP = 'VIP',
 }
 
 export enum CustomerStatus {
@@ -80,21 +80,21 @@ export enum CustomerStatus {
   AKTIV = 'AKTIV',
   RISIKO = 'RISIKO',
   INAKTIV = 'INAKTIV',
-  ARCHIVIERT = 'ARCHIVIERT'
+  ARCHIVIERT = 'ARCHIVIERT',
 }
 
 export enum CustomerHierarchyType {
   STANDALONE = 'STANDALONE',
   HEADQUARTER = 'HEADQUARTER',
   FILIALE = 'FILIALE',
-  FRANCHISE = 'FRANCHISE'
+  FRANCHISE = 'FRANCHISE',
 }
 
 export enum CustomerLifecycleStage {
   ACQUISITION = 'ACQUISITION',
   GROWTH = 'GROWTH',
   MAINTENANCE = 'MAINTENANCE',
-  REACTIVATION = 'REACTIVATION'
+  REACTIVATION = 'REACTIVATION',
 }
 
 export enum PartnerStatus {
@@ -103,7 +103,7 @@ export enum PartnerStatus {
   IN_PRUEFUNG = 'IN_PRUEFUNG',
   AKTIV = 'AKTIV',
   VERLAENGERUNG_FAELLIG = 'VERLAENGERUNG_FAELLIG',
-  GEKUENDIGT = 'GEKUENDIGT'
+  GEKUENDIGT = 'GEKUENDIGT',
 }
 
 export enum PaymentTerms {
@@ -112,7 +112,7 @@ export enum PaymentTerms {
   NETTO_14 = 'NETTO_14',
   NETTO_30 = 'NETTO_30',
   NETTO_60 = 'NETTO_60',
-  SONDERKONDITION = 'SONDERKONDITION'
+  SONDERKONDITION = 'SONDERKONDITION',
 }
 
 export enum DeliveryCondition {
@@ -120,7 +120,7 @@ export enum DeliveryCondition {
   EXPRESS = 'EXPRESS',
   SELBSTABHOLUNG = 'SELBSTABHOLUNG',
   TERMINLIEFERUNG = 'TERMINLIEFERUNG',
-  KUEHLTRANSPORT = 'KUEHLTRANSPORT'
+  KUEHLTRANSPORT = 'KUEHLTRANSPORT',
 }
 
 // Translations for display
@@ -129,7 +129,7 @@ export const customerTypeLabels: Record<CustomerType, string> = {
   [CustomerType.EINZELUNTERNEHMEN]: 'Einzelunternehmen',
   [CustomerType.FILIALE]: 'Filiale',
   [CustomerType.OEFFENTLICH]: 'Öffentlich',
-  [CustomerType.SONSTIGES]: 'Sonstiges'
+  [CustomerType.SONSTIGES]: 'Sonstiges',
 };
 
 export const customerStatusLabels: Record<CustomerStatus, string> = {
@@ -138,7 +138,7 @@ export const customerStatusLabels: Record<CustomerStatus, string> = {
   [CustomerStatus.AKTIV]: 'Aktiv',
   [CustomerStatus.RISIKO]: 'Risiko',
   [CustomerStatus.INAKTIV]: 'Inaktiv',
-  [CustomerStatus.ARCHIVIERT]: 'Archiviert'
+  [CustomerStatus.ARCHIVIERT]: 'Archiviert',
 };
 
 export const industryLabels: Record<Industry, string> = {
@@ -151,15 +151,15 @@ export const industryLabels: Record<Industry, string> = {
   [Industry.BILDUNG]: 'Bildung',
   [Industry.GESUNDHEIT]: 'Gesundheit',
   [Industry.EINZELHANDEL]: 'Einzelhandel',
-  [Industry.SONSTIGES]: 'Sonstiges'
+  [Industry.SONSTIGES]: 'Sonstiges',
 };
 
 // Status color mappings
 export const customerStatusColors: Record<CustomerStatus, string> = {
-  [CustomerStatus.LEAD]: '#2196F3',      // Blue
-  [CustomerStatus.PROSPECT]: '#FF9800',   // Orange
-  [CustomerStatus.AKTIV]: '#4CAF50',      // Green
-  [CustomerStatus.RISIKO]: '#F44336',     // Red
-  [CustomerStatus.INAKTIV]: '#9E9E9E',    // Gray
-  [CustomerStatus.ARCHIVIERT]: '#607D8B'  // Blue Gray
+  [CustomerStatus.LEAD]: '#2196F3', // Blue
+  [CustomerStatus.PROSPECT]: '#FF9800', // Orange
+  [CustomerStatus.AKTIV]: '#4CAF50', // Green
+  [CustomerStatus.RISIKO]: '#F44336', // Red
+  [CustomerStatus.INAKTIV]: '#9E9E9E', // Gray
+  [CustomerStatus.ARCHIVIERT]: '#607D8B', // Blue Gray
 };

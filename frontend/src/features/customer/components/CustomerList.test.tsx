@@ -1,9 +1,9 @@
 /**
  * CustomerList Component Tests
- * 
+ *
  * Comprehensive test suite for CustomerList component
  * including unit tests, integration tests, and accessibility tests
- * 
+ *
  * @component CustomerList
  * @version 2.0.0
  */
@@ -42,7 +42,7 @@ const mockCustomers: CustomerListResponse = {
       hasChildren: false,
       childCustomerIds: [],
       createdAt: '2024-01-01T00:00:00Z',
-      createdBy: 'system'
+      createdBy: 'system',
     },
     {
       id: '2',
@@ -58,15 +58,15 @@ const mockCustomers: CustomerListResponse = {
       hasChildren: false,
       childCustomerIds: [],
       createdAt: '2024-01-02T00:00:00Z',
-      createdBy: 'system'
-    }
+      createdBy: 'system',
+    },
   ],
   page: 0,
   size: 20,
   totalElements: 2,
   totalPages: 1,
   first: true,
-  last: true
+  last: true,
 };
 
 // Test wrapper component
@@ -79,9 +79,7 @@ const TestWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        {children}
-      </BrowserRouter>
+      <BrowserRouter>{children}</BrowserRouter>
     </QueryClientProvider>
   );
 };
@@ -123,9 +121,7 @@ describe('CustomerList Component', () => {
     });
 
     it('should render error state on API failure', async () => {
-      vi.mocked(customerApi.getCustomers).mockRejectedValue(
-        new Error('Network error')
-      );
+      vi.mocked(customerApi.getCustomers).mockRejectedValue(new Error('Network error'));
 
       render(
         <TestWrapper>
@@ -142,7 +138,7 @@ describe('CustomerList Component', () => {
       vi.mocked(customerApi.getCustomers).mockResolvedValue({
         ...mockCustomers,
         content: [],
-        totalElements: 0
+        totalElements: 0,
       });
 
       render(
@@ -175,9 +171,7 @@ describe('CustomerList Component', () => {
       const companyHeader = screen.getByText('Firmenname');
       await user.click(companyHeader);
 
-      expect(vi.mocked(customerApi.getCustomers)).toHaveBeenCalledWith(
-        0, 20, 'companyName'
-      );
+      expect(vi.mocked(customerApi.getCustomers)).toHaveBeenCalledWith(0, 20, 'companyName');
     });
 
     it('should handle pagination', async () => {
@@ -186,7 +180,7 @@ describe('CustomerList Component', () => {
         totalElements: 50,
         totalPages: 3,
         first: true,
-        last: false
+        last: false,
       });
       const user = userEvent.setup();
 
@@ -201,22 +195,20 @@ describe('CustomerList Component', () => {
       });
 
       const nextButton = screen.getByText('Weiter');
-      
+
       // Button should be enabled for non-last page
       expect(nextButton).not.toBeDisabled();
-      
+
       await user.click(nextButton);
 
-      expect(vi.mocked(customerApi.getCustomers)).toHaveBeenCalledWith(
-        1, 20, 'companyName'
-      );
+      expect(vi.mocked(customerApi.getCustomers)).toHaveBeenCalledWith(1, 20, 'companyName');
     });
 
     it('should disable pagination buttons appropriately', async () => {
       vi.mocked(customerApi.getCustomers).mockResolvedValue({
         ...mockCustomers,
         first: true,
-        last: true
+        last: true,
       });
 
       render(
@@ -406,9 +398,7 @@ describe('CustomerList Snapshot Tests', () => {
   });
 
   it('should match snapshot for loading state', () => {
-    vi.mocked(customerApi.getCustomers).mockImplementation(
-      () => new Promise(() => {})
-    );
+    vi.mocked(customerApi.getCustomers).mockImplementation(() => new Promise(() => {}));
 
     const { container } = render(
       <TestWrapper>
@@ -420,9 +410,7 @@ describe('CustomerList Snapshot Tests', () => {
   });
 
   it('should match snapshot for error state', async () => {
-    vi.mocked(customerApi.getCustomers).mockRejectedValue(
-      new Error('Network error')
-    );
+    vi.mocked(customerApi.getCustomers).mockRejectedValue(new Error('Network error'));
 
     const { container } = render(
       <TestWrapper>

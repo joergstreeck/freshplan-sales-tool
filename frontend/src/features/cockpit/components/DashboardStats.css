@@ -159,13 +159,13 @@
   .stats-grid {
     grid-template-columns: repeat(2, 1fr);
   }
-  
+
   .stat-card {
     flex-direction: column;
     text-align: center;
     padding: var(--spacing-sm);
   }
-  
+
   .stat-icon {
     margin-bottom: var(--spacing-xs);
   }

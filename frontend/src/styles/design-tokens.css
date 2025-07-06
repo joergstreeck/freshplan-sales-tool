@@ -13,58 +13,58 @@
   /* ========================================
      FARBEN - Basierend auf FreshPlan CI
      ======================================== */
-  
+
   /* Primärfarben */
-  --fresh-green-50: #F3F9ED;
-  --fresh-green-100: #E8F5DC;
-  --fresh-green-200: #D2EBB9;
-  --fresh-green-300: #BBE196;
-  --fresh-green-400: #A5D773;
-  --fresh-green-500: #94C456; /* Haupt-Grün */
-  --fresh-green-600: #7BA942;
-  --fresh-green-700: #628E2E;
-  --fresh-green-800: #49731A;
+  --fresh-green-50: #f3f9ed;
+  --fresh-green-100: #e8f5dc;
+  --fresh-green-200: #d2ebb9;
+  --fresh-green-300: #bbe196;
+  --fresh-green-400: #a5d773;
+  --fresh-green-500: #94c456; /* Haupt-Grün */
+  --fresh-green-600: #7ba942;
+  --fresh-green-700: #628e2e;
+  --fresh-green-800: #49731a;
   --fresh-green-900: #305806;
-  
+
   /* Sekundärfarben */
-  --fresh-blue-50: #E6F2F8;
-  --fresh-blue-100: #CCE5F1;
-  --fresh-blue-200: #99CBE3;
-  --fresh-blue-300: #66B1D5;
-  --fresh-blue-400: #3397C7;
-  --fresh-blue-500: #004F7B; /* Haupt-Blau */
-  --fresh-blue-600: #003F62;
-  --fresh-blue-700: #002F49;
-  --fresh-blue-800: #001F30;
-  --fresh-blue-900: #000F17;
-  
+  --fresh-blue-50: #e6f2f8;
+  --fresh-blue-100: #cce5f1;
+  --fresh-blue-200: #99cbe3;
+  --fresh-blue-300: #66b1d5;
+  --fresh-blue-400: #3397c7;
+  --fresh-blue-500: #004f7b; /* Haupt-Blau */
+  --fresh-blue-600: #003f62;
+  --fresh-blue-700: #002f49;
+  --fresh-blue-800: #001f30;
+  --fresh-blue-900: #000f17;
+
   /* Semantische Farben */
-  --color-success: #4CAF50;
-  --color-warning: #FF9800;
-  --color-danger: #F44336;
-  --color-info: #2196F3;
-  
+  --color-success: #4caf50;
+  --color-warning: #ff9800;
+  --color-danger: #f44336;
+  --color-info: #2196f3;
+
   /* Neutrale Farben */
-  --gray-50: #FAFAFA;
-  --gray-100: #F5F5F5;
-  --gray-200: #EEEEEE;
-  --gray-300: #E0E0E0;
-  --gray-400: #BDBDBD;
-  --gray-500: #9E9E9E;
+  --gray-50: #fafafa;
+  --gray-100: #f5f5f5;
+  --gray-200: #eeeeee;
+  --gray-300: #e0e0e0;
+  --gray-400: #bdbdbd;
+  --gray-500: #9e9e9e;
   --gray-600: #757575;
   --gray-700: #616161;
   --gray-800: #424242;
   --gray-900: #212121;
-  
+
   /* ========================================
      TYPOGRAFIE
      ======================================== */
-  
+
   /* Font Families */
   --font-sans: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --font-display: 'Antonio', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --font-mono: 'Fira Code', 'Consolas', 'Monaco', monospace;
-  
+
   /* Font Sizes - Responsive Scale */
   --text-xs: clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem);
   --text-sm: clamp(0.875rem, 0.825rem + 0.25vw, 1rem);
@@ -74,14 +74,14 @@
   --text-2xl: clamp(1.5rem, 1.4rem + 0.5vw, 2rem);
   --text-3xl: clamp(2rem, 1.8rem + 1vw, 2.5rem);
   --text-4xl: clamp(2.5rem, 2.2rem + 1.5vw, 3rem);
-  
+
   /* Font Weights */
   --font-light: 300;
   --font-regular: 400;
   --font-medium: 500;
   --font-semibold: 600;
   --font-bold: 700;
-  
+
   /* Line Heights */
   --leading-none: 1;
   --leading-tight: 1.25;
@@ -89,7 +89,7 @@
   --leading-normal: 1.5;
   --leading-relaxed: 1.625;
   --leading-loose: 2;
-  
+
   /* Letter Spacing */
   --tracking-tighter: -0.05em;
   --tracking-tight: -0.025em;
@@ -97,79 +97,79 @@
   --tracking-wide: 0.025em;
   --tracking-wider: 0.05em;
   --tracking-widest: 0.1em;
-  
+
   /* ========================================
      SPACING - 8px Grid System
      ======================================== */
-  
+
   --space-0: 0;
-  --space-1: 0.25rem;  /* 4px */
-  --space-2: 0.5rem;   /* 8px */
-  --space-3: 0.75rem;  /* 12px */
-  --space-4: 1rem;     /* 16px */
-  --space-5: 1.25rem;  /* 20px */
-  --space-6: 1.5rem;   /* 24px */
-  --space-8: 2rem;     /* 32px */
-  --space-10: 2.5rem;  /* 40px */
-  --space-12: 3rem;    /* 48px */
-  --space-16: 4rem;    /* 64px */
-  --space-20: 5rem;    /* 80px */
-  --space-24: 6rem;    /* 96px */
-  
+  --space-1: 0.25rem; /* 4px */
+  --space-2: 0.5rem; /* 8px */
+  --space-3: 0.75rem; /* 12px */
+  --space-4: 1rem; /* 16px */
+  --space-5: 1.25rem; /* 20px */
+  --space-6: 1.5rem; /* 24px */
+  --space-8: 2rem; /* 32px */
+  --space-10: 2.5rem; /* 40px */
+  --space-12: 3rem; /* 48px */
+  --space-16: 4rem; /* 64px */
+  --space-20: 5rem; /* 80px */
+  --space-24: 6rem; /* 96px */
+
   /* ========================================
      BREAKPOINTS - Mobile First
      ======================================== */
-  
+
   --screen-xs: 475px;
   --screen-sm: 640px;
   --screen-md: 768px;
   --screen-lg: 1024px;
   --screen-xl: 1280px;
   --screen-2xl: 1536px;
-  
+
   /* ========================================
      LAYOUT
      ======================================== */
-  
-  --max-width-xs: 20rem;     /* 320px */
-  --max-width-sm: 24rem;     /* 384px */
-  --max-width-md: 28rem;     /* 448px */
-  --max-width-lg: 32rem;     /* 512px */
-  --max-width-xl: 36rem;     /* 576px */
-  --max-width-2xl: 42rem;    /* 672px */
-  --max-width-3xl: 48rem;    /* 768px */
-  --max-width-4xl: 56rem;    /* 896px */
-  --max-width-5xl: 64rem;    /* 1024px */
-  --max-width-6xl: 72rem;    /* 1152px */
-  --max-width-7xl: 80rem;    /* 1280px */
+
+  --max-width-xs: 20rem; /* 320px */
+  --max-width-sm: 24rem; /* 384px */
+  --max-width-md: 28rem; /* 448px */
+  --max-width-lg: 32rem; /* 512px */
+  --max-width-xl: 36rem; /* 576px */
+  --max-width-2xl: 42rem; /* 672px */
+  --max-width-3xl: 48rem; /* 768px */
+  --max-width-4xl: 56rem; /* 896px */
+  --max-width-5xl: 64rem; /* 1024px */
+  --max-width-6xl: 72rem; /* 1152px */
+  --max-width-7xl: 80rem; /* 1280px */
   --max-width-full: 100%;
-  
+
   /* ========================================
      BORDERS
      ======================================== */
-  
+
   /* Border Width */
   --border-0: 0;
   --border-1: 1px;
   --border-2: 2px;
   --border-4: 4px;
   --border-8: 8px;
-  
+
   /* Border Radius */
   --radius-none: 0;
-  --radius-sm: 0.125rem;   /* 2px */
-  --radius-base: 0.25rem;  /* 4px */
-  --radius-md: 0.375rem;   /* 6px */
-  --radius-lg: 0.5rem;     /* 8px */
-  --radius-xl: 0.75rem;    /* 12px */
-  --radius-2xl: 1rem;      /* 16px */
-  --radius-3xl: 1.5rem;    /* 24px */
+  --radius-sm: 0.125rem; /* 2px */
+  --radius-base: 0.25rem; /* 4px */
+  --radius-md: 0.375rem; /* 6px */
+  --radius-lg: 0.5rem; /* 8px */
+  --radius-xl: 0.75rem; /* 12px */
+  --radius-2xl: 1rem; /* 16px */
+  --radius-3xl: 1.5rem; /* 24px */
   --radius-full: 9999px;
-  
+
   /* ========================================
      SCHATTEN - Elevation System
      ======================================== */
-  
+
   --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
   --shadow-base: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
@@ -179,17 +179,17 @@
   --shadow-2xl: 0 35px 60px -15px rgba(0, 0, 0, 0.3);
   --shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
   --shadow-none: 0 0 #0000;
-  
+
   /* ========================================
      ANIMATIONEN & ÜBERGÄNGE
      ======================================== */
-  
+
   /* Timing Functions */
   --ease-linear: linear;
   --ease-in: cubic-bezier(0.4, 0, 1, 1);
   --ease-out: cubic-bezier(0, 0, 0.2, 1);
   --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
-  
+
   /* Durations */
   --duration-75: 75ms;
   --duration-100: 100ms;
@@ -199,11 +199,11 @@
   --duration-500: 500ms;
   --duration-700: 700ms;
   --duration-1000: 1000ms;
-  
+
   /* ========================================
      Z-INDEX SYSTEM
      ======================================== */
-  
+
   --z-0: 0;
   --z-10: 10;
   --z-20: 20;
@@ -217,37 +217,37 @@
   --z-modal: 1050;
   --z-popover: 1060;
   --z-tooltip: 1070;
-  
+
   /* ========================================
      KOMPONENTEN-SPEZIFISCHE TOKENS
      ======================================== */
-  
+
   /* Buttons */
   --btn-padding-x: var(--space-4);
   --btn-padding-y: var(--space-2);
   --btn-font-weight: var(--font-medium);
   --btn-border-radius: var(--radius-md);
-  
+
   /* Forms */
   --input-padding-x: var(--space-3);
   --input-padding-y: var(--space-2);
   --input-border-width: var(--border-1);
   --input-border-radius: var(--radius-base);
-  
+
   /* Cards */
   --card-padding: var(--space-6);
   --card-border-radius: var(--radius-lg);
   --card-shadow: var(--shadow-base);
-  
+
   /* Tables */
   --table-cell-padding-x: var(--space-4);
   --table-cell-padding-y: var(--space-3);
   --table-border-width: var(--border-1);
-  
+
   /* ========================================
      GRID SYSTEM
      ======================================== */
-  
+
   --grid-columns: 12;
   --grid-gap: var(--space-6);
   --container-padding: var(--space-4);

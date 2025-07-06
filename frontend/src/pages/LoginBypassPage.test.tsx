@@ -79,7 +79,9 @@ describe('LoginBypassPage', () => {
     );
 
     // Check for role descriptions in the list - German text
-    expect(screen.getByText(/Vollzugriff auf alle Funktionen, User-Verwaltung/)).toBeInTheDocument();
+    expect(
+      screen.getByText(/Vollzugriff auf alle Funktionen, User-Verwaltung/)
+    ).toBeInTheDocument();
     expect(screen.getByText(/Geschäftsleitung, alle Berichte, Credit Checks/)).toBeInTheDocument();
     expect(screen.getByText(/Verkäufer, Kunden anlegen, Kalkulationen/)).toBeInTheDocument();
   });

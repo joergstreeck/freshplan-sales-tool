@@ -1,6 +1,6 @@
 /**
  * Dashboard Statistiken Widget
- * 
+ *
  * Zeigt die wichtigsten Sales-Kennzahlen aus dem BFF an
  */
 import type { DashboardStatistics } from '../types/salesCockpit';
@@ -42,36 +42,36 @@ export function DashboardStats({ statistics, loading, error }: DashboardStatsPro
       label: 'Kunden gesamt',
       value: statistics.totalCustomers,
       icon: '👥',
-      color: 'blue'
+      color: 'blue',
     },
     {
       key: 'activeCustomers',
       label: 'Aktive Kunden',
       value: statistics.activeCustomers,
       icon: '✅',
-      color: 'green'
+      color: 'green',
     },
     {
       key: 'customersAtRisk',
       label: 'Risiko-Kunden',
       value: statistics.customersAtRisk,
       icon: '⚠️',
-      color: 'orange'
+      color: 'orange',
     },
     {
       key: 'openTasks',
       label: 'Offene Aufgaben',
       value: statistics.openTasks,
       icon: '📋',
-      color: 'purple'
+      color: 'purple',
     },
     {
       key: 'overdueItems',
       label: 'Überfällig',
       value: statistics.overdueItems,
       icon: '🔴',
-      color: 'red'
-    }
+      color: 'red',
+    },
   ];
 
   return (

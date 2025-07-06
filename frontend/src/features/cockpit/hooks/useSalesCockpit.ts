@@ -1,6 +1,6 @@
 /**
  * React Query Hooks für Sales Cockpit Daten
- * 
+ *
  * Bietet effizientes Caching und State Management
  */
 import { useQuery } from '@tanstack/react-query';
@@ -16,7 +16,7 @@ export const salesCockpitKeys = {
 
 /**
  * Hook zum Laden der Dashboard-Daten für einen Benutzer
- * 
+ *
  * @param userId Die ID des Benutzers
  * @param enabled Ob die Query ausgeführt werden soll (default: true)
  */

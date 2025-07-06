@@ -1,6 +1,6 @@
 /**
  * Activity Timeline Komponente
- * 
+ *
  * Zeigt die Aktivitäten und Tasks aus dem BFF an
  */
 import { format, parseISO } from 'date-fns';
@@ -80,9 +80,9 @@ export function ActivityTimeline({ tasks, alerts, loading, error }: ActivityTime
 
   return (
     <div className="activity-timeline">
-      {timelineItems.map((item) => (
-        <div 
-          key={item.id} 
+      {timelineItems.map(item => (
+        <div
+          key={item.id}
           className={`timeline-item ${item.type} ${
             item.type === 'task' && item.completed ? 'completed' : ''
           }`}
@@ -102,14 +102,8 @@ export function ActivityTimeline({ tasks, alerts, loading, error }: ActivityTime
                 </span>
               )}
             </div>
-            {item.description && (
-              <p className="timeline-description">{item.description}</p>
-            )}
-            {item.time && (
-              <time className="timeline-time">
-                {formatTimelineDate(item.time)}
-              </time>
-            )}
+            {item.description && <p className="timeline-description">{item.description}</p>}
+            {item.time && <time className="timeline-time">{formatTimelineDate(item.time)}</time>}
           </div>
         </div>
       ))}
@@ -163,7 +157,7 @@ function formatTimelineDate(dateString: string): string {
     const date = parseISO(dateString);
     const now = new Date();
     const diffInHours = (now.getTime() - date.getTime()) / (1000 * 60 * 60);
-    
+
     if (diffInHours < 1) {
       return 'Vor wenigen Minuten';
     } else if (diffInHours < 24) {
@@ -171,7 +165,8 @@ function formatTimelineDate(dateString: string): string {
       return `Vor ${hours} Stunde${hours !== 1 ? 'n' : ''}`;
     } else if (diffInHours < 48) {
       return 'Gestern';
-    } else if (diffInHours < 168) { // 7 Tage
+    } else if (diffInHours < 168) {
+      // 7 Tage
       const days = Math.floor(diffInHours / 24);
       return `Vor ${days} Tagen`;
     } else {

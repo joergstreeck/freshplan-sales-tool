@@ -1,6 +1,6 @@
 /**
  * Service für Sales Cockpit BFF-Integration
- * 
+ *
  * Ruft aggregierte Dashboard-Daten vom Backend-for-Frontend ab
  */
 import { httpClient } from '../../../lib/apiClient';
@@ -9,7 +9,7 @@ import type { SalesCockpitDashboard } from '../types/salesCockpit';
 class SalesCockpitService {
   /**
    * Lädt alle Dashboard-Daten für einen bestimmten Benutzer
-   * 
+   *
    * @param userId Die ID des Benutzers
    * @returns Aggregierte Dashboard-Daten
    */
@@ -22,7 +22,7 @@ class SalesCockpitService {
 
   /**
    * Health-Check für den Sales Cockpit Service
-   * 
+   *
    * @returns Status des Services
    */
   async checkHealth(): Promise<{ status: string; service: string }> {

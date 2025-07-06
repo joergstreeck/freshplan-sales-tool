@@ -1,6 +1,6 @@
 /**
  * TypeScript-Typen für Sales Cockpit BFF-Daten
- * 
+ *
  * Spiegelt die DTO-Struktur vom Backend wider
  */
 

@@ -1,102 +1,102 @@
 /* App-specific styles using FreshPlan Design System */
 
 .app-container {
-    min-height: 100vh;
-    background: var(--color-background);
-    padding: var(--spacing-xl);
+  min-height: 100vh;
+  background: var(--color-background);
+  padding: var(--spacing-xl);
 }
 
 .content-wrapper {
-    max-width: 1400px;
-    margin: 0 auto;
+  max-width: 1400px;
+  margin: 0 auto;
 }
 
 .main-title {
-    font-family: var(--font-heading);
-    font-size: 3rem;
-    font-weight: 700;
-    background: var(--bg-gradient-primary);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    text-fill-color: transparent;
-    margin-bottom: var(--spacing-sm);
+  font-family: var(--font-heading);
+  font-size: 3rem;
+  font-weight: 700;
+  background: var(--bg-gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-fill-color: transparent;
+  margin-bottom: var(--spacing-sm);
 }
 
 .subtitle {
-    font-family: var(--font-body);
-    font-size: var(--font-size-lg);
-    color: var(--color-text-light);
+  font-family: var(--font-body);
+  font-size: var(--font-size-lg);
+  color: var(--color-text-light);
 }
 
 .card-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: var(--spacing-xl);
-    align-items: stretch;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--spacing-xl);
+  align-items: stretch;
 }
 
 /* Card content styles */
 .card-actions {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .card-text {
-    font-family: var(--font-body);
-    font-size: var(--font-size-sm);
-    color: var(--text-light);
-    line-height: var(--line-height-normal);
-    margin-bottom: var(--spacing-lg);
-    flex: 1;
+  font-family: var(--font-body);
+  font-size: var(--font-size-sm);
+  color: var(--text-light);
+  line-height: var(--line-height-normal);
+  margin-bottom: var(--spacing-lg);
+  flex: 1;
 }
 
 /* Button wrapper to align buttons at bottom */
 .card-button-wrapper {
-    margin-top: auto;
+  margin-top: auto;
 }
 
 /* Make buttons full width in cards */
 .card-actions .btn {
-    width: 100%;
-    text-align: center;
-    justify-content: center;
+  width: 100%;
+  text-align: center;
+  justify-content: center;
 }
 
 .counter-display {
-    font-family: var(--font-body);
-    font-size: var(--font-size-lg);
-    color: var(--text-dark);
-    font-weight: var(--font-weight-medium);
-    text-align: center;
-    padding: var(--spacing-md);
-    background: var(--bg-light);
-    border-radius: var(--radius-md);
+  font-family: var(--font-body);
+  font-size: var(--font-size-lg);
+  color: var(--text-dark);
+  font-weight: var(--font-weight-medium);
+  text-align: center;
+  padding: var(--spacing-md);
+  background: var(--bg-light);
+  border-radius: var(--radius-md);
 }
 
 .code-block {
-    background: var(--bg-light);
-    padding: var(--spacing-md);
-    border-radius: var(--radius-md);
-    font-size: var(--font-size-sm);
-    overflow: auto;
-    max-height: 8rem;
-    border: 1px solid var(--border-light);
-    font-family: monospace;
+  background: var(--bg-light);
+  padding: var(--spacing-md);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  overflow: auto;
+  max-height: 8rem;
+  border: 1px solid var(--border-light);
+  font-family: monospace;
 }
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
-    .app-container {
-        padding: var(--spacing-md);
-    }
-    
-    .main-title {
-        font-size: 2rem;
-    }
-    
-    .card-grid {
-        grid-template-columns: 1fr;
-    }
+  .app-container {
+    padding: var(--spacing-md);
+  }
+
+  .main-title {
+    font-size: 2rem;
+  }
+
+  .card-grid {
+    grid-template-columns: 1fr;
+  }
 }

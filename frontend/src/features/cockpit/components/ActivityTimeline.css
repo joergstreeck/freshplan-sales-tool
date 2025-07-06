@@ -24,7 +24,9 @@
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* Error State */
@@ -169,17 +171,17 @@
   .timeline-item {
     padding: 0.75rem;
   }
-  
+
   .timeline-icon {
     font-size: 1.25rem;
     width: 2rem;
     height: 2rem;
   }
-  
+
   .timeline-title {
     font-size: 0.875rem;
   }
-  
+
   .timeline-description {
     font-size: 0.8125rem;
   }

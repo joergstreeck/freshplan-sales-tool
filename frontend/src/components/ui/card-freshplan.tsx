@@ -5,14 +5,8 @@ const Card = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElemen
   ({ className, ...props }, ref) => {
     const classes = ['card'];
     if (className) classes.push(className);
-    
-    return (
-      <div
-        ref={ref}
-        className={classes.join(' ')}
-        {...props}
-      />
-    );
+
+    return <div ref={ref} className={classes.join(' ')} {...props} />;
   }
 );
 Card.displayName = 'Card';
@@ -21,10 +15,8 @@ const CardHeader = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDiv
   ({ className, ...props }, ref) => {
     const classes = ['card-header'];
     if (className) classes.push(className);
-    
-    return (
-      <div ref={ref} className={classes.join(' ')} {...props} />
-    );
+
+    return <div ref={ref} className={classes.join(' ')} {...props} />;
   }
 );
 CardHeader.displayName = 'CardHeader';
@@ -33,10 +25,8 @@ const CardTitle = React.forwardRef<HTMLParagraphElement, React.HTMLAttributes<HT
   ({ className, ...props }, ref) => {
     const classes = ['card-title'];
     if (className) classes.push(className);
-    
-    return (
-      <h3 ref={ref} className={classes.join(' ')} {...props} />
-    );
+
+    return <h3 ref={ref} className={classes.join(' ')} {...props} />;
   }
 );
 CardTitle.displayName = 'CardTitle';
@@ -47,10 +37,8 @@ const CardDescription = React.forwardRef<
 >(({ className, ...props }, ref) => {
   const classes = ['card-description'];
   if (className) classes.push(className);
-  
-  return (
-    <p ref={ref} className={classes.join(' ')} {...props} />
-  );
+
+  return <p ref={ref} className={classes.join(' ')} {...props} />;
 });
 CardDescription.displayName = 'CardDescription';
 
@@ -58,10 +46,8 @@ const CardContent = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDi
   ({ className, ...props }, ref) => {
     const classes = ['card-content'];
     if (className) classes.push(className);
-    
-    return (
-      <div ref={ref} className={classes.join(' ')} {...props} />
-    );
+
+    return <div ref={ref} className={classes.join(' ')} {...props} />;
   }
 );
 CardContent.displayName = 'CardContent';
@@ -70,10 +56,8 @@ const CardFooter = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDiv
   ({ className, ...props }, ref) => {
     const classes = ['card-footer'];
     if (className) classes.push(className);
-    
-    return (
-      <div ref={ref} className={classes.join(' ')} {...props} />
-    );
+
+    return <div ref={ref} className={classes.join(' ')} {...props} />;
   }
 );
 CardFooter.displayName = 'CardFooter';

@@ -15,8 +15,8 @@ vi.mock('../../../store/cockpitStore', () => ({
   useCockpitStore: vi.fn(() => ({
     showTriageInbox: false,
     toggleTriageInbox: mockToggleTriageInbox,
-    setPriorityTasksCount: mockSetPriorityTasksCount
-  }))
+    setPriorityTasksCount: mockSetPriorityTasksCount,
+  })),
 }));
 
 // Mock für die Daten
@@ -28,7 +28,7 @@ vi.mock('../data/mockData', () => ({
       type: 'call',
       customerName: 'Test GmbH',
       priority: 'high',
-      completed: false
+      completed: false,
     },
     {
       id: '2',
@@ -36,8 +36,8 @@ vi.mock('../data/mockData', () => ({
       type: 'email',
       customerName: 'Test AG',
       priority: 'medium',
-      completed: false
-    }
+      completed: false,
+    },
   ],
   mockTriageItems: [
     {
@@ -47,9 +47,9 @@ vi.mock('../data/mockData', () => ({
       content: 'Test Inhalt',
       receivedAt: new Date('2025-01-06T10:00:00'),
       type: 'email',
-      processed: false
-    }
-  ]
+      processed: false,
+    },
+  ],
 }));
 
 describe('MyDayColumn', () => {
@@ -59,13 +59,13 @@ describe('MyDayColumn', () => {
 
   it('sollte Loading State anzeigen', () => {
     render(<MyDayColumn />);
-    
+
     expect(screen.getByText('', { selector: '.loading-spinner' })).toBeInTheDocument();
   });
 
   it('sollte nach dem Laden die Komponente anzeigen', async () => {
     render(<MyDayColumn />);
-    
+
     await waitFor(() => {
       expect(screen.getByText('Mein Tag')).toBeInTheDocument();
     });
@@ -73,7 +73,7 @@ describe('MyDayColumn', () => {
 
   it('sollte KI-Empfehlung anzeigen', async () => {
     render(<MyDayColumn />);
-    
+
     await waitFor(() => {
       expect(screen.getByText('Nächste beste Aktion')).toBeInTheDocument();
       expect(screen.getByText(/Müller GmbH/)).toBeInTheDocument();
@@ -82,7 +82,7 @@ describe('MyDayColumn', () => {
 
   it('sollte Prioritäts-Aufgaben anzeigen', async () => {
     render(<MyDayColumn />);
-    
+
     await waitFor(() => {
       expect(screen.getByText('Prioritäts-Aufgaben (2)')).toBeInTheDocument();
       expect(screen.getByText('Test Aufgabe 1')).toBeInTheDocument();
@@ -92,12 +92,12 @@ describe('MyDayColumn', () => {
 
   it('sollte die richtigen Icons für Aufgabentypen anzeigen', async () => {
     render(<MyDayColumn />);
-    
+
     await waitFor(() => {
       const taskIcons = screen.getAllByText((content, element) => {
         return element?.classList.contains('task-icon') || false;
       });
-      
+
       expect(taskIcons[0]).toHaveTextContent('📞'); // call
       expect(taskIcons[1]).toHaveTextContent('✉️'); // email
     });
@@ -105,7 +105,7 @@ describe('MyDayColumn', () => {
 
   it('sollte Priority Tasks Count setzen', async () => {
     render(<MyDayColumn />);
-    
+
     await waitFor(() => {
       expect(mockSetPriorityTasksCount).toHaveBeenCalledWith(1); // 1 high priority task
     });
@@ -113,14 +113,14 @@ describe('MyDayColumn', () => {
 
   it('sollte Triage-Inbox toggle funktionieren', async () => {
     render(<MyDayColumn />);
-    
+
     await waitFor(() => {
-      const toggleButton = screen.getByRole('button', { 
-        name: /triage-inbox anzeigen/i 
+      const toggleButton = screen.getByRole('button', {
+        name: /triage-inbox anzeigen/i,
       });
-      
+
       fireEvent.click(toggleButton);
-      
+
       expect(mockToggleTriageInbox).toHaveBeenCalled();
     });
   });
@@ -130,11 +130,11 @@ describe('MyDayColumn', () => {
     (useCockpitStore as ReturnType<typeof vi.fn>).mockReturnValue({
       showTriageInbox: true,
       toggleTriageInbox: mockToggleTriageInbox,
-      setPriorityTasksCount: mockSetPriorityTasksCount
+      setPriorityTasksCount: mockSetPriorityTasksCount,
     });
 
     render(<MyDayColumn />);
-    
+
     await waitFor(() => {
       expect(screen.getByText('Test Anfrage')).toBeInTheDocument();
       expect(screen.getByText('test@example.com')).toBeInTheDocument();
@@ -144,12 +144,12 @@ describe('MyDayColumn', () => {
 
   it('sollte Aktualisieren Button haben', async () => {
     render(<MyDayColumn />);
-    
+
     await waitFor(() => {
-      const refreshButton = screen.getByRole('button', { 
-        name: /aufgaben aktualisieren/i 
+      const refreshButton = screen.getByRole('button', {
+        name: /aufgaben aktualisieren/i,
       });
-      
+
       expect(refreshButton).toBeInTheDocument();
     });
   });
@@ -158,11 +158,11 @@ describe('MyDayColumn', () => {
     (useCockpitStore as ReturnType<typeof vi.fn>).mockReturnValue({
       showTriageInbox: true,
       toggleTriageInbox: mockToggleTriageInbox,
-      setPriorityTasksCount: mockSetPriorityTasksCount
+      setPriorityTasksCount: mockSetPriorityTasksCount,
     });
 
     render(<MyDayColumn />);
-    
+
     await waitFor(() => {
       expect(screen.getByText('Zuordnen')).toBeInTheDocument();
       expect(screen.getByText('Als Lead')).toBeInTheDocument();
@@ -171,11 +171,11 @@ describe('MyDayColumn', () => {
 
   it('sollte korrekte CSS-Klassen für Prioritäten verwenden', async () => {
     render(<MyDayColumn />);
-    
+
     await waitFor(() => {
       const highPriorityTask = screen.getByText('Test Aufgabe 1').closest('.task-item');
       const mediumPriorityTask = screen.getByText('Test Aufgabe 2').closest('.task-item');
-      
+
       expect(highPriorityTask).toHaveClass('priority-high');
       expect(mediumPriorityTask).toHaveClass('priority-medium');
     });
