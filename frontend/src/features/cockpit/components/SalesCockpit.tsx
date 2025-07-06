@@ -41,7 +41,7 @@ export function SalesCockpit() {
   }, [setActiveColumn]);
 
   return (
-    <div className={`sales-cockpit ${isCompactMode ? 'compact-mode' : ''}`}>
+    <div className={`sales-cockpit ${isCompactMode ? 'compact-mode' : ''}`} data-testid="sales-cockpit">
       <CockpitHeader />
 
       <main className="cockpit-main">
