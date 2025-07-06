@@ -9,10 +9,13 @@
 
 import { useEffect } from 'react';
 import { useCockpitStore } from '../../../store/cockpitStore';
+import { useKeycloak } from '../../../contexts/KeycloakContext';
+import { useDashboardData } from '../hooks/useSalesCockpit';
 import { MyDayColumn } from './MyDayColumn';
 import { FocusListColumn } from './FocusListColumn';
 import { ActionCenterColumn } from './ActionCenterColumn';
 import { CockpitHeader } from './CockpitHeader';
+import { DashboardStats } from './DashboardStats';
 import './SalesCockpit.css';
 
 export function SalesCockpit() {
@@ -22,6 +25,16 @@ export function SalesCockpit() {
     isCompactMode,
     setActiveColumn 
   } = useCockpitStore();
+  
+  const { userId } = useKeycloak();
+  
+  // Hole Dashboard-Daten für Header-Statistiken
+  const { 
+    data: dashboardData, 
+    isLoading, 
+    isError, 
+    error 
+  } = useDashboardData(userId);
 
   // Keyboard navigation
   useEffect(() => {
@@ -48,6 +61,17 @@ export function SalesCockpit() {
   return (
     <div className={`sales-cockpit ${isCompactMode ? 'compact-mode' : ''}`}>
       <CockpitHeader />
+      
+      {/* Dashboard Statistiken */}
+      {dashboardData?.statistics && (
+        <div className="cockpit-stats-container">
+          <DashboardStats 
+            statistics={dashboardData.statistics}
+            loading={isLoading}
+            error={isError ? error : null}
+          />
+        </div>
+      )}
       
       <main className="cockpit-main">
         <div 

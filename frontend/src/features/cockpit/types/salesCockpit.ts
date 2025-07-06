@@ -29,7 +29,7 @@ export interface DashboardTask {
   completed: boolean;
 }
 
-export type TaskType = 'CALL' | 'EMAIL' | 'MEETING' | 'TODO' | 'FOLLOW_UP';
+export type TaskType = 'CALL' | 'EMAIL' | 'APPOINTMENT' | 'TODO' | 'FOLLOW_UP';
 export type TaskPriority = 'HIGH' | 'MEDIUM' | 'LOW';
 
 /**
