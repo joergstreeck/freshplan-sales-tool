@@ -3,15 +3,15 @@ name: Smoke Tests
 on:
   pull_request:
     paths:
-      - "src/**"
-      - "e2e/**"
+      - "frontend/src/**"
+      - "frontend/tests/**"
       - ".github/workflows/smoke-tests.yml"
   push:
     branches:
       - ci-mail-throttle  # Für Testzwecke
     paths:
-      - "src/**"
-      - "e2e/**"
+      - "frontend/src/**"
+      - "frontend/tests/**"
       - ".github/workflows/smoke-tests.yml"
 
 jobs:
@@ -52,7 +52,7 @@ jobs:
         with:
           node-version: 20
           cache: "npm"
-          cache-dependency-path: legacy/package-lock.json
+          cache-dependency-path: frontend/package-lock.json
       
       - name: Debug - Check directories
         run: |
@@ -63,10 +63,10 @@ jobs:
           echo "=== Package files ==="
           find . -name "package*.json" -type f | grep -v node_modules
       
-      - run: cd legacy && npm ci
+      - run: cd frontend && npm ci
       
       - name: Build application for CI
-        run: cd legacy && npm run build:ci
+        run: cd frontend && npm run build
       
       # Build diagnosis (static files only)
       - name: Diagnose build output
@@ -74,11 +74,11 @@ jobs:
         continue-on-error: true  # Don't fail the pipeline on diagnosis errors
         run: |
           echo '=== Build completed ==='
-          echo "Build artifacts in legacy/dist/ directory"
-          ls -la legacy/dist/ | head -10 || true
+          echo "Build artifacts in frontend/dist/ directory"
+          ls -la frontend/dist/ | head -10 || true
           
           echo '=== Main JS bundle ==='
-          MAIN_JS=$(find legacy/dist/assets -name "*.js" -type f 2>/dev/null | head -1)
+          MAIN_JS=$(find frontend/dist/assets -name "*.js" -type f 2>/dev/null | head -1)
           if [ -n "$MAIN_JS" ]; then
             echo "Checking $MAIN_JS for phase2 detection..."
             grep -E "(has\(\"phase2\"\)|CustomerModuleV2|initLegacyScript)" "$MAIN_JS" | head -5 || true
@@ -88,20 +88,20 @@ jobs:
           echo "phase2 parameter is handled at runtime via URLSearchParams"
           echo "Build uses: .has('phase2') method for detection"
       
-      - run: cd legacy && npx playwright install --with-deps ${{ matrix.browser }}
+      - run: cd frontend && npx playwright install --with-deps ${{ matrix.browser }}
       
       - name: Debug - List e2e directory
         run: |
           echo "Current directory: $(pwd)"
           echo "Contents of root e2e directory:"
           ls -la e2e/ || echo "Root e2e not found"
-          echo "Contents of legacy e2e directory:"
-          ls -la legacy/e2e/ || echo "Legacy e2e not found"
+          echo "Contents of frontend tests directory:"
+          ls -la frontend/tests/ || echo "Frontend tests not found"
           echo "Looking for test files:"
           find . -name "*.spec.ts" -type f | grep -E "(e2e|test)" | head -10
       
       - name: Run Playwright tests on ${{ matrix.browser }}
-        run: cd legacy && npx playwright test --project=${{ matrix.browser }} --reporter=line
+        run: cd frontend && npx playwright test --project=${{ matrix.browser }} --reporter=line
       # Upload diagnosis artifacts
       - name: Upload build diagnosis
         uses: actions/upload-artifact@v4
