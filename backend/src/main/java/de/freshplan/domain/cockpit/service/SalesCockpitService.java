@@ -40,6 +40,9 @@ public class SalesCockpitService {
   /** Schwellwert für hohes Risiko: 120 Tage ohne Kontakt */
   private static final int RISK_THRESHOLD_HIGH_DAYS = 120;
 
+  /** Test-User-ID für Entwicklung - umgeht User-Validierung */
+  private static final UUID TEST_USER_ID = UUID.fromString("00000000-0000-0000-0000-000000000000");
+
   private final CustomerRepository customerRepository;
   private final UserRepository userRepository;
 
@@ -65,7 +68,7 @@ public class SalesCockpitService {
     // Benutzer validieren
     // TODO: User-Validierung aktivieren, sobald User-Modul implementiert ist
     // Temporär: Akzeptiere Test-User-ID für Entwicklung
-    if (!userId.toString().equals("00000000-0000-0000-0000-000000000000")) {
+    if (!userId.equals(TEST_USER_ID)) {
       User user = userRepository.findById(userId);
       if (user == null) {
         throw new UserNotFoundException("User not found: " + userId);

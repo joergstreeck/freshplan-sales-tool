@@ -8,6 +8,7 @@
 import { useCockpitStore } from '../../../store/cockpitStore';
 import { useDashboardData } from '../hooks/useSalesCockpit';
 import { ActivityTimeline } from './ActivityTimeline';
+import { MOCK_USER_ID } from '../../../lib/constants';
 import './ActionCenterColumn.css';
 
 const AVAILABLE_PROCESSES = [
@@ -28,11 +29,10 @@ export function ActionCenterColumn() {
   // TODO: Echte userId verwenden, sobald Auth implementiert ist
   // Für jetzt verwenden wir eine Mock-User-ID
   // Diese ID wird im Backend als Test-User erkannt
-  const mockUserId = '00000000-0000-0000-0000-000000000000';
   
   // Lade Dashboard-Daten vom BFF
   const { data: dashboardData, isLoading, error } = useDashboardData(
-    mockUserId,
+    MOCK_USER_ID,
     !!selectedCustomer // Nur laden wenn ein Kunde ausgewählt ist
   );
 

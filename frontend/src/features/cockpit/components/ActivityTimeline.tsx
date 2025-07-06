@@ -61,7 +61,9 @@ export function ActivityTimeline({ tasks, alerts, loading, error }: ActivityTime
       severity: alert.severity,
     })),
   ].sort((a, b) => {
-    if (!a.time || !b.time) return 0;
+    if (!a.time && !b.time) return 0; // both null, keep order
+    if (!a.time) return 1; // a is null, send to back
+    if (!b.time) return -1; // b is null, send to back
     return new Date(b.time).getTime() - new Date(a.time).getTime();
   });
 
