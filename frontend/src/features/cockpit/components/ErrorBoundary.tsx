@@ -18,7 +18,7 @@ interface State {
 export class CockpitErrorBoundary extends Component<Props, State> {
   public state: State = {
     hasError: false,
-    error: null
+    error: null,
   };
 
   public static getDerivedStateFromError(error: Error): State {
@@ -38,13 +38,11 @@ export class CockpitErrorBoundary extends Component<Props, State> {
       return (
         <div className="error-boundary-fallback">
           <div className="error-icon">⚠️</div>
-          <h2 className="error-title">
-            Etwas ist schief gelaufen
-          </h2>
+          <h2 className="error-title">Etwas ist schief gelaufen</h2>
           <p className="error-message">
             {this.state.error?.message || 'Ein unerwarteter Fehler ist aufgetreten'}
           </p>
-          <button 
+          <button
             className="error-retry-btn"
             onClick={() => this.setState({ hasError: false, error: null })}
           >

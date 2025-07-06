@@ -1,17 +1,8 @@
 // React Query hooks for User API
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { httpClient } from '../../../shared/lib/apiClient';
-import type {
-  User,
-  CreateUserData,
-  UpdateUserData,
-  UserFilter,
-} from './userSchemas';
-import {
-  UserSchema,
-  CreateUserSchema,
-  UpdateUserSchema,
-} from './userSchemas';
+import type { User, CreateUserData, UpdateUserData, UserFilter } from './userSchemas';
+import { UserSchema, CreateUserSchema, UpdateUserSchema } from './userSchemas';
 
 // Query keys for consistent cache management
 export const userKeys = {

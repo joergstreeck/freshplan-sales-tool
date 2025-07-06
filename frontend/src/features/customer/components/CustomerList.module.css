@@ -81,11 +81,7 @@
 
 /* Table Header */
 .customerList__tableHeader {
-  background: linear-gradient(
-    135deg, 
-    var(--fresh-green-500) 0%, 
-    var(--fresh-green-600) 100%
-  );
+  background: linear-gradient(135deg, var(--fresh-green-500) 0%, var(--fresh-green-600) 100%);
 }
 
 .customerList__th {
@@ -428,11 +424,11 @@
   .customerList {
     padding: var(--space-6);
   }
-  
+
   .customerList__table {
     font-size: var(--text-sm);
   }
-  
+
   .customerList__th,
   .customerList__td {
     padding: var(--space-3) var(--space-4);
@@ -444,27 +440,27 @@
   .customerList {
     padding: var(--space-4);
   }
-  
+
   .customerList__header {
     flex-direction: column;
     align-items: flex-start;
     gap: var(--space-4);
   }
-  
+
   .customerList__tableWrapper {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
   }
-  
+
   .customerList__table {
     min-width: 800px;
   }
-  
+
   .customerList__pagination {
     flex-direction: column;
     gap: var(--space-4);
   }
-  
+
   .customerList__paginationControls {
     flex-wrap: wrap;
     justify-content: center;
@@ -476,7 +472,7 @@
   .customerList__title {
     font-size: var(--text-2xl);
   }
-  
+
   .customerList__stats {
     flex-direction: column;
     gap: var(--space-2);

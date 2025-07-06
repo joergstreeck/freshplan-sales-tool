@@ -5,41 +5,47 @@
 /* Base Typography Classes */
 
 /* Headings - Antonio Font */
-h1, h2, h3, h4, h5, h6,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
 .heading {
-    font-family: var(--font-heading);
-    font-weight: 700;
-    color: var(--primary-blue);
-    line-height: var(--line-height-tight);
+  font-family: var(--font-heading);
+  font-weight: 700;
+  color: var(--primary-blue);
+  line-height: var(--line-height-tight);
 }
 
 /* Section Title (h2) - Hauptüberschriften */
 .section-title {
-    font-family: var(--font-heading);
-    font-size: var(--font-size-2xl);
-    font-weight: 700;
-    color: var(--primary-blue);
-    margin-top: 2rem;
-    margin-bottom: 2rem;
+  font-family: var(--font-heading);
+  font-size: var(--font-size-2xl);
+  font-weight: 700;
+  color: var(--primary-blue);
+  margin-top: 2rem;
+  margin-bottom: 2rem;
 }
 
 /* Form Section Title (h3) - Abschnittsüberschriften */
 .form-section-title {
-    font-family: var(--font-heading);
-    font-size: var(--font-size-lg);
-    font-weight: 600;
-    color: var(--primary-blue);
-    margin-bottom: 1rem;
+  font-family: var(--font-heading);
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  color: var(--primary-blue);
+  margin-bottom: 1rem;
 }
 
 /* Sub-headings (h4) */
-h4, .sub-heading {
-    font-family: var(--font-heading);
-    font-size: var(--font-size-lg);
-    font-weight: 600;
-    color: var(--primary-blue);
-    margin-top: 1.5rem;
-    margin-bottom: 1rem;
+h4,
+.sub-heading {
+  font-family: var(--font-heading);
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  color: var(--primary-blue);
+  margin-top: 1.5rem;
+  margin-bottom: 1rem;
 }
 
 /* Body Text - Poppins Font */
@@ -48,19 +54,19 @@ p,
 span,
 div,
 .text-body {
-    font-family: var(--font-body);
-    font-size: var(--font-size-base);
-    line-height: var(--line-height-normal);
+  font-family: var(--font-body);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-normal);
 }
 
 /* Labels */
 label,
 .label {
-    font-family: var(--font-body);
-    font-size: var(--font-size-sm);
-    font-weight: var(--font-weight-medium);
-    color: var(--text-dark);
-    margin-bottom: var(--spacing-xs);
+  font-family: var(--font-body);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-dark);
+  margin-bottom: var(--spacing-xs);
 }
 
 /* Form Controls Typography */
@@ -68,207 +74,207 @@ input,
 select,
 textarea,
 .form-control {
-    font-family: var(--font-body);
-    font-size: var(--font-size-base);
-    line-height: var(--line-height-normal);
+  font-family: var(--font-body);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-normal);
 }
 
 /* Buttons */
 button,
 .btn {
-    font-family: var(--font-body);
-    font-size: var(--font-size-base);
-    font-weight: var(--font-weight-medium);
+  font-family: var(--font-body);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
 }
 
 /* Small Text */
 .text-sm {
-    font-size: var(--font-size-sm);
+  font-size: var(--font-size-sm);
 }
 
 .text-xs {
-    font-size: var(--font-size-xs);
+  font-size: var(--font-size-xs);
 }
 
 /* Large Text */
 .text-lg {
-    font-size: var(--font-size-lg);
+  font-size: var(--font-size-lg);
 }
 
 .text-xl {
-    font-size: var(--font-size-xl);
+  font-size: var(--font-size-xl);
 }
 
 /* Font Weights */
 .font-normal {
-    font-weight: var(--font-weight-normal);
+  font-weight: var(--font-weight-normal);
 }
 
 .font-medium {
-    font-weight: var(--font-weight-medium);
+  font-weight: var(--font-weight-medium);
 }
 
 .font-bold {
-    font-weight: var(--font-weight-bold);
+  font-weight: var(--font-weight-bold);
 }
 
 /* Text Colors */
 .text-primary {
-    color: var(--primary-blue);
+  color: var(--primary-blue);
 }
 
 .text-secondary {
-    color: var(--primary-green);
+  color: var(--primary-green);
 }
 
 .text-dark {
-    color: var(--text-dark);
+  color: var(--text-dark);
 }
 
 .text-light {
-    color: var(--text-light);
+  color: var(--text-light);
 }
 
 .text-white {
-    color: var(--text-white);
+  color: var(--text-white);
 }
 
 /* Alert Text */
 .alert-title {
-    font-family: var(--font-heading);
-    font-size: var(--font-size-lg);
-    font-weight: 600;
-    color: var(--warning);
-    margin-bottom: 0.5rem;
+  font-family: var(--font-heading);
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  color: var(--warning);
+  margin-bottom: 0.5rem;
 }
 
 .alert-text {
-    font-family: var(--font-body);
-    font-size: var(--font-size-sm);
-    color: var(--text-dark);
-    line-height: var(--line-height-normal);
+  font-family: var(--font-body);
+  font-size: var(--font-size-sm);
+  color: var(--text-dark);
+  line-height: var(--line-height-normal);
 }
 
 /* Location Service Text */
 .location-service-label {
-    font-family: var(--font-body);
-    font-size: 0.813rem;
-    color: var(--text-light);
+  font-family: var(--font-body);
+  font-size: 0.813rem;
+  color: var(--text-light);
 }
 
 /* Tab Navigation */
 .tab-label {
-    font-family: var(--font-body);
-    font-size: var(--font-size-base);
-    font-weight: var(--font-weight-medium);
+  font-family: var(--font-body);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
 }
 
 /* Logo Text */
 .logo-text {
-    font-family: var(--font-heading);
-    font-weight: 700;
-    font-size: 2rem;
-    color: var(--primary-blue);
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 2rem;
+  color: var(--primary-blue);
 }
 
 .logo-tagline {
-    font-family: var(--font-body);
-    font-size: var(--font-size-sm);
-    color: var(--text-light);
+  font-family: var(--font-body);
+  font-size: var(--font-size-sm);
+  color: var(--text-light);
 }
 
 /* Helper Classes for Legacy Compatibility */
 .font-antonio {
-    font-family: var(--font-heading);
+  font-family: var(--font-heading);
 }
 
 .font-poppins {
-    font-family: var(--font-body);
+  font-family: var(--font-body);
 }
 
 /* Calculation Results Typography */
 .calculation-label {
-    font-family: var(--font-body);
-    font-size: var(--font-size-sm);
-    font-weight: var(--font-weight-medium);
-    color: var(--text-dark);
+  font-family: var(--font-body);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-dark);
 }
 
 .calculation-value {
-    font-family: var(--font-body);
-    font-size: var(--font-size-lg);
-    font-weight: var(--font-weight-bold);
-    color: var(--primary-blue);
+  font-family: var(--font-body);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--primary-blue);
 }
 
 /* Status Text */
 .status-pending {
-    color: var(--warning);
+  color: var(--warning);
 }
 
 .status-success {
-    color: var(--success);
+  color: var(--success);
 }
 
 .status-error {
-    color: var(--danger);
+  color: var(--danger);
 }
 
 /* Placeholder Styling */
 ::placeholder {
-    font-family: var(--font-body);
-    font-size: var(--font-size-sm);
-    color: #999;
-    opacity: 1;
+  font-family: var(--font-body);
+  font-size: var(--font-size-sm);
+  color: #999;
+  opacity: 1;
 }
 
 /* Text Alignment */
 .text-left {
-    text-align: left;
+  text-align: left;
 }
 
 .text-center {
-    text-align: center;
+  text-align: center;
 }
 
 .text-right {
-    text-align: right;
+  text-align: right;
 }
 
 /* Line Height Utilities */
 .leading-tight {
-    line-height: var(--line-height-tight);
+  line-height: var(--line-height-tight);
 }
 
 .leading-normal {
-    line-height: var(--line-height-normal);
+  line-height: var(--line-height-normal);
 }
 
 .leading-loose {
-    line-height: var(--line-height-loose);
+  line-height: var(--line-height-loose);
 }
 
 /* Special Typography Components */
 .info-box-title {
-    font-family: var(--font-heading);
-    font-size: var(--font-size-lg);
-    font-weight: 600;
-    color: var(--primary-blue);
-    margin-bottom: 0.5rem;
+  font-family: var(--font-heading);
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  color: var(--primary-blue);
+  margin-bottom: 0.5rem;
 }
 
 .info-box-content {
-    font-family: var(--font-body);
-    font-size: var(--font-size-sm);
-    color: var(--text-dark);
-    line-height: var(--line-height-normal);
+  font-family: var(--font-body);
+  font-size: var(--font-size-sm);
+  color: var(--text-dark);
+  line-height: var(--line-height-normal);
 }
 
 /* Ensure all children inherit proper fonts */
 .customer-form *,
 .locations-form *,
 .calculator-content * {
-    font-family: inherit;
+  font-family: inherit;
 }
 
 /* Reset font-family for specific elements that should always use body font */
@@ -278,5 +284,5 @@ button,
 .locations-form input,
 .locations-form select,
 .locations-form textarea {
-    font-family: var(--font-body);
+  font-family: var(--font-body);
 }

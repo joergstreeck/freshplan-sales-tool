@@ -7,6 +7,7 @@ import de.freshplan.domain.customer.repository.CustomerRepository;
 import de.freshplan.domain.user.entity.User;
 import de.freshplan.domain.user.repository.UserRepository;
 import de.freshplan.domain.user.service.exception.UserNotFoundException;
+import io.quarkus.panache.common.Page;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -89,13 +90,12 @@ public class SalesCockpitService {
   /**
    * Lädt die heutigen Aufgaben für einen Benutzer.
    *
-   * <p>Hinweis: Diese Implementierung verwendet Mock-Daten, da das Task-Modul noch nicht
-   * implementiert ist. In der finalen Version werden echte Aufgaben aus dem Task-Service geladen.
+   * <p>Diese Implementierung generiert intelligente Tasks basierend auf echten Customer-Daten
+   * und deren Status. In der finalen Version werden echte Aufgaben aus dem Task-Service geladen.
    */
   private List<DashboardTask> loadTodaysTasks(UUID userId) {
     List<DashboardTask> tasks = new ArrayList<>();
 
-    // Mock-Implementierung bis Task-Modul verfügbar ist
     // Feature-Flag: ff_FRESH-001_task_module_integration
     boolean useRealTasks = false; // Wird später durch Feature-Flag ersetzt
 
@@ -104,29 +104,65 @@ public class SalesCockpitService {
       return tasks;
     }
 
-    // Mock-Tasks basierend auf Customer-Daten
-    // Hinweis: In Production sollte hier Pagination verwendet werden
-    List<Customer> activeCustomers =
-        customerRepository
-            .find("status", CustomerStatus.AKTIV)
-            .page(0, 3) // Nur die ersten 3 laden für Performance
-            .list();
+    // Intelligente Task-Generierung basierend auf echten Customer-Daten
+    
+    // 1. Überfällige Follow-ups (höchste Priorität)
+    List<Customer> overdueCustomers = customerRepository.findOverdueFollowUps(Page.of(0, 2));
+    overdueCustomers.forEach(customer -> {
+      DashboardTask task = new DashboardTask();
+      task.setId(UUID.randomUUID());
+      task.setTitle("ÜBERFÄLLIG: Follow-up mit " + customer.getCompanyName());
+      task.setDescription("Geplanter Follow-up seit " + 
+          (customer.getNextFollowUpDate() != null ? 
+           customer.getNextFollowUpDate().toLocalDate() : "unbekannt"));
+      task.setType(DashboardTask.TaskType.CALL);
+      task.setPriority(DashboardTask.TaskPriority.HIGH);
+      task.setCustomerId(customer.getId());
+      task.setCustomerName(customer.getCompanyName());
+      task.setDueDate(LocalDateTime.now().minusHours(1)); // Bereits überfällig
+      task.setCompleted(false);
+      tasks.add(task);
+    });
 
-    // Erstelle Mock-Tasks für aktive Kunden
-    activeCustomers.forEach(
-        customer -> {
-          DashboardTask task = new DashboardTask();
-          task.setId(UUID.randomUUID());
-          task.setTitle("Follow-up mit " + customer.getCompanyName());
-          task.setDescription("Quartalsmeeting besprechen");
-          task.setType(DashboardTask.TaskType.CALL);
-          task.setPriority(DashboardTask.TaskPriority.MEDIUM);
-          task.setCustomerId(customer.getId());
-          task.setCustomerName(customer.getCompanyName());
-          task.setDueDate(LocalDateTime.now().plusHours(2));
-          task.setCompleted(false);
-          tasks.add(task);
-        });
+    // 2. Risiko-Kunden kontaktieren (mittlere Priorität)
+    LocalDateTime riskThreshold = LocalDateTime.now().minusDays(RISK_THRESHOLD_LOW_DAYS);
+    List<Customer> riskCustomers = customerRepository
+        .findActiveCustomersWithoutRecentContact(riskThreshold)
+        .stream()
+        .limit(3)
+        .toList();
+    
+    riskCustomers.forEach(customer -> {
+      DashboardTask task = new DashboardTask();
+      task.setId(UUID.randomUUID());
+      task.setTitle("Risiko-Kunde kontaktieren: " + customer.getCompanyName());
+      task.setDescription("Kein Kontakt seit " + 
+          (customer.getLastContactDate() != null ? 
+           customer.getLastContactDate().toLocalDate() : "Beginn der Geschäftsbeziehung"));
+      task.setType(DashboardTask.TaskType.EMAIL);
+      task.setPriority(DashboardTask.TaskPriority.MEDIUM);
+      task.setCustomerId(customer.getId());
+      task.setCustomerName(customer.getCompanyName());
+      task.setDueDate(LocalDateTime.now().plusHours(4));
+      task.setCompleted(false);
+      tasks.add(task);
+    });
+
+    // 3. Neue Kunden begrüßen (niedrige Priorität)
+    List<Customer> newCustomers = customerRepository.findRecentlyCreated(7, Page.of(0, 2));
+    newCustomers.forEach(customer -> {
+      DashboardTask task = new DashboardTask();
+      task.setId(UUID.randomUUID());
+      task.setTitle("Willkommen-Anruf: " + customer.getCompanyName());
+      task.setDescription("Neuer Kunde seit " + customer.getCreatedAt().toLocalDate());
+      task.setType(DashboardTask.TaskType.CALL);
+      task.setPriority(DashboardTask.TaskPriority.LOW);
+      task.setCustomerId(customer.getId());
+      task.setCustomerName(customer.getCompanyName());
+      task.setDueDate(LocalDateTime.now().plusHours(8));
+      task.setCompleted(false);
+      tasks.add(task);
+    });
 
     return tasks;
   }
@@ -189,19 +225,27 @@ public class SalesCockpitService {
   private DashboardStatistics calculateStatistics() {
     DashboardStatistics stats = new DashboardStatistics();
 
-    // Zähle Kunden
-    stats.setTotalCustomers((int) customerRepository.count());
-    stats.setActiveCustomers((int) customerRepository.count("status", CustomerStatus.AKTIV));
+    // Echte Kunden-Statistiken
+    stats.setTotalCustomers((int) customerRepository.countActive());
+    stats.setActiveCustomers((int) customerRepository.countByStatus(CustomerStatus.AKTIV));
 
-    // Risiko-Kunden
+    // Risiko-Kunden basierend auf verschiedenen Schwellwerten
     LocalDateTime riskThreshold = LocalDateTime.now().minusDays(RISK_THRESHOLD_LOW_DAYS);
     stats.setCustomersAtRisk(
         (int) customerRepository.countActiveCustomersWithoutRecentContact(riskThreshold));
 
-    // Temporäre Mock-Werte bis Task-Modul implementiert ist
+    // Task-basierte Statistiken: Berechnung basierend auf echten Customer-Daten
+    // bis Task-Modul implementiert ist
     // Feature-Flag: ff_FRESH-001_task_module_integration
-    stats.setOpenTasks(3);
-    stats.setOverdueItems(1);
+    
+    // Überfällige Follow-ups als Proxy für überfällige Aufgaben
+    long overdueFollowUps = customerRepository.countOverdueFollowUps();
+    stats.setOverdueItems((int) overdueFollowUps);
+    
+    // Offene Tasks basierend auf Kunden ohne kürzlichen Kontakt (letzte 7 Tage)
+    LocalDateTime recentContactThreshold = LocalDateTime.now().minusDays(7);
+    long customersNeedingContact = customerRepository.countActiveCustomersWithoutRecentContact(recentContactThreshold);
+    stats.setOpenTasks((int) customersNeedingContact);
 
     return stats;
   }

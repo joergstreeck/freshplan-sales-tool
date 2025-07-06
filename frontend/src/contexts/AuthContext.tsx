@@ -43,10 +43,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = async (email: string, password: string) => {
     // TODO: Implement Keycloak login
-    if (import.meta.env.DEV) {
-      console.log('Login attempt for email:', email);
-      // SECURITY: Never log passwords! But we need to use the parameter
-      console.assert(password.length > 0, 'Password should not be empty');
+    if (import.meta.env.DEV && password.length === 0) {
+      throw new Error('Password should not be empty');
     }
 
     // Mock login for now
