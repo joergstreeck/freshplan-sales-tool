@@ -3,7 +3,8 @@ name: Generate HTML docs
 
 on:
   push:
-    branches: [main]
+    branches: 
+      - main
     paths:
       - '**.md'
       - '!README.md'       # ← optional, wenn README nicht konvertiert werden muss
@@ -14,6 +15,8 @@ on:
 jobs:
   build-docs:
     runs-on: ubuntu-latest
+    # Only run on main branch to prevent execution on feature branches
+    if: github.ref == 'refs/heads/main'
 
     steps:
       - uses: actions/checkout@v4
