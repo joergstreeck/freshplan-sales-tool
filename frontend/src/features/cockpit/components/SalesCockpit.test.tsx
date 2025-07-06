@@ -81,7 +81,6 @@ describe('SalesCockpit', () => {
 
   it('sollte Keyboard Navigation unterstützen', () => {
     renderWithProviders(<SalesCockpit />);
-    const { activeColumn } = useCockpitStore.getState();
     
     // Alt + 1
     fireEvent.keyDown(document, { key: '1', altKey: true });

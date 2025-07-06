@@ -9,9 +9,12 @@ import { FocusListColumn } from './FocusListColumn';
 import { useCockpitStore } from '../../../store/cockpitStore';
 import type { Customer } from '../types';
 
+// Customer Mock Type
+type CustomerMock = Pick<Customer, 'id' | 'companyName' | 'status'>;
+
 // Mock für CustomerList
 vi.mock('../../../features/customer/components/CustomerList', () => ({
-  CustomerList: ({ onCustomerSelect }: { onCustomerSelect?: (customer: any) => void }) => (
+  CustomerList: ({ onCustomerSelect }: { onCustomerSelect?: (customer: CustomerMock) => void }) => (
     <div data-testid="customer-list">
       <button 
         onClick={() => onCustomerSelect?.({ 
@@ -154,7 +157,7 @@ describe('FocusListColumn', () => {
   });
 
   it('sollte Placeholder für andere View Modes anzeigen', () => {
-    (useCockpitStore as any).mockReturnValue({
+    (useCockpitStore as vi.MockedFunction<typeof useCockpitStore>).mockReturnValue({
       viewMode: 'cards',
       setViewMode: mockSetViewMode,
       filterTags: [],

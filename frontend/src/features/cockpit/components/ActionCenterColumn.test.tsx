@@ -12,6 +12,7 @@ import type { Customer } from '../types';
 const mockSelectCustomer = vi.fn();
 const mockSetActiveProcess = vi.fn();
 
+
 const mockCustomer: Customer = {
   id: '123',
   companyName: 'Test GmbH',
@@ -50,7 +51,7 @@ describe('ActionCenterColumn', () => {
 
   describe('Mit ausgewähltem Kunden', () => {
     beforeEach(() => {
-      (useCockpitStore as any).mockReturnValue({
+      (useCockpitStore as vi.MockedFunction<typeof useCockpitStore>).mockReturnValue({
         selectedCustomer: mockCustomer,
         activeProcess: null,
         setActiveProcess: mockSetActiveProcess,
@@ -138,7 +139,7 @@ describe('ActionCenterColumn', () => {
 
   describe('Mit aktivem Prozess', () => {
     beforeEach(() => {
-      (useCockpitStore as any).mockReturnValue({
+      (useCockpitStore as vi.MockedFunction<typeof useCockpitStore>).mockReturnValue({
         selectedCustomer: mockCustomer,
         activeProcess: 'new-customer',
         setActiveProcess: mockSetActiveProcess,
@@ -182,7 +183,7 @@ describe('ActionCenterColumn', () => {
   describe('Mit verschiedenen Kundenstatus', () => {
     it('sollte inactive Status korrekt anzeigen', () => {
       const inactiveCustomer = { ...mockCustomer, status: 'inactive' as const };
-      (useCockpitStore as any).mockReturnValue({
+      (useCockpitStore as vi.MockedFunction<typeof useCockpitStore>).mockReturnValue({
         selectedCustomer: inactiveCustomer,
         activeProcess: null,
         setActiveProcess: mockSetActiveProcess,
@@ -197,7 +198,7 @@ describe('ActionCenterColumn', () => {
 
     it('sollte prospect Status korrekt anzeigen', () => {
       const prospectCustomer = { ...mockCustomer, status: 'prospect' as const };
-      (useCockpitStore as any).mockReturnValue({
+      (useCockpitStore as vi.MockedFunction<typeof useCockpitStore>).mockReturnValue({
         selectedCustomer: prospectCustomer,
         activeProcess: null,
         setActiveProcess: mockSetActiveProcess,
@@ -213,7 +214,7 @@ describe('ActionCenterColumn', () => {
 
   describe('Accessibility', () => {
     it('sollte alle Buttons mit title Attributen haben', () => {
-      (useCockpitStore as any).mockReturnValue({
+      (useCockpitStore as vi.MockedFunction<typeof useCockpitStore>).mockReturnValue({
         selectedCustomer: mockCustomer,
         activeProcess: null,
         setActiveProcess: mockSetActiveProcess,
@@ -227,7 +228,7 @@ describe('ActionCenterColumn', () => {
     });
 
     it('sollte semantisch korrekte Überschriften verwenden', () => {
-      (useCockpitStore as any).mockReturnValue({
+      (useCockpitStore as vi.MockedFunction<typeof useCockpitStore>).mockReturnValue({
         selectedCustomer: mockCustomer,
         activeProcess: null,
         setActiveProcess: mockSetActiveProcess,

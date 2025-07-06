@@ -127,7 +127,7 @@ describe('MyDayColumn', () => {
 
   it('sollte Triage-Inbox Items anzeigen wenn offen', async () => {
     // Mock showTriageInbox = true
-    (useCockpitStore as any).mockReturnValue({
+    (useCockpitStore as vi.MockedFunction<typeof useCockpitStore>).mockReturnValue({
       showTriageInbox: true,
       toggleTriageInbox: mockToggleTriageInbox,
       setPriorityTasksCount: mockSetPriorityTasksCount
@@ -155,7 +155,7 @@ describe('MyDayColumn', () => {
   });
 
   it('sollte Triage Action Buttons anzeigen', async () => {
-    (useCockpitStore as any).mockReturnValue({
+    (useCockpitStore as vi.MockedFunction<typeof useCockpitStore>).mockReturnValue({
       showTriageInbox: true,
       toggleTriageInbox: mockToggleTriageInbox,
       setPriorityTasksCount: mockSetPriorityTasksCount
