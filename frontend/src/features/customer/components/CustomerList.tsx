@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { useCustomers } from '../api/customerQueries';
 import type { CustomerResponse } from '../types/customer.types';
-import { 
-  customerTypeLabels, 
-  customerStatusLabels, 
+import {
+  customerTypeLabels,
+  customerStatusLabels,
   industryLabels,
-  customerStatusColors 
+  customerStatusColors,
 } from '../types/customer.types';
 import { LoadingSpinner } from '../../../components/ui/LoadingSpinner';
 import './CustomerList.css';
@@ -22,7 +22,7 @@ export const CustomerList: React.FC = () => {
     if (!amount) return '-';
     return new Intl.NumberFormat('de-DE', {
       style: 'currency',
-      currency: 'EUR'
+      currency: 'EUR',
     }).format(amount);
   };
 
@@ -32,7 +32,7 @@ export const CustomerList: React.FC = () => {
     return new Date(dateString).toLocaleDateString('de-DE', {
       day: '2-digit',
       month: '2-digit',
-      year: 'numeric'
+      year: 'numeric',
     });
   };
 
@@ -91,13 +91,13 @@ export const CustomerList: React.FC = () => {
         <table className="customer-list-table">
           <thead>
             <tr>
-              <th 
+              <th
                 className={`sortable ${sortBy === 'customerNumber' ? 'sorted' : ''}`}
                 onClick={() => handleSort('customerNumber')}
               >
                 Kundennummer
               </th>
-              <th 
+              <th
                 className={`sortable ${sortBy === 'companyName' ? 'sorted' : ''}`}
                 onClick={() => handleSort('companyName')}
               >
@@ -105,14 +105,14 @@ export const CustomerList: React.FC = () => {
               </th>
               <th>Typ</th>
               <th>Branche</th>
-              <th 
+              <th
                 className={`sortable ${sortBy === 'status' ? 'sorted' : ''}`}
                 onClick={() => handleSort('status')}
               >
                 Status
               </th>
               <th>Jahresumsatz</th>
-              <th 
+              <th
                 className={`sortable ${sortBy === 'lastContactDate' ? 'sorted' : ''}`}
                 onClick={() => handleSort('lastContactDate')}
               >
@@ -134,25 +134,27 @@ export const CustomerList: React.FC = () => {
                 <td>{customerTypeLabels[customer.customerType]}</td>
                 <td>{customer.industry ? industryLabels[customer.industry] : '-'}</td>
                 <td>
-                  <span 
+                  <span
                     className="status-badge"
                     style={{ backgroundColor: customerStatusColors[customer.status] }}
                   >
                     {customerStatusLabels[customer.status]}
                   </span>
                 </td>
-                <td className="currency">
-                  {formatCurrency(customer.expectedAnnualVolume)}
-                </td>
+                <td className="currency">{formatCurrency(customer.expectedAnnualVolume)}</td>
                 <td>{formatDate(customer.lastContactDate)}</td>
                 <td>
                   <div className="risk-indicator">
-                    <div 
+                    <div
                       className="risk-bar"
-                      style={{ 
+                      style={{
                         width: `${customer.riskScore}%`,
-                        backgroundColor: customer.riskScore > 70 ? '#F44336' : 
-                                       customer.riskScore > 40 ? '#FF9800' : '#4CAF50'
+                        backgroundColor:
+                          customer.riskScore > 70
+                            ? '#F44336'
+                            : customer.riskScore > 40
+                              ? '#FF9800'
+                              : '#4CAF50',
                       }}
                     />
                     <span className="risk-score">{customer.riskScore}%</span>
@@ -167,17 +169,19 @@ export const CustomerList: React.FC = () => {
       {/* Pagination */}
       <div className="customer-list-pagination">
         <div className="pagination-info">
-          Zeige {data.page * data.size + 1} - {Math.min((data.page + 1) * data.size, data.totalElements)} von {data.totalElements} Einträgen
+          Zeige {data.page * data.size + 1} -{' '}
+          {Math.min((data.page + 1) * data.size, data.totalElements)} von {data.totalElements}{' '}
+          Einträgen
         </div>
         <div className="pagination-controls">
-          <button 
+          <button
             className="pagination-button"
             onClick={() => setCurrentPage(0)}
             disabled={data.first}
           >
             Erste
           </button>
-          <button 
+          <button
             className="pagination-button"
             onClick={() => setCurrentPage(prev => Math.max(0, prev - 1))}
             disabled={data.first}
@@ -187,14 +191,14 @@ export const CustomerList: React.FC = () => {
           <span className="pagination-current">
             Seite {data.page + 1} von {data.totalPages}
           </span>
-          <button 
+          <button
             className="pagination-button"
             onClick={() => setCurrentPage(prev => prev + 1)}
             disabled={data.last}
           >
             Weiter
           </button>
-          <button 
+          <button
             className="pagination-button"
             onClick={() => setCurrentPage(data.totalPages - 1)}
             disabled={data.last}

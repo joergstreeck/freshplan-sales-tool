@@ -2,501 +2,494 @@ package de.freshplan.domain.customer.entity;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
-import org.hibernate.annotations.UuidGenerator;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import org.hibernate.annotations.UuidGenerator;
 
 /**
- * Customer location entity representing different locations/sites of a customer.
- * Each location can have multiple addresses (billing, shipping, etc.).
- * 
+ * Customer location entity representing different locations/sites of a customer. Each location can
+ * have multiple addresses (billing, shipping, etc.).
+ *
  * @author FreshPlan Team
  * @since 2.0.0
  */
 @Entity
-@Table(name = "customer_locations", indexes = {
-    @Index(name = "idx_location_customer", columnList = "customer_id"),
-    @Index(name = "idx_location_main", columnList = "customer_id, is_main_location"),
-    @Index(name = "idx_location_category", columnList = "category"),
-    @Index(name = "idx_location_deleted", columnList = "is_deleted")
-})
+@Table(
+    name = "customer_locations",
+    indexes = {
+      @Index(name = "idx_location_customer", columnList = "customer_id"),
+      @Index(name = "idx_location_main", columnList = "customer_id, is_main_location"),
+      @Index(name = "idx_location_category", columnList = "category"),
+      @Index(name = "idx_location_deleted", columnList = "is_deleted")
+    })
 public class CustomerLocation extends PanacheEntityBase {
-    
-    @Id
-    @GeneratedValue
-    @UuidGenerator
-    @Column(name = "id", updatable = false, nullable = false)
-    private UUID id;
-    
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "customer_id", nullable = false)
-    private Customer customer;
-    
-    @Column(name = "location_name", nullable = false, length = 255)
-    private String locationName;
-    
-    @Column(name = "location_code", length = 50)
-    private String locationCode; // Internal code for this location
-    
-    @Enumerated(EnumType.STRING)
-    @Column(name = "category", length = 30)
-    private LocationCategory category;
-    
-    @Column(name = "description", columnDefinition = "TEXT")
-    private String description;
-    
-    // Addresses - One location can have multiple addresses
-    @OneToMany(mappedBy = "location", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<CustomerAddress> addresses = new ArrayList<>();
-    
-    // Operational Information
-    @Column(name = "operating_hours", length = 500)
-    private String operatingHours; // JSON or structured text
-    
-    @Column(name = "time_zone", length = 50)
-    private String timeZone;
-    
-    @Column(name = "phone", length = 50)
-    private String phone;
-    
-    @Column(name = "fax", length = 50)
-    private String fax;
-    
-    @Column(name = "email", length = 255)
-    private String email;
-    
-    // Business Information
-    @Column(name = "tax_number", length = 50)
-    private String taxNumber;
-    
-    @Column(name = "vat_number", length = 50)
-    private String vatNumber;
-    
-    @Column(name = "commercial_register", length = 100)
-    private String commercialRegister;
-    
-    // Status Flags
-    @Column(name = "is_main_location", nullable = false)
-    private Boolean isMainLocation = false;
-    
-    @Column(name = "is_active", nullable = false)
-    private Boolean isActive = true;
-    
-    @Column(name = "is_billing_location", nullable = false)
-    private Boolean isBillingLocation = false;
-    
-    @Column(name = "is_shipping_location", nullable = false)
-    private Boolean isShippingLocation = false;
-    
-    // Special Instructions
-    @Column(name = "delivery_instructions", columnDefinition = "TEXT")
-    private String deliveryInstructions;
-    
-    @Column(name = "access_instructions", columnDefinition = "TEXT")
-    private String accessInstructions;
-    
-    @Column(name = "notes", columnDefinition = "TEXT")
-    private String notes;
-    
-    // Soft Delete
-    @Column(name = "is_deleted", nullable = false)
-    private Boolean isDeleted = false;
-    
-    @Column(name = "deleted_at")
-    private LocalDateTime deletedAt;
-    
-    @Column(name = "deleted_by", length = 100)
-    private String deletedBy;
-    
-    // Audit Fields
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
-    
-    @Column(name = "created_by", nullable = false, updatable = false, length = 100)
-    private String createdBy;
-    
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
-    
-    @Column(name = "updated_by", length = 100)
-    private String updatedBy;
-    
-    // Lifecycle Methods
-    @PrePersist
-    protected void onCreate() {
-        createdAt = LocalDateTime.now();
-        if (isDeleted == null) {
-            isDeleted = false;
-        }
-        if (isActive == null) {
-            isActive = true;
-        }
-        if (isMainLocation == null) {
-            isMainLocation = false;
-        }
-        if (isBillingLocation == null) {
-            isBillingLocation = false;
-        }
-        if (isShippingLocation == null) {
-            isShippingLocation = false;
-        }
-    }
-    
-    @PreUpdate
-    protected void onUpdate() {
-        updatedAt = LocalDateTime.now();
-    }
-    
-    // Business Methods
-    
-    /**
-     * Gets the primary billing address for this location.
-     */
-    public Optional<CustomerAddress> getPrimaryBillingAddress() {
-        return addresses.stream()
-                .filter(addr -> !Boolean.TRUE.equals(addr.getIsDeleted()))
-                .filter(addr -> addr.getAddressType() == AddressType.BILLING)
-                .filter(addr -> Boolean.TRUE.equals(addr.getIsPrimaryForType()))
-                .findFirst();
-    }
-    
-    /**
-     * Gets the primary shipping address for this location.
-     */
-    public Optional<CustomerAddress> getPrimaryShippingAddress() {
-        return addresses.stream()
-                .filter(addr -> !Boolean.TRUE.equals(addr.getIsDeleted()))
-                .filter(addr -> addr.getAddressType() == AddressType.SHIPPING)
-                .filter(addr -> Boolean.TRUE.equals(addr.getIsPrimaryForType()))
-                .findFirst();
-    }
-    
-    /**
-     * Gets all active addresses of a specific type.
-     */
-    public List<CustomerAddress> getAddressesByType(AddressType type) {
-        return addresses.stream()
-                .filter(addr -> !Boolean.TRUE.equals(addr.getIsDeleted()))
-                .filter(addr -> addr.getAddressType() == type)
-                .toList();
-    }
-    
-    /**
-     * Gets all active addresses.
-     */
-    public List<CustomerAddress> getActiveAddresses() {
-        return addresses.stream()
-                .filter(addr -> !Boolean.TRUE.equals(addr.getIsDeleted()))
-                .filter(addr -> Boolean.TRUE.equals(addr.getIsActive()))
-                .toList();
-    }
-    
-    /**
-     * Adds an address to this location.
-     */
-    public void addAddress(CustomerAddress address) {
-        if (address != null) {
-            address.setLocation(this);
-            this.addresses.add(address);
-        }
-    }
-    
-    /**
-     * Removes an address from this location (soft delete).
-     */
-    public void removeAddress(CustomerAddress address, String deletedBy) {
-        if (address != null && addresses.contains(address)) {
-            address.setIsDeleted(true);
-            address.setDeletedAt(LocalDateTime.now());
-            address.setDeletedBy(deletedBy);
-        }
-    }
-    
-    /**
-     * Sets this location as the main location.
-     * Note: Business logic should ensure only one main location per customer.
-     */
-    public void setAsMainLocation(String updatedBy) {
-        this.isMainLocation = true;
-        this.updatedBy = updatedBy;
-    }
-    
-    /**
-     * Removes main location status.
-     */
-    public void removeMainLocationStatus(String updatedBy) {
-        this.isMainLocation = false;
-        this.updatedBy = updatedBy;
-    }
-    
-    /**
-     * Gets a display name for this location.
-     */
-    public String getDisplayName() {
-        if (locationName != null && !locationName.isBlank()) {
-            if (Boolean.TRUE.equals(isMainLocation)) {
-                return locationName + " (Hauptstandort)";
-            }
-            return locationName;
-        }
-        return "Unbenannter Standort";
-    }
-    
-    /**
-     * Checks if this location has any active addresses.
-     */
-    public boolean hasActiveAddresses() {
-        return addresses.stream()
-                .anyMatch(addr -> !Boolean.TRUE.equals(addr.getIsDeleted()) && 
-                                Boolean.TRUE.equals(addr.getIsActive()));
-    }
-    
-    // Getters and Setters
-    public UUID getId() {
-        return id;
-    }
 
-    public void setId(UUID id) {
-        this.id = id;
-    }
+  @Id
+  @GeneratedValue
+  @UuidGenerator
+  @Column(name = "id", updatable = false, nullable = false)
+  private UUID id;
 
-    public Customer getCustomer() {
-        return customer;
-    }
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "customer_id", nullable = false)
+  private Customer customer;
 
-    public void setCustomer(Customer customer) {
-        this.customer = customer;
-    }
+  @Column(name = "location_name", nullable = false, length = 255)
+  private String locationName;
 
-    public String getLocationName() {
-        return locationName;
-    }
+  @Column(name = "location_code", length = 50)
+  private String locationCode; // Internal code for this location
 
-    public void setLocationName(String locationName) {
-        this.locationName = locationName;
-    }
+  @Enumerated(EnumType.STRING)
+  @Column(name = "category", length = 30)
+  private LocationCategory category;
 
-    public String getLocationCode() {
-        return locationCode;
-    }
+  @Column(name = "description", columnDefinition = "TEXT")
+  private String description;
 
-    public void setLocationCode(String locationCode) {
-        this.locationCode = locationCode;
-    }
+  // Addresses - One location can have multiple addresses
+  @OneToMany(mappedBy = "location", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+  private List<CustomerAddress> addresses = new ArrayList<>();
 
-    public LocationCategory getCategory() {
-        return category;
-    }
+  // Operational Information
+  @Column(name = "operating_hours", length = 500)
+  private String operatingHours; // JSON or structured text
 
-    public void setCategory(LocationCategory category) {
-        this.category = category;
-    }
+  @Column(name = "time_zone", length = 50)
+  private String timeZone;
 
-    public String getDescription() {
-        return description;
-    }
+  @Column(name = "phone", length = 50)
+  private String phone;
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+  @Column(name = "fax", length = 50)
+  private String fax;
 
-    public List<CustomerAddress> getAddresses() {
-        return addresses;
-    }
+  @Column(name = "email", length = 255)
+  private String email;
 
-    public void setAddresses(List<CustomerAddress> addresses) {
-        this.addresses = addresses;
-    }
+  // Business Information
+  @Column(name = "tax_number", length = 50)
+  private String taxNumber;
 
-    public String getOperatingHours() {
-        return operatingHours;
-    }
+  @Column(name = "vat_number", length = 50)
+  private String vatNumber;
 
-    public void setOperatingHours(String operatingHours) {
-        this.operatingHours = operatingHours;
-    }
+  @Column(name = "commercial_register", length = 100)
+  private String commercialRegister;
 
-    public String getTimeZone() {
-        return timeZone;
-    }
+  // Status Flags
+  @Column(name = "is_main_location", nullable = false)
+  private Boolean isMainLocation = false;
 
-    public void setTimeZone(String timeZone) {
-        this.timeZone = timeZone;
-    }
+  @Column(name = "is_active", nullable = false)
+  private Boolean isActive = true;
 
-    public String getPhone() {
-        return phone;
-    }
+  @Column(name = "is_billing_location", nullable = false)
+  private Boolean isBillingLocation = false;
 
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
+  @Column(name = "is_shipping_location", nullable = false)
+  private Boolean isShippingLocation = false;
 
-    public String getFax() {
-        return fax;
-    }
+  // Special Instructions
+  @Column(name = "delivery_instructions", columnDefinition = "TEXT")
+  private String deliveryInstructions;
 
-    public void setFax(String fax) {
-        this.fax = fax;
-    }
+  @Column(name = "access_instructions", columnDefinition = "TEXT")
+  private String accessInstructions;
 
-    public String getEmail() {
-        return email;
-    }
+  @Column(name = "notes", columnDefinition = "TEXT")
+  private String notes;
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
+  // Soft Delete
+  @Column(name = "is_deleted", nullable = false)
+  private Boolean isDeleted = false;
 
-    public String getTaxNumber() {
-        return taxNumber;
-    }
+  @Column(name = "deleted_at")
+  private LocalDateTime deletedAt;
 
-    public void setTaxNumber(String taxNumber) {
-        this.taxNumber = taxNumber;
-    }
+  @Column(name = "deleted_by", length = 100)
+  private String deletedBy;
 
-    public String getVatNumber() {
-        return vatNumber;
-    }
+  // Audit Fields
+  @Column(name = "created_at", nullable = false, updatable = false)
+  private LocalDateTime createdAt;
 
-    public void setVatNumber(String vatNumber) {
-        this.vatNumber = vatNumber;
-    }
+  @Column(name = "created_by", nullable = false, updatable = false, length = 100)
+  private String createdBy;
 
-    public String getCommercialRegister() {
-        return commercialRegister;
-    }
+  @Column(name = "updated_at")
+  private LocalDateTime updatedAt;
 
-    public void setCommercialRegister(String commercialRegister) {
-        this.commercialRegister = commercialRegister;
-    }
+  @Column(name = "updated_by", length = 100)
+  private String updatedBy;
 
-    public Boolean getIsMainLocation() {
-        return isMainLocation;
+  // Lifecycle Methods
+  @PrePersist
+  protected void onCreate() {
+    createdAt = LocalDateTime.now();
+    if (isDeleted == null) {
+      isDeleted = false;
     }
+    if (isActive == null) {
+      isActive = true;
+    }
+    if (isMainLocation == null) {
+      isMainLocation = false;
+    }
+    if (isBillingLocation == null) {
+      isBillingLocation = false;
+    }
+    if (isShippingLocation == null) {
+      isShippingLocation = false;
+    }
+  }
 
-    public void setIsMainLocation(Boolean isMainLocation) {
-        this.isMainLocation = isMainLocation;
-    }
+  @PreUpdate
+  protected void onUpdate() {
+    updatedAt = LocalDateTime.now();
+  }
 
-    public Boolean getIsActive() {
-        return isActive;
-    }
+  // Business Methods
 
-    public void setIsActive(Boolean isActive) {
-        this.isActive = isActive;
-    }
+  /** Gets the primary billing address for this location. */
+  public Optional<CustomerAddress> getPrimaryBillingAddress() {
+    return addresses.stream()
+        .filter(addr -> !Boolean.TRUE.equals(addr.getIsDeleted()))
+        .filter(addr -> addr.getAddressType() == AddressType.BILLING)
+        .filter(addr -> Boolean.TRUE.equals(addr.getIsPrimaryForType()))
+        .findFirst();
+  }
 
-    public Boolean getIsBillingLocation() {
-        return isBillingLocation;
-    }
+  /** Gets the primary shipping address for this location. */
+  public Optional<CustomerAddress> getPrimaryShippingAddress() {
+    return addresses.stream()
+        .filter(addr -> !Boolean.TRUE.equals(addr.getIsDeleted()))
+        .filter(addr -> addr.getAddressType() == AddressType.SHIPPING)
+        .filter(addr -> Boolean.TRUE.equals(addr.getIsPrimaryForType()))
+        .findFirst();
+  }
 
-    public void setIsBillingLocation(Boolean isBillingLocation) {
-        this.isBillingLocation = isBillingLocation;
-    }
+  /** Gets all active addresses of a specific type. */
+  public List<CustomerAddress> getAddressesByType(AddressType type) {
+    return addresses.stream()
+        .filter(addr -> !Boolean.TRUE.equals(addr.getIsDeleted()))
+        .filter(addr -> addr.getAddressType() == type)
+        .toList();
+  }
 
-    public Boolean getIsShippingLocation() {
-        return isShippingLocation;
-    }
+  /** Gets all active addresses. */
+  public List<CustomerAddress> getActiveAddresses() {
+    return addresses.stream()
+        .filter(addr -> !Boolean.TRUE.equals(addr.getIsDeleted()))
+        .filter(addr -> Boolean.TRUE.equals(addr.getIsActive()))
+        .toList();
+  }
 
-    public void setIsShippingLocation(Boolean isShippingLocation) {
-        this.isShippingLocation = isShippingLocation;
+  /** Adds an address to this location. */
+  public void addAddress(CustomerAddress address) {
+    if (address != null) {
+      address.setLocation(this);
+      this.addresses.add(address);
     }
+  }
 
-    public String getDeliveryInstructions() {
-        return deliveryInstructions;
+  /** Removes an address from this location (soft delete). */
+  public void removeAddress(CustomerAddress address, String deletedBy) {
+    if (address != null && addresses.contains(address)) {
+      address.setIsDeleted(true);
+      address.setDeletedAt(LocalDateTime.now());
+      address.setDeletedBy(deletedBy);
     }
+  }
 
-    public void setDeliveryInstructions(String deliveryInstructions) {
-        this.deliveryInstructions = deliveryInstructions;
-    }
+  /**
+   * Sets this location as the main location. Note: Business logic should ensure only one main
+   * location per customer.
+   */
+  public void setAsMainLocation(String updatedBy) {
+    this.isMainLocation = true;
+    this.updatedBy = updatedBy;
+  }
 
-    public String getAccessInstructions() {
-        return accessInstructions;
-    }
+  /** Removes main location status. */
+  public void removeMainLocationStatus(String updatedBy) {
+    this.isMainLocation = false;
+    this.updatedBy = updatedBy;
+  }
 
-    public void setAccessInstructions(String accessInstructions) {
-        this.accessInstructions = accessInstructions;
+  /** Gets a display name for this location. */
+  public String getDisplayName() {
+    if (locationName != null && !locationName.isBlank()) {
+      if (Boolean.TRUE.equals(isMainLocation)) {
+        return locationName + " (Hauptstandort)";
+      }
+      return locationName;
     }
+    return "Unbenannter Standort";
+  }
 
-    public String getNotes() {
-        return notes;
-    }
+  /** Checks if this location has any active addresses. */
+  public boolean hasActiveAddresses() {
+    return addresses.stream()
+        .anyMatch(
+            addr ->
+                !Boolean.TRUE.equals(addr.getIsDeleted())
+                    && Boolean.TRUE.equals(addr.getIsActive()));
+  }
 
-    public void setNotes(String notes) {
-        this.notes = notes;
-    }
+  // Getters and Setters
+  public UUID getId() {
+    return id;
+  }
 
-    public Boolean getIsDeleted() {
-        return isDeleted;
-    }
+  public void setId(UUID id) {
+    this.id = id;
+  }
 
-    public void setIsDeleted(Boolean isDeleted) {
-        this.isDeleted = isDeleted;
-    }
+  public Customer getCustomer() {
+    return customer;
+  }
 
-    public LocalDateTime getDeletedAt() {
-        return deletedAt;
-    }
+  public void setCustomer(Customer customer) {
+    this.customer = customer;
+  }
 
-    public void setDeletedAt(LocalDateTime deletedAt) {
-        this.deletedAt = deletedAt;
-    }
+  public String getLocationName() {
+    return locationName;
+  }
 
-    public String getDeletedBy() {
-        return deletedBy;
-    }
+  public void setLocationName(String locationName) {
+    this.locationName = locationName;
+  }
 
-    public void setDeletedBy(String deletedBy) {
-        this.deletedBy = deletedBy;
-    }
+  public String getLocationCode() {
+    return locationCode;
+  }
 
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
+  public void setLocationCode(String locationCode) {
+    this.locationCode = locationCode;
+  }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
+  public LocationCategory getCategory() {
+    return category;
+  }
 
-    public String getCreatedBy() {
-        return createdBy;
-    }
+  public void setCategory(LocationCategory category) {
+    this.category = category;
+  }
 
-    public void setCreatedBy(String createdBy) {
-        this.createdBy = createdBy;
-    }
+  public String getDescription() {
+    return description;
+  }
 
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
+  public void setDescription(String description) {
+    this.description = description;
+  }
 
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-    }
+  public List<CustomerAddress> getAddresses() {
+    return addresses;
+  }
 
-    public String getUpdatedBy() {
-        return updatedBy;
-    }
+  public void setAddresses(List<CustomerAddress> addresses) {
+    this.addresses = addresses;
+  }
 
-    public void setUpdatedBy(String updatedBy) {
-        this.updatedBy = updatedBy;
-    }
+  public String getOperatingHours() {
+    return operatingHours;
+  }
 
-    @Override
-    public String toString() {
-        return "CustomerLocation{" +
-                "id=" + id +
-                ", locationName='" + locationName + '\'' +
-                ", locationCode='" + locationCode + '\'' +
-                ", category=" + category +
-                ", isMainLocation=" + isMainLocation +
-                ", isActive=" + isActive +
-                '}';
-    }
+  public void setOperatingHours(String operatingHours) {
+    this.operatingHours = operatingHours;
+  }
+
+  public String getTimeZone() {
+    return timeZone;
+  }
+
+  public void setTimeZone(String timeZone) {
+    this.timeZone = timeZone;
+  }
+
+  public String getPhone() {
+    return phone;
+  }
+
+  public void setPhone(String phone) {
+    this.phone = phone;
+  }
+
+  public String getFax() {
+    return fax;
+  }
+
+  public void setFax(String fax) {
+    this.fax = fax;
+  }
+
+  public String getEmail() {
+    return email;
+  }
+
+  public void setEmail(String email) {
+    this.email = email;
+  }
+
+  public String getTaxNumber() {
+    return taxNumber;
+  }
+
+  public void setTaxNumber(String taxNumber) {
+    this.taxNumber = taxNumber;
+  }
+
+  public String getVatNumber() {
+    return vatNumber;
+  }
+
+  public void setVatNumber(String vatNumber) {
+    this.vatNumber = vatNumber;
+  }
+
+  public String getCommercialRegister() {
+    return commercialRegister;
+  }
+
+  public void setCommercialRegister(String commercialRegister) {
+    this.commercialRegister = commercialRegister;
+  }
+
+  public Boolean getIsMainLocation() {
+    return isMainLocation;
+  }
+
+  public void setIsMainLocation(Boolean isMainLocation) {
+    this.isMainLocation = isMainLocation;
+  }
+
+  public Boolean getIsActive() {
+    return isActive;
+  }
+
+  public void setIsActive(Boolean isActive) {
+    this.isActive = isActive;
+  }
+
+  public Boolean getIsBillingLocation() {
+    return isBillingLocation;
+  }
+
+  public void setIsBillingLocation(Boolean isBillingLocation) {
+    this.isBillingLocation = isBillingLocation;
+  }
+
+  public Boolean getIsShippingLocation() {
+    return isShippingLocation;
+  }
+
+  public void setIsShippingLocation(Boolean isShippingLocation) {
+    this.isShippingLocation = isShippingLocation;
+  }
+
+  public String getDeliveryInstructions() {
+    return deliveryInstructions;
+  }
+
+  public void setDeliveryInstructions(String deliveryInstructions) {
+    this.deliveryInstructions = deliveryInstructions;
+  }
+
+  public String getAccessInstructions() {
+    return accessInstructions;
+  }
+
+  public void setAccessInstructions(String accessInstructions) {
+    this.accessInstructions = accessInstructions;
+  }
+
+  public String getNotes() {
+    return notes;
+  }
+
+  public void setNotes(String notes) {
+    this.notes = notes;
+  }
+
+  public Boolean getIsDeleted() {
+    return isDeleted;
+  }
+
+  public void setIsDeleted(Boolean isDeleted) {
+    this.isDeleted = isDeleted;
+  }
+
+  public LocalDateTime getDeletedAt() {
+    return deletedAt;
+  }
+
+  public void setDeletedAt(LocalDateTime deletedAt) {
+    this.deletedAt = deletedAt;
+  }
+
+  public String getDeletedBy() {
+    return deletedBy;
+  }
+
+  public void setDeletedBy(String deletedBy) {
+    this.deletedBy = deletedBy;
+  }
+
+  public LocalDateTime getCreatedAt() {
+    return createdAt;
+  }
+
+  public void setCreatedAt(LocalDateTime createdAt) {
+    this.createdAt = createdAt;
+  }
+
+  public String getCreatedBy() {
+    return createdBy;
+  }
+
+  public void setCreatedBy(String createdBy) {
+    this.createdBy = createdBy;
+  }
+
+  public LocalDateTime getUpdatedAt() {
+    return updatedAt;
+  }
+
+  public void setUpdatedAt(LocalDateTime updatedAt) {
+    this.updatedAt = updatedAt;
+  }
+
+  public String getUpdatedBy() {
+    return updatedBy;
+  }
+
+  public void setUpdatedBy(String updatedBy) {
+    this.updatedBy = updatedBy;
+  }
+
+  @Override
+  public String toString() {
+    return "CustomerLocation{"
+        + "id="
+        + id
+        + ", locationName='"
+        + locationName
+        + '\''
+        + ", locationCode='"
+        + locationCode
+        + '\''
+        + ", category="
+        + category
+        + ", isMainLocation="
+        + isMainLocation
+        + ", isActive="
+        + isActive
+        + '}';
+  }
 }

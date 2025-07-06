@@ -31,11 +31,11 @@ async function enableMocking() {
       signal: AbortSignal.timeout(1000), // 1 second timeout
     });
     if (response.ok) {
-      console.log('✅ Backend is available, using real API');
+      // Backend is available, using real API
       return;
     }
   } catch {
-    console.log('⚠️ Backend not available, starting MSW mock server');
+    // Backend not available, starting MSW mock server
   }
 
   const { worker } = await import('./mocks/browser');

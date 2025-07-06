@@ -42,7 +42,7 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    command: start-dev --import-realm
+    command: start-dev
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/health/ready"]
       interval: 10s

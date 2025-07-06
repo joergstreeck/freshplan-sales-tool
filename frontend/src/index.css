@@ -1,30 +1,30 @@
 /* FreshPlan CI Design System */
 :root {
   /* FreshPlan Colors */
-  --color-primary: #94C456;          /* FreshPlan Grün */
-  --color-primary-dark: #7BA942;     /* Dunkleres Grün */
-  --color-primary-light: #E8F5DC;    /* Helles Grün */
-  --color-secondary: #004F7B;        /* FreshPlan Dunkelblau */
-  --color-secondary-light: #E6F2F8;  /* Helles Blau */
-  
+  --color-primary: #94c456; /* FreshPlan Grün */
+  --color-primary-dark: #7ba942; /* Dunkleres Grün */
+  --color-primary-light: #e8f5dc; /* Helles Grün */
+  --color-secondary: #004f7b; /* FreshPlan Dunkelblau */
+  --color-secondary-light: #e6f2f8; /* Helles Blau */
+
   /* Status Colors */
-  --color-success: #4CAF50;
-  --color-warning: #FF9800;
-  --color-danger: #F44336;
-  --color-info: #2196F3;
-  
+  --color-success: #4caf50;
+  --color-warning: #ff9800;
+  --color-danger: #f44336;
+  --color-info: #2196f3;
+
   /* Neutrals */
-  --color-text: #2D3748;
+  --color-text: #2d3748;
   --color-text-light: #718096;
-  --color-background: #F8F9FA;
-  --color-white: #FFFFFF;
-  --color-border: #E2E8F0;
-  --border-light: #F0F4F8;
-  
+  --color-background: #f8f9fa;
+  --color-white: #ffffff;
+  --color-border: #e2e8f0;
+  --border-light: #f0f4f8;
+
   /* Typography */
   --font-heading: 'Antonio', system-ui, sans-serif;
   --font-body: 'Poppins', system-ui, sans-serif;
-  
+
   /* Font Sizes */
   --font-size-xs: 0.75rem;
   --font-size-sm: 0.875rem;
@@ -34,13 +34,13 @@
   --font-size-2xl: 1.5rem;
   --font-size-3xl: 2rem;
   --font-size-4xl: 2.5rem;
-  
+
   /* Font Weights */
   --font-weight-normal: 400;
   --font-weight-medium: 500;
   --font-weight-semibold: 600;
   --font-weight-bold: 700;
-  
+
   /* Spacing */
   --spacing-xs: 0.25rem;
   --spacing-sm: 0.5rem;
@@ -48,33 +48,37 @@
   --spacing-lg: 1.5rem;
   --spacing-xl: 2rem;
   --spacing-2xl: 3rem;
-  
+
   /* Border Radius */
   --radius-sm: 0.25rem;
   --radius-md: 0.5rem;
   --radius-lg: 1rem;
   --radius-full: 9999px;
-  
+
   /* Shadows */
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-  
+
   /* Transitions */
   --transition-fast: 150ms ease-in-out;
   --transition-medium: 300ms ease-in-out;
-  
+
   /* Gradients */
-  --bg-gradient-primary: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
-  --bg-gradient-secondary: linear-gradient(135deg, var(--color-secondary) 0%, #003A5A 100%);
-  
+  --bg-gradient-primary: linear-gradient(
+    135deg,
+    var(--color-primary) 0%,
+    var(--color-primary-dark) 100%
+  );
+  --bg-gradient-secondary: linear-gradient(135deg, var(--color-secondary) 0%, #003a5a 100%);
+
   /* Base Settings */
   font-family: var(--font-body);
   line-height: 1.5;
   font-weight: 400;
   color: var(--color-text);
   background-color: var(--color-background);
-  
+
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -105,7 +109,12 @@ body {
 }
 
 /* Typography */
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: var(--font-heading);
   font-weight: var(--font-weight-semibold);
   line-height: 1.2;
@@ -176,7 +185,7 @@ button:focus-visible {
 }
 
 .btn-secondary:hover {
-  background-color: #003A5A;
+  background-color: #003a5a;
   transform: translateY(-1px);
   box-shadow: var(--shadow-md);
 }
@@ -186,8 +195,18 @@ button:focus-visible {
   text-align: center;
 }
 
-.mt-1 { margin-top: var(--spacing-xs); }
-.mt-2 { margin-top: var(--spacing-sm); }
-.mt-3 { margin-top: var(--spacing-md); }
-.mt-4 { margin-top: var(--spacing-lg); }
-.mt-5 { margin-top: var(--spacing-xl); }
+.mt-1 {
+  margin-top: var(--spacing-xs);
+}
+.mt-2 {
+  margin-top: var(--spacing-sm);
+}
+.mt-3 {
+  margin-top: var(--spacing-md);
+}
+.mt-4 {
+  margin-top: var(--spacing-lg);
+}
+.mt-5 {
+  margin-top: var(--spacing-xl);
+}

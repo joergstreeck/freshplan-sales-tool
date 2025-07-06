@@ -9,17 +9,20 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className = '', variant = 'default', size = 'default', asChild = false, children, ...props }, ref) => {
+  (
+    { className = '', variant = 'default', size = 'default', asChild = false, children, ...props },
+    ref
+  ) => {
     const Comp = asChild ? Slot : 'button';
-    
+
     // Map shadcn variants to our CSS classes
     const variantClasses: Record<string, string> = {
       default: 'btn btn-primary',
-      secondary: 'btn btn-secondary', 
+      secondary: 'btn btn-secondary',
       ghost: 'btn btn-ghost',
       destructive: 'btn btn-primary', // Use primary for destructive
-      outline: 'btn btn-secondary',   // Use secondary for outline
-      link: 'btn btn-ghost'           // Use ghost for link
+      outline: 'btn btn-secondary', // Use secondary for outline
+      link: 'btn btn-ghost', // Use ghost for link
     };
 
     // Size modifiers
@@ -27,21 +30,15 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       default: '',
       sm: 'btn-sm',
       lg: 'btn-lg',
-      icon: 'btn-sm'  // Use small for icon
+      icon: 'btn-sm', // Use small for icon
     };
 
-    const classes = [
-      variantClasses[variant],
-      sizeClasses[size],
-      className
-    ].filter(Boolean).join(' ');
+    const classes = [variantClasses[variant], sizeClasses[size], className]
+      .filter(Boolean)
+      .join(' ');
 
     return (
-      <Comp
-        className={classes}
-        ref={ref}
-        {...props}
-      >
+      <Comp className={classes} ref={ref} {...props}>
         {children}
       </Comp>
     );

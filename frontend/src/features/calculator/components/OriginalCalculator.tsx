@@ -19,7 +19,7 @@ export function OriginalCalculator() {
       orderValue,
       leadTime,
       pickup,
-      chain
+      chain,
     });
   }, [orderValue, leadTime, pickup, chain]);
 
@@ -31,7 +31,7 @@ export function OriginalCalculator() {
       style: 'currency',
       currency: 'EUR',
       minimumFractionDigits: 0,
-      maximumFractionDigits: 0
+      maximumFractionDigits: 0,
     }).format(value);
   };
 
@@ -39,7 +39,7 @@ export function OriginalCalculator() {
   const updateSliderProgress = (value: number, min: number, max: number) => {
     const percentage = ((value - min) / (max - min)) * 100;
     return {
-      background: `linear-gradient(to right, #94c456 0%, #94c456 ${percentage}%, #e0e0e0 ${percentage}%, #e0e0e0 100%)`
+      background: `linear-gradient(to right, #94c456 0%, #94c456 ${percentage}%, #e0e0e0 ${percentage}%, #e0e0e0 100%)`,
     };
   };
 
@@ -48,62 +48,54 @@ export function OriginalCalculator() {
       {/* Calculator Section */}
       <div className="calculator-section">
         <h2 className="section-title">FreshPlan Rabattrechner</h2>
-        
+
         {/* Order Value Slider */}
         <div className="slider-group">
           <div className="slider-label">
             <span>Bestellwert</span>
             <span className="slider-value">{formatCurrency(orderValue)}</span>
           </div>
-          <input 
-            type="range" 
-            className="slider" 
-            min="1000" 
-            max="100000" 
-            step="1000" 
+          <input
+            type="range"
+            className="slider"
+            min="1000"
+            max="100000"
+            step="1000"
             value={orderValue}
-            onChange={(e) => setOrderValue(Number(e.target.value))}
+            onChange={e => setOrderValue(Number(e.target.value))}
             style={updateSliderProgress(orderValue, 1000, 100000)}
           />
         </div>
-        
+
         {/* Lead Time Slider */}
         <div className="slider-group">
           <div className="slider-label">
             <span>Vorlaufzeit</span>
             <span className="slider-value">{leadTime} Tage</span>
           </div>
-          <input 
-            type="range" 
-            className="slider" 
-            min="0" 
-            max="60" 
+          <input
+            type="range"
+            className="slider"
+            min="0"
+            max="60"
             value={leadTime}
-            onChange={(e) => setLeadTime(Number(e.target.value))}
+            onChange={e => setLeadTime(Number(e.target.value))}
             style={updateSliderProgress(leadTime, 0, 60)}
           />
         </div>
-        
+
         {/* Checkboxes */}
         <div className="checkbox-group">
           <label className="checkbox-label">
-            <input 
-              type="checkbox" 
-              checked={pickup}
-              onChange={(e) => setPickup(e.target.checked)}
-            />
+            <input type="checkbox" checked={pickup} onChange={e => setPickup(e.target.checked)} />
             <span>Abholung (Mindestbestellwert: 5.000€ netto)</span>
           </label>
           <label className="checkbox-label">
-            <input 
-              type="checkbox" 
-              checked={chain}
-              onChange={(e) => setChain(e.target.checked)}
-            />
+            <input type="checkbox" checked={chain} onChange={e => setChain(e.target.checked)} />
             <span>Kettenkunde</span>
           </label>
         </div>
-        
+
         {/* Results - only show when we have data */}
         {result && (
           <div className="results-section">
@@ -128,7 +120,7 @@ export function OriginalCalculator() {
                 <span className="discount-value accent">{result.totalDiscount}%</span>
               </div>
             </div>
-            
+
             <div className="price-summary">
               <div className="price-row">
                 <span>Ersparnis:</span>
@@ -142,7 +134,7 @@ export function OriginalCalculator() {
           </div>
         )}
       </div>
-      
+
       {/* Right Column - Information */}
       <div className="info-section">
         {/* Scenario Cards */}
@@ -151,8 +143,8 @@ export function OriginalCalculator() {
             <h3>Beispielszenarien</h3>
           </div>
           <div className="scenario-grid">
-            <div 
-              className="scenario-card" 
+            <div
+              className="scenario-card"
               onClick={() => {
                 setOrderValue(8000);
                 setLeadTime(5);
@@ -166,9 +158,9 @@ export function OriginalCalculator() {
                 <span>8.000€ • 5 Tage</span>
               </div>
             </div>
-            
-            <div 
-              className="scenario-card" 
+
+            <div
+              className="scenario-card"
               onClick={() => {
                 setOrderValue(32000);
                 setLeadTime(16);
@@ -182,9 +174,9 @@ export function OriginalCalculator() {
                 <span>32.000€ • 16 Tage</span>
               </div>
             </div>
-            
-            <div 
-              className="scenario-card" 
+
+            <div
+              className="scenario-card"
               onClick={() => {
                 setOrderValue(50000);
                 setLeadTime(30);
@@ -200,7 +192,7 @@ export function OriginalCalculator() {
             </div>
           </div>
         </div>
-        
+
         {/* Discount System Info */}
         <div className="info-card modern">
           <div className="info-header">

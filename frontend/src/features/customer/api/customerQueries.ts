@@ -6,7 +6,7 @@ import type { CustomerStatus } from '../types/customer.types';
 export const customerKeys = {
   all: ['customers'] as const,
   lists: () => [...customerKeys.all, 'list'] as const,
-  list: (page?: number, size?: number, sortBy?: string) => 
+  list: (page?: number, size?: number, sortBy?: string) =>
     [...customerKeys.lists(), { page, size, sortBy }] as const,
   byStatus: (status: CustomerStatus, page?: number, size?: number) =>
     [...customerKeys.lists(), 'status', status, { page, size }] as const,
@@ -24,8 +24,8 @@ export const useCustomers = (page = 0, size = 20, sortBy = 'companyName') => {
 };
 
 export const useCustomersByStatus = (
-  status: CustomerStatus, 
-  page = 0, 
+  status: CustomerStatus,
+  page = 0,
   size = 20,
   enabled = true
 ) => {
@@ -37,12 +37,7 @@ export const useCustomersByStatus = (
   });
 };
 
-export const useCustomerSearch = (
-  query: string,
-  page = 0,
-  size = 20,
-  enabled = true
-) => {
+export const useCustomerSearch = (query: string, page = 0, size = 20, enabled = true) => {
   return useQuery({
     queryKey: customerKeys.search(query, page, size),
     queryFn: () => customerApi.searchCustomers(query, page, size),
