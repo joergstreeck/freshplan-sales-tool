@@ -2,612 +2,589 @@ package de.freshplan.domain.customer.entity;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
-import org.hibernate.annotations.UuidGenerator;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import org.hibernate.annotations.UuidGenerator;
 
 /**
- * Customer entity representing a business customer with full CRM capabilities.
- * Supports soft delete, hierarchies, and comprehensive business data.
+ * Customer entity representing a business customer with full CRM capabilities. Supports soft
+ * delete, hierarchies, and comprehensive business data.
  */
 @Entity
-@Table(name = "customers", indexes = {
-    @Index(name = "idx_customer_number", columnList = "customer_number", unique = true),
-    @Index(name = "idx_customer_status", columnList = "status"),
-    @Index(name = "idx_customer_deleted", columnList = "is_deleted")
-})
+@Table(
+    name = "customers",
+    indexes = {
+      @Index(name = "idx_customer_number", columnList = "customer_number", unique = true),
+      @Index(name = "idx_customer_status", columnList = "status"),
+      @Index(name = "idx_customer_deleted", columnList = "is_deleted")
+    })
 public class Customer extends PanacheEntityBase {
-    
-    @Id
-    @GeneratedValue
-    @UuidGenerator
-    @Column(name = "id", updatable = false, nullable = false)
-    private UUID id;
-    
-    // Basic Information
-    @Column(name = "customer_number", unique = true, nullable = false, length = 20)
-    private String customerNumber;
-    
-    @Column(name = "company_name", nullable = false, length = 255)
-    private String companyName;
-    
-    @Column(name = "trading_name", length = 255)
-    private String tradingName;
-    
-    @Column(name = "legal_form", length = 100)
-    private String legalForm;
-    
-    // Classification
-    @Enumerated(EnumType.STRING)
-    @Column(name = "customer_type", nullable = false, length = 20)
-    private CustomerType customerType = CustomerType.UNTERNEHMEN;
-    
-    @Enumerated(EnumType.STRING)
-    @Column(name = "industry", length = 30)
-    private Industry industry;
-    
-    @Enumerated(EnumType.STRING)
-    @Column(name = "classification", length = 10)
-    private Classification classification;
-    
-    // Hierarchy Support
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "parent_customer_id")
-    private Customer parentCustomer;
-    
-    @OneToMany(mappedBy = "parentCustomer", cascade = CascadeType.ALL)
-    private List<Customer> childCustomers = new ArrayList<>();
-    
-    @Enumerated(EnumType.STRING)
-    @Column(name = "hierarchy_type", length = 20)
-    private CustomerHierarchyType hierarchyType = CustomerHierarchyType.STANDALONE;
-    
-    // Status & Lifecycle
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false, length = 20)
-    private CustomerStatus status = CustomerStatus.LEAD;
-    
-    @Enumerated(EnumType.STRING)
-    @Column(name = "lifecycle_stage", length = 20)
-    private CustomerLifecycleStage lifecycleStage = CustomerLifecycleStage.ACQUISITION;
-    
-    // Partner Status (for future partner management)
-    @Enumerated(EnumType.STRING)
-    @Column(name = "partner_status", length = 20)
-    private PartnerStatus partnerStatus = PartnerStatus.KEIN_PARTNER;
-    
-    // Financial Information
-    @Column(name = "expected_annual_volume", precision = 12, scale = 2)
-    private BigDecimal expectedAnnualVolume;
-    
-    @Column(name = "actual_annual_volume", precision = 12, scale = 2)
-    private BigDecimal actualAnnualVolume;
-    
-    @Enumerated(EnumType.STRING)
-    @Column(name = "payment_terms", length = 20)
-    private PaymentTerms paymentTerms = PaymentTerms.NETTO_30;
-    
-    @Column(name = "credit_limit", precision = 12, scale = 2)
-    private BigDecimal creditLimit;
-    
-    @Enumerated(EnumType.STRING)
-    @Column(name = "delivery_condition", length = 30)
-    private DeliveryCondition deliveryCondition = DeliveryCondition.STANDARD;
-    
-    // Risk Management
-    @Column(name = "risk_score")
-    private Integer riskScore = 0;
-    
-    @Column(name = "last_contact_date")
-    private LocalDateTime lastContactDate;
-    
-    @Column(name = "next_follow_up_date")
-    private LocalDateTime nextFollowUpDate;
-    
-    // Soft Delete
-    @Column(name = "is_deleted", nullable = false)
-    private Boolean isDeleted = false;
-    
-    @Column(name = "deleted_at")
-    private LocalDateTime deletedAt;
-    
-    @Column(name = "deleted_by", length = 100)
-    private String deletedBy;
-    
-    // Audit Fields
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
-    
-    @Column(name = "created_by", nullable = false, updatable = false, length = 100)
-    private String createdBy;
-    
-    @Column(name = "updated_at", nullable = true)
-    private LocalDateTime updatedAt;
-    
-    @Column(name = "updated_by", length = 100, nullable = true)
-    private String updatedBy;
-    
-    // Additional audit fields (added by Hibernate automatically)
-    @Column(name = "last_modified_at", nullable = true)
-    private LocalDateTime lastModifiedAt;
-    
-    @Column(name = "last_modified_by", length = 100, nullable = true)
-    private String lastModifiedBy;
-    
-    // Relationships
-    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<CustomerContact> contacts = new ArrayList<>();
-    
-    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<CustomerLocation> locations = new ArrayList<>();
-    
-    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<CustomerTimelineEvent> timelineEvents = new ArrayList<>();
-    
-    // Lifecycle Methods
-    @PrePersist
-    protected void onCreate() {
-        createdAt = LocalDateTime.now();
-        if (isDeleted == null) {
-            isDeleted = false;
-        }
-        // Set initial values for last_modified fields
-        lastModifiedAt = createdAt;
-        if (createdBy != null) {
-            lastModifiedBy = createdBy;
-        } else {
-            lastModifiedBy = "system"; // Fallback for tests
-        }
+
+  @Id
+  @GeneratedValue
+  @UuidGenerator
+  @Column(name = "id", updatable = false, nullable = false)
+  private UUID id;
+
+  // Basic Information
+  @Column(name = "customer_number", unique = true, nullable = false, length = 20)
+  private String customerNumber;
+
+  @Column(name = "company_name", nullable = false, length = 255)
+  private String companyName;
+
+  @Column(name = "trading_name", length = 255)
+  private String tradingName;
+
+  @Column(name = "legal_form", length = 100)
+  private String legalForm;
+
+  // Classification
+  @Enumerated(EnumType.STRING)
+  @Column(name = "customer_type", nullable = false, length = 20)
+  private CustomerType customerType = CustomerType.UNTERNEHMEN;
+
+  @Enumerated(EnumType.STRING)
+  @Column(name = "industry", length = 30)
+  private Industry industry;
+
+  @Enumerated(EnumType.STRING)
+  @Column(name = "classification", length = 10)
+  private Classification classification;
+
+  // Hierarchy Support
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "parent_customer_id")
+  private Customer parentCustomer;
+
+  @OneToMany(mappedBy = "parentCustomer", cascade = CascadeType.ALL)
+  private List<Customer> childCustomers = new ArrayList<>();
+
+  @Enumerated(EnumType.STRING)
+  @Column(name = "hierarchy_type", length = 20)
+  private CustomerHierarchyType hierarchyType = CustomerHierarchyType.STANDALONE;
+
+  // Status & Lifecycle
+  @Enumerated(EnumType.STRING)
+  @Column(name = "status", nullable = false, length = 20)
+  private CustomerStatus status = CustomerStatus.LEAD;
+
+  @Enumerated(EnumType.STRING)
+  @Column(name = "lifecycle_stage", length = 20)
+  private CustomerLifecycleStage lifecycleStage = CustomerLifecycleStage.ACQUISITION;
+
+  // Partner Status (for future partner management)
+  @Enumerated(EnumType.STRING)
+  @Column(name = "partner_status", length = 20)
+  private PartnerStatus partnerStatus = PartnerStatus.KEIN_PARTNER;
+
+  // Financial Information
+  @Column(name = "expected_annual_volume", precision = 12, scale = 2)
+  private BigDecimal expectedAnnualVolume;
+
+  @Column(name = "actual_annual_volume", precision = 12, scale = 2)
+  private BigDecimal actualAnnualVolume;
+
+  @Enumerated(EnumType.STRING)
+  @Column(name = "payment_terms", length = 20)
+  private PaymentTerms paymentTerms = PaymentTerms.NETTO_30;
+
+  @Column(name = "credit_limit", precision = 12, scale = 2)
+  private BigDecimal creditLimit;
+
+  @Enumerated(EnumType.STRING)
+  @Column(name = "delivery_condition", length = 30)
+  private DeliveryCondition deliveryCondition = DeliveryCondition.STANDARD;
+
+  // Risk Management
+  @Column(name = "risk_score")
+  private Integer riskScore = 0;
+
+  @Column(name = "last_contact_date")
+  private LocalDateTime lastContactDate;
+
+  @Column(name = "next_follow_up_date")
+  private LocalDateTime nextFollowUpDate;
+
+  // Soft Delete
+  @Column(name = "is_deleted", nullable = false)
+  private Boolean isDeleted = false;
+
+  @Column(name = "deleted_at")
+  private LocalDateTime deletedAt;
+
+  @Column(name = "deleted_by", length = 100)
+  private String deletedBy;
+
+  // Audit Fields
+  @Column(name = "created_at", nullable = false, updatable = false)
+  private LocalDateTime createdAt;
+
+  @Column(name = "created_by", nullable = false, updatable = false, length = 100)
+  private String createdBy;
+
+  @Column(name = "updated_at", nullable = true)
+  private LocalDateTime updatedAt;
+
+  @Column(name = "updated_by", length = 100, nullable = true)
+  private String updatedBy;
+
+  // Additional audit fields (added by Hibernate automatically)
+  @Column(name = "last_modified_at", nullable = true)
+  private LocalDateTime lastModifiedAt;
+
+  @Column(name = "last_modified_by", length = 100, nullable = true)
+  private String lastModifiedBy;
+
+  // Relationships
+  @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+  private List<CustomerContact> contacts = new ArrayList<>();
+
+  @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+  private List<CustomerLocation> locations = new ArrayList<>();
+
+  @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+  private List<CustomerTimelineEvent> timelineEvents = new ArrayList<>();
+
+  // Lifecycle Methods
+  @PrePersist
+  protected void onCreate() {
+    createdAt = LocalDateTime.now();
+    if (isDeleted == null) {
+      isDeleted = false;
     }
-    
-    @PreUpdate
-    protected void onUpdate() {
-        updatedAt = LocalDateTime.now();
-        // Update last_modified fields
-        lastModifiedAt = updatedAt;
-        if (updatedBy != null) {
-            lastModifiedBy = updatedBy;
-        } else if (lastModifiedBy == null) {
-            lastModifiedBy = "system"; // Fallback for tests
-        }
+    // Set initial values for last_modified fields
+    lastModifiedAt = createdAt;
+    if (createdBy != null) {
+      lastModifiedBy = createdBy;
+    } else {
+      lastModifiedBy = "system"; // Fallback for tests
     }
-    
-    // Business Methods
-    public void updateRiskScore() {
-        int score = 0;
-        
-        // Base score by status
-        score += switch (this.status) {
-            case LEAD -> 50;
-            case PROSPECT -> 30;
-            case AKTIV -> 10;
-            case RISIKO -> 70;
-            case INAKTIV -> 90;
-            case ARCHIVIERT -> 100;
+  }
+
+  @PreUpdate
+  protected void onUpdate() {
+    updatedAt = LocalDateTime.now();
+    // Update last_modified fields
+    lastModifiedAt = updatedAt;
+    if (updatedBy != null) {
+      lastModifiedBy = updatedBy;
+    } else if (lastModifiedBy == null) {
+      lastModifiedBy = "system"; // Fallback for tests
+    }
+  }
+
+  // Business Methods
+  public void updateRiskScore() {
+    int score = 0;
+
+    // Base score by status
+    score +=
+        switch (this.status) {
+          case LEAD -> 50;
+          case PROSPECT -> 30;
+          case AKTIV -> 10;
+          case RISIKO -> 70;
+          case INAKTIV -> 90;
+          case ARCHIVIERT -> 100;
         };
-        
-        // Last contact scoring
-        if (lastContactDate != null) {
-            long daysSinceContact = java.time.temporal.ChronoUnit.DAYS.between(
-                lastContactDate.toLocalDate(), 
-                java.time.LocalDate.now()
-            );
-            if (daysSinceContact > 90) score += 20;
-            if (daysSinceContact > 180) score += 20;
-        } else {
-            score += 30; // Never contacted
-        }
-        
-        // Overdue follow-up
-        if (nextFollowUpDate != null && 
-            nextFollowUpDate.isBefore(LocalDateTime.now())) {
-            score += 10;
-        }
-        
-        this.riskScore = Math.min(score, 100);
-    }
-    
-    public boolean isAtRisk() {
-        return lastContactDate != null && 
-               lastContactDate.isBefore(LocalDateTime.now().minusDays(90));
-    }
-    
-    public boolean hasChildren() {
-        return childCustomers != null && !childCustomers.isEmpty();
-    }
-    
-    // Getters and Setters
-    public UUID getId() {
-        return id;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
-    }
-
-    public String getCustomerNumber() {
-        return customerNumber;
-    }
-
-    public void setCustomerNumber(String customerNumber) {
-        this.customerNumber = customerNumber;
-    }
-
-    public String getCompanyName() {
-        return companyName;
-    }
-
-    public void setCompanyName(String companyName) {
-        this.companyName = companyName;
-    }
-
-    public String getTradingName() {
-        return tradingName;
-    }
-
-    public void setTradingName(String tradingName) {
-        this.tradingName = tradingName;
-    }
-
-    public String getLegalForm() {
-        return legalForm;
-    }
-
-    public void setLegalForm(String legalForm) {
-        this.legalForm = legalForm;
-    }
 
-    public CustomerType getCustomerType() {
-        return customerType;
+    // Last contact scoring
+    if (lastContactDate != null) {
+      long daysSinceContact =
+          java.time.temporal.ChronoUnit.DAYS.between(
+              lastContactDate.toLocalDate(), java.time.LocalDate.now());
+      if (daysSinceContact > 90) score += 20;
+      if (daysSinceContact > 180) score += 20;
+    } else {
+      score += 30; // Never contacted
     }
 
-    public void setCustomerType(CustomerType customerType) {
-        this.customerType = customerType;
+    // Overdue follow-up
+    if (nextFollowUpDate != null && nextFollowUpDate.isBefore(LocalDateTime.now())) {
+      score += 10;
     }
 
-    public Industry getIndustry() {
-        return industry;
-    }
-
-    public void setIndustry(Industry industry) {
-        this.industry = industry;
-    }
-
-    public Classification getClassification() {
-        return classification;
-    }
+    this.riskScore = Math.min(score, 100);
+  }
 
-    public void setClassification(Classification classification) {
-        this.classification = classification;
-    }
+  public boolean isAtRisk() {
+    return lastContactDate != null && lastContactDate.isBefore(LocalDateTime.now().minusDays(90));
+  }
 
-    public Customer getParentCustomer() {
-        return parentCustomer;
-    }
+  public boolean hasChildren() {
+    return childCustomers != null && !childCustomers.isEmpty();
+  }
 
-    public void setParentCustomer(Customer parentCustomer) {
-        this.parentCustomer = parentCustomer;
-    }
+  // Getters and Setters
+  public UUID getId() {
+    return id;
+  }
 
-    public List<Customer> getChildCustomers() {
-        return childCustomers;
-    }
+  public void setId(UUID id) {
+    this.id = id;
+  }
 
-    public void setChildCustomers(List<Customer> childCustomers) {
-        this.childCustomers = childCustomers;
-    }
+  public String getCustomerNumber() {
+    return customerNumber;
+  }
 
-    public CustomerHierarchyType getHierarchyType() {
-        return hierarchyType;
-    }
+  public void setCustomerNumber(String customerNumber) {
+    this.customerNumber = customerNumber;
+  }
 
-    public void setHierarchyType(CustomerHierarchyType hierarchyType) {
-        this.hierarchyType = hierarchyType;
-    }
+  public String getCompanyName() {
+    return companyName;
+  }
 
-    public CustomerStatus getStatus() {
-        return status;
-    }
+  public void setCompanyName(String companyName) {
+    this.companyName = companyName;
+  }
 
-    public void setStatus(CustomerStatus status) {
-        this.status = status;
-    }
+  public String getTradingName() {
+    return tradingName;
+  }
 
-    public CustomerLifecycleStage getLifecycleStage() {
-        return lifecycleStage;
-    }
+  public void setTradingName(String tradingName) {
+    this.tradingName = tradingName;
+  }
 
-    public void setLifecycleStage(CustomerLifecycleStage lifecycleStage) {
-        this.lifecycleStage = lifecycleStage;
-    }
+  public String getLegalForm() {
+    return legalForm;
+  }
 
-    public PartnerStatus getPartnerStatus() {
-        return partnerStatus;
-    }
+  public void setLegalForm(String legalForm) {
+    this.legalForm = legalForm;
+  }
 
-    public void setPartnerStatus(PartnerStatus partnerStatus) {
-        this.partnerStatus = partnerStatus;
-    }
+  public CustomerType getCustomerType() {
+    return customerType;
+  }
 
-    public BigDecimal getExpectedAnnualVolume() {
-        return expectedAnnualVolume;
-    }
+  public void setCustomerType(CustomerType customerType) {
+    this.customerType = customerType;
+  }
 
-    public void setExpectedAnnualVolume(BigDecimal expectedAnnualVolume) {
-        this.expectedAnnualVolume = expectedAnnualVolume;
-    }
+  public Industry getIndustry() {
+    return industry;
+  }
 
-    public BigDecimal getActualAnnualVolume() {
-        return actualAnnualVolume;
-    }
+  public void setIndustry(Industry industry) {
+    this.industry = industry;
+  }
 
-    public void setActualAnnualVolume(BigDecimal actualAnnualVolume) {
-        this.actualAnnualVolume = actualAnnualVolume;
-    }
+  public Classification getClassification() {
+    return classification;
+  }
 
-    public PaymentTerms getPaymentTerms() {
-        return paymentTerms;
-    }
+  public void setClassification(Classification classification) {
+    this.classification = classification;
+  }
 
-    public void setPaymentTerms(PaymentTerms paymentTerms) {
-        this.paymentTerms = paymentTerms;
-    }
+  public Customer getParentCustomer() {
+    return parentCustomer;
+  }
 
-    public BigDecimal getCreditLimit() {
-        return creditLimit;
-    }
+  public void setParentCustomer(Customer parentCustomer) {
+    this.parentCustomer = parentCustomer;
+  }
 
-    public void setCreditLimit(BigDecimal creditLimit) {
-        this.creditLimit = creditLimit;
-    }
+  public List<Customer> getChildCustomers() {
+    return childCustomers;
+  }
 
-    public DeliveryCondition getDeliveryCondition() {
-        return deliveryCondition;
-    }
+  public void setChildCustomers(List<Customer> childCustomers) {
+    this.childCustomers = childCustomers;
+  }
 
-    public void setDeliveryCondition(DeliveryCondition deliveryCondition) {
-        this.deliveryCondition = deliveryCondition;
-    }
+  public CustomerHierarchyType getHierarchyType() {
+    return hierarchyType;
+  }
 
-    public Integer getRiskScore() {
-        return riskScore;
-    }
+  public void setHierarchyType(CustomerHierarchyType hierarchyType) {
+    this.hierarchyType = hierarchyType;
+  }
 
-    public void setRiskScore(Integer riskScore) {
-        this.riskScore = riskScore;
-    }
+  public CustomerStatus getStatus() {
+    return status;
+  }
 
-    public LocalDateTime getLastContactDate() {
-        return lastContactDate;
-    }
+  public void setStatus(CustomerStatus status) {
+    this.status = status;
+  }
 
-    public void setLastContactDate(LocalDateTime lastContactDate) {
-        this.lastContactDate = lastContactDate;
-    }
+  public CustomerLifecycleStage getLifecycleStage() {
+    return lifecycleStage;
+  }
 
-    public LocalDateTime getNextFollowUpDate() {
-        return nextFollowUpDate;
-    }
+  public void setLifecycleStage(CustomerLifecycleStage lifecycleStage) {
+    this.lifecycleStage = lifecycleStage;
+  }
 
-    public void setNextFollowUpDate(LocalDateTime nextFollowUpDate) {
-        this.nextFollowUpDate = nextFollowUpDate;
-    }
+  public PartnerStatus getPartnerStatus() {
+    return partnerStatus;
+  }
 
-    public Boolean getIsDeleted() {
-        return isDeleted;
-    }
+  public void setPartnerStatus(PartnerStatus partnerStatus) {
+    this.partnerStatus = partnerStatus;
+  }
 
-    public void setIsDeleted(Boolean isDeleted) {
-        this.isDeleted = isDeleted;
-    }
+  public BigDecimal getExpectedAnnualVolume() {
+    return expectedAnnualVolume;
+  }
 
-    public LocalDateTime getDeletedAt() {
-        return deletedAt;
-    }
+  public void setExpectedAnnualVolume(BigDecimal expectedAnnualVolume) {
+    this.expectedAnnualVolume = expectedAnnualVolume;
+  }
 
-    public void setDeletedAt(LocalDateTime deletedAt) {
-        this.deletedAt = deletedAt;
-    }
+  public BigDecimal getActualAnnualVolume() {
+    return actualAnnualVolume;
+  }
 
-    public String getDeletedBy() {
-        return deletedBy;
-    }
+  public void setActualAnnualVolume(BigDecimal actualAnnualVolume) {
+    this.actualAnnualVolume = actualAnnualVolume;
+  }
 
-    public void setDeletedBy(String deletedBy) {
-        this.deletedBy = deletedBy;
-    }
+  public PaymentTerms getPaymentTerms() {
+    return paymentTerms;
+  }
 
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
+  public void setPaymentTerms(PaymentTerms paymentTerms) {
+    this.paymentTerms = paymentTerms;
+  }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
+  public BigDecimal getCreditLimit() {
+    return creditLimit;
+  }
 
-    public String getCreatedBy() {
-        return createdBy;
-    }
+  public void setCreditLimit(BigDecimal creditLimit) {
+    this.creditLimit = creditLimit;
+  }
 
-    public void setCreatedBy(String createdBy) {
-        this.createdBy = createdBy;
-    }
+  public DeliveryCondition getDeliveryCondition() {
+    return deliveryCondition;
+  }
 
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
+  public void setDeliveryCondition(DeliveryCondition deliveryCondition) {
+    this.deliveryCondition = deliveryCondition;
+  }
 
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-    }
+  public Integer getRiskScore() {
+    return riskScore;
+  }
 
-    public String getUpdatedBy() {
-        return updatedBy;
-    }
+  public void setRiskScore(Integer riskScore) {
+    this.riskScore = riskScore;
+  }
 
-    public void setUpdatedBy(String updatedBy) {
-        this.updatedBy = updatedBy;
-    }
+  public LocalDateTime getLastContactDate() {
+    return lastContactDate;
+  }
 
-    public LocalDateTime getLastModifiedAt() {
-        return lastModifiedAt;
-    }
+  public void setLastContactDate(LocalDateTime lastContactDate) {
+    this.lastContactDate = lastContactDate;
+  }
 
-    public void setLastModifiedAt(LocalDateTime lastModifiedAt) {
-        this.lastModifiedAt = lastModifiedAt;
-    }
+  public LocalDateTime getNextFollowUpDate() {
+    return nextFollowUpDate;
+  }
 
-    public String getLastModifiedBy() {
-        return lastModifiedBy;
-    }
+  public void setNextFollowUpDate(LocalDateTime nextFollowUpDate) {
+    this.nextFollowUpDate = nextFollowUpDate;
+  }
 
-    public void setLastModifiedBy(String lastModifiedBy) {
-        this.lastModifiedBy = lastModifiedBy;
-    }
+  public Boolean getIsDeleted() {
+    return isDeleted;
+  }
 
-    public List<CustomerContact> getContacts() {
-        return contacts;
-    }
+  public void setIsDeleted(Boolean isDeleted) {
+    this.isDeleted = isDeleted;
+  }
 
-    public void setContacts(List<CustomerContact> contacts) {
-        this.contacts = contacts;
-    }
+  public LocalDateTime getDeletedAt() {
+    return deletedAt;
+  }
 
-    public List<CustomerLocation> getLocations() {
-        return locations;
-    }
+  public void setDeletedAt(LocalDateTime deletedAt) {
+    this.deletedAt = deletedAt;
+  }
 
-    public void setLocations(List<CustomerLocation> locations) {
-        this.locations = locations;
-    }
+  public String getDeletedBy() {
+    return deletedBy;
+  }
 
-    public List<CustomerTimelineEvent> getTimelineEvents() {
-        return timelineEvents;
-    }
+  public void setDeletedBy(String deletedBy) {
+    this.deletedBy = deletedBy;
+  }
 
-    public void setTimelineEvents(List<CustomerTimelineEvent> timelineEvents) {
-        this.timelineEvents = timelineEvents;
-    }
-    
-    // Business methods for relationships
-    
-    /**
-     * Adds a contact to this customer.
-     */
-    public void addContact(CustomerContact contact) {
-        if (contact != null) {
-            contact.setCustomer(this);
-            this.contacts.add(contact);
-        }
-    }
-    
-    /**
-     * Removes a contact from this customer (soft delete).
-     */
-    public void removeContact(CustomerContact contact, String deletedBy) {
-        if (contact != null && contacts.contains(contact)) {
-            contact.setIsDeleted(true);
-            contact.setDeletedAt(java.time.LocalDateTime.now());
-            contact.setDeletedBy(deletedBy);
-        }
-    }
-    
-    /**
-     * Gets the primary contact for this customer.
-     */
-    public java.util.Optional<CustomerContact> getPrimaryContact() {
-        return contacts.stream()
-                .filter(contact -> !Boolean.TRUE.equals(contact.getIsDeleted()))
-                .filter(contact -> Boolean.TRUE.equals(contact.getIsPrimary()))
-                .findFirst();
-    }
-    
-    /**
-     * Gets all active contacts.
-     */
-    public java.util.List<CustomerContact> getActiveContacts() {
-        return contacts.stream()
-                .filter(contact -> !Boolean.TRUE.equals(contact.getIsDeleted()))
-                .filter(contact -> Boolean.TRUE.equals(contact.getIsActive()))
-                .toList();
-    }
-    
-    /**
-     * Adds a location to this customer.
-     */
-    public void addLocation(CustomerLocation location) {
-        if (location != null) {
-            location.setCustomer(this);
-            this.locations.add(location);
-        }
-    }
-    
-    /**
-     * Removes a location from this customer (soft delete).
-     */
-    public void removeLocation(CustomerLocation location, String deletedBy) {
-        if (location != null && locations.contains(location)) {
-            location.setIsDeleted(true);
-            location.setDeletedAt(java.time.LocalDateTime.now());
-            location.setDeletedBy(deletedBy);
-        }
-    }
-    
-    /**
-     * Gets the main location for this customer.
-     */
-    public java.util.Optional<CustomerLocation> getMainLocation() {
-        return locations.stream()
-                .filter(location -> !Boolean.TRUE.equals(location.getIsDeleted()))
-                .filter(location -> Boolean.TRUE.equals(location.getIsMainLocation()))
-                .findFirst();
-    }
-    
-    /**
-     * Gets all active locations.
-     */
-    public java.util.List<CustomerLocation> getActiveLocations() {
-        return locations.stream()
-                .filter(location -> !Boolean.TRUE.equals(location.getIsDeleted()))
-                .filter(location -> Boolean.TRUE.equals(location.getIsActive()))
-                .toList();
-    }
-    
-    /**
-     * Adds a timeline event to this customer.
-     */
-    public void addTimelineEvent(CustomerTimelineEvent event) {
-        if (event != null) {
-            event.setCustomer(this);
-            this.timelineEvents.add(event);
-        }
-    }
-    
-    /**
-     * Gets recent timeline events (last 30 days).
-     */
-    public java.util.List<CustomerTimelineEvent> getRecentTimelineEvents() {
-        java.time.LocalDateTime thirtyDaysAgo = java.time.LocalDateTime.now().minusDays(30);
-        return timelineEvents.stream()
-                .filter(event -> !Boolean.TRUE.equals(event.getIsDeleted()))
-                .filter(event -> event.getEventDate().isAfter(thirtyDaysAgo))
-                .sorted((e1, e2) -> e2.getEventDate().compareTo(e1.getEventDate()))
-                .toList();
-    }
-    
-    /**
-     * Gets timeline events by category.
-     */
-    public java.util.List<CustomerTimelineEvent> getTimelineEventsByCategory(
-            de.freshplan.domain.customer.entity.EventCategory category) {
-        return timelineEvents.stream()
-                .filter(event -> !Boolean.TRUE.equals(event.getIsDeleted()))
-                .filter(event -> event.getCategory() == category)
-                .sorted((e1, e2) -> e2.getEventDate().compareTo(e1.getEventDate()))
-                .toList();
-    }
+  public LocalDateTime getCreatedAt() {
+    return createdAt;
+  }
+
+  public void setCreatedAt(LocalDateTime createdAt) {
+    this.createdAt = createdAt;
+  }
+
+  public String getCreatedBy() {
+    return createdBy;
+  }
+
+  public void setCreatedBy(String createdBy) {
+    this.createdBy = createdBy;
+  }
+
+  public LocalDateTime getUpdatedAt() {
+    return updatedAt;
+  }
+
+  public void setUpdatedAt(LocalDateTime updatedAt) {
+    this.updatedAt = updatedAt;
+  }
+
+  public String getUpdatedBy() {
+    return updatedBy;
+  }
+
+  public void setUpdatedBy(String updatedBy) {
+    this.updatedBy = updatedBy;
+  }
+
+  public LocalDateTime getLastModifiedAt() {
+    return lastModifiedAt;
+  }
+
+  public void setLastModifiedAt(LocalDateTime lastModifiedAt) {
+    this.lastModifiedAt = lastModifiedAt;
+  }
+
+  public String getLastModifiedBy() {
+    return lastModifiedBy;
+  }
+
+  public void setLastModifiedBy(String lastModifiedBy) {
+    this.lastModifiedBy = lastModifiedBy;
+  }
+
+  public List<CustomerContact> getContacts() {
+    return contacts;
+  }
+
+  public void setContacts(List<CustomerContact> contacts) {
+    this.contacts = contacts;
+  }
+
+  public List<CustomerLocation> getLocations() {
+    return locations;
+  }
+
+  public void setLocations(List<CustomerLocation> locations) {
+    this.locations = locations;
+  }
+
+  public List<CustomerTimelineEvent> getTimelineEvents() {
+    return timelineEvents;
+  }
+
+  public void setTimelineEvents(List<CustomerTimelineEvent> timelineEvents) {
+    this.timelineEvents = timelineEvents;
+  }
+
+  // Business methods for relationships
+
+  /** Adds a contact to this customer. */
+  public void addContact(CustomerContact contact) {
+    if (contact != null) {
+      contact.setCustomer(this);
+      this.contacts.add(contact);
+    }
+  }
+
+  /** Removes a contact from this customer (soft delete). */
+  public void removeContact(CustomerContact contact, String deletedBy) {
+    if (contact != null && contacts.contains(contact)) {
+      contact.setIsDeleted(true);
+      contact.setDeletedAt(java.time.LocalDateTime.now());
+      contact.setDeletedBy(deletedBy);
+    }
+  }
+
+  /** Gets the primary contact for this customer. */
+  public java.util.Optional<CustomerContact> getPrimaryContact() {
+    return contacts.stream()
+        .filter(contact -> !Boolean.TRUE.equals(contact.getIsDeleted()))
+        .filter(contact -> Boolean.TRUE.equals(contact.getIsPrimary()))
+        .findFirst();
+  }
+
+  /** Gets all active contacts. */
+  public java.util.List<CustomerContact> getActiveContacts() {
+    return contacts.stream()
+        .filter(contact -> !Boolean.TRUE.equals(contact.getIsDeleted()))
+        .filter(contact -> Boolean.TRUE.equals(contact.getIsActive()))
+        .toList();
+  }
+
+  /** Adds a location to this customer. */
+  public void addLocation(CustomerLocation location) {
+    if (location != null) {
+      location.setCustomer(this);
+      this.locations.add(location);
+    }
+  }
+
+  /** Removes a location from this customer (soft delete). */
+  public void removeLocation(CustomerLocation location, String deletedBy) {
+    if (location != null && locations.contains(location)) {
+      location.setIsDeleted(true);
+      location.setDeletedAt(java.time.LocalDateTime.now());
+      location.setDeletedBy(deletedBy);
+    }
+  }
+
+  /** Gets the main location for this customer. */
+  public java.util.Optional<CustomerLocation> getMainLocation() {
+    return locations.stream()
+        .filter(location -> !Boolean.TRUE.equals(location.getIsDeleted()))
+        .filter(location -> Boolean.TRUE.equals(location.getIsMainLocation()))
+        .findFirst();
+  }
+
+  /** Gets all active locations. */
+  public java.util.List<CustomerLocation> getActiveLocations() {
+    return locations.stream()
+        .filter(location -> !Boolean.TRUE.equals(location.getIsDeleted()))
+        .filter(location -> Boolean.TRUE.equals(location.getIsActive()))
+        .toList();
+  }
+
+  /** Adds a timeline event to this customer. */
+  public void addTimelineEvent(CustomerTimelineEvent event) {
+    if (event != null) {
+      event.setCustomer(this);
+      this.timelineEvents.add(event);
+    }
+  }
+
+  /** Gets recent timeline events (last 30 days). */
+  public java.util.List<CustomerTimelineEvent> getRecentTimelineEvents() {
+    java.time.LocalDateTime thirtyDaysAgo = java.time.LocalDateTime.now().minusDays(30);
+    return timelineEvents.stream()
+        .filter(event -> !Boolean.TRUE.equals(event.getIsDeleted()))
+        .filter(event -> event.getEventDate().isAfter(thirtyDaysAgo))
+        .sorted((e1, e2) -> e2.getEventDate().compareTo(e1.getEventDate()))
+        .toList();
+  }
+
+  /** Gets timeline events by category. */
+  public java.util.List<CustomerTimelineEvent> getTimelineEventsByCategory(
+      de.freshplan.domain.customer.entity.EventCategory category) {
+    return timelineEvents.stream()
+        .filter(event -> !Boolean.TRUE.equals(event.getIsDeleted()))
+        .filter(event -> event.getCategory() == category)
+        .sorted((e1, e2) -> e2.getEventDate().compareTo(e1.getEventDate()))
+        .toList();
+  }
 }

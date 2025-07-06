@@ -10,36 +10,31 @@ import org.jboss.logging.Logger;
 
 /**
  * JAX-RS exception mapper for DuplicateEmailException.
- * 
- * Converts DuplicateEmailException to a 409 Conflict response
- * with a standardized error format.
- * 
+ *
+ * <p>Converts DuplicateEmailException to a 409 Conflict response with a standardized error format.
+ *
  * @author FreshPlan Team
  * @since 2.0.0
  */
 @Provider
-public class DuplicateEmailExceptionMapper 
-        implements ExceptionMapper<DuplicateEmailException> {
-    
-    private static final Logger LOG = 
-            Logger.getLogger(DuplicateEmailExceptionMapper.class);
-    
-    @Context
-    UriInfo uriInfo;
-    
-    @Override
-    public Response toResponse(DuplicateEmailException exception) {
-        LOG.debugf("Duplicate email: %s", exception.getMessage());
-        
-        ErrorResponse errorResponse = ErrorResponse.builder()
-                .status(409)
-                .error("Conflict")
-                .message(exception.getMessage())
-                .path(uriInfo.getPath())
-                .build();
-        
-        return Response.status(Response.Status.CONFLICT)
-                .entity(errorResponse)
-                .build();
-    }
+public class DuplicateEmailExceptionMapper implements ExceptionMapper<DuplicateEmailException> {
+
+  private static final Logger LOG = Logger.getLogger(DuplicateEmailExceptionMapper.class);
+
+  @Context UriInfo uriInfo;
+
+  @Override
+  public Response toResponse(DuplicateEmailException exception) {
+    LOG.debugf("Duplicate email: %s", exception.getMessage());
+
+    ErrorResponse errorResponse =
+        ErrorResponse.builder()
+            .status(409)
+            .error("Conflict")
+            .message(exception.getMessage())
+            .path(uriInfo.getPath())
+            .build();
+
+    return Response.status(Response.Status.CONFLICT).entity(errorResponse).build();
+  }
 }

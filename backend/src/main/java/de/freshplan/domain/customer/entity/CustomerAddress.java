@@ -2,492 +2,495 @@ package de.freshplan.domain.customer.entity;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
-import org.hibernate.annotations.UuidGenerator;
-
 import java.time.LocalDateTime;
 import java.util.UUID;
+import org.hibernate.annotations.UuidGenerator;
 
 /**
- * Customer address entity representing different addresses for a customer location.
- * Supports multiple address types (billing, shipping, etc.) per location.
- * 
+ * Customer address entity representing different addresses for a customer location. Supports
+ * multiple address types (billing, shipping, etc.) per location.
+ *
  * @author FreshPlan Team
  * @since 2.0.0
  */
 @Entity
-@Table(name = "customer_addresses", indexes = {
-    @Index(name = "idx_address_location", columnList = "location_id"),
-    @Index(name = "idx_address_type", columnList = "location_id, address_type"),
-    @Index(name = "idx_address_postal", columnList = "postal_code"),
-    @Index(name = "idx_address_city", columnList = "city"),
-    @Index(name = "idx_address_deleted", columnList = "is_deleted")
-})
+@Table(
+    name = "customer_addresses",
+    indexes = {
+      @Index(name = "idx_address_location", columnList = "location_id"),
+      @Index(name = "idx_address_type", columnList = "location_id, address_type"),
+      @Index(name = "idx_address_postal", columnList = "postal_code"),
+      @Index(name = "idx_address_city", columnList = "city"),
+      @Index(name = "idx_address_deleted", columnList = "is_deleted")
+    })
 public class CustomerAddress extends PanacheEntityBase {
-    
-    @Id
-    @GeneratedValue
-    @UuidGenerator
-    @Column(name = "id", updatable = false, nullable = false)
-    private UUID id;
-    
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "location_id", nullable = false)
-    private CustomerLocation location;
-    
-    @Enumerated(EnumType.STRING)
-    @Column(name = "address_type", nullable = false, length = 20)
-    private AddressType addressType;
-    
-    // Address Components
-    @Column(name = "street", length = 255)
-    private String street;
-    
-    @Column(name = "street_number", length = 20)
-    private String streetNumber;
-    
-    @Column(name = "additional_line", length = 255)
-    private String additionalLine;
-    
-    @Column(name = "postal_code", length = 20)
-    private String postalCode;
-    
-    @Column(name = "city", nullable = false, length = 100)
-    private String city;
-    
-    @Column(name = "state_province", length = 100)
-    private String stateProvince;
-    
-    @Column(name = "country", nullable = false, length = 3)
-    private String country = "DEU"; // ISO 3166-1 alpha-3 country code
-    
-    // Additional Information
-    @Column(name = "po_box", length = 50)
-    private String poBox;
-    
-    @Column(name = "care_of", length = 100)
-    private String careOf; // "c/o" field
-    
-    @Column(name = "building_name", length = 100)
-    private String buildingName;
-    
-    @Column(name = "floor_apartment", length = 50)
-    private String floorApartment;
-    
-    // Geocoding Information
-    @Column(name = "latitude")
-    private Double latitude;
-    
-    @Column(name = "longitude")
-    private Double longitude;
-    
-    @Column(name = "geocoded_at")
-    private LocalDateTime geocodedAt;
-    
-    // Validation Status
-    @Column(name = "is_validated", nullable = false)
-    private Boolean isValidated = false;
-    
-    @Column(name = "validated_at")
-    private LocalDateTime validatedAt;
-    
-    @Column(name = "validation_service", length = 50)
-    private String validationService;
-    
-    // Status Flags
-    @Column(name = "is_primary_for_type", nullable = false)
-    private Boolean isPrimaryForType = false;
-    
-    @Column(name = "is_active", nullable = false)
-    private Boolean isActive = true;
-    
-    // Special Delivery Instructions
-    @Column(name = "delivery_instructions", columnDefinition = "TEXT")
-    private String deliveryInstructions;
-    
-    @Column(name = "access_instructions", columnDefinition = "TEXT")
-    private String accessInstructions;
-    
-    // Soft Delete
-    @Column(name = "is_deleted", nullable = false)
-    private Boolean isDeleted = false;
-    
-    @Column(name = "deleted_at")
-    private LocalDateTime deletedAt;
-    
-    @Column(name = "deleted_by", length = 100)
-    private String deletedBy;
-    
-    // Audit Fields
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
-    
-    @Column(name = "created_by", nullable = false, updatable = false, length = 100)
-    private String createdBy;
-    
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
-    
-    @Column(name = "updated_by", length = 100)
-    private String updatedBy;
-    
-    // Lifecycle Methods
-    @PrePersist
-    protected void onCreate() {
-        createdAt = LocalDateTime.now();
-        if (isDeleted == null) {
-            isDeleted = false;
-        }
-        if (isActive == null) {
-            isActive = true;
-        }
-        if (isPrimaryForType == null) {
-            isPrimaryForType = false;
-        }
-        if (isValidated == null) {
-            isValidated = false;
-        }
+
+  @Id
+  @GeneratedValue
+  @UuidGenerator
+  @Column(name = "id", updatable = false, nullable = false)
+  private UUID id;
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "location_id", nullable = false)
+  private CustomerLocation location;
+
+  @Enumerated(EnumType.STRING)
+  @Column(name = "address_type", nullable = false, length = 20)
+  private AddressType addressType;
+
+  // Address Components
+  @Column(name = "street", length = 255)
+  private String street;
+
+  @Column(name = "street_number", length = 20)
+  private String streetNumber;
+
+  @Column(name = "additional_line", length = 255)
+  private String additionalLine;
+
+  @Column(name = "postal_code", length = 20)
+  private String postalCode;
+
+  @Column(name = "city", nullable = false, length = 100)
+  private String city;
+
+  @Column(name = "state_province", length = 100)
+  private String stateProvince;
+
+  @Column(name = "country", nullable = false, length = 3)
+  private String country = "DEU"; // ISO 3166-1 alpha-3 country code
+
+  // Additional Information
+  @Column(name = "po_box", length = 50)
+  private String poBox;
+
+  @Column(name = "care_of", length = 100)
+  private String careOf; // "c/o" field
+
+  @Column(name = "building_name", length = 100)
+  private String buildingName;
+
+  @Column(name = "floor_apartment", length = 50)
+  private String floorApartment;
+
+  // Geocoding Information
+  @Column(name = "latitude")
+  private Double latitude;
+
+  @Column(name = "longitude")
+  private Double longitude;
+
+  @Column(name = "geocoded_at")
+  private LocalDateTime geocodedAt;
+
+  // Validation Status
+  @Column(name = "is_validated", nullable = false)
+  private Boolean isValidated = false;
+
+  @Column(name = "validated_at")
+  private LocalDateTime validatedAt;
+
+  @Column(name = "validation_service", length = 50)
+  private String validationService;
+
+  // Status Flags
+  @Column(name = "is_primary_for_type", nullable = false)
+  private Boolean isPrimaryForType = false;
+
+  @Column(name = "is_active", nullable = false)
+  private Boolean isActive = true;
+
+  // Special Delivery Instructions
+  @Column(name = "delivery_instructions", columnDefinition = "TEXT")
+  private String deliveryInstructions;
+
+  @Column(name = "access_instructions", columnDefinition = "TEXT")
+  private String accessInstructions;
+
+  // Soft Delete
+  @Column(name = "is_deleted", nullable = false)
+  private Boolean isDeleted = false;
+
+  @Column(name = "deleted_at")
+  private LocalDateTime deletedAt;
+
+  @Column(name = "deleted_by", length = 100)
+  private String deletedBy;
+
+  // Audit Fields
+  @Column(name = "created_at", nullable = false, updatable = false)
+  private LocalDateTime createdAt;
+
+  @Column(name = "created_by", nullable = false, updatable = false, length = 100)
+  private String createdBy;
+
+  @Column(name = "updated_at")
+  private LocalDateTime updatedAt;
+
+  @Column(name = "updated_by", length = 100)
+  private String updatedBy;
+
+  // Lifecycle Methods
+  @PrePersist
+  protected void onCreate() {
+    createdAt = LocalDateTime.now();
+    if (isDeleted == null) {
+      isDeleted = false;
     }
-    
-    @PreUpdate
-    protected void onUpdate() {
-        updatedAt = LocalDateTime.now();
+    if (isActive == null) {
+      isActive = true;
     }
-    
-    // Business Methods
-    
-    /**
-     * Gets the full formatted address as a single string.
-     */
-    public String getFormattedAddress() {
-        StringBuilder sb = new StringBuilder();
-        
-        if (street != null && !street.isBlank()) {
-            sb.append(street);
-            if (streetNumber != null && !streetNumber.isBlank()) {
-                sb.append(" ").append(streetNumber);
-            }
-            sb.append("\n");
-        }
-        
-        if (additionalLine != null && !additionalLine.isBlank()) {
-            sb.append(additionalLine).append("\n");
-        }
-        
-        if (poBox != null && !poBox.isBlank()) {
-            sb.append("Postfach ").append(poBox).append("\n");
-        }
-        
-        if (postalCode != null && !postalCode.isBlank()) {
-            sb.append(postalCode).append(" ");
-        }
-        
-        if (city != null && !city.isBlank()) {
-            sb.append(city);
-        }
-        
-        if (stateProvince != null && !stateProvince.isBlank()) {
-            sb.append(", ").append(stateProvince);
-        }
-        
-        if (country != null && !country.equals("DEU")) {
-            sb.append("\n").append(country);
-        }
-        
-        return sb.toString().trim();
+    if (isPrimaryForType == null) {
+      isPrimaryForType = false;
     }
-    
-    /**
-     * Gets a single-line formatted address.
-     */
-    public String getFormattedAddressOneLine() {
-        return getFormattedAddress().replace("\n", ", ");
+    if (isValidated == null) {
+      isValidated = false;
     }
-    
-    /**
-     * Checks if this address has geocoding information.
-     */
-    public boolean hasGeoLocation() {
-        return latitude != null && longitude != null;
-    }
-    
-    /**
-     * Sets geocoding information.
-     */
-    public void setGeoLocation(Double latitude, Double longitude, String service) {
-        this.latitude = latitude;
-        this.longitude = longitude;
-        this.geocodedAt = LocalDateTime.now();
-        this.validationService = service;
-    }
-    
-    /**
-     * Marks address as validated.
-     */
-    public void markAsValidated(String service) {
-        this.isValidated = true;
-        this.validatedAt = LocalDateTime.now();
-        this.validationService = service;
-    }
-    
-    // Getters and Setters
-    public UUID getId() {
-        return id;
+  }
+
+  @PreUpdate
+  protected void onUpdate() {
+    updatedAt = LocalDateTime.now();
+  }
+
+  // Business Methods
+
+  /** Gets the full formatted address as a single string. */
+  public String getFormattedAddress() {
+    StringBuilder sb = new StringBuilder();
+
+    if (street != null && !street.isBlank()) {
+      sb.append(street);
+      if (streetNumber != null && !streetNumber.isBlank()) {
+        sb.append(" ").append(streetNumber);
+      }
+      sb.append("\n");
     }
 
-    public void setId(UUID id) {
-        this.id = id;
+    if (additionalLine != null && !additionalLine.isBlank()) {
+      sb.append(additionalLine).append("\n");
     }
 
-    public CustomerLocation getLocation() {
-        return location;
+    if (poBox != null && !poBox.isBlank()) {
+      sb.append("Postfach ").append(poBox).append("\n");
     }
 
-    public void setLocation(CustomerLocation location) {
-        this.location = location;
+    if (postalCode != null && !postalCode.isBlank()) {
+      sb.append(postalCode).append(" ");
     }
 
-    public AddressType getAddressType() {
-        return addressType;
+    if (city != null && !city.isBlank()) {
+      sb.append(city);
     }
 
-    public void setAddressType(AddressType addressType) {
-        this.addressType = addressType;
+    if (stateProvince != null && !stateProvince.isBlank()) {
+      sb.append(", ").append(stateProvince);
     }
 
-    public String getStreet() {
-        return street;
+    if (country != null && !country.equals("DEU")) {
+      sb.append("\n").append(country);
     }
 
-    public void setStreet(String street) {
-        this.street = street;
-    }
+    return sb.toString().trim();
+  }
 
-    public String getStreetNumber() {
-        return streetNumber;
-    }
+  /** Gets a single-line formatted address. */
+  public String getFormattedAddressOneLine() {
+    return getFormattedAddress().replace("\n", ", ");
+  }
 
-    public void setStreetNumber(String streetNumber) {
-        this.streetNumber = streetNumber;
-    }
+  /** Checks if this address has geocoding information. */
+  public boolean hasGeoLocation() {
+    return latitude != null && longitude != null;
+  }
 
-    public String getAdditionalLine() {
-        return additionalLine;
-    }
+  /** Sets geocoding information. */
+  public void setGeoLocation(Double latitude, Double longitude, String service) {
+    this.latitude = latitude;
+    this.longitude = longitude;
+    this.geocodedAt = LocalDateTime.now();
+    this.validationService = service;
+  }
 
-    public void setAdditionalLine(String additionalLine) {
-        this.additionalLine = additionalLine;
-    }
+  /** Marks address as validated. */
+  public void markAsValidated(String service) {
+    this.isValidated = true;
+    this.validatedAt = LocalDateTime.now();
+    this.validationService = service;
+  }
 
-    public String getPostalCode() {
-        return postalCode;
-    }
+  // Getters and Setters
+  public UUID getId() {
+    return id;
+  }
 
-    public void setPostalCode(String postalCode) {
-        this.postalCode = postalCode;
-    }
+  public void setId(UUID id) {
+    this.id = id;
+  }
 
-    public String getCity() {
-        return city;
-    }
+  public CustomerLocation getLocation() {
+    return location;
+  }
 
-    public void setCity(String city) {
-        this.city = city;
-    }
+  public void setLocation(CustomerLocation location) {
+    this.location = location;
+  }
 
-    public String getStateProvince() {
-        return stateProvince;
-    }
+  public AddressType getAddressType() {
+    return addressType;
+  }
 
-    public void setStateProvince(String stateProvince) {
-        this.stateProvince = stateProvince;
-    }
+  public void setAddressType(AddressType addressType) {
+    this.addressType = addressType;
+  }
 
-    public String getCountry() {
-        return country;
-    }
+  public String getStreet() {
+    return street;
+  }
 
-    public void setCountry(String country) {
-        this.country = country;
-    }
+  public void setStreet(String street) {
+    this.street = street;
+  }
 
-    public String getPoBox() {
-        return poBox;
-    }
+  public String getStreetNumber() {
+    return streetNumber;
+  }
 
-    public void setPoBox(String poBox) {
-        this.poBox = poBox;
-    }
+  public void setStreetNumber(String streetNumber) {
+    this.streetNumber = streetNumber;
+  }
 
-    public String getCareOf() {
-        return careOf;
-    }
+  public String getAdditionalLine() {
+    return additionalLine;
+  }
 
-    public void setCareOf(String careOf) {
-        this.careOf = careOf;
-    }
+  public void setAdditionalLine(String additionalLine) {
+    this.additionalLine = additionalLine;
+  }
 
-    public String getBuildingName() {
-        return buildingName;
-    }
+  public String getPostalCode() {
+    return postalCode;
+  }
 
-    public void setBuildingName(String buildingName) {
-        this.buildingName = buildingName;
-    }
+  public void setPostalCode(String postalCode) {
+    this.postalCode = postalCode;
+  }
 
-    public String getFloorApartment() {
-        return floorApartment;
-    }
+  public String getCity() {
+    return city;
+  }
 
-    public void setFloorApartment(String floorApartment) {
-        this.floorApartment = floorApartment;
-    }
+  public void setCity(String city) {
+    this.city = city;
+  }
 
-    public Double getLatitude() {
-        return latitude;
-    }
+  public String getStateProvince() {
+    return stateProvince;
+  }
 
-    public void setLatitude(Double latitude) {
-        this.latitude = latitude;
-    }
+  public void setStateProvince(String stateProvince) {
+    this.stateProvince = stateProvince;
+  }
 
-    public Double getLongitude() {
-        return longitude;
-    }
+  public String getCountry() {
+    return country;
+  }
 
-    public void setLongitude(Double longitude) {
-        this.longitude = longitude;
-    }
+  public void setCountry(String country) {
+    this.country = country;
+  }
 
-    public LocalDateTime getGeocodedAt() {
-        return geocodedAt;
-    }
+  public String getPoBox() {
+    return poBox;
+  }
 
-    public void setGeocodedAt(LocalDateTime geocodedAt) {
-        this.geocodedAt = geocodedAt;
-    }
+  public void setPoBox(String poBox) {
+    this.poBox = poBox;
+  }
 
-    public Boolean getIsValidated() {
-        return isValidated;
-    }
+  public String getCareOf() {
+    return careOf;
+  }
 
-    public void setIsValidated(Boolean isValidated) {
-        this.isValidated = isValidated;
-    }
+  public void setCareOf(String careOf) {
+    this.careOf = careOf;
+  }
 
-    public LocalDateTime getValidatedAt() {
-        return validatedAt;
-    }
+  public String getBuildingName() {
+    return buildingName;
+  }
 
-    public void setValidatedAt(LocalDateTime validatedAt) {
-        this.validatedAt = validatedAt;
-    }
+  public void setBuildingName(String buildingName) {
+    this.buildingName = buildingName;
+  }
 
-    public String getValidationService() {
-        return validationService;
-    }
+  public String getFloorApartment() {
+    return floorApartment;
+  }
 
-    public void setValidationService(String validationService) {
-        this.validationService = validationService;
-    }
+  public void setFloorApartment(String floorApartment) {
+    this.floorApartment = floorApartment;
+  }
 
-    public Boolean getIsPrimaryForType() {
-        return isPrimaryForType;
-    }
+  public Double getLatitude() {
+    return latitude;
+  }
 
-    public void setIsPrimaryForType(Boolean isPrimaryForType) {
-        this.isPrimaryForType = isPrimaryForType;
-    }
+  public void setLatitude(Double latitude) {
+    this.latitude = latitude;
+  }
 
-    public Boolean getIsActive() {
-        return isActive;
-    }
+  public Double getLongitude() {
+    return longitude;
+  }
 
-    public void setIsActive(Boolean isActive) {
-        this.isActive = isActive;
-    }
+  public void setLongitude(Double longitude) {
+    this.longitude = longitude;
+  }
 
-    public String getDeliveryInstructions() {
-        return deliveryInstructions;
-    }
+  public LocalDateTime getGeocodedAt() {
+    return geocodedAt;
+  }
 
-    public void setDeliveryInstructions(String deliveryInstructions) {
-        this.deliveryInstructions = deliveryInstructions;
-    }
+  public void setGeocodedAt(LocalDateTime geocodedAt) {
+    this.geocodedAt = geocodedAt;
+  }
 
-    public String getAccessInstructions() {
-        return accessInstructions;
-    }
+  public Boolean getIsValidated() {
+    return isValidated;
+  }
 
-    public void setAccessInstructions(String accessInstructions) {
-        this.accessInstructions = accessInstructions;
-    }
+  public void setIsValidated(Boolean isValidated) {
+    this.isValidated = isValidated;
+  }
 
-    public Boolean getIsDeleted() {
-        return isDeleted;
-    }
+  public LocalDateTime getValidatedAt() {
+    return validatedAt;
+  }
 
-    public void setIsDeleted(Boolean isDeleted) {
-        this.isDeleted = isDeleted;
-    }
+  public void setValidatedAt(LocalDateTime validatedAt) {
+    this.validatedAt = validatedAt;
+  }
 
-    public LocalDateTime getDeletedAt() {
-        return deletedAt;
-    }
+  public String getValidationService() {
+    return validationService;
+  }
 
-    public void setDeletedAt(LocalDateTime deletedAt) {
-        this.deletedAt = deletedAt;
-    }
+  public void setValidationService(String validationService) {
+    this.validationService = validationService;
+  }
 
-    public String getDeletedBy() {
-        return deletedBy;
-    }
+  public Boolean getIsPrimaryForType() {
+    return isPrimaryForType;
+  }
 
-    public void setDeletedBy(String deletedBy) {
-        this.deletedBy = deletedBy;
-    }
+  public void setIsPrimaryForType(Boolean isPrimaryForType) {
+    this.isPrimaryForType = isPrimaryForType;
+  }
 
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
+  public Boolean getIsActive() {
+    return isActive;
+  }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
+  public void setIsActive(Boolean isActive) {
+    this.isActive = isActive;
+  }
 
-    public String getCreatedBy() {
-        return createdBy;
-    }
+  public String getDeliveryInstructions() {
+    return deliveryInstructions;
+  }
 
-    public void setCreatedBy(String createdBy) {
-        this.createdBy = createdBy;
-    }
+  public void setDeliveryInstructions(String deliveryInstructions) {
+    this.deliveryInstructions = deliveryInstructions;
+  }
 
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
+  public String getAccessInstructions() {
+    return accessInstructions;
+  }
 
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-    }
+  public void setAccessInstructions(String accessInstructions) {
+    this.accessInstructions = accessInstructions;
+  }
 
-    public String getUpdatedBy() {
-        return updatedBy;
-    }
+  public Boolean getIsDeleted() {
+    return isDeleted;
+  }
 
-    public void setUpdatedBy(String updatedBy) {
-        this.updatedBy = updatedBy;
-    }
+  public void setIsDeleted(Boolean isDeleted) {
+    this.isDeleted = isDeleted;
+  }
 
-    @Override
-    public String toString() {
-        return "CustomerAddress{" +
-                "id=" + id +
-                ", addressType=" + addressType +
-                ", street='" + street + '\'' +
-                ", streetNumber='" + streetNumber + '\'' +
-                ", postalCode='" + postalCode + '\'' +
-                ", city='" + city + '\'' +
-                ", country='" + country + '\'' +
-                '}';
-    }
+  public LocalDateTime getDeletedAt() {
+    return deletedAt;
+  }
+
+  public void setDeletedAt(LocalDateTime deletedAt) {
+    this.deletedAt = deletedAt;
+  }
+
+  public String getDeletedBy() {
+    return deletedBy;
+  }
+
+  public void setDeletedBy(String deletedBy) {
+    this.deletedBy = deletedBy;
+  }
+
+  public LocalDateTime getCreatedAt() {
+    return createdAt;
+  }
+
+  public void setCreatedAt(LocalDateTime createdAt) {
+    this.createdAt = createdAt;
+  }
+
+  public String getCreatedBy() {
+    return createdBy;
+  }
+
+  public void setCreatedBy(String createdBy) {
+    this.createdBy = createdBy;
+  }
+
+  public LocalDateTime getUpdatedAt() {
+    return updatedAt;
+  }
+
+  public void setUpdatedAt(LocalDateTime updatedAt) {
+    this.updatedAt = updatedAt;
+  }
+
+  public String getUpdatedBy() {
+    return updatedBy;
+  }
+
+  public void setUpdatedBy(String updatedBy) {
+    this.updatedBy = updatedBy;
+  }
+
+  @Override
+  public String toString() {
+    return "CustomerAddress{"
+        + "id="
+        + id
+        + ", addressType="
+        + addressType
+        + ", street='"
+        + street
+        + '\''
+        + ", streetNumber='"
+        + streetNumber
+        + '\''
+        + ", postalCode='"
+        + postalCode
+        + '\''
+        + ", city='"
+        + city
+        + '\''
+        + ", country='"
+        + country
+        + '\''
+        + '}';
+  }
 }

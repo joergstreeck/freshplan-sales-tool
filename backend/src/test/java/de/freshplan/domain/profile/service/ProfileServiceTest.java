@@ -1,5 +1,11 @@
 package de.freshplan.domain.profile.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.*;
+
 import de.freshplan.domain.profile.entity.Profile;
 import de.freshplan.domain.profile.repository.ProfileRepository;
 import de.freshplan.domain.profile.service.dto.*;
@@ -9,202 +15,189 @@ import de.freshplan.domain.profile.service.mapper.ProfileMapper;
 import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 @QuarkusTest
 class ProfileServiceTest {
 
-    @Inject
-    ProfileService profileService;
+  @Inject ProfileService profileService;
 
-    @InjectMock
-    ProfileRepository profileRepository;
+  @InjectMock ProfileRepository profileRepository;
 
-    @InjectMock
-    ProfileMapper profileMapper;
+  @InjectMock ProfileMapper profileMapper;
 
-    private Profile testProfile;
-    private ProfileResponse testProfileResponse;
-    private CreateProfileRequest createRequest;
-    private UpdateProfileRequest updateRequest;
+  private Profile testProfile;
+  private ProfileResponse testProfileResponse;
+  private CreateProfileRequest createRequest;
+  private UpdateProfileRequest updateRequest;
 
-    @BeforeEach
-    void setUp() {
-        // Test Profile Entity
-        testProfile = new Profile();
-        testProfile.setId(UUID.randomUUID());
-        testProfile.setCustomerId("CUST-001");
-        testProfile.setCreatedAt(LocalDateTime.now());
-        testProfile.setUpdatedAt(LocalDateTime.now());
+  @BeforeEach
+  void setUp() {
+    // Test Profile Entity
+    testProfile = new Profile();
+    testProfile.setId(UUID.randomUUID());
+    testProfile.setCustomerId("CUST-001");
+    testProfile.setCreatedAt(LocalDateTime.now());
+    testProfile.setUpdatedAt(LocalDateTime.now());
 
-        // Test Profile Response
-        testProfileResponse = ProfileResponse.builder()
-                .id(testProfile.getId())
-                .customerId(testProfile.getCustomerId())
-                .createdAt(testProfile.getCreatedAt())
-                .updatedAt(testProfile.getUpdatedAt())
-                .build();
+    // Test Profile Response
+    testProfileResponse =
+        ProfileResponse.builder()
+            .id(testProfile.getId())
+            .customerId(testProfile.getCustomerId())
+            .createdAt(testProfile.getCreatedAt())
+            .updatedAt(testProfile.getUpdatedAt())
+            .build();
 
-        // Create Request
-        createRequest = CreateProfileRequest.builder()
-                .customerId("CUST-001")
-                .build();
+    // Create Request
+    createRequest = CreateProfileRequest.builder().customerId("CUST-001").build();
 
-        // Update Request
-        updateRequest = UpdateProfileRequest.builder()
-                .build();
-    }
+    // Update Request
+    updateRequest = UpdateProfileRequest.builder().build();
+  }
 
-    @Test
-    void createProfile_withValidData_shouldReturnCreatedProfile() {
-        // Given
-        when(profileRepository.existsByCustomerId(anyString())).thenReturn(false);
-        when(profileMapper.toEntity(any(CreateProfileRequest.class))).thenReturn(testProfile);
-        when(profileMapper.toResponse(any(Profile.class))).thenReturn(testProfileResponse);
+  @Test
+  void createProfile_withValidData_shouldReturnCreatedProfile() {
+    // Given
+    when(profileRepository.existsByCustomerId(anyString())).thenReturn(false);
+    when(profileMapper.toEntity(any(CreateProfileRequest.class))).thenReturn(testProfile);
+    when(profileMapper.toResponse(any(Profile.class))).thenReturn(testProfileResponse);
 
-        // When
-        ProfileResponse result = profileService.createProfile(createRequest);
+    // When
+    ProfileResponse result = profileService.createProfile(createRequest);
 
-        // Then
-        assertThat(result).isNotNull();
-        assertThat(result.getCustomerId()).isEqualTo("CUST-001");
-        
-        verify(profileRepository).persist(any(Profile.class));
-        verify(profileRepository).existsByCustomerId("CUST-001");
-    }
+    // Then
+    assertThat(result).isNotNull();
+    assertThat(result.getCustomerId()).isEqualTo("CUST-001");
 
-    @Test
-    void createProfile_withDuplicateCustomerId_shouldThrowException() {
-        // Given
-        when(profileRepository.existsByCustomerId(anyString())).thenReturn(true);
+    verify(profileRepository).persist(any(Profile.class));
+    verify(profileRepository).existsByCustomerId("CUST-001");
+  }
 
-        // When/Then
-        assertThatThrownBy(() -> profileService.createProfile(createRequest))
-                .isInstanceOf(DuplicateProfileException.class)
-                .hasMessageContaining("CUST-001");
+  @Test
+  void createProfile_withDuplicateCustomerId_shouldThrowException() {
+    // Given
+    when(profileRepository.existsByCustomerId(anyString())).thenReturn(true);
 
-        verify(profileRepository, never()).persist(any(Profile.class));
-    }
+    // When/Then
+    assertThatThrownBy(() -> profileService.createProfile(createRequest))
+        .isInstanceOf(DuplicateProfileException.class)
+        .hasMessageContaining("CUST-001");
 
-    @Test
-    void getProfile_withExistingId_shouldReturnProfile() {
-        // Given
-        UUID profileId = testProfile.getId();
-        when(profileRepository.findByIdOptional(profileId)).thenReturn(Optional.of(testProfile));
-        when(profileMapper.toResponse(testProfile)).thenReturn(testProfileResponse);
+    verify(profileRepository, never()).persist(any(Profile.class));
+  }
 
-        // When
-        ProfileResponse result = profileService.getProfile(profileId);
+  @Test
+  void getProfile_withExistingId_shouldReturnProfile() {
+    // Given
+    UUID profileId = testProfile.getId();
+    when(profileRepository.findByIdOptional(profileId)).thenReturn(Optional.of(testProfile));
+    when(profileMapper.toResponse(testProfile)).thenReturn(testProfileResponse);
 
-        // Then
-        assertThat(result).isNotNull();
-        assertThat(result.getId()).isEqualTo(profileId);
-    }
+    // When
+    ProfileResponse result = profileService.getProfile(profileId);
 
-    @Test
-    void getProfile_withNonExistingId_shouldThrowException() {
-        // Given
-        UUID profileId = UUID.randomUUID();
-        when(profileRepository.findByIdOptional(profileId)).thenReturn(Optional.empty());
+    // Then
+    assertThat(result).isNotNull();
+    assertThat(result.getId()).isEqualTo(profileId);
+  }
 
-        // When/Then
-        assertThatThrownBy(() -> profileService.getProfile(profileId))
-                .isInstanceOf(ProfileNotFoundException.class)
-                .hasMessageContaining(profileId.toString());
-    }
+  @Test
+  void getProfile_withNonExistingId_shouldThrowException() {
+    // Given
+    UUID profileId = UUID.randomUUID();
+    when(profileRepository.findByIdOptional(profileId)).thenReturn(Optional.empty());
 
-    @Test
-    void getProfileByCustomerId_withExistingCustomerId_shouldReturnProfile() {
-        // Given
-        when(profileRepository.findByCustomerId("CUST-001")).thenReturn(Optional.of(testProfile));
-        when(profileMapper.toResponse(testProfile)).thenReturn(testProfileResponse);
+    // When/Then
+    assertThatThrownBy(() -> profileService.getProfile(profileId))
+        .isInstanceOf(ProfileNotFoundException.class)
+        .hasMessageContaining(profileId.toString());
+  }
 
-        // When
-        ProfileResponse result = profileService.getProfileByCustomerId("CUST-001");
+  @Test
+  void getProfileByCustomerId_withExistingCustomerId_shouldReturnProfile() {
+    // Given
+    when(profileRepository.findByCustomerId("CUST-001")).thenReturn(Optional.of(testProfile));
+    when(profileMapper.toResponse(testProfile)).thenReturn(testProfileResponse);
 
-        // Then
-        assertThat(result).isNotNull();
-        assertThat(result.getCustomerId()).isEqualTo("CUST-001");
-    }
+    // When
+    ProfileResponse result = profileService.getProfileByCustomerId("CUST-001");
 
-    @Test
-    void updateProfile_withExistingProfile_shouldReturnUpdatedProfile() {
-        // Given
-        UUID profileId = testProfile.getId();
-        when(profileRepository.findByIdOptional(profileId)).thenReturn(Optional.of(testProfile));
-        when(profileMapper.toResponse(any(Profile.class))).thenReturn(testProfileResponse);
+    // Then
+    assertThat(result).isNotNull();
+    assertThat(result.getCustomerId()).isEqualTo("CUST-001");
+  }
 
-        // When
-        ProfileResponse result = profileService.updateProfile(profileId, updateRequest);
+  @Test
+  void updateProfile_withExistingProfile_shouldReturnUpdatedProfile() {
+    // Given
+    UUID profileId = testProfile.getId();
+    when(profileRepository.findByIdOptional(profileId)).thenReturn(Optional.of(testProfile));
+    when(profileMapper.toResponse(any(Profile.class))).thenReturn(testProfileResponse);
 
-        // Then
-        assertThat(result).isNotNull();
-        verify(profileMapper).updateEntity(testProfile, updateRequest);
-        verify(profileRepository).persist(testProfile);
-    }
+    // When
+    ProfileResponse result = profileService.updateProfile(profileId, updateRequest);
 
-    @Test
-    void deleteProfile_withExistingProfile_shouldDeleteSuccessfully() {
-        // Given
-        UUID profileId = testProfile.getId();
-        when(profileRepository.findByIdOptional(profileId)).thenReturn(Optional.of(testProfile));
+    // Then
+    assertThat(result).isNotNull();
+    verify(profileMapper).updateEntity(testProfile, updateRequest);
+    verify(profileRepository).persist(testProfile);
+  }
 
-        // When
-        profileService.deleteProfile(profileId);
+  @Test
+  void deleteProfile_withExistingProfile_shouldDeleteSuccessfully() {
+    // Given
+    UUID profileId = testProfile.getId();
+    when(profileRepository.findByIdOptional(profileId)).thenReturn(Optional.of(testProfile));
 
-        // Then
-        verify(profileRepository).delete(testProfile);
-    }
+    // When
+    profileService.deleteProfile(profileId);
 
-    @Test
-    void getAllProfiles_shouldReturnAllProfiles() {
-        // Given
-        List<Profile> profiles = List.of(testProfile);
-        when(profileRepository.listAll()).thenReturn(profiles);
-        when(profileMapper.toResponse(any(Profile.class))).thenReturn(testProfileResponse);
+    // Then
+    verify(profileRepository).delete(testProfile);
+  }
 
-        // When
-        List<ProfileResponse> result = profileService.getAllProfiles();
+  @Test
+  void getAllProfiles_shouldReturnAllProfiles() {
+    // Given
+    List<Profile> profiles = List.of(testProfile);
+    when(profileRepository.listAll()).thenReturn(profiles);
+    when(profileMapper.toResponse(any(Profile.class))).thenReturn(testProfileResponse);
 
-        // Then
-        assertThat(result).hasSize(1);
-        assertThat(result.get(0).getCustomerId()).isEqualTo("CUST-001");
-    }
+    // When
+    List<ProfileResponse> result = profileService.getAllProfiles();
 
-    @Test
-    void profileExists_withExistingCustomerId_shouldReturnTrue() {
-        // Given
-        when(profileRepository.existsByCustomerId("CUST-001")).thenReturn(true);
+    // Then
+    assertThat(result).hasSize(1);
+    assertThat(result.get(0).getCustomerId()).isEqualTo("CUST-001");
+  }
 
-        // When
-        boolean exists = profileService.profileExists("CUST-001");
+  @Test
+  void profileExists_withExistingCustomerId_shouldReturnTrue() {
+    // Given
+    when(profileRepository.existsByCustomerId("CUST-001")).thenReturn(true);
 
-        // Then
-        assertThat(exists).isTrue();
-    }
+    // When
+    boolean exists = profileService.profileExists("CUST-001");
 
-    @Test
-    void profileExists_withNonExistingCustomerId_shouldReturnFalse() {
-        // Given
-        when(profileRepository.existsByCustomerId("CUST-999")).thenReturn(false);
+    // Then
+    assertThat(exists).isTrue();
+  }
 
-        // When
-        boolean exists = profileService.profileExists("CUST-999");
+  @Test
+  void profileExists_withNonExistingCustomerId_shouldReturnFalse() {
+    // Given
+    when(profileRepository.existsByCustomerId("CUST-999")).thenReturn(false);
 
-        // Then
-        assertThat(exists).isFalse();
-    }
+    // When
+    boolean exists = profileService.profileExists("CUST-999");
+
+    // Then
+    assertThat(exists).isFalse();
+  }
 }
