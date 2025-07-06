@@ -27,5 +27,6 @@ export default defineConfig({
     command: 'npm run preview',
     port: 5173,
     reuseExistingServer: !process.env.CI,
+    timeout: 120 * 1000, // 2 minutes timeout for CI
   },
 });
