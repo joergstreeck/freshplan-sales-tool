@@ -61,6 +61,15 @@ export function SalesCockpit() {
               activeColumn === 'my-day' ? 'active' : ''
             }`}
             onClick={() => setActiveColumn('my-day')}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                setActiveColumn('my-day');
+              }
+            }}
+            role="button"
+            tabIndex={0}
+            aria-label="Mein Tag Spalte"
           >
             <MyDayColumn />
           </div>
@@ -71,6 +80,15 @@ export function SalesCockpit() {
               activeColumn === 'focus-list' ? 'active' : ''
             }`}
             onClick={() => setActiveColumn('focus-list')}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                setActiveColumn('focus-list');
+              }
+            }}
+            role="button"
+            tabIndex={0}
+            aria-label="Fokus-Liste Spalte"
           >
             <FocusListColumn />
           </div>
@@ -81,6 +99,15 @@ export function SalesCockpit() {
               activeColumn === 'action-center' ? 'active' : ''
             }`}
             onClick={() => setActiveColumn('action-center')}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                setActiveColumn('action-center');
+              }
+            }}
+            role="button"
+            tabIndex={0}
+            aria-label="Aktions-Center Spalte"
           >
             <ActionCenterColumn />
           </div>

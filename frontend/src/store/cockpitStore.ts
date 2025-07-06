@@ -13,10 +13,11 @@ import { devtools, persist } from 'zustand/middleware';
 export type ViewMode = 'list' | 'kanban' | 'cards';
 export type CockpitColumn = 'my-day' | 'focus-list' | 'action-center';
 
+// TODO: Import Customer type from '../features/cockpit/types' when circular dependency is resolved
 interface SelectedCustomer {
   id: string;
   companyName: string;
-  status: string;
+  status: 'active' | 'inactive' | 'lead' | 'prospect';
 }
 
 interface CockpitState {

@@ -7,11 +7,11 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { FocusListColumn } from './FocusListColumn';
 import { useCockpitStore } from '../../../store/cockpitStore';
-import type { Customer } from '../types';
+// Customer type not needed in this test file
 
 // Mock für CustomerList
 vi.mock('../../../features/customer/components/CustomerList', () => ({
-  CustomerList: ({ onCustomerSelect }: { onCustomerSelect?: (customer: any) => void }) => (
+  CustomerList: ({ onCustomerSelect }: { onCustomerSelect?: (customer: { id: string; companyName: string; status: string }) => void }) => (
     <div data-testid="customer-list">
       <button 
         onClick={() => onCustomerSelect?.({ 
@@ -154,7 +154,7 @@ describe('FocusListColumn', () => {
   });
 
   it('sollte Placeholder für andere View Modes anzeigen', () => {
-    (useCockpitStore as any).mockReturnValue({
+    (useCockpitStore as ReturnType<typeof vi.fn>).mockReturnValue({
       viewMode: 'cards',
       setViewMode: mockSetViewMode,
       filterTags: [],

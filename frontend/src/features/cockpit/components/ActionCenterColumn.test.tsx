@@ -50,7 +50,7 @@ describe('ActionCenterColumn', () => {
 
   describe('Mit ausgewähltem Kunden', () => {
     beforeEach(() => {
-      (useCockpitStore as any).mockReturnValue({
+      (useCockpitStore as ReturnType<typeof vi.fn>).mockReturnValue({
         selectedCustomer: mockCustomer,
         activeProcess: null,
         setActiveProcess: mockSetActiveProcess,
@@ -138,7 +138,7 @@ describe('ActionCenterColumn', () => {
 
   describe('Mit aktivem Prozess', () => {
     beforeEach(() => {
-      (useCockpitStore as any).mockReturnValue({
+      (useCockpitStore as ReturnType<typeof vi.fn>).mockReturnValue({
         selectedCustomer: mockCustomer,
         activeProcess: 'new-customer',
         setActiveProcess: mockSetActiveProcess,
@@ -182,7 +182,7 @@ describe('ActionCenterColumn', () => {
   describe('Mit verschiedenen Kundenstatus', () => {
     it('sollte inactive Status korrekt anzeigen', () => {
       const inactiveCustomer = { ...mockCustomer, status: 'inactive' as const };
-      (useCockpitStore as any).mockReturnValue({
+      (useCockpitStore as ReturnType<typeof vi.fn>).mockReturnValue({
         selectedCustomer: inactiveCustomer,
         activeProcess: null,
         setActiveProcess: mockSetActiveProcess,
@@ -197,7 +197,7 @@ describe('ActionCenterColumn', () => {
 
     it('sollte prospect Status korrekt anzeigen', () => {
       const prospectCustomer = { ...mockCustomer, status: 'prospect' as const };
-      (useCockpitStore as any).mockReturnValue({
+      (useCockpitStore as ReturnType<typeof vi.fn>).mockReturnValue({
         selectedCustomer: prospectCustomer,
         activeProcess: null,
         setActiveProcess: mockSetActiveProcess,
@@ -213,7 +213,7 @@ describe('ActionCenterColumn', () => {
 
   describe('Accessibility', () => {
     it('sollte alle Buttons mit title Attributen haben', () => {
-      (useCockpitStore as any).mockReturnValue({
+      (useCockpitStore as ReturnType<typeof vi.fn>).mockReturnValue({
         selectedCustomer: mockCustomer,
         activeProcess: null,
         setActiveProcess: mockSetActiveProcess,
@@ -227,7 +227,7 @@ describe('ActionCenterColumn', () => {
     });
 
     it('sollte semantisch korrekte Überschriften verwenden', () => {
-      (useCockpitStore as any).mockReturnValue({
+      (useCockpitStore as ReturnType<typeof vi.fn>).mockReturnValue({
         selectedCustomer: mockCustomer,
         activeProcess: null,
         setActiveProcess: mockSetActiveProcess,

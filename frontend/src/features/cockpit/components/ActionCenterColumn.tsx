@@ -8,6 +8,13 @@
 import { useCockpitStore } from '../../../store/cockpitStore';
 import './ActionCenterColumn.css';
 
+const AVAILABLE_PROCESSES = [
+  { id: 'new-customer', name: 'Neukunden-Akquise', icon: '🎯' },
+  { id: 'offer', name: 'Angebot erstellen', icon: '📄' },
+  { id: 'follow-up', name: 'Nachfassen', icon: '📞' },
+  { id: 'renewal', name: 'Vertragsverlängerung', icon: '🔄' }
+];
+
 export function ActionCenterColumn() {
   const { 
     selectedCustomer, 
@@ -16,12 +23,6 @@ export function ActionCenterColumn() {
     selectCustomer 
   } = useCockpitStore();
 
-  const processes = [
-    { id: 'new-customer', name: 'Neukunden-Akquise', icon: '🎯' },
-    { id: 'offer', name: 'Angebot erstellen', icon: '📄' },
-    { id: 'follow-up', name: 'Nachfassen', icon: '📞' },
-    { id: 'renewal', name: 'Vertragsverlängerung', icon: '🔄' }
-  ];
 
   if (!selectedCustomer) {
     return (
@@ -74,7 +75,7 @@ export function ActionCenterColumn() {
         <section className="process-section">
           <h3 className="section-title">Verfügbare Prozesse</h3>
           <div className="process-grid">
-            {processes.map(process => (
+            {AVAILABLE_PROCESSES.map(process => (
               <button
                 key={process.id}
                 className={`process-card ${activeProcess === process.id ? 'active' : ''}`}
@@ -88,32 +89,35 @@ export function ActionCenterColumn() {
         </section>
 
         {/* Active Process Content */}
-        {activeProcess && (
-          <section className="process-content">
-            <div className="process-header">
-              <h3 className="process-title">
-                {processes.find(p => p.id === activeProcess)?.name}
-              </h3>
-              <button 
-                className="btn-text"
-                onClick={() => setActiveProcess(null)}
-              >
-                Prozess beenden
-              </button>
-            </div>
+        {activeProcess && (() => {
+          const activeProcessData = AVAILABLE_PROCESSES.find(p => p.id === activeProcess);
+          return (
+            <section className="process-content">
+              <div className="process-header">
+                <h3 className="process-title">
+                  {activeProcessData?.name}
+                </h3>
+                <button 
+                  className="btn-text"
+                  onClick={() => setActiveProcess(null)}
+                >
+                  Prozess beenden
+                </button>
+              </div>
 
-            {/* Process-specific content would go here */}
-            <div className="process-placeholder">
-              <p>
-                Hier werden die geführten Schritte für den Prozess 
-                "{processes.find(p => p.id === activeProcess)?.name}" angezeigt.
-              </p>
+              {/* Process-specific content would go here */}
+              <div className="process-placeholder">
+                <p>
+                  Hier werden die geführten Schritte für den Prozess 
+                  "{activeProcessData?.name}" angezeigt.
+                </p>
               <p className="placeholder-note">
                 Die detaillierte Prozess-Implementation erfolgt in Phase 2.
               </p>
             </div>
           </section>
-        )}
+          );
+        })()}
 
         {/* Quick Actions */}
         <section className="quick-actions">

@@ -18,6 +18,7 @@ export function FocusListColumn() {
     filterTags,
     addFilterTag,
     removeFilterTag,
+    clearFilterTags,
     searchQuery,
     setSearchQuery,
     selectCustomer
@@ -116,7 +117,7 @@ export function FocusListColumn() {
             ))}
             <button
               className="btn-text btn-sm"
-              onClick={() => filterTags.forEach(tag => removeFilterTag(tag))}
+              onClick={clearFilterTags}
             >
               Alle entfernen
             </button>
@@ -131,7 +132,11 @@ export function FocusListColumn() {
               <button
                 key={view.id}
                 className="saved-view-btn"
-                onClick={() => addFilterTag(view.name)}
+                onClick={() => {
+                  // TODO: Implement proper saved view filters
+                  // view.filters should be applied here
+                  addFilterTag(view.name);
+                }}
               >
                 <span className="view-name">{view.name}</span>
                 <span className="view-count">{view.count}</span>

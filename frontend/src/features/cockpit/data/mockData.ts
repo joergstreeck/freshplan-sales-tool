@@ -37,7 +37,7 @@ export const mockTriageItems: TriageItem[] = [
     from: 'info@neuekunden.de',
     subject: 'Anfrage Catering-Service',
     content: 'Sehr geehrte Damen und Herren, wir sind auf der Suche nach...',
-    receivedAt: new Date(),
+    receivedAt: new Date('2025-01-15T09:00:00Z'),
     type: 'email',
     processed: false
   },
@@ -46,7 +46,7 @@ export const mockTriageItems: TriageItem[] = [
     from: 'bestellung@restaurant-xyz.de',
     subject: 'Interesse an Ihrem Angebot',
     content: 'Guten Tag, wir haben Ihre Webseite gesehen und würden gerne...',
-    receivedAt: new Date(),
+    receivedAt: new Date('2025-01-15T09:00:00Z'),
     type: 'email',
     processed: false
   }
