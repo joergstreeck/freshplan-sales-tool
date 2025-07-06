@@ -17,7 +17,7 @@ interface KeycloakContextType {
   userRoles: string[];
 }
 
-const KeycloakContext = createContext<KeycloakContextType | undefined>(undefined);
+export const KeycloakContext = createContext<KeycloakContextType | undefined>(undefined);
 
 interface KeycloakProviderProps {
   children: ReactNode;

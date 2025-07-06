@@ -9,7 +9,7 @@
 
 import { useEffect } from 'react';
 import { useCockpitStore } from '../../../store/cockpitStore';
-import { useKeycloak } from '../../../contexts/KeycloakContext';
+import { useAuth } from '../../../hooks/useAuth';
 import { useDashboardData } from '../hooks/useSalesCockpit';
 import { MyDayColumn } from './MyDayColumn';
 import { FocusListColumn } from './FocusListColumn';
@@ -26,7 +26,7 @@ export function SalesCockpit() {
     setActiveColumn 
   } = useCockpitStore();
   
-  const { userId } = useKeycloak();
+  const { userId } = useAuth();
   
   // Hole Dashboard-Daten für Header-Statistiken
   const { 
@@ -34,7 +34,7 @@ export function SalesCockpit() {
     isLoading, 
     isError, 
     error 
-  } = useDashboardData(userId);
+  } = useDashboardData(userId || null);
 
   // Keyboard navigation
   useEffect(() => {
