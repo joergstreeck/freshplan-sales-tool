@@ -1162,6 +1162,27 @@ Siehe [Vision und Roadmap][vision] für Details zu geplanten Integrationen und F
 
 Ab sofort gilt für ALLE von Claude erstellten Dokumentationen:
 
+### 🆕 Feature-Konzept-Prozess (Ab 07.07.2025)
+Für jedes größere Feature erstellen wir ein separates technisches Konzeptdokument:
+
+1. **Feature Code vergeben**: FC-XXX (fortlaufende Nummerierung)
+2. **Technisches Konzept erstellen**: `/docs/features/YYYY-MM-DD_TECH_CONCEPT_feature-name.md`
+3. **Template nutzen**: `/docs/templates/TECH_CONCEPT_TEMPLATE.md`
+4. **Master Plan aktualisieren**: Nur Verweis auf Detail-Dokument, keine Details im Master Plan
+
+**Vorteile:**
+- Master Plan bleibt übersichtlich
+- Detaillierte technische Diskussionen im Kontext
+- Versionierte Feature-Historie
+- Bessere Nachvollziehbarkeit von Entscheidungen
+
+**🔄 AKTUALISIERUNGS-PFLICHT:**
+Bei JEDER Übergabe MÜSSEN alle aktiven Feature-Konzepte (FC-XXX) auf ihren aktuellen Implementierungs-Status überprüft und aktualisiert werden! Dies beinhaltet:
+- Status-Updates (✅ Abgeschlossen / 🔄 In Arbeit / ⏸️ Pausiert)
+- Neue implementierte Komponenten
+- Behobene Probleme
+- Nächste Schritte
+
 ### 🔒 KRITISCHE DOKUMENTE - NIEMALS LÖSCHEN:
 - `/docs/TRIGGER_TEXTS.md` - Offizielle Trigger-Texte für Übergaben
 - `/docs/STANDARDUBERGABE_NEU.md` - Hauptprozess-Dokument
@@ -1174,13 +1195,17 @@ Ab sofort gilt für ALLE von Claude erstellten Dokumentationen:
 
 ### Ablagestruktur:
 ```
-docs/claude-work/
-├── daily-work/YYYY-MM-DD/      # Tägliche Arbeit
-├── implementations/             # Umgesetzte Features
-├── reviews/                     # Code-Reviews
-├── proposals/                   # Vorschläge
-├── maintenance/                 # Wartungsarbeiten
-└── learning/                    # Erkenntnisse
+docs/
+├── features/                    # Technische Feature-Konzepte (FC-XXX)
+├── templates/                   # Wiederverwendbare Templates
+├── claude-work/
+│   ├── daily-work/YYYY-MM-DD/  # Tägliche Arbeit
+│   ├── implementations/         # Umgesetzte Features
+│   ├── reviews/                 # Code-Reviews
+│   ├── proposals/               # Vorschläge
+│   ├── maintenance/             # Wartungsarbeiten
+│   └── learning/                # Erkenntnisse
+└── adr/                         # Architecture Decision Records
 ```
 
 ### Namenskonvention:

@@ -149,33 +149,8 @@ public class CustomerResource {
     return Response.ok(customers).build();
   }
 
-  /**
-   * Searches customers by company name.
-   *
-   * @param query The search query
-   * @param page The page number (0-based, default 0)
-   * @param size The page size (default 20, max 100)
-   * @return 200 OK with search results
-   */
-  @GET
-  @Path("/search")
-  public Response searchCustomers(
-      @QueryParam("q") @DefaultValue("") String query,
-      @QueryParam("page") @DefaultValue("0") int page,
-      @QueryParam("size") @DefaultValue("20") int size) {
-
-    // Validate parameters
-    if (page < 0) page = 0;
-    if (size <= 0 || size > 100) size = 20;
-    if (query.trim().isEmpty()) {
-      return Response.status(Response.Status.BAD_REQUEST)
-          .entity("Search query 'q' parameter is required")
-          .build();
-    }
-
-    CustomerListResponse customers = customerService.searchCustomers(query.trim(), page, size);
-    return Response.ok(customers).build();
-  }
+  // Note: Search functionality has been moved to POST /api/customers/search
+  // See CustomerSearchResource for the new implementation
 
   // ========== ANALYTICS & DASHBOARD ==========
 

@@ -421,42 +421,8 @@ class CustomerResourceTest {
       verify(customerService).getAllCustomers(0, 20);
     }
 
-    @Test
-    @DisplayName("GET /api/customers/search - Should search customers")
-    void searchCustomers_withQuery_shouldReturn200() {
-      // Given
-      String query = "Hotel";
-      when(customerService.searchCustomers(query, 0, 20)).thenReturn(customerListResponse);
-
-      // When & Then
-      given()
-          .queryParam("q", query)
-          .queryParam("page", 0)
-          .queryParam("size", 20)
-          .when()
-          .get("/api/customers/search")
-          .then()
-          .statusCode(200)
-          .contentType(ContentType.JSON)
-          .body("content", hasSize(1));
-
-      verify(customerService).searchCustomers(query, 0, 20);
-    }
-
-    @Test
-    @DisplayName("GET /api/customers/search - Should return 400 for empty query")
-    void searchCustomers_withEmptyQuery_shouldReturn400() {
-      // When & Then
-      given()
-          .queryParam("q", "")
-          .when()
-          .get("/api/customers/search")
-          .then()
-          .statusCode(400)
-          .body(containsString("Search query 'q' parameter is required"));
-
-      verify(customerService, never()).searchCustomers(any(), anyInt(), anyInt());
-    }
+    // Note: Search functionality has been moved to POST /api/customers/search
+    // Tests for the new search API are in CustomerSearchResourceTest
   }
 
   @Nested

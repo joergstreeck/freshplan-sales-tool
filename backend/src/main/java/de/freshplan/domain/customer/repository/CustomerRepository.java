@@ -90,25 +90,8 @@ public class CustomerRepository implements PanacheRepositoryBase<Customer, UUID>
 
   // ========== SEARCH & FILTERING ==========
 
-  /**
-   * Full-text search in company name and trading name. Uses LIKE with LOWER() instead of
-   * similarity() due to missing pg_trgm.
-   */
-  public List<Customer> searchByCompanyName(String searchTerm, Page page) {
-    if (searchTerm == null || searchTerm.isBlank()) {
-      return List.of();
-    }
-
-    String pattern = "%" + searchTerm.toLowerCase() + "%";
-    return find(
-            """
-                isDeleted = false
-                AND (LOWER(companyName) LIKE ?1 OR LOWER(tradingName) LIKE ?1)
-                """,
-            pattern)
-        .page(page)
-        .list();
-  }
+  // Note: Search functionality has been moved to CustomerQueryBuilder
+  // which provides more flexible and performant search capabilities
 
   /** Find customers by status. */
   public List<Customer> findByStatus(CustomerStatus status, Page page) {

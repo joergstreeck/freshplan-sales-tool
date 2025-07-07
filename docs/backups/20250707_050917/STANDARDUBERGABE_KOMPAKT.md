@@ -17,7 +17,6 @@
 - Code validieren (grep/find/ls)
 - Two-Pass Review bei Milestones
 - Dokumentieren in `/docs/claude-work/daily-work/`
-- FC-Status in `/docs/features/` aktualisieren!
 
 ### 4️⃣ Problemlösung
 - Analysieren → Dokumentieren → Lösungen vorschlagen
@@ -25,7 +24,6 @@
 ### 5️⃣ Übergabe
 - Template verwenden
 - Code-Stand verifizieren
-- FC-Status dokumentieren
 - "NACH KOMPRIMIERUNG" Abschnitt
 - Speichern: `YYYY-MM-DD_HANDOVER_HH-MM.md`
 
