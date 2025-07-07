@@ -20,19 +20,19 @@ interface AppProvidersProps {
   children?: ReactNode;
 }
 
-export const AppProviders = ({ children }: AppProvidersProps) => {
+export const AppProviders = ({ children: mainChildren }: AppProvidersProps) => {
   // Only include login bypass in development mode
   const isDevelopmentMode = import.meta.env.DEV && import.meta.env.MODE !== 'production';
   
   // Conditional Auth Provider based on development settings
-  const AuthWrapper = ({ children }: { children: ReactNode }) => {
+  const AuthWrapper = ({ children: authChildren }: { children: ReactNode }) => {
     if (IS_DEV_MODE && !USE_KEYCLOAK_IN_DEV) {
       // Use existing AuthProvider for fallback mode
-      return <AuthProvider>{children}</AuthProvider>;
+      return <AuthProvider>{authChildren}</AuthProvider>;
     }
 
     // Use Keycloak for production or when enabled in dev
-    return <KeycloakProvider>{children}</KeycloakProvider>;
+    return <KeycloakProvider>{authChildren}</KeycloakProvider>;
   };
 
   return (
@@ -40,18 +40,20 @@ export const AppProviders = ({ children }: AppProvidersProps) => {
       <QueryClientProvider client={queryClient}>
         <BrowserRouter>
           <AuthWrapper>
-            <Routes>
-              <Route path="/" element={<App />} />
-              <Route path="/cockpit" element={<SalesCockpit />} />
-              <Route path="/users" element={<UsersPage />} />
-              <Route path="/customers" element={<CustomersPage />} />
-              <Route path="/legacy-tool" element={<LegacyToolPage />} />
-              {/* Login Bypass temporär reaktiviert - Auto-Login Problem */}
-              {isDevelopmentMode && <Route path="/login-bypass" element={<LoginBypassPage />} />}
-              {isDevelopmentMode && (
-                <Route path="/integration-test" element={<IntegrationTestPage />} />
-              )}
-            </Routes>
+            {mainChildren || (
+              <Routes>
+                <Route path="/" element={<App />} />
+                <Route path="/cockpit" element={<SalesCockpit />} />
+                <Route path="/users" element={<UsersPage />} />
+                <Route path="/customers" element={<CustomersPage />} />
+                <Route path="/legacy-tool" element={<LegacyToolPage />} />
+                {/* Login Bypass temporär reaktiviert - Auto-Login Problem */}
+                {isDevelopmentMode && <Route path="/login-bypass" element={<LoginBypassPage />} />}
+                {isDevelopmentMode && (
+                  <Route path="/integration-test" element={<IntegrationTestPage />} />
+                )}
+              </Routes>
+            )}
           </AuthWrapper>
         </BrowserRouter>
 

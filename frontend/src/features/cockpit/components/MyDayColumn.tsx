@@ -11,7 +11,7 @@ import { useAuth } from '../../../hooks/useAuth';
 import { useDashboardData } from '../hooks/useSalesCockpit';
 import { mockTriageItems, mockTasks } from '../data/mockData';
 import type { DashboardTask, DashboardAlert } from '../types/salesCockpit';
-import type { TriageItem, PriorityTask } from '../types';
+import type { PriorityTask } from '../types';
 import './MyDayColumn.css';
 
 export function MyDayColumn() {

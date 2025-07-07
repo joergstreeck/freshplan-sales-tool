@@ -10,55 +10,42 @@ import { KeycloakContext } from '../contexts/KeycloakContext';
 import { USE_KEYCLOAK_IN_DEV, IS_DEV_MODE } from '../lib/constants';
 
 export function useAuth() {
+  // Always call both hooks to satisfy React's rules
+  const keycloakContext = useContext(KeycloakContext);
+  const authContext = useContext(AuthContext);
+  
   // Determine which auth context to use
   const useKeycloak = !IS_DEV_MODE || USE_KEYCLOAK_IN_DEV;
   
-  // Try to get the appropriate context
-  let authData;
-  
-  if (useKeycloak) {
-    try {
-      // Try Keycloak context
-      const keycloakContext = useContext(KeycloakContext);
-      if (keycloakContext) {
-        return {
-          isAuthenticated: keycloakContext.isAuthenticated,
-          isLoading: keycloakContext.isLoading,
-          login: keycloakContext.login,
-          logout: keycloakContext.logout,
-          token: keycloakContext.token,
-          userId: keycloakContext.userId,
-          username: keycloakContext.username,
-          email: keycloakContext.email,
-          hasRole: keycloakContext.hasRole,
-          userRoles: keycloakContext.userRoles,
-        };
-      }
-    } catch {
-      // Keycloak context not available, fall through to AuthContext
-    }
+  if (useKeycloak && keycloakContext) {
+    return {
+      isAuthenticated: keycloakContext.isAuthenticated,
+      isLoading: keycloakContext.isLoading,
+      login: keycloakContext.login,
+      logout: keycloakContext.logout,
+      token: keycloakContext.token,
+      userId: keycloakContext.userId,
+      username: keycloakContext.username,
+      email: keycloakContext.email,
+      hasRole: keycloakContext.hasRole,
+      userRoles: keycloakContext.userRoles,
+    };
   }
   
-  // Fallback to AuthContext
-  try {
-    const authContext = useContext(AuthContext);
-    if (authContext) {
-      // Map AuthContext to the same interface
-      return {
-        isAuthenticated: authContext.isAuthenticated,
-        isLoading: authContext.isLoading,
-        login: authContext.login,
-        logout: authContext.logout,
-        token: authContext.token,
-        userId: authContext.user?.id,
-        username: authContext.user?.username,
-        email: authContext.user?.email,
-        hasRole: (role: string) => authContext.user?.roles?.includes(role) || false,
-        userRoles: authContext.user?.roles || [],
-      };
-    }
-  } catch {
-    // AuthContext not available either
+  if (authContext) {
+    // Map AuthContext to the same interface
+    return {
+      isAuthenticated: authContext.isAuthenticated,
+      isLoading: authContext.isLoading,
+      login: authContext.login,
+      logout: authContext.logout,
+      token: authContext.token,
+      userId: authContext.user?.id,
+      username: authContext.user?.username,
+      email: authContext.user?.email,
+      hasRole: (role: string) => authContext.user?.roles?.includes(role) || false,
+      userRoles: authContext.user?.roles || [],
+    };
   }
   
   // Return default values if no auth context is available
