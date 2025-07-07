@@ -65,7 +65,7 @@
   align-items: center;
   gap: var(--space-2);
   margin: 0 0 var(--space-3) 0;
-  font-family: var(--font-sans);
+  font-family: var(--font-heading);
   font-size: var(--text-base);
   font-weight: var(--font-semibold);
   color: var(--gray-800);
@@ -104,18 +104,18 @@
 }
 
 .alert-item.alert-info {
-  background: linear-gradient(135deg, #E8F4FD 0%, #D1E9FC 100%);
-  border-color: #B8D4F1;
+  background: linear-gradient(135deg, var(--color-secondary-light) 0%, #D1E9FC 100%);
+  border-color: var(--color-secondary);
 }
 
 .alert-item.alert-warning {
   background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
-  border-color: #F59E0B;
+  border-color: var(--color-warning);
 }
 
 .alert-item.alert-danger {
   background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
-  border-color: #F87171;
+  border-color: var(--color-danger);
 }
 
 .alert-icon {
@@ -157,7 +157,7 @@
   font-size: var(--text-sm);
   font-weight: var(--font-medium);
   color: white;
-  background: var(--fresh-green-600);
+  background: var(--color-primary);
   border: none;
   border-radius: var(--radius-md);
   cursor: pointer;
@@ -165,7 +165,7 @@
 }
 
 .alert-action-btn:hover {
-  background: var(--fresh-green-700);
+  background: var(--color-primary-dark);
 }
 
 /* ========================================
@@ -207,19 +207,19 @@
 }
 
 .task-item.priority-high::before {
-  background: #DC2626;
+  background: var(--color-danger);
 }
 
 .task-item.priority-medium::before {
-  background: #F59E0B;
+  background: var(--color-warning);
 }
 
 .task-item.priority-low::before {
-  background: #10B981;
+  background: var(--color-success);
 }
 
 .task-item:hover {
-  border-color: var(--fresh-green-300);
+  border-color: var(--color-primary);
   box-shadow: var(--shadow-md);
   transform: translateY(-1px);
 }
@@ -275,15 +275,16 @@
 
 .triage-item {
   padding: var(--space-4);
-  background: linear-gradient(135deg, #E0F2FE 0%, #BAE6FD 100%);
-  border: 2px solid #7DD3FC;
+  background: linear-gradient(135deg, var(--color-secondary-light) 0%, #D1E9FC 100%);
+  border: 2px solid var(--color-secondary);
   border-radius: var(--radius-lg);
   transition: all var(--duration-150) var(--ease-out);
 }
 
 .triage-item:hover {
-  border-color: #38BDF8;
+  border-color: var(--color-secondary);
   box-shadow: var(--shadow-md);
+  opacity: 0.95;
 }
 
 .triage-header {
@@ -295,7 +296,7 @@
 .triage-from {
   font-size: var(--text-sm);
   font-weight: var(--font-semibold);
-  color: #0369A1;
+  color: var(--color-secondary);
 }
 
 .triage-time {
@@ -329,17 +330,17 @@
   font-size: var(--text-sm);
   font-weight: var(--font-medium);
   background: white;
-  color: #0369A1;
-  border: 1px solid #7DD3FC;
+  color: var(--color-secondary);
+  border: 1px solid var(--color-secondary);
   border-radius: var(--radius-md);
   cursor: pointer;
   transition: all var(--duration-150) var(--ease-out);
 }
 
 .triage-action:hover {
-  background: #0369A1;
+  background: var(--color-secondary);
   color: white;
-  border-color: #0369A1;
+  border-color: var(--color-secondary);
 }
 
 .toggle-icon {
@@ -498,7 +499,7 @@
   font-size: var(--text-sm);
   font-weight: var(--font-medium);
   color: white;
-  background: var(--fresh-green-600);
+  background: var(--color-primary);
   border: none;
   border-radius: var(--radius-md);
   cursor: pointer;
@@ -506,6 +507,6 @@
 }
 
 .retry-button:hover {
-  background: var(--fresh-green-700);
+  background: var(--color-primary-dark);
   transform: translateY(-1px);
 }
