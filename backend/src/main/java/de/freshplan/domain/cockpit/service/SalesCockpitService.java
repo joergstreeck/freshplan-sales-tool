@@ -309,80 +309,55 @@ public class SalesCockpitService {
   public SalesCockpitDashboard getDevDashboardData() {
     SalesCockpitDashboard dashboard = new SalesCockpitDashboard();
 
-    // Mock Tasks (3 Aufgaben)
+    // Mock Tasks (3 Aufgaben) - Refactored mit Helper-Methoden
     List<DashboardTask> mockTasks = new ArrayList<>();
-
-    // Task 1: Überfälliger Follow-up
-    DashboardTask task1 = new DashboardTask();
-    task1.setId(UUID.randomUUID());
-    task1.setTitle("ÜBERFÄLLIG: Follow-up mit Mustermann GmbH");
-    task1.setDescription("Geplanter Follow-up seit 2025-01-05");
-    task1.setType(DashboardTask.TaskType.CALL);
-    task1.setPriority(DashboardTask.TaskPriority.HIGH);
-    task1.setCustomerId(UUID.randomUUID());
-    task1.setCustomerName("Mustermann GmbH");
-    task1.setDueDate(LocalDateTime.now().minusHours(2));
-    task1.setCompleted(false);
-    mockTasks.add(task1);
-
-    // Task 2: Risiko-Kunde kontaktieren
-    DashboardTask task2 = new DashboardTask();
-    task2.setId(UUID.randomUUID());
-    task2.setTitle("Risiko-Kunde kontaktieren: Schmidt & Co.");
-    task2.setDescription("Kein Kontakt seit 2024-12-01");
-    task2.setType(DashboardTask.TaskType.EMAIL);
-    task2.setPriority(DashboardTask.TaskPriority.MEDIUM);
-    task2.setCustomerId(UUID.randomUUID());
-    task2.setCustomerName("Schmidt & Co.");
-    task2.setDueDate(LocalDateTime.now().plusHours(4));
-    task2.setCompleted(false);
-    mockTasks.add(task2);
-
-    // Task 3: Willkommen-Anruf
-    DashboardTask task3 = new DashboardTask();
-    task3.setId(UUID.randomUUID());
-    task3.setTitle("Willkommen-Anruf: Neue Kunde AG");
-    task3.setDescription("Neuer Kunde seit 2025-01-06");
-    task3.setType(DashboardTask.TaskType.CALL);
-    task3.setPriority(DashboardTask.TaskPriority.LOW);
-    task3.setCustomerId(UUID.randomUUID());
-    task3.setCustomerName("Neue Kunde AG");
-    task3.setDueDate(LocalDateTime.now().plusHours(8));
-    task3.setCompleted(false);
-    mockTasks.add(task3);
-
+    mockTasks.add(
+        createMockTask(
+            "ÜBERFÄLLIG: Follow-up mit Mustermann GmbH",
+            "Geplanter Follow-up seit 2025-01-05",
+            DashboardTask.TaskType.CALL,
+            DashboardTask.TaskPriority.HIGH,
+            "Mustermann GmbH",
+            LocalDateTime.now().minusHours(2)));
+    mockTasks.add(
+        createMockTask(
+            "Risiko-Kunde kontaktieren: Schmidt & Co.",
+            "Kein Kontakt seit 2024-12-01",
+            DashboardTask.TaskType.EMAIL,
+            DashboardTask.TaskPriority.MEDIUM,
+            "Schmidt & Co.",
+            LocalDateTime.now().plusHours(4)));
+    mockTasks.add(
+        createMockTask(
+            "Willkommen-Anruf: Neue Kunde AG",
+            "Neuer Kunde seit 2025-01-06",
+            DashboardTask.TaskType.CALL,
+            DashboardTask.TaskPriority.LOW,
+            "Neue Kunde AG",
+            LocalDateTime.now().plusHours(8)));
     dashboard.setTodaysTasks(mockTasks);
 
-    // Mock Risk Customers (2 Risiko-Kunden)
+    // Mock Risk Customers (2 Risiko-Kunden) - Refactored mit Helper-Methoden
     List<RiskCustomer> mockRiskCustomers = new ArrayList<>();
-
-    // Risk Customer 1
-    RiskCustomer risk1 = new RiskCustomer();
-    risk1.setId(UUID.randomUUID());
-    risk1.setCustomerNumber("K-2024-001");
-    risk1.setCompanyName("Risiko GmbH");
-    risk1.setLastContactDate(LocalDateTime.now().minusDays(95));
-    risk1.setDaysSinceLastContact(95);
-    risk1.setRiskLevel(RiskCustomer.RiskLevel.MEDIUM);
-    risk1.setRiskReason("Kein Kontakt seit über 90 Tagen");
-    risk1.setRecommendedAction("Zeitnah kontaktieren zur Beziehungspflege");
-    mockRiskCustomers.add(risk1);
-
-    // Risk Customer 2
-    RiskCustomer risk2 = new RiskCustomer();
-    risk2.setId(UUID.randomUUID());
-    risk2.setCustomerNumber("K-2023-042");
-    risk2.setCompanyName("Verloren AG");
-    risk2.setLastContactDate(LocalDateTime.now().minusDays(125));
-    risk2.setDaysSinceLastContact(125);
-    risk2.setRiskLevel(RiskCustomer.RiskLevel.HIGH);
-    risk2.setRiskReason("Kein Kontakt seit über 120 Tagen");
-    risk2.setRecommendedAction("Dringend kontaktieren - Kundenverlust droht!");
-    mockRiskCustomers.add(risk2);
-
+    mockRiskCustomers.add(
+        createMockRiskCustomer(
+            "K-2024-001",
+            "Risiko GmbH",
+            95,
+            RiskCustomer.RiskLevel.MEDIUM,
+            "Kein Kontakt seit über 90 Tagen",
+            "Zeitnah kontaktieren zur Beziehungspflege"));
+    mockRiskCustomers.add(
+        createMockRiskCustomer(
+            "K-2023-042",
+            "Verloren AG",
+            125,
+            RiskCustomer.RiskLevel.HIGH,
+            "Kein Kontakt seit über 120 Tagen",
+            "Dringend kontaktieren - Kundenverlust droht!"));
     dashboard.setRiskCustomers(mockRiskCustomers);
 
-    // Mock Statistics
+    // Mock Statistics - Kompakt erstellt
     DashboardStatistics stats = new DashboardStatistics();
     stats.setTotalCustomers(156);
     stats.setActiveCustomers(142);
@@ -391,23 +366,74 @@ public class SalesCockpitService {
     stats.setOpenTasks(12);
     dashboard.setStatistics(stats);
 
-    // Mock Alerts
+    // Mock Alerts - Refactored mit Helper-Methode
     List<DashboardAlert> mockAlerts = new ArrayList<>();
-
-    DashboardAlert alert1 = new DashboardAlert();
-    alert1.setId(UUID.randomUUID());
-    alert1.setTitle("Umsatzchance bei Premium Partner GmbH");
-    alert1.setMessage("Kunde hatte lange keinen Kontakt - idealer Zeitpunkt für Cross-Selling");
-    alert1.setType(DashboardAlert.AlertType.OPPORTUNITY);
-    alert1.setSeverity(DashboardAlert.AlertSeverity.INFO);
-    alert1.setCustomerId(UUID.randomUUID());
-    alert1.setCustomerName("Premium Partner GmbH");
-    alert1.setCreatedAt(LocalDateTime.now());
-    alert1.setActionLink("/customers/" + alert1.getCustomerId());
-    mockAlerts.add(alert1);
-
+    DashboardAlert alert =
+        createMockAlert(
+            "Umsatzchance bei Premium Partner GmbH",
+            "Kunde hatte lange keinen Kontakt - idealer Zeitpunkt für Cross-Selling",
+            "Premium Partner GmbH",
+            "/customers/" + UUID.randomUUID());
+    mockAlerts.add(alert);
     dashboard.setAlerts(mockAlerts);
 
     return dashboard;
+  }
+
+  /** Helper-Methode zur Erstellung von Mock-Tasks. */
+  private DashboardTask createMockTask(
+      String title,
+      String description,
+      DashboardTask.TaskType type,
+      DashboardTask.TaskPriority priority,
+      String customerName,
+      LocalDateTime dueDate) {
+    DashboardTask task = new DashboardTask();
+    task.setId(UUID.randomUUID());
+    task.setTitle(title);
+    task.setDescription(description);
+    task.setType(type);
+    task.setPriority(priority);
+    task.setCustomerId(UUID.randomUUID());
+    task.setCustomerName(customerName);
+    task.setDueDate(dueDate);
+    task.setCompleted(false);
+    return task;
+  }
+
+  /** Helper-Methode zur Erstellung von Mock-Risk-Customers. */
+  private RiskCustomer createMockRiskCustomer(
+      String customerNumber,
+      String companyName,
+      int daysSinceContact,
+      RiskCustomer.RiskLevel riskLevel,
+      String riskReason,
+      String recommendedAction) {
+    RiskCustomer riskCustomer = new RiskCustomer();
+    riskCustomer.setId(UUID.randomUUID());
+    riskCustomer.setCustomerNumber(customerNumber);
+    riskCustomer.setCompanyName(companyName);
+    riskCustomer.setLastContactDate(LocalDateTime.now().minusDays(daysSinceContact));
+    riskCustomer.setDaysSinceLastContact(daysSinceContact);
+    riskCustomer.setRiskLevel(riskLevel);
+    riskCustomer.setRiskReason(riskReason);
+    riskCustomer.setRecommendedAction(recommendedAction);
+    return riskCustomer;
+  }
+
+  /** Helper-Methode zur Erstellung von Mock-Alerts. */
+  private DashboardAlert createMockAlert(
+      String title, String message, String customerName, String actionLink) {
+    DashboardAlert alert = new DashboardAlert();
+    alert.setId(UUID.randomUUID());
+    alert.setTitle(title);
+    alert.setMessage(message);
+    alert.setType(DashboardAlert.AlertType.OPPORTUNITY);
+    alert.setSeverity(DashboardAlert.AlertSeverity.INFO);
+    alert.setCustomerId(UUID.randomUUID());
+    alert.setCustomerName(customerName);
+    alert.setCreatedAt(LocalDateTime.now());
+    alert.setActionLink(actionLink);
+    return alert;
   }
 }

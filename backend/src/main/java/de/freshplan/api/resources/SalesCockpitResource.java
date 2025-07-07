@@ -114,6 +114,7 @@ public class SalesCockpitResource {
    *
    * @return Mock Dashboard-Daten für Entwicklung
    */
+  @io.quarkus.arc.profile.IfBuildProfile("dev")
   @GET
   @Path("/dashboard/dev")
   @Operation(

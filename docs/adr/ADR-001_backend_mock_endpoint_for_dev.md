@@ -16,12 +16,12 @@ Verfügung:
 ## Entscheidung
 
 Wir implementieren **dedizierte Mock-Endpunkte** im Backend unter dem Pfad 
-`/api/dev/*`, die nur in der Entwicklungsumgebung verfügbar sind.
+`/api/{service}/*/dev`, die nur in der Entwicklungsumgebung verfügbar sind.
 
 ### Implementierte Mock-Endpunkte:
-- `GET /api/dev/sales-cockpit/dashboard/{userId}` - Mock Dashboard-Daten
-- `GET /api/dev/sales-cockpit/activities/{userId}` - Mock Activities  
-- `GET /api/dev/customers` - Mock Kundenliste
+- `GET /api/sales-cockpit/dashboard/dev` - Mock Dashboard-Daten (✅ Implementiert)
+- `GET /api/sales-cockpit/activities/dev` - Mock Activities (🚧 Geplant)  
+- `GET /api/customers/dev` - Mock Kundenliste (🚧 Geplant)
 
 ## Begründung
 
