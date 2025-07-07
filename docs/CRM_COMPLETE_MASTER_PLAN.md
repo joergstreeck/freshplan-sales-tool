@@ -14,6 +14,36 @@ Wir bauen kein Werkzeug, das man benutzen *muss*. Wir bauen einen Partner, den m
 
 ---
 
+## 🎨 UI/UX & Corporate Identity
+
+**VERBINDLICH: Alle sichtbaren Frontend-Elemente MÜSSEN der Freshfoodz CI entsprechen!**
+
+### Freshfoodz Corporate Identity Standards
+
+#### Farben (Pflicht für alle UI-Komponenten):
+- **Primärgrün**: `#94C456` - Hauptfarbe für Buttons, Links, Aktionen
+- **Dunkelblau**: `#004F7B` - Sekundärfarbe für Headlines, Navigation
+- **Weiß**: `#FFFFFF` - Hintergründe, Cards
+- **Schwarz**: `#000000` - Haupttext, Icons
+
+#### Typografie (Verbindlich):
+- **Headlines**: Antonio Bold - für alle Überschriften und Titel
+- **Fließtext**: Poppins Regular/Medium - für alle Texte und UI-Elemente
+
+#### Markenidentität:
+- **Slogan**: "So einfach, schnell und lecker!" - Integration in Onboarding/Marketing
+- **Logo-Regeln**: Nur auf neutralen Hintergründen, Schutzzone beachten
+
+#### Implementierungsrichtlinien:
+1. **CSS-Variablen definieren** für alle CI-Farben
+2. **Font-Loading optimieren** für Antonio Bold und Poppins
+3. **Design System erstellen** mit allen CI-konformen Komponenten
+4. **Accessibility sicherstellen** bei Farbkontrasten (WCAG 2.1 AA)
+
+**Referenz**: `/docs/FRESH-FOODZ_CI.md` für detaillierte CI-Vorgaben
+
+---
+
 ## 🏛️ Unsere Philosophie: Die 3 Kernprinzipien
 
 Diese Prinzipien leiten jede einzelne Design- und Entwicklungsentscheidung.
@@ -64,8 +94,9 @@ Die Hauptoberfläche ist ein einziges, dreigeteiltes Cockpit. Es ist **responsiv
 * **Phase 1: Das begeisternde Fundament (Unser aktueller Fokus)**
     1.  **Backend Finalisierung (JETZT!):** Die Integration-Tests werden mit Testcontainers repariert. **Das ist der Gatekeeper für alles Weitere.**
     2.  **Frontend Foundation:** Das 3-Spalten-Layout des Cockpits wird mit `Zustand` als State Manager implementiert.
-    3.  **Erste funktionale Integration:** Die `CustomerList` wird in die mittlere Spalte des Cockpits integriert.
-    4.  **Activity Timeline (Backend):** Die Services und API-Endpunkte für die Kunden-Zeitleiste werden gebaut.
+    3.  **Mock-Endpunkte für Entwicklung:** Dedizierte Backend-Mock-Endpunkte unter `/api/dev/*` für saubere Entwicklung ohne DB-Verschmutzung (siehe [ADR-001](./adr/ADR-001_backend_mock_endpoint_for_dev.md)).
+    4.  **Erste funktionale Integration:** Die `CustomerList` wird in die mittlere Spalte des Cockpits integriert.
+    5.  **Activity Timeline (Backend):** Die Services und API-Endpunkte für die Kunden-Zeitleiste werden gebaut.
 
 * **Phase 2: Prozess-Exzellenz & Integration**
     * **Backend-for-Frontend (BFF)** implementieren.

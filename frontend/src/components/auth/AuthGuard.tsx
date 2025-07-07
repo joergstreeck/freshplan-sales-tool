@@ -2,7 +2,7 @@
  * Auth Guard Komponente - Schützt Routen vor unauthentifizierten Benutzern
  */
 import React, { ReactNode } from 'react';
-import { useKeycloak } from '../../contexts/KeycloakContext';
+import { useAuth } from '../../hooks/useAuth';
 import { LoginPage } from './LoginPage';
 
 interface AuthGuardProps {
@@ -12,7 +12,7 @@ interface AuthGuardProps {
 }
 
 export const AuthGuard: React.FC<AuthGuardProps> = ({ children, requiredRole, fallback }) => {
-  const { isAuthenticated, isLoading, hasRole } = useKeycloak();
+  const { isAuthenticated, isLoading, hasRole } = useAuth();
 
   // Loading state
   if (isLoading) {

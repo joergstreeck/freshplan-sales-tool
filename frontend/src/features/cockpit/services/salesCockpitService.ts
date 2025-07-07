@@ -5,6 +5,7 @@
  */
 import { httpClient } from '../../../lib/apiClient';
 import type { SalesCockpitDashboard } from '../types/salesCockpit';
+import { IS_DEV_MODE, USE_KEYCLOAK_IN_DEV } from '../../../lib/constants';
 
 class SalesCockpitService {
   /**
@@ -14,9 +15,12 @@ class SalesCockpitService {
    * @returns Aggregierte Dashboard-Daten
    */
   async getDashboardData(userId: string): Promise<SalesCockpitDashboard> {
-    const response = await httpClient.get<SalesCockpitDashboard>(
-      `/api/sales-cockpit/dashboard/${userId}`
-    );
+    // In Development-Mode ohne Keycloak: Nutze den /dev Endpunkt
+    const endpoint = IS_DEV_MODE && !USE_KEYCLOAK_IN_DEV 
+      ? '/api/sales-cockpit/dashboard/dev'
+      : `/api/sales-cockpit/dashboard/${userId}`;
+    
+    const response = await httpClient.get<SalesCockpitDashboard>(endpoint);
     return response.data;
   }
 

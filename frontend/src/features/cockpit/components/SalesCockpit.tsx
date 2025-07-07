@@ -34,10 +34,10 @@ export function SalesCockpit() {
     isLoading, 
     isError, 
     error 
-  } = useDashboardData(userId || null);
+  } = useDashboardData(userId);
 
-    // Keyboard navigation
-    useEffect(() => {
+  // Keyboard navigation
+  useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
       if (e.altKey) {
         switch (e.key) {
@@ -61,6 +61,17 @@ export function SalesCockpit() {
   return (
     <div className={`sales-cockpit ${isCompactMode ? 'compact-mode' : ''}`}>
       <CockpitHeader />
+      
+      {/* Dashboard Statistiken */}
+      {dashboardData?.statistics && (
+        <div className="cockpit-stats-container">
+          <DashboardStats 
+            statistics={dashboardData.statistics}
+            loading={isLoading}
+            error={isError ? error : null}
+          />
+        </div>
+      )}
       
       <main className="cockpit-main">
         <div 

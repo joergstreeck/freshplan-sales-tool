@@ -76,15 +76,15 @@
   font-family: var(--font-display);
   font-size: var(--text-2xl);
   font-weight: var(--font-bold);
-  color: var(--fresh-blue-500);
+  color: var(--color-secondary);
   line-height: 1;
 }
 
 .brand-subtitle {
-  font-family: var(--font-body);
+  font-family: var(--font-sans);
   font-size: var(--text-xs);
   font-weight: var(--font-medium);
-  color: var(--fresh-green-500);
+  color: var(--color-primary);
   line-height: 1;
 }
 
@@ -113,13 +113,13 @@
 }
 
 .nav-link:hover {
-  color: var(--fresh-green-500);
-  background-color: var(--fresh-green-50);
+  color: var(--color-primary);
+  background-color: var(--color-primary-light);
 }
 
 .nav-link.active {
-  color: var(--fresh-green-600);
-  background-color: var(--fresh-green-100);
+  color: var(--color-primary-hover);
+  background-color: var(--color-primary-light);
 }
 
 /* ========================================
@@ -202,7 +202,7 @@
   font-size: var(--text-sm);
   font-weight: var(--font-semibold);
   color: white;
-  background-color: var(--fresh-green-500);
+  background-color: var(--color-primary);
   border-radius: var(--radius-full);
 }
 
@@ -253,7 +253,7 @@
 }
 
 .user-menu-item:hover {
-  color: var(--fresh-green-600);
+  color: var(--color-primary-hover);
   background-color: var(--gray-50);
 }
 

@@ -90,8 +90,8 @@ public class SalesCockpitService {
   /**
    * Lädt die heutigen Aufgaben für einen Benutzer.
    *
-   * <p>Diese Implementierung generiert intelligente Tasks basierend auf echten Customer-Daten
-   * und deren Status. In der finalen Version werden echte Aufgaben aus dem Task-Service geladen.
+   * <p>Diese Implementierung generiert intelligente Tasks basierend auf echten Customer-Daten und
+   * deren Status. In der finalen Version werden echte Aufgaben aus dem Task-Service geladen.
    */
   private List<DashboardTask> loadTodaysTasks(UUID userId) {
     List<DashboardTask> tasks = new ArrayList<>();
@@ -105,64 +105,70 @@ public class SalesCockpitService {
     }
 
     // Intelligente Task-Generierung basierend auf echten Customer-Daten
-    
+
     // 1. Überfällige Follow-ups (höchste Priorität)
     List<Customer> overdueCustomers = customerRepository.findOverdueFollowUps(Page.of(0, 2));
-    overdueCustomers.forEach(customer -> {
-      DashboardTask task = new DashboardTask();
-      task.setId(UUID.randomUUID());
-      task.setTitle("ÜBERFÄLLIG: Follow-up mit " + customer.getCompanyName());
-      task.setDescription("Geplanter Follow-up seit " + 
-          (customer.getNextFollowUpDate() != null ? 
-           customer.getNextFollowUpDate().toLocalDate() : "unbekannt"));
-      task.setType(DashboardTask.TaskType.CALL);
-      task.setPriority(DashboardTask.TaskPriority.HIGH);
-      task.setCustomerId(customer.getId());
-      task.setCustomerName(customer.getCompanyName());
-      task.setDueDate(LocalDateTime.now().minusHours(1)); // Bereits überfällig
-      task.setCompleted(false);
-      tasks.add(task);
-    });
+    overdueCustomers.forEach(
+        customer -> {
+          DashboardTask task = new DashboardTask();
+          task.setId(UUID.randomUUID());
+          task.setTitle("ÜBERFÄLLIG: Follow-up mit " + customer.getCompanyName());
+          task.setDescription(
+              "Geplanter Follow-up seit "
+                  + (customer.getNextFollowUpDate() != null
+                      ? customer.getNextFollowUpDate().toLocalDate()
+                      : "unbekannt"));
+          task.setType(DashboardTask.TaskType.CALL);
+          task.setPriority(DashboardTask.TaskPriority.HIGH);
+          task.setCustomerId(customer.getId());
+          task.setCustomerName(customer.getCompanyName());
+          task.setDueDate(LocalDateTime.now().minusHours(1)); // Bereits überfällig
+          task.setCompleted(false);
+          tasks.add(task);
+        });
 
     // 2. Risiko-Kunden kontaktieren (mittlere Priorität)
     LocalDateTime riskThreshold = LocalDateTime.now().minusDays(RISK_THRESHOLD_LOW_DAYS);
-    List<Customer> riskCustomers = customerRepository
-        .findActiveCustomersWithoutRecentContact(riskThreshold)
-        .stream()
-        .limit(3)
-        .toList();
-    
-    riskCustomers.forEach(customer -> {
-      DashboardTask task = new DashboardTask();
-      task.setId(UUID.randomUUID());
-      task.setTitle("Risiko-Kunde kontaktieren: " + customer.getCompanyName());
-      task.setDescription("Kein Kontakt seit " + 
-          (customer.getLastContactDate() != null ? 
-           customer.getLastContactDate().toLocalDate() : "Beginn der Geschäftsbeziehung"));
-      task.setType(DashboardTask.TaskType.EMAIL);
-      task.setPriority(DashboardTask.TaskPriority.MEDIUM);
-      task.setCustomerId(customer.getId());
-      task.setCustomerName(customer.getCompanyName());
-      task.setDueDate(LocalDateTime.now().plusHours(4));
-      task.setCompleted(false);
-      tasks.add(task);
-    });
+    List<Customer> riskCustomers =
+        customerRepository.findActiveCustomersWithoutRecentContact(riskThreshold).stream()
+            .limit(3)
+            .toList();
+
+    riskCustomers.forEach(
+        customer -> {
+          DashboardTask task = new DashboardTask();
+          task.setId(UUID.randomUUID());
+          task.setTitle("Risiko-Kunde kontaktieren: " + customer.getCompanyName());
+          task.setDescription(
+              "Kein Kontakt seit "
+                  + (customer.getLastContactDate() != null
+                      ? customer.getLastContactDate().toLocalDate()
+                      : "Beginn der Geschäftsbeziehung"));
+          task.setType(DashboardTask.TaskType.EMAIL);
+          task.setPriority(DashboardTask.TaskPriority.MEDIUM);
+          task.setCustomerId(customer.getId());
+          task.setCustomerName(customer.getCompanyName());
+          task.setDueDate(LocalDateTime.now().plusHours(4));
+          task.setCompleted(false);
+          tasks.add(task);
+        });
 
     // 3. Neue Kunden begrüßen (niedrige Priorität)
     List<Customer> newCustomers = customerRepository.findRecentlyCreated(7, Page.of(0, 2));
-    newCustomers.forEach(customer -> {
-      DashboardTask task = new DashboardTask();
-      task.setId(UUID.randomUUID());
-      task.setTitle("Willkommen-Anruf: " + customer.getCompanyName());
-      task.setDescription("Neuer Kunde seit " + customer.getCreatedAt().toLocalDate());
-      task.setType(DashboardTask.TaskType.CALL);
-      task.setPriority(DashboardTask.TaskPriority.LOW);
-      task.setCustomerId(customer.getId());
-      task.setCustomerName(customer.getCompanyName());
-      task.setDueDate(LocalDateTime.now().plusHours(8));
-      task.setCompleted(false);
-      tasks.add(task);
-    });
+    newCustomers.forEach(
+        customer -> {
+          DashboardTask task = new DashboardTask();
+          task.setId(UUID.randomUUID());
+          task.setTitle("Willkommen-Anruf: " + customer.getCompanyName());
+          task.setDescription("Neuer Kunde seit " + customer.getCreatedAt().toLocalDate());
+          task.setType(DashboardTask.TaskType.CALL);
+          task.setPriority(DashboardTask.TaskPriority.LOW);
+          task.setCustomerId(customer.getId());
+          task.setCustomerName(customer.getCompanyName());
+          task.setDueDate(LocalDateTime.now().plusHours(8));
+          task.setCompleted(false);
+          tasks.add(task);
+        });
 
     return tasks;
   }
@@ -237,14 +243,15 @@ public class SalesCockpitService {
     // Task-basierte Statistiken: Berechnung basierend auf echten Customer-Daten
     // bis Task-Modul implementiert ist
     // Feature-Flag: ff_FRESH-001_task_module_integration
-    
+
     // Überfällige Follow-ups als Proxy für überfällige Aufgaben
     long overdueFollowUps = customerRepository.countOverdueFollowUps();
     stats.setOverdueItems((int) overdueFollowUps);
-    
+
     // Offene Tasks basierend auf Kunden ohne kürzlichen Kontakt (letzte 7 Tage)
     LocalDateTime recentContactThreshold = LocalDateTime.now().minusDays(7);
-    long customersNeedingContact = customerRepository.countActiveCustomersWithoutRecentContact(recentContactThreshold);
+    long customersNeedingContact =
+        customerRepository.countActiveCustomersWithoutRecentContact(recentContactThreshold);
     stats.setOpenTasks((int) customersNeedingContact);
 
     return stats;
@@ -289,5 +296,144 @@ public class SalesCockpitService {
             });
 
     return alerts;
+  }
+
+  /**
+   * Lädt Dashboard-Daten für die Entwicklungsumgebung.
+   *
+   * <p>Diese Methode gibt Mock-Daten zurück und umgeht die User-Validierung. Sie ist nur in der
+   * Entwicklungsumgebung verfügbar.
+   *
+   * @return Mock Dashboard-Daten für Entwicklung
+   */
+  public SalesCockpitDashboard getDevDashboardData() {
+    SalesCockpitDashboard dashboard = new SalesCockpitDashboard();
+
+    // Mock Tasks (3 Aufgaben) - Refactored mit Helper-Methoden
+    List<DashboardTask> mockTasks = new ArrayList<>();
+    mockTasks.add(
+        createMockTask(
+            "ÜBERFÄLLIG: Follow-up mit Mustermann GmbH",
+            "Geplanter Follow-up seit 2025-01-05",
+            DashboardTask.TaskType.CALL,
+            DashboardTask.TaskPriority.HIGH,
+            "Mustermann GmbH",
+            LocalDateTime.now().minusHours(2)));
+    mockTasks.add(
+        createMockTask(
+            "Risiko-Kunde kontaktieren: Schmidt & Co.",
+            "Kein Kontakt seit 2024-12-01",
+            DashboardTask.TaskType.EMAIL,
+            DashboardTask.TaskPriority.MEDIUM,
+            "Schmidt & Co.",
+            LocalDateTime.now().plusHours(4)));
+    mockTasks.add(
+        createMockTask(
+            "Willkommen-Anruf: Neue Kunde AG",
+            "Neuer Kunde seit 2025-01-06",
+            DashboardTask.TaskType.CALL,
+            DashboardTask.TaskPriority.LOW,
+            "Neue Kunde AG",
+            LocalDateTime.now().plusHours(8)));
+    dashboard.setTodaysTasks(mockTasks);
+
+    // Mock Risk Customers (2 Risiko-Kunden) - Refactored mit Helper-Methoden
+    List<RiskCustomer> mockRiskCustomers = new ArrayList<>();
+    mockRiskCustomers.add(
+        createMockRiskCustomer(
+            "K-2024-001",
+            "Risiko GmbH",
+            95,
+            RiskCustomer.RiskLevel.MEDIUM,
+            "Kein Kontakt seit über 90 Tagen",
+            "Zeitnah kontaktieren zur Beziehungspflege"));
+    mockRiskCustomers.add(
+        createMockRiskCustomer(
+            "K-2023-042",
+            "Verloren AG",
+            125,
+            RiskCustomer.RiskLevel.HIGH,
+            "Kein Kontakt seit über 120 Tagen",
+            "Dringend kontaktieren - Kundenverlust droht!"));
+    dashboard.setRiskCustomers(mockRiskCustomers);
+
+    // Mock Statistics - Kompakt erstellt
+    DashboardStatistics stats = new DashboardStatistics();
+    stats.setTotalCustomers(156);
+    stats.setActiveCustomers(142);
+    stats.setCustomersAtRisk(8);
+    stats.setOverdueItems(3);
+    stats.setOpenTasks(12);
+    dashboard.setStatistics(stats);
+
+    // Mock Alerts - Refactored mit Helper-Methode
+    List<DashboardAlert> mockAlerts = new ArrayList<>();
+    DashboardAlert alert =
+        createMockAlert(
+            "Umsatzchance bei Premium Partner GmbH",
+            "Kunde hatte lange keinen Kontakt - idealer Zeitpunkt für Cross-Selling",
+            "Premium Partner GmbH",
+            "/customers/" + UUID.randomUUID());
+    mockAlerts.add(alert);
+    dashboard.setAlerts(mockAlerts);
+
+    return dashboard;
+  }
+
+  /** Helper-Methode zur Erstellung von Mock-Tasks. */
+  private DashboardTask createMockTask(
+      String title,
+      String description,
+      DashboardTask.TaskType type,
+      DashboardTask.TaskPriority priority,
+      String customerName,
+      LocalDateTime dueDate) {
+    DashboardTask task = new DashboardTask();
+    task.setId(UUID.randomUUID());
+    task.setTitle(title);
+    task.setDescription(description);
+    task.setType(type);
+    task.setPriority(priority);
+    task.setCustomerId(UUID.randomUUID());
+    task.setCustomerName(customerName);
+    task.setDueDate(dueDate);
+    task.setCompleted(false);
+    return task;
+  }
+
+  /** Helper-Methode zur Erstellung von Mock-Risk-Customers. */
+  private RiskCustomer createMockRiskCustomer(
+      String customerNumber,
+      String companyName,
+      int daysSinceContact,
+      RiskCustomer.RiskLevel riskLevel,
+      String riskReason,
+      String recommendedAction) {
+    RiskCustomer riskCustomer = new RiskCustomer();
+    riskCustomer.setId(UUID.randomUUID());
+    riskCustomer.setCustomerNumber(customerNumber);
+    riskCustomer.setCompanyName(companyName);
+    riskCustomer.setLastContactDate(LocalDateTime.now().minusDays(daysSinceContact));
+    riskCustomer.setDaysSinceLastContact(daysSinceContact);
+    riskCustomer.setRiskLevel(riskLevel);
+    riskCustomer.setRiskReason(riskReason);
+    riskCustomer.setRecommendedAction(recommendedAction);
+    return riskCustomer;
+  }
+
+  /** Helper-Methode zur Erstellung von Mock-Alerts. */
+  private DashboardAlert createMockAlert(
+      String title, String message, String customerName, String actionLink) {
+    DashboardAlert alert = new DashboardAlert();
+    alert.setId(UUID.randomUUID());
+    alert.setTitle(title);
+    alert.setMessage(message);
+    alert.setType(DashboardAlert.AlertType.OPPORTUNITY);
+    alert.setSeverity(DashboardAlert.AlertSeverity.INFO);
+    alert.setCustomerId(UUID.randomUUID());
+    alert.setCustomerName(customerName);
+    alert.setCreatedAt(LocalDateTime.now());
+    alert.setActionLink(actionLink);
+    return alert;
   }
 }

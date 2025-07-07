@@ -108,6 +108,41 @@ public class SalesCockpitResource {
   }
 
   /**
+   * Lädt Dashboard-Daten für die Entwicklungsumgebung.
+   *
+   * <p>Dieser Endpunkt ist nur in der Entwicklungsumgebung verfügbar und gibt Mock-Daten zurück.
+   *
+   * @return Mock Dashboard-Daten für Entwicklung
+   */
+  @io.quarkus.arc.profile.IfBuildProfile("dev")
+  @GET
+  @Path("/dashboard/dev")
+  @Operation(
+      summary = "Lädt Development Dashboard-Daten",
+      description = "Gibt Mock-Daten für die Entwicklungsumgebung zurück")
+  @APIResponses({
+    @APIResponse(
+        responseCode = "200",
+        description = "Development Dashboard-Daten erfolgreich geladen",
+        content =
+            @Content(
+                mediaType = MediaType.APPLICATION_JSON,
+                schema = @Schema(implementation = SalesCockpitDashboard.class))),
+    @APIResponse(responseCode = "500", description = "Interner Serverfehler")
+  })
+  public Response getDevDashboardData() {
+    try {
+      SalesCockpitDashboard dashboard = salesCockpitService.getDevDashboardData();
+      return Response.ok(dashboard).build();
+    } catch (RuntimeException e) {
+      LOG.errorf(e, "Internal server error while fetching dev dashboard data");
+      return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+          .entity("Internal server error occurred")
+          .build();
+    }
+  }
+
+  /**
    * Health-Check Endpunkt für das Sales Cockpit.
    *
    * @return Status des Sales Cockpit Service
