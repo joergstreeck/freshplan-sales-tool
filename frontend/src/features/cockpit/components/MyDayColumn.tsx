@@ -7,16 +7,16 @@
 
 import { useEffect } from 'react';
 import { useCockpitStore } from '../../../store/cockpitStore';
-import { useKeycloak } from '../../../contexts/KeycloakContext';
+import { useAuth } from '../../../hooks/useAuth';
 import { useDashboardData } from '../hooks/useSalesCockpit';
-import { mockTriageItems } from '../data/mockData';
+import { mockTriageItems, mockTasks } from '../data/mockData';
 import type { DashboardTask, DashboardAlert } from '../types/salesCockpit';
-import type { TriageItem } from '../types';
+import type { TriageItem, PriorityTask } from '../types';
 import './MyDayColumn.css';
 
 export function MyDayColumn() {
   const { showTriageInbox, toggleTriageInbox, setPriorityTasksCount } = useCockpitStore();
-  const { userId } = useKeycloak();
+  const { userId } = useAuth();
   
   // Hole Dashboard-Daten via BFF
   const { 
@@ -122,12 +122,25 @@ export function MyDayColumn() {
     );
   }
 
-  // Extract data from BFF response
-  const tasks = dashboardData?.todaysTasks || [];
+  // Extract data from BFF response or use mock data as fallback
+  const bffTasks = dashboardData?.todaysTasks || [];
   const alerts = dashboardData?.alerts || [];
   const todaysAlerts = alerts.filter(alert => 
     new Date(alert.createdAt).toDateString() === new Date().toDateString()
   );
+  
+  // Use mock tasks if there's an error or no data
+  const tasks: PriorityTask[] = bffTasks.length > 0 
+    ? bffTasks.map(task => ({
+        id: task.id,
+        title: task.title,
+        customerName: task.customerName,
+        type: task.type.toLowerCase() as PriorityTask['type'],
+        priority: task.priority.toLowerCase() as PriorityTask['priority'],
+        dueDate: task.dueDate ? new Date(task.dueDate) : undefined,
+        completed: false
+      }))
+    : (isError || !dashboardData) ? mockTasks : [];
 
   return (
     <div className="my-day-column">
