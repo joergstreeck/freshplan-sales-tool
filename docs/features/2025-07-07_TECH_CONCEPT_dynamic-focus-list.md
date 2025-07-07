@@ -467,5 +467,71 @@ export const CustomerCard: React.FC<{ customer: Customer }> = ({ customer }) => 
 
 **Status-Updates**:
 - 07.07.2025: Konzept erstellt (Draft)
+- 07.07.2025: Backend-Implementierung abgeschlossen
 - [Datum]: Review durch Jörg
 - [Datum]: Approved / Änderungen
+
+## Implementierungs-Status
+
+### ✅ Backend-Implementierung (07.07.2025 - ABGESCHLOSSEN)
+
+#### Implementierte Komponenten:
+
+1. **DTOs** 
+   - ✅ `CustomerSearchRequest` mit GlobalSearch, Filters und Sort
+   - ✅ `FilterCriteria` mit allen FilterOperator-Typen
+   - ✅ `SortCriteria` für flexible Sortierung
+   - ✅ Bean Validation auf allen DTOs
+   - ✅ Builder-Pattern für einfache Nutzung
+
+2. **CustomerQueryBuilder**
+   - ✅ Dynamische Query-Generierung mit Panache
+   - ✅ Global Search über companyName, customerNumber, tradingName
+   - ✅ Alle FilterOperator implementiert (EQUALS, GREATER_THAN, CONTAINS, etc.)
+   - ✅ Enum-Typ-Konvertierung für Status-Felder
+   - ✅ Support für komplexe Filter-Kombinationen mit AND/OR
+
+3. **CustomerSearchService**
+   - ✅ Pagination mit PagedResponse
+   - ✅ Optimierte Query-Ausführung
+   - ✅ Debug-Logging für Troubleshooting
+
+4. **CustomerSearchResource**
+   - ✅ POST /api/customers/search Endpoint
+   - ✅ Query-Parameter für Pagination (page, size)
+   - ✅ OpenAPI-Dokumentation
+   - ✅ Rollenbasierte Sicherheit (@RolesAllowed)
+
+#### Getestete Szenarien:
+- ✅ Global Search funktioniert (getestet mit "TEST")
+- ✅ Status-Filter mit Enum-Konvertierung (getestet mit AKTIV)
+- ✅ Numerische Filter (getestet mit riskScore > 50)
+- ✅ Kombinierte Filter mit AND (getestet mit riskScore > 50 AND status != INAKTIV)
+- ✅ Sortierung (getestet mit riskScore DESC)
+- ✅ Pagination (Default: page=0, size=20)
+
+#### Behobene Probleme:
+1. **CustomerTimelineEventRepository existierte nicht**
+   - Lösung: Auf CustomerTimelineRepository umgestellt in TestDataService
+
+2. **Enum-Typ-Konvertierung fehlte**
+   - Lösung: convertValue() und convertListValues() Methoden implementiert
+   - Status wird nun korrekt von String zu CustomerStatus konvertiert
+
+3. **Java-Version-Konflikt**
+   - Bestätigt: Wir nutzen korrekt Java 17 (nicht Java 21)
+
+#### Performance-Überlegungen:
+- Query-Builder generiert optimierte Panache-Queries
+- Indizes sollten für häufig gefilterte Felder erstellt werden (siehe SQL-Migrations im Konzept)
+- Bei großen Datenmengen sollte Caching evaluiert werden
+
+### 🔄 Frontend-Implementierung (AUSSTEHEND)
+
+Die Frontend-Implementierung kann nun beginnen. Die Backend-API ist vollständig funktionsfähig und getestet.
+
+#### Nächste Schritte:
+1. FilterBar-Komponente mit Zustand Store implementieren
+2. Adaptive Views (Cards/Table) erstellen
+3. Integration mit React Query für optimales Caching
+4. E2E-Tests schreiben
