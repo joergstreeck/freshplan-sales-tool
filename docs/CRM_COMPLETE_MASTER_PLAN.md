@@ -97,7 +97,7 @@ Die Hauptoberfläche ist ein einziges, dreigeteiltes Cockpit. Es ist **responsiv
     3.  ✅ **Mock-Endpunkte für Entwicklung:** Backend-Mock-Endpunkte unter `/api/dev/*` implementiert.
     4.  ✅ **Test-Daten-Management:** Kontrollierte Test-Szenarien mit Seed/Clean-Funktionalität.
     
-* **Phase 2: Dynamische Fokus-Liste (AKTUELLER FOKUS)**
+* **Phase 2: Dynamische Fokus-Liste (AKTUELLER FOKUS)** - Intelligente, filterbare und adaptive Arbeitsfläche
     1.  **Phase 2.1 (Backend):** Implementierung der dynamischen Such-API (`/api/customers/search`)
         - Query Builder für komplexe Filter-Kombinationen
         - Performance-Optimierung mit Indizes

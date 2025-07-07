@@ -108,6 +108,7 @@ graph TB
 ### [Datum] - [Entscheidung]
 **Entscheidung**: [Was wurde entschieden]  
 **Begründung**: [Warum]  
+**Impact**: [Auswirkungen der Entscheidung auf das Projekt/Team]  
 **Alternativen**: [Welche Alternativen wurden betrachtet]  
 **Entscheider**: [Wer hat entschieden]
 

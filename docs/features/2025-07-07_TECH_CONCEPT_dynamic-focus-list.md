@@ -419,9 +419,12 @@ export const CustomerCard: React.FC<{ customer: Customer }> = ({ customer }) => 
 ### 07.07.2025 - Backend-First vs Frontend-First
 **Entscheidung**: Backend-First Approach  
 **Begründung**: 
-- Solide API-Basis wichtiger als schnelle UI
-- Performance-Probleme früh erkennen
-- Frontend kann parallel mit Mock-Daten entwickelt werden
+- Solide API-Basis ist wichtiger, da sie die Grundlage für alle nachfolgenden Frontend-Funktionen bildet
+- Performance-Probleme können frühzeitig erkannt und behoben werden, bevor das Frontend implementiert wird
+- Frontend kann parallel mit Mock-Daten entwickelt werden, wodurch Zeit gespart wird und eine schnellere Iteration möglich ist
+- Klare API-Contracts ermöglichen parallele Entwicklung im Team
+**Impact**: Frontend-Team kann 2 Tage später starten, aber mit stabiler API-Basis arbeiten
+**Alternativen**: Frontend-First mit Mock-Backend
 **Entscheider**: Jörg Streeck
 
 ### 07.07.2025 - Card-Layout als Standard
@@ -438,9 +441,9 @@ export const CustomerCard: React.FC<{ customer: Customer }> = ({ customer }) => 
 **Wahrscheinlichkeit**: Mittel  
 **Impact**: Hoch  
 **Mitigation**: 
-- Frühzeitige Performance-Tests
+- Frühzeitige Performance-Tests mit realistischen Datenmengen
 - Query-Optimierung mit EXPLAIN ANALYZE
-- Caching-Layer für häufige Filter
+- Quarkus Cache (Caffeine) für häufige Filter-Kombinationen
 
 ### Risiko 2: UX-Komplexität
 **Wahrscheinlichkeit**: Mittel  
