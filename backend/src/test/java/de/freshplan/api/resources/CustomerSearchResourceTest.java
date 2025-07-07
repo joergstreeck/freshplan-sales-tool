@@ -33,10 +33,13 @@ class CustomerSearchResourceTest {
   @Transactional
   void setUp() {
     // Clean up existing test data - use soft delete to avoid constraint violations
-    customerRepository.listAll().forEach(customer -> {
-      customer.setIsDeleted(true);
-      customerRepository.persist(customer);
-    });
+    customerRepository
+        .listAll()
+        .forEach(
+            customer -> {
+              customer.setIsDeleted(true);
+              customerRepository.persist(customer);
+            });
     customerRepository.flush();
 
     // Create test customers
@@ -230,7 +233,9 @@ class CustomerSearchResourceTest {
   }
 
   @Test
-  @TestSecurity(user = "unauthorized", roles = {})
+  @TestSecurity(
+      user = "unauthorized",
+      roles = {})
   void testUnauthorizedAccess() {
     // In test mode, security might not be fully active
     // This test verifies that the @RolesAllowed annotation is present
@@ -242,7 +247,8 @@ class CustomerSearchResourceTest {
         .when()
         .post()
         .then()
-        .statusCode(anyOf(is(403), is(200))); // Accept both since security might be disabled in tests
+        .statusCode(
+            anyOf(is(403), is(200))); // Accept both since security might be disabled in tests
   }
 
   // Helper method to create test customers
