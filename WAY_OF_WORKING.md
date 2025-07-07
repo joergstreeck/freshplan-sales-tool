@@ -19,11 +19,12 @@ Wir entwickeln FreshPlan 2.0 als moderne, cloud-native Enterprise-Lösung mit h�
 2. [Code-Qualität](#code-qualität)
 3. [Architektur](#architektur)
 4. [Development Workflow](#development-workflow)
-5. [Testing](#testing)
-6. [Security & Compliance](#security--compliance)
-7. [DevOps & Releases](#devops--releases)
-8. [Team-Rituale](#team-rituale)
-9. [Aktueller Projektstatus](#aktueller-projektstatus)
+5. [Dokumentation](#dokumentation)
+6. [Testing](#testing)
+7. [Security & Compliance](#security--compliance)
+8. [DevOps & Releases](#devops--releases)
+9. [Team-Rituale](#team-rituale)
+10. [Aktueller Projektstatus](#aktueller-projektstatus)
 
 ---
 
@@ -199,6 +200,59 @@ git push origin feature/user-management
 - [ ] Dokumentation aktualisiert
 - [ ] Code Review durch min. 1 Person
 - [ ] Screenshots bei UI-Änderungen
+
+---
+
+## Dokumentation
+
+### 🆕 Feature-Konzept-Prozess (Ab 07.07.2025)
+
+Für größere Features verwenden wir einen strukturierten Dokumentationsprozess:
+
+#### 1. Feature Code System
+- **Format**: FC-XXX (fortlaufende Nummerierung)
+- **Beispiel**: FC-001 für "Dynamische Fokus-Liste"
+
+#### 2. Technisches Konzept erstellen
+- **Template**: `/docs/templates/TECH_CONCEPT_TEMPLATE.md`
+- **Ablage**: `/docs/features/YYYY-MM-DD_TECH_CONCEPT_feature-name.md`
+- **Inhalt**:
+  - Zusammenfassung und Geschäftswert
+  - Technische Architektur (Backend & Frontend)
+  - Implementierungsstrategie
+  - Entscheidungs-Log mit Impact-Analyse
+  - Risiken und Mitigationen
+  - Zeitschätzung
+
+#### 3. Master Plan Update
+- **Nur Verweis** auf das Detail-Dokument
+- **Keine technischen Details** im Master Plan
+- **Phasen-Struktur** mit klaren Meilensteinen
+
+#### Vorteile
+- ✅ Master Plan bleibt übersichtlich
+- ✅ Detaillierte technische Diskussionen im Kontext
+- ✅ Versionierte Feature-Historie
+- ✅ Bessere Nachvollziehbarkeit von Entscheidungen
+- ✅ Wiederverwendbare Templates
+
+### Dokumentations-Standards
+
+#### Struktur
+```
+docs/
+├── features/        # Technische Konzepte (FC-XXX)
+├── adr/             # Architecture Decision Records
+├── api/             # API Dokumentation
+├── guides/          # How-to Guides
+├── team/            # Team-Prozesse
+└── claude-work/     # Arbeits-Dokumentation
+```
+
+#### Versionierung
+- Alle Dokumente mit Datum versehen
+- Status-Updates am Ende dokumentieren
+- Breaking Changes klar markieren
 
 ---
 

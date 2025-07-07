@@ -71,7 +71,29 @@ TodoRead                     # TODO-Liste lesen
   ls -la backend/src/main/resources/db/migration/
   ```
 - **Dokumentiere** wichtige Entscheidungen in `/docs/claude-work/daily-work/YYYY-MM-DD/`
+- **Feature-Konzepte** für größere Features erstellen:
+  - Feature Code vergeben (FC-XXX)
+  - Template nutzen: `/docs/templates/TECH_CONCEPT_TEMPLATE.md`
+  - In `/docs/features/` ablegen
+  - Master Plan nur mit Verweis aktualisieren
 - **Two-Pass-Review** nach jedem signifikanten Schritt (siehe CLAUDE.md Abschnitt 0.10)
+
+#### 📝 Change Logs (NEU! Ab 07.07.2025)
+**PFLICHT bei jeder signifikanten Änderung:**
+- Erstelle IMMER ein Change Log VOR der Implementierung
+- Format: `YYYY-MM-DD_CHANGE_LOG_<feature-name>.md`
+- Nutze das Template: `cp docs/templates/CHANGE_LOG_TEMPLATE.md docs/claude-work/daily-work/$(date +%Y-%m-%d)/`
+- Dokumentiere Vorher/Nachher-Zustand mit Screenshots/Logs
+- Verlinke das Change Log in der Übergabe
+
+**Was zählt als "signifikante Änderung"?**
+- Neue Features oder Funktionalitäten
+- Änderungen an bestehenden Features
+- Datenbank-Migrationen oder Schema-Änderungen
+- API-Änderungen
+- UI/UX-Änderungen
+- Performance-Optimierungen
+- Bug-Fixes die Verhalten ändern
 
 ### 4. Problemlösung
 **Bei Problemen - Systematisches Vorgehen:**
@@ -115,6 +137,11 @@ TodoRead                     # TODO-Liste lesen
 
 ## 📋 WAS WURDE HEUTE GEMACHT?
 [Detaillierte Liste der Aktivitäten]
+
+## 📝 CHANGE LOGS DIESER SESSION
+- [ ] Change Log erstellt für: [Feature-Name]
+  - Link: `/docs/claude-work/daily-work/YYYY-MM-DD/YYYY-MM-DD_CHANGE_LOG_feature.md`
+- [ ] Weitere Change Logs: [Liste weitere wenn vorhanden]
 
 ## 🛠️ WAS FUNKTIONIERT?
 [Verifizierte, funktionierende Features]
