@@ -259,33 +259,8 @@ public class CustomerResourceIntegrationTest extends BaseIntegrationTest {
         "All customers should have AKTIV status");
   }
 
-  @Test
-  void searchCustomers_withQuery_shouldReturnMatches() {
-    // Create test customers with unique prefix
-    String testPrefix = "TestSearch_" + UUID.randomUUID().toString();
-    createTestCustomer(testPrefix + "_Alpha_Company");
-    createTestCustomer(testPrefix + "_Beta_Corporation");
-    createTestCustomer(testPrefix + "_Gamma_Industries");
-
-    CustomerListResponse response =
-        given()
-            .queryParam("q", testPrefix + "_Beta")
-            .when()
-            .get("/search")
-            .then()
-            .statusCode(200)
-            .extract()
-            .as(CustomerListResponse.class);
-
-    // We should find exactly one match with our unique prefix
-    assertEquals(1, response.content().size());
-    assertTrue(response.content().get(0).companyName().contains(testPrefix + "_Beta"));
-  }
-
-  @Test
-  void searchCustomers_withoutQuery_shouldReturn400() {
-    given().when().get("/search").then().statusCode(400).body(containsString("Search query"));
-  }
+  // Note: Search functionality has been moved to POST /api/customers/search
+  // See CustomerSearchResourceTest for comprehensive search API tests
 
   // ========== ANALYTICS & DASHBOARD TESTS ==========
 
