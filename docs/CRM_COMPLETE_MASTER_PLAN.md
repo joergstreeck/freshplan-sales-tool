@@ -102,11 +102,22 @@ Die Hauptoberfläche ist ein einziges, dreigeteiltes Cockpit. Es ist **responsiv
         - Query Builder für komplexe Filter-Kombinationen
         - Performance-Optimierung mit Indizes
         - Support für gespeicherte Ansichten
-    2.  **Phase 2.2 (Frontend):** Implementierung der Filterleiste
+    
+    ### Phase 2.2: Hardening & Optimierung (FC-001)
+    **Trigger:** Diese Phase beginnt, nachdem die Frontend-Implementierung für die "Dynamische Fokus-Liste" funktional abgeschlossen und erfolgreich integriert ist.
+    
+    **Ziel:** Beseitigung der bewusst in Kauf genommenen technischen Schulden aus Phase 2.1 und Sicherstellung der Produktionsreife des Features.
+    
+    **Konkrete Aufgaben:**
+    - **Technische Schuld (Tests):** Wiederherstellung und Erweiterung der Integration-Tests für die CustomerSearchResource, um alle Filter-Kombinationen und Edge-Cases abzudecken.
+    - **Performance:** Implementierung der in FC-001 definierten Datenbank-Indizes zur Beschleunigung von Suchanfragen.
+    - **Last-Tests:** Durchführung von Last-Tests mit einer größeren Datenmenge (z.B. 10.000+ Kunden), um die Performance der Such-API unter realen Bedingungen zu validieren.
+    
+    3.  **Phase 2.3 (Frontend):** Implementierung der Filterleiste
         - Globale Suche mit Auto-Complete
         - Quick-Filter für häufige Szenarien
         - Erweiterte Filter-Dialoge
-    3.  **Phase 2.3 (Frontend):** Implementierung der adaptiven Ansicht
+    4.  **Phase 2.4 (Frontend):** Implementierung der adaptiven Ansicht
         - Card-Layout als Standard-Ansicht
         - Optionale Tabellen-Ansicht für Analysen
         - Nahtloser Wechsel zwischen Ansichten
