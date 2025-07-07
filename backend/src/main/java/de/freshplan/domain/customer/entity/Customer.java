@@ -109,7 +109,11 @@ public class Customer extends PanacheEntityBase {
   @Column(name = "next_follow_up_date")
   private LocalDateTime nextFollowUpDate;
 
-  // Test Data Flag
+  /**
+   * Flag to identify test data that can be safely cleaned up.
+   * Used for controlled test scenarios and data seeding.
+   * When true, this customer can be deleted by clean-test-data scripts.
+   */
   @Column(name = "is_test_data", nullable = false)
   private Boolean isTestData = false;
 

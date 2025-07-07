@@ -99,6 +99,18 @@ public class CustomerQueryBuilder {
     String field = mapFieldName(filter.getField());
     String paramName = "param" + index;
     FilterOperator operator = filter.getOperator();
+    
+    // Validate BETWEEN operator early
+    if (operator == FilterOperator.BETWEEN) {
+      if (!(filter.getValue() instanceof List)) {
+        throw new IllegalArgumentException("BETWEEN operator requires a list value");
+      }
+      List<?> values = (List<?>) filter.getValue();
+      if (values.size() != 2) {
+        throw new IllegalArgumentException("BETWEEN operator requires exactly two values");
+      }
+    }
+    
     Object value = convertValue(field, filter.getValue());
 
     switch (operator) {

@@ -4,6 +4,10 @@
 
 -- Index for text search on company_name and trading_name
 -- Using GIN index for full-text search capabilities
+-- Note: Using 'english' language for to_tsvector as it provides:
+--   - Better stemming for business terms (company -> compani)
+--   - Consistent behavior across different locales
+--   - Can be changed to 'german' if needed for German-specific stemming
 CREATE INDEX IF NOT EXISTS idx_customer_search_text 
     ON customers 
     USING gin(to_tsvector('english', 

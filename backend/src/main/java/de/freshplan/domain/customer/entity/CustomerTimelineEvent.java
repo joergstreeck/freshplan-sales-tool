@@ -145,7 +145,11 @@ public class CustomerTimelineEvent extends PanacheEntityBase {
   @Column(name = "external_url", length = 500)
   private String externalUrl;
 
-  // Test Data Flag
+  /**
+   * Flag to identify test data that can be safely cleaned up.
+   * Used for controlled test scenarios and data seeding.
+   * When true, this timeline event can be deleted by clean-test-data scripts.
+   */
   @Column(name = "is_test_data", nullable = false)
   private Boolean isTestData = false;
 

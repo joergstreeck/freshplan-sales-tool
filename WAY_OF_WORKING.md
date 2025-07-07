@@ -214,7 +214,7 @@ Für größere Features verwenden wir einen strukturierten Dokumentationsprozess
 - **Beispiel**: FC-001 für "Dynamische Fokus-Liste"
 
 #### 2. Technisches Konzept erstellen
-- **Template**: `/docs/templates/TECH_CONCEPT_TEMPLATE.md`
+- **Template**: [`/docs/templates/TECH_CONCEPT_TEMPLATE.md`](./docs/templates/TECH_CONCEPT_TEMPLATE.md)
 - **Ablage**: `/docs/features/YYYY-MM-DD_TECH_CONCEPT_feature-name.md`
 - **Inhalt**:
   - Zusammenfassung und Geschäftswert
