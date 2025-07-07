@@ -29,9 +29,14 @@ class CustomerSearchResourceTest {
 
   @Inject CustomerRepository customerRepository;
 
+  private String testPrefix;
+
   @BeforeEach
   @Transactional
   void setUp() {
+    // Generate unique prefix for this test run to avoid conflicts
+    testPrefix = "T" + System.currentTimeMillis() + "_";
+    
     // Clean up existing test data - use soft delete to avoid constraint violations
     customerRepository
         .listAll()
@@ -42,12 +47,12 @@ class CustomerSearchResourceTest {
             });
     customerRepository.flush();
 
-    // Create test customers
-    createTestCustomer("10001", "Alpha GmbH", CustomerStatus.AKTIV, 30);
-    createTestCustomer("10002", "Beta AG", CustomerStatus.LEAD, 60);
-    createTestCustomer("10003", "Gamma GmbH", CustomerStatus.RISIKO, 90);
-    createTestCustomer("10004", "Delta KG", CustomerStatus.INAKTIV, 40);
-    createTestCustomer("10005", "Epsilon GmbH", CustomerStatus.PROSPECT, 20);
+    // Create test customers with unique numbers
+    createTestCustomer(testPrefix + "001", "Alpha GmbH", CustomerStatus.AKTIV, 30);
+    createTestCustomer(testPrefix + "002", "Beta AG", CustomerStatus.LEAD, 60);
+    createTestCustomer(testPrefix + "003", "Gamma GmbH", CustomerStatus.RISIKO, 90);
+    createTestCustomer(testPrefix + "004", "Delta KG", CustomerStatus.INAKTIV, 40);
+    createTestCustomer(testPrefix + "005", "Epsilon GmbH", CustomerStatus.PROSPECT, 20);
   }
 
   @Test
