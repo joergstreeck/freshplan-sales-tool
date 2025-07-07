@@ -91,18 +91,45 @@ Die Hauptoberfläche ist ein einziges, dreigeteiltes Cockpit. Es ist **responsiv
 
 ## 🗺️ Die finale Roadmap
 
-* **Phase 1: Das begeisternde Fundament (Unser aktueller Fokus)**
-    1.  **Backend Finalisierung (JETZT!):** Die Integration-Tests werden mit Testcontainers repariert. **Das ist der Gatekeeper für alles Weitere.**
-    2.  **Frontend Foundation:** Das 3-Spalten-Layout des Cockpits wird mit `Zustand` als State Manager implementiert.
-    3.  **Mock-Endpunkte für Entwicklung:** Dedizierte Backend-Mock-Endpunkte unter `/api/dev/*` für saubere Entwicklung ohne DB-Verschmutzung (siehe [ADR-001](./adr/ADR-001_backend_mock_endpoint_for_dev.md)).
-    4.  **Erste funktionale Integration:** Die `CustomerList` wird in die mittlere Spalte des Cockpits integriert.
-    5.  **Activity Timeline (Backend):** Die Services und API-Endpunkte für die Kunden-Zeitleiste werden gebaut.
+* **Phase 1: Das begeisternde Fundament (✅ ABGESCHLOSSEN)**
+    1.  ✅ **Backend Finalisierung:** Die Integration-Tests wurden mit Testcontainers repariert.
+    2.  ✅ **Frontend Foundation:** Das 3-Spalten-Layout des Cockpits wurde implementiert.
+    3.  ✅ **Mock-Endpunkte für Entwicklung:** Backend-Mock-Endpunkte unter `/api/dev/*` implementiert.
+    4.  ✅ **Test-Daten-Management:** Kontrollierte Test-Szenarien mit Seed/Clean-Funktionalität.
+    
+* **Phase 2: Dynamische Fokus-Liste (AKTUELLER FOKUS)**
+    1.  **Phase 2.1 (Backend):** Implementierung der dynamischen Such-API (`/api/customers/search`)
+        - Query Builder für komplexe Filter-Kombinationen
+        - Performance-Optimierung mit Indizes
+        - Support für gespeicherte Ansichten
+    2.  **Phase 2.2 (Frontend):** Implementierung der Filterleiste
+        - Globale Suche mit Auto-Complete
+        - Quick-Filter für häufige Szenarien
+        - Erweiterte Filter-Dialoge
+    3.  **Phase 2.3 (Frontend):** Implementierung der adaptiven Ansicht
+        - Card-Layout als Standard-Ansicht
+        - Optionale Tabellen-Ansicht für Analysen
+        - Nahtloser Wechsel zwischen Ansichten
+    
+    **📋 Detailliertes Konzept:** [FC-001: Dynamische Fokus-Liste](./features/2025-07-07_TECH_CONCEPT_dynamic-focus-list.md)
 
-* **Phase 2: Prozess-Exzellenz & Integration**
-    * **Backend-for-Frontend (BFF)** implementieren.
-    * **Opportunity & Aktivitäten Management** (Backend & Frontend).
-    * **Xentral-Integration** (Proof-of-Concept, dann volle Integration).
-    * **"BCC-to-CRM"** und die **Triage-Inbox**.
+* **Phase 3: Activity Timeline & Prozess-Integration**
+    1.  **Activity Timeline:** Services und API-Endpunkte für die Kunden-Zeitleiste
+    2.  **Backend-for-Frontend (BFF)** implementieren
+    3.  **Opportunity & Aktivitäten Management** (Backend & Frontend)
+    4.  **Xentral-Integration** (Proof-of-Concept, dann volle Integration)
+    5.  **"BCC-to-CRM"** und die **Triage-Inbox**
 
-* **Phase 3 & 4: Intelligenz & Proaktive Unterstützung**
-    * **Data Health Dashboard**, **Partner-Lifecycle**-Automatisierung, **Lead Scoring** und der **AI Sales Assistant**.
+* **Phase 4: Intelligenz & Proaktive Unterstützung**
+    * **Data Health Dashboard**
+    * **Partner-Lifecycle**-Automatisierung
+    * **Lead Scoring** 
+    * **AI Sales Assistant**
+
+---
+
+## 📋 Feature-Konzepte
+
+Detaillierte technische Konzepte für alle größeren Features:
+
+- **FC-001**: [Dynamische Fokus-Liste](./features/2025-07-07_TECH_CONCEPT_dynamic-focus-list.md) - Status: Draft
