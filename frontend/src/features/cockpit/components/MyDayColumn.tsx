@@ -7,7 +7,7 @@
 
 import { useEffect } from 'react';
 import { useCockpitStore } from '../../../store/cockpitStore';
-import { useAuth } from '../../../hooks/useAuth';
+import { useKeycloak } from '../../../contexts/KeycloakContext';
 import { useDashboardData } from '../hooks/useSalesCockpit';
 import { mockTriageItems } from '../data/mockData';
 import type { DashboardTask, DashboardAlert } from '../types/salesCockpit';
@@ -16,7 +16,7 @@ import './MyDayColumn.css';
 
 export function MyDayColumn() {
   const { showTriageInbox, toggleTriageInbox, setPriorityTasksCount } = useCockpitStore();
-  const { userId } = useAuth();
+  const { userId } = useKeycloak();
   
   // Hole Dashboard-Daten via BFF
   const { 
@@ -25,7 +25,7 @@ export function MyDayColumn() {
     isError, 
     error,
     refetch 
-  } = useDashboardData(userId || null);
+  } = useDashboardData(userId);
 
   // Update Priority Task Count when data changes
   useEffect(() => {

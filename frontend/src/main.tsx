@@ -20,10 +20,6 @@ const isDevelopmentMode = import.meta.env.DEV && import.meta.env.MODE !== 'produ
 
 // Enable MSW for development if backend is not available
 async function enableMocking() {
-  // TEMPORARILY DISABLED - MSW is interfering with routing
-  return;
-  
-  /*
   if (!import.meta.env.DEV) {
     return;
   }
@@ -51,7 +47,6 @@ async function enableMocking() {
       url: '/mockServiceWorker.js',
     },
   });
-  */
 }
 
 const rootElement = document.getElementById('root');
@@ -64,7 +59,20 @@ enableMocking().then(() => {
   createRoot(rootElement).render(
     <StrictMode>
       <Suspense fallback={<div>Loading...</div>}>
-        <AppProviders />
+        <AppProviders>
+          <Routes>
+            <Route path="/" element={<App />} />
+            <Route path="/cockpit" element={<SalesCockpit />} />
+            <Route path="/users" element={<UsersPage />} />
+            <Route path="/customers" element={<CustomersPage />} />
+            <Route path="/legacy-tool" element={<LegacyToolPage />} />
+            {/* Login Bypass temporär reaktiviert - Auto-Login Problem */}
+            {isDevelopmentMode && <Route path="/login-bypass" element={<LoginBypassPage />} />}
+            {isDevelopmentMode && (
+              <Route path="/integration-test" element={<IntegrationTestPage />} />
+            )}
+          </Routes>
+        </AppProviders>
       </Suspense>
     </StrictMode>
   );

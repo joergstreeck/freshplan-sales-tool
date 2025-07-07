@@ -290,4 +290,17 @@ public class SalesCockpitService {
 
     return alerts;
   }
+
+  /**
+   * Lädt Dashboard-Daten für die Entwicklungsumgebung.
+   *
+   * <p>Diese Methode gibt Mock-Daten zurück und umgeht die User-Validierung.
+   * Sie ist nur in der Entwicklungsumgebung verfügbar.
+   *
+   * @return Mock Dashboard-Daten für Entwicklung
+   */
+  public SalesCockpitDashboard getDevDashboardData() {
+    // Vorerst nur null oder leeres Objekt zurückgeben
+    return new SalesCockpitDashboard();
+  }
 }

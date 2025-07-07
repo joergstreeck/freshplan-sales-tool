@@ -6,20 +6,17 @@ interface User {
   id: string;
   name: string;
   email: string;
-  username?: string;
-  roles?: string[];
 }
 
 interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
-  isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
   token: string | null;
 }
 
-export const AuthContext = createContext<AuthContextType | null>(null);
+const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   // Auto-Login in Development mit richtigem Mock-Token
@@ -30,11 +27,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(() => {
     if (import.meta.env.DEV) {
       const mockUser = {
-        id: '7eabd235-2559-4bd7-b582-b53e691a4d60', // admin user from DB
+        id: 'mock-admin-user',
         name: 'Admin User',
         email: 'admin@freshplan.de',
-        username: 'admin',
-        roles: ['admin'],
       };
       // Speichere auch in localStorage für API-Client
       localStorage.setItem('auth-token', mockToken);
@@ -45,7 +40,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   });
 
   const [token, setToken] = useState<string | null>(import.meta.env.DEV ? mockToken : null);
-  const [isLoading] = useState(false);
 
   const login = async (email: string, password: string) => {
     // TODO: Implement Keycloak login
@@ -82,7 +76,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       value={{
         user,
         isAuthenticated: !!user,
-        isLoading,
         login,
         logout,
         token,
