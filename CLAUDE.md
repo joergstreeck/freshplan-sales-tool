@@ -4,7 +4,7 @@
 
 ## 🚨 KRITISCHE REGELN (IMMER LESEN!)
 
-### Die 16 wichtigsten Regeln für Claude:
+### Die 17 wichtigsten Regeln für Claude:
 
 1. **REPOSITORY SAUBER HALTEN:** VOR JEDEM GIT PUSH/COMMIT muss `./scripts/quick-cleanup.sh` ausgeführt werden!
 2. **SPRACHE:** IMMER Deutsch - auch bei kurzen Antworten, Status-Updates, Zusammenfassungen!
@@ -22,6 +22,7 @@
 14. **CI GRÜN HALTEN:** Bei roter CI selbstständig debuggen mit GitHub CLI
 15. **NAMING:** PascalCase für Klassen, camelCase für Methoden, UPPER_SNAKE für Konstanten
 16. **PERFORMANCE:** Bundle ≤200KB, API <200ms P95, keine N+1 Queries
+17. **FRESHFOODZ CI COMPLIANCE:** ALLE sichtbaren Frontend-Elemente MÜSSEN Freshfoodz CI verwenden (#94C456, #004F7B, Antonio Bold, Poppins)
 
 ### 🔍 Quick Reference - Direkt zu den Details:
 - [0. Grundlegende Arbeitsphilosophie](#0-grundlegende-arbeitsphilosophie)
@@ -45,6 +46,7 @@
 [code-review-standard]: ./docs/guides/CODE_REVIEW_STANDARD.md
 [keycloak-setup]: ./docs/guides/KEYCLOAK_SETUP.md
 [documentation-structure]: ./docs/DOCUMENTATION_STRUCTURE.md
+[freshfoodz-ci]: ./docs/FRESH-FOODZ_CI.md
 
 ## 0. Grundlegende Arbeitsphilosophie
 

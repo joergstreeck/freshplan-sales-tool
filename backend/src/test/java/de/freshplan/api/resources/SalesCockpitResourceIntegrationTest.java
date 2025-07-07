@@ -18,11 +18,9 @@ class SalesCockpitResourceIntegrationTest {
 
   /**
    * Testet den neuen Development-Endpunkt /dashboard/dev.
-   * 
-   * Überprüft, dass:
-   * - Der Endpunkt mit Status 200 antwortet
-   * - Das Response-Format korrekt ist
-   * - Mock-Daten enthalten sind
+   *
+   * <p>Überprüft, dass: - Der Endpunkt mit Status 200 antwortet - Das Response-Format korrekt ist -
+   * Mock-Daten enthalten sind
    */
   @Test
   void testGetDevDashboardData() {
@@ -46,9 +44,7 @@ class SalesCockpitResourceIntegrationTest {
         .body("alerts.size()", equalTo(1));
   }
 
-  /**
-   * Testet, dass der Development-Endpunkt die korrekte Struktur der Tasks zurückgibt.
-   */
+  /** Testet, dass der Development-Endpunkt die korrekte Struktur der Tasks zurückgibt. */
   @Test
   void testDevDashboardTaskStructure() {
     given()
@@ -67,9 +63,7 @@ class SalesCockpitResourceIntegrationTest {
         .body("todaysTasks[0].completed", equalTo(false));
   }
 
-  /**
-   * Testet, dass der Development-Endpunkt die korrekte Struktur der Risk Customers zurückgibt.
-   */
+  /** Testet, dass der Development-Endpunkt die korrekte Struktur der Risk Customers zurückgibt. */
   @Test
   void testDevDashboardRiskCustomerStructure() {
     given()
@@ -87,9 +81,7 @@ class SalesCockpitResourceIntegrationTest {
         .body("riskCustomers[0].recommendedAction", notNullValue());
   }
 
-  /**
-   * Testet den bestehenden Health-Check Endpunkt.
-   */
+  /** Testet den bestehenden Health-Check Endpunkt. */
   @Test
   void testHealthEndpoint() {
     given()

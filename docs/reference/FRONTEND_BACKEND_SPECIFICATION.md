@@ -2,6 +2,96 @@
 
 **📅 Aktuelles Datum: <!-- AUTO_DATE --> (System: 08.06.2025)**
 
+## 🎨 Freshfoodz Corporate Identity Compliance
+
+**KRITISCH: Alle Frontend-Komponenten MÜSSEN Freshfoodz CI-Standards einhalten!**
+
+### Verbindliche Design-Tokens:
+
+```css
+/* Freshfoodz Farben - NICHT ändern! */
+:root {
+  --freshfoodz-primary: #94C456;    /* Primärgrün für Buttons, Links */
+  --freshfoodz-secondary: #004F7B;   /* Dunkelblau für Headlines, Navigation */
+  --freshfoodz-white: #FFFFFF;       /* Hintergründe, Cards */
+  --freshfoodz-black: #000000;       /* Haupttext, Icons */
+}
+
+/* Freshfoodz Typografie - NICHT ändern! */
+.freshfoodz-headline {
+  font-family: 'Antonio', sans-serif;
+  font-weight: bold;
+}
+
+.freshfoodz-body {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 400; /* Regular */
+}
+
+.freshfoodz-body-medium {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 500; /* Medium */
+}
+```
+
+### Frontend-Komponenten CI-Compliance:
+
+#### Buttons:
+```typescript
+// RICHTIG - Freshfoodz CI konform
+const PrimaryButton = styled.button`
+  background-color: var(--freshfoodz-primary);
+  color: var(--freshfoodz-white);
+  font-family: 'Poppins', sans-serif;
+  font-weight: 500;
+`;
+
+const SecondaryButton = styled.button`
+  background-color: transparent;
+  color: var(--freshfoodz-secondary);
+  border: 2px solid var(--freshfoodz-secondary);
+  font-family: 'Poppins', sans-serif;
+  font-weight: 500;
+`;
+```
+
+#### Navigation & Headlines:
+```typescript
+// RICHTIG - Freshfoodz CI konform
+const Navigation = styled.nav`
+  background-color: var(--freshfoodz-secondary);
+  color: var(--freshfoodz-white);
+`;
+
+const PageTitle = styled.h1`
+  font-family: 'Antonio', sans-serif;
+  font-weight: bold;
+  color: var(--freshfoodz-secondary);
+`;
+
+const SectionHeading = styled.h2`
+  font-family: 'Antonio', sans-serif;
+  font-weight: bold;
+  color: var(--freshfoodz-black);
+`;
+```
+
+#### Links & Actions:
+```typescript
+// RICHTIG - Freshfoodz CI konform
+const ActionLink = styled.a`
+  color: var(--freshfoodz-primary);
+  font-family: 'Poppins', sans-serif;
+  font-weight: 500;
+  
+  &:hover {
+    color: var(--freshfoodz-secondary);
+  }
+`;
+```
+
+**Referenz**: `/docs/FRESH-FOODZ_CI.md` für vollständige CI-Vorgaben
+
 ## 1. Backend-Berechnungen und Business-Logik
 
 ### 1.1 Rabattrechner (Calculator Module)
@@ -522,6 +612,14 @@ interface CalculatorValidation {
 - Keine sensiblen Daten im Local Storage
 - API Keys nur im Backend
 - Content Security Policy Headers
+
+### Frontend CI-Compliance Prüfung:
+- [ ] Alle Farben verwenden Freshfoodz Palette (#94C456, #004F7B, #FFFFFF, #000000)
+- [ ] Alle Headlines verwenden Antonio Bold
+- [ ] Alle Texte verwenden Poppins Regular/Medium
+- [ ] Logo-Regeln werden eingehalten (neutrale Hintergründe, Schutzzone)
+- [ ] Design-Tokens sind in CSS-Variablen definiert
+- [ ] Accessibility-Standards sind erfüllt (WCAG 2.1 AA Kontraste)
 
 ## 9. Monitoring & Logging
 
