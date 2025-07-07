@@ -1176,6 +1176,13 @@ Für jedes größere Feature erstellen wir ein separates technisches Konzeptdoku
 - Versionierte Feature-Historie
 - Bessere Nachvollziehbarkeit von Entscheidungen
 
+**🔄 AKTUALISIERUNGS-PFLICHT:**
+Bei JEDER Übergabe MÜSSEN alle aktiven Feature-Konzepte (FC-XXX) auf ihren aktuellen Implementierungs-Status überprüft und aktualisiert werden! Dies beinhaltet:
+- Status-Updates (✅ Abgeschlossen / 🔄 In Arbeit / ⏸️ Pausiert)
+- Neue implementierte Komponenten
+- Behobene Probleme
+- Nächste Schritte
+
 ### 🔒 KRITISCHE DOKUMENTE - NIEMALS LÖSCHEN:
 - `/docs/TRIGGER_TEXTS.md` - Offizielle Trigger-Texte für Übergaben
 - `/docs/STANDARDUBERGABE_NEU.md` - Hauptprozess-Dokument

@@ -82,6 +82,18 @@ echo "" >> "$HANDOVER_FILE"
 echo "[MANUELL AUSFÜLLEN]" >> "$HANDOVER_FILE"
 echo "" >> "$HANDOVER_FILE"
 
+echo "## 📝 CHANGE LOGS DIESER SESSION" >> "$HANDOVER_FILE"
+echo "- [ ] Change Log erstellt für: [Feature-Name]" >> "$HANDOVER_FILE"
+echo "  - Link: \`/docs/claude-work/daily-work/$DATE/$DATE\_CHANGE_LOG_feature.md\`" >> "$HANDOVER_FILE"
+echo "- [ ] Weitere Change Logs: [Liste weitere wenn vorhanden]" >> "$HANDOVER_FILE"
+echo "" >> "$HANDOVER_FILE"
+
+echo "## 📑 FEATURE-KONZEPTE STATUS-UPDATE" >> "$HANDOVER_FILE"
+echo "- [ ] FC-001 (Dynamic Focus List) Status aktualisiert: ✅ Backend / 🔄 Frontend" >> "$HANDOVER_FILE"
+echo "  - Link: \`/docs/features/2025-07-07_TECH_CONCEPT_dynamic-focus-list.md\`" >> "$HANDOVER_FILE"
+echo "- [ ] Weitere FC-Updates: [Liste weitere aktive Feature-Konzepte]" >> "$HANDOVER_FILE"
+echo "" >> "$HANDOVER_FILE"
+
 echo "## 🛠️ WAS FUNKTIONIERT?" >> "$HANDOVER_FILE"
 echo "" >> "$HANDOVER_FILE"
 echo "[MANUELL AUSFÜLLEN]" >> "$HANDOVER_FILE"

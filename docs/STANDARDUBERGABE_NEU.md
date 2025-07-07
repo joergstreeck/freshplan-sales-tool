@@ -76,6 +76,7 @@ TodoRead                     # TODO-Liste lesen
   - Template nutzen: `/docs/templates/TECH_CONCEPT_TEMPLATE.md`
   - In `/docs/features/` ablegen
   - Master Plan nur mit Verweis aktualisieren
+  - **WICHTIG**: Bei jeder Übergabe den Implementierungs-Status in der FC-Datei aktualisieren!
 - **Two-Pass-Review** nach jedem signifikanten Schritt (siehe CLAUDE.md Abschnitt 0.10)
 
 #### 📝 Change Logs (NEU! Ab 07.07.2025)
@@ -142,6 +143,11 @@ TodoRead                     # TODO-Liste lesen
 - [ ] Change Log erstellt für: [Feature-Name]
   - Link: `/docs/claude-work/daily-work/YYYY-MM-DD/YYYY-MM-DD_CHANGE_LOG_feature.md`
 - [ ] Weitere Change Logs: [Liste weitere wenn vorhanden]
+
+## 📑 FEATURE-KONZEPTE STATUS-UPDATE
+- [ ] FC-001 (Dynamic Focus List) Status aktualisiert: ✅ Backend / 🔄 Frontend
+  - Link: `/docs/features/2025-07-07_TECH_CONCEPT_dynamic-focus-list.md`
+- [ ] Weitere FC-Updates: [Liste weitere aktive Feature-Konzepte]
 
 ## 🛠️ WAS FUNKTIONIERT?
 [Verifizierte, funktionierende Features]

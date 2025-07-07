@@ -207,16 +207,8 @@ public class CustomerService {
     return customerMapper.toMinimalListResponse(customers, page, size, totalElements);
   }
 
-  /** Searches customers by company name. */
-  public CustomerListResponse searchCustomers(String searchTerm, int page, int size) {
-    Page pageRequest = Page.of(page, size);
-    List<Customer> customers = customerRepository.searchByCompanyName(searchTerm, pageRequest);
-
-    // For search, we use the actual result count as total (not global count)
-    long totalElements = customers.size();
-
-    return customerMapper.toMinimalListResponse(customers, page, size, totalElements);
-  }
+  // Note: Search functionality has been moved to CustomerSearchService
+  // This uses the new dynamic query builder for more flexible searches
 
   /** Filters customers by status. */
   public CustomerListResponse getCustomersByStatus(CustomerStatus status, int page, int size) {
