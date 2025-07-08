@@ -94,6 +94,44 @@ echo "  - Link: \`/docs/features/2025-07-07_TECH_CONCEPT_dynamic-focus-list.md\`
 echo "- [ ] Weitere FC-Updates: [Liste weitere aktive Feature-Konzepte]" >> "$HANDOVER_FILE"
 echo "" >> "$HANDOVER_FILE"
 
+# Add new FOKUS section
+echo "## 🎯 HEUTIGER FOKUS" >> "$HANDOVER_FILE"
+
+# Check if .current-focus exists and read it
+if [ -f ".current-focus" ]; then
+    FEATURE=$(grep '"feature"' .current-focus | cut -d'"' -f4)
+    MODULE=$(grep '"module"' .current-focus | cut -d'"' -f4)
+    LASTFILE=$(grep '"lastFile"' .current-focus | cut -d'"' -f4)
+    LASTLINE=$(grep '"lastLine"' .current-focus | cut -d'"' -f4)
+    NEXTTASK=$(grep '"nextTask"' .current-focus | cut -d'"' -f4)
+    
+    if [ "$MODULE" != "null" ]; then
+        echo "**Aktives Modul:** $FEATURE-$MODULE" >> "$HANDOVER_FILE"
+        echo "**Modul-Dokument:** \`/docs/features/$FEATURE-$MODULE-*.md\` ⭐" >> "$HANDOVER_FILE"
+    else
+        echo "**Aktives Feature:** $FEATURE" >> "$HANDOVER_FILE"
+    fi
+    echo "**Hub-Dokument:** \`/docs/features/$FEATURE-hub.md\` (Referenz)" >> "$HANDOVER_FILE"
+    
+    if [ "$LASTFILE" != "null" ]; then
+        echo "**Letzte Datei:** $LASTFILE" >> "$HANDOVER_FILE"
+        if [ "$LASTLINE" != "null" ]; then
+            echo "**Letzte Zeile:** $LASTLINE" >> "$HANDOVER_FILE"
+        fi
+    fi
+    
+    if [ "$NEXTTASK" != "null" ]; then
+        echo "**Nächster Schritt:** $NEXTTASK" >> "$HANDOVER_FILE"
+    fi
+else
+    echo "**Aktives Modul:** [FC-XXX-MX Name]" >> "$HANDOVER_FILE"
+    echo "**Modul-Dokument:** [Pfad] ⭐" >> "$HANDOVER_FILE"
+    echo "**Hub-Dokument:** [Pfad] (Referenz)" >> "$HANDOVER_FILE"
+    echo "**Letzte Zeile bearbeitet:** [Component:Line]" >> "$HANDOVER_FILE"
+    echo "**Nächster Schritt:** [Konkrete Aufgabe]" >> "$HANDOVER_FILE"
+fi
+echo "" >> "$HANDOVER_FILE"
+
 echo "## 🛠️ WAS FUNKTIONIERT?" >> "$HANDOVER_FILE"
 echo "" >> "$HANDOVER_FILE"
 echo "[MANUELL AUSFÜLLEN]" >> "$HANDOVER_FILE"
@@ -158,4 +196,93 @@ echo "✅ Handover template created: $HANDOVER_FILE"
 echo ""
 echo "📝 Please fill in the [MANUELL AUSFÜLLEN] sections!"
 echo ""
-echo "To edit: code $HANDOVER_FILE"
+
+# Ask for next focus module
+echo "📍 FOKUS-MODUL für nächste Session festlegen:"
+echo ""
+echo "Aktuelle Feature-Module:"
+echo "1) FC-002-M1: Hauptnavigation"
+echo "2) FC-002-M2: Quick-Create"
+echo "3) FC-002-M3: Cockpit"
+echo "4) FC-002-M4: Neukundengewinnung"
+echo "5) FC-002-M5: Kundenmanagement"
+echo "6) FC-002-M6: Berichte"
+echo "7) FC-002-M7: Einstellungen"
+echo "8) Anderes Feature/Modul"
+echo "9) Kein spezifisches Modul"
+echo ""
+read -p "Auswahl (1-9): " choice
+
+# Update .current-focus based on choice
+case $choice in
+    1)
+        MODULE="M1"
+        MODULE_NAME="Hauptnavigation"
+        ;;
+    2)
+        MODULE="M2"
+        MODULE_NAME="Quick-Create"
+        ;;
+    3)
+        MODULE="M3"
+        MODULE_NAME="Cockpit"
+        ;;
+    4)
+        MODULE="M4"
+        MODULE_NAME="Neukundengewinnung"
+        ;;
+    5)
+        MODULE="M5"
+        MODULE_NAME="Kundenmanagement"
+        ;;
+    6)
+        MODULE="M6"
+        MODULE_NAME="Berichte"
+        ;;
+    7)
+        MODULE="M7"
+        MODULE_NAME="Einstellungen"
+        ;;
+    8)
+        read -p "Feature-Code (z.B. FC-003): " CUSTOM_FEATURE
+        read -p "Modul-Code (z.B. M1): " CUSTOM_MODULE
+        FEATURE=$CUSTOM_FEATURE
+        MODULE=$CUSTOM_MODULE
+        MODULE_NAME="Custom"
+        ;;
+    9)
+        MODULE="null"
+        MODULE_NAME="Kein spezifisches Modul"
+        ;;
+    *)
+        MODULE="null"
+        MODULE_NAME="Ungültige Auswahl"
+        ;;
+esac
+
+# Default to FC-002 if not custom
+if [ "$choice" -ne 8 ]; then
+    FEATURE="FC-002"
+fi
+
+# Ask for next task
+echo ""
+read -p "Nächste konkrete Aufgabe: " NEXT_TASK
+
+# Update .current-focus file
+cat > .current-focus << EOF
+{
+  "feature": "$FEATURE",
+  "module": "$MODULE",
+  "lastFile": null,
+  "lastLine": null,
+  "nextTask": "$NEXT_TASK",
+  "lastUpdated": "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+}
+EOF
+
+echo ""
+echo "✅ Fokus für nächste Session gesetzt: $FEATURE-$MODULE ($MODULE_NAME)"
+echo "📋 Nächste Aufgabe: $NEXT_TASK"
+echo ""
+echo "To edit handover: code $HANDOVER_FILE"

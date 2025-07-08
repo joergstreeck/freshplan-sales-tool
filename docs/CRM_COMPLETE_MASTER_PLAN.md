@@ -124,14 +124,26 @@ Die Hauptoberfläche ist ein einziges, dreigeteiltes Cockpit. Es ist **responsiv
     
     **📋 Detailliertes Konzept:** [FC-001: Dynamische Fokus-Liste](./features/2025-07-07_TECH_CONCEPT_dynamic-focus-list.md)
 
-* **Phase 3: Activity Timeline & Prozess-Integration**
+* **Phase 3: Neuausrichtung der Benutzeroberfläche & Arbeitsprozesse (FC-002)**
+    
+    **Ziel:** Transformation von einer funktionsgetriebenen zu einer prozessorientierten Anwendung durch eine intuitive 5-Punkte-Navigation und kontextbezogene Aktionen.
+    
+    **Kernelemente:**
+    - **5-Punkte-Navigation:** Mein Cockpit | Neukundengewinnung | Kundenmanagement | Auswertungen & Berichte | Einstellungen
+    - **Globaler "+ Neu" Button:** Schnellzugriff für neue Entitäten von überall
+    - **Prozessorientierte Werkzeuge:** Funktionen erscheinen dort, wo sie im Arbeitsablauf benötigt werden
+    - **Klare deutsche Begriffe:** Gemäß unserem neuen [Way of Working](./WAY_OF_WORKING.md)
+    
+    **📋 Detailliertes Konzept:** [FC-002: UI/UX-Neuausrichtung & Prozessorientierung](./features/2025-07-08_TECH_CONCEPT_ui-ux-refactoring.md)
+
+* **Phase 4: Activity Timeline & Prozess-Integration**
     1.  **Activity Timeline:** Services und API-Endpunkte für die Kunden-Zeitleiste
     2.  **Backend-for-Frontend (BFF)** implementieren
     3.  **Opportunity & Aktivitäten Management** (Backend & Frontend)
     4.  **Xentral-Integration** (Proof-of-Concept, dann volle Integration)
     5.  **"BCC-to-CRM"** und die **Triage-Inbox**
 
-* **Phase 4: Intelligenz & Proaktive Unterstützung**
+* **Phase 5: Intelligenz & Proaktive Unterstützung**
     * **Data Health Dashboard**
     * **Partner-Lifecycle**-Automatisierung
     * **Lead Scoring** 
@@ -143,4 +155,5 @@ Die Hauptoberfläche ist ein einziges, dreigeteiltes Cockpit. Es ist **responsiv
 
 Detaillierte technische Konzepte für alle größeren Features:
 
-- **FC-001**: [Dynamische Fokus-Liste](./features/2025-07-07_TECH_CONCEPT_dynamic-focus-list.md) - Status: Draft
+- **FC-001**: [Dynamische Fokus-Liste](./features/2025-07-07_TECH_CONCEPT_dynamic-focus-list.md) - Status: Backend ✅ | Frontend ✅
+- **FC-002**: [UI/UX-Neuausrichtung & Prozessorientierung](./features/2025-07-08_TECH_CONCEPT_ui-ux-refactoring.md) - Status: 📋 In Planung

@@ -149,6 +149,21 @@ TodoRead                     # TODO-Liste lesen
   - Link: `/docs/features/2025-07-07_TECH_CONCEPT_dynamic-focus-list.md`
 - [ ] Weitere FC-Updates: [Liste weitere aktive Feature-Konzepte]
 
+## 🎯 HEUTIGER FOKUS
+**Aktives Modul:** [FC-XXX-MX Name]
+**Modul-Dokument:** [Pfad] ⭐
+**Hub-Dokument:** [Pfad] (Referenz)
+**Letzte Zeile bearbeitet:** [Component:Line]
+**Nächster Schritt:** [Konkrete Aufgabe]
+
+## 🏛️ ARCHITEKTUR & PLANUNG
+- [ ] **Feature-Konzept [FC-XXX] geprüft:** Das Konzept ist auf dem neuesten Stand und enthält alle notwendigen, "kompressionssicheren" Implementierungsdetails.
+  - Dateipfade und Komponenten-Namen definiert
+  - Props und State vollständig spezifiziert
+  - State Management Stores zugeordnet
+  - API-Interaktionen dokumentiert
+  - Kernlogik beschrieben
+
 ## 🛠️ WAS FUNKTIONIERT?
 [Verifizierte, funktionierende Features]
 

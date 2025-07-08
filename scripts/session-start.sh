@@ -33,8 +33,42 @@ echo "Recent commits:"
 git log --oneline -5
 echo ""
 
-# Step 4: Find latest handover
-echo "4️⃣  Latest Handover Document"
+# Step 4: Check current focus
+echo "4️⃣  Current Focus"
+echo "----------------"
+if [ -f ".current-focus" ]; then
+    FEATURE=$(grep '"feature"' .current-focus | cut -d'"' -f4)
+    MODULE=$(grep '"module"' .current-focus | cut -d'"' -f4)
+    LASTFILE=$(grep '"lastFile"' .current-focus | cut -d'"' -f4)
+    LASTLINE=$(grep '"lastLine"' .current-focus | cut -d'"' -f4)
+    NEXTTASK=$(grep '"nextTask"' .current-focus | cut -d'"' -f4)
+    
+    echo -e "${GREEN}📍 Letzter Fokus gefunden:${NC}"
+    if [ "$MODULE" != "null" ]; then
+        echo "   Feature: $FEATURE-$MODULE"
+        echo "   Modul-Dokument: docs/features/$FEATURE-$MODULE-*.md ⭐"
+    else
+        echo "   Feature: $FEATURE"
+    fi
+    
+    if [ "$LASTFILE" != "null" ] && [ -n "$LASTFILE" ]; then
+        echo "   Letzte Datei: $LASTFILE"
+        if [ "$LASTLINE" != "null" ] && [ -n "$LASTLINE" ]; then
+            echo "   Letzte Zeile: $LASTLINE"
+        fi
+    fi
+    
+    if [ "$NEXTTASK" != "null" ] && [ -n "$NEXTTASK" ]; then
+        echo -e "   ${YELLOW}Nächste Aufgabe: $NEXTTASK${NC}"
+    fi
+    echo ""
+else
+    echo -e "${YELLOW}Kein Fokus gesetzt. Verwende ./scripts/create-handover.sh am Ende der Session.${NC}"
+    echo ""
+fi
+
+# Step 5: Find latest handover
+echo "5️⃣  Latest Handover Document"
 echo "---------------------------"
 LATEST_HANDOVER=$(find docs/claude-work/daily-work -name "*HANDOVER*.md" -type f -print0 | xargs -0 ls -t | head -1)
 if [ -n "$LATEST_HANDOVER" ]; then
@@ -48,13 +82,13 @@ else
 fi
 echo ""
 
-# Step 5: Show TODOs
-echo "5️⃣  Current TODOs"
+# Step 6: Show TODOs
+echo "6️⃣  Current TODOs"
 echo "----------------"
 echo "[Use TodoRead in your session]"
 echo ""
 
-# Step 6: Quick Actions
+# Step 7: Quick Actions
 echo "📋 Quick Actions:"
 echo "----------------"
 echo "• Read CLAUDE.md:        cat docs/CLAUDE.md | head -50"
@@ -64,7 +98,7 @@ echo "• Run tests:            cd backend && ./mvnw test"
 echo "• View logs:            tail -f logs/backend.log"
 echo ""
 
-# Step 7: Important reminders
+# Step 8: Important reminders
 echo -e "${YELLOW}⚠️  Wichtige Erinnerungen:${NC}"
 echo "• Gründlichkeit vor Schnelligkeit"
 echo "• Two-Pass Review bei wichtigen Änderungen"
