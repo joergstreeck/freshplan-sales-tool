@@ -99,7 +99,7 @@ export const FilterBar: React.FC = () => {
           sx={{ maxWidth: 400 }}
         />
 
-        {/* Quick Filter Chips */}
+        {/* Quick Filter Chips - funktionieren wie Preset Views */}
         <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
           <QuickFilterChip
             label="Aktive Kunden"
@@ -119,6 +119,19 @@ export const FilterBar: React.FC = () => {
             onClick={() => toggleQuickFilter('status', 'LEAD')}
             color="#004F7B" // Freshfoodz Blau
           />
+          
+          {/* Zeige nur Button zum Zurücksetzen wenn Filter aktiv */}
+          {(activeFilters.length > 0 || globalSearch) && (
+            <Button
+              variant="text"
+              size="small"
+              onClick={clearAllFilters}
+              startIcon={<ClearIcon />}
+              sx={{ ml: 1, color: 'text.secondary' }}
+            >
+              Alle anzeigen
+            </Button>
+          )}
         </Box>
       </Box>
 
@@ -139,17 +152,6 @@ export const FilterBar: React.FC = () => {
             </Button>
           </Badge>
 
-          {/* Clear All Button - nur wenn Filter aktiv */}
-          {hasActiveFilters && (
-            <Button
-              variant="text"
-              color="error"
-              onClick={clearAllFilters}
-              startIcon={<ClearIcon />}
-            >
-              Alle Filter löschen
-            </Button>
-          )}
         </Box>
 
         <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>

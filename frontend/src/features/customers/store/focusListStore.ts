@@ -159,25 +159,36 @@ export const useFocusListStore = create<FocusListStore>()(
 
         toggleQuickFilter: (field, value) => {
           const state = get();
-          const existingFilter = state.activeFilters.find(
-            (f) => f.field === field && f.value === value
-          );
-
-          if (existingFilter) {
-            state.removeFilter(existingFilter.id);
-          } else {
-            // Spezielle Behandlung für verschiedene Quick Filter
+          
+          // Quick Filter funktionieren wie Preset-Views
+          // Erst alle Filter löschen, dann nur den gewünschten setzen
+          set({ activeFilters: [], page: 0 });
+          
+          // Wenn der gleiche Filter nochmal geklickt wird, nur löschen (deaktivieren)
+          const wasActive = state.activeFilters.length === 1 && 
+            state.activeFilters[0].field === field && 
+            ((field === 'riskScore' && value === '>70' && state.activeFilters[0].value === 70) ||
+             (field !== 'riskScore' && state.activeFilters[0].value === value));
+          
+          if (!wasActive) {
+            // Neuen Filter setzen
             if (field === 'riskScore' && value === '>70') {
-              state.addFilter({
-                field: 'riskScore',
-                operator: FilterOperator.GREATER_THAN,
-                value: 70,
+              set({
+                activeFilters: [{
+                  id: crypto.randomUUID(),
+                  field: 'riskScore',
+                  operator: FilterOperator.GREATER_THAN,
+                  value: 70,
+                }]
               });
             } else {
-              state.addFilter({
-                field,
-                operator: FilterOperator.EQUALS,
-                value,
+              set({
+                activeFilters: [{
+                  id: crypto.randomUUID(),
+                  field,
+                  operator: FilterOperator.EQUALS,
+                  value,
+                }]
               });
             }
           }
