@@ -4,7 +4,13 @@ import {
   ListItemButton,
   ListItemText,
 } from '@mui/material';
-import { NavigationSubItem } from '@/types/navigation.types';
+
+// Temporär: Direkte Type-Definition um Import-Probleme zu umgehen
+interface NavigationSubItem {
+  label: string;
+  path: string;
+  permissions?: string[];
+}
 
 interface NavigationSubMenuProps {
   items: NavigationSubItem[];

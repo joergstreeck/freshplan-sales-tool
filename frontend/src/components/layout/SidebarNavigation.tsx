@@ -7,7 +7,7 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { useNavigationStore } from '@/store/navigationStore';
 import { useAuthStore } from '@/store/authStore';
 import { NavigationItem } from './NavigationItem';
-import { navigationConfig } from '@/config/navigation.config';
+import { navigationConfig } from '../../config/navigation.config';
 import { useNavigationShortcuts } from '@/hooks/useNavigationShortcuts';
 
 const DRAWER_WIDTH = 280;

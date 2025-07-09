@@ -3,7 +3,22 @@ import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import PeopleIcon from '@mui/icons-material/People';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 import SettingsIcon from '@mui/icons-material/Settings';
-import { NavigationItemType } from '@/types/navigation.types';
+
+// Temporär: Direkte Type-Definition um Import-Probleme zu umgehen
+interface NavigationSubItem {
+  label: string;
+  path: string;
+  permissions?: string[];
+}
+
+interface NavigationItemType {
+  id: string;
+  label: string;
+  icon: React.ComponentType<any>;
+  path: string;
+  permissions?: string[];
+  subItems?: NavigationSubItem[];
+}
 
 export const navigationConfig: NavigationItemType[] = [
   {

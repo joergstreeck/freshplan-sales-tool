@@ -8,8 +8,23 @@ import {
 } from '@mui/material';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { NavigationItemType } from '@/types/navigation.types';
 import { NavigationSubMenu } from './NavigationSubMenu';
+
+// Temporär: Direkte Type-Definition um Import-Probleme zu umgehen
+interface NavigationSubItem {
+  label: string;
+  path: string;
+  permissions?: string[];
+}
+
+interface NavigationItemType {
+  id: string;
+  label: string;
+  icon: React.ComponentType<any>;
+  path: string;
+  permissions?: string[];
+  subItems?: NavigationSubItem[];
+}
 
 interface NavigationItemProps {
   item: NavigationItemType;
