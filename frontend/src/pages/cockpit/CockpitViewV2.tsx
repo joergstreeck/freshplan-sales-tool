@@ -6,21 +6,11 @@
  */
 
 import React from 'react';
-import { Box, Grid, Paper, Typography, Container } from '@mui/material';
+import { Box, Container } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { useCockpitStore } from '@/store/cockpitStore';
 import { SalesCockpitMUI } from '@/features/cockpit/components/SalesCockpitMUI';
 
-// Styled Components für wiederverwendbare Styles
-const ContentPaper = styled(Paper)(({ theme }) => ({
-  padding: theme.spacing(3),
-  height: '100%',
-  overflow: 'auto',
-  backgroundColor: theme.palette.background.paper,
-  boxShadow: theme.shadows[1],
-}));
-
-const PageContainer = styled(Box)(({ theme }) => ({
+const PageContainer = styled(Box)(() => ({
   // Reset any inherited styles
   position: 'relative',
   width: '100%',
