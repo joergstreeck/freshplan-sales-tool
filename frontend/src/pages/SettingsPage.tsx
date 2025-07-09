@@ -75,11 +75,13 @@ export function SettingsPage() {
               value={tabValue} 
               onChange={handleTabChange} 
               aria-label="Einstellungen Tabs"
+              variant="scrollable"
+              scrollButtons="auto"
               sx={{
                 '& .MuiTab-root': {
                   textTransform: 'none',
-                  minHeight: 64,
-                  fontSize: '1rem',
+                  minHeight: { xs: 56, sm: 64 },
+                  fontSize: { xs: '0.875rem', sm: '1rem' },
                 },
               }}
             >
