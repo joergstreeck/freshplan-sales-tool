@@ -151,6 +151,44 @@ Die Hauptoberfläche ist ein einziges, dreigeteiltes Cockpit. Es ist **responsiv
 
 ---
 
+## 🏗️ Backend-Architektur-Standards (NEU - 09.07.2025)
+
+### Strategische Entscheidung: Modularer Monolith
+
+Nach eingehender Analyse des bestehenden Customer-Monolithen (54 Dateien, eng gekoppelt) haben wir uns für eine **schrittweise Migration zu einem modularen Monolithen** entschieden:
+
+1. **Migration statt Neubau**: Bestehender Code wird refactored, nicht neu geschrieben
+2. **Modularer Monolith**: Service-ready Architektur, aber weiterhin als Monolith deployed
+3. **Event-Driven Communication**: Lose Kopplung zwischen Modulen über Domain Events
+4. **CQRS für Read-Heavy Operations**: Optimierte Read Models für Listen und Suche
+
+### Neue Modul-Struktur (am Beispiel Customer)
+
+```
+modules/
+├── customer-core/        # Kern-Entity mit Basis-Daten
+├── customer-contacts/    # Kontaktpersonen-Verwaltung
+├── customer-financials/  # Finanz- und Bonitätsdaten
+└── customer-timeline/    # Event-basierte Historie
+```
+
+### Architektur-Prinzipien
+
+1. **Bounded Contexts**: Klare Modul-Grenzen ohne zirkuläre Abhängigkeiten
+2. **Domain Events**: Kommunikation zwischen Modulen nur über Events
+3. **Feature Flags**: Schrittweise Migration mit Parallel-Betrieb
+4. **API-Stabilität**: Keine Breaking Changes während der Migration
+
+### Performance-Ziele
+
+- API Response Time: P95 < 200ms
+- Event Processing: < 100ms
+- Read Model Updates: Eventually Consistent (< 1s)
+
+**Details**: Siehe `/docs/features/FC-002-M5-kundenmanagement.md`
+
+---
+
 ## 📋 Feature-Konzepte
 
 Detaillierte technische Konzepte für alle größeren Features:
