@@ -122,54 +122,70 @@ export const HeaderV2: React.FC<HeaderV2Props> = ({
     >
       <Toolbar sx={{ 
         minHeight: 64,
-        px: { xs: 2, sm: 3 }
+        px: { xs: 2, sm: 3 },
+        justifyContent: 'space-between',
       }}>
-        {/* Mobile Menu Toggle */}
-        {showMenuIcon && isMobile && (
-          <IconButton
-            edge="start"
-            onClick={onMenuClick || toggleSidebar}
-            sx={{ 
-              mr: 2,
-              color: '#004F7B',
-              display: { md: 'none' } 
-            }}
-          >
-            <MenuIcon />
-          </IconButton>
-        )}
-        
-        {/* Logo */}
-        <Box sx={{ mr: 4 }}>
-          {/* Desktop: Volles Logo */}
-          <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
-            <Logo 
-              variant="full" 
-              height={40}
-              onClick={() => navigate('/')}
-            />
-          </Box>
-          {/* Mobile: Icon Logo */}
-          <Box sx={{ display: { xs: 'block', sm: 'none' } }}>
-            <Logo 
-              variant="icon" 
-              height={32}
-              onClick={() => navigate('/')}
-            />
+        {/* Left Section - Logo and Mobile Menu */}
+        <Box sx={{ 
+          display: 'flex', 
+          alignItems: 'center',
+          flexShrink: 0,
+        }}>
+          {/* Mobile Menu Toggle */}
+          {showMenuIcon && isMobile && (
+            <IconButton
+              edge="start"
+              onClick={onMenuClick || toggleSidebar}
+              sx={{ 
+                mr: 1,
+                color: '#004F7B',
+                display: { md: 'none' } 
+              }}
+            >
+              <MenuIcon />
+            </IconButton>
+          )}
+          
+          {/* Logo */}
+          <Box>
+            {/* Desktop: Volles Logo */}
+            <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
+              <Logo 
+                variant="full" 
+                height={40}
+                onClick={() => navigate('/')}
+              />
+            </Box>
+            {/* Mobile: Icon Logo */}
+            <Box sx={{ display: { xs: 'block', sm: 'none' } }}>
+              <Logo 
+                variant="icon" 
+                height={32}
+                onClick={() => navigate('/')}
+              />
+            </Box>
           </Box>
         </Box>
         
-        {/* Search Bar - Desktop */}
-        {!isMobile && (
-          <Box 
-            component="form" 
-            onSubmit={handleSearchSubmit}
-            sx={{ 
-              flexGrow: 1, 
-              maxWidth: 500,
-              mx: 2,
-            }}
-          >
+        {/* Right Section - Search, Notifications, User */}
+        <Box sx={{ 
+          display: 'flex', 
+          alignItems: 'center',
+          gap: 2,
+          flexGrow: { xs: 0, sm: 1 },
+          justifyContent: 'flex-end',
+          maxWidth: { xs: 'none', sm: '800px' }, // Maximale Breite nur auf Desktop
+        }}>
+          {/* Search Bar - Desktop */}
+          {!isMobile && (
+            <Box 
+              component="form" 
+              onSubmit={handleSearchSubmit}
+              sx={{ 
+                width: '100%',
+                maxWidth: 400,
+              }}
+            >
             <TextField
               fullWidth
               size="small"
@@ -214,15 +230,12 @@ export const HeaderV2: React.FC<HeaderV2Props> = ({
           </Box>
         )}
         
-        {/* Spacer */}
-        <Box sx={{ flexGrow: isMobile ? 1 : 0 }} />
-        
         {/* Notifications */}
         <Tooltip title="Benachrichtigungen">
           <IconButton 
             sx={{ 
               color: '#004F7B',
-              mr: 2,
+              flexShrink: 0,
             }}
           >
             <Badge badgeContent={3} color="error">
@@ -232,7 +245,7 @@ export const HeaderV2: React.FC<HeaderV2Props> = ({
         </Tooltip>
         
         {/* User Menu */}
-        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', flexShrink: 0 }}>
           <IconButton
             onClick={handleMenuOpen}
             sx={{
@@ -339,6 +352,7 @@ export const HeaderV2: React.FC<HeaderV2Props> = ({
               </ListItemText>
             </MenuItem>
           </Menu>
+        </Box>
         </Box>
       </Toolbar>
       
