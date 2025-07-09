@@ -37,7 +37,6 @@ import {
   Settings as SettingsIcon,
   Notifications as NotificationsIcon,
   KeyboardArrowDown as ArrowDownIcon,
-  LocalFlorist as FloristIcon,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
