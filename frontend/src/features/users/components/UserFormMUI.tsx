@@ -17,16 +17,16 @@ import {
   CircularProgress,
 } from '@mui/material';
 import { useCreateUser, useUpdateUser } from '../userQueries';
-import type { CreateUserRequest, UpdateUserRequest, UserResponse } from '../userSchemas';
-import { createUserSchema, updateUserSchema } from '../userSchemas';
+import type { User, CreateUserData, UpdateUserData } from '../userSchemas';
+import { CreateUserSchema, UpdateUserSchema } from '../userSchemas';
 
 interface UserFormProps {
-  user?: UserResponse;
+  user?: User;
   onSuccess?: () => void;
   onCancel?: () => void;
 }
 
-type FormData = CreateUserRequest | UpdateUserRequest;
+type FormData = CreateUserData | UpdateUserData;
 
 const availableRoles = [
   { value: 'admin', label: 'Administrator' },
@@ -46,7 +46,7 @@ export const UserFormMUI = ({ user, onSuccess, onCancel }: UserFormProps) => {
     formState: { errors, isSubmitting },
     setError,
   } = useForm<FormData>({
-    resolver: zodResolver(isEditing ? updateUserSchema : createUserSchema),
+    resolver: zodResolver(isEditing ? UpdateUserSchema : CreateUserSchema),
     defaultValues: isEditing
       ? {
           firstName: user.firstName,

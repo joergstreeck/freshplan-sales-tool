@@ -17,6 +17,7 @@ import CustomersPage from './pages/CustomersPage';
 import { CockpitPage } from './pages/CockpitPage';
 import { CockpitPageV2 } from './pages/CockpitPageV2';
 import { SettingsPage } from './pages/SettingsPage';
+import { CalculatorPageV2 } from './pages/CalculatorPageV2';
 
 interface AppProvidersProps {
   children?: ReactNode;
