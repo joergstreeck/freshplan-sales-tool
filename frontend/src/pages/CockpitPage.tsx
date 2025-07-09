@@ -2,12 +2,12 @@
  * Cockpit Page with Authenticated Layout
  */
 import { AuthenticatedLayout } from '../components/layout/AuthenticatedLayout';
-import { SalesCockpit } from '../features/cockpit/components/SalesCockpit';
+import { SalesCockpitMUI } from '../features/cockpit/components/SalesCockpitMUI';
 
 export function CockpitPage() {
   return (
     <AuthenticatedLayout>
-      <SalesCockpit />
+      <SalesCockpitMUI />
     </AuthenticatedLayout>
   );
 }

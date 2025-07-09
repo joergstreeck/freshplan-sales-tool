@@ -15,6 +15,7 @@ import { LegacyToolPage } from './pages/LegacyToolPage';
 import { IntegrationTestPage } from './pages/IntegrationTestPage';
 import CustomersPage from './pages/CustomersPage';
 import { CockpitPage } from './pages/CockpitPage';
+import { CockpitPageV2 } from './pages/CockpitPageV2';
 
 interface AppProvidersProps {
   children?: ReactNode;
@@ -44,6 +45,7 @@ export const AppProviders = ({ children: mainChildren }: AppProvidersProps) => {
               <Routes>
                 <Route path="/" element={<App />} />
                 <Route path="/cockpit" element={<CockpitPage />} />
+                <Route path="/cockpit-v2" element={<CockpitPageV2 />} />
                 <Route path="/users" element={<UsersPage />} />
                 <Route path="/customers" element={<CustomersPage />} />
                 <Route path="/legacy-tool" element={<LegacyToolPage />} />
