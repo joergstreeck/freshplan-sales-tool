@@ -15,7 +15,7 @@
 | M2 | 📋 0% | [Quick-Create System](./FC-002-M2-quick-create.md) | Globaler "+ Neu" Button |
 | M3 | 🔍 40% | [Cockpit-Integration](./FC-002-M3-cockpit.md) | 3-Spalten-Ansicht Migration (Analyse abgeschlossen) |
 | M4 | 📋 0% | [Neukundengewinnung](./FC-002-M4-neukundengewinnung.md) | Akquise-Modul |
-| M5 | 📋 0% | [Kundenmanagement](./FC-002-M5-kundenmanagement.md) | CRM-Kernfunktionen |
+| M5 | 🔍 50% | [Kundenmanagement](./FC-002-M5-kundenmanagement.md) | CRM-Kernfunktionen (Backend-Analyse abgeschlossen) |
 | M6 | 📋 0% | [Berichte & Auswertungen](./FC-002-M6-berichte.md) | Analytics & Reports |
 | M7 | 📋 0% | [Einstellungen](./FC-002-M7-einstellungen.md) | User & System Settings |
 
