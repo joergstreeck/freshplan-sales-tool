@@ -576,10 +576,207 @@ const breakpoints = {
 };
 ```
 
+## 🔍 Modul-Analyse-Matrix für Cockpit
+
+### Übersicht des Cockpit-Moduls
+
+**Dateien im Modul:**
+```
+frontend/src/features/cockpit/
+├── components/ (7 Dateien)
+│   ├── SalesCockpit.tsx         # Hauptkomponente (122 Zeilen)
+│   ├── CockpitHeader.tsx        # Header mit Navigation
+│   ├── DashboardStats.tsx       # KPI-Anzeige
+│   ├── MyDayColumn.tsx          # Spalte 1 (264 Zeilen)
+│   ├── FocusListColumn.tsx      # Spalte 2
+│   ├── ActionCenterColumn.tsx   # Spalte 3
+│   └── SalesCockpit.test.tsx    # Test (231 Zeilen) ✅ ERWEITERT!
+├── hooks/ (1 Datei)
+│   └── useSalesCockpit.ts       # Dashboard-Daten Hook
+├── data/ (1 Datei)
+│   └── mockData.ts              # Mock-Daten für Entwicklung
+└── types/ (1 Datei)
+    └── salesCockpit.ts          # TypeScript-Definitionen
+```
+
+### 1. SalesCockpit.tsx - Hauptkomponente
+
+**Was ist vorhanden?**
+- Vollständig implementierte 3-Spalten-Struktur
+- Keyboard-Navigation (Alt+1/2/3)
+- Mobile-Responsive-Logik mit activeColumn State
+- Integration mit cockpitStore für UI-State
+- Dashboard-Statistiken im Header-Bereich
+- Verwendung von useDashboardData Hook
+
+**Was tut es?**
+- Rendert die 3-Spalten-Vision aus dem Master Plan
+- Verwaltet aktive Spalte für Mobile-View
+- Zeigt Dashboard-KPIs oberhalb der Spalten
+- Bindet alle drei Column-Komponenten ein
+
+**Code-Qualität:**
+- ✅ Gut strukturiert und dokumentiert
+- ✅ Event-Handler cleanup implementiert
+- ⚠️ Noch mit CSS statt MUI
+- ⚠️ Keine TypeScript strict mode
+- ✅ Test-Coverage vorhanden und erweitert
+
+**Wiederverwendbarkeit: 40%**
+- Struktur und Logik sind gut
+- CSS muss durch MUI ersetzt werden
+- TypeScript-Typisierung fehlt
+
+### 2. MyDayColumn.tsx - Spalte 1
+
+**Was ist vorhanden?**
+- Vollständige "Mein Tag" Implementierung
+- KI-gestützte Alerts aus Dashboard-Daten
+- Prioritäts-Aufgaben mit Icons
+- Triage-Inbox für unzugeordnete E-Mails
+- Toggle-Funktionalität für Triage-Inbox
+- Error-Handling und Loading-States
+
+**Was tut es?**
+- Zeigt Tagesübersicht mit Alerts, Tasks und E-Mails
+- Nutzt Mock-Daten als Fallback
+- Formatiert Zeiten in deutschem Format
+- Bietet Refresh-Funktionalität
+
+**Code-Qualität:**
+- ✅ Umfassende Funktionalität
+- ✅ Error-Handling vorhanden
+- ⚠️ Mix aus Mock- und echten Daten
+- ⚠️ Emoji-Icons statt MUI Icons
+- ❌ Keine Tests
+
+**Wiederverwendbarkeit: 60%**
+- Kernlogik ist solide
+- UI muss auf MUI migriert werden
+- Mock-Daten müssen entfernt werden
+
+### 3. FocusListColumn.tsx - Spalte 2
+
+**Was ist vorhanden?**
+- Integration der neuen FilterBar (FC-001)
+- Verwendung von CustomerCard Komponente
+- View-Mode Toggle (Cards/Table)
+- Pagination-Informationen
+- Integration mit focusListStore
+- Error-Handling
+
+**Was tut es?**
+- Zeigt gefilterte Kundenliste
+- Nutzt bereits moderne Komponenten aus FC-001
+- Unterstützt verschiedene Ansichtsmodi
+- Verwaltet Suchzustand über Store
+
+**Code-Qualität:**
+- ✅ Bereits modernisiert
+- ✅ Nutzt FC-001 Komponenten
+- ✅ Store-Integration vorhanden
+- ⚠️ CSS muss zu MUI
+- ❌ Keine eigenen Tests
+
+**Wiederverwendbarkeit: 80%**
+- Fast fertig für FC-002
+- Nur CSS-Migration nötig
+
+### 4. ActionCenterColumn.tsx - Spalte 3
+
+**Was ist vorhanden?**
+- Basis-Implementierung (nicht gelesen, aber in Struktur erkennbar)
+- Platzhalter für kontextbezogene Aktionen
+
+**Erwartete Funktionalität:**
+- Kundendetails anzeigen
+- Kontextbezogene Aktionen
+- Geführte Prozesse
+
+**Wiederverwendbarkeit: 20%**
+- Muss größtenteils neu gebaut werden
+
+### 5. CockpitHeader.tsx
+
+**Was ist vorhanden?**
+- Header-Komponente für Navigation
+- Integration mit cockpitStore
+
+**Wiederverwendbarkeit: 50%**
+- Struktur kann bleiben
+- UI-Migration zu MUI nötig
+
+### 6. DashboardStats.tsx
+
+**Was ist vorhanden?**
+- KPI-Anzeige-Komponente
+- Visualisierung von Statistiken
+
+**Wiederverwendbarkeit: 70%**
+- Logik ist gut
+- Nur UI-Migration nötig
+
+### 7. useSalesCockpit.ts Hook
+
+**Was ist vorhanden?**
+- Data-Fetching für Dashboard
+- Integration mit React Query (vermutlich)
+- Error-Handling
+
+**Wiederverwendbarkeit: 85%**
+- Hook-Logik kann bleiben
+- Evtl. Endpoint anpassen
+
+### 🎯 Strategische Bewertung
+
+**Stärken des bestehenden Codes:**
+1. ✅ 3-Spalten-Layout bereits implementiert
+2. ✅ Keyboard-Navigation vorhanden
+3. ✅ Store-Integration etabliert
+4. ✅ FC-001 Komponenten bereits integriert
+5. ✅ Test-Suite jetzt vorhanden
+
+**Herausforderungen:**
+1. ⚠️ CSS → MUI Migration in allen Komponenten
+2. ⚠️ TypeScript strict mode fehlt
+3. ⚠️ Mock-Daten müssen entfernt werden
+4. ❌ ActionCenter muss neu gebaut werden
+5. ❌ Tests für Subkomponenten fehlen
+
+**Geschätzter Gesamtaufwand:**
+- **Mit Wiederverwendung:** 2-3 Tage (statt 3-4)
+- **Grund:** Viel Struktur und Logik kann übernommen werden
+
+### 📋 Migrations-Strategie
+
+**Phase 1: Basis-Migration (1 Tag)**
+1. SalesCockpit.tsx → CockpitView.tsx
+   - CSS zu MUI sx-Props
+   - TypeScript strict mode
+   - Route-Integration
+2. MyDayColumn.tsx → MeinTag.tsx
+   - Aufteilen in Subkomponenten
+   - MUI-Migration
+   - Mock-Daten entfernen
+
+**Phase 2: Integration (1 Tag)**
+1. FocusListColumn anpassen
+   - Minimal-Änderungen (schon fast fertig)
+2. Stores konsolidieren
+   - cockpitStore erweitern
+3. API-Integration
+   - Aggregierte Endpoint anbinden
+
+**Phase 3: Neubau & Polish (1 Tag)**
+1. ActionCenter komplett neu
+2. ResizablePanels implementieren
+3. Performance-Optimierung
+4. Weitere Tests schreiben
+
 ---
 
 **Nächste Schritte:**
-1. CockpitView Page implementieren
-2. API-Service für aggregierte Daten
-3. Spalten-Komponenten entwickeln
-4. Responsive Layout testen
+1. ✅ Test-Suite für SalesCockpit erweitert
+2. Branch `feature/fc-002-m3-cockpit` erstellen
+3. Phase 1 der Migration beginnen
+4. CockpitView.tsx mit MUI implementieren
