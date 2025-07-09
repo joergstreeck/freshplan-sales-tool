@@ -1,8 +1,8 @@
 {
   "feature": "FC-002",
-  "module": "M3",
-  "lastFile": "",
-  "lastLine": "",
-  "nextTask": "Migration von SalesCockpit zu CockpitView mit MUI beginnen",
-  "lastUpdated": "2025-07-09T02:20:30Z"
+  "module": "M8-rechner",
+  "lastFile": "frontend/src/pages/CalculatorPageV2.tsx",
+  "lastLine": "101",
+  "nextTask": "Calculator Migration zu MainLayoutV2",
+  "lastUpdated": "2025-07-09T14:18:24Z"
 }

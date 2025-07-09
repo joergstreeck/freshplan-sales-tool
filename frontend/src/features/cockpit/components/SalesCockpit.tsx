@@ -16,7 +16,7 @@ import { FocusListColumn } from './FocusListColumn';
 import { ActionCenterColumn } from './ActionCenterColumn';
 import { CockpitHeader } from './CockpitHeader';
 import { DashboardStats } from './DashboardStats';
-import './SalesCockpit.css';
+// CSS import removed - migrating to MUI sx props
 
 export function SalesCockpit() {
   const { 

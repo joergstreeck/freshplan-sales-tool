@@ -1,27 +1,14 @@
 /**
- * Cockpit Page with Auth Guard
+ * Cockpit Page with MainLayoutV2
+ * Updated to use the new standard layout for consistency
  */
-import { Navigate } from 'react-router-dom';
-import { useAuth } from '../hooks/useAuth';
-import { SalesCockpit } from '../features/cockpit/components/SalesCockpit';
+import { MainLayoutV2 } from '../components/layout/MainLayoutV2';
+import { SalesCockpitV2 } from '../features/cockpit/components/SalesCockpitV2';
 
 export function CockpitPage() {
-  const { isAuthenticated, isLoading } = useAuth();
-  
-  console.log('CockpitPage - Auth state:', { isAuthenticated, isLoading });
-  
-  if (isLoading) {
-    return (
-      <div style={{ padding: '20px', textAlign: 'center' }}>
-        <h2>Loading authentication...</h2>
-      </div>
-    );
-  }
-  
-  if (!isAuthenticated) {
-    console.log('Not authenticated, redirecting to home');
-    return <Navigate to="/" replace />;
-  }
-  
-  return <SalesCockpit />;
+  return (
+    <MainLayoutV2>
+      <SalesCockpitV2 />
+    </MainLayoutV2>
+  );
 }

@@ -1,11 +1,14 @@
 import React from 'react';
 import { CustomerList } from '@/features/customer/components';
+import { AuthenticatedLayout } from '@/components/layout/AuthenticatedLayout';
 
 const CustomersPage: React.FC = () => {
   return (
-    <div className="page-container">
-      <CustomerList />
-    </div>
+    <AuthenticatedLayout>
+      <div className="page-container">
+        <CustomerList />
+      </div>
+    </AuthenticatedLayout>
   );
 };
 
