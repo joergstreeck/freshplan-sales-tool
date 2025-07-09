@@ -169,3 +169,71 @@ frontend/src/
    - Session-Management
 
 **Gesamtaufwand:** 3 Personentage
+
+## 🎨 Visueller Migrationsplan (NEU - 09.07.2025)
+
+### ✅ CSS-Konflikt-Analyse
+
+**Risiko-Stufe:** 🟢 GERING
+
+**Glückwunsch!** Settings ist das am wenigsten betroffene Modul:
+- Nutzt bereits hauptsächlich MUI-Komponenten
+- Minimale eigene CSS-Styles
+- Keine globalen CSS-Konflikte identifiziert
+
+### 📐 Migration-Strategie: Direct Migration
+
+**Neuer Aufwand:** 0.5-1 Tag (statt 3 Tage!)
+
+Dies ist unser **Quick Win** für Momentum!
+
+#### Einziger Schritt: Integration in MainLayoutV2
+```typescript
+// SettingsPage.tsx
+export function SettingsPage() {
+  return (
+    <MainLayoutV2>
+      <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+        <Typography variant="h4" gutterBottom>
+          Einstellungen
+        </Typography>
+        
+        <Grid2 container spacing={3}>
+          <Grid2 size={{ xs: 12, md: 3 }}>
+            <SettingsNavigation />
+          </Grid2>
+          <Grid2 size={{ xs: 12, md: 9 }}>
+            <Outlet /> {/* Nested Routes */}
+          </Grid2>
+        </Grid2>
+      </Container>
+    </MainLayoutV2>
+  );
+}
+```
+
+### 🖼️ Visuelle Referenzen
+
+**Aktueller Zustand:**
+- Bereits MUI-basiert
+- Tabs für Navigation
+- Form-basierte Einstellungen
+
+**Minimale Anpassungen:**
+- Integration in MainLayoutV2
+- Konsistente Spacing mit theme.spacing()
+- Mobile Breakpoints optimieren
+
+### 🚀 Warum als Erstes?
+
+1. **Sofortiger Erfolg** - In einem Tag fertig
+2. **Keine Abhängigkeiten** - Komplett isoliert
+3. **Lerneffekt** - Perfekt um MainLayoutV2 zu verstehen
+4. **Team-Moral** - Quick Win motiviert für komplexere Module
+
+### ✨ Bonus-Features (optional)
+
+Da so wenig Aufwand:
+- Dark Mode Toggle einbauen
+- Keyboard Shortcuts für Settings
+- Verbesserte Mobile UX

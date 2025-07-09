@@ -611,3 +611,88 @@ curl localhost:8080/admin/events/stream
 
 **Status:** ✅ Planung komplett - Bereit für Implementierung
 **Nächster Schritt:** Phase 1 starten - Package-Struktur + Event Bus
+
+## 🎨 Visueller Migrationsplan (NEU - 09.07.2025)
+
+### 🚨 CSS-Konflikt-Analyse
+
+**Risiko-Stufe:** 🟡 MITTEL
+
+Identifizierte CSS-Probleme:
+- `CustomerList.css` - Direkte CSS-Imports mit globalen Styles
+- `CustomerList.module.css` - CSS Modules (besser isoliert)
+- Gemischte Verwendung von CSS und MUI
+
+**Hauptprobleme:**
+1. **Tabellen-Layout** mit custom Styles
+2. **Eigene Scrollbar-Implementation**
+3. **Z-Index Konflikte** mit Modals
+4. **Inkonsistente Spacing-Werte**
+
+### 📐 Migration-Strategie: Hybrid-Ansatz
+
+**Frontend-Aufwand neu:** 2-3 Tage (statt 2 Tage)
+
+#### Phase 1: CSS-Cleanup (Tag 1)
+```typescript
+// Schritt 1: CSS Modules beibehalten
+import styles from './CustomerList.module.css';
+
+// Schritt 2: Globale CSS entfernen
+// REMOVE: import './CustomerList.css';
+
+// Schritt 3: MUI-Theme für konsistente Styles
+const theme = useTheme();
+```
+
+#### Phase 2: Schrittweise MUI-Migration (Tag 2)
+```typescript
+// Alt: Custom Table
+<table className="customer-table">
+  <thead>...</thead>
+  <tbody>...</tbody>
+</table>
+
+// Neu: MUI DataGrid
+<DataGrid
+  rows={customers}
+  columns={columns}
+  pageSizeOptions={[10, 25, 50]}
+  sx={{
+    '& .MuiDataGrid-root': {
+      border: 'none',
+    }
+  }}
+/>
+```
+
+#### Phase 3: Integration in MainLayoutV2 (Tag 3)
+- Entfernung aller position: fixed Elemente
+- Anpassung an neue Scroll-Container
+- Theme-basierte Breakpoints
+
+### 🖼️ Visuelle Referenzen
+
+**Aktueller Zustand:**
+- Custom Table mit eigenem Styling
+- Fixed Header mit Scroll-Body
+- Eigene Filter-Komponenten
+
+**Ziel-Design mit MUI:**
+- MUI DataGrid mit eingebauter Pagination
+- Consistent mit FC-001 Dynamic Focus List
+- Material Design Cards für Detail-Views
+- Responsive Grid Layout
+
+### 🔗 Abhängigkeiten beachten
+
+**Calculator-Integration:**
+- CustomerDetail kann Calculator einbetten
+- Muss nach Calculator-Migration angepasst werden
+- Shared Theme-Context erforderlich
+
+### ⚡ Performance-Optimierungen
+
+- Virtual Scrolling mit MUI DataGrid
+- Lazy Loading für Customer Details
+- Memoization für Filter-Operationen

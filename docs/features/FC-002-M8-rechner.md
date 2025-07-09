@@ -114,3 +114,82 @@ frontend/src/features/calculator/
 - Polish & Tests
 
 **Gesamtaufwand:** 2 Personentage
+
+## 🎨 Visueller Migrationsplan (NEU - 09.07.2025)
+
+### 🚨 KRITISCHES UPDATE: CSS-Konflikt-Analyse
+
+**Risiko-Stufe:** 🔴 HOCH
+
+Nach eingehender Analyse wurden **675 Zeilen Legacy-CSS** identifiziert:
+- `calculator-layout.css` (376 Zeilen) - Eigenes Grid-System
+- `calculator-components.css` (238 Zeilen) - Custom Komponenten
+- `calculator.css` (61 Zeilen) - Globale Overrides
+
+**Hauptprobleme:**
+1. **Grid-System kollidiert** mit MainLayoutV2
+2. **Position: fixed** Elemente brechen aus Layout aus
+3. **Custom Scrollbars** konfligieren mit MUI
+4. **Z-Index Chaos** mit globalen Werten
+
+### 📐 Migration-Strategie: Clean Slate
+
+**Neuer Aufwand:** 3-4 Tage (statt 1.5 Tage)
+
+#### Phase 1: Parallel-Route (Tag 1)
+```typescript
+// Neue Route: /calculator-v2
+<Route path="/calculator-v2" element={<CalculatorPageV2 />} />
+
+// CalculatorPageV2.tsx
+export function CalculatorPageV2() {
+  return (
+    <MainLayoutV2>
+      <CalculatorViewV2 />
+    </MainLayoutV2>
+  );
+}
+```
+
+#### Phase 2: MUI-Komponenten (Tag 2-3)
+```typescript
+// Alte CSS-basierte Komponente
+<div className="calculator-form">
+  <div className="form-group">...</div>
+</div>
+
+// Neue MUI-basierte Komponente
+<Paper sx={{ p: 3 }}>
+  <Grid2 container spacing={3}>
+    <Grid2 size={12}>
+      <TextField fullWidth label="..." />
+    </Grid2>
+  </Grid2>
+</Paper>
+```
+
+#### Phase 3: Layout-Integration (Tag 4)
+- Entfernung aller CSS-Imports
+- Integration in MainLayoutV2
+- Responsive Design mit MUI Breakpoints
+
+### 🖼️ Visuelle Referenzen
+
+**Aktueller Zustand:** [Screenshot erforderlich]
+- Grid-basiertes Layout mit fixen Breiten
+- Custom-styled Inputs und Buttons
+- Eigene Tabellen-Komponente
+
+**Ziel-Design mit MUI:**
+- Material Design Paper für Sections
+- MUI DataGrid für Ergebnistabelle
+- Consistent Spacing mit theme.spacing()
+- Mobile-First Responsive Design
+
+### ⚡ Performance-Überlegungen
+
+**Problem:** CSS-in-JS bei vielen Berechnungen
+**Lösung:** 
+- Memoization für berechnete Styles
+- Static styled-components wo möglich
+- Debouncing für Eingabefelder

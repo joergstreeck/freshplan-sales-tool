@@ -16,6 +16,7 @@ import { IntegrationTestPage } from './pages/IntegrationTestPage';
 import CustomersPage from './pages/CustomersPage';
 import { CockpitPage } from './pages/CockpitPage';
 import { CockpitPageV2 } from './pages/CockpitPageV2';
+import { SettingsPage } from './pages/SettingsPage';
 
 interface AppProvidersProps {
   children?: ReactNode;
@@ -47,6 +48,7 @@ export const AppProviders = ({ children: mainChildren }: AppProvidersProps) => {
                 <Route path="/cockpit" element={<CockpitPage />} />
                 <Route path="/cockpit-v2" element={<CockpitPageV2 />} />
                 <Route path="/users" element={<UsersPage />} />
+                <Route path="/settings" element={<SettingsPage />} />
                 <Route path="/customers" element={<CustomersPage />} />
                 <Route path="/legacy-tool" element={<LegacyToolPage />} />
                 {/* Login Bypass temporär reaktiviert - Auto-Login Problem */}
