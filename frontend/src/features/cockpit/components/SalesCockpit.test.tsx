@@ -3,7 +3,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { SalesCockpit } from './SalesCockpit';
@@ -27,7 +27,7 @@ vi.mock('./ActionCenterColumn', () => ({
 }));
 
 vi.mock('./DashboardStats', () => ({
-  DashboardStats: ({ statistics }: any) => (
+  DashboardStats: ({ statistics }: { statistics?: { totalRevenue?: number; activeDeals?: number } }) => (
     <div data-testid="dashboard-stats">
       <span>Total Revenue: {statistics?.totalRevenue}</span>
       <span>Active Deals: {statistics?.activeDeals}</span>
@@ -182,7 +182,7 @@ describe('SalesCockpit', () => {
       isError: false,
       error: null,
       refetch: vi.fn()
-    } as any);
+    });
 
     renderWithProviders(<SalesCockpit />);
     
@@ -198,7 +198,7 @@ describe('SalesCockpit', () => {
       isError: true,
       error: new Error('Failed to load dashboard data'),
       refetch: vi.fn()
-    } as any);
+    });
 
     renderWithProviders(<SalesCockpit />);
     
