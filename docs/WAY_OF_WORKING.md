@@ -41,3 +41,55 @@ Technische Dokumentation für Entwickler darf etablierte Fachbegriffe verwenden 
 5. **Dokumentation**: Zielgruppengerecht (Nutzer vs. Entwickler)
 
 Diese Regel gilt ab sofort für alle neuen Entwicklungen und wird schrittweise auch in bestehenden Bereichen umgesetzt.
+
+## 2. Das Konsistenz-Protokoll
+
+**Zweck:** Sicherstellung der Widerspruchsfreiheit über alle Planungs- und Dokumentationsebenen hinweg.
+
+### Grundregel
+Nach jeder getroffenen Entscheidung oder signifikanten Änderung MÜSSEN die folgenden Dokumente in dieser Reihenfolge geprüft und bei Bedarf sofort aktualisiert werden:
+
+### Update-Hierarchie
+
+1. **Das relevante "Spoke"-Dokument (Detail-Planung)**
+   - Primärer Ort für alle Details und Implementierungsspezifika
+   - Enthält: Code-Beispiele, genaue Spezifikationen, Analyse-Matrizen
+   - Update: Bei jeder Code-Änderung oder Erkenntnisgewinn
+
+2. **Das "Hub"-Dokument (FC-XXX-hub.md)**
+   - Nur Status-Updates und übergreifende Änderungen
+   - Enthält: Modulstatus (%), Abhängigkeiten, grobe Timeline
+   - Update: Bei Modul-Abschluss oder Meilenstein-Erreichen
+
+3. **Die Anhänge (falls betroffen)**
+   - Anhang A: Strategische Entscheidungen und technische Ansätze
+   - Anhang B: Backend-Anforderungen und API-Spezifikationen
+   - Update: Bei Architektur-Entscheidungen oder API-Änderungen
+
+4. **Der CRM_COMPLETE_MASTER_PLAN.md**
+   - Nur bei Änderungen der groben Roadmap oder Vision
+   - Update: Sehr selten, nur bei fundamentalen Richtungsänderungen
+
+### Praktische Umsetzung
+
+```bash
+# Nach jeder Arbeitssession:
+1. Code committen
+2. Spoke-Dokument aktualisieren (Details, Status)
+3. Hub-Dokument prüfen (Status-%, Fortschritt)
+4. Bei Bedarf Anhänge anpassen
+5. Master Plan nur bei Major Changes
+```
+
+### Konsistenz-Checks
+
+- **Täglicher Check**: Stimmen die Prozentangaben im Hub mit dem Spoke-Status überein?
+- **Wöchentlicher Check**: Sind alle Entscheidungen aus den Anhängen in den Spokes reflektiert?
+- **Sprint-Check**: Ist der Master Plan noch aktuell bezüglich der groben Timeline?
+
+### Anti-Patterns vermeiden
+
+❌ **Nicht**: Nur Code ändern ohne Doku-Update
+❌ **Nicht**: Nur Hub updaten ohne Spoke-Details
+❌ **Nicht**: Widersprüchliche Status in verschiedenen Dokumenten
+✅ **Sondern**: Immer von Detail (Spoke) zu Übersicht (Hub) arbeiten

@@ -2,9 +2,10 @@
 
 **Modul:** M3  
 **Feature:** FC-002  
-**Status:** 📋 In Planung (0%)  
-**Geschätzter Aufwand:** 3-4 Tage  
-**Abhängigkeit:** FC-001 (Dynamic Focus List)
+**Status:** 📋 Planung abgeschlossen (30%)  
+**Geschätzter Aufwand:** 2-3 Tage (durch Wiederverwendung reduziert)  
+**Abhängigkeit:** FC-001 (Dynamic Focus List)  
+**Letztes Update:** 09.07.2025 - Analyse abgeschlossen, Implementierung vorbereitet
 
 ## 📋 Implementierungs-Checkliste
 
@@ -51,482 +52,114 @@ frontend/src/
 
 ## 📝 Detaillierte Spezifikation
 
-### 1. Cockpit Hauptansicht
+### 1. Cockpit Hauptansicht (CockpitView.tsx)
 
+**Kernfunktionalität:**
+- Container-Komponente für das 3-Spalten-Layout
+- Nutzt `ResizablePanels` für flexible Spaltenbreiten
+- Integriert mit `useCockpitData` Hook für aggregierte Daten
+- State-Management über `useCockpitStore`
+
+**Wichtige Props für Panels:**
+- `mein-tag`: minSize=300px, defaultSize=350px
+- `focus-list`: minSize=400px, defaultSize=500px  
+- `aktions-center`: minSize=400px
+
+**Implementierungs-Hinweise:**
+- Loading/Error States mit gemeinsamen Komponenten
+- Container mit `maxWidth={false}` für volle Breite
+- Document Title Update für bessere UX
+
+### 2. Mein Tag Komponente (MeinTag.tsx - Spalte 1)
+
+**Kernfunktionalität:**
+- Tagesübersicht mit Datum und Refresh-Button
+- Quick Stats: Tagesumsatz und aktive Verkaufschancen
+- Vier Hauptbereiche:
+  - `AlertsList`: KI-gestützte Tagesalarme
+  - `AppointmentsList`: Heutige Termine
+  - `TasksList`: Priorisierte Aufgaben
+  - `TriageInbox`: Unzugeordnete E-Mails (conditional)
+
+**Props:** `data: CockpitOverviewData`
+
+**UI-Patterns:**
+- Stack-Layout mit 2er Spacing
+- Card-basierte Sections
+- Chip-Komponenten für Stats
+- Deutsches Datumsformat
+
+### 3. Aktions-Center (AktionsCenter.tsx - Spalte 3)
+
+**Kernfunktionalität:**
+- Kontextabhängige Anzeige basierend auf ausgewähltem Kunden
+- Empty State wenn kein Kunde ausgewählt
+- Drei Hauptbereiche bei Kundenauswahl:
+  - `CustomerDetail`: Kundendetails
+  - `QuickActions`: Schnellaktionen
+  - `ActivityTimeline`: Aktivitätsverlauf
+
+**Props:**
+- `customerId: string | null`
+- `onClose: () => void`
+
+**UI-Patterns:**
+- Header mit Close-Button
+- Scrollbarer Content-Bereich
+- Divider zwischen Sections
+
+### 4. Resizable Panels Layout (ResizablePanels.tsx)
+
+**Kernfunktionalität:**
+- Flexible Spaltenbreiten mit Drag & Drop
+- Persistierung der Breiten in `useCockpitLayoutStore`
+- Respektiert Mindestbreiten pro Panel
+- Mouse-Events für Resize-Funktion
+
+**Panel Interface:**
 ```typescript
-// frontend/src/pages/cockpit/CockpitView.tsx
-import React, { useEffect } from 'react';
-import { Box, Container } from '@mui/material';
-import { ResizablePanels } from '@/features/cockpit/components/layout/ResizablePanels';
-import { MeinTag } from '@/features/cockpit/components/MeinTag/MeinTag';
-import { FocusListColumn } from '@/features/customers/components/FocusListColumn';
-import { AktionsCenter } from '@/features/cockpit/components/AktionsCenter/AktionsCenter';
-import { useCockpitData } from '@/features/cockpit/hooks/useCockpitData';
-import { useCockpitStore } from '@/features/cockpit/store/cockpitStore';
-import { LoadingState, ErrorState } from '@/components/common';
-
-export const CockpitView: React.FC = () => {
-  const { selectedCustomerId, setSelectedCustomer } = useCockpitStore();
-  const { data, isLoading, isError, error } = useCockpitData();
-
-  // Track page visit
-  useEffect(() => {
-    document.title = 'Mein Cockpit - FreshPlan';
-  }, []);
-
-  if (isLoading) return <LoadingState message="Cockpit wird geladen..." />;
-  if (isError) return <ErrorState error={error} />;
-
-  return (
-    <Container maxWidth={false} sx={{ height: '100%', py: 2 }}>
-      <ResizablePanels
-        panels={[
-          {
-            id: 'mein-tag',
-            minSize: 300,
-            defaultSize: 350,
-            content: <MeinTag data={data} />,
-          },
-          {
-            id: 'focus-list',
-            minSize: 400,
-            defaultSize: 500,
-            content: (
-              <FocusListColumn
-                onCustomerSelect={setSelectedCustomer}
-                selectedCustomerId={selectedCustomerId}
-              />
-            ),
-          },
-          {
-            id: 'aktions-center',
-            minSize: 400,
-            content: (
-              <AktionsCenter
-                customerId={selectedCustomerId}
-                onClose={() => setSelectedCustomer(null)}
-              />
-            ),
-          },
-        ]}
-      />
-    </Container>
-  );
-};
-```
-
-### 2. Mein Tag Komponente (Spalte 1)
-
-```typescript
-// frontend/src/features/cockpit/components/MeinTag/MeinTag.tsx
-import React from 'react';
-import {
-  Box,
-  Card,
-  CardContent,
-  Typography,
-  Stack,
-  Chip,
-  IconButton,
-  Tooltip,
-} from '@mui/material';
-import RefreshIcon from '@mui/icons-material/Refresh';
-import { AlertsList } from './AlertsList';
-import { AppointmentsList } from './AppointmentsList';
-import { TasksList } from './TasksList';
-import { TriageInbox } from './TriageInbox';
-import { CockpitOverviewData } from '@/types/cockpit.types';
-
-interface MeinTagProps {
-  data: CockpitOverviewData;
-}
-
-export const MeinTag: React.FC<MeinTagProps> = ({ data }) => {
-  const { alerts, appointments, tasks, unassignedEmails, stats } = data;
-
-  return (
-    <Stack spacing={2} sx={{ height: '100%', overflow: 'auto' }}>
-      {/* Header */}
-      <Card>
-        <CardContent>
-          <Box display="flex" justifyContent="space-between" alignItems="center">
-            <Typography variant="h5" component="h1">
-              Mein Tag
-            </Typography>
-            <Box display="flex" gap={1} alignItems="center">
-              <Chip
-                label={new Date().toLocaleDateString('de-DE', {
-                  weekday: 'long',
-                  day: 'numeric',
-                  month: 'long',
-                })}
-                color="primary"
-                variant="outlined"
-              />
-              <Tooltip title="Aktualisieren">
-                <IconButton size="small" onClick={() => window.location.reload()}>
-                  <RefreshIcon />
-                </IconButton>
-              </Tooltip>
-            </Box>
-          </Box>
-          
-          {/* Quick Stats */}
-          <Box display="flex" gap={2} mt={2}>
-            <Chip
-              label={`${stats.todayRevenue.toLocaleString('de-DE')} € Umsatz`}
-              color="success"
-              size="small"
-            />
-            <Chip
-              label={`${stats.activeOpportunities} Verkaufschancen`}
-              color="info"
-              size="small"
-            />
-          </Box>
-        </CardContent>
-      </Card>
-
-      {/* Alerts Section */}
-      {alerts.length > 0 && (
-        <AlertsList alerts={alerts} />
-      )}
-
-      {/* Appointments Section */}
-      <AppointmentsList appointments={appointments} />
-
-      {/* Tasks Section */}
-      <TasksList tasks={tasks} />
-
-      {/* Triage Inbox */}
-      {unassignedEmails.length > 0 && (
-        <TriageInbox emails={unassignedEmails} />
-      )}
-    </Stack>
-  );
-};
-```
-
-### 3. Aktions-Center (Spalte 3)
-
-```typescript
-// frontend/src/features/cockpit/components/AktionsCenter/AktionsCenter.tsx
-import React from 'react';
-import {
-  Box,
-  Card,
-  CardContent,
-  Typography,
-  IconButton,
-  Divider,
-  Stack,
-} from '@mui/material';
-import CloseIcon from '@mui/icons-material/Close';
-import { CustomerDetail } from './CustomerDetail';
-import { ActivityTimeline } from './ActivityTimeline';
-import { QuickActions } from './QuickActions';
-import { EmptyState } from '@/components/common';
-import PeopleIcon from '@mui/icons-material/People';
-
-interface AktionsCenterProps {
-  customerId: string | null;
-  onClose: () => void;
-}
-
-export const AktionsCenter: React.FC<AktionsCenterProps> = ({
-  customerId,
-  onClose,
-}) => {
-  if (!customerId) {
-    return (
-      <Card sx={{ height: '100%', display: 'flex', alignItems: 'center' }}>
-        <CardContent sx={{ width: '100%' }}>
-          <EmptyState
-            icon={PeopleIcon}
-            message="Wählen Sie einen Kunden aus der Liste"
-            subMessage="Hier erscheinen dann alle Details und möglichen Aktionen"
-          />
-        </CardContent>
-      </Card>
-    );
-  }
-
-  return (
-    <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-      {/* Header */}
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          p: 2,
-          borderBottom: 1,
-          borderColor: 'divider',
-        }}
-      >
-        <Typography variant="h6">Aktions-Center</Typography>
-        <IconButton size="small" onClick={onClose}>
-          <CloseIcon />
-        </IconButton>
-      </Box>
-
-      {/* Content */}
-      <Box sx={{ flex: 1, overflow: 'auto' }}>
-        <Stack spacing={2} sx={{ p: 2 }}>
-          {/* Customer Details */}
-          <CustomerDetail customerId={customerId} />
-          
-          <Divider />
-          
-          {/* Quick Actions */}
-          <QuickActions customerId={customerId} />
-          
-          <Divider />
-          
-          {/* Activity Timeline */}
-          <ActivityTimeline customerId={customerId} />
-        </Stack>
-      </Box>
-    </Card>
-  );
-};
-```
-
-### 4. Resizable Panels Layout
-
-```typescript
-// frontend/src/features/cockpit/components/layout/ResizablePanels.tsx
-import React, { useState, useRef, useEffect } from 'react';
-import { Box, Divider } from '@mui/material';
-import { useCockpitLayoutStore } from '@/features/cockpit/store/cockpitLayoutStore';
-
 interface Panel {
   id: string;
   minSize: number;
   defaultSize?: number;
   content: React.ReactNode;
 }
-
-interface ResizablePanelsProps {
-  panels: Panel[];
-}
-
-export const ResizablePanels: React.FC<ResizablePanelsProps> = ({ panels }) => {
-  const { columnWidths, setColumnWidths } = useCockpitLayoutStore();
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [sizes, setSizes] = useState<number[]>(() => 
-    panels.map((panel, index) => 
-      columnWidths[panel.id] || panel.defaultSize || 400
-    )
-  );
-  const [isDragging, setIsDragging] = useState<number | null>(null);
-
-  const handleMouseDown = (index: number) => (e: React.MouseEvent) => {
-    e.preventDefault();
-    setIsDragging(index);
-  };
-
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      if (isDragging === null || !containerRef.current) return;
-
-      const containerRect = containerRef.current.getBoundingClientRect();
-      const containerWidth = containerRect.width;
-      const mouseX = e.clientX - containerRect.left;
-
-      setSizes((prevSizes) => {
-        const newSizes = [...prevSizes];
-        const totalSize = newSizes.reduce((sum, size) => sum + size, 0);
-        
-        // Calculate new sizes
-        let leftSize = mouseX;
-        let rightSize = containerWidth - mouseX;
-
-        // Apply min size constraints
-        const leftPanel = panels[isDragging];
-        const rightPanel = panels[isDragging + 1];
-        
-        leftSize = Math.max(leftSize, leftPanel.minSize);
-        rightSize = Math.max(rightSize, rightPanel.minSize);
-
-        // Update sizes
-        newSizes[isDragging] = leftSize;
-        newSizes[isDragging + 1] = rightSize;
-
-        return newSizes;
-      });
-    };
-
-    const handleMouseUp = () => {
-      if (isDragging !== null) {
-        // Save to store
-        const newWidths: Record<string, number> = {};
-        panels.forEach((panel, index) => {
-          newWidths[panel.id] = sizes[index];
-        });
-        setColumnWidths(newWidths);
-      }
-      setIsDragging(null);
-    };
-
-    if (isDragging !== null) {
-      document.addEventListener('mousemove', handleMouseMove);
-      document.addEventListener('mouseup', handleMouseUp);
-      document.body.style.cursor = 'col-resize';
-    }
-
-    return () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
-      document.body.style.cursor = '';
-    };
-  }, [isDragging, panels, sizes, setColumnWidths]);
-
-  return (
-    <Box
-      ref={containerRef}
-      sx={{
-        display: 'flex',
-        height: '100%',
-        width: '100%',
-        position: 'relative',
-      }}
-    >
-      {panels.map((panel, index) => (
-        <React.Fragment key={panel.id}>
-          <Box
-            sx={{
-              width: sizes[index],
-              height: '100%',
-              overflow: 'hidden',
-              position: 'relative',
-            }}
-          >
-            {panel.content}
-          </Box>
-          
-          {index < panels.length - 1 && (
-            <Divider
-              orientation="vertical"
-              flexItem
-              sx={{
-                cursor: 'col-resize',
-                position: 'relative',
-                '&:hover': {
-                  backgroundColor: 'primary.main',
-                  opacity: 0.5,
-                },
-                '&::before': {
-                  content: '""',
-                  position: 'absolute',
-                  top: 0,
-                  bottom: 0,
-                  left: -4,
-                  right: -4,
-                },
-              }}
-              onMouseDown={handleMouseDown(index)}
-            />
-          )}
-        </React.Fragment>
-      ))}
-    </Box>
-  );
-};
 ```
 
-### 5. Cockpit Data Hook (Aggregierte API)
+**Implementierungs-Hinweise:**
+- Nutzt `useRef` für Container-Referenz
+- Mouse-Event-Handling mit cleanup
+- Cursor ändert sich zu 'col-resize' beim Dragging
+- Divider mit Hover-Effekt zwischen Panels
 
-```typescript
-// frontend/src/features/cockpit/hooks/useCockpitData.ts
-import { useQuery } from '@tanstack/react-query';
-import { cockpitService } from '@/services/cockpit.service';
+### 5. Cockpit Data Hook (useCockpitData.ts)
 
-export const useCockpitData = (date?: string) => {
-  const today = date || new Date().toISOString().split('T')[0];
-  
-  return useQuery({
-    queryKey: ['cockpit-overview', today],
-    queryFn: () => cockpitService.getOverview(today),
-    staleTime: 60 * 1000, // 1 Minute
-    gcTime: 5 * 60 * 1000, // 5 Minuten
-    refetchInterval: 30 * 1000, // Auto-refresh alle 30 Sekunden
-    refetchIntervalInBackground: false,
-  });
-};
-```
+**Kernfunktionalität:**
+- React Query Hook für aggregierte Cockpit-Daten
+- Auto-Refresh alle 30 Sekunden
+- Cache-Verwaltung mit staleTime und gcTime
 
-### 6. Cockpit Store
+**Query-Konfiguration:**
+- `staleTime`: 1 Minute
+- `gcTime`: 5 Minuten  
+- `refetchInterval`: 30 Sekunden
+- `refetchIntervalInBackground`: false
 
-```typescript
-// frontend/src/features/cockpit/store/cockpitStore.ts
-import { create } from 'zustand';
+### 6. Cockpit Store (cockpitStore.ts)
 
-interface CockpitState {
-  // Selected customer
-  selectedCustomerId: string | null;
-  
-  // View preferences
-  showAlerts: boolean;
-  showTriage: boolean;
-  dateFilter: string; // ISO date
-  
-  // Actions
-  setSelectedCustomer: (customerId: string | null) => void;
-  toggleAlerts: () => void;
-  toggleTriage: () => void;
-  setDateFilter: (date: string) => void;
-  resetFilters: () => void;
-}
+**Zwei separate Stores:**
 
-export const useCockpitStore = create<CockpitState>((set) => ({
-  selectedCustomerId: null,
-  showAlerts: true,
-  showTriage: true,
-  dateFilter: new Date().toISOString().split('T')[0],
-  
-  setSelectedCustomer: (customerId) => set({ selectedCustomerId: customerId }),
-  
-  toggleAlerts: () => set((state) => ({ showAlerts: !state.showAlerts })),
-  
-  toggleTriage: () => set((state) => ({ showTriage: !state.showTriage })),
-  
-  setDateFilter: (date) => set({ dateFilter: date }),
-  
-  resetFilters: () => set({
-    showAlerts: true,
-    showTriage: true,
-    dateFilter: new Date().toISOString().split('T')[0],
-  }),
-}));
+**1. useCockpitStore** - Session State:
+- `selectedCustomerId`: Aktuell ausgewählter Kunde
+- `showAlerts`, `showTriage`: Toggle-States
+- `dateFilter`: ISO-Datum für Filterung
+- Actions: `setSelectedCustomer`, `toggleAlerts`, `toggleTriage`, `setDateFilter`, `resetFilters`
 
-// Separate store for layout preferences
-interface CockpitLayoutState {
-  columnWidths: Record<string, number>;
-  isCompactMode: boolean;
-  
-  setColumnWidths: (widths: Record<string, number>) => void;
-  toggleCompactMode: () => void;
-}
-
-export const useCockpitLayoutStore = create<CockpitLayoutState>()(
-  persist(
-    (set) => ({
-      columnWidths: {},
-      isCompactMode: false,
-      
-      setColumnWidths: (widths) => set({ columnWidths: widths }),
-      
-      toggleCompactMode: () => set((state) => ({ 
-        isCompactMode: !state.isCompactMode 
-      })),
-    }),
-    {
-      name: 'cockpit-layout-storage',
-    }
-  )
-);
-```
+**2. useCockpitLayoutStore** - Persistierte Layout-Einstellungen:
+- `columnWidths`: Gespeicherte Spaltenbreiten
+- `isCompactMode`: Kompakt-Modus Toggle
+- Nutzt Zustand persist() für localStorage
+- Name: 'cockpit-layout-storage'
 
 ## 🎨 UI/UX Guidelines
 
@@ -775,8 +408,24 @@ frontend/src/features/cockpit/
 
 ---
 
-**Nächste Schritte:**
-1. ✅ Test-Suite für SalesCockpit erweitert
-2. Branch `feature/fc-002-m3-cockpit` erstellen
-3. Phase 1 der Migration beginnen
-4. CockpitView.tsx mit MUI implementieren
+## 🎯 NÄCHSTER SCHRITT FÜR IMPLEMENTIERUNG
+
+**Aufgabe:** Beginne mit Phase 1 der Migration - SalesCockpit.tsx zu CockpitView.tsx mit MUI migrieren
+
+**Konkrete Schritte:**
+1. **Branch erstellen:** `git checkout -b feature/fc-002-m3-cockpit`
+2. **Neue Datei anlegen:** `frontend/src/pages/cockpit/CockpitView.tsx`
+3. **Migration durchführen:**
+   - Kopiere die Struktur aus `SalesCockpit.tsx`
+   - Ersetze alle CSS-Klassen durch MUI sx-Props
+   - Füge TypeScript-Typisierung hinzu
+   - Integriere mit React Router (Route: `/cockpit`)
+4. **Tests anpassen:** Migriere die bestehenden Tests auf die neue Komponente
+
+**Warum dieser Schritt zuerst?**
+- Die Hauptkomponente ist das Fundament für alle weiteren Arbeiten
+- Die bestehende Struktur kann zu 90% wiederverwendet werden
+- Nach diesem Schritt haben wir eine funktionierende Basis für die weiteren Phasen
+
+**Erwartetes Ergebnis:**
+Eine funktionierende CockpitView mit MUI-Styling, die das bestehende 3-Spalten-Layout in moderner Form implementiert.
