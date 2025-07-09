@@ -101,7 +101,7 @@ Nach jeder getroffenen Entscheidung oder signifikanten Änderung MÜSSEN die fol
 ### Das Problem
 Wenn Claude während einer Session abstürzt, geht der gesamte Kontext verloren. Ohne einen klaren Recovery-Plan ist es schwierig, die Arbeit fortzusetzen.
 
-### Die Lösung: Crash-Recovery-Protokoll v2
+### Die Lösung: Crash-Recovery-Protokoll
 
 #### Bei Session-Start nach Absturz:
 
@@ -111,13 +111,7 @@ Wenn Claude während einer Session abstürzt, geht der gesamte Kontext verloren.
    ```
    Diese Datei ist unsere "Blackbox" - sie enthält den letzten stabilen Zustand und das Ziel der abgestürzten Session.
 
-2. **Breadcrumbs der abgestürzten Session prüfen** (falls vorhanden):
-   ```bash
-   cat docs/claude-work/daily-work/$(date +%Y-%m-%d)/session-breadcrumbs.log
-   ```
-   Diese Einträge zeigen, welche Schritte in der abgestürzten Session bereits durchgeführt wurden.
-
-3. **Git-Status analysieren**:
+2. **Git-Status analysieren**:
    ```bash
    git log --oneline -10
    git status
@@ -125,28 +119,24 @@ Wenn Claude während einer Session abstürzt, geht der gesamte Kontext verloren.
    ```
    Uncommitted Changes und recent Commits geben Hinweise auf die verlorene Arbeit.
 
-4. **Arbeit fortsetzen** basierend auf:
+3. **Arbeit fortsetzen** basierend auf:
    - Ziel aus letzter Übergabe
-   - Breadcrumbs der abgestürzten Session
    - Uncommitted Changes im Git
+   - Recent Commits als Orientierung
 
 ### Präventive Maßnahmen
 
-#### Breadcrumbs während der Arbeit setzen
-Nutze das `log-step.sh` Script, um wichtige Fortschritte zu dokumentieren:
-```bash
-./scripts/log-step.sh "Customer API: getAllCustomers implementiert"
-./scripts/log-step.sh "Frontend: CustomerList Component erstellt"
-```
-
 #### Häufige Git-Commits
-Nach jedem wichtigen Schritt kleine WIP-Commits erstellen:
+Claude sollte nach jedem wichtigen Schritt kleine WIP-Commits erstellen:
 ```bash
 git add -A && git commit -m "WIP: Customer API basic structure"
+git add -A && git commit -m "WIP: Frontend CustomerList component"
 ```
 
+Diese können später zu einem sauberen Commit zusammengefasst werden.
+
 ### Wichtige Hinweise
-- Das Protokoll funktioniert nur, wenn regelmäßig Breadcrumbs gesetzt werden
 - Die letzte Übergabe muss korrekt und vollständig sein
-- Git-Commits sind die zusätzliche Sicherheitsebene
+- Git-Commits sind die primäre Sicherheitsebene
+- WIP-Commits zeigen genau, was in der Session gemacht wurde
 - Keep it simple - keine komplexen Scripts, die selbst abstürzen können
