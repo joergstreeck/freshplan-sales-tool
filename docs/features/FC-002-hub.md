@@ -13,7 +13,7 @@
 |-------|--------|----------|--------------|
 | M1 | ✅ Analyse & Planung abgeschlossen | [Hauptnavigation](./FC-002-M1-hauptnavigation.md) | Sidebar mit 5-Punkte-Navigation + **NEU: Layout-Architektur** |
 | M2 | 📋 0% | [Quick-Create System](./FC-002-M2-quick-create.md) | Globaler "+ Neu" Button |
-| M3 | 🔍 40% | [Cockpit-Integration](./FC-002-M3-cockpit.md) | 3-Spalten-Ansicht Migration (Analyse abgeschlossen) |
+| M3 | 🔍 60% | [Cockpit-Integration](./FC-002-M3-cockpit.md) | 3-Spalten-Ansicht Migration (Planung abgeschlossen) inkl. detailliertem Workflow-Design für 'Gewinner-Aktionen' |
 | M4 | 📋 0% | [Neukundengewinnung](./FC-002-M4-neukundengewinnung.md) | Akquise-Modul |
 | M5 | ✅ 50% | [Kundenmanagement](./FC-002-M5-kundenmanagement.md) | CRM-Kernfunktionen (Planung abgeschlossen) |
 | M6 | 📋 0% | [Berichte & Auswertungen](./FC-002-M6-berichte.md) | Analytics & Reports |
@@ -146,7 +146,7 @@ notificationService.show({
   - Parallele Entwicklung über Test-Route `/cockpit-v2` implementiert
   - CSS-Cleanup: 8 Dateien in `legacy-to-remove` verschoben
   - Geschätzter Aufwand Phase 1: ✅ Abgeschlossen, Phase 2-3: 2-3 Tage
-- **M3 Cockpit**: Code-Analyse abgeschlossen (40% Wiederverwendbarkeit)
+- **M3 Cockpit**: Planung abgeschlossen (60%) inkl. detailliertem Workflow-Design für 'Gewinner-Aktionen'
 - **M5 Kundenmanagement**: Implementierungsplan finalisiert und freigegeben
 - **M7 Einstellungen**: Kompakte Analyse durchgeführt
   - User Management Backend: 100% wiederverwendbar (production-ready)
