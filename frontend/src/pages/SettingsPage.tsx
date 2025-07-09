@@ -1,5 +1,5 @@
 import React from 'react';
-import { Container, Typography, Tabs, Tab, Box, Paper } from '@mui/material';
+import { Typography, Tabs, Tab, Box, Paper } from '@mui/material';
 import { MainLayoutV2 } from '../components/layout/MainLayoutV2';
 import { UserTableMUI } from '../features/users/components/UserTableMUI';
 import { UserFormMUI } from '../features/users/components/UserFormMUI';
@@ -64,14 +64,13 @@ export function SettingsPage() {
 
   return (
     <MainLayoutV2>
-      <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-        <Typography variant="h4" gutterBottom sx={{ mb: 4 }}>
-          Einstellungen
-        </Typography>
-        
-        <Paper sx={{ width: '100%' }}>
-          <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-            <Tabs 
+      <Typography variant="h4" gutterBottom sx={{ mb: 4 }}>
+        Einstellungen
+      </Typography>
+      
+      <Paper sx={{ width: '100%' }}>
+        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+          <Tabs 
               value={tabValue} 
               onChange={handleTabChange} 
               aria-label="Einstellungen Tabs"
@@ -164,7 +163,6 @@ export function SettingsPage() {
             </TabPanel>
           </Box>
         </Paper>
-      </Container>
     </MainLayoutV2>
   );
 }

@@ -44,6 +44,9 @@ import { useAuth } from '@/hooks/useAuth';
 import { useNavigationStore } from '@/store/navigationStore';
 import { Logo } from '../common/Logo';
 
+const DRAWER_WIDTH = 320;
+const DRAWER_WIDTH_COLLAPSED = 64;
+
 interface HeaderV2Props {
   onMenuClick?: () => void;
   showMenuIcon?: boolean;
@@ -56,7 +59,7 @@ export const HeaderV2: React.FC<HeaderV2Props> = ({
   const theme = useTheme();
   const navigate = useNavigate();
   const { user, logout } = useAuth();
-  const { toggleSidebar } = useNavigationStore();
+  const { toggleSidebar, isCollapsed } = useNavigationStore();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   
   // State
@@ -112,12 +115,15 @@ export const HeaderV2: React.FC<HeaderV2Props> = ({
   
   return (
     <AppBar 
-      position="sticky" 
+      position="fixed" 
       sx={{
         backgroundColor: '#FFFFFF',
         color: '#000000',
         borderBottom: `2px solid ${theme.palette.primary.main}`,
         boxShadow: '0 2px 4px rgba(0,0,0,0.08)',
+        zIndex: theme.zIndex.appBar,
+        left: { xs: 0, md: isCollapsed ? DRAWER_WIDTH_COLLAPSED : DRAWER_WIDTH },
+        width: { xs: '100%', md: `calc(100% - ${isCollapsed ? DRAWER_WIDTH_COLLAPSED : DRAWER_WIDTH}px)` },
       }}
     >
       <Toolbar sx={{ 
@@ -125,7 +131,7 @@ export const HeaderV2: React.FC<HeaderV2Props> = ({
         px: { xs: 2, sm: 3 },
         justifyContent: 'space-between',
       }}>
-        {/* Left Section - Logo and Mobile Menu */}
+        {/* Left Section - Mobile Menu Only */}
         <Box sx={{ 
           display: 'flex', 
           alignItems: 'center',
@@ -137,7 +143,6 @@ export const HeaderV2: React.FC<HeaderV2Props> = ({
               edge="start"
               onClick={onMenuClick || toggleSidebar}
               sx={{ 
-                mr: 1,
                 color: '#004F7B',
                 display: { md: 'none' } 
               }}
@@ -146,8 +151,20 @@ export const HeaderV2: React.FC<HeaderV2Props> = ({
             </IconButton>
           )}
           
-          {/* Logo */}
-          <Box>
+          {/* Spacer on Desktop to keep content right-aligned */}
+          {!isMobile && <Box sx={{ width: 1 }} />}
+        </Box>
+        
+        {/* Right Section - Logo, Search, Notifications, User */}
+        <Box sx={{ 
+          display: 'flex', 
+          alignItems: 'center',
+          gap: 2,
+          flexGrow: 1,
+          justifyContent: 'flex-end',
+        }}>
+          {/* Logo - Now in right section */}
+          <Box sx={{ mr: 'auto', display: 'flex', alignItems: 'center' }}>
             {/* Desktop: Volles Logo */}
             <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
               <Logo 
@@ -165,17 +182,7 @@ export const HeaderV2: React.FC<HeaderV2Props> = ({
               />
             </Box>
           </Box>
-        </Box>
-        
-        {/* Right Section - Search, Notifications, User */}
-        <Box sx={{ 
-          display: 'flex', 
-          alignItems: 'center',
-          gap: 2,
-          flexGrow: { xs: 0, sm: 1 },
-          justifyContent: 'flex-end',
-          maxWidth: { xs: 'none', sm: '800px' }, // Maximale Breite nur auf Desktop
-        }}>
+          
           {/* Search Bar - Desktop */}
           {!isMobile && (
             <Box 

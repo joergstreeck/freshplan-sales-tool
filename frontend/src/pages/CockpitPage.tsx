@@ -1,13 +1,14 @@
 /**
- * Cockpit Page with Authenticated Layout
+ * Cockpit Page with MainLayoutV2
+ * Updated to use the new standard layout for consistency
  */
-import { AuthenticatedLayout } from '../components/layout/AuthenticatedLayout';
-import { SalesCockpitMUI } from '../features/cockpit/components/SalesCockpitMUI';
+import { MainLayoutV2 } from '../components/layout/MainLayoutV2';
+import { SalesCockpitV2 } from '../features/cockpit/components/SalesCockpitV2';
 
 export function CockpitPage() {
   return (
-    <AuthenticatedLayout>
-      <SalesCockpitMUI />
-    </AuthenticatedLayout>
+    <MainLayoutV2>
+      <SalesCockpitV2 />
+    </MainLayoutV2>
   );
 }

@@ -795,3 +795,193 @@ Nach Freigabe dieses Plans:
 2. Visual Regression Testing
 3. Performance-Vergleich alt vs. neu
 4. Bei Erfolg: Phase 2 beginnen
+
+---
+
+## 🚨 KRITISCHE COCKPIT-REPARATUR (09.07.2025 - 18:05)
+
+### 📸 IST-Zustand Analyse (Screenshot-basiert)
+
+Nach Analyse des aktuellen Cockpit-Screenshots wurden folgende **kritische Probleme** identifiziert:
+
+1. **Fehlender Header**
+   - Kein HeaderV2 vorhanden (kein Logo, keine Suche, kein User-Menu)
+   - Im Gegensatz zur funktionierenden Einstellungen-Seite
+
+2. **Layout-Chaos**
+   - Sidebar überlappt den Content-Bereich
+   - 3-Spalten-Layout ist völlig verzerrt
+   - Inhalte werden abgeschnitten/gehen über Viewport hinaus
+
+3. **Fehlende MainLayoutV2 Integration**
+   - Das Cockpit nutzt noch das alte Layout-System
+   - Keine konsistente Struktur mit anderen Seiten
+
+### 🎯 SOLL-Zustand Definition (Visuelle Referenz)
+
+Das Cockpit soll exakt wie die Einstellungen-Seite aufgebaut sein:
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  HEADER (weiß, fixed)                                       │
+│  [🟢 Logo] [🔍 Suche...............] [🔔] [👤 User ▼]      │
+└─────────────────────────────────────────────────────────────┘
+┌─────┬───────────────────────────────────────────────────────┐
+│  S  │  COCKPIT CONTENT (3 Spalten)                          │
+│  I  │  ┌─────────┬──────────────┬─────────────────────┐     │
+│  D  │  │ Mein    │ Fokus-Liste  │ Aktions-Center      │     │
+│  E  │  │ Tag     │              │                     │     │
+│  B  │  │         │              │                     │     │
+│  A  │  │         │              │                     │     │
+│  R  │  └─────────┴──────────────┴─────────────────────┘     │
+└─────┴───────────────────────────────────────────────────────┘
+```
+
+### 🛠️ TECHNISCHER UMSETZUNGSPLAN
+
+#### Phase 1: Cockpit auf MainLayoutV2 umstellen (Tag 1)
+
+**1.1 CockpitPage.tsx anpassen**
+```typescript
+// VORHER: Nutzt AuthenticatedLayout
+export function CockpitPage() {
+  return (
+    <AuthenticatedLayout>
+      <SalesCockpit />
+    </AuthenticatedLayout>
+  );
+}
+
+// NACHHER: Nutzt MainLayoutV2
+export function CockpitPage() {
+  return (
+    <MainLayoutV2>
+      <SalesCockpitV2 />
+    </MainLayoutV2>
+  );
+}
+```
+
+**1.2 SalesCockpitV2 erstellen (ohne CSS)**
+- Kopie von SalesCockpit.tsx
+- ALLE CSS-Imports entfernen
+- className durch sx-Props ersetzen
+- Grid-Layout mit MUI Grid2
+
+**🔍 Review-Punkt 1:** Header und Sidebar korrekt positioniert?
+
+#### Phase 2: 3-Spalten-Layout mit MUI (Tag 1-2)
+
+**2.1 Container-Struktur**
+```typescript
+<Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+  {/* Stats-Header */}
+  <Paper sx={{ p: 2, mb: 2 }}>
+    <DashboardStats />
+  </Paper>
+  
+  {/* 3-Spalten Container */}
+  <Grid2 container spacing={2} sx={{ flexGrow: 1, overflow: 'hidden' }}>
+    <Grid2 size={{ xs: 12, md: 3 }}>
+      <MeinTagV2 />
+    </Grid2>
+    <Grid2 size={{ xs: 12, md: 5 }}>
+      <FokusListeV2 />
+    </Grid2>
+    <Grid2 size={{ xs: 12, md: 4 }}>
+      <AktionsCenterV2 />
+    </Grid2>
+  </Grid2>
+</Box>
+```
+
+**2.2 Spalten-Komponenten migrieren**
+- MeinTag.tsx → MeinTagV2.tsx (MUI Paper)
+- FocusListColumn.tsx → FokusListeV2.tsx (MUI Card)
+- ActionCenterColumn.tsx → AktionsCenterV2.tsx (MUI Paper)
+
+**🔍 Review-Punkt 2:** 3 Spalten korrekt angeordnet und responsive?
+
+#### Phase 3: Detail-Optimierung (Tag 2)
+
+**3.1 Responsive Breakpoints**
+```typescript
+// Mobile: Spalten untereinander
+// Tablet: 2 Spalten nebeneinander
+// Desktop: 3 Spalten nebeneinander
+```
+
+**3.2 Scrolling-Verhalten**
+- Jede Spalte scrollt unabhängig
+- Stats-Header bleibt sichtbar
+- Overflow: 'auto' für jede Spalte
+
+**3.3 Styling & Polish**
+- Schatten für Karten
+- Konsistente Abstände (theme.spacing)
+- Freshfoodz CI-Farben
+
+**🔍 Review-Punkt 3:** Finale visuelle Abnahme
+
+### 📋 REVIEW-SCHLEIFEN
+
+#### Meilenstein 1: Grundlayout (Nach Phase 1)
+**Prüfkriterien:**
+- [ ] Header mit Logo, Suche, User-Menu sichtbar
+- [ ] Sidebar funktioniert (collapse/expand)
+- [ ] Keine Überlappungen
+- [ ] Content-Bereich nimmt verfügbaren Platz ein
+
+**Review mit Jörg:** Screenshot + Live-Demo
+
+#### Meilenstein 2: 3-Spalten-Layout (Nach Phase 2)
+**Prüfkriterien:**
+- [ ] Alle 3 Spalten sichtbar und korrekt positioniert
+- [ ] Responsive auf verschiedenen Bildschirmgrößen
+- [ ] Inhalte werden nicht abgeschnitten
+- [ ] Unabhängiges Scrolling funktioniert
+
+**Review mit Jörg:** Vergleich mit SOLL-Design
+
+#### Meilenstein 3: Finales Polish (Nach Phase 3)
+**Prüfkriterien:**
+- [ ] Alle Details stimmen (Abstände, Farben, Schatten)
+- [ ] Performance ist gut (keine Lags beim Scrollen)
+- [ ] Konsistent mit Einstellungen-Seite
+- [ ] Freshfoodz CI vollständig umgesetzt
+
+**Finale Abnahme durch Jörg:** Produktions-Ready?
+
+### 🚀 SOFORT-MAßNAHMEN
+
+1. **Branch erstellen**
+   ```bash
+   git checkout -b fix/FC-002-cockpit-layout-critical
+   ```
+
+2. **Erste Datei anpassen: CockpitPage.tsx**
+   - MainLayoutV2 importieren
+   - AuthenticatedLayout ersetzen
+
+3. **Test & Screenshot**
+   - Browser öffnen
+   - Screenshot für ersten Review
+
+### ⏱️ ZEITSCHÄTZUNG
+
+- **Phase 1:** 4 Stunden (Grundlayout)
+- **Phase 2:** 6 Stunden (3-Spalten-Migration)
+- **Phase 3:** 2 Stunden (Polish)
+- **Reviews:** 3 x 30 Minuten
+
+**Gesamt:** 1,5-2 Tage mit Reviews
+
+### 🎯 ERFOLGSKRITERIEN
+
+Das Cockpit ist erst dann "perfekt", wenn:
+1. Es exakt wie die Einstellungen-Seite aussieht (nur mit anderem Content)
+2. Alle Layout-Probleme behoben sind
+3. Die 3 Spalten optimal funktionieren
+4. Jörg die visuelle Umsetzung abgenommen hat
+
+**Dies ist unsere PRIORITÄT 0 - keine andere Arbeit bis dies perfekt ist!**

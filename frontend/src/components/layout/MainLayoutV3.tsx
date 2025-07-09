@@ -1,35 +1,47 @@
 /**
- * MainLayoutV2 - Clean Slate Layout Architecture
+ * MainLayoutV3 - Hauptlayout mit intelligentem Design System V2
  * 
- * Eine saubere, MUI-basierte Layout-Komponente die:
- * - Keine globalen CSS-Dateien benötigt
- * - Isolierte Scroll-Contexts bietet
- * - Responsive von Anfang an ist
- * - Theme-First Approach nutzt
+ * Features:
+ * - Intelligente Content-Breiten-Erkennung via SmartLayout
+ * - Visuelle Header-Trennung (8px Gap + Shadow)
+ * - Optimierte Sidebar-Integration
+ * - Freshfoodz CI-konform
+ * 
+ * @since 2.0.0
  */
 
 import React from 'react';
 import { Box, useMediaQuery, useTheme } from '@mui/material';
 import { SidebarNavigation } from './SidebarNavigation';
 import { HeaderV2 } from './HeaderV2';
+import SmartLayout, { type ContentWidth } from './SmartLayout';
 import { useNavigationStore } from '@/store/navigationStore';
 
 // Layout-Konstanten
-const DRAWER_WIDTH = 320; // Angepasst an SidebarNavigation
+const DRAWER_WIDTH = 320;
 const DRAWER_WIDTH_COLLAPSED = 64;
-const HEADER_HEIGHT = 64; // Standard Header-Höhe
-const HEADER_HEIGHT_MOBILE = 112; // Mit Suchleiste auf Mobile
+const HEADER_HEIGHT = 64;
+const HEADER_HEIGHT_MOBILE = 112;
+const HEADER_CONTENT_GAP = 8; // Visueller Abstand
 
-interface MainLayoutV2Props {
+interface MainLayoutV3Props {
   children: React.ReactNode;
-  showHeader?: boolean;
-  hideHeader?: boolean; // Für spezielle Seiten wie Login
+  /** Versteckt den Header komplett (z.B. für Login) */
+  hideHeader?: boolean;
+  /** Override für SmartLayout Breiten-Erkennung */
+  forceContentWidth?: ContentWidth;
+  /** Deaktiviert Paper-Container im SmartLayout */
+  noPaper?: boolean;
+  /** Hintergrundfarbe für Content-Bereich */
+  contentBackground?: string;
 }
 
-export const MainLayoutV2: React.FC<MainLayoutV2Props> = ({ 
+export const MainLayoutV3: React.FC<MainLayoutV3Props> = ({ 
   children, 
-  showHeader = true,
-  hideHeader = false
+  hideHeader = false,
+  forceContentWidth,
+  noPaper = false,
+  contentBackground = '#FAFAFA'
 }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
@@ -38,14 +50,15 @@ export const MainLayoutV2: React.FC<MainLayoutV2Props> = ({
   // Berechne die aktuelle Drawer-Breite
   const drawerWidth = isCollapsed ? DRAWER_WIDTH_COLLAPSED : DRAWER_WIDTH;
   
-  // Header soll angezeigt werden wenn nicht explizit versteckt
-  const shouldShowHeader = !hideHeader && showHeader;
-  
   // Berechne Header-Höhe basierend auf Gerät
   const headerHeight = isMobile ? HEADER_HEIGHT_MOBILE : HEADER_HEIGHT;
   
   return (
-    <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: 'background.default' }}>
+    <Box sx={{ 
+      display: 'flex', 
+      minHeight: '100vh', 
+      bgcolor: contentBackground 
+    }}>
       {/* Sidebar Container - Immer links */}
       <Box
         component="nav"
@@ -78,53 +91,55 @@ export const MainLayoutV2: React.FC<MainLayoutV2Props> = ({
         flexGrow: 1,
         width: { xs: '100%', md: `calc(100% - ${drawerWidth}px)` },
         minHeight: '100vh',
+        position: 'relative',
       }}>
-        {/* Header - Nimmt volle Breite des verbleibenden Raums */}
-        {shouldShowHeader && (
-          <HeaderV2 
-            showMenuIcon={isMobile}
-            onMenuClick={toggleSidebar}
-          />
+        {/* Header mit visueller Trennung */}
+        {!hideHeader && (
+          <>
+            <Box
+              sx={{
+                position: 'sticky',
+                top: 0,
+                zIndex: theme.zIndex.appBar,
+                boxShadow: '0 2px 4px rgba(0,0,0,0.08)',
+              }}
+            >
+              <HeaderV2 
+                showMenuIcon={isMobile}
+                onMenuClick={toggleSidebar}
+              />
+            </Box>
+            
+            {/* Visueller Abstand zwischen Header und Content */}
+            <Box sx={{ height: HEADER_CONTENT_GAP }} />
+          </>
         )}
         
-        {/* Main Content Area */}
+        {/* Main Content Area mit SmartLayout */}
         <Box
           component="main"
           sx={{
             flexGrow: 1,
-            backgroundColor: 'background.default',
-            // Wichtig: Isolierter Scroll-Context
+            backgroundColor: contentBackground,
             overflow: 'auto',
             position: 'relative',
+            // Minimale Höhe berechnen
+            minHeight: !hideHeader 
+              ? `calc(100vh - ${headerHeight}px - ${HEADER_CONTENT_GAP}px)` 
+              : '100vh',
           }}
         >
-          {/* Page Content Container */}
-          <Box
-            sx={{
-              // Content-spezifisches Padding
-              p: { xs: 2, sm: 3, md: 4 },
-              // Top-Padding für fixed Header
-              pt: shouldShowHeader 
-                ? { xs: `${headerHeight + 16}px`, sm: `${headerHeight + 24}px`, md: `${headerHeight + 32}px` }
-                : { xs: 2, sm: 3, md: 4 },
-              // Maximale Breite für bessere Lesbarkeit auf großen Screens
-              maxWidth: 'xl',
-              mx: 'auto',
-              // Minimale Höhe für Content
-              minHeight: '100vh',
-              // Box-Model Isolation
-              position: 'relative',
-              width: '100%',
-              // Verhindert Layout-Bleed
-              contain: 'layout style',
-            }}
+          {/* SmartLayout übernimmt die intelligente Breiten-Steuerung */}
+          <SmartLayout 
+            forceWidth={forceContentWidth}
+            noPaper={noPaper}
           >
             {children}
-          </Box>
+          </SmartLayout>
         </Box>
       </Box>
       
-      {/* Mobile Overlay when Sidebar is open */}
+      {/* Mobile Overlay wenn Sidebar offen */}
       {isMobile && !isCollapsed && (
         <Box
           onClick={toggleSidebar}
@@ -143,5 +158,5 @@ export const MainLayoutV2: React.FC<MainLayoutV2Props> = ({
   );
 };
 
-// Export mit Default-Props für einfache Migration
-export default MainLayoutV2;
+// Convenience Export
+export default MainLayoutV3;
