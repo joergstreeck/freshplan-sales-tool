@@ -10,7 +10,7 @@ import { NavigationItem } from './NavigationItem';
 import { navigationConfig } from '../../config/navigation.config';
 import { useNavigationShortcuts } from '@/hooks/useNavigationShortcuts';
 
-const DRAWER_WIDTH = 280;
+const DRAWER_WIDTH = 320; // Erhöht von 280px für bessere Textdarstellung
 const DRAWER_WIDTH_COLLAPSED = 64;
 
 const StyledDrawer = styled(Drawer, {

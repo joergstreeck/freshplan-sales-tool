@@ -94,9 +94,10 @@ export const NavigationItem: React.FC<NavigationItemProps> = ({
                 fontFamily: 'Poppins, sans-serif',
                 fontWeight: isActive ? 500 : 400,
                 color: isActive ? '#94C456' : '#000',
-                whiteSpace: 'nowrap',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
+                lineHeight: 1.3,
+                // Erlaubt Zeilenumbruch bei sehr langen Texten
+                whiteSpace: 'normal',
+                wordBreak: 'break-word',
               }
             }}
           />

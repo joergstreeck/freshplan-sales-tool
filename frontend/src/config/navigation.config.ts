@@ -72,7 +72,7 @@ export const navigationConfig: NavigationItemType[] = [
   },
   {
     id: 'berichte',
-    label: 'Auswertungen & Berichte',
+    label: 'Auswertungen',
     icon: AssessmentIcon,
     path: '/berichte',
     permissions: ['reports.view'],
