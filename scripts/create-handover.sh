@@ -237,71 +237,97 @@ echo ""
 echo "📝 Please fill in the [MANUELL AUSFÜLLEN] sections!"
 echo ""
 
-# Ask for next focus module
-echo "📍 FOKUS-MODUL für nächste Session festlegen:"
-echo ""
-echo "Aktuelle Feature-Module:"
-echo "1) FC-002-M1: Hauptnavigation"
-echo "2) FC-002-M2: Quick-Create"
-echo "3) FC-002-M3: Cockpit"
-echo "4) FC-002-M4: Neukundengewinnung"
-echo "5) FC-002-M5: Kundenmanagement"
-echo "6) FC-002-M6: Berichte"
-echo "7) FC-002-M7: Einstellungen"
-echo "8) Anderes Feature/Modul"
-echo "9) Kein spezifisches Modul"
-echo ""
-read -p "Auswahl (1-9): " choice
+# Initialize FEATURE variable
+FEATURE="FC-002"
 
-# Update .current-focus based on choice
-case $choice in
-    1)
-        MODULE="M1"
-        MODULE_NAME="Hauptnavigation"
-        ;;
-    2)
-        MODULE="M2"
-        MODULE_NAME="Quick-Create"
-        ;;
-    3)
-        MODULE="M3"
-        MODULE_NAME="Cockpit"
-        ;;
-    4)
-        MODULE="M4"
-        MODULE_NAME="Neukundengewinnung"
-        ;;
-    5)
-        MODULE="M5"
-        MODULE_NAME="Kundenmanagement"
-        ;;
-    6)
-        MODULE="M6"
-        MODULE_NAME="Berichte"
-        ;;
-    7)
-        MODULE="M7"
-        MODULE_NAME="Einstellungen"
-        ;;
-    8)
-        read -p "Feature-Code (z.B. FC-003): " CUSTOM_FEATURE
-        read -p "Modul-Code (z.B. M1): " CUSTOM_MODULE
-        FEATURE=$CUSTOM_FEATURE
-        MODULE=$CUSTOM_MODULE
-        MODULE_NAME="Custom"
-        ;;
-    9)
-        MODULE="null"
-        MODULE_NAME="Kein spezifisches Modul"
-        ;;
-    *)
-        MODULE="null"
-        MODULE_NAME="Ungültige Auswahl"
-        ;;
-esac
+# Ask for next focus module
+valid_choice=false
+while [ "$valid_choice" = false ]; do
+    echo "📍 FOKUS-MODUL für nächste Session festlegen:"
+    echo ""
+    echo "Aktuelle Feature-Module:"
+    echo "1) FC-002-M1: Hauptnavigation"
+    echo "2) FC-002-M2: Quick-Create"
+    echo "3) FC-002-M3: Cockpit"
+    echo "4) FC-002-M4: Neukundengewinnung"
+    echo "5) FC-002-M5: Kundenmanagement"
+    echo "6) FC-002-M6: Berichte"
+    echo "7) FC-002-M7: Einstellungen"
+    echo "8) Anderes Feature/Modul"
+    echo "9) Kein spezifisches Modul"
+    echo ""
+    read -p "Auswahl (1-9): " choice
+
+    # Validate input
+    if [[ ! "$choice" =~ ^[1-9]$ ]]; then
+        echo ""
+        echo "❌ Ungültige Eingabe! Bitte eine Zahl zwischen 1 und 9 eingeben."
+        echo ""
+        continue
+    fi
+
+    valid_choice=true
+
+    # Update .current-focus based on choice
+    case $choice in
+        1)
+            MODULE="M1"
+            MODULE_NAME="Hauptnavigation"
+            ;;
+        2)
+            MODULE="M2"
+            MODULE_NAME="Quick-Create"
+            ;;
+        3)
+            MODULE="M3"
+            MODULE_NAME="Cockpit"
+            ;;
+        4)
+            MODULE="M4"
+            MODULE_NAME="Neukundengewinnung"
+            ;;
+        5)
+            MODULE="M5"
+            MODULE_NAME="Kundenmanagement"
+            ;;
+        6)
+            MODULE="M6"
+            MODULE_NAME="Berichte"
+            ;;
+        7)
+            MODULE="M7"
+            MODULE_NAME="Einstellungen"
+            ;;
+        8)
+            # Get custom feature and module
+            custom_valid=false
+            while [ "$custom_valid" = false ]; do
+                read -p "Feature-Code (z.B. FC-003): " CUSTOM_FEATURE
+                read -p "Modul-Code (z.B. M1): " CUSTOM_MODULE
+                
+                # Validate custom inputs
+                if [ -z "$CUSTOM_FEATURE" ] || [ -z "$CUSTOM_MODULE" ]; then
+                    echo ""
+                    echo "❌ Feature-Code und Modul-Code dürfen nicht leer sein!"
+                    echo ""
+                else
+                    custom_valid=true
+                fi
+            done
+            
+            FEATURE=$CUSTOM_FEATURE
+            MODULE=$CUSTOM_MODULE
+            MODULE_NAME="Custom"
+            ;;
+        9)
+            MODULE="null"
+            MODULE_NAME="Kein spezifisches Modul"
+            ;;
+    esac
+done
 
 # Default to FC-002 if not custom
-if [ "$choice" -ne 8 ]; then
+if [ "$choice" != "8" ]; then
     FEATURE="FC-002"
 fi
 
