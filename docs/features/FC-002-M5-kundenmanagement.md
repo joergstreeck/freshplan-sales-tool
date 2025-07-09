@@ -1,29 +1,70 @@
-# FC-002-M5: Kundenmanagement
+# FC-002-M5: Kundenmanagement - Implementierungsplan
 
 **Modul:** M5  
 **Feature:** FC-002  
-**Status:** 📋 In Planung (0%)  
-**Geschätzter Aufwand:** 4-5 Tage  
+**Status:** 🔍 50% (Planung abgeschlossen)  
+**Geschätzter Aufwand:** 8-10 Tage  
+**Architektur-Entscheidung:** ✅ Modularer Monolith mit Event-Driven Communication
 
-## 📋 Übersicht
+## 🎯 Strategische Entscheidungen (FINAL)
 
-Das zentrale CRM-Modul mit:
-- Kundenliste (erweiterte Ansicht von FC-001)
-- Kundendetails (360° Ansicht)
-- Verkaufschancen (Opportunities)
-- Aktivitätsverwaltung
+1. **Migration statt Neubau** - Bestehender Code wird refactored
+2. **Modularer Monolith** - Service-ready, aber im Monolith starten
+3. **Event-Driven** für lose Kopplung zwischen Modulen
+4. **CQRS** nur für Read-Heavy Operations (Listen, Suche)
 
-## 🎯 Ziele
+## 🏗️ Ziel-Architektur (ASCII)
 
-- Vollständige Kundenübersicht
-- Effiziente Verwaltung von Verkaufschancen
-- Lückenlose Aktivitätsdokumentation
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    Customer API Gateway                      │
+│                 CustomerController.java                      │
+└────────────┬───────────────────────────────┬────────────────┘
+             │                               │
+     ┌───────▼────────┐              ┌──────▼────────┐
+     │ Command Side   │              │  Query Side   │
+     │ (Write Ops)    │              │  (Read Ops)   │
+     └───────┬────────┘              └──────┬────────┘
+             │                               │
+    ┌────────▼─────────────────────────────▼────────┐
+    │              Event Bus (Domain Events)         │
+    └────┬────────┬────────┬────────────┬───────────┘
+         │        │        │            │
+    ┌────▼───┐ ┌─▼────┐ ┌─▼─────┐ ┌───▼────┐
+    │Customer│ │Contact│ │Finance│ │Timeline│
+    │  Core  │ │Module │ │Module │ │ Module │
+    └────────┘ └──────┘ └───────┘ └────────┘
+```
 
-## 📝 Detaillierte Spezifikation
+## 📦 Neue Package-Struktur
 
-### Vision der neuen Kundenmanagement-Architektur
-
-Das Kundenmanagement-Modul wird das Herzstück des CRM-Systems. Es muss modular, erweiterbar und performant sein, während es gleichzeitig eine umfassende 360°-Sicht auf alle Kundeninteraktionen bietet.
+```
+backend/src/main/java/de/freshplan/
+└── modules/
+    ├── customer/
+    │   ├── core/
+    │   │   ├── domain/
+    │   │   │   ├── Customer.java         // Nur: id, number, name, status
+    │   │   │   ├── CustomerNumber.java   // Value Object
+    │   │   │   └── CustomerStatus.java   // Enum
+    │   │   ├── application/
+    │   │   │   ├── CustomerCommandHandler.java
+    │   │   │   └── CustomerQueryHandler.java
+    │   │   └── infrastructure/
+    │   │       └── CustomerRepository.java
+    │   │
+    │   ├── contact/                      // Analog aufgebaut
+    │   ├── financial/                    // Analog aufgebaut
+    │   └── timeline/                     // Event Store
+    │
+    └── shared/
+        ├── events/
+        │   ├── CustomerCreatedEvent.java
+        │   ├── CustomerUpdatedEvent.java
+        │   └── EventBus.java
+        └── api/
+            └── CustomerApiGateway.java
+```
 
 ## 🔍 Analyse & Integration des Backend-Bestandscodes
 
@@ -299,60 +340,262 @@ frontend/src/features/customers/
 └── store/
 ```
 
-### 🎯 Zusammenfassung & Empfehlungen
+## 🚀 Implementierungsphasen (Der Bauplan)
 
-#### Kritische Erkenntnisse
+### Phase 1: Foundation (Tag 1-2)
+**Ziel:** Basis-Infrastruktur ohne Breaking Changes
 
-1. **Das Customer-Modul ist ein "versteckter Monolith"**
-   - 54 Dateien, eng gekoppelt
-   - Keine klare Separation of Concerns
-   - Schwer testbar und wartbar
+```bash
+# 1. Neue Package-Struktur anlegen
+mkdir -p backend/src/main/java/de/freshplan/modules/customer/{core,contact,financial,timeline}
+mkdir -p backend/src/main/java/de/freshplan/modules/shared/{events,api}
 
-2. **Refactoring ist ZWINGEND notwendig**
-   - Aktuelle Struktur nicht zukunftsfähig
-   - Performance-Probleme vorprogrammiert
-   - Erweiterbarkeit stark eingeschränkt
+# 2. Event Bus implementieren
+```
 
-3. **Schrittweise Migration erforderlich**
-   - Big-Bang-Ansatz zu riskant
-   - Parallel-Betrieb alter/neuer Code
-   - Feature-Flags für Umschaltung
+```java
+// EventBus.java - Synchron für Start, Async-ready
+@ApplicationScoped
+public class EventBus {
+    @Inject Event<DomainEvent> events;
+    
+    public void publish(DomainEvent event) {
+        events.fire(event);  // Später: Async mit Kafka/Redis
+    }
+}
+```
 
-#### Empfohlenes Vorgehen
+**Konkrete TODOs:**
+- [ ] Package-Struktur erstellen
+- [ ] EventBus + Base Events (CustomerCreatedEvent, etc.)
+- [ ] Test-Infrastruktur für neue Module
+- [ ] CI/CD anpassen für neue Struktur
 
-**Phase 1: Analyse & Design (2 Tage)**
-1. Domain Model Workshop
-2. Aggregate-Grenzen definieren
-3. Event-Storming für Timeline
-4. API-Design finalisieren
+### Phase 2: Customer Core Module (Tag 3-4)
+**Ziel:** Minimaler Customer mit sauberer Architektur
 
-**Phase 2: Infrastruktur (1 Tag)**
-1. Neue Package-Struktur anlegen
-2. Test-Framework aufsetzen
-3. CI/CD anpassen
+```java
+// Customer.java - Neue schlanke Entity
+@Entity
+@Table(name = "customers")  // GLEICHE Tabelle!
+public class Customer {
+    @Id UUID id;
+    @Column String customerNumber;
+    @Column String companyName;
+    @Enumerated CustomerStatus status;
+    
+    // Business Logic
+    public void activate() {
+        if (status != LEAD) 
+            throw new IllegalStateException();
+        this.status = ACTIVE;
+        // Event wird im Handler gefeuert
+    }
+}
+```
 
-**Phase 3: Core Implementation (3-4 Tage)**
-1. Customer-Core Modul
-2. Contact Management
-3. Timeline als Event Store
-4. API Gateway
+```java
+// CustomerCommandHandler.java
+@ApplicationScoped
+@Transactional
+public class CustomerCommandHandler {
+    @Inject CustomerRepository repo;
+    @Inject EventBus eventBus;
+    
+    public UUID createCustomer(CreateCustomerCommand cmd) {
+        // 1. Validierung
+        // 2. Customer erstellen
+        // 3. Event publizieren
+        var customer = new Customer(cmd);
+        repo.persist(customer);
+        eventBus.publish(new CustomerCreatedEvent(customer));
+        return customer.getId();
+    }
+}
+```
 
-**Phase 4: Migration (2 Tage)**
-1. Daten-Migration Scripts
-2. Parallelbetrieb testen
-3. Schrittweise Umstellung
+**Migration-Trick:** Neue Entities nutzen GLEICHE Tabellen mit Subset der Spalten!
 
-#### Offene Entscheidungen
+### Phase 3: Facade & Parallel-Betrieb (Tag 5)
+**Ziel:** Alte API weiter bedienen, intern neue Module nutzen
 
-1. **Event-Driven vs. Direct Calls?**
-   - Empfehlung: Event-Driven für lose Kopplung
+```java
+// CustomerServiceFacade.java - Ersetzt alten Service
+@ApplicationScoped
+public class CustomerServiceFacade implements CustomerService {
+    @Inject CustomerCommandHandler commands;
+    @Inject CustomerQueryHandler queries;
+    @Inject @Named("legacy") CustomerService legacy;
+    
+    @ConfigProperty(name = "feature.new-customer-core")
+    boolean useNewCore;
+    
+    public CustomerResponse createCustomer(CreateRequest req) {
+        if (useNewCore) {
+            var id = commands.createCustomer(toCommand(req));
+            return queries.getCustomer(id);
+        }
+        return legacy.createCustomer(req);
+    }
+}
+```
 
-2. **Monolith-First vs. Services?**
-   - Empfehlung: Modularer Monolith, Service-Ready
+### Phase 4: Contact & Financial Module (Tag 6-7)
+**Ziel:** Weitere Module analog zu Core
 
-3. **CQRS vollständig oder teilweise?**
-   - Empfehlung: Nur für Read-Heavy Parts (Search, List)
+```java
+// CustomerContact.java - Eigenes Aggregate
+@Entity
+@Table(name = "customer_contacts")
+public class CustomerContact {
+    @Id UUID id;
+    @Column UUID customerId;  // Nur ID, keine @ManyToOne!
+    // Rest der Felder
+}
+
+// ContactCommandHandler.java
+public void addContact(AddContactCommand cmd) {
+    // Prüfe Customer existiert via Query
+    if (!customerQueries.exists(cmd.customerId))
+        throw new CustomerNotFoundException();
+    
+    var contact = new CustomerContact(cmd);
+    contactRepo.persist(contact);
+    eventBus.publish(new ContactAddedEvent(contact));
+}
+```
+
+### Phase 5: Timeline als Event Store (Tag 8)
+**Ziel:** Timeline wird zum zentralen Event Log
+
+```java
+@ApplicationScoped
+public class TimelineEventHandler {
+    @Inject TimelineRepository repo;
+    
+    void onCustomerCreated(@Observes CustomerCreatedEvent e) {
+        var entry = TimelineEntry.of(e, "Kunde erstellt");
+        repo.persist(entry);
+    }
+    
+    void onContactAdded(@Observes ContactAddedEvent e) {
+        var entry = TimelineEntry.of(e, "Kontakt hinzugefügt");
+        repo.persist(entry);
+    }
+}
+```
+
+### Phase 6: Read Models & CQRS (Tag 9)
+**Ziel:** Optimierte Lese-Zugriffe
+
+```java
+// CustomerListReadModel.java - Denormalisierte View
+@Entity
+@Table(name = "customer_list_view")
+@Immutable
+public class CustomerListReadModel {
+    @Id UUID id;
+    String customerNumber;
+    String companyName;
+    String status;
+    Integer contactCount;     // Vorberechnet!
+    BigDecimal totalRevenue;  // Vorberechnet!
+    LocalDateTime lastActivity;
+}
+
+// Projection Update via Events
+void onCustomerUpdated(@Observes CustomerUpdatedEvent e) {
+    // Update Read Model
+}
+```
+
+### Phase 7: Migration & Cleanup (Tag 10)
+**Ziel:** Alte Strukturen entfernen
+
+1. Feature Flags auf 100%
+2. Alte Services deprecaten
+3. Unused Code entfernen
+4. Performance-Tests
+
+## 🎮 Feature Flags für sichere Migration
+
+```properties
+# application.properties
+feature.new-customer-core=false      # Start: false
+feature.new-customer-contacts=false  # Schrittweise
+feature.new-customer-timeline=false  # aktivieren
+feature.use-read-models=false        # Am Ende
+```
+
+## 🧪 Test-Strategie
+
+```java
+// Parallele Tests für Sicherheit
+@Test
+void customerCreation_shouldWorkInBothModes() {
+    // Arrange
+    var request = createValidRequest();
+    
+    // Act - Alter Weg
+    System.setProperty("feature.new-customer-core", "false");
+    var oldResult = service.createCustomer(request);
+    
+    // Act - Neuer Weg  
+    System.setProperty("feature.new-customer-core", "true");
+    var newResult = service.createCustomer(request);
+    
+    // Assert - Gleiche Ergebnisse!
+    assertThat(newResult).isEqualTo(oldResult);
+}
+```
+
+## 📊 Erfolgs-Metriken
+
+- [ ] Alle Tests grün (alte + neue)
+- [ ] Performance gleich oder besser
+- [ ] Keine Breaking Changes in API
+- [ ] Event Bus funktioniert
+- [ ] Module unabhängig deploybar (theoretisch)
+
+## 🚨 Kritische Punkte (Achtung!)
+
+1. **Datenbank-Schema** bleibt IDENTISCH während Migration
+2. **API-Kompatibilität** muss 100% gewährleistet sein
+3. **Events** müssen idempotent sein
+4. **Transaktionen** über Module-Grenzen vermeiden
+5. **Feature Flags** täglich prüfen
+
+## 💻 Quick-Start-Befehle
+
+```bash
+# Neue Tests ausführen
+./mvnw test -Dtest="**/modules/customer/**"
+
+# Feature Flag togglen
+curl -X POST localhost:8080/admin/feature/new-customer-core/true
+
+# Event Bus Monitor
+curl localhost:8080/admin/events/stream
+
+# Performance Vergleich
+./scripts/perf-test-customer-api.sh
+```
+
+## 🎁 Das Wichtigste auf einen Blick
+
+**Was machen wir?** 
+→ Customer-Monolith in 4 Module aufteilen (Core, Contact, Financial, Timeline)
+
+**Wie machen wir es?** 
+→ Schrittweise mit Feature Flags, alte API bleibt stabil
+
+**Wann ist es fertig?** 
+→ 10 Tage, aber ab Tag 5 produktiv nutzbar
+
+**Was ist das Risiko?** 
+→ Minimal durch Parallel-Betrieb und umfassende Tests
 
 ---
 
-**Status:** Analyse abgeschlossen - Bereit für Architektur-Entscheidungen
+**Status:** ✅ Planung komplett - Bereit für Implementierung
+**Nächster Schritt:** Phase 1 starten - Package-Struktur + Event Bus
