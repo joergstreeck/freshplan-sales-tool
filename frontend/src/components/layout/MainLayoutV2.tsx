@@ -15,7 +15,7 @@ import { SidebarNavigation } from './SidebarNavigation';
 import { useNavigationStore } from '@/store/navigationStore';
 
 // Layout-Konstanten
-const DRAWER_WIDTH = 280;
+const DRAWER_WIDTH = 320; // Angepasst an SidebarNavigation
 const DRAWER_WIDTH_COLLAPSED = 64;
 const APP_BAR_HEIGHT = 64;
 
@@ -98,7 +98,16 @@ export const MainLayoutV2: React.FC<MainLayoutV2Props> = ({
               
               {/* App Bar Content */}
               {appBarContent || (
-                <Typography variant="h6" noWrap component="div">
+                <Typography 
+                  variant="h6" 
+                  noWrap 
+                  component="div"
+                  sx={{
+                    fontFamily: 'Antonio, sans-serif',
+                    fontWeight: 700,
+                    color: '#004F7B',
+                  }}
+                >
                   FreshPlan Sales Tool
                 </Typography>
               )}

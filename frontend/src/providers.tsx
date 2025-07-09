@@ -3,11 +3,13 @@ import { ReactNode } from 'react';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { ThemeProvider, CssBaseline } from '@mui/material';
 import { queryClient } from './lib/queryClient';
 import { AuthProvider } from './contexts/AuthContext';
 import { KeycloakProvider } from './contexts/KeycloakContext';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { USE_KEYCLOAK_IN_DEV, IS_DEV_MODE } from './lib/constants';
+import freshfoodzTheme from './theme/freshfoodz';
 import App from './App';
 import { LoginBypassPage } from './pages/LoginBypassPage';
 import { UsersPage } from './pages/UsersPage';
@@ -40,11 +42,13 @@ export const AppProviders = ({ children: mainChildren }: AppProvidersProps) => {
 
   return (
     <ErrorBoundary>
-      <QueryClientProvider client={queryClient}>
-        <BrowserRouter>
-          <AuthWrapper>
-            {mainChildren || (
-              <Routes>
+      <ThemeProvider theme={freshfoodzTheme}>
+        <CssBaseline />
+        <QueryClientProvider client={queryClient}>
+          <BrowserRouter>
+            <AuthWrapper>
+              {mainChildren || (
+                <Routes>
                 <Route path="/" element={<App />} />
                 <Route path="/cockpit" element={<CockpitPage />} />
                 <Route path="/cockpit-v2" element={<CockpitPageV2 />} />
@@ -62,11 +66,12 @@ export const AppProviders = ({ children: mainChildren }: AppProvidersProps) => {
           </AuthWrapper>
         </BrowserRouter>
 
-        {/* React Query DevTools - only in development */}
-        {import.meta.env.DEV && (
-          <ReactQueryDevtools initialIsOpen={false} buttonPosition="bottom-right" />
-        )}
-      </QueryClientProvider>
+          {/* React Query DevTools - only in development */}
+          {import.meta.env.DEV && (
+            <ReactQueryDevtools initialIsOpen={false} buttonPosition="bottom-right" />
+          )}
+        </QueryClientProvider>
+      </ThemeProvider>
     </ErrorBoundary>
   );
 };
