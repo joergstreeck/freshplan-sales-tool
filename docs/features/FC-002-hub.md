@@ -13,7 +13,7 @@
 |-------|--------|----------|--------------|
 | M1 | 🔄 0% | [Hauptnavigation](./FC-002-M1-hauptnavigation.md) | Sidebar mit 5-Punkte-Navigation |
 | M2 | 📋 0% | [Quick-Create System](./FC-002-M2-quick-create.md) | Globaler "+ Neu" Button |
-| M3 | ✅ 30% | [Cockpit-Integration](./FC-002-M3-cockpit.md) | 3-Spalten-Ansicht Migration (Planung abgeschlossen) |
+| M3 | 🔍 40% | [Cockpit-Integration](./FC-002-M3-cockpit.md) | 3-Spalten-Ansicht Migration (Analyse abgeschlossen) |
 | M4 | 📋 0% | [Neukundengewinnung](./FC-002-M4-neukundengewinnung.md) | Akquise-Modul |
 | M5 | 📋 0% | [Kundenmanagement](./FC-002-M5-kundenmanagement.md) | CRM-Kernfunktionen |
 | M6 | 📋 0% | [Berichte & Auswertungen](./FC-002-M6-berichte.md) | Analytics & Reports |
@@ -129,3 +129,11 @@ notificationService.show({
 - 09.07.2025: M3 Cockpit-Modul Planung abgeschlossen (30%), Analyse durchgeführt
 - [Datum]: Review durch Jörg
 - [Datum]: Approved / Änderungen
+## 📅 Status-Updates
+
+### 09.07.2025 - M3 Code-Analyse abgeschlossen
+- Detaillierte Analyse der bestehenden SalesCockpit-Implementierung durchgeführt
+- 40% Wiederverwendbarkeit identifiziert
+- 3-Phasen-Migrationsplan zu MUI erstellt
+- Import-Pfad-Probleme identifiziert (customers → customer)
+- Nächster Schritt: CockpitView.tsx mit MUI erstellen

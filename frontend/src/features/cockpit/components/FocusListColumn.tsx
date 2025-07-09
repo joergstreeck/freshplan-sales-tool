@@ -6,12 +6,12 @@
  */
 
 import { useCockpitStore } from '../../../store/cockpitStore';
-import { FilterBar } from '../../customers/components/FilterBar';
-import { CustomerCard } from '../../customers/components/CustomerCard';
-import { CustomerList } from '../../../features/customer/components/CustomerList';
-import { useCustomerSearch } from '../../customers/hooks/useCustomerSearch';
-import { useFocusListStore } from '../../customers/store/focusListStore';
-import type { Customer } from '../../customers/hooks/useCustomerSearch';
+import { FilterBar } from '../../customer/components/FilterBar';
+import { CustomerCard } from '../../customer/components/CustomerCard';
+import { CustomerList } from '../../customer/components/CustomerList';
+import { useCustomerSearch } from '../../customer/hooks/useCustomerSearch';
+import { useFocusListStore } from '../../customer/store/focusListStore';
+import type { Customer } from '../../customer/types/customer';
 import './FocusListColumn.css';
 
 export function FocusListColumn() {

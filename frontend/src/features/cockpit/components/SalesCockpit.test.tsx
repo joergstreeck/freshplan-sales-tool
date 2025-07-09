@@ -174,7 +174,7 @@ describe('SalesCockpit', () => {
     expect(screen.getByText('Alt+3: Aktions-Center')).toBeInTheDocument();
   });
 
-  it('sollte mit loading state umgehen können', () => {
+  it('sollte mit loading state umgehen können', async () => {
     const { useDashboardData } = await import('../hooks/useSalesCockpit');
     vi.mocked(useDashboardData).mockReturnValueOnce({
       data: null,
@@ -190,7 +190,7 @@ describe('SalesCockpit', () => {
     expect(screen.queryByTestId('dashboard-stats')).not.toBeInTheDocument();
   });
 
-  it('sollte mit error state umgehen können', () => {
+  it('sollte mit error state umgehen können', async () => {
     const { useDashboardData } = await import('../hooks/useSalesCockpit');
     vi.mocked(useDashboardData).mockReturnValueOnce({
       data: null,
