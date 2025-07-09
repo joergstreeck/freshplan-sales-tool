@@ -181,13 +181,17 @@ CockpitView.tsx (Hauptcontainer)
     
     **Basierend auf direktem Nutzerfeedback - Diese Features sind essentiell!**
     
-    **Phase 4.1 - Team-Funktionen (10 Tage):**
+    **Phase 4.1 - Team-Funktionen (11-12 Tage):**
     1. **E-Mail-Integration (BCC-to-CRM):** Automatische E-Mail-Archivierung beim Kunden
     2. **Interne Team-Nachrichten:** Chat, @-Mentions, Aktivitäts-Feed
-    3. **Kundenschutz-System:** Verhindert Doppelbearbeitung mit intelligenter Sperrung
+    3. **Verkäuferschutz-System:** Provisions-Sicherung mit fairen Regeln & Historie
     
-    **Phase 4.2 - Führungs-Tools (5-6 Tage):**
-    4. **Chef-Dashboard:** Team-Übersicht, Pipeline-Gesundheit, Coaching-Insights
+    **Phase 4.2 - Führungs-Tools (7-8 Tage):**
+    4. **Chef-Dashboard mit KPIs:** 
+       - Was tun meine Verkäufer? (Live-Aktivitäten)
+       - Wieviel Geschäft in der Pipeline? (€-Werte)
+       - Wie ist die Abschlussquote? (Drill-Down Analysen)
+       - Provisions-Übersicht & Konflikte
     
     **Phase 4.3 - Activity Timeline (5 Tage):**
     5. **Timeline & BFF:** Ursprünglich geplante Features

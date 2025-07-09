@@ -52,47 +52,110 @@ BCC an diese Adresse → E-Mail wird automatisch beim Kunden 123 gespeichert
 
 ---
 
-## 3. 🛡️ Kundenschutz-System
+## 3. 🛡️ Verkäuferschutz-System (Provisions-Sicherung)
 
 ### Warum kritisch?
-Doppelbearbeitung frustriert Kunden und verschwendet Ressourcen.
+**Verkäufer arbeiten auf Provision!** Ihre Arbeit muss geschützt werden, sonst verlieren Sie Motivation und Geld.
 
 ### Implementierung:
 ```typescript
-Kundenstatus-Stufen:
-1. "Offen" - Jeder kann kontaktieren
-2. "In Bearbeitung" - Warnung bei Zugriff + Bearbeiter sichtbar
-3. "Reserviert" - Gesperrt für 30 Tage nach Angebotserstellung
-4. "Gewonnen" - Zugeordneter Verkäufer
+Schutz-Stufen mit Provisions-Zuordnung:
+1. "Offen" - Jeder kann kontaktieren (0% Provision)
+2. "Erstkontakt" - Leichte Reservierung (50% Provision bei Abschluss)
+3. "In Verhandlung" - Feste Zuordnung (75% Provision)
+4. "Angebot erstellt" - Vollschutz (100% Provision für 30 Tage)
+5. "Gewonnen" - Dauerhaft zugeordnet (100% + Folgeprovisionen)
 ```
 
 ### Features:
-- **Live-Anzeige**: "Thomas bearbeitet gerade diesen Kunden"
-- **Eskalation**: Chef kann Sperrungen aufheben
-- **Fairness-Regel**: Nach X Tagen ohne Aktivität wird Kunde wieder frei
+- **Provisions-Anzeige**: "Dieser Kunde sichert dir 100% Provision"
+- **Warn-System**: "Achtung: Thomas hat bereits ein Angebot erstellt"
+- **Fairness-Regeln**: 
+  - Erstkontakt = 7 Tage Schutz
+  - Angebot = 30 Tage Schutz
+  - Keine Aktivität in X Tagen = Schutz verfällt
+- **Chef-Override**: Nur mit Begründung und Provisions-Ausgleich
+- **Historie**: Wer hat wann was gemacht (Beweissicherung)
 
-**Geschätzter Aufwand:** 2-3 Tage
+### Provisions-Splitting bei Teamarbeit:
+- Erstkontakt: 30%
+- Qualifizierung: 20%
+- Angebotserstellung: 30%
+- Abschluss: 20%
+
+**Geschätzter Aufwand:** 3-4 Tage (komplexer wegen Provisions-Logik)
 
 ---
 
-## 4. 🎯 Chef-Dashboard & Kontrollfunktionen
+## 4. 🎯 Chef-Dashboard & Führungs-KPIs
 
 ### Warum kritisch?
-Führungskräfte brauchen Überblick ohne Micromanagement.
+Sie müssen sehen: **"Was tun meine Verkäufer? Wieviel Geschäft ist in der Pipeline? Wie ist die Abschlussquote?"**
 
-### Features:
-- **Team-Übersicht**: Wer arbeitet an was?
-- **Pipeline-Gesundheit**: Wo stockt es?
-- **Aktivitäten-Monitor**: Anrufe/E-Mails pro Mitarbeiter
-- **Forecast**: Hochrechnung basierend auf Pipeline
-- **Alarm-System**: Bei kritischen Situationen
+### Kern-Metriken auf einen Blick:
+```
+Dashboard-Übersicht:
+┌─────────────────────────────────────────────────────┐
+│ Pipeline-Wert: 2.450.000€  | Forecast: 735.000€     │
+│ Abschlussquote: 32%        | ⬆️ +5% zum Vormonat    │
+└─────────────────────────────────────────────────────┘
+```
 
-### Spezial-Ansichten:
-- "Gefährdete Deals" - Lange keine Aktivität
-- "Top-Performer" - Motivation durch Transparenz
-- "Coaching-Bedarf" - Wer braucht Unterstützung?
+### Detaillierte Verkäufer-Ansichten:
 
-**Geschätzter Aufwand:** 5-6 Tage
+#### 1. **Aktivitäten-Monitor** (Was tun sie gerade?)
+- **Live-Board**: "Thomas: 3 Anrufe, 2 Termine, 1 Angebot heute"
+- **Wochen-Übersicht**: Aktivitäten pro Verkäufer
+- **Qualitäts-Metriken**: Nicht nur Quantität!
+  - Anruf → Termin Conversion Rate
+  - Termin → Angebot Conversion Rate
+  - Angebot → Abschluss Rate
+
+#### 2. **Pipeline-Analyse** (Wieviel Geschäft in Anbahnung?)
+```
+Verkäufer | Anzahl Deals | Pipeline-Wert | Ø Deal-Größe | Forecast
+Thomas    | 23          | 450.000€      | 19.565€      | 144.000€
+Maria     | 31          | 380.000€      | 12.258€      | 133.000€
+Klaus     | 15          | 620.000€      | 41.333€      | 186.000€
+```
+
+#### 3. **Abschlussquoten-Drill-Down**
+- **Gesamt-Quote**: 32% (Benchmark: 25-35%)
+- **Nach Verkäufer**: Wer performt über/unter Durchschnitt?
+- **Nach Produkt**: Welche Produkte laufen gut?
+- **Nach Kundentyp**: Neukunden vs. Bestandskunden
+- **Zeitverlauf**: Trend über Monate
+
+#### 4. **Performance-Indikatoren**
+- **Geschwindigkeit**: Ø Tage von Lead zu Abschluss
+- **Deal-Größe**: Entwicklung der durchschnittlichen Auftragswerte
+- **Verlust-Analyse**: Warum gehen Deals verloren?
+- **Aktivitäts-ROI**: Welche Aktivitäten führen zu Abschlüssen?
+
+### Spezial-Reports für Führungskräfte:
+
+1. **"Meine Pipeline diese Woche"**
+   - Neue Opportunities: +X
+   - Gewonnene Deals: Y (Wert: Z€)
+   - Verlorene Deals: A (Warum?)
+   - Kritische Deals: B (Handlungsbedarf)
+
+2. **"Team-Coaching-Insights"**
+   - Wer braucht Unterstützung? (niedrige Conversion)
+   - Wer kann Best Practices teilen? (hohe Performance)
+   - Wo sind Bottlenecks im Verkaufsprozess?
+
+3. **"Provisions-Übersicht"** (NEU)
+   - Erwartete Provisionen diese Monat
+   - Provisions-Konflikte (wenn vorhanden)
+   - Fair-Share bei Team-Deals
+
+### Alert-System:
+- **Rote Flaggen**: Deal seit 14 Tagen keine Aktivität
+- **Gelbe Warnungen**: Abschlussquote sinkt
+- **Grüne Erfolge**: Neuer Rekord-Deal
+
+**Geschätzter Aufwand:** 7-8 Tage (mehr Details = mehr Aufwand)
 
 ---
 
@@ -157,13 +220,13 @@ Neue Kunden finden ist die Lebensader des Vertriebs.
 
 ## 📊 Priorisierung für Roadmap
 
-### Phase 4.1 - "Team-Funktionen" (10 Tage)
+### Phase 4.1 - "Team-Funktionen" (11-12 Tage)
 1. E-Mail-Integration (BCC-to-CRM) - 5 Tage
 2. Interne Team-Nachrichten - 3 Tage  
-3. Kundenschutz-System - 2 Tage
+3. Verkäuferschutz-System - 3-4 Tage (komplexer wegen Provisions-Logik)
 
-### Phase 4.2 - "Führungs-Tools" (5-6 Tage)
-4. Chef-Dashboard & Kontrolle
+### Phase 4.2 - "Führungs-Tools" (7-8 Tage)
+4. Chef-Dashboard mit echten KPIs - 7-8 Tage
 
 ### Phase 5 - "Mobile First" (15-20 Tage)
 5. Mobile App mit Spracheingabe
