@@ -1,8 +1,8 @@
 {
-  "feature": "",
-  "module": "FC-002-M8-rechner",
-  "lastFile": "",
-  "lastLine": "",
+  "feature": "FC-002",
+  "module": "M8-rechner",
+  "lastFile": "frontend/src/pages/CalculatorPageV2.tsx",
+  "lastLine": "101",
   "nextTask": "Calculator Migration zu MainLayoutV2",
-  "lastUpdated": "2025-07-09T13:36:36Z"
+  "lastUpdated": "2025-07-09T14:18:24Z"
 }

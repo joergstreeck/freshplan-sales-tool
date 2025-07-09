@@ -9,26 +9,27 @@
  */
 
 import React from 'react';
-import { Box, AppBar, Toolbar, Typography, useMediaQuery, useTheme, IconButton } from '@mui/material';
-import MenuIcon from '@mui/icons-material/Menu';
+import { Box, useMediaQuery, useTheme } from '@mui/material';
 import { SidebarNavigation } from './SidebarNavigation';
+import { HeaderV2 } from './HeaderV2';
 import { useNavigationStore } from '@/store/navigationStore';
 
 // Layout-Konstanten
 const DRAWER_WIDTH = 320; // Angepasst an SidebarNavigation
 const DRAWER_WIDTH_COLLAPSED = 64;
-const APP_BAR_HEIGHT = 64;
+const HEADER_HEIGHT = 64; // Standard Header-Höhe
+const HEADER_HEIGHT_MOBILE = 112; // Mit Suchleiste auf Mobile
 
 interface MainLayoutV2Props {
   children: React.ReactNode;
-  showAppBar?: boolean;
-  appBarContent?: React.ReactNode;
+  showHeader?: boolean;
+  hideHeader?: boolean; // Für spezielle Seiten wie Login
 }
 
 export const MainLayoutV2: React.FC<MainLayoutV2Props> = ({ 
   children, 
-  showAppBar = false,
-  appBarContent 
+  showHeader = true,
+  hideHeader = false
 }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
@@ -37,122 +38,103 @@ export const MainLayoutV2: React.FC<MainLayoutV2Props> = ({
   // Berechne die aktuelle Drawer-Breite
   const drawerWidth = isCollapsed ? DRAWER_WIDTH_COLLAPSED : DRAWER_WIDTH;
   
+  // Header soll angezeigt werden wenn nicht explizit versteckt
+  const shouldShowHeader = !hideHeader && showHeader;
+  
+  // Berechne Header-Höhe basierend auf Gerät
+  const headerHeight = isMobile ? HEADER_HEIGHT_MOBILE : HEADER_HEIGHT;
+  
   return (
-    <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: 'background.default' }}>
-      {/* Sidebar Container */}
-      <Box
-        component="nav"
-        sx={{
-          width: { md: drawerWidth },
-          flexShrink: { md: 0 },
-          // Auf Mobile wird die Sidebar als Overlay angezeigt
-          ...(isMobile && {
-            position: 'fixed',
-            zIndex: theme.zIndex.drawer,
-            height: '100%',
-          }),
-        }}
-      >
-        <SidebarNavigation />
-      </Box>
-      
-      {/* Main Content Area */}
-      <Box
-        component="main"
-        sx={{
-          flexGrow: 1,
-          width: { md: `calc(100% - ${drawerWidth}px)` },
-          minHeight: '100vh',
-          backgroundColor: 'background.default',
-          // Wichtig: Isolierter Scroll-Context
-          overflow: 'auto',
-          position: 'relative',
-          // Smooth transition when sidebar collapses
-          transition: theme.transitions.create(['width', 'margin'], {
-            easing: theme.transitions.easing.sharp,
-            duration: theme.transitions.duration.enteringScreen,
-          }),
-        }}
-      >
-        {/* Optional: Top App Bar */}
-        {showAppBar && (
-          <AppBar 
-            position="sticky" 
-            sx={{ 
-              backgroundColor: 'background.paper',
-              color: 'text.primary',
-              boxShadow: 1,
-            }}
-          >
-            <Toolbar sx={{ minHeight: APP_BAR_HEIGHT }}>
-              {/* Mobile Menu Toggle */}
-              {isMobile && (
-                <IconButton
-                  edge="start"
-                  onClick={toggleSidebar}
-                  sx={{ mr: 2, display: { md: 'none' } }}
-                >
-                  <MenuIcon />
-                </IconButton>
-              )}
-              
-              {/* App Bar Content */}
-              {appBarContent || (
-                <Typography 
-                  variant="h6" 
-                  noWrap 
-                  component="div"
-                  sx={{
-                    fontFamily: 'Antonio, sans-serif',
-                    fontWeight: 700,
-                    color: '#004F7B',
-                  }}
-                >
-                  FreshPlan Sales Tool
-                </Typography>
-              )}
-            </Toolbar>
-          </AppBar>
-        )}
-        
-        {/* Page Content Container */}
-        <Box
-          sx={{
-            // Content-spezifisches Padding
-            p: { xs: 2, sm: 3, md: 4 },
-            // Maximale Breite für bessere Lesbarkeit auf großen Screens
-            maxWidth: showAppBar ? '100%' : 'xl',
-            mx: 'auto',
-            // Volle Höhe minus AppBar
-            minHeight: showAppBar 
-              ? `calc(100vh - ${APP_BAR_HEIGHT}px)` 
-              : '100vh',
-            // Box-Model Isolation
-            position: 'relative',
-            width: '100%',
-            // Verhindert Layout-Bleed
-            contain: 'layout style',
-          }}
-        >
-          {children}
-        </Box>
-      </Box>
-      
-      {/* Mobile Overlay when Sidebar is open */}
-      {isMobile && !isCollapsed && (
-        <Box
-          onClick={toggleSidebar}
-          sx={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.5)',
-            zIndex: theme.zIndex.drawer - 1,
-          }}
+    <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', bgcolor: 'background.default' }}>
+      {/* Header */}
+      {shouldShowHeader && (
+        <HeaderV2 
+          showMenuIcon={isMobile}
+          onMenuClick={toggleSidebar}
         />
       )}
+      
+      {/* Main Layout Container */}
+      <Box sx={{ 
+        display: 'flex', 
+        flexGrow: 1,
+        position: 'relative',
+        overflow: 'hidden',
+      }}>
+        {/* Sidebar Container */}
+        <Box
+          component="nav"
+          sx={{
+            width: { md: drawerWidth },
+            flexShrink: { md: 0 },
+            // Auf Mobile wird die Sidebar als Overlay angezeigt
+            ...(isMobile && {
+              position: 'fixed',
+              top: shouldShowHeader ? headerHeight : 0,
+              zIndex: theme.zIndex.drawer,
+              height: shouldShowHeader ? `calc(100% - ${headerHeight}px)` : '100%',
+            }),
+          }}
+        >
+          <SidebarNavigation />
+        </Box>
+        
+        {/* Main Content Area */}
+        <Box
+          component="main"
+          sx={{
+            flexGrow: 1,
+            width: { md: `calc(100% - ${drawerWidth}px)` },
+            backgroundColor: 'background.default',
+            // Wichtig: Isolierter Scroll-Context
+            overflow: 'auto',
+            position: 'relative',
+            // Smooth transition when sidebar collapses
+            transition: theme.transitions.create(['width', 'margin'], {
+              easing: theme.transitions.easing.sharp,
+              duration: theme.transitions.duration.enteringScreen,
+            }),
+          }}
+        >
+          {/* Page Content Container */}
+          <Box
+            sx={{
+              // Content-spezifisches Padding
+              p: { xs: 2, sm: 3, md: 4 },
+              // Maximale Breite für bessere Lesbarkeit auf großen Screens
+              maxWidth: 'xl',
+              mx: 'auto',
+              // Minimale Höhe für Content
+              minHeight: shouldShowHeader 
+                ? `calc(100vh - ${headerHeight}px)` 
+                : '100vh',
+              // Box-Model Isolation
+              position: 'relative',
+              width: '100%',
+              // Verhindert Layout-Bleed
+              contain: 'layout style',
+            }}
+          >
+            {children}
+          </Box>
+        </Box>
+        
+        {/* Mobile Overlay when Sidebar is open */}
+        {isMobile && !isCollapsed && (
+          <Box
+            onClick={toggleSidebar}
+            sx={{
+              position: 'fixed',
+              top: shouldShowHeader ? headerHeight : 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: 'rgba(0, 0, 0, 0.5)',
+              zIndex: theme.zIndex.drawer - 1,
+            }}
+          />
+        )}
+      </Box>
     </Box>
   );
 };
