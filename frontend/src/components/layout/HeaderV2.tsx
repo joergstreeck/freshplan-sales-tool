@@ -37,10 +37,12 @@ import {
   Settings as SettingsIcon,
   Notifications as NotificationsIcon,
   KeyboardArrowDown as ArrowDownIcon,
+  LocalFlorist as FloristIcon,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigationStore } from '@/store/navigationStore';
+import { Logo } from '../common/Logo';
 
 interface HeaderV2Props {
   onMenuClick?: () => void;
@@ -137,22 +139,25 @@ export const HeaderV2: React.FC<HeaderV2Props> = ({
           </IconButton>
         )}
         
-        {/* Logo / Title */}
-        <Typography
-          variant="h5"
-          noWrap
-          component="div"
-          sx={{
-            fontFamily: 'Antonio, sans-serif',
-            fontWeight: 700,
-            color: '#004F7B',
-            flexGrow: 0,
-            mr: 4,
-            display: { xs: 'none', sm: 'block' }
-          }}
-        >
-          FreshPlan
-        </Typography>
+        {/* Logo */}
+        <Box sx={{ mr: 4 }}>
+          {/* Desktop: Volles Logo */}
+          <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
+            <Logo 
+              variant="full" 
+              height={40}
+              onClick={() => navigate('/')}
+            />
+          </Box>
+          {/* Mobile: Icon Logo */}
+          <Box sx={{ display: { xs: 'block', sm: 'none' } }}>
+            <Logo 
+              variant="icon" 
+              height={32}
+              onClick={() => navigate('/')}
+            />
+          </Box>
+        </Box>
         
         {/* Search Bar - Desktop */}
         {!isMobile && (
