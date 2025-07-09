@@ -59,12 +59,29 @@ BCC an diese Adresse → E-Mail wird automatisch beim Kunden 123 gespeichert
 
 ### Implementierung:
 ```typescript
-Schutz-Stufen mit Provisions-Zuordnung:
-1. "Offen" - Jeder kann kontaktieren (0% Provision)
-2. "Erstkontakt" - Leichte Reservierung (50% Provision bei Abschluss)
-3. "In Verhandlung" - Feste Zuordnung (75% Provision)
-4. "Angebot erstellt" - Vollschutz (100% Provision für 30 Tage)
-5. "Gewonnen" - Dauerhaft zugeordnet (100% + Folgeprovisionen)
+// Verkäuferschutz-Stufen (bestimmt WER die Provision bekommt)
+1. "Offen" - Jeder kann kontaktieren
+2. "Erstkontakt" - Leichte Reservierung (7 Tage)
+3. "In Verhandlung" - Feste Zuordnung (14 Tage)
+4. "Angebot erstellt" - Vollschutz (30 Tage)
+5. "Auftrag gewonnen" - Dauerhaft zugeordnet
+
+// Provisions-Berechnung (aus Xentral-Daten)
+Provision = Gezahlter Betrag × Individueller Provisionssatz des Verkäufers
+```
+
+### Xentral-Integration für Provisionen:
+```typescript
+// Datenfluss aus Xentral
+1. Auftrag erstellt → Status "Gewonnen" im CRM
+2. Rechnung erstellt → Provisionsbasis bekannt
+3. Zahlung eingegangen → Provision wird fällig
+4. Teilzahlung → Anteilige Provision
+
+// Provisions-Einstellungen pro Verkäufer
+Thomas: 3% auf Netto-Umsatz
+Maria: 2.5% + 500€ bei Neukunden
+Klaus: 4% aber max. 5000€/Monat
 ```
 
 ### Features:
@@ -145,10 +162,17 @@ Klaus     | 15          | 620.000€      | 41.333€      | 186.000€
    - Wer kann Best Practices teilen? (hohe Performance)
    - Wo sind Bottlenecks im Verkaufsprozess?
 
-3. **"Provisions-Übersicht"** (NEU)
-   - Erwartete Provisionen diese Monat
-   - Provisions-Konflikte (wenn vorhanden)
-   - Fair-Share bei Team-Deals
+3. **"Provisions-Übersicht"** (Xentral-Daten)
+   - **Fällige Provisionen**: Nur bei bezahlten Rechnungen
+   - **Offene Provisionen**: Geliefert aber noch nicht bezahlt
+   - **Provisions-Sätze**: Individuelle Einstellungen pro Verkäufer
+   - **Provisions-Historie**: Was wurde wann ausgezahlt
+   
+4. **"Xentral-Status Monitor"**
+   - Welche Aufträge sind in Rechnung?
+   - Welche Rechnungen sind offen?
+   - Zahlungseingänge diese Woche
+   - Mahnstatus kritischer Kunden
 
 ### Alert-System:
 - **Rote Flaggen**: Deal seit 14 Tagen keine Aktivität
@@ -203,7 +227,67 @@ Neue Kunden finden ist die Lebensader des Vertriebs.
 
 ---
 
-## 7. 📞 Anruf-Integration mit Spracherkennung
+## 7. 💰 Xentral-Integration für Provisions-Management
+
+### Warum kritisch?
+Ohne Xentral-Daten keine korrekte Provisionsberechnung! Xentral ist die "Source of Truth" für Rechnungen und Zahlungen.
+
+### Zu klärende Fragen:
+1. **Hat Xentral Zahlungsabgleich?** → Wahrscheinlich ja, da Rechnungen dort erstellt werden
+2. **Welche APIs bietet Xentral?** → REST API oder Datenbank-Zugriff?
+3. **Echtzeit oder Batch-Sync?** → Stündlich/Täglich reicht vermutlich
+
+### Datenfluss CRM ↔ Xentral:
+```
+CRM → Xentral:
+- Neuer Auftrag → Auftrag in Xentral anlegen
+- Kundendaten → Stammdaten synchronisieren
+
+Xentral → CRM:
+- Rechnung erstellt → Status-Update + Betrag
+- Zahlung eingegangen → Provision wird berechnet
+- Teilzahlung → Anteilige Provision
+- Mahnung verschickt → Warnung im CRM
+```
+
+### Provisions-Verwaltung im CRM:
+```typescript
+// Einstellungen pro Verkäufer (im CRM)
+{
+  verkäuferId: "thomas",
+  provisionsModell: {
+    typ: "prozentual",
+    satz: 3.0,  // 3% vom Netto
+    neukunden_bonus: 0,
+    max_pro_monat: null,
+    gültig_ab: "2025-01-01"
+  }
+}
+
+// Provisions-Berechnung
+function berechneProvision(zahlung, verkäufer) {
+  const nettoBetrag = zahlung.netto;
+  const provision = nettoBetrag * (verkäufer.satz / 100);
+  
+  // Sonderfälle beachten
+  if (zahlung.istNeukunde && verkäufer.neukunden_bonus > 0) {
+    provision += verkäufer.neukunden_bonus;
+  }
+  
+  return provision;
+}
+```
+
+### Provisions-Dashboard für Verkäufer:
+- **"Meine Provisionen diesen Monat"**: Bereits ausgezahlt
+- **"Offene Provisionen"**: Warte auf Zahlungseingang
+- **"Provisions-Verlauf"**: Historie mit Details
+
+**Geschätzter Aufwand:** 8-10 Tage (abhängig von Xentral-API)
+
+---
+
+## 8. 📞 Anruf-Integration mit Spracherkennung
 
 ### Warum kritisch?
 "Was wurde nochmal besprochen?" - Nie wieder vergessen!
@@ -228,12 +312,15 @@ Neue Kunden finden ist die Lebensader des Vertriebs.
 ### Phase 4.2 - "Führungs-Tools" (7-8 Tage)
 4. Chef-Dashboard mit echten KPIs - 7-8 Tage
 
+### Phase 4.3 - "Xentral-Integration" (8-10 Tage)
+5. Xentral-Anbindung für Provisions-Management
+
 ### Phase 5 - "Mobile First" (15-20 Tage)
-5. Mobile App mit Spracheingabe
+6. Mobile App mit Spracheingabe
 
 ### Phase 6 - "KI & Automation" (17-20 Tage)
-6. Lead-Generierung - 10-12 Tage
-7. Anruf-Integration - 7-8 Tage
+7. Lead-Generierung - 10-12 Tage
+8. Anruf-Integration - 7-8 Tage
 
 ---
 
@@ -256,10 +343,11 @@ Einige Features können wir schon früher teilweise einbauen:
 Diese Features adressieren die täglichen Schmerzpunkte:
 
 1. **Zeitersparnis**: 30-45 Min/Tag durch E-Mail-Integration
-2. **Keine Doppelarbeit**: Kundenschutz verhindert Konflikte  
-3. **Bessere Führung**: Chef sieht Probleme bevor sie eskalieren
-4. **Flexibilität**: Mobile App für moderne Arbeitsweise
-5. **Mehr Umsatz**: KI findet neue Opportunities
+2. **Faire Provisionen**: Verkäuferschutz sichert Einkommen
+3. **Transparenz**: Xentral-Integration zeigt echte Zahlen
+4. **Bessere Führung**: KPIs zeigen wo Coaching nötig ist
+5. **Flexibilität**: Mobile App für moderne Arbeitsweise
+6. **Mehr Umsatz**: Fokus auf richtige Aktivitäten
 
 ---
 

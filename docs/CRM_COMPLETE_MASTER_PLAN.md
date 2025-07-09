@@ -193,8 +193,14 @@ CockpitView.tsx (Hauptcontainer)
        - Wie ist die Abschlussquote? (Drill-Down Analysen)
        - Provisions-Übersicht & Konflikte
     
-    **Phase 4.3 - Activity Timeline (5 Tage):**
-    5. **Timeline & BFF:** Ursprünglich geplante Features
+    **Phase 4.3 - Xentral-Integration (8-10 Tage):**
+    5. **Provisions-Management:** 
+       - Rechnungs- und Zahlungsdaten aus Xentral
+       - Individuelle Provisionssätze pro Verkäufer
+       - Automatische Provisionsberechnung bei Zahlungseingang
+    
+    **Phase 4.4 - Activity Timeline (5 Tage):**
+    6. **Timeline & BFF:** Ursprünglich geplante Features
     
     **📋 Details:** [FC-002-PHASE4-ADDITIONS.md](./features/FC-002-PHASE4-ADDITIONS.md)
 
