@@ -72,20 +72,53 @@ Wir bauen von Tag 1 an auf einem Fundament, das für Wachstum, Performance und h
 
 Die Hauptoberfläche ist ein einziges, dreigeteiltes Cockpit. Es ist **responsiv** und passt sich allen Bildschirmgrößen an.
 
+### Frontend-Architektur (NEU - 09.07.2025)
+
+**Status:** 🔍 40% Analyse abgeschlossen - Wiederverwendbarkeits-Matrix erstellt
+
+**Technische Struktur:**
+```
+CockpitView.tsx (Hauptcontainer)
+├── MeinTag.tsx (Spalte 1)
+│   ├── AlertsList.tsx        # Tagesalarme & KI-Insights
+│   ├── AppointmentsList.tsx  # Google Kalender Integration
+│   ├── TasksList.tsx         # Priorisierte Aufgaben
+│   └── TriageInbox.tsx       # Nicht zugeordnete E-Mails
+├── FocusListColumn (Spalte 2)
+│   └── [Wiederverwendung von FC-001]
+└── AktionsCenter.tsx (Spalte 3)
+    ├── CustomerDetail.tsx    # 360° Kundenansicht
+    ├── ActivityTimeline.tsx  # Alle Interaktionen
+    └── QuickActions.tsx      # Kontextuelle Aktionen
+```
+
+**Performance-Optimierungen:**
+- Aggregierter Backend-Endpunkt: `GET /api/cockpit/overview`
+- Lazy Loading für Timeline & Details
+- Optimistic UI Updates
+- Local Storage für Layout-Präferenzen
+
+### Die drei Säulen im Detail:
+
 * **Spalte 1: Mein Tag (Übersicht & Prioritäten):**
     * Zeigt proaktiv die wichtigsten Aufgaben, Termine (via **Google Kalender-Integration**) und KI-gestützten Alarme für den aktuellen Tag.
     * Beinhaltet die **"Triage-Inbox"** für nicht zugeordnete Kommunikation.
+    * **Wiederverwendung:** 70% bestehender Code adaptierbar
 
 * **Spalte 2: Fokus-Liste (Arbeitsvorrat):**
-    * Die dynamische Arbeitsliste für Kunden.
+    * Die dynamische Arbeitsliste für Kunden (FC-001 Integration).
     * Ermöglicht Wechsel zwischen Listen-, Karten- und Kanban-Ansicht.
     * Bietet mächtige Filter und speicherbare Ansichten.
+    * **Wiederverwendung:** 100% von FC-001
 
 * **Spalte 3: Aktions-Center (Der Arbeitsbereich):**
     * Hier findet die kontextbezogene Arbeit statt.
     * Bietet einen **geführten Prozess** je nach Kundenstatus (z.B. Neukunden-Akquise).
     * Funktionen wie **Bonitätsprüfung**, **Rabattrechner** und **Angebotserstellung** sind als logische Schritte in diesen Prozess integriert.
     * Ermöglicht das direkte **Schreiben von E-Mails** und die Dokumentation aller Aktivitäten.
+    * **Wiederverwendung:** 85% aus customer/activities Modulen
+
+**Details:** Siehe `/docs/features/FC-002-M3-cockpit.md`
 
 ---
 
