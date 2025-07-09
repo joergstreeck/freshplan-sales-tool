@@ -3,7 +3,7 @@
  */
 
 import { Component, ErrorInfo, ReactNode } from 'react';
-import './ErrorBoundary.css';
+// CSS import removed - migrating to MUI sx props
 
 interface Props {
   children: ReactNode;

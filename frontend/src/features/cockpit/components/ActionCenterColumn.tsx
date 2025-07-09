@@ -6,7 +6,7 @@
  */
 
 import { useCockpitStore } from '../../../store/cockpitStore';
-import './ActionCenterColumn.css';
+// CSS import removed - migrating to MUI sx props
 
 export function ActionCenterColumn() {
   const { 

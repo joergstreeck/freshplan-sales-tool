@@ -409,8 +409,145 @@ logger.info('Batch create executed', {
 
 ---
 
+## B.7 Event-Driven Architecture Patterns (NEU - 09.07.2025)
+
+### Domain Events für Module-Kommunikation
+
+**Basis Event Interface:**
+```java
+public interface DomainEvent {
+    UUID getEventId();
+    UUID getAggregateId();
+    String getAggregateType();
+    LocalDateTime getOccurredAt();
+    String getUserId();
+}
+```
+
+**Customer Events:**
+```java
+// Beispiel Events
+public record CustomerCreatedEvent(
+    UUID eventId,
+    UUID customerId,
+    String customerNumber,
+    String companyName,
+    LocalDateTime occurredAt,
+    String createdBy
+) implements DomainEvent {}
+
+public record CustomerStatusChangedEvent(
+    UUID eventId,
+    UUID customerId,
+    String oldStatus,
+    String newStatus,
+    LocalDateTime occurredAt,
+    String changedBy
+) implements DomainEvent {}
+```
+
+### Event Bus Implementation
+
+```java
+@ApplicationScoped
+public class EventBus {
+    @Inject Event<DomainEvent> events;
+    @Inject EventStore eventStore;
+    
+    @Transactional
+    public void publish(DomainEvent event) {
+        // 1. Persist to Event Store
+        eventStore.append(event);
+        
+        // 2. Publish for immediate handling
+        events.fire(event);
+        
+        // 3. Later: Publish to Kafka/Redis for async
+    }
+}
+```
+
+### CQRS Read Model Pattern
+
+**Write Side:**
+```java
+@POST
+@Path("/customers")
+public Response createCustomer(CreateCustomerRequest request) {
+    // Command Handler
+    UUID customerId = customerCommands.create(request);
+    
+    // Event wird automatisch publiziert
+    // Read Model wird async aktualisiert
+    
+    return Response.status(201)
+        .entity(Map.of("id", customerId))
+        .build();
+}
+```
+
+**Read Side:**
+```java
+@GET
+@Path("/customers")
+public List<CustomerListView> listCustomers(
+    @QueryParam("status") String status,
+    @QueryParam("sort") String sort
+) {
+    // Direkt vom Read Model
+    return customerReadRepository.findAll(status, sort);
+}
+```
+
+### Feature Flag Integration
+
+```java
+@ApplicationScoped
+public class CustomerServiceFacade {
+    @ConfigProperty(name = "feature.customer.use-new-core")
+    boolean useNewCore;
+    
+    @ConfigProperty(name = "feature.customer.use-event-driven")
+    boolean useEventDriven;
+    
+    public CustomerResponse createCustomer(CreateRequest req) {
+        if (useNewCore) {
+            var id = newCustomerService.create(req);
+            
+            if (useEventDriven) {
+                // Wait for read model update
+                await().atMost(1, SECONDS)
+                    .until(() -> readModel.exists(id));
+            }
+            
+            return readModel.findById(id);
+        }
+        
+        return legacyService.createCustomer(req);
+    }
+}
+```
+
+### Migration API Endpoints
+
+**Feature Flag Management:**
+```
+GET  /api/admin/features
+PUT  /api/admin/features/{name}
+POST /api/admin/features/{name}/toggle
+```
+
+**Event Stream Monitoring:**
+```
+GET  /api/admin/events/stream
+GET  /api/admin/events/stats
+POST /api/admin/events/replay/{aggregateId}
+```
+
+---
+
 **Nächste Schritte:**
 1. API-Spezifikation in OpenAPI dokumentieren
-2. Backend-Team briefen
-3. Testdaten für neue Endpunkte erstellen
-4. Performance-Tests planen
+2. Event Store Schema definieren
+3. Read Model Projektionen planen
+4. Performance-Tests für Event Processing

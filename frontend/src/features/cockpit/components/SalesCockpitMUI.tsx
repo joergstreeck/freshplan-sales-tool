@@ -6,6 +6,7 @@
 import React from 'react';
 import { Box, Paper, Typography, Grid, Card, CardContent, Chip, Button } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import DashboardIcon from '@mui/icons-material/Dashboard';
 import GroupIcon from '@mui/icons-material/Group';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import TaskIcon from '@mui/icons-material/Task';

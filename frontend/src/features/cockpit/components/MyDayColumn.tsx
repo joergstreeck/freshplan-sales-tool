@@ -12,7 +12,7 @@ import { useDashboardData } from '../hooks/useSalesCockpit';
 import { mockTriageItems, mockTasks } from '../data/mockData';
 import type { DashboardTask, DashboardAlert } from '../types/salesCockpit';
 import type { PriorityTask } from '../types';
-import './MyDayColumn.css';
+// CSS import removed - migrating to MUI sx props
 
 export function MyDayColumn() {
   const { showTriageInbox, toggleTriageInbox, setPriorityTasksCount } = useCockpitStore();

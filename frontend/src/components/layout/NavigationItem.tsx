@@ -21,7 +21,7 @@ interface NavigationSubItem {
 interface NavigationItemType {
   id: string;
   label: string;
-  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
+  icon: React.ComponentType<any>;
   path: string;
   permissions?: string[];
   subItems?: NavigationSubItem[];
