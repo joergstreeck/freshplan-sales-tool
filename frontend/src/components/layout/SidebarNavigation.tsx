@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Box, Drawer, List, IconButton, Tooltip } from '@mui/material';
+import { Box, Drawer, List, IconButton, Tooltip, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
@@ -27,8 +27,9 @@ const StyledDrawer = styled(Drawer, {
       duration: theme.transitions.duration.enteringScreen,
     }),
     overflowX: 'hidden',
-    backgroundColor: theme.palette.background.paper,
-    borderRight: `1px solid ${theme.palette.divider}`,
+    backgroundColor: '#FAFAFA', // Leicht grauer Hintergrund für besseren Kontrast
+    borderRight: '2px solid #94C456', // Freshfoodz Grün als Akzent
+    boxShadow: '2px 0 8px rgba(0, 0, 0, 0.05)',
   },
 }));
 
@@ -67,12 +68,46 @@ export const SidebarNavigation: React.FC = () => {
       <Box sx={{ 
         display: 'flex', 
         alignItems: 'center', 
-        justifyContent: 'flex-end',
-        p: 1,
-        minHeight: 64
+        justifyContent: 'space-between',
+        p: 2,
+        minHeight: 64,
+        borderBottom: '1px solid rgba(148, 196, 86, 0.2)',
       }}>
+        {!isCollapsed && (
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Box
+              component="img"
+              src="/freshfoodz-logo.svg"
+              alt="FreshPlan"
+              sx={{ height: 32 }}
+              onError={(e) => {
+                const target = e.target as HTMLImageElement;
+                target.style.display = 'none';
+              }}
+            />
+            <Typography
+              variant="h6"
+              sx={{
+                color: '#004F7B',
+                fontFamily: 'Antonio, sans-serif',
+                fontWeight: 700,
+              }}
+            >
+              FreshPlan
+            </Typography>
+          </Box>
+        )}
         <Tooltip title={isCollapsed ? "Navigation erweitern" : "Navigation einklappen"}>
-          <IconButton onClick={toggleSidebar} size="small">
+          <IconButton 
+            onClick={toggleSidebar} 
+            size="small"
+            sx={{
+              color: '#94C456',
+              '&:hover': {
+                backgroundColor: 'rgba(148, 196, 86, 0.1)',
+              },
+            }}
+          >
             {isCollapsed ? <ChevronRightIcon /> : <ChevronLeftIcon />}
           </IconButton>
         </Tooltip>

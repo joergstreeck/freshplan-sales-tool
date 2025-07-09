@@ -5,6 +5,7 @@ import {
   ListItemText,
   Collapse,
   Tooltip,
+  Box,
 } from '@mui/material';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -52,22 +53,47 @@ export const NavigationItem: React.FC<NavigationItemProps> = ({
       sx={{
         borderRadius: 1,
         mb: 0.5,
+        position: 'relative',
         '&.Mui-selected': {
-          backgroundColor: 'primary.lighter',
+          backgroundColor: 'rgba(148, 196, 86, 0.12)', // Freshfoodz Grün transparent
+          borderLeft: '3px solid #94C456',
           '&:hover': {
-            backgroundColor: 'primary.light',
+            backgroundColor: 'rgba(148, 196, 86, 0.18)',
           },
+          '& .MuiListItemIcon-root': {
+            color: '#94C456',
+          },
+          '& .MuiListItemText-primary': {
+            color: '#94C456',
+            fontWeight: 600,
+          },
+        },
+        '&:hover': {
+          backgroundColor: 'rgba(148, 196, 86, 0.08)',
         },
       }}
     >
-      <ListItemIcon sx={{ minWidth: 40 }}>
+      <ListItemIcon sx={{ 
+        minWidth: 40,
+        color: isActive ? '#94C456' : '#004F7B', // Freshfoodz Farben
+      }}>
         <Icon />
       </ListItemIcon>
       {!isCollapsed && (
         <>
-          <ListItemText primary={item.label} />
+          <ListItemText 
+            primary={item.label} 
+            sx={{
+              '& .MuiListItemText-primary': {
+                fontSize: '0.95rem',
+                color: isActive ? '#94C456' : '#000',
+              }
+            }}
+          />
           {item.subItems && (
-            isExpanded ? <ExpandLessIcon /> : <ExpandMoreIcon />
+            <Box sx={{ ml: 'auto', display: 'flex', alignItems: 'center' }}>
+              {isExpanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+            </Box>
           )}
         </>
       )}
