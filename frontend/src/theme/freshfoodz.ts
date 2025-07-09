@@ -135,6 +135,7 @@ export const freshfoodzTheme = createTheme({
           borderRadius: 8,
           textTransform: 'none',
           fontWeight: 500,
+          fontFamily: 'Poppins, sans-serif',
           '&:hover': {
             transform: 'translateY(-1px)',
             boxShadow: '0 4px 8px rgba(0,0,0,0.12)',
@@ -144,6 +145,26 @@ export const freshfoodzTheme = createTheme({
           boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
           '&:hover': {
             boxShadow: '0 4px 8px rgba(0,0,0,0.15)',
+          },
+        },
+        containedPrimary: {
+          backgroundColor: '#94C456',
+          color: '#FFFFFF',
+          '&:hover': {
+            backgroundColor: '#7fb03f',
+          },
+        },
+        containedSecondary: {
+          backgroundColor: '#004F7B',
+          color: '#FFFFFF',
+          '&:hover': {
+            backgroundColor: '#003856',
+          },
+        },
+        text: {
+          color: '#004F7B',
+          '&:hover': {
+            backgroundColor: 'rgba(0, 79, 123, 0.08)',
           },
         },
       },
@@ -173,14 +194,15 @@ export const freshfoodzTheme = createTheme({
           borderRadius: 8,
           margin: '2px 0',
           '&.Mui-selected': {
-            backgroundColor: '#e8f5e9',
+            backgroundColor: 'rgba(148, 196, 86, 0.12)',
             color: '#94C456',
+            borderLeft: '3px solid #94C456',
             '&:hover': {
-              backgroundColor: '#d4f0d6',
+              backgroundColor: 'rgba(148, 196, 86, 0.18)',
             },
           },
           '&:hover': {
-            backgroundColor: '#f5f5f5',
+            backgroundColor: 'rgba(148, 196, 86, 0.08)',
           },
         },
       },
@@ -212,6 +234,63 @@ export const freshfoodzTheme = createTheme({
               borderColor: '#94C456',
             },
           },
+        },
+      },
+    },
+    MuiTabs: {
+      styleOverrides: {
+        indicator: {
+          backgroundColor: '#94C456',
+          height: 3,
+        },
+      },
+    },
+    MuiTab: {
+      styleOverrides: {
+        root: {
+          fontFamily: 'Poppins, sans-serif',
+          color: '#004F7B',
+          '&.Mui-selected': {
+            color: '#94C456',
+            fontWeight: 600,
+          },
+          '&:hover': {
+            backgroundColor: 'rgba(148, 196, 86, 0.08)',
+          },
+        },
+      },
+    },
+    MuiTypography: {
+      styleOverrides: {
+        h1: {
+          fontFamily: 'Antonio, sans-serif',
+          fontWeight: 700,
+          color: '#004F7B',
+        },
+        h2: {
+          fontFamily: 'Antonio, sans-serif',
+          fontWeight: 700,
+          color: '#004F7B',
+        },
+        h3: {
+          fontFamily: 'Antonio, sans-serif',
+          fontWeight: 700,
+          color: '#004F7B',
+        },
+        h4: {
+          fontFamily: 'Antonio, sans-serif',
+          fontWeight: 700,
+          color: '#004F7B',
+        },
+        h5: {
+          fontFamily: 'Antonio, sans-serif',
+          fontWeight: 700,
+          color: '#004F7B',
+        },
+        h6: {
+          fontFamily: 'Antonio, sans-serif',
+          fontWeight: 700,
+          color: '#004F7B',
         },
       },
     },
