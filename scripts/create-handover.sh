@@ -97,31 +97,57 @@ echo "" >> "$HANDOVER_FILE"
 # Add new FOKUS section
 echo "## 🎯 HEUTIGER FOKUS" >> "$HANDOVER_FILE"
 
+# Use get-active-module.sh to find current module info
+ACTIVE_MODULE_INFO=$(./scripts/get-active-module.sh 2>/dev/null)
+
 # Check if .current-focus exists and read it
 if [ -f ".current-focus" ]; then
-    FEATURE=$(grep '"feature"' .current-focus | cut -d'"' -f4)
-    MODULE=$(grep '"module"' .current-focus | cut -d'"' -f4)
-    LASTFILE=$(grep '"lastFile"' .current-focus | cut -d'"' -f4)
-    LASTLINE=$(grep '"lastLine"' .current-focus | cut -d'"' -f4)
-    NEXTTASK=$(grep '"nextTask"' .current-focus | cut -d'"' -f4)
+    FEATURE=$(grep '"feature"' .current-focus | cut -d'"' -f4 2>/dev/null || echo "")
+    MODULE=$(grep '"module"' .current-focus | cut -d'"' -f4 2>/dev/null || echo "")
+    LASTFILE=$(grep '"lastFile"' .current-focus | cut -d'"' -f4 2>/dev/null || echo "")
+    LASTLINE=$(grep '"lastLine"' .current-focus | cut -d'"' -f4 2>/dev/null || echo "")
+    NEXTTASK=$(grep '"nextTask"' .current-focus | cut -d'"' -f4 2>/dev/null || echo "")
     
-    if [ "$MODULE" != "null" ]; then
-        echo "**Aktives Modul:** $FEATURE-$MODULE" >> "$HANDOVER_FILE"
-        echo "**Modul-Dokument:** \`/docs/features/$FEATURE-$MODULE-*.md\` ⭐" >> "$HANDOVER_FILE"
+    if [ "$MODULE" != "null" ] && [ -n "$MODULE" ]; then
+        FULL_MODULE="$FEATURE-$MODULE"
+        echo "**Aktives Modul:** $FULL_MODULE" >> "$HANDOVER_FILE"
+        
+        # Try to find the actual spoke document
+        SPOKE_DOC=$(find docs/features -name "${FULL_MODULE}*.md" 2>/dev/null | head -1)
+        if [ -n "$SPOKE_DOC" ]; then
+            echo "**Modul-Dokument:** \`$SPOKE_DOC\` ⭐" >> "$HANDOVER_FILE"
+            
+            # Extract next step from spoke document
+            if grep -q "NÄCHSTER SCHRITT" "$SPOKE_DOC"; then
+                echo "" >> "$HANDOVER_FILE"
+                echo "**Dokumentierter nächster Schritt aus Spoke:**" >> "$HANDOVER_FILE"
+                grep -A 5 "NÄCHSTER SCHRITT" "$SPOKE_DOC" | tail -n +2 | head -5 >> "$HANDOVER_FILE"
+                echo "" >> "$HANDOVER_FILE"
+            fi
+        else
+            echo "**Modul-Dokument:** \`/docs/features/$FULL_MODULE-*.md\` ⭐" >> "$HANDOVER_FILE"
+        fi
+        
+        # Hub document
+        HUB_DOC=$(find docs/features -name "${FEATURE}-hub.md" 2>/dev/null | head -1)
+        if [ -n "$HUB_DOC" ]; then
+            echo "**Hub-Dokument:** \`$HUB_DOC\` (Referenz)" >> "$HANDOVER_FILE"
+        else
+            echo "**Hub-Dokument:** \`/docs/features/$FEATURE-hub.md\` (Referenz)" >> "$HANDOVER_FILE"
+        fi
     else
         echo "**Aktives Feature:** $FEATURE" >> "$HANDOVER_FILE"
     fi
-    echo "**Hub-Dokument:** \`/docs/features/$FEATURE-hub.md\` (Referenz)" >> "$HANDOVER_FILE"
     
-    if [ "$LASTFILE" != "null" ]; then
+    if [ "$LASTFILE" != "null" ] && [ -n "$LASTFILE" ]; then
         echo "**Letzte Datei:** $LASTFILE" >> "$HANDOVER_FILE"
-        if [ "$LASTLINE" != "null" ]; then
+        if [ "$LASTLINE" != "null" ] && [ -n "$LASTLINE" ]; then
             echo "**Letzte Zeile:** $LASTLINE" >> "$HANDOVER_FILE"
         fi
     fi
     
-    if [ "$NEXTTASK" != "null" ]; then
-        echo "**Nächster Schritt:** $NEXTTASK" >> "$HANDOVER_FILE"
+    if [ "$NEXTTASK" != "null" ] && [ -n "$NEXTTASK" ]; then
+        echo "**Nächster Schritt (aus .current-focus):** $NEXTTASK" >> "$HANDOVER_FILE"
     fi
 else
     echo "**Aktives Modul:** [FC-XXX-MX Name]" >> "$HANDOVER_FILE"
@@ -130,6 +156,17 @@ else
     echo "**Letzte Zeile bearbeitet:** [Component:Line]" >> "$HANDOVER_FILE"
     echo "**Nächster Schritt:** [Konkrete Aufgabe]" >> "$HANDOVER_FILE"
 fi
+
+echo "" >> "$HANDOVER_FILE"
+
+# Add architecture and planning section
+echo "## 🏛️ ARCHITEKTUR & PLANUNG" >> "$HANDOVER_FILE"
+echo "- [ ] **Feature-Konzept [FC-XXX] geprüft:** Das Konzept ist auf dem neuesten Stand und enthält alle notwendigen, \"kompressionssicheren\" Implementierungsdetails." >> "$HANDOVER_FILE"
+echo "  - Dateipfade und Komponenten-Namen definiert" >> "$HANDOVER_FILE"
+echo "  - Props und State vollständig spezifiziert" >> "$HANDOVER_FILE"
+echo "  - State Management Stores zugeordnet" >> "$HANDOVER_FILE"
+echo "  - API-Interaktionen dokumentiert" >> "$HANDOVER_FILE"
+echo "  - Kernlogik beschrieben" >> "$HANDOVER_FILE"
 echo "" >> "$HANDOVER_FILE"
 
 echo "## 🛠️ WAS FUNKTIONIERT?" >> "$HANDOVER_FILE"
@@ -180,7 +217,10 @@ TodoRead
 # 5. Letzte Übergabe lesen
 cat docs/claude-work/daily-work/$(date +%Y-%m-%d)/*HANDOVER*.md | head -50
 
-# 6. [SPEZIFISCHE BEFEHLE FÜR AKTUELLE AUFGABE]
+# 6. Aktives Modul identifizieren
+./scripts/get-active-module.sh
+
+# 7. [SPEZIFISCHE BEFEHLE FÜR AKTUELLE AUFGABE]
 ```
 
 ---
