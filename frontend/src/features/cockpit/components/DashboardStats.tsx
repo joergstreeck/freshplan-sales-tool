@@ -4,7 +4,7 @@
  * Zeigt die wichtigsten Sales-Kennzahlen aus dem BFF an
  */
 import type { DashboardStatistics } from '../types/salesCockpit';
-// CSS import removed - migrating to MUI sx props
+import './DashboardStats.css';
 
 interface DashboardStatsProps {
   statistics: DashboardStatistics;

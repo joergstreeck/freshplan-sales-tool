@@ -10,12 +10,10 @@
 ## 📋 Implementierungs-Checkliste
 
 - [ ] CockpitView.tsx Hauptcontainer
-- [ ] **KalenderView.tsx (NEU - Vollständige Kalenderansicht)**
 - [ ] MeinTag.tsx (Spalte 1)
 - [ ] FocusListColumn Integration (Spalte 2)
 - [ ] AktionsCenter.tsx (Spalte 3)
 - [ ] cockpitStore.ts erweitern
-- [ ] **Ansichts-Toggle (Kalender vs. 3-Spalten)**
 - [ ] Aggregierten API-Endpunkt nutzen
 - [ ] Responsive Layout implementieren
 - [ ] Drag & Drop für Spaltenbreiten
@@ -29,36 +27,27 @@
 frontend/src/
 ├── pages/
 │   └── cockpit/
-│       └── CockpitView.tsx             # Hauptseite mit View-Toggle
+│       └── CockpitView.tsx             # Hauptseite
 ├── features/
 │   └── cockpit/
 │       ├── components/
-│       │   ├── KalenderView/           # NEU - Vollständige Kalenderansicht
-│       │   │   ├── KalenderView.tsx   # Hauptkalender-Komponente
-│       │   │   ├── CalendarHeader.tsx # Monat/Woche/Tag Toggle
-│       │   │   ├── CalendarGrid.tsx   # Kalender-Grid
-│       │   │   └── AppointmentCard.tsx # Termin-Karten
-│       │   ├── DashboardView/          # 3-Spalten-Dashboard
-│       │   │   ├── DashboardView.tsx  # Container für 3 Spalten
-│       │   │   ├── MeinTag/
-│       │   │   │   ├── MeinTag.tsx    # Spalte 1 Container
-│       │   │   │   ├── AlertsList.tsx # Tagesalarme
-│       │   │   │   ├── AppointmentsList.tsx # Termine
-│       │   │   │   ├── TasksList.tsx  # Aufgaben
-│       │   │   │   └── TriageInbox.tsx # E-Mail Posteingang
-│       │   │   ├── AktionsCenter/
-│       │   │   │   ├── AktionsCenter.tsx # Spalte 3 Container
-│       │   │   │   ├── CustomerDetail.tsx # Kundendetails
-│       │   │   │   ├── ActivityTimeline.tsx # Aktivitäten
-│       │   │   │   └── QuickActions.tsx # Schnellaktionen
-│       │   │   └── layout/
-│       │   │       └── ResizablePanels.tsx # Spalten-Layout
-│       │   └── ViewToggle.tsx         # Toggle zwischen Ansichten
+│       │   ├── MeinTag/
+│       │   │   ├── MeinTag.tsx         # Spalte 1 Container
+│       │   │   ├── AlertsList.tsx      # Tagesalarme
+│       │   │   ├── AppointmentsList.tsx # Termine
+│       │   │   ├── TasksList.tsx       # Aufgaben
+│       │   │   └── TriageInbox.tsx     # E-Mail Posteingang
+│       │   ├── AktionsCenter/
+│       │   │   ├── AktionsCenter.tsx   # Spalte 3 Container
+│       │   │   ├── CustomerDetail.tsx  # Kundendetails
+│       │   │   ├── ActivityTimeline.tsx # Aktivitäten
+│       │   │   └── QuickActions.tsx    # Schnellaktionen
+│       │   └── layout/
+│       │       └── ResizablePanels.tsx # Spalten-Layout
 │       ├── hooks/
-│       │   ├── useCockpitData.ts      # Aggregierte Daten
-│       │   └── useCalendarData.ts     # Kalender-spezifische Daten
+│       │   └── useCockpitData.ts       # Aggregierte Daten
 │       └── store/
-│           └── cockpitStore.ts         # Cockpit-Zustand inkl. View-Mode
+│           └── cockpitStore.ts         # Cockpit-Zustand
 ```
 
 ## 📝 Detaillierte Spezifikation
@@ -482,77 +471,3 @@ Eine funktionierende CockpitView mit MUI-Styling, die das bestehende 3-Spalten-L
 1. **Sofort:** Import-Pfade korrigieren
 2. **Sprint 2:** CSS-Design-System integrieren
 3. **Sprint 3:** Vollständige MUI-Migration
-
-## 🎨 Visueller Migrationsplan (NEU - 09.07.2025)
-
-### ✅ CSS-Konflikt-Analyse
-
-**Risiko-Stufe:** ✅ GELÖST (Phase 1 abgeschlossen)
-
-**Status:** Clean-Slate-Ansatz bereits implementiert:
-- MainLayoutV2 erstellt
-- Route `/cockpit-v2` läuft
-- CSS-Dateien in `legacy-to-remove` verschoben
-
-### 📐 Verbleibende Migrations-Schritte
-
-**Verbleibender Aufwand:** 2 Tage
-
-#### Phase 2: MUI-Migration der Cockpit-Komponenten
-```typescript
-// MyDayColumn → MeinTag.tsx
-<Paper 
-  sx={{ 
-    height: '100%',
-    overflow: 'auto',
-    p: 2 
-  }}
->
-  <Typography variant="h5" gutterBottom>
-    Mein Tag
-  </Typography>
-  <Stack spacing={2}>
-    <AlertsList />
-    <AppointmentsList />
-    <TasksList />
-  </Stack>
-</Paper>
-```
-
-#### Phase 3: Integration der anderen Module
-Nach Migration von Calculator, Customer, Settings:
-- FocusListColumn integriert von FC-001
-- AktionsCenter zeigt ausgewählten Content
-- Responsive 3-Spalten-Layout
-
-### 🖼️ Visuelle Referenzen
-
-**Aktueller Proof of Concept:**
-- `/cockpit-v2` zeigt Grundstruktur
-- Sidebar funktioniert
-- Content-Area bereit für Module
-
-**Ziel-Integration:**
-```
-┌─────────────┬──────────────────┬─────────────────┐
-│  Mein Tag   │  Fokus-Liste     │ Aktions-Center  │
-│             │  (von FC-001)    │                 │
-│ - Alerts    │ - Filter         │ - Details       │
-│ - Termine   │ - Cards/List     │ - Calculator    │
-│ - Tasks     │ - Pagination     │ - Actions       │
-└─────────────┴──────────────────┴─────────────────┘
-```
-
-### 🔗 Abhängigkeiten für Finalisierung
-
-**Wartet auf:**
-1. ✅ Settings (M7) - Als Test für MainLayoutV2
-2. ⏳ Calculator (M8) - Für AktionsCenter
-3. ⏳ Customer (M5) - Für Details im AktionsCenter
-
-### ⚡ Performance-Optimierungen
-
-- Lazy Loading für Spalten-Inhalte
-- Virtual Scrolling in Listen
-- Optimistic Updates für schnelle UX
-- Local Storage für Layout-Präferenzen

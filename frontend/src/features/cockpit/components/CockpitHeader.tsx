@@ -5,7 +5,7 @@
 import { Link } from 'react-router-dom';
 import { useCockpitStore } from '../../../store/cockpitStore';
 import { useAuth } from '../../../contexts/AuthContext';
-// CSS import removed - migrating to MUI sx props
+import './CockpitHeader.css';
 
 export function CockpitHeader() {
   const { toggleMobileMenu, toggleCompactMode, isCompactMode } = useCockpitStore();

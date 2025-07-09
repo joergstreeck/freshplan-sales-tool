@@ -12,7 +12,7 @@ import { CustomerList } from '../../customer/components/CustomerList';
 import { useCustomerSearch } from '../../customer/hooks/useCustomerSearch';
 import { useFocusListStore } from '../../customer/store/focusListStore';
 import type { Customer } from '../../customer/types/customer';
-// CSS import removed - migrating to MUI sx props
+import './FocusListColumn.css';
 
 export function FocusListColumn() {
   const { selectCustomer } = useCockpitStore();

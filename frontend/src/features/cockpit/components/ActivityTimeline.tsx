@@ -6,7 +6,7 @@
 import { format, parseISO } from 'date-fns';
 import { de } from 'date-fns/locale';
 import type { DashboardTask, DashboardAlert } from '../types/salesCockpit';
-// CSS import removed - migrating to MUI sx props
+import './ActivityTimeline.css';
 
 interface ActivityTimelineProps {
   tasks: DashboardTask[];

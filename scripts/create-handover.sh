@@ -1,126 +1,354 @@
 #!/bin/bash
 
-# Simple handover creation script - minimal output to avoid crashes
-# This script creates a handover template and lets Claude fill it
+echo "📝 Creating Handover Documentation"
+echo "================================="
+echo ""
 
+# Get current date and time
 DATE=$(date +%Y-%m-%d)
 TIME=$(date +%H-%M)
 DATETIME=$(date +"%d.%m.%Y %H:%M")
 
-# Create directory
+# Create directory if it doesn't exist
 HANDOVER_DIR="docs/claude-work/daily-work/$DATE"
 mkdir -p "$HANDOVER_DIR"
 
 # Handover file
 HANDOVER_FILE="$HANDOVER_DIR/${DATE}_HANDOVER_${TIME}.md"
 
-# Check service status
-SERVICE_STATUS=$($HOME/freshplan-sales-tool/scripts/check-services.sh 2>&1 | tail -4 | head -3)
-
-# Get Java and Node versions
-JAVA_VERSION=$(java -version 2>&1 | head -1 | cut -d'"' -f2)
-NODE_VERSION=$(node -v)
-
-# Create template with critical info
-cat > "$HANDOVER_FILE" << 'EOF'
-# 🔄 STANDARDÜBERGABE - DATETIME_PLACEHOLDER
+# Start creating the handover
+cat > "$HANDOVER_FILE" << EOF
+# 🔄 STANDARDÜBERGABE - $DATETIME
 
 **WICHTIG: Lies ZUERST diese Dokumente in dieser Reihenfolge:**
-1. `/docs/CLAUDE.md` (Arbeitsrichtlinien und Standards)
+1. \`/docs/CLAUDE.md\` (Arbeitsrichtlinien und Standards)
 2. Diese Übergabe
-3. `/docs/STANDARDUBERGABE_NEU.md` als Hauptanleitung
+3. \`/docs/STANDARDUBERGABE_NEU.md\` als Hauptanleitung
 
-## 🚨 KRITISCHE TECHNISCHE INFORMATIONEN
+## 📚 Das 3-STUFEN-SYSTEM verstehen
 
-### 🖥️ Service-Konfiguration
-| Service | Port | Technologie | Status |
-|---------|------|-------------|--------|
-| **Backend** | `8080` | Quarkus mit Java 17 | SERVICE_CHECK_PLACEHOLDER |
-| **Frontend** | `5173` | React/Vite | SERVICE_CHECK_PLACEHOLDER |
-| **PostgreSQL** | `5432` | PostgreSQL 15+ | SERVICE_CHECK_PLACEHOLDER |
-| **Keycloak** | `8180` | Auth Service | SERVICE_CHECK_PLACEHOLDER |
+**STANDARDUBERGABE_NEU.md** (Hauptdokument)
+- 5-Schritt-Prozess: System-Check → Orientierung → Arbeiten → Problemlösung → Übergabe
+- Verwende IMMER als primäre Anleitung
+- Enthält alle wichtigen Scripts und Befehle
 
-### ⚠️ WICHTIGE HINWEISE
-- **Java Version:** MUSS Java 17 sein! (aktuell: JAVA_VERSION_PLACEHOLDER)
-- **Node Version:** v22.16.0+ erforderlich (aktuell: NODE_VERSION_PLACEHOLDER)
-- **Working Directory:** `/Users/joergstreeck/freshplan-sales-tool`
-- **Branch-Regel:** NIEMALS direkt in `main` pushen!
+**STANDARDUBERGABE_KOMPAKT.md** (Ultra-kurz)
+- Nur für Quick-Reference wenn du den Prozess schon kennst
+- Komprimierte Version für erfahrene Sessions
 
-## 🎯 AKTUELLER STAND
+**STANDARDUBERGABE.md** (Vollständig)
+- Nur bei ernsten Problemen verwenden
+- Detaillierte Troubleshooting-Anleitungen
 
-### Git Status
-```
-[Git status wird von Claude eingefügt]
-```
+---
 
-### Aktives Modul
-**Feature:** [Von Claude ausfüllen]
-**Modul:** [Von Claude ausfüllen]
-**Dokument:** [Von Claude ausfüllen] ⭐
-**Status:** [Von Claude ausfüllen]
+## 🎯 AKTUELLER STAND (Code-Inspektion-Validiert)
 
-## 📋 WAS WURDE HEUTE GEMACHT?
-[Von Claude ausfüllen - konkrete Code-Änderungen mit Dateinamen]
+### ✅ SYSTEM-STATUS ($TIME)
+EOF
 
-## ✅ WAS FUNKTIONIERT?
-[Von Claude ausfüllen - verifiziert durch Tests/Logs]
+# Add system check results
+echo '```' >> "$HANDOVER_FILE"
+./scripts/check-services.sh >> "$HANDOVER_FILE" 2>&1
+echo '```' >> "$HANDOVER_FILE"
+echo "" >> "$HANDOVER_FILE"
 
-## 🚨 WELCHE FEHLER GIBT ES?
-[Von Claude ausfüllen - mit genauer Fehlermeldung und betroffenen Dateien]
+# Add Git status
+echo "### 📊 Git Status" >> "$HANDOVER_FILE"
+echo '```' >> "$HANDOVER_FILE"
+echo "Branch: $(git branch --show-current)" >> "$HANDOVER_FILE"
+echo "Status: $(git status --porcelain | wc -l) uncommitted changes" >> "$HANDOVER_FILE"
+echo "" >> "$HANDOVER_FILE"
+echo "Recent commits:" >> "$HANDOVER_FILE"
+git log --oneline -5 >> "$HANDOVER_FILE"
+echo '```' >> "$HANDOVER_FILE"
+echo "" >> "$HANDOVER_FILE"
 
-## 🔧 NÄCHSTE SCHRITTE
-[Von Claude ausfüllen - konkret mit Dateinamen und Befehlen]
+# Add implementation status
+echo "### 🏗️ IMPLEMENTIERTE FEATURES (Code-validiert)" >> "$HANDOVER_FILE"
+echo "" >> "$HANDOVER_FILE"
+echo "**Customer Module Backend:**" >> "$HANDOVER_FILE"
+echo '```bash' >> "$HANDOVER_FILE"
+echo "# Entities: $(find backend/src/main/java/de/freshplan/domain/customer/entity -name "*.java" 2>/dev/null | wc -l)" >> "$HANDOVER_FILE"
+echo "# Services: $(find backend/src/main/java/de/freshplan/domain/customer/service -name "*.java" 2>/dev/null | wc -l)" >> "$HANDOVER_FILE"
+echo "# DTOs: $(find backend/src/main/java/de/freshplan/domain/customer/service/dto -name "*.java" 2>/dev/null | wc -l)" >> "$HANDOVER_FILE"
+echo "# Migrations: $(ls backend/src/main/resources/db/migration/V*.sql 2>/dev/null | wc -l)" >> "$HANDOVER_FILE"
+echo '```' >> "$HANDOVER_FILE"
+echo "" >> "$HANDOVER_FILE"
 
-## 📝 CHANGE LOGS DIESER SESSION
-- [ ] Change Log erstellt für: [Feature-Name]
-  - Link: `/docs/claude-work/daily-work/DATE_PLACEHOLDER/DATE_PLACEHOLDER_CHANGE_LOG_feature.md`
+# Add TODO section
+echo "## 📋 WAS WURDE HEUTE GEMACHT?" >> "$HANDOVER_FILE"
+echo "" >> "$HANDOVER_FILE"
+echo "[MANUELL AUSFÜLLEN]" >> "$HANDOVER_FILE"
+echo "" >> "$HANDOVER_FILE"
 
-## 🚀 QUICK START FÜR NÄCHSTE SESSION
+echo "## 📝 CHANGE LOGS DIESER SESSION" >> "$HANDOVER_FILE"
+echo "- [ ] Change Log erstellt für: [Feature-Name]" >> "$HANDOVER_FILE"
+echo "  - Link: \`/docs/claude-work/daily-work/$DATE/$DATE\_CHANGE_LOG_feature.md\`" >> "$HANDOVER_FILE"
+echo "- [ ] Weitere Change Logs: [Liste weitere wenn vorhanden]" >> "$HANDOVER_FILE"
+echo "" >> "$HANDOVER_FILE"
+
+echo "## 📑 FEATURE-KONZEPTE STATUS-UPDATE" >> "$HANDOVER_FILE"
+echo "- [ ] FC-001 (Dynamic Focus List) Status aktualisiert: ✅ Backend / 🔄 Frontend" >> "$HANDOVER_FILE"
+echo "  - Link: \`/docs/features/2025-07-07_TECH_CONCEPT_dynamic-focus-list.md\`" >> "$HANDOVER_FILE"
+echo "- [ ] Weitere FC-Updates: [Liste weitere aktive Feature-Konzepte]" >> "$HANDOVER_FILE"
+echo "" >> "$HANDOVER_FILE"
+
+# Add new FOKUS section
+echo "## 🎯 HEUTIGER FOKUS" >> "$HANDOVER_FILE"
+
+# Use get-active-module.sh to find current module info
+ACTIVE_MODULE_INFO=$(./scripts/get-active-module.sh 2>/dev/null)
+
+# Check if .current-focus exists and read it
+if [ -f ".current-focus" ]; then
+    FEATURE=$(grep '"feature"' .current-focus | cut -d'"' -f4 2>/dev/null || echo "")
+    MODULE=$(grep '"module"' .current-focus | cut -d'"' -f4 2>/dev/null || echo "")
+    LASTFILE=$(grep '"lastFile"' .current-focus | cut -d'"' -f4 2>/dev/null || echo "")
+    LASTLINE=$(grep '"lastLine"' .current-focus | cut -d'"' -f4 2>/dev/null || echo "")
+    NEXTTASK=$(grep '"nextTask"' .current-focus | cut -d'"' -f4 2>/dev/null || echo "")
+    
+    if [ "$MODULE" != "null" ] && [ -n "$MODULE" ]; then
+        FULL_MODULE="$FEATURE-$MODULE"
+        echo "**Aktives Modul:** $FULL_MODULE" >> "$HANDOVER_FILE"
+        
+        # Try to find the actual spoke document
+        SPOKE_DOC=$(find docs/features -name "${FULL_MODULE}*.md" 2>/dev/null | head -1)
+        if [ -n "$SPOKE_DOC" ]; then
+            echo "**Modul-Dokument:** \`$SPOKE_DOC\` ⭐" >> "$HANDOVER_FILE"
+            
+            # Extract next step from spoke document
+            if grep -q "NÄCHSTER SCHRITT" "$SPOKE_DOC"; then
+                echo "" >> "$HANDOVER_FILE"
+                echo "**Dokumentierter nächster Schritt aus Spoke:**" >> "$HANDOVER_FILE"
+                grep -A 5 "NÄCHSTER SCHRITT" "$SPOKE_DOC" | tail -n +2 | head -5 >> "$HANDOVER_FILE"
+                echo "" >> "$HANDOVER_FILE"
+            fi
+        else
+            echo "**Modul-Dokument:** \`/docs/features/$FULL_MODULE-*.md\` ⭐" >> "$HANDOVER_FILE"
+        fi
+        
+        # Hub document
+        HUB_DOC=$(find docs/features -name "${FEATURE}-hub.md" 2>/dev/null | head -1)
+        if [ -n "$HUB_DOC" ]; then
+            echo "**Hub-Dokument:** \`$HUB_DOC\` (Referenz)" >> "$HANDOVER_FILE"
+        else
+            echo "**Hub-Dokument:** \`/docs/features/$FEATURE-hub.md\` (Referenz)" >> "$HANDOVER_FILE"
+        fi
+    else
+        echo "**Aktives Feature:** $FEATURE" >> "$HANDOVER_FILE"
+    fi
+    
+    if [ "$LASTFILE" != "null" ] && [ -n "$LASTFILE" ]; then
+        echo "**Letzte Datei:** $LASTFILE" >> "$HANDOVER_FILE"
+        if [ "$LASTLINE" != "null" ] && [ -n "$LASTLINE" ]; then
+            echo "**Letzte Zeile:** $LASTLINE" >> "$HANDOVER_FILE"
+        fi
+    fi
+    
+    if [ "$NEXTTASK" != "null" ] && [ -n "$NEXTTASK" ]; then
+        echo "**Nächster Schritt (aus .current-focus):** $NEXTTASK" >> "$HANDOVER_FILE"
+    fi
+else
+    echo "**Aktives Modul:** [FC-XXX-MX Name]" >> "$HANDOVER_FILE"
+    echo "**Modul-Dokument:** [Pfad] ⭐" >> "$HANDOVER_FILE"
+    echo "**Hub-Dokument:** [Pfad] (Referenz)" >> "$HANDOVER_FILE"
+    echo "**Letzte Zeile bearbeitet:** [Component:Line]" >> "$HANDOVER_FILE"
+    echo "**Nächster Schritt:** [Konkrete Aufgabe]" >> "$HANDOVER_FILE"
+fi
+
+echo "" >> "$HANDOVER_FILE"
+
+# Add architecture and planning section
+echo "## 🏛️ ARCHITEKTUR & PLANUNG" >> "$HANDOVER_FILE"
+echo "- [ ] **Feature-Konzept [FC-XXX] geprüft:** Das Konzept ist auf dem neuesten Stand und enthält alle notwendigen, \"kompressionssicheren\" Implementierungsdetails." >> "$HANDOVER_FILE"
+echo "  - Dateipfade und Komponenten-Namen definiert" >> "$HANDOVER_FILE"
+echo "  - Props und State vollständig spezifiziert" >> "$HANDOVER_FILE"
+echo "  - State Management Stores zugeordnet" >> "$HANDOVER_FILE"
+echo "  - API-Interaktionen dokumentiert" >> "$HANDOVER_FILE"
+echo "  - Kernlogik beschrieben" >> "$HANDOVER_FILE"
+echo "" >> "$HANDOVER_FILE"
+
+echo "## 🛠️ WAS FUNKTIONIERT?" >> "$HANDOVER_FILE"
+echo "" >> "$HANDOVER_FILE"
+echo "[MANUELL AUSFÜLLEN]" >> "$HANDOVER_FILE"
+echo "" >> "$HANDOVER_FILE"
+
+echo "## 🚨 WELCHE FEHLER GIBT ES?" >> "$HANDOVER_FILE"
+echo "" >> "$HANDOVER_FILE"
+echo "[MANUELL AUSFÜLLEN]" >> "$HANDOVER_FILE"
+echo "" >> "$HANDOVER_FILE"
+
+echo "## 🔧 WIE WURDEN SIE GELÖST / WAS IST ZU TUN?" >> "$HANDOVER_FILE"
+echo "" >> "$HANDOVER_FILE"
+echo "[MANUELL AUSFÜLLEN]" >> "$HANDOVER_FILE"
+echo "" >> "$HANDOVER_FILE"
+
+echo "## 📈 NÄCHSTE KONKRETE SCHRITTE" >> "$HANDOVER_FILE"
+echo "" >> "$HANDOVER_FILE"
+echo "[MANUELL AUSFÜLLEN]" >> "$HANDOVER_FILE"
+echo "" >> "$HANDOVER_FILE"
+
+echo "## 📚 MASSGEBLICHE DOKUMENTE" >> "$HANDOVER_FILE"
+echo "" >> "$HANDOVER_FILE"
+echo "- \`/docs/CRM_COMPLETE_MASTER_PLAN.md\` - Phase 1 Customer Management" >> "$HANDOVER_FILE"
+echo "- \`/docs/CLAUDE.md\` - Arbeitsrichtlinien" >> "$HANDOVER_FILE"
+echo "" >> "$HANDOVER_FILE"
+
+# Add quick start section
+cat >> "$HANDOVER_FILE" << 'EOF'
+## 🚀 NACH KOMPRIMIERUNG SOFORT AUSFÜHREN
+
 ```bash
 # 1. Zum Projekt wechseln
 cd /Users/joergstreeck/freshplan-sales-tool
 
 # 2. System-Check und Services starten
 ./scripts/validate-config.sh
-./scripts/check-services.sh
-
-# Falls Services nicht laufen:
 ./scripts/start-services.sh
 
 # 3. Git-Status
 git status
 git log --oneline -5
 
-# 4. Aktives Modul anzeigen
-./scripts/get-active-module.sh
-
-# 5. TODO-Status
+# 4. TODO-Status
 TodoRead
 
-# 6. [Spezifische Befehle von Claude für aktuelle Aufgabe]
+# 5. Letzte Übergabe lesen
+cat docs/claude-work/daily-work/$(date +%Y-%m-%d)/*HANDOVER*.md | head -50
+
+# 6. Aktives Modul identifizieren
+./scripts/get-active-module.sh
+
+# 7. [SPEZIFISCHE BEFEHLE FÜR AKTUELLE AUFGABE]
 ```
 
 ---
-**Session-Ende:** TIME_PLACEHOLDER  
-**Hauptaufgabe:** [Von Claude ausfüllen]  
-**Status:** [Von Claude ausfüllen]
+
+**Session-Ende:** [ZEIT EINTRAGEN]  
+**Hauptaufgabe:** [AUFGABE EINTRAGEN]  
+**Status:** [FORTSCHRITT EINTRAGEN]  
+**Nächster Schritt:** [PRIORITÄT EINTRAGEN]
 EOF
 
-# Replace placeholders
-sed -i.bak "s/DATETIME_PLACEHOLDER/$DATETIME/g" "$HANDOVER_FILE"
-sed -i.bak "s/TIME_PLACEHOLDER/$TIME/g" "$HANDOVER_FILE"
-sed -i.bak "s/DATE_PLACEHOLDER/$DATE/g" "$HANDOVER_FILE"
-sed -i.bak "s/JAVA_VERSION_PLACEHOLDER/$JAVA_VERSION/g" "$HANDOVER_FILE"
-sed -i.bak "s/NODE_VERSION_PLACEHOLDER/$NODE_VERSION/g" "$HANDOVER_FILE"
-sed -i.bak "s/SERVICE_CHECK_PLACEHOLDER/[Von Script prüfen]/g" "$HANDOVER_FILE"
-rm "$HANDOVER_FILE.bak"
-
-# Simple output
-echo "✅ Handover template created:"
-echo "   $HANDOVER_FILE"
 echo ""
-echo "📝 Claude, please fill in the template with:"
-echo "   - Git status and recent commits"
-echo "   - What was done today"
-echo "   - Current state and any issues"
-echo "   - Next steps for the next session"
+echo "✅ Handover template created: $HANDOVER_FILE"
+echo ""
+echo "📝 Please fill in the [MANUELL AUSFÜLLEN] sections!"
+echo ""
+
+# Initialize FEATURE variable
+FEATURE="FC-002"
+
+# Ask for next focus module
+valid_choice=false
+while [ "$valid_choice" = false ]; do
+    echo "📍 FOKUS-MODUL für nächste Session festlegen:"
+    echo ""
+    echo "Aktuelle Feature-Module:"
+    echo "1) FC-002-M1: Hauptnavigation"
+    echo "2) FC-002-M2: Quick-Create"
+    echo "3) FC-002-M3: Cockpit"
+    echo "4) FC-002-M4: Neukundengewinnung"
+    echo "5) FC-002-M5: Kundenmanagement"
+    echo "6) FC-002-M6: Berichte"
+    echo "7) FC-002-M7: Einstellungen"
+    echo "8) Anderes Feature/Modul"
+    echo "9) Kein spezifisches Modul"
+    echo ""
+    read -p "Auswahl (1-9): " choice
+
+    # Validate input
+    if [[ ! "$choice" =~ ^[1-9]$ ]]; then
+        echo ""
+        echo "❌ Ungültige Eingabe! Bitte eine Zahl zwischen 1 und 9 eingeben."
+        echo ""
+        continue
+    fi
+
+    valid_choice=true
+
+    # Update .current-focus based on choice
+    case $choice in
+        1)
+            MODULE="M1"
+            MODULE_NAME="Hauptnavigation"
+            ;;
+        2)
+            MODULE="M2"
+            MODULE_NAME="Quick-Create"
+            ;;
+        3)
+            MODULE="M3"
+            MODULE_NAME="Cockpit"
+            ;;
+        4)
+            MODULE="M4"
+            MODULE_NAME="Neukundengewinnung"
+            ;;
+        5)
+            MODULE="M5"
+            MODULE_NAME="Kundenmanagement"
+            ;;
+        6)
+            MODULE="M6"
+            MODULE_NAME="Berichte"
+            ;;
+        7)
+            MODULE="M7"
+            MODULE_NAME="Einstellungen"
+            ;;
+        8)
+            # Get custom feature and module
+            custom_valid=false
+            while [ "$custom_valid" = false ]; do
+                read -p "Feature-Code (z.B. FC-003): " CUSTOM_FEATURE
+                read -p "Modul-Code (z.B. M1): " CUSTOM_MODULE
+                
+                # Validate custom inputs
+                if [ -z "$CUSTOM_FEATURE" ] || [ -z "$CUSTOM_MODULE" ]; then
+                    echo ""
+                    echo "❌ Feature-Code und Modul-Code dürfen nicht leer sein!"
+                    echo ""
+                else
+                    custom_valid=true
+                fi
+            done
+            
+            FEATURE=$CUSTOM_FEATURE
+            MODULE=$CUSTOM_MODULE
+            MODULE_NAME="Custom"
+            ;;
+        9)
+            MODULE="null"
+            MODULE_NAME="Kein spezifisches Modul"
+            ;;
+    esac
+done
+
+# Default to FC-002 if not custom
+if [ "$choice" != "8" ]; then
+    FEATURE="FC-002"
+fi
+
+# Ask for next task
+echo ""
+read -p "Nächste konkrete Aufgabe: " NEXT_TASK
+
+# Update .current-focus file
+cat > .current-focus << EOF
+{
+  "feature": "$FEATURE",
+  "module": "$MODULE",
+  "lastFile": null,
+  "lastLine": null,
+  "nextTask": "$NEXT_TASK",
+  "lastUpdated": "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+}
+EOF
+
+echo ""
+echo "✅ Fokus für nächste Session gesetzt: $FEATURE-$MODULE ($MODULE_NAME)"
+echo "📋 Nächste Aufgabe: $NEXT_TASK"
+echo ""
+echo "To edit handover: code $HANDOVER_FILE"

@@ -86,8 +86,6 @@
 5. **YAGNI** - You Aren't Gonna Need It (keine vorzeitige Abstraktion)
 
 ### Backend-Architektur (Quarkus/Java):
-
-#### Legacy-Struktur (wird schrittweise migriert):
 ```
 backend/
 ├── api/                          # REST Layer (Controllers)
@@ -111,30 +109,6 @@ backend/
     ├── constants/              # Global Constants
     └── util/                   # Utility Classes
 ```
-
-#### Neue Modulare Architektur (ab 09.07.2025):
-```
-backend/
-├── modules/                     # Modularer Monolith
-│   ├── customer/               # Customer Bounded Context
-│   │   ├── core/              # Kern-Modul
-│   │   │   ├── domain/        # Entities, Value Objects
-│   │   │   ├── application/   # Command/Query Handlers
-│   │   │   └── infrastructure/# Repositories
-│   │   ├── contacts/          # Kontakt-Modul
-│   │   ├── financials/        # Finanz-Modul
-│   │   └── timeline/          # Event-History
-│   └── shared/                # Gemeinsame Module
-│       ├── events/            # Domain Events
-│       └── api/               # API Gateway
-└── legacy/                     # Alt-Code während Migration
-```
-
-**Migration-Strategie:**
-1. Neue Module parallel zu altem Code
-2. Feature Flags für schrittweise Umstellung
-3. Facade Pattern für API-Kompatibilität
-4. Event-Driven Communication zwischen Modulen
 
 ### Frontend-Architektur (React/TypeScript):
 ```
@@ -378,44 +352,6 @@ class UserServiceTest {
 - **Query Optimization** mit Named Queries
 - **Caching** wo sinnvoll (`@CacheResult`)
 - **Database Indexes** in Flyway Migrations
-
-### Event-Driven Architecture (NEU ab 09.07.2025):
-```java
-// Domain Event Basis
-public interface DomainEvent {
-    UUID getEventId();
-    UUID getAggregateId();
-    LocalDateTime getOccurredAt();
-}
-
-// Event Bus für Module-Kommunikation
-@ApplicationScoped
-public class EventBus {
-    public void publish(DomainEvent event) {
-        // Sync jetzt, Async später
-    }
-}
-
-// Event Handler
-void onCustomerCreated(@Observes CustomerCreatedEvent e) {
-    // Reagiere auf Event
-}
-```
-
-### CQRS Pattern (für Read-Heavy Operations):
-```java
-// Command Side
-CustomerCommandHandler -> Customer Entity -> Event
-
-// Query Side  
-CustomerQueryHandler -> CustomerReadModel -> Response
-
-// Read Models für Performance
-@Entity @Immutable
-public class CustomerListView {
-    // Denormalisierte Daten für schnelle Queries
-}
-```
 
 ### Git Workflow & Code Review:
 ```bash

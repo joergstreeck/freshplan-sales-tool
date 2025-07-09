@@ -30,23 +30,11 @@ TIPP: Du kannst ./scripts/create-handover.sh als Basis-Template nutzen.
 ## 🚀 TEIL 2: Session-Start (nach Komprimierung)
 
 ```
-Lese alles gründlich durch und befolge strict die Standardübergabe. 
-Wichtig: Fange noch nicht an zu arbeiten.
+Lese alles gründlich durch und befolge strict die Standardübergabe. Fange noch nicht an zu arbeiten. 
 Führe ./scripts/session-start.sh aus für einen optimalen Start.
-Lies dann zuerst CLAUDE.md, dann lese STANDARDUBERGABE_NEU.md und dann CRM_COMPLETE_MASTER_PLAN.md. Lese alle Dateien komplett. Wichtig: du pushst nie direkt in den main-branch.
-DANN FOKUSSIERE DICH:
-  1. Führe aus: ./scripts/get-active-module.sh
-  2. Öffne das mit ⭐ markierte Spoke-Dokument
-  3. Gehe direkt zum Abschnitt "NÄCHSTER SCHRITT FÜR IMPLEMENTIERUNG"
-  4. Validiere den dokumentierten Stand durch Code-Inspektion
-  5. Beginne mit der Arbeit am dokumentierten nächsten Schritt
-Wenn du das getan hast, melde dich bei mir mit:
-  - Bestätigung des aktiven Moduls (FC-XXX-MX)
-  - Bestätigung des nächsten Schritts
-  - Eventuelle Diskrepanzen zwischen Doku und Code
-TIPP: Nutze während der Arbeit:
-  - ./scripts/update-focus.sh - um deinen Fortschritt zu tracken
-  - ./scripts/get-active-module.sh - um Dokumente schnell zu finden
+Lies dann zuerst CLAUDE.md, dann lese STANDARDUBERGABE_NEU.md und dann CRM_COMPLETE_MASTER_PLAN.md. Lese alle Dateien komplett. 
+Nutze TodoRead für den aktuellen TODO-Stand.
+Wenn du das getan hast, melde dich bei mir mit einer kurzen Zusammenfassung des aktuellen Stands.
 ```
 
 ---
@@ -60,7 +48,7 @@ TIPP: Nutze während der Arbeit:
 
 **Teil 2:**
 ```
-./scripts/session-start.sh → Docs lesen → get-active-module.sh → ⛔ STOPP: Status melden und auf "ARBEITSSTART" warten!
+./scripts/session-start.sh → Docs lesen (siehe TRIGGER_TEXTS.md) → TodoRead → Status melden.
 ```
 
 ---

@@ -44,57 +44,7 @@
 
 ---
 
-## A.3 Cockpit-Frontend-Architektur
-
-**Status:** ✅ **ENTSCHIEDEN & ANALYSIERT** (09.07.2025)
-
-### Technische Entscheidungen:
-
-#### 1. Wiederverwendungs-Strategie
-Nach Code-Analyse wurde eine **3-Phasen-Integrationsstrategie** festgelegt:
-
-**Phase 1: Quick Wins (70% Wiederverwendung)**
-- `TriageInbox`, `TaskList`, `AppointmentsList` mit minimalen Anpassungen
-- Bestehende Stores und Hooks nutzen
-
-**Phase 2: Moderate Anpassungen (50% Wiederverwendung)**
-- `CustomerDetail`, `ActivityTimeline` refactoren
-- API-Integration modernisieren
-
-**Phase 3: Neue Entwicklung (< 30% Wiederverwendung)**
-- `CockpitView` als neuer Container
-- `ResizablePanels` für flexibles Layout
-- Aggregierte API-Calls implementieren
-
-#### 2. State Management
-```typescript
-// Erweiterter cockpitStore
-interface CockpitState {
-  layout: {
-    columnWidths: [number, number, number];
-    collapsed: boolean[];
-  };
-  data: {
-    overview: CockpitOverviewDTO | null;
-    selectedCustomer: Customer | null;
-    isLoading: boolean;
-  };
-  preferences: {
-    defaultView: 'cards' | 'list' | 'kanban';
-    refreshInterval: number;
-  };
-}
-```
-
-#### 3. Performance-Optimierungen
-- **Single API Call**: `/api/cockpit/overview` aggregiert alle Daten
-- **React.memo**: Für alle Sub-Komponenten
-- **Virtual Scrolling**: Bei Listen > 50 Items
-- **Lazy Loading**: Timeline lädt on-demand
-
----
-
-## A.4 Performance-Optimierung
+## A.3 Performance-Optimierung
 
 **Status:** ✅ **ENTSCHIEDEN & FREIGEGEBEN**
 

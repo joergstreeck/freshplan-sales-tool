@@ -32,20 +32,6 @@ Dieses Dokument ist deine **HAUPTANLEITUNG** für effiziente und nachvollziehbar
 ./scripts/code-review.sh
 ```
 
-## 🚨 KRITISCHE INFORMATIONEN (IMMER BEACHTEN!)
-
-### Service-Ports und Technologien
-- **Backend:** Port `8080` - Quarkus mit Java 17 (NICHT 11 oder 21!)
-- **Frontend:** Port `5173` - React/Vite mit TypeScript
-- **PostgreSQL:** Port `5432` - Datenbank
-- **Keycloak:** Port `8180` - Authentication Service
-
-### Working Directory
-**IMMER:** `/Users/joergstreeck/freshplan-sales-tool`
-
-### Branch-Regel
-**NIEMALS** direkt in `main` pushen! Immer Feature-Branches nutzen.
-
 ## Das 5-Schritte-System
 
 ### 1. System-Check (Vor der Arbeit)

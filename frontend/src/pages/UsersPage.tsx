@@ -3,7 +3,6 @@ import { UserTable } from '../features/users/UserTable';
 import { UserForm } from '../features/users/UserForm';
 import { useUser } from '../features/users/userQueries';
 import { useUserStore } from '../features/users/userStore';
-import { AuthenticatedLayout } from '../components/layout/AuthenticatedLayout';
 
 export const UsersPage = () => {
   const { isCreateModalOpen, isEditModalOpen, selectedUserId, closeCreateModal, closeEditModal } =
@@ -19,9 +18,8 @@ export const UsersPage = () => {
   };
 
   return (
-    <AuthenticatedLayout>
-      <div className="min-h-screen bg-background p-8">
-        <div className="mx-auto max-w-7xl space-y-8">
+    <div className="min-h-screen bg-background p-8">
+      <div className="mx-auto max-w-7xl space-y-8">
         {/* Main content */}
         {!isCreateModalOpen && !isEditModalOpen && <UserTable />}
 
@@ -47,8 +45,7 @@ export const UsersPage = () => {
             </div>
           </div>
         )}
-        </div>
       </div>
-    </AuthenticatedLayout>
+    </div>
   );
 };

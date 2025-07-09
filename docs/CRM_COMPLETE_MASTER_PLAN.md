@@ -72,53 +72,20 @@ Wir bauen von Tag 1 an auf einem Fundament, das für Wachstum, Performance und h
 
 Die Hauptoberfläche ist ein einziges, dreigeteiltes Cockpit. Es ist **responsiv** und passt sich allen Bildschirmgrößen an.
 
-### Frontend-Architektur (NEU - 09.07.2025)
-
-**Status:** 🔍 40% Analyse abgeschlossen - Wiederverwendbarkeits-Matrix erstellt
-
-**Technische Struktur:**
-```
-CockpitView.tsx (Hauptcontainer)
-├── MeinTag.tsx (Spalte 1)
-│   ├── AlertsList.tsx        # Tagesalarme & KI-Insights
-│   ├── AppointmentsList.tsx  # Google Kalender Integration
-│   ├── TasksList.tsx         # Priorisierte Aufgaben
-│   └── TriageInbox.tsx       # Nicht zugeordnete E-Mails
-├── FocusListColumn (Spalte 2)
-│   └── [Wiederverwendung von FC-001]
-└── AktionsCenter.tsx (Spalte 3)
-    ├── CustomerDetail.tsx    # 360° Kundenansicht
-    ├── ActivityTimeline.tsx  # Alle Interaktionen
-    └── QuickActions.tsx      # Kontextuelle Aktionen
-```
-
-**Performance-Optimierungen:**
-- Aggregierter Backend-Endpunkt: `GET /api/cockpit/overview`
-- Lazy Loading für Timeline & Details
-- Optimistic UI Updates
-- Local Storage für Layout-Präferenzen
-
-### Die drei Säulen im Detail:
-
 * **Spalte 1: Mein Tag (Übersicht & Prioritäten):**
     * Zeigt proaktiv die wichtigsten Aufgaben, Termine (via **Google Kalender-Integration**) und KI-gestützten Alarme für den aktuellen Tag.
     * Beinhaltet die **"Triage-Inbox"** für nicht zugeordnete Kommunikation.
-    * **Wiederverwendung:** 70% bestehender Code adaptierbar
 
 * **Spalte 2: Fokus-Liste (Arbeitsvorrat):**
-    * Die dynamische Arbeitsliste für Kunden (FC-001 Integration).
+    * Die dynamische Arbeitsliste für Kunden.
     * Ermöglicht Wechsel zwischen Listen-, Karten- und Kanban-Ansicht.
     * Bietet mächtige Filter und speicherbare Ansichten.
-    * **Wiederverwendung:** 100% von FC-001
 
 * **Spalte 3: Aktions-Center (Der Arbeitsbereich):**
     * Hier findet die kontextbezogene Arbeit statt.
     * Bietet einen **geführten Prozess** je nach Kundenstatus (z.B. Neukunden-Akquise).
     * Funktionen wie **Bonitätsprüfung**, **Rabattrechner** und **Angebotserstellung** sind als logische Schritte in diesen Prozess integriert.
     * Ermöglicht das direkte **Schreiben von E-Mails** und die Dokumentation aller Aktivitäten.
-    * **Wiederverwendung:** 85% aus customer/activities Modulen
-
-**Details:** Siehe `/docs/features/FC-002-M3-cockpit.md`
 
 ---
 
@@ -159,128 +126,28 @@ CockpitView.tsx (Hauptcontainer)
 
 * **Phase 3: Neuausrichtung der Benutzeroberfläche & Arbeitsprozesse (FC-002)**
     
-    **Status:** ✅ Planungsphase abgeschlossen | 🚀 Bereit für Implementierung
+    **Ziel:** Transformation von einer funktionsgetriebenen zu einer prozessorientierten Anwendung durch eine intuitive 5-Punkte-Navigation und kontextbezogene Aktionen.
     
-    **Strategische Zusammenfassung:**
-    Die UI/UX-Neuausrichtung erfolgt in 3 klar definierten Meilensteinen über 35-40 Personentage:
+    **Kernelemente:**
+    - **5-Punkte-Navigation:** Mein Cockpit | Neukundengewinnung | Kundenmanagement | Auswertungen & Berichte | Einstellungen
+    - **Globaler "+ Neu" Button:** Schnellzugriff für neue Entitäten von überall
+    - **Prozessorientierte Werkzeuge:** Funktionen erscheinen dort, wo sie im Arbeitsablauf benötigt werden
+    - **Klare deutsche Begriffe:** Gemäß unserem neuen [Way of Working](./WAY_OF_WORKING.md)
     
-    - **Meilenstein 1 - "Das neue Grundgerüst" (5 Tage):** Navigation & Basis-Funktionalität
-    - **Meilenstein 2 - "Das neue Cockpit" (17 Tage):** Kern-Arbeitsbereich & Backend-Modernisierung  
-    - **Meilenstein 3 - "Feature-Vervollständigung" (12 Tage):** Alle verbleibenden Module
-    
-    **Kernvorteile:**
-    - 70-100% Code-Wiederverwendung im Backend
-    - Schrittweise Migration ohne Big-Bang-Risiko
-    - Quick Wins durch frühe Cockpit-Verfügbarkeit
-    
-    **📋 Vollständiger Implementierungsplan:** [FC-002-IMPLEMENTATION_PLAN.md](./features/FC-002-IMPLEMENTATION_PLAN.md)
-    **🎯 Technisches Hub-Dokument:** [FC-002-hub.md](./features/FC-002-hub.md)
-    
-    _Alle technischen Details, Modul-Analysen und Abhängigkeiten sind im verlinkten Implementierungsplan dokumentiert. Das Hub-Dokument bietet eine detaillierte Übersicht aller Module inkl. der neuen Layout-Architektur._
+    **📋 Detailliertes Konzept:** [FC-002: UI/UX-Neuausrichtung & Prozessorientierung](./features/2025-07-08_TECH_CONCEPT_ui-ux-refactoring.md)
 
-* **Phase 4: Kritische Vertriebsfunktionen (NEU - 09.07.2025)**
-    
-    **Basierend auf direktem Nutzerfeedback - Diese Features sind essentiell für den Vertriebserfolg!**
-    
-    **Phase 4.1 - Team-Funktionen (11-12 Tage):**
-    1. **[FC-003: E-Mail-Integration (BCC-to-CRM)](./features/FC-003-email-integration.md):** 
-       - Automatische E-Mail-Archivierung beim richtigen Kunden
-       - Triage-Inbox für unzugeordnete Kommunikation
-       - Thread-Erkennung für Konversationen
-    
-    2. **Interne Team-Nachrichten:** 
-       - Team-Chat pro Kunde/Lead
-       - @-Mentions für direkte Benachrichtigungen
-       - Aktivitäts-Feed zeigt wer gerade was macht
-    
-    3. **[FC-004: Verkäuferschutz-System](./features/FC-004-verkaeuferschutz.md):** 
-       - Provisions-Sicherung mit 5-stufigem Schutz-System
-       - Faire Regeln mit automatischer Eskalation
-       - Provisions-Splitting bei Teamarbeit
-       - Historie für Konfliktlösung
-    
-    **Phase 4.2 - Führungs-Tools (7-8 Tage):**
-    4. **[FC-007: Chef-Dashboard mit KPIs](./features/FC-007-chef-dashboard.md):** 
-       - Live-Aktivitäten-Monitor: Was tun meine Verkäufer gerade?
-       - Pipeline-Analyse: Wieviel Geschäft ist in Anbahnung?
-       - Performance-Matrix: Wer braucht Coaching?
-       - KI-gestützte Insights und Handlungsempfehlungen
-    
-    **Phase 4.3 - Xentral-Integration (8-10 Tage):**
-    5. **[FC-005: Provisions-Management](./features/FC-005-xentral-integration.md):** 
-       - Echtzeit-Integration via REST-API und Webhooks
-       - Automatische Provisionsberechnung bei Zahlungseingang
-       - Individuelle Provisionssätze und Sonderregeln
-       - Vollständige Transparenz für alle Beteiligten
-       - **📊 [Xentral API Analyse](./technical/XENTRAL_API_ANALYSIS.md)**
-    
-    **Phase 4.4 - Activity Timeline (5 Tage):**
-    6. **Timeline & BFF:** Integration der ursprünglich geplanten Features
-    
-    **📋 Übersicht aller neuen Features:** [FC-002-PHASE4-ADDITIONS.md](./features/FC-002-PHASE4-ADDITIONS.md)
+* **Phase 4: Activity Timeline & Prozess-Integration**
+    1.  **Activity Timeline:** Services und API-Endpunkte für die Kunden-Zeitleiste
+    2.  **Backend-for-Frontend (BFF)** implementieren
+    3.  **Opportunity & Aktivitäten Management** (Backend & Frontend)
+    4.  **Xentral-Integration** (Proof-of-Concept, dann volle Integration)
+    5.  **"BCC-to-CRM"** und die **Triage-Inbox**
 
-* **Phase 5: Mobile First & KI-Integration**
-    
-    **Phase 5.1 - Mobile Companion App (15-20 Tage):**
-    * **[FC-006: FreshPlan Mobile Companion](./features/FC-006-mobile-app.md):**
-      - Revolutionäre Sprach-zu-Text Erfassung mit KI-Parsing
-      - Vollständige Offline-Fähigkeit mit intelligentem Sync
-      - Visitenkarten-Scanner mit automatischer Kundenzuordnung
-      - Context-Awareness durch GPS und Kalender-Integration
-      - One-Handed optimierte UI für Außendienst
-    
-    **Phase 5.2 - KI & Automation (17-20 Tage):**
-    * **Intelligente Lead-Generierung:** 
-      - Web-Monitoring für Trigger-Events
-      - Social Listening auf LinkedIn/XING
-      - Branchen-Crawler für neue Opportunities
-    * **Anruf-Integration:** 
-      - Automatische Gesprächstranskription
-      - Stimmungsanalyse und Next-Best-Action
-    * **AI Sales Assistant:** 
-      - Proaktive Handlungsempfehlungen
-      - Optimale Kontaktzeiten-Vorhersage
-    * **Partner-Lifecycle Automation:** 
-      - Automatisierte Follow-Ups
-      - Intelligente Eskalation bei Inaktivität
-
----
-
-## 🏗️ Backend-Architektur-Standards (NEU - 09.07.2025)
-
-### Strategische Entscheidung: Modularer Monolith
-
-Nach eingehender Analyse des bestehenden Customer-Monolithen (54 Dateien, eng gekoppelt) haben wir uns für eine **schrittweise Migration zu einem modularen Monolithen** entschieden:
-
-1. **Migration statt Neubau**: Bestehender Code wird refactored, nicht neu geschrieben
-2. **Modularer Monolith**: Service-ready Architektur, aber weiterhin als Monolith deployed
-3. **Event-Driven Communication**: Lose Kopplung zwischen Modulen über Domain Events
-4. **CQRS für Read-Heavy Operations**: Optimierte Read Models für Listen und Suche
-
-### Neue Modul-Struktur (am Beispiel Customer)
-
-```
-modules/
-├── customer-core/        # Kern-Entity mit Basis-Daten
-├── customer-contacts/    # Kontaktpersonen-Verwaltung
-├── customer-financials/  # Finanz- und Bonitätsdaten
-└── customer-timeline/    # Event-basierte Historie
-```
-
-### Architektur-Prinzipien
-
-1. **Bounded Contexts**: Klare Modul-Grenzen ohne zirkuläre Abhängigkeiten
-2. **Domain Events**: Kommunikation zwischen Modulen nur über Events
-3. **Feature Flags**: Schrittweise Migration mit Parallel-Betrieb
-4. **API-Stabilität**: Keine Breaking Changes während der Migration
-
-### Performance-Ziele
-
-- API Response Time: P95 < 200ms
-- Event Processing: < 100ms
-- Read Model Updates: Eventually Consistent (< 1s)
-
-**Details**: Siehe `/docs/features/FC-002-M5-kundenmanagement.md`
+* **Phase 5: Intelligenz & Proaktive Unterstützung**
+    * **Data Health Dashboard**
+    * **Partner-Lifecycle**-Automatisierung
+    * **Lead Scoring** 
+    * **AI Sales Assistant**
 
 ---
 
@@ -288,19 +155,5 @@ modules/
 
 Detaillierte technische Konzepte für alle größeren Features:
 
-### Phase 1-3 Features:
 - **FC-001**: [Dynamische Fokus-Liste](./features/2025-07-07_TECH_CONCEPT_dynamic-focus-list.md) - Status: Backend ✅ | Frontend ✅
-- **FC-002**: [UI/UX-Neuausrichtung & Prozessorientierung](./features/2025-07-08_TECH_CONCEPT_ui-ux-refactoring.md) - Status: 📋 Planung abgeschlossen
-  - **[Master-Implementierungsplan](./features/FC-002-IMPLEMENTATION_PLAN.md)** - 3 Meilensteine, 35-40 Personentage
-
-### Phase 4 Features (Kritische Vertriebsfunktionen):
-- **FC-003**: [E-Mail-Integration (BCC-to-CRM)](./features/FC-003-email-integration.md) - Status: 📋 Architektur definiert
-- **FC-004**: [Verkäuferschutz-System](./features/FC-004-verkaeuferschutz.md) - Status: 📋 Schutz-Stufen definiert
-- **FC-005**: [Xentral-Integration](./features/FC-005-xentral-integration.md) - Status: 📋 API analysiert
-- **FC-007**: [Chef-Dashboard & KPIs](./features/FC-007-chef-dashboard.md) - Status: 📋 Metriken definiert
-
-### Phase 5 Features:
-- **FC-006**: [Mobile Companion App](./features/FC-006-mobile-app.md) - Status: 📋 Konzept erstellt
-
-### Technische Analysen:
-- **[Xentral API Analyse](./technical/XENTRAL_API_ANALYSIS.md)** - Status: ✅ Abgeschlossen
+- **FC-002**: [UI/UX-Neuausrichtung & Prozessorientierung](./features/2025-07-08_TECH_CONCEPT_ui-ux-refactoring.md) - Status: 📋 In Planung

@@ -1,14 +1,5 @@
 # Freshfoodz CI-Guide
 
-## 🎨 Offizielles Logo
-
-![FreshPlan Logo](./assets/images/freshplan-logo-official.png)
-
-- **Datei:** `freshplan-logo-official.png` (19 KB)
-- **Original:** Aus legacy/assets/images/freshfoodzlogo.png
-- **Verwendung:** Header, Login, Dokumente
-- **Weitere Details:** Siehe [Logo Guidelines](./design/LOGO_GUIDELINES.md)
-
 ## Farben
 - #94C456 (Primärgrün)
 - #004F7B (Dunkelblau)
