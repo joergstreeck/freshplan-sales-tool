@@ -93,3 +93,60 @@ Nach jeder getroffenen Entscheidung oder signifikanten Änderung MÜSSEN die fol
 ❌ **Nicht**: Nur Hub updaten ohne Spoke-Details
 ❌ **Nicht**: Widersprüchliche Status in verschiedenen Dokumenten
 ✅ **Sondern**: Immer von Detail (Spoke) zu Übersicht (Hub) arbeiten
+
+## 3. Crash-Recovery-Protokoll (Notfallplan)
+
+**Zweck:** Schnelle und zuverlässige Wiederherstellung des Arbeitskontexts nach einem Absturz.
+
+### Das Problem
+Wenn Claude während einer Session abstürzt, geht der gesamte Kontext verloren. Ohne einen klaren Recovery-Plan ist es schwierig, die Arbeit fortzusetzen.
+
+### Die Lösung: Crash-Recovery-Protokoll v2
+
+#### Bei Session-Start nach Absturz:
+
+1. **Letzte gültige Übergabe finden**:
+   ```bash
+   ls -t docs/claude-work/daily-work/*/​*HANDOVER*.md | head -1
+   ```
+   Diese Datei ist unsere "Blackbox" - sie enthält den letzten stabilen Zustand und das Ziel der abgestürzten Session.
+
+2. **Breadcrumbs der abgestürzten Session prüfen** (falls vorhanden):
+   ```bash
+   cat docs/claude-work/daily-work/$(date +%Y-%m-%d)/session-breadcrumbs.log
+   ```
+   Diese Einträge zeigen, welche Schritte in der abgestürzten Session bereits durchgeführt wurden.
+
+3. **Git-Status analysieren**:
+   ```bash
+   git log --oneline -10
+   git status
+   git diff --stat
+   ```
+   Uncommitted Changes und recent Commits geben Hinweise auf die verlorene Arbeit.
+
+4. **Arbeit fortsetzen** basierend auf:
+   - Ziel aus letzter Übergabe
+   - Breadcrumbs der abgestürzten Session
+   - Uncommitted Changes im Git
+
+### Präventive Maßnahmen
+
+#### Breadcrumbs während der Arbeit setzen
+Nutze das `log-step.sh` Script, um wichtige Fortschritte zu dokumentieren:
+```bash
+./scripts/log-step.sh "Customer API: getAllCustomers implementiert"
+./scripts/log-step.sh "Frontend: CustomerList Component erstellt"
+```
+
+#### Häufige Git-Commits
+Nach jedem wichtigen Schritt kleine WIP-Commits erstellen:
+```bash
+git add -A && git commit -m "WIP: Customer API basic structure"
+```
+
+### Wichtige Hinweise
+- Das Protokoll funktioniert nur, wenn regelmäßig Breadcrumbs gesetzt werden
+- Die letzte Übergabe muss korrekt und vollständig sein
+- Git-Commits sind die zusätzliche Sicherheitsebene
+- Keep it simple - keine komplexen Scripts, die selbst abstürzen können
