@@ -166,8 +166,8 @@ export const HeaderV2: React.FC<HeaderV2Props> = ({
             onSubmit={handleSearchSubmit}
             sx={{ 
               flexGrow: 1, 
-              maxWidth: 600,
-              mx: 'auto'
+              maxWidth: 500,
+              mx: 2,
             }}
           >
             <TextField
