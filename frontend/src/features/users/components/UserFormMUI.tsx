@@ -1,4 +1,4 @@
-import { useForm, Controller, FieldPath } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Box,
@@ -78,7 +78,7 @@ export const UserFormMUI = ({ user, onSuccess, onCancel }: UserFormProps) => {
         const apiError = error as { response?: { data?: { errors?: Record<string, string> } }; message?: string };
         if (apiError.response?.data?.errors) {
           Object.entries(apiError.response.data.errors).forEach(([field, message]) => {
-            setError(field as FieldPath<FormData>, { message: message as string });
+            setError(field as keyof FormData, { message: message as string });
           });
         } else {
           setError('root', {

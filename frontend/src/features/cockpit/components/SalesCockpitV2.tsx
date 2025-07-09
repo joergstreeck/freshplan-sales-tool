@@ -8,7 +8,6 @@ import {
   Box, 
   Paper, 
   Typography, 
-  Grid, 
   Card, 
   CardContent, 
   Chip, 
@@ -88,43 +87,44 @@ export function SalesCockpitV2() {
       
       {/* Dashboard Stats */}
       <Box sx={{ mb: 3 }}>
-        <Grid container spacing={2}>
-          <Grid item xs={12} sm={6} md={3}>
-            <StatsCard>
+        <Box sx={{ 
+          display: 'grid', 
+          gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(4, 1fr)' },
+          gap: 2 
+        }}>
+          <StatsCard>
               <GroupIcon sx={{ fontSize: 40, color: 'primary.main' }} />
               <Typography variant="h4">156</Typography>
               <Typography variant="body2" color="text.secondary">Kunden gesamt</Typography>
-            </StatsCard>
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <StatsCard>
+          </StatsCard>
+          <StatsCard>
               <TrendingUpIcon sx={{ fontSize: 40, color: 'success.main' }} />
               <Typography variant="h4">142</Typography>
               <Typography variant="body2" color="text.secondary">Aktive Kunden</Typography>
-            </StatsCard>
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <StatsCard>
+          </StatsCard>
+          <StatsCard>
               <TaskIcon sx={{ fontSize: 40, color: 'warning.main' }} />
               <Typography variant="h4">8</Typography>
               <Typography variant="body2" color="text.secondary">Risiko-Kunden</Typography>
-            </StatsCard>
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <StatsCard>
+          </StatsCard>
+          <StatsCard>
               <ErrorIcon sx={{ fontSize: 40, color: 'error.main' }} />
               <Typography variant="h4">3</Typography>
               <Typography variant="body2" color="text.secondary">Überfällig</Typography>
-            </StatsCard>
-          </Grid>
-        </Grid>
+          </StatsCard>
+        </Box>
       </Box>
 
       {/* 3-Column Layout - Flex-grow to fill remaining space */}
       <Box sx={{ flexGrow: 1, overflow: 'hidden' }}>
-        <Grid container spacing={2} sx={{ height: '100%' }}>
+        <Box sx={{ 
+          display: 'grid', 
+          gridTemplateColumns: { xs: '1fr', md: 'repeat(3, 1fr)' },
+          gap: 2,
+          height: '100%' 
+        }}>
           {/* Column 1: Mein Tag */}
-          <Grid item xs={12} md={4} sx={{ display: 'flex' }}>
+          <Box sx={{ display: 'flex' }}>
             <ColumnPaper elevation={1} sx={{ width: '100%' }}>
               <Typography variant="h6" gutterBottom sx={{ color: 'secondary.main' }}>
                 Mein Tag
@@ -173,10 +173,10 @@ export function SalesCockpitV2() {
                 </Box>
               </ScrollableContent>
             </ColumnPaper>
-          </Grid>
+          </Box>
 
           {/* Column 2: Fokus-Liste */}
-          <Grid item xs={12} md={4} sx={{ display: 'flex' }}>
+          <Box sx={{ display: 'flex' }}>
             <ColumnPaper elevation={1} sx={{ width: '100%' }}>
               <Typography variant="h6" gutterBottom sx={{ color: 'secondary.main' }}>
                 Fokus-Liste
@@ -214,10 +214,10 @@ export function SalesCockpitV2() {
                 ))}
               </ScrollableContent>
             </ColumnPaper>
-          </Grid>
+          </Box>
 
           {/* Column 3: Aktions-Center */}
-          <Grid item xs={12} md={4} sx={{ display: 'flex' }}>
+          <Box sx={{ display: 'flex' }}>
             <ColumnPaper elevation={1} sx={{ width: '100%' }}>
               <Typography variant="h6" gutterBottom sx={{ color: 'secondary.main' }}>
                 Aktions-Center
@@ -234,8 +234,8 @@ export function SalesCockpitV2() {
                 </Box>
               </ScrollableContent>
             </ColumnPaper>
-          </Grid>
-        </Grid>
+          </Box>
+        </Box>
       </Box>
     </Box>
   );
