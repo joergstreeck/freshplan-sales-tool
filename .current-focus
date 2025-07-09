@@ -1,8 +1,8 @@
 {
   "feature": "FC-002",
-  "module": "null",
-  "lastFile": null,
-  "lastLine": null,
-  "nextTask": "",
-  "lastUpdated": "2025-07-09T01:14:17Z"
+  "module": "M3",
+  "lastFile": "",
+  "lastLine": "",
+  "nextTask": "Migration von SalesCockpit zu CockpitView mit MUI beginnen",
+  "lastUpdated": "2025-07-09T02:20:30Z"
 }
