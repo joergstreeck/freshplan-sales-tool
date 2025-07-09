@@ -1,4 +1,4 @@
-import { SvgIconComponent } from '@mui/icons-material';
+import { SvgIconComponent } from '@mui/material';
 
 export interface NavigationSubItem {
   label: string;
