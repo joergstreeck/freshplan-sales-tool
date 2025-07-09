@@ -174,8 +174,9 @@ CockpitView.tsx (Hauptcontainer)
     - Quick Wins durch frühe Cockpit-Verfügbarkeit
     
     **📋 Vollständiger Implementierungsplan:** [FC-002-IMPLEMENTATION_PLAN.md](./features/FC-002-IMPLEMENTATION_PLAN.md)
+    **🎯 Technisches Hub-Dokument:** [FC-002-hub.md](./features/FC-002-hub.md)
     
-    _Alle technischen Details, Modul-Analysen und Abhängigkeiten sind im verlinkten Implementierungsplan dokumentiert._
+    _Alle technischen Details, Modul-Analysen und Abhängigkeiten sind im verlinkten Implementierungsplan dokumentiert. Das Hub-Dokument bietet eine detaillierte Übersicht aller Module inkl. der neuen Layout-Architektur._
 
 * **Phase 4: Kritische Vertriebsfunktionen (NEU - 09.07.2025)**
     

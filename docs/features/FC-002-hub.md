@@ -11,7 +11,7 @@
 
 | Modul | Status | Dokument | Beschreibung |
 |-------|--------|----------|--------------|
-| M1 | 🔄 0% | [Hauptnavigation](./FC-002-M1-hauptnavigation.md) | Sidebar mit 5-Punkte-Navigation |
+| M1 | ✅ Analyse & Planung abgeschlossen | [Hauptnavigation](./FC-002-M1-hauptnavigation.md) | Sidebar mit 5-Punkte-Navigation + **NEU: Layout-Architektur** |
 | M2 | 📋 0% | [Quick-Create System](./FC-002-M2-quick-create.md) | Globaler "+ Neu" Button |
 | M3 | 🔍 40% | [Cockpit-Integration](./FC-002-M3-cockpit.md) | 3-Spalten-Ansicht Migration (Analyse abgeschlossen) |
 | M4 | 📋 0% | [Neukundengewinnung](./FC-002-M4-neukundengewinnung.md) | Akquise-Modul |
@@ -139,6 +139,13 @@ notificationService.show({
 ## 📅 Status-Updates
 
 ### 09.07.2025 - Planungsphase abgeschlossen
+- **M1 Hauptnavigation & Layout-Architektur**: ✅ Analyse & Planung abgeschlossen
+  - **NEU: Layout-Architektur-Analyse** durchgeführt ([Details im LAYOUT-ARCHITEKTUR-ANALYSE Abschnitt](./FC-002-M1-hauptnavigation.md#🏗️-layout-architektur-analyse-09072025))
+  - Identifizierte CSS-Konflikte zwischen SalesCockpit und SidebarNavigation
+  - Lösung: Clean-Slate `MainLayoutV2.tsx` mit MUI-only Ansatz
+  - Parallele Entwicklung über Test-Route `/cockpit-v2` implementiert
+  - CSS-Cleanup: 8 Dateien in `legacy-to-remove` verschoben
+  - Geschätzter Aufwand Phase 1: ✅ Abgeschlossen, Phase 2-3: 2-3 Tage
 - **M3 Cockpit**: Code-Analyse abgeschlossen (40% Wiederverwendbarkeit)
 - **M5 Kundenmanagement**: Implementierungsplan finalisiert und freigegeben
 - **M7 Einstellungen**: Kompakte Analyse durchgeführt
