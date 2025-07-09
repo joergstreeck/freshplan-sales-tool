@@ -1,8 +1,8 @@
 import React from 'react';
 import { Container, Typography, Tabs, Tab, Box, Paper } from '@mui/material';
 import { MainLayoutV2 } from '../components/layout/MainLayoutV2';
-import { UserTable } from '../features/users/UserTable';
-import { UserForm } from '../features/users/UserForm';
+import { UserTableMUI } from '../features/users/components/UserTableMUI';
+import { UserFormMUI } from '../features/users/components/UserFormMUI';
 import { useUser } from '../features/users/userQueries';
 import { useUserStore } from '../features/users/userStore';
 import PersonIcon from '@mui/icons-material/Person';
@@ -107,19 +107,19 @@ export function SettingsPage() {
           <Box sx={{ p: 3 }}>
             <TabPanel value={tabValue} index={0}>
               {/* Benutzerverwaltung */}
-              {!isCreateModalOpen && !isEditModalOpen && <UserTable />}
+              {!isCreateModalOpen && !isEditModalOpen && <UserTableMUI />}
 
               {/* Create user form */}
               {isCreateModalOpen && (
                 <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                  <UserForm onSuccess={handleFormSuccess} onCancel={closeCreateModal} />
+                  <UserFormMUI onSuccess={handleFormSuccess} onCancel={closeCreateModal} />
                 </Box>
               )}
 
               {/* Edit user form */}
               {isEditModalOpen && selectedUser && (
                 <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                  <UserForm 
+                  <UserFormMUI 
                     user={selectedUser} 
                     onSuccess={handleFormSuccess} 
                     onCancel={closeEditModal} 
