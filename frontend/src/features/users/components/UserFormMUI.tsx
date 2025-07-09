@@ -1,4 +1,4 @@
-import { useForm, Controller } from 'react-hook-form';
+import { useForm, Controller, FieldPath } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Box,
@@ -72,15 +72,22 @@ export const UserFormMUI = ({ user, onSuccess, onCancel }: UserFormProps) => {
         await createUser.mutateAsync(data as CreateUserRequest);
       }
       onSuccess?.();
-    } catch (error: any) {
+    } catch (error: unknown) {
       // Handle server validation errors
-      if (error.response?.data?.errors) {
-        Object.entries(error.response.data.errors).forEach(([field, message]) => {
-          setError(field as any, { message: message as string });
-        });
+      if (error && typeof error === 'object' && 'response' in error) {
+        const apiError = error as { response?: { data?: { errors?: Record<string, string> } }; message?: string };
+        if (apiError.response?.data?.errors) {
+          Object.entries(apiError.response.data.errors).forEach(([field, message]) => {
+            setError(field as FieldPath<FormData>, { message: message as string });
+          });
+        } else {
+          setError('root', {
+            message: apiError.message || 'Ein unerwarteter Fehler ist aufgetreten',
+          });
+        }
       } else {
         setError('root', {
-          message: error.message || 'Ein unerwarteter Fehler ist aufgetreten',
+          message: 'Ein unerwarteter Fehler ist aufgetreten',
         });
       }
     }
@@ -173,8 +180,8 @@ export const UserFormMUI = ({ user, onSuccess, onCancel }: UserFormProps) => {
                   type="password"
                   fullWidth
                   required
-                  error={!!(errors as any).password}
-                  helperText={(errors as any).password?.message}
+                  error={!!errors.password}
+                  helperText={errors.password?.message}
                 />
               )}
             />
