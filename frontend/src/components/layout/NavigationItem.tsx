@@ -54,6 +54,10 @@ export const NavigationItem: React.FC<NavigationItemProps> = ({
         borderRadius: 1,
         mb: 0.5,
         position: 'relative',
+        display: 'flex',
+        alignItems: 'center',
+        pr: 1,
+        pl: isActive ? 'calc(8px - 3px)' : '8px', // Kompensiert den Border
         '&.Mui-selected': {
           backgroundColor: 'rgba(148, 196, 86, 0.12)', // Freshfoodz Grün transparent
           borderLeft: '3px solid #94C456',
@@ -84,15 +88,31 @@ export const NavigationItem: React.FC<NavigationItemProps> = ({
           <ListItemText 
             primary={item.label} 
             sx={{
+              mr: item.subItems ? 1 : 0,
               '& .MuiListItemText-primary': {
                 fontSize: '0.95rem',
+                fontFamily: 'Poppins, sans-serif',
+                fontWeight: isActive ? 500 : 400,
                 color: isActive ? '#94C456' : '#000',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
               }
             }}
           />
           {item.subItems && (
-            <Box sx={{ ml: 'auto', display: 'flex', alignItems: 'center' }}>
-              {isExpanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+            <Box sx={{ 
+              ml: 'auto', 
+              display: 'flex', 
+              alignItems: 'center',
+              flexShrink: 0,
+              width: 24,
+              height: 24,
+            }}>
+              {isExpanded ? 
+                <ExpandLessIcon sx={{ fontSize: 20, color: '#94C456' }} /> : 
+                <ExpandMoreIcon sx={{ fontSize: 20, color: '#94C456' }} />
+              }
             </Box>
           )}
         </>
