@@ -179,44 +179,69 @@ CockpitView.tsx (Hauptcontainer)
 
 * **Phase 4: Kritische Vertriebsfunktionen (NEU - 09.07.2025)**
     
-    **Basierend auf direktem Nutzerfeedback - Diese Features sind essentiell!**
+    **Basierend auf direktem Nutzerfeedback - Diese Features sind essentiell für den Vertriebserfolg!**
     
     **Phase 4.1 - Team-Funktionen (11-12 Tage):**
-    1. **E-Mail-Integration (BCC-to-CRM):** Automatische E-Mail-Archivierung beim Kunden
-    2. **Interne Team-Nachrichten:** Chat, @-Mentions, Aktivitäts-Feed
-    3. **Verkäuferschutz-System:** Provisions-Sicherung mit fairen Regeln & Historie
+    1. **[FC-003: E-Mail-Integration (BCC-to-CRM)](./features/FC-003-email-integration.md):** 
+       - Automatische E-Mail-Archivierung beim richtigen Kunden
+       - Triage-Inbox für unzugeordnete Kommunikation
+       - Thread-Erkennung für Konversationen
+    
+    2. **Interne Team-Nachrichten:** 
+       - Team-Chat pro Kunde/Lead
+       - @-Mentions für direkte Benachrichtigungen
+       - Aktivitäts-Feed zeigt wer gerade was macht
+    
+    3. **[FC-004: Verkäuferschutz-System](./features/FC-004-verkaeuferschutz.md):** 
+       - Provisions-Sicherung mit 5-stufigem Schutz-System
+       - Faire Regeln mit automatischer Eskalation
+       - Provisions-Splitting bei Teamarbeit
+       - Historie für Konfliktlösung
     
     **Phase 4.2 - Führungs-Tools (7-8 Tage):**
-    4. **Chef-Dashboard mit KPIs:** 
-       - Was tun meine Verkäufer? (Live-Aktivitäten)
-       - Wieviel Geschäft in der Pipeline? (€-Werte)
-       - Wie ist die Abschlussquote? (Drill-Down Analysen)
-       - Provisions-Übersicht & Konflikte
+    4. **[FC-007: Chef-Dashboard mit KPIs](./features/FC-007-chef-dashboard.md):** 
+       - Live-Aktivitäten-Monitor: Was tun meine Verkäufer gerade?
+       - Pipeline-Analyse: Wieviel Geschäft ist in Anbahnung?
+       - Performance-Matrix: Wer braucht Coaching?
+       - KI-gestützte Insights und Handlungsempfehlungen
     
     **Phase 4.3 - Xentral-Integration (8-10 Tage):**
-    5. **Provisions-Management:** 
-       - Rechnungs- und Zahlungsdaten aus Xentral
-       - Individuelle Provisionssätze pro Verkäufer
+    5. **[FC-005: Provisions-Management](./features/FC-005-xentral-integration.md):** 
+       - Echtzeit-Integration via REST-API und Webhooks
        - Automatische Provisionsberechnung bei Zahlungseingang
+       - Individuelle Provisionssätze und Sonderregeln
+       - Vollständige Transparenz für alle Beteiligten
+       - **📊 [Xentral API Analyse](./technical/XENTRAL_API_ANALYSIS.md)**
     
     **Phase 4.4 - Activity Timeline (5 Tage):**
-    6. **Timeline & BFF:** Ursprünglich geplante Features
+    6. **Timeline & BFF:** Integration der ursprünglich geplanten Features
     
-    **📋 Details:** [FC-002-PHASE4-ADDITIONS.md](./features/FC-002-PHASE4-ADDITIONS.md)
+    **📋 Übersicht aller neuen Features:** [FC-002-PHASE4-ADDITIONS.md](./features/FC-002-PHASE4-ADDITIONS.md)
 
 * **Phase 5: Mobile First & KI-Integration**
     
     **Phase 5.1 - Mobile Companion App (15-20 Tage):**
-    * **Sprach-zu-Text Notizen:** "Kunde will 500 Stück"
-    * **Offline-Fähigkeit:** Sync wenn wieder online
-    * **Foto-Erfassung:** Visitenkarte → Kontakt
-    * **GPS-Context:** Weiß wo Sie sind
+    * **[FC-006: FreshPlan Mobile Companion](./features/FC-006-mobile-app.md):**
+      - Revolutionäre Sprach-zu-Text Erfassung mit KI-Parsing
+      - Vollständige Offline-Fähigkeit mit intelligentem Sync
+      - Visitenkarten-Scanner mit automatischer Kundenzuordnung
+      - Context-Awareness durch GPS und Kalender-Integration
+      - One-Handed optimierte UI für Außendienst
     
     **Phase 5.2 - KI & Automation (17-20 Tage):**
-    * **Intelligente Lead-Generierung:** Web-Scraping, Social Listening
-    * **Anruf-Integration:** Automatische Gesprächsnotizen
-    * **AI Sales Assistant:** Nächste beste Aktion
-    * **Partner-Lifecycle:** Automatisierung
+    * **Intelligente Lead-Generierung:** 
+      - Web-Monitoring für Trigger-Events
+      - Social Listening auf LinkedIn/XING
+      - Branchen-Crawler für neue Opportunities
+    * **Anruf-Integration:** 
+      - Automatische Gesprächstranskription
+      - Stimmungsanalyse und Next-Best-Action
+    * **AI Sales Assistant:** 
+      - Proaktive Handlungsempfehlungen
+      - Optimale Kontaktzeiten-Vorhersage
+    * **Partner-Lifecycle Automation:** 
+      - Automatisierte Follow-Ups
+      - Intelligente Eskalation bei Inaktivität
 
 ---
 
@@ -262,6 +287,19 @@ modules/
 
 Detaillierte technische Konzepte für alle größeren Features:
 
+### Phase 1-3 Features:
 - **FC-001**: [Dynamische Fokus-Liste](./features/2025-07-07_TECH_CONCEPT_dynamic-focus-list.md) - Status: Backend ✅ | Frontend ✅
 - **FC-002**: [UI/UX-Neuausrichtung & Prozessorientierung](./features/2025-07-08_TECH_CONCEPT_ui-ux-refactoring.md) - Status: 📋 Planung abgeschlossen
   - **[Master-Implementierungsplan](./features/FC-002-IMPLEMENTATION_PLAN.md)** - 3 Meilensteine, 35-40 Personentage
+
+### Phase 4 Features (Kritische Vertriebsfunktionen):
+- **FC-003**: [E-Mail-Integration (BCC-to-CRM)](./features/FC-003-email-integration.md) - Status: 📋 Architektur definiert
+- **FC-004**: [Verkäuferschutz-System](./features/FC-004-verkaeuferschutz.md) - Status: 📋 Schutz-Stufen definiert
+- **FC-005**: [Xentral-Integration](./features/FC-005-xentral-integration.md) - Status: 📋 API analysiert
+- **FC-007**: [Chef-Dashboard & KPIs](./features/FC-007-chef-dashboard.md) - Status: 📋 Metriken definiert
+
+### Phase 5 Features:
+- **FC-006**: [Mobile Companion App](./features/FC-006-mobile-app.md) - Status: 📋 Konzept erstellt
+
+### Technische Analysen:
+- **[Xentral API Analyse](./technical/XENTRAL_API_ANALYSIS.md)** - Status: ✅ Abgeschlossen

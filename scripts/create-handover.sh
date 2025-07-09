@@ -14,14 +14,37 @@ mkdir -p "$HANDOVER_DIR"
 # Handover file
 HANDOVER_FILE="$HANDOVER_DIR/${DATE}_HANDOVER_${TIME}.md"
 
-# Create minimal template
+# Check service status
+SERVICE_STATUS=$($HOME/freshplan-sales-tool/scripts/check-services.sh 2>&1 | tail -4 | head -3)
+
+# Get Java and Node versions
+JAVA_VERSION=$(java -version 2>&1 | head -1 | cut -d'"' -f2)
+NODE_VERSION=$(node -v)
+
+# Create template with critical info
 cat > "$HANDOVER_FILE" << 'EOF'
 # 🔄 STANDARDÜBERGABE - DATETIME_PLACEHOLDER
 
-**WICHTIG: Lies ZUERST diese Dokumente:**
-1. `/docs/CLAUDE.md` (Arbeitsrichtlinien)
+**WICHTIG: Lies ZUERST diese Dokumente in dieser Reihenfolge:**
+1. `/docs/CLAUDE.md` (Arbeitsrichtlinien und Standards)
 2. Diese Übergabe
 3. `/docs/STANDARDUBERGABE_NEU.md` als Hauptanleitung
+
+## 🚨 KRITISCHE TECHNISCHE INFORMATIONEN
+
+### 🖥️ Service-Konfiguration
+| Service | Port | Technologie | Status |
+|---------|------|-------------|--------|
+| **Backend** | `8080` | Quarkus mit Java 17 | SERVICE_CHECK_PLACEHOLDER |
+| **Frontend** | `5173` | React/Vite | SERVICE_CHECK_PLACEHOLDER |
+| **PostgreSQL** | `5432` | PostgreSQL 15+ | SERVICE_CHECK_PLACEHOLDER |
+| **Keycloak** | `8180` | Auth Service | SERVICE_CHECK_PLACEHOLDER |
+
+### ⚠️ WICHTIGE HINWEISE
+- **Java Version:** MUSS Java 17 sein! (aktuell: JAVA_VERSION_PLACEHOLDER)
+- **Node Version:** v22.16.0+ erforderlich (aktuell: NODE_VERSION_PLACEHOLDER)
+- **Working Directory:** `/Users/joergstreeck/freshplan-sales-tool`
+- **Branch-Regel:** NIEMALS direkt in `main` pushen!
 
 ## 🎯 AKTUELLER STAND
 
@@ -33,27 +56,48 @@ cat > "$HANDOVER_FILE" << 'EOF'
 ### Aktives Modul
 **Feature:** [Von Claude ausfüllen]
 **Modul:** [Von Claude ausfüllen]
-**Dokument:** [Von Claude ausfüllen]
+**Dokument:** [Von Claude ausfüllen] ⭐
+**Status:** [Von Claude ausfüllen]
 
 ## 📋 WAS WURDE HEUTE GEMACHT?
-[Von Claude ausfüllen - konkrete Code-Änderungen]
+[Von Claude ausfüllen - konkrete Code-Änderungen mit Dateinamen]
 
 ## ✅ WAS FUNKTIONIERT?
-[Von Claude ausfüllen - verifiziert durch Tests]
+[Von Claude ausfüllen - verifiziert durch Tests/Logs]
 
 ## 🚨 WELCHE FEHLER GIBT ES?
-[Von Claude ausfüllen - mit genauer Fehlermeldung]
+[Von Claude ausfüllen - mit genauer Fehlermeldung und betroffenen Dateien]
 
 ## 🔧 NÄCHSTE SCHRITTE
-[Von Claude ausfüllen - konkret und umsetzbar]
+[Von Claude ausfüllen - konkret mit Dateinamen und Befehlen]
+
+## 📝 CHANGE LOGS DIESER SESSION
+- [ ] Change Log erstellt für: [Feature-Name]
+  - Link: `/docs/claude-work/daily-work/DATE_PLACEHOLDER/DATE_PLACEHOLDER_CHANGE_LOG_feature.md`
 
 ## 🚀 QUICK START FÜR NÄCHSTE SESSION
 ```bash
+# 1. Zum Projekt wechseln
 cd /Users/joergstreeck/freshplan-sales-tool
+
+# 2. System-Check und Services starten
 ./scripts/validate-config.sh
+./scripts/check-services.sh
+
+# Falls Services nicht laufen:
 ./scripts/start-services.sh
+
+# 3. Git-Status
 git status
-# [Weitere spezifische Befehle von Claude]
+git log --oneline -5
+
+# 4. Aktives Modul anzeigen
+./scripts/get-active-module.sh
+
+# 5. TODO-Status
+TodoRead
+
+# 6. [Spezifische Befehle von Claude für aktuelle Aufgabe]
 ```
 
 ---
@@ -65,6 +109,10 @@ EOF
 # Replace placeholders
 sed -i.bak "s/DATETIME_PLACEHOLDER/$DATETIME/g" "$HANDOVER_FILE"
 sed -i.bak "s/TIME_PLACEHOLDER/$TIME/g" "$HANDOVER_FILE"
+sed -i.bak "s/DATE_PLACEHOLDER/$DATE/g" "$HANDOVER_FILE"
+sed -i.bak "s/JAVA_VERSION_PLACEHOLDER/$JAVA_VERSION/g" "$HANDOVER_FILE"
+sed -i.bak "s/NODE_VERSION_PLACEHOLDER/$NODE_VERSION/g" "$HANDOVER_FILE"
+sed -i.bak "s/SERVICE_CHECK_PLACEHOLDER/[Von Script prüfen]/g" "$HANDOVER_FILE"
 rm "$HANDOVER_FILE.bak"
 
 # Simple output

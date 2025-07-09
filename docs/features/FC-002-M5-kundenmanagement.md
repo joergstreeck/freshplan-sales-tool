@@ -256,6 +256,18 @@ Das aktuelle Customer-Modul umfasst **54 Java-Dateien** und ist ein massiver, en
 - Integrationstests dominieren
 - Lange Test-Laufzeiten
 
+### 🔗 Xentral-Integration für Provisions-Management
+
+**Technische Machbarkeit bestätigt!** Die detaillierte Analyse der Xentral-API hat ergeben, dass eine vollständige Integration möglich ist.
+
+**📋 Details siehe:** [Xentral API Analyse](/docs/technical/XENTRAL_API_ANALYSIS.md)
+
+**Kernpunkte der Integration:**
+- REST-API mit OAuth 2.0 Authentifizierung
+- Webhook-Support für Echtzeit-Events (Zahlungseingänge)
+- Alle benötigten Endpunkte vorhanden (Rechnungen, Zahlungen, Kunden)
+- Event-basierte Provisionsberechnung möglich
+
 ### 💡 Alternative Architektur-Ideen
 
 #### Vorschlag: Modulare Mikroservice-Ready Architektur
