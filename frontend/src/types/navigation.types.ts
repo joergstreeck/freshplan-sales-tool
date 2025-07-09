@@ -1,4 +1,4 @@
-import { SvgIconComponent } from '@mui/material';
+import React from 'react';
 
 export interface NavigationSubItem {
   label: string;
@@ -9,7 +9,7 @@ export interface NavigationSubItem {
 export interface NavigationItemType {
   id: string;
   label: string;
-  icon: SvgIconComponent;
+  icon: React.ComponentType<any>;
   path: string;
   permissions?: string[];
   subItems?: NavigationSubItem[];
