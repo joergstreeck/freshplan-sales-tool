@@ -159,28 +159,54 @@ CockpitView.tsx (Hauptcontainer)
 
 * **Phase 3: Neuausrichtung der Benutzeroberfläche & Arbeitsprozesse (FC-002)**
     
-    **Ziel:** Transformation von einer funktionsgetriebenen zu einer prozessorientierten Anwendung durch eine intuitive 5-Punkte-Navigation und kontextbezogene Aktionen.
+    **Status:** ✅ Planungsphase abgeschlossen | 🚀 Bereit für Implementierung
     
-    **Kernelemente:**
-    - **5-Punkte-Navigation:** Mein Cockpit | Neukundengewinnung | Kundenmanagement | Auswertungen & Berichte | Einstellungen
-    - **Globaler "+ Neu" Button:** Schnellzugriff für neue Entitäten von überall
-    - **Prozessorientierte Werkzeuge:** Funktionen erscheinen dort, wo sie im Arbeitsablauf benötigt werden
-    - **Klare deutsche Begriffe:** Gemäß unserem neuen [Way of Working](./WAY_OF_WORKING.md)
+    **Strategische Zusammenfassung:**
+    Die UI/UX-Neuausrichtung erfolgt in 3 klar definierten Meilensteinen über 35-40 Personentage:
     
-    **📋 Detailliertes Konzept:** [FC-002: UI/UX-Neuausrichtung & Prozessorientierung](./features/2025-07-08_TECH_CONCEPT_ui-ux-refactoring.md)
+    - **Meilenstein 1 - "Das neue Grundgerüst" (5 Tage):** Navigation & Basis-Funktionalität
+    - **Meilenstein 2 - "Das neue Cockpit" (17 Tage):** Kern-Arbeitsbereich & Backend-Modernisierung  
+    - **Meilenstein 3 - "Feature-Vervollständigung" (12 Tage):** Alle verbleibenden Module
+    
+    **Kernvorteile:**
+    - 70-100% Code-Wiederverwendung im Backend
+    - Schrittweise Migration ohne Big-Bang-Risiko
+    - Quick Wins durch frühe Cockpit-Verfügbarkeit
+    
+    **📋 Vollständiger Implementierungsplan:** [FC-002-IMPLEMENTATION_PLAN.md](./features/FC-002-IMPLEMENTATION_PLAN.md)
+    
+    _Alle technischen Details, Modul-Analysen und Abhängigkeiten sind im verlinkten Implementierungsplan dokumentiert._
 
-* **Phase 4: Activity Timeline & Prozess-Integration**
-    1.  **Activity Timeline:** Services und API-Endpunkte für die Kunden-Zeitleiste
-    2.  **Backend-for-Frontend (BFF)** implementieren
-    3.  **Opportunity & Aktivitäten Management** (Backend & Frontend)
-    4.  **Xentral-Integration** (Proof-of-Concept, dann volle Integration)
-    5.  **"BCC-to-CRM"** und die **Triage-Inbox**
+* **Phase 4: Kritische Vertriebsfunktionen (NEU - 09.07.2025)**
+    
+    **Basierend auf direktem Nutzerfeedback - Diese Features sind essentiell!**
+    
+    **Phase 4.1 - Team-Funktionen (10 Tage):**
+    1. **E-Mail-Integration (BCC-to-CRM):** Automatische E-Mail-Archivierung beim Kunden
+    2. **Interne Team-Nachrichten:** Chat, @-Mentions, Aktivitäts-Feed
+    3. **Kundenschutz-System:** Verhindert Doppelbearbeitung mit intelligenter Sperrung
+    
+    **Phase 4.2 - Führungs-Tools (5-6 Tage):**
+    4. **Chef-Dashboard:** Team-Übersicht, Pipeline-Gesundheit, Coaching-Insights
+    
+    **Phase 4.3 - Activity Timeline (5 Tage):**
+    5. **Timeline & BFF:** Ursprünglich geplante Features
+    
+    **📋 Details:** [FC-002-PHASE4-ADDITIONS.md](./features/FC-002-PHASE4-ADDITIONS.md)
 
-* **Phase 5: Intelligenz & Proaktive Unterstützung**
-    * **Data Health Dashboard**
-    * **Partner-Lifecycle**-Automatisierung
-    * **Lead Scoring** 
-    * **AI Sales Assistant**
+* **Phase 5: Mobile First & KI-Integration**
+    
+    **Phase 5.1 - Mobile Companion App (15-20 Tage):**
+    * **Sprach-zu-Text Notizen:** "Kunde will 500 Stück"
+    * **Offline-Fähigkeit:** Sync wenn wieder online
+    * **Foto-Erfassung:** Visitenkarte → Kontakt
+    * **GPS-Context:** Weiß wo Sie sind
+    
+    **Phase 5.2 - KI & Automation (17-20 Tage):**
+    * **Intelligente Lead-Generierung:** Web-Scraping, Social Listening
+    * **Anruf-Integration:** Automatische Gesprächsnotizen
+    * **AI Sales Assistant:** Nächste beste Aktion
+    * **Partner-Lifecycle:** Automatisierung
 
 ---
 
@@ -227,4 +253,5 @@ modules/
 Detaillierte technische Konzepte für alle größeren Features:
 
 - **FC-001**: [Dynamische Fokus-Liste](./features/2025-07-07_TECH_CONCEPT_dynamic-focus-list.md) - Status: Backend ✅ | Frontend ✅
-- **FC-002**: [UI/UX-Neuausrichtung & Prozessorientierung](./features/2025-07-08_TECH_CONCEPT_ui-ux-refactoring.md) - Status: 📋 In Planung
+- **FC-002**: [UI/UX-Neuausrichtung & Prozessorientierung](./features/2025-07-08_TECH_CONCEPT_ui-ux-refactoring.md) - Status: 📋 Planung abgeschlossen
+  - **[Master-Implementierungsplan](./features/FC-002-IMPLEMENTATION_PLAN.md)** - 3 Meilensteine, 35-40 Personentage

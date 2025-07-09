@@ -10,10 +10,12 @@
 ## 📋 Implementierungs-Checkliste
 
 - [ ] CockpitView.tsx Hauptcontainer
+- [ ] **KalenderView.tsx (NEU - Vollständige Kalenderansicht)**
 - [ ] MeinTag.tsx (Spalte 1)
 - [ ] FocusListColumn Integration (Spalte 2)
 - [ ] AktionsCenter.tsx (Spalte 3)
 - [ ] cockpitStore.ts erweitern
+- [ ] **Ansichts-Toggle (Kalender vs. 3-Spalten)**
 - [ ] Aggregierten API-Endpunkt nutzen
 - [ ] Responsive Layout implementieren
 - [ ] Drag & Drop für Spaltenbreiten
@@ -27,27 +29,36 @@
 frontend/src/
 ├── pages/
 │   └── cockpit/
-│       └── CockpitView.tsx             # Hauptseite
+│       └── CockpitView.tsx             # Hauptseite mit View-Toggle
 ├── features/
 │   └── cockpit/
 │       ├── components/
-│       │   ├── MeinTag/
-│       │   │   ├── MeinTag.tsx         # Spalte 1 Container
-│       │   │   ├── AlertsList.tsx      # Tagesalarme
-│       │   │   ├── AppointmentsList.tsx # Termine
-│       │   │   ├── TasksList.tsx       # Aufgaben
-│       │   │   └── TriageInbox.tsx     # E-Mail Posteingang
-│       │   ├── AktionsCenter/
-│       │   │   ├── AktionsCenter.tsx   # Spalte 3 Container
-│       │   │   ├── CustomerDetail.tsx  # Kundendetails
-│       │   │   ├── ActivityTimeline.tsx # Aktivitäten
-│       │   │   └── QuickActions.tsx    # Schnellaktionen
-│       │   └── layout/
-│       │       └── ResizablePanels.tsx # Spalten-Layout
+│       │   ├── KalenderView/           # NEU - Vollständige Kalenderansicht
+│       │   │   ├── KalenderView.tsx   # Hauptkalender-Komponente
+│       │   │   ├── CalendarHeader.tsx # Monat/Woche/Tag Toggle
+│       │   │   ├── CalendarGrid.tsx   # Kalender-Grid
+│       │   │   └── AppointmentCard.tsx # Termin-Karten
+│       │   ├── DashboardView/          # 3-Spalten-Dashboard
+│       │   │   ├── DashboardView.tsx  # Container für 3 Spalten
+│       │   │   ├── MeinTag/
+│       │   │   │   ├── MeinTag.tsx    # Spalte 1 Container
+│       │   │   │   ├── AlertsList.tsx # Tagesalarme
+│       │   │   │   ├── AppointmentsList.tsx # Termine
+│       │   │   │   ├── TasksList.tsx  # Aufgaben
+│       │   │   │   └── TriageInbox.tsx # E-Mail Posteingang
+│       │   │   ├── AktionsCenter/
+│       │   │   │   ├── AktionsCenter.tsx # Spalte 3 Container
+│       │   │   │   ├── CustomerDetail.tsx # Kundendetails
+│       │   │   │   ├── ActivityTimeline.tsx # Aktivitäten
+│       │   │   │   └── QuickActions.tsx # Schnellaktionen
+│       │   │   └── layout/
+│       │   │       └── ResizablePanels.tsx # Spalten-Layout
+│       │   └── ViewToggle.tsx         # Toggle zwischen Ansichten
 │       ├── hooks/
-│       │   └── useCockpitData.ts       # Aggregierte Daten
+│       │   ├── useCockpitData.ts      # Aggregierte Daten
+│       │   └── useCalendarData.ts     # Kalender-spezifische Daten
 │       └── store/
-│           └── cockpitStore.ts         # Cockpit-Zustand
+│           └── cockpitStore.ts         # Cockpit-Zustand inkl. View-Mode
 ```
 
 ## 📝 Detaillierte Spezifikation

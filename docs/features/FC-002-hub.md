@@ -17,7 +17,14 @@
 | M4 | 📋 0% | [Neukundengewinnung](./FC-002-M4-neukundengewinnung.md) | Akquise-Modul |
 | M5 | ✅ 50% | [Kundenmanagement](./FC-002-M5-kundenmanagement.md) | CRM-Kernfunktionen (Planung abgeschlossen) |
 | M6 | 📋 0% | [Berichte & Auswertungen](./FC-002-M6-berichte.md) | Analytics & Reports |
-| M7 | 📋 0% | [Einstellungen](./FC-002-M7-einstellungen.md) | User & System Settings |
+| M7 | 🔍 Analysiert | [Einstellungen](./FC-002-M7-einstellungen.md) | User & System Settings (Analyse abgeschlossen) |
+| M8 | 🔍 Analysiert | [Rechner](./FC-002-M8-rechner.md) | Kalkulator-Modul (Analyse abgeschlossen) |
+
+## 🚀 Master-Implementierungsplan
+
+**[📋 Zum detaillierten Implementierungsplan →](./FC-002-IMPLEMENTATION_PLAN.md)**
+
+Der Master-Implementierungsplan definiert 3 Meilensteine mit klarer Priorisierung und Abhängigkeiten.
 
 ## 🎯 Vision
 
@@ -131,9 +138,15 @@ notificationService.show({
 - [Datum]: Approved / Änderungen
 ## 📅 Status-Updates
 
-### 09.07.2025 - M3 Code-Analyse abgeschlossen
-- Detaillierte Analyse der bestehenden SalesCockpit-Implementierung durchgeführt
-- 40% Wiederverwendbarkeit identifiziert
-- 3-Phasen-Migrationsplan zu MUI erstellt
-- Import-Pfad-Probleme identifiziert (customers → customer)
-- Nächster Schritt: CockpitView.tsx mit MUI erstellen
+### 09.07.2025 - Planungsphase abgeschlossen
+- **M3 Cockpit**: Code-Analyse abgeschlossen (40% Wiederverwendbarkeit)
+- **M5 Kundenmanagement**: Implementierungsplan finalisiert und freigegeben
+- **M7 Einstellungen**: Kompakte Analyse durchgeführt
+  - User Management Backend: 100% wiederverwendbar (production-ready)
+  - Frontend: 85% wiederverwendbar (minimale UI-Anpassungen)
+  - Geschätzter Aufwand: 3 Personentage
+- **M8 Rechner**: Kompakte Analyse durchgeführt
+  - Backend: 95% wiederverwendbar
+  - Frontend: 70% wiederverwendbar (UI-Migration zu MUI nötig)
+  - Geschätzter Aufwand: 2 Personentage
+- **Master-Implementierungsplan erstellt**: 3 Meilensteine, 35-40 Personentage Gesamtaufwand
