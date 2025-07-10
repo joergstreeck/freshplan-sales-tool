@@ -19,6 +19,7 @@ import {
 } from '@mui/icons-material';
 import { useFocusListStore } from '../store/focusListStore';
 import { AdvancedFilterDialog } from './AdvancedFilterDialog';
+import { TableColumnSettings } from './TableColumnSettings';
 
 interface QuickFilterChipProps {
   label: string;
@@ -192,6 +193,9 @@ export const FilterBar: React.FC = () => {
               </IconButton>
             </Tooltip>
           </Box>
+          
+          {/* Tabellen-Spalten-Einstellungen (nur bei Tabellenansicht) */}
+          {viewMode === 'table' && <TableColumnSettings />}
         </Box>
       </Box>
 

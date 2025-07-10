@@ -34,6 +34,16 @@ export interface SortCriteria {
   ascending: boolean;
 }
 
+export interface TableColumn {
+  id: string;
+  label: string;
+  field: string;
+  visible: boolean;
+  order: number;
+  align?: 'left' | 'center' | 'right';
+  minWidth?: number;
+}
+
 export interface SavedView {
   id: string;
   name: string;
@@ -42,6 +52,7 @@ export interface SavedView {
   globalSearch: string;
   sort: SortCriteria;
   viewMode: 'cards' | 'table';
+  tableColumns?: TableColumn[];
   createdAt: Date;
 }
 
@@ -55,6 +66,7 @@ interface FocusListStore {
   // View State
   viewMode: 'cards' | 'table';
   sortBy: SortCriteria;
+  tableColumns: TableColumn[];
   
   // Selection State
   selectedCustomerId: string | null;
@@ -66,6 +78,7 @@ interface FocusListStore {
   // Derived State
   filterCount: number;
   hasActiveFilters: boolean;
+  visibleTableColumns: TableColumn[];
   
   // Actions - Search & Filter
   setGlobalSearch: (search: string) => void;
@@ -87,6 +100,11 @@ interface FocusListStore {
   setSortBy: (sort: SortCriteria) => void;
   setPage: (page: number) => void;
   setPageSize: (pageSize: number) => void;
+  
+  // Actions - Table Columns
+  toggleColumnVisibility: (columnId: string) => void;
+  setColumnOrder: (columnIds: string[]) => void;
+  resetTableColumns: () => void;
   
   // Actions - Selection
   setSelectedCustomer: (customerId: string | null) => void;
@@ -110,6 +128,19 @@ export interface CustomerSearchRequest {
   };
 }
 
+// Default Tabellen-Spalten
+const DEFAULT_TABLE_COLUMNS: TableColumn[] = [
+  { id: 'companyName', label: 'Kunde', field: 'companyName', visible: true, order: 0 },
+  { id: 'customerNumber', label: 'Kundennummer', field: 'customerNumber', visible: false, order: 1 },
+  { id: 'status', label: 'Status', field: 'status', visible: true, order: 2 },
+  { id: 'riskScore', label: 'Risiko', field: 'riskScore', visible: true, order: 3, align: 'center' },
+  { id: 'industry', label: 'Branche', field: 'industry', visible: true, order: 4 },
+  { id: 'expectedAnnualVolume', label: 'Jahresumsatz', field: 'expectedAnnualVolume', visible: false, order: 5, align: 'right' },
+  { id: 'lastContactDate', label: 'Letzter Kontakt', field: 'lastContactDate', visible: false, order: 6 },
+  { id: 'assignedTo', label: 'Betreuer', field: 'assignedTo', visible: false, order: 7 },
+  { id: 'actions', label: 'Aktionen', field: 'actions', visible: true, order: 8, align: 'right' },
+];
+
 export const useFocusListStore = create<FocusListStore>()(
   devtools(
     persist(
@@ -121,6 +152,7 @@ export const useFocusListStore = create<FocusListStore>()(
         currentViewId: null,
         viewMode: 'cards',
         sortBy: { field: 'lastContactDate', ascending: false },
+        tableColumns: [...DEFAULT_TABLE_COLUMNS],
         selectedCustomerId: null,
         page: 0,
         pageSize: 20,
@@ -132,6 +164,12 @@ export const useFocusListStore = create<FocusListStore>()(
         
         get hasActiveFilters() {
           return get().globalSearch !== '' || get().activeFilters.length > 0;
+        },
+        
+        get visibleTableColumns() {
+          return get().tableColumns
+            .filter(col => col.visible)
+            .sort((a, b) => a.order - b.order);
         },
 
         // Search & Filter Actions
@@ -281,6 +319,25 @@ export const useFocusListStore = create<FocusListStore>()(
         
         setPageSize: (pageSize) => set({ pageSize, page: 0 }),
         
+        // Table Column Actions
+        toggleColumnVisibility: (columnId) => 
+          set((state) => ({
+            tableColumns: state.tableColumns.map(col =>
+              col.id === columnId ? { ...col, visible: !col.visible } : col
+            )
+          })),
+          
+        setColumnOrder: (columnIds) => 
+          set((state) => ({
+            tableColumns: state.tableColumns.map(col => ({
+              ...col,
+              order: columnIds.indexOf(col.id)
+            }))
+          })),
+          
+        resetTableColumns: () => 
+          set({ tableColumns: [...DEFAULT_TABLE_COLUMNS] }),
+        
         // Selection Actions
         setSelectedCustomer: (customerId) => set({ selectedCustomerId: customerId }),
 
@@ -316,6 +373,7 @@ export const useFocusListStore = create<FocusListStore>()(
           savedViews: state.savedViews,
           viewMode: state.viewMode,
           pageSize: state.pageSize,
+          tableColumns: state.tableColumns,
         }),
       }
     )
