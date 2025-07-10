@@ -56,6 +56,9 @@ interface FocusListStore {
   viewMode: 'cards' | 'table';
   sortBy: SortCriteria;
   
+  // Selection State
+  selectedCustomerId: string | null;
+  
   // Pagination
   page: number;
   pageSize: number;
@@ -84,6 +87,9 @@ interface FocusListStore {
   setSortBy: (sort: SortCriteria) => void;
   setPage: (page: number) => void;
   setPageSize: (pageSize: number) => void;
+  
+  // Actions - Selection
+  setSelectedCustomer: (customerId: string | null) => void;
   
   // API Request Builder
   getSearchRequest: () => CustomerSearchRequest;
@@ -115,6 +121,7 @@ export const useFocusListStore = create<FocusListStore>()(
         currentViewId: null,
         viewMode: 'cards',
         sortBy: { field: 'lastContactDate', ascending: false },
+        selectedCustomerId: null,
         page: 0,
         pageSize: 20,
 
@@ -273,6 +280,9 @@ export const useFocusListStore = create<FocusListStore>()(
         setPage: (page) => set({ page }),
         
         setPageSize: (pageSize) => set({ pageSize, page: 0 }),
+        
+        // Selection Actions
+        setSelectedCustomer: (customerId) => set({ selectedCustomerId: customerId }),
 
         // API Request Builder
         getSearchRequest: () => {

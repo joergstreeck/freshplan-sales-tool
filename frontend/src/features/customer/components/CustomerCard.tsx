@@ -21,7 +21,8 @@ import type { Customer } from '../hooks/useCustomerSearch';
 
 interface CustomerCardProps {
   customer: Customer;
-  onClick: (customer: Customer) => void;
+  onClick?: (customer: Customer) => void;
+  selected?: boolean;
 }
 
 const statusColors: Record<string, string> = {
@@ -44,7 +45,7 @@ const getRiskColor = (score: number): string => {
   return '#4CAF50'; // Grün
 };
 
-export const CustomerCard: React.FC<CustomerCardProps> = ({ customer, onClick }) => {
+export const CustomerCard: React.FC<CustomerCardProps> = ({ customer, onClick, selected = false }) => {
   const daysSinceContact = customer.lastContactDate
     ? daysSince(new Date(customer.lastContactDate))
     : null;
@@ -54,17 +55,22 @@ export const CustomerCard: React.FC<CustomerCardProps> = ({ customer, onClick })
   return (
     <Card
       sx={{
-        cursor: 'pointer',
+        cursor: onClick ? 'pointer' : 'default',
         transition: 'all 0.2s',
-        '&:hover': {
+        '&:hover': onClick ? {
           transform: 'translateY(-2px)',
           boxShadow: 3,
-        },
+        } : {},
         height: '100%',
         display: 'flex',
         flexDirection: 'column',
+        ...(selected && {
+          backgroundColor: 'action.selected',
+          borderColor: 'primary.main',
+          borderWidth: 2,
+        }),
       }}
-      onClick={() => onClick(customer)}
+      onClick={() => onClick?.(customer)}
     >
       <CardContent sx={{ flex: 1 }}>
         {/* Header */}

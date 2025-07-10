@@ -1,7 +1,13 @@
 import { httpClient } from '../../../lib/apiClient';
-import type { CustomerListResponse } from '../types/customer.types';
+import type { CustomerListResponse, CustomerResponse } from '../types/customer.types';
 
 export const customerApi = {
+  // Get single customer by ID
+  getCustomer: async (customerId: string): Promise<CustomerResponse> => {
+    const response = await httpClient.get<CustomerResponse>(`/api/customers/${customerId}`);
+    return response.data;
+  },
+
   // Get paginated list of customers
   getCustomers: async (
     page = 0,

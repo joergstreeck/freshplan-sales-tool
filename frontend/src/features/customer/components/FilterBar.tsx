@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Box,
   TextField,
@@ -18,6 +18,7 @@ import {
   ViewList as ViewListIcon,
 } from '@mui/icons-material';
 import { useFocusListStore } from '../store/focusListStore';
+import { AdvancedFilterDialog } from './AdvancedFilterDialog';
 
 interface QuickFilterChipProps {
   label: string;
@@ -56,6 +57,8 @@ export const FilterBar: React.FC = () => {
   const clearAllFilters = useFocusListStore((state) => state.clearAllFilters);
   const toggleQuickFilter = useFocusListStore((state) => state.toggleQuickFilter);
   const hasFilter = useFocusListStore((state) => state.hasFilter);
+  
+  const [advancedFilterOpen, setAdvancedFilterOpen] = useState(false);
   
   const filterCount = activeFilters.length;
   const hasActiveFilters = globalSearch !== '' || activeFilters.length > 0;
@@ -143,10 +146,7 @@ export const FilterBar: React.FC = () => {
             <Button
               variant="outlined"
               startIcon={<FilterIcon />}
-              onClick={() => {
-                // TODO: Show advanced filters dialog
-                console.log('Advanced filters clicked');
-              }}
+              onClick={() => setAdvancedFilterOpen(true)}
             >
               Erweiterte Filter
             </Button>
@@ -195,7 +195,12 @@ export const FilterBar: React.FC = () => {
         </Box>
       </Box>
 
-      {/* TODO: Advanced Filter Dialog */}
+      {/* Advanced Filter Dialog */}
+      <AdvancedFilterDialog 
+        open={advancedFilterOpen}
+        onClose={() => setAdvancedFilterOpen(false)}
+      />
+      
       {/* TODO: Active Filters Display */}
     </Box>
   );
