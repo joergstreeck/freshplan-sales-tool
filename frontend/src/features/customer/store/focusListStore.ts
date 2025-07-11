@@ -211,9 +211,13 @@ export const useFocusListStore = create<FocusListStore>()(
           
           // Wenn der gleiche Filter nochmal geklickt wird, nur löschen (deaktivieren)
           const wasActive = state.activeFilters.length === 1 && 
-            state.activeFilters[0].field === field && 
-            ((field === 'riskScore' && value === '>70' && state.activeFilters[0].value === 70) ||
-             (field !== 'riskScore' && state.activeFilters[0].value === value));
+            ((field === 'riskScore' && value === '>70' && 
+              state.activeFilters[0].field === 'riskScore' && 
+              state.activeFilters[0].operator === FilterOperator.GREATER_THAN &&
+              state.activeFilters[0].value === 70) ||
+             (field !== 'riskScore' && 
+              state.activeFilters[0].field === field && 
+              state.activeFilters[0].value === value));
           
           if (!wasActive) {
             // Neuen Filter setzen

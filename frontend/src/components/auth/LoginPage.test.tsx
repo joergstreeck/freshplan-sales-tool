@@ -6,10 +6,10 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { LoginPage } from './LoginPage';
 
-// Mock für useKeycloak Hook
+// Mock für useAuth Hook
 const mockLogin = vi.fn();
-vi.mock('../../contexts/KeycloakContext', () => ({
-  useKeycloak: () => ({
+vi.mock('../../hooks/useAuth', () => ({
+  useAuth: () => ({
     login: mockLogin,
   }),
 }));

@@ -105,12 +105,12 @@ export const HeaderV2: React.FC<HeaderV2Props> = ({
   // User display name
   const userDisplayName = user?.firstName && user?.lastName 
     ? `${user.firstName} ${user.lastName}`
-    : user?.username || 'Benutzer';
+    : user?.username || user?.email?.split('@')[0] || 'Gast';
   
   // User initials for avatar
   const userInitials = user?.firstName && user?.lastName
-    ? `${user.firstName[0]}${user.lastName[0]}`
-    : user?.username?.[0]?.toUpperCase() || 'U';
+    ? `${user.firstName[0]}${user.lastName[0]}`.toUpperCase()
+    : user?.email?.[0]?.toUpperCase() || user?.username?.[0]?.toUpperCase() || '?';
   
   return (
     <AppBar 
@@ -294,7 +294,7 @@ export const HeaderV2: React.FC<HeaderV2Props> = ({
                       textTransform: 'capitalize',
                     }}
                   >
-                    {user?.roles?.[0] || 'Benutzer'}
+                    {user?.roles?.[0] || 'Vertrieb'}
                   </Typography>
                 </Box>
                 <ArrowDownIcon sx={{ color: '#004F7B' }} />

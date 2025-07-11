@@ -1,14 +1,14 @@
 /**
  * Fokus-Liste - Spalte 2 des Sales Cockpit (MUI Version)
- * 
+ *
  * Zeigt die gefilterte und priorisierte Kundenliste
  * Nutzt die FilterBar aus FC-001
  */
 
-import { 
-  Box, 
-  Typography, 
-  CircularProgress, 
+import {
+  Box,
+  Typography,
+  CircularProgress,
   Alert,
   AlertTitle,
   Button,
@@ -20,7 +20,7 @@ import {
   TableHead,
   TableRow,
   Chip,
-  IconButton
+  IconButton,
 } from '@mui/material';
 import { useFocusListStore } from '../../customer/store/focusListStore';
 import { useCustomerSearch } from '../../customer/hooks/useCustomerSearch';
@@ -36,22 +36,17 @@ interface FocusListColumnMUIProps {
 }
 
 export function FocusListColumnMUI({ onCustomerSelect }: FocusListColumnMUIProps = {}) {
-  const { 
-    searchCriteria, 
-    viewMode, 
-    selectedCustomerId, 
-    setSelectedCustomer,
-    visibleTableColumns 
-  } = useFocusListStore();
+  const { searchCriteria, viewMode, selectedCustomerId, setSelectedCustomer, visibleTableColumns } =
+    useFocusListStore();
   // useAuth(); // userId wird aktuell nicht genutzt
-  
+
   // Customer Search Query mit den Filtern aus dem Store
-  const { 
-    data: searchResults, 
-    isLoading, 
-    isError, 
+  const {
+    data: searchResults,
+    isLoading,
+    isError,
     error,
-    refetch
+    refetch,
   } = useCustomerSearch(searchCriteria);
 
   // Set selected customer in cockpit store when clicked
@@ -92,87 +87,83 @@ export function FocusListColumnMUI({ onCustomerSelect }: FocusListColumnMUIProps
             </Typography>
           </Box>
         );
-      
+
       case 'customerNumber':
-        return (
-          <Typography variant="body2">
-            #{customer.customerNumber}
-          </Typography>
-        );
-      
+        return <Typography variant="body2">#{customer.customerNumber}</Typography>;
+
       case 'status':
         return (
-          <Chip 
+          <Chip
             label={customer.status === 'AKTIV' ? 'Aktiv' : customer.status}
             size="small"
             color={customer.status === 'AKTIV' ? 'success' : 'default'}
-            sx={{ 
+            sx={{
               backgroundColor: customer.status === 'AKTIV' ? '#94C456' : undefined,
-              color: customer.status === 'AKTIV' ? '#fff' : undefined
+              color: customer.status === 'AKTIV' ? '#fff' : undefined,
             }}
           />
         );
-      
+
       case 'riskScore':
         return (
-          <Box sx={{ 
-            display: 'flex', 
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 0.5
-          }}>
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 0.5,
+            }}
+          >
             <Box
               sx={{
                 width: 8,
                 height: 8,
                 borderRadius: '50%',
-                backgroundColor: 
-                  customer.riskScore > 70 ? '#f44336' :
-                  customer.riskScore > 40 ? '#ff9800' :
-                  '#4caf50'
+                backgroundColor:
+                  customer.riskScore > 70
+                    ? '#f44336'
+                    : customer.riskScore > 40
+                      ? '#ff9800'
+                      : '#4caf50',
               }}
             />
-            <Typography variant="body2">
-              {customer.riskScore}%
-            </Typography>
+            <Typography variant="body2">{customer.riskScore}%</Typography>
           </Box>
         );
-      
+
       case 'industry':
         return (
           <Typography variant="body2" color="text.secondary">
             {customer.industry || '-'}
           </Typography>
         );
-      
+
       case 'expectedAnnualVolume':
         return (
-          <Typography variant="body2">
-            {formatCurrency(customer.expectedAnnualVolume)}
-          </Typography>
+          <Typography variant="body2">{formatCurrency(customer.expectedAnnualVolume)}</Typography>
         );
-      
+
       case 'lastContactDate':
         return (
           <Typography variant="body2" color="text.secondary">
-            {customer.lastContactDate 
+            {customer.lastContactDate
               ? format(new Date(customer.lastContactDate), 'dd.MM.yyyy', { locale: de })
               : '-'}
           </Typography>
         );
-      
+
       case 'assignedTo':
         return (
           <Typography variant="body2" color="text.secondary">
             {customer.assignedTo || '-'}
           </Typography>
         );
-      
+
       case 'actions':
         return (
-          <IconButton 
+          <IconButton
             size="small"
-            onClick={(e) => {
+            onClick={e => {
               e.stopPropagation();
               // TODO: Aktionen-Menü öffnen
             }}
@@ -180,7 +171,7 @@ export function FocusListColumnMUI({ onCustomerSelect }: FocusListColumnMUIProps
             <MoreVertIcon fontSize="small" />
           </IconButton>
         );
-      
+
       default:
         return <Typography variant="body2">-</Typography>;
     }
@@ -189,11 +180,13 @@ export function FocusListColumnMUI({ onCustomerSelect }: FocusListColumnMUIProps
   return (
     <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
       {/* Header */}
-      <Box sx={{ 
-        p: 2, 
-        borderBottom: 1, 
-        borderColor: 'divider'
-      }}>
+      <Box
+        sx={{
+          p: 2,
+          borderBottom: 1,
+          borderColor: 'divider',
+        }}
+      >
         <Typography variant="h6" sx={{ color: 'primary.main' }}>
           Arbeitsliste
         </Typography>
@@ -208,13 +201,15 @@ export function FocusListColumnMUI({ onCustomerSelect }: FocusListColumnMUIProps
       <Box sx={{ flex: 1, overflow: 'auto', p: 2 }}>
         {/* Loading State */}
         {isLoading && (
-          <Box sx={{ 
-            display: 'flex', 
-            flexDirection: 'column', 
-            alignItems: 'center', 
-            justifyContent: 'center',
-            height: '100%'
-          }}>
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              height: '100%',
+            }}
+          >
             <CircularProgress size={40} />
             <Typography sx={{ mt: 2 }} color="text.secondary">
               Lade Kundendaten...
@@ -224,12 +219,12 @@ export function FocusListColumnMUI({ onCustomerSelect }: FocusListColumnMUIProps
 
         {/* Error State */}
         {isError && (
-          <Alert 
+          <Alert
             severity="error"
             action={
-              <Button 
-                color="inherit" 
-                size="small" 
+              <Button
+                color="inherit"
+                size="small"
                 onClick={() => refetch()}
                 startIcon={<RefreshIcon />}
               >
@@ -256,13 +251,15 @@ export function FocusListColumnMUI({ onCustomerSelect }: FocusListColumnMUIProps
 
             {/* Customer List/Grid */}
             {viewMode === 'cards' ? (
-              <Box sx={{ 
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
-                gap: 2
-              }}>
+              <Box
+                sx={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
+                  gap: 2,
+                }}
+              >
                 {searchResults.content.map(customer => (
-                  <CustomerCard 
+                  <CustomerCard
                     key={customer.id}
                     customer={customer}
                     selected={selectedCustomerId === customer.id}
@@ -276,9 +273,9 @@ export function FocusListColumnMUI({ onCustomerSelect }: FocusListColumnMUIProps
                 <Table size="small" stickyHeader>
                   <TableHead>
                     <TableRow>
-                      {visibleTableColumns.map((column) => (
-                        <TableCell 
-                          key={column.id} 
+                      {visibleTableColumns.map(column => (
+                        <TableCell
+                          key={column.id}
                           align={column.align || 'left'}
                           style={{ minWidth: column.minWidth }}
                           sx={{ fontWeight: 600 }}
@@ -290,20 +287,20 @@ export function FocusListColumnMUI({ onCustomerSelect }: FocusListColumnMUIProps
                   </TableHead>
                   <TableBody>
                     {searchResults.content.map(customer => (
-                      <TableRow 
+                      <TableRow
                         key={customer.id}
                         hover
                         selected={selectedCustomerId === customer.id}
                         onClick={() => handleCustomerSelect(customer.id)}
-                        sx={{ 
+                        sx={{
                           cursor: 'pointer',
                           '&.Mui-selected': {
                             backgroundColor: 'action.selected',
-                          }
+                          },
                         }}
                       >
-                        {visibleTableColumns.map((column) => (
-                          <TableCell 
+                        {visibleTableColumns.map(column => (
+                          <TableCell
                             key={`${customer.id}-${column.id}`}
                             align={column.align || 'left'}
                           >
@@ -328,10 +325,12 @@ export function FocusListColumnMUI({ onCustomerSelect }: FocusListColumnMUIProps
 
             {/* Empty State */}
             {searchResults.totalElements === 0 && (
-              <Box sx={{ 
-                textAlign: 'center', 
-                py: 4 
-              }}>
+              <Box
+                sx={{
+                  textAlign: 'center',
+                  py: 4,
+                }}
+              >
                 <Typography color="text.secondary" gutterBottom>
                   Keine Kunden gefunden
                 </Typography>

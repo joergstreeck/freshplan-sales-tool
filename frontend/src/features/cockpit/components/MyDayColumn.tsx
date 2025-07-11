@@ -1,6 +1,6 @@
 /**
  * Mein Tag - Spalte 1 des Sales Cockpit
- * 
+ *
  * Zeigt proaktiv die wichtigsten Aufgaben, Termine und KI-gestützte Alarme
  * Beinhaltet die Triage-Inbox für nicht zugeordnete Kommunikation
  */
@@ -17,15 +17,9 @@ import type { PriorityTask } from '../types';
 export function MyDayColumn() {
   const { showTriageInbox, toggleTriageInbox, setPriorityTasksCount } = useCockpitStore();
   const { userId } = useAuth();
-  
+
   // Hole Dashboard-Daten via BFF
-  const { 
-    data: dashboardData, 
-    isLoading, 
-    isError, 
-    error,
-    refetch 
-  } = useDashboardData(userId);
+  const { data: dashboardData, isLoading, isError, error, refetch } = useDashboardData(userId);
 
   // Update Priority Task Count when data changes
   useEffect(() => {
@@ -78,7 +72,7 @@ export function MyDayColumn() {
     const date = new Date(dateString);
     return new Intl.DateTimeFormat('de-DE', {
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     }).format(date);
   };
 
@@ -110,11 +104,7 @@ export function MyDayColumn() {
           <p className="error-message">
             {error?.message || 'Unbekannter Fehler beim Abrufen der Dashboard-Daten'}
           </p>
-          <button 
-            className="retry-button" 
-            onClick={() => refetch()}
-            type="button"
-          >
+          <button className="retry-button" onClick={() => refetch()} type="button">
             🔄 Erneut versuchen
           </button>
         </div>
@@ -125,37 +115,44 @@ export function MyDayColumn() {
   // Extract data from BFF response or use mock data as fallback
   const bffTasks = dashboardData?.todaysTasks || [];
   const alerts = dashboardData?.alerts || [];
-  const todaysAlerts = alerts.filter(alert => 
-    new Date(alert.createdAt).toDateString() === new Date().toDateString()
+  const todaysAlerts = alerts.filter(
+    alert => new Date(alert.createdAt).toDateString() === new Date().toDateString()
   );
-  
+
   // Use mock tasks if there's an error or no data
-  const tasks: PriorityTask[] = bffTasks.length > 0 
-    ? bffTasks.map(task => ({
-        id: task.id,
-        title: task.title,
-        customerName: task.customerName,
-        type: task.type.toLowerCase() as PriorityTask['type'],
-        priority: task.priority.toLowerCase() as PriorityTask['priority'],
-        dueDate: task.dueDate ? new Date(task.dueDate) : undefined,
-        completed: false
-      }))
-    : (isError || !dashboardData) ? mockTasks : [];
+  const tasks: PriorityTask[] =
+    bffTasks.length > 0
+      ? bffTasks.map(task => ({
+          id: task.id,
+          title: task.title,
+          customerName: task.customerName,
+          type: task.type.toLowerCase() as PriorityTask['type'],
+          priority: task.priority.toLowerCase() as PriorityTask['priority'],
+          dueDate: task.dueDate ? new Date(task.dueDate) : undefined,
+          completed: false,
+        }))
+      : isError || !dashboardData
+        ? mockTasks
+        : [];
 
   return (
     <div className="my-day-column">
       <div className="column-header">
         <h2 className="column-title">Mein Tag</h2>
         <div className="column-actions">
-          <button 
-            className="btn-icon" 
+          <button
+            className="btn-icon"
             title="Aktualisieren"
             aria-label="Aufgaben aktualisieren"
             onClick={() => refetch()}
             type="button"
           >
             <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clipRule="evenodd"/>
+              <path
+                fillRule="evenodd"
+                d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"
+                clipRule="evenodd"
+              />
             </svg>
           </button>
         </div>
@@ -195,13 +192,9 @@ export function MyDayColumn() {
                 <span className="task-icon">{getTaskIcon(task.type)}</span>
                 <div className="task-content">
                   <h4 className="task-title">{task.title}</h4>
-                  {task.customerName && (
-                    <span className="task-customer">{task.customerName}</span>
-                  )}
+                  {task.customerName && <span className="task-customer">{task.customerName}</span>}
                 </div>
-                {task.dueDate && (
-                  <span className="task-time">{formatTime(task.dueDate)}</span>
-                )}
+                {task.dueDate && <span className="task-time">{formatTime(task.dueDate)}</span>}
               </div>
             ))}
           </div>
@@ -210,28 +203,30 @@ export function MyDayColumn() {
         {/* Triage-Inbox - Vorerst Mock-Daten */}
         <section className="triage-section">
           <div className="section-header">
-            <h3 className="section-title">
-              Triage-Inbox ({mockTriageItems.length})
-            </h3>
-            <button 
+            <h3 className="section-title">Triage-Inbox ({mockTriageItems.length})</h3>
+            <button
               className="btn-icon"
               onClick={toggleTriageInbox}
               aria-expanded={showTriageInbox}
               aria-label={showTriageInbox ? 'Triage-Inbox ausblenden' : 'Triage-Inbox anzeigen'}
               type="button"
             >
-              <svg 
-                width="20" 
-                height="20" 
-                viewBox="0 0 20 20" 
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 20 20"
                 fill="currentColor"
                 className={`toggle-icon ${showTriageInbox ? 'expanded' : ''}`}
               >
-                <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd"/>
+                <path
+                  fillRule="evenodd"
+                  d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                  clipRule="evenodd"
+                />
               </svg>
             </button>
           </div>
-          
+
           {showTriageInbox && (
             <div className="triage-list">
               {mockTriageItems.map(item => (
@@ -241,14 +236,12 @@ export function MyDayColumn() {
                     <span className="triage-time">
                       {new Date(item.receivedAt).toLocaleTimeString('de-DE', {
                         hour: '2-digit',
-                        minute: '2-digit'
+                        minute: '2-digit',
                       })}
                     </span>
                   </div>
                   <h4 className="triage-subject">{item.subject}</h4>
-                  {item.content && (
-                    <p className="triage-preview">{item.content}</p>
-                  )}
+                  {item.content && <p className="triage-preview">{item.content}</p>}
                   <div className="triage-actions">
                     <button className="triage-action">Zuordnen</button>
                     <button className="triage-action">Als Lead</button>

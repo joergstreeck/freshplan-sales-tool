@@ -1,6 +1,6 @@
 /**
  * Mein Tag - Spalte 1 des Sales Cockpit (MUI Version)
- * 
+ *
  * Zeigt proaktiv die wichtigsten Aufgaben, Termine und KI-gestützte Alarme
  * Beinhaltet die Triage-Inbox für nicht zugeordnete Kommunikation
  */
@@ -41,15 +41,9 @@ import type { PriorityTask } from '../types';
 export function MyDayColumnMUI() {
   const { showTriageInbox, toggleTriageInbox, setPriorityTasksCount } = useCockpitStore();
   const { userId } = useAuth();
-  
+
   // Hole Dashboard-Daten via BFF
-  const { 
-    data: dashboardData, 
-    isLoading, 
-    isError, 
-    error,
-    refetch 
-  } = useDashboardData(userId);
+  const { data: dashboardData, isLoading, isError, error, refetch } = useDashboardData(userId);
 
   // Update Priority Task Count when data changes
   useEffect(() => {
@@ -109,7 +103,7 @@ export function MyDayColumnMUI() {
     const date = new Date(dateString);
     return new Intl.DateTimeFormat('de-DE', {
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     }).format(date);
   };
 
@@ -122,13 +116,15 @@ export function MyDayColumnMUI() {
             Mein Tag
           </Typography>
         </Box>
-        <Box sx={{ 
-          flex: 1, 
-          display: 'flex', 
-          flexDirection: 'column', 
-          alignItems: 'center', 
-          justifyContent: 'center' 
-        }}>
+        <Box
+          sx={{
+            flex: 1,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
           <CircularProgress size={40} />
           <Typography sx={{ mt: 2 }} color="text.secondary">
             Lade Dashboard-Daten...
@@ -148,8 +144,8 @@ export function MyDayColumnMUI() {
           </Typography>
         </Box>
         <Box sx={{ p: 2 }}>
-          <Alert 
-            severity="error" 
+          <Alert
+            severity="error"
             action={
               <Button color="inherit" size="small" onClick={() => refetch()}>
                 Erneut versuchen
@@ -167,38 +163,43 @@ export function MyDayColumnMUI() {
   // Extract data from BFF response or use mock data as fallback
   const bffTasks = dashboardData?.todaysTasks || [];
   const alerts = dashboardData?.alerts || [];
-  const todaysAlerts = alerts.filter(alert => 
-    new Date(alert.createdAt).toDateString() === new Date().toDateString()
+  const todaysAlerts = alerts.filter(
+    alert => new Date(alert.createdAt).toDateString() === new Date().toDateString()
   );
-  
+
   // Use mock tasks if there's an error or no data
-  const tasks: PriorityTask[] = bffTasks.length > 0 
-    ? bffTasks.map(task => ({
-        id: task.id,
-        title: task.title,
-        customerName: task.customerName,
-        type: task.type.toLowerCase() as PriorityTask['type'],
-        priority: task.priority.toLowerCase() as PriorityTask['priority'],
-        dueDate: task.dueDate ? new Date(task.dueDate) : undefined,
-        completed: false
-      }))
-    : (isError || !dashboardData) ? mockTasks : [];
+  const tasks: PriorityTask[] =
+    bffTasks.length > 0
+      ? bffTasks.map(task => ({
+          id: task.id,
+          title: task.title,
+          customerName: task.customerName,
+          type: task.type.toLowerCase() as PriorityTask['type'],
+          priority: task.priority.toLowerCase() as PriorityTask['priority'],
+          dueDate: task.dueDate ? new Date(task.dueDate) : undefined,
+          completed: false,
+        }))
+      : isError || !dashboardData
+        ? mockTasks
+        : [];
 
   return (
     <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
       {/* Header */}
-      <Box sx={{ 
-        p: 2, 
-        borderBottom: 1, 
-        borderColor: 'divider',
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center'
-      }}>
+      <Box
+        sx={{
+          p: 2,
+          borderBottom: 1,
+          borderColor: 'divider',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        }}
+      >
         <Typography variant="h6" sx={{ color: 'primary.main' }}>
           Mein Tag
         </Typography>
-        <IconButton 
+        <IconButton
           size="small"
           onClick={() => refetch()}
           title="Aktualisieren"
@@ -219,23 +220,31 @@ export function MyDayColumnMUI() {
               </Typography>
               <Stack spacing={1}>
                 {todaysAlerts.slice(0, 3).map(alert => (
-                  <Card 
-                    key={alert.id} 
+                  <Card
+                    key={alert.id}
                     variant="outlined"
-                    sx={{ 
-                      borderColor: alert.severity === 'HIGH' ? 'error.main' : 
-                                  alert.severity === 'MEDIUM' ? 'warning.main' : 
-                                  'primary.main',
-                      borderWidth: 2
+                    sx={{
+                      borderColor:
+                        alert.severity === 'HIGH'
+                          ? 'error.main'
+                          : alert.severity === 'MEDIUM'
+                            ? 'warning.main'
+                            : 'primary.main',
+                      borderWidth: 2,
                     }}
                   >
                     <CardContent sx={{ py: 1.5, '&:last-child': { pb: 1.5 } }}>
                       <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1 }}>
-                        <Box sx={{ 
-                          color: alert.severity === 'HIGH' ? 'error.main' : 
-                                alert.severity === 'MEDIUM' ? 'warning.main' : 
-                                'primary.main'
-                        }}>
+                        <Box
+                          sx={{
+                            color:
+                              alert.severity === 'HIGH'
+                                ? 'error.main'
+                                : alert.severity === 'MEDIUM'
+                                  ? 'warning.main'
+                                  : 'primary.main',
+                          }}
+                        >
                           {getAlertIcon(alert.type)}
                         </Box>
                         <Box sx={{ flex: 1 }}>
@@ -272,13 +281,15 @@ export function MyDayColumnMUI() {
             <Stack spacing={1}>
               {tasks.map(task => (
                 <Card key={task.id}>
-                  <CardContent sx={{ 
-                    py: 1.5, 
-                    '&:last-child': { pb: 1.5 },
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 1.5
-                  }}>
+                  <CardContent
+                    sx={{
+                      py: 1.5,
+                      '&:last-child': { pb: 1.5 },
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 1.5,
+                    }}
+                  >
                     <Box sx={{ color: getPriorityColor(task.priority) }}>
                       {getTaskIcon(task.type)}
                     </Box>
@@ -305,46 +316,52 @@ export function MyDayColumnMUI() {
 
           {/* Triage-Inbox - Vorerst Mock-Daten */}
           <Box>
-            <Box sx={{ 
-              display: 'flex', 
-              alignItems: 'center', 
-              justifyContent: 'space-between',
-              mb: 1
-            }}>
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                mb: 1,
+              }}
+            >
               <Typography variant="subtitle1" sx={{ fontWeight: 'medium' }}>
                 Posteingang ({mockTriageItems.length})
               </Typography>
-              <IconButton 
+              <IconButton
                 size="small"
                 onClick={toggleTriageInbox}
                 aria-expanded={showTriageInbox}
                 aria-label={showTriageInbox ? 'Posteingang ausblenden' : 'Posteingang anzeigen'}
               >
-                <ExpandMoreIcon sx={{ 
-                  transform: showTriageInbox ? 'rotate(180deg)' : 'rotate(0deg)',
-                  transition: 'transform 0.2s'
-                }} />
+                <ExpandMoreIcon
+                  sx={{
+                    transform: showTriageInbox ? 'rotate(180deg)' : 'rotate(0deg)',
+                    transition: 'transform 0.2s',
+                  }}
+                />
               </IconButton>
             </Box>
-            
+
             <Collapse in={showTriageInbox}>
               <Stack spacing={1}>
                 {mockTriageItems.map(item => (
                   <Card key={item.id}>
                     <CardContent sx={{ py: 1.5, '&:last-child': { pb: 1.5 } }}>
-                      <Box sx={{ 
-                        display: 'flex', 
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        mb: 0.5
-                      }}>
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          mb: 0.5,
+                        }}
+                      >
                         <Typography variant="caption" sx={{ fontWeight: 'medium' }}>
                           {item.from}
                         </Typography>
                         <Typography variant="caption" color="text.secondary">
                           {new Date(item.receivedAt).toLocaleTimeString('de-DE', {
                             hour: '2-digit',
-                            minute: '2-digit'
+                            minute: '2-digit',
                           })}
                         </Typography>
                       </Box>
@@ -352,14 +369,14 @@ export function MyDayColumnMUI() {
                         {item.subject}
                       </Typography>
                       {item.content && (
-                        <Typography 
-                          variant="caption" 
+                        <Typography
+                          variant="caption"
                           color="text.secondary"
-                          sx={{ 
+                          sx={{
                             display: '-webkit-box',
                             WebkitLineClamp: 2,
                             WebkitBoxOrient: 'vertical',
-                            overflow: 'hidden'
+                            overflow: 'hidden',
                           }}
                         >
                           {item.content}

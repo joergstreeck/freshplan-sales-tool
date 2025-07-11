@@ -24,17 +24,17 @@ const StyledResizeHandle = styled(PanelResizeHandle)(({ theme }) => ({
   position: 'relative',
   cursor: 'col-resize',
   transition: 'background-color 0.2s',
-  
+
   '&:hover': {
     backgroundColor: theme.palette.primary.light,
     opacity: 0.3,
   },
-  
+
   '&:active': {
     backgroundColor: theme.palette.primary.main,
     opacity: 0.5,
   },
-  
+
   '&::before': {
     content: '""',
     position: 'absolute',
@@ -92,24 +92,13 @@ export const ResizablePanels: React.FC<ResizablePanelsProps> = ({
   }
 
   return (
-    <StyledPanelGroup
-      direction="horizontal"
-      onLayout={handleLayout}
-    >
+    <StyledPanelGroup direction="horizontal" onLayout={handleLayout}>
       {validChildren.map((child, index) => (
         <React.Fragment key={index}>
-          <Panel
-            defaultSize={sizes[index]}
-            minSize={minSizes[index] || 20}
-            order={index}
-          >
-            <PanelContainer>
-              {child}
-            </PanelContainer>
+          <Panel defaultSize={sizes[index]} minSize={minSizes[index] || 20} order={index}>
+            <PanelContainer>{child}</PanelContainer>
           </Panel>
-          {index < validChildren.length - 1 && (
-            <StyledResizeHandle />
-          )}
+          {index < validChildren.length - 1 && <StyledResizeHandle />}
         </React.Fragment>
       ))}
     </StyledPanelGroup>

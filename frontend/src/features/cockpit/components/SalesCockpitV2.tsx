@@ -4,11 +4,7 @@
  */
 
 import React, { useState } from 'react';
-import { 
-  Box, 
-  Typography, 
-  Card
-} from '@mui/material';
+import { Box, Typography, Card } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import GroupIcon from '@mui/icons-material/Group';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
@@ -30,7 +26,7 @@ const StatsCard = styled(Card)(({ theme }) => ({
   '&:hover': {
     transform: 'translateY(-1px)',
     boxShadow: theme.shadows[3],
-  }
+  },
 }));
 
 // Styled components entfernt - jetzt in den einzelnen MUI-Komponenten
@@ -38,85 +34,114 @@ const StatsCard = styled(Card)(({ theme }) => ({
 export function SalesCockpitV2() {
   // State für ausgewählten Kunden
   const [selectedCustomerId, setSelectedCustomerId] = useState<string | undefined>(undefined);
-  
+
   // Debug logging
   console.log('SalesCockpitV2 - selectedCustomerId:', selectedCustomerId);
-  
+
   const handleCustomerSelect = (customerId: string) => {
     console.log('SalesCockpitV2 - handleCustomerSelect called with:', customerId);
     setSelectedCustomerId(customerId);
   };
 
   return (
-    <Box sx={{ 
-      height: '100%', 
-      display: 'flex', 
-      flexDirection: 'column',
-      overflow: 'hidden',
-      mt: -2  // Negativer margin um näher an den Header zu kommen
-    }}>
+    <Box
+      component="main"
+      role="main"
+      sx={{
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        overflow: 'hidden',
+        mt: -2, // Negativer margin um näher an den Header zu kommen
+      }}
+    >
       {/* Dashboard Header */}
       <Box sx={{ mb: 0 }}>
-        <Typography 
-          variant="h4" 
-          component="h1" 
-        >
+        <Typography variant="h4" component="h1">
           FreshPlan Verkaufszentrale
         </Typography>
       </Box>
-      
+
       {/* Dashboard Stats - klein und rechtsbündig */}
-      <Box sx={{ 
-        display: 'flex', 
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        mb: 0.5 
-      }}>
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          mb: 0.5,
+        }}
+      >
         {/* Linke Seite leer für Balance */}
         <Box />
-        
+
         {/* Rechte Seite mit Stats */}
-        <Box sx={{ 
-          display: 'flex', 
-          gap: 1.5,
-          flexWrap: 'wrap',
-          justifyContent: 'flex-end'
-        }}>
+        <Box
+          sx={{
+            display: 'flex',
+            gap: 1.5,
+            flexWrap: 'wrap',
+            justifyContent: 'flex-end',
+          }}
+        >
           <StatsCard>
             <GroupIcon sx={{ fontSize: 20, color: 'primary.main' }} />
             <Box>
-              <Typography variant="body1" sx={{ lineHeight: 1, fontWeight: 600 }}>156</Typography>
-              <Typography variant="caption" color="text.secondary" sx={{ lineHeight: 1, fontSize: '0.7rem' }}>
+              <Typography variant="body1" sx={{ lineHeight: 1, fontWeight: 600 }}>
+                156
+              </Typography>
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                sx={{ lineHeight: 1, fontSize: '0.7rem' }}
+              >
                 Kunden gesamt
               </Typography>
             </Box>
           </StatsCard>
-          
+
           <StatsCard>
             <TrendingUpIcon sx={{ fontSize: 20, color: 'primary.main' }} />
             <Box>
-              <Typography variant="body1" sx={{ lineHeight: 1, fontWeight: 600 }}>142</Typography>
-              <Typography variant="caption" color="text.secondary" sx={{ lineHeight: 1, fontSize: '0.7rem' }}>
+              <Typography variant="body1" sx={{ lineHeight: 1, fontWeight: 600 }}>
+                142
+              </Typography>
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                sx={{ lineHeight: 1, fontSize: '0.7rem' }}
+              >
                 Aktive Kunden
               </Typography>
             </Box>
           </StatsCard>
-          
+
           <StatsCard>
             <TaskIcon sx={{ fontSize: 20, color: 'secondary.main' }} />
             <Box>
-              <Typography variant="body1" sx={{ lineHeight: 1, fontWeight: 600 }}>8</Typography>
-              <Typography variant="caption" color="text.secondary" sx={{ lineHeight: 1, fontSize: '0.7rem' }}>
+              <Typography variant="body1" sx={{ lineHeight: 1, fontWeight: 600 }}>
+                8
+              </Typography>
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                sx={{ lineHeight: 1, fontSize: '0.7rem' }}
+              >
                 Risiko-Kunden
               </Typography>
             </Box>
           </StatsCard>
-          
+
           <StatsCard>
             <ErrorIcon sx={{ fontSize: 20, color: 'secondary.main' }} />
             <Box>
-              <Typography variant="body1" sx={{ lineHeight: 1, fontWeight: 600 }}>3</Typography>
-              <Typography variant="caption" color="text.secondary" sx={{ lineHeight: 1, fontSize: '0.7rem' }}>
+              <Typography variant="body1" sx={{ lineHeight: 1, fontWeight: 600 }}>
+                3
+              </Typography>
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                sx={{ lineHeight: 1, fontSize: '0.7rem' }}
+              >
                 Überfällig
               </Typography>
             </Box>
@@ -135,12 +160,10 @@ export function SalesCockpitV2() {
           <MyDayColumnMUI />
 
           {/* Column 2: Fokus-Liste */}
-          <FocusListColumnMUI 
-            onCustomerSelect={handleCustomerSelect}
-          />
+          <FocusListColumnMUI onCustomerSelect={handleCustomerSelect} />
 
           {/* Column 3: Aktions-Center */}
-          <ActionCenterColumnMUI 
+          <ActionCenterColumnMUI
             selectedCustomerId={selectedCustomerId}
             onClose={() => setSelectedCustomerId(undefined)}
           />

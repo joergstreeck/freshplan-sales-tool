@@ -1,6 +1,6 @@
 /**
  * Sales Cockpit - Die revolutionäre 3-Spalten-Oberfläche
- * 
+ *
  * Implementiert die Vision aus dem CRM_COMPLETE_MASTER_PLAN V4:
  * - Spalte 1: Mein Tag (Übersicht & Prioritäten)
  * - Spalte 2: Fokus-Liste (Dynamischer Arbeitsvorrat)
@@ -19,22 +19,12 @@ import { DashboardStats } from './DashboardStats';
 // CSS import removed - migrating to MUI sx props
 
 export function SalesCockpit() {
-  const { 
-    activeColumn, 
-    isMobileMenuOpen,
-    isCompactMode,
-    setActiveColumn 
-  } = useCockpitStore();
-  
+  const { activeColumn, isMobileMenuOpen, isCompactMode, setActiveColumn } = useCockpitStore();
+
   const { userId } = useAuth();
-  
+
   // Hole Dashboard-Daten für Header-Statistiken
-  const { 
-    data: dashboardData, 
-    isLoading, 
-    isError, 
-    error 
-  } = useDashboardData(userId);
+  const { data: dashboardData, isLoading, isError, error } = useDashboardData(userId);
 
   // Keyboard navigation
   useEffect(() => {
@@ -61,36 +51,30 @@ export function SalesCockpit() {
   return (
     <div className={`sales-cockpit ${isCompactMode ? 'compact-mode' : ''}`}>
       <CockpitHeader />
-      
+
       {/* Dashboard Statistiken */}
       {dashboardData?.statistics && (
         <div className="cockpit-stats-container">
-          <DashboardStats 
+          <DashboardStats
             statistics={dashboardData.statistics}
             loading={isLoading}
             error={isError ? error : null}
           />
         </div>
       )}
-      
+
       <main className="cockpit-main">
-        <div 
-        className={`cockpit-columns ${
-          isMobileMenuOpen ? 'mobile-menu-open' : ''
-        }`}
-      >
+        <div className={`cockpit-columns ${isMobileMenuOpen ? 'mobile-menu-open' : ''}`}>
           {/* Spalte 1: Mein Tag */}
-          <div 
-            className={`cockpit-column column-my-day ${
-              activeColumn === 'my-day' ? 'active' : ''
-            }`}
+          <div
+            className={`cockpit-column column-my-day ${activeColumn === 'my-day' ? 'active' : ''}`}
             onClick={() => setActiveColumn('my-day')}
           >
             <MyDayColumn />
           </div>
 
           {/* Spalte 2: Fokus-Liste */}
-          <div 
+          <div
             className={`cockpit-column column-focus-list ${
               activeColumn === 'focus-list' ? 'active' : ''
             }`}
@@ -100,7 +84,7 @@ export function SalesCockpit() {
           </div>
 
           {/* Spalte 3: Aktions-Center */}
-          <div 
+          <div
             className={`cockpit-column column-action-center ${
               activeColumn === 'action-center' ? 'active' : ''
             }`}

@@ -1,14 +1,14 @@
 /**
  * Aktions-Center - Spalte 3 des Sales Cockpit (MUI Version)
- * 
+ *
  * Zeigt kontextbezogene Aktionen und Details zum ausgewählten Kunden
  * Integriert verschiedene Module wie Calculator, Customer Details etc.
  */
 
 import { useState } from 'react';
-import { 
-  Box, 
-  Typography, 
+import {
+  Box,
+  Typography,
   Card,
   CardContent,
   Button,
@@ -31,7 +31,7 @@ import {
   DialogTitle,
   DialogContent,
   TextField,
-  DialogActions
+  DialogActions,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import EmailIcon from '@mui/icons-material/Email';
@@ -68,11 +68,7 @@ function TabPanel(props: TabPanelProps) {
       aria-labelledby={`action-center-tab-${index}`}
       {...other}
     >
-      {value === index && (
-        <Box sx={{ pt: 2 }}>
-          {children}
-        </Box>
-      )}
+      {value === index && <Box sx={{ pt: 2 }}>{children}</Box>}
     </div>
   );
 }
@@ -81,51 +77,58 @@ export function ActionCenterColumnMUI({ selectedCustomerId, onClose }: ActionCen
   const [activeTab, setActiveTab] = useState(0);
   const [noteDialogOpen, setNoteDialogOpen] = useState(false);
   const [newNote, setNewNote] = useState('');
-  
+
   // Debug logging
   console.log('ActionCenterColumnMUI - selectedCustomerId:', selectedCustomerId);
-  
+
   // Lade Kundendaten
   const { data: customer, isLoading, isError } = useCustomerDetails(selectedCustomerId);
 
   // Empty State wenn kein Kunde ausgewählt
   if (!selectedCustomerId) {
     return (
-      <Card sx={{ 
-        height: '100%', 
-        display: 'flex', 
-        flexDirection: 'column',
-        bgcolor: 'background.paper'
-      }}>
-        {/* Header */}
-        <Box sx={{ 
-          p: 2, 
-          borderBottom: 1, 
-          borderColor: 'divider',
+      <Card
+        sx={{
+          height: '100%',
           display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center'
-        }}>
+          flexDirection: 'column',
+          bgcolor: 'background.paper',
+        }}
+      >
+        {/* Header */}
+        <Box
+          sx={{
+            p: 2,
+            borderBottom: 1,
+            borderColor: 'divider',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          }}
+        >
           <Typography variant="h6" sx={{ color: 'primary.main' }}>
             Arbeitsbereich
           </Typography>
         </Box>
-        
+
         {/* Empty State Content */}
-        <Box sx={{ 
-          flex: 1,
-          display: 'flex', 
-          alignItems: 'center', 
-          justifyContent: 'center',
-          p: 3
-        }}>
+        <Box
+          sx={{
+            flex: 1,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            p: 3,
+          }}
+        >
           <Box sx={{ textAlign: 'center' }}>
             <BusinessIcon sx={{ fontSize: 64, color: 'text.disabled', mb: 2 }} />
             <Typography variant="h6" color="text.secondary" gutterBottom>
               Kein Kunde ausgewählt
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              Wählen Sie einen Kunden aus der Arbeitsliste aus,<br />
+              Wählen Sie einen Kunden aus der Arbeitsliste aus,
+              <br />
               um mit der Bearbeitung zu beginnen.
             </Typography>
           </Box>
@@ -137,7 +140,9 @@ export function ActionCenterColumnMUI({ selectedCustomerId, onClose }: ActionCen
   // Loading State
   if (isLoading) {
     return (
-      <Card sx={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <Card
+        sx={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+      >
         <CircularProgress />
       </Card>
     );
@@ -147,9 +152,7 @@ export function ActionCenterColumnMUI({ selectedCustomerId, onClose }: ActionCen
   if (isError || !customer) {
     return (
       <Card sx={{ height: '100%', p: 2 }}>
-        <Alert severity="error">
-          Fehler beim Laden der Kundendaten
-        </Alert>
+        <Alert severity="error">Fehler beim Laden der Kundendaten</Alert>
       </Card>
     );
   }
@@ -185,14 +188,16 @@ export function ActionCenterColumnMUI({ selectedCustomerId, onClose }: ActionCen
   return (
     <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
       {/* Header */}
-      <Box sx={{ 
-        p: 2, 
-        borderBottom: 1, 
-        borderColor: 'divider',
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center'
-      }}>
+      <Box
+        sx={{
+          p: 2,
+          borderBottom: 1,
+          borderColor: 'divider',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        }}
+      >
         <Typography variant="h6" sx={{ color: 'primary.main' }}>
           Arbeitsbereich
         </Typography>
@@ -212,24 +217,20 @@ export function ActionCenterColumnMUI({ selectedCustomerId, onClose }: ActionCen
           <Box sx={{ flex: 1 }}>
             <Typography variant="h6">{customer.companyName}</Typography>
             <Box sx={{ display: 'flex', gap: 1, mt: 0.5 }}>
-              <Chip 
-                label={customerStatusLabels[customer.status]} 
-                color={customer.status === 'AKTIV' ? 'success' : 'default'} 
-                size="small" 
+              <Chip
+                label={customerStatusLabels[customer.status]}
+                color={customer.status === 'AKTIV' ? 'success' : 'default'}
+                size="small"
               />
               {customer.expectedAnnualVolume && (
-                <Chip 
-                  label={`Umsatz: € ${customer.expectedAnnualVolume.toLocaleString('de-DE')}`} 
-                  size="small" 
-                  variant="outlined" 
+                <Chip
+                  label={`Umsatz: € ${customer.expectedAnnualVolume.toLocaleString('de-DE')}`}
+                  size="small"
+                  variant="outlined"
                 />
               )}
               {customer.riskScore > 70 && (
-                <Chip 
-                  label={`Risiko: ${customer.riskScore}%`} 
-                  size="small" 
-                  color="error"
-                />
+                <Chip label={`Risiko: ${customer.riskScore}%`} size="small" color="error" />
               )}
             </Box>
           </Box>
@@ -250,9 +251,7 @@ export function ActionCenterColumnMUI({ selectedCustomerId, onClose }: ActionCen
           </Box>
           {customer.industry && (
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <Typography variant="body2">
-                Branche: {industryLabels[customer.industry]}
-              </Typography>
+              <Typography variant="body2">Branche: {industryLabels[customer.industry]}</Typography>
             </Box>
           )}
         </Stack>
@@ -263,12 +262,50 @@ export function ActionCenterColumnMUI({ selectedCustomerId, onClose }: ActionCen
         <Typography variant="subtitle2" gutterBottom>
           Schnellaktionen
         </Typography>
-        <ButtonGroup variant="outlined" size="small" fullWidth>
-          <Button startIcon={<EmailIcon />} onClick={handleEmailClick}>E-Mail</Button>
-          <Button startIcon={<PhoneIcon />} onClick={handlePhoneClick}>Anrufen</Button>
-          <Button startIcon={<CalculateIcon />} onClick={handleCalculatorClick}>Kalkulation</Button>
-          <Button startIcon={<DescriptionIcon />} onClick={handleQuoteClick}>Angebot</Button>
-        </ButtonGroup>
+        <Box
+          sx={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(2, 1fr)',
+            gap: 1,
+          }}
+        >
+          <Button
+            variant="outlined"
+            size="small"
+            startIcon={<EmailIcon />}
+            onClick={handleEmailClick}
+            sx={{ justifyContent: 'flex-start' }}
+          >
+            E-Mail
+          </Button>
+          <Button
+            variant="outlined"
+            size="small"
+            startIcon={<PhoneIcon />}
+            onClick={handlePhoneClick}
+            sx={{ justifyContent: 'flex-start' }}
+          >
+            Anrufen
+          </Button>
+          <Button
+            variant="outlined"
+            size="small"
+            startIcon={<CalculateIcon />}
+            onClick={handleCalculatorClick}
+            sx={{ justifyContent: 'flex-start' }}
+          >
+            Kalkulation
+          </Button>
+          <Button
+            variant="outlined"
+            size="small"
+            startIcon={<DescriptionIcon />}
+            onClick={handleQuoteClick}
+            sx={{ justifyContent: 'flex-start' }}
+          >
+            Angebot
+          </Button>
+        </Box>
       </Box>
 
       {/* Tabs */}
@@ -285,8 +322,8 @@ export function ActionCenterColumnMUI({ selectedCustomerId, onClose }: ActionCen
         <TabPanel value={activeTab} index={0}>
           {/* Add Note Button */}
           <Box sx={{ mb: 2 }}>
-            <Button 
-              variant="outlined" 
+            <Button
+              variant="outlined"
               startIcon={<NoteAddIcon />}
               onClick={() => setNoteDialogOpen(true)}
               fullWidth
@@ -294,7 +331,7 @@ export function ActionCenterColumnMUI({ selectedCustomerId, onClose }: ActionCen
               Notiz hinzufügen
             </Button>
           </Box>
-          
+
           {/* Activity Timeline */}
           <List>
             <ListItem alignItems="flex-start">
@@ -310,7 +347,7 @@ export function ActionCenterColumnMUI({ selectedCustomerId, onClose }: ActionCen
                     <Typography component="span" variant="body2" color="text.primary">
                       Angebot für Q3/2025
                     </Typography>
-                    {" — Vor 2 Tagen"}
+                    {' — Vor 2 Tagen'}
                   </>
                 }
               />
@@ -329,7 +366,7 @@ export function ActionCenterColumnMUI({ selectedCustomerId, onClose }: ActionCen
                     <Typography component="span" variant="body2" color="text.primary">
                       Bedarfsanalyse durchgeführt
                     </Typography>
-                    {" — Vor 1 Woche"}
+                    {' — Vor 1 Woche'}
                   </>
                 }
               />
@@ -348,7 +385,7 @@ export function ActionCenterColumnMUI({ selectedCustomerId, onClose }: ActionCen
                     <Typography component="span" variant="body2" color="text.primary">
                       Von "Interessent" zu "Aktiv"
                     </Typography>
-                    {" — Vor 2 Wochen"}
+                    {' — Vor 2 Wochen'}
                   </>
                 }
               />
@@ -366,24 +403,32 @@ export function ActionCenterColumnMUI({ selectedCustomerId, onClose }: ActionCen
                 </Typography>
                 <Stack spacing={1} sx={{ mt: 2 }}>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <Typography variant="body2" color="text.secondary">Kundentyp:</Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Kundentyp:
+                    </Typography>
                     <Typography variant="body2">{customer.customerType}</Typography>
                   </Box>
                   {customer.classification && (
                     <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <Typography variant="body2" color="text.secondary">Klassifizierung:</Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        Klassifizierung:
+                      </Typography>
                       <Typography variant="body2">{customer.classification}</Typography>
                     </Box>
                   )}
                   <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <Typography variant="body2" color="text.secondary">Kunde seit:</Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Kunde seit:
+                    </Typography>
                     <Typography variant="body2">
                       {format(new Date(customer.createdAt), 'dd.MM.yyyy', { locale: de })}
                     </Typography>
                   </Box>
                   {customer.creditLimit && (
                     <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <Typography variant="body2" color="text.secondary">Kreditlimit:</Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        Kreditlimit:
+                      </Typography>
                       <Typography variant="body2">
                         € {customer.creditLimit.toLocaleString('de-DE')}
                       </Typography>
@@ -400,12 +445,16 @@ export function ActionCenterColumnMUI({ selectedCustomerId, onClose }: ActionCen
                 </Typography>
                 <Stack spacing={1} sx={{ mt: 2 }}>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <Typography variant="body2" color="text.secondary">Erstellt von:</Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Erstellt von:
+                    </Typography>
                     <Typography variant="body2">{customer.createdBy}</Typography>
                   </Box>
                   {customer.lastContactDate && (
                     <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <Typography variant="body2" color="text.secondary">Letzter Kontakt:</Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        Letzter Kontakt:
+                      </Typography>
                       <Typography variant="body2">
                         {format(new Date(customer.lastContactDate), 'dd.MM.yyyy', { locale: de })}
                       </Typography>
@@ -413,7 +462,9 @@ export function ActionCenterColumnMUI({ selectedCustomerId, onClose }: ActionCen
                   )}
                   {customer.nextFollowUpDate && (
                     <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <Typography variant="body2" color="text.secondary">Nächste Aktion:</Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        Nächste Aktion:
+                      </Typography>
                       <Typography variant="body2" color="warning.main">
                         {format(new Date(customer.nextFollowUpDate), 'dd.MM.yyyy', { locale: de })}
                       </Typography>
@@ -421,7 +472,9 @@ export function ActionCenterColumnMUI({ selectedCustomerId, onClose }: ActionCen
                   )}
                   {customer.paymentTerms && (
                     <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <Typography variant="body2" color="text.secondary">Zahlungsziel:</Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        Zahlungsziel:
+                      </Typography>
                       <Typography variant="body2">{customer.paymentTerms}</Typography>
                     </Box>
                   )}
@@ -434,29 +487,23 @@ export function ActionCenterColumnMUI({ selectedCustomerId, onClose }: ActionCen
         <TabPanel value={activeTab} index={2}>
           {/* Documents */}
           <List>
-            <ListItem button>
+            <ListItem>
               <ListItemIcon>
                 <DescriptionIcon />
               </ListItemIcon>
-              <ListItemText 
-                primary="Angebot_Q3_2025.pdf"
-                secondary="Hochgeladen vor 2 Tagen"
-              />
+              <ListItemText primary="Angebot_Q3_2025.pdf" secondary="Hochgeladen vor 2 Tagen" />
             </ListItem>
-            <ListItem button>
+            <ListItem>
               <ListItemIcon>
                 <DescriptionIcon />
               </ListItemIcon>
-              <ListItemText 
-                primary="Rahmenvertrag_2025.pdf"
-                secondary="Hochgeladen vor 1 Monat"
-              />
+              <ListItemText primary="Rahmenvertrag_2025.pdf" secondary="Hochgeladen vor 1 Monat" />
             </ListItem>
-            <ListItem button>
+            <ListItem>
               <ListItemIcon>
                 <DescriptionIcon />
               </ListItemIcon>
-              <ListItemText 
+              <ListItemText
                 primary="Produktkatalog_2025.pdf"
                 secondary="Hochgeladen vor 2 Monaten"
               />
@@ -464,9 +511,14 @@ export function ActionCenterColumnMUI({ selectedCustomerId, onClose }: ActionCen
           </List>
         </TabPanel>
       </Box>
-      
+
       {/* Note Dialog */}
-      <Dialog open={noteDialogOpen} onClose={() => setNoteDialogOpen(false)} maxWidth="sm" fullWidth>
+      <Dialog
+        open={noteDialogOpen}
+        onClose={() => setNoteDialogOpen(false)}
+        maxWidth="sm"
+        fullWidth
+      >
         <DialogTitle>Notiz hinzufügen</DialogTitle>
         <DialogContent>
           <TextField
@@ -477,7 +529,7 @@ export function ActionCenterColumnMUI({ selectedCustomerId, onClose }: ActionCen
             variant="outlined"
             placeholder="Notiz eingeben..."
             value={newNote}
-            onChange={(e) => setNewNote(e.target.value)}
+            onChange={e => setNewNote(e.target.value)}
             sx={{ mt: 1 }}
           />
         </DialogContent>

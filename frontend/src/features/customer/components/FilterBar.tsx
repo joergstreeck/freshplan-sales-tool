@@ -8,6 +8,8 @@ import {
   IconButton,
   Badge,
   Tooltip,
+  Divider,
+  Typography,
 } from '@mui/material';
 import {
   Search as SearchIcon,
@@ -16,6 +18,10 @@ import {
   Save as SaveIcon,
   ViewModule as ViewModuleIcon,
   ViewList as ViewListIcon,
+  Schedule as ScheduleIcon,
+  TrendingUp as TrendingUpIcon,
+  Warning as WarningIcon,
+  FiberNew as NewIcon,
 } from '@mui/icons-material';
 import { useFocusListStore } from '../store/focusListStore';
 import { AdvancedFilterDialog } from './AdvancedFilterDialog';
@@ -26,24 +32,51 @@ interface QuickFilterChipProps {
   active: boolean;
   onClick: () => void;
   color?: string;
+  icon?: React.ReactNode;
+  count?: number;
 }
 
 const QuickFilterChip: React.FC<QuickFilterChipProps> = ({
   label,
   active,
   onClick,
-  color,
+  color = '#94C456',
+  icon,
+  count,
 }) => (
   <Chip
-    label={label}
+    label={
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+        {label}
+        {count !== undefined && (
+          <Typography 
+            component="span" 
+            variant="caption" 
+            sx={{ 
+              ml: 0.5,
+              fontWeight: 600,
+              opacity: 0.8 
+            }}
+          >
+            ({count})
+          </Typography>
+        )}
+      </Box>
+    }
+    icon={icon}
     onClick={onClick}
     variant={active ? 'filled' : 'outlined'}
+    size="small"
     sx={{
       backgroundColor: active ? color : 'transparent',
-      borderColor: color,
-      color: active ? '#fff' : color,
+      borderColor: active ? color : 'divider',
+      color: active ? '#fff' : 'text.primary',
+      '& .MuiChip-icon': {
+        color: active ? '#fff' : color,
+      },
       '&:hover': {
         backgroundColor: active ? color : `${color}20`,
+        borderColor: color,
       },
     }}
   />
@@ -55,157 +88,169 @@ export const FilterBar: React.FC = () => {
   const activeFilters = useFocusListStore((state) => state.activeFilters);
   const viewMode = useFocusListStore((state) => state.viewMode);
   const setViewMode = useFocusListStore((state) => state.setViewMode);
-  const clearAllFilters = useFocusListStore((state) => state.clearAllFilters);
   const toggleQuickFilter = useFocusListStore((state) => state.toggleQuickFilter);
+  const clearAllFilters = useFocusListStore((state) => state.clearAllFilters);
   const hasFilter = useFocusListStore((state) => state.hasFilter);
   
-  const [advancedFilterOpen, setAdvancedFilterOpen] = useState(false);
-  
+  const [filterDialogOpen, setFilterDialogOpen] = useState(false);
+
   const filterCount = activeFilters.length;
-  const hasActiveFilters = globalSearch !== '' || activeFilters.length > 0;
 
   return (
-    <Box
-      sx={{
-        borderBottom: 1,
-        borderColor: 'divider',
-        p: 2,
-        backgroundColor: '#f5f5f5',
-      }}
-    >
-      {/* Hauptzeile mit Suche und Quick Filters */}
-      <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', mb: 2 }}>
-        {/* Globale Suche */}
+    <Box>
+      {/* Erste Zeile: Suche + Erweiterte Filter + View Toggle */}
+      <Box sx={{ 
+        display: 'flex', 
+        gap: 2, 
+        alignItems: 'center',
+        mb: 1.5,
+        flexWrap: 'wrap'
+      }}>
+        {/* Suchfeld */}
         <TextField
-          fullWidth
-          variant="outlined"
+          size="small"
           placeholder="Kunde, Nummer oder Handelsname suchen..."
           value={globalSearch}
           onChange={(e) => setGlobalSearch(e.target.value)}
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
-                <SearchIcon />
-              </InputAdornment>
-            ),
-            endAdornment: globalSearch && (
-              <InputAdornment position="end">
-                <IconButton
-                  size="small"
-                  onClick={() => setGlobalSearch('')}
-                  edge="end"
-                >
-                  <ClearIcon />
-                </IconButton>
+                <SearchIcon fontSize="small" sx={{ color: 'text.secondary' }} />
               </InputAdornment>
             ),
           }}
-          sx={{ maxWidth: 400 }}
+          sx={{ 
+            flex: '1 1 300px',
+            maxWidth: 400,
+          }}
         />
 
-        {/* Quick Filter Chips - funktionieren wie Preset Views */}
-        <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-          <QuickFilterChip
-            label="Aktive Kunden"
-            active={hasFilter('status', 'AKTIV')}
-            onClick={() => toggleQuickFilter('status', 'AKTIV')}
-            color="#94C456" // Freshfoodz Grün
-          />
-          <QuickFilterChip
-            label="Risiko > 70"
-            active={hasFilter('riskScore', '>70')}
-            onClick={() => toggleQuickFilter('riskScore', '>70')}
-            color="#F44336"
-          />
-          <QuickFilterChip
-            label="Neue Leads"
-            active={hasFilter('status', 'LEAD')}
-            onClick={() => toggleQuickFilter('status', 'LEAD')}
-            color="#004F7B" // Freshfoodz Blau
-          />
-          
-          {/* Zeige nur Button zum Zurücksetzen wenn Filter aktiv */}
-          {(activeFilters.length > 0 || globalSearch) && (
+        {/* Erweiterte Filter Button */}
+        <Badge badgeContent={filterCount} color="primary">
+          <Button
+            variant="outlined"
+            size="small"
+            startIcon={<FilterIcon />}
+            onClick={() => setFilterDialogOpen(true)}
+          >
+            Erweiterte Filter
+          </Button>
+        </Badge>
+
+        {/* View Mode Toggle */}
+        <Box sx={{ display: 'flex', bgcolor: 'grey.100', borderRadius: 1, p: 0.5 }}>
+          <Tooltip title="Kartenansicht">
+            <IconButton
+              size="small"
+              onClick={() => setViewMode('cards')}
+              sx={{
+                bgcolor: viewMode === 'cards' ? 'white' : 'transparent',
+                boxShadow: viewMode === 'cards' ? 1 : 0,
+              }}
+            >
+              <ViewModuleIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Tabellenansicht">
+            <IconButton
+              size="small"
+              onClick={() => setViewMode('table')}
+              sx={{
+                bgcolor: viewMode === 'table' ? 'white' : 'transparent',
+                boxShadow: viewMode === 'table' ? 1 : 0,
+              }}
+            >
+              <ViewListIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+        </Box>
+
+        {/* Tabellen-Einstellungen nur bei Tabellenansicht */}
+        {viewMode === 'table' && (
+          <TableColumnSettings />
+        )}
+      </Box>
+
+      {/* Zweite Zeile: Quick Filters als eigene Gruppe */}
+      <Box sx={{ 
+        display: 'flex', 
+        alignItems: 'center',
+        gap: 1,
+        flexWrap: 'wrap',
+        pt: 1.5,
+        borderTop: 1,
+        borderColor: 'divider'
+      }}>
+        <Typography 
+          variant="caption" 
+          sx={{ 
+            color: 'text.secondary',
+            fontWeight: 500,
+            mr: 1
+          }}
+        >
+          Quick-Filter:
+        </Typography>
+        
+        <QuickFilterChip
+          label="Aktive Kunden"
+          active={hasFilter('status', 'AKTIV')}
+          onClick={() => toggleQuickFilter('status', 'AKTIV')}
+          color="#94C456"
+          icon={<TrendingUpIcon fontSize="small" />}
+        />
+        
+        <QuickFilterChip
+          label="Risiko > 70"
+          active={hasFilter('riskScore', '>70')}
+          onClick={() => toggleQuickFilter('riskScore', '>70')}
+          color="#FF9800"
+          icon={<WarningIcon fontSize="small" />}
+        />
+        
+        <QuickFilterChip
+          label="Neue Leads"
+          active={hasFilter('status', 'LEAD')}
+          onClick={() => toggleQuickFilter('status', 'LEAD')}
+          color="#004F7B"
+          icon={<NewIcon fontSize="small" />}
+        />
+
+        {/* Spacer */}
+        <Box sx={{ flex: 1 }} />
+
+        {/* Clear All + Save am Ende */}
+        {(activeFilters.length > 0 || globalSearch) && (
+          <>
             <Button
               variant="text"
               size="small"
               onClick={clearAllFilters}
               startIcon={<ClearIcon />}
-              sx={{ ml: 1, color: 'text.secondary' }}
+              sx={{ color: 'text.secondary' }}
             >
-              Alle anzeigen
+              Alle zurücksetzen
             </Button>
-          )}
-        </Box>
+            
+            {activeFilters.length > 0 && (
+              <Button
+                variant="text"
+                size="small"
+                startIcon={<SaveIcon />}
+                sx={{ color: 'primary.main' }}
+              >
+                Filter speichern
+              </Button>
+            )}
+          </>
+        )}
       </Box>
 
-      {/* Steuerungszeile */}
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-          {/* Erweiterte Filter Button */}
-          <Badge badgeContent={filterCount} color="primary">
-            <Button
-              variant="outlined"
-              startIcon={<FilterIcon />}
-              onClick={() => setAdvancedFilterOpen(true)}
-            >
-              Erweiterte Filter
-            </Button>
-          </Badge>
-
-        </Box>
-
-        <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-          {/* Gespeicherte Ansichten */}
-          <Tooltip title="Ansicht speichern">
-            <span>
-              <IconButton disabled={!hasActiveFilters}>
-                <SaveIcon />
-              </IconButton>
-            </span>
-          </Tooltip>
-
-          {/* View Mode Toggle */}
-          <Box
-            sx={{
-              display: 'flex',
-              border: 1,
-              borderColor: 'divider',
-              borderRadius: 1,
-            }}
-          >
-            <Tooltip title="Kartenansicht">
-              <IconButton
-                size="small"
-                onClick={() => setViewMode('cards')}
-                color={viewMode === 'cards' ? 'primary' : 'default'}
-              >
-                <ViewModuleIcon />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Tabellenansicht">
-              <IconButton
-                size="small"
-                onClick={() => setViewMode('table')}
-                color={viewMode === 'table' ? 'primary' : 'default'}
-              >
-                <ViewListIcon />
-              </IconButton>
-            </Tooltip>
-          </Box>
-          
-          {/* Tabellen-Spalten-Einstellungen (nur bei Tabellenansicht) */}
-          {viewMode === 'table' && <TableColumnSettings />}
-        </Box>
-      </Box>
-
-      {/* Advanced Filter Dialog */}
-      <AdvancedFilterDialog 
-        open={advancedFilterOpen}
-        onClose={() => setAdvancedFilterOpen(false)}
+      {/* Erweiterte Filter Dialog */}
+      <AdvancedFilterDialog
+        open={filterDialogOpen}
+        onClose={() => setFilterDialogOpen(false)}
       />
-      
-      {/* TODO: Active Filters Display */}
     </Box>
   );
 };
