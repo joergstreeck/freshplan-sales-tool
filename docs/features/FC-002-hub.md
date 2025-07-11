@@ -12,9 +12,9 @@
 
 | Modul | Status FINAL | Risiko | Aufwand | Dokument | Nächste Schritte |
 |-------|--------------|--------|---------|----------|------------------|
-| M1 | ✅ **FERTIG** | Kein | 0 Tage | [Hauptnavigation](./FC-002-M1-hauptnavigation.md) | MainLayoutV2 als Referenz nutzen |
-| M7 | ✅ **FERTIG** | Kein | 0 Tage | [Einstellungen](./FC-002-M7-einstellungen.md) | **Goldene Referenz** - funktional |
-| M3 | 🔄 90% | Niedrig | 0.5 Tage | [Cockpit-Integration](./FC-002-M3-cockpit.md) | **NÄCHSTER SCHRITT** - SalesCockpitV2 integrieren |
+| M1 | ✅ **100% FERTIG** | Kein | 0 Tage | [Hauptnavigation](./FC-002-M1-hauptnavigation.md) | Stabile App-Shell ✅ |
+| M7 | ✅ **100% FERTIG** | Kein | 0 Tage | [Einstellungen](./FC-002-M7-einstellungen.md) | **Goldene Referenz** für CRUD-Module ✅ |
+| M3 | ✅ **100% FERTIG** | Kein | 0.5 Tage | [Cockpit-Integration](./FC-002-M3-cockpit.md) | **Goldene Referenz** für Multi-Spalten ✅ |
 | User | 🟡 Modern | Niedrig | 1 Tag | Siehe M7 Dokument | Tailwind → MUI Migration |
 | M8 | 🟡 Modern | Niedrig | 2 Tage | [Rechner](./FC-002-M8-rechner.md) | ShadCN → MUI Migration |
 | M5 | 🔴 Legacy | **HOCH** | 3.5 Tage | [Kundenmanagement](./FC-002-M5-kundenmanagement.md) | Kritische CSS-Konflikte, Neuentwicklung |
