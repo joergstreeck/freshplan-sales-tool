@@ -211,11 +211,13 @@ exports[`CustomerList Snapshot Tests > should match snapshot for loaded state 1`
       >
         Zeige 
         1
-         - 
+         -
+         
         2
          von 
         2
-         Einträgen
+         
+        Einträgen
       </div>
       <div
         class="pagination-controls"

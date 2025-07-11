@@ -12,7 +12,6 @@ import {
   Card,
   CardContent,
   Button,
-  ButtonGroup,
   Divider,
   Stack,
   IconButton,
@@ -272,6 +271,7 @@ export function ActionCenterColumnMUI({ selectedCustomerId, onClose }: ActionCen
           <Button
             variant="outlined"
             size="small"
+            fullWidth
             startIcon={<EmailIcon />}
             onClick={handleEmailClick}
             sx={{ justifyContent: 'flex-start' }}
@@ -281,6 +281,7 @@ export function ActionCenterColumnMUI({ selectedCustomerId, onClose }: ActionCen
           <Button
             variant="outlined"
             size="small"
+            fullWidth
             startIcon={<PhoneIcon />}
             onClick={handlePhoneClick}
             sx={{ justifyContent: 'flex-start' }}
@@ -290,6 +291,7 @@ export function ActionCenterColumnMUI({ selectedCustomerId, onClose }: ActionCen
           <Button
             variant="outlined"
             size="small"
+            fullWidth
             startIcon={<CalculateIcon />}
             onClick={handleCalculatorClick}
             sx={{ justifyContent: 'flex-start' }}
@@ -299,6 +301,7 @@ export function ActionCenterColumnMUI({ selectedCustomerId, onClose }: ActionCen
           <Button
             variant="outlined"
             size="small"
+            fullWidth
             startIcon={<DescriptionIcon />}
             onClick={handleQuoteClick}
             sx={{ justifyContent: 'flex-start' }}
