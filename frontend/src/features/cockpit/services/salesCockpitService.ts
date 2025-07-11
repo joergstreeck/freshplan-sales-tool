@@ -16,10 +16,11 @@ class SalesCockpitService {
    */
   async getDashboardData(userId: string): Promise<SalesCockpitDashboard> {
     // In Development-Mode ohne Keycloak: Nutze den /dev Endpunkt
-    const endpoint = IS_DEV_MODE && !USE_KEYCLOAK_IN_DEV 
-      ? '/api/sales-cockpit/dashboard/dev'
-      : `/api/sales-cockpit/dashboard/${userId}`;
-    
+    const endpoint =
+      IS_DEV_MODE && !USE_KEYCLOAK_IN_DEV
+        ? '/api/sales-cockpit/dashboard/dev'
+        : `/api/sales-cockpit/dashboard/${userId}`;
+
     const response = await httpClient.get<SalesCockpitDashboard>(endpoint);
     return response.data;
   }

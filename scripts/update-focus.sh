@@ -4,16 +4,74 @@
 # Zweck: Einfaches Update der .current-focus Datei während der Arbeit
 # Autor: Claude
 # Datum: 09.07.2025
+# Update: 10.07.2025 - Respektiert jetzt Übergaben und ist flexibler
+#
+# Verwendung:
+#   ./scripts/update-focus.sh                    # Interaktiver Modus
+#   ./scripts/update-focus.sh --override         # Override-Modus (ignoriert current-focus)
+#   ./scripts/update-focus.sh M3-cockpit         # Setze Modul direkt
+#   ./scripts/update-focus.sh M3-cockpit "Task"  # Setze Modul und Task
 
 set -e
+
+# Hilfe anzeigen
+if [ "$1" = "--help" ] || [ "$1" = "-h" ]; then
+    echo "update-focus.sh - Verwaltet den aktuellen Arbeitsfokus"
+    echo ""
+    echo "Verwendung:"
+    echo "  ./scripts/update-focus.sh                    # Interaktiver Modus"
+    echo "  ./scripts/update-focus.sh --override         # Override-Modus"
+    echo "  ./scripts/update-focus.sh M3-cockpit         # Setze Modul direkt"
+    echo "  ./scripts/update-focus.sh M3-cockpit 'Task'  # Setze Modul und Task"
+    echo ""
+    echo "Flags:"
+    echo "  --override, -o    Ignoriere aktuelle .current-focus Werte"
+    echo "  --help, -h        Diese Hilfe anzeigen"
+    echo ""
+    echo "Das Script warnt, wenn eine Übergabe-Datei existiert und das"
+    echo "aktuelle Modul nicht mit der Übergabe übereinstimmt."
+    exit 0
+fi
 
 # Farben für Output
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
+RED='\033[0;31m'
+BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 echo "📍 Update Current Focus"
 echo "====================="
+
+# Prüfe auf spezielle Flags
+if [ "$1" = "--override" ] || [ "$1" = "-o" ]; then
+    echo -e "${YELLOW}Override-Modus aktiviert - ignoriere .current-focus${NC}"
+    OVERRIDE_MODE=true
+    shift # Entferne das Flag aus den Argumenten
+else
+    OVERRIDE_MODE=false
+fi
+
+# Prüfe ob eine Übergabe-Datei von heute existiert
+TODAY=$(date +%Y-%m-%d)
+HANDOVER_DIR="docs/claude-work/daily-work/$TODAY"
+LATEST_HANDOVER=""
+
+if [ -d "$HANDOVER_DIR" ]; then
+    LATEST_HANDOVER=$(ls -t "$HANDOVER_DIR"/*HANDOVER*.md 2>/dev/null | head -1)
+    if [ -n "$LATEST_HANDOVER" ]; then
+        echo -e "${YELLOW}⚠️  Warnung: Aktuelle Übergabe gefunden!${NC}"
+        echo -e "${BLUE}📄 $LATEST_HANDOVER${NC}"
+        echo ""
+        
+        # Versuche, das aktive Modul aus der Übergabe zu extrahieren
+        if grep -q "Aktives Modul:" "$LATEST_HANDOVER"; then
+            HANDOVER_MODULE=$(grep "Aktives Modul:" "$LATEST_HANDOVER" | head -1 | sed 's/.*Aktives Modul:[[:space:]]*//' | cut -d' ' -f1)
+            echo -e "${GREEN}Aus Übergabe extrahiert: $HANDOVER_MODULE${NC}"
+            echo ""
+        fi
+    fi
+fi
 
 # Read current values if file exists
 if [ -f .current-focus ]; then
@@ -28,6 +86,20 @@ else
     CURRENT_FILE="null"
     CURRENT_LINE="null"
     CURRENT_TASK="null"
+fi
+
+# Wenn eine Übergabe existiert und das Modul nicht übereinstimmt, warne
+if [ -n "$HANDOVER_MODULE" ] && [ "$HANDOVER_MODULE" != "$CURRENT_MODULE" ]; then
+    echo -e "${RED}⚠️  ACHTUNG: Diskrepanz zwischen .current-focus und Übergabe!${NC}"
+    echo -e "Current-Focus zeigt: ${YELLOW}$CURRENT_MODULE${NC}"
+    echo -e "Übergabe zeigt: ${GREEN}$HANDOVER_MODULE${NC}"
+    echo ""
+    read -p "Möchtest du den Fokus auf das Übergabe-Modul setzen? (j/n): " USE_HANDOVER
+    if [[ "$USE_HANDOVER" =~ ^[Jj]$ ]]; then
+        CURRENT_MODULE="$HANDOVER_MODULE"
+        echo -e "${GREEN}✅ Fokus wird auf Übergabe-Modul gesetzt${NC}"
+    fi
+    echo ""
 fi
 
 # If called with arguments, use them

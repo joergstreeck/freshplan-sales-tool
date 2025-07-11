@@ -1,3 +1,4 @@
+import React from 'react';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import PeopleIcon from '@mui/icons-material/People';
@@ -14,7 +15,7 @@ interface NavigationSubItem {
 interface NavigationItemType {
   id: string;
   label: string;
-  icon: React.ComponentType<any>;
+  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
   path: string;
   permissions?: string[];
   subItems?: NavigationSubItem[];

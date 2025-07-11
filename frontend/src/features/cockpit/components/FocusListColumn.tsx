@@ -1,6 +1,6 @@
 /**
  * Fokus-Liste - Spalte 2 des Sales Cockpit
- * 
+ *
  * Die dynamische Arbeitsliste für Kunden
  * Ermöglicht Wechsel zwischen Listen-, Karten- und Kanban-Ansicht
  */
@@ -17,7 +17,7 @@ import type { Customer } from '../../customer/types/customer';
 export function FocusListColumn() {
   const { selectCustomer } = useCockpitStore();
   const { viewMode } = useFocusListStore();
-  
+
   // Verwende den neuen Customer Search Hook
   const { data, isLoading, isError, error } = useCustomerSearch();
 
@@ -25,7 +25,7 @@ export function FocusListColumn() {
     selectCustomer({
       id: customer.id,
       companyName: customer.companyName,
-      status: customer.status
+      status: customer.status,
     });
   };
 
@@ -39,7 +39,6 @@ export function FocusListColumn() {
       <FilterBar />
 
       <div className="column-content">
-
         {/* Customer List based on view mode */}
         <div className="customer-list-wrapper">
           {/* Loading State */}
@@ -48,21 +47,19 @@ export function FocusListColumn() {
               <p>Lade Kunden...</p>
             </div>
           )}
-          
+
           {/* Error State */}
           {isError && (
             <div className="error-state">
               <p>Fehler beim Laden der Kunden: {error?.message}</p>
             </div>
           )}
-          
+
           {/* Data Display */}
           {data && !isLoading && (
             <>
-              {viewMode === 'table' && (
-                <CustomerList onCustomerSelect={handleCustomerSelect} />
-              )}
-              
+              {viewMode === 'table' && <CustomerList onCustomerSelect={handleCustomerSelect} />}
+
               {viewMode === 'cards' && (
                 <div className="cards-view">
                   <div className="customer-cards-grid">
@@ -78,13 +75,13 @@ export function FocusListColumn() {
               )}
             </>
           )}
-          
+
           {/* Pagination Info */}
           {data && (
             <div className="pagination-info">
               <p>
-                Zeige {data.content.length} von {data.totalElements} Kunden
-                (Seite {data.page + 1} von {data.totalPages})
+                Zeige {data.content.length} von {data.totalElements} Kunden (Seite {data.page + 1}{' '}
+                von {data.totalPages})
               </p>
             </div>
           )}

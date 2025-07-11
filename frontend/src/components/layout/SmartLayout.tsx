@@ -11,7 +11,7 @@
  */
 
 import React, { useMemo } from 'react';
-import { Box, Paper, useTheme, useMediaQuery } from '@mui/material';
+import { Box, Paper, useTheme, useMediaQuery, Theme } from '@mui/material';
 
 export type ContentWidth = 'full' | 'content' | 'narrow' | 'form';
 
@@ -38,7 +38,7 @@ function detectContentType(children: React.ReactNode): ContentWidth {
   let gridCount = 0;
   let dataWideCount = 0;
   
-  const countElements = (element: any): void => {
+  const countElements = (element: React.ReactElement): void => {
     if (!element || !element.type) return;
     
     // Check für DataGrid oder Table
@@ -101,7 +101,7 @@ function detectContentType(children: React.ReactNode): ContentWidth {
  */
 function getContainerStyles(
   width: ContentWidth, 
-  theme: any,
+  theme: Theme,
   isMobile: boolean
 ) {
   const baseStyles = {
@@ -162,7 +162,7 @@ function getContainerStyles(
 /**
  * Paper-Styles mit visueller Hierarchie
  */
-function getPaperStyles(theme: any) {
+function getPaperStyles(theme: Theme) {
   return {
     p: { xs: 2, sm: 3, md: 4 },
     boxShadow: '0 1px 3px rgba(0,0,0,0.05)',

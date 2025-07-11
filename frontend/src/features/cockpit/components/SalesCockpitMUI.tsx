@@ -6,7 +6,6 @@
 import React from 'react';
 import { Box, Paper, Typography, Grid, Card, CardContent, Chip, Button } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import DashboardIcon from '@mui/icons-material/Dashboard';
 import GroupIcon from '@mui/icons-material/Group';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import TaskIcon from '@mui/icons-material/Task';
@@ -33,38 +32,51 @@ export function SalesCockpitMUI() {
   return (
     <Box sx={{ p: 3, height: '100%', bgcolor: 'background.default' }}>
       {/* Dashboard Header */}
-      <Typography variant="h4" component="h1" gutterBottom sx={{ color: 'primary.main', fontWeight: 'bold' }}>
+      <Typography
+        variant="h4"
+        component="h1"
+        gutterBottom
+        sx={{ color: 'primary.main', fontWeight: 'bold' }}
+      >
         FreshPlan Sales Command Center
       </Typography>
-      
+
       {/* Dashboard Stats */}
       <Grid container spacing={2} sx={{ mb: 3 }}>
         <Grid item xs={12} sm={6} md={3}>
           <StatsCard>
             <GroupIcon sx={{ fontSize: 40, color: 'primary.main' }} />
             <Typography variant="h4">156</Typography>
-            <Typography variant="body2" color="text.secondary">Kunden gesamt</Typography>
+            <Typography variant="body2" color="text.secondary">
+              Kunden gesamt
+            </Typography>
           </StatsCard>
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
           <StatsCard>
             <TrendingUpIcon sx={{ fontSize: 40, color: 'success.main' }} />
             <Typography variant="h4">142</Typography>
-            <Typography variant="body2" color="text.secondary">Aktive Kunden</Typography>
+            <Typography variant="body2" color="text.secondary">
+              Aktive Kunden
+            </Typography>
           </StatsCard>
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
           <StatsCard>
             <TaskIcon sx={{ fontSize: 40, color: 'warning.main' }} />
             <Typography variant="h4">8</Typography>
-            <Typography variant="body2" color="text.secondary">Risiko-Kunden</Typography>
+            <Typography variant="body2" color="text.secondary">
+              Risiko-Kunden
+            </Typography>
           </StatsCard>
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
           <StatsCard>
             <ErrorIcon sx={{ fontSize: 40, color: 'error.main' }} />
             <Typography variant="h4">3</Typography>
-            <Typography variant="body2" color="text.secondary">Überfällig</Typography>
+            <Typography variant="body2" color="text.secondary">
+              Überfällig
+            </Typography>
           </StatsCard>
         </Grid>
       </Grid>
@@ -77,14 +89,14 @@ export function SalesCockpitMUI() {
             <Typography variant="h6" gutterBottom sx={{ color: 'secondary.main' }}>
               Mein Tag
             </Typography>
-            
+
             <Box sx={{ mb: 2 }}>
-              <Typography variant="subtitle2" gutterBottom>Aktuelle Benachrichtigungen</Typography>
+              <Typography variant="subtitle2" gutterBottom>
+                Aktuelle Benachrichtigungen
+              </Typography>
               <Card sx={{ mb: 1, bgcolor: '#e8f5e9' }}>
                 <CardContent sx={{ py: 1 }}>
-                  <Typography variant="body2">
-                    🔔 Umsatzchance bei Premium Partner GmbH
-                  </Typography>
+                  <Typography variant="body2">🔔 Umsatzchance bei Premium Partner GmbH</Typography>
                   <Typography variant="caption" color="text.secondary">
                     Kunde hatte lange keinen Kontakt - Idealer Zeitpunkt für Cross-Selling
                   </Typography>
@@ -93,7 +105,9 @@ export function SalesCockpitMUI() {
             </Box>
 
             <Box sx={{ mb: 2 }}>
-              <Typography variant="subtitle2" gutterBottom>Prioritäts-Aufgaben (3)</Typography>
+              <Typography variant="subtitle2" gutterBottom>
+                Prioritäts-Aufgaben (3)
+              </Typography>
               <Card sx={{ mb: 1 }}>
                 <CardContent sx={{ py: 1 }}>
                   <Typography variant="body2">
@@ -114,7 +128,7 @@ export function SalesCockpitMUI() {
             <Typography variant="h6" gutterBottom sx={{ color: 'secondary.main' }}>
               Fokus-Liste
             </Typography>
-            
+
             <Box sx={{ mb: 2 }}>
               <Chip label="Aktive" color="primary" size="small" sx={{ mr: 1 }} />
               <Chip label="Risiko" variant="outlined" size="small" sx={{ mr: 1 }} />
@@ -143,7 +157,7 @@ export function SalesCockpitMUI() {
             <Typography variant="h6" gutterBottom sx={{ color: 'secondary.main' }}>
               Aktions-Center
             </Typography>
-            
+
             <Box sx={{ textAlign: 'center', py: 4 }}>
               <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
                 Wählen Sie einen Kunden aus der Fokus-Liste aus, um mit der Bearbeitung zu beginnen.

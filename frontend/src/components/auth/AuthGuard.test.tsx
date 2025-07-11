@@ -6,15 +6,15 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { AuthGuard } from './AuthGuard';
 
-// Mock für useKeycloak Hook
-const mockKeycloak = {
+// Mock für useAuth Hook
+const mockAuth = {
   isAuthenticated: false,
   isLoading: false,
   hasRole: vi.fn(),
 };
 
-vi.mock('../../contexts/KeycloakContext', () => ({
-  useKeycloak: () => mockKeycloak,
+vi.mock('../../hooks/useAuth', () => ({
+  useAuth: () => mockAuth,
 }));
 
 // Mock für LoginPage
@@ -26,14 +26,14 @@ describe('AuthGuard', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     // Reset mock defaults
-    mockKeycloak.isAuthenticated = false;
-    mockKeycloak.isLoading = false;
-    mockKeycloak.hasRole.mockReturnValue(false);
+    mockAuth.isAuthenticated = false;
+    mockAuth.isLoading = false;
+    mockAuth.hasRole.mockReturnValue(false);
   });
 
   describe('Loading State', () => {
     it('sollte Loading-Spinner zeigen wenn isLoading true ist', () => {
-      mockKeycloak.isLoading = true;
+      mockAuth.isLoading = true;
 
       render(
         <AuthGuard>
@@ -46,7 +46,7 @@ describe('AuthGuard', () => {
     });
 
     it('sollte animierten Spinner beim Laden haben', () => {
-      mockKeycloak.isLoading = true;
+      mockAuth.isLoading = true;
 
       const { container } = render(
         <AuthGuard>
@@ -68,8 +68,8 @@ describe('AuthGuard', () => {
 
   describe('Authentication', () => {
     it('sollte LoginPage zeigen wenn nicht authentifiziert', () => {
-      mockKeycloak.isAuthenticated = false;
-      mockKeycloak.isLoading = false;
+      mockAuth.isAuthenticated = false;
+      mockAuth.isLoading = false;
 
       render(
         <AuthGuard>
@@ -82,8 +82,8 @@ describe('AuthGuard', () => {
     });
 
     it('sollte geschützte Inhalte zeigen wenn authentifiziert', () => {
-      mockKeycloak.isAuthenticated = true;
-      mockKeycloak.isLoading = false;
+      mockAuth.isAuthenticated = true;
+      mockAuth.isLoading = false;
 
       render(
         <AuthGuard>
@@ -98,9 +98,9 @@ describe('AuthGuard', () => {
 
   describe('Role-based Authorization', () => {
     it('sollte Inhalte zeigen wenn Benutzer die erforderliche Rolle hat', () => {
-      mockKeycloak.isAuthenticated = true;
-      mockKeycloak.isLoading = false;
-      mockKeycloak.hasRole.mockReturnValue(true);
+      mockAuth.isAuthenticated = true;
+      mockAuth.isLoading = false;
+      mockAuth.hasRole.mockReturnValue(true);
 
       render(
         <AuthGuard requiredRole="admin">
@@ -109,13 +109,13 @@ describe('AuthGuard', () => {
       );
 
       expect(screen.getByText('Admin Content')).toBeInTheDocument();
-      expect(mockKeycloak.hasRole).toHaveBeenCalledWith('admin');
+      expect(mockAuth.hasRole).toHaveBeenCalledWith('admin');
     });
 
     it('sollte Zugriff verweigert zeigen wenn Benutzer nicht die erforderliche Rolle hat', () => {
-      mockKeycloak.isAuthenticated = true;
-      mockKeycloak.isLoading = false;
-      mockKeycloak.hasRole.mockReturnValue(false);
+      mockAuth.isAuthenticated = true;
+      mockAuth.isLoading = false;
+      mockAuth.hasRole.mockReturnValue(false);
 
       render(
         <AuthGuard requiredRole="admin">
@@ -132,9 +132,9 @@ describe('AuthGuard', () => {
     });
 
     it('sollte benutzerdefiniertes Fallback rendern wenn angegeben', () => {
-      mockKeycloak.isAuthenticated = true;
-      mockKeycloak.isLoading = false;
-      mockKeycloak.hasRole.mockReturnValue(false);
+      mockAuth.isAuthenticated = true;
+      mockAuth.isLoading = false;
+      mockAuth.hasRole.mockReturnValue(false);
 
       const customFallback = <div>Custom Unauthorized Message</div>;
 
@@ -152,8 +152,8 @@ describe('AuthGuard', () => {
 
   describe('Different Scenarios', () => {
     it('sollte ohne requiredRole nur Authentication prüfen', () => {
-      mockKeycloak.isAuthenticated = true;
-      mockKeycloak.isLoading = false;
+      mockAuth.isAuthenticated = true;
+      mockAuth.isLoading = false;
 
       render(
         <AuthGuard>
@@ -162,12 +162,12 @@ describe('AuthGuard', () => {
       );
 
       expect(screen.getByText('Public Authenticated Content')).toBeInTheDocument();
-      expect(mockKeycloak.hasRole).not.toHaveBeenCalled();
+      expect(mockAuth.hasRole).not.toHaveBeenCalled();
     });
 
     it('sollte mehrere Kinder korrekt rendern', () => {
-      mockKeycloak.isAuthenticated = true;
-      mockKeycloak.isLoading = false;
+      mockAuth.isAuthenticated = true;
+      mockAuth.isLoading = false;
 
       render(
         <AuthGuard>
@@ -183,9 +183,9 @@ describe('AuthGuard', () => {
     });
 
     it('sollte richtige CSS-Klassen für unauthorisierte Anzeige haben', () => {
-      mockKeycloak.isAuthenticated = true;
-      mockKeycloak.isLoading = false;
-      mockKeycloak.hasRole.mockReturnValue(false);
+      mockAuth.isAuthenticated = true;
+      mockAuth.isLoading = false;
+      mockAuth.hasRole.mockReturnValue(false);
 
       const { container } = render(
         <AuthGuard requiredRole="admin">
@@ -203,8 +203,8 @@ describe('AuthGuard', () => {
 
   describe('Edge Cases', () => {
     it('sollte mit leeren children umgehen können', () => {
-      mockKeycloak.isAuthenticated = true;
-      mockKeycloak.isLoading = false;
+      mockAuth.isAuthenticated = true;
+      mockAuth.isLoading = false;
 
       const { container } = render(<AuthGuard>{null}</AuthGuard>);
 
@@ -213,8 +213,8 @@ describe('AuthGuard', () => {
     });
 
     it('sollte Loading priorisieren über Authentication-Check', () => {
-      mockKeycloak.isAuthenticated = false;
-      mockKeycloak.isLoading = true;
+      mockAuth.isAuthenticated = false;
+      mockAuth.isLoading = true;
 
       render(
         <AuthGuard>
