@@ -123,8 +123,8 @@ export const UserTableMUI = () => {
             startIcon={<AddIcon />}
             onClick={openCreateModal}
             sx={{ 
-              bgcolor: '#94C456',
-              '&:hover': { bgcolor: '#7aa845' }
+              bgcolor: 'primary.main',
+              '&:hover': { bgcolor: 'primary.dark' }
             }}
           >
             Neuer Benutzer

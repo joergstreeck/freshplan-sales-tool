@@ -129,7 +129,7 @@ export function CockpitHeader() {
                 </svg>
                 Mein Profil
               </Link>
-              <Link to="/settings" className="user-menu-item">
+              <Link to="/einstellungen" className="user-menu-item">
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
                   <path
                     fillRule="evenodd"
