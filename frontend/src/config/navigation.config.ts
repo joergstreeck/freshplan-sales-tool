@@ -2,6 +2,7 @@ import React from 'react';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import PeopleIcon from '@mui/icons-material/People';
+import GroupIcon from '@mui/icons-material/Group';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 import SettingsIcon from '@mui/icons-material/Settings';
 
@@ -28,6 +29,13 @@ export const navigationConfig: NavigationItemType[] = [
     icon: DashboardIcon,
     path: '/cockpit',
     permissions: ['cockpit.view'],
+  },
+  {
+    id: 'users',
+    label: 'Benutzerverwaltung',
+    icon: GroupIcon,
+    path: '/users',
+    permissions: ['users.view'],
   },
   {
     id: 'neukundengewinnung',

@@ -1,13 +1,19 @@
-// Users management page
-import { UserTable } from '../features/users/UserTable';
-import { UserForm } from '../features/users/UserForm';
+// Users management page - Using MainLayoutV2 and MUI components
+import { Box, Typography } from '@mui/material';
+import { MainLayoutV2 } from '../components/layout/MainLayoutV2';
+import { UserTableMUI } from '../features/users/components/UserTableMUI';
+import { UserFormMUI } from '../features/users/components/UserFormMUI';
 import { useUser } from '../features/users/userQueries';
 import { useUserStore } from '../features/users/userStore';
-import { AuthenticatedLayout } from '../components/layout/AuthenticatedLayout';
 
 export const UsersPage = () => {
-  const { isCreateModalOpen, isEditModalOpen, selectedUserId, closeCreateModal, closeEditModal } =
-    useUserStore();
+  const { 
+    isCreateModalOpen, 
+    isEditModalOpen, 
+    selectedUserId, 
+    closeCreateModal, 
+    closeEditModal 
+  } = useUserStore();
 
   // Fetch user data when editing
   const { data: selectedUser } = useUser(selectedUserId || '');
@@ -19,36 +25,40 @@ export const UsersPage = () => {
   };
 
   return (
-    <AuthenticatedLayout>
-      <div className="min-h-screen bg-background p-8">
-        <div className="mx-auto max-w-7xl space-y-8">
+    <MainLayoutV2>
+      <Typography variant="h4" gutterBottom sx={{ mb: 4 }}>
+        Benutzerverwaltung
+      </Typography>
+      
+      <Box sx={{ width: '100%' }}>
         {/* Main content */}
-        {!isCreateModalOpen && !isEditModalOpen && <UserTable />}
+        {!isCreateModalOpen && !isEditModalOpen && <UserTableMUI />}
 
         {/* Create user form */}
         {isCreateModalOpen && (
-          <div className="flex justify-center">
-            <UserForm onSuccess={handleFormSuccess} onCancel={closeCreateModal} />
-          </div>
+          <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+            <UserFormMUI onSuccess={handleFormSuccess} onCancel={closeCreateModal} />
+          </Box>
         )}
 
         {/* Edit user form */}
         {isEditModalOpen && selectedUser && (
-          <div className="flex justify-center">
-            <UserForm user={selectedUser} onSuccess={handleFormSuccess} onCancel={closeEditModal} />
-          </div>
+          <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+            <UserFormMUI 
+              user={selectedUser} 
+              onSuccess={handleFormSuccess} 
+              onCancel={closeEditModal} 
+            />
+          </Box>
         )}
 
         {/* Loading state for edit mode */}
         {isEditModalOpen && !selectedUser && selectedUserId && (
-          <div className="flex justify-center">
-            <div className="p-8">
-              <p>Lade Benutzerdaten...</p>
-            </div>
-          </div>
+          <Box sx={{ display: 'flex', justifyContent: 'center', p: 8 }}>
+            <Typography>Lade Benutzerdaten...</Typography>
+          </Box>
         )}
-        </div>
-      </div>
-    </AuthenticatedLayout>
+      </Box>
+    </MainLayoutV2>
   );
 };
