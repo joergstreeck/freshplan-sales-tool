@@ -7,7 +7,6 @@ import {
   Button,
   Box,
   Typography,
-  TextField,
   Select,
   MenuItem,
   FormControl,
@@ -16,7 +15,6 @@ import {
   Stack,
   Slider,
   FormLabel,
-  Autocomplete,
   IconButton,
   Divider,
 } from '@mui/material';
@@ -26,7 +24,6 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { de } from 'date-fns/locale';
 import CloseIcon from '@mui/icons-material/Close';
 import AddIcon from '@mui/icons-material/Add';
-import DeleteIcon from '@mui/icons-material/Delete';
 import { useFocusListStore } from '../store/focusListStore';
 import {
   CustomerStatus,
@@ -86,7 +83,7 @@ export const AdvancedFilterDialog: React.FC<AdvancedFilterDialogProps> = ({
 
   const handleApplyFilters = () => {
     // Konvertiere Filter zu Search Criteria
-    const criteria: any = {};
+    const criteria: Record<string, unknown> = {};
     
     if (filters.status.length > 0) {
       criteria.status = filters.status;

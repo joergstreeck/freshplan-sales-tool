@@ -1,31 +1,32 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { TableColumnSettings } from './TableColumnSettings';
 import { useFocusListStore } from '../store/focusListStore';
+import React from 'react';
 
 // Mock the store
 vi.mock('../store/focusListStore');
 
 // Mock @dnd-kit
 vi.mock('@dnd-kit/core', () => ({
-  DndContext: ({ children }: any) => <div data-testid="dnd-context">{children}</div>,
+  DndContext: ({ children }: { children: React.ReactNode }) => <div data-testid="dnd-context">{children}</div>,
   closestCenter: vi.fn(),
   KeyboardSensor: vi.fn(),
   PointerSensor: vi.fn(),
   useSensor: vi.fn(),
   useSensors: vi.fn(),
-  DragOverlay: ({ children }: any) => <div data-testid="drag-overlay">{children}</div>,
+  DragOverlay: ({ children }: { children: React.ReactNode }) => <div data-testid="drag-overlay">{children}</div>,
 }));
 
 vi.mock('@dnd-kit/sortable', () => ({
-  arrayMove: vi.fn((array: any[], from: number, to: number) => {
+  arrayMove: vi.fn((array: unknown[], from: number, to: number) => {
     const newArray = [...array];
     const [removed] = newArray.splice(from, 1);
     newArray.splice(to, 0, removed);
     return newArray;
   }),
-  SortableContext: ({ children }: any) => <div data-testid="sortable-context">{children}</div>,
+  SortableContext: ({ children }: { children: React.ReactNode }) => <div data-testid="sortable-context">{children}</div>,
   sortableKeyboardCoordinates: vi.fn(),
   verticalListSortingStrategy: vi.fn(),
   useSortable: vi.fn(() => ({
@@ -66,7 +67,7 @@ describe('TableColumnSettings', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    (useFocusListStore as any).mockReturnValue(mockStore);
+    (useFocusListStore as unknown as jest.Mock).mockReturnValue(mockStore);
   });
 
   it('sollte das Einstellungs-Icon rendern', () => {
@@ -129,7 +130,7 @@ describe('TableColumnSettings', () => {
       { id: 'actions', label: 'Aktionen', field: 'actions', visible: true, order: 2 },
     ];
     
-    (useFocusListStore as any).mockReturnValue({
+    (useFocusListStore as unknown as jest.Mock).mockReturnValue({
       ...mockStore,
       tableColumns: limitedColumns,
     });

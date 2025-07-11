@@ -12,7 +12,6 @@ import {
   Alert,
   AlertTitle,
   Button,
-  Stack,
   Card,
   Table,
   TableBody,
@@ -24,14 +23,10 @@ import {
   IconButton
 } from '@mui/material';
 import { useFocusListStore } from '../../customer/store/focusListStore';
-import { useAuth } from '../../../hooks/useAuth';
 import { useCustomerSearch } from '../../customer/hooks/useCustomerSearch';
 import { FilterBar } from '../../customer/components/FilterBar';
 import { CustomerCard } from '../../customer/components/CustomerCard';
-import { TableColumnSettings } from '../../customer/components/TableColumnSettings';
 import RefreshIcon from '@mui/icons-material/Refresh';
-import PhoneIcon from '@mui/icons-material/Phone';
-import EmailIcon from '@mui/icons-material/Email';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { format } from 'date-fns';
 import { de } from 'date-fns/locale';
@@ -84,7 +79,7 @@ export function FocusListColumnMUI({ onCustomerSelect }: FocusListColumnMUIProps
   };
 
   // Render Zellinhalt basierend auf Spalten-ID
-  const renderCellContent = (customer: any, columnId: string) => {
+  const renderCellContent = (customer: { companyName: string; customerNumber: string; status?: string; lastContact?: string; location?: string }, columnId: string) => {
     switch (columnId) {
       case 'companyName':
         return (

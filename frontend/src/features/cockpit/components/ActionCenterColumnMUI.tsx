@@ -5,7 +5,7 @@
  * Integriert verschiedene Module wie Calculator, Customer Details etc.
  */
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { 
   Box, 
   Typography, 
@@ -34,14 +34,12 @@ import {
   DialogActions
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import PersonIcon from '@mui/icons-material/Person';
 import EmailIcon from '@mui/icons-material/Email';
 import PhoneIcon from '@mui/icons-material/Phone';
 import CalculateIcon from '@mui/icons-material/Calculate';
 import DescriptionIcon from '@mui/icons-material/Description';
 import HistoryIcon from '@mui/icons-material/History';
 import BusinessIcon from '@mui/icons-material/Business';
-import LocationOnIcon from '@mui/icons-material/LocationOn';
 import NoteAddIcon from '@mui/icons-material/NoteAdd';
 import { useCustomerDetails } from '../../customer/hooks/useCustomerDetails';
 import { customerStatusLabels, industryLabels } from '../../customer/types/customer.types';

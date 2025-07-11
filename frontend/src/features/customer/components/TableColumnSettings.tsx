@@ -9,7 +9,6 @@ import React, { useState } from 'react';
 import {
   IconButton,
   Menu,
-  MenuItem,
   FormControlLabel,
   Checkbox,
   Box,
@@ -23,7 +22,6 @@ import ResetIcon from '@mui/icons-material/RestartAlt';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import { useFocusListStore } from '../store/focusListStore';
-import type { TableColumn } from '../store/focusListStore';
 
 
 export function TableColumnSettings() {

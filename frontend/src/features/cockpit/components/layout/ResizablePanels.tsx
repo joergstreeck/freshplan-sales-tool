@@ -10,7 +10,7 @@ interface ResizablePanelsProps {
   defaultSizes?: number[];
 }
 
-const StyledPanelGroup = styled(PanelGroup)(({ theme }) => ({
+const StyledPanelGroup = styled(PanelGroup)(() => ({
   height: '100%',
   width: '100%',
   display: 'flex',
@@ -48,7 +48,7 @@ const StyledResizeHandle = styled(PanelResizeHandle)(({ theme }) => ({
   },
 }));
 
-const PanelContainer = styled(Box)(({ theme }) => ({
+const PanelContainer = styled(Box)(() => ({
   height: '100%',
   overflow: 'auto',
   display: 'flex',
