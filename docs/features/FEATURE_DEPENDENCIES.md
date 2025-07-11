@@ -1,36 +1,151 @@
 # 🚨 Feature Dependencies & Layout-Migrations-Risikoanalyse
 
 **Dokument:** Feature Dependencies & Risikoanalyse  
-**Datum:** 09.07.2025  
+**Datum:** 11.07.2025 (AKTUALISIERT)  
 **Autor:** Claude  
 **Status:** KRITISCH - Vor Implementierung beachten!
 
-## 🎯 Executive Summary
+## 🎯 Executive Summary - KORRIGIERTE ANALYSE
 
-Die Analyse zeigt **kritische CSS-Konflikte** in mehreren Modulen, die eine sorgfältige Migrationsstrategie erfordern:
+Die **vollständige Layout-Risikoanalyse** zeigt ein anderes Bild als erwartet:
 
-1. **Calculator (M8)**: 675 Zeilen Legacy-CSS - **HÖCHSTES RISIKO**
-2. **Customer Management (M5)**: Gemischte CSS/MUI-Nutzung - **MITTLERES RISIKO**
-3. **Cockpit (M3)**: Bereits migriert, aber Abhängigkeiten zu anderen Modulen
-4. **Settings (M7)**: Minimal betroffen - **GERINGES RISIKO**
+### ✅ POSITIVE ÜBERRASCHUNGEN:
+1. **Calculator (M8)**: Nutzt bereits **Tailwind CSS + ShadCN/UI** - nur Integration nötig
+2. **User Management**: Nutzt bereits **Tailwind CSS + ShadCN/UI** - nur Integration nötig
+3. **Settings (M7)**: Bereits mit **MainLayoutV2 migriert** ✅
 
-## 📊 Risiko-Matrix nach Modulen
+### ⚠️ KRITISCHE PROBLEMBEREICHE:
+1. **Customer Management (M5)**: **HÖCHSTES RISIKO** - Legacy CSS mit kritischen Konflikten
+2. **Cockpit (M3)**: CSS-System in legacy-to-remove/, aber MUI-Versionen bereits vorhanden
 
-### 🔴 HOCH - Calculator (M8)
-**CSS-Komplexität:** 675 Zeilen über 3 Dateien
-- `calculator-layout.css` (376 Zeilen) - Grid-basiertes Layout
-- `calculator-components.css` (238 Zeilen) - Komponenten-Styles
-- `calculator.css` (61 Zeilen) - Globale Styles
+## 📊 AKTUALISIERTE Risiko-Matrix nach Modulen
+
+### 🔴 HÖCHSTES RISIKO - Customer Management (M5)
+**CSS-Komplexität:** 2 parallele CSS-Systeme
+- `CustomerList.css` (349 Zeilen) - Legacy CSS-Variablen
+- `CustomerList.module.css` (481 Zeilen) - CSS Modules mit Design Tokens
 
 **Kritische Konflikte:**
-- Verwendet eigenes Grid-System (kollidiert mit MainLayoutV2)
-- Globale CSS-Variablen überschreiben Theme
-- Position: fixed Elemente brechen aus Layout aus
-- Custom Scrollbar-Styles
+```css
+/* KONFLIKT 1: Nicht existierende CSS-Variable-Imports */
+@import '../../../styles/design-tokens.css';  /* FEHLT! */
 
-**Migrations-Aufwand:** 3-4 Tage (statt geplante 1.5 Tage)
+/* KONFLIKT 2: Inkompatible CSS-Variablen */
+var(--spacing-xl)        /* Legacy */
+var(--fresh-green-500)   /* Design Tokens */
+var(--color-background)  /* Unbekannt */
+```
 
-### 🟡 MITTEL - Customer Management (M5)
+**Migration-Aufwand:** 3.5 Tage
+**Risiko:** CSS-Zusammenbruch bei MainLayoutV2-Integration
+
+### 🟡 GERINGES RISIKO - Calculator (M8) 
+**Überraschung:** Bereits moderne UI-Library!
+- Nutzt **Tailwind CSS + ShadCN/UI** (nicht Legacy CSS!)
+- Gut strukturiert mit React Query
+- 22 Dateien, aber moderne Architektur
+
+**Kleine Konflikte:**
+```typescript
+// Nur Layout-Wrapper-Konflikte
+<div className="min-h-screen bg-background p-8">  // Kollidiert mit MainLayoutV2
+```
+
+**Migration-Aufwand:** 2 Tage (Tailwind → MUI)
+**Risiko:** Niedrig - nur Design-System-Harmonisierung
+
+### 🟡 GERINGES RISIKO - User Management
+**Status:** Bereits Tailwind CSS + ShadCN/UI
+- Gleiche Situation wie Calculator
+- Weniger Dateien (11 vs 22)
+- Einfache Integration
+
+**Migration-Aufwand:** 1 Tag
+**Risiko:** Niedrig
+
+### ✅ KEIN RISIKO - Settings (M7)
+**Status:** Bereits migriert zu MainLayoutV2 + MUI
+- Funktioniert als "goldene Referenz"
+- Alle anderen Module können dieses Pattern kopieren
+
+### 🟢 NIEDRIGES RISIKO - Cockpit (M3)
+**Status:** Migration bereits vorbereitet
+- CSS in `legacy-to-remove/` verschoben
+- `SalesCockpitV2.tsx` bereits für MainLayoutV2 erstellt
+- MUI-Versionen aller Komponenten vorhanden
+
+**Migration-Aufwand:** 0.5 Tage (Integration finalisieren)
+**Risiko:** Sehr niedrig
+
+## 🎯 EMPFOHLENE MIGRATIONS-REIHENFOLGE
+
+### Phase 1: Schnelle Erfolge (1.5 Tage)
+1. **Cockpit (M3)** finalisieren - 0.5 Tage
+2. **User Management** migrieren - 1 Tag
+
+### Phase 2: Mittlere Komplexität (2 Tage) 
+3. **Calculator (M8)** migrieren - 2 Tage
+
+### Phase 3: Kritische Migration (3.5 Tage)
+4. **Customer Management (M5)** komplett neu aufbauen - 3.5 Tage
+
+**Gesamt-Aufwand:** 7 Tage (statt ursprünglich geplante 3-4 Tage)
+
+## 🚨 KRITISCHE ERKENNTNISSE
+
+### ✅ Positive Nachrichten:
+1. **Drei Module bereits modern:** Calculator, User, Settings nutzen moderne UI-Libraries
+2. **Cockpit fast fertig:** Migration bereits vorbereitet
+3. **Weniger Legacy CSS als befürchtet:** Nur Customer-Modul kritisch
+
+### ⚠️ Kritische Punkte:
+1. **Customer-Modul ist Problemfall:** Komplette Neuentwicklung nötig
+2. **Design-System-Heterogenität:** Tailwind vs. MUI vs. Legacy CSS
+3. **Aufwand unterschätzt:** Fast doppelt so viel Zeit nötig
+
+## 📋 KONKRETE NEXT STEPS
+
+### Sofortige Maßnahmen:
+1. **Customer CSS deaktivieren:** Imports entfernen, um Konflikte zu vermeiden
+2. **Cockpit finalisieren:** Als Referenz für andere Module
+3. **Design-System-Entscheidung:** Tailwind → MUI Migration planen
+
+### Mittelfristige Planung:
+1. **Feature-Toggles:** Für schrittweise Migration ohne Service-Unterbrechung
+2. **Component-Library:** Gemeinsame MUI-Komponenten für alle Module
+3. **E2E-Test-Suite:** Vor/nach Migration validieren
+
+## 🔗 ABHÄNGIGKEITS-GRAPH
+
+```
+Settings (M7) ✅
+    ↓ (Referenz)
+Cockpit (M3) 🟢 → User Management 🟡
+    ↓                    ↓
+Calculator (M8) 🟡 ← Customer (M5) 🔴
+```
+
+**Legende:**
+- ✅ Abgeschlossen
+- 🟢 Niedrig-Risiko
+- 🟡 Mittel-Risiko  
+- 🔴 Hoch-Risiko
+
+## 📊 RESOURCE-PLANNING
+
+### Entwicklungskapazität (geschätzt):
+- **1 Entwickler:** 7 Arbeitstage
+- **2 Entwickler parallel:** 4-5 Arbeitstage
+- **Mit Testing/QA:** +2 Tage Buffer
+
+### Kritischer Pfad:
+Customer Management blockiert Integration in Cockpit → muss priorisiert werden
+
+---
+
+**Letzte Aktualisierung:** 11.07.2025 nach vollständiger CSS-Konflikt-Analyse  
+**Status:** ✅ INTEGRIERT IN MASTER-PLAN - Bereit für Umsetzung  
+**Integration:** Alle Erkenntnisse sind in FC-002-IMPLEMENTATION_PLAN.md übernommen
 **CSS-Komplexität:** Gemischt (CSS + CSS Modules)
 - `CustomerList.css` - Direkte CSS-Imports
 - `CustomerList.module.css` - CSS Modules (besser isoliert)

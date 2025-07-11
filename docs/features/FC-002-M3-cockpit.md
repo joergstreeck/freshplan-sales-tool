@@ -2,10 +2,10 @@
 
 **Modul:** M3  
 **Feature:** FC-002  
-**Status:** 🔍 Analyse abgeschlossen (40%)  
-**Geschätzter Aufwand:** 2-3 Tage (durch Wiederverwendung reduziert)  
-**Abhängigkeit:** FC-001 (Dynamic Focus List)  
-**Letztes Update:** 09.07.2025 - Code-Analyse durchgeführt, Migration geplant
+**Status:** 🔄 **AKTIVER NEXT STEP** (90% vorbereitet)  
+**Geschätzter Aufwand:** 0.5 Tage (SalesCockpitV2 Integration)  
+**Abhängigkeit:** FC-001 (Dynamic Focus List) ✅  
+**Letztes Update:** 11.07.2025 - Bereit für Finalisierung nach Layout-Risikoanalyse
 
 ## 📋 Implementierungs-Checkliste
 
@@ -556,3 +556,130 @@ Nach Migration von Calculator, Customer, Settings:
 - Virtual Scrolling in Listen
 - Optimistic Updates für schnelle UX
 - Local Storage für Layout-Präferenzen
+
+## 🎨 User-Management Visueller Migrationsplan (11.07.2025)
+
+### ✅ CSS-Konflikt-Analyse für User-Modul
+
+**Risiko-Stufe:** 🟡 GERING
+**Grund:** User-Modul nutzt bereits Tailwind CSS + ShadCN/UI
+
+**Gefundene Kompatibilitäts-Situation:**
+```typescript
+// UserTable.tsx nutzt bereits Tailwind
+<Card className="w-full max-w-2xl">
+  <CardContent className="p-0">
+    <table className="w-full">
+      <td className="p-4 font-medium">{user.username}</td>
+```
+
+**Potentielle Konflikte:**
+1. **Konsistenz mit Cockpit:** User-Verwaltung soll in Cockpit integriert werden
+2. **Design-Token:** Muss Freshfoodz CI entsprechen
+3. **Layout-Integration:** Standalone vs. integrierte Ansicht
+
+### 📐 User-Modul Migrations-Strategie
+
+**Phase 1: Layout-Integration (0.5 Tage)**
+1. UserTable als Widget für Cockpit-Integration
+2. Route-Integration in MainLayoutV2
+3. Responsive Design für mobile Ansicht
+
+**Phase 2: UI-Harmonisierung (0.5 Tage)**
+1. ShadCN → MUI Migration (konsistent mit Cockpit)
+2. Freshfoodz CI Farben integrieren
+3. Typografie-Standards anwenden
+
+**Gesamtaufwand User-Modul:** 1 Tag
+
+## 🎨 Customer-Management Visueller Migrationsplan (11.07.2025)
+
+### ✅ CSS-Konflikt-Analyse für Customer-Modul
+
+**Risiko-Stufe:** 🔴 HOCH
+**Grund:** Customer-Modul nutzt **Legacy CSS mit CSS-Variablen**
+
+**Gefundene kritische Konflikte:**
+```css
+/* CustomerList.css - Legacy CSS-Variablen */
+.customer-list-container {
+  padding: var(--spacing-xl);
+  background-color: var(--color-background);
+}
+
+/* CustomerList.module.css - Design Tokens */
+.customerList__header {
+  color: var(--fresh-blue-500);
+  border-bottom: var(--border-2) solid var(--fresh-green-500);
+}
+```
+
+**Kritische Konflikte:**
+1. **Zwei CSS-Systeme:** Standard CSS + CSS Modules parallel
+2. **Legacy CSS-Variablen:** Nicht kompatibel mit MUI Theme
+3. **Import-Fehler:** `@import '../../../styles/design-tokens.css';` fehlt
+4. **Inkonsistente Farben:** Custom Variablen vs. Freshfoodz CI
+
+### 📐 Customer-Modul Migrations-Strategie
+
+**⚠️ KRITISCH: Vollständige Neuentwicklung empfohlen**
+
+**Phase 1: Analyse und Vorbereitung (0.5 Tage)**
+1. CSS-Dependencies identifizieren und entfernen
+2. Komponenten-Architektur für MUI planen
+3. FilterBar und CustomerCard von FC-001 integrieren
+
+**Phase 2: Komplette UI-Migration (2 Tage)**
+1. CustomerList.css komplett entfernen
+2. CustomerList.module.css durch MUI sx-Props ersetzen
+3. Tabellen-Komponente mit MUI DataGrid neu bauen
+4. Pagination mit MUI Pagination
+5. Status-Badges mit MUI Chips
+
+**Phase 3: Integration und Testing (1 Tag)**
+1. Integration in MainLayoutV2
+2. E2E-Tests für alle Customer-Funktionen
+3. Performance-Optimierung
+4. Responsive Design validieren
+
+**Gesamtaufwand Customer-Modul:** 3.5 Tage
+
+### 🖼️ Customer-Modul Ziel-Vision
+
+**Vor Migration (Legacy CSS):**
+```
+┌─────────────────────────────────┐
+│ Custom CSS Header               │
+├─────────────────────────────────┤
+│ Legacy CSS Table                │
+│ • Inkonsistente Farben          │
+│ • Nicht responsive              │
+│ • CSS-Variable-Konflikte        │
+└─────────────────────────────────┘
+```
+
+**Nach Migration (MUI):**
+```
+┌─────────────────────────────────────────────┐
+│ MainLayoutV2 Header                         │
+├──────────────┬──────────────────────────────┤
+│ Sidebar      │ Customer Management          │
+│              │ ┌─────────────────────────┐  │
+│              │ │ MUI DataGrid            │  │
+│              │ │ • Freshfoodz CI         │  │
+│              │ │ • Responsive            │  │
+│              │ │ • Filtering integriert  │  │
+│              │ └─────────────────────────┘  │
+└──────────────┴──────────────────────────────┘
+```
+
+### ⚠️ Customer-Modul Risiken
+
+**Risiko 1: Funktionalitätsverlust**
+- Mitigation: Schrittweise Migration mit Feature-Toggles
+
+**Risiko 2: CSS-Konflikt während Migration**  
+- Mitigation: CSS-Isolation, separate Branch für Migration
+
+**Risiko 3: Performance-Regression**
+- Mitigation: Performance-Tests vor/nach Migration

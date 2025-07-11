@@ -48,6 +48,128 @@ frontend/src/features/calculator/
 ├── store/
 │   └── calculatorStore.ts         # Zustand-Management
 └── pages/
+    └── CalculatorPage.tsx          # Haupt-Seite
+
+22 Dateien total - größtes Frontend-Modul
+```
+
+**Code-Qualität:** ⭐⭐⭐⭐⭐ (Exzellent)
+- Verwendet **ShadCN/UI + Tailwind CSS** (bereits modern!)
+- Umfassende React Query Integration
+- Zustand-Management mit Zustand
+- 3 Testdateien vorhanden (14% Coverage)
+
+**Wiederverwendbarkeit:** 90%
+- Moderne UI-Library bereits verwendet
+- Nur MainLayoutV2-Integration nötig
+
+## 🎨 Visueller Migrationsplan (11.07.2025)
+
+### ✅ CSS-Konflikt-Analyse
+
+**Risiko-Stufe:** 🟡 GERING
+**Grund:** Calculator nutzt bereits Tailwind CSS + ShadCN/UI statt Legacy-CSS
+
+**Gefundene Kompatibilitäts-Situation:**
+```typescript
+// CalculatorPage.tsx nutzt bereits Tailwind
+<div className="min-h-screen bg-background p-8">
+  <div className="mx-auto max-w-7xl space-y-8">
+    <h1 className="text-4xl font-bold text-foreground mb-4">
+      FreshPlan Rabatt-Kalkulator
+    </h1>
+```
+
+**Potentielle Konflikte:**
+1. **Tailwind vs. MUI:** Calculator nutzt Tailwind, MainLayoutV2 nutzt MUI
+2. **Design Token Differenzen:** Farben, Abstände, Typografie
+3. **Layout-Wrapper:** `min-h-screen` kann mit MainLayoutV2 kollidieren
+
+### 📐 Migrations-Strategie
+
+**Option A: Tailwind → MUI Migration (Empfohlen)**
+```typescript
+// Vor Migration (Tailwind)
+<div className="min-h-screen bg-background p-8">
+  <div className="mx-auto max-w-7xl space-y-8">
+
+// Nach Migration (MUI)
+<Container maxWidth="xl" sx={{ py: 4 }}>
+  <Stack spacing={4}>
+```
+
+**Option B: Hybrid-Ansatz (Risiko)**
+- Calculator behält Tailwind
+- Wrapper-Komponente für Integration
+- Kann zu inkonsistenter UX führen
+
+### 🔧 Konkrete Migrations-Schritte
+
+**Phase 1: Layout-Integration (0.5 Tage)**
+1. CalculatorPage.tsx für MainLayoutV2 anpassen
+2. `min-h-screen` entfernen (Konflikte mit Layout)
+3. Container-Logik durch MainLayoutV2 ersetzen
+4. Route in neue Layout-Struktur integrieren
+
+**Phase 2: UI-Komponenten-Migration (1 Tag)**
+1. ShadCN Cards → MUI Cards
+2. ShadCN Buttons → MUI Buttons  
+3. ShadCN Inputs → MUI TextFields
+4. Tailwind-Klassen → MUI sx-Props
+
+**Phase 3: Design-Token-Harmonisierung (0.5 Tage)**
+1. Freshfoodz CI Farben integrieren
+2. Typografie auf Antonio Bold + Poppins
+3. Abstände auf MUI-Standards
+4. Testing und Feintuning
+
+### 🖼️ Visuelle Referenzen
+
+**Aktueller Stand:**
+- Vollständig funktional mit Tailwind
+- 2-Spalten-Layout (Input | Ergebnis)
+- Responsive Design implementiert
+
+**Ziel-Integration:**
+```
+┌─────────────────────────────────────────────┐
+│ MainLayoutV2 Header                         │
+├──────────────┬──────────────────────────────┤
+│ Sidebar      │ Calculator Content           │
+│              │ ┌─────────┬─────────┐       │
+│              │ │ Input   │ Result  │       │
+│              │ │ Form    │ Display │       │
+│              │ │         │         │       │
+│              │ └─────────┴─────────┘       │
+└──────────────┴──────────────────────────────┘
+```
+
+### ⚠️ Risiken und Mitigationen
+
+**Risiko 1: Tailwind/MUI-Konflikte**
+- Mitigation: Schrittweise Migration, Testing nach jedem Schritt
+
+**Risiko 2: ShadCN Abhängigkeiten**
+- Mitigation: Komponenten-Mapping erstellen vor Migration
+
+**Risiko 3: Funktionalitätsverlust**  
+- Mitigation: E2E-Tests vor/nach Migration
+
+### 🎯 Abhängigkeiten für Finalisierung
+
+**Blockiert durch:**
+- Keine Blocker - Calculator kann eigenständig migriert werden
+
+**Wartet auf:**
+- MainLayoutV2 Finalisierung (bereits verfügbar)
+- MUI Theme mit Freshfoodz CI (bereits verfügbar)
+
+### ⚡ Performance-Impact
+
+**Erwartete Verbesserungen:**
+- Bundle-Size: -20% (Tailwind → MUI, weniger CSS)
+- Konsistenz: +100% (einheitliches Design-System)
+- Entwickler-Erfahrung: +50% (ein System statt zwei)
     └── CalculatorPage.tsx         # Hauptseite
 ```
 

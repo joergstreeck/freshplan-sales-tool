@@ -2,29 +2,33 @@
 
 **Feature Code:** FC-002  
 **Datum:** 08.07.2025  
-**Status:** 📋 In Planung  
+**Letzte Aktualisierung:** 11.07.2025  
+**Status:** 🔄 AKTIVE IMPLEMENTATION  
 **Typ:** Hub-Dokument (Übersicht)  
 **Autor:** Claude (AI Assistant)  
 **Reviewer:** Jörg Streeck  
 
-## 📋 Module im Überblick
+## 📋 Module im Überblick - AKTUALISIERT nach Layout-Risikoanalyse
 
-| Modul | Status | Dokument | Beschreibung |
-|-------|--------|----------|--------------|
-| M1 | ✅ Analyse & Planung abgeschlossen | [Hauptnavigation](./FC-002-M1-hauptnavigation.md) | Sidebar mit 5-Punkte-Navigation + **NEU: Layout-Architektur** |
-| M2 | 📋 0% | [Quick-Create System](./FC-002-M2-quick-create.md) | Globaler "+ Neu" Button |
-| M3 | 🔍 60% | [Cockpit-Integration](./FC-002-M3-cockpit.md) | 3-Spalten-Ansicht Migration (Planung abgeschlossen) inkl. detailliertem Workflow-Design für 'Gewinner-Aktionen' |
-| M4 | 📋 0% | [Neukundengewinnung](./FC-002-M4-neukundengewinnung.md) | Akquise-Modul |
-| M5 | ✅ 50% | [Kundenmanagement](./FC-002-M5-kundenmanagement.md) | CRM-Kernfunktionen (Planung abgeschlossen) |
-| M6 | 📋 0% | [Berichte & Auswertungen](./FC-002-M6-berichte.md) | Analytics & Reports |
-| M7 | 🔍 Analysiert | [Einstellungen](./FC-002-M7-einstellungen.md) | User & System Settings (Analyse abgeschlossen) |
-| M8 | 🔍 Analysiert | [Rechner](./FC-002-M8-rechner.md) | Kalkulator-Modul (Analyse abgeschlossen) |
+| Modul | Status FINAL | Risiko | Aufwand | Dokument | Nächste Schritte |
+|-------|--------------|--------|---------|----------|------------------|
+| M1 | ✅ **FERTIG** | Kein | 0 Tage | [Hauptnavigation](./FC-002-M1-hauptnavigation.md) | MainLayoutV2 als Referenz nutzen |
+| M7 | ✅ **FERTIG** | Kein | 0 Tage | [Einstellungen](./FC-002-M7-einstellungen.md) | **Goldene Referenz** - funktional |
+| M3 | 🔄 90% | Niedrig | 0.5 Tage | [Cockpit-Integration](./FC-002-M3-cockpit.md) | **NÄCHSTER SCHRITT** - SalesCockpitV2 integrieren |
+| User | 🟡 Modern | Niedrig | 1 Tag | Siehe M7 Dokument | Tailwind → MUI Migration |
+| M8 | 🟡 Modern | Niedrig | 2 Tage | [Rechner](./FC-002-M8-rechner.md) | ShadCN → MUI Migration |
+| M5 | 🔴 Legacy | **HOCH** | 3.5 Tage | [Kundenmanagement](./FC-002-M5-kundenmanagement.md) | Kritische CSS-Konflikte, Neuentwicklung |
+| M2 | 📋 Geplant | Mittel | 2 Tage | [Quick-Create System](./FC-002-M2-quick-create.md) | Nach Core-Module |
+| M4 | 📋 Geplant | Mittel | 5 Tage | [Neukundengewinnung](./FC-002-M4-neukundengewinnung.md) | Abhängig von M5 |
+| M6 | 📋 Geplant | Niedrig | 5 Tage | [Berichte & Auswertungen](./FC-002-M6-berichte.md) | Letzter Schritt |
+
+**Core-Migration:** 7 Tage | **Vollständiges Feature-Set:** +14 Tage
 
 ## 🚀 Master-Implementierungsplan
 
-**[📋 Zum detaillierten Implementierungsplan →](./FC-002-IMPLEMENTATION_PLAN.md)**
+**[📋 Zum FINALEN Implementierungsplan →](./FC-002-IMPLEMENTATION_PLAN.md)**
 
-Der Master-Implementierungsplan definiert 3 Meilensteine mit klarer Priorisierung und Abhängigkeiten.
+Der aktualisierte Plan basiert auf der vollständigen Layout-Risikoanalyse vom 11.07.2025 und zeigt **80% weniger Aufwand** als ursprünglich geschätzt.
 
 ## 🎯 Vision
 
