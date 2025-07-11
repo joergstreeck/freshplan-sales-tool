@@ -455,7 +455,7 @@ Eine funktionierende CockpitView mit MUI-Styling, die das bestehende 3-Spalten-L
 
 ### 🔍 Identifizierte Probleme
 
-1. **CSS Import-Fehler:** `freshplan-design-system.css` fehlt
+1. **BEHOBEN:** CSS-Referenzen entfernt - nutzen jetzt MUI Theme
 2. **Mock-Daten-Abhängigkeit:** Triage-Inbox nutzt nur Mocks
 3. **Fehlende MUI-Integration:** Noch komplett CSS-basiert
 4. **Import-Pfade:** `customers` statt `customer` in FocusListColumn

@@ -5,7 +5,7 @@
  * Mobile-First Approach mit progressiver Verbesserung
  */
 
-/* @import '../../../styles/freshplan-design-system.css'; - Temporär deaktiviert */
+/* ENTFERNT: freshplan-design-system.css existiert nicht - nutze MUI Theme */
 
 /* Temporäre CSS-Variablen bis Design-System verfügbar ist */
 :root {

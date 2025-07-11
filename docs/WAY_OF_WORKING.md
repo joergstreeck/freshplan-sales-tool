@@ -6,27 +6,14 @@
 
 Alle Begriffe im UI und in der Dokumentation müssen einfach und verständlich sein. Englische Fachbegriffe und Berater-Deutsch sind zu vermeiden. Wir sprechen die Sprache unserer Nutzer - klar, direkt und ohne unnötige Fremdwörter.
 
-### Unsere Sprachprinzipien:
+**📋 Vollständige Sprachregeln:** Siehe [`/docs/UI_SPRACHREGELN.md`](./UI_SPRACHREGELN.md)
+
+### Unsere Kernprinzipien:
 
 1. **Deutsche Begriffe bevorzugen**: Verwende verständliche deutsche Bezeichnungen statt englischer Fachbegriffe
-2. **Einfachheit**: Wähle den einfachsten Begriff, der die Funktion klar beschreibt
+2. **Einfachheit**: Wähle den einfachsten Begriff, der die Funktion klar beschreibt  
 3. **Nutzerorientierung**: Benenne Funktionen aus Sicht des Nutzers, nicht aus technischer Sicht
 4. **Konsistenz**: Verwende einmal gewählte Begriffe durchgängig im gesamten System
-
-### Konkrete Beispiele:
-
-| ❌ Vermeiden | ✅ Verwenden | Begründung |
-|--------------|--------------|------------|
-| Triage-Inbox | Posteingang für neue E-Mails | Direkt verständlich |
-| Customer 360° View | Kundenakte | Klarer deutscher Begriff |
-| Hardening & Optimization | Stabilisierung & Verbesserung | Keine Anglizismen |
-| Lead Scoring | Kundenbewertung | Selbsterklärend |
-| Dashboard | Übersicht / Cockpit | Etablierter deutscher Begriff |
-| Activity Timeline | Verlauf / Kundenhistorie | Verständlicher |
-| Pipeline | Verkaufsprozess | Beschreibt die Funktion |
-| Opportunity | Verkaufschance | Klarer Bezug zum Geschäft |
-| Feature Flag | Funktionsschalter | Technisch korrekt, aber verständlich |
-| Backend/Frontend | Server/Benutzeroberfläche (in Nutzer-Docs) | Für technische Docs OK, für Nutzer übersetzen |
 
 ### Ausnahmen:
 

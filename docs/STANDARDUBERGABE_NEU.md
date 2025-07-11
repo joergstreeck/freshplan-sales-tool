@@ -25,6 +25,9 @@ Dieses Dokument ist deine **HAUPTANLEITUNG** für effiziente und nachvollziehbar
 # Ein Befehl für optimalen Session-Start:
 ./scripts/session-start.sh
 
+# Orientierungsphase abschließen:
+./scripts/orientation-check.sh
+
 # Während der Arbeit - Quick Status:
 ./scripts/quick-status.sh
 
@@ -45,6 +48,19 @@ Dieses Dokument ist deine **HAUPTANLEITUNG** für effiziente und nachvollziehbar
 
 ### Branch-Regel
 **NIEMALS** direkt in `main` pushen! Immer Feature-Branches nutzen.
+
+## 🚦 PHASE-SYSTEM (NEU)
+
+### Phase 1: Orientierung (IMMER ZUERST)
+- Session-Start und Dokumente lesen
+- Code-Stand validieren  
+- Status melden und auf Arbeitsfreigabe warten
+- **REGEL: Noch keine Implementierung!**
+
+### Phase 2: Arbeitsphase (NACH FREIGABE)
+- Implementierung des nächsten Schritts
+- Fortschritt dokumentieren
+- Bei Abschluss: Übergabe erstellen
 
 ## Das 5-Schritte-System
 
@@ -73,6 +89,9 @@ Dieses Dokument ist deine **HAUPTANLEITUNG** für effiziente und nachvollziehbar
 git status                    # Git-Status prüfen
 git log --oneline -10        # Letzte Commits
 TodoRead                     # TODO-Liste lesen
+
+# Orientierungsphase abschließen:
+./scripts/orientation-check.sh  # Checkliste für Orientierung
 ```
 
 ### 3. Arbeiten (Der Hauptteil)

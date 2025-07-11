@@ -1,7 +1,8 @@
 # ADR-004: Frontend Design System Choice
 
-**Status:** accepted
+**Status:** ⚠️ VERALTET/ÜBERHOLT
 **Date:** 2025-01-07
+**Archiviert:** 2025-07-11
 **Authors:** Team FRONT (Claude)
 **Reviewers:** @ChatGPT (Team ADVISOR)
 
@@ -22,7 +23,17 @@ FreshPlan 2.0 benötigt eine Design System Entscheidung für das React Frontend.
 - Responsive Design erforderlich
 - Accessibility (WCAG 2.1 AA) gewünscht
 
-## Decision
+## ⚠️ ARCHIVIERUNG HINWEIS
+
+**Diese Entscheidung wurde REVIDIERT und durch Material-UI (MUI) ersetzt.**
+
+**Neuer Standard ab Juli 2025:** Material-UI (MUI) ist unser verbindliches Design-System
+- Siehe: `/docs/design/AKTUELLER_DESIGN_STANDARD.md`
+- Grund: Bessere Enterprise-Tauglichkeit und TeamScalability
+
+---
+
+## Decision (VERALTET - NUR ZUR REFERENZ)
 
 **ACCEPTED:** Tailwind CSS 3.x + shadcn/ui + Radix UI primitives
 

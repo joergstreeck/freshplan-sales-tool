@@ -1,8 +1,14 @@
-# Design System V2 - Intelligentes Layout
+# ZUKUNFTSVISION: Intelligentes Design System
 
 **Erstellt:** 09.07.2025  
-**Status:** 📋 Geplant für Implementierung  
-**Autor:** Claude & Jörg  
+**Status:** 🔮 ZUKUNFTSVISION - Nicht für aktuelle Implementierung  
+**Autor:** Claude & Jörg
+
+## ⚠️ WICHTIGER HINWEIS
+
+**Dieses Dokument beschreibt Ideen für eine spätere Ausbaustufe und ist für die aktuelle Implementierung NICHT verbindlich.**
+
+**Aktuell verbindlicher Standard:** `/docs/design/AKTUELLER_DESIGN_STANDARD.md`  
 
 ## 🎯 Vision
 
