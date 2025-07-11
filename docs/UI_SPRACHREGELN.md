@@ -19,43 +19,43 @@ Jeder Begriff, jeder Knopf und jede Überschrift muss sofort und ohne Nachdenken
 
 ## 📖 Übersetzungs-Glossar
 
-| ❌ Vermeiden (Jargon) | ✅ Verwenden (Einfach & Deutsch) | Kontext |
-|----------------------|----------------------------------|---------|
-| Triage-Inbox | Posteingang | Unzugeordnete E-Mails |
-| Customer 360° View | Kundenakte | Vollständige Kundenansicht |
-| Hot Alerts | Wichtige Hinweise | Dringende Benachrichtigungen |
-| Hardening & Optimization | Stabilisierung & Verbesserung | Technische Verbesserungen |
-| Gewinner-Aktionen | Vorgeschlagene Aktionen | KI-basierte Empfehlungen |
-| Dashboard | Übersicht | Hauptansicht mit Statistiken |
-| Sales Cockpit | Verkaufszentrale | Hauptarbeitsbereich |
-| Focus List | Arbeitsliste | Gefilterte Kundenliste |
-| Action Center | Arbeitsbereich | Detailansicht rechts |
-| My Day | Mein Tag | Tagesübersicht links |
-| Alerts | Hinweise | Benachrichtigungen |
-| Tasks | Aufgaben | To-Do-Einträge |
-| Appointments | Termine | Kalendereinträge |
-| Activity Timeline | Verlauf | Chronologische Aktivitäten |
-| Quick Actions | Schnellaktionen | Häufige Aktionen |
-| Filter | Filter | (Ausnahme: bekannter Begriff) |
-| Search | Suche | Suchfunktion |
-| Settings | Einstellungen | Konfiguration |
-| Save | Speichern | Daten sichern |
-| Cancel | Abbrechen | Aktion abbrechen |
-| Delete | Löschen | Entfernen |
-| Edit | Bearbeiten | Ändern |
-| Create | Erstellen / Anlegen | Neu hinzufügen |
-| Update | Aktualisieren | Auf neuesten Stand bringen |
-| Refresh | Neu laden | Daten aktualisieren |
-| Submit | Absenden | Formular senden |
-| Close | Schließen | Dialog/Fenster schließen |
-| Back | Zurück | Navigation |
-| Next | Weiter | Navigation |
-| Previous | Vorherige | Navigation |
-| Loading | Lädt... | Ladezustand |
-| Error | Fehler | Fehlermeldung |
-| Success | Erfolgreich | Erfolgsmeldung |
-| Warning | Warnung | Warnhinweis |
-| Info | Information | Informationshinweis |
+| ❌ Vermeiden (Jargon)      | ✅ Verwenden (Einfach & Deutsch) | Kontext                       |
+|---------------------------|----------------------------------|-------------------------------|
+| Triage-Inbox              | Posteingang                      | Unzugeordnete E-Mails         |
+| Customer 360° View        | Kundenakte                       | Vollständige Kundenansicht    |
+| Hot Alerts                | Wichtige Hinweise                | Dringende Benachrichtigungen  |
+| Hardening & Optimization  | Stabilisierung & Verbesserung    | Technische Verbesserungen     |
+| Gewinner-Aktionen         | Vorgeschlagene Aktionen          | KI-basierte Empfehlungen      |
+| Dashboard                 | Übersicht                        | Hauptansicht mit Statistiken  |
+| Sales Cockpit             | Verkaufszentrale                 | Hauptarbeitsbereich           |
+| Focus List                | Arbeitsliste                     | Gefilterte Kundenliste        |
+| Action Center             | Arbeitsbereich                   | Detailansicht rechts          |
+| My Day                    | Mein Tag                         | Tagesübersicht links          |
+| Alerts                    | Hinweise                         | Benachrichtigungen            |
+| Tasks                     | Aufgaben                         | To-Do-Einträge                |
+| Appointments              | Termine                          | Kalendereinträge              |
+| Activity Timeline         | Verlauf                          | Chronologische Aktivitäten    |
+| Quick Actions             | Schnellaktionen                  | Häufige Aktionen              |
+| Filter                    | Filter                           | (Ausnahme: bekannter Begriff) |
+| Search                    | Suche                            | Suchfunktion                  |
+| Settings                  | Einstellungen                    | Konfiguration                 |
+| Save                      | Speichern                        | Daten sichern                 |
+| Cancel                    | Abbrechen                        | Aktion abbrechen              |
+| Delete                    | Löschen                          | Entfernen                     |
+| Edit                      | Bearbeiten                       | Ändern                        |
+| Create                    | Erstellen / Anlegen              | Neu hinzufügen                |
+| Update                    | Aktualisieren                    | Auf neuesten Stand bringen    |
+| Refresh                   | Neu laden                        | Daten aktualisieren           |
+| Submit                    | Absenden                         | Formular senden               |
+| Close                     | Schließen                        | Dialog/Fenster schließen      |
+| Back                      | Zurück                           | Navigation                    |
+| Next                      | Weiter                           | Navigation                    |
+| Previous                  | Vorherige                        | Navigation                    |
+| Loading                   | Lädt...                          | Ladezustand                   |
+| Error                     | Fehler                           | Fehlermeldung                 |
+| Success                   | Erfolgreich                      | Erfolgsmeldung                |
+| Warning                   | Warnung                          | Warnhinweis                   |
+| Info                      | Information                      | Informationshinweis           |
 
 ## 🎨 Anwendungsbeispiele
 

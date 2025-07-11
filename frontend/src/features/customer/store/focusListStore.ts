@@ -205,12 +205,8 @@ export const useFocusListStore = create<FocusListStore>()(
         toggleQuickFilter: (field, value) => {
           const state = get();
           
-          // Quick Filter funktionieren wie Preset-Views
-          // Erst alle Filter löschen, dann nur den gewünschten setzen
-          set({ activeFilters: [], page: 0 });
-          
-          // Wenn der gleiche Filter nochmal geklickt wird, nur löschen (deaktivieren)
-          const wasActive = state.activeFilters.length === 1 && 
+          // Prüfe ZUERST ob der Filter bereits aktiv ist
+          const isActive = state.activeFilters.length === 1 && 
             ((field === 'riskScore' && value === '>70' && 
               state.activeFilters[0].field === 'riskScore' && 
               state.activeFilters[0].operator === FilterOperator.GREATER_THAN &&
@@ -219,8 +215,11 @@ export const useFocusListStore = create<FocusListStore>()(
               state.activeFilters[0].field === field && 
               state.activeFilters[0].value === value));
           
-          if (!wasActive) {
-            // Neuen Filter setzen
+          if (isActive) {
+            // Filter ist aktiv -> deaktivieren (alle Filter löschen)
+            set({ activeFilters: [], page: 0 });
+          } else {
+            // Filter ist nicht aktiv -> aktivieren (alle anderen löschen, neuen setzen)
             if (field === 'riskScore' && value === '>70') {
               set({
                 activeFilters: [{
@@ -228,7 +227,8 @@ export const useFocusListStore = create<FocusListStore>()(
                   field: 'riskScore',
                   operator: FilterOperator.GREATER_THAN,
                   value: 70,
-                }]
+                }],
+                page: 0
               });
             } else {
               set({
@@ -237,7 +237,8 @@ export const useFocusListStore = create<FocusListStore>()(
                   field,
                   operator: FilterOperator.EQUALS,
                   value,
-                }]
+                }],
+                page: 0
               });
             }
           }

@@ -35,11 +35,7 @@ export function SalesCockpitV2() {
   // State für ausgewählten Kunden
   const [selectedCustomerId, setSelectedCustomerId] = useState<string | undefined>(undefined);
 
-  // Debug logging
-  console.log('SalesCockpitV2 - selectedCustomerId:', selectedCustomerId);
-
   const handleCustomerSelect = (customerId: string) => {
-    console.log('SalesCockpitV2 - handleCustomerSelect called with:', customerId);
     setSelectedCustomerId(customerId);
   };
 
