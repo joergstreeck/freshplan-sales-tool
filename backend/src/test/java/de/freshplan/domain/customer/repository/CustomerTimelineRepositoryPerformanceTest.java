@@ -6,7 +6,7 @@ import de.freshplan.domain.customer.entity.*;
 import de.freshplan.test.BaseIntegrationTest;
 import io.quarkus.panache.common.Page;
 import io.quarkus.test.junit.QuarkusTest;
-import jakarta.inject.Inject;
+import io.quarkus.test.security.TestSecurity;import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test;
  * @since 2.0.0
  */
 @QuarkusTest
-class CustomerTimelineRepositoryPerformanceTest extends BaseIntegrationTest {
+@TestSecurity(user = "testuser", roles = {"admin", "manager", "sales", "viewer"})class CustomerTimelineRepositoryPerformanceTest extends BaseIntegrationTest {
 
   @Inject CustomerTimelineRepository timelineRepository;
 

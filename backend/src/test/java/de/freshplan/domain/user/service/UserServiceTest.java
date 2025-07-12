@@ -16,7 +16,7 @@ import de.freshplan.domain.user.service.exception.DuplicateUsernameException;
 import de.freshplan.domain.user.service.exception.UserNotFoundException;
 import de.freshplan.domain.user.service.mapper.UserMapper;
 import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.junit.mockito.InjectMock;
+import io.quarkus.test.security.TestSecurity;import io.quarkus.test.junit.mockito.InjectMock;
 import jakarta.inject.Inject;
 import java.time.Instant;
 import java.util.List;
@@ -35,7 +35,7 @@ import org.junit.jupiter.api.Test;
  * @since 2.0.0
  */
 @QuarkusTest
-class UserServiceTest {
+@TestSecurity(user = "testuser", roles = {"admin", "manager", "sales", "viewer"})class UserServiceTest {
 
   @InjectMock UserRepository userRepository;
 

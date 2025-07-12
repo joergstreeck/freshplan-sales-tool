@@ -5,10 +5,10 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 
 import io.quarkus.test.junit.QuarkusTest;
-import org.junit.jupiter.api.Test;
+import io.quarkus.test.security.TestSecurity;import org.junit.jupiter.api.Test;
 
 @QuarkusTest
-public class PingResourceTest {
+@TestSecurity(user = "testuser", roles = {"admin", "manager", "sales", "viewer"})public class PingResourceTest {
 
   @Test
   public void testPingEndpoint() {

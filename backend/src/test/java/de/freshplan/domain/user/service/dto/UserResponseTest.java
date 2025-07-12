@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.within;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.quarkus.test.junit.QuarkusTest;
-import jakarta.inject.Inject;
+import io.quarkus.test.security.TestSecurity;import jakarta.inject.Inject;
 import java.time.Instant;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
@@ -19,7 +19,7 @@ import org.junit.jupiter.api.Test;
  * @since 2.0.0
  */
 @QuarkusTest
-class UserResponseTest {
+@TestSecurity(user = "testuser", roles = {"admin", "manager", "sales", "viewer"})class UserResponseTest {
 
   @Inject ObjectMapper objectMapper;
 

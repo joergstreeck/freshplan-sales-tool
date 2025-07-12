@@ -11,6 +11,7 @@ import de.freshplan.domain.customer.service.dto.*;
 import de.freshplan.domain.customer.service.exception.*;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.mockito.InjectMock;
+import io.quarkus.test.security.TestSecurity;
 import io.restassured.http.ContentType;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -29,6 +30,7 @@ import org.mockito.Mockito;
  * @since 2.0.0
  */
 @QuarkusTest
+@TestSecurity(user = "testuser", roles = {"admin", "manager", "sales"})
 @DisplayName("CustomerResource Integration Tests")
 class CustomerResourceTest {
 

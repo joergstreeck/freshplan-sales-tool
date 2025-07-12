@@ -3,7 +3,7 @@
 # Script: get-active-module.sh
 # Zweck: Liest das aktive Modul aus .current-focus und findet zugehörige Dokumente
 # Autor: Claude
-# Datum: 09.07.2025
+# Datum: 13.07.2025 - Angepasst an neue Dokumentationsstruktur
 
 set -e
 
@@ -35,43 +35,78 @@ fi
 echo -e "${GREEN}✅ Aktives Feature:${NC} $FEATURE"
 
 if [ -n "$MODULE" ] && [ "$MODULE" != "null" ]; then
-    FULL_MODULE="$FEATURE-$MODULE"
-    echo -e "${GREEN}✅ Aktives Modul:${NC} $FULL_MODULE"
+    echo -e "${GREEN}✅ Aktives Modul:${NC} $MODULE"
     
-    # Suche Hub-Dokument
-    HUB_DOC=$(find docs/features -name "${FEATURE}-hub.md" 2>/dev/null | head -1)
-    if [ -n "$HUB_DOC" ]; then
-        echo -e "${GREEN}📋 Hub-Dokument:${NC} $HUB_DOC"
+    # Neue Struktur: Suche in ACTIVE/PLANNED/ARCHIVE Ordnern
+    # Konvertiere Module-Namen zu snake_case für Ordnersuche
+    MODULE_FOLDER=$(echo "$MODULE" | tr '[:upper:]' '[:lower:]' | tr ' ' '_')
+    
+    # Suche nach Modul-Ordner in der neuen Struktur
+    FOUND_DOCS=""
+    
+    # Prüfe ACTIVE Ordner
+    if [ -d "docs/features/ACTIVE" ]; then
+        ACTIVE_DOC=$(find docs/features/ACTIVE -type d -name "*${MODULE_FOLDER}*" 2>/dev/null | head -1)
+        if [ -n "$ACTIVE_DOC" ] && [ -f "$ACTIVE_DOC/README.md" ]; then
+            FOUND_DOCS="$ACTIVE_DOC/README.md"
+            echo -e "${GREEN}⭐ Aktives Modul-Dokument:${NC} $FOUND_DOCS"
+        fi
     fi
     
-    # Suche Spoke-Dokument
-    SPOKE_DOC=$(find docs/features -name "${FULL_MODULE}*.md" 2>/dev/null | head -1)
-    if [ -n "$SPOKE_DOC" ]; then
-        echo -e "${GREEN}⭐ Spoke-Dokument:${NC} $SPOKE_DOC"
-        
-        # Extrahiere Status aus Spoke
-        if [ -f "$SPOKE_DOC" ]; then
-            STATUS=$(grep -E "^\*\*Status:\*\*" "$SPOKE_DOC" | head -1 | sed 's/.*Status:\*\* //')
-            if [ -n "$STATUS" ]; then
-                echo -e "${GREEN}📊 Modul-Status:${NC} $STATUS"
-            fi
-            
-            # Suche nach "NÄCHSTER SCHRITT"
-            if grep -q "NÄCHSTER SCHRITT" "$SPOKE_DOC"; then
-                echo ""
-                echo -e "${GREEN}🎯 Nächster Schritt gefunden im Dokument${NC}"
-                echo "Nutze 'grep -A 10 \"NÄCHSTER SCHRITT\" $SPOKE_DOC' zum Anzeigen"
-            fi
+    # Falls nicht in ACTIVE, suche in PLANNED
+    if [ -z "$FOUND_DOCS" ] && [ -d "docs/features/PLANNED" ]; then
+        PLANNED_DOC=$(find docs/features/PLANNED -type d -name "*${MODULE_FOLDER}*" 2>/dev/null | head -1)
+        if [ -n "$PLANNED_DOC" ] && [ -f "$PLANNED_DOC/README.md" ]; then
+            FOUND_DOCS="$PLANNED_DOC/README.md"
+            echo -e "${YELLOW}📋 Geplantes Modul-Dokument:${NC} $FOUND_DOCS"
         fi
+    fi
+    
+    # Falls immer noch nicht gefunden, suche nach Feature-Code
+    if [ -z "$FOUND_DOCS" ]; then
+        # Suche nach Ordnern die mit Nummer beginnen (z.B. 01_security_foundation)
+        NUMBERED_DOC=$(find docs/features/ACTIVE -type d -name "[0-9]*" 2>/dev/null | while read dir; do
+            if [ -f "$dir/README.md" ] && grep -q "$FEATURE" "$dir/README.md" 2>/dev/null; then
+                echo "$dir/README.md"
+                break
+            fi
+        done)
+        
+        if [ -n "$NUMBERED_DOC" ]; then
+            FOUND_DOCS="$NUMBERED_DOC"
+            echo -e "${GREEN}⭐ Modul-Dokument gefunden:${NC} $FOUND_DOCS"
+        fi
+    fi
+    
+    # Extrahiere Status und weitere Infos wenn Dokument gefunden
+    if [ -n "$FOUND_DOCS" ] && [ -f "$FOUND_DOCS" ]; then
+        # Status extrahieren
+        STATUS=$(grep -E "^\*\*Status:\*\*" "$FOUND_DOCS" | head -1 | sed 's/.*Status:\*\* //')
+        if [ -n "$STATUS" ]; then
+            echo -e "${GREEN}📊 Modul-Status:${NC} $STATUS"
+        fi
+        
+        # Suche nach nächsten Schritten
+        if grep -q -E "(NÄCHSTER SCHRITT|Next Step|TODO|Checklist)" "$FOUND_DOCS"; then
+            echo ""
+            echo -e "${GREEN}🎯 Aufgaben im Dokument gefunden${NC}"
+            echo "Öffne das Dokument für Details: cat $FOUND_DOCS"
+        fi
+        
+        # Exportiere für andere Scripts
+        export ACTIVE_MODULE_DOC="$FOUND_DOCS"
     else
-        echo -e "${YELLOW}⚠️  Kein Spoke-Dokument für $MODULE gefunden${NC}"
+        echo -e "${YELLOW}⚠️  Kein Modul-Dokument gefunden${NC}"
+        echo ""
+        echo "Mögliche Gründe:"
+        echo "1. Modul-Ordner existiert nicht in docs/features/ACTIVE/"
+        echo "2. README.md fehlt im Modul-Ordner"
+        echo "3. Modul-Name in .current-focus stimmt nicht mit Ordnername überein"
     fi
     
     # Exportiere Variablen für andere Scripts
     export ACTIVE_FEATURE="$FEATURE"
     export ACTIVE_MODULE="$MODULE"
-    export ACTIVE_HUB="$HUB_DOC"
-    export ACTIVE_SPOKE="$SPOKE_DOC"
     
 else
     echo -e "${YELLOW}⚠️  Kein spezifisches Modul in .current-focus definiert${NC}"
@@ -79,5 +114,5 @@ else
 fi
 
 echo ""
-echo "💡 Tipp: Aktualisiere .current-focus mit:"
-echo "   echo 'Feature: FC-XXX-MX ModulName' > .current-focus"
+echo "💡 Tipp: Aktualisiere .current-focus mit update-focus.sh"
+echo "   Beispiel: ./scripts/update-focus.sh FC-008 'Security Foundation'"
