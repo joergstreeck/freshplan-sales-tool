@@ -29,19 +29,8 @@ export const AppProviders = ({ children: mainChildren }: AppProvidersProps) => {
   // Only include login bypass in development mode
   const isDevelopmentMode = import.meta.env.DEV && import.meta.env.MODE !== 'production';
   
-  // Conditional Auth Provider based on development settings
+  // Auth Provider wrapper - AuthProvider always depends on KeycloakContext
   const AuthWrapper = ({ children: authChildren }: { children: ReactNode }) => {
-    if (IS_DEV_MODE && !USE_KEYCLOAK_IN_DEV) {
-      // In dev mode without Keycloak, we still need KeycloakProvider
-      // AuthProvider now depends on KeycloakContext
-      return (
-        <KeycloakProvider>
-          <AuthProvider>{authChildren}</AuthProvider>
-        </KeycloakProvider>
-      );
-    }
-
-    // Use Keycloak for production or when enabled in dev
     return (
       <KeycloakProvider>
         <AuthProvider>{authChildren}</AuthProvider>

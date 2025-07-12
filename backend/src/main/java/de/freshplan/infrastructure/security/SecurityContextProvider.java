@@ -39,7 +39,7 @@ public class SecurityContextProvider {
       } catch (IllegalArgumentException e) {
         // Subject is not a UUID, use it as string identifier
         // In a real scenario, you might want to map this to a database user
-        return UUID.nameUUIDFromBytes(subject.getBytes());
+        return UUID.nameUUIDFromBytes(subject.getBytes(java.nio.charset.StandardCharsets.UTF_8));
       }
     }
 

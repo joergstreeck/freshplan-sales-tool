@@ -30,15 +30,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const keycloak = useKeycloak();
 
   // Map Keycloak user data to legacy User interface
-  const user: User | null = keycloak.isAuthenticated
-    ? {
-        id: keycloak.userId || '',
-        name: keycloak.username || keycloak.email || 'Unknown',
-        email: keycloak.email || '',
-        username: keycloak.username,
-        roles: keycloak.userRoles,
-      }
-    : null;
+  const user: User | null =
+    keycloak.isAuthenticated && keycloak.userId
+      ? {
+          id: keycloak.userId,
+          name: keycloak.username || keycloak.email || 'Unknown',
+          email: keycloak.email || '',
+          username: keycloak.username,
+          roles: keycloak.userRoles,
+        }
+      : null;
 
   // Legacy login function - redirects to Keycloak
   const login = async (_email: string, _password: string) => {

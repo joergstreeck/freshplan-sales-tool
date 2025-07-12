@@ -43,9 +43,7 @@ public class SecurityAuditInterceptor {
     } catch (Exception e) {
       // Log security-related exceptions
       if (securityContext.isAuthenticated()) {
-        LOG.errorf(
-            "Security Audit - Failed call by user %s: %s",
-            securityContext.getUsername(), e.getMessage());
+        LOG.errorf(e, "Security Audit - Failed call by user %s", securityContext.getUsername());
       }
       throw e;
     }
