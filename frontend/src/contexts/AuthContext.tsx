@@ -42,6 +42,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       : null;
 
   // Legacy login function - redirects to Keycloak
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const login = async (_email: string, _password: string) => {
     // Email and password are ignored - Keycloak handles authentication
     keycloak.login();

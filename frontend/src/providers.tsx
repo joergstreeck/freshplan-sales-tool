@@ -8,7 +8,6 @@ import { queryClient } from './lib/queryClient';
 import { AuthProvider } from './contexts/AuthContext';
 import { KeycloakProvider } from './contexts/KeycloakContext';
 import { ErrorBoundary } from './components/ErrorBoundary';
-import { USE_KEYCLOAK_IN_DEV, IS_DEV_MODE } from './lib/constants';
 import freshfoodzTheme from './theme/freshfoodz';
 import App from './App';
 import { LoginBypassPage } from './pages/LoginBypassPage';
