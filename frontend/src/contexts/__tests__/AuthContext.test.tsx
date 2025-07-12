@@ -1,7 +1,33 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { AuthProvider, useAuth } from '../AuthContext';
+import { KeycloakProvider } from '../KeycloakContext';
+
+// Mock keycloak-js
+vi.mock('keycloak-js', () => {
+  return {
+    default: vi.fn().mockImplementation(() => ({
+      init: vi.fn().mockResolvedValue(true),
+      authenticated: true,
+      token: 'mock-token',
+      tokenParsed: {
+        sub: 'test-user-id',
+        preferred_username: 'testuser',
+        email: 'test@example.com',
+        realm_access: {
+          roles: ['user', 'admin'],
+        },
+      },
+      hasRealmRole: vi.fn((role: string) => ['user', 'admin'].includes(role)),
+      login: vi.fn(),
+      logout: vi.fn(),
+      updateToken: vi.fn().mockResolvedValue(true),
+      clearToken: vi.fn(),
+      isTokenExpired: vi.fn().mockReturnValue(false),
+    })),
+  };
+});
 
 function TestComponent() {
   const { user, isAuthenticated } = useAuth();
@@ -14,20 +40,53 @@ function TestComponent() {
 }
 
 describe('AuthContext', () => {
-  it('renders without crashing and provides default state', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('renders without crashing and provides authentication state', async () => {
     const { getByTestId } = render(
-      <AuthProvider>
-        <TestComponent />
-      </AuthProvider>
+      <KeycloakProvider>
+        <AuthProvider>
+          <TestComponent />
+        </AuthProvider>
+      </KeycloakProvider>
     );
 
-    // In development mode, AuthContext auto-logs in as Admin User
-    if (import.meta.env.DEV) {
-      expect(getByTestId('user')).toHaveTextContent('Admin User');
+    // Wait for async initialization
+    await vi.waitFor(() => {
+      expect(getByTestId('user')).toHaveTextContent('testuser');
       expect(getByTestId('auth')).toHaveTextContent('authenticated');
-    } else {
+    });
+  });
+
+  it('shows not authenticated when keycloak is not authenticated', async () => {
+    // Override the mock for this test
+    const Keycloak = await import('keycloak-js');
+    vi.mocked(Keycloak.default).mockImplementationOnce(() => ({
+      init: vi.fn().mockResolvedValue(false),
+      authenticated: false,
+      token: undefined,
+      tokenParsed: undefined,
+      hasRealmRole: vi.fn().mockReturnValue(false),
+      login: vi.fn(),
+      logout: vi.fn(),
+      updateToken: vi.fn().mockResolvedValue(false),
+      clearToken: vi.fn(),
+      isTokenExpired: vi.fn().mockReturnValue(true),
+    }));
+
+    const { getByTestId } = render(
+      <KeycloakProvider>
+        <AuthProvider>
+          <TestComponent />
+        </AuthProvider>
+      </KeycloakProvider>
+    );
+
+    await vi.waitFor(() => {
       expect(getByTestId('user')).toHaveTextContent('no-user');
       expect(getByTestId('auth')).toHaveTextContent('not-authenticated');
-    }
+    });
   });
 });

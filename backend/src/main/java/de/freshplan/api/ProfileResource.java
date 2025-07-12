@@ -4,6 +4,9 @@ import de.freshplan.domain.profile.service.ProfileService;
 import de.freshplan.domain.profile.service.dto.CreateProfileRequest;
 import de.freshplan.domain.profile.service.dto.ProfileResponse;
 import de.freshplan.domain.profile.service.dto.UpdateProfileRequest;
+import de.freshplan.infrastructure.security.SecurityAudit;
+import de.freshplan.infrastructure.security.SecurityContextProvider;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
@@ -20,11 +23,15 @@ import java.util.UUID;
  * @since 1.0.0
  */
 @Path("/api/profiles")
+@RolesAllowed({"admin", "manager", "sales"})
+@SecurityAudit
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class ProfileResource {
 
   @Inject ProfileService profileService;
+
+  @Inject SecurityContextProvider securityContext;
 
   /**
    * Create a new profile.

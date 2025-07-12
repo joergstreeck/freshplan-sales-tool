@@ -1,7 +1,9 @@
 package de.freshplan.api.dev;
 
 import de.freshplan.domain.testdata.service.TestDataService;
-import io.quarkus.security.Authenticated;
+import de.freshplan.infrastructure.security.SecurityAudit;
+import de.freshplan.infrastructure.security.SecurityContextProvider;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -15,13 +17,16 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
  * to clearly separate from production APIs.
  */
 @Path("/api/dev/test-data")
-@Authenticated
+@RolesAllowed("admin")
+@SecurityAudit
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Tag(name = "Development - Test Data", description = "Test data management for development")
 public class TestDataResource {
 
   @Inject TestDataService testDataService;
+
+  @Inject SecurityContextProvider securityContext;
 
   @POST
   @Path("/seed")

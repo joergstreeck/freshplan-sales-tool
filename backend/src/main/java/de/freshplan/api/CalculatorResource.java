@@ -3,7 +3,7 @@ package de.freshplan.api;
 import de.freshplan.domain.calculator.service.CalculatorService;
 import de.freshplan.domain.calculator.service.dto.CalculatorRequest;
 import de.freshplan.domain.calculator.service.dto.CalculatorResponse;
-import jakarta.annotation.security.PermitAll;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
@@ -22,7 +22,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Tag(name = "Calculator", description = "Discount calculation operations")
-@PermitAll
+@RolesAllowed({"admin", "manager", "sales"})
 public class CalculatorResource {
 
   private final CalculatorService calculatorService;

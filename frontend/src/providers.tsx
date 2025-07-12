@@ -32,12 +32,21 @@ export const AppProviders = ({ children: mainChildren }: AppProvidersProps) => {
   // Conditional Auth Provider based on development settings
   const AuthWrapper = ({ children: authChildren }: { children: ReactNode }) => {
     if (IS_DEV_MODE && !USE_KEYCLOAK_IN_DEV) {
-      // Use existing AuthProvider for fallback mode
-      return <AuthProvider>{authChildren}</AuthProvider>;
+      // In dev mode without Keycloak, we still need KeycloakProvider
+      // AuthProvider now depends on KeycloakContext
+      return (
+        <KeycloakProvider>
+          <AuthProvider>{authChildren}</AuthProvider>
+        </KeycloakProvider>
+      );
     }
 
     // Use Keycloak for production or when enabled in dev
-    return <KeycloakProvider>{authChildren}</KeycloakProvider>;
+    return (
+      <KeycloakProvider>
+        <AuthProvider>{authChildren}</AuthProvider>
+      </KeycloakProvider>
+    );
   };
 
   return (

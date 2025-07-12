@@ -6,6 +6,8 @@ import de.freshplan.domain.user.service.dto.CreateUserRequest;
 import de.freshplan.domain.user.service.dto.UpdateUserRequest;
 import de.freshplan.domain.user.service.dto.UpdateUserRolesRequest;
 import de.freshplan.domain.user.service.dto.UserResponse;
+import de.freshplan.infrastructure.security.SecurityAudit;
+import de.freshplan.infrastructure.security.SecurityContextProvider;
 import io.quarkus.arc.profile.UnlessBuildProfile;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
@@ -41,14 +43,17 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 @Consumes(MediaType.APPLICATION_JSON)
 @Tag(name = "User Management", description = "Operations for managing users")
 @RolesAllowed("admin")
+@SecurityAudit
 @UnlessBuildProfile("dev")
 public class UserResource {
 
   private final UserService userService;
+  private final SecurityContextProvider securityContext;
 
   @Inject
-  public UserResource(UserService userService) {
+  public UserResource(UserService userService, SecurityContextProvider securityContext) {
     this.userService = userService;
+    this.securityContext = securityContext;
   }
 
   /**

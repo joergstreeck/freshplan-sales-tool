@@ -11,12 +11,14 @@ import io.restassured.http.ContentType;
 import org.junit.jupiter.api.Test;
 
 /**
- * Basic integration tests for CustomerSearchResource.
- * These tests verify that the endpoint is accessible and returns valid responses.
+ * Basic integration tests for CustomerSearchResource. These tests verify that the endpoint is
+ * accessible and returns valid responses.
  */
 @QuarkusTest
 @TestHTTPEndpoint(CustomerSearchResource.class)
-@TestSecurity(user = "testuser", roles = {"user", "admin"})
+@TestSecurity(
+    user = "testuser",
+    roles = {"user", "admin"})
 class CustomerSearchResourceBasicTest {
 
   @Test
@@ -77,7 +79,9 @@ class CustomerSearchResourceBasicTest {
   }
 
   @Test
-  @TestSecurity(user = "unauthorized", roles = {})
+  @TestSecurity(
+      user = "unauthorized",
+      roles = {})
   void testUnauthorizedAccess_shouldReturn403() {
     // Given: Search request
     CustomerSearchRequest request = new CustomerSearchRequest();
@@ -89,16 +93,15 @@ class CustomerSearchResourceBasicTest {
         .when()
         .post()
         .then()
-        .statusCode(anyOf(is(403), is(200))); // Accept both since security might be disabled in tests
+        .statusCode(
+            anyOf(is(403), is(200))); // Accept both since security might be disabled in tests
   }
 
   @Test
   void testSearchWithGlobalSearch_shouldReturnValidResponse() {
     // Given: Search with global search term
     CustomerSearchRequest request =
-        CustomerSearchRequest.builder()
-            .withGlobalSearch("test")
-            .build();
+        CustomerSearchRequest.builder().withGlobalSearch("test").build();
 
     // When & Then: Should return valid response structure
     given()
@@ -135,9 +138,7 @@ class CustomerSearchResourceBasicTest {
   void testSearchWithSorting_shouldReturnValidResponse() {
     // Given: Search with sorting
     CustomerSearchRequest request =
-        CustomerSearchRequest.builder()
-            .withSort(SortCriteria.desc("createdAt"))
-            .build();
+        CustomerSearchRequest.builder().withSort(SortCriteria.desc("createdAt")).build();
 
     // When & Then: Should return valid response
     given()
