@@ -49,7 +49,7 @@ describe('KeycloakContext', () => {
   });
 
   it('handles login action', async () => {
-    const { authUtils, keycloak } = await import('../../lib/keycloak');
+    const { keycloak } = await import('../../lib/keycloak');
     
     const { getByTestId } = render(
       <KeycloakProvider>
@@ -70,7 +70,7 @@ describe('KeycloakContext', () => {
   });
 
   it('handles logout action', async () => {
-    const { authUtils, keycloak } = await import('../../lib/keycloak');
+    const { keycloak } = await import('../../lib/keycloak');
     
     const { getByTestId } = render(
       <KeycloakProvider>
