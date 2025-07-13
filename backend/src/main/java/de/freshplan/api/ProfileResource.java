@@ -6,7 +6,6 @@ import de.freshplan.domain.profile.service.dto.ProfileResponse;
 import de.freshplan.domain.profile.service.dto.UpdateProfileRequest;
 import de.freshplan.infrastructure.security.SecurityAudit;
 import de.freshplan.infrastructure.security.SecurityContextProvider;
-import jakarta.annotation.security.PermitAll;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;

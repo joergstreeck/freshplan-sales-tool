@@ -5,7 +5,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import de.freshplan.domain.profile.entity.Profile;
 import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.security.TestSecurity;import jakarta.inject.Inject;
+import io.quarkus.test.security.TestSecurity;
+import jakarta.inject.Inject;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
@@ -13,7 +14,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 @QuarkusTest
-@TestSecurity(user = "testuser", roles = {"admin", "manager", "sales", "viewer"})@TestTransaction
+@TestSecurity(
+    user = "testuser",
+    roles = {"admin", "manager", "sales", "viewer"})
+@TestTransaction
 class ProfileRepositoryTest {
 
   @Inject ProfileRepository profileRepository;

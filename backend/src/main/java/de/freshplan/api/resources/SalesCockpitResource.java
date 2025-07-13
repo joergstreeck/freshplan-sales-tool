@@ -5,7 +5,6 @@ import de.freshplan.domain.cockpit.service.dto.SalesCockpitDashboard;
 import de.freshplan.domain.user.service.exception.UserNotFoundException;
 import de.freshplan.infrastructure.security.SecurityAudit;
 import de.freshplan.infrastructure.security.SecurityContextProvider;
-import jakarta.annotation.security.PermitAll;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;

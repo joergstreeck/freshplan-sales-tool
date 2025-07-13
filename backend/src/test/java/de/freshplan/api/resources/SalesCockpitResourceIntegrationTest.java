@@ -4,7 +4,8 @@ import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
 
 import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.security.TestSecurity;import jakarta.ws.rs.core.MediaType;
+import io.quarkus.test.security.TestSecurity;
+import jakarta.ws.rs.core.MediaType;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -14,7 +15,10 @@ import org.junit.jupiter.api.Test;
  * @since 2.0.0
  */
 @QuarkusTest
-@TestSecurity(user = "testuser", roles = {"admin", "manager", "sales", "viewer"})class SalesCockpitResourceIntegrationTest {
+@TestSecurity(
+    user = "testuser",
+    roles = {"admin", "manager", "sales", "viewer"})
+class SalesCockpitResourceIntegrationTest {
 
   /**
    * Konsolidierter Test für den Development-Endpunkt /dashboard/dev.

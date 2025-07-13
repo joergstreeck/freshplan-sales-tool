@@ -9,7 +9,6 @@ import de.freshplan.domain.user.service.dto.UserResponse;
 import de.freshplan.infrastructure.security.SecurityAudit;
 import de.freshplan.infrastructure.security.SecurityContextProvider;
 import io.quarkus.arc.profile.UnlessBuildProfile;
-import jakarta.annotation.security.PermitAll;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;

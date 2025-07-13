@@ -4,7 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import de.freshplan.domain.user.entity.User;
 import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.security.TestSecurity;import jakarta.inject.Inject;
+import io.quarkus.test.security.TestSecurity;
+import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
@@ -22,7 +23,10 @@ import org.junit.jupiter.api.Test;
  * @since 2.0.0
  */
 @QuarkusTest
-@TestSecurity(user = "testuser", roles = {"admin", "manager", "sales", "viewer"})class UserRepositoryTest {
+@TestSecurity(
+    user = "testuser",
+    roles = {"admin", "manager", "sales", "viewer"})
+class UserRepositoryTest {
 
   @Inject UserRepository userRepository;
 

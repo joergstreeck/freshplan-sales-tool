@@ -4,7 +4,6 @@ import de.freshplan.domain.customer.service.CustomerTimelineService;
 import de.freshplan.domain.customer.service.dto.timeline.*;
 import de.freshplan.infrastructure.security.SecurityAudit;
 import de.freshplan.infrastructure.security.SecurityContextProvider;
-import jakarta.annotation.security.PermitAll;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;

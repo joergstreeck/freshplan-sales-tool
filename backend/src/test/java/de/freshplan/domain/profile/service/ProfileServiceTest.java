@@ -14,7 +14,8 @@ import de.freshplan.domain.profile.service.exception.ProfileNotFoundException;
 import de.freshplan.domain.profile.service.mapper.ProfileMapper;
 import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.security.TestSecurity;import jakarta.inject.Inject;
+import io.quarkus.test.security.TestSecurity;
+import jakarta.inject.Inject;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -23,7 +24,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 @QuarkusTest
-@TestSecurity(user = "testuser", roles = {"admin", "manager", "sales", "viewer"})class ProfileServiceTest {
+@TestSecurity(
+    user = "testuser",
+    roles = {"admin", "manager", "sales", "viewer"})
+class ProfileServiceTest {
 
   @Inject ProfileService profileService;
 

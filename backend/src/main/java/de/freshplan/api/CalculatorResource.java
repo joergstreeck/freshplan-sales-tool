@@ -3,7 +3,6 @@ package de.freshplan.api;
 import de.freshplan.domain.calculator.service.CalculatorService;
 import de.freshplan.domain.calculator.service.dto.CalculatorRequest;
 import de.freshplan.domain.calculator.service.dto.CalculatorResponse;
-import jakarta.annotation.security.PermitAll;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;

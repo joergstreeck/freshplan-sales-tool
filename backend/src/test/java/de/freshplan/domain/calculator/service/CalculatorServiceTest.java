@@ -6,14 +6,18 @@ import static org.assertj.core.api.Assertions.within;
 import de.freshplan.domain.calculator.service.dto.CalculatorRequest;
 import de.freshplan.domain.calculator.service.dto.CalculatorResponse;
 import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.security.TestSecurity;import jakarta.inject.Inject;
+import io.quarkus.test.security.TestSecurity;
+import jakarta.inject.Inject;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
 /** Tests for CalculatorService based on FreshPlan business rules. */
 @QuarkusTest
-@TestSecurity(user = "testuser", roles = {"admin", "manager", "sales", "viewer"})class CalculatorServiceTest {
+@TestSecurity(
+    user = "testuser",
+    roles = {"admin", "manager", "sales", "viewer"})
+class CalculatorServiceTest {
 
   @Inject CalculatorService calculatorService;
 
