@@ -8,7 +8,6 @@ import { queryClient } from './lib/queryClient';
 import { AuthProvider } from './contexts/AuthContext';
 import { KeycloakProvider } from './contexts/KeycloakContext';
 import { ErrorBoundary } from './components/ErrorBoundary';
-import { USE_KEYCLOAK_IN_DEV, IS_DEV_MODE } from './lib/constants';
 import freshfoodzTheme from './theme/freshfoodz';
 import App from './App';
 import { LoginBypassPage } from './pages/LoginBypassPage';
@@ -29,15 +28,13 @@ export const AppProviders = ({ children: mainChildren }: AppProvidersProps) => {
   // Only include login bypass in development mode
   const isDevelopmentMode = import.meta.env.DEV && import.meta.env.MODE !== 'production';
   
-  // Conditional Auth Provider based on development settings
+  // Auth Provider wrapper - AuthProvider always depends on KeycloakContext
   const AuthWrapper = ({ children: authChildren }: { children: ReactNode }) => {
-    if (IS_DEV_MODE && !USE_KEYCLOAK_IN_DEV) {
-      // Use existing AuthProvider for fallback mode
-      return <AuthProvider>{authChildren}</AuthProvider>;
-    }
-
-    // Use Keycloak for production or when enabled in dev
-    return <KeycloakProvider>{authChildren}</KeycloakProvider>;
+    return (
+      <KeycloakProvider>
+        <AuthProvider>{authChildren}</AuthProvider>
+      </KeycloakProvider>
+    );
   };
 
   return (

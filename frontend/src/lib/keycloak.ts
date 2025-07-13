@@ -6,12 +6,16 @@ import Keycloak from 'keycloak-js';
 // Keycloak Konfiguration
 const keycloakConfig = {
   url: import.meta.env.VITE_KEYCLOAK_URL || 'http://localhost:8180',
-  realm: import.meta.env.VITE_KEYCLOAK_REALM || 'freshplan',
+  realm: import.meta.env.VITE_KEYCLOAK_REALM || 'freshplan-realm', // Updated to match production
   clientId: import.meta.env.VITE_KEYCLOAK_CLIENT_ID || 'freshplan-frontend',
 };
 
 // Keycloak Instance erstellen
 export const keycloak = new Keycloak(keycloakConfig);
+
+// Track initialization state
+let isInitialized = false;
+let initializationPromise: Promise<boolean> | null = null;
 
 // Keycloak Initialisierungsoptionen
 export const keycloakInitOptions = {
@@ -27,8 +31,21 @@ export const keycloakInitOptions = {
  * @returns Promise<boolean> - true wenn erfolgreich initialisiert
  */
 export const initKeycloak = async (): Promise<boolean> => {
-  try {
-    const authenticated = await keycloak.init(keycloakInitOptions);
+  // Prevent multiple initializations
+  if (isInitialized) {
+    return keycloak.authenticated || false;
+  }
+
+  // If initialization is already in progress, wait for it
+  if (initializationPromise) {
+    return initializationPromise;
+  }
+
+  // Start initialization
+  initializationPromise = (async () => {
+    try {
+      const authenticated = await keycloak.init(keycloakInitOptions);
+      isInitialized = true;
 
     // Token-Refresh-Setup - Event-basiert
     if (authenticated) {
@@ -56,20 +73,25 @@ export const initKeycloak = async (): Promise<boolean> => {
       };
     }
 
-    return authenticated;
-  } catch (error) {
-    console.error('Keycloak initialization failed:', error);
-    // Dispatch error event for global handling
-    const event = new CustomEvent('auth-error', {
-      detail: {
-        type: 'init-failed',
-        message: 'Authentifizierungssystem konnte nicht initialisiert werden.',
-        error,
-      },
-    });
-    window.dispatchEvent(event);
-    return false;
-  }
+      return authenticated;
+    } catch (error) {
+      console.error('Keycloak initialization failed:', error);
+      isInitialized = false;
+      initializationPromise = null;
+      // Dispatch error event for global handling
+      const event = new CustomEvent('auth-error', {
+        detail: {
+          type: 'init-failed',
+          message: 'Authentifizierungssystem konnte nicht initialisiert werden.',
+          error,
+        },
+      });
+      window.dispatchEvent(event);
+      return false;
+    }
+  })();
+
+  return initializationPromise;
 };
 
 /**

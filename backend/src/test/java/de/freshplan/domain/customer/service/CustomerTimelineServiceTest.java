@@ -14,6 +14,7 @@ import de.freshplan.domain.customer.service.mapper.CustomerTimelineMapper;
 import io.quarkus.panache.common.Page;
 import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.security.TestSecurity;
 import jakarta.inject.Inject;
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -31,6 +32,9 @@ import org.mockito.ArgumentCaptor;
  * @since 2.0.0
  */
 @QuarkusTest
+@TestSecurity(
+    user = "testuser",
+    roles = {"admin", "manager", "sales", "viewer"})
 class CustomerTimelineServiceTest {
 
   @Inject CustomerTimelineService timelineService;

@@ -4,6 +4,9 @@ import de.freshplan.domain.customer.entity.CustomerStatus;
 import de.freshplan.domain.customer.entity.Industry;
 import de.freshplan.domain.customer.service.CustomerService;
 import de.freshplan.domain.customer.service.dto.*;
+import de.freshplan.infrastructure.security.SecurityAudit;
+import de.freshplan.infrastructure.security.SecurityContextProvider;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
@@ -25,9 +28,13 @@ import java.util.UUID;
 @Path("/api/customers")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@RolesAllowed({"admin", "manager", "sales"})
+@SecurityAudit
 public class CustomerResource {
 
   @Inject CustomerService customerService;
+
+  @Inject SecurityContextProvider securityContext;
 
   // ========== CRUD OPERATIONS ==========
 
@@ -39,8 +46,11 @@ public class CustomerResource {
    */
   @POST
   public Response createCustomer(@Valid CreateCustomerRequest request) {
-    // TODO: Extract user from JWT when security is implemented
-    String createdBy = "system"; // Fallback for dev mode
+    // Extract user from security context
+    String createdBy = securityContext.getUsername();
+    if (createdBy == null) {
+      createdBy = "system"; // Fallback for dev mode
+    }
 
     CustomerResponse customer = customerService.createCustomer(request, createdBy);
 

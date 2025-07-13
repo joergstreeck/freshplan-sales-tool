@@ -2,6 +2,9 @@ package de.freshplan.api.resources;
 
 import de.freshplan.domain.customer.service.CustomerTimelineService;
 import de.freshplan.domain.customer.service.dto.timeline.*;
+import de.freshplan.infrastructure.security.SecurityAudit;
+import de.freshplan.infrastructure.security.SecurityContextProvider;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
@@ -29,6 +32,8 @@ import org.jboss.logging.Logger;
  */
 @Path("/api/customers/{customerId}/timeline")
 @RequestScoped
+@RolesAllowed({"admin", "manager", "sales"})
+@SecurityAudit
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Tag(name = "Customer Timeline", description = "Operations for managing customer timeline events")
@@ -37,10 +42,13 @@ public class CustomerTimelineResource {
   private static final Logger LOG = Logger.getLogger(CustomerTimelineResource.class);
 
   private final CustomerTimelineService timelineService;
+  private final SecurityContextProvider securityContext;
 
   @Inject
-  public CustomerTimelineResource(CustomerTimelineService timelineService) {
+  public CustomerTimelineResource(
+      CustomerTimelineService timelineService, SecurityContextProvider securityContext) {
     this.timelineService = timelineService;
+    this.securityContext = securityContext;
   }
 
   @GET

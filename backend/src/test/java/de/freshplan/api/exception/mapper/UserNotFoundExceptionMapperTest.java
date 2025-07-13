@@ -5,6 +5,7 @@ import static org.mockito.Mockito.when;
 
 import de.freshplan.domain.user.service.exception.UserNotFoundException;
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.security.TestSecurity;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
@@ -22,6 +23,9 @@ import org.mockito.Mockito;
  * @since 2.0.0
  */
 @QuarkusTest
+@TestSecurity(
+    user = "testuser",
+    roles = {"admin", "manager", "sales", "viewer"})
 class UserNotFoundExceptionMapperTest {
 
   @Inject UserNotFoundExceptionMapper mapper;

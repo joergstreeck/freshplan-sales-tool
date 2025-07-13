@@ -4,6 +4,7 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { BrowserRouter } from 'react-router-dom';
 import { queryClient } from '../shared/lib/queryClient';
+import { KeycloakProvider } from '../contexts/KeycloakContext';
 import { AuthProvider } from '../contexts/AuthContext';
 import { ErrorBoundary } from '../components/ErrorBoundary';
 
@@ -16,7 +17,9 @@ export const AppProviders = ({ children }: AppProvidersProps) => {
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
         <BrowserRouter>
-          <AuthProvider>{children}</AuthProvider>
+          <KeycloakProvider>
+            <AuthProvider>{children}</AuthProvider>
+          </KeycloakProvider>
         </BrowserRouter>
 
         {/* React Query DevTools - only in development */}

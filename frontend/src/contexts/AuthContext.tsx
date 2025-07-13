@@ -1,6 +1,11 @@
 /* eslint-disable react-refresh/only-export-components */
-import { createContext, useContext, useState } from 'react';
+/**
+ * Legacy AuthContext - Wrapper around KeycloakContext
+ * This maintains backward compatibility while using Keycloak for authentication
+ */
+import { createContext, useContext } from 'react';
 import type { ReactNode } from 'react';
+import { useKeycloak } from './KeycloakContext';
 
 interface User {
   id: string;
@@ -22,74 +27,37 @@ interface AuthContextType {
 export const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  // Auto-Login in Development mit richtigem Mock-Token
-  const mockToken =
-    'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Im1vY2sta2V5LWlkIn0.eyJleHAiOjE5OTk5OTk5OTksImlhdCI6MTYwOTQ1OTIwMCwianRpIjoibW9jay1qdGktYWRtaW4iLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgxODAvcmVhbG1zL2ZyZXNocGxhbiIsImF1ZCI6ImZyZXNocGxhbi1iYWNrZW5kIiwic3ViIjoibW9jay1hZG1pbi11c2VyIiwidHlwIjoiQmVhcmVyIiwiYXpwIjoiZnJlc2hwbGFuLWJhY2tlbmQiLCJzZXNzaW9uX3N0YXRlIjoibW9jay1zZXNzaW9uIiwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbImFkbWluIl19LCJyZXNvdXJjZV9hY2Nlc3MiOnsiZnJlc2hwbGFuLWJhY2tlbmQiOnsicm9sZXMiOlsiYWRtaW4iXX19LCJzY29wZSI6Im9wZW5pZCBlbWFpbCBwcm9maWxlIiwic2lkIjoibW9jay1zaWQiLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwibmFtZSI6IkFkbWluIFVzZXIiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJhZG1pbiIsImdpdmVuX25hbWUiOiJBZG1pbiIsImZhbWlseV9uYW1lIjoiVXNlciIsImVtYWlsIjoiYWRtaW5AZnJlc2hwbGFuLmRlIn0.mock-signature';
+  const keycloak = useKeycloak();
 
-  // Initialisierung mit Development Auto-Login
-  const [user, setUser] = useState<User | null>(() => {
-    if (import.meta.env.DEV) {
-      const mockUser = {
-        id: 'mock-admin-user',
-        name: 'Admin User',
-        email: 'admin@freshplan.de',
-        username: 'admin',
-        roles: ['admin', 'sales'],
-      };
-      // Speichere auch in localStorage für API-Client
-      localStorage.setItem('auth-token', mockToken);
-      localStorage.setItem('auth-user', JSON.stringify(mockUser));
-      return mockUser;
-    }
-    return null;
-  });
+  // Map Keycloak user data to legacy User interface
+  const user: User | null =
+    keycloak.isAuthenticated && keycloak.userId
+      ? {
+          id: keycloak.userId,
+          name: keycloak.username || keycloak.email || 'Unknown',
+          email: keycloak.email || '',
+          username: keycloak.username,
+          roles: keycloak.userRoles,
+        }
+      : null;
 
-  const [token, setToken] = useState<string | null>(import.meta.env.DEV ? mockToken : null);
-
-  const login = async (email: string, password: string) => {
-    // TODO: Implement Keycloak login
-    if (import.meta.env.DEV && password.length === 0) {
-      throw new Error('Password should not be empty');
-    }
-
-    // Mock login for now
-    const mockUser = {
-      id: '1',
-      name: 'Demo User',
-      email: email,
-    };
-    setUser(mockUser);
-    setToken('mock-jwt-token');
-
-    // Sync with localStorage for API client
-    localStorage.setItem('auth-token', 'mock-jwt-token');
-    localStorage.setItem('auth-user', JSON.stringify(mockUser));
+  // Legacy login function - redirects to Keycloak
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const login = async (_email: string, _password: string) => {
+    // Email and password are ignored - Keycloak handles authentication
+    keycloak.login();
   };
 
-  const logout = () => {
-    // TODO: Implement Keycloak logout
-    setUser(null);
-    setToken(null);
-
-    // Clear localStorage
-    localStorage.removeItem('auth-token');
-    localStorage.removeItem('auth-user');
+  const contextValue: AuthContextType = {
+    user,
+    isAuthenticated: keycloak.isAuthenticated,
+    isLoading: keycloak.isLoading,
+    login,
+    logout: keycloak.logout,
+    token: keycloak.token || null,
   };
 
-  return (
-    <AuthContext.Provider
-      value={{
-        user,
-        isAuthenticated: !!user,
-        isLoading: false,
-        login,
-        logout,
-        token,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>;
 }
 
 export function useAuth() {

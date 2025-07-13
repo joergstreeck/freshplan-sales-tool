@@ -14,6 +14,7 @@ import de.freshplan.test.TestcontainersProfile;
 import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
+import io.quarkus.test.security.TestSecurity;
 import io.restassured.RestAssured;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
@@ -33,6 +34,9 @@ import org.junit.jupiter.api.Test;
  * @since 2.0.0
  */
 @QuarkusTest
+@TestSecurity(
+    user = "testuser",
+    roles = {"admin", "manager", "sales", "viewer"})
 @TestProfile(TestcontainersProfile.class)
 @TestTransaction
 public class CustomerResourceIntegrationTest extends BaseIntegrationTest {

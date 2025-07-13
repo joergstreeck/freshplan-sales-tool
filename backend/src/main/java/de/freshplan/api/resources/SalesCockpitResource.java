@@ -3,6 +3,9 @@ package de.freshplan.api.resources;
 import de.freshplan.domain.cockpit.service.SalesCockpitService;
 import de.freshplan.domain.cockpit.service.dto.SalesCockpitDashboard;
 import de.freshplan.domain.user.service.exception.UserNotFoundException;
+import de.freshplan.infrastructure.security.SecurityAudit;
+import de.freshplan.infrastructure.security.SecurityContextProvider;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
@@ -32,15 +35,20 @@ import org.jboss.logging.Logger;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @ApplicationScoped
+@RolesAllowed({"admin", "manager", "sales", "viewer"})
+@SecurityAudit
 public class SalesCockpitResource {
 
   private static final Logger LOG = Logger.getLogger(SalesCockpitResource.class);
 
   private final SalesCockpitService salesCockpitService;
+  private final SecurityContextProvider securityContext;
 
   @Inject
-  public SalesCockpitResource(SalesCockpitService salesCockpitService) {
+  public SalesCockpitResource(
+      SalesCockpitService salesCockpitService, SecurityContextProvider securityContext) {
     this.salesCockpitService = salesCockpitService;
+    this.securityContext = securityContext;
   }
 
   /**

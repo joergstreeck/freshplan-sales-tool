@@ -4,7 +4,9 @@ import de.freshplan.domain.customer.service.CustomerSearchService;
 import de.freshplan.domain.customer.service.CustomerSearchService.PagedResponse;
 import de.freshplan.domain.customer.service.dto.CustomerResponse;
 import de.freshplan.domain.customer.service.dto.CustomerSearchRequest;
-import io.quarkus.security.Authenticated;
+import de.freshplan.infrastructure.security.SecurityAudit;
+import de.freshplan.infrastructure.security.SecurityContextProvider;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
@@ -27,7 +29,8 @@ import org.jboss.logging.Logger;
  * search, and sorting capabilities.
  */
 @Path("/api/customers/search")
-@Authenticated
+@RolesAllowed({"admin", "manager", "sales", "viewer"})
+@SecurityAudit
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Tag(name = "Customer Search", description = "Advanced customer search operations")
@@ -36,6 +39,8 @@ public class CustomerSearchResource {
   private static final Logger LOG = Logger.getLogger(CustomerSearchResource.class);
 
   @Inject CustomerSearchService searchService;
+
+  @Inject SecurityContextProvider securityContext;
 
   @POST
   @Operation(

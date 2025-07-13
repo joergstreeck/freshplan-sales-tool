@@ -1,8 +1,8 @@
 {
-  "feature": "FC-002",
-  "module": "FC-002",
-  "lastFile": "frontend/src/features/cockpit/components/SalesCockpitV2.tsx",
-  "lastLine": "55",
-  "nextTask": "M3-cockpit",
-  "lastUpdated": "2025-07-10T17:11:50Z"
+  "feature": "FC-008",
+  "module": "Security Foundation",
+  "lastFile": "backend/src/main/java/de/freshplan/api/resources/CustomerSearchResource.java",
+  "lastLine": "1",
+  "nextTask": "Backend Security Completion",
+  "lastUpdated": "2025-07-12T19:02:00Z"
 }

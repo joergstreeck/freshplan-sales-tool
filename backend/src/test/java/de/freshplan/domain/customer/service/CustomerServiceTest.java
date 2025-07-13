@@ -11,6 +11,7 @@ import de.freshplan.domain.customer.service.exception.*;
 import de.freshplan.domain.customer.service.mapper.CustomerMapper;
 import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.security.TestSecurity;
 import jakarta.inject.Inject;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -28,6 +29,9 @@ import org.junit.jupiter.api.Test;
  * @since 2.0.0
  */
 @QuarkusTest
+@TestSecurity(
+    user = "testuser",
+    roles = {"admin", "manager", "sales", "viewer"})
 @DisplayName("CustomerService Tests")
 class CustomerServiceTest {
 
