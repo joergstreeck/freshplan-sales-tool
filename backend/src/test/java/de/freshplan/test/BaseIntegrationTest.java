@@ -1,24 +1,16 @@
 package de.freshplan.test;
 
-import jakarta.inject.Inject;
-import jakarta.persistence.EntityManager;
+import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.junit.TestProfile;
 
 /**
- * Basis-Klasse für alle Integrationstests mit Testcontainers.
- *
- * <p>Diese Klasse stellt sicher, dass: - Eine echte PostgreSQL-Datenbank via Testcontainers läuft -
- * Flyway-Migrationen ausgeführt werden
- *
- * <p>WICHTIG: Jeder Test sollte mit @TestTransaction annotiert sein, damit die Datenbank
- * automatisch sauber bleibt!
+ * Base class for integration tests that require security to be disabled.
+ * This allows testing API endpoints without dealing with authentication
+ * while maintaining security in production.
  */
+@QuarkusTest
+@TestProfile(SecurityDisabledTestProfile.class)
 public abstract class BaseIntegrationTest {
-
-  @Inject protected EntityManager entityManager;
-
-  /** Hilfsmethode um zu prüfen ob Stammdaten vorhanden sind */
-  protected long countContactRoles() {
-    return (Long)
-        entityManager.createNativeQuery("SELECT COUNT(*) FROM contact_roles").getSingleResult();
-  }
+    
+    // Common test setup can be added here if needed
 }

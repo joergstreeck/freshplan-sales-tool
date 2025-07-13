@@ -43,8 +43,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Tag(name = "User Management", description = "Operations for managing users")
-@PermitAll // TODO: SECURITY ROLLBACK - Remove after fixing test configuration (Issue #CI-FIX)
-// @RolesAllowed("admin") // TODO: SECURITY ROLLBACK - Uncomment after test fix
+@RolesAllowed("admin")
 @SecurityAudit
 @UnlessBuildProfile("dev")
 public class UserResource {

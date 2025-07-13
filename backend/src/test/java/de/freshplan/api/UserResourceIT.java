@@ -117,7 +117,6 @@ class UserResourceIT {
   }
 
   @Test
-  @org.junit.jupiter.api.Disabled("SECURITY ROLLBACK: Disabled due to @PermitAll temporary fix (Issue #CI-FIX)")
   void testCreateUser_Unauthorized_ShouldReturn401() {
     given()
         .contentType(ContentType.JSON)
@@ -129,7 +128,6 @@ class UserResourceIT {
   }
 
   @Test
-  @org.junit.jupiter.api.Disabled("SECURITY ROLLBACK: Disabled due to @PermitAll temporary fix (Issue #CI-FIX)")
   @TestSecurity(user = "sales", roles = "sales")
   void testCreateUser_Forbidden_ShouldReturn403() {
     given()

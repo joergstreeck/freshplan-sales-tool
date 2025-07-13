@@ -24,8 +24,7 @@ import java.util.UUID;
  * @since 1.0.0
  */
 @Path("/api/profiles")
-@PermitAll // TODO: SECURITY ROLLBACK - Remove after fixing test configuration (Issue #CI-FIX)
-// @RolesAllowed({"admin", "manager", "sales"}) // TODO: SECURITY ROLLBACK - Uncomment after test fix
+@RolesAllowed({"admin", "manager", "sales"})
 @SecurityAudit
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)

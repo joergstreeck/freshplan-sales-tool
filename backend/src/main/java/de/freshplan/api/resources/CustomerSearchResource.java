@@ -30,8 +30,7 @@ import org.jboss.logging.Logger;
  * search, and sorting capabilities.
  */
 @Path("/api/customers/search")
-@PermitAll // TODO: SECURITY ROLLBACK - Remove after fixing test configuration (Issue #CI-FIX)
-// @RolesAllowed({"admin", "manager", "sales", "viewer"}) // TODO: SECURITY ROLLBACK - Uncomment after test fix
+@RolesAllowed({"admin", "manager", "sales", "viewer"})
 @SecurityAudit
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)

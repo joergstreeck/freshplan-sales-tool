@@ -18,8 +18,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
  * to clearly separate from production APIs.
  */
 @Path("/api/dev/test-data")
-@PermitAll // TODO: SECURITY ROLLBACK - Remove after fixing test configuration (Issue #CI-FIX)
-// @RolesAllowed("admin") // TODO: SECURITY ROLLBACK - Uncomment after test fix
+@RolesAllowed("admin")
 @SecurityAudit
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
@@ -130,7 +129,7 @@ public class TestDataResource {
 
   private boolean isDevelopmentMode() {
     // Check if we're running in dev or test mode
-    String profile = io.quarkus.runtime.configuration.ProfileManager.getActiveProfile();
+    String profile = io.quarkus.runtime.LaunchMode.current().getDefaultProfile();
     return "dev".equals(profile) || "test".equals(profile);
   }
 

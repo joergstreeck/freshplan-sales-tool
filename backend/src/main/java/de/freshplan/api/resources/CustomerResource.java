@@ -29,8 +29,7 @@ import java.util.UUID;
 @Path("/api/customers")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-@PermitAll // TODO: SECURITY ROLLBACK - Remove after fixing test configuration (Issue #CI-FIX)
-// @RolesAllowed({"admin", "manager", "sales"}) // TODO: SECURITY ROLLBACK - Uncomment after test fix
+@RolesAllowed({"admin", "manager", "sales"})
 @SecurityAudit
 public class CustomerResource {
 

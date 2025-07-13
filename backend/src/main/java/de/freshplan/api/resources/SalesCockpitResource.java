@@ -36,8 +36,7 @@ import org.jboss.logging.Logger;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @ApplicationScoped
-@PermitAll // TODO: SECURITY ROLLBACK - Remove after fixing test configuration (Issue #CI-FIX)
-// @RolesAllowed({"admin", "manager", "sales", "viewer"}) // TODO: SECURITY ROLLBACK - Uncomment after test fix
+@RolesAllowed({"admin", "manager", "sales", "viewer"})
 @SecurityAudit
 public class SalesCockpitResource {
 
