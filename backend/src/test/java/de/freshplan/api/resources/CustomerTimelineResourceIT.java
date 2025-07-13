@@ -149,7 +149,9 @@ class CustomerTimelineResourceIT {
   }
 
   @Test
-  @TestSecurity(user = "testuser", roles = {"admin", "manager", "sales"})
+  @TestSecurity(
+      user = "testuser",
+      roles = {"admin", "manager", "sales"})
   void getTimeline_shouldReturnPaginatedEvents() {
     // Create test data in separate transactions
     UUID customerId = createTestCustomerInTransaction();
@@ -182,7 +184,9 @@ class CustomerTimelineResourceIT {
   }
 
   @Test
-  @TestSecurity(user = "testuser", roles = {"admin", "manager", "sales"})
+  @TestSecurity(
+      user = "testuser",
+      roles = {"admin", "manager", "sales"})
   void getTimeline_withCategoryFilter_shouldReturnFilteredEvents() {
     // Create test data in separate transactions
     UUID customerId = createTestCustomerInTransaction();
@@ -207,7 +211,9 @@ class CustomerTimelineResourceIT {
   }
 
   @Test
-  @TestSecurity(user = "testuser", roles = {"admin", "manager", "sales"})
+  @TestSecurity(
+      user = "testuser",
+      roles = {"admin", "manager", "sales"})
   void getTimeline_withSearchText_shouldReturnMatchingEvents() {
     // Create test data in separate transactions
     UUID customerId = createTestCustomerInTransaction();
@@ -231,13 +237,17 @@ class CustomerTimelineResourceIT {
   }
 
   @Test
-  @TestSecurity(user = "testuser", roles = {"admin", "manager", "sales"})
+  @TestSecurity(
+      user = "testuser",
+      roles = {"admin", "manager", "sales"})
   void getTimeline_withNonExistentCustomer_shouldReturn404() {
     given().pathParam("customerId", UUID.randomUUID()).when().get().then().statusCode(404);
   }
 
   @Test
-  @TestSecurity(user = "testuser", roles = {"admin", "manager", "sales"})
+  @TestSecurity(
+      user = "testuser",
+      roles = {"admin", "manager", "sales"})
   void createEvent_withValidData_shouldCreateTimelineEvent() {
     // Create test data in separate transaction
     UUID customerId = createTestCustomerInTransaction();
@@ -282,7 +292,9 @@ class CustomerTimelineResourceIT {
   }
 
   @Test
-  @TestSecurity(user = "testuser", roles = {"admin", "manager", "sales"})
+  @TestSecurity(
+      user = "testuser",
+      roles = {"admin", "manager", "sales"})
   void createNote_withValidData_shouldCreateNoteEvent() {
     // Create test data in separate transaction
     UUID customerId = createTestCustomerInTransaction();
@@ -312,7 +324,9 @@ class CustomerTimelineResourceIT {
   }
 
   @Test
-  @TestSecurity(user = "testuser", roles = {"admin", "manager", "sales"})
+  @TestSecurity(
+      user = "testuser",
+      roles = {"admin", "manager", "sales"})
   void createCommunication_withValidData_shouldCreateCommunicationEvent() {
     // Create test data in separate transaction
     UUID customerId = createTestCustomerInTransaction();
@@ -352,7 +366,9 @@ class CustomerTimelineResourceIT {
   }
 
   @Test
-  @TestSecurity(user = "testuser", roles = {"admin", "manager", "sales"})
+  @TestSecurity(
+      user = "testuser",
+      roles = {"admin", "manager", "sales"})
   void createEvent_withInvalidData_shouldReturn400() {
     // Create test data in separate transaction
     UUID customerId = createTestCustomerInTransaction();
@@ -371,7 +387,9 @@ class CustomerTimelineResourceIT {
   }
 
   @Test
-  @TestSecurity(user = "testuser", roles = {"admin", "manager", "sales"})
+  @TestSecurity(
+      user = "testuser",
+      roles = {"admin", "manager", "sales"})
   void getFollowUps_shouldReturnEventsRequiringFollowUp() {
     // Create test data in separate transaction
     UUID customerId = createTestCustomerInTransaction();
@@ -390,7 +408,9 @@ class CustomerTimelineResourceIT {
   }
 
   @Test
-  @TestSecurity(user = "testuser", roles = {"admin", "manager", "sales"})
+  @TestSecurity(
+      user = "testuser",
+      roles = {"admin", "manager", "sales"})
   void getOverdueFollowUps_shouldReturnOverdueEvents() {
     // Create test data in separate transaction
     UUID customerId = createTestCustomerInTransaction();
@@ -408,7 +428,9 @@ class CustomerTimelineResourceIT {
   }
 
   @Test
-  @TestSecurity(user = "testuser", roles = {"admin", "manager", "sales"})
+  @TestSecurity(
+      user = "testuser",
+      roles = {"admin", "manager", "sales"})
   void getRecentCommunications_shouldReturnRecentCommunicationEvents() {
     // Create test data in separate transaction
     UUID customerId = createTestCustomerInTransaction();
@@ -427,7 +449,9 @@ class CustomerTimelineResourceIT {
   }
 
   @Test
-  @TestSecurity(user = "testuser", roles = {"admin", "manager", "sales"})
+  @TestSecurity(
+      user = "testuser",
+      roles = {"admin", "manager", "sales"})
   void getTimelineSummary_shouldReturnSummaryStatistics() {
     // Create test data in separate transaction
     UUID customerId = createTestCustomerInTransaction();
@@ -450,7 +474,9 @@ class CustomerTimelineResourceIT {
   }
 
   @Test
-  @TestSecurity(user = "testuser", roles = {"admin", "manager", "sales"})
+  @TestSecurity(
+      user = "testuser",
+      roles = {"admin", "manager", "sales"})
   void updateEvent_withValidData_shouldUpdateTimelineEvent() {
     // Create test data in separate transaction
     UUID customerId = createTestCustomerInTransaction();
@@ -483,7 +509,9 @@ class CustomerTimelineResourceIT {
   }
 
   @Test
-  @TestSecurity(user = "testuser", roles = {"admin", "manager", "sales"})
+  @TestSecurity(
+      user = "testuser",
+      roles = {"admin", "manager", "sales"})
   void completeFollowUp_shouldMarkAsCompleted() {
     // Create test data in separate transaction
     UUID customerId = createTestCustomerInTransaction();
@@ -505,7 +533,9 @@ class CustomerTimelineResourceIT {
   }
 
   @Test
-  @TestSecurity(user = "testuser", roles = {"admin", "manager", "sales"})
+  @TestSecurity(
+      user = "testuser",
+      roles = {"admin", "manager", "sales"})
   void deleteEvent_shouldSoftDeleteEvent() {
     // Create test data in separate transaction
     UUID customerId = createTestCustomerInTransaction();
