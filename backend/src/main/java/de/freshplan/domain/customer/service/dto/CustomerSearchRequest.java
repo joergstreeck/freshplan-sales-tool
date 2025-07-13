@@ -17,6 +17,8 @@ public class CustomerSearchRequest {
   @Valid private List<FilterCriteria> filters = new ArrayList<>();
 
   @Valid private SortCriteria sort;
+  
+  @Valid private List<SortCriteria> multiSort = new ArrayList<>();
 
   // Constructors
   public CustomerSearchRequest() {}
@@ -50,6 +52,14 @@ public class CustomerSearchRequest {
   public void setSort(SortCriteria sort) {
     this.sort = sort;
   }
+  
+  public List<SortCriteria> getMultiSort() {
+    return multiSort;
+  }
+
+  public void setMultiSort(List<SortCriteria> multiSort) {
+    this.multiSort = multiSort != null ? multiSort : new ArrayList<>();
+  }
 
   // Builder class
   public static class Builder {
@@ -75,6 +85,19 @@ public class CustomerSearchRequest {
 
     public Builder withSort(SortCriteria sort) {
       request.setSort(sort);
+      return this;
+    }
+    
+    public Builder withMultiSort(List<SortCriteria> multiSort) {
+      request.setMultiSort(multiSort);
+      return this;
+    }
+    
+    public Builder addSort(SortCriteria sort) {
+      if (request.multiSort == null) {
+        request.multiSort = new ArrayList<>();
+      }
+      request.multiSort.add(sort);
       return this;
     }
 

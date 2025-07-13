@@ -26,6 +26,7 @@ import { useFocusListStore } from '../../customer/store/focusListStore';
 import { useCustomerSearch } from '../../customer/hooks/useCustomerSearch';
 import { FilterBar } from '../../customer/components/FilterBar';
 import { CustomerCard } from '../../customer/components/CustomerCard';
+import { SmartSortSelector } from '../../customer/components/SmartSortSelector';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { format } from 'date-fns';
@@ -36,8 +37,15 @@ interface FocusListColumnMUIProps {
 }
 
 export function FocusListColumnMUI({ onCustomerSelect }: FocusListColumnMUIProps = {}) {
-  const { searchCriteria, viewMode, selectedCustomerId, setSelectedCustomer, visibleTableColumns } =
-    useFocusListStore();
+  const { 
+    searchCriteria, 
+    viewMode, 
+    selectedCustomerId, 
+    setSelectedCustomer, 
+    visibleTableColumns,
+    setPage,
+    setPageSize 
+  } = useFocusListStore();
   // useAuth(); // userId wird aktuell nicht genutzt
 
   // Customer Search Query mit den Filtern aus dem Store
@@ -179,21 +187,35 @@ export function FocusListColumnMUI({ onCustomerSelect }: FocusListColumnMUIProps
 
   return (
     <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-      {/* Header */}
+      {/* Kompakter Header - alles in einer Zeile */}
       <Box
         sx={{
-          p: 2,
+          p: 1.5,
           borderBottom: 1,
           borderColor: 'divider',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: 2,
+          minHeight: 64,
         }}
       >
-        <Typography variant="h6" sx={{ color: 'primary.main' }}>
-          Arbeitsliste
-        </Typography>
+        {/* Links: Titel + Sortierung */}
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flex: 1 }}>
+          <Typography variant="h6" sx={{ color: 'primary.main', whiteSpace: 'nowrap' }}>
+            Arbeitsliste
+          </Typography>
+          <SmartSortSelector variant="compact" showDescription={false} />
+        </Box>
+        
+        {/* Rechts: Refresh Button */}
+        <IconButton size="small" onClick={() => refetch()}>
+          <RefreshIcon />
+        </IconButton>
       </Box>
 
-      {/* Filter Bar */}
-      <Box sx={{ p: 2, borderBottom: 1, borderColor: 'divider' }}>
+      {/* Filter Bar - kompakter */}
+      <Box sx={{ px: 1.5, py: 1, borderBottom: 1, borderColor: 'divider' }}>
         <FilterBar />
       </Box>
 
@@ -314,12 +336,64 @@ export function FocusListColumnMUI({ onCustomerSelect }: FocusListColumnMUIProps
               </TableContainer>
             )}
 
-            {/* Pagination Info */}
+            {/* Pagination Controls */}
             {searchResults.totalPages > 1 && (
-              <Box sx={{ mt: 3, textAlign: 'center' }}>
-                <Typography variant="caption" color="text.secondary">
-                  Seite {searchResults.number + 1} von {searchResults.totalPages}
-                </Typography>
+              <Box sx={{ mt: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                {/* Page Navigation */}
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    disabled={searchResults.first}
+                    onClick={() => setPage(searchResults.page - 1)}
+                  >
+                    Zurück
+                  </Button>
+                  
+                  <Typography variant="body2" sx={{ mx: 2 }}>
+                    Seite {searchResults.page + 1} von {searchResults.totalPages}
+                  </Typography>
+                  
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    disabled={searchResults.last}
+                    onClick={() => setPage(searchResults.page + 1)}
+                  >
+                    Weiter
+                  </Button>
+                </Box>
+
+                {/* Page Size Selector */}
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Typography variant="caption" color="text.secondary">
+                    Anzahl pro Seite:
+                  </Typography>
+                  <Button
+                    size="small"
+                    variant={searchResults.size === 10 ? "contained" : "outlined"}
+                    onClick={() => setPageSize(10)}
+                    sx={{ minWidth: '40px' }}
+                  >
+                    10
+                  </Button>
+                  <Button
+                    size="small"
+                    variant={searchResults.size === 20 ? "contained" : "outlined"}
+                    onClick={() => setPageSize(20)}
+                    sx={{ minWidth: '40px' }}
+                  >
+                    20
+                  </Button>
+                  <Button
+                    size="small"
+                    variant={searchResults.size === 50 ? "contained" : "outlined"}
+                    onClick={() => setPageSize(50)}
+                    sx={{ minWidth: '40px' }}
+                  >
+                    50
+                  </Button>
+                </Box>
               </Box>
             )}
 
