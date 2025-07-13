@@ -1,0 +1,88 @@
+version: '3.8'
+
+services:
+  keycloak:
+    image: quay.io/keycloak/keycloak:25.0.1
+    container_name: freshplan-keycloak
+    environment:
+      # Admin credentials for Keycloak
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      # Database configuration (using dev mode with H2)
+      KC_DB: h2-mem
+      # Development mode settings
+      KC_HEALTH_ENABLED: true
+      KC_METRICS_ENABLED: true
+      KC_LOG_LEVEL: INFO
+    ports:
+      - "8180:8080"  # Keycloak on different port to avoid conflicts
+    command:
+      - start-dev
+      - --import-realm
+    volumes:
+      # Mount the realm configuration
+      - ./infrastructure/keycloak/freshplan-realm.json:/opt/keycloak/data/import/freshplan-realm.json:ro
+      # Mount for theme customization (optional)
+      - ./infrastructure/keycloak/themes:/opt/keycloak/themes:ro
+    networks:
+      - freshplan-network
+
+  # PostgreSQL for Keycloak (production-like setup)
+  keycloak-db:
+    image: postgres:16-alpine
+    container_name: freshplan-keycloak-db
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: keycloak
+    volumes:
+      - keycloak-db-data:/var/lib/postgresql/data
+    networks:
+      - freshplan-network
+    profiles:
+      - production  # Only start in production mode
+
+  # Production Keycloak configuration
+  keycloak-prod:
+    image: quay.io/keycloak/keycloak:25.0.1
+    container_name: freshplan-keycloak-prod
+    depends_on:
+      - keycloak-db
+    environment:
+      # Admin credentials
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:-admin}
+      # Database configuration
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://keycloak-db:5432/keycloak
+      KC_DB_USERNAME: keycloak
+      KC_DB_PASSWORD: keycloak
+      # Production settings
+      KC_HOSTNAME: localhost
+      KC_HOSTNAME_PORT: 8180
+      KC_HOSTNAME_STRICT: false
+      KC_HTTPS_ENABLED: false  # Set to true in real production
+      KC_HTTP_ENABLED: true
+      KC_HEALTH_ENABLED: true
+      KC_METRICS_ENABLED: true
+    ports:
+      - "8180:8080"
+    command:
+      - start
+      - --optimized
+      - --import-realm
+    volumes:
+      - ./infrastructure/keycloak/freshplan-realm.json:/opt/keycloak/data/import/freshplan-realm.json:ro
+      - ./infrastructure/keycloak/themes:/opt/keycloak/themes:ro
+    networks:
+      - freshplan-network
+    profiles:
+      - production
+
+networks:
+  freshplan-network:
+    driver: bridge
+
+volumes:
+  keycloak-db-data:
+    driver: local
