@@ -42,7 +42,6 @@ public class SecurityConfig {
     LOG.info("- admin: Full system access");
     LOG.info("- manager: Management functions");
     LOG.info("- sales: Sales operations");
-    LOG.info("- viewer: Read-only access");
   }
 
   /** Security role constants for consistent usage across the application. */
@@ -50,7 +49,6 @@ public class SecurityConfig {
     public static final String ADMIN = "admin";
     public static final String MANAGER = "manager";
     public static final String SALES = "sales";
-    public static final String VIEWER = "viewer";
 
     private Roles() {
       // Utility class

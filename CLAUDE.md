@@ -1205,7 +1205,7 @@ Siehe [Vision und Roadmap][vision] für Details zu geplanten Integrationen und F
    - ✅ Optimierte Nginx-Konfiguration für SPAs
 
 3. **Komponenten implementiert:**
-   - ✅ UserList mit neuen Rollen (admin, manager, sales, viewer)
+   - ✅ UserList mit neuen Rollen (admin, manager, sales)
    - ✅ ErrorBoundary für globale Fehlerbehandlung
    - ✅ UserListSkeleton für Loading-States
    - ✅ Keycloak-Provider mit Auto-Refresh

@@ -29,7 +29,7 @@
         "description": "Administrator role with full access",
         "composite": true,
         "composites": {
-          "realm": ["sales", "manager", "viewer"]
+          "realm": ["sales", "manager"]
         },
         "clientRole": false,
         "containerId": "freshplan"
@@ -46,14 +46,6 @@
         "id": "sales",
         "name": "sales",
         "description": "Sales representative role",
-        "composite": false,
-        "clientRole": false,
-        "containerId": "freshplan"
-      },
-      {
-        "id": "viewer",
-        "name": "viewer",
-        "description": "Read-only access role",
         "composite": false,
         "clientRole": false,
         "containerId": "freshplan"
@@ -237,7 +229,7 @@
           "temporary": false
         }
       ],
-      "realmRoles": ["manager", "viewer"],
+      "realmRoles": ["manager"],
       "clientRoles": {}
     },
     {

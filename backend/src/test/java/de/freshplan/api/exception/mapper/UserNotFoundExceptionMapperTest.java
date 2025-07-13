@@ -25,7 +25,7 @@ import org.mockito.Mockito;
 @QuarkusTest
 @TestSecurity(
     user = "testuser",
-    roles = {"admin", "manager", "sales", "viewer"})
+    roles = {"admin", "manager", "sales"})
 class UserNotFoundExceptionMapperTest {
 
   @Inject UserNotFoundExceptionMapper mapper;

@@ -36,7 +36,7 @@ import org.junit.jupiter.api.Test;
 @QuarkusTest
 @TestSecurity(
     user = "testuser",
-    roles = {"admin", "manager", "sales", "viewer"})
+    roles = {"admin", "manager", "sales"})
 @TestProfile(TestcontainersProfile.class)
 @TestTransaction
 public class CustomerResourceIntegrationTest extends BaseIntegrationTest {
