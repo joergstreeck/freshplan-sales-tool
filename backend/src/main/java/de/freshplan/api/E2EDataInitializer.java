@@ -11,37 +11,36 @@ import jakarta.transaction.Transactional;
 import java.util.Arrays;
 import org.jboss.logging.Logger;
 
-/** Development data initializer that creates test users. Active in dev and e2e profiles. */
+/** E2E test data initializer that creates test users. Only active in e2e profile. */
 @ApplicationScoped
-@IfBuildProfile("dev")
-public class DevDataInitializer {
+@IfBuildProfile("e2e")
+public class E2EDataInitializer {
 
-  private static final Logger LOG = Logger.getLogger(DevDataInitializer.class);
+  private static final Logger LOG = Logger.getLogger(E2EDataInitializer.class);
 
   @Inject UserRepository userRepository;
 
   @Transactional
   void onStart(@Observes StartupEvent ev) {
-    LOG.info("Initializing development data...");
+    LOG.info("Initializing E2E test data...");
 
     // Check if we already have users
     if (userRepository.count() > 0) {
-      LOG.info("Users already exist, skipping initialization");
+      LOG.info("Users already exist, skipping E2E initialization");
       return;
     }
 
-    // Create test users
+    // Create test users identical to DevDataInitializer
     createUser("admin", "Admin", "User", "admin@freshplan.de", "admin");
     createUser("manager", "Manager", "User", "manager@freshplan.de", "manager");
     createUser("sales", "Sales", "User", "sales@freshplan.de", "sales");
     createUser("max.mustermann", "Max", "Mustermann", "max@example.com", "sales");
     createUser("erika.musterfrau", "Erika", "Musterfrau", "erika@example.com", "sales");
 
-    LOG.info("Development data initialized successfully");
+    LOG.info("E2E test data initialized successfully");
   }
 
-  private void createUser(
-      String username, String firstName, String lastName, String email, String... roles) {
+  private void createUser(String username, String firstName, String lastName, String email, String... roles) {
     User user = new User(username, firstName, lastName, email);
     user.setRoles(Arrays.asList(roles));
     userRepository.persist(user);
