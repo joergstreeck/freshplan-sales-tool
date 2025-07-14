@@ -62,7 +62,8 @@ public class TestDataResource {
   @Path("/seed-comprehensive")
   @Operation(
       summary = "Seed comprehensive edge-case test data",
-      description = "Seeds the database with comprehensive test data covering all edge cases for thorough testing")
+      description =
+          "Seeds the database with comprehensive test data covering all edge cases for thorough testing")
   @APIResponse(responseCode = "200", description = "Comprehensive test data seeded successfully")
   @APIResponse(responseCode = "500", description = "Error seeding comprehensive test data")
   public Response seedComprehensiveTestData() {

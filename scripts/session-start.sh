@@ -22,6 +22,26 @@ echo "2️⃣  Starting Services..."
 ./scripts/start-services.sh
 echo ""
 
+# Step 2.5: CRITICAL BACKEND CHECK (AUTO-FIX)
+echo "🚨 CRITICAL BACKEND VALIDATION"
+echo "==============================="
+if ! curl -s http://localhost:8080/q/health > /dev/null 2>&1; then
+    echo -e "${RED}❌ BACKEND IS DOWN - AUTO-FIXING...${NC}"
+    echo "🔧 Setting Java 17..."
+    export JAVA_HOME=/Library/Java/JavaVirtualMachines/temurin-17.jdk/Contents/Home
+    export PATH=$JAVA_HOME/bin:$PATH
+    
+    echo "🚀 Starting Backend in background..."
+    cd backend
+    nohup mvn quarkus:dev > ../logs/backend.log 2>&1 &
+    cd ..
+    echo "⏳ Backend starting... (will be ready in ~30 seconds)"
+    echo -e "${YELLOW}💡 TIP: Run 'curl http://localhost:8080/q/health' in 30s to verify${NC}"
+else
+    echo -e "${GREEN}✅ Backend is running${NC}"
+fi
+echo ""
+
 # Step 3: Git Status
 echo "3️⃣  Git Repository Status"
 echo "------------------------"

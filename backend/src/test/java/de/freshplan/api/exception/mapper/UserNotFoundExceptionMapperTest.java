@@ -56,7 +56,7 @@ class UserNotFoundExceptionMapperTest {
     ErrorResponse errorResponse = (ErrorResponse) response.getEntity();
     assertThat(errorResponse).isNotNull();
     assertThat(errorResponse.getStatus()).isEqualTo(404);
-    assertThat(errorResponse.getError()).isEqualTo("Not Found");
+    assertThat(errorResponse.getError()).isEqualTo("USER_NOT_FOUND");
     assertThat(errorResponse.getMessage()).isEqualTo(message);
     assertThat(errorResponse.getPath()).isEqualTo("/api/users/" + userId);
     assertThat(errorResponse.getErrorId()).isNotNull();

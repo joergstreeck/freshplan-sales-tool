@@ -177,7 +177,7 @@ class UserResourceIT {
         .then()
         .statusCode(404)
         .body("status", equalTo(404))
-        .body("error", equalTo("Not Found"))
+        .body("error", equalTo("USER_NOT_FOUND"))
         .body("message", containsString(nonExistentId.toString()));
   }
 

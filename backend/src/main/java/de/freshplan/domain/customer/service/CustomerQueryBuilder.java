@@ -68,10 +68,11 @@ public class CustomerQueryBuilder {
   }
 
   /**
-   * Builds a multi-sort Sort object from a list of sort criteria.
-   * Supports complex sorting strategies for sales-oriented customer prioritization.
+   * Builds a multi-sort Sort object from a list of sort criteria. Supports complex sorting
+   * strategies for sales-oriented customer prioritization.
    */
-  private Sort buildMultiSort(List<de.freshplan.domain.customer.service.dto.SortCriteria> sortCriteria) {
+  private Sort buildMultiSort(
+      List<de.freshplan.domain.customer.service.dto.SortCriteria> sortCriteria) {
     if (sortCriteria.isEmpty()) {
       return Sort.by("companyName").ascending(); // Default fallback
     }
@@ -79,26 +80,26 @@ public class CustomerQueryBuilder {
     // Start with the first sort criterion
     de.freshplan.domain.customer.service.dto.SortCriteria first = sortCriteria.get(0);
     String firstField = mapSortField(first.getField());
-    Sort sort = first.isAscending() 
-      ? Sort.by(firstField).ascending()
-      : Sort.by(firstField).descending();
+    Sort sort =
+        first.isAscending() ? Sort.by(firstField).ascending() : Sort.by(firstField).descending();
 
     // Chain additional sort criteria
     for (int i = 1; i < sortCriteria.size(); i++) {
       de.freshplan.domain.customer.service.dto.SortCriteria criteria = sortCriteria.get(i);
       String field = mapSortField(criteria.getField());
-      
-      sort = criteria.isAscending()
-        ? sort.and(field, Sort.Direction.Ascending)
-        : sort.and(field, Sort.Direction.Descending);
+
+      sort =
+          criteria.isAscending()
+              ? sort.and(field, Sort.Direction.Ascending)
+              : sort.and(field, Sort.Direction.Descending);
     }
 
     return sort;
   }
 
   /**
-   * Maps frontend sort field names to database field names.
-   * Handles special cases for computed fields and relationships.
+   * Maps frontend sort field names to database field names. Handles special cases for computed
+   * fields and relationships.
    */
   private String mapSortField(String frontendField) {
     switch (frontendField) {

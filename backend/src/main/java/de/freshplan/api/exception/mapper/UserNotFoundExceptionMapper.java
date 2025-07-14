@@ -30,7 +30,7 @@ public class UserNotFoundExceptionMapper implements ExceptionMapper<UserNotFound
     ErrorResponse errorResponse =
         ErrorResponse.builder()
             .status(404)
-            .error("Not Found")
+            .error("USER_NOT_FOUND")
             .message(exception.getMessage())
             .path(uriInfo.getPath())
             .build();
