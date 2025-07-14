@@ -1,5 +1,6 @@
 package de.freshplan.domain.customer.service;
 
+import de.freshplan.domain.customer.constants.CustomerConstants;
 import de.freshplan.domain.customer.repository.CustomerRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -40,7 +41,10 @@ public class CustomerNumberGeneratorService {
     lock.lock();
     try {
       int currentYear = Year.now().getValue();
-      String yearPrefix = "KD-" + currentYear + "-";
+      String yearPrefix = CustomerConstants.CUSTOMER_NUMBER_PREFIX + 
+                          CustomerConstants.CUSTOMER_NUMBER_SEPARATOR + 
+                          currentYear + 
+                          CustomerConstants.CUSTOMER_NUMBER_SEPARATOR;
 
       // Get the highest number for current year
       Integer maxNumber = customerRepository.getMaxCustomerNumberForYear(currentYear);
@@ -67,7 +71,10 @@ public class CustomerNumberGeneratorService {
   public String generateForYear(int year) {
     lock.lock();
     try {
-      String yearPrefix = "KD-" + year + "-";
+      String yearPrefix = CustomerConstants.CUSTOMER_NUMBER_PREFIX + 
+                          CustomerConstants.CUSTOMER_NUMBER_SEPARATOR + 
+                          year + 
+                          CustomerConstants.CUSTOMER_NUMBER_SEPARATOR;
 
       // Get the highest number for specified year
       Integer maxNumber = customerRepository.getMaxCustomerNumberForYear(year);
@@ -95,7 +102,7 @@ public class CustomerNumberGeneratorService {
     }
 
     // Pattern: KD-YYYY-XXXXX (where YYYY is year and XXXXX is 5-digit number)
-    return customerNumber.matches("^KD-\\d{4}-\\d{5}$");
+    return customerNumber.matches("^" + CustomerConstants.CUSTOMER_NUMBER_PATTERN + "$");
   }
 
   /**

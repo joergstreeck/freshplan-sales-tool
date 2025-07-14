@@ -27,6 +27,8 @@ public final class CustomerConstants {
   public static final int NEW_CUSTOMER_DAYS = 30;
 
   // Customer Number Format
+  public static final String CUSTOMER_NUMBER_PREFIX = "KD";
+  public static final String CUSTOMER_NUMBER_SEPARATOR = "-";
   public static final String CUSTOMER_NUMBER_FORMAT = "KD-%d-%05d";
   public static final String CUSTOMER_NUMBER_PATTERN = "KD-\\d{4}-\\d{5}";
   public static final int CUSTOMER_NUMBER_SEQUENCE_LENGTH = 5;

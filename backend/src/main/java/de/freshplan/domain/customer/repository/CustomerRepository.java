@@ -1,5 +1,6 @@
 package de.freshplan.domain.customer.repository;
 
+import de.freshplan.domain.customer.constants.CustomerConstants;
 import de.freshplan.domain.customer.entity.Customer;
 import de.freshplan.domain.customer.entity.CustomerLifecycleStage;
 import de.freshplan.domain.customer.entity.CustomerStatus;
@@ -258,7 +259,10 @@ public class CustomerRepository implements PanacheRepositoryBase<Customer, UUID>
 
   /** Get next customer number for CustomerNumberGenerator. Format: KD-YYYY-XXXXX */
   public Integer getMaxCustomerNumberForYear(int year) {
-    String yearPrefix = "KD-" + year + "-";
+    String yearPrefix = CustomerConstants.CUSTOMER_NUMBER_PREFIX + 
+                        CustomerConstants.CUSTOMER_NUMBER_SEPARATOR + 
+                        year + 
+                        CustomerConstants.CUSTOMER_NUMBER_SEPARATOR;
 
     // Native query to extract number part and find maximum
     String sql =
