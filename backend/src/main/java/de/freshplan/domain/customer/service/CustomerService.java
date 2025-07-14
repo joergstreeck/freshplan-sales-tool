@@ -9,6 +9,7 @@ import de.freshplan.domain.customer.entity.ImportanceLevel;
 import de.freshplan.domain.customer.entity.Industry;
 import de.freshplan.domain.customer.repository.CustomerRepository;
 import de.freshplan.domain.customer.service.dto.*;
+import de.freshplan.domain.customer.service.dto.CustomerResponseBuilder;
 import de.freshplan.domain.customer.service.exception.CustomerAlreadyExistsException;
 import de.freshplan.domain.customer.service.exception.CustomerHasChildrenException;
 import de.freshplan.domain.customer.service.exception.CustomerNotFoundException;
@@ -34,7 +35,6 @@ import java.util.stream.Collectors;
  * @since 2.0.0
  */
 @ApplicationScoped
-@Transactional
 public class CustomerService {
 
   private final CustomerRepository customerRepository;
@@ -61,6 +61,7 @@ public class CustomerService {
    * @return The created customer response
    * @throws CustomerAlreadyExistsException if company name already exists
    */
+  @Transactional
   public CustomerResponse createCustomer(@Valid CreateCustomerRequest request, String createdBy) {
     // Null validation
     if (request == null) {
@@ -122,6 +123,7 @@ public class CustomerService {
    * @return The updated customer response
    * @throws CustomerNotFoundException if customer not found
    */
+  @Transactional
   public CustomerResponse updateCustomer(
       UUID id, @Valid UpdateCustomerRequest request, String updatedBy) {
 
@@ -143,6 +145,7 @@ public class CustomerService {
    * @throws CustomerNotFoundException if customer not found
    * @throws CustomerHasChildrenException if customer has children
    */
+  @Transactional
   public void deleteCustomer(UUID id, String deletedBy, String reason) {
     Customer customer =
         customerRepository.findByIdActive(id).orElseThrow(() -> new CustomerNotFoundException(id));
@@ -174,6 +177,7 @@ public class CustomerService {
    * @param restoredBy The user restoring the customer
    * @throws CustomerNotFoundException if customer not found
    */
+  @Transactional
   public CustomerResponse restoreCustomer(UUID id, String restoredBy) {
     // Find even deleted customers for restore operation
     Optional<Customer> customerOpt = customerRepository.findByIdOptional(id);
@@ -249,6 +253,7 @@ public class CustomerService {
   }
 
   /** Adds a child customer to a parent. */
+  @Transactional
   public CustomerResponse addChildCustomer(UUID parentId, UUID childId, String updatedBy) {
     Customer parent =
         customerRepository
@@ -307,6 +312,7 @@ public class CustomerService {
    * Updates risk scores for all customers. This is a maintenance operation that should be run
    * periodically.
    */
+  @Transactional
   public void updateAllRiskScores() {
     List<Customer> allCustomers = customerRepository.findAllActive(Page.ofSize(1000));
 
@@ -327,6 +333,7 @@ public class CustomerService {
   }
 
   /** Merges two customers (keeps the target, deletes the source). */
+  @Transactional
   public CustomerResponse mergeCustomers(UUID targetId, UUID sourceId, String mergedBy) {
     Customer target =
         customerRepository
@@ -374,6 +381,7 @@ public class CustomerService {
   // ========== STATUS OPERATIONS ==========
 
   /** Changes customer status with business rules. */
+  @Transactional
   public CustomerResponse changeStatus(
       UUID customerId, CustomerStatus newStatus, String updatedBy) {
     Customer customer =
@@ -436,45 +444,7 @@ public class CustomerService {
   // ========== PRIVATE HELPER METHODS ==========
 
   private CustomerResponse mapToResponse(Customer customer) {
-    List<String> childIds =
-        customer.getChildCustomers().stream()
-            .map(child -> child.getId().toString())
-            .collect(Collectors.toList());
-
-    return new CustomerResponse(
-        customer.getId().toString(),
-        customer.getCustomerNumber(),
-        customer.getCompanyName(),
-        customer.getTradingName(),
-        customer.getLegalForm(),
-        customer.getCustomerType(),
-        customer.getIndustry(),
-        customer.getClassification(),
-        customer.getParentCustomer() != null
-            ? customer.getParentCustomer().getId().toString()
-            : null,
-        customer.getHierarchyType(),
-        childIds,
-        customer.hasChildren(),
-        customer.getStatus(),
-        customer.getLifecycleStage(),
-        customer.getPartnerStatus(),
-        customer.getExpectedAnnualVolume(),
-        customer.getActualAnnualVolume(),
-        customer.getPaymentTerms(),
-        customer.getCreditLimit(),
-        customer.getDeliveryCondition(),
-        customer.getRiskScore(),
-        customer.isAtRisk(),
-        customer.getLastContactDate(),
-        customer.getNextFollowUpDate(),
-        customer.getCreatedAt(),
-        customer.getCreatedBy(),
-        customer.getUpdatedAt(),
-        customer.getUpdatedBy(),
-        customer.getIsDeleted(),
-        customer.getDeletedAt(),
-        customer.getDeletedBy());
+    return CustomerResponseBuilder.builder().fromEntity(customer).build();
   }
 
   private CustomerResponse mapToResponseWithHierarchy(Customer customer) {
