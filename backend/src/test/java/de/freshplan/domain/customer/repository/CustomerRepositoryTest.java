@@ -7,9 +7,12 @@ import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -17,7 +20,7 @@ import org.junit.jupiter.api.Test;
  * Comprehensive test suite for CustomerRepository. Tests all repository methods including soft
  * delete support, search functionality, hierarchy management, and specialized queries.
  */
-@QuarkusTest
+@QuarkusTest  
 @TestTransaction
 class CustomerRepositoryTest {
 
@@ -29,49 +32,23 @@ class CustomerRepositoryTest {
   private Customer deletedCustomer;
   private Customer parentCustomer;
   private Customer childCustomer;
+  
+  // Counter for unique customer numbers
+  private static final AtomicInteger customerCounter = new AtomicInteger(1);
 
-  @BeforeEach
-  void setUp() {
-    // Clean up any existing test data in correct order due to foreign key constraints
-    em.createQuery("DELETE FROM CustomerTimelineEvent").executeUpdate();
-    em.createQuery("DELETE FROM CustomerContact").executeUpdate();
-    em.createQuery("DELETE FROM CustomerLocation").executeUpdate();
-    em.createQuery("DELETE FROM CustomerAddress").executeUpdate();
-    em.createQuery("DELETE FROM Customer").executeUpdate();
-    em.flush();
-
-    // Create test customers
-    testCustomer = createTestCustomer("Test Company", "KD-2025-00001");
-    testCustomer.setStatus(CustomerStatus.AKTIV);
-    testCustomer.setLifecycleStage(CustomerLifecycleStage.GROWTH);
-    testCustomer.setIndustry(Industry.GESUNDHEITSWESEN);
-    testCustomer.setExpectedAnnualVolume(new BigDecimal("50000.00"));
-    testCustomer.setRiskScore(30);
-    testCustomer.setLastContactDate(LocalDateTime.now().minusDays(10));
-    testCustomer.setNextFollowUpDate(LocalDateTime.now().plusDays(5));
-    repository.persist(testCustomer);
-
-    // Create deleted customer
-    deletedCustomer = createTestCustomer("Deleted Company", "KD-2025-00002");
-    deletedCustomer.setIsDeleted(true);
-    deletedCustomer.setDeletedAt(LocalDateTime.now());
-    repository.persist(deletedCustomer);
-
-    // Create parent-child hierarchy
-    parentCustomer = createTestCustomer("Parent Company", "KD-2025-00003");
-    repository.persist(parentCustomer);
-
-    childCustomer = createTestCustomer("Child Company", "KD-2025-00004");
-    childCustomer.setParentCustomer(parentCustomer);
-    repository.persist(childCustomer);
-
-    em.flush();
-  }
+  // Test data will be created in each test method instead of @BeforeEach
+  // to work properly with @TestTransaction
 
   // ========== SOFT DELETE TESTS ==========
 
   @Test
   void findByIdActive_shouldReturnActiveCustomer() {
+    // Create test customer
+    Customer testCustomer = createTestCustomer("Test Company");
+    testCustomer.setStatus(CustomerStatus.AKTIV);
+    repository.persist(testCustomer);
+    em.flush();
+    
     var result = repository.findByIdActive(testCustomer.getId());
 
     assertThat(result).isPresent();
@@ -118,13 +95,13 @@ class CustomerRepositoryTest {
   @Test
   void findActiveCustomersWithoutRecentContact_shouldReturnCustomersWithOldContact() {
     // Create customer with no contact
-    Customer noContactCustomer = createTestCustomer("No Contact Company", "KD-2025-00005");
+    Customer noContactCustomer = createTestCustomer("No Contact Company");
     noContactCustomer.setStatus(CustomerStatus.AKTIV);
     noContactCustomer.setLastContactDate(null);
     repository.persist(noContactCustomer);
 
     // Create customer with old contact
-    Customer oldContactCustomer = createTestCustomer("Old Contact Company", "KD-2025-00006");
+    Customer oldContactCustomer = createTestCustomer("Old Contact Company");
     oldContactCustomer.setStatus(CustomerStatus.AKTIV);
     oldContactCustomer.setLastContactDate(LocalDateTime.now().minusDays(60));
     repository.persist(oldContactCustomer);
@@ -213,7 +190,7 @@ class CustomerRepositoryTest {
   @Test
   void findByStatusIn_shouldReturnCustomersWithAnyStatus() {
     // Create customer with different status
-    Customer inactiveCustomer = createTestCustomer("Inactive Company", "KD-2025-00007");
+    Customer inactiveCustomer = createTestCustomer("Inactive Company");
     inactiveCustomer.setStatus(CustomerStatus.INAKTIV);
     repository.persist(inactiveCustomer);
     em.flush();
@@ -294,7 +271,7 @@ class CustomerRepositoryTest {
   @Test
   void findAtRisk_shouldReturnHighRiskCustomers() {
     // Create high risk customer
-    Customer highRiskCustomer = createTestCustomer("High Risk Company", "KD-2025-00008");
+    Customer highRiskCustomer = createTestCustomer("High Risk Company");
     highRiskCustomer.setRiskScore(80);
     repository.persist(highRiskCustomer);
     em.flush();
@@ -308,7 +285,7 @@ class CustomerRepositoryTest {
   @Test
   void findOverdueFollowUps_shouldReturnOverdueCustomers() {
     // Create customer with overdue follow-up
-    Customer overdueCustomer = createTestCustomer("Overdue Company", "KD-2025-00009");
+    Customer overdueCustomer = createTestCustomer("Overdue Company");
     overdueCustomer.setNextFollowUpDate(LocalDateTime.now().minusDays(5));
     repository.persist(overdueCustomer);
     em.flush();
@@ -322,7 +299,7 @@ class CustomerRepositoryTest {
   @Test
   void findNotContactedSince_shouldReturnCustomersNotContacted() {
     // Create customer not contacted for long time
-    Customer notContactedCustomer = createTestCustomer("Not Contacted Company", "KD-2025-00010");
+    Customer notContactedCustomer = createTestCustomer("Not Contacted Company");
     notContactedCustomer.setLastContactDate(LocalDateTime.now().minusDays(100));
     repository.persist(notContactedCustomer);
     em.flush();
@@ -338,11 +315,11 @@ class CustomerRepositoryTest {
   @Test
   void findByExpectedVolumeRange_shouldReturnCustomersInRange() {
     // Create customers with different volumes
-    Customer lowVolumeCustomer = createTestCustomer("Low Volume Company", "KD-2025-00011");
+    Customer lowVolumeCustomer = createTestCustomer("Low Volume Company");
     lowVolumeCustomer.setExpectedAnnualVolume(new BigDecimal("10000.00"));
     repository.persist(lowVolumeCustomer);
 
-    Customer highVolumeCustomer = createTestCustomer("High Volume Company", "KD-2025-00012");
+    Customer highVolumeCustomer = createTestCustomer("High Volume Company");
     highVolumeCustomer.setExpectedAnnualVolume(new BigDecimal("100000.00"));
     repository.persist(highVolumeCustomer);
     em.flush();
@@ -385,10 +362,10 @@ class CustomerRepositoryTest {
   @Test
   void findPotentialDuplicates_shouldFindSimilarNames() {
     // Create similar named companies
-    Customer similarCustomer1 = createTestCustomer("Test Company GmbH", "KD-2025-00013");
+    Customer similarCustomer1 = createTestCustomer("Test Company GmbH");
     repository.persist(similarCustomer1);
 
-    Customer similarCustomer2 = createTestCustomer("Test Company AG", "KD-2025-00014");
+    Customer similarCustomer2 = createTestCustomer("Test Company AG");
     repository.persist(similarCustomer2);
     em.flush();
 
@@ -433,7 +410,7 @@ class CustomerRepositoryTest {
   @Test
   void countNewThisMonth_shouldCountRecentlyCreated() {
     // Create customer created today
-    Customer newCustomer = createTestCustomer("New This Month Company", "KD-2025-00015");
+    Customer newCustomer = createTestCustomer("New This Month Company");
     newCustomer.setCreatedAt(LocalDateTime.now());
     repository.persist(newCustomer);
     em.flush();
@@ -446,7 +423,7 @@ class CustomerRepositoryTest {
   @Test
   void countAtRisk_shouldCountHighRiskCustomers() {
     // Create high risk customer
-    Customer highRiskCustomer = createTestCustomer("High Risk Company", "KD-2025-00016");
+    Customer highRiskCustomer = createTestCustomer("High Risk Company");
     highRiskCustomer.setRiskScore(85);
     repository.persist(highRiskCustomer);
     em.flush();
@@ -459,7 +436,7 @@ class CustomerRepositoryTest {
   @Test
   void countOverdueFollowUps_shouldCountOverdue() {
     // Create overdue customer
-    Customer overdueCustomer = createTestCustomer("Overdue Company", "KD-2025-00017");
+    Customer overdueCustomer = createTestCustomer("Overdue Company");
     overdueCustomer.setNextFollowUpDate(LocalDateTime.now().minusDays(1));
     repository.persist(overdueCustomer);
     em.flush();
@@ -474,7 +451,7 @@ class CustomerRepositoryTest {
   @Test
   void findRecentlyCreated_shouldReturnRecentCustomers() {
     // Create recent customer
-    Customer recentCustomer = createTestCustomer("Recent Company", "KD-2025-00018");
+    Customer recentCustomer = createTestCustomer("Recent Company");
     recentCustomer.setCreatedAt(LocalDateTime.now().minusDays(2));
     repository.persist(recentCustomer);
     em.flush();
@@ -504,7 +481,7 @@ class CustomerRepositoryTest {
   @Test
   void getMaxCustomerNumberForYear_shouldReturnMaxNumber() {
     // Create customer with higher number
-    Customer highNumberCustomer = createTestCustomer("High Number Company", "KD-2025-00099");
+    Customer highNumberCustomer = createTestCustomerWithNumber("High Number Company", "KD-2025-00099");
     repository.persist(highNumberCustomer);
     em.flush();
 
@@ -526,13 +503,27 @@ class CustomerRepositoryTest {
 
   // ========== HELPER METHODS ==========
 
-  private Customer createTestCustomer(String companyName, String customerNumber) {
+  private Customer createTestCustomer(String companyName) {
     Customer customer = new Customer();
     // Don't set ID manually - let JPA generate it
     customer.setCompanyName(companyName);
-    customer.setCustomerNumber(customerNumber);
+    // Generate unique customer number
+    customer.setCustomerNumber("KD-TEST-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase());
     customer.setIsDeleted(false);
     // Set required audit fields
+    customer.setCreatedBy("test-user");
+    customer.setUpdatedBy("test-user");
+    customer.setCreatedAt(LocalDateTime.now());
+    customer.setUpdatedAt(LocalDateTime.now());
+    return customer;
+  }
+  
+  // For special cases where customer number matters
+  private Customer createTestCustomerWithNumber(String companyName, String customerNumber) {
+    Customer customer = new Customer();
+    customer.setCompanyName(companyName);
+    customer.setCustomerNumber(customerNumber);
+    customer.setIsDeleted(false);
     customer.setCreatedBy("test-user");
     customer.setUpdatedBy("test-user");
     customer.setCreatedAt(LocalDateTime.now());

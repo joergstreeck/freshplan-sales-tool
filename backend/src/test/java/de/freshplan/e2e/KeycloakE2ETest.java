@@ -4,6 +4,8 @@ import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.junit.QuarkusTestProfile;
+import io.quarkus.test.junit.TestProfile;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import java.util.Map;
@@ -18,6 +20,7 @@ import org.junit.jupiter.api.*;
  * @since 2.0.0
  */
 @QuarkusTest
+@TestProfile(KeycloakE2ETest.E2ETestProfile.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @Tag("e2e")
 public class KeycloakE2ETest {
@@ -304,5 +307,13 @@ public class KeycloakE2ETest {
 
     // Parse JSON using RestAssured's JSON parser
     return io.restassured.path.json.JsonPath.from(decodedString).getMap("$");
+  }
+
+  /** Test profile for E2E tests with enabled OIDC */
+  public static class E2ETestProfile implements QuarkusTestProfile {
+    @Override
+    public String getConfigProfile() {
+      return "e2e";
+    }
   }
 }
