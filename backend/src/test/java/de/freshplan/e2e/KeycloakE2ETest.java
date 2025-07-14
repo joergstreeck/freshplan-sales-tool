@@ -32,16 +32,19 @@ public class KeycloakE2ETest {
   @BeforeAll
   public static void checkKeycloakAvailability() {
     try {
-      Response response = given().get(KEYCLOAK_URL + "/health/ready");
+      // Check if Keycloak is available by accessing the root endpoint
+      Response response = given().get(KEYCLOAK_URL);
 
       keycloakAvailable = response.getStatusCode() == 200;
 
       if (!keycloakAvailable) {
         System.err.println(
             "⚠️  Keycloak is not running! Start it with: ./scripts/start-keycloak.sh");
+        System.err.println("Response: " + response.getStatusCode() + " - " + response.getBody().asString());
       }
     } catch (Exception e) {
       System.err.println("⚠️  Cannot connect to Keycloak at " + KEYCLOAK_URL);
+      System.err.println("Error: " + e.getMessage());
       keycloakAvailable = false;
     }
   }

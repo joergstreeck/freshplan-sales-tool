@@ -9,7 +9,7 @@ services:
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
       # Database configuration (using dev mode with H2)
-      KC_DB: h2-mem
+      KC_DB: dev-mem
       # Development mode settings
       KC_HEALTH_ENABLED: true
       KC_METRICS_ENABLED: true
