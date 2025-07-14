@@ -56,6 +56,17 @@ public class UserService {
    * @throws UserAlreadyExistsException if username or email already exists
    */
   public UserResponse createUser(@Valid @NotNull CreateUserRequest request) {
+    // Defensive validation
+    if (request == null) {
+      throw new IllegalArgumentException("CreateUserRequest cannot be null");
+    }
+    if (request.getUsername() == null || request.getUsername().trim().isEmpty()) {
+      throw new IllegalArgumentException("Username cannot be null or empty");
+    }
+    if (request.getEmail() == null || request.getEmail().trim().isEmpty()) {
+      throw new IllegalArgumentException("Email cannot be null or empty");
+    }
+
     LOG.debugf("Creating new user with username: %s", request.getUsername());
 
     // Check for existing username
@@ -86,6 +97,14 @@ public class UserService {
    * @throws UserAlreadyExistsException if new username/email already exists
    */
   public UserResponse updateUser(@NotNull UUID id, @Valid @NotNull UpdateUserRequest request) {
+    // Defensive validation
+    if (id == null) {
+      throw new IllegalArgumentException("User ID cannot be null");
+    }
+    if (request == null) {
+      throw new IllegalArgumentException("UpdateUserRequest cannot be null");
+    }
+
     LOG.debugf("Updating user with ID: %s", id);
 
     User user =
@@ -134,6 +153,11 @@ public class UserService {
    * @throws UserNotFoundException if user not found
    */
   public UserResponse getUser(@NotNull UUID id) {
+    // Defensive validation
+    if (id == null) {
+      throw new IllegalArgumentException("User ID cannot be null");
+    }
+
     LOG.debugf("Retrieving user with ID: %s", id);
 
     User user =
@@ -152,6 +176,11 @@ public class UserService {
    * @throws UserNotFoundException if user not found
    */
   public UserResponse getUserByUsername(@NotNull String username) {
+    // Defensive validation
+    if (username == null || username.trim().isEmpty()) {
+      throw new IllegalArgumentException("Username cannot be null or empty");
+    }
+
     LOG.debugf("Retrieving user with username: %s", username);
 
     User user =
@@ -219,6 +248,11 @@ public class UserService {
    * @throws UserNotFoundException if user not found
    */
   public void deleteUser(@NotNull UUID id) {
+    // Defensive validation
+    if (id == null) {
+      throw new IllegalArgumentException("User ID cannot be null");
+    }
+
     LOG.debugf("Deleting user with ID: %s", id);
 
     User user =
@@ -275,6 +309,11 @@ public class UserService {
    * @throws UserNotFoundException if user not found
    */
   public UserResponse enableUser(@NotNull UUID id) {
+    // Defensive validation
+    if (id == null) {
+      throw new IllegalArgumentException("User ID cannot be null");
+    }
+
     LOG.debugf("Enabling user with ID: %s", id);
 
     User user =
@@ -298,6 +337,11 @@ public class UserService {
    * @throws UserNotFoundException if user not found
    */
   public UserResponse disableUser(@NotNull UUID id) {
+    // Defensive validation
+    if (id == null) {
+      throw new IllegalArgumentException("User ID cannot be null");
+    }
+
     LOG.debugf("Disabling user with ID: %s", id);
 
     User user =
@@ -343,6 +387,14 @@ public class UserService {
   @Transactional
   public UserResponse updateUserRoles(
       @NotNull UUID id, @Valid @NotNull UpdateUserRolesRequest request) {
+    // Defensive validation
+    if (id == null) {
+      throw new IllegalArgumentException("User ID cannot be null");
+    }
+    if (request == null) {
+      throw new IllegalArgumentException("UpdateUserRolesRequest cannot be null");
+    }
+
     LOG.debugf("Updating roles for user with ID: %s", id);
 
     User user =

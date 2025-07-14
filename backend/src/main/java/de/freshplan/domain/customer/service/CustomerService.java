@@ -67,8 +67,6 @@ public class CustomerService {
    */
   @Transactional
   public CustomerResponse createCustomer(@Valid CreateCustomerRequest request, String createdBy) {
-    log.debug("Creating new customer with company name: {}", request.companyName());
-
     // Null validation
     if (request == null) {
       throw new IllegalArgumentException("CreateCustomerRequest cannot be null");
@@ -76,6 +74,8 @@ public class CustomerService {
     if (createdBy == null || createdBy.trim().isEmpty()) {
       throw new IllegalArgumentException("createdBy cannot be null or empty");
     }
+
+    log.debug("Creating new customer with company name: {}", request.companyName());
 
     // Check for potential duplicates by company name
     List<Customer> potentialDuplicates =

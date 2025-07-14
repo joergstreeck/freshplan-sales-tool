@@ -44,6 +44,14 @@ public class ProfileService {
    * @throws DuplicateProfileException if profile already exists
    */
   public ProfileResponse createProfile(CreateProfileRequest request) {
+    // Defensive validation
+    if (request == null) {
+      throw new IllegalArgumentException("CreateProfileRequest cannot be null");
+    }
+    if (request.getCustomerId() == null || request.getCustomerId().trim().isEmpty()) {
+      throw new IllegalArgumentException("Customer ID cannot be null or empty");
+    }
+
     LOG.debugf("Creating profile for customer: %s", request.getCustomerId());
 
     // Check for duplicate
@@ -75,6 +83,12 @@ public class ProfileService {
    * @throws ProfileNotFoundException if not found
    */
   public ProfileResponse getProfile(UUID id) {
+    // Defensive validation
+    if (id == null) {
+      throw new IllegalArgumentException("Profile ID cannot be null");
+    }
+
+    LOG.debugf("Retrieving profile with ID: %s", id);
     Profile profile =
         profileRepository.findByIdOptional(id).orElseThrow(() -> new ProfileNotFoundException(id));
 
@@ -89,6 +103,12 @@ public class ProfileService {
    * @throws ProfileNotFoundException if not found
    */
   public ProfileResponse getProfileByCustomerId(String customerId) {
+    // Defensive validation
+    if (customerId == null || customerId.trim().isEmpty()) {
+      throw new IllegalArgumentException("Customer ID cannot be null or empty");
+    }
+
+    LOG.debugf("Retrieving profile for customer: %s", customerId);
     Profile profile =
         profileRepository
             .findByCustomerId(customerId)
@@ -106,6 +126,15 @@ public class ProfileService {
    * @throws ProfileNotFoundException if not found
    */
   public ProfileResponse updateProfile(UUID id, UpdateProfileRequest request) {
+    // Defensive validation
+    if (id == null) {
+      throw new IllegalArgumentException("Profile ID cannot be null");
+    }
+    if (request == null) {
+      throw new IllegalArgumentException("UpdateProfileRequest cannot be null");
+    }
+
+    LOG.debugf("Updating profile with ID: %s", id);
     Profile profile =
         profileRepository.findByIdOptional(id).orElseThrow(() -> new ProfileNotFoundException(id));
 
@@ -117,6 +146,7 @@ public class ProfileService {
 
     profileRepository.persist(profile);
 
+    LOG.infof("Profile updated successfully with ID: %s", id);
     return profileMapper.toResponse(profile);
   }
 
@@ -127,10 +157,17 @@ public class ProfileService {
    * @throws ProfileNotFoundException if not found
    */
   public void deleteProfile(UUID id) {
+    // Defensive validation
+    if (id == null) {
+      throw new IllegalArgumentException("Profile ID cannot be null");
+    }
+
+    LOG.debugf("Deleting profile with ID: %s", id);
     Profile profile =
         profileRepository.findByIdOptional(id).orElseThrow(() -> new ProfileNotFoundException(id));
 
     profileRepository.delete(profile);
+    LOG.infof("Profile deleted successfully with ID: %s", id);
   }
 
   /**
@@ -139,9 +176,13 @@ public class ProfileService {
    * @return list of all profile responses
    */
   public List<ProfileResponse> getAllProfiles() {
-    return profileRepository.listAll().stream()
-        .map(profileMapper::toResponse)
-        .collect(Collectors.toList());
+    LOG.debug("Retrieving all profiles");
+    List<ProfileResponse> profiles =
+        profileRepository.listAll().stream()
+            .map(profileMapper::toResponse)
+            .collect(Collectors.toList());
+    LOG.debugf("Retrieved %d profiles", profiles.size());
+    return profiles;
   }
 
   /**
@@ -151,6 +192,12 @@ public class ProfileService {
    * @return true if exists, false otherwise
    */
   public boolean profileExists(String customerId) {
+    // Defensive validation
+    if (customerId == null || customerId.trim().isEmpty()) {
+      throw new IllegalArgumentException("Customer ID cannot be null or empty");
+    }
+
+    LOG.debugf("Checking if profile exists for customer: %s", customerId);
     return profileRepository.existsByCustomerId(customerId);
   }
 
@@ -162,6 +209,12 @@ public class ProfileService {
    * @throws ProfileNotFoundException if not found
    */
   public byte[] exportProfileAsPdf(UUID id) {
+    // Defensive validation
+    if (id == null) {
+      throw new IllegalArgumentException("Profile ID cannot be null");
+    }
+
+    LOG.debugf("Exporting profile to PDF with ID: %s", id);
     Profile profile =
         profileRepository.findByIdOptional(id).orElseThrow(() -> new ProfileNotFoundException(id));
 
@@ -172,7 +225,10 @@ public class ProfileService {
     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
     HtmlConverter.convertToPdf(html, outputStream);
 
-    return outputStream.toByteArray();
+    byte[] pdfContent = outputStream.toByteArray();
+    LOG.infof(
+        "Profile PDF generated successfully with ID: %s, size: %d bytes", id, pdfContent.length);
+    return pdfContent;
   }
 
   /**
