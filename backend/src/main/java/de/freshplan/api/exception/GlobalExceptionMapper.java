@@ -13,6 +13,7 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
 import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Provider;
+import java.time.LocalDateTime;
 import java.util.*;
 import org.jboss.logging.Logger;
 
@@ -102,19 +103,21 @@ public class GlobalExceptionMapper implements ExceptionMapper<Exception> {
       int idStart = e.getMessage().indexOf("ID:") + 3;
       userId = e.getMessage().substring(idStart).trim();
     }
-    ErrorResponse error = ErrorResponse.notFound("User", userId);
+    
+    ErrorResponse.Builder errorBuilder = ErrorResponse.builder()
+        .type("RESOURCE_NOT_FOUND")
+        .title("Resource Not Found")
+        .status(404)
+        .detail(String.format("User with ID %s not found", userId))
+        .timestamp(LocalDateTime.now())
+        .error("USER_NOT_FOUND") // Set the expected error code
+        .message(String.format("User with ID %s not found", userId)); // Set message for backward compatibility
+    
     if (uriInfo != null) {
-      error =
-          ErrorResponse.builder()
-              .type(error.getType())
-              .title(error.getTitle())
-              .status(error.getStatus())
-              .detail(error.getDetail())
-              .instance(uriInfo.getPath())
-              .timestamp(error.getTimestamp())
-              .build();
+      errorBuilder.instance(uriInfo.getPath());
     }
-    return Response.status(Response.Status.NOT_FOUND).entity(error).build();
+    
+    return Response.status(Response.Status.NOT_FOUND).entity(errorBuilder.build()).build();
   }
 
   private Response handleCustomerAlreadyExists(CustomerAlreadyExistsException e) {

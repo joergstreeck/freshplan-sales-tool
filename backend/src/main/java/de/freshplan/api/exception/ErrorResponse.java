@@ -22,6 +22,8 @@ public final class ErrorResponse {
   private final LocalDateTime timestamp;
   private final Map<String, List<String>> violations;
   private final String traceId;
+  private final String error; // Legacy field for backward compatibility
+  private final String message; // Legacy field for backward compatibility
 
   private ErrorResponse(Builder builder) {
     this.type = Objects.requireNonNull(builder.type, "type must not be null");
@@ -32,6 +34,8 @@ public final class ErrorResponse {
     this.timestamp = builder.timestamp != null ? builder.timestamp : LocalDateTime.now();
     this.violations = builder.violations;
     this.traceId = builder.traceId;
+    this.error = builder.error != null ? builder.error : builder.type; // Use type as error for backward compatibility
+    this.message = builder.message != null ? builder.message : builder.detail; // Use detail as message for backward compatibility
   }
 
   // Factory methods for common error types
@@ -142,6 +146,14 @@ public final class ErrorResponse {
     return traceId;
   }
 
+  public String getError() {
+    return error;
+  }
+
+  public String getMessage() {
+    return message;
+  }
+
   // Builder
 
   public static Builder builder() {
@@ -157,6 +169,8 @@ public final class ErrorResponse {
     private LocalDateTime timestamp;
     private Map<String, List<String>> violations;
     private String traceId;
+    private String error;
+    private String message;
 
     public Builder type(String type) {
       this.type = type;
@@ -195,6 +209,16 @@ public final class ErrorResponse {
 
     public Builder traceId(String traceId) {
       this.traceId = traceId;
+      return this;
+    }
+
+    public Builder error(String error) {
+      this.error = error;
+      return this;
+    }
+
+    public Builder message(String message) {
+      this.message = message;
       return this;
     }
 
