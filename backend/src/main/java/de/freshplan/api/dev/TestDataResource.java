@@ -58,6 +58,36 @@ public class TestDataResource {
     }
   }
 
+  @POST
+  @Path("/seed-comprehensive")
+  @Operation(
+      summary = "Seed comprehensive edge-case test data",
+      description = "Seeds the database with comprehensive test data covering all edge cases for thorough testing")
+  @APIResponse(responseCode = "200", description = "Comprehensive test data seeded successfully")
+  @APIResponse(responseCode = "500", description = "Error seeding comprehensive test data")
+  public Response seedComprehensiveTestData() {
+    // Only allow in development mode
+    if (!isDevelopmentMode()) {
+      return Response.status(Response.Status.FORBIDDEN)
+          .entity(new ErrorResponse("Test data operations are only allowed in development mode"))
+          .build();
+    }
+
+    try {
+      var result = testDataService.seedComprehensiveTestData();
+      return Response.ok(
+              new SeedResponse(
+                  "🧪 Comprehensive edge-case test data seeded successfully! This covers string boundaries, numeric edges, date/time cases, enum values, business logic variations, and unicode characters.",
+                  result.customersCreated(),
+                  result.eventsCreated()))
+          .build();
+    } catch (Exception e) {
+      return Response.serverError()
+          .entity(new ErrorResponse("Failed to seed comprehensive test data: " + e.getMessage()))
+          .build();
+    }
+  }
+
   @DELETE
   @Path("/clean")
   @Operation(summary = "Clean test data", description = "Removes all test data from the database")
