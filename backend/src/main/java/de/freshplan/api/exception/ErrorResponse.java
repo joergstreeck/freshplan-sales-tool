@@ -34,8 +34,14 @@ public final class ErrorResponse {
     this.timestamp = builder.timestamp != null ? builder.timestamp : LocalDateTime.now();
     this.violations = builder.violations;
     this.traceId = builder.traceId;
-    this.error = builder.error != null ? builder.error : builder.type; // Use type as error for backward compatibility
-    this.message = builder.message != null ? builder.message : builder.detail; // Use detail as message for backward compatibility
+    this.error =
+        builder.error != null
+            ? builder.error
+            : builder.type; // Use type as error for backward compatibility
+    this.message =
+        builder.message != null
+            ? builder.message
+            : builder.detail; // Use detail as message for backward compatibility
   }
 
   // Factory methods for common error types

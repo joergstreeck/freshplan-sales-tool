@@ -259,10 +259,11 @@ public class CustomerRepository implements PanacheRepositoryBase<Customer, UUID>
 
   /** Get next customer number for CustomerNumberGenerator. Format: KD-YYYY-XXXXX */
   public Integer getMaxCustomerNumberForYear(int year) {
-    String yearPrefix = CustomerConstants.CUSTOMER_NUMBER_PREFIX + 
-                        CustomerConstants.CUSTOMER_NUMBER_SEPARATOR + 
-                        year + 
-                        CustomerConstants.CUSTOMER_NUMBER_SEPARATOR;
+    String yearPrefix =
+        CustomerConstants.CUSTOMER_NUMBER_PREFIX
+            + CustomerConstants.CUSTOMER_NUMBER_SEPARATOR
+            + year
+            + CustomerConstants.CUSTOMER_NUMBER_SEPARATOR;
 
     // Native query to extract number part and find maximum
     String sql =

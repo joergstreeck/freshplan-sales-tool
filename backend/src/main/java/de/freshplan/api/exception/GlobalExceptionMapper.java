@@ -103,20 +103,23 @@ public class GlobalExceptionMapper implements ExceptionMapper<Exception> {
       int idStart = e.getMessage().indexOf("ID:") + 3;
       userId = e.getMessage().substring(idStart).trim();
     }
-    
-    ErrorResponse.Builder errorBuilder = ErrorResponse.builder()
-        .type("RESOURCE_NOT_FOUND")
-        .title("Resource Not Found")
-        .status(404)
-        .detail(String.format("User with ID %s not found", userId))
-        .timestamp(LocalDateTime.now())
-        .error("USER_NOT_FOUND") // Set the expected error code
-        .message(String.format("User with ID %s not found", userId)); // Set message for backward compatibility
-    
+
+    ErrorResponse.Builder errorBuilder =
+        ErrorResponse.builder()
+            .type("RESOURCE_NOT_FOUND")
+            .title("Resource Not Found")
+            .status(404)
+            .detail(String.format("User with ID %s not found", userId))
+            .timestamp(LocalDateTime.now())
+            .error("USER_NOT_FOUND") // Set the expected error code
+            .message(
+                String.format(
+                    "User with ID %s not found", userId)); // Set message for backward compatibility
+
     if (uriInfo != null) {
       errorBuilder.instance(uriInfo.getPath());
     }
-    
+
     return Response.status(Response.Status.NOT_FOUND).entity(errorBuilder.build()).build();
   }
 

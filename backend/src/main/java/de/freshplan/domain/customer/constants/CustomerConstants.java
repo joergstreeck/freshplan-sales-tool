@@ -13,7 +13,7 @@ public final class CustomerConstants {
   public static final int HIGH_RISK_THRESHOLD = 85;
   public static final int CRITICAL_RISK_THRESHOLD = 95;
   public static final int LOW_RISK_THRESHOLD = 30;
-  
+
   // Risk Score Calculation - Base scores by status
   public static final int RISK_SCORE_STATUS_LEAD = 50;
   public static final int RISK_SCORE_STATUS_PROSPECT = 30;
@@ -21,7 +21,7 @@ public final class CustomerConstants {
   public static final int RISK_SCORE_STATUS_RISIKO = 70;
   public static final int RISK_SCORE_STATUS_INAKTIV = 90;
   public static final int RISK_SCORE_STATUS_ARCHIVIERT = 100;
-  
+
   // Risk Score Calculation - Contact penalties
   public static final int RISK_SCORE_NO_CONTACT_PENALTY = 30;
   public static final int RISK_SCORE_LONG_NO_CONTACT_PENALTY = 20;

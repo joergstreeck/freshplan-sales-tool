@@ -224,8 +224,9 @@ public class Customer extends PanacheEntityBase {
   }
 
   public boolean isAtRisk() {
-    return lastContactDate != null && 
-           lastContactDate.isBefore(LocalDateTime.now().minusDays(CustomerConstants.DAYS_UNTIL_RISK));
+    return lastContactDate != null
+        && lastContactDate.isBefore(
+            LocalDateTime.now().minusDays(CustomerConstants.DAYS_UNTIL_RISK));
   }
 
   public boolean hasChildren() {
@@ -591,7 +592,7 @@ public class Customer extends PanacheEntityBase {
 
   /** Gets recent timeline events (last 30 days). */
   public java.util.List<CustomerTimelineEvent> getRecentTimelineEvents() {
-    java.time.LocalDateTime thirtyDaysAgo = 
+    java.time.LocalDateTime thirtyDaysAgo =
         java.time.LocalDateTime.now().minusDays(CustomerConstants.NEW_CUSTOMER_DAYS);
     return timelineEvents.stream()
         .filter(event -> !Boolean.TRUE.equals(event.getIsDeleted()))

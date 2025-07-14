@@ -10,14 +10,12 @@ import jakarta.persistence.EntityManager;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
- * Comprehensive test suite for CustomerRepository.
- * Tests all repository methods including soft delete support, search functionality,
- * hierarchy management, and specialized queries.
+ * Comprehensive test suite for CustomerRepository. Tests all repository methods including soft
+ * delete support, search functionality, hierarchy management, and specialized queries.
  */
 @QuarkusTest
 @TestTransaction
@@ -75,7 +73,7 @@ class CustomerRepositoryTest {
   @Test
   void findByIdActive_shouldReturnActiveCustomer() {
     var result = repository.findByIdActive(testCustomer.getId());
-    
+
     assertThat(result).isPresent();
     assertThat(result.get().getId()).isEqualTo(testCustomer.getId());
     assertThat(result.get().getIsDeleted()).isFalse();
@@ -84,31 +82,32 @@ class CustomerRepositoryTest {
   @Test
   void findByIdActive_shouldNotReturnDeletedCustomer() {
     var result = repository.findByIdActive(deletedCustomer.getId());
-    
+
     assertThat(result).isEmpty();
   }
 
   @Test
   void findAllActive_shouldOnlyReturnActiveCustomers() {
     var result = repository.findAllActive(null);
-    
+
     assertThat(result).hasSize(3); // testCustomer, parentCustomer, childCustomer
     assertThat(result).noneMatch(Customer::getIsDeleted);
-    assertThat(result).extracting(Customer::getCompanyName)
+    assertThat(result)
+        .extracting(Customer::getCompanyName)
         .containsExactlyInAnyOrder("Test Company", "Parent Company", "Child Company");
   }
 
   @Test
   void countActive_shouldOnlyCountActiveCustomers() {
     long count = repository.countActive();
-    
+
     assertThat(count).isEqualTo(3); // Excluding deleted customer
   }
 
   @Test
   void findDeleted_shouldOnlyReturnDeletedCustomers() {
     var result = repository.findDeleted(null);
-    
+
     assertThat(result).hasSize(1);
     assertThat(result.get(0).getId()).isEqualTo(deletedCustomer.getId());
     assertThat(result.get(0).getIsDeleted()).isTrue();
@@ -136,7 +135,8 @@ class CustomerRepositoryTest {
     var result = repository.findActiveCustomersWithoutRecentContact(thresholdDate);
 
     assertThat(result).hasSize(2);
-    assertThat(result).extracting(Customer::getCompanyName)
+    assertThat(result)
+        .extracting(Customer::getCompanyName)
         .containsExactlyInAnyOrder("No Contact Company", "Old Contact Company");
   }
 
@@ -144,7 +144,7 @@ class CustomerRepositoryTest {
   void countActiveCustomersWithoutRecentContact_shouldCountCorrectly() {
     LocalDateTime thresholdDate = LocalDateTime.now().minusDays(30);
     long count = repository.countActiveCustomersWithoutRecentContact(thresholdDate);
-    
+
     assertThat(count).isEqualTo(0); // All test customers have recent contact
   }
 
@@ -153,7 +153,7 @@ class CustomerRepositoryTest {
   @Test
   void findByCustomerNumber_shouldReturnCorrectCustomer() {
     var result = repository.findByCustomerNumber("KD-2025-00001");
-    
+
     assertThat(result).isPresent();
     assertThat(result.get().getId()).isEqualTo(testCustomer.getId());
   }
@@ -161,42 +161,42 @@ class CustomerRepositoryTest {
   @Test
   void findByCustomerNumber_shouldReturnEmptyForNull() {
     var result = repository.findByCustomerNumber(null);
-    
+
     assertThat(result).isEmpty();
   }
 
   @Test
   void findByCustomerNumber_shouldReturnEmptyForBlank() {
     var result = repository.findByCustomerNumber("   ");
-    
+
     assertThat(result).isEmpty();
   }
 
   @Test
   void findByCustomerNumber_shouldNotReturnDeletedCustomer() {
     var result = repository.findByCustomerNumber("KD-2025-00002");
-    
+
     assertThat(result).isEmpty();
   }
 
   @Test
   void existsByCustomerNumber_shouldReturnTrueForExisting() {
     boolean exists = repository.existsByCustomerNumber("KD-2025-00001");
-    
+
     assertThat(exists).isTrue();
   }
 
   @Test
   void existsByCustomerNumber_shouldReturnFalseForNonExisting() {
     boolean exists = repository.existsByCustomerNumber("KD-2025-99999");
-    
+
     assertThat(exists).isFalse();
   }
 
   @Test
   void existsByCustomerNumber_shouldReturnFalseForNull() {
     boolean exists = repository.existsByCustomerNumber(null);
-    
+
     assertThat(exists).isFalse();
   }
 
@@ -205,7 +205,7 @@ class CustomerRepositoryTest {
   @Test
   void findByStatus_shouldReturnCustomersWithStatus() {
     var result = repository.findByStatus(CustomerStatus.AKTIV, null);
-    
+
     assertThat(result).hasSize(1);
     assertThat(result.get(0).getId()).isEqualTo(testCustomer.getId());
   }
@@ -220,30 +220,31 @@ class CustomerRepositoryTest {
 
     var statuses = List.of(CustomerStatus.AKTIV, CustomerStatus.INAKTIV);
     var result = repository.findByStatusIn(statuses, null);
-    
+
     assertThat(result).hasSize(2);
-    assertThat(result).extracting(Customer::getStatus)
+    assertThat(result)
+        .extracting(Customer::getStatus)
         .containsExactlyInAnyOrder(CustomerStatus.AKTIV, CustomerStatus.INAKTIV);
   }
 
   @Test
   void findByStatusIn_shouldReturnEmptyForNullList() {
     var result = repository.findByStatusIn(null, null);
-    
+
     assertThat(result).isEmpty();
   }
 
   @Test
   void findByStatusIn_shouldReturnEmptyForEmptyList() {
     var result = repository.findByStatusIn(List.of(), null);
-    
+
     assertThat(result).isEmpty();
   }
 
   @Test
   void findByLifecycleStage_shouldReturnCorrectCustomers() {
     var result = repository.findByLifecycleStage(CustomerLifecycleStage.GROWTH, null);
-    
+
     assertThat(result).hasSize(1);
     assertThat(result.get(0).getId()).isEqualTo(testCustomer.getId());
   }
@@ -251,7 +252,7 @@ class CustomerRepositoryTest {
   @Test
   void findByIndustry_shouldReturnCorrectCustomers() {
     var result = repository.findByIndustry(Industry.GESUNDHEITSWESEN, null);
-    
+
     assertThat(result).hasSize(1);
     assertThat(result.get(0).getId()).isEqualTo(testCustomer.getId());
   }
@@ -261,7 +262,7 @@ class CustomerRepositoryTest {
   @Test
   void findChildren_shouldReturnAllChildren() {
     var children = repository.findChildren(parentCustomer.getId());
-    
+
     assertThat(children).hasSize(1);
     assertThat(children.get(0).getId()).isEqualTo(childCustomer.getId());
   }
@@ -269,7 +270,7 @@ class CustomerRepositoryTest {
   @Test
   void findRootCustomers_shouldReturnCustomersWithoutParent() {
     var roots = repository.findRootCustomers(null);
-    
+
     assertThat(roots).hasSize(2); // testCustomer and parentCustomer
     assertThat(roots).noneMatch(c -> c.getParentCustomer() != null);
   }
@@ -277,14 +278,14 @@ class CustomerRepositoryTest {
   @Test
   void hasChildren_shouldReturnTrueForParentWithChildren() {
     boolean hasChildren = repository.hasChildren(parentCustomer.getId());
-    
+
     assertThat(hasChildren).isTrue();
   }
 
   @Test
   void hasChildren_shouldReturnFalseForCustomerWithoutChildren() {
     boolean hasChildren = repository.hasChildren(testCustomer.getId());
-    
+
     assertThat(hasChildren).isFalse();
   }
 
@@ -299,7 +300,7 @@ class CustomerRepositoryTest {
     em.flush();
 
     var result = repository.findAtRisk(70, null);
-    
+
     assertThat(result).hasSize(1);
     assertThat(result.get(0).getRiskScore()).isGreaterThanOrEqualTo(70);
   }
@@ -313,7 +314,7 @@ class CustomerRepositoryTest {
     em.flush();
 
     var result = repository.findOverdueFollowUps(null);
-    
+
     assertThat(result).hasSize(1);
     assertThat(result.get(0).getId()).isEqualTo(overdueCustomer.getId());
   }
@@ -327,7 +328,7 @@ class CustomerRepositoryTest {
     em.flush();
 
     var result = repository.findNotContactedSince(90, null);
-    
+
     assertThat(result).hasSize(1);
     assertThat(result.get(0).getId()).isEqualTo(notContactedCustomer.getId());
   }
@@ -346,12 +347,10 @@ class CustomerRepositoryTest {
     repository.persist(highVolumeCustomer);
     em.flush();
 
-    var result = repository.findByExpectedVolumeRange(
-        new BigDecimal("30000.00"), 
-        new BigDecimal("70000.00"), 
-        null
-    );
-    
+    var result =
+        repository.findByExpectedVolumeRange(
+            new BigDecimal("30000.00"), new BigDecimal("70000.00"), null);
+
     assertThat(result).hasSize(1);
     assertThat(result.get(0).getId()).isEqualTo(testCustomer.getId());
     assertThat(result.get(0).getExpectedAnnualVolume())
@@ -360,12 +359,8 @@ class CustomerRepositoryTest {
 
   @Test
   void findByExpectedVolumeRange_withOnlyMinVolume_shouldReturnCustomersAboveMin() {
-    var result = repository.findByExpectedVolumeRange(
-        new BigDecimal("40000.00"), 
-        null, 
-        null
-    );
-    
+    var result = repository.findByExpectedVolumeRange(new BigDecimal("40000.00"), null, null);
+
     assertThat(result).hasSize(1);
     assertThat(result.get(0).getExpectedAnnualVolume())
         .isGreaterThanOrEqualTo(new BigDecimal("40000.00"));
@@ -373,19 +368,15 @@ class CustomerRepositoryTest {
 
   @Test
   void findByExpectedVolumeRange_withOnlyMaxVolume_shouldReturnCustomersBelowMax() {
-    var result = repository.findByExpectedVolumeRange(
-        null, 
-        new BigDecimal("60000.00"), 
-        null
-    );
-    
+    var result = repository.findByExpectedVolumeRange(null, new BigDecimal("60000.00"), null);
+
     assertThat(result).hasSize(3); // test, parent, child customers
   }
 
   @Test
   void findByExpectedVolumeRange_withNoBounds_shouldReturnAllActive() {
     var result = repository.findByExpectedVolumeRange(null, null, null);
-    
+
     assertThat(result).hasSize(3); // All active customers
   }
 
@@ -402,23 +393,24 @@ class CustomerRepositoryTest {
     em.flush();
 
     var duplicates = repository.findPotentialDuplicates("Test Company");
-    
+
     assertThat(duplicates).hasSize(2); // GmbH and AG variants
-    assertThat(duplicates).extracting(Customer::getCompanyName)
+    assertThat(duplicates)
+        .extracting(Customer::getCompanyName)
         .containsExactlyInAnyOrder("Test Company GmbH", "Test Company AG");
   }
 
   @Test
   void findPotentialDuplicates_shouldReturnEmptyForNull() {
     var duplicates = repository.findPotentialDuplicates(null);
-    
+
     assertThat(duplicates).isEmpty();
   }
 
   @Test
   void findPotentialDuplicates_shouldReturnEmptyForBlank() {
     var duplicates = repository.findPotentialDuplicates("   ");
-    
+
     assertThat(duplicates).isEmpty();
   }
 
@@ -427,14 +419,14 @@ class CustomerRepositoryTest {
   @Test
   void countByStatus_shouldCountCorrectly() {
     long count = repository.countByStatus(CustomerStatus.AKTIV);
-    
+
     assertThat(count).isEqualTo(1);
   }
 
   @Test
   void countByLifecycleStage_shouldCountCorrectly() {
     long count = repository.countByLifecycleStage(CustomerLifecycleStage.GROWTH);
-    
+
     assertThat(count).isEqualTo(1);
   }
 
@@ -447,7 +439,7 @@ class CustomerRepositoryTest {
     em.flush();
 
     long count = repository.countNewThisMonth();
-    
+
     assertThat(count).isGreaterThanOrEqualTo(1); // At least the new customer
   }
 
@@ -460,7 +452,7 @@ class CustomerRepositoryTest {
     em.flush();
 
     long count = repository.countAtRisk(80);
-    
+
     assertThat(count).isEqualTo(1);
   }
 
@@ -473,7 +465,7 @@ class CustomerRepositoryTest {
     em.flush();
 
     long count = repository.countOverdueFollowUps();
-    
+
     assertThat(count).isEqualTo(1);
   }
 
@@ -488,7 +480,7 @@ class CustomerRepositoryTest {
     em.flush();
 
     var result = repository.findRecentlyCreated(7, null);
-    
+
     assertThat(result).isNotEmpty();
     assertThat(result).anyMatch(c -> c.getCompanyName().equals("Recent Company"));
   }
@@ -502,7 +494,7 @@ class CustomerRepositoryTest {
     em.flush();
 
     var result = repository.findRecentlyUpdated(1, null);
-    
+
     assertThat(result).isNotEmpty();
     assertThat(result).anyMatch(c -> c.getCompanyName().equals("Updated Test Company"));
   }
@@ -517,19 +509,18 @@ class CustomerRepositoryTest {
     em.flush();
 
     Integer maxNumber = repository.getMaxCustomerNumberForYear(2025);
-    
+
     assertThat(maxNumber).isEqualTo(99);
   }
 
   @Test
   void getMaxCustomerNumberForYear_shouldReturnNullForNoCustomers() {
     // Delete all customers for year 2026
-    em.createQuery("DELETE FROM Customer WHERE customerNumber LIKE 'KD-2026-%'")
-        .executeUpdate();
+    em.createQuery("DELETE FROM Customer WHERE customerNumber LIKE 'KD-2026-%'").executeUpdate();
     em.flush();
 
     Integer maxNumber = repository.getMaxCustomerNumberForYear(2026);
-    
+
     assertThat(maxNumber).isNull();
   }
 

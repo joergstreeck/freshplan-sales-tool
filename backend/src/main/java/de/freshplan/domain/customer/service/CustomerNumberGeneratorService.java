@@ -41,10 +41,11 @@ public class CustomerNumberGeneratorService {
     lock.lock();
     try {
       int currentYear = Year.now().getValue();
-      String yearPrefix = CustomerConstants.CUSTOMER_NUMBER_PREFIX + 
-                          CustomerConstants.CUSTOMER_NUMBER_SEPARATOR + 
-                          currentYear + 
-                          CustomerConstants.CUSTOMER_NUMBER_SEPARATOR;
+      String yearPrefix =
+          CustomerConstants.CUSTOMER_NUMBER_PREFIX
+              + CustomerConstants.CUSTOMER_NUMBER_SEPARATOR
+              + currentYear
+              + CustomerConstants.CUSTOMER_NUMBER_SEPARATOR;
 
       // Get the highest number for current year
       Integer maxNumber = customerRepository.getMaxCustomerNumberForYear(currentYear);
@@ -71,10 +72,11 @@ public class CustomerNumberGeneratorService {
   public String generateForYear(int year) {
     lock.lock();
     try {
-      String yearPrefix = CustomerConstants.CUSTOMER_NUMBER_PREFIX + 
-                          CustomerConstants.CUSTOMER_NUMBER_SEPARATOR + 
-                          year + 
-                          CustomerConstants.CUSTOMER_NUMBER_SEPARATOR;
+      String yearPrefix =
+          CustomerConstants.CUSTOMER_NUMBER_PREFIX
+              + CustomerConstants.CUSTOMER_NUMBER_SEPARATOR
+              + year
+              + CustomerConstants.CUSTOMER_NUMBER_SEPARATOR;
 
       // Get the highest number for specified year
       Integer maxNumber = customerRepository.getMaxCustomerNumberForYear(year);
