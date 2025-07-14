@@ -212,11 +212,17 @@ public class CustomerService {
    */
   @Transactional
   public CustomerResponse restoreCustomer(UUID id, String restoredBy) {
+    log.debug("Restoring customer with ID: {}", id);
+    
     // Find even deleted customers for restore operation
     Optional<Customer> customerOpt = customerRepository.findByIdOptional(id);
-    Customer customer = customerOpt.orElseThrow(() -> new CustomerNotFoundException(id));
+    Customer customer = customerOpt.orElseThrow(() -> {
+      log.error("Customer not found for restoration - ID: {}", id);
+      return new CustomerNotFoundException(id);
+    });
 
     if (!customer.getIsDeleted()) {
+      log.warn("Attempted to restore non-deleted customer - ID: {}", id);
       throw new IllegalStateException("Customer is not deleted: " + id);
     }
 
@@ -230,6 +236,9 @@ public class CustomerService {
     createTimelineEvent(
         customer, "CUSTOMER_RESTORED", "Kunde wiederhergestellt", restoredBy, ImportanceLevel.HIGH);
 
+    log.info("Customer restored successfully - ID: {}, Company: {}", 
+        customer.getId(), customer.getCompanyName());
+    
     return customerMapper.toResponse(customer);
   }
 
@@ -237,10 +246,15 @@ public class CustomerService {
 
   /** Gets all customers with pagination. */
   public CustomerListResponse getAllCustomers(int page, int size) {
+    log.debug("Fetching all customers - page: {}, size: {}", page, size);
+    
     Page pageRequest = Page.of(page, size);
     List<Customer> customers = customerRepository.findAllActive(pageRequest);
     long totalElements = customerRepository.countActive();
 
+    log.debug("Found {} customers (page {} of {})", 
+        customers.size(), page, (totalElements + size - 1) / size);
+    
     return customerMapper.toMinimalListResponse(customers, page, size, totalElements);
   }
 
@@ -249,6 +263,8 @@ public class CustomerService {
 
   /** Filters customers by status. */
   public CustomerListResponse getCustomersByStatus(CustomerStatus status, int page, int size) {
+    log.debug("Fetching customers by status - status: {}, page: {}, size: {}", status, page, size);
+    
     Page pageRequest = Page.of(page, size);
     List<Customer> customers = customerRepository.findByStatus(status, pageRequest);
     long totalElements = customerRepository.countByStatus(status);
@@ -256,6 +272,8 @@ public class CustomerService {
     List<CustomerResponse> customerResponses =
         customers.stream().map(this::mapToResponse).collect(Collectors.toList());
 
+    log.debug("Found {} customers with status {}", totalElements, status);
+    
     return CustomerListResponse.of(customerResponses, page, size, totalElements);
   }
 
@@ -288,6 +306,8 @@ public class CustomerService {
   /** Adds a child customer to a parent. */
   @Transactional
   public CustomerResponse addChildCustomer(UUID parentId, UUID childId, String updatedBy) {
+    log.debug("Adding child customer - parent: {}, child: {}", parentId, childId);
+    
     Customer parent =
         customerRepository
             .findByIdActive(parentId)
@@ -301,17 +321,24 @@ public class CustomerService {
 
     // Business rules
     if (child.getParentCustomer() != null) {
+      log.warn("Cannot add child - customer {} already has parent {}", 
+          childId, child.getParentCustomer().getId());
       throw new IllegalStateException("Customer already has a parent: " + childId);
     }
 
     // Prevent circular references
     if (isDescendant(parent, child)) {
+      log.error("Circular hierarchy detected - parent: {}, child: {}", parentId, childId);
       throw new IllegalStateException("Cannot create circular hierarchy");
     }
 
     child.setParentCustomer(parent);
     child.setUpdatedBy(updatedBy);
 
+    log.info("Child customer added successfully - parent: {} ({}), child: {} ({})", 
+        parent.getId(), parent.getCompanyName(), 
+        child.getId(), child.getCompanyName());
+    
     return mapToResponse(child);
   }
 
@@ -347,12 +374,25 @@ public class CustomerService {
    */
   @Transactional
   public void updateAllRiskScores() {
+    log.info("Starting risk score update for all customers");
+    
     List<Customer> allCustomers = customerRepository.findAllActive(Page.ofSize(1000));
+    int updatedCount = 0;
 
     for (Customer customer : allCustomers) {
+      int oldScore = customer.getRiskScore();
       customer.updateRiskScore();
+      
+      if (oldScore != customer.getRiskScore()) {
+        log.debug("Risk score updated for customer {} - old: {}, new: {}", 
+            customer.getId(), oldScore, customer.getRiskScore());
+        updatedCount++;
+      }
     }
 
+    log.info("Risk score update completed - {} customers updated out of {} total", 
+        updatedCount, allCustomers.size());
+    
     // Changes are automatically persisted due to @Transactional
   }
 
@@ -368,6 +408,8 @@ public class CustomerService {
   /** Merges two customers (keeps the target, deletes the source). */
   @Transactional
   public CustomerResponse mergeCustomers(UUID targetId, UUID sourceId, String mergedBy) {
+    log.info("Merging customers - target: {}, source: {}", targetId, sourceId);
+    
     Customer target =
         customerRepository
             .findByIdActive(targetId)
@@ -382,6 +424,7 @@ public class CustomerService {
 
     // Business rule: Cannot merge customer with children
     if (source.hasChildren()) {
+      log.warn("Cannot merge customer {} - has child customers", sourceId);
       throw new CustomerHasChildrenException(sourceId, "merge");
     }
 
@@ -408,6 +451,10 @@ public class CustomerService {
     source.setDeletedAt(LocalDateTime.now());
     source.setDeletedBy(mergedBy);
 
+    log.info("Customers merged successfully - target: {} ({}), source: {} ({}) deleted", 
+        target.getId(), target.getCompanyName(), 
+        source.getId(), source.getCompanyName());
+    
     return mapToResponse(target);
   }
 
@@ -417,6 +464,8 @@ public class CustomerService {
   @Transactional
   public CustomerResponse changeStatus(
       UUID customerId, CustomerStatus newStatus, String updatedBy) {
+    log.debug("Changing customer status - ID: {}, new status: {}", customerId, newStatus);
+    
     Customer customer =
         customerRepository
             .findByIdActive(customerId)
@@ -438,6 +487,9 @@ public class CustomerService {
         "Status geändert von " + oldStatus + " zu " + newStatus,
         updatedBy);
 
+    log.info("Customer status changed - ID: {}, Company: {}, Status: {} -> {}", 
+        customer.getId(), customer.getCompanyName(), oldStatus, newStatus);
+    
     return mapToResponse(customer);
   }
 
