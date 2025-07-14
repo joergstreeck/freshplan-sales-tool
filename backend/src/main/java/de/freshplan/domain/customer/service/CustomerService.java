@@ -73,6 +73,9 @@ public class CustomerService {
     if (request == null) {
       throw new IllegalArgumentException("CreateCustomerRequest cannot be null");
     }
+    if (createdBy == null || createdBy.trim().isEmpty()) {
+      throw new IllegalArgumentException("createdBy cannot be null or empty");
+    }
 
     // Check for potential duplicates by company name
     List<Customer> potentialDuplicates =
@@ -121,6 +124,11 @@ public class CustomerService {
   public CustomerResponse getCustomer(UUID id) {
     log.debug("Fetching customer with ID: {}", id);
     
+    // Null validation
+    if (id == null) {
+      throw new IllegalArgumentException("Customer ID cannot be null");
+    }
+    
     Customer customer =
         customerRepository.findByIdActive(id).orElseThrow(() -> {
           log.error("Customer not found with ID: {}", id);
@@ -144,6 +152,17 @@ public class CustomerService {
   public CustomerResponse updateCustomer(
       UUID id, @Valid UpdateCustomerRequest request, String updatedBy) {
     log.debug("Updating customer with ID: {}", id);
+    
+    // Null validation
+    if (id == null) {
+      throw new IllegalArgumentException("Customer ID cannot be null");
+    }
+    if (request == null) {
+      throw new IllegalArgumentException("UpdateCustomerRequest cannot be null");
+    }
+    if (updatedBy == null || updatedBy.trim().isEmpty()) {
+      throw new IllegalArgumentException("updatedBy cannot be null or empty");
+    }
 
     Customer customer =
         customerRepository.findByIdActive(id).orElseThrow(() -> {
@@ -172,6 +191,17 @@ public class CustomerService {
   @Transactional
   public void deleteCustomer(UUID id, String deletedBy, String reason) {
     log.debug("Deleting customer with ID: {} - Reason: {}", id, reason);
+    
+    // Null validation
+    if (id == null) {
+      throw new IllegalArgumentException("Customer ID cannot be null");
+    }
+    if (deletedBy == null || deletedBy.trim().isEmpty()) {
+      throw new IllegalArgumentException("deletedBy cannot be null or empty");
+    }
+    if (reason == null || reason.trim().isEmpty()) {
+      throw new IllegalArgumentException("reason cannot be null or empty");
+    }
     
     Customer customer =
         customerRepository.findByIdActive(id).orElseThrow(() -> {
@@ -213,6 +243,14 @@ public class CustomerService {
   @Transactional
   public CustomerResponse restoreCustomer(UUID id, String restoredBy) {
     log.debug("Restoring customer with ID: {}", id);
+    
+    // Null validation
+    if (id == null) {
+      throw new IllegalArgumentException("Customer ID cannot be null");
+    }
+    if (restoredBy == null || restoredBy.trim().isEmpty()) {
+      throw new IllegalArgumentException("restoredBy cannot be null or empty");
+    }
     
     // Find even deleted customers for restore operation
     Optional<Customer> customerOpt = customerRepository.findByIdOptional(id);
