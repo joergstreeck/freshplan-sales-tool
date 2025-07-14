@@ -24,6 +24,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Service layer for Customer management operations.
@@ -36,6 +38,8 @@ import java.util.stream.Collectors;
  */
 @ApplicationScoped
 public class CustomerService {
+
+  private static final Logger log = LoggerFactory.getLogger(CustomerService.class);
 
   private final CustomerRepository customerRepository;
   private final CustomerNumberGeneratorService numberGenerator;
@@ -63,6 +67,8 @@ public class CustomerService {
    */
   @Transactional
   public CustomerResponse createCustomer(@Valid CreateCustomerRequest request, String createdBy) {
+    log.debug("Creating new customer with company name: {}", request.companyName());
+    
     // Null validation
     if (request == null) {
       throw new IllegalArgumentException("CreateCustomerRequest cannot be null");
@@ -73,6 +79,8 @@ public class CustomerService {
         customerRepository.findPotentialDuplicates(request.companyName());
 
     if (!potentialDuplicates.isEmpty()) {
+      log.warn("Duplicate customer name detected: {} similar to existing: {}", 
+          request.companyName(), potentialDuplicates.get(0).getCompanyName());
       throw new CustomerAlreadyExistsException(
           "Customer with similar company name already exists: "
               + potentialDuplicates.get(0).getCompanyName(),
@@ -97,6 +105,9 @@ public class CustomerService {
         createdBy,
         ImportanceLevel.HIGH);
 
+    log.info("Customer created successfully - ID: {}, Number: {}, Company: {}", 
+        customer.getId(), customerNumber, customer.getCompanyName());
+    
     return customerMapper.toResponse(customer);
   }
 
@@ -108,9 +119,15 @@ public class CustomerService {
    * @throws CustomerNotFoundException if customer not found
    */
   public CustomerResponse getCustomer(UUID id) {
+    log.debug("Fetching customer with ID: {}", id);
+    
     Customer customer =
-        customerRepository.findByIdActive(id).orElseThrow(() -> new CustomerNotFoundException(id));
+        customerRepository.findByIdActive(id).orElseThrow(() -> {
+          log.error("Customer not found with ID: {}", id);
+          return new CustomerNotFoundException(id);
+        });
 
+    log.debug("Customer found: {} ({})", customer.getCompanyName(), customer.getCustomerNumber());
     return customerMapper.toResponse(customer);
   }
 
@@ -126,13 +143,20 @@ public class CustomerService {
   @Transactional
   public CustomerResponse updateCustomer(
       UUID id, @Valid UpdateCustomerRequest request, String updatedBy) {
+    log.debug("Updating customer with ID: {}", id);
 
     Customer customer =
-        customerRepository.findByIdActive(id).orElseThrow(() -> new CustomerNotFoundException(id));
+        customerRepository.findByIdActive(id).orElseThrow(() -> {
+          log.error("Customer not found for update - ID: {}", id);
+          return new CustomerNotFoundException(id);
+        });
 
     // Use mapper for update logic
     customerMapper.updateEntity(customer, request, updatedBy);
 
+    log.info("Customer updated successfully - ID: {}, Company: {}", 
+        customer.getId(), customer.getCompanyName());
+    
     return customerMapper.toResponse(customer);
   }
 
@@ -147,11 +171,17 @@ public class CustomerService {
    */
   @Transactional
   public void deleteCustomer(UUID id, String deletedBy, String reason) {
+    log.debug("Deleting customer with ID: {} - Reason: {}", id, reason);
+    
     Customer customer =
-        customerRepository.findByIdActive(id).orElseThrow(() -> new CustomerNotFoundException(id));
+        customerRepository.findByIdActive(id).orElseThrow(() -> {
+          log.error("Customer not found for deletion - ID: {}", id);
+          return new CustomerNotFoundException(id);
+        });
 
     // Business rule: Cannot delete customer with children
     if (customerRepository.hasChildren(id)) {
+      log.warn("Cannot delete customer {} - has child customers", id);
       throw new CustomerHasChildrenException(
           "Cannot delete customer with children. Delete children first.");
     }
@@ -168,6 +198,9 @@ public class CustomerService {
         "Kunde archiviert. Grund: " + reason,
         deletedBy,
         ImportanceLevel.HIGH);
+    
+    log.info("Customer deleted (soft delete) - ID: {}, Company: {}, Reason: {}", 
+        customer.getId(), customer.getCompanyName(), reason);
   }
 
   /**
