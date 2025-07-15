@@ -95,17 +95,18 @@ class CustomerServiceIntegrationTest {
   @TestTransaction
   @DisplayName("Should throw exception for duplicate customer")
   void createCustomer_withDuplicateCompanyName_shouldThrowException() {
-      // Given
-      customerService.createCustomer(validCreateRequest, "testuser");
+      // Given - Create first customer with specific name
+      CreateCustomerRequest firstRequest = 
+          new CreateCustomerRequest("Unique Hotel Name", CustomerType.UNTERNEHMEN);
+      customerService.createCustomer(firstRequest, "testuser");
 
-      // Create a similar request with the same company name
+      // When & Then - Try to create similar company name (triggers LIKE duplicate detection)
       CreateCustomerRequest duplicateRequest = 
-          new CreateCustomerRequest("Test Hotel GmbH", CustomerType.UNTERNEHMEN);
+          new CreateCustomerRequest("unique hotel name", CustomerType.UNTERNEHMEN);
 
-      // When & Then
       assertThatThrownBy(() -> customerService.createCustomer(duplicateRequest, "testuser"))
           .isInstanceOf(CustomerAlreadyExistsException.class)
-          .hasMessageContaining("Test Hotel GmbH");
+          .hasMessageContaining("Unique Hotel Name");
     }
 
   @Test
