@@ -98,8 +98,12 @@ class CustomerServiceIntegrationTest {
       // Given
       customerService.createCustomer(validCreateRequest, "testuser");
 
+      // Create a similar request with the same company name
+      CreateCustomerRequest duplicateRequest = 
+          new CreateCustomerRequest("Test Hotel GmbH", CustomerType.UNTERNEHMEN);
+
       // When & Then
-      assertThatThrownBy(() -> customerService.createCustomer(validCreateRequest, "testuser"))
+      assertThatThrownBy(() -> customerService.createCustomer(duplicateRequest, "testuser"))
           .isInstanceOf(CustomerAlreadyExistsException.class)
           .hasMessageContaining("Test Hotel GmbH");
     }
@@ -323,7 +327,7 @@ class CustomerServiceIntegrationTest {
       // When & Then
       assertThatThrownBy(() -> customerService.createCustomer(invalidRequest, "testuser"))
           .isInstanceOf(jakarta.validation.ConstraintViolationException.class)
-          .hasMessageContaining("Company name cannot be empty");
+          .hasMessageContaining("Company name is required");
     }
 
   @Test
@@ -337,7 +341,7 @@ class CustomerServiceIntegrationTest {
       // When & Then
       assertThatThrownBy(() -> customerService.createCustomer(invalidRequest, "testuser"))
           .isInstanceOf(jakarta.validation.ConstraintViolationException.class)
-          .hasMessageContaining("Customer type cannot be null");
+          .hasMessageContaining("Customer type is required");
   }
 
   @Test
@@ -403,7 +407,10 @@ class CustomerServiceIntegrationTest {
       // Then
       assertThat(result).isNotNull();
       assertThat(result.totalCustomers()).isEqualTo(1);
-      assertThat(result.activeCustomers()).isEqualTo(0); // LEAD status
+      assertThat(result.activeCustomers()).isEqualTo(0); // LEAD status is not AKTIV
       assertThat(result.newThisMonth()).isEqualTo(1);
+      // Basic validation - check that maps are not null
+      assertThat(result.customersByStatus()).isNotNull();
+      assertThat(result.customersByLifecycle()).isNotNull();
   }
 }
