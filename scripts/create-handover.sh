@@ -3,6 +3,11 @@
 # Simple handover creation script - minimal output to avoid crashes
 # This script creates a handover template and lets Claude fill it
 
+# Ensure we're in the right directory
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+cd "$PROJECT_ROOT"
+
 DATE=$(date +%Y-%m-%d)
 TIME=$(date +%H-%M)
 DATETIME=$(date +"%d.%m.%Y %H:%M")
@@ -14,8 +19,8 @@ mkdir -p "$HANDOVER_DIR"
 # Handover file
 HANDOVER_FILE="$HANDOVER_DIR/${DATE}_HANDOVER_${TIME}.md"
 
-# Check service status
-SERVICE_STATUS=$($HOME/freshplan-sales-tool/scripts/check-services.sh 2>&1 | tail -4 | head -3)
+# Check service status (relative path)
+SERVICE_STATUS=$(./scripts/check-services.sh 2>&1 | tail -4 | head -3 || echo "Service check failed")
 
 # Get Java and Node versions
 JAVA_VERSION=$(java -version 2>&1 | head -1 | cut -d'"' -f2)
@@ -70,14 +75,8 @@ cat > "$HANDOVER_FILE" << 'EOF'
 
 ## 📋 TODO-LISTE
 
-### ⚠️ TODO-STATUS FEHLT!
-**KRITISCH: Führe diese Schritte aus:**
-```bash
-1. ./scripts/todo-export.sh
-2. TodoRead in deiner Session
-3. Füge TODOs in .current-todos.md ein
-4. Führe ./scripts/create-handover.sh erneut aus
-```
+### ⚠️ TODO-STATUS WIRD VON CLAUDE EINGEFÜGT!
+**Claude:** Bitte führe `TodoRead` aus und füge die aktuelle TODO-Liste hier ein.
 
 ## 🔧 NÄCHSTE SCHRITTE
 [Von Claude ausfüllen - konkret mit Dateinamen und Befehlen]
@@ -148,8 +147,26 @@ if [ -f ".current-todos.md" ]; then
     
     echo "✅ TODOs wurden automatisch eingefügt!"
 else
-    echo "⚠️  WARNUNG: Keine .current-todos.md gefunden!"
-    echo "   Führe erst ./scripts/todo-export.sh aus!"
+    # Create a minimal TODO template that Claude can fill
+    TODO_START="## 📋 TODO-LISTE"
+    TODO_END="## 🔧 NÄCHSTE SCHRITTE"
+    
+    # Extract content before TODOs
+    sed -n "1,/${TODO_START}/p" "$HANDOVER_FILE" | sed '$d' > "${HANDOVER_FILE}.tmp"
+    
+    # Add placeholder for TODOs
+    echo "" >> "${HANDOVER_FILE}.tmp"
+    echo "### ⚠️ TODO-STATUS WIRD VON CLAUDE EINGEFÜGT!" >> "${HANDOVER_FILE}.tmp"
+    echo "**Claude:** Bitte führe \`TodoRead\` aus und füge die aktuelle TODO-Liste hier ein." >> "${HANDOVER_FILE}.tmp"
+    echo "" >> "${HANDOVER_FILE}.tmp"
+    
+    # Extract content after TODOs
+    sed -n "/${TODO_END}/,\$p" "$HANDOVER_FILE" >> "${HANDOVER_FILE}.tmp"
+    
+    # Replace original file
+    mv "${HANDOVER_FILE}.tmp" "$HANDOVER_FILE"
+    
+    echo "⚠️  TODOs müssen von Claude eingefügt werden!"
 fi
 
 # Simple output
@@ -163,8 +180,6 @@ echo "   - Current state and any issues"
 echo "   - Next steps for the next session"
 echo ""
 if [ ! -f ".current-todos.md" ]; then
-    echo "⚠️  KRITISCH: TODOs fehlen! Führe aus:"
-    echo "   1. ./scripts/todo-export.sh"
-    echo "   2. TodoRead und TODOs in .current-todos.md eintragen"
-    echo "   3. ./scripts/create-handover.sh erneut"
+    echo "⚠️  HINWEIS: TODOs müssen von Claude eingefügt werden!"
+    echo "   Claude sollte 'TodoRead' ausführen und die Liste in die Handover eintragen"
 fi
