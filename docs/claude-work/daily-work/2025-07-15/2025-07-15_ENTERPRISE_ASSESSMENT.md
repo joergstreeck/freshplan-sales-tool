@@ -131,7 +131,7 @@ Die PR4 Security Foundation erfüllt alle kritischen Enterprise-Anforderungen un
 | **Security Implementation** | Basic Auth | Keycloak+JWT+RBAC ✅ |
 | **Architecture Quality** | Monolith | Clean Architecture ✅ |
 | **Documentation** | Minimal | Comprehensive ✅ |
-| **Code Review Process** | Manual | Two-Pass Automated ✅ |
+| **Code Review Process** | Manual | Semi-Automated (Spotless + Manual) ✅ |
 | **CI/CD Maturity** | Basic | Advanced ✅ |
 
 ## 🎯 Fazit
