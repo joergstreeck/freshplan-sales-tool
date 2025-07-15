@@ -26,7 +26,6 @@ import {
 import { useState } from 'react';
 import { useFocusListStore } from '../store/focusListStore';
 import { 
-  SMART_SORT_OPTIONS, 
   getSmartSortById, 
   getSmartSortsByCategory,
   type SmartSortOption 
