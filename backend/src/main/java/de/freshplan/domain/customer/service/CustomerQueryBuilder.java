@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import org.jboss.logging.Logger;
 
 /**
@@ -272,17 +273,12 @@ public class CustomerQueryBuilder {
       return null;
     }
 
-    // Handle enum conversions
-    if ("status".equals(field) && value instanceof String) {
-      return CustomerStatus.valueOf((String) value);
-    }
-
-    if ("industry".equals(field) && value instanceof String) {
-      return Industry.valueOf((String) value);
-    }
-
-    if ("lifecycleStage".equals(field) && value instanceof String) {
-      return CustomerLifecycleStage.valueOf((String) value);
+    // Handle enum conversions using generic helper
+    if (value instanceof String stringValue) {
+      Object enumValue = convertStringToEnum(field, stringValue);
+      if (enumValue != null) {
+        return enumValue;
+      }
     }
 
     // Handle DateTime conversions for date/time fields
@@ -343,21 +339,40 @@ public class CustomerQueryBuilder {
       return list;
     }
 
-    // For status field, convert strings to enums
-    if ("status".equals(field) && list.get(0) instanceof String) {
-      return list.stream().map(item -> CustomerStatus.valueOf((String) item)).toList();
-    }
-
-    // For industry field, convert strings to enums
-    if ("industry".equals(field) && list.get(0) instanceof String) {
-      return list.stream().map(item -> Industry.valueOf((String) item)).toList();
-    }
-
-    // For lifecycleStage field, convert strings to enums
-    if ("lifecycleStage".equals(field) && list.get(0) instanceof String) {
-      return list.stream().map(item -> CustomerLifecycleStage.valueOf((String) item)).toList();
+    // Convert string lists to enums using generic helper
+    if (list.get(0) instanceof String) {
+      Function<String, Object> enumConverter = getEnumConverter(field);
+      if (enumConverter != null) {
+        return list.stream().map(item -> enumConverter.apply((String) item)).toList();
+      }
     }
 
     return list;
+  }
+
+  /**
+   * Converts a string value to the appropriate enum type based on field name. Returns null if the
+   * field doesn't require enum conversion.
+   */
+  private Object convertStringToEnum(String field, String value) {
+    return switch (field) {
+      case "status" -> CustomerStatus.valueOf(value);
+      case "industry" -> Industry.valueOf(value);
+      case "lifecycleStage" -> CustomerLifecycleStage.valueOf(value);
+      default -> null;
+    };
+  }
+
+  /**
+   * Returns a function that converts strings to the appropriate enum type for the given field.
+   * Returns null if the field doesn't require enum conversion.
+   */
+  private Function<String, Object> getEnumConverter(String field) {
+    return switch (field) {
+      case "status" -> CustomerStatus::valueOf;
+      case "industry" -> Industry::valueOf;
+      case "lifecycleStage" -> CustomerLifecycleStage::valueOf;
+      default -> null;
+    };
   }
 }
