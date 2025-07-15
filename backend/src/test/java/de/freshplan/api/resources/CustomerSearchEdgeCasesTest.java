@@ -21,7 +21,6 @@ import org.junit.jupiter.api.Test;
  * characters, null values, and other edge cases gracefully.
  */
 @QuarkusTest
-@TestHTTPEndpoint(CustomerSearchResource.class)
 @TestSecurity(
     user = "testuser",
     roles = {"admin", "manager", "sales"})
@@ -50,7 +49,7 @@ class CustomerSearchEdgeCasesTest {
           .contentType(ContentType.JSON)
           .body(request)
           .when()
-          .post()
+          .post("/api/customers/search")
           .then()
           .statusCode(200)
           .body("content", notNullValue())
@@ -73,7 +72,7 @@ class CustomerSearchEdgeCasesTest {
           .contentType(ContentType.JSON)
           .body(request)
           .when()
-          .post()
+          .post("/api/customers/search")
           .then()
           .statusCode(200)
           .body("content", notNullValue())
@@ -96,7 +95,7 @@ class CustomerSearchEdgeCasesTest {
           .contentType(ContentType.JSON)
           .body(request)
           .when()
-          .post()
+          .post("/api/customers/search")
           .then()
           .statusCode(200)
           .body("content", notNullValue())
@@ -119,7 +118,7 @@ class CustomerSearchEdgeCasesTest {
           .contentType(ContentType.JSON)
           .body(request)
           .when()
-          .post()
+          .post("/api/customers/search")
           .then()
           .statusCode(200)
           .body("content", notNullValue())
@@ -139,7 +138,7 @@ class CustomerSearchEdgeCasesTest {
           .queryParam("page", 0)
           .queryParam("size", 0)
           .when()
-          .post()
+          .post("/api/customers/search")
           .then()
           .statusCode(400);
     }
@@ -157,7 +156,7 @@ class CustomerSearchEdgeCasesTest {
           .queryParam("page", 0)
           .queryParam("size", 10000)
           .when()
-          .post()
+          .post("/api/customers/search")
           .then()
           .statusCode(anyOf(equalTo(200), equalTo(400))); // Depends on implementation limits
     }
@@ -175,7 +174,7 @@ class CustomerSearchEdgeCasesTest {
           .queryParam("page", 999999)
           .queryParam("size", 10)
           .when()
-          .post()
+          .post("/api/customers/search")
           .then()
           .statusCode(200)
           .body("content", hasSize(0))
@@ -202,7 +201,7 @@ class CustomerSearchEdgeCasesTest {
           .contentType(ContentType.JSON)
           .body(request)
           .when()
-          .post()
+          .post("/api/customers/search")
           .then()
           .statusCode(200)
           .body("content", notNullValue())
@@ -221,7 +220,7 @@ class CustomerSearchEdgeCasesTest {
           .contentType(ContentType.JSON)
           .body(request)
           .when()
-          .post()
+          .post("/api/customers/search")
           .then()
           .statusCode(200)
           .body("content", notNullValue())
@@ -240,7 +239,7 @@ class CustomerSearchEdgeCasesTest {
           .contentType(ContentType.JSON)
           .body(request)
           .when()
-          .post()
+          .post("/api/customers/search")
           .then()
           .statusCode(200)
           .body("content", notNullValue())
@@ -259,7 +258,7 @@ class CustomerSearchEdgeCasesTest {
           .contentType(ContentType.JSON)
           .body(request)
           .when()
-          .post()
+          .post("/api/customers/search")
           .then()
           .statusCode(200)
           .body("content", notNullValue())
@@ -279,7 +278,7 @@ class CustomerSearchEdgeCasesTest {
           .contentType(ContentType.JSON)
           .body(request)
           .when()
-          .post()
+          .post("/api/customers/search")
           .then()
           .statusCode(anyOf(equalTo(200), equalTo(400))); // Depends on validation
     }
@@ -296,7 +295,7 @@ class CustomerSearchEdgeCasesTest {
           .contentType(ContentType.JSON)
           .body(request)
           .when()
-          .post()
+          .post("/api/customers/search")
           .then()
           .statusCode(200)
           .body("content", notNullValue())
@@ -323,7 +322,7 @@ class CustomerSearchEdgeCasesTest {
           .contentType(ContentType.JSON)
           .body(request)
           .when()
-          .post()
+          .post("/api/customers/search")
           .then()
           .statusCode(200)
           .body("content", notNullValue())
@@ -342,7 +341,7 @@ class CustomerSearchEdgeCasesTest {
           .contentType(ContentType.JSON)
           .body(request)
           .when()
-          .post()
+          .post("/api/customers/search")
           .then()
           .statusCode(200)
           .body("content", notNullValue())
@@ -361,7 +360,7 @@ class CustomerSearchEdgeCasesTest {
           .contentType(ContentType.JSON)
           .body(request)
           .when()
-          .post()
+          .post("/api/customers/search")
           .then()
           .statusCode(200)
           .body("content", notNullValue())
@@ -380,7 +379,7 @@ class CustomerSearchEdgeCasesTest {
           .contentType(ContentType.JSON)
           .body(request)
           .when()
-          .post()
+          .post("/api/customers/search")
           .then()
           .statusCode(200)
           .body("content", notNullValue())
@@ -399,7 +398,7 @@ class CustomerSearchEdgeCasesTest {
           .contentType(ContentType.JSON)
           .body(request)
           .when()
-          .post()
+          .post("/api/customers/search")
           .then()
           .statusCode(200)
           .body("content", notNullValue())
@@ -422,7 +421,7 @@ class CustomerSearchEdgeCasesTest {
           .contentType(ContentType.JSON)
           .body(request)
           .when()
-          .post()
+          .post("/api/customers/search")
           .then()
           .statusCode(anyOf(equalTo(200), equalTo(400))); // Depends on validation
     }
@@ -443,7 +442,7 @@ class CustomerSearchEdgeCasesTest {
           .contentType(ContentType.JSON)
           .body(request)
           .when()
-          .post()
+          .post("/api/customers/search")
           .then()
           .statusCode(anyOf(equalTo(200), equalTo(400))); // Depends on validation
     }
@@ -472,7 +471,7 @@ class CustomerSearchEdgeCasesTest {
           .contentType(ContentType.JSON)
           .body(request)
           .when()
-          .post()
+          .post("/api/customers/search")
           .then()
           .statusCode(anyOf(equalTo(400), equalTo(500))); // Depends on validation
     }
@@ -493,7 +492,7 @@ class CustomerSearchEdgeCasesTest {
           .contentType(ContentType.JSON)
           .body(request)
           .when()
-          .post()
+          .post("/api/customers/search")
           .then()
           .statusCode(anyOf(equalTo(400), equalTo(500))); // Depends on validation
     }
@@ -510,7 +509,7 @@ class CustomerSearchEdgeCasesTest {
           .contentType(ContentType.JSON)
           .body(malformedJson)
           .when()
-          .post()
+          .post("/api/customers/search")
           .then()
           .statusCode(400);
     }
@@ -531,7 +530,7 @@ class CustomerSearchEdgeCasesTest {
           .contentType(ContentType.JSON)
           .body(request)
           .when()
-          .post()
+          .post("/api/customers/search")
           .then()
           .statusCode(anyOf(equalTo(200), equalTo(400))); // May return empty results or error
     }
@@ -559,7 +558,7 @@ class CustomerSearchEdgeCasesTest {
           .contentType(ContentType.JSON)
           .body(request1)
           .when()
-          .post()
+          .post("/api/customers/search")
           .then()
           .statusCode(200)
           .body("content", notNullValue());
@@ -568,7 +567,7 @@ class CustomerSearchEdgeCasesTest {
           .contentType(ContentType.JSON)
           .body(request2)
           .when()
-          .post()
+          .post("/api/customers/search")
           .then()
           .statusCode(200)
           .body("content", notNullValue());
@@ -591,7 +590,7 @@ class CustomerSearchEdgeCasesTest {
               .contentType(ContentType.JSON)
               .body(request)
               .when()
-              .post()
+              .post("/api/customers/search")
               .then()
               .statusCode(200)
               .body("content", notNullValue())
@@ -603,7 +602,7 @@ class CustomerSearchEdgeCasesTest {
               .contentType(ContentType.JSON)
               .body(request)
               .when()
-              .post()
+              .post("/api/customers/search")
               .then()
               .statusCode(200)
               .body("content", notNullValue())
@@ -634,7 +633,7 @@ class CustomerSearchEdgeCasesTest {
           .contentType(ContentType.JSON)
           .body(request)
           .when()
-          .post()
+          .post("/api/customers/search")
           .then()
           .statusCode(200)
           .body("content", notNullValue());
@@ -658,7 +657,7 @@ class CustomerSearchEdgeCasesTest {
           .queryParam("page", 0)
           .queryParam("size", 100) // Large but reasonable page size
           .when()
-          .post()
+          .post("/api/customers/search")
           .then()
           .statusCode(200)
           .body("content", notNullValue());
@@ -689,7 +688,7 @@ class CustomerSearchEdgeCasesTest {
             .contentType(ContentType.JSON)
             .body(request)
             .when()
-            .post()
+            .post("/api/customers/search")
             .then()
             .statusCode(200)
             .body("content", notNullValue());
