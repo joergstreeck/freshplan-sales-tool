@@ -9,6 +9,7 @@ import de.freshplan.domain.customer.service.dto.CustomerSearchRequest;
 import de.freshplan.domain.customer.service.dto.SmartSearchRequest;
 import de.freshplan.infrastructure.security.SecurityAudit;
 import de.freshplan.infrastructure.security.SecurityContextProvider;
+import de.freshplan.shared.constants.PaginationConstants;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
@@ -77,14 +78,14 @@ public class CustomerSearchResource {
           CustomerSearchRequest request,
       @Parameter(description = "Page number (0-based)", example = "0")
           @QueryParam("page")
-          @DefaultValue("0")
+          @DefaultValue(PaginationConstants.DEFAULT_PAGE_NUMBER_STRING)
           @Min(value = 0, message = "Page must be >= 0")
           int page,
       @Parameter(description = "Page size", example = "20")
           @QueryParam("size")
-          @DefaultValue("20")
+          @DefaultValue(PaginationConstants.DEFAULT_PAGE_SIZE_STRING)
           @Min(value = 1, message = "Size must be >= 1")
-          @Max(value = 100, message = "Size must be <= 100")
+          @Max(value = PaginationConstants.MAX_PAGE_SIZE, message = "Size must be <= " + PaginationConstants.MAX_PAGE_SIZE)
           int size) {
     LOG.infof("Customer search request received: page=%d, size=%d", page, size);
 
@@ -137,9 +138,9 @@ public class CustomerSearchResource {
           SmartSearchRequest request,
       @Parameter(description = "Page number (0-based)", example = "0")
           @QueryParam("page")
-          @DefaultValue("0")
+          @DefaultValue(PaginationConstants.DEFAULT_PAGE_NUMBER_STRING)
           int page,
-      @Parameter(description = "Page size", example = "20") @QueryParam("size") @DefaultValue("20")
+      @Parameter(description = "Page size", example = "20") @QueryParam("size") @DefaultValue(PaginationConstants.DEFAULT_PAGE_SIZE_STRING)
           int size) {
 
     LOG.infof(

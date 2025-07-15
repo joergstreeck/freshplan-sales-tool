@@ -1,57 +1,42 @@
-2025-07-15 21:29:15 INFO  [or.fl.co.FlywayExecutor] (Quarkus Main Thread) Database: jdbc:postgresql://localhost:5432/freshplan (PostgreSQL 15.13)
-2025-07-15 21:29:15 INFO  [or.fl.co.in.co.DbValidate] (Quarkus Main Thread) Successfully validated 15 migrations (execution time 00:00.008s)
-2025-07-15 21:29:15 INFO  [or.fl.co.in.co.DbMigrate] (Quarkus Main Thread) Current version of schema "public": 102
-2025-07-15 21:29:15 INFO  [or.fl.co.in.co.DbMigrate] (Quarkus Main Thread) Schema "public" is up to date. No migration necessary.
-2025-07-15 21:29:15 INFO  [de.fr.ap.CustomerDataInitializer] (Quarkus Main Thread) 🧪 Initializing comprehensive test data for edge case testing...
-2025-07-15 21:29:15 INFO  [de.fr.ap.CustomerDataInitializer] (Quarkus Main Thread) Creating normal business test cases...
-2025-07-15 21:29:15 INFO  [de.fr.ap.CustomerDataInitializer] (Quarkus Main Thread) Created hotel customer: Grand Hotel Berlin
-2025-07-15 21:29:15 INFO  [de.fr.ap.CustomerDataInitializer] (Quarkus Main Thread) Created restaurant customer: Bella Italia Restaurant
-2025-07-15 21:29:15 INFO  [de.fr.ap.CustomerDataInitializer] (Quarkus Main Thread) Created catering customer: Event Catering München GmbH
-2025-07-15 21:29:15 INFO  [de.fr.ap.CustomerDataInitializer] (Quarkus Main Thread) Created school customer: Städtische Grundschule Nord
-2025-07-15 21:29:15 INFO  [de.fr.ap.CustomerDataInitializer] (Quarkus Main Thread) Created event customer: Messe Frankfurt Event GmbH
-2025-07-15 21:29:15 INFO  [de.fr.ap.CustomerDataInitializer] (Quarkus Main Thread) Creating string boundary test cases...
-2025-07-15 21:29:15 INFO  [de.fr.ap.CustomerDataInitializer] (Quarkus Main Thread) ✅ String boundary tests created
-2025-07-15 21:29:15 INFO  [de.fr.ap.CustomerDataInitializer] (Quarkus Main Thread) Creating numeric edge case tests...
-2025-07-15 21:29:15 INFO  [de.fr.ap.CustomerDataInitializer] (Quarkus Main Thread) ✅ Numeric edge cases created
-2025-07-15 21:29:15 INFO  [de.fr.ap.CustomerDataInitializer] (Quarkus Main Thread) Creating date/time edge cases...
-2025-07-15 21:29:15 INFO  [de.fr.ap.CustomerDataInitializer] (Quarkus Main Thread) ✅ Date/time edge cases created
-2025-07-15 21:29:15 INFO  [de.fr.ap.CustomerDataInitializer] (Quarkus Main Thread) Creating enum boundary tests...
-2025-07-15 21:29:15 INFO  [de.fr.ap.CustomerDataInitializer] (Quarkus Main Thread) ✅ Enum boundary tests created
-2025-07-15 21:29:15 INFO  [de.fr.ap.CustomerDataInitializer] (Quarkus Main Thread) Creating business logic variation tests...
-2025-07-15 21:29:15 INFO  [de.fr.ap.CustomerDataInitializer] (Quarkus Main Thread) ✅ Business logic variations created
-2025-07-15 21:29:15 INFO  [de.fr.ap.CustomerDataInitializer] (Quarkus Main Thread) Creating unicode and special character tests...
-2025-07-15 21:29:15 INFO  [de.fr.ap.CustomerDataInitializer] (Quarkus Main Thread) ✅ Unicode and special character tests created
-2025-07-15 21:29:15 INFO  [de.fr.ap.CustomerDataInitializer] (Quarkus Main Thread) 🎯 Comprehensive test data initialized successfully! Total customers: 44
-2025-07-15 21:29:15 INFO  [de.fr.ap.CustomerDataInitializer] (Quarkus Main Thread) 💡 This covers all edge cases for thorough testing
-2025-07-15 21:29:15 INFO  [de.fr.in.se.SecurityConfig] (Quarkus Main Thread) === Security Configuration ===
-2025-07-15 21:29:15 INFO  [de.fr.in.se.SecurityConfig] (Quarkus Main Thread) OIDC Enabled: false
-2025-07-15 21:29:15 INFO  [de.fr.in.se.SecurityConfig] (Quarkus Main Thread) Auth Server URL: http://localhost:8180/realms/freshplan-realm
-2025-07-15 21:29:15 INFO  [de.fr.in.se.SecurityConfig] (Quarkus Main Thread) Client ID: freshplan-backend
-2025-07-15 21:29:15 WARN  [de.fr.in.se.SecurityConfig] (Quarkus Main Thread) ⚠️  Security is DISABLED! This should only be used in development.
-2025-07-15 21:29:15 INFO  [de.fr.in.se.SecurityConfig] (Quarkus Main Thread) === Available Security Roles ===
-2025-07-15 21:29:15 INFO  [de.fr.in.se.SecurityConfig] (Quarkus Main Thread) - admin: Full system access
-2025-07-15 21:29:15 INFO  [de.fr.in.se.SecurityConfig] (Quarkus Main Thread) - manager: Management functions
-2025-07-15 21:29:15 INFO  [de.fr.in.se.SecurityConfig] (Quarkus Main Thread) - sales: Sales operations
-2025-07-15 21:29:15 INFO  [de.fr.ap.DevDataInitializer] (Quarkus Main Thread) Initializing development data...
-2025-07-15 21:29:15 INFO  [de.fr.ap.DevDataInitializer] (Quarkus Main Thread) Created user: admin with roles: admin
-2025-07-15 21:29:15 INFO  [de.fr.ap.DevDataInitializer] (Quarkus Main Thread) Created user: manager with roles: manager
-2025-07-15 21:29:15 INFO  [de.fr.ap.DevDataInitializer] (Quarkus Main Thread) Created user: sales with roles: sales
-2025-07-15 21:29:15 INFO  [de.fr.ap.DevDataInitializer] (Quarkus Main Thread) Created user: max.mustermann with roles: sales
-2025-07-15 21:29:15 INFO  [de.fr.ap.DevDataInitializer] (Quarkus Main Thread) Created user: erika.musterfrau with roles: sales
-2025-07-15 21:29:15 INFO  [de.fr.ap.DevDataInitializer] (Quarkus Main Thread) Development data initialized successfully
-2025-07-15 21:29:15 INFO  [io.quarkus] (Quarkus Main Thread) backend 1.0.0-SNAPSHOT on JVM (powered by Quarkus 3.17.4) started in 1.060s. Listening on: http://localhost:8080
-2025-07-15 21:29:15 INFO  [io.quarkus] (Quarkus Main Thread) Profile dev activated. Live Coding activated.
-2025-07-15 21:29:15 INFO  [io.quarkus] (Quarkus Main Thread) Installed features: [agroal, cdi, flyway, hibernate-orm, hibernate-orm-panache, hibernate-validator, jdbc-h2, jdbc-postgresql, narayana-jta, oidc, rest, rest-jackson, security, smallrye-context-propagation, smallrye-health, smallrye-openapi, swagger-ui, vertx]
-2025-07-15 21:29:15 INFO  [io.qu.de.de.RuntimeUpdatesProcessor] (vert.x-worker-thread-41) Live reload total time: 1.215s 
-2025-07-15 21:31:01 INFO  [de.fr.ap.re.CustomerSearchResource] (executor-thread-1) Customer search request received: page=0, size=20
-2025-07-15 21:31:01 INFO  [de.fr.ap.re.CustomerSearchResource] (executor-thread-1) Search completed: found 44 customers
-2025-07-15 21:31:05 INFO  [de.fr.ap.re.CustomerSearchResource] (executor-thread-1) Customer search request received: page=0, size=20
-2025-07-15 21:31:05 INFO  [de.fr.ap.re.CustomerSearchResource] (executor-thread-1) Search completed: found 44 customers
-2025-07-15 21:32:03 INFO  [de.fr.ap.re.CustomerSearchResource] (executor-thread-1) Customer search request received: page=0, size=20
-2025-07-15 21:32:03 INFO  [de.fr.ap.re.CustomerSearchResource] (executor-thread-1) Search completed: found 0 customers
-2025-07-15 21:51:09 INFO  [de.fr.ap.re.CustomerSearchResource] (executor-thread-1) Customer search request received: page=0, size=20
-2025-07-15 21:51:09 INFO  [de.fr.ap.re.CustomerSearchResource] (executor-thread-1) Search completed: found 0 customers
-2025-07-15 21:51:14 INFO  [de.fr.ap.re.CustomerSearchResource] (executor-thread-1) Customer search request received: page=0, size=20
-2025-07-15 21:51:14 INFO  [de.fr.ap.re.CustomerSearchResource] (executor-thread-1) Search completed: found 0 customers
-2025-07-15 21:54:14 INFO  [de.fr.ap.re.CustomerSearchResource] (executor-thread-1) Customer search request received: page=0, size=20
-2025-07-15 21:54:14 INFO  [de.fr.ap.re.CustomerSearchResource] (executor-thread-1) Search completed: found 0 customers
+2025-07-15 22:47:36 INFO  [or.fl.co.FlywayExecutor] (Quarkus Main Thread) Database: jdbc:postgresql://localhost:5432/freshplan (PostgreSQL 15.13)
+2025-07-15 22:47:36 INFO  [or.fl.co.in.co.DbValidate] (Quarkus Main Thread) Successfully validated 15 migrations (execution time 00:00.007s)
+2025-07-15 22:47:36 INFO  [or.fl.co.in.co.DbMigrate] (Quarkus Main Thread) Current version of schema "public": 102
+2025-07-15 22:47:36 INFO  [or.fl.co.in.co.DbMigrate] (Quarkus Main Thread) Schema "public" is up to date. No migration necessary.
+2025-07-15 22:47:36 INFO  [de.fr.in.se.SecurityConfig] (Quarkus Main Thread) === Security Configuration ===
+2025-07-15 22:47:36 INFO  [de.fr.in.se.SecurityConfig] (Quarkus Main Thread) OIDC Enabled: false
+2025-07-15 22:47:36 INFO  [de.fr.in.se.SecurityConfig] (Quarkus Main Thread) Auth Server URL: http://localhost:8180/realms/freshplan-realm
+2025-07-15 22:47:36 INFO  [de.fr.in.se.SecurityConfig] (Quarkus Main Thread) Client ID: freshplan-backend
+2025-07-15 22:47:36 WARN  [de.fr.in.se.SecurityConfig] (Quarkus Main Thread) ⚠️  Security is DISABLED! This should only be used in development.
+2025-07-15 22:47:36 INFO  [de.fr.in.se.SecurityConfig] (Quarkus Main Thread) === Available Security Roles ===
+2025-07-15 22:47:36 INFO  [de.fr.in.se.SecurityConfig] (Quarkus Main Thread) - admin: Full system access
+2025-07-15 22:47:36 INFO  [de.fr.in.se.SecurityConfig] (Quarkus Main Thread) - manager: Management functions
+2025-07-15 22:47:36 INFO  [de.fr.in.se.SecurityConfig] (Quarkus Main Thread) - sales: Sales operations
+2025-07-15 22:47:36 INFO  [de.fr.ap.DevDataInitializer] (Quarkus Main Thread) Initializing development data...
+2025-07-15 22:47:36 INFO  [de.fr.ap.DevDataInitializer] (Quarkus Main Thread) Users already exist, skipping initialization
+2025-07-15 22:47:36 INFO  [de.fr.ap.CustomerDataInitializer] (Quarkus Main Thread) 🧪 Initializing comprehensive test data for edge case testing...
+2025-07-15 22:47:36 INFO  [de.fr.ap.CustomerDataInitializer] (Quarkus Main Thread) Found 44 existing customers, clearing for fresh test data...
+2025-07-15 22:47:36 INFO  [de.fr.ap.CustomerDataInitializer] (Quarkus Main Thread) Existing customers and related data cleared via SQL
+2025-07-15 22:47:36 INFO  [de.fr.ap.CustomerDataInitializer] (Quarkus Main Thread) Creating normal business test cases...
+2025-07-15 22:47:36 INFO  [de.fr.ap.CustomerDataInitializer] (Quarkus Main Thread) Created hotel customer: Grand Hotel Berlin
+2025-07-15 22:47:36 INFO  [de.fr.ap.CustomerDataInitializer] (Quarkus Main Thread) Created restaurant customer: Bella Italia Restaurant
+2025-07-15 22:47:36 INFO  [de.fr.ap.CustomerDataInitializer] (Quarkus Main Thread) Created catering customer: Event Catering München GmbH
+2025-07-15 22:47:36 INFO  [de.fr.ap.CustomerDataInitializer] (Quarkus Main Thread) Created school customer: Städtische Grundschule Nord
+2025-07-15 22:47:36 INFO  [de.fr.ap.CustomerDataInitializer] (Quarkus Main Thread) Created event customer: Messe Frankfurt Event GmbH
+2025-07-15 22:47:36 INFO  [de.fr.ap.CustomerDataInitializer] (Quarkus Main Thread) Creating string boundary test cases...
+2025-07-15 22:47:36 INFO  [de.fr.ap.CustomerDataInitializer] (Quarkus Main Thread) ✅ String boundary tests created
+2025-07-15 22:47:36 INFO  [de.fr.ap.CustomerDataInitializer] (Quarkus Main Thread) Creating numeric edge case tests...
+2025-07-15 22:47:36 INFO  [de.fr.ap.CustomerDataInitializer] (Quarkus Main Thread) ✅ Numeric edge cases created
+2025-07-15 22:47:36 INFO  [de.fr.ap.CustomerDataInitializer] (Quarkus Main Thread) Creating date/time edge cases...
+2025-07-15 22:47:36 INFO  [de.fr.ap.CustomerDataInitializer] (Quarkus Main Thread) ✅ Date/time edge cases created
+2025-07-15 22:47:36 INFO  [de.fr.ap.CustomerDataInitializer] (Quarkus Main Thread) Creating enum boundary tests...
+2025-07-15 22:47:36 INFO  [de.fr.ap.CustomerDataInitializer] (Quarkus Main Thread) ✅ Enum boundary tests created
+2025-07-15 22:47:36 INFO  [de.fr.ap.CustomerDataInitializer] (Quarkus Main Thread) Creating business logic variation tests...
+2025-07-15 22:47:36 INFO  [de.fr.ap.CustomerDataInitializer] (Quarkus Main Thread) ✅ Business logic variations created
+2025-07-15 22:47:36 INFO  [de.fr.ap.CustomerDataInitializer] (Quarkus Main Thread) Creating unicode and special character tests...
+2025-07-15 22:47:36 INFO  [de.fr.ap.CustomerDataInitializer] (Quarkus Main Thread) ✅ Unicode and special character tests created
+2025-07-15 22:47:36 INFO  [de.fr.ap.CustomerDataInitializer] (Quarkus Main Thread) 🎯 Comprehensive test data initialized successfully! Total customers: 44
+2025-07-15 22:47:36 INFO  [de.fr.ap.CustomerDataInitializer] (Quarkus Main Thread) 💡 This covers all edge cases for thorough testing
+2025-07-15 22:47:36 INFO  [io.quarkus] (Quarkus Main Thread) backend 1.0.0-SNAPSHOT on JVM (powered by Quarkus 3.17.4) started in 1.092s. Listening on: http://localhost:8080
+2025-07-15 22:47:36 INFO  [io.quarkus] (Quarkus Main Thread) Profile dev activated. Live Coding activated.
+2025-07-15 22:47:36 INFO  [io.quarkus] (Quarkus Main Thread) Installed features: [agroal, cdi, flyway, hibernate-orm, hibernate-orm-panache, hibernate-validator, jdbc-h2, jdbc-postgresql, narayana-jta, oidc, rest, rest-jackson, security, smallrye-context-propagation, smallrye-health, smallrye-openapi, swagger-ui, vertx]
+2025-07-15 22:47:36 INFO  [io.qu.de.de.RuntimeUpdatesProcessor] (vert.x-worker-thread-45) Live reload total time: 1.332s 

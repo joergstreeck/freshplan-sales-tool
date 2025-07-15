@@ -5,6 +5,7 @@ import de.freshplan.domain.user.service.dto.CreateUserRequest;
 import de.freshplan.domain.user.service.dto.UpdateUserRequest;
 import de.freshplan.domain.user.service.dto.UpdateUserRolesRequest;
 import de.freshplan.domain.user.service.dto.UserResponse;
+import de.freshplan.shared.constants.PaginationConstants;
 import io.quarkus.arc.profile.IfBuildProfile;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
@@ -32,8 +33,8 @@ public class DevUserResource {
 
   @GET
   public Response listUsers(
-      @QueryParam("page") @DefaultValue("0") int page,
-      @QueryParam("size") @DefaultValue("20") int size,
+      @QueryParam("page") @DefaultValue(PaginationConstants.DEFAULT_PAGE_NUMBER_STRING) int page,
+      @QueryParam("size") @DefaultValue(PaginationConstants.DEFAULT_PAGE_SIZE_STRING) int size,
       @QueryParam("search") String search,
       @QueryParam("enabledOnly") @DefaultValue("false") boolean enabledOnly) {
 

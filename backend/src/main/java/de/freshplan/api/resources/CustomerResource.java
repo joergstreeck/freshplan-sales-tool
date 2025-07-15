@@ -9,6 +9,8 @@ import de.freshplan.infrastructure.security.CurrentUser;
 import de.freshplan.infrastructure.security.SecurityAudit;
 import de.freshplan.infrastructure.security.SecurityContextProvider;
 import de.freshplan.infrastructure.security.UserPrincipal;
+import de.freshplan.shared.constants.PaginationConstants;
+import de.freshplan.shared.constants.RiskManagementConstants;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
@@ -126,14 +128,14 @@ public class CustomerResource {
    */
   @GET
   public Response getAllCustomers(
-      @QueryParam("page") @DefaultValue("0") int page,
-      @QueryParam("size") @DefaultValue("20") int size,
+      @QueryParam("page") @DefaultValue(PaginationConstants.DEFAULT_PAGE_NUMBER_STRING) int page,
+      @QueryParam("size") @DefaultValue(PaginationConstants.DEFAULT_PAGE_SIZE_STRING) int size,
       @QueryParam("status") CustomerStatus status,
       @QueryParam("industry") Industry industry) {
 
     // Validate pagination parameters
     if (page < 0) page = 0;
-    if (size <= 0 || size > 100) size = 20;
+    if (size > PaginationConstants.MAX_PAGE_SIZE) size = PaginationConstants.DEFAULT_PAGE_SIZE;
 
     CustomerListResponse customers;
 
@@ -176,9 +178,9 @@ public class CustomerResource {
   @GET
   @Path("/analytics/risk-assessment")
   public Response getCustomersAtRisk(
-      @QueryParam("minRiskScore") @DefaultValue("70") int minRiskScore,
+      @QueryParam("minRiskScore") @DefaultValue(RiskManagementConstants.DEFAULT_RISK_SCORE_STRING) int minRiskScore,
       @QueryParam("page") @DefaultValue("0") int page,
-      @QueryParam("size") @DefaultValue("20") int size) {
+      @QueryParam("size") @DefaultValue(PaginationConstants.DEFAULT_PAGE_SIZE_STRING) int size) {
 
     // Validate parameters
     if (page < 0) page = CustomerConstants.DEFAULT_PAGE_NUMBER;

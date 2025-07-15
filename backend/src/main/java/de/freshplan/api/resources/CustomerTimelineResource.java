@@ -4,6 +4,8 @@ import de.freshplan.domain.customer.service.CustomerTimelineService;
 import de.freshplan.domain.customer.service.dto.timeline.*;
 import de.freshplan.infrastructure.security.SecurityAudit;
 import de.freshplan.infrastructure.security.SecurityContextProvider;
+import de.freshplan.shared.constants.PaginationConstants;
+import de.freshplan.shared.constants.TimeConstants;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
@@ -66,9 +68,9 @@ public class CustomerTimelineResource {
   public Response getTimeline(
       @Parameter(description = "Customer ID", required = true) @PathParam("customerId")
           UUID customerId,
-      @Parameter(description = "Page number (0-based)") @QueryParam("page") @DefaultValue("0")
+      @Parameter(description = "Page number (0-based)") @QueryParam("page") @DefaultValue(PaginationConstants.DEFAULT_PAGE_NUMBER_STRING)
           int page,
-      @Parameter(description = "Page size") @QueryParam("size") @DefaultValue("20") int size,
+      @Parameter(description = "Page size") @QueryParam("size") @DefaultValue(PaginationConstants.DEFAULT_PAGE_SIZE_STRING) int size,
       @Parameter(description = "Filter by event category") @QueryParam("category") String category,
       @Parameter(description = "Search in title and description") @QueryParam("search")
           String search) {
@@ -215,7 +217,7 @@ public class CustomerTimelineResource {
           UUID customerId,
       @Parameter(description = "Number of days to look back")
           @QueryParam("days")
-          @DefaultValue("30")
+          @DefaultValue(TimeConstants.DEFAULT_LOOKBACK_DAYS_STRING)
           int days) {
 
     LOG.infof("Getting recent communications for customer %s (last %d days)", customerId, days);

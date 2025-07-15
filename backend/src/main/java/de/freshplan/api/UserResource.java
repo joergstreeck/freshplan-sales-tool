@@ -8,6 +8,7 @@ import de.freshplan.domain.user.service.dto.UpdateUserRolesRequest;
 import de.freshplan.domain.user.service.dto.UserResponse;
 import de.freshplan.infrastructure.security.SecurityAudit;
 import de.freshplan.infrastructure.security.SecurityContextProvider;
+import de.freshplan.shared.constants.PaginationConstants;
 import io.quarkus.arc.profile.UnlessBuildProfile;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
@@ -230,14 +231,14 @@ public class UserResource {
   public Response listUsers(
       @Parameter(description = "Page number (0-based)", example = "0")
           @QueryParam("page")
-          @DefaultValue("0")
+          @DefaultValue(PaginationConstants.DEFAULT_PAGE_NUMBER_STRING)
           @Min(0)
           int page,
       @Parameter(description = "Page size", example = "20")
           @QueryParam("size")
-          @DefaultValue("20")
-          @Min(1)
-          @Max(100)
+          @DefaultValue(PaginationConstants.DEFAULT_PAGE_SIZE_STRING)
+          @Min(PaginationConstants.MIN_PAGE_SIZE)
+          @Max(PaginationConstants.MAX_PAGE_SIZE)
           int size,
       @Parameter(description = "Search term (searches in username, name, email)")
           @QueryParam("search")
