@@ -140,7 +140,7 @@ public class CustomerSearchResource {
           @QueryParam("page")
           @DefaultValue(PaginationConstants.DEFAULT_PAGE_NUMBER_STRING)
           int page,
-      @Parameter(description = "Page size", example = "20") @QueryParam("size") @DefaultValue("20")
+      @Parameter(description = "Page size", example = "20") @QueryParam("size") @DefaultValue(PaginationConstants.DEFAULT_PAGE_SIZE_STRING)
           int size) {
 
     LOG.infof(

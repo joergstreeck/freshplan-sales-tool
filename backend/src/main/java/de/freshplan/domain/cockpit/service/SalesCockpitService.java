@@ -8,6 +8,7 @@ import de.freshplan.domain.user.entity.User;
 import de.freshplan.domain.user.repository.UserRepository;
 import de.freshplan.domain.user.service.exception.UserNotFoundException;
 import de.freshplan.shared.constants.RiskManagementConstants;
+import de.freshplan.shared.constants.TimeConstants;
 import io.quarkus.panache.common.Page;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -275,7 +276,7 @@ public class SalesCockpitService {
             .find(
                 "status = ?1 AND lastContactDate < ?2",
                 CustomerStatus.AKTIV,
-                LocalDateTime.now().minusDays(30))
+                LocalDateTime.now().minusDays(TimeConstants.DEFAULT_LOOKBACK_DAYS))
             .list();
 
     highValueCustomers.stream()
