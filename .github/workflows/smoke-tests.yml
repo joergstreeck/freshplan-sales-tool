@@ -102,6 +102,8 @@ jobs:
       
       - name: Run Playwright tests on ${{ matrix.browser }}
         run: cd frontend && npx playwright test --project=${{ matrix.browser }} --reporter=line
+        env:
+          CI: true
       # Upload diagnosis artifacts
       - name: Upload build diagnosis
         uses: actions/upload-artifact@v4
