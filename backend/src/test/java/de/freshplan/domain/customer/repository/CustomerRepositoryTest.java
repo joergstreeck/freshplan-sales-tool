@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -31,6 +32,16 @@ class CustomerRepositoryTest {
   private static final AtomicInteger customerCounter = new AtomicInteger(1);
 
   // Test data will be created in each test method for proper isolation
+
+  @BeforeEach
+  @Transactional
+  void setupCleanDatabase() {
+    // Clean database before each test to ensure proper isolation
+    // Delete timeline events first due to foreign key constraints
+    em.createQuery("DELETE FROM CustomerTimelineEvent").executeUpdate();
+    em.createQuery("DELETE FROM Customer").executeUpdate();
+    em.flush();
+  }
 
   @AfterEach
   @Transactional
