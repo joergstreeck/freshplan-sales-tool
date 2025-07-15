@@ -68,6 +68,7 @@ public class CustomerSearchService {
     private final int totalPages;
     private final boolean first;
     private final boolean last;
+    private final int numberOfElements;
 
     public PagedResponse(
         List<T> content,
@@ -84,6 +85,7 @@ public class CustomerSearchService {
       this.totalPages = totalPages;
       this.first = first;
       this.last = last;
+      this.numberOfElements = content != null ? content.size() : 0;
     }
 
     // Getters
@@ -113,6 +115,10 @@ public class CustomerSearchService {
 
     public boolean isLast() {
       return last;
+    }
+
+    public int getNumberOfElements() {
+      return numberOfElements;
     }
   }
 }

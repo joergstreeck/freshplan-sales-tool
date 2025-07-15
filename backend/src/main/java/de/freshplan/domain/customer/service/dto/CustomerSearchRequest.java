@@ -20,6 +20,8 @@ public class CustomerSearchRequest {
 
   @Valid private List<SortCriteria> multiSort = new ArrayList<>();
 
+  private LogicalOperator logicalOperator = LogicalOperator.AND;
+
   // Constructors
   public CustomerSearchRequest() {}
 
@@ -59,6 +61,14 @@ public class CustomerSearchRequest {
 
   public void setMultiSort(List<SortCriteria> multiSort) {
     this.multiSort = multiSort != null ? multiSort : new ArrayList<>();
+  }
+
+  public LogicalOperator getLogicalOperator() {
+    return logicalOperator;
+  }
+
+  public void setLogicalOperator(LogicalOperator logicalOperator) {
+    this.logicalOperator = logicalOperator != null ? logicalOperator : LogicalOperator.AND;
   }
 
   // Builder class
