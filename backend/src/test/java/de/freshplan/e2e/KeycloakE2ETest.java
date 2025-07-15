@@ -43,7 +43,8 @@ public class KeycloakE2ETest {
       if (!keycloakAvailable) {
         System.err.println(
             "⚠️  Keycloak is not running! Start it with: ./scripts/start-keycloak.sh");
-        System.err.println("Response: " + response.getStatusCode() + " - " + response.getBody().asString());
+        System.err.println(
+            "Response: " + response.getStatusCode() + " - " + response.getBody().asString());
       }
     } catch (Exception e) {
       System.err.println("⚠️  Cannot connect to Keycloak at " + KEYCLOAK_URL);

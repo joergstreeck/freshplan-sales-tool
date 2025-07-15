@@ -2,11 +2,11 @@ package de.freshplan.api;
 
 import de.freshplan.domain.customer.entity.*;
 import de.freshplan.domain.customer.repository.CustomerRepository;
+import de.freshplan.domain.customer.repository.CustomerTimelineRepository;
 import io.quarkus.arc.profile.IfBuildProfile;
 import io.quarkus.runtime.StartupEvent;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
-import jakarta.enterprise.event.Reception;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import java.math.BigDecimal;
@@ -30,18 +30,20 @@ public class CustomerDataInitializer {
   private static final Logger LOG = Logger.getLogger(CustomerDataInitializer.class);
 
   @Inject CustomerRepository customerRepository;
+  @Inject CustomerTimelineRepository timelineRepository;
 
   @Transactional
-  void onStart(@Observes(notifyObserver = Reception.IF_EXISTS) StartupEvent ev) {
+  void onStart(@Observes StartupEvent ev) {
     LOG.info("🧪 Initializing comprehensive test data for edge case testing...");
 
     // For comprehensive testing: Always recreate test data
-    // Clear existing customers first (except users)
+    // Clear existing data first (timeline events before customers due to FK constraints)
     long existingCount = customerRepository.count();
     if (existingCount > 0) {
       LOG.info("Found " + existingCount + " existing customers, clearing for fresh test data...");
-      customerRepository.deleteAll();
-      LOG.info("Existing customers cleared");
+      timelineRepository.deleteAll(); // Delete timeline events first
+      customerRepository.deleteAll(); // Then delete customers
+      LOG.info("Existing customers and timeline events cleared");
     }
 
     // 1. NORMAL BUSINESS CASES (Realistische Szenarien)

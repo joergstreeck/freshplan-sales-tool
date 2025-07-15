@@ -13,42 +13,126 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 /**
  * Comprehensive test suite for CustomerRepository. Tests all repository methods including soft
  * delete support, search functionality, hierarchy management, and specialized queries.
  */
-@QuarkusTest  
-@TestTransaction
+@QuarkusTest
 class CustomerRepositoryTest {
 
   @Inject CustomerRepository repository;
 
   @Inject EntityManager em;
 
-  private Customer testCustomer;
-  private Customer deletedCustomer;
-  private Customer parentCustomer;
-  private Customer childCustomer;
-  
   // Counter for unique customer numbers
   private static final AtomicInteger customerCounter = new AtomicInteger(1);
 
-  // Test data will be created in each test method instead of @BeforeEach
-  // to work properly with @TestTransaction
+  // Test data will be created in each test method for proper isolation
+
+  @AfterEach
+  @Transactional
+  void cleanupTestData() {
+    // Delete only test customers (those with KD-TEST- prefix)
+    em.createQuery("DELETE FROM Customer c WHERE c.customerNumber LIKE 'KD-TEST-%'")
+        .executeUpdate();
+    em.flush();
+  }
+
+  /**
+   * Creates standard test data set for tests that need multiple customers. Returns a TestDataSet
+   * with active, deleted, parent and child customers.
+   */
+  private TestDataSet createStandardTestData() {
+    Customer testCustomer = createTestCustomer("Test Company");
+    testCustomer.setStatus(CustomerStatus.AKTIV);
+    testCustomer.setLifecycleStage(CustomerLifecycleStage.GROWTH);
+    testCustomer.setIndustry(Industry.GESUNDHEITSWESEN);
+    testCustomer.setExpectedAnnualVolume(new BigDecimal("50000.00"));
+    repository.persist(testCustomer);
+
+    Customer deletedCustomer = createTestCustomer("Deleted Company");
+    deletedCustomer.setStatus(CustomerStatus.INAKTIV);
+    deletedCustomer.setIsDeleted(true);
+    repository.persist(deletedCustomer);
+
+    Customer parentCustomer = createTestCustomer("Parent Company");
+    parentCustomer.setStatus(CustomerStatus.AKTIV);
+    parentCustomer.setExpectedAnnualVolume(new BigDecimal("30000.00"));
+    repository.persist(parentCustomer);
+
+    Customer childCustomer = createTestCustomer("Child Company");
+    childCustomer.setStatus(CustomerStatus.AKTIV);
+    childCustomer.setParentCustomer(parentCustomer);
+    childCustomer.setExpectedAnnualVolume(new BigDecimal("20000.00"));
+    repository.persist(childCustomer);
+
+    em.flush();
+
+    return new TestDataSet(testCustomer, deletedCustomer, parentCustomer, childCustomer);
+  }
+
+  /** Creates a single customer with specific status for simple tests. */
+  private Customer createSingleCustomer(String name, CustomerStatus status) {
+    Customer customer = createTestCustomer(name);
+    customer.setStatus(status);
+    repository.persist(customer);
+    em.flush();
+    return customer;
+  }
+
+  /** Creates a customer with specific industry for industry-based tests. */
+  private Customer createCustomerWithIndustry(String name, Industry industry) {
+    Customer customer = createTestCustomer(name);
+    customer.setStatus(CustomerStatus.AKTIV);
+    customer.setIndustry(industry);
+    repository.persist(customer);
+    em.flush();
+    return customer;
+  }
+
+  /** Creates customers with specific expected volumes for volume-based tests. */
+  private Customer createCustomerWithVolume(String name, BigDecimal expectedVolume) {
+    Customer customer = createTestCustomer(name);
+    customer.setStatus(CustomerStatus.AKTIV);
+    customer.setExpectedAnnualVolume(expectedVolume);
+    repository.persist(customer);
+    em.flush();
+    return customer;
+  }
+
+  /** Helper class to hold test data */
+  private static class TestDataSet {
+    final Customer testCustomer;
+    final Customer deletedCustomer;
+    final Customer parentCustomer;
+    final Customer childCustomer;
+
+    TestDataSet(
+        Customer testCustomer,
+        Customer deletedCustomer,
+        Customer parentCustomer,
+        Customer childCustomer) {
+      this.testCustomer = testCustomer;
+      this.deletedCustomer = deletedCustomer;
+      this.parentCustomer = parentCustomer;
+      this.childCustomer = childCustomer;
+    }
+  }
 
   // ========== SOFT DELETE TESTS ==========
 
   @Test
+  @TestTransaction
   void findByIdActive_shouldReturnActiveCustomer() {
     // Create test customer
     Customer testCustomer = createTestCustomer("Test Company");
     testCustomer.setStatus(CustomerStatus.AKTIV);
     repository.persist(testCustomer);
     em.flush();
-    
+
     var result = repository.findByIdActive(testCustomer.getId());
 
     assertThat(result).isPresent();
@@ -57,14 +141,20 @@ class CustomerRepositoryTest {
   }
 
   @Test
+  @TestTransaction
   void findByIdActive_shouldNotReturnDeletedCustomer() {
-    var result = repository.findByIdActive(deletedCustomer.getId());
+    TestDataSet data = createStandardTestData();
+
+    var result = repository.findByIdActive(data.deletedCustomer.getId());
 
     assertThat(result).isEmpty();
   }
 
   @Test
+  @TestTransaction
   void findAllActive_shouldOnlyReturnActiveCustomers() {
+    TestDataSet data = createStandardTestData();
+
     var result = repository.findAllActive(null);
 
     assertThat(result).hasSize(3); // testCustomer, parentCustomer, childCustomer
@@ -75,24 +165,31 @@ class CustomerRepositoryTest {
   }
 
   @Test
+  @TestTransaction
   void countActive_shouldOnlyCountActiveCustomers() {
+    TestDataSet data = createStandardTestData();
+
     long count = repository.countActive();
 
-    assertThat(count).isEqualTo(3); // Excluding deleted customer
+    assertThat(count).isEqualTo(3); // testCustomer, parentCustomer, childCustomer
   }
 
   @Test
+  @TestTransaction
   void findDeleted_shouldOnlyReturnDeletedCustomers() {
+    TestDataSet data = createStandardTestData();
+
     var result = repository.findDeleted(null);
 
     assertThat(result).hasSize(1);
-    assertThat(result.get(0).getId()).isEqualTo(deletedCustomer.getId());
+    assertThat(result.get(0).getId()).isEqualTo(data.deletedCustomer.getId());
     assertThat(result.get(0).getIsDeleted()).isTrue();
   }
 
   // ========== RISK CUSTOMER QUERIES ==========
 
   @Test
+  @TestTransaction
   void findActiveCustomersWithoutRecentContact_shouldReturnCustomersWithOldContact() {
     // Create customer with no contact
     Customer noContactCustomer = createTestCustomer("No Contact Company");
@@ -128,11 +225,14 @@ class CustomerRepositoryTest {
   // ========== UNIQUE CONSTRAINTS ==========
 
   @Test
+  @TestTransaction
   void findByCustomerNumber_shouldReturnCorrectCustomer() {
-    var result = repository.findByCustomerNumber("KD-2025-00001");
+    TestDataSet data = createStandardTestData();
+
+    var result = repository.findByCustomerNumber(data.testCustomer.getCustomerNumber());
 
     assertThat(result).isPresent();
-    assertThat(result.get().getId()).isEqualTo(testCustomer.getId());
+    assertThat(result.get().getId()).isEqualTo(data.testCustomer.getId());
   }
 
   @Test
@@ -150,15 +250,21 @@ class CustomerRepositoryTest {
   }
 
   @Test
+  @TestTransaction
   void findByCustomerNumber_shouldNotReturnDeletedCustomer() {
-    var result = repository.findByCustomerNumber("KD-2025-00002");
+    TestDataSet data = createStandardTestData();
+
+    var result = repository.findByCustomerNumber(data.deletedCustomer.getCustomerNumber());
 
     assertThat(result).isEmpty();
   }
 
   @Test
+  @TestTransaction
   void existsByCustomerNumber_shouldReturnTrueForExisting() {
-    boolean exists = repository.existsByCustomerNumber("KD-2025-00001");
+    TestDataSet data = createStandardTestData();
+
+    boolean exists = repository.existsByCustomerNumber(data.testCustomer.getCustomerNumber());
 
     assertThat(exists).isTrue();
   }
@@ -180,16 +286,24 @@ class CustomerRepositoryTest {
   // ========== SEARCH & FILTERING ==========
 
   @Test
+  @TestTransaction
   void findByStatus_shouldReturnCustomersWithStatus() {
+    TestDataSet data = createStandardTestData();
+
     var result = repository.findByStatus(CustomerStatus.AKTIV, null);
 
-    assertThat(result).hasSize(1);
-    assertThat(result.get(0).getId()).isEqualTo(testCustomer.getId());
+    assertThat(result).hasSize(3); // testCustomer, parentCustomer, childCustomer
+    assertThat(result).extracting(Customer::getId).contains(data.testCustomer.getId());
   }
 
   @Test
+  @TestTransaction
   void findByStatusIn_shouldReturnCustomersWithAnyStatus() {
-    // Create customer with different status
+    // Create one AKTIV and one INAKTIV customer
+    Customer activeCustomer = createTestCustomer("Active Company");
+    activeCustomer.setStatus(CustomerStatus.AKTIV);
+    repository.persist(activeCustomer);
+
     Customer inactiveCustomer = createTestCustomer("Inactive Company");
     inactiveCustomer.setStatus(CustomerStatus.INAKTIV);
     repository.persist(inactiveCustomer);
@@ -219,33 +333,45 @@ class CustomerRepositoryTest {
   }
 
   @Test
+  @TestTransaction
   void findByLifecycleStage_shouldReturnCorrectCustomers() {
+    TestDataSet data = createStandardTestData();
+
     var result = repository.findByLifecycleStage(CustomerLifecycleStage.GROWTH, null);
 
     assertThat(result).hasSize(1);
-    assertThat(result.get(0).getId()).isEqualTo(testCustomer.getId());
+    assertThat(result.get(0).getId()).isEqualTo(data.testCustomer.getId());
   }
 
   @Test
+  @TestTransaction
   void findByIndustry_shouldReturnCorrectCustomers() {
+    TestDataSet data = createStandardTestData();
+
     var result = repository.findByIndustry(Industry.GESUNDHEITSWESEN, null);
 
     assertThat(result).hasSize(1);
-    assertThat(result.get(0).getId()).isEqualTo(testCustomer.getId());
+    assertThat(result.get(0).getId()).isEqualTo(data.testCustomer.getId());
   }
 
   // ========== HIERARCHY SUPPORT ==========
 
   @Test
+  @TestTransaction
   void findChildren_shouldReturnAllChildren() {
-    var children = repository.findChildren(parentCustomer.getId());
+    TestDataSet data = createStandardTestData();
+
+    var children = repository.findChildren(data.parentCustomer.getId());
 
     assertThat(children).hasSize(1);
-    assertThat(children.get(0).getId()).isEqualTo(childCustomer.getId());
+    assertThat(children.get(0).getId()).isEqualTo(data.childCustomer.getId());
   }
 
   @Test
+  @TestTransaction
   void findRootCustomers_shouldReturnCustomersWithoutParent() {
+    TestDataSet data = createStandardTestData();
+
     var roots = repository.findRootCustomers(null);
 
     assertThat(roots).hasSize(2); // testCustomer and parentCustomer
@@ -253,15 +379,21 @@ class CustomerRepositoryTest {
   }
 
   @Test
+  @TestTransaction
   void hasChildren_shouldReturnTrueForParentWithChildren() {
-    boolean hasChildren = repository.hasChildren(parentCustomer.getId());
+    TestDataSet data = createStandardTestData();
+
+    boolean hasChildren = repository.hasChildren(data.parentCustomer.getId());
 
     assertThat(hasChildren).isTrue();
   }
 
   @Test
+  @TestTransaction
   void hasChildren_shouldReturnFalseForCustomerWithoutChildren() {
-    boolean hasChildren = repository.hasChildren(testCustomer.getId());
+    TestDataSet data = createStandardTestData();
+
+    boolean hasChildren = repository.hasChildren(data.testCustomer.getId());
 
     assertThat(hasChildren).isFalse();
   }
@@ -269,6 +401,7 @@ class CustomerRepositoryTest {
   // ========== RISK MANAGEMENT ==========
 
   @Test
+  @TestTransaction
   void findAtRisk_shouldReturnHighRiskCustomers() {
     // Create high risk customer
     Customer highRiskCustomer = createTestCustomer("High Risk Company");
@@ -283,6 +416,7 @@ class CustomerRepositoryTest {
   }
 
   @Test
+  @TestTransaction
   void findOverdueFollowUps_shouldReturnOverdueCustomers() {
     // Create customer with overdue follow-up
     Customer overdueCustomer = createTestCustomer("Overdue Company");
@@ -297,6 +431,7 @@ class CustomerRepositoryTest {
   }
 
   @Test
+  @TestTransaction
   void findNotContactedSince_shouldReturnCustomersNotContacted() {
     // Create customer not contacted for long time
     Customer notContactedCustomer = createTestCustomer("Not Contacted Company");
@@ -313,7 +448,10 @@ class CustomerRepositoryTest {
   // ========== FINANCIAL QUERIES ==========
 
   @Test
+  @TestTransaction
   void findByExpectedVolumeRange_shouldReturnCustomersInRange() {
+    TestDataSet data = createStandardTestData();
+
     // Create customers with different volumes
     Customer lowVolumeCustomer = createTestCustomer("Low Volume Company");
     lowVolumeCustomer.setExpectedAnnualVolume(new BigDecimal("10000.00"));
@@ -328,14 +466,24 @@ class CustomerRepositoryTest {
         repository.findByExpectedVolumeRange(
             new BigDecimal("30000.00"), new BigDecimal("70000.00"), null);
 
-    assertThat(result).hasSize(1);
-    assertThat(result.get(0).getId()).isEqualTo(testCustomer.getId());
-    assertThat(result.get(0).getExpectedAnnualVolume())
-        .isBetween(new BigDecimal("30000.00"), new BigDecimal("70000.00"));
+    assertThat(result).hasSize(2); // testCustomer (50k) and parentCustomer (30k) both in range
+    // Both testCustomer and parentCustomer should be in the range
+    assertThat(result)
+        .extracting(Customer::getId)
+        .containsExactlyInAnyOrder(data.testCustomer.getId(), data.parentCustomer.getId());
+    // Verify all returned customers are in the expected range
+    assertThat(result)
+        .allSatisfy(
+            customer ->
+                assertThat(customer.getExpectedAnnualVolume())
+                    .isBetween(new BigDecimal("30000.00"), new BigDecimal("70000.00")));
   }
 
   @Test
+  @TestTransaction
   void findByExpectedVolumeRange_withOnlyMinVolume_shouldReturnCustomersAboveMin() {
+    TestDataSet data = createStandardTestData();
+
     var result = repository.findByExpectedVolumeRange(new BigDecimal("40000.00"), null, null);
 
     assertThat(result).hasSize(1);
@@ -344,14 +492,20 @@ class CustomerRepositoryTest {
   }
 
   @Test
+  @TestTransaction
   void findByExpectedVolumeRange_withOnlyMaxVolume_shouldReturnCustomersBelowMax() {
+    TestDataSet data = createStandardTestData();
+
     var result = repository.findByExpectedVolumeRange(null, new BigDecimal("60000.00"), null);
 
     assertThat(result).hasSize(3); // test, parent, child customers
   }
 
   @Test
+  @TestTransaction
   void findByExpectedVolumeRange_withNoBounds_shouldReturnAllActive() {
+    TestDataSet data = createStandardTestData();
+
     var result = repository.findByExpectedVolumeRange(null, null, null);
 
     assertThat(result).hasSize(3); // All active customers
@@ -360,6 +514,7 @@ class CustomerRepositoryTest {
   // ========== DUPLICATE DETECTION ==========
 
   @Test
+  @TestTransaction
   void findPotentialDuplicates_shouldFindSimilarNames() {
     // Create similar named companies
     Customer similarCustomer1 = createTestCustomer("Test Company GmbH");
@@ -394,20 +549,27 @@ class CustomerRepositoryTest {
   // ========== DASHBOARD QUERIES ==========
 
   @Test
+  @TestTransaction
   void countByStatus_shouldCountCorrectly() {
+    TestDataSet data = createStandardTestData();
+
     long count = repository.countByStatus(CustomerStatus.AKTIV);
 
-    assertThat(count).isEqualTo(1);
+    assertThat(count).isEqualTo(3); // testCustomer, parentCustomer, childCustomer
   }
 
   @Test
+  @TestTransaction
   void countByLifecycleStage_shouldCountCorrectly() {
+    TestDataSet data = createStandardTestData();
+
     long count = repository.countByLifecycleStage(CustomerLifecycleStage.GROWTH);
 
-    assertThat(count).isEqualTo(1);
+    assertThat(count).isEqualTo(1); // nur testCustomer hat GROWTH stage
   }
 
   @Test
+  @TestTransaction
   void countNewThisMonth_shouldCountRecentlyCreated() {
     // Create customer created today
     Customer newCustomer = createTestCustomer("New This Month Company");
@@ -421,6 +583,7 @@ class CustomerRepositoryTest {
   }
 
   @Test
+  @TestTransaction
   void countAtRisk_shouldCountHighRiskCustomers() {
     // Create high risk customer
     Customer highRiskCustomer = createTestCustomer("High Risk Company");
@@ -434,6 +597,7 @@ class CustomerRepositoryTest {
   }
 
   @Test
+  @TestTransaction
   void countOverdueFollowUps_shouldCountOverdue() {
     // Create overdue customer
     Customer overdueCustomer = createTestCustomer("Overdue Company");
@@ -449,6 +613,7 @@ class CustomerRepositoryTest {
   // ========== RECENT ACTIVITY ==========
 
   @Test
+  @TestTransaction
   void findRecentlyCreated_shouldReturnRecentCustomers() {
     // Create recent customer
     Customer recentCustomer = createTestCustomer("Recent Company");
@@ -463,11 +628,14 @@ class CustomerRepositoryTest {
   }
 
   @Test
+  @TestTransaction
   void findRecentlyUpdated_shouldReturnRecentlyUpdatedCustomers() {
+    TestDataSet data = createStandardTestData();
+
     // Update test customer
-    testCustomer.setCompanyName("Updated Test Company");
-    testCustomer.setUpdatedAt(LocalDateTime.now());
-    repository.persist(testCustomer);
+    data.testCustomer.setCompanyName("Updated Test Company");
+    data.testCustomer.setUpdatedAt(LocalDateTime.now());
+    repository.persist(data.testCustomer);
     em.flush();
 
     var result = repository.findRecentlyUpdated(1, null);
@@ -479,9 +647,11 @@ class CustomerRepositoryTest {
   // ========== UTILITY METHODS ==========
 
   @Test
+  @TestTransaction
   void getMaxCustomerNumberForYear_shouldReturnMaxNumber() {
     // Create customer with higher number
-    Customer highNumberCustomer = createTestCustomerWithNumber("High Number Company", "KD-2025-00099");
+    Customer highNumberCustomer =
+        createTestCustomerWithNumber("High Number Company", "KD-2025-00099");
     repository.persist(highNumberCustomer);
     em.flush();
 
@@ -491,6 +661,7 @@ class CustomerRepositoryTest {
   }
 
   @Test
+  @TestTransaction
   void getMaxCustomerNumberForYear_shouldReturnNullForNoCustomers() {
     // Delete all customers for year 2026
     em.createQuery("DELETE FROM Customer WHERE customerNumber LIKE 'KD-2026-%'").executeUpdate();
@@ -508,7 +679,8 @@ class CustomerRepositoryTest {
     // Don't set ID manually - let JPA generate it
     customer.setCompanyName(companyName);
     // Generate unique customer number
-    customer.setCustomerNumber("KD-TEST-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase());
+    customer.setCustomerNumber(
+        "KD-TEST-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase());
     customer.setIsDeleted(false);
     // Set required audit fields
     customer.setCreatedBy("test-user");
@@ -517,7 +689,7 @@ class CustomerRepositoryTest {
     customer.setUpdatedAt(LocalDateTime.now());
     return customer;
   }
-  
+
   // For special cases where customer number matters
   private Customer createTestCustomerWithNumber(String companyName, String customerNumber) {
     Customer customer = new Customer();

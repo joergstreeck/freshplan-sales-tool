@@ -37,9 +37,9 @@ class CustomerTimelineResourceIT {
   @BeforeEach
   @Transactional
   void setUp() {
-    // Clean up database
+    // Clean only test-specific data to preserve CustomerDataInitializer test customers
     timelineRepository.deleteAll();
-    customerRepository.deleteAll();
+    customerRepository.delete("customerNumber LIKE ?1", "IT-TEST-%");
   }
 
   @Transactional

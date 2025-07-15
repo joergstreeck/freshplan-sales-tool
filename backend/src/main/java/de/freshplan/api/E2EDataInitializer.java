@@ -40,7 +40,8 @@ public class E2EDataInitializer {
     LOG.info("E2E test data initialized successfully");
   }
 
-  private void createUser(String username, String firstName, String lastName, String email, String... roles) {
+  private void createUser(
+      String username, String firstName, String lastName, String email, String... roles) {
     User user = new User(username, firstName, lastName, email);
     user.setRoles(Arrays.asList(roles));
     userRepository.persist(user);
