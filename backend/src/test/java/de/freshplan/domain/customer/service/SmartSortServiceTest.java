@@ -26,7 +26,7 @@ class SmartSortServiceTest {
 
     // Then
     assertThat(result).hasSize(4);
-    assertThat(result.get(0).getField()).isEqualTo("atRisk");
+    assertThat(result.get(0).getField()).isEqualTo("riskScore");
     assertThat(result.get(0).getDirection()).isEqualTo("DESC");
     assertThat(result.get(1).getField()).isEqualTo("expectedAnnualVolume");
     assertThat(result.get(1).getDirection()).isEqualTo("DESC");
@@ -46,14 +46,14 @@ class SmartSortServiceTest {
 
     // Then
     assertThat(result).hasSize(4);
-    assertThat(result.get(0).getField()).isEqualTo("atRisk");
+    assertThat(result.get(0).getField()).isEqualTo("riskScore");
     assertThat(result.get(0).getDirection()).isEqualTo("DESC");
-    assertThat(result.get(1).getField()).isEqualTo("riskScore");
-    assertThat(result.get(1).getDirection()).isEqualTo("DESC");
-    assertThat(result.get(2).getField()).isEqualTo("lastContactDate");
-    assertThat(result.get(2).getDirection()).isEqualTo("ASC");
-    assertThat(result.get(3).getField()).isEqualTo("expectedAnnualVolume");
-    assertThat(result.get(3).getDirection()).isEqualTo("DESC");
+    assertThat(result.get(1).getField()).isEqualTo("lastContactDate");
+    assertThat(result.get(1).getDirection()).isEqualTo("ASC");
+    assertThat(result.get(2).getField()).isEqualTo("expectedAnnualVolume");
+    assertThat(result.get(2).getDirection()).isEqualTo("DESC");
+    assertThat(result.get(3).getField()).isEqualTo("companyName");
+    assertThat(result.get(3).getDirection()).isEqualTo("ASC");
   }
 
   @Test
@@ -70,7 +70,7 @@ class SmartSortServiceTest {
     assertThat(result.get(0).getDirection()).isEqualTo("ASC");
     assertThat(result.get(1).getField()).isEqualTo("lastContactDate");
     assertThat(result.get(1).getDirection()).isEqualTo("ASC");
-    assertThat(result.get(2).getField()).isEqualTo("atRisk");
+    assertThat(result.get(2).getField()).isEqualTo("riskScore");
     assertThat(result.get(2).getDirection()).isEqualTo("DESC");
     assertThat(result.get(3).getField()).isEqualTo("companyName");
     assertThat(result.get(3).getDirection()).isEqualTo("ASC");
@@ -108,7 +108,7 @@ class SmartSortServiceTest {
     assertThat(result).hasSize(4);
     assertThat(result.get(0).getField()).isEqualTo("lastContactDate");
     assertThat(result.get(0).getDirection()).isEqualTo("ASC");
-    assertThat(result.get(1).getField()).isEqualTo("atRisk");
+    assertThat(result.get(1).getField()).isEqualTo("riskScore");
     assertThat(result.get(1).getDirection()).isEqualTo("DESC");
     assertThat(result.get(2).getField()).isEqualTo("expectedAnnualVolume");
     assertThat(result.get(2).getDirection()).isEqualTo("DESC");
