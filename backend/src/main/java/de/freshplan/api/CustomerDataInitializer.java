@@ -45,13 +45,13 @@ public class CustomerDataInitializer {
       // Delete in dependency order: child tables first, then parent tables
       var em = customerRepository.getEntityManager();
       
-      // Security: Whitelist for allowed tables to prevent SQL injection
-      var allowedTables = java.util.Set.of(
-          "customer_timeline_events", "customer_contacts", "customer_locations", "customers");
-      
+      // Security: Define allowed tables for deletion (prevents SQL injection)
       var tablesToClear =
           java.util.List.of(
               "customer_timeline_events", "customer_contacts", "customer_locations", "customers");
+      
+      // Derive allowed tables from the clearing list to ensure consistency
+      var allowedTables = java.util.Set.copyOf(tablesToClear);
 
       for (String table : tablesToClear) {
         if (!allowedTables.contains(table)) {
