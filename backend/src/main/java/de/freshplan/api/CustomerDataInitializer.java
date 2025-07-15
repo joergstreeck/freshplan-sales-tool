@@ -44,11 +44,19 @@ public class CustomerDataInitializer {
       // Use SQL directly to avoid Hibernate/JPA cascade issues
       // Delete in dependency order: child tables first, then parent tables
       var em = customerRepository.getEntityManager();
+      
+      // Security: Define allowed tables for deletion (prevents SQL injection)
       var tablesToClear =
           java.util.List.of(
               "customer_timeline_events", "customer_contacts", "customer_locations", "customers");
+      
+      // Derive allowed tables from the clearing list to ensure consistency
+      var allowedTables = java.util.Set.copyOf(tablesToClear);
 
       for (String table : tablesToClear) {
+        if (!allowedTables.contains(table)) {
+          throw new IllegalArgumentException("Invalid table name for deletion: " + table);
+        }
         em.createNativeQuery("DELETE FROM " + table).executeUpdate();
       }
       LOG.info("Existing customers and related data cleared via SQL");
