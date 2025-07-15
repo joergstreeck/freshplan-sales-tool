@@ -37,13 +37,25 @@ public class CustomerDataInitializer {
     LOG.info("🧪 Initializing comprehensive test data for edge case testing...");
 
     // For comprehensive testing: Always recreate test data
-    // Clear existing data first (timeline events before customers due to FK constraints)
+    // Clear existing data - SQL-based cascade deletion approach
     long existingCount = customerRepository.count();
     if (existingCount > 0) {
       LOG.info("Found " + existingCount + " existing customers, clearing for fresh test data...");
-      timelineRepository.deleteAll(); // Delete timeline events first
-      customerRepository.deleteAll(); // Then delete customers
-      LOG.info("Existing customers and timeline events cleared");
+      // Use SQL directly to avoid Hibernate/JPA cascade issues
+      // Delete timeline events first, then customers
+      customerRepository.getEntityManager()
+          .createNativeQuery("DELETE FROM customer_timeline_events")
+          .executeUpdate();
+      customerRepository.getEntityManager()
+          .createNativeQuery("DELETE FROM customer_contacts")
+          .executeUpdate();
+      customerRepository.getEntityManager()
+          .createNativeQuery("DELETE FROM customer_locations")
+          .executeUpdate();
+      customerRepository.getEntityManager()
+          .createNativeQuery("DELETE FROM customers")
+          .executeUpdate();
+      LOG.info("Existing customers and related data cleared via SQL");
     }
 
     // 1. NORMAL BUSINESS CASES (Realistische Szenarien)
