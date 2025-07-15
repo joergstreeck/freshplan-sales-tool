@@ -2,17 +2,9 @@ name: Smoke Tests
 
 on:
   pull_request:
-    paths:
-      - "frontend/src/**"
-      - "frontend/tests/**"
-      - ".github/workflows/smoke-tests.yml"
   push:
     branches:
-      - ci-mail-throttle  # Für Testzwecke
-    paths:
-      - "frontend/src/**"
-      - "frontend/tests/**"
-      - ".github/workflows/smoke-tests.yml"
+      - ci-mail-throttle
 
 jobs:
   playwright:
