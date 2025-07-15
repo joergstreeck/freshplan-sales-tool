@@ -10,7 +10,7 @@ import java.util.List;
  * Request DTO for updating user roles.
  *
  * <p>This class validates that roles are provided and contain only allowed values: admin, manager,
- * sales, viewer.
+ * sales.
  *
  * @author FreshPlan Team
  * @since 2.0.0

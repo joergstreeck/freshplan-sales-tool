@@ -16,7 +16,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 @QuarkusTest
 @TestSecurity(
     user = "testuser",
-    roles = {"admin", "manager", "sales", "viewer"})
+    roles = {"admin", "manager", "sales"})
 class CalculatorServiceTest {
 
   @Inject CalculatorService calculatorService;

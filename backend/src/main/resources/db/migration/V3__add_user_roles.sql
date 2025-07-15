@@ -17,9 +17,9 @@ SELECT id,
         WHEN username = 'admin' THEN 'admin'
         WHEN username = 'manager' THEN 'manager'
         WHEN username = 'sales' THEN 'sales'
-        ELSE 'viewer'  -- Default role for other users
+        ELSE 'sales'  -- Default role for other users
     END
 FROM app_user;
 
 -- Add comment
-COMMENT ON TABLE user_roles IS 'Roles assigned to users (admin, manager, sales, viewer)';
+COMMENT ON TABLE user_roles IS 'Roles assigned to users (admin, manager, sales)';

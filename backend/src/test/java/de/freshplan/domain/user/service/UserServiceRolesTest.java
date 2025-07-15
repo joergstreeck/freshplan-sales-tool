@@ -118,7 +118,7 @@ class UserServiceRolesTest {
         .hasMessageContaining("admin")
         .hasMessageContaining("manager")
         .hasMessageContaining("sales")
-        .hasMessageContaining("viewer");
+        .hasMessageContaining("invalid_role");
 
     verify(userRepository).findByIdOptional(userId);
     verify(userRepository, never()).flush();

@@ -32,7 +32,6 @@ const availableRoles = [
   { value: 'admin', label: 'Administrator' },
   { value: 'manager', label: 'Manager' },
   { value: 'sales', label: 'Vertrieb' },
-  { value: 'viewer', label: 'Betrachter' },
 ];
 
 export const UserFormMUI = ({ user, onSuccess, onCancel }: UserFormProps) => {
@@ -60,7 +59,7 @@ export const UserFormMUI = ({ user, onSuccess, onCancel }: UserFormProps) => {
           lastName: '',
           email: '',
           password: '',
-          roles: ['viewer'],
+          roles: ['sales'],
         },
   });
 

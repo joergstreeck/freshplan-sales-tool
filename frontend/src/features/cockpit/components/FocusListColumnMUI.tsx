@@ -26,8 +26,11 @@ import { useFocusListStore } from '../../customer/store/focusListStore';
 import { useCustomerSearch } from '../../customer/hooks/useCustomerSearch';
 import { FilterBar } from '../../customer/components/FilterBar';
 import { CustomerCard } from '../../customer/components/CustomerCard';
+import { SmartSortSelector } from '../../customer/components/SmartSortSelector';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { format } from 'date-fns';
 import { de } from 'date-fns/locale';
 
@@ -36,8 +39,15 @@ interface FocusListColumnMUIProps {
 }
 
 export function FocusListColumnMUI({ onCustomerSelect }: FocusListColumnMUIProps = {}) {
-  const { searchCriteria, viewMode, selectedCustomerId, setSelectedCustomer, visibleTableColumns } =
-    useFocusListStore();
+  const { 
+    searchCriteria, 
+    viewMode, 
+    selectedCustomerId, 
+    setSelectedCustomer, 
+    visibleTableColumns,
+    setPage,
+    setPageSize 
+  } = useFocusListStore();
   // useAuth(); // userId wird aktuell nicht genutzt
 
   // Customer Search Query mit den Filtern aus dem Store
@@ -179,21 +189,35 @@ export function FocusListColumnMUI({ onCustomerSelect }: FocusListColumnMUIProps
 
   return (
     <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-      {/* Header */}
+      {/* Kompakter Header - alles in einer Zeile */}
       <Box
         sx={{
-          p: 2,
+          p: 1.5,
           borderBottom: 1,
           borderColor: 'divider',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: 2,
+          minHeight: 64,
         }}
       >
-        <Typography variant="h6" sx={{ color: 'primary.main' }}>
-          Arbeitsliste
-        </Typography>
+        {/* Links: Titel + Sortierung */}
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flex: 1 }}>
+          <Typography variant="h6" sx={{ color: 'primary.main', whiteSpace: 'nowrap' }}>
+            Arbeitsliste
+          </Typography>
+          <SmartSortSelector variant="compact" showDescription={false} />
+        </Box>
+        
+        {/* Rechts: Refresh Button */}
+        <IconButton size="small" onClick={() => refetch()}>
+          <RefreshIcon />
+        </IconButton>
       </Box>
 
-      {/* Filter Bar */}
-      <Box sx={{ p: 2, borderBottom: 1, borderColor: 'divider' }}>
+      {/* Filter Bar - kompakter */}
+      <Box sx={{ px: 1.5, py: 1, borderBottom: 1, borderColor: 'divider' }}>
         <FilterBar />
       </Box>
 
@@ -314,12 +338,76 @@ export function FocusListColumnMUI({ onCustomerSelect }: FocusListColumnMUIProps
               </TableContainer>
             )}
 
-            {/* Pagination Info */}
+            {/* Pagination Controls - Responsive Layout */}
             {searchResults.totalPages > 1 && (
-              <Box sx={{ mt: 3, textAlign: 'center' }}>
-                <Typography variant="caption" color="text.secondary">
-                  Seite {searchResults.number + 1} von {searchResults.totalPages}
-                </Typography>
+              <Box 
+                sx={{ 
+                  mt: 3, 
+                  display: 'flex', 
+                  flexDirection: { xs: 'column', sm: 'column', md: 'row' },
+                  justifyContent: 'space-between', 
+                  alignItems: { xs: 'stretch', sm: 'stretch', md: 'center' },
+                  gap: 2
+                }}
+              >
+                {/* Page Navigation */}
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, justifyContent: 'center' }}>
+                  <IconButton
+                    size="small"
+                    disabled={searchResults.first}
+                    onClick={() => setPage(searchResults.page - 1)}
+                    sx={{ 
+                      border: 1, 
+                      borderColor: 'divider',
+                      '&:hover': { borderColor: 'primary.main' }
+                    }}
+                  >
+                    <ChevronLeftIcon />
+                  </IconButton>
+                  
+                  <Typography variant="body2" sx={{ mx: 1, whiteSpace: 'nowrap' }}>
+                    {searchResults.page + 1} / {searchResults.totalPages}
+                  </Typography>
+                  
+                  <IconButton
+                    size="small"
+                    disabled={searchResults.last}
+                    onClick={() => setPage(searchResults.page + 1)}
+                    sx={{ 
+                      border: 1, 
+                      borderColor: 'divider',
+                      '&:hover': { borderColor: 'primary.main' }
+                    }}
+                  >
+                    <ChevronRightIcon />
+                  </IconButton>
+                </Box>
+
+                {/* Page Size Selector - Kompakt */}
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, justifyContent: 'center' }}>
+                  <Typography variant="caption" color="text.secondary" sx={{ mr: 1 }}>
+                    pro Seite:
+                  </Typography>
+                  {[10, 20, 50].map(size => (
+                    <IconButton
+                      key={size}
+                      size="small"
+                      onClick={() => setPageSize(size)}
+                      sx={{ 
+                        minWidth: 32,
+                        height: 32,
+                        fontSize: '0.875rem',
+                        color: searchResults.size === size ? 'primary.main' : 'text.secondary',
+                        backgroundColor: searchResults.size === size ? 'action.selected' : 'transparent',
+                        '&:hover': {
+                          backgroundColor: searchResults.size === size ? 'action.selected' : 'action.hover'
+                        }
+                      }}
+                    >
+                      {size}
+                    </IconButton>
+                  ))}
+                </Box>
               </Box>
             )}
 

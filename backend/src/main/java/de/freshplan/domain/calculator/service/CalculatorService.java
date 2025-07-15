@@ -5,10 +5,14 @@ import de.freshplan.domain.calculator.service.dto.CalculatorResponse;
 import jakarta.enterprise.context.ApplicationScoped;
 import java.util.Arrays;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** Service for discount calculations based on FreshPlan business rules. */
 @ApplicationScoped
 public class CalculatorService {
+
+  private static final Logger log = LoggerFactory.getLogger(CalculatorService.class);
 
   // Business rules from FreshPlan documentation (freshplan_summary.md)
   // Basisrabatt je Einzelbestellung (netto)
@@ -38,6 +42,23 @@ public class CalculatorService {
 
   /** Calculate discount based on input parameters. */
   public CalculatorResponse calculate(CalculatorRequest request) {
+    // Defensive validation
+    if (request == null) {
+      throw new IllegalArgumentException("CalculatorRequest cannot be null");
+    }
+    if (request.getOrderValue() < 0) {
+      throw new IllegalArgumentException("Order value cannot be negative");
+    }
+    if (request.getLeadTime() < 0) {
+      throw new IllegalArgumentException("Lead time cannot be negative");
+    }
+
+    log.debug(
+        "Calculating discount for order value: {}, lead time: {} days, pickup: {}, chain: {}",
+        request.getOrderValue(),
+        request.getLeadTime(),
+        request.getPickup(),
+        request.getChain());
     // Calculate individual discounts
     double baseDiscount = calculateBaseDiscount(request.getOrderValue());
     double earlyDiscount = calculateEarlyBookingDiscount(request.getLeadTime());
@@ -54,23 +75,31 @@ public class CalculatorService {
     double finalPrice = request.getOrderValue() - discountAmount;
     double savingsAmount = discountAmount; // Same as discount amount for now
 
-    return CalculatorResponse.builder()
-        .orderValue(request.getOrderValue())
-        .leadTime(request.getLeadTime())
-        .pickup(request.getPickup())
-        .chain(request.getChain())
-        .baseDiscount(baseDiscount)
-        .earlyDiscount(earlyDiscount)
-        .pickupDiscount(pickupDiscount)
-        .chainDiscount(chainDiscount)
-        .totalDiscount(totalDiscount)
-        .discountAmount(discountAmount)
-        .savingsAmount(savingsAmount)
-        .finalPrice(finalPrice)
-        .build();
+    CalculatorResponse response =
+        CalculatorResponse.builder()
+            .orderValue(request.getOrderValue())
+            .leadTime(request.getLeadTime())
+            .pickup(request.getPickup())
+            .chain(request.getChain())
+            .baseDiscount(baseDiscount)
+            .earlyDiscount(earlyDiscount)
+            .pickupDiscount(pickupDiscount)
+            .chainDiscount(chainDiscount)
+            .totalDiscount(totalDiscount)
+            .discountAmount(discountAmount)
+            .savingsAmount(savingsAmount)
+            .finalPrice(finalPrice)
+            .build();
+
+    log.info(
+        "Discount calculation completed - Order: {}€, Total discount: {}%, Final price: {}€",
+        request.getOrderValue(), totalDiscount, finalPrice);
+
+    return response;
   }
 
   private double calculateBaseDiscount(double orderValue) {
+    log.trace("Calculating base discount for order value: {}€", orderValue);
     for (DiscountRule rule : BASE_RULES) {
       if (orderValue >= rule.minAmount) {
         return rule.discount;
@@ -80,6 +109,7 @@ public class CalculatorService {
   }
 
   private double calculateEarlyBookingDiscount(int leadTime) {
+    log.trace("Calculating early booking discount for {} days lead time", leadTime);
     for (EarlyBookingRule rule : EARLY_BOOKING_RULES) {
       if (leadTime >= rule.days) {
         return rule.discount;
@@ -89,6 +119,7 @@ public class CalculatorService {
   }
 
   private double calculatePickupDiscount(boolean pickup, double orderValue) {
+    log.trace("Calculating pickup discount - pickup: {}, order value: {}€", pickup, orderValue);
     if (pickup && orderValue >= PICKUP_MIN_ORDER_VALUE) {
       return PICKUP_DISCOUNT;
     }

@@ -72,8 +72,7 @@ class RoleValidatorTest {
   }
 
   @ParameterizedTest
-  @ValueSource(
-      strings = {"admin", "manager", "sales", "viewer", "ADMIN", "Manager", "SALES", "VIEWER"})
+  @ValueSource(strings = {"admin", "manager", "sales", "ADMIN", "Manager", "SALES"})
   void isValidRole_withValidRoles_shouldReturnTrue(String role) {
     // When
     boolean result = RoleValidator.isValidRole(role);
@@ -108,9 +107,7 @@ class RoleValidatorTest {
     var allowedRoles = RoleValidator.getAllowedRoles();
 
     // Then
-    assertThat(allowedRoles)
-        .hasSize(4)
-        .containsExactlyInAnyOrder("admin", "manager", "sales", "viewer");
+    assertThat(allowedRoles).hasSize(3).containsExactlyInAnyOrder("admin", "manager", "sales");
   }
 
   @Test

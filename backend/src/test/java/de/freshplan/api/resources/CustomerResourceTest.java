@@ -245,7 +245,7 @@ class CustomerResourceTest {
 
     @Test
     @TestSecurity(
-        user = "system",
+        user = "testuser",
         roles = {"admin", "manager", "sales"})
     @DisplayName("PUT /api/customers/{id} - Should update customer")
     void updateCustomer_withValidRequest_shouldReturn200() {
@@ -254,7 +254,7 @@ class CustomerResourceTest {
       when(customerService.updateCustomer(
               eq(customerId),
               org.mockito.ArgumentMatchers.any(UpdateCustomerRequest.class),
-              eq("system")))
+              eq("testuser")))
           .thenReturn(customerResponse);
 
       // When & Then
@@ -271,19 +271,19 @@ class CustomerResourceTest {
           .updateCustomer(
               eq(customerId),
               org.mockito.ArgumentMatchers.any(UpdateCustomerRequest.class),
-              eq("system"));
+              eq("testuser"));
     }
 
     @Test
     @TestSecurity(
-        user = "system",
+        user = "testuser",
         roles = {"admin", "manager", "sales"})
     @DisplayName("DELETE /api/customers/{id} - Should soft delete customer")
     void deleteCustomer_withValidId_shouldReturn204() {
       // Given
       UUID customerId = UUID.randomUUID();
       String reason = "Test deletion";
-      doNothing().when(customerService).deleteCustomer(customerId, "system", reason);
+      doNothing().when(customerService).deleteCustomer(customerId, "testuser", reason);
 
       // When & Then
       given()
@@ -294,12 +294,12 @@ class CustomerResourceTest {
           .then()
           .statusCode(204);
 
-      verify(customerService).deleteCustomer(customerId, "system", reason);
+      verify(customerService).deleteCustomer(customerId, "testuser", reason);
     }
 
     @Test
     @TestSecurity(
-        user = "system",
+        user = "testuser",
         roles = {"admin", "manager", "sales"})
     @DisplayName("DELETE /api/customers/{id} - Should return 400 when customer has children")
     void deleteCustomer_withChildren_shouldReturn400() {
@@ -307,7 +307,7 @@ class CustomerResourceTest {
       UUID customerId = UUID.randomUUID();
       doThrow(new CustomerHasChildrenException(customerId, "delete"))
           .when(customerService)
-          .deleteCustomer(eq(customerId), eq("system"), any());
+          .deleteCustomer(eq(customerId), eq("testuser"), any());
 
       // When & Then
       given()
@@ -318,18 +318,18 @@ class CustomerResourceTest {
           .statusCode(400)
           .body("error", equalTo("CUSTOMER_HAS_CHILDREN"));
 
-      verify(customerService).deleteCustomer(eq(customerId), eq("system"), any());
+      verify(customerService).deleteCustomer(eq(customerId), eq("testuser"), any());
     }
 
     @Test
     @TestSecurity(
-        user = "system",
+        user = "testuser",
         roles = {"admin", "manager", "sales"})
     @DisplayName("PUT /api/customers/{id}/restore - Should restore customer")
     void restoreCustomer_withValidId_shouldReturn200() {
       // Given
       UUID customerId = UUID.randomUUID();
-      when(customerService.restoreCustomer(customerId, "system")).thenReturn(customerResponse);
+      when(customerService.restoreCustomer(customerId, "testuser")).thenReturn(customerResponse);
 
       // When & Then
       given()
@@ -339,7 +339,7 @@ class CustomerResourceTest {
           .then()
           .statusCode(200);
 
-      verify(customerService).restoreCustomer(customerId, "system");
+      verify(customerService).restoreCustomer(customerId, "testuser");
     }
   }
 
@@ -556,7 +556,7 @@ class CustomerResourceTest {
 
     @Test
     @TestSecurity(
-        user = "system",
+        user = "testuser",
         roles = {"admin", "manager", "sales"})
     @DisplayName("POST /api/customers/{parentId}/children - Should add child customer")
     void addChildCustomer_withValidIds_shouldReturn200() {
@@ -565,7 +565,7 @@ class CustomerResourceTest {
       UUID childId = UUID.randomUUID();
       AddChildCustomerRequest request = new AddChildCustomerRequest(childId);
 
-      when(customerService.addChildCustomer(parentId, childId, "system"))
+      when(customerService.addChildCustomer(parentId, childId, "testuser"))
           .thenReturn(customerResponse);
 
       // When & Then
@@ -578,7 +578,7 @@ class CustomerResourceTest {
           .then()
           .statusCode(200);
 
-      verify(customerService).addChildCustomer(parentId, childId, "system");
+      verify(customerService).addChildCustomer(parentId, childId, "testuser");
     }
   }
 
@@ -615,7 +615,7 @@ class CustomerResourceTest {
 
     @Test
     @TestSecurity(
-        user = "system",
+        user = "testuser",
         roles = {"admin", "manager", "sales"})
     @DisplayName("POST /api/customers/{targetId}/merge - Should merge customers")
     void mergeCustomers_withValidIds_shouldReturn200() {
@@ -624,7 +624,7 @@ class CustomerResourceTest {
       UUID sourceId = UUID.randomUUID();
       MergeCustomersRequest request = new MergeCustomersRequest(sourceId);
 
-      when(customerService.mergeCustomers(targetId, sourceId, "system"))
+      when(customerService.mergeCustomers(targetId, sourceId, "testuser"))
           .thenReturn(customerResponse);
 
       // When & Then
@@ -637,12 +637,12 @@ class CustomerResourceTest {
           .then()
           .statusCode(200);
 
-      verify(customerService).mergeCustomers(targetId, sourceId, "system");
+      verify(customerService).mergeCustomers(targetId, sourceId, "testuser");
     }
 
     @Test
     @TestSecurity(
-        user = "system",
+        user = "testuser",
         roles = {"admin", "manager", "sales"})
     @DisplayName("PUT /api/customers/{id}/status - Should change customer status")
     void changeCustomerStatus_withValidStatus_shouldReturn200() {
@@ -651,7 +651,7 @@ class CustomerResourceTest {
       CustomerStatus newStatus = CustomerStatus.AKTIV;
       ChangeStatusRequest request = new ChangeStatusRequest(newStatus);
 
-      when(customerService.changeStatus(customerId, newStatus, "system"))
+      when(customerService.changeStatus(customerId, newStatus, "testuser"))
           .thenReturn(customerResponse);
 
       // When & Then
@@ -664,7 +664,7 @@ class CustomerResourceTest {
           .then()
           .statusCode(200);
 
-      verify(customerService).changeStatus(customerId, newStatus, "system");
+      verify(customerService).changeStatus(customerId, newStatus, "testuser");
     }
   }
 

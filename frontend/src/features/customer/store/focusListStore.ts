@@ -34,6 +34,15 @@ export interface SortCriteria {
   ascending: boolean;
 }
 
+export interface SmartSortOption {
+  id: string;
+  label: string;
+  description: string;
+  category: 'priority' | 'business' | 'activity' | 'custom';
+  sorts: SortCriteria[];
+  icon?: string;
+}
+
 export interface TableColumn {
   id: string;
   label: string;
@@ -66,6 +75,7 @@ interface FocusListStore {
   // View State
   viewMode: 'cards' | 'table';
   sortBy: SortCriteria;
+  smartSortId: string | null;
   tableColumns: TableColumn[];
   
   // Selection State
@@ -98,6 +108,7 @@ interface FocusListStore {
   // Actions - Display
   setViewMode: (mode: 'cards' | 'table') => void;
   setSortBy: (sort: SortCriteria) => void;
+  setSmartSort: (smartSortId: string) => void;
   setPage: (page: number) => void;
   setPageSize: (pageSize: number) => void;
   
@@ -126,6 +137,10 @@ export interface CustomerSearchRequest {
     field: string;
     ascending: boolean;
   };
+  multiSort?: Array<{
+    field: string;
+    ascending: boolean;
+  }>;
 }
 
 // Default Tabellen-Spalten
@@ -152,6 +167,7 @@ export const useFocusListStore = create<FocusListStore>()(
         currentViewId: null,
         viewMode: 'cards',
         sortBy: { field: 'lastContactDate', ascending: false },
+        smartSortId: 'revenue-high-to-low',
         tableColumns: [...DEFAULT_TABLE_COLUMNS],
         selectedCustomerId: null,
         page: 0,
@@ -318,7 +334,18 @@ export const useFocusListStore = create<FocusListStore>()(
         // Display Actions
         setViewMode: (mode) => set({ viewMode: mode }),
         
-        setSortBy: (sort) => set({ sortBy: sort, page: 0 }),
+        setSortBy: (sort) => set({ sortBy: sort, smartSortId: null, page: 0 }),
+        
+        setSmartSort: (smartSortId) => {
+          const smartSort = getSmartSortById(smartSortId);
+          if (smartSort) {
+            set({ 
+              sortBy: smartSort.sorts[0], // Use first sort criterion for backward compatibility
+              smartSortId, 
+              page: 0 
+            });
+          }
+        },
         
         setPage: (page) => set({ page }),
         
@@ -364,10 +391,26 @@ export const useFocusListStore = create<FocusListStore>()(
             }));
           }
 
-          request.sort = {
-            field: state.sortBy.field,
-            ascending: state.sortBy.ascending,
-          };
+          // If smart sort is active, use multi-sort; otherwise use single sort
+          if (state.smartSortId) {
+            const smartSort = getSmartSortById(state.smartSortId);
+            if (smartSort && smartSort.sorts.length > 1) {
+              request.multiSort = smartSort.sorts.map(s => ({
+                field: s.field,
+                ascending: s.ascending,
+              }));
+            } else {
+              request.sort = {
+                field: state.sortBy.field,
+                ascending: state.sortBy.ascending,
+              };
+            }
+          } else {
+            request.sort = {
+              field: state.sortBy.field,
+              ascending: state.sortBy.ascending,
+            };
+          }
 
           return request;
         },
@@ -384,3 +427,144 @@ export const useFocusListStore = create<FocusListStore>()(
     )
   )
 );
+
+// Smart Sort Optionen - ÜBERARBEITET: Klarere, intuitive Sales-Sortierung
+export const SMART_SORT_OPTIONS: SmartSortOption[] = [
+  // === HARDFACTS - Geschäftskritisch ===
+  {
+    id: 'revenue-high-to-low',
+    label: 'Umsatz: Hoch → Niedrig',
+    description: 'Größte Kunden zuerst (Jahresumsatz)',
+    category: 'business',
+    icon: '💰',
+    sorts: [
+      { field: 'expectedAnnualVolume', ascending: false },
+      { field: 'companyName', ascending: true }
+    ]
+  },
+  {
+    id: 'revenue-low-to-high',
+    label: 'Umsatz: Niedrig → Hoch',
+    description: 'Kleinste Kunden zuerst (Potenzial identifizieren)',
+    category: 'business',
+    icon: '💡',
+    sorts: [
+      { field: 'expectedAnnualVolume', ascending: true },
+      { field: 'companyName', ascending: true }
+    ]
+  },
+  {
+    id: 'risk-critical-first',
+    label: 'Risiko-Kunden ZUERST',
+    description: 'Gefährdete Kunden retten (Risiko-Score hoch)',
+    category: 'priority',
+    icon: '🚨',
+    sorts: [
+      { field: 'riskScore', ascending: false },
+      { field: 'expectedAnnualVolume', ascending: false }
+    ]
+  },
+  {
+    id: 'contracts-expiring',
+    label: 'Auslaufende Verträge',
+    description: 'Nächste Follow-Ups / Vertragsverlängerungen',
+    category: 'priority',
+    icon: '⏰',
+    sorts: [
+      { field: 'nextFollowUpDate', ascending: true },
+      { field: 'expectedAnnualVolume', ascending: false }
+    ]
+  },
+  
+  // === AKTIVITÄT - Verkaufsaktivität ===
+  {
+    id: 'last-contact-oldest',
+    label: 'Längster Kontakt-Stopp',
+    description: 'Kunden die am längsten nicht kontaktiert wurden',
+    category: 'activity',
+    icon: '🕒',
+    sorts: [
+      { field: 'lastContactDate', ascending: true },
+      { field: 'expectedAnnualVolume', ascending: false }
+    ]
+  },
+  {
+    id: 'last-contact-recent',
+    label: 'Neueste Kontakte',
+    description: 'Letzte Aktivitäten zuerst',
+    category: 'activity',
+    icon: '📞',
+    sorts: [
+      { field: 'lastContactDate', ascending: false },
+      { field: 'companyName', ascending: true }
+    ]
+  },
+  {
+    id: 'new-customers-first',
+    label: 'Neue Kunden zuerst',
+    description: 'Frisch angelegt - Momentum nutzen',
+    category: 'activity',
+    icon: '🌟',
+    sorts: [
+      { field: 'createdAt', ascending: false },
+      { field: 'expectedAnnualVolume', ascending: false }
+    ]
+  },
+  
+  // === STATUS-BASIERT - Pipeline Management ===
+  {
+    id: 'hot-leads-first',
+    label: 'Heiße Leads zuerst',
+    description: 'Prospects mit höchstem Potenzial',
+    category: 'priority',
+    icon: '🔥',
+    sorts: [
+      { field: 'status', ascending: true }, // PROSPECT, LEAD vor AKTIV
+      { field: 'expectedAnnualVolume', ascending: false },
+      { field: 'lastContactDate', ascending: true }
+    ]
+  },
+  {
+    id: 'active-customers-first',
+    label: 'Aktive Kunden zuerst',
+    description: 'Bestehende Kunden für Upselling/Cross-selling',
+    category: 'business',
+    icon: '✅',
+    sorts: [
+      { field: 'status', ascending: false }, // AKTIV zuerst
+      { field: 'expectedAnnualVolume', ascending: false }
+    ]
+  },
+  
+  // === STANDARD - Klassisch ===
+  {
+    id: 'alphabetical',
+    label: 'A-Z (Alphabetisch)',
+    description: 'Firmenname von A bis Z',
+    category: 'custom',
+    icon: '📋',
+    sorts: [
+      { field: 'companyName', ascending: true }
+    ]
+  },
+  {
+    id: 'customer-number',
+    label: 'Kundennummer',
+    description: 'Nach Kundennummer sortiert',
+    category: 'custom',
+    icon: '#️⃣',
+    sorts: [
+      { field: 'customerNumber', ascending: true }
+    ]
+  }
+];
+
+// Helper function to get smart sort by ID
+export const getSmartSortById = (id: string): SmartSortOption | undefined => {
+  return SMART_SORT_OPTIONS.find(option => option.id === id);
+};
+
+// Helper function to get smart sort options by category
+export const getSmartSortsByCategory = (category: SmartSortOption['category']): SmartSortOption[] => {
+  return SMART_SORT_OPTIONS.filter(option => option.category === category);
+};

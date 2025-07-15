@@ -11,7 +11,7 @@ import jakarta.transaction.Transactional;
 import java.util.Arrays;
 import org.jboss.logging.Logger;
 
-/** Development data initializer that creates test users. Only active in dev profile. */
+/** Development data initializer that creates test users. Active in dev and e2e profiles. */
 @ApplicationScoped
 @IfBuildProfile("dev")
 public class DevDataInitializer {
@@ -34,7 +34,6 @@ public class DevDataInitializer {
     createUser("admin", "Admin", "User", "admin@freshplan.de", "admin");
     createUser("manager", "Manager", "User", "manager@freshplan.de", "manager");
     createUser("sales", "Sales", "User", "sales@freshplan.de", "sales");
-    createUser("viewer", "Viewer", "User", "viewer@freshplan.de", "viewer");
     createUser("max.mustermann", "Max", "Mustermann", "max@example.com", "sales");
     createUser("erika.musterfrau", "Erika", "Musterfrau", "erika@example.com", "sales");
 

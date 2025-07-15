@@ -95,8 +95,6 @@ export const UserTableMUI = () => {
         return 'Manager';
       case 'sales':
         return 'Vertrieb';
-      case 'viewer':
-        return 'Betrachter';
       default:
         return role;
     }

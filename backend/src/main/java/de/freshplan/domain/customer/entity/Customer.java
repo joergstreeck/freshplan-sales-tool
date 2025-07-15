@@ -1,5 +1,6 @@
 package de.freshplan.domain.customer.entity;
 
+import de.freshplan.domain.customer.constants.CustomerConstants;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
@@ -191,12 +192,12 @@ public class Customer extends PanacheEntityBase {
     // Base score by status
     score +=
         switch (this.status) {
-          case LEAD -> 50;
-          case PROSPECT -> 30;
-          case AKTIV -> 10;
-          case RISIKO -> 70;
-          case INAKTIV -> 90;
-          case ARCHIVIERT -> 100;
+          case LEAD -> CustomerConstants.RISK_SCORE_STATUS_LEAD;
+          case PROSPECT -> CustomerConstants.RISK_SCORE_STATUS_PROSPECT;
+          case AKTIV -> CustomerConstants.RISK_SCORE_STATUS_AKTIV;
+          case RISIKO -> CustomerConstants.RISK_SCORE_STATUS_RISIKO;
+          case INAKTIV -> CustomerConstants.RISK_SCORE_STATUS_INAKTIV;
+          case ARCHIVIERT -> CustomerConstants.RISK_SCORE_STATUS_ARCHIVIERT;
         };
 
     // Last contact scoring
@@ -204,22 +205,28 @@ public class Customer extends PanacheEntityBase {
       long daysSinceContact =
           java.time.temporal.ChronoUnit.DAYS.between(
               lastContactDate.toLocalDate(), java.time.LocalDate.now());
-      if (daysSinceContact > 90) score += 20;
-      if (daysSinceContact > 180) score += 20;
+      if (daysSinceContact > CustomerConstants.DAYS_UNTIL_RISK) {
+        score += CustomerConstants.RISK_SCORE_LONG_NO_CONTACT_PENALTY;
+      }
+      if (daysSinceContact > CustomerConstants.DAYS_UNTIL_INACTIVE) {
+        score += CustomerConstants.RISK_SCORE_LONG_NO_CONTACT_PENALTY;
+      }
     } else {
-      score += 30; // Never contacted
+      score += CustomerConstants.RISK_SCORE_NO_CONTACT_PENALTY; // Never contacted
     }
 
     // Overdue follow-up
     if (nextFollowUpDate != null && nextFollowUpDate.isBefore(LocalDateTime.now())) {
-      score += 10;
+      score += CustomerConstants.RISK_SCORE_OVERDUE_FOLLOWUP_PENALTY;
     }
 
-    this.riskScore = Math.min(score, 100);
+    this.riskScore = Math.min(score, CustomerConstants.RISK_SCORE_MAX);
   }
 
   public boolean isAtRisk() {
-    return lastContactDate != null && lastContactDate.isBefore(LocalDateTime.now().minusDays(90));
+    return lastContactDate != null
+        && lastContactDate.isBefore(
+            LocalDateTime.now().minusDays(CustomerConstants.DAYS_UNTIL_RISK));
   }
 
   public boolean hasChildren() {
@@ -585,7 +592,8 @@ public class Customer extends PanacheEntityBase {
 
   /** Gets recent timeline events (last 30 days). */
   public java.util.List<CustomerTimelineEvent> getRecentTimelineEvents() {
-    java.time.LocalDateTime thirtyDaysAgo = java.time.LocalDateTime.now().minusDays(30);
+    java.time.LocalDateTime thirtyDaysAgo =
+        java.time.LocalDateTime.now().minusDays(CustomerConstants.NEW_CUSTOMER_DAYS);
     return timelineEvents.stream()
         .filter(event -> !Boolean.TRUE.equals(event.getIsDeleted()))
         .filter(event -> event.getEventDate().isAfter(thirtyDaysAgo))

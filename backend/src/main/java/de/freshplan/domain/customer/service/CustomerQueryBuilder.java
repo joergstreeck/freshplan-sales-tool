@@ -52,8 +52,11 @@ public class CustomerQueryBuilder {
     // Create query with sorting
     PanacheQuery<Customer> query = Customer.find(queryString, params);
 
-    // Apply sorting
-    if (request.getSort() != null) {
+    // Apply sorting - Multi-Sort takes precedence over single sort
+    if (request.getMultiSort() != null && !request.getMultiSort().isEmpty()) {
+      Sort multiSort = buildMultiSort(request.getMultiSort());
+      query = Customer.find(queryString, multiSort, params);
+    } else if (request.getSort() != null) {
       Sort sort =
           request.getSort().isAscending()
               ? Sort.by(request.getSort().getField()).ascending()
@@ -62,6 +65,70 @@ public class CustomerQueryBuilder {
     }
 
     return query;
+  }
+
+  /**
+   * Builds a multi-sort Sort object from a list of sort criteria. Supports complex sorting
+   * strategies for sales-oriented customer prioritization.
+   */
+  private Sort buildMultiSort(
+      List<de.freshplan.domain.customer.service.dto.SortCriteria> sortCriteria) {
+    if (sortCriteria.isEmpty()) {
+      return Sort.by("companyName").ascending(); // Default fallback
+    }
+
+    // Start with the first sort criterion
+    de.freshplan.domain.customer.service.dto.SortCriteria first = sortCriteria.get(0);
+    String firstField = mapSortField(first.getField());
+    Sort sort =
+        first.isAscending() ? Sort.by(firstField).ascending() : Sort.by(firstField).descending();
+
+    // Chain additional sort criteria
+    for (int i = 1; i < sortCriteria.size(); i++) {
+      de.freshplan.domain.customer.service.dto.SortCriteria criteria = sortCriteria.get(i);
+      String field = mapSortField(criteria.getField());
+
+      sort =
+          criteria.isAscending()
+              ? sort.and(field, Sort.Direction.Ascending)
+              : sort.and(field, Sort.Direction.Descending);
+    }
+
+    return sort;
+  }
+
+  /**
+   * Maps frontend sort field names to database field names. Handles special cases for computed
+   * fields and relationships.
+   */
+  private String mapSortField(String frontendField) {
+    switch (frontendField) {
+      case "companyName":
+        return "companyName";
+      case "riskScore":
+        return "riskScore";
+      case "expectedAnnualVolume":
+        return "expectedAnnualVolume";
+      case "lastContactDate":
+        return "lastContactDate";
+      case "nextFollowUpDate":
+        return "nextFollowUpDate";
+      case "createdAt":
+        return "createdAt";
+      case "updatedAt":
+        return "updatedAt";
+      case "status":
+        return "status";
+      case "atRisk":
+        return "atRisk";
+      case "industry":
+        return "industry";
+      case "customerNumber":
+        return "customerNumber";
+      default:
+        LOG.warnf("Unknown sort field: %s, falling back to companyName", frontendField);
+        return "companyName";
+    }
   }
 
   private String buildGlobalSearchCondition(String searchTerm, Map<String, Object> params) {

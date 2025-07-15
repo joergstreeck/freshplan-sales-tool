@@ -24,7 +24,24 @@
 16. **PERFORMANCE:** Bundle ≤200KB, API <200ms P95, keine N+1 Queries
 17. **FRESHFOODZ CI COMPLIANCE:** ALLE sichtbaren Frontend-Elemente MÜSSEN Freshfoodz CI verwenden (#94C456, #004F7B, Antonio Bold, Poppins)
 
+## 🆘 NOTFALL-DIAGNOSE (für Claude nach Übergabe)
+
+### Symptom: Frontend zeigt "Failed to fetch" oder "Connection refused"
+➡️ **Backend-Problem** - [Springe zu Backend-Fix](#backend-fix)
+
+### Symptom: "Keine Kunden gefunden" aber API antwortet
+➡️ **Datenbank leer** - [Springe zu Testdaten-Fix](#testdaten-fix) 
+
+### Symptom: Tests schlagen fehl mit 401 Unauthorized
+➡️ **Security-Problem** - [Springe zu Auth-Fix](#auth-fix)
+
+### Symptom: Irgendwas funktioniert nicht
+➡️ **Automatische Diagnose** - Führe aus: `./scripts/diagnose-problems.sh`
+
+---
+
 ### 🔍 Quick Reference - Direkt zu den Details:
+- [🆘 Notfall-Diagnose](#🆘-notfall-diagnose-für-claude-nach-übergabe)
 - [0. Grundlegende Arbeitsphilosophie](#0-grundlegende-arbeitsphilosophie)
 - [0.1 Best Practices und Architektur](#01-best-practices-und-architektur-standards)
 - [0.10 Code-Review-Regel](#010-code-review-regel-gründliche-überprüfung-bei-jedem-bedeutenden-abschnitt)
@@ -1205,7 +1222,7 @@ Siehe [Vision und Roadmap][vision] für Details zu geplanten Integrationen und F
    - ✅ Optimierte Nginx-Konfiguration für SPAs
 
 3. **Komponenten implementiert:**
-   - ✅ UserList mit neuen Rollen (admin, manager, sales, viewer)
+   - ✅ UserList mit neuen Rollen (admin, manager, sales)
    - ✅ ErrorBoundary für globale Fehlerbehandlung
    - ✅ UserListSkeleton für Loading-States
    - ✅ Keycloak-Provider mit Auto-Refresh
@@ -1290,5 +1307,85 @@ Beispiel: `2025-06-08_IMPL_dynamic-links.md`
 - **IMMER** in passenden Unterordner ablegen
 
 Vollständige Dokumentation: [Claude Documentation Structure][claude-doc-structure]
+
+---
+
+## 🚨 PROBLEMLÖSUNGEN FÜR CLAUDE
+
+### Backend-Fix {#backend-fix}
+
+**Problem:** Backend nicht erreichbar (Failed to fetch, Connection refused)  
+**Ursache:** Java-Version + Timeout-Issue
+
+**SOFORT-LÖSUNG:**
+```bash
+# 1. Java 17 setzen (KRITISCH!)
+export JAVA_HOME=/Library/Java/JavaVirtualMachines/temurin-17.jdk/Contents/Home
+export PATH=$JAVA_HOME/bin:$PATH
+
+# 2. Backend persistent starten (NIEMALS mit Timeout!)
+cd backend
+nohup mvn quarkus:dev > ../logs/backend.log 2>&1 &
+
+# 3. Warten und testen (30 Sekunden)
+sleep 30 && curl http://localhost:8080/q/health
+```
+
+**Oder verwende das Management-Script:**
+```bash
+./scripts/backend-manager.sh start
+./scripts/backend-manager.sh status
+```
+
+---
+
+### Testdaten-Fix {#testdaten-fix}
+
+**Problem:** "Keine Kunden gefunden" aber Backend antwortet  
+**Ursache:** Datenbank leer, CustomerDataInitializer nicht gelaufen
+
+**LÖSUNG:**
+```bash
+# Backend neu starten um CustomerDataInitializer zu triggern
+./scripts/backend-manager.sh restart
+
+# Nach 30s testen:
+curl http://localhost:8080/api/customers
+```
+
+---
+
+### Auth-Fix {#auth-fix}
+
+**Problem:** Tests schlagen fehl mit 401 Unauthorized  
+**Ursache:** Security-Konfiguration oder @TestSecurity fehlt
+
+**LÖSUNG:**
+```bash
+# 1. Prüfe application.properties
+grep "dev.quarkus.oidc.enabled" backend/src/main/resources/application.properties
+# Sollte: %dev.quarkus.oidc.enabled=false
+
+# 2. Für Tests: @TestSecurity hinzufügen
+@TestSecurity(user = "testuser", roles = {"admin", "manager", "sales"})
+
+# 3. Quarkus 3.17.4 verwenden (für @TestSecurity Support)
+```
+
+---
+
+### Automatische Diagnose
+
+**Bei JEDEM unklaren Problem zuerst ausführen:**
+```bash
+./scripts/diagnose-problems.sh
+```
+
+Dieses Script erkennt automatisch:
+- Backend Status (up/down)
+- API Erreichbarkeit
+- Datenbank Status (leer/gefüllt)
+- Java Version (17 check)
+- PostgreSQL Status
 
 [claude-doc-structure]: ./docs/CLAUDE_DOCUMENTATION_STRUCTURE.md

@@ -1,11 +1,14 @@
 package de.freshplan.api.resources;
 
+import de.freshplan.domain.customer.constants.CustomerConstants;
 import de.freshplan.domain.customer.entity.CustomerStatus;
 import de.freshplan.domain.customer.entity.Industry;
 import de.freshplan.domain.customer.service.CustomerService;
 import de.freshplan.domain.customer.service.dto.*;
+import de.freshplan.infrastructure.security.CurrentUser;
 import de.freshplan.infrastructure.security.SecurityAudit;
 import de.freshplan.infrastructure.security.SecurityContextProvider;
+import de.freshplan.infrastructure.security.UserPrincipal;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
@@ -36,6 +39,8 @@ public class CustomerResource {
 
   @Inject SecurityContextProvider securityContext;
 
+  @Inject @CurrentUser UserPrincipal currentUser;
+
   // ========== CRUD OPERATIONS ==========
 
   /**
@@ -46,13 +51,7 @@ public class CustomerResource {
    */
   @POST
   public Response createCustomer(@Valid CreateCustomerRequest request) {
-    // Extract user from security context
-    String createdBy = securityContext.getUsername();
-    if (createdBy == null) {
-      createdBy = "system"; // Fallback for dev mode
-    }
-
-    CustomerResponse customer = customerService.createCustomer(request, createdBy);
+    CustomerResponse customer = customerService.createCustomer(request, currentUser.getUsername());
 
     return Response.status(Response.Status.CREATED).entity(customer).build();
   }
@@ -80,11 +79,8 @@ public class CustomerResource {
   @PUT
   @Path("/{id}")
   public Response updateCustomer(@PathParam("id") UUID id, @Valid UpdateCustomerRequest request) {
-
-    // TODO: Extract user from JWT when security is implemented
-    String updatedBy = "system"; // Fallback for dev mode
-
-    CustomerResponse customer = customerService.updateCustomer(id, request, updatedBy);
+    CustomerResponse customer =
+        customerService.updateCustomer(id, request, currentUser.getUsername());
     return Response.ok(customer).build();
   }
 
@@ -100,11 +96,7 @@ public class CustomerResource {
   public Response deleteCustomer(
       @PathParam("id") UUID id,
       @QueryParam("reason") @DefaultValue("No reason provided") String reason) {
-
-    // TODO: Extract user from JWT when security is implemented
-    String deletedBy = "system"; // Fallback for dev mode
-
-    customerService.deleteCustomer(id, deletedBy, reason);
+    customerService.deleteCustomer(id, currentUser.getUsername(), reason);
     return Response.noContent().build();
   }
 
@@ -117,10 +109,7 @@ public class CustomerResource {
   @PUT
   @Path("/{id}/restore")
   public Response restoreCustomer(@PathParam("id") UUID id) {
-    // TODO: Extract user from JWT when security is implemented
-    String restoredBy = "system"; // Fallback for dev mode
-
-    CustomerResponse customer = customerService.restoreCustomer(id, restoredBy);
+    CustomerResponse customer = customerService.restoreCustomer(id, currentUser.getUsername());
     return Response.ok(customer).build();
   }
 
@@ -192,9 +181,13 @@ public class CustomerResource {
       @QueryParam("size") @DefaultValue("20") int size) {
 
     // Validate parameters
-    if (page < 0) page = 0;
-    if (size <= 0 || size > 100) size = 20;
-    if (minRiskScore < 0 || minRiskScore > 100) minRiskScore = 70;
+    if (page < 0) page = CustomerConstants.DEFAULT_PAGE_NUMBER;
+    if (size <= 0 || size > CustomerConstants.MAX_PAGE_SIZE) {
+      size = CustomerConstants.DEFAULT_PAGE_SIZE;
+    }
+    if (minRiskScore < 0 || minRiskScore > 100) {
+      minRiskScore = CustomerConstants.DEFAULT_RISK_THRESHOLD;
+    }
 
     CustomerListResponse customers = customerService.getCustomersAtRisk(minRiskScore, page, size);
     return Response.ok(customers).build();
@@ -226,13 +219,8 @@ public class CustomerResource {
   @Path("/{parentId}/children")
   public Response addChildCustomer(
       @PathParam("parentId") UUID parentId, AddChildCustomerRequest request) {
-
-    // TODO: Extract user from JWT when security is implemented
-    String updatedBy = "system"; // Fallback for dev mode
-
     CustomerResponse child =
-        customerService.addChildCustomer(parentId, request.childId(), updatedBy);
-
+        customerService.addChildCustomer(parentId, request.childId(), currentUser.getUsername());
     return Response.ok(child).build();
   }
 
@@ -262,13 +250,8 @@ public class CustomerResource {
   @Path("/{targetId}/merge")
   public Response mergeCustomers(
       @PathParam("targetId") UUID targetId, @Valid MergeCustomersRequest request) {
-
-    // TODO: Extract user from JWT when security is implemented
-    String mergedBy = "system"; // Fallback for dev mode
-
     CustomerResponse customer =
-        customerService.mergeCustomers(targetId, request.sourceId(), mergedBy);
-
+        customerService.mergeCustomers(targetId, request.sourceId(), currentUser.getUsername());
     return Response.ok(customer).build();
   }
 
@@ -283,12 +266,8 @@ public class CustomerResource {
   @Path("/{id}/status")
   public Response changeCustomerStatus(
       @PathParam("id") UUID id, @Valid ChangeStatusRequest request) {
-
-    // TODO: Extract user from JWT when security is implemented
-    String updatedBy = "system"; // Fallback for dev mode
-
-    CustomerResponse customer = customerService.changeStatus(id, request.newStatus(), updatedBy);
-
+    CustomerResponse customer =
+        customerService.changeStatus(id, request.newStatus(), currentUser.getUsername());
     return Response.ok(customer).build();
   }
 }

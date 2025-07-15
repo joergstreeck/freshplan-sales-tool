@@ -26,7 +26,7 @@ import org.junit.jupiter.api.Test;
 @QuarkusTest
 @TestSecurity(
     user = "testuser",
-    roles = {"admin", "manager", "sales", "viewer"})
+    roles = {"admin", "manager", "sales"})
 class CustomerTimelineRepositoryPerformanceTest extends BaseIntegrationTest {
 
   @Inject CustomerTimelineRepository timelineRepository;
@@ -39,9 +39,9 @@ class CustomerTimelineRepositoryPerformanceTest extends BaseIntegrationTest {
   @BeforeEach
   @Transactional
   void setUp() {
-    // Clean database
+    // Clean only test-specific data to preserve CustomerDataInitializer test customers
     timelineRepository.deleteAll();
-    customerRepository.deleteAll();
+    customerRepository.delete("customerNumber LIKE ?1", "PERF-TEST-%");
 
     // Create test customer
     Customer customer = new Customer();
