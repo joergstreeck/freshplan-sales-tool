@@ -43,16 +43,20 @@ public class CustomerDataInitializer {
       LOG.info("Found " + existingCount + " existing customers, clearing for fresh test data...");
       // Use SQL directly to avoid Hibernate/JPA cascade issues
       // Delete timeline events first, then customers
-      customerRepository.getEntityManager()
+      customerRepository
+          .getEntityManager()
           .createNativeQuery("DELETE FROM customer_timeline_events")
           .executeUpdate();
-      customerRepository.getEntityManager()
+      customerRepository
+          .getEntityManager()
           .createNativeQuery("DELETE FROM customer_contacts")
           .executeUpdate();
-      customerRepository.getEntityManager()
+      customerRepository
+          .getEntityManager()
           .createNativeQuery("DELETE FROM customer_locations")
           .executeUpdate();
-      customerRepository.getEntityManager()
+      customerRepository
+          .getEntityManager()
           .createNativeQuery("DELETE FROM customers")
           .executeUpdate();
       LOG.info("Existing customers and related data cleared via SQL");
