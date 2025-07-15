@@ -5,7 +5,6 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import de.freshplan.domain.customer.service.dto.*;
-import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.security.TestSecurity;
 import io.restassured.http.ContentType;
@@ -29,7 +28,6 @@ import org.junit.jupiter.api.Test;
  * datasets. Some tests are disabled by default to avoid impacting regular test runs.
  */
 @QuarkusTest
-@TestHTTPEndpoint(CustomerSearchResource.class)
 @TestSecurity(
     user = "testuser",
     roles = {"admin", "manager", "sales"})
@@ -58,7 +56,7 @@ class CustomerSearchPerformanceTest {
           .contentType(ContentType.JSON)
           .body(request)
           .when()
-          .post()
+          .post("/api/customers/search")
           .then()
           .statusCode(200)
           .body("content", notNullValue());
@@ -87,7 +85,7 @@ class CustomerSearchPerformanceTest {
           .contentType(ContentType.JSON)
           .body(request)
           .when()
-          .post()
+          .post("/api/customers/search")
           .then()
           .statusCode(200)
           .body("content", notNullValue());
@@ -121,7 +119,7 @@ class CustomerSearchPerformanceTest {
           .contentType(ContentType.JSON)
           .body(request)
           .when()
-          .post()
+          .post("/api/customers/search")
           .then()
           .statusCode(200)
           .body("content", notNullValue());
@@ -151,7 +149,7 @@ class CustomerSearchPerformanceTest {
           .contentType(ContentType.JSON)
           .body(request)
           .when()
-          .post("/smart")
+          .post("/api/customers/search/smart")
           .then()
           .statusCode(200)
           .body("content", notNullValue());
@@ -189,7 +187,7 @@ class CustomerSearchPerformanceTest {
           .queryParam("page", 0)
           .queryParam("size", 20)
           .when()
-          .post()
+          .post("/api/customers/search")
           .then()
           .statusCode(200)
           .body("content", notNullValue());
@@ -215,7 +213,7 @@ class CustomerSearchPerformanceTest {
           .queryParam("page", 5)
           .queryParam("size", 20)
           .when()
-          .post()
+          .post("/api/customers/search")
           .then()
           .statusCode(200)
           .body("content", notNullValue());
@@ -245,7 +243,7 @@ class CustomerSearchPerformanceTest {
           .queryParam("page", 0)
           .queryParam("size", 100)
           .when()
-          .post()
+          .post("/api/customers/search")
           .then()
           .statusCode(200)
           .body("content", notNullValue());
@@ -289,7 +287,7 @@ class CustomerSearchPerformanceTest {
                       .contentType(ContentType.JSON)
                       .body(request)
                       .when()
-                      .post()
+                      .post("/api/customers/search")
                       .then()
                       .statusCode(200)
                       .body("content", notNullValue());
@@ -331,7 +329,7 @@ class CustomerSearchPerformanceTest {
             .contentType(ContentType.JSON)
             .body(request)
             .when()
-            .post()
+            .post("/api/customers/search")
             .then()
             .statusCode(200)
             .body("content", notNullValue());
@@ -399,7 +397,7 @@ class CustomerSearchPerformanceTest {
             .contentType(ContentType.JSON)
             .body(request)
             .when()
-            .post()
+            .post("/api/customers/search")
             .then()
             .statusCode(200)
             .body("content", notNullValue());
@@ -442,7 +440,7 @@ class CustomerSearchPerformanceTest {
           .queryParam("page", 0)
           .queryParam("size", 100)
           .when()
-          .post()
+          .post("/api/customers/search")
           .then()
           .statusCode(200)
           .body("content", notNullValue());
@@ -485,7 +483,7 @@ class CustomerSearchPerformanceTest {
                   try {
                     long startTime = System.currentTimeMillis();
                     Response response =
-                        given().contentType(ContentType.JSON).body(request).when().post();
+                        given().contentType(ContentType.JSON).body(request).when().post("/api/customers/search");
                     long endTime = System.currentTimeMillis();
 
                     return response.statusCode() == 200 && (endTime - startTime) < 5000;
@@ -534,7 +532,7 @@ class CustomerSearchPerformanceTest {
             .contentType(ContentType.JSON)
             .body(request)
             .when()
-            .post()
+            .post("/api/customers/search")
             .then()
             .statusCode(200)
             .body("content", notNullValue());
@@ -591,7 +589,7 @@ class CustomerSearchPerformanceTest {
           .contentType(ContentType.JSON)
           .body(request)
           .when()
-          .post()
+          .post("/api/customers/search")
           .then()
           .statusCode(200)
           .body("content", notNullValue());
@@ -620,7 +618,7 @@ class CustomerSearchPerformanceTest {
           .contentType(ContentType.JSON)
           .body(request)
           .when()
-          .post()
+          .post("/api/customers/search")
           .then()
           .statusCode(200)
           .body("content", notNullValue());
