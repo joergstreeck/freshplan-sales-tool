@@ -44,8 +44,11 @@ class CustomerServiceIntegrationTest {
   @BeforeEach
   @Transactional
   void setUp() {
-    // Clean database before each test
-    entityManager.createQuery("DELETE FROM Customer").executeUpdate();
+    // Clean database before each test using native queries for consistency
+    entityManager.createNativeQuery("DELETE FROM customer_timeline_events").executeUpdate();
+    entityManager.createNativeQuery("DELETE FROM customer_contacts").executeUpdate();
+    entityManager.createNativeQuery("DELETE FROM customer_locations").executeUpdate();
+    entityManager.createNativeQuery("DELETE FROM customers").executeUpdate();
     entityManager.flush();
 
     // Create valid request DTOs for integration tests
@@ -292,8 +295,8 @@ class CustomerServiceIntegrationTest {
 
   @Test
   @TestTransaction
-  @DisplayName("Should search customers by company name")
-  void searchCustomers_withCompanyName_shouldReturnMatchingCustomers() {
+  @DisplayName("Should retrieve all customers with correct content")
+  void getAllCustomers_shouldReturnAllCreatedCustomers() {
       // Given
       customerService.createCustomer(validCreateRequest, "testuser");
       customerService.createCustomer(
@@ -319,6 +322,7 @@ class CustomerServiceIntegrationTest {
 
       // When & Then
       assertThatThrownBy(() -> customerService.createCustomer(invalidRequest, "testuser"))
+          .isInstanceOf(jakarta.validation.ConstraintViolationException.class)
           .hasMessageContaining("Company name cannot be empty");
     }
 
@@ -332,6 +336,7 @@ class CustomerServiceIntegrationTest {
 
       // When & Then
       assertThatThrownBy(() -> customerService.createCustomer(invalidRequest, "testuser"))
+          .isInstanceOf(jakarta.validation.ConstraintViolationException.class)
           .hasMessageContaining("Customer type cannot be null");
   }
 
@@ -340,16 +345,28 @@ class CustomerServiceIntegrationTest {
   @DisplayName("Should update risk scores for all customers")
   void updateRiskScores_shouldUpdateAllCustomers() {
       // Given
-      customerService.createCustomer(validCreateRequest, "testuser");
-      customerService.createCustomer(
-          new CreateCustomerRequest("High Risk Company", CustomerType.UNTERNEHMEN), "testuser");
+      CustomerResponse c1 = customerService.createCustomer(
+          new CreateCustomerRequest("Low Risk", CustomerType.UNTERNEHMEN), "testuser");
+      CustomerResponse c2 = customerService.createCustomer(
+          new CreateCustomerRequest("High Risk", CustomerType.UNTERNEHMEN), "testuser");
+
+      // Manually reset risk scores to a known state to test the update logic
+      Customer customer1 = customerRepository.findByIdOptional(UUID.fromString(c1.id())).get();
+      customer1.setRiskScore(0);
+      Customer customer2 = customerRepository.findByIdOptional(UUID.fromString(c2.id())).get();
+      customer2.setRiskScore(0);
+      customerRepository.flush();
 
       // When
-      // Risk scores are calculated automatically during creation
-      int updatedCount = 2;
+      customerService.updateAllRiskScores();
+      customerRepository.flush(); // Ensure changes are persisted
 
       // Then
-      assertThat(updatedCount).isEqualTo(2);
+      Customer updatedCustomer1 = customerRepository.findByIdOptional(UUID.fromString(c1.id())).get();
+      Customer updatedCustomer2 = customerRepository.findByIdOptional(UUID.fromString(c2.id())).get();
+
+      assertThat(updatedCustomer1.getRiskScore()).isGreaterThan(0);
+      assertThat(updatedCustomer2.getRiskScore()).isGreaterThan(0);
     }
 
   @Test
@@ -357,13 +374,20 @@ class CustomerServiceIntegrationTest {
   @DisplayName("Should find customers requiring follow-up")
   void findCustomersRequiringFollowUp_shouldReturnOverdueCustomers() {
       // Given
-      customerService.createCustomer(validCreateRequest, "testuser");
+      CustomerResponse created = customerService.createCustomer(
+          new CreateCustomerRequest("Test Corp", CustomerType.UNTERNEHMEN), "testuser");
+      
+      // Manually set the follow-up date to the past to create the test condition
+      Customer customer = customerRepository.findByIdOptional(UUID.fromString(created.id())).get();
+      customer.setNextFollowUpDate(LocalDateTime.now().minusDays(1));
+      customerRepository.flush();
 
       // When
-      List<CustomerResponse> result = customerService.getAllCustomers(0, 10).content();
+      CustomerListResponse result = customerService.getOverdueFollowUps(0, 10);
 
       // Then
-      assertThat(result).isNotEmpty();
+      assertThat(result.content()).hasSize(1);
+      assertThat(result.content().get(0).id()).isEqualTo(created.id());
   }
 
   @Test
