@@ -12,7 +12,7 @@ import de.freshplan.domain.customer.service.dto.timeline.*;
 import de.freshplan.domain.customer.service.exception.CustomerNotFoundException;
 import de.freshplan.domain.customer.service.mapper.CustomerTimelineMapper;
 import io.quarkus.panache.common.Page;
-import io.quarkus.test.InjectMock;
+import io.quarkus.test.junit.mockito.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.security.TestSecurity;
 import jakarta.inject.Inject;

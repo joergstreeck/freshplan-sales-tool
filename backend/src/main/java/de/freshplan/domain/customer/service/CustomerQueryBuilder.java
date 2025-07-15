@@ -1,7 +1,9 @@
 package de.freshplan.domain.customer.service;
 
 import de.freshplan.domain.customer.entity.Customer;
+import de.freshplan.domain.customer.entity.CustomerLifecycleStage;
 import de.freshplan.domain.customer.entity.CustomerStatus;
+import de.freshplan.domain.customer.entity.Industry;
 import de.freshplan.domain.customer.service.dto.CustomerSearchRequest;
 import de.freshplan.domain.customer.service.dto.FilterCriteria;
 import de.freshplan.domain.customer.service.dto.FilterOperator;
@@ -9,10 +11,14 @@ import de.freshplan.domain.customer.service.dto.LogicalOperator;
 import io.quarkus.hibernate.orm.panache.PanacheQuery;
 import io.quarkus.panache.common.Sort;
 import jakarta.enterprise.context.ApplicationScoped;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import org.jboss.logging.Logger;
 
 /**
@@ -267,14 +273,58 @@ public class CustomerQueryBuilder {
       return null;
     }
 
-    // Handle enum conversions
-    if ("status".equals(field) && value instanceof String) {
-      return CustomerStatus.valueOf((String) value);
+    // Handle enum conversions using generic helper
+    if (value instanceof String stringValue) {
+      Object enumValue = convertStringToEnum(field, stringValue);
+      if (enumValue != null) {
+        return enumValue;
+      }
     }
 
-    // Add other field-specific conversions here as needed
+    // Handle DateTime conversions for date/time fields
+    if (isDateTimeField(field) && value instanceof String) {
+      return convertStringToLocalDateTime((String) value);
+    }
 
     return value;
+  }
+
+  /** Checks if a field is a DateTime field that needs conversion. */
+  private boolean isDateTimeField(String field) {
+    return "createdAt".equals(field)
+        || "updatedAt".equals(field)
+        || "lastContactDate".equals(field)
+        || "nextFollowUpDate".equals(field);
+  }
+
+  /** Converts a string to LocalDateTime. Supports various date formats. */
+  private LocalDateTime convertStringToLocalDateTime(String dateString) {
+    if (dateString == null || dateString.trim().isEmpty()) {
+      return null;
+    }
+
+    try {
+      // Try ISO date format first (2024-01-01T00:00:00)
+      if (dateString.contains("T")) {
+        return LocalDateTime.parse(dateString, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+      }
+
+      // Try date-only format (2024-01-01) - add midnight time
+      if (dateString.matches("\\d{4}-\\d{2}-\\d{2}")) {
+        return LocalDateTime.parse(dateString + "T00:00:00", DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+      }
+
+      // Try other common formats if needed
+      throw new IllegalArgumentException("Unsupported date format: " + dateString);
+
+    } catch (DateTimeParseException e) {
+      LOG.errorf("Failed to parse date string '%s': %s", dateString, e.getMessage());
+      throw new IllegalArgumentException(
+          "Invalid date format: "
+              + dateString
+              + ". Expected format: YYYY-MM-DD or YYYY-MM-DDTHH:MM:SS",
+          e);
+    }
   }
 
   /** Converts list values for IN/NOT_IN operators. */
@@ -289,11 +339,40 @@ public class CustomerQueryBuilder {
       return list;
     }
 
-    // For status field, convert strings to enums
-    if ("status".equals(field) && list.get(0) instanceof String) {
-      return list.stream().map(item -> CustomerStatus.valueOf((String) item)).toList();
+    // Convert string lists to enums using generic helper
+    if (list.get(0) instanceof String) {
+      Function<String, Object> enumConverter = getEnumConverter(field);
+      if (enumConverter != null) {
+        return list.stream().map(item -> enumConverter.apply((String) item)).toList();
+      }
     }
 
     return list;
+  }
+
+  /**
+   * Converts a string value to the appropriate enum type based on field name. Returns null if the
+   * field doesn't require enum conversion.
+   */
+  private Object convertStringToEnum(String field, String value) {
+    return switch (field) {
+      case "status" -> CustomerStatus.valueOf(value);
+      case "industry" -> Industry.valueOf(value);
+      case "lifecycleStage" -> CustomerLifecycleStage.valueOf(value);
+      default -> null;
+    };
+  }
+
+  /**
+   * Returns a function that converts strings to the appropriate enum type for the given field.
+   * Returns null if the field doesn't require enum conversion.
+   */
+  private Function<String, Object> getEnumConverter(String field) {
+    return switch (field) {
+      case "status" -> CustomerStatus::valueOf;
+      case "industry" -> Industry::valueOf;
+      case "lifecycleStage" -> CustomerLifecycleStage::valueOf;
+      default -> null;
+    };
   }
 }
