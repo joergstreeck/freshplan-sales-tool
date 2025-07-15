@@ -29,6 +29,8 @@ import { CustomerCard } from '../../customer/components/CustomerCard';
 import { SmartSortSelector } from '../../customer/components/SmartSortSelector';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { format } from 'date-fns';
 import { de } from 'date-fns/locale';
 
@@ -336,63 +338,75 @@ export function FocusListColumnMUI({ onCustomerSelect }: FocusListColumnMUIProps
               </TableContainer>
             )}
 
-            {/* Pagination Controls */}
+            {/* Pagination Controls - Responsive Layout */}
             {searchResults.totalPages > 1 && (
-              <Box sx={{ mt: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <Box 
+                sx={{ 
+                  mt: 3, 
+                  display: 'flex', 
+                  flexDirection: { xs: 'column', sm: 'column', md: 'row' },
+                  justifyContent: 'space-between', 
+                  alignItems: { xs: 'stretch', sm: 'stretch', md: 'center' },
+                  gap: 2
+                }}
+              >
                 {/* Page Navigation */}
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <Button
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, justifyContent: 'center' }}>
+                  <IconButton
                     size="small"
-                    variant="outlined"
                     disabled={searchResults.first}
                     onClick={() => setPage(searchResults.page - 1)}
+                    sx={{ 
+                      border: 1, 
+                      borderColor: 'divider',
+                      '&:hover': { borderColor: 'primary.main' }
+                    }}
                   >
-                    Zurück
-                  </Button>
+                    <ChevronLeftIcon />
+                  </IconButton>
                   
-                  <Typography variant="body2" sx={{ mx: 2 }}>
-                    Seite {searchResults.page + 1} von {searchResults.totalPages}
+                  <Typography variant="body2" sx={{ mx: 1, whiteSpace: 'nowrap' }}>
+                    {searchResults.page + 1} / {searchResults.totalPages}
                   </Typography>
                   
-                  <Button
+                  <IconButton
                     size="small"
-                    variant="outlined"
                     disabled={searchResults.last}
                     onClick={() => setPage(searchResults.page + 1)}
+                    sx={{ 
+                      border: 1, 
+                      borderColor: 'divider',
+                      '&:hover': { borderColor: 'primary.main' }
+                    }}
                   >
-                    Weiter
-                  </Button>
+                    <ChevronRightIcon />
+                  </IconButton>
                 </Box>
 
-                {/* Page Size Selector */}
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <Typography variant="caption" color="text.secondary">
-                    Anzahl pro Seite:
+                {/* Page Size Selector - Kompakt */}
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, justifyContent: 'center' }}>
+                  <Typography variant="caption" color="text.secondary" sx={{ mr: 1 }}>
+                    pro Seite:
                   </Typography>
-                  <Button
-                    size="small"
-                    variant={searchResults.size === 10 ? "contained" : "outlined"}
-                    onClick={() => setPageSize(10)}
-                    sx={{ minWidth: '40px' }}
-                  >
-                    10
-                  </Button>
-                  <Button
-                    size="small"
-                    variant={searchResults.size === 20 ? "contained" : "outlined"}
-                    onClick={() => setPageSize(20)}
-                    sx={{ minWidth: '40px' }}
-                  >
-                    20
-                  </Button>
-                  <Button
-                    size="small"
-                    variant={searchResults.size === 50 ? "contained" : "outlined"}
-                    onClick={() => setPageSize(50)}
-                    sx={{ minWidth: '40px' }}
-                  >
-                    50
-                  </Button>
+                  {[10, 20, 50].map(size => (
+                    <IconButton
+                      key={size}
+                      size="small"
+                      onClick={() => setPageSize(size)}
+                      sx={{ 
+                        minWidth: 32,
+                        height: 32,
+                        fontSize: '0.875rem',
+                        color: searchResults.size === size ? 'primary.main' : 'text.secondary',
+                        backgroundColor: searchResults.size === size ? 'action.selected' : 'transparent',
+                        '&:hover': {
+                          backgroundColor: searchResults.size === size ? 'action.selected' : 'action.hover'
+                        }
+                      }}
+                    >
+                      {size}
+                    </IconButton>
+                  ))}
                 </Box>
               </Box>
             )}
