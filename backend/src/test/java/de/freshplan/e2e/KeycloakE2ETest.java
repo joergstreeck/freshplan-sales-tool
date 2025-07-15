@@ -2,6 +2,7 @@ package de.freshplan.e2e;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.QuarkusTestProfile;
@@ -183,13 +184,17 @@ public class KeycloakE2ETest {
     // Then
     // Keycloak may return 401 (correct) or 500 (with unknown_error) for invalid credentials
     // This is a known Keycloak behavior when client authentication is enabled
-    assertThat(tokenResponse.getStatusCode()).isIn(401, 500);
-    
-    if (tokenResponse.getStatusCode() == 401) {
-      assertThat(tokenResponse.jsonPath().getString("error")).isEqualTo("invalid_grant");
-    } else if (tokenResponse.getStatusCode() == 500) {
-      // Keycloak returns unknown_error for invalid user credentials when client secret is used
-      assertThat(tokenResponse.jsonPath().getString("error")).isEqualTo("unknown_error");
+    int statusCode = tokenResponse.getStatusCode();
+    switch (statusCode) {
+      case 401:
+        assertThat(tokenResponse.jsonPath().getString("error")).isEqualTo("invalid_grant");
+        break;
+      case 500:
+        // Keycloak returns unknown_error for invalid user credentials when client secret is used
+        assertThat(tokenResponse.jsonPath().getString("error")).isEqualTo("unknown_error");
+        break;
+      default:
+        fail("Expected status code 401 or 500, but got: " + statusCode);
     }
   }
 
