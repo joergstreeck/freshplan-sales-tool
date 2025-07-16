@@ -30,7 +30,8 @@ import org.junit.jupiter.api.Test;
  * query building, and result transformation.
  */
 @QuarkusTest
-@org.junit.jupiter.api.Disabled("Unit tests need refactoring for new CustomerQueryBuilder architecture - Integration tests are passing")
+@org.junit.jupiter.api.Disabled(
+    "Unit tests need refactoring for new CustomerQueryBuilder architecture - Integration tests are passing")
 class CustomerSearchServiceTest {
 
   @Inject CustomerSearchService searchService;

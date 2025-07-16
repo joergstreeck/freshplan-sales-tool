@@ -68,9 +68,14 @@ public class CustomerTimelineResource {
   public Response getTimeline(
       @Parameter(description = "Customer ID", required = true) @PathParam("customerId")
           UUID customerId,
-      @Parameter(description = "Page number (0-based)") @QueryParam("page") @DefaultValue(PaginationConstants.DEFAULT_PAGE_NUMBER_STRING)
+      @Parameter(description = "Page number (0-based)")
+          @QueryParam("page")
+          @DefaultValue(PaginationConstants.DEFAULT_PAGE_NUMBER_STRING)
           int page,
-      @Parameter(description = "Page size") @QueryParam("size") @DefaultValue(PaginationConstants.DEFAULT_PAGE_SIZE_STRING) int size,
+      @Parameter(description = "Page size")
+          @QueryParam("size")
+          @DefaultValue(PaginationConstants.DEFAULT_PAGE_SIZE_STRING)
+          int size,
       @Parameter(description = "Filter by event category") @QueryParam("category") String category,
       @Parameter(description = "Search in title and description") @QueryParam("search")
           String search) {
