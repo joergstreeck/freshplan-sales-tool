@@ -26,7 +26,7 @@ interface AuthContextType {
   hasAnyRole: (roles: string[]) => boolean;
   getValidToken: () => Promise<string | null>;
   refreshToken: () => Promise<boolean>;
-  authInfo: () => Record<string, any>;
+  authInfo: () => Record<string, unknown>;
 }
 
 export const AuthContext = createContext<AuthContextType | null>(null);

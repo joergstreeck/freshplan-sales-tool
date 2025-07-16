@@ -196,7 +196,7 @@ export const authUtils = {
     if (!keycloak.authenticated || !keycloak.tokenParsed) return [];
     const realmRoles = keycloak.tokenParsed.realm_access?.roles || [];
     const resourceRoles = Object.values(keycloak.tokenParsed.resource_access || {})
-      .flatMap((resource: any) => resource.roles || []);
+      .flatMap((resource: { roles?: string[] }) => resource.roles || []);
     return [...new Set([...realmRoles, ...resourceRoles])];
   },
   
