@@ -1,0 +1,6 @@
+# Disable Jekyll processing for GitHub Pages
+# This prevents Jekyll from interpreting {{ }} syntax in our documentation
+# as Liquid template tags, which causes build failures.
+#
+# Our repository contains many code examples with {{ }} syntax that should
+# be treated as literal text, not as Jekyll/Liquid templates.
