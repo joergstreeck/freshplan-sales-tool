@@ -12,15 +12,13 @@ import io.quarkus.test.junit.TestProfile;
 import io.quarkus.test.security.TestSecurity;
 import io.restassured.http.ContentType;
 import jakarta.ws.rs.core.Response;
-import java.util.Set;
 import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 /**
- * Security tests for UserResource endpoints.
- * Tests admin-only access and role management security.
+ * Security tests for UserResource endpoints. Tests admin-only access and role management security.
  */
 @QuarkusTest
 @TestProfile(SecurityDisabledTestProfile.class)
@@ -33,7 +31,9 @@ class UserResourceSecurityTest {
   class AdminOnlyAccessTests {
 
     @Test
-    @TestSecurity(user = "admin", roles = {"admin"})
+    @TestSecurity(
+        user = "admin",
+        roles = {"admin"})
     @DisplayName("Admin should be able to create users")
     void adminShouldBeAbleToCreateUsers() {
       CreateUserRequest request = createValidUserRequest();
@@ -48,7 +48,9 @@ class UserResourceSecurityTest {
     }
 
     @Test
-    @TestSecurity(user = "manager", roles = {"manager"})
+    @TestSecurity(
+        user = "manager",
+        roles = {"manager"})
     @DisplayName("Manager should NOT be able to create users")
     void managerShouldNotBeAbleToCreateUsers() {
       CreateUserRequest request = createValidUserRequest();
@@ -63,7 +65,9 @@ class UserResourceSecurityTest {
     }
 
     @Test
-    @TestSecurity(user = "sales", roles = {"sales"})
+    @TestSecurity(
+        user = "sales",
+        roles = {"sales"})
     @DisplayName("Sales user should NOT be able to create users")
     void salesShouldNotBeAbleToCreateUsers() {
       CreateUserRequest request = createValidUserRequest();
@@ -78,7 +82,9 @@ class UserResourceSecurityTest {
     }
 
     @Test
-    @TestSecurity(user = "viewer", roles = {"viewer"})
+    @TestSecurity(
+        user = "viewer",
+        roles = {"viewer"})
     @DisplayName("Viewer should NOT be able to create users")
     void viewerShouldNotBeAbleToCreateUsers() {
       CreateUserRequest request = createValidUserRequest();
@@ -112,18 +118,18 @@ class UserResourceSecurityTest {
   class UserReadAccessTests {
 
     @Test
-    @TestSecurity(user = "admin", roles = {"admin"})
+    @TestSecurity(
+        user = "admin",
+        roles = {"admin"})
     @DisplayName("Admin should be able to read all users")
     void adminShouldBeAbleToReadAllUsers() {
-      given()
-          .when()
-          .get(USERS_BASE_PATH)
-          .then()
-          .statusCode(Response.Status.OK.getStatusCode());
+      given().when().get(USERS_BASE_PATH).then().statusCode(Response.Status.OK.getStatusCode());
     }
 
     @Test
-    @TestSecurity(user = "admin", roles = {"admin"})
+    @TestSecurity(
+        user = "admin",
+        roles = {"admin"})
     @DisplayName("Admin should be able to read individual user")
     void adminShouldBeAbleToReadIndividualUser() {
       UUID userId = createTestUser();
@@ -136,7 +142,9 @@ class UserResourceSecurityTest {
     }
 
     @Test
-    @TestSecurity(user = "manager", roles = {"manager"})
+    @TestSecurity(
+        user = "manager",
+        roles = {"manager"})
     @DisplayName("Manager should NOT be able to read users")
     void managerShouldNotBeAbleToReadUsers() {
       given()
@@ -147,7 +155,9 @@ class UserResourceSecurityTest {
     }
 
     @Test
-    @TestSecurity(user = "sales", roles = {"sales"})
+    @TestSecurity(
+        user = "sales",
+        roles = {"sales"})
     @DisplayName("Sales user should NOT be able to read users")
     void salesShouldNotBeAbleToReadUsers() {
       given()
@@ -163,7 +173,9 @@ class UserResourceSecurityTest {
   class UserUpdateTests {
 
     @Test
-    @TestSecurity(user = "admin", roles = {"admin"})
+    @TestSecurity(
+        user = "admin",
+        roles = {"admin"})
     @DisplayName("Admin should be able to update users")
     void adminShouldBeAbleToUpdateUsers() {
       UUID userId = createTestUser();
@@ -179,7 +191,9 @@ class UserResourceSecurityTest {
     }
 
     @Test
-    @TestSecurity(user = "manager", roles = {"manager"})
+    @TestSecurity(
+        user = "manager",
+        roles = {"manager"})
     @DisplayName("Manager should NOT be able to update users")
     void managerShouldNotBeAbleToUpdateUsers() {
       UUID userId = createTestUser();
@@ -195,7 +209,9 @@ class UserResourceSecurityTest {
     }
 
     @Test
-    @TestSecurity(user = "admin", roles = {"admin"})
+    @TestSecurity(
+        user = "admin",
+        roles = {"admin"})
     @DisplayName("Admin should be able to enable users")
     void adminShouldBeAbleToEnableUsers() {
       UUID userId = createTestUser();
@@ -208,7 +224,9 @@ class UserResourceSecurityTest {
     }
 
     @Test
-    @TestSecurity(user = "admin", roles = {"admin"})
+    @TestSecurity(
+        user = "admin",
+        roles = {"admin"})
     @DisplayName("Admin should be able to disable users")
     void adminShouldBeAbleToDisableUsers() {
       UUID userId = createTestUser();
@@ -226,7 +244,9 @@ class UserResourceSecurityTest {
   class UserDeletionTests {
 
     @Test
-    @TestSecurity(user = "admin", roles = {"admin"})
+    @TestSecurity(
+        user = "admin",
+        roles = {"admin"})
     @DisplayName("Admin should be able to delete users")
     void adminShouldBeAbleToDeleteUsers() {
       UUID userId = createTestUser();
@@ -239,7 +259,9 @@ class UserResourceSecurityTest {
     }
 
     @Test
-    @TestSecurity(user = "manager", roles = {"manager"})
+    @TestSecurity(
+        user = "manager",
+        roles = {"manager"})
     @DisplayName("Manager should NOT be able to delete users")
     void managerShouldNotBeAbleToDeleteUsers() {
       UUID userId = createTestUser();
@@ -257,7 +279,9 @@ class UserResourceSecurityTest {
   class RoleManagementTests {
 
     @Test
-    @TestSecurity(user = "admin", roles = {"admin"})
+    @TestSecurity(
+        user = "admin",
+        roles = {"admin"})
     @DisplayName("Admin should be able to update user roles")
     void adminShouldBeAbleToUpdateUserRoles() {
       UUID userId = createTestUser();
@@ -273,7 +297,9 @@ class UserResourceSecurityTest {
     }
 
     @Test
-    @TestSecurity(user = "manager", roles = {"manager"})
+    @TestSecurity(
+        user = "manager",
+        roles = {"manager"})
     @DisplayName("Manager should NOT be able to update user roles")
     void managerShouldNotBeAbleToUpdateUserRoles() {
       UUID userId = createTestUser();
@@ -289,7 +315,9 @@ class UserResourceSecurityTest {
     }
 
     @Test
-    @TestSecurity(user = "sales", roles = {"sales"})
+    @TestSecurity(
+        user = "sales",
+        roles = {"sales"})
     @DisplayName("Sales user should NOT be able to update user roles")
     void salesShouldNotBeAbleToUpdateUserRoles() {
       UUID userId = createTestUser();
@@ -325,7 +353,9 @@ class UserResourceSecurityTest {
   class UserSearchTests {
 
     @Test
-    @TestSecurity(user = "admin", roles = {"admin"})
+    @TestSecurity(
+        user = "admin",
+        roles = {"admin"})
     @DisplayName("Admin should be able to search users by email")
     void adminShouldBeAbleToSearchUsersByEmail() {
       given()
@@ -333,12 +363,16 @@ class UserResourceSecurityTest {
           .when()
           .get(USERS_BASE_PATH + "/search")
           .then()
-          .statusCode(anyOf(is(Response.Status.OK.getStatusCode()), 
-                           is(Response.Status.NOT_FOUND.getStatusCode())));
+          .statusCode(
+              anyOf(
+                  is(Response.Status.OK.getStatusCode()),
+                  is(Response.Status.NOT_FOUND.getStatusCode())));
     }
 
     @Test
-    @TestSecurity(user = "manager", roles = {"manager"})
+    @TestSecurity(
+        user = "manager",
+        roles = {"manager"})
     @DisplayName("Manager should NOT be able to search users")
     void managerShouldNotBeAbleToSearchUsers() {
       given()
@@ -350,7 +384,9 @@ class UserResourceSecurityTest {
     }
 
     @Test
-    @TestSecurity(user = "admin", roles = {"admin"})
+    @TestSecurity(
+        user = "admin",
+        roles = {"admin"})
     @DisplayName("Admin should get bad request for search without email parameter")
     void adminShouldGetBadRequestForSearchWithoutEmail() {
       given()
@@ -366,7 +402,9 @@ class UserResourceSecurityTest {
   class UserListFilteringTests {
 
     @Test
-    @TestSecurity(user = "admin", roles = {"admin"})
+    @TestSecurity(
+        user = "admin",
+        roles = {"admin"})
     @DisplayName("Admin should be able to list users with filters")
     void adminShouldBeAbleToListUsersWithFilters() {
       given()
@@ -380,7 +418,9 @@ class UserResourceSecurityTest {
     }
 
     @Test
-    @TestSecurity(user = "admin", roles = {"admin"})
+    @TestSecurity(
+        user = "admin",
+        roles = {"admin"})
     @DisplayName("Admin should be able to search users with search term")
     void adminShouldBeAbleToSearchUsersWithSearchTerm() {
       given()
@@ -401,8 +441,7 @@ class UserResourceSecurityTest {
         "testuser" + uniqueId,
         "Test",
         "User Security " + uniqueId,
-        "security.test." + uniqueId + "@example.com"
-    );
+        "security.test." + uniqueId + "@example.com");
   }
 
   private UpdateUserRequest createValidUpdateRequest() {
@@ -411,20 +450,16 @@ class UserResourceSecurityTest {
         "Updated Test",
         "User Security",
         "updated.security.test@example.com",
-        true
-    );
+        true);
   }
 
   private UpdateUserRolesRequest createValidRolesUpdateRequest() {
-    return new UpdateUserRolesRequest(
-        java.util.List.of("manager", "sales")
-    );
+    return new UpdateUserRolesRequest(java.util.List.of("manager", "sales"));
   }
 
   /**
-   * Returns a random UUID for security tests.
-   * Security tests focus on access control, not business logic,
-   * so we don't need real users in the database.
+   * Returns a random UUID for security tests. Security tests focus on access control, not business
+   * logic, so we don't need real users in the database.
    */
   private UUID createTestUser() {
     return UUID.randomUUID(); // Use a random UUID - security tests verify authorization, not data

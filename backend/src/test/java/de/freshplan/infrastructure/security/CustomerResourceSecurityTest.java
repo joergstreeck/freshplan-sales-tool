@@ -17,8 +17,8 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 /**
- * Security tests for CustomerResource endpoints.
- * Tests RBAC implementation and security annotations.
+ * Security tests for CustomerResource endpoints. Tests RBAC implementation and security
+ * annotations.
  */
 @QuarkusTest
 @TestProfile(SecurityDisabledTestProfile.class)
@@ -31,7 +31,9 @@ class CustomerResourceSecurityTest {
   class CustomerCreationSecurityTests {
 
     @Test
-    @TestSecurity(user = "admin", roles = {"admin"})
+    @TestSecurity(
+        user = "admin",
+        roles = {"admin"})
     @DisplayName("Admin should be able to create customers")
     void adminShouldBeAbleToCreateCustomers() {
       CreateCustomerRequest request = createValidCustomerRequest();
@@ -46,7 +48,9 @@ class CustomerResourceSecurityTest {
     }
 
     @Test
-    @TestSecurity(user = "manager", roles = {"manager"})
+    @TestSecurity(
+        user = "manager",
+        roles = {"manager"})
     @DisplayName("Manager should be able to create customers")
     void managerShouldBeAbleToCreateCustomers() {
       CreateCustomerRequest request = createValidCustomerRequest();
@@ -61,7 +65,9 @@ class CustomerResourceSecurityTest {
     }
 
     @Test
-    @TestSecurity(user = "sales", roles = {"sales"})
+    @TestSecurity(
+        user = "sales",
+        roles = {"sales"})
     @DisplayName("Sales user should NOT be able to create customers")
     void salesShouldNotBeAbleToCreateCustomers() {
       CreateCustomerRequest request = createValidCustomerRequest();
@@ -76,7 +82,9 @@ class CustomerResourceSecurityTest {
     }
 
     @Test
-    @TestSecurity(user = "viewer", roles = {"viewer"})
+    @TestSecurity(
+        user = "viewer",
+        roles = {"viewer"})
     @DisplayName("Viewer should NOT be able to create customers")
     void viewerShouldNotBeAbleToCreateCustomers() {
       CreateCustomerRequest request = createValidCustomerRequest();
@@ -110,7 +118,9 @@ class CustomerResourceSecurityTest {
   class CustomerUpdateSecurityTests {
 
     @Test
-    @TestSecurity(user = "admin", roles = {"admin"})
+    @TestSecurity(
+        user = "admin",
+        roles = {"admin"})
     @DisplayName("Admin should be able to update customers")
     void adminShouldBeAbleToUpdateCustomers() {
       UUID customerId = createTestCustomer();
@@ -126,7 +136,9 @@ class CustomerResourceSecurityTest {
     }
 
     @Test
-    @TestSecurity(user = "manager", roles = {"manager"})
+    @TestSecurity(
+        user = "manager",
+        roles = {"manager"})
     @DisplayName("Manager should be able to update customers")
     void managerShouldBeAbleToUpdateCustomers() {
       UUID customerId = createTestCustomer();
@@ -142,7 +154,9 @@ class CustomerResourceSecurityTest {
     }
 
     @Test
-    @TestSecurity(user = "sales", roles = {"sales"})
+    @TestSecurity(
+        user = "sales",
+        roles = {"sales"})
     @DisplayName("Sales user should NOT be able to update customers")
     void salesShouldNotBeAbleToUpdateCustomers() {
       UUID customerId = createTestCustomer();
@@ -163,7 +177,9 @@ class CustomerResourceSecurityTest {
   class CustomerDeletionSecurityTests {
 
     @Test
-    @TestSecurity(user = "admin", roles = {"admin"})
+    @TestSecurity(
+        user = "admin",
+        roles = {"admin"})
     @DisplayName("Admin should be able to delete customers")
     void adminShouldBeAbleToDeleteCustomers() {
       UUID customerId = createTestCustomer();
@@ -176,7 +192,9 @@ class CustomerResourceSecurityTest {
     }
 
     @Test
-    @TestSecurity(user = "manager", roles = {"manager"})
+    @TestSecurity(
+        user = "manager",
+        roles = {"manager"})
     @DisplayName("Manager should NOT be able to delete customers")
     void managerShouldNotBeAbleToDeleteCustomers() {
       UUID customerId = createTestCustomer();
@@ -189,7 +207,9 @@ class CustomerResourceSecurityTest {
     }
 
     @Test
-    @TestSecurity(user = "sales", roles = {"sales"})
+    @TestSecurity(
+        user = "sales",
+        roles = {"sales"})
     @DisplayName("Sales user should NOT be able to delete customers")
     void salesShouldNotBeAbleToDeleteCustomers() {
       UUID customerId = createTestCustomer();
@@ -202,7 +222,9 @@ class CustomerResourceSecurityTest {
     }
 
     @Test
-    @TestSecurity(user = "viewer", roles = {"viewer"})
+    @TestSecurity(
+        user = "viewer",
+        roles = {"viewer"})
     @DisplayName("Viewer should NOT be able to delete customers")
     void viewerShouldNotBeAbleToDeleteCustomers() {
       UUID customerId = createTestCustomer();
@@ -220,40 +242,36 @@ class CustomerResourceSecurityTest {
   class CustomerReadAccessTests {
 
     @Test
-    @TestSecurity(user = "admin", roles = {"admin"})
+    @TestSecurity(
+        user = "admin",
+        roles = {"admin"})
     @DisplayName("Admin should be able to read all customers")
     void adminShouldBeAbleToReadAllCustomers() {
-      given()
-          .when()
-          .get(CUSTOMERS_BASE_PATH)
-          .then()
-          .statusCode(Response.Status.OK.getStatusCode());
+      given().when().get(CUSTOMERS_BASE_PATH).then().statusCode(Response.Status.OK.getStatusCode());
     }
 
     @Test
-    @TestSecurity(user = "manager", roles = {"manager"})
+    @TestSecurity(
+        user = "manager",
+        roles = {"manager"})
     @DisplayName("Manager should be able to read all customers")
     void managerShouldBeAbleToReadAllCustomers() {
-      given()
-          .when()
-          .get(CUSTOMERS_BASE_PATH)
-          .then()
-          .statusCode(Response.Status.OK.getStatusCode());
+      given().when().get(CUSTOMERS_BASE_PATH).then().statusCode(Response.Status.OK.getStatusCode());
     }
 
     @Test
-    @TestSecurity(user = "sales", roles = {"sales"})
+    @TestSecurity(
+        user = "sales",
+        roles = {"sales"})
     @DisplayName("Sales user should be able to read all customers")
     void salesShouldBeAbleToReadAllCustomers() {
-      given()
-          .when()
-          .get(CUSTOMERS_BASE_PATH)
-          .then()
-          .statusCode(Response.Status.OK.getStatusCode());
+      given().when().get(CUSTOMERS_BASE_PATH).then().statusCode(Response.Status.OK.getStatusCode());
     }
 
     @Test
-    @TestSecurity(user = "viewer", roles = {"viewer"})
+    @TestSecurity(
+        user = "viewer",
+        roles = {"viewer"})
     @DisplayName("Viewer should NOT be able to access customer endpoints")
     void viewerShouldNotBeAbleToAccessCustomerEndpoints() {
       given()
@@ -264,7 +282,9 @@ class CustomerResourceSecurityTest {
     }
 
     @Test
-    @TestSecurity(user = "sales", roles = {"sales"})
+    @TestSecurity(
+        user = "sales",
+        roles = {"sales"})
     @DisplayName("Sales user should be able to read individual customer")
     void salesShouldBeAbleToReadIndividualCustomer() {
       UUID customerId = createTestCustomer();
@@ -282,7 +302,9 @@ class CustomerResourceSecurityTest {
   class CustomerAnalyticsSecurityTests {
 
     @Test
-    @TestSecurity(user = "admin", roles = {"admin"})
+    @TestSecurity(
+        user = "admin",
+        roles = {"admin"})
     @DisplayName("Admin should be able to access dashboard")
     void adminShouldBeAbleToAccessDashboard() {
       given()
@@ -293,7 +315,9 @@ class CustomerResourceSecurityTest {
     }
 
     @Test
-    @TestSecurity(user = "manager", roles = {"manager"})
+    @TestSecurity(
+        user = "manager",
+        roles = {"manager"})
     @DisplayName("Manager should be able to access dashboard")
     void managerShouldBeAbleToAccessDashboard() {
       given()
@@ -304,7 +328,9 @@ class CustomerResourceSecurityTest {
     }
 
     @Test
-    @TestSecurity(user = "sales", roles = {"sales"})
+    @TestSecurity(
+        user = "sales",
+        roles = {"sales"})
     @DisplayName("Sales user should be able to access dashboard")
     void salesShouldBeAbleToAccessDashboard() {
       given()
@@ -315,7 +341,9 @@ class CustomerResourceSecurityTest {
     }
 
     @Test
-    @TestSecurity(user = "sales", roles = {"sales"})
+    @TestSecurity(
+        user = "sales",
+        roles = {"sales"})
     @DisplayName("Sales user should be able to access risk assessment")
     void salesShouldBeAbleToAccessRiskAssessment() {
       given()
@@ -331,7 +359,9 @@ class CustomerResourceSecurityTest {
   class CustomerUtilitySecurityTests {
 
     @Test
-    @TestSecurity(user = "sales", roles = {"sales"})
+    @TestSecurity(
+        user = "sales",
+        roles = {"sales"})
     @DisplayName("Sales user should be able to check duplicates")
     void salesShouldBeAbleToCheckDuplicates() {
       given()
@@ -344,7 +374,9 @@ class CustomerResourceSecurityTest {
     }
 
     @Test
-    @TestSecurity(user = "admin", roles = {"admin"})
+    @TestSecurity(
+        user = "admin",
+        roles = {"admin"})
     @DisplayName("Admin should be able to merge customers")
     void adminShouldBeAbleToMergeCustomers() {
       UUID targetId = createTestCustomer();
@@ -356,12 +388,16 @@ class CustomerResourceSecurityTest {
           .when()
           .post(CUSTOMERS_BASE_PATH + "/" + targetId + "/merge")
           .then()
-          .statusCode(anyOf(is(Response.Status.OK.getStatusCode()), 
-                           is(Response.Status.BAD_REQUEST.getStatusCode())));
+          .statusCode(
+              anyOf(
+                  is(Response.Status.OK.getStatusCode()),
+                  is(Response.Status.BAD_REQUEST.getStatusCode())));
     }
 
     @Test
-    @TestSecurity(user = "sales", roles = {"sales"})
+    @TestSecurity(
+        user = "sales",
+        roles = {"sales"})
     @DisplayName("Sales user should be able to change customer status")
     void salesShouldBeAbleToChangeCustomerStatus() {
       UUID customerId = createTestCustomer();
@@ -372,8 +408,10 @@ class CustomerResourceSecurityTest {
           .when()
           .put(CUSTOMERS_BASE_PATH + "/" + customerId + "/status")
           .then()
-          .statusCode(anyOf(is(Response.Status.OK.getStatusCode()), 
-                           is(Response.Status.BAD_REQUEST.getStatusCode())));
+          .statusCode(
+              anyOf(
+                  is(Response.Status.OK.getStatusCode()),
+                  is(Response.Status.BAD_REQUEST.getStatusCode())));
     }
   }
 
@@ -392,9 +430,8 @@ class CustomerResourceSecurityTest {
   }
 
   /**
-   * Returns a random UUID for security tests.
-   * Security tests focus on access control, not business logic,
-   * so we don't need real customers in the database.
+   * Returns a random UUID for security tests. Security tests focus on access control, not business
+   * logic, so we don't need real customers in the database.
    */
   private UUID createTestCustomer() {
     return UUID.randomUUID(); // Use a random UUID - security tests verify authorization, not data

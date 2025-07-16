@@ -22,6 +22,11 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
   token: string | null;
+  hasRole: (role: string) => boolean;
+  hasAnyRole: (roles: string[]) => boolean;
+  getValidToken: () => Promise<string | null>;
+  refreshToken: () => Promise<boolean>;
+  authInfo: () => Record<string, any>;
 }
 
 export const AuthContext = createContext<AuthContextType | null>(null);
@@ -55,6 +60,40 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     login,
     logout: keycloak.logout,
     token: keycloak.token || null,
+    hasRole: keycloak.hasRole,
+    hasAnyRole: (roles: string[]) => roles.some(role => keycloak.hasRole(role)),
+    getValidToken: async () => {
+      if (!keycloak.isAuthenticated) return null;
+      
+      try {
+        // Import authUtils here to avoid circular dependency
+        const { authUtils } = await import('../lib/keycloak');
+        return await authUtils.getValidToken();
+      } catch (error) {
+        console.error('Failed to get valid token:', error);
+        return null;
+      }
+    },
+    refreshToken: async () => {
+      if (!keycloak.isAuthenticated) return false;
+      
+      try {
+        const { authUtils } = await import('../lib/keycloak');
+        return await authUtils.updateToken(30);
+      } catch (error) {
+        console.error('Failed to refresh token:', error);
+        return false;
+      }
+    },
+    authInfo: () => {
+      return {
+        authenticated: keycloak.isAuthenticated,
+        username: user?.username,
+        email: user?.email,
+        roles: user?.roles || [],
+        tokenTimeLeft: keycloak.token ? 'available' : 'none',
+      };
+    },
   };
 
   return <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>;

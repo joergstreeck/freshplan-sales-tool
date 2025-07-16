@@ -14,21 +14,18 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 /**
- * Unit tests for CurrentUserProducer class.
- * Tests CDI producer methods for current user information.
+ * Unit tests for CurrentUserProducer class. Tests CDI producer methods for current user
+ * information.
  */
 class CurrentUserProducerTest {
 
   private CurrentUserProducer currentUserProducer;
 
-  @Mock
-  private SecurityContextProvider mockSecurityContext;
-  
-  @Mock
-  private Instance<JsonWebToken> mockJwtInstance;
-  
-  @Mock
-  private JsonWebToken mockJwt;
+  @Mock private SecurityContextProvider mockSecurityContext;
+
+  @Mock private Instance<JsonWebToken> mockJwtInstance;
+
+  @Mock private JsonWebToken mockJwt;
 
   @BeforeEach
   void setUp() {
@@ -49,7 +46,7 @@ class CurrentUserProducerTest {
       String tokenName = "john.doe";
       String email = "john.doe@example.com";
       Set<String> groups = Set.of("admin", "manager");
-      
+
       when(mockJwtInstance.isUnsatisfied()).thenReturn(false);
       when(mockJwtInstance.isAmbiguous()).thenReturn(false);
       when(mockJwtInstance.get()).thenReturn(mockJwt);
@@ -76,7 +73,7 @@ class CurrentUserProducerTest {
       when(mockJwtInstance.isAmbiguous()).thenReturn(false);
       when(mockJwtInstance.get()).thenReturn(mockJwt);
       when(mockJwt.getName()).thenReturn(null);
-      
+
       when(mockSecurityContext.isAuthenticated()).thenReturn(false);
 
       // Act
@@ -99,7 +96,7 @@ class CurrentUserProducerTest {
       // Arrange
       String username = "security.user";
       Set<String> roles = Set.of("sales");
-      
+
       when(mockJwtInstance.isUnsatisfied()).thenReturn(true);
       when(mockSecurityContext.isAuthenticated()).thenReturn(true);
       when(mockSecurityContext.getUsername()).thenReturn(username);
@@ -170,9 +167,11 @@ class CurrentUserProducerTest {
       // Act & Assert
       // The current implementation doesn't handle exceptions gracefully,
       // so we expect the exception to propagate
-      assertThrows(RuntimeException.class, () -> {
-        currentUserProducer.getCurrentUser();
-      });
+      assertThrows(
+          RuntimeException.class,
+          () -> {
+            currentUserProducer.getCurrentUser();
+          });
     }
 
     @Test
@@ -185,9 +184,11 @@ class CurrentUserProducerTest {
       // Act & Assert
       // The current implementation doesn't handle exceptions gracefully,
       // so we expect the exception to propagate
-      assertThrows(RuntimeException.class, () -> {
-        currentUserProducer.getCurrentUser();
-      });
+      assertThrows(
+          RuntimeException.class,
+          () -> {
+            currentUserProducer.getCurrentUser();
+          });
     }
   }
 
@@ -199,7 +200,7 @@ class CurrentUserProducerTest {
     @DisplayName("Should test system user creation")
     void shouldTestSystemUserCreation() {
       UserPrincipal systemUser = UserPrincipal.system();
-      
+
       assertNotNull(systemUser);
       assertEquals("system", systemUser.getUsername());
       assertEquals("system@freshplan.de", systemUser.getEmail());
@@ -211,7 +212,7 @@ class CurrentUserProducerTest {
     @DisplayName("Should test anonymous user creation")
     void shouldTestAnonymousUserCreation() {
       UserPrincipal anonymousUser = UserPrincipal.anonymous();
-      
+
       assertNotNull(anonymousUser);
       assertEquals("anonymous", anonymousUser.getUsername());
       assertNull(anonymousUser.getEmail());

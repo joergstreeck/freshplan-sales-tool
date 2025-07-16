@@ -46,13 +46,17 @@ public class CustomerResource {
   // ========== CRUD OPERATIONS ==========
 
   /**
-   * Creates a new customer.
+   * Creates a new customer. Requires admin or manager role for creating customers.
    *
    * @param request The customer creation request
    * @return 201 Created with customer response
    */
   @POST
+  @RolesAllowed({"admin", "manager"})
   public Response createCustomer(@Valid CreateCustomerRequest request) {
+    // Additional security: verify role programmatically for audit
+    securityContext.requireAnyRole("admin", "manager");
+
     CustomerResponse customer = customerService.createCustomer(request, currentUser.getUsername());
 
     return Response.status(Response.Status.CREATED).entity(customer).build();
@@ -72,7 +76,7 @@ public class CustomerResource {
   }
 
   /**
-   * Updates an existing customer.
+   * Updates an existing customer. Requires admin or manager role for customer updates.
    *
    * @param id The customer ID
    * @param request The update request
@@ -80,14 +84,17 @@ public class CustomerResource {
    */
   @PUT
   @Path("/{id}")
+  @RolesAllowed({"admin", "manager"})
   public Response updateCustomer(@PathParam("id") UUID id, @Valid UpdateCustomerRequest request) {
+    securityContext.requireAnyRole("admin", "manager");
+
     CustomerResponse customer =
         customerService.updateCustomer(id, request, currentUser.getUsername());
     return Response.ok(customer).build();
   }
 
   /**
-   * Soft deletes a customer.
+   * Soft deletes a customer. Requires admin role only - deletion is a critical operation.
    *
    * @param id The customer ID
    * @param reason The reason for deletion (query parameter)
@@ -95,9 +102,12 @@ public class CustomerResource {
    */
   @DELETE
   @Path("/{id}")
+  @RolesAllowed({"admin"})
   public Response deleteCustomer(
       @PathParam("id") UUID id,
       @QueryParam("reason") @DefaultValue("No reason provided") String reason) {
+    securityContext.requireRole("admin");
+
     customerService.deleteCustomer(id, currentUser.getUsername(), reason);
     return Response.noContent().build();
   }
@@ -178,7 +188,8 @@ public class CustomerResource {
   @GET
   @Path("/analytics/risk-assessment")
   public Response getCustomersAtRisk(
-      @QueryParam("minRiskScore") @DefaultValue(RiskManagementConstants.DEFAULT_RISK_SCORE_STRING) int minRiskScore,
+      @QueryParam("minRiskScore") @DefaultValue(RiskManagementConstants.DEFAULT_RISK_SCORE_STRING)
+          int minRiskScore,
       @QueryParam("page") @DefaultValue("0") int page,
       @QueryParam("size") @DefaultValue(PaginationConstants.DEFAULT_PAGE_SIZE_STRING) int size) {
 

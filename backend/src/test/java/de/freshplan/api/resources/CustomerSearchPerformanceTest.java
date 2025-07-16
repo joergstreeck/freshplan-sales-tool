@@ -483,7 +483,11 @@ class CustomerSearchPerformanceTest {
                   try {
                     long startTime = System.currentTimeMillis();
                     Response response =
-                        given().contentType(ContentType.JSON).body(request).when().post("/api/customers/search");
+                        given()
+                            .contentType(ContentType.JSON)
+                            .body(request)
+                            .when()
+                            .post("/api/customers/search");
                     long endTime = System.currentTimeMillis();
 
                     return response.statusCode() == 200 && (endTime - startTime) < 5000;

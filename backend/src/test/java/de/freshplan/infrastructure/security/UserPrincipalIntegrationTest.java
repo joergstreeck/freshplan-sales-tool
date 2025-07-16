@@ -8,8 +8,8 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 /**
- * Integration tests for UserPrincipal class.
- * These tests call the actual UserPrincipal methods to increase coverage.
+ * Integration tests for UserPrincipal class. These tests call the actual UserPrincipal methods to
+ * increase coverage.
  */
 class UserPrincipalIntegrationTest {
 
@@ -24,12 +24,13 @@ class UserPrincipalIntegrationTest {
       String email = "john.doe@example.com";
       Set<String> roles = Set.of("admin", "manager");
 
-      UserPrincipal principal = UserPrincipal.builder()
-          .username(username)
-          .email(email)
-          .roles(roles)
-          .authenticated(true)
-          .build();
+      UserPrincipal principal =
+          UserPrincipal.builder()
+              .username(username)
+              .email(email)
+              .roles(roles)
+              .authenticated(true)
+              .build();
 
       assertEquals(username, principal.getUsername());
       assertEquals(email, principal.getEmail());
@@ -42,9 +43,7 @@ class UserPrincipalIntegrationTest {
     void shouldBuildUserPrincipalWithMinimalFields() {
       String username = "john.doe";
 
-      UserPrincipal principal = UserPrincipal.builder()
-          .username(username)
-          .build();
+      UserPrincipal principal = UserPrincipal.builder().username(username).build();
 
       assertEquals(username, principal.getUsername());
       assertNull(principal.getEmail());
@@ -56,7 +55,7 @@ class UserPrincipalIntegrationTest {
     @DisplayName("Should create system user correctly")
     void shouldCreateSystemUserCorrectly() {
       UserPrincipal systemUser = UserPrincipal.system();
-      
+
       assertNotNull(systemUser);
       assertEquals("system", systemUser.getUsername());
       assertEquals("system@freshplan.de", systemUser.getEmail());
@@ -68,7 +67,7 @@ class UserPrincipalIntegrationTest {
     @DisplayName("Should create anonymous user correctly")
     void shouldCreateAnonymousUserCorrectly() {
       UserPrincipal anonymousUser = UserPrincipal.anonymous();
-      
+
       assertNotNull(anonymousUser);
       assertEquals("anonymous", anonymousUser.getUsername());
       assertNull(anonymousUser.getEmail());
@@ -84,10 +83,8 @@ class UserPrincipalIntegrationTest {
     @Test
     @DisplayName("Should check hasRole correctly")
     void shouldCheckHasRoleCorrectly() {
-      UserPrincipal principal = UserPrincipal.builder()
-          .username("test.user")
-          .roles(Set.of("admin", "manager"))
-          .build();
+      UserPrincipal principal =
+          UserPrincipal.builder().username("test.user").roles(Set.of("admin", "manager")).build();
 
       assertTrue(principal.hasRole("admin"));
       assertTrue(principal.hasRole("manager"));
@@ -98,10 +95,8 @@ class UserPrincipalIntegrationTest {
     @Test
     @DisplayName("Should check hasAnyRole correctly")
     void shouldCheckHasAnyRoleCorrectly() {
-      UserPrincipal principal = UserPrincipal.builder()
-          .username("test.user")
-          .roles(Set.of("admin"))
-          .build();
+      UserPrincipal principal =
+          UserPrincipal.builder().username("test.user").roles(Set.of("admin")).build();
 
       assertTrue(principal.hasAnyRole("admin", "manager"));
       assertTrue(principal.hasAnyRole("manager", "admin"));
@@ -113,10 +108,8 @@ class UserPrincipalIntegrationTest {
     @Test
     @DisplayName("Should handle empty roles")
     void shouldHandleEmptyRoles() {
-      UserPrincipal principal = UserPrincipal.builder()
-          .username("test.user")
-          .roles(Set.of())
-          .build();
+      UserPrincipal principal =
+          UserPrincipal.builder().username("test.user").roles(Set.of()).build();
 
       assertFalse(principal.hasRole("admin"));
       assertFalse(principal.hasRole(""));
@@ -127,10 +120,7 @@ class UserPrincipalIntegrationTest {
     @Test
     @DisplayName("Should handle null roles gracefully")
     void shouldHandleNullRolesGracefully() {
-      UserPrincipal principal = UserPrincipal.builder()
-          .username("test.user")
-          .roles(null)
-          .build();
+      UserPrincipal principal = UserPrincipal.builder().username("test.user").roles(null).build();
 
       assertFalse(principal.hasRole("admin"));
       assertFalse(principal.hasAnyRole("admin", "manager"));
@@ -149,19 +139,21 @@ class UserPrincipalIntegrationTest {
       String email = "john.doe@example.com";
       Set<String> roles = Set.of("admin");
 
-      UserPrincipal principal1 = UserPrincipal.builder()
-          .username(username)
-          .email(email)
-          .roles(roles)
-          .authenticated(true)
-          .build();
+      UserPrincipal principal1 =
+          UserPrincipal.builder()
+              .username(username)
+              .email(email)
+              .roles(roles)
+              .authenticated(true)
+              .build();
 
-      UserPrincipal principal2 = UserPrincipal.builder()
-          .username(username)
-          .email(email)
-          .roles(roles)
-          .authenticated(true)
-          .build();
+      UserPrincipal principal2 =
+          UserPrincipal.builder()
+              .username(username)
+              .email(email)
+              .roles(roles)
+              .authenticated(true)
+              .build();
 
       assertEquals(principal1, principal2);
       assertEquals(principal1.hashCode(), principal2.hashCode());
@@ -170,13 +162,9 @@ class UserPrincipalIntegrationTest {
     @Test
     @DisplayName("Should not be equal when usernames differ")
     void shouldNotBeEqualWhenUsernamesDiffer() {
-      UserPrincipal principal1 = UserPrincipal.builder()
-          .username("user1")
-          .build();
+      UserPrincipal principal1 = UserPrincipal.builder().username("user1").build();
 
-      UserPrincipal principal2 = UserPrincipal.builder()
-          .username("user2")
-          .build();
+      UserPrincipal principal2 = UserPrincipal.builder().username("user2").build();
 
       assertNotEquals(principal1, principal2);
     }
@@ -184,15 +172,11 @@ class UserPrincipalIntegrationTest {
     @Test
     @DisplayName("Should not be equal when authentication differs")
     void shouldNotBeEqualWhenAuthenticationDiffers() {
-      UserPrincipal principal1 = UserPrincipal.builder()
-          .username("user1")
-          .authenticated(true)
-          .build();
+      UserPrincipal principal1 =
+          UserPrincipal.builder().username("user1").authenticated(true).build();
 
-      UserPrincipal principal2 = UserPrincipal.builder()
-          .username("user1")
-          .authenticated(false)
-          .build();
+      UserPrincipal principal2 =
+          UserPrincipal.builder().username("user1").authenticated(false).build();
 
       assertNotEquals(principal1, principal2);
     }
@@ -200,9 +184,7 @@ class UserPrincipalIntegrationTest {
     @Test
     @DisplayName("Should handle null comparison")
     void shouldHandleNullComparison() {
-      UserPrincipal principal = UserPrincipal.builder()
-          .username("john.doe")
-          .build();
+      UserPrincipal principal = UserPrincipal.builder().username("john.doe").build();
 
       assertNotEquals(principal, null);
       assertNotEquals(null, principal);
@@ -211,9 +193,7 @@ class UserPrincipalIntegrationTest {
     @Test
     @DisplayName("Should handle different class comparison")
     void shouldHandleDifferentClassComparison() {
-      UserPrincipal principal = UserPrincipal.builder()
-          .username("john.doe")
-          .build();
+      UserPrincipal principal = UserPrincipal.builder().username("john.doe").build();
 
       assertNotEquals(principal, "john.doe");
       assertNotEquals(principal, 42);
@@ -228,9 +208,7 @@ class UserPrincipalIntegrationTest {
     @DisplayName("Should include username in toString")
     void shouldIncludeUsernameInToString() {
       String username = "john.doe";
-      UserPrincipal principal = UserPrincipal.builder()
-          .username(username)
-          .build();
+      UserPrincipal principal = UserPrincipal.builder().username(username).build();
 
       String toString = principal.toString();
       assertTrue(toString.contains(username));
@@ -241,10 +219,7 @@ class UserPrincipalIntegrationTest {
     @DisplayName("Should include email in toString")
     void shouldIncludeEmailInToString() {
       String email = "john.doe@example.com";
-      UserPrincipal principal = UserPrincipal.builder()
-          .username("john.doe")
-          .email(email)
-          .build();
+      UserPrincipal principal = UserPrincipal.builder().username("john.doe").email(email).build();
 
       String toString = principal.toString();
       assertTrue(toString.contains(email));
@@ -254,10 +229,7 @@ class UserPrincipalIntegrationTest {
     @DisplayName("Should include roles in toString")
     void shouldIncludeRolesInToString() {
       Set<String> roles = Set.of("admin", "manager");
-      UserPrincipal principal = UserPrincipal.builder()
-          .username("john.doe")
-          .roles(roles)
-          .build();
+      UserPrincipal principal = UserPrincipal.builder().username("john.doe").roles(roles).build();
 
       String toString = principal.toString();
       assertTrue(toString.contains("admin"));
@@ -267,10 +239,8 @@ class UserPrincipalIntegrationTest {
     @Test
     @DisplayName("Should include authentication status in toString")
     void shouldIncludeAuthenticationStatusInToString() {
-      UserPrincipal principal = UserPrincipal.builder()
-          .username("john.doe")
-          .authenticated(false)
-          .build();
+      UserPrincipal principal =
+          UserPrincipal.builder().username("john.doe").authenticated(false).build();
 
       String toString = principal.toString();
       assertTrue(toString.contains("authenticated=false"));
@@ -284,12 +254,13 @@ class UserPrincipalIntegrationTest {
     @Test
     @DisplayName("Should support method chaining")
     void shouldSupportMethodChaining() {
-      UserPrincipal principal = UserPrincipal.builder()
-          .username("john.doe")
-          .email("john.doe@example.com")
-          .roles(Set.of("admin"))
-          .authenticated(true)
-          .build();
+      UserPrincipal principal =
+          UserPrincipal.builder()
+              .username("john.doe")
+              .email("john.doe@example.com")
+              .roles(Set.of("admin"))
+              .authenticated(true)
+              .build();
 
       assertNotNull(principal);
       assertEquals("john.doe", principal.getUsername());
@@ -301,13 +272,10 @@ class UserPrincipalIntegrationTest {
     @Test
     @DisplayName("Should allow partial building")
     void shouldAllowPartialBuilding() {
-      UserPrincipal.Builder builder = UserPrincipal.builder()
-          .username("john.doe");
+      UserPrincipal.Builder builder = UserPrincipal.builder().username("john.doe");
 
       // Can continue building later
-      UserPrincipal principal = builder
-          .email("john.doe@example.com")
-          .build();
+      UserPrincipal principal = builder.email("john.doe@example.com").build();
 
       assertEquals("john.doe", principal.getUsername());
       assertEquals("john.doe@example.com", principal.getEmail());
@@ -321,10 +289,11 @@ class UserPrincipalIntegrationTest {
     @Test
     @DisplayName("Should handle multiple role checks")
     void shouldHandleMultipleRoleChecks() {
-      UserPrincipal principal = UserPrincipal.builder()
-          .username("john.doe")
-          .roles(Set.of("admin", "manager", "sales"))
-          .build();
+      UserPrincipal principal =
+          UserPrincipal.builder()
+              .username("john.doe")
+              .roles(Set.of("admin", "manager", "sales"))
+              .build();
 
       assertTrue(principal.hasRole("admin"));
       assertTrue(principal.hasRole("manager"));
@@ -341,19 +310,16 @@ class UserPrincipalIntegrationTest {
     @DisplayName("Should create immutable roles set")
     void shouldCreateImmutableRolesSet() {
       Set<String> originalRoles = Set.of("admin", "manager");
-      UserPrincipal principal = UserPrincipal.builder()
-          .username("john.doe")
-          .roles(originalRoles)
-          .build();
+      UserPrincipal principal =
+          UserPrincipal.builder().username("john.doe").roles(originalRoles).build();
 
       Set<String> principalRoles = principal.getRoles();
-      
+
       // Should have the same content
       assertEquals(originalRoles, principalRoles);
-      
+
       // Should be immutable
-      assertThrows(UnsupportedOperationException.class, 
-          () -> principalRoles.add("new-role"));
+      assertThrows(UnsupportedOperationException.class, () -> principalRoles.add("new-role"));
     }
   }
 }

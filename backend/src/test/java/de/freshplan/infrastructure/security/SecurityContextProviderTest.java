@@ -22,8 +22,8 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 /**
- * Comprehensive test suite for SecurityContextProvider.
- * Tests authentication, authorization, token handling, and audit functionality.
+ * Comprehensive test suite for SecurityContextProvider. Tests authentication, authorization, token
+ * handling, and audit functionality.
  */
 @QuarkusTest
 @TestProfile(SecurityDisabledTestProfile.class)
@@ -45,7 +45,9 @@ class SecurityContextProviderTest {
   class AuthenticationTests {
 
     @Test
-    @TestSecurity(user = "testuser", roles = {"admin", "manager"})
+    @TestSecurity(
+        user = "testuser",
+        roles = {"admin", "manager"})
     @DisplayName("Should return true when user is authenticated")
     void shouldReturnTrueWhenAuthenticated() {
       assertTrue(securityContextProvider.isAuthenticated());
@@ -68,10 +70,9 @@ class SecurityContextProviderTest {
     @Test
     @DisplayName("Should require authentication and throw when not authenticated")
     void shouldRequireAuthenticationAndThrow() {
-      SecurityException exception = assertThrows(
-          SecurityException.class, 
-          () -> securityContextProvider.requireAuthentication()
-      );
+      SecurityException exception =
+          assertThrows(
+              SecurityException.class, () -> securityContextProvider.requireAuthentication());
       assertEquals("Authentication required", exception.getMessage());
     }
   }
@@ -81,58 +82,70 @@ class SecurityContextProviderTest {
   class RoleBasedAccessControlTests {
 
     @Test
-    @TestSecurity(user = "admin", roles = {"admin"})
+    @TestSecurity(
+        user = "admin",
+        roles = {"admin"})
     @DisplayName("Should return true when user has required role")
     void shouldReturnTrueWhenUserHasRole() {
       assertTrue(securityContextProvider.hasRole("admin"));
     }
 
     @Test
-    @TestSecurity(user = "manager", roles = {"manager"})
+    @TestSecurity(
+        user = "manager",
+        roles = {"manager"})
     @DisplayName("Should return false when user lacks required role")
     void shouldReturnFalseWhenUserLacksRole() {
       assertFalse(securityContextProvider.hasRole("admin"));
     }
 
     @Test
-    @TestSecurity(user = "admin", roles = {"admin"})
+    @TestSecurity(
+        user = "admin",
+        roles = {"admin"})
     @DisplayName("Should require role and pass when user has role")
     void shouldRequireRoleAndPass() {
       assertDoesNotThrow(() -> securityContextProvider.requireRole("admin"));
     }
 
     @Test
-    @TestSecurity(user = "manager", roles = {"manager"})
+    @TestSecurity(
+        user = "manager",
+        roles = {"manager"})
     @DisplayName("Should require role and throw when user lacks role")
     void shouldRequireRoleAndThrow() {
-      SecurityException exception = assertThrows(
-          SecurityException.class,
-          () -> securityContextProvider.requireRole("admin")
-      );
+      SecurityException exception =
+          assertThrows(SecurityException.class, () -> securityContextProvider.requireRole("admin"));
       assertEquals("Role 'admin' required", exception.getMessage());
     }
 
     @Test
-    @TestSecurity(user = "manager", roles = {"manager", "sales"})
+    @TestSecurity(
+        user = "manager",
+        roles = {"manager", "sales"})
     @DisplayName("Should require any role and pass when user has one of required roles")
     void shouldRequireAnyRoleAndPass() {
       assertDoesNotThrow(() -> securityContextProvider.requireAnyRole("admin", "manager"));
     }
 
     @Test
-    @TestSecurity(user = "viewer", roles = {"viewer"})
+    @TestSecurity(
+        user = "viewer",
+        roles = {"viewer"})
     @DisplayName("Should require any role and throw when user lacks all roles")
     void shouldRequireAnyRoleAndThrow() {
-      SecurityException exception = assertThrows(
-          SecurityException.class,
-          () -> securityContextProvider.requireAnyRole("admin", "manager")
-      );
+      SecurityException exception =
+          assertThrows(
+              SecurityException.class,
+              () -> securityContextProvider.requireAnyRole("admin", "manager"));
       assertTrue(exception.getMessage().contains("One of roles"));
       assertTrue(exception.getMessage().contains("required"));
     }
 
     @Test
-    @TestSecurity(user = "manager", roles = {"admin", "manager", "sales"})
+    @TestSecurity(
+        user = "manager",
+        roles = {"admin", "manager", "sales"})
     @DisplayName("Should return correct roles set")
     void shouldReturnCorrectRoles() {
       Set<String> roles = securityContextProvider.getRoles();
@@ -398,12 +411,14 @@ class SecurityContextProviderTest {
   class AuthenticationDetailsTests {
 
     @Test
-    @TestSecurity(user = "testuser", roles = {"admin", "manager"})
+    @TestSecurity(
+        user = "testuser",
+        roles = {"admin", "manager"})
     @DisplayName("Should return authenticated details when user is authenticated")
     void shouldReturnAuthenticatedDetailsWhenAuthenticated() {
-      SecurityContextProvider.AuthenticationDetails details = 
+      SecurityContextProvider.AuthenticationDetails details =
           securityContextProvider.getAuthenticationDetails();
-      
+
       assertTrue(details.isAuthenticated());
       assertEquals("testuser", details.getUsername());
       assertEquals(2, details.getRoles().size());
@@ -414,9 +429,9 @@ class SecurityContextProviderTest {
     @Test
     @DisplayName("Should return anonymous details when user is not authenticated")
     void shouldReturnAnonymousDetailsWhenNotAuthenticated() {
-      SecurityContextProvider.AuthenticationDetails details = 
+      SecurityContextProvider.AuthenticationDetails details =
           securityContextProvider.getAuthenticationDetails();
-      
+
       assertFalse(details.isAuthenticated());
       assertNull(details.getUsername());
       assertTrue(details.getRoles().isEmpty());
@@ -425,9 +440,9 @@ class SecurityContextProviderTest {
     @Test
     @DisplayName("Should create anonymous details correctly")
     void shouldCreateAnonymousDetailsCorrectly() {
-      SecurityContextProvider.AuthenticationDetails anonymous = 
+      SecurityContextProvider.AuthenticationDetails anonymous =
           SecurityContextProvider.AuthenticationDetails.anonymous();
-      
+
       assertFalse(anonymous.isAuthenticated());
       assertNull(anonymous.getUserId());
       assertNull(anonymous.getUsername());
@@ -452,7 +467,7 @@ class SecurityContextProviderTest {
       String sessionId = "session123";
       Instant tokenExpiration = Instant.now().plusSeconds(3600);
 
-      SecurityContextProvider.AuthenticationDetails details = 
+      SecurityContextProvider.AuthenticationDetails details =
           SecurityContextProvider.AuthenticationDetails.builder()
               .userId(userId)
               .username(username)
@@ -475,7 +490,7 @@ class SecurityContextProviderTest {
     @Test
     @DisplayName("Should handle null roles in builder")
     void shouldHandleNullRolesInBuilder() {
-      SecurityContextProvider.AuthenticationDetails details = 
+      SecurityContextProvider.AuthenticationDetails details =
           SecurityContextProvider.AuthenticationDetails.builder()
               .username("testuser")
               .roles(null)
@@ -519,7 +534,7 @@ class SecurityContextProviderTest {
       when(mockJwt.getClaim("sid")).thenReturn(testSessionId);
       when(mockJwt.getClaim("exp")).thenReturn(expTimestamp);
 
-      SecurityContextProvider.AuthenticationDetails details = 
+      SecurityContextProvider.AuthenticationDetails details =
           testProvider.getAuthenticationDetails();
 
       assertTrue(details.isAuthenticated());
@@ -551,7 +566,7 @@ class SecurityContextProviderTest {
       // Fallback to security identity name
       when(mockSecurityIdentity.getPrincipal()).thenReturn(() -> "fallback_user");
 
-      SecurityContextProvider.AuthenticationDetails details = 
+      SecurityContextProvider.AuthenticationDetails details =
           testProvider.getAuthenticationDetails();
 
       assertTrue(details.isAuthenticated());
@@ -576,17 +591,20 @@ class SecurityContextProviderTest {
     }
 
     @Test
-    @TestSecurity(user = "testuser", roles = {"admin"})
+    @TestSecurity(
+        user = "testuser",
+        roles = {"admin"})
     @DisplayName("Should handle multiple role requirements correctly")
     void shouldHandleMultipleRoleRequirementsCorrectly() {
       // User has admin role
       assertDoesNotThrow(() -> securityContextProvider.requireAnyRole("admin", "manager", "sales"));
-      
+
       // User doesn't have viewer role but has admin
       assertDoesNotThrow(() -> securityContextProvider.requireAnyRole("viewer", "admin"));
-      
+
       // User doesn't have any of these roles
-      assertThrows(SecurityException.class, 
+      assertThrows(
+          SecurityException.class,
           () -> securityContextProvider.requireAnyRole("viewer", "customer"));
     }
 

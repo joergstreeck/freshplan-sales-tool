@@ -17,8 +17,8 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 /**
- * Integration tests for Role-Based Access Control (RBAC) across the entire application.
- * Tests the interaction between different roles and their access permissions.
+ * Integration tests for Role-Based Access Control (RBAC) across the entire application. Tests the
+ * interaction between different roles and their access permissions.
  */
 @QuarkusTest
 @TestProfile(SecurityDisabledTestProfile.class)
@@ -29,31 +29,30 @@ class RoleBasedAccessIntegrationTest {
   class AdminRoleTests {
 
     @Test
-    @TestSecurity(user = "admin", roles = {"admin"})
+    @TestSecurity(
+        user = "admin",
+        roles = {"admin"})
     @DisplayName("Admin should have full access to user management")
     void admin_shouldHaveFullUserManagementAccess() {
       // List users
-      given()
-          .when()
-          .get("/api/users")
-          .then()
-          .statusCode(Response.Status.OK.getStatusCode());
+      given().when().get("/api/users").then().statusCode(Response.Status.OK.getStatusCode());
 
       // Create user
-      var createUserResponse = given()
-          .contentType(ContentType.JSON)
-          .body(Map.of(
-              "username", "adminCreatedUser",
-              "firstName", "Admin",
-              "lastName", "Created",
-              "email", "admin.created@example.com"
-          ))
-          .when()
-          .post("/api/users")
-          .then()
-          .statusCode(Response.Status.CREATED.getStatusCode())
-          .extract()
-          .path("id");
+      var createUserResponse =
+          given()
+              .contentType(ContentType.JSON)
+              .body(
+                  Map.of(
+                      "username", "adminCreatedUser",
+                      "firstName", "Admin",
+                      "lastName", "Created",
+                      "email", "admin.created@example.com"))
+              .when()
+              .post("/api/users")
+              .then()
+              .statusCode(Response.Status.CREATED.getStatusCode())
+              .extract()
+              .path("id");
 
       // Read specific user
       given()
@@ -66,13 +65,13 @@ class RoleBasedAccessIntegrationTest {
       // Update user
       given()
           .contentType(ContentType.JSON)
-          .body(Map.of(
-              "username", "updatedAdminUser",
-              "firstName", "Updated",
-              "lastName", "Admin",
-              "email", "updated.admin@example.com",
-              "enabled", true
-          ))
+          .body(
+              Map.of(
+                  "username", "updatedAdminUser",
+                  "firstName", "Updated",
+                  "lastName", "Admin",
+                  "email", "updated.admin@example.com",
+                  "enabled", true))
           .when()
           .put("/api/users/" + createUserResponse)
           .then()
@@ -87,41 +86,40 @@ class RoleBasedAccessIntegrationTest {
     }
 
     @Test
-    @TestSecurity(user = "admin", roles = {"admin"})
+    @TestSecurity(
+        user = "admin",
+        roles = {"admin"})
     @DisplayName("Admin should have full access to customer management")
     void admin_shouldHaveFullCustomerManagementAccess() {
       // Create customer
-      var createCustomerResponse = given()
-          .contentType(ContentType.JSON)
-          .body(Map.of(
-              "customerType", "NEUKUNDE",
-              "companyName", "Admin Test Company",
-              "contactPerson", "Admin Contact",
-              "email", "admin.customer@example.com"
-          ))
-          .when()
-          .post("/api/customers")
-          .then()
-          .statusCode(Response.Status.CREATED.getStatusCode())
-          .extract()
-          .path("id");
+      var createCustomerResponse =
+          given()
+              .contentType(ContentType.JSON)
+              .body(
+                  Map.of(
+                      "customerType", "NEUKUNDE",
+                      "companyName", "Admin Test Company",
+                      "contactPerson", "Admin Contact",
+                      "email", "admin.customer@example.com"))
+              .when()
+              .post("/api/customers")
+              .then()
+              .statusCode(Response.Status.CREATED.getStatusCode())
+              .extract()
+              .path("id");
 
       // Read customers
-      given()
-          .when()
-          .get("/api/customers")
-          .then()
-          .statusCode(Response.Status.OK.getStatusCode());
+      given().when().get("/api/customers").then().statusCode(Response.Status.OK.getStatusCode());
 
       // Update customer
       given()
           .contentType(ContentType.JSON)
-          .body(Map.of(
-              "customerType", "BESTANDSKUNDE",
-              "companyName", "Updated Admin Company",
-              "contactPerson", "Updated Admin Contact",
-              "email", "updated.admin.customer@example.com"
-          ))
+          .body(
+              Map.of(
+                  "customerType", "BESTANDSKUNDE",
+                  "companyName", "Updated Admin Company",
+                  "contactPerson", "Updated Admin Contact",
+                  "email", "updated.admin.customer@example.com"))
           .when()
           .put("/api/customers/" + createCustomerResponse)
           .then()
@@ -136,24 +134,27 @@ class RoleBasedAccessIntegrationTest {
     }
 
     @Test
-    @TestSecurity(user = "admin", roles = {"admin"})
+    @TestSecurity(
+        user = "admin",
+        roles = {"admin"})
     @DisplayName("Admin should be able to manage user roles")
     void admin_shouldManageUserRoles() {
       // Create user first
-      var userId = given()
-          .contentType(ContentType.JSON)
-          .body(Map.of(
-              "username", "roleTestUser",
-              "firstName", "Role",
-              "lastName", "Test",
-              "email", "role.test@example.com"
-          ))
-          .when()
-          .post("/api/users")
-          .then()
-          .statusCode(Response.Status.CREATED.getStatusCode())
-          .extract()
-          .path("id");
+      var userId =
+          given()
+              .contentType(ContentType.JSON)
+              .body(
+                  Map.of(
+                      "username", "roleTestUser",
+                      "firstName", "Role",
+                      "lastName", "Test",
+                      "email", "role.test@example.com"))
+              .when()
+              .post("/api/users")
+              .then()
+              .statusCode(Response.Status.CREATED.getStatusCode())
+              .extract()
+              .path("id");
 
       // Update roles
       given()
@@ -179,41 +180,40 @@ class RoleBasedAccessIntegrationTest {
   class ManagerRoleTests {
 
     @Test
-    @TestSecurity(user = "manager", roles = {"manager"})
+    @TestSecurity(
+        user = "manager",
+        roles = {"manager"})
     @DisplayName("Manager should have customer create and update access")
     void manager_shouldHaveCustomerCreateUpdateAccess() {
       // Create customer (allowed)
-      var customerId = given()
-          .contentType(ContentType.JSON)
-          .body(Map.of(
-              "customerType", "NEUKUNDE",
-              "companyName", "Manager Test Company",
-              "contactPerson", "Manager Contact",
-              "email", "manager.customer@example.com"
-          ))
-          .when()
-          .post("/api/customers")
-          .then()
-          .statusCode(Response.Status.CREATED.getStatusCode())
-          .extract()
-          .path("id");
+      var customerId =
+          given()
+              .contentType(ContentType.JSON)
+              .body(
+                  Map.of(
+                      "customerType", "NEUKUNDE",
+                      "companyName", "Manager Test Company",
+                      "contactPerson", "Manager Contact",
+                      "email", "manager.customer@example.com"))
+              .when()
+              .post("/api/customers")
+              .then()
+              .statusCode(Response.Status.CREATED.getStatusCode())
+              .extract()
+              .path("id");
 
       // Read customers (allowed)
-      given()
-          .when()
-          .get("/api/customers")
-          .then()
-          .statusCode(Response.Status.OK.getStatusCode());
+      given().when().get("/api/customers").then().statusCode(Response.Status.OK.getStatusCode());
 
       // Update customer (allowed)
       given()
           .contentType(ContentType.JSON)
-          .body(Map.of(
-              "customerType", "BESTANDSKUNDE",
-              "companyName", "Updated Manager Company",
-              "contactPerson", "Updated Manager Contact",
-              "email", "updated.manager.customer@example.com"
-          ))
+          .body(
+              Map.of(
+                  "customerType", "BESTANDSKUNDE",
+                  "companyName", "Updated Manager Company",
+                  "contactPerson", "Updated Manager Contact",
+                  "email", "updated.manager.customer@example.com"))
           .when()
           .put("/api/customers/" + customerId)
           .then()
@@ -228,25 +228,23 @@ class RoleBasedAccessIntegrationTest {
     }
 
     @Test
-    @TestSecurity(user = "manager", roles = {"manager"})
+    @TestSecurity(
+        user = "manager",
+        roles = {"manager"})
     @DisplayName("Manager should NOT have user management access")
     void manager_shouldNotHaveUserManagementAccess() {
       // List users (forbidden)
-      given()
-          .when()
-          .get("/api/users")
-          .then()
-          .statusCode(Response.Status.FORBIDDEN.getStatusCode());
+      given().when().get("/api/users").then().statusCode(Response.Status.FORBIDDEN.getStatusCode());
 
       // Create user (forbidden)
       given()
           .contentType(ContentType.JSON)
-          .body(Map.of(
-              "username", "managerAttemptUser",
-              "firstName", "Manager",
-              "lastName", "Attempt",
-              "email", "manager.attempt@example.com"
-          ))
+          .body(
+              Map.of(
+                  "username", "managerAttemptUser",
+                  "firstName", "Manager",
+                  "lastName", "Attempt",
+                  "email", "manager.attempt@example.com"))
           .when()
           .post("/api/users")
           .then()
@@ -263,7 +261,9 @@ class RoleBasedAccessIntegrationTest {
     }
 
     @Test
-    @TestSecurity(user = "manager", roles = {"manager"})
+    @TestSecurity(
+        user = "manager",
+        roles = {"manager"})
     @DisplayName("Manager should have access to own profile")
     void manager_shouldHaveOwnProfileAccess() {
       given()
@@ -281,25 +281,23 @@ class RoleBasedAccessIntegrationTest {
   class SalesRoleTests {
 
     @Test
-    @TestSecurity(user = "sales", roles = {"sales"})
+    @TestSecurity(
+        user = "sales",
+        roles = {"sales"})
     @DisplayName("Sales should have read-only customer access")
     void sales_shouldHaveReadOnlyCustomerAccess() {
       // Read customers (allowed)
-      given()
-          .when()
-          .get("/api/customers")
-          .then()
-          .statusCode(Response.Status.OK.getStatusCode());
+      given().when().get("/api/customers").then().statusCode(Response.Status.OK.getStatusCode());
 
       // Create customer (forbidden)
       given()
           .contentType(ContentType.JSON)
-          .body(Map.of(
-              "customerType", "NEUKUNDE",
-              "companyName", "Sales Test Company",
-              "contactPerson", "Sales Contact",
-              "email", "sales.customer@example.com"
-          ))
+          .body(
+              Map.of(
+                  "customerType", "NEUKUNDE",
+                  "companyName", "Sales Test Company",
+                  "contactPerson", "Sales Contact",
+                  "email", "sales.customer@example.com"))
           .when()
           .post("/api/customers")
           .then()
@@ -308,12 +306,12 @@ class RoleBasedAccessIntegrationTest {
       // Update customer (forbidden)
       given()
           .contentType(ContentType.JSON)
-          .body(Map.of(
-              "customerType", "BESTANDSKUNDE",
-              "companyName", "Updated Sales Company",
-              "contactPerson", "Updated Sales Contact",
-              "email", "updated.sales.customer@example.com"
-          ))
+          .body(
+              Map.of(
+                  "customerType", "BESTANDSKUNDE",
+                  "companyName", "Updated Sales Company",
+                  "contactPerson", "Updated Sales Contact",
+                  "email", "updated.sales.customer@example.com"))
           .when()
           .put("/api/customers/" + UUID.randomUUID())
           .then()
@@ -328,15 +326,13 @@ class RoleBasedAccessIntegrationTest {
     }
 
     @Test
-    @TestSecurity(user = "sales", roles = {"sales"})
+    @TestSecurity(
+        user = "sales",
+        roles = {"sales"})
     @DisplayName("Sales should NOT have user management access")
     void sales_shouldNotHaveUserManagementAccess() {
       // List users (forbidden)
-      given()
-          .when()
-          .get("/api/users")
-          .then()
-          .statusCode(Response.Status.FORBIDDEN.getStatusCode());
+      given().when().get("/api/users").then().statusCode(Response.Status.FORBIDDEN.getStatusCode());
 
       // Access specific user (forbidden)
       given()
@@ -348,12 +344,12 @@ class RoleBasedAccessIntegrationTest {
       // Create user (forbidden)
       given()
           .contentType(ContentType.JSON)
-          .body(Map.of(
-              "username", "salesAttemptUser",
-              "firstName", "Sales",
-              "lastName", "Attempt",
-              "email", "sales.attempt@example.com"
-          ))
+          .body(
+              Map.of(
+                  "username", "salesAttemptUser",
+                  "firstName", "Sales",
+                  "lastName", "Attempt",
+                  "email", "sales.attempt@example.com"))
           .when()
           .post("/api/users")
           .then()
@@ -361,7 +357,9 @@ class RoleBasedAccessIntegrationTest {
     }
 
     @Test
-    @TestSecurity(user = "sales", roles = {"sales"})
+    @TestSecurity(
+        user = "sales",
+        roles = {"sales"})
     @DisplayName("Sales should have access to own profile")
     void sales_shouldHaveOwnProfileAccess() {
       given()
@@ -379,25 +377,23 @@ class RoleBasedAccessIntegrationTest {
   class ViewerRoleTests {
 
     @Test
-    @TestSecurity(user = "viewer", roles = {"viewer"})
+    @TestSecurity(
+        user = "viewer",
+        roles = {"viewer"})
     @DisplayName("Viewer should have read-only access to customers")
     void viewer_shouldHaveReadOnlyCustomerAccess() {
       // Read customers (allowed)
-      given()
-          .when()
-          .get("/api/customers")
-          .then()
-          .statusCode(Response.Status.OK.getStatusCode());
+      given().when().get("/api/customers").then().statusCode(Response.Status.OK.getStatusCode());
 
       // All write operations should be forbidden
       given()
           .contentType(ContentType.JSON)
-          .body(Map.of(
-              "customerType", "NEUKUNDE",
-              "companyName", "Viewer Test Company",
-              "contactPerson", "Viewer Contact",
-              "email", "viewer.customer@example.com"
-          ))
+          .body(
+              Map.of(
+                  "customerType", "NEUKUNDE",
+                  "companyName", "Viewer Test Company",
+                  "contactPerson", "Viewer Contact",
+                  "email", "viewer.customer@example.com"))
           .when()
           .post("/api/customers")
           .then()
@@ -405,15 +401,13 @@ class RoleBasedAccessIntegrationTest {
     }
 
     @Test
-    @TestSecurity(user = "viewer", roles = {"viewer"})
+    @TestSecurity(
+        user = "viewer",
+        roles = {"viewer"})
     @DisplayName("Viewer should NOT have any user management access")
     void viewer_shouldNotHaveUserManagementAccess() {
       // No user management operations allowed
-      given()
-          .when()
-          .get("/api/users")
-          .then()
-          .statusCode(Response.Status.FORBIDDEN.getStatusCode());
+      given().when().get("/api/users").then().statusCode(Response.Status.FORBIDDEN.getStatusCode());
 
       given()
           .when()
@@ -423,7 +417,9 @@ class RoleBasedAccessIntegrationTest {
     }
 
     @Test
-    @TestSecurity(user = "viewer", roles = {"viewer"})
+    @TestSecurity(
+        user = "viewer",
+        roles = {"viewer"})
     @DisplayName("Viewer should have access to own profile")
     void viewer_shouldHaveOwnProfileAccess() {
       given()
@@ -441,31 +437,30 @@ class RoleBasedAccessIntegrationTest {
   class MultipleRolesTests {
 
     @Test
-    @TestSecurity(user = "multiuser", roles = {"admin", "manager", "sales"})
+    @TestSecurity(
+        user = "multiuser",
+        roles = {"admin", "manager", "sales"})
     @DisplayName("User with multiple roles should get highest privilege level")
     void userWithMultipleRoles_shouldGetHighestPrivilege() {
       // Should have admin privileges (highest level)
-      given()
-          .when()
-          .get("/api/users")
-          .then()
-          .statusCode(Response.Status.OK.getStatusCode());
+      given().when().get("/api/users").then().statusCode(Response.Status.OK.getStatusCode());
 
       // Should be able to create customers (admin/manager privilege)
-      var customerId = given()
-          .contentType(ContentType.JSON)
-          .body(Map.of(
-              "customerType", "NEUKUNDE",
-              "companyName", "Multi Role Company",
-              "contactPerson", "Multi Contact",
-              "email", "multi.role@example.com"
-          ))
-          .when()
-          .post("/api/customers")
-          .then()
-          .statusCode(Response.Status.CREATED.getStatusCode())
-          .extract()
-          .path("id");
+      var customerId =
+          given()
+              .contentType(ContentType.JSON)
+              .body(
+                  Map.of(
+                      "customerType", "NEUKUNDE",
+                      "companyName", "Multi Role Company",
+                      "contactPerson", "Multi Contact",
+                      "email", "multi.role@example.com"))
+              .when()
+              .post("/api/customers")
+              .then()
+              .statusCode(Response.Status.CREATED.getStatusCode())
+              .extract()
+              .path("id");
 
       // Should be able to delete customers (admin privilege)
       given()
@@ -476,34 +471,37 @@ class RoleBasedAccessIntegrationTest {
     }
 
     @Test
-    @TestSecurity(user = "managersales", roles = {"manager", "sales"})
+    @TestSecurity(
+        user = "managersales",
+        roles = {"manager", "sales"})
     @DisplayName("Manager+Sales user should have manager privileges")
     void managerSalesUser_shouldHaveManagerPrivileges() {
       // Should have manager privileges (create/update customers)
-      var customerId = given()
-          .contentType(ContentType.JSON)
-          .body(Map.of(
-              "customerType", "NEUKUNDE",
-              "companyName", "Manager Sales Company",
-              "contactPerson", "Manager Sales Contact",
-              "email", "manager.sales@example.com"
-          ))
-          .when()
-          .post("/api/customers")
-          .then()
-          .statusCode(Response.Status.CREATED.getStatusCode())
-          .extract()
-          .path("id");
+      var customerId =
+          given()
+              .contentType(ContentType.JSON)
+              .body(
+                  Map.of(
+                      "customerType", "NEUKUNDE",
+                      "companyName", "Manager Sales Company",
+                      "contactPerson", "Manager Sales Contact",
+                      "email", "manager.sales@example.com"))
+              .when()
+              .post("/api/customers")
+              .then()
+              .statusCode(Response.Status.CREATED.getStatusCode())
+              .extract()
+              .path("id");
 
       // Should be able to update
       given()
           .contentType(ContentType.JSON)
-          .body(Map.of(
-              "customerType", "BESTANDSKUNDE",
-              "companyName", "Updated Manager Sales Company",
-              "contactPerson", "Updated Manager Sales Contact",
-              "email", "updated.manager.sales@example.com"
-          ))
+          .body(
+              Map.of(
+                  "customerType", "BESTANDSKUNDE",
+                  "companyName", "Updated Manager Sales Company",
+                  "contactPerson", "Updated Manager Sales Contact",
+                  "email", "updated.manager.sales@example.com"))
           .when()
           .put("/api/customers/" + customerId)
           .then()
@@ -517,11 +515,7 @@ class RoleBasedAccessIntegrationTest {
           .statusCode(Response.Status.FORBIDDEN.getStatusCode());
 
       // Should NOT have user management access
-      given()
-          .when()
-          .get("/api/users")
-          .then()
-          .statusCode(Response.Status.FORBIDDEN.getStatusCode());
+      given().when().get("/api/users").then().statusCode(Response.Status.FORBIDDEN.getStatusCode());
     }
   }
 
@@ -530,24 +524,27 @@ class RoleBasedAccessIntegrationTest {
   class CrossRoleOperationTests {
 
     @Test
-    @TestSecurity(user = "admin", roles = {"admin"})
+    @TestSecurity(
+        user = "admin",
+        roles = {"admin"})
     @DisplayName("Admin operations should maintain data integrity across roles")
     void adminOperations_shouldMaintainDataIntegrityAcrossRoles() {
       // Admin creates a customer
-      var customerId = given()
-          .contentType(ContentType.JSON)
-          .body(Map.of(
-              "customerType", "NEUKUNDE",
-              "companyName", "Cross Role Test Company",
-              "contactPerson", "Cross Role Contact",
-              "email", "cross.role@example.com"
-          ))
-          .when()
-          .post("/api/customers")
-          .then()
-          .statusCode(Response.Status.CREATED.getStatusCode())
-          .extract()
-          .path("id");
+      var customerId =
+          given()
+              .contentType(ContentType.JSON)
+              .body(
+                  Map.of(
+                      "customerType", "NEUKUNDE",
+                      "companyName", "Cross Role Test Company",
+                      "contactPerson", "Cross Role Contact",
+                      "email", "cross.role@example.com"))
+              .when()
+              .post("/api/customers")
+              .then()
+              .statusCode(Response.Status.CREATED.getStatusCode())
+              .extract()
+              .path("id");
 
       // Verify the customer exists and has correct data
       given()
@@ -577,7 +574,9 @@ class RoleBasedAccessIntegrationTest {
     }
 
     @Test
-    @TestSecurity(user = "testuser", roles = {"nonexistent_role"})
+    @TestSecurity(
+        user = "testuser",
+        roles = {"nonexistent_role"})
     @DisplayName("Users with invalid roles should be handled appropriately")
     void usersWithInvalidRoles_shouldBeHandledAppropriately() {
       // User should still be authenticated
@@ -589,11 +588,7 @@ class RoleBasedAccessIntegrationTest {
           .body("username", equalTo("testuser"));
 
       // But should not have access to protected resources
-      given()
-          .when()
-          .get("/api/users")
-          .then()
-          .statusCode(Response.Status.FORBIDDEN.getStatusCode());
+      given().when().get("/api/users").then().statusCode(Response.Status.FORBIDDEN.getStatusCode());
 
       given()
           .when()
@@ -608,18 +603,20 @@ class RoleBasedAccessIntegrationTest {
   class SecurityAuditTests {
 
     @Test
-    @TestSecurity(user = "auditadmin", roles = {"admin"})
+    @TestSecurity(
+        user = "auditadmin",
+        roles = {"admin"})
     @DisplayName("Admin operations should be auditable")
     void adminOperations_shouldBeAuditable() {
       // Perform various admin operations
       given()
           .contentType(ContentType.JSON)
-          .body(Map.of(
-              "username", "auditTestUser",
-              "firstName", "Audit",
-              "lastName", "Test",
-              "email", "audit@example.com"
-          ))
+          .body(
+              Map.of(
+                  "username", "auditTestUser",
+                  "firstName", "Audit",
+                  "lastName", "Test",
+                  "email", "audit@example.com"))
           .when()
           .post("/api/users")
           .then()
@@ -627,12 +624,12 @@ class RoleBasedAccessIntegrationTest {
 
       given()
           .contentType(ContentType.JSON)
-          .body(Map.of(
-              "customerType", "NEUKUNDE",
-              "companyName", "Audit Company",
-              "contactPerson", "Audit Contact",
-              "email", "audit.company@example.com"
-          ))
+          .body(
+              Map.of(
+                  "customerType", "NEUKUNDE",
+                  "companyName", "Audit Company",
+                  "contactPerson", "Audit Contact",
+                  "email", "audit.company@example.com"))
           .when()
           .post("/api/customers")
           .then()
@@ -643,29 +640,27 @@ class RoleBasedAccessIntegrationTest {
     }
 
     @Test
-    @TestSecurity(user = "auditmanager", roles = {"manager"})
+    @TestSecurity(
+        user = "auditmanager",
+        roles = {"manager"})
     @DisplayName("Manager operations should be auditable")
     void managerOperations_shouldBeAuditable() {
       // Perform manager operations
       given()
           .contentType(ContentType.JSON)
-          .body(Map.of(
-              "customerType", "NEUKUNDE",
-              "companyName", "Manager Audit Company",
-              "contactPerson", "Manager Audit Contact",
-              "email", "manager.audit@example.com"
-          ))
+          .body(
+              Map.of(
+                  "customerType", "NEUKUNDE",
+                  "companyName", "Manager Audit Company",
+                  "contactPerson", "Manager Audit Contact",
+                  "email", "manager.audit@example.com"))
           .when()
           .post("/api/customers")
           .then()
           .statusCode(Response.Status.CREATED.getStatusCode());
 
       // Access own profile
-      given()
-          .when()
-          .get("/api/users/me")
-          .then()
-          .statusCode(Response.Status.OK.getStatusCode());
+      given().when().get("/api/users/me").then().statusCode(Response.Status.OK.getStatusCode());
     }
   }
 }

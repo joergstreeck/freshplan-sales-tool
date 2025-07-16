@@ -14,15 +14,14 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 /**
- * Integration tests for SecurityContextProvider.AuthenticationDetails.
- * These tests actually call the builder and methods to increase coverage.
+ * Integration tests for SecurityContextProvider.AuthenticationDetails. These tests actually call
+ * the builder and methods to increase coverage.
  */
 @QuarkusTest
 @TestProfile(SecurityDisabledTestProfile.class)
 class SecurityContextProviderIntegrationTest {
 
-  @Inject
-  SecurityContextProvider securityContextProvider;
+  @Inject SecurityContextProvider securityContextProvider;
 
   @Nested
   @DisplayName("AuthenticationDetails Builder Tests")
@@ -38,7 +37,7 @@ class SecurityContextProviderIntegrationTest {
       String sessionId = "session123";
       Instant tokenExpiration = Instant.now().plusSeconds(3600);
 
-      SecurityContextProvider.AuthenticationDetails details = 
+      SecurityContextProvider.AuthenticationDetails details =
           SecurityContextProvider.AuthenticationDetails.builder()
               .userId(userId)
               .username(username)
@@ -64,7 +63,7 @@ class SecurityContextProviderIntegrationTest {
     void shouldBuildAuthenticationDetailsWithMinimalFields() {
       String username = "minimal.user";
 
-      SecurityContextProvider.AuthenticationDetails details = 
+      SecurityContextProvider.AuthenticationDetails details =
           SecurityContextProvider.AuthenticationDetails.builder()
               .username(username)
               .authenticated(false)
@@ -82,7 +81,7 @@ class SecurityContextProviderIntegrationTest {
     @Test
     @DisplayName("Should handle null roles in builder")
     void shouldHandleNullRolesInBuilder() {
-      SecurityContextProvider.AuthenticationDetails details = 
+      SecurityContextProvider.AuthenticationDetails details =
           SecurityContextProvider.AuthenticationDetails.builder()
               .username("testuser")
               .roles(null)
@@ -95,9 +94,9 @@ class SecurityContextProviderIntegrationTest {
     @Test
     @DisplayName("Should create anonymous AuthenticationDetails")
     void shouldCreateAnonymousAuthenticationDetails() {
-      SecurityContextProvider.AuthenticationDetails anonymous = 
+      SecurityContextProvider.AuthenticationDetails anonymous =
           SecurityContextProvider.AuthenticationDetails.anonymous();
-      
+
       assertFalse(anonymous.isAuthenticated());
       assertNull(anonymous.getUserId());
       assertNull(anonymous.getUsername());
@@ -111,19 +110,20 @@ class SecurityContextProviderIntegrationTest {
     @DisplayName("Should test all builder method chains")
     void shouldTestAllBuilderMethodChains() {
       // Test each builder method individually to ensure coverage
-      SecurityContextProvider.AuthenticationDetails.Builder builder = 
+      SecurityContextProvider.AuthenticationDetails.Builder builder =
           SecurityContextProvider.AuthenticationDetails.builder();
 
       // Chain all methods
-      SecurityContextProvider.AuthenticationDetails details = builder
-          .userId("user123")
-          .username("testuser")
-          .email("test@example.com")
-          .roles(Set.of("admin"))
-          .sessionId("session456")
-          .tokenExpiration(Instant.now())
-          .authenticated(true)
-          .build();
+      SecurityContextProvider.AuthenticationDetails details =
+          builder
+              .userId("user123")
+              .username("testuser")
+              .email("test@example.com")
+              .roles(Set.of("admin"))
+              .sessionId("session456")
+              .tokenExpiration(Instant.now())
+              .authenticated(true)
+              .build();
 
       assertNotNull(details);
       assertEquals("user123", details.getUserId());
@@ -143,7 +143,7 @@ class SecurityContextProviderIntegrationTest {
     @Test
     @DisplayName("Should get authentication details in test mode")
     void shouldGetAuthenticationDetailsInTestMode() {
-      SecurityContextProvider.AuthenticationDetails details = 
+      SecurityContextProvider.AuthenticationDetails details =
           securityContextProvider.getAuthenticationDetails();
 
       assertNotNull(details);
@@ -181,7 +181,7 @@ class SecurityContextProviderIntegrationTest {
     void shouldHandleHasRoleInTestMode() {
       boolean hasAdmin = securityContextProvider.hasRole("admin");
       boolean hasManager = securityContextProvider.hasRole("manager");
-      
+
       // In test mode, these might be false, but should not throw
       assertNotNull(hasAdmin);
       assertNotNull(hasManager);
@@ -191,27 +191,33 @@ class SecurityContextProviderIntegrationTest {
     @DisplayName("Should handle requireAuthentication exception in test mode")
     void shouldHandleRequireAuthenticationExceptionInTestMode() {
       // In test mode with security disabled, this should throw
-      assertThrows(SecurityException.class, () -> {
-        securityContextProvider.requireAuthentication();
-      });
+      assertThrows(
+          SecurityException.class,
+          () -> {
+            securityContextProvider.requireAuthentication();
+          });
     }
 
     @Test
     @DisplayName("Should handle requireRole exception in test mode")
     void shouldHandleRequireRoleExceptionInTestMode() {
       // In test mode with security disabled, this should throw
-      assertThrows(SecurityException.class, () -> {
-        securityContextProvider.requireRole("admin");
-      });
+      assertThrows(
+          SecurityException.class,
+          () -> {
+            securityContextProvider.requireRole("admin");
+          });
     }
 
     @Test
     @DisplayName("Should handle requireAnyRole exception in test mode")
     void shouldHandleRequireAnyRoleExceptionInTestMode() {
       // In test mode with security disabled, this should throw
-      assertThrows(SecurityException.class, () -> {
-        securityContextProvider.requireAnyRole("admin", "manager");
-      });
+      assertThrows(
+          SecurityException.class,
+          () -> {
+            securityContextProvider.requireAnyRole("admin", "manager");
+          });
     }
 
     @Test
@@ -270,21 +276,21 @@ class SecurityContextProviderIntegrationTest {
     @Test
     @DisplayName("Should test AuthenticationDetails equals and hashCode")
     void shouldTestAuthenticationDetailsEqualsAndHashCode() {
-      SecurityContextProvider.AuthenticationDetails details1 = 
+      SecurityContextProvider.AuthenticationDetails details1 =
           SecurityContextProvider.AuthenticationDetails.builder()
               .username("testuser")
               .email("test@example.com")
               .authenticated(true)
               .build();
 
-      SecurityContextProvider.AuthenticationDetails details2 = 
+      SecurityContextProvider.AuthenticationDetails details2 =
           SecurityContextProvider.AuthenticationDetails.builder()
               .username("testuser")
               .email("test@example.com")
               .authenticated(true)
               .build();
 
-      SecurityContextProvider.AuthenticationDetails details3 = 
+      SecurityContextProvider.AuthenticationDetails details3 =
           SecurityContextProvider.AuthenticationDetails.builder()
               .username("different")
               .email("test@example.com")
@@ -304,7 +310,7 @@ class SecurityContextProviderIntegrationTest {
     @Test
     @DisplayName("Should test AuthenticationDetails toString")
     void shouldTestAuthenticationDetailsToString() {
-      SecurityContextProvider.AuthenticationDetails details = 
+      SecurityContextProvider.AuthenticationDetails details =
           SecurityContextProvider.AuthenticationDetails.builder()
               .username("testuser")
               .email("test@example.com")
@@ -322,7 +328,7 @@ class SecurityContextProviderIntegrationTest {
     @Test
     @DisplayName("Should test builder with empty roles")
     void shouldTestBuilderWithEmptyRoles() {
-      SecurityContextProvider.AuthenticationDetails details = 
+      SecurityContextProvider.AuthenticationDetails details =
           SecurityContextProvider.AuthenticationDetails.builder()
               .username("testuser")
               .roles(Set.of())

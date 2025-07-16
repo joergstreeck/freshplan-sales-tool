@@ -35,13 +35,16 @@ import java.util.stream.Collectors;
 public class SalesCockpitService {
 
   /** Schwellwert für niedriges Risiko: 60 Tage ohne Kontakt */
-  private static final int RISK_THRESHOLD_LOW_DAYS = RiskManagementConstants.RISK_THRESHOLD_LOW_DAYS;
+  private static final int RISK_THRESHOLD_LOW_DAYS =
+      RiskManagementConstants.RISK_THRESHOLD_LOW_DAYS;
 
   /** Schwellwert für mittleres Risiko: 90 Tage ohne Kontakt */
-  private static final int RISK_THRESHOLD_MEDIUM_DAYS = RiskManagementConstants.RISK_THRESHOLD_MEDIUM_DAYS;
+  private static final int RISK_THRESHOLD_MEDIUM_DAYS =
+      RiskManagementConstants.RISK_THRESHOLD_MEDIUM_DAYS;
 
   /** Schwellwert für hohes Risiko: 120 Tage ohne Kontakt */
-  private static final int RISK_THRESHOLD_HIGH_DAYS = RiskManagementConstants.RISK_THRESHOLD_HIGH_DAYS;
+  private static final int RISK_THRESHOLD_HIGH_DAYS =
+      RiskManagementConstants.RISK_THRESHOLD_HIGH_DAYS;
 
   /** Test-User-ID für Entwicklung - umgeht User-Validierung */
   private static final UUID TEST_USER_ID = UUID.fromString("00000000-0000-0000-0000-000000000000");

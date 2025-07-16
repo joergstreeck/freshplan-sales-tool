@@ -85,7 +85,9 @@ public class CustomerSearchResource {
           @QueryParam("size")
           @DefaultValue(PaginationConstants.DEFAULT_PAGE_SIZE_STRING)
           @Min(value = 1, message = "Size must be >= 1")
-          @Max(value = PaginationConstants.MAX_PAGE_SIZE, message = "Size must be <= " + PaginationConstants.MAX_PAGE_SIZE)
+          @Max(
+              value = PaginationConstants.MAX_PAGE_SIZE,
+              message = "Size must be <= " + PaginationConstants.MAX_PAGE_SIZE)
           int size) {
     LOG.infof("Customer search request received: page=%d, size=%d", page, size);
 
@@ -140,7 +142,9 @@ public class CustomerSearchResource {
           @QueryParam("page")
           @DefaultValue(PaginationConstants.DEFAULT_PAGE_NUMBER_STRING)
           int page,
-      @Parameter(description = "Page size", example = "20") @QueryParam("size") @DefaultValue(PaginationConstants.DEFAULT_PAGE_SIZE_STRING)
+      @Parameter(description = "Page size", example = "20")
+          @QueryParam("size")
+          @DefaultValue(PaginationConstants.DEFAULT_PAGE_SIZE_STRING)
           int size) {
 
     LOG.infof(

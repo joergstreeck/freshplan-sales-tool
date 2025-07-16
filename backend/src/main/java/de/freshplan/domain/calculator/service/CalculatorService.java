@@ -19,27 +19,45 @@ public class CalculatorService {
   // Basisrabatt je Einzelbestellung (netto)
   private static final List<DiscountRule> BASE_RULES =
       Arrays.asList(
-          new DiscountRule((int) CalculatorConstants.VOLUME_THRESHOLD_TIER_1, (int) CalculatorConstants.VOLUME_DISCOUNT_TIER_1), // ab 75.000 EUR: 10%
-          new DiscountRule((int) CalculatorConstants.VOLUME_THRESHOLD_TIER_2, (int) CalculatorConstants.VOLUME_DISCOUNT_TIER_2), // 50.000 - 74.999 EUR: 9%
-          new DiscountRule((int) CalculatorConstants.VOLUME_THRESHOLD_TIER_3, (int) CalculatorConstants.VOLUME_DISCOUNT_TIER_3), // 30.000 - 49.999 EUR: 8%
-          new DiscountRule((int) CalculatorConstants.VOLUME_THRESHOLD_TIER_4, (int) CalculatorConstants.VOLUME_DISCOUNT_TIER_4), // 15.000 - 29.999 EUR: 6%
-          new DiscountRule((int) CalculatorConstants.VOLUME_THRESHOLD_TIER_5, (int) CalculatorConstants.VOLUME_DISCOUNT_TIER_5), // 5.000 - 14.999 EUR: 3%
+          new DiscountRule(
+              (int) CalculatorConstants.VOLUME_THRESHOLD_TIER_1,
+              (int) CalculatorConstants.VOLUME_DISCOUNT_TIER_1), // ab 75.000 EUR: 10%
+          new DiscountRule(
+              (int) CalculatorConstants.VOLUME_THRESHOLD_TIER_2,
+              (int) CalculatorConstants.VOLUME_DISCOUNT_TIER_2), // 50.000 - 74.999 EUR: 9%
+          new DiscountRule(
+              (int) CalculatorConstants.VOLUME_THRESHOLD_TIER_3,
+              (int) CalculatorConstants.VOLUME_DISCOUNT_TIER_3), // 30.000 - 49.999 EUR: 8%
+          new DiscountRule(
+              (int) CalculatorConstants.VOLUME_THRESHOLD_TIER_4,
+              (int) CalculatorConstants.VOLUME_DISCOUNT_TIER_4), // 15.000 - 29.999 EUR: 6%
+          new DiscountRule(
+              (int) CalculatorConstants.VOLUME_THRESHOLD_TIER_5,
+              (int) CalculatorConstants.VOLUME_DISCOUNT_TIER_5), // 5.000 - 14.999 EUR: 3%
           new DiscountRule(0, 0) // unter 5.000 EUR: 0%
           );
 
   // Frühbucherrabatt (zusätzlich) - korrigiert: ab 30 Tage nach oben offen
   private static final List<EarlyBookingRule> EARLY_BOOKING_RULES =
       Arrays.asList(
-          new EarlyBookingRule(CalculatorConstants.EARLY_BOOKING_DAYS_TIER_1, (int) CalculatorConstants.EARLY_BOOKING_DISCOUNT_TIER_1), // ab 30 Tage: +3%
-          new EarlyBookingRule(CalculatorConstants.EARLY_BOOKING_DAYS_TIER_2, (int) CalculatorConstants.EARLY_BOOKING_DISCOUNT_TIER_2), // 15 - 29 Tage: +2%
-          new EarlyBookingRule(CalculatorConstants.EARLY_BOOKING_DAYS_TIER_3, (int) CalculatorConstants.EARLY_BOOKING_DISCOUNT_TIER_3), // 10 - 14 Tage: +1%
+          new EarlyBookingRule(
+              CalculatorConstants.EARLY_BOOKING_DAYS_TIER_1,
+              (int) CalculatorConstants.EARLY_BOOKING_DISCOUNT_TIER_1), // ab 30 Tage: +3%
+          new EarlyBookingRule(
+              CalculatorConstants.EARLY_BOOKING_DAYS_TIER_2,
+              (int) CalculatorConstants.EARLY_BOOKING_DISCOUNT_TIER_2), // 15 - 29 Tage: +2%
+          new EarlyBookingRule(
+              CalculatorConstants.EARLY_BOOKING_DAYS_TIER_3,
+              (int) CalculatorConstants.EARLY_BOOKING_DISCOUNT_TIER_3), // 10 - 14 Tage: +1%
           new EarlyBookingRule(0, 0) // unter 10 Tage: 0%
           );
 
   private static final double PICKUP_DISCOUNT = CalculatorConstants.PICKUP_DISCOUNT_PERCENTAGE;
   // Mindestbestellwert für Abholrabatt
-  private static final double PICKUP_MIN_ORDER_VALUE = CalculatorConstants.PICKUP_MINIMUM_ORDER_VALUE;
-  private static final double MAX_TOTAL_DISCOUNT = CalculatorConstants.MAX_TOTAL_DISCOUNT_PERCENTAGE;
+  private static final double PICKUP_MIN_ORDER_VALUE =
+      CalculatorConstants.PICKUP_MINIMUM_ORDER_VALUE;
+  private static final double MAX_TOTAL_DISCOUNT =
+      CalculatorConstants.MAX_TOTAL_DISCOUNT_PERCENTAGE;
 
   /** Calculate discount based on input parameters. */
   public CalculatorResponse calculate(CalculatorRequest request) {
