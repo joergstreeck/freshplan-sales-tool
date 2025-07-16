@@ -242,7 +242,7 @@ public class SecurityContextProvider {
     if (!hasRole(role)) {
       LOG.warnf(
           "Unauthorized role access attempt. User: %s, Required role: %s, Actual roles: %s",
-          getUsername(), role, getRoles());
+          getUsername(), role, getRoles().toString());
       throw new SecurityException("Role '" + role + "' required");
     }
   }
@@ -265,7 +265,7 @@ public class SecurityContextProvider {
 
     LOG.warnf(
         "Unauthorized role access attempt. User: %s, Required roles: %s, Actual roles: %s",
-        getUsername(), Set.of(roles), userRoles);
+        getUsername(), Set.of(roles).toString(), userRoles.toString());
     throw new SecurityException("One of roles " + Set.of(roles) + " required");
   }
 

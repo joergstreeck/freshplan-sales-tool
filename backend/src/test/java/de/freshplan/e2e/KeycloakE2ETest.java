@@ -24,6 +24,7 @@ import org.junit.jupiter.api.*;
 @TestProfile(KeycloakE2ETest.E2ETestProfile.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @Tag("e2e")
+@Disabled("E2E Tests require running Keycloak server. Start with: ./scripts/start-keycloak.sh")
 public class KeycloakE2ETest {
 
   private static final String KEYCLOAK_URL = "http://localhost:8180";

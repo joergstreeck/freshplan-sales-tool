@@ -458,10 +458,31 @@ class UserResourceSecurityTest {
   }
 
   /**
-   * Returns a random UUID for security tests. Security tests focus on access control, not business
-   * logic, so we don't need real users in the database.
+   * Creates a real test user for security tests. This ensures the user exists in the database
+   * when testing authorization rules.
    */
   private UUID createTestUser() {
-    return UUID.randomUUID(); // Use a random UUID - security tests verify authorization, not data
+    // Create a real user for testing
+    CreateUserRequest request = createValidUserRequest();
+    
+    var response = given()
+        .contentType(ContentType.JSON)
+        .body(request)
+        .when()
+        .post(USERS_BASE_PATH)
+        .then()
+        .statusCode(Response.Status.CREATED.getStatusCode())
+        .extract()
+        .response();
+    
+    // Extract ID from Location header
+    String location = response.getHeader("Location");
+    if (location != null && location.contains("/")) {
+      String idString = location.substring(location.lastIndexOf('/') + 1);
+      return UUID.fromString(idString);
+    }
+    
+    // Fallback to response body
+    return response.jsonPath().getUUID("id");
   }
 }

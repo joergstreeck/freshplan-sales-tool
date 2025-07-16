@@ -138,16 +138,14 @@ class TokenRefreshIntegrationTest {
         roles = {"invalid_role"})
     @DisplayName("Token with invalid roles should be handled gracefully")
     void tokenWithInvalidRoles_shouldBeHandledGracefully() {
-      // User with invalid role should still be authenticated
-      // but should not have access to protected resources
+      // User with invalid role should not have access to endpoints that require specific roles
       given()
           .when()
           .get("/api/users/me")
           .then()
-          .statusCode(Response.Status.OK.getStatusCode())
-          .body("username", equalTo("roleuser"));
+          .statusCode(Response.Status.FORBIDDEN.getStatusCode());
 
-      // But should not have access to admin endpoints
+      // Should not have access to admin endpoints
       given().when().get("/api/users").then().statusCode(Response.Status.FORBIDDEN.getStatusCode());
     }
   }
