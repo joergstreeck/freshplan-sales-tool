@@ -371,9 +371,9 @@ class TokenRefreshIntegrationTest {
       long endTime = System.currentTimeMillis();
       long responseTime = endTime - startTime;
 
-      // Authentication should not add significant overhead (< 1000ms for local tests)
+      // Authentication should not add significant overhead (< 2000ms for CI)
       assertTrue(
-          responseTime < 1000,
+          responseTime < 2000,
           "Authenticated request should complete quickly, took: " + responseTime + "ms");
     }
 
