@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test;
  */
 @QuarkusTest
 @TestProfile(SecurityDisabledTestProfile.class)
-@Disabled("Temporarily disabled - needs proper test data setup")
+@Disabled("Tests need proper endpoint implementation")
 class UserResourceSecurityTest {
 
   private static final String USERS_BASE_PATH = "/api/users";
@@ -83,22 +83,7 @@ class UserResourceSecurityTest {
           .statusCode(Response.Status.FORBIDDEN.getStatusCode());
     }
 
-    @Test
-    @TestSecurity(
-        user = "viewer",
-        roles = {"viewer"})
-    @DisplayName("Viewer should NOT be able to create users")
-    void viewerShouldNotBeAbleToCreateUsers() {
-      CreateUserRequest request = createValidUserRequest();
-
-      given()
-          .contentType(ContentType.JSON)
-          .body(request)
-          .when()
-          .post(USERS_BASE_PATH)
-          .then()
-          .statusCode(Response.Status.FORBIDDEN.getStatusCode());
-    }
+    // Note: Viewer role was removed - sales role now represents lowest access level
 
     @Test
     @DisplayName("Unauthenticated user should NOT be able to create users")

@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test;
  */
 @QuarkusTest
 @TestProfile(SecurityDisabledTestProfile.class)
-@Disabled("Temporarily disabled - needs proper test data setup and role configuration")
+@Disabled("Tests need proper endpoint implementation and test infrastructure")
 class RoleBasedAccessIntegrationTest {
 
   @Nested
@@ -374,66 +374,9 @@ class RoleBasedAccessIntegrationTest {
     }
   }
 
-  @Nested
-  @DisplayName("Viewer Role Access Tests")
-  @Disabled("Viewer role not yet implemented in the system")
-  class ViewerRoleTests {
-
-    @Test
-    @TestSecurity(
-        user = "viewer",
-        roles = {"viewer"})
-    @DisplayName("Viewer should have read-only access to customers")
-    void viewer_shouldHaveReadOnlyCustomerAccess() {
-      // Read customers (allowed)
-      given().when().get("/api/customers").then().statusCode(Response.Status.OK.getStatusCode());
-
-      // All write operations should be forbidden
-      given()
-          .contentType(ContentType.JSON)
-          .body(
-              Map.of(
-                  "customerType", "NEUKUNDE",
-                  "companyName", "Viewer Test Company",
-                  "contactPerson", "Viewer Contact",
-                  "email", "viewer.customer@example.com"))
-          .when()
-          .post("/api/customers")
-          .then()
-          .statusCode(Response.Status.FORBIDDEN.getStatusCode());
-    }
-
-    @Test
-    @TestSecurity(
-        user = "viewer",
-        roles = {"viewer"})
-    @DisplayName("Viewer should NOT have any user management access")
-    void viewer_shouldNotHaveUserManagementAccess() {
-      // No user management operations allowed
-      given().when().get("/api/users").then().statusCode(Response.Status.FORBIDDEN.getStatusCode());
-
-      given()
-          .when()
-          .get("/api/users/" + UUID.randomUUID())
-          .then()
-          .statusCode(Response.Status.FORBIDDEN.getStatusCode());
-    }
-
-    @Test
-    @TestSecurity(
-        user = "viewer",
-        roles = {"viewer"})
-    @DisplayName("Viewer should have access to own profile")
-    void viewer_shouldHaveOwnProfileAccess() {
-      given()
-          .when()
-          .get("/api/users/me")
-          .then()
-          .statusCode(Response.Status.OK.getStatusCode())
-          .body("username", equalTo("viewer"))
-          .body("roles", hasItem("viewer"));
-    }
-  }
+  // Note: Viewer role was removed from the system
+  // The sales role now represents the lowest access level (read-only)
+  // Hierarchy is: admin > manager > sales
 
   @Nested
   @DisplayName("Multiple Roles Integration Tests")

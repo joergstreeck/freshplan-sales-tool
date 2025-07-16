@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test;
  */
 @QuarkusTest
 @TestProfile(SecurityDisabledTestProfile.class)
-@Disabled("Temporarily disabled - needs proper test data setup")
+@Disabled("Tests need proper endpoint implementation and test data setup")
 class CustomerResourceSecurityTest {
 
   private static final String CUSTOMERS_BASE_PATH = "/api/customers";

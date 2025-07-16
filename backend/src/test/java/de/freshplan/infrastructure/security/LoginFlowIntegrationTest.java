@@ -21,7 +21,7 @@ import org.junit.jupiter.api.Test;
  */
 @QuarkusTest
 @TestProfile(SecurityDisabledTestProfile.class)
-@Disabled("Temporarily disabled - tests expect viewer role which is not implemented")
+@Disabled("Tests need proper endpoint implementation")
 class LoginFlowIntegrationTest {
 
   @Nested
@@ -216,29 +216,7 @@ class LoginFlowIntegrationTest {
           .statusCode(Response.Status.FORBIDDEN.getStatusCode());
     }
 
-    @Test
-    @TestSecurity(
-        user = "viewer",
-        roles = {"viewer"})
-    @DisplayName("Viewer should only have read access")
-    void viewer_shouldOnlyHaveReadAccess() {
-      // Read operation (allowed)
-      given().when().get("/api/customers").then().statusCode(Response.Status.OK.getStatusCode());
-
-      // Create operation (forbidden)
-      given()
-          .contentType(ContentType.JSON)
-          .body(
-              Map.of(
-                  "customerType", "NEUKUNDE",
-                  "companyName", "Viewer Test Company",
-                  "contactPerson", "Viewer Contact",
-                  "email", "viewer.test@example.com"))
-          .when()
-          .post("/api/customers")
-          .then()
-          .statusCode(Response.Status.FORBIDDEN.getStatusCode());
-    }
+    // Note: Viewer role was removed - sales role now represents read-only access
   }
 
   @Nested

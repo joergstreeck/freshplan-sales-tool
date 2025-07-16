@@ -89,7 +89,7 @@ class UserPrincipalIntegrationTest {
       assertTrue(principal.hasRole("admin"));
       assertTrue(principal.hasRole("manager"));
       assertFalse(principal.hasRole("sales"));
-      assertFalse(principal.hasRole("viewer"));
+      assertFalse(principal.hasRole("nonexistent"));
     }
 
     @Test
@@ -101,7 +101,7 @@ class UserPrincipalIntegrationTest {
       assertTrue(principal.hasAnyRole("admin", "manager"));
       assertTrue(principal.hasAnyRole("manager", "admin"));
       assertTrue(principal.hasAnyRole("admin"));
-      assertFalse(principal.hasAnyRole("sales", "viewer"));
+      assertFalse(principal.hasAnyRole("sales", "nonexistent"));
       assertFalse(principal.hasAnyRole());
     }
 
@@ -298,12 +298,12 @@ class UserPrincipalIntegrationTest {
       assertTrue(principal.hasRole("admin"));
       assertTrue(principal.hasRole("manager"));
       assertTrue(principal.hasRole("sales"));
-      assertFalse(principal.hasRole("viewer"));
+      assertFalse(principal.hasRole("nonexistent"));
 
       assertTrue(principal.hasAnyRole("admin"));
-      assertTrue(principal.hasAnyRole("viewer", "admin"));
+      assertTrue(principal.hasAnyRole("nonexistent", "admin"));
       assertTrue(principal.hasAnyRole("manager", "sales"));
-      assertFalse(principal.hasAnyRole("viewer", "customer"));
+      assertFalse(principal.hasAnyRole("nonexistent", "customer"));
     }
 
     @Test
