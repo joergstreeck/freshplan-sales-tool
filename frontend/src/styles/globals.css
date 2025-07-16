@@ -1,8 +1,6 @@
 /* FreshPlan Global Styles */
 /* Verwendet das FreshPlan Design System anstatt Tailwind */
-
-/* Import legacy design system variables */
-@import './legacy/variables.css';
+/* Note: Legacy variables are now imported directly in main.tsx to avoid @import issues */
 
 /* Global resets and base styles */
 * {

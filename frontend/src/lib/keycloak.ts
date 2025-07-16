@@ -20,10 +20,12 @@ let initializationPromise: Promise<boolean> | null = null;
 // Keycloak Initialisierungsoptionen
 export const keycloakInitOptions = {
   onLoad: 'check-sso' as const,
-  silentCheckSsoRedirectUri: window.location.origin + '/silent-check-sso.html',
+  // silentCheckSsoRedirectUri: window.location.origin + '/silent-check-sso.html',
   pkceMethod: 'S256' as const,
-  checkLoginIframe: false, // Für Dev-Mode
+  checkLoginIframe: false, // Deaktiviert iframe-basierte Session Checks
   enableLogging: import.meta.env.DEV,
+  timeout: 5000, // 5 Sekunden Timeout für Keycloak-Initialisierung
+  flow: 'standard' as const, // Explizit Standard Flow verwenden
 };
 
 /**

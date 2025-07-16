@@ -251,4 +251,36 @@
   --grid-columns: 12;
   --grid-gap: var(--space-6);
   --container-padding: var(--space-4);
+
+  /* ========================================
+     APP-SPECIFIC VARIABLES (für app.css)
+     ======================================== */
+
+  /* Background colors */
+  --color-background: var(--gray-50);
+  --bg-light: var(--gray-100);
+  --bg-gradient-primary: linear-gradient(135deg, var(--fresh-green-500), var(--fresh-blue-500));
+
+  /* Text colors */
+  --color-text-light: var(--gray-600);
+  --text-light: var(--gray-600);
+  --text-dark: var(--gray-900);
+  --color-text-dark: var(--gray-900);
+
+  /* Spacing aliases */
+  --spacing-sm: var(--space-2);
+  --spacing-md: var(--space-4);
+  --spacing-lg: var(--space-6);
+  --spacing-xl: var(--space-8);
+
+  /* Font aliases */
+  --font-heading: var(--font-display);
+  --font-body: var(--font-sans);
+  --font-size-sm: var(--text-sm);
+  --font-size-lg: var(--text-lg);
+  --font-weight-medium: var(--font-medium);
+
+  /* Border aliases */
+  --border-light: var(--gray-300);
+  --line-height-normal: var(--leading-normal);
 }

@@ -4,8 +4,10 @@
  * This file serves as the single source of truth for all
  * design decisions in the FreshPlan application.
  * 
- * Import Order:
- * 1. Design Tokens (variables)
+ * Note: Design tokens are now imported directly in main.tsx to avoid @import issues
+ * 
+ * Content Order:
+ * 1. Design Tokens (imported via main.tsx)
  * 2. Base Styles (resets, typography)
  * 3. Utilities (helper classes)
  * 4. Components (reusable patterns)
@@ -15,9 +17,8 @@
  */
 
 /* ========================================
-   1. DESIGN TOKENS
+   1. DESIGN TOKENS - Imported via main.tsx
    ======================================== */
-@import './design-tokens.css';
 
 /* ========================================
    2. BASE STYLES

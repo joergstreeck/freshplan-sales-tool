@@ -6,12 +6,11 @@
  * Element: customer-list__element
  * Modifier: customer-list--modifier
  * 
+ * Note: Design tokens are imported globally via main.tsx
+ * 
  * @component CustomerList
  * @version 2.0.0
  */
-
-/* Import Design Tokens */
-@import '../../../styles/design-tokens.css';
 
 /* ========================================
    BLOCK: Customer List Container

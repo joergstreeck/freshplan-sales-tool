@@ -1,9 +1,12 @@
 import { StrictMode, Suspense } from 'react';
 import { createRoot } from 'react-dom/client';
 import './i18n'; // i18n vor allen anderen Imports!
+import './styles/legacy/variables.css'; // Legacy design system variables - must be first
+import './styles/design-tokens.css'; // Design tokens - must be before files that use them
 import './styles/globals.css'; // Legacy base styles
 import './index.css'; // FreshPlan CI Design System (überschreibt Legacy)
 import './styles/variables-mapping.css'; // Map legacy variables to new FreshPlan CI
+import './styles/freshplan-design-system.css'; // Main design system
 import { AppProviders } from './providers.tsx';
 
 // Enable MSW for development if backend is not available
