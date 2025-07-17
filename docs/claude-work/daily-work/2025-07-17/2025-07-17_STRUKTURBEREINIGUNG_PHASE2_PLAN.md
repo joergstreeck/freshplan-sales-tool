@@ -2,7 +2,7 @@
 
 **Erstellt:** 17.07.2025 19:45  
 **Zweck:** Phase 2 Detailplan - Claude-optimiert unter 200 Zeilen  
-**Prerequisite:** [Phase 1](./2025-07-17_STRUKTURBEREINIGUNG_PHASE1_PLAN.md) abgeschlossen  
+**Prerequisite:** [Phase 1](/docs/claude-work/daily-work/2025-07-17/2025-07-17_STRUKTURBEREINIGUNG_PHASE1_PLAN.md) abgeschlossen  
 
 ---
 
@@ -73,12 +73,12 @@
 
 ### **Schritt 2: Zu V5 Master Plan**
 ```markdown
-**Zurück:** [V5 Master Plan](../../CRM_COMPLETE_MASTER_PLAN_V5.md)
+**Zurück:** [V5 Master Plan](/docs/CRM_COMPLETE_MASTER_PLAN_V5.md)
 ```
 
 ### **Schritt 3: Zwischen Features**
 ```markdown
-**Dependencies:** [FC-008](../01_security_foundation/FC-008_KOMPAKT.md)
+**Dependencies:** [FC-008](/docs/features/ACTIVE/01_security_foundation/FC-008_KOMPAKT.md)
 ```
 
 ---
@@ -98,7 +98,7 @@
 ## 🔗 NÄCHSTE SCHRITTE
 
 **Nach Phase 2:**
-- [Phase 3 Plan](./2025-07-17_STRUKTURBEREINIGUNG_PHASE3_PLAN.md)
+- [Phase 3 Plan](/docs/claude-work/daily-work/2025-07-17/2025-07-17_STRUKTURBEREINIGUNG_PHASE3_PLAN.md)
 
 **Bei Problemen:**
-- [Kompakt-Übersicht](./2025-07-17_STRUKTURBEREINIGUNG_KOMPAKT.md)
+- [Kompakt-Übersicht](/docs/claude-work/daily-work/2025-07-17/2025-07-17_STRUKTURBEREINIGUNG_KOMPAKT.md)

@@ -108,6 +108,26 @@ git log --oneline -10        # Letzte Commits
 TodoRead                     # TODO-Liste lesen
 ```
 
+## 🎯 FEATURE-TYP BESTIMMEN (NEU!)
+**WICHTIG: Bei JEDER Aufgabe den Feature-Typ prüfen!**
+
+1. **Schaue ins Feature-Dokument** (FC-XXX_KOMPAKT.md)
+2. **Finde "Feature-Typ"** Zeile
+3. **Handle entsprechend:**
+   - 🎨 **FRONTEND** → `./scripts/ui-development-start.sh --module=[name]`
+   - 🔧 **BACKEND** → Normal weiterarbeiten
+   - 🔀 **FULLSTACK** → Beides beachten
+
+**Beispiel:**
+```bash
+# Feature-Typ prüfen:
+cat docs/features/ACTIVE/*/M3_*_KOMPAKT.md | grep "Feature-Typ"
+# Output: **Feature-Typ:** 🎨 FRONTEND
+
+# Bei Frontend-Arbeit IMMER:
+./scripts/ui-development-start.sh --module=sales-cockpit
+```
+
 ### 3. Arbeiten (Der Hauptteil)
 - **Fokussiert** an der in der Übergabe definierten Hauptaufgabe arbeiten
 - **Code-Validierung**: NIEMALS Annahmen treffen!

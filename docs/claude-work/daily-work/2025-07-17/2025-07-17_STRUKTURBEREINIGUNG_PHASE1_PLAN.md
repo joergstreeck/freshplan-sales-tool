@@ -2,7 +2,7 @@
 
 **Erstellt:** 17.07.2025 19:45  
 **Zweck:** Phase 1 Detailplan - Claude-optimiert unter 200 Zeilen  
-**Prerequisite:** [KOMPAKT Plan](./2025-07-17_STRUKTURBEREINIGUNG_KOMPAKT.md) gelesen  
+**Prerequisite:** [KOMPAKT Plan](/docs/claude-work/daily-work/2025-07-17/2025-07-17_STRUKTURBEREINIGUNG_KOMPAKT.md) gelesen  
 
 ---
 
@@ -86,8 +86,8 @@ mkdir -p docs/features/VISION
 ## 🔗 NÄCHSTE SCHRITTE
 
 **Nach Phase 1:**
-- [Phase 2 Plan](./2025-07-17_STRUKTURBEREINIGUNG_PHASE2_PLAN.md)
-- [Phase 3 Plan](./2025-07-17_STRUKTURBEREINIGUNG_PHASE3_PLAN.md)
+- [Phase 2 Plan](/docs/claude-work/daily-work/2025-07-17/2025-07-17_STRUKTURBEREINIGUNG_PHASE2_PLAN.md)
+- [Phase 3 Plan](/docs/claude-work/daily-work/2025-07-17/2025-07-17_STRUKTURBEREINIGUNG_PHASE3_PLAN.md)
 
 **Bei Problemen:**
-- [Kompakt-Übersicht](./2025-07-17_STRUKTURBEREINIGUNG_KOMPAKT.md)
+- [Kompakt-Übersicht](/docs/claude-work/daily-work/2025-07-17/2025-07-17_STRUKTURBEREINIGUNG_KOMPAKT.md)

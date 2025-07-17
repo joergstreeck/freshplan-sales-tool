@@ -81,6 +81,13 @@ if [ -f ".current-focus" ]; then
     if [ "$NEXTTASK" != "null" ] && [ -n "$NEXTTASK" ]; then
         echo -e "   ${YELLOW}Nächste Aufgabe: $NEXTTASK${NC}"
     fi
+    
+    # Frontend Detection
+    if [[ "$FEATURE" =~ (M1|M2|M3|M7|UI|Frontend|Navigation|Cockpit|Settings|Calculator) ]]; then
+        echo ""
+        echo -e "${YELLOW}🎨 HINWEIS: $FEATURE ist ein Frontend-Modul!${NC}"
+        echo "   Bei Frontend-Arbeit: ./scripts/ui-development-start.sh"
+    fi
     echo ""
 else
     echo -e "${YELLOW}Kein Fokus gesetzt. Verwende ./scripts/create-handover.sh am Ende der Session.${NC}"

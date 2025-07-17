@@ -83,12 +83,12 @@
 3. **D3:** Navigation UX-Präferenz
 
 **Nach Entscheidungen:**
-→ [M3_SALES_COCKPIT_KOMPAKT.md](./M3_SALES_COCKPIT_KOMPAKT.md) ⭐
+→ [M3_SALES_COCKPIT_KOMPAKT.md](/docs/features/ACTIVE/05_ui_foundation/M3_SALES_COCKPIT_KOMPAKT.md) ⭐
 
 ---
 
 ## 🔗 VOLLSTÄNDIGE ENTSCHEIDUNGEN
 
-**Alle 8 Entscheidungen:** [DECISION_LOG.md](./DECISION_LOG.md) (250 Zeilen)
+**Alle 8 Entscheidungen:** [DECISION_LOG.md](/docs/features/ACTIVE/05_ui_foundation/DECISION_LOG.md) (250 Zeilen)
 
 **Diese Datei:** Nur die 3 kritischen für Claude-Kontext optimiert!

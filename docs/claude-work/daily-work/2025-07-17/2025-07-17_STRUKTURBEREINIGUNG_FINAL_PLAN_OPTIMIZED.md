@@ -20,7 +20,7 @@
 ## 📖 CLAUDE-OPTIMIERTE NAVIGATION
 
 ### **🚀 PHASE 1: HYBRID-MIGRATION (4-5h)**
-➡️ **[PHASE 1 PLAN](./2025-07-17_STRUKTURBEREINIGUNG_PHASE1_PLAN.md)** (unter 200 Zeilen)
+➡️ **[PHASE 1 PLAN](/docs/claude-work/daily-work/2025-07-17/2025-07-17_STRUKTURBEREINIGUNG_PHASE1_PLAN.md)** (unter 200 Zeilen)
 
 **Ziel:** Alle Features auf bewährte FC-009/FC-010 Struktur migrieren
 - UI Foundation Module erstellen
@@ -28,7 +28,7 @@
 - FUTURE VISION strukturieren
 
 ### **⚡ PHASE 2: INTEGRATION (2-3h)**
-➡️ **[PHASE 2 PLAN](./2025-07-17_STRUKTURBEREINIGUNG_PHASE2_PLAN.md)** (unter 200 Zeilen)
+➡️ **[PHASE 2 PLAN](/docs/claude-work/daily-work/2025-07-17/2025-07-17_STRUKTURBEREINIGUNG_PHASE2_PLAN.md)** (unter 200 Zeilen)
 
 **Ziel:** Alle Features in zentralen Übersichten integrieren
 - MASTER/FEATURE_OVERVIEW.md komplettieren
@@ -36,7 +36,7 @@
 - Implementierungs-Sequenz neu ordnen
 
 ### **🔍 PHASE 3: CODE-REALITY MAPPING (2-3h)**
-➡️ **[PHASE 3 PLAN](./2025-07-17_STRUKTURBEREINIGUNG_PHASE3_PLAN.md)** (unter 200 Zeilen)
+➡️ **[PHASE 3 PLAN](/docs/claude-work/daily-work/2025-07-17/2025-07-17_STRUKTURBEREINIGUNG_PHASE3_PLAN.md)** (unter 200 Zeilen)
 
 **Ziel:** Dokumentation spiegelt tatsächlichen Code-Stand
 - Bestehende UI analysieren
@@ -48,10 +48,10 @@
 ## 🎯 QUICK START
 
 **Für sofortigen Einstieg:**
-➡️ **[KOMPAKT-ÜBERSICHT](./2025-07-17_STRUKTURBEREINIGUNG_KOMPAKT.md)** (unter 150 Zeilen)
+➡️ **[KOMPAKT-ÜBERSICHT](/docs/claude-work/daily-work/2025-07-17/2025-07-17_STRUKTURBEREINIGUNG_KOMPAKT.md)** (unter 150 Zeilen)
 
 **Bei Problemen:**
-- **Original-Plan:** [FINAL_PLAN.md](./2025-07-17_STRUKTURBEREINIGUNG_FINAL_PLAN.md) (778 Zeilen)
+- **Original-Plan:** [FINAL_PLAN.md](/docs/claude-work/daily-work/2025-07-17/2025-07-17_STRUKTURBEREINIGUNG_FINAL_PLAN.md) (778 Zeilen)
 - **Warnung:** Zu lang für Claude-Kontext!
 
 ---

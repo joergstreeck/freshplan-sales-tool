@@ -58,6 +58,24 @@
 
 ---
 
+## 🚨 ÜBERGABE-ANPASSUNG NOTWENDIG
+
+### **Neue UI-Konsistenz-Strategie erfordert Trigger-Anpassung:**
+Nach der Strukturbereinigung müssen wir die **Übergabe-Trigger** an die neue Struktur anpassen:
+
+- **Aktuelle Trigger:** `/docs/TRIGGER_TEXTS.md` (Stand: 17.07.2025)
+- **Neue Anforderung:** Feature-Typ-basierte Trigger für UI-Konsistenz
+- **Status:** SPÄTER ANPASSEN - erst wenn Struktur stabil ist
+
+**Was sich ändern wird:**
+1. Feature-Typ (🎨 FRONTEND) automatisch in Übergabe integrieren
+2. UI-Development Trigger bei Frontend-Arbeit
+3. Prozessbasierte Führung statt Regel-Listen
+
+➡️ **Siehe:** `/docs/claude-work/daily-work/2025-07-17/2025-07-17_UI_CONSISTENCY_ENFORCEMENT.md`
+
+---
+
 ## 🎯 SALES COMMAND CENTER REALITÄT
 
 ### **Bestehende Code-Basis (KRITISCH!):**
@@ -689,6 +707,31 @@ export const ActionCenterColumnMUI: React.FC = () => {
 - [ ] Neuer Claude kann in 15 Min produktiv werden
 - [ ] Alle Features in MASTER/FEATURE_OVERVIEW.md
 - [ ] Implementierungs-Reihenfolge logisch und umsetzbar
+- [ ] Feature-Typ Markierung in ALLEN Modulen
+
+---
+
+## 🚨 WICHTIG: FEATURE-TYP MARKIERUNG
+
+### **Ab sofort PFLICHT für ALLE Module:**
+
+**Jedes neue oder bestehende Modul MUSS haben:**
+```markdown
+**Feature-Typ:** 🎨 FRONTEND | 🔧 BACKEND | 🔀 FULLSTACK
+```
+
+**Warum kritisch?**
+- Automatische UI-Konsistenz-Enforcement bei Frontend
+- Prozessbasierte Führung für Claude
+- Verhindert inkonsistente Implementierungen
+
+**Technische Schuld:**
+- **FC-010:** Feature-Typ fehlt noch ❌
+- **M5:** Feature-Typ fehlt noch ❌
+- **M6:** Feature-Typ fehlt noch ❌
+- **Alle zukünftigen Module:** MÜSSEN Feature-Typ haben!
+
+**Siehe:** `/docs/claude-work/daily-work/2025-07-17/2025-07-17_UI_CONSISTENCY_ENFORCEMENT.md`
 - [ ] Code-Realität spiegelt sich in Dokumentation
 
 ---

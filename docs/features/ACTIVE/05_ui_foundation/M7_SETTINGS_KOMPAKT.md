@@ -2,7 +2,13 @@
 
 **Erstellt:** 17.07.2025 16:45  
 **Status:** 🟡 50% FERTIG - Tab-Struktur vorhanden, Settings fehlen  
-**Priorität:** 🔥 HOCH - User Management & Configuration  
+**Feature-Typ:** 🎨 FRONTEND  
+**Priorität:** 🔥 HOCH - User Management & Configuration
+
+## 🚨 BEI FRONTEND-ARBEIT:
+```bash
+./scripts/ui-development-start.sh --module=settings
+```
 
 ---
 

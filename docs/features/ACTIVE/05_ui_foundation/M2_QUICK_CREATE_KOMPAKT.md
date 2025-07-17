@@ -2,7 +2,13 @@
 
 **Erstellt:** 17.07.2025 16:40  
 **Status:** 🔴 0% FERTIG - Noch nicht implementiert  
-**Priorität:** 🔥 HOCH - Produktivitäts-Feature  
+**Feature-Typ:** 🎨 FRONTEND  
+**Priorität:** 🔥 HOCH - Produktivitäts-Feature
+
+## 🚨 BEI FRONTEND-ARBEIT:
+```bash
+./scripts/ui-development-start.sh --module=quick-create
+```
 
 ---
 

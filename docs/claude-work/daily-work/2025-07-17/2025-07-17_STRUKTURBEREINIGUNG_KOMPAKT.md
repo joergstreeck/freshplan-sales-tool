@@ -106,6 +106,16 @@ mkdir -p docs/features/ACTIVE/05_ui_foundation
 3. ✅ Von V5 Master Plan aus zu jedem Feature navigieren
 4. ✅ In 15 Minuten bei jedem Feature produktiv werden
 5. ✅ Bestehenden Code als solide Basis nutzen
+6. ✅ Feature-Typ automatisch erkennen und entsprechend handeln
+
+## 🚨 NEU: FEATURE-TYP PFLICHT
+
+**Ab sofort MUSS jedes Modul haben:**
+```markdown
+**Feature-Typ:** 🎨 FRONTEND | 🔧 BACKEND | 🔀 FULLSTACK
+```
+
+**Technische Schuld:** FC-010, M5, M6 fehlen noch!
 
 ---
 
@@ -124,7 +134,7 @@ mkdir -p docs/features/ACTIVE/05_ui_foundation
 ## 🚀 JETZT LOSLEGEN!
 
 **📖 Vollständiger Plan mit allen Details:**  
-**➡️ [STRUKTURBEREINIGUNG_FINAL_PLAN.md](./2025-07-17_STRUKTURBEREINIGUNG_FINAL_PLAN.md)**
+**➡️ [STRUKTURBEREINIGUNG_FINAL_PLAN_OPTIMIZED.md](/docs/claude-work/daily-work/2025-07-17/2025-07-17_STRUKTURBEREINIGUNG_FINAL_PLAN_OPTIMIZED.md)**
 
 **🎯 Arbeitsweise:** Schritt-für-Schritt durch die Anker-Links navigieren  
 **💡 Bei Fragen:** Nutze die direkten Links zu den Abschnitten  

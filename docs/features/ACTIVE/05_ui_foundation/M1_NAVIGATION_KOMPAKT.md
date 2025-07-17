@@ -2,7 +2,13 @@
 
 **Erstellt:** 17.07.2025 16:35  
 **Status:** 🟡 40% FERTIG - MainLayoutV2 vorhanden, Navigation fehlt  
-**Priorität:** ⭐ FOUNDATION - Basis für alle Features  
+**Feature-Typ:** 🎨 FRONTEND  
+**Priorität:** ⭐ FOUNDATION - Basis für alle Features
+
+## 🚨 BEI FRONTEND-ARBEIT:
+```bash
+./scripts/ui-development-start.sh --module=navigation
+```
 
 ---
 
@@ -10,7 +16,12 @@
 
 **Realität:** MainLayoutV2 mit Basis-Layout bereits implementiert!  
 **Basis:** MainLayoutV2.tsx + MUI AppBar + Drawer-Navigation  
-**Enhancement:** Dynamische Navigation + Breadcrumbs + User-Context  
+**Enhancement:** Dynamische Navigation + Breadcrumbs + User-Context
+
+## ⚠️ UI-KONSISTENZ BEACHTEN:
+- Nutze `/docs/UI_SPRACHREGELN.md` für deutsche Begriffe
+- Verwende Base Components aus `/frontend/src/components/base/`
+- KEINE hardcoded Texte - immer `useTranslation` Hook
 
 > **Live Code:** `/frontend/src/components/layout/MainLayoutV2.tsx` ✅  
 > **Live URL:** http://localhost:5173/ ✅  

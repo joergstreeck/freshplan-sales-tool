@@ -2,7 +2,7 @@
 
 **Erstellt:** 17.07.2025 19:45  
 **Zweck:** Phase 3 Detailplan - Claude-optimiert unter 200 Zeilen  
-**Prerequisite:** [Phase 2](./2025-07-17_STRUKTURBEREINIGUNG_PHASE2_PLAN.md) abgeschlossen  
+**Prerequisite:** [Phase 2](/docs/claude-work/daily-work/2025-07-17/2025-07-17_STRUKTURBEREINIGUNG_PHASE2_PLAN.md) abgeschlossen  
 
 ---
 
@@ -135,4 +135,4 @@ Live-URLs:
 - Entscheidungen D1-D3 klären
 
 **Bei Problemen:**
-- [Kompakt-Übersicht](./2025-07-17_STRUKTURBEREINIGUNG_KOMPAKT.md)
+- [Kompakt-Übersicht](/docs/claude-work/daily-work/2025-07-17/2025-07-17_STRUKTURBEREINIGUNG_KOMPAKT.md)

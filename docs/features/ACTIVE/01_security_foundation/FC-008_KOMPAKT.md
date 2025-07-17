@@ -2,6 +2,7 @@
 
 **Erstellt:** 17.07.2025 14:10  
 **Status:** 🟡 85% FERTIG - Tests deaktiviert  
+**Feature-Typ:** 🔧 BACKEND  
 **Priorität:** KRITISCH - Blockiert alle anderen Features  
 
 ---

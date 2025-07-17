@@ -2,7 +2,13 @@
 
 **Erstellt:** 17.07.2025 16:30  
 **Status:** 🟡 60% FERTIG - Basis vorhanden, KI-Features fehlen  
-**Priorität:** ⭐ KERN-FEATURE - Sales Command Center  
+**Feature-Typ:** 🎨 FRONTEND  
+**Priorität:** ⭐ KERN-FEATURE - Sales Command Center
+
+## 🚨 BEI FRONTEND-ARBEIT:
+```bash
+./scripts/ui-development-start.sh --module=sales-cockpit
+```
 
 ---
 
