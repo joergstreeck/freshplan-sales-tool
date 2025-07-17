@@ -78,6 +78,11 @@ cat > "$HANDOVER_FILE" << 'EOF'
 ### ⚠️ TODO-STATUS WIRD VON CLAUDE EINGEFÜGT!
 **Claude:** Bitte führe `TodoRead` aus und füge die aktuelle TODO-Liste hier ein.
 
+### 📊 TODO-ANZAHL ZUM VERGLEICH:
+**Automatisch gezählt:** TODO_COUNT_PLACEHOLDER TODOs gefunden
+**Nach TodoRead:** [Von Claude einzutragen]
+⚠️ **Bei Diskrepanz:** ALLE TODOs aus dieser Übergabe mit TodoWrite wiederherstellen!
+
 ## 🔧 NÄCHSTE SCHRITTE
 [Von Claude ausfüllen - konkret mit Dateinamen und Befehlen]
 
@@ -123,19 +128,60 @@ sed -i.bak "s/DATE_PLACEHOLDER/$DATE/g" "$HANDOVER_FILE"
 sed -i.bak "s/JAVA_VERSION_PLACEHOLDER/$JAVA_VERSION/g" "$HANDOVER_FILE"
 sed -i.bak "s/NODE_VERSION_PLACEHOLDER/$NODE_VERSION/g" "$HANDOVER_FILE"
 sed -i.bak "s/SERVICE_CHECK_PLACEHOLDER/[Von Script prüfen]/g" "$HANDOVER_FILE"
+
+# Count TODOs in recent handovers
+TODO_COUNT=0
+if [ -f ".current-todos.md" ]; then
+    # Count from current todos file
+    TODO_COUNT=$(grep -E "^\- \[" ".current-todos.md" 2>/dev/null | wc -l | tr -d ' ')
+    echo "✅ TODOs gezählt: $TODO_COUNT (aus .current-todos.md)"
+else
+    # Count from most recent handover
+    LATEST_HANDOVER=$(find docs/claude-work/daily-work -name "*HANDOVER*.md" -type f 2>/dev/null | sort -r | head -1)
+    if [ -f "$LATEST_HANDOVER" ]; then
+        # Try strict pattern first
+        TODO_COUNT=$(grep -E "^\- \[ \].*\[ID: todo-" "$LATEST_HANDOVER" 2>/dev/null | wc -l | tr -d ' ')
+        
+        # If no results, try more flexible pattern
+        if [ "$TODO_COUNT" -eq 0 ]; then
+            TODO_COUNT=$(grep -E "^\- \[ \].*todo-[0-9]+" "$LATEST_HANDOVER" 2>/dev/null | wc -l | tr -d ' ')
+        fi
+        
+        if [ "$TODO_COUNT" -gt 0 ]; then
+            echo "✅ TODOs aus letzter Übergabe: $TODO_COUNT"
+            echo "   Quelle: $(basename $LATEST_HANDOVER)"
+        fi
+    fi
+fi
+
+# Warning if no TODOs found
+if [ "$TODO_COUNT" -eq 0 ]; then
+    echo "⚠️  WARNUNG: TODO-Zählung fehlgeschlagen!"
+    echo "   Tipp: 'TodoRead > .current-todos.md' ausführen für zuverlässigere Zählung"
+    TODO_COUNT="[MANUELL_PRÜFEN]"
+fi
+
+# Replace TODO count placeholder
+sed -i.bak "s/TODO_COUNT_PLACEHOLDER/$TODO_COUNT/g" "$HANDOVER_FILE"
 rm "$HANDOVER_FILE.bak"
 
 # Check if TODOs exist and update template
 if [ -f ".current-todos.md" ]; then
     # Create a temporary file with proper markers
     TODO_START="## 📋 TODO-LISTE"
+    TODO_ANZAHL_START="### 📊 TODO-ANZAHL ZUM VERGLEICH:"
     TODO_END="## 🔧 NÄCHSTE SCHRITTE"
     
     # Extract content before TODOs
-    sed -n "1,/${TODO_START}/p" "$HANDOVER_FILE" | sed '$d' > "${HANDOVER_FILE}.tmp"
+    sed -n "1,/${TODO_START}/p" "$HANDOVER_FILE" > "${HANDOVER_FILE}.tmp"
+    echo "" >> "${HANDOVER_FILE}.tmp"
+    
+    # Add the TODO-ANZAHL section (preserve it!)
+    sed -n "/${TODO_ANZAHL_START}/,/^$/p" "$HANDOVER_FILE" >> "${HANDOVER_FILE}.tmp"
+    echo "" >> "${HANDOVER_FILE}.tmp"
     
     # Add the actual TODOs
-    echo "" >> "${HANDOVER_FILE}.tmp"
+    echo "### Aktuelle TODOs:" >> "${HANDOVER_FILE}.tmp"
     cat ".current-todos.md" >> "${HANDOVER_FILE}.tmp"
     echo "" >> "${HANDOVER_FILE}.tmp"
     
@@ -147,25 +193,7 @@ if [ -f ".current-todos.md" ]; then
     
     echo "✅ TODOs wurden automatisch eingefügt!"
 else
-    # Create a minimal TODO template that Claude can fill
-    TODO_START="## 📋 TODO-LISTE"
-    TODO_END="## 🔧 NÄCHSTE SCHRITTE"
-    
-    # Extract content before TODOs
-    sed -n "1,/${TODO_START}/p" "$HANDOVER_FILE" | sed '$d' > "${HANDOVER_FILE}.tmp"
-    
-    # Add placeholder for TODOs
-    echo "" >> "${HANDOVER_FILE}.tmp"
-    echo "### ⚠️ TODO-STATUS WIRD VON CLAUDE EINGEFÜGT!" >> "${HANDOVER_FILE}.tmp"
-    echo "**Claude:** Bitte führe \`TodoRead\` aus und füge die aktuelle TODO-Liste hier ein." >> "${HANDOVER_FILE}.tmp"
-    echo "" >> "${HANDOVER_FILE}.tmp"
-    
-    # Extract content after TODOs
-    sed -n "/${TODO_END}/,\$p" "$HANDOVER_FILE" >> "${HANDOVER_FILE}.tmp"
-    
-    # Replace original file
-    mv "${HANDOVER_FILE}.tmp" "$HANDOVER_FILE"
-    
+    # Keep the template as is - don't modify the TODO section
     echo "⚠️  TODOs müssen von Claude eingefügt werden!"
 fi
 

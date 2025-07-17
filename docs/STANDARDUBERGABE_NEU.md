@@ -62,11 +62,44 @@ Dieses Dokument ist deine **HAUPTANLEITUNG** für effiziente und nachvollziehbar
 ./scripts/start-frontend.sh  # Frontend mit Vite auf Port 5173
 ```
 
+### 1.5 Master Plan V5 Check (NEU! Ab 17.07.2025)
+**🚨 KRITISCH: V5 ist der neue Standard für alle Arbeiten!**
+
+Nach dem System-Check IMMER V5 prüfen:
+```bash
+# V5 Master Plan lesen (Claude-optimiert, nur 92 Zeilen):
+cat docs/CRM_COMPLETE_MASTER_PLAN_V5.md
+
+# Fokus auf diese Sektionen:
+# 1. "📍 Aktueller Fokus" - Was ist gerade dran?
+# 2. "🧭 Navigation" - Nächste Schritte
+# 3. "📊 Status Dashboard" - Welche Module sind ready?
+```
+
+**Quick-Checks:**
+```bash
+# Aktueller Fokus (Zeilen 15-35):
+cat docs/CRM_COMPLETE_MASTER_PLAN_V5.md | sed -n '15,35p'
+
+# Status Dashboard (Zeilen 77-85):
+cat docs/CRM_COMPLETE_MASTER_PLAN_V5.md | sed -n '77,85p'
+
+# 🧭 NEXT STEP Navigation (NEU!):
+cat docs/NEXT_STEP.md
+# → Zeigt dir GENAU wo du weitermachen sollst!
+```
+
+**MELDE DICH MIT V5-STATUS:**
+- ✅ V5 gelesen, aktueller Fokus: [Phase X - Name]
+- ✅ Arbeits-Dokument: [Pfad aus ⭐ Markierung]
+- ✅ Status: [Ready/In Progress/Blocked]
+- ⚠️ Offene kritische Fragen: [Anzahl aus OPEN_QUESTIONS_TRACKER.md]
+
 ### 2. Orientierung (Beginn der Arbeit)
 **Pflicht-Lektüre in DIESER Reihenfolge:**
 1. `/docs/CLAUDE.md` - Arbeitsrichtlinien und Standards
 2. Letzte Übergabe in `/docs/claude-work/daily-work/YYYY-MM-DD/`
-3. `/docs/CRM_COMPLETE_MASTER_PLAN.md` - Aktueller Masterplan
+3. ~~`/docs/CRM_COMPLETE_MASTER_PLAN.md`~~ → **V5 bereits in Schritt 1.5 gelesen!**
 
 **Dann Status abgleichen:**
 ```bash
