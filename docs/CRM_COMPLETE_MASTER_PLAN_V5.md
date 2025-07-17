@@ -15,16 +15,19 @@
 ## 🤖 CLAUDE WORKING SECTION
 
 ### 📍 Aktueller Fokus
-**Phase:** 0 - Security Foundation  
-**Status:** Bereit zum Start  
-**Nächster Schritt:** Keycloak Integration (Tag 1)  
-**Arbeits-Dokument:** [./features/ACTIVE/01_security_foundation/README.md](./features/ACTIVE/01_security_foundation/README.md) ⭐
+**Phase:** 1 - Core Foundation  
+**Status:** FC-008 zu 85% fertig, FC-009 bereit, FC-010 geplant  
+**Nächster Schritt:** Security-Tests reaktivieren (TODO-024/028) oder FC-010 Implementation  
+**Arbeits-Dokument:** [./features/ACTIVE/01_security_foundation/FC-008_KOMPAKT.md](./features/ACTIVE/01_security_foundation/FC-008_KOMPAKT.md) ⭐
 **Offene Fragen:** [./features/OPEN_QUESTIONS_TRACKER.md](./features/OPEN_QUESTIONS_TRACKER.md) 🚨
 
 ### 🧭 Navigation für die nächsten Schritte
-1. **Tag 1:** Security Foundation → [Keycloak + JWT](./features/ACTIVE/01_security_foundation/README.md)
-2. **Tag 2-5:** Opportunity Pipeline → [M4 Konzept](./features/ACTIVE/02_opportunity_pipeline/README.md)
-3. **Tag 6:** Calculator Integration → [M8 Modal](./features/ACTIVE/03_calculator_modal/README.md)
+1. **OPTION A:** Security-Tests fixen → [FC-008 KOMPAKT](./features/ACTIVE/01_security_foundation/FC-008_KOMPAKT.md)
+2. **OPTION B:** Customer Import starten → [FC-010 KOMPAKT](./features/PLANNED/FC-010_KOMPAKT.md) ⭐
+3. **DANN:** Permissions System → [FC-009 KOMPAKT](./features/ACTIVE/04_permissions_system/FC-009_KOMPAKT.md)
+4. **PARALLEL:** Opportunity Pipeline → [M4 KOMPAKT](./features/ACTIVE/02_opportunity_pipeline/M4_KOMPAKT.md)
+5. **ÜBERSICHT:** Features Dashboard → [Master Overview](./features/MASTER/FEATURE_OVERVIEW.md)
+6. **HISTORIE:** Abgeschlossene Features → [Completed](./features/COMPLETED/README.md)
 
 ### 📚 Context-Dokumente
 - **Implementierungs-Sequenz:** [./features/2025-07-12_FINAL_OPTIMIZED_SEQUENCE.md](./features/2025-07-12_FINAL_OPTIMIZED_SEQUENCE.md)
@@ -78,7 +81,9 @@ Von Tag 1 auf Wachstum, Performance und Qualität ausgelegt.
 
 | Modul | Status | Fortschritt | Nächster Schritt |
 |-------|--------|-------------|------------------|
-| Security | 🔄 Ready | 0% | Keycloak Integration |
+| FC-008 Security | 🔄 85% fertig | 85% | Tests reaktivieren |
+| FC-010 Import | 📋 Geplant | 0% | DB Schema erstellen |
+| FC-009 Permissions | 📋 Bereit | 0% | Entity Design |
 | M4 Pipeline | 📋 Planned | 0% | Entity Design |
 | M8 Calculator | 📋 Planned | 0% | Modal Template |
 | M5 Customer | ✅ Done* | 90% | *Legacy CSS Cleanup |

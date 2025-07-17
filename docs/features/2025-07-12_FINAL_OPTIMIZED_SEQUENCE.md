@@ -23,31 +23,49 @@ Nach nochmaliger Analyse muss die Reihenfolge angepasst werden:
 ```
 **Output:** Alle APIs secured, User-Context verfügbar
 
-#### Tag 2-5: Opportunity Pipeline (4 Tage)
+#### Tag 2-3: Permissions System (2 Tage)
 ```typescript
-// Das HERZSTÜCK - ohne das macht nichts Sinn!
-3. Opportunity Entity & API (1 Tag)
-4. Pipeline UI mit Drag&Drop (2 Tage)
-5. Stage-Validierung & Rules (1 Tag)
+// KRITISCH für Multi-User System
+3. Permission Tables & Entities (1 Tag)
+4. Role-Based Access Control (1 Tag)
+```
+**Output:** Sichere Multi-User Basis
+
+#### Tag 4-17: Customer Import Foundation (10-14 Tage)
+```typescript
+// KRITISCHE Daten-Migration für 5000+ Bestandskunden
+5. Configuration-Driven Import Schema (3-4 Tage)
+6. Plugin-Based Validation System (2-3 Tage)
+7. Dynamic UI Generation (3-4 Tage)  
+8. Legacy Data Migration (2-3 Tage)
+```
+**Output:** Alle Bestandskunden migriert, flexible Import-Architektur
+
+#### Tag 18-21: Opportunity Pipeline (4 Tage)
+```typescript
+// Das HERZSTÜCK - jetzt mit vollständigen Kundendaten!
+9. Opportunity Entity & API (1 Tag)
+10. Pipeline UI mit Drag&Drop (2 Tage)
+11. Stage-Validierung & Rules (1 Tag)
 ```
 **Output:** Funktionsfähige Pipeline, Basis für Calculator
 
 ---
 
-### 🚀 **WOCHE 2: Process Integration**
+### 🚀 **WOCHE 3-4: Process Integration**
 
-#### Tag 6: Calculator Integration (1 Tag)
+#### Tag 22: Calculator Integration (1 Tag)
 ```typescript
 // JETZT macht Calculator Sinn - als Modal in Pipeline!
-6. Calculator Modal in Stage "Angebot"
-7. Context-Passing von Opportunity
+12. Calculator Modal in Stage "Angebot"
+13. Context-Passing von Opportunity
 ```
 **Output:** Vollständiger Angebotsprozess
 
-#### Tag 7-8: Verkäuferschutz Basis (2 Tage)
+#### Tag 23-24: Verkäuferschutz Basis (2 Tage)
 ```typescript
 // Muss früh rein - betrifft alle Sales-Daten!
-8. Opportunity Ownership Rules
+14. Opportunity Ownership Rules
 9. Basis-Provisionslogik
 10. Schutz-Stufen Implementation
 ```
