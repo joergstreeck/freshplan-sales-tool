@@ -15,25 +15,28 @@
 ## 🤖 CLAUDE WORKING SECTION
 
 ### 📍 Aktueller Fokus
-**Phase:** 1 - Core Foundation  
-**Status:** FC-008 zu 85% fertig, FC-009 bereit, FC-010 geplant  
-**Nächster Schritt:** Security-Tests reaktivieren (TODO-024/028) oder FC-010 Implementation  
-**Arbeits-Dokument:** [./features/ACTIVE/01_security_foundation/FC-008_KOMPAKT.md](./features/ACTIVE/01_security_foundation/FC-008_KOMPAKT.md) ⭐
-**Offene Fragen:** [./features/OPEN_QUESTIONS_TRACKER.md](./features/OPEN_QUESTIONS_TRACKER.md) 🚨
+**Phase:** 1 - Core Foundation + UI Enhancement  
+**Status:** FC-008 zu 85% fertig, UI Foundation zu 50% fertig, FC-010 bereit  
+**Nächster Schritt:** UI Foundation Enhancement (KI-Integration) oder Security-Tests (TODO-024/028)  
+**Arbeits-Dokument:** `/docs/features/ACTIVE/05_ui_foundation/M3_SALES_COCKPIT_KOMPAKT.md` ⭐
+**Offene Entscheidungen:** `/docs/features/ACTIVE/05_ui_foundation/DECISION_LOG.md` 🚨 **8 KRITISCHE ENTSCHEIDUNGEN!**
 
 ### 🧭 Navigation für die nächsten Schritte
-1. **OPTION A:** Security-Tests fixen → [FC-008 KOMPAKT](./features/ACTIVE/01_security_foundation/FC-008_KOMPAKT.md)
-2. **OPTION B:** Customer Import starten → [FC-010 KOMPAKT](./features/PLANNED/FC-010_KOMPAKT.md) ⭐
-3. **DANN:** Permissions System → [FC-009 KOMPAKT](./features/ACTIVE/04_permissions_system/FC-009_KOMPAKT.md)
-4. **PARALLEL:** Opportunity Pipeline → [M4 KOMPAKT](./features/ACTIVE/02_opportunity_pipeline/M4_KOMPAKT.md)
-5. **ÜBERSICHT:** Features Dashboard → [Master Overview](./features/MASTER/FEATURE_OVERVIEW.md)
-6. **HISTORIE:** Abgeschlossene Features → [Completed](./features/COMPLETED/README.md)
+
+**🚨 BLOCKIERT:** 3 kritische Entscheidungen → `/docs/features/ACTIVE/05_ui_foundation/DECISION_LOG.md`
+
+1. **OPTION A:** UI Foundation Enhancement → `/docs/features/ACTIVE/05_ui_foundation/M3_SALES_COCKPIT_KOMPAKT.md` ⭐
+2. **OPTION B:** Security-Tests fixen → `/docs/features/ACTIVE/01_security_foundation/FC-008_KOMPAKT.md`
+3. **OPTION C:** Customer Import starten → `/docs/features/PLANNED/FC-010_KOMPAKT.md`
+4. **DANN:** Permissions System → `/docs/features/ACTIVE/04_permissions_system/FC-009_KOMPAKT.md`
+5. **PARALLEL:** Opportunity Pipeline → `/docs/features/ACTIVE/02_opportunity_pipeline/M4_KOMPAKT.md`
+6. **ÜBERSICHT:** Features Dashboard → `/docs/features/MASTER/FEATURE_OVERVIEW.md`
+7. **HISTORIE:** Abgeschlossene Features → `/docs/features/COMPLETED/README.md`
 
 ### 📚 Context-Dokumente
-- **Implementierungs-Sequenz:** [./features/2025-07-12_FINAL_OPTIMIZED_SEQUENCE.md](./features/2025-07-12_FINAL_OPTIMIZED_SEQUENCE.md)
-- **Offene Fragen:** [./features/OPEN_QUESTIONS_TRACKER.md](./features/OPEN_QUESTIONS_TRACKER.md) 🚨
-- **Quality Standards:** [./features/QUALITY_STANDARDS.md](./features/QUALITY_STANDARDS.md) 🏆
-- **Daily Workflow:** [./features/DAILY_WORKFLOW.md](./features/DAILY_WORKFLOW.md) 📅
+- **Implementierungs-Sequenz:** `/docs/features/2025-07-12_FINAL_OPTIMIZED_SEQUENCE.md`
+- **Standards & Best Practices:** `/CLAUDE.md` (Alle Standards dort!)
+- **TODOs:** Nutze `TodoRead` für aktuelle TODO-Liste
 
 ---
 
@@ -63,15 +66,15 @@ Von Tag 1 auf Wachstum, Performance und Qualität ausgelegt.
 
 ### ✅ Phase 0: Security Foundation (Tag 1)
 **Status:** 🚀 READY TO START  
-**Details:** [Security Foundation](./features/ACTIVE/01_security_foundation/README.md)
+**Details:** `/docs/features/ACTIVE/01_security_foundation/FC-008_KOMPAKT.md`
 
 ### 📋 Phase 1: Core Sales Process (Tag 2-10)
 **Module:** M4 Pipeline → M8 Calculator → FC-004 Verkäuferschutz  
-**Details:** [Core Sales Features](./features/PLANNED/phase1_core_sales.md)
+**Details:** Siehe Feature Overview für M4, M8, FC-004
 
 ### 📋 Phase 2: Communication Hub (Tag 11-18)
 **Module:** FC-003 E-Mail → Team-Chat → Notifications  
-**Details:** [Communication Features](./features/PLANNED/phase2_communication.md)
+**Details:** Siehe Feature Overview für FC-003
 
 ### 📋 Phase 3-8: [Siehe vollständige Roadmap](./features/2025-07-12_COMPLETE_FEATURE_ROADMAP.md)
 
@@ -82,17 +85,21 @@ Von Tag 1 auf Wachstum, Performance und Qualität ausgelegt.
 | Modul | Status | Fortschritt | Nächster Schritt |
 |-------|--------|-------------|------------------|
 | FC-008 Security | 🔄 85% fertig | 85% | Tests reaktivieren |
+| M3 Sales Cockpit | 🟡 60% fertig | 60% | KI-Integration |
+| M1 Navigation | 🟡 40% fertig | 40% | Rolle-basiert |
+| M7 Settings | 🟡 50% fertig | 50% | Tab-Inhalte |
 | FC-010 Import | 📋 Geplant | 0% | DB Schema erstellen |
 | FC-009 Permissions | 📋 Bereit | 0% | Entity Design |
 | M4 Pipeline | 📋 Planned | 0% | Entity Design |
 | M8 Calculator | 📋 Planned | 0% | Modal Template |
+| M2 Quick Create | 📋 Planned | 0% | FAB Component |
 | M5 Customer | ✅ Done* | 90% | *Legacy CSS Cleanup |
 
 ---
 
 ## 🔗 Quick Links für Claude
 
-- **Bei Fragen zu Business Rules:** [./features/ACTIVE/02_opportunity_pipeline/business_rules.md](./features/ACTIVE/02_opportunity_pipeline/business_rules.md)
-- **Bei API Design:** [./docs/technical/API_DESIGN_PATTERNS.md](./docs/technical/API_DESIGN_PATTERNS.md)
-- **Bei UI/UX:** [./docs/design/UI_PATTERNS.md](./docs/design/UI_PATTERNS.md)
-- **Bei Performance:** [./docs/technical/PERFORMANCE_REQUIREMENTS.md](./docs/technical/PERFORMANCE_REQUIREMENTS.md)
+- **Bei Fragen zu Business Rules:** `/docs/features/ACTIVE/02_opportunity_pipeline/M4_KOMPAKT.md`
+- **Bei API Design:** Backend Best Practices in `/CLAUDE.md`
+- **Bei UI/UX:** `/CLAUDE.md` (Frontend Best Practices)
+- **Bei Performance:** `/CLAUDE.md` (Performance Standards)

@@ -7,24 +7,26 @@
 
 ## 🎯 JETZT GERADE:
 
-**STRUKTURBEREINIGUNG PHASE 1:** ✅ ABGESCHLOSSEN - UI Foundation Hybrid-Migration vollständig
+**STRUKTURBEREINIGUNG PHASE 2:** ✅ ABGESCHLOSSEN - Integration vollständig
 
-**Erledigt 17.07.2025 (Session 2):**
-- ✅ UI Foundation Hybrid-Migration komplett (M1/M2/M3/M7)
-- ✅ Modulare Implementation Guides erstellt (543→219-340 Zeilen)
-- ✅ Vollständige Vernetzung aller Dokumente (bidirektional)
-- ✅ FC-002 Legacy sauber archiviert (15 Dateien)
-- ✅ Code-Reality Mapping - Sales Command Center 60% fertig
-- ✅ DECISION_LOG mit 8 offenen Entscheidungen
-- ✅ Claude-optimierte Struktur (<200-300 Zeilen pro Dokument)
+**Erledigt 17.07.2025 (Session 3):**
+- ✅ Phase 1: UI Foundation Hybrid-Migration 
+- ✅ Phase 2: Master-Dokumente integriert
+- ✅ Alle Links funktionieren (absolute Pfade)
+- ✅ Logik-Lücken behoben
+
+**🚨 KRITISCHE ENTSCHEIDUNGEN BLOCKIEREN FORTSCHRITT:**
+- 3 HIGH-PRIORITY Entscheidungen in `/docs/features/ACTIVE/05_ui_foundation/DECISION_LOG.md`
+- D1: KI-Provider? D2: Real-time? D3: Navigation?
+- **OHNE DIESE ENTSCHEIDUNGEN KANN UI FOUNDATION NICHT STARTEN!**
 
 **Nächster konkreter Schritt - WÄHLE EINE OPTION:**
 
-**A) STRUKTURBEREINIGUNG PHASE 2:** Integration vervollständigen → STRUKTURBEREINIGUNG_KOMPAKT.md ⭐ (EMPFOHLEN)
-**B) TODO-024/028:** Security-Tests fixen → FC-008_KOMPAKT.md  
-**C) UI FOUNDATION:** Implementation starten → ui_foundation/DECISION_LOG.md (D1-D3 klären)
+**A) ENTSCHEIDUNGEN:** D1-D3 mit Jörg klären → `/docs/features/ACTIVE/05_ui_foundation/DECISION_LOG.md` ⭐⭐⭐
+**B) TODO-024/028:** Security-Tests fixen → `/docs/features/ACTIVE/01_security_foundation/FC-008_IMPLEMENTATION_GUIDE.md`
+**C) PHASE 3:** Code-Reality Mapping → `/docs/claude-work/daily-work/2025-07-17/2025-07-17_STRUKTURBEREINIGUNG_KOMPAKT.md`
 
-**KRITISCH:** Phase 1 perfekt - Phase 2 vervollständigt die Basis für alle weiteren Arbeiten!
+**EMPFEHLUNG:** Option A - Ohne Entscheidungen keine sinnvolle Arbeit möglich!
 
 ---
 

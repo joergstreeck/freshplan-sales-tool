@@ -13,35 +13,47 @@ Nach nochmaliger Analyse muss die Reihenfolge angepasst werden:
 
 ## 📋 OPTIMIERTE SEQUENZ
 
-### 🔥 **WOCHE 1: Foundation & Quick Wins**
+### 🔥 **WOCHE 1: Foundation & UI Enhancement**
 
-#### Tag 1: Security Foundation (1 Tag)
+#### Tag 1: Security Foundation (1 Tag) ✅ 85% FERTIG
 ```typescript
 // Blockiert ALLES - muss zuerst!
-1. Keycloak Login/Logout (0.5 Tag)
-2. JWT Security Context Backend (0.5 Tag)
+1. Keycloak Login/Logout ✅ FERTIG
+2. JWT Security Context Backend ✅ FERTIG
+3. Tests reaktivieren 🔄 TODO-024/028
 ```
 **Output:** Alle APIs secured, User-Context verfügbar
 
-#### Tag 2-3: Permissions System (2 Tage)
+#### Tag 2-17: UI Foundation Enhancement (16 Tage) 🟡 50% FERTIG
+```typescript
+// Sales Command Center bereits live - intelligent erweitern!
+4. M3 Sales Cockpit KI-Integration (5 Tage) 
+5. M1 Navigation Rolle-basiert (4 Tage)
+6. M7 Settings Tab-Inhalte (3 Tage)
+7. M2 Quick Create FAB (4 Tage)
+```
+**Output:** Intelligente 3-Spalten Oberfläche mit KI
+**Hinweis:** Realistische Schätzung basiert auf IMPLEMENTATION_GUIDE.md
+
+#### Tag 18-19: Permissions System (2 Tage)
 ```typescript
 // KRITISCH für Multi-User System
-3. Permission Tables & Entities (1 Tag)
-4. Role-Based Access Control (1 Tag)
+8. Permission Tables & Entities (1 Tag)
+9. Role-Based Access Control (1 Tag)
 ```
 **Output:** Sichere Multi-User Basis
 
-#### Tag 4-17: Customer Import Foundation (10-14 Tage)
+#### Tag 20-35: Customer Import Foundation (10-16 Tage)
 ```typescript
 // KRITISCHE Daten-Migration für 5000+ Bestandskunden
-5. Configuration-Driven Import Schema (3-4 Tage)
-6. Plugin-Based Validation System (2-3 Tage)
-7. Dynamic UI Generation (3-4 Tage)  
-8. Legacy Data Migration (2-3 Tage)
+10. Configuration-Driven Import Schema (3-4 Tage)
+11. Plugin-Based Validation System (2-3 Tage)
+12. Dynamic UI Generation (3-4 Tage)  
+13. Legacy Data Migration (2-3 Tage)
 ```
 **Output:** Alle Bestandskunden migriert, flexible Import-Architektur
 
-#### Tag 18-21: Opportunity Pipeline (4 Tage)
+#### Tag 36-39: Opportunity Pipeline (4 Tage)
 ```typescript
 // Das HERZSTÜCK - jetzt mit vollständigen Kundendaten!
 9. Opportunity Entity & API (1 Tag)
