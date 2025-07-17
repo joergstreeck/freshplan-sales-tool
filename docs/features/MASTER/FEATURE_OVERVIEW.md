@@ -14,7 +14,8 @@
 | Calculator Modal | M8 | 📋 Ready to Start | 0% | Modal Wrapper | [KOMPAKT](../ACTIVE/03_calculator_modal/M8_KOMPAKT.md) • [IMPL](../ACTIVE/03_calculator_modal/IMPLEMENTATION_GUIDE.md) |
 | **Hinweis:** | | | | | M8 ist eigenständig, da es Legacy-Calculator integriert |
 | Permissions System | FC-009 | 📋 Planned | 0% | Technical Review | [KOMPAKT](../ACTIVE/04_permissions_system/FC-009_KOMPAKT.md) • [IMPL](../ACTIVE/04_permissions_system/IMPLEMENTATION_GUIDE.md) |
-| UI Foundation | M1-M3-M7 | 🟡 Enhancement | 50% | **BLOCKIERT**: D1-D3 Entscheidungen | [NAVIGATION](../ACTIVE/05_ui_foundation/M1_NAVIGATION_KOMPAKT.md) • [COCKPIT](../ACTIVE/05_ui_foundation/M3_SALES_COCKPIT_KOMPAKT.md) • [SETTINGS](../ACTIVE/05_ui_foundation/M7_SETTINGS_KOMPAKT.md) • [DECISIONS](../ACTIVE/05_ui_foundation/DECISION_LOG.md) 🚨 |
+| UI Foundation | M1-M3-M7 | 🟡 Enhancement | 60% | **BLOCKIERT**: D1-D3 Entscheidungen | [NAV-40%](../ACTIVE/05_ui_foundation/M1_NAVIGATION_KOMPAKT.md) • [COCKPIT-60%](../ACTIVE/05_ui_foundation/M3_SALES_COCKPIT_KOMPAKT.md) • [SETTINGS-50%](../ACTIVE/05_ui_foundation/M7_SETTINGS_KOMPAKT.md) • [DECISIONS](../ACTIVE/05_ui_foundation/DECISION_LOG.md) 🚨 |
+| Quick Create | M2 | 📋 Ready to Start | 0% | FAB + Dialogs | [KOMPAKT](../ACTIVE/05_ui_foundation/M2_QUICK_CREATE_KOMPAKT.md) • Teil von UI Foundation |
 
 ### 🔵 PLANNED (Geplant)
 

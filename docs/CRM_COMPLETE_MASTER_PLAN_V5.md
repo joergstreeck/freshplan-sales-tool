@@ -16,10 +16,16 @@
 
 ### 📍 Aktueller Fokus
 **Phase:** 1 - Core Foundation + UI Enhancement  
-**Status:** FC-008 zu 85% fertig, UI Foundation zu 50% fertig, FC-010 bereit  
+**Status:** FC-008 zu 85% fertig, UI Foundation zu 60% fertig (Code-Reality korrigiert!), FC-010 bereit  
 **Nächster Schritt:** UI Foundation Enhancement (KI-Integration) oder Security-Tests (TODO-024/028)  
 **Arbeits-Dokument:** `/docs/features/ACTIVE/05_ui_foundation/M3_SALES_COCKPIT_KOMPAKT.md` ⭐
-**Offene Entscheidungen:** `/docs/features/ACTIVE/05_ui_foundation/DECISION_LOG.md` 🚨 **8 KRITISCHE ENTSCHEIDUNGEN!**
+**Offene Entscheidungen:** `/docs/features/ACTIVE/05_ui_foundation/DECISION_LOG.md` 🚨 **3 KRITISCHE ENTSCHEIDUNGEN!**
+
+**🎯 STRUKTURBEREINIGUNG PHASE 3 ABGESCHLOSSEN:**
+- **M3 Sales Cockpit:** 60% fertig (SalesCockpitV2.tsx + 3-Spalten + ResizablePanels ✅)
+- **M1 Navigation:** 40% fertig (MainLayoutV2.tsx + Header + Sidebar ✅)  
+- **M7 Settings:** 50% fertig (SettingsPage.tsx + MUI Tabs + UserTable ✅)
+- **Status:** Enhancement statt Neuentwicklung! Live URLs funktionieren bereits.
 
 ### 🧭 Navigation für die nächsten Schritte
 
