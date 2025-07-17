@@ -438,24 +438,25 @@ class CustomerResourceSecurityTest {
   private UUID createTestCustomer() {
     // Create a real customer for testing
     CreateCustomerRequest request = createValidCustomerRequest();
-    
-    var response = given()
-        .contentType(ContentType.JSON)
-        .body(request)
-        .when()
-        .post(CUSTOMERS_BASE_PATH)
-        .then()
-        .statusCode(Response.Status.CREATED.getStatusCode())
-        .extract()
-        .response();
-    
+
+    var response =
+        given()
+            .contentType(ContentType.JSON)
+            .body(request)
+            .when()
+            .post(CUSTOMERS_BASE_PATH)
+            .then()
+            .statusCode(Response.Status.CREATED.getStatusCode())
+            .extract()
+            .response();
+
     // Extract ID from Location header
     String location = response.getHeader("Location");
     if (location != null && location.contains("/")) {
       String idString = location.substring(location.lastIndexOf('/') + 1);
       return UUID.fromString(idString);
     }
-    
+
     // Fallback to response body
     return response.jsonPath().getUUID("id");
   }

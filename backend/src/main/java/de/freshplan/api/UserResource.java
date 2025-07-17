@@ -60,66 +60,73 @@ public class UserResource {
 
   /**
    * Gets current user's profile information.
-   * 
+   *
    * @return current user's profile
    */
   @GET
   @Path("/me")
-  @Operation(summary = "Get current user profile", description = "Returns the current authenticated user's profile information")
+  @Operation(
+      summary = "Get current user profile",
+      description = "Returns the current authenticated user's profile information")
   @APIResponses({
-      @APIResponse(
-          responseCode = "200",
-          description = "Current user profile",
-          content = @Content(
-              mediaType = MediaType.APPLICATION_JSON,
-              schema = @Schema(implementation = UserResponse.class)
-          )
-      ),
-      @APIResponse(
-          responseCode = "401",
-          description = "Unauthorized - user not authenticated",
-          content = @Content(
-              mediaType = MediaType.APPLICATION_JSON,
-              schema = @Schema(implementation = ErrorResponse.class)
-          )
-      )
+    @APIResponse(
+        responseCode = "200",
+        description = "Current user profile",
+        content =
+            @Content(
+                mediaType = MediaType.APPLICATION_JSON,
+                schema = @Schema(implementation = UserResponse.class))),
+    @APIResponse(
+        responseCode = "401",
+        description = "Unauthorized - user not authenticated",
+        content =
+            @Content(
+                mediaType = MediaType.APPLICATION_JSON,
+                schema = @Schema(implementation = ErrorResponse.class)))
   })
   @RolesAllowed({"admin", "manager", "sales"})
   public Response getCurrentUser() {
     securityContext.requireAuthentication();
-    
+
     String username = securityContext.getUsername();
     if (username == null) {
       return Response.status(Response.Status.UNAUTHORIZED)
-          .entity(ErrorResponse.builder()
-              .error("UNAUTHORIZED")
-              .message("No user information available")
-              .build())
+          .entity(
+              ErrorResponse.builder()
+                  .error("UNAUTHORIZED")
+                  .message("No user information available")
+                  .build())
           .build();
     }
-    
+
     var authDetails = securityContext.getAuthenticationDetails();
-    
+
     // Create a simple response object with authentication info for tests
     UUID userId = securityContext.getUserId();
     String email = securityContext.getEmail();
-    
+
     // Use deterministic ID for test environments
     UUID responseId = userId;
     if (responseId == null) {
       // Generate consistent ID based on username for tests
       responseId = UUID.nameUUIDFromBytes(username.getBytes());
     }
-    
-    var response = Map.of(
-        "id", responseId,
-        "username", username,
-        "email", email != null ? email : "",
-        "roles", securityContext.getRoles().stream().toList(),
-        "enabled", true,
-        "authenticated", true
-    );
-        
+
+    var response =
+        Map.of(
+            "id",
+            responseId,
+            "username",
+            username,
+            "email",
+            email != null ? email : "",
+            "roles",
+            securityContext.getRoles().stream().toList(),
+            "enabled",
+            true,
+            "authenticated",
+            true);
+
     return Response.ok(response).build();
   }
 
