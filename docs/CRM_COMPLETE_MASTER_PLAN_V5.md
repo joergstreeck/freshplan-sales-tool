@@ -19,7 +19,7 @@
 **Status:** FC-008 zu 85% fertig, UI Foundation zu 60% fertig (Code-Reality korrigiert!), FC-010 bereit  
 **Nächster Schritt:** UI Foundation Enhancement (KI-Integration) oder Security-Tests (TODO-024/028)  
 **Arbeits-Dokument:** `/docs/features/ACTIVE/05_ui_foundation/M3_SALES_COCKPIT_KOMPAKT.md` ⭐
-**Offene Entscheidungen:** `/docs/features/ACTIVE/05_ui_foundation/DECISION_LOG.md` 🚨 **3 KRITISCHE ENTSCHEIDUNGEN!**
+**Offene Entscheidungen:** `/docs/features/ACTIVE/05_ui_foundation/DECISION_LOG_CRITICAL.md` 🚨 **3 KRITISCHE ENTSCHEIDUNGEN!**
 
 **🎯 STRUKTURBEREINIGUNG PHASE 3 ABGESCHLOSSEN:**
 - **M3 Sales Cockpit:** 60% fertig (SalesCockpitV2.tsx + 3-Spalten + ResizablePanels ✅)
@@ -29,7 +29,7 @@
 
 ### 🧭 Navigation für die nächsten Schritte
 
-**🚨 BLOCKIERT:** 3 kritische Entscheidungen → `/docs/features/ACTIVE/05_ui_foundation/DECISION_LOG.md`
+**🚨 BLOCKIERT:** 3 kritische Entscheidungen → `/docs/features/ACTIVE/05_ui_foundation/DECISION_LOG_CRITICAL.md`
 
 1. **OPTION A:** UI Foundation Enhancement → `/docs/features/ACTIVE/05_ui_foundation/M3_SALES_COCKPIT_KOMPAKT.md` ⭐
 2. **OPTION B:** Security-Tests fixen → `/docs/features/ACTIVE/01_security_foundation/FC-008_KOMPAKT.md`
