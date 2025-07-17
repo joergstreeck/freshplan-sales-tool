@@ -97,15 +97,18 @@ echo "- Überall via FAB"
 
 ## 🔗 VOLLSTÄNDIGE DETAILS
 
-**Direkter Implementation Guide:** [M2_QUICK_CREATE_GUIDE.md](./guides/M2_QUICK_CREATE_GUIDE.md)
+**Direkter Implementation Guide:** `/docs/features/ACTIVE/05_ui_foundation/guides/M2_QUICK_CREATE_GUIDE.md`
 - Phase 1: Floating Action Button (Tag 1)
 - Phase 2: Quick Create Modals (Tag 2-3)
 - Phase 3: Smart Defaults (Tag 4)
 - Vollständige Code-Beispiele + Copy-paste ready
 
-**Navigation:** [IMPLEMENTATION_GUIDE.md](./IMPLEMENTATION_GUIDE.md) (Übersicht aller Module)
+**Navigation:** 
+- **IMPLEMENTATION_GUIDE.md:** `/docs/features/ACTIVE/05_ui_foundation/IMPLEMENTATION_GUIDE.md` (Übersicht aller Module)
+- **V5 Master Plan:** `/docs/CRM_COMPLETE_MASTER_PLAN_V5.md` (Gesamt-Roadmap)
+- **Feature Overview:** `/docs/features/MASTER/FEATURE_OVERVIEW.md` (Status Dashboard)
 
-**Entscheidungen:** [DECISION_LOG.md](./DECISION_LOG.md)
+**Entscheidungen:** `/docs/features/ACTIVE/05_ui_foundation/DECISION_LOG.md`
 - FAB-Position: Bottom-Right vs. Context-sensitive?
 - Modal-Style: Fullscreen vs. Centered vs. Slide-up?
 - Validation: Client-side vs. Server-side vs. Hybrid?

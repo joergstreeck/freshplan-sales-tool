@@ -92,20 +92,23 @@ curl http://localhost:8080/api/customers | head -5
 
 ## 🔗 VOLLSTÄNDIGE DETAILS
 
-**Direkter Implementation Guide:** [M3_COCKPIT_GUIDE.md](./guides/M3_COCKPIT_GUIDE.md)
+**Direkter Implementation Guide:** `/docs/features/ACTIVE/05_ui_foundation/guides/M3_COCKPIT_GUIDE.md`
 - Phase 1: KI-Integration (Tag 1-2)
 - Phase 2: Data Integration (Tag 3-4)  
 - Phase 3: Calculator Integration (Tag 5)
 - Vollständige Code-Beispiele + Copy-paste ready
 
-**Navigation:** [IMPLEMENTATION_GUIDE.md](./IMPLEMENTATION_GUIDE.md) (Übersicht aller Module)
+**Navigation:** 
+- **IMPLEMENTATION_GUIDE.md:** `/docs/features/ACTIVE/05_ui_foundation/IMPLEMENTATION_GUIDE.md` (Übersicht aller Module)
+- **V5 Master Plan:** `/docs/CRM_COMPLETE_MASTER_PLAN_V5.md` (Gesamt-Roadmap)
+- **Feature Overview:** `/docs/features/MASTER/FEATURE_OVERVIEW.md` (Status Dashboard)
 
-**Entscheidungen:** [DECISION_LOG.md](./DECISION_LOG.md)
+**Entscheidungen:** `/docs/features/ACTIVE/05_ui_foundation/DECISION_LOG.md`
 - KI-Provider Wahl: OpenAI API vs. Local Model?
 - Refresh-Strategie: Polling vs. WebSocket vs. Hybrid?
 - Action-Integration: Modal vs. Inline vs. Neue Tabs?
 
-**Sales Roadmap:** [SALES_COMMAND_CENTER_ROADMAP.md](./SALES_COMMAND_CENTER_ROADMAP.md)
+**Enhancement Roadmap:**
 - Stage 1: Foundation Enhancement (2-3 Tage)
 - Stage 2: Data Integration (3-4 Tage)  
 - Stage 3: KI Enhancement (4-5 Tage)
@@ -129,10 +132,10 @@ curl http://localhost:8080/api/customers | head -5
 ## 🔗 VERWANDTE MODULE
 
 **Abhängigkeiten:**
-- [M1 Navigation](./M1_NAVIGATION_KOMPAKT.md) - Für Cockpit-Navigation
-- [M8 Calculator](../../03_calculator_modal/M8_KOMPAKT.md) - Für ActionCenter Integration
-- [FC-009 Permissions](../../04_permissions_system/FC-009_KOMPAKT.md) - Für rolle-basierte Cockpit-Inhalte
+- **M1 Navigation:** `/docs/features/ACTIVE/05_ui_foundation/M1_NAVIGATION_KOMPAKT.md` - Für Cockpit-Navigation
+- **M8 Calculator:** `/docs/features/ACTIVE/03_calculator_modal/M8_KOMPAKT.md` - Für ActionCenter Integration
+- **FC-009 Permissions:** `/docs/features/ACTIVE/04_permissions_system/FC-009_KOMPAKT.md` - Für rolle-basierte Cockpit-Inhalte
 
 **Verwandte Features:**
-- [M2 Quick Create](./M2_QUICK_CREATE_KOMPAKT.md) - FAB Integration mit Cockpit
-- [M7 Settings](./M7_SETTINGS_KOMPAKT.md) - Cockpit-Konfiguration
+- **M2 Quick Create:** `/docs/features/ACTIVE/05_ui_foundation/M2_QUICK_CREATE_KOMPAKT.md` - FAB Integration mit Cockpit
+- **M7 Settings:** `/docs/features/ACTIVE/05_ui_foundation/M7_SETTINGS_KOMPAKT.md` - Cockpit-Konfiguration

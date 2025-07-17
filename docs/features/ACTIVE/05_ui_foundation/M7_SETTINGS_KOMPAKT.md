@@ -93,15 +93,18 @@ grep -A10 -B5 "TabPanel" frontend/src/pages/SettingsPage.tsx | grep -A20 "value=
 
 ## 🔗 VOLLSTÄNDIGE DETAILS
 
-**Direkter Implementation Guide:** [M7_SETTINGS_GUIDE.md](./guides/M7_SETTINGS_GUIDE.md)
+**Direkter Implementation Guide:** `/docs/features/ACTIVE/05_ui_foundation/guides/M7_SETTINGS_GUIDE.md`
 - Phase 1: System Settings Tab (Tag 1)
 - Phase 2: Security Settings Tab (Tag 2)
 - Phase 3: Notification Settings Tab (Tag 3)
 - Vollständige Code-Beispiele + Copy-paste ready
 
-**Navigation:** [IMPLEMENTATION_GUIDE.md](./IMPLEMENTATION_GUIDE.md) (Übersicht aller Module)
+**Navigation:** 
+- **IMPLEMENTATION_GUIDE.md:** `/docs/features/ACTIVE/05_ui_foundation/IMPLEMENTATION_GUIDE.md` (Übersicht aller Module)
+- **V5 Master Plan:** `/docs/CRM_COMPLETE_MASTER_PLAN_V5.md` (Gesamt-Roadmap)
+- **Feature Overview:** `/docs/features/MASTER/FEATURE_OVERVIEW.md` (Status Dashboard)
 
-**Entscheidungen:** [DECISION_LOG.md](./DECISION_LOG.md)
+**Entscheidungen:** `/docs/features/ACTIVE/05_ui_foundation/DECISION_LOG.md`
 - Settings-Storage: Local vs. Server vs. Hybrid?
 - Tab-Struktur: Mehr Tabs vs. Kategorien vs. Accordion?
 - Permissions: Role-based vs. User-specific vs. Hybrid?

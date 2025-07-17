@@ -8,6 +8,8 @@
 
 ## 📋 ENTSCHEIDUNGSÜBERSICHT
 
+**🚨 ESKALATION:** D1-D3 blockieren UI Foundation Start! → **Deadline: 19.07.2025**
+
 | ID | Kategorie | Entscheidung | Status | Priorität |
 |----|-----------|-------------|---------|-----------|
 | **D1** | KI-Integration | KI-Provider: OpenAI vs. Local Model | ❓ OFFEN | 🔥 HOCH |

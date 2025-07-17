@@ -90,15 +90,18 @@ curl http://localhost:8080/api/users/current | jq '.roles'
 
 ## 🔗 VOLLSTÄNDIGE DETAILS
 
-**Direkter Implementation Guide:** [M1_NAVIGATION_GUIDE.md](./guides/M1_NAVIGATION_GUIDE.md)
+**Direkter Implementation Guide:** `/docs/features/ACTIVE/05_ui_foundation/guides/M1_NAVIGATION_GUIDE.md`
 - Phase 1: Rolle-basierte Navigation (Tag 1-2)
 - Phase 2: Breadcrumbs System (Tag 3)
 - Phase 3: Notifications (Tag 4)
 - Vollständige Code-Beispiele + Copy-paste ready
 
-**Navigation:** [IMPLEMENTATION_GUIDE.md](./IMPLEMENTATION_GUIDE.md) (Übersicht aller Module)
+**Navigation:** 
+- **IMPLEMENTATION_GUIDE.md:** `/docs/features/ACTIVE/05_ui_foundation/IMPLEMENTATION_GUIDE.md` (Übersicht aller Module)
+- **V5 Master Plan:** `/docs/CRM_COMPLETE_MASTER_PLAN_V5.md` (Gesamt-Roadmap)
+- **Feature Overview:** `/docs/features/MASTER/FEATURE_OVERVIEW.md` (Status Dashboard)
 
-**Entscheidungen:** [DECISION_LOG.md](./DECISION_LOG.md)
+**Entscheidungen:** `/docs/features/ACTIVE/05_ui_foundation/DECISION_LOG.md`
 - Navigation-Style: Sidebar vs. Top-Navigation vs. Hybrid?
 - Breadcrumb-Strategie: Auto-generiert vs. Manual vs. Hybrid?
 - Search-Integration: Elastic vs. Database vs. Client-side?
