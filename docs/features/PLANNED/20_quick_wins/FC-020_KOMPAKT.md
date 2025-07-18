@@ -1,4 +1,4 @@
-# ⚡ FC-020: Quick Wins Collection KOMPAKT
+# ⚡ FC-020: Quick Wins Collection KOMPAKT (ENHANCED)
 
 **In 15 Minuten Quick Wins verstehen und umsetzen!**
 
@@ -6,27 +6,61 @@
 
 **Eine Sammlung von Power-User Features** die sofort die Produktivität steigern.
 
-**Die 4 Quick Wins:**
-1. ⌨️ **Keyboard Shortcuts** - Alles ohne Maus erreichbar
-2. 🔍 **Smart Search** - "k anna morgen" findet Kundenmeeting
-3. ✅ **Bulk Actions** - 20 Opportunities auf einmal updaten
-4. 📊 **Excel Export** - Ein Klick, alle Daten
+**Die 5 Quick Wins:**
+1. 🎯 **Command Palette** - Cmd+K für ALLES (NEU!)
+2. ⌨️ **Keyboard Shortcuts** - Alles ohne Maus erreichbar
+3. 🔍 **Smart Search** - "k anna morgen" findet Kundenmeeting
+4. ✅ **Bulk Actions** - 20 Opportunities auf einmal updaten
+5. 📊 **Excel Export** - Ein Klick, alle Daten
 
 ## 💰 Business Value in Zahlen
 
 | Feature | Zeitersparnis pro Tag | Pro User/Jahr |
 |---------|----------------------|---------------|
-| Keyboard Shortcuts | 30 Min | **125 Stunden** |
+| Command Palette | 35 Min | **146 Stunden** |
+| Keyboard Shortcuts | 25 Min | **104 Stunden** |
 | Smart Search | 20 Min | **83 Stunden** |
 | Bulk Actions | 15 Min | **62 Stunden** |
 | Excel Export | 10 Min | **42 Stunden** |
-| **GESAMT** | **75 Min** | **312 Stunden** |
+| **GESAMT** | **105 Min** | **437 Stunden** |
 
-**ROI:** Bei 10 Usern = 3.120 Stunden = 390 Arbeitstage gespart!
+**ROI:** Bei 10 Usern = 4.370 Stunden = 546 Arbeitstage gespart!
 
 ## 🏗️ Quick Implementation
 
-### 1. Keyboard Shortcuts (0.5 Tag)
+### 1. Command Palette (0.5 Tag) 🆕
+```typescript
+// Universal Command Center
+const CommandPalette = () => {
+  const [open, setOpen] = useState(false);
+  
+  // Cmd+K to open
+  useHotkeys('cmd+k, ctrl+k', () => setOpen(true));
+  
+  const commands = [
+    { id: 'new-customer', label: 'Neuer Kunde', icon: '🏢', action: createCustomer },
+    { id: 'new-opportunity', label: 'Neue Opportunity', icon: '🎯', action: createOpportunity },
+    { id: 'search-customers', label: 'Kunden suchen...', icon: '🔍', action: searchCustomers },
+    { id: 'export-excel', label: 'Nach Excel exportieren', icon: '📊', action: exportToExcel },
+    { id: 'settings', label: 'Einstellungen', icon: '⚙️', action: openSettings },
+  ];
+  
+  return (
+    <CommandDialog open={open} onOpenChange={setOpen}>
+      <CommandInput placeholder="Was möchtest du tun?" />
+      <CommandList>
+        {commands.map(cmd => (
+          <CommandItem key={cmd.id} onSelect={cmd.action}>
+            <span>{cmd.icon}</span> {cmd.label}
+          </CommandItem>
+        ))}
+      </CommandList>
+    </CommandDialog>
+  );
+};
+```
+
+### 2. Keyboard Shortcuts (0.25 Tag)
 ```typescript
 // Global Shortcut Manager
 const shortcuts = {
@@ -40,7 +74,7 @@ const shortcuts = {
 useKeyboardShortcuts(shortcuts);
 ```
 
-### 2. Smart Search (0.5 Tag)
+### 3. Smart Search (0.25 Tag)
 ```typescript
 // Natural Language Parser
 parseQuery("k bosch morgen") => {
@@ -52,7 +86,7 @@ parseQuery("k bosch morgen") => {
 // Shortcuts: k=kunde, o=opportunity, t=heute
 ```
 
-### 3. Bulk Actions (0.5 Tag)
+### 4. Bulk Actions (0.5 Tag)
 ```typescript
 // Multi-Select + Action Bar
 <BulkActionBar 
@@ -65,7 +99,7 @@ parseQuery("k bosch morgen") => {
 />
 ```
 
-### 4. Excel Export (0.5 Tag)
+### 5. Excel Export (0.5 Tag)
 ```typescript
 // One-Click Export
 const exportToExcel = async () => {
@@ -79,6 +113,18 @@ const exportToExcel = async () => {
 ## 📱 UI Integration
 
 ```
+[Cmd+K] Command Palette 🆕
+┌─────────────────────────────────────┐
+│ 🔍 Was möchtest du tun?             │
+├─────────────────────────────────────┤
+│ 🏢 Neuer Kunde                      │
+│ 🎯 Neue Opportunity                 │
+│ 📊 Nach Excel exportieren           │
+│ 🔍 Kunden suchen...                 │
+│ ⚙️ Einstellungen                    │
+│ 📞 Support kontaktieren             │
+└─────────────────────────────────────┘
+
 [Ctrl+K] Smart Search
 ┌─────────────────────────────────────┐
 │ 🔍 k bosch morgen                   │
@@ -99,9 +145,15 @@ const exportToExcel = async () => {
                                    - Nach Excel
 ```
 
-## ⚡ 2-Tage-Sprint Plan
+## ⚡ 2-Tage-Sprint Plan (Enhanced)
 
-**Tag 1 Vormittag: Shortcuts**
+**Tag 1 Vormittag: Command Palette** 🆕
+- Command Palette Component
+- Fuzzy Search für Commands
+- Keyboard Navigation
+- Recent Commands
+
+**Tag 1 Mittag: Shortcuts**
 - Global Shortcut Manager
 - Help Overlay (? key)
 - User Settings speichern

@@ -20,13 +20,14 @@
 **🚀 AKTUELLER FOKUS:**
 - **M4 Opportunity Pipeline** ist NICHT BLOCKIERT und kann sofort starten!
 - Inkludiert jetzt FC-011 Bonitätsprüfung als Stage-Gate
-- **NEU:** M2 Quick Create folgt nach M4 (braucht Customer + Opportunity Entities)
-- Calculator Modal (M8) kommt danach
+- **NEU:** FC-021 Integration Hub dokumentiert - kommt vor allen anderen Integrationen!
+- **OPTIMIERT:** Dokumentation für Claude-Kontext (keine Dateien > 500 Zeilen mehr)
 
-**🚨 WEITERHIN BLOCKIERT:**
-- UI Foundation wartet auf 3 Entscheidungen (D1-D3)
-- **DEADLINE: 19.07.2025 (MORGEN!)** 
-- `/docs/features/ACTIVE/05_ui_foundation/DECISION_LOG_CRITICAL.md`
+**✅ ERLEDIGT (18.07.2025):**
+- FC-021 Integration Hub vollständig dokumentiert
+- Dokumentation für Claude optimiert (große Dateien aufgeteilt)
+- 9 neue Features dokumentiert (FC-013 bis FC-021)
+- Feature-Sequenz mit Integration Hub optimiert
 
 **Nächster konkreter Schritt:**
 
@@ -36,20 +37,22 @@
 - 4 Tage Aufwand
 
 **👉 DANACH:** FC-020 Quick Wins
-- Arbeits-Dokument: `/docs/features/PLANNED/20_quick_wins/FC-020_QUICK_WINS.md` 🚀
-- Keyboard Shortcuts, Smart Search, Bulk Actions, Excel Export
+- Arbeits-Dokument: `/docs/features/PLANNED/20_quick_wins/FC-020_KOMPAKT.md` 🚀
+- NEU: Separates IMPLEMENTATION_GUIDE für Details
 - 2 Tage Aufwand = sofortiger Impact!
 
 **Alternative Optionen:**
 - Security-Tests fixen (SEC-001) - kann parallel laufen
-- UI Entscheidungen geklärt: D1: OpenAI, D2: Polling, D3: Sidebar ✅
+- UI Entscheidungen laut Übergabe geklärt, aber TODO noch offen
 
 ---
 
 ## 🚨 BEI INTERRUPT:
 
-**Session vollständig abgeschlossen - keine Unterbrechung**
-_Nächster Schritt klar: M4 Opportunity Pipeline starten_
+**Session abgeschlossen - Alle 15 Features dokumentiert!**
+_✅ FC-022 bis FC-036 fertig_
+_Nächster Schritt: Commit + M4 Pipeline starten_
+_Übergabe: `/docs/claude-work/daily-work/2025-07-19/2025-07-19_HANDOVER_00-30.md`_
 
 ---
 
