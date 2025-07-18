@@ -53,24 +53,34 @@ Nach nochmaliger Analyse muss die Reihenfolge angepasst werden:
 ```
 **Output:** Alle Bestandskunden migriert, flexible Import-Architektur
 
-#### Tag 36-39: Opportunity Pipeline (4 Tage)
+#### Tag 20-23: Opportunity Pipeline (4 Tage)
 ```typescript
-// Das HERZSTÜCK - jetzt mit vollständigen Kundendaten!
+// Das HERZSTÜCK - mit integrierter Bonitätsprüfung!
 9. Opportunity Entity & API (1 Tag)
 10. Pipeline UI mit Drag&Drop (2 Tage)
-11. Stage-Validierung & Rules (1 Tag)
+11. Stage-Validierung & Bonitätsprüfung (1 Tag)
 ```
-**Output:** Funktionsfähige Pipeline, Basis für Calculator
+**Output:** Funktionsfähige Pipeline mit Credit Check
+
+#### Tag 24-26: Quick Create FAB (3 Tage)
+```typescript
+// NACH Pipeline - braucht Customer & Opportunity Entities!
+12. Floating Action Button in MainLayoutV2 (0.5 Tag)
+13. Quick Create Modals (Customer/Opportunity) (1.5 Tage)
+14. Smart Defaults & Context-Awareness (1 Tag)
+```
+**Output:** Produktivitäts-Boost durch schnelle Erfassung
 
 ---
 
-### 🚀 **WOCHE 3-4: Process Integration**
+### 🚀 **WOCHE 4: Process Integration**
 
-#### Tag 22: Calculator Integration (1 Tag)
+#### Tag 27-28: Calculator Integration (2 Tage)
 ```typescript
-// JETZT macht Calculator Sinn - als Modal in Pipeline!
-12. Calculator Modal in Stage "Angebot"
-13. Context-Passing von Opportunity
+// JETZT macht Calculator Sinn - nach Pipeline & Quick Create!
+15. Calculator Modal in Stage "Angebot"
+16. Context-Passing von Opportunity
+17. PDF-Generator für Verträge
 ```
 **Output:** Vollständiger Angebotsprozess
 

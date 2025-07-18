@@ -15,11 +15,11 @@
 ## 🤖 CLAUDE WORKING SECTION
 
 ### 📍 Aktueller Fokus
-**Phase:** 1 - Core Foundation + UI Enhancement  
-**Status:** FC-008 zu 85% fertig, UI Foundation zu 60% fertig (Code-Reality korrigiert!), FC-010 bereit  
-**Nächster Schritt:** UI Foundation Enhancement (KI-Integration) oder Security-Tests (TODO-024/028)  
-**Arbeits-Dokument:** `/docs/features/ACTIVE/05_ui_foundation/M3_SALES_COCKPIT_KOMPAKT.md` ⭐
-**Offene Entscheidungen:** `/docs/features/ACTIVE/05_ui_foundation/DECISION_LOG_CRITICAL.md` 🚨 **3 KRITISCHE ENTSCHEIDUNGEN!**
+**Phase:** 1 - Core Foundation + Pipeline Integration  
+**Status:** FC-008 zu 85% fertig, UI Foundation BLOCKIERT (3 Entscheidungen), M4 Opportunity Pipeline READY  
+**Nächster Schritt:** M4 Opportunity Pipeline starten (inkl. FC-011 Bonitätsprüfung)  
+**Arbeits-Dokument:** `/docs/features/ACTIVE/02_opportunity_pipeline/M4_KOMPAKT.md` ⭐
+**Kritische Blockade:** `/docs/features/ACTIVE/05_ui_foundation/DECISION_LOG_CRITICAL.md` 🚨 **UI wartet auf D1-D3!**
 
 **🎯 STRUKTURBEREINIGUNG PHASE 3 ABGESCHLOSSEN:**
 - **M3 Sales Cockpit:** 60% fertig (SalesCockpitV2.tsx + 3-Spalten + ResizablePanels ✅)
@@ -29,15 +29,17 @@
 
 ### 🧭 Navigation für die nächsten Schritte
 
-**🚨 BLOCKIERT:** 3 kritische Entscheidungen → `/docs/features/ACTIVE/05_ui_foundation/DECISION_LOG_CRITICAL.md`
+**🚀 EMPFOHLEN:** M4 Opportunity Pipeline (nicht blockiert!)
 
-1. **OPTION A:** UI Foundation Enhancement → `/docs/features/ACTIVE/05_ui_foundation/M3_SALES_COCKPIT_KOMPAKT.md` ⭐
-2. **OPTION B:** Security-Tests fixen → `/docs/features/ACTIVE/01_security_foundation/FC-008_KOMPAKT.md`
-3. **OPTION C:** Customer Import starten → `/docs/features/PLANNED/FC-010_KOMPAKT.md`
-4. **DANN:** Permissions System → `/docs/features/ACTIVE/04_permissions_system/FC-009_KOMPAKT.md`
-5. **PARALLEL:** Opportunity Pipeline → `/docs/features/ACTIVE/02_opportunity_pipeline/M4_KOMPAKT.md`
-6. **ÜBERSICHT:** Features Dashboard → `/docs/features/MASTER/FEATURE_OVERVIEW.md`
-7. **HISTORIE:** Abgeschlossene Features → `/docs/features/COMPLETED/README.md`
+1. **JETZT:** Opportunity Pipeline → `/docs/features/ACTIVE/02_opportunity_pipeline/M4_KOMPAKT.md` ⭐
+   - Inkl. FC-011 Bonitätsprüfung → `/docs/features/ACTIVE/02_opportunity_pipeline/integrations/FC-011_KOMPAKT.md`
+2. **DANACH:** FC-020 Quick Wins → `/docs/features/PLANNED/20_quick_wins/FC-020_QUICK_WINS.md` 🚀
+   - Keyboard Shortcuts, Smart Search, Bulk Actions, Excel Export
+3. **NEUE SEQUENZ:** Komplette Feature-Reihenfolge → `/docs/features/2025-07-18_COMPLETE_FEATURE_SEQUENCE.md` 📋
+4. **DANN:** Calculator Modal → `/docs/features/ACTIVE/03_calculator_modal/M8_KOMPAKT.md`
+5. **PARALLEL:** Security-Tests fixen → `/docs/features/ACTIVE/01_security_foundation/FC-008_KOMPAKT.md`
+6. **WENN ENTSCHIEDEN:** UI Foundation → `/docs/features/ACTIVE/05_ui_foundation/M3_SALES_COCKPIT_KOMPAKT.md`
+7. **ÜBERSICHT:** Features Dashboard → `/docs/features/MASTER/FEATURE_OVERVIEW.md`
 
 ### 📚 Context-Dokumente
 - **Implementierungs-Sequenz:** `/docs/features/2025-07-12_FINAL_OPTIMIZED_SEQUENCE.md`
