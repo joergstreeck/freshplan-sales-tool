@@ -54,15 +54,23 @@ POST   /api/opportunities/{id}/move # Stage verschieben
 
 ---
 
-## 📋 DIE 5 SALES STAGES
+## 📋 DIE 5 SALES STAGES + INTEGRATIONEN
 
 1. **Lead** → Erster Kontakt
-2. **Qualified** → Budget & Need confirmed  
-3. **Proposal** → Angebot erstellt
+2. **Qualified** → Budget & Need confirmed
+   - 🔍 **NEU: Bonitätsprüfung** (FC-011) als Stage-Gate
+   - ✅ Nur mit positiver Bonität → Proposal
+3. **Proposal** → Angebot erstellt  
+   - 📄 **Vertragsunterlagen** automatisch generiert
+   - 🧮 **Calculator Modal** (M8) für Angebote
 4. **Negotiation** → Verhandlung läuft
 5. **Closed** → Won/Lost
 
 **Drag & Drop zwischen Stages mit Validierung!**
+
+### 🔗 Integrierte Features:
+- **FC-011 Bonitätsprüfung & Verträge** → [Details](./integrations/FC-011_KOMPAKT.md)
+- **M8 Calculator Modal** → [Details](../03_calculator_modal/M8_KOMPAKT.md)
 
 ---
 
