@@ -158,6 +158,6 @@ curl http://localhost:8080/api/users/current | jq '.roles'
 - **[🔍 FC-030 One-Tap Actions](/docs/features/PLANNED/30_one_tap_actions/FC-030_KOMPAKT.md)** - Quick Actions in Header
 
 ### 🔧 Technische Details:
-- **[M1_NAVIGATION_GUIDE.md](./guides/M1_NAVIGATION_GUIDE.md)** - Schritt-für-Schritt Implementation
-- **[IMPLEMENTATION_GUIDE.md](./IMPLEMENTATION_GUIDE.md)** - UI Foundation Übersicht
-- **[DECISION_LOG.md](./DECISION_LOG.md)** - Navigation Entscheidungen
+- [M1_NAVIGATION_GUIDE.md](./guides/M1_NAVIGATION_GUIDE.md) *(geplant)* - Schritt-für-Schritt Implementation
+- [IMPLEMENTATION_GUIDE.md](./IMPLEMENTATION_GUIDE.md) *(geplant)* - UI Foundation Übersicht
+- [DECISION_LOG.md](./DECISION_LOG.md) *(geplant)* - Navigation Entscheidungen

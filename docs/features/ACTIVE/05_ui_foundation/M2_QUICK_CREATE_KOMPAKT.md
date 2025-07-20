@@ -166,6 +166,6 @@ echo "- Überall via FAB"
 - **[🎯 FC-031 Smart Templates](/docs/features/PLANNED/31_smart_templates/FC-031_KOMPAKT.md)** - Template-basiertes Quick Create
 
 ### 🔧 Technische Details:
-- **[M2_QUICK_CREATE_IMPLEMENTATION.md](./M2_QUICK_CREATE_IMPLEMENTATION.md)** - Vollständige Implementation
-- **[M2_QUICK_CREATE_GUIDE.md](./guides/M2_QUICK_CREATE_GUIDE.md)** - Schritt-für-Schritt Guide
-- **[DECISION_LOG.md](./DECISION_LOG.md)** - FAB Position & Modal Style
+- [M2_QUICK_CREATE_IMPLEMENTATION.md](./M2_QUICK_CREATE_IMPLEMENTATION.md) *(geplant)* - Vollständige Implementation
+- [M2_QUICK_CREATE_GUIDE.md](./guides/M2_QUICK_CREATE_GUIDE.md) *(geplant)* - Schritt-für-Schritt Guide
+- [DECISION_LOG.md](./DECISION_LOG.md) *(geplant)* - FAB Position & Modal Style

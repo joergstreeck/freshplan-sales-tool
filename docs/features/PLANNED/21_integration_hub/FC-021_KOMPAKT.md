@@ -254,6 +254,6 @@ export const IntegrationCard: React.FC<{integration: Integration}> = ({
 - **[📊 M3 Sales Cockpit](/docs/features/ACTIVE/05_ui_foundation/M3_SALES_COCKPIT_KOMPAKT.md)** - Sync Status Widget
 
 ### 🔧 Technische Details:
-- **[FC-021_IMPLEMENTATION_GUIDE.md](./FC-021_IMPLEMENTATION_GUIDE.md)** - Adapter Pattern Details
-- **[FC-021_DECISION_LOG.md](./FC-021_DECISION_LOG.md)** - Hub vs. Point-to-Point
-- **[ADAPTER_CATALOG.md](./ADAPTER_CATALOG.md)** - Verfügbare Adapter
+- [FC-021_IMPLEMENTATION_GUIDE.md](./FC-021_IMPLEMENTATION_GUIDE.md) *(geplant)* - Adapter Pattern Details
+- [FC-021_DECISION_LOG.md](./FC-021_DECISION_LOG.md) *(geplant)* - Hub vs. Point-to-Point
+- [ADAPTER_CATALOG.md](./ADAPTER_CATALOG.md) *(geplant)* - Verfügbare Adapter

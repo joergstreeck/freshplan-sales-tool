@@ -175,6 +175,6 @@ curl http://localhost:8080/api/customers | head -5
 - **[📊 FC-034 Instant Insights](/docs/features/PLANNED/34_instant_insights/FC-034_KOMPAKT.md)** - KI-Insights in MyDay
 
 ### 🔧 Technische Details:
-- **[M3_COCKPIT_GUIDE.md](./guides/M3_COCKPIT_GUIDE.md)** - Schritt-für-Schritt Enhancement
-- **[IMPLEMENTATION_GUIDE.md](./IMPLEMENTATION_GUIDE.md)** - UI Foundation Übersicht
-- **[ENHANCEMENT_ROADMAP.md](./ENHANCEMENT_ROADMAP.md)** - 4-Stage Enhancement Plan
+- [M3_COCKPIT_GUIDE.md](./guides/M3_COCKPIT_GUIDE.md) *(geplant)* - Schritt-für-Schritt Enhancement
+- [IMPLEMENTATION_GUIDE.md](./IMPLEMENTATION_GUIDE.md) *(geplant)* - UI Foundation Übersicht
+- [ENHANCEMENT_ROADMAP.md](./ENHANCEMENT_ROADMAP.md) *(geplant)* - 4-Stage Enhancement Plan

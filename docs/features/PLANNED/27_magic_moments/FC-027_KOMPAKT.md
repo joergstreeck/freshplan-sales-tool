@@ -263,6 +263,6 @@ const quotes = [
 - **[⚙️ M7 Settings](/docs/features/ACTIVE/05_ui_foundation/M7_SETTINGS_KOMPAKT.md)** - Magic Preferences
 
 ### 🔧 Technische Details:
-- **[FC-027_IMPLEMENTATION_GUIDE.md](./FC-027_IMPLEMENTATION_GUIDE.md)** - Magic Features Setup
-- **[FC-027_DECISION_LOG.md](./FC-027_DECISION_LOG.md)** - Subtlety vs. Impact
-- **[MAGIC_CATALOG.md](./MAGIC_CATALOG.md)** - Alle Magic Moments
+- [FC-027_IMPLEMENTATION_GUIDE.md](./FC-027_IMPLEMENTATION_GUIDE.md) *(geplant)* - Magic Features Setup
+- [FC-027_DECISION_LOG.md](./FC-027_DECISION_LOG.md) *(geplant)* - Subtlety vs. Impact
+- [MAGIC_CATALOG.md](./MAGIC_CATALOG.md) *(geplant)* - Alle Magic Moments

@@ -332,6 +332,6 @@ const activitySources = {
 - **[📊 M6 Analytics Module](/docs/features/PLANNED/13_analytics_m6/M6_KOMPAKT.md)** - Activity Reports
 
 ### 🔧 Technische Details:
-- **[FC-014_IMPLEMENTATION_GUIDE.md](./FC-014_IMPLEMENTATION_GUIDE.md)** - Event Sourcing Pattern
-- **[FC-014_DECISION_LOG.md](./FC-014_DECISION_LOG.md)** - Polling vs. WebSocket
-- **[ACTIVITY_SCHEMA.md](./ACTIVITY_SCHEMA.md)** - Activity Data Model
+- [FC-014_IMPLEMENTATION_GUIDE.md](./FC-014_IMPLEMENTATION_GUIDE.md) *(geplant)* - Event Sourcing Pattern
+- [FC-014_DECISION_LOG.md](./FC-014_DECISION_LOG.md) *(geplant)* - Polling vs. WebSocket
+- [ACTIVITY_SCHEMA.md](./ACTIVITY_SCHEMA.md) *(geplant)* - Activity Data Model

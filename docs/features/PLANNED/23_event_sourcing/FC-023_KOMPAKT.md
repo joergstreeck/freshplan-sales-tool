@@ -184,6 +184,6 @@ Customer customer = eventStore
 - **[🎯 FC-027 Magic Moments](/docs/features/PLANNED/27_magic_moments/FC-027_KOMPAKT.md)** - Event Pattern Detection
 
 ### 🔧 Technische Details:
-- **[FC-023_IMPLEMENTATION_GUIDE.md](./FC-023_IMPLEMENTATION_GUIDE.md)** - Event Store Pattern
-- **[FC-023_DECISION_LOG.md](./FC-023_DECISION_LOG.md)** - Event Sourcing vs. CRUD
-- **[EVENT_CATALOG.md](./EVENT_CATALOG.md)** - Alle Domain Events
+- [FC-023_IMPLEMENTATION_GUIDE.md](./FC-023_IMPLEMENTATION_GUIDE.md) *(geplant)* - Event Store Pattern
+- [FC-023_DECISION_LOG.md](./FC-023_DECISION_LOG.md) *(geplant)* - Event Sourcing vs. CRUD
+- [EVENT_CATALOG.md](./EVENT_CATALOG.md) *(geplant)* - Alle Domain Events

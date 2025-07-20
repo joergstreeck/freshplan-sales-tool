@@ -237,6 +237,6 @@ export const ReportBuilder: React.FC = () => {
 - **[⚙️ M7 Settings](/docs/features/ACTIVE/05_ui_foundation/M7_SETTINGS_KOMPAKT.md)** - Report-Konfiguration
 
 ### 🔧 Technische Details:
-- **[REPORT_CATALOG.md](./REPORT_CATALOG.md)** - Alle verfügbaren Reports
-- **[ANALYTICS_GUIDE.md](./ANALYTICS_GUIDE.md)** - Implementation Details
-- **[DATA_MODEL.md](./DATA_MODEL.md)** - Analytics Datenmodell
+- [REPORT_CATALOG.md](./REPORT_CATALOG.md) *(geplant)* - Alle verfügbaren Reports
+- [ANALYTICS_GUIDE.md](./ANALYTICS_GUIDE.md) *(geplant)* - Implementation Details
+- [DATA_MODEL.md](./DATA_MODEL.md) *(geplant)* - Analytics Datenmodell

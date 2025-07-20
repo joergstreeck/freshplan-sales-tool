@@ -205,6 +205,6 @@ GROUP BY stage;
 - **[⚙️ M7 Settings](/docs/features/ACTIVE/05_ui_foundation/M7_SETTINGS_KOMPAKT.md)** - Metric Preferences
 
 ### 🔧 Technische Details:
-- **[FC-019_IMPLEMENTATION_GUIDE.md](./FC-019_IMPLEMENTATION_GUIDE.md)** - Vollständige Umsetzung
-- **[FC-019_DECISION_LOG.md](./FC-019_DECISION_LOG.md)** - Real-time vs. Batch Processing
-- **[METRICS_CATALOG.md](./METRICS_CATALOG.md)** - Alle verfügbaren KPIs
+- [FC-019_IMPLEMENTATION_GUIDE.md](./FC-019_IMPLEMENTATION_GUIDE.md) *(geplant)* - Vollständige Umsetzung
+- [FC-019_DECISION_LOG.md](./FC-019_DECISION_LOG.md) *(geplant)* - Real-time vs. Batch Processing
+- [METRICS_CATALOG.md](./METRICS_CATALOG.md) *(geplant)* - Alle verfügbaren KPIs

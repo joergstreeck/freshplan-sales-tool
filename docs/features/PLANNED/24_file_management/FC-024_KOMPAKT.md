@@ -236,6 +236,6 @@ freshplan-files/
 - **[⚙️ M7 Settings](/docs/features/ACTIVE/05_ui_foundation/M7_SETTINGS_KOMPAKT.md)** - Storage Settings
 
 ### 🔧 Technische Details:
-- **[FC-024_IMPLEMENTATION_GUIDE.md](./FC-024_IMPLEMENTATION_GUIDE.md)** - S3 Setup Guide
-- **[FC-024_DECISION_LOG.md](./FC-024_DECISION_LOG.md)** - S3 vs. Local Storage
-- **[FILE_SECURITY.md](./FILE_SECURITY.md)** - Security Best Practices
+- [FC-024_IMPLEMENTATION_GUIDE.md](./FC-024_IMPLEMENTATION_GUIDE.md) *(geplant)* - S3 Setup Guide
+- [FC-024_DECISION_LOG.md](./FC-024_DECISION_LOG.md) *(geplant)* - S3 vs. Local Storage
+- [FILE_SECURITY.md](./FILE_SECURITY.md) *(geplant)* - Security Best Practices

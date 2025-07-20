@@ -574,6 +574,6 @@ public class GamificationService {
 - **[⚙️ M7 Settings](/docs/features/ACTIVE/05_ui_foundation/M7_SETTINGS_KOMPAKT.md)** - Gamification Preferences
 
 ### 🔧 Technische Details:
-- **[FC-017_IMPLEMENTATION_GUIDE.md](./FC-017_IMPLEMENTATION_GUIDE.md)** - Point System Algorithm
-- **[FC-017_DECISION_LOG.md](./FC-017_DECISION_LOG.md)** - Rewards vs. Recognition
-- **[ACHIEVEMENT_CATALOG.md](./ACHIEVEMENT_CATALOG.md)** - Vollständige Badge-Liste
+- [FC-017_IMPLEMENTATION_GUIDE.md](./FC-017_IMPLEMENTATION_GUIDE.md) *(geplant)* - Point System Algorithm
+- [FC-017_DECISION_LOG.md](./FC-017_DECISION_LOG.md) *(geplant)* - Rewards vs. Recognition
+- [ACHIEVEMENT_CATALOG.md](./ACHIEVEMENT_CATALOG.md) *(geplant)* - Vollständige Badge-Liste

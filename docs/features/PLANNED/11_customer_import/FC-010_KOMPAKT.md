@@ -159,8 +159,8 @@ const DynamicImportWizard = () => {
 - **[📊 FC-034 Instant Insights](/docs/features/PLANNED/34_instant_insights/FC-034_KOMPAKT.md)** - Import-Statistiken
 
 ### 🔧 Technische Details:
-- **[FC-010_IMPLEMENTATION_GUIDE.md](./FC-010_IMPLEMENTATION_GUIDE.md)** - Plugin Architecture
-- **[FC-010_DECISION_LOG.md](./FC-010_DECISION_LOG.md)** - Architektur-Entscheidungen
+- [FC-010_IMPLEMENTATION_GUIDE.md](./FC-010_IMPLEMENTATION_GUIDE.md) *(geplant)* - Plugin Architecture
+- [FC-010_DECISION_LOG.md](./FC-010_DECISION_LOG.md) *(geplant)* - Architektur-Entscheidungen
 
 ---
 

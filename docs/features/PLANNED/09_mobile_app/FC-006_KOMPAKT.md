@@ -164,6 +164,6 @@ async getCurrentContext() {
 - **[⚙️ M7 Settings](/docs/features/ACTIVE/05_ui_foundation/M7_SETTINGS_KOMPAKT.md)** - Mobile Settings Sync
 
 ### 🔧 Technische Details:
-- **[IMPLEMENTATION_GUIDE.md](./IMPLEMENTATION_GUIDE.md)** - React Native Setup
-- **[MOBILE_DESIGN.md](./MOBILE_DESIGN.md)** - UI/UX Mockups
-- **[SYNC_ARCHITECTURE.md](./SYNC_ARCHITECTURE.md)** - Offline-Sync Details
+- [IMPLEMENTATION_GUIDE.md](./IMPLEMENTATION_GUIDE.md) *(geplant)* - React Native Setup
+- [MOBILE_DESIGN.md](./MOBILE_DESIGN.md) *(geplant)* - UI/UX Mockups
+- [SYNC_ARCHITECTURE.md](./SYNC_ARCHITECTURE.md) *(geplant)* - Offline-Sync Details

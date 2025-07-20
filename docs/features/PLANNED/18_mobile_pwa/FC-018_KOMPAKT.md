@@ -292,6 +292,6 @@ async function syncOpportunities() {
 - **[🧮 M8 Calculator Modal](/docs/features/ACTIVE/03_calculator_modal/M8_KOMPAKT.md)** - Offline Calculations
 
 ### 🔧 Technische Details:
-- **[FC-018_IMPLEMENTATION_GUIDE.md](./FC-018_IMPLEMENTATION_GUIDE.md)** - PWA Setup Details
-- **[FC-018_DECISION_LOG.md](./FC-018_DECISION_LOG.md)** - Native vs. PWA Decision
-- **[SERVICE_WORKER_STRATEGY.md](./SERVICE_WORKER_STRATEGY.md)** - Caching Strategies
+- [FC-018_IMPLEMENTATION_GUIDE.md](./FC-018_IMPLEMENTATION_GUIDE.md) *(geplant)* - PWA Setup Details
+- [FC-018_DECISION_LOG.md](./FC-018_DECISION_LOG.md) *(geplant)* - Native vs. PWA Decision
+- [SERVICE_WORKER_STRATEGY.md](./SERVICE_WORKER_STRATEGY.md) *(geplant)* - Caching Strategies

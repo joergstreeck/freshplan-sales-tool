@@ -176,6 +176,6 @@ self.addEventListener('sync', event => {
 - **[⚙️ M7 Settings](/docs/features/ACTIVE/05_ui_foundation/M7_SETTINGS_KOMPAKT.md)** - Mobile Settings
 
 ### 🔧 Technische Details:
-- **[FC-022_IMPLEMENTATION_GUIDE.md](./FC-022_IMPLEMENTATION_GUIDE.md)** - PWA Setup Guide
-- **[FC-022_DECISION_LOG.md](./FC-022_DECISION_LOG.md)** - Light vs. Full Mobile
-- **[MOBILE_PATTERNS.md](./MOBILE_PATTERNS.md)** - Touch-optimierte UI Patterns
+- [FC-022_IMPLEMENTATION_GUIDE.md](./FC-022_IMPLEMENTATION_GUIDE.md) *(geplant)* - PWA Setup Guide
+- [FC-022_DECISION_LOG.md](./FC-022_DECISION_LOG.md) *(geplant)* - Light vs. Full Mobile
+- [MOBILE_PATTERNS.md](./MOBILE_PATTERNS.md) *(geplant)* - Touch-optimierte UI Patterns

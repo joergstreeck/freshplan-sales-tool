@@ -224,6 +224,6 @@ interface DuplicateDetectionConfig {
 - **[📊 FC-034 Instant Insights](/docs/features/PLANNED/34_instant_insights/FC-034_KOMPAKT.md)** - Data Quality Metrics
 
 ### 🔧 Technische Details:
-- **[FC-013_IMPLEMENTATION_GUIDE.md](./FC-013_IMPLEMENTATION_GUIDE.md)** - Fuzzy Matching Algorithmen
-- **[FC-013_DECISION_LOG.md](./FC-013_DECISION_LOG.md)** - Elasticsearch vs. PostgreSQL
-- **[MERGE_STRATEGY.md](./MERGE_STRATEGY.md)** - Merge-Konflikt-Auflösung
+- [FC-013_IMPLEMENTATION_GUIDE.md](./FC-013_IMPLEMENTATION_GUIDE.md) *(geplant)* - Fuzzy Matching Algorithmen
+- [FC-013_DECISION_LOG.md](./FC-013_DECISION_LOG.md) *(geplant)* - Elasticsearch vs. PostgreSQL
+- [MERGE_STRATEGY.md](./MERGE_STRATEGY.md) *(geplant)* - Merge-Konflikt-Auflösung

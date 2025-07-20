@@ -207,6 +207,6 @@ const TouchAction = styled(Fab)`
 - **[📱 FC-018 Mobile PWA](/docs/features/PLANNED/18_mobile_pwa/FC-018_KOMPAKT.md)** - Offline Actions
 
 ### 🔧 Technische Details:
-- **[FC-030_IMPLEMENTATION_GUIDE.md](./FC-030_IMPLEMENTATION_GUIDE.md)** - Context Detection Setup
-- **[FC-030_DECISION_LOG.md](./FC-030_DECISION_LOG.md)** - FAB vs. Speed Dial
-- **[ACTION_CATALOG.md](./ACTION_CATALOG.md)** - Alle Quick Actions
+- [FC-030_IMPLEMENTATION_GUIDE.md](./FC-030_IMPLEMENTATION_GUIDE.md) *(geplant)* - Context Detection Setup
+- [FC-030_DECISION_LOG.md](./FC-030_DECISION_LOG.md) *(geplant)* - FAB vs. Speed Dial
+- [ACTION_CATALOG.md](./ACTION_CATALOG.md) *(geplant)* - Alle Quick Actions

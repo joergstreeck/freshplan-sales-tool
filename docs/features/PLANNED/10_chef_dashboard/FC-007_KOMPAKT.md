@@ -158,6 +158,6 @@ export const ChefDashboard: React.FC = () => {
 - **[📊 FC-034 Instant Insights](/docs/features/PLANNED/34_instant_insights/FC-034_KOMPAKT.md)** - KI-Insights
 
 ### 🔧 Technische Details:
-- **[IMPLEMENTATION_GUIDE.md](./IMPLEMENTATION_GUIDE.md)** - GraphQL & Analytics Engine
-- **[DASHBOARD_DESIGN.md](./DASHBOARD_DESIGN.md)** - UI/UX Mockups
-- **[PERFORMANCE_GUIDE.md](./PERFORMANCE_GUIDE.md)** - Caching & Real-Time
+- [IMPLEMENTATION_GUIDE.md](./IMPLEMENTATION_GUIDE.md) *(geplant)* - GraphQL & Analytics Engine
+- [DASHBOARD_DESIGN.md](./DASHBOARD_DESIGN.md) *(geplant)* - UI/UX Mockups
+- [PERFORMANCE_GUIDE.md](./PERFORMANCE_GUIDE.md) *(geplant)* - Caching & Real-Time

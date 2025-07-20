@@ -1,8 +1,17 @@
 # 🚀 UI FOUNDATION ENHANCEMENT ROADMAP
 
 **Erstellt:** 17.07.2025 18:25  
-**Status:** 🎯 Klare Vision für intelligente Erweiterungen  
+**Aktualisiert:** 20.07.2025 - Entscheidungen integriert  
+**Status:** ✅ READY TO IMPLEMENT - Alle Blockaden gelöst  
 **Basis:** 50% existierender Code wird ERWEITERT, nicht ersetzt  
+
+## 🎉 KRITISCHE ENTSCHEIDUNGEN GETROFFEN!
+
+| Decision | Wahl | Impact |
+|----------|------|--------|
+| **D1: KI-Provider** | OpenAI API ✅ | KI-Features können starten |
+| **D2: Real-time** | Polling (30s) ✅ | Team-Updates implementierbar |
+| **D3: Navigation** | Sidebar ✅ | Bereits implementiert |
 
 ---
 

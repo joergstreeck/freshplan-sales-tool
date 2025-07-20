@@ -185,6 +185,6 @@ export const CustomerListOptimized = () => {
 - **[📊 M6 Analytics Module](/docs/features/PLANNED/13_analytics_m6/M6_KOMPAKT.md)** - Customer Analytics
 
 ### 🔧 Technische Details:
-- **[PERFORMANCE_ANALYSIS.md](./PERFORMANCE_ANALYSIS.md)** - Query-Profiling & Metriken
-- **[OPTIMIZATION_GUIDE.md](./OPTIMIZATION_GUIDE.md)** - Schrittweise Migration
-- **[CACHE_ARCHITECTURE.md](./CACHE_ARCHITECTURE.md)** - Redis Setup & Patterns
+- [PERFORMANCE_ANALYSIS.md](./PERFORMANCE_ANALYSIS.md) *(geplant)* - Query-Profiling & Metriken
+- [OPTIMIZATION_GUIDE.md](./OPTIMIZATION_GUIDE.md) *(geplant)* - Schrittweise Migration
+- [CACHE_ARCHITECTURE.md](./CACHE_ARCHITECTURE.md) *(geplant)* - Redis Setup & Patterns

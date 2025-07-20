@@ -110,7 +110,7 @@ public class EmailIngestionService {
 - **[📊 M4 Opportunity Pipeline](/docs/features/ACTIVE/02_opportunity_pipeline/M4_KOMPAKT.md)** - Email-History bei Opportunities
 
 ### 🔧 Technische Details:
-- **[IMPLEMENTATION_GUIDE.md](./IMPLEMENTATION_GUIDE.md)** - Vollständige technische Umsetzung
+- [IMPLEMENTATION_GUIDE.md](./IMPLEMENTATION_GUIDE.md) *(geplant)* - Vollständige technische Umsetzung
 
 ---
 

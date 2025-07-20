@@ -296,6 +296,6 @@ const offlineCommands = new Map([
 - **[🧭 M1 Navigation](/docs/features/ACTIVE/05_ui_foundation/M1_NAVIGATION_KOMPAKT.md)** - Voice Navigation
 
 ### 🔧 Technische Details:
-- **[FC-029_IMPLEMENTATION_GUIDE.md](./FC-029_IMPLEMENTATION_GUIDE.md)** - Speech API Setup
-- **[FC-029_DECISION_LOG.md](./FC-029_DECISION_LOG.md)** - Web Speech vs. Cloud APIs
-- **[VOICE_COMMANDS.md](./VOICE_COMMANDS.md)** - Vollständige Command Liste
+- [FC-029_IMPLEMENTATION_GUIDE.md](./FC-029_IMPLEMENTATION_GUIDE.md) *(geplant)* - Speech API Setup
+- [FC-029_DECISION_LOG.md](./FC-029_DECISION_LOG.md) *(geplant)* - Web Speech vs. Cloud APIs
+- [VOICE_COMMANDS.md](./VOICE_COMMANDS.md) *(geplant)* - Vollständige Command Liste

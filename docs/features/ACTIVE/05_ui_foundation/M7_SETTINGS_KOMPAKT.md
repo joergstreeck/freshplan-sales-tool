@@ -158,6 +158,6 @@ grep -A10 -B5 "TabPanel" frontend/src/pages/SettingsPage.tsx | grep -A20 "value=
 - **[🔍 FC-026 Analytics Platform](/docs/features/PLANNED/26_analytics_platform/FC-026_KOMPAKT.md)** - Dashboard Konfiguration
 
 ### 🔧 Technische Details:
-- **[M7_SETTINGS_GUIDE.md](./guides/M7_SETTINGS_GUIDE.md)** - Schritt-für-Schritt Implementation
-- **[IMPLEMENTATION_GUIDE.md](./IMPLEMENTATION_GUIDE.md)** - UI Foundation Übersicht
-- **[DECISION_LOG.md](./DECISION_LOG.md)** - Settings Storage Entscheidungen
+- [M7_SETTINGS_GUIDE.md](./guides/M7_SETTINGS_GUIDE.md) *(geplant)* - Schritt-für-Schritt Implementation
+- [IMPLEMENTATION_GUIDE.md](./IMPLEMENTATION_GUIDE.md) *(geplant)* - UI Foundation Übersicht
+- [DECISION_LOG.md](./DECISION_LOG.md) *(geplant)* - Settings Storage Entscheidungen

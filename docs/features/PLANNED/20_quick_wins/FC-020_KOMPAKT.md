@@ -244,6 +244,6 @@ morgen 14:00    → Termine morgen 14 Uhr
 - **[🧮 M8 Calculator Modal](/docs/features/ACTIVE/03_calculator_modal/M8_KOMPAKT.md)** - Calculator via Cmd+K
 
 ### 🔧 Technische Details:
-- **[FC-020_IMPLEMENTATION_GUIDE.md](./FC-020_IMPLEMENTATION_GUIDE.md)** - Vollständige Umsetzung
-- **[FC-020_DECISION_LOG.md](./FC-020_DECISION_LOG.md)** - Command Palette vs. Menu
-- **[SHORTCUT_REFERENCE.md](./SHORTCUT_REFERENCE.md)** - Alle Keyboard Shortcuts
+- [FC-020_IMPLEMENTATION_GUIDE.md](./FC-020_IMPLEMENTATION_GUIDE.md) *(geplant)* - Vollständige Umsetzung
+- [FC-020_DECISION_LOG.md](./FC-020_DECISION_LOG.md) *(geplant)* - Command Palette vs. Menu
+- [SHORTCUT_REFERENCE.md](./SHORTCUT_REFERENCE.md) *(geplant)* - Alle Keyboard Shortcuts

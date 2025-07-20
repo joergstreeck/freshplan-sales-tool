@@ -9,55 +9,64 @@
 
 ## 🔥 KRITISCHE ENTSCHEIDUNGEN (BLOCKIEREN START!)
 
-### **D1: KI-Integration Provider** 🤖
+### **D1: KI-Integration Provider** 🤖 ✅ ENTSCHIEDEN
 
 **Problem:** Sales Cockpit braucht KI-Priorisierung für MyDay Column
 
 **Optionen:**
-- **A) OpenAI API** - Extern, kostet pro Request, beste Qualität
+- **A) OpenAI API** - Extern, kostet pro Request, beste Qualität ✅ GEWÄHLT
 - **B) Local Model** - Intern, einmalige Kosten, Datenschutz
 
 **Impact:** Architektur-Entscheidung für alle KI-Features
 
-**Empfehlung:** OpenAI API (schnellerer Start, bessere Qualität)
+**Entscheidung:** OpenAI API für MVP
+- Budget: 50-200€/Monat akzeptiert
+- Datenschutz: Nur aggregierte Daten, keine Kundennamen
+- Migration zu Local Model später möglich
 
 ---
 
-### **D2: Real-time Strategy** ⚡
+### **D2: Real-time Strategy** ⚡ ✅ ENTSCHIEDEN
 
 **Problem:** Team-Updates und Live-Daten in Cockpit
 
 **Optionen:**
-- **A) Polling** - Alle 30s abfragen, einfach, Server-Last
-- **B) WebSocket** - Echtes Real-time, komplex, bessere UX
+- **A) Polling** - Alle 30s abfragen, einfach, Server-Last ✅ GEWÄHLT (MVP)
+- **B) WebSocket** - Echtes Real-time, komplex, bessere UX (V2)
 
 **Impact:** Performance und Architektur-Komplexität
 
-**Empfehlung:** Polling für MVP, WebSocket für V2
+**Entscheidung:** Polling für MVP, WebSocket für V2
+- Polling-Intervall: 30 Sekunden
+- React Query mit staleTime: 30000ms
+- Migration-Pfad zu WebSocket vorbereitet
 
 ---
 
-### **D3: Navigation Style** 🧭
+### **D3: Navigation Style** 🧭 ✅ ENTSCHIEDEN
 
 **Problem:** Haupt-Navigation Layout für MainLayoutV2
 
 **Optionen:**
-- **A) Sidebar** - Vertikal, mehr Platz, Desktop-First
+- **A) Sidebar** - Vertikal, mehr Platz, Desktop-First ✅ GEWÄHLT
 - **B) Top-Navigation** - Horizontal, kompakt, Mobile-First
 
 **Impact:** Komplette UI-Struktur und User Experience
 
-**Empfehlung:** Sidebar (bessere Skalierbarkeit für Features)
+**Status:** ✅ IMPLEMENTIERT in `SidebarNavigation.tsx`
+- 320px breit (erweitert) / 64px (collapsed)
+- Freshfoodz CI integriert (grüner Border)
+- Theme-Integration vorhanden
 
 ---
 
 ## 📋 ENTSCHEIDUNGSMATRIX
 
-| ID | Entscheidung | Optionen | Empfehlung | Grund |
-|----|--------------|----------|------------|--------|
-| **D1** | KI-Provider | OpenAI vs. Local | OpenAI | Schneller Start |
-| **D2** | Real-time | Polling vs. WebSocket | Polling | MVP-Fokus |
-| **D3** | Navigation | Sidebar vs. Top | Sidebar | Skalierbarkeit |
+| ID | Entscheidung | Optionen | Gewählt | Status |
+|----|--------------|----------|---------|--------|
+| **D1** | KI-Provider | OpenAI vs. Local | OpenAI API | ✅ Entschieden |
+| **D2** | Real-time | Polling vs. WebSocket | Polling (MVP) | ✅ Entschieden |
+| **D3** | Navigation | Sidebar vs. Top | Sidebar | ✅ Implementiert |
 
 ---
 

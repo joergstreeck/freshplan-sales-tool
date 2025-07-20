@@ -462,6 +462,6 @@ const useLossPatternDetection = () => {
 - **[⚙️ M7 Settings](/docs/features/ACTIVE/05_ui_foundation/M7_SETTINGS_KOMPAKT.md)** - Loss Reason Config
 
 ### 🔧 Technische Details:
-- **[FC-015_IMPLEMENTATION_GUIDE.md](./FC-015_IMPLEMENTATION_GUIDE.md)** - Analysis Engine Details
-- **[FC-015_DECISION_LOG.md](./FC-015_DECISION_LOG.md)** - Mandatory vs. Optional Fields
-- **[LOSS_TAXONOMY.md](./LOSS_TAXONOMY.md)** - Standardisierte Verlustgründe
+- [FC-015_IMPLEMENTATION_GUIDE.md](./FC-015_IMPLEMENTATION_GUIDE.md) *(geplant)* - Analysis Engine Details
+- [FC-015_DECISION_LOG.md](./FC-015_DECISION_LOG.md) *(geplant)* - Mandatory vs. Optional Fields
+- [LOSS_TAXONOMY.md](./LOSS_TAXONOMY.md) *(geplant)* - Standardisierte Verlustgründe

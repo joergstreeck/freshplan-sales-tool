@@ -292,6 +292,6 @@ if (!hasWhatsAppConsent(customerId)) {
 - **[📱 FC-022 Mobile Light](/docs/features/PLANNED/22_mobile_light/FC-022_KOMPAKT.md)** - Mobile WhatsApp UI
 
 ### 🔧 Technische Details:
-- **[FC-028_IMPLEMENTATION_GUIDE.md](./FC-028_IMPLEMENTATION_GUIDE.md)** - WhatsApp API Setup
-- **[FC-028_DECISION_LOG.md](./FC-028_DECISION_LOG.md)** - Cloud API vs. On-Premise
-- **[WHATSAPP_TEMPLATES.md](./WHATSAPP_TEMPLATES.md)** - Alle Message Templates
+- [FC-028_IMPLEMENTATION_GUIDE.md](./FC-028_IMPLEMENTATION_GUIDE.md) *(geplant)* - WhatsApp API Setup
+- [FC-028_DECISION_LOG.md](./FC-028_DECISION_LOG.md) *(geplant)* - Cloud API vs. On-Premise
+- [WHATSAPP_TEMPLATES.md](./WHATSAPP_TEMPLATES.md) *(geplant)* - Alle Message Templates

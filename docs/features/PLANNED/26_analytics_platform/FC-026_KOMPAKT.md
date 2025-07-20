@@ -284,6 +284,6 @@ posthog.set_config({
 - **[⚙️ M7 Settings](/docs/features/ACTIVE/05_ui_foundation/M7_SETTINGS_KOMPAKT.md)** - Privacy Settings
 
 ### 🔧 Technische Details:
-- **[FC-026_IMPLEMENTATION_GUIDE.md](./FC-026_IMPLEMENTATION_GUIDE.md)** - PostHog Setup
-- **[FC-026_DECISION_LOG.md](./FC-026_DECISION_LOG.md)** - Build vs. Buy Analytics
-- **[EVENT_TRACKING_PLAN.md](./EVENT_TRACKING_PLAN.md)** - Alle Events & Properties
+- [FC-026_IMPLEMENTATION_GUIDE.md](./FC-026_IMPLEMENTATION_GUIDE.md) *(geplant)* - PostHog Setup
+- [FC-026_DECISION_LOG.md](./FC-026_DECISION_LOG.md) *(geplant)* - Build vs. Buy Analytics
+- [EVENT_TRACKING_PLAN.md](./EVENT_TRACKING_PLAN.md) *(geplant)* - Alle Events & Properties

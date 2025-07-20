@@ -109,5 +109,5 @@ cat docs/features/ACTIVE/04_permissions_system/DECISION_LOG.md
 - **[📊 M3 Sales Cockpit](/docs/features/ACTIVE/05_ui_foundation/M3_SALES_COCKPIT_KOMPAKT.md)** - Permission-based Filtering
 
 ### 🔧 Technische Details:
-- **[TECHNICAL_SOLUTION.md](./TECHNICAL_SOLUTION.md)** - Vollständige technische Umsetzung
-- **[DECISION_LOG.md](./DECISION_LOG.md)** - Kritische Entscheidungen für Jörg
+- [TECHNICAL_SOLUTION.md](./TECHNICAL_SOLUTION.md) *(geplant)* - Vollständige technische Umsetzung
+- [DECISION_LOG.md](./DECISION_LOG.md) *(geplant)* - Kritische Entscheidungen für Jörg

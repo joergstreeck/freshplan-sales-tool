@@ -270,7 +270,7 @@ const useCustomerRealtimeUpdates = (customerId: string) => {
 ### 🚀 Ermöglicht folgende Features:
 - **[📊 M3 Sales Cockpit](/docs/features/ACTIVE/05_ui_foundation/M3_SALES_COCKPIT_KOMPAKT.md)** - Team-Aktivitäten anzeigen
 - **[🎯 FC-027 Magic Moments](/docs/features/PLANNED/27_magic_moments/FC-027_KOMPAKT.md)** - Team-Koordination Insights
-- **[📱 FC-028 WhatsApp Business](/docs/features/PLANNED/28_whatsapp_business/FC-028_KOMPAKT.md)** - Multi-Channel Communication
+- **[📱 FC-028 WhatsApp Business](/docs/features/PLANNED/28_whatsapp_integration/FC-028_KOMPAKT.md)** - Multi-Channel Communication
 
 ### 🎨 UI Integration:
 - **[🧭 M1 Navigation](/docs/features/ACTIVE/05_ui_foundation/M1_NAVIGATION_KOMPAKT.md)** - Notification Bell im Header
@@ -278,6 +278,6 @@ const useCustomerRealtimeUpdates = (customerId: string) => {
 - **[⚙️ M7 Settings](/docs/features/ACTIVE/05_ui_foundation/M7_SETTINGS_KOMPAKT.md)** - Notification Preferences
 
 ### 🔧 Technische Details:
-- **[FC-012_IMPLEMENTATION_GUIDE.md](./FC-012_IMPLEMENTATION_GUIDE.md)** - WebSocket & Event System
-- **[FC-012_DECISION_LOG.md](./FC-012_DECISION_LOG.md)** - Real-time vs. Polling
-- **[NOTIFICATION_RULES.md](./NOTIFICATION_RULES.md)** - Rule Engine Details
+- [FC-012_IMPLEMENTATION_GUIDE.md](./FC-012_IMPLEMENTATION_GUIDE.md) *(geplant)* - WebSocket & Event System
+- [FC-012_DECISION_LOG.md](./FC-012_DECISION_LOG.md) *(geplant)* - Real-time vs. Polling
+- [NOTIFICATION_RULES.md](./NOTIFICATION_RULES.md) *(geplant)* - Rule Engine Details

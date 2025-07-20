@@ -128,7 +128,7 @@ void syncInvoices() {
 3. OAuth Client implementieren
 
 **Detaillierte Implementierung:** [IMPLEMENTATION_GUIDE.md](./IMPLEMENTATION_GUIDE.md)  
-**API-Analyse:** [XENTRAL_API_ANALYSIS.md](/docs/technical/XENTRAL_API_ANALYSIS.md)
+**API-Analyse:** [XENTRAL_API_ANALYSIS.md](/docs/technical/XENTRAL_API_ANALYSIS.md) *(geplant)*
 
 ---
 
@@ -158,5 +158,5 @@ void syncInvoices() {
 - **[⚙️ M7 Settings](/docs/features/ACTIVE/05_ui_foundation/M7_SETTINGS_KOMPAKT.md)** - Xentral-Konfiguration
 
 ### 🔧 Technische Details:
-- **[IMPLEMENTATION_GUIDE.md](./IMPLEMENTATION_GUIDE.md)** - Vollständige technische Umsetzung
-- **[XENTRAL_API_ANALYSIS.md](/docs/technical/XENTRAL_API_ANALYSIS.md)** - API-Dokumentation
+- [IMPLEMENTATION_GUIDE.md](./IMPLEMENTATION_GUIDE.md) *(geplant)* - Vollständige technische Umsetzung
+- [XENTRAL_API_ANALYSIS.md](/docs/technical/XENTRAL_API_ANALYSIS.md) *(geplant)* - API-Dokumentation

@@ -121,7 +121,7 @@ touch contexts/CalculatorContext.tsx
 - **[📱 FC-006 Mobile App](/docs/features/PLANNED/09_mobile_app/FC-006_KOMPAKT.md)** - Mobile Calculator-Ansicht
 
 ### 🚀 Ermöglicht folgende Features:
-- **[📄 PDF-001 PDF Generator](/docs/features/ACTIVE/pdf-generator/)** - Angebots-PDF aus Calculator
+- **[📄 PDF-001 PDF Generator](#)** *(geplant)* - Angebots-PDF aus Calculator
 - **[📧 FC-003 E-Mail Integration](/docs/features/PLANNED/06_email_integration/FC-003_KOMPAKT.md)** - Angebot per Mail versenden
 - **[🎯 FC-031 Smart Templates](/docs/features/PLANNED/31_smart_templates/FC-031_KOMPAKT.md)** - Wiederverwendbare Kalkulationen
 
@@ -130,5 +130,5 @@ touch contexts/CalculatorContext.tsx
 - **[➕ M2 Quick Create](/docs/features/ACTIVE/05_ui_foundation/M2_QUICK_CREATE_KOMPAKT.md)** - FAB für neue Kalkulation
 
 ### 🔧 Technische Details:
-- **[IMPLEMENTATION_GUIDE.md](./IMPLEMENTATION_GUIDE.md)** - Vollständige technische Umsetzung
-- **[DECISION_LOG.md](./DECISION_LOG.md)** - Architektur-Entscheidungen
+- [IMPLEMENTATION_GUIDE.md](./IMPLEMENTATION_GUIDE.md) *(geplant)* - Vollständige technische Umsetzung
+- [DECISION_LOG.md](./DECISION_LOG.md) *(geplant)* - Architektur-Entscheidungen

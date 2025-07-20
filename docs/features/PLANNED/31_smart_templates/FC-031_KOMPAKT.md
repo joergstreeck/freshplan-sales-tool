@@ -282,6 +282,6 @@ const trackUsage = async (templateId: string, outcome: 'sent' | 'won' | 'lost') 
 - **[⚙️ M7 Settings](/docs/features/ACTIVE/05_ui_foundation/M7_SETTINGS_KOMPAKT.md)** - Template Management
 
 ### 🔧 Technische Details:
-- **[FC-031_IMPLEMENTATION_GUIDE.md](./FC-031_IMPLEMENTATION_GUIDE.md)** - Template Engine Setup
-- **[FC-031_DECISION_LOG.md](./FC-031_DECISION_LOG.md)** - Storage & ML Decisions
-- **[TEMPLATE_CATALOG.md](./TEMPLATE_CATALOG.md)** - Alle Branchen-Templates
+- [FC-031_IMPLEMENTATION_GUIDE.md](./FC-031_IMPLEMENTATION_GUIDE.md) *(geplant)* - Template Engine Setup
+- [FC-031_DECISION_LOG.md](./FC-031_DECISION_LOG.md) *(geplant)* - Storage & ML Decisions
+- [TEMPLATE_CATALOG.md](./TEMPLATE_CATALOG.md) *(geplant)* - Alle Branchen-Templates

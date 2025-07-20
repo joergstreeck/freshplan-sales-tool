@@ -466,6 +466,6 @@ const BulkCloneWizard: React.FC = () => {
 - **[🔍 FC-030 One-Tap Actions](/docs/features/PLANNED/30_one_tap_actions/FC-030_KOMPAKT.md)** - Quick Clone One-Tap
 
 ### 🔧 Technische Details:
-- **[FC-016_IMPLEMENTATION_GUIDE.md](./FC-016_IMPLEMENTATION_GUIDE.md)** - Clone Algorithm Details
-- **[FC-016_DECISION_LOG.md](./FC-016_DECISION_LOG.md)** - Deep vs. Shallow Clone
-- **[CLONE_TEMPLATES.md](./CLONE_TEMPLATES.md)** - Vordefinierte Clone-Szenarien
+- [FC-016_IMPLEMENTATION_GUIDE.md](./FC-016_IMPLEMENTATION_GUIDE.md) *(geplant)* - Clone Algorithm Details
+- [FC-016_DECISION_LOG.md](./FC-016_DECISION_LOG.md) *(geplant)* - Deep vs. Shallow Clone
+- [CLONE_TEMPLATES.md](./CLONE_TEMPLATES.md) *(geplant)* - Vordefinierte Clone-Szenarien

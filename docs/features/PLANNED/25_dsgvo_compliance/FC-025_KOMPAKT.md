@@ -278,6 +278,6 @@ public class AccessLogListener {
 - **[📊 M3 Sales Cockpit](/docs/features/ACTIVE/05_ui_foundation/M3_SALES_COCKPIT_KOMPAKT.md)** - DSGVO Warnings
 
 ### 🔧 Technische Details:
-- **[FC-025_IMPLEMENTATION_GUIDE.md](./FC-025_IMPLEMENTATION_GUIDE.md)** - Compliance Checkliste
-- **[FC-025_DECISION_LOG.md](./FC-025_DECISION_LOG.md)** - Löschstrategien
-- **[RETENTION_POLICIES.md](./RETENTION_POLICIES.md)** - Aufbewahrungsfristen
+- [FC-025_IMPLEMENTATION_GUIDE.md](./FC-025_IMPLEMENTATION_GUIDE.md) *(geplant)* - Compliance Checkliste
+- [FC-025_DECISION_LOG.md](./FC-025_DECISION_LOG.md) *(geplant)* - Löschstrategien
+- [RETENTION_POLICIES.md](./RETENTION_POLICIES.md) *(geplant)* - Aufbewahrungsfristen

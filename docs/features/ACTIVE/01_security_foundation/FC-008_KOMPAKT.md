@@ -107,8 +107,8 @@ touch TestResource.java
 - **[⚙️ M7 Settings](/docs/features/ACTIVE/05_ui_foundation/M7_SETTINGS_KOMPAKT.md)** - User-Management
 
 ### 🔧 Technische Details:
-- **[IMPLEMENTATION_GUIDE.md](./IMPLEMENTATION_GUIDE.md)** - Vollständige technische Umsetzung
-- **[DECISION_LOG.md](./DECISION_LOG.md)** - Architektur-Entscheidungen
+- [IMPLEMENTATION_GUIDE.md](./IMPLEMENTATION_GUIDE.md) *(geplant)* - Vollständige technische Umsetzung
+- [DECISION_LOG.md](./DECISION_LOG.md) *(geplant)* - Architektur-Entscheidungen
 
 ---
 

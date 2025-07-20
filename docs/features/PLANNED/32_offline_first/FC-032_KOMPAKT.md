@@ -316,6 +316,6 @@ const offlineSettings = {
 - **[⚙️ M7 Settings](/docs/features/ACTIVE/05_ui_foundation/M7_SETTINGS_KOMPAKT.md)** - Offline Preferences
 
 ### 🔧 Technische Details:
-- **[FC-032_IMPLEMENTATION_GUIDE.md](./FC-032_IMPLEMENTATION_GUIDE.md)** - Service Worker Setup
-- **[FC-032_DECISION_LOG.md](./FC-032_DECISION_LOG.md)** - IndexedDB vs. LocalStorage
-- **[SYNC_STRATEGIES.md](./SYNC_STRATEGIES.md)** - Conflict Resolution Details
+- [FC-032_IMPLEMENTATION_GUIDE.md](./FC-032_IMPLEMENTATION_GUIDE.md) *(geplant)* - Service Worker Setup
+- [FC-032_DECISION_LOG.md](./FC-032_DECISION_LOG.md) *(geplant)* - IndexedDB vs. LocalStorage
+- [SYNC_STRATEGIES.md](./SYNC_STRATEGIES.md) *(geplant)* - Conflict Resolution Details
