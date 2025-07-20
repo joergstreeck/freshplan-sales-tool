@@ -91,6 +91,29 @@ public class EmailIngestionService {
 
 ---
 
+## 🧭 NAVIGATION & VERWEISE
+
+### 📋 Zurück zum Überblick:
+- **[📊 Master Plan V5](/docs/CRM_COMPLETE_MASTER_PLAN_V5.md)** - Vollständige Feature-Roadmap
+- **[🗺️ Feature Overview](/docs/features/MASTER/FEATURE_OVERVIEW.md)** - Alle 40 Features im Überblick
+
+### 🔗 Dependencies (Required):
+- **[🔒 FC-008 Security Foundation](/docs/features/ACTIVE/01_security_foundation/FC-008_KOMPAKT.md)** - User Authentication für Email-Zuordnung
+- **[📈 FC-014 Activity Timeline](/docs/features/PLANNED/16_activity_timeline/FC-014_KOMPAKT.md)** - Email-Events in Customer Timeline
+
+### 🚀 Ermöglicht folgende Features:
+- **[📱 FC-012 Team Communication](/docs/features/PLANNED/14_team_communication/FC-012_KOMPAKT.md)** - Interne Email-Benachrichtigungen
+- **[📞 FC-028 WhatsApp Business](/docs/features/PLANNED/28_whatsapp_integration/FC-028_KOMPAKT.md)** - Unified Communication Hub
+
+### 🎨 UI Integration:
+- **[📊 M3 Sales Cockpit](/docs/features/ACTIVE/05_ui_foundation/M3_SALES_COCKPIT_KOMPAKT.md)** - Email-Timeline in Customer View
+- **[📊 M4 Opportunity Pipeline](/docs/features/ACTIVE/02_opportunity_pipeline/M4_KOMPAKT.md)** - Email-History bei Opportunities
+
+### 🔧 Technische Details:
+- **[IMPLEMENTATION_GUIDE.md](./IMPLEMENTATION_GUIDE.md)** - Vollständige technische Umsetzung
+
+---
+
 ## 🚀 NÄCHSTER SCHRITT
 
 1. SMTP-Server Entscheidung treffen

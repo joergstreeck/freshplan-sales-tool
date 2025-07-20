@@ -85,6 +85,33 @@ touch TestResource.java
 
 ---
 
+## 🧭 NAVIGATION & VERWEISE
+
+### 📋 Zurück zum Überblick:
+- **[📊 Master Plan V5](/docs/CRM_COMPLETE_MASTER_PLAN_V5.md)** - Vollständige Feature-Roadmap
+- **[🗺️ Feature Overview](/docs/features/MASTER/FEATURE_OVERVIEW.md)** - Alle 40 Features im Überblick
+
+### 🔗 Dependencies (Required):
+- *KEINE* - Foundation Feature (wird von allen anderen benötigt)
+
+### 🚀 Ermöglicht folgende Features (Critical Path):
+- **[👥 FC-009 Permissions System](/docs/features/ACTIVE/04_permissions_system/FC-009_KOMPAKT.md)** - Baut auf JWT-Auth auf
+- **[📊 M4 Opportunity Pipeline](/docs/features/ACTIVE/02_opportunity_pipeline/M4_KOMPAKT.md)** - Benötigt User-Context
+- **[🧮 M8 Calculator Modal](/docs/features/ACTIVE/03_calculator_modal/M8_KOMPAKT.md)** - User-spezifische Berechnungen
+- **[💰 FC-011 Bonitätsprüfung](/docs/features/ACTIVE/02_opportunity_pipeline/integrations/FC-011_KOMPAKT.md)** - Auditierbare Aktionen
+- **[💼 FC-004 Verkäuferschutz](/docs/features/PLANNED/07_verkaeuferschutz/FC-004_KOMPAKT.md)** - User-basierte Provisionen
+
+### 🎨 UI Integration:
+- **[🧭 M1 Navigation](/docs/features/ACTIVE/05_ui_foundation/M1_NAVIGATION_KOMPAKT.md)** - Login/Logout UI
+- **[📊 M3 Sales Cockpit](/docs/features/ACTIVE/05_ui_foundation/M3_SALES_COCKPIT_KOMPAKT.md)** - User-spezifische Daten
+- **[⚙️ M7 Settings](/docs/features/ACTIVE/05_ui_foundation/M7_SETTINGS_KOMPAKT.md)** - User-Management
+
+### 🔧 Technische Details:
+- **[IMPLEMENTATION_GUIDE.md](./IMPLEMENTATION_GUIDE.md)** - Vollständige technische Umsetzung
+- **[DECISION_LOG.md](./DECISION_LOG.md)** - Architektur-Entscheidungen
+
+---
+
 ## 📞 NÄCHSTE SCHRITTE
 
 1. **TODO-024/028 lösen** - Test-Endpoints implementieren

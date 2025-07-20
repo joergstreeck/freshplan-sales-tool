@@ -206,3 +206,36 @@ freshplan-files/
 6. **Cleanup Job** - Alte Dateien
 
 **WICHTIG:** DSGVO-konform mit Löschung!
+
+---
+
+## 🧭 NAVIGATION & VERWEISE
+
+### 📋 Zurück zum Überblick:
+- **[📊 Master Plan V5](/docs/CRM_COMPLETE_MASTER_PLAN_V5.md)** - Vollständige Feature-Roadmap
+- **[🗺️ Feature Overview](/docs/features/MASTER/FEATURE_OVERVIEW.md)** - Alle 40 Features im Überblick
+
+### 🔗 Dependencies (Required):
+- **[🔒 FC-008 Security Foundation](/docs/features/ACTIVE/01_security_foundation/FC-008_KOMPAKT.md)** - File Access Control
+- **[👥 M5 Customer Refactor](/docs/features/PLANNED/12_customer_refactor_m5/M5_KOMPAKT.md)** - Customer File Storage
+- **[📊 M4 Opportunity Pipeline](/docs/features/ACTIVE/02_opportunity_pipeline/M4_KOMPAKT.md)** - Opportunity Files
+
+### ⚡ Integrationen:
+- **[📧 FC-003 E-Mail Integration](/docs/features/PLANNED/06_email_integration/FC-003_KOMPAKT.md)** - E-Mail Attachments
+- **[🔒 FC-025 DSGVO Compliance](/docs/features/PLANNED/25_dsgvo_compliance/FC-025_KOMPAKT.md)** - Löschkonzepte
+- **[📴 FC-032 Offline-First](/docs/features/PLANNED/32_offline_first/FC-032_KOMPAKT.md)** - Offline File Cache
+
+### 🚀 Ermöglicht folgende Features:
+- **[📸 FC-033 Visual Customer Cards](/docs/features/PLANNED/33_visual_cards/FC-033_KOMPAKT.md)** - Customer Images
+- **[📋 FC-031 Smart Templates](/docs/features/PLANNED/31_smart_templates/FC-031_KOMPAKT.md)** - Template Storage
+- **[📱 FC-022 Mobile Light](/docs/features/PLANNED/22_mobile_light/FC-022_KOMPAKT.md)** - Mobile File Access
+
+### 🎨 UI Integration:
+- **[📊 M3 Sales Cockpit](/docs/features/ACTIVE/05_ui_foundation/M3_SALES_COCKPIT_KOMPAKT.md)** - File Widget
+- **[➕ M2 Quick Create](/docs/features/ACTIVE/05_ui_foundation/M2_QUICK_CREATE_KOMPAKT.md)** - File Upload
+- **[⚙️ M7 Settings](/docs/features/ACTIVE/05_ui_foundation/M7_SETTINGS_KOMPAKT.md)** - Storage Settings
+
+### 🔧 Technische Details:
+- **[FC-024_IMPLEMENTATION_GUIDE.md](./FC-024_IMPLEMENTATION_GUIDE.md)** - S3 Setup Guide
+- **[FC-024_DECISION_LOG.md](./FC-024_DECISION_LOG.md)** - S3 vs. Local Storage
+- **[FILE_SECURITY.md](./FILE_SECURITY.md)** - Security Best Practices

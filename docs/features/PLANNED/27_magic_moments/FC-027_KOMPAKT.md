@@ -233,3 +233,36 @@ const quotes = [
 6. **A/B Testing** für Features
 
 **WICHTIG:** Nicht übertreiben - Subtil ist besser!
+
+---
+
+## 🧭 NAVIGATION & VERWEISE
+
+### 📋 Zurück zum Überblick:
+- **[📊 Master Plan V5](/docs/CRM_COMPLETE_MASTER_PLAN_V5.md)** - Vollständige Feature-Roadmap
+- **[🗺️ Feature Overview](/docs/features/MASTER/FEATURE_OVERVIEW.md)** - Alle 40 Features im Überblick
+
+### 🔗 Dependencies (Required):
+- **[📊 M4 Opportunity Pipeline](/docs/features/ACTIVE/02_opportunity_pipeline/M4_KOMPAKT.md)** - Deal Win Events
+- **[👥 M5 Customer Refactor](/docs/features/PLANNED/12_customer_refactor_m5/M5_KOMPAKT.md)** - Customer Context
+- **[📊 FC-026 Analytics Platform](/docs/features/PLANNED/26_analytics_platform/FC-026_KOMPAKT.md)** - Pattern Detection
+
+### ⚡ Datenquellen:
+- **[📈 FC-014 Activity Timeline](/docs/features/PLANNED/16_activity_timeline/FC-014_KOMPAKT.md)** - Activity Patterns
+- **[📊 FC-019 Advanced Sales Metrics](/docs/features/PLANNED/19_advanced_metrics/FC-019_KOMPAKT.md)** - Success Metrics
+- **[📊 FC-015 Deal Loss Analysis](/docs/features/PLANNED/17_deal_loss_analysis/FC-015_KOMPAKT.md)** - Loss Patterns
+
+### 🚀 Ermöglicht folgende Features:
+- **[🏆 FC-017 Sales Gamification](/docs/features/PLANNED/99_sales_gamification/FC-017_KOMPAKT.md)** - Achievement Celebrations
+- **[🔍 FC-034 Instant Insights](/docs/features/PLANNED/34_instant_insights/FC-034_KOMPAKT.md)** - Smart Suggestions
+- **[📱 FC-035 Social Selling](/docs/features/PLANNED/35_social_selling/FC-035_KOMPAKT.md)** - Social Context
+
+### 🎨 UI Integration:
+- **[📊 M3 Sales Cockpit](/docs/features/ACTIVE/05_ui_foundation/M3_SALES_COCKPIT_KOMPAKT.md)** - Magic Widgets
+- **[🧭 M1 Navigation](/docs/features/ACTIVE/05_ui_foundation/M1_NAVIGATION_KOMPAKT.md)** - Celebration Overlays
+- **[⚙️ M7 Settings](/docs/features/ACTIVE/05_ui_foundation/M7_SETTINGS_KOMPAKT.md)** - Magic Preferences
+
+### 🔧 Technische Details:
+- **[FC-027_IMPLEMENTATION_GUIDE.md](./FC-027_IMPLEMENTATION_GUIDE.md)** - Magic Features Setup
+- **[FC-027_DECISION_LOG.md](./FC-027_DECISION_LOG.md)** - Subtlety vs. Impact
+- **[MAGIC_CATALOG.md](./MAGIC_CATALOG.md)** - Alle Magic Moments

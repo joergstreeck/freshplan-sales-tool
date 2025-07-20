@@ -401,3 +401,36 @@ public class PersonalDetails {
 - **Kundenbindung:** +25% durch persönliche Touch
 
 **Integration:** Tag 18-20 mit Timeline für volle Historie!
+
+---
+
+## 🧭 NAVIGATION & VERWEISE
+
+### 📋 Zurück zum Überblick:
+- **[📊 Master Plan V5](/docs/CRM_COMPLETE_MASTER_PLAN_V5.md)** - Vollständige Feature-Roadmap
+- **[🗺️ Feature Overview](/docs/features/MASTER/FEATURE_OVERVIEW.md)** - Alle 40 Features im Überblick
+
+### 🔗 Dependencies (Required):
+- **[👥 M5 Customer Refactor](/docs/features/PLANNED/12_customer_refactor_m5/M5_KOMPAKT.md)** - Contact Management
+- **[📈 FC-014 Activity Timeline](/docs/features/PLANNED/16_activity_timeline/FC-014_KOMPAKT.md)** - Interaction History
+- **[🔒 FC-025 DSGVO Compliance](/docs/features/PLANNED/25_dsgvo_compliance/FC-025_KOMPAKT.md)** - Privacy Rules
+
+### ⚡ Beziehungsdaten-Quellen:
+- **[📱 FC-035 Social Selling](/docs/features/PLANNED/35_social_selling/FC-035_KOMPAKT.md)** - Social Connections
+- **[📧 FC-003 Email Integration](/docs/features/PLANNED/06_email_integration/FC-003_KOMPAKT.md)** - Email History
+- **[💬 FC-028 WhatsApp Integration](/docs/features/PLANNED/28_whatsapp_integration/FC-028_KOMPAKT.md)** - Chat History
+
+### 🚀 Ermöglicht folgende Features:
+- **[🔍 FC-034 Instant Insights](/docs/features/PLANNED/34_instant_insights/FC-034_KOMPAKT.md)** - Relationship Insights
+- **[🎯 FC-027 Magic Moments](/docs/features/PLANNED/27_magic_moments/FC-027_KOMPAKT.md)** - Personal Events
+- **[📊 FC-019 Advanced Sales Metrics](/docs/features/PLANNED/19_advanced_metrics/FC-019_KOMPAKT.md)** - Relationship ROI
+
+### 🎨 UI Integration:
+- **[📊 M3 Sales Cockpit](/docs/features/ACTIVE/05_ui_foundation/M3_SALES_COCKPIT_KOMPAKT.md)** - Relationship Widget
+- **[⚡ M2 Quick Create](/docs/features/ACTIVE/05_ui_foundation/M2_QUICK_CREATE_KOMPAKT.md)** - Quick Notes
+- **[⚙️ M7 Settings](/docs/features/ACTIVE/05_ui_foundation/M7_SETTINGS_KOMPAKT.md)** - Privacy Settings
+
+### 🔧 Technische Details:
+- **FC-036_IMPLEMENTATION_GUIDE.md** *(geplant)* - Relationship Model
+- **FC-036_DECISION_LOG.md** *(geplant)* - Privacy vs. Sharing
+- **RELATIONSHIP_PLAYBOOK.md** *(geplant)* - Best Practices

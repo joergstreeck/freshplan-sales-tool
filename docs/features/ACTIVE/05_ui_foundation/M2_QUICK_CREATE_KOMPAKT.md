@@ -138,3 +138,34 @@ echo "- Überall via FAB"
 **WICHTIG:** Komplett neue Entwicklung - keine bestehende Basis!
 
 **KRITISCH:** Status ist 0% fertig - vollständige Neuentwicklung erforderlich!
+
+---
+
+## 🧭 NAVIGATION & VERWEISE
+
+### 📋 Zurück zum Überblick:
+- **[📊 Master Plan V5](/docs/CRM_COMPLETE_MASTER_PLAN_V5.md)** - Vollständige Feature-Roadmap
+- **[🗺️ Feature Overview](/docs/features/MASTER/FEATURE_OVERVIEW.md)** - Alle 40 Features im Überblick
+
+### 🔗 Dependencies (Required):
+- **[🧭 M1 Navigation](/docs/features/ACTIVE/05_ui_foundation/M1_NAVIGATION_KOMPAKT.md)** - FAB Position im Layout
+- **[🔒 FC-008 Security Foundation](/docs/features/ACTIVE/01_security_foundation/FC-008_KOMPAKT.md)** - User Context für Defaults
+
+### ⚡ Direkt integriert mit:
+- **[📊 M3 Sales Cockpit](/docs/features/ACTIVE/05_ui_foundation/M3_SALES_COCKPIT_KOMPAKT.md)** - Quick Create aus Cockpit
+- **[📊 M4 Opportunity Pipeline](/docs/features/ACTIVE/02_opportunity_pipeline/M4_KOMPAKT.md)** - Quick Opportunity Create
+- **[🧮 M8 Calculator Modal](/docs/features/ACTIVE/03_calculator_modal/M8_KOMPAKT.md)** - Nach Kalkulation → Opportunity
+
+### 🚀 Ermöglicht folgende Features:
+- **[📱 FC-006 Mobile App](/docs/features/PLANNED/09_mobile_app/FC-006_KOMPAKT.md)** - Mobile Quick Create Pattern
+- **[🎯 FC-020 Quick Wins](/docs/features/PLANNED/20_quick_wins/FC-020_KOMPAKT.md)** - Command Palette Alternative
+- **[🔍 FC-030 One-Tap Actions](/docs/features/PLANNED/30_one_tap_actions/FC-030_KOMPAKT.md)** - One-Tap Create Actions
+
+### 🎨 UI Components:
+- **[⚙️ M7 Settings](/docs/features/ACTIVE/05_ui_foundation/M7_SETTINGS_KOMPAKT.md)** - Quick Create Defaults konfigurieren
+- **[🎯 FC-031 Smart Templates](/docs/features/PLANNED/31_smart_templates/FC-031_KOMPAKT.md)** - Template-basiertes Quick Create
+
+### 🔧 Technische Details:
+- **[M2_QUICK_CREATE_IMPLEMENTATION.md](./M2_QUICK_CREATE_IMPLEMENTATION.md)** - Vollständige Implementation
+- **[M2_QUICK_CREATE_GUIDE.md](./guides/M2_QUICK_CREATE_GUIDE.md)** - Schritt-für-Schritt Guide
+- **[DECISION_LOG.md](./DECISION_LOG.md)** - FAB Position & Modal Style

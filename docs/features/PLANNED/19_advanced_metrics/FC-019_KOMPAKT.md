@@ -175,3 +175,36 @@ GROUP BY stage;
 **🎯 In 15 Minuten hast du:** Dashboard-Konzept + erste Metrik läuft!
 
 **📚 Details:** Siehe `FC-019_IMPLEMENTATION_GUIDE.md` für vollständige Umsetzung
+
+---
+
+## 🧭 NAVIGATION & VERWEISE
+
+### 📋 Zurück zum Überblick:
+- **[📊 Master Plan V5](/docs/CRM_COMPLETE_MASTER_PLAN_V5.md)** - Vollständige Feature-Roadmap
+- **[🗺️ Feature Overview](/docs/features/MASTER/FEATURE_OVERVIEW.md)** - Alle 40 Features im Überblick
+
+### 🔗 Dependencies (Required):
+- **[📊 M4 Opportunity Pipeline](/docs/features/ACTIVE/02_opportunity_pipeline/M4_KOMPAKT.md)** - Datenquelle für Metriken
+- **[🔒 FC-008 Security Foundation](/docs/features/ACTIVE/01_security_foundation/FC-008_KOMPAKT.md)** - Zugriffsrechte auf Metriken
+- **[📊 M6 Analytics Module](/docs/features/PLANNED/13_analytics_m6/M6_KOMPAKT.md)** - Analytics Framework
+
+### ⚡ Datenquellen:
+- **[📈 FC-014 Activity Timeline](/docs/features/PLANNED/16_activity_timeline/FC-014_KOMPAKT.md)** - Activity-basierte Metriken
+- **[📊 FC-015 Deal Loss Analysis](/docs/features/PLANNED/17_deal_loss_analysis/FC-015_KOMPAKT.md)** - Loss-Metriken
+- **[🏆 FC-017 Sales Gamification](/docs/features/PLANNED/99_sales_gamification/FC-017_KOMPAKT.md)** - Performance-Punkte
+
+### 🚀 Ermöglicht folgende Features:
+- **[📊 FC-007 Chef-Dashboard](/docs/features/PLANNED/10_chef_dashboard/FC-007_KOMPAKT.md)** - Executive Metrics View
+- **[🎯 FC-027 Magic Moments](/docs/features/PLANNED/27_magic_moments/FC-027_KOMPAKT.md)** - Insight-basierte Alerts
+- **[📊 FC-026 Analytics Platform](/docs/features/PLANNED/26_analytics_platform/FC-026_KOMPAKT.md)** - Erweiterte Analysen
+
+### 🎨 UI Integration:
+- **[📊 M3 Sales Cockpit](/docs/features/ACTIVE/05_ui_foundation/M3_SALES_COCKPIT_KOMPAKT.md)** - Metrics Widget
+- **[🧭 M1 Navigation](/docs/features/ACTIVE/05_ui_foundation/M1_NAVIGATION_KOMPAKT.md)** - Analytics-Menüpunkt
+- **[⚙️ M7 Settings](/docs/features/ACTIVE/05_ui_foundation/M7_SETTINGS_KOMPAKT.md)** - Metric Preferences
+
+### 🔧 Technische Details:
+- **[FC-019_IMPLEMENTATION_GUIDE.md](./FC-019_IMPLEMENTATION_GUIDE.md)** - Vollständige Umsetzung
+- **[FC-019_DECISION_LOG.md](./FC-019_DECISION_LOG.md)** - Real-time vs. Batch Processing
+- **[METRICS_CATALOG.md](./METRICS_CATALOG.md)** - Alle verfügbaren KPIs

@@ -262,3 +262,36 @@ if (!hasWhatsAppConsent(customerId)) {
 6. **Consent Management** DSGVO
 
 **WICHTIG:** Business Verification dauert 2-3 Tage!
+
+---
+
+## 🧭 NAVIGATION & VERWEISE
+
+### 📋 Zurück zum Überblick:
+- **[📊 Master Plan V5](/docs/CRM_COMPLETE_MASTER_PLAN_V5.md)** - Vollständige Feature-Roadmap
+- **[🗺️ Feature Overview](/docs/features/MASTER/FEATURE_OVERVIEW.md)** - Alle 40 Features im Überblick
+
+### 🔗 Dependencies (Required):
+- **[🔒 FC-008 Security Foundation](/docs/features/ACTIVE/01_security_foundation/FC-008_KOMPAKT.md)** - Authentication für API
+- **[👥 M5 Customer Refactor](/docs/features/PLANNED/12_customer_refactor_m5/M5_KOMPAKT.md)** - Customer Daten & Phone Numbers
+- **[🔒 FC-025 DSGVO Compliance](/docs/features/PLANNED/25_dsgvo_compliance/FC-025_KOMPAKT.md)** - Consent Management
+
+### ⚡ Integration-Punkte:
+- **[📈 FC-014 Activity Timeline](/docs/features/PLANNED/16_activity_timeline/FC-014_KOMPAKT.md)** - WhatsApp Activities loggen
+- **[📧 FC-003 Email Integration](/docs/features/PLANNED/06_email_integration/FC-003_KOMPAKT.md)** - Multi-Channel Kommunikation
+- **[💼 FC-012 Team Communication](/docs/features/PLANNED/14_team_communication/FC-012_KOMPAKT.md)** - Team-Notifications bei Antworten
+
+### 🚀 Ermöglicht folgende Features:
+- **[🎤 FC-029 Voice-First Interface](/docs/features/PLANNED/29_voice_first/FC-029_KOMPAKT.md)** - Voice-to-WhatsApp Messages
+- **[👆 FC-030 One-Tap Actions](/docs/features/PLANNED/30_one_tap_actions/FC-030_KOMPAKT.md)** - Quick WhatsApp Actions
+- **[📱 FC-031 Smart Templates](/docs/features/PLANNED/31_smart_templates/FC-031_KOMPAKT.md)** - Template Management
+
+### 🎨 UI Integration:
+- **[📊 M3 Sales Cockpit](/docs/features/ACTIVE/05_ui_foundation/M3_SALES_COCKPIT_KOMPAKT.md)** - WhatsApp in Customer Cards
+- **[⚡ M2 Quick Create](/docs/features/ACTIVE/05_ui_foundation/M2_QUICK_CREATE_KOMPAKT.md)** - Quick WhatsApp Dialog
+- **[📱 FC-022 Mobile Light](/docs/features/PLANNED/22_mobile_light/FC-022_KOMPAKT.md)** - Mobile WhatsApp UI
+
+### 🔧 Technische Details:
+- **[FC-028_IMPLEMENTATION_GUIDE.md](./FC-028_IMPLEMENTATION_GUIDE.md)** - WhatsApp API Setup
+- **[FC-028_DECISION_LOG.md](./FC-028_DECISION_LOG.md)** - Cloud API vs. On-Premise
+- **[WHATSAPP_TEMPLATES.md](./WHATSAPP_TEMPLATES.md)** - Alle Message Templates

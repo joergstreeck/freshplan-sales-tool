@@ -155,3 +155,36 @@ export const CustomerListOptimized = () => {
 
 **Detaillierte Analyse:** [PERFORMANCE_ANALYSIS.md](./PERFORMANCE_ANALYSIS.md)  
 **Migration Guide:** [OPTIMIZATION_GUIDE.md](./OPTIMIZATION_GUIDE.md)
+
+---
+
+## 🧭 NAVIGATION & VERWEISE
+
+### 📋 Zurück zum Überblick:
+- **[📊 Master Plan V5](/docs/CRM_COMPLETE_MASTER_PLAN_V5.md)** - Vollständige Feature-Roadmap
+- **[🗺️ Feature Overview](/docs/features/MASTER/FEATURE_OVERVIEW.md)** - Alle 40 Features im Überblick
+
+### 🔗 Dependencies (Required):
+- **[🔒 FC-008 Security Foundation](/docs/features/ACTIVE/01_security_foundation/FC-008_KOMPAKT.md)** - User-basiertes Caching & Permissions
+- **[👥 FC-009 Permissions System](/docs/features/ACTIVE/04_permissions_system/FC-009_KOMPAKT.md)** - Datenzugriff nach Rollen
+- **[📊 M4 Opportunity Pipeline](/docs/features/ACTIVE/02_opportunity_pipeline/M4_KOMPAKT.md)** - Customer-Verknüpfungen
+
+### ⚡ Performance-kritische Integration:
+- **[🛡️ FC-004 Verkäuferschutz](/docs/features/PLANNED/07_verkaeuferschutz/FC-004_KOMPAKT.md)** - Performance bei vielen Zuordnungen
+- **[💰 FC-011 Bonitätsprüfung](/docs/features/ACTIVE/02_opportunity_pipeline/integrations/FC-011_KOMPAKT.md)** - Batch-Abfragen optimieren
+- **[📥 FC-010 Customer Import](/docs/features/PLANNED/11_customer_import/FC-010_KOMPAKT.md)** - Bulk-Import Performance
+
+### 🚀 Ermöglicht folgende Features:
+- **[📊 M3 Sales Cockpit](/docs/features/ACTIVE/05_ui_foundation/M3_SALES_COCKPIT_KOMPAKT.md)** - Schnelle Kundenlisten
+- **[🔍 FC-013 Duplicate Detection](/docs/features/PLANNED/15_duplicate_detection/FC-013_KOMPAKT.md)** - Effiziente Duplikatsuche
+- **[📈 FC-014 Activity Timeline](/docs/features/PLANNED/16_activity_timeline/FC-014_KOMPAKT.md)** - Customer Event Stream
+
+### 🎨 UI Integration:
+- **[🧭 M1 Navigation](/docs/features/ACTIVE/05_ui_foundation/M1_NAVIGATION_KOMPAKT.md)** - Customer-Menüpunkt
+- **[➕ M2 Quick Create](/docs/features/ACTIVE/05_ui_foundation/M2_QUICK_CREATE_KOMPAKT.md)** - Neukunden-Anlage
+- **[📊 M6 Analytics Module](/docs/features/PLANNED/13_analytics_m6/M6_KOMPAKT.md)** - Customer Analytics
+
+### 🔧 Technische Details:
+- **[PERFORMANCE_ANALYSIS.md](./PERFORMANCE_ANALYSIS.md)** - Query-Profiling & Metriken
+- **[OPTIMIZATION_GUIDE.md](./OPTIMIZATION_GUIDE.md)** - Schrittweise Migration
+- **[CACHE_ARCHITECTURE.md](./CACHE_ARCHITECTURE.md)** - Redis Setup & Patterns

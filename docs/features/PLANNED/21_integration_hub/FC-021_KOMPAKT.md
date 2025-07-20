@@ -224,3 +224,36 @@ export const IntegrationCard: React.FC<{integration: Integration}> = ({
 ---
 
 **🎯 In 15 Minuten hast du:** Komplettes Verständnis + Code-Struktur + erste Integration läuft!
+
+---
+
+## 🧭 NAVIGATION & VERWEISE
+
+### 📋 Zurück zum Überblick:
+- **[📊 Master Plan V5](/docs/CRM_COMPLETE_MASTER_PLAN_V5.md)** - Vollständige Feature-Roadmap
+- **[🗺️ Feature Overview](/docs/features/MASTER/FEATURE_OVERVIEW.md)** - Alle 40 Features im Überblick
+
+### 🔗 Dependencies (Required):
+- **[🔒 FC-008 Security Foundation](/docs/features/ACTIVE/01_security_foundation/FC-008_KOMPAKT.md)** - Sichere Credential-Verwaltung
+- **[📊 M6 Analytics Module](/docs/features/PLANNED/13_analytics_m6/M6_KOMPAKT.md)** - Monitoring-Dashboard
+- **[🔄 FC-023 Event Sourcing](/docs/features/PLANNED/23_event_sourcing/FC-023_KOMPAKT.md)** - Event-basierte Sync
+
+### ⚡ Managed Integrations:
+- **[📥 FC-005 Xentral Integration](/docs/features/PLANNED/08_xentral_integration/FC-005_KOMPAKT.md)** - Xentral Adapter
+- **[📧 FC-003 E-Mail Integration](/docs/features/PLANNED/06_email_integration/FC-003_KOMPAKT.md)** - E-Mail Adapter
+- **[💬 FC-028 WhatsApp Business](/docs/features/PLANNED/28_whatsapp_integration/FC-028_KOMPAKT.md)** - WhatsApp Adapter
+
+### 🚀 Ermöglicht folgende Features:
+- **[📊 FC-007 Chef-Dashboard](/docs/features/PLANNED/10_chef_dashboard/FC-007_KOMPAKT.md)** - Integration Health Status
+- **[📱 FC-022 Mobile Light](/docs/features/PLANNED/22_mobile_light/FC-022_KOMPAKT.md)** - Simplified Sync UI
+- **[📊 FC-026 Analytics Platform](/docs/features/PLANNED/26_analytics_platform/FC-026_KOMPAKT.md)** - Sync Performance Metrics
+
+### 🎨 UI Integration:
+- **[🧭 M1 Navigation](/docs/features/ACTIVE/05_ui_foundation/M1_NAVIGATION_KOMPAKT.md)** - Integration Hub Menü
+- **[⚙️ M7 Settings](/docs/features/ACTIVE/05_ui_foundation/M7_SETTINGS_KOMPAKT.md)** - Integration Configuration
+- **[📊 M3 Sales Cockpit](/docs/features/ACTIVE/05_ui_foundation/M3_SALES_COCKPIT_KOMPAKT.md)** - Sync Status Widget
+
+### 🔧 Technische Details:
+- **[FC-021_IMPLEMENTATION_GUIDE.md](./FC-021_IMPLEMENTATION_GUIDE.md)** - Adapter Pattern Details
+- **[FC-021_DECISION_LOG.md](./FC-021_DECISION_LOG.md)** - Hub vs. Point-to-Point
+- **[ADAPTER_CATALOG.md](./ADAPTER_CATALOG.md)** - Verfügbare Adapter

@@ -132,16 +132,35 @@ const DynamicImportWizard = () => {
 
 **WICHTIG:** Ohne Flexibilität wird jede neue Anforderung zum Entwicklungsaufwand!
 
-## 🔗 NAVIGATION
+## 🧭 NAVIGATION & VERWEISE
 
-**Master-Dokumente:**
-- **V5 Master Plan:** `/docs/CRM_COMPLETE_MASTER_PLAN_V5.md` - Gesamt-Roadmap und aktueller Fokus
-- **Feature Overview:** `/docs/features/MASTER/FEATURE_OVERVIEW.md` - Status Dashboard aller Features
-- **Implementierungs-Sequenz:** `/docs/features/2025-07-12_FINAL_OPTIMIZED_SEQUENCE.md` - Optimale Reihenfolge
+### 📋 Zurück zum Überblick:
+- **[📊 Master Plan V5](/docs/CRM_COMPLETE_MASTER_PLAN_V5.md)** - Vollständige Feature-Roadmap
+- **[🗺️ Feature Overview](/docs/features/MASTER/FEATURE_OVERVIEW.md)** - Alle 40 Features im Überblick
 
-**Abhängige Features:**
-- **M3 Sales Cockpit:** `/docs/features/ACTIVE/05_ui_foundation/M3_SALES_COCKPIT_KOMPAKT.md` - Braucht echte Kundendaten
-- **M5 Customer Refactor** - Performance nach Import (siehe Feature Overview)
+### 🔗 Dependencies (Required):
+- **[🔒 FC-008 Security Foundation](/docs/features/ACTIVE/01_security_foundation/FC-008_KOMPAKT.md)** - Import-Berechtigungen
+- **[👥 FC-009 Permissions System](/docs/features/ACTIVE/04_permissions_system/FC-009_KOMPAKT.md)** - Import-Permissions
+- **[👥 M5 Customer Refactor](/docs/features/PLANNED/12_customer_refactor_m5/M5_KOMPAKT.md)** - Customer-Datenmodell
+
+### ⚡ Plugin Integration:
+- **[🧮 M8 Calculator Modal](/docs/features/ACTIVE/03_calculator_modal/M8_KOMPAKT.md)** - Rabattstaffeln importieren
+- **[🛡️ FC-004 Verkäuferschutz](/docs/features/PLANNED/07_verkaeuferschutz/FC-004_KOMPAKT.md)** - Zuordnungen importieren
+- **[📥 FC-005 Xentral Integration](/docs/features/PLANNED/08_xentral_integration/FC-005_KOMPAKT.md)** - Xentral-IDs mappen
+
+### 🚀 Ermöglicht folgende Features:
+- **[📊 M3 Sales Cockpit](/docs/features/ACTIVE/05_ui_foundation/M3_SALES_COCKPIT_KOMPAKT.md)** - Echte Kundendaten
+- **[🔍 FC-013 Duplicate Detection](/docs/features/PLANNED/15_duplicate_detection/FC-013_KOMPAKT.md)** - Dubletten beim Import
+- **[📈 FC-014 Activity Timeline](/docs/features/PLANNED/16_activity_timeline/FC-014_KOMPAKT.md)** - Import-Events
+
+### 🎨 UI Integration:
+- **[⚙️ M7 Settings](/docs/features/ACTIVE/05_ui_foundation/M7_SETTINGS_KOMPAKT.md)** - Import-Konfiguration
+- **[🧭 M1 Navigation](/docs/features/ACTIVE/05_ui_foundation/M1_NAVIGATION_KOMPAKT.md)** - Import-Menüpunkt
+- **[📊 FC-034 Instant Insights](/docs/features/PLANNED/34_instant_insights/FC-034_KOMPAKT.md)** - Import-Statistiken
+
+### 🔧 Technische Details:
+- **[FC-010_IMPLEMENTATION_GUIDE.md](./FC-010_IMPLEMENTATION_GUIDE.md)** - Plugin Architecture
+- **[FC-010_DECISION_LOG.md](./FC-010_DECISION_LOG.md)** - Architektur-Entscheidungen
 
 ---
 

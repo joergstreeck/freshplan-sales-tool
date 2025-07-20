@@ -252,3 +252,36 @@ const trackUsage = async (templateId: string, outcome: 'sent' | 'won' | 'lost') 
 - **Learning:** System wird täglich besser
 
 **Integration:** Tag 14-15 nach Mobile & WhatsApp!
+
+---
+
+## 🧭 NAVIGATION & VERWEISE
+
+### 📋 Zurück zum Überblick:
+- **[📊 Master Plan V5](/docs/CRM_COMPLETE_MASTER_PLAN_V5.md)** - Vollständige Feature-Roadmap
+- **[🗺️ Feature Overview](/docs/features/MASTER/FEATURE_OVERVIEW.md)** - Alle 40 Features im Überblick
+
+### 🔗 Dependencies (Required):
+- **[👥 M5 Customer Refactor](/docs/features/PLANNED/12_customer_refactor_m5/M5_KOMPAKT.md)** - Customer & Branch Data
+- **[📊 M6 Analytics Module](/docs/features/PLANNED/13_analytics_m6/M6_KOMPAKT.md)** - Success Tracking
+- **[💬 FC-028 WhatsApp Integration](/docs/features/PLANNED/28_whatsapp_integration/FC-028_KOMPAKT.md)** - Message Templates
+
+### ⚡ Datenquellen & Learning:
+- **[📈 FC-019 Advanced Sales Metrics](/docs/features/PLANNED/19_advanced_metrics/FC-019_KOMPAKT.md)** - Conversion Data
+- **[📈 FC-014 Activity Timeline](/docs/features/PLANNED/16_activity_timeline/FC-014_KOMPAKT.md)** - Usage Patterns
+- **[📊 FC-026 Analytics Platform](/docs/features/PLANNED/26_analytics_platform/FC-026_KOMPAKT.md)** - ML Training Data
+
+### 🚀 Ermöglicht folgende Features:
+- **[👆 FC-030 One-Tap Actions](/docs/features/PLANNED/30_one_tap_actions/FC-030_KOMPAKT.md)** - Quick Template Apply
+- **[🎤 FC-029 Voice-First](/docs/features/PLANNED/29_voice_first/FC-029_KOMPAKT.md)** - Voice Template Fill
+- **[🎯 FC-027 Magic Moments](/docs/features/PLANNED/27_magic_moments/FC-027_KOMPAKT.md)** - Smart Suggestions
+
+### 🎨 UI Integration:
+- **[⚡ M2 Quick Create](/docs/features/ACTIVE/05_ui_foundation/M2_QUICK_CREATE_KOMPAKT.md)** - Template Selection
+- **[📊 M3 Sales Cockpit](/docs/features/ACTIVE/05_ui_foundation/M3_SALES_COCKPIT_KOMPAKT.md)** - Template Widget
+- **[⚙️ M7 Settings](/docs/features/ACTIVE/05_ui_foundation/M7_SETTINGS_KOMPAKT.md)** - Template Management
+
+### 🔧 Technische Details:
+- **[FC-031_IMPLEMENTATION_GUIDE.md](./FC-031_IMPLEMENTATION_GUIDE.md)** - Template Engine Setup
+- **[FC-031_DECISION_LOG.md](./FC-031_DECISION_LOG.md)** - Storage & ML Decisions
+- **[TEMPLATE_CATALOG.md](./TEMPLATE_CATALOG.md)** - Alle Branchen-Templates

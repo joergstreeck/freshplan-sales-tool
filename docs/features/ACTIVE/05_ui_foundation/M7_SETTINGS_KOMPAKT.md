@@ -127,3 +127,37 @@ grep -A10 -B5 "TabPanel" frontend/src/pages/SettingsPage.tsx | grep -A20 "value=
 **WICHTIG:** Die Tab-Struktur ist exzellent - wir füllen sie mit Inhalt!
 
 **KRITISCH:** Status ist 50% fertig (User Management), andere Tabs leer!
+
+---
+
+## 🧭 NAVIGATION & VERWEISE
+
+### 📋 Zurück zum Überblick:
+- **[📊 Master Plan V5](/docs/CRM_COMPLETE_MASTER_PLAN_V5.md)** - Vollständige Feature-Roadmap
+- **[🗺️ Feature Overview](/docs/features/MASTER/FEATURE_OVERVIEW.md)** - Alle 40 Features im Überblick
+
+### 🔗 Dependencies (Required):
+- **[🔒 FC-008 Security Foundation](/docs/features/ACTIVE/01_security_foundation/FC-008_KOMPAKT.md)** - User Management Basis
+- **[👥 FC-009 Permissions System](/docs/features/ACTIVE/04_permissions_system/FC-009_KOMPAKT.md)** - Security Settings Tab
+- **[🧭 M1 Navigation](/docs/features/ACTIVE/05_ui_foundation/M1_NAVIGATION_KOMPAKT.md)** - Settings-Zugriff über Navigation
+
+### ⚡ Konfiguriert Features:
+- **[📊 M3 Sales Cockpit](/docs/features/ACTIVE/05_ui_foundation/M3_SALES_COCKPIT_KOMPAKT.md)** - Cockpit-Einstellungen
+- **[➕ M2 Quick Create](/docs/features/ACTIVE/05_ui_foundation/M2_QUICK_CREATE_KOMPAKT.md)** - Quick Create Defaults
+- **[🧮 M8 Calculator Modal](/docs/features/ACTIVE/03_calculator_modal/M8_KOMPAKT.md)** - Calculator Settings
+
+### 🚀 Ermöglicht Konfiguration von:
+- **[📱 FC-006 Mobile App](/docs/features/PLANNED/09_mobile_app/FC-006_KOMPAKT.md)** - Mobile Settings Sync
+- **[💰 FC-011 Bonitätsprüfung](/docs/features/ACTIVE/02_opportunity_pipeline/integrations/FC-011_KOMPAKT.md)** - Bonitäts-Schwellwerte
+- **[🛡️ FC-004 Verkäuferschutz](/docs/features/PLANNED/07_verkaeuferschutz/FC-004_KOMPAKT.md)** - Schutz-Regeln
+- **[📥 FC-010 Customer Import](/docs/features/PLANNED/11_customer_import/FC-010_KOMPAKT.md)** - Import Settings
+
+### 🎨 UI Components:
+- **[📊 M6 Analytics Module](/docs/features/PLANNED/13_analytics_m6/M6_KOMPAKT.md)** - Analytics Settings
+- **[📄 FC-025 DSGVO Compliance](/docs/features/PLANNED/25_dsgvo_compliance/FC-025_KOMPAKT.md)** - DSGVO Settings
+- **[🔍 FC-026 Analytics Platform](/docs/features/PLANNED/26_analytics_platform/FC-026_KOMPAKT.md)** - Dashboard Konfiguration
+
+### 🔧 Technische Details:
+- **[M7_SETTINGS_GUIDE.md](./guides/M7_SETTINGS_GUIDE.md)** - Schritt-für-Schritt Implementation
+- **[IMPLEMENTATION_GUIDE.md](./IMPLEMENTATION_GUIDE.md)** - UI Foundation Übersicht
+- **[DECISION_LOG.md](./DECISION_LOG.md)** - Settings Storage Entscheidungen

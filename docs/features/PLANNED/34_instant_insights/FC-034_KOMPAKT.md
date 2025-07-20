@@ -330,3 +330,36 @@ const mlPredictor = {
 - **Impact:** +15% Close Rate durch bessere Vorbereitung
 
 **Integration:** Tag 16-17 nach WhatsApp & Templates!
+
+---
+
+## 🧭 NAVIGATION & VERWEISE
+
+### 📋 Zurück zum Überblick:
+- **[📊 Master Plan V5](/docs/CRM_COMPLETE_MASTER_PLAN_V5.md)** - Vollständige Feature-Roadmap
+- **[🗺️ Feature Overview](/docs/features/MASTER/FEATURE_OVERVIEW.md)** - Alle 40 Features im Überblick
+
+### 🔗 Dependencies (Required):
+- **[📊 M6 Analytics Module](/docs/features/PLANNED/13_analytics_m6/M6_KOMPAKT.md)** - Datenanalyse
+- **[📊 FC-019 Advanced Sales Metrics](/docs/features/PLANNED/19_advanced_metrics/FC-019_KOMPAKT.md)** - KPI-Berechnung
+- **[📈 FC-014 Activity Timeline](/docs/features/PLANNED/16_activity_timeline/FC-014_KOMPAKT.md)** - Historie-Daten
+
+### ⚡ Datenquellen für Insights:
+- **[📊 M4 Opportunity Pipeline](/docs/features/ACTIVE/02_opportunity_pipeline/M4_KOMPAKT.md)** - Deal-Daten
+- **[📊 FC-015 Deal Loss Analysis](/docs/features/PLANNED/17_deal_loss_analysis/FC-015_KOMPAKT.md)** - Loss-Patterns
+- **[📊 FC-026 Analytics Platform](/docs/features/PLANNED/26_analytics_platform/FC-026_KOMPAKT.md)** - ML-Models
+
+### 🚀 Ermöglicht folgende Features:
+- **[🎯 FC-027 Magic Moments](/docs/features/PLANNED/27_magic_moments/FC-027_KOMPAKT.md)** - Smart Suggestions
+- **[📱 FC-035 Social Selling](/docs/features/PLANNED/35_social_selling/FC-035_KOMPAKT.md)** - Social Insights
+- **[👥 FC-036 Beziehungsmanagement](/docs/features/PLANNED/36_relationship_mgmt/FC-036_KOMPAKT.md)** - Relationship Score
+
+### 🎨 UI Integration:
+- **[📊 M3 Sales Cockpit](/docs/features/ACTIVE/05_ui_foundation/M3_SALES_COCKPIT_KOMPAKT.md)** - Insight Widgets
+- **[🧭 M1 Navigation](/docs/features/ACTIVE/05_ui_foundation/M1_NAVIGATION_KOMPAKT.md)** - Insights Dashboard
+- **[📱 FC-022 Mobile Light](/docs/features/PLANNED/22_mobile_light/FC-022_KOMPAKT.md)** - Mobile Insights
+
+### 🔧 Technische Details:
+- **FC-034_IMPLEMENTATION_GUIDE.md** *(geplant)* - Insight Engine Setup
+- **FC-034_DECISION_LOG.md** *(geplant)* - ML vs. Rule-based
+- **INSIGHT_CATALOG.md** *(geplant)* - Alle Insight-Typen

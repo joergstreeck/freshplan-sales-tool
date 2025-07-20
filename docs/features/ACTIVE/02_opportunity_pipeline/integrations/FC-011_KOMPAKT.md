@@ -296,3 +296,33 @@ class MockCreditCheckService implements CreditCheckService {
 
 **Implementation Guide:** [FC-011_IMPLEMENTATION_GUIDE.md](./FC-011_IMPLEMENTATION_GUIDE.md)  
 **Decision Log:** [FC-011_DECISION_LOG.md](./FC-011_DECISION_LOG.md)
+
+---
+
+## 🧭 NAVIGATION & VERWEISE
+
+### 📋 Zurück zum Überblick:
+- **[📊 Master Plan V5](/docs/CRM_COMPLETE_MASTER_PLAN_V5.md)** - Vollständige Feature-Roadmap
+- **[🗺️ Feature Overview](/docs/features/MASTER/FEATURE_OVERVIEW.md)** - Alle 40 Features im Überblick
+
+### 🔗 Dependencies (Required):
+- **[🔒 FC-008 Security Foundation](/docs/features/ACTIVE/01_security_foundation/FC-008_KOMPAKT.md)** - User Authentication für Bonitätszugriff
+- **[📊 M4 Opportunity Pipeline](/docs/features/ACTIVE/02_opportunity_pipeline/M4_KOMPAKT.md)** - Parent-Feature (Integration)
+- **[👥 FC-009 Permissions System](/docs/features/ACTIVE/04_permissions_system/FC-009_KOMPAKT.md)** - Wer darf Bonitätsprüfung durchführen
+
+### ⚡ Direkt integriert in:
+- **[🧮 M8 Calculator Modal](/docs/features/ACTIVE/03_calculator_modal/M8_KOMPAKT.md)** - Bonitätsdaten für Angebote
+- **[📄 PDF-001 PDF Generator](/docs/features/ACTIVE/pdf-generator/)** - Vertrags-PDFs generieren
+
+### 🚀 Ermöglicht folgende Features:
+- **[🛡️ FC-004 Verkäuferschutz](/docs/features/PLANNED/07_verkaeuferschutz/FC-004_KOMPAKT.md)** - Bonität als Schutz-Kriterium
+- **[👨‍💼 FC-007 Chef-Dashboard](/docs/features/PLANNED/10_chef_dashboard/FC-007_KOMPAKT.md)** - Risiko-Analytics
+- **[📈 FC-019 Advanced Sales Metrics](/docs/features/PLANNED/19_advanced_metrics/FC-019_KOMPAKT.md)** - Bonitäts-KPIs
+
+### 🎨 UI Integration:
+- **[📊 M3 Sales Cockpit](/docs/features/ACTIVE/05_ui_foundation/M3_SALES_COCKPIT_KOMPAKT.md)** - Bonitäts-Status in Cards
+- **[⚙️ M7 Settings](/docs/features/ACTIVE/05_ui_foundation/M7_SETTINGS_KOMPAKT.md)** - Bonitäts-Schwellwerte konfigurieren
+
+### 🔧 Technische Details:
+- **[IMPLEMENTATION_BACKEND.md](./IMPLEMENTATION_BACKEND.md)** - Backend-Implementation
+- **[IMPLEMENTATION_FRONTEND.md](./IMPLEMENTATION_FRONTEND.md)** - Frontend-Integration

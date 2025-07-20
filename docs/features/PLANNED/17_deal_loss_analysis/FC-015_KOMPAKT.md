@@ -432,3 +432,36 @@ const useLossPatternDetection = () => {
 ---
 
 **Nächster Schritt:** Loss Analysis Entity + Modal in Opportunity Pipeline integrieren
+
+---
+
+## 🧭 NAVIGATION & VERWEISE
+
+### 📋 Zurück zum Überblick:
+- **[📊 Master Plan V5](/docs/CRM_COMPLETE_MASTER_PLAN_V5.md)** - Vollständige Feature-Roadmap
+- **[🗺️ Feature Overview](/docs/features/MASTER/FEATURE_OVERVIEW.md)** - Alle 40 Features im Überblick
+
+### 🔗 Dependencies (Required):
+- **[📊 M4 Opportunity Pipeline](/docs/features/ACTIVE/02_opportunity_pipeline/M4_KOMPAKT.md)** - Opportunity Status "Closed Lost"
+- **[🔒 FC-008 Security Foundation](/docs/features/ACTIVE/01_security_foundation/FC-008_KOMPAKT.md)** - Analyse-Berechtigungen
+- **[📈 FC-014 Activity Timeline](/docs/features/PLANNED/16_activity_timeline/FC-014_KOMPAKT.md)** - Loss Event in Timeline
+
+### ⚡ Datenquellen:
+- **[📊 M6 Analytics Module](/docs/features/PLANNED/13_analytics_m6/M6_KOMPAKT.md)** - Reporting Framework
+- **[📥 FC-005 Xentral Integration](/docs/features/PLANNED/08_xentral_integration/FC-005_KOMPAKT.md)** - Competitor-Preise
+- **[🛡️ FC-004 Verkäuferschutz](/docs/features/PLANNED/07_verkaeuferschutz/FC-004_KOMPAKT.md)** - Sales Rep Performance
+
+### 🚀 Ermöglicht folgende Features:
+- **[📊 FC-007 Chef-Dashboard](/docs/features/PLANNED/10_chef_dashboard/FC-007_KOMPAKT.md)** - Loss Analysis KPIs
+- **[📈 FC-019 Advanced Sales Metrics](/docs/features/PLANNED/19_advanced_metrics/FC-019_KOMPAKT.md)** - Win/Loss Ratios
+- **[🎯 FC-027 Magic Moments](/docs/features/PLANNED/27_magic_moments/FC-027_KOMPAKT.md)** - Loss Prevention Insights
+
+### 🎨 UI Integration:
+- **[🧭 M1 Navigation](/docs/features/ACTIVE/05_ui_foundation/M1_NAVIGATION_KOMPAKT.md)** - Analytics-Menüpunkt
+- **[📊 M3 Sales Cockpit](/docs/features/ACTIVE/05_ui_foundation/M3_SALES_COCKPIT_KOMPAKT.md)** - Loss Alerts Widget
+- **[⚙️ M7 Settings](/docs/features/ACTIVE/05_ui_foundation/M7_SETTINGS_KOMPAKT.md)** - Loss Reason Config
+
+### 🔧 Technische Details:
+- **[FC-015_IMPLEMENTATION_GUIDE.md](./FC-015_IMPLEMENTATION_GUIDE.md)** - Analysis Engine Details
+- **[FC-015_DECISION_LOG.md](./FC-015_DECISION_LOG.md)** - Mandatory vs. Optional Fields
+- **[LOSS_TAXONOMY.md](./LOSS_TAXONOMY.md)** - Standardisierte Verlustgründe

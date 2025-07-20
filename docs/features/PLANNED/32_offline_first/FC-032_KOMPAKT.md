@@ -286,3 +286,36 @@ const offlineSettings = {
 - **Storage:** < 50MB für 1000 Kunden
 
 **Integration:** Tag 8-11 mit Mobile Light PWA!
+
+---
+
+## 🧭 NAVIGATION & VERWEISE
+
+### 📋 Zurück zum Überblick:
+- **[📊 Master Plan V5](/docs/CRM_COMPLETE_MASTER_PLAN_V5.md)** - Vollständige Feature-Roadmap
+- **[🗺️ Feature Overview](/docs/features/MASTER/FEATURE_OVERVIEW.md)** - Alle 40 Features im Überblick
+
+### 🔗 Dependencies (Required):
+- **[📱 FC-018 Mobile PWA](/docs/features/PLANNED/18_mobile_pwa/FC-018_KOMPAKT.md)** - PWA Foundation
+- **[📱 FC-022 Mobile Light](/docs/features/PLANNED/22_mobile_light/FC-022_KOMPAKT.md)** - Mobile UI
+- **[🔄 FC-023 Event Sourcing](/docs/features/PLANNED/23_event_sourcing/FC-023_KOMPAKT.md)** - Event-based Sync
+
+### ⚡ Sync & Datenquellen:
+- **[👥 M5 Customer Refactor](/docs/features/PLANNED/12_customer_refactor_m5/M5_KOMPAKT.md)** - Customer Data Model
+- **[📈 FC-014 Activity Timeline](/docs/features/PLANNED/16_activity_timeline/FC-014_KOMPAKT.md)** - Activity Sync
+- **[📊 M4 Opportunity Pipeline](/docs/features/ACTIVE/02_opportunity_pipeline/M4_KOMPAKT.md)** - Pipeline Data
+
+### 🚀 Ermöglicht folgende Features:
+- **[🎤 FC-029 Voice-First](/docs/features/PLANNED/29_voice_first/FC-029_KOMPAKT.md)** - Offline Voice Commands
+- **[👆 FC-030 One-Tap Actions](/docs/features/PLANNED/30_one_tap_actions/FC-030_KOMPAKT.md)** - Offline Actions
+- **[📱 FC-006 Native Mobile App](/docs/features/PLANNED/09_mobile_app/FC-006_KOMPAKT.md)** - Offline-First Mobile
+
+### 🎨 UI Integration:
+- **[📊 M3 Sales Cockpit](/docs/features/ACTIVE/05_ui_foundation/M3_SALES_COCKPIT_KOMPAKT.md)** - Offline Indicators
+- **[🧭 M1 Navigation](/docs/features/ACTIVE/05_ui_foundation/M1_NAVIGATION_KOMPAKT.md)** - Sync Status
+- **[⚙️ M7 Settings](/docs/features/ACTIVE/05_ui_foundation/M7_SETTINGS_KOMPAKT.md)** - Offline Preferences
+
+### 🔧 Technische Details:
+- **[FC-032_IMPLEMENTATION_GUIDE.md](./FC-032_IMPLEMENTATION_GUIDE.md)** - Service Worker Setup
+- **[FC-032_DECISION_LOG.md](./FC-032_DECISION_LOG.md)** - IndexedDB vs. LocalStorage
+- **[SYNC_STRATEGIES.md](./SYNC_STRATEGIES.md)** - Conflict Resolution Details

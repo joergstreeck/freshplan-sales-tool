@@ -145,3 +145,36 @@ curl http://localhost:8080/api/customers | head -5
 **Verwandte Features:**
 - **M2 Quick Create:** `/docs/features/ACTIVE/05_ui_foundation/M2_QUICK_CREATE_KOMPAKT.md` - FAB Integration mit Cockpit
 - **M7 Settings:** `/docs/features/ACTIVE/05_ui_foundation/M7_SETTINGS_KOMPAKT.md` - Cockpit-Konfiguration
+
+---
+
+## 🧭 NAVIGATION & VERWEISE
+
+### 📋 Zurück zum Überblick:
+- **[📊 Master Plan V5](/docs/CRM_COMPLETE_MASTER_PLAN_V5.md)** - Vollständige Feature-Roadmap
+- **[🗺️ Feature Overview](/docs/features/MASTER/FEATURE_OVERVIEW.md)** - Alle 40 Features im Überblick
+
+### 🔗 Dependencies (Required):
+- **[🔒 FC-008 Security Foundation](/docs/features/ACTIVE/01_security_foundation/FC-008_KOMPAKT.md)** - User Context & Teams
+- **[🧭 M1 Navigation](/docs/features/ACTIVE/05_ui_foundation/M1_NAVIGATION_KOMPAKT.md)** - Layout & Routing
+- **[👥 FC-009 Permissions System](/docs/features/ACTIVE/04_permissions_system/FC-009_KOMPAKT.md)** - Rolle-basierte Inhalte
+
+### ⚡ Zentrale Integration mit:
+- **[📊 M4 Opportunity Pipeline](/docs/features/ACTIVE/02_opportunity_pipeline/M4_KOMPAKT.md)** - Opportunities in FocusList
+- **[🧮 M8 Calculator Modal](/docs/features/ACTIVE/03_calculator_modal/M8_KOMPAKT.md)** - ActionCenter Integration
+- **[➕ M2 Quick Create](/docs/features/ACTIVE/05_ui_foundation/M2_QUICK_CREATE_KOMPAKT.md)** - FAB im Cockpit
+
+### 🚀 Nutzt Daten von:
+- **[👥 M5 Customer Refactor](/docs/features/PLANNED/12_customer_refactor_m5/M5_KOMPAKT.md)** - Customer Cards
+- **[📈 FC-014 Activity Timeline](/docs/features/PLANNED/16_activity_timeline/FC-014_KOMPAKT.md)** - Aktivitäten in MyDay
+- **[💰 FC-011 Bonitätsprüfung](/docs/features/ACTIVE/02_opportunity_pipeline/integrations/FC-011_KOMPAKT.md)** - Risiko-Anzeige
+
+### 🎨 UI Enhancements:
+- **[🎯 FC-020 Quick Wins](/docs/features/PLANNED/20_quick_wins/FC-020_KOMPAKT.md)** - Command Palette im Cockpit
+- **[🔍 FC-030 One-Tap Actions](/docs/features/PLANNED/30_one_tap_actions/FC-030_KOMPAKT.md)** - Quick Actions in Cards
+- **[📊 FC-034 Instant Insights](/docs/features/PLANNED/34_instant_insights/FC-034_KOMPAKT.md)** - KI-Insights in MyDay
+
+### 🔧 Technische Details:
+- **[M3_COCKPIT_GUIDE.md](./guides/M3_COCKPIT_GUIDE.md)** - Schritt-für-Schritt Enhancement
+- **[IMPLEMENTATION_GUIDE.md](./IMPLEMENTATION_GUIDE.md)** - UI Foundation Übersicht
+- **[ENHANCEMENT_ROADMAP.md](./ENHANCEMENT_ROADMAP.md)** - 4-Stage Enhancement Plan

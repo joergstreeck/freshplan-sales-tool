@@ -248,3 +248,36 @@ const useCustomerRealtimeUpdates = (customerId: string) => {
 
 **Implementation Guide:** [FC-012_IMPLEMENTATION_GUIDE.md](./FC-012_IMPLEMENTATION_GUIDE.md)  
 **Decision Log:** [FC-012_DECISION_LOG.md](./FC-012_DECISION_LOG.md)
+
+---
+
+## 🧭 NAVIGATION & VERWEISE
+
+### 📋 Zurück zum Überblick:
+- **[📊 Master Plan V5](/docs/CRM_COMPLETE_MASTER_PLAN_V5.md)** - Vollständige Feature-Roadmap
+- **[🗺️ Feature Overview](/docs/features/MASTER/FEATURE_OVERVIEW.md)** - Alle 40 Features im Überblick
+
+### 🔗 Dependencies (Required):
+- **[🔒 FC-008 Security Foundation](/docs/features/ACTIVE/01_security_foundation/FC-008_KOMPAKT.md)** - User Authentication & Permissions
+- **[👥 FC-009 Permissions System](/docs/features/ACTIVE/04_permissions_system/FC-009_KOMPAKT.md)** - Team-based Access Control
+- **[👥 M5 Customer Refactor](/docs/features/PLANNED/12_customer_refactor_m5/M5_KOMPAKT.md)** - Customer-Context für Chats
+
+### ⚡ Event-Quellen:
+- **[📊 M4 Opportunity Pipeline](/docs/features/ACTIVE/02_opportunity_pipeline/M4_KOMPAKT.md)** - Opportunity Updates
+- **[📈 FC-014 Activity Timeline](/docs/features/PLANNED/16_activity_timeline/FC-014_KOMPAKT.md)** - Activity Events
+- **[📧 FC-003 E-Mail Integration](/docs/features/PLANNED/06_email_integration/FC-003_KOMPAKT.md)** - Email Activities
+
+### 🚀 Ermöglicht folgende Features:
+- **[📊 M3 Sales Cockpit](/docs/features/ACTIVE/05_ui_foundation/M3_SALES_COCKPIT_KOMPAKT.md)** - Team-Aktivitäten anzeigen
+- **[🎯 FC-027 Magic Moments](/docs/features/PLANNED/27_magic_moments/FC-027_KOMPAKT.md)** - Team-Koordination Insights
+- **[📱 FC-028 WhatsApp Business](/docs/features/PLANNED/28_whatsapp_business/FC-028_KOMPAKT.md)** - Multi-Channel Communication
+
+### 🎨 UI Integration:
+- **[🧭 M1 Navigation](/docs/features/ACTIVE/05_ui_foundation/M1_NAVIGATION_KOMPAKT.md)** - Notification Bell im Header
+- **[➕ M2 Quick Create](/docs/features/ACTIVE/05_ui_foundation/M2_QUICK_CREATE_KOMPAKT.md)** - Quick Note mit @Mentions
+- **[⚙️ M7 Settings](/docs/features/ACTIVE/05_ui_foundation/M7_SETTINGS_KOMPAKT.md)** - Notification Preferences
+
+### 🔧 Technische Details:
+- **[FC-012_IMPLEMENTATION_GUIDE.md](./FC-012_IMPLEMENTATION_GUIDE.md)** - WebSocket & Event System
+- **[FC-012_DECISION_LOG.md](./FC-012_DECISION_LOG.md)** - Real-time vs. Polling
+- **[NOTIFICATION_RULES.md](./NOTIFICATION_RULES.md)** - Rule Engine Details

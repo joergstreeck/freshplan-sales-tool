@@ -389,3 +389,36 @@ WHERE engaged_at > NOW() - INTERVAL '30 days';
 - **Time to Close:** -20% durch Beziehungsaufbau
 
 **Integration:** Tag 21-22 nach Timeline & Beziehungen!
+
+---
+
+## 🧭 NAVIGATION & VERWEISE
+
+### 📋 Zurück zum Überblick:
+- **[📊 Master Plan V5](/docs/CRM_COMPLETE_MASTER_PLAN_V5.md)** - Vollständige Feature-Roadmap
+- **[🗺️ Feature Overview](/docs/features/MASTER/FEATURE_OVERVIEW.md)** - Alle 40 Features im Überblick
+
+### 🔗 Dependencies (Required):
+- **[👥 FC-036 Beziehungsmanagement](/docs/features/PLANNED/36_relationship_mgmt/FC-036_KOMPAKT.md)** - Contact Network
+- **[📈 FC-014 Activity Timeline](/docs/features/PLANNED/16_activity_timeline/FC-014_KOMPAKT.md)** - Social Activities
+- **[🔍 FC-034 Instant Insights](/docs/features/PLANNED/34_instant_insights/FC-034_KOMPAKT.md)** - Social Insights
+
+### ⚡ Social Media Integration:
+- **[📧 FC-003 Email Integration](/docs/features/PLANNED/06_email_integration/FC-003_KOMPAKT.md)** - Multi-Channel
+- **[💬 FC-028 WhatsApp Integration](/docs/features/PLANNED/28_whatsapp_integration/FC-028_KOMPAKT.md)** - Messaging
+- **[📁 FC-024 File Management](/docs/features/PLANNED/24_file_management/FC-024_KOMPAKT.md)** - Post Assets
+
+### 🚀 Ermöglicht folgende Features:
+- **[🎯 FC-027 Magic Moments](/docs/features/PLANNED/27_magic_moments/FC-027_KOMPAKT.md)** - Social Celebrations
+- **[📊 FC-019 Advanced Sales Metrics](/docs/features/PLANNED/19_advanced_metrics/FC-019_KOMPAKT.md)** - Social ROI
+- **[🏆 FC-017 Sales Gamification](/docs/features/PLANNED/99_sales_gamification/FC-017_KOMPAKT.md)** - Social Points
+
+### 🎨 UI Integration:
+- **[📊 M3 Sales Cockpit](/docs/features/ACTIVE/05_ui_foundation/M3_SALES_COCKPIT_KOMPAKT.md)** - Social Widget
+- **[📱 FC-022 Mobile Light](/docs/features/PLANNED/22_mobile_light/FC-022_KOMPAKT.md)** - Mobile Social
+- **[⚡ M2 Quick Create](/docs/features/ACTIVE/05_ui_foundation/M2_QUICK_CREATE_KOMPAKT.md)** - Quick Post
+
+### 🔧 Technische Details:
+- **FC-035_IMPLEMENTATION_GUIDE.md** *(geplant)* - API Integration Guide
+- **FC-035_DECISION_LOG.md** *(geplant)* - Platform-Auswahl
+- **SOCIAL_PLAYBOOK.md** *(geplant)* - Best Practices Social Selling

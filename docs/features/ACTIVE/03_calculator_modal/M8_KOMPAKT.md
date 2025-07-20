@@ -102,3 +102,33 @@ touch contexts/CalculatorContext.tsx
 7. **Mobile Responsive** - Touch-optimiert
 
 **WICHTIG:** Legacy Calculator Code NICHT ändern, nur wrappen!
+
+---
+
+## 🧭 NAVIGATION & VERWEISE
+
+### 📋 Zurück zum Überblick:
+- **[📊 Master Plan V5](/docs/CRM_COMPLETE_MASTER_PLAN_V5.md)** - Vollständige Feature-Roadmap
+- **[🗺️ Feature Overview](/docs/features/MASTER/FEATURE_OVERVIEW.md)** - Alle 40 Features im Überblick
+
+### 🔗 Dependencies (Required):
+- **[🔒 FC-008 Security Foundation](/docs/features/ACTIVE/01_security_foundation/FC-008_KOMPAKT.md)** - User Authentication für Calculator-Zugriff
+- **[📊 M4 Opportunity Pipeline](/docs/features/ACTIVE/02_opportunity_pipeline/M4_KOMPAKT.md)** - Trigger-Context für Modal
+
+### ⚡ Integration mit:
+- **[📊 M3 Sales Cockpit](/docs/features/ACTIVE/05_ui_foundation/M3_SALES_COCKPIT_KOMPAKT.md)** - Quick-Action in Customer Card
+- **[👨‍💼 FC-007 Chef-Dashboard](/docs/features/PLANNED/10_chef_dashboard/FC-007_KOMPAKT.md)** - Angebots-KPIs
+- **[📱 FC-006 Mobile App](/docs/features/PLANNED/09_mobile_app/FC-006_KOMPAKT.md)** - Mobile Calculator-Ansicht
+
+### 🚀 Ermöglicht folgende Features:
+- **[📄 PDF-001 PDF Generator](/docs/features/ACTIVE/pdf-generator/)** - Angebots-PDF aus Calculator
+- **[📧 FC-003 E-Mail Integration](/docs/features/PLANNED/06_email_integration/FC-003_KOMPAKT.md)** - Angebot per Mail versenden
+- **[🎯 FC-031 Smart Templates](/docs/features/PLANNED/31_smart_templates/FC-031_KOMPAKT.md)** - Wiederverwendbare Kalkulationen
+
+### 🎨 UI Integration:
+- **[🧭 M1 Navigation](/docs/features/ACTIVE/05_ui_foundation/M1_NAVIGATION_KOMPAKT.md)** - Menü-Eintrag für standalone
+- **[➕ M2 Quick Create](/docs/features/ACTIVE/05_ui_foundation/M2_QUICK_CREATE_KOMPAKT.md)** - FAB für neue Kalkulation
+
+### 🔧 Technische Details:
+- **[IMPLEMENTATION_GUIDE.md](./IMPLEMENTATION_GUIDE.md)** - Vollständige technische Umsetzung
+- **[DECISION_LOG.md](./DECISION_LOG.md)** - Architektur-Entscheidungen

@@ -129,3 +129,35 @@ curl http://localhost:8080/api/users/current | jq '.roles'
 **WICHTIG:** Die Layout-Basis ist exzellent - wir machen sie intelligent!
 
 **KRITISCH:** Status ist 40% fertig, nicht 0% geplant!
+
+---
+
+## 🧭 NAVIGATION & VERWEISE
+
+### 📋 Zurück zum Überblick:
+- **[📊 Master Plan V5](/docs/CRM_COMPLETE_MASTER_PLAN_V5.md)** - Vollständige Feature-Roadmap
+- **[🗺️ Feature Overview](/docs/features/MASTER/FEATURE_OVERVIEW.md)** - Alle 40 Features im Überblick
+
+### 🔗 Dependencies (Required):
+- **[🔒 FC-008 Security Foundation](/docs/features/ACTIVE/01_security_foundation/FC-008_KOMPAKT.md)** - User Context & Authentication
+- **[👥 FC-009 Permissions System](/docs/features/ACTIVE/04_permissions_system/FC-009_KOMPAKT.md)** - Rolle-basierte Navigation
+
+### ⚡ Direkt integriert mit:
+- **[➕ M2 Quick Create](/docs/features/ACTIVE/05_ui_foundation/M2_QUICK_CREATE_KOMPAKT.md)** - FAB Integration
+- **[📊 M3 Sales Cockpit](/docs/features/ACTIVE/05_ui_foundation/M3_SALES_COCKPIT_KOMPAKT.md)** - Haupt-Arbeitsbereich
+- **[⚙️ M7 Settings](/docs/features/ACTIVE/05_ui_foundation/M7_SETTINGS_KOMPAKT.md)** - Navigation zu Settings
+
+### 🚀 Ermöglicht Navigation zu:
+- **[📊 M4 Opportunity Pipeline](/docs/features/ACTIVE/02_opportunity_pipeline/M4_KOMPAKT.md)** - /opportunities Route
+- **[🧮 M8 Calculator Modal](/docs/features/ACTIVE/03_calculator_modal/M8_KOMPAKT.md)** - /calculator Route
+- **[👨‍💼 FC-007 Chef-Dashboard](/docs/features/PLANNED/10_chef_dashboard/FC-007_KOMPAKT.md)** - /dashboard Route
+- **[📱 FC-006 Mobile App](/docs/features/PLANNED/09_mobile_app/FC-006_KOMPAKT.md)** - Mobile Navigation Pattern
+
+### 🎨 UI Components:
+- **[🎯 FC-020 Quick Wins](/docs/features/PLANNED/20_quick_wins/FC-020_KOMPAKT.md)** - Command Palette Integration
+- **[🔍 FC-030 One-Tap Actions](/docs/features/PLANNED/30_one_tap_actions/FC-030_KOMPAKT.md)** - Quick Actions in Header
+
+### 🔧 Technische Details:
+- **[M1_NAVIGATION_GUIDE.md](./guides/M1_NAVIGATION_GUIDE.md)** - Schritt-für-Schritt Implementation
+- **[IMPLEMENTATION_GUIDE.md](./IMPLEMENTATION_GUIDE.md)** - UI Foundation Übersicht
+- **[DECISION_LOG.md](./DECISION_LOG.md)** - Navigation Entscheidungen

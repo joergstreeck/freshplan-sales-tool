@@ -81,3 +81,33 @@ cat docs/features/ACTIVE/04_permissions_system/DECISION_LOG.md
 7. **Migration durchführen** - Rollen → Permissions
 
 **WICHTIG:** Ohne FC-009 bleibt alles bei 3 hardcoded Rollen!
+
+---
+
+## 🧭 NAVIGATION & VERWEISE
+
+### 📋 Zurück zum Überblick:
+- **[📊 Master Plan V5](/docs/CRM_COMPLETE_MASTER_PLAN_V5.md)** - Vollständige Feature-Roadmap
+- **[🗺️ Feature Overview](/docs/features/MASTER/FEATURE_OVERVIEW.md)** - Alle 40 Features im Überblick
+
+### 🔗 Dependencies (Required):
+- **[🔒 FC-008 Security Foundation](/docs/features/ACTIVE/01_security_foundation/FC-008_KOMPAKT.md)** - Authentication Layer als Basis
+
+### ⚡ Direkt integriert in:
+- **[👥 M5 Customer Refactor](/docs/features/PLANNED/12_customer_refactor_m5/M5_KOMPAKT.md)** - Customer Ownership Model
+- **[📊 M4 Opportunity Pipeline](/docs/features/ACTIVE/02_opportunity_pipeline/M4_KOMPAKT.md)** - Opportunity-Permissions
+- **[🛡️ FC-004 Verkäuferschutz](/docs/features/PLANNED/07_verkaeuferschutz/FC-004_KOMPAKT.md)** - Protection Rules
+
+### 🚀 Ermöglicht folgende Features:
+- **[👨‍💼 FC-007 Chef-Dashboard](/docs/features/PLANNED/10_chef_dashboard/FC-007_KOMPAKT.md)** - Team-based Analytics
+- **[📥 FC-010 Customer Import](/docs/features/PLANNED/11_customer_import/FC-010_KOMPAKT.md)** - Import-Permissions
+- **[📊 M6 Analytics Module](/docs/features/PLANNED/13_analytics_m6/M6_KOMPAKT.md)** - Data Access Control
+- **[📈 FC-019 Advanced Sales Metrics](/docs/features/PLANNED/19_advanced_metrics/FC-019_KOMPAKT.md)** - Team Performance
+
+### 🎨 UI Integration:
+- **[⚙️ M7 Settings](/docs/features/ACTIVE/05_ui_foundation/M7_SETTINGS_KOMPAKT.md)** - Permission Management UI
+- **[📊 M3 Sales Cockpit](/docs/features/ACTIVE/05_ui_foundation/M3_SALES_COCKPIT_KOMPAKT.md)** - Permission-based Filtering
+
+### 🔧 Technische Details:
+- **[TECHNICAL_SOLUTION.md](./TECHNICAL_SOLUTION.md)** - Vollständige technische Umsetzung
+- **[DECISION_LOG.md](./DECISION_LOG.md)** - Kritische Entscheidungen für Jörg

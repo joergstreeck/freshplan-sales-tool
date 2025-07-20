@@ -266,3 +266,36 @@ const offlineCommands = new Map([
 7. **Multi-Language** - DE/EN
 
 **TIPP:** Mit Chrome Mobile testen - beste Speech API!
+
+---
+
+## 🧭 NAVIGATION & VERWEISE
+
+### 📋 Zurück zum Überblick:
+- **[📊 Master Plan V5](/docs/CRM_COMPLETE_MASTER_PLAN_V5.md)** - Vollständige Feature-Roadmap
+- **[🗺️ Feature Overview](/docs/features/MASTER/FEATURE_OVERVIEW.md)** - Alle 40 Features im Überblick
+
+### 🔗 Dependencies (Required):
+- **[📱 FC-022 Mobile Light](/docs/features/PLANNED/22_mobile_light/FC-022_KOMPAKT.md)** - Mobile UI Foundation
+- **[🔒 FC-008 Security Foundation](/docs/features/ACTIVE/01_security_foundation/FC-008_KOMPAKT.md)** - User Context
+- **[🔒 FC-009 Permissions](/docs/features/ACTIVE/04_permissions_system/FC-009_KOMPAKT.md)** - Voice Permissions
+
+### ⚡ Audio & Datenquellen:
+- **[📈 FC-014 Activity Timeline](/docs/features/PLANNED/16_activity_timeline/FC-014_KOMPAKT.md)** - Voice Activities
+- **[📧 FC-028 WhatsApp Integration](/docs/features/PLANNED/28_whatsapp_integration/FC-028_KOMPAKT.md)** - Voice-to-Text Messages
+- **[📱 FC-018 Mobile PWA](/docs/features/PLANNED/18_mobile_pwa/FC-018_KOMPAKT.md)** - Offline Voice
+
+### 🚀 Ermöglicht folgende Features:
+- **[👆 FC-030 One-Tap Actions](/docs/features/PLANNED/30_one_tap_actions/FC-030_KOMPAKT.md)** - Voice Shortcuts
+- **[📱 FC-031 Smart Templates](/docs/features/PLANNED/31_smart_templates/FC-031_KOMPAKT.md)** - Voice Template Fill
+- **[🏆 FC-017 Sales Gamification](/docs/features/PLANNED/99_sales_gamification/FC-017_KOMPAKT.md)** - Voice Achievements
+
+### 🎨 UI Integration:
+- **[📊 M3 Sales Cockpit](/docs/features/ACTIVE/05_ui_foundation/M3_SALES_COCKPIT_KOMPAKT.md)** - Voice Button Integration
+- **[⚡ M2 Quick Create](/docs/features/ACTIVE/05_ui_foundation/M2_QUICK_CREATE_KOMPAKT.md)** - Voice Quick Create
+- **[🧭 M1 Navigation](/docs/features/ACTIVE/05_ui_foundation/M1_NAVIGATION_KOMPAKT.md)** - Voice Navigation
+
+### 🔧 Technische Details:
+- **[FC-029_IMPLEMENTATION_GUIDE.md](./FC-029_IMPLEMENTATION_GUIDE.md)** - Speech API Setup
+- **[FC-029_DECISION_LOG.md](./FC-029_DECISION_LOG.md)** - Web Speech vs. Cloud APIs
+- **[VOICE_COMMANDS.md](./VOICE_COMMANDS.md)** - Vollständige Command Liste

@@ -194,3 +194,36 @@ interface DuplicateDetectionConfig {
 ---
 
 **Nächster Schritt:** Backend Fuzzy-Matching implementieren mit Apache Commons Text
+
+---
+
+## 🧭 NAVIGATION & VERWEISE
+
+### 📋 Zurück zum Überblick:
+- **[📊 Master Plan V5](/docs/CRM_COMPLETE_MASTER_PLAN_V5.md)** - Vollständige Feature-Roadmap
+- **[🗺️ Feature Overview](/docs/features/MASTER/FEATURE_OVERVIEW.md)** - Alle 40 Features im Überblick
+
+### 🔗 Dependencies (Required):
+- **[👥 M5 Customer Refactor](/docs/features/PLANNED/12_customer_refactor_m5/M5_KOMPAKT.md)** - Customer Entity & Repository
+- **[🔒 FC-008 Security Foundation](/docs/features/ACTIVE/01_security_foundation/FC-008_KOMPAKT.md)** - @RolesAllowed für API
+- **[➕ M2 Quick Create](/docs/features/ACTIVE/05_ui_foundation/M2_QUICK_CREATE_KOMPAKT.md)** - Integration in Create Dialog
+
+### ⚡ Datenquellen:
+- **[📥 FC-010 Customer Import](/docs/features/PLANNED/11_customer_import/FC-010_KOMPAKT.md)** - Bulk-Duplicate-Check beim Import
+- **[📈 FC-014 Activity Timeline](/docs/features/PLANNED/16_activity_timeline/FC-014_KOMPAKT.md)** - Merge-Historie tracken
+- **[📧 FC-003 E-Mail Integration](/docs/features/PLANNED/06_email_integration/FC-003_KOMPAKT.md)** - Email-basierte Dubletten
+
+### 🚀 Ermöglicht folgende Features:
+- **[📊 M3 Sales Cockpit](/docs/features/ACTIVE/05_ui_foundation/M3_SALES_COCKPIT_KOMPAKT.md)** - Saubere Kundenlisten
+- **[🛡️ FC-004 Verkäuferschutz](/docs/features/PLANNED/07_verkaeuferschutz/FC-004_KOMPAKT.md)** - Eindeutige Kundenzuordnung
+- **[📊 M6 Analytics Module](/docs/features/PLANNED/13_analytics_m6/M6_KOMPAKT.md)** - Korrekte Statistiken
+
+### 🎨 UI Integration:
+- **[🧭 M1 Navigation](/docs/features/ACTIVE/05_ui_foundation/M1_NAVIGATION_KOMPAKT.md)** - Admin-Menü für Settings
+- **[⚙️ M7 Settings](/docs/features/ACTIVE/05_ui_foundation/M7_SETTINGS_KOMPAKT.md)** - Duplicate Detection Config
+- **[📊 FC-034 Instant Insights](/docs/features/PLANNED/34_instant_insights/FC-034_KOMPAKT.md)** - Data Quality Metrics
+
+### 🔧 Technische Details:
+- **[FC-013_IMPLEMENTATION_GUIDE.md](./FC-013_IMPLEMENTATION_GUIDE.md)** - Fuzzy Matching Algorithmen
+- **[FC-013_DECISION_LOG.md](./FC-013_DECISION_LOG.md)** - Elasticsearch vs. PostgreSQL
+- **[MERGE_STRATEGY.md](./MERGE_STRATEGY.md)** - Merge-Konflikt-Auflösung

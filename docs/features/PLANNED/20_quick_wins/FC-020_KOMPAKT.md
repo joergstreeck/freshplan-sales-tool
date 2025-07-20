@@ -214,3 +214,36 @@ morgen 14:00    → Termine morgen 14 Uhr
 **🎯 Nach 2 Tagen:** 4 Power Features die JEDER User lieben wird!
 
 **📚 Details:** Siehe `FC-020_IMPLEMENTATION_GUIDE.md`
+
+---
+
+## 🧭 NAVIGATION & VERWEISE
+
+### 📋 Zurück zum Überblick:
+- **[📊 Master Plan V5](/docs/CRM_COMPLETE_MASTER_PLAN_V5.md)** - Vollständige Feature-Roadmap
+- **[🗺️ Feature Overview](/docs/features/MASTER/FEATURE_OVERVIEW.md)** - Alle 40 Features im Überblick
+
+### 🔗 Dependencies (Required):
+- **[🧭 M1 Navigation](/docs/features/ACTIVE/05_ui_foundation/M1_NAVIGATION_KOMPAKT.md)** - UI Framework für Command Palette
+- **[🔒 FC-008 Security Foundation](/docs/features/ACTIVE/01_security_foundation/FC-008_KOMPAKT.md)** - Berechtigungen für Bulk Actions
+- **[📊 M3 Sales Cockpit](/docs/features/ACTIVE/05_ui_foundation/M3_SALES_COCKPIT_KOMPAKT.md)** - Integration der Quick Wins
+
+### ⚡ Integrationen:
+- **[📊 M4 Opportunity Pipeline](/docs/features/ACTIVE/02_opportunity_pipeline/M4_KOMPAKT.md)** - Bulk Actions für Opportunities
+- **[👥 M5 Customer Refactor](/docs/features/PLANNED/12_customer_refactor_m5/M5_KOMPAKT.md)** - Smart Search für Kunden
+- **[📊 M6 Analytics Module](/docs/features/PLANNED/13_analytics_m6/M6_KOMPAKT.md)** - Excel Export für Reports
+
+### 🚀 Ermöglicht folgende Features:
+- **[⚡ FC-030 One-Tap Actions](/docs/features/PLANNED/30_one_tap_actions/FC-030_KOMPAKT.md)** - Command Palette Actions
+- **[📋 FC-031 Smart Templates](/docs/features/PLANNED/31_smart_templates/FC-031_KOMPAKT.md)** - Template-Auswahl via Cmd+K
+- **[🔍 FC-034 Instant Insights](/docs/features/PLANNED/34_instant_insights/FC-034_KOMPAKT.md)** - Quick Search Insights
+
+### 🎨 UI Integration:
+- **[➕ M2 Quick Create](/docs/features/ACTIVE/05_ui_foundation/M2_QUICK_CREATE_KOMPAKT.md)** - Command Palette Create Actions
+- **[⚙️ M7 Settings](/docs/features/ACTIVE/05_ui_foundation/M7_SETTINGS_KOMPAKT.md)** - Shortcut Customization
+- **[🧮 M8 Calculator Modal](/docs/features/ACTIVE/03_calculator_modal/M8_KOMPAKT.md)** - Calculator via Cmd+K
+
+### 🔧 Technische Details:
+- **[FC-020_IMPLEMENTATION_GUIDE.md](./FC-020_IMPLEMENTATION_GUIDE.md)** - Vollständige Umsetzung
+- **[FC-020_DECISION_LOG.md](./FC-020_DECISION_LOG.md)** - Command Palette vs. Menu
+- **[SHORTCUT_REFERENCE.md](./SHORTCUT_REFERENCE.md)** - Alle Keyboard Shortcuts
