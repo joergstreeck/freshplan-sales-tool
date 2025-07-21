@@ -1,4 +1,8 @@
-#!/bin/bash
+#\!/bin/bash
+# ⚠️  DEPRECATED - This script was for KOMPAKT structure
+# 🆕 New structure uses CLAUDE_TECH format
+# 📅 Deprecated on: 2025-07-21
+
 
 # Script to mark all technical documentation links as "planned"
 # Version 2: Handles markdown link format [text](url)

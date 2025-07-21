@@ -10,13 +10,13 @@
 
 | Feature | Code | Status | Progress | Nächster Schritt | Dokumente |
 |---------|------|--------|----------|------------------|-----------|
-| Security Foundation | FC-008 | 🟡 Tests deaktiviert | 85% | TODO-024/028 | [KOMPAKT](../ACTIVE/01_security_foundation/FC-008_KOMPAKT.md) • [IMPL](../ACTIVE/01_security_foundation/IMPLEMENTATION_GUIDE.md) |
-| Opportunity Pipeline | M4 | 📋 Ready to Start | 0% | Backend Entities | [KOMPAKT](../ACTIVE/02_opportunity_pipeline/M4_KOMPAKT.md) • [IMPL](../ACTIVE/02_opportunity_pipeline/IMPLEMENTATION_GUIDE.md) |
-| Calculator Modal | M8 | 📋 Ready to Start | 0% | Modal Wrapper | [KOMPAKT](../ACTIVE/03_calculator_modal/M8_KOMPAKT.md) • [IMPL](../ACTIVE/03_calculator_modal/IMPLEMENTATION_GUIDE.md) |
+| Security Foundation | FC-008 | 🟡 Tests deaktiviert | 85% | TODO-024/028 | [CLAUDE_TECH](../ACTIVE/01_security_foundation/FC-008_CLAUDE_TECH.md) • [IMPL](../ACTIVE/01_security_foundation/IMPLEMENTATION_GUIDE.md) |
+| Opportunity Pipeline | M4 | 📋 Ready to Start | 0% | Backend Entities | [CLAUDE_TECH](../ACTIVE/02_opportunity_pipeline/M4_CLAUDE_TECH.md) • [IMPL](../ACTIVE/02_opportunity_pipeline/IMPLEMENTATION_GUIDE.md) |
+| Calculator Modal | M8 | 📋 Ready to Start | 0% | Modal Wrapper | [CLAUDE_TECH](../ACTIVE/03_calculator_modal/M8_CLAUDE_TECH.md) • [IMPL](../ACTIVE/03_calculator_modal/IMPLEMENTATION_GUIDE.md) |
 | **Hinweis:** | | | | | M8 ist eigenständig, da es Legacy-Calculator integriert |
-| Permissions System | FC-009 | 📋 Planned | 0% | Technical Review | [KOMPAKT](../ACTIVE/04_permissions_system/FC-009_KOMPAKT.md) • [IMPL](../ACTIVE/04_permissions_system/IMPLEMENTATION_GUIDE.md) |
-| UI Foundation | M1-M3-M7 | 🟡 Enhancement | 60% | **BLOCKIERT**: D1-D3 Entscheidungen | [NAV-40%](../ACTIVE/05_ui_foundation/M1_NAVIGATION_KOMPAKT.md) • [COCKPIT-60%](../ACTIVE/05_ui_foundation/M3_SALES_COCKPIT_KOMPAKT.md) • [SETTINGS-50%](../ACTIVE/05_ui_foundation/M7_SETTINGS_KOMPAKT.md) • [DECISIONS](../ACTIVE/05_ui_foundation/DECISION_LOG.md) 🚨 |
-| Quick Create | M2 | 📋 Ready to Start | 0% | FAB + Dialogs | [KOMPAKT](../ACTIVE/05_ui_foundation/M2_QUICK_CREATE_KOMPAKT.md) • Teil von UI Foundation |
+| Permissions System | FC-009 | 📋 Planned | 0% | Technical Review | [CLAUDE_TECH](../ACTIVE/04_permissions_system/FC-009_CLAUDE_TECH.md) • [IMPL](../ACTIVE/04_permissions_system/IMPLEMENTATION_GUIDE.md) |
+| UI Foundation | M1-M3-M7 | 🟡 Enhancement | 60% | **BLOCKIERT**: D1-D3 Entscheidungen | [NAV-40%](../ACTIVE/05_ui_foundation/M1_NAVIGATION_CLAUDE_TECH.md) • [COCKPIT-60%](../ACTIVE/05_ui_foundation/M3_SALES_COCKPIT_CLAUDE_TECH.md) • [SETTINGS-50%](../ACTIVE/05_ui_foundation/M7_SETTINGS_CLAUDE_TECH.md) • [DECISIONS](../ACTIVE/05_ui_foundation/DECISION_LOG.md) 🚨 |
+| Quick Create | M2 | 📋 Ready to Start | 0% | FAB + Dialogs | [CLAUDE_TECH](../ACTIVE/05_ui_foundation/M2_QUICK_CREATE_CLAUDE_TECH.md) • Teil von UI Foundation |
 
 ### 🔵 PLANNED (Geplant)
 
@@ -100,7 +100,7 @@
 | Technical Foundation | - | 14.07.2025 | Monorepo + CI/CD + Walking Skeleton ✅ | [Docs](../COMPLETED/00_technical_foundation/README.md) |
 
 **⚠️ Noch nicht verschoben (nicht 100%):**
-| Basic Auth | FC-008 | 85% (17.07.2025) | Tests deaktiviert | [KOMPAKT](../ACTIVE/01_security_foundation/FC-008_KOMPAKT.md) |
+| Basic Auth | FC-008 | 85% (17.07.2025) | Tests deaktiviert | [CLAUDE_TECH](../ACTIVE/01_security_foundation/FC-008_CLAUDE_TECH.md) |
 
 **🚨 Wichtiger Hinweis:** Technical Foundation hat nur 3 hardcoded Rollen (admin, manager, sales). FC-009 bringt das echte Permission System!
 

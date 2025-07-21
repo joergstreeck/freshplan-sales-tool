@@ -1,4 +1,8 @@
-#!/bin/bash
+#\!/bin/bash
+# ⚠️  DEPRECATED - This script was for KOMPAKT structure
+# 🆕 New structure uses CLAUDE_TECH format
+# 📅 Deprecated on: 2025-07-21
+
 
 # Fix für Bold-Markierungen bei technischen Dokumenten mit *(geplant)*
 # Von: **[Link](path)** *(geplant)* 

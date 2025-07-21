@@ -1,4 +1,8 @@
-#!/bin/bash
+#\!/bin/bash
+# ⚠️  DEPRECATED - This script was for KOMPAKT structure
+# 🆕 New structure uses CLAUDE_TECH format
+# 📅 Deprecated on: 2025-07-21
+
 
 # Navigation Link Validator für FreshPlan Sales Tool - Version 2
 # Prüft alle Navigation-Links in den Feature-Dokumenten
