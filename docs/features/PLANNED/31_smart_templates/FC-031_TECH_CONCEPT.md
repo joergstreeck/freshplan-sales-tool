@@ -35,22 +35,22 @@ KI-gestützte Template Engine mit Kontext-Personalisierung und automatischer Inh
 
 ### ⚡ Direkt integriert in:
 - **[📧 FC-003 E-Mail Integration](/docs/features/PLANNED/06_email_integration/FC-003_TECH_CONCEPT.md)** - E-Mail Templates
-- **[🧮 M8 Calculator Modal](/docs/features/ACTIVE/03_calculator_modal/M8_KOMPAKT.md)** - Angebots-Templates
-- **[📄 PDF-001 PDF Generator](/docs/features/ACTIVE/pdf-generator/)** - Vertrags-Templates
+- **[🧮 M8 Calculator Modal](/docs/features/ACTIVE/03_calculator_modal/M8_TECH_CONCEPT.md)** - Angebots-Templates
+- **[📄 PDF-001 PDF Generator](/docs/features/ACTIVE/28_pdf_export/README.md)** - Vertrags-Templates
 
 ### 🚀 Ermöglicht folgende Features:
 - **[🚀 FC-030 One-Tap Actions](/docs/features/PLANNED/30_one_tap_actions/FC-030_TECH_CONCEPT.md)** - Template Quick Actions
-- **[⚡ FC-020 Quick Wins](/docs/features/PLANNED/20_quick_wins/FC-020_KOMPAKT.md)** - Command Palette Templates
-- **[📱 FC-018 Mobile PWA](/docs/features/PLANNED/18_mobile_pwa/FC-018_KOMPAKT.md)** - Mobile Template Access
+- **[⚡ FC-020 Quick Wins](/docs/features/PLANNED/20_quick_wins/FC-020_TECH_CONCEPT.md)** - Command Palette Templates
+- **[📱 FC-018 Mobile PWA](/docs/features/PLANNED/09_mobile_app/FC-018_TECH_CONCEPT.md)** - Mobile Template Access
 
 ### 🎨 UI Integration:
-- **[📊 M3 Sales Cockpit](/docs/features/ACTIVE/05_ui_foundation/M3_SALES_COCKPIT_KOMPAKT.md)** - Template Shortcuts
-- **[⚙️ M7 Settings](/docs/features/ACTIVE/05_ui_foundation/M7_SETTINGS_KOMPAKT.md)** - Template Management
+- **[📊 M3 Sales Cockpit](/docs/features/ACTIVE/05_ui_foundation/M3_TECH_CONCEPT.md)** - Template Shortcuts
+- **[⚙️ M7 Settings](/docs/features/ACTIVE/05_ui_foundation/M7_TECH_CONCEPT.md)** - Template Management
 
 ### 🔧 Technische Details:
-- **[IMPLEMENTATION_BACKEND.md](./IMPLEMENTATION_BACKEND.md)** *(geplant)* - Template Engine
-- **[IMPLEMENTATION_FRONTEND.md](./IMPLEMENTATION_FRONTEND.md)** *(geplant)* - Template Editor
-- **[DECISION_LOG.md](./DECISION_LOG.md)** *(geplant)* - KI-Integration Entscheidungen
+- **[IMPLEMENTATION_BACKEND.md](/docs/features/ACTIVE/01_security/IMPLEMENTATION_BACKEND.md)** *(geplant)* - Template Engine
+- **[IMPLEMENTATION_FRONTEND.md](/docs/features/ACTIVE/01_security/IMPLEMENTATION_FRONTEND.md)** *(geplant)* - Template Editor
+- **[DECISION_LOG.md](/docs/features/ACTIVE/01_security/DECISION_LOG.md)** *(geplant)* - KI-Integration Entscheidungen
 
 ---
 

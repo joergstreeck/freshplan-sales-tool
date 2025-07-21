@@ -1,0 +1,40 @@
+name: Reality Check
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  reality-check:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Extract Feature Code
+      id: feature
+      run: |
+        # Extract FC-XXX or MX from branch name or PR title
+        FEATURE=$(echo "${{ github.head_ref }}" | grep -oE "FC-[0-9]+|M[0-9]+" || true)
+        if [ -z "$FEATURE" ]; then
+          FEATURE=$(echo "${{ github.event.pull_request.title }}" | grep -oE "FC-[0-9]+|M[0-9]+" || true)
+        fi
+        echo "feature=$FEATURE" >> $GITHUB_OUTPUT
+    
+    - name: Run Reality Check
+      if: steps.feature.outputs.feature != ''
+      run: |
+        chmod +x scripts/reality-check.sh
+        ./scripts/reality-check.sh ${{ steps.feature.outputs.feature }}
+    
+    - name: Comment on PR
+      if: failure()
+      uses: actions/github-script@v6
+      with:
+        script: |
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: '❌ Reality Check failed! Please ensure plan matches code structure.'
+          })

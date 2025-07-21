@@ -1,0 +1,10 @@
+🔍 REALITY CHECK REMINDER
+========================
+
+Bevor du mit einem neuen Feature (FC-XXX) beginnst:
+1. ./scripts/reality-check.sh FC-XXX
+2. Bei FAIL → Plan updaten
+3. Bei PASS → Implementierung starten
+
+Letzte Checks:
+(Wird automatisch vom Script aktualisiert)

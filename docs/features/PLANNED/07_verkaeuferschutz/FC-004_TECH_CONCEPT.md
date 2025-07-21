@@ -1258,65 +1258,65 @@ export const ProtectionRulesConfig: React.FC = () => {
 ### 📋 Zurück zum Überblick:
 - **[📊 Master Plan V5](/docs/CRM_COMPLETE_MASTER_PLAN_V5.md)** - Vollständige Feature-Roadmap
 - **[🗺️ Feature Overview](/docs/features/MASTER/FEATURE_OVERVIEW.md)** - Alle 40 Features im Überblick
-- **[🛡️ FC-004 KOMPAKT](/docs/features/PLANNED/07_verkaeuferschutz/FC-004_KOMPAKT.md)** - Übersicht dieses Features
+- **[🛡️ FC-004 KOMPAKT](/docs/features/PLANNED/07_verkaeuferschutz/FC-004_TECH_CONCEPT.md)** - Übersicht dieses Features
 
 ### 🔗 Dependencies (Required):
-- **[🔒 FC-008 Security Foundation](/docs/features/ACTIVE/11_security_foundation/FC-008_KOMPAKT.md)** - User Authentication für Protection
-- **[👥 FC-009 Permission System](/docs/features/ACTIVE/12_permission_system/FC-009_KOMPAKT.md)** - Role-based Override Rights
-- **[📊 M4 Opportunity Pipeline](/docs/features/ACTIVE/02_opportunity_pipeline/M4_KOMPAKT.md)** - Deal Status für Protection Level
-- **[👥 M5 Customer Management](/docs/features/ACTIVE/01_customer_management/M5_KOMPAKT.md)** - Customer Model für Protection
+- **[🔒 FC-008 Security Foundation](/docs/features/ACTIVE/01_security_foundation/FC-008_TECH_CONCEPT.md)** - User Authentication für Protection
+- **[👥 FC-009 Permission System](/docs/features/ACTIVE/12_permission_system/FC-009_TECH_CONCEPT.md)** - Role-based Override Rights
+- **[📊 M4 Opportunity Pipeline](/docs/features/ACTIVE/02_opportunity_pipeline/M4_TECH_CONCEPT.md)** - Deal Status für Protection Level
+- **[👥 M5 Customer Management](/docs/features/ACTIVE/01_customer_management/M5_TECH_CONCEPT.md)** - Customer Model für Protection
 
 ### ⚡ Integrationen mit anderen Features:
-- **[📈 FC-014 Activity Timeline](/docs/features/PLANNED/16_activity_timeline/FC-014_KOMPAKT.md)** - Protection Events in Timeline
-- **[📧 FC-003 E-Mail Integration](/docs/features/PLANNED/06_email_integration/FC-003_KOMPAKT.md)** - Email Activity triggert Protection
-- **[📈 FC-019 Advanced Sales Metrics](/docs/features/PLANNED/01_customer_management/FC-019_KOMPAKT.md)** - Commission Analytics
-- **[🎯 FC-011 Bonitätsprüfung](/docs/features/ACTIVE/02_opportunity_pipeline/integrations/FC-011_KOMPAKT.md)** - Protection bei Prüfung
-- **[📱 FC-012 Team Communication](/docs/features/PLANNED/14_team_communication/FC-012_KOMPAKT.md)** - Protection Notifications
+- **[📈 FC-014 Activity Timeline](/docs/features/PLANNED/16_activity_timeline/FC-014_TECH_CONCEPT.md)** - Protection Events in Timeline
+- **[📧 FC-003 E-Mail Integration](/docs/features/PLANNED/06_email_integration/FC-003_TECH_CONCEPT.md)** - Email Activity triggert Protection
+- **[📈 FC-019 Advanced Sales Metrics](/docs/features/PLANNED/01_customer_management/FC-019_TECH_CONCEPT.md)** - Commission Analytics
+- **[🎯 FC-011 Bonitätsprüfung](/docs/features/ACTIVE/02_opportunity_pipeline/integrations/FC-011_TECH_CONCEPT.md)** - Protection bei Prüfung
+- **[📱 FC-012 Team Communication](/docs/features/PLANNED/14_team_communication/FC-012_TECH_CONCEPT.md)** - Protection Notifications
 
 ### 🚀 Ermöglicht folgende Features:
-- **[📊 FC-007 Chef-Dashboard](/docs/features/PLANNED/10_chef_dashboard/FC-007_KOMPAKT.md)** - Commission Overview & Disputes
-- **[🎯 FC-027 Magic Moments](/docs/features/PLANNED/27_magic_moments/FC-027_KOMPAKT.md)** - Fair Attribution System
-- **[📱 FC-006 Mobile App](/docs/features/PLANNED/09_mobile_app/FC-006_KOMPAKT.md)** - Protection Status mobil
-- **[🎮 FC-017 Sales Gamification](/docs/features/PLANNED/18_sales_gamification/FC-017_KOMPAKT.md)** - Fair Competition Rules
-- **[🔄 FC-005 Xentral Integration](/docs/features/PLANNED/08_xentral_integration/FC-005_KOMPAKT.md)** - Payment Data für Commission
+- **[📊 FC-007 Chef-Dashboard](/docs/features/PLANNED/10_chef_dashboard/FC-007_TECH_CONCEPT.md)** - Commission Overview & Disputes
+- **[🎯 FC-027 Magic Moments](/docs/features/PLANNED/27_magic_moments/FC-027_TECH_CONCEPT.md)** - Fair Attribution System
+- **[📱 FC-006 Mobile App](/docs/features/PLANNED/09_mobile_app/FC-006_TECH_CONCEPT.md)** - Protection Status mobil
+- **[🎮 FC-017 Sales Gamification](/docs/features/PLANNED/18_sales_gamification/FC-017_TECH_CONCEPT.md)** - Fair Competition Rules
+- **[🔄 FC-005 Xentral Integration](/docs/features/PLANNED/08_xentral_integration/FC-005_TECH_CONCEPT.md)** - Payment Data für Commission
 
 ### 🎨 UI Integration:
-- **[📊 M3 Sales Cockpit](/docs/features/ACTIVE/05_ui_foundation/M3_SALES_COCKPIT_KOMPAKT.md)** - Protection Status in Cards
-- **[⚙️ M7 Settings](/docs/features/ACTIVE/05_ui_foundation/M7_SETTINGS_KOMPAKT.md)** - Protection Rules Config
-- **[🧭 M1 Navigation](/docs/features/ACTIVE/05_ui_foundation/M1_NAVIGATION_KOMPAKT.md)** - Commission Dashboard Link
-- **[🔐 M2 Authentication](/docs/features/ACTIVE/05_ui_foundation/M2_AUTHENTICATION_KOMPAKT.md)** - Role-based UI Elements
+- **[📊 M3 Sales Cockpit](/docs/features/ACTIVE/05_ui_foundation/M3_TECH_CONCEPT.md)** - Protection Status in Cards
+- **[⚙️ M7 Settings](/docs/features/ACTIVE/05_ui_foundation/M7_TECH_CONCEPT.md)** - Protection Rules Config
+- **[🧭 M1 Navigation](/docs/features/ACTIVE/05_ui_foundation/M1_TECH_CONCEPT.md)** - Commission Dashboard Link
+- **[🔐 M2 Authentication](/docs/features/ACTIVE/05_ui_foundation/M2_AUTHENTICATION_TECH_CONCEPT.md)** - Role-based UI Elements
 
 ### 📚 Verwandte Features:
-- **[🔍 FC-013 Duplicate Detection](/docs/features/PLANNED/15_duplicate_detection/FC-013_KOMPAKT.md)** - Protection bei Merge
-- **[📊 FC-015 Deal Loss Analysis](/docs/features/PLANNED/17_deal_loss_analysis/FC-015_KOMPAKT.md)** - Protection Impact Analysis
-- **[📱 FC-018 Mobile PWA](/docs/features/PLANNED/19_mobile_pwa/FC-018_KOMPAKT.md)** - Mobile Protection View
-- **[⚡ FC-020 Quick Wins](/docs/features/PLANNED/20_quick_wins/FC-020_KOMPAKT.md)** - Bulk Protection Management
-- **[🏗️ FC-023 Event Sourcing](/docs/features/PLANNED/23_event_sourcing/FC-023_KOMPAKT.md)** - Protection Event History
+- **[🔍 FC-013 Duplicate Detection](/docs/features/PLANNED/15_duplicate_detection/FC-013_TECH_CONCEPT.md)** - Protection bei Merge
+- **[📊 FC-015 Deal Loss Analysis](/docs/features/PLANNED/17_deal_loss_analysis/FC-015_TECH_CONCEPT.md)** - Protection Impact Analysis
+- **[📱 FC-018 Mobile PWA](/docs/features/PLANNED/19_mobile_pwa/FC-018_TECH_CONCEPT.md)** - Mobile Protection View
+- **[⚡ FC-020 Quick Wins](/docs/features/PLANNED/20_quick_wins/FC-020_TECH_CONCEPT.md)** - Bulk Protection Management
+- **[🏗️ FC-023 Event Sourcing](/docs/features/PLANNED/23_event_sourcing/FC-023_TECH_CONCEPT.md)** - Protection Event History
 
 ### 🔧 Technische Dokumentation:
 - **[📊 Activity Timeline Tech](/docs/features/PLANNED/16_activity_timeline/FC-014_TECH_CONCEPT.md)** - Event Integration
-- **[🔒 Security Foundation Tech](/docs/features/ACTIVE/11_security_foundation/FC-008_TECH_CONCEPT.md)** - Auth Integration
+- **[🔒 Security Foundation Tech](/docs/features/ACTIVE/01_security_foundation/FC-008_TECH_CONCEPT.md)** - Auth Integration
 - **[📧 Email Integration Tech](/docs/features/PLANNED/06_email_integration/FC-003_TECH_CONCEPT.md)** - Activity Trigger
 
 ### 🌐 Externe Systeme:
-- **[🔄 FC-005 Xentral](/docs/features/PLANNED/08_xentral_integration/FC-005_KOMPAKT.md)** - Payment Import für Commission
-- **[🔌 FC-021 Integration Hub](/docs/features/PLANNED/21_integration_hub/FC-021_KOMPAKT.md)** - External CRM Sync
-- **[📊 FC-026 Analytics Platform](/docs/features/PLANNED/26_analytics_platform/FC-026_KOMPAKT.md)** - Commission Reports
-- **[📞 FC-028 WhatsApp Business](/docs/features/PLANNED/28_whatsapp_business/FC-028_KOMPAKT.md)** - Activity Trigger
-- **[🎙️ FC-029 Voice-First](/docs/features/PLANNED/29_voice_first/FC-029_KOMPAKT.md)** - Voice Activity Protection
+- **[🔄 FC-005 Xentral](/docs/features/PLANNED/08_xentral_integration/FC-005_TECH_CONCEPT.md)** - Payment Import für Commission
+- **[🔌 FC-021 Integration Hub](/docs/features/PLANNED/21_integration_hub/FC-021_TECH_CONCEPT.md)** - External CRM Sync
+- **[📊 FC-026 Analytics Platform](/docs/features/PLANNED/26_analytics_platform/FC-026_TECH_CONCEPT.md)** - Commission Reports
+- **[📞 FC-028 WhatsApp Business](/docs/features/PLANNED/28_whatsapp_integration/FC-028_TECH_CONCEPT.md)** - Activity Trigger
+- **[🎙️ FC-029 Voice-First](/docs/features/PLANNED/29_voice_first/FC-029_TECH_CONCEPT.md)** - Voice Activity Protection
 
 ### 🚀 Field Service Features:
-- **[🗺️ FC-030 Außendienst-Optimierung](/docs/features/PLANNED/30_aussendienst_optimierung/FC-030_KOMPAKT.md)** - Territory Protection
-- **[📍 FC-031 Route Planning](/docs/features/PLANNED/31_route_planning/FC-031_KOMPAKT.md)** - Visit-based Protection
-- **[⏱️ FC-032 Field Service Time](/docs/features/PLANNED/32_field_service_time/FC-032_KOMPAKT.md)** - Time-based Attribution
-- **[📋 FC-033 SLA Management](/docs/features/PLANNED/33_sla_management/FC-033_KOMPAKT.md)** - Service Protection Rules
+- **[🗺️ FC-030 Außendienst-Optimierung](/docs/features/PLANNED/30_one_tap_actions/FC-030_TECH_CONCEPT.md)** - Territory Protection
+- **[📍 FC-031 Route Planning](/docs/features/PLANNED/31_dynamic_documents/FC-031_TECH_CONCEPT.md)** - Visit-based Protection
+- **[⏱️ FC-032 Field Service Time](/docs/features/PLANNED/32_field_service_time/FC-032_TECH_CONCEPT.md)** - Time-based Attribution
+- **[📋 FC-033 SLA Management](/docs/features/PLANNED/33_sla_management/FC-033_TECH_CONCEPT.md)** - Service Protection Rules
 
 ### 📁 Weitere Features:
-- **[🔄 FC-016 Opportunity Cloning](/docs/features/PLANNED/02_opportunity_pipeline/FC-016_KOMPAKT.md)** - Protection Transfer
-- **[📎 FC-024 File Management](/docs/features/PLANNED/24_file_management/FC-024_KOMPAKT.md)** - Contract-based Protection
-- **[🔒 FC-025 DSGVO Compliance](/docs/features/PLANNED/25_dsgvo_compliance/FC-025_KOMPAKT.md)** - Protection Data Privacy
-- **[💼 FC-010 Import Management](/docs/features/ACTIVE/13_import_management/FC-010_KOMPAKT.md)** - Bulk Protection Import
-- **[📱 FC-022 Mobile Light](/docs/features/PLANNED/22_mobile_light/FC-022_KOMPAKT.md)** - Quick Protection Check
+- **[🔄 FC-016 Opportunity Cloning](/docs/features/PLANNED/02_opportunity_pipeline/FC-016_TECH_CONCEPT.md)** - Protection Transfer
+- **[📎 FC-024 File Management](/docs/features/PLANNED/24_file_management/FC-024_TECH_CONCEPT.md)** - Contract-based Protection
+- **[🔒 FC-025 DSGVO Compliance](/docs/features/PLANNED/25_dsgvo_compliance/FC-025_TECH_CONCEPT.md)** - Protection Data Privacy
+- **[💼 FC-010 Import Management](/docs/features/ACTIVE/13_import_management/FC-010_TECH_CONCEPT.md)** - Bulk Protection Import
+- **[📱 FC-022 Mobile Light](/docs/features/PLANNED/22_mobile_light/FC-022_TECH_CONCEPT.md)** - Quick Protection Check
 
 ---
 

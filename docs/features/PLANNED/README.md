@@ -67,9 +67,9 @@
 
 ## 🔗 Quick Links
 
-- [Complete Feature Roadmap](../2025-07-12_COMPLETE_FEATURE_ROADMAP.md)
-- [V5 Master Plan](../../CRM_COMPLETE_MASTER_PLAN_V5.md)
-- [Business Priorities](../BUSINESS_PRIORITIES.md)
+- [Complete Feature Roadmap](/docs/features/2025-07-12_COMPLETE_FEATURE_ROADMAP.md)
+- [V5 Master Plan](/docs/CRM_COMPLETE_MASTER_PLAN_V5.md)
+- [Business Priorities](/docs/BUSINESS_PRIORITIES.md)
 
 ## 📊 Entscheidungsmatrix
 
@@ -93,9 +93,9 @@
 5. **Quarterly Review** für weitere Priorisierung
 
 ### 🔗 FC-010 Quick Links
-- **Konzept:** [FC-010_KOMPAKT.md](./FC-010_KOMPAKT.md) ⭐
-- **Implementation:** [FC-010_IMPLEMENTATION_GUIDE.md](./FC-010_IMPLEMENTATION_GUIDE.md)
-- **Entscheidungen:** [FC-010_DECISION_LOG.md](./FC-010_DECISION_LOG.md)
+- **Konzept:** [FC-010_TECH_CONCEPT.md](/docs/features/PLANNED/11_customer_import/FC-010_TECH_CONCEPT.md) ⭐
+- **Implementation:** [FC-010_IMPLEMENTATION_GUIDE.md](/docs/features/PLANNED/FC-010_IMPLEMENTATION_GUIDE.md)
+- **Entscheidungen:** [FC-010_DECISION_LOG.md](/docs/features/PLANNED/FC-010_DECISION_LOG.md)
 - **Aufwand:** 10-16 Tage für flexible Architektur
 - **ROI:** Break-even nach 2. Custom Field
 

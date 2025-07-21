@@ -6,6 +6,12 @@
 **Autor:** Claude  
 **Reviewer:** Jörg  
 **Geschätzte Dauer:** 15-20 Tage  
+**Claude Tech:** [FC-006_CLAUDE_TECH.md](/docs/features/PLANNED/09_mobile_app/FC-006_CLAUDE_TECH.md)
+
+## Navigation
+- **Zurück:** [FC-005 Xentral Integration](/docs/features/PLANNED/08_xentral_integration/FC-005_TECH_CONCEPT.md)
+- **Weiter:** [FC-007 Chef-Dashboard](/docs/features/PLANNED/10_chef_dashboard/FC-007_TECH_CONCEPT.md)
+- **Übersicht:** [Master Plan V5](/docs/CRM_COMPLETE_MASTER_PLAN_V5.md)
 
 ## 📋 Inhaltsverzeichnis
 
@@ -1442,66 +1448,72 @@ public class ConflictResolutionService {
 ### 📋 Zurück zum Überblick:
 - **[📊 Master Plan V5](/docs/CRM_COMPLETE_MASTER_PLAN_V5.md)** - Vollständige Feature-Roadmap
 - **[🗺️ Feature Overview](/docs/features/MASTER/FEATURE_OVERVIEW.md)** - Alle 40 Features im Überblick
-- **[📱 FC-006 KOMPAKT](/docs/features/PLANNED/09_mobile_app/FC-006_KOMPAKT.md)** - Übersicht dieses Features
+- **[📱 FC-006 KOMPAKT](/docs/features/PLANNED/09_mobile_app/FC-006_TECH_CONCEPT.md)** - Übersicht dieses Features
 
 ### 🔗 Dependencies (Required):
-- **[🔒 FC-008 Security Foundation](/docs/features/ACTIVE/11_security_foundation/FC-008_KOMPAKT.md)** - Keycloak Mobile Auth
-- **[👥 FC-009 Permission System](/docs/features/ACTIVE/12_permission_system/FC-009_KOMPAKT.md)** - Role-based Access
-- **[🧭 M1 Navigation](/docs/features/ACTIVE/05_ui_foundation/M1_NAVIGATION_KOMPAKT.md)** - Navigation Patterns
-- **[📊 M3 Sales Cockpit](/docs/features/ACTIVE/05_ui_foundation/M3_SALES_COCKPIT_KOMPAKT.md)** - Desktop Integration
-- **[👥 M5 Customer Management](/docs/features/ACTIVE/01_customer_management/M5_KOMPAKT.md)** - Customer Data Model
+- **[🔒 FC-008 Security Foundation](/docs/features/ACTIVE/01_security_foundation/FC-008_TECH_CONCEPT.md)** - Keycloak Mobile Auth
+- **[👥 FC-009 Permission System](/docs/features/ACTIVE/12_permission_system/FC-009_TECH_CONCEPT.md)** - Role-based Access
+- **[🧭 M1 Navigation](/docs/features/ACTIVE/05_ui_foundation/M1_TECH_CONCEPT.md)** - Navigation Patterns
+- **[📊 M3 Sales Cockpit](/docs/features/ACTIVE/05_ui_foundation/M3_TECH_CONCEPT.md)** - Desktop Integration
+- **[👥 M5 Customer Management](/docs/features/ACTIVE/01_customer_management/M5_TECH_CONCEPT.md)** - Customer Data Model
 
 ### ⚡ Mobile-spezifische Features:
-- **[📱 FC-022 Mobile Light](/docs/features/PLANNED/22_mobile_light/FC-022_KOMPAKT.md)** - Vereinfachte Version
-- **[🎙️ FC-029 Voice-First Interface](/docs/features/PLANNED/29_voice_first/FC-029_KOMPAKT.md)** - Voice UI Erweiterung
-- **[📱 FC-018 Mobile PWA](/docs/features/PLANNED/19_mobile_pwa/FC-018_KOMPAKT.md)** - Alternative PWA Ansatz
-- **[🗺️ FC-030 Außendienst-Optimierung](/docs/features/PLANNED/30_aussendienst_optimierung/FC-030_KOMPAKT.md)** - Field Service Features
-- **[📍 FC-031 Route Planning](/docs/features/PLANNED/31_route_planning/FC-031_KOMPAKT.md)** - Navigation Integration
+- **[📱 FC-022 Mobile Light](/docs/features/PLANNED/22_mobile_light/FC-022_TECH_CONCEPT.md)** - Vereinfachte Version
+- **[🎙️ FC-029 Voice-First Interface](/docs/features/PLANNED/29_voice_first/FC-029_TECH_CONCEPT.md)** - Voice UI Erweiterung
+- **[📱 FC-018 Mobile PWA](/docs/features/PLANNED/19_mobile_pwa/FC-018_TECH_CONCEPT.md)** - Alternative PWA Ansatz
+- **[🗺️ FC-030 Außendienst-Optimierung](/docs/features/PLANNED/30_one_tap_actions/FC-030_TECH_CONCEPT.md)** - Field Service Features
+- **[📍 FC-031 Route Planning](/docs/features/PLANNED/31_dynamic_documents/FC-031_TECH_CONCEPT.md)** - Navigation Integration
 
 ### 🚀 Ermöglicht folgende Features:
-- **[🛡️ FC-004 Verkäuferschutz](/docs/features/PLANNED/07_verkaeuferschutz/FC-004_KOMPAKT.md)** - Mobile Protection Status
-- **[📧 FC-003 E-Mail Integration](/docs/features/PLANNED/06_email_integration/FC-003_KOMPAKT.md)** - Email-to-Voice Notes
-- **[📈 FC-014 Activity Timeline](/docs/features/PLANNED/16_activity_timeline/FC-014_KOMPAKT.md)** - Mobile Activity Feed
-- **[🎯 FC-027 Magic Moments](/docs/features/PLANNED/27_magic_moments/FC-027_KOMPAKT.md)** - Context-aware Suggestions
-- **[📊 FC-007 Chef-Dashboard](/docs/features/PLANNED/10_chef_dashboard/FC-007_KOMPAKT.md)** - Live Team Monitoring
+- **[🛡️ FC-004 Verkäuferschutz](/docs/features/PLANNED/07_verkaeuferschutz/FC-004_TECH_CONCEPT.md)** - Mobile Protection Status
+- **[📧 FC-003 E-Mail Integration](/docs/features/PLANNED/06_email_integration/FC-003_TECH_CONCEPT.md)** - Email-to-Voice Notes
+- **[📈 FC-014 Activity Timeline](/docs/features/PLANNED/16_activity_timeline/FC-014_TECH_CONCEPT.md)** - Mobile Activity Feed
+- **[🎯 FC-027 Magic Moments](/docs/features/PLANNED/27_magic_moments/FC-027_TECH_CONCEPT.md)** - Context-aware Suggestions
+- **[📊 FC-007 Chef-Dashboard](/docs/features/PLANNED/10_chef_dashboard/FC-007_TECH_CONCEPT.md)** - Live Team Monitoring
 
 ### 🎨 UI/UX Integration:
-- **[➕ M2 Quick Create](/docs/features/ACTIVE/05_ui_foundation/M2_QUICK_CREATE_KOMPAKT.md)** - Mobile Quick Actions
-- **[⚙️ M7 Settings](/docs/features/ACTIVE/05_ui_foundation/M7_SETTINGS_KOMPAKT.md)** - Sync Settings
-- **[🔐 M2 Authentication](/docs/features/ACTIVE/05_ui_foundation/M2_AUTHENTICATION_KOMPAKT.md)** - Mobile Auth Flow
-- **[⚡ FC-020 Quick Wins](/docs/features/PLANNED/20_quick_wins/FC-020_KOMPAKT.md)** - Mobile Shortcuts
+- **[➕ M2 Quick Create](/docs/features/ACTIVE/05_ui_foundation/M2_TECH_CONCEPT.md)** - Mobile Quick Actions
+- **[⚙️ M7 Settings](/docs/features/ACTIVE/05_ui_foundation/M7_TECH_CONCEPT.md)** - Sync Settings
+- **[🔐 M2 Authentication](/docs/features/ACTIVE/05_ui_foundation/M2_AUTHENTICATION_TECH_CONCEPT.md)** - Mobile Auth Flow
+- **[⚡ FC-020 Quick Wins](/docs/features/PLANNED/20_quick_wins/FC-020_TECH_CONCEPT.md)** - Mobile Shortcuts
 
 ### 📚 Backend Integration:
-- **[🔄 FC-005 Xentral Integration](/docs/features/PLANNED/08_xentral_integration/FC-005_KOMPAKT.md)** - Payment Notifications
-- **[🏗️ FC-023 Event Sourcing](/docs/features/PLANNED/23_event_sourcing/FC-023_KOMPAKT.md)** - Sync Event History
-- **[📎 FC-024 File Management](/docs/features/PLANNED/24_file_management/FC-024_KOMPAKT.md)** - Photo/Audio Storage
-- **[🔌 FC-021 Integration Hub](/docs/features/PLANNED/21_integration_hub/FC-021_KOMPAKT.md)** - External Sync
-- **[📊 FC-026 Analytics Platform](/docs/features/PLANNED/26_analytics_platform/FC-026_KOMPAKT.md)** - Mobile Usage Analytics
+- **[🔄 FC-005 Xentral Integration](/docs/features/PLANNED/08_xentral_integration/FC-005_TECH_CONCEPT.md)** - Payment Notifications
+- **[🏗️ FC-023 Event Sourcing](/docs/features/PLANNED/23_event_sourcing/FC-023_TECH_CONCEPT.md)** - Sync Event History
+- **[📎 FC-024 File Management](/docs/features/PLANNED/24_file_management/FC-024_TECH_CONCEPT.md)** - Photo/Audio Storage
+- **[🔌 FC-021 Integration Hub](/docs/features/PLANNED/21_integration_hub/FC-021_TECH_CONCEPT.md)** - External Sync
+- **[📊 FC-026 Analytics Platform](/docs/features/PLANNED/26_analytics_platform/FC-026_TECH_CONCEPT.md)** - Mobile Usage Analytics
 
 ### 🔧 Technische Dokumentation:
-- **[🔒 Security Foundation Tech](/docs/features/ACTIVE/11_security_foundation/FC-008_TECH_CONCEPT.md)** - Auth Implementation
+- **[🔒 Security Foundation Tech](/docs/features/ACTIVE/01_security_foundation/FC-008_TECH_CONCEPT.md)** - Auth Implementation
 - **[📊 Activity Timeline Tech](/docs/features/PLANNED/16_activity_timeline/FC-014_TECH_CONCEPT.md)** - Activity Integration
 - **[🏗️ Event Sourcing Tech](/docs/features/PLANNED/23_event_sourcing/FC-023_TECH_CONCEPT.md)** - Sync Architecture
 - **[📎 File Management Tech](/docs/features/PLANNED/24_file_management/FC-024_TECH_CONCEPT.md)** - S3 Integration
 
 ### 🌐 Verwandte Features:
-- **[🔍 FC-013 Duplicate Detection](/docs/features/PLANNED/15_duplicate_detection/FC-013_KOMPAKT.md)** - Mobile Duplicate Check
-- **[📊 FC-015 Deal Loss Analysis](/docs/features/PLANNED/17_deal_loss_analysis/FC-015_KOMPAKT.md)** - Mobile Loss Reasons
-- **[🔄 FC-016 Opportunity Cloning](/docs/features/PLANNED/02_opportunity_pipeline/FC-016_KOMPAKT.md)** - Quick Opportunity Creation
-- **[🎮 FC-017 Sales Gamification](/docs/features/PLANNED/18_sales_gamification/FC-017_KOMPAKT.md)** - Mobile Achievements
-- **[📊 FC-019 Advanced Sales Metrics](/docs/features/PLANNED/01_customer_management/FC-019_KOMPAKT.md)** - Mobile KPIs
+- **[🔍 FC-013 Duplicate Detection](/docs/features/PLANNED/15_duplicate_detection/FC-013_TECH_CONCEPT.md)** - Mobile Duplicate Check
+- **[📊 FC-015 Deal Loss Analysis](/docs/features/PLANNED/17_deal_loss_analysis/FC-015_TECH_CONCEPT.md)** - Mobile Loss Reasons
+- **[🔄 FC-016 Opportunity Cloning](/docs/features/PLANNED/02_opportunity_pipeline/FC-016_TECH_CONCEPT.md)** - Quick Opportunity Creation
 
-### 🔒 Compliance & Security:
-- **[🔒 FC-025 DSGVO Compliance](/docs/features/PLANNED/25_dsgvo_compliance/FC-025_KOMPAKT.md)** - Mobile Data Privacy
-- **[💼 FC-010 Import Management](/docs/features/ACTIVE/13_import_management/FC-010_KOMPAKT.md)** - Offline Import Queue
-- **[🎯 FC-011 Bonitätsprüfung](/docs/features/ACTIVE/02_opportunity_pipeline/integrations/FC-011_KOMPAKT.md)** - Mobile Credit Check
-- **[📞 FC-028 WhatsApp Business](/docs/features/PLANNED/28_whatsapp_business/FC-028_KOMPAKT.md)** - WhatsApp Integration
-- **[⏱️ FC-032 Field Service Time](/docs/features/PLANNED/32_field_service_time/FC-032_KOMPAKT.md)** - Time Tracking
+---
 
-### 📊 Analytics & Reporting:
-- **[📊 M4 Opportunity Pipeline](/docs/features/ACTIVE/02_opportunity_pipeline/M4_KOMPAKT.md)** - Mobile Pipeline View
-- **[💰 M6 Product Calculation](/docs/features/ACTIVE/03_product_calculation/M6_KOMPAKT.md)** - Mobile Calculator
-- **[📋 FC-033 SLA Management](/docs/features/PLANNED/33_sla_management/FC-033_KOMPAKT.md)** - Service Tracking
+## Verwandte Features
+
+### Kern-Abhängigkeiten:
+- [FC-008 Security Foundation](/docs/features/ACTIVE/01_security_foundation/FC-008_TECH_CONCEPT.md) - Mobile Auth & Biometrics
+- [M4 Opportunity Pipeline](/docs/features/ACTIVE/02_opportunity_pipeline/M4_TECH_CONCEPT.md) - Opportunity Sync
+- [FC-009 Permissions System](/docs/features/ACTIVE/04_permissions_system/FC-009_TECH_CONCEPT.md) - Mobile Permissions
+
+### Mobile Features:
+- [FC-018 Mobile PWA](/docs/features/PLANNED/09_mobile_app/FC-018_TECH_CONCEPT.md) - Alternative PWA Approach
+- [FC-022 Mobile Light](/docs/features/PLANNED/22_mobile_light/FC-022_TECH_CONCEPT.md) - Lightweight Version
+- [FC-029 Voice First](/docs/features/PLANNED/29_voice_first/FC-029_TECH_CONCEPT.md) - Voice Integration
+- [FC-032 Offline First](/docs/features/PLANNED/32_offline_first/FC-032_TECH_CONCEPT.md) - Offline Capabilities
+
+### Backend Integration:
+- [FC-014 Activity Timeline](/docs/features/PLANNED/16_activity_timeline/FC-014_TECH_CONCEPT.md) - Activity Sync
+- [FC-023 Event Sourcing](/docs/features/PLANNED/23_event_sourcing/FC-023_TECH_CONCEPT.md) - Sync Architecture
+- [FC-024 File Management](/docs/features/PLANNED/24_file_management/FC-024_TECH_CONCEPT.md) - Photo/Audio Storage
 
 ---
 
@@ -1512,4 +1524,4 @@ public class ConflictResolutionService {
 - Speak & Snap: Voice + Photo = Structured Data
 - Intelligente Sync mit Conflict Resolution
 - Context-Awareness durch GPS + Calendar
-- Alle 40 Features verlinkt für optimale Navigation
+- Verwandte Features mit korrekten Links aktualisiert ✅

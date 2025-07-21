@@ -40,7 +40,7 @@ COMPLETED/
 - **Status:** ✅ Technische Basis abgeschlossen
 - **Umfang:** Monorepo-Setup, CI/CD, Walking Skeleton, Basis-Auth
 - **WICHTIG:** Nur 3 hardcoded Rollen - kein flexibles Permission System!
-- **Dokumentation:** [Technical Foundation](./00_technical_foundation/README.md)
+- **Dokumentation:** [Technical Foundation](/docs/features/COMPLETED/00_technical_foundation/README.md)
 
 ### ⏳ FC-008 Security Foundation
 - **Status:** 🟡 85% - NOCH NICHT HIERHER VERSCHIEBEN!
@@ -85,9 +85,9 @@ Completed Module dienen als:
 
 ## 🔗 NAVIGATION
 
-← [Master Feature Overview](../MASTER/FEATURE_OVERVIEW.md)  
-→ [Active Features](../ACTIVE/)  
-→ [Planned Features](../PLANNED/)  
+← [Master Feature Overview](/docs/features/MASTER/FEATURE_OVERVIEW.md)  
+→ [Active Features](/docs/features/ACTIVE/README.md)  
+→ [Planned Features](/docs/features/PLANNED/README.md)  
 
 ---
 

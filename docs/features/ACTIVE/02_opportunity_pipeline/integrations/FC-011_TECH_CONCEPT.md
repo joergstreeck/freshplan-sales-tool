@@ -1823,14 +1823,14 @@ export const StageGateValidator: React.FC<StageGateValidatorProps> = ({
 ### 🔗 Required Dependencies
 
 **Backend Dependencies:**
-- [`FC-008 Security Foundation`](/docs/features/ACTIVE/01_security_foundation/FC-008_KOMPAKT.md) - User Authentication für Bonitätszugriff
-- [`M4 Opportunity Pipeline`](/docs/features/ACTIVE/02_opportunity_pipeline/M4_KOMPAKT.md) - Parent-Feature (Integration)
-- [`FC-009 Permissions System`](/docs/features/ACTIVE/04_permissions_system/FC-009_KOMPAKT.md) - Wer darf Bonitätsprüfung durchführen
+- [`FC-008 Security Foundation`](/docs/features/ACTIVE/01_security_foundation/FC-008_TECH_CONCEPT.md) - User Authentication für Bonitätszugriff
+- [`M4 Opportunity Pipeline`](/docs/features/ACTIVE/02_opportunity_pipeline/M4_TECH_CONCEPT.md) - Parent-Feature (Integration)
+- [`FC-009 Permissions System`](/docs/features/ACTIVE/04_permissions_system/FC-009_TECH_CONCEPT.md) - Wer darf Bonitätsprüfung durchführen
 
 **Data Sources:**
-- [`M2 Customer Management`](/docs/features/ACTIVE/03_customer_management/M2_KOMPAKT.md)** - Customer Data für Bonitätsprüfung
-- [`M8 Calculator Modal`](/docs/features/ACTIVE/03_calculator_modal/M8_KOMPAKT.md) - Bonitätsdaten für Angebote
-- [`FC-014 Activity Timeline`](/docs/features/PLANNED/16_activity_timeline/FC-014_KOMPAKT.md) - Bonitäts-Events logging
+- [`M2 Customer Management`](/docs/features/ACTIVE/03_customer_management/M2_TECH_CONCEPT.md)** - Customer Data für Bonitätsprüfung
+- [`M8 Calculator Modal`](/docs/features/ACTIVE/03_calculator_modal/M8_TECH_CONCEPT.md) - Bonitätsdaten für Angebote
+- [`FC-014 Activity Timeline`](/docs/features/PLANNED/16_activity_timeline/FC-014_TECH_CONCEPT.md) - Bonitäts-Events logging
 
 ### ⚡ Integration Points
 
@@ -2011,87 +2011,87 @@ public class DataRetentionService {
 - **[🗺️ Feature Overview](/docs/features/MASTER/FEATURE_OVERVIEW.md)** - Alle 40 Features im Überblick
 
 ### 🔗 Dependencies (Required):
-- **[🔒 FC-008 Security Foundation](/docs/features/ACTIVE/01_security_foundation/FC-008_KOMPAKT.md)** - User Authentication für Bonitätszugriff
-- **[📊 M4 Opportunity Pipeline](/docs/features/ACTIVE/02_opportunity_pipeline/M4_KOMPAKT.md)** - Parent-Feature (Integration)
-- **[👥 FC-009 Permissions System](/docs/features/ACTIVE/04_permissions_system/FC-009_KOMPAKT.md)** - Wer darf Bonitätsprüfung durchführen
+- **[🔒 FC-008 Security Foundation](/docs/features/ACTIVE/01_security_foundation/FC-008_TECH_CONCEPT.md)** - User Authentication für Bonitätszugriff
+- **[📊 M4 Opportunity Pipeline](/docs/features/ACTIVE/02_opportunity_pipeline/M4_TECH_CONCEPT.md)** - Parent-Feature (Integration)
+- **[👥 FC-009 Permissions System](/docs/features/ACTIVE/04_permissions_system/FC-009_TECH_CONCEPT.md)** - Wer darf Bonitätsprüfung durchführen
 
 ### ⚡ Direkt integriert in:
-- **[🧮 M8 Calculator Modal](/docs/features/ACTIVE/03_calculator_modal/M8_KOMPAKT.md)** - Bonitätsdaten für Angebote
-- **[📄 PDF-001 PDF Generator](/docs/features/ACTIVE/pdf-generator/)** - Vertrags-PDFs generieren
+- **[🧮 M8 Calculator Modal](/docs/features/ACTIVE/03_calculator_modal/M8_TECH_CONCEPT.md)** - Bonitätsdaten für Angebote
+- **[📄 PDF-001 PDF Generator](/docs/features/ACTIVE/pdf-generator/README.md)** - Vertrags-PDFs generieren
 
 ### 🚀 Ermöglicht folgende Features:
-- **[🛡️ FC-004 Verkäuferschutz](/docs/features/PLANNED/07_verkaeuferschutz/FC-004_KOMPAKT.md)** - Bonität als Schutz-Kriterium
-- **[👨‍💼 FC-007 Chef-Dashboard](/docs/features/PLANNED/10_chef_dashboard/FC-007_KOMPAKT.md)** - Risiko-Analytics
-- **[📈 FC-019 Advanced Sales Metrics](/docs/features/PLANNED/19_advanced_metrics/FC-019_KOMPAKT.md)** - Bonitäts-KPIs
+- **[🛡️ FC-004 Verkäuferschutz](/docs/features/PLANNED/07_verkaeuferschutz/FC-004_TECH_CONCEPT.md)** - Bonität als Schutz-Kriterium
+- **[👨‍💼 FC-007 Chef-Dashboard](/docs/features/PLANNED/10_chef_dashboard/FC-007_TECH_CONCEPT.md)** - Risiko-Analytics
+- **[📈 FC-019 Advanced Sales Metrics](/docs/features/PLANNED/19_advanced_metrics/FC-019_TECH_CONCEPT.md)** - Bonitäts-KPIs
 
 ### 🎨 UI Integration:
-- **[📊 M3 Sales Cockpit](/docs/features/ACTIVE/05_ui_foundation/M3_SALES_COCKPIT_KOMPAKT.md)** - Bonitäts-Status in Cards
-- **[⚙️ M7 Settings](/docs/features/ACTIVE/05_ui_foundation/M7_SETTINGS_KOMPAKT.md)** - Bonitäts-Schwellwerte konfigurieren
+- **[📊 M3 Sales Cockpit](/docs/features/ACTIVE/05_ui_foundation/M3_TECH_CONCEPT.md)** - Bonitäts-Status in Cards
+- **[⚙️ M7 Settings](/docs/features/ACTIVE/05_ui_foundation/M7_TECH_CONCEPT.md)** - Bonitäts-Schwellwerte konfigurieren
 
 ### 🔧 Technische Details:
-- **[IMPLEMENTATION_BACKEND.md](./IMPLEMENTATION_BACKEND.md)** *(geplant)* - Backend-Implementation
-- **[IMPLEMENTATION_FRONTEND.md](./IMPLEMENTATION_FRONTEND.md)** *(geplant)* - Frontend-Integration
+- **[IMPLEMENTATION_BACKEND.md](/docs/features/ACTIVE/02_opportunity_pipeline/integrations/IMPLEMENTATION_BACKEND.md)** *(geplant)* - Backend-Implementation
+- **[IMPLEMENTATION_FRONTEND.md](/docs/features/ACTIVE/02_opportunity_pipeline/integrations/IMPLEMENTATION_FRONTEND.md)** *(geplant)* - Frontend-Integration
 
 ---
 
 ## 📊 COMPLETE FEATURE NAVIGATION (40 Features)
 
 ### 🏢 CORE CRM FEATURES (M1-M7)
-- **[M1 Navigation System](/docs/features/ACTIVE/05_ui_foundation/M1_NAVIGATION_KOMPAKT.md)** - Hauptnavigation & Routing
-- **[M2 Customer Management](/docs/features/ACTIVE/03_customer_management/M2_KOMPAKT.md)** - Kundenverwaltung
-- **[M3 Sales Cockpit](/docs/features/ACTIVE/05_ui_foundation/M3_SALES_COCKPIT_KOMPAKT.md)** - Verkäufer-Dashboard
-- **[M4 Opportunity Pipeline](/docs/features/ACTIVE/02_opportunity_pipeline/M4_KOMPAKT.md)** - Deal-Management
-- **[M5 Customer Import](/docs/features/PLANNED/05_customer_import/M5_KOMPAKT.md)** - CSV/Excel Import
-- **[M6 Analytics Module](/docs/features/PLANNED/13_analytics_m6/M6_KOMPAKT.md)** - Business Intelligence
-- **[M7 Settings](/docs/features/ACTIVE/05_ui_foundation/M7_SETTINGS_KOMPAKT.md)** - System-Konfiguration
+- **[M1 Navigation System](/docs/features/ACTIVE/05_ui_foundation/M1_TECH_CONCEPT.md)** - Hauptnavigation & Routing
+- **[M2 Customer Management](/docs/features/ACTIVE/03_customer_management/M2_TECH_CONCEPT.md)** - Kundenverwaltung
+- **[M3 Sales Cockpit](/docs/features/ACTIVE/05_ui_foundation/M3_TECH_CONCEPT.md)** - Verkäufer-Dashboard
+- **[M4 Opportunity Pipeline](/docs/features/ACTIVE/02_opportunity_pipeline/M4_TECH_CONCEPT.md)** - Deal-Management
+- **[M5 Customer Import](/docs/features/PLANNED/12_customer_refactor_m5/M5_TECH_CONCEPT.md)** - CSV/Excel Import
+- **[M6 Analytics Module](/docs/features/PLANNED/13_analytics_m6/M6_TECH_CONCEPT.md)** - Business Intelligence
+- **[M7 Settings](/docs/features/ACTIVE/05_ui_foundation/M7_TECH_CONCEPT.md)** - System-Konfiguration
 
 ### 🔧 FOUNDATION FEATURES (FC-001 bis FC-010)
-- **[FC-001 Basic Setup](/docs/features/ACTIVE/00_basic_setup/FC-001_KOMPAKT.md)** - Projekt-Grundlagen
-- **[FC-002 Legacy Navigation](/docs/features/LEGACY/02_navigation_legacy/FC-002_KOMPAKT.md)** - Alte Navigation (archiviert)
-- **[FC-003 E-Mail Integration](/docs/features/PLANNED/06_email_integration/FC-003_KOMPAKT.md)** - BCC-to-CRM & SMTP
-- **[FC-004 Verkäuferschutz](/docs/features/PLANNED/07_verkaeuferschutz/FC-004_KOMPAKT.md)** - Lead-Protection
-- **[FC-005 Xentral Integration](/docs/features/PLANNED/08_xentral_integration/FC-005_KOMPAKT.md)** - ERP-Anbindung
-- **[FC-006 Mobile App](/docs/features/PLANNED/09_mobile_app/FC-006_KOMPAKT.md)** - React Native App
-- **[FC-007 Chef-Dashboard](/docs/features/PLANNED/10_chef_dashboard/FC-007_KOMPAKT.md)** - Führungs-KPIs
-- **[FC-008 Security Foundation](/docs/features/ACTIVE/01_security_foundation/FC-008_KOMPAKT.md)** - Auth & Security
-- **[FC-009 Permissions System](/docs/features/ACTIVE/04_permissions_system/FC-009_KOMPAKT.md)** - Rollen & Rechte
-- **[FC-010 Data Import Configuration](/docs/features/PLANNED/11_customer_import/FC-010_KOMPAKT.md)** - Import-Workflows
+- **[FC-001 Basic Setup](/docs/features/ACTIVE/00_basic_setup/FC-001_TECH_CONCEPT.md)** - Projekt-Grundlagen
+- **[FC-002 Legacy Navigation](/docs/features/LEGACY/02_navigation_legacy/FC-002_TECH_CONCEPT.md)** - Alte Navigation (archiviert)
+- **[FC-003 E-Mail Integration](/docs/features/PLANNED/06_email_integration/FC-003_TECH_CONCEPT.md)** - BCC-to-CRM & SMTP
+- **[FC-004 Verkäuferschutz](/docs/features/PLANNED/07_verkaeuferschutz/FC-004_TECH_CONCEPT.md)** - Lead-Protection
+- **[FC-005 Xentral Integration](/docs/features/PLANNED/08_xentral_integration/FC-005_TECH_CONCEPT.md)** - ERP-Anbindung
+- **[FC-006 Mobile App](/docs/features/PLANNED/09_mobile_app/FC-006_TECH_CONCEPT.md)** - React Native App
+- **[FC-007 Chef-Dashboard](/docs/features/PLANNED/10_chef_dashboard/FC-007_TECH_CONCEPT.md)** - Führungs-KPIs
+- **[FC-008 Security Foundation](/docs/features/ACTIVE/01_security_foundation/FC-008_TECH_CONCEPT.md)** - Auth & Security
+- **[FC-009 Permissions System](/docs/features/ACTIVE/04_permissions_system/FC-009_TECH_CONCEPT.md)** - Rollen & Rechte
+- **[FC-010 Data Import Configuration](/docs/features/PLANNED/11_customer_import/FC-010_TECH_CONCEPT.md)** - Import-Workflows
 
 ### 🔄 INTEGRATION FEATURES (FC-011 bis FC-020)
-- **[FC-011 Bonitätsprüfung](/docs/features/ACTIVE/02_opportunity_pipeline/integrations/FC-011_KOMPAKT.md)** - Credit-Check ⭐ **AKTUELL**
-- **[FC-012 Team Communication](/docs/features/PLANNED/14_team_communication/FC-012_KOMPAKT.md)** - Slack/Teams Integration
-- **[FC-013 Duplicate Detection](/docs/features/PLANNED/15_duplicate_detection/FC-013_KOMPAKT.md)** - Duplikat-Erkennung
-- **[FC-014 Activity Timeline](/docs/features/PLANNED/16_activity_timeline/FC-014_KOMPAKT.md)** - Event-History
-- **[FC-015 Deal Loss Analysis](/docs/features/PLANNED/17_deal_loss_analysis/FC-015_KOMPAKT.md)** - Verlust-Analyse
-- **[FC-016 Opportunity Cloning](/docs/features/PLANNED/18_opportunity_cloning/FC-016_KOMPAKT.md)** - Deal-Templates
-- **[FC-017 Sales Gamification](/docs/features/PLANNED/11_sales_gamification/FC-017_KOMPAKT.md)** - Motivation & Wettbewerb
-- **[FC-018 Mobile PWA](/docs/features/PLANNED/12_mobile_pwa/FC-018_KOMPAKT.md)** - Progressive Web App
-- **[FC-019 Advanced Sales Metrics](/docs/features/PLANNED/19_advanced_metrics/FC-019_KOMPAKT.md)** - KPI-Dashboard
-- **[FC-020 Quick Wins](/docs/features/PLANNED/20_quick_wins/FC-020_KOMPAKT.md)** - Command Palette & Shortcuts
+- **[FC-011 Bonitätsprüfung](/docs/features/ACTIVE/02_opportunity_pipeline/integrations/FC-011_TECH_CONCEPT.md)** - Credit-Check ⭐ **AKTUELL**
+- **[FC-012 Team Communication](/docs/features/PLANNED/14_team_communication/FC-012_TECH_CONCEPT.md)** - Slack/Teams Integration
+- **[FC-013 Duplicate Detection](/docs/features/PLANNED/15_duplicate_detection/FC-013_TECH_CONCEPT.md)** - Duplikat-Erkennung
+- **[FC-014 Activity Timeline](/docs/features/PLANNED/16_activity_timeline/FC-014_TECH_CONCEPT.md)** - Event-History
+- **[FC-015 Deal Loss Analysis](/docs/features/PLANNED/17_deal_loss_analysis/FC-015_TECH_CONCEPT.md)** - Verlust-Analyse
+- **[FC-016 Opportunity Cloning](/docs/features/PLANNED/18_opportunity_cloning/FC-016_TECH_CONCEPT.md)** - Deal-Templates
+- **[FC-017 Sales Gamification](/docs/features/PLANNED/99_sales_gamification/FC-017_TECH_CONCEPT.md)** - Motivation & Wettbewerb
+- **[FC-018 Mobile PWA](/docs/features/PLANNED/09_mobile_app/FC-018_TECH_CONCEPT.md)** - Progressive Web App
+- **[FC-019 Advanced Sales Metrics](/docs/features/PLANNED/19_advanced_metrics/FC-019_TECH_CONCEPT.md)** - KPI-Dashboard
+- **[FC-020 Quick Wins](/docs/features/PLANNED/20_quick_wins/FC-020_TECH_CONCEPT.md)** - Command Palette & Shortcuts
 
 ### 🚀 ADVANCED FEATURES (FC-021 bis FC-030)
-- **[FC-021 Integration Hub](/docs/features/PLANNED/21_integration_hub/FC-021_KOMPAKT.md)** - Plugin-System
-- **[FC-022 Mobile Light](/docs/features/PLANNED/22_mobile_light/FC-022_KOMPAKT.md)** - Essential Mobile Features
-- **[FC-023 Event Sourcing](/docs/features/PLANNED/23_event_sourcing/FC-023_KOMPAKT.md)** - Audit-Trail
-- **[FC-024 File Management](/docs/features/PLANNED/24_file_management/FC-024_KOMPAKT.md)** - Dokument-Verwaltung
-- **[FC-025 DSGVO Compliance](/docs/features/PLANNED/25_dsgvo_compliance/FC-025_KOMPAKT.md)** - Datenschutz-Tools
-- **[FC-026 Analytics Platform](/docs/features/PLANNED/26_analytics_platform/FC-026_KOMPAKT.md)** - BI-Integration
-- **[FC-027 Magic Moments](/docs/features/PLANNED/27_magic_moments/FC-027_KOMPAKT.md)** - AI-Coaching
-- **[FC-028 WhatsApp Business](/docs/features/PLANNED/28_whatsapp_business/FC-028_KOMPAKT.md)** - Chat-Integration
-- **[FC-029 Voice-First Interface](/docs/features/PLANNED/29_voice_first/FC-029_KOMPAKT.md)** - Sprach-Steuerung
-- **[FC-030 Sales Automation Hub](/docs/features/PLANNED/30_sales_automation/FC-030_KOMPAKT.md)** - Workflow-Engine
+- **[FC-021 Integration Hub](/docs/features/PLANNED/21_integration_hub/FC-021_TECH_CONCEPT.md)** - Plugin-System
+- **[FC-022 Mobile Light](/docs/features/PLANNED/22_mobile_light/FC-022_TECH_CONCEPT.md)** - Essential Mobile Features
+- **[FC-023 Event Sourcing](/docs/features/PLANNED/23_event_sourcing/FC-023_TECH_CONCEPT.md)** - Audit-Trail
+- **[FC-024 File Management](/docs/features/PLANNED/24_file_management/FC-024_TECH_CONCEPT.md)** - Dokument-Verwaltung
+- **[FC-025 DSGVO Compliance](/docs/features/PLANNED/25_dsgvo_compliance/FC-025_TECH_CONCEPT.md)** - Datenschutz-Tools
+- **[FC-026 Analytics Platform](/docs/features/PLANNED/26_analytics_platform/FC-026_TECH_CONCEPT.md)** - BI-Integration
+- **[FC-027 Magic Moments](/docs/features/PLANNED/27_magic_moments/FC-027_TECH_CONCEPT.md)** - AI-Coaching
+- **[FC-028 WhatsApp Business](/docs/features/PLANNED/28_whatsapp_integration/FC-028_TECH_CONCEPT.md)** - Chat-Integration
+- **[FC-029 Voice-First Interface](/docs/features/PLANNED/29_voice_first/FC-029_TECH_CONCEPT.md)** - Sprach-Steuerung
+- **[FC-030 Sales Automation Hub](/docs/features/PLANNED/30_one_tap_actions/FC-030_TECH_CONCEPT.md)** - Workflow-Engine
 
 ### 🔮 FUTURE VISION (FC-031 bis FC-040)
-- **[FC-031 AI Sales Assistant](/docs/features/PLANNED/31_ai_sales_assistant/FC-031_KOMPAKT.md)** - KI-Verkaufsberater
-- **[FC-032 Predictive Analytics](/docs/features/PLANNED/32_predictive_analytics/FC-032_KOMPAKT.md)** - Vorhersage-Modelle
-- **[FC-033 Customer 360 View](/docs/features/PLANNED/33_customer_360/FC-033_KOMPAKT.md)** - Vollbild-Kundensicht
-- **[FC-034 Instant Insights](/docs/features/PLANNED/34_instant_insights/FC-034_KOMPAKT.md)** - Echtzeit-Erkenntnisse
-- **[FC-035 Territory Management](/docs/features/PLANNED/35_territory_management/FC-035_KOMPAKT.md)** - Gebiets-Verwaltung
-- **[FC-036 Commission Engine](/docs/features/PLANNED/36_commission_engine/FC-036_KOMPAKT.md)** - Provisions-System
-- **[FC-037 Field Service Integration](/docs/features/PLANNED/37_field_service/FC-037_KOMPAKT.md)** - Außendienst-Tools
-- **[FC-038 Customer Portal](/docs/features/PLANNED/38_customer_portal/FC-038_KOMPAKT.md)** - Kunden-Self-Service
-- **[FC-039 Advanced Workflow Engine](/docs/features/PLANNED/39_workflow_engine/FC-039_KOMPAKT.md)** - Prozess-Automatisierung
-- **[FC-040 Enterprise API Gateway](/docs/features/PLANNED/40_api_gateway/FC-040_KOMPAKT.md)** - API-Management
+- **[FC-031 AI Sales Assistant](/docs/features/PLANNED/31_dynamic_documents/FC-031_TECH_CONCEPT.md)** - KI-Verkaufsberater
+- **[FC-032 Predictive Analytics](/docs/features/PLANNED/32_predictive_analytics/FC-032_TECH_CONCEPT.md)** - Vorhersage-Modelle
+- **[FC-033 Customer 360 View](/docs/features/PLANNED/33_customer_360/FC-033_TECH_CONCEPT.md)** - Vollbild-Kundensicht
+- **[FC-034 Instant Insights](/docs/features/PLANNED/34_instant_insights/FC-034_TECH_CONCEPT.md)** - Echtzeit-Erkenntnisse
+- **[FC-035 Territory Management](/docs/features/PLANNED/35_territory_management/FC-035_TECH_CONCEPT.md)** - Gebiets-Verwaltung
+- **[FC-036 Commission Engine](/docs/features/PLANNED/36_commission_engine/FC-036_TECH_CONCEPT.md)** - Provisions-System
+- **[FC-037 Field Service Integration](/docs/features/PLANNED/37_field_service/FC-037_TECH_CONCEPT.md)** - Außendienst-Tools
+- **[FC-038 Customer Portal](/docs/features/PLANNED/38_customer_portal/FC-038_TECH_CONCEPT.md)** - Kunden-Self-Service
+- **[FC-039 Advanced Workflow Engine](/docs/features/PLANNED/39_workflow_engine/FC-039_TECH_CONCEPT.md)** - Prozess-Automatisierung
+- **[FC-040 Enterprise API Gateway](/docs/features/PLANNED/40_api_gateway/FC-040_TECH_CONCEPT.md)** - API-Management
 
 ---
 

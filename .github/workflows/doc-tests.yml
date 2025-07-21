@@ -1,0 +1,148 @@
+name: Documentation Tests
+
+on:
+  push:
+    paths:
+      - 'docs/**/*.md'
+      - 'tests/**'
+      - '.github/workflows/doc-tests.yml'
+  pull_request:
+    paths:
+      - 'docs/**/*.md'
+      - 'tests/**'
+      - '.github/workflows/doc-tests.yml'
+  workflow_dispatch:
+
+jobs:
+  doc-tests:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Set up environment
+      run: |
+        echo "Setting up test environment..."
+        chmod +x tests/*.sh
+        chmod +x scripts/*.sh
+        
+    - name: Run link integrity test
+      id: link-test
+      run: |
+        echo "## 🔗 Link Integrity Test" >> $GITHUB_STEP_SUMMARY
+        if ./tests/link-integrity-test.sh; then
+          echo "✅ All links are valid!" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "❌ Found broken links!" >> $GITHUB_STEP_SUMMARY
+          exit 1
+        fi
+        
+    - name: Run coverage test
+      id: coverage-test
+      run: |
+        echo "## 📊 CLAUDE_TECH Coverage Test" >> $GITHUB_STEP_SUMMARY
+        ./tests/test-coverage.sh | tee coverage-output.txt
+        
+        # Extract coverage percentage
+        COVERAGE=$(grep "Coverage:" coverage-output.txt | grep -o '[0-9]\+%')
+        echo "Coverage: $COVERAGE" >> $GITHUB_STEP_SUMMARY
+        
+        # Add badge
+        if [[ ${COVERAGE%\%} -ge 100 ]]; then
+          echo "![Coverage](https://img.shields.io/badge/coverage-$COVERAGE-brightgreen)" >> $GITHUB_STEP_SUMMARY
+        elif [[ ${COVERAGE%\%} -ge 80 ]]; then
+          echo "![Coverage](https://img.shields.io/badge/coverage-$COVERAGE-green)" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "![Coverage](https://img.shields.io/badge/coverage-$COVERAGE-red)" >> $GITHUB_STEP_SUMMARY
+        fi
+        
+    - name: Run all tests with summary
+      run: |
+        echo "## 🧪 Complete Test Suite" >> $GITHUB_STEP_SUMMARY
+        ./tests/run-all-tests.sh
+        
+    - name: Upload test artifacts
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: test-reports
+        path: |
+          test-report-*.md
+          coverage-output.txt
+          
+    - name: Comment PR with results
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const fs = require('fs');
+          const summary = fs.readFileSync(process.env.GITHUB_STEP_SUMMARY, 'utf8');
+          
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: `## 📋 Documentation Test Results\n\n${summary}`
+          });
+
+  validate-claude-tech:
+    runs-on: ubuntu-latest
+    needs: doc-tests
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Validate CLAUDE_TECH format
+      run: |
+        echo "## 🤖 CLAUDE_TECH Format Validation" >> $GITHUB_STEP_SUMMARY
+        
+        # Check for required sections in CLAUDE_TECH files
+        for file in $(find docs/features -name "*_CLAUDE_TECH.md" -type f); do
+          echo "Checking $file..."
+          
+          # Check for QUICK-LOAD section
+          if ! grep -q "## 🚀 QUICK-LOAD" "$file"; then
+            echo "❌ Missing QUICK-LOAD section in $file" >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi
+          
+          # Check file size (should be 300-600 lines)
+          LINES=$(wc -l < "$file")
+          if [[ $LINES -lt 300 ]] || [[ $LINES -gt 700 ]]; then
+            echo "⚠️ $file has $LINES lines (recommended: 300-600)" >> $GITHUB_STEP_SUMMARY
+          fi
+        done
+        
+        echo "✅ All CLAUDE_TECH files validated!" >> $GITHUB_STEP_SUMMARY
+
+  check-missing-concepts:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Check for missing TECH_CONCEPT files
+      run: |
+        echo "## 🔍 Missing TECH_CONCEPT Check" >> $GITHUB_STEP_SUMMARY
+        
+        # Find CLAUDE_TECH without corresponding TECH_CONCEPT
+        MISSING_COUNT=0
+        for claude_tech in $(find docs/features -name "*_CLAUDE_TECH.md" -type f); do
+          # Get corresponding TECH_CONCEPT path
+          tech_concept="${claude_tech/_CLAUDE_TECH.md/_TECH_CONCEPT.md}"
+          
+          if [[ ! -f "$tech_concept" ]]; then
+            echo "❌ Missing: $tech_concept" >> $GITHUB_STEP_SUMMARY
+            ((MISSING_COUNT++))
+          fi
+        done
+        
+        if [[ $MISSING_COUNT -eq 0 ]]; then
+          echo "✅ All CLAUDE_TECH files have corresponding TECH_CONCEPT!" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "⚠️ Found $MISSING_COUNT missing TECH_CONCEPT files" >> $GITHUB_STEP_SUMMARY
+          exit 1
+        fi
