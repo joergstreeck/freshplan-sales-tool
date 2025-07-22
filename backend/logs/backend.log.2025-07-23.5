@@ -1,13 +1,22 @@
-2025-07-23 01:30:46 INFO  [or.fl.co.FlywayExecutor] (Quarkus Main Thread) Database: jdbc:postgresql://localhost:5432/freshplan (PostgreSQL 15.13)
-2025-07-23 01:30:46 INFO  [or.fl.co.in.co.DbValidate] (Quarkus Main Thread) Successfully validated 18 migrations (execution time 00:00.008s)
-2025-07-23 01:30:46 INFO  [or.fl.co.in.co.DbMigrate] (Quarkus Main Thread) Current version of schema "public": 105
-2025-07-23 01:30:46 INFO  [or.fl.co.in.co.DbMigrate] (Quarkus Main Thread) Schema "public" is up to date. No migration necessary.
-2025-07-23 01:30:46 INFO  [de.fr.ap.CustomerDataInitializer] (Quarkus Main Thread) 🧪 Initializing comprehensive test data for edge case testing...
-2025-07-23 01:30:46 INFO  [de.fr.ap.CustomerDataInitializer] (Quarkus Main Thread) Found 5 existing customers, clearing for fresh test data...
-2025-07-23 01:30:46 WARN  [or.hi.en.jd.sp.SqlExceptionHelper] (Quarkus Main Thread) SQL Error: 0, SQLState: 23503
-2025-07-23 01:30:46 ERROR [or.hi.en.jd.sp.SqlExceptionHelper] (Quarkus Main Thread) ERROR: update or delete on table "customers" violates foreign key constraint "fkmyycpwk5m2x1l3yjqbky15o4a" on table "opportunities"
-  Detail: Key (id)=(81600224-6c05-4c27-84ad-2a0458b348e0) is still referenced from table "opportunities".
-2025-07-23 01:30:46 ERROR [io.qu.ru.Application] (Quarkus Main Thread) Failed to start application: java.lang.RuntimeException: Failed to start quarkus
+2025-07-22 23:52:31 INFO  [or.fl.co.FlywayExecutor] (Quarkus Main Thread) Database: jdbc:postgresql://localhost:5432/freshplan (PostgreSQL 15.13)
+2025-07-22 23:52:31 INFO  [or.fl.co.in.co.DbValidate] (Quarkus Main Thread) Successfully validated 18 migrations (execution time 00:00.008s)
+2025-07-22 23:52:31 INFO  [or.fl.co.in.co.DbMigrate] (Quarkus Main Thread) Current version of schema "public": 105
+2025-07-22 23:52:31 INFO  [or.fl.co.in.co.DbMigrate] (Quarkus Main Thread) Schema "public" is up to date. No migration necessary.
+2025-07-22 23:52:31 INFO  [de.fr.in.se.SecurityConfig] (Quarkus Main Thread) === Security Configuration ===
+2025-07-22 23:52:31 INFO  [de.fr.in.se.SecurityConfig] (Quarkus Main Thread) OIDC Enabled: false
+2025-07-22 23:52:31 INFO  [de.fr.in.se.SecurityConfig] (Quarkus Main Thread) Auth Server URL: http://localhost:8180/realms/freshplan-realm
+2025-07-22 23:52:31 INFO  [de.fr.in.se.SecurityConfig] (Quarkus Main Thread) Client ID: freshplan-backend
+2025-07-22 23:52:31 WARN  [de.fr.in.se.SecurityConfig] (Quarkus Main Thread) ⚠️  Security is DISABLED! This should only be used in development.
+2025-07-22 23:52:31 INFO  [de.fr.in.se.SecurityConfig] (Quarkus Main Thread) === Available Security Roles ===
+2025-07-22 23:52:31 INFO  [de.fr.in.se.SecurityConfig] (Quarkus Main Thread) - admin: Full system access
+2025-07-22 23:52:31 INFO  [de.fr.in.se.SecurityConfig] (Quarkus Main Thread) - manager: Management functions
+2025-07-22 23:52:31 INFO  [de.fr.in.se.SecurityConfig] (Quarkus Main Thread) - sales: Sales operations
+2025-07-22 23:52:31 INFO  [de.fr.ap.CustomerDataInitializer] (Quarkus Main Thread) 🧪 Initializing comprehensive test data for edge case testing...
+2025-07-22 23:52:31 INFO  [de.fr.ap.CustomerDataInitializer] (Quarkus Main Thread) Found 2 existing customers, clearing for fresh test data...
+2025-07-22 23:52:31 WARN  [or.hi.en.jd.sp.SqlExceptionHelper] (Quarkus Main Thread) SQL Error: 0, SQLState: 23503
+2025-07-22 23:52:31 ERROR [or.hi.en.jd.sp.SqlExceptionHelper] (Quarkus Main Thread) ERROR: update or delete on table "customers" violates foreign key constraint "fkmyycpwk5m2x1l3yjqbky15o4a" on table "opportunities"
+  Detail: Key (id)=(0b14e10a-b597-41ef-b0e4-35c18909a26e) is still referenced from table "opportunities".
+2025-07-22 23:52:31 ERROR [io.qu.ru.Application] (Quarkus Main Thread) Failed to start application: java.lang.RuntimeException: Failed to start quarkus
 	at io.quarkus.runner.ApplicationImpl.doStart(Unknown Source)
 	at io.quarkus.runtime.Application.start(Application.java:101)
 	at io.quarkus.runtime.ApplicationLifecycleManager.run(ApplicationLifecycleManager.java:121)
@@ -22,7 +31,7 @@
 	at io.quarkus.runner.bootstrap.StartupActionImpl$1.run(StartupActionImpl.java:116)
 	at java.base/java.lang.Thread.run(Thread.java:840)
 Caused by: org.hibernate.exception.ConstraintViolationException: JDBC exception executing SQL [DELETE FROM customers] [ERROR: update or delete on table "customers" violates foreign key constraint "fkmyycpwk5m2x1l3yjqbky15o4a" on table "opportunities"
-  Detail: Key (id)=(81600224-6c05-4c27-84ad-2a0458b348e0) is still referenced from table "opportunities".] [n/a]
+  Detail: Key (id)=(0b14e10a-b597-41ef-b0e4-35c18909a26e) is still referenced from table "opportunities".] [n/a]
 	at org.hibernate.exception.internal.SQLStateConversionDelegate.convert(SQLStateConversionDelegate.java:97)
 	at org.hibernate.exception.internal.StandardSQLExceptionConverter.convert(StandardSQLExceptionConverter.java:58)
 	at org.hibernate.engine.jdbc.spi.SqlExceptionHelper.convert(SqlExceptionHelper.java:108)
@@ -33,7 +42,7 @@ Caused by: org.hibernate.exception.ConstraintViolationException: JDBC exception 
 	at org.hibernate.query.spi.AbstractQuery.executeUpdate(AbstractQuery.java:651)
 	at de.freshplan.api.CustomerDataInitializer.onStart(CustomerDataInitializer.java:60)
 	at de.freshplan.api.CustomerDataInitializer_Subclass.onStart$$superforward(Unknown Source)
-	at de.freshplan.api.CustomerDataInitializer_Subclass$$function$$8.apply(Unknown Source)
+	at de.freshplan.api.CustomerDataInitializer_Subclass$$function$$5.apply(Unknown Source)
 	at io.quarkus.arc.impl.AroundInvokeInvocationContext.proceed(AroundInvokeInvocationContext.java:73)
 	at io.quarkus.arc.impl.AroundInvokeInvocationContext.proceed(AroundInvokeInvocationContext.java:62)
 	at io.quarkus.narayana.jta.runtime.interceptor.TransactionalInterceptorBase.invokeInOurTx(TransactionalInterceptorBase.java:136)
@@ -56,7 +65,7 @@ Caused by: org.hibernate.exception.ConstraintViolationException: JDBC exception 
 	at io.quarkus.deployment.steps.LifecycleEventsBuildStep$startupEvent1144526294.deploy(Unknown Source)
 	... 13 more
 Caused by: org.postgresql.util.PSQLException: ERROR: update or delete on table "customers" violates foreign key constraint "fkmyycpwk5m2x1l3yjqbky15o4a" on table "opportunities"
-  Detail: Key (id)=(81600224-6c05-4c27-84ad-2a0458b348e0) is still referenced from table "opportunities".
+  Detail: Key (id)=(0b14e10a-b597-41ef-b0e4-35c18909a26e) is still referenced from table "opportunities".
 	at org.postgresql.core.v3.QueryExecutorImpl.receiveErrorResponse(QueryExecutorImpl.java:2733)
 	at org.postgresql.core.v3.QueryExecutorImpl.processResults(QueryExecutorImpl.java:2420)
 	at org.postgresql.core.v3.QueryExecutorImpl.execute(QueryExecutorImpl.java:372)
@@ -68,7 +77,7 @@ Caused by: org.postgresql.util.PSQLException: ERROR: update or delete on table "
 	at org.hibernate.sql.exec.internal.StandardJdbcMutationExecutor.execute(StandardJdbcMutationExecutor.java:90)
 	... 39 more
 
-2025-07-23 01:30:46 ERROR [io.qu.de.de.IsolatedDevModeMain] (vert.x-worker-thread-9) Failed to start quarkus: io.quarkus.dev.appstate.ApplicationStartException: java.lang.RuntimeException: Failed to start quarkus
+2025-07-22 23:52:32 ERROR [io.qu.de.de.IsolatedDevModeMain] (vert.x-worker-thread-7) Failed to start quarkus: io.quarkus.dev.appstate.ApplicationStartException: java.lang.RuntimeException: Failed to start quarkus
 	at io.quarkus.dev.appstate.ApplicationStateNotification.waitForApplicationStart(ApplicationStateNotification.java:63)
 	at io.quarkus.runner.bootstrap.StartupActionImpl.runMainClass(StartupActionImpl.java:142)
 	at io.quarkus.deployment.dev.IsolatedDevModeMain.restartApp(IsolatedDevModeMain.java:202)
@@ -105,7 +114,7 @@ Caused by: java.lang.RuntimeException: Failed to start quarkus
 	at io.quarkus.runner.bootstrap.StartupActionImpl$1.run(StartupActionImpl.java:116)
 	... 1 more
 Caused by: org.hibernate.exception.ConstraintViolationException: JDBC exception executing SQL [DELETE FROM customers] [ERROR: update or delete on table "customers" violates foreign key constraint "fkmyycpwk5m2x1l3yjqbky15o4a" on table "opportunities"
-  Detail: Key (id)=(81600224-6c05-4c27-84ad-2a0458b348e0) is still referenced from table "opportunities".] [n/a]
+  Detail: Key (id)=(0b14e10a-b597-41ef-b0e4-35c18909a26e) is still referenced from table "opportunities".] [n/a]
 	at org.hibernate.exception.internal.SQLStateConversionDelegate.convert(SQLStateConversionDelegate.java:97)
 	at org.hibernate.exception.internal.StandardSQLExceptionConverter.convert(StandardSQLExceptionConverter.java:58)
 	at org.hibernate.engine.jdbc.spi.SqlExceptionHelper.convert(SqlExceptionHelper.java:108)
@@ -116,7 +125,7 @@ Caused by: org.hibernate.exception.ConstraintViolationException: JDBC exception 
 	at org.hibernate.query.spi.AbstractQuery.executeUpdate(AbstractQuery.java:651)
 	at de.freshplan.api.CustomerDataInitializer.onStart(CustomerDataInitializer.java:60)
 	at de.freshplan.api.CustomerDataInitializer_Subclass.onStart$$superforward(Unknown Source)
-	at de.freshplan.api.CustomerDataInitializer_Subclass$$function$$8.apply(Unknown Source)
+	at de.freshplan.api.CustomerDataInitializer_Subclass$$function$$5.apply(Unknown Source)
 	at io.quarkus.arc.impl.AroundInvokeInvocationContext.proceed(AroundInvokeInvocationContext.java:73)
 	at io.quarkus.arc.impl.AroundInvokeInvocationContext.proceed(AroundInvokeInvocationContext.java:62)
 	at io.quarkus.narayana.jta.runtime.interceptor.TransactionalInterceptorBase.invokeInOurTx(TransactionalInterceptorBase.java:136)
@@ -139,7 +148,7 @@ Caused by: org.hibernate.exception.ConstraintViolationException: JDBC exception 
 	at io.quarkus.deployment.steps.LifecycleEventsBuildStep$startupEvent1144526294.deploy(Unknown Source)
 	... 13 more
 Caused by: org.postgresql.util.PSQLException: ERROR: update or delete on table "customers" violates foreign key constraint "fkmyycpwk5m2x1l3yjqbky15o4a" on table "opportunities"
-  Detail: Key (id)=(81600224-6c05-4c27-84ad-2a0458b348e0) is still referenced from table "opportunities".
+  Detail: Key (id)=(0b14e10a-b597-41ef-b0e4-35c18909a26e) is still referenced from table "opportunities".
 	at org.postgresql.core.v3.QueryExecutorImpl.receiveErrorResponse(QueryExecutorImpl.java:2733)
 	at org.postgresql.core.v3.QueryExecutorImpl.processResults(QueryExecutorImpl.java:2420)
 	at org.postgresql.core.v3.QueryExecutorImpl.execute(QueryExecutorImpl.java:372)

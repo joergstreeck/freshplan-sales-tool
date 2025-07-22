@@ -53,6 +53,11 @@ public class CustomerDataInitializer {
       // Derive allowed tables from the clearing list to ensure consistency
       var allowedTables = java.util.Set.copyOf(tablesToClear);
 
+      // CRITICAL FIX: Delete opportunities first to avoid foreign key constraint violations
+      LOG.info("Clearing opportunities before customers to avoid FK violations...");
+      em.createNativeQuery("DELETE FROM opportunity_activities").executeUpdate();
+      em.createNativeQuery("DELETE FROM opportunities").executeUpdate();
+
       for (String table : tablesToClear) {
         if (!allowedTables.contains(table)) {
           throw new IllegalArgumentException("Invalid table name for deletion: " + table);
