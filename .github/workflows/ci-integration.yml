@@ -204,6 +204,12 @@ jobs:
           
       - name: Run Playwright tests
         run: |
+          # Final health check before running tests
+          echo "Final backend health check before E2E tests..."
+          curl -f http://localhost:8080/q/health/ready || curl -f http://localhost:8080/api/ping || {
+            echo "Backend is not ready, but proceeding with tests (may use fallback mechanisms)"
+          }
+          
           # Set API URL for tests
           export VITE_API_URL=http://localhost:8080
           export CI=true

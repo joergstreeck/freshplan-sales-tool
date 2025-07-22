@@ -1,0 +1,94 @@
+2025-07-20 12:05:30 INFO  [de.fr.do.ca.se.CalculatorService] (executor-thread-16) Discount calculation completed - Order: 15000.0€, Total discount: 7.0%, Final price: 13950.0€
+2025-07-20 12:05:30 INFO  [de.fr.do.ca.se.CalculatorService] (executor-thread-15) Discount calculation completed - Order: 15000.0€, Total discount: 7.0%, Final price: 13950.0€
+2025-07-20 12:05:30 INFO  [de.fr.do.ca.se.CalculatorService] (executor-thread-16) Discount calculation completed - Order: 15000.0€, Total discount: 7.0%, Final price: 13950.0€
+2025-07-20 12:05:30 INFO  [de.fr.do.ca.se.CalculatorService] (executor-thread-15) Discount calculation completed - Order: 15000.0€, Total discount: 7.0%, Final price: 13950.0€
+2025-07-20 12:44:56 INFO  [de.fr.do.ca.se.CalculatorService] (executor-thread-15) Discount calculation completed - Order: 15000.0€, Total discount: 7.0%, Final price: 13950.0€
+2025-07-20 12:44:56 INFO  [de.fr.do.ca.se.CalculatorService] (executor-thread-17) Discount calculation completed - Order: 15000.0€, Total discount: 7.0%, Final price: 13950.0€
+2025-07-20 12:44:57 INFO  [de.fr.do.ca.se.CalculatorService] (executor-thread-17) Discount calculation completed - Order: 15000.0€, Total discount: 7.0%, Final price: 13950.0€
+2025-07-20 12:44:57 INFO  [de.fr.do.ca.se.CalculatorService] (executor-thread-15) Discount calculation completed - Order: 15000.0€, Total discount: 7.0%, Final price: 13950.0€
+2025-07-20 13:08:07 INFO  [de.fr.do.ca.se.CalculatorService] (executor-thread-15) Discount calculation completed - Order: 15000.0€, Total discount: 7.0%, Final price: 13950.0€
+2025-07-20 13:08:07 INFO  [de.fr.do.ca.se.CalculatorService] (executor-thread-18) Discount calculation completed - Order: 15000.0€, Total discount: 7.0%, Final price: 13950.0€
+2025-07-20 13:08:08 INFO  [de.fr.do.ca.se.CalculatorService] (executor-thread-18) Discount calculation completed - Order: 15000.0€, Total discount: 7.0%, Final price: 13950.0€
+2025-07-20 13:08:08 INFO  [de.fr.do.ca.se.CalculatorService] (executor-thread-15) Discount calculation completed - Order: 15000.0€, Total discount: 7.0%, Final price: 13950.0€
+2025-07-20 13:14:17 INFO  [de.fr.do.ca.se.CalculatorService] (executor-thread-15) Discount calculation completed - Order: 15000.0€, Total discount: 7.0%, Final price: 13950.0€
+2025-07-20 13:14:17 INFO  [de.fr.do.ca.se.CalculatorService] (executor-thread-19) Discount calculation completed - Order: 15000.0€, Total discount: 7.0%, Final price: 13950.0€
+2025-07-20 13:14:17 INFO  [de.fr.do.ca.se.CalculatorService] (executor-thread-20) Discount calculation completed - Order: 15000.0€, Total discount: 7.0%, Final price: 13950.0€
+2025-07-20 13:14:17 INFO  [de.fr.do.ca.se.CalculatorService] (executor-thread-15) Discount calculation completed - Order: 15000.0€, Total discount: 7.0%, Final price: 13950.0€
+2025-07-20 13:23:08 INFO  [de.fr.ap.re.CustomerSearchResource] (executor-thread-21) Customer search request received: page=0, size=20
+2025-07-20 13:23:08 INFO  [de.fr.ap.re.CustomerSearchResource] (executor-thread-21) Search completed: found 44 customers
+2025-07-20 14:31:50 INFO  [de.fr.ap.re.CustomerSearchResource] (executor-thread-21) Customer search request received: page=0, size=20
+2025-07-20 14:31:50 INFO  [de.fr.ap.re.CustomerSearchResource] (executor-thread-21) Search completed: found 44 customers
+2025-07-20 14:31:50 INFO  [de.fr.do.ca.se.CalculatorService] (executor-thread-22) Discount calculation completed - Order: 15000.0€, Total discount: 7.0%, Final price: 13950.0€
+2025-07-20 14:31:50 INFO  [de.fr.do.ca.se.CalculatorService] (executor-thread-21) Discount calculation completed - Order: 15000.0€, Total discount: 7.0%, Final price: 13950.0€
+2025-07-20 14:31:50 INFO  [de.fr.ap.re.CustomerSearchResource] (executor-thread-21) Customer search request received: page=0, size=20
+2025-07-20 14:31:50 INFO  [de.fr.ap.re.CustomerSearchResource] (executor-thread-21) Search completed: found 44 customers
+2025-07-20 14:31:50 INFO  [de.fr.do.ca.se.CalculatorService] (executor-thread-22) Discount calculation completed - Order: 15000.0€, Total discount: 7.0%, Final price: 13950.0€
+2025-07-20 14:31:50 INFO  [de.fr.do.ca.se.CalculatorService] (executor-thread-21) Discount calculation completed - Order: 15000.0€, Total discount: 7.0%, Final price: 13950.0€
+2025-07-20 15:03:41 INFO  [de.fr.ap.re.CustomerSearchResource] (executor-thread-21) Customer search request received: page=0, size=20
+2025-07-20 15:03:41 INFO  [de.fr.ap.re.CustomerSearchResource] (executor-thread-21) Search completed: found 44 customers
+2025-07-20 15:03:41 INFO  [de.fr.do.ca.se.CalculatorService] (executor-thread-21) Discount calculation completed - Order: 15000.0€, Total discount: 7.0%, Final price: 13950.0€
+2025-07-20 15:03:41 INFO  [de.fr.do.ca.se.CalculatorService] (executor-thread-23) Discount calculation completed - Order: 15000.0€, Total discount: 7.0%, Final price: 13950.0€
+2025-07-20 15:03:41 INFO  [de.fr.ap.re.CustomerSearchResource] (executor-thread-23) Customer search request received: page=0, size=20
+2025-07-20 15:03:41 INFO  [de.fr.ap.re.CustomerSearchResource] (executor-thread-23) Search completed: found 44 customers
+2025-07-20 15:03:41 INFO  [de.fr.do.ca.se.CalculatorService] (executor-thread-23) Discount calculation completed - Order: 15000.0€, Total discount: 7.0%, Final price: 13950.0€
+2025-07-20 15:03:41 INFO  [de.fr.do.ca.se.CalculatorService] (executor-thread-21) Discount calculation completed - Order: 15000.0€, Total discount: 7.0%, Final price: 13950.0€
+2025-07-20 15:05:03 INFO  [de.fr.ap.re.CustomerSearchResource] (executor-thread-21) Customer search request received: page=0, size=20
+2025-07-20 15:05:04 INFO  [de.fr.ap.re.CustomerSearchResource] (executor-thread-21) Search completed: found 44 customers
+2025-07-20 15:05:09 INFO  [de.fr.ap.re.CustomerSearchResource] (executor-thread-21) Customer search request received: page=0, size=20
+2025-07-20 15:05:09 INFO  [de.fr.ap.re.CustomerSearchResource] (executor-thread-21) Search completed: found 44 customers
+2025-07-20 15:05:09 INFO  [de.fr.do.ca.se.CalculatorService] (executor-thread-21) Discount calculation completed - Order: 15000.0€, Total discount: 7.0%, Final price: 13950.0€
+2025-07-20 15:05:09 INFO  [de.fr.do.ca.se.CalculatorService] (executor-thread-23) Discount calculation completed - Order: 15000.0€, Total discount: 7.0%, Final price: 13950.0€
+2025-07-20 15:05:10 INFO  [de.fr.ap.re.CustomerSearchResource] (executor-thread-23) Customer search request received: page=0, size=20
+2025-07-20 15:05:10 INFO  [de.fr.ap.re.CustomerSearchResource] (executor-thread-23) Search completed: found 44 customers
+2025-07-20 15:05:10 INFO  [de.fr.do.ca.se.CalculatorService] (executor-thread-23) Discount calculation completed - Order: 15000.0€, Total discount: 7.0%, Final price: 13950.0€
+2025-07-20 15:05:10 INFO  [de.fr.do.ca.se.CalculatorService] (executor-thread-21) Discount calculation completed - Order: 15000.0€, Total discount: 7.0%, Final price: 13950.0€
+2025-07-20 15:17:12 INFO  [de.fr.ap.re.CustomerSearchResource] (executor-thread-21) Customer search request received: page=0, size=20
+2025-07-20 15:17:12 INFO  [de.fr.ap.re.CustomerSearchResource] (executor-thread-21) Search completed: found 44 customers
+2025-07-20 16:16:17 INFO  [de.fr.do.ca.se.CalculatorService] (executor-thread-21) Discount calculation completed - Order: 15000.0€, Total discount: 7.0%, Final price: 13950.0€
+2025-07-20 16:16:17 INFO  [de.fr.do.ca.se.CalculatorService] (executor-thread-24) Discount calculation completed - Order: 15000.0€, Total discount: 7.0%, Final price: 13950.0€
+2025-07-20 16:16:17 INFO  [de.fr.ap.re.CustomerSearchResource] (executor-thread-24) Customer search request received: page=0, size=20
+2025-07-20 16:16:17 INFO  [de.fr.ap.re.CustomerSearchResource] (executor-thread-24) Search completed: found 44 customers
+2025-07-20 16:16:17 INFO  [de.fr.do.ca.se.CalculatorService] (executor-thread-24) Discount calculation completed - Order: 15000.0€, Total discount: 7.0%, Final price: 13950.0€
+2025-07-20 16:16:17 INFO  [de.fr.do.ca.se.CalculatorService] (executor-thread-21) Discount calculation completed - Order: 15000.0€, Total discount: 7.0%, Final price: 13950.0€
+2025-07-20 16:16:18 INFO  [de.fr.ap.re.CustomerSearchResource] (executor-thread-21) Customer search request received: page=0, size=20
+2025-07-20 16:16:18 INFO  [de.fr.ap.re.CustomerSearchResource] (executor-thread-21) Search completed: found 44 customers
+2025-07-20 16:25:18 INFO  [de.fr.do.ca.se.CalculatorService] (executor-thread-25) Discount calculation completed - Order: 15000.0€, Total discount: 7.0%, Final price: 13950.0€
+2025-07-20 16:25:18 INFO  [de.fr.do.ca.se.CalculatorService] (executor-thread-21) Discount calculation completed - Order: 15000.0€, Total discount: 7.0%, Final price: 13950.0€
+2025-07-20 16:25:18 INFO  [de.fr.ap.re.CustomerSearchResource] (executor-thread-26) Customer search request received: page=0, size=20
+2025-07-20 16:25:19 INFO  [de.fr.ap.re.CustomerSearchResource] (executor-thread-26) Search completed: found 44 customers
+2025-07-20 16:25:19 INFO  [de.fr.do.ca.se.CalculatorService] (executor-thread-26) Discount calculation completed - Order: 15000.0€, Total discount: 7.0%, Final price: 13950.0€
+2025-07-20 16:25:19 INFO  [de.fr.do.ca.se.CalculatorService] (executor-thread-25) Discount calculation completed - Order: 15000.0€, Total discount: 7.0%, Final price: 13950.0€
+2025-07-20 16:25:19 INFO  [de.fr.ap.re.CustomerSearchResource] (executor-thread-25) Customer search request received: page=0, size=20
+2025-07-20 16:25:19 INFO  [de.fr.ap.re.CustomerSearchResource] (executor-thread-25) Search completed: found 44 customers
+2025-07-20 17:57:23 INFO  [de.fr.do.ca.se.CalculatorService] (executor-thread-25) Discount calculation completed - Order: 15000.0€, Total discount: 7.0%, Final price: 13950.0€
+2025-07-20 17:57:23 INFO  [de.fr.do.ca.se.CalculatorService] (executor-thread-27) Discount calculation completed - Order: 15000.0€, Total discount: 7.0%, Final price: 13950.0€
+2025-07-20 17:57:23 INFO  [de.fr.ap.re.CustomerSearchResource] (executor-thread-27) Customer search request received: page=0, size=20
+2025-07-20 17:57:23 INFO  [de.fr.ap.re.CustomerSearchResource] (executor-thread-27) Search completed: found 44 customers
+2025-07-20 17:57:23 INFO  [de.fr.do.ca.se.CalculatorService] (executor-thread-25) Discount calculation completed - Order: 15000.0€, Total discount: 7.0%, Final price: 13950.0€
+2025-07-20 17:57:23 INFO  [de.fr.do.ca.se.CalculatorService] (executor-thread-27) Discount calculation completed - Order: 15000.0€, Total discount: 7.0%, Final price: 13950.0€
+2025-07-20 17:57:23 INFO  [de.fr.ap.re.CustomerSearchResource] (executor-thread-27) Customer search request received: page=0, size=20
+2025-07-20 17:57:23 INFO  [de.fr.ap.re.CustomerSearchResource] (executor-thread-27) Search completed: found 44 customers
+2025-07-20 21:53:08 INFO  [de.fr.do.ca.se.CalculatorService] (executor-thread-27) Discount calculation completed - Order: 15000.0€, Total discount: 7.0%, Final price: 13950.0€
+2025-07-20 21:53:08 INFO  [de.fr.do.ca.se.CalculatorService] (executor-thread-28) Discount calculation completed - Order: 15000.0€, Total discount: 7.0%, Final price: 13950.0€
+2025-07-20 21:53:09 INFO  [de.fr.ap.re.CustomerSearchResource] (executor-thread-28) Customer search request received: page=0, size=20
+2025-07-20 21:53:09 INFO  [de.fr.ap.re.CustomerSearchResource] (executor-thread-28) Search completed: found 44 customers
+2025-07-20 21:53:09 INFO  [de.fr.do.ca.se.CalculatorService] (executor-thread-27) Discount calculation completed - Order: 15000.0€, Total discount: 7.0%, Final price: 13950.0€
+2025-07-20 21:53:09 INFO  [de.fr.do.ca.se.CalculatorService] (executor-thread-28) Discount calculation completed - Order: 15000.0€, Total discount: 7.0%, Final price: 13950.0€
+2025-07-20 21:53:09 INFO  [de.fr.ap.re.CustomerSearchResource] (executor-thread-28) Customer search request received: page=0, size=20
+2025-07-20 21:53:09 INFO  [de.fr.ap.re.CustomerSearchResource] (executor-thread-28) Search completed: found 44 customers
+2025-07-20 22:03:15 INFO  [de.fr.do.ca.se.CalculatorService] (executor-thread-28) Discount calculation completed - Order: 15000.0€, Total discount: 7.0%, Final price: 13950.0€
+2025-07-20 22:03:15 INFO  [de.fr.do.ca.se.CalculatorService] (executor-thread-29) Discount calculation completed - Order: 15000.0€, Total discount: 7.0%, Final price: 13950.0€
+2025-07-20 22:03:15 INFO  [de.fr.ap.re.CustomerSearchResource] (executor-thread-29) Customer search request received: page=0, size=20
+2025-07-20 22:03:15 INFO  [de.fr.ap.re.CustomerSearchResource] (executor-thread-29) Search completed: found 44 customers
+2025-07-20 22:03:15 INFO  [de.fr.do.ca.se.CalculatorService] (executor-thread-28) Discount calculation completed - Order: 15000.0€, Total discount: 7.0%, Final price: 13950.0€
+2025-07-20 22:03:15 INFO  [de.fr.do.ca.se.CalculatorService] (executor-thread-29) Discount calculation completed - Order: 15000.0€, Total discount: 7.0%, Final price: 13950.0€
+2025-07-20 22:03:15 INFO  [de.fr.ap.re.CustomerSearchResource] (executor-thread-29) Customer search request received: page=0, size=20
+2025-07-20 22:03:15 INFO  [de.fr.ap.re.CustomerSearchResource] (executor-thread-29) Search completed: found 44 customers
+2025-07-20 22:48:26 INFO  [de.fr.do.ca.se.CalculatorService] (executor-thread-30) Discount calculation completed - Order: 15000.0€, Total discount: 7.0%, Final price: 13950.0€
+2025-07-20 22:48:26 INFO  [de.fr.do.ca.se.CalculatorService] (executor-thread-29) Discount calculation completed - Order: 15000.0€, Total discount: 7.0%, Final price: 13950.0€
+2025-07-20 22:48:26 INFO  [de.fr.ap.re.CustomerSearchResource] (executor-thread-30) Customer search request received: page=0, size=20
+2025-07-20 22:48:26 INFO  [de.fr.ap.re.CustomerSearchResource] (executor-thread-30) Search completed: found 44 customers
+2025-07-20 22:48:26 INFO  [de.fr.ap.re.CustomerSearchResource] (executor-thread-30) Customer search request received: page=0, size=20
+2025-07-20 22:48:26 INFO  [de.fr.ap.re.CustomerSearchResource] (executor-thread-30) Search completed: found 44 customers
+2025-07-20 22:48:26 INFO  [de.fr.do.ca.se.CalculatorService] (executor-thread-30) Discount calculation completed - Order: 15000.0€, Total discount: 7.0%, Final price: 13950.0€
+2025-07-20 22:48:26 INFO  [de.fr.do.ca.se.CalculatorService] (executor-thread-29) Discount calculation completed - Order: 15000.0€, Total discount: 7.0%, Final price: 13950.0€
