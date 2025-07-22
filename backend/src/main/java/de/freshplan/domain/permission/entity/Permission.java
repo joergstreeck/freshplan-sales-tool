@@ -128,12 +128,12 @@ public class Permission extends PanacheEntityBase {
     if (this == o) return true;
     if (!(o instanceof Permission)) return false;
     Permission that = (Permission) o;
-    return Objects.equals(id, that.id);
+    return Objects.equals(permissionCode, that.permissionCode);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id);
+    return Objects.hash(permissionCode);
   }
 
   @Override

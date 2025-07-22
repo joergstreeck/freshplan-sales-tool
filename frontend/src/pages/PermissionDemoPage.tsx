@@ -37,7 +37,6 @@ import { PermissionButton, PermissionIconButton, MultiPermissionButton } from '.
 export const PermissionDemoPage: React.FC = () => {
     const { user } = useAuth();
     const { permissions, isLoading, refreshPermissions } = usePermissions();
-    const [testResults, setTestResults] = useState<Record<string, boolean>>({});
 
     // Test individual permission hooks
     const customerReadPerm = usePermission('customers:read');
@@ -55,10 +54,6 @@ export const PermissionDemoPage: React.FC = () => {
         'reports:read',
         'reports:export'
     ];
-
-    const handleTestPermission = (permission: string, result: boolean) => {
-        setTestResults(prev => ({ ...prev, [permission]: result }));
-    };
 
     if (isLoading) {
         return (

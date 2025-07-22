@@ -38,16 +38,17 @@ export const PermissionProvider: React.FC<PermissionProviderProps> = ({ children
 
         try {
             setIsLoading(true);
-            console.log('Loading permissions for user:', user.username);
             
             const response = await apiClient.get('/api/permissions/me');
             const userPermissions = response.data.permissions || [];
             
-            console.log('Loaded permissions:', userPermissions);
             setPermissions(new Set(userPermissions));
             
         } catch (error) {
-            console.error('Failed to load user permissions:', error);
+            // Log errors in development only
+            if (import.meta.env.DEV) {
+                console.error('Failed to load user permissions:', error);
+            }
             setPermissions(new Set());
         } finally {
             setIsLoading(false);

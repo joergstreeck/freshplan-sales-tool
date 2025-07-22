@@ -80,12 +80,18 @@ public class UserPermission extends PanacheEntityBase {
     this.expiresAt = expiresAt;
   }
 
-  // Business methods
+  // Business methods - Note: use PermissionService.isUserPermissionExpired() for timezone-safe checks
+  @Deprecated
   public boolean isExpired() {
+    // DEPRECATED: This method uses system timezone and should not be used in production
+    // Use PermissionService.isUserPermissionExpired(UserPermission, Clock) instead
     return expiresAt != null && LocalDateTime.now().isAfter(expiresAt);
   }
 
+  @Deprecated
   public boolean isActive() {
+    // DEPRECATED: This method uses system timezone and should not be used in production
+    // Use PermissionService.isUserPermissionActive(UserPermission, Clock) instead
     return !isExpired();
   }
 

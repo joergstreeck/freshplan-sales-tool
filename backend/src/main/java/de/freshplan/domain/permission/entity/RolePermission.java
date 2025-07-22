@@ -94,9 +94,9 @@ public class RolePermission extends PanacheEntityBase {
   public String toString() {
     return "RolePermission{"
         + "role="
-        + (role != null ? role.getName() : null)
+        + (role != null ? role.getId() : null)
         + ", permission="
-        + (permission != null ? permission.getPermissionCode() : null)
+        + (permission != null ? permission.getId() : null)
         + ", granted="
         + granted
         + '}';

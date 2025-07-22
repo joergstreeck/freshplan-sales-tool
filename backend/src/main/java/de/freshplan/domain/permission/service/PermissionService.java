@@ -1,9 +1,12 @@
 package de.freshplan.domain.permission.service;
 
+import de.freshplan.domain.permission.entity.UserPermission;
 import de.freshplan.infrastructure.security.SecurityContextProvider;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import java.time.Clock;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -26,6 +29,8 @@ public class PermissionService {
   private static final Logger logger = LoggerFactory.getLogger(PermissionService.class);
 
   @Inject SecurityContextProvider securityProvider;
+  
+  @Inject Clock clock; // Timezone-safe clock injection
 
   /** Simplified permission check - uses Keycloak roles as permissions for now. */
   public boolean hasPermission(String permissionCode) {
@@ -67,7 +72,7 @@ public class PermissionService {
             "admin:permissions",
             "admin:users");
       } else if (roles.contains("manager")) {
-        return Arrays.asList("customers:read", "customers:write");
+        return Arrays.asList("customers:read", "customers:write", "customers:delete");
       } else if (roles.contains("sales")) {
         return Arrays.asList("customers:read");
       }
@@ -78,6 +83,27 @@ public class PermissionService {
       logger.error("Error getting current user permissions: {}", e.getMessage());
       return Arrays.asList();
     }
+  }
+  
+  /**
+   * Timezone-safe method to check if a UserPermission is expired.
+   * 
+   * @param userPermission the permission to check
+   * @return true if the permission is expired
+   */
+  public boolean isUserPermissionExpired(UserPermission userPermission) {
+    return userPermission.getExpiresAt() != null 
+        && LocalDateTime.now(clock).isAfter(userPermission.getExpiresAt());
+  }
+  
+  /**
+   * Timezone-safe method to check if a UserPermission is active.
+   * 
+   * @param userPermission the permission to check
+   * @return true if the permission is active (not expired)
+   */
+  public boolean isUserPermissionActive(UserPermission userPermission) {
+    return !isUserPermissionExpired(userPermission);
   }
 
   /** Placeholder methods for full permission management (not implemented yet). */
