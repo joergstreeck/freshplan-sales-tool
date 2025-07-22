@@ -1828,7 +1828,7 @@ export const StageGateValidator: React.FC<StageGateValidatorProps> = ({
 - [`FC-009 Permissions System`](/docs/features/ACTIVE/04_permissions_system/FC-009_TECH_CONCEPT.md) - Wer darf Bonitätsprüfung durchführen
 
 **Data Sources:**
-- [`M2 Customer Management`](/docs/features/ACTIVE/03_customer_management/M2_TECH_CONCEPT.md)** - Customer Data für Bonitätsprüfung
+- **M2 Customer Management** - Customer Data für Bonitätsprüfung (Feature noch in Planung)
 - [`M8 Calculator Modal`](/docs/features/ACTIVE/03_calculator_modal/M8_TECH_CONCEPT.md) - Bonitätsdaten für Angebote
 - [`FC-014 Activity Timeline`](/docs/features/PLANNED/16_activity_timeline/FC-014_TECH_CONCEPT.md) - Bonitäts-Events logging
 
@@ -2038,7 +2038,7 @@ public class DataRetentionService {
 
 ### 🏢 CORE CRM FEATURES (M1-M7)
 - **[M1 Navigation System](/docs/features/ACTIVE/05_ui_foundation/M1_TECH_CONCEPT.md)** - Hauptnavigation & Routing
-- **[M2 Customer Management](/docs/features/ACTIVE/03_customer_management/M2_TECH_CONCEPT.md)** - Kundenverwaltung
+- **M2 Customer Management** - Kundenverwaltung (Feature noch in Planung)
 - **[M3 Sales Cockpit](/docs/features/ACTIVE/05_ui_foundation/M3_TECH_CONCEPT.md)** - Verkäufer-Dashboard
 - **[M4 Opportunity Pipeline](/docs/features/ACTIVE/02_opportunity_pipeline/M4_TECH_CONCEPT.md)** - Deal-Management
 - **[M5 Customer Import](/docs/features/PLANNED/12_customer_refactor_m5/M5_TECH_CONCEPT.md)** - CSV/Excel Import
