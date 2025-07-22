@@ -1,8 +1,8 @@
 {
-  "feature": "FC-008",
-  "module": "Security Foundation",
-  "lastFile": "backend/src/main/java/de/freshplan/api/resources/CustomerSearchResource.java",
-  "lastLine": "1",
-  "nextTask": "Backend Security Completion",
-  "lastUpdated": "2025-07-12T19:02:00Z"
+  "feature": "FC-002",
+  "module": "M4 Opportunity Pipeline",
+  "lastFile": "backend/src/test/java/de/freshplan/domain/opportunity/repository/OpportunityRepositoryTest.java",
+  "lastLine": "481",
+  "nextTask": "OpportunityRepositoryTest customer_number fix",
+  "lastUpdated": "2025-07-22T21:19:58Z"
 }

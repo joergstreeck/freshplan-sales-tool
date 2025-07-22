@@ -17,7 +17,7 @@
 /* ========================================
    1. DESIGN TOKENS
    ======================================== */
-@import './design-tokens.css';
+/* Design tokens werden über globals.css geladen (vermeidet @import-Konflikte) */
 
 /* ========================================
    2. BASE STYLES

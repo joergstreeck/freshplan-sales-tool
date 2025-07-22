@@ -7,10 +7,12 @@
 # Update: 10.07.2025 - Respektiert jetzt Übergaben und ist flexibler
 #
 # Verwendung:
-#   ./scripts/update-focus.sh                    # Interaktiver Modus
-#   ./scripts/update-focus.sh --override         # Override-Modus (ignoriert current-focus)
-#   ./scripts/update-focus.sh M3-cockpit         # Setze Modul direkt
-#   ./scripts/update-focus.sh M3-cockpit "Task"  # Setze Modul und Task
+#   ./scripts/update-focus.sh                              # Interaktiver Modus
+#   ./scripts/update-focus.sh --override                   # Override-Modus (ignoriert current-focus)
+#   ./scripts/update-focus.sh M3-cockpit                   # Setze Modul direkt
+#   ./scripts/update-focus.sh M3-cockpit "Task"            # Setze Modul und Task
+#   ./scripts/update-focus.sh FC-002 "M4 Pipeline"         # Setze Feature und Modul
+#   ./scripts/update-focus.sh FC-002 "M4 Pipeline" "Task"  # Setze Feature, Modul und Task
 
 set -e
 
@@ -19,10 +21,12 @@ if [ "$1" = "--help" ] || [ "$1" = "-h" ]; then
     echo "update-focus.sh - Verwaltet den aktuellen Arbeitsfokus"
     echo ""
     echo "Verwendung:"
-    echo "  ./scripts/update-focus.sh                    # Interaktiver Modus"
-    echo "  ./scripts/update-focus.sh --override         # Override-Modus"
-    echo "  ./scripts/update-focus.sh M3-cockpit         # Setze Modul direkt"
-    echo "  ./scripts/update-focus.sh M3-cockpit 'Task'  # Setze Modul und Task"
+    echo "  ./scripts/update-focus.sh                              # Interaktiver Modus"
+    echo "  ./scripts/update-focus.sh --override                   # Override-Modus"
+    echo "  ./scripts/update-focus.sh M3-cockpit                   # Setze Modul direkt"
+    echo "  ./scripts/update-focus.sh M3-cockpit 'Task'            # Setze Modul und Task"
+    echo "  ./scripts/update-focus.sh FC-002 'M4 Pipeline'         # Setze Feature und Modul"
+    echo "  ./scripts/update-focus.sh FC-002 'M4 Pipeline' 'Task'  # Setze Feature, Modul und Task"
     echo ""
     echo "Flags:"
     echo "  --override, -o    Ignoriere aktuelle .current-focus Werte"
@@ -132,10 +136,18 @@ if [ $# -eq 0 ]; then
     read -p "Nächste Aufgabe: " NEW_TASK
     NEW_TASK=${NEW_TASK:-$CURRENT_TASK}
 else
-    # Command line mode: update-focus.sh <module> ["task"]
-    NEW_MODULE=$1
-    NEW_TASK=${2:-$CURRENT_TASK}
-    NEW_FEATURE=$CURRENT_FEATURE
+    # Command line mode: update-focus.sh <feature_or_module> ["task"]
+    # Wenn das erste Argument mit FC- beginnt, ist es ein Feature Code
+    if [[ "$1" =~ ^FC-[0-9]+ ]]; then
+        NEW_FEATURE=$1
+        NEW_MODULE=${2:-$CURRENT_MODULE}
+        NEW_TASK=${3:-$CURRENT_TASK}
+    else
+        # Ansonsten ist es ein Module Name
+        NEW_MODULE=$1
+        NEW_TASK=${2:-$CURRENT_TASK}
+        NEW_FEATURE=$CURRENT_FEATURE
+    fi
     NEW_FILE=$CURRENT_FILE
     NEW_LINE=$CURRENT_LINE
 fi

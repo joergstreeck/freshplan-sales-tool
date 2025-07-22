@@ -1,8 +1,8 @@
 # 🚀 CRM COMPLETE MASTER PLAN V5 - Das Sales Command Center
 
 **Version:** 5.0  
-**Datum:** 23.07.2025 01:25 (Auto-Sync)
-**Status:** Backend implementiert ✅, Tests fast vollständig 🔄
+**Datum:** 12.07.2025  
+**Status:** VERBINDLICH - Claude-optimiert mit neuer Arbeitsreihenfolge
 
 ---
 
@@ -15,9 +15,9 @@
 ## 🤖 CLAUDE WORKING SECTION
 
 ### 📍 Aktueller Fokus
-**Phase:** 1 - Core Sales Process (M4 Opportunity Pipeline Finalisierung)
-**Status:** Backend implementiert ✅, Tests fast vollständig 🔄
-**Nächster Schritt:** OpportunityRepositoryTest customer_number fix
+**Phase:** 1 - Core Sales Process (M4 Opportunity Pipeline Finalisierung)  
+**Status:** Backend implementiert ✅, Tests fast vollständig 🔄  
+**Nächster Schritt:** findByAssignedTo Debug-Output analysieren (TODO-31)  
 **Arbeits-Dokument:** [./features/2025-07-12_TECH_CONCEPT_M4-opportunity-pipeline.md](./features/2025-07-12_TECH_CONCEPT_M4-opportunity-pipeline.md) ⭐
 **Offene Fragen:** [./features/OPEN_QUESTIONS_TRACKER.md](./features/OPEN_QUESTIONS_TRACKER.md) 🚨
 
@@ -59,7 +59,7 @@ Von Tag 1 auf Wachstum, Performance und Qualität ausgelegt.
 ## 🗺️ Implementierungs-Roadmap
 
 ### ✅ Phase 0: Security Foundation (Tag 1)
-**Status:** Backend implementiert ✅, Tests fast vollständig 🔄
+**Status:** ✅ ABGESCHLOSSEN (Keycloak läuft seit Wochen)  
 **Details:** [Security Foundation](./features/ACTIVE/01_security_foundation/README.md)
 
 ### 🔄 Phase 1: Core Sales Process (Tag 2-10) - IN ARBEIT
