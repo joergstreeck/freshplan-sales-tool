@@ -63,8 +63,15 @@ public class PermissionResource {
 
       return Response.ok(Map.of("permissions", permissionList)).build();
 
+    } catch (jakarta.persistence.PersistenceException e) {
+      // It's good practice to log the stack trace for debugging purposes
+      // logger.error("Database error while loading permissions", e);
+      return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+          .entity(Map.of("error", "A database error occurred: " + e.getMessage()))
+          .build();
     } catch (Exception e) {
-      return Response.status(500)
+      // logger.error("An unexpected error occurred while loading permissions", e);
+      return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
           .entity(Map.of("error", "Failed to load permissions: " + e.getMessage()))
           .build();
     }

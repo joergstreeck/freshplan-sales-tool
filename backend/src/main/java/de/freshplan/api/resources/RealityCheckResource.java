@@ -76,7 +76,7 @@ public class RealityCheckResource {
         "invalid",
         invalid,
         "percentage",
-        (valid * 100.0) / features.size());
+        features.isEmpty() ? 0.0 : (valid * 100.0) / features.size());
   }
 }
 

@@ -80,7 +80,7 @@ INSERT INTO role_permissions (role_id, permission_id, granted_by)
 SELECT 
     r.id,
     p.id,
-    (SELECT id FROM app_user WHERE username = 'admin' LIMIT 1)
+    NULL -- System-granted permissions have no granted_by user
 FROM roles r, permissions p
 WHERE 
     -- Admin gets all permissions

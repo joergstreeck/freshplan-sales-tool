@@ -52,9 +52,8 @@ public class SecurityTestResource {
       return Response.ok(new SecurityTestResponse("You are authenticated", username, email))
           .build();
     } catch (Exception e) {
-      // In test context, use simple response
-      return Response.ok(new SecurityTestResponse("You are authenticated", "testuser", null))
-          .build();
+      // Re-throw as a runtime exception to ensure the test fails and reveals the issue.
+      throw new RuntimeException("Error in authenticatedEndpoint while getting security context", e);
     }
   }
 
