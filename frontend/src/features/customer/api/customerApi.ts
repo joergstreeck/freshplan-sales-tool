@@ -4,8 +4,15 @@ import type { CustomerListResponse, CustomerResponse } from '../types/customer.t
 export const customerApi = {
   // Get single customer by ID
   getCustomer: async (customerId: string): Promise<CustomerResponse> => {
-    const response = await httpClient.get<CustomerResponse>(`/api/customers/${customerId}`);
-    return response.data;
+    console.log('customerApi.getCustomer - fetching customer:', customerId);
+    try {
+      const response = await httpClient.get<CustomerResponse>(`/api/customers/${customerId}`);
+      console.log('customerApi.getCustomer - response:', response);
+      return response.data;
+    } catch (error) {
+      console.error('customerApi.getCustomer - error:', error);
+      throw error;
+    }
   },
 
   // Get paginated list of customers

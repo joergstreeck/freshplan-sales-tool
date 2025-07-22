@@ -81,7 +81,10 @@ export function ActionCenterColumnMUI({ selectedCustomerId, onClose }: ActionCen
   console.log('ActionCenterColumnMUI - selectedCustomerId:', selectedCustomerId);
 
   // Lade Kundendaten
-  const { data: customer, isLoading, isError } = useCustomerDetails(selectedCustomerId);
+  const { data: customer, isLoading, isError, error } = useCustomerDetails(selectedCustomerId);
+  
+  // More debug logging
+  console.log('ActionCenterColumnMUI - Loading state:', { isLoading, isError, hasCustomer: !!customer, error });
 
   // Empty State wenn kein Kunde ausgewählt
   if (!selectedCustomerId) {
@@ -142,6 +145,15 @@ export function ActionCenterColumnMUI({ selectedCustomerId, onClose }: ActionCen
       <Card
         sx={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
       >
+        <CircularProgress />
+      </Card>
+    );
+  }
+
+  // Loading State
+  if (isLoading) {
+    return (
+      <Card sx={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <CircularProgress />
       </Card>
     );

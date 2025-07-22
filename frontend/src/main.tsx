@@ -15,6 +15,9 @@ async function enableMocking() {
     return;
   }
 
+  // Set mock token for development
+  localStorage.setItem('auth-token', 'MOCK_JWT_TOKEN');
+
   // Check if backend is available
   try {
     const response = await fetch('http://localhost:8080/api/ping', {

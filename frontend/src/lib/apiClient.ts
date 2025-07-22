@@ -24,10 +24,11 @@ class ApiClient {
     };
 
     // Add auth token if available
-    const token = this.getAuthToken();
-    if (token) {
-      defaultHeaders['Authorization'] = `Bearer ${token}`;
-    }
+    // Temporarily disabled for development - backend not accepting tokens
+    // const token = this.getAuthToken();
+    // if (token) {
+    //   defaultHeaders['Authorization'] = `Bearer ${token}`;
+    // }
 
     const config: RequestInit = {
       ...options,
@@ -38,13 +39,16 @@ class ApiClient {
     };
 
     try {
+      console.log('apiClient.request - fetching:', url, config);
       const response = await fetch(url, config);
 
       if (!response.ok) {
+        const errorBody = await response.text();
+        console.error('apiClient.request - error response:', response.status, errorBody);
         const error: ApiError = {
           code: `HTTP_${response.status}`,
           message: response.statusText || 'API request failed',
-          details: { status: response.status },
+          details: { status: response.status, body: errorBody },
         };
         throw error;
       }
@@ -102,6 +106,7 @@ class ApiClient {
     // For development: Check localStorage for mock token
     if (import.meta.env.DEV) {
       const token = localStorage.getItem('auth-token');
+      console.log('apiClient.getAuthToken - token from localStorage:', token);
       if (token) {
         return token;
       }
