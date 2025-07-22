@@ -29,7 +29,7 @@ public class PermissionService {
   private static final Logger logger = LoggerFactory.getLogger(PermissionService.class);
 
   @Inject SecurityContextProvider securityProvider;
-  
+
   @Inject Clock clock; // Timezone-safe clock injection
 
   /** Simplified permission check - uses Keycloak roles as permissions for now. */
@@ -84,21 +84,21 @@ public class PermissionService {
       return Arrays.asList();
     }
   }
-  
+
   /**
    * Timezone-safe method to check if a UserPermission is expired.
-   * 
+   *
    * @param userPermission the permission to check
    * @return true if the permission is expired
    */
   public boolean isUserPermissionExpired(UserPermission userPermission) {
-    return userPermission.getExpiresAt() != null 
+    return userPermission.getExpiresAt() != null
         && LocalDateTime.now(clock).isAfter(userPermission.getExpiresAt());
   }
-  
+
   /**
    * Timezone-safe method to check if a UserPermission is active.
-   * 
+   *
    * @param userPermission the permission to check
    * @return true if the permission is active (not expired)
    */

@@ -121,7 +121,8 @@ class PermissionServiceTest {
     List<String> permissions = permissionService.getCurrentUserPermissions();
 
     // Assert
-    assertThat(permissions).containsExactlyInAnyOrder("customers:read", "customers:write", "customers:delete");
+    assertThat(permissions)
+        .containsExactlyInAnyOrder("customers:read", "customers:write", "customers:delete");
   }
 
   @Test

@@ -26,7 +26,7 @@ public class PermissionInterceptor {
   @AroundInvoke
   public Object checkPermission(InvocationContext context) throws Exception {
     PermissionRequired annotation = context.getMethod().getAnnotation(PermissionRequired.class);
-    
+
     // Check for class-level annotation if method-level annotation is not present
     if (annotation == null) {
       annotation = context.getTarget().getClass().getAnnotation(PermissionRequired.class);

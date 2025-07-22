@@ -74,7 +74,7 @@ public class PermissionResource {
           .entity(Map.of("error", "A database error occurred while processing your request."))
           .build();
     } catch (Exception e) {
-      // Log the full stack trace for debugging purposes  
+      // Log the full stack trace for debugging purposes
       logger.error("An unexpected error occurred while loading permissions", e);
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
           .entity(Map.of("error", "An unexpected error occurred while processing your request."))
