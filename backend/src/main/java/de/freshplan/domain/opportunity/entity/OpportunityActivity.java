@@ -5,8 +5,6 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.GenericGenerator;
-
 /**
  * Opportunity Activity - Aktivitäten zu einer Verkaufschance
  *
@@ -21,8 +19,7 @@ import org.hibernate.annotations.GenericGenerator;
 public class OpportunityActivity {
 
   @Id
-  @GeneratedValue(generator = "UUID")
-  @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+  @GeneratedValue(strategy = GenerationType.UUID)
   @Column(name = "id", updatable = false, nullable = false)
   private UUID id;
 

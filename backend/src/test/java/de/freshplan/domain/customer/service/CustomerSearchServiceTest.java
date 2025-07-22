@@ -12,7 +12,7 @@ import io.quarkus.hibernate.orm.panache.PanacheQuery;
 import io.quarkus.panache.common.Page;
 import io.quarkus.panache.common.Sort;
 import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.junit.mockito.InjectMock;
+import io.quarkus.test.InjectMock;
 import jakarta.inject.Inject;
 import java.math.BigDecimal;
 import java.time.LocalDate;
