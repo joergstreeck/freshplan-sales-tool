@@ -120,7 +120,6 @@ interface AccessDeniedDefaultProps {
 }
 
 const AccessDeniedDefault: React.FC<AccessDeniedDefaultProps> = ({ permission }) => {
-    const location = useLocation();
 
     return (
         <Box
