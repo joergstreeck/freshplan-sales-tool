@@ -12,7 +12,7 @@ eine saubere Frontend-Entwicklung ohne Datenbank-Verschmutzung.
 
 ## Architektur-Entscheidung
 
-**Referenz:** [ADR-001](../../../adr/ADR-001_backend_mock_endpoint_for_dev.md)
+**Referenz:** [ADR-001](/docs/features/../../adr/ADR-001_backend_mock_endpoint_for_dev.md)
 
 **Kernpunkte:**
 - ⭐⭐⭐⭐ Architektur-Qualität (4 Sterne)

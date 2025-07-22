@@ -2,7 +2,8 @@
  * Authenticated API Client
  * Axios instance with automatic token injection and error handling
  */
-import axios, { AxiosInstance } from 'axios';
+import axios from 'axios';
+import type { AxiosInstance } from 'axios';
 import { authUtils } from './keycloak';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';

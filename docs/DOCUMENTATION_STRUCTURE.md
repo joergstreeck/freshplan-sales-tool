@@ -17,7 +17,7 @@ freshplan-sales-tool/
 ├── VISION_AND_ROADMAP.md          # Produkt-Vision und Roadmap
 │
 └── docs/
-    ├── CRM_COMPLETE_MASTER_PLAN.md   # Master-Plan mit Phasen-Übersicht
+    ├── CRM_COMPLETE_MASTER_PLAN_V5.md   # Master-Plan mit Phasen-Übersicht
     ├── DOCUMENTATION_STRUCTURE.md     # Dieses Dokument
     ├── KNOWN_ISSUES.md                # Bekannte Probleme und Workarounds
     │
@@ -168,7 +168,7 @@ Diese Dokumente dürfen NIEMALS gelöscht werden:
 
 1. `/docs/CLAUDE.md`
 2. `/docs/STANDARDUBERGABE_NEU.md`
-3. `/docs/CRM_COMPLETE_MASTER_PLAN.md`
+3. `/docs/CRM_COMPLETE_MASTER_PLAN_V5.md`
 4. `/docs/TRIGGER_TEXTS.md`
 5. Alle Feature-Konzepte (FC-XXX)
 6. Alle ADRs

@@ -38,7 +38,8 @@ public class SecurityContextProvider {
       // For @TestSecurity, generate ID from principal name
       String principalName = securityIdentity.getPrincipal().getName();
       if (principalName != null) {
-        return UUID.nameUUIDFromBytes(principalName.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+        return UUID.nameUUIDFromBytes(
+            principalName.getBytes(java.nio.charset.StandardCharsets.UTF_8));
       }
       return null;
     }
@@ -156,8 +157,8 @@ public class SecurityContextProvider {
   }
 
   /**
-   * Safely get JWT token, handling cases where principal is not a JWT.
-   * This is needed for @TestSecurity which creates QuarkusPrincipal instead of JWT.
+   * Safely get JWT token, handling cases where principal is not a JWT. This is needed
+   * for @TestSecurity which creates QuarkusPrincipal instead of JWT.
    *
    * @return JsonWebToken or null if not available or not a JWT
    */
@@ -165,7 +166,7 @@ public class SecurityContextProvider {
     if (jwtInstance.isUnsatisfied()) {
       return null;
     }
-    
+
     try {
       JsonWebToken jwt = jwtInstance.get();
       if (jwt == null) {

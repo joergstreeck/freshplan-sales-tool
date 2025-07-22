@@ -19,8 +19,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 /**
- * Unit tests for SecurityContextProvider WITHOUT Quarkus context.
- * These tests use mocks to test the logic in isolation.
+ * Unit tests for SecurityContextProvider WITHOUT Quarkus context. These tests use mocks to test the
+ * logic in isolation.
  */
 @ExtendWith(MockitoExtension.class)
 @DisplayName("SecurityContextProvider Unit Tests")
@@ -194,10 +194,9 @@ class SecurityContextProviderUnitTest {
     when(securityIdentity.isAnonymous()).thenReturn(true);
 
     // When & Then
-    SecurityException exception = assertThrows(
-        SecurityException.class,
-        () -> securityContextProvider.requireAuthentication()
-    );
+    SecurityException exception =
+        assertThrows(
+            SecurityException.class, () -> securityContextProvider.requireAuthentication());
     assertEquals("Authentication required", exception.getMessage());
   }
 
@@ -210,10 +209,8 @@ class SecurityContextProviderUnitTest {
     when(securityIdentity.hasRole("admin")).thenReturn(false);
 
     // When & Then
-    SecurityException exception = assertThrows(
-        SecurityException.class,
-        () -> securityContextProvider.requireRole("admin")
-    );
+    SecurityException exception =
+        assertThrows(SecurityException.class, () -> securityContextProvider.requireRole("admin"));
     assertEquals("Role 'admin' required", exception.getMessage());
   }
 
@@ -226,15 +223,11 @@ class SecurityContextProviderUnitTest {
     when(securityIdentity.getRoles()).thenReturn(Set.of("sales", "viewer"));
 
     // When & Then: Should pass
-    assertDoesNotThrow(() -> 
-        securityContextProvider.requireAnyRole("admin", "sales", "manager")
-    );
+    assertDoesNotThrow(() -> securityContextProvider.requireAnyRole("admin", "sales", "manager"));
 
     // When & Then: Should fail
     assertThrows(
-        SecurityException.class,
-        () -> securityContextProvider.requireAnyRole("admin", "manager")
-    );
+        SecurityException.class, () -> securityContextProvider.requireAnyRole("admin", "manager"));
   }
 
   @Test

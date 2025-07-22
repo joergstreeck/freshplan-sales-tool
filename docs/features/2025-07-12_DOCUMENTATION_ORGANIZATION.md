@@ -8,7 +8,7 @@
 ### 1️⃣ Master-Dokumente (Immer aktuell halten!)
 ```
 docs/
-├── CRM_COMPLETE_MASTER_PLAN.md          # Die Vision (nur Links zu Details)
+├── CRM_COMPLETE_MASTER_PLAN_V5.md          # Die Vision (nur Links zu Details)
 └── features/
     ├── FC-002-IMPLEMENTATION_PLAN.md    # Der aktuelle Fahrplan ⭐
     └── FC-002-hub.md                    # Technische Übersicht aller Module

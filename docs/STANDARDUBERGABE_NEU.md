@@ -99,7 +99,7 @@ cat docs/NEXT_STEP.md
 **Pflicht-Lektüre in DIESER Reihenfolge:**
 1. `/docs/CLAUDE.md` - Arbeitsrichtlinien und Standards
 2. Letzte Übergabe in `/docs/claude-work/daily-work/YYYY-MM-DD/`
-3. ~~`/docs/CRM_COMPLETE_MASTER_PLAN.md`~~ → **V5 bereits in Schritt 1.5 gelesen!**
+3. ~~`/docs/CRM_COMPLETE_MASTER_PLAN_V5.md`~~ → **V5 bereits in Schritt 1.5 gelesen!**
 
 **Dann Status abgleichen:**
 ```bash

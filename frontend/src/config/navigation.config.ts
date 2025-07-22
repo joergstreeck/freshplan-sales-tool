@@ -4,6 +4,7 @@ import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import PeopleIcon from '@mui/icons-material/People';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 import SettingsIcon from '@mui/icons-material/Settings';
+import SecurityIcon from '@mui/icons-material/Security';
 
 // Temporär: Direkte Type-Definition um Import-Probleme zu umgehen
 interface NavigationSubItem {
@@ -98,5 +99,12 @@ export const navigationConfig: NavigationItemType[] = [
     icon: SettingsIcon,
     path: '/einstellungen',
     permissions: ['settings.view'],
+  },
+  {
+    id: 'security-test',
+    label: 'Security Test',
+    icon: SecurityIcon,
+    path: '/security-test',
+    permissions: [], // Für alle sichtbar während des Tests
   },
 ];

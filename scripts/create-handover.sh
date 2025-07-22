@@ -132,9 +132,18 @@ sed -i.bak "s/SERVICE_CHECK_PLACEHOLDER/[Von Script prüfen]/g" "$HANDOVER_FILE"
 # Count TODOs in recent handovers
 TODO_COUNT=0
 if [ -f ".current-todos.md" ]; then
-    # Count from current todos file
-    TODO_COUNT=$(grep -E "^\- \[" ".current-todos.md" 2>/dev/null | wc -l | tr -d ' ')
-    echo "✅ TODOs gezählt: $TODO_COUNT (aus .current-todos.md)"
+    # Count from current todos file (JSON format)
+    # Count occurrences of "id": "todo-" in the JSON
+    TODO_COUNT=$(grep -o '"id": "todo-' ".current-todos.md" 2>/dev/null | wc -l | tr -d ' ')
+    if [ "$TODO_COUNT" -gt 0 ]; then
+        echo "✅ TODOs gezählt: $TODO_COUNT (aus .current-todos.md)"
+    fi
+elif [ -f "backend/.current-todos.md" ]; then
+    # Try backend directory
+    TODO_COUNT=$(grep -o '"id": "todo-' "backend/.current-todos.md" 2>/dev/null | wc -l | tr -d ' ')
+    if [ "$TODO_COUNT" -gt 0 ]; then
+        echo "✅ TODOs gezählt: $TODO_COUNT (aus backend/.current-todos.md)"
+    fi
 else
     # Count from most recent handover
     LATEST_HANDOVER=$(find docs/claude-work/daily-work -name "*HANDOVER*.md" -type f 2>/dev/null | sort -r | head -1)
@@ -166,32 +175,17 @@ sed -i.bak "s/TODO_COUNT_PLACEHOLDER/$TODO_COUNT/g" "$HANDOVER_FILE"
 rm "$HANDOVER_FILE.bak"
 
 # Check if TODOs exist and update template
+TODO_FILE=""
 if [ -f ".current-todos.md" ]; then
-    # Create a temporary file with proper markers
-    TODO_START="## 📋 TODO-LISTE"
-    TODO_ANZAHL_START="### 📊 TODO-ANZAHL ZUM VERGLEICH:"
-    TODO_END="## 🔧 NÄCHSTE SCHRITTE"
-    
-    # Extract content before TODOs
-    sed -n "1,/${TODO_START}/p" "$HANDOVER_FILE" > "${HANDOVER_FILE}.tmp"
-    echo "" >> "${HANDOVER_FILE}.tmp"
-    
-    # Add the TODO-ANZAHL section (preserve it!)
-    sed -n "/${TODO_ANZAHL_START}/,/^$/p" "$HANDOVER_FILE" >> "${HANDOVER_FILE}.tmp"
-    echo "" >> "${HANDOVER_FILE}.tmp"
-    
-    # Add the actual TODOs
-    echo "### Aktuelle TODOs:" >> "${HANDOVER_FILE}.tmp"
-    cat ".current-todos.md" >> "${HANDOVER_FILE}.tmp"
-    echo "" >> "${HANDOVER_FILE}.tmp"
-    
-    # Extract content after TODOs
-    sed -n "/${TODO_END}/,\$p" "$HANDOVER_FILE" >> "${HANDOVER_FILE}.tmp"
-    
-    # Replace original file
-    mv "${HANDOVER_FILE}.tmp" "$HANDOVER_FILE"
-    
-    echo "✅ TODOs wurden automatisch eingefügt!"
+    TODO_FILE=".current-todos.md"
+elif [ -f "backend/.current-todos.md" ]; then
+    TODO_FILE="backend/.current-todos.md"
+fi
+
+if [ -n "$TODO_FILE" ]; then
+    # Don't automatically insert JSON TODOs - Claude should format them properly
+    echo "✅ TODOs gefunden in: $TODO_FILE"
+    echo "⚠️  Claude muss die TODOs aus $TODO_FILE formatiert einfügen!"
 else
     # Keep the template as is - don't modify the TODO section
     echo "⚠️  TODOs müssen von Claude eingefügt werden!"

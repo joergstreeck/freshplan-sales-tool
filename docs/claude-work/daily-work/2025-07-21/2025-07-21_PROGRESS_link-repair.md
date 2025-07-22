@@ -52,7 +52,7 @@ Von ursprünglich **917 defekten Links** wurden bereits **784 repariert** (85,5%
    - Müssen individuell geprüft werden
 
 4. **Verzeichnis-Links** - ~10 Links
-   - `../ACTIVE/`, `../PLANNED/`
+   - `/docs/features/ACTIVE/`, `/docs/features/PLANNED/`
    - Sollten auf README.md zeigen
 
 5. **Sonstige** - ~23 Links

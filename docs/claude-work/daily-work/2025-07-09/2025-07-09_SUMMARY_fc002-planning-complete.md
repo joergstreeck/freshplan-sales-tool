@@ -12,7 +12,7 @@ Der Plan definiert:
 - **Abhängigkeiten** und kritische Pfade
 - **Team-Aufteilung** für paralleles Arbeiten
 
-### 2. CRM_COMPLETE_MASTER_PLAN.md aktualisiert ✅
+### 2. CRM_COMPLETE_MASTER_PLAN_V5.md aktualisiert ✅
 **Wichtigste Änderung:** Phase 3 wurde von groben Details zu einer strategischen Zusammenfassung transformiert:
 
 Vorher:

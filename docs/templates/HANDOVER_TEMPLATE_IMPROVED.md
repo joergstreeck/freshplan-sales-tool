@@ -113,7 +113,7 @@ cd frontend && npm test
 - **Auth:** Keycloak OIDC Integration
 
 ## 📚 RELEVANTE DOKUMENTATION
-- Master Plan: `/docs/CRM_COMPLETE_MASTER_PLAN.md`
+- Master Plan: `/docs/CRM_COMPLETE_MASTER_PLAN_V5.md`
 - Aktives Feature-Konzept: [Link zum FC-XXX Dokument]
 - API Contract: `/docs/technical/API_CONTRACT.md`
 - Known Issues: `/docs/KNOWN_ISSUES.md`

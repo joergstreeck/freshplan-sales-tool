@@ -47,7 +47,7 @@
 ### 1. **MASTER/FEATURE_OVERVIEW.md aktualisieren**
 ```markdown
 # Hinzufügen zu PLANNED Sektion:
-| FC-010 Customer Import | 📋 Geplant | 0% | DB Schema | [KOMPAKT](../PLANNED/FC-010_KOMPAKT.md) |
+| FC-010 Customer Import | 📋 Geplant | 0% | DB Schema | [KOMPAKT](/docs/features/PLANNED/FC-010_KOMPAKT.md) |
 
 # Hinzufügen zu Dependencies Graph:
 FC-008 Security Foundation (85%)

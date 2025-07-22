@@ -13,7 +13,7 @@
 
 ```typescript
 // hooks/useRoleBasedNavigation.ts (NEU)
-import { useUser } from '../features/users/userQueries';
+import { useUser } from '/docs/features/users/userQueries';
 
 interface NavigationItem {
   id: string;

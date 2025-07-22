@@ -45,4 +45,4 @@ GET    /api/ping            # Health check
 ## Kontakt
 - Lead: Team BACK (@Max)
 - Slack: #team-back
-- Wiki: [Backend Architecture](../docs/adr/)
+- Wiki: [Backend Architecture](/docs/features/docs/adr/)

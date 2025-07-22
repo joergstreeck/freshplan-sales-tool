@@ -101,6 +101,6 @@ public Response getMockDashboard(@PathParam("userId") String userId) {
 
 ## Referenzen
 
-- [Backend Start Guide](../technical/BACKEND_START_GUIDE.md)
-- [API Contract](../technical/API_CONTRACT.md)
-- [CRM Complete Master Plan](../CRM_COMPLETE_MASTER_PLAN.md)
+- [Backend README](/backend/README.md)
+- [Security Foundation](/docs/features/ACTIVE/01_security_foundation/FC-008_CLAUDE_TECH.md)
+- [CRM Complete Master Plan V5](/docs/CRM_COMPLETE_MASTER_PLAN_V5.md)

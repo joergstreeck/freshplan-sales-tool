@@ -170,9 +170,9 @@ backend/
 
 ## 📖 Quick Links (Backend-spezifisch)
 
-- [Database Guide](./DATABASE_GUIDE.md) - Schema, Migrations, JPA Tipps
-- [API Testing Guide](./API_TESTING.md) - curl, HTTPie, Postman Examples
-- [Test Coverage Report](./TEST_COVERAGE_REPORT.md) - Aktuelle Test-Abdeckung
+- Database Guide - Schema in src/main/resources/db/migration/
+- API Testing Guide - Swagger UI unter http://localhost:8080/q/swagger-ui
+- Test Coverage Report - Führe `./mvnw test` aus
 - Backend Team + ChatGPT AI Assistant
 
 ### Sprint 0 Status

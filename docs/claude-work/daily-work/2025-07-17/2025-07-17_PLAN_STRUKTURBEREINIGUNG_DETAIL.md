@@ -16,7 +16,7 @@ cat docs/features/MASTER/FEATURE_OVERVIEW.md
 
 **Hinzufügen zu Zeile 27 (nach FC-006):**
 ```markdown
-| Customer Import | FC-010 | 📋 Geplant | 0% | DB Schema erstellen | [KOMPAKT](../PLANNED/FC-010_KOMPAKT.md) • [IMPL](../PLANNED/FC-010_IMPLEMENTATION_GUIDE.md) |
+| Customer Import | FC-010 | 📋 Geplant | 0% | DB Schema erstellen | [KOMPAKT](/docs/features/PLANNED/FC-010_KOMPAKT.md) • [IMPL](/docs/features/PLANNED/FC-010_IMPLEMENTATION_GUIDE.md) |
 ```
 
 **Dependencies Graph erweitern (Zeile 42):**

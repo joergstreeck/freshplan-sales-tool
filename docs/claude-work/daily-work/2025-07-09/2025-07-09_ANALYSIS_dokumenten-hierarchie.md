@@ -43,7 +43,7 @@ Die Dokumentenstruktur des FreshPlan Sales Tool Projekts zeigt eine klare, hiera
 
 ### 1. **Zentrale Dokumente (Hub-Funktion)**
 
-#### CRM COMPLETE MASTER PLAN (`/docs/CRM_COMPLETE_MASTER_PLAN.md`)
+#### CRM COMPLETE MASTER PLAN (`/docs/CRM_COMPLETE_MASTER_PLAN_V5.md`)
 - **Rolle:** Einzige Wahrheit, zentraler Einstiegspunkt
 - **Verlinkt zu:** Alle Feature-Konzepte (FC-001 bis FC-007)
 - **Besonderheit:** Nutzt relative Links zu Features (`./features/FC-XXX.md`)

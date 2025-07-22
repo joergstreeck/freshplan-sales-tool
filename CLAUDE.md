@@ -1270,7 +1270,7 @@ Bei JEDER Übergabe MÜSSEN alle aktiven Feature-Konzepte (FC-XXX) auf ihren akt
 - `/docs/STANDARDUBERGABE_KOMPAKT.md` - Quick Reference
 - `/docs/STANDARDUBERGABE.md` - Troubleshooting Guide
 - `/docs/CLAUDE.md` - Diese Arbeitsrichtlinien
-- `/docs/CRM_COMPLETE_MASTER_PLAN.md` - Aktueller Masterplan
+- `/docs/CRM_COMPLETE_MASTER_PLAN_V5.md` - Aktueller Masterplan
 
 **Backup:** `./scripts/backup-critical-docs.sh` regelmäßig ausführen!
 

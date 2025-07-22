@@ -18,7 +18,7 @@ import java.util.UUID;
  * Development-only version of UserResource without security. This is ONLY active in dev profile for
  * local development.
  */
-@Path("/api/users")
+@Path("/api/dev/users")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @IfBuildProfile("dev")

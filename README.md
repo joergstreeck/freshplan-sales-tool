@@ -14,7 +14,7 @@ Wir entwickeln nicht nur ein CRM, sondern ein **Sales Command Center** - eine re
 - **Spalte 2: Fokus-Liste** - Dynamische Kundenlisten mit Enterprise-Features
 - **Spalte 3: Aktions-Center** - Geführte Prozesse für maximale Effizienz
 
-Mehr Details: [Vision & Roadmap](./VISION_AND_ROADMAP.md) | [Master Plan V4](./docs/CRM_COMPLETE_MASTER_PLAN.md)
+Mehr Details: [Vision & Roadmap](./VISION_AND_ROADMAP.md) | [Master Plan V5](./docs/CRM_COMPLETE_MASTER_PLAN_V5.md)
 
 ## 🏗️ Architektur & Technologie
 
@@ -90,7 +90,7 @@ npm run dev
 
 ### 🎯 Vision & Strategy
 - [Vision & Roadmap](./VISION_AND_ROADMAP.md) - Sales Command Center Vision
-- [Master Plan V4](./docs/CRM_COMPLETE_MASTER_PLAN.md) - Die finale Wahrheit
+- [Master Plan V5](./docs/CRM_COMPLETE_MASTER_PLAN_V5.md) - Die finale Wahrheit
 - [Way of Working](./WAY_OF_WORKING.md) - Unsere Entwicklungsstandards
 
 ### 🛠️ Technical Documentation

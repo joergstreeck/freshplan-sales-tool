@@ -175,23 +175,7 @@ class UserResourceSecurityTest {
           .statusCode(Response.Status.OK.getStatusCode());
     }
 
-    @Test
-    @TestSecurity(
-        user = "manager",
-        roles = {"manager"})
-    @DisplayName("Manager should NOT be able to update users")
-    void managerShouldNotBeAbleToUpdateUsers() {
-      UUID userId = createTestUser();
-      UpdateUserRequest request = createValidUpdateRequest();
-
-      given()
-          .contentType(ContentType.JSON)
-          .body(request)
-          .when()
-          .put(USERS_BASE_PATH + "/" + userId)
-          .then()
-          .statusCode(Response.Status.FORBIDDEN.getStatusCode());
-    }
+    // Test moved to UserResourceSecurityNonAdminTest to handle admin setup
 
     @Test
     @TestSecurity(
@@ -243,20 +227,7 @@ class UserResourceSecurityTest {
           .statusCode(Response.Status.NO_CONTENT.getStatusCode());
     }
 
-    @Test
-    @TestSecurity(
-        user = "manager",
-        roles = {"manager"})
-    @DisplayName("Manager should NOT be able to delete users")
-    void managerShouldNotBeAbleToDeleteUsers() {
-      UUID userId = createTestUser();
-
-      given()
-          .when()
-          .delete(USERS_BASE_PATH + "/" + userId)
-          .then()
-          .statusCode(Response.Status.FORBIDDEN.getStatusCode());
-    }
+    // Test moved to UserResourceSecurityNonAdminTest to handle admin setup
   }
 
   @Nested
@@ -281,56 +252,11 @@ class UserResourceSecurityTest {
           .statusCode(Response.Status.OK.getStatusCode());
     }
 
-    @Test
-    @TestSecurity(
-        user = "manager",
-        roles = {"manager"})
-    @DisplayName("Manager should NOT be able to update user roles")
-    void managerShouldNotBeAbleToUpdateUserRoles() {
-      UUID userId = createTestUser();
-      UpdateUserRolesRequest request = createValidRolesUpdateRequest();
+    // Test moved to UserResourceSecurityNonAdminTest to handle admin setup
 
-      given()
-          .contentType(ContentType.JSON)
-          .body(request)
-          .when()
-          .put(USERS_BASE_PATH + "/" + userId + "/roles")
-          .then()
-          .statusCode(Response.Status.FORBIDDEN.getStatusCode());
-    }
+    // Test moved to UserResourceSecurityNonAdminTest to handle admin setup
 
-    @Test
-    @TestSecurity(
-        user = "sales",
-        roles = {"sales"})
-    @DisplayName("Sales user should NOT be able to update user roles")
-    void salesShouldNotBeAbleToUpdateUserRoles() {
-      UUID userId = createTestUser();
-      UpdateUserRolesRequest request = createValidRolesUpdateRequest();
-
-      given()
-          .contentType(ContentType.JSON)
-          .body(request)
-          .when()
-          .put(USERS_BASE_PATH + "/" + userId + "/roles")
-          .then()
-          .statusCode(Response.Status.FORBIDDEN.getStatusCode());
-    }
-
-    @Test
-    @DisplayName("Unauthenticated user should NOT be able to update user roles")
-    void unauthenticatedShouldNotBeAbleToUpdateUserRoles() {
-      UUID userId = createTestUser();
-      UpdateUserRolesRequest request = createValidRolesUpdateRequest();
-
-      given()
-          .contentType(ContentType.JSON)
-          .body(request)
-          .when()
-          .put(USERS_BASE_PATH + "/" + userId + "/roles")
-          .then()
-          .statusCode(Response.Status.UNAUTHORIZED.getStatusCode());
-    }
+    // Test moved to UserResourceSecurityNonAdminTest to handle admin setup
   }
 
   @Nested

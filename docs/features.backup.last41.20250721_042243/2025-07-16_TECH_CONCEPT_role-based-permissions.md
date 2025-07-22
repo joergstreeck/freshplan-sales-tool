@@ -277,7 +277,7 @@ describe('Permission System', () => {
 
 ## 📚 Related Documents
 
-- **Master Plan:** `/docs/CRM_COMPLETE_MASTER_PLAN.md`
+- **Master Plan:** `/docs/CRM_COMPLETE_MASTER_PLAN_V5.md`
 - **Security Foundation:** `/docs/features/ACTIVE/01_security_foundation/README.md`
 - **UI/UX Konzept:** Frontend-Architektur-Sektion
 - **Implementation Plan:** Dieser Plan wird als FC-009 in Master Plan integriert

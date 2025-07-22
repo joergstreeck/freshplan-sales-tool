@@ -126,9 +126,9 @@ docs/
 **Kritische Integration mit:** Customer Entity, Menu System  
 
 ## 🔗 Navigation
-← Zurück: [V5 Master Plan](../../../CRM_COMPLETE_MASTER_PLAN_V5.md)
-→ Nächstes Modul: [Opportunity Pipeline](../02_opportunity_pipeline/README.md)
-↗️ Abhängigkeiten: [Security Foundation](../01_security_foundation/README.md)
+← Zurück: [V5 Master Plan](/docs/features/../../CRM_COMPLETE_MASTER_PLAN_V5.md)
+→ Nächstes Modul: [Opportunity Pipeline](/docs/features/02_opportunity_pipeline/README.md)
+↗️ Abhängigkeiten: [Security Foundation](/docs/features/01_security_foundation/README.md)
 
 ## 📋 Quick Context für Claude
 - **Was war vorher:** Security Foundation mit JWT + Keycloak
@@ -136,7 +136,7 @@ docs/
 - **Offene Fragen:** Customer-Team-Zuordnung, Transfer-Mechanismen
 
 ## 📝 Technisches Konzept
-**Vollständige Details:** [FC-009 Technisches Konzept](../../2025-07-16_TECH_CONCEPT_role-based-permissions.md)
+**Vollständige Details:** [FC-009 Technisches Konzept](/docs/features/../2025-07-16_TECH_CONCEPT_role-based-permissions.md)
 
 ### Vision
 Menüpunkt-basierte Permissions mit Capabilities:
@@ -155,7 +155,7 @@ Menüpunkt-basierte Permissions mit Capabilities:
 **Pattern für alle ACTIVE-Module:**
 ```markdown
 ## 🔗 Navigation
-← Zurück: [V5 Master Plan](../../MASTER/CRM_COMPLETE_MASTER_PLAN_V5.md)
+← Zurück: [V5 Master Plan](/docs/features/../MASTER/CRM_COMPLETE_MASTER_PLAN_V5.md)
 → Nächstes Modul: [Link zu nächstem ACTIVE Modul]
 ↗️ Abhängigkeiten: [Links zu dependency modules]
 

@@ -6,7 +6,7 @@
 
 ### 1️⃣ **Master Plan** - Der Kompass
 ```markdown
-# CRM_COMPLETE_MASTER_PLAN.md
+# CRM_COMPLETE_MASTER_PLAN_V5.md
 
 ## 🎯 Aktuelle Arbeitsphase
 **Modul:** M4 - Opportunity Pipeline
@@ -30,7 +30,7 @@
 # In jeder HANDOVER.md
 
 ## 📍 CLAUDE QUICK CONTEXT
-**Master Plan:** docs/CRM_COMPLETE_MASTER_PLAN.md (Zeilen 120-150) ⭐
+**Master Plan:** docs/CRM_COMPLETE_MASTER_PLAN_V5.md (Zeilen 120-150) ⭐
 **Aktives Modul:** M4 - docs/features/2025-07-12_TECH_CONCEPT_M4-opportunity-pipeline.md
 **Letzte Datei:** backend/src/main/java/de/freshplan/domain/opportunity/service/OpportunityService.java
 **Nächster TODO:** Stage-Validierung implementieren (Zeile 87)
@@ -166,7 +166,7 @@ vim OpportunityService.java +87
 ./mvnw test -Dtest=OpportunityServiceTest
 
 # Business Rules checken
-cat ../../features/M4_opportunity_pipeline/business_rules.md | grep -A 20 "Stage Transitions"
+cat ..//docs/features/M4_opportunity_pipeline/business_rules.md | grep -A 20 "Stage Transitions"
 ```
 ```
 

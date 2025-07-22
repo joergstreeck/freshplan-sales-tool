@@ -66,7 +66,7 @@ Nach jeder getroffenen Entscheidung oder signifikanten Änderung MÜSSEN die fol
    - Anhang B: Backend-Anforderungen und API-Spezifikationen
    - Update: Bei Architektur-Entscheidungen oder API-Änderungen
 
-4. **Der CRM_COMPLETE_MASTER_PLAN.md**
+4. **Der CRM_COMPLETE_MASTER_PLAN_V5.md**
    - Nur bei Änderungen der groben Roadmap oder Vision
    - Update: Sehr selten, nur bei fundamentalen Richtungsänderungen
 

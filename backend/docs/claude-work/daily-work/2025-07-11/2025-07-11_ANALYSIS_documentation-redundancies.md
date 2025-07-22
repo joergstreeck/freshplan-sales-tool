@@ -8,7 +8,7 @@
 ### 1. Master Plan Versionen
 - **Problem:** Zwei konkurrierende Master-Pläne
 - **Dateien:**
-  - `/docs/CRM_COMPLETE_MASTER_PLAN.md` (V4 vom 06.07.2025)
+  - `/docs/CRM_COMPLETE_MASTER_PLAN_V5.md` (V4 vom 06.07.2025)
   - `/docs/CRM_COMPLETE_MASTER_PLAN_V5.md` (V5 vom 12.07.2025)
 - **Empfehlung:** V4 archivieren, nur V5 behalten
 - **Inkonsistenz:** V5 hat neue Claude-Working-Section und verweist auf andere Dokumente

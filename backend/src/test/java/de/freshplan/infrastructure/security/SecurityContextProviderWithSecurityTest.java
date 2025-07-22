@@ -10,8 +10,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 /**
- * Integration tests for SecurityContextProvider WITH security enabled.
- * These tests use @TestSecurity to simulate authenticated users.
+ * Integration tests for SecurityContextProvider WITH security enabled. These tests
+ * use @TestSecurity to simulate authenticated users.
  */
 @QuarkusTest
 @DisplayName("SecurityContextProvider Integration Tests (with Security)")
@@ -20,7 +20,9 @@ class SecurityContextProviderWithSecurityTest {
   @Inject SecurityContextProvider securityContextProvider;
 
   @Test
-  @TestSecurity(user = "testuser", roles = {"admin", "manager"})
+  @TestSecurity(
+      user = "testuser",
+      roles = {"admin", "manager"})
   @DisplayName("Should return authenticated user information")
   void shouldReturnAuthenticatedUserInfo() {
     // Given: User authenticated via @TestSecurity
@@ -38,7 +40,9 @@ class SecurityContextProviderWithSecurityTest {
   }
 
   @Test
-  @TestSecurity(user = "salesuser", roles = {"sales"})
+  @TestSecurity(
+      user = "salesuser",
+      roles = {"sales"})
   @DisplayName("Should check roles correctly")
   void shouldCheckRolesCorrectly() {
     // Given: User with sales role only
@@ -50,7 +54,9 @@ class SecurityContextProviderWithSecurityTest {
   }
 
   @Test
-  @TestSecurity(user = "adminuser", roles = {"admin"})
+  @TestSecurity(
+      user = "adminuser",
+      roles = {"admin"})
   @DisplayName("Should require correct role")
   void shouldRequireCorrectRole() {
     // Given: User with admin role
@@ -59,29 +65,27 @@ class SecurityContextProviderWithSecurityTest {
     assertDoesNotThrow(() -> securityContextProvider.requireRole("admin"));
 
     // When & Then: Should throw for missing role
-    SecurityException exception = assertThrows(
-        SecurityException.class,
-        () -> securityContextProvider.requireRole("manager")
-    );
+    SecurityException exception =
+        assertThrows(SecurityException.class, () -> securityContextProvider.requireRole("manager"));
     assertEquals("Role 'manager' required", exception.getMessage());
   }
 
   @Test
-  @TestSecurity(user = "multiuser", roles = {"sales", "viewer"})
+  @TestSecurity(
+      user = "multiuser",
+      roles = {"sales", "viewer"})
   @DisplayName("Should require any of multiple roles")
   void shouldRequireAnyOfMultipleRoles() {
     // Given: User with sales and viewer roles
 
     // When & Then: Should pass if user has at least one required role
-    assertDoesNotThrow(() -> 
-        securityContextProvider.requireAnyRole("admin", "sales", "manager")
-    );
+    assertDoesNotThrow(() -> securityContextProvider.requireAnyRole("admin", "sales", "manager"));
 
     // When & Then: Should fail if user has none of the required roles
-    SecurityException exception = assertThrows(
-        SecurityException.class,
-        () -> securityContextProvider.requireAnyRole("admin", "manager")
-    );
+    SecurityException exception =
+        assertThrows(
+            SecurityException.class,
+            () -> securityContextProvider.requireAnyRole("admin", "manager"));
     assertTrue(exception.getMessage().contains("One of roles"));
   }
 
@@ -103,18 +107,16 @@ class SecurityContextProviderWithSecurityTest {
     // Given: No @TestSecurity annotation (anonymous user)
 
     // When & Then: Should throw when authentication required
-    SecurityException exception = assertThrows(
-        SecurityException.class,
-        () -> securityContextProvider.requireAuthentication()
-    );
+    SecurityException exception =
+        assertThrows(
+            SecurityException.class, () -> securityContextProvider.requireAuthentication());
     assertEquals("Authentication required", exception.getMessage());
   }
 
   @Test
   @TestSecurity(
       user = "complexuser",
-      roles = {"admin", "manager", "sales"}
-  )
+      roles = {"admin", "manager", "sales"})
   @DisplayName("Should handle complex user with multiple roles")
   void shouldHandleComplexUserWithMultipleRoles() {
     // Given: User with multiple roles
@@ -130,7 +132,9 @@ class SecurityContextProviderWithSecurityTest {
   }
 
   @Test
-  @TestSecurity(user = "testuser", roles = {"viewer"})
+  @TestSecurity(
+      user = "testuser",
+      roles = {"viewer"})
   @DisplayName("Should get authentication details")
   void shouldGetAuthenticationDetails() {
     // Given: Authenticated user

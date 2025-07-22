@@ -240,7 +240,7 @@ export const QuickCustomerForm: React.FC<QuickCustomerFormProps> = ({ onSubmit }
 ```typescript
 // hooks/useSmartDefaults.ts (NEU)
 import { useLocation } from 'react-router-dom';
-import { useUser } from '../features/users/userQueries';
+import { useUser } from '/docs/features/users/userQueries';
 
 export const useSmartDefaults = () => {
   const location = useLocation();

@@ -2,7 +2,7 @@
 
 **Version:** 2.0  
 **Datum:** 06.07.2025  
-**Status:** AKTUELL - Aligned mit [CRM_COMPLETE_MASTER_PLAN V4](./docs/CRM_COMPLETE_MASTER_PLAN.md)
+**Status:** AKTUELL - Aligned mit [CRM_COMPLETE_MASTER_PLAN V4](./docs/CRM_COMPLETE_MASTER_PLAN_V5.md)
 
 ---
 

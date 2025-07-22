@@ -359,7 +359,7 @@ const CorrectButton = styled.button`
 
 **Bei CI-Fragen oder Unsicherheiten:**
 - Referenz: `/docs/FRESH-FOODZ_CI.md`
-- Master Plan: `/docs/CRM_COMPLETE_MASTER_PLAN.md`
+- Master Plan: `/docs/CRM_COMPLETE_MASTER_PLAN_V5.md`
 - Code-Review durch Claude mit CI-Focus
 
 **WICHTIG:** Im Zweifelsfall IMMER die strengeren CI-Vorgaben wählen!

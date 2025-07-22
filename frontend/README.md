@@ -112,8 +112,8 @@ npm run test:ui     # Interactive UI
 
 #### 🏗️ Architektur & Standards
 
-- **Frontend Design System**: [src/styles/DESIGN_SYSTEM.md](./src/styles/DESIGN_SYSTEM.md)
-- **Component Architecture**: Siehe [Architecture Decision Records](../docs/architecture/0004-frontend-design-system.md) _(wenn Zugriff)_
+- **Frontend Design System**: Siehe UI Foundation Module
+- **Component Architecture**: Dokumentation in Arbeit
 - **Code Standards**: TypeScript Strict Mode, ESLint Rules in `.eslintrc`
 
 #### 🔧 Setup & Development
@@ -178,6 +178,6 @@ frontend/
 
 ## 📖 Quick Links (Frontend-spezifisch)
 
-- [Troubleshooting Guide](./TROUBLESHOOTING.md) - Häufige Probleme & Lösungen
-- [API Cheatsheet](./API_CHEATSHEET.md) - Backend API Quick Reference
-- [Design System](./src/styles/DESIGN_SYSTEM.md) - UI Standards & Components
+- Troubleshooting Guide - In Arbeit
+- API Cheatsheet - Siehe Backend README
+- Design System - Siehe UI Foundation Module

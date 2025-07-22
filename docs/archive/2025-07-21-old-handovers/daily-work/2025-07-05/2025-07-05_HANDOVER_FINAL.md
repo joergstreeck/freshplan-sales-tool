@@ -215,7 +215,7 @@ Alle Major-Issues wurden erfolgreich behoben:
 - **API Documentation:** OpenAPI verfügbar unter `/q/swagger-ui`
 
 **Dokumentation:**
-- `/docs/CRM_COMPLETE_MASTER_PLAN.md` - Phase 1 Customer Management
+- `/docs/CRM_COMPLETE_MASTER_PLAN_V5.md` - Phase 1 Customer Management
 - `/CLAUDE.md` - Arbeitsrichtlinien und Standards
 - **Merged PR #28:** https://github.com/joergstreeck/freshplan-sales-tool/pull/28
 

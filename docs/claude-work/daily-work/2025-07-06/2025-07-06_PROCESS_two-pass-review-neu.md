@@ -49,7 +49,7 @@ Alles, was eine Maschine nicht kann und was wirklich über die Qualität der Sof
 - Folgt er unseren Backend- und Frontend-Architektur-Standards?
 
 #### 2. **Logik** 🧠
-- Tut das Feature genau das, was es laut `CRM_COMPLETE_MASTER_PLAN.md` tun soll?
+- Tut das Feature genau das, was es laut `CRM_COMPLETE_MASTER_PLAN_V5.md` tun soll?
 - Gibt es unentdeckte Denkfehler?
 - Sind Edge-Cases berücksichtigt?
 - Ist die Business-Logik korrekt implementiert?
