@@ -6,10 +6,7 @@ test.describe('Authentication Flow - Smoke Test', () => {
     // Navigate to the app
     await page.goto('/');
     
-    // Wait longer for the app to initialize (API call + React render)
-    await page.waitForTimeout(3000);
-    
-    // Check for JS errors in console
+    // Check for JS errors in console (removed fixed waitForTimeout in favor of dynamic waiting)
     const errors: string[] = [];
     page.on('console', msg => {
       if (msg.type() === 'error') {

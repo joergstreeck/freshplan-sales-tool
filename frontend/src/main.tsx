@@ -8,6 +8,7 @@ import './index.css'; // FreshPlan CI Design System (überschreibt Legacy)
 import './styles/variables-mapping.css'; // Map legacy variables to new FreshPlan CI
 import './styles/freshplan-design-system.css'; // Main design system
 import { AppProviders } from './providers.tsx';
+import { AUTH_TOKEN_KEY, MOCK_JWT_TOKEN, BACKEND_BASE_URL, PING_ENDPOINT, BACKEND_CHECK_TIMEOUT } from './constants';
 
 // Enable MSW for development if backend is not available
 async function enableMocking() {
@@ -19,13 +20,13 @@ async function enableMocking() {
   }
 
   // Set mock token for development
-  localStorage.setItem('auth-token', 'MOCK_JWT_TOKEN');
+  localStorage.setItem(AUTH_TOKEN_KEY, MOCK_JWT_TOKEN);
 
   // Check if backend is available with longer timeout for CI
   try {
-    const response = await fetch('http://localhost:8080/api/ping', {
+    const response = await fetch(`${BACKEND_BASE_URL}${PING_ENDPOINT}`, {
       method: 'GET',
-      signal: AbortSignal.timeout(5000), // 5 second timeout for CI
+      signal: AbortSignal.timeout(BACKEND_CHECK_TIMEOUT),
     });
     if (response.ok) {
       // Backend is available, using real API
@@ -53,25 +54,23 @@ if (!rootElement) {
   throw new Error('Root element not found');
 }
 
+// Function to render the React app - eliminates DRY violation
+const renderApp = () => {
+  createRoot(rootElement).render(
+    <StrictMode>
+      <Suspense fallback={<div>Loading...</div>}>
+        <AppProviders />
+      </Suspense>
+    </StrictMode>
+  );
+};
+
 // Start the app with optional mocking
 enableMocking()
-  .then(() => {
-    createRoot(rootElement).render(
-      <StrictMode>
-        <Suspense fallback={<div>Loading...</div>}>
-          <AppProviders />
-        </Suspense>
-      </StrictMode>
-    );
-  })
   .catch((error) => {
     console.error('Failed to initialize app:', error);
     // Render app anyway - don't let initialization errors block the entire app
-    createRoot(rootElement).render(
-      <StrictMode>
-        <Suspense fallback={<div>Loading...</div>}>
-          <AppProviders />
-        </Suspense>
-      </StrictMode>
-    );
+  })
+  .finally(() => {
+    renderApp();
   });
