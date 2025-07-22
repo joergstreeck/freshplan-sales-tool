@@ -13,6 +13,8 @@ import jakarta.ws.rs.core.Response;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * REST API for permission management from FC-009.
@@ -24,6 +26,8 @@ import java.util.UUID;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class PermissionResource {
+
+  private static final Logger logger = LoggerFactory.getLogger(PermissionResource.class);
 
   @Inject PermissionService permissionService;
 
