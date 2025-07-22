@@ -1,12 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
     Box,
-    Paper,
     Typography,
     Grid,
     Card,
     CardContent,
-    CardActions,
     Chip,
     List,
     ListItem,
