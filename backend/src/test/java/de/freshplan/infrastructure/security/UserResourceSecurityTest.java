@@ -13,7 +13,6 @@ import io.quarkus.test.security.TestSecurity;
 import io.restassured.http.ContentType;
 import jakarta.ws.rs.core.Response;
 import java.util.UUID;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -23,7 +22,6 @@ import org.junit.jupiter.api.Test;
  */
 @QuarkusTest
 @TestProfile(SecurityDisabledTestProfile.class)
-@Disabled("Tests need proper endpoint implementation")
 class UserResourceSecurityTest {
 
   private static final String USERS_BASE_PATH = "/api/users";

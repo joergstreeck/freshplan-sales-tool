@@ -29,11 +29,19 @@ public class SecurityContextProvider {
    * @return User ID or null if not authenticated
    */
   public UUID getUserId() {
-    if (!isAuthenticated() || jwtInstance.isUnsatisfied()) {
+    if (!isAuthenticated()) {
       return null;
     }
 
-    JsonWebToken jwt = jwtInstance.get();
+    JsonWebToken jwt = getJwtSafely();
+    if (jwt == null) {
+      // For @TestSecurity, generate ID from principal name
+      String principalName = securityIdentity.getPrincipal().getName();
+      if (principalName != null) {
+        return UUID.nameUUIDFromBytes(principalName.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+      }
+      return null;
+    }
 
     // Try to get user ID from 'sub' claim
     String subject = jwt.getSubject();
@@ -60,12 +68,12 @@ public class SecurityContextProvider {
       return null;
     }
 
-    if (jwtInstance.isUnsatisfied()) {
+    // Check if we have a real JWT token
+    JsonWebToken jwt = getJwtSafely();
+    if (jwt == null) {
       // Fall back to principal name when no JWT available
       return securityIdentity.getPrincipal().getName();
     }
-
-    JsonWebToken jwt = jwtInstance.get();
 
     // Try different claims that might contain the username
     String username = jwt.getClaim("preferred_username");
@@ -88,11 +96,16 @@ public class SecurityContextProvider {
    * @return Email or null if not authenticated
    */
   public String getEmail() {
-    if (!isAuthenticated() || jwtInstance.isUnsatisfied()) {
+    if (!isAuthenticated()) {
       return null;
     }
 
-    JsonWebToken jwt = jwtInstance.get();
+    JsonWebToken jwt = getJwtSafely();
+    if (jwt == null) {
+      // No email available when using @TestSecurity
+      return null;
+    }
+
     return jwt.getClaim("email");
   }
 
@@ -139,10 +152,33 @@ public class SecurityContextProvider {
    * @return JsonWebToken or null if not available
    */
   public JsonWebToken getJwt() {
+    return getJwtSafely();
+  }
+
+  /**
+   * Safely get JWT token, handling cases where principal is not a JWT.
+   * This is needed for @TestSecurity which creates QuarkusPrincipal instead of JWT.
+   *
+   * @return JsonWebToken or null if not available or not a JWT
+   */
+  private JsonWebToken getJwtSafely() {
     if (jwtInstance.isUnsatisfied()) {
       return null;
     }
-    return jwtInstance.get();
+    
+    try {
+      JsonWebToken jwt = jwtInstance.get();
+      if (jwt == null) {
+        return null;
+      }
+      // Check if it's a real JWT by trying to access a standard claim
+      jwt.getSubject(); // This will throw if not a real JWT
+      return jwt;
+    } catch (IllegalStateException e) {
+      // Not a real JWT (e.g., @TestSecurity creates QuarkusPrincipal)
+      LOG.debug("Principal is not a JWT token, likely using @TestSecurity");
+      return null;
+    }
   }
 
   /**
@@ -151,11 +187,16 @@ public class SecurityContextProvider {
    * @return Instant when token expires, or null if not available
    */
   public Instant getTokenExpiration() {
-    if (!isAuthenticated() || jwtInstance.isUnsatisfied()) {
+    if (!isAuthenticated()) {
       return null;
     }
 
-    JsonWebToken jwt = jwtInstance.get();
+    JsonWebToken jwt = getJwtSafely();
+    if (jwt == null) {
+      // No expiration info available when using @TestSecurity
+      return null;
+    }
+
     Long exp = jwt.getClaim("exp");
     return exp != null ? Instant.ofEpochSecond(exp) : null;
   }
@@ -180,11 +221,16 @@ public class SecurityContextProvider {
    * @return Session ID or null if not available
    */
   public String getSessionId() {
-    if (!isAuthenticated() || jwtInstance.isUnsatisfied()) {
+    if (!isAuthenticated()) {
       return null;
     }
 
-    JsonWebToken jwt = jwtInstance.get();
+    JsonWebToken jwt = getJwtSafely();
+    if (jwt == null) {
+      // No session ID available when using @TestSecurity
+      return null;
+    }
+
     return jwt.getClaim("sid");
   }
 

@@ -9,7 +9,6 @@ import de.freshplan.domain.user.service.dto.UserResponse;
 import de.freshplan.infrastructure.security.SecurityAudit;
 import de.freshplan.infrastructure.security.SecurityContextProvider;
 import de.freshplan.shared.constants.PaginationConstants;
-import io.quarkus.arc.profile.UnlessBuildProfile;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
@@ -46,7 +45,6 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 @Tag(name = "User Management", description = "Operations for managing users")
 @RolesAllowed("admin")
 @SecurityAudit
-@UnlessBuildProfile("dev")
 public class UserResource {
 
   private final UserService userService;
