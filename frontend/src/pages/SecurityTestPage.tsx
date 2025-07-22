@@ -12,7 +12,7 @@ import { Button } from '../components/ui/button';
  */
 export const SecurityTestPage: React.FC = () => {
   const { isAuthenticated, username, email, userRoles, hasRole } = useAuth();
-  const [testResults, setTestResults] = useState<Record<string, any>>({});
+  const [testResults, setTestResults] = useState<Record<string, { success: boolean; data?: unknown; error?: string }>>({});
   const [loading, setLoading] = useState<Record<string, boolean>>({});
 
   const testEndpoint = async (endpoint: string, name: string) => {
@@ -23,7 +23,7 @@ export const SecurityTestPage: React.FC = () => {
         ...prev,
         [name]: { success: true, data: response.data }
       }));
-    } catch (error: any) {
+    } catch (error: unknown) {
       setTestResults(prev => ({
         ...prev,
         [name]: { 
