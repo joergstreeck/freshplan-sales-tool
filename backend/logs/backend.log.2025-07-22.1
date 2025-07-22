@@ -1,0 +1,32 @@
+2025-07-22 19:26:53 INFO  [or.fl.co.FlywayExecutor] (Quarkus Main Thread) Database: jdbc:postgresql://localhost:5432/freshplan (PostgreSQL 15.13)
+2025-07-22 19:26:53 ERROR [io.qu.ru.Application] (Quarkus Main Thread) Failed to start application: java.lang.RuntimeException: Failed to start quarkus
+	at io.quarkus.runner.ApplicationImpl.doStart(Unknown Source)
+	at io.quarkus.runtime.Application.start(Application.java:101)
+	at io.quarkus.runtime.ApplicationLifecycleManager.run(ApplicationLifecycleManager.java:121)
+	at io.quarkus.runtime.Quarkus.run(Quarkus.java:71)
+	at io.quarkus.runtime.Quarkus.run(Quarkus.java:44)
+	at io.quarkus.runtime.Quarkus.run(Quarkus.java:124)
+	at io.quarkus.runner.GeneratedMain.main(Unknown Source)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:569)
+	at io.quarkus.runner.bootstrap.StartupActionImpl$1.run(StartupActionImpl.java:116)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+Caused by: org.flywaydb.core.api.exception.FlywayValidateException: Validate failed: Migrations have failed validation
+Migration checksum mismatch for migration version 103
+-> Applied to database : 927817239
+-> Resolved locally    : 1324787085
+Either revert the changes to the migration, or run repair to update the schema history.
+Need more flexibility with validation rules? Learn more: https://rd.gt/3AbJUZE
+	at org.flywaydb.core.Flyway.lambda$migrate$1(Flyway.java:190)
+	at org.flywaydb.core.FlywayExecutor.execute(FlywayExecutor.java:213)
+	at org.flywaydb.core.Flyway.migrate(Flyway.java:177)
+	at io.quarkus.flyway.runtime.FlywayRecorder.doStartActions(FlywayRecorder.java:142)
+	at io.quarkus.deployment.steps.FlywayProcessor$startActions2099152139.deploy_0(Unknown Source)
+	at io.quarkus.deployment.steps.FlywayProcessor$startActions2099152139.deploy(Unknown Source)
+	... 13 more
+
+2025-07-22 19:26:53 INFO  [io.qu.de.de.IsolatedDevModeMain] (main) Attempting to start live reload endpoint to recover from previous Quarkus startup failure
+2025-07-22 19:32:05 INFO  [io.qu.oi.de.de.OidcDevUIProcessor] (build-21) OIDC Dev Console: discovering the provider metadata at http://localhost:8180/realms/freshplan-realm/.well-known/openid-configuration
+2025-07-22 19:32:05 ERROR [io.qu.oi.de.de.OidcDevUIProcessor] (build-21) OIDC metadata discovery failed: {"error":"unknown_error","error_description":"For more on this error consult the server log at the debug level."}
