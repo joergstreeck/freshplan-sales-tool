@@ -2,10 +2,12 @@ package de.freshplan.domain.user.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import de.freshplan.domain.opportunity.entity.OpportunityActivity;
 import de.freshplan.domain.user.entity.User;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.security.TestSecurity;
 import jakarta.inject.Inject;
+import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
@@ -30,13 +32,18 @@ class UserRepositoryTest {
 
   @Inject UserRepository userRepository;
   @Inject de.freshplan.domain.opportunity.repository.OpportunityRepository opportunityRepository;
+  @Inject EntityManager entityManager;
 
   @BeforeEach
   @Transactional
   void setUp() {
-    // Clear any existing data - opportunities first due to foreign key constraints
+    // Clear any existing data in correct order (children first!)
+    // Delete opportunity_activities first (child table)
+    entityManager.createQuery("DELETE FROM OpportunityActivity").executeUpdate();
+    // Then delete opportunities (parent table)
     opportunityRepository.deleteAll();
     opportunityRepository.flush();
+    // Finally delete users
     userRepository.deleteAll();
     userRepository.flush();
   }
