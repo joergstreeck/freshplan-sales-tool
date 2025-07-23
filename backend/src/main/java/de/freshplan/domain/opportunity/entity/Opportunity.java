@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.GenericGenerator;
 
 /**
  * Opportunity Entity - Verkaufschance im Sales Pipeline
@@ -26,8 +25,7 @@ import org.hibernate.annotations.GenericGenerator;
 public class Opportunity {
 
   @Id
-  @GeneratedValue(generator = "UUID")
-  @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+  @GeneratedValue(strategy = GenerationType.UUID)
   @Column(name = "id", updatable = false, nullable = false)
   private UUID id;
 

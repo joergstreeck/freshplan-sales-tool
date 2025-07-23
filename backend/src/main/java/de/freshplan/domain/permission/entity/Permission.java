@@ -5,8 +5,6 @@ import jakarta.persistence.*;
 import java.time.Instant;
 import java.util.Objects;
 import java.util.UUID;
-import org.hibernate.annotations.GenericGenerator;
-
 /**
  * Permission entity representing system permissions.
  *
@@ -27,8 +25,7 @@ import org.hibernate.annotations.GenericGenerator;
 public class Permission extends PanacheEntityBase {
 
   @Id
-  @GeneratedValue(generator = "uuid2")
-  @GenericGenerator(name = "uuid2", strategy = "uuid2")
+  @GeneratedValue(strategy = GenerationType.UUID)
   @Column(columnDefinition = "uuid", updatable = false, nullable = false)
   private UUID id;
 
