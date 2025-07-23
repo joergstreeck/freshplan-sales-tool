@@ -131,6 +131,14 @@ public class OpportunityStageTest {
       assertThat(testOpportunity.getStageChangedAt()).isEqualTo(originalStageChangedAt);
 
       // Test CLOSED_LOST → any other state should not work
+      // Reset to a non-closed state first
+      testOpportunity = new Opportunity();
+      testOpportunity.setName("Test Opportunity");
+      testOpportunity.setCustomer(testCustomer);
+      testOpportunity.setAssignedTo(testUser);
+      testOpportunity.setExpectedValue(BigDecimal.valueOf(10000));
+      testOpportunity.setStage(OpportunityStage.NEW_LEAD);
+      
       testOpportunity.changeStage(OpportunityStage.CLOSED_LOST);
       originalStageChangedAt = testOpportunity.getStageChangedAt();
 
@@ -287,10 +295,34 @@ public class OpportunityStageTest {
     @DisplayName("Should identify won opportunities correctly")
     void isWonOpportunity_shouldIdentifyCorrectly() {
       testOpportunity.changeStage(OpportunityStage.CLOSED_WON);
-      assertThat(testOpportunity.getStage()).isEqualTo(OpportunityStage.CLOSED_WON);
+      assertThat(testOpportunity.isWonOpportunity()).isTrue();
+      assertThat(testOpportunity.isLostOpportunity()).isFalse();
+      assertThat(testOpportunity.isClosedOpportunity()).isTrue();
 
+      // Reset to a non-closed state before changing to CLOSED_LOST
+      testOpportunity = new Opportunity();
+      testOpportunity.setName("Test Opportunity");
+      testOpportunity.setCustomer(testCustomer);
+      testOpportunity.setAssignedTo(testUser);
+      testOpportunity.setExpectedValue(BigDecimal.valueOf(10000));
+      testOpportunity.setStage(OpportunityStage.NEW_LEAD);
+      
       testOpportunity.changeStage(OpportunityStage.CLOSED_LOST);
-      assertThat(testOpportunity.getStage()).isNotEqualTo(OpportunityStage.CLOSED_WON);
+      assertThat(testOpportunity.isWonOpportunity()).isFalse();
+      assertThat(testOpportunity.isLostOpportunity()).isTrue();
+      assertThat(testOpportunity.isClosedOpportunity()).isTrue();
+      
+      // Reset again for NEW_LEAD test
+      testOpportunity = new Opportunity();
+      testOpportunity.setName("Test Opportunity");
+      testOpportunity.setCustomer(testCustomer);
+      testOpportunity.setAssignedTo(testUser);
+      testOpportunity.setExpectedValue(BigDecimal.valueOf(10000));
+      testOpportunity.setStage(OpportunityStage.NEW_LEAD);
+      
+      assertThat(testOpportunity.isWonOpportunity()).isFalse();
+      assertThat(testOpportunity.isLostOpportunity()).isFalse();
+      assertThat(testOpportunity.isClosedOpportunity()).isFalse();
     }
 
     @Test

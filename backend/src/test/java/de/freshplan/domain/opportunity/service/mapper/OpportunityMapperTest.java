@@ -199,11 +199,39 @@ public class OpportunityMapperTest {
     @DisplayName("Should correctly map all opportunity stages")
     void toResponse_allStages_shouldMapCorrectly() {
       for (OpportunityStage stage : OpportunityStage.values()) {
-        // Arrange
-        testOpportunity.setStage(stage);
+        // Arrange - Create fresh opportunity for each stage to avoid changeStage restrictions
+        var opportunity = new Opportunity();
+        opportunity.setId(UUID.randomUUID());
+        opportunity.setName("Test Opportunity");
+        opportunity.setCustomer(testCustomer);
+        opportunity.setAssignedTo(testUser);
+        
+        // Use reflection to set stage directly to bypass business logic
+        // This is OK for mapper tests - we're testing mapping, not business logic
+        try {
+          var stageField = Opportunity.class.getDeclaredField("stage");
+          stageField.setAccessible(true);
+          stageField.set(opportunity, stage);
+          
+          var probabilityField = Opportunity.class.getDeclaredField("probability");
+          probabilityField.setAccessible(true);
+          // Set default probability based on stage
+          int defaultProbability = switch (stage) {
+            case NEW_LEAD -> 10;
+            case QUALIFICATION -> 25;
+            case NEEDS_ANALYSIS -> 40;
+            case PROPOSAL -> 60;
+            case NEGOTIATION -> 80;
+            case CLOSED_WON -> 100;
+            case CLOSED_LOST -> 0;
+          };
+          probabilityField.set(opportunity, defaultProbability);
+        } catch (Exception e) {
+          throw new RuntimeException("Failed to set stage via reflection", e);
+        }
 
         // Act
-        var response = opportunityMapper.toResponse(testOpportunity);
+        var response = opportunityMapper.toResponse(opportunity);
 
         // Assert
         assertThat(response.getStage())

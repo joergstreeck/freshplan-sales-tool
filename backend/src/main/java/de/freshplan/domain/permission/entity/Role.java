@@ -7,7 +7,6 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
-import org.hibernate.annotations.GenericGenerator;
 
 /**
  * Role entity representing user roles with associated permissions.
@@ -25,8 +24,7 @@ import org.hibernate.annotations.GenericGenerator;
 public class Role extends PanacheEntityBase {
 
   @Id
-  @GeneratedValue(generator = "uuid2")
-  @GenericGenerator(name = "uuid2", strategy = "uuid2")
+  @GeneratedValue(strategy = GenerationType.UUID)
   @Column(columnDefinition = "uuid", updatable = false, nullable = false)
   private UUID id;
 

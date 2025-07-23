@@ -1,8 +1,8 @@
 # 🚀 CRM COMPLETE MASTER PLAN V5 - Das Sales Command Center
 
 **Version:** 5.0  
-**Datum:** 12.07.2025  
-**Status:** VERBINDLICH - Claude-optimiert mit neuer Arbeitsreihenfolge
+**Datum:** 23.07.2025 22:21 (Auto-Sync)
+**Status:** Backend implementiert ✅, Tests fast vollständig 🔄
 
 ---
 
@@ -15,16 +15,16 @@
 ## 🤖 CLAUDE WORKING SECTION
 
 ### 📍 Aktueller Fokus
-**Phase:** 0 - Security Foundation  
-**Status:** Bereit zum Start  
-**Nächster Schritt:** Keycloak Integration (Tag 1)  
-**Arbeits-Dokument:** [./features/ACTIVE/01_security_foundation/README.md](./features/ACTIVE/01_security_foundation/README.md) ⭐
+**Phase:** 1 - Core Sales Process (M4 Opportunity Pipeline Finalisierung)
+**Status:** Backend implementiert ✅, Tests fast vollständig 🔄
+**Nächster Schritt:** OpportunityRepositoryTest customer_number fix
+**Arbeits-Dokument:** [./features/2025-07-12_TECH_CONCEPT_M4-opportunity-pipeline.md](./features/2025-07-12_TECH_CONCEPT_M4-opportunity-pipeline.md) ⭐
 **Offene Fragen:** [./features/OPEN_QUESTIONS_TRACKER.md](./features/OPEN_QUESTIONS_TRACKER.md) 🚨
 
 ### 🧭 Navigation für die nächsten Schritte
-1. **Tag 1:** Security Foundation → [Keycloak + JWT](./features/ACTIVE/01_security_foundation/README.md)
-2. **Tag 2-5:** Opportunity Pipeline → [M4 Konzept](./features/ACTIVE/02_opportunity_pipeline/README.md)
-3. **Tag 6:** Calculator Integration → [M8 Modal](./features/ACTIVE/03_calculator_modal/README.md)
+1. **AKTUELL:** M4 Tests finalisieren → [findByAssignedTo Debug + getUserPerformanceMetrics Fix](docs/NEXT_STEP.md)
+2. **NÄCHSTES:** M4 Frontend implementieren → [Kanban Board](./features/ACTIVE/02_opportunity_pipeline/README.md)
+3. **DANACH:** Calculator Integration → [M8 Modal](./features/ACTIVE/03_calculator_modal/README.md)
 
 ### 📚 Context-Dokumente
 - **Implementierungs-Sequenz:** [./features/2025-07-12_FINAL_OPTIMIZED_SEQUENCE.md](./features/2025-07-12_FINAL_OPTIMIZED_SEQUENCE.md)
@@ -59,11 +59,11 @@ Von Tag 1 auf Wachstum, Performance und Qualität ausgelegt.
 ## 🗺️ Implementierungs-Roadmap
 
 ### ✅ Phase 0: Security Foundation (Tag 1)
-**Status:** 🚀 READY TO START  
+**Status:** Backend implementiert ✅, Tests fast vollständig 🔄
 **Details:** [Security Foundation](./features/ACTIVE/01_security_foundation/README.md)
 
-### 📋 Phase 1: Core Sales Process (Tag 2-10)
-**Module:** M4 Pipeline → M8 Calculator → FC-004 Verkäuferschutz  
+### 🔄 Phase 1: Core Sales Process (Tag 2-10) - IN ARBEIT
+**Module:** M4 Pipeline (Backend ✅, Tests 🔄, Frontend ⏳) → M8 Calculator → FC-004 Verkäuferschutz  
 **Details:** [Core Sales Features](./features/PLANNED/phase1_core_sales.md)
 
 ### 📋 Phase 2: Communication Hub (Tag 11-18)
@@ -78,8 +78,8 @@ Von Tag 1 auf Wachstum, Performance und Qualität ausgelegt.
 
 | Modul | Status | Fortschritt | Nächster Schritt |
 |-------|--------|-------------|------------------|
-| Security | 🔄 Ready | 0% | Keycloak Integration |
-| M4 Pipeline | 📋 Planned | 0% | Entity Design |
+| Security | ✅ Done | 100% | ✅ Keycloak läuft produktiv |
+| M4 Pipeline | 🔄 In Progress | 85% | Tests finalisieren (TODO-31) |
 | M8 Calculator | 📋 Planned | 0% | Modal Template |
 | M5 Customer | ✅ Done* | 90% | *Legacy CSS Cleanup |
 

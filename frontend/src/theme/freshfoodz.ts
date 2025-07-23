@@ -125,9 +125,9 @@ export const freshfoodzTheme = createTheme({
   },
   components: {
     MuiCssBaseline: {
-      styleOverrides: `
-        @import url('https://fonts.googleapis.com/css2?family=Antonio:wght@400;700&family=Poppins:wght@300;400;500;600;700&display=swap');
-      `,
+      styleOverrides: {
+        // Google Fonts werden über index.html geladen (vermeidet @import-Konflikte)
+      },
     },
     MuiButton: {
       styleOverrides: {

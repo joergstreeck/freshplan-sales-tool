@@ -1264,6 +1264,16 @@ Bei JEDER Übergabe MÜSSEN alle aktiven Feature-Konzepte (FC-XXX) auf ihren akt
 - Behobene Probleme
 - Nächste Schritte
 
+**🆕 MASTER PLAN SYNC (ab 22.07.2025):**
+```bash
+# Automatische Synchronisation des V5 Master Plans mit aktuellem Stand
+./scripts/sync-master-plan.sh
+
+# Erweiterte Übergabe mit automatischem Sync
+./scripts/handover-with-sync.sh
+```
+**WICHTIG:** Der V5 Master Plan wird jetzt automatisch synchronisiert und zeigt den echten Projekt-Stand!
+
 ### 🔒 KRITISCHE DOKUMENTE - NIEMALS LÖSCHEN:
 - `/docs/TRIGGER_TEXTS.md` - Offizielle Trigger-Texte für Übergaben
 - `/docs/STANDARDUBERGABE_NEU.md` - Hauptprozess-Dokument

@@ -4,6 +4,8 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { ThemeProvider, CssBaseline } from '@mui/material';
+import { CacheProvider } from '@emotion/react';
+import { emotionCache } from './emotion-cache';
 import { queryClient } from './lib/queryClient';
 import { AuthProvider } from './contexts/AuthContext';
 import { KeycloakProvider } from './contexts/KeycloakContext';
@@ -39,9 +41,10 @@ export const AppProviders = ({ children: mainChildren }: AppProvidersProps) => {
 
   return (
     <ErrorBoundary>
-      <ThemeProvider theme={freshfoodzTheme}>
-        <CssBaseline />
-        <QueryClientProvider client={queryClient}>
+      <QueryClientProvider client={queryClient}>
+        <CacheProvider value={emotionCache}>
+          <ThemeProvider theme={freshfoodzTheme}>
+            <CssBaseline />
           <BrowserRouter>
             <AuthWrapper>
               {mainChildren || (
@@ -64,12 +67,13 @@ export const AppProviders = ({ children: mainChildren }: AppProvidersProps) => {
           </AuthWrapper>
         </BrowserRouter>
 
-          {/* React Query DevTools - only in development */}
-          {import.meta.env.DEV && (
-            <ReactQueryDevtools initialIsOpen={false} buttonPosition="bottom-right" />
-          )}
-        </QueryClientProvider>
-      </ThemeProvider>
+            {/* React Query DevTools - only in development */}
+            {import.meta.env.DEV && (
+              <ReactQueryDevtools initialIsOpen={false} buttonPosition="bottom-right" />
+            )}
+          </ThemeProvider>
+        </CacheProvider>
+      </QueryClientProvider>
     </ErrorBoundary>
   );
 };
