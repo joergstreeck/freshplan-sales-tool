@@ -15,6 +15,7 @@ import jakarta.transaction.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -60,12 +61,19 @@ public class OpportunityRepositoryTest {
     testCustomer1 = getOrCreateCustomer("Test Company 1", "test1@example.com");
     testCustomer2 = getOrCreateCustomer("Test Company 2", "test2@example.com");
 
-    // Create test users - use existing test users from TestDataInitializer
-    testUser1 = userRepository.find("username", "admin").firstResult();
-    testUser2 = userRepository.find("username", "manager").firstResult();
+    // Get or create test users for CI environment
+    testUser1 = userRepository.find("username", "testuser1").firstResult();
+    if (testUser1 == null) {
+      testUser1 = new User("testuser1", "Test", "User1", "testuser1@test.com");
+      testUser1.setRoles(Arrays.asList("admin", "manager", "sales"));
+      userRepository.persist(testUser1);
+    }
     
-    if (testUser1 == null || testUser2 == null) {
-      throw new IllegalStateException("Test users not found. Ensure DevDataInitializer has run.");
+    testUser2 = userRepository.find("username", "testuser2").firstResult();
+    if (testUser2 == null) {
+      testUser2 = new User("testuser2", "Test", "User2", "testuser2@test.com");
+      testUser2.setRoles(Arrays.asList("manager", "sales"));
+      userRepository.persist(testUser2);
     }
   }
 

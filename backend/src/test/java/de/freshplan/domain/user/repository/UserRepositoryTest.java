@@ -29,11 +29,14 @@ import org.junit.jupiter.api.Test;
 class UserRepositoryTest {
 
   @Inject UserRepository userRepository;
+  @Inject de.freshplan.domain.opportunity.repository.OpportunityRepository opportunityRepository;
 
   @BeforeEach
   @Transactional
   void setUp() {
-    // Clear any existing data
+    // Clear any existing data - opportunities first due to foreign key constraints
+    opportunityRepository.deleteAll();
+    opportunityRepository.flush();
     userRepository.deleteAll();
     userRepository.flush();
   }

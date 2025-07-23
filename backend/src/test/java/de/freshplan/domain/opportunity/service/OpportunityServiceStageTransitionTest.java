@@ -17,6 +17,7 @@ import io.quarkus.test.security.TestSecurity;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.UUID;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
@@ -64,20 +65,17 @@ public class OpportunityServiceStageTransitionTest {
     // Create test customer
     testCustomer = getOrCreateCustomer("Test Company", "test@example.com");
 
-    // Use existing test user - DevDataInitializer creates these users
-    testUser = userRepository.find("username", "admin").firstResult();
+    // Get test user that was created by TestDataInitializer
+    testUser = userRepository.find("username", "testuser").firstResult();
     if (testUser == null) {
-      // Fallback to any existing user
-      testUser = userRepository.findAll().firstResult();
-      if (testUser == null) {
-        throw new IllegalStateException("No test users found in database. Ensure DevDataInitializer has run.");
-      }
+      throw new IllegalStateException("Test user 'testuser' not found. TestDataInitializer should have created it.");
     }
   }
 
   @Nested
   @DisplayName("Valid Stage Transition Tests")
   class ValidStageTransitionTests {
+    
 
     @ParameterizedTest
     @MethodSource("validForwardTransitions")
@@ -199,6 +197,7 @@ public class OpportunityServiceStageTransitionTest {
   @Nested
   @DisplayName("Invalid Stage Transition Tests")
   class InvalidStageTransitionTests {
+    
 
     @ParameterizedTest
     @MethodSource("invalidTransitionsFromClosedStates")
@@ -262,6 +261,7 @@ public class OpportunityServiceStageTransitionTest {
   @Nested
   @DisplayName("Stage Transition Business Rules")
   class StageTransitionBusinessRules {
+    
 
     @Test
     @DisplayName("Should update probability according to stage default")
@@ -374,6 +374,7 @@ public class OpportunityServiceStageTransitionTest {
   @Nested
   @DisplayName("Complex Stage Transition Scenarios")
   class ComplexStageTransitionScenarios {
+    
 
     @Test
     @DisplayName("Should handle rapid sequential stage transitions")
@@ -502,6 +503,7 @@ public class OpportunityServiceStageTransitionTest {
   }
 
   // Helper methods
+  
 
   @Transactional
   Customer getOrCreateCustomer(String companyName, String email) {
@@ -510,9 +512,17 @@ public class OpportunityServiceStageTransitionTest {
       return existingCustomer;
     }
 
+    // Create minimal test customer with all required fields
     var customer = new Customer();
     customer.setCompanyName(companyName);
-    // Customer email field not available
+    
+    // Set required NOT NULL fields to avoid constraint violations
+    customer.setCustomerNumber("TEST-" + System.currentTimeMillis()); // Unique customer number
+    customer.setIsTestData(true); // Mark as test data
+    customer.setIsDeleted(false); // Not deleted
+    customer.setCreatedAt(java.time.LocalDateTime.now()); // Set created timestamp
+    customer.setCreatedBy("test-system"); // Set created by
+    
     customerRepository.persist(customer);
     return customer;
   }

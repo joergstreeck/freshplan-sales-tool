@@ -94,8 +94,24 @@ public class Opportunity {
     };
   }
 
+  // JPA Lifecycle Hook für Timestamps
+  @PrePersist
+  protected void onCreate() {
+    if (this.createdAt == null) {
+      this.createdAt = LocalDateTime.now();
+    }
+    if (this.stageChangedAt == null) {
+      this.stageChangedAt = LocalDateTime.now();
+    }
+  }
+
   // Business Method: Stage ändern mit Timestamp
   public void changeStage(OpportunityStage newStage) {
+    // Business Rule: Null stages werden ignoriert
+    if (newStage == null) {
+      return;
+    }
+    
     // Business Rule: Geschlossene Opportunities können nicht mehr geändert werden
     if (this.stage == OpportunityStage.CLOSED_WON || this.stage == OpportunityStage.CLOSED_LOST) {
       return; // Silently ignore stage changes for closed opportunities
@@ -223,5 +239,18 @@ public class Opportunity {
   @PreUpdate
   protected void onUpdate() {
     this.updatedAt = LocalDateTime.now();
+  }
+  
+  // Business Logic Methods
+  public boolean isWonOpportunity() {
+    return this.stage == OpportunityStage.CLOSED_WON;
+  }
+  
+  public boolean isLostOpportunity() {
+    return this.stage == OpportunityStage.CLOSED_LOST;
+  }
+  
+  public boolean isClosedOpportunity() {
+    return this.stage == OpportunityStage.CLOSED_WON || this.stage == OpportunityStage.CLOSED_LOST;
   }
 }
