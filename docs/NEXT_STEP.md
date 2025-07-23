@@ -7,26 +7,28 @@
 
 ## 🎯 JETZT GERADE:
 
-**M4 OPPORTUNITY PIPELINE - TESTS SYSTEMATISCH GRÜN MACHEN**
+**CI PIPELINE SYSTEMATISCH GRÜN MACHEN - PHASE 1 EXCEPTION MAPPERS ABGESCHLOSSEN**
 
-**Stand 23.07.2025 21:10:**
+**Stand 23.07.2025 21:33:**
 - ✅ OpportunityResourceIntegrationTest: 27/27 Tests GRÜN!
 - ✅ OpportunityRepositoryTest: 19/19 Tests GRÜN!
 - ✅ OpportunityStageTest: 31/31 Tests GRÜN!
 - ✅ OpportunityMapperTest: 16/16 Tests GRÜN!
 - ✅ UserRepositoryTest: 18/18 Tests GRÜN! **GEFIXT**
-- ✅ OpportunityEntityStageTest: 26/27 Tests GRÜN! **NEU ERSTELLT**
-- ❌ **NUR NOCH 1 NPE:** OpportunityEntityStageTest Null-Check
-- 🎯 **MASSIVE VERBESSERUNG:** Von 46 auf ~28 Fehler reduziert!
-- 🔄 **FAST FERTIG:** TODO-40 OpportunityEntityStageTest finalisieren
+- ✅ OpportunityEntityStageTest: 27/27 Tests GRÜN! **VOLLSTÄNDIG ABGESCHLOSSEN**
+- ✅ **PHASE 1 FERTIG:** Exception Mappers für Top-5-Fehlertypen implementiert
+- 🎯 **CI STATUS:** 58 Fehler von 838 Tests (strukturierter 3-Phasen-Ansatz läuft)
+- 🔄 **NEXT:** Exception Mappers pushen und Fehlerreduktion verifizieren
 
 **🚀 NÄCHSTER SCHRITT:**
 
-**NÄCHSTE CRITICAL TEST-FIXES (TODO-43.5):**
+**EXCEPTION MAPPERS PUSHEN UND TESTEN (TODO-43 PHASE 1):**
 
-**Status:** 58 Fehler verbleibend (von ursprünglich 46→28→58 durch erweiterte Tests)
-**FORTSCHRITT:** TODO-40 OpportunityEntityStageTest vollständig abgeschlossen! ✅
-**Nächste Aufgabe:** Verbleibende 58 Test-Fehler systematisch analysieren und beheben
+**Status:** IllegalArgumentMasterExceptionMapper implementiert, kompiliert ✅, aber noch nicht gepusht
+**Erwartung:** 15-20 Fehler weniger (von 58 auf ~40-43)
+**Nächster Befehl:** `git add . && git commit && git push`
+
+**DANACH:** PHASE 2 - Input Validation schärfen (Parameter Converter, Enum Validation)
 
 **ERFOLGREICH ABGESCHLOSSEN:**
 - ✅ TODO-43.3: UserRepositoryTest Foreign Key Fix (18/18 Tests grün)
