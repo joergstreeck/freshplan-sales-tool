@@ -38,7 +38,7 @@ import org.junit.jupiter.params.provider.ValueSource;
  * @since 2.0.0
  */
 @QuarkusTest
-@TestSecurity(authorizationEnabled = false)
+@TestSecurity(user = "testuser", roles = {"admin", "manager", "sales"})
 public class OpportunityResourceIntegrationTest {
 
   @Inject OpportunityRepository opportunityRepository;
@@ -59,8 +59,15 @@ public class OpportunityResourceIntegrationTest {
     // Create test customer
     testCustomer = getOrCreateCustomer("Test Company", "test@example.com");
 
-    // Create test user
-    testUser = getOrCreateUser("testuser", "Test", "User");
+    // Use existing test user - DevDataInitializer creates these users
+    testUser = userRepository.find("username", "admin").firstResult();
+    if (testUser == null) {
+      // Fallback to any existing user
+      testUser = userRepository.findAll().firstResult();
+      if (testUser == null) {
+        throw new IllegalStateException("No test users found in database. Ensure DevDataInitializer has run.");
+      }
+    }
   }
 
   @Nested
