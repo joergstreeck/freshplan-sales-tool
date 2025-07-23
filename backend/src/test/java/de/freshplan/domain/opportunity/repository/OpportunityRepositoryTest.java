@@ -61,8 +61,12 @@ public class OpportunityRepositoryTest {
     testCustomer2 = getOrCreateCustomer("Test Company 2", "test2@example.com");
 
     // Create test users - use existing test users from TestDataInitializer
-    testUser1 = getOrCreateUser("admin", "Admin", "User");
-    testUser2 = getOrCreateUser("manager", "Manager", "User");
+    testUser1 = userRepository.find("username", "admin").firstResult();
+    testUser2 = userRepository.find("username", "manager").firstResult();
+    
+    if (testUser1 == null || testUser2 == null) {
+      throw new IllegalStateException("Test users not found. Ensure DevDataInitializer has run.");
+    }
   }
 
   @Nested

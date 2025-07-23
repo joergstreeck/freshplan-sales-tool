@@ -7,28 +7,31 @@
 
 ## 🎯 JETZT GERADE:
 
-**M4 OPPORTUNITY PIPELINE - ENTERPRISE-READY & CI GRÜN MACHEN**
+**M4 OPPORTUNITY PIPELINE - CI PIPELINE DEBUGGING (EXPERT-LEVEL SECURITY PROBLEM)**
 
-**Stand 23.07.2025 01:50:**
-- ✅ **ERFOLG:** Enterprise Two-Pass Code Review vollständig abgeschlossen
+**Stand 23.07.2025 19:19:**
 - ✅ M4 Backend: PRODUCTION-READY mit allen Enterprise-Standards  
-- ✅ Critical Code Review Issues behoben (Foreign Keys, Deprecated APIs, Flyway)
-- ✅ Pull Request #56 erstellt und bereit für Review
-- ✅ Backend läuft stabil auf localhost:8080
-- 🔄 **IN ARBEIT:** CI Pipeline grün machen (Deprecated APIs teilweise behoben)
-- ❌ Verbleibend: OpportunityActivity.java @GenericGenerator deprecated API
-- ❌ Test Failures in verschiedenen CI-Test-Klassen
+- ✅ Alle deprecated APIs behoben (@GenericGenerator → @GeneratedValue)
+- ✅ Backend läuft stabil ohne Warnings auf localhost:8080
+- ✅ Lokale Tests: 16/16 PermissionResourceTest grün
+- ❌ **CI PIPELINE ROT:** Security Tests scheitern mit 401/403 Errors
+- 🔄 **IN ARBEIT:** TODO-43 CI Pipeline Expert-Level Security Debugging
 
 **🚀 NÄCHSTER SCHRITT:**
 
-**M4 FRONTEND IMPLEMENTIEREN (TODO-26) - HIGH PRIORITY:**
+**CI PIPELINE EXPERT-LEVEL DEBUGGING (TODO-43) - HIGH PRIORITY:**
 ```bash
-cd frontend
-npm run dev
-# Erstelle neue Komponenten:
-# - OpportunityKanbanBoard.tsx  
-# - OpportunityCard.tsx
-# - OpportunityForm.tsx
+# 1. CI Status prüfen
+gh run list --branch feature/M4-opportunity-pipeline-complete --limit 3
+
+# 2. Failed Run analysieren
+gh run view <RUN_ID> --log-failed
+
+# 3. Lokale Tests zur Verification
+cd backend && ./mvnw test -Dtest=PermissionResourceTest
+
+# 4. Security-Konfiguration analysieren
+# Problem: CI Environment verhält sich anders als lokal bei Quarkus 3.17.4 Security
 ```
 
 **ERFOLGREICH ABGESCHLOSSEN:**
@@ -49,16 +52,16 @@ npm run dev
 ```
 
 **UNTERBROCHEN BEI:**
-- TODO-43: CI Pipeline grün machen
-- OpportunityActivity.java deprecated API @GenericGenerator
-- Nächster Schritt: Moderne JPA UUID Generation implementieren
+- TODO-43: CI Pipeline grün machen - Security Tests Debugging
+- PermissionResourceTest.java - Expert-Level Security Problem
+- Nächster Schritt: CI vs. lokale Test Environment Unterschiede bei Quarkus Security analysieren
 
 **STATUS:**
 - M4 Backend: ✅ PRODUCTION-READY (Enterprise-Standard erreicht)
-- M4 Tests: ✅ 5/6 Klassen grün, Database Integration ✅
+- M4 Tests: ✅ 6/6 Klassen grün LOKAL, aber CI scheitert
 - M4 Code Review: ✅ Two-Pass Review abgeschlossen
-- M4 CI: 🔄 IN ARBEIT (Deprecated APIs werden behoben)
-- M4 Frontend: ⏳ Bereit zu starten nach grüner CI
+- M4 CI: ❌ ROT (Security Tests 401/403 Errors in CI Environment)
+- M4 Frontend: ⏳ Blockiert bis CI grün ist
 
 ---
 
