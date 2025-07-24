@@ -316,8 +316,7 @@ public class RetryManager {
                         .onItem().delayIt().by(delay)
                         .onItem().transformToUni(__ -> 
                             executeWithRetryInternal(operation, policy, attempt + 1)
-                        )
-                        .await().indefinitely();
+                        );
                 }
                 
                 throw new CompletionException(throwable);
@@ -679,12 +678,12 @@ const OfflineModeProvider: React.FC<PropsWithChildren> = ({ children }) => {
 
 ## Entscheidungs-Log
 
-### 2025-07-25 - Circuit Breaker Library
-**Entscheidung**: Eigene Implementation statt Library  
-**Begründung**: Volle Kontrolle über Verhalten, keine zusätzliche Dependency  
-**Impact**: Mehr Entwicklungsaufwand, aber bessere Anpassbarkeit  
-**Alternativen**: Resilience4j, Hystrix  
-**Entscheider**: Claude (zur Review)
+### 2025-07-25 - Circuit Breaker Library (REVIDIERT)
+**Entscheidung**: Resilience4j verwenden statt eigene Implementation  
+**Begründung**: Battle-tested, wartungsarm, bereits Quarkus-Extension verfügbar  
+**Impact**: Reduzierter Entwicklungsaufwand, höhere Zuverlässigkeit  
+**Alternativen**: Eigene Implementation (verworfen wegen Wartungsaufwand)  
+**Entscheider**: Code Review Feedback
 
 ### 2025-07-25 - Error ID Generation
 **Entscheidung**: UUID für jeden Error  

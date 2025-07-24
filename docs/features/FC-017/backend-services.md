@@ -648,8 +648,7 @@ public class RetryManager {
                                     operationName, 
                                     attempt + 1
                                 )
-                            )
-                            .await().indefinitely();
+                            );
                     }
                     
                     throw new CompletionException(throwable);
@@ -792,10 +791,16 @@ public class ErrorMetricsCollector {
     void publishMetrics() {
         // Circuit breaker states
         circuitBreakerRegistry.getAllBreakers().forEach(breaker -> {
-            Gauge.builder("circuit.breaker.state", breaker, b -> 
-                    b.getState() == State.OPEN ? 1.0 : 0.0)
-                .tag("service", breaker.getName())
-                .register(registry);
+            Gauge.builder("circuit.breaker.state", breaker, b -> {
+                switch (b.getState()) {
+                    case CLOSED: return 0.0;
+                    case OPEN: return 1.0;
+                    case HALF_OPEN: return 2.0;
+                    default: return -1.0;
+                }
+            })
+            .tag("service", breaker.getName())
+            .register(registry);
         });
         
         // Offline queue size

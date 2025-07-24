@@ -26,9 +26,9 @@
 - Integration mit FC-017 Error Logging
 
 **ALTERNATIVE NÄCHSTE SCHRITTE:**
-- FC-012 Audit Trail implementieren (KRITISCH!)
 - M4 Backend-Integration: OpportunityApi.ts mit echten Endpoints (TODO-60)
 - FC-010 Phase 1: Filter-Bar implementieren
+- FC-017 Error Handling implementieren (nach FC-012)
 
 **ABGESCHLOSSEN:**
 - ✅ FC-018 Datenschutz & DSGVO-Compliance vollständig geplant

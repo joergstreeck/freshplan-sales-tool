@@ -487,25 +487,77 @@ public class PrivacyAwareKpiCollector {
 ### Bestehende Daten verschlüsseln
 
 ```sql
--- Migration Script für Customer-Verschlüsselung
+-- Migration Script für Customer-Verschlüsselung (SICHERE MULTI-STEP MIGRATION)
 -- ACHTUNG: Immer erst Backup erstellen!
 
--- 1. Backup erstellen
+-- PHASE 1: Neue verschlüsselte Spalten hinzufügen
 CREATE TABLE customers_backup AS SELECT * FROM customers;
 
--- 2. Neue Spalten für verschlüsselte Daten
 ALTER TABLE customers 
 ADD COLUMN contact_name_encrypted TEXT,
-ADD COLUMN email_encrypted TEXT,
+ADD COLUMN email_encrypted TEXT, 
 ADD COLUMN phone_encrypted TEXT,
 ADD COLUMN anonymized BOOLEAN DEFAULT FALSE,
 ADD COLUMN consent_marketing BOOLEAN DEFAULT FALSE,
-ADD COLUMN consent_given_at TIMESTAMP;
+ADD COLUMN consent_given_at TIMESTAMP,
+ADD COLUMN migration_status VARCHAR(20) DEFAULT 'PENDING'; -- PENDING, MIGRATED, VERIFIED
 
--- 3. Verschlüsselung wird durch Quarkus Converter automatisch beim ersten Update durchgeführt
+-- PHASE 2: Batch-Migration (NICHT beim ersten Update!)
+-- Wird durch separaten BatchMigrationService durchgeführt
+```
 
--- 4. Nach erfolgreicher Migration: Alte Spalten löschen
--- ALTER TABLE customers DROP COLUMN contact_name_old;
+**SICHERE MIGRATIONS-STRATEGIE:**
+
+```java
+// BatchEncryptionMigrationService.java
+@ApplicationScoped
+public class BatchEncryptionMigrationService {
+    
+    @Inject
+    EncryptionService encryptionService;
+    
+    @Scheduled(every = "1m", executionThreshold = 10000)
+    @Transactional
+    public void migrateBatch() {
+        List<Customer> unmigrated = customerRepository
+            .find("migration_status = 'PENDING'")
+            .page(0, 100) // Kleine Batches
+            .list();
+            
+        for (Customer customer : unmigrated) {
+            try {
+                // Dual-Write: Verschlüsselt + Klartext parallel
+                customer.contactNameEncrypted = encryptionService.encrypt(customer.contactName);
+                customer.emailEncrypted = encryptionService.encrypt(customer.email);
+                customer.phoneEncrypted = encryptionService.encrypt(customer.phone);
+                customer.migrationStatus = "MIGRATED";
+                
+                // Validation: Decrypt & Compare
+                if (encryptionService.decrypt(customer.contactNameEncrypted).equals(customer.contactName)) {
+                    customer.migrationStatus = "VERIFIED";
+                }
+                
+                customerRepository.persist(customer);
+                Log.info("Migrated customer: " + customer.id);
+                
+            } catch (Exception e) {
+                Log.error("Migration failed for customer: " + customer.id, e);
+                customer.migrationStatus = "FAILED";
+            }
+        }
+    }
+}
+
+// PHASE 3: Application Code liest aus beiden Spalten
+@Convert(converter = EncryptedStringConverter.class)
+public String getContactName() {
+    // Während Migration: Fallback auf Klartext
+    return contactNameEncrypted != null ? contactNameEncrypted : contactName;
+}
+
+// PHASE 4: Nach vollständiger Migration (100% VERIFIED)
+-- ALTER TABLE customers DROP COLUMN contact_name, email, phone;
+-- ALTER TABLE customers RENAME COLUMN contact_name_encrypted TO contact_name;
 ```
 
 ### Consent-Erstellung für bestehende Kunden

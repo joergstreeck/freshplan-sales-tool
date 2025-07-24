@@ -780,6 +780,7 @@ interface PrivacyGuardProps {
     fallback?: React.ReactNode;
 }
 
+// PERFORMANCE-OPTIMIERT: Context-basierter Ansatz statt Einzelanfragen
 const PrivacyGuard: React.FC<PrivacyGuardProps> = ({
     dataClassification,
     purpose,
@@ -787,21 +788,49 @@ const PrivacyGuard: React.FC<PrivacyGuardProps> = ({
     children,
     fallback = <PrivacyBlockedMessage />
 }) => {
-    const { user } = useAuth();
-    const { data: canAccess, isLoading } = useQuery({
-        queryKey: ['privacy-access', user.id, dataSubjectId, dataClassification, purpose],
-        queryFn: () => privacyApi.checkAccess({
-            userId: user.id,
-            dataSubjectId,
-            dataClassification,
-            purpose
-        })
-    });
+    // Liest aus vorgeladenen Permissions (Context)
+    const { permissions, isLoading } = usePrivacyPermissions();
     
     if (isLoading) return <Skeleton />;
+    
+    const permissionKey = `${dataSubjectId}-${dataClassification}-${purpose}`;
+    const canAccess = permissions?.[permissionKey] || false;
+    
     if (!canAccess) return <>{fallback}</>;
     
     return <>{children}</>;
+};
+
+// NEW: Privacy Permissions Provider
+const PrivacyPermissionsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+    const { user } = useAuth();
+    const [permissions, setPermissions] = useState<Record<string, boolean>>({});
+    const [isLoading, setIsLoading] = useState(true);
+    
+    // Batch-Load aller Permissions für aktuellen View
+    useEffect(() => {
+        const loadPermissions = async () => {
+            try {
+                // Sammle alle benötigten Permissions für aktuelle Route
+                const neededPermissions = collectViewPermissions();
+                const batchResponse = await privacyApi.checkBatchAccess({
+                    userId: user.id,
+                    permissions: neededPermissions
+                });
+                setPermissions(batchResponse);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        
+        loadPermissions();
+    }, [user.id, location.pathname]);
+    
+    return (
+        <PrivacyPermissionsContext.Provider value={{ permissions, isLoading }}>
+            {children}
+        </PrivacyPermissionsContext.Provider>
+    );
 };
 
 // Verwendung in Komponenten
