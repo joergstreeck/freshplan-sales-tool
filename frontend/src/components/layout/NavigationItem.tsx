@@ -34,6 +34,7 @@ interface NavigationItemProps {
   isCollapsed: boolean;
   onItemClick: () => void;
   onSubItemClick: (path: string) => void;
+  userPermissions: string[];
 }
 
 export const NavigationItem: React.FC<NavigationItemProps> = ({
@@ -43,6 +44,7 @@ export const NavigationItem: React.FC<NavigationItemProps> = ({
   isCollapsed,
   onItemClick,
   onSubItemClick,
+  userPermissions,
 }) => {
   const Icon = item.icon;
   
@@ -136,6 +138,7 @@ export const NavigationItem: React.FC<NavigationItemProps> = ({
           <NavigationSubMenu
             items={item.subItems}
             onItemClick={onSubItemClick}
+            userPermissions={userPermissions}
           />
         </Collapse>
       )}

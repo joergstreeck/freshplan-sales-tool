@@ -60,14 +60,17 @@ export const navigationConfig: NavigationItemType[] = [
       {
         label: 'Alle Kunden',
         path: '/kundenmanagement/liste',
+        permissions: ['customers.view'],
       },
       {
         label: 'Verkaufschancen',
         path: '/kundenmanagement/opportunities',
+        permissions: ['opportunities.view'],
       },
       {
         label: 'Aktivitäten',
         path: '/kundenmanagement/aktivitaeten',
+        permissions: ['activities.view'],
       },
     ],
   },

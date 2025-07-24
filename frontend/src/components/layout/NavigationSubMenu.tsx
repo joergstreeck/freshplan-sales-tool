@@ -15,15 +15,21 @@ interface NavigationSubItem {
 interface NavigationSubMenuProps {
   items: NavigationSubItem[];
   onItemClick: (path: string) => void;
+  userPermissions: string[];
 }
 
 export const NavigationSubMenu: React.FC<NavigationSubMenuProps> = ({
   items,
   onItemClick,
+  userPermissions,
 }) => {
+  // Filter Sub-Items basierend auf User Permissions
+  const visibleItems = items.filter(item => 
+    !item.permissions || item.permissions.some(p => userPermissions.includes(p))
+  );
   return (
     <List component="div" disablePadding>
-      {items.map((item) => (
+      {visibleItems.map((item) => (
         <ListItemButton
           key={item.path}
           onClick={() => onItemClick(item.path)}

@@ -11,6 +11,8 @@ export const useAuthStore = create<AuthState>()((set) => ({
     'cockpit.view',
     'customers.create',
     'customers.view',
+    'opportunities.view',  // M4 Opportunity Pipeline Permission
+    'activities.view',     // Für Activities Sub-Item
     'reports.view',
     'settings.view',
   ],

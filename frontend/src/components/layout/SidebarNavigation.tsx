@@ -2,8 +2,8 @@ import React, { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Box, Drawer, List, IconButton, Tooltip, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import MenuIcon from '@mui/icons-material/Menu';
+import MenuOpenIcon from '@mui/icons-material/MenuOpen';
 import { useNavigationStore } from '@/store/navigationStore';
 import { useAuthStore } from '@/store/authStore';
 import { NavigationItem } from './NavigationItem';
@@ -50,10 +50,28 @@ export const SidebarNavigation: React.FC = () => {
   // Keyboard shortcuts
   useNavigationShortcuts();
 
-  // Track visited pages
+  // Track visited pages and set active menu based on current location
   useEffect(() => {
     addToRecentlyVisited(location.pathname);
-  }, [location.pathname, addToRecentlyVisited]);
+    
+    // Find which navigation item matches the current path
+    for (const item of navigationConfig) {
+      if (item.path === location.pathname) {
+        setActiveMenu(item.id);
+        break;
+      }
+      // Check sub-items
+      if (item.subItems) {
+        for (const subItem of item.subItems) {
+          if (subItem.path === location.pathname) {
+            setActiveMenu(item.id);
+            toggleSubmenu(item.id);
+            break;
+          }
+        }
+      }
+    }
+  }, [location.pathname, addToRecentlyVisited, setActiveMenu, toggleSubmenu]);
 
   // Filter navigation items based on permissions
   const visibleItems = navigationConfig.filter(item => 
@@ -97,7 +115,7 @@ export const SidebarNavigation: React.FC = () => {
             </Typography>
           </Box>
         )}
-        <Tooltip title={isCollapsed ? "Navigation erweitern" : "Navigation einklappen"}>
+        <Tooltip title={isCollapsed ? "Menü öffnen" : "Menü schließen"}>
           <IconButton 
             onClick={toggleSidebar} 
             size="small"
@@ -108,7 +126,7 @@ export const SidebarNavigation: React.FC = () => {
               },
             }}
           >
-            {isCollapsed ? <ChevronRightIcon /> : <ChevronLeftIcon />}
+{isCollapsed ? <MenuIcon /> : <MenuOpenIcon />}
           </IconButton>
         </Tooltip>
       </Box>
@@ -121,12 +139,22 @@ export const SidebarNavigation: React.FC = () => {
             isActive={activeMenuId === item.id}
             isExpanded={expandedMenuId === item.id}
             isCollapsed={isCollapsed}
+            userPermissions={userPermissions}
             onItemClick={() => {
               setActiveMenu(item.id);
               if (!item.subItems) {
+                // Hauptmenü ohne Sub-Items: Direkt navigieren
                 navigate(item.path);
               } else {
-                toggleSubmenu(item.id);
+                // Hauptmenü mit Sub-Items: Smart Behavior
+                if (isCollapsed) {
+                  // Eingeklappte Sidebar: Aufklappen + Sub-Items zeigen
+                  toggleSidebar(); // Sidebar aufklappen
+                  toggleSubmenu(item.id); // Sub-Items zeigen
+                } else {
+                  // Ausgeklappte Sidebar: Sub-Items togglen
+                  toggleSubmenu(item.id);
+                }
               }
             }}
             onSubItemClick={(subPath) => {
