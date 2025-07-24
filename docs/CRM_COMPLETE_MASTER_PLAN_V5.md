@@ -117,7 +117,7 @@ Von Tag 1 auf Wachstum, Performance und Qualität ausgelegt.
 - **Schlechte Kennzeichnung:** Sub-Items nicht klar als Unterpunkte erkennbar
 
 **🎯 Aktuelle Navigation-Struktur Bewertung:**
-```
+```text
 ├── 🏠 Mein Cockpit                    # Top-Level - perfekt
 ├── 👤 Neukundengewinnung              # 3 Sub-Items - OK
 │   ├── E-Mail Posteingang

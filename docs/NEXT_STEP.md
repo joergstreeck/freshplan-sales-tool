@@ -37,11 +37,6 @@
 # http://localhost:5173/kundenmanagement/opportunities
 ```
 
-**ALTERNATIVE NÄCHSTE SCHRITTE:**
-- FC-010 Phase 1: Filter-Bar implementieren
-- TODO-64: RENEWAL Stage zum Kanban hinzufügen
-- FC-011: Pipeline-Cockpit Integration implementieren (Tech-Konzept fertig ✅)
-
 ---
 
 ## ⚠️ VOR JEDER IMPLEMENTATION - REALITY CHECK PFLICHT:

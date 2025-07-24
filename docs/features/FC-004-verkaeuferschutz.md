@@ -71,10 +71,7 @@ public class CustomerProtectionService {
     @Transactional
     @RequiresPermission("customer.claim") // FC-015 Integration
     public void claimCustomer(UUID customerId, UUID userId, String reason) {
-        // FC-015: Permission Check für Customer-Claim
-        if (!permissionService.hasPermission("customer.claim")) {
-            throw new ForbiddenException("Keine Berechtigung zum Claim von Kunden");
-        }
+        // Permission Check erfolgt automatisch durch @RequiresPermission Annotation
         
         // Prüfungen und Event publizieren
         eventBus.publish(new CustomerClaimedEvent(customerId, userId));

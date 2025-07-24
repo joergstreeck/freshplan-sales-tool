@@ -12,10 +12,10 @@ Automatisiertes Management der jährlichen FreshPlan-Partnerschaftsvereinbarunge
 
 ## 📚 Verwandte Dokumente
 
-- **Business Context:** [/Users/joergstreeck/freshplan-sales-tool/docs/business/freshplan_summary.md](/Users/joergstreeck/freshplan-sales-tool/docs/business/freshplan_summary.md)
-- **Abhängiges Feature:** [/Users/joergstreeck/freshplan-sales-tool/docs/features/2025-07-12_TECH_CONCEPT_M4-opportunity-pipeline.md](/Users/joergstreeck/freshplan-sales-tool/docs/features/2025-07-12_TECH_CONCEPT_M4-opportunity-pipeline.md)
-- **Integration:** [/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-xentral-integration.md](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-xentral-integration.md)
-- **Offene Fragen:** [/Users/joergstreeck/freshplan-sales-tool/docs/features/OPEN_QUESTIONS_TRACKER.md#10-contract-renewal-management-fc-009-🆕](/Users/joergstreeck/freshplan-sales-tool/docs/features/OPEN_QUESTIONS_TRACKER.md#10-contract-renewal-management-fc-009-🆕)
+- **Business Context:** [../../business/freshplan_summary.md](../../business/freshplan_summary.md)
+- **Abhängiges Feature:** [./2025-07-12_TECH_CONCEPT_M4-opportunity-pipeline.md](./2025-07-12_TECH_CONCEPT_M4-opportunity-pipeline.md)
+- **Integration:** [./FC-005-xentral-integration.md](./FC-005-xentral-integration.md)
+- **Offene Fragen:** [./OPEN_QUESTIONS_TRACKER.md#10-contract-renewal-management-fc-009-🆕](./OPEN_QUESTIONS_TRACKER.md#10-contract-renewal-management-fc-009-🆕)
 
 ## 💼 Business-Anforderungen
 
