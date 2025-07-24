@@ -1,45 +1,292 @@
-2025-07-23 20:26:55 INFO  [or.fl.co.FlywayExecutor] (Quarkus Main Thread) Database: jdbc:postgresql://localhost:5432/freshplan (PostgreSQL 15.13)
-2025-07-23 20:26:55 INFO  [or.fl.co.in.co.DbValidate] (Quarkus Main Thread) Successfully validated 18 migrations (execution time 00:00.007s)
-2025-07-23 20:26:55 INFO  [or.fl.co.in.co.DbMigrate] (Quarkus Main Thread) Current version of schema "public": 105
-2025-07-23 20:26:55 INFO  [or.fl.co.in.co.DbMigrate] (Quarkus Main Thread) Schema "public" is up to date. No migration necessary.
-2025-07-23 20:26:55 INFO  [de.fr.in.se.SecurityConfig] (Quarkus Main Thread) === Security Configuration ===
-2025-07-23 20:26:55 INFO  [de.fr.in.se.SecurityConfig] (Quarkus Main Thread) OIDC Enabled: false
-2025-07-23 20:26:55 INFO  [de.fr.in.se.SecurityConfig] (Quarkus Main Thread) Auth Server URL: http://localhost:8180/realms/freshplan-realm
-2025-07-23 20:26:55 INFO  [de.fr.in.se.SecurityConfig] (Quarkus Main Thread) Client ID: freshplan-backend
-2025-07-23 20:26:55 WARN  [de.fr.in.se.SecurityConfig] (Quarkus Main Thread) ⚠️  Security is DISABLED! This should only be used in development.
-2025-07-23 20:26:55 INFO  [de.fr.in.se.SecurityConfig] (Quarkus Main Thread) === Available Security Roles ===
-2025-07-23 20:26:55 INFO  [de.fr.in.se.SecurityConfig] (Quarkus Main Thread) - admin: Full system access
-2025-07-23 20:26:55 INFO  [de.fr.in.se.SecurityConfig] (Quarkus Main Thread) - manager: Management functions
-2025-07-23 20:26:55 INFO  [de.fr.in.se.SecurityConfig] (Quarkus Main Thread) - sales: Sales operations
-2025-07-23 20:26:55 INFO  [de.fr.ap.CustomerDataInitializer] (Quarkus Main Thread) 🧪 Initializing comprehensive test data for edge case testing...
-2025-07-23 20:26:55 INFO  [de.fr.ap.CustomerDataInitializer] (Quarkus Main Thread) Found 23 existing customers, clearing for fresh test data...
-2025-07-23 20:26:55 INFO  [de.fr.ap.CustomerDataInitializer] (Quarkus Main Thread) Clearing opportunities before customers to avoid FK violations...
-2025-07-23 20:26:55 INFO  [de.fr.ap.CustomerDataInitializer] (Quarkus Main Thread) Existing customers and related data cleared via SQL
-2025-07-23 20:26:55 INFO  [de.fr.ap.CustomerDataInitializer] (Quarkus Main Thread) Creating normal business test cases...
-2025-07-23 20:26:55 INFO  [de.fr.ap.CustomerDataInitializer] (Quarkus Main Thread) Created hotel customer: Grand Hotel Berlin
-2025-07-23 20:26:55 INFO  [de.fr.ap.CustomerDataInitializer] (Quarkus Main Thread) Created restaurant customer: Bella Italia Restaurant
-2025-07-23 20:26:55 INFO  [de.fr.ap.CustomerDataInitializer] (Quarkus Main Thread) Created catering customer: Event Catering München GmbH
-2025-07-23 20:26:55 INFO  [de.fr.ap.CustomerDataInitializer] (Quarkus Main Thread) Created school customer: Städtische Grundschule Nord
-2025-07-23 20:26:55 INFO  [de.fr.ap.CustomerDataInitializer] (Quarkus Main Thread) Created event customer: Messe Frankfurt Event GmbH
-2025-07-23 20:26:55 INFO  [de.fr.ap.CustomerDataInitializer] (Quarkus Main Thread) Creating string boundary test cases...
-2025-07-23 20:26:55 INFO  [de.fr.ap.CustomerDataInitializer] (Quarkus Main Thread) ✅ String boundary tests created
-2025-07-23 20:26:55 INFO  [de.fr.ap.CustomerDataInitializer] (Quarkus Main Thread) Creating numeric edge case tests...
-2025-07-23 20:26:55 INFO  [de.fr.ap.CustomerDataInitializer] (Quarkus Main Thread) ✅ Numeric edge cases created
-2025-07-23 20:26:55 INFO  [de.fr.ap.CustomerDataInitializer] (Quarkus Main Thread) Creating date/time edge cases...
-2025-07-23 20:26:55 INFO  [de.fr.ap.CustomerDataInitializer] (Quarkus Main Thread) ✅ Date/time edge cases created
-2025-07-23 20:26:55 INFO  [de.fr.ap.CustomerDataInitializer] (Quarkus Main Thread) Creating enum boundary tests...
-2025-07-23 20:26:55 INFO  [de.fr.ap.CustomerDataInitializer] (Quarkus Main Thread) ✅ Enum boundary tests created
-2025-07-23 20:26:55 INFO  [de.fr.ap.CustomerDataInitializer] (Quarkus Main Thread) Creating business logic variation tests...
-2025-07-23 20:26:55 INFO  [de.fr.ap.CustomerDataInitializer] (Quarkus Main Thread) ✅ Business logic variations created
-2025-07-23 20:26:55 INFO  [de.fr.ap.CustomerDataInitializer] (Quarkus Main Thread) Creating unicode and special character tests...
-2025-07-23 20:26:55 INFO  [de.fr.ap.CustomerDataInitializer] (Quarkus Main Thread) ✅ Unicode and special character tests created
-2025-07-23 20:26:55 INFO  [de.fr.ap.CustomerDataInitializer] (Quarkus Main Thread) 🎯 Comprehensive test data initialized successfully! Total customers: 44
-2025-07-23 20:26:55 INFO  [de.fr.ap.CustomerDataInitializer] (Quarkus Main Thread) 💡 This covers all edge cases for thorough testing
-2025-07-23 20:26:55 INFO  [de.fr.ap.DevDataInitializer] (Quarkus Main Thread) Initializing development data...
-2025-07-23 20:26:55 INFO  [de.fr.ap.DevDataInitializer] (Quarkus Main Thread) Users already exist, skipping initialization
-2025-07-23 20:26:55 INFO  [io.quarkus] (Quarkus Main Thread) backend 1.0.0-SNAPSHOT on JVM (powered by Quarkus 3.17.4) started in 1.027s. Listening on: http://localhost:8080
-2025-07-23 20:26:55 INFO  [io.quarkus] (Quarkus Main Thread) Profile dev activated. Live Coding activated.
-2025-07-23 20:26:55 INFO  [io.quarkus] (Quarkus Main Thread) Installed features: [agroal, cdi, flyway, hibernate-orm, hibernate-orm-panache, hibernate-validator, jdbc-h2, jdbc-postgresql, narayana-jta, oidc, rest, rest-jackson, security, smallrye-context-propagation, smallrye-health, smallrye-openapi, swagger-ui, vertx]
-2025-07-23 20:26:55 INFO  [io.qu.de.de.RuntimeUpdatesProcessor] (vert.x-worker-thread-3) Live reload total time: 1.236s 
-2025-07-23 20:39:02 INFO  [io.qu.de.de.RuntimeUpdatesProcessor] (vert.x-worker-thread-5) Restarting quarkus due to changes in Opportunity.class, Opportunity$1.class.
-2025-07-23 20:39:02 INFO  [io.quarkus] (Quarkus Main Thread) backend stopped in 0.014s
+2025-07-23 20:39:02 INFO  [or.fl.co.FlywayExecutor] (Quarkus Main Thread) Database: jdbc:postgresql://localhost:5432/freshplan (PostgreSQL 15.13)
+2025-07-23 20:39:02 INFO  [or.fl.co.in.co.DbValidate] (Quarkus Main Thread) Successfully validated 18 migrations (execution time 00:00.007s)
+2025-07-23 20:39:02 INFO  [or.fl.co.in.co.DbMigrate] (Quarkus Main Thread) Current version of schema "public": 105
+2025-07-23 20:39:02 INFO  [or.fl.co.in.co.DbMigrate] (Quarkus Main Thread) Schema "public" is up to date. No migration necessary.
+2025-07-23 20:39:03 INFO  [de.fr.in.se.SecurityConfig] (Quarkus Main Thread) === Security Configuration ===
+2025-07-23 20:39:03 INFO  [de.fr.in.se.SecurityConfig] (Quarkus Main Thread) OIDC Enabled: false
+2025-07-23 20:39:03 INFO  [de.fr.in.se.SecurityConfig] (Quarkus Main Thread) Auth Server URL: http://localhost:8180/realms/freshplan-realm
+2025-07-23 20:39:03 INFO  [de.fr.in.se.SecurityConfig] (Quarkus Main Thread) Client ID: freshplan-backend
+2025-07-23 20:39:03 WARN  [de.fr.in.se.SecurityConfig] (Quarkus Main Thread) ⚠️  Security is DISABLED! This should only be used in development.
+2025-07-23 20:39:03 INFO  [de.fr.in.se.SecurityConfig] (Quarkus Main Thread) === Available Security Roles ===
+2025-07-23 20:39:03 INFO  [de.fr.in.se.SecurityConfig] (Quarkus Main Thread) - admin: Full system access
+2025-07-23 20:39:03 INFO  [de.fr.in.se.SecurityConfig] (Quarkus Main Thread) - manager: Management functions
+2025-07-23 20:39:03 INFO  [de.fr.in.se.SecurityConfig] (Quarkus Main Thread) - sales: Sales operations
+2025-07-23 20:39:03 INFO  [de.fr.ap.CustomerDataInitializer] (Quarkus Main Thread) 🧪 Initializing comprehensive test data for edge case testing...
+2025-07-23 20:39:03 INFO  [de.fr.ap.CustomerDataInitializer] (Quarkus Main Thread) Creating normal business test cases...
+2025-07-23 20:39:03 INFO  [de.fr.ap.CustomerDataInitializer] (Quarkus Main Thread) Created hotel customer: Grand Hotel Berlin
+2025-07-23 20:39:03 INFO  [de.fr.ap.CustomerDataInitializer] (Quarkus Main Thread) Created restaurant customer: Bella Italia Restaurant
+2025-07-23 20:39:03 INFO  [de.fr.ap.CustomerDataInitializer] (Quarkus Main Thread) Created catering customer: Event Catering München GmbH
+2025-07-23 20:39:03 INFO  [de.fr.ap.CustomerDataInitializer] (Quarkus Main Thread) Created school customer: Städtische Grundschule Nord
+2025-07-23 20:39:03 INFO  [de.fr.ap.CustomerDataInitializer] (Quarkus Main Thread) Created event customer: Messe Frankfurt Event GmbH
+2025-07-23 20:39:03 INFO  [de.fr.ap.CustomerDataInitializer] (Quarkus Main Thread) Creating string boundary test cases...
+2025-07-23 20:39:03 INFO  [de.fr.ap.CustomerDataInitializer] (Quarkus Main Thread) ✅ String boundary tests created
+2025-07-23 20:39:03 INFO  [de.fr.ap.CustomerDataInitializer] (Quarkus Main Thread) Creating numeric edge case tests...
+2025-07-23 20:39:03 INFO  [de.fr.ap.CustomerDataInitializer] (Quarkus Main Thread) ✅ Numeric edge cases created
+2025-07-23 20:39:03 INFO  [de.fr.ap.CustomerDataInitializer] (Quarkus Main Thread) Creating date/time edge cases...
+2025-07-23 20:39:03 INFO  [de.fr.ap.CustomerDataInitializer] (Quarkus Main Thread) ✅ Date/time edge cases created
+2025-07-23 20:39:03 INFO  [de.fr.ap.CustomerDataInitializer] (Quarkus Main Thread) Creating enum boundary tests...
+2025-07-23 20:39:03 INFO  [de.fr.ap.CustomerDataInitializer] (Quarkus Main Thread) ✅ Enum boundary tests created
+2025-07-23 20:39:03 INFO  [de.fr.ap.CustomerDataInitializer] (Quarkus Main Thread) Creating business logic variation tests...
+2025-07-23 20:39:03 INFO  [de.fr.ap.CustomerDataInitializer] (Quarkus Main Thread) ✅ Business logic variations created
+2025-07-23 20:39:03 INFO  [de.fr.ap.CustomerDataInitializer] (Quarkus Main Thread) Creating unicode and special character tests...
+2025-07-23 20:39:03 INFO  [de.fr.ap.CustomerDataInitializer] (Quarkus Main Thread) ✅ Unicode and special character tests created
+2025-07-23 20:39:03 INFO  [de.fr.ap.CustomerDataInitializer] (Quarkus Main Thread) 🎯 Comprehensive test data initialized successfully! Total customers: 44
+2025-07-23 20:39:03 INFO  [de.fr.ap.CustomerDataInitializer] (Quarkus Main Thread) 💡 This covers all edge cases for thorough testing
+2025-07-23 20:39:03 INFO  [de.fr.ap.DevDataInitializer] (Quarkus Main Thread) Initializing development data...
+2025-07-23 20:39:03 INFO  [de.fr.ap.DevDataInitializer] (Quarkus Main Thread) Users already exist, skipping initialization
+2025-07-23 20:39:03 INFO  [io.quarkus] (Quarkus Main Thread) backend 1.0.0-SNAPSHOT on JVM (powered by Quarkus 3.17.4) started in 0.944s. Listening on: http://localhost:8080
+2025-07-23 20:39:03 INFO  [io.quarkus] (Quarkus Main Thread) Profile dev activated. Live Coding activated.
+2025-07-23 20:39:03 INFO  [io.quarkus] (Quarkus Main Thread) Installed features: [agroal, cdi, flyway, hibernate-orm, hibernate-orm-panache, hibernate-validator, jdbc-h2, jdbc-postgresql, narayana-jta, oidc, rest, rest-jackson, security, smallrye-context-propagation, smallrye-health, smallrye-openapi, swagger-ui, vertx]
+2025-07-23 20:39:03 INFO  [io.qu.de.de.RuntimeUpdatesProcessor] (vert.x-worker-thread-5) Live reload total time: 1.068s 
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) cannot find symbol
+  symbol:   class OpportunityActivity
+  location: package de.freshplan.domain.opportunity.entity, line 4 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/service/OpportunityService.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) cannot find symbol
+  symbol:   class OpportunityStage
+  location: package de.freshplan.domain.opportunity.entity, line 5 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/service/OpportunityService.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) package de.freshplan.domain.opportunity.repository does not exist, line 6 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/service/OpportunityService.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) package de.freshplan.domain.opportunity.service.dto does not exist, line 7 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/service/OpportunityService.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) package de.freshplan.domain.opportunity.service.dto does not exist, line 8 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/service/OpportunityService.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) package de.freshplan.domain.opportunity.service.dto does not exist, line 9 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/service/OpportunityService.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) package de.freshplan.domain.opportunity.service.dto does not exist, line 10 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/service/OpportunityService.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) package de.freshplan.domain.opportunity.service.exception does not exist, line 11 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/service/OpportunityService.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) package de.freshplan.domain.opportunity.service.exception does not exist, line 12 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/service/OpportunityService.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) package de.freshplan.domain.opportunity.service.mapper does not exist, line 13 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/service/OpportunityService.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) package de.freshplan.domain.user.entity does not exist, line 14 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/service/OpportunityService.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) package de.freshplan.domain.user.repository does not exist, line 15 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/service/OpportunityService.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) cannot find symbol
+  symbol:   class OpportunityRepository
+  location: class de.freshplan.domain.opportunity.service.OpportunityService, line 44 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/service/OpportunityService.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) cannot find symbol
+  symbol:   class UserRepository
+  location: class de.freshplan.domain.opportunity.service.OpportunityService, line 46 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/service/OpportunityService.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) cannot find symbol
+  symbol:   class OpportunityMapper
+  location: class de.freshplan.domain.opportunity.service.OpportunityService, line 48 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/service/OpportunityService.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) cannot find symbol
+  symbol:   class CreateOpportunityRequest
+  location: class de.freshplan.domain.opportunity.service.OpportunityService, line 57 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/service/OpportunityService.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) cannot find symbol
+  symbol:   class OpportunityResponse
+  location: class de.freshplan.domain.opportunity.service.OpportunityService, line 57 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/service/OpportunityService.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) cannot find symbol
+  symbol:   class OpportunityResponse
+  location: class de.freshplan.domain.opportunity.service.OpportunityService, line 115 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/service/OpportunityService.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) cannot find symbol
+  symbol:   class OpportunityResponse
+  location: class de.freshplan.domain.opportunity.service.OpportunityService, line 121 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/service/OpportunityService.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) cannot find symbol
+  symbol:   class UpdateOpportunityRequest
+  location: class de.freshplan.domain.opportunity.service.OpportunityService, line 130 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/service/OpportunityService.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) cannot find symbol
+  symbol:   class OpportunityResponse
+  location: class de.freshplan.domain.opportunity.service.OpportunityService, line 130 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/service/OpportunityService.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) cannot find symbol
+  symbol:   class OpportunityStage
+  location: class de.freshplan.domain.opportunity.service.OpportunityService, line 178 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/service/OpportunityService.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) cannot find symbol
+  symbol:   class OpportunityResponse
+  location: class de.freshplan.domain.opportunity.service.OpportunityService, line 178 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/service/OpportunityService.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) cannot find symbol
+  symbol:   class OpportunityStage
+  location: class de.freshplan.domain.opportunity.service.OpportunityService, line 183 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/service/OpportunityService.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) cannot find symbol
+  symbol:   class OpportunityResponse
+  location: class de.freshplan.domain.opportunity.service.OpportunityService, line 182 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/service/OpportunityService.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) cannot find symbol
+  symbol:   class PipelineOverviewResponse
+  location: class de.freshplan.domain.opportunity.service.OpportunityService, line 228 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/service/OpportunityService.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) cannot find symbol
+  symbol:   class OpportunityResponse
+  location: class de.freshplan.domain.opportunity.service.OpportunityService, line 259 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/service/OpportunityService.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) cannot find symbol
+  symbol:   class OpportunityStage
+  location: class de.freshplan.domain.opportunity.service.OpportunityService, line 270 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/service/OpportunityService.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) cannot find symbol
+  symbol:   class OpportunityResponse
+  location: class de.freshplan.domain.opportunity.service.OpportunityService, line 270 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/service/OpportunityService.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) package OpportunityActivity does not exist, line 281 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/service/OpportunityService.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) cannot find symbol
+  symbol:   class OpportunityResponse
+  location: class de.freshplan.domain.opportunity.service.OpportunityService, line 280 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/service/OpportunityService.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) package de.freshplan.domain.opportunity.service.dto does not exist, line 308 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/service/OpportunityService.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) cannot find symbol
+  symbol:   class OpportunityResponse
+  location: class de.freshplan.domain.opportunity.service.OpportunityService, line 307 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/service/OpportunityService.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) cannot find symbol
+  symbol:   class OpportunityResponse
+  location: class de.freshplan.domain.opportunity.service.OpportunityService, line 367 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/service/OpportunityService.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) cannot find symbol
+  symbol:   class User
+  location: class de.freshplan.domain.opportunity.service.OpportunityService, line 394 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/service/OpportunityService.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) package de.freshplan.domain.customer.entity does not exist, line 3 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/entity/Opportunity.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) package de.freshplan.domain.user.entity does not exist, line 4 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/entity/Opportunity.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) cannot find symbol
+  symbol:   class OpportunityStage
+  location: class de.freshplan.domain.opportunity.entity.Opportunity, line 37 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/entity/Opportunity.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) cannot find symbol
+  symbol:   class Customer
+  location: class de.freshplan.domain.opportunity.entity.Opportunity, line 41 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/entity/Opportunity.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) cannot find symbol
+  symbol:   class User
+  location: class de.freshplan.domain.opportunity.entity.Opportunity, line 45 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/entity/Opportunity.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) cannot find symbol
+  symbol:   class OpportunityActivity
+  location: class de.freshplan.domain.opportunity.entity.Opportunity, line 60 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/entity/Opportunity.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) cannot find symbol
+  symbol:   class OpportunityStage
+  location: class de.freshplan.domain.opportunity.entity.Opportunity, line 76 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/entity/Opportunity.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) cannot find symbol
+  symbol:   class User
+  location: class de.freshplan.domain.opportunity.entity.Opportunity, line 76 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/entity/Opportunity.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) cannot find symbol
+  symbol:   class OpportunityStage
+  location: class de.freshplan.domain.opportunity.entity.Opportunity, line 85 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/entity/Opportunity.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) cannot find symbol
+  symbol:   class OpportunityStage
+  location: class de.freshplan.domain.opportunity.entity.Opportunity, line 109 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/entity/Opportunity.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) cannot find symbol
+  symbol:   class OpportunityActivity
+  location: class de.freshplan.domain.opportunity.entity.Opportunity, line 129 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/entity/Opportunity.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) cannot find symbol
+  symbol:   class OpportunityStage
+  location: class de.freshplan.domain.opportunity.entity.Opportunity, line 153 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/entity/Opportunity.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) cannot find symbol
+  symbol:   class OpportunityStage
+  location: class de.freshplan.domain.opportunity.entity.Opportunity, line 157 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/entity/Opportunity.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) cannot find symbol
+  symbol:   class Customer
+  location: class de.freshplan.domain.opportunity.entity.Opportunity, line 161 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/entity/Opportunity.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) cannot find symbol
+  symbol:   class Customer
+  location: class de.freshplan.domain.opportunity.entity.Opportunity, line 165 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/entity/Opportunity.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) cannot find symbol
+  symbol:   class User
+  location: class de.freshplan.domain.opportunity.entity.Opportunity, line 170 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/entity/Opportunity.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) cannot find symbol
+  symbol:   class User
+  location: class de.freshplan.domain.opportunity.entity.Opportunity, line 174 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/entity/Opportunity.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) cannot find symbol
+  symbol:   class OpportunityActivity
+  location: class de.freshplan.domain.opportunity.entity.Opportunity, line 215 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/entity/Opportunity.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) cannot find symbol
+  symbol:   class OpportunityActivity
+  location: class de.freshplan.domain.opportunity.entity.Opportunity, line 219 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/entity/Opportunity.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) cannot find symbol
+  symbol:   class User
+  location: class de.freshplan.domain.opportunity.service.OpportunityService, line 72 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/service/OpportunityService.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) cannot find symbol
+  symbol:   variable OpportunityStage
+  location: class de.freshplan.domain.opportunity.service.OpportunityService, line 76 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/service/OpportunityService.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) cannot find symbol
+  symbol:   class OpportunityActivity
+  location: class de.freshplan.domain.opportunity.service.OpportunityService, line 101 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/service/OpportunityService.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) cannot find symbol
+  symbol:   class OpportunityActivity
+  location: class de.freshplan.domain.opportunity.service.OpportunityService, line 102 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/service/OpportunityService.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) package OpportunityActivity does not exist, line 105 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/service/OpportunityService.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) cannot find symbol
+  symbol:   class OpportunityNotFoundException
+  location: class de.freshplan.domain.opportunity.service.OpportunityService, line 125 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/service/OpportunityService.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) cannot find symbol
+  symbol:   class OpportunityNotFoundException
+  location: class de.freshplan.domain.opportunity.service.OpportunityService, line 136 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/service/OpportunityService.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) cannot find symbol
+  symbol:   class User
+  location: class de.freshplan.domain.opportunity.service.OpportunityService, line 156 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/service/OpportunityService.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) cannot find symbol
+  symbol:   class OpportunityActivity
+  location: class de.freshplan.domain.opportunity.service.OpportunityService, line 157 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/service/OpportunityService.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) cannot find symbol
+  symbol:   class OpportunityActivity
+  location: class de.freshplan.domain.opportunity.service.OpportunityService, line 158 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/service/OpportunityService.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) package OpportunityActivity does not exist, line 161 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/service/OpportunityService.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) cannot find symbol
+  symbol:   class OpportunityNotFoundException
+  location: class de.freshplan.domain.opportunity.service.OpportunityService, line 189 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/service/OpportunityService.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) cannot find symbol
+  symbol:   class OpportunityStage
+  location: class de.freshplan.domain.opportunity.service.OpportunityService, line 191 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/service/OpportunityService.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) cannot find symbol
+  symbol:   class InvalidStageTransitionException
+  location: class de.freshplan.domain.opportunity.service.OpportunityService, line 195 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/service/OpportunityService.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) cannot find symbol
+  symbol:   class OpportunityStage
+  location: class de.freshplan.domain.opportunity.service.OpportunityService, line 199 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/service/OpportunityService.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) cannot find symbol
+  symbol:   class User
+  location: class de.freshplan.domain.opportunity.service.OpportunityService, line 203 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/service/OpportunityService.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) cannot find symbol
+  symbol:   class OpportunityActivity
+  location: class de.freshplan.domain.opportunity.service.OpportunityService, line 207 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/service/OpportunityService.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) cannot find symbol
+  symbol:   class OpportunityActivity
+  location: class de.freshplan.domain.opportunity.service.OpportunityService, line 208 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/service/OpportunityService.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) package OpportunityActivity does not exist, line 211 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/service/OpportunityService.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) cannot find symbol
+  symbol:   variable PipelineOverviewResponse
+  location: class de.freshplan.domain.opportunity.service.OpportunityService, line 238 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/service/OpportunityService.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) cannot find symbol
+  symbol:   class OpportunityStage
+  location: class de.freshplan.domain.opportunity.service.OpportunityService, line 244 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/service/OpportunityService.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) package PipelineOverviewResponse does not exist, line 243 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/service/OpportunityService.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) cannot find symbol
+  symbol:   class User
+  location: class de.freshplan.domain.opportunity.service.OpportunityService, line 260 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/service/OpportunityService.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) cannot find symbol
+  symbol:   class OpportunityNotFoundException
+  location: class de.freshplan.domain.opportunity.service.OpportunityService, line 285 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/service/OpportunityService.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) cannot find symbol
+  symbol:   class User
+  location: class de.freshplan.domain.opportunity.service.OpportunityService, line 287 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/service/OpportunityService.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) cannot find symbol
+  symbol:   class OpportunityActivity
+  location: class de.freshplan.domain.opportunity.service.OpportunityService, line 288 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/service/OpportunityService.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) cannot find symbol
+  symbol:   class OpportunityActivity
+  location: class de.freshplan.domain.opportunity.service.OpportunityService, line 289 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/service/OpportunityService.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) cannot find symbol
+  symbol:   class OpportunityNotFoundException
+  location: class de.freshplan.domain.opportunity.service.OpportunityService, line 328 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/service/OpportunityService.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) cannot find symbol
+  symbol:   variable OpportunityStage
+  location: class de.freshplan.domain.opportunity.service.OpportunityService, line 331 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/service/OpportunityService.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) cannot find symbol
+  symbol:   variable OpportunityStage
+  location: class de.freshplan.domain.opportunity.service.OpportunityService, line 332 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/service/OpportunityService.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) cannot find symbol
+  symbol:   class InvalidStageTransitionException
+  location: class de.freshplan.domain.opportunity.service.OpportunityService, line 334 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/service/OpportunityService.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) cannot find symbol
+  symbol:   class User
+  location: class de.freshplan.domain.opportunity.service.OpportunityService, line 346 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/service/OpportunityService.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) cannot find symbol
+  symbol:   class OpportunityActivity
+  location: class de.freshplan.domain.opportunity.service.OpportunityService, line 347 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/service/OpportunityService.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) cannot find symbol
+  symbol:   class OpportunityActivity
+  location: class de.freshplan.domain.opportunity.service.OpportunityService, line 348 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/service/OpportunityService.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) package OpportunityActivity does not exist, line 351 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/service/OpportunityService.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) cannot find symbol
+  symbol:   class OpportunityNotFoundException
+  location: class de.freshplan.domain.opportunity.service.OpportunityService, line 384 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/service/OpportunityService.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) cannot find symbol
+  symbol:   variable OpportunityStage
+  location: class de.freshplan.domain.opportunity.entity.Opportunity, line 116 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/entity/Opportunity.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) cannot find symbol
+  symbol:   variable OpportunityStage
+  location: class de.freshplan.domain.opportunity.entity.Opportunity, line 116 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/entity/Opportunity.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) cannot find symbol
+  symbol:   variable OpportunityStage
+  location: class de.freshplan.domain.opportunity.entity.Opportunity, line 246 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/entity/Opportunity.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) cannot find symbol
+  symbol:   variable OpportunityStage
+  location: class de.freshplan.domain.opportunity.entity.Opportunity, line 250 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/entity/Opportunity.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) cannot find symbol
+  symbol:   variable OpportunityStage
+  location: class de.freshplan.domain.opportunity.entity.Opportunity, line 254 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/entity/Opportunity.java
+2025-07-23 21:15:16 ERROR [io.qu.de.de.JavaCompilationProvider] (vert.x-worker-thread-7) cannot find symbol
+  symbol:   variable OpportunityStage
+  location: class de.freshplan.domain.opportunity.entity.Opportunity, line 254 in /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/domain/opportunity/entity/Opportunity.java
+2025-07-23 21:37:09 INFO  [io.qu.de.de.RuntimeUpdatesProcessor] (vert.x-worker-thread-7) Restarting quarkus due to changes in UpdateProfileRequest.class, SmartSortService$1.class, RateLimitConstants.class, AddressType.class, OpportunityActivityResponse$Builder.class, RiskManagementConstants.class, RateLimited.class, PipelineOverviewResponse.class, RiskCustomer.class, SecurityContextProvider$AuthenticationDetails.class, UserPrincipal$Builder.class, ErrorResponse.class, SalesCockpitResource.class, CustomerTimelineResource.class, ChangeStatusRequest.class, UpdateUserRequest$Builder.class, DuplicateEmailException.class, DashboardStatistics.class, CustomerSearchService$PagedResponse.class, DashboardTask.class, DuplicateProfileExceptionMapper.class, TestDataService$CleanupResult.class, CustomerAlreadyExistsExceptionMapper.class, Profile.class, CalculatorService$EarlyBookingRule.class, RoleValidator.class, CustomerResponseBuilder.class, FilterCriteria.class, UpdateUserRequest.class, RoleRepository.class, CreateCommunicationRequest$Builder.class, PaginationRequest.class, CustomerLocation.class, OpportunityMapper.class, CalculatorService$DiscountRule.class, CreateProfileRequest$FinancialInfo.class, CreateProfileRequest.class, CustomerTimelineMapper.class, TestDataService.class, RateLimitExceededException.class, UserService.class, RateLimitInterceptor.class, OpportunityResponse$Builder.class, OpportunityResource.class, TimeConstants.class, ProfileMappingException.class, CustomerStatus.class, CustomerNotFoundExceptionMapper.class, CustomerConstants.class, InvalidStageTransitionException.class, OpportunityStage$1.class, InvalidStageTransitionExceptionMapper.class, DuplicateUsernameException.class, AddChildCustomerRequest.class, E2EDataInitializer.class, InvalidRoleException.class, ProfileNotFoundException.class, ChangeStageRequest.class, CustomerResponse.class, PartnerStatus.class, OpportunityActivity.class, UserMapper.class, HtmlUtils.class, CustomerNotFoundException.class, TestDataService$SeedResult.class, RiskCustomer$RiskLevel.class, CustomerSearchResource$SmartSortStrategyInfo.class, LogicalOperator.class, ErrorResponse$Builder.class, PermissionRequired.class, DashboardAlert.class, UserPermissionId.class, CustomerType.class, FieldLengthConstants.class, DevUserResource.class, ProfileMapper.class, Customer.class, UserRepository.class, CustomerSearchRequest$Builder.class, SecurityAudit.class, UserResponse.class, RolePermission.class, ImportanceLevel.class, ProfileNotFoundExceptionMapper.class, CreateTimelineEventRequest.class, CustomerSearchResource$PagedCustomerResponse.class, TestDataResource$StatsResponse.class, CreateProfileRequest$CompanyInfo.class, Opportunity.class, GlobalExceptionMapper.class, SmartSortService$SmartSortStrategy.class, CustomerTimelineEvent.class, TestDataResource.class, PipelineOverviewResponse$StageStatistic.class, OpportunityService.class, SmartSortService.class, CustomerSearchResource.class, UpdateOpportunityRequest$Builder.class, CreateCustomerRequest.class, ErrorResponse$FieldError.class, UpdateCustomerRequest.class, SecurityContextProvider.class, OpportunityActivityResponse.class, DashboardAlert$AlertSeverity.class, CalculatorResponse.class, OpportunityResponse.class, UserAlreadyExistsException.class, Permission.class, CustomerListResponse.class, CreateProfileRequest$ContactInfo.class, PermissionService.class, CustomerMapper.class, TimelineListResponse.class, CreateOpportunityRequest$Builder.class, DuplicateProfileException.class, CustomerQueryBuilder$1.class, MergeCustomersRequest.class, UpdateOpportunityRequest.class, CustomerHasChildrenExceptionMapper.class, UserAlreadyExistsExceptionMapper.class, CustomerContact.class, CustomerRepository.class, CustomerTimelineRepository.class, OpportunityStage.class, ProfileRepository.class, DuplicateUsernameExceptionMapper.class, TimelineSummaryResponse.class, CustomerSearchResource$ErrorResponse.class, ProfileResponse$Builder.class, PermissionRepository.class, PingResource.class, CreateUserRequest$Builder.class, RateLimitInterceptor$RateLimitEntry.class, CalculatorService.class, OpportunityNotFoundExceptionMapper.class, CalculatorResponse$Builder.class, FilterOperator.class, UpdateProfileRequest$Builder.class, CustomerService.class, CustomerTimelineService.class, ProfileResource.class, UpdateCustomerRequest$Builder.class, ProfileService.class, CustomerHasChildrenException.class, CustomerQueryBuilder.class, RolePermissionId.class, PermissionResource.class, UpdateUserRolesRequest.class, PaginationConstants.class, PermissionResource$GrantPermissionRequest.class, UserPrincipal.class, CustomerLifecycleStage.class, Opportunity$1.class, CreateCommunicationRequest.class, SecurityAuditInterceptor.class, Customer$1.class, LocationCategory.class, Classification.class, SmartSearchRequest.class, TestDataService$TestDataStats.class, CustomerTimelineRepository$TimelineSummary.class, CreateOpportunityRequest.class, UserPermission.class, CustomerAddress.class, ChangeStageRequest$Builder.class, PermissionInterceptor.class, DashboardAlert$AlertType.class, OpportunityRepository.class, CustomerSearchRequest.class, OpportunityNotFoundException.class, CustomerNumberGeneratorService.class, UpdateUserRolesRequest$Builder.class, ContactRole.class, CalculatorConstants.class, DashboardTask$TaskType.class, DevDataInitializer.class, TestDataResource$CleanupResponse.class, CommunicationMethod.class, TestDataResource$SeedResponse.class, Role.class, ClockProvider.class, PaymentTerms.class, SalesCockpitDashboard.class, User.class, CustomerHierarchyType.class, UpdateTimelineEventRequest.class, SecurityContextProvider$AuthenticationDetails$Builder.class, DuplicateEmailExceptionMapper.class, CalculatorRequest.class, CreateCustomerRequest$Builder.class, CustomerTimelineEventRepository.class, ValidationExceptionMapper.class, SecurityConfig$Roles.class, ProfileResponse.class, EventCategory.class, CustomerMapper$CustomerMapperException.class, CreateNoteRequest.class, CustomerDashboardResponse.class, PipelineOverviewResponse$StageStatistic$Builder.class, InvalidRoleExceptionMapper.class, UserResponse$Builder.class, DashboardTask$TaskPriority.class, CustomerAlreadyExistsException.class, CalculatorResource.class, SortCriteria.class, ErrorResponse$Builder.class, PipelineOverviewResponse$Builder.class, DeliveryCondition.class, CreateTimelineEventRequest$Builder.class, CustomerSearchService.class, PermissionResource$RevokePermissionRequest.class, TestDataResource$ErrorResponse.class, ErrorResponse.class, Industry.class, CustomerResource.class, SecurityConfig.class, CurrentUserProducer.class, IllegalArgumentExceptionMapper.class, CurrentUser.class, OpportunityActivity$ActivityType.class, CreateProfileRequest$Builder.class, UserNotFoundException.class, UserResource.class, CustomerDataInitializer.class, TimelineEventResponse.class, UserPermissionRepository.class, CheckDuplicatesRequest.class, SalesCockpitService.class, CreateUserRequest.class, IllegalArgumentMasterExceptionMapper.class, DateFormatExceptionMapper$ErrorResponse.class, DateFormatExceptionMapper.class, IllegalArgumentMasterExceptionMapper$ErrorResponse.class.
+2025-07-23 21:37:09 INFO  [io.quarkus] (Quarkus Main Thread) backend stopped in 0.010s

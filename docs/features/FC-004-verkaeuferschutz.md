@@ -69,7 +69,10 @@ public class CustomerProtectionService {
     }
     
     @Transactional
+    @RequiresPermission("customer.claim") // FC-015 Integration
     public void claimCustomer(UUID customerId, UUID userId, String reason) {
+        // Permission Check erfolgt automatisch durch @RequiresPermission Annotation
+        
         // Prüfungen und Event publizieren
         eventBus.publish(new CustomerClaimedEvent(customerId, userId));
     }

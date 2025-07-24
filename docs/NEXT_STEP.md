@@ -7,48 +7,35 @@
 
 ## 🎯 JETZT GERADE:
 
-**🎉 DRAMATISCHER ERFOLG - CI PIPELINE 100% GRÜN!**
+**FC-015 RECHTE- UND ROLLENKONZEPT VOLLSTÄNDIG GEPLANT ✅**
 
-**Stand 23.07.2025 22:21:**
-- ✅ **KRITISCHER MEILENSTEIN:** Von 58 CI-Fehlern auf 0 reduziert!
-- ✅ Foreign Key Cleanup erfolgreich implementiert 
-- ✅ DateTime-Timing-Toleranz für CI-Environment behoben
-- ✅ Exception Mappers für alle API-Fehlertypen implementiert
-- ✅ Tests run: 437, Failures: 0, Errors: 0 - **100% ERFOLG!**
-- ✅ M4 Backend PRODUCTION-READY
-- 🔄 **AKTUELL:** M4 Frontend Implementation gestartet
+**Stand 24.07.2025 23:00:**
+- ✅ **FC-013:** Activity & Notes System VOLLSTÄNDIG geplant
+- ✅ **FC-014:** Mobile & Tablet Optimierung VOLLSTÄNDIG geplant
+- ✅ **FC-015:** Rechte & Rollen VOLLSTÄNDIG geplant mit allen Detail-Dokumenten
+- ✅ **Integrationen:** Alle Cross-References aktualisiert (M4, FC-009, FC-004, FC-012, FC-005)
 
 **🚀 NÄCHSTER SCHRITT:**
 
-**PR FÜR M4 BACKEND ERSTELLEN (SOFORT):**
+**FC-012 AUDIT TRAIL IMPLEMENTIEREN (KRITISCH!):**
+- Basis für FC-015 Permission Logging
+- @Auditable Annotations
+- Hash-Chain für Integrität
+- Integration in alle Features
 
-**Warum jetzt:** CI ist 100% grün, Backend production-ready, alle Tests erfolgreich
-**Befehl:** 
+**ALTERNATIVE NÄCHSTE SCHRITTE:**
+- M4 Backend-Integration: OpportunityApi.ts mit echten Endpoints (TODO-60)
+- FC-010 Phase 1: Filter-Bar implementieren
+- TODO-64: RENEWAL Stage zum Kanban hinzufügen
+
 ```bash
-gh pr create --title "feat: M4 Opportunity Pipeline - Complete Backend Implementation" \
-  --body "## Summary
-- ✅ Complete M4 Opportunity Pipeline Backend Implementation  
-- ✅ All 437 tests passing (0 failures)
-- ✅ Foreign Key Cleanup implemented
-- ✅ DateTime timing tolerance for CI
-- ✅ Exception Mappers for API errors
+# Relevante Dateien:
+# frontend/src/features/opportunity/services/opportunityApi.ts
+# backend/src/main/java/de/freshplan/api/opportunity/OpportunityResource.java
 
-🤖 Generated with [Claude Code](https://claude.ai/code)"
+# Kanban Board testen:
+# http://localhost:5173/kundenmanagement/opportunities
 ```
-
-**DANACH:** M4 Frontend implementieren - apiClient Integration fortsetzen
-
-**ERFOLGREICH ABGESCHLOSSEN:**
-- ✅ TODO-43: CI Pipeline systematisch grün - VON 58 AUF 0 FEHLER! 🎉
-- ✅ Foreign Key Cleanup mit EntityManager
-- ✅ DateTime-Toleranz-Fix (10ms für CI)
-- ✅ IllegalArgumentMasterExceptionMapper
-- ✅ OpportunityServiceStageTransitionTest alle 20 Tests grün
-
-**UNTERBROCHEN BEI:**
-- TODO-26: M4 Frontend Implementation
-- Datei: frontend/src/features/opportunity/services/opportunityApi.ts (vollständig)
-- Nächster geplanter Schritt: apiClient importieren + OpportunityPipeline Komponente
 
 ---
 
@@ -61,12 +48,12 @@ gh pr create --title "feat: M4 Opportunity Pipeline - Complete Backend Implement
 
 ## 📊 OFFENE TODOS:
 ```
-🔴 HIGH Priority: 2 TODOs (26, 41)
+🔴 HIGH Priority: 1 TODO (41)
 🟢 LOW Priority: 1 TODO (11)
 ```
 
 **Status:**
-- M4 Backend: ✅ PRODUCTION-READY (100% grün CI!)
-- M4 Frontend: 🔄 IN ARBEIT (Types + API Service erstellt)
-- M4 Code Review: ✅ Ready für PR
-- M4 CI: ✅ 100% GRÜN (437 Tests, 0 Failures!)
+- M4 Backend: ✅ PRODUCTION-READY (100% fertig)
+- M4 Frontend: 🔴 BLOCKIERT durch Drag & Drop Bug
+- M4 UX: ✅ Viele Verbesserungen umgesetzt
+- M4 Integration: ⏸️ Wartet auf Bug-Fix
