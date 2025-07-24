@@ -82,7 +82,7 @@
 
 ---
 
-### 📊 **PHASE 3: Analytics & Intelligence** (12 Tage)
+### 📊 **PHASE 3: Analytics & Intelligence** (21 Tage)
 **Warum?** Führungskräfte-Features + datengetriebene Entscheidungen
 
 12. **FC-007 - Chef-Dashboard** (4 Tage)
@@ -91,13 +91,37 @@
     - Team-Performance KPIs
     - WebSocket für Echtzeit
 
-13. **M6 - Embedded Analytics** (5 Tage)
+13. **FC-016 - KPI-Tracking & Reporting** (9-11 Tage) ⭐ NEU
+    - Renewal-Quote Tracking
+    - Durchschnittliche Zeit bis Vertragsabschluss
+    - Offene vs. erledigte Opportunities
+    - Verlagerte Deals im Zeitverlauf
+    - Time Series Storage für Trends
+    - **Details:** [FC-016 Tech-Konzept](./2025-07-24_TECH_CONCEPT_FC-016-kpi-tracking-reporting.md)
+
+14. **FC-017 - Fehler- und Ausnahmehandling** (7-8 Tage) ⭐ NEU
+    - Circuit Breaker für externe Services
+    - Fallback-Mechanismen & Offline Mode
+    - Sichtbare Status-Indikatoren auf Cards
+    - Recovery & Retry Strategien
+    - Direkte Notifikationen bei Fehlern
+    - **Details:** [FC-017 Tech-Konzept](./2025-07-25_TECH_CONCEPT_FC-017-error-handling-system.md)
+
+15. **FC-018 - Datenschutz & DSGVO-Compliance** (8-9 Tage) ⭐ NEU
+    - Privacy by Design Architektur
+    - Field-Level Zugriffsschutz für personenbezogene Daten
+    - DSGVO-konformes Löschen/Anonymisieren
+    - Consent Management & Betroffenenrechte
+    - Automatische Retention Policies
+    - **Details:** [FC-018 Tech-Konzept](./2025-07-25_TECH_CONCEPT_FC-018-datenschutz-dsgvo-compliance.md)
+
+16. **M6 - Embedded Analytics** (5 Tage)
     - Kontextuelle Reports
     - Custom Dashboards
     - Export-Funktionen
     - Scheduled Reports
 
-14. **KI Basis-Features** (3 Tage)
+15. **KI Basis-Features** (3 Tage)
     - Lead Scoring
     - Next Best Action
     - Anomalie-Erkennung
@@ -226,15 +250,15 @@
 | Phase 0 | Quick Wins | 3 Tage | 3 Tage |
 | Phase 1 | Core Sales | 10 Tage | 13 Tage |
 | Phase 2 | Communication | 10 Tage | 23 Tage |
-| Phase 3 | Analytics | 12 Tage | 35 Tage |
-| Phase 4 | Integration | 10 Tage | 45 Tage |
-| Phase 5 | Mobile/UX | 12 Tage | 57 Tage |
-| Phase 6 | AI/Automation | 15 Tage | 72 Tage |
-| Phase 7 | Gamification | 5 Tage | 77 Tage |
-| Phase 8 | Enterprise | 8 Tage | 85 Tage |
+| Phase 3 | Analytics | 37 Tage | 60 Tage |
+| Phase 4 | Integration | 10 Tage | 70 Tage |
+| Phase 5 | Mobile/UX | 12 Tage | 82 Tage |
+| Phase 6 | AI/Automation | 15 Tage | 97 Tage |
+| Phase 7 | Gamification | 5 Tage | 102 Tage |
+| Phase 8 | Enterprise | 8 Tage | 110 Tage |
 
-**Gesamt-Entwicklungszeit:** ~85 Personentage
-**Mit Buffer (20%):** ~100-120 Personentage
+**Gesamt-Entwicklungszeit:** ~110 Personentage
+**Mit Buffer (20%):** ~132-140 Personentage
 
 ## 🚀 Quick-Win Meilensteine
 

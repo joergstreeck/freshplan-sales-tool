@@ -24,6 +24,14 @@ Die Opportunity Pipeline ist das zentrale Element unserer prozessorientierten Ar
 - **Bessere Forecasts** durch transparente Pipeline-Daten
 - **Weniger verlorene Leads** durch systematisches Follow-up
 
+## 🔗 Feature-Integrationen
+
+### KPI-Tracking Integration (FC-016)
+- **Deal Velocity Tracking**: Automatische Zeitmessung pro Stage
+- **Deferral Tracking**: Erfassung verlagerter Deals mit Grund
+- **Real-time Metrics**: KPI-Updates bei jedem Stage-Wechsel
+- Details: [FC-016 KPI-Tracking](./2025-07-24_TECH_CONCEPT_FC-016-kpi-tracking-reporting.md)
+
 ## 🏗️ Technische Architektur
 
 ### Frontend-Architektur

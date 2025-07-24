@@ -1,7 +1,7 @@
 # 🚀 CRM COMPLETE MASTER PLAN V5 - Das Sales Command Center
 
 **Version:** 5.0  
-**Datum:** 24.07.2025 23:06 (Auto-Sync)
+**Datum:** 25.07.2025 00:45 (Auto-Sync)
 **Status:** Backend implementiert ✅, Tests fast vollständig 🔄
 
 ---
@@ -81,11 +81,15 @@ Von Tag 1 auf Wachstum, Performance und Qualität ausgelegt.
 | Security | ✅ Done | 100% | ✅ Keycloak läuft produktiv |
 | FC-012 Audit Trail | 🚨 CRITICAL | Tech-Konzept ✅ | Parallel-Implementierung |
 | M4 Pipeline | 🔄 In Progress | 85% | Tests finalisieren (TODO-31) |
+| FC-003 E-Mail Integration | 📋 Planned | Tech-Konzept ✅ | Phase 2 Communication Hub |
 | FC-009 Renewal | 📋 Planned | Tech-Konzept ✅ | Nach M4 + Audit Integration |
 | FC-010 Scalability | 📋 Planned | Tech-Konzept ✅ | Filter-Bar Phase 1 |
 | FC-011 Cockpit-Int | 📋 Planned | Tech-Konzept ✅ | Nach M4 Integration |
 | FC-013 Activity Notes | 📋 Planned | Tech-Konzept ✅ | Core CRM Feature |
 | FC-014 Mobile/Tablet | 📋 Planned | Tech-Konzept ✅ | Außendienst kritisch |
+| FC-016 KPI-Tracking | 📋 Planned | Tech-Konzept ✅ | Renewal-Metriken ⭐ NEU |
+| FC-017 Error Handling | 📋 Planned | Tech-Konzept ✅ | Fallback & Recovery ⭐ NEU |
+| FC-018 Datenschutz/DSGVO | 📋 Planned | Tech-Konzept ✅ | Privacy by Design ⭐ NEU |
 | M8 Calculator | 📋 Planned | 0% | Modal Template |
 | M5 Customer | ✅ Done* | 90% | *Legacy CSS Cleanup + Audit |
 

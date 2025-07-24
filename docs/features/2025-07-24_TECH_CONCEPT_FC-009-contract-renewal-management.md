@@ -15,6 +15,7 @@ Automatisiertes Management der jährlichen FreshPlan-Partnerschaftsvereinbarunge
 - **Business Context:** [../../business/freshplan_summary.md](../../business/freshplan_summary.md)
 - **Abhängiges Feature:** [./2025-07-12_TECH_CONCEPT_M4-opportunity-pipeline.md](./2025-07-12_TECH_CONCEPT_M4-opportunity-pipeline.md)
 - **Integration:** [./FC-005-xentral-integration.md](./FC-005-xentral-integration.md)
+- **E-Mail Integration:** [./FC-003-email-integration.md](./FC-003-email-integration.md) - E-Mail-Templates für Renewal-Kommunikation
 - **Offene Fragen:** [./OPEN_QUESTIONS_TRACKER.md#10-contract-renewal-management-fc-009-🆕](./OPEN_QUESTIONS_TRACKER.md#10-contract-renewal-management-fc-009-🆕)
 
 ## 💼 Business-Anforderungen
@@ -68,7 +69,7 @@ Die technische Implementierung ist aufgeteilt in:
 - **M4 Opportunity Pipeline:** 7. Spalte + neue API Endpoints
 - **FC-005 Xentral:** Contract Status Events
 - **FC-003 E-Mail:** Renewal-Templates
-- **M11 Reporting:** Neue KPIs
+- **FC-016 KPI-Tracking:** Renewal-Quote, Zeit bis Abschluss, At-Risk Monitoring
 - **FC-012 Audit Trail:** Alle Contract-Änderungen werden auditiert
 - **FC-015 Rechte & Rollen:** Contract-Approval Workflows für Verlängerungen
 
