@@ -65,7 +65,17 @@ enum Permission {
   AUDIT_VIEW = 'audit.view',
   AUDIT_EXPORT = 'audit.export',
   USER_MANAGE = 'user.manage',
-  ROLE_MANAGE = 'role.manage'
+  ROLE_MANAGE = 'role.manage',
+  
+  // Email Permissions (FC-003)
+  EMAIL_VIEW_ALL = 'email.view.all',
+  EMAIL_VIEW_OWN = 'email.view.own',
+  EMAIL_SEND = 'email.send',
+  EMAIL_TEMPLATE_CREATE = 'email.template.create',
+  EMAIL_TEMPLATE_EDIT = 'email.template.edit',
+  EMAIL_TEMPLATE_DELETE = 'email.template.delete',
+  EMAIL_TRACKING_VIEW = 'email.tracking.view',
+  EMAIL_BULK_SEND = 'email.bulk.send'
 }
 ```
 

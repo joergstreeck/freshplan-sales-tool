@@ -18,7 +18,7 @@ public class Permission extends PanacheEntityBase {
     public String key; // z.B. "opportunity.change_stage"
     
     @Column(nullable = false)
-    public String category; // OPPORTUNITY, CONTRACT, DISCOUNT, SYSTEM
+    public String category; // OPPORTUNITY, CONTRACT, DISCOUNT, SYSTEM, EMAIL
     
     @Column(nullable = false)
     public String action; // VIEW, CREATE, EDIT, DELETE, APPROVE
@@ -147,6 +147,53 @@ public class PermissionInterceptor {
 ```
 
 ## 🎯 Integration mit bestehenden Features
+
+### E-Mail Permissions (FC-003)
+```java
+@Path("/api/emails")
+public class EmailResource {
+    
+    @POST
+    @RequiresPermission("email.send")
+    public Response sendEmail(@Valid EmailRequest request) {
+        return emailService.send(request);
+    }
+    
+    @POST
+    @Path("/bulk")
+    @RequiresPermission("email.bulk.send")
+    public Response sendBulkEmail(@Valid BulkEmailRequest request) {
+        // Bulk send requires special permission
+        return emailService.sendBulk(request);
+    }
+    
+    @GET
+    @Path("/templates")
+    @RequiresPermission(value = "email.template.view", 
+                       alternatives = {"email.template.create", "email.template.edit"})
+    public Response listTemplates() {
+        return Response.ok(templateService.list()).build();
+    }
+    
+    @GET
+    @Path("/tracking/{messageId}")
+    @RequiresPermission("email.tracking.view")
+    public Response getTrackingData(@PathParam("messageId") UUID messageId) {
+        return Response.ok(trackingService.getMetrics(messageId)).build();
+    }
+    
+    @GET
+    @RequiresPermission(value = "email.view.own", checkOwnership = true,
+                       alternatives = {"email.view.all"})
+    public Response listEmails(
+        @QueryParam("customerId") UUID customerId,
+        @PermissionContext("owner") UUID ownerId
+    ) {
+        // Either own emails or all with special permission
+        return emailService.list(customerId);
+    }
+}
+```
 
 ### M4 Opportunity Pipeline
 ```java
