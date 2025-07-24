@@ -1,7 +1,7 @@
 # 🚀 CRM COMPLETE MASTER PLAN V5 - Das Sales Command Center
 
 **Version:** 5.0  
-**Datum:** 23.07.2025 22:21 (Auto-Sync)
+**Datum:** 24.07.2025 23:06 (Auto-Sync)
 **Status:** Backend implementiert ✅, Tests fast vollständig 🔄
 
 ---
@@ -63,7 +63,7 @@ Von Tag 1 auf Wachstum, Performance und Qualität ausgelegt.
 **Details:** [Security Foundation](./features/ACTIVE/01_security_foundation/README.md)
 
 ### 🔄 Phase 1: Core Sales Process (Tag 2-10) - IN ARBEIT
-**Module:** M4 Pipeline (Backend ✅, Tests 🔄, Frontend ⏳) → M8 Calculator → FC-004 Verkäuferschutz  
+**Module:** M4 Pipeline (Backend ✅, Frontend ✅, Integration ⏳) → M8 Calculator → FC-004 Verkäuferschutz → FC-009 Renewal  
 **Details:** [Core Sales Features](./features/PLANNED/phase1_core_sales.md)
 
 ### 📋 Phase 2: Communication Hub (Tag 11-18)
@@ -79,9 +79,15 @@ Von Tag 1 auf Wachstum, Performance und Qualität ausgelegt.
 | Modul | Status | Fortschritt | Nächster Schritt |
 |-------|--------|-------------|------------------|
 | Security | ✅ Done | 100% | ✅ Keycloak läuft produktiv |
+| FC-012 Audit Trail | 🚨 CRITICAL | Tech-Konzept ✅ | Parallel-Implementierung |
 | M4 Pipeline | 🔄 In Progress | 85% | Tests finalisieren (TODO-31) |
+| FC-009 Renewal | 📋 Planned | Tech-Konzept ✅ | Nach M4 + Audit Integration |
+| FC-010 Scalability | 📋 Planned | Tech-Konzept ✅ | Filter-Bar Phase 1 |
+| FC-011 Cockpit-Int | 📋 Planned | Tech-Konzept ✅ | Nach M4 Integration |
+| FC-013 Activity Notes | 📋 Planned | Tech-Konzept ✅ | Core CRM Feature |
+| FC-014 Mobile/Tablet | 📋 Planned | Tech-Konzept ✅ | Außendienst kritisch |
 | M8 Calculator | 📋 Planned | 0% | Modal Template |
-| M5 Customer | ✅ Done* | 90% | *Legacy CSS Cleanup |
+| M5 Customer | ✅ Done* | 90% | *Legacy CSS Cleanup + Audit |
 
 ---
 
@@ -91,3 +97,45 @@ Von Tag 1 auf Wachstum, Performance und Qualität ausgelegt.
 - **Bei API Design:** [./docs/technical/API_DESIGN_PATTERNS.md](./docs/technical/API_DESIGN_PATTERNS.md)
 - **Bei UI/UX:** [./docs/design/UI_PATTERNS.md](./docs/design/UI_PATTERNS.md)
 - **Bei Performance:** [./docs/technical/PERFORMANCE_REQUIREMENTS.md](./docs/technical/PERFORMANCE_REQUIREMENTS.md)
+
+---
+
+## 🎨 Frontend Navigation Design Principles
+
+### ✅ Übersichtliche Sidebar-Navigation - Best Practices:
+
+**Vorteile (wann übersichtlich):**
+- **Klare Struktur:** Hauptmenüpunkte + Sub-Items logisch gegliedert
+- **Einfache Einrückung:** Sub-Items optisch erkennbar (Einrückung, kleinere Schrift, dezente Farben)
+- **Nicht zu viele Punkte:** ~5–7 Hauptpunkte für Übersicht
+- **Sinnvolle Icons:** Passende Symbole für schnelle Orientierung
+- **Klare Trennung:** Visuelle Trennlinien zwischen Gruppen
+
+**❌ Nachteile (wann unübersichtlich):**
+- **Zu viele Ebenen:** "Menü im Menü im Menü" schadet Übersicht
+- **Zu viele Funktionen:** Erschlagende Anzahl sichtbarer Menüpunkte
+- **Schlechte Kennzeichnung:** Sub-Items nicht klar als Unterpunkte erkennbar
+
+**🎯 Aktuelle Navigation-Struktur Bewertung:**
+```
+├── 🏠 Mein Cockpit                    # Top-Level - perfekt
+├── 👤 Neukundengewinnung              # 3 Sub-Items - OK
+│   ├── E-Mail Posteingang
+│   ├── Lead-Erfassung
+│   └── Kampagnen
+├── 👥 Kundenmanagement                # 3 Sub-Items - OK
+│   ├── Alle Kunden
+│   ├── Verkaufschancen ← M4 HIER
+│   └── Aktivitäten
+├── 📊 Auswertungen                    # 3 Sub-Items - OK
+│   ├── Umsatzübersicht
+│   ├── Kundenanalyse
+│   └── Aktivitätsberichte
+└── ⚙️ Einstellungen                   # Top-Level - perfekt
+```
+
+**✅ Bewertung: OPTIMAL strukturiert**
+- 5 Hauptpunkte (perfekt für Übersicht)
+- Max. 3 Sub-Items pro Gruppe (nicht überladen)
+- Logische Gruppierung nach User-Journey
+- Klare Icons und Trennung vorhanden

@@ -103,6 +103,7 @@ public class XentralWebhookResource {
 public class XentralSyncService {
     
     @Scheduled(every = "6h")
+    @RequiresPermission("sync.trigger") // FC-015 Integration
     void syncInvoices() {
         var lastSync = syncRepository.getLastSync("invoices");
         var invoices = xentralClient.getInvoicesSince(lastSync);
@@ -206,6 +207,7 @@ export const CommissionDashboard: React.FC = () => {
 - **Customer (M5)**: Kunden-Mapping Xentral ↔ CRM
 - **Protection (FC-004)**: Verkäuferzuordnung für Provision
 - **Timeline**: Zahlungs-Events dokumentieren
+- **FC-009 Renewal**: Contract Status Sync, Discount Management
 
 ### Zu neuen Features:
 - **FC-007 (Chef-Dashboard)**: Provisions-KPIs

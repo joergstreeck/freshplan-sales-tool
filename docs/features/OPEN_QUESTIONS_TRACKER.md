@@ -13,20 +13,25 @@
 - [ ] **Redirect URIs:** Erlaubte Redirect URLs?
 - [ ] **Admin Access:** Wer kann Keycloak konfigurieren?
 
-### 2. Opportunity Stage Transitions (Tag 2)
-- [ ] **Erlaubte Übergänge:** Vollständige Matrix fehlt!
-  ```
-  NEW_LEAD → ? (Nur QUALIFICATION oder auch direkt CLOSED_LOST?)
-  QUALIFICATION → ? (Kann man zurück zu NEW_LEAD?)
-  ```
+### 2. Opportunity Stage Transitions (Tag 2) ✅ TEILWEISE GEKLÄRT
+- [x] **Stages vereinfacht:** LEAD → QUALIFIED → PROPOSAL → NEGOTIATION → CLOSED_WON/LOST
+- [x] **Reaktivierung:** CLOSED_LOST → LEAD möglich (per Button, nicht Drag & Drop)
+- [x] **CLOSED_WON ist final:** Keine Reaktivierung möglich
 - [ ] **Pflicht-Validierungen:** Welche Felder bei welcher Stage?
 - [ ] **Auto-Aktionen:** Was passiert automatisch?
 
-### 3. Verkäuferschutz Rules (Tag 7)
+### 3. Verkäuferschutz Rules (Tag 7) ⚠️ NEUE FRAGE
 - [ ] **Sichtbarkeit:** Wer sieht welche Opportunities?
 - [ ] **Edit-Rechte:** Wer darf Stages ändern?
 - [ ] **Provisions-Split:** Wie bei Team-Arbeit?
 - [ ] **Konflikt-Eskalation:** An wen? Wie?
+- [ ] **🆕 Reaktivierte Opportunities:** Wer erhält Provision bei reaktivierten Deals?
+  - Original-Verkäufer behält Rechte für X Monate?
+  - Neuer Verkäufer bei Neuzuweisung?
+  - Split zwischen beiden?
+- [ ] **🆕 Lapsed Renewals:** Provisionslogik bei rückwirkender Verlängerung?
+  - Reduzierte Provision wegen Lücke?
+  - Volle Provision wenn innerhalb X Tagen?
 
 ## 🟡 TECHNISCHE FRAGEN (Wichtig, aber nicht blockierend)
 
@@ -67,6 +72,13 @@
 - [ ] **API Access:** Für Partner? Kosten?
 - [ ] **Support Level:** SLAs definieren
 - [ ] **Customization:** Wie viel erlauben?
+
+### 10. Contract Renewal Management (FC-009) 🆕
+- [ ] **Eskalations-Empfänger:** Konkrete E-Mail-Adressen für Manager/Geschäftsführung?
+- [ ] **Preisindex-Kommunikation:** Template-Texte für Preiserhöhungen?
+- [ ] **Renewal-Dokumente:** Wo werden unterschriebene Verträge gespeichert?
+- [ ] **Audit-Requirements:** Wie lange Vertragshistorie aufbewahren?
+- [ ] **Xentral-Feldmapping:** Welche Contract-Felder in Xentral?
 
 ## 📊 FRAGEN NACH PRIORITÄT
 
