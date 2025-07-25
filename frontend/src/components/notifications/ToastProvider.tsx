@@ -10,7 +10,6 @@
 
 import React, { createContext, useContext, useState, useCallback } from 'react';
 import {
-  Snackbar,
   Alert,
   AlertColor,
   IconButton,
@@ -152,17 +151,21 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     <ToastContext.Provider value={{ addToast, removeToast, clearAll }}>
       {children}
       
-      {/* Render all toasts */}
-      {toasts.map((toast, index) => (
-        <Snackbar
-          key={toast.id}
-          open={true}
-          anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-          sx={{
-            top: `${80 + index * 70}px !important` // Stack toasts vertically
-          }}
-        >
+      {/* Render all toasts in a container */}
+      <Box
+        sx={{
+          position: 'fixed',
+          top: 80,
+          right: 24,
+          zIndex: (theme) => theme.zIndex.snackbar,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 1
+        }}
+      >
+        {toasts.map((toast) => (
           <Alert
+            key={toast.id}
             severity={toast.severity}
             variant="filled"
             onClose={() => removeToast(toast.id)}
@@ -191,7 +194,10 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             sx={{
               minWidth: 320,
               maxWidth: 500,
-              boxShadow: 3
+              boxShadow: 3,
+              '& .MuiAlert-message': {
+                width: '100%'
+              }
             }}
           >
             {toast.title && (
@@ -203,8 +209,8 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
               {toast.message}
             </Typography>
           </Alert>
-        </Snackbar>
-      ))}
+        ))}
+      </Box>
     </ToastContext.Provider>
   );
 };

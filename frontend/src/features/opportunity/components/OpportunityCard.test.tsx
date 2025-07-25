@@ -3,7 +3,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { ThemeProvider } from '@mui/material/styles';
 import freshfoodzTheme from '../../../theme/freshfoodz';
 import { OpportunityCard } from './OpportunityCard';
-import { OpportunityStage } from '../types/stages';
+import { OpportunityStage } from '../types/opportunity.types';
 import type { Opportunity } from './OpportunityCard';
 
 // Mock the logger
@@ -48,7 +48,7 @@ const renderWithTheme = (component: React.ReactElement) => {
 const mockOpportunity: Opportunity = {
   id: '1',
   name: 'Großauftrag Wocheneinkauf',
-  stage: OpportunityStage.LEAD,
+  stage: OpportunityStage.NEW_LEAD,
   value: 15000,
   probability: 20,
   customerName: 'Restaurant Schmidt GmbH',

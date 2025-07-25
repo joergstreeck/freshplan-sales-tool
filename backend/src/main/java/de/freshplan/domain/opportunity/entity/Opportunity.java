@@ -115,12 +115,11 @@ public class Opportunity {
 
     // Business Rule: Geschlossene Opportunities können nicht mehr geändert werden
     // AUSNAHME: CLOSED_WON darf zu RENEWAL wechseln (Contract Renewal)
-    if (this.stage == OpportunityStage.CLOSED_WON && newStage != OpportunityStage.RENEWAL) {
-      return; // CLOSED_WON kann nur zu RENEWAL wechseln
-    }
-
-    if (this.stage == OpportunityStage.CLOSED_LOST) {
-      return; // CLOSED_LOST kann gar nicht geändert werden
+    if (isClosedOpportunity()) {
+      // Allow transition from CLOSED_WON to RENEWAL, but block all others from a closed state
+      if (!(this.stage == OpportunityStage.CLOSED_WON && newStage == OpportunityStage.RENEWAL)) {
+        return; // Silently ignore other transitions from closed opportunities
+      }
     }
 
     if (this.stage != newStage) {

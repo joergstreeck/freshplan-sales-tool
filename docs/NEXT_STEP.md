@@ -7,9 +7,9 @@
 
 ## 🎯 JETZT GERADE:
 
-**RENEWAL STAGE TESTS - ALLE 18 TESTS ERFOLGREICH ✅**
+**M4 RENEWAL STAGE KOMPLETT ABGESCHLOSSEN - PR #68 BEREIT FÜR REVIEW**
 
-**Stand 25.07.2025 21:53:**
+**Stand 25.07.2025 22:09:**
 - ✅ **RENEWAL Stage technisch vollständig implementiert:**
   - Backend: OpportunityStage.RENEWAL mit Business Rules ✅
   - Frontend: Kanban-Spalte mit Orange-Design ✅  
@@ -31,27 +31,19 @@
 
 **🚀 NÄCHSTER SCHRITT:**
 
-**SOFORT: Pull Request für RENEWAL Stage erstellen (15 Min):**
+**SOFORT: Frontend RENEWAL-Spalte implementieren (TODO-64):**
 
 ```bash
-cd /Users/joergstreeck/freshplan-sales-tool
+cd /Users/joergstreeck/freshplan-sales-tool/frontend/src/features/opportunity/components
 
-# Repository säubern
-./scripts/quick-cleanup.sh
+# PR Status prüfen
+gh pr status
+gh pr view 68
 
-# Commit erstellen
-git add .
-git commit -m "feat(m4): Complete RENEWAL stage implementation with tests
-
-- Add RENEWAL stage to OpportunityStage enum
-- Implement stage transition logic (CLOSED_WON → RENEWAL → CLOSED_WON/LOST)
-- Add comprehensive unit and integration tests (18 tests total)
-- Fix authentication configuration for tests
-- Add helper methods for complex stage transitions
-- Fix test expectations for JAX-RS enum handling"
-
-# Push zum Remote
-git push origin feature/m4-renewal-stage-implementation
+# OpportunityPipeline.tsx erweitern
+# - 7. Spalte "Verlängerung" hinzufügen
+# - Orange Color (#ff9800) verwenden
+# - Stage: OpportunityStage.RENEWAL
 ```
 
 **DANACH: Alle Tests validieren:**
@@ -76,8 +68,13 @@ git push origin feature/m4-renewal-stage-implementation
 - Datei: backend/src/test/java/de/freshplan/api/resources/OpportunityRenewalResourceTest.java
 - Nächster geplanter Schritt: Authentication für Tests konfigurieren
 
-**STRATEGISCH WICHTIG DANACH:**
-Customer-Contract Foundation implementieren bevor echte Contract Renewals möglich sind!
+**UNTERBROCHEN BEI:**
+- Session sauber abgeschlossen
+- PR #68 erstellt und wartet auf Review
+- Nächster Schritt: Frontend RENEWAL-Spalte (TODO-64)
+
+**STRATEGISCH WICHTIG:**
+Customer-Contract Foundation (TODO: critical-3, contract-1) implementieren bevor echte Contract Renewals möglich sind!
 
 ---
 

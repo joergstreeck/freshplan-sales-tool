@@ -36,7 +36,7 @@ const mockOpportunities: Opportunity[] = [
   {
     id: '2',
     name: 'Hotel Adler - Neuer Lead',
-    stage: OpportunityStage.LEAD,
+    stage: OpportunityStage.NEW_LEAD,
     value: 8500,
     probability: 20,
     customerName: 'Hotel Adler',
@@ -122,8 +122,8 @@ describe('OpportunityPipeline - RENEWAL Stage Tests', () => {
       expect(isStageTransitionAllowed(OpportunityStage.RENEWAL, OpportunityStage.CLOSED_LOST)).toBe(true);
       
       // Ungültige Transitionen
-      expect(isStageTransitionAllowed(OpportunityStage.RENEWAL, OpportunityStage.LEAD)).toBe(false);
-      expect(isStageTransitionAllowed(OpportunityStage.LEAD, OpportunityStage.RENEWAL)).toBe(false);
+      expect(isStageTransitionAllowed(OpportunityStage.RENEWAL, OpportunityStage.NEW_LEAD)).toBe(false);
+      expect(isStageTransitionAllowed(OpportunityStage.NEW_LEAD, OpportunityStage.RENEWAL)).toBe(false);
     });
   });
 

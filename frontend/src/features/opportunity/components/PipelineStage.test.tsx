@@ -3,7 +3,7 @@ import { render, screen } from '@testing-library/react';
 import { ThemeProvider } from '@mui/material/styles';
 import freshfoodzTheme from '../../../theme/freshfoodz';
 import { PipelineStage } from './PipelineStage';
-import { OpportunityStage } from '../types/stages';
+import { OpportunityStage } from '../types/opportunity.types';
 
 // Mock the logger
 vi.mock('../../../lib/logger', () => ({
@@ -48,7 +48,7 @@ describe('PipelineStage', () => {
     it('renders stage label', () => {
       renderWithTheme(
         <PipelineStage 
-          stage={OpportunityStage.LEAD}
+          stage={OpportunityStage.NEW_LEAD}
           opportunityCount={5}
         >
           <div>Test Content</div>
@@ -61,7 +61,7 @@ describe('PipelineStage', () => {
     it('renders opportunity count badge', () => {
       renderWithTheme(
         <PipelineStage 
-          stage={OpportunityStage.QUALIFIED}
+          stage={OpportunityStage.QUALIFICATION}
           opportunityCount={10}
         >
           <div>Test Content</div>
@@ -120,7 +120,7 @@ describe('PipelineStage', () => {
       // For now, we'll test that the component renders without error
       const { container } = renderWithTheme(
         <PipelineStage 
-          stage={OpportunityStage.LEAD}
+          stage={OpportunityStage.NEW_LEAD}
           opportunityCount={5}
         >
           <div>Test Content</div>
@@ -134,7 +134,7 @@ describe('PipelineStage', () => {
     it('uses stage id for droppable configuration', () => {
       renderWithTheme(
         <PipelineStage 
-          stage={OpportunityStage.QUALIFIED}
+          stage={OpportunityStage.QUALIFICATION}
           opportunityCount={3}
         >
           <div>Test Content</div>
@@ -150,8 +150,8 @@ describe('PipelineStage', () => {
   describe('Stage Configuration', () => {
     it('applies correct color for each stage', () => {
       const stages = [
-        { stage: OpportunityStage.LEAD, label: 'Lead' },
-        { stage: OpportunityStage.QUALIFIED, label: 'Qualifiziert' },
+        { stage: OpportunityStage.NEW_LEAD, label: 'Lead' },
+        { stage: OpportunityStage.QUALIFICATION, label: 'Qualifizierung' },
         { stage: OpportunityStage.PROPOSAL, label: 'Angebot' },
         { stage: OpportunityStage.NEGOTIATION, label: 'Verhandlung' },
         { stage: OpportunityStage.CLOSED_WON, label: 'Gewonnen' },
@@ -223,7 +223,7 @@ describe('PipelineStage', () => {
     it('memoizes component to prevent unnecessary rerenders', () => {
       const { rerender } = renderWithTheme(
         <PipelineStage 
-          stage={OpportunityStage.LEAD}
+          stage={OpportunityStage.NEW_LEAD}
           opportunityCount={5}
           totalValue={10000}
         >
@@ -235,7 +235,7 @@ describe('PipelineStage', () => {
       rerender(
         <ThemeProvider theme={freshfoodzTheme}>
           <PipelineStage 
-            stage={OpportunityStage.LEAD}
+            stage={OpportunityStage.NEW_LEAD}
             opportunityCount={5}
             totalValue={10000}
           >
