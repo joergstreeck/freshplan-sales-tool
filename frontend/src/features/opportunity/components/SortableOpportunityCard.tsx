@@ -2,20 +2,7 @@ import React from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { OpportunityCard } from './KanbanBoardDndKit';
-
-interface Opportunity {
-  id: string;
-  name: string;
-  stage: string;
-  value?: number;
-  probability?: number;
-  customerName?: string;
-  contactName?: string;
-  assignedToName?: string;
-  expectedCloseDate?: string;
-  createdAt: string;
-  updatedAt: string;
-}
+import type { Opportunity } from '../types';
 
 interface SortableOpportunityCardProps {
   opportunity: Opportunity;

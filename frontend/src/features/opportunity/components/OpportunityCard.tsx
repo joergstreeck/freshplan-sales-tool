@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useMemo } from 'react';
 import {
   Card,
   CardContent,
@@ -14,32 +14,49 @@ import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import PersonIcon from '@mui/icons-material/Person';
 import EuroIcon from '@mui/icons-material/Euro';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
-import { OpportunityStage } from './PipelineStage';
+import type { Opportunity } from '../types';
+import { logger } from '../../../lib/logger';
+import { useErrorHandler } from '../../../components/ErrorBoundary';
 
-// Opportunity Interface basierend auf Backend-Modell
-interface Opportunity {
-  id: string;
-  name: string;
-  stage: OpportunityStage;
-  value?: number;
-  probability?: number;  // 0-100
-  customerName?: string;
-  assignedToName?: string;
-  expectedCloseDate?: string; // ISO Date
-  createdAt: string;
-  updatedAt: string;
-}
+// Component logger instance
+const componentLogger = logger.child('OpportunityCard');
 
+/**
+ * Opportunity Card Component Props
+ * @interface OpportunityCardProps
+ */
 interface OpportunityCardProps {
+  /** The opportunity data to display */
   opportunity: Opportunity;
+  /** Click handler for card selection */
   onClick?: (opportunity: Opportunity) => void;
 }
 
-export const OpportunityCard: React.FC<OpportunityCardProps> = ({
+/**
+ * OpportunityCard Component
+ * @description Enterprise-grade opportunity card with drag & drop support
+ * Features:
+ * - Drag & drop functionality via @dnd-kit
+ * - Performance optimized with React.memo and useMemo
+ * - Structured logging and error handling
+ * - Freshfoodz CI compliant design
+ * - Accessible drag handle
+ * @component
+ * @since 2.0.0
+ * @example
+ * ```tsx
+ * <OpportunityCard
+ *   opportunity={opportunity}
+ *   onClick={handleOpportunityClick}
+ * />
+ * ```
+ */
+export const OpportunityCard: React.FC<OpportunityCardProps> = React.memo(({
   opportunity,
   onClick,
 }) => {
   const theme = useTheme();
+  const errorHandler = useErrorHandler('OpportunityCard');
   
   // Drag & Drop Setup
   const {
@@ -56,41 +73,63 @@ export const OpportunityCard: React.FC<OpportunityCardProps> = ({
     },
   });
 
-  // Transform für Drag-Animation
-  const style = transform ? {
-    transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
-  } : undefined;
+  // Transform für Drag-Animation (memoized)
+  const style = useMemo(() => {
+    if (!transform) return undefined;
+    return {
+      transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
+    };
+  }, [transform]);
 
-  // Wahrscheinlichkeits-Farbe basierend auf Wert
-  const getProbabilityColor = (probability?: number) => {
+  /**
+   * Get color based on probability percentage
+   * @memoized
+   */
+  const getProbabilityColor = useCallback((probability?: number) => {
     if (!probability) return theme.palette.grey[400];
     if (probability >= 80) return '#66BB6A'; // Grün
     if (probability >= 60) return '#94C456'; // Freshfoodz Grün
     if (probability >= 40) return '#FFA726'; // Orange
     if (probability >= 20) return '#FF7043'; // Orange-Rot
     return '#EF5350'; // Rot
-  };
+  }, [theme]);
 
-  // Datum formatieren
-  const formatDate = (dateString?: string) => {
+  /**
+   * Format date to German locale
+   * @memoized
+   */
+  const formatDate = useCallback((dateString?: string) => {
     if (!dateString) return '-';
-    return new Date(dateString).toLocaleDateString('de-DE', {
-      day: '2-digit',
-      month: '2-digit',
-      year: '2-digit',
-    });
-  };
+    try {
+      return new Date(dateString).toLocaleDateString('de-DE', {
+        day: '2-digit',
+        month: '2-digit',
+        year: '2-digit',
+      });
+    } catch (error) {
+      componentLogger.warn('Invalid date format', { dateString, error });
+      return '-';
+    }
+  }, []);
 
-  // Wert formatieren
-  const formatValue = (value?: number) => {
+  /**
+   * Format currency value
+   * @memoized
+   */
+  const formatValue = useCallback((value?: number) => {
     if (!value) return 'Kein Wert';
-    return new Intl.NumberFormat('de-DE', {
-      style: 'currency',
-      currency: 'EUR',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(value);
-  };
+    try {
+      return new Intl.NumberFormat('de-DE', {
+        style: 'currency',
+        currency: 'EUR',
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
+      }).format(value);
+    } catch (error) {
+      componentLogger.warn('Error formatting value', { value, error });
+      return `${value} €`;
+    }
+  }, []);
 
   return (
     <Card
@@ -114,12 +153,18 @@ export const OpportunityCard: React.FC<OpportunityCardProps> = ({
         // Drag & Drop hat Priorität über onClick
         pointerEvents: 'auto',
       }}
-      onClick={() => {
+      onClick={useCallback(() => {
         // Nur onClick wenn nicht gedraggt wird
-        if (!isDragging) {
-          onClick?.(opportunity);
+        if (!isDragging && onClick) {
+          try {
+            componentLogger.debug('Card clicked', { opportunityId: opportunity.id });
+            onClick(opportunity);
+          } catch (error) {
+            componentLogger.error('Error in onClick handler', { error });
+            errorHandler(error as Error);
+          }
         }
-      }}
+      }, [isDragging, onClick, opportunity, errorHandler])}
     >
       {/* Drag Handle - Dedizierter Drag-Punkt für bessere Hand-Auge-Koordination */}
       <Box
@@ -276,7 +321,6 @@ export const OpportunityCard: React.FC<OpportunityCardProps> = ({
       </CardContent>
     </Card>
   );
-};
+});
 
-// Export Opportunity Interface für externe Verwendung
-export { type Opportunity };
+OpportunityCard.displayName = 'OpportunityCard';

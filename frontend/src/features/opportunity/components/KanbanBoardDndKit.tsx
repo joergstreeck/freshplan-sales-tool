@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import {
   DndContext,
   KeyboardSensor,
@@ -38,7 +38,9 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import RestoreIcon from '@mui/icons-material/Restore';
 import { SortableOpportunityCard } from './SortableOpportunityCard';
 
-import { OpportunityStage, STAGE_CONFIGS } from '../types/stages';
+import { OpportunityStage, STAGE_CONFIGS, type Opportunity } from '../types';
+import { logger } from '../../../lib/logger';
+import { useErrorHandler } from '../../../components/ErrorBoundary';
 
 // Aktive Pipeline Stages (immer sichtbar)
 const ACTIVE_STAGES = [
@@ -54,19 +56,7 @@ const CLOSED_STAGES = [
   OpportunityStage.CLOSED_LOST,
 ];
 
-interface Opportunity {
-  id: string;
-  name: string;
-  stage: OpportunityStage;
-  value?: number;
-  probability?: number;
-  customerName?: string;
-  contactName?: string;
-  assignedToName?: string;
-  expectedCloseDate?: string;
-  createdAt: string;
-  updatedAt: string;
-}
+// Type imported from '../types'
 
 // Convert STAGE_CONFIGS array to Record for easier lookup
 const STAGE_CONFIGS_RECORD: Record<string, typeof STAGE_CONFIGS[0]> = {};
@@ -143,41 +133,49 @@ const initialOpportunities: Opportunity[] = [
   }
 ];
 
-// Opportunity Card Komponente (für DragOverlay)
+/**
+ * Opportunity Card Component Props
+ * @interface OpportunityCardProps
+ */
 interface OpportunityCardProps {
+  /** The opportunity data to display */
   opportunity: Opportunity;
+  /** Whether the card is being dragged */
   isDragging?: boolean;
+  /** Callback for quick actions (win/lose/reactivate) */
   onQuickAction?: (opportunityId: string, action: 'won' | 'lost' | 'reactivate') => void;
+  /** Whether to show action buttons */
   showActions?: boolean;
 }
 
-export const OpportunityCard: React.FC<OpportunityCardProps> = ({ 
+export const OpportunityCard: React.FC<OpportunityCardProps> = React.memo(({ 
   opportunity, 
   isDragging = false,
   onQuickAction,
   showActions = false
 }) => {
   const theme = useTheme();
+  const [, setIsHovered] = useState(false);
 
-  const getProbabilityColor = (probability?: number) => {
+  const getProbabilityColor = useCallback((probability?: number) => {
     if (!probability) return theme.palette.grey[400];
     if (probability >= 80) return '#66BB6A';
     if (probability >= 60) return '#94C456';
     if (probability >= 40) return '#FFA726';
     if (probability >= 20) return '#FF7043';
     return '#EF5350';
-  };
+  }, [theme]);
 
-  const formatDate = (dateString?: string) => {
+  const formatDate = useCallback((dateString?: string) => {
     if (!dateString) return '-';
     return new Date(dateString).toLocaleDateString('de-DE', {
       day: '2-digit',
       month: '2-digit',
       year: '2-digit',
     });
-  };
+  }, []);
 
-  const formatValue = (value?: number) => {
+  const formatValue = useCallback((value?: number) => {
     if (!value) return 'Kein Wert';
     return new Intl.NumberFormat('de-DE', {
       style: 'currency',
@@ -185,7 +183,7 @@ export const OpportunityCard: React.FC<OpportunityCardProps> = ({
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(value);
-  };
+  }, []);
 
   return (
     <Card
@@ -410,18 +408,27 @@ export const OpportunityCard: React.FC<OpportunityCardProps> = ({
       </CardContent>
     </Card>
   );
-};
+});
+
+OpportunityCard.displayName = 'OpportunityCard';
 
 
-// Kanban Column Komponente
+/**
+ * Kanban Column Component Props
+ * @interface KanbanColumnProps
+ */
 interface KanbanColumnProps {
+  /** The stage this column represents */
   stage: OpportunityStage;
+  /** Opportunities in this stage */
   opportunities: Opportunity[];
+  /** Callback for quick actions */
   onQuickAction?: (opportunityId: string, action: 'won' | 'lost' | 'reactivate') => void;
+  /** Set of opportunity IDs currently animating */
   animatingIds: Set<string>;
 }
 
-const KanbanColumn: React.FC<KanbanColumnProps> = ({ stage, opportunities, onQuickAction, animatingIds }) => {
+const KanbanColumn: React.FC<KanbanColumnProps> = React.memo(({ stage, opportunities, onQuickAction, animatingIds }) => {
   const theme = useTheme();
   const config = STAGE_CONFIGS_RECORD[stage];
   const totalValue = opportunities.reduce((sum, opp) => sum + (opp.value || 0), 0);
@@ -503,11 +510,33 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({ stage, opportunities, onQui
       </SortableContext>
     </Paper>
   );
-};
+});
 
-// Main Kanban Board
-export const KanbanBoardDndKit: React.FC = () => {
+KanbanColumn.displayName = 'KanbanColumn';
+
+// Component logger instance
+const componentLogger = logger.child('KanbanBoardDndKit');
+
+/**
+ * KanbanBoardDndKit Component
+ * @description Enterprise-grade Kanban board implementation using @dnd-kit library
+ * Features:
+ * - Drag & Drop between stages with visual feedback
+ * - Quick actions (win/lose/reactivate)
+ * - Performance optimized with React.memo and useMemo
+ * - Structured logging and error handling
+ * - Responsive scroll indicator
+ * - Animated transitions
+ * @component
+ * @since 2.0.0
+ * @example
+ * ```tsx
+ * <KanbanBoardDndKit />
+ * ```
+ */
+export const KanbanBoardDndKit: React.FC = React.memo(() => {
   const theme = useTheme();
+  const errorHandler = useErrorHandler('KanbanBoardDndKit');
   const [opportunities, setOpportunities] = useState<Opportunity[]>(initialOpportunities);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [animatingIds, setAnimatingIds] = useState<Set<string>>(new Set());
@@ -526,8 +555,8 @@ export const KanbanBoardDndKit: React.FC = () => {
     })
   );
 
-  // Pipeline-Statistiken berechnen
-  const pipelineStats = React.useMemo(() => {
+  // Pipeline-Statistiken berechnen (memoized)
+  const pipelineStats = useMemo(() => {
     const activeOpps = opportunities.filter(opp => 
       ACTIVE_STAGES.includes(opp.stage)
     );
@@ -552,126 +581,249 @@ export const KanbanBoardDndKit: React.FC = () => {
     };
   }, [opportunities]);
 
-  // Opportunities nach Stage gruppieren
-  const opportunitiesByStage = React.useMemo(() => {
+  // Opportunities nach Stage gruppieren (memoized)
+  const opportunitiesByStage = useMemo(() => {
     return Object.values(OpportunityStage).reduce((acc, stage) => {
       acc[stage] = opportunities.filter(opp => opp.stage === stage);
       return acc;
     }, {} as Record<OpportunityStage, Opportunity[]>);
   }, [opportunities]);
 
-  const handleDragStart = (event: DragStartEvent) => {
-    console.log('🚀 DRAG START - dnd-kit', event.active.id);
-    setActiveId(event.active.id as string);
-  };
+  const handleDragStart = useCallback((event: DragStartEvent) => {
+    try {
+      componentLogger.debug('Drag operation started', { activeId: event.active.id });
+      setActiveId(event.active.id as string);
+    } catch (error) {
+      componentLogger.error('Error in handleDragStart', { error });
+      errorHandler(error as Error);
+    }
+  }, [errorHandler]);
 
-  const handleDragEnd = (event: DragEndEvent) => {
-    console.log('🏁 DRAG END - dnd-kit', {
-      activeId: event.active.id,
-      overId: event.over?.id,
-      overData: event.over?.data,
-    });
-    const { active, over } = event;
-    setActiveId(null);
-
-    if (!over) return;
-
-    const activeOpp = opportunities.find(o => o.id === active.id);
-    if (!activeOpp) return;
-
-    // Find which stage the item was dropped in
-    let targetStage: OpportunityStage | null = null;
+  const handleDragEnd = useCallback((event: DragEndEvent) => {
+    const timer = componentLogger.time('handleDragEnd');
     
-    // Check if dropped on a stage column or quick drop zone
-    if (Object.values(OpportunityStage).includes(over.id as OpportunityStage)) {
-      targetStage = over.id as OpportunityStage;
-      console.log('Dropped on stage/quick-zone:', targetStage);
-    } else {
-      // Dropped on another opportunity - find its stage
-      const overOpp = opportunities.find(o => o.id === over.id);
-      if (overOpp) {
-        targetStage = overOpp.stage;
-        console.log('Dropped on opportunity in stage:', targetStage);
+    try {
+      componentLogger.debug('Drag operation ended', {
+        activeId: event.active.id,
+        overId: event.over?.id
+      });
+      
+      const { active, over } = event;
+      setActiveId(null);
+
+      if (!over) {
+        componentLogger.debug('No drop target');
+        return;
       }
-    }
 
-    if (!targetStage || targetStage === activeOpp.stage) {
-      console.log('Same stage or no target stage');
-      return;
-    }
+      const activeOpp = opportunities.find(o => o.id === active.id);
+      if (!activeOpp) {
+        componentLogger.warn('Active opportunity not found', { activeId: active.id });
+        return;
+      }
 
-    // Verhindere Drag von abgeschlossenen zu aktiven Stages
-    if (CLOSED_STAGES.includes(activeOpp.stage) && ACTIVE_STAGES.includes(targetStage)) {
-      console.warn('❌ Abgeschlossene Opportunities können nicht reaktiviert werden');
-      return;
-    }
+      // Find which stage the item was dropped in
+      let targetStage: OpportunityStage | null = null;
+      
+      // Check if dropped on a stage column or quick drop zone
+      if (Object.values(OpportunityStage).includes(over.id as OpportunityStage)) {
+        targetStage = over.id as OpportunityStage;
+        componentLogger.debug('Dropped on stage/quick-zone', { targetStage });
+      } else {
+        // Dropped on another opportunity - find its stage
+        const overOpp = opportunities.find(o => o.id === over.id);
+        if (overOpp) {
+          targetStage = overOpp.stage;
+          componentLogger.debug('Dropped on opportunity', { targetStage });
+        }
+      }
 
-    // Update opportunity stage
-    setOpportunities(prevOpportunities => 
-      prevOpportunities.map(opp => 
-        opp.id === active.id 
-          ? { ...opp, stage: targetStage, updatedAt: new Date().toISOString() }
-          : opp
-      )
-    );
+      if (!targetStage || targetStage === activeOpp.stage) {
+        componentLogger.debug('Same stage or no target stage');
+        return;
+      }
 
-    console.log(`✅ Moved opportunity ${active.id} to ${targetStage}`);
-  };
+      // Verhindere Drag von abgeschlossenen zu aktiven Stages
+      if (CLOSED_STAGES.includes(activeOpp.stage) && ACTIVE_STAGES.includes(targetStage)) {
+        componentLogger.warn('Cannot reactivate closed opportunities', {
+          fromStage: activeOpp.stage,
+          toStage: targetStage
+        });
+        return;
+      }
 
-  const handleQuickAction = (opportunityId: string, action: 'won' | 'lost' | 'reactivate') => {
-    let targetStage: OpportunityStage;
-    
-    if (action === 'reactivate') {
-      // Bei Reaktivierung zurück in Lead-Phase
-      targetStage = OpportunityStage.LEAD;
-    } else {
-      targetStage = action === 'won' ? OpportunityStage.CLOSED_WON : OpportunityStage.CLOSED_LOST;
-    }
-    
-    // Animation starten
-    setAnimatingIds(prev => new Set(prev).add(opportunityId));
-    
-    // Nach kurzer Verzögerung Stage wechseln
-    setTimeout(() => {
+      // Update opportunity stage
       setOpportunities(prevOpportunities => 
         prevOpportunities.map(opp => 
-          opp.id === opportunityId 
+          opp.id === active.id 
             ? { ...opp, stage: targetStage, updatedAt: new Date().toISOString() }
             : opp
         )
       );
+
+      componentLogger.info('Opportunity stage updated', {
+        opportunityId: active.id,
+        toStage: targetStage
+      });
+    } catch (error) {
+      componentLogger.error('Error in handleDragEnd', { error });
+      errorHandler(error as Error);
+    } finally {
+      timer();
+    }
+  }, [opportunities, errorHandler]);
+
+  const handleQuickAction = useCallback((opportunityId: string, action: 'won' | 'lost' | 'reactivate') => {
+    try {
+      let targetStage: OpportunityStage;
       
-      // Animation nach weiterer Verzögerung beenden
+      if (action === 'reactivate') {
+        // Bei Reaktivierung zurück in Lead-Phase
+        targetStage = OpportunityStage.LEAD;
+      } else {
+        targetStage = action === 'won' ? OpportunityStage.CLOSED_WON : OpportunityStage.CLOSED_LOST;
+      }
+      
+      componentLogger.info('Quick action triggered', { opportunityId, action, targetStage });
+      
+      // Animation starten
+      setAnimatingIds(prev => new Set(prev).add(opportunityId));
+      
+      // Nach kurzer Verzögerung Stage wechseln
       setTimeout(() => {
-        setAnimatingIds(prev => {
-          const newSet = new Set(prev);
-          newSet.delete(opportunityId);
-          return newSet;
-        });
-      }, 500);
-    }, 300);
+        setOpportunities(prevOpportunities => 
+          prevOpportunities.map(opp => 
+            opp.id === opportunityId 
+              ? { ...opp, stage: targetStage, updatedAt: new Date().toISOString() }
+              : opp
+          )
+        );
+        
+        // Animation nach weiterer Verzögerung beenden
+        setTimeout(() => {
+          setAnimatingIds(prev => {
+            const newSet = new Set(prev);
+            newSet.delete(opportunityId);
+            return newSet;
+          });
+        }, 500);
+      }, 300);
+    } catch (error) {
+      componentLogger.error('Error in handleQuickAction', { error });
+      errorHandler(error as Error);
+    }
+  }, [errorHandler]);
 
-    console.log(`✅ Quick action: ${action === 'reactivate' ? 'Reactivated' : 'Marked'} opportunity ${opportunityId} as ${action}`);
-  };
-
-  const activeOpportunity = activeId ? opportunities.find(o => o.id === activeId) : null;
+  const activeOpportunity = useMemo(
+    () => activeId ? opportunities.find(o => o.id === activeId) : null,
+    [activeId, opportunities]
+  );
 
   // Custom collision detection that prioritizes quick drop zones
-  const customCollisionDetection = (args: Parameters<typeof rectIntersection>[0]) => {
+  const customCollisionDetection = useCallback((args: Parameters<typeof rectIntersection>[0]) => {
     // Use rect intersection for better drop zone detection
     return rectIntersection(args);
-  };
+  }, []);
 
-  // Initialize scroll indicator on mount
-  React.useEffect(() => {
-    const container = document.getElementById('kanbanScrollContainer');
-    const indicator = document.getElementById('scrollIndicator');
-    if (container && indicator) {
-      const indicatorWidth = (container.clientWidth / container.scrollWidth) * 100;
-      indicator.style.width = `${indicatorWidth}%`;
-      indicator.style.left = '0%';
+  // Optimized scroll handler with performance tracking
+  const handleScroll = useCallback((e: React.UIEvent<HTMLDivElement>) => {
+    const timer = componentLogger.time('handleScroll');
+    
+    try {
+      const container = e.target as HTMLElement;
+      const indicator = document.getElementById('scrollIndicator');
+      
+      if (!indicator) {
+        componentLogger.debug('Scroll indicator not found');
+        return;
+      }
+
+      const scrollWidth = container.scrollWidth;
+      const clientWidth = container.clientWidth;
+      const scrollLeft = container.scrollLeft;
+
+      // Prevent division by zero
+      if (scrollWidth <= clientWidth) {
+        indicator.style.width = '100%';
+        indicator.style.left = '0%';
+        return;
+      }
+
+      const scrollPercentage = scrollLeft / (scrollWidth - clientWidth);
+      const indicatorWidth = (clientWidth / scrollWidth) * 100;
+      
+      // Use requestAnimationFrame for smooth updates
+      requestAnimationFrame(() => {
+        indicator.style.width = `${indicatorWidth}%`;
+        indicator.style.left = `${scrollPercentage * (100 - indicatorWidth)}%`;
+      });
+
+      componentLogger.debug('Scroll position updated', {
+        scrollPercentage: Math.round(scrollPercentage * 100),
+        indicatorWidth: Math.round(indicatorWidth)
+      });
+    } catch (error) {
+      componentLogger.error('Error in scroll handler', { error });
+      errorHandler(error as Error);
+    } finally {
+      timer();
+    }
+  }, [errorHandler]);
+
+  // Initialize scroll indicator on mount and resize
+  const initializeScrollIndicator = useCallback(() => {
+    try {
+      const container = document.getElementById('kanbanScrollContainer');
+      const indicator = document.getElementById('scrollIndicator');
+      
+      if (!container || !indicator) {
+        componentLogger.debug('Scroll elements not found during initialization');
+        return;
+      }
+
+      const scrollWidth = container.scrollWidth;
+      const clientWidth = container.clientWidth;
+
+      if (scrollWidth <= clientWidth) {
+        indicator.style.width = '100%';
+        indicator.style.left = '0%';
+      } else {
+        const indicatorWidth = (clientWidth / scrollWidth) * 100;
+        indicator.style.width = `${indicatorWidth}%`;
+        indicator.style.left = '0%';
+      }
+
+      componentLogger.debug('Scroll indicator initialized', {
+        scrollWidth,
+        clientWidth,
+        indicatorWidth: Math.round((clientWidth / scrollWidth) * 100)
+      });
+    } catch (error) {
+      componentLogger.error('Error initializing scroll indicator', { error });
     }
   }, []);
+
+  // Component lifecycle management
+  React.useEffect(() => {
+    componentLogger.debug('Component mounted');
+    
+    // Initialize scroll indicator after render
+    const timeoutId = setTimeout(initializeScrollIndicator, 100);
+    
+    // Handle window resize
+    const handleResize = () => {
+      componentLogger.debug('Window resized, reinitializing scroll indicator');
+      initializeScrollIndicator();
+    };
+    
+    window.addEventListener('resize', handleResize);
+    
+    return () => {
+      componentLogger.debug('Component unmounted');
+      clearTimeout(timeoutId);
+      window.removeEventListener('resize', handleResize);
+    };
+  }, [initializeScrollIndicator]);
 
   return (
     <Box sx={{ p: 3 }}>
@@ -799,16 +951,7 @@ export const KanbanBoardDndKit: React.FC = () => {
               height: 0, // Verstecke nativen Scrollbar
             },
           }}
-          onScroll={(e) => {
-            const container = e.target as HTMLElement;
-            const indicator = document.getElementById('scrollIndicator');
-            if (indicator) {
-              const scrollPercentage = container.scrollLeft / (container.scrollWidth - container.clientWidth);
-              const indicatorWidth = (container.clientWidth / container.scrollWidth) * 100;
-              indicator.style.width = `${indicatorWidth}%`;
-              indicator.style.left = `${scrollPercentage * (100 - indicatorWidth)}%`;
-            }
-          }}
+          onScroll={handleScroll}
         >
           {/* Zeige immer alle Stages */}
           {Object.values(OpportunityStage).map((stage) => (
@@ -841,4 +984,6 @@ export const KanbanBoardDndKit: React.FC = () => {
       </DndContext>
     </Box>
   );
-};
+});
+
+KanbanBoardDndKit.displayName = 'KanbanBoardDndKit';

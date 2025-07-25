@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { 
   Box, 
   Paper, 
@@ -10,52 +10,137 @@ import { useTheme } from '@mui/material/styles';
 import { useDroppable } from '@dnd-kit/core';
 
 import { OpportunityStage, STAGE_CONFIGS } from '../types/stages';
+import { logger } from '../../../lib/logger';
+import { useErrorHandler } from '../../../components/ErrorBoundary';
 
-// Convert STAGE_CONFIGS array to Record for easier lookup
-const STAGE_CONFIGS_RECORD: Record<string, typeof STAGE_CONFIGS[0]> = {};
-STAGE_CONFIGS.forEach(config => {
-  STAGE_CONFIGS_RECORD[config.stage] = config;
-});
+// Component logger instance
+const componentLogger = logger.child('PipelineStage');
 
+// Convert STAGE_CONFIGS array to Record for easier lookup (memoized at module level)
+const STAGE_CONFIGS_RECORD: Record<string, typeof STAGE_CONFIGS[0]> = STAGE_CONFIGS.reduce(
+  (acc, config) => {
+    acc[config.stage] = config;
+    return acc;
+  },
+  {} as Record<string, typeof STAGE_CONFIGS[0]>
+);
+
+/**
+ * Pipeline Stage Component Props
+ * @interface PipelineStageProps
+ */
 interface PipelineStageProps {
+  /** The pipeline stage to render */
   stage: OpportunityStage;
+  /** Number of opportunities in this stage */
   opportunityCount: number;
+  /** Total monetary value of opportunities in stage */
   totalValue?: number;
+  /** Opportunity cards to display in this stage */
   children: React.ReactNode;
 }
 
-export const PipelineStage: React.FC<PipelineStageProps> = ({
+/**
+ * PipelineStage Component
+ * @description Enterprise-grade pipeline stage container with drag & drop support
+ * Features:
+ * - Drag & drop target via @dnd-kit
+ * - Visual feedback on drag over
+ * - Freshfoodz CI compliant design
+ * - Performance optimized with React.memo
+ * - Structured logging
+ * @component
+ * @since 2.0.0
+ * @example
+ * ```tsx
+ * <PipelineStage
+ *   stage={OpportunityStage.LEAD}
+ *   opportunityCount={5}
+ *   totalValue={50000}
+ * >
+ *   <OpportunityCard />
+ * </PipelineStage>
+ * ```
+ */
+export const PipelineStage: React.FC<PipelineStageProps> = React.memo(({
   stage,
   opportunityCount,
   totalValue,
   children
 }) => {
   const theme = useTheme();
+  const errorHandler = useErrorHandler('PipelineStage');
   const config = STAGE_CONFIGS_RECORD[stage];
+  
+  // Log stage configuration issues
+  React.useEffect(() => {
+    if (!config) {
+      componentLogger.error('Invalid stage configuration', { stage });
+      errorHandler(new Error(`Invalid stage: ${stage}`));
+    } else {
+      componentLogger.debug('Stage initialized', { 
+        stage, 
+        opportunityCount,
+        totalValue 
+      });
+    }
+  }, [stage, config, opportunityCount, totalValue, errorHandler]);
   
   // Drag & Drop Setup
   const { setNodeRef, isOver } = useDroppable({
     id: stage,
   });
 
+  // Format currency value (memoized)
+  const formattedValue = useMemo(() => {
+    if (totalValue === undefined) return null;
+    
+    try {
+      return new Intl.NumberFormat('de-DE', {
+        style: 'currency',
+        currency: 'EUR',
+        minimumFractionDigits: 0,
+      }).format(totalValue);
+    } catch (error) {
+      componentLogger.warn('Error formatting currency', { totalValue, error });
+      return `${totalValue} €`;
+    }
+  }, [totalValue]);
+
+  // Stage styles (memoized)
+  const stageStyles = useMemo(() => ({
+    minHeight: 400,
+    p: 2,
+    bgcolor: isOver ? 'rgba(148, 196, 86, 0.12)' : config?.bgColor || theme.palette.background.paper,
+    border: isOver ? '3px dashed #94C456' : '1px solid rgba(0, 0, 0, 0.12)',
+    borderRadius: 2,
+    transition: theme.transitions.create(['border', 'background-color', 'box-shadow', 'transform'], {
+      duration: theme.transitions.duration.short,
+    }),
+    transform: isOver ? 'scale(1.02)' : 'scale(1)',
+    boxShadow: isOver ? theme.shadows[4] : theme.shadows[1],
+    width: '280px',
+    minWidth: '280px',
+  }), [isOver, config?.bgColor, theme]);
+
+  // Badge styles (memoized)
+  const badgeStyles = useMemo(() => ({
+    '& .MuiBadge-badge': {
+      bgcolor: config?.color || theme.palette.primary.main,
+      color: 'white',
+      fontWeight: 600,
+    }
+  }), [config?.color, theme]);
+
+  if (!config) {
+    return null;
+  }
+
   return (
     <Paper
       ref={setNodeRef}
       elevation={isOver ? 4 : 1}
-      sx={{
-        minHeight: 400,
-        p: 2,
-        bgcolor: isOver ? 'rgba(148, 196, 86, 0.12)' : config.bgColor,
-        border: isOver ? '3px dashed #94C456' : '1px solid rgba(0, 0, 0, 0.12)',
-        borderRadius: 2,
-        transition: theme.transitions.create(['border', 'background-color', 'box-shadow', 'transform'], {
-          duration: theme.transitions.duration.short,
-        }),
-        transform: isOver ? 'scale(1.02)' : 'scale(1)',
-        boxShadow: isOver ? theme.shadows[4] : theme.shadows[1],
-        width: '280px', // Feste Breite für gleichmäßige Spalten
-        minWidth: '280px',
-      }}
+      sx={stageStyles}
     >
       {/* Stage Header */}
       <Box sx={{ mb: 2 }}>
@@ -80,18 +165,12 @@ export const PipelineStage: React.FC<PipelineStageProps> = ({
           <Badge
             badgeContent={opportunityCount}
             color="primary"
-            sx={{
-              '& .MuiBadge-badge': {
-                bgcolor: config.color,
-                color: 'white',
-                fontWeight: 600,
-              }
-            }}
+            sx={badgeStyles}
           />
         </Box>
         
         {/* Total Value (optional) */}
-        {totalValue !== undefined && (
+        {formattedValue && (
           <Typography
             variant="body2"
             sx={{
@@ -99,11 +178,7 @@ export const PipelineStage: React.FC<PipelineStageProps> = ({
               fontWeight: 500,
             }}
           >
-            Gesamt: {new Intl.NumberFormat('de-DE', {
-              style: 'currency',
-              currency: 'EUR',
-              minimumFractionDigits: 0,
-            }).format(totalValue)}
+            Gesamt: {formattedValue}
           </Typography>
         )}
       </Box>
@@ -114,4 +189,6 @@ export const PipelineStage: React.FC<PipelineStageProps> = ({
       </Stack>
     </Paper>
   );
-};
+});
+
+PipelineStage.displayName = 'PipelineStage';
