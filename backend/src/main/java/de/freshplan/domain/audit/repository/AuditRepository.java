@@ -177,11 +177,50 @@ public class AuditRepository implements PanacheRepositoryBase<AuditEntry, UUID> 
     Map<String, Object> params = new HashMap<>();
     StringBuilder queryStr = new StringBuilder("1=1");
 
-    // ... (same query building logic as search method)
+    // Apply same filters as search method
+    if (criteria.getEntityType() != null) {
+      queryStr.append(" and entityType = :entityType");
+      params.put("entityType", criteria.getEntityType());
+    }
+
+    if (criteria.getEntityId() != null) {
+      queryStr.append(" and entityId = :entityId");
+      params.put("entityId", criteria.getEntityId());
+    }
+
+    if (criteria.getUserId() != null) {
+      queryStr.append(" and userId = :userId");
+      params.put("userId", criteria.getUserId());
+    }
+
+    if (criteria.getEventTypes() != null && !criteria.getEventTypes().isEmpty()) {
+      queryStr.append(" and eventType in :eventTypes");
+      params.put("eventTypes", criteria.getEventTypes());
+    }
+
+    if (criteria.getSources() != null && !criteria.getSources().isEmpty()) {
+      queryStr.append(" and source in :sources");
+      params.put("sources", criteria.getSources());
+    }
+
+    if (criteria.getFrom() != null) {
+      queryStr.append(" and timestamp >= :from");
+      params.put("from", criteria.getFrom());
+    }
+
+    if (criteria.getTo() != null) {
+      queryStr.append(" and timestamp <= :to");
+      params.put("to", criteria.getTo());
+    }
+
+    if (criteria.getSearchText() != null && !criteria.getSearchText().isBlank()) {
+      queryStr.append(" and (userComment like :searchText or changeReason like :searchText)");
+      params.put("searchText", "%" + criteria.getSearchText() + "%");
+    }
 
     TypedQuery<AuditEntry> query =
         getEntityManager()
-            .createQuery("SELECT a FROM AuditEntry a WHERE " + queryStr, AuditEntry.class);
+            .createQuery("SELECT a FROM AuditEntry a WHERE " + queryStr + " ORDER BY a.timestamp DESC", AuditEntry.class);
 
     params.forEach(query::setParameter);
 

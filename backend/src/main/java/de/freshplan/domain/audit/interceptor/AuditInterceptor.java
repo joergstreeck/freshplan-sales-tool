@@ -4,8 +4,10 @@ import de.freshplan.domain.audit.annotation.Auditable;
 import de.freshplan.domain.audit.entity.AuditEventType;
 import de.freshplan.domain.audit.service.AuditService;
 import de.freshplan.domain.audit.service.dto.AuditContext;
+import jakarta.annotation.Priority;
 import jakarta.inject.Inject;
 import jakarta.interceptor.AroundInvoke;
+import jakarta.interceptor.Interceptor;
 import jakarta.interceptor.InvocationContext;
 import java.lang.reflect.Method;
 import java.util.Map;
@@ -19,9 +21,9 @@ import org.jboss.logging.Logger;
  * @author FreshPlan Team
  * @since 2.0.0
  */
-// @Interceptor // TODO: Re-enable when annotation binding is fixed
-// @Auditable // TODO: Fix annotation binding
-// @Priority(Interceptor.Priority.APPLICATION + 100)
+@Interceptor
+@Auditable(eventType = AuditEventType.SYSTEM_STARTUP, entityType = "interceptor")
+@Priority(Interceptor.Priority.APPLICATION + 100)
 public class AuditInterceptor {
 
   private static final Logger log = Logger.getLogger(AuditInterceptor.class);

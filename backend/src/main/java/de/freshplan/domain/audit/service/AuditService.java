@@ -57,7 +57,7 @@ public class AuditService {
   @Inject Instance<HttpServerRequest> httpRequestInstance;
 
   private ExecutorService auditExecutor;
-  private final Map<String, String> lastHashCache = new ConcurrentHashMap<>();
+  private volatile String lastGlobalHash = null;
 
   @PostConstruct
   void init() {
@@ -124,8 +124,8 @@ public class AuditService {
       // Persist
       auditRepository.persist(entry);
 
-      // Update hash cache
-      lastHashCache.put(context.getEntityType(), entry.getDataHash());
+      // Update global hash cache
+      lastGlobalHash = entry.getDataHash();
 
       // Fire event for real-time monitoring
       if (configuration.isEventBusEnabled()) {
@@ -377,15 +377,14 @@ public class AuditService {
     }
   }
 
-  /** Get previous hash for chaining */
+  /** Get previous hash for global chaining */
   private String getPreviousHash(String entityType) {
-    // Check cache first
-    String cached = lastHashCache.get(entityType);
-    if (cached != null) {
-      return cached;
+    // Check global cache first
+    if (lastGlobalHash != null) {
+      return lastGlobalHash;
     }
 
-    // Load from database
+    // Load from database (global chain)
     return auditRepository.getLastHash().orElse(null);
   }
 

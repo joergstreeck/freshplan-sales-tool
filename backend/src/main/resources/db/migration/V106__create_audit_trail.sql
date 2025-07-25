@@ -16,9 +16,9 @@ CREATE TABLE audit_trail (
     user_name VARCHAR(255) NOT NULL,
     user_role VARCHAR(50) NOT NULL,
     
-    -- Change Details (TEXT for compatibility with JPA)
-    old_value TEXT,
-    new_value TEXT,
+    -- Change Details (JSONB for efficient JSON storage and indexing)
+    old_value JSONB,
+    new_value JSONB,
     change_reason VARCHAR(500),
     user_comment TEXT,
     
