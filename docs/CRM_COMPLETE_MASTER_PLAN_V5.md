@@ -83,7 +83,7 @@ Von Tag 1 auf Wachstum, Performance und Qualität ausgelegt.
 | M4 Pipeline | 🔄 In Progress | 85% | Tests finalisieren (TODO-31) |
 | M4 RENEWAL-Spalte | 🔄 In Progress | 0% | TODO-64: 7. Kanban-Spalte hinzufügen |
 | FC-003 E-Mail Integration | 📋 Planned | Tech-Konzept ✅ | Phase 2 Communication Hub |
-| FC-009 Renewal | 📋 Planned | Tech-Konzept ✅ | Nach RENEWAL-Spalte |
+| FC-009 Renewal | 📋 Planned | Tech-Konzept ✅ | Contract-Entity Foundation → Event-Driven Triggers |
 | FC-010 Scalability | 📋 Planned | Tech-Konzept ✅ | Filter-Bar Phase 1 |
 | FC-011 Cockpit-Int | 📋 Planned | Tech-Konzept ✅ | Nach M4 Integration |
 | FC-013 Activity Notes | 📋 Planned | Tech-Konzept ✅ | Core CRM Feature |
