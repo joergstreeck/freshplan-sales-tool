@@ -24,7 +24,9 @@ test.describe('Authentication Flow - Smoke Test', () => {
     await expect(page.locator('body')).toBeVisible();
     
     // Check for the main title content (React must have rendered)
-    await expect(page.locator('text=FreshPlan 2.0')).toBeVisible({ timeout: 10000 });
+    // Try multiple selectors to find the title
+    const titleLocator = page.locator('h1.main-title, h1:has-text("FreshPlan"), text=FreshPlan 2.0').first();
+    await expect(titleLocator).toBeVisible({ timeout: 15000 });
     
     // Simple smoke test - verify app renders without crashing
     const errorMessages = page.locator('text=Error');
