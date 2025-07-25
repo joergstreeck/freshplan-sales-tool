@@ -4,10 +4,8 @@ import {
   CardContent,
   Typography,
   Box,
-  Chip,
   Avatar,
   LinearProgress,
-  IconButton,
   Tooltip,
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
@@ -116,7 +114,7 @@ export const OpportunityCard: React.FC<OpportunityCardProps> = ({
         // Drag & Drop hat Priorität über onClick
         pointerEvents: 'auto',
       }}
-      onClick={(e) => {
+      onClick={() => {
         // Nur onClick wenn nicht gedraggt wird
         if (!isDragging) {
           onClick?.(opportunity);

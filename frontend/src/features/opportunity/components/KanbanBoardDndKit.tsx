@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import {
   DndContext,
-  closestCorners,
   KeyboardSensor,
   PointerSensor,
   useSensor,
@@ -12,7 +11,6 @@ import {
 } from '@dnd-kit/core';
 import type { DragEndEvent, DragStartEvent } from '@dnd-kit/core';
 import {
-  arrayMove,
   SortableContext,
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
@@ -25,7 +23,6 @@ import {
   Card,
   CardContent,
   Stack,
-  Chip,
   Avatar,
   LinearProgress,
   IconButton,
@@ -210,7 +207,6 @@ export const OpportunityCard: React.FC<OpportunityCardProps> = ({
   showActions = false
 }) => {
   const theme = useTheme();
-  const [isHovered, setIsHovered] = React.useState(false);
 
   const getProbabilityColor = (probability?: number) => {
     if (!probability) return theme.palette.grey[400];
@@ -710,7 +706,7 @@ export const KanbanBoardDndKit: React.FC = () => {
   const activeOpportunity = activeId ? opportunities.find(o => o.id === activeId) : null;
 
   // Custom collision detection that prioritizes quick drop zones
-  const customCollisionDetection = (args: any) => {
+  const customCollisionDetection = (args: Parameters<typeof rectIntersection>[0]) => {
     // Use rect intersection for better drop zone detection
     return rectIntersection(args);
   };
