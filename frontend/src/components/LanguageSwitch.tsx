@@ -30,7 +30,7 @@ export function LanguageSwitch({ onLanguageChange }: LanguageSwitchProps = {}) {
   // Sync initial language
   useEffect(() => {
     onLanguageChange?.(currentLanguage);
-  }, []);
+  }, [currentLanguage, onLanguageChange]);
 
   return (
     <>

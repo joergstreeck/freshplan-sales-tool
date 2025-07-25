@@ -9,15 +9,16 @@ import {
 import { useTheme } from '@mui/material/styles';
 import { useDroppable } from '@dnd-kit/core';
 
-import { OpportunityStage, STAGE_CONFIGS } from '../types/stages';
+import { OpportunityStage } from '../types/opportunity.types';
+import { STAGE_CONFIGURATIONS } from '../config/stage-config';
 import { logger } from '../../../lib/logger';
 import { useErrorHandler } from '../../../components/ErrorBoundary';
 
 // Component logger instance
 const componentLogger = logger.child('PipelineStage');
 
-// Convert STAGE_CONFIGS array to Record for easier lookup (memoized at module level)
-const STAGE_CONFIGS_RECORD: Record<string, typeof STAGE_CONFIGS[0]> = STAGE_CONFIGS.reduce(
+// Convert STAGE_CONFIGURATIONS array to Record for easier lookup (memoized at module level)
+const STAGE_CONFIGS_RECORD: Record<string, typeof STAGE_CONFIGURATIONS[0]> = STAGE_CONFIGURATIONS.reduce(
   (acc, config) => {
     acc[config.stage] = config;
     return acc;

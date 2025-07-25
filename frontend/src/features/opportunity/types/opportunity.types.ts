@@ -28,7 +28,9 @@ export enum OpportunityStage {
   /** Erfolgreich abgeschlossen */
   CLOSED_WON = "CLOSED_WON",
   /** Verloren */
-  CLOSED_LOST = "CLOSED_LOST"
+  CLOSED_LOST = "CLOSED_LOST",
+  /** Vertragsverlängerung */
+  RENEWAL = "RENEWAL"
 }
 
 /**

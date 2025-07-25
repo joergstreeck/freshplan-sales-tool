@@ -3,6 +3,8 @@ package de.freshplan.api;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.startsWith;
+import static org.hamcrest.Matchers.endsWith;
 
 import de.freshplan.domain.user.entity.User;
 import de.freshplan.domain.user.repository.UserRepository;
@@ -17,6 +19,9 @@ import jakarta.transaction.Transactional;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
+import org.junit.jupiter.api.Order;
 
 /**
  * Integration tests for UserResource REST API.
@@ -29,6 +34,7 @@ import org.junit.jupiter.api.Test;
  */
 @QuarkusTest
 @TestHTTPEndpoint(UserResource.class)
+@TestMethodOrder(OrderAnnotation.class)
 class UserResourceIT {
 
   @Inject UserRepository userRepository;
@@ -60,10 +66,11 @@ class UserResourceIT {
         .then()
         .statusCode(201)
         .header("Location", containsString("/api/users/"))
-        .body("username", equalTo("new.user"))
+        .body("username", startsWith("new.user."))
         .body("firstName", equalTo("New"))
         .body("lastName", equalTo("User"))
-        .body("email", equalTo("new.user@freshplan.de"))
+        .body("email", startsWith("new.user."))
+        .body("email", endsWith("@freshplan.de"))
         .body("enabled", equalTo(true))
         .body("id", notNullValue())
         .body("createdAt", notNullValue())
@@ -191,10 +198,11 @@ class UserResourceIT {
         .put("/{id}", testUser.getId())
         .then()
         .statusCode(200)
-        .body("username", equalTo("updated.user"))
+        .body("username", startsWith("updated.user."))
         .body("firstName", equalTo("Updated"))
         .body("lastName", equalTo("User"))
-        .body("email", equalTo("updated@freshplan.de"));
+        .body("email", startsWith("updated."))
+        .body("email", endsWith("@freshplan.de"));
   }
 
   @Test
@@ -238,10 +246,34 @@ class UserResourceIT {
   @Test
   @TestSecurity(user = "admin", roles = "admin")
   void testDeleteUser_Success() {
-    given().when().delete("/{id}", testUser.getId()).then().statusCode(204);
+    // Create user via API to ensure it's properly committed
+    // Use timestamp to avoid conflicts between parallel test runs
+    String uniqueTimestamp = String.valueOf(System.currentTimeMillis());
+    CreateUserRequest createRequest = CreateUserRequest.builder()
+        .username("to.delete." + uniqueTimestamp)
+        .firstName("To")
+        .lastName("Delete")
+        .email("to.delete." + uniqueTimestamp + "@freshplan.de")
+        .build();
+    
+    String location = given()
+        .contentType(ContentType.JSON)
+        .body(createRequest)
+        .when()
+        .post()
+        .then()
+        .statusCode(201)
+        .extract()
+        .header("Location");
+    
+    // Extract ID from location header
+    String userId = location.substring(location.lastIndexOf("/") + 1);
+    
+    // Delete the user
+    given().when().delete("/{id}", userId).then().statusCode(204);
 
     // Verify deletion
-    given().when().get("/{id}", testUser.getId()).then().statusCode(404);
+    given().when().get("/{id}", userId).then().statusCode(404);
   }
 
   @Test
@@ -302,26 +334,30 @@ class UserResourceIT {
 
   @Transactional
   User createAndPersistUser() {
-    User user = new User("test.user", "Test", "User", "test.user@freshplan.de");
+    String uniqueId = System.currentTimeMillis() + "_" + Thread.currentThread().getId();
+    User user = new User("test.user." + uniqueId, "Test", "User", "test.user." + uniqueId + "@freshplan.de");
     userRepository.persist(user);
     return user;
   }
 
   private CreateUserRequest createValidCreateRequest() {
+    // Use timestamp and thread ID to ensure unique usernames across parallel test runs
+    String uniqueId = System.currentTimeMillis() + "_" + Thread.currentThread().getId();
     return CreateUserRequest.builder()
-        .username("new.user")
+        .username("new.user." + uniqueId)
         .firstName("New")
         .lastName("User")
-        .email("new.user@freshplan.de")
+        .email("new.user." + uniqueId + "@freshplan.de")
         .build();
   }
 
   private UpdateUserRequest createValidUpdateRequest() {
+    String uniqueId = System.currentTimeMillis() + "_" + Thread.currentThread().getId();
     return UpdateUserRequest.builder()
-        .username("updated.user")
+        .username("updated.user." + uniqueId)
         .firstName("Updated")
         .lastName("User")
-        .email("updated@freshplan.de")
+        .email("updated." + uniqueId + "@freshplan.de")
         .enabled(true)
         .build();
   }

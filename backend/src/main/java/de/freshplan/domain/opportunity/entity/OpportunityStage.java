@@ -51,7 +51,14 @@ public enum OpportunityStage {
    * Abgeschlossen - Verloren Standard-Wahrscheinlichkeit: 0% Automatische Aktionen: Verlustgrund
    * dokumentieren
    */
-  CLOSED_LOST("Verloren", "#f44336", 0);
+  CLOSED_LOST("Verloren", "#f44336", 0),
+
+  /**
+   * Vertragsverlängerung - Contract Renewal Phase ⭐ Standard-Wahrscheinlichkeit: 75% Verfügbare
+   * Tools: Contract-Monitoring, Renewal-E-Mail-Templates Nächste Aktionen: Renewal-Gespräch führen,
+   * Konditionen verhandeln
+   */
+  RENEWAL("Verlängerung", "#ff9800", 75);
 
   private final String displayName;
   private final String color;
@@ -80,6 +87,11 @@ public enum OpportunityStage {
     return this != CLOSED_WON && this != CLOSED_LOST;
   }
 
+  /** Prüft ob die Stage eine Renewal-bezogene Stage ist */
+  public boolean isRenewal() {
+    return this == RENEWAL;
+  }
+
   /** Prüft ob die Stage abgeschlossen ist */
   public boolean isClosed() {
     return this == CLOSED_WON || this == CLOSED_LOST;
@@ -93,8 +105,10 @@ public enum OpportunityStage {
       case NEEDS_ANALYSIS -> new OpportunityStage[] {PROPOSAL, CLOSED_LOST};
       case PROPOSAL -> new OpportunityStage[] {NEGOTIATION, NEEDS_ANALYSIS, CLOSED_LOST};
       case NEGOTIATION -> new OpportunityStage[] {CLOSED_WON, PROPOSAL, CLOSED_LOST};
-      case CLOSED_WON -> new OpportunityStage[] {}; // Keine weiteren Änderungen
+      case CLOSED_WON -> new OpportunityStage[] {RENEWAL}; // Contract kann zur Verlängerung
       case CLOSED_LOST -> new OpportunityStage[] {}; // Keine weiteren Änderungen
+      case RENEWAL ->
+          new OpportunityStage[] {CLOSED_WON, CLOSED_LOST}; // Renewal erfolgreich oder verloren
     };
   }
 

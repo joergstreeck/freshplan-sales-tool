@@ -3,8 +3,8 @@
  * Single point of entry for all opportunity-related types
  */
 
-// Re-export stage enum and configurations
-export { OpportunityStage, STAGE_CONFIGS } from './stages';
+// Re-export stage enum from opportunity.types.ts
+export { OpportunityStage } from './opportunity.types';
 
 // Re-export from opportunity.types.ts (comprehensive types)
 export type {

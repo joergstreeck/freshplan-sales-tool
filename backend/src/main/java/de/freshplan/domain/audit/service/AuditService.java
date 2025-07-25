@@ -23,7 +23,6 @@ import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import org.jboss.logging.Logger;
@@ -116,6 +115,7 @@ public class AuditService {
 
   /** Log an audit event synchronously (use sparingly) */
   @Transactional(Transactional.TxType.REQUIRES_NEW)
+  @jakarta.enterprise.context.control.ActivateRequestContext
   public UUID logSync(AuditContext context) {
     try {
       // Build audit entry

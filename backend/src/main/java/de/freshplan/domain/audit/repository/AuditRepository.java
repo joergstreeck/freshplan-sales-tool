@@ -220,7 +220,9 @@ public class AuditRepository implements PanacheRepositoryBase<AuditEntry, UUID> 
 
     TypedQuery<AuditEntry> query =
         getEntityManager()
-            .createQuery("SELECT a FROM AuditEntry a WHERE " + queryStr + " ORDER BY a.timestamp DESC", AuditEntry.class);
+            .createQuery(
+                "SELECT a FROM AuditEntry a WHERE " + queryStr + " ORDER BY a.timestamp DESC",
+                AuditEntry.class);
 
     params.forEach(query::setParameter);
 

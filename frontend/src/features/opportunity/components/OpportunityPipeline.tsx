@@ -52,6 +52,18 @@ const mockOpportunities: Opportunity[] = [
     expectedCloseDate: '2025-08-01',
     createdAt: '2025-07-10T14:20:00Z',
     updatedAt: '2025-07-23T09:10:00Z',
+  },
+  {
+    id: '4',
+    name: 'Restaurant Sonnenblick - Vertragsverlängerung',
+    stage: OpportunityStage.RENEWAL,
+    value: 12000,
+    probability: 75,
+    customerName: 'Restaurant Sonnenblick',
+    assignedToName: 'Maria Schmidt',
+    expectedCloseDate: '2025-08-15',
+    createdAt: '2025-05-15T10:00:00Z',
+    updatedAt: '2025-07-25T14:30:00Z',
   }
 ];
 

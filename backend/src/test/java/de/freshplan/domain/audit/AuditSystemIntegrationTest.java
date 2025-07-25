@@ -1,7 +1,6 @@
 package de.freshplan.domain.audit;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.awaitility.Awaitility.await;
 
 import de.freshplan.domain.audit.annotation.Auditable;
 import de.freshplan.domain.audit.entity.AuditEntry;
@@ -11,9 +10,7 @@ import de.freshplan.domain.audit.service.AuditService;
 import de.freshplan.domain.audit.service.dto.AuditContext;
 import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.junit.callback.QuarkusTestContext;
 import io.quarkus.test.security.TestSecurity;
-import io.smallrye.common.annotation.Blocking;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.context.control.ActivateRequestContext;
 import jakarta.inject.Inject;
@@ -22,7 +19,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -50,7 +46,7 @@ class AuditSystemIntegrationTest {
   void setUp() {
     testEntityId = UUID.randomUUID();
   }
-  
+
   // Remove unused cleanup method - now done inline in each test
 
   @Test
@@ -58,7 +54,7 @@ class AuditSystemIntegrationTest {
   @ActivateRequestContext
   void testCompleteAuditFlow() throws Exception {
     auditRepository.deleteAll(); // Clean within same transaction
-    
+
     // Given
     String initialValue = "Initial";
     String updatedValue = "Updated";
@@ -116,7 +112,7 @@ class AuditSystemIntegrationTest {
   @TestTransaction
   void testHashChainIntegrity() throws Exception {
     auditRepository.deleteAll(); // Clean within same transaction
-    
+
     // Create multiple audit entries
     for (int i = 0; i < 5; i++) {
       auditService.logSync(
@@ -152,7 +148,7 @@ class AuditSystemIntegrationTest {
   @TestTransaction
   void testSecurityEventAuditing() {
     auditRepository.deleteAll(); // Clean within same transaction
-    
+
     // Log security event
     UUID auditId =
         auditService.logSecurityEvent(
@@ -175,7 +171,7 @@ class AuditSystemIntegrationTest {
   @ActivateRequestContext
   void testAuditExceptionHandling() {
     auditRepository.deleteAll(); // Clean within same transaction
-    
+
     // When - Log error directly (sync for reliable testing)
     auditService.logSync(
         AuditContext.builder()
@@ -188,8 +184,7 @@ class AuditSystemIntegrationTest {
 
     // Verify failure was audited
     Instant now = Instant.now().plus(1, ChronoUnit.MINUTES);
-    List<AuditEntry> entries =
-        auditRepository.findFailures(Instant.now().minusSeconds(60), now);
+    List<AuditEntry> entries = auditRepository.findFailures(Instant.now().minusSeconds(60), now);
 
     assertThat(entries).hasSize(1);
     assertThat(entries.get(0).getEventType()).isEqualTo(AuditEventType.ERROR_OCCURRED);
@@ -199,7 +194,7 @@ class AuditSystemIntegrationTest {
   @TestTransaction
   void testAuditSearch() throws Exception {
     auditRepository.deleteAll(); // Clean within same transaction
-    
+
     // Create various audit entries
     UUID userId1 = UUID.randomUUID();
     UUID userId2 = UUID.randomUUID();

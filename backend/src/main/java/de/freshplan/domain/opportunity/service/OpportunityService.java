@@ -61,7 +61,6 @@ public class OpportunityService {
   // =====================================
 
   /** Erstellt eine neue Opportunity */
-  @Auditable(eventType = AuditEventType.OPPORTUNITY_CREATED, entityType = "opportunity")
   public OpportunityResponse createOpportunity(CreateOpportunityRequest request) {
     logger.info("Creating new opportunity: {}", request.getName());
 
@@ -104,6 +103,20 @@ public class OpportunityService {
 
     // Speichern
     opportunityRepository.persist(opportunity);
+
+    // Audit Log für Opportunity-Erstellung
+    try {
+      auditService.logAsync(
+          AuditContext.builder()
+              .eventType(AuditEventType.OPPORTUNITY_CREATED)
+              .entityType("opportunity")
+              .entityId(opportunity.getId())
+              .newValue(opportunity.getName())
+              .changeReason("Neue Verkaufschance erstellt")
+              .build());
+    } catch (Exception e) {
+      logger.warn("Failed to log audit event for opportunity creation", e);
+    }
 
     // Initiale Activity erstellen
     OpportunityActivity activity =

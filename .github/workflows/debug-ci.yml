@@ -1,0 +1,139 @@
+name: Debug CI Pipeline
+on:
+  workflow_dispatch:
+  push:
+    branches: [ feature/m4-renewal-stage-implementation ]
+
+jobs:
+  debug-frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Debug Environment
+        run: |
+          echo "=== SYSTEM INFO ==="
+          node --version
+          npm --version
+          pwd
+          ls -la
+          
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+          
+      - name: Debug Frontend Structure
+        working-directory: frontend
+        run: |
+          echo "=== FRONTEND DEBUG ==="
+          echo "Working directory: $(pwd)"
+          echo "Package.json exists: $(test -f package.json && echo 'YES' || echo 'NO')"
+          echo "Node modules exists: $(test -d node_modules && echo 'YES' || echo 'NO')"
+          ls -la
+          
+      - name: Install Dependencies with Debug
+        working-directory: frontend
+        run: |
+          echo "=== INSTALLING DEPENDENCIES ==="
+          npm ci --verbose
+          echo "=== POST INSTALL CHECK ==="
+          ls -la node_modules/.bin/ | head -10
+          
+      - name: Lint with Full Debug Output
+        working-directory: frontend
+        run: |
+          echo "=== ESLINT DEBUG ==="
+          echo "ESLint config:"
+          cat eslint.config.js
+          echo ""
+          echo "Package.json lint script:"
+          grep -A1 -B1 '"lint"' package.json
+          echo ""
+          echo "Running lint with full output:"
+          npm run lint -- --debug 2>&1 || true
+          echo ""
+          echo "ESLint version:"
+          npx eslint --version
+          
+      - name: Build with Debug
+        working-directory: frontend
+        run: |
+          echo "=== BUILD DEBUG ==="
+          npm run build -- --mode development 2>&1 || echo "Build failed"
+          echo "Build output:"
+          ls -la dist/ 2>/dev/null || echo "No dist directory"
+
+  debug-backend:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: freshplan
+          POSTGRES_USER: freshplan
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+          
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          
+      - name: Debug Java Environment
+        run: |
+          echo "=== JAVA DEBUG ==="
+          java -version
+          echo "JAVA_HOME: $JAVA_HOME"
+          mvn -version
+          
+      - name: Debug Backend Structure
+        working-directory: backend
+        run: |
+          echo "=== BACKEND DEBUG ==="
+          echo "Working directory: $(pwd)"
+          ls -la
+          echo "POM exists: $(test -f pom.xml && echo 'YES' || echo 'NO')"
+          
+      - name: Debug Database Connection
+        run: |
+          echo "=== DATABASE DEBUG ==="
+          pg_isready -h localhost -p 5432 -U freshplan
+          psql -h localhost -p 5432 -U freshplan -d freshplan -c "SELECT version();" || echo "DB connection failed"
+          
+      - name: Maven Test with Debug
+        working-directory: backend
+        env:
+          DATABASE_URL: jdbc:postgresql://localhost:5432/freshplan
+          CI_GREEN: true
+        run: |
+          echo "=== MAVEN DEBUG ==="
+          echo "Environment:"
+          env | grep -E "(JAVA|DATABASE|CI)" | sort
+          echo ""
+          echo "Maven test with debug output:"
+          ./mvnw clean test -X -e 2>&1 | tee maven-debug.log || true
+          echo ""
+          echo "Last 50 lines of maven output:"
+          tail -50 maven-debug.log
+          
+      - name: Upload Debug Logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: debug-logs
+          path: |
+            backend/maven-debug.log
+            backend/target/surefire-reports/

@@ -206,7 +206,8 @@ public class OpportunityStageTest {
           Arguments.of(OpportunityStage.PROPOSAL, 60),
           Arguments.of(OpportunityStage.NEGOTIATION, 80),
           Arguments.of(OpportunityStage.CLOSED_WON, 100),
-          Arguments.of(OpportunityStage.CLOSED_LOST, 0));
+          Arguments.of(OpportunityStage.CLOSED_LOST, 0),
+          Arguments.of(OpportunityStage.RENEWAL, 75));
     }
 
     @Test
@@ -252,7 +253,7 @@ public class OpportunityStageTest {
     @DisplayName("Should have expected number of stages")
     void opportunityStage_shouldHaveExpectedStages() {
       // Assert
-      assertThat(OpportunityStage.values()).hasSize(7);
+      assertThat(OpportunityStage.values()).hasSize(8);
     }
 
     @Test
@@ -269,6 +270,7 @@ public class OpportunityStageTest {
       assertThat(stages[4]).isEqualTo(OpportunityStage.NEGOTIATION);
       assertThat(stages[5]).isEqualTo(OpportunityStage.CLOSED_WON);
       assertThat(stages[6]).isEqualTo(OpportunityStage.CLOSED_LOST);
+      assertThat(stages[7]).isEqualTo(OpportunityStage.RENEWAL);
     }
   }
 
@@ -285,6 +287,9 @@ public class OpportunityStageTest {
       assertThat(isActiveStage(OpportunityStage.NEEDS_ANALYSIS)).isTrue();
       assertThat(isActiveStage(OpportunityStage.PROPOSAL)).isTrue();
       assertThat(isActiveStage(OpportunityStage.NEGOTIATION)).isTrue();
+
+      // Renewal stage (active)
+      assertThat(isActiveStage(OpportunityStage.RENEWAL)).isTrue();
 
       // Closed stages (not active)
       assertThat(isActiveStage(OpportunityStage.CLOSED_WON)).isFalse();
@@ -411,6 +416,102 @@ public class OpportunityStageTest {
       assertThat(testOpportunity.getStage()).isEqualTo(OpportunityStage.NEGOTIATION);
       assertThat(testOpportunity.getProbability()).isEqualTo(80);
       assertThat(testOpportunity.getStageChangedAt()).isNotNull();
+    }
+  }
+
+  @Nested
+  @DisplayName("RENEWAL Stage Tests")
+  class RenewalStageTests {
+
+    @Test
+    @DisplayName("Should allow transition from CLOSED_WON to RENEWAL")
+    void stageTransition_closedWonToRenewal_shouldWork() {
+      // Arrange
+      testOpportunity.changeStage(OpportunityStage.CLOSED_WON);
+
+      // Act
+      testOpportunity.changeStage(OpportunityStage.RENEWAL);
+
+      // Assert
+      assertThat(testOpportunity.getStage()).isEqualTo(OpportunityStage.RENEWAL);
+      assertThat(testOpportunity.getProbability()).isEqualTo(75);
+    }
+
+    @Test
+    @DisplayName("Should allow transition from RENEWAL to CLOSED_WON")
+    void stageTransition_renewalToClosedWon_shouldWork() {
+      // Arrange
+      testOpportunity.changeStage(OpportunityStage.CLOSED_WON);
+      testOpportunity.changeStage(OpportunityStage.RENEWAL);
+
+      // Act
+      testOpportunity.changeStage(OpportunityStage.CLOSED_WON);
+
+      // Assert
+      assertThat(testOpportunity.getStage()).isEqualTo(OpportunityStage.CLOSED_WON);
+      assertThat(testOpportunity.getProbability()).isEqualTo(100);
+    }
+
+    @Test
+    @DisplayName("Should allow transition from RENEWAL to CLOSED_LOST")
+    void stageTransition_renewalToClosedLost_shouldWork() {
+      // Arrange
+      testOpportunity.changeStage(OpportunityStage.CLOSED_WON);
+      testOpportunity.changeStage(OpportunityStage.RENEWAL);
+
+      // Act
+      testOpportunity.changeStage(OpportunityStage.CLOSED_LOST);
+
+      // Assert
+      assertThat(testOpportunity.getStage()).isEqualTo(OpportunityStage.CLOSED_LOST);
+      assertThat(testOpportunity.getProbability()).isEqualTo(0);
+    }
+
+    @Test
+    @DisplayName("Should identify RENEWAL as active stage")
+    void isActive_renewalStage_shouldReturnTrue() {
+      // Act
+      testOpportunity.changeStage(OpportunityStage.RENEWAL);
+
+      // Assert
+      assertThat(testOpportunity.getStage().isActive()).isTrue();
+    }
+
+    @Test
+    @DisplayName("Should identify RENEWAL stage correctly")
+    void isRenewal_renewalStage_shouldReturnTrue() {
+      // Act
+      testOpportunity.changeStage(OpportunityStage.RENEWAL);
+
+      // Assert
+      assertThat(testOpportunity.getStage().isRenewal()).isTrue();
+
+      // Verify other stages are not renewal
+      assertThat(OpportunityStage.NEW_LEAD.isRenewal()).isFalse();
+      assertThat(OpportunityStage.CLOSED_WON.isRenewal()).isFalse();
+    }
+
+    @Test
+    @DisplayName("Should have correct display name and color for RENEWAL")
+    void renewalStage_shouldHaveCorrectProperties() {
+      // Assert
+      assertThat(OpportunityStage.RENEWAL.getDisplayName()).isEqualTo("Verlängerung");
+      assertThat(OpportunityStage.RENEWAL.getColor()).isEqualTo("#ff9800");
+      assertThat(OpportunityStage.RENEWAL.getDefaultProbability()).isEqualTo(75);
+    }
+
+    @Test
+    @DisplayName("Should not allow invalid transitions to RENEWAL")
+    void stageTransition_invalidToRenewal_shouldNotWork() {
+      // Test direct transition from NEW_LEAD to RENEWAL (should not work)
+      testOpportunity.changeStage(OpportunityStage.NEW_LEAD);
+      var originalStage = testOpportunity.getStage();
+      var originalTimestamp = testOpportunity.getStageChangedAt();
+
+      // This transition should be blocked by business rules in the service layer
+      // For now, we test that the enum allows us to check valid transitions
+      var nextStages = OpportunityStage.NEW_LEAD.getNextPossibleStages();
+      assertThat(nextStages).doesNotContain(OpportunityStage.RENEWAL);
     }
   }
 
