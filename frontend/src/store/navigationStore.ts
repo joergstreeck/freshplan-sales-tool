@@ -56,6 +56,7 @@ export const useNavigationStore = create<NavigationState>()(
       partialize: (state) => ({
         isCollapsed: state.isCollapsed,
         favorites: state.favorites,
+        expandedMenuId: state.expandedMenuId, // Persist expanded menu state
       }),
     }
   )

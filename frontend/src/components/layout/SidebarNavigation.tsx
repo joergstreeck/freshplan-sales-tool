@@ -55,6 +55,39 @@ export const SidebarNavigation: React.FC = () => {
     addToRecentlyVisited(location.pathname);
   }, [location.pathname, addToRecentlyVisited]);
 
+  // Auto-set active menu based on current URL
+  useEffect(() => {
+    const currentPath = location.pathname;
+    
+    // Find matching navigation item (including sub-items)
+    const matchingItem = navigationConfig.find(item => {
+      // Direct path match
+      if (currentPath.startsWith(item.path)) {
+        return true;
+      }
+      
+      // Sub-item path match
+      if (item.subItems) {
+        return item.subItems.some(subItem => currentPath.startsWith(subItem.path));
+      }
+      
+      return false;
+    });
+    
+    if (matchingItem) {
+      // Always set the active menu to ensure correct highlighting
+      setActiveMenu(matchingItem.id);
+      
+      // Check if we're on a sub-page
+      const isOnSubPage = matchingItem.subItems?.some(sub => currentPath.startsWith(sub.path));
+      
+      // Auto-expand submenu if on a sub-page and not already expanded
+      if (isOnSubPage && expandedMenuId !== matchingItem.id) {
+        toggleSubmenu(matchingItem.id);
+      }
+    }
+  }, [location.pathname]); // Remove dependencies to always update on path change
+
   // Filter navigation items based on permissions
   const visibleItems = navigationConfig.filter(item => 
     !item.permissions || item.permissions.some(p => userPermissions.includes(p))
