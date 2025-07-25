@@ -2,7 +2,7 @@
 
 **WICHTIG: Diese Datei enthält die offiziellen Trigger-Texte. NIEMALS löschen oder überschreiben!**
 
-Letzte Aktualisierung: 22.07.2025
+Letzte Aktualisierung: 25.07.2025
 
 ---
 
@@ -92,45 +92,60 @@ Speichere in /docs/claude-work/daily-work/YYYY-MM-DD/YYYY-MM-DD_HANDOVER_HH-MM.m
 
 ```
 Lese alles gründlich durch und befolge strict die Standardübergabe.
-WICHTIG: Dies ist NUR die Orientierungsphase - noch NICHT arbeiten!
+    WICHTIG: Dies ist NUR die Orientierungsphase - noch NICHT arbeiten!
 
-SCHRITT 1 - System vorbereiten:
-./scripts/session-start.sh
-→ Bei Fehlern/Warnungen STOPPE und analysiere
+    SCHRITT 1 - System vorbereiten:
+    ./scripts/session-start.sh
+    → Bei Fehlern/Warnungen STOPPE und analysiere
 
-SCHRITT 2 - Pflichtlektüre:
-1. CLAUDE.md (besonders Session-Ende-Routine)
-2. Letzte Übergabe (besonders TODO-Status)
-3. STANDARDUERGABE_NEU.md
+    SCHRITT 2 - ABSOLUTES WORKFLOW-VERBOT:
+    🛑 NIEMALS "git push origin main" oder "git commit" auf main Branch!
+    🛑 NIEMALS direkte Änderungen auf main Branch committen!
+    🛑 NIEMALS eigenständig Pull Requests mergen!
+    🛑 AUSNAHMSLOS: Feature Branch → Pull Request → Warten auf Merge-Anweisung
+    
+    WORKFLOW-REGEL (UNVERHANDELBAR):
+    1. git checkout -b feature/[name] (IMMER neuer Branch)
+    2. Code ändern + committen auf Feature Branch
+    3. git push origin feature/[name] 
+    4. Pull Request erstellen
+    5. Nach Review: NUR auf direkte Anweisung mergen!
+    
+    Aktuelle Branch prüfen: git branch --show-current (sollte main sein für Orientierung)
 
-SCHRITT 3 - V5 Fokus prüfen (✅ Auto-Sync):
-cat docs/CRM_COMPLETE_MASTER_PLAN_V5.md | sed -n '15,35p'
-→ Notiere: Aktueller Fokus, Status, Arbeits-Dokument (⭐)
-→ Vergleiche mit get-active-module.sh Output
-→ ✅ KEINE DISKREPANZ MEHR: V5 wurde automatisch synchronisiert!
+    SCHRITT 3 - Pflichtlektüre:
+    1. docs/CLAUDE.md (besonders Session-Ende-Routine)
+    2. Letzte Übergabe (besonders TODO-Status)
+    3. docs/STANDARDUERGABE_NEU.md
 
-SCHRITT 4 - TODOs wiederherstellen:
-- Prüfe TODO-Section der letzten Übergabe
-- Führe TodoWrite aus für alle offenen TODOs
-- Verifiziere mit TodoRead
+    SCHRITT 4 - V5 Fokus prüfen (✅ Auto-Sync):
+    cat docs/CRM_COMPLETE_MASTER_PLAN_V5.md | sed -n '15,35p'
+    → Notiere: Aktueller Fokus, Status, Arbeits-Dokument (⭐)
+    → Vergleiche mit ./scripts/get-active-module.sh Output
+    → ✅ KEINE DISKREPANZ MEHR: V5 wurde automatisch synchronisiert!
 
-SCHRITT 5 - Aktives Modul:
-./scripts/get-active-module.sh
-→ Bei "Kein Spoke-Dokument": Prüfe neue Struktur in /docs/features/ACTIVE/
+    SCHRITT 5 - TODOs wiederherstellen:
+    - Prüfe TODO-Section der letzten Übergabe
+    - Führe TodoWrite aus für alle offenen TODOs
+    - Verifiziere mit TodoRead
 
-SCHRITT 6 - Code-Validierung:
-- git status (stimmt mit Übergabe?)
-- Prüfe genannte Dateien existieren
-- Verifiziere Implementierungsstand
-- cat docs/NEXT_STEP.md (wo genau weitermachen?)
+    SCHRITT 6 - Aktives Modul:
+    ./scripts/get-active-module.sh
+    → Bei "Kein Spoke-Dokument": Prüfe neue Struktur in docs/features/ACTIVE/
 
-MELDE DICH MIT:
-- ✅ X offene TODOs wiederhergestellt
-- ✅ Aktives Modul: FC-XXX-MX
-- ✅ V5 Fokus: [Phase/Status aus V5] (✅ Auto-Sync)
-- ✅ Nächster Schritt: [aus NEXT_STEP.md oder TODO]
-- ⚠️ Diskrepanzen: [Liste - sollten minimal sein dank Auto-Sync]
-- Status: BEREIT FÜR ARBEITSPHASE
+    SCHRITT 7 - Code-Validierung:
+    - git status (stimmt mit Übergabe?)
+    - Prüfe genannte Dateien existieren
+    - Verifiziere Implementierungsstand
+    - cat docs/NEXT_STEP.md (wo genau weitermachen?)
+
+    MELDE DICH MIT:
+    - ✅ X offene TODOs wiederhergestellt
+    - ✅ Aktives Modul: FC-XXX-MX
+    - ✅ V5 Fokus: [Phase/Status aus V5] (✅ Auto-Sync)
+    - ✅ Nächster Schritt: [aus NEXT_STEP.md oder TODO]
+    - ⚠️ Diskrepanzen: [Liste - sollten minimal sein dank Auto-Sync]
+    - Status: BEREIT FÜR ARBEITSPHASE
 ```
 
 ---
@@ -144,7 +159,7 @@ MELDE DICH MIT:
 
 **Teil 2:**
 ```
-./scripts/session-start.sh → Docs lesen → get-active-module.sh → ⛔ STOPP: Status melden und auf "ARBEITSSTART" warten!
+./scripts/session-start.sh → WORKFLOW-VERBOT verstehen → Docs lesen → ./scripts/get-active-module.sh → ⛔ STOPP: Status melden und auf "ARBEITSSTART" warten!
 ```
 
 ---
