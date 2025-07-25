@@ -49,8 +49,7 @@ class UserResourceITDebug {
 
     // Create fresh test user with unique timestamp
     String timestamp = String.valueOf(System.currentTimeMillis());
-    testUser = new User("test.user." + timestamp, "Test", "User");
-    testUser.setEmail("test.user." + timestamp + "@freshplan.de");
+    testUser = new User("test.user." + timestamp, "Test", "User", "test.user." + timestamp + "@freshplan.de");
     userRepository.persist(testUser);
     
     System.out.println("=== DEBUG: Created testUser with ID: " + testUser.getId() + ", username: " + testUser.getUsername() + " ===");
