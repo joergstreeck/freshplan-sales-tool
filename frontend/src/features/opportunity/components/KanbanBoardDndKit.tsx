@@ -39,13 +39,14 @@ import RestoreIcon from '@mui/icons-material/Restore';
 import { SortableOpportunityCard } from './SortableOpportunityCard';
 
 import { OpportunityStage, type Opportunity } from '../types';
+import { STAGE_CONFIGURATIONS } from '../config/stage-config';
 import { logger } from '../../../lib/logger';
 import { useErrorHandler } from '../../../components/ErrorBoundary';
 
 // Aktive Pipeline Stages (immer sichtbar)
 const ACTIVE_STAGES = [
-  OpportunityStage.LEAD,
-  OpportunityStage.QUALIFIED,
+  OpportunityStage.NEW_LEAD,
+  OpportunityStage.QUALIFICATION,
   OpportunityStage.PROPOSAL,
   OpportunityStage.NEGOTIATION,
 ];
@@ -58,9 +59,9 @@ const CLOSED_STAGES = [
 
 // Type imported from '../types'
 
-// Convert STAGE_CONFIGS array to Record for easier lookup
-const STAGE_CONFIGS_RECORD: Record<string, typeof STAGE_CONFIGS[0]> = {};
-STAGE_CONFIGS.forEach(config => {
+// Convert STAGE_CONFIGURATIONS array to Record for easier lookup
+const STAGE_CONFIGS_RECORD: Record<string, typeof STAGE_CONFIGURATIONS[0]> = {};
+STAGE_CONFIGURATIONS.forEach(config => {
   STAGE_CONFIGS_RECORD[config.stage] = config;
 });
 
@@ -69,7 +70,7 @@ const initialOpportunities: Opportunity[] = [
   {
     id: '1',
     name: 'Großauftrag Wocheneinkauf',
-    stage: OpportunityStage.LEAD,
+    stage: OpportunityStage.NEW_LEAD,
     value: 15000,
     probability: 20,
     customerName: 'Restaurant Schmidt GmbH',
@@ -82,7 +83,7 @@ const initialOpportunities: Opportunity[] = [
   {
     id: '2', 
     name: 'Wocheneinkauf Hotelküche',
-    stage: OpportunityStage.QUALIFIED,
+    stage: OpportunityStage.QUALIFICATION,
     value: 8500,
     probability: 60,
     customerName: 'Hotel Adler',

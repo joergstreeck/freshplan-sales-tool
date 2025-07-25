@@ -7,61 +7,50 @@
 
 ## 🎯 JETZT GERADE:
 
-**M4 RENEWAL STAGE - CODE REVIEW FEEDBACK UMGESETZT, CI PIPELINE FIXES**
+**CI PIPELINE DEBUGGING FÜR PR #68 - MEHRERE FIXES GEPUSHT**
 
-**Stand 25.07.2025 22:52:**
-- ✅ **RENEWAL Stage vollständig implementiert:**
-  - Backend: OpportunityStage.RENEWAL mit Business Rules ✅
-  - Frontend: Type-Definitionen bereinigt (stages.ts gelöscht) ✅
-  - Alle 18 Backend Tests erfolgreich ✅
-  - PR #68 erstellt und reviewed ✅
-
-- ✅ **Code Review Feedback umgesetzt:**
-  - Business Logic vereinfacht mit isClosedOpportunity() Helper ✅
-  - !important CSS entfernt in ToastProvider ✅
-  - Code-Duplikation behoben (stages.ts gelöscht) ✅
-  - Alle Test-Importe korrigiert ✅
-
-- 🔄 **CI Pipeline Status:**
-  - Import-Fehler behoben (STAGE_CONFIGS → STAGE_CONFIGURATIONS) ✅
-  - Neuer CI Run läuft nach Fix (commit ca8ba13) 🔄
-  - Erwartung: CI sollte jetzt grün werden
+**Stand 25.07.2025 23:05:**
+- ✅ **Backend CI ist GRÜN!** Backend läuft einwandfrei
+- 🔄 **3 CI Fixes gepusht:**
+  - Fix 1: Lint Errors behoben (unbenutzte Variablen, STAGE_CONFIGURATIONS Import) ✅
+  - Fix 2: Smoke Test mit multiple selectors robuster gemacht ✅
+  - Fix 3: CSS Selector Syntax korrigiert (.or() statt Komma) ✅
+- 🟡 **CI Status:** 3 von 4 Jobs noch rot (Lint, Smoke, Integration)
 
 **🚀 NÄCHSTER SCHRITT:**
 
-**SOFORT: CI Pipeline Status prüfen:**
+**SOFORT: CI Pipeline Status nach letztem Fix prüfen:**
 
 ```bash
 cd /Users/joergstreeck/freshplan-sales-tool
 
-# CI Status prüfen
-gh run list --branch feature/m4-renewal-stage-implementation --limit 3
+# CI Status prüfen (warte 2-3 Minuten nach Push)
+gh run list --branch feature/m4-renewal-stage-implementation --limit 5
 
-# Bei Fehler: Logs analysieren
-gh run view <RUN_ID> --log-failed
+# Bei weiterem Fehler: Smoke Test genauer analysieren
+gh run view <RUN_ID> --log-failed | grep -A 20 "Error"
+```
 
-# Falls grün: PR #68 ist ready for merge!
+**Falls immer noch rot: Smoke Test weiter debuggen:**
+```bash
+# Lokal testen ob Smoke Test funktioniert
+cd frontend
+npx playwright test tests/auth.spec.ts --project=chromium
+
+# Evtl. noch robusterer Selector nötig
 ```
 
 **DANACH: Frontend Tests fixen (TODO-fix-frontend-tests):**
 ```bash
 cd frontend
 npm test
-# Erwartung: Einige Tests fehlschlagen wegen Enum-Änderungen
-# Fix: LEAD → NEW_LEAD, QUALIFIED → QUALIFICATION
-```
-
-**DANN: RENEWAL-Spalte zum Kanban Board (TODO-64):**
-```bash
-# 7. Spalte "Verlängerung" implementieren
-# Orange Color (#ff9800) verwenden
-# Stage: OpportunityStage.RENEWAL
+# Enum-Werte anpassen: LEAD → NEW_LEAD, QUALIFIED → QUALIFICATION
 ```
 
 **UNTERBROCHEN BEI:**
-- CI Pipeline Fix gepusht (ca8ba13)
-- Warte auf CI Run Ergebnis
-- Nächster Schritt: CI Status prüfen
+- 3. CI Fix gepusht (CSS Selector Syntax)
+- Warte auf CI Run Ergebnis nach commit 678bd37
+- Nächster Schritt: CI Status prüfen und ggf. weitere Smoke Test Fixes
 
 **STRATEGISCH WICHTIG:**
 Customer-Contract Foundation (TODO: critical-3, contract-1) implementieren bevor echte Contract Renewals möglich sind!
