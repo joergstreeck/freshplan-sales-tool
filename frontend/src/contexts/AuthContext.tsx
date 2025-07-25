@@ -1,4 +1,3 @@
-/* eslint-disable react-refresh/only-export-components */
 /**
  * Legacy AuthContext - Wrapper around KeycloakContext
  * This maintains backward compatibility while using Keycloak for authentication
@@ -47,9 +46,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       : null;
 
   // Legacy login function - redirects to Keycloak
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const login = async (_email: string, _password: string) => {
-    // Email and password are ignored - Keycloak handles authentication
+  const login = async (_email?: string, _password?: string) => {
+    // Legacy API compatibility - parameters ignored, redirects to Keycloak
     keycloak.login();
   };
 
