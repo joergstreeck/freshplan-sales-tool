@@ -22,7 +22,6 @@ import org.junit.jupiter.api.Test;
  * @since 2.0.0
  */
 @QuarkusTest
-@TestTransaction
 class AuditRepositoryTest {
 
   @Inject AuditRepository auditRepository;
@@ -34,12 +33,17 @@ class AuditRepositoryTest {
   void setUp() {
     testEntityId = UUID.randomUUID();
     testUserId = UUID.randomUUID();
-
-    // Clean up any existing test data
+  }
+  
+  @TestTransaction
+  void cleanupBeforeTest() {
+    // Clean up any existing test data completely for THIS test
     auditRepository.deleteAll();
+    auditRepository.flush();
   }
 
   @Test
+  @TestTransaction
   void testFindByEntity() {
     // Given
     createAuditEntry("opportunity", testEntityId, AuditEventType.OPPORTUNITY_CREATED);
@@ -56,6 +60,7 @@ class AuditRepositoryTest {
   }
 
   @Test
+  @TestTransaction
   void testFindByUser() {
     // Given
     Instant now = Instant.now();
@@ -75,7 +80,10 @@ class AuditRepositoryTest {
   }
 
   @Test
+  @TestTransaction
   void testFindSecurityEvents() {
+    cleanupBeforeTest();
+    
     // Given
     Instant now = Instant.now();
     Instant anHourAgo = now.minus(1, ChronoUnit.HOURS);
@@ -99,7 +107,10 @@ class AuditRepositoryTest {
   }
 
   @Test
+  @TestTransaction
   void testFindFailures() {
+    cleanupBeforeTest();
+    
     // Given
     Instant now = Instant.now();
     Instant anHourAgo = now.minus(1, ChronoUnit.HOURS);
@@ -124,6 +135,7 @@ class AuditRepositoryTest {
   }
 
   @Test
+  @TestTransaction
   void testAdvancedSearch() {
     // Given
     createAuditEntry("opportunity", testEntityId, AuditEventType.OPPORTUNITY_CREATED);
@@ -148,7 +160,10 @@ class AuditRepositoryTest {
   }
 
   @Test
+  @TestTransaction
   void testGetStatistics() {
+    cleanupBeforeTest();
+    
     // Given
     Instant now = Instant.now();
     Instant yesterday = now.minus(1, ChronoUnit.DAYS);
@@ -169,9 +184,12 @@ class AuditRepositoryTest {
   }
 
   @Test
+  @TestTransaction
   void testHashChaining() {
-    // Given
-    createAuditEntry("test", UUID.randomUUID(), AuditEventType.SYSTEM_STARTUP);
+    cleanupBeforeTest();
+    
+    // Given - Create first entry with proper hash chain
+    createAuditEntryWithPreviousHash("test", UUID.randomUUID(), AuditEventType.SYSTEM_STARTUP, null);
 
     // When
     var lastHash = auditRepository.getLastHash();
@@ -181,7 +199,7 @@ class AuditRepositoryTest {
     assertThat(lastHash.get()).hasSize(64); // SHA-256 hex
 
     // Create another entry and verify previous hash is set
-    createAuditEntry("test", UUID.randomUUID(), AuditEventType.SYSTEM_SHUTDOWN);
+    createAuditEntryWithPreviousHash("test", UUID.randomUUID(), AuditEventType.SYSTEM_SHUTDOWN, lastHash.get());
 
     List<AuditEntry> allEntries = auditRepository.listAll();
     assertThat(allEntries).hasSize(2);
@@ -197,17 +215,19 @@ class AuditRepositoryTest {
   }
 
   @Test
+  @TestTransaction
   void testPagination() {
-    // Given - create 25 entries
+    // Given - create 25 entries with the same entity
+    UUID sharedEntityId = UUID.randomUUID();
     for (int i = 0; i < 25; i++) {
-      createAuditEntry("test", UUID.randomUUID(), AuditEventType.OPPORTUNITY_CREATED);
+      createAuditEntry("test", sharedEntityId, AuditEventType.OPPORTUNITY_CREATED);
     }
 
     // When - get first page
-    List<AuditEntry> page1 = auditRepository.findByEntity("test", null, 0, 10);
+    List<AuditEntry> page1 = auditRepository.findByEntity("test", sharedEntityId, 0, 10);
 
     // When - get second page
-    List<AuditEntry> page2 = auditRepository.findByEntity("test", null, 1, 10);
+    List<AuditEntry> page2 = auditRepository.findByEntity("test", sharedEntityId, 1, 10);
 
     // Then
     assertThat(page1).hasSize(10);
@@ -246,6 +266,25 @@ class AuditRepositoryTest {
             .userRole("user")
             .source(AuditSource.TEST)
             .dataHash(generateHash())
+            .timestamp(Instant.now())
+            .build();
+
+    auditRepository.persist(entry);
+    auditRepository.flush(); // Ensure data is committed
+  }
+
+  private void createAuditEntryWithPreviousHash(String entityType, UUID entityId, AuditEventType eventType, String previousHash) {
+    AuditEntry entry =
+        AuditEntry.builder()
+            .eventType(eventType)
+            .entityType(entityType)
+            .entityId(entityId)
+            .userId(testUserId)
+            .userName("Test User")
+            .userRole("admin")
+            .source(AuditSource.TEST)
+            .dataHash(generateHash())
+            .previousHash(previousHash)
             .timestamp(Instant.now())
             .build();
 

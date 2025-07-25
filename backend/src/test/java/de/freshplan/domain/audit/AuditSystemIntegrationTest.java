@@ -11,8 +11,11 @@ import de.freshplan.domain.audit.service.AuditService;
 import de.freshplan.domain.audit.service.dto.AuditContext;
 import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.junit.callback.QuarkusTestContext;
 import io.quarkus.test.security.TestSecurity;
+import io.smallrye.common.annotation.Blocking;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.control.ActivateRequestContext;
 import jakarta.inject.Inject;
 import java.time.Instant;
 import java.util.List;
@@ -29,7 +32,6 @@ import org.junit.jupiter.api.Test;
  * @since 2.0.0
  */
 @QuarkusTest
-@TestTransaction
 @TestSecurity(
     user = "integrationtest",
     roles = {"admin"})
@@ -46,11 +48,18 @@ class AuditSystemIntegrationTest {
   @BeforeEach
   void setUp() {
     testEntityId = UUID.randomUUID();
-    // Clean any existing audit entries
+  }
+  
+  @TestTransaction
+  void cleanupBeforeTest() {
+    // Clean any existing audit entries completely for THIS test
     auditRepository.deleteAll();
+    auditRepository.flush();
   }
 
   @Test
+  @TestTransaction
+  @ActivateRequestContext
   void testCompleteAuditFlow() throws Exception {
     // Given
     String initialValue = "Initial";
@@ -98,7 +107,10 @@ class AuditSystemIntegrationTest {
   }
 
   @Test
+  @TestTransaction
   void testHashChainIntegrity() throws Exception {
+    cleanupBeforeTest();
+    
     // Create multiple audit entries
     for (int i = 0; i < 5; i++) {
       auditService.logSync(
@@ -131,7 +143,10 @@ class AuditSystemIntegrationTest {
   }
 
   @Test
+  @TestTransaction
   void testSecurityEventAuditing() {
+    cleanupBeforeTest();
+    
     // Log security event
     UUID auditId =
         auditService.logSecurityEvent(
@@ -150,6 +165,8 @@ class AuditSystemIntegrationTest {
   }
 
   @Test
+  @TestTransaction
+  @ActivateRequestContext
   void testAuditExceptionHandling() {
     // Test that audit failures don't break business logic
     try {
@@ -170,6 +187,7 @@ class AuditSystemIntegrationTest {
   }
 
   @Test
+  @TestTransaction
   void testAuditSearch() throws Exception {
     // Create various audit entries
     UUID userId1 = UUID.randomUUID();
