@@ -40,14 +40,20 @@ test-artifacts-backup/
 *.log
 frontend.log
 backend.log
+backend/logs/
+logs/
 
 # Backup files
 *_backup.txt
 *.backup
+*.backup.*
 *.bak
 .archive/
 *-backup-*/
 freshplan-backup-*/
+
+# Claude work documents
+docs/claude-work/
 
 # Temporary HTML files
 index-minimal.html

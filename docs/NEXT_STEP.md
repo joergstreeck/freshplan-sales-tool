@@ -7,22 +7,23 @@
 
 ## 🎯 JETZT GERADE:
 
-**M4 BACKEND-INTEGRATION ABGESCHLOSSEN ✅**
+**M4 BACKEND-INTEGRATION PR ERSTELLT ✅**
 
-**Stand 25.07.2025 16:15:**
+**Stand 25.07.2025 16:21:**
+- ✅ **PR #66 erstellt:** https://github.com/joergstreeck/freshplan-sales-tool/pull/66
 - ✅ **TODO-60 FERTIG:** M4 Backend-Integration 100% - API vollständig verbunden
 - ✅ **Tests:** KanbanBoard 14/14 grün, Gesamt 93% Test Coverage
 - ✅ **Type System:** Frontend↔Backend harmonisiert (Stage Enum UPPERCASE)
 - ✅ **Drag & Drop:** Funktioniert mit echten API-Calls + Optimistic Updates
-- ✅ **Two-Pass Review:** Code-Qualität bestätigt, PR bereit
+- 🔄 **CI Checks:** Laufen gerade...
 
 **🚀 NÄCHSTER SCHRITT:**
 
-**PR erstellen & TODO-64: RENEWAL Spalte hinzufügen:**
-1. PR über GitHub UI erstellen (Branch bereits gepusht)
-2. RENEWAL Stage in Backend OpportunityStage Enum
-3. Frontend ACTIVE_STAGES erweitern
-4. Tests für neue Stage hinzufügen
+**TODO-64: RENEWAL Spalte (7. Stage) hinzufügen:**
+1. Backend: RENEWAL zu OpportunityStage Enum hinzufügen
+2. Frontend: ACTIVE_STAGES um RENEWAL erweitern
+3. Tests für neue Stage schreiben
+4. Kanban Board visuell testen
 
 **ALTERNATIVE NÄCHSTE SCHRITTE:**
 - Branch-Protection für main aktivieren (TODO-94)
