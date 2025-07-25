@@ -243,11 +243,13 @@ class UserResourceIT {
   @TestSecurity(user = "admin", roles = "admin")
   void testDeleteUser_Success() {
     // Create user via API to ensure it's properly committed
+    // Use timestamp to avoid conflicts between parallel test runs
+    String uniqueTimestamp = String.valueOf(System.currentTimeMillis());
     CreateUserRequest createRequest = CreateUserRequest.builder()
-        .username("to.delete")
+        .username("to.delete." + uniqueTimestamp)
         .firstName("To")
         .lastName("Delete")
-        .email("to.delete@freshplan.de")
+        .email("to.delete." + uniqueTimestamp + "@freshplan.de")
         .build();
     
     String location = given()
