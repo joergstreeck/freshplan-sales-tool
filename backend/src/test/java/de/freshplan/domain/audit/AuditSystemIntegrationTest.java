@@ -198,6 +198,8 @@ class AuditSystemIntegrationTest {
   @Test
   @TestTransaction
   void testAuditSearch() throws Exception {
+    auditRepository.deleteAll(); // Clean within same transaction
+    
     // Create various audit entries
     UUID userId1 = UUID.randomUUID();
     UUID userId2 = UUID.randomUUID();
