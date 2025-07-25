@@ -95,7 +95,7 @@ Lese alles gründlich durch und befolge strict die Standardübergabe.
     WICHTIG: Dies ist NUR die Orientierungsphase - noch NICHT arbeiten!
 
     SCHRITT 1 - System vorbereiten:
-    /Users/joergstreeck/freshplan-sales-tool/scripts/session-start.sh
+    ./scripts/session-start.sh
     → Bei Fehlern/Warnungen STOPPE und analysiere
 
     SCHRITT 2 - ABSOLUTES WORKFLOW-VERBOT:
@@ -114,15 +114,14 @@ Lese alles gründlich durch und befolge strict die Standardübergabe.
     Aktuelle Branch prüfen: git branch --show-current (sollte main sein für Orientierung)
 
     SCHRITT 3 - Pflichtlektüre:
-    1. /Users/joergstreeck/freshplan-sales-tool/docs/CLAUDE.md (besonders Session-Ende-Routine)
+    1. docs/CLAUDE.md (besonders Session-Ende-Routine)
     2. Letzte Übergabe (besonders TODO-Status)
-    3. /Users/joergstreeck/freshplan-sales-tool/docs/STANDARDUERGABE_NEU.md
+    3. docs/STANDARDUERGABE_NEU.md
 
     SCHRITT 4 - V5 Fokus prüfen (✅ Auto-Sync):
-    cat /Users/joergstreeck/freshplan-sales-tool/docs/CRM_COMPLETE_MASTER_PLAN_V5.md | sed -n 
-  '15,35p'
+    cat docs/CRM_COMPLETE_MASTER_PLAN_V5.md | sed -n '15,35p'
     → Notiere: Aktueller Fokus, Status, Arbeits-Dokument (⭐)
-    → Vergleiche mit /Users/joergstreeck/freshplan-sales-tool/scripts/get-active-module.sh Output
+    → Vergleiche mit ./scripts/get-active-module.sh Output
     → ✅ KEINE DISKREPANZ MEHR: V5 wurde automatisch synchronisiert!
 
     SCHRITT 5 - TODOs wiederherstellen:
@@ -131,15 +130,14 @@ Lese alles gründlich durch und befolge strict die Standardübergabe.
     - Verifiziere mit TodoRead
 
     SCHRITT 6 - Aktives Modul:
-    /Users/joergstreeck/freshplan-sales-tool/scripts/get-active-module.sh
-    → Bei "Kein Spoke-Dokument": Prüfe neue Struktur in 
-  /Users/joergstreeck/freshplan-sales-tool/docs/features/ACTIVE/
+    ./scripts/get-active-module.sh
+    → Bei "Kein Spoke-Dokument": Prüfe neue Struktur in docs/features/ACTIVE/
 
     SCHRITT 7 - Code-Validierung:
     - git status (stimmt mit Übergabe?)
     - Prüfe genannte Dateien existieren
     - Verifiziere Implementierungsstand
-    - cat /Users/joergstreeck/freshplan-sales-tool/docs/NEXT_STEP.md (wo genau weitermachen?)
+    - cat docs/NEXT_STEP.md (wo genau weitermachen?)
 
     MELDE DICH MIT:
     - ✅ X offene TODOs wiederhergestellt
@@ -161,7 +159,7 @@ Lese alles gründlich durch und befolge strict die Standardübergabe.
 
 **Teil 2:**
 ```
-./scripts/session-start.sh → WORKFLOW-VERBOT verstehen → Docs lesen → get-active-module.sh → ⛔ STOPP: Status melden und auf "ARBEITSSTART" warten!
+./scripts/session-start.sh → WORKFLOW-VERBOT verstehen → Docs lesen → ./scripts/get-active-module.sh → ⛔ STOPP: Status melden und auf "ARBEITSSTART" warten!
 ```
 
 ---
