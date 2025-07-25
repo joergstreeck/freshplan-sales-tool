@@ -97,7 +97,7 @@ export class ErrorBoundary extends Component<IErrorBoundaryProps, IErrorBoundary
     const { errorId } = this.state;
 
     // Log to console in development
-    if (process.env.NODE_ENV === 'development') {
+    if (import.meta.env.DEV) {
       console.error('ErrorBoundary caught an error:', error, errorInfo);
     }
 
@@ -150,7 +150,7 @@ export class ErrorBoundary extends Component<IErrorBoundaryProps, IErrorBoundary
   public render() {
     const { hasError, error, errorInfo, errorId, showDetails } = this.state;
     const { children, fallback } = this.props;
-    const isDevelopment = process.env.NODE_ENV === 'development';
+    const isDevelopment = import.meta.env.DEV;
 
     if (hasError && error) {
       // Use custom fallback if provided

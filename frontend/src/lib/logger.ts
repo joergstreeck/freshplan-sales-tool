@@ -342,10 +342,10 @@ class Logger {
 
 // Export singleton instance with default config
 export const logger = new Logger({
-  minLevel: process.env.NODE_ENV === 'production' ? LogLevel.INFO : LogLevel.DEBUG,
+  minLevel: import.meta.env.MODE === 'production' ? LogLevel.INFO : LogLevel.DEBUG,
   enableConsole: true,
-  enableRemote: process.env.NODE_ENV === 'production',
-  remoteEndpoint: process.env.REACT_APP_LOG_ENDPOINT,
+  enableRemote: import.meta.env.MODE === 'production',
+  remoteEndpoint: import.meta.env.VITE_LOG_ENDPOINT,
   performanceThreshold: 1000
 });
 
