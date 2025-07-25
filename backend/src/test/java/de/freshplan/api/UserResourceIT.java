@@ -17,6 +17,9 @@ import jakarta.transaction.Transactional;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
+import org.junit.jupiter.api.Order;
 
 /**
  * Integration tests for UserResource REST API.
@@ -29,6 +32,7 @@ import org.junit.jupiter.api.Test;
  */
 @QuarkusTest
 @TestHTTPEndpoint(UserResource.class)
+@TestMethodOrder(OrderAnnotation.class)
 class UserResourceIT {
 
   @Inject UserRepository userRepository;
@@ -238,10 +242,32 @@ class UserResourceIT {
   @Test
   @TestSecurity(user = "admin", roles = "admin")
   void testDeleteUser_Success() {
-    given().when().delete("/{id}", testUser.getId()).then().statusCode(204);
+    // Create user via API to ensure it's properly committed
+    CreateUserRequest createRequest = CreateUserRequest.builder()
+        .username("to.delete")
+        .firstName("To")
+        .lastName("Delete")
+        .email("to.delete@freshplan.de")
+        .build();
+    
+    String location = given()
+        .contentType(ContentType.JSON)
+        .body(createRequest)
+        .when()
+        .post()
+        .then()
+        .statusCode(201)
+        .extract()
+        .header("Location");
+    
+    // Extract ID from location header
+    String userId = location.substring(location.lastIndexOf("/") + 1);
+    
+    // Delete the user
+    given().when().delete("/{id}", userId).then().statusCode(204);
 
     // Verify deletion
-    given().when().get("/{id}", testUser.getId()).then().statusCode(404);
+    given().when().get("/{id}", userId).then().statusCode(404);
   }
 
   @Test
