@@ -43,6 +43,7 @@ export const SidebarNavigation: React.FC = () => {
     isCollapsed,
     setActiveMenu,
     toggleSubmenu,
+    closeAllSubmenus,
     toggleSidebar,
     addToRecentlyVisited
   } = useNavigationStore();
@@ -157,7 +158,9 @@ export const SidebarNavigation: React.FC = () => {
             onItemClick={() => {
               setActiveMenu(item.id);
               if (!item.subItems) {
+                // Navigate to the page and close any open submenus
                 navigate(item.path);
+                closeAllSubmenus();
               } else {
                 toggleSubmenu(item.id);
               }
