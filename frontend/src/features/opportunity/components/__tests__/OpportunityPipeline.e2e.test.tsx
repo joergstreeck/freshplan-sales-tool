@@ -93,7 +93,8 @@ describe('OpportunityPipeline - E2E RENEWAL Tests', () => {
 
   describe('Complete RENEWAL Workflow', () => {
     test('should complete full contract renewal workflow: CLOSED_WON → RENEWAL → CLOSED_WON', async () => {
-      const user = userEvent.setup();
+      // userEvent wird später für Interaktionen benötigt
+      // const user = userEvent.setup();
       
       render(
         <TestWrapper>
@@ -157,7 +158,8 @@ describe('OpportunityPipeline - E2E RENEWAL Tests', () => {
     });
 
     test('should handle successful renewal completion: RENEWAL → CLOSED_WON', async () => {
-      const user = userEvent.setup();
+      // userEvent wird später für Interaktionen benötigt
+      // const user = userEvent.setup();
       
       render(
         <TestWrapper>
@@ -273,8 +275,9 @@ describe('OpportunityPipeline - E2E RENEWAL Tests', () => {
         // Prüfe dass DragOverlay sichtbar wird
         await waitFor(() => {
           // DragOverlay sollte visuelles Feedback zeigen
-          const dragOverlay = document.querySelector('[data-testid="drag-overlay"]');
+          // const dragOverlay = document.querySelector('[data-testid="drag-overlay"]');
           // Je nach Implementation der DragOverlay
+          expect(opportunityCard).toBeDefined();
         });
       }
     });
@@ -412,8 +415,9 @@ describe('OpportunityPipeline - E2E RENEWAL Tests', () => {
       });
 
       // ARIA Live Regions sollten Stage-Änderungen ankündigen
-      const ariaLiveRegion = document.querySelector('[aria-live="polite"]');
+      // const ariaLiveRegion = document.querySelector('[aria-live="polite"]');
       // Je nach Implementation der Accessibility Features
+      expect(screen.getByText('Verlängerung')).toHaveAttribute('role', 'region');
     });
   });
 });

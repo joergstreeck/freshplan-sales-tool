@@ -39,7 +39,6 @@ import RestoreIcon from '@mui/icons-material/Restore';
 import { SortableOpportunityCard } from './SortableOpportunityCard';
 
 import { OpportunityStage, type Opportunity } from '../types';
-import { STAGE_CONFIGURATIONS } from '../config/stage-config';
 import { logger } from '../../../lib/logger';
 import { useErrorHandler } from '../../../components/ErrorBoundary';
 
