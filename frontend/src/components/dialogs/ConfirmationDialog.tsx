@@ -19,7 +19,8 @@ import {
   Alert,
   Box,
   Typography,
-  useTheme
+  useTheme,
+  Theme
 } from '@mui/material';
 import {
   Warning as WarningIcon,
@@ -69,7 +70,7 @@ export interface ConfirmationDialogProps {
 /**
  * Get icon and color for severity level
  */
-function getSeverityConfig(severity: ConfirmationSeverity, theme: any) {
+function getSeverityConfig(severity: ConfirmationSeverity, theme: Theme) {
   switch (severity) {
     case ConfirmationSeverity.ERROR:
       return {

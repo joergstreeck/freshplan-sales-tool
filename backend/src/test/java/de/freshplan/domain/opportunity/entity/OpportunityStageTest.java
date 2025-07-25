@@ -428,10 +428,10 @@ public class OpportunityStageTest {
     void stageTransition_closedWonToRenewal_shouldWork() {
       // Arrange
       testOpportunity.changeStage(OpportunityStage.CLOSED_WON);
-      
+
       // Act
       testOpportunity.changeStage(OpportunityStage.RENEWAL);
-      
+
       // Assert
       assertThat(testOpportunity.getStage()).isEqualTo(OpportunityStage.RENEWAL);
       assertThat(testOpportunity.getProbability()).isEqualTo(75);
@@ -443,10 +443,10 @@ public class OpportunityStageTest {
       // Arrange
       testOpportunity.changeStage(OpportunityStage.CLOSED_WON);
       testOpportunity.changeStage(OpportunityStage.RENEWAL);
-      
+
       // Act
       testOpportunity.changeStage(OpportunityStage.CLOSED_WON);
-      
+
       // Assert
       assertThat(testOpportunity.getStage()).isEqualTo(OpportunityStage.CLOSED_WON);
       assertThat(testOpportunity.getProbability()).isEqualTo(100);
@@ -458,10 +458,10 @@ public class OpportunityStageTest {
       // Arrange
       testOpportunity.changeStage(OpportunityStage.CLOSED_WON);
       testOpportunity.changeStage(OpportunityStage.RENEWAL);
-      
+
       // Act
       testOpportunity.changeStage(OpportunityStage.CLOSED_LOST);
-      
+
       // Assert
       assertThat(testOpportunity.getStage()).isEqualTo(OpportunityStage.CLOSED_LOST);
       assertThat(testOpportunity.getProbability()).isEqualTo(0);
@@ -472,7 +472,7 @@ public class OpportunityStageTest {
     void isActive_renewalStage_shouldReturnTrue() {
       // Act
       testOpportunity.changeStage(OpportunityStage.RENEWAL);
-      
+
       // Assert
       assertThat(testOpportunity.getStage().isActive()).isTrue();
     }
@@ -482,10 +482,10 @@ public class OpportunityStageTest {
     void isRenewal_renewalStage_shouldReturnTrue() {
       // Act
       testOpportunity.changeStage(OpportunityStage.RENEWAL);
-      
+
       // Assert
       assertThat(testOpportunity.getStage().isRenewal()).isTrue();
-      
+
       // Verify other stages are not renewal
       assertThat(OpportunityStage.NEW_LEAD.isRenewal()).isFalse();
       assertThat(OpportunityStage.CLOSED_WON.isRenewal()).isFalse();
@@ -507,7 +507,7 @@ public class OpportunityStageTest {
       testOpportunity.changeStage(OpportunityStage.NEW_LEAD);
       var originalStage = testOpportunity.getStage();
       var originalTimestamp = testOpportunity.getStageChangedAt();
-      
+
       // This transition should be blocked by business rules in the service layer
       // For now, we test that the enum allows us to check valid transitions
       var nextStages = OpportunityStage.NEW_LEAD.getNextPossibleStages();

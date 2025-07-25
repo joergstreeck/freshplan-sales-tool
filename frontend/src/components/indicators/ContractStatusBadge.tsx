@@ -11,20 +11,19 @@
 import React from 'react';
 import {
   Chip,
-  Badge,
   Box,
   Tooltip,
   Typography,
   alpha,
-  useTheme
+  useTheme,
+  Theme
 } from '@mui/material';
 import {
   Schedule as ScheduleIcon,
   Warning as WarningIcon,
   Error as ErrorIcon,
   CheckCircle as CheckCircleIcon,
-  Autorenew as AutorenewIcon,
-  AccessTime as AccessTimeIcon
+  Autorenew as AutorenewIcon
 } from '@mui/icons-material';
 
 /**
@@ -70,7 +69,7 @@ export interface ContractStatusBadgeProps {
 /**
  * Get status configuration
  */
-function getStatusConfig(status: ContractStatus, theme: any) {
+function getStatusConfig(status: ContractStatus, theme: Theme) {
   switch (status) {
     case ContractStatus.ACTIVE:
       return {
@@ -303,7 +302,7 @@ export const ContractMonitoringIndicator: React.FC<{
   expiryDate: Date;
   isRenewal?: boolean;
   contractValue?: number;
-}> = ({ opportunityName, expiryDate, isRenewal = false, contractValue }) => {
+}> = ({ expiryDate, isRenewal = false, contractValue }) => {
   const today = new Date();
   const daysUntilExpiry = Math.ceil((expiryDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
   

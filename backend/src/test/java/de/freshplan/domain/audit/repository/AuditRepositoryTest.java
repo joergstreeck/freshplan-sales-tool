@@ -34,7 +34,7 @@ class AuditRepositoryTest {
     testEntityId = UUID.randomUUID();
     testUserId = UUID.randomUUID();
   }
-  
+
   @Test
   @TestTransaction
   void testFindByEntity() {
@@ -77,7 +77,7 @@ class AuditRepositoryTest {
   @TestTransaction
   void testFindSecurityEvents() {
     auditRepository.deleteAll(); // Clean within same transaction
-    
+
     // Given
     Instant anHourAgo = Instant.now().minus(1, ChronoUnit.HOURS);
 
@@ -104,7 +104,7 @@ class AuditRepositoryTest {
   @TestTransaction
   void testFindFailures() {
     auditRepository.deleteAll(); // Clean within same transaction
-    
+
     // Given
     Instant anHourAgo = Instant.now().minus(1, ChronoUnit.HOURS);
 
@@ -114,7 +114,8 @@ class AuditRepositoryTest {
     createAuditEntry("opportunity", UUID.randomUUID(), AuditEventType.OPPORTUNITY_CREATED);
 
     // When - search with wider time range
-    Instant now = Instant.now().plus(1, ChronoUnit.MINUTES); // Future range to include created entries
+    Instant now =
+        Instant.now().plus(1, ChronoUnit.MINUTES); // Future range to include created entries
     List<AuditEntry> entries = auditRepository.findFailures(anHourAgo, now);
 
     // Then
@@ -157,7 +158,7 @@ class AuditRepositoryTest {
   @TestTransaction
   void testGetStatistics() {
     auditRepository.deleteAll(); // Clean within same transaction
-    
+
     // Given
     Instant yesterday = Instant.now().minus(1, ChronoUnit.DAYS);
 
@@ -181,9 +182,10 @@ class AuditRepositoryTest {
   @TestTransaction
   void testHashChaining() {
     auditRepository.deleteAll(); // Clean within same transaction
-    
+
     // Given - Create first entry with proper hash chain
-    createAuditEntryWithPreviousHash("test", UUID.randomUUID(), AuditEventType.SYSTEM_STARTUP, null);
+    createAuditEntryWithPreviousHash(
+        "test", UUID.randomUUID(), AuditEventType.SYSTEM_STARTUP, null);
 
     // When
     var lastHash = auditRepository.getLastHash();
@@ -193,7 +195,8 @@ class AuditRepositoryTest {
     assertThat(lastHash.get()).hasSize(64); // SHA-256 hex
 
     // Create another entry and verify previous hash is set
-    createAuditEntryWithPreviousHash("test", UUID.randomUUID(), AuditEventType.SYSTEM_SHUTDOWN, lastHash.get());
+    createAuditEntryWithPreviousHash(
+        "test", UUID.randomUUID(), AuditEventType.SYSTEM_SHUTDOWN, lastHash.get());
 
     List<AuditEntry> allEntries = auditRepository.listAll();
     assertThat(allEntries).hasSize(2);
@@ -267,7 +270,8 @@ class AuditRepositoryTest {
     auditRepository.flush(); // Ensure data is committed
   }
 
-  private void createAuditEntryWithPreviousHash(String entityType, UUID entityId, AuditEventType eventType, String previousHash) {
+  private void createAuditEntryWithPreviousHash(
+      String entityType, UUID entityId, AuditEventType eventType, String previousHash) {
     AuditEntry entry =
         AuditEntry.builder()
             .eventType(eventType)

@@ -118,7 +118,7 @@ public class Opportunity {
     if (this.stage == OpportunityStage.CLOSED_WON && newStage != OpportunityStage.RENEWAL) {
       return; // CLOSED_WON kann nur zu RENEWAL wechseln
     }
-    
+
     if (this.stage == OpportunityStage.CLOSED_LOST) {
       return; // CLOSED_LOST kann gar nicht geändert werden
     }
