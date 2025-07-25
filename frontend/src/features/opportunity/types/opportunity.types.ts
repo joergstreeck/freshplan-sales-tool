@@ -128,9 +128,16 @@ export interface IUpdateOpportunityRequest {
 /** @deprecated Use IUpdateOpportunityRequest instead */
 export type UpdateOpportunityRequest = IUpdateOpportunityRequest;
 
+/**
+ * Request payload for changing opportunity stage
+ * @interface ChangeStageRequest
+ * @description Used for stage transitions in the sales pipeline
+ */
 export interface ChangeStageRequest {
-  stage: OpportunityStage;
-  customProbability?: number;
+  /** The new stage to transition to */
+  newStage: OpportunityStage;
+  /** Optional reason for stage change (audit trail) */
+  reason?: string;
 }
 
 export interface PipelineOverviewResponse {

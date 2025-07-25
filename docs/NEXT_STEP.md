@@ -7,24 +7,23 @@
 
 ## 🎯 JETZT GERADE:
 
-**M4 FRONTEND ENTERPRISE UPGRADE - VOLLSTÄNDIG ABGESCHLOSSEN ✅**
+**M4 BACKEND-INTEGRATION PR ERSTELLT ✅**
 
-**Stand 25.07.2025 14:00:**
-- ✅ **PR #63:** Erfolgreich gemerged
-- ✅ **KanbanBoard.tsx:** Vollständig auf Enterprise-Standard refactored + 14 Tests
-- ✅ **KanbanBoardDndKit.tsx:** Vollständig refactored inkl. Scroll-Handler + 13 Tests
-- ✅ **OpportunityCard.tsx:** Enterprise-Standard refactoring + 19 Tests
-- ✅ **PipelineStage.tsx:** Enterprise-Standard refactoring + 16 Tests
-- ✅ **Two-Pass Review:** Durchgeführt, 3 von 6 Tests repariert
-- ✅ **Tests:** 325 von 328 Frontend Tests bestehen (99.1% Success Rate)
+**Stand 25.07.2025 16:21:**
+- ✅ **PR #66 erstellt:** https://github.com/joergstreeck/freshplan-sales-tool/pull/66
+- ✅ **TODO-60 FERTIG:** M4 Backend-Integration 100% - API vollständig verbunden
+- ✅ **Tests:** KanbanBoard 14/14 grün, Gesamt 93% Test Coverage
+- ✅ **Type System:** Frontend↔Backend harmonisiert (Stage Enum UPPERCASE)
+- ✅ **Drag & Drop:** Funktioniert mit echten API-Calls + Optimistic Updates
+- 🔄 **CI Checks:** Laufen gerade...
 
 **🚀 NÄCHSTER SCHRITT:**
 
-**OpportunityDataInitializer implementieren (TODO-84):**
-1. Backend: OpportunityDataInitializer.java erstellen
-2. 10-15 Test-Opportunities mit verschiedenen Stages
-3. Frontend kann endlich mit echten Daten arbeiten
-4. API liefert nicht mehr leeres Array
+**TODO-64: RENEWAL Spalte (7. Stage) hinzufügen:**
+1. Backend: RENEWAL zu OpportunityStage Enum hinzufügen
+2. Frontend: ACTIVE_STAGES um RENEWAL erweitern
+3. Tests für neue Stage schreiben
+4. Kanban Board visuell testen
 
 **ALTERNATIVE NÄCHSTE SCHRITTE:**
 - Branch-Protection für main aktivieren (TODO-94)

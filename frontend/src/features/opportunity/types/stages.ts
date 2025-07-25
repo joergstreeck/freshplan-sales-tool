@@ -1,12 +1,12 @@
 // Stage-Definitionen aus dem Technical Concept
 export enum OpportunityStage {
-  LEAD = "lead",
-  QUALIFIED = "qualified",
-  NEEDS_ANALYSIS = "needs_analysis", // Kept for backward compatibility, maps to 'Qualifiziert' stage
-  PROPOSAL = "proposal",
-  NEGOTIATION = "negotiation",
-  CLOSED_WON = "closed_won",
-  CLOSED_LOST = "closed_lost"
+  LEAD = "NEW_LEAD",
+  QUALIFIED = "QUALIFICATION", 
+  NEEDS_ANALYSIS = "NEEDS_ANALYSIS",
+  PROPOSAL = "PROPOSAL",
+  NEGOTIATION = "NEGOTIATION",
+  CLOSED_WON = "CLOSED_WON",
+  CLOSED_LOST = "CLOSED_LOST"
 }
 
 // Stage-Konfiguration
