@@ -206,16 +206,17 @@ public class OpportunityService {
     // Stage ändern
     OpportunityStage previousStage = opportunity.getStage();
     opportunity.changeStage(newStage);
-    
+
     // Audit log the stage change
-    auditService.logAsync(AuditContext.builder()
-        .eventType(AuditEventType.OPPORTUNITY_STAGE_CHANGED)
-        .entityType("opportunity")
-        .entityId(opportunityId)
-        .oldValue(Map.of("stage", previousStage.name()))
-        .newValue(Map.of("stage", newStage.name()))
-        .changeReason(reason)
-        .build());
+    auditService.logAsync(
+        AuditContext.builder()
+            .eventType(AuditEventType.OPPORTUNITY_STAGE_CHANGED)
+            .entityType("opportunity")
+            .entityId(opportunityId)
+            .oldValue(Map.of("stage", previousStage.name()))
+            .newValue(Map.of("stage", newStage.name()))
+            .changeReason(reason)
+            .build());
 
     // Stage Change Activity erstellen
     User currentUser = getCurrentUser();

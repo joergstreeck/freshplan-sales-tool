@@ -2,7 +2,6 @@ package de.freshplan.domain.user.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import de.freshplan.domain.opportunity.entity.OpportunityActivity;
 import de.freshplan.domain.user.entity.User;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.security.TestSecurity;

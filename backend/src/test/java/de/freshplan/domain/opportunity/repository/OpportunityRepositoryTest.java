@@ -68,7 +68,7 @@ public class OpportunityRepositoryTest {
       testUser1.setRoles(Arrays.asList("admin", "manager", "sales"));
       userRepository.persist(testUser1);
     }
-    
+
     testUser2 = userRepository.find("username", "testuser2").firstResult();
     if (testUser2 == null) {
       testUser2 = new User("testuser2", "Test", "User2", "testuser2@test.com");

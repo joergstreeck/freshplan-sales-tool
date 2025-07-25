@@ -19,11 +19,11 @@ import org.junit.jupiter.params.provider.MethodSource;
 /**
  * Unit Tests für Opportunity Entity Stage Transition Business Logic
  *
- * <p>Tests decken ab: - Entity.changeStage() Business Rules - Stage Validation Rules -
- * Transition History Tracking - Invalid Transition Handling - Edge Cases in Stage Changes -
- * Business Rule Enforcement
+ * <p>Tests decken ab: - Entity.changeStage() Business Rules - Stage Validation Rules - Transition
+ * History Tracking - Invalid Transition Handling - Edge Cases in Stage Changes - Business Rule
+ * Enforcement
  *
- * @author FreshPlan Team  
+ * @author FreshPlan Team
  * @since 2.0.0
  */
 @DisplayName("Opportunity Entity Stage Transition Tests")
@@ -278,31 +278,32 @@ public class OpportunityEntityStageTest {
     opportunity.setId(UUID.randomUUID());
     opportunity.setCustomer(testCustomer);
     opportunity.setExpectedValue(BigDecimal.valueOf(10000));
-    
+
     // Use reflection to set stage directly if not NEW_LEAD to avoid business logic
     if (stage != OpportunityStage.NEW_LEAD) {
       try {
         var stageField = Opportunity.class.getDeclaredField("stage");
         stageField.setAccessible(true);
         stageField.set(opportunity, stage);
-        
+
         var probabilityField = Opportunity.class.getDeclaredField("probability");
         probabilityField.setAccessible(true);
-        int defaultProbability = switch (stage) {
-          case NEW_LEAD -> 10;
-          case QUALIFICATION -> 25;
-          case NEEDS_ANALYSIS -> 40;
-          case PROPOSAL -> 60;
-          case NEGOTIATION -> 80;
-          case CLOSED_WON -> 100;
-          case CLOSED_LOST -> 0;
-        };
+        int defaultProbability =
+            switch (stage) {
+              case NEW_LEAD -> 10;
+              case QUALIFICATION -> 25;
+              case NEEDS_ANALYSIS -> 40;
+              case PROPOSAL -> 60;
+              case NEGOTIATION -> 80;
+              case CLOSED_WON -> 100;
+              case CLOSED_LOST -> 0;
+            };
         probabilityField.set(opportunity, defaultProbability);
       } catch (Exception e) {
         throw new RuntimeException("Failed to set stage via reflection", e);
       }
     }
-    
+
     return opportunity;
   }
 }

@@ -111,7 +111,7 @@ public class Opportunity {
     if (newStage == null) {
       return;
     }
-    
+
     // Business Rule: Geschlossene Opportunities können nicht mehr geändert werden
     if (this.stage == OpportunityStage.CLOSED_WON || this.stage == OpportunityStage.CLOSED_LOST) {
       return; // Silently ignore stage changes for closed opportunities
@@ -240,16 +240,16 @@ public class Opportunity {
   protected void onUpdate() {
     this.updatedAt = LocalDateTime.now();
   }
-  
+
   // Business Logic Methods
   public boolean isWonOpportunity() {
     return this.stage == OpportunityStage.CLOSED_WON;
   }
-  
+
   public boolean isLostOpportunity() {
     return this.stage == OpportunityStage.CLOSED_LOST;
   }
-  
+
   public boolean isClosedOpportunity() {
     return this.stage == OpportunityStage.CLOSED_WON || this.stage == OpportunityStage.CLOSED_LOST;
   }

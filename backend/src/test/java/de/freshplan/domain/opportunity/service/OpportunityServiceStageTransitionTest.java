@@ -2,11 +2,9 @@ package de.freshplan.domain.opportunity.service;
 
 import static org.assertj.core.api.Assertions.*;
 
-import java.time.Duration;
 import de.freshplan.domain.customer.entity.Customer;
 import de.freshplan.domain.customer.repository.CustomerRepository;
 import de.freshplan.domain.opportunity.entity.Opportunity;
-import de.freshplan.domain.opportunity.entity.OpportunityActivity;
 import de.freshplan.domain.opportunity.entity.OpportunityStage;
 import de.freshplan.domain.opportunity.repository.OpportunityRepository;
 import de.freshplan.domain.opportunity.service.dto.ChangeStageRequest;
@@ -20,8 +18,8 @@ import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import jakarta.transaction.UserTransaction;
+import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.UUID;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
@@ -56,9 +54,9 @@ public class OpportunityServiceStageTransitionTest {
   @Inject CustomerRepository customerRepository;
 
   @Inject UserRepository userRepository;
-  
+
   @Inject EntityManager entityManager;
-  
+
   @Inject UserTransaction userTransaction;
 
   private Customer testCustomer;
@@ -79,14 +77,14 @@ public class OpportunityServiceStageTransitionTest {
     // Get test user that was created by TestDataInitializer
     testUser = userRepository.find("username", "testuser").firstResult();
     if (testUser == null) {
-      throw new IllegalStateException("Test user 'testuser' not found. TestDataInitializer should have created it.");
+      throw new IllegalStateException(
+          "Test user 'testuser' not found. TestDataInitializer should have created it.");
     }
   }
 
   @Nested
   @DisplayName("Valid Stage Transition Tests")
   class ValidStageTransitionTests {
-    
 
     @ParameterizedTest
     @MethodSource("validForwardTransitions")
@@ -202,7 +200,8 @@ public class OpportunityServiceStageTransitionTest {
                 assertThat(updated.getProbability()).isEqualTo(60);
                 // Allow for small timing differences (nanoseconds) in CI environment
                 // Check that timestamps are the same within 10ms tolerance
-                var timeDifference = Duration.between(originalTimestamp, updated.getStageChangedAt()).abs();
+                var timeDifference =
+                    Duration.between(originalTimestamp, updated.getStageChangedAt()).abs();
                 assertThat(timeDifference).isLessThan(Duration.ofMillis(10)); // No change
               });
     }
@@ -211,7 +210,6 @@ public class OpportunityServiceStageTransitionTest {
   @Nested
   @DisplayName("Invalid Stage Transition Tests")
   class InvalidStageTransitionTests {
-    
 
     @ParameterizedTest
     @MethodSource("invalidTransitionsFromClosedStates")
@@ -275,10 +273,10 @@ public class OpportunityServiceStageTransitionTest {
   @Nested
   @DisplayName("Stage Transition Business Rules")
   class StageTransitionBusinessRules {
-    
 
     @Test
-    @org.junit.jupiter.api.Disabled("Temporary disable due to CDI @Transactional limitation in nested classes - will fix in separate issue")
+    @org.junit.jupiter.api.Disabled(
+        "Temporary disable due to CDI @Transactional limitation in nested classes - will fix in separate issue")
     @DisplayName("Should update probability according to stage default")
     void changeStage_shouldUpdateProbabilityToStageDefault() throws Exception {
       // Arrange - Manual transaction management
@@ -391,7 +389,6 @@ public class OpportunityServiceStageTransitionTest {
   @Nested
   @DisplayName("Complex Stage Transition Scenarios")
   class ComplexStageTransitionScenarios {
-    
 
     @Test
     @DisplayName("Should handle rapid sequential stage transitions")
@@ -520,7 +517,6 @@ public class OpportunityServiceStageTransitionTest {
   }
 
   // Helper methods
-  
 
   @Transactional
   Customer getOrCreateCustomer(String companyName, String email) {
@@ -532,14 +528,14 @@ public class OpportunityServiceStageTransitionTest {
     // Create minimal test customer with all required fields
     var customer = new Customer();
     customer.setCompanyName(companyName);
-    
+
     // Set required NOT NULL fields to avoid constraint violations
     customer.setCustomerNumber("TEST-" + System.currentTimeMillis()); // Unique customer number
     customer.setIsTestData(true); // Mark as test data
     customer.setIsDeleted(false); // Not deleted
     customer.setCreatedAt(java.time.LocalDateTime.now()); // Set created timestamp
     customer.setCreatedBy("test-system"); // Set created by
-    
+
     customerRepository.persist(customer);
     return customer;
   }

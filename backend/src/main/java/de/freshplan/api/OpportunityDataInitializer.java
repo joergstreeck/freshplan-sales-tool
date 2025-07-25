@@ -9,15 +9,14 @@ import de.freshplan.domain.user.entity.User;
 import de.freshplan.domain.user.repository.UserRepository;
 import io.quarkus.arc.profile.IfBuildProfile;
 import io.quarkus.runtime.StartupEvent;
+import jakarta.annotation.Priority;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
-import jakarta.annotation.Priority;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 import org.jboss.logging.Logger;
 
 /**
@@ -55,12 +54,12 @@ public class OpportunityDataInitializer {
     // Prüfe ob Customers und Users existieren
     long customerCount = customerRepository.count();
     long userCount = userRepository.count();
-    
+
     if (customerCount == 0) {
       LOG.warn("⚠️ No customers found! CustomerDataInitializer should run first.");
       return;
     }
-    
+
     if (userCount == 0) {
       LOG.warn("⚠️ No users found! Cannot create opportunities without users.");
       return;
@@ -69,8 +68,13 @@ public class OpportunityDataInitializer {
     // Lade verfügbare Customers und Users
     List<Customer> customers = customerRepository.listAll();
     List<User> users = userRepository.listAll();
-    
-    LOG.info("Creating opportunities with " + customers.size() + " customers and " + users.size() + " users");
+
+    LOG.info(
+        "Creating opportunities with "
+            + customers.size()
+            + " customers and "
+            + users.size()
+            + " users");
 
     // 1. REALISTISCHE PIPELINE-VERTEILUNG
     LOG.info("Creating realistic pipeline distribution...");
@@ -89,13 +93,15 @@ public class OpportunityDataInitializer {
     createTimeframeVariations(customers, users);
 
     long totalOpportunities = opportunityRepository.count();
-    LOG.info("🎯 Opportunity test data initialized successfully! Total opportunities: " + totalOpportunities);
+    LOG.info(
+        "🎯 Opportunity test data initialized successfully! Total opportunities: "
+            + totalOpportunities);
     LOG.info("💡 Pipeline contains opportunities in all stages for comprehensive testing");
   }
 
   /**
-   * Erstellt eine realistische Verteilung von Opportunities über alle Pipeline-Stages
-   * Folgt der typischen Sales-Funnel-Verteilung: Viele Leads, weniger in späteren Stages
+   * Erstellt eine realistische Verteilung von Opportunities über alle Pipeline-Stages Folgt der
+   * typischen Sales-Funnel-Verteilung: Viele Leads, weniger in späteren Stages
    */
   private void createRealisticPipeline(List<Customer> customers, List<User> users) {
     // NEW_LEAD: 40% der Pipeline (8 Opportunities)
@@ -107,8 +113,7 @@ public class OpportunityDataInitializer {
           getRandomUser(users, i),
           new BigDecimal(5000 + (i * 2000)), // 5k - 21k
           LocalDate.now().plusDays(30 + i * 5),
-          "Neuer Kontakt über " + getContactSource(i)
-      );
+          "Neuer Kontakt über " + getContactSource(i));
     }
 
     // QUALIFICATION: 25% der Pipeline (5 Opportunities)
@@ -120,8 +125,7 @@ public class OpportunityDataInitializer {
           getRandomUser(users, i),
           new BigDecimal(8000 + (i * 3000)), // 8k - 20k
           LocalDate.now().plusDays(20 + i * 3),
-          "Lead qualifiziert, Interesse an " + getProductType(i)
-      );
+          "Lead qualifiziert, Interesse an " + getProductType(i));
     }
 
     // NEEDS_ANALYSIS: 15% der Pipeline (3 Opportunities)
@@ -133,8 +137,7 @@ public class OpportunityDataInitializer {
           getRandomUser(users, i),
           new BigDecimal(12000 + (i * 5000)), // 12k - 22k
           LocalDate.now().plusDays(15 + i * 2),
-          "Detaillierte Anforderungen ermittelt für " + getServiceType(i)
-      );
+          "Detaillierte Anforderungen ermittelt für " + getServiceType(i));
     }
 
     // PROPOSAL: 10% der Pipeline (2 Opportunities)
@@ -146,8 +149,7 @@ public class OpportunityDataInitializer {
           getRandomUser(users, i),
           new BigDecimal(18000 + (i * 7000)), // 18k - 25k
           LocalDate.now().plusDays(10 + i),
-          "Angebot erstellt und versendet am " + LocalDate.now().minusDays(i * 2)
-      );
+          "Angebot erstellt und versendet am " + LocalDate.now().minusDays(i * 2));
     }
 
     // NEGOTIATION: 7% der Pipeline (1 Opportunity)
@@ -158,8 +160,7 @@ public class OpportunityDataInitializer {
         getRandomUser(users, 1),
         new BigDecimal("35000"),
         LocalDate.now().plusDays(7),
-        "Finale Verhandlungsrunde, Preisverhandlung läuft"
-    );
+        "Finale Verhandlungsrunde, Preisverhandlung läuft");
 
     // CLOSED_WON: 2% der Pipeline (1 Opportunity - Erfolgsbeispiel)
     createOpportunity(
@@ -169,8 +170,7 @@ public class OpportunityDataInitializer {
         getRandomUser(users, 2),
         new BigDecimal("28000"),
         LocalDate.now().minusDays(3),
-        "Vertragsabschluss erfolgreich, Onboarding startet nächste Woche"
-    );
+        "Vertragsabschluss erfolgreich, Onboarding startet nächste Woche");
 
     // CLOSED_LOST: 1% der Pipeline (1 Opportunity - Lernbeispiel)
     createOpportunity(
@@ -180,13 +180,10 @@ public class OpportunityDataInitializer {
         getRandomUser(users, 3),
         new BigDecimal("15000"),
         LocalDate.now().minusDays(10),
-        "Verlustgrund: Budget nicht ausreichend, Wiedervorlage Q2/2026"
-    );
+        "Verlustgrund: Budget nicht ausreichend, Wiedervorlage Q2/2026");
   }
 
-  /**
-   * Erstellt High-Value Opportunities für Executive Dashboard Testing
-   */
+  /** Erstellt High-Value Opportunities für Executive Dashboard Testing */
   private void createHighValueOpportunities(List<Customer> customers, List<User> users) {
     // Mega-Deal in Verhandlung
     createOpportunity(
@@ -196,8 +193,7 @@ public class OpportunityDataInitializer {
         getRandomUser(users, 0),
         new BigDecimal("150000"),
         LocalDate.now().plusDays(14),
-        "Strategisches Partnership für 50+ Hotels europaweit"
-    );
+        "Strategisches Partnership für 50+ Hotels europaweit");
 
     // Premium Catering Proposal
     createOpportunity(
@@ -207,8 +203,7 @@ public class OpportunityDataInitializer {
         getRandomUser(users, 1),
         new BigDecimal("85000"),
         LocalDate.now().plusDays(8),
-        "Exklusiver Catering-Partner für alle Firmenereignisse"
-    );
+        "Exklusiver Catering-Partner für alle Firmenereignisse");
 
     // Franchise-System Lead
     createOpportunity(
@@ -218,13 +213,10 @@ public class OpportunityDataInitializer {
         getRandomUser(users, 0),
         new BigDecimal("200000"),
         LocalDate.now().plusDays(45),
-        "Franchise-Kette möchte alle Standorte umstellen"
-    );
+        "Franchise-Kette möchte alle Standorte umstellen");
   }
 
-  /**
-   * Erstellt Edge Cases und spezielle Testszenarien
-   */
+  /** Erstellt Edge Cases und spezielle Testszenarien */
   private void createEdgeCaseOpportunities(List<Customer> customers, List<User> users) {
     // Null/Empty Values Test
     Opportunity minimalOpp = new Opportunity();
@@ -243,7 +235,7 @@ public class OpportunityDataInitializer {
         new BigDecimal("999999.99"), // Maximum Wert
         LocalDate.now().plusYears(1), // Fernes Datum
         "Test für maximale Feldlängen und Werte" + "X".repeat(1000) // Lange Beschreibung
-    );
+        );
 
     // Zero Values Test
     createOpportunity(
@@ -253,8 +245,7 @@ public class OpportunityDataInitializer {
         getRandomUser(users, 2),
         BigDecimal.ZERO,
         LocalDate.now().plusDays(1),
-        "Test mit Nullwerten"
-    );
+        "Test mit Nullwerten");
 
     // Past Date Test (überfällig)
     createOpportunity(
@@ -264,13 +255,10 @@ public class OpportunityDataInitializer {
         getRandomUser(users, 0),
         new BigDecimal("45000"),
         LocalDate.now().minusDays(15), // Überfällig
-        "Test für überfällige Opportunities"
-    );
+        "Test für überfällige Opportunities");
   }
 
-  /**
-   * Erstellt Opportunities mit verschiedenen Zeitrahmen
-   */
+  /** Erstellt Opportunities mit verschiedenen Zeitrahmen */
   private void createTimeframeVariations(List<Customer> customers, List<User> users) {
     // Sehr kurzfristig (diese Woche)
     createOpportunity(
@@ -280,8 +268,7 @@ public class OpportunityDataInitializer {
         getRandomUser(users, 1),
         new BigDecimal("12000"),
         LocalDate.now().plusDays(3),
-        "Kurzfristige Anfrage für Veranstaltung nächste Woche"
-    );
+        "Kurzfristige Anfrage für Veranstaltung nächste Woche");
 
     // Langfristig (nächstes Jahr)
     createOpportunity(
@@ -291,8 +278,7 @@ public class OpportunityDataInitializer {
         getRandomUser(users, 2),
         new BigDecimal("75000"),
         LocalDate.now().plusMonths(8),
-        "Langfristige Planung für Expansion 2026"
-    );
+        "Langfristige Planung für Expansion 2026");
 
     // Quartalsziel
     createOpportunity(
@@ -302,13 +288,10 @@ public class OpportunityDataInitializer {
         getRandomUser(users, 0),
         new BigDecimal("32000"),
         LocalDate.now().plusDays(25), // Ende Q1
-        "Wichtig für Q1 Zielerreichung"
-    );
+        "Wichtig für Q1 Zielerreichung");
   }
 
-  /**
-   * Hilfsmethode zum Erstellen einer Opportunity
-   */
+  /** Hilfsmethode zum Erstellen einer Opportunity */
   private void createOpportunity(
       String name,
       OpportunityStage stage,
@@ -317,7 +300,7 @@ public class OpportunityDataInitializer {
       BigDecimal expectedValue,
       LocalDate expectedCloseDate,
       String description) {
-    
+
     Opportunity opportunity = new Opportunity();
     opportunity.setName(name);
     opportunity.setStage(stage);
@@ -326,12 +309,13 @@ public class OpportunityDataInitializer {
     opportunity.setExpectedValue(expectedValue);
     opportunity.setExpectedCloseDate(expectedCloseDate);
     opportunity.setDescription(description);
-    
+
     // Stage-spezifische Wahrscheinlichkeiten
     opportunity.setProbability(stage.getDefaultProbability());
-    
+
     opportunityRepository.persist(opportunity);
-    LOG.debug("Created opportunity: " + name + " (Stage: " + stage + ", Value: " + expectedValue + "€)");
+    LOG.debug(
+        "Created opportunity: " + name + " (Stage: " + stage + ", Value: " + expectedValue + "€)");
   }
 
   // Hilfsmethoden für realistische Testdaten
@@ -347,33 +331,48 @@ public class OpportunityDataInitializer {
 
   private String getOpportunityName(int index, String type) {
     String[] businessTypes = {
-        "Wochenmenü-Service", "Event-Catering", "Betriebskantine", 
-        "Hotel-Vollpension", "Schulverpflegung", "Seniorenheim-Catering",
-        "Conference-Catering", "Hochzeits-Service", "Food-Truck-Belieferung"
+      "Wochenmenü-Service", "Event-Catering", "Betriebskantine",
+      "Hotel-Vollpension", "Schulverpflegung", "Seniorenheim-Catering",
+      "Conference-Catering", "Hochzeits-Service", "Food-Truck-Belieferung"
     };
     return businessTypes[index % businessTypes.length];
   }
 
   private String getContactSource(int index) {
     String[] sources = {
-        "Website-Anfrage", "Empfehlung", "Messe-Kontakt", 
-        "Kaltakquise", "LinkedIn", "Google Ads", "Bestehender Kunde"
+      "Website-Anfrage",
+      "Empfehlung",
+      "Messe-Kontakt",
+      "Kaltakquise",
+      "LinkedIn",
+      "Google Ads",
+      "Bestehender Kunde"
     };
     return sources[index % sources.length];
   }
 
   private String getProductType(int index) {
     String[] products = {
-        "Bio-Menüs", "Vegetarisch/Vegan", "Internationale Küche",
-        "Diätmenüs", "Fingerfood", "Buffet-Service", "À-la-carte"
+      "Bio-Menüs",
+      "Vegetarisch/Vegan",
+      "Internationale Küche",
+      "Diätmenüs",
+      "Fingerfood",
+      "Buffet-Service",
+      "À-la-carte"
     };
     return products[index % products.length];
   }
 
   private String getServiceType(int index) {
     String[] services = {
-        "Vollservice mit Personal", "Lieferservice", "Selbstabholung",
-        "Hybrid-Modell", "Nur Wochenenden", "Täglich", "Events only"
+      "Vollservice mit Personal",
+      "Lieferservice",
+      "Selbstabholung",
+      "Hybrid-Modell",
+      "Nur Wochenenden",
+      "Täglich",
+      "Events only"
     };
     return services[index % services.length];
   }
