@@ -7,28 +7,32 @@
 
 ## 🎯 JETZT GERADE:
 
-**FC-012 AUDIT TRAIL CI PIPELINE REPARATUR - 90% ABGESCHLOSSEN ⚡**
+**FC-012 AUDIT TRAIL CI PIPELINE REPARATUR - 95% ABGESCHLOSSEN ⚡**
 
-**Stand 25.07.2025 19:05:**
+**Stand 25.07.2025 19:39:**
 - ✅ **Enterprise-grade Audit System komplett:**
   - Audit Entity mit Hash-Chaining ✅
   - Async/Sync Audit Service ✅
   - REST API vollständig funktional ✅
   - Tamper-Detection mit SHA-256 ✅
-  - CDI Context Issues größtenteils behoben ✅
-  - Test-Isolation Strategy implementiert ✅
-- ✅ **Massive Test-Verbesserung:**
-  - 75% weniger Probleme (15→5 Issues)
-  - Hash-Chaining Tests komplett repariert ✅
-  - 10 von 13 Tests erfolgreich ✅
-- 🔄 **Fast fertig:** Nur noch 5 finale Test-Issues
+  - Schema V107 Migration: IP-Address Kompatibilität ✅
+- ✅ **Cockpit-Problem behoben:**
+  - CustomerDataInitializer lief nicht (dev Profile fehlte) ✅
+  - Backend mit dev Profile gestartet ✅
+  - 44 Kunden + 31 Opportunities geladen ✅
+- 🚨 **Letzter CI-Fehler:** Nur noch 1 von 875 Tests
 
 **🚀 NÄCHSTER SCHRITT:**
 
-**TODO-85: CI Pipeline final reparieren (30-60 Min):**
-1. 3 Empty-Result Tests: Cleanup-Strategy verfeinern
-2. 2 CDI Context Errors: Async Service Context-Preservation verstärken
-3. Ziel: Von 5 auf 0 Probleme → CI Pipeline 100% grün
+**TODO-85: CustomerResourceIntegrationTest.checkDuplicates fixen (15-30 Min):**
+1. Test deterministisch machen (bessere Cleanup-Strategie)
+2. CI-spezifische Environment-Unterschiede beheben
+3. Ziel: Von 1 auf 0 Probleme → CI Pipeline 100% grün ✅
+
+**UNTERBROCHEN BEI:**
+- CustomerResourceIntegrationTest.java:383-403
+- Test analysiert, Problem identifiziert (nicht-deterministisch)
+- Nächster Schritt: Unique Test-Namen + eigene Cleanup
 
 **ALTERNATIVE NÄCHSTE SCHRITTE:**
 - Branch-Protection für main aktivieren (TODO-94)
