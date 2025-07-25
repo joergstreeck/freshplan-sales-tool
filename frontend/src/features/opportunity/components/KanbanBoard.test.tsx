@@ -8,7 +8,6 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { KanbanBoard } from './KanbanBoard';
-import { OpportunityStage } from '../types/stages';
 
 // Mock the logger
 vi.mock('../../../lib/logger', () => ({
@@ -28,12 +27,50 @@ vi.mock('../../../components/ErrorBoundary', () => ({
   useErrorHandler: vi.fn().mockReturnValue(vi.fn())
 }));
 
+// Type definitions for mocks
+interface DragDropContextProps {
+  children: React.ReactNode;
+  onDragStart?: () => void;
+  onDragEnd?: () => void;
+}
+
+interface DroppableRenderProps {
+  innerRef: () => void;
+  droppableProps: Record<string, unknown>;
+  placeholder: null;
+}
+
+interface DroppableSnapshot {
+  isDraggingOver: boolean;
+}
+
+interface DroppableProps {
+  children: (provided: DroppableRenderProps, snapshot: DroppableSnapshot) => React.ReactNode;
+  droppableId: string;
+}
+
+interface DraggableRenderProps {
+  innerRef: () => void;
+  draggableProps: { style: Record<string, unknown> };
+  dragHandleProps: Record<string, unknown>;
+}
+
+interface DraggableSnapshot {
+  isDragging: boolean;
+}
+
+interface DraggableProps {
+  children: (provided: DraggableRenderProps, snapshot: DraggableSnapshot) => React.ReactNode;
+  draggableId: string;
+  index: number;
+}
+
 // Mock @hello-pangea/dnd
 vi.mock('@hello-pangea/dnd', () => ({
-  DragDropContext: ({ children, onDragStart, onDragEnd }: any) => {
+  DragDropContext: ({ children }: DragDropContextProps) => {
     return <div data-testid="drag-drop-context">{children}</div>;
   },
-  Droppable: ({ children, droppableId }: any) => {
+  Droppable: ({ children, droppableId }: DroppableProps) => {
     return (
       <div data-testid={`droppable-${droppableId}`}>
         {children({
@@ -44,7 +81,7 @@ vi.mock('@hello-pangea/dnd', () => ({
       </div>
     );
   },
-  Draggable: ({ children, draggableId, index }: any) => {
+  Draggable: ({ children, draggableId }: DraggableProps) => {
     return (
       <div data-testid={`draggable-${draggableId}`}>
         {children({

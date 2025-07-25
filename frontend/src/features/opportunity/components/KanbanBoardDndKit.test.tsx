@@ -152,19 +152,25 @@ describe('KanbanBoardDndKit', () => {
       });
     });
 
-    it('handles resize events', () => {
+    it('handles resize events', async () => {
       renderWithTheme(<KanbanBoardDndKit />);
       
-      // Get the mocked logger instance
-      const loggerChild = vi.mocked(logger.child).mock.results[0]?.value;
+      // Wait for component to mount
+      await waitFor(() => {
+        const loggerChild = vi.mocked(logger.child).mock.results[0]?.value;
+        expect(loggerChild?.debug).toHaveBeenCalledWith('Component mounted');
+      });
       
       // Trigger resize
       fireEvent(window, new Event('resize'));
       
-      // Logger should log resize event
-      expect(loggerChild?.debug).toHaveBeenCalledWith(
-        'Window resized, reinitializing scroll indicator'
-      );
+      // Wait for resize handler
+      await waitFor(() => {
+        const loggerChild = vi.mocked(logger.child).mock.results[0]?.value;
+        expect(loggerChild?.debug).toHaveBeenCalledWith(
+          'Window resized, reinitializing scroll indicator'
+        );
+      });
     });
   });
 
@@ -203,17 +209,16 @@ describe('KanbanBoardDndKit', () => {
       expect(screen.getByText('3 Aktive')).toBeInTheDocument();
     });
 
-    it('logs performance metrics', () => {
+    it('logs performance metrics', async () => {
       renderWithTheme(<KanbanBoardDndKit />);
       
-      // Get the mocked logger instance
-      const loggerChild = vi.mocked(logger.child).mock.results[0]?.value;
-      
-      // Should create timer for performance tracking
-      expect(loggerChild?.time).toBeDefined();
-      
-      // Component should have called debug on mount
-      expect(loggerChild?.debug).toHaveBeenCalledWith('Component mounted');
+      // Wait for component to mount and logger to be initialized
+      await waitFor(() => {
+        const loggerChild = vi.mocked(logger.child).mock.results[0]?.value;
+        expect(loggerChild).toBeDefined();
+        expect(loggerChild?.time).toBeDefined();
+        expect(loggerChild?.debug).toHaveBeenCalledWith('Component mounted');
+      });
     });
   });
 });

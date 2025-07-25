@@ -167,7 +167,7 @@ export const OpportunityCard: React.FC<OpportunityCardProps> = React.memo(({
   showActions = false
 }) => {
   const theme = useTheme();
-  const [isHovered, setIsHovered] = useState(false);
+  const [, setIsHovered] = useState(false);
 
   const getProbabilityColor = useCallback((probability?: number) => {
     if (!probability) return theme.palette.grey[400];

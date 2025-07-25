@@ -180,7 +180,7 @@ export const OpportunityCard: React.FC<OpportunityCardProps> = React.memo(({
         // Drag & Drop hat Priorität über onClick
         pointerEvents: 'auto',
       }}
-      onClick={useCallback((e: React.MouseEvent) => {
+      onClick={useCallback(() => {
         // Nur onClick wenn nicht gedraggt wird
         if (!isDragging && onClick) {
           try {
