@@ -38,8 +38,8 @@ describe('SidebarNavigation', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    (useNavigationStore as any).mockReturnValue(mockNavigationStore);
-    (useAuthStore as any).mockReturnValue(mockAuthStore);
+    (useNavigationStore as unknown as ReturnType<typeof vi.fn>).mockReturnValue(mockNavigationStore);
+    (useAuthStore as unknown as ReturnType<typeof vi.fn>).mockReturnValue(mockAuthStore);
   });
 
   it('renders navigation items', () => {
@@ -151,11 +151,11 @@ describe('SidebarNavigation', () => {
 
   it('filters navigation items based on permissions', () => {
     // Reset store with different permissions and ensure sidebar is not collapsed
-    (useNavigationStore as any).mockReturnValue({
+    (useNavigationStore as unknown as ReturnType<typeof vi.fn>).mockReturnValue({
       ...mockNavigationStore,
       isCollapsed: false,
     });
-    (useAuthStore as any).mockReturnValue({
+    (useAuthStore as unknown as ReturnType<typeof vi.fn>).mockReturnValue({
       userPermissions: ['cockpit.view'], // Only cockpit permission
     });
     

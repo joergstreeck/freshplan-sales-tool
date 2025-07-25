@@ -8,13 +8,10 @@ import {
   Badge,
   Card,
   CardContent,
-  Stack,
-  Chip,
   Avatar,
   LinearProgress,
   ToggleButton,
   ToggleButtonGroup,
-  Grid,
   Alert,
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
@@ -25,15 +22,8 @@ import FilterListIcon from '@mui/icons-material/FilterList';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
 
-// Stage-Definitionen
-export enum OpportunityStage {
-  LEAD = "lead",
-  QUALIFIED = "qualified", 
-  PROPOSAL = "proposal",
-  NEGOTIATION = "negotiation",
-  CLOSED_WON = "closed_won",
-  CLOSED_LOST = "closed_lost"
-}
+import { OpportunityStage } from '../types/stages';
+
 
 // Aktive Pipeline Stages (immer sichtbar)
 const ACTIVE_STAGES = [

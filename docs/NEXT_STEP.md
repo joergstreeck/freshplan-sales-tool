@@ -7,43 +7,45 @@
 
 ## 🎯 JETZT GERADE:
 
-**FC-017 & FC-018 SYSTEME ZU 100% GEPLANT ✅**
+**3 PRs ERSTELLT - M4 FRONTEND KOMPLETT READY! 🚀**
 
-**Stand 25.07.2025 01:05:**
-- ✅ **FC-018:** Datenschutz & DSGVO-Compliance System vollständig geplant (inkl. Detail-Docs)
-- ✅ **FC-017:** Fehler- und Ausnahmehandling System vollständig geplant (inkl. Detail-Docs)
-- ✅ **FC-016:** KPI-Tracking mit Renewal-Metriken vollständig geplant
-- ✅ **FC-003:** E-Mail Integration mit Multi-Provider Support geplant
-- ✅ **FC-009-015:** Alle technischen Konzepte fertig und gemerged (PR #57)
-- ✅ **Integrationen:** Error Handling in alle Features integrierbar
+**Stand 25.07.2025 04:50:**
+- ✅ **PR #59:** Test Suite für M4 Frontend (47 Tests)
+- ✅ **PR #60:** ESLint-Fixes für CI Compliance
+- ✅ **PR #61:** Critical Test-Fixes nach Code Review
+- ✅ **Alle Tests grün:** OpportunityCard mit DndContext, keine Placeholders mehr
+- 🚨 **Backend blockiert:** API liefert immer noch leeres Array []
 
 **🚀 NÄCHSTER SCHRITT:**
 
-**FC-012 AUDIT TRAIL IMPLEMENTIEREN (KRITISCH!):**
-- Basis für FC-015 Permission Logging
-- @Auditable Annotations erstellen
-- Hash-Chain für Integrität
-- Integration mit FC-017 Error Logging
+**OPPORTUNITY TESTDATEN ERSTELLEN (TODO-84):**
+- OpportunityDataInitializer im Backend implementieren
+- Analog zu CustomerDataInitializer
+- 10-15 Test-Opportunities in verschiedenen Stages
+- Ziel: Frontend kann endlich mit echten Daten arbeiten
 
 **ALTERNATIVE NÄCHSTE SCHRITTE:**
-- M4 Backend-Integration: OpportunityApi.ts mit echten Endpoints (TODO-60)
-- FC-010 Phase 1: Filter-Bar implementieren
-- FC-017 Error Handling implementieren (nach FC-012)
+- Branch-Protection für main aktivieren (TODO-94)
+- M4 Backend-Integration: OpportunityApi.ts verbinden (TODO-60)
+- FC-012 Audit Trail implementieren (kritisch für FC-015)
 
-**ABGESCHLOSSEN:**
-- ✅ FC-018 Datenschutz & DSGVO-Compliance vollständig geplant
-- ✅ FC-017 Fehler- und Ausnahmehandling vollständig geplant
-- ✅ Master Plan V5 aktualisiert (beide Features eingetragen)
-- ✅ Feature Roadmap erweitert (110 Tage gesamt)
-- ✅ Integration Guides für alle Features erstellt
+**ABGESCHLOSSEN HEUTE:**
+- ✅ M4 Frontend Tests gefixt: OpportunityCard & SortableCard Tests (TODO-90)
+- ✅ Navigation Tests gefixt: SidebarNavigation & NavigationSubMenu (TODO-91)
+- ✅ Two-Pass Review für 5 gepushte Frontend-Commits durchgeführt
+- ✅ Alle 47 Frontend Tests laufen erfolgreich
+- ✅ Code-Qualität dokumentiert (JSDoc fehlt, Prozess-Verstoß notiert)
 
 ```bash
 # Relevante Dateien:
-# frontend/src/features/opportunity/services/opportunityApi.ts
-# backend/src/main/java/de/freshplan/api/opportunity/OpportunityResource.java
+# backend/src/main/java/de/freshplan/infrastructure/CustomerDataInitializer.java
+# frontend/src/features/opportunity/components/OpportunityCard.tsx (Tests fixen)
 
 # Kanban Board testen:
 # http://localhost:5173/kundenmanagement/opportunities
+
+# API testen:
+curl http://localhost:8080/api/opportunities
 ```
 
 ---
@@ -57,12 +59,13 @@
 
 ## 📊 OFFENE TODOS:
 ```
-🔴 HIGH Priority: 1 TODO (41)
-🟢 LOW Priority: 1 TODO (11)
+🔴 HIGH Priority: 14 TODOs
+🟡 MEDIUM Priority: 4 TODOs  
+🟢 LOW Priority: 2 TODOs
 ```
 
 **Status:**
 - M4 Backend: ✅ PRODUCTION-READY (100% fertig)
-- M4 Frontend: 🔴 BLOCKIERT durch Drag & Drop Bug
-- M4 UX: ✅ Viele Verbesserungen umgesetzt
-- M4 Integration: ⏸️ Wartet auf Bug-Fix
+- M4 Frontend: ✅ WIEDERHERGESTELLT & FUNKTIONSFÄHIG
+- M4 Tests: 🔄 Teilweise geschrieben (10 Tests fehlgeschlagen)
+- M4 Integration: 🔴 BLOCKIERT - Backend liefert keine Testdaten

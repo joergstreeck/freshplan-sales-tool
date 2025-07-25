@@ -1,8 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { DndContext } from '@dnd-kit/core';
+import { render, screen } from '@testing-library/react';
 import { KanbanBoardDndKit } from './KanbanBoardDndKit';
-import { mockOpportunities } from '../services/mockData';
 import '@testing-library/jest-dom';
 
 // HINWEIS: KanbanBoardDndKit verwendet aktuell hardcoded initialOpportunities

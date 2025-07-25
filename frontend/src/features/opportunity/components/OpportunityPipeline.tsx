@@ -11,7 +11,7 @@ import { DndContext, DragOverlay, closestCorners } from '@dnd-kit/core';
 import type { DragEndEvent, DragStartEvent } from '@dnd-kit/core';
 
 // Import unserer neuen Komponenten
-import { PipelineStage, OpportunityStage, STAGE_CONFIGS } from './PipelineStage';
+import { PipelineStage, OpportunityStage } from './PipelineStage';
 import { OpportunityCard } from './OpportunityCard';
 import type { Opportunity } from './OpportunityCard';
 
@@ -55,21 +55,21 @@ const mockOpportunities: Opportunity[] = [
   }
 ];
 
-// Mock Pipeline Stats
-const mockPipelineData = {
-  totalOpportunities: mockOpportunities.length,
-  totalValue: mockOpportunities.reduce((sum, opp) => sum + (opp.value || 0), 0),
-  conversionRate: 0.35,
-  stageDistribution: Object.values(OpportunityStage).reduce((acc, stage) => {
-    const stageOpps = mockOpportunities.filter(opp => opp.stage === stage);
-    acc[stage] = {
-      count: stageOpps.length,
-      value: stageOpps.reduce((sum, opp) => sum + (opp.value || 0), 0),
-      opportunities: stageOpps,
-    };
-    return acc;
-  }, {} as Record<OpportunityStage, { count: number, value: number, opportunities: Opportunity[] }>)
-};
+// Mock Pipeline Stats - unused, will be removed when API is ready
+// const mockPipelineData = {
+//   totalOpportunities: mockOpportunities.length,
+//   totalValue: mockOpportunities.reduce((sum, opp) => sum + (opp.value || 0), 0),
+//   conversionRate: 0.35,
+//   stageDistribution: Object.values(OpportunityStage).reduce((acc, stage) => {
+//     const stageOpps = mockOpportunities.filter(opp => opp.stage === stage);
+//     acc[stage] = {
+//       count: stageOpps.length,
+//       value: stageOpps.reduce((sum, opp) => sum + (opp.value || 0), 0),
+//       opportunities: stageOpps,
+//     };
+//     return acc;
+//   }, {} as Record<OpportunityStage, { count: number, value: number, opportunities: Opportunity[] }>)
+// };
 
 /**
  * M4 Opportunity Pipeline - Kanban Board für Verkaufschancen
