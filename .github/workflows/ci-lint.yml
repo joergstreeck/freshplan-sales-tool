@@ -27,8 +27,53 @@ jobs:
       - name: Install dependencies
         run: npm ci
       
-      - name: Run ESLint
-        run: npm run lint
+      - name: Debug ESLint Setup
+        run: |
+          echo "=== ESLint Debug Info ==="
+          echo "Node version: $(node --version)"
+          echo "NPM version: $(npm --version)" 
+          echo "ESLint version: $(npx eslint --version)"
+          echo "Working directory: $(pwd)"
+          echo "Package.json lint script:"
+          grep -A1 -B1 '"lint"' package.json
+          echo "ESLint config preview:"
+          head -20 eslint.config.js
+          
+      - name: Run ESLint with Debug
+        run: |
+          echo "=== Running ESLint ==="
+          npm run lint 2>&1 | tee eslint-output.log
+          echo "=== ESLint Exit Code: $? ==="
+          
+      - name: Debug ESLint Results
+        if: always()
+        run: |
+          echo "=== ESLint Output Analysis ==="
+          if [ -f eslint-output.log ]; then
+            echo "ESLint output file size: $(wc -l < eslint-output.log) lines"
+            echo "Last 20 lines of output:"
+            tail -20 eslint-output.log
+            echo "Warning count:"
+            grep -c "warning" eslint-output.log || echo "0 warnings found in log"
+            echo "Error count:"
+            grep -c "error" eslint-output.log || echo "0 errors found in log"
+          else
+            echo "No eslint-output.log file found"
+          fi
+          
+      - name: Create Debug Report
+        if: always()
+        run: |
+          node debug-lint.cjs || echo "Debug script failed"
+          
+      - name: Upload Debug Artifacts  
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: eslint-debug-frontend
+          path: |
+            frontend/eslint-output.log
+            frontend/eslint-debug-report.json
       
       - name: Check TypeScript
         run: npm run type-check
@@ -74,13 +119,57 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('backend/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
       
-      - name: Run tests
+      - name: Debug Backend Environment
         run: |
+          echo "=== Backend Debug Info ==="
+          echo "Java version: $(java -version 2>&1)"
+          echo "Maven version: $(mvn -version 2>&1 | head -1)"
+          echo "Working directory: $(pwd)"
+          echo "PostgreSQL status:"
+          pg_isready -h localhost -p 5432 -U freshplan || echo "PostgreSQL not ready"
+          echo "Environment variables:"
+          env | grep -E "(JAVA|DATABASE|CI)" | sort
+          
+      - name: Run tests with Debug Output
+        run: |
+          echo "=== Running Maven Tests ==="
           mvn -B clean verify -Pgreen -Dquarkus.profile=test \
             -Dquarkus.datasource.devservices.enabled=false \
             -Dquarkus.datasource.jdbc.url=jdbc:postgresql://localhost:5432/freshplan \
             -Dquarkus.datasource.username=freshplan \
-            -Dquarkus.datasource.password=freshplan
+            -Dquarkus.datasource.password=freshplan \
+            2>&1 | tee maven-test-output.log
+          echo "=== Maven Exit Code: $? ==="
+          
+      - name: Debug Test Results
+        if: always()
+        run: |
+          echo "=== Test Results Analysis ==="
+          if [ -f maven-test-output.log ]; then
+            echo "Maven output file size: $(wc -l < maven-test-output.log) lines"
+            echo "Test summary:"
+            grep -E "(Tests run:|BUILD SUCCESS|BUILD FAILURE)" maven-test-output.log | tail -10
+            echo "Errors/Failures:"
+            grep -E "(ERROR|FAILURE|Failed)" maven-test-output.log | head -10 || echo "No errors found"
+          fi
+          
+          if [ -d target/surefire-reports ]; then
+            echo "Surefire reports found:"
+            ls -la target/surefire-reports/ | head -10
+            echo "Failed tests:"
+            grep -l "failure\|error" target/surefire-reports/*.xml 2>/dev/null | head -5 || echo "No failed tests"
+          else
+            echo "No surefire reports directory found"
+          fi
+          
+      - name: Upload Backend Debug Artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-debug-lint
+          path: |
+            backend/maven-test-output.log
+            backend/target/surefire-reports/
         env:
           CI_GREEN: true
           KEYCLOAK_CLIENT_SECRET: ${{ secrets.KEYCLOAK_CLIENT_SECRET || 'secret' }}
