@@ -330,26 +330,30 @@ class UserResourceIT {
 
   @Transactional
   User createAndPersistUser() {
-    User user = new User("test.user", "Test", "User", "test.user@freshplan.de");
+    String uniqueId = System.currentTimeMillis() + "_" + Thread.currentThread().getId();
+    User user = new User("test.user." + uniqueId, "Test", "User", "test.user." + uniqueId + "@freshplan.de");
     userRepository.persist(user);
     return user;
   }
 
   private CreateUserRequest createValidCreateRequest() {
+    // Use timestamp and thread ID to ensure unique usernames across parallel test runs
+    String uniqueId = System.currentTimeMillis() + "_" + Thread.currentThread().getId();
     return CreateUserRequest.builder()
-        .username("new.user")
+        .username("new.user." + uniqueId)
         .firstName("New")
         .lastName("User")
-        .email("new.user@freshplan.de")
+        .email("new.user." + uniqueId + "@freshplan.de")
         .build();
   }
 
   private UpdateUserRequest createValidUpdateRequest() {
+    String uniqueId = System.currentTimeMillis() + "_" + Thread.currentThread().getId();
     return UpdateUserRequest.builder()
-        .username("updated.user")
+        .username("updated.user." + uniqueId)
         .firstName("Updated")
         .lastName("User")
-        .email("updated@freshplan.de")
+        .email("updated." + uniqueId + "@freshplan.de")
         .enabled(true)
         .build();
   }
