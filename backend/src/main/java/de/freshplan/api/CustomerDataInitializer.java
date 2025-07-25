@@ -9,6 +9,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import jakarta.annotation.Priority;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import org.jboss.logging.Logger;
@@ -33,7 +34,7 @@ public class CustomerDataInitializer {
   @Inject CustomerTimelineRepository timelineRepository;
 
   @Transactional
-  void onStart(@Observes StartupEvent ev) {
+  void onStart(@Observes @Priority(500) StartupEvent ev) {
     LOG.info("🧪 Initializing comprehensive test data for edge case testing...");
 
     // For comprehensive testing: Always recreate test data
