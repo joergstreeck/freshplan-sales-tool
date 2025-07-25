@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Typography } from '@mui/material';
+import { Box } from '@mui/material';
 import { MainLayoutV2 } from '../components/layout/MainLayoutV2';
 import { KanbanBoardDndKit } from '../features/opportunity/components/KanbanBoardDndKit';
 
