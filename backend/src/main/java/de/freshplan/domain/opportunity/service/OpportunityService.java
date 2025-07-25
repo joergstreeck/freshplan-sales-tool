@@ -1,5 +1,9 @@
 package de.freshplan.domain.opportunity.service;
 
+import de.freshplan.domain.audit.annotation.Auditable;
+import de.freshplan.domain.audit.entity.AuditEventType;
+import de.freshplan.domain.audit.service.AuditService;
+import de.freshplan.domain.audit.service.dto.AuditContext;
 import de.freshplan.domain.opportunity.entity.Opportunity;
 import de.freshplan.domain.opportunity.entity.OpportunityActivity;
 import de.freshplan.domain.opportunity.entity.OpportunityStage;
@@ -21,6 +25,7 @@ import jakarta.transaction.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
@@ -49,11 +54,14 @@ public class OpportunityService {
 
   @Inject SecurityIdentity securityIdentity;
 
+  @Inject AuditService auditService;
+
   // =====================================
   // CRUD OPERATIONS
   // =====================================
 
   /** Erstellt eine neue Opportunity */
+  @Auditable(eventType = AuditEventType.OPPORTUNITY_CREATED, entityType = "opportunity")
   public OpportunityResponse createOpportunity(CreateOpportunityRequest request) {
     logger.info("Creating new opportunity: {}", request.getName());
 
@@ -198,6 +206,17 @@ public class OpportunityService {
     // Stage ändern
     OpportunityStage previousStage = opportunity.getStage();
     opportunity.changeStage(newStage);
+
+    // Audit log the stage change
+    auditService.logAsync(
+        AuditContext.builder()
+            .eventType(AuditEventType.OPPORTUNITY_STAGE_CHANGED)
+            .entityType("opportunity")
+            .entityId(opportunityId)
+            .oldValue(Map.of("stage", previousStage.name()))
+            .newValue(Map.of("stage", newStage.name()))
+            .changeReason(reason)
+            .build());
 
     // Stage Change Activity erstellen
     User currentUser = getCurrentUser();

@@ -21,10 +21,14 @@ public class IllegalArgumentExceptionMapper implements ExceptionMapper<IllegalAr
     // Create structured error response
     Map<String, Object> errorResponse =
         Map.of(
-            "error", "INVALID_REQUEST",
-            "message", exception.getMessage(),
-            "timestamp", LocalDateTime.now().toString(),
-            "status", 400);
+            "error",
+            "INVALID_REQUEST",
+            "message",
+            exception.getMessage(),
+            "timestamp",
+            LocalDateTime.now().toString(),
+            "status",
+            400);
 
     return Response.status(Response.Status.BAD_REQUEST).entity(errorResponse).build();
   }

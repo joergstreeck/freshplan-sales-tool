@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import org.hibernate.annotations.CreationTimestamp;
+
 /**
  * Opportunity Activity - Aktivitäten zu einer Verkaufschance
  *

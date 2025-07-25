@@ -47,7 +47,7 @@ public class OpportunityResourceIntegrationTest {
   @Inject CustomerRepository customerRepository;
 
   @Inject UserRepository userRepository;
-  
+
   @Inject EntityManager entityManager;
 
   private Customer testCustomer;
@@ -78,7 +78,9 @@ public class OpportunityResourceIntegrationTest {
   class ListOpportunitiesTests {
 
     @Test
-    @TestSecurity(user = "testuser", roles = {"admin", "manager", "sales"})
+    @TestSecurity(
+        user = "testuser",
+        roles = {"admin", "manager", "sales"})
     @DisplayName("Should return empty list when no opportunities exist")
     void getOpportunities_noData_shouldReturnEmptyList() {
       given()
@@ -91,7 +93,9 @@ public class OpportunityResourceIntegrationTest {
     }
 
     @Test
-    @TestSecurity(user = "testuser", roles = {"admin", "manager", "sales"})
+    @TestSecurity(
+        user = "testuser",
+        roles = {"admin", "manager", "sales"})
     @DisplayName("Should return all opportunities with correct structure")
     void getOpportunities_withData_shouldReturnCorrectStructure() {
       // Arrange
@@ -114,7 +118,9 @@ public class OpportunityResourceIntegrationTest {
     }
 
     @Test
-    @TestSecurity(user = "testuser", roles = {"admin", "manager", "sales"})
+    @TestSecurity(
+        user = "testuser",
+        roles = {"admin", "manager", "sales"})
     @DisplayName("Should return all opportunities without stage filter")
     void getOpportunities_withStageParam_shouldReturnAll() {
       // Arrange
@@ -134,7 +140,9 @@ public class OpportunityResourceIntegrationTest {
     }
 
     @Test
-    @TestSecurity(user = "testuser", roles = {"admin", "manager", "sales"})
+    @TestSecurity(
+        user = "testuser",
+        roles = {"admin", "manager", "sales"})
     @DisplayName("Should ignore invalid stage parameter")
     void getOpportunities_invalidStage_shouldIgnoreAndReturnAll() {
       // Act & Assert - Invalid stage is ignored
@@ -153,7 +161,9 @@ public class OpportunityResourceIntegrationTest {
   class GetSingleOpportunityTests {
 
     @Test
-    @TestSecurity(user = "testuser", roles = {"admin", "manager", "sales"})
+    @TestSecurity(
+        user = "testuser",
+        roles = {"admin", "manager", "sales"})
     @DisplayName("Should return opportunity by valid ID")
     void getOpportunity_validId_shouldReturnOpportunity() {
       // Arrange
@@ -174,7 +184,9 @@ public class OpportunityResourceIntegrationTest {
     }
 
     @Test
-    @TestSecurity(user = "testuser", roles = {"admin", "manager", "sales"})
+    @TestSecurity(
+        user = "testuser",
+        roles = {"admin", "manager", "sales"})
     @DisplayName("Should return 404 for non-existent ID")
     void getOpportunity_nonExistentId_shouldReturn404() {
       // Arrange
@@ -191,7 +203,9 @@ public class OpportunityResourceIntegrationTest {
     }
 
     @Test
-    @TestSecurity(user = "testuser", roles = {"admin", "manager", "sales"})
+    @TestSecurity(
+        user = "testuser",
+        roles = {"admin", "manager", "sales"})
     @DisplayName("Should return 404 for invalid ID format")
     void getOpportunity_invalidIdFormat_shouldReturn404() {
       // JAX-RS returns 404 when it cannot convert path parameters
@@ -209,7 +223,9 @@ public class OpportunityResourceIntegrationTest {
   class CreateOpportunityTests {
 
     @Test
-    @TestSecurity(user = "testuser", roles = {"admin", "manager", "sales"})
+    @TestSecurity(
+        user = "testuser",
+        roles = {"admin", "manager", "sales"})
     @DisplayName("Should create opportunity with valid request")
     void createOpportunity_validRequest_shouldReturn201() {
       // Arrange
@@ -242,7 +258,9 @@ public class OpportunityResourceIntegrationTest {
     }
 
     @Test
-    @TestSecurity(user = "testuser", roles = {"admin", "manager", "sales"})
+    @TestSecurity(
+        user = "testuser",
+        roles = {"admin", "manager", "sales"})
     @DisplayName("Should create opportunity with minimal required fields")
     void createOpportunity_minimalRequest_shouldReturn201() {
       // Arrange
@@ -269,7 +287,9 @@ public class OpportunityResourceIntegrationTest {
     }
 
     @Test
-    @TestSecurity(user = "testuser", roles = {"admin", "manager", "sales"})
+    @TestSecurity(
+        user = "testuser",
+        roles = {"admin", "manager", "sales"})
     @DisplayName("Should return 400 for missing required fields")
     void createOpportunity_missingRequiredFields_shouldReturn400() {
       // Test missing name
@@ -300,7 +320,9 @@ public class OpportunityResourceIntegrationTest {
     }
 
     @ParameterizedTest
-    @TestSecurity(user = "testuser", roles = {"admin", "manager", "sales"})
+    @TestSecurity(
+        user = "testuser",
+        roles = {"admin", "manager", "sales"})
     @ValueSource(strings = {"", " ", "   "})
     @DisplayName("Should return 400 for blank name")
     void createOpportunity_blankName_shouldReturn400(String blankName) {
@@ -323,7 +345,9 @@ public class OpportunityResourceIntegrationTest {
     }
 
     @Test
-    @TestSecurity(user = "testuser", roles = {"admin", "manager", "sales"})
+    @TestSecurity(
+        user = "testuser",
+        roles = {"admin", "manager", "sales"})
     @DisplayName("Should return 400 for negative expected value")
     void createOpportunity_negativeValue_shouldReturn400() {
       // Arrange
@@ -346,7 +370,9 @@ public class OpportunityResourceIntegrationTest {
     }
 
     @Test
-    @TestSecurity(user = "testuser", roles = {"admin", "manager", "sales"})
+    @TestSecurity(
+        user = "testuser",
+        roles = {"admin", "manager", "sales"})
     @DisplayName("Should return 400 for past expected close date")
     void createOpportunity_pastCloseDate_shouldReturn400() {
       // Arrange
@@ -374,7 +400,9 @@ public class OpportunityResourceIntegrationTest {
   class UpdateOpportunityTests {
 
     @Test
-    @TestSecurity(user = "testuser", roles = {"admin", "manager", "sales"})
+    @TestSecurity(
+        user = "testuser",
+        roles = {"admin", "manager", "sales"})
     @DisplayName("Should update opportunity with valid request")
     void updateOpportunity_validRequest_shouldReturn200() {
       // Arrange
@@ -404,7 +432,9 @@ public class OpportunityResourceIntegrationTest {
     }
 
     @Test
-    @TestSecurity(user = "testuser", roles = {"admin", "manager", "sales"})
+    @TestSecurity(
+        user = "testuser",
+        roles = {"admin", "manager", "sales"})
     @DisplayName("Should handle partial updates")
     void updateOpportunity_partialUpdate_shouldReturn200() {
       // Arrange
@@ -425,7 +455,9 @@ public class OpportunityResourceIntegrationTest {
     }
 
     @Test
-    @TestSecurity(user = "testuser", roles = {"admin", "manager", "sales"})
+    @TestSecurity(
+        user = "testuser",
+        roles = {"admin", "manager", "sales"})
     @DisplayName("Should return 404 for non-existent ID")
     void updateOpportunity_nonExistentId_shouldReturn404() {
       // Arrange
@@ -450,7 +482,9 @@ public class OpportunityResourceIntegrationTest {
   class DeleteOpportunityTests {
 
     @Test
-    @TestSecurity(user = "testuser", roles = {"admin", "manager", "sales"})
+    @TestSecurity(
+        user = "testuser",
+        roles = {"admin", "manager", "sales"})
     @DisplayName("Should return NOT_IMPLEMENTED for delete")
     void deleteOpportunity_existingId_shouldReturn501() {
       // Arrange
@@ -467,7 +501,9 @@ public class OpportunityResourceIntegrationTest {
     }
 
     @Test
-    @TestSecurity(user = "testuser", roles = {"admin", "manager", "sales"})
+    @TestSecurity(
+        user = "testuser",
+        roles = {"admin", "manager", "sales"})
     @DisplayName("Should return NOT_IMPLEMENTED for non-existent ID delete")
     void deleteOpportunity_nonExistentId_shouldReturn501() {
       // Arrange
@@ -489,7 +525,9 @@ public class OpportunityResourceIntegrationTest {
   class ChangeStageTests {
 
     @Test
-    @TestSecurity(user = "testuser", roles = {"admin", "manager", "sales"})
+    @TestSecurity(
+        user = "testuser",
+        roles = {"admin", "manager", "sales"})
     @DisplayName("Should change stage with valid request")
     void changeStage_validStage_shouldReturn200() {
       // Arrange
@@ -510,7 +548,9 @@ public class OpportunityResourceIntegrationTest {
     }
 
     @Test
-    @TestSecurity(user = "testuser", roles = {"admin", "manager", "sales"})
+    @TestSecurity(
+        user = "testuser",
+        roles = {"admin", "manager", "sales"})
     @DisplayName("Should return 404 for invalid stage")
     void changeStage_invalidStage_shouldReturn404() {
       // Arrange
@@ -527,7 +567,9 @@ public class OpportunityResourceIntegrationTest {
     }
 
     @Test
-    @TestSecurity(user = "testuser", roles = {"admin", "manager", "sales"})
+    @TestSecurity(
+        user = "testuser",
+        roles = {"admin", "manager", "sales"})
     @DisplayName("Should return 404 for non-existent opportunity")
     void changeStage_nonExistentId_shouldReturn404() {
       // Arrange
@@ -550,7 +592,9 @@ public class OpportunityResourceIntegrationTest {
   class PipelineOverviewTests {
 
     @Test
-    @TestSecurity(user = "testuser", roles = {"admin", "manager", "sales"})
+    @TestSecurity(
+        user = "testuser",
+        roles = {"admin", "manager", "sales"})
     @DisplayName("Should return pipeline overview")
     void getPipelineOverview_shouldReturnData() {
       // Arrange
@@ -576,7 +620,9 @@ public class OpportunityResourceIntegrationTest {
   class ContentTypeAndErrorTests {
 
     @Test
-    @TestSecurity(user = "testuser", roles = {"admin", "manager", "sales"})
+    @TestSecurity(
+        user = "testuser",
+        roles = {"admin", "manager", "sales"})
     @DisplayName("Should return 415 for unsupported content type")
     void createOpportunity_unsupportedContentType_shouldReturn415() {
       given()
@@ -589,7 +635,9 @@ public class OpportunityResourceIntegrationTest {
     }
 
     @Test
-    @TestSecurity(user = "testuser", roles = {"admin", "manager", "sales"})
+    @TestSecurity(
+        user = "testuser",
+        roles = {"admin", "manager", "sales"})
     @DisplayName("Should return 400 for malformed JSON")
     void createOpportunity_malformedJson_shouldReturn400() {
       given()
@@ -602,7 +650,9 @@ public class OpportunityResourceIntegrationTest {
     }
 
     @Test
-    @TestSecurity(user = "testuser", roles = {"admin", "manager", "sales"})
+    @TestSecurity(
+        user = "testuser",
+        roles = {"admin", "manager", "sales"})
     @DisplayName("Should include error details in response")
     void createOpportunity_validationError_shouldIncludeErrorDetails() {
       // Arrange

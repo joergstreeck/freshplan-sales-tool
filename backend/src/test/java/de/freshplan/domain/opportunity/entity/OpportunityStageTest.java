@@ -138,7 +138,7 @@ public class OpportunityStageTest {
       testOpportunity.setAssignedTo(testUser);
       testOpportunity.setExpectedValue(BigDecimal.valueOf(10000));
       testOpportunity.setStage(OpportunityStage.NEW_LEAD);
-      
+
       testOpportunity.changeStage(OpportunityStage.CLOSED_LOST);
       originalStageChangedAt = testOpportunity.getStageChangedAt();
 
@@ -306,12 +306,12 @@ public class OpportunityStageTest {
       testOpportunity.setAssignedTo(testUser);
       testOpportunity.setExpectedValue(BigDecimal.valueOf(10000));
       testOpportunity.setStage(OpportunityStage.NEW_LEAD);
-      
+
       testOpportunity.changeStage(OpportunityStage.CLOSED_LOST);
       assertThat(testOpportunity.isWonOpportunity()).isFalse();
       assertThat(testOpportunity.isLostOpportunity()).isTrue();
       assertThat(testOpportunity.isClosedOpportunity()).isTrue();
-      
+
       // Reset again for NEW_LEAD test
       testOpportunity = new Opportunity();
       testOpportunity.setName("Test Opportunity");
@@ -319,7 +319,7 @@ public class OpportunityStageTest {
       testOpportunity.setAssignedTo(testUser);
       testOpportunity.setExpectedValue(BigDecimal.valueOf(10000));
       testOpportunity.setStage(OpportunityStage.NEW_LEAD);
-      
+
       assertThat(testOpportunity.isWonOpportunity()).isFalse();
       assertThat(testOpportunity.isLostOpportunity()).isFalse();
       assertThat(testOpportunity.isClosedOpportunity()).isFalse();
