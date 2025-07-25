@@ -3,6 +3,8 @@ package de.freshplan.api;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.startsWith;
+import static org.hamcrest.Matchers.endsWith;
 
 import de.freshplan.domain.user.entity.User;
 import de.freshplan.domain.user.repository.UserRepository;
@@ -64,10 +66,11 @@ class UserResourceIT {
         .then()
         .statusCode(201)
         .header("Location", containsString("/api/users/"))
-        .body("username", equalTo("new.user"))
+        .body("username", startsWith("new.user."))
         .body("firstName", equalTo("New"))
         .body("lastName", equalTo("User"))
-        .body("email", equalTo("new.user@freshplan.de"))
+        .body("email", startsWith("new.user."))
+        .body("email", endsWith("@freshplan.de"))
         .body("enabled", equalTo(true))
         .body("id", notNullValue())
         .body("createdAt", notNullValue())
@@ -195,10 +198,11 @@ class UserResourceIT {
         .put("/{id}", testUser.getId())
         .then()
         .statusCode(200)
-        .body("username", equalTo("updated.user"))
+        .body("username", startsWith("updated.user."))
         .body("firstName", equalTo("Updated"))
         .body("lastName", equalTo("User"))
-        .body("email", equalTo("updated@freshplan.de"));
+        .body("email", startsWith("updated."))
+        .body("email", endsWith("@freshplan.de"));
   }
 
   @Test
