@@ -163,8 +163,6 @@ describe('OpportunityCard', () => {
     });
 
     it('does not call onClick when dragging', () => {
-      const handleClick = vi.fn();
-      
       // This test would require mocking the dragging state properly
       // For now, we'll skip this test and mark it as TODO
       expect(true).toBe(true);
