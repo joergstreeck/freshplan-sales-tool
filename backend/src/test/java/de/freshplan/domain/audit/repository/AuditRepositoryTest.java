@@ -35,16 +35,10 @@ class AuditRepositoryTest {
     testUserId = UUID.randomUUID();
   }
   
-  @TestTransaction
-  void cleanupBeforeTest() {
-    // Clean up any existing test data completely for THIS test
-    auditRepository.deleteAll();
-    auditRepository.flush();
-  }
-
   @Test
   @TestTransaction
   void testFindByEntity() {
+    auditRepository.deleteAll(); // Clean within same transaction
     // Given
     createAuditEntry("opportunity", testEntityId, AuditEventType.OPPORTUNITY_CREATED);
     createAuditEntry("opportunity", testEntityId, AuditEventType.OPPORTUNITY_UPDATED);
@@ -82,18 +76,18 @@ class AuditRepositoryTest {
   @Test
   @TestTransaction
   void testFindSecurityEvents() {
-    cleanupBeforeTest();
+    auditRepository.deleteAll(); // Clean within same transaction
     
     // Given
-    Instant now = Instant.now();
-    Instant anHourAgo = now.minus(1, ChronoUnit.HOURS);
+    Instant anHourAgo = Instant.now().minus(1, ChronoUnit.HOURS);
 
     createAuditEntry("security", UUID.randomUUID(), AuditEventType.LOGIN_SUCCESS);
     createAuditEntry("security", UUID.randomUUID(), AuditEventType.PERMISSION_DENIED);
     createAuditEntry("security", UUID.randomUUID(), AuditEventType.ROLE_ASSIGNED);
     createAuditEntry("opportunity", UUID.randomUUID(), AuditEventType.OPPORTUNITY_CREATED);
 
-    // When
+    // When - search with wider time range
+    Instant now = Instant.now().plus(1, ChronoUnit.MINUTES);
     List<AuditEntry> entries = auditRepository.findSecurityEvents(anHourAgo, now);
 
     // Then
@@ -109,18 +103,18 @@ class AuditRepositoryTest {
   @Test
   @TestTransaction
   void testFindFailures() {
-    cleanupBeforeTest();
+    auditRepository.deleteAll(); // Clean within same transaction
     
     // Given
-    Instant now = Instant.now();
-    Instant anHourAgo = now.minus(1, ChronoUnit.HOURS);
+    Instant anHourAgo = Instant.now().minus(1, ChronoUnit.HOURS);
 
     createAuditEntry("api", UUID.randomUUID(), AuditEventType.API_ERROR);
     createAuditEntry("security", UUID.randomUUID(), AuditEventType.LOGIN_FAILURE);
     createAuditEntry("security", UUID.randomUUID(), AuditEventType.PERMISSION_DENIED);
     createAuditEntry("opportunity", UUID.randomUUID(), AuditEventType.OPPORTUNITY_CREATED);
 
-    // When
+    // When - search with wider time range
+    Instant now = Instant.now().plus(1, ChronoUnit.MINUTES); // Future range to include created entries
     List<AuditEntry> entries = auditRepository.findFailures(anHourAgo, now);
 
     // Then
@@ -162,11 +156,10 @@ class AuditRepositoryTest {
   @Test
   @TestTransaction
   void testGetStatistics() {
-    cleanupBeforeTest();
+    auditRepository.deleteAll(); // Clean within same transaction
     
     // Given
-    Instant now = Instant.now();
-    Instant yesterday = now.minus(1, ChronoUnit.DAYS);
+    Instant yesterday = Instant.now().minus(1, ChronoUnit.DAYS);
 
     createAuditEntry("opportunity", UUID.randomUUID(), AuditEventType.OPPORTUNITY_CREATED);
     createAuditEntry("opportunity", UUID.randomUUID(), AuditEventType.OPPORTUNITY_UPDATED);
@@ -174,7 +167,8 @@ class AuditRepositoryTest {
     createAuditEntryWithUser(testUserId, AuditEventType.LOGIN_SUCCESS);
     createAuditEntryWithUser(UUID.randomUUID(), AuditEventType.LOGIN_SUCCESS);
 
-    // When
+    // When - search with wider time range
+    Instant now = Instant.now().plus(1, ChronoUnit.MINUTES);
     var stats = auditRepository.getStatistics(yesterday, now);
 
     // Then
@@ -186,7 +180,7 @@ class AuditRepositoryTest {
   @Test
   @TestTransaction
   void testHashChaining() {
-    cleanupBeforeTest();
+    auditRepository.deleteAll(); // Clean within same transaction
     
     // Given - Create first entry with proper hash chain
     createAuditEntryWithPreviousHash("test", UUID.randomUUID(), AuditEventType.SYSTEM_STARTUP, null);
