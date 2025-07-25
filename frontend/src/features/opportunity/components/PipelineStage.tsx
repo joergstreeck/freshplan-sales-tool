@@ -9,15 +9,7 @@ import {
 import { useTheme } from '@mui/material/styles';
 import { useDroppable } from '@dnd-kit/core';
 
-// Stage-Definitionen aus dem Technical Concept
-export enum OpportunityStage {
-  LEAD = "lead",
-  NEEDS_ANALYSIS = "needs_analysis", 
-  PROPOSAL = "proposal",
-  NEGOTIATION = "negotiation",
-  CLOSED_WON = "closed_won",
-  CLOSED_LOST = "closed_lost"
-}
+import { OpportunityStage } from '../types/stages';
 
 interface StageConfig {
   stage: OpportunityStage;
@@ -164,6 +156,3 @@ export const PipelineStage: React.FC<PipelineStageProps> = ({
     </Paper>
   );
 };
-
-// Export Stage Configs für externe Verwendung
-export { STAGE_CONFIGS };
