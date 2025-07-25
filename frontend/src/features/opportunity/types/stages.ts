@@ -6,7 +6,8 @@ export enum OpportunityStage {
   PROPOSAL = "PROPOSAL",
   NEGOTIATION = "NEGOTIATION",
   CLOSED_WON = "CLOSED_WON",
-  CLOSED_LOST = "CLOSED_LOST"
+  CLOSED_LOST = "CLOSED_LOST",
+  RENEWAL = "RENEWAL"
 }
 
 // Stage-Konfiguration
@@ -59,5 +60,11 @@ export const STAGE_CONFIGS: StageConfig[] = [
     label: 'Verloren', 
     color: '#D32F2F', 
     bgColor: '#FFCDD2' 
+  },
+  { 
+    stage: OpportunityStage.RENEWAL, 
+    label: 'Verlängerung', 
+    color: '#FF9800', 
+    bgColor: '#FFF3E0' 
   },
 ];

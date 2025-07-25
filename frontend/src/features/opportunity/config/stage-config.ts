@@ -81,7 +81,7 @@ export const STAGE_CONFIGURATIONS: ReadonlyArray<IStageConfig> = [
     color: '#2E7D32',
     bgColor: '#C8E6C9',
     description: 'Erfolgreich abgeschlossen',
-    allowedNextStages: [],
+    allowedNextStages: [OpportunityStage.RENEWAL],
     defaultProbability: 100,
     icon: 'emoji_events',
     sortOrder: 6,
@@ -96,8 +96,20 @@ export const STAGE_CONFIGURATIONS: ReadonlyArray<IStageConfig> = [
     allowedNextStages: [],
     defaultProbability: 0,
     icon: 'cancel',
-    sortOrder: 7,
+    sortOrder: 8,
     isActive: false
+  },
+  {
+    stage: OpportunityStage.RENEWAL,
+    label: 'Verlängerung',
+    color: '#FF9800',
+    bgColor: '#FFF3E0',
+    description: 'Vertragsverlängerung in Verhandlung',
+    allowedNextStages: [OpportunityStage.CLOSED_WON, OpportunityStage.CLOSED_LOST],
+    defaultProbability: 75,
+    icon: 'autorenew',
+    sortOrder: 7,
+    isActive: true
   }
 ];
 
