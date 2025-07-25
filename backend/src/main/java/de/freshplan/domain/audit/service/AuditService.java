@@ -115,6 +115,7 @@ public class AuditService {
 
   /** Log an audit event synchronously (use sparingly) */
   @Transactional(Transactional.TxType.REQUIRES_NEW)
+  @jakarta.enterprise.context.control.ActivateRequestContext
   public UUID logSync(AuditContext context) {
     try {
       // Build audit entry
