@@ -39,8 +39,12 @@ export const SortableOpportunityCard: React.FC<SortableOpportunityCardProps> = (
       ? 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)' 
       : transition,
     marginBottom: '12px',
-    opacity: isDragging ? 0.5 : isAnimating ? 0 : 1,
+    opacity: isDragging ? 0.6 : isAnimating ? 0 : 1,
     scale: isAnimating ? 1.1 : 1,
+    zIndex: isDragging ? 999 : 'auto',
+    // CARD LAYOUT FIX
+    width: '100%',
+    boxSizing: 'border-box',
   };
 
   return (

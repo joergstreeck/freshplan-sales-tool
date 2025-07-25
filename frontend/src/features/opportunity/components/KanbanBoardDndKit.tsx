@@ -565,11 +565,13 @@ export const KanbanBoardDndKit: React.FC = () => {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [animatingIds, setAnimatingIds] = useState<Set<string>>(new Set());
 
-  // Configure sensors
+  // Configure sensors with cursor offset fix
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        distance: 8,
+        distance: 3,
+        delay: 0,
+        tolerance: 5,
       },
     }),
     useSensor(KeyboardSensor, {
@@ -873,7 +875,18 @@ export const KanbanBoardDndKit: React.FC = () => {
           ))}
         </Box>
 
-        <DragOverlay>
+        <DragOverlay
+          style={{
+            cursor: 'grabbing',
+          }}
+          modifiers={[
+            // Custom modifier für Cursor-Zentrierung
+            ({ transform }) => ({
+              ...transform,
+              x: transform.x - 280, // Volle Kartenbreite
+            })
+          ]}
+        >
           {activeOpportunity ? (
             <OpportunityCard opportunity={activeOpportunity} isDragging />
           ) : null}

@@ -13,21 +13,7 @@ import { KanbanBoardDndKit } from '../features/opportunity/components/KanbanBoar
 export const OpportunityPipelinePage: React.FC = () => {
   return (
     <MainLayoutV2>
-      <Box sx={{ p: 3, height: '100vh', overflow: 'hidden' }}>
-        <Typography 
-          variant="h4" 
-          component="h1" 
-          gutterBottom
-          sx={{ 
-            fontFamily: 'Antonio, sans-serif',
-            fontWeight: 'bold',
-            color: '#004F7B',
-            mb: 3
-          }}
-        >
-          Verkaufschancen Pipeline
-        </Typography>
-        
+      <Box sx={{ height: '100vh', overflow: 'hidden' }}>
         <KanbanBoardDndKit />
       </Box>
     </MainLayoutV2>

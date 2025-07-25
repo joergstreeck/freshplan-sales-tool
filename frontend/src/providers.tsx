@@ -21,6 +21,7 @@ import { CockpitPage } from './pages/CockpitPage';
 import { CockpitPageV2 } from './pages/CockpitPageV2';
 import { SettingsPage } from './pages/SettingsPage';
 import { CalculatorPageV2 } from './pages/CalculatorPageV2';
+import { OpportunityPipelinePage } from './pages/OpportunityPipelinePage';
 
 interface AppProvidersProps {
   children?: ReactNode;
@@ -55,6 +56,7 @@ export const AppProviders = ({ children: mainChildren }: AppProvidersProps) => {
                 <Route path="/users" element={<UsersPage />} />
                 <Route path="/einstellungen" element={<SettingsPage />} />
                 <Route path="/customers" element={<CustomersPage />} />
+                <Route path="/kundenmanagement/opportunities" element={<OpportunityPipelinePage />} />
                 <Route path="/calculator-v2" element={<CalculatorPageV2 />} />
                 <Route path="/legacy-tool" element={<LegacyToolPage />} />
                 {/* Login Bypass temporär reaktiviert - Auto-Login Problem */}
