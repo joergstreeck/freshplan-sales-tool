@@ -7,24 +7,22 @@
 
 ## 🎯 JETZT GERADE:
 
-**M4 FRONTEND ENTERPRISE UPGRADE - VOLLSTÄNDIG ABGESCHLOSSEN ✅**
+**M4 BACKEND-INTEGRATION IN ARBEIT 🔄**
 
-**Stand 25.07.2025 14:00:**
-- ✅ **PR #63:** Erfolgreich gemerged
-- ✅ **KanbanBoard.tsx:** Vollständig auf Enterprise-Standard refactored + 14 Tests
-- ✅ **KanbanBoardDndKit.tsx:** Vollständig refactored inkl. Scroll-Handler + 13 Tests
-- ✅ **OpportunityCard.tsx:** Enterprise-Standard refactoring + 19 Tests
-- ✅ **PipelineStage.tsx:** Enterprise-Standard refactoring + 16 Tests
-- ✅ **Two-Pass Review:** Durchgeführt, 3 von 6 Tests repariert
-- ✅ **Tests:** 325 von 328 Frontend Tests bestehen (99.1% Success Rate)
+**Stand 25.07.2025 15:50:**
+- ✅ **Branch-Protection:** main Branch technisch geschützt + TRIGGER_TEXTS erweitert
+- ✅ **PR #65:** Backup Smoke Tests entfernt + Code Review Fixes gemerged
+- 🔄 **TODO-60:** M4 Backend-Integration 50% fertig - useOpportunities Hook erstellt
+- 🔄 **KanbanBoard.tsx:** API-Integration begonnen, Drag & Drop noch ausstehend
+- ✅ **API liefert Daten:** 20 aktive Opportunities aus Backend verfügbar
 
 **🚀 NÄCHSTER SCHRITT:**
 
-**OpportunityDataInitializer implementieren (TODO-84):**
-1. Backend: OpportunityDataInitializer.java erstellen
-2. 10-15 Test-Opportunities mit verschiedenen Stages
-3. Frontend kann endlich mit echten Daten arbeiten
-4. API liefert nicht mehr leeres Array
+**🔄 TODO-60 abschließen: M4 Backend-Integration finalisieren:**
+1. KanbanBoard.tsx Loading/Error States vollständig implementieren
+2. Drag & Drop changeStagemutation testen und debuggen
+3. Type-Mapping Backend ↔ Frontend verifizieren
+4. Integration-Tests für API-Calls erstellen
 
 **ALTERNATIVE NÄCHSTE SCHRITTE:**
 - Branch-Protection für main aktivieren (TODO-94)

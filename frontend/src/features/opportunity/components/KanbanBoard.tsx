@@ -13,6 +13,8 @@ import {
   ToggleButton,
   ToggleButtonGroup,
   Alert,
+  Skeleton,
+  CircularProgress,
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import PersonIcon from '@mui/icons-material/Person';
@@ -25,6 +27,7 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import { OpportunityStage, STAGE_CONFIGS, type Opportunity } from '../types';
 import { logger } from '../../../lib/logger';
 import { useErrorHandler } from '../../../components/ErrorBoundary';
+import { useOpportunities, useChangeOpportunityStage } from '../hooks/useOpportunities';
 
 // Aktive Pipeline Stages (immer sichtbar)
 const ACTIVE_STAGES = [
@@ -48,69 +51,7 @@ STAGE_CONFIGS.forEach(config => {
   STAGE_CONFIGS_RECORD[config.stage] = config;
 });
 
-// Mock-Daten
-const initialOpportunities: Opportunity[] = [
-  {
-    id: '1',
-    name: 'Großauftrag Restaurant Schmidt',
-    stage: OpportunityStage.LEAD,
-    value: 15000,
-    probability: 20,
-    customerName: 'Restaurant Schmidt GmbH',
-    assignedToName: 'Max Mustermann',
-    expectedCloseDate: '2025-08-15',
-    createdAt: '2025-07-01T10:00:00Z',
-    updatedAt: '2025-07-20T15:30:00Z',
-  },
-  {
-    id: '2', 
-    name: 'Hotel Adler - Wocheneinkauf',
-    stage: OpportunityStage.QUALIFIED,
-    value: 8500,
-    probability: 60,
-    customerName: 'Hotel Adler',
-    assignedToName: 'Anna Weber',
-    expectedCloseDate: '2025-07-30',
-    createdAt: '2025-07-05T09:15:00Z',
-    updatedAt: '2025-07-22T11:45:00Z',
-  },
-  {
-    id: '3',
-    name: 'Catering Müller - Event-Paket',
-    stage: OpportunityStage.PROPOSAL,
-    value: 5200,
-    probability: 80,
-    customerName: 'Catering Müller',
-    assignedToName: 'Tom Fischer',
-    expectedCloseDate: '2025-08-01',
-    createdAt: '2025-07-10T14:20:00Z',
-    updatedAt: '2025-07-23T09:10:00Z',
-  },
-  {
-    id: '4',
-    name: 'Bistro Sonne - Großbestellung',
-    stage: OpportunityStage.CLOSED_WON,
-    value: 12000,
-    probability: 100,
-    customerName: 'Bistro Sonne',
-    assignedToName: 'Max Mustermann',
-    expectedCloseDate: '2025-07-15',
-    createdAt: '2025-06-20T10:00:00Z',
-    updatedAt: '2025-07-15T16:00:00Z',
-  },
-  {
-    id: '5',
-    name: 'Kantine Nord - Testbestellung',
-    stage: OpportunityStage.CLOSED_LOST,
-    value: 3000,
-    probability: 0,
-    customerName: 'Kantine Nord GmbH',
-    assignedToName: 'Anna Weber',
-    expectedCloseDate: '2025-07-10',
-    createdAt: '2025-06-25T11:00:00Z',
-    updatedAt: '2025-07-10T14:30:00Z',
-  }
-];
+// Mock data removed - now using real API data via useOpportunities hook
 
 /**
  * Opportunity Card Component
@@ -372,6 +313,7 @@ const KanbanColumn: React.FC<KanbanColumnProps> = React.memo(({ stage, opportuni
           <Box
             ref={provided.innerRef}
             {...provided.droppableProps}
+            data-testid={`droppable-${stage.toLowerCase()}`}
             sx={{
               minHeight: 300,
               bgcolor: snapshot.isDraggingOver ? 'rgba(148, 196, 86, 0.08)' : 'transparent',
@@ -408,7 +350,11 @@ const componentLogger = logger.child('KanbanBoard');
 export const KanbanBoard: React.FC = React.memo(() => {
   const theme = useTheme();
   const errorHandler = useErrorHandler('KanbanBoard');
-  const [opportunities, setOpportunities] = useState<Opportunity[]>(initialOpportunities);
+  
+  // API Integration
+  const { data: opportunities = [], isLoading, error, refetch } = useOpportunities();
+  const changeStagemutation = useChangeOpportunityStage();
+  
   const [showClosed, setShowClosed] = useState<boolean>(false);
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const [dragKey, setDragKey] = useState<number>(0); // Force re-render nach Drag
@@ -503,33 +449,104 @@ export const KanbanBoard: React.FC = React.memo(() => {
         return;
       }
       
-      // Opportunity Stage aktualisieren
-      setOpportunities(prevOpportunities => 
-        prevOpportunities.map(opp => 
-          opp.id === draggableId 
-            ? { ...opp, stage: destStage, updatedAt: new Date().toISOString() }
-            : opp
-        )
-      );
-
-      componentLogger.info('Opportunity stage updated', {
-        opportunityId: draggableId,
-        fromStage: sourceStage,
-        toStage: destStage
+      // API Call für Stage-Änderung
+      changeStagemutation.mutate({
+        id: draggableId,
+        request: {
+          newStage: destStage,
+          reason: `Stage changed via drag & drop from ${sourceStage} to ${destStage}`,
+          stageChangedAt: new Date().toISOString()
+        }
+      }, {
+        onSuccess: (updatedOpportunity) => {
+          componentLogger.info('Opportunity stage updated successfully', {
+            opportunityId: draggableId,
+            fromStage: sourceStage,
+            toStage: destStage,
+            opportunityName: updatedOpportunity.name
+          });
+          
+          // Force re-render des DragDropContext
+          setDragKey(prev => prev + 1);
+        },
+        onError: (error) => {
+          componentLogger.error('Failed to update opportunity stage', {
+            opportunityId: draggableId,
+            fromStage: sourceStage,
+            toStage: destStage,
+            error
+          });
+          
+          // Zeige User-friendly Error Message
+          errorHandler(new Error(`Konnte Opportunity-Stage nicht ändern: ${error.message || 'Unbekannter Fehler'}`));
+          
+          // Revert optimistic update durch refetch
+          refetch();
+        }
       });
-      
-      // Force re-render des DragDropContext
-      setDragKey(prev => prev + 1);
     } catch (error) {
       componentLogger.error('Error in handleDragEnd', { error });
       errorHandler(error as Error);
     } finally {
       timer();
     }
-  }, [errorHandler]);
+  }, [changeStagemutation, refetch, errorHandler]);
+
+  // Loading State
+  if (isLoading) {
+    return (
+      <Box sx={{ p: 3 }}>
+        <Paper sx={{ p: 2, mb: 2 }}>
+          <Skeleton variant="text" width="40%" height={40} />
+          <Box sx={{ display: 'flex', gap: 2, mt: 1 }}>
+            <Skeleton variant="text" width="15%" />
+            <Skeleton variant="text" width="20%" />
+          </Box>
+        </Paper>
+        <Box sx={{ display: 'flex', gap: 2 }}>
+          {[1, 2, 3, 4].map((index) => (
+            <Paper key={index} sx={{ flex: 1, p: 2 }}>
+              <Skeleton variant="text" width="60%" height={30} />
+              <Skeleton variant="rectangular" width="100%" height={120} sx={{ mt: 1 }} />
+              <Skeleton variant="rectangular" width="100%" height={80} sx={{ mt: 1 }} />
+            </Paper>
+          ))}
+        </Box>
+      </Box>
+    );
+  }
+
+  // Error State
+  if (error) {
+    return (
+      <Box sx={{ p: 3 }}>
+        <Alert 
+          severity="error" 
+          action={
+            <button onClick={() => refetch()}>
+              Wiederholen
+            </button>
+          }
+        >
+          <Typography variant="h6">Fehler beim Laden der Opportunities</Typography>
+          <Typography variant="body2">
+            {error instanceof Error ? error.message : 'Unbekannter Fehler beim Laden der Pipeline-Daten'}
+          </Typography>
+        </Alert>
+      </Box>
+    );
+  }
 
   return (
     <Box sx={{ p: 3 }}>
+      {/* Status Indikator für laufende Stage-Änderungen */}
+      {changeStagemutation.isPending && (
+        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, p: 1, bgcolor: 'info.light', borderRadius: 1 }}>
+          <CircularProgress size={16} sx={{ mr: 1 }} />
+          <Typography variant="body2">Stage-Änderung wird gespeichert...</Typography>
+        </Box>
+      )}
+
       {/* Kompakter Header */}
       <Paper sx={{ 
         p: 2, 

@@ -1,0 +1,98 @@
+2025-07-25 01:05:00 INFO  [de.fr.do.ca.se.CalculatorService] (executor-thread-8) Discount calculation completed - Order: 15000.0€, Total discount: 7.0%, Final price: 13950.0€
+2025-07-25 01:05:00 INFO  [de.fr.do.ca.se.CalculatorService] (executor-thread-7) Discount calculation completed - Order: 15000.0€, Total discount: 7.0%, Final price: 13950.0€
+2025-07-25 01:05:00 INFO  [de.fr.do.ca.se.CalculatorService] (executor-thread-8) Discount calculation completed - Order: 15000.0€, Total discount: 7.0%, Final price: 13950.0€
+2025-07-25 01:05:00 INFO  [de.fr.do.ca.se.CalculatorService] (executor-thread-7) Discount calculation completed - Order: 15000.0€, Total discount: 7.0%, Final price: 13950.0€
+2025-07-25 01:08:39 INFO  [de.fr.ap.re.CustomerSearchResource] (executor-thread-7) Customer search request received: page=0, size=20
+2025-07-25 01:08:39 INFO  [de.fr.ap.re.CustomerSearchResource] (executor-thread-7) Search completed: found 44 customers
+2025-07-25 01:12:52 INFO  [de.fr.ap.re.CustomerSearchResource] (executor-thread-7) Customer search request received: page=0, size=20
+2025-07-25 01:12:52 INFO  [de.fr.ap.re.CustomerSearchResource] (executor-thread-7) Search completed: found 44 customers
+2025-07-25 01:27:51 INFO  [de.fr.do.ca.se.CalculatorService] (executor-thread-7) Discount calculation completed - Order: 15000.0€, Total discount: 7.0%, Final price: 13950.0€
+2025-07-25 01:27:51 INFO  [de.fr.do.ca.se.CalculatorService] (executor-thread-9) Discount calculation completed - Order: 15000.0€, Total discount: 7.0%, Final price: 13950.0€
+2025-07-25 01:27:52 INFO  [de.fr.do.ca.se.CalculatorService] (executor-thread-9) Discount calculation completed - Order: 15000.0€, Total discount: 7.0%, Final price: 13950.0€
+2025-07-25 01:27:52 INFO  [de.fr.do.ca.se.CalculatorService] (executor-thread-7) Discount calculation completed - Order: 15000.0€, Total discount: 7.0%, Final price: 13950.0€
+2025-07-25 01:28:09 INFO  [de.fr.do.ca.se.CalculatorService] (executor-thread-7) Discount calculation completed - Order: 15000.0€, Total discount: 7.0%, Final price: 13950.0€
+2025-07-25 01:28:09 INFO  [de.fr.do.ca.se.CalculatorService] (executor-thread-7) Discount calculation completed - Order: 15000.0€, Total discount: 7.0%, Final price: 13950.0€
+2025-07-25 01:28:13 INFO  [de.fr.do.ca.se.CalculatorService] (executor-thread-7) Discount calculation completed - Order: 15000.0€, Total discount: 7.0%, Final price: 13950.0€
+2025-07-25 01:28:13 INFO  [de.fr.do.ca.se.CalculatorService] (executor-thread-7) Discount calculation completed - Order: 15000.0€, Total discount: 7.0%, Final price: 13950.0€
+2025-07-25 01:42:36 INFO  [de.fr.do.ca.se.CalculatorService] (executor-thread-7) Discount calculation completed - Order: 15000.0€, Total discount: 7.0%, Final price: 13950.0€
+2025-07-25 01:42:36 INFO  [de.fr.do.ca.se.CalculatorService] (executor-thread-10) Discount calculation completed - Order: 15000.0€, Total discount: 7.0%, Final price: 13950.0€
+2025-07-25 01:42:37 INFO  [de.fr.do.ca.se.CalculatorService] (executor-thread-10) Discount calculation completed - Order: 15000.0€, Total discount: 7.0%, Final price: 13950.0€
+2025-07-25 01:42:37 INFO  [de.fr.do.ca.se.CalculatorService] (executor-thread-7) Discount calculation completed - Order: 15000.0€, Total discount: 7.0%, Final price: 13950.0€
+2025-07-25 01:42:45 ERROR [de.fr.ap.ex.GlobalExceptionMapper] (executor-thread-10) Exception caught [traceId=734acdfd-ec4e-4af5-b326-10cdbea3b1df]: java.io.IOException: java.nio.channels.ClosedChannelException
+	at org.jboss.resteasy.reactive.server.vertx.VertxInputStream$VertxBlockingInput.readBlocking(VertxInputStream.java:256)
+	at org.jboss.resteasy.reactive.server.vertx.VertxInputStream.readIntoBuffer(VertxInputStream.java:123)
+	at org.jboss.resteasy.reactive.server.vertx.VertxInputStream.read(VertxInputStream.java:85)
+	at com.fasterxml.jackson.core.json.ByteSourceJsonBootstrapper.ensureLoaded(ByteSourceJsonBootstrapper.java:547)
+	at com.fasterxml.jackson.core.json.ByteSourceJsonBootstrapper.detectEncoding(ByteSourceJsonBootstrapper.java:137)
+	at com.fasterxml.jackson.core.json.ByteSourceJsonBootstrapper.constructParser(ByteSourceJsonBootstrapper.java:266)
+	at com.fasterxml.jackson.core.JsonFactory._createParser(JsonFactory.java:1874)
+	at com.fasterxml.jackson.core.JsonFactory.createParser(JsonFactory.java:1273)
+	at com.fasterxml.jackson.databind.ObjectReader.createParser(ObjectReader.java:1123)
+	at com.fasterxml.jackson.databind.ObjectReader.readValue(ObjectReader.java:1501)
+	at io.quarkus.resteasy.reactive.jackson.runtime.serialisers.ServerJacksonMessageBodyReader.doReadFrom(ServerJacksonMessageBodyReader.java:87)
+	at io.quarkus.resteasy.reactive.jackson.runtime.serialisers.ServerJacksonMessageBodyReader.readFrom(ServerJacksonMessageBodyReader.java:38)
+	at io.quarkus.resteasy.reactive.jackson.runtime.serialisers.ServerJacksonMessageBodyReader.readFrom(ServerJacksonMessageBodyReader.java:77)
+	at org.jboss.resteasy.reactive.server.handlers.RequestDeserializeHandler.readFrom(RequestDeserializeHandler.java:126)
+	at org.jboss.resteasy.reactive.server.handlers.RequestDeserializeHandler.handle(RequestDeserializeHandler.java:84)
+	at io.quarkus.resteasy.reactive.server.runtime.QuarkusResteasyReactiveRequestContext.invokeHandler(QuarkusResteasyReactiveRequestContext.java:135)
+	at org.jboss.resteasy.reactive.common.core.AbstractResteasyReactiveContext.run(AbstractResteasyReactiveContext.java:147)
+	at io.quarkus.vertx.core.runtime.VertxCoreRecorder$15.runWith(VertxCoreRecorder.java:637)
+	at org.jboss.threads.EnhancedQueueExecutor$Task.doRunWith(EnhancedQueueExecutor.java:2675)
+	at org.jboss.threads.EnhancedQueueExecutor$Task.run(EnhancedQueueExecutor.java:2654)
+	at org.jboss.threads.EnhancedQueueExecutor.runThreadBody(EnhancedQueueExecutor.java:1627)
+	at org.jboss.threads.EnhancedQueueExecutor$ThreadBody.run(EnhancedQueueExecutor.java:1594)
+	at org.jboss.threads.DelegatingRunnable.run(DelegatingRunnable.java:11)
+	at org.jboss.threads.ThreadLocalResettingRunnable.run(ThreadLocalResettingRunnable.java:11)
+	at io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+Caused by: java.nio.channels.ClosedChannelException
+	at org.jboss.resteasy.reactive.server.vertx.VertxInputStream$VertxBlockingInput.<init>(VertxInputStream.java:184)
+	at org.jboss.resteasy.reactive.server.vertx.VertxInputStream.<init>(VertxInputStream.java:39)
+	at org.jboss.resteasy.reactive.server.vertx.VertxResteasyReactiveRequestContext.createInputStream(VertxResteasyReactiveRequestContext.java:249)
+	at org.jboss.resteasy.reactive.server.core.ResteasyReactiveRequestContext.getInputStream(ResteasyReactiveRequestContext.java:733)
+	... 14 more
+
+2025-07-25 01:42:45 ERROR [de.fr.ap.ex.GlobalExceptionMapper] (executor-thread-7) Exception caught [traceId=368442f8-efaf-4ac3-85f6-5b89b8a47c8e]: java.io.IOException: java.nio.channels.ClosedChannelException
+	at org.jboss.resteasy.reactive.server.vertx.VertxInputStream$VertxBlockingInput.readBlocking(VertxInputStream.java:256)
+	at org.jboss.resteasy.reactive.server.vertx.VertxInputStream.readIntoBuffer(VertxInputStream.java:123)
+	at org.jboss.resteasy.reactive.server.vertx.VertxInputStream.read(VertxInputStream.java:85)
+	at com.fasterxml.jackson.core.json.ByteSourceJsonBootstrapper.ensureLoaded(ByteSourceJsonBootstrapper.java:547)
+	at com.fasterxml.jackson.core.json.ByteSourceJsonBootstrapper.detectEncoding(ByteSourceJsonBootstrapper.java:137)
+	at com.fasterxml.jackson.core.json.ByteSourceJsonBootstrapper.constructParser(ByteSourceJsonBootstrapper.java:266)
+	at com.fasterxml.jackson.core.JsonFactory._createParser(JsonFactory.java:1874)
+	at com.fasterxml.jackson.core.JsonFactory.createParser(JsonFactory.java:1273)
+	at com.fasterxml.jackson.databind.ObjectReader.createParser(ObjectReader.java:1123)
+	at com.fasterxml.jackson.databind.ObjectReader.readValue(ObjectReader.java:1501)
+	at io.quarkus.resteasy.reactive.jackson.runtime.serialisers.ServerJacksonMessageBodyReader.doReadFrom(ServerJacksonMessageBodyReader.java:87)
+	at io.quarkus.resteasy.reactive.jackson.runtime.serialisers.ServerJacksonMessageBodyReader.readFrom(ServerJacksonMessageBodyReader.java:38)
+	at io.quarkus.resteasy.reactive.jackson.runtime.serialisers.ServerJacksonMessageBodyReader.readFrom(ServerJacksonMessageBodyReader.java:77)
+	at org.jboss.resteasy.reactive.server.handlers.RequestDeserializeHandler.readFrom(RequestDeserializeHandler.java:126)
+	at org.jboss.resteasy.reactive.server.handlers.RequestDeserializeHandler.handle(RequestDeserializeHandler.java:84)
+	at io.quarkus.resteasy.reactive.server.runtime.QuarkusResteasyReactiveRequestContext.invokeHandler(QuarkusResteasyReactiveRequestContext.java:135)
+	at org.jboss.resteasy.reactive.common.core.AbstractResteasyReactiveContext.run(AbstractResteasyReactiveContext.java:147)
+	at io.quarkus.vertx.core.runtime.VertxCoreRecorder$15.runWith(VertxCoreRecorder.java:637)
+	at org.jboss.threads.EnhancedQueueExecutor$Task.doRunWith(EnhancedQueueExecutor.java:2675)
+	at org.jboss.threads.EnhancedQueueExecutor$Task.run(EnhancedQueueExecutor.java:2654)
+	at org.jboss.threads.EnhancedQueueExecutor.runThreadBody(EnhancedQueueExecutor.java:1627)
+	at org.jboss.threads.EnhancedQueueExecutor$ThreadBody.run(EnhancedQueueExecutor.java:1594)
+	at org.jboss.threads.DelegatingRunnable.run(DelegatingRunnable.java:11)
+	at org.jboss.threads.ThreadLocalResettingRunnable.run(ThreadLocalResettingRunnable.java:11)
+	at io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+Caused by: java.nio.channels.ClosedChannelException
+	at org.jboss.resteasy.reactive.server.vertx.VertxInputStream$VertxBlockingInput.<init>(VertxInputStream.java:184)
+	at org.jboss.resteasy.reactive.server.vertx.VertxInputStream.<init>(VertxInputStream.java:39)
+	at org.jboss.resteasy.reactive.server.vertx.VertxResteasyReactiveRequestContext.createInputStream(VertxResteasyReactiveRequestContext.java:249)
+	at org.jboss.resteasy.reactive.server.core.ResteasyReactiveRequestContext.getInputStream(ResteasyReactiveRequestContext.java:733)
+	... 14 more
+
+2025-07-25 01:42:45 INFO  [de.fr.do.ca.se.CalculatorService] (executor-thread-7) Discount calculation completed - Order: 15000.0€, Total discount: 7.0%, Final price: 13950.0€
+2025-07-25 01:42:45 INFO  [de.fr.do.ca.se.CalculatorService] (executor-thread-10) Discount calculation completed - Order: 15000.0€, Total discount: 7.0%, Final price: 13950.0€
+2025-07-25 02:14:19 INFO  [de.fr.ap.re.CustomerSearchResource] (executor-thread-7) Customer search request received: page=0, size=20
+2025-07-25 02:14:19 INFO  [de.fr.ap.re.CustomerSearchResource] (executor-thread-7) Search completed: found 44 customers
+2025-07-25 03:21:30 INFO  [de.fr.ap.re.CustomerSearchResource] (executor-thread-7) Customer search request received: page=0, size=20
+2025-07-25 03:21:30 INFO  [de.fr.ap.re.CustomerSearchResource] (executor-thread-7) Search completed: found 44 customers
+2025-07-25 03:52:04 INFO  [de.fr.ap.re.CustomerSearchResource] (executor-thread-11) Customer search request received: page=0, size=20
+2025-07-25 03:52:04 INFO  [de.fr.ap.re.CustomerSearchResource] (executor-thread-11) Search completed: found 44 customers
+2025-07-25 04:11:36 INFO  [io.qu.de.de.RuntimeUpdatesProcessor] (vert.x-worker-thread-12) Restarting quarkus due to changes in OpportunityActivity.class, IllegalArgumentMasterExceptionMapper.class, Permission.class, DateFormatExceptionMapper$ErrorResponse.class, IllegalArgumentExceptionMapper.class, OpportunityActivity$ActivityType.class, Opportunity.class, OpportunityNotFoundExceptionMapper.class, Opportunity$1.class, DateFormatExceptionMapper.class, InvalidStageTransitionExceptionMapper.class, IllegalArgumentMasterExceptionMapper$ErrorResponse.class.
+2025-07-25 04:11:36 INFO  [io.quarkus] (Quarkus Main Thread) backend stopped in 0.009s
