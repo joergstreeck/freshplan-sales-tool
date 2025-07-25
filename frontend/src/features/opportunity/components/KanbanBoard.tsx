@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import type { DropResult } from '@hello-pangea/dnd';
 import {
@@ -23,6 +23,8 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
 
 import { OpportunityStage, STAGE_CONFIGS } from '../types/stages';
+import { logger } from '../../../lib/logger';
+import { useErrorHandler } from '../../../components/ErrorBoundary';
 
 // Aktive Pipeline Stages (immer sichtbar)
 const ACTIVE_STAGES = [
@@ -121,34 +123,40 @@ const initialOpportunities: Opportunity[] = [
   }
 ];
 
-// Opportunity Card Komponente
+/**
+ * Opportunity Card Component
+ * @description Renders a draggable opportunity card with details
+ * @component
+ */
 interface OpportunityCardProps {
+  /** The opportunity data to display */
   opportunity: Opportunity;
+  /** Index for drag and drop ordering */
   index: number;
 }
 
-const OpportunityCard: React.FC<OpportunityCardProps> = ({ opportunity, index }) => {
+const OpportunityCard: React.FC<OpportunityCardProps> = React.memo(({ opportunity, index }) => {
   const theme = useTheme();
 
-  const getProbabilityColor = (probability?: number) => {
+  const getProbabilityColor = useCallback((probability?: number) => {
     if (!probability) return theme.palette.grey[400];
     if (probability >= 80) return '#66BB6A';
     if (probability >= 60) return '#94C456';
     if (probability >= 40) return '#FFA726';
     if (probability >= 20) return '#FF7043';
     return '#EF5350';
-  };
+  }, [theme]);
 
-  const formatDate = (dateString?: string) => {
+  const formatDate = useCallback((dateString?: string) => {
     if (!dateString) return '-';
     return new Date(dateString).toLocaleDateString('de-DE', {
       day: '2-digit',
       month: '2-digit',
       year: '2-digit',
     });
-  };
+  }, []);
 
-  const formatValue = (value?: number) => {
+  const formatValue = useCallback((value?: number) => {
     if (!value) return 'Kein Wert';
     return new Intl.NumberFormat('de-DE', {
       style: 'currency',
@@ -156,7 +164,7 @@ const OpportunityCard: React.FC<OpportunityCardProps> = ({ opportunity, index })
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(value);
-  };
+  }, []);
 
   return (
     <Draggable draggableId={opportunity.id} index={index}>
@@ -296,15 +304,23 @@ const OpportunityCard: React.FC<OpportunityCardProps> = ({ opportunity, index })
       )}
     </Draggable>
   );
-};
+});
 
-// Kanban Column Komponente
+OpportunityCard.displayName = 'OpportunityCard';
+
+/**
+ * Kanban Column Component
+ * @description Renders a single pipeline stage column with droppable area
+ * @component
+ */
 interface KanbanColumnProps {
+  /** The stage this column represents */
   stage: OpportunityStage;
+  /** Opportunities in this stage */
   opportunities: Opportunity[];
 }
 
-const KanbanColumn: React.FC<KanbanColumnProps> = ({ stage, opportunities }) => {
+const KanbanColumn: React.FC<KanbanColumnProps> = React.memo(({ stage, opportunities }) => {
   const theme = useTheme();
   const config = STAGE_CONFIGS_RECORD[stage];
   const totalValue = opportunities.reduce((sum, opp) => sum + (opp.value || 0), 0);
@@ -387,31 +403,42 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({ stage, opportunities }) => 
       </Droppable>
     </Paper>
   );
-};
+});
 
-// Main Kanban Board
-export const KanbanBoard: React.FC = () => {
+KanbanColumn.displayName = 'KanbanColumn';
+
+// Component logger instance
+const componentLogger = logger.child('KanbanBoard');
+
+/**
+ * KanbanBoard Component
+ * @description Main opportunity pipeline visualization with drag & drop
+ * @component
+ * @since 2.0.0
+ */
+export const KanbanBoard: React.FC = React.memo(() => {
   const theme = useTheme();
+  const errorHandler = useErrorHandler('KanbanBoard');
   const [opportunities, setOpportunities] = useState<Opportunity[]>(initialOpportunities);
   const [showClosed, setShowClosed] = useState<boolean>(false);
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const [dragKey, setDragKey] = useState<number>(0); // Force re-render nach Drag
 
-  // Debug: Component Mount/Unmount
+  // Component lifecycle logging
   React.useEffect(() => {
-    console.log('🔵 KanbanBoard MOUNTED');
+    componentLogger.debug('Component mounted');
     return () => {
-      console.log('🔴 KanbanBoard UNMOUNTED');
+      componentLogger.debug('Component unmounted');
     };
   }, []);
 
-  // Debug: isDragging changes
+  // Drag state monitoring
   React.useEffect(() => {
-    console.log('🎯 isDragging changed to:', isDragging);
+    componentLogger.debug('Drag state changed', { isDragging });
   }, [isDragging]);
 
-  // Pipeline-Statistiken berechnen
-  const pipelineStats = React.useMemo(() => {
+  // Pipeline-Statistiken berechnen (memoized)
+  const pipelineStats = useMemo(() => {
     const activeOpps = opportunities.filter(opp => 
       ACTIVE_STAGES.includes(opp.stage)
     );
@@ -436,60 +463,81 @@ export const KanbanBoard: React.FC = () => {
     };
   }, [opportunities]);
 
-  // Opportunities nach Stage gruppieren
-  const opportunitiesByStage = React.useMemo(() => {
+  // Opportunities nach Stage gruppieren (memoized)
+  const opportunitiesByStage = useMemo(() => {
     return Object.values(OpportunityStage).reduce((acc, stage) => {
       acc[stage] = opportunities.filter(opp => opp.stage === stage);
       return acc;
     }, {} as Record<OpportunityStage, Opportunity[]>);
   }, [opportunities]);
 
-  const handleDragStart = () => {
-    console.log('🚀 DRAG START - Setting isDragging to true');
-    setIsDragging(true);
-    // Vibrieren für haptisches Feedback (falls verfügbar)
-    if (navigator.vibrate) {
-      navigator.vibrate(50);
+  const handleDragStart = useCallback(() => {
+    try {
+      componentLogger.debug('Drag operation started');
+      setIsDragging(true);
+      // Vibrieren für haptisches Feedback (falls verfügbar)
+      if (navigator.vibrate) {
+        navigator.vibrate(50);
+      }
+    } catch (error) {
+      componentLogger.error('Error in handleDragStart', { error });
+      errorHandler(error as Error);
     }
-  };
+  }, [errorHandler]);
 
-  const handleDragEnd = (result: DropResult) => {
-    console.log('🏁 DRAG END - Result:', result);
-    console.log('🏁 DRAG END - Setting isDragging to false');
-    setIsDragging(false);
-    const { destination, source, draggableId } = result;
+  const handleDragEnd = useCallback((result: DropResult) => {
+    const timer = componentLogger.time('handleDragEnd');
+    
+    try {
+      componentLogger.debug('Drag operation ended', { result });
+      setIsDragging(false);
+      const { destination, source, draggableId } = result;
 
-    // Kein gültiges Drop-Target
-    if (!destination) return;
+      // Kein gültiges Drop-Target
+      if (!destination) {
+        componentLogger.debug('No valid drop target');
+        return;
+      }
 
-    // Gleiche Position
-    if (destination.droppableId === source.droppableId && destination.index === source.index) {
-      return;
+      // Gleiche Position
+      if (destination.droppableId === source.droppableId && destination.index === source.index) {
+        componentLogger.debug('Same position - no change needed');
+        return;
+      }
+
+      const sourceStage = source.droppableId as OpportunityStage;
+      const destStage = destination.droppableId as OpportunityStage;
+      
+      // Verhindere Drag von abgeschlossenen zu aktiven Stages
+      if (CLOSED_STAGES.includes(sourceStage) && ACTIVE_STAGES.includes(destStage)) {
+        componentLogger.warn('Cannot reactivate closed opportunities', { sourceStage, destStage });
+        return;
+      }
+      
+      // Opportunity Stage aktualisieren
+      setOpportunities(prevOpportunities => 
+        prevOpportunities.map(opp => 
+          opp.id === draggableId 
+            ? { ...opp, stage: destStage, updatedAt: new Date().toISOString() }
+            : opp
+        )
+      );
+
+      componentLogger.info('Opportunity stage updated', {
+        opportunityId: draggableId,
+        fromStage: sourceStage,
+        toStage: destStage
+      });
+      
+      // Force re-render des DragDropContext
+      setDragKey(prev => prev + 1);
+    } catch (error) {
+      componentLogger.error('Error in handleDragEnd', { error });
+      errorHandler(error as Error);
+    } finally {
+      timer();
     }
-
-    const sourceStage = source.droppableId as OpportunityStage;
-    const destStage = destination.droppableId as OpportunityStage;
-    
-    // Verhindere Drag von abgeschlossenen zu aktiven Stages
-    if (CLOSED_STAGES.includes(sourceStage) && ACTIVE_STAGES.includes(destStage)) {
-      console.warn('❌ Abgeschlossene Opportunities können nicht reaktiviert werden');
-      return;
-    }
-    
-    // Opportunity Stage aktualisieren
-    setOpportunities(prevOpportunities => 
-      prevOpportunities.map(opp => 
-        opp.id === draggableId 
-          ? { ...opp, stage: destStage, updatedAt: new Date().toISOString() }
-          : opp
-      )
-    );
-
-    console.log(`✅ Moved opportunity ${draggableId} to ${destStage}`);
-    
-    // Force re-render des DragDropContext
-    setDragKey(prev => prev + 1);
-  };
+  }, [errorHandler]);
 
   return (
     <Box sx={{ p: 3 }}>
@@ -713,4 +761,6 @@ export const KanbanBoard: React.FC = () => {
       </DragDropContext>
     </Box>
   );
-};
+});
+
+KanbanBoard.displayName = 'KanbanBoard';
