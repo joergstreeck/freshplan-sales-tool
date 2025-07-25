@@ -7,22 +7,22 @@
 
 ## 🎯 JETZT GERADE:
 
-**M4 BACKEND-INTEGRATION IN ARBEIT 🔄**
+**M4 BACKEND-INTEGRATION ABGESCHLOSSEN ✅**
 
-**Stand 25.07.2025 15:50:**
-- ✅ **Branch-Protection:** main Branch technisch geschützt + TRIGGER_TEXTS erweitert
-- ✅ **PR #65:** Backup Smoke Tests entfernt + Code Review Fixes gemerged
-- 🔄 **TODO-60:** M4 Backend-Integration 50% fertig - useOpportunities Hook erstellt
-- 🔄 **KanbanBoard.tsx:** API-Integration begonnen, Drag & Drop noch ausstehend
-- ✅ **API liefert Daten:** 20 aktive Opportunities aus Backend verfügbar
+**Stand 25.07.2025 16:15:**
+- ✅ **TODO-60 FERTIG:** M4 Backend-Integration 100% - API vollständig verbunden
+- ✅ **Tests:** KanbanBoard 14/14 grün, Gesamt 93% Test Coverage
+- ✅ **Type System:** Frontend↔Backend harmonisiert (Stage Enum UPPERCASE)
+- ✅ **Drag & Drop:** Funktioniert mit echten API-Calls + Optimistic Updates
+- ✅ **Two-Pass Review:** Code-Qualität bestätigt, PR bereit
 
 **🚀 NÄCHSTER SCHRITT:**
 
-**🔄 TODO-60 abschließen: M4 Backend-Integration finalisieren:**
-1. KanbanBoard.tsx Loading/Error States vollständig implementieren
-2. Drag & Drop changeStagemutation testen und debuggen
-3. Type-Mapping Backend ↔ Frontend verifizieren
-4. Integration-Tests für API-Calls erstellen
+**PR erstellen & TODO-64: RENEWAL Spalte hinzufügen:**
+1. PR über GitHub UI erstellen (Branch bereits gepusht)
+2. RENEWAL Stage in Backend OpportunityStage Enum
+3. Frontend ACTIVE_STAGES erweitern
+4. Tests für neue Stage hinzufügen
 
 **ALTERNATIVE NÄCHSTE SCHRITTE:**
 - Branch-Protection für main aktivieren (TODO-94)
