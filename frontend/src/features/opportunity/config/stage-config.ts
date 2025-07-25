@@ -7,7 +7,7 @@
  * @since 2.0.0
  */
 
-import { OpportunityStage, IStageConfig } from '../types/opportunity.types';
+import { OpportunityStage, type IStageConfig } from '../types';
 
 /**
  * Stage configuration with enterprise features
