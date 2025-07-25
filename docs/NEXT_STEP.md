@@ -7,17 +7,17 @@
 
 ## 🎯 JETZT GERADE:
 
-**M4 RENEWAL-SPALTE IMPLEMENTATION - KANBAN BOARD ERWEITERUNG**
+**FC-012 AUDIT TRAIL SYSTEM INTEGRATION TESTS REPARIERT**
 
-**Stand 25.07.2025 23:58:**
-- ✅ **CI Pipeline ist GRÜN!** ESLint strategisch behoben (23 → 7 warnings)
-- ✅ **Debug-System implementiert!** Umfassendes CI-Debugging für Zukunft
-- ✅ **Backend RENEWAL Stage:** 100% funktionsfähig
-- 🔄 **Frontend UI fehlt:** 7. Kanban-Spalte für RENEWAL Stage
+**Stand 26.07.2025 00:24:**
+- ✅ **User-Lifecycle-Management Tests:** Vollständig repariert durch Test-Isolation
+- ✅ **FC-012 Audit Trail entityId Fix:** @Auditable entfernt, manueller Audit-Call implementiert
+- ✅ **Backend RENEWAL Stage:** 100% funktionsfähig 
+- 🔄 **CI Pipeline läuft:** Integration Tests sollten jetzt grün werden
 
 **🚀 NÄCHSTER SCHRITT:**
 
-**TODO-64: 7. RENEWAL-Spalte zum Kanban Board hinzufügen**
+**CI-Status prüfen, dann TODO-64: 7. RENEWAL-Spalte zum Kanban Board hinzufügen**
 
 ```bash
 cd /Users/joergstreeck/freshplan-sales-tool
@@ -25,7 +25,7 @@ cd /Users/joergstreeck/freshplan-sales-tool
 # 1. CI Status final prüfen
 gh run list --branch feature/m4-renewal-stage-implementation --limit 3
 
-# 2. Frontend Development starten
+# 2. Falls grün: Frontend Development starten
 cd frontend
 npm run dev
 
@@ -49,9 +49,9 @@ npm test
 ```
 
 **UNTERBROCHEN BEI:**
-- CI Pipeline erfolgreich debuggt und repariert
-- Debug-System für zukünftige CI-Probleme implementiert  
-- Bereit für Feature-Development: RENEWAL-Spalte UI
+- FC-012 Audit Trail System erfolgreich repariert und gepusht
+- CI Pipeline läuft gerade mit Fix - Erwartung: grün
+- Bereit für Feature-Development: RENEWAL-Spalte UI (TODO-64)
 
 **STRATEGISCH WICHTIG:**
 RENEWAL-Spalte ist der letzte fehlende Teil für vollständiges Contract Renewal Management!
