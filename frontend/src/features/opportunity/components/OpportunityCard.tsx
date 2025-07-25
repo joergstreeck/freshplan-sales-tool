@@ -14,39 +14,12 @@ import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import PersonIcon from '@mui/icons-material/Person';
 import EuroIcon from '@mui/icons-material/Euro';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
-import { OpportunityStage } from '../types/stages';
+import type { Opportunity } from '../types';
 import { logger } from '../../../lib/logger';
 import { useErrorHandler } from '../../../components/ErrorBoundary';
 
 // Component logger instance
 const componentLogger = logger.child('OpportunityCard');
-
-/**
- * Opportunity data structure
- * @interface Opportunity
- */
-export interface Opportunity {
-  /** Unique identifier */
-  id: string;
-  /** Opportunity name/title */
-  name: string;
-  /** Current pipeline stage */
-  stage: OpportunityStage;
-  /** Monetary value in EUR */
-  value?: number;
-  /** Win probability percentage (0-100) */
-  probability?: number;
-  /** Customer company name */
-  customerName?: string;
-  /** Assigned sales person name */
-  assignedToName?: string;
-  /** Expected close date ISO string */
-  expectedCloseDate?: string;
-  /** Creation timestamp */
-  createdAt: string;
-  /** Last update timestamp */
-  updatedAt: string;
-}
 
 /**
  * Opportunity Card Component Props

@@ -38,7 +38,7 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import RestoreIcon from '@mui/icons-material/Restore';
 import { SortableOpportunityCard } from './SortableOpportunityCard';
 
-import { OpportunityStage, STAGE_CONFIGS } from '../types/stages';
+import { OpportunityStage, STAGE_CONFIGS, type Opportunity } from '../types';
 import { logger } from '../../../lib/logger';
 import { useErrorHandler } from '../../../components/ErrorBoundary';
 
@@ -56,19 +56,7 @@ const CLOSED_STAGES = [
   OpportunityStage.CLOSED_LOST,
 ];
 
-interface Opportunity {
-  id: string;
-  name: string;
-  stage: OpportunityStage;
-  value?: number;
-  probability?: number;
-  customerName?: string;
-  contactName?: string;
-  assignedToName?: string;
-  expectedCloseDate?: string;
-  createdAt: string;
-  updatedAt: string;
-}
+// Type imported from '../types'
 
 // Convert STAGE_CONFIGS array to Record for easier lookup
 const STAGE_CONFIGS_RECORD: Record<string, typeof STAGE_CONFIGS[0]> = {};
