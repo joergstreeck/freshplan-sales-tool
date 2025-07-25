@@ -91,6 +91,7 @@ public class Opportunity {
       case NEGOTIATION -> 80;
       case CLOSED_WON -> 100;
       case CLOSED_LOST -> 0;
+      case RENEWAL -> 75;
     };
   }
 
@@ -113,8 +114,13 @@ public class Opportunity {
     }
 
     // Business Rule: Geschlossene Opportunities können nicht mehr geändert werden
-    if (this.stage == OpportunityStage.CLOSED_WON || this.stage == OpportunityStage.CLOSED_LOST) {
-      return; // Silently ignore stage changes for closed opportunities
+    // AUSNAHME: CLOSED_WON darf zu RENEWAL wechseln (Contract Renewal)
+    if (this.stage == OpportunityStage.CLOSED_WON && newStage != OpportunityStage.RENEWAL) {
+      return; // CLOSED_WON kann nur zu RENEWAL wechseln
+    }
+    
+    if (this.stage == OpportunityStage.CLOSED_LOST) {
+      return; // CLOSED_LOST kann gar nicht geändert werden
     }
 
     if (this.stage != newStage) {

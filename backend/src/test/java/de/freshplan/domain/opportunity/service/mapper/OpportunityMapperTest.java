@@ -225,6 +225,7 @@ public class OpportunityMapperTest {
                 case NEGOTIATION -> 80;
                 case CLOSED_WON -> 100;
                 case CLOSED_LOST -> 0;
+                case RENEWAL -> 75;
               };
           probabilityField.set(opportunity, defaultProbability);
         } catch (Exception e) {

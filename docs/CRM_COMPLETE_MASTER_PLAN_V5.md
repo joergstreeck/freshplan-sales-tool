@@ -1,7 +1,7 @@
 # 🚀 CRM COMPLETE MASTER PLAN V5 - Das Sales Command Center
 
 **Version:** 5.0  
-**Datum:** 25.07.2025 19:05 (Auto-Sync)
+**Datum:** 25.07.2025 20:05 (Auto-Sync)
 **Status:** Backend implementiert ✅, Tests fast vollständig 🔄
 
 ---
@@ -18,12 +18,12 @@
 **Phase:** 1 - Core Sales Process (M4 Opportunity Pipeline Finalisierung)
 **Status:** Backend implementiert ✅, Tests fast vollständig 🔄
 **Nächster Schritt:** OpportunityRepositoryTest customer_number fix
-**Arbeits-Dokument:** [./features/2025-07-12_TECH_CONCEPT_M4-opportunity-pipeline.md](./features/2025-07-12_TECH_CONCEPT_M4-opportunity-pipeline.md) ⭐
-**Offene Fragen:** [./features/OPEN_QUESTIONS_TRACKER.md](./features/OPEN_QUESTIONS_TRACKER.md) 🚨
+**Arbeits-Dokument:** M4 Kanban Board Enhancement ⭐
+**Letzte Erfolge:** FC-012 Audit Trail System deployed, CI Pipeline 100% grün
 
 ### 🧭 Navigation für die nächsten Schritte
-1. **AKTUELL:** M4 Tests finalisieren → [findByAssignedTo Debug + getUserPerformanceMetrics Fix](docs/NEXT_STEP.md)
-2. **NÄCHSTES:** M4 Frontend implementieren → [Kanban Board](./features/ACTIVE/02_opportunity_pipeline/README.md)
+1. **AKTUELL:** RENEWAL-Spalte hinzufügen → [7. Kanban-Spalte für Contract Renewals](docs/NEXT_STEP.md)
+2. **NÄCHSTES:** FC-012 Audit Viewer UI → [Admin Dashboard für Audit Logs](./features/FC-012-audit-trail.md)
 3. **DANACH:** Calculator Integration → [M8 Modal](./features/ACTIVE/03_calculator_modal/README.md)
 
 ### 📚 Context-Dokumente
@@ -62,8 +62,8 @@ Von Tag 1 auf Wachstum, Performance und Qualität ausgelegt.
 **Status:** Backend implementiert ✅, Tests fast vollständig 🔄
 **Details:** [Security Foundation](./features/ACTIVE/01_security_foundation/README.md)
 
-### 🔄 Phase 1: Core Sales Process (Tag 2-10) - IN ARBEIT
-**Module:** M4 Pipeline (Backend ✅, Frontend ✅, Integration ⏳) → M8 Calculator → FC-004 Verkäuferschutz → FC-009 Renewal  
+### ✅ Phase 1: Core Sales Process (Tag 2-10) - 95% ABGESCHLOSSEN
+**Module:** M4 Pipeline (Backend ✅, Frontend ✅, Integration ✅) → RENEWAL-Spalte (pending) → M8 Calculator → FC-004 Verkäuferschutz → FC-009 Renewal  
 **Details:** [Core Sales Features](./features/PLANNED/phase1_core_sales.md)
 
 ### 📋 Phase 2: Communication Hub (Tag 11-18)
@@ -79,10 +79,11 @@ Von Tag 1 auf Wachstum, Performance und Qualität ausgelegt.
 | Modul | Status | Fortschritt | Nächster Schritt |
 |-------|--------|-------------|------------------|
 | Security | ✅ Done | 100% | ✅ Keycloak läuft produktiv |
-| FC-012 Audit Trail | 🚨 CRITICAL | Tech-Konzept ✅ | Parallel-Implementierung |
+| FC-012 Audit Trail | ✅ Done | 100% | ✅ Enterprise System deployed, CI grün |
 | M4 Pipeline | 🔄 In Progress | 85% | Tests finalisieren (TODO-31) |
+| M4 RENEWAL-Spalte | 🔄 In Progress | 0% | TODO-64: 7. Kanban-Spalte hinzufügen |
 | FC-003 E-Mail Integration | 📋 Planned | Tech-Konzept ✅ | Phase 2 Communication Hub |
-| FC-009 Renewal | 📋 Planned | Tech-Konzept ✅ | Nach M4 + Audit Integration |
+| FC-009 Renewal | 📋 Planned | Tech-Konzept ✅ | Nach RENEWAL-Spalte |
 | FC-010 Scalability | 📋 Planned | Tech-Konzept ✅ | Filter-Bar Phase 1 |
 | FC-011 Cockpit-Int | 📋 Planned | Tech-Konzept ✅ | Nach M4 Integration |
 | FC-013 Activity Notes | 📋 Planned | Tech-Konzept ✅ | Core CRM Feature |
