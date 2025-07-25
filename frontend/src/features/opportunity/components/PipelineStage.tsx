@@ -9,54 +9,13 @@ import {
 import { useTheme } from '@mui/material/styles';
 import { useDroppable } from '@dnd-kit/core';
 
-import { OpportunityStage } from '../types/stages';
+import { OpportunityStage, STAGE_CONFIGS } from '../types/stages';
 
-interface StageConfig {
-  stage: OpportunityStage;
-  label: string;
-  color: string;
-  bgColor: string;
-}
-
-// Freshfoodz Corporate Identity Stage-Farben
-const STAGE_CONFIGS: Record<OpportunityStage, StageConfig> = {
-  [OpportunityStage.LEAD]: {
-    stage: OpportunityStage.LEAD,
-    label: 'Lead',
-    color: '#004F7B', // Freshfoodz Blau
-    bgColor: 'rgba(0, 79, 123, 0.05)'
-  },
-  [OpportunityStage.NEEDS_ANALYSIS]: {
-    stage: OpportunityStage.NEEDS_ANALYSIS,
-    label: 'Bedarfsanalyse',
-    color: '#94C456', // Freshfoodz Grün
-    bgColor: 'rgba(148, 196, 86, 0.05)'
-  },
-  [OpportunityStage.PROPOSAL]: {
-    stage: OpportunityStage.PROPOSAL,
-    label: 'Angebot',
-    color: '#FFA726', // Orange für Aktivität
-    bgColor: 'rgba(255, 167, 38, 0.05)'
-  },
-  [OpportunityStage.NEGOTIATION]: {
-    stage: OpportunityStage.NEGOTIATION,
-    label: 'Verhandlung',
-    color: '#FF7043', // Orange-Rot für Dringlichkeit
-    bgColor: 'rgba(255, 112, 67, 0.05)'
-  },
-  [OpportunityStage.CLOSED_WON]: {
-    stage: OpportunityStage.CLOSED_WON,
-    label: 'Gewonnen',
-    color: '#66BB6A', // Grün für Erfolg
-    bgColor: 'rgba(102, 187, 106, 0.05)'
-  },
-  [OpportunityStage.CLOSED_LOST]: {
-    stage: OpportunityStage.CLOSED_LOST,
-    label: 'Verloren',
-    color: '#EF5350', // Rot für Verlust
-    bgColor: 'rgba(239, 83, 80, 0.05)'
-  }
-};
+// Convert STAGE_CONFIGS array to Record for easier lookup
+const STAGE_CONFIGS_RECORD: Record<string, typeof STAGE_CONFIGS[0]> = {};
+STAGE_CONFIGS.forEach(config => {
+  STAGE_CONFIGS_RECORD[config.stage] = config;
+});
 
 interface PipelineStageProps {
   stage: OpportunityStage;
@@ -72,7 +31,7 @@ export const PipelineStage: React.FC<PipelineStageProps> = ({
   children
 }) => {
   const theme = useTheme();
-  const config = STAGE_CONFIGS[stage];
+  const config = STAGE_CONFIGS_RECORD[stage];
   
   // Drag & Drop Setup
   const { setNodeRef, isOver } = useDroppable({

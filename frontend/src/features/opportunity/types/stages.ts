@@ -2,7 +2,7 @@
 export enum OpportunityStage {
   LEAD = "lead",
   QUALIFIED = "qualified",
-  NEEDS_ANALYSIS = "needs_analysis", // Alias für QUALIFIED
+  NEEDS_ANALYSIS = "needs_analysis", // Kept for backward compatibility, maps to 'Qualifiziert' stage
   PROPOSAL = "proposal",
   NEGOTIATION = "negotiation",
   CLOSED_WON = "closed_won",
@@ -10,7 +10,7 @@ export enum OpportunityStage {
 }
 
 // Stage-Konfiguration
-interface StageConfig {
+export interface StageConfig {
   stage: OpportunityStage;
   label: string;
   color: string;
@@ -29,6 +29,12 @@ export const STAGE_CONFIGS: StageConfig[] = [
     label: 'Qualifiziert', 
     color: '#388E3C', 
     bgColor: '#E8F5E9' 
+  },
+  {
+    stage: OpportunityStage.NEEDS_ANALYSIS,
+    label: 'Bedarfsanalyse',
+    color: '#388E3C',
+    bgColor: '#E8F5E9'
   },
   { 
     stage: OpportunityStage.PROPOSAL, 

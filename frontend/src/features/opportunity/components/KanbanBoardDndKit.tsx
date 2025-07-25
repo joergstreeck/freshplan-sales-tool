@@ -38,7 +38,7 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import RestoreIcon from '@mui/icons-material/Restore';
 import { SortableOpportunityCard } from './SortableOpportunityCard';
 
-import { OpportunityStage } from '../types/stages';
+import { OpportunityStage, STAGE_CONFIGS } from '../types/stages';
 
 // Aktive Pipeline Stages (immer sichtbar)
 const ACTIVE_STAGES = [
@@ -68,52 +68,11 @@ interface Opportunity {
   updatedAt: string;
 }
 
-interface StageConfig {
-  stage: OpportunityStage;
-  label: string;
-  color: string;
-  bgColor: string;
-}
-
-// Freshfoodz Corporate Identity Stage-Farben
-const STAGE_CONFIGS: Record<OpportunityStage, StageConfig> = {
-  [OpportunityStage.LEAD]: {
-    stage: OpportunityStage.LEAD,
-    label: 'Lead',
-    color: '#004F7B',
-    bgColor: 'rgba(0, 79, 123, 0.05)'
-  },
-  [OpportunityStage.QUALIFIED]: {
-    stage: OpportunityStage.QUALIFIED,
-    label: 'Qualifiziert',
-    color: '#94C456',
-    bgColor: 'rgba(148, 196, 86, 0.05)'
-  },
-  [OpportunityStage.PROPOSAL]: {
-    stage: OpportunityStage.PROPOSAL,
-    label: 'Angebot',
-    color: '#FFA726',
-    bgColor: 'rgba(255, 167, 38, 0.05)'
-  },
-  [OpportunityStage.NEGOTIATION]: {
-    stage: OpportunityStage.NEGOTIATION,
-    label: 'Verhandlung',
-    color: '#FF7043',
-    bgColor: 'rgba(255, 112, 67, 0.05)'
-  },
-  [OpportunityStage.CLOSED_WON]: {
-    stage: OpportunityStage.CLOSED_WON,
-    label: 'Gewonnen',
-    color: '#66BB6A',
-    bgColor: 'rgba(102, 187, 106, 0.05)'
-  },
-  [OpportunityStage.CLOSED_LOST]: {
-    stage: OpportunityStage.CLOSED_LOST,
-    label: 'Verloren',
-    color: '#EF5350',
-    bgColor: 'rgba(239, 83, 80, 0.05)'
-  }
-};
+// Convert STAGE_CONFIGS array to Record for easier lookup
+const STAGE_CONFIGS_RECORD: Record<string, typeof STAGE_CONFIGS[0]> = {};
+STAGE_CONFIGS.forEach(config => {
+  STAGE_CONFIGS_RECORD[config.stage] = config;
+});
 
 // Mock-Daten
 const initialOpportunities: Opportunity[] = [
@@ -464,7 +423,7 @@ interface KanbanColumnProps {
 
 const KanbanColumn: React.FC<KanbanColumnProps> = ({ stage, opportunities, onQuickAction, animatingIds }) => {
   const theme = useTheme();
-  const config = STAGE_CONFIGS[stage];
+  const config = STAGE_CONFIGS_RECORD[stage];
   const totalValue = opportunities.reduce((sum, opp) => sum + (opp.value || 0), 0);
   
   // Make the column a drop target
