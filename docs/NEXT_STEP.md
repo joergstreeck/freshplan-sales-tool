@@ -7,54 +7,56 @@
 
 ## 🎯 JETZT GERADE:
 
-**FC-012 AUDIT TRAIL SYSTEM INTEGRATION TESTS REPARIERT**
+**CI INTEGRATION TEST ASSERTIONS FIXEN**
 
-**Stand 26.07.2025 00:24:**
-- ✅ **User-Lifecycle-Management Tests:** Vollständig repariert durch Test-Isolation
-- ✅ **FC-012 Audit Trail entityId Fix:** @Auditable entfernt, manueller Audit-Call implementiert
-- ✅ **Backend RENEWAL Stage:** 100% funktionsfähig 
-- 🔄 **CI Pipeline läuft:** Integration Tests sollten jetzt grün werden
+**Stand 26.07.2025 01:00:**
+- ✅ **FC-012 Audit Trail System:** Vollständig repariert und funktionsfähig
+- ✅ **Problem identifiziert:** Nicht UserNotFoundException, sondern Test-Assertion-Failures!
+- ✅ **Root Cause:** Test-Assertions erwarten statische Namen, bekommen unique Timestamps
+- 🔄 **Lösung dokumentiert:** Pattern-Matching statt exakte String-Vergleiche
 
 **🚀 NÄCHSTER SCHRITT:**
 
-**CI-Status prüfen, dann TODO-64: 7. RENEWAL-Spalte zum Kanban Board hinzufügen**
+**TODO-2: UserResourceIT Test-Assertions an unique Namen anpassen**
 
 ```bash
-cd /Users/joergstreeck/freshplan-sales-tool
+cd /Users/joergstreeck/freshplan-sales-tool/backend
 
-# 1. CI Status final prüfen
-gh run list --branch feature/m4-renewal-stage-implementation --limit 3
+# 1. Betroffene Assertions identifizieren
+grep -n "equalTo.*user" src/test/java/de/freshplan/api/UserResourceIT.java
 
-# 2. Falls grün: Frontend Development starten
-cd frontend
-npm run dev
+# 2. testUpdateUser_Success Test fixen
+# Ersetze: .body("username", equalTo("updated.user"))
+# Mit: .body("username", startsWith("updated.user."))
 
-# 3. RENEWAL-Spalte implementieren:
-# - Orange Design (#ff9800) 
-# - Stage-Konfiguration in stage-config.ts erweitern
-# - Drag & Drop Integration
-# - Kanban Board Layout anpassen
+# 3. Pattern für andere Tests:
+# .body("username", matchesPattern("updated\\.user\\.\\d+_\\d+"))
+# .body("email", matchesPattern("updated\\.\\d+_\\d+@freshplan\\.de"))
+
+# 4. Lokaler Test
+./mvnw test -Dtest=UserResourceIT#testUpdateUser_Success
+
+# 5. Vollständige Integration Tests
+./mvnw test -Dtest=UserResourceIT
+
+# 6. CI Push wenn lokal grün
+git add . && git commit -m "fix: adapt UserResourceIT assertions to unique usernames"
+git push origin feature/m4-renewal-stage-implementation
 ```
 
-**Implementation Details:**
-- **Datei:** `frontend/src/features/opportunity/config/stage-config.ts`
-- **Design:** Orange Theme (#ff9800) für Contract Renewals
-- **Integration:** DnD-Kit Unterstützung für RENEWAL → CLOSED_WON/CLOSED_LOST
-
-**DANACH: Frontend Tests fixen (TODO-fix-frontend-tests):**
-```bash
-cd frontend
-npm test
-# Enum-Werte anpassen: LEAD → NEW_LEAD, QUALIFIED → QUALIFICATION
+**Fehler-Details:**
+```
+Expected: updated.user  
+Actual: updated.user.1753484020772_1
 ```
 
 **UNTERBROCHEN BEI:**
-- FC-012 Audit Trail System erfolgreich repariert und gepusht
-- CI Pipeline läuft gerade mit Fix - Erwartung: grün
-- Bereit für Feature-Development: RENEWAL-Spalte UI (TODO-64)
+- CI Integration Tests: 2 Failures identifiziert
+- Lösung vollständig dokumentiert in `/docs/claude-work/daily-work/2025-07-26/2025-07-26_SOLUTION_test-assertion-fix.md`
+- Nächster Schritt: 30-Minuten Test-Assertion-Fix
 
 **STRATEGISCH WICHTIG:**
-RENEWAL-Spalte ist der letzte fehlende Teil für vollständiges Contract Renewal Management!
+Das ist der letzte Blocker für 100% grüne CI-Pipeline! Race-Condition-Fix funktioniert, nur Assertions müssen angepasst werden.
 
 ---
 
@@ -67,14 +69,14 @@ RENEWAL-Spalte ist der letzte fehlende Teil für vollständiges Contract Renewal
 
 ## 📊 OFFENE TODOS:
 ```
-🔴 HIGH Priority: 14 TODOs (davon 1 in_progress: TODO-60)
-🟡 MEDIUM Priority: 4 TODOs  
-🟢 LOW Priority: 2 TODOs
+🔴 HIGH Priority: 2 TODOs (TODO-2: CI Assertions, TODO-3: UserResourceIT)
+🟡 MEDIUM Priority: 1 TODO (TODO-4: RENEWAL-Spalte)
+🟢 LOW Priority: 1 TODO (TODO-5: Übergabe)
 ```
 
 **Status:**
-- RENEWAL Stage Backend: ✅ PRODUCTION-READY (100% implementiert)
-- CI Pipeline: ✅ GRÜN (Debug-System implementiert)
-- RENEWAL Frontend UI: 🔄 TODO-64 als nächste Hauptaufgabe
-- Frontend Tests: 🟡 Enum-Anpassungen ausstehend
-- Debug-System: ✅ DEPLOYED (lokale + CI Reproduktion)
+- FC-012 Audit Trail System: ✅ PRODUCTION-READY
+- CI Integration Tests: 🟡 2 Assertion-Failures (lösbar in 30 Min)
+- RENEWAL Backend: ✅ 100% implementiert
+- RENEWAL Frontend UI: 🔄 Bereit für Implementation nach CI-Fix
+- Debug-System: ✅ DEPLOYED (umfassende Dokumentation)
