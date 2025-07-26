@@ -1,0 +1,352 @@
+{
+  "customer": {
+    "base": [
+      {
+        "key": "companyName",
+        "label": "Firmenname",
+        "entityType": "customer",
+        "fieldType": "text",
+        "required": true,
+        "maxLength": 100,
+        "placeholder": "z.B. Hotel zur goldenen Krone GmbH",
+        "helpText": "Vollständiger Firmenname wie im Handelsregister",
+        "gridSize": { "xs": 12, "sm": 12, "md": 8 }
+      },
+      {
+        "key": "legalForm",
+        "label": "Rechtsform",
+        "entityType": "customer",
+        "fieldType": "select",
+        "required": true,
+        "options": [
+          { "value": "gmbh", "label": "GmbH" },
+          { "value": "gmbh_co_kg", "label": "GmbH & Co. KG" },
+          { "value": "ag", "label": "AG" },
+          { "value": "eg", "label": "eG" },
+          { "value": "einzelunternehmen", "label": "Einzelunternehmen" },
+          { "value": "gbr", "label": "GbR" },
+          { "value": "ohg", "label": "OHG" },
+          { "value": "kg", "label": "KG" },
+          { "value": "verein", "label": "e.V." },
+          { "value": "stiftung", "label": "Stiftung" },
+          { "value": "sonstige", "label": "Sonstige" }
+        ],
+        "gridSize": { "xs": 12, "sm": 6, "md": 4 }
+      },
+      {
+        "key": "industry",
+        "label": "Branche",
+        "entityType": "customer",
+        "fieldType": "select",
+        "required": true,
+        "options": [
+          { "value": "hotel", "label": "Hotel" },
+          { "value": "krankenhaus", "label": "Krankenhaus" },
+          { "value": "seniorenresidenz", "label": "Seniorenresidenz" },
+          { "value": "restaurant", "label": "Restaurant" },
+          { "value": "betriebsrestaurant", "label": "Betriebsrestaurant" },
+          { "value": "kantine", "label": "Kantine" },
+          { "value": "catering", "label": "Catering" },
+          { "value": "sonstige", "label": "Sonstige" }
+        ],
+        "helpText": "Wählen Sie die Hauptbranche des Unternehmens",
+        "gridSize": { "xs": 12, "sm": 6, "md": 4 }
+      },
+      {
+        "key": "chainCustomer",
+        "label": "Filialunternehmen",
+        "entityType": "customer",
+        "fieldType": "select",
+        "required": true,
+        "defaultValue": "nein",
+        "options": [
+          { "value": "ja", "label": "Ja" },
+          { "value": "nein", "label": "Nein" }
+        ],
+        "helpText": "Hat Ihr Unternehmen mehrere Standorte?",
+        "triggerWizardStep": {
+          "when": "ja",
+          "step": "locations"
+        },
+        "gridSize": { "xs": 12, "sm": 6, "md": 4 }
+      },
+      {
+        "key": "street",
+        "label": "Straße und Hausnummer",
+        "entityType": "customer",
+        "fieldType": "text",
+        "required": true,
+        "maxLength": 100,
+        "placeholder": "z.B. Hauptstraße 42",
+        "gridSize": { "xs": 12, "sm": 12, "md": 8 }
+      },
+      {
+        "key": "postalCode",
+        "label": "PLZ",
+        "entityType": "customer",
+        "fieldType": "text",
+        "required": true,
+        "validation": "germanPostalCode",
+        "maxLength": 5,
+        "placeholder": "12345",
+        "helpText": "5-stellige deutsche Postleitzahl",
+        "gridSize": { "xs": 6, "sm": 4, "md": 2 }
+      },
+      {
+        "key": "city",
+        "label": "Ort",
+        "entityType": "customer",
+        "fieldType": "text",
+        "required": true,
+        "maxLength": 50,
+        "placeholder": "z.B. Berlin",
+        "gridSize": { "xs": 6, "sm": 8, "md": 6 }
+      },
+      {
+        "key": "contactName",
+        "label": "Ansprechpartner",
+        "entityType": "customer",
+        "fieldType": "text",
+        "required": true,
+        "maxLength": 100,
+        "placeholder": "Vor- und Nachname",
+        "helpText": "Hauptansprechpartner für Vertriebsthemen",
+        "gridSize": { "xs": 12, "sm": 6, "md": 4 }
+      },
+      {
+        "key": "contactEmail",
+        "label": "E-Mail",
+        "entityType": "customer",
+        "fieldType": "email",
+        "required": true,
+        "validation": "email",
+        "maxLength": 100,
+        "placeholder": "kontakt@beispiel.de",
+        "helpText": "Hauptkontakt-E-Mail für Angebote und Rechnungen",
+        "gridSize": { "xs": 12, "sm": 6, "md": 4 }
+      },
+      {
+        "key": "contactPhone",
+        "label": "Telefon",
+        "entityType": "customer",
+        "fieldType": "text",
+        "required": true,
+        "validation": "germanPhone",
+        "maxLength": 30,
+        "placeholder": "+49 30 123456789",
+        "helpText": "Telefonnummer mit Vorwahl",
+        "gridSize": { "xs": 12, "sm": 6, "md": 4 }
+      }
+    ],
+    "industrySpecific": {
+      "hotel": [
+        {
+          "key": "starRating",
+          "label": "Sterne-Kategorie",
+          "entityType": "customer",
+          "fieldType": "select",
+          "required": false,
+          "options": [
+            { "value": "1", "label": "1 Stern" },
+            { "value": "2", "label": "2 Sterne" },
+            { "value": "3", "label": "3 Sterne" },
+            { "value": "4", "label": "4 Sterne" },
+            { "value": "5", "label": "5 Sterne" },
+            { "value": "none", "label": "Keine Klassifizierung" }
+          ],
+          "gridSize": { "xs": 12, "sm": 6, "md": 3 }
+        },
+        {
+          "key": "roomCount",
+          "label": "Anzahl Zimmer",
+          "entityType": "customer",
+          "fieldType": "number",
+          "required": false,
+          "min": 1,
+          "max": 9999,
+          "placeholder": "z.B. 120",
+          "gridSize": { "xs": 12, "sm": 6, "md": 3 }
+        }
+      ],
+      "krankenhaus": [
+        {
+          "key": "hospitalType",
+          "label": "Krankenhaustyp",
+          "entityType": "customer",
+          "fieldType": "select",
+          "required": false,
+          "options": [
+            { "value": "university", "label": "Universitätsklinikum" },
+            { "value": "general", "label": "Allgemeinkrankenhaus" },
+            { "value": "specialized", "label": "Fachklinik" },
+            { "value": "rehabilitation", "label": "Rehaklinik" },
+            { "value": "private", "label": "Privatklinik" }
+          ],
+          "gridSize": { "xs": 12, "sm": 6, "md": 4 }
+        },
+        {
+          "key": "bedCount",
+          "label": "Anzahl Betten",
+          "entityType": "customer",
+          "fieldType": "number",
+          "required": false,
+          "min": 1,
+          "max": 9999,
+          "placeholder": "z.B. 250",
+          "gridSize": { "xs": 12, "sm": 6, "md": 3 }
+        }
+      ],
+      "seniorenresidenz": [
+        {
+          "key": "careLevel",
+          "label": "Pflegestufen angeboten",
+          "entityType": "customer",
+          "fieldType": "multiselect",
+          "required": false,
+          "options": [
+            { "value": "independent", "label": "Betreutes Wohnen" },
+            { "value": "level1", "label": "Pflegegrad 1" },
+            { "value": "level2", "label": "Pflegegrad 2" },
+            { "value": "level3", "label": "Pflegegrad 3" },
+            { "value": "level4", "label": "Pflegegrad 4" },
+            { "value": "level5", "label": "Pflegegrad 5" }
+          ],
+          "gridSize": { "xs": 12, "sm": 12, "md": 6 }
+        },
+        {
+          "key": "residentCount",
+          "label": "Anzahl Bewohner",
+          "entityType": "customer",
+          "fieldType": "number",
+          "required": false,
+          "min": 1,
+          "max": 9999,
+          "placeholder": "z.B. 80",
+          "gridSize": { "xs": 12, "sm": 6, "md": 3 }
+        }
+      ],
+      "restaurant": [
+        {
+          "key": "cuisineType",
+          "label": "Küchenstil",
+          "entityType": "customer",
+          "fieldType": "select",
+          "required": false,
+          "options": [
+            { "value": "german", "label": "Deutsche Küche" },
+            { "value": "italian", "label": "Italienisch" },
+            { "value": "asian", "label": "Asiatisch" },
+            { "value": "international", "label": "International" },
+            { "value": "vegetarian", "label": "Vegetarisch/Vegan" },
+            { "value": "other", "label": "Sonstige" }
+          ],
+          "gridSize": { "xs": 12, "sm": 6, "md": 4 }
+        },
+        {
+          "key": "seatCount",
+          "label": "Anzahl Sitzplätze",
+          "entityType": "customer",
+          "fieldType": "number",
+          "required": false,
+          "min": 1,
+          "max": 9999,
+          "placeholder": "z.B. 60",
+          "gridSize": { "xs": 12, "sm": 6, "md": 3 }
+        }
+      ],
+      "betriebsrestaurant": [
+        {
+          "key": "mealCapacity",
+          "label": "Mahlzeiten pro Tag",
+          "entityType": "customer",
+          "fieldType": "number",
+          "required": false,
+          "min": 1,
+          "max": 99999,
+          "placeholder": "z.B. 500",
+          "helpText": "Durchschnittliche Anzahl ausgegebener Mahlzeiten",
+          "gridSize": { "xs": 12, "sm": 6, "md": 3 }
+        },
+        {
+          "key": "operatingDays",
+          "label": "Betriebstage",
+          "entityType": "customer",
+          "fieldType": "multiselect",
+          "required": false,
+          "options": [
+            { "value": "monday", "label": "Montag" },
+            { "value": "tuesday", "label": "Dienstag" },
+            { "value": "wednesday", "label": "Mittwoch" },
+            { "value": "thursday", "label": "Donnerstag" },
+            { "value": "friday", "label": "Freitag" },
+            { "value": "saturday", "label": "Samstag" },
+            { "value": "sunday", "label": "Sonntag" }
+          ],
+          "gridSize": { "xs": 12, "sm": 12, "md": 6 }
+        }
+      ]
+    }
+  },
+  "location": {
+    "base": [
+      {
+        "key": "locationName",
+        "label": "Standortname",
+        "entityType": "location",
+        "fieldType": "text",
+        "required": true,
+        "maxLength": 100,
+        "placeholder": "z.B. Hauptfiliale Berlin",
+        "helpText": "Eindeutige Bezeichnung für diesen Standort",
+        "gridSize": { "xs": 12, "sm": 12, "md": 6 }
+      },
+      {
+        "key": "street",
+        "label": "Straße und Hausnummer",
+        "entityType": "location",
+        "fieldType": "text",
+        "required": true,
+        "maxLength": 100,
+        "placeholder": "z.B. Filialstraße 10",
+        "gridSize": { "xs": 12, "sm": 12, "md": 8 }
+      },
+      {
+        "key": "postalCode",
+        "label": "PLZ",
+        "entityType": "location",
+        "fieldType": "text",
+        "required": true,
+        "validation": "germanPostalCode",
+        "maxLength": 5,
+        "placeholder": "12345",
+        "gridSize": { "xs": 6, "sm": 4, "md": 2 }
+      },
+      {
+        "key": "city",
+        "label": "Ort",
+        "entityType": "location",
+        "fieldType": "text",
+        "required": true,
+        "maxLength": 50,
+        "placeholder": "z.B. Berlin",
+        "gridSize": { "xs": 6, "sm": 8, "md": 6 }
+      }
+    ]
+  },
+  "validationRules": {
+    "germanPostalCode": {
+      "pattern": "^[0-9]{5}$",
+      "message": "Bitte geben Sie eine gültige 5-stellige PLZ ein"
+    },
+    "germanPhone": {
+      "pattern": "^[+]?[0-9\\s\\-\\/\\(\\)]+$",
+      "minLength": 6,
+      "maxLength": 30,
+      "message": "Bitte geben Sie eine gültige Telefonnummer ein"
+    },
+    "email": {
+      "pattern": "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$",
+      "message": "Bitte geben Sie eine gültige E-Mail-Adresse ein"
+    }
+  }
+}
