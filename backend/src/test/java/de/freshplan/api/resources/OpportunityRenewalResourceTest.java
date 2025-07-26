@@ -14,6 +14,8 @@ import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 
 /**
  * Integration Tests für RENEWAL Stage API Endpoints
@@ -25,6 +27,7 @@ import org.junit.jupiter.api.Test;
 @TestSecurity(
     user = "testuser",
     roles = {"admin", "manager", "sales"})
+@Execution(ExecutionMode.SAME_THREAD)
 class OpportunityRenewalResourceTest {
 
   /** Helper method to move an opportunity through stages to reach CLOSED_WON */

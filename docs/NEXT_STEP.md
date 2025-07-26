@@ -7,19 +7,20 @@
 
 ## 🎯 JETZT GERADE:
 
-**FC-005 DOKUMENTATIONS-UMSTRUKTURIERUNG - 100% FERTIG ✅**
+**FC-005 DOKUMENTATION 100% ABGESCHLOSSEN + CI-PROBLEM DOKUMENTIERT**
 
-**Stand 26.07.2025 17:15:**
-- ✅ **Master Plan V5:** Auto-Sync durchgeführt + FC-005 auf 100%
+**Stand 26.07.2025 18:45:**
 - ✅ **FC-005 Umstrukturierung:** 33 von 33 Dokumenten fertig ✅
-- ✅ **Fertige Bereiche:** ALLE 8 Verzeichnisse komplett (inkl. 08-IMPLEMENTATION/)
-- 📋 **TODO-System:** 26 offene TODOs (4 completed)
+- ✅ **PR #69 erstellt:** Vollständige deutsche Beschreibung
+- 🚨 **CI-Problem dokumentiert:** OpportunityRenewalResourceTest HTTP 500
+- ✅ **Master Plan V5:** Auto-Sync durchgeführt
 - 🔄 **Services:** Alle 4 laufen stabil
-- 📁 **Fortschritt:** Siehe RESTRUCTURING_PLAN.md
+- 📋 **TODO-System:** 30 TODOs (8 completed)
 
 **🚀 NÄCHSTER SCHRITT:**
 
-**FC-005 Implementation beginnen - Field Catalog JSON (todo-field-catalog)**
+**OPTION A: CI-Problem systematisch lösen (KRITISCH - blockiert Backend-Entwicklung)**
+**OPTION B: FC-005 Implementation beginnen (todo-field-catalog)**
 
 ```bash
 cd /Users/joergstreeck/freshplan-sales-tool
