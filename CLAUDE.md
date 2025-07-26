@@ -19,7 +19,7 @@
 11. **SECURITY:** Keine Hardcoded Secrets, Input Validation überall, CORS korrekt
 12. **PROAKTIVITÄT:** Fasse Verständnis zusammen und frage BEVOR du codest
 13. **INKREMENTELL:** Kleine, nachvollziehbare Schritte - teste häufig
-14. **CI GRÜN HALTEN:** Bei roter CI selbstständig debuggen mit GitHub CLI
+14. **CI GRÜN HALTEN:** Bei roter CI selbstständig debuggen mit GitHub CLI - siehe [CI Debugging Guide](./docs/guides/CI_DEBUGGING_LESSONS_LEARNED.md)
 15. **NAMING:** PascalCase für Klassen, camelCase für Methoden, UPPER_SNAKE für Konstanten
 16. **PERFORMANCE:** Bundle ≤200KB, API <200ms P95, keine N+1 Queries
 17. **FRESHFOODZ CI COMPLIANCE:** ALLE sichtbaren Frontend-Elemente MÜSSEN Freshfoodz CI verwenden (#94C456, #004F7B, Antonio Bold, Poppins)
@@ -35,6 +35,9 @@
 ### Symptom: Tests schlagen fehl mit 401 Unauthorized
 ➡️ **Security-Problem** - [Springe zu Auth-Fix](#auth-fix)
 
+### Symptom: CI Integration Tests sind rot (HTTP 500 oder andere Fehler)
+➡️ **CI-Problem** - [CI Debugging Lessons Learned](./docs/guides/CI_DEBUGGING_LESSONS_LEARNED.md) 🎯
+
 ### Symptom: Irgendwas funktioniert nicht
 ➡️ **Automatische Diagnose** - Führe aus: `./scripts/diagnose-problems.sh`
 
@@ -42,6 +45,7 @@
 
 ### 🔍 Quick Reference - Direkt zu den Details:
 - [🆘 Notfall-Diagnose](#🆘-notfall-diagnose-für-claude-nach-übergabe)
+- [🎯 CI Debugging Lessons Learned](./docs/guides/CI_DEBUGGING_LESSONS_LEARNED.md) **NEU!**
 - [0. Grundlegende Arbeitsphilosophie](#0-grundlegende-arbeitsphilosophie)
 - [0.1 Best Practices und Architektur](#01-best-practices-und-architektur-standards)
 - [0.10 Code-Review-Regel](#010-code-review-regel-gründliche-überprüfung-bei-jedem-bedeutenden-abschnitt)
