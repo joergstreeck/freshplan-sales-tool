@@ -7,43 +7,61 @@
 
 ## 🎯 JETZT GERADE:
 
-**✅ M4 RENEWAL STAGE ERFOLGREICH GEMERGED!**
+**FC-005 DOKUMENTATIONS-UMSTRUKTURIERUNG - 100% FERTIG ✅**
 
-**Stand 26.07.2025 02:15:**
-- ✅ **M4 Renewal Stage:** Komplett in main integriert (Commit: 807a4e3)
-- ✅ **RENEWAL-Spalte:** Frontend & Backend vollständig implementiert
-- ✅ **Lokale Tests:** Backend 349/349 ✅, Frontend 309/314 ✅
-- ✅ **CI-Bypass:** Strategisch durchgeführt und dokumentiert
-- ✅ **Cleanup:** UserResourceITDebug.java gelöscht
-- 🔄 **CI-Status:** Erwartungsgemäß rot (Environment-Problem, nicht Code)
+**Stand 26.07.2025 17:15:**
+- ✅ **Master Plan V5:** Auto-Sync durchgeführt + FC-005 auf 100%
+- ✅ **FC-005 Umstrukturierung:** 33 von 33 Dokumenten fertig ✅
+- ✅ **Fertige Bereiche:** ALLE 8 Verzeichnisse komplett (inkl. 08-IMPLEMENTATION/)
+- 📋 **TODO-System:** 26 offene TODOs (4 completed)
+- 🔄 **Services:** Alle 4 laufen stabil
+- 📁 **Fortschritt:** Siehe RESTRUCTURING_PLAN.md
 
 **🚀 NÄCHSTER SCHRITT:**
 
-**FC-012 Audit Trail System - Admin UI implementieren**
+**FC-005 Implementation beginnen - Field Catalog JSON (todo-field-catalog)**
 
 ```bash
 cd /Users/joergstreeck/freshplan-sales-tool
 
-# 1. Feature-Konzept lesen
-cat docs/features/FC-012/2025-07-17_TECH_CONCEPT_audit-trail-system.md
+# OPTION A: Dokumentation Claude-tauglich machen (todo-fc005-docs-optimize)
+cd docs/features/FC-005-CUSTOMER-MANAGEMENT/
+# - Dokumente in 500-Zeilen Chunks aufteilen
+# - Navigation mit absoluten Pfaden hinzufügen
+# - Cross-References zwischen allen Docs
 
-# 2. Audit Viewer UI implementieren
-# - Admin Dashboard für Audit Logs
-# - Filter nach Entity/User/Zeitraum
-# - Export-Funktionalität
-
-# Alternative: Nächstes Feature aus Master Plan
-./scripts/get-active-module.sh
+# OPTION B: Mit Implementation beginnen (todo-field-catalog)
+cd frontend/src/features/customers/data
+# - fieldCatalog.json mit 10 MVP Feldern erstellen
+# - Validierungsregeln definieren
+# - Industry-spezifische Felder
 ```
 
-**ABGESCHLOSSENE FEATURES:**
-- ✅ M4 Opportunity Pipeline (inkl. RENEWAL Stage)
-- ✅ FC-012 Audit Trail Backend
-- ✅ Security Foundation
-- ✅ Customer Module (90%)
+**WICHTIGE DOKUMENTE (NEUE STRUKTUR - 100% FERTIG!):**
+- Hauptübersicht: `/docs/features/FC-005-CUSTOMER-MANAGEMENT/README.md` ⭐
+- Quick Reference: `/docs/features/FC-005-CUSTOMER-MANAGEMENT/CLAUDE_QUICK_REFERENCE.md` 🚀
+- Implementation: `/docs/features/FC-005-CUSTOMER-MANAGEMENT/08-IMPLEMENTATION/README.md` ✅ NEU
+- Tech Konzept: `/docs/features/FC-005-CUSTOMER-MANAGEMENT/01-TECH-CONCEPT/README.md`
+- Backend Docs: `/docs/features/FC-005-CUSTOMER-MANAGEMENT/02-BACKEND/README.md`
+- Frontend Docs: `/docs/features/FC-005-CUSTOMER-MANAGEMENT/03-FRONTEND/README.md`
+- Performance: `/docs/features/FC-005-CUSTOMER-MANAGEMENT/07-PERFORMANCE/README.md`
+- Umstrukturierungs-Plan: `/docs/features/FC-005-CUSTOMER-MANAGEMENT/RESTRUCTURING_PLAN.md` ✅
 
-**STRATEGISCH WICHTIG:**
-CI-Bypass war eine bewusste Entscheidung nach stundenlangem Debugging. Der Code ist produktionsreif, nur die CI-Umgebung hat spezifische Probleme.
+**WICHTIGE DETAILS:**
+- chainCustomer='ja' triggert Standorte-Tab
+- industry bestimmt branchenspezifische Felder
+- Validierungen: Deutsche PLZ, E-Mail, Telefon
+- 3-stufiger Workflow: Kunde → Standorte → Details
+
+**ABGESCHLOSSENE FEATURES:**
+- ✅ M4 Opportunity Pipeline (100%)
+- ✅ Customer Backend API
+- ✅ Customer UI Analyse
+
+**OFFENE PRIORITÄTEN:**
+1. Customer UI Implementation (2-3 Tage)
+2. FC-012 Audit Trail UI (1 Tag)
+3. Security-Analyse Quarkus 3.17.4 (4h)
 
 ---
 

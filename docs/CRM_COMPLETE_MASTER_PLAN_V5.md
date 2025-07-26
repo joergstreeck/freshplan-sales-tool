@@ -1,7 +1,7 @@
 # 🚀 CRM COMPLETE MASTER PLAN V5 - Das Sales Command Center
 
 **Version:** 5.0  
-**Datum:** 26.07.2025 01:57 (Auto-Sync)
+**Datum:** 26.07.2025 17:14 (Auto-Sync)
 **Status:** Backend implementiert ✅, Tests fast vollständig 🔄
 
 ---
@@ -15,10 +15,11 @@
 ## 🤖 CLAUDE WORKING SECTION
 
 ### 📍 Aktueller Fokus
-**Phase:** 1 - Core Sales Process ✅ M4 ABGESCHLOSSEN!
-**Status:** M4 Renewal Stage komplett in main integriert ✅
-**Nächster Schritt:** FC-012 Audit Viewer UI implementieren
-**Arbeits-Dokument:** Audit Trail Admin Dashboard
+**Phase:** 1 - Core Sales Process (M4 Opportunity Pipeline Finalisierung)
+**Status:** Backend implementiert ✅, Tests fast vollständig 🔄
+**Nächster Schritt:** OpportunityRepositoryTest customer_number fix
+**Arbeits-Dokument:** [FC-005 Customer Management](./features/FC-005-CUSTOMER-MANAGEMENT/README.md) - Field-Based Architecture (ersetzt altes M5)
+**⚠️ WICHTIG:** FC-005 Docs komplett umstrukturiert in 8 Unterordner (33 Dokumente) für Claude-Kompatibilität!
 **Letzte Erfolge:** M4 Renewal Stage erfolgreich gemerged (CI-Bypass strategisch)
 
 ### 🧭 Navigation für die nächsten Schritte
@@ -62,8 +63,8 @@ Von Tag 1 auf Wachstum, Performance und Qualität ausgelegt.
 **Status:** Backend implementiert ✅, Tests fast vollständig 🔄
 **Details:** [Security Foundation](./features/ACTIVE/01_security_foundation/README.md)
 
-### ✅ Phase 1: Core Sales Process (Tag 2-10) - 95% ABGESCHLOSSEN
-**Module:** M4 Pipeline (Backend ✅, Frontend ✅, Integration ✅) → RENEWAL-Spalte (pending) → M8 Calculator → FC-004 Verkäuferschutz → FC-009 Renewal  
+### ✅ Phase 1: Core Sales Process (Tag 2-10) - 85% ABGESCHLOSSEN
+**Module:** M4 Pipeline (Backend ✅, Frontend ✅, Integration ✅) → FC-005 Customer Management → M8 Calculator → FC-004 Verkäuferschutz → FC-009 Renewal  
 **Details:** [Core Sales Features](./features/PLANNED/phase1_core_sales.md)
 
 ### 📋 Phase 2: Communication Hub (Tag 11-18)
@@ -80,7 +81,7 @@ Von Tag 1 auf Wachstum, Performance und Qualität ausgelegt.
 |-------|--------|-------------|------------------|
 | Security | ✅ Done | 100% | ✅ Keycloak läuft produktiv |
 | FC-012 Audit Trail | ✅ Backend Done | 90% | Admin UI implementieren |
-| M4 Pipeline | ✅ Done | 100% | ✅ Komplett in main integriert |
+| M4 Pipeline | 🔄 In Progress | 85% | Tests finalisieren (TODO-31) |
 | M4 RENEWAL-Spalte | ✅ Done | 100% | ✅ Teil des M4 Merge |
 | FC-003 E-Mail Integration | 📋 Planned | Tech-Konzept ✅ | Phase 2 Communication Hub |
 | FC-009 Renewal | 📋 Planned | Tech-Konzept ✅ | Contract-Entity Foundation → Event-Driven Triggers |
@@ -92,7 +93,7 @@ Von Tag 1 auf Wachstum, Performance und Qualität ausgelegt.
 | FC-017 Error Handling | 📋 Planned | Tech-Konzept ✅ | Fallback & Recovery ⭐ NEU |
 | FC-018 Datenschutz/DSGVO | 📋 Planned | Tech-Konzept ✅ | Privacy by Design ⭐ NEU |
 | M8 Calculator | 📋 Planned | 0% | Modal Template |
-| M5 Customer | ✅ Done* | 90% | *Legacy CSS Cleanup + Audit |
+| FC-005 Customer Mgmt | 🔄 In Progress | Docs 100% ✅ | [Field-Based Architecture](./features/FC-005-CUSTOMER-MANAGEMENT/README.md) ⭐ |
 
 ---
 
