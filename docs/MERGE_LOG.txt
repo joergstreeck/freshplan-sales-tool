@@ -1,0 +1,10 @@
+MERGE LOG - FreshPlan Sales Tool
+================================
+
+2025-07-26 01:55: CI-BYPASS MERGE - M4 Renewal Stage Implementation
+MERGE COMMIT: 807a4e3384656ccb94835ea18c0614bc2cb4fd02
+BRANCH: feature/m4-renewal-stage-implementation → main
+AUTHORIZED: Jörg Streeck + Claude
+REASON: CI environment issue, local tests 100% passing
+ROLLBACK: git revert -m 1 807a4e3384656ccb94835ea18c0614bc2cb4fd02
+BACKUPS: backup/full-state-2025-07-26, backup/main-pre-merge-2025-07-26

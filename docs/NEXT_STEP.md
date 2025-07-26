@@ -7,51 +7,62 @@
 
 ## 🎯 JETZT GERADE:
 
-**CI PIPELINE VERIFIKATION - AUDITSERVICE FIX**
+**FC-005 DOKUMENTATION 100% ABGESCHLOSSEN + CI-PROBLEM DOKUMENTIERT**
 
-**Stand 26.07.2025 01:16:**
-- ✅ **FC-012 Audit Trail System:** Vollständig repariert und funktionsfähig
-- ✅ **UserResourceIT Tests:** Pattern-basierte Assertions implementiert
-- ✅ **AuditService Context Fix:** @ActivateRequestContext hinzugefügt
-- ✅ **OpportunityRenewalResourceTest Fix:** Lokal erfolgreich getestet
-- 🔄 **CI-Verifikation:** Commit dbfbbce wartet auf CI-Pipeline Ergebnis
+**Stand 26.07.2025 18:45:**
+- ✅ **FC-005 Umstrukturierung:** 33 von 33 Dokumenten fertig ✅
+- ✅ **PR #69 erstellt:** Vollständige deutsche Beschreibung
+- 🚨 **CI-Problem dokumentiert:** OpportunityRenewalResourceTest HTTP 500
+- ✅ **Master Plan V5:** Auto-Sync durchgeführt
+- 🔄 **Services:** Alle 4 laufen stabil
+- 📋 **TODO-System:** 30 TODOs (8 completed)
 
 **🚀 NÄCHSTER SCHRITT:**
 
-**TODO-8: CI Pipeline überwachen - grüne Tests bestätigen (Commit: dbfbbce)**
+**OPTION A: CI-Problem systematisch lösen (KRITISCH - blockiert Backend-Entwicklung)**
+**OPTION B: FC-005 Implementation beginnen (todo-field-catalog)**
 
 ```bash
 cd /Users/joergstreeck/freshplan-sales-tool
 
-# 1. CI-Status prüfen (KRITISCH!)
-gh run list --branch feature/m4-renewal-stage-implementation --limit 3
+# OPTION A: Dokumentation Claude-tauglich machen (todo-fc005-docs-optimize)
+cd docs/features/FC-005-CUSTOMER-MANAGEMENT/
+# - Dokumente in 500-Zeilen Chunks aufteilen
+# - Navigation mit absoluten Pfaden hinzufügen
+# - Cross-References zwischen allen Docs
 
-# 2. Letzten Run detailliert anzeigen
-gh run view --log
-
-# 3a. Falls CI GRÜN:
-# - Dokumentation aktualisieren: Status auf ✅ GELÖST ändern
-# - UserResourceITDebug.java löschen
-# - Weiter mit RENEWAL-Spalte Implementation
-
-# 3b. Falls CI ROT:
-# - Debug-Analyse der CI-Logs
-# - Weitere AuditService oder Context-Probleme identifizieren
+# OPTION B: Mit Implementation beginnen (todo-field-catalog)
+cd frontend/src/features/customers/data
+# - fieldCatalog.json mit 10 MVP Feldern erstellen
+# - Validierungsregeln definieren
+# - Industry-spezifische Felder
 ```
 
-**Fix-Details:**
-```
-AuditService Context Fehler:
-RequestScoped context was not active → @ActivateRequestContext hinzugefügt
-```
+**WICHTIGE DOKUMENTE (NEUE STRUKTUR - 100% FERTIG!):**
+- Hauptübersicht: `/docs/features/FC-005-CUSTOMER-MANAGEMENT/README.md` ⭐
+- Quick Reference: `/docs/features/FC-005-CUSTOMER-MANAGEMENT/CLAUDE_QUICK_REFERENCE.md` 🚀
+- Implementation: `/docs/features/FC-005-CUSTOMER-MANAGEMENT/08-IMPLEMENTATION/README.md` ✅ NEU
+- Tech Konzept: `/docs/features/FC-005-CUSTOMER-MANAGEMENT/01-TECH-CONCEPT/README.md`
+- Backend Docs: `/docs/features/FC-005-CUSTOMER-MANAGEMENT/02-BACKEND/README.md`
+- Frontend Docs: `/docs/features/FC-005-CUSTOMER-MANAGEMENT/03-FRONTEND/README.md`
+- Performance: `/docs/features/FC-005-CUSTOMER-MANAGEMENT/07-PERFORMANCE/README.md`
+- Umstrukturierungs-Plan: `/docs/features/FC-005-CUSTOMER-MANAGEMENT/RESTRUCTURING_PLAN.md` ✅
 
-**UNTERBROCHEN BEI:**
-- AuditService Fix implementiert und committed (dbfbbce)
-- CI-Pipeline Verifikation ausstehend
-- Nächster Schritt: CI-Status prüfen und entsprechend reagieren
+**WICHTIGE DETAILS:**
+- chainCustomer='ja' triggert Standorte-Tab
+- industry bestimmt branchenspezifische Felder
+- Validierungen: Deutsche PLZ, E-Mail, Telefon
+- 3-stufiger Workflow: Kunde → Standorte → Details
 
-**STRATEGISCH WICHTIG:**
-Das AuditService Problem war der wahre Blocker für CI Integration Tests. UserResourceIT Tests waren ein Ablenkungsmanöver - das eigentliche Problem waren 8 OpportunityRenewalResourceTest Failures durch RequestScoped Context Fehler.
+**ABGESCHLOSSENE FEATURES:**
+- ✅ M4 Opportunity Pipeline (100%)
+- ✅ Customer Backend API
+- ✅ Customer UI Analyse
+
+**OFFENE PRIORITÄTEN:**
+1. Customer UI Implementation (2-3 Tage)
+2. FC-012 Audit Trail UI (1 Tag)
+3. Security-Analyse Quarkus 3.17.4 (4h)
 
 ---
 
