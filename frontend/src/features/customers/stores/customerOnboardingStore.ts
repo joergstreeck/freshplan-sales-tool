@@ -36,6 +36,8 @@ interface CustomerOnboardingState {
   locations: Location[];
   /** Location field values by location ID */
   locationFieldValues: Record<string, Record<string, any>>;
+  /** Detailed locations (sub-locations within locations) */
+  detailedLocations: DetailedLocation[];
   /** Validation errors by field key */
   validationErrors: Record<string, string>;
   
@@ -59,9 +61,13 @@ interface CustomerOnboardingState {
   /** Update location */
   updateLocation: (locationId: string, updates: Partial<Location>) => void;
   /** Add detailed location */
-  addDetailedLocation: (locationId: string) => void;
+  addDetailedLocation: (locationId: string, detailedLocation: Omit<DetailedLocation, 'id' | 'locationId' | 'createdAt' | 'updatedAt'>) => void;
+  /** Update detailed location */
+  updateDetailedLocation: (detailedLocationId: string, updates: Partial<DetailedLocation>) => void;
   /** Remove detailed location */
-  removeDetailedLocation: (locationId: string, detailedLocationId: string) => void;
+  removeDetailedLocation: (detailedLocationId: string) => void;
+  /** Add batch detailed locations */
+  addBatchDetailedLocations: (locationId: string, detailedLocations: Omit<DetailedLocation, 'id' | 'locationId' | 'createdAt' | 'updatedAt'>[]) => void;
   /** Validate a field */
   validateField: (fieldKey: string) => void;
   /** Validate current step */
@@ -101,6 +107,7 @@ export const useCustomerOnboardingStore = create<CustomerOnboardingState>()(
       customerData: {},
       locations: [],
       locationFieldValues: {},
+      detailedLocations: [],
       validationErrors: {},
       customerFields: [],
       locationFields: [],
@@ -169,16 +176,83 @@ export const useCustomerOnboardingStore = create<CustomerOnboardingState>()(
         });
       },
       
-      addDetailedLocation: (locationId) => {
-        // Implementation for detailed locations
+      addDetailedLocation: (locationId, detailedLocation) => {
         set((state) => {
+          const newDetailedLocation: DetailedLocation = {
+            id: `dl-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+            locationId,
+            name: detailedLocation.name,
+            category: detailedLocation.category || 'other',
+            floor: detailedLocation.floor,
+            capacity: detailedLocation.capacity,
+            operatingHours: detailedLocation.operatingHours,
+            responsiblePerson: detailedLocation.responsiblePerson,
+            internalPhone: detailedLocation.internalPhone,
+            specialRequirements: detailedLocation.specialRequirements,
+            sortOrder: state.detailedLocations.filter(dl => dl.locationId === locationId).length,
+            street: detailedLocation.street,
+            postalCode: detailedLocation.postalCode,
+            city: detailedLocation.city,
+            notes: detailedLocation.notes,
+            isActive: true,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+          };
+          
+          state.detailedLocations.push(newDetailedLocation);
           state.isDirty = true;
         });
       },
       
-      removeDetailedLocation: (locationId, detailedLocationId) => {
-        // Implementation for detailed locations
+      updateDetailedLocation: (detailedLocationId, updates) => {
         set((state) => {
+          const index = state.detailedLocations.findIndex(dl => dl.id === detailedLocationId);
+          if (index !== -1) {
+            state.detailedLocations[index] = {
+              ...state.detailedLocations[index],
+              ...updates,
+              updatedAt: new Date().toISOString()
+            };
+            state.isDirty = true;
+          }
+        });
+      },
+      
+      removeDetailedLocation: (detailedLocationId) => {
+        set((state) => {
+          state.detailedLocations = state.detailedLocations.filter(
+            dl => dl.id !== detailedLocationId
+          );
+          state.isDirty = true;
+        });
+      },
+      
+      addBatchDetailedLocations: (locationId, detailedLocations) => {
+        set((state) => {
+          const startOrder = state.detailedLocations.filter(dl => dl.locationId === locationId).length;
+          
+          const newDetailedLocations = detailedLocations.map((dl, index) => ({
+            id: `dl-${Date.now()}-${index}-${Math.random().toString(36).substr(2, 9)}`,
+            locationId,
+            name: dl.name,
+            category: dl.category || 'other',
+            floor: dl.floor,
+            capacity: dl.capacity,
+            operatingHours: dl.operatingHours,
+            responsiblePerson: dl.responsiblePerson,
+            internalPhone: dl.internalPhone,
+            specialRequirements: dl.specialRequirements,
+            sortOrder: startOrder + index,
+            street: dl.street,
+            postalCode: dl.postalCode,
+            city: dl.city,
+            notes: dl.notes,
+            isActive: true,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+          } as DetailedLocation));
+          
+          state.detailedLocations.push(...newDetailedLocations);
           state.isDirty = true;
         });
       },
@@ -315,6 +389,7 @@ export const useCustomerOnboardingStore = create<CustomerOnboardingState>()(
           state.customerData = {};
           state.locations = [];
           state.locationFieldValues = {};
+          state.detailedLocations = [];
           state.validationErrors = {};
         });
       },
@@ -333,6 +408,7 @@ export const useCustomerOnboardingStore = create<CustomerOnboardingState>()(
         customerData: state.customerData,
         locations: state.locations,
         locationFieldValues: state.locationFieldValues,
+        detailedLocations: state.detailedLocations,
         draftId: state.draftId,
         lastSaved: state.lastSaved
       })

@@ -49,6 +49,18 @@ export interface LocationWithFields extends Location {
 }
 
 /**
+ * Detailed location category types
+ */
+export type DetailedLocationCategory = 
+  | 'restaurant'
+  | 'cafeteria'
+  | 'kiosk'
+  | 'station'
+  | 'kitchen'
+  | 'storage'
+  | 'other';
+
+/**
  * Detailed location (Ausgabestelle)
  * Represents individual serving points within a location
  */
@@ -59,6 +71,22 @@ export interface DetailedLocation {
   locationId: string;
   /** Name of the serving point */
   name: string;
+  /** Category/Type of the detailed location */
+  category: DetailedLocationCategory;
+  /** Floor/Level information */
+  floor?: string;
+  /** Capacity (seats, beds, etc.) */
+  capacity?: number;
+  /** Operating hours */
+  operatingHours?: string;
+  /** Responsible person */
+  responsiblePerson?: string;
+  /** Internal phone */
+  internalPhone?: string;
+  /** Special requirements */
+  specialRequirements?: string[];
+  /** Sort order */
+  sortOrder?: number;
   /** Address fields */
   street?: string;
   postalCode?: string;
