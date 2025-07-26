@@ -95,11 +95,13 @@ export interface CustomerDraftResponse {
 }
 ```
 
-## 🔲 13. Field Catalog & Data (1h)
+## ✅ 13. Field Catalog & Data (1h) - FERTIG
 
 **Location:** `frontend/src/features/customers/data/`
 
-- [ ] `fieldCatalog.json`
+- [x] `fieldCatalog.json` ✅ **IMPLEMENTIERT am 26.07.2025**
+  - Siehe: [Field Catalog Implementation](/Users/joergstreeck/freshplan-sales-tool/frontend/src/features/customers/data/fieldCatalog.json)
+  - Dokumentation: [Field Catalog README](/Users/joergstreeck/freshplan-sales-tool/frontend/src/features/customers/data/README.md)
 ```json
 {
   "customer": [
