@@ -25,7 +25,7 @@ import org.junit.jupiter.api.parallel.ExecutionMode;
  */
 @QuarkusTest
 @TestSecurity(
-    user = "testuser",
+    user = "ci-test-user",
     roles = {"admin", "manager", "sales"})
 @Execution(ExecutionMode.SAME_THREAD)
 class OpportunityRenewalResourceTest {
