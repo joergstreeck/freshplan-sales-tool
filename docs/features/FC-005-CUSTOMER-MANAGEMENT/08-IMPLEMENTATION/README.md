@@ -98,6 +98,17 @@ Eine Aufgabe gilt als abgeschlossen wenn:
 ## 📊 Fortschritt
 
 - **Backend:** 0% (Tag 1-2)
-- **Frontend:** 30% (Field Catalog ✅, Type Definitions ✅, Field Renderer ✅)
-- **Integration:** 0% (Tag 4)
+- **Frontend:** 75% (Field Catalog ✅, Types ✅, Field Renderer ✅, Wizard ✅, Store ✅, API Services ✅)
+- **Integration:** 15% (API Client implementiert)
 - **Testing:** 0% (Tag 5)
+
+## 📝 Letzte Updates
+
+**26.07.2025 - API Services implementiert:**
+- ✅ API Client mit Retry Logic und Error Handling
+- ✅ Customer API Service (Draft System, CRUD, Search)
+- ✅ Field Definition API mit 5-Minuten Cache
+- ✅ Location API Service
+- ✅ React Query Hooks für alle Services
+- ✅ Auto-Save Hook mit API Integration
+- 📄 [Vollständige Dokumentation](/Users/joergstreeck/freshplan-sales-tool/frontend/src/features/customers/services/README.md)

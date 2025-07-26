@@ -236,11 +236,12 @@ export const useCustomerOnboardingStore = create<CustomerOnboardingState>()(
 - [ ] Trigger-Logic implementieren
 - [ ] Persistence verifizieren
 
-## 🔲 15. API Services (2h)
+## ✅ 15. API Services (2h) - FERTIG 26.07.2025
 
 **Location:** `frontend/src/features/customers/services/`
 
-- [ ] `customerApi.ts`
+- [x] `api-client.ts` - Basis HTTP Client mit Retry & Error Handling ✅
+- [x] `customerApi.ts` - Customer API Service implementiert ✅
 ```typescript
 class CustomerApi {
   async createDraft(): Promise<CustomerDraftResponse> {
