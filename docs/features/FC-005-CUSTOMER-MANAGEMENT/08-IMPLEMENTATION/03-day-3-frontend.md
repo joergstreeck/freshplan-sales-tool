@@ -23,11 +23,20 @@ mkdir -p {components,hooks,stores,services,types,utils,schemas,data}
   - [ ] Zod (v3+)
   - [ ] Material-UI (v5+)
 
-## 🔲 12. Type Definitions (1h)
+## ✅ 12. Type Definitions (1h) - FERTIG
 
 **Location:** `frontend/src/features/customers/types/`
 
-- [ ] `customer.types.ts`
+- [x] `customer.types.ts` ✅ **IMPLEMENTIERT am 26.07.2025**
+  - Siehe: [customer.types.ts](/Users/joergstreeck/freshplan-sales-tool/frontend/src/features/customers/types/customer.types.ts)
+- [x] `field.types.ts` ✅ **IMPLEMENTIERT**
+  - Siehe: [field.types.ts](/Users/joergstreeck/freshplan-sales-tool/frontend/src/features/customers/types/field.types.ts)
+- [x] `location.types.ts` ✅ **IMPLEMENTIERT**
+  - Siehe: [location.types.ts](/Users/joergstreeck/freshplan-sales-tool/frontend/src/features/customers/types/location.types.ts)
+- [x] `api.types.ts` ✅ **IMPLEMENTIERT**
+  - Siehe: [api.types.ts](/Users/joergstreeck/freshplan-sales-tool/frontend/src/features/customers/types/api.types.ts)
+- [x] `index.ts` ✅ **Re-Exports erstellt**
+  - Siehe: [index.ts](/Users/joergstreeck/freshplan-sales-tool/frontend/src/features/customers/types/index.ts)
 ```typescript
 export enum CustomerStatus {
   DRAFT = 'DRAFT',

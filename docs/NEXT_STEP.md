@@ -7,20 +7,20 @@
 
 ## 🎯 JETZT GERADE:
 
-**FC-005 DOKUMENTATION 100% ABGESCHLOSSEN + CI-PROBLEM DOKUMENTIERT**
+**CI-PROBLEM GELÖST ✅ + FC-005 BEREIT FÜR IMPLEMENTATION**
 
-**Stand 26.07.2025 18:45:**
+**Stand 26.07.2025 19:25:**
+- ✅ **CI-Problem GELÖST:** Alle Workflows grün! Backend-Entwicklung entsperrt
 - ✅ **FC-005 Umstrukturierung:** 33 von 33 Dokumenten fertig ✅
-- ✅ **PR #69 erstellt:** Vollständige deutsche Beschreibung
-- 🚨 **CI-Problem dokumentiert:** OpportunityRenewalResourceTest HTTP 500
+- ✅ **PR #69 gemerged:** FC-005 + CI-Fixes in main
+- ✅ **CI Lessons Learned:** Dokumentiert und in CLAUDE.md verankert
 - ✅ **Master Plan V5:** Auto-Sync durchgeführt
 - 🔄 **Services:** Alle 4 laufen stabil
-- 📋 **TODO-System:** 30 TODOs (8 completed)
+- 📋 **TODO-System:** 7 offen, 9 erledigt
 
 **🚀 NÄCHSTER SCHRITT:**
 
-**OPTION A: CI-Problem systematisch lösen (KRITISCH - blockiert Backend-Entwicklung)**
-**OPTION B: FC-005 Implementation beginnen (todo-field-catalog)**
+**FC-005 Implementation beginnen mit Field Catalog JSON (todo-field-catalog)**
 
 ```bash
 cd /Users/joergstreeck/freshplan-sales-tool

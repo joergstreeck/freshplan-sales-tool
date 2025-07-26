@@ -98,6 +98,6 @@ Eine Aufgabe gilt als abgeschlossen wenn:
 ## 📊 Fortschritt
 
 - **Backend:** 0% (Tag 1-2)
-- **Frontend:** 10% (Field Catalog ✅)
+- **Frontend:** 30% (Field Catalog ✅, Type Definitions ✅, Field Renderer ✅)
 - **Integration:** 0% (Tag 4)
 - **Testing:** 0% (Tag 5)
