@@ -23,11 +23,20 @@ mkdir -p {components,hooks,stores,services,types,utils,schemas,data}
   - [ ] Zod (v3+)
   - [ ] Material-UI (v5+)
 
-## 🔲 12. Type Definitions (1h)
+## ✅ 12. Type Definitions (1h) - FERTIG
 
 **Location:** `frontend/src/features/customers/types/`
 
-- [ ] `customer.types.ts`
+- [x] `customer.types.ts` ✅ **IMPLEMENTIERT am 26.07.2025**
+  - Siehe: [customer.types.ts](/Users/joergstreeck/freshplan-sales-tool/frontend/src/features/customers/types/customer.types.ts)
+- [x] `field.types.ts` ✅ **IMPLEMENTIERT**
+  - Siehe: [field.types.ts](/Users/joergstreeck/freshplan-sales-tool/frontend/src/features/customers/types/field.types.ts)
+- [x] `location.types.ts` ✅ **IMPLEMENTIERT**
+  - Siehe: [location.types.ts](/Users/joergstreeck/freshplan-sales-tool/frontend/src/features/customers/types/location.types.ts)
+- [x] `api.types.ts` ✅ **IMPLEMENTIERT**
+  - Siehe: [api.types.ts](/Users/joergstreeck/freshplan-sales-tool/frontend/src/features/customers/types/api.types.ts)
+- [x] `index.ts` ✅ **Re-Exports erstellt**
+  - Siehe: [index.ts](/Users/joergstreeck/freshplan-sales-tool/frontend/src/features/customers/types/index.ts)
 ```typescript
 export enum CustomerStatus {
   DRAFT = 'DRAFT',
@@ -95,11 +104,13 @@ export interface CustomerDraftResponse {
 }
 ```
 
-## 🔲 13. Field Catalog & Data (1h)
+## ✅ 13. Field Catalog & Data (1h) - FERTIG
 
 **Location:** `frontend/src/features/customers/data/`
 
-- [ ] `fieldCatalog.json`
+- [x] `fieldCatalog.json` ✅ **IMPLEMENTIERT am 26.07.2025**
+  - Siehe: [Field Catalog Implementation](/Users/joergstreeck/freshplan-sales-tool/frontend/src/features/customers/data/fieldCatalog.json)
+  - Dokumentation: [Field Catalog README](/Users/joergstreeck/freshplan-sales-tool/frontend/src/features/customers/data/README.md)
 ```json
 {
   "customer": [
@@ -150,11 +161,17 @@ export const industryConfig: Record<string, IndustryConfig> = {
 };
 ```
 
-## 🔲 14. Zustand Store (2h)
+## ✅ 14. Zustand Store (2h) - FERTIG
 
 **Location:** `frontend/src/features/customers/stores/`
 
-- [ ] `customerOnboardingStore.ts`
+- [x] `customerOnboardingStore.ts` ✅ **IMPLEMENTIERT am 26.07.2025**
+  - Siehe: [customerOnboardingStore.ts](/Users/joergstreeck/freshplan-sales-tool/frontend/src/features/customers/stores/customerOnboardingStore.ts)
+  - Features: State Management, Draft Persistence, Validation
+- [x] `useFieldDefinitions.ts` ✅ **IMPLEMENTIERT**
+  - Siehe: [useFieldDefinitions.ts](/Users/joergstreeck/freshplan-sales-tool/frontend/src/features/customers/hooks/useFieldDefinitions.ts)
+- [x] `useAutoSave.ts` ✅ **IMPLEMENTIERT**
+  - Siehe: [useAutoSave.ts](/Users/joergstreeck/freshplan-sales-tool/frontend/src/features/customers/hooks/useAutoSave.ts)
 ```typescript
 interface CustomerOnboardingState {
   // Draft data
@@ -219,11 +236,12 @@ export const useCustomerOnboardingStore = create<CustomerOnboardingState>()(
 - [ ] Trigger-Logic implementieren
 - [ ] Persistence verifizieren
 
-## 🔲 15. API Services (2h)
+## ✅ 15. API Services (2h) - FERTIG 26.07.2025
 
 **Location:** `frontend/src/features/customers/services/`
 
-- [ ] `customerApi.ts`
+- [x] `api-client.ts` - Basis HTTP Client mit Retry & Error Handling ✅
+- [x] `customerApi.ts` - Customer API Service implementiert ✅
 ```typescript
 class CustomerApi {
   async createDraft(): Promise<CustomerDraftResponse> {
@@ -318,7 +336,7 @@ export const customerBaseSchema = z.object({
 });
 ```
 
-- [ ] `fieldValidation.ts`
+- [x] `fieldValidation.ts` - Als schemaBuilder.ts implementiert ✅
 ```typescript
 export class FieldValidationService {
   buildSchemaForFields(fields: FieldDefinition[]): z.ZodSchema {
@@ -345,11 +363,11 @@ export class FieldValidationService {
 
 ## ✅ Checklist Ende Tag 3
 
-- [ ] Type System vollständig
-- [ ] Store funktioniert mit Persistence
-- [ ] API Services implementiert
-- [ ] Validation Framework ready
-- [ ] Erste Integration Tests
+- [x] Type System vollständig ✅
+- [x] Store funktioniert mit Persistence ✅
+- [x] API Services implementiert ✅
+- [x] Validation Framework ready ✅
+- [ ] Erste Integration Tests (noch ausstehend)
 
 ---
 

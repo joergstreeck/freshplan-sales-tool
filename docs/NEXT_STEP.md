@@ -7,35 +7,41 @@
 
 ## 🎯 JETZT GERADE:
 
-**FC-005 DOKUMENTATION 100% ABGESCHLOSSEN + CI-PROBLEM DOKUMENTIERT**
+**FC-005 CODE REVIEW FEEDBACK VOLLSTÄNDIG ABGEARBEITET ✅**
 
-**Stand 26.07.2025 18:45:**
-- ✅ **FC-005 Umstrukturierung:** 33 von 33 Dokumenten fertig ✅
-- ✅ **PR #69 erstellt:** Vollständige deutsche Beschreibung
-- 🚨 **CI-Problem dokumentiert:** OpportunityRenewalResourceTest HTTP 500
-- ✅ **Master Plan V5:** Auto-Sync durchgeführt
-- 🔄 **Services:** Alle 4 laufen stabil
-- 📋 **TODO-System:** 30 TODOs (8 completed)
+**Stand 27.07.2025 04:57:**
+- ✅ **CR-001:** Conditional Field Visibility mit 6 Operatoren vollständig implementiert
+- ✅ **CR-002:** Dynamic Zod Schema Builder Integration in Store abgeschlossen  
+- ✅ **Testing:** 24 Tests total (17 + 6 + 7) mit Performance & Robustheit validiert
+- ✅ **Field Catalog:** Erweitert mit practical conditional examples und cascading logic
+- ✅ **Schema Builder:** Required field validation und enterprise robustheit gefixt
+- 🚨 **Status:** BEREIT FÜR CR-003 ODER UI INTEGRATION
 
 **🚀 NÄCHSTER SCHRITT:**
 
-**OPTION A: CI-Problem systematisch lösen (KRITISCH - blockiert Backend-Entwicklung)**
-**OPTION B: FC-005 Implementation beginnen (todo-field-catalog)**
+**CR-003 Configuration Data externalisieren ODER FC-005 UI Integration**
 
 ```bash
 cd /Users/joergstreeck/freshplan-sales-tool
 
-# OPTION A: Dokumentation Claude-tauglich machen (todo-fc005-docs-optimize)
-cd docs/features/FC-005-CUSTOMER-MANAGEMENT/
-# - Dokumente in 500-Zeilen Chunks aufteilen
-# - Navigation mit absoluten Pfaden hinzufügen
-# - Cross-References zwischen allen Docs
+# Option A: CR-003 Configuration Data externalisieren  
+# 1. DetailedLocationsStep.tsx:72-134 categoryIcons, industryTemplates auslagern
+# 2. Separate config files für bessere Wartbarkeit erstellen
+# 3. Template-System für branchenspezifische Vorkonfigurationen
 
-# OPTION B: Mit Implementation beginnen (todo-field-catalog)
-cd frontend/src/features/customers/data
-# - fieldCatalog.json mit 10 MVP Feldern erstellen
-# - Validierungsregeln definieren
-# - Industry-spezifische Felder
+# Option B: FC-005 UI Integration - CustomerOnboardingWizard einbinden
+# 1. Komponenten sind bereit, müssen nur in UI integriert werden  
+# 2. "Neuen Kunden anlegen" Button zur bestehenden Kundenliste hinzufügen
+# 3. Field-Catalog JSON aktivieren für Dynamic Forms
+
+# Tests validieren (sollten alle grün sein):
+cd frontend
+npm test -- --run DynamicFieldRenderer
+npm test -- --run ConditionalFieldsLive
+npm test -- --run StoreDynamicValidationSimple
+
+# Pull Request Status prüfen:
+gh pr view 70
 ```
 
 **WICHTIGE DOKUMENTE (NEUE STRUKTUR - 100% FERTIG!):**

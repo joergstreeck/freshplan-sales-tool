@@ -6,11 +6,22 @@
 - **Next:** [Tag 5: Testing & Completion](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/08-IMPLEMENTATION/05-day-5-testing.md)
 - **Related:** [Frontend Components](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/03-FRONTEND/01-components.md)
 
-## 🔲 17. Base Components (3h)
+## ✅ 17. Base Components (3h) - FERTIG
 
 **Location:** `frontend/src/features/customers/components/`
 
-- [ ] `wizard/CustomerOnboardingWizard.tsx`
+- [x] `wizard/CustomerOnboardingWizard.tsx` ✅ **IMPLEMENTIERT am 26.07.2025**
+  - Siehe: [CustomerOnboardingWizard.tsx](/Users/joergstreeck/freshplan-sales-tool/frontend/src/features/customers/components/wizard/CustomerOnboardingWizard.tsx)
+- [x] `wizard/WizardNavigation.tsx` ✅ **IMPLEMENTIERT**
+  - Siehe: [WizardNavigation.tsx](/Users/joergstreeck/freshplan-sales-tool/frontend/src/features/customers/components/wizard/WizardNavigation.tsx)
+- [x] `steps/CustomerDataStep.tsx` ✅ **IMPLEMENTIERT**
+  - Siehe: [CustomerDataStep.tsx](/Users/joergstreeck/freshplan-sales-tool/frontend/src/features/customers/components/steps/CustomerDataStep.tsx)
+- [x] `steps/LocationsStep.tsx` ✅ **IMPLEMENTIERT**
+  - Siehe: [LocationsStep.tsx](/Users/joergstreeck/freshplan-sales-tool/frontend/src/features/customers/components/steps/LocationsStep.tsx)
+- [x] `shared/SaveIndicator.tsx` ✅ **IMPLEMENTIERT**
+  - Siehe: [SaveIndicator.tsx](/Users/joergstreeck/freshplan-sales-tool/frontend/src/features/customers/components/shared/SaveIndicator.tsx)
+- [x] `shared/LoadingScreen.tsx` ✅ **IMPLEMENTIERT**
+  - Siehe: [LoadingScreen.tsx](/Users/joergstreeck/freshplan-sales-tool/frontend/src/features/customers/components/shared/LoadingScreen.tsx)
 ```tsx
 export const CustomerOnboardingWizard: React.FC = () => {
   const { currentStep, customerData, locations } = useCustomerOnboardingStore();
@@ -156,11 +167,13 @@ export const SaveIndicator: React.FC = () => {
 };
 ```
 
-## 🔲 18. Field Components (3h)
+## ✅ 18. Field Components (3h) - FERTIG
 
 **Location:** `frontend/src/features/customers/components/fields/`
 
-- [ ] `DynamicFieldRenderer.tsx`
+- [x] `DynamicFieldRenderer.tsx` ✅ **IMPLEMENTIERT am 26.07.2025**
+  - Siehe: [DynamicFieldRenderer.tsx](/Users/joergstreeck/freshplan-sales-tool/frontend/src/features/customers/components/fields/DynamicFieldRenderer.tsx)
+  - Dokumentation: [Field Rendering Guide](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/03-FRONTEND/03-field-rendering.md)
 ```tsx
 interface DynamicFieldRendererProps {
   fields: FieldDefinition[];

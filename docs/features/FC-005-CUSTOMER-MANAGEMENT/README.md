@@ -27,6 +27,7 @@ Das Customer Management ist das **Herzstück** des FreshPlan CRM Systems. Es imp
 ### 1. 🏗️ [Technisches Konzept](./2025-07-26_TECH_CONCEPT_customer-field-based-architecture.md)
 **Die zentrale Referenz** - Single Source of Truth für die gesamte Architektur
 - Executive Summary
+- 🚨 **KRITISCHE TEAM-PHILOSOPHIE:** Flexibilität über Dogmatismus
 - Architektur-Entscheidungen (ADRs)
 - Datenmodell & Entity Relations
 - Implementierungsplan (5 Tage)
@@ -149,10 +150,13 @@ Das Customer Management ist das **Herzstück** des FreshPlan CRM Systems. Es imp
 - ✅ Vollständige technische Dokumentation
 - ✅ Alle Architektur-Entscheidungen getroffen
 - ✅ Implementation Checklist bereit
-- 🔄 Feature Branch erstellt: `feature/customer-field-based-ui`
+- ✅ **Field Catalog JSON implementiert** (26.07.2025)
+  - [fieldCatalog.json](/Users/joergstreeck/freshplan-sales-tool/frontend/src/features/customers/data/fieldCatalog.json)
+  - [Field Catalog Dokumentation](/Users/joergstreeck/freshplan-sales-tool/frontend/src/features/customers/data/README.md)
+- 🔄 Feature Branch: `feature/fc-005-field-catalog`
 
 **Nächste Schritte:**
-1. Field Catalog JSON erstellen (Tag 1)
+1. ~~Field Catalog JSON erstellen~~ ✅ **FERTIG**
 2. Backend Entities implementieren (Tag 1)
 3. Frontend Store aufsetzen (Tag 3)
 4. Wizard Components (Tag 4)

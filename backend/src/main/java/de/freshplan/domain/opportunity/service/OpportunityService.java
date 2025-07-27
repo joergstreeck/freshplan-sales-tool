@@ -1,6 +1,5 @@
 package de.freshplan.domain.opportunity.service;
 
-import de.freshplan.domain.audit.annotation.Auditable;
 import de.freshplan.domain.audit.entity.AuditEventType;
 import de.freshplan.domain.audit.service.AuditService;
 import de.freshplan.domain.audit.service.dto.AuditContext;
@@ -432,18 +431,20 @@ public class OpportunityService {
     } catch (Exception e) {
       // Fallback für Tests - verwende verschiedene Test-User
       logger.warn("SecurityIdentity not available, falling back to test user: {}", e.getMessage());
-      
+
       // Versuche verschiedene Test-User
-      return userRepository.findByUsername("testuser")
+      return userRepository
+          .findByUsername("testuser")
           .or(() -> userRepository.findByUsername("ci-test-user"))
-          .or(() -> {
-            // Als letzter Ausweg: Erstelle temporären Test-User
-            logger.warn("No test user found, creating temporary test user for CI");
-            User tempUser = new User("ci-test-user", "CI", "Test User", "ci-test@example.com");
-            tempUser.setRoles(java.util.Arrays.asList("admin", "manager", "sales"));
-            userRepository.persist(tempUser);
-            return java.util.Optional.of(tempUser);
-          })
+          .or(
+              () -> {
+                // Als letzter Ausweg: Erstelle temporären Test-User
+                logger.warn("No test user found, creating temporary test user for CI");
+                User tempUser = new User("ci-test-user", "CI", "Test User", "ci-test@example.com");
+                tempUser.setRoles(java.util.Arrays.asList("admin", "manager", "sales"));
+                userRepository.persist(tempUser);
+                return java.util.Optional.of(tempUser);
+              })
           .orElseThrow(() -> new RuntimeException("No test user available"));
     }
   }

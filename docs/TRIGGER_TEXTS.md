@@ -2,7 +2,9 @@
 
 **WICHTIG: Diese Datei enthält die offiziellen Trigger-Texte. NIEMALS löschen oder überschreiben!**
 
-Letzte Aktualisierung: 25.07.2025
+**Version:** 2.5  
+**Letzte Aktualisierung:** 27.07.2025  
+**Kritischer Fix:** Feature Branch Workflow nach Orientierung
 
 ---
 
@@ -92,11 +94,22 @@ Speichere in /docs/claude-work/daily-work/YYYY-MM-DD/YYYY-MM-DD_HANDOVER_HH-MM.m
 
 ```
 Lese alles gründlich durch und befolge strict die Standardübergabe.
-    WICHTIG: Dies ist NUR die Orientierungsphase - noch NICHT arbeiten!
+
+    SCHRITT 0 - SOFORT zum Feature-Branch wechseln:
+    git branch --show-current
+    ./scripts/get-current-feature-branch.sh
+    
+    → Falls Feature-Branch gefunden: git checkout feature/[branch-name]
+    → Falls KEIN Feature-Branch: git checkout -b feature/fc-XXX-[description]
+    
+    ⚠️ DU BLEIBST AUF DEM FEATURE-BRANCH FÜR DIE GESAMTE SESSION!
+    ✅ Orientierung und Arbeit erfolgen auf dem gleichen Branch!
 
     SCHRITT 1 - System vorbereiten:
-    ./scripts/session-start.sh
-    → Bei Fehlern/Warnungen STOPPE und analysiere
+    ./scripts/robust-session-start.sh
+    → ODER für maximale Sicherheit:
+    ./scripts/safe-run.sh ./scripts/session-start.sh
+    → Bei Fehlern: Check die angezeigte Log-Datei für Details
 
     SCHRITT 2 - ABSOLUTES WORKFLOW-VERBOT:
     🛑 NIEMALS "git push origin main" oder "git commit" auf main Branch!
@@ -110,13 +123,11 @@ Lese alles gründlich durch und befolge strict die Standardübergabe.
     3. git push origin feature/[name] 
     4. Pull Request erstellen
     5. Nach Review: NUR auf direkte Anweisung mergen!
-    
-    Aktuelle Branch prüfen: git branch --show-current (sollte main sein für Orientierung)
 
     SCHRITT 3 - Pflichtlektüre:
-    1. docs/CLAUDE.md (besonders Session-Ende-Routine)
+    1. /CLAUDE.md (besonders Session-Ende-Routine)
     2. Letzte Übergabe (besonders TODO-Status)
-    3. docs/STANDARDUERGABE_NEU.md
+    3. /docs/STANDARDUERGABE_NEU.md
 
     SCHRITT 4 - V5 Fokus prüfen (✅ Auto-Sync):
     cat docs/CRM_COMPLETE_MASTER_PLAN_V5.md | sed -n '15,35p'
@@ -140,12 +151,15 @@ Lese alles gründlich durch und befolge strict die Standardübergabe.
     - cat docs/NEXT_STEP.md (wo genau weitermachen?)
 
     MELDE DICH MIT:
+    - ✅ Arbeits-Branch: feature/[branch-name]
     - ✅ X offene TODOs wiederhergestellt
     - ✅ Aktives Modul: FC-XXX-MX
     - ✅ V5 Fokus: [Phase/Status aus V5] (✅ Auto-Sync)
     - ✅ Nächster Schritt: [aus NEXT_STEP.md oder TODO]
     - ⚠️ Diskrepanzen: [Liste - sollten minimal sein dank Auto-Sync]
     - Status: BEREIT FÜR ARBEITSPHASE
+
+    ⛔ STOPP: Warte auf "ARBEITSSTART" Bestätigung bevor du mit der Implementierung beginnst!
 ```
 
 ---
@@ -159,7 +173,7 @@ Lese alles gründlich durch und befolge strict die Standardübergabe.
 
 **Teil 2:**
 ```
-./scripts/session-start.sh → WORKFLOW-VERBOT verstehen → Docs lesen → ./scripts/get-active-module.sh → ⛔ STOPP: Status melden und auf "ARBEITSSTART" warten!
+Feature-Branch checkout → ./scripts/robust-session-start.sh → WORKFLOW-VERBOT verstehen → Docs lesen → ./scripts/get-active-module.sh → ⛔ STOPP: Status melden und auf "ARBEITSSTART" warten!
 ```
 
 ---
