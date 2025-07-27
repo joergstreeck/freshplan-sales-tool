@@ -2,17 +2,18 @@
  * Condition Evaluator Utility
  * 
  * Evaluates field visibility conditions based on other field values.
- * Supports the triggerWizardStep logic from Field Catalog.
+ * Supports both triggerWizardStep and generic condition logic from Field Catalog.
  * 
  * @see /Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/03-FRONTEND/03-field-rendering.md
+ * @see /Users/joergstreeck/freshplan-sales-tool/frontend/src/features/customers/data/fieldCatalog.json
  */
 
-import { TriggerCondition } from '../types/field.types';
+import { TriggerCondition, FieldCondition, FieldDefinition } from '../types/field.types';
 
 /**
- * Evaluate a single condition
+ * Evaluate a trigger condition (for wizard steps)
  */
-export const evaluateCondition = (
+export const evaluateTriggerCondition = (
   condition: TriggerCondition,
   values: Record<string, any>
 ): boolean => {
@@ -23,6 +24,62 @@ export const evaluateCondition = (
   
   // Handle single trigger value
   return values[condition.step] === condition.when;
+};
+
+/**
+ * Evaluate a generic field condition
+ */
+export const evaluateFieldCondition = (
+  condition: FieldCondition,
+  values: Record<string, any>
+): boolean => {
+  const fieldValue = values[condition.field];
+  
+  switch (condition.operator) {
+    case 'equals':
+      return fieldValue === condition.value;
+      
+    case 'not_equals':
+      return fieldValue !== condition.value;
+      
+    case 'in':
+      if (Array.isArray(condition.value)) {
+        return condition.value.includes(fieldValue);
+      }
+      return fieldValue === condition.value;
+      
+    case 'not_in':
+      if (Array.isArray(condition.value)) {
+        return !condition.value.includes(fieldValue);
+      }
+      return fieldValue !== condition.value;
+      
+    case 'exists':
+      return fieldValue !== undefined && fieldValue !== null && fieldValue !== '';
+      
+    case 'not_exists':
+      return fieldValue === undefined || fieldValue === null || fieldValue === '';
+      
+    default:
+      console.warn(`Unknown condition operator: ${condition.operator}`);
+      return true;
+  }
+};
+
+/**
+ * Evaluate any condition (backwards compatibility)
+ */
+export const evaluateCondition = (
+  condition: TriggerCondition | FieldCondition,
+  values: Record<string, any>
+): boolean => {
+  // Check if it's a TriggerCondition (has 'when' and 'step' properties)
+  if ('when' in condition && 'step' in condition) {
+    return evaluateTriggerCondition(condition as TriggerCondition, values);
+  }
+  
+  // Otherwise treat as FieldCondition
+  return evaluateFieldCondition(condition as FieldCondition, values);
 };
 
 /**
@@ -58,23 +115,27 @@ export const shouldShowWizardStep = (
 
 /**
  * Get visible fields based on conditions
+ * 
+ * Supports both generic field conditions and wizard step filtering.
+ * This is the main function used by DynamicFieldRenderer.
  */
 export const getVisibleFields = (
-  fields: any[],
+  fields: FieldDefinition[],
   values: Record<string, any>,
   currentStep?: string
-): any[] => {
+): FieldDefinition[] => {
   return fields.filter(field => {
     // Filter by current wizard step if provided
     if (currentStep && field.wizardStep && field.wizardStep !== currentStep) {
       return false;
     }
     
-    // Check field conditions
+    // Check generic field visibility conditions
     if (field.condition) {
-      return evaluateCondition(field.condition, values);
+      return evaluateFieldCondition(field.condition, values);
     }
     
+    // Always show fields without conditions
     return true;
   });
 };

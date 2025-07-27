@@ -271,34 +271,244 @@ describe('DynamicFieldRenderer - Flexible Field System (ENTERPRISE PHILOSOPHY)',
     });
   });
 
-  describe('🏢 Branchenspezifische Dynamik', () => {
-    it('should handle industry-specific field visibility', () => {
+  describe('🏢 Conditional Field Visibility (CR-001 Feature)', () => {
+    it('should show fields with generic condition when condition is met', () => {
       const fields: FieldDefinition[] = [
         {
-          id: '1',
-          key: 'companyName',
-          label: 'Firmenname',
-          fieldType: 'text',
+          key: 'industry',
+          label: 'Branche',
+          fieldType: 'select',
           entityType: 'customer',
           required: true,
-          sortOrder: 1
+          options: [
+            { value: 'hotel', label: 'Hotel' },
+            { value: 'restaurant', label: 'Restaurant' }
+          ]
         },
         {
-          id: '2',
           key: 'hotelStars',
           label: 'Hotel Sterne',
           fieldType: 'select',
           entityType: 'customer',
           required: false,
-          sortOrder: 2,
           options: [
-            { value: 1, label: '1 Stern' },
-            { value: 5, label: '5 Sterne' }
+            { value: '1', label: '1 Stern' },
+            { value: '5', label: '5 Sterne' }
           ],
-          // Conditional field für Hotels
+          // NEW: Generic condition support
           condition: {
-            step: 'industry',
-            when: 'hotel'
+            field: 'industry',
+            operator: 'equals',
+            value: 'hotel'
+          }
+        }
+      ];
+
+      const values = {
+        industry: 'hotel'
+      };
+
+      render(
+        <DynamicFieldRenderer
+          fields={fields}
+          values={values}
+          errors={{}}
+          onChange={mockOnChange}
+          onBlur={mockOnBlur}
+        />
+      );
+
+      // Both fields should be visible
+      expect(document.querySelector('[data-testid="selectfield-industry"]')).toBeInTheDocument();
+      expect(document.querySelector('[data-testid="selectfield-hotelStars"]')).toBeInTheDocument();
+    });
+
+    it('should hide fields with generic condition when condition is not met', () => {
+      const fields: FieldDefinition[] = [
+        {
+          key: 'industry',
+          label: 'Branche',
+          fieldType: 'select',
+          entityType: 'customer',
+          required: true,
+          options: [
+            { value: 'hotel', label: 'Hotel' },
+            { value: 'restaurant', label: 'Restaurant' }
+          ]
+        },
+        {
+          key: 'hotelStars',
+          label: 'Hotel Sterne',
+          fieldType: 'select',
+          entityType: 'customer',
+          required: false,
+          condition: {
+            field: 'industry',
+            operator: 'equals',
+            value: 'hotel'
+          }
+        }
+      ];
+
+      const values = {
+        industry: 'restaurant' // Different value
+      };
+
+      render(
+        <DynamicFieldRenderer
+          fields={fields}
+          values={values}
+          errors={{}}
+          onChange={mockOnChange}
+          onBlur={mockOnBlur}
+        />
+      );
+
+      // Only industry field should be visible
+      expect(document.querySelector('[data-testid="selectfield-industry"]')).toBeInTheDocument();
+      expect(document.querySelector('[data-testid="selectfield-hotelStars"]')).not.toBeInTheDocument();
+    });
+
+    it('should support "in" operator for multiple values', () => {
+      const fields: FieldDefinition[] = [
+        {
+          key: 'industry',
+          label: 'Branche',
+          fieldType: 'select',
+          entityType: 'customer',
+          required: true
+        },
+        {
+          key: 'foodServiceType',
+          label: 'Gastronomie Art',
+          fieldType: 'select',
+          entityType: 'customer',
+          required: false,
+          condition: {
+            field: 'industry',
+            operator: 'in',
+            value: ['hotel', 'restaurant', 'catering']
+          }
+        }
+      ];
+
+      const values = {
+        industry: 'restaurant'
+      };
+
+      render(
+        <DynamicFieldRenderer
+          fields={fields}
+          values={values}
+          errors={{}}
+          onChange={mockOnChange}
+          onBlur={mockOnBlur}
+        />
+      );
+
+      expect(document.querySelector('[data-testid="selectfield-foodServiceType"]')).toBeInTheDocument();
+    });
+
+    it('should support "exists" operator', () => {
+      const fields: FieldDefinition[] = [
+        {
+          key: 'optionalField',
+          label: 'Optional Field',
+          fieldType: 'text',
+          entityType: 'customer',
+          required: false
+        },
+        {
+          key: 'dependentField',
+          label: 'Dependent Field',
+          fieldType: 'text',
+          entityType: 'customer',
+          required: false,
+          condition: {
+            field: 'optionalField',
+            operator: 'exists'
+          }
+        }
+      ];
+
+      const values = {
+        optionalField: 'some value'
+      };
+
+      render(
+        <DynamicFieldRenderer
+          fields={fields}
+          values={values}
+          errors={{}}
+          onChange={mockOnChange}
+          onBlur={mockOnBlur}
+        />
+      );
+
+      expect(document.querySelector('[data-testid="textfield-dependentField"]')).toBeInTheDocument();
+    });
+
+    it('should support currentStep parameter for wizard step filtering', () => {
+      const fields: FieldDefinition[] = [
+        {
+          key: 'basicField',
+          label: 'Basic Field',
+          fieldType: 'text',
+          entityType: 'customer',
+          required: false,
+          wizardStep: 'basic'
+        },
+        {
+          key: 'advancedField',
+          label: 'Advanced Field',
+          fieldType: 'text',
+          entityType: 'customer',
+          required: false,
+          wizardStep: 'advanced'
+        }
+      ];
+
+      const values = {};
+
+      render(
+        <DynamicFieldRenderer
+          fields={fields}
+          values={values}
+          errors={{}}
+          onChange={mockOnChange}
+          onBlur={mockOnBlur}
+          currentStep="basic"
+        />
+      );
+
+      // Only basic step field should be visible
+      expect(document.querySelector('[data-testid="textfield-basicField"]')).toBeInTheDocument();
+      expect(document.querySelector('[data-testid="textfield-advancedField"]')).not.toBeInTheDocument();
+    });
+
+    it('should handle industry-specific field visibility', () => {
+      const fields: FieldDefinition[] = [
+        {
+          key: 'companyName',
+          label: 'Firmenname',
+          fieldType: 'text',
+          entityType: 'customer',
+          required: true
+        },
+        {
+          key: 'hotelStars',
+          label: 'Hotel Sterne',
+          fieldType: 'select',
+          entityType: 'customer',
+          required: false,
+          options: [
+            { value: '1', label: '1 Stern' },
+            { value: '5', label: '5 Sterne' }
+          ],
+          // Legacy trigger condition (still supported)
+          triggerWizardStep: {
+            when: 'hotel',
+            step: 'industry'
           }
         }
       ];
@@ -318,7 +528,7 @@ describe('DynamicFieldRenderer - Flexible Field System (ENTERPRISE PHILOSOPHY)',
         />
       );
 
-      // Beide Felder sollten sichtbar sein (conditional logic wird in der Komponente behandelt)
+      // Both fields should be visible (legacy system still works)
       expect(document.querySelector('[data-testid="textfield-companyName"]')).toBeInTheDocument();
       expect(document.querySelector('[data-testid="selectfield-hotelStars"]')).toBeInTheDocument();
     });

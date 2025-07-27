@@ -65,73 +65,16 @@ import {
 import { useCustomerOnboardingStore } from '../../stores/customerOnboardingStore';
 import { DetailedLocation, DetailedLocationCategory } from '../../types/location.types';
 import { toast } from 'react-toastify';
+import {
+  categoryLabels,
+  getCategoryIcon,
+  industryTemplates,
+  getIndustryTemplates,
+  hasIndustryTemplates
+} from '../../config';
 
-/**
- * Icon mapping for location categories
- */
-const categoryIcons: Record<DetailedLocationCategory, React.ReactElement> = {
-  restaurant: <RestaurantIcon />,
-  cafeteria: <RestaurantIcon />,
-  kiosk: <RestaurantIcon />,
-  station: <MedicalIcon />,
-  kitchen: <KitchenIcon />,
-  storage: <BusinessIcon />,
-  other: <RoomIcon />
-};
-
-/**
- * Category labels in German
- */
-const categoryLabels: Record<DetailedLocationCategory, string> = {
-  restaurant: 'Restaurant',
-  cafeteria: 'Cafeteria',
-  kiosk: 'Kiosk',
-  station: 'Station/Abteilung',
-  kitchen: 'Küche',
-  storage: 'Lager',
-  other: 'Sonstiges'
-};
-
-/**
- * Industry-specific templates for quick setup
- */
-const industryTemplates = {
-  hotel: [
-    { name: 'Restaurant Haupthaus', category: 'restaurant' as DetailedLocationCategory },
-    { name: 'Frühstücksraum', category: 'restaurant' as DetailedLocationCategory },
-    { name: 'Bar/Lounge', category: 'cafeteria' as DetailedLocationCategory },
-    { name: 'Poolbar', category: 'kiosk' as DetailedLocationCategory },
-    { name: 'Bankett/Konferenz', category: 'restaurant' as DetailedLocationCategory }
-  ],
-  krankenhaus: [
-    { name: 'Cafeteria Haupteingang', category: 'cafeteria' as DetailedLocationCategory },
-    { name: 'Personalrestaurant', category: 'restaurant' as DetailedLocationCategory },
-    { name: 'Station 1A', category: 'station' as DetailedLocationCategory },
-    { name: 'Station 1B', category: 'station' as DetailedLocationCategory },
-    { name: 'Station 2A', category: 'station' as DetailedLocationCategory },
-    { name: 'Intensivstation', category: 'station' as DetailedLocationCategory },
-    { name: 'Kiosk Eingangsbereich', category: 'kiosk' as DetailedLocationCategory }
-  ],
-  seniorenresidenz: [
-    { name: 'Speisesaal EG', category: 'restaurant' as DetailedLocationCategory },
-    { name: 'Wohnbereich 1', category: 'station' as DetailedLocationCategory },
-    { name: 'Wohnbereich 2', category: 'station' as DetailedLocationCategory },
-    { name: 'Demenzbereich', category: 'station' as DetailedLocationCategory },
-    { name: 'Cafeteria', category: 'cafeteria' as DetailedLocationCategory }
-  ],
-  restaurant: [
-    { name: 'Hauptrestaurant', category: 'restaurant' as DetailedLocationCategory },
-    { name: 'Außenbereich', category: 'restaurant' as DetailedLocationCategory },
-    { name: 'Bar', category: 'cafeteria' as DetailedLocationCategory },
-    { name: 'Privatraum', category: 'restaurant' as DetailedLocationCategory }
-  ],
-  betriebsrestaurant: [
-    { name: 'Hauptkantine', category: 'restaurant' as DetailedLocationCategory },
-    { name: 'Salatbar', category: 'restaurant' as DetailedLocationCategory },
-    { name: 'Coffee Corner', category: 'cafeteria' as DetailedLocationCategory },
-    { name: 'Executive Dining', category: 'restaurant' as DetailedLocationCategory }
-  ]
-};
+// Configuration data has been externalized to separate files for better maintainability
+// See: /Users/joergstreeck/freshplan-sales-tool/frontend/src/features/customers/config/
 
 interface BatchAddDialogProps {
   open: boolean;
@@ -158,7 +101,7 @@ const BatchAddDialog: React.FC<BatchAddDialogProps> = ({
     capacity?: number;
   }>>([{ name: '', category: 'restaurant' }]);
 
-  const templates = industryTemplates[industry as keyof typeof industryTemplates] || [];
+  const templates = getIndustryTemplates(industry) || [];
 
   const handleAddRow = () => {
     setLocations([...locations, { name: '', category: 'restaurant' }]);
@@ -418,7 +361,7 @@ export const DetailedLocationsStep: React.FC = () => {
                 {Object.entries(stats.byCategory).map(([category, count]) => (
                   <Chip
                     key={category}
-                    icon={categoryIcons[category as DetailedLocationCategory]}
+                    icon={getCategoryIcon(category as DetailedLocationCategory)}
                     label={`${categoryLabels[category as DetailedLocationCategory]}: ${count}`}
                     size="small"
                     variant="outlined"
@@ -504,7 +447,7 @@ export const DetailedLocationsStep: React.FC = () => {
                               }}
                             >
                               <Box sx={{ display: 'flex', alignItems: 'center', mr: 2 }}>
-                                {categoryIcons[dl.category]}
+                                {getCategoryIcon(dl.category)}
                               </Box>
                               <ListItemText
                                 primary={dl.name}

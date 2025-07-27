@@ -69,6 +69,18 @@ export interface TriggerCondition {
 }
 
 /**
+ * Generic condition for field visibility
+ */
+export interface FieldCondition {
+  /** Field key to check */
+  field: string;
+  /** Operator for comparison */
+  operator: 'equals' | 'not_equals' | 'in' | 'not_in' | 'exists' | 'not_exists';
+  /** Value(s) to compare against */
+  value?: string | string[] | number | boolean;
+}
+
+/**
  * Field validation rules
  */
 export interface FieldValidation {
@@ -124,6 +136,8 @@ export interface FieldDefinition {
   gridSize?: GridSize;
   /** Conditional wizard trigger */
   triggerWizardStep?: TriggerCondition;
+  /** Generic visibility condition */
+  condition?: FieldCondition;
   /** Field contains sensitive data (DSGVO) */
   sensitive?: boolean;
   /** Field is read-only */

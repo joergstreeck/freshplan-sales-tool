@@ -19,6 +19,7 @@ import {
   citySchema,
   positiveIntegerSchema,
   optionalPositiveIntegerSchema,
+  optionalPositiveIntegerWithMaxSchema,
   contactPersonSchema,
   euroAmountSchema,
   percentageSchema
@@ -69,8 +70,7 @@ export const hotelFieldsSchema = z.object({
   roomCount: positiveIntegerSchema
     .max(9999, 'Anzahl Zimmer darf maximal 9999 sein')
     .describe('Anzahl Zimmer'),
-  restaurantSeats: optionalPositiveIntegerSchema
-    .max(9999, 'Anzahl Sitzplätze darf maximal 9999 sein')
+  restaurantSeats: optionalPositiveIntegerWithMaxSchema(9999, 'Anzahl Sitzplätze darf maximal 9999 sein')
     .describe('Restaurant Sitzplätze'),
   breakfastGuests: optionalPositiveIntegerSchema
     .describe('Durchschnittliche Frühstücksgäste pro Tag'),

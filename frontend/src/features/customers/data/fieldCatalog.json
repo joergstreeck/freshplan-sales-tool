@@ -154,6 +154,11 @@
             { "value": "5", "label": "5 Sterne" },
             { "value": "none", "label": "Keine Klassifizierung" }
           ],
+          "condition": {
+            "field": "industry",
+            "operator": "equals",
+            "value": "hotel"
+          },
           "gridSize": { "xs": 12, "sm": 6, "md": 3 }
         },
         {
@@ -165,6 +170,46 @@
           "min": 1,
           "max": 9999,
           "placeholder": "z.B. 120",
+          "condition": {
+            "field": "industry",
+            "operator": "equals",
+            "value": "hotel"
+          },
+          "gridSize": { "xs": 12, "sm": 6, "md": 3 }
+        },
+        {
+          "key": "hasConferenceRooms",
+          "label": "Tagungsräume vorhanden",
+          "entityType": "customer",
+          "fieldType": "select",
+          "required": false,
+          "defaultValue": "nein",
+          "options": [
+            { "value": "ja", "label": "Ja" },
+            { "value": "nein", "label": "Nein" }
+          ],
+          "condition": {
+            "field": "industry",
+            "operator": "in",
+            "value": ["hotel", "betriebsrestaurant"]
+          },
+          "gridSize": { "xs": 12, "sm": 6, "md": 4 }
+        },
+        {
+          "key": "conferenceCapacity",
+          "label": "Max. Tagungsgäste",
+          "entityType": "customer",
+          "fieldType": "number",
+          "required": false,
+          "min": 1,
+          "max": 9999,
+          "placeholder": "z.B. 200",
+          "helpText": "Maximale Kapazität für Tagungen/Events",
+          "condition": {
+            "field": "hasConferenceRooms",
+            "operator": "equals",
+            "value": "ja"
+          },
           "gridSize": { "xs": 12, "sm": 6, "md": 3 }
         }
       ],

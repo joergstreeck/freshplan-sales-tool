@@ -111,7 +111,13 @@ export function buildFieldSchema(field: FieldDefinition): z.ZodType<any> {
   }
   
   // Handle required/optional
-  if (!field.required) {
+  if (field.required) {
+    // For required fields, ensure they're not empty
+    schema = schema.refine(
+      (val) => val !== null && val !== undefined && val !== '',
+      DEFAULT_MESSAGES.required
+    );
+  } else {
     schema = schema.optional().nullable();
   }
   

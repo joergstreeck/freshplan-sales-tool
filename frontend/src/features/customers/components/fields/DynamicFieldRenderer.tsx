@@ -18,7 +18,7 @@ import { SelectField } from './fieldTypes/SelectField';
 import { MultiSelectField } from './fieldTypes/MultiSelectField';
 import { EmailField } from './fieldTypes/EmailField';
 import { TextAreaField } from './fieldTypes/TextAreaField';
-import { evaluateCondition } from '../../utils/conditionEvaluator';
+import { getVisibleFields } from '../../utils/conditionEvaluator';
 
 interface DynamicFieldRendererProps {
   /** Field definitions to render */
@@ -35,6 +35,8 @@ interface DynamicFieldRendererProps {
   loading?: boolean;
   /** Read-only mode */
   readOnly?: boolean;
+  /** Current wizard step (for step-based filtering) */
+  currentStep?: string;
 }
 
 /**
@@ -50,7 +52,8 @@ export const DynamicFieldRenderer: React.FC<DynamicFieldRendererProps> = ({
   onChange,
   onBlur,
   loading = false,
-  readOnly = false
+  readOnly = false,
+  currentStep
 }) => {
   /**
    * Render a single field based on its type
@@ -100,17 +103,15 @@ export const DynamicFieldRenderer: React.FC<DynamicFieldRendererProps> = ({
   
   /**
    * Filter visible fields based on conditions
+   * 
+   * Uses the sophisticated condition evaluator to handle:
+   * - Generic field conditions (condition property)
+   * - Wizard step filtering (currentStep parameter)
+   * - Always shows fields without conditions
+   * 
+   * @see /Users/joergstreeck/freshplan-sales-tool/frontend/src/features/customers/utils/conditionEvaluator.ts
    */
-  const visibleFields = fields.filter(field => {
-    // Always show fields without conditions
-    if (!field.triggerWizardStep) return true;
-    
-    // For chain customer trigger
-    if (field.key === 'chainCustomer') return true;
-    
-    // Evaluate other conditions (future extension)
-    return true;
-  });
+  const visibleFields = getVisibleFields(fields, values, currentStep);
   
   return (
     <Grid container spacing={3}>

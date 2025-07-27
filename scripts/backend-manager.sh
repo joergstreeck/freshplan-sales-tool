@@ -1,8 +1,15 @@
 #!/bin/bash
 
-BACKEND_URL="http://localhost:8080"
-JAVA_HOME_PATH="/Library/Java/JavaVirtualMachines/temurin-17.jdk/Contents/Home"
-PROJECT_ROOT="/Users/joergstreeck/freshplan-sales-tool"
+# Determine script directory
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Source central configuration
+# This provides PROJECT_ROOT and other paths dynamically
+source "$SCRIPT_DIR/config/paths.conf"
+
+# Backend-specific configuration
+BACKEND_URL="http://localhost:${BACKEND_PORT:-8080}"
+JAVA_HOME_PATH="${JAVA_17_HOME}"
 LOG_FILE="$PROJECT_ROOT/logs/backend.log"
 PID_FILE="$PROJECT_ROOT/logs/backend.pid"
 

@@ -16,7 +16,8 @@ import {
   germanPhoneSchema,
   emailSchema,
   positiveIntegerSchema,
-  optionalPositiveIntegerSchema
+  optionalPositiveIntegerSchema,
+  optionalPositiveIntegerWithMaxSchema
 } from './baseSchemas';
 
 /**
@@ -62,8 +63,7 @@ export const locationBaseSchema = z.object({
  * Hotel Location spezifische Felder
  */
 export const hotelLocationSchema = locationBaseSchema.extend({
-  roomCount: optionalPositiveIntegerSchema
-    .max(999, 'Anzahl Zimmer darf maximal 999 sein'),
+  roomCount: optionalPositiveIntegerWithMaxSchema(999, 'Anzahl Zimmer darf maximal 999 sein'),
   restaurantSeats: optionalPositiveIntegerSchema,
   conferenceRooms: optionalPositiveIntegerSchema,
   parkingSpaces: optionalPositiveIntegerSchema

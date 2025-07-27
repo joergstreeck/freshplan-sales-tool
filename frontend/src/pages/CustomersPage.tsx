@@ -1,26 +1,43 @@
 import React from 'react';
 import { CustomerList } from '@/features/customer/components';
 import { AuthenticatedLayout } from '@/components/layout/AuthenticatedLayout';
+import { isFeatureEnabled } from '@/config/featureFlags';
+import { DevAuthProvider } from '@/features/auth/contexts/DevAuthContext';
+import { DevAuthPanel } from '@/features/auth/components/DevAuthPanel';
+import { Box, Container, Alert, AlertTitle } from '@mui/material';
 
 const CustomersPage: React.FC = () => {
-  // Temporär: Debug-Modus für direkten Zugriff (entfernen nach Auth-Fix)
-  const isDev = import.meta.env.DEV;
+  // Check if auth bypass is enabled via feature flag
+  const authBypassEnabled = isFeatureEnabled('authBypass');
   
-  if (isDev) {
-    // Development: Zeige CustomerList direkt ohne Auth-Check
+  if (authBypassEnabled) {
+    // Development: Provide mock auth context with role simulation
     return (
-      <div style={{ padding: '20px', minHeight: '100vh' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-          <h1>🚧 Dev-Modus: Kundenverwaltung</h1>
-          <p style={{ color: '#666', marginBottom: '20px' }}>
-            Direktzugriff für Development (Auth umgangen)
-          </p>
-          <CustomerList />
-        </div>
-      </div>
+      <DevAuthProvider>
+        <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', pt: 2 }}>
+          <Container maxWidth="xl">
+            {/* Development Warning Banner */}
+            <Alert 
+              severity="warning" 
+              sx={{ mb: 2 }}
+              action={
+                <DevAuthPanel compact />
+              }
+            >
+              <AlertTitle>Development Mode - Auth Bypass Active</AlertTitle>
+              This is a temporary development feature. Use the auth panel to test different roles.
+              Set VITE_AUTH_BYPASS=false to use real authentication.
+            </Alert>
+            
+            {/* Main Content */}
+            <CustomerList />
+          </Container>
+        </Box>
+      </DevAuthProvider>
     );
   }
   
+  // Production: Use real authentication
   return (
     <AuthenticatedLayout>
       <div className="page-container">

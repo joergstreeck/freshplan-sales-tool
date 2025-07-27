@@ -137,6 +137,17 @@ export const optionalPositiveIntegerSchema = z
   .nullable();
 
 /**
+ * Helper für optional positive integer mit max constraint
+ */
+export const optionalPositiveIntegerWithMaxSchema = (max: number, message?: string) => z
+  .number()
+  .int('Muss eine ganze Zahl sein')
+  .positive('Muss größer als 0 sein')
+  .max(max, message || `Wert darf maximal ${max} sein`)
+  .optional()
+  .nullable();
+
+/**
  * Datums-String (ISO format)
  */
 export const dateStringSchema = z

@@ -4,7 +4,10 @@
  * Zustand store for managing the customer onboarding wizard state.
  * Handles customer data, locations, validation, and draft persistence.
  * 
+ * Integration mit Dynamic Zod Schema Builder für Enterprise-Validation.
+ * 
  * @see /Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/03-FRONTEND/02-state-management.md
+ * @see /Users/joergstreeck/freshplan-sales-tool/frontend/src/features/customers/validation/schemaBuilder.ts
  */
 
 import { create } from 'zustand';
@@ -13,6 +16,13 @@ import { immer } from 'zustand/middleware/immer';
 import { CustomerStatus } from '../types/customer.types';
 import { FieldDefinition } from '../types/field.types';
 import { Location, DetailedLocation } from '../types/location.types';
+import { 
+  buildFieldSchema, 
+  buildFormSchema, 
+  validateField, 
+  validateFields
+} from '../validation';
+import { getVisibleFields } from '../utils/conditionEvaluator';
 
 interface CustomerOnboardingState {
   // ===== Wizard State =====
@@ -68,10 +78,10 @@ interface CustomerOnboardingState {
   removeDetailedLocation: (detailedLocationId: string) => void;
   /** Add batch detailed locations */
   addBatchDetailedLocations: (locationId: string, detailedLocations: Omit<DetailedLocation, 'id' | 'locationId' | 'createdAt' | 'updatedAt'>[]) => void;
-  /** Validate a field */
-  validateField: (fieldKey: string) => void;
-  /** Validate current step */
-  validateCurrentStep: () => boolean;
+  /** Validate a field with Dynamic Zod Schema Builder */
+  validateField: (fieldKey: string) => Promise<void>;
+  /** Validate current step with conditional field visibility */
+  validateCurrentStep: () => Promise<boolean>;
   /** Can progress to next step */
   canProgressToNextStep: () => boolean;
   /** Save as draft */
@@ -257,54 +267,88 @@ export const useCustomerOnboardingStore = create<CustomerOnboardingState>()(
         });
       },
       
-      validateField: (fieldKey) => {
-        set((state) => {
-          const field = state.customerFields.find(f => f.key === fieldKey);
-          if (!field) return;
+      validateField: async (fieldKey) => {
+        const state = get();
+        const field = state.customerFields.find(f => f.key === fieldKey);
+        if (!field) return;
+        
+        const value = state.customerData[fieldKey];
+        
+        // NEW: Use Dynamic Zod Schema Builder for validation
+        try {
+          const result = await validateField(field, value);
           
-          const value = state.customerData[fieldKey];
-          
-          // Required field validation
-          if (field.required && (!value || value === '')) {
-            state.validationErrors[fieldKey] = `${field.label} ist erforderlich`;
-            return;
-          }
-          
-          // Email validation
-          if (field.fieldType === 'email' && value) {
-            const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-            if (!emailRegex.test(value)) {
-              state.validationErrors[fieldKey] = 'Bitte geben Sie eine gültige E-Mail-Adresse ein';
-              return;
+          set((draft) => {
+            if (result.isValid) {
+              // Clear error if validation passes
+              delete draft.validationErrors[fieldKey];
+            } else {
+              // Set dynamic validation error
+              draft.validationErrors[fieldKey] = result.error || `${field.label} ist ungültig`;
             }
-          }
-          
-          // Clear error if validation passes
-          delete state.validationErrors[fieldKey];
-        });
+          });
+        } catch (error) {
+          // Fallback for unexpected errors (respecting Enterprise Flexibility Philosophy)
+          console.warn(`Validation error for field ${fieldKey}:`, error);
+          set((draft) => {
+            draft.validationErrors[fieldKey] = `${field.label} konnte nicht validiert werden`;
+          });
+        }
       },
       
-      validateCurrentStep: () => {
+      validateCurrentStep: async () => {
         const state = get();
-        const errors: Record<string, string> = {};
+        
+        // NEW: Dynamic validation with conditional field visibility
+        let fieldsToValidate: FieldDefinition[] = [];
         
         if (state.currentStep === 0) {
-          // Validate customer fields
-          state.customerFields
-            .filter(field => field.required)
-            .forEach(field => {
-              const value = state.customerData[field.key];
-              if (!value || value === '') {
-                errors[field.key] = `${field.label} ist erforderlich`;
-              }
-            });
+          // Get visible customer fields for current step with conditional logic
+          const visibleFields = getVisibleFields(
+            state.customerFields, 
+            state.customerData,
+            'customer' // currentStep parameter 
+          );
+          fieldsToValidate = visibleFields.filter(field => field.required);
+        } else if (state.currentStep === 1) {
+          // Location fields validation if applicable
+          fieldsToValidate = []; // Will be extended when location validation is needed
         }
         
-        set((draft) => {
-          draft.validationErrors = errors;
-        });
-        
-        return Object.keys(errors).length === 0;
+        // NEW: Use Dynamic Zod Schema Builder for step validation
+        try {
+          const fieldsWithValues = fieldsToValidate.map(field => ({
+            field,
+            value: state.customerData[field.key]
+          }));
+          
+          const validationErrors = await validateFields(fieldsWithValues);
+          const errors = Object.fromEntries(validationErrors);
+          
+          set((draft) => {
+            draft.validationErrors = errors;
+          });
+          
+          return validationErrors.size === 0;
+        } catch (error) {
+          // Fallback for unexpected errors (Enterprise Flexibility Philosophy)
+          console.warn('Step validation error:', error);
+          
+          // Basic fallback validation
+          const errors: Record<string, string> = {};
+          fieldsToValidate.forEach(field => {
+            const value = state.customerData[field.key];
+            if (!value || value === '') {
+              errors[field.key] = `${field.label} ist erforderlich`;
+            }
+          });
+          
+          set((draft) => {
+            draft.validationErrors = errors;
+          });
+          
+          return Object.keys(errors).length === 0;
+        }
       },
       
       canProgressToNextStep: () => {
