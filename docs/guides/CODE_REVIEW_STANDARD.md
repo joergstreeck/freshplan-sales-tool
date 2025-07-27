@@ -94,6 +94,7 @@ Nach der Erfahrung vom heutigen Frontend-Review ist klar: **Fixes können neue P
 - [ ] **Dokumentation**: JSDoc/JavaDoc für alle public APIs
 - [ ] **DRY**: Keine Code-Duplikation
 - [ ] **SOLID**: Single Responsibility eingehalten
+- [ ] **TypeScript Import Types**: Bei `verbatimModuleSyntax` alle Types mit `import type` ([Guide](../TYPESCRIPT_IMPORT_TYPE_GUIDE.md))
 
 ### 2. 🔒 Security-Check
 - [ ] **Keine hardcoded Credentials** (auch nicht in Tests!)

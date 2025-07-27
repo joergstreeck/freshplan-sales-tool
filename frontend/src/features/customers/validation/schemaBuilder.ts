@@ -9,7 +9,7 @@
  */
 
 import { z } from 'zod';
-import { FieldDefinition, FieldType } from '../types/field.types';
+import type { FieldDefinition, FieldType } from '../types/field.types';
 import {
   emailSchema,
   germanPhoneSchema,

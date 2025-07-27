@@ -26,6 +26,24 @@
 
 ---
 
+## ⚠️ WICHTIG: TypeScript Import Type Requirements
+
+**Alle Type-Imports in diesem Sprint MÜSSEN `import type` verwenden!**
+
+```typescript
+// ✅ RICHTIG für alle folgenden Code-Beispiele:
+import type { Task, TaskRule, TaskContext } from '../types/task.types';
+import type { Customer } from '../types/customer.types';
+import type { User } from '../types/user.types';
+
+// ❌ FALSCH - führt zu "does not provide an export named" Fehlern:
+import { Task, TaskRule } from '../types/task.types';
+```
+
+Siehe [TypeScript Import Type Guide](/Users/joergstreeck/freshplan-sales-tool/docs/guides/TYPESCRIPT_IMPORT_TYPE_GUIDE.md) für Details.
+
+---
+
 ## 🎯 Tag 2 Ziele
 
 1. **Task Domain Model definieren** (1h)
@@ -202,7 +220,7 @@ public class Task extends PanacheEntityBase {
 
 ```typescript
 // frontend/src/services/taskEngine.ts
-import { TaskRule, TaskEvent, Task, TaskContext } from '../types/task.types';
+import type { TaskRule, TaskEvent, Task, TaskContext } from '../types/task.types';
 import { taskApi } from './api/taskApi';
 import { 
   welcomeCustomerRule,
@@ -301,7 +319,7 @@ if (import.meta.env.DEV) {
 ### Rule 1: Welcome Customer (2 Tage)
 ```typescript
 // frontend/src/services/taskRules/welcomeCustomerRule.ts
-import { TaskRule } from '../../types/task.types';
+import type { TaskRule } from '../../types/task.types';
 import { addDays } from 'date-fns';
 
 export const welcomeCustomerRule: TaskRule = {
@@ -346,7 +364,7 @@ E-Mail: ${context.customer.email || 'Keine E-Mail hinterlegt'}`,
 ### Rule 2: Request Quote (7 Tage)
 ```typescript
 // frontend/src/services/taskRules/requestQuoteRule.ts
-import { TaskRule } from '../../types/task.types';
+import type { TaskRule } from '../../types/task.types';
 import { addDays } from 'date-fns';
 
 export const requestQuoteRule: TaskRule = {
@@ -392,7 +410,7 @@ Der Kunde wurde vor einer Woche angelegt. Folgende Schritte empfehlen wir:
 ### Rule 3: Inactivity Warning (60 Tage)
 ```typescript
 // frontend/src/services/taskRules/inactivityWarningRule.ts
-import { TaskRule } from '../../types/task.types';
+import type { TaskRule } from '../../types/task.types';
 import { addDays } from 'date-fns';
 
 export const inactivityWarningRule: TaskRule = {
@@ -615,7 +633,7 @@ public class TaskService {
 ```typescript
 // frontend/src/services/api/taskApi.ts
 import { apiClient } from './client';
-import { Task } from '../../types/task.types';
+import type { Task } from '../../types/task.types';
 
 interface TaskFilter {
   customerId?: string;

@@ -1,7 +1,7 @@
 # 🚀 CRM COMPLETE MASTER PLAN V5 - Das Sales Command Center
 
 **Version:** 5.0  
-**Datum:** 27.07.2025 18:09 (Auto-Sync)
+**Datum:** 27.07.2025 20:36 (Auto-Sync)
 **Status:** Backend implementiert ✅, Tests fast vollständig 🔄
 
 ---
@@ -93,6 +93,7 @@ Von Tag 1 auf Wachstum, Performance und Qualität ausgelegt.
 | FC-016 KPI-Tracking | 📋 Planned | Tech-Konzept ✅ | Renewal-Metriken ⭐ NEU |
 | FC-017 Error Handling | 📋 Planned | Tech-Konzept ✅ | Fallback & Recovery ⭐ NEU |
 | FC-018 Datenschutz/DSGVO | 📋 Planned | Tech-Konzept ✅ | Privacy by Design ⭐ NEU |
+| FC-020 Lead Management | 📋 Planned | Tech-Konzept ✅ | Lead → Kunde Konvertierung ⭐ NEU |
 | M8 Calculator | 📋 Planned | 0% | Modal Template |
 | FC-005 Customer Mgmt | 🔄 In Progress | Docs 100% ✅ | [Field-Based Architecture](./features/FC-005-CUSTOMER-MANAGEMENT/README.md) ⭐ |
 
@@ -104,6 +105,7 @@ Von Tag 1 auf Wachstum, Performance und Qualität ausgelegt.
 - **Bei API Design:** [./docs/technical/API_DESIGN_PATTERNS.md](./docs/technical/API_DESIGN_PATTERNS.md)
 - **Bei UI/UX:** [./docs/design/UI_PATTERNS.md](./docs/design/UI_PATTERNS.md)
 - **Bei Performance:** [./docs/technical/PERFORMANCE_REQUIREMENTS.md](./docs/technical/PERFORMANCE_REQUIREMENTS.md)
+- **Bei TypeScript Import-Fehlern:** [./docs/guides/TYPESCRIPT_IMPORT_TYPE_GUIDE.md](./docs/guides/TYPESCRIPT_IMPORT_TYPE_GUIDE.md) 🆕
 
 ---
 

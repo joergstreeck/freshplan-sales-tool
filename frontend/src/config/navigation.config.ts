@@ -10,6 +10,8 @@ interface NavigationSubItem {
   label: string;
   path: string;
   permissions?: string[];
+  disabled?: boolean;  // NEU für disabled items
+  tooltip?: string;    // NEU für Erklärung
 }
 
 interface NavigationItemType {
@@ -43,6 +45,8 @@ export const navigationConfig: NavigationItemType[] = [
       {
         label: 'Lead-Erfassung',
         path: '/neukundengewinnung/leads',
+        disabled: true,  // Sprint 2: Noch nicht implementiert
+        tooltip: 'Verfügbar in Phase 2 (FC-020 Lead Management)',
       },
       {
         label: 'Kampagnen',
@@ -59,11 +63,15 @@ export const navigationConfig: NavigationItemType[] = [
     subItems: [
       {
         label: 'Alle Kunden',
-        path: '/kundenmanagement/liste',
+        path: '/customers',  // Angepasst an tatsächliche Route
+      },
+      {
+        label: 'Neuer Kunde',  // NEU für Sprint 2!
+        path: '/customers/new',
       },
       {
         label: 'Verkaufschancen',
-        path: '/kundenmanagement/opportunities',
+        path: '/opportunities',  // Angepasst an tatsächliche Route
       },
       {
         label: 'Aktivitäten',

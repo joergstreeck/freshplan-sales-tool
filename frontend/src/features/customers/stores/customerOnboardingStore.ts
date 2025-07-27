@@ -14,8 +14,8 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 import { CustomerStatus } from '../types/customer.types';
-import { FieldDefinition } from '../types/field.types';
-import { Location, DetailedLocation } from '../types/location.types';
+import type { FieldDefinition } from '../types/field.types';
+import type { Location, DetailedLocation } from '../types/location.types';
 import { 
   buildFieldSchema, 
   buildFormSchema, 

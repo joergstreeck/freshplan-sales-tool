@@ -27,6 +27,32 @@
 
 ---
 
+## ⚠️ KRITISCH: TypeScript Import Type Requirements
+
+**WICHTIG für ALLE Code-Implementierungen in diesem Sprint:**
+
+Bei `verbatimModuleSyntax: true` in tsconfig.json MÜSSEN alle Type-Imports explizit sein!
+
+```typescript
+// ✅ RICHTIG - IMMER so importieren:
+import type { FieldDefinition, FieldCatalog } from '../types/field.types';
+import type { Customer, CustomerStatus } from '../types/customer.types';
+
+// ❌ FALSCH - NIEMALS so:
+import { FieldDefinition, FieldCatalog } from '../types/field.types';
+
+// ✅ AUSNAHME - Enums bleiben normale Imports:
+import { EntityType } from '../types/field.types';  // EntityType ist ein Enum
+```
+
+**Bei Fehlern wie "does not provide an export named":**
+1. Siehe [TypeScript Import Type Guide](/Users/joergstreeck/freshplan-sales-tool/docs/guides/TYPESCRIPT_IMPORT_TYPE_GUIDE.md)
+2. Debug Session Beispiel: [Import Type Marathon](/Users/joergstreeck/freshplan-sales-tool/docs/claude-work/daily-work/2025-07-27/2025-07-27_DEBUG_typescript-import-type-marathon.md)
+
+**Regel für alle folgenden Code-Beispiele:** Alle TypeScript Interfaces und Types werden mit `import type` importiert!
+
+---
+
 ## 🎯 Tag 1 Ziele
 
 1. **CustomersPage komplett refactoren** (2h)
@@ -40,6 +66,22 @@
 ---
 
 ## 1.1 CustomersPage Refactoring (2h)
+
+### 🎯 Wichtige Entscheidung: Sidebar-Navigation + Header Button
+Basierend auf unserer [Sidebar-Diskussion](./SIDEBAR_LEAD_DISCUSSION.md) implementieren wir **BEIDE** Varianten:
+
+#### 1. Sidebar-Menüpunkt:
+- **"Neuer Kunde"** wird als Menüpunkt unter "3. Kundenmanagement → 3.2 Neuer Kunde" platziert
+- Für Nutzer, die über die Navigation gehen
+
+#### 2. Quick-Action Button im Header (ZUSÄTZLICH!):
+- **[+ Neuer Kunde]** Button prominent im Header der Kundenliste
+- Für Power-User und häufige Nutzung
+- Immer sichtbar auf der Kundenseite
+
+#### 3. Lead-Erfassung (Phase 2):
+- Kommt später unter "2. Neukundengewinnung → 2.2 Lead-Erfassung" (disabled)
+- Siehe [FC-020 Lead Management](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-020-LEAD-MANAGEMENT_TECH_CONCEPT.md)
 
 ### Aktueller Stand:
 ```typescript
@@ -161,16 +203,39 @@ export function CustomersPage() {
         )}
       </Box>
       
-      {/* Wizard Modal/Drawer */}
+      {/* Wizard Modal/Drawer - Mit initialData prop für spätere Lead-Konvertierung vorbereitet */}
       <CustomerOnboardingWizard
         open={wizardOpen}
         onClose={() => setWizardOpen(false)}
+        initialData={undefined}  // Sprint 2: Noch keine Lead-Daten
+        source="direct"          // Sprint 2: Immer direkte Kundenanlage
         onComplete={handleCustomerCreated}
       />
     </Box>
   );
 }
 ```
+
+---
+
+## 1.1.1 CustomerOnboardingWizard Props (Wichtig!)
+
+### Für Lead-Konvertierung vorbereitet:
+```typescript
+// ⚠️ WICHTIG: import type verwenden!
+import type { CustomerFormData } from '../types/customer.types';
+
+interface CustomerOnboardingWizardProps {
+  open: boolean;
+  onClose: () => void;
+  // Für spätere Lead-Konvertierung vorbereitet:
+  initialData?: Partial<CustomerFormData>;  // Sprint 2: undefined
+  source?: 'direct' | 'lead_conversion' | 'import';  // Sprint 2: 'direct'
+  onComplete: (data: CustomerFormData) => void;
+}
+```
+
+**Warum jetzt schon?** Siehe [Lead-Kunde-Trennung Entscheidung](./LEAD_CUSTOMER_SEPARATION_DECISION.md)
 
 ---
 

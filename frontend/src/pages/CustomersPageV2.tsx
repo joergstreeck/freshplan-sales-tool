@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Box, Button, Typography } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
-import { CustomerOnboardingWizard } from '../features/customers/components/wizard/CustomerOnboardingWizardWrapper';
+import { CustomerOnboardingWizard } from '../features/customers/components/wizard/CustomerOnboardingWizard';
 import { EmptyStateHero } from '../components/common/EmptyStateHero';
 import { CustomerTable } from '../features/customers/components/CustomerTable';
 import { CustomerListHeader } from '../features/customers/components/CustomerListHeader';
@@ -15,8 +15,12 @@ import { taskEngine } from '../services/taskEngine';
 import { isFeatureEnabled } from '../config/featureFlags';
 import type { Customer } from '../types/customer.types';
 
-export function CustomersPageV2() {
-  const [wizardOpen, setWizardOpen] = useState(false);
+interface CustomersPageV2Props {
+  openWizard?: boolean;
+}
+
+export function CustomersPageV2({ openWizard = false }: CustomersPageV2Props) {
+  const [wizardOpen, setWizardOpen] = useState(openWizard);
   const { user } = useAuth();
   const navigate = useNavigate();
   

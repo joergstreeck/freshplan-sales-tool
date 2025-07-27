@@ -6,6 +6,17 @@
 
 ---
 
+## ⚠️ WICHTIG: TypeScript Import Types
+
+**Alle Code-Beispiele verwenden `import type` für TypeScript Types!**
+```typescript
+import type { Task, Customer } from './types';  // ✅ RICHTIG
+import { Task, Customer } from './types';       // ❌ FALSCH
+```
+[Details im TypeScript Import Type Guide](/Users/joergstreeck/freshplan-sales-tool/docs/guides/TYPESCRIPT_IMPORT_TYPE_GUIDE.md)
+
+---
+
 ## 🎯 Die 3 Kern-Features
 
 ### 1. Customer UI Integration

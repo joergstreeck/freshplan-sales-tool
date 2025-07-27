@@ -13,6 +13,7 @@
 - [Failed to fetch / Connection refused](#failed-to-fetch) 🟡
 - [Vite Dev Server läuft nicht](#vite-issues) 🟡
 - [Keycloak Auth hängt](#auth-hang) 🔵
+- [TypeScript Import Type Fehler](#typescript-import-type) 🆕
 
 ### Backend Probleme  
 - [Backend nicht erreichbar](#backend-down) 🔴
@@ -184,6 +185,68 @@ VITE_AUTH_BYPASS=true
 # Frontend neu starten
 cd frontend && npm run dev
 ```
+
+---
+
+### TypeScript Import Type {#typescript-import-type}
+
+**Symptome:**
+- "The requested module does not provide an export named 'FieldDefinition'"
+- Vite Build Fehler bei Type-Exports
+- White Screen nach TypeScript Änderungen
+
+**Häufigkeit:** Bei `verbatimModuleSyntax: true` in tsconfig.json
+
+**Quick Fix:**
+```bash
+# 1. Import korrigieren
+# FALSCH: import { FieldDefinition } from './types';
+# RICHTIG: import type { FieldDefinition } from './types';
+
+# 2. Cache löschen und neu starten
+cd frontend
+rm -rf node_modules/.vite
+npm run dev
+```
+
+**Diagnose:**
+1. Fehler lesen: Welcher Export fehlt?
+2. Export prüfen: `export interface FieldDefinition` vorhanden?
+3. Import prüfen: `import type` verwendet?
+4. Weitere Imports suchen: `grep -r "import {.*FieldDefinition" src/`
+
+**Lösung:**
+```typescript
+// ✅ RICHTIG - Types direkt exportieren
+export interface FieldDefinition { ... }
+export type FieldCatalog = { ... }
+
+// ✅ RICHTIG - Type Imports verwenden
+import type { FieldDefinition, FieldCatalog } from './types/field.types';
+
+// ✅ RICHTIG - Enums bleiben normale Imports
+import { EntityType } from './types/field.types';
+
+// ❌ FALSCH - Keine Re-Exports
+type Foo = { ... }
+export { Foo }; // NICHT SO!
+```
+
+**Root Causes:**
+- TypeScript `verbatimModuleSyntax` erfordert explizite Type-Imports
+- Vite/ESM Module Resolution ist strikt
+- Re-Exports am Dateiende funktionieren nicht für Types
+
+**Prävention:**
+- IMMER `export interface` oder `export type` direkt
+- IMMER `import type` für Types/Interfaces
+- Nach Type-Änderungen Cache löschen
+- ESLint Rule: `@typescript-eslint/consistent-type-imports`
+
+**Siehe auch:**
+- [TypeScript Import Type Guide](/Users/joergstreeck/freshplan-sales-tool/docs/guides/TYPESCRIPT_IMPORT_TYPE_GUIDE.md)
+- [Debug Session vom 27.07.2025](/Users/joergstreeck/freshplan-sales-tool/docs/claude-work/daily-work/2025-07-27/2025-07-27_DEBUG_typescript-import-type-marathon.md)
+- [Sprint 2 Dokumentation Updates](/Users/joergstreeck/freshplan-sales-tool/docs/claude-work/daily-work/2025-07-27/2025-07-27_IMPL_sprint2-docs-typescript-update.md)
 
 ---
 

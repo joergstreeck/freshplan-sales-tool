@@ -7,6 +7,26 @@
 
 ---
 
+## ⚠️ KRITISCHE VORAUSSETZUNG: TypeScript Import Types
+
+**WICHTIG:** Bei `verbatimModuleSyntax: true` müssen ALLE Type-Imports explizit mit `import type` erfolgen!
+
+```typescript
+// ✅ RICHTIG für ALLE Sprint 2 Implementierungen:
+import type { Customer, Task, FieldDefinition } from './types';
+
+// ❌ FALSCH - führt zu "does not provide an export named" Fehlern:
+import { Customer, Task } from './types';
+```
+
+**Referenzen:**
+- [TypeScript Import Type Guide](/Users/joergstreeck/freshplan-sales-tool/docs/guides/TYPESCRIPT_IMPORT_TYPE_GUIDE.md)
+- [Debug Session vom 27.07.2025](/Users/joergstreeck/freshplan-sales-tool/docs/claude-work/daily-work/2025-07-27/2025-07-27_DEBUG_typescript-import-type-marathon.md)
+
+**Diese Regel gilt für ALLE Code-Beispiele in den Sprint 2 Dokumenten!**
+
+---
+
 ## 🎯 Sprint Goals auf einen Blick
 
 1. **Customer UI Integration** - Nahtlose Einbindung des CustomerOnboardingWizard
@@ -28,6 +48,12 @@
 - **Tag 3.5:** [/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/DAY3_5_FINAL.md](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/DAY3_5_FINAL.md) - Final Polish
 
 ### Weitere Dokumente:
+
+### 🎯 Wichtige Entscheidungen (Navigations-Reihenfolge):
+1. **Sidebar Discussion:** [/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/SIDEBAR_LEAD_DISCUSSION.md](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/SIDEBAR_LEAD_DISCUSSION.md) - UI/UX Diskussion
+2. **Lead-Kunde-Trennung:** [/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/LEAD_CUSTOMER_SEPARATION_DECISION.md](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/LEAD_CUSTOMER_SEPARATION_DECISION.md) - Warum FC-020 separat
+3. **Sidebar Config:** [/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/SIDEBAR_NAVIGATION_CONFIG.md](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/SIDEBAR_NAVIGATION_CONFIG.md) - Finale Implementierung
+4. **⭐ Zusammenfassung ALLER Entscheidungen:** [/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/SPRINT2_KEY_DECISIONS_SUMMARY.md](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/SPRINT2_KEY_DECISIONS_SUMMARY.md) - START HIER!
 - **UI Diskussion & Entscheidungen:** [/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/discussions/2025-07-27_UI_INTEGRATION_DISCUSSION.md](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/discussions/2025-07-27_UI_INTEGRATION_DISCUSSION.md)
 
 ---

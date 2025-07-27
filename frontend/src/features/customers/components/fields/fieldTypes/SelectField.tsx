@@ -13,7 +13,7 @@ import {
   FormHelperText,
   ListItemText
 } from '@mui/material';
-import { FieldDefinition } from '../../../types/field.types';
+import type { FieldDefinition } from '../../../types/field.types';
 
 interface SelectFieldProps {
   /** Field definition */

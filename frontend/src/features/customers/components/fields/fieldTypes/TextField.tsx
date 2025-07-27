@@ -7,7 +7,7 @@
 
 import React from 'react';
 import { TextField as MuiTextField } from '@mui/material';
-import { FieldDefinition } from '../../../types/field.types';
+import type { FieldDefinition } from '../../../types/field.types';
 
 interface TextFieldProps {
   /** Field definition */

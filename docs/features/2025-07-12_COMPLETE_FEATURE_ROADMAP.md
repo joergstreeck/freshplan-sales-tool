@@ -294,6 +294,19 @@
 - ✅ KI-Features Basis
 - ✅ **MARKTFÜHREND!**
 
+## 🛠️ Technische Standards & Best Practices
+
+### TypeScript/Vite Konfiguration
+Bei Verwendung von `verbatimModuleSyntax: true` in tsconfig.json:
+- **ALLE Type-Imports** müssen explizit mit `import type` erfolgen
+- **Keine Re-Exports** für Types am Dateiende
+- **Details:** [TypeScript Import Type Guide](../guides/TYPESCRIPT_IMPORT_TYPE_GUIDE.md)
+
+### Weitere Standards
+- **Code Review:** Two-Pass System für alle Releases
+- **Test Coverage:** Minimum 80% für neue Features
+- **Performance Budgets:** Definiert in Phase 0
+
 ## 🎯 Empfehlung
 
 **Beginne mit Phase 0 + Phase 1!**

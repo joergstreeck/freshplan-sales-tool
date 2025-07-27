@@ -10,7 +10,7 @@
 import React from 'react';
 import { Box, Typography, Tooltip, Chip } from '@mui/material';
 import { Info as InfoIcon, Lock as LockIcon } from '@mui/icons-material';
-import { FieldDefinition } from '../../types/field.types';
+import type { FieldDefinition } from '../../types/field.types';
 
 interface FieldWrapperProps {
   /** Field definition */
