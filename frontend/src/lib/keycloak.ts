@@ -31,6 +31,13 @@ export const keycloakInitOptions = {
  * @returns Promise<boolean> - true wenn erfolgreich initialisiert
  */
 export const initKeycloak = async (): Promise<boolean> => {
+  // Check for auth bypass FIRST
+  if (import.meta.env.DEV && import.meta.env.VITE_AUTH_BYPASS === 'true') {
+    console.log('[Keycloak] Auth bypass enabled - skipping initialization');
+    isInitialized = true;
+    return false; // Not authenticated, but that's OK in bypass mode
+  }
+
   // Prevent multiple initializations
   if (isInitialized) {
     return keycloak.authenticated || false;
