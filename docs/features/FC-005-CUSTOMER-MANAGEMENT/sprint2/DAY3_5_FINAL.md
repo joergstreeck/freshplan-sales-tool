@@ -20,6 +20,13 @@
 
 ---
 
+## ⚠️ TypeScript Import Type Reminder
+
+**Auch in Tests gilt:** Alle Type-Imports mit `import type`!
+Details: [TypeScript Import Type Guide](/Users/joergstreeck/freshplan-sales-tool/docs/guides/TYPESCRIPT_IMPORT_TYPE_GUIDE.md)
+
+---
+
 ## 🎯 Tag 3.5 Ziele
 
 1. **E2E Tests schreiben** (1h)

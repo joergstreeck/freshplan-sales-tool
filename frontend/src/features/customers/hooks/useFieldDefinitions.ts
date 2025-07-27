@@ -8,7 +8,7 @@
  */
 
 import { useEffect, useState } from 'react';
-import { FieldDefinition, FieldCatalog } from '../types/field.types';
+import type { FieldDefinition, FieldCatalog } from '../types/field.types';
 import { useCustomerOnboardingStore } from '../stores/customerOnboardingStore';
 import fieldCatalog from '../data/fieldCatalog.json';
 

@@ -10,7 +10,7 @@
 
 import React from 'react';
 import { Grid } from '@mui/material';
-import { FieldDefinition } from '../../types/field.types';
+import type { FieldDefinition } from '../../types/field.types';
 import { FieldWrapper } from './FieldWrapper';
 import { TextField } from './fieldTypes/TextField';
 import { NumberField } from './fieldTypes/NumberField';

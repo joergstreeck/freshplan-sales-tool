@@ -26,6 +26,23 @@
 
 ---
 
+## ⚠️ KRITISCH: TypeScript Import Type Requirements
+
+**ALLE Type-Imports müssen `import type` verwenden bei `verbatimModuleSyntax: true`!**
+
+```typescript
+// ✅ RICHTIG - So müssen alle Type-Imports aussehen:
+import type { Task } from '../../types/task.types';
+import type { AuditLogEntry } from '../../types/audit.types';
+
+// ❌ FALSCH - Führt zu Build-Fehlern:
+import type { Task } from '../../types/task.types';
+```
+
+**Bei Problemen:** [TypeScript Import Type Guide](/Users/joergstreeck/freshplan-sales-tool/docs/guides/TYPESCRIPT_IMPORT_TYPE_GUIDE.md)
+
+---
+
 ## 🎯 Tag 3 Ziele
 
 1. **Swipeable Task Cards** (3h)
@@ -48,7 +65,7 @@ import EmailIcon from '@mui/icons-material/Email';
 import EventIcon from '@mui/icons-material/Event';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import SnoozeIcon from '@mui/icons-material/Snooze';
-import { Task } from '../../types/task.types';
+import type { Task } from '../../types/task.types';
 import { formatDistanceToNow } from 'date-fns';
 import { de } from 'date-fns/locale';
 
@@ -226,7 +243,7 @@ import { useState } from 'react';
 import { Box, Typography, IconButton } from '@mui/material';
 import { AnimatePresence } from 'framer-motion';
 import { SwipeableTaskCard } from '../../../components/mobile/SwipeableTaskCard';
-import { Task } from '../../../types/task.types';
+import type { Task } from '../../../types/task.types';
 import { useCompleteTask, useSnoozeTask } from '../hooks/useTasks';
 import { useNavigate } from 'react-router-dom';
 import RefreshIcon from '@mui/icons-material/Refresh';

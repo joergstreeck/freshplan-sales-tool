@@ -7,11 +7,12 @@
  * @see /Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/03-FRONTEND/04-validation.md
  */
 
-import { useForm, UseFormProps, FieldValues, Path } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
+import type { UseFormProps, FieldValues, Path } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useCallback, useEffect, useMemo } from 'react';
-import { FieldDefinition, EntityType } from '../types/field.types';
+import type { FieldDefinition, EntityType } from '../types/field.types';
 import { useCustomerOnboardingStore } from '../stores/customerOnboardingStore';
 import { buildFormSchema, validateField } from './schemaBuilder';
 import { getCustomerSchema, getCustomerDraftSchema } from './customerSchemas';

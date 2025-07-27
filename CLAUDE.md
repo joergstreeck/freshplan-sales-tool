@@ -38,6 +38,9 @@
 ### Symptom: CI Integration Tests sind rot (HTTP 500 oder andere Fehler)
 ➡️ **CI-Problem** - [CI Debugging Lessons Learned](./docs/guides/CI_DEBUGGING_LESSONS_LEARNED.md) 🎯
 
+### Symptom: "The requested module does not provide an export named 'FieldDefinition'"
+➡️ **TypeScript Import Type Problem** - [TypeScript Import Type Guide](./docs/guides/TYPESCRIPT_IMPORT_TYPE_GUIDE.md) 🆕
+
 ### Symptom: Irgendwas funktioniert nicht
 ➡️ **Automatische Diagnose** - Führe aus: `./scripts/diagnose-problems.sh`
 
@@ -57,6 +60,9 @@
 ### Symptom: CI Integration Tests sind rot (HTTP 500 oder andere Fehler)
 ➡️ **CI-Problem** - [CI Debugging Lessons Learned](./docs/guides/CI_DEBUGGING_LESSONS_LEARNED.md) 🎯
 
+### Symptom: "The requested module does not provide an export named 'FieldDefinition'"
+➡️ **TypeScript Import Type Problem** - [TypeScript Import Type Guide](./docs/guides/TYPESCRIPT_IMPORT_TYPE_GUIDE.md) 🆕
+
 ### Symptom: Irgendwas funktioniert nicht
 ➡️ **Automatische Diagnose** - Führe aus: `./scripts/diagnose-problems.sh`
 
@@ -64,6 +70,8 @@
 
 ### 🔍 Quick Reference - Direkt zu den Details:
 - [🚑 Debug Cookbook - Komplette Troubleshooting-Referenz](./docs/guides/DEBUG_COOKBOOK.md) **NEU!**
+- [📚 TypeScript Import Type Guide](./docs/guides/TYPESCRIPT_IMPORT_TYPE_GUIDE.md) **NEU!**
+- [🔍 Debug Session: Import Type Marathon](./docs/claude-work/daily-work/2025-07-27/2025-07-27_DEBUG_typescript-import-type-marathon.md)
 - [0. Grundlegende Arbeitsphilosophie](#0-grundlegende-arbeitsphilosophie)
 - [0.1 Best Practices und Architektur](#01-best-practices-und-architektur-standards)
 - [0.10 Code-Review-Regel](#010-code-review-regel-gründliche-überprüfung-bei-jedem-bedeutenden-abschnitt)
@@ -176,6 +184,29 @@ backend/
 4. Event-Driven Communication zwischen Modulen
 
 ### Frontend-Architektur (React/TypeScript):
+
+#### TypeScript Import/Export Strategie (KRITISCH bei Vite):
+Bei `verbatimModuleSyntax: true` in tsconfig.json MÜSSEN alle Type-Imports explizit sein:
+
+```typescript
+// ✅ RICHTIG - Direkte Exports
+export interface FieldDefinition { ... }
+export type FieldCatalog = { ... }
+
+// ✅ RICHTIG - Type Imports verwenden
+import type { FieldDefinition, FieldCatalog } from './types';
+
+// ❌ FALSCH - Keine Re-Exports für Types
+type Foo = { ... }
+export { Foo };  // NICHT SO!
+
+// ❌ FALSCH - Normale Imports für Types
+import { FieldDefinition } from './types';  // Führt zu Build-Fehlern!
+```
+
+**Siehe:** [TypeScript Import Type Guide](./docs/guides/TYPESCRIPT_IMPORT_TYPE_GUIDE.md) für Details
+
+#### Projekt-Struktur:
 ```
 frontend/
 ├── components/                  # Reusable UI Components
@@ -1165,6 +1196,7 @@ freshplan-sales-tool/
 
 ### Tech-Stack:
 * **Frontend:** React 18 + TypeScript + Vite + MUI + React Query
+  * ⚠️ **TypeScript-Konfiguration:** `verbatimModuleSyntax: true` erfordert explizite `import type` für alle Types
 * **Backend:** Quarkus + RESTEasy Reactive + Hibernate ORM + Flyway
 * **Auth:** Keycloak mit OIDC
 * **Database:** PostgreSQL mit Row-Level Security
@@ -1354,5 +1386,6 @@ Die häufigsten Probleme und ihre Lösungen findest du im:
 - [Testdaten-Fix](/Users/joergstreeck/freshplan-sales-tool/docs/guides/DEBUG_COOKBOOK.md#no-test-data)
 - [Auth-Fix](/Users/joergstreeck/freshplan-sales-tool/docs/guides/DEBUG_COOKBOOK.md#auth-401)
 - [White Screen Fix](/Users/joergstreeck/freshplan-sales-tool/docs/guides/DEBUG_COOKBOOK.md#white-screen)
+- [TypeScript Import Type Fix](/Users/joergstreeck/freshplan-sales-tool/docs/guides/TYPESCRIPT_IMPORT_TYPE_GUIDE.md) **NEU!**
 
 [claude-doc-structure]: ./docs/CLAUDE_DOCUMENTATION_STRUCTURE.md

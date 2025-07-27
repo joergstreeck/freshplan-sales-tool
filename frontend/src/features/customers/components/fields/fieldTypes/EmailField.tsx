@@ -8,7 +8,7 @@
 import React from 'react';
 import { TextField as MuiTextField, InputAdornment } from '@mui/material';
 import { Email as EmailIcon } from '@mui/icons-material';
-import { FieldDefinition } from '../../../types/field.types';
+import type { FieldDefinition } from '../../../types/field.types';
 
 interface EmailFieldProps {
   /** Field definition */

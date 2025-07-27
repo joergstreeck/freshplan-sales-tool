@@ -80,8 +80,9 @@ export const AppProviders = ({ children: mainChildren }: AppProvidersProps) => {
                 <Route path="/users" element={<UsersPage />} />
                 <Route path="/einstellungen" element={<SettingsPage />} />
                 <Route path="/customers" element={<CustomersPageV2 />} />
+                <Route path="/customers/new" element={<CustomersPageV2 openWizard={true} />} />
                 <Route path="/customers-old" element={<CustomersPage />} />
-                <Route path="/kundenmanagement/opportunities" element={<OpportunityPipelinePage />} />
+                <Route path="/opportunities" element={<OpportunityPipelinePage />} />
                 <Route path="/calculator-v2" element={<CalculatorPageV2 />} />
                 <Route path="/legacy-tool" element={<LegacyToolPage />} />
                 {/* Login Bypass temporär reaktiviert - Auto-Login Problem */}

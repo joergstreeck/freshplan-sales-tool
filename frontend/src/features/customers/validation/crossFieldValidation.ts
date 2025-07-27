@@ -7,8 +7,8 @@
  * @see /Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/03-FRONTEND/04-validation.md
  */
 
-import { CustomerData } from '../types/customer.types';
-import { LocationData } from '../types/location.types';
+// CustomerData und LocationData sind jetzt dynamische Field-basierte Daten
+// Wir verwenden Record<string, any> für die Field Values
 
 export interface ValidationResult {
   isValid: boolean;
@@ -24,7 +24,7 @@ export const customerCrossFieldValidators = {
    * Validate complete address
    * If one address field is filled, all must be filled
    */
-  validateAddress(data: Partial<CustomerData>): ValidationResult {
+  validateAddress(data: Record<string, any>): ValidationResult {
     const { street, postalCode, city } = data;
     const hasAnyAddress = !!(street || postalCode || city);
     const hasCompleteAddress = !!(street && postalCode && city);

@@ -16,7 +16,7 @@ import {
   Chip,
   Box
 } from '@mui/material';
-import { FieldDefinition } from '../../../types/field.types';
+import type { FieldDefinition } from '../../../types/field.types';
 
 interface MultiSelectFieldProps {
   /** Field definition */
