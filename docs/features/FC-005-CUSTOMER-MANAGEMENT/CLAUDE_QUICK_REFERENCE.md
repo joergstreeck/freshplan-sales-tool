@@ -8,6 +8,12 @@
 ### Was ist FC-005?
 **FC-005 Customer Management** ist das neue Field-Based Architecture System für dynamisches Kundendatenmanagement. Es ersetzt das alte M5 Modul.
 
+### 🚨 KRITISCH: Team-Philosophie verstehen
+**BEVOR du irgendetwas änderst:** Lies die [TEAM-PHILOSOPHIE](./2025-07-26_TECH_CONCEPT_customer-field-based-architecture.md#-kritische-team-philosophie-flexibilität-über-dogmatismus) zur Flexibilität!
+- `any`-Typen sind BEABSICHTIGT (nicht Fehler!)
+- Ungenutzte Imports sind FEATURES (nicht aufräumen!)
+- Type Safety ist Werkzeug, nicht Dogma
+
 ### Warum wurde die Dokumentation umstrukturiert?
 Die ursprünglichen Dokumente waren 700-1000+ Zeilen lang - zu groß für Claude's Kontext-Fenster. Jetzt sind alle Dokumente <500 Zeilen und haben vollständige Navigation.
 

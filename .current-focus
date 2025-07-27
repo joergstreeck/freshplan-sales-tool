@@ -1,8 +1,8 @@
 {
-  "feature": "FC-002",
-  "module": "M4 Opportunity Pipeline",
-  "lastFile": "backend/src/test/java/de/freshplan/domain/opportunity/repository/OpportunityRepositoryTest.java",
-  "lastLine": "481",
-  "nextTask": "OpportunityRepositoryTest customer_number fix",
-  "lastUpdated": "2025-07-22T21:19:58Z"
+  "feature": "FC-005",
+  "module": "FC-005 Customer Management",
+  "lastFile": "auto-sync-from-v5",
+  "lastLine": "0",
+  "nextTask": "Store mit API Services verbinden",
+  "lastUpdated": "2025-07-27T02:00:40Z"
 }

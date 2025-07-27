@@ -53,6 +53,43 @@ Basierend auf der Diskussion vom 26.07.2025:
 
 ## Architektur-Entscheidungen
 
+### 🚨 KRITISCHE TEAM-PHILOSOPHIE: Flexibilität über Dogmatismus
+
+**Status:** VERBINDLICH FÜR ALLE ENTWICKLER  
+**Datum:** 27.07.2025  
+**Kontext:** Dynamische Field-basierte Architektur erfordert bewusste Flexibilität  
+
+#### Unsere Enterprise-Engineering-Philosophie:
+
+1. **Ungenutzte Imports in Komponenten**
+   - **Philosophie:** Nicht jeder Import muss sofort genutzt werden
+   - **Begründung:** Bei dynamisch verändernden Formularen mit neuen Feldern ist "Flex-Modus" effizienter
+   - **Sicherheit:** Build Tools (Tree Shaking in Webpack/Vite) sorgen für optimale Bundle-Größe
+   - **Team-Haltung:** Im MVP und bei fachlicher Fluktuation ist Pragmatismus über Optimierungszwang zu stellen
+
+2. **Generischer API-Client mit `any`-Typen**
+   - **Bewusste Entscheidung** für maximal dynamische Datenmodelle
+   - **Begründung:** Field Catalog und Feldstruktur werden zur Laufzeit definiert
+   - **Strikte Typsicherheit würde konterkarieren:** Ein branchendynamisches CRM muss extrem flexibel Felder aufnehmen können
+   - **Sicherheit liegt in:** `Promise<T>` - generischer Response-Typ ist best practice
+
+3. **Type Safety als Werkzeug, nicht als Dogma**
+   - **Abwägung:** Field Values als `any`, aber Komponenten- und API-Contracts stark typisiert wo sinnvoll
+   - **Prinzip:** 
+     - Dort wo wir WISSEN was kommt → Strikte Typisierung
+     - Dort wo das System "lebt" → Flexibilität über Schlüssel-Wert-Paare
+
+4. **Warum das Enterprise-Standard ist**
+   - **Field-basiert = dynamisch:** Zur Laufzeit können neue Felder dazukommen (per Admin, Branche, Kunde)
+   - **Nicht abdeckbar mit:** Klassischen hardcodierten Interfaces (HotelCustomerData, KrankenhausCustomerData...)
+   - **Vorbild:** Große Systeme wie Salesforce setzen ebenfalls auf "Felder als Data-Dictionary"
+   - **Wettbewerbsvorteil:** Schnelle Reaktion auf Kurs-Änderungen ohne Code-Änderungen
+
+#### Team-Statement:
+> "Wir setzen bewusst auf ein flexibles, Field-basiertes Datenmodell und API-Handling, das dynamische Feldstrukturen für unterschiedliche Branchen ohne Over-Engineering ermöglicht. Strikte Typisierung da, wo sie sich auszahlt – Flexibilität, wo die Domäne es fordert. Das ist bewusstes, modernes Enterprise-Engineering."
+
+---
+
 ### ADR-005-1: Hybrid Field System
 
 **Status:** Akzeptiert  

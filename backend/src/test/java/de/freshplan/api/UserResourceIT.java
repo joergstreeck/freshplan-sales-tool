@@ -2,9 +2,9 @@ package de.freshplan.api;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.startsWith;
-import static org.hamcrest.Matchers.endsWith;
 
 import de.freshplan.domain.user.entity.User;
 import de.freshplan.domain.user.repository.UserRepository;
@@ -18,10 +18,9 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
-import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
-import org.junit.jupiter.api.Order;
 
 /**
  * Integration tests for UserResource REST API.
@@ -249,26 +248,28 @@ class UserResourceIT {
     // Create user via API to ensure it's properly committed
     // Use timestamp to avoid conflicts between parallel test runs
     String uniqueTimestamp = String.valueOf(System.currentTimeMillis());
-    CreateUserRequest createRequest = CreateUserRequest.builder()
-        .username("to.delete." + uniqueTimestamp)
-        .firstName("To")
-        .lastName("Delete")
-        .email("to.delete." + uniqueTimestamp + "@freshplan.de")
-        .build();
-    
-    String location = given()
-        .contentType(ContentType.JSON)
-        .body(createRequest)
-        .when()
-        .post()
-        .then()
-        .statusCode(201)
-        .extract()
-        .header("Location");
-    
+    CreateUserRequest createRequest =
+        CreateUserRequest.builder()
+            .username("to.delete." + uniqueTimestamp)
+            .firstName("To")
+            .lastName("Delete")
+            .email("to.delete." + uniqueTimestamp + "@freshplan.de")
+            .build();
+
+    String location =
+        given()
+            .contentType(ContentType.JSON)
+            .body(createRequest)
+            .when()
+            .post()
+            .then()
+            .statusCode(201)
+            .extract()
+            .header("Location");
+
     // Extract ID from location header
     String userId = location.substring(location.lastIndexOf("/") + 1);
-    
+
     // Delete the user
     given().when().delete("/{id}", userId).then().statusCode(204);
 
@@ -335,7 +336,9 @@ class UserResourceIT {
   @Transactional
   User createAndPersistUser() {
     String uniqueId = System.currentTimeMillis() + "_" + Thread.currentThread().getId();
-    User user = new User("test.user." + uniqueId, "Test", "User", "test.user." + uniqueId + "@freshplan.de");
+    User user =
+        new User(
+            "test.user." + uniqueId, "Test", "User", "test.user." + uniqueId + "@freshplan.de");
     userRepository.persist(user);
     return user;
   }

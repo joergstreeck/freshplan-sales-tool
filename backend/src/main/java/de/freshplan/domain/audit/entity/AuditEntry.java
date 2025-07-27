@@ -143,8 +143,8 @@ public class AuditEntry extends PanacheEntityBase {
 
   /** Generate a simple test hash */
   private String generateTestHash() {
-    return String.format("TEST-%s-%s-%s-%d", 
-        eventType, entityType, entityId, System.currentTimeMillis());
+    return String.format(
+        "TEST-%s-%s-%s-%d", eventType, entityType, entityId, System.currentTimeMillis());
   }
 
   /** Check if this audit entry represents a failed operation */

@@ -27,6 +27,7 @@ Das Customer Management ist das **Herzstück** des FreshPlan CRM Systems. Es imp
 ### 1. 🏗️ [Technisches Konzept](./2025-07-26_TECH_CONCEPT_customer-field-based-architecture.md)
 **Die zentrale Referenz** - Single Source of Truth für die gesamte Architektur
 - Executive Summary
+- 🚨 **KRITISCHE TEAM-PHILOSOPHIE:** Flexibilität über Dogmatismus
 - Architektur-Entscheidungen (ADRs)
 - Datenmodell & Entity Relations
 - Implementierungsplan (5 Tage)

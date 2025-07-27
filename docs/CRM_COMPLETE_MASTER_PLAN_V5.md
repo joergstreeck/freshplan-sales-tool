@@ -1,7 +1,7 @@
 # 🚀 CRM COMPLETE MASTER PLAN V5 - Das Sales Command Center
 
 **Version:** 5.0  
-**Datum:** 26.07.2025 19:57 (Auto-Sync)
+**Datum:** 27.07.2025 03:56 (Auto-Sync)
 **Status:** Backend implementiert ✅, Tests fast vollständig 🔄
 
 ---
@@ -15,11 +15,12 @@
 ## 🤖 CLAUDE WORKING SECTION
 
 ### 📍 Aktueller Fokus
-**Phase:** 1 - Core Sales Process (M4 Opportunity Pipeline Finalisierung)
+**Phase:** Unknown Phase
 **Status:** Backend implementiert ✅, Tests fast vollständig 🔄
-**Nächster Schritt:** OpportunityRepositoryTest customer_number fix
+**Nächster Schritt:** Store mit API Services verbinden
 **Arbeits-Dokument:** [FC-005 Customer Management](./features/FC-005-CUSTOMER-MANAGEMENT/README.md) - Field-Based Architecture (ersetzt altes M5)
 **⚠️ WICHTIG:** FC-005 Docs komplett umstrukturiert in 8 Unterordner (33 Dokumente) für Claude-Kompatibilität!
+**🚨 KRITISCH:** [Team-Philosophie zu Flexibilität](./features/FC-005-CUSTOMER-MANAGEMENT/2025-07-26_TECH_CONCEPT_customer-field-based-architecture.md#-kritische-team-philosophie-flexibilität-über-dogmatismus) VERBINDLICH!
 **Letzte Erfolge:** M4 Renewal Stage erfolgreich gemerged (CI-Bypass strategisch)
 
 ### 🧭 Navigation für die nächsten Schritte
