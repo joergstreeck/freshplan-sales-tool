@@ -1,0 +1,1 @@
+export { EmptyStateHero } from './EmptyStateHero';
