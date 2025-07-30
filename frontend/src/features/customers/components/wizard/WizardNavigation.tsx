@@ -30,6 +30,8 @@ interface WizardNavigationProps {
   onNext: () => void;
   /** Finish button handler */
   onFinish: () => void;
+  /** Cancel button handler (optional for modal mode) */
+  onCancel?: () => void;
 }
 
 /**
@@ -45,7 +47,8 @@ export const WizardNavigation: React.FC<WizardNavigationProps> = ({
   isSaving = false,
   onBack,
   onNext,
-  onFinish
+  onFinish,
+  onCancel
 }) => {
   const isFirstStep = currentStep === 0;
   const isLastStep = currentStep === totalSteps - 1;

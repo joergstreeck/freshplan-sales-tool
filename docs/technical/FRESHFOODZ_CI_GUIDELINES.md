@@ -366,4 +366,39 @@ const CorrectButton = styled.button`
 
 ---
 
+## 🗣️ UI-Sprachregeln
+
+### Grundprinzip
+**"Das Tool muss die Sprache des Vertriebsmitarbeiters sprechen, nicht die von IT-Experten."**
+
+### Verbindliche Regeln
+1. **Deutsch als Standardsprache** - Alle UI-Texte konsequent auf Deutsch
+2. **Kein Fachjargon** - Keine Anglizismen oder "Berater-Deutsch"
+3. **Einfachheit vor Präzision** - Immer den bekannteren Begriff wählen
+
+### Wichtigste Übersetzungen
+| ❌ Vermeiden | ✅ Verwenden |
+|--------------|--------------|
+| Dashboard | Übersicht |
+| Customer | Kunde |
+| Save | Speichern |
+| Cancel | Abbrechen |
+| Delete | Löschen |
+| Edit | Bearbeiten |
+| Create | Erstellen/Anlegen |
+| Submit | Absenden |
+| Settings | Einstellungen |
+| Error | Fehler |
+| Success | Erfolgreich |
+| Loading | Lädt... |
+
+### Stil-Richtlinien
+- **Höflich und direkt:** "Bitte wählen Sie..."
+- **Einheitlich "Sie"** für professionellen Kontext
+- **Keine Abkürzungen:** "Kundennummer" statt "Kd-Nr."
+
+**Vollständige Sprachregeln:** `/docs/UI_SPRACHREGELN.md`
+
+---
+
 *Diese Guidelines sind verbindlich und werden bei jedem Code-Review überprüft. CI-Compliance ist nicht optional - es ist unsere Markenverpflichtung!*

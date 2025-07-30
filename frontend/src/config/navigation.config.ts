@@ -8,7 +8,8 @@ import SettingsIcon from '@mui/icons-material/Settings';
 // Temporär: Direkte Type-Definition um Import-Probleme zu umgehen
 interface NavigationSubItem {
   label: string;
-  path: string;
+  path?: string;  // Optional für action-based items
+  action?: string;  // NEU für Modal-Trigger
   permissions?: string[];
   disabled?: boolean;  // NEU für disabled items
   tooltip?: string;    // NEU für Erklärung
@@ -67,7 +68,7 @@ export const navigationConfig: NavigationItemType[] = [
       },
       {
         label: 'Neuer Kunde',  // NEU für Sprint 2!
-        path: '/customers/new',
+        action: 'OPEN_CUSTOMER_WIZARD',  // Triggert Modal statt Navigation
       },
       {
         label: 'Verkaufschancen',

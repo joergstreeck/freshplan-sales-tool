@@ -11,6 +11,7 @@
 
 ### Sprint 2 Dokumente:
 - **← Zurück:** [Sprint 2 Overview](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/README.md)
+- **🚨 KRITISCH:** [Architecture Fix Plan](./CRITICAL_ARCHITECTURE_FIX_PLAN.md) - ZUERST LESEN!
 - **→ Weiter:** [Tag 2 Implementation](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/DAY2_IMPLEMENTATION.md)
 - **↑ Philosophie:** [Philosophy & Approach](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/PHILOSOPHY_AND_APPROACH.md)
 - **📚 Quick Ref:** [Quick Reference](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/QUICK_REFERENCE.md)
@@ -615,14 +616,32 @@ describe('CustomersPage', () => {
 
 ## ✅ Tag 1 Checklist
 
-- [ ] CustomersPage komplett refactored
-- [ ] EmptyStateHero implementiert und getestet
-- [ ] Keyboard Shortcuts (Ctrl+N) funktionieren
-- [ ] ActionToast zeigt Success mit Button
-- [ ] CustomerListHeader mit Count Badge
-- [ ] Tests grün für alle Components
-- [ ] Performance: Initial Load < 200ms
-- [ ] Mobile: Touch Targets ≥ 44px
+- [x] CustomersPage komplett refactored
+- [x] EmptyStateHero implementiert und getestet
+- [x] Keyboard Shortcuts (Ctrl+N) funktionieren
+- [x] ActionToast zeigt Success mit Button
+- [x] CustomerListHeader mit Count Badge
+- [x] Tests grün für alle Components
+- [x] Performance: Initial Load < 200ms
+- [x] Mobile: Touch Targets ≥ 44px
+
+### 🚨 KRITISCHER ARCHITECTURE FIX (Zwischen Tag 1 & 2):
+- [x] MainLayoutV2 für CustomersPageV2 implementiert
+- [x] CustomerOnboardingWizard als Modal umgebaut
+- [x] Route /customers/new entfernt
+- [x] Event-basierte Navigation implementiert
+- [x] **Tests erstellt:**
+  - `CustomerOnboardingWizardModal.test.tsx` (15 Tests)
+  - `CustomersPageV2.test.tsx` (8 Tests)
+  - Alle 23 Tests grün ✅
+
+### 🧪 NEUE PROTOTYPES:
+- [x] **Field Theme System** erstellt (2 Dokumente)
+  - Konzept: [FIELD_THEME_SYSTEM_PROTOTYPE.md](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/prototypes/FIELD_THEME_SYSTEM_PROTOTYPE.md) - Blueprint & Strategie
+  - Implementation: [FIELD_THEME_IMPLEMENTATION.md](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/prototypes/FIELD_THEME_IMPLEMENTATION.md) - Code für Sprint 2
+  - Status: Konzept fertig, bereit für Implementierung in CustomerOnboardingWizard
+  - Löst: Platzverschwendung in Forms, responsive Grid-Probleme
+  - Scope: NUR CustomerOnboardingWizard in Sprint 2
 
 ---
 

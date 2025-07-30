@@ -1,7 +1,7 @@
 # 🚀 CRM COMPLETE MASTER PLAN V5 - Das Sales Command Center
 
 **Version:** 5.0  
-**Datum:** 27.07.2025 20:36 (Auto-Sync)
+**Datum:** 30.07.2025 13:47 (Auto-Sync)
 **Status:** Backend implementiert ✅, Tests fast vollständig 🔄
 
 ---
@@ -18,15 +18,17 @@
 **Phase:** Unknown Phase
 **Status:** Backend implementiert ✅, Tests fast vollständig 🔄
 **Nächster Schritt:** Store mit API Services verbinden
-**Arbeits-Dokument:** [FC-005 Customer Management](./features/FC-005-CUSTOMER-MANAGEMENT/README.md) - Field-Based Architecture (ersetzt altes M5)
+**Sprint 2 Docs:** [/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/README.md](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/README.md)
+**Arbeits-Dokument:** [FC-005 Customer Management](./features/FC-005-CUSTOMER-MANAGEMENT/README.md) - Field-Based Architecture
 **⚠️ WICHTIG:** FC-005 Docs komplett umstrukturiert in 8 Unterordner (33 Dokumente) für Claude-Kompatibilität!
 **🚨 KRITISCH:** [Team-Philosophie zu Flexibilität](./features/FC-005-CUSTOMER-MANAGEMENT/2025-07-26_TECH_CONCEPT_customer-field-based-architecture.md#-kritische-team-philosophie-flexibilität-über-dogmatismus) VERBINDLICH!
-**Letzte Erfolge:** M4 Renewal Stage erfolgreich gemerged (CI-Bypass strategisch)
+**Letzte Erfolge:** Architecture Fix implementiert, 23 Tests grün, UI bereinigt
 
-### 🧭 Navigation für die nächsten Schritte
-1. **AKTUELL:** FC-012 Audit Viewer UI → [Admin Dashboard für Audit Logs](./features/FC-012-audit-trail.md)
-2. **NÄCHSTES:** M8 Calculator Integration → [Modal Implementation](./features/ACTIVE/03_calculator_modal/README.md)
-3. **DANACH:** FC-009 Contract Renewal Management → [Automatisierte Verlängerungen](./features/FC-009/backend-architecture.md)
+### 🧭 Sprint-Planung FC-005
+1. **Sprint 2 (AKTUELL):** Customer UI Integration - Tag 1 ✅, Tag 2-3 ausstehend
+2. **Sprint 3:** Advanced Features (Filter, Bulk Operations, Export)
+3. **Sprint 4:** Performance Optimierung & Polish
+4. **DANACH:** FC-012 Audit Trail UI → [Admin Dashboard](./features/FC-012-audit-trail.md)
 
 ### 📚 Context-Dokumente
 - **Implementierungs-Sequenz:** [./features/2025-07-12_FINAL_OPTIMIZED_SEQUENCE.md](./features/2025-07-12_FINAL_OPTIMIZED_SEQUENCE.md)

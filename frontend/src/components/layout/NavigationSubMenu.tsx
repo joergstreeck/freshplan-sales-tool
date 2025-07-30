@@ -10,7 +10,8 @@ import {
 // Temporär: Direkte Type-Definition um Import-Probleme zu umgehen
 interface NavigationSubItem {
   label: string;
-  path: string;
+  path?: string;
+  action?: string;
   permissions?: string[];
   disabled?: boolean;
   tooltip?: string;
@@ -18,7 +19,7 @@ interface NavigationSubItem {
 
 interface NavigationSubMenuProps {
   items: NavigationSubItem[];
-  onItemClick: (path: string) => void;
+  onItemClick: (pathOrAction: string, isAction?: boolean) => void;
 }
 
 export const NavigationSubMenu: React.FC<NavigationSubMenuProps> = ({
@@ -30,13 +31,22 @@ export const NavigationSubMenu: React.FC<NavigationSubMenuProps> = ({
   return (
     <List component="div" disablePadding>
       {items.map((item) => {
-        const isActive = location.pathname.startsWith(item.path);
+        const isActive = item.path ? location.pathname.startsWith(item.path) : false;
         const isDisabled = item.disabled || false;
+        const key = item.path || item.action || item.label;
         
         const button = (
           <ListItemButton
-            key={item.path}
-            onClick={() => !isDisabled && onItemClick(item.path)}
+            key={key}
+            onClick={() => {
+              if (!isDisabled) {
+                if (item.action) {
+                  onItemClick(item.action, true);
+                } else if (item.path) {
+                  onItemClick(item.path, false);
+                }
+              }
+            }}
             selected={isActive}
             disabled={isDisabled}
             sx={{
@@ -91,7 +101,7 @@ export const NavigationSubMenu: React.FC<NavigationSubMenuProps> = ({
         // Wrap with tooltip if disabled and tooltip text exists
         if (isDisabled && item.tooltip) {
           return (
-            <Tooltip key={item.path} title={item.tooltip} placement="right">
+            <Tooltip key={key} title={item.tooltip} placement="right">
               <span>{button}</span>
             </Tooltip>
           );

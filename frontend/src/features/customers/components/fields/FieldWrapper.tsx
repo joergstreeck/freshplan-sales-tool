@@ -87,20 +87,6 @@ export const FieldWrapper: React.FC<FieldWrapperProps> = ({
       
       {/* Field Component */}
       {children}
-      
-      {/* Error or Help Text */}
-      {(error || field.helpText) && (
-        <Typography
-          variant="caption"
-          sx={{
-            mt: 0.5,
-            display: 'block',
-            color: error ? 'error.main' : 'text.secondary'
-          }}
-        >
-          {error || field.helpText}
-        </Typography>
-      )}
     </Box>
   );
 };

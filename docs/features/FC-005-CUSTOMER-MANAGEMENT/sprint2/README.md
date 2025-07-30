@@ -7,6 +7,14 @@
 
 ---
 
+## 📍 Navigation
+**← Zurück:** [FC-005 Customer Management](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/README.md)  
+**⬆️ Master Plan:** [V5 Complete Master Plan](/Users/joergstreeck/freshplan-sales-tool/docs/CRM_COMPLETE_MASTER_PLAN_V5.md)  
+**🚨 KRITISCH:** [Architecture Fix Required](/Users/joergstreeck/freshplan-sales-tool/docs/CRITICAL_FIX_MAINLAYOUT_MISSING.md)  
+**→ Start hier:** [Sprint 2 Key Decisions](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/SPRINT2_KEY_DECISIONS_SUMMARY.md)
+
+---
+
 ## ⚠️ KRITISCHE VORAUSSETZUNG: TypeScript Import Types
 
 **WICHTIG:** Bei `verbatimModuleSyntax: true` müssen ALLE Type-Imports explizit mit `import type` erfolgen!
@@ -30,8 +38,19 @@ import { Customer, Task } from './types';
 ## 🎯 Sprint Goals auf einen Blick
 
 1. **Customer UI Integration** - Nahtlose Einbindung des CustomerOnboardingWizard
-2. **Task Preview MVP** - "Das System denkt mit" erlebbar machen  
-3. **FC-012 Audit UI** - Transparenz für Admins
+2. **Field Theme System** - Intelligente Feldgrößen-Berechnung ✅
+3. **Adaptive Layout Evolution** - Dynamische, inhaltsbasierte Feldanpassung 🆕
+4. **Task Preview MVP** - "Das System denkt mit" erlebbar machen  
+5. **FC-012 Audit UI** - Transparenz für Admins
+
+---
+
+### 🆕 Adaptive Layout Dokumente:
+- **Konzept & Evolution:** [/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/prototypes/ADAPTIVE_LAYOUT_EVOLUTION.md](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/prototypes/ADAPTIVE_LAYOUT_EVOLUTION.md)
+- **Implementation Guide:** [/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/prototypes/ADAPTIVE_LAYOUT_IMPLEMENTATION_GUIDE.md](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/prototypes/ADAPTIVE_LAYOUT_IMPLEMENTATION_GUIDE.md)
+- **Rollout & Testing:** [/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/prototypes/ADAPTIVE_LAYOUT_ROLLOUT_GUIDE.md](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/prototypes/ADAPTIVE_LAYOUT_ROLLOUT_GUIDE.md)
+- **🔧 FIX PLAN:** [/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/ADAPTIVE_THEME_FIX_PLAN.md](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/ADAPTIVE_THEME_FIX_PLAN.md) - Korrektur für aktuelle Probleme
+- **🛠️ IMPLEMENTATION:** [/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/ADAPTIVE_THEME_IMPLEMENTATION.md](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/ADAPTIVE_THEME_IMPLEMENTATION.md) - Schritt-für-Schritt Anleitung
 
 ---
 
@@ -46,6 +65,10 @@ import { Customer, Task } from './types';
 - **Tag 2:** [/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/DAY2_IMPLEMENTATION.md](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/DAY2_IMPLEMENTATION.md) - Task Engine & API
 - **Tag 3:** [/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/DAY3_IMPLEMENTATION.md](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/DAY3_IMPLEMENTATION.md) - Mobile & Audit UI
 - **Tag 3.5:** [/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/DAY3_5_FINAL.md](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/DAY3_5_FINAL.md) - Final Polish
+
+### 🧪 Sprint 2 Prototypes:
+- **Field Theme System Konzept:** [/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/prototypes/FIELD_THEME_SYSTEM_PROTOTYPE.md](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/prototypes/FIELD_THEME_SYSTEM_PROTOTYPE.md) - Blueprint & Konzept
+- **Field Theme Implementation:** [/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/prototypes/FIELD_THEME_IMPLEMENTATION.md](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/prototypes/FIELD_THEME_IMPLEMENTATION.md) - Code & Sprint 2 Guide
 
 ### Weitere Dokumente:
 
@@ -168,6 +191,15 @@ import { Customer, Task } from './types';
 ---
 
 **Nächste Schritte:** 
-1. Git Branch checken: `git checkout feature/sprint-2-customer-ui-integration`
-2. Dependencies prüfen: `cd frontend && npm install`
-3. Los geht's mit Tag 1! 🚀
+1. **🚨 ZUERST:** [Critical Architecture Fix](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/CRITICAL_ARCHITECTURE_FIX_PLAN.md) lesen!
+2. Git Branch checken: `git checkout feature/sprint-2-customer-ui-integration`
+3. Dependencies prüfen: `cd frontend && npm install`
+4. Los geht's mit Tag 1! 🚀
+
+---
+
+## 🔗 Weiterführende Links
+
+**→ Weiter zu:** [Tag 1 Implementation](./DAY1_IMPLEMENTATION.md)  
+**↑ Übergeordnet:** [FC-005 Overview](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/README.md)  
+**🚨 Kritisch:** [Architecture Fix Plan](./CRITICAL_ARCHITECTURE_FIX_PLAN.md)

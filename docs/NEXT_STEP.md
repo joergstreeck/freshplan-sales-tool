@@ -7,86 +7,52 @@
 
 ## 🎯 JETZT GERADE:
 
-**SPRINT 2 TAG 1 - TYPESCRIPT IMPORT TYPE FEHLER SYSTEMATISCH BEHEBEN**
+**SPRINT 2 - WIZARD-STRUKTUR FINALISIEREN**
 
-**Stand 27.07.2025 20:45:**
-- ✅ **Sprint 2 Tag 1 ABGESCHLOSSEN:** Alle Features implementiert, alle Import-Fehler behoben
-- ✅ **Dokumentation VOLLSTÄNDIG:** TypeScript Import Type Guide + Integration in alle Hauptdokumente
-- ✅ **CustomersPageV2 läuft perfekt!** Bereit zum Testen
-- 🎯 **Status:** Erfolgreiche Session - bereit für Sprint 2 Tag 2
+**Stand 30.07.2025 14:17:**
+- ✅ Adaptive Theme Fix KOMPLETT abgeschlossen (alle 4 Schritte)
+- ✅ UI-Elemente funktionieren (Labels, *, Icons)
+- ✅ Dynamisches Wachstum aktiviert
+- ✅ Info-Box für Filialunternehmen
+- 🔄 TODO-5: Wizard-Struktur finalisieren
 
 **🚀 NÄCHSTER SCHRITT:**
 
-**Sprint 2 Tag 1 Features testen, committen, dann Sprint 2 Tag 2 beginnen (Task Engine)**
-
+**TODO-5: Wizard-Struktur finalisieren (3 Schritte)**
 ```bash
-cd /Users/joergstreeck/freshplan-sales-tool
+# 1. Wizard-Struktur-Dokument lesen:
+cat /Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/WIZARD_STRUCTURE_FINAL.md
 
-# Option A: CR-003 Configuration Data externalisieren  
-# 1. DetailedLocationsStep.tsx:72-134 categoryIcons, industryTemplates auslagern
-# 2. Separate config files für bessere Wartbarkeit erstellen
-# 3. Template-System für branchenspezifische Vorkonfigurationen
-
-# Option B: FC-005 UI Integration - CustomerOnboardingWizard einbinden
-# 1. Komponenten sind bereit, müssen nur in UI integriert werden  
-# 2. "Neuen Kunden anlegen" Button zur bestehenden Kundenliste hinzufügen
-# 3. Field-Catalog JSON aktivieren für Dynamic Forms
-
-# Tests validieren (sollten alle grün sein):
-cd frontend
-npm test -- --run DynamicFieldRenderer
-npm test -- --run ConditionalFieldsLive
-npm test -- --run StoreDynamicValidationSimple
-
-# Pull Request Status prüfen:
-gh pr view 70
+# 2. CustomerOnboardingWizard prüfen:
+# - 3 Schritte: Kundendaten → Standorte → Details
+# - Conditional Navigation für Filialunternehmen
+# - Konsistente Theme-Nutzung
 ```
 
-**WICHTIGE DOKUMENTE (NEUE STRUKTUR - 100% FERTIG!):**
-- Hauptübersicht: `/docs/features/FC-005-CUSTOMER-MANAGEMENT/README.md` ⭐
-- Quick Reference: `/docs/features/FC-005-CUSTOMER-MANAGEMENT/CLAUDE_QUICK_REFERENCE.md` 🚀
-- Implementation: `/docs/features/FC-005-CUSTOMER-MANAGEMENT/08-IMPLEMENTATION/README.md` ✅ NEU
-- Tech Konzept: `/docs/features/FC-005-CUSTOMER-MANAGEMENT/01-TECH-CONCEPT/README.md`
-- Backend Docs: `/docs/features/FC-005-CUSTOMER-MANAGEMENT/02-BACKEND/README.md`
-- Frontend Docs: `/docs/features/FC-005-CUSTOMER-MANAGEMENT/03-FRONTEND/README.md`
-- Performance: `/docs/features/FC-005-CUSTOMER-MANAGEMENT/07-PERFORMANCE/README.md`
-- Umstrukturierungs-Plan: `/docs/features/FC-005-CUSTOMER-MANAGEMENT/RESTRUCTURING_PLAN.md` ✅
+**KONKRETE AUFGABEN:**
+1. **Schritt 1:** Wizard-Navigation auf 3 Schritte anpassen
+2. **Schritt 2:** Conditional Logic für Standorte-Step
+3. **Schritt 3:** Details-Step optional machen
 
-**WICHTIGE DETAILS:**
-- chainCustomer='ja' triggert Standorte-Tab
-- industry bestimmt branchenspezifische Felder
-- Validierungen: Deutsche PLZ, E-Mail, Telefon
-- 3-stufiger Workflow: Kunde → Standorte → Details
+**WICHTIGE DOKUMENTE:**
+- Fix Plan: `/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/ADAPTIVE_THEME_FIX_PLAN.md`
+- Implementation: `/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/ADAPTIVE_THEME_IMPLEMENTATION.md`
+- Wizard Final: `/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/WIZARD_STRUCTURE_FINAL.md`
+- Sprint 2 Overview: `/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/README.md`
 
-**ABGESCHLOSSENE FEATURES:**
-- ✅ M4 Opportunity Pipeline (100%)
-- ✅ Customer Backend API
-- ✅ Customer UI Analyse
-
-**OFFENE PRIORITÄTEN:**
-1. Customer UI Implementation (2-3 Tage)
-2. FC-012 Audit Trail UI (1 Tag)
-3. Security-Analyse Quarkus 3.17.4 (4h)
+**UNTERBROCHEN BEI:**
+- Screenshot-Analyse zeigte Probleme (Felder zu breit, keine Labels)
+- Fix-Plan und Implementation Guide erstellt
+- Nächster konkreter Schritt: AdaptiveField.tsx anpassen
 
 ---
 
-## ⚠️ VOR JEDER IMPLEMENTATION - REALITY CHECK PFLICHT:
-```bash
-./scripts/reality-check.sh FC-002  # M4 Opportunity Pipeline Check
-```
+## 📊 SPRINT 2 STATUS:
+- Field Theme System: ✅ Implementiert, 🚨 Fix erforderlich
+- Wizard-Struktur: ✅ Definiert (3 Schritte)
+- Task Preview MVP: ⏳ Pending nach Theme-Fix
+- Quick Wins: ⏳ Pending nach Theme-Fix
 
----
-
-## 📊 OFFENE TODOS:
-```
-🔴 HIGH Priority: 2 TODOs (TODO-2: CI Assertions, TODO-3: UserResourceIT)
-🟡 MEDIUM Priority: 1 TODO (TODO-4: RENEWAL-Spalte)
-🟢 LOW Priority: 1 TODO (TODO-5: Übergabe)
-```
-
-**Status:**
-- FC-012 Audit Trail System: ✅ PRODUCTION-READY
-- CI Integration Tests: 🟡 2 Assertion-Failures (lösbar in 30 Min)
-- RENEWAL Backend: ✅ 100% implementiert
-- RENEWAL Frontend UI: 🔄 Bereit für Implementation nach CI-Fix
-- Debug-System: ✅ DEPLOYED (umfassende Dokumentation)
+**Nach Theme-Fix:**
+- TODO-5: Wizard-Struktur finalisieren
+- TODO-6: Task Preview MVP implementieren
