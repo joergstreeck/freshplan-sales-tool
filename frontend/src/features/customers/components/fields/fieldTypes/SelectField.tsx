@@ -5,7 +5,7 @@
  * Used for fieldType: 'select'
  */
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import { 
   FormControl, 
   Select as MuiSelect, 
@@ -87,7 +87,13 @@ export const SelectField: React.FC<SelectFieldProps> = ({
           'aria-invalid': error
         }}
         sx={{
-          backgroundColor: readOnly ? 'action.disabledBackground' : 'background.paper'
+          backgroundColor: readOnly ? 'action.disabledBackground' : 'background.paper',
+          '& .MuiSelect-select': {
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            paddingRight: '32px' // Platz für den Dropdown-Pfeil
+          }
         }}
       >
         {/* Placeholder option */}
@@ -104,6 +110,13 @@ export const SelectField: React.FC<SelectFieldProps> = ({
             key={option.value} 
             value={option.value}
             disabled={option.disabled}
+            sx={{
+              whiteSpace: 'normal', // Erlaube Zeilenumbruch in der Liste
+              minHeight: 'auto',
+              '& .MuiListItemText-primary': {
+                whiteSpace: 'normal'
+              }
+            }}
           >
             <ListItemText primary={option.label} />
           </MenuItem>

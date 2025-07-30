@@ -86,18 +86,19 @@
   ],
   "businessModel": [
     {
-      "key": "primaryFinancing",
+      "key": "financingType",
       "label": "Geschäftsmodell",
       "entityType": "customer",
-      "fieldType": "radio",
+      "fieldType": "select",
       "required": true,
+      "size": "large",
       "category": "business",
       "options": [
-        { "value": "private", "label": "Privat finanziert" },
-        { "value": "public", "label": "Öffentlich/Kasse" },
-        { "value": "mixed", "label": "Mischmodell" }
+        { "value": "private", "label": "Privatwirtschaftlich" },
+        { "value": "public", "label": "Öffentlich finanziert" },
+        { "value": "mixed", "label": "Mischfinanzierung" }
       ],
-      "helpText": "Bestimmt Produktempfehlungen und Preisgestaltung",
+      "helpText": "Privatwirtschaftlich: Hotels, Restaurants, Unternehmen | Öffentlich: Schulen, Krankenhäuser, Behörden | Mischfinanzierung: PPP-Projekte",
       "salesRelevance": "CRITICAL"
     }
   ],
@@ -117,11 +118,20 @@
       "key": "contractEndDate",
       "label": "Vertragsende",
       "entityType": "customer",
-      "fieldType": "date",
+      "fieldType": "select",
       "required": false,
+      "size": "medium",
       "category": "competitor",
       "displayCondition": "currentSupplier !== null && currentSupplier !== ''",
-      "helpText": "Wann endet der aktuelle Vertrag?",
+      "options": [
+        { "value": "open", "label": "Unbefristet / Kein Vertrag" },
+        { "value": "next_3_months", "label": "In den nächsten 3 Monaten" },
+        { "value": "next_6_months", "label": "In 3-6 Monaten" },
+        { "value": "next_12_months", "label": "In 6-12 Monaten" },
+        { "value": "over_12_months", "label": "Über 12 Monate" }
+      ],
+      "helpText": "Wann endet der aktuelle Vertrag? (für automatische Wiedervorlage)",
+      "triggerTaskGeneration": true,
       "salesRelevance": "CRITICAL"
     },
     {
@@ -146,15 +156,18 @@
       "fieldType": "select",
       "required": false,
       "category": "sales",
+      "size": "medium",
       "options": [
-        { "value": "immediate", "label": "Sofort (< 1 Monat)" },
-        { "value": "q1_2025", "label": "Q1 2025" },
-        { "value": "q2_2025", "label": "Q2 2025" },
-        { "value": "q3_2025", "label": "Q3 2025" },
-        { "value": "q4_2025", "label": "Q4 2025" },
-        { "value": "2026", "label": "2026 oder später" },
+        { "value": "immediate", "label": "Sofortige Entscheidung möglich" },
+        { "value": "1_month", "label": "Innerhalb 1 Monat" },
+        { "value": "3_months", "label": "In 1-3 Monaten" },
+        { "value": "6_months", "label": "In 3-6 Monaten" },
+        { "value": "12_months", "label": "In 6-12 Monaten" },
+        { "value": "over_12_months", "label": "Später als 12 Monate" },
         { "value": "unknown", "label": "Noch unklar" }
       ],
+      "helpText": "Wann wird voraussichtlich eine Entscheidung getroffen?",
+      "triggerTaskGeneration": true,
       "salesRelevance": "HIGH"
     }
   ],
