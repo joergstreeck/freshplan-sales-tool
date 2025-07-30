@@ -183,18 +183,28 @@
       "key": "offersBreakfast",
       "label": "Frühstück angeboten",
       "entityType": "customer",
-      "fieldType": "checkbox",
+      "fieldType": "select",
       "category": "services",
       "displayCondition": "industry === 'hotel'",
+      "options": [
+        { "value": "nein", "label": "Nein" },
+        { "value": "ja", "label": "Ja" }
+      ],
+      "sizeHint": "klein",
       "salesRelevance": "HIGH"
     },
     {
       "key": "breakfastWarm",
       "label": "Warme Frühstückskomponenten",
       "entityType": "customer",
-      "fieldType": "checkbox",
+      "fieldType": "select",
       "category": "services",
-      "displayCondition": "industry === 'hotel' && offersBreakfast === true",
+      "displayCondition": "industry === 'hotel' && offersBreakfast === 'ja'",
+      "options": [
+        { "value": "nein", "label": "Nein" },
+        { "value": "ja", "label": "Ja" }
+      ],
+      "sizeHint": "klein",
       "salesImpact": "high-margin",
       "triggerProducts": ["breakfast-convenience"]
     },
@@ -204,7 +214,7 @@
       "entityType": "customer",
       "fieldType": "number",
       "category": "services",
-      "displayCondition": "industry === 'hotel' && offersBreakfast === true",
+      "displayCondition": "industry === 'hotel' && offersBreakfast === 'ja'",
       "placeholder": "0",
       "min": 0,
       "sizeHint": "klein",
@@ -214,34 +224,54 @@
       "key": "offersLunch",
       "label": "Mittagessen/Restaurant",
       "entityType": "customer",
-      "fieldType": "checkbox",
+      "fieldType": "select",
       "category": "services",
-      "displayCondition": "industry === 'hotel'"
+      "displayCondition": "industry === 'hotel'",
+      "options": [
+        { "value": "nein", "label": "Nein" },
+        { "value": "ja", "label": "Ja" }
+      ],
+      "sizeHint": "klein"
     },
     {
       "key": "offersDinner",
       "label": "Abendessen/À la carte",
       "entityType": "customer",
-      "fieldType": "checkbox",
+      "fieldType": "select",
       "category": "services",
-      "displayCondition": "industry === 'hotel'"
+      "displayCondition": "industry === 'hotel'",
+      "options": [
+        { "value": "nein", "label": "Nein" },
+        { "value": "ja", "label": "Ja" }
+      ],
+      "sizeHint": "klein"
     },
     {
       "key": "offersRoomService",
       "label": "Roomservice",
       "entityType": "customer",
-      "fieldType": "checkbox",
+      "fieldType": "select",
       "category": "services",
       "displayCondition": "industry === 'hotel'",
+      "options": [
+        { "value": "nein", "label": "Nein" },
+        { "value": "ja", "label": "Ja" }
+      ],
+      "sizeHint": "klein",
       "salesImpact": "premium-products"
     },
     {
       "key": "offersEvents",
       "label": "Events/Bankette",
       "entityType": "customer",
-      "fieldType": "checkbox",
+      "fieldType": "select",
       "category": "services",
       "displayCondition": "industry === 'hotel'",
+      "options": [
+        { "value": "nein", "label": "Nein" },
+        { "value": "ja", "label": "Ja" }
+      ],
+      "sizeHint": "klein",
       "salesImpact": "high-volume"
     },
     {
@@ -250,7 +280,7 @@
       "entityType": "customer",
       "fieldType": "number",
       "category": "services",
-      "displayCondition": "industry === 'hotel' && offersEvents === true",
+      "displayCondition": "industry === 'hotel' && offersEvents === 'ja'",
       "placeholder": "0",
       "sizeHint": "klein"
     },
@@ -283,9 +313,14 @@
       "key": "hasStaffingIssues",
       "label": "Personalmangel/Fachkräftemangel",
       "entityType": "customer",
-      "fieldType": "checkbox",
+      "fieldType": "select",
       "category": "painPoints",
       "required": false,
+      "options": [
+        { "value": "nein", "label": "Kein Problem" },
+        { "value": "ja", "label": "Ja, großes Problem" }
+      ],
+      "sizeHint": "mittel",
       "salesRelevance": "CRITICAL",
       "triggerProducts": ["convenience", "ready-to-serve"],
       "solutionText": "Cook&Fresh® - Keine Fachkräfte nötig!",
@@ -295,8 +330,13 @@
       "key": "hasQualityIssues",
       "label": "Schwankende Qualität",
       "entityType": "customer",
-      "fieldType": "checkbox",
+      "fieldType": "select",
       "category": "painPoints",
+      "options": [
+        { "value": "nein", "label": "Kein Problem" },
+        { "value": "ja", "label": "Ja, großes Problem" }
+      ],
+      "sizeHint": "mittel",
       "required": false,
       "salesRelevance": "HIGH",
       "triggerProducts": ["standardized"],
@@ -306,9 +346,14 @@
       "key": "hasFoodWasteIssues",
       "label": "Zu viel Lebensmittelverschwendung",
       "entityType": "customer",
-      "fieldType": "checkbox",
+      "fieldType": "select",
       "category": "painPoints",
       "required": false,
+      "options": [
+        { "value": "nein", "label": "Kein Problem" },
+        { "value": "ja", "label": "Ja, großes Problem" }
+      ],
+      "sizeHint": "mittel",
       "salesRelevance": "HIGH",
       "triggerProducts": ["long-shelf-life"],
       "solutionText": "40 Tage Haltbarkeit ohne Qualitätsverlust"
@@ -317,9 +362,14 @@
       "key": "hasCostPressure",
       "label": "Kostendruck",
       "entityType": "customer",
-      "fieldType": "checkbox",
+      "fieldType": "select",
       "category": "painPoints",
       "required": false,
+      "options": [
+        { "value": "nein", "label": "Kein Problem" },
+        { "value": "ja", "label": "Ja, großes Problem" }
+      ],
+      "sizeHint": "mittel",
       "salesRelevance": "HIGH",
       "triggerProducts": ["efficiency"],
       "solutionText": "Kalkulierbare Kosten, weniger Personal"
@@ -328,9 +378,14 @@
       "key": "hasFlexibilityIssues",
       "label": "Mangelnde Flexibilität bei Gästezahlen",
       "entityType": "customer",
-      "fieldType": "checkbox",
+      "fieldType": "select",
       "category": "painPoints",
       "required": false,
+      "options": [
+        { "value": "nein", "label": "Kein Problem" },
+        { "value": "ja", "label": "Ja, großes Problem" }
+      ],
+      "sizeHint": "mittel",
       "salesRelevance": "MEDIUM",
       "triggerProducts": ["portion-exact"],
       "solutionText": "Portionsgenaue Bestellung möglich"
@@ -339,9 +394,14 @@
       "key": "hasDietComplexity",
       "label": "Komplexe Diät-/Allergieanforderungen",
       "entityType": "customer",
-      "fieldType": "checkbox",
+      "fieldType": "select",
       "category": "painPoints",
       "required": false,
+      "options": [
+        { "value": "nein", "label": "Kein Problem" },
+        { "value": "ja", "label": "Ja, großes Problem" }
+      ],
+      "sizeHint": "mittel",
       "salesRelevance": "MEDIUM",
       "triggerProducts": ["special-diets", "allergen-free"],
       "solutionText": "Komplettes Sortiment für alle Anforderungen"
@@ -352,9 +412,14 @@
       "key": "vendingInterest",
       "label": "Interesse an Vending/Automaten (bonPeti)",
       "entityType": "customer",
-      "fieldType": "checkbox",
+      "fieldType": "select",
       "category": "additional",
       "required": false,
+      "options": [
+        { "value": "nein", "label": "Nein" },
+        { "value": "ja", "label": "Ja" }
+      ],
+      "sizeHint": "mittel",
       "salesRelevance": "MEDIUM",
       "helpText": "24/7 Versorgung für Mitarbeiter/Gäste",
       "triggerProducts": ["vending", "bonpeti"]
@@ -365,7 +430,7 @@
       "entityType": "customer",
       "fieldType": "number",
       "category": "additional",
-      "displayCondition": "vendingInterest === true",
+      "displayCondition": "vendingInterest === 'ja'",
       "placeholder": "0",
       "sizeHint": "klein",
       "helpText": "z.B. Pausenräume, Lobbys, Stationen"
