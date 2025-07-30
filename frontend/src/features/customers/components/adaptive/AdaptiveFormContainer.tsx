@@ -57,6 +57,14 @@ const GridContainer = styled('div')(({ theme }) => ({
     maxWidth: '100%',
   },
   
+  // Spezielle Behandlung für Dropdown-Felder - Text muss immer lesbar sein
+  '& .field-dropdown-auto': {
+    gridColumn: 'span 1',
+    minWidth: '200px',
+    maxWidth: 'none', // Keine Begrenzung - wächst mit Inhalt
+    width: 'auto',
+  },
+  
   // Mobile Overrides
   [theme.breakpoints.down('sm')]: {
     '& .field-kompakt, & .field-klein, & .field-mittel, & .field-groß': {

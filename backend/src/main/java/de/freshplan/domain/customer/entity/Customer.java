@@ -118,6 +118,9 @@ public class Customer extends PanacheEntityBase {
   @Column(name = "locations_rest_eu")
   private Integer locationsRestEU;
 
+  @Column(name = "expansion_planned", length = 10)
+  private String expansionPlanned;
+
   // Business Model - NEW for Sprint 2
   @Enumerated(EnumType.STRING)
   @Column(name = "primary_financing", length = 20)
@@ -585,6 +588,14 @@ public class Customer extends PanacheEntityBase {
 
   public void setLocationsRestEU(Integer locationsRestEU) {
     this.locationsRestEU = locationsRestEU;
+  }
+
+  public String getExpansionPlanned() {
+    return expansionPlanned;
+  }
+
+  public void setExpansionPlanned(String expansionPlanned) {
+    this.expansionPlanned = expansionPlanned;
   }
 
   public FinancingType getPrimaryFinancing() {

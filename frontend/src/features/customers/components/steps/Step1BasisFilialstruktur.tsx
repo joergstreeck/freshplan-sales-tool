@@ -19,7 +19,11 @@ import {
 import { useCustomerOnboardingStore } from '../../stores/customerOnboardingStore';
 import { useFieldDefinitions } from '../../hooks/useFieldDefinitions';
 import { DynamicFieldRenderer } from '../fields/DynamicFieldRenderer';
-import type { FieldDefinition } from '../../types/FieldDefinition';
+import { FilialstrukturLayout } from '../layout/FilialstrukturLayout';
+import { TextField } from '../fields/fieldTypes/TextField';
+import { NumberField } from '../fields/fieldTypes/NumberField';
+import { SelectField } from '../fields/fieldTypes/SelectField';
+import type { FieldDefinition } from '../../types/field.types';
 import { getFieldSize } from '../../utils/fieldSizeCalculator';
 
 /**
@@ -108,6 +112,71 @@ export const Step1BasisFilialstruktur: React.FC = () => {
   const handleFieldBlur = useCallback((fieldKey: string) => {
     validateField(fieldKey);
   }, [validateField]);
+
+  // Render function for FilialstrukturLayout (without labels - labels are rendered by FilialstrukturLayout)
+  const renderField = useCallback((field: FieldDefinition) => {
+    const fieldValue = customerData[field.key];
+    const fieldError = validationErrors[field.key];
+    
+    // Handle field change
+    const handleChange = (value: any) => {
+      handleFieldChange(field.key, value);
+    };
+    
+    // Handle field blur
+    const handleBlur = () => {
+      handleFieldBlur(field.key);
+    };
+    
+    // Render field directly without FieldWrapper (no label)
+    switch (field.fieldType) {
+      case 'text':
+        return (
+          <TextField
+            field={field}
+            value={fieldValue || ''}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            error={!!fieldError}
+            helperText={fieldError}
+          />
+        );
+      case 'number':
+        return (
+          <NumberField
+            field={field}
+            value={fieldValue || ''}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            error={!!fieldError}
+            helperText={fieldError}
+          />
+        );
+      case 'select':
+      case 'dropdown':
+        return (
+          <SelectField
+            field={field}
+            value={fieldValue || ''}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            error={!!fieldError}
+            helperText={fieldError}
+          />
+        );
+      default:
+        return (
+          <DynamicFieldRenderer
+            fields={[field]}
+            values={customerData}
+            errors={validationErrors}
+            onChange={handleFieldChange}
+            onBlur={handleFieldBlur}
+            useAdaptiveLayout={false}
+          />
+        );
+    }
+  }, [customerData, validationErrors, handleFieldChange, handleFieldBlur]);
   
   return (
     <Box>
@@ -166,13 +235,10 @@ export const Step1BasisFilialstruktur: React.FC = () => {
               Dies hilft uns, das Potenzial für Rahmenverträge zu bewerten.
             </Alert>
             
-            <DynamicFieldRenderer
+            <FilialstrukturLayout
               fields={chainStructureFields}
+              renderField={renderField}
               values={customerData}
-              errors={validationErrors}
-              onChange={handleFieldChange}
-              onBlur={handleFieldBlur}
-              useAdaptiveLayout={true}
             />
             
             {/* Potential Indicator */}
