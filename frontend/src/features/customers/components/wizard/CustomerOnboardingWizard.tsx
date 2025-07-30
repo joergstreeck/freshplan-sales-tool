@@ -27,31 +27,37 @@ import { LoadingScreen } from '../shared/LoadingScreen';
 import { WizardNavigation } from './WizardNavigation';
 import { CustomerDataStep } from '../steps/CustomerDataStep';
 import { LocationsStep } from '../steps/LocationsStep';
+import { Step1BasisFilialstruktur } from '../steps/Step1BasisFilialstruktur';
+import { Step2AngebotPainpoints } from '../steps/Step2AngebotPainpoints';
+import { Step3Ansprechpartner } from '../steps/Step3Ansprechpartner';
 import { CustomerFieldThemeProvider } from '../../theme';
 
 // DEBUG: Field Theme System
 import { debugCustomerFieldTheme } from '../../utils/debugFieldTheme';
 
 /**
- * Wizard step configuration
+ * Wizard step configuration - Verkaufsfokussierte Struktur
+ * @see /Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/WIZARD_STRUCTURE_V2.md
  */
 const WIZARD_STEPS = [
   { 
-    id: 'customer', 
-    label: 'Kundenstammdaten',
-    description: 'Grundlegende Informationen zum Kunden'
+    id: 'basis-filialstruktur', 
+    label: 'Basis & Filialstruktur',
+    description: 'Unternehmensdaten und Standortverteilung',
+    icon: '🏢'
   },
   { 
-    id: 'locations', 
-    label: 'Standorte',
-    description: 'Standorte für Filialunternehmen',
-    condition: (data: Record<string, any>) => data.chainCustomer === 'ja'
+    id: 'angebot-painpoints', 
+    label: 'Angebot & Pain Points',
+    description: 'Angebotsstruktur und Herausforderungen',
+    icon: '🎯'
   },
   { 
-    id: 'details', 
-    label: 'Details',
-    description: 'Zusätzliche Details und Ausgabestellen',
-    condition: (data: Record<string, any>) => data.chainCustomer === 'ja' && data.hasDetailedLocations
+    id: 'ansprechpartner', 
+    label: 'Ansprechpartner',
+    description: 'Kontaktpersonen und Kommunikation',
+    icon: '👥',
+    optional: true
   }
 ];
 
@@ -101,17 +107,8 @@ export const CustomerOnboardingWizard: React.FC<CustomerOnboardingWizardProps> =
     }
   }, []);
   
-  // Filter visible steps based on conditions
-  const visibleSteps = WIZARD_STEPS.filter(step => 
-    !step.condition || step.condition(customerData)
-  );
-  
-  // Adjust current step if conditions change
-  useEffect(() => {
-    if (currentStep >= visibleSteps.length && visibleSteps.length > 0) {
-      setCurrentStep(visibleSteps.length - 1);
-    }
-  }, [currentStep, visibleSteps.length, setCurrentStep]);
+  // All steps are visible in the new structure - Step 3 is optional but still shown
+  const visibleSteps = WIZARD_STEPS;
   
   /**
    * Handle step navigation
@@ -170,19 +167,12 @@ export const CustomerOnboardingWizard: React.FC<CustomerOnboardingWizardProps> =
     if (!stepConfig) return null;
     
     switch (stepConfig.id) {
-      case 'customer':
-        return <CustomerDataStep />;
-      case 'locations':
-        return <LocationsStep />;
-      case 'details':
-        // DetailedLocationsStep would be implemented here
-        return (
-          <Box sx={{ p: 3, textAlign: 'center' }}>
-            <Typography variant="h6" color="text.secondary">
-              Details-Step (Coming Soon)
-            </Typography>
-          </Box>
-        );
+      case 'basis-filialstruktur':
+        return <Step1BasisFilialstruktur />;
+      case 'angebot-painpoints':
+        return <Step2AngebotPainpoints />;
+      case 'ansprechpartner':
+        return <Step3Ansprechpartner />;
       default:
         return null;
     }
@@ -236,7 +226,17 @@ export const CustomerOnboardingWizard: React.FC<CustomerOnboardingWizardProps> =
         <Stepper activeStep={currentStep} sx={{ my: 4 }}>
           {visibleSteps.map((step, index) => (
             <Step key={step.id} completed={index < currentStep}>
-              <StepLabel>{step.label}</StepLabel>
+              <StepLabel>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  {step.icon && <span>{step.icon}</span>}
+                  <span>{step.label}</span>
+                  {step.optional && (
+                    <Typography variant="caption" color="text.secondary">
+                      (Optional)
+                    </Typography>
+                  )}
+                </Box>
+              </StepLabel>
             </Step>
           ))}
         </Stepper>
