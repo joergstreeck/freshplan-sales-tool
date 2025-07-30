@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Box, Button, Typography } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
-import { CustomerOnboardingWizard } from '../features/customers/components/wizard/CustomerOnboardingWizard';
+import { MainLayoutV2 } from '../components/layout/MainLayoutV2';
+import { CustomerOnboardingWizardModal } from '../features/customers/components/wizard/CustomerOnboardingWizardModal';
 import { EmptyStateHero } from '../components/common/EmptyStateHero';
 import { CustomerTable } from '../features/customers/components/CustomerTable';
 import { CustomerListHeader } from '../features/customers/components/CustomerListHeader';
@@ -23,6 +24,13 @@ export function CustomersPageV2({ openWizard = false }: CustomersPageV2Props) {
   const [wizardOpen, setWizardOpen] = useState(openWizard);
   const { user } = useAuth();
   const navigate = useNavigate();
+  
+  // Listen for new customer event from sidebar
+  useEffect(() => {
+    const handleNewCustomer = () => setWizardOpen(true);
+    window.addEventListener('freshplan:new-customer', handleNewCustomer);
+    return () => window.removeEventListener('freshplan:new-customer', handleNewCustomer);
+  }, []);
   
   // Verkäuferschutz: Nur eigene Kunden für Sales-Rolle
   const filter = user?.role === 'sales' ? { assignedTo: user.id } : undefined;
@@ -72,53 +80,59 @@ export function CustomersPageV2({ openWizard = false }: CustomersPageV2Props) {
   };
 
   if (isLoading) {
-    return <CustomerListSkeleton />;
+    return (
+      <MainLayoutV2>
+        <CustomerListSkeleton />
+      </MainLayoutV2>
+    );
   }
 
   return (
-    <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-      {/* Header mit Button - immer sichtbar */}
-      <CustomerListHeader 
-        totalCount={customers.length}
-        onAddCustomer={() => setWizardOpen(true)}
-      />
-      
-      {/* Content Area */}
-      <Box sx={{ flex: 1, overflow: 'auto', p: 3 }}>
-        {customers.length === 0 ? (
-          <EmptyStateHero 
-            title="Noch keine Kunden"
-            description="Legen Sie Ihren ersten Kunden an und starten Sie Ihre Erfolgsgeschichte!"
-            illustration="/illustrations/empty-customers.svg"
-            action={{
-              label: "✨ Ersten Kunden anlegen",
-              onClick: () => setWizardOpen(true),
-              variant: "contained",
-              size: "large"
-            }}
-            secondaryAction={{
-              label: "Demo-Daten importieren",
-              onClick: () => navigate('/settings/import')
-            }}
-          />
-        ) : (
-          <>
-            {/* Filter Bar (später in Sprint 3) */}
-            <CustomerTable 
-              customers={customers}
-              onRowClick={(customer) => navigate(`/customers/${customer.id}`)}
-              highlightNew
+    <MainLayoutV2>
+      <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+        {/* Header mit Button - immer sichtbar */}
+        <CustomerListHeader 
+          totalCount={customers.length}
+          onAddCustomer={() => setWizardOpen(true)}
+        />
+        
+        {/* Content Area */}
+        <Box sx={{ flex: 1, overflow: 'auto', p: 3 }}>
+          {customers.length === 0 ? (
+            <EmptyStateHero 
+              title="Noch keine Kunden"
+              description="Legen Sie Ihren ersten Kunden an und starten Sie Ihre Erfolgsgeschichte!"
+              illustration="/illustrations/empty-customers.svg"
+              action={{
+                label: "✨ Ersten Kunden anlegen",
+                onClick: () => setWizardOpen(true),
+                variant: "contained",
+                size: "large"
+              }}
+              secondaryAction={{
+                label: "Demo-Daten importieren",
+                onClick: () => navigate('/settings/import')
+              }}
             />
-          </>
-        )}
+          ) : (
+            <>
+              {/* Filter Bar (später in Sprint 3) */}
+              <CustomerTable 
+                customers={customers}
+                onRowClick={(customer) => navigate(`/customers/${customer.id}`)}
+                highlightNew
+              />
+            </>
+          )}
+        </Box>
+        
+        {/* Wizard Modal/Drawer */}
+        <CustomerOnboardingWizardModal
+          open={wizardOpen}
+          onClose={() => setWizardOpen(false)}
+          onComplete={handleCustomerCreated}
+        />
       </Box>
-      
-      {/* Wizard Modal/Drawer */}
-      <CustomerOnboardingWizard
-        open={wizardOpen}
-        onClose={() => setWizardOpen(false)}
-        onComplete={handleCustomerCreated}
-      />
-    </Box>
+    </MainLayoutV2>
   );
 }

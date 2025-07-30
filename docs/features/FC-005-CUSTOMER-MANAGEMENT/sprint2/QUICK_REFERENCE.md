@@ -17,7 +17,7 @@ import { Task, Customer } from './types';       // ❌ FALSCH
 
 ---
 
-## 🎯 Die 3 Kern-Features
+## 🎯 Die 5 Kern-Features
 
 ### 1. Customer UI Integration
 ```typescript
@@ -26,18 +26,32 @@ import { Task, Customer } from './types';       // ❌ FALSCH
 // Warum: Erste Kundenanlage = Start der Beziehung
 ```
 
-### 2. Task Preview MVP  
+### 2. Field Theme System ✅
+```typescript
+// Status: Implementiert, ABER Fix erforderlich!
+// Problem: UI-Elemente fehlen, Größen nicht korrekt
+// Lösung: ADAPTIVE_THEME_FIX_PLAN.md
+```
+
+### 3. Task Preview MVP  
 ```typescript
 // 3 Rules: Welcome (2d), Quote (7d), Inactivity (60d)
 // Automatisch: Nach Customer.create → Task generiert
 // Feedback: Toast mit "Aufgabe anzeigen" Action
 ```
 
-### 3. Quick Wins
+### 4. Quick Wins
 ```typescript
 // Shortcuts: Ctrl+N (Kunde), Ctrl+T (Task), Ctrl+K (Command)
 // Empty States: Motivierend statt frustrierend
 // Mobile: Swipe right = done, left = snooze
+```
+
+### 5. Wizard-Struktur Final
+```typescript
+// 3 Schritte: Kundendaten → Standorte → Details
+// Mit Adaptive Theme für intelligente Feldanordnung
+// Details: WIZARD_STRUCTURE_FINAL.md
 ```
 
 ---
@@ -47,14 +61,22 @@ import { Task, Customer } from './types';       // ❌ FALSCH
 ### Frontend Changes:
 ```
 frontend/src/
-├── pages/CustomersPage.tsx                    # Main Integration Point
+├── pages/
+│   ├── CustomersPageV2.tsx                   # Main Page with MainLayoutV2 ✅
+│   └── __tests__/CustomersPageV2.test.tsx    # Page Tests (8 tests)
+├── features/customers/components/wizard/
+│   ├── CustomerOnboardingWizard.tsx          # Wizard Component
+│   ├── CustomerOnboardingWizardModal.tsx     # NEW: Modal Wrapper ✅
+│   └── __tests__/
+│       └── CustomerOnboardingWizardModal.test.tsx  # Modal Tests (15 tests)
 ├── components/
+│   ├── layout/MainLayoutV2.tsx               # MUST USE for all pages!
 │   ├── common/EmptyStateHero.tsx             # Smart Empty States
 │   ├── notifications/ActionToast.tsx         # Toast with Actions
 │   ├── mobile/SwipeableTaskCard.tsx         # Mobile Swipe
 │   ├── tasks/TaskBadge.tsx                  # NEW/OVERDUE Badges
 │   └── dashboard/CockpitTeaser.tsx          # Preview Widget
-├── hooks/useKeyboardShortcuts.ts             # Productivity Boost
+├── hooks/useKeyboardShortcuts.tsx            # Productivity Boost
 ├── services/
 │   ├── taskEngine.ts                        # Core Task Engine
 │   └── taskRules/                           # Rule Implementations
@@ -70,6 +92,36 @@ backend/src/main/java/de/freshplan/api/
     ├── repository/TaskRepository.java       # Data Access
     └── api/TaskResource.java                # REST Endpoints
 ```
+
+---
+
+## 🚨 KRITISCH: Architecture Fix Changes
+
+### Was wurde geändert:
+1. **MainLayoutV2 ist Pflicht** für alle Seiten
+2. **Wizard als Modal** statt separate Route
+3. **Event-basierte Navigation** für globale Actions
+4. **Tests hinzugefügt** (23 Tests total)
+
+### Geänderte Dateien:
+- `CustomersPageV2.tsx` - Nutzt jetzt MainLayoutV2
+- `CustomerOnboardingWizardModal.tsx` - NEW: Modal Wrapper
+- `/customers/new` Route - ENTFERNT
+- `navigation.config.ts` - Action statt Path
+
+---
+
+### Field Theme System ✅
+- **Datei:** `/frontend/src/features/customers/theme/fieldTheme.ts`
+- **5 Größen:** compact, small, medium, large, full
+- **Calculator:** `/frontend/src/features/customers/utils/fieldSizeCalculator.ts`
+- **Debug:** `window.debugFieldTheme()` in Browser Console
+
+### Adaptive Layout Evolution 🆕
+- **Konzept:** `/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/prototypes/ADAPTIVE_LAYOUT_EVOLUTION.md`
+- **Implementation:** `/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/prototypes/ADAPTIVE_LAYOUT_IMPLEMENTATION_GUIDE.md`
+- **Rollout:** `/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/prototypes/ADAPTIVE_LAYOUT_ROLLOUT_GUIDE.md`
+- **Status:** Ready for Team Review
 
 ---
 

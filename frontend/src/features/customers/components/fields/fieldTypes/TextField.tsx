@@ -72,6 +72,15 @@ export const TextField: React.FC<TextFieldProps> = ({
       sx={{
         '& .MuiInputBase-root': {
           backgroundColor: readOnly ? 'action.disabledBackground' : 'background.paper'
+        },
+        // Für lange Texte: Kleinere Schrift bei Bedarf
+        '& .MuiInputBase-input': {
+          ...(field.key === 'companyName' && value.length > 30 && {
+            fontSize: '0.875rem'
+          }),
+          ...(field.key === 'companyName' && value.length > 50 && {
+            fontSize: '0.8rem'
+          })
         }
       }}
     />

@@ -27,6 +27,10 @@ import { LoadingScreen } from '../shared/LoadingScreen';
 import { WizardNavigation } from './WizardNavigation';
 import { CustomerDataStep } from '../steps/CustomerDataStep';
 import { LocationsStep } from '../steps/LocationsStep';
+import { CustomerFieldThemeProvider } from '../../theme';
+
+// DEBUG: Field Theme System
+import { debugCustomerFieldTheme } from '../../utils/debugFieldTheme';
 
 /**
  * Wizard step configuration
@@ -51,13 +55,23 @@ const WIZARD_STEPS = [
   }
 ];
 
+interface CustomerOnboardingWizardProps {
+  onComplete?: (customer: any) => void;
+  onCancel?: () => void;
+  isModal?: boolean;
+}
+
 /**
  * Customer Onboarding Wizard
  * 
  * Central component for creating new customers.
  * Manages wizard flow, validation, and draft persistence.
  */
-export const CustomerOnboardingWizard: React.FC = () => {
+export const CustomerOnboardingWizard: React.FC<CustomerOnboardingWizardProps> = ({
+  onComplete,
+  onCancel,
+  isModal = false
+}) => {
   const navigate = useNavigate();
   const [finalizing, setFinalizing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -79,6 +93,13 @@ export const CustomerOnboardingWizard: React.FC = () => {
   
   const { isLoading: loadingFields, error: fieldError } = useFieldDefinitions();
   const { save: manualSave } = useAutoSave({ enabled: true, delay: 2000 });
+  
+  // DEBUG: Log field theme on mount
+  useEffect(() => {
+    if (process.env.NODE_ENV === 'development') {
+      debugCustomerFieldTheme();
+    }
+  }, []);
   
   // Filter visible steps based on conditions
   const visibleSteps = WIZARD_STEPS.filter(step => 
@@ -121,12 +142,18 @@ export const CustomerOnboardingWizard: React.FC = () => {
         return;
       }
       
-      await finalizeCustomer();
+      const customer = await finalizeCustomer();
       
-      // Navigate to success page or customer list
-      navigate('/customers', { 
-        state: { message: 'Kunde erfolgreich angelegt!' }
-      });
+      // If modal mode, call onComplete callback
+      if (isModal && onComplete) {
+        onComplete(customer);
+        reset(); // Reset wizard state
+      } else {
+        // Navigate to success page or customer list
+        navigate('/customers', { 
+          state: { message: 'Kunde erfolgreich angelegt!' }
+        });
+      }
     } catch (err) {
       setError('Fehler beim Speichern des Kunden. Bitte versuchen Sie es erneut.');
       console.error('Failed to finalize customer:', err);
@@ -177,24 +204,31 @@ export const CustomerOnboardingWizard: React.FC = () => {
     );
   }
   
-  return (
-    <Box sx={{ width: '100%', maxWidth: 1200, mx: 'auto', p: 3 }}>
-      <Paper elevation={2} sx={{ p: 4, position: 'relative' }}>
-        {/* Save Indicator */}
-        <SaveIndicator 
-          isDirty={isDirty}
-          isSaving={isSaving}
-          lastSaved={lastSaved}
-        />
-        
-        {/* Header */}
+  const content = (
+    <CustomerFieldThemeProvider mode="anpassungsfähig">
+      {/* Save Indicator */}
+      <SaveIndicator 
+        isDirty={isDirty}
+        isSaving={isSaving}
+        lastSaved={lastSaved}
+      />
+      
+      {/* Header - only show if not in modal */}
+      {!isModal && (
         <Typography variant="h4" component="h1" gutterBottom>
           Neuen Kunden anlegen
         </Typography>
+      )}
         
-        {draftId && (
+        {draftId && !customerData.customerNumber && (
           <Typography variant="body2" color="text.secondary" gutterBottom>
             Entwurf-ID: {draftId}
+          </Typography>
+        )}
+        
+        {customerData.customerNumber && (
+          <Typography variant="body2" color="text.secondary" gutterBottom>
+            Kundennummer: {customerData.customerNumber}
           </Typography>
         )}
         
@@ -219,16 +253,30 @@ export const CustomerOnboardingWizard: React.FC = () => {
           {renderStep()}
         </Box>
         
-        {/* Navigation */}
-        <WizardNavigation
-          currentStep={currentStep}
-          totalSteps={visibleSteps.length}
-          canProgress={canProgressToNextStep()}
-          isSaving={finalizing}
-          onBack={handleBack}
-          onNext={handleNext}
-          onFinish={handleFinish}
-        />
+      {/* Navigation */}
+      <WizardNavigation
+        currentStep={currentStep}
+        totalSteps={visibleSteps.length}
+        canProgress={canProgressToNextStep()}
+        isSaving={finalizing}
+        onBack={handleBack}
+        onNext={handleNext}
+        onFinish={handleFinish}
+        onCancel={isModal ? onCancel : undefined}
+      />
+    </CustomerFieldThemeProvider>
+  );
+
+  // If modal mode, return content without wrapper
+  if (isModal) {
+    return content;
+  }
+
+  // Otherwise, wrap in Paper
+  return (
+    <Box sx={{ width: '100%', maxWidth: 1200, mx: 'auto', p: 3 }}>
+      <Paper elevation={2} sx={{ p: 4, position: 'relative' }}>
+        {content}
       </Paper>
     </Box>
   );

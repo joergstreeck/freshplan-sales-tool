@@ -9,8 +9,10 @@
  */
 
 import React from 'react';
-import { Grid } from '@mui/material';
+import { Grid, Box } from '@mui/material';
 import type { FieldDefinition } from '../../types/field.types';
+import { AdaptiveFormContainer } from '../adaptive/AdaptiveFormContainer';
+import { AdaptiveField } from '../adaptive/AdaptiveField';
 import { FieldWrapper } from './FieldWrapper';
 import { TextField } from './fieldTypes/TextField';
 import { NumberField } from './fieldTypes/NumberField';
@@ -19,6 +21,8 @@ import { MultiSelectField } from './fieldTypes/MultiSelectField';
 import { EmailField } from './fieldTypes/EmailField';
 import { TextAreaField } from './fieldTypes/TextAreaField';
 import { getVisibleFields } from '../../utils/conditionEvaluator';
+import { getFieldSize } from '../../utils/fieldSizeCalculator';
+import { useCustomerFieldTheme } from '../../theme';
 
 interface DynamicFieldRendererProps {
   /** Field definitions to render */
@@ -55,6 +59,18 @@ export const DynamicFieldRenderer: React.FC<DynamicFieldRendererProps> = ({
   readOnly = false,
   currentStep
 }) => {
+  const { theme } = useCustomerFieldTheme();
+  const useAdaptiveLayout = theme.darstellung === 'anpassungsfähig';
+  
+  // Size mapping für deutsche CSS-Klassen
+  const sizeMap: Record<string, string> = {
+    'compact': 'kompakt',
+    'small': 'klein', 
+    'medium': 'mittel',
+    'large': 'groß',
+    'full': 'voll'
+  };
+  
   /**
    * Render a single field based on its type
    */
@@ -62,14 +78,31 @@ export const DynamicFieldRenderer: React.FC<DynamicFieldRendererProps> = ({
     const value = values[field.key] ?? field.defaultValue ?? '';
     const error = errors[field.key];
     
-    // Common props for all field types
+    // Für adaptive Felder (alle Text-basierten Typen)
+    if (useAdaptiveLayout && ['text', 'email', 'number'].includes(field.fieldType)) {
+      return (
+        <FieldWrapper field={field} error={error}>
+          <AdaptiveField
+            field={field}
+            value={value}
+            onChange={(newValue) => onChange(field.key, newValue)}
+            onBlur={() => onBlur(field.key)}
+            error={error}
+            disabled={loading || field.disabled}
+            readOnly={readOnly || field.readonly}
+          />
+        </FieldWrapper>
+      );
+    }
+    
+    // Common props for traditional field types
     const commonProps = {
       field,
       value,
       onChange: (newValue: any) => onChange(field.key, newValue),
       onBlur: () => onBlur(field.key),
       error: !!error,
-      helperText: error || field.helpText,
+      helperText: error || undefined,
       disabled: loading || field.disabled,
       readOnly: readOnly || field.readonly,
       required: field.required
@@ -113,22 +146,53 @@ export const DynamicFieldRenderer: React.FC<DynamicFieldRendererProps> = ({
    */
   const visibleFields = getVisibleFields(fields, values, currentStep);
   
+  // Helper-Funktion für Size-Kategorie Mapping
+  const getSizeCategoryFromGrid = (gridSize: number): string => {
+    if (gridSize <= 2) return 'compact';
+    if (gridSize <= 3) return 'small';
+    if (gridSize <= 6) return 'medium';
+    if (gridSize <= 10) return 'large';
+    return 'full';
+  };
+  
+  // Verwende adaptive Layout wenn aktiviert
+  if (useAdaptiveLayout) {
+    return (
+      <AdaptiveFormContainer variant="flexbox">
+        {visibleFields.map(field => {
+          const sizeInfo = getFieldSize(field);
+          const sizeCategory = getSizeCategoryFromGrid(sizeInfo.md || 6);
+          const sizeClass = `field-${sizeMap[sizeCategory] || 'mittel'}`;
+          
+          return (
+            <Box key={field.key} className={sizeClass}>
+              {renderField(field)}
+            </Box>
+          );
+        })}
+      </AdaptiveFormContainer>
+    );
+  }
+  
+  // Traditionelles Grid Layout
   return (
     <Grid container spacing={3}>
-      {visibleFields.map(field => (
-        <Grid 
-          key={field.key}
-          item 
-          xs={field.gridSize?.xs || 12}
-          sm={field.gridSize?.sm || 6}
-          md={field.gridSize?.md || 4}
-          lg={field.gridSize?.lg}
-        >
-          <FieldWrapper field={field}>
+      {visibleFields.map(field => {
+        const themeSize = getFieldSize(field);
+        const gridSize = themeSize;
+        
+        return (
+          <Grid 
+            item
+            key={field.key}
+            xs={gridSize.xs}
+            sm={gridSize.sm}
+            md={gridSize.md}
+          >
             {renderField(field)}
-          </FieldWrapper>
-        </Grid>
-      ))}
+          </Grid>
+        );
+      })}
     </Grid>
   );
 };
