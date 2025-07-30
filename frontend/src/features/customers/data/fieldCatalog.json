@@ -140,6 +140,29 @@
         }
       },
       {
+        "key": "financingType",
+        "label": "Geschäftsmodell",
+        "entityType": "customer",
+        "fieldType": "select",
+        "required": true,
+        "size": "large",
+        "options": [
+          {
+            "value": "private",
+            "label": "Privatwirtschaftlich (Hotels, Restaurants, Unternehmen)"
+          },
+          {
+            "value": "public",
+            "label": "Öffentlich finanziert (Schulen, Krankenhäuser, Behörden)"
+          },
+          {
+            "value": "mixed",
+            "label": "Mischfinanzierung (z.B. PPP-Projekte)"
+          }
+        ],
+        "helpText": "Die Finanzierungsart beeinflusst Entscheidungsprozesse und Verkaufsargumente"
+      },
+      {
         "key": "street",
         "label": "Straße und Hausnummer",
         "entityType": "customer",
@@ -199,6 +222,119 @@
         "maxLength": 30,
         "placeholder": "+49 30 123456789",
         "helpText": "Telefonnummer mit Vorwahl"
+      },
+      {
+        "key": "currentSupplier",
+        "label": "Aktueller Lieferant",
+        "entityType": "customer",
+        "fieldType": "text",
+        "required": false,
+        "maxLength": 100,
+        "placeholder": "z.B. Apetito, eigene Küche",
+        "helpText": "Wer beliefert den Kunden aktuell?"
+      },
+      {
+        "key": "contractEndDate",
+        "label": "Vertragsende",
+        "entityType": "customer",
+        "fieldType": "select",
+        "required": false,
+        "size": "medium",
+        "options": [
+          {
+            "value": "open",
+            "label": "Unbefristet / Kein Vertrag"
+          },
+          {
+            "value": "next_3_months",
+            "label": "In den nächsten 3 Monaten"
+          },
+          {
+            "value": "next_6_months",
+            "label": "In 3-6 Monaten"
+          },
+          {
+            "value": "next_12_months",
+            "label": "In 6-12 Monaten"
+          },
+          {
+            "value": "over_12_months",
+            "label": "Über 12 Monate"
+          }
+        ],
+        "helpText": "Wann endet der aktuelle Vertrag? (für automatische Wiedervorlage)",
+        "triggerTaskGeneration": true
+      },
+      {
+        "key": "switchWillingness",
+        "label": "Wechselbereitschaft",
+        "entityType": "customer",
+        "fieldType": "select",
+        "required": false,
+        "size": "medium",
+        "options": [
+          {
+            "value": "immediate",
+            "label": "Sofort wechselbereit"
+          },
+          {
+            "value": "high",
+            "label": "Hoch - aktiv am Suchen"
+          },
+          {
+            "value": "medium",
+            "label": "Mittel - offen für Alternativen"
+          },
+          {
+            "value": "low",
+            "label": "Niedrig - zufrieden mit Status Quo"
+          },
+          {
+            "value": "none",
+            "label": "Keine - fest gebunden"
+          }
+        ],
+        "helpText": "Wie schätzen Sie die Wechselbereitschaft ein?"
+      },
+      {
+        "key": "decisionTimeline",
+        "label": "Entscheidungszeitpunkt",
+        "entityType": "customer",
+        "fieldType": "select",
+        "required": false,
+        "size": "medium",
+        "options": [
+          {
+            "value": "immediate",
+            "label": "Sofortige Entscheidung möglich"
+          },
+          {
+            "value": "1_month",
+            "label": "Innerhalb 1 Monat"
+          },
+          {
+            "value": "3_months",
+            "label": "In 1-3 Monaten"
+          },
+          {
+            "value": "6_months",
+            "label": "In 3-6 Monaten"
+          },
+          {
+            "value": "12_months",
+            "label": "In 6-12 Monaten"
+          },
+          {
+            "value": "over_12_months",
+            "label": "Später als 12 Monate"
+          },
+          {
+            "value": "unknown",
+            "label": "Noch unklar"
+          }
+        ],
+        "helpText": "Wann wird voraussichtlich eine Entscheidung getroffen?",
+        "triggerTaskGeneration": true
       }
     ],
     "industrySpecific": {

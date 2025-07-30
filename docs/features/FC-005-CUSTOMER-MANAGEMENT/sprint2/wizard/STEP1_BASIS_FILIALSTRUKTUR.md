@@ -50,10 +50,11 @@ Erfassung der Basisdaten UND sofortige Potenzial-Einschätzung bei Ketten.
 │                                     │
 │ ─────────────────────────────────── │
 │                                     │
-│ 💰 Geschäftsmodell:                 │
-│ ○ Privat finanziert                 │
-│ ● Public/Kasse                      │
-│ ○ Mischmodell                       │
+│ 💰 Geschäftsmodell: [▼]*            │
+│ [Öffentlich finanziert ▼]           │
+│  ├─ Privatwirtschaftlich            │
+│  ├─ Öffentlich finanziert           │
+│  └─ Mischfinanzierung               │
 │                                     │
 │ ℹ️ Info: Bei Ketten erfassen wir    │
 │ im nächsten Schritt die einzelnen   │
@@ -80,12 +81,14 @@ Erfassung der Basisdaten UND sofortige Potenzial-Einschätzung bei Ketten.
 }
 ```
 
-### Geschäftsmodell
+### Geschäftsmodell (Dropdown)
 ```typescript
 {
-  primaryFinancing: 'private' | 'public' | 'mixed';
-  priceSegment?: 'budget' | 'mid' | 'premium';
-  decisionCriteria?: ('price' | 'quality' | 'service' | 'innovation')[];
+  financingType: 'private' | 'public' | 'mixed';
+  // Dropdown mit aussagekräftigen Labels:
+  // - "Privatwirtschaftlich (Hotels, Restaurants, Unternehmen)"
+  // - "Öffentlich finanziert (Schulen, Krankenhäuser, Behörden)"
+  // - "Mischfinanzierung (z.B. PPP-Projekte)"
 }
 ```
 

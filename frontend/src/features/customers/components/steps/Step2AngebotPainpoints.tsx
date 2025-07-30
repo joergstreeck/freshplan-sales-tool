@@ -23,6 +23,7 @@ import { useCustomerOnboardingStore } from '../../stores/customerOnboardingStore
 import { useFieldDefinitions } from '../../hooks/useFieldDefinitions';
 import { DynamicFieldRenderer } from '../fields/DynamicFieldRenderer';
 import type { FieldDefinition } from '../../types/FieldDefinition';
+import { debugDropdownSizes } from '../../utils/fieldSizeCalculator';
 
 // Pain Point Solutions Mapping
 const PAIN_POINT_SOLUTIONS = {
@@ -72,7 +73,14 @@ export const Step2AngebotPainpoints: React.FC = () => {
     validateField
   } = useCustomerOnboardingStore();
   
-  const { getFieldByKey } = useFieldDefinitions();
+  const { getFieldByKey, fieldDefinitions } = useFieldDefinitions();
+  
+  // DEBUG: Dropdown-Größen analysieren
+  React.useEffect(() => {
+    if (process.env.NODE_ENV === 'development') {
+      debugDropdownSizes(fieldDefinitions);
+    }
+  }, [fieldDefinitions]);
   
   // Get industry-specific service fields
   const serviceFields = useMemo(() => {

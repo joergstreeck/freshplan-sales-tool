@@ -7,51 +7,53 @@
 
 ## 🎯 JETZT GERADE:
 
-**SPRINT 2 - VERKAUFSFOKUSSIERTE NEUAUSRICHTUNG**
+**SPRINT 2 - FRONTEND-BACKEND INTEGRATION ABGESCHLOSSEN**
 
-**Stand 30.07.2025 17:10:**
-- ✅ Adaptive Theme Fix KOMPLETT abgeschlossen
-- ✅ Select-Felder Labels korrigiert
-- ✅ Customer Structure Redesign diskutiert
-- ✅ Sprint 2 komplett neu strukturiert (verkaufsfokussiert)
-- 🔄 TODO-8: Field Catalog erweitern
+**Stand 30.07.2025 19:40:**
+- ✅ Frontend: 3-Schritt Wizard mit allen UI-Verbesserungen
+- ✅ Backend: Entities und API Endpoints implementiert
+- ✅ Integration: Frontend-Backend verbunden
+- ✅ UI: Alle Dropdowns funktionieren mit adaptiven Größen
+- ✅ Backend läuft stabil auf Port 8080
+- ⏳ Tests noch zu schreiben
 
 **🚀 NÄCHSTER SCHRITT:**
 
-**TODO-8: Field Catalog um Filialstruktur erweitern**
+**Tests schreiben & Quick-Win-Generator (TODO-12)**
 ```bash
-# 1. Field Catalog Extension Dokument öffnen:
-cat /Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/implementation/FIELD_CATALOG_EXTENSION.md
+# 1. Backend Tests:
+cd backend && ./mvnw test
 
-# 2. fieldCatalog.json erweitern mit:
-# - chainStructure (5 Felder)
-# - businessModel (3 Felder)
-# - painPoints (universell)
-# - hotelServices (branchenspezifisch)
+# 2. Frontend Tests:
+cd frontend && npm run test
+
+# 3. Quick-Win-Generator implementieren:
+# Basierend auf Pain Points
+# Top 3 Verkaufschancen
 ```
 
 **KONKRETE AUFGABEN:**
-1. **chainStructure Block** in fieldCatalog.json
-2. **businessModel Block** mit Radio-Buttons
-3. **painPoints Block** mit salesRelevance
-4. **Tests** für conditional fields
+1. **Unit Tests** für neue Backend-Services
+2. **Integration Tests** für API Endpoints
+3. **Quick-Win-Generator** (TODO-12)
+4. **Task Preview MVP** (TODO-6)
 
 **WICHTIGE DOKUMENTE:**
-- Implementation Roadmap: `/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/IMPLEMENTATION_ROADMAP.md`
-- Field Catalog Extension: `/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/implementation/FIELD_CATALOG_EXTENSION.md`
-- Wizard Struktur V2: `/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/WIZARD_STRUCTURE_V2.md`
-- Diskussion Ergebnisse: `/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/DISKUSSION_ERGEBNISSE_KOMPAKT.md`
+- Sprint 2 Overview: `/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/README.md`
+- Task-Generierung: `/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/TASK_GENERATION_LOGIC.md`
 
 **UNTERBROCHEN BEI:**
-- Übergabe-Erstellung nach umfassender Diskussion
-- Sprint 2 komplett neu strukturiert
-- Nächster Schritt: Field Catalog Implementation
+- Sprint 2 technisch abgeschlossen
+- Tests noch zu schreiben
+- Quick-Win-Generator als nächstes
+- Übergabe erstellt: `/docs/claude-work/daily-work/2025-07-30/2025-07-30_HANDOVER_19-39.md`
 
 ---
 
 ## 📊 SPRINT 2 STATUS:
-- Wizard-Struktur: 🆕 Neu definiert (verkaufsfokussiert)
-- Field Catalog: ⏳ TODO-8 als nächstes
-- Pain Point Mapping: 📋 Konzept fertig
-- Potenzialberechnung: 📋 Konzept fertig
+- Wizard-Struktur: ✅ Implementiert
+- Field Catalog: ✅ Vollständig
+- Pain Point Mapping: ✅ Implementiert
+- Potenzialberechnung: ✅ Live im Wizard
+- Backend-Integration: ⏳ TODO-13 & 14
 - Task Preview MVP: ⏳ TODO-6 später

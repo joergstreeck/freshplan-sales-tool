@@ -3,6 +3,8 @@ package de.freshplan.domain.customer.entity;
 import de.freshplan.domain.customer.constants.CustomerConstants;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -100,6 +102,32 @@ public class Customer extends PanacheEntityBase {
   @Column(name = "delivery_condition", length = 30)
   private DeliveryCondition deliveryCondition = DeliveryCondition.STANDARD;
 
+  // Chain Structure - NEW for Sprint 2
+  @Column(name = "total_locations_eu")
+  private Integer totalLocationsEU;
+
+  @Column(name = "locations_germany")
+  private Integer locationsGermany;
+
+  @Column(name = "locations_austria")
+  private Integer locationsAustria;
+
+  @Column(name = "locations_switzerland")
+  private Integer locationsSwitzerland;
+
+  @Column(name = "locations_rest_eu")
+  private Integer locationsRestEU;
+
+  // Business Model - NEW for Sprint 2
+  @Enumerated(EnumType.STRING)
+  @Column(name = "primary_financing", length = 20)
+  private FinancingType primaryFinancing;
+
+  // Pain Points as JSON - NEW for Sprint 2
+  @JdbcTypeCode(SqlTypes.JSON)
+  @Column(name = "pain_points", columnDefinition = "jsonb")
+  private List<String> painPoints = new ArrayList<>();
+
   // Risk Management
   @Column(name = "risk_score")
   private Integer riskScore = 0;
@@ -163,6 +191,10 @@ public class Customer extends PanacheEntityBase {
     createdAt = LocalDateTime.now();
     if (isDeleted == null) {
       isDeleted = false;
+    }
+    // Initialize Sprint 2 fields
+    if (painPoints == null) {
+      painPoints = new ArrayList<>();
     }
     // Set initial values for last_modified fields
     lastModifiedAt = createdAt;
@@ -512,6 +544,63 @@ public class Customer extends PanacheEntityBase {
 
   public void setTimelineEvents(List<CustomerTimelineEvent> timelineEvents) {
     this.timelineEvents = timelineEvents;
+  }
+
+  // Chain Structure Getters/Setters - NEW for Sprint 2
+  public Integer getTotalLocationsEU() {
+    return totalLocationsEU;
+  }
+
+  public void setTotalLocationsEU(Integer totalLocationsEU) {
+    this.totalLocationsEU = totalLocationsEU;
+  }
+
+  public Integer getLocationsGermany() {
+    return locationsGermany;
+  }
+
+  public void setLocationsGermany(Integer locationsGermany) {
+    this.locationsGermany = locationsGermany;
+  }
+
+  public Integer getLocationsAustria() {
+    return locationsAustria;
+  }
+
+  public void setLocationsAustria(Integer locationsAustria) {
+    this.locationsAustria = locationsAustria;
+  }
+
+  public Integer getLocationsSwitzerland() {
+    return locationsSwitzerland;
+  }
+
+  public void setLocationsSwitzerland(Integer locationsSwitzerland) {
+    this.locationsSwitzerland = locationsSwitzerland;
+  }
+
+  public Integer getLocationsRestEU() {
+    return locationsRestEU;
+  }
+
+  public void setLocationsRestEU(Integer locationsRestEU) {
+    this.locationsRestEU = locationsRestEU;
+  }
+
+  public FinancingType getPrimaryFinancing() {
+    return primaryFinancing;
+  }
+
+  public void setPrimaryFinancing(FinancingType primaryFinancing) {
+    this.primaryFinancing = primaryFinancing;
+  }
+
+  public List<String> getPainPoints() {
+    return painPoints;
+  }
+
+  public void setPainPoints(List<String> painPoints) {
+    this.painPoints = painPoints;
   }
 
   // Business methods for relationships

@@ -100,6 +100,13 @@ const FlexContainer = styled('div')(({ theme }) => ({
     maxWidth: '100%',
   },
   
+  // Spezielle Behandlung für Dropdown-Felder - Text muss immer lesbar sein
+  '& .field-dropdown-auto': {
+    flex: '0 1 auto',
+    minWidth: '200px',
+    maxWidth: 'none', // Keine Begrenzung - wächst mit Inhalt
+  },
+  
   // Mobile Breakpoint
   [theme.breakpoints.down('sm')]: {
     '& > *': {

@@ -24,6 +24,8 @@ interface UseFieldDefinitionsResult {
   getFieldByKey: (key: string) => FieldDefinition | undefined;
   /** All available fields */
   allFields: FieldDefinition[];
+  /** All field definitions for debug */
+  fieldDefinitions: FieldDefinition[];
   /** Loading state */
   isLoading: boolean;
   /** Error state */
@@ -122,6 +124,7 @@ export const useFieldDefinitions = (): UseFieldDefinitionsResult => {
     getIndustryFields,
     getFieldByKey,
     allFields: Array.from(fieldMap.values()),
+    fieldDefinitions: Array.from(fieldMap.values()),
     isLoading,
     error
   };

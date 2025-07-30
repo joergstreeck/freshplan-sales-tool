@@ -20,6 +20,7 @@ import { useCustomerOnboardingStore } from '../../stores/customerOnboardingStore
 import { useFieldDefinitions } from '../../hooks/useFieldDefinitions';
 import { DynamicFieldRenderer } from '../fields/DynamicFieldRenderer';
 import type { FieldDefinition } from '../../types/FieldDefinition';
+import { getFieldSize } from '../../utils/fieldSizeCalculator';
 
 /**
  * Step 1: Basis & Filialstruktur
@@ -60,13 +61,23 @@ export const Step1BasisFilialstruktur: React.FC = () => {
   }, [getFieldByKey]);
   
   const businessModelFields = useMemo(() => {
-    return [
-      'primaryFinancing',
+    const fields = [
+      'financingType',
       'currentSupplier',
       'contractEndDate',
       'switchWillingness',
       'decisionTimeline'
     ].map(key => getFieldByKey(key)).filter(Boolean) as FieldDefinition[];
+    
+    // DEBUG: Log die berechneten Größen
+    if (process.env.NODE_ENV === 'development') {
+      fields.forEach(field => {
+        const size = getFieldSize(field);
+        console.log(`Field: ${field.key}, Grid size: ${size.md}, Options:`, field.options?.map(o => o.label));
+      });
+    }
+    
+    return fields;
   }, [getFieldByKey]);
   
   const chainStructureFields = useMemo(() => {

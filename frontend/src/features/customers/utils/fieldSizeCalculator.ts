@@ -97,19 +97,56 @@ export function getFieldSize(field: FieldDefinition): GridSize {
     }
   }
   
-  // 2. Field-Key-basierte Mappings (höchste Automatik-Priorität)
-  if (field.key in CUSTOMER_FIELD_MAPPINGS) {
-    return FIELD_THEME[CUSTOMER_FIELD_MAPPINGS[field.key]];
+  // 2. Für Dropdowns: Dynamische Berechnung hat Vorrang
+  if (field.fieldType === 'select' || field.fieldType === 'dropdown') {
+    // Springe direkt zur dynamischen Berechnung für Dropdowns
+    // und überspringe CUSTOMER_FIELD_MAPPINGS
+  } else {
+    // 3. Field-Key-basierte Mappings für alle anderen Feldtypen
+    if (field.key in CUSTOMER_FIELD_MAPPINGS) {
+      return FIELD_THEME[CUSTOMER_FIELD_MAPPINGS[field.key]];
+    }
   }
   
-  // 3. Auto-Berechnung basierend auf fieldType
+  // 4. Auto-Berechnung basierend auf fieldType
   switch (field.fieldType) {
     case 'number':
       return FIELD_THEME.compact;
       
     case 'select':
     case 'dropdown':
-      // Große Auswahllisten brauchen mehr Platz
+      // Dynamische Größenberechnung basierend auf längster Option
+      // Diese hat VORRANG vor expliziter size Property
+      if (field.options && field.options.length > 0) {
+        const longestLabel = Math.max(
+          ...field.options.map(opt => opt.label.length),
+          field.placeholder?.length || 0
+        );
+        
+        // Größenberechnung basierend auf Textlänge
+        // Angepasste Schwellenwerte für bessere Darstellung
+        if (longestLabel <= 10) return FIELD_THEME.compact;    // 2-3 Grid
+        if (longestLabel <= 20) return FIELD_THEME.small;      // 3-4 Grid
+        if (longestLabel <= 35) return FIELD_THEME.medium;     // 4-6 Grid
+        if (longestLabel <= 50) return FIELD_THEME.large;      // 8-10 Grid
+        return FIELD_THEME.full;                                // 12 Grid
+      }
+      
+      // Fallback: Berücksichtige explizite size Property
+      if (field.size) {
+        const sizeMapping: Record<string, FieldSizeKey> = {
+          'compact': 'compact',
+          'small': 'small',
+          'medium': 'medium',
+          'large': 'large',
+          'xlarge': 'full'
+        };
+        if (field.size in sizeMapping) {
+          return FIELD_THEME[sizeMapping[field.size]];
+        }
+      }
+      
+      // Letzter Fallback: Große Auswahllisten brauchen mehr Platz
       return field.options && field.options.length > 10 
         ? FIELD_THEME.medium 
         : FIELD_THEME.small;
@@ -207,4 +244,43 @@ export function debugFieldLayout(fields: FieldDefinition[]): string {
   });
   
   return output;
+}
+
+/**
+ * Debug-Helper für Dropdown-Größenberechnung
+ * Zeigt die berechneten Größen für alle Dropdown-Felder
+ */
+export function debugDropdownSizes(fields: FieldDefinition[]): void {
+  console.log('=== Dropdown Size Debug ===');
+  
+  fields.forEach(field => {
+    if (field.fieldType === 'select' || field.fieldType === 'dropdown') {
+      const size = getFieldSize(field);
+      const gridSize = size.md || 12;
+      
+      // Längste Option finden
+      let longestLabel = 0;
+      if (field.options) {
+        longestLabel = Math.max(
+          ...field.options.map(opt => opt.label.length),
+          field.placeholder?.length || 0
+        );
+      }
+      
+      console.log(`Field: ${field.key}`);
+      console.log(`  - Label: "${field.label}"`);
+      console.log(`  - Longest option: ${longestLabel} chars`);
+      console.log(`  - Calculated grid size: ${gridSize}`);
+      console.log(`  - Has explicit size: ${field.size || 'no'}`);
+      console.log(`  - In CUSTOMER_FIELD_MAPPINGS: ${field.key in CUSTOMER_FIELD_MAPPINGS ? 'yes' : 'no'}`);
+      
+      if (field.options && field.options.length > 0) {
+        console.log(`  - Options:`);
+        field.options.forEach(opt => {
+          console.log(`    * "${opt.label}" (${opt.label.length} chars)`);
+        });
+      }
+      console.log('');
+    }
+  });
 }
