@@ -95,7 +95,7 @@ export const DynamicFieldRenderer: React.FC<DynamicFieldRendererProps> = ({
       );
     }
     
-    // Common props for traditional field types
+    // Common props for all field types
     const commonProps = {
       field,
       value,
@@ -108,30 +108,45 @@ export const DynamicFieldRenderer: React.FC<DynamicFieldRendererProps> = ({
       required: field.required
     };
     
-    // Render based on field type
+    // Render field component based on type
+    let fieldComponent: React.ReactElement;
+    
     switch (field.fieldType) {
       case 'text':
-        return <TextField {...commonProps} />;
+        fieldComponent = <TextField {...commonProps} />;
+        break;
         
       case 'email':
-        return <EmailField {...commonProps} />;
+        fieldComponent = <EmailField {...commonProps} />;
+        break;
         
       case 'number':
-        return <NumberField {...commonProps} />;
+        fieldComponent = <NumberField {...commonProps} />;
+        break;
         
       case 'select':
-        return <SelectField {...commonProps} />;
+        fieldComponent = <SelectField {...commonProps} />;
+        break;
         
       case 'multiselect':
-        return <MultiSelectField {...commonProps} />;
+        fieldComponent = <MultiSelectField {...commonProps} />;
+        break;
         
       case 'textarea':
-        return <TextAreaField {...commonProps} />;
+        fieldComponent = <TextAreaField {...commonProps} />;
+        break;
         
       default:
         console.warn(`Unknown field type: ${field.fieldType} for field: ${field.key}`);
-        return <TextField {...commonProps} />;
+        fieldComponent = <TextField {...commonProps} />;
     }
+    
+    // Wrap ALL field types with FieldWrapper for consistent labels and icons
+    return (
+      <FieldWrapper field={field} error={error}>
+        {fieldComponent}
+      </FieldWrapper>
+    );
   };
   
   /**
