@@ -61,12 +61,18 @@
       "key": "expansionPlanned",
       "label": "Expansion geplant",
       "entityType": "customer",
-      "fieldType": "checkbox",
+      "fieldType": "select",
       "required": false,
       "category": "chain",
       "displayCondition": "chainCustomer === 'ja'",
       "salesRelevance": "HIGH",
-      "helpText": "Wachstumspotenzial für Rahmenverträge"
+      "sizeHint": "klein",
+      "options": [
+        { "value": "nein", "label": "Nein" },
+        { "value": "ja", "label": "Ja" }
+      ],
+      "placeholder": "Bitte wählen...",
+      "helpText": "Plant das Unternehmen eine Expansion? Wichtig für Rahmenverträge"
     },
     {
       "key": "decisionStructure",
@@ -81,6 +87,7 @@
         { "value": "decentral", "label": "Dezentral (je Standort)" },
         { "value": "mixed", "label": "Gemischt" }
       ],
+      "helpText": "Wer entscheidet über Lieferantenverträge? Zentral = Rahmenvertrag möglich, Dezentral = Einzelverträge pro Standort",
       "salesRelevance": "HIGH"
     }
   ],

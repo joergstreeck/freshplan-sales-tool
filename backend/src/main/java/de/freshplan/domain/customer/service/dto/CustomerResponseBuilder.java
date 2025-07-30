@@ -52,6 +52,18 @@ public final class CustomerResponseBuilder {
   private LocalDateTime lastContactDate;
   private LocalDateTime nextFollowUpDate;
 
+  // Chain Structure - NEW for Sprint 2
+  private Integer totalLocationsEU;
+  private Integer locationsGermany;
+  private Integer locationsAustria;
+  private Integer locationsSwitzerland;
+  private Integer locationsRestEU;
+  private String expansionPlanned;
+
+  // Business Model - NEW for Sprint 2
+  private FinancingType primaryFinancing;
+  private List<String> painPoints = new ArrayList<>();
+
   // Audit Information
   private LocalDateTime createdAt;
   private String createdBy;
@@ -223,6 +235,48 @@ public final class CustomerResponseBuilder {
     return this;
   }
 
+  // Chain Structure - NEW for Sprint 2
+  public CustomerResponseBuilder totalLocationsEU(Integer totalLocationsEU) {
+    this.totalLocationsEU = totalLocationsEU;
+    return this;
+  }
+
+  public CustomerResponseBuilder locationsGermany(Integer locationsGermany) {
+    this.locationsGermany = locationsGermany;
+    return this;
+  }
+
+  public CustomerResponseBuilder locationsAustria(Integer locationsAustria) {
+    this.locationsAustria = locationsAustria;
+    return this;
+  }
+
+  public CustomerResponseBuilder locationsSwitzerland(Integer locationsSwitzerland) {
+    this.locationsSwitzerland = locationsSwitzerland;
+    return this;
+  }
+
+  public CustomerResponseBuilder locationsRestEU(Integer locationsRestEU) {
+    this.locationsRestEU = locationsRestEU;
+    return this;
+  }
+
+  public CustomerResponseBuilder expansionPlanned(String expansionPlanned) {
+    this.expansionPlanned = expansionPlanned;
+    return this;
+  }
+
+  // Business Model - NEW for Sprint 2
+  public CustomerResponseBuilder primaryFinancing(FinancingType primaryFinancing) {
+    this.primaryFinancing = primaryFinancing;
+    return this;
+  }
+
+  public CustomerResponseBuilder painPoints(List<String> painPoints) {
+    this.painPoints = painPoints;
+    return this;
+  }
+
   /**
    * Builds a CustomerResponse from a Customer entity. This is a convenience method that populates
    * all fields from the entity.
@@ -267,6 +321,18 @@ public final class CustomerResponseBuilder {
     this.isDeleted = customer.getIsDeleted();
     this.deletedAt = customer.getDeletedAt();
     this.deletedBy = customer.getDeletedBy();
+    
+    // Chain Structure - NEW for Sprint 2
+    this.totalLocationsEU = customer.getTotalLocationsEU();
+    this.locationsGermany = customer.getLocationsGermany();
+    this.locationsAustria = customer.getLocationsAustria();
+    this.locationsSwitzerland = customer.getLocationsSwitzerland();
+    this.locationsRestEU = customer.getLocationsRestEU();
+    this.expansionPlanned = customer.getExpansionPlanned();
+    
+    // Business Model - NEW for Sprint 2
+    this.primaryFinancing = customer.getPrimaryFinancing();
+    this.painPoints = customer.getPainPoints();
 
     return this;
   }
@@ -297,6 +363,19 @@ public final class CustomerResponseBuilder {
         atRisk,
         lastContactDate,
         nextFollowUpDate,
+        
+        // Chain Structure - NEW for Sprint 2
+        totalLocationsEU,
+        locationsGermany,
+        locationsAustria,
+        locationsSwitzerland,
+        locationsRestEU,
+        expansionPlanned,
+        
+        // Business Model - NEW for Sprint 2
+        primaryFinancing,
+        painPoints,
+        
         createdAt,
         createdBy,
         updatedAt,

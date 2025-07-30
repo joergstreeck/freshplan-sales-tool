@@ -13,6 +13,8 @@ import {
   FormHelperText,
   ListItemText
 } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
+import { useDropdownWidth } from '../../../hooks/useDropdownWidth';
 import type { FieldDefinition } from '../../../types/field.types';
 
 interface SelectFieldProps {
@@ -54,6 +56,13 @@ export const SelectField: React.FC<SelectFieldProps> = ({
   required
 }) => {
   const displayValue = value || '';
+  const theme = useTheme();
+
+  // Nutze den neuen Hook für automatische Breiten-Berechnung
+  const dropdownWidth = useDropdownWidth({
+    options: field.options,
+    placeholder: field.placeholder
+  });
 
   return (
     <FormControl 
@@ -62,6 +71,13 @@ export const SelectField: React.FC<SelectFieldProps> = ({
       error={error}
       required={required}
       disabled={disabled || readOnly}
+      className="field-dropdown-auto"
+      sx={{
+        ...dropdownWidth.style,
+        [theme.breakpoints?.down('sm')]: {
+          width: '100%'
+        }
+      }}
     >
       <MuiSelect
         id={field.key}

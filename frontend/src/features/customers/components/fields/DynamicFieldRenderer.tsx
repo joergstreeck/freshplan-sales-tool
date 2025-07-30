@@ -175,20 +175,16 @@ export const DynamicFieldRenderer: React.FC<DynamicFieldRendererProps> = ({
     return (
       <AdaptiveFormContainer variant="flexbox">
         {visibleFields.map(field => {
-          const sizeInfo = getFieldSize(field);
-          const sizeCategory = getSizeCategoryFromGrid(sizeInfo.md || 6);
-          const sizeClass = `field-${sizeMap[sizeCategory] || 'mittel'}`;
+          // Spezielle CSS-Klasse für Dropdowns zur automatischen Breitenberechnung
+          const sizeClass = (field.fieldType === 'select' || field.fieldType === 'dropdown')
+            ? 'field-dropdown-auto'
+            : (() => {
+                const sizeInfo = getFieldSize(field);
+                const sizeCategory = getSizeCategoryFromGrid(sizeInfo.md || 6);
+                return `field-${sizeMap[sizeCategory] || 'mittel'}`;
+              })();
           
-          // Spezielle Behandlung für Dropdowns - stelle sicher dass Text lesbar ist
-          let style: React.CSSProperties = {};
-          if (field.fieldType === 'select' || field.fieldType === 'dropdown') {
-            // Überschreibe die CSS-Klassen-Beschränkungen für Dropdowns
-            style = {
-              minWidth: '250px', // Minimum damit kurze Texte gut aussehen
-              maxWidth: '100%',  // Erlaube volle Breite wenn nötig
-              flex: '1 1 auto'   // Flexibles Wachstum
-            };
-          }
+          const style: React.CSSProperties = {};
           
           return (
             <Box key={field.key} className={sizeClass} sx={style}>
