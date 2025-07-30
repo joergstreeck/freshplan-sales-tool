@@ -37,11 +37,12 @@ import { Customer, Task } from './types';
 
 ## 🎯 Sprint Goals auf einen Blick
 
-1. **Customer UI Integration** - Nahtlose Einbindung des CustomerOnboardingWizard
-2. **Field Theme System** - Intelligente Feldgrößen-Berechnung ✅
-3. **Adaptive Layout Evolution** - Dynamische, inhaltsbasierte Feldanpassung 🆕
-4. **Task Preview MVP** - "Das System denkt mit" erlebbar machen  
-5. **FC-012 Audit UI** - Transparenz für Admins
+1. **Verkaufsfokussierte Wizard-Struktur** - Angebotsstruktur → Bedarf → Potenzial 🆕
+2. **Standort-basierte Datenstruktur** - Customer → Location → Contact 🆕
+3. **Pain Point → Solution Mapping** - Jedes Problem wird zur Verkaufschance 🆕
+4. **Automatische Potenzialberechnung** - Motivation auf einen Blick 🆕
+5. **Field Theme System** - Intelligente Feldgrößen-Berechnung ✅
+6. **Task Preview MVP** - "Das System denkt mit" erlebbar machen 🔄
 
 ---
 
@@ -70,33 +71,55 @@ import { Customer, Task } from './types';
 - **Field Theme System Konzept:** [/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/prototypes/FIELD_THEME_SYSTEM_PROTOTYPE.md](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/prototypes/FIELD_THEME_SYSTEM_PROTOTYPE.md) - Blueprint & Konzept
 - **Field Theme Implementation:** [/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/prototypes/FIELD_THEME_IMPLEMENTATION.md](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/prototypes/FIELD_THEME_IMPLEMENTATION.md) - Code & Sprint 2 Guide
 
-### Weitere Dokumente:
+### 🆕 Neue Struktur (nach Diskussion 30.07.2025):
 
-### 🎯 Wichtige Entscheidungen (Navigations-Reihenfolge):
-1. **Sidebar Discussion:** [/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/SIDEBAR_LEAD_DISCUSSION.md](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/SIDEBAR_LEAD_DISCUSSION.md) - UI/UX Diskussion
-2. **Lead-Kunde-Trennung:** [/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/LEAD_CUSTOMER_SEPARATION_DECISION.md](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/LEAD_CUSTOMER_SEPARATION_DECISION.md) - Warum FC-020 separat
-3. **Sidebar Config:** [/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/SIDEBAR_NAVIGATION_CONFIG.md](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/SIDEBAR_NAVIGATION_CONFIG.md) - Finale Implementierung
-4. **⭐ Zusammenfassung ALLER Entscheidungen:** [/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/SPRINT2_KEY_DECISIONS_SUMMARY.md](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/SPRINT2_KEY_DECISIONS_SUMMARY.md) - START HIER!
-- **UI Diskussion & Entscheidungen:** [/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/discussions/2025-07-27_UI_INTEGRATION_DISCUSSION.md](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/discussions/2025-07-27_UI_INTEGRATION_DISCUSSION.md)
+#### Wizard-Struktur:
+- **AKTUELL:** [Wizard Struktur V2](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/WIZARD_STRUCTURE_V2.md) - Verkaufsfokussiert!
+- **NEU:** [Wizard Adaptive Integration](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/wizard/WIZARD_ADAPTIVE_INTEGRATION.md) - Theme-System bleibt!
+- [Step 1: Basis & Filialstruktur](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/wizard/STEP1_BASIS_FILIALSTRUKTUR.md)
+- [Step 2: Angebot & Pain Points](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/wizard/STEP2_ANGEBOT_PAINPOINTS.md)
+- [Step 3: Ansprechpartner](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/wizard/STEP3_ANSPRECHPARTNER.md)
+
+#### Backend-Integration:
+- **NEU:** [Backend Requirements](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/backend/BACKEND_REQUIREMENTS.md) - Entity-Erweiterungen
+- **NEU:** [API Endpoints](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/backend/API_ENDPOINTS.md) - REST-Schnittstellen
+- **NEU:** [Entity Extensions](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/backend/ENTITY_EXTENSIONS.md) - Java-Entities
+
+#### Field Catalog (vollständig):
+- **NEU:** [Field Catalog Complete](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/implementation/FIELD_CATALOG_COMPLETE.md) - Step 1 Felder
+- **NEU:** [Field Catalog Services](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/implementation/FIELD_CATALOG_SERVICES.md) - Step 2 Felder
+- **NEU:** [Field Catalog Contacts](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/implementation/FIELD_CATALOG_CONTACTS.md) - Step 3 Felder
+- **NEU:** [Adaptive Behavior Spec](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/implementation/ADAPTIVE_BEHAVIOR_SPEC.md) - Flexible Feldgrößen
+- [Field Catalog Extension](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/implementation/FIELD_CATALOG_EXTENSION.md) - Übersicht
+
+#### Implementierung:
+- [Potenzialberechnung](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/implementation/POTENTIAL_CALCULATION.md) - Erfahrungswerte
+- [Pain Point Mapping](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/implementation/PAIN_POINT_MAPPING.md) - Freshfoodz-Lösungen
+- [Vending/bonPeti Integration](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/implementation/VENDING_BONPETI_INTEGRATION.md) - Zusatzgeschäft
+
+#### Archivierte Dokumente:
+- [Sprint 2 Key Decisions](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/SPRINT2_KEY_DECISIONS_SUMMARY.md)
 
 ---
 
-## ✅ Was wurde entschieden?
+## ✅ Was wurde entschieden? (UPDATE 30.07.2025)
 
-### UI Integration:
-- **Button-Platzierung:** Hybrid-Ansatz (über Tabelle + Empty State Hero)
-- **Wizard:** Modal (Desktop) / Drawer (Mobile)
-- **Nach Anlegen:** Navigation zur Customer Detail Page
+### 🆕 Neue Kern-Entscheidungen:
+- **Standort-basierte Struktur:** Jeder Kunde hat mind. 1 Standort
+- **Ansprechpartner strukturiert:** Anrede, Titel, Vor-/Nachname getrennt
+- **Angebotsstruktur = Bedarfsindikator:** Nicht "was habt ihr", sondern "was bietet ihr an"
+- **Pain Points = Verkaufschancen:** Jeder Pain Point hat eine Freshfoodz-Lösung
+- **80%-MVP-Modell:** Nur verkaufsrelevante Felder
 
-### Task Preview:
-- **3 Core Rules:** Willkommen (2 Tage), Angebot (7 Tage), Inaktivität (60 Tage)
-- **Visual Feedback:** NEU-Badge für 24h, ÜBERFÄLLIG in rot
-- **Toast mit Action:** "Aufgabe anzeigen" Button direkt in Erfolgsmeldung
+### Wizard-Struktur NEU:
+- **Step 1:** Basis + Filialstruktur + Geschäftsmodell + Adresse
+- **Step 2:** Angebotsstruktur + Pain Points + Live-Potenzial
+- **Step 3:** Ansprechpartner strukturiert + Beziehungsaufbau
 
-### Quick Wins:
-- **Keyboard Shortcuts:** Ctrl+N (Neuer Kunde), Ctrl+T (Task), Ctrl+K (Command Palette)
-- **Smart Empty States:** Motivierende Messages statt leere Screens
-- **Cockpit Teaser:** Mini-Dashboard mit Task-Stats
+### Freshfoodz-Spezifika integriert:
+- **Cook&Fresh®:** 40 Tage Haltbarkeit, 15 Min Regenerierung
+- **bonPeti:** Vending/Automaten-Checkbox
+- **Berlin-Produktion:** 640 Mitarbeiter, 250.000 Portionen täglich
 
 ---
 
@@ -191,10 +214,10 @@ import { Customer, Task } from './types';
 ---
 
 **Nächste Schritte:** 
-1. **🚨 ZUERST:** [Critical Architecture Fix](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/CRITICAL_ARCHITECTURE_FIX_PLAN.md) lesen!
-2. Git Branch checken: `git checkout feature/sprint-2-customer-ui-integration`
-3. Dependencies prüfen: `cd frontend && npm install`
-4. Los geht's mit Tag 1! 🚀
+1. **📊 NEUE ROADMAP:** [Implementation Roadmap](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/IMPLEMENTATION_ROADMAP.md) - Tag-für-Tag Plan!
+2. **📦 START MIT:** [Field Catalog Extension](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/implementation/FIELD_CATALOG_EXTENSION.md) - TODO-8
+3. Git Branch checken: `git checkout feature/sprint-2-customer-ui-integration`
+4. Los geht's mit der neuen Struktur! 🚀
 
 ---
 
@@ -203,3 +226,11 @@ import { Customer, Task } from './types';
 **→ Weiter zu:** [Tag 1 Implementation](./DAY1_IMPLEMENTATION.md)  
 **↑ Übergeordnet:** [FC-005 Overview](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/README.md)  
 **🚨 Kritisch:** [Architecture Fix Plan](./CRITICAL_ARCHITECTURE_FIX_PLAN.md)
+
+### 📋 Sprint 2 Diskussionen & Ergebnisse:
+- **WICHTIG:** [Customer Structure Redesign](./discussions/2025-07-30_CUSTOMER_STRUCTURE_REDESIGN.md) - Komplette Neuausrichtung auf Verkaufsfokus!
+  - Angebotsstruktur als Bedarfsindikator
+  - Pain Points als Verkaufshebel  
+  - Filialstruktur für Skalierung
+  - Freshfoodz-spezifische Lösungen
+- **NEU:** [Diskussion Ergebnisse Kompakt](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/DISKUSSION_ERGEBNISSE_KOMPAKT.md) - Alle 10 Kernergebnisse auf einen Blick!
