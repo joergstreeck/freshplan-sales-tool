@@ -22,7 +22,8 @@ import {
 import { useCustomerOnboardingStore } from '../../stores/customerOnboardingStore';
 import { useFieldDefinitions } from '../../hooks/useFieldDefinitions';
 import { DynamicFieldRenderer } from '../fields/DynamicFieldRenderer';
-import type { FieldDefinition } from '../../types/FieldDefinition';
+import { AngebotsstrukturLayout } from '../layout/AngebotsstrukturLayout';
+import type { FieldDefinition } from '../../types/field.types';
 import { debugDropdownSizes } from '../../utils/fieldSizeCalculator';
 
 // Pain Point Solutions Mapping
@@ -82,36 +83,52 @@ export const Step2AngebotPainpoints: React.FC = () => {
     }
   }, [fieldDefinitions]);
   
-  // Get industry-specific service fields
-  const serviceFields = useMemo(() => {
+  // Get industry-specific service field groups
+  const serviceFieldGroups = useMemo(() => {
     const industry = customerData.industry;
     if (!industry) return [];
     
-    // Map industry to service field keys
-    const serviceFieldKeys: Record<string, string[]> = {
-      hotel: [
-        'offersBreakfast',
-        'breakfastWarm',
-        'breakfastGuestsPerDay',
-        'offersLunch',
-        'offersDinner',
-        'offersRoomService',
-        'offersEvents',
-        'eventCapacity',
-        'roomCount',
-        'averageOccupancy'
-      ],
-      krankenhaus: [
-        'bedCount',
-        'cateringSystem',
-        'dietRequirements',
-        'privatePatientShare'
-      ],
-      // Add more industries as needed
-    };
+    if (industry === 'hotel') {
+      return [
+        {
+          title: 'Frühstückgeschäft',
+          icon: '☕',
+          fields: [
+            'offersBreakfast',
+            'breakfastWarm',
+            'breakfastGuestsPerDay'
+          ].map(key => getFieldByKey(key)).filter(Boolean) as FieldDefinition[]
+        },
+        {
+          title: 'Mittag- und Abendessen',
+          icon: '🍽️',
+          fields: [
+            'offersLunch',
+            'offersDinner'
+          ].map(key => getFieldByKey(key)).filter(Boolean) as FieldDefinition[]
+        },
+        {
+          title: 'Zusatzservices',
+          icon: '🛎️',
+          fields: [
+            'offersRoomService',
+            'offersEvents',
+            'eventCapacity'
+          ].map(key => getFieldByKey(key)).filter(Boolean) as FieldDefinition[]
+        },
+        {
+          title: 'Kapazität',
+          icon: '🏨',
+          fields: [
+            'roomCount',
+            'averageOccupancy'
+          ].map(key => getFieldByKey(key)).filter(Boolean) as FieldDefinition[]
+        }
+      ].filter(group => group.fields.length > 0);
+    }
     
-    const keys = serviceFieldKeys[industry] || [];
-    return keys.map(key => getFieldByKey(key)).filter(Boolean) as FieldDefinition[];
+    // Add more industries as needed
+    return [];
   }, [customerData.industry, getFieldByKey]);
   
   // Pain point fields
@@ -140,22 +157,22 @@ export const Step2AngebotPainpoints: React.FC = () => {
       const occupancy = Number(customerData.averageOccupancy) || 75;
       
       // Breakfast potential
-      if (customerData.offersBreakfast) {
+      if (customerData.offersBreakfast === 'ja') {
         basePotential += breakfastGuests * 8 * 30; // 8€ per guest, 30 days
-        if (customerData.breakfastWarm) {
+        if (customerData.breakfastWarm === 'ja') {
           basePotential *= 1.3; // 30% more for warm breakfast
         }
       }
       
       // Room service potential
-      if (customerData.offersRoomService) {
+      if (customerData.offersRoomService === 'ja') {
         basePotential += roomCount * occupancy * 0.01 * 15 * 30; // 1% order rate, 15€ avg, 30 days
       }
     }
     
     // Apply pain point multipliers
-    if (customerData.hasStaffingIssues) basePotential *= 1.3;
-    if (customerData.hasQualityIssues) basePotential *= 1.1;
+    if (customerData.hasStaffingIssues === 'ja') basePotential *= 1.3;
+    if (customerData.hasQualityIssues === 'ja') basePotential *= 1.1;
     
     // Chain multiplier
     if (customerData.chainCustomer === 'ja') {
@@ -169,7 +186,7 @@ export const Step2AngebotPainpoints: React.FC = () => {
   // Active pain points
   const activePainPoints = useMemo(() => {
     return Object.entries(PAIN_POINT_SOLUTIONS)
-      .filter(([key]) => customerData[key] === true)
+      .filter(([key]) => customerData[key] === 'ja')
       .map(([key, data]) => ({ key, ...data }));
   }, [customerData]);
   
@@ -192,7 +209,7 @@ export const Step2AngebotPainpoints: React.FC = () => {
       </Typography>
       
       {/* Service Structure */}
-      {serviceFields.length > 0 && (
+      {serviceFieldGroups.length > 0 && (
         <Box sx={{ mb: 4 }}>
           <Typography variant="h6" gutterBottom>
             🍳 Angebotsstruktur
@@ -200,13 +217,12 @@ export const Step2AngebotPainpoints: React.FC = () => {
           <Alert severity="info" sx={{ mb: 2 }}>
             Was wird angeboten? Dies hilft uns, den Bedarf einzuschätzen.
           </Alert>
-          <DynamicFieldRenderer
-            fields={serviceFields}
+          <AngebotsstrukturLayout
+            fieldGroups={serviceFieldGroups}
             values={customerData}
             errors={validationErrors}
             onChange={handleFieldChange}
             onBlur={handleFieldBlur}
-            useAdaptiveLayout={true}
           />
         </Box>
       )}
