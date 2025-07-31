@@ -72,14 +72,18 @@ import { Customer, Task } from './types';
 - **Field Theme System Konzept:** [/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/prototypes/FIELD_THEME_SYSTEM_PROTOTYPE.md](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/prototypes/FIELD_THEME_SYSTEM_PROTOTYPE.md) - Blueprint & Konzept
 - **Field Theme Implementation:** [/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/prototypes/FIELD_THEME_IMPLEMENTATION.md](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/prototypes/FIELD_THEME_IMPLEMENTATION.md) - Code & Sprint 2 Guide
 
-### 🆕 Neue Struktur (nach Diskussion 30.07.2025):
+### 🆕 Finale Wizard-Struktur (nach Best Practice Diskussion 31.07.2025):
 
-#### Wizard-Struktur:
-- **AKTUELL:** [Wizard Struktur V2](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/WIZARD_STRUCTURE_V2.md) - Verkaufsfokussiert!
-- **NEU:** [Wizard Adaptive Integration](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/wizard/WIZARD_ADAPTIVE_INTEGRATION.md) - Theme-System bleibt!
-- [Step 1: Basis & Filialstruktur](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/wizard/STEP1_BASIS_FILIALSTRUKTUR.md)
-- [Step 2: Angebot & Pain Points](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/wizard/STEP2_ANGEBOT_PAINPOINTS.md)
-- [Step 3: Ansprechpartner](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/wizard/STEP3_ANSPRECHPARTNER.md)
+#### ⚠️ FINALE STRUKTUR - 4 Steps für optimalen Vertriebsflow:
+- **FINAL:** [Sprint 2 V3 - Best Practice Structure](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/SPRINT2_V3_FINAL_STRUCTURE.md) - 🔴 ZUERST LESEN!
+- **AKTUELL:** [Wizard Struktur V3](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/WIZARD_STRUCTURE_V3.md) - Enterprise CRM Best Practice!
+- **NEU:** [Step 4 Planung](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/wizard/STEP4_ANGEBOT_SERVICES.md) - Standortbasierte Services
+
+#### Wizard-Steps (V3 - Final):
+- [Step 1: Basis & Filialstruktur](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/wizard/STEP1_BASIS_FILIALSTRUKTUR.md) - Unverändert
+- [Step 2: Herausforderungen & Potenzial V3](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/wizard/STEP2_HERAUSFORDERUNGEN_POTENZIAL_V3.md) - NUR globale Themen
+- [Step 3: Ansprechpartner V2](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/wizard/STEP3_ANSPRECHPARTNER_V2.md) - Mit Standort-Zuordnung
+- [Step 4: Angebot & Leistungen je Filiale](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/wizard/STEP4_ANGEBOT_SERVICES.md) - NEU!
 
 #### Backend-Integration:
 - **NEU:** [Backend Requirements](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/backend/BACKEND_REQUIREMENTS.md) - Entity-Erweiterungen
@@ -112,10 +116,11 @@ import { Customer, Task } from './types';
 - **Pain Points = Verkaufschancen:** Jeder Pain Point hat eine Freshfoodz-Lösung
 - **80%-MVP-Modell:** Nur verkaufsrelevante Felder
 
-### Wizard-Struktur NEU:
+### Wizard-Struktur V3 (Final):
 - **Step 1:** Basis + Filialstruktur + Geschäftsmodell + Adresse
-- **Step 2:** Angebotsstruktur + Pain Points + Live-Potenzial
-- **Step 3:** Ansprechpartner strukturiert + Beziehungsaufbau
+- **Step 2:** Pain Points (global) + Umsatzerwartung + Zusatzgeschäft
+- **Step 3:** Ansprechpartner strukturiert + Standort-Zuordnung
+- **Step 4:** Angebot & Leistungen je Filiale (mit Progress & Bulk-Actions)
 
 ### Freshfoodz-Spezifika integriert:
 - **Cook&Fresh®:** 40 Tage Haltbarkeit, 15 Min Regenerierung

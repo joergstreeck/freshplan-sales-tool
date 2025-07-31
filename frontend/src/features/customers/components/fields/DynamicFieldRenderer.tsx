@@ -15,7 +15,7 @@ import { AdaptiveFormContainer } from '../adaptive/AdaptiveFormContainer';
 import { AdaptiveField } from '../adaptive/AdaptiveField';
 import { FieldWrapper } from './FieldWrapper';
 import { TextField } from './fieldTypes/TextField';
-import { NumberField } from './fieldTypes/NumberField';
+import { NumberFieldV2 } from './fieldTypes/NumberFieldV2';
 import { SelectField } from './fieldTypes/SelectField';
 import { MultiSelectField } from './fieldTypes/MultiSelectField';
 import { EmailField } from './fieldTypes/EmailField';
@@ -121,7 +121,7 @@ export const DynamicFieldRenderer: React.FC<DynamicFieldRendererProps> = ({
         break;
         
       case 'number':
-        fieldComponent = <NumberField {...commonProps} />;
+        fieldComponent = <NumberFieldV2 {...commonProps} />;
         break;
         
       case 'select':

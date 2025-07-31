@@ -1,7 +1,7 @@
 # 🚀 CRM COMPLETE MASTER PLAN V5 - Das Sales Command Center
 
 **Version:** 5.0  
-**Datum:** 30.07.2025 21:09 (Auto-Sync)
+**Datum:** 31.07.2025 20:34 (Auto-Sync)
 **Status:** Backend implementiert ✅, Tests fast vollständig 🔄
 
 ---
@@ -17,15 +17,21 @@
 ### 📍 Aktueller Fokus
 **Phase:** Unknown Phase
 **Status:** Backend implementiert ✅, Tests fast vollständig 🔄
-**Nächster Schritt:** Store mit API Services verbinden
-**Sprint 2 Docs:** [/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/README.md](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/README.md)
-**Arbeits-Dokument:** [FC-005 Customer Management](./features/FC-005-CUSTOMER-MANAGEMENT/README.md) - Field-Based Architecture
+**Nächster Schritt:** Backend Contact Entity implementieren (Tag 1)
+**Sprint 2 Docs:** [Sprint 2 Master Plan](./features/FC-005-CUSTOMER-MANAGEMENT/sprint2/SPRINT2_MASTER_PLAN.md)
+**Arbeits-Dokument:** [Contact Management Vision](./features/FC-005-CUSTOMER-MANAGEMENT/sprint2/CONTACT_MANAGEMENT_VISION.md) ⭐
+**Architecture:** [Event Sourcing Foundation](./architecture/EVENT_SOURCING_FOUNDATION.md) 🏛️
 **⚠️ WICHTIG:** FC-005 Docs komplett umstrukturiert in 8 Unterordner (33 Dokumente) für Claude-Kompatibilität!
 **🚨 KRITISCH:** [Team-Philosophie zu Flexibilität](./features/FC-005-CUSTOMER-MANAGEMENT/2025-07-26_TECH_CONCEPT_customer-field-based-architecture.md#-kritische-team-philosophie-flexibilität-über-dogmatismus) VERBINDLICH!
 **Letzte Erfolge:** Architecture Fix implementiert, 23 Tests grün, UI bereinigt
 
 ### 🧭 Sprint-Planung FC-005
-1. **Sprint 2 (AKTUELL):** Customer UI Integration - Tag 1 ✅, Tag 2-3 ausstehend
+1. **Sprint 2 (AKTUELL):** Contact Management mit Event Sourcing Foundation
+   - Woche 1: Event Store + Multi-Contact UI
+   - Woche 2: DSGVO Compliance + Mobile Features
+   - Woche 3: Relationship Features + Analytics
+   - Woche 4: Integration FC-012/FC-018
+   - **Details:** [Sprint 2 Master Plan](./features/FC-005-CUSTOMER-MANAGEMENT/sprint2/SPRINT2_MASTER_PLAN.md)
 2. **Sprint 3:** Advanced Features (Filter, Bulk Operations, Export)
 3. **Sprint 4:** Performance Optimierung & Polish
 4. **DANACH:** FC-012 Audit Trail UI → [Admin Dashboard](./features/FC-012-audit-trail.md)
@@ -83,21 +89,21 @@ Von Tag 1 auf Wachstum, Performance und Qualität ausgelegt.
 | Modul | Status | Fortschritt | Nächster Schritt |
 |-------|--------|-------------|------------------|
 | Security | ✅ Done | 100% | ✅ Keycloak läuft produktiv |
-| FC-012 Audit Trail | ✅ Backend Done | 90% | Admin UI implementieren |
+| FC-012 Audit Trail | ✅ Backend Done | 90% | Admin UI implementieren → Event Integration mit FC-005 |
 | M4 Pipeline | 🔄 In Progress | 85% | Tests finalisieren (TODO-31) |
 | M4 RENEWAL-Spalte | ✅ Done | 100% | ✅ Teil des M4 Merge |
 | FC-003 E-Mail Integration | 📋 Planned | Tech-Konzept ✅ | Phase 2 Communication Hub |
 | FC-009 Renewal | 📋 Planned | Tech-Konzept ✅ | Contract-Entity Foundation → Event-Driven Triggers |
 | FC-010 Scalability | 📋 Planned | Tech-Konzept ✅ | Filter-Bar Phase 1 |
 | FC-011 Cockpit-Int | 📋 Planned | Tech-Konzept ✅ | Nach M4 Integration |
-| FC-013 Activity Notes | 📋 Planned | Tech-Konzept ✅ | Core CRM Feature |
-| FC-014 Mobile/Tablet | 📋 Planned | Tech-Konzept ✅ | Außendienst kritisch |
-| FC-016 KPI-Tracking | 📋 Planned | Tech-Konzept ✅ | Renewal-Metriken ⭐ NEU |
+| FC-013 Activity Notes | 📋 Planned | Tech-Konzept ✅ | Core CRM Feature → Event Store nutzen |
+| FC-014 Mobile/Tablet | 📋 Planned | Tech-Konzept ✅ | Außendienst kritisch → Offline Queue Ready |
+| FC-016 KPI-Tracking | 📋 Planned | Tech-Konzept ✅ | Analytics Events von FC-005 nutzen ⭐ |
 | FC-017 Error Handling | 📋 Planned | Tech-Konzept ✅ | Fallback & Recovery ⭐ NEU |
-| FC-018 Datenschutz/DSGVO | 📋 Planned | Tech-Konzept ✅ | Privacy by Design ⭐ NEU |
+| FC-018 Datenschutz/DSGVO | 📋 Planned | Tech-Konzept ✅ | Crypto-Shredding via Event Store ⭐ |
 | FC-020 Lead Management | 📋 Planned | Tech-Konzept ✅ | Lead → Kunde Konvertierung ⭐ NEU |
 | M8 Calculator | 📋 Planned | 0% | Modal Template |
-| FC-005 Customer Mgmt | 🔄 In Progress | Docs 100% ✅ | [Field-Based Architecture](./features/FC-005-CUSTOMER-MANAGEMENT/README.md) ⭐ |
+| FC-005 Customer Mgmt | 🔄 Sprint 2 | Event Sourcing 🚀 | [Contact Management Vision](./features/FC-005-CUSTOMER-MANAGEMENT/sprint2/CONTACT_MANAGEMENT_VISION.md) ⭐ |
 
 ---
 
