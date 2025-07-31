@@ -109,6 +109,31 @@
       "salesRelevance": "CRITICAL"
     }
   ],
+  "globalBusiness": [
+    {
+      "key": "expectedAnnualRevenue",
+      "label": "Geplantes Jahresvolumen Freshfoodz (EUR)",
+      "entityType": "customer",
+      "fieldType": "number",
+      "format": "currency",
+      "currency": "EUR",
+      "thousandSeparator": true,
+      "required": true,
+      "category": "business",
+      "sizeHint": "groß",
+      "width": "large",
+      "fontSize": "18px",
+      "textAlign": "right",
+      "salesRelevance": "CRITICAL",
+      "helpText": "Brutto-Jahresvolumen an Freshfoodz-Produkten, das gemeinsam geplant wird. Dieser Wert erscheint 1:1 im Partnerschaftsvertrag.",
+      "tooltip": "Brutto-Jahresvolumen an Freshfoodz-Produkten, das gemeinsam geplant wird. Dieser Wert erscheint 1:1 im Partnerschaftsvertrag.",
+      "min": 0,
+      "validationWarning": 1000000,
+      "placeholder": "z.B. 250.000",
+      "showCalculator": true,
+      "calculatorHint": "100 Betten × 10€/Monat × 12 = 120.000€"
+    }
+  ],
   "competitorInfo": [
     {
       "key": "currentSupplier",
@@ -389,22 +414,6 @@
       "salesRelevance": "MEDIUM",
       "triggerProducts": ["portion-exact"],
       "solutionText": "Portionsgenaue Bestellung möglich"
-    },
-    {
-      "key": "hasDietComplexity",
-      "label": "Komplexe Diät-/Allergieanforderungen",
-      "entityType": "customer",
-      "fieldType": "select",
-      "category": "painPoints",
-      "required": false,
-      "options": [
-        { "value": "nein", "label": "Kein Problem" },
-        { "value": "ja", "label": "Ja, großes Problem" }
-      ],
-      "sizeHint": "mittel",
-      "salesRelevance": "MEDIUM",
-      "triggerProducts": ["special-diets", "allergen-free"],
-      "solutionText": "Komplettes Sortiment für alle Anforderungen"
     }
   ],
   "additionalBusiness": [

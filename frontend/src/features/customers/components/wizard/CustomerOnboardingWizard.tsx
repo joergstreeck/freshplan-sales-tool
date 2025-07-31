@@ -28,8 +28,9 @@ import { WizardNavigation } from './WizardNavigation';
 import { CustomerDataStep } from '../steps/CustomerDataStep';
 import { LocationsStep } from '../steps/LocationsStep';
 import { Step1BasisFilialstruktur } from '../steps/Step1BasisFilialstruktur';
-import { Step2AngebotPainpoints } from '../steps/Step2AngebotPainpoints';
-import { Step3Ansprechpartner } from '../steps/Step3Ansprechpartner';
+import { Step2HerausforderungenPotenzialV3 } from '../steps/Step2HerausforderungenPotenzialV3';
+import { Step3AnsprechpartnerV4 } from '../steps/Step3AnsprechpartnerV4';
+import { Step4AngebotServices } from '../steps/Step4AngebotServices';
 import { CustomerFieldThemeProvider } from '../../theme';
 
 // DEBUG: Field Theme System
@@ -47,17 +48,22 @@ const WIZARD_STEPS = [
     icon: '🏢'
   },
   { 
-    id: 'angebot-painpoints', 
-    label: 'Angebot & Pain Points',
-    description: 'Angebotsstruktur und Herausforderungen',
+    id: 'herausforderungen-potenzial', 
+    label: 'Herausforderungen & Potenzial',
+    description: 'Unternehmensweite Herausforderungen und Umsatzerwartung',
     icon: '🎯'
   },
   { 
     id: 'ansprechpartner', 
     label: 'Ansprechpartner',
     description: 'Kontaktpersonen und Kommunikation',
-    icon: '👥',
-    optional: true
+    icon: '👥'
+  },
+  { 
+    id: 'angebot-services', 
+    label: 'Angebot & Leistungen',
+    description: 'Services je Filiale',
+    icon: '🏢'
   }
 ];
 
@@ -169,10 +175,12 @@ export const CustomerOnboardingWizard: React.FC<CustomerOnboardingWizardProps> =
     switch (stepConfig.id) {
       case 'basis-filialstruktur':
         return <Step1BasisFilialstruktur />;
-      case 'angebot-painpoints':
-        return <Step2AngebotPainpoints />;
+      case 'herausforderungen-potenzial':
+        return <Step2HerausforderungenPotenzialV3 />;
       case 'ansprechpartner':
-        return <Step3Ansprechpartner />;
+        return <Step3AnsprechpartnerV4 />;
+      case 'angebot-services':
+        return <Step4AngebotServices />;
       default:
         return null;
     }

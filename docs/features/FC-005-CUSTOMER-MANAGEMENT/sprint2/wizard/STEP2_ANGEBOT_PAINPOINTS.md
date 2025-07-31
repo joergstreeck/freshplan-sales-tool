@@ -1,8 +1,8 @@
-# 🍳 Step 2: Angebot & Pain Points
+# 🎯 Step 2: Herausforderungen & Potenzial
 
 **Sprint:** 2  
 **Component:** CustomerOnboardingWizard  
-**Status:** 🆕 Verkaufsfokussiert  
+**Status:** 🆕 Neu strukturiert (30.07.2025)  
 
 ---
 
@@ -10,12 +10,13 @@
 **← Zurück:** [Step 1: Basis & Filialstruktur](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/wizard/STEP1_BASIS_FILIALSTRUKTUR.md)  
 **→ Weiter:** [Step 3: Ansprechpartner](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/wizard/STEP3_ANSPRECHPARTNER.md)  
 **⚙️ Implementierung:** [Pain Point Mapping](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/implementation/PAIN_POINT_MAPPING.md)
+**🔧 Struktur:** [Step 2 Restructure Plan](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/STEP2_RESTRUCTURE_PLAN.md)
 
 ---
 
 ## 🎯 Zweck
 
-Angebotsstruktur erfassen → Bedarf ableiten → Pain Points identifizieren → Potenzial berechnen
+Pain Points global erfassen → Umsatzerwartung definieren → Zusatzgeschäft prüfen → Angebotsstruktur pro Filiale
 
 ---
 

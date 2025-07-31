@@ -23,6 +23,7 @@ import {
   validateFields
 } from '../validation';
 import { getVisibleFields } from '../utils/conditionEvaluator';
+import type { LocationServiceData } from './customerOnboardingStore.extensions';
 
 interface CustomerOnboardingState {
   // ===== Wizard State =====
@@ -56,6 +57,16 @@ interface CustomerOnboardingState {
   customerFields: FieldDefinition[];
   /** Location field definitions */
   locationFields: FieldDefinition[];
+  
+  // ===== Step 2 Extensions =====
+  /** Selected location for service data entry */
+  selectedLocationId: string | 'all';
+  /** Apply service data to all locations */
+  applyToAllLocations: boolean;
+  /** Service data per location */
+  locationServices: Record<string, LocationServiceData>;
+  /** Completed location IDs */
+  completedLocationIds: string[];
   
   // ===== Actions =====
   /** Set a customer field value */
@@ -94,6 +105,20 @@ interface CustomerOnboardingState {
   reset: () => void;
   /** Set field definitions */
   setFieldDefinitions: (customerFields: FieldDefinition[], locationFields: FieldDefinition[]) => void;
+  
+  // ===== Step 2 Extension Actions =====
+  /** Set expected annual revenue */
+  setExpectedRevenue: (amount: number) => void;
+  /** Set selected location */
+  setSelectedLocation: (locationId: string | 'all') => void;
+  /** Set apply to all locations */
+  setApplyToAll: (value: boolean) => void;
+  /** Save location services */
+  saveLocationServices: (data: LocationServiceData) => void;
+  /** Get location services */
+  getLocationServices: (locationId: string) => LocationServiceData;
+  /** Mark location as completed */
+  markLocationCompleted: (locationId: string) => void;
 }
 
 const STORAGE_KEY = 'customer-onboarding-draft';
@@ -121,6 +146,10 @@ export const useCustomerOnboardingStore = create<CustomerOnboardingState>()(
       validationErrors: {},
       customerFields: [],
       locationFields: [],
+      selectedLocationId: 'all',
+      applyToAllLocations: false,
+      locationServices: {},
+      completedLocationIds: [],
       
       // ===== Actions =====
       setCustomerField: (fieldKey, value) => {
@@ -363,9 +392,23 @@ export const useCustomerOnboardingStore = create<CustomerOnboardingState>()(
           });
         }
         
-        // Step 1: At least one location for chain customers
+        // Step 1: Herausforderungen & Potenzial
+        // Hier ist das expectedAnnualRevenue ein Pflichtfeld
         if (state.currentStep === 1) {
-          return state.locations.length > 0;
+          const revenueValue = state.customerData.expectedAnnualRevenue;
+          return revenueValue !== undefined && revenueValue !== null && revenueValue > 0;
+        }
+        
+        // Step 2: Ansprechpartner - keine Pflichtfelder in Step 3
+        if (state.currentStep === 2) {
+          // Step 3 ist optional, daher immer true
+          return true;
+        }
+        
+        // Step 3: Angebot & Services
+        if (state.currentStep === 3) {
+          // Keine Pflichtfelder, aber wir könnten prüfen ob mindestens ein Service ausgewählt wurde
+          return true;
         }
         
         return true;
@@ -435,6 +478,10 @@ export const useCustomerOnboardingStore = create<CustomerOnboardingState>()(
           state.locationFieldValues = {};
           state.detailedLocations = [];
           state.validationErrors = {};
+          state.selectedLocationId = 'all';
+          state.applyToAllLocations = false;
+          state.locationServices = {};
+          state.completedLocationIds = [];
         });
       },
       
@@ -442,6 +489,68 @@ export const useCustomerOnboardingStore = create<CustomerOnboardingState>()(
         set((state) => {
           state.customerFields = customerFields;
           state.locationFields = locationFields;
+        });
+      },
+      
+      // ===== Step 2 Extension Actions =====
+      setExpectedRevenue: (amount) => {
+        set((state) => {
+          state.customerData.expectedAnnualRevenue = amount;
+          state.isDirty = true;
+        });
+      },
+      
+      setSelectedLocation: (locationId) => {
+        set((state) => {
+          state.selectedLocationId = locationId;
+        });
+      },
+      
+      setApplyToAll: (value) => {
+        set((state) => {
+          state.applyToAllLocations = value;
+        });
+      },
+      
+      saveLocationServices: (data) => {
+        set((state) => {
+          const { selectedLocationId, applyToAllLocations, locations } = state;
+          
+          if (selectedLocationId === 'all' || applyToAllLocations) {
+            // Speichere für alle Standorte
+            locations.forEach((loc) => {
+              state.locationServices[loc.id] = { ...data };
+            });
+            state.locationServices['all'] = { ...data };
+          } else {
+            // Speichere nur für ausgewählten Standort
+            state.locationServices[selectedLocationId] = { ...data };
+          }
+          
+          // Markiere als abgeschlossen
+          if (selectedLocationId !== 'all' && !state.completedLocationIds.includes(selectedLocationId)) {
+            state.completedLocationIds.push(selectedLocationId);
+          }
+          
+          state.isDirty = true;
+        });
+      },
+      
+      getLocationServices: (locationId) => {
+        const state = get();
+        
+        if (state.applyToAllLocations && state.locationServices['all']) {
+          return state.locationServices['all'];
+        }
+        
+        return state.locationServices[locationId] || {};
+      },
+      
+      markLocationCompleted: (locationId) => {
+        set((state) => {
+          if (!state.completedLocationIds.includes(locationId)) {
+            state.completedLocationIds.push(locationId);
+          }
         });
       }
     })),

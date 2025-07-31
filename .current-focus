@@ -1,8 +1,8 @@
 {
   "feature": "FC-005",
-  "module": "FC-005 Customer Management",
+  "module": "Contact Management Vision",
   "lastFile": "auto-sync-from-v5",
   "lastLine": "0",
   "nextTask": "Store mit API Services verbinden",
-  "lastUpdated": "2025-07-30T19:50:09Z"
+  "lastUpdated": "2025-07-31T18:38:59Z"
 }
