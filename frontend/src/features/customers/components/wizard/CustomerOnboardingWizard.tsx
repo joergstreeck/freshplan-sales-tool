@@ -120,7 +120,15 @@ export const CustomerOnboardingWizard: React.FC<CustomerOnboardingWizardProps> =
    * Handle step navigation
    */
   const handleNext = async () => {
-    const isValid = validateCurrentStep();
+    console.log('handleNext Debug:', {
+      currentStep,
+      customerData,
+      canProgress: canProgressToNextStep()
+    });
+    
+    const isValid = await validateCurrentStep();
+    console.log('Validation result:', isValid);
+    
     if (isValid) {
       await manualSave();
       setCurrentStep(currentStep + 1);

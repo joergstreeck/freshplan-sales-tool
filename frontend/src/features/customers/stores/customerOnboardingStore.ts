@@ -332,13 +332,27 @@ export const useCustomerOnboardingStore = create<CustomerOnboardingState>()(
         let fieldsToValidate: FieldDefinition[] = [];
         
         if (state.currentStep === 0) {
+          // Only validate fields that are shown in Step 1
+          const step1Fields = [
+            'companyName',
+            'legalForm', 
+            'industry',
+            'chainCustomer',
+            'financingType',
+            'street',
+            'postalCode',
+            'city'
+          ];
+          
           // Get visible customer fields for current step with conditional logic
           const visibleFields = getVisibleFields(
             state.customerFields, 
             state.customerData,
             'customer' // currentStep parameter 
           );
-          fieldsToValidate = visibleFields.filter(field => field.required);
+          fieldsToValidate = visibleFields.filter(field => 
+            field.required && step1Fields.includes(field.key)
+          );
         } else if (state.currentStep === 1) {
           // Location fields validation if applicable
           fieldsToValidate = []; // Will be extended when location validation is needed
@@ -385,7 +399,29 @@ export const useCustomerOnboardingStore = create<CustomerOnboardingState>()(
         
         // Step 0: Customer data must be valid
         if (state.currentStep === 0) {
-          const requiredFields = state.customerFields.filter(f => f.required);
+          // Only validate fields that are shown in Step 1
+          const step1Fields = [
+            'companyName',
+            'legalForm', 
+            'industry',
+            'chainCustomer',
+            'financingType',
+            'street',
+            'postalCode',
+            'city'
+          ];
+          
+          const requiredFields = state.customerFields.filter(f => 
+            f.required && step1Fields.includes(f.key)
+          );
+          
+          console.log('Step 0 - Required fields for Step 1:', requiredFields.map(f => ({
+            key: f.key,
+            label: f.label,
+            value: state.customerData[f.key],
+            isValid: state.customerData[f.key] !== undefined && state.customerData[f.key] !== '' && state.customerData[f.key] !== null
+          })));
+          
           return requiredFields.every(field => {
             const value = state.customerData[field.key];
             return value !== undefined && value !== '' && value !== null;
