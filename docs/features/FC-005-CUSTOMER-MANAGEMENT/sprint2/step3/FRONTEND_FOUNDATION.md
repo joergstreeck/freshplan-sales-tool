@@ -1,22 +1,40 @@
-# 🎨 Tag 2: Frontend Foundation
+# 🏗️ Frontend Foundation - Contact Store & API Integration
 
-**Datum:** Tag 2 der Step 3 Implementation  
-**Fokus:** Types, Store & API Integration  
-**Ziel:** Frontend-Basis für Multi-Contact  
+**Phase:** 1 - Foundation  
+**Tag:** 2 der Woche 1  
+**Status:** 🎯 Ready for Implementation  
 
 ## 🧭 Navigation
 
-**← Vorher:** [Backend Contact](./BACKEND_CONTACT.md)  
-**↑ Übersicht:** [Step 3 Guide](./README.md)  
-**→ Nächster:** [Multi-Contact UI](./FRONTEND_MULTICONTACT.md)  
+**← Zurück:** [Theme Architecture](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/step3/THEME_ARCHITECTURE.md)  
+**→ Nächster:** [Smart Contact Cards](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/step3/SMART_CONTACT_CARDS.md)  
+**↑ Übergeordnet:** [Step 3 Main Guide](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/step3/README.md)  
 
-## 🎯 Tagesziel
+## 🎯 Vision: Robuste Frontend-Architektur
 
-Frontend Foundation mit:
-- TypeScript Types
-- Zustand Store Extension
-- API Service
-- Field Catalog Erweiterung
+**Frontend Foundation** schafft die **technische Basis** für alle Contact-Features:
+
+> "Ein solides Fundament für intelligente Kontaktverwaltung"
+
+## 🏗️ Architektur-Übersicht
+
+```
+┌─────────────────────────────────────────┐
+│        React Components                  │
+├─────────────────────────────────────────┤
+│    Zustand Contact Store                │
+│    - State Management                   │
+│    - Optimistic Updates                 │
+├─────────────────────────────────────────┤
+│      Contact API Service                │
+│    - Type-safe API calls               │
+│    - Error Handling                     │
+├─────────────────────────────────────────┤
+│     Validation & Utilities              │
+│    - Form Validation                    │
+│    - Data Transformation               │
+└─────────────────────────────────────────┘
+```
 
 ## 💻 Implementation
 
@@ -29,9 +47,9 @@ export interface Contact {
   id: string;
   customerId: string;
   
-  // Basic Info
-  salutation?: string;
-  title?: string;
+  // Basic Info (Strukturiert nach V2)
+  salutation: 'Herr' | 'Frau' | 'Divers';
+  title?: string; // Dr., Prof., etc.
   firstName: string;
   lastName: string;
   position?: string;
@@ -46,9 +64,13 @@ export interface Contact {
   isPrimary: boolean;
   isActive: boolean;
   
-  // Location
-  assignedLocationId?: string;
-  assignedLocationName?: string; // Denormalized for display
+  // Location & Responsibility (NEU aus V2)
+  responsibilityScope: 'all' | 'specific';
+  assignedLocationIds?: string[]; // Array bei 'specific'
+  assignedLocationNames?: string[]; // Denormalized for display
+  
+  // Roles (NEU aus V2)
+  roles: ContactRole[];
   
   // Relationship Data
   birthday?: string; // ISO date
@@ -63,6 +85,12 @@ export interface Contact {
   createdBy?: string;
   updatedBy?: string;
 }
+
+export type ContactRole = 
+  | 'decision_maker'
+  | 'technical_contact'
+  | 'billing_contact'
+  | 'operations_contact';
 
 export interface CreateContactRequest {
   firstName: string;
@@ -190,7 +218,32 @@ export const useContactStore = create<ContactState>()(
     assignToLocation: async (contactId, locationId) => {
       try {
         const updated = await contactApi.updateContact(contactId, {
-          assignedLocationId: locationId
+          assignedLocationIds: [locationId],
+          responsibilityScope: 'specific'
+        });
+        set((state) => {
+          const index = state.contacts.findIndex(c => c.id === contactId);
+          if (index >= 0) {
+            state.contacts[index] = updated;
+          }
+        });
+      } catch (error) {
+        set((state) => {
+          state.error = error.message;
+        });
+      }
+    },
+    
+    // NEU aus V2: Responsibility Management
+    setContactResponsibility: async (
+      contactId: string,
+      scope: 'all' | 'specific',
+      locationIds?: string[]
+    ) => {
+      try {
+        const updated = await contactApi.updateContact(contactId, {
+          responsibilityScope: scope,
+          assignedLocationIds: scope === 'specific' ? locationIds : undefined
         });
         set((state) => {
           const index = state.contacts.findIndex(c => c.id === contactId);
@@ -315,6 +368,21 @@ export const contactApi = {
         { "value": "art", "label": "Kunst" },
         { "value": "music", "label": "Musik" }
       ]
+    },
+    {
+      "key": "contactTitle",
+      "label": "Titel",
+      "entityType": "contact",
+      "fieldType": "autocomplete",
+      "required": false,
+      "category": "personal",
+      "options": [
+        { "value": "dr", "label": "Dr." },
+        { "value": "prof", "label": "Prof." },
+        { "value": "prof_dr", "label": "Prof. Dr." }
+      ],
+      "allowCustom": true,
+      "helpText": "Akademischer Titel"
     }
   ]
 }
@@ -360,10 +428,413 @@ describe('ContactStore', () => {
 - [ ] Tests geschrieben
 - [ ] Integration getestet
 
-## 🔗 Nächste Schritte
+### 5. Validation Utilities
 
-**Morgen:** [Multi-Contact UI](./FRONTEND_MULTICONTACT.md) - Contact Cards implementieren
+```typescript
+// utils/contactValidation.ts
+
+export const contactValidation = {
+  email: {
+    pattern: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+    message: 'Ungültige E-Mail-Adresse'
+  },
+  
+  phone: {
+    pattern: /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{4,6}$/,
+    message: 'Ungültige Telefonnummer'
+  },
+  
+  required: {
+    firstName: 'Vorname ist erforderlich',
+    lastName: 'Nachname ist erforderlich',
+    decisionLevel: 'Entscheidungsebene muss ausgewählt werden'
+  },
+  
+  /**
+   * Telefonnummern-Normalisierung
+   */
+  normalizePhoneNumber(phone: string): string {
+    if (!phone) return '';
+    
+    // Entferne alle nicht-numerischen Zeichen außer +
+    let normalized = phone.replace(/[^0-9+]/g, '');
+    
+    // Deutsche Nummern normalisieren
+    if (normalized.startsWith('0049')) {
+      normalized = '+49' + normalized.substring(4);
+    } else if (normalized.startsWith('00')) {
+      normalized = '+' + normalized.substring(2);
+    } else if (normalized.startsWith('0') && !normalized.startsWith('+')) {
+      // Deutsche Nummer ohne Landesvorwahl
+      normalized = '+49' + normalized.substring(1);
+    }
+    
+    // Formatierung für bessere Lesbarkeit
+    if (normalized.startsWith('+49')) {
+      const number = normalized.substring(3);
+      const area = number.substring(0, 3);
+      const rest = number.substring(3);
+      return `+49 ${area} ${rest.match(/.{1,4}/g)?.join(' ') || rest}`;
+    }
+    
+    return normalized;
+  },
+  
+  /**
+   * Validierung internationaler Telefonnummern
+   */
+  validateInternationalPhone(phone: string): boolean {
+    // E.164 Format: +[country code][number] max 15 digits
+    const e164Regex = /^\+[1-9]\d{1,14}$/;
+    const normalized = this.normalizePhoneNumber(phone).replace(/\s/g, '');
+    return e164Regex.test(normalized);
+  }
+};
+
+// Email uniqueness check
+export const checkEmailUniqueness = async (
+  customerId: string, 
+  email: string, 
+  excludeContactId?: string
+): Promise<boolean> => {
+  try {
+    const response = await api.post(`/customers/${customerId}/contacts/check-email`, {
+      email,
+      excludeContactId
+    });
+    return response.data.isUnique;
+  } catch (error) {
+    console.error('Email check failed:', error);
+    return true; // Assume unique on error
+  }
+};
+```
+
+### 6. Empty State Component
+
+```typescript
+// components/shared/EmptyState.tsx
+
+export const EmptyState: React.FC<{
+  icon?: React.ReactNode;
+  title: string;
+  description?: string;
+  action?: {
+    label: string;
+    onClick: () => void;
+    startIcon?: React.ReactNode;
+  };
+}> = ({ icon, title, description, action }) => {
+  return (
+    <Box
+      sx={{
+        textAlign: 'center',
+        py: 8,
+        px: 3,
+        bgcolor: 'background.paper',
+        borderRadius: 2,
+        border: '2px dashed',
+        borderColor: 'divider',
+        transition: 'all 0.3s ease',
+        '&:hover': {
+          borderColor: 'primary.main',
+          bgcolor: 'action.hover'
+        }
+      }}
+    >
+      {icon && (
+        <Box sx={{ mb: 3 }}>
+          {icon}
+        </Box>
+      )}
+      
+      <Typography variant="h6" gutterBottom>
+        {title}
+      </Typography>
+      
+      {description && (
+        <Typography variant="body2" color="text.secondary" paragraph>
+          {description}
+        </Typography>
+      )}
+      
+      {action && (
+        <Button
+          variant="contained"
+          startIcon={action.startIcon}
+          onClick={action.onClick}
+          size="large"
+          sx={{ mt: 2 }}
+        >
+          {action.label}
+        </Button>
+      )}
+    </Box>
+  );
+};
+```
+
+### 7. Error Handling
+
+```typescript
+// hooks/useContactError.ts
+
+export const useContactError = () => {
+  const [error, setError] = useState<string | null>(null);
+  
+  const handleError = useCallback((error: any) => {
+    if (error.response?.data?.message) {
+      setError(error.response.data.message);
+    } else if (error.message) {
+      setError(error.message);
+    } else {
+      setError('Ein unerwarteter Fehler ist aufgetreten');
+    }
+    
+    // Auto-clear nach 5 Sekunden
+    setTimeout(() => setError(null), 5000);
+  }, []);
+  
+  return { error, setError, handleError };
+};
+```
+
+### 8. Loading States
+
+```typescript
+// components/shared/ContactSkeleton.tsx
+
+export const ContactSkeleton: React.FC = () => {
+  return (
+    <Card>
+      <CardContent>
+        <Box display="flex" alignItems="flex-start" gap={2}>
+          <Skeleton variant="circular" width={64} height={64} />
+          <Box flex={1}>
+            <Skeleton variant="text" width="60%" height={32} />
+            <Skeleton variant="text" width="40%" />
+            <Box mt={2}>
+              <Skeleton variant="text" width="80%" />
+              <Skeleton variant="text" width="70%" />
+            </Box>
+          </Box>
+        </Box>
+      </CardContent>
+    </Card>
+  );
+};
+```
+
+### 9. ResponsibilitySelector Component (aus V2)
+
+```typescript
+// components/ResponsibilitySelector.tsx
+
+export const ResponsibilitySelector: React.FC<{
+  scope: 'all' | 'specific';
+  selectedLocationIds?: string[];
+  locations: CustomerLocation[];
+  onChange: (scope: 'all' | 'specific', locationIds?: string[]) => void;
+  disabled?: boolean;
+}> = ({ scope, selectedLocationIds = [], locations, onChange, disabled }) => {
+  const isSingleLocation = locations.length === 1;
+  
+  // Bei Einzelbetrieb automatisch "alle Standorte"
+  useEffect(() => {
+    if (isSingleLocation && scope !== 'all') {
+      onChange('all', [locations[0].id]);
+    }
+  }, [isSingleLocation, scope, locations, onChange]);
+  
+  if (isSingleLocation) {
+    return (
+      <Box sx={{ mt: 2 }}>
+        <Typography variant="body2" color="text.secondary">
+          📍 Zuständig für: {locations[0].name}
+        </Typography>
+      </Box>
+    );
+  }
+  
+  return (
+    <Box sx={{ mt: 2 }}>
+      <Typography variant="subtitle2" gutterBottom>
+        📍 Zuständigkeitsbereich:
+      </Typography>
+      
+      <RadioGroup
+        value={scope}
+        onChange={(e) => onChange(e.target.value as 'all' | 'specific')}
+        disabled={disabled}
+      >
+        <FormControlLabel
+          value="all"
+          control={<Radio />}
+          label="Für alle Standorte"
+        />
+        <FormControlLabel
+          value="specific"
+          control={<Radio />}
+          label="Für bestimmte Standorte:"
+        />
+      </RadioGroup>
+      
+      {scope === 'specific' && (
+        <Box sx={{ ml: 4, mt: 1 }}>
+          <LocationCheckboxList
+            locations={locations}
+            selectedIds={selectedLocationIds}
+            onChange={(ids) => onChange('specific', ids)}
+            disabled={disabled}
+          />
+        </Box>
+      )}
+    </Box>
+  );
+};
+
+// LocationCheckboxList Component
+const LocationCheckboxList: React.FC<{
+  locations: CustomerLocation[];
+  selectedIds: string[];
+  onChange: (ids: string[]) => void;
+  disabled?: boolean;
+}> = ({ locations, selectedIds, onChange, disabled }) => {
+  const handleToggle = (locationId: string) => {
+    const newIds = selectedIds.includes(locationId)
+      ? selectedIds.filter(id => id !== locationId)
+      : [...selectedIds, locationId];
+    onChange(newIds);
+  };
+  
+  return (
+    <FormGroup>
+      {locations.map(location => (
+        <FormControlLabel
+          key={location.id}
+          control={
+            <Checkbox
+              checked={selectedIds.includes(location.id)}
+              onChange={() => handleToggle(location.id)}
+              disabled={disabled}
+            />
+          }
+          label={`${location.name} ${location.city ? `(${location.city})` : ''}`}
+        />
+      ))}
+    </FormGroup>
+  );
+};
+```
+
+## 🧪 Comprehensive Testing
+
+```typescript
+// stores/__tests__/contactStore.test.ts
+
+describe('ContactStore', () => {
+  beforeEach(() => {
+    useContactStore.setState({ contacts: [], loading: false, error: null });
+  });
+  
+  it('should handle loading states correctly', async () => {
+    const { loadContacts } = useContactStore.getState();
+    
+    // Start loading
+    const promise = loadContacts('customer-1');
+    expect(useContactStore.getState().loading).toBe(true);
+    
+    // Wait for completion
+    await promise;
+    expect(useContactStore.getState().loading).toBe(false);
+  });
+  
+  it('should handle API errors gracefully', async () => {
+    // Mock API error
+    jest.spyOn(contactApi, 'getContacts').mockRejectedValue(
+      new Error('Network error')
+    );
+    
+    const { loadContacts } = useContactStore.getState();
+    await loadContacts('customer-1');
+    
+    expect(useContactStore.getState().error).toBe('Network error');
+  });
+  
+  it('should validate email uniqueness', async () => {
+    const isUnique = await checkEmailUniqueness(
+      'customer-1',
+      'test@example.com'
+    );
+    
+    expect(isUnique).toBeDefined();
+  });
+});
+```
+
+## 📊 Performance Optimizations
+
+### Optimistic Updates
+
+```typescript
+// Store mit optimistischen Updates
+addContact: async (customerId, data) => {
+  // Optimistic update
+  const tempId = `temp-${Date.now()}`;
+  const tempContact = { ...data, id: tempId, isPrimary: false };
+  
+  set((state) => {
+    state.contacts.push(tempContact as any);
+  });
+  
+  try {
+    const newContact = await contactApi.createContact(customerId, data);
+    set((state) => {
+      // Replace temp with real
+      const index = state.contacts.findIndex(c => c.id === tempId);
+      if (index >= 0) {
+        state.contacts[index] = newContact;
+      }
+    });
+  } catch (error) {
+    // Rollback on error
+    set((state) => {
+      state.contacts = state.contacts.filter(c => c.id !== tempId);
+      state.error = error.message;
+    });
+  }
+}
+```
+
+## 🎯 Success Metrics
+
+### Technical:
+- **API Response Time:** < 200ms
+- **Store Update Time:** < 16ms
+- **Type Coverage:** 100%
+- **Test Coverage:** > 90%
+
+### Developer Experience:
+- **Type Safety:** Full IntelliSense support
+- **Error Messages:** Clear and actionable
+- **Reusability:** All utilities exportable
+
+## 🔗 Integration Points
+
+### Mit Backend Intelligence:
+- Warmth Data Integration
+- Interaction Tracking Hooks
+
+### Mit Smart Contact Cards:
+- Type-safe Props
+- Store Subscriptions
+
+### Mit Mobile Actions:
+- API Service Reuse
+- Offline Queue Support
 
 ---
 
-**Status:** 📋 Bereit zur Implementierung
+**Nächster Schritt:** [→ Smart Contact Cards](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/step3/SMART_CONTACT_CARDS.md)
+
+**Foundation = Solide Basis für Innovation! 🏗️✨**

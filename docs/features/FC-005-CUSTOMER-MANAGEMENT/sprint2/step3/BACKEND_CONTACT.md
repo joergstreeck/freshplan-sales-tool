@@ -35,6 +35,16 @@ import org.hibernate.envers.Audited;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
+import java.util.Set;
+import java.util.HashSet;
+
+// ContactRole enum
+public enum ContactRole {
+    DECISION_MAKER,
+    TECHNICAL_CONTACT,
+    BILLING_CONTACT,
+    OPERATIONS_CONTACT
+}
 
 @Entity
 @Table(name = "contacts")
@@ -71,6 +81,16 @@ public class Contact extends PanacheEntityBase {
     @Column(name = "decision_level", length = 50)
     private String decisionLevel;
     
+    // Roles
+    @ElementCollection
+    @CollectionTable(
+        name = "contact_roles",
+        joinColumns = @JoinColumn(name = "contact_id")
+    )
+    @Column(name = "role")
+    @Enumerated(EnumType.STRING)
+    private Set<ContactRole> roles = new HashSet<>();
+    
     // Contact Info
     @Column(name = "email", length = 255)
     private String email;
@@ -88,17 +108,39 @@ public class Contact extends PanacheEntityBase {
     @Column(name = "is_active", nullable = false)
     private boolean isActive = true;
     
-    // Location Assignment
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "assigned_location_id")
-    private CustomerLocation assignedLocation;
+    // Soft-Delete Fields (aus BACKEND_INTELLIGENCE.md)
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
+    
+    @Column(name = "deleted_by")
+    private String deletedBy;
+    
+    @Column(name = "deletion_reason")
+    private String deletionReason;
+    
+    // Location Assignment & Responsibility
+    @Column(name = "responsibility_scope", length = 20)
+    private String responsibilityScope = "all"; // 'all' or 'specific'
+    
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+        name = "contact_location_assignments",
+        joinColumns = @JoinColumn(name = "contact_id"),
+        inverseJoinColumns = @JoinColumn(name = "location_id")
+    )
+    private Set<CustomerLocation> assignedLocations = new HashSet<>();
     
     // Relationship Data (Beziehungsebene)
     @Column(name = "birthday")
     private LocalDate birthday;
     
-    @Column(name = "hobbies", length = 500)
-    private String hobbies;
+    @ElementCollection
+    @CollectionTable(
+        name = "contact_hobbies",
+        joinColumns = @JoinColumn(name = "contact_id")
+    )
+    @Column(name = "hobby")
+    private Set<String> hobbies = new HashSet<>();
     
     @Column(name = "family_status", length = 50)
     private String familyStatus;
@@ -136,6 +178,8 @@ package de.freshplan.domain.customer.repository;
 import de.freshplan.domain.customer.entity.Contact;
 import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.transaction.Transactional;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -164,7 +208,7 @@ public class ContactRepository implements PanacheRepositoryBase<Contact, UUID> {
      * Find contacts assigned to a location
      */
     public List<Contact> findByLocationId(UUID locationId) {
-        return find("assignedLocation.id = ?1 and isActive = true", locationId)
+        return find("SELECT c FROM Contact c JOIN c.assignedLocations l WHERE l.id = ?1 and c.isActive = true", locationId)
             .list();
     }
     
@@ -178,6 +222,36 @@ public class ContactRepository implements PanacheRepositoryBase<Contact, UUID> {
         
         // Set new primary
         update("isPrimary = true where id = ?1", contactId);
+    }
+    
+    /**
+     * Soft delete a contact
+     */
+    @Transactional
+    public void softDelete(UUID contactId, String reason, String deletedBy) {
+        Contact contact = findById(contactId);
+        if (contact != null) {
+            contact.setActive(false);
+            contact.setDeletedAt(LocalDateTime.now());
+            contact.setDeletedBy(deletedBy);
+            contact.setDeletionReason(reason);
+            persist(contact);
+        }
+    }
+    
+    /**
+     * Restore a soft-deleted contact
+     */
+    @Transactional
+    public void restore(UUID contactId) {
+        Contact contact = findById(contactId);
+        if (contact != null && !contact.isActive()) {
+            contact.setActive(true);
+            contact.setDeletedAt(null);
+            contact.setDeletedBy(null);
+            contact.setDeletionReason(null);
+            persist(contact);
+        }
     }
 }
 ```
@@ -207,13 +281,16 @@ CREATE TABLE contacts (
     -- Flags
     is_primary BOOLEAN NOT NULL DEFAULT false,
     is_active BOOLEAN NOT NULL DEFAULT true,
+    deleted_at TIMESTAMP WITH TIME ZONE,
+    deleted_by VARCHAR(100),
+    deletion_reason VARCHAR(500),
     
-    -- Location
-    assigned_location_id UUID REFERENCES customer_locations(id),
+    -- Responsibility
+    responsibility_scope VARCHAR(20) DEFAULT 'all',
     
     -- Relationship Data
     birthday DATE,
-    hobbies VARCHAR(500),
+    -- hobbies are stored in separate table
     family_status VARCHAR(50),
     children_count INTEGER,
     personal_notes TEXT,
@@ -229,10 +306,33 @@ CREATE TABLE contacts (
         WHERE is_primary = true
 );
 
+-- Junction table for contact-location assignments
+CREATE TABLE contact_location_assignments (
+    contact_id UUID NOT NULL REFERENCES contacts(id) ON DELETE CASCADE,
+    location_id UUID NOT NULL REFERENCES customer_locations(id) ON DELETE CASCADE,
+    PRIMARY KEY (contact_id, location_id)
+);
+
+-- Table for hobbies (ElementCollection)
+CREATE TABLE contact_hobbies (
+    contact_id UUID NOT NULL REFERENCES contacts(id) ON DELETE CASCADE,
+    hobby VARCHAR(100) NOT NULL,
+    PRIMARY KEY (contact_id, hobby)
+);
+
+-- Table for roles (ElementCollection)
+CREATE TABLE contact_roles (
+    contact_id UUID NOT NULL REFERENCES contacts(id) ON DELETE CASCADE,
+    role VARCHAR(50) NOT NULL,
+    PRIMARY KEY (contact_id, role)
+);
+
 -- Indices
 CREATE INDEX idx_contact_customer ON contacts(customer_id);
-CREATE INDEX idx_contact_location ON contacts(assigned_location_id);
 CREATE INDEX idx_contact_active ON contacts(is_active);
+CREATE INDEX idx_contact_responsibility ON contacts(responsibility_scope);
+CREATE INDEX idx_contact_location_contact ON contact_location_assignments(contact_id);
+CREATE INDEX idx_contact_location_location ON contact_location_assignments(location_id);
 
 -- Audit Table (Hibernate Envers)
 CREATE TABLE contacts_aud (

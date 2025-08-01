@@ -29,7 +29,7 @@ import { CustomerDataStep } from '../steps/CustomerDataStep';
 import { LocationsStep } from '../steps/LocationsStep';
 import { Step1BasisFilialstruktur } from '../steps/Step1BasisFilialstruktur';
 import { Step2HerausforderungenPotenzialV3 } from '../steps/Step2HerausforderungenPotenzialV3';
-import { Step3AnsprechpartnerV4 } from '../steps/Step3AnsprechpartnerV4';
+import { Step3MultiContactManagement } from '../steps/Step3MultiContactManagement';
 import { Step4AngebotServices } from '../steps/Step4AngebotServices';
 import { CustomerFieldThemeProvider } from '../../theme';
 
@@ -186,7 +186,7 @@ export const CustomerOnboardingWizard: React.FC<CustomerOnboardingWizardProps> =
       case 'herausforderungen-potenzial':
         return <Step2HerausforderungenPotenzialV3 />;
       case 'ansprechpartner':
-        return <Step3AnsprechpartnerV4 />;
+        return <Step3MultiContactManagement />;
       case 'angebot-services':
         return <Step4AngebotServices />;
       default:
