@@ -94,6 +94,26 @@ public class Contact extends PanacheEntityBase {
     @Column(name = "personal_notes", columnDefinition = "TEXT")
     private String personalNotes;
     
+    // Intelligence Data (added for Data Strategy Intelligence)
+    @Column(name = "warmth_score")
+    private Integer warmthScore = 50; // 0-100, default neutral
+    
+    @Column(name = "warmth_confidence")
+    private Integer warmthConfidence = 0; // 0-100, confidence in warmth score
+    
+    @Column(name = "last_interaction_date")
+    private LocalDateTime lastInteractionDate;
+    
+    @Column(name = "interaction_count")
+    private Integer interactionCount = 0;
+    
+    // Data Quality & Freshness (added for Data Freshness Tracking)
+    @Column(name = "data_quality_score")
+    private Integer dataQualityScore; // 0-100, overall data quality score
+    
+    @Column(name = "data_quality_recommendations", columnDefinition = "TEXT")
+    private String dataQualityRecommendations; // Semicolon-separated recommendations
+    
     // Audit Fields
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
@@ -297,6 +317,54 @@ public class Contact extends PanacheEntityBase {
 
     public void setUpdatedBy(String updatedBy) {
         this.updatedBy = updatedBy;
+    }
+    
+    public Integer getWarmthScore() {
+        return warmthScore;
+    }
+
+    public void setWarmthScore(Integer warmthScore) {
+        this.warmthScore = warmthScore;
+    }
+
+    public Integer getWarmthConfidence() {
+        return warmthConfidence;
+    }
+
+    public void setWarmthConfidence(Integer warmthConfidence) {
+        this.warmthConfidence = warmthConfidence;
+    }
+
+    public LocalDateTime getLastInteractionDate() {
+        return lastInteractionDate;
+    }
+
+    public void setLastInteractionDate(LocalDateTime lastInteractionDate) {
+        this.lastInteractionDate = lastInteractionDate;
+    }
+
+    public Integer getInteractionCount() {
+        return interactionCount;
+    }
+
+    public void setInteractionCount(Integer interactionCount) {
+        this.interactionCount = interactionCount;
+    }
+
+    public Integer getDataQualityScore() {
+        return dataQualityScore;
+    }
+
+    public void setDataQualityScore(Integer dataQualityScore) {
+        this.dataQualityScore = dataQualityScore;
+    }
+
+    public String getDataQualityRecommendations() {
+        return dataQualityRecommendations;
+    }
+
+    public void setDataQualityRecommendations(String dataQualityRecommendations) {
+        this.dataQualityRecommendations = dataQualityRecommendations;
     }
     
     // Business Methods
