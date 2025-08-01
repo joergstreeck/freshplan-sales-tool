@@ -1,31 +1,31 @@
-# 🎯 Sprint 2 Master Plan - Contact Management Foundation
+# 🎯 Sprint 2 Master Plan - Contact Management CRUD
 
 **Feature:** FC-005 Customer Management  
-**Sprint:** Sprint 2 - Contact Management Foundation  
+**Sprint:** Sprint 2 - Contact Management CRUD Implementation  
 **Datum:** 31.07.2025  
 **Status:** 📋 GEPLANT  
-**Dauer:** 4 Wochen  
+**Dauer:** 2 Wochen  
 
 ## 📌 Executive Summary
 
-Sprint 2 transformiert die Kontaktverwaltung in eine **Event-Sourcing basierte Beziehungs-Zentrale**. Die Implementierung legt das Fundament für alle zukünftigen CRM-Features mit DSGVO-Compliance, Audit Trail Integration und Mobile-First Design.
+Sprint 2 implementiert **Multi-Contact Support** mit einer **pragmatischen CRUD-Architektur**. Fokus auf Business Value statt Architektur-Komplexität - einfach, wartbar und sofort nutzbar.
 
 **Kernziele:**
 - ✅ Multi-Contact Support mit Beziehungsebene
-- ✅ Event Sourcing Architecture als Foundation
-- ✅ DSGVO-Ready mit Consent Management
-- ✅ Audit Trail vorbereitet
-- ✅ Mobile-First mit Offline Queue
+- ✅ JPA/Hibernate Standard-Architektur
+- ✅ REST API für Contact Management
+- ✅ Responsive Multi-Contact UI
+- ✅ Location Assignment für Filialkunden
 
 ## 🏗️ Architektur-Foundation
 
-### Event Sourcing als Kern
+### CRUD als Kern
 ```
-Contact Events → Event Store → Projections → UI Views
-                     ↓
-              Audit Trail (FC-012)
-                     ↓
-              DSGVO Export (FC-018)
+Frontend (React) → REST API → JPA Service → PostgreSQL
+                       ↓
+              Hibernate Envers (Audit)
+                       ↓
+              Standard Logging
 ```
 
 **Details:** [/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/CONTACT_MANAGEMENT_VISION.md](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/CONTACT_MANAGEMENT_VISION.md)
