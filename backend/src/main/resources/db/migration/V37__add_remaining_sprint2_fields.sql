@@ -17,6 +17,21 @@ ADD COLUMN IF NOT EXISTS primary_financing VARCHAR(20);
 -- Add comment for documentation
 COMMENT ON COLUMN customers.primary_financing IS 'Primary financing type (Sprint 2)';
 
+-- Add a CHECK constraint to enforce valid values, even with VARCHAR
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_constraint 
+        WHERE conname = 'chk_customers_primary_financing' AND conrelid = 'customers'::regclass
+    ) THEN
+        ALTER TABLE customers 
+        ADD CONSTRAINT chk_customers_primary_financing CHECK (
+            primary_financing IS NULL OR 
+            primary_financing IN ('CASH', 'CREDIT', 'LEASING', 'MIXED')
+        );
+    END IF;
+END $$;
+
 -- Create enum type if not exists (for future use)
 DO $$
 BEGIN
