@@ -12,6 +12,7 @@ import de.freshplan.domain.customer.repository.CustomerRepository;
 import de.freshplan.domain.customer.service.dto.ContactInteractionDTO;
 import de.freshplan.domain.customer.service.dto.DataQualityMetricsDTO;
 import de.freshplan.domain.customer.service.dto.WarmthScoreDTO;
+import io.quarkus.panache.common.Page;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -49,7 +50,7 @@ class ContactInteractionServiceIT {
     // Create test customer
     Customer testCustomer = new Customer();
     testCustomer.setCompanyName("Test Company GmbH");
-    testCustomer.setEmail("test@company.com");
+    // Customer has no email field anymore
     customerRepository.persist(testCustomer);
     testCustomerId = testCustomer.getId();
 
@@ -70,13 +71,13 @@ class ContactInteractionServiceIT {
     // Arrange
     ContactInteractionDTO dto =
         ContactInteractionDTO.builder()
-            .contactId(testContactId.toString())
+            .contactId(testContactId)
             .type(InteractionType.EMAIL)
             .subject("Test Email Subject")
             .summary("Test email content")
             .sentimentScore(0.8)
             .engagementScore(85)
-            .timestamp(LocalDateTime.now().toString())
+            .timestamp(LocalDateTime.now())
             .build();
 
     // Act
@@ -105,7 +106,7 @@ class ContactInteractionServiceIT {
     createInteraction(InteractionType.EMAIL, 0.9, 90, -5); // Recent, positive
     createInteraction(InteractionType.EMAIL, 0.8, 85, -10); // Recent response
     createInteraction(InteractionType.CALL, 0.7, 80, -15); // Call
-    createInteraction(InteractionType.MEETING_COMPLETED, 0.9, 95, -20); // Successful meeting
+    createInteraction(InteractionType.MEETING, 0.9, 95, -20); // Successful meeting
 
     // Act
     WarmthScoreDTO result = contactInteractionService.calculateWarmthScore(testContactId);
@@ -116,12 +117,8 @@ class ContactInteractionServiceIT {
     assertTrue(result.getWarmthScore() >= 0 && result.getWarmthScore() <= 100);
     assertTrue(result.getConfidence() >= 0 && result.getConfidence() <= 100);
 
-    // Check individual factors
-    assertNotNull(result.getFactors());
-    assertTrue(result.getFactors().getFrequency() >= 0);
-    assertTrue(result.getFactors().getSentiment() >= 0);
-    assertTrue(result.getFactors().getEngagement() >= 0);
-    assertTrue(result.getFactors().getResponse() >= 0);
+    // Check individual factors - not available in current DTO
+    // Factors have been removed from WarmthScoreDTO
 
     assertNotNull(result.getTrend());
     assertNotNull(result.getRecommendation());
@@ -279,26 +276,40 @@ class ContactInteractionServiceIT {
     assertEquals(InteractionType.NOTE, note.getType());
     assertEquals("Test note content", note.getSummary());
 
-    // Test email recording
-    ContactInteractionDTO email =
-        contactInteractionService.recordEmail(testContactId, "SENT", "Test Subject", 0.8);
+    // Test email recording - use createInteraction instead
+    ContactInteractionDTO emailDto = ContactInteractionDTO.builder()
+        .contactId(testContactId)
+        .type(InteractionType.EMAIL)
+        .subject("Test Subject")
+        .sentimentScore(0.8)
+        .timestamp(LocalDateTime.now())
+        .build();
+    ContactInteractionDTO email = contactInteractionService.createInteraction(emailDto);
     assertEquals(InteractionType.EMAIL, email.getType());
     assertEquals("Test Subject", email.getSubject());
     assertEquals(0.8, email.getSentimentScore(), 0.01);
 
-    // Test call recording
-    ContactInteractionDTO call =
-        contactInteractionService.recordCall(testContactId, "OUTBOUND", 1800, "Successful call");
+    // Test call recording - use createInteraction instead
+    ContactInteractionDTO callDto = ContactInteractionDTO.builder()
+        .contactId(testContactId)
+        .type(InteractionType.CALL)
+        .outcome("POSITIVE")
+        .summary("Successful call")
+        .timestamp(LocalDateTime.now())
+        .build();
+    ContactInteractionDTO call = contactInteractionService.createInteraction(callDto);
     assertEquals(InteractionType.CALL, call.getType());
-    assertEquals(1800, call.getDuration());
-    assertEquals("Successful call", call.getOutcome());
+    assertEquals("POSITIVE", call.getOutcome());
 
-    // Test meeting recording
-    ContactInteractionDTO meeting =
-        contactInteractionService.recordMeeting(
-            testContactId, "COMPLETED", 3600, "Productive meeting");
-    assertEquals(InteractionType.MEETING_COMPLETED, meeting.getType());
-    assertEquals(3600, meeting.getDuration());
+    // Test meeting recording - use createInteraction instead
+    ContactInteractionDTO meetingDto = ContactInteractionDTO.builder()
+        .contactId(testContactId)
+        .type(InteractionType.MEETING)
+        .summary("Productive meeting")
+        .timestamp(LocalDateTime.now())
+        .build();
+    ContactInteractionDTO meeting = contactInteractionService.createInteraction(meetingDto);
+    assertEquals(InteractionType.MEETING, meeting.getType());
     assertEquals("Productive meeting", meeting.getSummary());
   }
 
@@ -350,7 +361,7 @@ class ContactInteractionServiceIT {
   }
 
   @Transactional
-  private Contact createAdditionalContact(String firstName, String lastName) {
+  protected Contact createAdditionalContact(String firstName, String lastName) {
     Customer customer = customerRepository.findById(testCustomerId);
     Contact contact = new Contact();
     contact.setFirstName(firstName);
