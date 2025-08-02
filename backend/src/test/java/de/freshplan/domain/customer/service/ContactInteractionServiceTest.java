@@ -333,7 +333,7 @@ class ContactInteractionServiceTest {
     }
 
     @Override
-    public <T extends Entity> MockPanacheQuery project(Class<T> type) {
+    public <T> MockPanacheQuery project(Class<T> type) {
       return this;
     }
 

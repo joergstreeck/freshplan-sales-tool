@@ -71,9 +71,9 @@ class ContactInteractionServiceIT {
     ContactInteractionDTO dto =
         ContactInteractionDTO.builder()
             .contactId(testContactId.toString())
-            .type(InteractionType.EMAIL_SENT)
+            .type(InteractionType.EMAIL)
             .subject("Test Email Subject")
-            .notes("Test email content")
+            .summary("Test email content")
             .sentimentScore(0.8)
             .engagementScore(85)
             .timestamp(LocalDateTime.now().toString())
@@ -86,7 +86,7 @@ class ContactInteractionServiceIT {
     assertNotNull(result);
     assertNotNull(result.getId());
     assertEquals(testContactId.toString(), result.getContactId());
-    assertEquals(InteractionType.EMAIL_SENT, result.getType());
+    assertEquals(InteractionType.EMAIL, result.getType());
     assertEquals("Test Email Subject", result.getSubject());
     assertEquals(0.8, result.getSentimentScore(), 0.01);
     assertEquals(85, result.getEngagementScore());
@@ -102,9 +102,9 @@ class ContactInteractionServiceIT {
   @Transactional
   void shouldCalculateWarmthScoreWithMultipleFactors() {
     // Arrange - Create diverse interactions
-    createInteraction(InteractionType.EMAIL_SENT, 0.9, 90, -5); // Recent, positive
-    createInteraction(InteractionType.EMAIL_RECEIVED, 0.8, 85, -10); // Recent response
-    createInteraction(InteractionType.CALL_OUTBOUND, 0.7, 80, -15); // Call
+    createInteraction(InteractionType.EMAIL, 0.9, 90, -5); // Recent, positive
+    createInteraction(InteractionType.EMAIL, 0.8, 85, -10); // Recent response
+    createInteraction(InteractionType.CALL, 0.7, 80, -15); // Call
     createInteraction(InteractionType.MEETING_COMPLETED, 0.9, 95, -20); // Successful meeting
 
     // Act
@@ -113,7 +113,7 @@ class ContactInteractionServiceIT {
     // Assert
     assertNotNull(result);
     assertEquals(testContactId.toString(), result.getContactId());
-    assertTrue(result.getScore() >= 0 && result.getScore() <= 100);
+    assertTrue(result.getWarmthScore() >= 0 && result.getWarmthScore() <= 100);
     assertTrue(result.getConfidence() >= 0 && result.getConfidence() <= 100);
 
     // Check individual factors
@@ -124,7 +124,7 @@ class ContactInteractionServiceIT {
     assertTrue(result.getFactors().getResponse() >= 0);
 
     assertNotNull(result.getTrend());
-    assertNotNull(result.getRecommendations());
+    assertNotNull(result.getRecommendation());
     assertNotNull(result.getLastCalculated());
   }
 
@@ -133,24 +133,23 @@ class ContactInteractionServiceIT {
   @Transactional
   void shouldHandleLowDataScenario() {
     // Arrange - Only one interaction
-    createInteraction(InteractionType.NOTE_ADDED, 0.5, 60, -1);
+    createInteraction(InteractionType.NOTE, 0.5, 60, -1);
 
     // Act
     WarmthScoreDTO result = contactInteractionService.calculateWarmthScore(testContactId);
 
     // Assert
     assertNotNull(result);
-    assertTrue(result.getScore() >= 0 && result.getScore() <= 100);
+    assertTrue(result.getWarmthScore() >= 0 && result.getWarmthScore() <= 100);
     // With only one interaction, confidence should be lower
     assertTrue(
         result.getConfidence() < 80,
         "Confidence should be lower with limited data, was: " + result.getConfidence());
 
     // Should include recommendations for more data
-    assertFalse(result.getRecommendations().isEmpty());
+    assertNotNull(result.getRecommendation());
     assertTrue(
-        result.getRecommendations().stream()
-            .anyMatch(
+        result.getRecommendation()
                 rec ->
                     rec.toLowerCase().contains("mehr")
                         || rec.toLowerCase().contains("daten")
@@ -165,11 +164,11 @@ class ContactInteractionServiceIT {
     Contact contact3 = createAdditionalContact("Peter", "Müller");
 
     // Contact 1: Multiple recent interactions
-    createInteraction(InteractionType.EMAIL_SENT, 0.8, 85, -5);
-    createInteraction(InteractionType.EMAIL_RECEIVED, 0.9, 90, -3);
+    createInteraction(InteractionType.EMAIL, 0.8, 85, -5);
+    createInteraction(InteractionType.EMAIL, 0.9, 90, -3);
 
     // Contact 2: One older interaction
-    createInteractionForContact(contact2.getId(), InteractionType.NOTE_ADDED, 0.5, 60, -100);
+    createInteractionForContact(contact2.getId(), InteractionType.NOTE, 0.5, 60, -100);
 
     // Contact 3: No interactions
 
@@ -204,20 +203,20 @@ class ContactInteractionServiceIT {
   @Transactional
   void shouldTrackDataFreshnessCorrectly() {
     // Arrange - Create interactions with different ages
-    createInteraction(InteractionType.EMAIL_SENT, 0.8, 85, -30); // Fresh (< 90 days)
+    createInteraction(InteractionType.EMAIL, 0.8, 85, -30); // Fresh (< 90 days)
 
     Contact agingContact = createAdditionalContact("Old", "Contact");
     createInteractionForContact(
-        agingContact.getId(), InteractionType.NOTE_ADDED, 0.5, 60, -120); // Aging (90-180 days)
+        agingContact.getId(), InteractionType.NOTE, 0.5, 60, -120); // Aging (90-180 days)
 
     Contact staleContact = createAdditionalContact("Stale", "Contact");
     createInteractionForContact(
-        staleContact.getId(), InteractionType.CALL_OUTBOUND, 0.3, 40, -200); // Stale (180-365 days)
+        staleContact.getId(), InteractionType.CALL, 0.3, 40, -200); // Stale (180-365 days)
 
     Contact criticalContact = createAdditionalContact("Critical", "Contact");
     createInteractionForContact(
         criticalContact.getId(),
-        InteractionType.EMAIL_RECEIVED,
+        InteractionType.EMAIL,
         0.2,
         30,
         -400); // Critical (> 365 days)
@@ -250,13 +249,13 @@ class ContactInteractionServiceIT {
   void shouldGetInteractionsChronologically() {
     // Arrange - Create interactions at different times
     LocalDateTime now = LocalDateTime.now();
-    createInteractionAtTime(InteractionType.EMAIL_SENT, "First", now.minusDays(3));
-    createInteractionAtTime(InteractionType.EMAIL_RECEIVED, "Response", now.minusDays(2));
-    createInteractionAtTime(InteractionType.CALL_OUTBOUND, "Follow-up", now.minusDays(1));
+    createInteractionAtTime(InteractionType.EMAIL, "First", now.minusDays(3));
+    createInteractionAtTime(InteractionType.EMAIL, "Response", now.minusDays(2));
+    createInteractionAtTime(InteractionType.CALL, "Follow-up", now.minusDays(1));
 
     // Act
     List<ContactInteractionDTO> result =
-        contactInteractionService.getContactInteractions(testContactId);
+        contactInteractionService.getInteractionsByContact(testContactId, Page.of(0, 10));
 
     // Assert
     assertEquals(3, result.size());
@@ -277,21 +276,21 @@ class ContactInteractionServiceIT {
   void shouldRecordDifferentInteractionTypes() {
     // Test note recording
     ContactInteractionDTO note =
-        contactInteractionService.recordNote(testContactId, "Test note content");
-    assertEquals(InteractionType.NOTE_ADDED, note.getType());
-    assertEquals("Test note content", note.getNotes());
+        contactInteractionService.recordNote(testContactId, "Test note content", "test-user");
+    assertEquals(InteractionType.NOTE, note.getType());
+    assertEquals("Test note content", note.getSummary());
 
     // Test email recording
     ContactInteractionDTO email =
         contactInteractionService.recordEmail(testContactId, "SENT", "Test Subject", 0.8);
-    assertEquals(InteractionType.EMAIL_SENT, email.getType());
+    assertEquals(InteractionType.EMAIL, email.getType());
     assertEquals("Test Subject", email.getSubject());
     assertEquals(0.8, email.getSentimentScore(), 0.01);
 
     // Test call recording
     ContactInteractionDTO call =
         contactInteractionService.recordCall(testContactId, "OUTBOUND", 1800, "Successful call");
-    assertEquals(InteractionType.CALL_OUTBOUND, call.getType());
+    assertEquals(InteractionType.CALL, call.getType());
     assertEquals(1800, call.getDuration());
     assertEquals("Successful call", call.getOutcome());
 
@@ -301,7 +300,7 @@ class ContactInteractionServiceIT {
             testContactId, "COMPLETED", 3600, "Productive meeting");
     assertEquals(InteractionType.MEETING_COMPLETED, meeting.getType());
     assertEquals(3600, meeting.getDuration());
-    assertEquals("Productive meeting", meeting.getNotes());
+    assertEquals("Productive meeting", meeting.getSummary());
   }
 
   // Helper methods
@@ -321,7 +320,7 @@ class ContactInteractionServiceIT {
             .type(type)
             .timestamp(LocalDateTime.now().minusDays(Math.abs(daysAgo)))
             .subject("Test " + type.name())
-            .notes("Test interaction")
+            .summary("Test interaction")
             .sentimentScore(sentiment)
             .engagementScore(engagement)
             .build();
@@ -343,7 +342,7 @@ class ContactInteractionServiceIT {
             .type(type)
             .timestamp(timestamp)
             .subject(subject)
-            .notes("Test interaction")
+            .summary("Test interaction")
             .sentimentScore(0.7)
             .engagementScore(75)
             .build();

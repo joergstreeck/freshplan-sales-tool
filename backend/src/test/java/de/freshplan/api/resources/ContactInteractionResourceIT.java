@@ -47,7 +47,6 @@ class ContactInteractionResourceIT {
     // Create test customer
     Customer testCustomer = new Customer();
     testCustomer.setCompanyName("Test Company GmbH");
-    testCustomer.setEmail("test@company.com");
     customerRepository.persist(testCustomer);
     testCustomerId = testCustomer.getId();
 
@@ -92,12 +91,12 @@ class ContactInteractionResourceIT {
   void shouldCreateContactInteraction() {
     ContactInteractionDTO dto =
         ContactInteractionDTO.builder()
-            .contactId(testContactId.toString())
+            .contactId(testContactId)
             .type(InteractionType.NOTE)
-            .notes("Test note for integration")
+            .summary("Test note for integration")
             .sentimentScore(0.5)
             .engagementScore(75)
-            .timestamp(LocalDateTime.now().toString())
+            .timestamp(LocalDateTime.now())
             .build();
 
     given()
@@ -110,8 +109,8 @@ class ContactInteractionResourceIT {
         .contentType(ContentType.JSON)
         .body("id", notNullValue())
         .body("contactId", equalTo(testContactId.toString()))
-        .body("type", equalTo("NOTE_ADDED"))
-        .body("notes", equalTo("Test note for integration"))
+        .body("type", equalTo("NOTE"))
+        .body("summary", equalTo("Test note for integration"))
         .body("sentimentScore", closeTo(0.5f, 0.01f))
         .body("engagementScore", equalTo(75));
   }
@@ -120,7 +119,7 @@ class ContactInteractionResourceIT {
   @DisplayName("Should get interactions for contact")
   void shouldGetContactInteractions() {
     // First create an interaction
-    createTestInteraction(InteractionType.EMAIL_SENT, "Test email subject");
+    createTestInteraction(InteractionType.EMAIL, "Test email subject");
 
     given()
         .when()
@@ -130,7 +129,7 @@ class ContactInteractionResourceIT {
         .contentType(ContentType.JSON)
         .body("size()", equalTo(1))
         .body("[0].contactId", equalTo(testContactId.toString()))
-        .body("[0].type", equalTo("EMAIL_SENT"))
+        .body("[0].type", equalTo("EMAIL"))
         .body("[0].subject", equalTo("Test email subject"));
   }
 
@@ -138,9 +137,9 @@ class ContactInteractionResourceIT {
   @DisplayName("Should calculate warmth score for contact")
   void shouldCalculateWarmthScore() {
     // Create multiple interactions to have a meaningful score
-    createTestInteraction(InteractionType.EMAIL_SENT, "First email");
-    createTestInteraction(InteractionType.EMAIL_RECEIVED, "Response email");
-    createTestInteraction(InteractionType.CALL_OUTBOUND, "Follow-up call");
+    createTestInteraction(InteractionType.EMAIL, "First email");
+    createTestInteraction(InteractionType.EMAIL, "Response email");
+    createTestInteraction(InteractionType.CALL, "Follow-up call");
 
     given()
         .when()
@@ -164,7 +163,7 @@ class ContactInteractionResourceIT {
   @DisplayName("Should get warmth score for contact")
   void shouldGetWarmthScore() {
     // First calculate the score
-    createTestInteraction(InteractionType.NOTE_ADDED, "Initial note");
+    createTestInteraction(InteractionType.NOTE, "Initial note");
     given()
         .when()
         .post("/api/contact-interactions/warmth/{contactId}/calculate", testContactId)
@@ -196,8 +195,8 @@ class ContactInteractionResourceIT {
         .statusCode(201)
         .contentType(ContentType.JSON)
         .body("contactId", equalTo(testContactId.toString()))
-        .body("type", equalTo("NOTE_ADDED"))
-        .body("notes", equalTo(noteContent))
+        .body("type", equalTo("NOTE"))
+        .body("summary", equalTo(noteContent))
         .body("id", notNullValue())
         .body("timestamp", notNullValue());
   }
@@ -214,7 +213,7 @@ class ContactInteractionResourceIT {
         .statusCode(201)
         .contentType(ContentType.JSON)
         .body("contactId", equalTo(testContactId.toString()))
-        .body("type", equalTo("EMAIL_SENT"))
+        .body("type", equalTo("EMAIL"))
         .body("subject", equalTo("Test Email Subject"))
         .body("sentimentScore", closeTo(0.8f, 0.01f));
   }
@@ -232,7 +231,7 @@ class ContactInteractionResourceIT {
         .statusCode(201)
         .contentType(ContentType.JSON)
         .body("contactId", equalTo(testContactId.toString()))
-        .body("type", equalTo("CALL_OUTBOUND"))
+        .body("type", equalTo("CALL"))
         .body("duration", equalTo(1800))
         .body("outcome", equalTo("Successful discussion"));
   }
@@ -251,7 +250,7 @@ class ContactInteractionResourceIT {
         .body("contactId", equalTo(testContactId.toString()))
         .body("type", equalTo("MEETING_COMPLETED"))
         .body("duration", equalTo(3600))
-        .body("notes", equalTo("Productive meeting"));
+        .body("summary", equalTo("Productive meeting"));
   }
 
   @Test
@@ -268,10 +267,10 @@ class ContactInteractionResourceIT {
             .as(DataQualityMetricsDTO.class);
 
     // Add several interactions
-    createTestInteraction(InteractionType.EMAIL_SENT, "First interaction");
-    createTestInteraction(InteractionType.EMAIL_RECEIVED, "Response");
-    createTestInteraction(InteractionType.CALL_OUTBOUND, "Follow-up");
-    createTestInteraction(InteractionType.NOTE_ADDED, "Meeting notes");
+    createTestInteraction(InteractionType.EMAIL, "First interaction");
+    createTestInteraction(InteractionType.EMAIL, "Response");
+    createTestInteraction(InteractionType.CALL, "Follow-up");
+    createTestInteraction(InteractionType.NOTE, "Meeting notes");
 
     // Get updated metrics
     given()
@@ -305,7 +304,7 @@ class ContactInteractionResourceIT {
   void shouldValidateRequiredFields() {
     // Test with missing contact ID
     ContactInteractionDTO dto =
-        ContactInteractionDTO.builder().type(InteractionType.NOTE_ADDED).notes("Test note").build();
+        ContactInteractionDTO.builder().type(InteractionType.NOTE).summary("Test note").build();
 
     given()
         .contentType(ContentType.JSON)
@@ -324,7 +323,7 @@ class ContactInteractionResourceIT {
             .type(type)
             .timestamp(LocalDateTime.now())
             .subject(content)
-            .notes(content)
+            .summary(content)
             .sentimentScore(0.7)
             .engagementScore(80)
             .build();

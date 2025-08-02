@@ -112,7 +112,7 @@ public class ContactInteractionService {
       // Return default cold start values
       return WarmthScoreDTO.builder()
           .contactId(contactId)
-          .warmthScore(DEFAULT_SENTIMENT_SCORE) // Neutral
+          .warmthScore((int) Math.round(DEFAULT_SENTIMENT_SCORE)) // Neutral
           .confidence(0) // No confidence
           .dataPoints(0)
           .build();
