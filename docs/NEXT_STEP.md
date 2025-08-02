@@ -7,38 +7,45 @@
 
 ## 🎯 JETZT GERADE: 
 
-**✅ MIGRATION-FIX + CODE REVIEW ABGESCHLOSSEN!**
+**CI GRÜN BEKOMMEN - MIGRATIONS-CHAOS SYSTEMATISCH LÖSEN**
 
-**Stand 02.08.2025 22:40:**
-- ✅ V120 Migration korrigiert - respektiert Flyway-Historie
-- ✅ KRITISCHER Security-Fix: Flyway Validation wieder aktiviert  
-- ✅ Portabilitäts-Fix: PostgreSQL Query zu Standard CAST geändert
-- ✅ PR #73 für Migration-Stabilisierung erstellt
-- ✅ Code Review Response mit HIGH-Priority Fixes umgesetzt
+**Stand 02.08.2025 23:12:**
+- ✅ Vollständige systematische Analyse des Migration-Problems abgeschlossen
+- ✅ Kern-Problem identifiziert: V8 Migration sucht `contacts` statt `customer_contacts`
+- ✅ Lösungsstrategie A gewählt: V8 direkt korrigieren (erlaubt, da nicht im main)
+- ✅ Strategischer Plan erstellt mit allen Erkenntnissen
+- 🔄 Bereit für Implementierung in nächster Session
 
 **🚀 NÄCHSTER SCHRITT:**
 
-**CI-Status prüfen und FC-005 Help System PR erstellen (todo-003)**
+**V8 Migration korrigieren und CI grün bekommen (TODO-007)**
 
 ```bash
-# 1. CI-Status prüfen
-gh run list --branch feature/sprint-2-customer-ui-integration --limit 3
+# 1. V8 Migration korrigieren
+# In backend/src/main/resources/db/migration/V8__add_data_quality_fields.sql:
+# Alle "contacts" → "customer_contacts" ersetzen
 
-# 2. Falls noch rot - Debug
-gh run view <RUN_ID> --log-failed
+# 2. V121 Workaround löschen
+rm backend/src/main/resources/db/migration/V121__fix_v8_table_name_error.sql
 
-# 3. Bei grüner CI - FC-005 Help System PR erstellen
-# Alle Help System Features sind bereit auf stabilem Migration-Fundament
+# 3. Lokaler Test
+MAVEN_OPTS="-Dmaven.multiModuleProjectDirectory=$PWD" ./mvnw test -Dtest=PingResourceTest -q
+
+# 4. Git Commit + Push
+git add -A
+git commit -m "fix(migration): Correct V8 table name from contacts to customer_contacts"
+git push
 ```
 
 **DANACH:**
-- Performance-Optimierungen aus Code Review (todo-020)
-- Backend Tests für ContactInteractionServiceIT fixen (todo-004)
-- Script-Cleanup nach Verwendung (todo-021)
+- CI-Status verifizieren (sollte grün werden)
+- Sprint 2 Contact Management weiterführen
+- Backend Tests für ContactInteractionServiceIT fixen
 
 **UNTERBROCHEN BEI:**
-- Keine Unterbrechung - Session wurde vollständig abgeschlossen
-- Migration-Fix und Code Review Response sind committet und gepusht
+- TODO-006: PHASE 3 Implementierung bereit
+- Exakte Stelle: V8__add_data_quality_fields.sql editieren - alle `contacts` durch `customer_contacts` ersetzen
+- Plan vollständig in: `/docs/claude-work/daily-work/2025-08-02/2025-08-02_PLAN_ci-fix-migrations-chaos.md`
 
 **🚨 WICHTIG FÜR NÄCHSTE SESSION:**
 Bei neuen Migrationen IMMER:
