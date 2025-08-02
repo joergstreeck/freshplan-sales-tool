@@ -1,8 +1,8 @@
 package de.freshplan.api.resources;
 
 import de.freshplan.domain.customer.service.CustomerChainService;
-import de.freshplan.domain.customer.service.dto.ChainStructureDto;
 import de.freshplan.domain.customer.service.dto.BusinessModelDto;
+import de.freshplan.domain.customer.service.dto.ChainStructureDto;
 import de.freshplan.domain.customer.service.dto.PotentialCalculationRequest;
 import de.freshplan.domain.customer.service.dto.PotentialCalculationResponse;
 import de.freshplan.infrastructure.security.CurrentUser;
@@ -18,8 +18,8 @@ import jakarta.ws.rs.core.Response;
 import java.util.UUID;
 
 /**
- * REST API for Customer Chain Structure and Business Model Management.
- * Part of Sprint 2 - Sales-focused customer management.
+ * REST API for Customer Chain Structure and Business Model Management. Part of Sprint 2 -
+ * Sales-focused customer management.
  *
  * @author FreshPlan Team
  * @since 2.0.0
@@ -48,17 +48,13 @@ public class CustomerChainResource {
   @Path("/{id}/chain-structure")
   @RolesAllowed({"admin", "manager"})
   public Response updateChainStructure(
-      @PathParam("id") UUID customerId,
-      @Valid ChainStructureDto chainStructure) {
-    
+      @PathParam("id") UUID customerId, @Valid ChainStructureDto chainStructure) {
+
     securityContext.requireAnyRole("admin", "manager");
-    
-    ChainStructureDto updated = chainService.updateChainStructure(
-        customerId, 
-        chainStructure, 
-        currentUser.getUsername()
-    );
-    
+
+    ChainStructureDto updated =
+        chainService.updateChainStructure(customerId, chainStructure, currentUser.getUsername());
+
     return Response.ok(updated).build();
   }
 
@@ -73,23 +69,18 @@ public class CustomerChainResource {
   @Path("/{id}/business-model")
   @RolesAllowed({"admin", "manager"})
   public Response updateBusinessModel(
-      @PathParam("id") UUID customerId,
-      @Valid BusinessModelDto businessModel) {
-    
+      @PathParam("id") UUID customerId, @Valid BusinessModelDto businessModel) {
+
     securityContext.requireAnyRole("admin", "manager");
-    
-    BusinessModelDto updated = chainService.updateBusinessModel(
-        customerId, 
-        businessModel, 
-        currentUser.getUsername()
-    );
-    
+
+    BusinessModelDto updated =
+        chainService.updateBusinessModel(customerId, businessModel, currentUser.getUsername());
+
     return Response.ok(updated).build();
   }
 
   /**
-   * Calculates the sales potential for a customer based on their
-   * industry and service offerings.
+   * Calculates the sales potential for a customer based on their industry and service offerings.
    *
    * @param customerId The customer ID
    * @param request The calculation parameters
@@ -98,14 +89,10 @@ public class CustomerChainResource {
   @POST
   @Path("/{id}/calculate-potential")
   public Response calculatePotential(
-      @PathParam("id") UUID customerId,
-      @Valid PotentialCalculationRequest request) {
-    
-    PotentialCalculationResponse response = chainService.calculatePotential(
-        customerId, 
-        request
-    );
-    
+      @PathParam("id") UUID customerId, @Valid PotentialCalculationRequest request) {
+
+    PotentialCalculationResponse response = chainService.calculatePotential(customerId, request);
+
     return Response.ok(response).build();
   }
 }
