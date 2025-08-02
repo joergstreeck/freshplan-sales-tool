@@ -4,8 +4,7 @@ import type {
   HelpContent, 
   HelpResponse, 
   HelpAnalytics,
-  UserStruggle,
-  StruggleType 
+  UserStruggle
 } from '../types/help.types';
 import { helpApi } from '../services/helpApi';
 
@@ -97,9 +96,9 @@ export const useHelpStore = create<HelpState>()(
           });
           state.loading = false;
         });
-      } catch (error: any) {
+      } catch (error) {
         set((state) => {
-          state.error = error.message || 'Failed to load help content';
+          state.error = error instanceof Error ? error.message : 'Failed to load help content';
           state.loading = false;
         });
       }

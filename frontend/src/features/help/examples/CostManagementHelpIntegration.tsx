@@ -115,7 +115,7 @@ export const CostManagementExample: React.FC = () => {
 // Beispiel für Struggle Detection Integration
 export const FormWithStruggleDetection: React.FC = () => {
   const [errors, setErrors] = React.useState(0);
-  const { detectStruggle } = useHelp({ feature: 'complex-form' });
+  // Struggle detection is handled automatically by HelpProvider
   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

@@ -43,11 +43,9 @@ const STRUGGLE_MESSAGES: Record<StruggleType, string> = {
 
 export const ProactiveHelp: React.FC = () => {
   const { 
-    currentHelp,
     struggles,
     clearStruggles,
-    startTour,
-    searchHelp
+    startTour
   } = useHelpStore();
   
   const [showHelp, setShowHelp] = useState(false);

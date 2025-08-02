@@ -23,14 +23,13 @@ import {
 } from '@mui/icons-material';
 
 export const HelpSystemDemoPage: React.FC = () => {
-  const { showHelp, showTour } = useHelp({ 
+  // Help hooks are loaded but not used in demo
+  useHelp({ 
     feature: 'help-demo',
     autoLoad: true 
   });
   
   const { 
-    loadHelpContent, 
-    openModal, 
     startTour,
     detectStruggle,
     analytics,
