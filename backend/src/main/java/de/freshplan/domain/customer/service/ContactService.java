@@ -89,6 +89,35 @@ public class ContactService {
   }
 
   /**
+   * Update an existing contact, verifying it belongs to the specified customer
+   *
+   * @param customerId the customer ID
+   * @param contactId the contact ID
+   * @param contactDTO the updated contact data
+   * @return updated contact DTO
+   */
+  public ContactDTO updateContact(UUID customerId, UUID contactId, ContactDTO contactDTO) {
+    Contact contact =
+        contactRepository
+            .findByIdOptional(contactId)
+            .orElseThrow(() -> new NotFoundException("Contact not found: " + contactId));
+
+    if (!contact.getCustomer().getId().equals(customerId)) {
+      throw new NotFoundException("Contact not found: " + contactId);
+    }
+
+    // Update fields
+    contactMapper.updateEntityFromDTO(contactDTO, contact);
+
+    // Update audit field
+    contact.setUpdatedBy(securityIdentity.getPrincipal().getName());
+
+    // Note: isPrimary is not updated here, use setPrimaryContact method
+
+    return contactMapper.toDTO(contact);
+  }
+
+  /**
    * Get all contacts for a customer
    *
    * @param customerId the customer ID
@@ -111,6 +140,26 @@ public class ContactService {
         contactRepository
             .findByIdOptional(contactId)
             .orElseThrow(() -> new NotFoundException("Contact not found: " + contactId));
+    return contactMapper.toDTO(contact);
+  }
+
+  /**
+   * Get a single contact by ID, verifying it belongs to the specified customer
+   *
+   * @param customerId the customer ID
+   * @param contactId the contact ID
+   * @return contact DTO
+   */
+  public ContactDTO getContact(UUID customerId, UUID contactId) {
+    Contact contact =
+        contactRepository
+            .findByIdOptional(contactId)
+            .orElseThrow(() -> new NotFoundException("Contact not found: " + contactId));
+    
+    if (!contact.getCustomer().getId().equals(customerId)) {
+      throw new NotFoundException("Contact not found: " + contactId);
+    }
+    
     return contactMapper.toDTO(contact);
   }
 
@@ -145,6 +194,36 @@ public class ContactService {
         contactRepository
             .findByIdOptional(contactId)
             .orElseThrow(() -> new NotFoundException("Contact not found: " + contactId));
+
+    // Don't delete primary contact if there are other contacts
+    if (contact.isPrimary()) {
+      long contactCount = contactRepository.countActiveByCustomerId(contact.getCustomer().getId());
+      if (contactCount > 1) {
+        throw new IllegalStateException(
+            "Cannot delete primary contact. Please assign another contact as primary first.");
+      }
+    }
+
+    // Soft delete
+    contact.setActive(false);
+    contact.setUpdatedBy(securityIdentity.getPrincipal().getName());
+  }
+
+  /**
+   * Soft delete a contact, verifying it belongs to the specified customer
+   *
+   * @param customerId the customer ID
+   * @param contactId the contact ID
+   */
+  public void deleteContact(UUID customerId, UUID contactId) {
+    Contact contact =
+        contactRepository
+            .findByIdOptional(contactId)
+            .orElseThrow(() -> new NotFoundException("Contact not found: " + contactId));
+
+    if (!contact.getCustomer().getId().equals(customerId)) {
+      throw new NotFoundException("Contact not found: " + contactId);
+    }
 
     // Don't delete primary contact if there are other contacts
     if (contact.isPrimary()) {

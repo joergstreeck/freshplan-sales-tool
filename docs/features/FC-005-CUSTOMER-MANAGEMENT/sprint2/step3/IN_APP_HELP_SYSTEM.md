@@ -6,10 +6,10 @@
 
 ## 🧭 Navigation
 
-**← Zurück:** [Cost Management External Services](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/step3/COST_MANAGEMENT_EXTERNAL_SERVICES.md)  
-**→ Nächstes:** [Feature Adoption Tracking](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/step3/FEATURE_ADOPTION_TRACKING.md)  
-**↗ Verbunden:** [Relationship Intelligence](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/step3/RELATIONSHIP_INTELLIGENCE.md)  
-**🎯 Governance:** [Help System Governance & Roadmap](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/step3/HELP_SYSTEM_GOVERNANCE.md) **NEU**  
+**← Zurück:** [Cost Management External Services](./COST_MANAGEMENT_EXTERNAL_SERVICES.md)  
+**→ Nächstes:** [Feature Adoption Tracking](./FEATURE_ADOPTION_TRACKING.md)  
+**↗ Verbunden:** [Relationship Intelligence](./RELATIONSHIP_INTELLIGENCE.md)  
+**🎯 Governance:** [Help System Governance & Roadmap](./HELP_SYSTEM_GOVERNANCE.md) **NEU**  
 
 ## 🎯 Problem: Magische Features ohne Erklärung
 
@@ -755,9 +755,9 @@ interface HelpSystemMetrics {
 
 ## 🔗 Verwandte Dokumente
 
-- [Relationship Intelligence](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/step3/RELATIONSHIP_INTELLIGENCE.md) - Hauptziel der Hilfe
-- [Smart Suggestions](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/step3/SMART_SUGGESTIONS.md) - Erklärt Vorschläge
-- [Feature Adoption Tracking](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/step3/FEATURE_ADOPTION_TRACKING.md) - Misst Erfolg
+- [Relationship Intelligence](./RELATIONSHIP_INTELLIGENCE.md) - Hauptziel der Hilfe
+- [Smart Suggestions](./SMART_SUGGESTIONS.md) - Erklärt Vorschläge
+- [Feature Adoption Tracking](./FEATURE_ADOPTION_TRACKING.md) - Misst Erfolg
 
 ## ✅ Implementation Status (02.08.2025)
 
@@ -785,8 +785,8 @@ interface HelpSystemMetrics {
 2. **Analytics Dashboard** für Help-Metriken im Admin-Bereich
 3. **Keine Mehrsprachigkeit** vorerst - Fokus auf deutsche Inhalte
 
-**[→ Vollständige Governance & Roadmap](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/step3/HELP_SYSTEM_GOVERNANCE.md)**
+**[→ Vollständige Governance & Roadmap](./HELP_SYSTEM_GOVERNANCE.md)**
 
 ---
 
-**Nächster Schritt:** [→ Feature Adoption Tracking](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/step3/FEATURE_ADOPTION_TRACKING.md)
+**Nächster Schritt:** [→ Feature Adoption Tracking](./FEATURE_ADOPTION_TRACKING.md)

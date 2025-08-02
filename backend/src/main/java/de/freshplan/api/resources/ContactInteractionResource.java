@@ -117,25 +117,27 @@ public class ContactInteractionResource {
   @Operation(summary = "Batch import historical interactions")
   @APIResponses({
     @APIResponse(responseCode = "200", description = "Import completed"),
-    @APIResponse(responseCode = "400", description = "Invalid import data")
+    @APIResponse(responseCode = "400", description = "Invalid import data"),
+    @APIResponse(responseCode = "500", description = "Import failed")
   })
   public Response batchImport(List<ContactInteractionDTO> interactions) {
     LOG.infof("Batch importing %d interactions", interactions.size());
 
-    int imported = 0;
-    int failed = 0;
-
-    for (ContactInteractionDTO interaction : interactions) {
-      try {
-        interactionService.createInteraction(interaction);
-        imported++;
-      } catch (Exception e) {
-        LOG.error("Failed to import interaction", e);
-        failed++;
+    try {
+      ContactInteractionService.BatchImportResult result = 
+          interactionService.batchImportInteractions(interactions);
+      
+      if (result.failed > 0) {
+        LOG.warnf("Batch import completed with %d failures", result.failed);
       }
+      
+      return Response.ok().entity(result).build();
+    } catch (Exception e) {
+      LOG.error("Batch import failed", e);
+      return Response.serverError()
+          .entity(new ErrorResponse("Batch import failed: " + e.getMessage()))
+          .build();
     }
-
-    return Response.ok().entity(new ImportResult(imported, failed)).build();
   }
 
   /** Get freshness level for a specific contact */
@@ -240,14 +242,12 @@ public class ContactInteractionResource {
     }
   }
 
-  // Inner class for import results
-  public static class ImportResult {
-    public final int imported;
-    public final int failed;
+  // Inner class for error responses
+  public static class ErrorResponse {
+    public final String message;
 
-    public ImportResult(int imported, int failed) {
-      this.imported = imported;
-      this.failed = failed;
+    public ErrorResponse(String message) {
+      this.message = message;
     }
   }
 }

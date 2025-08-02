@@ -15,7 +15,9 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.jboss.logging.Logger;
@@ -29,6 +31,27 @@ import org.jboss.logging.Logger;
 public class ContactInteractionService {
 
   private static final Logger LOG = Logger.getLogger(ContactInteractionService.class);
+  
+  // Warmth Score calculation weights
+  private static final double WARMTH_WEIGHT_FREQUENCY = 0.3;
+  private static final double WARMTH_WEIGHT_SENTIMENT = 0.3;
+  private static final double WARMTH_WEIGHT_ENGAGEMENT = 0.2;
+  private static final double WARMTH_WEIGHT_RESPONSE = 0.2;
+  
+  // Time-based constants (in days)
+  private static final int DAYS_RECENT = 30;
+  private static final int DAYS_FRESH = 90;
+  private static final int DAYS_AGING = 180;
+  private static final int DAYS_STALE = 365;
+  
+  // Default scores
+  private static final double DEFAULT_SENTIMENT_SCORE = 50.0;
+  private static final double DEFAULT_ENGAGEMENT_SCORE = 50.0;
+  private static final double DEFAULT_RESPONSE_SCORE = 50.0;
+  
+  // Frequency calculation constants
+  private static final int DAYS_PER_WEEK = 7;
+  private static final double MAX_FREQUENCY_SCORE = 100.0;
 
   @Inject ContactInteractionRepository interactionRepository;
 
@@ -83,13 +106,13 @@ public class ContactInteractionService {
 
     // Get recent interactions (last 90 days)
     List<ContactInteraction> recentInteractions =
-        interactionRepository.findRecentInteractions(contact, 90);
+        interactionRepository.findRecentInteractions(contact, DAYS_FRESH);
 
     if (recentInteractions.isEmpty()) {
       // Return default cold start values
       return WarmthScoreDTO.builder()
           .contactId(contactId)
-          .warmthScore(50) // Neutral
+          .warmthScore(DEFAULT_SENTIMENT_SCORE) // Neutral
           .confidence(0) // No confidence
           .dataPoints(0)
           .build();
@@ -103,10 +126,10 @@ public class ContactInteractionService {
 
     // Weighted average
     double warmthScore =
-        (frequencyScore * 0.3)
-            + (sentimentScore * 0.3)
-            + (engagementScore * 0.2)
-            + (responseScore * 0.2);
+        (frequencyScore * WARMTH_WEIGHT_FREQUENCY)
+            + (sentimentScore * WARMTH_WEIGHT_SENTIMENT)
+            + (engagementScore * WARMTH_WEIGHT_ENGAGEMENT)
+            + (responseScore * WARMTH_WEIGHT_RESPONSE);
 
     // Calculate confidence based on data points
     int dataPoints = recentInteractions.size();
@@ -202,10 +225,10 @@ public class ContactInteractionService {
     long daysBetween = ChronoUnit.DAYS.between(first, last) + 1;
 
     // Interactions per week
-    double interactionsPerWeek = (interactions.size() * 7.0) / daysBetween;
+    double interactionsPerWeek = (interactions.size() * (double)DAYS_PER_WEEK) / daysBetween;
 
     // Score based on frequency (1+ per week = 100, 0 = 0)
-    return Math.min(100, interactionsPerWeek * 100);
+    return Math.min(MAX_FREQUENCY_SCORE, interactionsPerWeek * MAX_FREQUENCY_SCORE);
   }
 
   private double calculateSentimentScore(List<ContactInteraction> interactions) {
@@ -215,13 +238,13 @@ public class ContactInteractionService {
             .filter(s -> s != null)
             .collect(Collectors.toList());
 
-    if (sentiments.isEmpty()) return 50; // Neutral if no sentiment data
+    if (sentiments.isEmpty()) return DEFAULT_SENTIMENT_SCORE; // Neutral if no sentiment data
 
     double avgSentiment =
         sentiments.stream().mapToDouble(Double::doubleValue).average().orElse(0.0);
 
     // Convert from -1 to 1 range to 0 to 100
-    return (avgSentiment + 1) * 50;
+    return (avgSentiment + 1) * DEFAULT_SENTIMENT_SCORE;
   }
 
   private double calculateEngagementScore(List<ContactInteraction> interactions) {
@@ -231,37 +254,37 @@ public class ContactInteractionService {
             .filter(e -> e != null)
             .collect(Collectors.toList());
 
-    if (engagements.isEmpty()) return 50; // Default if no engagement data
+    if (engagements.isEmpty()) return DEFAULT_ENGAGEMENT_SCORE; // Default if no engagement data
 
-    return engagements.stream().mapToInt(Integer::intValue).average().orElse(50.0);
+    return engagements.stream().mapToInt(Integer::intValue).average().orElse(DEFAULT_ENGAGEMENT_SCORE);
   }
 
   private double calculateResponseScore(Contact contact) {
     Double responseRate = interactionRepository.calculateResponseRate(contact);
-    return responseRate != null ? responseRate : 50.0;
+    return responseRate != null ? responseRate : DEFAULT_RESPONSE_SCORE;
   }
 
   private long countFreshContacts() {
-    LocalDateTime ninetyDaysAgo = LocalDateTime.now().minusDays(90);
+    LocalDateTime ninetyDaysAgo = LocalDateTime.now().minusDays(DAYS_FRESH);
     return contactRepository.count("updatedAt >= ?1", ninetyDaysAgo);
   }
 
   private long countAgingContacts() {
-    LocalDateTime ninetyDaysAgo = LocalDateTime.now().minusDays(90);
-    LocalDateTime oneEightyDaysAgo = LocalDateTime.now().minusDays(180);
+    LocalDateTime ninetyDaysAgo = LocalDateTime.now().minusDays(DAYS_FRESH);
+    LocalDateTime oneEightyDaysAgo = LocalDateTime.now().minusDays(DAYS_AGING);
     return contactRepository.count(
         "updatedAt < ?1 and updatedAt >= ?2", ninetyDaysAgo, oneEightyDaysAgo);
   }
 
   private long countStaleContacts() {
-    LocalDateTime oneEightyDaysAgo = LocalDateTime.now().minusDays(180);
-    LocalDateTime oneYearAgo = LocalDateTime.now().minusDays(365);
+    LocalDateTime oneEightyDaysAgo = LocalDateTime.now().minusDays(DAYS_AGING);
+    LocalDateTime oneYearAgo = LocalDateTime.now().minusDays(DAYS_STALE);
     return contactRepository.count(
         "updatedAt < ?1 and updatedAt >= ?2", oneEightyDaysAgo, oneYearAgo);
   }
 
   private long countCriticalContacts() {
-    LocalDateTime oneYearAgo = LocalDateTime.now().minusDays(365);
+    LocalDateTime oneYearAgo = LocalDateTime.now().minusDays(DAYS_STALE);
     return contactRepository.count("updatedAt < ?1", oneYearAgo);
   }
 
@@ -276,5 +299,94 @@ public class ContactInteractionService {
                 + "and position is not null");
 
     return (completeContacts * 100.0) / totalContacts;
+  }
+
+  /**
+   * Batch import interactions for better performance.
+   * Processes all interactions in a single transaction.
+   *
+   * @param dtos List of interaction DTOs to import
+   * @return Import result with success/failure counts
+   */
+  public BatchImportResult batchImportInteractions(List<ContactInteractionDTO> dtos) {
+    LOG.infof("Starting batch import of %d interactions", dtos.size());
+    
+    int imported = 0;
+    int failed = 0;
+    List<String> errors = new ArrayList<>();
+    
+    // Validate and prepare all entities first
+    List<ContactInteraction> toImport = new ArrayList<>();
+    
+    for (ContactInteractionDTO dto : dtos) {
+      try {
+        Contact contact = contactRepository.findById(dto.getContactId());
+        if (contact == null) {
+          failed++;
+          errors.add("Contact not found: " + dto.getContactId());
+          continue;
+        }
+        
+        ContactInteraction interaction = mapper.toEntity(dto);
+        interaction.setContact(contact);
+        toImport.add(interaction);
+        
+      } catch (Exception e) {
+        failed++;
+        errors.add("Failed to process interaction: " + e.getMessage());
+        LOG.warn("Failed to process interaction during batch import", e);
+      }
+    }
+    
+    // Batch persist all valid interactions
+    if (!toImport.isEmpty()) {
+      try {
+        interactionRepository.persist(toImport);
+        imported = toImport.size();
+        
+        // Update contact last interaction dates in batch
+        updateContactsLastInteraction(toImport);
+        
+        LOG.infof("Successfully imported %d interactions", imported);
+      } catch (Exception e) {
+        LOG.error("Failed to persist batch interactions", e);
+        throw new RuntimeException("Batch import failed: " + e.getMessage(), e);
+      }
+    }
+    
+    return new BatchImportResult(imported, failed, errors);
+  }
+  
+  /**
+   * Update last interaction dates for multiple contacts efficiently
+   */
+  private void updateContactsLastInteraction(List<ContactInteraction> interactions) {
+    // Group by contact to find latest interaction per contact
+    Map<UUID, LocalDateTime> latestInteractions = interactions.stream()
+        .collect(Collectors.toMap(
+            i -> i.getContact().getId(),
+            ContactInteraction::getTimestamp,
+            (existing, replacement) -> existing.isAfter(replacement) ? existing : replacement
+        ));
+    
+    // Batch update using custom query
+    latestInteractions.forEach((contactId, timestamp) -> {
+      contactRepository.update("lastInteractionAt = ?1 where id = ?2", timestamp, contactId);
+    });
+  }
+  
+  /**
+   * Result of batch import operation
+   */
+  public static class BatchImportResult {
+    public final int imported;
+    public final int failed;
+    public final List<String> errors;
+    
+    public BatchImportResult(int imported, int failed, List<String> errors) {
+      this.imported = imported;
+      this.failed = failed;
+      this.errors = errors;
+    }
   }
 }

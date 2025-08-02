@@ -6,9 +6,9 @@
 
 ## 🧭 Navigation
 
-**← Zurück:** [In-App Help System](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/step3/IN_APP_HELP_SYSTEM.md)  
-**→ Nächstes:** [Feature Adoption Tracking](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/step3/FEATURE_ADOPTION_TRACKING.md)  
-**↗ Integration:** [FC-012 Audit Trail UI](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-012-audit-trail.md)  
+**← Zurück:** [In-App Help System](./IN_APP_HELP_SYSTEM.md)  
+**→ Nächstes:** [Feature Adoption Tracking](./FEATURE_ADOPTION_TRACKING.md)  
+**↗ Integration:** [FC-012 Audit Trail UI](../../FC-012-audit-trail.md)  
 
 ## 📊 Status: Help System Implementation
 
@@ -196,10 +196,10 @@ interface HelpAnalyticsDashboard {
 
 ## 🔗 Verbindungen zu anderen Features
 
-- **[FC-012 Audit Trail](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-012-audit-trail.md):** Content Governance & Compliance
-- **[FC-016 KPI-Tracking](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-016-kpi-tracking.md):** Help Effectiveness Metrics
-- **[FC-013 Activity Notes](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-013-activity-notes.md):** Support Integration
-- **[Feature Adoption Tracking](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/step3/FEATURE_ADOPTION_TRACKING.md):** Usage Analytics
+- **[FC-012 Audit Trail](../../FC-012-audit-trail.md):** Content Governance & Compliance
+- **[FC-016 KPI-Tracking](../../FC-016-kpi-tracking.md):** Help Effectiveness Metrics
+- **[FC-013 Activity Notes](../../FC-013-activity-notes.md):** Support Integration
+- **[Feature Adoption Tracking](./FEATURE_ADOPTION_TRACKING.md):** Usage Analytics
 
 ## 💡 Lessons Learned
 

@@ -64,7 +64,7 @@ public class ContactResource {
           UUID customerId,
       @Parameter(description = "Contact ID", required = true) @PathParam("contactId")
           UUID contactId) {
-    return contactService.getContact(contactId);
+    return contactService.getContact(customerId, contactId);
   }
 
   @PUT
@@ -80,7 +80,7 @@ public class ContactResource {
           UUID contactId,
       @Valid ContactDTO contactDTO) {
     contactDTO.setId(contactId);
-    return contactService.updateContact(contactId, contactDTO);
+    return contactService.updateContact(customerId, contactId, contactDTO);
   }
 
   @DELETE
@@ -94,7 +94,7 @@ public class ContactResource {
           UUID customerId,
       @Parameter(description = "Contact ID", required = true) @PathParam("contactId")
           UUID contactId) {
-    contactService.deleteContact(contactId);
+    contactService.deleteContact(customerId, contactId);
     return Response.noContent().build();
   }
 
@@ -147,24 +147,5 @@ public class ContactResource {
       this.email = email;
       this.available = available;
     }
-  }
-}
-
-/** Separate resource for location-based contact queries */
-@Path("/api/locations/{locationId}/contacts")
-@Authenticated
-@Produces(MediaType.APPLICATION_JSON)
-@Tag(name = "Contacts", description = "Contact management operations")
-class LocationContactResource {
-
-  @Inject ContactService contactService;
-
-  @GET
-  @Operation(summary = "Get all contacts assigned to a location")
-  @APIResponse(responseCode = "200", description = "List of contacts")
-  public List<ContactDTO> getContactsByLocation(
-      @Parameter(description = "Location ID", required = true) @PathParam("locationId")
-          UUID locationId) {
-    return contactService.getContactsByLocationId(locationId);
   }
 }
