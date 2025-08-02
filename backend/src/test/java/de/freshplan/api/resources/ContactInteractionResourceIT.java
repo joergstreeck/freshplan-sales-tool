@@ -316,7 +316,7 @@ class ContactInteractionResourceIT {
   }
 
   @Transactional
-  private void createTestInteraction(InteractionType type, String content) {
+  protected void createTestInteraction(InteractionType type, String content) {
     ContactInteraction interaction =
         ContactInteraction.builder()
             .contact(contactRepository.findById(testContactId))
