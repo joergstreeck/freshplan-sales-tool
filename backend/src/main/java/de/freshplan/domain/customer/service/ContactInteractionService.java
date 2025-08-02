@@ -140,12 +140,16 @@ public class ContactInteractionService {
     contact.setWarmthConfidence(confidence);
     contactRepository.persist(contact);
 
+    // Determine trend (simplified logic for now)
+    String trend = warmthScore >= 70 ? "INCREASING" : warmthScore >= 40 ? "STABLE" : "DECREASING";
+    
     return WarmthScoreDTO.builder()
         .contactId(contactId)
         .warmthScore((int) Math.round(warmthScore))
         .confidence(confidence)
         .dataPoints(dataPoints)
         .lastCalculated(LocalDateTime.now())
+        .trend(trend)
         .build();
   }
 
