@@ -193,7 +193,7 @@ public class HelpContent extends PanacheEntityBase {
 
   public static List<HelpContent> findMostHelpful(int limit) {
     return find("isActive = true AND (helpfulCount + notHelpfulCount) > 0 "
-            + "ORDER BY (helpfulCount::float / (helpfulCount + notHelpfulCount)) DESC")
+            + "ORDER BY (CAST(helpfulCount AS DOUBLE) / (helpfulCount + notHelpfulCount)) DESC")
         .page(0, limit)
         .list();
   }
