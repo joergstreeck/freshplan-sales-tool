@@ -17,7 +17,7 @@
 -- Note: This migration assumes Flyway has picked one of the duplicate files
 -- We ensure all structures from all duplicate migrations exist
 
--- From V6__create_permission_system_core.sql (if not applied)
+-- Permissions system (idempotent - may already exist from earlier migrations)
 CREATE TABLE IF NOT EXISTS permissions (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     permission_code VARCHAR(100) UNIQUE NOT NULL,
@@ -29,12 +29,34 @@ CREATE TABLE IF NOT EXISTS permissions (
 );
 
 CREATE TABLE IF NOT EXISTS role_permissions (
-    role_id UUID NOT NULL REFERENCES app_user_roles(id) ON DELETE CASCADE,
-    permission_id UUID NOT NULL REFERENCES permissions(id) ON DELETE CASCADE,
+    role_id UUID NOT NULL,
+    permission_id UUID NOT NULL,
     granted_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     granted_by VARCHAR(100),
     PRIMARY KEY (role_id, permission_id)
 );
+
+-- Add FK constraints only if tables exist
+DO $$ 
+BEGIN
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'role_permissions') AND
+       EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'app_user_roles') THEN
+        IF NOT EXISTS (SELECT 1 FROM information_schema.table_constraints 
+                      WHERE constraint_name = 'fk_role_permissions_role') THEN
+            ALTER TABLE role_permissions ADD CONSTRAINT fk_role_permissions_role 
+                FOREIGN KEY (role_id) REFERENCES app_user_roles(id) ON DELETE CASCADE;
+        END IF;
+    END IF;
+    
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'role_permissions') AND
+       EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'permissions') THEN
+        IF NOT EXISTS (SELECT 1 FROM information_schema.table_constraints 
+                      WHERE constraint_name = 'fk_role_permissions_permission') THEN
+            ALTER TABLE role_permissions ADD CONSTRAINT fk_role_permissions_permission 
+                FOREIGN KEY (permission_id) REFERENCES permissions(id) ON DELETE CASCADE;
+        END IF;
+    END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_permissions_resource_action ON permissions(resource, action);
 CREATE INDEX IF NOT EXISTS idx_role_permissions_role ON role_permissions(role_id);
