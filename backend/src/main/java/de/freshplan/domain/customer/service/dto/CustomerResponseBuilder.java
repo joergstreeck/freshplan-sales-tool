@@ -321,7 +321,7 @@ public final class CustomerResponseBuilder {
     this.isDeleted = customer.getIsDeleted();
     this.deletedAt = customer.getDeletedAt();
     this.deletedBy = customer.getDeletedBy();
-    
+
     // Chain Structure - NEW for Sprint 2
     this.totalLocationsEU = customer.getTotalLocationsEU();
     this.locationsGermany = customer.getLocationsGermany();
@@ -329,7 +329,7 @@ public final class CustomerResponseBuilder {
     this.locationsSwitzerland = customer.getLocationsSwitzerland();
     this.locationsRestEU = customer.getLocationsRestEU();
     this.expansionPlanned = customer.getExpansionPlanned();
-    
+
     // Business Model - NEW for Sprint 2
     this.primaryFinancing = customer.getPrimaryFinancing();
     this.painPoints = customer.getPainPoints();
@@ -363,7 +363,7 @@ public final class CustomerResponseBuilder {
         atRisk,
         lastContactDate,
         nextFollowUpDate,
-        
+
         // Chain Structure - NEW for Sprint 2
         totalLocationsEU,
         locationsGermany,
@@ -371,11 +371,10 @@ public final class CustomerResponseBuilder {
         locationsSwitzerland,
         locationsRestEU,
         expansionPlanned,
-        
+
         // Business Model - NEW for Sprint 2
         primaryFinancing,
         painPoints,
-        
         createdAt,
         createdBy,
         updatedAt,

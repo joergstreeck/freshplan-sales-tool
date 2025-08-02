@@ -74,7 +74,7 @@ public class CustomerMapper {
         customer.isAtRisk(),
         customer.getLastContactDate(),
         customer.getNextFollowUpDate(),
-        
+
         // Chain Structure - NEW for Sprint 2
         customer.getTotalLocationsEU(),
         customer.getLocationsGermany(),
@@ -82,11 +82,10 @@ public class CustomerMapper {
         customer.getLocationsSwitzerland(),
         customer.getLocationsRestEU(),
         customer.getExpansionPlanned(),
-        
+
         // Business Model - NEW for Sprint 2
         customer.getPrimaryFinancing(),
         customer.getPainPoints(),
-        
         customer.getCreatedAt(),
         customer.getCreatedBy(),
         customer.getUpdatedAt(),
