@@ -12,6 +12,7 @@ import { AuthProvider } from './contexts/AuthContext';
 import { KeycloakProvider } from './contexts/KeycloakContext';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { KeyboardShortcutsProvider } from './hooks/useKeyboardShortcuts';
+import { HelpProvider } from './features/help';
 import freshfoodzTheme from './theme/freshfoodz';
 import App from './App';
 import { LoginBypassPage } from './pages/LoginBypassPage';
@@ -52,7 +53,8 @@ export const AppProviders = ({ children: mainChildren }: AppProvidersProps) => {
           <BrowserRouter>
             <AuthWrapper>
               <KeyboardShortcutsProvider>
-                <Toaster 
+                <HelpProvider>
+                  <Toaster 
                 position="top-right"
                 toastOptions={{
                   duration: 4000,
@@ -91,6 +93,7 @@ export const AppProviders = ({ children: mainChildren }: AppProvidersProps) => {
                 )}
               </Routes>
             )}
+                </HelpProvider>
               </KeyboardShortcutsProvider>
           </AuthWrapper>
         </BrowserRouter>
