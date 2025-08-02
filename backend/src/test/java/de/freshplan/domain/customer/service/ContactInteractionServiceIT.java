@@ -148,12 +148,11 @@ class ContactInteractionServiceIT {
 
     // Should include recommendations for more data
     assertNotNull(result.getRecommendation());
+    String recommendation = result.getRecommendation().toLowerCase();
     assertTrue(
-        result.getRecommendation()
-                rec ->
-                    rec.toLowerCase().contains("mehr")
-                        || rec.toLowerCase().contains("daten")
-                        || rec.toLowerCase().contains("interaktionen")));
+        recommendation.contains("mehr") 
+            || recommendation.contains("daten")
+            || recommendation.contains("interaktionen"));
   }
 
   @Test
