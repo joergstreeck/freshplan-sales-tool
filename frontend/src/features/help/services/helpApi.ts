@@ -58,8 +58,8 @@ export const helpApi = {
   },
 
   // Get feature-specific analytics
-  getFeatureAnalytics: async (feature: string): Promise<any> => {
-    const response = await httpClient.get<any>(`/api/help/analytics/${feature}`);
+  getFeatureAnalytics: async (feature: string): Promise<HelpAnalytics> => {
+    const response = await httpClient.get<HelpAnalytics>(`/api/help/analytics/${feature}`);
     return response.data;
   },
 
@@ -67,7 +67,7 @@ export const helpApi = {
   reportStruggle: async (struggle: {
     feature: string;
     type: string;
-    context?: Record<string, any>;
+    context?: Record<string, unknown>;
   }): Promise<void> => {
     await httpClient.post('/api/help/struggle', struggle);
   }

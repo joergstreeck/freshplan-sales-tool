@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { useHelpStore } from '../stores/helpStore';
 import type { HelpContent } from '../types/help.types';
 
@@ -15,7 +15,6 @@ export const useHelp = ({ feature, autoLoad = false, userId }: UseHelpOptions) =
     error,
     loadHelpContent,
     openTooltip,
-    closeTooltip,
     openModal,
     startTour,
     submitFeedback,
@@ -30,9 +29,10 @@ export const useHelp = ({ feature, autoLoad = false, userId }: UseHelpOptions) =
   }, [feature, userId, autoLoad, loadHelpContent]);
   
   // Get help content for this feature
-  const helpContent = currentHelp?.helpContents.filter(
-    h => h.feature === feature
-  ) || [];
+  const helpContent = useMemo(() => 
+    currentHelp?.helpContents.filter(h => h.feature === feature) || [],
+    [currentHelp, feature]
+  );
   
   // Get specific help types
   const tooltip = helpContent.find(h => h.helpType === 'TOOLTIP');

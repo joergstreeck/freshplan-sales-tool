@@ -18,7 +18,6 @@ import {
 } from '@mui/icons-material';
 import { CustomerFieldThemeProvider } from '../../customers/theme/CustomerFieldThemeProvider';
 import { useHelpStore } from '../stores/helpStore';
-import type { HelpContent } from '../types/help.types';
 
 interface HelpTooltipProps {
   feature: string;

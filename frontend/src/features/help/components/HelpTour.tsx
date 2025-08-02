@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import Joyride, { STATUS } from 'react-joyride';
 import type { CallBackProps, Step } from 'react-joyride';
-import { Box, Typography, Button, Avatar } from '@mui/material';
+import { Box, Typography, Avatar } from '@mui/material';
 import { 
-  Assistant as AssistantIcon,
-  ArrowForward as ArrowForwardIcon 
+  Assistant as AssistantIcon
 } from '@mui/icons-material';
 import { useHelpStore } from '../stores/helpStore';
 import type { HelpContent } from '../types/help.types';

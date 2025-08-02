@@ -45,7 +45,7 @@ export interface HelpRequest {
   userId?: string;
   userLevel?: UserLevel;
   userRoles?: string[];
-  context?: Record<string, any>;
+  context?: Record<string, unknown>;
 }
 
 export interface HelpResponse {
@@ -105,5 +105,5 @@ export interface UserStruggle {
   severity: 'low' | 'medium' | 'high';
   attemptCount?: number;
   timeSpent?: number;
-  context?: Record<string, any>;
+  context?: Record<string, unknown>;
 }
