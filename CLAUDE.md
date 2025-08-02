@@ -1379,13 +1379,13 @@ Vollständige Dokumentation: [Claude Documentation Structure][claude-doc-structu
 ### Detaillierte Lösungen {#problemloesungen}
 
 Die häufigsten Probleme und ihre Lösungen findest du im:
-➡️ **[DEBUG_COOKBOOK](/Users/joergstreeck/freshplan-sales-tool/docs/guides/DEBUG_COOKBOOK.md)**
+➡️ **[DEBUG_COOKBOOK](./docs/guides/DEBUG_COOKBOOK.md)**
 
 **Quick Links zu Lösungen:**
-- [Backend-Fix](/Users/joergstreeck/freshplan-sales-tool/docs/guides/DEBUG_COOKBOOK.md#backend-down)
-- [Testdaten-Fix](/Users/joergstreeck/freshplan-sales-tool/docs/guides/DEBUG_COOKBOOK.md#no-test-data)
-- [Auth-Fix](/Users/joergstreeck/freshplan-sales-tool/docs/guides/DEBUG_COOKBOOK.md#auth-401)
-- [White Screen Fix](/Users/joergstreeck/freshplan-sales-tool/docs/guides/DEBUG_COOKBOOK.md#white-screen)
-- [TypeScript Import Type Fix](/Users/joergstreeck/freshplan-sales-tool/docs/guides/TYPESCRIPT_IMPORT_TYPE_GUIDE.md) **NEU!**
+- [Backend-Fix](./docs/guides/DEBUG_COOKBOOK.md#backend-down)
+- [Testdaten-Fix](./docs/guides/DEBUG_COOKBOOK.md#no-test-data)
+- [Auth-Fix](./docs/guides/DEBUG_COOKBOOK.md#auth-401)
+- [White Screen Fix](./docs/guides/DEBUG_COOKBOOK.md#white-screen)
+- [TypeScript Import Type Fix](./docs/guides/TYPESCRIPT_IMPORT_TYPE_GUIDE.md) **NEU!**
 
 [claude-doc-structure]: ./docs/CLAUDE_DOCUMENTATION_STRUCTURE.md
