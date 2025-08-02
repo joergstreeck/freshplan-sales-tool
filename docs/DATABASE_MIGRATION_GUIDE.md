@@ -2,6 +2,7 @@
 
 **Status:** VERBINDLICH ab 02.08.2025
 **Zielgruppe:** Alle Entwickler (Menschen & KI)
+**Erweitert:** 02.08.2025 - Migration Registry System hinzugefügt
 
 ## 🚨 GOLDENE REGELN - NIEMALS BRECHEN!
 
@@ -39,10 +40,16 @@ CREATE INDEX idx_customer_new_field ON customers(new_field);
 ## 📋 Migration Erstellen - Schritt für Schritt
 
 ### 1. Nächste Versionsnummer ermitteln
+🚨 **NEUE REGEL (ab 02.08.2025):**
 ```bash
-ls -la backend/src/main/resources/db/migration/ | grep "^-" | tail -1
-# Beispiel: V35__last_migration.sql → Nächste ist V36
+# IMMER zuerst die Registry prüfen!
+cat docs/MIGRATION_REGISTRY.md | grep "NÄCHSTE VERFÜGBARE NUMMER"
+
+# Oder automatisch aktualisieren
+./scripts/update-migration-registry.sh
 ```
+
+**NIEMALS** einfach die Dateien zählen - es kann Lücken durch Duplikate geben!
 
 ### 2. Migration-Template verwenden
 ```bash

@@ -1,4 +1,4 @@
--- V15: Fix entity-database schema mismatches
+-- V9: Fix entity-database schema mismatches
 -- Date: 2025-07-05
 -- Author: Claude (FreshPlan Team)
 

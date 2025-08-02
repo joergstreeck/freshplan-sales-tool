@@ -1,4 +1,4 @@
--- V16: Add last_contact_date column to customer_contacts table
+-- V15: Add last_contact_date column to customer_contacts table
 -- Date: 2025-07-05
 -- Purpose: This column tracks when the contact person was last contacted
 ALTER TABLE customer_contacts 

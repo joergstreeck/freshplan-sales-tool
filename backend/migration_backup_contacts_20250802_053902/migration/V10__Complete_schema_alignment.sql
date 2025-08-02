@@ -1,4 +1,4 @@
--- V12: Complete schema alignment with entities
+-- V10: Complete schema alignment with entities
 -- Date: 2025-07-05
 -- Author: Claude (FreshPlan Team)
 

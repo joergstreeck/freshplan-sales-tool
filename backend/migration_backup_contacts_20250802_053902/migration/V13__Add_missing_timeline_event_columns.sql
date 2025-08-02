@@ -1,4 +1,4 @@
--- V14: Add missing columns to customer_timeline_events table
+-- V13: Add missing columns to customer_timeline_events table
 -- Date: 2025-07-05
 -- Author: Claude (FreshPlan Team)
 -- Description: Add all missing columns that are defined in CustomerTimelineEvent entity

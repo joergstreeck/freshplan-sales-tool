@@ -1,4 +1,4 @@
--- V6: Core Permission System Tables
+-- V103: Core Permission System Tables
 -- Creates minimal permission system without complex features
 -- Based on FC-009 CLAUDE_TECH specification
 

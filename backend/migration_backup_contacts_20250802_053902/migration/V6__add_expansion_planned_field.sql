@@ -1,4 +1,4 @@
--- Migration V11: Add expansion_planned field to customer table
+-- Migration V6: Add expansion_planned field to customer table
 -- Sprint 2: Erweiterung der Filialstruktur um Expansionspläne
 
 -- Add expansion_planned column as simple ja/nein string

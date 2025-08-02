@@ -1,4 +1,4 @@
--- V13: Add last_modified audit fields explicitly
+-- V12: Add last_modified audit fields explicitly
 -- Date: 2025-07-05
 -- Author: Claude (FreshPlan Team)
 -- Description: Add last_modified_by and last_modified_at fields that Hibernate expects

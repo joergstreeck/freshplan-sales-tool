@@ -1,4 +1,4 @@
--- V7: Create contact_interactions table for Data Strategy Intelligence
+-- V120: Create contact_interactions table for Data Strategy Intelligence
 -- This table tracks all interactions with contacts to enable warmth scoring,
 -- timeline visualization, and predictive analytics
 
