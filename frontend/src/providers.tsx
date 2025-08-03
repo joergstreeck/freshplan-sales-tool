@@ -56,7 +56,7 @@ export const AppProviders = ({ children: mainChildren }: AppProvidersProps) => {
                 <Route path="/users" element={<UsersPage />} />
                 <Route path="/einstellungen" element={<SettingsPage />} />
                 <Route path="/customers" element={<CustomersPage />} />
-                {/* German alias for customer list */}
+                {/* Deutscher Alias für Kundenliste */}
                 <Route path="/kundenmanagement/liste" element={<CustomersPage />} />
                 <Route path="/kundenmanagement/opportunities" element={<OpportunityPipelinePage />} />
                 <Route path="/calculator-v2" element={<CalculatorPageV2 />} />
