@@ -35,7 +35,7 @@ public class CustomerDataInitializer {
 
   @Transactional
   void onStart(@Observes @Priority(500) StartupEvent ev) {
-    LOG.info("🧪 Initializing comprehensive test data for edge case testing...");
+    LOG.info("🧪 Initializing comprehensive test data for ALL modules (Intelligence, Cockpit, Opportunities)...");
 
     // For comprehensive testing: Always recreate test data
     // Clear existing data - SQL-based cascade deletion approach
@@ -49,13 +49,20 @@ public class CustomerDataInitializer {
       // Security: Define allowed tables for deletion (prevents SQL injection)
       var tablesToClear =
           java.util.List.of(
-              "customer_timeline_events", "customer_contacts", "customer_locations", "customers");
+              "customer_timeline_events", 
+              "customer_contacts", 
+              "customer_locations", 
+              "customers");
 
       // Derive allowed tables from the clearing list to ensure consistency
       var allowedTables = java.util.Set.copyOf(tablesToClear);
 
       // CRITICAL FIX: Delete opportunities first to avoid foreign key constraint violations
-      LOG.info("Clearing opportunities before customers to avoid FK violations...");
+      LOG.info("Clearing all module data (opportunities, audit) before customers...");
+      em.createNativeQuery("DELETE FROM audit_trail").executeUpdate();
+      // TODO: contact_interactions und contact_warmth_scores Tabellen müssen erst angelegt werden
+      // em.createNativeQuery("DELETE FROM contact_interactions").executeUpdate();
+      // em.createNativeQuery("DELETE FROM contact_warmth_scores").executeUpdate();
       em.createNativeQuery("DELETE FROM opportunity_activities").executeUpdate();
       em.createNativeQuery("DELETE FROM opportunities").executeUpdate();
 
@@ -65,7 +72,7 @@ public class CustomerDataInitializer {
         }
         em.createNativeQuery("DELETE FROM " + table).executeUpdate();
       }
-      LOG.info("Existing customers and related data cleared via SQL");
+      LOG.info("Existing data for all modules cleared via SQL");
     }
 
     // 1. NORMAL BUSINESS CASES (Realistische Szenarien)
@@ -99,11 +106,24 @@ public class CustomerDataInitializer {
     // 7. UNICODE & SPECIAL CHARACTER TESTS
     LOG.info("Creating unicode and special character tests...");
     createUnicodeTests();
+    
+    // 8. DATA INTELLIGENCE SCENARIOS
+    LOG.info("Creating Data Intelligence test scenarios...");
+    createDataIntelligenceScenarios();
+    
+    // 9. SALES COCKPIT SCENARIOS  
+    LOG.info("Creating Sales Cockpit test scenarios...");
+    createSalesCockpitScenarios();
+    
+    // 10. OPPORTUNITY PIPELINE SCENARIOS
+    LOG.info("Creating Opportunity Pipeline test scenarios...");
+    createOpportunityPipelineScenarios();
 
     long totalCustomers = customerRepository.count();
     LOG.info(
         "🎯 Comprehensive test data initialized successfully! Total customers: " + totalCustomers);
-    LOG.info("💡 This covers all edge cases for thorough testing");
+    LOG.info("💡 This covers all edge cases and modules for thorough testing");
+    LOG.info("📊 Modules covered: Data Intelligence, Data Freshness, Cockpit, Opportunities");
   }
 
   private void createHotelCustomer() {
@@ -556,5 +576,245 @@ public class CustomerDataInitializer {
     customerRepository.persist(punctuation);
 
     LOG.info("✅ Unicode and special character tests created");
+  }
+  
+  // 8. DATA INTELLIGENCE SCENARIOS
+  private void createDataIntelligenceScenarios() {
+    // Kunde mit vielen aktuellen Interaktionen (FRESH)
+    Customer activeCustomer = new Customer();
+    activeCustomer.setCustomerNumber("DI-FRESH-001");
+    activeCustomer.setCompanyName("Fresh Contact GmbH - Sehr aktiver Kunde");
+    activeCustomer.setTradingName("Fresh Contact");
+    activeCustomer.setCustomerType(CustomerType.UNTERNEHMEN);
+    activeCustomer.setIndustry(Industry.HOTEL);
+    activeCustomer.setClassification(Classification.A_KUNDE);
+    activeCustomer.setStatus(CustomerStatus.AKTIV);
+    activeCustomer.setLastContactDate(LocalDateTime.now().minusDays(1)); // Gestern kontaktiert
+    activeCustomer.setNextFollowUpDate(LocalDateTime.now().plusDays(7));
+    activeCustomer.setCreatedBy("data-intelligence");
+    customerRepository.persist(activeCustomer);
+    
+    // Kunde mit alternden Daten (AGING - 90-180 Tage)
+    Customer agingCustomer = new Customer();
+    agingCustomer.setCustomerNumber("DI-AGING-002");
+    agingCustomer.setCompanyName("Aging Data AG - Kontakt vor 4 Monaten");
+    agingCustomer.setTradingName("Aging Data");
+    agingCustomer.setCustomerType(CustomerType.UNTERNEHMEN);
+    agingCustomer.setIndustry(Industry.RESTAURANT);
+    agingCustomer.setClassification(Classification.B_KUNDE);
+    agingCustomer.setStatus(CustomerStatus.AKTIV);
+    agingCustomer.setLastContactDate(LocalDateTime.now().minusDays(120)); // 4 Monate alt
+    agingCustomer.setNextFollowUpDate(LocalDateTime.now().minusDays(90)); // Überfällig
+    agingCustomer.setCreatedBy("data-intelligence");
+    customerRepository.persist(agingCustomer);
+    
+    // Kunde mit veralteten Daten (STALE - 180-365 Tage)
+    Customer staleCustomer = new Customer();
+    staleCustomer.setCustomerNumber("DI-STALE-003");
+    staleCustomer.setCompanyName("Stale Records Ltd - Kontakt vor 8 Monaten");
+    staleCustomer.setTradingName("Stale Records");
+    staleCustomer.setCustomerType(CustomerType.UNTERNEHMEN);
+    staleCustomer.setIndustry(Industry.CATERING);
+    staleCustomer.setClassification(Classification.C_KUNDE);
+    staleCustomer.setStatus(CustomerStatus.AKTIV);
+    staleCustomer.setLastContactDate(LocalDateTime.now().minusDays(240)); // 8 Monate alt
+    staleCustomer.setNextFollowUpDate(LocalDateTime.now().minusDays(200)); // Lange überfällig
+    staleCustomer.setCreatedBy("data-intelligence");
+    customerRepository.persist(staleCustomer);
+    
+    // Kunde mit kritisch alten Daten (CRITICAL - >365 Tage)
+    Customer criticalCustomer = new Customer();
+    criticalCustomer.setCustomerNumber("DI-CRITICAL-004");
+    criticalCustomer.setCompanyName("Critical Alert Inc - Kontakt vor 2 Jahren");
+    criticalCustomer.setTradingName("Critical Alert");
+    criticalCustomer.setCustomerType(CustomerType.UNTERNEHMEN);
+    criticalCustomer.setIndustry(Industry.BILDUNG);
+    criticalCustomer.setClassification(Classification.C_KUNDE);
+    criticalCustomer.setStatus(CustomerStatus.INAKTIV);
+    criticalCustomer.setLastContactDate(LocalDateTime.now().minusDays(730)); // 2 Jahre alt
+    criticalCustomer.setNextFollowUpDate(LocalDateTime.now().minusDays(700)); // Extrem überfällig
+    criticalCustomer.setCreatedBy("data-intelligence");
+    customerRepository.persist(criticalCustomer);
+    
+    // Kunde ohne jegliche Interaktionen
+    Customer noInteractionCustomer = new Customer();
+    noInteractionCustomer.setCustomerNumber("DI-NO-INT-005");
+    noInteractionCustomer.setCompanyName("Never Contacted Corp - Noch nie kontaktiert");
+    noInteractionCustomer.setTradingName("Never Contacted");
+    noInteractionCustomer.setCustomerType(CustomerType.UNTERNEHMEN);
+    noInteractionCustomer.setIndustry(Industry.SONSTIGE);
+    noInteractionCustomer.setClassification(Classification.D_KUNDE);
+    noInteractionCustomer.setStatus(CustomerStatus.LEAD);
+    noInteractionCustomer.setLastContactDate(null); // Nie kontaktiert
+    noInteractionCustomer.setNextFollowUpDate(LocalDateTime.now().plusDays(1)); // Dringend kontaktieren
+    noInteractionCustomer.setCreatedBy("data-intelligence");
+    customerRepository.persist(noInteractionCustomer);
+    
+    LOG.info("✅ Data Intelligence test scenarios created (5 customers with different freshness levels)");
+  }
+  
+  // 9. SALES COCKPIT SCENARIOS
+  private void createSalesCockpitScenarios() {
+    // Top-Performer Kunde
+    Customer topPerformer = new Customer();
+    topPerformer.setCustomerNumber("SC-TOP-001");
+    topPerformer.setCompanyName("Top Performer GmbH - Hoher Umsatz");
+    topPerformer.setTradingName("Top Performer");
+    topPerformer.setCustomerType(CustomerType.UNTERNEHMEN);
+    topPerformer.setIndustry(Industry.HOTEL);
+    topPerformer.setClassification(Classification.A_KUNDE);
+    topPerformer.setStatus(CustomerStatus.AKTIV);
+    topPerformer.setExpectedAnnualVolume(new BigDecimal("500000.00"));
+    topPerformer.setActualAnnualVolume(new BigDecimal("550000.00")); // Übertrifft Erwartungen
+    topPerformer.setPaymentTerms(PaymentTerms.NETTO_60);
+    topPerformer.setCreditLimit(new BigDecimal("100000.00"));
+    topPerformer.setLifecycleStage(CustomerLifecycleStage.GROWTH);
+    topPerformer.setLastContactDate(LocalDateTime.now().minusDays(3));
+    topPerformer.setCreatedBy("sales-cockpit");
+    customerRepository.persist(topPerformer);
+    
+    // At-Risk Kunde
+    Customer atRisk = new Customer();
+    atRisk.setCustomerNumber("SC-RISK-002");
+    atRisk.setCompanyName("At Risk Ltd - Umsatz rückläufig");
+    atRisk.setTradingName("At Risk");
+    atRisk.setCustomerType(CustomerType.UNTERNEHMEN);
+    atRisk.setIndustry(Industry.RESTAURANT);
+    atRisk.setClassification(Classification.B_KUNDE);
+    atRisk.setStatus(CustomerStatus.AKTIV);
+    atRisk.setExpectedAnnualVolume(new BigDecimal("100000.00"));
+    atRisk.setActualAnnualVolume(new BigDecimal("60000.00")); // Nur 60% erreicht
+    atRisk.setPaymentTerms(PaymentTerms.NETTO_30);
+    atRisk.setCreditLimit(new BigDecimal("20000.00"));
+    atRisk.setLifecycleStage(CustomerLifecycleStage.RECOVERY);
+    atRisk.setLastContactDate(LocalDateTime.now().minusDays(45)); // Lange nicht kontaktiert
+    atRisk.setCreatedBy("sales-cockpit");
+    customerRepository.persist(atRisk);
+    
+    // Churn Risk Kunde
+    Customer churnRisk = new Customer();
+    churnRisk.setCustomerNumber("SC-CHURN-003");
+    churnRisk.setCompanyName("Churn Alert AG - Kurz vor Verlust");
+    churnRisk.setTradingName("Churn Alert");
+    churnRisk.setCustomerType(CustomerType.UNTERNEHMEN);
+    churnRisk.setIndustry(Industry.CATERING);
+    churnRisk.setClassification(Classification.C_KUNDE);
+    churnRisk.setStatus(CustomerStatus.RISIKO);
+    churnRisk.setExpectedAnnualVolume(new BigDecimal("50000.00"));
+    churnRisk.setActualAnnualVolume(new BigDecimal("5000.00")); // Nur 10% erreicht
+    churnRisk.setPaymentTerms(PaymentTerms.SOFORT);
+    churnRisk.setCreditLimit(new BigDecimal("0.00")); // Kein Kredit mehr
+    churnRisk.setLifecycleStage(CustomerLifecycleStage.RECOVERY);
+    churnRisk.setLastContactDate(LocalDateTime.now().minusDays(180));
+    churnRisk.setCreatedBy("sales-cockpit");
+    customerRepository.persist(churnRisk);
+    
+    // Neukunde mit Potenzial
+    Customer newPotential = new Customer();
+    newPotential.setCustomerNumber("SC-NEW-004");
+    newPotential.setCompanyName("New Potential GmbH - Vielversprechender Neukunde");
+    newPotential.setTradingName("New Potential");
+    newPotential.setCustomerType(CustomerType.UNTERNEHMEN);
+    newPotential.setIndustry(Industry.VERANSTALTUNG);
+    newPotential.setClassification(Classification.A_KUNDE);
+    newPotential.setStatus(CustomerStatus.PROSPECT);
+    newPotential.setExpectedAnnualVolume(new BigDecimal("300000.00"));
+    newPotential.setActualAnnualVolume(new BigDecimal("0.00")); // Noch kein Umsatz
+    newPotential.setPaymentTerms(PaymentTerms.NETTO_14);
+    newPotential.setCreditLimit(new BigDecimal("50000.00"));
+    newPotential.setLifecycleStage(CustomerLifecycleStage.ONBOARDING);
+    newPotential.setLastContactDate(LocalDateTime.now());
+    newPotential.setNextFollowUpDate(LocalDateTime.now().plusDays(3));
+    newPotential.setCreatedBy("sales-cockpit");
+    customerRepository.persist(newPotential);
+    
+    LOG.info("✅ Sales Cockpit test scenarios created (4 customers with different performance levels)");
+  }
+  
+  // 10. OPPORTUNITY PIPELINE SCENARIOS
+  private void createOpportunityPipelineScenarios() {
+    // Kunde mit Hot Lead
+    Customer hotLead = new Customer();
+    hotLead.setCustomerNumber("OP-HOT-001");
+    hotLead.setCompanyName("Hot Opportunity AG - Kurz vor Abschluss");
+    hotLead.setTradingName("Hot Opportunity");
+    hotLead.setCustomerType(CustomerType.UNTERNEHMEN);
+    hotLead.setIndustry(Industry.HOTEL);
+    hotLead.setClassification(Classification.A_KUNDE);
+    hotLead.setStatus(CustomerStatus.AKTIV);
+    hotLead.setExpectedAnnualVolume(new BigDecimal("250000.00"));
+    hotLead.setLifecycleStage(CustomerLifecycleStage.GROWTH);
+    hotLead.setLastContactDate(LocalDateTime.now());
+    hotLead.setNextFollowUpDate(LocalDateTime.now().plusDays(1)); // Morgen Abschluss
+    hotLead.setCreatedBy("opportunity-pipeline");
+    customerRepository.persist(hotLead);
+    
+    // Kunde in Verhandlung
+    Customer negotiation = new Customer();
+    negotiation.setCustomerNumber("OP-NEGO-002");
+    negotiation.setCompanyName("Negotiation Inc - In Preisverhandlung");
+    negotiation.setTradingName("Negotiation");
+    negotiation.setCustomerType(CustomerType.UNTERNEHMEN);
+    negotiation.setIndustry(Industry.CATERING);
+    negotiation.setClassification(Classification.B_KUNDE);
+    negotiation.setStatus(CustomerStatus.AKTIV);
+    negotiation.setExpectedAnnualVolume(new BigDecimal("150000.00"));
+    negotiation.setLifecycleStage(CustomerLifecycleStage.RETENTION);
+    negotiation.setLastContactDate(LocalDateTime.now().minusDays(2));
+    negotiation.setNextFollowUpDate(LocalDateTime.now().plusDays(5));
+    negotiation.setCreatedBy("opportunity-pipeline");
+    customerRepository.persist(negotiation);
+    
+    // Kunde mit verlorenem Deal
+    Customer lostDeal = new Customer();
+    lostDeal.setCustomerNumber("OP-LOST-003");
+    lostDeal.setCompanyName("Lost Deal Ltd - An Konkurrenz verloren");
+    lostDeal.setTradingName("Lost Deal");
+    lostDeal.setCustomerType(CustomerType.UNTERNEHMEN);
+    lostDeal.setIndustry(Industry.RESTAURANT);
+    lostDeal.setClassification(Classification.D_KUNDE);
+    lostDeal.setStatus(CustomerStatus.INAKTIV);
+    lostDeal.setExpectedAnnualVolume(new BigDecimal("80000.00"));
+    lostDeal.setActualAnnualVolume(new BigDecimal("0.00"));
+    lostDeal.setLifecycleStage(CustomerLifecycleStage.RECOVERY);
+    lostDeal.setLastContactDate(LocalDateTime.now().minusDays(30));
+    lostDeal.setCreatedBy("opportunity-pipeline");
+    customerRepository.persist(lostDeal);
+    
+    // Kunde mit Renewal-Opportunity
+    Customer renewal = new Customer();
+    renewal.setCustomerNumber("OP-RENEWAL-004");
+    renewal.setCompanyName("Renewal Corp - Vertragsverlängerung anstehend");
+    renewal.setTradingName("Renewal");
+    renewal.setCustomerType(CustomerType.UNTERNEHMEN);
+    renewal.setIndustry(Industry.BILDUNG);
+    renewal.setClassification(Classification.A_KUNDE);
+    renewal.setStatus(CustomerStatus.AKTIV);
+    renewal.setExpectedAnnualVolume(new BigDecimal("180000.00"));
+    renewal.setActualAnnualVolume(new BigDecimal("175000.00"));
+    renewal.setLifecycleStage(CustomerLifecycleStage.RETENTION);
+    renewal.setLastContactDate(LocalDateTime.now().minusDays(7));
+    renewal.setNextFollowUpDate(LocalDateTime.now().plusDays(14)); // Renewal in 2 Wochen
+    renewal.setCreatedBy("opportunity-pipeline");
+    customerRepository.persist(renewal);
+    
+    // Kunde mit Upsell-Potenzial
+    Customer upsell = new Customer();
+    upsell.setCustomerNumber("OP-UPSELL-005");
+    upsell.setCompanyName("Upsell Potential GmbH - Erweiterung möglich");
+    upsell.setTradingName("Upsell Potential");
+    upsell.setCustomerType(CustomerType.UNTERNEHMEN);
+    upsell.setIndustry(Industry.VERANSTALTUNG);
+    upsell.setClassification(Classification.B_KUNDE);
+    upsell.setStatus(CustomerStatus.AKTIV);
+    upsell.setExpectedAnnualVolume(new BigDecimal("120000.00"));
+    upsell.setActualAnnualVolume(new BigDecimal("100000.00"));
+    upsell.setLifecycleStage(CustomerLifecycleStage.GROWTH);
+    upsell.setLastContactDate(LocalDateTime.now().minusDays(10));
+    upsell.setNextFollowUpDate(LocalDateTime.now().plusDays(7));
+    upsell.setCreatedBy("opportunity-pipeline");
+    customerRepository.persist(upsell);
+    
+    LOG.info("✅ Opportunity Pipeline test scenarios created (5 customers with different opportunity stages)");
   }
 }
