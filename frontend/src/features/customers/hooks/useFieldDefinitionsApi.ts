@@ -11,7 +11,8 @@
 import { useEffect } from 'react';
 import { useFieldDefinitions as useFieldDefinitionsQuery } from '../services';
 import { useCustomerOnboardingStore } from '../stores/customerOnboardingStore';
-import { EntityType, FieldDefinition, FieldCatalog } from '../types/field.types';
+import type { FieldDefinition, FieldCatalog } from '../types/field.types';
+import { EntityType } from '../types/field.types';
 import fieldCatalog from '../data/fieldCatalog.json';
 
 interface UseFieldDefinitionsApiResult {

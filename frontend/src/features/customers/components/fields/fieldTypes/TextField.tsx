@@ -7,7 +7,7 @@
 
 import React from 'react';
 import { TextField as MuiTextField } from '@mui/material';
-import { FieldDefinition } from '../../../types/field.types';
+import type { FieldDefinition } from '../../../types/field.types';
 
 interface TextFieldProps {
   /** Field definition */
@@ -72,6 +72,15 @@ export const TextField: React.FC<TextFieldProps> = ({
       sx={{
         '& .MuiInputBase-root': {
           backgroundColor: readOnly ? 'action.disabledBackground' : 'background.paper'
+        },
+        // Für lange Texte: Kleinere Schrift bei Bedarf
+        '& .MuiInputBase-input': {
+          ...(field.key === 'companyName' && value.length > 30 && {
+            fontSize: '0.875rem'
+          }),
+          ...(field.key === 'companyName' && value.length > 50 && {
+            fontSize: '0.8rem'
+          })
         }
       }}
     />

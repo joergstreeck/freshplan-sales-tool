@@ -5,7 +5,7 @@
  * Used for fieldType: 'select'
  */
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import { 
   FormControl, 
   Select as MuiSelect, 
@@ -13,7 +13,9 @@ import {
   FormHelperText,
   ListItemText
 } from '@mui/material';
-import { FieldDefinition } from '../../../types/field.types';
+import { useTheme } from '@mui/material/styles';
+import { useDropdownWidth } from '../../../hooks/useDropdownWidth';
+import type { FieldDefinition } from '../../../types/field.types';
 
 interface SelectFieldProps {
   /** Field definition */
@@ -54,6 +56,13 @@ export const SelectField: React.FC<SelectFieldProps> = ({
   required
 }) => {
   const displayValue = value || '';
+  const theme = useTheme();
+
+  // Nutze den neuen Hook für automatische Breiten-Berechnung
+  const dropdownWidth = useDropdownWidth({
+    options: field.options,
+    placeholder: field.placeholder
+  });
 
   return (
     <FormControl 
@@ -62,6 +71,13 @@ export const SelectField: React.FC<SelectFieldProps> = ({
       error={error}
       required={required}
       disabled={disabled || readOnly}
+      className="field-dropdown-auto"
+      sx={{
+        ...dropdownWidth.style,
+        [theme.breakpoints?.down('sm')]: {
+          width: '100%'
+        }
+      }}
     >
       <MuiSelect
         id={field.key}
@@ -87,7 +103,13 @@ export const SelectField: React.FC<SelectFieldProps> = ({
           'aria-invalid': error
         }}
         sx={{
-          backgroundColor: readOnly ? 'action.disabledBackground' : 'background.paper'
+          backgroundColor: readOnly ? 'action.disabledBackground' : 'background.paper',
+          '& .MuiSelect-select': {
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            paddingRight: '32px' // Platz für den Dropdown-Pfeil
+          }
         }}
       >
         {/* Placeholder option */}
@@ -104,6 +126,13 @@ export const SelectField: React.FC<SelectFieldProps> = ({
             key={option.value} 
             value={option.value}
             disabled={option.disabled}
+            sx={{
+              whiteSpace: 'normal', // Erlaube Zeilenumbruch in der Liste
+              minHeight: 'auto',
+              '& .MuiListItemText-primary': {
+                whiteSpace: 'normal'
+              }
+            }}
           >
             <ListItemText primary={option.label} />
           </MenuItem>

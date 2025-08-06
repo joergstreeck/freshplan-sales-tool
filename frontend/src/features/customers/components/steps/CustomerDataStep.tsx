@@ -8,7 +8,7 @@
  */
 
 import React, { useCallback } from 'react';
-import { Box, Typography, Alert } from '@mui/material';
+import { Box, Typography, Alert, AlertTitle } from '@mui/material';
 import { useCustomerOnboardingStore } from '../../stores/customerOnboardingStore';
 import { useFieldDefinitions } from '../../hooks/useFieldDefinitions';
 import { DynamicFieldRenderer } from '../fields/DynamicFieldRenderer';
@@ -74,6 +74,7 @@ export const CustomerDataStep: React.FC = () => {
       {/* Info for chain customers */}
       {customerData.chainCustomer === 'ja' && (
         <Alert severity="info" sx={{ mb: 3 }}>
+          <AlertTitle>Filialunternehmen</AlertTitle>
           Sie haben angegeben, dass es sich um ein Filialunternehmen handelt. 
           Im nächsten Schritt können Sie die einzelnen Standorte erfassen.
         </Alert>

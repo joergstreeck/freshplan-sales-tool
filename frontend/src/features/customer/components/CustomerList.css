@@ -25,9 +25,38 @@
   font-weight: var(--font-weight-bold);
 }
 
+.customer-list-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xl);
+}
+
 .customer-list-stats {
   display: flex;
   gap: var(--spacing-lg);
+}
+
+/* New Customer Button */
+.btn-new-customer {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--spacing-md) var(--spacing-lg);
+  background: var(--color-primary);
+  color: var(--color-white);
+  text-decoration: none;
+  border-radius: var(--radius-md);
+  font-family: var(--font-body);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  transition: all var(--transition-fast);
+  box-shadow: var(--shadow-md);
+}
+
+.btn-new-customer:hover {
+  background: var(--color-primary-dark);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+  color: var(--color-white);
 }
 
 .stat-item {

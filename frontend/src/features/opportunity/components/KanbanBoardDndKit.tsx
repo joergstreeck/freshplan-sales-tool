@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import {
   DndContext,
   KeyboardSensor,
@@ -42,6 +42,7 @@ import { OpportunityStage, type Opportunity } from '../types';
 import { STAGE_CONFIGURATIONS } from '../config/stage-config';
 import { logger } from '../../../lib/logger';
 import { useErrorHandler } from '../../../components/ErrorBoundary';
+import { httpClient } from '../../../lib/apiClient';
 
 // Aktive Pipeline Stages (immer sichtbar)
 const ACTIVE_STAGES = [
@@ -498,7 +499,7 @@ const KanbanColumn: React.FC<KanbanColumnProps> = React.memo(({ stage, opportuni
         items={opportunities.map(o => o.id)}
         strategy={verticalListSortingStrategy}
       >
-        <Box sx={{ minHeight: 300 }}>
+        <Box sx={{ minHeight: 400, maxHeight: 'calc(100vh - 400px)', overflowY: 'auto' }}>
           {opportunities.map((opportunity) => (
             <SortableOpportunityCard
               key={opportunity.id}
@@ -541,6 +542,39 @@ export const KanbanBoardDndKit: React.FC = React.memo(() => {
   const [opportunities, setOpportunities] = useState<Opportunity[]>(initialOpportunities);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [animatingIds, setAnimatingIds] = useState<Set<string>>(new Set());
+
+  // Load opportunities from API on component mount
+  useEffect(() => {
+    const loadOpportunities = async () => {
+      try {
+        console.log('🚀 KanbanBoard: Loading opportunities from API...');
+        const response = await httpClient.get<Opportunity[]>('/api/opportunities');
+        console.log('📥 KanbanBoard: Received', response.data?.length || 0, 'opportunities');
+        
+        if (response.data && response.data.length > 0) {
+          // Transform API data to match our Opportunity interface
+          const apiOpportunities = response.data.map((opp: any) => ({
+            ...opp,
+            // Ensure all required fields are present
+            contactName: opp.contactName || 'Unbekannt',
+            assignedToName: opp.assignedToName || 'Nicht zugewiesen',
+            probability: opp.probability || 0,
+            createdAt: opp.createdAt || new Date().toISOString(),
+            updatedAt: opp.updatedAt || new Date().toISOString()
+          }));
+          
+          console.log('✅ KanbanBoard: Setting API opportunities:', apiOpportunities.slice(0, 3).map(o => ({name: o.name, customer: o.customerName})));
+          setOpportunities(apiOpportunities);
+        }
+      } catch (error) {
+        console.error('❌ KanbanBoard: Failed to load opportunities:', error);
+        console.log('⚠️ KanbanBoard: Using fallback mock data');
+        // Keep using initialOpportunities as fallback
+      }
+    };
+
+    loadOpportunities();
+  }, []);
 
   // Configure sensors with cursor offset fix
   const sensors = useSensors(
@@ -946,10 +980,23 @@ export const KanbanBoardDndKit: React.FC = React.memo(() => {
             gap: 2, 
             pb: 2,
             minHeight: 500,
+            maxHeight: 'calc(100vh - 300px)', // Dynamische Höhe basierend auf Viewport
             overflowX: 'auto',
-            overflowY: 'hidden',
+            overflowY: 'auto', // Vertikales Scrollen aktivieren
             '&::-webkit-scrollbar': {
-              height: 0, // Verstecke nativen Scrollbar
+              height: 8, // Horizontaler Scrollbar
+              width: 8,  // Vertikaler Scrollbar
+            },
+            '&::-webkit-scrollbar-track': {
+              background: '#f1f1f1',
+              borderRadius: 4,
+            },
+            '&::-webkit-scrollbar-thumb': {
+              background: '#94C456',
+              borderRadius: 4,
+              '&:hover': {
+                background: '#7ba83f',
+              },
             },
           }}
           onScroll={handleScroll}

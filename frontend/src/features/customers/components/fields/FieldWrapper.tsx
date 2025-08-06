@@ -10,7 +10,7 @@
 import React from 'react';
 import { Box, Typography, Tooltip, Chip } from '@mui/material';
 import { Info as InfoIcon, Lock as LockIcon } from '@mui/icons-material';
-import { FieldDefinition } from '../../types/field.types';
+import type { FieldDefinition } from '../../types/field.types';
 
 interface FieldWrapperProps {
   /** Field definition */
@@ -87,20 +87,6 @@ export const FieldWrapper: React.FC<FieldWrapperProps> = ({
       
       {/* Field Component */}
       {children}
-      
-      {/* Error or Help Text */}
-      {(error || field.helpText) && (
-        <Typography
-          variant="caption"
-          sx={{
-            mt: 0.5,
-            display: 'block',
-            color: error ? 'error.main' : 'text.secondary'
-          }}
-        >
-          {error || field.helpText}
-        </Typography>
-      )}
     </Box>
   );
 };

@@ -51,6 +51,66 @@ public class CustomerSearchResource {
 
   @Inject SecurityContextProvider securityContext;
 
+  @GET
+  @Operation(
+      summary = "Search customers with query parameter",
+      description = "Simple search endpoint using query parameter")
+  @APIResponses({
+    @APIResponse(
+        responseCode = "200",
+        description = "Search completed successfully",
+        content =
+            @Content(
+                mediaType = MediaType.APPLICATION_JSON,
+                schema = @Schema(implementation = PagedCustomerResponse.class))),
+    @APIResponse(responseCode = "400", description = "Invalid search parameters"),
+    @APIResponse(responseCode = "401", description = "User not authenticated"),
+    @APIResponse(responseCode = "500", description = "Internal server error")
+  })
+  public Response searchCustomersGet(
+      @Parameter(description = "Search query", example = "Bella")
+          @QueryParam("query")
+          String query,
+      @Parameter(description = "Page number (0-based)", example = "0")
+          @QueryParam("page")
+          @DefaultValue(PaginationConstants.DEFAULT_PAGE_NUMBER_STRING)
+          @Min(value = 0, message = "Page must be >= 0")
+          int page,
+      @Parameter(description = "Page size", example = "20")
+          @QueryParam("size")
+          @DefaultValue(PaginationConstants.DEFAULT_PAGE_SIZE_STRING)
+          @Min(value = 1, message = "Size must be >= 1")
+          @Max(
+              value = PaginationConstants.MAX_PAGE_SIZE,
+              message = "Size must be <= " + PaginationConstants.MAX_PAGE_SIZE)
+          int size) {
+    LOG.infof("Customer GET search request: query=%s, page=%d, size=%d", query, page, size);
+
+    try {
+      // Create request object from query parameter
+      CustomerSearchRequest request = new CustomerSearchRequest();
+      if (query != null && !query.isBlank()) {
+        request.setGlobalSearch(query);
+      }
+      
+      PagedResponse<CustomerResponse> results = searchService.search(request, page, size);
+      LOG.infof("Search completed: found %d customers", results.getTotalElements());
+      return Response.ok(results).build();
+
+    } catch (IllegalArgumentException e) {
+      LOG.error("Invalid search parameters", e);
+      return Response.status(Response.Status.BAD_REQUEST)
+          .entity(new ErrorResponse("Invalid search parameters: " + e.getMessage()))
+          .build();
+
+    } catch (Exception e) {
+      LOG.error("Error during customer search", e);
+      return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+          .entity(new ErrorResponse("An error occurred during search"))
+          .build();
+    }
+  }
+
   @POST
   @Operation(
       summary = "Search customers with dynamic filters",

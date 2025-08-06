@@ -9,64 +9,14 @@ import {
 import { useTheme } from '@mui/material/styles';
 import { DndContext, DragOverlay, closestCorners } from '@dnd-kit/core';
 import type { DragEndEvent, DragStartEvent } from '@dnd-kit/core';
-import { httpClient } from '../../../services/httpClient';
+import { httpClient } from '../../../lib/apiClient';
 
 // Import unserer neuen Komponenten
 import { PipelineStage, OpportunityStage } from './PipelineStage';
 import { OpportunityCard } from './OpportunityCard';
 import type { Opportunity } from './OpportunityCard';
 
-// Temporär: Mock-Daten als Fallback
-const mockOpportunities: Opportunity[] = [
-  {
-    id: '1',
-    name: 'Großauftrag Restaurant Schmidt',
-    stage: OpportunityStage.LEAD,
-    value: 15000,
-    probability: 20,
-    customerName: 'Restaurant Schmidt GmbH',
-    assignedToName: 'Max Mustermann',
-    expectedCloseDate: '2025-08-15',
-    createdAt: '2025-07-01T10:00:00Z',
-    updatedAt: '2025-07-20T15:30:00Z',
-  },
-  {
-    id: '2', 
-    name: 'Hotel Adler - Wocheneinkauf',
-    stage: OpportunityStage.NEEDS_ANALYSIS,
-    value: 8500,
-    probability: 60,
-    customerName: 'Hotel Adler',
-    assignedToName: 'Anna Weber',
-    expectedCloseDate: '2025-07-30',
-    createdAt: '2025-07-05T09:15:00Z',
-    updatedAt: '2025-07-22T11:45:00Z',
-  },
-  {
-    id: '3',
-    name: 'Catering Müller - Event-Paket',
-    stage: OpportunityStage.PROPOSAL,
-    value: 5200,
-    probability: 80,
-    customerName: 'Catering Müller',
-    assignedToName: 'Tom Fischer',
-    expectedCloseDate: '2025-08-01',
-    createdAt: '2025-07-10T14:20:00Z',
-    updatedAt: '2025-07-23T09:10:00Z',
-  },
-  {
-    id: '4',
-    name: 'Restaurant Sonnenblick - Vertragsverlängerung',
-    stage: OpportunityStage.RENEWAL,
-    value: 12000,
-    probability: 75,
-    customerName: 'Restaurant Sonnenblick',
-    assignedToName: 'Maria Schmidt',
-    expectedCloseDate: '2025-08-15',
-    createdAt: '2025-05-15T10:00:00Z',
-    updatedAt: '2025-07-25T14:30:00Z',
-  }
-];
+// Mock-Daten entfernt - OpportunityPipeline nutzt jetzt ausschließlich echte API-Daten
 
 
 /**
@@ -89,7 +39,9 @@ export const OpportunityPipeline: React.FC = () => {
     const fetchOpportunities = async () => {
       try {
         setIsLoading(true);
+        console.log('🚀 Fetching opportunities from API...');
         const response = await httpClient.get<Opportunity[]>('/api/opportunities');
+        console.log('📥 API Response:', response.data?.length || 0, 'opportunities received');
         
         // Transformiere die API-Daten falls nötig
         const apiOpportunities = response.data.map((opp: any) => ({
@@ -101,13 +53,14 @@ export const OpportunityPipeline: React.FC = () => {
           updatedAt: opp.updatedAt || new Date().toISOString()
         }));
         
+        console.log('✅ Setting opportunities:', apiOpportunities.slice(0, 3).map(o => ({name: o.name, customer: o.customerName})));
         setOpportunities(apiOpportunities);
         setError(null);
       } catch (err) {
         console.error('Fehler beim Laden der Opportunities:', err);
-        setError('Fehler beim Laden der Opportunities');
-        // Fallback auf Mock-Daten bei Fehler
-        setOpportunities(mockOpportunities);
+        setError('Fehler beim Laden der Opportunities - Backend nicht erreichbar');
+        // Leere Liste statt Mock-Daten bei Fehler
+        setOpportunities([]);
       } finally {
         setIsLoading(false);
       }

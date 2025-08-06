@@ -8,7 +8,7 @@
  * @see /Users/joergstreeck/freshplan-sales-tool/frontend/src/features/customers/data/fieldCatalog.json
  */
 
-import { TriggerCondition, FieldCondition, FieldDefinition } from '../types/field.types';
+import type { TriggerCondition, FieldCondition, FieldDefinition } from '../types/field.types';
 
 /**
  * Evaluate a trigger condition (for wizard steps)

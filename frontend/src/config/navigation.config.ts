@@ -62,6 +62,10 @@ export const navigationConfig: NavigationItemType[] = [
         path: '/kundenmanagement/liste',
       },
       {
+        label: 'Neuer Kunde',
+        path: '/kundenmanagement/neu',
+      },
+      {
         label: 'Verkaufschancen',
         path: '/kundenmanagement/opportunities',
       },
