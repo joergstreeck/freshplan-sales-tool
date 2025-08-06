@@ -171,7 +171,7 @@ export const useFocusListStore = create<FocusListStore>()(
         tableColumns: [...DEFAULT_TABLE_COLUMNS],
         selectedCustomerId: null,
         page: 0,
-        pageSize: 20,
+        pageSize: 50, // Erhöht für bessere Übersicht aller Testkunden
 
         // Derived State
         get filterCount() {

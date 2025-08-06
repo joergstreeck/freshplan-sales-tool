@@ -8,10 +8,13 @@ import { AppProviders } from './providers.tsx';
 
 // Enable MSW for development if backend is not available
 async function enableMocking() {
-  if (!import.meta.env.DEV) {
+  // TEMPORARY: Disable MSW to use real backend data
+  const USE_MSW = import.meta.env.VITE_USE_MSW === 'true' || false;
+  
+  if (!import.meta.env.DEV || !USE_MSW) {
     // In production/preview mode, don't use MSW but still check backend availability
     // This prevents the app from hanging if backend is slow to start
-    console.log('Production mode: Skipping MSW setup');
+    console.log('MSW disabled: Using real backend API');
     return;
   }
 

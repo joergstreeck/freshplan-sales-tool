@@ -13,7 +13,7 @@ import './CustomerList.css';
 export const CustomerList: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const [sortBy, setSortBy] = useState('companyName');
-  const pageSize = 20;
+  const pageSize = 50; // Erhöht von 20 auf 50 für bessere Übersicht
 
   const { data, isLoading, isError, error } = useCustomers(currentPage, pageSize, sortBy);
 
@@ -79,10 +79,15 @@ export const CustomerList: React.FC = () => {
       {/* Header */}
       <div className="customer-list-header">
         <h1>Kundenliste</h1>
-        <div className="customer-list-stats">
-          <span className="stat-item">
-            <strong>{data.totalElements}</strong> Kunden gesamt
-          </span>
+        <div className="customer-list-actions">
+          <div className="customer-list-stats">
+            <span className="stat-item">
+              <strong>{data.totalElements}</strong> Kunden gesamt
+            </span>
+          </div>
+          <a href="/kundenmanagement/neu" className="btn-new-customer">
+            + Neuer Kunde
+          </a>
         </div>
       </div>
 

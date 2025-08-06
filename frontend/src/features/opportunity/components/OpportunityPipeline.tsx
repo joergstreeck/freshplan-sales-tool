@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { 
   Box, 
   Typography, 
@@ -9,13 +9,14 @@ import {
 import { useTheme } from '@mui/material/styles';
 import { DndContext, DragOverlay, closestCorners } from '@dnd-kit/core';
 import type { DragEndEvent, DragStartEvent } from '@dnd-kit/core';
+import { httpClient } from '../../../services/httpClient';
 
 // Import unserer neuen Komponenten
 import { PipelineStage, OpportunityStage } from './PipelineStage';
 import { OpportunityCard } from './OpportunityCard';
 import type { Opportunity } from './OpportunityCard';
 
-// Temporär: Mock-Daten für Development (bis API vollständig implementiert)
+// Temporär: Mock-Daten als Fallback
 const mockOpportunities: Opportunity[] = [
   {
     id: '1',
@@ -78,8 +79,42 @@ export const OpportunityPipeline: React.FC = () => {
   const theme = useTheme();
   const [activeOpportunity, setActiveOpportunity] = useState<Opportunity | null>(null);
   
-  // State für Mock-Daten (wird bei Drag & Drop aktualisiert)
-  const [opportunities, setOpportunities] = useState<Opportunity[]>(mockOpportunities);
+  // State für Opportunities (aus API oder Fallback)
+  const [opportunities, setOpportunities] = useState<Opportunity[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  
+  // Lade Opportunities aus der API
+  useEffect(() => {
+    const fetchOpportunities = async () => {
+      try {
+        setIsLoading(true);
+        const response = await httpClient.get<Opportunity[]>('/api/opportunities');
+        
+        // Transformiere die API-Daten falls nötig
+        const apiOpportunities = response.data.map((opp: any) => ({
+          ...opp,
+          // Stelle sicher, dass alle erforderlichen Felder vorhanden sind
+          assignedToName: opp.assignedToName || 'Nicht zugewiesen',
+          probability: opp.probability || 0,
+          createdAt: opp.createdAt || new Date().toISOString(),
+          updatedAt: opp.updatedAt || new Date().toISOString()
+        }));
+        
+        setOpportunities(apiOpportunities);
+        setError(null);
+      } catch (err) {
+        console.error('Fehler beim Laden der Opportunities:', err);
+        setError('Fehler beim Laden der Opportunities');
+        // Fallback auf Mock-Daten bei Fehler
+        setOpportunities(mockOpportunities);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    fetchOpportunities();
+  }, []);
   
   // Pipeline-Daten basierend auf aktuellem State berechnen
   const pipelineData = useMemo(() => ({
@@ -96,9 +131,6 @@ export const OpportunityPipeline: React.FC = () => {
       return acc;
     }, {} as Record<OpportunityStage, { count: number, value: number, opportunities: Opportunity[] }>)
   }), [opportunities]);
-  
-  const isLoading = false;
-  const error = null;
 
   // Drag & Drop Handlers
   const handleDragStart = (event: DragStartEvent) => {
