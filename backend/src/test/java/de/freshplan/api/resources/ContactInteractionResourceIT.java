@@ -8,6 +8,10 @@ import de.freshplan.domain.customer.entity.Contact;
 import de.freshplan.domain.customer.entity.ContactInteraction;
 import de.freshplan.domain.customer.entity.ContactInteraction.InteractionType;
 import de.freshplan.domain.customer.entity.Customer;
+import de.freshplan.domain.customer.entity.CustomerStatus;
+import de.freshplan.domain.customer.entity.FinancingType;
+import de.freshplan.domain.customer.entity.PartnerStatus;
+import de.freshplan.domain.customer.entity.PaymentTerms;
 import de.freshplan.domain.customer.repository.ContactInteractionRepository;
 import de.freshplan.domain.customer.repository.ContactRepository;
 import de.freshplan.domain.customer.repository.CustomerRepository;
@@ -48,22 +52,12 @@ class ContactInteractionResourceIT {
     Customer testCustomer = new Customer();
     testCustomer.setCompanyName("Test Company GmbH");
     testCustomer.setCustomerNumber("CUST-" + UUID.randomUUID().toString().substring(0, 8));
-    testCustomer.setCompanyType("UNTERNEHMEN");
-    testCustomer.setCompanyStructure("STANDALONE");
-    testCustomer.setLifecyclePhase("ACQUISITION");
-    testCustomer.setPartnerStatus("KEIN_PARTNER");
-    testCustomer.setPaymentTerms("NETTO_30");
-    testCustomer.setStatus("LEAD");
-    testCustomer.setDataQualityStatus("STANDARD");
-    testCustomer.setPainPoints("[]"); // Empty JSON array
+    testCustomer.setPartnerStatus(PartnerStatus.KEIN_PARTNER);
+    testCustomer.setPaymentTerms(PaymentTerms.NETTO_30);
+    testCustomer.setStatus(CustomerStatus.LEAD);
     testCustomer.setCreatedBy("system");
     // Sprint 2 fields
-    testCustomer.setLocationsGermany(0);
-    testCustomer.setLocationsAustria(0);
-    testCustomer.setLocationsRestEu(0);
-    testCustomer.setLocationsSwitzerland(0);
-    testCustomer.setTotalLocationsEu(0);
-    testCustomer.setPrimaryFinancing("EIGENKAPITAL");
+    testCustomer.setPrimaryFinancing(FinancingType.EIGENKAPITAL);
     customerRepository.persist(testCustomer);
     testCustomerId = testCustomer.getId();
 
