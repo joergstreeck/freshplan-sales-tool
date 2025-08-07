@@ -40,6 +40,25 @@ class ContactInteractionResourceIT {
   private UUID testCustomerId;
   private UUID testContactId;
 
+  private void createTestInteraction(InteractionType type, String summary) {
+    ContactInteractionDTO dto = ContactInteractionDTO.builder()
+        .contactId(testContactId)
+        .type(type)
+        .summary(summary)
+        .sentimentScore(0.7)
+        .engagementScore(75)
+        .timestamp(LocalDateTime.now())
+        .build();
+
+    given()
+        .contentType(ContentType.JSON)
+        .body(dto)
+        .when()
+        .post("/api/contact-interactions")
+        .then()
+        .statusCode(201);
+  }
+
   @BeforeEach
   @Transactional
   void setUp() {
@@ -154,7 +173,7 @@ class ContactInteractionResourceIT {
 
     given()
         .when()
-        .post("/api/contact-interactions/warmth/{contactId}/calculate", testContactId)
+        .get("/api/contact-interactions/contact/{contactId}/warmth-score", testContactId)
         .then()
         .statusCode(200)
         .contentType(ContentType.JSON)
@@ -173,18 +192,13 @@ class ContactInteractionResourceIT {
   @Test
   @DisplayName("Should get warmth score for contact")
   void shouldGetWarmthScore() {
-    // First calculate the score
+    // First create an interaction
     createTestInteraction(InteractionType.NOTE, "Initial note");
-    given()
-        .when()
-        .post("/api/contact-interactions/warmth/{contactId}/calculate", testContactId)
-        .then()
-        .statusCode(200);
 
-    // Then retrieve it
+    // Get warmth score
     given()
         .when()
-        .get("/api/contact-interactions/warmth/{contactId}", testContactId)
+        .get("/api/contact-interactions/contact/{contactId}/warmth-score", testContactId)
         .then()
         .statusCode(200)
         .contentType(ContentType.JSON)
@@ -198,10 +212,10 @@ class ContactInteractionResourceIT {
     String noteContent = "This is a test note for integration testing";
 
     given()
-        .contentType(ContentType.JSON)
-        .body("{\"note\": \"" + noteContent + "\"}")
+        .contentType(ContentType.TEXT)
+        .body(noteContent)
         .when()
-        .post("/api/contact-interactions/note/{contactId}", testContactId)
+        .post("/api/contact-interactions/contact/{contactId}/note", testContactId)
         .then()
         .statusCode(201)
         .contentType(ContentType.JSON)
@@ -215,11 +229,19 @@ class ContactInteractionResourceIT {
   @Test
   @DisplayName("Should record email interaction")
   void shouldRecordEmail() {
+    ContactInteractionDTO dto = ContactInteractionDTO.builder()
+        .contactId(testContactId)
+        .type(InteractionType.EMAIL)
+        .summary("Test Email Subject")
+        .sentimentScore(0.8)
+        .timestamp(LocalDateTime.now())
+        .build();
+    
     given()
         .contentType(ContentType.JSON)
-        .body("{\"type\": \"SENT\", \"subject\": \"Test Email Subject\", \"sentiment\": 0.8}")
+        .body(dto)
         .when()
-        .post("/api/contact-interactions/email/{contactId}", testContactId)
+        .post("/api/contact-interactions")
         .then()
         .statusCode(201)
         .contentType(ContentType.JSON)
@@ -232,12 +254,19 @@ class ContactInteractionResourceIT {
   @Test
   @DisplayName("Should record call interaction")
   void shouldRecordCall() {
+    ContactInteractionDTO dto = ContactInteractionDTO.builder()
+        .contactId(testContactId)
+        .type(InteractionType.CALL)
+        .summary("Successful discussion")
+        .engagementScore(80)
+        .timestamp(LocalDateTime.now())
+        .build();
+    
     given()
         .contentType(ContentType.JSON)
-        .body(
-            "{\"type\": \"OUTBOUND\", \"duration\": 1800, \"outcome\": \"Successful discussion\"}")
+        .body(dto)
         .when()
-        .post("/api/contact-interactions/call/{contactId}", testContactId)
+        .post("/api/contact-interactions")
         .then()
         .statusCode(201)
         .contentType(ContentType.JSON)
@@ -250,11 +279,19 @@ class ContactInteractionResourceIT {
   @Test
   @DisplayName("Should record meeting interaction")
   void shouldRecordMeeting() {
+    ContactInteractionDTO dto = ContactInteractionDTO.builder()
+        .contactId(testContactId)
+        .type(InteractionType.MEETING)
+        .summary("Productive meeting")
+        .engagementScore(90)
+        .timestamp(LocalDateTime.now())
+        .build();
+    
     given()
         .contentType(ContentType.JSON)
-        .body("{\"type\": \"COMPLETED\", \"duration\": 3600, \"notes\": \"Productive meeting\"}")
+        .body(dto)
         .when()
-        .post("/api/contact-interactions/meeting/{contactId}", testContactId)
+        .post("/api/contact-interactions")
         .then()
         .statusCode(201)
         .contentType(ContentType.JSON)
