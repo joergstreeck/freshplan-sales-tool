@@ -37,8 +37,9 @@ class CustomerRepositoryTest {
   @Transactional
   void setupCleanDatabase() {
     // Clean database before each test to ensure proper isolation
-    // Delete timeline events first due to foreign key constraints
+    // Delete in correct order due to foreign key constraints
     em.createQuery("DELETE FROM CustomerTimelineEvent").executeUpdate();
+    em.createQuery("DELETE FROM CustomerContact").executeUpdate();
     em.createQuery("DELETE FROM Customer").executeUpdate();
     em.flush();
   }
