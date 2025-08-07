@@ -1,14 +1,46 @@
+/**
+ * Permission-based Content Gating Component
+ * 
+ * @module components/permission/PermissionGate
+ * @description Enterprise-grade permission gating für conditional rendering basierend auf
+ *              User-Permissions. Implementiert RBAC (Role-Based Access Control) mit
+ *              graceful loading states und flexible fallback options.
+ * 
+ * @example
+ * ```tsx
+ * // Einfache Permission-Prüfung
+ * <PermissionGate permission="customers:write">
+ *   <Button>Kunde bearbeiten</Button>
+ * </PermissionGate>
+ * 
+ * // Mit Custom Fallback
+ * <PermissionGate 
+ *   permission="admin:access" 
+ *   fallback={<Alert>Keine Berechtigung</Alert>}
+ * >
+ *   <AdminPanel />
+ * </PermissionGate>
+ * 
+ * // Multiple Permissions (OR-Logik)
+ * <MultiPermissionGate permissions={["manager:view", "admin:view"]}>
+ *   <Dashboard />
+ * </MultiPermissionGate>
+ * ```
+ * 
+ * @since 2.0.0
+ * @see {@link usePermissions} - Hook für Permission-Logik
+ * @see {@link PermissionButton} - Button mit Permission-Check
+ */
+
 import React, { ReactNode } from 'react';
 import { Skeleton } from '@mui/material';
 import { usePermissions } from '../../contexts/PermissionContext';
 
 /**
- * PermissionGate component from FC-009 CLAUDE_TECH recipes.
- *
- * Conditionally renders children based on permission checks.
- * Shows loading skeleton while permissions are being loaded.
+ * Props für PermissionGate Component
+ * 
+ * @interface PermissionGateProps
  */
-
 interface PermissionGateProps {
   /** The permission code to check (e.g., "customers:read") */
   permission: string;
@@ -41,7 +73,13 @@ export const PermissionGate: React.FC<PermissionGateProps> = ({
 };
 
 /**
- * Multiple permission gate - requires ANY of the permissions.
+ * Multiple Permission Gate Component
+ * 
+ * @description Prüft mehrere Permissions mit OR-Logik.
+ *              Rendert Content wenn MINDESTENS EINE der angegebenen
+ *              Permissions vorhanden ist.
+ * 
+ * @interface MultiPermissionGateProps
  */
 interface MultiPermissionGateProps {
   /** Array of permission codes - user needs ANY of these */

@@ -1,14 +1,40 @@
 /**
- * Logo Component mit Fallback
+ * Logo Component mit intelligentem Fallback-System
  *
- * Zeigt das FreshPlan Logo oder einen Fallback,
- * falls die Bilddatei nicht verfügbar ist
+ * @module components/common/Logo
+ * @description Enterprise-ready Logo-Komponente mit automatischem Fallback auf SVG-Icon
+ *              bei fehlenden Bilddateien. Unterstützt responsive Größenanpassung und
+ *              verschiedene Darstellungsvarianten.
+ * 
+ * @example
+ * ```tsx
+ * // Standard Logo mit voller Breite
+ * <Logo variant="full" height={60} />
+ * 
+ * // Icon-only Variante für mobile Ansicht
+ * <Logo variant="icon" height={{ xs: 30, sm: 40 }} />
+ * 
+ * // Klickbares Logo mit Navigation
+ * <Logo onClick={() => navigate('/')} />
+ * ```
+ * 
+ * @since 2.0.0
+ * @author FreshPlan Team
  */
 
 import React, { useState } from 'react';
 import { Box, Typography } from '@mui/material';
 import { LocalFlorist as FloristIcon } from '@mui/icons-material';
 
+/**
+ * Props für die Logo-Komponente
+ * 
+ * @interface LogoProps
+ * @property {'full' | 'icon'} [variant='full'] - Darstellungsvariante des Logos
+ * @property {number | { xs: number; sm: number }} [height=40] - Höhe des Logos (responsive möglich)
+ * @property {() => void} [onClick] - Click-Handler für Logo-Navigation
+ * @property {boolean} [showFallback=true] - Zeigt Fallback-Logo bei Ladefehler
+ */
 interface LogoProps {
   variant?: 'full' | 'icon';
   height?: number | { xs: number; sm: number };
