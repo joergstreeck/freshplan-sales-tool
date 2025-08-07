@@ -44,9 +44,26 @@ class ContactInteractionResourceIT {
     contactRepository.deleteAll();
     customerRepository.deleteAll();
 
-    // Create test customer
+    // Create test customer with all required fields
     Customer testCustomer = new Customer();
     testCustomer.setCompanyName("Test Company GmbH");
+    testCustomer.setCustomerNumber("CUST-" + UUID.randomUUID().toString().substring(0, 8));
+    testCustomer.setCompanyType("UNTERNEHMEN");
+    testCustomer.setCompanyStructure("STANDALONE");
+    testCustomer.setLifecyclePhase("ACQUISITION");
+    testCustomer.setPartnerStatus("KEIN_PARTNER");
+    testCustomer.setPaymentTerms("NETTO_30");
+    testCustomer.setStatus("LEAD");
+    testCustomer.setDataQualityStatus("STANDARD");
+    testCustomer.setPainPoints("[]"); // Empty JSON array
+    testCustomer.setCreatedBy("system");
+    // Sprint 2 fields
+    testCustomer.setLocationsGermany(0);
+    testCustomer.setLocationsAustria(0);
+    testCustomer.setLocationsRestEu(0);
+    testCustomer.setLocationsSwitzerland(0);
+    testCustomer.setTotalLocationsEu(0);
+    testCustomer.setPrimaryFinancing("EIGENKAPITAL");
     customerRepository.persist(testCustomer);
     testCustomerId = testCustomer.getId();
 
