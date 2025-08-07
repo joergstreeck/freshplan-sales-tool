@@ -306,13 +306,13 @@ class ContactInteractionResourceIT {
   @DisplayName("Should improve data quality metrics after adding interactions")
   void shouldImproveDataQualityAfterInteractions() {
     // Get initial metrics
-    Response initialResponse = given()
+    Float initialScore = given()
             .when()
             .get("/api/contact-interactions/metrics/data-quality")
             .then()
             .statusCode(200)
             .extract()
-            .response();
+            .path("dataCompletenessScore");
 
     // Add several interactions
     createTestInteraction(InteractionType.EMAIL, "First interaction");
@@ -330,7 +330,7 @@ class ContactInteractionResourceIT {
         .body("contactsWithInteractions", equalTo(1))
         .body("averageInteractionsPerContact", equalTo(4.0f))
         .body("contactsWithInteractions", greaterThan(0))
-        .body("dataCompletenessScore", greaterThan(initialMetrics.getDataCompletenessScore()));
+        .body("dataCompletenessScore", greaterThan(initialScore));
   }
 
   @Test
