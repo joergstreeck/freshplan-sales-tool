@@ -7,20 +7,19 @@
 
 ## 🎯 JETZT GERADE:
 
-**CI FAST GRÜN - NUR NOCH 2 TESTS ROT**
+**CI-VERBESSERUNGEN DURCHGEFÜHRT - BACKEND TESTS GRÜN**
 
-**Stand 08.08.2025 00:33:**
-- ✅ **9 von 11 CI-Checks grün**
-- ✅ **React Downgrade:** 19.1.0 → 18.3.1 erfolgreich
-- ✅ **ContactInteractionResourceIT:** API-Pfade gefixt
-- ✅ **CustomerRepositoryTest:** Pflichtfelder ergänzt
-- 🔄 **Backend Integration Tests:** Noch rot (Response-Validierung)
-- 🔄 **Playwright Tests:** Timeouts in CI
-- 🎯 **PR #74:** Wartet auf grüne CI
+**Stand 08.08.2025 00:54:**
+- ✅ **Backend Test Job:** GRÜN!
+- ✅ **Playwright Debug:** Umfassende Debug-Features hinzugefügt
+- ✅ **Foreign Key Issues:** CustomerRepositoryTest gefixt
+- 🔄 **Backend Integration Tests:** Noch kleinere Issues
+- 🔄 **Playwright Tests:** Läuft mit Debug-Infos
+- 🎯 **PR #74:** Fast grün (2 grün, 5 pending)
 
 **🚀 NÄCHSTER SCHRITT:**
 
-**Letzte 2 CI-Tests fixen**
+**CI-Ergebnisse analysieren und letzte Fixes**
 
 ```bash
 cd /Users/joergstreeck/freshplan-sales-tool
@@ -28,18 +27,18 @@ cd /Users/joergstreeck/freshplan-sales-tool
 # 1. CI-Status prüfen
 gh pr checks 74
 
-# 2. Backend Integration Test Logs analysieren
-gh run list --branch feature/fc-005-data-quality-fixes --limit 1
-gh run view <RUN_ID> --log-failed | grep -A20 "ContactInteractionResourceIT"
+# 2. Playwright Artifacts downloaden (falls Timeout)
+# → GitHub Actions → Run → Artifacts → playwright-report & playwright-traces
 
-# 3. Response-Validierung in Tests anpassen
-# Problem: Tests erwarten andere Response-Felder als API liefert
+# 3. Backend Integration Test finale Fixes
+# warmthScore: Integer vs Float Issue
+# sentimentScore: Type Mismatch
 ```
 
 **UNTERBROCHEN BEI:**
-- Warten auf CI-Ergebnisse der letzten Fixes (Commits f2450d2)
-- ContactInteractionResourceIT braucht noch Response-Field-Anpassungen
-- Playwright-Timeouts müssen erhöht werden
+- Warten auf CI-Ergebnisse mit neuen Debug-Features
+- Backend Integration Tests: warmthScore/sentimentScore Format-Issues
+- Playwright läuft noch mit erweiterten Traces
 
 **AKTUELLE POSITION:**
 - ✅ Sprint 2 Integration: 100% abgeschlossen

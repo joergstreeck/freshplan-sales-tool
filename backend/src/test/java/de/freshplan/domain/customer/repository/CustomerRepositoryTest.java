@@ -39,6 +39,7 @@ class CustomerRepositoryTest {
     // Clean database before each test to ensure proper isolation
     // Delete in correct order due to foreign key constraints
     em.createQuery("DELETE FROM CustomerTimelineEvent").executeUpdate();
+    em.createQuery("DELETE FROM ContactInteraction").executeUpdate();
     em.createQuery("DELETE FROM CustomerContact").executeUpdate();
     em.createQuery("DELETE FROM Customer").executeUpdate();
     em.flush();
