@@ -7,19 +7,19 @@
 
 ## 🎯 JETZT GERADE:
 
-**CI-VERBESSERUNGEN DURCHGEFÜHRT - BACKEND TESTS GRÜN**
+**CI FAST GRÜN - NUR NOCH PLAYWRIGHT TEST ROT**
 
-**Stand 08.08.2025 00:54:**
-- ✅ **Backend Test Job:** GRÜN!
-- ✅ **Playwright Debug:** Umfassende Debug-Features hinzugefügt
-- ✅ **Foreign Key Issues:** CustomerRepositoryTest gefixt
-- 🔄 **Backend Integration Tests:** Noch kleinere Issues
-- 🔄 **Playwright Tests:** Läuft mit Debug-Infos
-- 🎯 **PR #74:** Fast grün (2 grün, 5 pending)
+**Stand 08.08.2025 01:38:**
+- ✅ **Backend Tests:** ALLE GRÜN!
+- ✅ **Integration Tests:** GRÜN!
+- ✅ **E2E Smoke:** GRÜN!
+- ✅ **Lint/Quality:** ALLE GRÜN!
+- 🔄 **Playwright:** SPA-Routing Fix deployed, läuft noch
+- 🎯 **PR #74:** 8/9 Tests grün (89%)
 
 **🚀 NÄCHSTER SCHRITT:**
 
-**CI-Ergebnisse analysieren und letzte Fixes**
+**CI-Status prüfen und PR mergen**
 
 ```bash
 cd /Users/joergstreeck/freshplan-sales-tool
@@ -27,18 +27,17 @@ cd /Users/joergstreeck/freshplan-sales-tool
 # 1. CI-Status prüfen
 gh pr checks 74
 
-# 2. Playwright Artifacts downloaden (falls Timeout)
-# → GitHub Actions → Run → Artifacts → playwright-report & playwright-traces
+# 2. Falls Playwright grün → PR mergen
+gh pr merge 74 --squash
 
-# 3. Backend Integration Test finale Fixes
-# warmthScore: Integer vs Float Issue
-# sentimentScore: Type Mismatch
+# 3. Falls noch rot → Logs checken
+gh run view [RUN-ID] --log-failed | grep -A 10 "Error:"
 ```
 
 **UNTERBROCHEN BEI:**
-- Warten auf CI-Ergebnisse mit neuen Debug-Features
-- Backend Integration Tests: warmthScore/sentimentScore Format-Issues
-- Playwright läuft noch mit erweiterten Traces
+- Warten auf Playwright CI-Ergebnis mit SPA-Routing Fix
+- Fix ist deployed: `npx serve -s` für SPA-Mode
+- Erwarte grüne CI in wenigen Minuten
 
 **AKTUELLE POSITION:**
 - ✅ Sprint 2 Integration: 100% abgeschlossen
