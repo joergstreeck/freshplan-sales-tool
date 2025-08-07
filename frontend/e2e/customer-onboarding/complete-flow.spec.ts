@@ -134,7 +134,7 @@ test.describe('Complete Customer Onboarding Flow', () => {
     });
     
     // Navigate to customer creation
-    await page.goto('/customers/new');
+    await page.goto('/kundenmanagement/neu');
   });
 
   test('should complete full onboarding flow successfully', async ({ page }) => {
