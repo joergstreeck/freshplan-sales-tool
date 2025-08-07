@@ -6,10 +6,15 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : undefined,
-  reporter: 'html',
+  reporter: process.env.CI ? [['list'], ['html', { open: 'never' }]] : 'html',
+  timeout: 60000, // 60 seconds timeout per test
   use: {
     baseURL: 'http://localhost:5173',
-    trace: 'on-first-retry',
+    trace: process.env.CI ? 'on' : 'on-first-retry',
+    screenshot: 'only-on-failure',
+    video: process.env.CI ? 'retain-on-failure' : 'off',
+    actionTimeout: 15000, // 15 seconds for actions
+    navigationTimeout: 30000, // 30 seconds for navigation
   },
 
   projects: [
