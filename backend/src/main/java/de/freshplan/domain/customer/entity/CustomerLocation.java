@@ -4,10 +4,14 @@ import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UuidGenerator;
+import org.hibernate.type.SqlTypes;
 
 /**
  * Customer location entity representing different locations/sites of a customer. Each location can
@@ -103,6 +107,15 @@ public class CustomerLocation extends PanacheEntityBase {
   @Column(name = "notes", columnDefinition = "TEXT")
   private String notes;
 
+  // Sprint 2: Service Offerings and Location Details as JSON
+  @JdbcTypeCode(SqlTypes.JSON)
+  @Column(name = "service_offerings", columnDefinition = "jsonb")
+  private Map<String, Object> serviceOfferings = new HashMap<>();
+
+  @JdbcTypeCode(SqlTypes.JSON)
+  @Column(name = "location_details", columnDefinition = "jsonb")
+  private Map<String, Object> locationDetails = new HashMap<>();
+
   // Soft Delete
   @Column(name = "is_deleted", nullable = false)
   private Boolean isDeleted = false;
@@ -144,6 +157,13 @@ public class CustomerLocation extends PanacheEntityBase {
     }
     if (isShippingLocation == null) {
       isShippingLocation = false;
+    }
+    // Initialize Sprint 2 fields
+    if (serviceOfferings == null) {
+      serviceOfferings = new HashMap<>();
+    }
+    if (locationDetails == null) {
+      locationDetails = new HashMap<>();
     }
   }
 
@@ -471,6 +491,23 @@ public class CustomerLocation extends PanacheEntityBase {
 
   public void setUpdatedBy(String updatedBy) {
     this.updatedBy = updatedBy;
+  }
+
+  // Sprint 2 Getters/Setters
+  public Map<String, Object> getServiceOfferings() {
+    return serviceOfferings;
+  }
+
+  public void setServiceOfferings(Map<String, Object> serviceOfferings) {
+    this.serviceOfferings = serviceOfferings;
+  }
+
+  public Map<String, Object> getLocationDetails() {
+    return locationDetails;
+  }
+
+  public void setLocationDetails(Map<String, Object> locationDetails) {
+    this.locationDetails = locationDetails;
   }
 
   @Override

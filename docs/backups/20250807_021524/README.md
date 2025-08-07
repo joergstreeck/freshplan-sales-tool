@@ -1,0 +1,18 @@
+# Critical Documentation Backup
+
+**Created:** Do  7 Aug 2025 02:15:24 CEST
+**Purpose:** Backup of critical FreshPlan documentation
+
+## Included Files:
+- CLAUDE.md - Working guidelines
+- STANDARDUBERGABE_NEU.md - Main handover process
+- STANDARDUBERGABE_KOMPAKT.md - Quick reference
+- STANDARDUBERGABE.md - Extended troubleshooting
+- TRIGGER_TEXTS.md - Official trigger texts
+- CRM_COMPLETE_MASTER_PLAN.md - Current master plan
+
+## Restore Instructions:
+To restore these files, copy them back to the docs/ directory:
+```bash
+cp docs/backups/20250807_021524/*.md ../../
+```

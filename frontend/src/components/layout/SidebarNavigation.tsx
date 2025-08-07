@@ -165,9 +165,18 @@ export const SidebarNavigation: React.FC = () => {
                 toggleSubmenu(item.id);
               }
             }}
-            onSubItemClick={(subPath) => {
-              navigate(subPath);
-              setActiveMenu(item.id);
+            onSubItemClick={(pathOrAction, isAction) => {
+              if (isAction) {
+                // Handle action
+                if (pathOrAction === 'OPEN_CUSTOMER_WIZARD') {
+                  // Dispatch event to open customer wizard
+                  window.dispatchEvent(new CustomEvent('freshplan:new-customer'));
+                }
+              } else {
+                // Navigate to path
+                navigate(pathOrAction);
+                setActiveMenu(item.id);
+              }
             }}
           />
         ))}

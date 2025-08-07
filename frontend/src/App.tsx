@@ -151,6 +151,23 @@ function App() {
                 </div>
               </CardContent>
             </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>In-App Help System 🆕</CardTitle>
+                <CardDescription>Intelligente kontextsensitive Hilfe</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="card-actions">
+                  <p className="card-text">Testen Sie das neue Help System mit Tooltips, Tours und proaktiver Hilfe</p>
+                  <div className="card-button-wrapper">
+                    <Button asChild>
+                      <Link to="/help-demo">Help System Demo öffnen</Link>
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </div>

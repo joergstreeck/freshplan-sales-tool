@@ -34,11 +34,27 @@ Dieses Dokument ist deine **HAUPTANLEITUNG** für effiziente und nachvollziehbar
 
 ## 🚨 KRITISCHE INFORMATIONEN (IMMER BEACHTEN!)
 
-### Service-Ports und Technologien
-- **Backend:** Port `8080` - Quarkus mit Java 17 (NICHT 11 oder 21!)
-- **Frontend:** Port `5173` - React/Vite mit TypeScript
-- **PostgreSQL:** Port `5432` - Datenbank
-- **Keycloak:** Port `8180` - Authentication Service
+### 🖥️ Service-Konfiguration & MIGRATION STATUS
+| Service | Port | Technologie | **Migration** |
+|---------|------|-------------|--------------|
+| **Backend** | `8080` | Quarkus mit Java 17 | **🚨 V121 FREI** |
+| **Frontend** | `5173` | React/Vite | - |
+| **PostgreSQL** | `5432` | PostgreSQL 15+ | **V120 applied** |
+| **Keycloak** | `8180` | Auth Service | - |
+
+### 🚨 MIGRATION-WARNUNG - KRITISCH
+**Bei DB-Arbeit SOFORT prüfen:**
+```bash
+cat docs/MIGRATION_REGISTRY.md | grep "NÄCHSTE VERFÜGBARE"
+# Aktuell: V121
+
+# NEU: Vollständige Historie prüfen
+cat docs/FLYWAY_MIGRATION_HISTORY.md | grep "NÄCHSTE VERFÜGBARE"
+
+# Nach neuer Migration automatisch aktualisieren:
+./scripts/update-flyway-history.sh V121 "feature_name" "Beschreibung"
+```
+**NIEMALS** vergebene Nummern verwenden! Migration-Duplikate = Backend startet nicht!
 
 ### Working Directory
 **IMMER:** `/Users/joergstreeck/freshplan-sales-tool`
@@ -46,7 +62,7 @@ Dieses Dokument ist deine **HAUPTANLEITUNG** für effiziente und nachvollziehbar
 ### Branch-Regel
 **NIEMALS** direkt in `main` pushen! Immer Feature-Branches nutzen.
 
-## Das 5-Schritte-System
+## Das 5.5-Schritte-System (NEU: Migration-Check integriert!)
 
 ### 1. System-Check (Vor der Arbeit)
 ```bash
@@ -74,6 +90,31 @@ git status                    # Git-Status prüfen
 git log --oneline -10        # Letzte Commits
 TodoRead                     # TODO-Liste lesen
 ```
+
+### 2.5. MIGRATION-CHECK (🚨 PFLICHT bei DB-Arbeit!)
+```
+🚨🚨🚨 MIGRATION ALERT - V121 FREI 🚨🚨🚨
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃  NÄCHSTE MIGRATION: V121                                   ┃
+┃  HISTORIE: docs/FLYWAY_MIGRATION_HISTORY.md                ┃
+┃  ⚠️  NIEMALS vergebene Nummern verwenden!                   ┃
+┃  💀 MIGRATION-DUPLIKATE = BACKEND STARTET NICHT!           ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+```
+
+**🚨 VOR JEDER MIGRATION AUSFÜHREN:**
+```bash
+# PFLICHT: Prüfe freie Nummer und Historie
+cat docs/FLYWAY_MIGRATION_HISTORY.md | head -20
+echo -e "\033[1;31m🚨 NÄCHSTE FREIE MIGRATION: V121\033[0m"
+
+# PFLICHT: Nach Migration aktualisieren  
+./scripts/update-flyway-history.sh V121 "feature_name" "Beschreibung"
+
+# Bei Unsicherheit: STOPP und frage nach!
+```
+
+**⛔ STOPP-REGEL:** Bei Migration-Arbeit ohne klare V121+ Nummer → Session unterbrechen!
 
 ### 3. Arbeiten (Der Hauptteil)
 - **Fokussiert** an der in der Übergabe definierten Hauptaufgabe arbeiten
@@ -189,6 +230,25 @@ TodoRead                     # TODO-Liste lesen
 
 ## 📈 NÄCHSTE KONKRETE SCHRITTE
 [Priorisierte Liste mit Zeitschätzungen]
+
+## 🔄 PR-READINESS CHECK
+**Automatische Empfehlung basierend auf:**
+- [ ] Lines changed: [Anzahl] → ⚠️ >200 = Consider PR
+- [ ] New migrations: [Anzahl] → ✅ Any = PR recommended  
+- [ ] New components: [Anzahl] → ⚠️ >3 = Consider PR
+- [ ] Test coverage: [%] → ✅ >80% = PR ready
+- [ ] Feature demo-able: [Ja/Nein] → ✅ Yes = PR ready
+
+**PR-Empfehlung:** [✅ PR ERSTELLEN / ⚠️ NOCH WARTEN / ❌ ZU FRÜH]
+
+## 📊 COMMIT-READINESS CHECK
+**Code bereit für Commit?**
+- [ ] Tests laufen grün
+- [ ] Keine TODO-Kommentare im Code
+- [ ] Code Review durchgeführt
+- [ ] Feature funktioniert wie erwartet
+
+**Commit-Empfehlung:** [✅ COMMIT READY / ⚠️ FAST FERTIG / ❌ NOCH NICHT]
 
 ## 📚 MASSGEBLICHE DOKUMENTE
 [Welcher Plan/Dokument ist aktuell gültig]

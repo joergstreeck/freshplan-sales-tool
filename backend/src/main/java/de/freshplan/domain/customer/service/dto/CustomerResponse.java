@@ -51,6 +51,18 @@ public record CustomerResponse(
     LocalDateTime lastContactDate,
     LocalDateTime nextFollowUpDate,
 
+    // Chain Structure - NEW for Sprint 2
+    Integer totalLocationsEU,
+    Integer locationsGermany,
+    Integer locationsAustria,
+    Integer locationsSwitzerland,
+    Integer locationsRestEU,
+    String expansionPlanned,
+
+    // Business Model - NEW for Sprint 2
+    FinancingType primaryFinancing,
+    List<String> painPoints,
+
     // Audit Information
     LocalDateTime createdAt,
     String createdBy,
@@ -98,6 +110,18 @@ public record CustomerResponse(
         false,
         null,
         null,
+
+        // Chain Structure - NEW for Sprint 2 (null for minimal)
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+
+        // Business Model - NEW for Sprint 2 (null for minimal)
+        null,
+        List.of(),
         createdAt,
         null,
         null,

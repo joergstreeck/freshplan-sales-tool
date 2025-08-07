@@ -4,18 +4,22 @@ import {
   List,
   ListItemButton,
   ListItemText,
+  Tooltip,
 } from '@mui/material';
 
 // Temporär: Direkte Type-Definition um Import-Probleme zu umgehen
 interface NavigationSubItem {
   label: string;
-  path: string;
+  path?: string;
+  action?: string;
   permissions?: string[];
+  disabled?: boolean;
+  tooltip?: string;
 }
 
 interface NavigationSubMenuProps {
   items: NavigationSubItem[];
-  onItemClick: (path: string) => void;
+  onItemClick: (pathOrAction: string, isAction?: boolean) => void;
 }
 
 export const NavigationSubMenu: React.FC<NavigationSubMenuProps> = ({
@@ -27,21 +31,34 @@ export const NavigationSubMenu: React.FC<NavigationSubMenuProps> = ({
   return (
     <List component="div" disablePadding>
       {items.map((item) => {
-        const isActive = location.pathname.startsWith(item.path);
+        const isActive = item.path ? location.pathname.startsWith(item.path) : false;
+        const isDisabled = item.disabled || false;
+        const key = item.path || item.action || item.label;
         
-        return (
+        const button = (
           <ListItemButton
-            key={item.path}
-            onClick={() => onItemClick(item.path)}
+            key={key}
+            onClick={() => {
+              if (!isDisabled) {
+                if (item.action) {
+                  onItemClick(item.action, true);
+                } else if (item.path) {
+                  onItemClick(item.path, false);
+                }
+              }
+            }}
             selected={isActive}
+            disabled={isDisabled}
             sx={{
               pl: 7,
               py: 0.75,
               borderRadius: 1,
               mb: 0.25,
               position: 'relative',
+              opacity: isDisabled ? 0.5 : 1,
+              cursor: isDisabled ? 'not-allowed' : 'pointer',
               '&:hover': {
-                backgroundColor: 'rgba(148, 196, 86, 0.08)',
+                backgroundColor: isDisabled ? 'transparent' : 'rgba(148, 196, 86, 0.08)',
               },
               '&.Mui-selected': {
                 backgroundColor: 'rgba(148, 196, 86, 0.12)',
@@ -80,6 +97,17 @@ export const NavigationSubMenu: React.FC<NavigationSubMenuProps> = ({
             />
           </ListItemButton>
         );
+        
+        // Wrap with tooltip if disabled and tooltip text exists
+        if (isDisabled && item.tooltip) {
+          return (
+            <Tooltip key={key} title={item.tooltip} placement="right">
+              <span>{button}</span>
+            </Tooltip>
+          );
+        }
+        
+        return button;
       })}
     </List>
   );

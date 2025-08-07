@@ -121,6 +121,15 @@
     - Export-Funktionen
     - Scheduled Reports
 
+17. **FC-019 - Customer Profile Generator** (6-8 Tage) ⭐ NEU
+    - Widget-basiertes System
+    - Rollenbasierte Profile (Management, Vertrieb, Operations)
+    - Automatische Aktualisierung
+    - Export als PDF/PowerPoint
+    - Self-Service Profile Builder
+    - Integration mit Field Catalog
+    - **Details:** Siehe Diskussion in FC-005 UI Integration
+
 15. **KI Basis-Features** (3 Tage)
     - Lead Scoring
     - Next Best Action
@@ -250,7 +259,7 @@
 | Phase 0 | Quick Wins | 3 Tage | 3 Tage |
 | Phase 1 | Core Sales | 10 Tage | 13 Tage |
 | Phase 2 | Communication | 10 Tage | 23 Tage |
-| Phase 3 | Analytics | 37 Tage | 60 Tage |
+| Phase 3 | Analytics | 43-45 Tage | 66-68 Tage |
 | Phase 4 | Integration | 10 Tage | 70 Tage |
 | Phase 5 | Mobile/UX | 12 Tage | 82 Tage |
 | Phase 6 | AI/Automation | 15 Tage | 97 Tage |
@@ -284,6 +293,19 @@
 - ✅ Mobile App
 - ✅ KI-Features Basis
 - ✅ **MARKTFÜHREND!**
+
+## 🛠️ Technische Standards & Best Practices
+
+### TypeScript/Vite Konfiguration
+Bei Verwendung von `verbatimModuleSyntax: true` in tsconfig.json:
+- **ALLE Type-Imports** müssen explizit mit `import type` erfolgen
+- **Keine Re-Exports** für Types am Dateiende
+- **Details:** [TypeScript Import Type Guide](../guides/TYPESCRIPT_IMPORT_TYPE_GUIDE.md)
+
+### Weitere Standards
+- **Code Review:** Two-Pass System für alle Releases
+- **Test Coverage:** Minimum 80% für neue Features
+- **Performance Budgets:** Definiert in Phase 0
 
 ## 🎯 Empfehlung
 
