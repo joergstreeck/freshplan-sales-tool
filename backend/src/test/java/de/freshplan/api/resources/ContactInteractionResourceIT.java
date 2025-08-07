@@ -57,7 +57,7 @@ class ContactInteractionResourceIT {
     testCustomer.setStatus(CustomerStatus.LEAD);
     testCustomer.setCreatedBy("system");
     // Sprint 2 fields
-    testCustomer.setPrimaryFinancing(FinancingType.EIGENKAPITAL);
+    testCustomer.setPrimaryFinancing(FinancingType.PRIVATE);
     customerRepository.persist(testCustomer);
     testCustomerId = testCustomer.getId();
 
