@@ -33,7 +33,7 @@ export default defineConfig({
 
   webServer: {
     command: process.env.CI 
-      ? 'npx serve dist -l 5173 --no-request-logging' 
+      ? 'npx serve dist -l 5173 --no-request-logging -s' // -s flag for SPA routing
       : 'npm run preview',
     port: 5173,
     reuseExistingServer: !process.env.CI,
