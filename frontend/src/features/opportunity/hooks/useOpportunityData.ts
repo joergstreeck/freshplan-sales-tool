@@ -1,12 +1,12 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { opportunityApi } from '../services/opportunityApi';
-import { 
-  OpportunityResponse, 
-  CreateOpportunityRequest, 
+import {
+  OpportunityResponse,
+  CreateOpportunityRequest,
   UpdateOpportunityRequest,
   ChangeStageRequest,
   PipelineFilters,
-  OpportunityStage
+  OpportunityStage,
 } from '../types/opportunity.types';
 
 // Query Keys für Cache Management
@@ -17,7 +17,8 @@ export const opportunityKeys = {
   details: () => [...opportunityKeys.all, 'detail'] as const,
   detail: (id: string) => [...opportunityKeys.details(), id] as const,
   pipeline: () => [...opportunityKeys.all, 'pipeline'] as const,
-  pipelineOverview: (filters?: PipelineFilters) => [...opportunityKeys.pipeline(), 'overview', filters] as const,
+  pipelineOverview: (filters?: PipelineFilters) =>
+    [...opportunityKeys.pipeline(), 'overview', filters] as const,
   byStage: (stage: OpportunityStage) => [...opportunityKeys.all, 'stage', stage] as const,
 };
 
@@ -67,17 +68,14 @@ export function useCreateOpportunity() {
 
   return useMutation({
     mutationFn: (request: CreateOpportunityRequest) => opportunityApi.create(request),
-    onSuccess: (newOpportunity) => {
+    onSuccess: newOpportunity => {
       // Cache invalidieren
       queryClient.invalidateQueries({ queryKey: opportunityKeys.lists() });
       queryClient.invalidateQueries({ queryKey: opportunityKeys.pipeline() });
       queryClient.invalidateQueries({ queryKey: opportunityKeys.byStage(newOpportunity.stage) });
-      
+
       // Neue Opportunity direkt in Cache setzen
-      queryClient.setQueryData(
-        opportunityKeys.detail(newOpportunity.id), 
-        newOpportunity
-      );
+      queryClient.setQueryData(opportunityKeys.detail(newOpportunity.id), newOpportunity);
     },
   });
 }
@@ -87,19 +85,18 @@ export function useUpdateOpportunity() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, ...request }: UpdateOpportunityRequest & { id: string }) => 
+    mutationFn: ({ id, ...request }: UpdateOpportunityRequest & { id: string }) =>
       opportunityApi.update(id, request),
-    onSuccess: (updatedOpportunity) => {
+    onSuccess: updatedOpportunity => {
       // Spezifische Caches invalidieren
       queryClient.invalidateQueries({ queryKey: opportunityKeys.lists() });
       queryClient.invalidateQueries({ queryKey: opportunityKeys.pipeline() });
-      queryClient.invalidateQueries({ queryKey: opportunityKeys.byStage(updatedOpportunity.stage) });
-      
+      queryClient.invalidateQueries({
+        queryKey: opportunityKeys.byStage(updatedOpportunity.stage),
+      });
+
       // Detail-Cache aktualisieren
-      queryClient.setQueryData(
-        opportunityKeys.detail(updatedOpportunity.id), 
-        updatedOpportunity
-      );
+      queryClient.setQueryData(opportunityKeys.detail(updatedOpportunity.id), updatedOpportunity);
     },
   });
 }
@@ -109,48 +106,42 @@ export function useChangeOpportunityStage() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, ...request }: ChangeStageRequest & { id: string }) => 
+    mutationFn: ({ id, ...request }: ChangeStageRequest & { id: string }) =>
       opportunityApi.changeStage(id, request),
     onMutate: async ({ id, newStage }) => {
       // Optimistic Update für bessere UX
       await queryClient.cancelQueries({ queryKey: opportunityKeys.detail(id) });
-      
+
       const previousOpportunity = queryClient.getQueryData<OpportunityResponse>(
         opportunityKeys.detail(id)
       );
-      
+
       if (previousOpportunity) {
-        queryClient.setQueryData(
-          opportunityKeys.detail(id),
-          { ...previousOpportunity, stage: newStage }
-        );
+        queryClient.setQueryData(opportunityKeys.detail(id), {
+          ...previousOpportunity,
+          stage: newStage,
+        });
       }
-      
+
       return { previousOpportunity };
     },
     onError: (err, { id }, context) => {
       // Rollback bei Fehler
       if (context?.previousOpportunity) {
-        queryClient.setQueryData(
-          opportunityKeys.detail(id),
-          context.previousOpportunity
-        );
+        queryClient.setQueryData(opportunityKeys.detail(id), context.previousOpportunity);
       }
     },
     onSuccess: (updatedOpportunity, { id }) => {
       // Cache komplett refreshen für Stage-Änderungen
       queryClient.invalidateQueries({ queryKey: opportunityKeys.lists() });
       queryClient.invalidateQueries({ queryKey: opportunityKeys.pipeline() });
-      
+
       // Alle Stage-spezifischen Caches invalidieren
       Object.values(OpportunityStage).forEach(stage => {
         queryClient.invalidateQueries({ queryKey: opportunityKeys.byStage(stage) });
       });
-      
-      queryClient.setQueryData(
-        opportunityKeys.detail(id), 
-        updatedOpportunity
-      );
+
+      queryClient.setQueryData(opportunityKeys.detail(id), updatedOpportunity);
     },
   });
 }
@@ -165,12 +156,12 @@ export function useDeleteOpportunity() {
       // Alle relevanten Caches invalidieren
       queryClient.invalidateQueries({ queryKey: opportunityKeys.lists() });
       queryClient.invalidateQueries({ queryKey: opportunityKeys.pipeline() });
-      
+
       // Stage-Caches invalidieren
       Object.values(OpportunityStage).forEach(stage => {
         queryClient.invalidateQueries({ queryKey: opportunityKeys.byStage(stage) });
       });
-      
+
       // Detail-Cache entfernen
       queryClient.removeQueries({ queryKey: opportunityKeys.detail(deletedId) });
     },

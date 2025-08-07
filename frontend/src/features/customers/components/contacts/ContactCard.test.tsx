@@ -48,7 +48,7 @@ const createMockContact = (overrides?: Partial<Contact>): Contact => ({
   notes: 'Wichtiger Kontakt',
   createdAt: new Date('2025-01-01').toISOString(),
   updatedAt: new Date('2025-01-01').toISOString(),
-  ...overrides
+  ...overrides,
 });
 
 describe('ContactCard', () => {
@@ -64,14 +64,9 @@ describe('ContactCard', () => {
   it('should render contact basic information', () => {
     const contact = createMockContact();
     const { container } = render(
-      <ContactCard 
-        contact={contact} 
-        onEdit={vi.fn()} 
-        onDelete={vi.fn()} 
-        onSetPrimary={vi.fn()} 
-      />
+      <ContactCard contact={contact} onEdit={vi.fn()} onDelete={vi.fn()} onSetPrimary={vi.fn()} />
     );
-    
+
     // getContactFullName includes salutation, so it's "Herr Max Mustermann"
     expect(screen.getByText('Herr Max Mustermann')).toBeInTheDocument();
     expect(screen.getByText('Geschäftsführer')).toBeInTheDocument();
@@ -82,14 +77,9 @@ describe('ContactCard', () => {
   it('should show primary badge for primary contact', () => {
     const contact = createMockContact({ isPrimary: true });
     render(
-      <ContactCard 
-        contact={contact} 
-        onEdit={vi.fn()} 
-        onDelete={vi.fn()} 
-        onSetPrimary={vi.fn()} 
-      />
+      <ContactCard contact={contact} onEdit={vi.fn()} onDelete={vi.fn()} onSetPrimary={vi.fn()} />
     );
-    
+
     // ContactCard zeigt "HAUPT" statt "Hauptkontakt"
     expect(screen.getByText('HAUPT')).toBeInTheDocument();
   });
@@ -97,28 +87,18 @@ describe('ContactCard', () => {
   it('should not show primary badge for non-primary contact', () => {
     const contact = createMockContact({ isPrimary: false });
     render(
-      <ContactCard 
-        contact={contact} 
-        onEdit={vi.fn()} 
-        onDelete={vi.fn()} 
-        onSetPrimary={vi.fn()} 
-      />
+      <ContactCard contact={contact} onEdit={vi.fn()} onDelete={vi.fn()} onSetPrimary={vi.fn()} />
     );
-    
+
     expect(screen.queryByText('HAUPT')).not.toBeInTheDocument();
   });
 
   it('should display decision level correctly', () => {
     const contact = createMockContact({ decisionLevel: 'entscheider' });
     render(
-      <ContactCard 
-        contact={contact} 
-        onEdit={vi.fn()} 
-        onDelete={vi.fn()} 
-        onSetPrimary={vi.fn()} 
-      />
+      <ContactCard contact={contact} onEdit={vi.fn()} onDelete={vi.fn()} onSetPrimary={vi.fn()} />
     );
-    
+
     // Decision level wird als Chip angezeigt
     const chip = screen.getByText('entscheider');
     expect(chip).toBeInTheDocument();
@@ -129,24 +109,24 @@ describe('ContactCard', () => {
     const contact = createMockContact({
       hobbies: ['Golf', 'Tennis'],
       birthday: '1980-05-15',
-      personalNotes: 'Bevorzugt Meetings am Nachmittag'
+      personalNotes: 'Bevorzugt Meetings am Nachmittag',
     });
-    
+
     render(
-      <ContactCard 
-        contact={contact} 
-        onEdit={vi.fn()} 
-        onDelete={vi.fn()} 
+      <ContactCard
+        contact={contact}
+        onEdit={vi.fn()}
+        onDelete={vi.fn()}
         onSetPrimary={vi.fn()}
         isExpanded={true}
         showRelationshipData={true}
       />
     );
-    
+
     // Hobbies werden als einzelne Chips angezeigt
     expect(screen.getByText('Golf')).toBeInTheDocument();
     expect(screen.getByText('Tennis')).toBeInTheDocument();
-    
+
     // Personal notes werden angezeigt
     expect(screen.getByText('Bevorzugt Meetings am Nachmittag')).toBeInTheDocument();
   });
@@ -155,70 +135,50 @@ describe('ContactCard', () => {
     const contact = createMockContact();
     const onEdit = vi.fn();
     render(
-      <ContactCard 
-        contact={contact} 
-        onEdit={onEdit} 
-        onDelete={vi.fn()} 
-        onSetPrimary={vi.fn()} 
-      />
+      <ContactCard contact={contact} onEdit={onEdit} onDelete={vi.fn()} onSetPrimary={vi.fn()} />
     );
-    
+
     // Edit button ist direkt sichtbar (nicht in einem Menü)
     const editButton = screen.getByLabelText('Bearbeiten');
     await userEvent.click(editButton);
-    
+
     expect(onEdit).toHaveBeenCalledWith(contact);
   });
 
   it('should handle delete action with confirmation', async () => {
     const contact = createMockContact({ isPrimary: false });
     const onDelete = vi.fn();
-    
+
     render(
-      <ContactCard 
-        contact={contact} 
-        onEdit={vi.fn()} 
-        onDelete={onDelete} 
-        onSetPrimary={vi.fn()} 
-      />
+      <ContactCard contact={contact} onEdit={vi.fn()} onDelete={onDelete} onSetPrimary={vi.fn()} />
     );
-    
+
     const deleteButton = screen.getByLabelText('Löschen');
     await userEvent.click(deleteButton);
-    
+
     expect(onDelete).toHaveBeenCalledWith(contact.id);
   });
 
   it('should disable delete button for primary contacts', () => {
     const contact = createMockContact({ isPrimary: true });
     render(
-      <ContactCard 
-        contact={contact} 
-        onEdit={vi.fn()} 
-        onDelete={vi.fn()} 
-        onSetPrimary={vi.fn()} 
-      />
+      <ContactCard contact={contact} onEdit={vi.fn()} onDelete={vi.fn()} onSetPrimary={vi.fn()} />
     );
-    
+
     const deleteButton = screen.getByLabelText('Löschen');
     expect(deleteButton).toBeDisabled();
   });
 
   it('should show location assignments', () => {
-    const contact = createMockContact({ 
+    const contact = createMockContact({
       responsibilityScope: 'specific',
-      assignedLocationIds: ['loc1', 'loc2'] 
+      assignedLocationIds: ['loc1', 'loc2'],
     });
-    
+
     render(
-      <ContactCard 
-        contact={contact} 
-        onEdit={vi.fn()} 
-        onDelete={vi.fn()} 
-        onSetPrimary={vi.fn()} 
-      />
+      <ContactCard contact={contact} onEdit={vi.fn()} onDelete={vi.fn()} onSetPrimary={vi.fn()} />
     );
-    
+
     expect(screen.getByText('2 ausgewählte Standorte')).toBeInTheDocument();
   });
 
@@ -226,18 +186,13 @@ describe('ContactCard', () => {
     const contact = createMockContact({
       phone: '+49 30 12345678',
       mobile: '+49 170 12345678',
-      email: 'max@example.com'
+      email: 'max@example.com',
     });
-    
+
     render(
-      <ContactCard 
-        contact={contact} 
-        onEdit={vi.fn()} 
-        onDelete={vi.fn()} 
-        onSetPrimary={vi.fn()} 
-      />
+      <ContactCard contact={contact} onEdit={vi.fn()} onDelete={vi.fn()} onSetPrimary={vi.fn()} />
     );
-    
+
     expect(screen.getByText('+49 30 12345678')).toBeInTheDocument();
     expect(screen.getByText('+49 170 12345678 (Mobil)')).toBeInTheDocument();
     expect(screen.getByText('max@example.com')).toBeInTheDocument();
@@ -246,56 +201,52 @@ describe('ContactCard', () => {
   it('should handle quick actions for mobile', async () => {
     const contact = createMockContact({ isPrimary: false });
     const onSetPrimary = vi.fn();
-    
+
     render(
-      <ContactCard 
-        contact={contact} 
-        onEdit={vi.fn()} 
-        onDelete={vi.fn()} 
-        onSetPrimary={onSetPrimary} 
+      <ContactCard
+        contact={contact}
+        onEdit={vi.fn()}
+        onDelete={vi.fn()}
+        onSetPrimary={onSetPrimary}
       />
     );
-    
+
     // Set as primary action
     const setPrimaryButton = screen.getByLabelText('Als Hauptansprechpartner festlegen');
     await userEvent.click(setPrimaryButton);
-    
+
     expect(onSetPrimary).toHaveBeenCalledWith(contact.id);
   });
 
   it('should display inactive state correctly', () => {
     const contact = createMockContact({ isActive: false });
-    
+
     // ContactCard doesn't seem to have visual indication for inactive state
     // This test might need to be adjusted based on actual implementation
     render(
-      <ContactCard 
-        contact={contact} 
-        onEdit={vi.fn()} 
-        onDelete={vi.fn()} 
-        onSetPrimary={vi.fn()} 
-      />
+      <ContactCard contact={contact} onEdit={vi.fn()} onDelete={vi.fn()} onSetPrimary={vi.fn()} />
     );
-    
+
     // At minimum, the card should still render with full name including salutation
     expect(screen.getByText('Herr Max Mustermann')).toBeInTheDocument();
   });
 
   it('should truncate long notes', () => {
-    const longNote = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.';
+    const longNote =
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.';
     const contact = createMockContact({ personalNotes: longNote });
-    
+
     render(
-      <ContactCard 
-        contact={contact} 
-        onEdit={vi.fn()} 
-        onDelete={vi.fn()} 
+      <ContactCard
+        contact={contact}
+        onEdit={vi.fn()}
+        onDelete={vi.fn()}
         onSetPrimary={vi.fn()}
         isExpanded={true}
         showRelationshipData={true}
       />
     );
-    
+
     // Notes should be displayed in full when expanded
     expect(screen.getByText(longNote)).toBeInTheDocument();
   });
@@ -305,22 +256,17 @@ describe('ContactCard', () => {
       position: undefined,
       phone: undefined,
       mobile: undefined,
-      notes: undefined
+      notes: undefined,
     });
-    
+
     render(
-      <ContactCard 
-        contact={contact} 
-        onEdit={vi.fn()} 
-        onDelete={vi.fn()} 
-        onSetPrimary={vi.fn()} 
-      />
+      <ContactCard contact={contact} onEdit={vi.fn()} onDelete={vi.fn()} onSetPrimary={vi.fn()} />
     );
-    
+
     // Should still show name (with salutation) and email
     expect(screen.getByText('Herr Max Mustermann')).toBeInTheDocument();
     expect(screen.getByText('max@example.com')).toBeInTheDocument();
-    
+
     // Should not crash due to missing fields
     expect(screen.queryByText('undefined')).not.toBeInTheDocument();
   });
@@ -328,18 +274,13 @@ describe('ContactCard', () => {
   it('should format phone numbers correctly', () => {
     const contact = createMockContact({
       phone: '+493012345678',
-      mobile: '+4917012345678'
+      mobile: '+4917012345678',
     });
-    
+
     render(
-      <ContactCard 
-        contact={contact} 
-        onEdit={vi.fn()} 
-        onDelete={vi.fn()} 
-        onSetPrimary={vi.fn()} 
-      />
+      <ContactCard contact={contact} onEdit={vi.fn()} onDelete={vi.fn()} onSetPrimary={vi.fn()} />
     );
-    
+
     // Phone numbers are displayed as provided (no formatting applied in component)
     expect(screen.getByText('+493012345678')).toBeInTheDocument();
     expect(screen.getByText('+4917012345678 (Mobil)')).toBeInTheDocument();
@@ -350,34 +291,24 @@ describe('ContactCard', () => {
     // The test would need to be adjusted based on actual implementation
     const contact = createMockContact();
     const onEdit = vi.fn();
-    
+
     render(
-      <ContactCard 
-        contact={contact} 
-        onEdit={onEdit} 
-        onDelete={vi.fn()} 
-        onSetPrimary={vi.fn()} 
-      />
+      <ContactCard contact={contact} onEdit={onEdit} onDelete={vi.fn()} onSetPrimary={vi.fn()} />
     );
-    
+
     // ContactCard doesn't track last contact date - just verify it renders
     expect(screen.getByText('Herr Max Mustermann')).toBeInTheDocument();
   });
 
   it('should handle roles display', () => {
     const contact = createMockContact({
-      roles: ['Einkauf', 'IT', 'Qualitätsmanagement']
+      roles: ['Einkauf', 'IT', 'Qualitätsmanagement'],
     });
-    
+
     render(
-      <ContactCard 
-        contact={contact} 
-        onEdit={vi.fn()} 
-        onDelete={vi.fn()} 
-        onSetPrimary={vi.fn()} 
-      />
+      <ContactCard contact={contact} onEdit={vi.fn()} onDelete={vi.fn()} onSetPrimary={vi.fn()} />
     );
-    
+
     // Roles should be displayed as chips
     expect(screen.getByText('Einkauf')).toBeInTheDocument();
     expect(screen.getByText('IT')).toBeInTheDocument();
@@ -388,40 +319,35 @@ describe('ContactCard', () => {
     const today = new Date();
     const birthdayIn10Days = new Date();
     birthdayIn10Days.setDate(today.getDate() + 10);
-    
+
     const contact = createMockContact({
-      birthday: birthdayIn10Days.toISOString().split('T')[0]
+      birthday: birthdayIn10Days.toISOString().split('T')[0],
     });
-    
+
     render(
-      <ContactCard 
-        contact={contact} 
-        onEdit={vi.fn()} 
-        onDelete={vi.fn()} 
+      <ContactCard
+        contact={contact}
+        onEdit={vi.fn()}
+        onDelete={vi.fn()}
         onSetPrimary={vi.fn()}
         isExpanded={true}
         showRelationshipData={true}
       />
     );
-    
+
     // Should show birthday reminder
     expect(screen.getByText(/Geburtstag in \d+ Tagen/)).toBeInTheDocument();
   });
 
   it('should handle responsibility scope "all"', () => {
-    const contact = createMockContact({ 
-      responsibilityScope: 'all' 
+    const contact = createMockContact({
+      responsibilityScope: 'all',
     });
-    
+
     render(
-      <ContactCard 
-        contact={contact} 
-        onEdit={vi.fn()} 
-        onDelete={vi.fn()} 
-        onSetPrimary={vi.fn()} 
-      />
+      <ContactCard contact={contact} onEdit={vi.fn()} onDelete={vi.fn()} onSetPrimary={vi.fn()} />
     );
-    
+
     expect(screen.getByText('Alle Standorte')).toBeInTheDocument();
   });
 });

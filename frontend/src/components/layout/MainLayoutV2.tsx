@@ -1,6 +1,6 @@
 /**
  * MainLayoutV2 - Clean Slate Layout Architecture
- * 
+ *
  * Eine saubere, MUI-basierte Layout-Komponente die:
  * - Keine globalen CSS-Dateien benötigt
  * - Isolierte Scroll-Contexts bietet
@@ -26,24 +26,24 @@ interface MainLayoutV2Props {
   hideHeader?: boolean; // Für spezielle Seiten wie Login
 }
 
-export const MainLayoutV2: React.FC<MainLayoutV2Props> = ({ 
-  children, 
+export const MainLayoutV2: React.FC<MainLayoutV2Props> = ({
+  children,
   showHeader = true,
-  hideHeader = false
+  hideHeader = false,
 }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const { isCollapsed, toggleSidebar } = useNavigationStore();
-  
+
   // Berechne die aktuelle Drawer-Breite
   const drawerWidth = isCollapsed ? DRAWER_WIDTH_COLLAPSED : DRAWER_WIDTH;
-  
+
   // Header soll angezeigt werden wenn nicht explizit versteckt
   const shouldShowHeader = !hideHeader && showHeader;
-  
+
   // Berechne Header-Höhe basierend auf Gerät
   const headerHeight = isMobile ? HEADER_HEIGHT_MOBILE : HEADER_HEIGHT;
-  
+
   return (
     <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: 'background.default' }}>
       {/* Sidebar Container - Immer links */}
@@ -70,23 +70,20 @@ export const MainLayoutV2: React.FC<MainLayoutV2Props> = ({
       >
         <SidebarNavigation />
       </Box>
-      
+
       {/* Haupt-Container mit Header und Content */}
-      <Box sx={{ 
-        display: 'flex',
-        flexDirection: 'column',
-        flexGrow: 1,
-        width: { xs: '100%', md: `calc(100% - ${drawerWidth}px)` },
-        minHeight: '100vh',
-      }}>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          flexGrow: 1,
+          width: { xs: '100%', md: `calc(100% - ${drawerWidth}px)` },
+          minHeight: '100vh',
+        }}
+      >
         {/* Header - Nimmt volle Breite des verbleibenden Raums */}
-        {shouldShowHeader && (
-          <HeaderV2 
-            showMenuIcon={isMobile}
-            onMenuClick={toggleSidebar}
-          />
-        )}
-        
+        {shouldShowHeader && <HeaderV2 showMenuIcon={isMobile} onMenuClick={toggleSidebar} />}
+
         {/* Main Content Area */}
         <Box
           component="main"
@@ -104,8 +101,12 @@ export const MainLayoutV2: React.FC<MainLayoutV2Props> = ({
               // Content-spezifisches Padding
               p: { xs: 2, sm: 3, md: 4 },
               // Top-Padding für fixed Header
-              pt: shouldShowHeader 
-                ? { xs: `${headerHeight + 16}px`, sm: `${headerHeight + 24}px`, md: `${headerHeight + 32}px` }
+              pt: shouldShowHeader
+                ? {
+                    xs: `${headerHeight + 16}px`,
+                    sm: `${headerHeight + 24}px`,
+                    md: `${headerHeight + 32}px`,
+                  }
                 : { xs: 2, sm: 3, md: 4 },
               // Maximale Breite für bessere Lesbarkeit auf großen Screens
               maxWidth: 'xl',
@@ -123,7 +124,7 @@ export const MainLayoutV2: React.FC<MainLayoutV2Props> = ({
           </Box>
         </Box>
       </Box>
-      
+
       {/* Mobile Overlay when Sidebar is open */}
       {isMobile && !isCollapsed && (
         <Box

@@ -1,8 +1,8 @@
 /**
  * Validation Module Export
- * 
+ *
  * Zentrale Exportstelle für alle Validation-Komponenten.
- * 
+ *
  * @see /Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/03-FRONTEND/04-validation.md
  */
 
@@ -14,12 +14,7 @@ export * from './customerSchemas';
 export * from './locationSchemas';
 
 // Schema Builder
-export {
-  buildFieldSchema,
-  buildFormSchema,
-  validateField,
-  validateFields
-} from './schemaBuilder';
+export { buildFieldSchema, buildFormSchema, validateField, validateFields } from './schemaBuilder';
 
 // Cross-Field Validation
 export {
@@ -27,7 +22,7 @@ export {
   locationCrossFieldValidators,
   validateCustomerCrossFields,
   validateLocationCrossFields,
-  type ValidationResult
+  type ValidationResult,
 } from './crossFieldValidation';
 
 // React Hook Form Integration
@@ -35,7 +30,7 @@ export {
   useFormValidation,
   useStepValidation,
   type UseFormValidationOptions,
-  type UseFormValidationResult
+  type UseFormValidationResult,
 } from './useFormValidation';
 
 // Re-export commonly used Zod types

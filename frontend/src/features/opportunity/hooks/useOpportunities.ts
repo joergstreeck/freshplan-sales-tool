@@ -14,7 +14,7 @@ import {
   type ChangeStageRequest,
   type PipelineFilters,
   type OpportunityStage,
-  type Opportunity
+  type Opportunity,
 } from '../types';
 
 // Query Keys für React Query Cache Management
@@ -25,7 +25,8 @@ export const opportunityKeys = {
   details: () => [...opportunityKeys.all, 'detail'] as const,
   detail: (id: string) => [...opportunityKeys.details(), id] as const,
   pipeline: () => [...opportunityKeys.all, 'pipeline'] as const,
-  pipelineOverview: (filters?: PipelineFilters) => [...opportunityKeys.pipeline(), 'overview', filters] as const,
+  pipelineOverview: (filters?: PipelineFilters) =>
+    [...opportunityKeys.pipeline(), 'overview', filters] as const,
 };
 
 /**
@@ -61,14 +62,16 @@ export function useOpportunities(filters?: PipelineFilters, enabled = true) {
     queryFn: async () => {
       logger.debug('Fetching opportunities with filters:', filters);
       const startTime = performance.now();
-      
+
       try {
         const backendOpportunities = await opportunityApi.getAll(filters);
         const frontendOpportunities = backendOpportunities.map(mapBackendToFrontend);
-        
+
         const duration = performance.now() - startTime;
-        logger.info(`Opportunities loaded successfully: ${frontendOpportunities.length} items in ${duration.toFixed(2)}ms`);
-        
+        logger.info(
+          `Opportunities loaded successfully: ${frontendOpportunities.length} items in ${duration.toFixed(2)}ms`
+        );
+
         return frontendOpportunities;
       } catch (error) {
         logger.error('Failed to fetch opportunities:', error);
@@ -118,7 +121,7 @@ export function useOpportunity(id: string, enabled = true) {
  */
 export function useCreateOpportunity() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: async (request: CreateOpportunityRequest) => {
       logger.debug('Creating opportunity:', request.name);
@@ -141,12 +144,12 @@ export function useCreateOpportunity() {
 }
 
 /**
- * Hook für Opportunity-Updates  
+ * Hook für Opportunity-Updates
  * @returns Mutation für das Updaten von Opportunities
  */
 export function useUpdateOpportunity() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: async ({ id, request }: { id: string; request: UpdateOpportunityRequest }) => {
       logger.debug(`Updating opportunity ${id}:`, request);
@@ -160,12 +163,9 @@ export function useUpdateOpportunity() {
         throw error;
       }
     },
-    onSuccess: (updatedOpportunity) => {
+    onSuccess: updatedOpportunity => {
       // Update specific opportunity in cache
-      queryClient.setQueryData(
-        opportunityKeys.detail(updatedOpportunity.id),
-        updatedOpportunity
-      );
+      queryClient.setQueryData(opportunityKeys.detail(updatedOpportunity.id), updatedOpportunity);
       // Invalidate lists to ensure consistency
       queryClient.invalidateQueries({ queryKey: opportunityKeys.lists() });
       queryClient.invalidateQueries({ queryKey: opportunityKeys.pipeline() });
@@ -179,7 +179,7 @@ export function useUpdateOpportunity() {
  */
 export function useChangeOpportunityStage() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: async ({ id, request }: { id: string; request: ChangeStageRequest }) => {
       logger.debug(`Changing stage for opportunity ${id} to ${request.newStage}`);
@@ -193,12 +193,9 @@ export function useChangeOpportunityStage() {
         throw error;
       }
     },
-    onSuccess: (updatedOpportunity) => {
+    onSuccess: updatedOpportunity => {
       // Optimistic updates
-      queryClient.setQueryData(
-        opportunityKeys.detail(updatedOpportunity.id),
-        updatedOpportunity
-      );
+      queryClient.setQueryData(opportunityKeys.detail(updatedOpportunity.id), updatedOpportunity);
       // Invalidate lists für UI refresh
       queryClient.invalidateQueries({ queryKey: opportunityKeys.lists() });
       queryClient.invalidateQueries({ queryKey: opportunityKeys.pipeline() });
@@ -208,11 +205,11 @@ export function useChangeOpportunityStage() {
 
 /**
  * Hook für Opportunity-Löschung
- * @returns Mutation für das Löschen von Opportunities  
+ * @returns Mutation für das Löschen von Opportunities
  */
 export function useDeleteOpportunity() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: async (id: string) => {
       logger.debug(`Deleting opportunity ${id}`);
@@ -225,7 +222,7 @@ export function useDeleteOpportunity() {
         throw error;
       }
     },
-    onSuccess: (deletedId) => {
+    onSuccess: deletedId => {
       // Remove from cache
       queryClient.removeQueries({ queryKey: opportunityKeys.detail(deletedId) });
       // Invalidate lists
@@ -269,8 +266,8 @@ export function usePipelineOverview(filters?: PipelineFilters, enabled = true) {
  * @returns React Query result mit gefilterten Opportunities
  */
 export function useOpportunitiesByStage(
-  stage: OpportunityStage, 
-  filters?: Omit<PipelineFilters, 'stage'>, 
+  stage: OpportunityStage,
+  filters?: Omit<PipelineFilters, 'stage'>,
   enabled = true
 ) {
   return useOpportunities({ ...filters, stage }, enabled);

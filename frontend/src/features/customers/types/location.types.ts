@@ -1,9 +1,9 @@
 /**
  * Location Entity Types
- * 
+ *
  * Types for managing customer locations (Standorte) and detailed locations (Ausgabestellen).
  * Used when chainCustomer = 'ja'.
- * 
+ *
  * @see /Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/01-TECH-CONCEPT/03-data-model.md
  */
 
@@ -16,7 +16,7 @@ export enum LocationType {
   /** Billing address */
   RECHNUNGSADRESSE = 'RECHNUNGSADRESSE',
   /** Combined delivery and billing */
-  KOMBINIERT = 'KOMBINIERT'
+  KOMBINIERT = 'KOMBINIERT',
 }
 
 /**
@@ -51,7 +51,7 @@ export interface LocationWithFields extends Location {
 /**
  * Detailed location category types
  */
-export type DetailedLocationCategory = 
+export type DetailedLocationCategory =
   | 'restaurant'
   | 'cafeteria'
   | 'kiosk'

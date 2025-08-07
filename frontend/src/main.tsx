@@ -10,7 +10,7 @@ import { AppProviders } from './providers.tsx';
 async function enableMocking() {
   // TEMPORARY: Disable MSW to use real backend data
   const USE_MSW = import.meta.env.VITE_USE_MSW === 'true' || false;
-  
+
   if (!import.meta.env.DEV || !USE_MSW) {
     // In production/preview mode, don't use MSW but still check backend availability
     // This prevents the app from hanging if backend is slow to start
@@ -64,7 +64,7 @@ enableMocking()
       </StrictMode>
     );
   })
-  .catch((error) => {
+  .catch(error => {
     console.error('Failed to initialize app:', error);
     // Render app anyway - don't let initialization errors block the entire app
     createRoot(rootElement).render(

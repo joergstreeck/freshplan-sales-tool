@@ -14,8 +14,8 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 /**
- * REST API endpoints for location-based contact queries.
- * Provides endpoints to retrieve contacts assigned to specific locations.
+ * REST API endpoints for location-based contact queries. Provides endpoints to retrieve contacts
+ * assigned to specific locations.
  */
 @Path("/api/locations/{locationId}/contacts")
 @Authenticated

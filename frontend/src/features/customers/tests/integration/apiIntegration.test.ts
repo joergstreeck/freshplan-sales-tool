@@ -1,6 +1,6 @@
 /**
  * FC-005 API Integration Tests (Simplified)
- * 
+ *
  * ZWECK: Testet die API-Integration ohne komplexe Store-Abhängigkeiten
  * PHILOSOPHIE: Fokus auf API Contract und Response Handling
  */
@@ -28,23 +28,23 @@ class TestApiClient {
     const response = await fetch(endpoint, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data)
+      body: JSON.stringify(data),
     });
-    
+
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     }
-    
+
     return await response.json();
   }
-  
+
   async get<T>(endpoint: string): Promise<T> {
     const response = await fetch(endpoint);
-    
+
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     }
-    
+
     return await response.json();
   }
 }
@@ -61,16 +61,17 @@ describe('FC-005 API Integration Tests (Simplified)', () => {
           chainCustomer: 'ja',
           hotelStars: 4, // Number value
           amenities: ['Pool', 'Spa', 'Gym'], // Array value
-          preferences: { // Object value
+          preferences: {
+            // Object value
             newsletter: true,
-            marketing: false
-          }
+            marketing: false,
+          },
         },
         locations: [
           { id: 'loc-1', name: 'Berlin' },
-          { id: 'loc-2', name: 'Hamburg' }
+          { id: 'loc-2', name: 'Hamburg' },
         ],
-        detailedLocations: []
+        detailedLocations: [],
       };
 
       const result = await apiClient.post<any>('/api/customers/draft', draftData);
@@ -86,8 +87,8 @@ describe('FC-005 API Integration Tests (Simplified)', () => {
     it('should handle validation errors from draft save', async () => {
       const invalidData = {
         customerData: {
-          companyName: 'VALIDATION_ERROR' // Triggers validation error in mock
-        }
+          companyName: 'VALIDATION_ERROR', // Triggers validation error in mock
+        },
       };
 
       try {
@@ -101,8 +102,8 @@ describe('FC-005 API Integration Tests (Simplified)', () => {
     it('should handle server errors during draft save', async () => {
       const serverErrorData = {
         customerData: {
-          companyName: 'SERVER_ERROR' // Triggers server error in mock
-        }
+          companyName: 'SERVER_ERROR', // Triggers server error in mock
+        },
       };
 
       try {
@@ -116,8 +117,8 @@ describe('FC-005 API Integration Tests (Simplified)', () => {
     it('should handle network errors during draft save', async () => {
       const networkErrorData = {
         customerData: {
-          companyName: 'NETWORK_ERROR' // Triggers network error in mock
-        }
+          companyName: 'NETWORK_ERROR', // Triggers network error in mock
+        },
       };
 
       try {
@@ -140,11 +141,11 @@ describe('FC-005 API Integration Tests (Simplified)', () => {
       expect(result.data.customerData.chainCustomer).toBe('ja');
       expect(result.data.locations).toHaveLength(2);
       expect(result.data.detailedLocations).toHaveLength(1);
-      
+
       // Verify location structure
       expect(result.data.locations[0]).toHaveProperty('id');
       expect(result.data.locations[0]).toHaveProperty('name');
-      
+
       // Verify detailed location structure
       expect(result.data.detailedLocations[0]).toHaveProperty('id');
       expect(result.data.detailedLocations[0]).toHaveProperty('locationId');
@@ -167,7 +168,7 @@ describe('FC-005 API Integration Tests (Simplified)', () => {
       const customerData = {
         customerData: testData.validCustomerData,
         locations: testData.validLocations,
-        detailedLocations: testData.validDetailedLocations
+        detailedLocations: testData.validDetailedLocations,
       };
 
       const result = await apiClient.post<any>('/api/customers', customerData);
@@ -185,7 +186,7 @@ describe('FC-005 API Integration Tests (Simplified)', () => {
       const invalidCustomerData = {
         customerData: testData.invalidCustomerData,
         locations: [],
-        detailedLocations: []
+        detailedLocations: [],
       };
 
       try {
@@ -214,10 +215,12 @@ describe('FC-005 API Integration Tests (Simplified)', () => {
     });
 
     it('should filter field definitions by industry', async () => {
-      const hotelFields = await apiClient.get<any>('/api/field-definitions?entityType=customer&industry=hotel');
+      const hotelFields = await apiClient.get<any>(
+        '/api/field-definitions?entityType=customer&industry=hotel'
+      );
 
       expect(hotelFields.success).toBe(true);
-      
+
       // Should include hotel-specific fields
       const hotelStarsField = hotelFields.data.find((f: any) => f.key === 'hotelStars');
       expect(hotelStarsField).toBeDefined();
@@ -249,7 +252,9 @@ describe('FC-005 API Integration Tests (Simplified)', () => {
         apiClient.get('/api/field-definitions?entityType=customer&industry=hotel'),
         apiClient.get('/api/customers/draft/draft-123'),
         apiClient.get('/api/health'),
-        apiClient.post('/api/customers/draft', { customerData: { companyName: 'Concurrent Test' } })
+        apiClient.post('/api/customers/draft', {
+          customerData: { companyName: 'Concurrent Test' },
+        }),
       ];
 
       const results = await Promise.all(promises);
@@ -275,23 +280,23 @@ describe('FC-005 API Integration Tests (Simplified)', () => {
           customFields: {
             nested: {
               deep: {
-                value: 'preserved'
-              }
+                value: 'preserved',
+              },
             },
             array: [1, 'two', { three: 3 }],
             nullValue: null,
             booleanTrue: true,
             booleanFalse: false,
             numberZero: 0,
-            emptyString: ''
-          }
-        }
+            emptyString: '',
+          },
+        },
       };
 
       const result = await apiClient.post<any>('/api/customers/draft', complexData);
 
       expect(result.success).toBe(true);
-      
+
       // Verify complex data preservation
       const savedData = result.data.customerData;
       expect(savedData.customFields.nested.deep.value).toBe('preserved');
@@ -308,7 +313,7 @@ describe('FC-005 API Integration Tests (Simplified)', () => {
 
       expect(result.status).toBe('ok');
       expect(result.timestamp).toBeDefined();
-      
+
       // Verify timestamp is recent
       const timestamp = new Date(result.timestamp);
       const now = new Date();
@@ -320,15 +325,17 @@ describe('FC-005 API Integration Tests (Simplified)', () => {
   describe('Real-World Integration Scenarios', () => {
     it('should support complete customer onboarding workflow', async () => {
       // Step 1: Load field definitions
-      const fieldDefs = await apiClient.get<any>('/api/field-definitions?entityType=customer&industry=hotel');
+      const fieldDefs = await apiClient.get<any>(
+        '/api/field-definitions?entityType=customer&industry=hotel'
+      );
       expect(fieldDefs.success).toBe(true);
 
       // Step 2: Save initial draft
       const initialDraft = {
         customerData: {
           companyName: 'Workflow Test Hotel',
-          industry: 'hotel'
-        }
+          industry: 'hotel',
+        },
       };
       const draftResult = await apiClient.post<any>('/api/customers/draft', initialDraft);
       expect(draftResult.success).toBe(true);
@@ -338,11 +345,9 @@ describe('FC-005 API Integration Tests (Simplified)', () => {
         customerData: {
           ...initialDraft.customerData,
           chainCustomer: 'ja',
-          hotelStars: '4'
+          hotelStars: '4',
         },
-        locations: [
-          { id: 'loc-1', name: 'Berlin Hotel' }
-        ]
+        locations: [{ id: 'loc-1', name: 'Berlin Hotel' }],
       };
       const updateResult = await apiClient.post<any>('/api/customers/draft', updatedDraft);
       expect(updateResult.success).toBe(true);
@@ -356,9 +361,9 @@ describe('FC-005 API Integration Tests (Simplified)', () => {
             locationId: 'loc-1',
             address: 'Hotel Str. 123',
             contactPerson: 'Max Manager',
-            phone: '+49 30 123456'
-          }
-        ]
+            phone: '+49 30 123456',
+          },
+        ],
       };
       const finalResult = await apiClient.post<any>('/api/customers', finalCustomer);
       expect(finalResult.success).toBe(true);
@@ -372,10 +377,10 @@ describe('FC-005 API Integration Tests (Simplified)', () => {
         customerData: {
           companyName: 'Single Location Restaurant',
           industry: 'hotel',
-          chainCustomer: 'nein'
+          chainCustomer: 'nein',
         },
         locations: [], // Empty for single customer
-        detailedLocations: []
+        detailedLocations: [],
       };
 
       const singleResult = await apiClient.post<any>('/api/customers', singleCustomer);
@@ -386,11 +391,11 @@ describe('FC-005 API Integration Tests (Simplified)', () => {
         customerData: {
           companyName: 'Chain Restaurant Group',
           industry: 'hotel',
-          chainCustomer: 'ja'
+          chainCustomer: 'ja',
         },
         locations: [
           { id: 'loc-1', name: 'Location Berlin' },
-          { id: 'loc-2', name: 'Location Munich' }
+          { id: 'loc-2', name: 'Location Munich' },
         ],
         detailedLocations: [
           {
@@ -398,16 +403,16 @@ describe('FC-005 API Integration Tests (Simplified)', () => {
             locationId: 'loc-1',
             address: 'Berlin Address',
             contactPerson: 'Berlin Manager',
-            phone: '+49 30 111111'
+            phone: '+49 30 111111',
           },
           {
             id: 'detail-2',
             locationId: 'loc-2',
             address: 'Munich Address',
             contactPerson: 'Munich Manager',
-            phone: '+49 89 222222'
-          }
-        ]
+            phone: '+49 89 222222',
+          },
+        ],
       };
 
       const chainResult = await apiClient.post<any>('/api/customers', chainCustomer);

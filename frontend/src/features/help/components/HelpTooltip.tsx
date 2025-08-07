@@ -8,13 +8,13 @@ import {
   Fade,
   Paper,
   Divider,
-  Alert
+  Alert,
 } from '@mui/material';
 import {
   HelpOutline as HelpOutlineIcon,
   Close as CloseIcon,
   PlayCircleOutline as PlayCircleIcon,
-  QuizOutlined as QuizIcon
+  QuizOutlined as QuizIcon,
 } from '@mui/icons-material';
 import { CustomerFieldThemeProvider } from '../../customers/theme/CustomerFieldThemeProvider';
 import { useHelpStore } from '../stores/helpStore';
@@ -30,29 +30,29 @@ export const HelpTooltip: React.FC<HelpTooltipProps> = ({
   feature,
   children,
   placement = 'right',
-  forceOpen = false
+  forceOpen = false,
 }) => {
-  const { 
-    currentHelp, 
-    tooltipOpen, 
-    openTooltip, 
-    closeTooltip, 
+  const {
+    currentHelp,
+    tooltipOpen,
+    openTooltip,
+    closeTooltip,
     loadHelpContent,
     trackView,
     openModal,
     startTour,
     loading,
-    error
+    error,
   } = useHelpStore();
-  
+
   const [hasLoaded, setHasLoaded] = useState(false);
   const isOpen = tooltipOpen[feature] || forceOpen;
-  
+
   // Find tooltip content for this feature
   const tooltipContent = currentHelp?.helpContents.find(
     h => h.feature === feature && h.helpType === 'TOOLTIP'
   );
-  
+
   // Load help content when tooltip opens
   useEffect(() => {
     if (isOpen && !hasLoaded) {
@@ -60,14 +60,14 @@ export const HelpTooltip: React.FC<HelpTooltipProps> = ({
       setHasLoaded(true);
     }
   }, [isOpen, feature, hasLoaded, loadHelpContent]);
-  
+
   // Track view when content is shown
   useEffect(() => {
     if (isOpen && tooltipContent) {
       trackView(tooltipContent.id);
     }
   }, [isOpen, tooltipContent, trackView]);
-  
+
   const handleToggle = () => {
     if (isOpen) {
       closeTooltip(feature);
@@ -75,19 +75,19 @@ export const HelpTooltip: React.FC<HelpTooltipProps> = ({
       openTooltip(feature);
     }
   };
-  
+
   const handleOpenModal = () => {
     if (tooltipContent) {
       openModal(tooltipContent);
       closeTooltip(feature);
     }
   };
-  
+
   const handleStartTour = () => {
     startTour(feature);
     closeTooltip(feature);
   };
-  
+
   const tooltipContentElement = (
     <CustomerFieldThemeProvider mode="anpassungsfähig">
       <Paper sx={{ p: 2, maxWidth: 350 }}>
@@ -95,15 +95,11 @@ export const HelpTooltip: React.FC<HelpTooltipProps> = ({
           <Typography variant="subtitle2" fontWeight="bold">
             {tooltipContent?.title || `Hilfe: ${feature}`}
           </Typography>
-          <IconButton 
-            size="small" 
-            onClick={() => closeTooltip(feature)} 
-            sx={{ ml: 1, mt: -0.5 }}
-          >
+          <IconButton size="small" onClick={() => closeTooltip(feature)} sx={{ ml: 1, mt: -0.5 }}>
             <CloseIcon fontSize="small" />
           </IconButton>
         </Box>
-        
+
         {loading ? (
           <Typography variant="body2" color="text.secondary">
             Lade Hilfe...
@@ -117,7 +113,7 @@ export const HelpTooltip: React.FC<HelpTooltipProps> = ({
             <Typography variant="body2" color="text.secondary" paragraph>
               {tooltipContent.shortContent}
             </Typography>
-            
+
             {tooltipContent.mediumContent && (
               <>
                 <Divider sx={{ my: 1 }} />
@@ -126,10 +122,10 @@ export const HelpTooltip: React.FC<HelpTooltipProps> = ({
                 </Typography>
               </>
             )}
-            
+
             <Box sx={{ mt: 2, display: 'flex', gap: 1 }}>
               {tooltipContent.detailedContent && (
-                <Button 
+                <Button
                   size="small"
                   variant="outlined"
                   onClick={handleOpenModal}
@@ -138,9 +134,9 @@ export const HelpTooltip: React.FC<HelpTooltipProps> = ({
                   Mehr Details
                 </Button>
               )}
-              
+
               {currentHelp?.helpContents.some(h => h.helpType === 'TOUR') && (
-                <Button 
+                <Button
                   size="small"
                   variant="contained"
                   onClick={handleStartTour}
@@ -150,7 +146,7 @@ export const HelpTooltip: React.FC<HelpTooltipProps> = ({
                 </Button>
               )}
             </Box>
-            
+
             {/* Confidence Indicator */}
             {currentHelp?.context && (
               <Box sx={{ mt: 2 }}>
@@ -169,7 +165,7 @@ export const HelpTooltip: React.FC<HelpTooltipProps> = ({
       </Paper>
     </CustomerFieldThemeProvider>
   );
-  
+
   return (
     <Tooltip
       title={tooltipContentElement}
@@ -191,12 +187,12 @@ export const HelpTooltip: React.FC<HelpTooltipProps> = ({
         <IconButton
           size="small"
           onClick={handleToggle}
-          sx={{ 
+          sx={{
             ml: children ? 0.5 : 0,
             color: 'action.active',
             '&:hover': {
-              color: 'primary.main'
-            }
+              color: 'primary.main',
+            },
           }}
           aria-label={`Hilfe für ${feature}`}
         >

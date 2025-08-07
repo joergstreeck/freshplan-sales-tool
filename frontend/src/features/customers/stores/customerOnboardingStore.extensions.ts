@@ -1,6 +1,6 @@
 /**
  * Customer Onboarding Store Extensions
- * 
+ *
  * Erweitert den Store um Funktionalität für die neue Step 2 Struktur
  * mit standortbasierter Angebotserfassung.
  */
@@ -20,7 +20,7 @@ export interface LocationServiceData {
   eventCapacity?: number;
   roomCount?: number;
   averageOccupancy?: number;
-  
+
   // Andere Branchen können hier ergänzt werden
   [key: string]: any;
 }
@@ -39,24 +39,24 @@ export interface CustomerOnboardingStateExtensions {
 export interface CustomerOnboardingActionsExtensions {
   // Umsatzerwartung
   setExpectedRevenue: (amount: number) => void;
-  
+
   // Standort-Auswahl
   setSelectedLocation: (locationId: string | 'all') => void;
   setApplyToAll: (value: boolean) => void;
-  
+
   // Service-Daten
   saveLocationServices: (data: LocationServiceData) => void;
   getLocationServices: (locationId: string) => LocationServiceData;
   markLocationCompleted: (locationId: string) => void;
-  
+
   // Helper
-  getAllLocationsWithServices: () => Array<{locationId: string; services: LocationServiceData}>;
+  getAllLocationsWithServices: () => Array<{ locationId: string; services: LocationServiceData }>;
   hasAllLocationsCompleted: () => boolean;
 }
 
 /**
  * Store-Erweiterungen implementieren
- * 
+ *
  * Diese Funktionen können in den bestehenden Store integriert werden.
  */
 export const createStoreExtensions = (set: any, get: any) => ({
@@ -90,7 +90,7 @@ export const createStoreExtensions = (set: any, get: any) => ({
   saveLocationServices: (data: LocationServiceData) => {
     set((state: WritableDraft<any>) => {
       const { selectedLocationId, applyToAllLocations, locations } = get();
-      
+
       if (selectedLocationId === 'all' || applyToAllLocations) {
         // Speichere für alle Standorte
         locations.forEach((loc: any) => {
@@ -101,23 +101,26 @@ export const createStoreExtensions = (set: any, get: any) => ({
         // Speichere nur für ausgewählten Standort
         state.locationServices.set(selectedLocationId, { ...data });
       }
-      
+
       // Markiere als abgeschlossen
-      if (selectedLocationId !== 'all' && !state.completedLocationIds.includes(selectedLocationId)) {
+      if (
+        selectedLocationId !== 'all' &&
+        !state.completedLocationIds.includes(selectedLocationId)
+      ) {
         state.completedLocationIds.push(selectedLocationId);
       }
-      
+
       state.isDirty = true;
     });
   },
 
   getLocationServices: (locationId: string): LocationServiceData => {
     const { locationServices, applyToAllLocations } = get();
-    
+
     if (applyToAllLocations && locationServices.has('all')) {
       return locationServices.get('all') || {};
     }
-    
+
     return locationServices.get(locationId) || {};
   },
 
@@ -133,19 +136,19 @@ export const createStoreExtensions = (set: any, get: any) => ({
     const { locations, locationServices } = get();
     return locations.map((loc: any) => ({
       locationId: loc.id,
-      services: locationServices.get(loc.id) || {}
+      services: locationServices.get(loc.id) || {},
     }));
   },
 
   hasAllLocationsCompleted: () => {
     const { locations, completedLocationIds } = get();
     return locations.every((loc: any) => completedLocationIds.includes(loc.id));
-  }
+  },
 });
 
 /**
  * Helper um die Erweiterungen in den bestehenden Store zu integrieren
- * 
+ *
  * Beispiel:
  * ```typescript
  * export const useCustomerOnboardingStore = create<CustomerOnboardingState & CustomerOnboardingStateExtensions>()(

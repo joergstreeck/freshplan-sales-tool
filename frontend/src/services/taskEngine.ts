@@ -16,15 +16,17 @@ class TaskEngine {
   async processEvent(event: TaskEvent): Promise<Task[]> {
     // TODO: Tag 2 - Implementation der Task Engine
     console.log('[TaskEngine] Processing event:', event);
-    
+
     // Mock implementation für Tag 1 Testing
     if (event.type === 'customer-created') {
-      return [{
-        id: 'mock-task-1',
-        title: `🎉 Neukunde ${event.context.customer.name || event.context.customer.companyName} begrüßen`
-      }];
+      return [
+        {
+          id: 'mock-task-1',
+          title: `🎉 Neukunde ${event.context.customer.name || event.context.customer.companyName} begrüßen`,
+        },
+      ];
     }
-    
+
     return [];
   }
 }

@@ -1,6 +1,6 @@
 /**
  * LocationServicesSection Component
- * 
+ *
  * Erfasst die Angebotsstruktur für den ausgewählten Standort
  * oder alle Standorte mit der AdaptiveFormContainer Theme.
  */
@@ -12,7 +12,7 @@ import { DynamicFieldRenderer } from '../fields/DynamicFieldRenderer';
 import type { FieldDefinition } from '../../types/field.types';
 
 const SectionContainer = styled(Box)(({ theme }) => ({
-  marginBottom: theme.spacing(2)
+  marginBottom: theme.spacing(2),
 }));
 
 const FieldGroupContainer = styled(Box)(({ theme }) => ({
@@ -21,17 +21,17 @@ const FieldGroupContainer = styled(Box)(({ theme }) => ({
   padding: theme.spacing(2),
   marginBottom: theme.spacing(2),
   backgroundColor: theme.palette.background.default,
-  
+
   '& .group-title': {
     display: 'flex',
     alignItems: 'center',
     gap: theme.spacing(1),
     marginBottom: theme.spacing(2),
-    
+
     '& .icon': {
-      fontSize: '1.25rem'
-    }
-  }
+      fontSize: '1.25rem',
+    },
+  },
 }));
 
 interface ServiceFieldGroup {
@@ -64,18 +64,20 @@ export const LocationServicesSection: React.FC<LocationServicesSectionProps> = (
   onChange,
   onBlur,
   selectedLocationId,
-  locationName
+  locationName,
 }) => {
   const isAllLocations = selectedLocationId === 'all';
 
   return (
     <SectionContainer>
       <Typography variant="h6" gutterBottom>
-        🍳 Angebotsstruktur{isAllLocations ? ': Alle Standorte' : locationName ? `: ${locationName}` : ''}
+        🍳 Angebotsstruktur
+        {isAllLocations ? ': Alle Standorte' : locationName ? `: ${locationName}` : ''}
       </Typography>
 
       <Alert severity="info" sx={{ mb: 3 }}>
-        Was wird angeboten? Dies hilft uns, den spezifischen Bedarf {isAllLocations ? 'aller Standorte' : 'dieses Standorts'} einzuschätzen.
+        Was wird angeboten? Dies hilft uns, den spezifischen Bedarf{' '}
+        {isAllLocations ? 'aller Standorte' : 'dieses Standorts'} einzuschätzen.
       </Alert>
 
       {serviceFieldGroups.map((group, index) => (
@@ -86,7 +88,7 @@ export const LocationServicesSection: React.FC<LocationServicesSectionProps> = (
               {group.title}
             </Typography>
           </div>
-          
+
           <DynamicFieldRenderer
             fields={group.fields}
             values={values}

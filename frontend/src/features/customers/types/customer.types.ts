@@ -1,9 +1,9 @@
 /**
  * Customer Entity Types
- * 
+ *
  * Core types for customer entities in the Field-Based Architecture.
  * Customer data is stored as dynamic field values, not fixed properties.
- * 
+ *
  * @see /Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/02-BACKEND/01-entities.md
  */
 
@@ -18,7 +18,7 @@ export enum CustomerStatus {
   /** Temporarily inactive customer */
   INACTIVE = 'INACTIVE',
   /** Soft-deleted customer (for DSGVO compliance) */
-  DELETED = 'DELETED'
+  DELETED = 'DELETED',
 }
 
 /**

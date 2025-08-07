@@ -1,7 +1,7 @@
 /**
  * LocationSelector Component
- * 
- * Ermöglicht die Auswahl eines Standorts oder "Alle Standorte" 
+ *
+ * Ermöglicht die Auswahl eines Standorts oder "Alle Standorte"
  * für die Erfassung der Angebotsstruktur in Step 2.
  */
 
@@ -16,7 +16,7 @@ import {
   FormControlLabel,
   Typography,
   Divider,
-  Chip
+  Chip,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
@@ -25,22 +25,22 @@ import type { CustomerLocation } from '../../types/customer.types';
 interface LocationSelectorProps {
   /** Verfügbare Standorte aus Customer Entity */
   locations: CustomerLocation[];
-  
+
   /** Aktuell ausgewählter Standort */
   selectedLocationId: string | 'all';
-  
+
   /** Callback bei Standortauswahl */
   onLocationChange: (locationId: string | 'all') => void;
-  
+
   /** Option "Für alle übernehmen" aktiviert? */
   applyToAll: boolean;
-  
+
   /** Callback für "Für alle übernehmen" */
   onApplyToAllChange: (value: boolean) => void;
-  
+
   /** Anzahl Gesamt-Standorte (für Display) */
   totalLocations: number;
-  
+
   /** Bereits erfasste Standorte (optional) */
   completedLocationIds?: string[];
 }
@@ -52,7 +52,7 @@ export const LocationSelector: React.FC<LocationSelectorProps> = ({
   applyToAll,
   onApplyToAllChange,
   totalLocations,
-  completedLocationIds = []
+  completedLocationIds = [],
 }) => {
   // Bei nur einem Standort automatisch auswählen
   React.useEffect(() => {
@@ -63,9 +63,8 @@ export const LocationSelector: React.FC<LocationSelectorProps> = ({
 
   // Progress berechnen
   const completedCount = completedLocationIds.length;
-  const progressText = totalLocations > 1 
-    ? `${completedCount} von ${totalLocations} Standorten erfasst`
-    : '';
+  const progressText =
+    totalLocations > 1 ? `${completedCount} von ${totalLocations} Standorten erfasst` : '';
 
   return (
     <Box sx={{ mb: 4 }}>
@@ -74,24 +73,25 @@ export const LocationSelector: React.FC<LocationSelectorProps> = ({
           📍 Angebotsstruktur pro Standort
         </Typography>
         {progressText && (
-          <Chip 
+          <Chip
             label={progressText}
             color={completedCount === totalLocations ? 'success' : 'default'}
             size="small"
           />
         )}
       </Box>
-      
+
       <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-        Erfassen Sie die Angebote für jeden Standort oder wählen Sie "Alle Standorte gleich" für einheitliche Strukturen.
+        Erfassen Sie die Angebote für jeden Standort oder wählen Sie "Alle Standorte gleich" für
+        einheitliche Strukturen.
       </Typography>
-      
+
       <FormControl fullWidth sx={{ mb: 2 }}>
         <InputLabel id="location-selector-label">Für welchen Standort erfassen?</InputLabel>
-        <Select 
+        <Select
           labelId="location-selector-label"
           value={selectedLocationId}
-          onChange={(e) => onLocationChange(e.target.value as string | 'all')}
+          onChange={e => onLocationChange(e.target.value as string | 'all')}
           label="Für welchen Standort erfassen?"
         >
           <MenuItem value="all">
@@ -99,9 +99,9 @@ export const LocationSelector: React.FC<LocationSelectorProps> = ({
               Alle {totalLocations} Standorte gleich
             </Box>
           </MenuItem>
-          
+
           {locations.length > 0 && <Divider />}
-          
+
           {locations.map((loc, index) => {
             const isCompleted = completedLocationIds.includes(loc.id);
             return (
@@ -109,20 +109,18 @@ export const LocationSelector: React.FC<LocationSelectorProps> = ({
                 <Box sx={{ display: 'flex', alignItems: 'center', width: '100%' }}>
                   <Box sx={{ flex: 1 }}>
                     Standort {index + 1}: {loc.name || loc.city || 'Unbenannt'}
-                    {loc.isMainLocation && " (Hauptsitz)"}
+                    {loc.isMainLocation && ' (Hauptsitz)'}
                   </Box>
                   {isCompleted && (
-                    <CheckCircleIcon 
-                      sx={{ ml: 1, color: 'success.main', fontSize: 20 }} 
-                    />
+                    <CheckCircleIcon sx={{ ml: 1, color: 'success.main', fontSize: 20 }} />
                   )}
                 </Box>
               </MenuItem>
             );
           })}
-          
+
           <Divider />
-          
+
           <MenuItem value="new">
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
               <AddIcon sx={{ mr: 1 }} />
@@ -131,13 +129,13 @@ export const LocationSelector: React.FC<LocationSelectorProps> = ({
           </MenuItem>
         </Select>
       </FormControl>
-      
+
       {selectedLocationId !== 'all' && totalLocations > 1 && (
         <FormControlLabel
           control={
             <Checkbox
               checked={applyToAll}
-              onChange={(e) => onApplyToAllChange(e.target.checked)}
+              onChange={e => onApplyToAllChange(e.target.checked)}
               color="primary"
             />
           }
@@ -153,19 +151,22 @@ export const LocationSelector: React.FC<LocationSelectorProps> = ({
           }
         />
       )}
-      
+
       {selectedLocationId === 'all' && (
-        <Box sx={{ 
-          mt: 2, 
-          p: 2, 
-          bgcolor: 'info.light', 
-          borderRadius: 1,
-          border: '1px solid',
-          borderColor: 'info.main'
-        }}>
+        <Box
+          sx={{
+            mt: 2,
+            p: 2,
+            bgcolor: 'info.light',
+            borderRadius: 1,
+            border: '1px solid',
+            borderColor: 'info.main',
+          }}
+        >
           <Typography variant="body2" color="info.dark">
-            <strong>Hinweis:</strong> Sie erfassen jetzt die Angebotsstruktur für alle {totalLocations} Standorte gleichzeitig. 
-            Individuelle Anpassungen können Sie später vornehmen.
+            <strong>Hinweis:</strong> Sie erfassen jetzt die Angebotsstruktur für alle{' '}
+            {totalLocations} Standorte gleichzeitig. Individuelle Anpassungen können Sie später
+            vornehmen.
           </Typography>
         </Box>
       )}

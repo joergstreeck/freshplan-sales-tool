@@ -39,14 +39,14 @@ interface FocusListColumnMUIProps {
 }
 
 export function FocusListColumnMUI({ onCustomerSelect }: FocusListColumnMUIProps = {}) {
-  const { 
-    searchCriteria, 
-    viewMode, 
-    selectedCustomerId, 
-    setSelectedCustomer, 
+  const {
+    searchCriteria,
+    viewMode,
+    selectedCustomerId,
+    setSelectedCustomer,
     visibleTableColumns,
     setPage,
-    setPageSize 
+    setPageSize,
   } = useFocusListStore();
   // useAuth(); // userId wird aktuell nicht genutzt
 
@@ -84,7 +84,16 @@ export function FocusListColumnMUI({ onCustomerSelect }: FocusListColumnMUIProps
   };
 
   // Render Zellinhalt basierend auf Spalten-ID
-  const renderCellContent = (customer: { companyName: string; customerNumber: string; status?: string; lastContact?: string; location?: string }, columnId: string) => {
+  const renderCellContent = (
+    customer: {
+      companyName: string;
+      customerNumber: string;
+      status?: string;
+      lastContact?: string;
+      location?: string;
+    },
+    columnId: string
+  ) => {
     switch (columnId) {
       case 'companyName':
         return (
@@ -209,7 +218,7 @@ export function FocusListColumnMUI({ onCustomerSelect }: FocusListColumnMUIProps
           </Typography>
           <SmartSortSelector variant="compact" showDescription={false} />
         </Box>
-        
+
         {/* Rechts: Refresh Button */}
         <IconButton size="small" onClick={() => refetch()}>
           <RefreshIcon />
@@ -340,43 +349,45 @@ export function FocusListColumnMUI({ onCustomerSelect }: FocusListColumnMUIProps
 
             {/* Pagination Controls - Responsive Layout */}
             {searchResults.totalPages > 1 && (
-              <Box 
-                sx={{ 
-                  mt: 3, 
-                  display: 'flex', 
+              <Box
+                sx={{
+                  mt: 3,
+                  display: 'flex',
                   flexDirection: { xs: 'column', sm: 'column', md: 'row' },
-                  justifyContent: 'space-between', 
+                  justifyContent: 'space-between',
                   alignItems: { xs: 'stretch', sm: 'stretch', md: 'center' },
-                  gap: 2
+                  gap: 2,
                 }}
               >
                 {/* Page Navigation */}
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, justifyContent: 'center' }}>
+                <Box
+                  sx={{ display: 'flex', alignItems: 'center', gap: 1, justifyContent: 'center' }}
+                >
                   <IconButton
                     size="small"
                     disabled={searchResults.first}
                     onClick={() => setPage(searchResults.page - 1)}
-                    sx={{ 
-                      border: 1, 
+                    sx={{
+                      border: 1,
                       borderColor: 'divider',
-                      '&:hover': { borderColor: 'primary.main' }
+                      '&:hover': { borderColor: 'primary.main' },
                     }}
                   >
                     <ChevronLeftIcon />
                   </IconButton>
-                  
+
                   <Typography variant="body2" sx={{ mx: 1, whiteSpace: 'nowrap' }}>
                     {searchResults.page + 1} / {searchResults.totalPages}
                   </Typography>
-                  
+
                   <IconButton
                     size="small"
                     disabled={searchResults.last}
                     onClick={() => setPage(searchResults.page + 1)}
-                    sx={{ 
-                      border: 1, 
+                    sx={{
+                      border: 1,
                       borderColor: 'divider',
-                      '&:hover': { borderColor: 'primary.main' }
+                      '&:hover': { borderColor: 'primary.main' },
                     }}
                   >
                     <ChevronRightIcon />
@@ -384,7 +395,9 @@ export function FocusListColumnMUI({ onCustomerSelect }: FocusListColumnMUIProps
                 </Box>
 
                 {/* Page Size Selector - Kompakt */}
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, justifyContent: 'center' }}>
+                <Box
+                  sx={{ display: 'flex', alignItems: 'center', gap: 0.5, justifyContent: 'center' }}
+                >
                   <Typography variant="caption" color="text.secondary" sx={{ mr: 1 }}>
                     pro Seite:
                   </Typography>
@@ -393,15 +406,17 @@ export function FocusListColumnMUI({ onCustomerSelect }: FocusListColumnMUIProps
                       key={size}
                       size="small"
                       onClick={() => setPageSize(size)}
-                      sx={{ 
+                      sx={{
                         minWidth: 32,
                         height: 32,
                         fontSize: '0.875rem',
                         color: searchResults.size === size ? 'primary.main' : 'text.secondary',
-                        backgroundColor: searchResults.size === size ? 'action.selected' : 'transparent',
+                        backgroundColor:
+                          searchResults.size === size ? 'action.selected' : 'transparent',
                         '&:hover': {
-                          backgroundColor: searchResults.size === size ? 'action.selected' : 'action.hover'
-                        }
+                          backgroundColor:
+                            searchResults.size === size ? 'action.selected' : 'action.hover',
+                        },
                       }}
                     >
                       {size}

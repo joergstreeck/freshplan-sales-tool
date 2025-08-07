@@ -1,9 +1,9 @@
 /**
  * Contact API Service
- * 
+ *
  * Handles all API communication for contact management.
  * Implements CRUD operations matching the backend ContactResource.
- * 
+ *
  * @see /Users/joergstreeck/freshplan-sales-tool/backend/src/main/java/de/freshplan/api/resources/ContactResource.java
  * @see /Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/step3/README.md
  */
@@ -43,14 +43,11 @@ export const contactApi = {
    * Update an existing contact
    */
   updateContact: async (
-    customerId: string, 
-    contactId: string, 
+    customerId: string,
+    contactId: string,
     updates: UpdateContactDTO
   ): Promise<Contact> => {
-    const response = await apiClient.put(
-      `/customers/${customerId}/contacts/${contactId}`, 
-      updates
-    );
+    const response = await apiClient.put(`/customers/${customerId}/contacts/${contactId}`, updates);
     return response.data;
   },
 
@@ -58,13 +55,9 @@ export const contactApi = {
    * Soft delete a contact
    * Contact remains in database with isActive = false
    */
-  deleteContact: async (
-    customerId: string, 
-    contactId: string,
-    reason?: string
-  ): Promise<void> => {
+  deleteContact: async (customerId: string, contactId: string, reason?: string): Promise<void> => {
     await apiClient.delete(`/customers/${customerId}/contacts/${contactId}`, {
-      params: { reason }
+      params: { reason },
     });
   },
 
@@ -83,14 +76,8 @@ export const contactApi = {
    * Bulk create contacts
    * Useful for import scenarios
    */
-  createContacts: async (
-    customerId: string, 
-    contacts: CreateContactDTO[]
-  ): Promise<Contact[]> => {
-    const response = await apiClient.post(
-      `/customers/${customerId}/contacts/bulk`, 
-      contacts
-    );
+  createContacts: async (customerId: string, contacts: CreateContactDTO[]): Promise<Contact[]> => {
+    const response = await apiClient.post(`/customers/${customerId}/contacts/bulk`, contacts);
     return response.data;
   },
 
@@ -98,10 +85,7 @@ export const contactApi = {
    * Get contacts by location
    * Returns contacts assigned to a specific location
    */
-  getContactsByLocation: async (
-    customerId: string, 
-    locationId: string
-  ): Promise<Contact[]> => {
+  getContactsByLocation: async (customerId: string, locationId: string): Promise<Contact[]> => {
     const response = await apiClient.get(
       `/customers/${customerId}/locations/${locationId}/contacts`
     );
@@ -128,14 +112,10 @@ export const contactApi = {
    * Search contacts
    * Searches across all customer contacts
    */
-  searchContacts: async (
-    customerId: string,
-    query: string
-  ): Promise<Contact[]> => {
-    const response = await apiClient.get(
-      `/customers/${customerId}/contacts/search`,
-      { params: { q: query } }
-    );
+  searchContacts: async (customerId: string, query: string): Promise<Contact[]> => {
+    const response = await apiClient.get(`/customers/${customerId}/contacts/search`, {
+      params: { q: query },
+    });
     return response.data;
   },
 
@@ -143,13 +123,8 @@ export const contactApi = {
    * Get contact activity timeline
    * Returns all interactions with a contact
    */
-  getContactTimeline: async (
-    customerId: string,
-    contactId: string
-  ): Promise<any[]> => {
-    const response = await apiClient.get(
-      `/customers/${customerId}/contacts/${contactId}/timeline`
-    );
+  getContactTimeline: async (customerId: string, contactId: string): Promise<any[]> => {
+    const response = await apiClient.get(`/customers/${customerId}/contacts/${contactId}/timeline`);
     return response.data;
   },
 
@@ -161,15 +136,12 @@ export const contactApi = {
     customerId: string,
     format: 'csv' | 'excel' | 'json' = 'csv'
   ): Promise<Blob> => {
-    const response = await apiClient.get(
-      `/customers/${customerId}/contacts/export`,
-      {
-        params: { format },
-        responseType: 'blob'
-      }
-    );
+    const response = await apiClient.get(`/customers/${customerId}/contacts/export`, {
+      params: { format },
+      responseType: 'blob',
+    });
     return response.data;
-  }
+  },
 };
 
 /**
@@ -199,22 +171,25 @@ export const contactValidation = {
    */
   formatPhone: (phone: string): string => {
     const clean = phone.replace(/\D/g, '');
-    
+
     // German mobile number
-    if (clean.startsWith('49') && (clean.startsWith('4915') || clean.startsWith('4916') || clean.startsWith('4917'))) {
+    if (
+      clean.startsWith('49') &&
+      (clean.startsWith('4915') || clean.startsWith('4916') || clean.startsWith('4917'))
+    ) {
       return clean.replace(/^(\d{2})(\d{3})(\d{4})(\d+)/, '+$1 $2 $3 $4');
     }
-    
+
     // German landline
     if (clean.startsWith('49')) {
       return clean.replace(/^(\d{2})(\d{2,5})(\d+)/, '+$1 $2 $3');
     }
-    
+
     // Local format
     if (clean.startsWith('0')) {
       return clean.replace(/^(\d{3,5})(\d+)/, '$1 $2');
     }
-    
+
     return phone;
   },
 
@@ -230,7 +205,7 @@ export const contactValidation = {
    */
   hasContactMethod: (contact: Partial<CreateContactDTO>): boolean => {
     return !!(contact.email || contact.phone || contact.mobile);
-  }
+  },
 };
 
 /**
@@ -242,16 +217,16 @@ export const contactRoleHelpers = {
    */
   getRoleDisplayName: (role: string): string => {
     const roleMap: Record<string, string> = {
-      'geschaeftsfuehrung': 'Geschäftsführung',
-      'einkauf': 'Einkauf',
-      'kueche': 'Küche',
-      'verwaltung': 'Verwaltung',
-      'qualitaet': 'Qualitätsmanagement',
-      'buchhaltung': 'Buchhaltung',
-      'marketing': 'Marketing',
-      'personal': 'Personal',
-      'technik': 'Technik',
-      'sonstiges': 'Sonstiges'
+      geschaeftsfuehrung: 'Geschäftsführung',
+      einkauf: 'Einkauf',
+      kueche: 'Küche',
+      verwaltung: 'Verwaltung',
+      qualitaet: 'Qualitätsmanagement',
+      buchhaltung: 'Buchhaltung',
+      marketing: 'Marketing',
+      personal: 'Personal',
+      technik: 'Technik',
+      sonstiges: 'Sonstiges',
     };
     return roleMap[role] || role;
   },
@@ -261,17 +236,17 @@ export const contactRoleHelpers = {
    */
   getRoleIcon: (role: string): string => {
     const iconMap: Record<string, string> = {
-      'geschaeftsfuehrung': '👔',
-      'einkauf': '🛒',
-      'kueche': '👨‍🍳',
-      'verwaltung': '📋',
-      'qualitaet': '✅',
-      'buchhaltung': '💰',
-      'marketing': '📢',
-      'personal': '👥',
-      'technik': '🔧',
-      'sonstiges': '📌'
+      geschaeftsfuehrung: '👔',
+      einkauf: '🛒',
+      kueche: '👨‍🍳',
+      verwaltung: '📋',
+      qualitaet: '✅',
+      buchhaltung: '💰',
+      marketing: '📢',
+      personal: '👥',
+      technik: '🔧',
+      sonstiges: '📌',
     };
     return iconMap[role] || '📌';
-  }
+  },
 };

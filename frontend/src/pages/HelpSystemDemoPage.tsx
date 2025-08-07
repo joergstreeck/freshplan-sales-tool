@@ -1,40 +1,31 @@
 import React from 'react';
-import { 
-  Container, 
-  Typography, 
-  Box, 
-  Paper, 
-  Grid, 
-  Card, 
+import {
+  Container,
+  Typography,
+  Box,
+  Paper,
+  Grid,
+  Card,
   CardContent,
   Button,
   Alert,
-  Stack
+  Stack,
 } from '@mui/material';
-import { 
-  HelpTooltip, 
-  useHelp, 
-  useHelpStore 
-} from '../features/help';
-import { 
+import { HelpTooltip, useHelp, useHelpStore } from '../features/help';
+import {
   PlayCircleOutline as PlayCircleIcon,
   BugReport as BugReportIcon,
-  Analytics as AnalyticsIcon
+  Analytics as AnalyticsIcon,
 } from '@mui/icons-material';
 
 export const HelpSystemDemoPage: React.FC = () => {
   // Help hooks are loaded but not used in demo
-  useHelp({ 
+  useHelp({
     feature: 'help-demo',
-    autoLoad: true 
+    autoLoad: true,
   });
-  
-  const { 
-    startTour,
-    detectStruggle,
-    analytics,
-    loadAnalytics 
-  } = useHelpStore();
+
+  const { startTour, detectStruggle, analytics, loadAnalytics } = useHelpStore();
 
   // Simulate user struggle
   const simulateStruggle = () => {
@@ -42,12 +33,12 @@ export const HelpSystemDemoPage: React.FC = () => {
     const actions = [
       { type: 'form-submit', timestamp: Date.now() - 3000, success: false },
       { type: 'form-submit', timestamp: Date.now() - 2000, success: false },
-      { type: 'form-submit', timestamp: Date.now() - 1000, success: false }
+      { type: 'form-submit', timestamp: Date.now() - 1000, success: false },
     ];
-    
+
     detectStruggle({
       feature: 'help-demo',
-      actions
+      actions,
     });
   };
 
@@ -61,7 +52,7 @@ export const HelpSystemDemoPage: React.FC = () => {
         In-App Help System Demo
         <HelpTooltip feature="help-demo" />
       </Typography>
-      
+
       <Alert severity="info" sx={{ mb: 4 }}>
         Diese Seite demonstriert alle Features des neuen In-App Help Systems!
       </Alert>
@@ -72,23 +63,19 @@ export const HelpSystemDemoPage: React.FC = () => {
           <Card>
             <CardContent>
               <Box display="flex" alignItems="center" mb={2}>
-                <Typography variant="h5">
-                  1. Help Tooltips
-                </Typography>
+                <Typography variant="h5">1. Help Tooltips</Typography>
                 <HelpTooltip feature="cost-management" />
               </Box>
               <Typography variant="body2" color="text.secondary" paragraph>
                 Klicken Sie auf das Help-Icon neben der Überschrift!
               </Typography>
-              
+
               <Box sx={{ mt: 3 }}>
                 <Typography variant="subtitle1" gutterBottom>
                   Budget-Limit
                   <HelpTooltip feature="cost-management-budget" />
                 </Typography>
-                <Typography variant="body2">
-                  Monatliches Limit: €500
-                </Typography>
+                <Typography variant="body2">Monatliches Limit: €500</Typography>
               </Box>
             </CardContent>
           </Card>
@@ -153,9 +140,7 @@ export const HelpSystemDemoPage: React.FC = () => {
               </Typography>
               {analytics && (
                 <Stack spacing={1}>
-                  <Typography variant="body2">
-                    Total Views: {analytics.totalViews}
-                  </Typography>
+                  <Typography variant="body2">Total Views: {analytics.totalViews}</Typography>
                   <Typography variant="body2">
                     Helpfulness Rate: {analytics.overallHelpfulnessRate.toFixed(1)}%
                   </Typography>
@@ -183,44 +168,44 @@ export const HelpSystemDemoPage: React.FC = () => {
         <Typography variant="h5" gutterBottom>
           Tour Test Areas
         </Typography>
-        
+
         <Grid container spacing={2} sx={{ mt: 2 }}>
           <Grid item xs={4}>
-            <Box 
+            <Box
               className="warmth-indicator"
-              sx={{ 
-                p: 2, 
+              sx={{
+                p: 2,
                 bgcolor: 'success.light',
                 borderRadius: 1,
-                textAlign: 'center'
+                textAlign: 'center',
               }}
             >
               <Typography>Warmth Score: 73</Typography>
             </Box>
           </Grid>
-          
+
           <Grid item xs={4}>
-            <Box 
+            <Box
               className="smart-suggestions"
-              sx={{ 
-                p: 2, 
+              sx={{
+                p: 2,
                 bgcolor: 'info.light',
                 borderRadius: 1,
-                textAlign: 'center'
+                textAlign: 'center',
               }}
             >
               <Typography>Smart Suggestions</Typography>
             </Box>
           </Grid>
-          
+
           <Grid item xs={4}>
-            <Box 
+            <Box
               className="contact-timeline"
-              sx={{ 
-                p: 2, 
+              sx={{
+                p: 2,
                 bgcolor: 'warning.light',
                 borderRadius: 1,
-                textAlign: 'center'
+                textAlign: 'center',
               }}
             >
               <Typography>Contact Timeline</Typography>

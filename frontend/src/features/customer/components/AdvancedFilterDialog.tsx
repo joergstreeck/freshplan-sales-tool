@@ -73,40 +73,39 @@ const initialFilters: FilterCriteria = {
   salesRep: [],
 };
 
-export const AdvancedFilterDialog: React.FC<AdvancedFilterDialogProps> = ({
-  open,
-  onClose,
-}) => {
+export const AdvancedFilterDialog: React.FC<AdvancedFilterDialogProps> = ({ open, onClose }) => {
   const { setSearchCriteria, clearAllFilters } = useFocusListStore();
   const [filters, setFilters] = useState<FilterCriteria>(initialFilters);
-  const [savedFilters, setSavedFilters] = useState<Array<{ name: string; filters: FilterCriteria }>>([]);
+  const [savedFilters, setSavedFilters] = useState<
+    Array<{ name: string; filters: FilterCriteria }>
+  >([]);
 
   const handleApplyFilters = () => {
     // Konvertiere Filter zu Search Criteria
     const criteria: Record<string, unknown> = {};
-    
+
     if (filters.status.length > 0) {
       criteria.status = filters.status;
     }
-    
+
     if (filters.customerType.length > 0) {
       criteria.customerType = filters.customerType;
     }
-    
+
     if (filters.industry.length > 0) {
       criteria.industry = filters.industry;
     }
-    
+
     if (filters.riskScoreRange[0] > 0 || filters.riskScoreRange[1] < 100) {
       criteria.minRiskScore = filters.riskScoreRange[0];
       criteria.maxRiskScore = filters.riskScoreRange[1];
     }
-    
+
     if (filters.volumeRange[0] > 0 || filters.volumeRange[1] < 1000000) {
       criteria.minVolume = filters.volumeRange[0];
       criteria.maxVolume = filters.volumeRange[1];
     }
-    
+
     setSearchCriteria(criteria);
     onClose();
   };
@@ -134,12 +133,7 @@ export const AdvancedFilterDialog: React.FC<AdvancedFilterDialogProps> = ({
 
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={de}>
-      <Dialog 
-        open={open} 
-        onClose={onClose}
-        maxWidth="md"
-        fullWidth
-      >
+      <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
         <DialogTitle>
           <Box display="flex" justifyContent="space-between" alignItems="center">
             <Typography variant="h6">Erweiterte Filter</Typography>
@@ -148,7 +142,7 @@ export const AdvancedFilterDialog: React.FC<AdvancedFilterDialogProps> = ({
             </IconButton>
           </Box>
         </DialogTitle>
-        
+
         <DialogContent dividers>
           <Stack spacing={3}>
             {/* Gespeicherte Filter */}
@@ -178,10 +172,12 @@ export const AdvancedFilterDialog: React.FC<AdvancedFilterDialogProps> = ({
               <Select
                 multiple
                 value={filters.status}
-                onChange={(e) => setFilters({ ...filters, status: e.target.value as CustomerStatus[] })}
-                renderValue={(selected) => (
+                onChange={e =>
+                  setFilters({ ...filters, status: e.target.value as CustomerStatus[] })
+                }
+                renderValue={selected => (
                   <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                    {selected.map((value) => (
+                    {selected.map(value => (
                       <Chip key={value} label={customerStatusLabels[value]} size="small" />
                     ))}
                   </Box>
@@ -201,10 +197,12 @@ export const AdvancedFilterDialog: React.FC<AdvancedFilterDialogProps> = ({
               <Select
                 multiple
                 value={filters.customerType}
-                onChange={(e) => setFilters({ ...filters, customerType: e.target.value as CustomerType[] })}
-                renderValue={(selected) => (
+                onChange={e =>
+                  setFilters({ ...filters, customerType: e.target.value as CustomerType[] })
+                }
+                renderValue={selected => (
                   <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                    {selected.map((value) => (
+                    {selected.map(value => (
                       <Chip key={value} label={customerTypeLabels[value]} size="small" />
                     ))}
                   </Box>
@@ -224,10 +222,10 @@ export const AdvancedFilterDialog: React.FC<AdvancedFilterDialogProps> = ({
               <Select
                 multiple
                 value={filters.industry}
-                onChange={(e) => setFilters({ ...filters, industry: e.target.value as Industry[] })}
-                renderValue={(selected) => (
+                onChange={e => setFilters({ ...filters, industry: e.target.value as Industry[] })}
+                renderValue={selected => (
                   <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                    {selected.map((value) => (
+                    {selected.map(value => (
                       <Chip key={value} label={industryLabels[value]} size="small" />
                     ))}
                   </Box>
@@ -247,10 +245,12 @@ export const AdvancedFilterDialog: React.FC<AdvancedFilterDialogProps> = ({
               <Select
                 multiple
                 value={filters.classification}
-                onChange={(e) => setFilters({ ...filters, classification: e.target.value as Classification[] })}
-                renderValue={(selected) => (
+                onChange={e =>
+                  setFilters({ ...filters, classification: e.target.value as Classification[] })
+                }
+                renderValue={selected => (
                   <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                    {selected.map((value) => (
+                    {selected.map(value => (
                       <Chip key={value} label={classificationLabels[value]} size="small" />
                     ))}
                   </Box>
@@ -271,7 +271,9 @@ export const AdvancedFilterDialog: React.FC<AdvancedFilterDialogProps> = ({
               </FormLabel>
               <Slider
                 value={filters.riskScoreRange}
-                onChange={(_, value) => setFilters({ ...filters, riskScoreRange: value as [number, number] })}
+                onChange={(_, value) =>
+                  setFilters({ ...filters, riskScoreRange: value as [number, number] })
+                }
                 valueLabelDisplay="auto"
                 min={0}
                 max={100}
@@ -286,11 +288,14 @@ export const AdvancedFilterDialog: React.FC<AdvancedFilterDialogProps> = ({
             {/* Umsatz Range */}
             <Box>
               <FormLabel component="legend">
-                Jahresumsatz: {(filters.volumeRange[0] / 1000).toFixed(0)}k € - {(filters.volumeRange[1] / 1000).toFixed(0)}k €
+                Jahresumsatz: {(filters.volumeRange[0] / 1000).toFixed(0)}k € -{' '}
+                {(filters.volumeRange[1] / 1000).toFixed(0)}k €
               </FormLabel>
               <Slider
                 value={filters.volumeRange}
-                onChange={(_, value) => setFilters({ ...filters, volumeRange: value as [number, number] })}
+                onChange={(_, value) =>
+                  setFilters({ ...filters, volumeRange: value as [number, number] })
+                }
                 valueLabelDisplay="auto"
                 min={0}
                 max={1000000}
@@ -312,19 +317,23 @@ export const AdvancedFilterDialog: React.FC<AdvancedFilterDialogProps> = ({
                 <DatePicker
                   label="Von"
                   value={filters.lastContactRange[0]}
-                  onChange={(date) => setFilters({ 
-                    ...filters, 
-                    lastContactRange: [date, filters.lastContactRange[1]] 
-                  })}
+                  onChange={date =>
+                    setFilters({
+                      ...filters,
+                      lastContactRange: [date, filters.lastContactRange[1]],
+                    })
+                  }
                   slotProps={{ textField: { fullWidth: true } }}
                 />
                 <DatePicker
                   label="Bis"
                   value={filters.lastContactRange[1]}
-                  onChange={(date) => setFilters({ 
-                    ...filters, 
-                    lastContactRange: [filters.lastContactRange[0], date] 
-                  })}
+                  onChange={date =>
+                    setFilters({
+                      ...filters,
+                      lastContactRange: [filters.lastContactRange[0], date],
+                    })
+                  }
                   slotProps={{ textField: { fullWidth: true } }}
                 />
               </Stack>
@@ -338,9 +347,11 @@ export const AdvancedFilterDialog: React.FC<AdvancedFilterDialogProps> = ({
                 Aktive Filter
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                {Object.values(filters).filter(v => 
-                  Array.isArray(v) ? v.length > 0 : v !== null
-                ).length} Filter aktiv
+                {
+                  Object.values(filters).filter(v => (Array.isArray(v) ? v.length > 0 : v !== null))
+                    .length
+                }{' '}
+                Filter aktiv
               </Typography>
             </Box>
           </Stack>
@@ -351,12 +362,8 @@ export const AdvancedFilterDialog: React.FC<AdvancedFilterDialogProps> = ({
             Filter speichern
           </Button>
           <Box sx={{ flex: 1 }} />
-          <Button onClick={handleReset}>
-            Zurücksetzen
-          </Button>
-          <Button onClick={onClose}>
-            Abbrechen
-          </Button>
+          <Button onClick={handleReset}>Zurücksetzen</Button>
+          <Button onClick={onClose}>Abbrechen</Button>
           <Button onClick={handleApplyFilters} variant="contained" color="primary">
             Anwenden
           </Button>

@@ -26,8 +26,8 @@ export function ActionToast({ message, action, icon }: ActionToastProps) {
             bgcolor: 'white',
             color: 'primary.main',
             '&:hover': {
-              bgcolor: 'grey.100'
-            }
+              bgcolor: 'grey.100',
+            },
           }}
         >
           {action.label}

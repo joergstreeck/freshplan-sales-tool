@@ -1,19 +1,11 @@
 import React from 'react';
-import {
-  Alert,
-  AlertTitle,
-  Button,
-  Chip,
-  Box,
-  Tooltip,
-  CircularProgress
-} from '@mui/material';
+import { Alert, AlertTitle, Button, Chip, Box, Tooltip, CircularProgress } from '@mui/material';
 import {
   Warning as WarningIcon,
   Error as ErrorIcon,
   CheckCircle as CheckCircleIcon,
   Info as InfoIcon,
-  Update as UpdateIcon
+  Update as UpdateIcon,
 } from '@mui/icons-material';
 import { useQuery } from '@tanstack/react-query';
 import { contactInteractionApi } from '../../services/contactInteractionApi';
@@ -36,7 +28,7 @@ interface DataFreshnessLevel {
 
 /**
  * Komponente zur Anzeige der Datenfreshness eines Kontakts.
- * 
+ *
  * Basiert auf dem Data Strategy Intelligence Konzept für
  * kontinuierliche Datenhygiene und proaktive Update-Kampagnen.
  */
@@ -44,10 +36,14 @@ export const DataFreshnessIndicator: React.FC<DataFreshnessIndicatorProps> = ({
   contact,
   variant = 'alert',
   showUpdateButton = true,
-  onUpdateClick
+  onUpdateClick,
 }) => {
   // Lade Freshness Level vom Backend
-  const { data: freshnessLevel, isLoading, error } = useQuery({
+  const {
+    data: freshnessLevel,
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: ['contact-freshness', contact.id],
     queryFn: () => contactInteractionApi.getContactFreshnessLevel(contact.id),
     staleTime: 5 * 60 * 1000, // 5 Minuten
@@ -125,20 +121,14 @@ export const DataFreshnessIndicator: React.FC<DataFreshnessIndicatorProps> = ({
       severity={freshnessLevel.severity}
       action={
         showUpdateButton ? (
-          <Button
-            size="small"
-            onClick={handleUpdateClick}
-            startIcon={<UpdateIcon />}
-          >
+          <Button size="small" onClick={handleUpdateClick} startIcon={<UpdateIcon />}>
             Jetzt aktualisieren
           </Button>
         ) : undefined
       }
       sx={{ mb: 2 }}
     >
-      <AlertTitle>
-        {getAlertTitle(freshnessLevel.key)}
-      </AlertTitle>
+      <AlertTitle>{getAlertTitle(freshnessLevel.key)}</AlertTitle>
       {getAlertMessage(contact, daysSinceUpdate)}
     </Alert>
   );
@@ -149,7 +139,7 @@ export const DataFreshnessIndicator: React.FC<DataFreshnessIndicatorProps> = ({
  */
 function getDaysSinceLastUpdate(contact: Contact): number {
   if (!contact.updatedAt) return 999;
-  
+
   const lastUpdate = new Date(contact.updatedAt);
   const now = new Date();
   const diffTime = Math.abs(now.getTime() - lastUpdate.getTime());
@@ -202,7 +192,7 @@ function getAlertTitle(level: string): string {
  */
 function getAlertMessage(contact: Contact, daysSinceUpdate: number): string {
   const contactName = `${contact.firstName} ${contact.lastName}`.trim() || 'Dieser Kontakt';
-  
+
   if (daysSinceUpdate > 365) {
     return `${contactName} wurde seit über einem Jahr (${daysSinceUpdate} Tage) nicht aktualisiert. Die Daten könnten veraltet oder ungenau sein.`;
   } else if (daysSinceUpdate > 180) {

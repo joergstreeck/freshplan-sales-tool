@@ -1,9 +1,9 @@
 /**
  * Contact Type Definitions
- * 
+ *
  * Types for managing customer contacts and their relationships.
  * Supports Sprint 2 Step 3 with multi-contact management and relationship intelligence.
- * 
+ *
  * @see /Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/step3/README.md
  * @see /Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/step3/BACKEND_CONTACT.md
  */
@@ -11,7 +11,7 @@
 export interface Contact {
   id: string;
   customerId: string;
-  
+
   // Basic Info
   salutation?: 'Herr' | 'Frau' | 'Divers';
   title?: string;
@@ -19,35 +19,35 @@ export interface Contact {
   lastName: string;
   position?: string;
   decisionLevel?: 'entscheider' | 'mitentscheider' | 'einflussnehmer' | 'nutzer' | 'gatekeeper';
-  
+
   // Contact Info
   email?: string;
   phone?: string;
   mobile?: string;
-  
+
   // Flags
   isPrimary: boolean;
   isActive: boolean;
-  
+
   // Soft Delete fields
   deletedAt?: string;
   deletedBy?: string;
   deletionReason?: string;
-  
+
   // Responsibility
   responsibilityScope: 'all' | 'specific';
   assignedLocationIds?: string[];
-  
+
   // Relationship Data (Beziehungsebene)
   birthday?: string; // ISO date string
   hobbies?: string[];
   familyStatus?: string;
   childrenCount?: number;
   personalNotes?: string;
-  
+
   // Roles (from sprint2/step3 planning)
   roles?: string[];
-  
+
   // Audit fields
   createdAt: string;
   updatedAt: string;
@@ -71,26 +71,26 @@ export interface CreateContactDTO {
   lastName: string;
   position?: string;
   decisionLevel?: 'entscheider' | 'mitentscheider' | 'einflussnehmer' | 'nutzer' | 'gatekeeper';
-  
+
   // Contact Info
   email?: string;
   phone?: string;
   mobile?: string;
-  
+
   // Flags
   isPrimary?: boolean;
-  
+
   // Responsibility
   responsibilityScope?: 'all' | 'specific';
   assignedLocationIds?: string[];
-  
+
   // Relationship Data
   birthday?: string;
   hobbies?: string[];
   familyStatus?: string;
   childrenCount?: number;
   personalNotes?: string;
-  
+
   // Roles
   roles?: string[];
 }
@@ -118,7 +118,7 @@ export const DECISION_LEVELS = [
   { value: 'mitentscheider', label: 'Mitentscheider' },
   { value: 'einflussnehmer', label: 'Einflussnehmer' },
   { value: 'nutzer', label: 'Nutzer' },
-  { value: 'gatekeeper', label: 'Gatekeeper' }
+  { value: 'gatekeeper', label: 'Gatekeeper' },
 ] as const;
 
 /**
@@ -127,7 +127,7 @@ export const DECISION_LEVELS = [
 export const SALUTATIONS = [
   { value: 'Herr', label: 'Herr' },
   { value: 'Frau', label: 'Frau' },
-  { value: 'Divers', label: 'Divers' }
+  { value: 'Divers', label: 'Divers' },
 ] as const;
 
 /**
@@ -140,7 +140,7 @@ export const ACADEMIC_TITLES = [
   { value: 'Prof. Dr.', label: 'Prof. Dr.' },
   { value: 'Dipl.-Ing.', label: 'Dipl.-Ing.' },
   { value: 'Dipl.-Kfm.', label: 'Dipl.-Kfm.' },
-  { value: 'MBA', label: 'MBA' }
+  { value: 'MBA', label: 'MBA' },
 ] as const;
 
 /**
@@ -151,7 +151,7 @@ export const FAMILY_STATUS_OPTIONS = [
   { value: 'verheiratet', label: 'Verheiratet' },
   { value: 'geschieden', label: 'Geschieden' },
   { value: 'verwitwet', label: 'Verwitwet' },
-  { value: 'lebenspartnerschaft', label: 'Eingetragene Lebenspartnerschaft' }
+  { value: 'lebenspartnerschaft', label: 'Eingetragene Lebenspartnerschaft' },
 ] as const;
 
 /**
@@ -173,7 +173,7 @@ export const COMMON_HOBBIES = [
   'Radfahren',
   'Segeln',
   'Ski',
-  'Fitness'
+  'Fitness',
 ] as const;
 
 /**
@@ -189,7 +189,7 @@ export const CONTACT_ROLES = [
   { value: 'marketing', label: 'Marketing' },
   { value: 'personal', label: 'Personal' },
   { value: 'technik', label: 'Technik' },
-  { value: 'sonstiges', label: 'Sonstiges' }
+  { value: 'sonstiges', label: 'Sonstiges' },
 ] as const;
 
 /**

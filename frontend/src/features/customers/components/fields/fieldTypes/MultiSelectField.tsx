@@ -1,20 +1,20 @@
 /**
  * Multi-Select Field Component
- * 
+ *
  * Renders a multi-select dropdown with checkboxes.
  * Used for fieldType: 'multiselect'
  */
 
 import React from 'react';
-import { 
-  FormControl, 
-  Select as MuiSelect, 
-  MenuItem, 
+import {
+  FormControl,
+  Select as MuiSelect,
+  MenuItem,
   FormHelperText,
   Checkbox,
   ListItemText,
   Chip,
-  Box
+  Box,
 } from '@mui/material';
 import type { FieldDefinition } from '../../../types/field.types';
 
@@ -41,7 +41,7 @@ interface MultiSelectFieldProps {
 
 /**
  * Multi-Select Field
- * 
+ *
  * Multiple selection dropdown with checkboxes and chip display.
  * Ideal for selecting multiple options like operating days or care levels.
  */
@@ -54,7 +54,7 @@ export const MultiSelectField: React.FC<MultiSelectFieldProps> = ({
   helperText,
   disabled,
   readOnly,
-  required
+  required,
 }) => {
   const selectedValues = value || [];
 
@@ -74,15 +74,10 @@ export const MultiSelectField: React.FC<MultiSelectFieldProps> = ({
 
     return (
       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-        {selected.map((value) => {
+        {selected.map(value => {
           const option = field.options?.find(opt => opt.value === value);
           return (
-            <Chip 
-              key={value} 
-              label={option?.label || value} 
-              size="small"
-              sx={{ height: 24 }}
-            />
+            <Chip key={value} label={option?.label || value} size="small" sx={{ height: 24 }} />
           );
         })}
       </Box>
@@ -90,9 +85,9 @@ export const MultiSelectField: React.FC<MultiSelectFieldProps> = ({
   };
 
   return (
-    <FormControl 
-      fullWidth 
-      size="small" 
+    <FormControl
+      fullWidth
+      size="small"
       error={error}
       required={required}
       disabled={disabled || readOnly}
@@ -109,7 +104,7 @@ export const MultiSelectField: React.FC<MultiSelectFieldProps> = ({
         inputProps={{
           'aria-label': field.label,
           'aria-required': required,
-          'aria-invalid': error
+          'aria-invalid': error,
         }}
         MenuProps={{
           PaperProps: {
@@ -124,37 +119,28 @@ export const MultiSelectField: React.FC<MultiSelectFieldProps> = ({
           '& .MuiSelect-select': {
             paddingTop: 1,
             paddingBottom: 1,
-            minHeight: 'auto'
-          }
+            minHeight: 'auto',
+          },
         }}
       >
         {/* Placeholder option */}
         <MenuItem value="" disabled>
-          <ListItemText 
-            primary={field.placeholder || 'Mehrere auswählen...'} 
+          <ListItemText
+            primary={field.placeholder || 'Mehrere auswählen...'}
             sx={{ color: 'text.disabled' }}
           />
         </MenuItem>
-        
+
         {/* Regular options with checkboxes */}
-        {field.options?.map((option) => (
-          <MenuItem 
-            key={option.value} 
-            value={option.value}
-            disabled={option.disabled}
-          >
-            <Checkbox 
-              checked={selectedValues.indexOf(option.value) > -1} 
-              size="small"
-            />
+        {field.options?.map(option => (
+          <MenuItem key={option.value} value={option.value} disabled={option.disabled}>
+            <Checkbox checked={selectedValues.indexOf(option.value) > -1} size="small" />
             <ListItemText primary={option.label} />
           </MenuItem>
         ))}
       </MuiSelect>
-      
-      {helperText && (
-        <FormHelperText>{helperText}</FormHelperText>
-      )}
+
+      {helperText && <FormHelperText>{helperText}</FormHelperText>}
     </FormControl>
   );
 };

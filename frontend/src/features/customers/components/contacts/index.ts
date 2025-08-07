@@ -1,6 +1,6 @@
 /**
  * Contact Components Export
- * 
+ *
  * Central export point for all contact-related components.
  */
 

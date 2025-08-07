@@ -1,9 +1,9 @@
 /**
  * FC-005 Location Configuration Tests
- * 
+ *
  * Tests für die externalisierten Location-Konfigurationen.
  * Stellt sicher, dass alle Kategorien und Templates korrekt exportiert werden.
- * 
+ *
  * @see /Users/joergstreeck/freshplan-sales-tool/frontend/src/features/customers/config/locationCategories.ts
  * @see /Users/joergstreeck/freshplan-sales-tool/frontend/src/features/customers/config/industryTemplates.ts
  */
@@ -16,11 +16,10 @@ import {
   getCategoryLabel,
   industryTemplates,
   getIndustryTemplates,
-  hasIndustryTemplates
+  hasIndustryTemplates,
 } from '../../../config';
 
 describe('🔧 CR-003: Location Configuration', () => {
-  
   describe('Category Configuration', () => {
     it('should export all category icon functions', () => {
       expect(categoryIcons).toBeDefined();
@@ -60,7 +59,7 @@ describe('🔧 CR-003: Location Configuration', () => {
       const unknownIcon = getCategoryIcon('unknown' as any);
       expect(unknownIcon).toBeDefined();
       // Should return the 'other' icon
-      
+
       const unknownLabel = getCategoryLabel('unknown' as any);
       expect(unknownLabel).toBe('Sonstiges');
     });
@@ -98,7 +97,7 @@ describe('🔧 CR-003: Location Configuration', () => {
     it('should have correct structure for templates', () => {
       const hotelTemplates = getIndustryTemplates('hotel');
       const firstTemplate = hotelTemplates[0];
-      
+
       expect(firstTemplate).toHaveProperty('name', 'Restaurant Haupthaus');
       expect(firstTemplate).toHaveProperty('category', 'restaurant');
       expect(firstTemplate).toHaveProperty('description');

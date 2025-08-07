@@ -118,7 +118,7 @@ public class Contact extends PanacheEntityBase {
   // Legacy fields from old schema - needed for tests
   @Column(name = "is_decision_maker", nullable = false)
   private Boolean isDecisionMaker = false;
-  
+
   @Column(name = "is_deleted", nullable = false)
   private Boolean isDeleted = false;
 
@@ -374,19 +374,19 @@ public class Contact extends PanacheEntityBase {
   public void setDataQualityRecommendations(String dataQualityRecommendations) {
     this.dataQualityRecommendations = dataQualityRecommendations;
   }
-  
+
   public Boolean getIsDecisionMaker() {
     return isDecisionMaker;
   }
-  
+
   public void setIsDecisionMaker(Boolean isDecisionMaker) {
     this.isDecisionMaker = isDecisionMaker;
   }
-  
+
   public Boolean getIsDeleted() {
     return isDeleted;
   }
-  
+
   public void setIsDeleted(Boolean isDeleted) {
     this.isDeleted = isDeleted;
   }

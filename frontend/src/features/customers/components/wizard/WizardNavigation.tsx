@@ -1,18 +1,18 @@
 /**
  * Wizard Navigation Component
- * 
+ *
  * Navigation controls for the customer onboarding wizard.
  * Handles step progression, validation, and finalization.
- * 
+ *
  * @see /Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/03-FRONTEND/01-components.md
  */
 
 import React from 'react';
 import { Box, Button, CircularProgress, Typography } from '@mui/material';
-import { 
+import {
   ArrowBack as ArrowBackIcon,
   ArrowForward as ArrowForwardIcon,
-  Check as CheckIcon
+  Check as CheckIcon,
 } from '@mui/icons-material';
 
 interface WizardNavigationProps {
@@ -36,7 +36,7 @@ interface WizardNavigationProps {
 
 /**
  * Wizard Navigation
- * 
+ *
  * Step navigation with validation support.
  * Shows different actions based on current step.
  */
@@ -48,11 +48,11 @@ export const WizardNavigation: React.FC<WizardNavigationProps> = ({
   onBack,
   onNext,
   onFinish,
-  onCancel
+  onCancel,
 }) => {
   const isFirstStep = currentStep === 0;
   const isLastStep = currentStep === totalSteps - 1;
-  
+
   return (
     <Box
       sx={{
@@ -61,7 +61,7 @@ export const WizardNavigation: React.FC<WizardNavigationProps> = ({
         alignItems: 'center',
         pt: 3,
         borderTop: 1,
-        borderColor: 'divider'
+        borderColor: 'divider',
       }}
     >
       {/* Back Button */}
@@ -74,14 +74,14 @@ export const WizardNavigation: React.FC<WizardNavigationProps> = ({
       >
         Zurück
       </Button>
-      
+
       {/* Step Indicator */}
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
         <Typography variant="body2" color="text.secondary">
           Schritt {currentStep + 1} von {totalSteps}
         </Typography>
       </Box>
-      
+
       {/* Next/Finish Button */}
       {isLastStep ? (
         <Button

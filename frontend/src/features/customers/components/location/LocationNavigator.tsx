@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
-import { 
-  Box, 
-  FormControl, 
-  InputLabel, 
-  Select, 
-  MenuItem, 
+import {
+  Box,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
   Button,
   Divider,
   Typography,
   IconButton,
-  Tooltip
+  Tooltip,
 } from '@mui/material';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
@@ -29,18 +29,18 @@ export const LocationNavigator: React.FC<LocationNavigatorProps> = ({
   currentIndex,
   completedIds,
   onNavigate,
-  onCopyFrom
+  onCopyFrom,
 }) => {
   const [copySourceId, setCopySourceId] = useState<string>('');
   const currentLocation = locations[currentIndex];
   const hasPrevious = currentIndex > 0;
   const hasNext = currentIndex < locations.length - 1;
-  
+
   // Get completed locations that can be copied from
   const copyableLocations = locations.filter(
     loc => completedIds.includes(loc.id) && loc.id !== currentLocation?.id
   );
-  
+
   const handleLocationChange = (event: any) => {
     const selectedId = event.target.value;
     const index = locations.findIndex(loc => loc.id === selectedId);
@@ -48,14 +48,14 @@ export const LocationNavigator: React.FC<LocationNavigatorProps> = ({
       onNavigate(index);
     }
   };
-  
+
   const handleCopyFrom = () => {
     if (copySourceId) {
       onCopyFrom(copySourceId);
       setCopySourceId('');
     }
   };
-  
+
   return (
     <Box sx={{ mb: 3 }}>
       <Box sx={{ display: 'flex', gap: 2, alignItems: 'flex-end', flexWrap: 'wrap' }}>
@@ -70,9 +70,7 @@ export const LocationNavigator: React.FC<LocationNavigatorProps> = ({
             {locations.map((location, index) => (
               <MenuItem key={location.id} value={location.id}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, width: '100%' }}>
-                  <Typography>
-                    {location.name}
-                  </Typography>
+                  <Typography>{location.name}</Typography>
                   {completedIds.includes(location.id) && (
                     <Typography variant="caption" color="success.main">
                       ✓
@@ -88,12 +86,12 @@ export const LocationNavigator: React.FC<LocationNavigatorProps> = ({
             ))}
           </Select>
         </FormControl>
-        
+
         {/* Navigation Buttons */}
         <Box sx={{ display: 'flex', gap: 1 }}>
           <Tooltip title="Vorheriger Standort">
             <span>
-              <IconButton 
+              <IconButton
                 onClick={() => onNavigate(currentIndex - 1)}
                 disabled={!hasPrevious}
                 size="large"
@@ -102,10 +100,10 @@ export const LocationNavigator: React.FC<LocationNavigatorProps> = ({
               </IconButton>
             </span>
           </Tooltip>
-          
+
           <Tooltip title="Nächster Standort">
             <span>
-              <IconButton 
+              <IconButton
                 onClick={() => onNavigate(currentIndex + 1)}
                 disabled={!hasNext}
                 size="large"
@@ -116,7 +114,7 @@ export const LocationNavigator: React.FC<LocationNavigatorProps> = ({
           </Tooltip>
         </Box>
       </Box>
-      
+
       {/* Copy From Section */}
       {copyableLocations.length > 0 && (
         <>
@@ -126,7 +124,7 @@ export const LocationNavigator: React.FC<LocationNavigatorProps> = ({
               <InputLabel>Daten kopieren von</InputLabel>
               <Select
                 value={copySourceId}
-                onChange={(e) => setCopySourceId(e.target.value)}
+                onChange={e => setCopySourceId(e.target.value)}
                 label="Daten kopieren von"
                 size="small"
               >
@@ -140,7 +138,7 @@ export const LocationNavigator: React.FC<LocationNavigatorProps> = ({
                 ))}
               </Select>
             </FormControl>
-            
+
             <Button
               variant="outlined"
               startIcon={<ContentCopyIcon />}

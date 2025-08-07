@@ -3,7 +3,7 @@
  */
 
 // Interaction types matching backend enum
-export type InteractionType = 
+export type InteractionType =
   | 'EMAIL_SENT'
   | 'EMAIL_RECEIVED'
   | 'CALL_OUTBOUND'
@@ -63,24 +63,24 @@ export interface DataQualityMetricsDTO {
   contactsWithInteractions: number;
   averageInteractionsPerContact: number;
   dataCompletenessScore: number; // 0-100%
-  
+
   // Intelligence metrics
   contactsWithWarmthScore: number;
   warmthScoreConfidence?: number; // Average confidence
   suggestionsAcceptanceRate?: number;
   predictionAccuracy?: number;
-  
+
   // Data freshness
   freshContacts: number; // < 90 days
   agingContacts: number; // 90-180 days
   staleContacts: number; // 180-365 days
   criticalContacts: number; // > 365 days
-  
+
   // Recommendations
   showDataCollectionHints: boolean;
   criticalDataGaps: string[];
   improvementSuggestions: string[];
-  
+
   // Calculated fields
   overallDataQuality: 'EXCELLENT' | 'GOOD' | 'FAIR' | 'POOR' | 'CRITICAL' | 'UNKNOWN';
   interactionCoverage: number; // percentage

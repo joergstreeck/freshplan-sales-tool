@@ -1,6 +1,6 @@
 /**
  * Number Field V2 Component
- * 
+ *
  * Erweiterte Version mit EUR-Formatierung und Live-Calculator Support.
  * Renders a numeric input field with min/max validation and currency formatting.
  */
@@ -33,7 +33,7 @@ interface NumberFieldV2Props {
 
 /**
  * Number Field V2
- * 
+ *
  * Numeric input with currency formatting support.
  * Automatically uses EURInput for currency fields.
  */
@@ -46,17 +46,17 @@ export const NumberFieldV2: React.FC<NumberFieldV2Props> = ({
   helperText,
   disabled,
   readOnly,
-  required
+  required,
 }) => {
   // Check if this is a currency field
   const isCurrencyField = field.format === 'currency' && field.currency === 'EUR';
-  
+
   // Use EURInput for currency fields
   if (isCurrencyField) {
     return (
       <EURInput
         value={typeof value === 'number' ? value : null}
-        onChange={(newValue) => onChange(newValue)}
+        onChange={newValue => onChange(newValue)}
         onBlur={onBlur}
         label={field.label}
         required={required}
@@ -70,17 +70,17 @@ export const NumberFieldV2: React.FC<NumberFieldV2Props> = ({
       />
     );
   }
-  
+
   // Standard number field handling
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value;
-    
+
     // Allow empty value
     if (inputValue === '') {
       onChange('');
       return;
     }
-    
+
     // Parse and validate number
     const numValue = parseFloat(inputValue);
     if (!isNaN(numValue)) {
@@ -124,15 +124,15 @@ export const NumberFieldV2: React.FC<NumberFieldV2Props> = ({
       size="small"
       variant="outlined"
       InputProps={{
-        endAdornment: suffix ? (
-          <InputAdornment position="end">{suffix}</InputAdornment>
-        ) : undefined,
-        sx: field.fontSize ? {
-          '& input': {
-            fontSize: field.fontSize,
-            textAlign: field.textAlign || 'left'
-          }
-        } : undefined
+        endAdornment: suffix ? <InputAdornment position="end">{suffix}</InputAdornment> : undefined,
+        sx: field.fontSize
+          ? {
+              '& input': {
+                fontSize: field.fontSize,
+                textAlign: field.textAlign || 'left',
+              },
+            }
+          : undefined,
       }}
       inputProps={{
         min: field.min,
@@ -143,21 +143,21 @@ export const NumberFieldV2: React.FC<NumberFieldV2Props> = ({
         'aria-required': required,
         'aria-invalid': error,
         'aria-valuemin': field.min,
-        'aria-valuemax': field.max
+        'aria-valuemax': field.max,
       }}
       sx={{
         '& .MuiInputBase-root': {
-          backgroundColor: readOnly ? 'action.disabledBackground' : 'background.paper'
+          backgroundColor: readOnly ? 'action.disabledBackground' : 'background.paper',
         },
         // Hide number spinner in some browsers
         '& input[type=number]::-webkit-inner-spin-button': {
           WebkitAppearance: 'none',
-          margin: 0
+          margin: 0,
         },
         '& input[type=number]::-webkit-outer-spin-button': {
           WebkitAppearance: 'none',
-          margin: 0
-        }
+          margin: 0,
+        },
       }}
     />
   );

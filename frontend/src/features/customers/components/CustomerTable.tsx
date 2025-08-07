@@ -10,7 +10,7 @@ import {
   Chip,
   Box,
   Typography,
-  TablePagination
+  TablePagination,
 } from '@mui/material';
 import { format } from 'date-fns';
 import { de } from 'date-fns/locale';
@@ -69,10 +69,7 @@ export function CustomerTable({ customers, onRowClick, highlightNew }: CustomerT
     return createdDate > dayAgo;
   };
 
-  const paginatedCustomers = customers.slice(
-    page * rowsPerPage,
-    page * rowsPerPage + rowsPerPage
-  );
+  const paginatedCustomers = customers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
   return (
     <Paper sx={{ width: '100%', overflow: 'hidden' }}>
@@ -91,7 +88,7 @@ export function CustomerTable({ customers, onRowClick, highlightNew }: CustomerT
             </TableRow>
           </TableHead>
           <TableBody>
-            {paginatedCustomers.map((customer) => (
+            {paginatedCustomers.map(customer => (
               <TableRow
                 key={customer.id}
                 hover
@@ -100,25 +97,23 @@ export function CustomerTable({ customers, onRowClick, highlightNew }: CustomerT
                   cursor: onRowClick ? 'pointer' : 'default',
                   bgcolor: isNewCustomer(customer) ? 'rgba(148, 196, 86, 0.08)' : undefined,
                   '&:hover': {
-                    bgcolor: isNewCustomer(customer) 
-                      ? 'rgba(148, 196, 86, 0.15)' 
-                      : 'action.hover'
-                  }
+                    bgcolor: isNewCustomer(customer) ? 'rgba(148, 196, 86, 0.15)' : 'action.hover',
+                  },
                 }}
               >
                 <TableCell>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                     {customer.customerNumber}
                     {isNewCustomer(customer) && (
-                      <Chip 
-                        label="NEU" 
-                        size="small" 
-                        sx={{ 
+                      <Chip
+                        label="NEU"
+                        size="small"
+                        sx={{
                           bgcolor: '#94C456',
                           color: 'white',
                           fontSize: '0.7rem',
-                          height: 20
-                        }} 
+                          height: 20,
+                        }}
                       />
                     )}
                   </Box>
@@ -143,7 +138,7 @@ export function CustomerTable({ customers, onRowClick, highlightNew }: CustomerT
                     size="small"
                     sx={{
                       bgcolor: customerStatusColors[customer.status],
-                      color: 'white'
+                      color: 'white',
                     }}
                   />
                 </TableCell>
@@ -157,19 +152,20 @@ export function CustomerTable({ customers, onRowClick, highlightNew }: CustomerT
                         height: 8,
                         bgcolor: 'grey.200',
                         borderRadius: 1,
-                        overflow: 'hidden'
+                        overflow: 'hidden',
                       }}
                     >
                       <Box
                         sx={{
                           width: `${customer.riskScore}%`,
                           height: '100%',
-                          bgcolor: customer.riskScore > 70
-                            ? 'error.main'
-                            : customer.riskScore > 40
-                              ? 'warning.main'
-                              : 'success.main',
-                          transition: 'width 0.3s ease'
+                          bgcolor:
+                            customer.riskScore > 70
+                              ? 'error.main'
+                              : customer.riskScore > 40
+                                ? 'warning.main'
+                                : 'success.main',
+                          transition: 'width 0.3s ease',
                         }}
                       />
                     </Box>

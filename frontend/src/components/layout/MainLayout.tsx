@@ -18,7 +18,7 @@ const MainContainer = styled(Box)(({ theme }) => ({
 }));
 
 const ContentContainer = styled(Box, {
-  shouldForwardProp: (prop) => prop !== 'collapsed',
+  shouldForwardProp: prop => prop !== 'collapsed',
 })<{ collapsed: boolean }>(({ theme, collapsed }) => ({
   flexGrow: 1,
   marginLeft: collapsed ? DRAWER_WIDTH_COLLAPSED : DRAWER_WIDTH,
@@ -36,9 +36,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   return (
     <MainContainer>
       <SidebarNavigation />
-      <ContentContainer collapsed={isCollapsed}>
-        {children}
-      </ContentContainer>
+      <ContentContainer collapsed={isCollapsed}>{children}</ContentContainer>
     </MainContainer>
   );
 };

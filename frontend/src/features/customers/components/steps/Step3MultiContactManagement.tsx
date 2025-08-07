@@ -1,11 +1,11 @@
 /**
  * Step 3: Multi-Contact Management
- * 
+ *
  * Advanced contact management with CRUD operations, smart cards,
  * and relationship intelligence features.
- * 
+ *
  * CRITICAL: Uses mandatory Theme Architecture components!
- * 
+ *
  * @see /Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/step3/README.md
  * @see /Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/step3/THEME_ARCHITECTURE.md
  */
@@ -25,7 +25,7 @@ import {
   Stack,
   Collapse,
   useTheme,
-  useMediaQuery
+  useMediaQuery,
 } from '@mui/material';
 import {
   Add as AddIcon,
@@ -38,7 +38,7 @@ import {
   LocationOn as LocationIcon,
   Phone as PhoneIcon,
   Email as EmailIcon,
-  Business as BusinessIcon
+  Business as BusinessIcon,
 } from '@mui/icons-material';
 
 import { useCustomerOnboardingStore } from '../../stores/customerOnboardingStore';
@@ -51,22 +51,22 @@ import { ContactQuickActions } from '../contacts/ContactQuickActions';
 
 import type { Contact } from '../../types/contact.types';
 import type { FieldDefinition } from '../../types/field.types';
-import { 
-  contactFieldExtensions, 
-  getContactFieldsForGroup 
+import {
+  contactFieldExtensions,
+  getContactFieldsForGroup,
 } from '../../data/fieldCatalogContactExtensions';
 import { getContactFullName, getContactBadgeInfo } from '../../types/contact.types';
 
 /**
  * Step 3: Multi-Contact Management
- * 
+ *
  * Implements the vision of an intelligent relationship center
  * with mandatory Theme Architecture components.
  */
 export const Step3MultiContactManagement: React.FC = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  
+
   const {
     contacts,
     primaryContactId,
@@ -76,14 +76,14 @@ export const Step3MultiContactManagement: React.FC = () => {
     updateContact,
     removeContact,
     setPrimaryContact,
-    validateContactField
+    validateContactField,
   } = useCustomerOnboardingStore();
-  
+
   // Dialog state
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingContact, setEditingContact] = useState<Contact | null>(null);
   const [expandedCards, setExpandedCards] = useState<Set<string>>(new Set());
-  
+
   // Sort contacts: primary first, then by name
   const sortedContacts = useMemo(() => {
     return [...contacts].sort((a, b) => {
@@ -92,7 +92,7 @@ export const Step3MultiContactManagement: React.FC = () => {
       return getContactFullName(a).localeCompare(getContactFullName(b));
     });
   }, [contacts]);
-  
+
   // Handle card expansion
   const toggleCardExpansion = useCallback((contactId: string) => {
     setExpandedCards(prev => {
@@ -105,42 +105,51 @@ export const Step3MultiContactManagement: React.FC = () => {
       return next;
     });
   }, []);
-  
+
   // Handle add contact
   const handleAddContact = useCallback(() => {
     setEditingContact(null);
     setIsFormOpen(true);
   }, []);
-  
+
   // Handle edit contact
   const handleEditContact = useCallback((contact: Contact) => {
     setEditingContact(contact);
     setIsFormOpen(true);
   }, []);
-  
+
   // Handle delete contact
-  const handleDeleteContact = useCallback((contactId: string) => {
-    if (window.confirm('Möchten Sie diesen Kontakt wirklich löschen?')) {
-      removeContact(contactId);
-    }
-  }, [removeContact]);
-  
+  const handleDeleteContact = useCallback(
+    (contactId: string) => {
+      if (window.confirm('Möchten Sie diesen Kontakt wirklich löschen?')) {
+        removeContact(contactId);
+      }
+    },
+    [removeContact]
+  );
+
   // Handle form submit
-  const handleFormSubmit = useCallback((contactData: Partial<Contact>) => {
-    if (editingContact) {
-      updateContact(editingContact.id, contactData);
-    } else {
-      addContact(contactData);
-    }
-    setIsFormOpen(false);
-    setEditingContact(null);
-  }, [editingContact, updateContact, addContact]);
-  
+  const handleFormSubmit = useCallback(
+    (contactData: Partial<Contact>) => {
+      if (editingContact) {
+        updateContact(editingContact.id, contactData);
+      } else {
+        addContact(contactData);
+      }
+      setIsFormOpen(false);
+      setEditingContact(null);
+    },
+    [editingContact, updateContact, addContact]
+  );
+
   // Get validation errors for a contact
-  const getContactErrors = useCallback((contactId: string) => {
-    return contactValidationErrors[contactId]?.fieldErrors || {};
-  }, [contactValidationErrors]);
-  
+  const getContactErrors = useCallback(
+    (contactId: string) => {
+      return contactValidationErrors[contactId]?.fieldErrors || {};
+    },
+    [contactValidationErrors]
+  );
+
   return (
     <Box data-testid="adaptive-form-container">
       {/* Header Section */}
@@ -149,11 +158,11 @@ export const Step3MultiContactManagement: React.FC = () => {
           Ansprechpartner verwalten
         </Typography>
         <Typography variant="body2" color="text.secondary">
-          Erfassen Sie alle wichtigen Kontaktpersonen. 
+          Erfassen Sie alle wichtigen Kontaktpersonen.
           {locations.length > 1 && ' Sie können Kontakte einzelnen Standorten zuordnen.'}
         </Typography>
       </Box>
-      
+
       {/* Add Contact Button */}
       <Box sx={{ mb: 3 }}>
         <Button
@@ -165,7 +174,7 @@ export const Step3MultiContactManagement: React.FC = () => {
           Neuen Kontakt hinzufügen
         </Button>
       </Box>
-      
+
       {/* Contact List */}
       {sortedContacts.length === 0 ? (
         <Alert severity="info">
@@ -173,7 +182,7 @@ export const Step3MultiContactManagement: React.FC = () => {
         </Alert>
       ) : (
         <Stack spacing={2}>
-          {sortedContacts.map((contact) => (
+          {sortedContacts.map(contact => (
             <Paper
               key={contact.id}
               data-testid="contact-card"
@@ -183,7 +192,7 @@ export const Step3MultiContactManagement: React.FC = () => {
               sx={{
                 p: 2,
                 border: contact.isPrimary ? `2px solid ${theme.palette.primary.main}` : undefined,
-                position: 'relative'
+                position: 'relative',
               }}
             >
               {/* Primary Badge */}
@@ -196,29 +205,27 @@ export const Step3MultiContactManagement: React.FC = () => {
                   sx={{
                     position: 'absolute',
                     top: 8,
-                    right: 8
+                    right: 8,
                   }}
                 />
               )}
-              
+
               {/* Contact Header */}
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
                 <Box sx={{ flex: 1 }}>
-                  <Typography variant="h6">
-                    {getContactFullName(contact)}
-                  </Typography>
+                  <Typography variant="h6">{getContactFullName(contact)}</Typography>
                   {contact.position && (
                     <Typography variant="body2" color="text.secondary">
                       {contact.position}
                     </Typography>
                   )}
                 </Box>
-                
+
                 {/* Actions */}
                 <Stack direction="row" spacing={1}>
                   {!contact.isPrimary && (
                     <Tooltip title="Als Hauptansprechpartner festlegen">
-                      <IconButton 
+                      <IconButton
                         size="small"
                         onClick={() => setPrimaryContact(contact.id)}
                         data-testid={`set-primary-${contact.id}`}
@@ -227,14 +234,14 @@ export const Step3MultiContactManagement: React.FC = () => {
                       </IconButton>
                     </Tooltip>
                   )}
-                  <IconButton 
+                  <IconButton
                     size="small"
                     onClick={() => handleEditContact(contact)}
                     data-testid={`edit-contact-${contact.id}`}
                   >
                     <EditIcon />
                   </IconButton>
-                  <IconButton 
+                  <IconButton
                     size="small"
                     onClick={() => handleDeleteContact(contact.id)}
                     disabled={contact.isPrimary && contacts.length > 1}
@@ -242,15 +249,12 @@ export const Step3MultiContactManagement: React.FC = () => {
                   >
                     <DeleteIcon />
                   </IconButton>
-                  <IconButton
-                    size="small"
-                    onClick={() => toggleCardExpansion(contact.id)}
-                  >
+                  <IconButton size="small" onClick={() => toggleCardExpansion(contact.id)}>
                     {expandedCards.has(contact.id) ? <ExpandLessIcon /> : <ExpandMoreIcon />}
                   </IconButton>
                 </Stack>
               </Box>
-              
+
               {/* Contact Quick Info */}
               <Stack direction="row" spacing={2} flexWrap="wrap" sx={{ mb: 1 }}>
                 {contact.email && (
@@ -272,34 +276,28 @@ export const Step3MultiContactManagement: React.FC = () => {
                   </Box>
                 )}
               </Stack>
-              
+
               {/* Responsibility Info */}
               {locations.length > 1 && (
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 1 }}>
                   <LocationIcon fontSize="small" color="action" />
                   <Typography variant="body2" color="text.secondary">
-                    {contact.responsibilityScope === 'all' 
+                    {contact.responsibilityScope === 'all'
                       ? 'Alle Standorte'
-                      : `${contact.assignedLocationIds?.length || 0} Standorte`
-                    }
+                      : `${contact.assignedLocationIds?.length || 0} Standorte`}
                   </Typography>
                 </Box>
               )}
-              
+
               {/* Roles */}
               {contact.roles && contact.roles.length > 0 && (
                 <Stack direction="row" spacing={0.5} flexWrap="wrap">
                   {contact.roles.map(role => (
-                    <Chip
-                      key={role}
-                      label={role}
-                      size="small"
-                      variant="outlined"
-                    />
+                    <Chip key={role} label={role} size="small" variant="outlined" />
                   ))}
                 </Stack>
               )}
-              
+
               {/* Expanded Details */}
               <Collapse in={expandedCards.has(contact.id)}>
                 <Divider sx={{ my: 2 }} />
@@ -310,24 +308,20 @@ export const Step3MultiContactManagement: React.FC = () => {
                       <Typography variant="caption" color="text.secondary">
                         Entscheidungsebene
                       </Typography>
-                      <Typography variant="body2">
-                        {contact.decisionLevel}
-                      </Typography>
+                      <Typography variant="body2">{contact.decisionLevel}</Typography>
                     </Box>
                   )}
-                  
+
                   {/* Personal Notes */}
                   {contact.personalNotes && (
                     <Box sx={{ gridColumn: 'span 2' }}>
                       <Typography variant="caption" color="text.secondary">
                         Persönliche Notizen
                       </Typography>
-                      <Typography variant="body2">
-                        {contact.personalNotes}
-                      </Typography>
+                      <Typography variant="body2">{contact.personalNotes}</Typography>
                     </Box>
                   )}
-                  
+
                   {/* Hobbies */}
                   {contact.hobbies && contact.hobbies.length > 0 && (
                     <Box>
@@ -347,7 +341,7 @@ export const Step3MultiContactManagement: React.FC = () => {
                       </Stack>
                     </Box>
                   )}
-                  
+
                   {/* Birthday */}
                   {contact.birthday && (
                     <Box>
@@ -360,7 +354,7 @@ export const Step3MultiContactManagement: React.FC = () => {
                     </Box>
                   )}
                 </AdaptiveFormContainer>
-                
+
                 {/* Quick Actions (Mobile) */}
                 {isMobile && (
                   <Box sx={{ mt: 2 }}>
@@ -372,21 +366,21 @@ export const Step3MultiContactManagement: React.FC = () => {
           ))}
         </Stack>
       )}
-      
+
       {/* Validation Summary */}
       {Object.keys(contactValidationErrors).length > 0 && (
         <Alert severity="error" sx={{ mt: 2 }}>
           Bitte überprüfen Sie die Kontaktdaten. Es gibt noch Validierungsfehler.
         </Alert>
       )}
-      
+
       {/* Help Text */}
       {contacts.length > 0 && !primaryContactId && (
         <Alert severity="warning" sx={{ mt: 2 }}>
           Bitte wählen Sie einen Hauptansprechpartner aus.
         </Alert>
       )}
-      
+
       {/* Contact Form Dialog */}
       <ContactFormDialog
         open={isFormOpen}

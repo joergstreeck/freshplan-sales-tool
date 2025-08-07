@@ -45,11 +45,15 @@ const getRiskColor = (score: number): string => {
   return '#4CAF50'; // Grün
 };
 
-export const CustomerCard: React.FC<CustomerCardProps> = ({ customer, onClick, selected = false }) => {
+export const CustomerCard: React.FC<CustomerCardProps> = ({
+  customer,
+  onClick,
+  selected = false,
+}) => {
   const daysSinceContact = customer.lastContactDate
     ? daysSince(new Date(customer.lastContactDate))
     : null;
-  
+
   const needsAttention = daysSinceContact && daysSinceContact > 30;
 
   return (
@@ -57,10 +61,12 @@ export const CustomerCard: React.FC<CustomerCardProps> = ({ customer, onClick, s
       sx={{
         cursor: onClick ? 'pointer' : 'default',
         transition: 'all 0.2s',
-        '&:hover': onClick ? {
-          transform: 'translateY(-2px)',
-          boxShadow: 3,
-        } : {},
+        '&:hover': onClick
+          ? {
+              transform: 'translateY(-2px)',
+              boxShadow: 3,
+            }
+          : {},
         height: '100%',
         display: 'flex',
         flexDirection: 'column',
@@ -131,8 +137,8 @@ export const CustomerCard: React.FC<CustomerCardProps> = ({ customer, onClick, s
             </Box>
             <Typography
               variant="body2"
-              sx={{ 
-                minWidth: 40, 
+              sx={{
+                minWidth: 40,
                 color: getRiskColor(customer.riskScore),
                 fontWeight: 'bold',
               }}
@@ -149,19 +155,16 @@ export const CustomerCard: React.FC<CustomerCardProps> = ({ customer, onClick, s
               Branche: {customer.industry}
             </Typography>
           )}
-          
+
           {daysSinceContact !== null && (
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
               <CalendarIcon fontSize="small" color="action" />
-              <Typography 
-                variant="body2" 
-                color={needsAttention ? 'error' : 'text.secondary'}
-              >
+              <Typography variant="body2" color={needsAttention ? 'error' : 'text.secondary'}>
                 Letzter Kontakt: vor {daysSinceContact} Tagen
               </Typography>
             </Box>
           )}
-          
+
           {customer.expectedAnnualVolume && (
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
               <EuroIcon fontSize="small" color="action" />
@@ -175,7 +178,7 @@ export const CustomerCard: React.FC<CustomerCardProps> = ({ customer, onClick, s
         {/* Tags */}
         {customer.tags && customer.tags.length > 0 && (
           <Box sx={{ mt: 2, display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-            {customer.tags.map((tag) => (
+            {customer.tags.map(tag => (
               <Chip
                 key={tag}
                 label={tag}
@@ -199,9 +202,9 @@ export const CustomerCard: React.FC<CustomerCardProps> = ({ customer, onClick, s
         </Box>
         <Box>
           <Tooltip title="E-Mail senden">
-            <IconButton 
-              size="small" 
-              onClick={(e) => {
+            <IconButton
+              size="small"
+              onClick={e => {
                 e.stopPropagation();
                 // TODO: E-Mail-Funktion implementieren
               }}
@@ -210,9 +213,9 @@ export const CustomerCard: React.FC<CustomerCardProps> = ({ customer, onClick, s
             </IconButton>
           </Tooltip>
           <Tooltip title="Anrufen">
-            <IconButton 
+            <IconButton
               size="small"
-              onClick={(e) => {
+              onClick={e => {
                 e.stopPropagation();
                 // TODO: Anruf-Funktion implementieren
               }}

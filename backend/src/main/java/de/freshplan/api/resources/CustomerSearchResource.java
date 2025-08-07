@@ -68,9 +68,7 @@ public class CustomerSearchResource {
     @APIResponse(responseCode = "500", description = "Internal server error")
   })
   public Response searchCustomersGet(
-      @Parameter(description = "Search query", example = "Bella")
-          @QueryParam("query")
-          String query,
+      @Parameter(description = "Search query", example = "Bella") @QueryParam("query") String query,
       @Parameter(description = "Page number (0-based)", example = "0")
           @QueryParam("page")
           @DefaultValue(PaginationConstants.DEFAULT_PAGE_NUMBER_STRING)
@@ -92,7 +90,7 @@ public class CustomerSearchResource {
       if (query != null && !query.isBlank()) {
         request.setGlobalSearch(query);
       }
-      
+
       PagedResponse<CustomerResponse> results = searchService.search(request, page, size);
       LOG.infof("Search completed: found %d customers", results.getTotalElements());
       return Response.ok(results).build();

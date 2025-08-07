@@ -124,13 +124,13 @@ public class ContactInteractionResource {
     LOG.infof("Batch importing %d interactions", interactions.size());
 
     try {
-      ContactInteractionService.BatchImportResult result = 
+      ContactInteractionService.BatchImportResult result =
           interactionService.batchImportInteractions(interactions);
-      
+
       if (result.failed > 0) {
         LOG.warnf("Batch import completed with %d failures", result.failed);
       }
-      
+
       return Response.ok().entity(result).build();
     } catch (Exception e) {
       LOG.error("Batch import failed", e);

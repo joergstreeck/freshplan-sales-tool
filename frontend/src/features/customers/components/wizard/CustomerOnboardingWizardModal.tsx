@@ -1,9 +1,9 @@
 /**
  * Customer Onboarding Wizard Modal
- * 
+ *
  * Modal wrapper for the CustomerOnboardingWizard.
  * Ensures the wizard opens as an overlay while keeping the sidebar visible.
- * 
+ *
  * @see CRITICAL_ARCHITECTURE_FIX_PLAN.md
  */
 
@@ -16,7 +16,7 @@ import {
   useMediaQuery,
   Drawer,
   Box,
-  Typography
+  Typography,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { CustomerOnboardingWizard } from './CustomerOnboardingWizard';
@@ -31,7 +31,7 @@ interface CustomerOnboardingWizardModalProps {
 export function CustomerOnboardingWizardModal({
   open,
   onClose,
-  onComplete
+  onComplete,
 }: CustomerOnboardingWizardModalProps) {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
@@ -48,8 +48,8 @@ export function CustomerOnboardingWizardModal({
             height: '90vh',
             borderTopLeftRadius: 16,
             borderTopRightRadius: 16,
-            overflow: 'hidden'
-          }
+            overflow: 'hidden',
+          },
         }}
       >
         <Box sx={{ position: 'relative', height: '100%' }}>
@@ -64,7 +64,7 @@ export function CustomerOnboardingWizardModal({
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
-              zIndex: 1
+              zIndex: 1,
             }}
           >
             <Typography variant="h6">Neuen Kunden anlegen</Typography>
@@ -73,11 +73,7 @@ export function CustomerOnboardingWizardModal({
             </IconButton>
           </Box>
           <Box sx={{ p: 2, overflow: 'auto', height: 'calc(100% - 64px)' }}>
-            <CustomerOnboardingWizard
-              onComplete={onComplete}
-              onCancel={onClose}
-              isModal={true}
-            />
+            <CustomerOnboardingWizard onComplete={onComplete} onCancel={onClose} isModal={true} />
           </Box>
         </Box>
       </Drawer>
@@ -96,8 +92,8 @@ export function CustomerOnboardingWizardModal({
           height: '95vh',
           maxHeight: 'none',
           overflow: 'hidden',
-          m: 1 // Margin für kleinere Bildschirme
-        }
+          m: 1, // Margin für kleinere Bildschirme
+        },
       }}
     >
       <Box
@@ -109,7 +105,7 @@ export function CustomerOnboardingWizardModal({
           borderBottom: 1,
           borderColor: 'divider',
           bgcolor: 'background.paper',
-          zIndex: 1
+          zIndex: 1,
         }}
       >
         <Typography variant="h5" component="h2">
@@ -120,20 +116,16 @@ export function CustomerOnboardingWizardModal({
           sx={{
             position: 'absolute',
             right: 8,
-            top: 8
+            top: 8,
           }}
         >
           <CloseIcon />
         </IconButton>
       </Box>
-      
+
       <DialogContent sx={{ p: 0, overflow: 'hidden' }}>
         <Box sx={{ height: '100%', overflow: 'auto', p: 3 }}>
-          <CustomerOnboardingWizard
-            onComplete={onComplete}
-            onCancel={onClose}
-            isModal={true}
-          />
+          <CustomerOnboardingWizard onComplete={onComplete} onCancel={onClose} isModal={true} />
         </Box>
       </DialogContent>
     </Dialog>

@@ -1,6 +1,6 @@
 /**
  * Unified Auth Hook that works with both Keycloak and Fallback Auth
- * 
+ *
  * This hook abstracts the authentication mechanism and provides
  * a consistent interface regardless of which auth provider is active.
  */
@@ -13,10 +13,10 @@ export function useAuth() {
   // Always call both hooks to satisfy React's rules
   const keycloakContext = useContext(KeycloakContext);
   const authContext = useContext(AuthContext);
-  
+
   // Determine which auth context to use
   const useKeycloak = !IS_DEV_MODE || USE_KEYCLOAK_IN_DEV;
-  
+
   if (useKeycloak && keycloakContext) {
     return {
       isAuthenticated: keycloakContext.isAuthenticated,
@@ -31,7 +31,7 @@ export function useAuth() {
       userRoles: keycloakContext.userRoles,
     };
   }
-  
+
   if (authContext) {
     // Map AuthContext to the same interface
     return {
@@ -47,7 +47,7 @@ export function useAuth() {
       userRoles: authContext.user?.roles || [],
     };
   }
-  
+
   // Return default values if no auth context is available
   return {
     isAuthenticated: false,

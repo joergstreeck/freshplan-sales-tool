@@ -38,7 +38,8 @@ public class CustomerDataInitializer {
   // TEMPORARILY DISABLED - Sprint-2 fields need to be initialized
   // TODO: Add locations_germany, locations_austria, etc. fields
   void onStartDisabled_TODO_FIX_SPRINT2_FIELDS_DISABLED(@Observes @Priority(500) StartupEvent ev) {
-    LOG.info("🧪 Initializing comprehensive test data for ALL modules (Intelligence, Cockpit, Opportunities)...");
+    LOG.info(
+        "🧪 Initializing comprehensive test data for ALL modules (Intelligence, Cockpit, Opportunities)...");
 
     // For comprehensive testing: Always recreate test data
     // Clear existing data - SQL-based cascade deletion approach
@@ -52,10 +53,7 @@ public class CustomerDataInitializer {
       // Security: Define allowed tables for deletion (prevents SQL injection)
       var tablesToClear =
           java.util.List.of(
-              "customer_timeline_events", 
-              "customer_contacts", 
-              "customer_locations", 
-              "customers");
+              "customer_timeline_events", "customer_contacts", "customer_locations", "customers");
 
       // Derive allowed tables from the clearing list to ensure consistency
       var allowedTables = java.util.Set.copyOf(tablesToClear);
@@ -109,15 +107,15 @@ public class CustomerDataInitializer {
     // 7. UNICODE & SPECIAL CHARACTER TESTS
     LOG.info("Creating unicode and special character tests...");
     createUnicodeTests();
-    
+
     // 8. DATA INTELLIGENCE SCENARIOS
     LOG.info("Creating Data Intelligence test scenarios...");
     createDataIntelligenceScenarios();
-    
-    // 9. SALES COCKPIT SCENARIOS  
+
+    // 9. SALES COCKPIT SCENARIOS
     LOG.info("Creating Sales Cockpit test scenarios...");
     createSalesCockpitScenarios();
-    
+
     // 10. OPPORTUNITY PIPELINE SCENARIOS
     LOG.info("Creating Opportunity Pipeline test scenarios...");
     createOpportunityPipelineScenarios();
@@ -515,7 +513,7 @@ public class CustomerDataInitializer {
       customer.setStatus(CustomerStatus.LEAD);
       customer.setCreatedBy("test");
       setSprint2FieldDefaults(customer);
-    customerRepository.persist(customer);
+      customerRepository.persist(customer);
     }
 
     // Test alle Industry Werte
@@ -530,7 +528,7 @@ public class CustomerDataInitializer {
       customer.setStatus(CustomerStatus.AKTIV);
       customer.setCreatedBy("test");
       setSprint2FieldDefaults(customer);
-    customerRepository.persist(customer);
+      customerRepository.persist(customer);
     }
 
     // Test alle CustomerStatus Werte
@@ -545,7 +543,7 @@ public class CustomerDataInitializer {
       customer.setStatus(status);
       customer.setCreatedBy("test");
       setSprint2FieldDefaults(customer);
-    customerRepository.persist(customer);
+      customerRepository.persist(customer);
     }
 
     LOG.info("✅ Enum boundary tests created");
@@ -688,7 +686,7 @@ public class CustomerDataInitializer {
 
     LOG.info("✅ Unicode and special character tests created");
   }
-  
+
   // 8. DATA INTELLIGENCE SCENARIOS
   private void createDataIntelligenceScenarios() {
     // Kunde mit vielen aktuellen Interaktionen (FRESH)
@@ -705,7 +703,7 @@ public class CustomerDataInitializer {
     activeCustomer.setCreatedBy("data-intelligence");
     setSprint2FieldDefaults(activeCustomer);
     customerRepository.persist(activeCustomer);
-    
+
     // Kunde mit alternden Daten (AGING - 90-180 Tage)
     Customer agingCustomer = new Customer();
     agingCustomer.setCustomerNumber("DI-AGING-002");
@@ -720,7 +718,7 @@ public class CustomerDataInitializer {
     agingCustomer.setCreatedBy("data-intelligence");
     setSprint2FieldDefaults(agingCustomer);
     customerRepository.persist(agingCustomer);
-    
+
     // Kunde mit veralteten Daten (STALE - 180-365 Tage)
     Customer staleCustomer = new Customer();
     staleCustomer.setCustomerNumber("DI-STALE-003");
@@ -735,7 +733,7 @@ public class CustomerDataInitializer {
     staleCustomer.setCreatedBy("data-intelligence");
     setSprint2FieldDefaults(staleCustomer);
     customerRepository.persist(staleCustomer);
-    
+
     // Kunde mit kritisch alten Daten (CRITICAL - >365 Tage)
     Customer criticalCustomer = new Customer();
     criticalCustomer.setCustomerNumber("DI-CRITICAL-004");
@@ -750,7 +748,7 @@ public class CustomerDataInitializer {
     criticalCustomer.setCreatedBy("data-intelligence");
     setSprint2FieldDefaults(criticalCustomer);
     customerRepository.persist(criticalCustomer);
-    
+
     // Kunde ohne jegliche Interaktionen
     Customer noInteractionCustomer = new Customer();
     noInteractionCustomer.setCustomerNumber("DI-NO-INT-005");
@@ -761,14 +759,16 @@ public class CustomerDataInitializer {
     noInteractionCustomer.setClassification(Classification.D_KUNDE);
     noInteractionCustomer.setStatus(CustomerStatus.LEAD);
     noInteractionCustomer.setLastContactDate(null); // Nie kontaktiert
-    noInteractionCustomer.setNextFollowUpDate(LocalDateTime.now().plusDays(1)); // Dringend kontaktieren
+    noInteractionCustomer.setNextFollowUpDate(
+        LocalDateTime.now().plusDays(1)); // Dringend kontaktieren
     noInteractionCustomer.setCreatedBy("data-intelligence");
     setSprint2FieldDefaults(noInteractionCustomer);
     customerRepository.persist(noInteractionCustomer);
-    
-    LOG.info("✅ Data Intelligence test scenarios created (5 customers with different freshness levels)");
+
+    LOG.info(
+        "✅ Data Intelligence test scenarios created (5 customers with different freshness levels)");
   }
-  
+
   // 9. SALES COCKPIT SCENARIOS
   private void createSalesCockpitScenarios() {
     // Top-Performer Kunde
@@ -789,7 +789,7 @@ public class CustomerDataInitializer {
     topPerformer.setCreatedBy("sales-cockpit");
     setSprint2FieldDefaults(topPerformer);
     customerRepository.persist(topPerformer);
-    
+
     // At-Risk Kunde
     Customer atRisk = new Customer();
     atRisk.setCustomerNumber("SC-RISK-002");
@@ -808,7 +808,7 @@ public class CustomerDataInitializer {
     atRisk.setCreatedBy("sales-cockpit");
     setSprint2FieldDefaults(atRisk);
     customerRepository.persist(atRisk);
-    
+
     // Churn Risk Kunde
     Customer churnRisk = new Customer();
     churnRisk.setCustomerNumber("SC-CHURN-003");
@@ -827,7 +827,7 @@ public class CustomerDataInitializer {
     churnRisk.setCreatedBy("sales-cockpit");
     setSprint2FieldDefaults(churnRisk);
     customerRepository.persist(churnRisk);
-    
+
     // Neukunde mit Potenzial
     Customer newPotential = new Customer();
     newPotential.setCustomerNumber("SC-NEW-004");
@@ -847,10 +847,11 @@ public class CustomerDataInitializer {
     newPotential.setCreatedBy("sales-cockpit");
     setSprint2FieldDefaults(newPotential);
     customerRepository.persist(newPotential);
-    
-    LOG.info("✅ Sales Cockpit test scenarios created (4 customers with different performance levels)");
+
+    LOG.info(
+        "✅ Sales Cockpit test scenarios created (4 customers with different performance levels)");
   }
-  
+
   // 10. OPPORTUNITY PIPELINE SCENARIOS
   private void createOpportunityPipelineScenarios() {
     // Kunde mit Hot Lead
@@ -869,7 +870,7 @@ public class CustomerDataInitializer {
     hotLead.setCreatedBy("opportunity-pipeline");
     setSprint2FieldDefaults(hotLead);
     customerRepository.persist(hotLead);
-    
+
     // Kunde in Verhandlung
     Customer negotiation = new Customer();
     negotiation.setCustomerNumber("OP-NEGO-002");
@@ -886,7 +887,7 @@ public class CustomerDataInitializer {
     negotiation.setCreatedBy("opportunity-pipeline");
     setSprint2FieldDefaults(negotiation);
     customerRepository.persist(negotiation);
-    
+
     // Kunde mit verlorenem Deal
     Customer lostDeal = new Customer();
     lostDeal.setCustomerNumber("OP-LOST-003");
@@ -903,7 +904,7 @@ public class CustomerDataInitializer {
     lostDeal.setCreatedBy("opportunity-pipeline");
     setSprint2FieldDefaults(lostDeal);
     customerRepository.persist(lostDeal);
-    
+
     // Kunde mit Renewal-Opportunity
     Customer renewal = new Customer();
     renewal.setCustomerNumber("OP-RENEWAL-004");
@@ -921,7 +922,7 @@ public class CustomerDataInitializer {
     renewal.setCreatedBy("opportunity-pipeline");
     setSprint2FieldDefaults(renewal);
     customerRepository.persist(renewal);
-    
+
     // Kunde mit Upsell-Potenzial
     Customer upsell = new Customer();
     upsell.setCustomerNumber("OP-UPSELL-005");
@@ -939,7 +940,8 @@ public class CustomerDataInitializer {
     upsell.setCreatedBy("opportunity-pipeline");
     setSprint2FieldDefaults(upsell);
     customerRepository.persist(upsell);
-    
-    LOG.info("✅ Opportunity Pipeline test scenarios created (5 customers with different opportunity stages)");
+
+    LOG.info(
+        "✅ Opportunity Pipeline test scenarios created (5 customers with different opportunity stages)");
   }
 }

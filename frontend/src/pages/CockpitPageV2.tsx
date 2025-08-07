@@ -1,6 +1,6 @@
 /**
  * CockpitPageV2 - Test Page mit neuem Layout
- * 
+ *
  * Nutzt MainLayoutV2 und CockpitViewV2 für Clean Slate Test
  */
 
@@ -15,29 +15,31 @@ import { freshfoodzTheme } from '@/theme/freshfoodz';
 
 export function CockpitPageV2() {
   const { isAuthenticated, isLoading } = useAuth();
-  
+
   if (isLoading) {
     return (
       <ThemeProvider theme={freshfoodzTheme}>
         <CssBaseline />
-        <div style={{ 
-          padding: '20px', 
-          textAlign: 'center', 
-          minHeight: '100vh',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center'
-        }}>
+        <div
+          style={{
+            padding: '20px',
+            textAlign: 'center',
+            minHeight: '100vh',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
           <h2>Loading authentication...</h2>
         </div>
       </ThemeProvider>
     );
   }
-  
+
   if (!isAuthenticated) {
     return <Navigate to="/" replace />;
   }
-  
+
   return (
     <ThemeProvider theme={freshfoodzTheme}>
       <CssBaseline />

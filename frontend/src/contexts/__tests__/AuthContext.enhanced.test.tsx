@@ -27,7 +27,7 @@ vi.mock('../KeycloakContext', () => ({
 // Test component that uses auth
 const TestComponent = () => {
   const auth = useAuth();
-  
+
   return (
     <div>
       <div data-testid="authenticated">{auth.isAuthenticated.toString()}</div>
@@ -35,9 +35,7 @@ const TestComponent = () => {
       <div data-testid="username">{auth.user?.username || 'none'}</div>
       <div data-testid="roles">{auth.user?.roles?.join(',') || 'none'}</div>
       <div data-testid="token">{auth.token || 'none'}</div>
-      <button onClick={() => auth.login('test@example.com', 'password')}>
-        Login
-      </button>
+      <button onClick={() => auth.login('test@example.com', 'password')}>Login</button>
       <button onClick={() => auth.logout()}>Logout</button>
     </div>
   );
@@ -63,7 +61,7 @@ describe('AuthContext Enhanced Tests', () => {
   describe('Authentication State Management', () => {
     it('should handle unauthenticated state correctly', () => {
       renderWithAuth(<TestComponent />);
-      
+
       expect(screen.getByTestId('authenticated')).toHaveTextContent('false');
       expect(screen.getByTestId('username')).toHaveTextContent('none');
       expect(screen.getByTestId('roles')).toHaveTextContent('none');
@@ -77,9 +75,9 @@ describe('AuthContext Enhanced Tests', () => {
       mockKeycloakContext.username = 'testuser';
       mockKeycloakContext.email = 'test@example.com';
       mockKeycloakContext.userRoles = ['admin', 'user'];
-      
+
       renderWithAuth(<TestComponent />);
-      
+
       expect(screen.getByTestId('authenticated')).toHaveTextContent('true');
       expect(screen.getByTestId('username')).toHaveTextContent('testuser');
       expect(screen.getByTestId('roles')).toHaveTextContent('admin,user');
@@ -88,9 +86,9 @@ describe('AuthContext Enhanced Tests', () => {
 
     it('should handle loading state', () => {
       mockKeycloakContext.isLoading = true;
-      
+
       renderWithAuth(<TestComponent />);
-      
+
       expect(screen.getByTestId('loading')).toHaveTextContent('true');
     });
   });
@@ -102,7 +100,7 @@ describe('AuthContext Enhanced Tests', () => {
       mockKeycloakContext.username = 'johndoe';
       mockKeycloakContext.email = 'john@example.com';
       mockKeycloakContext.userRoles = ['manager', 'editor'];
-      
+
       const TestAuth = () => {
         const auth = useAuth();
         return (
@@ -115,9 +113,9 @@ describe('AuthContext Enhanced Tests', () => {
           </div>
         );
       };
-      
+
       renderWithAuth(<TestAuth />);
-      
+
       expect(screen.getByTestId('user-id')).toHaveTextContent('user-456');
       expect(screen.getByTestId('user-name')).toHaveTextContent('johndoe');
       expect(screen.getByTestId('user-email')).toHaveTextContent('john@example.com');
@@ -129,7 +127,7 @@ describe('AuthContext Enhanced Tests', () => {
       mockKeycloakContext.isAuthenticated = true;
       mockKeycloakContext.userId = 'user-789';
       // No username or email
-      
+
       const TestAuth = () => {
         const auth = useAuth();
         return (
@@ -140,9 +138,9 @@ describe('AuthContext Enhanced Tests', () => {
           </div>
         );
       };
-      
+
       renderWithAuth(<TestAuth />);
-      
+
       expect(screen.getByTestId('user-id')).toHaveTextContent('user-789');
       expect(screen.getByTestId('user-name')).toHaveTextContent('Unknown');
       expect(screen.getByTestId('user-email')).toHaveTextContent('');
@@ -152,19 +150,19 @@ describe('AuthContext Enhanced Tests', () => {
   describe('Authentication Functions', () => {
     it('should call keycloak login when login is invoked', () => {
       renderWithAuth(<TestComponent />);
-      
+
       const loginButton = screen.getByText('Login');
       loginButton.click();
-      
+
       expect(mockKeycloakContext.login).toHaveBeenCalled();
     });
 
     it('should call keycloak logout when logout is invoked', () => {
       renderWithAuth(<TestComponent />);
-      
+
       const logoutButton = screen.getByText('Logout');
       logoutButton.click();
-      
+
       expect(mockKeycloakContext.logout).toHaveBeenCalled();
     });
   });
@@ -176,10 +174,10 @@ describe('AuthContext Enhanced Tests', () => {
     });
 
     it('should check roles through hasRole function', () => {
-      mockKeycloakContext.hasRole.mockImplementation((role: string) => 
+      mockKeycloakContext.hasRole.mockImplementation((role: string) =>
         ['admin', 'manager'].includes(role)
       );
-      
+
       const TestRoles = () => {
         const auth = useAuth();
         return (
@@ -189,30 +187,34 @@ describe('AuthContext Enhanced Tests', () => {
           </div>
         );
       };
-      
+
       renderWithAuth(<TestRoles />);
-      
+
       expect(screen.getByTestId('has-admin')).toHaveTextContent('true');
       expect(screen.getByTestId('has-user')).toHaveTextContent('false');
     });
 
     it('should check multiple roles with hasAnyRole', () => {
-      mockKeycloakContext.hasRole.mockImplementation((role: string) => 
+      mockKeycloakContext.hasRole.mockImplementation((role: string) =>
         ['admin', 'manager'].includes(role)
       );
-      
+
       const TestAnyRoles = () => {
         const auth = useAuth();
         return (
           <div>
-            <div data-testid="has-any-admin-editor">{auth.hasAnyRole(['admin', 'editor']).toString()}</div>
-            <div data-testid="has-any-user-guest">{auth.hasAnyRole(['user', 'guest']).toString()}</div>
+            <div data-testid="has-any-admin-editor">
+              {auth.hasAnyRole(['admin', 'editor']).toString()}
+            </div>
+            <div data-testid="has-any-user-guest">
+              {auth.hasAnyRole(['user', 'guest']).toString()}
+            </div>
           </div>
         );
       };
-      
+
       renderWithAuth(<TestAnyRoles />);
-      
+
       expect(screen.getByTestId('has-any-admin-editor')).toHaveTextContent('true');
       expect(screen.getByTestId('has-any-user-guest')).toHaveTextContent('false');
     });
@@ -225,7 +227,7 @@ describe('AuthContext Enhanced Tests', () => {
       mockKeycloakContext.username = 'debuguser';
       mockKeycloakContext.email = 'debug@example.com';
       mockKeycloakContext.userRoles = ['debug'];
-      
+
       const TestAuthInfo = () => {
         const auth = useAuth();
         const info = auth.authInfo();
@@ -239,9 +241,9 @@ describe('AuthContext Enhanced Tests', () => {
           </div>
         );
       };
-      
+
       renderWithAuth(<TestAuthInfo />);
-      
+
       expect(screen.getByTestId('info-authenticated')).toHaveTextContent('true');
       expect(screen.getByTestId('info-username')).toHaveTextContent('debuguser');
       expect(screen.getByTestId('info-email')).toHaveTextContent('debug@example.com');
@@ -252,15 +254,15 @@ describe('AuthContext Enhanced Tests', () => {
     it('should handle token availability', () => {
       mockKeycloakContext.isAuthenticated = true;
       mockKeycloakContext.token = 'valid-token-123';
-      
+
       const TestTokenInfo = () => {
         const auth = useAuth();
         const info = auth.authInfo();
         return <div data-testid="token-status">{info.tokenTimeLeft}</div>;
       };
-      
+
       renderWithAuth(<TestTokenInfo />);
-      
+
       expect(screen.getByTestId('token-status')).toHaveTextContent('available');
     });
   });
@@ -271,11 +273,11 @@ describe('useAuth Hook Error Handling', () => {
     // Suppress console.error for this test
     const originalError = console.error;
     console.error = vi.fn();
-    
+
     expect(() => {
       render(<TestComponent />);
     }).toThrow('useAuth must be used within AuthProvider');
-    
+
     console.error = originalError;
   });
 });

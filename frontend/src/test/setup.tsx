@@ -31,6 +31,13 @@ global.ResizeObserver = vi.fn().mockImplementation(() => ({
   disconnect: vi.fn(),
 }));
 
+// Mock für IntersectionObserver
+global.IntersectionObserver = vi.fn().mockImplementation(() => ({
+  observe: vi.fn(),
+  unobserve: vi.fn(),
+  disconnect: vi.fn(),
+}));
+
 // Mock für import.meta.env
 Object.defineProperty(import.meta, 'env', {
   value: {
@@ -45,6 +52,87 @@ Object.defineProperty(import.meta, 'env', {
     VITE_TEST_USER_PASSWORD: 'test-password',
   },
 });
+
+// Mock missing stores
+vi.mock('/src/features/customers/stores/customerOnboardingStore', () => ({
+  useCustomerOnboardingStore: () => ({
+    // Field management
+    fieldValues: {},
+    setFieldValue: vi.fn(),
+    setLocationFieldValue: vi.fn(),
+    setCustomerField: vi.fn(),
+    getFieldValue: vi.fn(() => ''),
+
+    // Location management
+    locations: [],
+    addLocation: vi.fn(),
+    removeLocation: vi.fn(),
+    locationFieldValues: {},
+    setLocationField: vi.fn(),
+
+    // Detailed locations
+    detailedLocations: [],
+    addDetailedLocation: vi.fn(),
+    addBatchDetailedLocations: vi.fn(),
+
+    // Customer data
+    customerData: {},
+    customer: null,
+
+    // Field definitions
+    fieldDefinitions: [],
+    customerFields: [],
+    locationFields: [],
+    setFieldDefinitions: vi.fn(),
+
+    // Validation
+    validate: vi.fn(() => true),
+    validateField: vi.fn(),
+    validateCurrentStep: vi.fn(() => true),
+    validationErrors: {},
+    errors: {},
+    isValid: true,
+
+    // Contacts management
+    contacts: [],
+    addContact: vi.fn(),
+    updateContact: vi.fn(),
+    removeContact: vi.fn(),
+    setPrimaryContact: vi.fn(),
+    validateContacts: vi.fn().mockResolvedValue(true),
+    contactValidationErrors: {},
+    validateContactField: vi.fn(),
+
+    // Wizard flow
+    currentStep: 0,
+    setCurrentStep: vi.fn(),
+    canProgressToNextStep: vi.fn(() => false),
+
+    // State management
+    isDirty: false,
+    lastSaved: null,
+    draftId: null,
+    reset: vi.fn(),
+
+    // Draft management
+    saveAsDraft: vi.fn().mockResolvedValue(undefined),
+    loadDraft: vi.fn().mockResolvedValue(undefined),
+  }),
+}));
+
+// Mock CustomerFieldThemeProvider
+vi.mock('/src/features/customers/theme/CustomerFieldThemeProvider', () => ({
+  CustomerFieldThemeProvider: ({ children }: { children: React.ReactNode }) => children,
+  useCustomerFieldTheme: () => ({
+    theme: {
+      colors: {
+        primary: '#94C456',
+        secondary: '#004F7B',
+      },
+    },
+    cssVariables: {},
+  }),
+}));
 
 // QueryClient für Tests erstellen
 const createTestQueryClient = () =>

@@ -1,9 +1,9 @@
 /**
  * Field System Types
- * 
+ *
  * Types for the dynamic field system that powers customer data management.
  * Based on the Field Catalog JSON structure.
- * 
+ *
  * @see /Users/joergstreeck/freshplan-sales-tool/frontend/src/features/customers/data/fieldCatalog.json
  * @see /Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/03-FRONTEND/03-field-rendering.md
  */
@@ -11,7 +11,7 @@
 /**
  * Supported field types in the system
  */
-export type FieldType = 
+export type FieldType =
   | 'text'
   | 'select'
   | 'multiselect'
@@ -29,7 +29,7 @@ export type FieldType =
 export enum EntityType {
   CUSTOMER = 'customer',
   LOCATION = 'location',
-  DETAILED_LOCATION = 'detailedLocation'
+  DETAILED_LOCATION = 'detailedLocation',
 }
 
 /**
@@ -199,12 +199,13 @@ export interface FieldCatalog {
     industrySpecific?: Record<string, FieldDefinition[]>;
   };
   /** Validation rule definitions */
-  validationRules: Record<string, {
-    pattern?: string;
-    minLength?: number;
-    maxLength?: number;
-    message: string;
-  }>;
+  validationRules: Record<
+    string,
+    {
+      pattern?: string;
+      minLength?: number;
+      maxLength?: number;
+      message: string;
+    }
+  >;
 }
-
-

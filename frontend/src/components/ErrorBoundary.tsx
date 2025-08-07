@@ -1,6 +1,6 @@
 /**
  * Enterprise Error Boundary Component
- * 
+ *
  * @module ErrorBoundary
  * @description React Error Boundary für graceful error handling mit Logging und Monitoring
  * @since 2.0.0
@@ -15,12 +15,12 @@ import {
   Typography,
   Alert,
   AlertTitle,
-  Collapse
+  Collapse,
 } from '@mui/material';
 import {
   Error as ErrorIcon,
   Refresh as RefreshIcon,
-  ExpandMore as ExpandMoreIcon
+  ExpandMore as ExpandMoreIcon,
 } from '@mui/icons-material';
 import { logger } from '../lib/logger';
 
@@ -60,7 +60,7 @@ interface IErrorBoundaryState {
  */
 export class ErrorBoundary extends Component<IErrorBoundaryProps, IErrorBoundaryState> {
   private loggerInstance = logger.child('ErrorBoundary', {
-    context: this.props.context
+    context: this.props.context,
   });
 
   public state: IErrorBoundaryState = {
@@ -68,7 +68,7 @@ export class ErrorBoundary extends Component<IErrorBoundaryProps, IErrorBoundary
     error: null,
     errorInfo: null,
     errorId: '',
-    showDetails: false
+    showDetails: false,
   };
 
   /**
@@ -79,11 +79,11 @@ export class ErrorBoundary extends Component<IErrorBoundaryProps, IErrorBoundary
    */
   public static getDerivedStateFromError(error: Error): Partial<IErrorBoundaryState> {
     const errorId = `ERR-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-    
+
     return {
       hasError: true,
       error,
-      errorId
+      errorId,
     };
   }
 
@@ -111,7 +111,7 @@ export class ErrorBoundary extends Component<IErrorBoundaryProps, IErrorBoundary
       context,
       url: window.location.href,
       userAgent: navigator.userAgent,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
 
     // Update state with error info
@@ -128,15 +128,15 @@ export class ErrorBoundary extends Component<IErrorBoundaryProps, IErrorBoundary
    */
   private resetError = (): void => {
     this.loggerInstance.info('Error boundary reset', {
-      errorId: this.state.errorId
+      errorId: this.state.errorId,
     });
-    
+
     this.setState({
       hasError: false,
       error: null,
       errorInfo: null,
       errorId: '',
-      showDetails: false
+      showDetails: false,
     });
   };
 
@@ -166,7 +166,7 @@ export class ErrorBoundary extends Component<IErrorBoundaryProps, IErrorBoundary
             justifyContent: 'center',
             alignItems: 'center',
             minHeight: '400px',
-            p: 3
+            p: 3,
           }}
         >
           <Card sx={{ maxWidth: 600, width: '100%' }}>
@@ -176,19 +176,19 @@ export class ErrorBoundary extends Component<IErrorBoundaryProps, IErrorBoundary
                   sx={{
                     fontSize: 64,
                     color: 'error.main',
-                    mb: 2
+                    mb: 2,
                   }}
                 />
                 <Typography variant="h5" gutterBottom>
                   Oops! Etwas ist schiefgelaufen
                 </Typography>
                 <Typography variant="body2" color="text.secondary" paragraph>
-                  Ein unerwarteter Fehler ist aufgetreten. Das Entwicklungsteam wurde
-                  automatisch benachrichtigt.
+                  Ein unerwarteter Fehler ist aufgetreten. Das Entwicklungsteam wurde automatisch
+                  benachrichtigt.
                 </Typography>
                 {errorId && (
-                  <Typography 
-                    variant="caption" 
+                  <Typography
+                    variant="caption"
                     color="text.secondary"
                     sx={{ fontFamily: 'monospace' }}
                   >
@@ -202,11 +202,11 @@ export class ErrorBoundary extends Component<IErrorBoundaryProps, IErrorBoundary
                   variant="contained"
                   startIcon={<RefreshIcon />}
                   onClick={this.resetError}
-                  sx={{ 
+                  sx={{
                     bgcolor: '#94C456',
                     '&:hover': {
-                      bgcolor: '#7BA646'
-                    }
+                      bgcolor: '#7BA646',
+                    },
                   }}
                 >
                   Neu laden
@@ -219,7 +219,7 @@ export class ErrorBoundary extends Component<IErrorBoundaryProps, IErrorBoundary
                       <ExpandMoreIcon
                         sx={{
                           transform: showDetails ? 'rotate(180deg)' : 'rotate(0deg)',
-                          transition: 'transform 0.3s'
+                          transition: 'transform 0.3s',
                         }}
                       />
                     }
@@ -233,26 +233,26 @@ export class ErrorBoundary extends Component<IErrorBoundaryProps, IErrorBoundary
                 <Collapse in={showDetails}>
                   <Alert severity="error" sx={{ mt: 2, textAlign: 'left' }}>
                     <AlertTitle>{error.name}</AlertTitle>
-                    <Typography 
-                      variant="body2" 
-                      component="pre" 
-                      sx={{ 
+                    <Typography
+                      variant="body2"
+                      component="pre"
+                      sx={{
                         fontFamily: 'monospace',
                         fontSize: '0.875rem',
                         whiteSpace: 'pre-wrap',
-                        wordBreak: 'break-word'
+                        wordBreak: 'break-word',
                       }}
                     >
                       {error.message}
                     </Typography>
                     <Box sx={{ mt: 2, maxHeight: 300, overflow: 'auto' }}>
-                      <Typography 
-                        variant="caption" 
-                        component="pre" 
-                        sx={{ 
+                      <Typography
+                        variant="caption"
+                        component="pre"
+                        sx={{
                           fontFamily: 'monospace',
                           fontSize: '0.75rem',
-                          opacity: 0.8
+                          opacity: 0.8,
                         }}
                       >
                         {errorInfo.componentStack}
@@ -283,15 +283,18 @@ export const useErrorHandler = (context?: string) => {
     [context]
   );
 
-  return React.useCallback((error: Error, errorInfo?: Record<string, unknown>) => {
-    loggerInstance.error('Hook error handler', {
-      errorName: error.name,
-      errorMessage: error.message,
-      errorStack: error.stack,
-      ...errorInfo
-    });
+  return React.useCallback(
+    (error: Error, errorInfo?: Record<string, unknown>) => {
+      loggerInstance.error('Hook error handler', {
+        errorName: error.name,
+        errorMessage: error.message,
+        errorStack: error.stack,
+        ...errorInfo,
+      });
 
-    // Re-throw to be caught by nearest ErrorBoundary
-    throw error;
-  }, [loggerInstance]);
+      // Re-throw to be caught by nearest ErrorBoundary
+      throw error;
+    },
+    [loggerInstance]
+  );
 };

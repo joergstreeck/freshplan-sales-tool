@@ -16,14 +16,14 @@ export const LocationGrid: React.FC<LocationGridProps> = ({
   locations,
   currentIndex,
   completedIds,
-  onLocationClick
+  onLocationClick,
 }) => {
   const getLocationStatus = (location: CustomerLocation, index: number) => {
     if (completedIds.includes(location.id)) return 'completed';
     if (index === currentIndex) return 'current';
     return 'pending';
   };
-  
+
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'completed':
@@ -34,7 +34,7 @@ export const LocationGrid: React.FC<LocationGridProps> = ({
         return <RadioButtonUncheckedIcon sx={{ fontSize: 16 }} />;
     }
   };
-  
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'completed':
@@ -45,13 +45,13 @@ export const LocationGrid: React.FC<LocationGridProps> = ({
         return 'default';
     }
   };
-  
+
   return (
     <Grid container spacing={2} sx={{ mb: 3 }}>
       {locations.map((location, index) => {
         const status = getLocationStatus(location, index);
         const isClickable = status !== 'current';
-        
+
         return (
           <Grid item xs={12} sm={6} md={3} key={location.id}>
             <Paper
@@ -63,10 +63,12 @@ export const LocationGrid: React.FC<LocationGridProps> = ({
                 borderWidth: status === 'current' ? 2 : 1,
                 backgroundColor: status === 'completed' ? 'success.lighter' : 'background.paper',
                 transition: 'all 0.2s',
-                '&:hover': isClickable ? {
-                  borderColor: 'primary.light',
-                  backgroundColor: 'action.hover'
-                } : {}
+                '&:hover': isClickable
+                  ? {
+                      borderColor: 'primary.light',
+                      backgroundColor: 'action.hover',
+                    }
+                  : {},
               }}
               onClick={() => isClickable && onLocationClick(index)}
             >
@@ -80,7 +82,11 @@ export const LocationGrid: React.FC<LocationGridProps> = ({
                 />
               </Box>
               {location.isHeadquarter && (
-                <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, display: 'block' }}>
+                <Typography
+                  variant="caption"
+                  color="text.secondary"
+                  sx={{ mt: 0.5, display: 'block' }}
+                >
                   Hauptsitz
                 </Typography>
               )}

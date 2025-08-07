@@ -11,19 +11,19 @@ export const formatEUR = (value: number | string | null | undefined): string => 
   if (value === null || value === undefined || value === '') {
     return '';
   }
-  
+
   const numValue = typeof value === 'string' ? parseFloat(value) : value;
-  
+
   if (isNaN(numValue)) {
     return '';
   }
-  
+
   // Formatierung mit deutschem Locale
   return new Intl.NumberFormat('de-DE', {
     style: 'currency',
     currency: 'EUR',
     minimumFractionDigits: 0,
-    maximumFractionDigits: 0
+    maximumFractionDigits: 0,
   }).format(numValue);
 };
 
@@ -34,12 +34,10 @@ export const formatEUR = (value: number | string | null | undefined): string => 
  */
 export const parseEUR = (formattedValue: string): number => {
   if (!formattedValue) return 0;
-  
+
   // Entferne alle nicht-numerischen Zeichen außer Komma
-  const cleanValue = formattedValue
-    .replace(/[^\d,]/g, '')
-    .replace(',', '.');
-  
+  const cleanValue = formattedValue.replace(/[^\d,]/g, '').replace(',', '.');
+
   const parsed = parseFloat(cleanValue);
   return isNaN(parsed) ? 0 : parsed;
 };
@@ -52,9 +50,9 @@ export const parseEUR = (formattedValue: string): number => {
 export const formatEURWhileTyping = (value: string): string => {
   // Entferne alle nicht-numerischen Zeichen
   const cleanValue = value.replace(/\D/g, '');
-  
+
   if (!cleanValue) return '';
-  
+
   // Formatiere mit Tausender-Punkten
   const numValue = parseInt(cleanValue, 10);
   return new Intl.NumberFormat('de-DE').format(numValue);

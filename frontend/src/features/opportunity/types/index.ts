@@ -19,7 +19,7 @@ export type {
   StageDistribution,
   ConversionRate,
   PipelineFilters,
-  ChangeStageRequest
+  ChangeStageRequest,
 } from './opportunity.types';
 
 // Simplified Opportunity interface for component compatibility

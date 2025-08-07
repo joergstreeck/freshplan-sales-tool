@@ -151,7 +151,7 @@ class ContactInteractionServiceIT {
     assertNotNull(result.getRecommendation());
     String recommendation = result.getRecommendation().toLowerCase();
     assertTrue(
-        recommendation.contains("mehr") 
+        recommendation.contains("mehr")
             || recommendation.contains("daten")
             || recommendation.contains("interaktionen"));
   }
@@ -202,9 +202,11 @@ class ContactInteractionServiceIT {
   @DisplayName("Should track data freshness categories correctly")
   @Transactional
   void shouldTrackDataFreshnessCorrectly() {
-    // NOTE: Due to @UpdateTimestamp on Contact.updatedAt, we cannot test aging categories in this integration test
-    // as Hibernate automatically overwrites updatedAt with current time. This test verifies the basic functionality.
-    
+    // NOTE: Due to @UpdateTimestamp on Contact.updatedAt, we cannot test aging categories in this
+    // integration test
+    // as Hibernate automatically overwrites updatedAt with current time. This test verifies the
+    // basic functionality.
+
     // Arrange - Create contacts with interactions
     createInteraction(InteractionType.EMAIL, 0.8, 85, -30); // Main test contact
 
@@ -224,7 +226,8 @@ class ContactInteractionServiceIT {
     assertEquals(4, result.getTotalContacts());
     assertEquals(4, result.getContactsWithInteractions());
 
-    // Check that all contacts are properly categorized (all should be fresh due to @UpdateTimestamp)
+    // Check that all contacts are properly categorized (all should be fresh due to
+    // @UpdateTimestamp)
     long totalCategorized =
         result.getFreshContacts()
             + result.getAgingContacts()
@@ -233,11 +236,15 @@ class ContactInteractionServiceIT {
     assertEquals(4, totalCategorized);
 
     // All contacts should be fresh due to @UpdateTimestamp behavior
-    assertEquals(4, result.getFreshContacts(), "All contacts should be fresh due to @UpdateTimestamp");
-    assertEquals(0, result.getAgingContacts(), "No aging contacts expected due to @UpdateTimestamp");
-    assertEquals(0, result.getStaleContacts(), "No stale contacts expected due to @UpdateTimestamp");
-    assertEquals(0, result.getCriticalContacts(), "No critical contacts expected due to @UpdateTimestamp");
-    
+    assertEquals(
+        4, result.getFreshContacts(), "All contacts should be fresh due to @UpdateTimestamp");
+    assertEquals(
+        0, result.getAgingContacts(), "No aging contacts expected due to @UpdateTimestamp");
+    assertEquals(
+        0, result.getStaleContacts(), "No stale contacts expected due to @UpdateTimestamp");
+    assertEquals(
+        0, result.getCriticalContacts(), "No critical contacts expected due to @UpdateTimestamp");
+
     // Verify other metrics work correctly
     assertTrue(result.getInteractionCoverage() > 0, "Should have interaction coverage");
     assertTrue(result.getAverageInteractionsPerContact() > 0, "Should have average interactions");
@@ -266,8 +273,7 @@ class ContactInteractionServiceIT {
     assertEquals("First", result.get(2).getSubject());
 
     // All should have the correct contact ID
-    result.forEach(
-        interaction -> assertEquals(testContactId, interaction.getContactId()));
+    result.forEach(interaction -> assertEquals(testContactId, interaction.getContactId()));
   }
 
   @Test
@@ -281,37 +287,40 @@ class ContactInteractionServiceIT {
     assertEquals("Test note content", note.getSummary());
 
     // Test email recording - use createInteraction instead
-    ContactInteractionDTO emailDto = ContactInteractionDTO.builder()
-        .contactId(testContactId)
-        .type(InteractionType.EMAIL)
-        .subject("Test Subject")
-        .sentimentScore(0.8)
-        .timestamp(LocalDateTime.now())
-        .build();
+    ContactInteractionDTO emailDto =
+        ContactInteractionDTO.builder()
+            .contactId(testContactId)
+            .type(InteractionType.EMAIL)
+            .subject("Test Subject")
+            .sentimentScore(0.8)
+            .timestamp(LocalDateTime.now())
+            .build();
     ContactInteractionDTO email = contactInteractionService.createInteraction(emailDto);
     assertEquals(InteractionType.EMAIL, email.getType());
     assertEquals("Test Subject", email.getSubject());
     assertEquals(0.8, email.getSentimentScore(), 0.01);
 
     // Test call recording - use createInteraction instead
-    ContactInteractionDTO callDto = ContactInteractionDTO.builder()
-        .contactId(testContactId)
-        .type(InteractionType.CALL)
-        .outcome("POSITIVE")
-        .summary("Successful call")
-        .timestamp(LocalDateTime.now())
-        .build();
+    ContactInteractionDTO callDto =
+        ContactInteractionDTO.builder()
+            .contactId(testContactId)
+            .type(InteractionType.CALL)
+            .outcome("POSITIVE")
+            .summary("Successful call")
+            .timestamp(LocalDateTime.now())
+            .build();
     ContactInteractionDTO call = contactInteractionService.createInteraction(callDto);
     assertEquals(InteractionType.CALL, call.getType());
     assertEquals("POSITIVE", call.getOutcome());
 
     // Test meeting recording - use createInteraction instead
-    ContactInteractionDTO meetingDto = ContactInteractionDTO.builder()
-        .contactId(testContactId)
-        .type(InteractionType.MEETING)
-        .summary("Productive meeting")
-        .timestamp(LocalDateTime.now())
-        .build();
+    ContactInteractionDTO meetingDto =
+        ContactInteractionDTO.builder()
+            .contactId(testContactId)
+            .type(InteractionType.MEETING)
+            .summary("Productive meeting")
+            .timestamp(LocalDateTime.now())
+            .build();
     ContactInteractionDTO meeting = contactInteractionService.createInteraction(meetingDto);
     assertEquals(InteractionType.MEETING, meeting.getType());
     assertEquals("Productive meeting", meeting.getSummary());

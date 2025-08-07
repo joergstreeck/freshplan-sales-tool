@@ -1,9 +1,9 @@
 /**
  * FC-005 Industry Templates Configuration
- * 
+ *
  * Branchenspezifische Vorlagen für die schnelle Einrichtung von Standorten.
  * Ermöglicht es, typische Standorte einer Branche mit einem Klick hinzuzufügen.
- * 
+ *
  * @see /Users/joergstreeck/freshplan-sales-tool/frontend/src/features/customers/components/steps/DetailedLocationsStep.tsx
  * @see /Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/03-FRONTEND/03-location-management.md
  */
@@ -27,7 +27,7 @@ export interface LocationTemplate {
 
 /**
  * Industry-specific templates for quick setup
- * 
+ *
  * @remarks
  * - Templates sind nach Branche gruppiert
  * - Decken typische Standorte jeder Branche ab
@@ -36,153 +36,153 @@ export interface LocationTemplate {
  */
 export const industryTemplates: Partial<Record<IndustryType, LocationTemplate[]>> = {
   hotel: [
-    { 
-      name: 'Restaurant Haupthaus', 
+    {
+      name: 'Restaurant Haupthaus',
       category: 'restaurant',
       description: 'Hauptrestaurant des Hotels',
-      capacity: 120
+      capacity: 120,
     },
-    { 
-      name: 'Frühstücksraum', 
+    {
+      name: 'Frühstücksraum',
       category: 'restaurant',
       description: 'Separater Bereich für Frühstück',
-      capacity: 80
+      capacity: 80,
     },
-    { 
-      name: 'Bar/Lounge', 
+    {
+      name: 'Bar/Lounge',
       category: 'cafeteria',
-      description: 'Hotelbar mit Lounge-Bereich'
+      description: 'Hotelbar mit Lounge-Bereich',
     },
-    { 
-      name: 'Poolbar', 
+    {
+      name: 'Poolbar',
       category: 'kiosk',
-      description: 'Außenbar am Pool'
+      description: 'Außenbar am Pool',
     },
-    { 
-      name: 'Bankett/Konferenz', 
+    {
+      name: 'Bankett/Konferenz',
       category: 'restaurant',
       description: 'Veranstaltungsbereich',
-      capacity: 200
-    }
+      capacity: 200,
+    },
   ],
-  
+
   krankenhaus: [
-    { 
-      name: 'Cafeteria Haupteingang', 
+    {
+      name: 'Cafeteria Haupteingang',
       category: 'cafeteria',
-      description: 'Öffentliche Cafeteria im Eingangsbereich'
+      description: 'Öffentliche Cafeteria im Eingangsbereich',
     },
-    { 
-      name: 'Personalrestaurant', 
+    {
+      name: 'Personalrestaurant',
       category: 'restaurant',
-      description: 'Restaurant für Mitarbeiter'
+      description: 'Restaurant für Mitarbeiter',
     },
-    { 
-      name: 'Station 1A', 
+    {
+      name: 'Station 1A',
       category: 'station',
-      description: 'Allgemeinstation'
+      description: 'Allgemeinstation',
     },
-    { 
-      name: 'Station 1B', 
+    {
+      name: 'Station 1B',
       category: 'station',
-      description: 'Allgemeinstation'
+      description: 'Allgemeinstation',
     },
-    { 
-      name: 'Station 2A', 
+    {
+      name: 'Station 2A',
       category: 'station',
-      description: 'Chirurgische Station'
+      description: 'Chirurgische Station',
     },
-    { 
-      name: 'Intensivstation', 
+    {
+      name: 'Intensivstation',
       category: 'station',
-      description: 'Intensivpflege'
+      description: 'Intensivpflege',
     },
-    { 
-      name: 'Kiosk Eingangsbereich', 
+    {
+      name: 'Kiosk Eingangsbereich',
       category: 'kiosk',
-      description: 'Kleiner Verkaufsbereich'
-    }
+      description: 'Kleiner Verkaufsbereich',
+    },
   ],
-  
+
   seniorenresidenz: [
-    { 
-      name: 'Speisesaal EG', 
+    {
+      name: 'Speisesaal EG',
       category: 'restaurant',
       description: 'Hauptspeisesaal im Erdgeschoss',
-      capacity: 60
+      capacity: 60,
     },
-    { 
-      name: 'Wohnbereich 1', 
+    {
+      name: 'Wohnbereich 1',
       category: 'station',
-      description: 'Betreutes Wohnen'
+      description: 'Betreutes Wohnen',
     },
-    { 
-      name: 'Wohnbereich 2', 
+    {
+      name: 'Wohnbereich 2',
       category: 'station',
-      description: 'Betreutes Wohnen'
+      description: 'Betreutes Wohnen',
     },
-    { 
-      name: 'Demenzbereich', 
+    {
+      name: 'Demenzbereich',
       category: 'station',
-      description: 'Spezialisierter Pflegebereich'
+      description: 'Spezialisierter Pflegebereich',
     },
-    { 
-      name: 'Cafeteria', 
+    {
+      name: 'Cafeteria',
       category: 'cafeteria',
-      description: 'Gemeinschaftsbereich mit Café'
-    }
+      description: 'Gemeinschaftsbereich mit Café',
+    },
   ],
-  
+
   restaurant: [
-    { 
-      name: 'Hauptrestaurant', 
+    {
+      name: 'Hauptrestaurant',
       category: 'restaurant',
       description: 'Hauptgastraum',
-      capacity: 80
+      capacity: 80,
     },
-    { 
-      name: 'Außenbereich', 
+    {
+      name: 'Außenbereich',
       category: 'restaurant',
       description: 'Terrasse/Biergarten',
-      capacity: 40
+      capacity: 40,
     },
-    { 
-      name: 'Bar', 
+    {
+      name: 'Bar',
       category: 'cafeteria',
-      description: 'Barbereich'
+      description: 'Barbereich',
     },
-    { 
-      name: 'Privatraum', 
+    {
+      name: 'Privatraum',
       category: 'restaurant',
       description: 'Separater Raum für Veranstaltungen',
-      capacity: 30
-    }
+      capacity: 30,
+    },
   ],
-  
+
   betriebsrestaurant: [
-    { 
-      name: 'Hauptkantine', 
+    {
+      name: 'Hauptkantine',
       category: 'restaurant',
       description: 'Hauptspeisebereich',
-      capacity: 200
+      capacity: 200,
     },
-    { 
-      name: 'Salatbar', 
+    {
+      name: 'Salatbar',
       category: 'restaurant',
-      description: 'Self-Service Salatbereich'
+      description: 'Self-Service Salatbereich',
     },
-    { 
-      name: 'Coffee Corner', 
+    {
+      name: 'Coffee Corner',
       category: 'cafeteria',
-      description: 'Kaffee und Snacks'
+      description: 'Kaffee und Snacks',
     },
-    { 
-      name: 'Executive Dining', 
+    {
+      name: 'Executive Dining',
       category: 'restaurant',
       description: 'Separater Bereich für Führungskräfte',
-      capacity: 20
-    }
-  ]
+      capacity: 20,
+    },
+  ],
 };
 
 /**

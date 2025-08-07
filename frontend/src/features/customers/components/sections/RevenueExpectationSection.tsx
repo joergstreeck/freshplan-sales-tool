@@ -1,6 +1,6 @@
 /**
  * RevenueExpectationSection Component
- * 
+ *
  * Erfasst die Umsatzerwartung mit automatischer Kalkulation
  * basierend auf Standorten und Pain Points.
  */
@@ -35,20 +35,20 @@ export const RevenueExpectationSection: React.FC<RevenueExpectationSectionProps>
   onChange,
   onBlur,
   totalLocations = 1,
-  activePainPoints = []
+  activePainPoints = [],
 }) => {
   // Kalkulationshilfe
   const calculateSuggestion = () => {
     const basePerLocation = 5500; // Durchschnitt pro Standort/Monat
     const annualBase = totalLocations * basePerLocation * 12;
-    
+
     // Pain Point Multiplikatoren
     let multiplier = 1;
     if (activePainPoints.includes('hasStaffingIssues')) multiplier += 0.3;
     if (activePainPoints.includes('hasQualityIssues')) multiplier += 0.1;
     if (activePainPoints.includes('hasFoodWasteIssues')) multiplier += 0.15;
     if (activePainPoints.includes('hasCostPressure')) multiplier += 0.2;
-    
+
     return Math.round(annualBase * multiplier);
   };
 
@@ -59,12 +59,7 @@ export const RevenueExpectationSection: React.FC<RevenueExpectationSectionProps>
     <Box sx={{ mb: 4 }}>
       <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
         💰 Geschäftspotenzial
-        <Chip 
-          label="Vertragsrelevant" 
-          size="small" 
-          color="error"
-          variant="outlined"
-        />
+        <Chip label="Vertragsrelevant" size="small" color="error" variant="outlined" />
       </Typography>
 
       <Alert severity="info" sx={{ mb: 2 }}>
@@ -82,33 +77,40 @@ export const RevenueExpectationSection: React.FC<RevenueExpectationSectionProps>
       />
 
       {/* Kalkulationshilfe */}
-      <Paper 
-        variant="outlined" 
-        sx={{ 
-          p: 2, 
-          mt: 2, 
+      <Paper
+        variant="outlined"
+        sx={{
+          p: 2,
+          mt: 2,
           bgcolor: 'background.default',
           borderColor: 'primary.main',
-          borderWidth: 2
+          borderWidth: 2,
         }}
       >
-        <Typography variant="subtitle2" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+        <Typography
+          variant="subtitle2"
+          gutterBottom
+          sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
+        >
           <TrendingUpIcon color="primary" />
           Automatische Kalkulation
         </Typography>
-        
+
         <Box sx={{ mt: 1 }}>
           <Typography variant="body2" color="text.secondary">
-            • {totalLocations} Standort{totalLocations > 1 ? 'e' : ''} × Ø 5.500€/Monat = {(totalLocations * 5500 * 12).toLocaleString('de-DE')}€
+            • {totalLocations} Standort{totalLocations > 1 ? 'e' : ''} × Ø 5.500€/Monat ={' '}
+            {(totalLocations * 5500 * 12).toLocaleString('de-DE')}€
           </Typography>
-          
+
           {activePainPoints.length > 0 && (
             <Typography variant="body2" color="text.secondary">
-              • Mit {activePainPoints.length} Pain Points: 
-              {' '}<strong>+{Math.round((calculateSuggestion() / (totalLocations * 5500 * 12) - 1) * 100)}%</strong>
+              • Mit {activePainPoints.length} Pain Points:{' '}
+              <strong>
+                +{Math.round((calculateSuggestion() / (totalLocations * 5500 * 12) - 1) * 100)}%
+              </strong>
             </Typography>
           )}
-          
+
           <Typography variant="body1" sx={{ mt: 1, fontWeight: 'bold', color: 'primary.main' }}>
             Empfohlenes Jahresvolumen: {suggestion.toLocaleString('de-DE')}€
           </Typography>

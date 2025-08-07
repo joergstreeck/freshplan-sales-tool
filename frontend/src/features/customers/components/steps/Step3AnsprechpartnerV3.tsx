@@ -1,19 +1,14 @@
 /**
  * Step 3: Ansprechpartner V3
- * 
+ *
  * Field-basierte Implementierung mit DynamicFieldRenderer für konsistentes Layout.
  * Nutzt die existierenden Field-Definitionen aus fieldCatalogExtensions.json.
- * 
+ *
  * @see /Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/wizard/STEP3_ANSPRECHPARTNER_V2.md
  */
 
 import React, { useCallback, useMemo } from 'react';
-import { 
-  Box, 
-  Typography,
-  Autocomplete,
-  TextField
-} from '@mui/material';
+import { Box, Typography, Autocomplete, TextField } from '@mui/material';
 import { useCustomerOnboardingStore } from '../../stores/customerOnboardingStore';
 import { useFieldDefinitions } from '../../hooks/useFieldDefinitions';
 import { DynamicFieldRenderer } from '../fields/DynamicFieldRenderer';
@@ -29,77 +24,73 @@ const POSITION_OPTIONS = [
   'Direktor',
   'Inhaber',
   'Vorstand',
-  
+
   // Hotel-spezifisch
   'Hoteldirektor',
   'F&B Manager',
   'Küchenchef',
   'Einkaufsleiter',
   'Betriebsleiter',
-  
+
   // Krankenhaus-spezifisch
   'Verwaltungsdirektor',
   'Küchenleitung',
   'Verpflegungsmanager',
-  
+
   // Betriebsrestaurant
   'Kantinenchef',
   'Gastronomiemanager',
-  
+
   // Allgemein
   'Einkäufer',
   'Prokurist',
-  'Assistent der Geschäftsführung'
+  'Assistent der Geschäftsführung',
 ];
 
 export const Step3AnsprechpartnerV3: React.FC = () => {
-  const {
-    customerData,
-    validationErrors,
-    setCustomerField,
-    validateField
-  } = useCustomerOnboardingStore();
-  
+  const { customerData, validationErrors, setCustomerField, validateField } =
+    useCustomerOnboardingStore();
+
   const { getFieldByKey, getFieldsByCategory } = useFieldDefinitions();
-  
+
   // Hole die Contact-Felder aus der Field Catalog Extension
   const contactFields = useMemo(() => {
     // Die wichtigsten Kontaktfelder für die erste Zeile
-    const nameFields = [
-      'salutation',
-      'title', 
-      'firstName',
-      'lastName'
-    ].map(key => getFieldByKey(key)).filter(Boolean) as FieldDefinition[];
-    
+    const nameFields = ['salutation', 'title', 'firstName', 'lastName']
+      .map(key => getFieldByKey(key))
+      .filter(Boolean) as FieldDefinition[];
+
     // Position und Entscheider-Ebene
-    const roleFields = [
-      'position',
-      'decisionLevel'
-    ].map(key => getFieldByKey(key)).filter(Boolean) as FieldDefinition[];
-    
+    const roleFields = ['position', 'decisionLevel']
+      .map(key => getFieldByKey(key))
+      .filter(Boolean) as FieldDefinition[];
+
     // Kontaktdaten
-    const contactInfoFields = [
-      'contactEmail',
-      'contactPhone',
-      'contactMobile'
-    ].map(key => getFieldByKey(key)).filter(Boolean) as FieldDefinition[];
-    
+    const contactInfoFields = ['contactEmail', 'contactPhone', 'contactMobile']
+      .map(key => getFieldByKey(key))
+      .filter(Boolean) as FieldDefinition[];
+
     return {
       nameFields,
       roleFields,
-      contactInfoFields
+      contactInfoFields,
     };
   }, [getFieldByKey]);
-  
-  const handleFieldChange = useCallback((fieldKey: string, value: any) => {
-    setCustomerField(fieldKey, value);
-  }, [setCustomerField]);
-  
-  const handleFieldBlur = useCallback((fieldKey: string) => {
-    validateField(fieldKey);
-  }, [validateField]);
-  
+
+  const handleFieldChange = useCallback(
+    (fieldKey: string, value: any) => {
+      setCustomerField(fieldKey, value);
+    },
+    [setCustomerField]
+  );
+
+  const handleFieldBlur = useCallback(
+    (fieldKey: string) => {
+      validateField(fieldKey);
+    },
+    [validateField]
+  );
+
   // Custom Component für Titel mit Autocomplete
   const TitleAutocomplete = useCallback(() => {
     return (
@@ -111,10 +102,10 @@ export const Step3AnsprechpartnerV3: React.FC = () => {
         freeSolo
         fullWidth
         size="small"
-        renderInput={(params) => (
-          <TextField 
-            {...params} 
-            label="Titel" 
+        renderInput={params => (
+          <TextField
+            {...params}
+            label="Titel"
             placeholder="Dr., Prof."
             error={!!validationErrors.title}
             helperText={validationErrors.title}
@@ -124,7 +115,7 @@ export const Step3AnsprechpartnerV3: React.FC = () => {
       />
     );
   }, [customerData.title, validationErrors.title, handleFieldChange, handleFieldBlur]);
-  
+
   // Custom Component für Position mit Autocomplete
   const PositionAutocomplete = useCallback(() => {
     return (
@@ -136,10 +127,10 @@ export const Step3AnsprechpartnerV3: React.FC = () => {
         freeSolo
         fullWidth
         size="small"
-        renderInput={(params) => (
-          <TextField 
-            {...params} 
-            label="Position/Funktion" 
+        renderInput={params => (
+          <TextField
+            {...params}
+            label="Position/Funktion"
             placeholder="z.B. Geschäftsführer, Einkaufsleiter"
             required
             error={!!validationErrors.position}
@@ -150,42 +141,42 @@ export const Step3AnsprechpartnerV3: React.FC = () => {
       />
     );
   }, [customerData.position, validationErrors.position, handleFieldChange, handleFieldBlur]);
-  
+
   // Erweitere die Field-Definitionen mit custom components
   const enhancedNameFields = useMemo(() => {
     return contactFields.nameFields.map(field => {
       if (field.key === 'title') {
         return {
           ...field,
-          customComponent: TitleAutocomplete
+          customComponent: TitleAutocomplete,
         };
       }
       return field;
     });
   }, [contactFields.nameFields, TitleAutocomplete]);
-  
+
   const enhancedRoleFields = useMemo(() => {
     return contactFields.roleFields.map(field => {
       if (field.key === 'position') {
         return {
           ...field,
-          customComponent: PositionAutocomplete
+          customComponent: PositionAutocomplete,
         };
       }
       return field;
     });
   }, [contactFields.roleFields, PositionAutocomplete]);
-  
+
   return (
     <Box>
       <Typography variant="h5" component="h2" gutterBottom>
         Schritt 3: Ansprechpartner
       </Typography>
-      
+
       <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
         Erfassen Sie den wichtigsten Ansprechpartner für eine erfolgreiche Zusammenarbeit.
       </Typography>
-      
+
       {/* Name Fields */}
       <Box sx={{ mb: 3 }}>
         <Typography variant="subtitle2" gutterBottom>
@@ -199,7 +190,7 @@ export const Step3AnsprechpartnerV3: React.FC = () => {
           onBlur={handleFieldBlur}
         />
       </Box>
-      
+
       {/* Role Fields */}
       <Box sx={{ mb: 3 }}>
         <Typography variant="subtitle2" gutterBottom>
@@ -213,7 +204,7 @@ export const Step3AnsprechpartnerV3: React.FC = () => {
           onBlur={handleFieldBlur}
         />
       </Box>
-      
+
       {/* Contact Info Fields */}
       <Box sx={{ mb: 3 }}>
         <Typography variant="subtitle2" gutterBottom>

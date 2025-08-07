@@ -233,9 +233,10 @@ public class CustomerMapper {
     customer.setLocationsRestEU(0);
     customer.setTotalLocationsEU(1); // Total should match sum
     customer.setPainPoints(new java.util.ArrayList<>()); // Empty list as default
-    customer.setPrimaryFinancing(de.freshplan.domain.customer.entity.FinancingType.PRIVATE); // Default financing
+    customer.setPrimaryFinancing(
+        de.freshplan.domain.customer.entity.FinancingType.PRIVATE); // Default financing
     customer.setExpansionPlanned(null); // Default: no expansion planned (nullable field)
-    
+
     // Calculate initial risk score
     customer.updateRiskScore();
 

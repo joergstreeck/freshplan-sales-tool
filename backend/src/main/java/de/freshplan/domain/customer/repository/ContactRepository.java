@@ -119,31 +119,37 @@ public class ContactRepository implements PanacheRepositoryBase<Contact, UUID> {
     // Calculate date range in Java to avoid database-specific syntax
     LocalDate today = LocalDate.now();
     LocalDate endDate = today.plusDays(daysAhead);
-    
+
     // Get all active contacts with birthdays
     List<Contact> contactsWithBirthdays = list("isActive = true AND birthday IS NOT NULL");
-    
+
     // Filter in Java for upcoming birthdays (handles year boundaries correctly)
     return contactsWithBirthdays.stream()
-        .filter(contact -> {
-          LocalDate birthday = contact.getBirthday();
-          if (birthday == null) return false;
-          
-          // Create birthday in current/next year
-          LocalDate birthdayThisYear = birthday.withYear(today.getYear());
-          LocalDate birthdayNextYear = birthday.withYear(today.getYear() + 1);
-          
-          // Check if birthday falls within the range
-          return (birthdayThisYear.isAfter(today.minusDays(1)) && birthdayThisYear.isBefore(endDate.plusDays(1)))
-              || (birthdayNextYear.isAfter(today.minusDays(1)) && birthdayNextYear.isBefore(endDate.plusDays(1)));
-        })
-        .sorted((c1, c2) -> {
-          // Sort by month and day
-          LocalDate b1 = c1.getBirthday();
-          LocalDate b2 = c2.getBirthday();
-          int monthCompare = Integer.compare(b1.getMonthValue(), b2.getMonthValue());
-          return monthCompare != 0 ? monthCompare : Integer.compare(b1.getDayOfMonth(), b2.getDayOfMonth());
-        })
+        .filter(
+            contact -> {
+              LocalDate birthday = contact.getBirthday();
+              if (birthday == null) return false;
+
+              // Create birthday in current/next year
+              LocalDate birthdayThisYear = birthday.withYear(today.getYear());
+              LocalDate birthdayNextYear = birthday.withYear(today.getYear() + 1);
+
+              // Check if birthday falls within the range
+              return (birthdayThisYear.isAfter(today.minusDays(1))
+                      && birthdayThisYear.isBefore(endDate.plusDays(1)))
+                  || (birthdayNextYear.isAfter(today.minusDays(1))
+                      && birthdayNextYear.isBefore(endDate.plusDays(1)));
+            })
+        .sorted(
+            (c1, c2) -> {
+              // Sort by month and day
+              LocalDate b1 = c1.getBirthday();
+              LocalDate b2 = c2.getBirthday();
+              int monthCompare = Integer.compare(b1.getMonthValue(), b2.getMonthValue());
+              return monthCompare != 0
+                  ? monthCompare
+                  : Integer.compare(b1.getDayOfMonth(), b2.getDayOfMonth());
+            })
         .collect(Collectors.toList());
   }
 

@@ -12,7 +12,7 @@ export function CustomerListSkeleton() {
           p: 3,
           borderBottom: 1,
           borderColor: 'divider',
-          bgcolor: 'background.paper'
+          bgcolor: 'background.paper',
         }}
       >
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
@@ -21,17 +21,19 @@ export function CustomerListSkeleton() {
         </Box>
         <Skeleton variant="rectangular" width={150} height={36} />
       </Box>
-      
+
       {/* Table Skeleton */}
       <Box sx={{ flex: 1, p: 3 }}>
         <Paper sx={{ p: 2 }}>
           {/* Table Header */}
-          <Box sx={{ display: 'flex', gap: 2, mb: 2, pb: 2, borderBottom: 1, borderColor: 'divider' }}>
+          <Box
+            sx={{ display: 'flex', gap: 2, mb: 2, pb: 2, borderBottom: 1, borderColor: 'divider' }}
+          >
             {[100, 200, 100, 150, 100, 150, 150, 100].map((width, index) => (
               <Skeleton key={index} variant="text" width={width} height={20} />
             ))}
           </Box>
-          
+
           {/* Table Rows */}
           {Array.from({ length: 10 }).map((_, index) => (
             <Box key={index} sx={{ display: 'flex', gap: 2, py: 1.5 }}>
@@ -41,7 +43,7 @@ export function CustomerListSkeleton() {
             </Box>
           ))}
         </Paper>
-        
+
         {/* Pagination Skeleton */}
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 2 }}>
           <Skeleton variant="text" width={200} height={20} />

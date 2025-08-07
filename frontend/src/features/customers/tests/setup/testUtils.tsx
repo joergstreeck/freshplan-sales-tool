@@ -1,16 +1,16 @@
 /**
  * @fileoverview Test Utilities für FC-005 Customer Management
  * @module tests/setup/testUtils
- * 
+ *
  * Wiederverwendbare Test-Utilities und Render-Funktionen
  */
 
-import React from 'react'
-import { render, RenderOptions } from '@testing-library/react'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { BrowserRouter } from 'react-router-dom'
-import { ToastContainer } from 'react-toastify'
-import type { Customer, FieldDefinition, Location } from '../../types'
+import React from 'react';
+import { render, RenderOptions } from '@testing-library/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { BrowserRouter } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
+import type { Customer, FieldDefinition, Location } from '../../types';
 
 // =============================================================================
 // Test Providers
@@ -19,35 +19,36 @@ import type { Customer, FieldDefinition, Location } from '../../types'
 /**
  * Create test query client with defaults
  */
-export const createTestQueryClient = () => new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: false,
-      cacheTime: 0,
-      staleTime: 0,
+export const createTestQueryClient = () =>
+  new QueryClient({
+    defaultOptions: {
+      queries: {
+        retry: false,
+        cacheTime: 0,
+        staleTime: 0,
+      },
+      mutations: {
+        retry: false,
+      },
     },
-    mutations: {
-      retry: false,
-    }
-  },
-  logger: {
-    log: () => {},
-    warn: () => {},
-    error: () => {},
-  }
-})
+    logger: {
+      log: () => {},
+      warn: () => {},
+      error: () => {},
+    },
+  });
 
 /**
  * All providers needed for testing
  */
 interface AllProvidersProps {
-  children: React.ReactNode
-  queryClient?: QueryClient
+  children: React.ReactNode;
+  queryClient?: QueryClient;
 }
 
-export const AllProviders: React.FC<AllProvidersProps> = ({ 
-  children, 
-  queryClient = createTestQueryClient() 
+export const AllProviders: React.FC<AllProvidersProps> = ({
+  children,
+  queryClient = createTestQueryClient(),
 }) => {
   return (
     <QueryClientProvider client={queryClient}>
@@ -56,8 +57,8 @@ export const AllProviders: React.FC<AllProvidersProps> = ({
         <ToastContainer />
       </BrowserRouter>
     </QueryClientProvider>
-  )
-}
+  );
+};
 
 /**
  * Custom render with all providers
@@ -66,20 +67,16 @@ export const renderWithProviders = (
   ui: React.ReactElement,
   options?: Omit<RenderOptions, 'wrapper'>
 ) => {
-  const queryClient = createTestQueryClient()
-  
+  const queryClient = createTestQueryClient();
+
   return {
-    ...render(ui, { 
-      wrapper: ({ children }) => (
-        <AllProviders queryClient={queryClient}>
-          {children}
-        </AllProviders>
-      ),
-      ...options 
+    ...render(ui, {
+      wrapper: ({ children }) => <AllProviders queryClient={queryClient}>{children}</AllProviders>,
+      ...options,
     }),
-    queryClient
-  }
-}
+    queryClient,
+  };
+};
 
 // =============================================================================
 // Test Data Factories
@@ -99,24 +96,24 @@ export const customerFactory = {
       phone: '+49 89 123456',
       street: 'Teststraße 123',
       postal_code: '80331',
-      city: 'München'
+      city: 'München',
     },
     locations: [],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
-    ...overrides
+    ...overrides,
   }),
-  
+
   buildList: (count: number, overrides: Partial<Customer> = {}): Customer[] => {
-    return Array.from({ length: count }, (_, i) => 
+    return Array.from({ length: count }, (_, i) =>
       customerFactory.build({
         ...overrides,
         name: `Test Customer ${i + 1}`,
-        customerNumber: `C${10000 + i}`
+        customerNumber: `C${10000 + i}`,
       })
-    )
-  }
-}
+    );
+  },
+};
 
 /**
  * Factory for creating test field definitions
@@ -132,9 +129,9 @@ export const fieldDefinitionFactory = {
     editable: true,
     category: 'basic',
     industry: 'all',
-    ...overrides
+    ...overrides,
   }),
-  
+
   buildSet: (): FieldDefinition[] => [
     fieldDefinitionFactory.build({
       id: 'customer_number',
@@ -142,14 +139,14 @@ export const fieldDefinitionFactory = {
       label: 'Kundennummer',
       type: 'text',
       required: true,
-      editable: false
+      editable: false,
     }),
     fieldDefinitionFactory.build({
       id: 'name',
       name: 'name',
       label: 'Firmenname',
       type: 'text',
-      required: true
+      required: true,
     }),
     fieldDefinitionFactory.build({
       id: 'email',
@@ -157,7 +154,7 @@ export const fieldDefinitionFactory = {
       label: 'E-Mail',
       type: 'email',
       required: true,
-      category: 'contact'
+      category: 'contact',
     }),
     fieldDefinitionFactory.build({
       id: 'industry',
@@ -167,11 +164,11 @@ export const fieldDefinitionFactory = {
       required: true,
       options: [
         { value: 'hotel', label: 'Hotel' },
-        { value: 'hospital', label: 'Krankenhaus' }
-      ]
-    })
-  ]
-}
+        { value: 'hospital', label: 'Krankenhaus' },
+      ],
+    }),
+  ],
+};
 
 /**
  * Factory for creating test locations
@@ -186,9 +183,9 @@ export const locationFactory = {
     city: 'München',
     fieldValues: {},
     detailedLocations: [],
-    ...overrides
+    ...overrides,
   }),
-  
+
   buildWithDetails: (overrides: Partial<Location> = {}): Location => ({
     ...locationFactory.build(overrides),
     detailedLocations: [
@@ -200,7 +197,7 @@ export const locationFactory = {
         capacity: 100,
         operationalHours: '11:00-23:00',
         specialRequirements: [],
-        internalContact: 'Max Mustermann'
+        internalContact: 'Max Mustermann',
       },
       {
         id: `detail-${Math.random().toString(36).substr(2, 9)}`,
@@ -210,11 +207,11 @@ export const locationFactory = {
         capacity: 50,
         operationalHours: '17:00-02:00',
         specialRequirements: ['Cocktailbar'],
-        internalContact: 'Maria Musterfrau'
-      }
-    ]
-  })
-}
+        internalContact: 'Maria Musterfrau',
+      },
+    ],
+  }),
+};
 
 // =============================================================================
 // Test Helpers
@@ -227,32 +224,28 @@ export const waitForElementToBeRemoved = async (
   getElement: () => HTMLElement | null,
   timeout = 3000
 ) => {
-  const start = Date.now()
-  
+  const start = Date.now();
+
   while (getElement() && Date.now() - start < timeout) {
-    await new Promise(resolve => setTimeout(resolve, 50))
+    await new Promise(resolve => setTimeout(resolve, 50));
   }
-  
+
   if (getElement()) {
-    throw new Error(`Element was not removed within ${timeout}ms`)
+    throw new Error(`Element was not removed within ${timeout}ms`);
   }
-}
+};
 
 /**
  * Fill form field helper
  */
-export const fillFormField = async (
-  element: HTMLElement,
-  fieldName: string,
-  value: string
-) => {
-  const field = element.querySelector(`[name="${fieldName}"]`) as HTMLInputElement
-  if (!field) throw new Error(`Field ${fieldName} not found`)
-  
-  const { fireEvent } = await import('@testing-library/react')
-  fireEvent.change(field, { target: { value } })
-  fireEvent.blur(field)
-}
+export const fillFormField = async (element: HTMLElement, fieldName: string, value: string) => {
+  const field = element.querySelector(`[name="${fieldName}"]`) as HTMLInputElement;
+  if (!field) throw new Error(`Field ${fieldName} not found`);
+
+  const { fireEvent } = await import('@testing-library/react');
+  fireEvent.change(field, { target: { value } });
+  fireEvent.blur(field);
+};
 
 /**
  * Select option helper
@@ -262,25 +255,25 @@ export const selectOption = async (
   fieldName: string,
   optionValue: string
 ) => {
-  const { fireEvent } = await import('@testing-library/react')
-  const select = element.querySelector(`[name="${fieldName}"]`) as HTMLSelectElement
-  if (!select) throw new Error(`Select ${fieldName} not found`)
-  
-  fireEvent.change(select, { target: { value: optionValue } })
-}
+  const { fireEvent } = await import('@testing-library/react');
+  const select = element.querySelector(`[name="${fieldName}"]`) as HTMLSelectElement;
+  if (!select) throw new Error(`Select ${fieldName} not found`);
+
+  fireEvent.change(select, { target: { value: optionValue } });
+};
 
 /**
  * Submit form helper
  */
 export const submitForm = async (form: HTMLFormElement) => {
-  const { fireEvent, waitFor } = await import('@testing-library/react')
-  
-  fireEvent.submit(form)
-  
+  const { fireEvent, waitFor } = await import('@testing-library/react');
+
+  fireEvent.submit(form);
+
   await waitFor(() => {
     // Wait for form submission to complete
-  })
-}
+  });
+};
 
 // =============================================================================
 // Mock Implementations
@@ -290,32 +283,34 @@ export const submitForm = async (form: HTMLFormElement) => {
  * Mock successful API response
  */
 export const mockApiSuccess = <T,>(data: T, delay = 100) => {
-  return new Promise<T>((resolve) => {
-    setTimeout(() => resolve(data), delay)
-  })
-}
+  return new Promise<T>(resolve => {
+    setTimeout(() => resolve(data), delay);
+  });
+};
 
 /**
  * Mock API error
  */
 export const mockApiError = (message = 'API Error', delay = 100) => {
   return new Promise((_, reject) => {
-    setTimeout(() => reject(new Error(message)), delay)
-  })
-}
+    setTimeout(() => reject(new Error(message)), delay);
+  });
+};
 
 /**
  * Mock auto-save behavior
  */
 export const mockAutoSave = () => {
-  let savedData: any = null
-  
+  let savedData: any = null;
+
   return {
     save: (data: any) => {
-      savedData = data
-      return mockApiSuccess({ success: true })
+      savedData = data;
+      return mockApiSuccess({ success: true });
     },
     getSavedData: () => savedData,
-    reset: () => { savedData = null }
-  }
-}
+    reset: () => {
+      savedData = null;
+    },
+  };
+};

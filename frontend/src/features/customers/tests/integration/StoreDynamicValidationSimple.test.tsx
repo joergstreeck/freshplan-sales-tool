@@ -1,9 +1,9 @@
 /**
  * FC-005 CR-002 Simple Store Dynamic Validation Test
- * 
+ *
  * Einfacher Test für die Dynamic Zod Schema Builder Integration im Store.
  * Fokus auf Kernfunktionalität ohne komplexe Dependencies.
- * 
+ *
  * @see /Users/joergstreeck/freshplan-sales-tool/frontend/src/features/customers/stores/customerOnboardingStore.ts
  * @see /Users/joergstreeck/freshplan-sales-tool/frontend/src/features/customers/validation/schemaBuilder.ts
  */
@@ -13,7 +13,6 @@ import { buildFieldSchema, validateField } from '../../validation/schemaBuilder'
 import { FieldDefinition } from '../../types/field.types';
 
 describe('🔄 CR-002 Dynamic Validation Integration (Simple)', () => {
-  
   describe('🎯 Schema Builder Core Functionality', () => {
     it('should build dynamic schema for text field', () => {
       const field: FieldDefinition = {
@@ -22,7 +21,7 @@ describe('🔄 CR-002 Dynamic Validation Integration (Simple)', () => {
         entityType: 'customer',
         fieldType: 'text',
         required: true,
-        maxLength: 100
+        maxLength: 100,
       };
 
       const schema = buildFieldSchema(field);
@@ -35,7 +34,7 @@ describe('🔄 CR-002 Dynamic Validation Integration (Simple)', () => {
         label: 'Firmenname',
         entityType: 'customer',
         fieldType: 'text',
-        required: true
+        required: true,
       };
 
       // Test empty value
@@ -55,7 +54,7 @@ describe('🔄 CR-002 Dynamic Validation Integration (Simple)', () => {
         label: 'E-Mail',
         entityType: 'customer',
         fieldType: 'email',
-        required: true
+        required: true,
       };
 
       // Test invalid email
@@ -76,8 +75,8 @@ describe('🔄 CR-002 Dynamic Validation Integration (Simple)', () => {
         required: true,
         options: [
           { value: 'hotel', label: 'Hotel' },
-          { value: 'restaurant', label: 'Restaurant' }
-        ]
+          { value: 'restaurant', label: 'Restaurant' },
+        ],
       };
 
       // Test invalid option
@@ -97,12 +96,12 @@ describe('🔄 CR-002 Dynamic Validation Integration (Simple)', () => {
         label: 'Future Field',
         entityType: 'customer',
         fieldType: 'unknownType' as any, // This is intentional - Flexibility!
-        required: false
+        required: false,
       };
 
       // Should not crash
       expect(() => buildFieldSchema(field)).not.toThrow();
-      
+
       // Validation should handle gracefully
       const result = await validateField(field, 'some value');
       expect(result).toBeDefined();
@@ -115,17 +114,11 @@ describe('🔄 CR-002 Dynamic Validation Integration (Simple)', () => {
         label: 'Flexible Field',
         entityType: 'customer',
         fieldType: 'text',
-        required: false
+        required: false,
       };
 
       // Test various value types (Enterprise Flexibility!)
-      const testValues = [
-        'string value',
-        123,
-        true,
-        { complex: 'object' },
-        ['array', 'value']
-      ];
+      const testValues = ['string value', 123, true, { complex: 'object' }, ['array', 'value']];
 
       for (const value of testValues) {
         // Should not crash with any value type
@@ -143,7 +136,7 @@ describe('🔄 CR-002 Dynamic Validation Integration (Simple)', () => {
         label: 'Test Field',
         entityType: 'customer',
         fieldType: 'text',
-        required: true
+        required: true,
       };
 
       const startTime = performance.now();

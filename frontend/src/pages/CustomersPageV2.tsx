@@ -27,31 +27,31 @@ export function CustomersPageV2({ openWizard = false }: CustomersPageV2Props) {
   const [activeTab, setActiveTab] = useState(0);
   const { user } = useAuth();
   const navigate = useNavigate();
-  
+
   // Listen for new customer event from sidebar
   useEffect(() => {
     const handleNewCustomer = () => setWizardOpen(true);
     window.addEventListener('freshplan:new-customer', handleNewCustomer);
     return () => window.removeEventListener('freshplan:new-customer', handleNewCustomer);
   }, []);
-  
+
   // Verkäuferschutz: Nur eigene Kunden für Sales-Rolle
   const filter = user?.role === 'sales' ? { assignedTo: user.id } : undefined;
-  
+
   // Use existing useCustomers hook with pagination
   const { data, isLoading, refetch } = useCustomers(0, 1000); // Get all for now
   const customers = data?.content || [];
 
   const handleCustomerCreated = async (customer: Customer) => {
     setWizardOpen(false);
-    
+
     // Task Preview: Automatisch erste Aufgabe generieren
     let taskId: string | undefined;
     if (isFeatureEnabled('taskPreview')) {
       try {
         const tasks = await taskEngine.processEvent({
           type: 'customer-created',
-          context: { customer, user }
+          context: { customer, user },
         });
         taskId = tasks[0]?.id;
       } catch (error) {
@@ -59,25 +59,29 @@ export function CustomersPageV2({ openWizard = false }: CustomersPageV2Props) {
         // Nicht blockierend - Customer wurde trotzdem angelegt
       }
     }
-    
+
     // Erfolgs-Feedback mit Action
     toast.custom(
       <ActionToast
         message={`Kunde "${customer.name || customer.companyName}" erfolgreich angelegt!`}
-        action={taskId ? {
-          label: "Aufgabe anzeigen",
-          onClick: () => navigate(`/tasks/${taskId}`)
-        } : undefined}
+        action={
+          taskId
+            ? {
+                label: 'Aufgabe anzeigen',
+                onClick: () => navigate(`/tasks/${taskId}`),
+              }
+            : undefined
+        }
       />,
       {
         duration: 5000,
-        position: 'top-right'
+        position: 'top-right',
       }
     );
-    
+
     // Liste aktualisieren
     await refetch();
-    
+
     // Zur Detail-Seite navigieren
     navigate(`/customers/${customer.id}?highlight=new`);
   };
@@ -94,11 +98,11 @@ export function CustomersPageV2({ openWizard = false }: CustomersPageV2Props) {
     <MainLayoutV2>
       <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
         {/* Header mit Button - immer sichtbar */}
-        <CustomerListHeader 
+        <CustomerListHeader
           totalCount={customers.length}
           onAddCustomer={activeTab === 0 ? () => setWizardOpen(true) : undefined}
         />
-        
+
         {/* Tab Navigation */}
         <Box sx={{ borderBottom: 1, borderColor: 'divider', px: 3 }}>
           <Tabs value={activeTab} onChange={(_, newValue) => setActiveTab(newValue)}>
@@ -107,47 +111,42 @@ export function CustomersPageV2({ openWizard = false }: CustomersPageV2Props) {
             <Tab label="Data Freshness" />
           </Tabs>
         </Box>
-        
+
         {/* Content Area */}
         <Box sx={{ flex: 1, overflow: 'auto', p: 3 }}>
-          {activeTab === 0 && (
-            customers.length === 0 ? (
-              <EmptyStateHero 
+          {activeTab === 0 &&
+            (customers.length === 0 ? (
+              <EmptyStateHero
                 title="Noch keine Kunden"
                 description="Legen Sie Ihren ersten Kunden an und starten Sie Ihre Erfolgsgeschichte!"
                 illustration="/illustrations/empty-customers.svg"
                 action={{
-                  label: "✨ Ersten Kunden anlegen",
+                  label: '✨ Ersten Kunden anlegen',
                   onClick: () => setWizardOpen(true),
-                  variant: "contained",
-                  size: "large"
+                  variant: 'contained',
+                  size: 'large',
                 }}
                 secondaryAction={{
-                  label: "Demo-Daten importieren",
-                  onClick: () => navigate('/settings/import')
+                  label: 'Demo-Daten importieren',
+                  onClick: () => navigate('/settings/import'),
                 }}
               />
             ) : (
               <>
                 {/* Filter Bar (später in Sprint 3) */}
-                <CustomerTable 
+                <CustomerTable
                   customers={customers}
-                  onRowClick={(customer) => navigate(`/customers/${customer.id}`)}
+                  onRowClick={customer => navigate(`/customers/${customer.id}`)}
                   highlightNew
                 />
               </>
-            )
-          )}
-          
-          {activeTab === 1 && (
-            <DataHygieneDashboard />
-          )}
-          
-          {activeTab === 2 && (
-            <DataFreshnessManager />
-          )}
+            ))}
+
+          {activeTab === 1 && <DataHygieneDashboard />}
+
+          {activeTab === 2 && <DataFreshnessManager />}
         </Box>
-        
+
         {/* Wizard Modal/Drawer */}
         <CustomerOnboardingWizardModal
           open={wizardOpen}

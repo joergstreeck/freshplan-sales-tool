@@ -1,19 +1,10 @@
 // Help System Types gemäß Backend-Implementierung und Sprint2/Step3 Architektur
 
-export type HelpType = 
-  | 'TOOLTIP'
-  | 'TOUR'
-  | 'MODAL'
-  | 'VIDEO'
-  | 'FAQ'
-  | 'ANNOUNCEMENT';
+export type HelpType = 'TOOLTIP' | 'TOUR' | 'MODAL' | 'VIDEO' | 'FAQ' | 'ANNOUNCEMENT';
 
-export type UserLevel = 
-  | 'BEGINNER' 
-  | 'INTERMEDIATE' 
-  | 'EXPERT';
+export type UserLevel = 'BEGINNER' | 'INTERMEDIATE' | 'EXPERT';
 
-export type StruggleType = 
+export type StruggleType =
   | 'REPEATED_FAILED_ATTEMPTS'
   | 'RAPID_NAVIGATION_CHANGES'
   | 'LONG_IDLE_AFTER_START'

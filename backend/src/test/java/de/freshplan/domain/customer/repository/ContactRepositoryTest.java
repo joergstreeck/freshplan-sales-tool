@@ -9,7 +9,6 @@ import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import java.util.List;
 import java.util.Optional;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -29,6 +28,7 @@ class ContactRepositoryTest {
     customer.setCustomerNumber("TEST-" + System.currentTimeMillis());
     customer.setCompanyName("Test Company GmbH");
     customer.setCreatedBy("test");
+    customer.setUpdatedBy("test");
     // Sprint 2 required fields
     customer.setLocationsGermany(1);
     customer.setLocationsAustria(0);
@@ -49,6 +49,7 @@ class ContactRepositoryTest {
     Customer testCustomer = createTestCustomer();
     Contact contact = createTestContact(testCustomer, "Max", "Mustermann", true);
     contactRepository.persist(contact);
+    contactRepository.flush();
 
     // When
     Optional<Contact> found = contactRepository.findByIdOptional(contact.getId());
@@ -69,6 +70,7 @@ class ContactRepositoryTest {
     Contact contact2 = createTestContact(testCustomer, "Maria", "Musterfrau", false);
     contactRepository.persist(contact1);
     contactRepository.persist(contact2);
+    contactRepository.flush();
 
     // When
     List<Contact> contacts = contactRepository.findByCustomerId(testCustomer.getId());
@@ -89,6 +91,7 @@ class ContactRepositoryTest {
     Contact secondary = createTestContact(testCustomer, "Maria", "Musterfrau", false);
     contactRepository.persist(primary);
     contactRepository.persist(secondary);
+    contactRepository.flush();
 
     // When
     Optional<Contact> found = contactRepository.findPrimaryByCustomerId(testCustomer.getId());
@@ -108,6 +111,7 @@ class ContactRepositoryTest {
     Contact contact2 = createTestContact(testCustomer, "Maria", "Musterfrau", false);
     contactRepository.persist(contact1);
     contactRepository.persist(contact2);
+    contactRepository.flush();
 
     // When
     contactRepository.setPrimaryContact(testCustomer.getId(), contact2.getId());
@@ -128,6 +132,7 @@ class ContactRepositoryTest {
     Customer testCustomer = createTestCustomer();
     Contact contact = createTestContact(testCustomer, "Max", "Mustermann", true);
     contactRepository.persist(contact);
+    contactRepository.flush();
 
     // When
     int deleted = contactRepository.softDelete(contact.getId());
@@ -155,6 +160,7 @@ class ContactRepositoryTest {
     contact2.setEmail("MAX@EXAMPLE.COM"); // Different case
     contactRepository.persist(contact1);
     contactRepository.persist(contact2);
+    contactRepository.flush();
 
     // When
     List<Contact> found = contactRepository.findByEmail("max@example.com");
@@ -176,6 +182,7 @@ class ContactRepositoryTest {
     contactRepository.persist(active1);
     contactRepository.persist(active2);
     contactRepository.persist(inactive);
+    contactRepository.flush();
 
     // When
     long count = contactRepository.countActiveByCustomerId(testCustomer.getId());
@@ -184,7 +191,8 @@ class ContactRepositoryTest {
     assertThat(count).isEqualTo(2);
   }
 
-  private Contact createTestContact(Customer customer, String firstName, String lastName, boolean isPrimary) {
+  private Contact createTestContact(
+      Customer customer, String firstName, String lastName, boolean isPrimary) {
     Contact contact = new Contact();
     contact.setCustomer(customer);
     contact.setFirstName(firstName);

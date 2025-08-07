@@ -1,9 +1,9 @@
 /**
  * ContactCard Component
- * 
+ *
  * Smart contact card with relationship intelligence features.
  * Part of Step 3 Multi-Contact Management.
- * 
+ *
  * @see /Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/step3/SMART_CONTACT_CARDS.md
  */
 
@@ -19,7 +19,7 @@ import {
   Tooltip,
   Stack,
   useTheme,
-  alpha
+  alpha,
 } from '@mui/material';
 import {
   Star as StarIcon,
@@ -30,7 +30,7 @@ import {
   Business as BusinessIcon,
   Cake as CakeIcon,
   LocationOn as LocationIcon,
-  TrendingUp as TrendingUpIcon
+  TrendingUp as TrendingUpIcon,
 } from '@mui/icons-material';
 
 import type { Contact } from '../../types/contact.types';
@@ -47,7 +47,7 @@ interface ContactCardProps {
 
 /**
  * Smart Contact Card Component
- * 
+ *
  * Displays contact information with visual indicators
  * for relationship warmth and importance.
  */
@@ -57,45 +57,43 @@ export const ContactCard: React.FC<ContactCardProps> = ({
   onDelete,
   onSetPrimary,
   isExpanded = false,
-  showRelationshipData = true
+  showRelationshipData = true,
 }) => {
   const theme = useTheme();
-  
+
   // Calculate days until birthday
   const getDaysUntilBirthday = (): number | null => {
     if (!contact.birthday) return null;
-    
+
     const today = new Date();
     const birthday = new Date(contact.birthday);
     birthday.setFullYear(today.getFullYear());
-    
+
     if (birthday < today) {
       birthday.setFullYear(today.getFullYear() + 1);
     }
-    
+
     const diffTime = birthday.getTime() - today.getTime();
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    
+
     return diffDays;
   };
-  
+
   const daysUntilBirthday = getDaysUntilBirthday();
   const birthdayIsSoon = daysUntilBirthday !== null && daysUntilBirthday <= 30;
-  
+
   return (
     <Card
       elevation={contact.isPrimary ? 3 : 1}
       sx={{
         position: 'relative',
         border: contact.isPrimary ? `2px solid ${theme.palette.primary.main}` : undefined,
-        backgroundColor: contact.isPrimary 
-          ? alpha(theme.palette.primary.main, 0.05)
-          : undefined,
+        backgroundColor: contact.isPrimary ? alpha(theme.palette.primary.main, 0.05) : undefined,
         transition: 'all 0.2s ease-in-out',
         '&:hover': {
           transform: 'translateY(-2px)',
-          boxShadow: theme.shadows[4]
-        }
+          boxShadow: theme.shadows[4],
+        },
       }}
     >
       {/* Primary Badge */}
@@ -112,7 +110,7 @@ export const ContactCard: React.FC<ContactCardProps> = ({
             borderBottomLeftRadius: theme.shape.borderRadius,
             display: 'flex',
             alignItems: 'center',
-            gap: 0.5
+            gap: 0.5,
           }}
         >
           <StarIcon fontSize="small" />
@@ -121,7 +119,7 @@ export const ContactCard: React.FC<ContactCardProps> = ({
           </Typography>
         </Box>
       )}
-      
+
       <CardContent>
         {/* Header */}
         <Box sx={{ mb: 2 }}>
@@ -142,7 +140,7 @@ export const ContactCard: React.FC<ContactCardProps> = ({
             />
           )}
         </Box>
-        
+
         {/* Contact Info */}
         <Stack spacing={1}>
           {contact.email && (
@@ -153,14 +151,14 @@ export const ContactCard: React.FC<ContactCardProps> = ({
               </Typography>
             </Box>
           )}
-          
+
           {contact.phone && (
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <PhoneIcon fontSize="small" color="action" />
               <Typography variant="body2">{contact.phone}</Typography>
             </Box>
           )}
-          
+
           {contact.mobile && (
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <PhoneIcon fontSize="small" color="action" />
@@ -168,20 +166,19 @@ export const ContactCard: React.FC<ContactCardProps> = ({
             </Box>
           )}
         </Stack>
-        
+
         {/* Location Responsibility */}
         {contact.responsibilityScope && (
           <Box sx={{ mt: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
             <LocationIcon fontSize="small" color="action" />
             <Typography variant="body2" color="text.secondary">
-              {contact.responsibilityScope === 'all' 
+              {contact.responsibilityScope === 'all'
                 ? 'Alle Standorte'
-                : `${contact.assignedLocationIds?.length || 0} ausgewählte Standorte`
-              }
+                : `${contact.assignedLocationIds?.length || 0} ausgewählte Standorte`}
             </Typography>
           </Box>
         )}
-        
+
         {/* Roles */}
         {contact.roles && contact.roles.length > 0 && (
           <Box sx={{ mt: 2 }}>
@@ -198,7 +195,7 @@ export const ContactCard: React.FC<ContactCardProps> = ({
             </Stack>
           </Box>
         )}
-        
+
         {/* Relationship Data (when expanded) */}
         {isExpanded && showRelationshipData && (
           <Box sx={{ mt: 2, pt: 2, borderTop: 1, borderColor: 'divider' }}>
@@ -211,7 +208,7 @@ export const ContactCard: React.FC<ContactCardProps> = ({
                 sx={{ mb: 1 }}
               />
             )}
-            
+
             {contact.hobbies && contact.hobbies.length > 0 && (
               <Box sx={{ mb: 1 }}>
                 <Typography variant="caption" color="text.secondary">
@@ -230,7 +227,7 @@ export const ContactCard: React.FC<ContactCardProps> = ({
                 </Stack>
               </Box>
             )}
-            
+
             {contact.personalNotes && (
               <Box>
                 <Typography variant="caption" color="text.secondary">
@@ -244,7 +241,7 @@ export const ContactCard: React.FC<ContactCardProps> = ({
           </Box>
         )}
       </CardContent>
-      
+
       <CardActions sx={{ justifyContent: 'space-between', px: 2, pb: 2 }}>
         <Box>
           {!contact.isPrimary && (
@@ -255,7 +252,7 @@ export const ContactCard: React.FC<ContactCardProps> = ({
             </Tooltip>
           )}
         </Box>
-        
+
         <Box>
           <Tooltip title="Bearbeiten">
             <IconButton size="small" onClick={() => onEdit(contact)}>
@@ -263,8 +260,8 @@ export const ContactCard: React.FC<ContactCardProps> = ({
             </IconButton>
           </Tooltip>
           <Tooltip title="Löschen">
-            <IconButton 
-              size="small" 
+            <IconButton
+              size="small"
               onClick={() => onDelete(contact.id)}
               disabled={contact.isPrimary}
             >

@@ -29,14 +29,14 @@ import org.slf4j.LoggerFactory;
 public class DataHygieneService {
 
   private static final Logger LOG = LoggerFactory.getLogger(DataHygieneService.class);
-  
+
   // Time thresholds for data freshness (in months/years)
   private static final int MONTHS_STALE_THRESHOLD = 6;
   private static final int YEARS_CRITICAL_THRESHOLD = 1;
   private static final int DAYS_FRESH = 30;
   private static final int DAYS_AGING = 90;
   private static final int DAYS_STALE = 180;
-  
+
   // Data quality score penalties
   private static final int PENALTY_MISSING_EMAIL = 20;
   private static final int PENALTY_MISSING_PHONE = 10;
@@ -45,11 +45,11 @@ public class DataHygieneService {
   private static final int PENALTY_NO_INTERACTIONS = 15;
   private static final int PENALTY_FEW_INTERACTIONS = 5;
   private static final int PENALTY_LOW_WARMTH_CONFIDENCE = 10;
-  
+
   // Thresholds
   private static final int MINIMUM_INTERACTIONS = 3;
   private static final int MINIMUM_WARMTH_CONFIDENCE = 50;
-  
+
   // Base score
   private static final int BASE_QUALITY_SCORE = 100;
 
@@ -68,7 +68,10 @@ public class DataHygieneService {
       LocalDateTime sixMonthsAgo = LocalDateTime.now().minusMonths(MONTHS_STALE_THRESHOLD);
       List<Contact> staleContacts = contactRepository.find("updatedAt < ?1", sixMonthsAgo).list();
 
-      LOG.info("Found {} stale contacts (> {} months old)", staleContacts.size(), MONTHS_STALE_THRESHOLD);
+      LOG.info(
+          "Found {} stale contacts (> {} months old)",
+          staleContacts.size(),
+          MONTHS_STALE_THRESHOLD);
 
       if (!staleContacts.isEmpty()) {
         processStaleContacts(staleContacts);
@@ -78,7 +81,10 @@ public class DataHygieneService {
       LocalDateTime oneYearAgo = LocalDateTime.now().minusYears(YEARS_CRITICAL_THRESHOLD);
       List<Contact> criticalContacts = contactRepository.find("updatedAt < ?1", oneYearAgo).list();
 
-      LOG.info("Found {} critical contacts (> {} year old)", criticalContacts.size(), YEARS_CRITICAL_THRESHOLD);
+      LOG.info(
+          "Found {} critical contacts (> {} year old)",
+          criticalContacts.size(),
+          YEARS_CRITICAL_THRESHOLD);
 
       if (!criticalContacts.isEmpty()) {
         processCriticalContacts(criticalContacts);

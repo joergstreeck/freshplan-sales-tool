@@ -1,9 +1,9 @@
 /**
  * FC-005 Location Categories Configuration
- * 
+ *
  * Zentrale Konfiguration für Location-Kategorien, Icons und Labels.
  * Externalisiert aus DetailedLocationsStep.tsx für bessere Wartbarkeit.
- * 
+ *
  * @see /Users/joergstreeck/freshplan-sales-tool/frontend/src/features/customers/components/steps/DetailedLocationsStep.tsx
  * @see /Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/03-FRONTEND/03-location-management.md
  */
@@ -14,13 +14,13 @@ import {
   LocalHospital as MedicalIcon,
   Kitchen as KitchenIcon,
   Business as BusinessIcon,
-  Room as RoomIcon
+  Room as RoomIcon,
 } from '@mui/icons-material';
 import { DetailedLocationCategory } from '../types/location.types';
 
 /**
  * Icon mapping for location categories
- * 
+ *
  * @remarks
  * - Icons werden als Funktionen definiert die React-Elemente zurückgeben
  * - Verwendet Material-UI Icons für konsistentes Design
@@ -33,12 +33,12 @@ export const categoryIcons: Record<DetailedLocationCategory, () => React.ReactEl
   station: () => React.createElement(MedicalIcon),
   kitchen: () => React.createElement(KitchenIcon),
   storage: () => React.createElement(BusinessIcon),
-  other: () => React.createElement(RoomIcon)
+  other: () => React.createElement(RoomIcon),
 };
 
 /**
  * Category labels in German
- * 
+ *
  * @remarks
  * - Deutsche Labels für die Benutzeroberfläche
  * - Konsistente Benennung über die gesamte Anwendung
@@ -51,7 +51,7 @@ export const categoryLabels: Record<DetailedLocationCategory, string> = {
   station: 'Station/Abteilung',
   kitchen: 'Küche',
   storage: 'Lager',
-  other: 'Sonstiges'
+  other: 'Sonstiges',
 };
 
 /**
@@ -79,5 +79,5 @@ export const availableCategories: Array<{
 }> = Object.entries(categoryLabels).map(([value, label]) => ({
   value: value as DetailedLocationCategory,
   label,
-  icon: categoryIcons[value as DetailedLocationCategory]()
+  icon: categoryIcons[value as DetailedLocationCategory](),
 }));

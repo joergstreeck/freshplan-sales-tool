@@ -1,6 +1,6 @@
 /**
  * AdditionalBusinessSection Component
- * 
+ *
  * Erfasst Zusatzgeschäft wie Vending/Automaten (bonPeti)
  * auf globaler Unternehmensebene.
  */
@@ -29,7 +29,7 @@ export const AdditionalBusinessSection: React.FC<AdditionalBusinessSectionProps>
   values,
   errors,
   onChange,
-  onBlur
+  onBlur,
 }) => {
   const hasVendingInterest = values.vendingInterest === 'ja';
   const vendingLocations = values.vendingLocations || 0;
@@ -38,12 +38,7 @@ export const AdditionalBusinessSection: React.FC<AdditionalBusinessSectionProps>
     <Box sx={{ mb: 4 }}>
       <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
         🤖 Zusatzgeschäft
-        <Chip 
-          label="bonPeti" 
-          size="small" 
-          color="secondary"
-          variant="outlined"
-        />
+        <Chip label="bonPeti" size="small" color="secondary" variant="outlined" />
       </Typography>
 
       <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
@@ -60,15 +55,15 @@ export const AdditionalBusinessSection: React.FC<AdditionalBusinessSectionProps>
       />
 
       {hasVendingInterest && vendingLocations > 0 && (
-        <Paper 
+        <Paper
           elevation={0}
-          sx={{ 
-            p: 2, 
-            mt: 2, 
+          sx={{
+            p: 2,
+            mt: 2,
             bgcolor: 'secondary.light',
             display: 'flex',
             alignItems: 'center',
-            gap: 2
+            gap: 2,
           }}
         >
           <LocalDrinkIcon sx={{ fontSize: 40, color: 'secondary.main' }} />
@@ -77,8 +72,9 @@ export const AdditionalBusinessSection: React.FC<AdditionalBusinessSectionProps>
               Großes Potenzial erkannt!
             </Typography>
             <Typography variant="body2">
-              {vendingLocations} Automaten-Standorte × 12 Monate = 
-              {' '}<strong>{(vendingLocations * 1500).toLocaleString('de-DE')}€</strong> zusätzliches Jahrespotenzial
+              {vendingLocations} Automaten-Standorte × 12 Monate ={' '}
+              <strong>{(vendingLocations * 1500).toLocaleString('de-DE')}€</strong> zusätzliches
+              Jahrespotenzial
             </Typography>
             <Typography variant="caption" color="text.secondary">
               (Durchschnitt: 1.500€ pro Automat/Monat)

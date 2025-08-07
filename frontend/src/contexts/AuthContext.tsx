@@ -40,20 +40,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         name: 'Dev User',
         email: 'dev@freshplan.de',
         username: 'devuser',
-        roles: ['admin', 'manager', 'sales']
+        roles: ['admin', 'manager', 'sales'],
       },
       isAuthenticated: true,
       isLoading: false,
-      login: async () => { console.log('Mock login'); },
-      logout: () => { console.log('Mock logout'); },
+      login: async () => {
+        console.log('Mock login');
+      },
+      logout: () => {
+        console.log('Mock logout');
+      },
       token: 'mock-dev-token',
       hasRole: (role: string) => ['admin', 'manager', 'sales'].includes(role),
-      hasAnyRole: (roles: string[]) => roles.some(role => ['admin', 'manager', 'sales'].includes(role)),
+      hasAnyRole: (roles: string[]) =>
+        roles.some(role => ['admin', 'manager', 'sales'].includes(role)),
       getValidToken: async () => 'mock-dev-token',
       refreshToken: async () => true,
-      authInfo: () => ({ mockAuth: true })
+      authInfo: () => ({ mockAuth: true }),
     };
-    
+
     return <AuthContext.Provider value={mockContext}>{children}</AuthContext.Provider>;
   }
 
@@ -88,7 +93,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     hasAnyRole: (roles: string[]) => roles.some(role => keycloak.hasRole(role)),
     getValidToken: async () => {
       if (!keycloak.isAuthenticated) return null;
-      
+
       try {
         // Import authUtils here to avoid circular dependency
         const { authUtils } = await import('../lib/keycloak');
@@ -100,7 +105,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     },
     refreshToken: async () => {
       if (!keycloak.isAuthenticated) return false;
-      
+
       try {
         const { authUtils } = await import('../lib/keycloak');
         return await authUtils.updateToken(30);

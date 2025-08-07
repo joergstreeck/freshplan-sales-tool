@@ -38,15 +38,12 @@ const ACTIVE_STAGES = [
 ];
 
 // Abgeschlossene Stages (über Filter einblendbar)
-const CLOSED_STAGES = [
-  OpportunityStage.CLOSED_WON,
-  OpportunityStage.CLOSED_LOST,
-];
+const CLOSED_STAGES = [OpportunityStage.CLOSED_WON, OpportunityStage.CLOSED_LOST];
 
 // Type imported from '../types'
 
 // Convert STAGE_CONFIGS array to Record for easier lookup
-const STAGE_CONFIGS_RECORD: Record<string, typeof STAGE_CONFIGS[0]> = {};
+const STAGE_CONFIGS_RECORD: Record<string, (typeof STAGE_CONFIGS)[0]> = {};
 STAGE_CONFIGS.forEach(config => {
   STAGE_CONFIGS_RECORD[config.stage] = config;
 });
@@ -68,14 +65,17 @@ interface OpportunityCardProps {
 const OpportunityCard: React.FC<OpportunityCardProps> = React.memo(({ opportunity, index }) => {
   const theme = useTheme();
 
-  const getProbabilityColor = useCallback((probability?: number) => {
-    if (!probability) return theme.palette.grey[400];
-    if (probability >= 80) return '#66BB6A';
-    if (probability >= 60) return '#94C456';
-    if (probability >= 40) return '#FFA726';
-    if (probability >= 20) return '#FF7043';
-    return '#EF5350';
-  }, [theme]);
+  const getProbabilityColor = useCallback(
+    (probability?: number) => {
+      if (!probability) return theme.palette.grey[400];
+      if (probability >= 80) return '#66BB6A';
+      if (probability >= 60) return '#94C456';
+      if (probability >= 40) return '#FFA726';
+      if (probability >= 20) return '#FF7043';
+      return '#EF5350';
+    },
+    [theme]
+  );
 
   const formatDate = useCallback((dateString?: string) => {
     if (!dateString) return '-';
@@ -124,111 +124,105 @@ const OpportunityCard: React.FC<OpportunityCardProps> = React.memo(({ opportunit
               },
             }}
           >
-          <CardContent sx={{ pb: '16px !important' }}>
-            {/* Opportunity Name */}
-            <Typography
-              variant="h6"
-              sx={{
-                color: '#004F7B',
-                fontFamily: 'Antonio, sans-serif',
-                fontWeight: 600,
-                fontSize: '1rem',
-                mb: 1,
-                lineHeight: 1.3,
-              }}
-            >
-              {opportunity.name}
-            </Typography>
+            <CardContent sx={{ pb: '16px !important' }}>
+              {/* Opportunity Name */}
+              <Typography
+                variant="h6"
+                sx={{
+                  color: '#004F7B',
+                  fontFamily: 'Antonio, sans-serif',
+                  fontWeight: 600,
+                  fontSize: '1rem',
+                  mb: 1,
+                  lineHeight: 1.3,
+                }}
+              >
+                {opportunity.name}
+              </Typography>
 
-            {/* Customer */}
-            {opportunity.customerName && (
+              {/* Customer */}
+              {opportunity.customerName && (
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                  <PersonIcon fontSize="small" sx={{ color: theme.palette.grey[600], mr: 0.5 }} />
+                  <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
+                    {opportunity.customerName}
+                  </Typography>
+                </Box>
+              )}
+
+              {/* Value */}
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                <PersonIcon 
-                  fontSize="small" 
-                  sx={{ color: theme.palette.grey[600], mr: 0.5 }} 
-                />
-                <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                  {opportunity.customerName}
+                <EuroIcon fontSize="small" sx={{ color: '#94C456', mr: 0.5 }} />
+                <Typography
+                  variant="body2"
+                  sx={{ color: theme.palette.text.primary, fontWeight: 600 }}
+                >
+                  {formatValue(opportunity.value)}
                 </Typography>
               </Box>
-            )}
 
-            {/* Value */}
-            <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-              <EuroIcon 
-                fontSize="small" 
-                sx={{ color: '#94C456', mr: 0.5 }} 
-              />
-              <Typography
-                variant="body2"
-                sx={{ color: theme.palette.text.primary, fontWeight: 600 }}
-              >
-                {formatValue(opportunity.value)}
-              </Typography>
-            </Box>
+              {/* Probability Progress */}
+              {opportunity.probability !== undefined && (
+                <Box sx={{ mb: 1.5 }}>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
+                    <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
+                      Wahrscheinlichkeit
+                    </Typography>
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        color: getProbabilityColor(opportunity.probability),
+                        fontWeight: 600,
+                      }}
+                    >
+                      {opportunity.probability}%
+                    </Typography>
+                  </Box>
+                  <LinearProgress
+                    variant="determinate"
+                    value={opportunity.probability}
+                    sx={{
+                      height: 6,
+                      borderRadius: 3,
+                      bgcolor: 'rgba(0, 0, 0, 0.08)',
+                      '& .MuiLinearProgress-bar': {
+                        bgcolor: getProbabilityColor(opportunity.probability),
+                        borderRadius: 3,
+                      },
+                    }}
+                  />
+                </Box>
+              )}
 
-            {/* Probability Progress */}
-            {opportunity.probability !== undefined && (
-              <Box sx={{ mb: 1.5 }}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
-                  <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                    Wahrscheinlichkeit
-                  </Typography>
-                  <Typography
-                    variant="caption"
-                    sx={{ 
-                      color: getProbabilityColor(opportunity.probability),
+              {/* Footer */}
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                {opportunity.expectedCloseDate && (
+                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    <CalendarTodayIcon
+                      fontSize="small"
+                      sx={{ color: theme.palette.grey[500], mr: 0.5 }}
+                    />
+                    <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
+                      {formatDate(opportunity.expectedCloseDate)}
+                    </Typography>
+                  </Box>
+                )}
+
+                {opportunity.assignedToName && (
+                  <Avatar
+                    sx={{
+                      width: 24,
+                      height: 24,
+                      bgcolor: '#94C456',
+                      fontSize: '0.75rem',
                       fontWeight: 600,
                     }}
                   >
-                    {opportunity.probability}%
-                  </Typography>
-                </Box>
-                <LinearProgress
-                  variant="determinate"
-                  value={opportunity.probability}
-                  sx={{
-                    height: 6,
-                    borderRadius: 3,
-                    bgcolor: 'rgba(0, 0, 0, 0.08)',
-                    '& .MuiLinearProgress-bar': {
-                      bgcolor: getProbabilityColor(opportunity.probability),
-                      borderRadius: 3,
-                    },
-                  }}
-                />
+                    {opportunity.assignedToName.charAt(0).toUpperCase()}
+                  </Avatar>
+                )}
               </Box>
-            )}
-
-            {/* Footer */}
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              {opportunity.expectedCloseDate && (
-                <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                  <CalendarTodayIcon 
-                    fontSize="small" 
-                    sx={{ color: theme.palette.grey[500], mr: 0.5 }} 
-                  />
-                  <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                    {formatDate(opportunity.expectedCloseDate)}
-                  </Typography>
-                </Box>
-              )}
-
-              {opportunity.assignedToName && (
-                <Avatar
-                  sx={{
-                    width: 24,
-                    height: 24,
-                    bgcolor: '#94C456',
-                    fontSize: '0.75rem',
-                    fontWeight: 600,
-                  }}
-                >
-                  {opportunity.assignedToName.charAt(0).toUpperCase()}
-                </Avatar>
-              )}
-            </Box>
-          </CardContent>
+            </CardContent>
           </Card>
         </div>
       )}
@@ -282,7 +276,7 @@ const KanbanColumn: React.FC<KanbanColumnProps> = React.memo(({ stage, opportuni
           >
             {config.label}
           </Typography>
-          
+
           <Badge
             badgeContent={opportunities.length}
             color="primary"
@@ -291,14 +285,15 @@ const KanbanColumn: React.FC<KanbanColumnProps> = React.memo(({ stage, opportuni
                 bgcolor: config.color,
                 color: 'white',
                 fontWeight: 600,
-              }
+              },
             }}
           />
         </Box>
-        
+
         {totalValue > 0 && (
           <Typography variant="body2" sx={{ color: theme.palette.text.secondary, fontWeight: 500 }}>
-            Gesamt: {new Intl.NumberFormat('de-DE', {
+            Gesamt:{' '}
+            {new Intl.NumberFormat('de-DE', {
               style: 'currency',
               currency: 'EUR',
               minimumFractionDigits: 0,
@@ -322,11 +317,7 @@ const KanbanColumn: React.FC<KanbanColumnProps> = React.memo(({ stage, opportuni
             }}
           >
             {opportunities.map((opportunity, index) => (
-              <OpportunityCard
-                key={opportunity.id}
-                opportunity={opportunity}
-                index={index}
-              />
+              <OpportunityCard key={opportunity.id} opportunity={opportunity} index={index} />
             ))}
             {provided.placeholder}
           </Box>
@@ -350,11 +341,11 @@ const componentLogger = logger.child('KanbanBoard');
 export const KanbanBoard: React.FC = React.memo(() => {
   const theme = useTheme();
   const errorHandler = useErrorHandler('KanbanBoard');
-  
+
   // API Integration
   const { data: opportunities = [], isLoading, error, refetch } = useOpportunities();
   const changeStagemutation = useChangeOpportunityStage();
-  
+
   const [showClosed, setShowClosed] = useState<boolean>(false);
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const [dragKey, setDragKey] = useState<number>(0); // Force re-render nach Drag
@@ -374,19 +365,13 @@ export const KanbanBoard: React.FC = React.memo(() => {
 
   // Pipeline-Statistiken berechnen (memoized)
   const pipelineStats = useMemo(() => {
-    const activeOpps = opportunities.filter(opp => 
-      ACTIVE_STAGES.includes(opp.stage)
-    );
-    const wonOpps = opportunities.filter(opp => 
-      opp.stage === OpportunityStage.CLOSED_WON
-    );
-    const lostOpps = opportunities.filter(opp => 
-      opp.stage === OpportunityStage.CLOSED_LOST
-    );
-    
+    const activeOpps = opportunities.filter(opp => ACTIVE_STAGES.includes(opp.stage));
+    const wonOpps = opportunities.filter(opp => opp.stage === OpportunityStage.CLOSED_WON);
+    const lostOpps = opportunities.filter(opp => opp.stage === OpportunityStage.CLOSED_LOST);
+
     const totalClosed = wonOpps.length + lostOpps.length;
     const conversionRate = totalClosed > 0 ? wonOpps.length / totalClosed : 0;
-    
+
     return {
       totalActive: activeOpps.length,
       totalWon: wonOpps.length,
@@ -400,10 +385,13 @@ export const KanbanBoard: React.FC = React.memo(() => {
 
   // Opportunities nach Stage gruppieren (memoized)
   const opportunitiesByStage = useMemo(() => {
-    return Object.values(OpportunityStage).reduce((acc, stage) => {
-      acc[stage] = opportunities.filter(opp => opp.stage === stage);
-      return acc;
-    }, {} as Record<OpportunityStage, Opportunity[]>);
+    return Object.values(OpportunityStage).reduce(
+      (acc, stage) => {
+        acc[stage] = opportunities.filter(opp => opp.stage === stage);
+        return acc;
+      },
+      {} as Record<OpportunityStage, Opportunity[]>
+    );
   }, [opportunities]);
 
   const handleDragStart = useCallback(() => {
@@ -420,77 +408,90 @@ export const KanbanBoard: React.FC = React.memo(() => {
     }
   }, [errorHandler]);
 
-  const handleDragEnd = useCallback((result: DropResult) => {
-    const timer = componentLogger.time('handleDragEnd');
-    
-    try {
-      componentLogger.debug('Drag operation ended', { result });
-      setIsDragging(false);
-      const { destination, source, draggableId } = result;
+  const handleDragEnd = useCallback(
+    (result: DropResult) => {
+      const timer = componentLogger.time('handleDragEnd');
 
-      // Kein gültiges Drop-Target
-      if (!destination) {
-        componentLogger.debug('No valid drop target');
-        return;
-      }
+      try {
+        componentLogger.debug('Drag operation ended', { result });
+        setIsDragging(false);
+        const { destination, source, draggableId } = result;
 
-      // Gleiche Position
-      if (destination.droppableId === source.droppableId && destination.index === source.index) {
-        componentLogger.debug('Same position - no change needed');
-        return;
-      }
-
-      const sourceStage = source.droppableId as OpportunityStage;
-      const destStage = destination.droppableId as OpportunityStage;
-      
-      // Verhindere Drag von abgeschlossenen zu aktiven Stages
-      if (CLOSED_STAGES.includes(sourceStage) && ACTIVE_STAGES.includes(destStage)) {
-        componentLogger.warn('Cannot reactivate closed opportunities', { sourceStage, destStage });
-        return;
-      }
-      
-      // API Call für Stage-Änderung
-      changeStagemutation.mutate({
-        id: draggableId,
-        request: {
-          newStage: destStage,
-          reason: `Stage changed via drag & drop from ${sourceStage} to ${destStage}`,
-          stageChangedAt: new Date().toISOString()
+        // Kein gültiges Drop-Target
+        if (!destination) {
+          componentLogger.debug('No valid drop target');
+          return;
         }
-      }, {
-        onSuccess: (updatedOpportunity) => {
-          componentLogger.info('Opportunity stage updated successfully', {
-            opportunityId: draggableId,
-            fromStage: sourceStage,
-            toStage: destStage,
-            opportunityName: updatedOpportunity.name
-          });
-          
-          // Force re-render des DragDropContext
-          setDragKey(prev => prev + 1);
-        },
-        onError: (error) => {
-          componentLogger.error('Failed to update opportunity stage', {
-            opportunityId: draggableId,
-            fromStage: sourceStage,
-            toStage: destStage,
-            error
-          });
-          
-          // Zeige User-friendly Error Message
-          errorHandler(new Error(`Konnte Opportunity-Stage nicht ändern: ${error.message || 'Unbekannter Fehler'}`));
-          
-          // Revert optimistic update durch refetch
-          refetch();
+
+        // Gleiche Position
+        if (destination.droppableId === source.droppableId && destination.index === source.index) {
+          componentLogger.debug('Same position - no change needed');
+          return;
         }
-      });
-    } catch (error) {
-      componentLogger.error('Error in handleDragEnd', { error });
-      errorHandler(error as Error);
-    } finally {
-      timer();
-    }
-  }, [changeStagemutation, refetch, errorHandler]);
+
+        const sourceStage = source.droppableId as OpportunityStage;
+        const destStage = destination.droppableId as OpportunityStage;
+
+        // Verhindere Drag von abgeschlossenen zu aktiven Stages
+        if (CLOSED_STAGES.includes(sourceStage) && ACTIVE_STAGES.includes(destStage)) {
+          componentLogger.warn('Cannot reactivate closed opportunities', {
+            sourceStage,
+            destStage,
+          });
+          return;
+        }
+
+        // API Call für Stage-Änderung
+        changeStagemutation.mutate(
+          {
+            id: draggableId,
+            request: {
+              newStage: destStage,
+              reason: `Stage changed via drag & drop from ${sourceStage} to ${destStage}`,
+              stageChangedAt: new Date().toISOString(),
+            },
+          },
+          {
+            onSuccess: updatedOpportunity => {
+              componentLogger.info('Opportunity stage updated successfully', {
+                opportunityId: draggableId,
+                fromStage: sourceStage,
+                toStage: destStage,
+                opportunityName: updatedOpportunity.name,
+              });
+
+              // Force re-render des DragDropContext
+              setDragKey(prev => prev + 1);
+            },
+            onError: error => {
+              componentLogger.error('Failed to update opportunity stage', {
+                opportunityId: draggableId,
+                fromStage: sourceStage,
+                toStage: destStage,
+                error,
+              });
+
+              // Zeige User-friendly Error Message
+              errorHandler(
+                new Error(
+                  `Konnte Opportunity-Stage nicht ändern: ${error.message || 'Unbekannter Fehler'}`
+                )
+              );
+
+              // Revert optimistic update durch refetch
+              refetch();
+            },
+          }
+        );
+      } catch (error) {
+        componentLogger.error('Error in handleDragEnd', { error });
+        errorHandler(error as Error);
+      } finally {
+        timer();
+      }
+    },
+    [changeStagemutation, refetch, errorHandler]
+  );
 
   // Loading State
   if (isLoading) {
@@ -504,7 +505,7 @@ export const KanbanBoard: React.FC = React.memo(() => {
           </Box>
         </Paper>
         <Box sx={{ display: 'flex', gap: 2 }}>
-          {[1, 2, 3, 4].map((index) => (
+          {[1, 2, 3, 4].map(index => (
             <Paper key={index} sx={{ flex: 1, p: 2 }}>
               <Skeleton variant="text" width="60%" height={30} />
               <Skeleton variant="rectangular" width="100%" height={120} sx={{ mt: 1 }} />
@@ -520,17 +521,12 @@ export const KanbanBoard: React.FC = React.memo(() => {
   if (error) {
     return (
       <Box sx={{ p: 3 }}>
-        <Alert 
-          severity="error" 
-          action={
-            <button onClick={() => refetch()}>
-              Wiederholen
-            </button>
-          }
-        >
+        <Alert severity="error" action={<button onClick={() => refetch()}>Wiederholen</button>}>
           <Typography variant="h6">Fehler beim Laden der Opportunities</Typography>
           <Typography variant="body2">
-            {error instanceof Error ? error.message : 'Unbekannter Fehler beim Laden der Pipeline-Daten'}
+            {error instanceof Error
+              ? error.message
+              : 'Unbekannter Fehler beim Laden der Pipeline-Daten'}
           </Typography>
         </Alert>
       </Box>
@@ -541,28 +537,42 @@ export const KanbanBoard: React.FC = React.memo(() => {
     <Box sx={{ p: 3 }}>
       {/* Status Indikator für laufende Stage-Änderungen */}
       {changeStagemutation.isPending && (
-        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, p: 1, bgcolor: 'info.light', borderRadius: 1 }}>
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            mb: 2,
+            p: 1,
+            bgcolor: 'info.light',
+            borderRadius: 1,
+          }}
+        >
           <CircularProgress size={16} sx={{ mr: 1 }} />
           <Typography variant="body2">Stage-Änderung wird gespeichert...</Typography>
         </Box>
       )}
 
       {/* Kompakter Header */}
-      <Paper sx={{ 
-        p: 2, 
-        mb: 2, 
-        display: 'flex', 
-        alignItems: 'center', 
-        justifyContent: 'space-between',
-        bgcolor: 'background.paper',
-        borderBottom: '2px solid #94C456'
-      }}>
+      <Paper
+        sx={{
+          p: 2,
+          mb: 2,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          bgcolor: 'background.paper',
+          borderBottom: '2px solid #94C456',
+        }}
+      >
         {/* Titel */}
-        <Typography variant="h5" sx={{ 
-          color: '#004F7B',
-          fontFamily: 'Antonio, sans-serif',
-          fontWeight: 700,
-        }}>
+        <Typography
+          variant="h5"
+          sx={{
+            color: '#004F7B',
+            fontFamily: 'Antonio, sans-serif',
+            fontWeight: 700,
+          }}
+        >
           Verkaufschancen Pipeline
         </Typography>
 
@@ -602,38 +612,48 @@ export const KanbanBoard: React.FC = React.memo(() => {
 
       {/* Minimale Erfolgs-Leiste */}
       {(pipelineStats.totalWon > 0 || pipelineStats.totalLost > 0) && (
-        <Box sx={{ 
-          display: 'flex', 
-          alignItems: 'center', 
-          gap: 2,
-          mb: 2,
-          p: 1,
-          bgcolor: 'rgba(0, 0, 0, 0.02)',
-          borderRadius: 1,
-          fontSize: '0.875rem'
-        }}>
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 2,
+            mb: 2,
+            p: 1,
+            bgcolor: 'rgba(0, 0, 0, 0.02)',
+            borderRadius: 1,
+            fontSize: '0.875rem',
+          }}
+        >
           <CheckCircleIcon sx={{ fontSize: 16, color: '#66BB6A' }} />
           <Typography variant="body2" sx={{ color: '#66BB6A' }}>
-            {pipelineStats.totalWon} Gewonnen ({new Intl.NumberFormat('de-DE', {
+            {pipelineStats.totalWon} Gewonnen (
+            {new Intl.NumberFormat('de-DE', {
               style: 'currency',
               currency: 'EUR',
               minimumFractionDigits: 0,
-            }).format(pipelineStats.wonValue)})
+            }).format(pipelineStats.wonValue)}
+            )
           </Typography>
-          
-          <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>•</Typography>
-          
+
+          <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
+            •
+          </Typography>
+
           <CancelIcon sx={{ fontSize: 16, color: '#EF5350' }} />
           <Typography variant="body2" sx={{ color: '#EF5350' }}>
-            {pipelineStats.totalLost} Verloren ({new Intl.NumberFormat('de-DE', {
+            {pipelineStats.totalLost} Verloren (
+            {new Intl.NumberFormat('de-DE', {
               style: 'currency',
               currency: 'EUR',
               minimumFractionDigits: 0,
-            }).format(pipelineStats.lostValue)})
+            }).format(pipelineStats.lostValue)}
+            )
           </Typography>
-          
-          <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>•</Typography>
-          
+
+          <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
+            •
+          </Typography>
+
           <Typography variant="body2" sx={{ color: '#FFA726', fontWeight: 600 }}>
             {Math.round(pipelineStats.conversionRate * 100)}% Erfolgsquote
           </Typography>
@@ -642,52 +662,46 @@ export const KanbanBoard: React.FC = React.memo(() => {
 
       {/* Info Alert wenn abgeschlossene angezeigt werden */}
       {showClosed && (
-        <Alert 
-          severity="info" 
-          sx={{ mb: 2 }}
-          onClose={() => setShowClosed(false)}
-        >
-          Sie sehen jetzt auch abgeschlossene Verkaufschancen (Gewonnen/Verloren). 
-          Diese können nicht mehr in aktive Stages verschoben werden.
+        <Alert severity="info" sx={{ mb: 2 }} onClose={() => setShowClosed(false)}>
+          Sie sehen jetzt auch abgeschlossene Verkaufschancen (Gewonnen/Verloren). Diese können
+          nicht mehr in aktive Stages verschoben werden.
         </Alert>
       )}
 
       {/* Kanban Board */}
       <DragDropContext key={dragKey} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
         <Box sx={{ position: 'relative' }}>
-          <Box sx={{ 
-            display: 'flex', 
-            gap: 2, 
-            pb: 2,
-            minHeight: 500,
-            // Kein horizontales Scrollen für 4 Spalten
-            overflowX: showClosed ? 'auto' : 'visible',
-            // Scrollbar-Styling nur wenn benötigt
-            ...(showClosed && {
-              '&::-webkit-scrollbar': {
-                height: 8,
-              },
-              '&::-webkit-scrollbar-track': {
-                backgroundColor: 'rgba(0, 0, 0, 0.05)',
-                borderRadius: 4,
-              },
-              '&::-webkit-scrollbar-thumb': {
-                backgroundColor: '#94C456',
-                borderRadius: 4,
-                '&:hover': {
-                  backgroundColor: '#7BA646',
+          <Box
+            sx={{
+              display: 'flex',
+              gap: 2,
+              pb: 2,
+              minHeight: 500,
+              // Kein horizontales Scrollen für 4 Spalten
+              overflowX: showClosed ? 'auto' : 'visible',
+              // Scrollbar-Styling nur wenn benötigt
+              ...(showClosed && {
+                '&::-webkit-scrollbar': {
+                  height: 8,
                 },
-              },
-            }),
-          }}>
-          {/* Zeige nur aktive Stages oder alle je nach Filter */}
-          {(showClosed ? Object.values(OpportunityStage) : ACTIVE_STAGES).map((stage) => (
-            <KanbanColumn
-              key={stage}
-              stage={stage}
-              opportunities={opportunitiesByStage[stage]}
-            />
-          ))}
+                '&::-webkit-scrollbar-track': {
+                  backgroundColor: 'rgba(0, 0, 0, 0.05)',
+                  borderRadius: 4,
+                },
+                '&::-webkit-scrollbar-thumb': {
+                  backgroundColor: '#94C456',
+                  borderRadius: 4,
+                  '&:hover': {
+                    backgroundColor: '#7BA646',
+                  },
+                },
+              }),
+            }}
+          >
+            {/* Zeige nur aktive Stages oder alle je nach Filter */}
+            {(showClosed ? Object.values(OpportunityStage) : ACTIVE_STAGES).map(stage => (
+              <KanbanColumn key={stage} stage={stage} opportunities={opportunitiesByStage[stage]} />
+            ))}
           </Box>
 
           {/* Quick-Action Drop Zones - nur beim Dragging und wenn nicht alle Stages sichtbar sind */}

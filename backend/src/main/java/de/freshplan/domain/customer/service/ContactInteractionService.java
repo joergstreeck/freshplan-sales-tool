@@ -31,24 +31,24 @@ import org.jboss.logging.Logger;
 public class ContactInteractionService {
 
   private static final Logger LOG = Logger.getLogger(ContactInteractionService.class);
-  
+
   // Warmth Score calculation weights
   private static final double WARMTH_WEIGHT_FREQUENCY = 0.3;
   private static final double WARMTH_WEIGHT_SENTIMENT = 0.3;
   private static final double WARMTH_WEIGHT_ENGAGEMENT = 0.2;
   private static final double WARMTH_WEIGHT_RESPONSE = 0.2;
-  
+
   // Time-based constants (in days)
   private static final int DAYS_RECENT = 30;
   private static final int DAYS_FRESH = 90;
   private static final int DAYS_AGING = 180;
   private static final int DAYS_STALE = 365;
-  
+
   // Default scores
   private static final double DEFAULT_SENTIMENT_SCORE = 50.0;
   private static final double DEFAULT_ENGAGEMENT_SCORE = 50.0;
   private static final double DEFAULT_RESPONSE_SCORE = 50.0;
-  
+
   // Frequency calculation constants
   private static final int DAYS_PER_WEEK = 7;
   private static final double MAX_FREQUENCY_SCORE = 100.0;
@@ -142,7 +142,7 @@ public class ContactInteractionService {
 
     // Determine trend (simplified logic for now)
     String trend = warmthScore >= 70 ? "INCREASING" : warmthScore >= 40 ? "STABLE" : "DECREASING";
-    
+
     return WarmthScoreDTO.builder()
         .contactId(contactId)
         .warmthScore((int) Math.round(warmthScore))
@@ -229,7 +229,7 @@ public class ContactInteractionService {
     long daysBetween = ChronoUnit.DAYS.between(first, last) + 1;
 
     // Interactions per week
-    double interactionsPerWeek = (interactions.size() * (double)DAYS_PER_WEEK) / daysBetween;
+    double interactionsPerWeek = (interactions.size() * (double) DAYS_PER_WEEK) / daysBetween;
 
     // Score based on frequency (1+ per week = 100, 0 = 0)
     return Math.min(MAX_FREQUENCY_SCORE, interactionsPerWeek * MAX_FREQUENCY_SCORE);
@@ -260,7 +260,10 @@ public class ContactInteractionService {
 
     if (engagements.isEmpty()) return DEFAULT_ENGAGEMENT_SCORE; // Default if no engagement data
 
-    return engagements.stream().mapToInt(Integer::intValue).average().orElse(DEFAULT_ENGAGEMENT_SCORE);
+    return engagements.stream()
+        .mapToInt(Integer::intValue)
+        .average()
+        .orElse(DEFAULT_ENGAGEMENT_SCORE);
   }
 
   private double calculateResponseScore(Contact contact) {
@@ -306,22 +309,22 @@ public class ContactInteractionService {
   }
 
   /**
-   * Batch import interactions for better performance.
-   * Processes all interactions in a single transaction.
+   * Batch import interactions for better performance. Processes all interactions in a single
+   * transaction.
    *
    * @param dtos List of interaction DTOs to import
    * @return Import result with success/failure counts
    */
   public BatchImportResult batchImportInteractions(List<ContactInteractionDTO> dtos) {
     LOG.infof("Starting batch import of %d interactions", dtos.size());
-    
+
     int imported = 0;
     int failed = 0;
     List<String> errors = new ArrayList<>();
-    
+
     // Validate and prepare all entities first
     List<ContactInteraction> toImport = new ArrayList<>();
-    
+
     for (ContactInteractionDTO dto : dtos) {
       try {
         Contact contact = contactRepository.findById(dto.getContactId());
@@ -330,63 +333,62 @@ public class ContactInteractionService {
           errors.add("Contact not found: " + dto.getContactId());
           continue;
         }
-        
+
         ContactInteraction interaction = mapper.toEntity(dto);
         interaction.setContact(contact);
         toImport.add(interaction);
-        
+
       } catch (Exception e) {
         failed++;
         errors.add("Failed to process interaction: " + e.getMessage());
         LOG.warn("Failed to process interaction during batch import", e);
       }
     }
-    
+
     // Batch persist all valid interactions
     if (!toImport.isEmpty()) {
       try {
         interactionRepository.persist(toImport);
         imported = toImport.size();
-        
+
         // Update contact last interaction dates in batch
         updateContactsLastInteraction(toImport);
-        
+
         LOG.infof("Successfully imported %d interactions", imported);
       } catch (Exception e) {
         LOG.error("Failed to persist batch interactions", e);
         throw new RuntimeException("Batch import failed: " + e.getMessage(), e);
       }
     }
-    
+
     return new BatchImportResult(imported, failed, errors);
   }
-  
-  /**
-   * Update last interaction dates for multiple contacts efficiently
-   */
+
+  /** Update last interaction dates for multiple contacts efficiently */
   private void updateContactsLastInteraction(List<ContactInteraction> interactions) {
     // Group by contact to find latest interaction per contact
-    Map<UUID, LocalDateTime> latestInteractions = interactions.stream()
-        .collect(Collectors.toMap(
-            i -> i.getContact().getId(),
-            ContactInteraction::getTimestamp,
-            (existing, replacement) -> existing.isAfter(replacement) ? existing : replacement
-        ));
-    
+    Map<UUID, LocalDateTime> latestInteractions =
+        interactions.stream()
+            .collect(
+                Collectors.toMap(
+                    i -> i.getContact().getId(),
+                    ContactInteraction::getTimestamp,
+                    (existing, replacement) ->
+                        existing.isAfter(replacement) ? existing : replacement));
+
     // Batch update using custom query
-    latestInteractions.forEach((contactId, timestamp) -> {
-      contactRepository.update("lastInteractionAt = ?1 where id = ?2", timestamp, contactId);
-    });
+    latestInteractions.forEach(
+        (contactId, timestamp) -> {
+          contactRepository.update("lastInteractionAt = ?1 where id = ?2", timestamp, contactId);
+        });
   }
-  
-  /**
-   * Result of batch import operation
-   */
+
+  /** Result of batch import operation */
   public static class BatchImportResult {
     public final int imported;
     public final int failed;
     public final List<String> errors;
-    
+
     public BatchImportResult(int imported, int failed, List<String> errors) {
       this.imported = imported;
       this.failed = failed;

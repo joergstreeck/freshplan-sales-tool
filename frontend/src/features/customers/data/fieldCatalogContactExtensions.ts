@@ -1,19 +1,19 @@
 /**
  * Field Catalog Extensions for Contact Management (Step 3)
- * 
+ *
  * Extends the field catalog with contact-specific fields following
  * the Theme Architecture requirements.
- * 
+ *
  * @see /Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/step3/THEME_ARCHITECTURE.md
  */
 
 import type { FieldDefinition } from '../types/field.types';
-import { 
-  SALUTATIONS, 
-  ACADEMIC_TITLES, 
+import {
+  SALUTATIONS,
+  ACADEMIC_TITLES,
   DECISION_LEVELS,
   FAMILY_STATUS_OPTIONS,
-  CONTACT_ROLES
+  CONTACT_ROLES,
 } from '../types/contact.types';
 
 /**
@@ -30,9 +30,9 @@ export const contactFieldExtensions: Record<string, FieldDefinition> = {
     category: 'contact',
     options: SALUTATIONS.map(s => ({ value: s.value, label: s.label })),
     sizeHint: 'klein',
-    helpText: 'Wählen Sie die passende Anrede'
+    helpText: 'Wählen Sie die passende Anrede',
   },
-  
+
   contactTitle: {
     key: 'contactTitle',
     label: 'Titel',
@@ -43,9 +43,9 @@ export const contactFieldExtensions: Record<string, FieldDefinition> = {
     options: ACADEMIC_TITLES.map(t => ({ value: t.value, label: t.label })),
     sizeHint: 'klein',
     placeholder: 'Akademischer Titel',
-    allowCustomValue: true // Allow entering custom titles
+    allowCustomValue: true, // Allow entering custom titles
   },
-  
+
   contactFirstName: {
     key: 'contactFirstName',
     label: 'Vorname',
@@ -55,9 +55,9 @@ export const contactFieldExtensions: Record<string, FieldDefinition> = {
     category: 'contact',
     sizeHint: 'mittel',
     placeholder: 'z.B. Max',
-    maxLength: 100
+    maxLength: 100,
   },
-  
+
   contactLastName: {
     key: 'contactLastName',
     label: 'Nachname',
@@ -67,9 +67,9 @@ export const contactFieldExtensions: Record<string, FieldDefinition> = {
     category: 'contact',
     sizeHint: 'mittel',
     placeholder: 'z.B. Mustermann',
-    maxLength: 100
+    maxLength: 100,
   },
-  
+
   // ===== Professional Info =====
   contactPosition: {
     key: 'contactPosition',
@@ -97,12 +97,12 @@ export const contactFieldExtensions: Record<string, FieldDefinition> = {
       { value: 'einkaeufer', label: 'Einkäufer' },
       { value: 'prokurist', label: 'Prokurist' },
       { value: 'assistent_gf', label: 'Assistent der Geschäftsführung' },
-      { value: 'other', label: 'Andere Position' }
+      { value: 'other', label: 'Andere Position' },
     ],
     allowCustomValue: true,
-    helpText: 'Position im Unternehmen'
+    helpText: 'Position im Unternehmen',
   },
-  
+
   contactDecisionLevel: {
     key: 'contactDecisionLevel',
     label: 'Entscheidungsebene',
@@ -112,9 +112,9 @@ export const contactFieldExtensions: Record<string, FieldDefinition> = {
     category: 'contact',
     sizeHint: 'mittel',
     options: DECISION_LEVELS.map(d => ({ value: d.value, label: d.label })),
-    helpText: 'Rolle im Entscheidungsprozess'
+    helpText: 'Rolle im Entscheidungsprozess',
   },
-  
+
   // ===== Contact Details =====
   contactEmail: {
     key: 'contactEmail',
@@ -127,10 +127,10 @@ export const contactFieldExtensions: Record<string, FieldDefinition> = {
     placeholder: 'name@firma.de',
     validation: {
       pattern: '^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$',
-      message: 'Bitte geben Sie eine gültige E-Mail-Adresse ein'
-    }
+      message: 'Bitte geben Sie eine gültige E-Mail-Adresse ein',
+    },
   },
-  
+
   contactPhone: {
     key: 'contactPhone',
     label: 'Telefon (Festnetz)',
@@ -140,9 +140,9 @@ export const contactFieldExtensions: Record<string, FieldDefinition> = {
     category: 'contact',
     sizeHint: 'mittel',
     placeholder: 'z.B. 030 12345678',
-    helpText: 'Festnetznummer mit Vorwahl'
+    helpText: 'Festnetznummer mit Vorwahl',
   },
-  
+
   contactMobile: {
     key: 'contactMobile',
     label: 'Mobilnummer',
@@ -152,9 +152,9 @@ export const contactFieldExtensions: Record<string, FieldDefinition> = {
     category: 'contact',
     sizeHint: 'mittel',
     placeholder: 'z.B. 0171 1234567',
-    helpText: 'Mobilnummer für direkte Erreichbarkeit'
+    helpText: 'Mobilnummer für direkte Erreichbarkeit',
   },
-  
+
   // ===== Responsibility Fields =====
   contactResponsibilityScope: {
     key: 'contactResponsibilityScope',
@@ -166,12 +166,12 @@ export const contactFieldExtensions: Record<string, FieldDefinition> = {
     sizeHint: 'groß',
     options: [
       { value: 'all', label: 'Alle Standorte' },
-      { value: 'specific', label: 'Bestimmte Standorte' }
+      { value: 'specific', label: 'Bestimmte Standorte' },
     ],
     defaultValue: 'all',
-    helpText: 'Ist der Kontakt für alle oder nur bestimmte Standorte zuständig?'
+    helpText: 'Ist der Kontakt für alle oder nur bestimmte Standorte zuständig?',
   },
-  
+
   contactIsPrimary: {
     key: 'contactIsPrimary',
     label: 'Hauptansprechpartner',
@@ -180,9 +180,9 @@ export const contactFieldExtensions: Record<string, FieldDefinition> = {
     required: false,
     category: 'contact',
     sizeHint: 'klein',
-    helpText: 'Nur ein Kontakt kann Hauptansprechpartner sein'
+    helpText: 'Nur ein Kontakt kann Hauptansprechpartner sein',
   },
-  
+
   // ===== Relationship Data (Beziehungsebene) =====
   contactBirthday: {
     key: 'contactBirthday',
@@ -194,10 +194,10 @@ export const contactFieldExtensions: Record<string, FieldDefinition> = {
     sizeHint: 'klein',
     helpText: 'Für persönliche Glückwünsche',
     validation: {
-      maxDate: 'today'
-    }
+      maxDate: 'today',
+    },
   },
-  
+
   contactFamilyStatus: {
     key: 'contactFamilyStatus',
     label: 'Familienstand',
@@ -206,9 +206,9 @@ export const contactFieldExtensions: Record<string, FieldDefinition> = {
     required: false,
     category: 'relationship',
     sizeHint: 'mittel',
-    options: FAMILY_STATUS_OPTIONS.map(f => ({ value: f.value, label: f.label }))
+    options: FAMILY_STATUS_OPTIONS.map(f => ({ value: f.value, label: f.label })),
   },
-  
+
   contactChildrenCount: {
     key: 'contactChildrenCount',
     label: 'Anzahl Kinder',
@@ -219,9 +219,9 @@ export const contactFieldExtensions: Record<string, FieldDefinition> = {
     sizeHint: 'klein',
     min: 0,
     max: 20,
-    placeholder: '0'
+    placeholder: '0',
   },
-  
+
   contactHobbies: {
     key: 'contactHobbies',
     label: 'Hobbys & Interessen',
@@ -246,12 +246,12 @@ export const contactFieldExtensions: Record<string, FieldDefinition> = {
       { value: 'radfahren', label: 'Radfahren' },
       { value: 'segeln', label: 'Segeln' },
       { value: 'ski', label: 'Ski' },
-      { value: 'fitness', label: 'Fitness' }
+      { value: 'fitness', label: 'Fitness' },
     ],
     allowCustomValue: true,
-    helpText: 'Gemeinsame Interessen fördern die Beziehung'
+    helpText: 'Gemeinsame Interessen fördern die Beziehung',
   },
-  
+
   contactPersonalNotes: {
     key: 'contactPersonalNotes',
     label: 'Persönliche Notizen',
@@ -263,9 +263,9 @@ export const contactFieldExtensions: Record<string, FieldDefinition> = {
     rows: 3,
     maxLength: 500,
     placeholder: 'z.B. Lieblingsrestaurant, besondere Vorlieben, Gesprächsthemen...',
-    helpText: 'Vertrauliche Notizen zur Beziehungspflege'
+    helpText: 'Vertrauliche Notizen zur Beziehungspflege',
   },
-  
+
   // ===== Roles =====
   contactRoles: {
     key: 'contactRoles',
@@ -276,8 +276,8 @@ export const contactFieldExtensions: Record<string, FieldDefinition> = {
     category: 'contact',
     sizeHint: 'groß',
     options: CONTACT_ROLES.map(r => ({ value: r.value, label: r.label })),
-    helpText: 'Mehrfachauswahl möglich'
-  }
+    helpText: 'Mehrfachauswahl möglich',
+  },
 };
 
 /**
@@ -297,7 +297,9 @@ export const getRequiredContactFields = (): FieldDefinition[] => {
 /**
  * Get contact fields by category
  */
-export const getContactFieldsByCategory = (category: 'contact' | 'relationship'): FieldDefinition[] => {
+export const getContactFieldsByCategory = (
+  category: 'contact' | 'relationship'
+): FieldDefinition[] => {
   return Object.values(contactFieldExtensions).filter(field => field.category === category);
 };
 
@@ -305,39 +307,25 @@ export const getContactFieldsByCategory = (category: 'contact' | 'relationship')
  * Field groups for organized display
  */
 export const contactFieldGroups = {
-  basicInfo: [
-    'contactSalutation',
-    'contactTitle', 
-    'contactFirstName',
-    'contactLastName'
-  ],
-  professionalInfo: [
-    'contactPosition',
-    'contactDecisionLevel',
-    'contactRoles'
-  ],
-  contactDetails: [
-    'contactEmail',
-    'contactPhone',
-    'contactMobile'
-  ],
-  responsibility: [
-    'contactResponsibilityScope',
-    'contactIsPrimary'
-  ],
+  basicInfo: ['contactSalutation', 'contactTitle', 'contactFirstName', 'contactLastName'],
+  professionalInfo: ['contactPosition', 'contactDecisionLevel', 'contactRoles'],
+  contactDetails: ['contactEmail', 'contactPhone', 'contactMobile'],
+  responsibility: ['contactResponsibilityScope', 'contactIsPrimary'],
   relationshipData: [
     'contactBirthday',
     'contactFamilyStatus',
     'contactChildrenCount',
     'contactHobbies',
-    'contactPersonalNotes'
-  ]
+    'contactPersonalNotes',
+  ],
 };
 
 /**
  * Get fields for a specific group
  */
-export const getContactFieldsForGroup = (group: keyof typeof contactFieldGroups): FieldDefinition[] => {
+export const getContactFieldsForGroup = (
+  group: keyof typeof contactFieldGroups
+): FieldDefinition[] => {
   const fieldKeys = contactFieldGroups[group];
   return fieldKeys.map(key => contactFieldExtensions[key]).filter(Boolean);
 };

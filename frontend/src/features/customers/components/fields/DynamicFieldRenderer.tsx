@@ -1,9 +1,9 @@
 /**
  * Dynamic Field Renderer Component
- * 
+ *
  * Core rendering engine for the Field-Based Architecture.
  * Renders fields dynamically based on their type and configuration.
- * 
+ *
  * @see /Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/03-FRONTEND/03-field-rendering.md
  * @see /Users/joergstreeck/freshplan-sales-tool/frontend/src/features/customers/data/fieldCatalog.json
  */
@@ -45,7 +45,7 @@ interface DynamicFieldRendererProps {
 
 /**
  * Dynamic Field Renderer
- * 
+ *
  * Renders fields based on their type definition from the Field Catalog.
  * Supports conditional rendering, validation, and responsive layouts.
  */
@@ -57,27 +57,27 @@ export const DynamicFieldRenderer: React.FC<DynamicFieldRendererProps> = ({
   onBlur,
   loading = false,
   readOnly = false,
-  currentStep
+  currentStep,
 }) => {
   const { theme } = useCustomerFieldTheme();
   const useAdaptiveLayout = theme.darstellung === 'anpassungsfähig';
-  
+
   // Size mapping für deutsche CSS-Klassen
   const sizeMap: Record<string, string> = {
-    'compact': 'kompakt',
-    'small': 'klein', 
-    'medium': 'mittel',
-    'large': 'groß',
-    'full': 'voll'
+    compact: 'kompakt',
+    small: 'klein',
+    medium: 'mittel',
+    large: 'groß',
+    full: 'voll',
   };
-  
+
   /**
    * Render a single field based on its type
    */
   const renderField = (field: FieldDefinition): React.ReactElement | null => {
     const value = values[field.key] ?? field.defaultValue ?? '';
     const error = errors[field.key];
-    
+
     // Für adaptive Felder (alle Text-basierten Typen)
     if (useAdaptiveLayout && ['text', 'email', 'number'].includes(field.fieldType)) {
       return (
@@ -85,7 +85,7 @@ export const DynamicFieldRenderer: React.FC<DynamicFieldRendererProps> = ({
           <AdaptiveField
             field={field}
             value={value}
-            onChange={(newValue) => onChange(field.key, newValue)}
+            onChange={newValue => onChange(field.key, newValue)}
             onBlur={() => onBlur(field.key)}
             error={error}
             disabled={loading || field.disabled}
@@ -94,7 +94,7 @@ export const DynamicFieldRenderer: React.FC<DynamicFieldRendererProps> = ({
         </FieldWrapper>
       );
     }
-    
+
     // Common props for all field types
     const commonProps = {
       field,
@@ -105,42 +105,42 @@ export const DynamicFieldRenderer: React.FC<DynamicFieldRendererProps> = ({
       helperText: error || undefined,
       disabled: loading || field.disabled,
       readOnly: readOnly || field.readonly,
-      required: field.required
+      required: field.required,
     };
-    
+
     // Render field component based on type
     let fieldComponent: React.ReactElement;
-    
+
     switch (field.fieldType) {
       case 'text':
         fieldComponent = <TextField {...commonProps} />;
         break;
-        
+
       case 'email':
         fieldComponent = <EmailField {...commonProps} />;
         break;
-        
+
       case 'number':
         fieldComponent = <NumberFieldV2 {...commonProps} />;
         break;
-        
+
       case 'select':
         fieldComponent = <SelectField {...commonProps} />;
         break;
-        
+
       case 'multiselect':
         fieldComponent = <MultiSelectField {...commonProps} />;
         break;
-        
+
       case 'textarea':
         fieldComponent = <TextAreaField {...commonProps} />;
         break;
-        
+
       default:
         console.warn(`Unknown field type: ${field.fieldType} for field: ${field.key}`);
         fieldComponent = <TextField {...commonProps} />;
     }
-    
+
     // Wrap ALL field types with FieldWrapper for consistent labels and icons
     return (
       <FieldWrapper field={field} error={error}>
@@ -148,19 +148,19 @@ export const DynamicFieldRenderer: React.FC<DynamicFieldRendererProps> = ({
       </FieldWrapper>
     );
   };
-  
+
   /**
    * Filter visible fields based on conditions
-   * 
+   *
    * Uses the sophisticated condition evaluator to handle:
    * - Generic field conditions (condition property)
    * - Wizard step filtering (currentStep parameter)
    * - Always shows fields without conditions
-   * 
+   *
    * @see /Users/joergstreeck/freshplan-sales-tool/frontend/src/features/customers/utils/conditionEvaluator.ts
    */
   const visibleFields = getVisibleFields(fields, values, currentStep);
-  
+
   // Helper-Funktion für Size-Kategorie Mapping
   const getSizeCategoryFromGrid = (gridSize: number): string => {
     if (gridSize <= 2) return 'compact';
@@ -169,23 +169,24 @@ export const DynamicFieldRenderer: React.FC<DynamicFieldRendererProps> = ({
     if (gridSize <= 10) return 'large';
     return 'full';
   };
-  
+
   // Verwende adaptive Layout wenn aktiviert
   if (useAdaptiveLayout) {
     return (
       <AdaptiveFormContainer variant="flexbox">
         {visibleFields.map(field => {
           // Spezielle CSS-Klasse für Dropdowns zur automatischen Breitenberechnung
-          const sizeClass = (field.fieldType === 'select' || field.fieldType === 'dropdown')
-            ? 'field-dropdown-auto'
-            : (() => {
-                const sizeInfo = getFieldSize(field);
-                const sizeCategory = getSizeCategoryFromGrid(sizeInfo.md || 6);
-                return `field-${sizeMap[sizeCategory] || 'mittel'}`;
-              })();
-          
+          const sizeClass =
+            field.fieldType === 'select' || field.fieldType === 'dropdown'
+              ? 'field-dropdown-auto'
+              : (() => {
+                  const sizeInfo = getFieldSize(field);
+                  const sizeCategory = getSizeCategoryFromGrid(sizeInfo.md || 6);
+                  return `field-${sizeMap[sizeCategory] || 'mittel'}`;
+                })();
+
           const style: React.CSSProperties = {};
-          
+
           return (
             <Box key={field.key} className={sizeClass} sx={style}>
               {renderField(field)}
@@ -195,22 +196,16 @@ export const DynamicFieldRenderer: React.FC<DynamicFieldRendererProps> = ({
       </AdaptiveFormContainer>
     );
   }
-  
+
   // Traditionelles Grid Layout
   return (
     <Grid container spacing={3}>
       {visibleFields.map(field => {
         const themeSize = getFieldSize(field);
         const gridSize = themeSize;
-        
+
         return (
-          <Grid 
-            item
-            key={field.key}
-            xs={gridSize.xs}
-            sm={gridSize.sm}
-            md={gridSize.md}
-          >
+          <Grid item key={field.key} xs={gridSize.xs} sm={gridSize.sm} md={gridSize.md}>
             {renderField(field)}
           </Grid>
         );

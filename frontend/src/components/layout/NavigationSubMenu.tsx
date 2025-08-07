@@ -1,11 +1,6 @@
 import React from 'react';
 import { useLocation } from 'react-router-dom';
-import {
-  List,
-  ListItemButton,
-  ListItemText,
-  Tooltip,
-} from '@mui/material';
+import { List, ListItemButton, ListItemText, Tooltip } from '@mui/material';
 
 // Temporär: Direkte Type-Definition um Import-Probleme zu umgehen
 interface NavigationSubItem {
@@ -22,19 +17,16 @@ interface NavigationSubMenuProps {
   onItemClick: (pathOrAction: string, isAction?: boolean) => void;
 }
 
-export const NavigationSubMenu: React.FC<NavigationSubMenuProps> = ({
-  items,
-  onItemClick,
-}) => {
+export const NavigationSubMenu: React.FC<NavigationSubMenuProps> = ({ items, onItemClick }) => {
   const location = useLocation();
-  
+
   return (
     <List component="div" disablePadding>
-      {items.map((item) => {
+      {items.map(item => {
         const isActive = item.path ? location.pathname.startsWith(item.path) : false;
         const isDisabled = item.disabled || false;
         const key = item.path || item.action || item.label;
-        
+
         const button = (
           <ListItemButton
             key={key}
@@ -83,21 +75,21 @@ export const NavigationSubMenu: React.FC<NavigationSubMenuProps> = ({
                 opacity: isActive ? 1 : 0.4,
               },
             }}
-        >
+          >
             <ListItemText
               primary={item.label}
               primaryTypographyProps={{
                 variant: 'body2',
-                sx: { 
+                sx: {
                   fontWeight: isActive ? 600 : 400,
                   fontSize: '0.875rem',
                   color: isActive ? '#94C456' : '#004F7B',
-                }
+                },
               }}
             />
           </ListItemButton>
         );
-        
+
         // Wrap with tooltip if disabled and tooltip text exists
         if (isDisabled && item.tooltip) {
           return (
@@ -106,7 +98,7 @@ export const NavigationSubMenu: React.FC<NavigationSubMenuProps> = ({
             </Tooltip>
           );
         }
-        
+
         return button;
       })}
     </List>

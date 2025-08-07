@@ -1,9 +1,9 @@
 /**
  * AdaptiveField - Intelligentes Feld mit dynamischer Größenanpassung
- * 
+ *
  * Felder wachsen basierend auf Inhalt bis zu einem definierten Maximum.
  * Rendert NUR das TextField - Label und Container werden von FieldWrapper übernommen.
- * 
+ *
  * @see /docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/prototypes/ADAPTIVE_LAYOUT_IMPLEMENTATION_GUIDE.md
  */
 
@@ -57,7 +57,7 @@ const StyledTextField = styled(TextField)(({ theme }) => ({
 
 /**
  * Adaptive Field Component
- * 
+ *
  * Features:
  * - Dynamisches Wachstum basierend auf Inhalt
  * - Sanfte Animationen
@@ -76,7 +76,7 @@ export const AdaptiveField: React.FC<AdaptiveFieldProps> = ({
   const { theme } = useCustomerFieldTheme();
   const [dynamicWidth, setDynamicWidth] = useState<number>();
   const measureRef = useRef<HTMLSpanElement>(null);
-  
+
   // Helper-Funktion für Size-Kategorie Mapping
   const getSizeCategoryFromGrid = (gridSize: number): string => {
     if (gridSize <= 2) return 'kompakt';
@@ -85,41 +85,41 @@ export const AdaptiveField: React.FC<AdaptiveFieldProps> = ({
     if (gridSize <= 10) return 'groß';
     return 'voll';
   };
-  
+
   // Dynamische Breiten-Berechnung
   useEffect(() => {
     if (measureRef.current && theme.darstellung === 'anpassungsfähig') {
       const textWidth = measureRef.current.offsetWidth;
-      
+
       // Nutze calculateFieldWidth für die intelligente Berechnung
       const calculatedWidth = calculateFieldWidth(field, textWidth);
-      
+
       // Zusätzlich: Respektiere Theme-Grenzen basierend auf fieldSizeCalculator
       const sizeInfo = getFieldSize(field);
       const sizeCategory = getSizeCategoryFromGrid(sizeInfo.md || 6);
       const themeMinWidth = parseInt(theme.feldgrößen[sizeCategory].minBreite);
       const themeMaxWidth = parseInt(theme.feldgrößen[sizeCategory].maxBreite);
-      
+
       // Kombiniere beide Systeme: calculateFieldWidth mit Theme-Grenzen
       const finalWidth = Math.min(Math.max(calculatedWidth, themeMinWidth), themeMaxWidth);
       setDynamicWidth(finalWidth);
     }
   }, [value, field, theme]);
-  
+
   return (
     <>
       {/* Unsichtbarer Mess-Span */}
-      <MeasureSpan ref={measureRef}>
-        {value || field.placeholder || field.label}
-      </MeasureSpan>
-      
+      <MeasureSpan ref={measureRef}>{value || field.placeholder || field.label}</MeasureSpan>
+
       {/* NUR TextField, OHNE Label (wird von FieldWrapper übernommen) */}
       <StyledTextField
         id={field.key}
         name={field.key}
-        type={field.fieldType === 'email' ? 'email' : field.fieldType === 'number' ? 'number' : 'text'}
+        type={
+          field.fieldType === 'email' ? 'email' : field.fieldType === 'number' ? 'number' : 'text'
+        }
         value={value}
-        onChange={(e) => onChange(e.target.value)}
+        onChange={e => onChange(e.target.value)}
         onBlur={onBlur}
         placeholder={field.placeholder}
         disabled={disabled}
@@ -137,8 +137,8 @@ export const AdaptiveField: React.FC<AdaptiveFieldProps> = ({
           'aria-required': field.required,
           'aria-invalid': !!error,
         }}
-        style={{ 
-          width: dynamicWidth ? `${dynamicWidth}px` : '100%' 
+        style={{
+          width: dynamicWidth ? `${dynamicWidth}px` : '100%',
         }}
         sx={{
           '& .MuiInputBase-root': {

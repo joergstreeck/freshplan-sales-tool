@@ -14,7 +14,7 @@ export function CustomerListHeader({ totalCount, onAddCustomer }: CustomerListHe
     window.addEventListener('freshplan:new-customer', handler);
     return () => window.removeEventListener('freshplan:new-customer', handler);
   }, [onAddCustomer]);
-  
+
   return (
     <Box
       sx={{
@@ -24,20 +24,20 @@ export function CustomerListHeader({ totalCount, onAddCustomer }: CustomerListHe
         p: 3,
         borderBottom: 1,
         borderColor: 'divider',
-        bgcolor: 'background.paper'
+        bgcolor: 'background.paper',
       }}
     >
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
         <Typography variant="h4" component="h1">
           Kunden
         </Typography>
-        <Chip 
-          label={totalCount} 
+        <Chip
+          label={totalCount}
           size="small"
           sx={{ bgcolor: 'primary.light', color: 'primary.contrastText' }}
         />
       </Box>
-      
+
       <Button
         variant="contained"
         startIcon={<AddIcon />}
@@ -45,8 +45,8 @@ export function CustomerListHeader({ totalCount, onAddCustomer }: CustomerListHe
         sx={{
           bgcolor: '#94C456', // Freshfoodz Grün
           '&:hover': {
-            bgcolor: '#7BA545'
-          }
+            bgcolor: '#7BA545',
+          },
         }}
       >
         Neuer Kunde
@@ -55,7 +55,7 @@ export function CustomerListHeader({ totalCount, onAddCustomer }: CustomerListHe
           sx={{
             ml: 1,
             fontSize: '0.75rem',
-            opacity: 0.7
+            opacity: 0.7,
           }}
         >
           Strg+N

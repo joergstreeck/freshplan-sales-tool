@@ -1,12 +1,12 @@
 /**
  * React Query Hooks für Customer Management
- * 
+ *
  * Bietet typsichere Hooks für alle API-Operationen mit:
  * - Automatisches Caching und Invalidierung
  * - Optimistic Updates
  * - Error Handling
  * - Loading States
- * 
+ *
  * @see /Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/03-FRONTEND/04-api-integration.md
  */
 
@@ -55,7 +55,7 @@ export const queryKeys = {
   },
   fieldDefinitions: {
     all: ['fieldDefinitions'] as const,
-    byEntity: (entityType: EntityType, industry?: string) => 
+    byEntity: (entityType: EntityType, industry?: string) =>
       ['fieldDefinitions', entityType, industry || 'all'] as const,
     industries: ['fieldDefinitions', 'industries'] as const,
   },
@@ -70,10 +70,10 @@ export function useCreateCustomerDraft(
   options?: UseMutationOptions<CustomerDraftResponse, ApiError, void>
 ) {
   const queryClient = useQueryClient();
-  
+
   return useMutation<CustomerDraftResponse, ApiError, void>({
     mutationFn: () => customerApi.createDraft(),
-    onSuccess: (data) => {
+    onSuccess: data => {
       // Invalidate drafts list
       queryClient.invalidateQueries({ queryKey: queryKeys.customers.drafts });
       // Set draft data in cache
@@ -103,17 +103,25 @@ export function useCustomerDraft(
  * Hook to update customer draft
  */
 export function useUpdateCustomerDraft(
-  options?: UseMutationOptions<CustomerDraftResponse, ApiError, { 
-    draftId: string; 
-    data: UpdateCustomerDraftRequest 
-  }>
+  options?: UseMutationOptions<
+    CustomerDraftResponse,
+    ApiError,
+    {
+      draftId: string;
+      data: UpdateCustomerDraftRequest;
+    }
+  >
 ) {
   const queryClient = useQueryClient();
-  
-  return useMutation<CustomerDraftResponse, ApiError, { 
-    draftId: string; 
-    data: UpdateCustomerDraftRequest 
-  }>({
+
+  return useMutation<
+    CustomerDraftResponse,
+    ApiError,
+    {
+      draftId: string;
+      data: UpdateCustomerDraftRequest;
+    }
+  >({
     mutationFn: ({ draftId, data }) => customerApi.updateDraft(draftId, data),
     onSuccess: (data, variables) => {
       // Update cache with new data
@@ -127,17 +135,25 @@ export function useUpdateCustomerDraft(
  * Hook to finalize customer draft
  */
 export function useFinalizeCustomerDraft(
-  options?: UseMutationOptions<Customer, ApiError, { 
-    draftId: string; 
-    data?: FinalizeCustomerDraftRequest 
-  }>
+  options?: UseMutationOptions<
+    Customer,
+    ApiError,
+    {
+      draftId: string;
+      data?: FinalizeCustomerDraftRequest;
+    }
+  >
 ) {
   const queryClient = useQueryClient();
-  
-  return useMutation<Customer, ApiError, { 
-    draftId: string; 
-    data?: FinalizeCustomerDraftRequest 
-  }>({
+
+  return useMutation<
+    Customer,
+    ApiError,
+    {
+      draftId: string;
+      data?: FinalizeCustomerDraftRequest;
+    }
+  >({
     mutationFn: ({ draftId, data }) => customerApi.finalizeDraft(draftId, data),
     onSuccess: (customer, variables) => {
       // Remove draft from cache
@@ -188,18 +204,26 @@ export function useCustomer(
  * Hook to update customer
  */
 export function useUpdateCustomer(
-  options?: UseMutationOptions<CustomerWithFields, ApiError, {
-    customerId: string;
-    fieldValues: Record<string, any>;
-  }>
+  options?: UseMutationOptions<
+    CustomerWithFields,
+    ApiError,
+    {
+      customerId: string;
+      fieldValues: Record<string, any>;
+    }
+  >
 ) {
   const queryClient = useQueryClient();
-  
-  return useMutation<CustomerWithFields, ApiError, {
-    customerId: string;
-    fieldValues: Record<string, any>;
-  }>({
-    mutationFn: ({ customerId, fieldValues }) => 
+
+  return useMutation<
+    CustomerWithFields,
+    ApiError,
+    {
+      customerId: string;
+      fieldValues: Record<string, any>;
+    }
+  >({
+    mutationFn: ({ customerId, fieldValues }) =>
       customerApi.updateCustomer(customerId, fieldValues),
     onSuccess: (data, variables) => {
       // Update cache
@@ -267,13 +291,13 @@ export function useCreateLocation(
   options?: UseMutationOptions<LocationResponse, ApiError, CreateLocationRequest>
 ) {
   const queryClient = useQueryClient();
-  
+
   return useMutation<LocationResponse, ApiError, CreateLocationRequest>({
-    mutationFn: (data) => locationApi.createLocation(data),
+    mutationFn: data => locationApi.createLocation(data),
     onSuccess: (data, variables) => {
       // Invalidate customer locations
-      queryClient.invalidateQueries({ 
-        queryKey: queryKeys.locations.byCustomer(variables.customerId) 
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.locations.byCustomer(variables.customerId),
       });
     },
     ...options,
@@ -284,18 +308,26 @@ export function useCreateLocation(
  * Hook to update location
  */
 export function useUpdateLocation(
-  options?: UseMutationOptions<LocationResponse, ApiError, {
-    locationId: string;
-    data: Record<string, any>;
-  }>
+  options?: UseMutationOptions<
+    LocationResponse,
+    ApiError,
+    {
+      locationId: string;
+      data: Record<string, any>;
+    }
+  >
 ) {
   const queryClient = useQueryClient();
-  
-  return useMutation<LocationResponse, ApiError, {
-    locationId: string;
-    data: Record<string, any>;
-  }>({
-    mutationFn: ({ locationId, data }) => 
+
+  return useMutation<
+    LocationResponse,
+    ApiError,
+    {
+      locationId: string;
+      data: Record<string, any>;
+    }
+  >({
+    mutationFn: ({ locationId, data }) =>
       locationApi.updateLocation(locationId, { fieldValues: data }),
     onSuccess: (data, variables) => {
       // Update cache
@@ -329,9 +361,7 @@ export function useFieldDefinitions(
 /**
  * Hook to get available industries
  */
-export function useIndustries(
-  options?: UseQueryOptions<string[], ApiError>
-) {
+export function useIndustries(options?: UseQueryOptions<string[], ApiError>) {
   return useQuery<string[], ApiError>({
     queryKey: queryKeys.fieldDefinitions.industries,
     queryFn: () => fieldDefinitionApi.getIndustries(),
@@ -345,7 +375,7 @@ export function useIndustries(
  */
 export function usePreloadFieldDefinitions() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: () => fieldDefinitionApi.preloadCommonDefinitions(),
     onSuccess: () => {

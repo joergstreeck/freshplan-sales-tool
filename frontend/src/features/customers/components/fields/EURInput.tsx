@@ -1,15 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { 
-  TextField, 
-  Box, 
-  InputAdornment
-} from '@mui/material';
+import { TextField, Box, InputAdornment } from '@mui/material';
 import type { TextFieldProps } from '@mui/material';
-import { 
-  formatEUR, 
-  parseEUR, 
+import {
+  formatEUR,
+  parseEUR,
   formatEURWhileTyping,
-  isValidCurrencyInput 
+  isValidCurrencyInput,
 } from '../../utils/currencyFormatter';
 import { SegmentedRevenueCalculator } from '../calculator/SegmentedRevenueCalculator';
 
@@ -42,7 +38,7 @@ export const EURInput: React.FC<EURInputProps> = ({
   fullWidth = true,
   size = 'medium',
   calculatorHint,
-  validationWarning = 1000000
+  validationWarning = 1000000,
 }) => {
   const [displayValue, setDisplayValue] = useState('');
   const [isFocused, setIsFocused] = useState(false);
@@ -56,30 +52,33 @@ export const EURInput: React.FC<EURInputProps> = ({
   }, [value, isFocused]);
 
   // Handle Input Change
-  const handleChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-    const inputValue = event.target.value;
-    
-    // Validiere Eingabe
-    if (!isValidCurrencyInput(inputValue)) {
-      return;
-    }
-    
-    // Formatiere während der Eingabe
-    const formatted = formatEURWhileTyping(inputValue);
-    setDisplayValue(formatted);
-    
-    // Parse zu Zahl und update
-    const numValue = parseEUR(formatted);
-    console.log('EURInput handleChange:', { inputValue, formatted, numValue });
-    onChange(numValue);
-    
-    // Check für Warnung
-    if (validationWarning && numValue > validationWarning) {
-      setShowWarning(true);
-    } else {
-      setShowWarning(false);
-    }
-  }, [onChange, validationWarning]);
+  const handleChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const inputValue = event.target.value;
+
+      // Validiere Eingabe
+      if (!isValidCurrencyInput(inputValue)) {
+        return;
+      }
+
+      // Formatiere während der Eingabe
+      const formatted = formatEURWhileTyping(inputValue);
+      setDisplayValue(formatted);
+
+      // Parse zu Zahl und update
+      const numValue = parseEUR(formatted);
+      console.log('EURInput handleChange:', { inputValue, formatted, numValue });
+      onChange(numValue);
+
+      // Check für Warnung
+      if (validationWarning && numValue > validationWarning) {
+        setShowWarning(true);
+      } else {
+        setShowWarning(false);
+      }
+    },
+    [onChange, validationWarning]
+  );
 
   // Handle Focus
   const handleFocus = useCallback(() => {
@@ -99,21 +98,24 @@ export const EURInput: React.FC<EURInputProps> = ({
   }, [value, onBlur]);
 
   // Handle Apply from Calculator
-  const handleApplyCalculation = useCallback((calculatedValue: number) => {
-    console.log('EURInput handleApplyCalculation:', calculatedValue);
-    // Update value immediately
-    onChange(calculatedValue);
-    // Update display immediately
-    setDisplayValue(formatEUR(calculatedValue));
-    // Check für Warnung
-    if (validationWarning && calculatedValue > validationWarning) {
-      setShowWarning(true);
-    } else {
-      setShowWarning(false);
-    }
-    // Hide calculator by removing focus
-    setIsFocused(false);
-  }, [onChange, validationWarning]);
+  const handleApplyCalculation = useCallback(
+    (calculatedValue: number) => {
+      console.log('EURInput handleApplyCalculation:', calculatedValue);
+      // Update value immediately
+      onChange(calculatedValue);
+      // Update display immediately
+      setDisplayValue(formatEUR(calculatedValue));
+      // Check für Warnung
+      if (validationWarning && calculatedValue > validationWarning) {
+        setShowWarning(true);
+      } else {
+        setShowWarning(false);
+      }
+      // Hide calculator by removing focus
+      setIsFocused(false);
+    },
+    [onChange, validationWarning]
+  );
 
   return (
     <Box>
@@ -125,43 +127,38 @@ export const EURInput: React.FC<EURInputProps> = ({
         onBlur={handleBlur}
         required={required}
         error={error || showWarning}
-        helperText={
-          showWarning 
-            ? 'Hoher Betrag - bitte nochmal prüfen' 
-            : helperText
-        }
+        helperText={showWarning ? 'Hoher Betrag - bitte nochmal prüfen' : helperText}
         disabled={disabled}
         fullWidth={fullWidth}
         size={size}
         InputProps={{
-          endAdornment: !isFocused && displayValue ? (
-            <InputAdornment position="end">€</InputAdornment>
-          ) : null,
+          endAdornment:
+            !isFocused && displayValue ? <InputAdornment position="end">€</InputAdornment> : null,
           sx: {
             '& input': {
               fontSize: '18px',
               textAlign: 'right',
               fontWeight: 500,
-              minWidth: fullWidth ? 'auto' : '320px'
-            }
-          }
+              minWidth: fullWidth ? 'auto' : '320px',
+            },
+          },
         }}
         sx={{
           '& .MuiFormHelperText-root': {
-            color: showWarning ? 'warning.main' : undefined
-          }
+            color: showWarning ? 'warning.main' : undefined,
+          },
         }}
       />
-      
+
       {/* Revenue Calculator */}
       {showCalculator && isFocused && (
         <Box
-          onMouseDown={(e) => {
+          onMouseDown={e => {
             // Verhindere, dass der Focus verloren geht
             e.preventDefault();
           }}
         >
-          <SegmentedRevenueCalculator 
+          <SegmentedRevenueCalculator
             currentValue={value || 0}
             onApplyCalculation={handleApplyCalculation}
           />

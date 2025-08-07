@@ -1,9 +1,9 @@
 /**
  * FC-005 API Client Tests
- * 
+ *
  * Tests für flexiblen API Client mit any-Types als FEATURE.
  * Respektiert Team-Philosophie: Dynamische Payloads sind ERWÜNSCHT!
- * 
+ *
  * @see /docs/features/FC-005-CUSTOMER-MANAGEMENT/09-TEST-PLAN/00-PHILOSOPHIE.md
  * @see /docs/features/FC-005-CUSTOMER-MANAGEMENT/09-TEST-PLAN/02-test-examples.md
  */
@@ -35,23 +35,23 @@ describe('ApiClient - Flexibles API mit any-Types (ENTERPRISE PHILOSOPHY)', () =
       mockFetch.mockResolvedValue({
         ok: true,
         status: 200,
-        json: async () => ({ success: true, id: 'test-123' })
+        json: async () => ({ success: true, id: 'test-123' }),
       });
 
       // Test ein paar repräsentative Payload-Strukturen
       const payloads = [
         // Einfaches Objekt
         { companyName: 'Test GmbH', industry: 'hotel' },
-        
+
         // Verschachteltes Objekt mit field-based structure
         {
           customerData: {
             companyName: 'Hotel Test',
             industry: 'hotel',
-            chainCustomer: 'ja'
-          }
+            chainCustomer: 'ja',
+          },
         },
-        
+
         // Branchenspezifische Daten mit any Types
         {
           fieldValues: {
@@ -59,10 +59,10 @@ describe('ApiClient - Flexibles API mit any-Types (ENTERPRISE PHILOSOPHY)', () =
             amenities: ['pool', 'spa', 'gym'],
             deliveryService: {
               enabled: true,
-              radius: 5
-            }
-          }
-        }
+              radius: 5,
+            },
+          },
+        },
       ];
 
       // Alle Payloads sollten funktionieren
@@ -70,7 +70,7 @@ describe('ApiClient - Flexibles API mit any-Types (ENTERPRISE PHILOSOPHY)', () =
         const result = await apiClient.post('/api/customers', payload);
         expect(result).toEqual({ success: true, id: 'test-123' });
       }
-      
+
       expect(mockFetch).toHaveBeenCalledTimes(payloads.length);
     });
 
@@ -78,35 +78,35 @@ describe('ApiClient - Flexibles API mit any-Types (ENTERPRISE PHILOSOPHY)', () =
       mockFetch.mockResolvedValue({
         ok: true,
         status: 200,
-        json: async () => ({ updated: true })
+        json: async () => ({ updated: true }),
       });
 
       // Partial updates with any structure
       const partialUpdates = [
         // Simple field update
         { companyName: 'Updated Name' },
-        
+
         // Deep nested update
         {
           'customer.preferences.communication': {
             email: true,
             sms: false,
-            phone: { preferred: 'mobile', timing: 'business-hours' }
-          }
+            phone: { preferred: 'mobile', timing: 'business-hours' },
+          },
         },
-        
+
         // Array operations
         {
           $push: { 'locations.amenities': 'new-feature' },
-          $set: { 'status': 'active' }
+          $set: { status: 'active' },
         },
-        
+
         // Conditional updates
         {
           $inc: { visitCount: 1 },
           $currentDate: { lastVisit: true },
-          $addToSet: { tags: 'vip-customer' }
-        }
+          $addToSet: { tags: 'vip-customer' },
+        },
       ];
 
       for (const update of partialUpdates) {
@@ -121,7 +121,7 @@ describe('ApiClient - Flexibles API mit any-Types (ENTERPRISE PHILOSOPHY)', () =
       const responses = [
         // Standard API response
         { success: true, data: { id: '123', name: 'Test' } },
-        
+
         // Field-based response
         {
           customer: {
@@ -130,10 +130,10 @@ describe('ApiClient - Flexibles API mit any-Types (ENTERPRISE PHILOSOPHY)', () =
               companyName: 'Test GmbH',
               industry: 'hotel',
               customFields: {
-                'rating_2024': 5,
-                'special_notes': 'VIP customer'
-              }
-            }
+                rating_2024: 5,
+                special_notes: 'VIP customer',
+              },
+            },
           },
           locations: [
             {
@@ -141,18 +141,18 @@ describe('ApiClient - Flexibles API mit any-Types (ENTERPRISE PHILOSOPHY)', () =
               fieldValues: {
                 roomCount: 150,
                 parkingSpaces: 50,
-                dynamicField_1: 'some value'
-              }
-            }
-          ]
+                dynamicField_1: 'some value',
+              },
+            },
+          ],
         },
-        
+
         // Array response
         [
           { type: 'customer', id: '1', data: {} },
-          { type: 'location', id: '2', data: {} }
+          { type: 'location', id: '2', data: {} },
         ],
-        
+
         // Nested response with metadata
         {
           result: {
@@ -161,17 +161,17 @@ describe('ApiClient - Flexibles API mit any-Types (ENTERPRISE PHILOSOPHY)', () =
             filters: { applied: [], available: [] },
             aggregations: {
               byIndustry: { hotel: 45, restaurant: 30 },
-              byRegion: { north: 25, south: 50 }
-            }
-          }
-        }
+              byRegion: { north: 25, south: 50 },
+            },
+          },
+        },
       ];
 
       for (const responseData of responses) {
         mockFetch.mockResolvedValueOnce({
           ok: true,
           status: 200,
-          json: async () => responseData
+          json: async () => responseData,
         });
 
         const result = await apiClient.get('/api/test');
@@ -185,7 +185,7 @@ describe('ApiClient - Flexibles API mit any-Types (ENTERPRISE PHILOSOPHY)', () =
       mockFetch.mockResolvedValue({
         ok: true,
         status: 200,
-        json: async () => ({ success: true })
+        json: async () => ({ success: true }),
       });
     });
 
@@ -202,7 +202,7 @@ describe('ApiClient - Flexibles API mit any-Types (ENTERPRISE PHILOSOPHY)', () =
         'industries[]': ['hotel', 'restaurant'],
         // Nested filtering
         'filters[industry][in]': 'hotel,restaurant',
-        'filters[status][ne]': 'deleted'
+        'filters[status][ne]': 'deleted',
       };
 
       await apiClient.get('/api/customers', { params: queryParams });
@@ -221,19 +221,19 @@ describe('ApiClient - Flexibles API mit any-Types (ENTERPRISE PHILOSOPHY)', () =
         cascade: true,
         backup: {
           enabled: true,
-          retention: '30days'
-        }
+          retention: '30days',
+        },
       };
 
       await apiClient.delete('/api/customers/bulk', {
-        body: JSON.stringify(deleteData)
+        body: JSON.stringify(deleteData),
       });
 
       expect(mockFetch).toHaveBeenCalledWith(
         expect.stringContaining('/api/customers/bulk'),
         expect.objectContaining({
           method: 'DELETE',
-          body: JSON.stringify(deleteData)
+          body: JSON.stringify(deleteData),
         })
       );
     });
@@ -244,19 +244,19 @@ describe('ApiClient - Flexibles API mit any-Types (ENTERPRISE PHILOSOPHY)', () =
       mockFetch.mockResolvedValue({
         ok: true,
         status: 200,
-        json: async () => ({})
+        json: async () => ({}),
       });
 
       // Test sessionStorage token
       sessionStorage.setItem('auth_token', 'session-token-123');
       await apiClient.get('/api/protected');
-      
+
       expect(mockFetch).toHaveBeenLastCalledWith(
         expect.any(String),
         expect.objectContaining({
           headers: expect.objectContaining({
-            'Authorization': 'Bearer session-token-123'
-          })
+            Authorization: 'Bearer session-token-123',
+          }),
         })
       );
 
@@ -269,8 +269,8 @@ describe('ApiClient - Flexibles API mit any-Types (ENTERPRISE PHILOSOPHY)', () =
         expect.any(String),
         expect.objectContaining({
           headers: expect.objectContaining({
-            'Authorization': 'Bearer local-token-456'
-          })
+            Authorization: 'Bearer local-token-456',
+          }),
         })
       );
 
@@ -283,8 +283,8 @@ describe('ApiClient - Flexibles API mit any-Types (ENTERPRISE PHILOSOPHY)', () =
         expect.any(String),
         expect.objectContaining({
           headers: expect.objectContaining({
-            'Authorization': 'Bearer keycloak-token-789'
-          })
+            Authorization: 'Bearer keycloak-token-789',
+          }),
         })
       );
     });
@@ -293,7 +293,7 @@ describe('ApiClient - Flexibles API mit any-Types (ENTERPRISE PHILOSOPHY)', () =
       mockFetch.mockResolvedValue({
         ok: true,
         status: 200,
-        json: async () => ({})
+        json: async () => ({}),
       });
 
       const customHeaders = {
@@ -304,18 +304,18 @@ describe('ApiClient - Flexibles API mit any-Types (ENTERPRISE PHILOSOPHY)', () =
         'X-Context': JSON.stringify({
           user: 'test-user',
           tenant: 'test-tenant',
-          capabilities: ['read', 'write']
-        })
+          capabilities: ['read', 'write'],
+        }),
       };
 
       await apiClient.get('/api/test', {
-        headers: customHeaders
+        headers: customHeaders,
       });
 
       expect(mockFetch).toHaveBeenCalledWith(
         expect.any(String),
         expect.objectContaining({
-          headers: expect.objectContaining(customHeaders)
+          headers: expect.objectContaining(customHeaders),
         })
       );
     });
@@ -325,25 +325,23 @@ describe('ApiClient - Flexibles API mit any-Types (ENTERPRISE PHILOSOPHY)', () =
     it('should handle timeout and abort operations', async () => {
       // Test that timeout functionality exists (simplified test)
       expect(typeof apiClient.get).toBe('function');
-      
+
       // Mock network error to simulate timeout
       mockFetch.mockRejectedValueOnce(new Error('Request timeout'));
-      
+
       await expect(apiClient.get('/api/slow')).rejects.toThrow();
     }, 1000);
 
     it('should implement retry logic for server errors', async () => {
       // First call fails, second succeeds
-      mockFetch
-        .mockRejectedValueOnce(new Error('Network error'))
-        .mockResolvedValueOnce({
-          ok: true,
-          status: 200,
-          json: async () => ({ success: true })
-        });
+      mockFetch.mockRejectedValueOnce(new Error('Network error')).mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => ({ success: true }),
+      });
 
       const result = await apiClient.get('/api/retry-test', { retry: 1 });
-      
+
       expect(result).toEqual({ success: true });
       expect(mockFetch).toHaveBeenCalledTimes(2);
     });
@@ -352,7 +350,7 @@ describe('ApiClient - Flexibles API mit any-Types (ENTERPRISE PHILOSOPHY)', () =
       mockFetch.mockResolvedValue({
         ok: true,
         status: 200,
-        json: async () => ({ success: true })
+        json: async () => ({ success: true }),
       });
 
       // Multiple concurrent requests
@@ -360,11 +358,11 @@ describe('ApiClient - Flexibles API mit any-Types (ENTERPRISE PHILOSOPHY)', () =
         apiClient.get('/api/customers'),
         apiClient.get('/api/locations'),
         apiClient.post('/api/drafts', { data: 'test' }),
-        apiClient.put('/api/settings', { theme: 'dark' })
+        apiClient.put('/api/settings', { theme: 'dark' }),
       ];
 
       const results = await Promise.all(requests);
-      
+
       expect(results).toHaveLength(4);
       expect(mockFetch).toHaveBeenCalledTimes(4);
       results.forEach(result => {
@@ -384,19 +382,19 @@ describe('ApiClient - Flexibles API mit any-Types (ENTERPRISE PHILOSOPHY)', () =
             message: 'Validation failed',
             fieldErrors: {
               companyName: 'Required field',
-              contactEmail: 'Invalid email format'
-            }
-          })
+              contactEmail: 'Invalid email format',
+            },
+          }),
         },
-        
+
         // Simple error
         {
           status: 404,
           json: async () => ({
-            error: 'Customer not found'
-          })
+            error: 'Customer not found',
+          }),
         },
-        
+
         // Complex nested error
         {
           status: 422,
@@ -405,22 +403,22 @@ describe('ApiClient - Flexibles API mit any-Types (ENTERPRISE PHILOSOPHY)', () =
               customer: {
                 fields: {
                   industry: ['Must be one of: hotel, restaurant, office'],
-                  'locations[0].roomCount': ['Must be greater than 0']
-                }
-              }
+                  'locations[0].roomCount': ['Must be greater than 0'],
+                },
+              },
             },
             context: {
               request_id: 'req-123',
-              trace_id: 'trace-456'
-            }
-          })
-        }
+              trace_id: 'trace-456',
+            },
+          }),
+        },
       ];
 
       for (const errorResponse of errorResponses) {
         mockFetch.mockResolvedValueOnce({
           ok: false,
-          ...errorResponse
+          ...errorResponse,
         });
 
         await expect(apiClient.get('/api/error')).rejects.toThrow();
@@ -430,8 +428,7 @@ describe('ApiClient - Flexibles API mit any-Types (ENTERPRISE PHILOSOPHY)', () =
     it('should handle network errors gracefully', async () => {
       mockFetch.mockRejectedValue(new Error('Network error'));
 
-      await expect(apiClient.get('/api/network-error'))
-        .rejects.toThrow('Netzwerkfehler');
+      await expect(apiClient.get('/api/network-error')).rejects.toThrow('Netzwerkfehler');
     });
   });
 
@@ -439,10 +436,10 @@ describe('ApiClient - Flexibles API mit any-Types (ENTERPRISE PHILOSOPHY)', () =
     it('should cancel specific requests', async () => {
       // Start a request (don't await)
       const requestPromise = apiClient.get('/api/long-running');
-      
+
       // Cancel it
       apiClient.cancelRequest('GET', '/api/long-running');
-      
+
       // Request should be aborted
       await expect(requestPromise).rejects.toThrow();
     });
@@ -452,12 +449,12 @@ describe('ApiClient - Flexibles API mit any-Types (ENTERPRISE PHILOSOPHY)', () =
       const requests = [
         apiClient.get('/api/customers'),
         apiClient.post('/api/locations', {}),
-        apiClient.put('/api/settings', {})
+        apiClient.put('/api/settings', {}),
       ];
-      
+
       // Cancel all
       apiClient.cancelAllRequests();
-      
+
       // All should be aborted
       for (const request of requests) {
         await expect(request).rejects.toThrow();
@@ -470,7 +467,7 @@ describe('ApiClient - Flexibles API mit any-Types (ENTERPRISE PHILOSOPHY)', () =
       mockFetch.mockResolvedValue({
         ok: true,
         status: 200,
-        json: async () => ({ success: true, id: 'customer-123' })
+        json: async () => ({ success: true, id: 'customer-123' }),
       });
 
       // Step 1: Create draft
@@ -478,13 +475,13 @@ describe('ApiClient - Flexibles API mit any-Types (ENTERPRISE PHILOSOPHY)', () =
         customerData: {
           companyName: 'Test Hotel GmbH',
           industry: 'hotel',
-          chainCustomer: 'ja'
+          chainCustomer: 'ja',
         },
         step: 'customer-data',
         metadata: {
           started: new Date().toISOString(),
-          source: 'web-wizard'
-        }
+          source: 'web-wizard',
+        },
       };
 
       await apiClient.post('/api/customers/draft', draftData);
@@ -497,18 +494,18 @@ describe('ApiClient - Flexibles API mit any-Types (ENTERPRISE PHILOSOPHY)', () =
             fieldValues: {
               roomCount: 150,
               hasRestaurant: true,
-              parkingSpaces: 50
-            }
+              parkingSpaces: 50,
+            },
           },
           {
             locationType: 'filiale',
             fieldValues: {
               roomCount: 80,
               hasRestaurant: false,
-              parkingSpaces: 25
-            }
-          }
-        ]
+              parkingSpaces: 25,
+            },
+          },
+        ],
       };
 
       await apiClient.put('/api/customers/draft/customer-123', locationData);
@@ -526,34 +523,34 @@ describe('ApiClient - Flexibles API mit any-Types (ENTERPRISE PHILOSOPHY)', () =
             key: 'companyName',
             label: 'Firmenname',
             fieldType: 'text',
-            required: true
+            required: true,
           },
           {
             key: 'industry',
             label: 'Branche',
             fieldType: 'select',
-            options: ['hotel', 'restaurant', 'office']
-          }
+            options: ['hotel', 'restaurant', 'office'],
+          },
         ],
         location: [
           {
             key: 'roomCount',
             label: 'Zimmeranzahl',
             fieldType: 'number',
-            condition: { step: 'industry', when: 'hotel' }
-          }
-        ]
+            condition: { step: 'industry', when: 'hotel' },
+          },
+        ],
       };
 
       mockFetch.mockResolvedValue({
         ok: true,
         status: 200,
-        json: async () => fieldDefinitions
+        json: async () => fieldDefinitions,
       });
 
       // Load field definitions
       const result = await apiClient.get('/api/field-definitions', {
-        params: { entityType: 'customer', industry: 'hotel' }
+        params: { entityType: 'customer', industry: 'hotel' },
       });
 
       expect(result).toEqual(fieldDefinitions);

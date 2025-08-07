@@ -20,7 +20,7 @@ import {
   ListItemSecondaryAction,
   CircularProgress,
   Tooltip,
-  Divider
+  Divider,
 } from '@mui/material';
 import {
   Refresh as RefreshIcon,
@@ -30,7 +30,7 @@ import {
   Assignment as TaskIcon,
   Update as UpdateIcon,
   CheckCircle as CheckCircleIcon,
-  Group as GroupIcon
+  Group as GroupIcon,
 } from '@mui/icons-material';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { contactInteractionApi } from '../../services/contactInteractionApi';
@@ -40,14 +40,14 @@ import type { FreshnessStatistics } from '../../types/intelligence.types';
 
 /**
  * Erweiterte Komponente für Data Freshness Management.
- * 
+ *
  * Implementiert proaktive Update-Kampagnen und Bulk-Update-Funktionalität
  * basierend auf dem Data Strategy Intelligence Konzept.
  */
 export const DataFreshnessManager: React.FC = () => {
   const [selectedLevel, setSelectedLevel] = useState<'aging' | 'stale' | 'critical' | null>(null);
   const [bulkUpdateDialog, setBulkUpdateDialog] = useState(false);
-  
+
   const queryClient = useQueryClient();
 
   // Load freshness statistics
@@ -68,7 +68,10 @@ export const DataFreshnessManager: React.FC = () => {
   // Load specific level contacts
   const { data: levelContacts, isLoading: levelLoading } = useQuery({
     queryKey: ['contacts-by-level', selectedLevel],
-    queryFn: () => selectedLevel ? contactInteractionApi.getContactsByFreshnessLevel(selectedLevel) : Promise.resolve([]),
+    queryFn: () =>
+      selectedLevel
+        ? contactInteractionApi.getContactsByFreshnessLevel(selectedLevel)
+        : Promise.resolve([]),
     enabled: !!selectedLevel,
   });
 
@@ -107,8 +110,9 @@ export const DataFreshnessManager: React.FC = () => {
     );
   }
 
-  const totalContacts = statistics ? 
-    statistics.FRESH + statistics.AGING + statistics.STALE + statistics.CRITICAL : 0;
+  const totalContacts = statistics
+    ? statistics.FRESH + statistics.AGING + statistics.STALE + statistics.CRITICAL
+    : 0;
 
   const criticalCount = contactsNeedingUpdate?.critical?.length || 0;
   const staleCount = contactsNeedingUpdate?.stale?.length || 0;
@@ -148,7 +152,8 @@ export const DataFreshnessManager: React.FC = () => {
       {criticalCount > 0 && (
         <Alert severity="error" sx={{ mb: 3 }}>
           <AlertTitle>Dringender Handlungsbedarf</AlertTitle>
-          {criticalCount} Kontakte wurden über ein Jahr nicht aktualisiert und benötigen sofortige Überprüfung.
+          {criticalCount} Kontakte wurden über ein Jahr nicht aktualisiert und benötigen sofortige
+          Überprüfung.
           <Button
             size="small"
             color="inherit"
@@ -181,10 +186,7 @@ export const DataFreshnessManager: React.FC = () => {
         </Grid>
 
         <Grid size={{ xs: 12, md: 3 }}>
-          <Card 
-            sx={{ cursor: 'pointer' }}
-            onClick={() => handleLevelClick('aging')}
-          >
+          <Card sx={{ cursor: 'pointer' }} onClick={() => handleLevelClick('aging')}>
             <CardContent>
               <Box display="flex" alignItems="center" gap={2}>
                 <ScheduleIcon color="info" fontSize="large" />
@@ -202,10 +204,7 @@ export const DataFreshnessManager: React.FC = () => {
         </Grid>
 
         <Grid size={{ xs: 12, md: 3 }}>
-          <Card 
-            sx={{ cursor: 'pointer' }}
-            onClick={() => handleLevelClick('stale')}
-          >
+          <Card sx={{ cursor: 'pointer' }} onClick={() => handleLevelClick('stale')}>
             <CardContent>
               <Box display="flex" alignItems="center" gap={2}>
                 <WarningIcon color="warning" fontSize="large" />
@@ -223,10 +222,7 @@ export const DataFreshnessManager: React.FC = () => {
         </Grid>
 
         <Grid size={{ xs: 12, md: 3 }}>
-          <Card 
-            sx={{ cursor: 'pointer' }}
-            onClick={() => handleLevelClick('critical')}
-          >
+          <Card sx={{ cursor: 'pointer' }} onClick={() => handleLevelClick('critical')}>
             <CardContent>
               <Box display="flex" alignItems="center" gap={2}>
                 <ErrorIcon color="error" fontSize="large" />
@@ -245,15 +241,14 @@ export const DataFreshnessManager: React.FC = () => {
       </Grid>
 
       {/* Level Detail Dialog */}
-      <Dialog
-        open={!!selectedLevel}
-        onClose={() => setSelectedLevel(null)}
-        maxWidth="md"
-        fullWidth
-      >
+      <Dialog open={!!selectedLevel} onClose={() => setSelectedLevel(null)} maxWidth="md" fullWidth>
         <DialogTitle>
-          Kontakte: {selectedLevel === 'aging' ? 'Bald veraltet' : 
-                   selectedLevel === 'stale' ? 'Veraltet' : 'Kritisch'}
+          Kontakte:{' '}
+          {selectedLevel === 'aging'
+            ? 'Bald veraltet'
+            : selectedLevel === 'stale'
+              ? 'Veraltet'
+              : 'Kritisch'}
         </DialogTitle>
         <DialogContent>
           {levelLoading ? (
@@ -262,7 +257,7 @@ export const DataFreshnessManager: React.FC = () => {
             </Box>
           ) : (
             <List>
-              {levelContacts?.map((contact) => (
+              {levelContacts?.map(contact => (
                 <ListItem key={contact.id} divider>
                   <ListItemIcon>
                     <GroupIcon />
@@ -275,8 +270,10 @@ export const DataFreshnessManager: React.FC = () => {
                           {contact.position} - {contact.email}
                         </Typography>
                         <Typography variant="body2" color="textSecondary">
-                          Zuletzt aktualisiert: {contact.updatedAt ? 
-                            new Date(contact.updatedAt).toLocaleDateString('de-DE') : 'Unbekannt'}
+                          Zuletzt aktualisiert:{' '}
+                          {contact.updatedAt
+                            ? new Date(contact.updatedAt).toLocaleDateString('de-DE')
+                            : 'Unbekannt'}
                         </Typography>
                       </Box>
                     }
@@ -302,9 +299,7 @@ export const DataFreshnessManager: React.FC = () => {
           )}
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setSelectedLevel(null)}>
-            Schließen
-          </Button>
+          <Button onClick={() => setSelectedLevel(null)}>Schließen</Button>
         </DialogActions>
       </Dialog>
 
@@ -329,14 +324,12 @@ export const DataFreshnessManager: React.FC = () => {
             </Typography>
           </Box>
           <Alert severity="info" sx={{ mt: 2 }}>
-            Diese Funktion wird in einer späteren Version implementiert.
-            Verwenden Sie vorerst die Einzelbearbeitung.
+            Diese Funktion wird in einer späteren Version implementiert. Verwenden Sie vorerst die
+            Einzelbearbeitung.
           </Alert>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setBulkUpdateDialog(false)}>
-            Abbrechen
-          </Button>
+          <Button onClick={() => setBulkUpdateDialog(false)}>Abbrechen</Button>
           <Button variant="contained" disabled>
             Markieren (Coming Soon)
           </Button>

@@ -1,6 +1,6 @@
 /**
  * Customer Field Theme - Freshfoodz CI konform
- * 
+ *
  * Dieses Theme-System steuert die adaptive Darstellung von Kundenfeldern
  * unter Einhaltung der Freshfoodz Corporate Identity und UI-Sprachregeln.
  */
@@ -8,26 +8,26 @@
 export interface CustomerFieldTheme {
   /** Darstellungsmodus des Formulars */
   darstellung: 'standard' | 'anpassungsfähig';
-  
+
   /** Freshfoodz Corporate Identity Farben */
   farben: {
-    primär: string;      // #94C456 - Freshfoodz Grün
-    sekundär: string;    // #004F7B - Freshfoodz Blau
-    weiß: string;        // #FFFFFF
-    schwarz: string;     // #000000
-    fehler: string;      // #DC3545
-    erfolg: string;      // #94C456
-    warnung: string;     // #FFC107
+    primär: string; // #94C456 - Freshfoodz Grün
+    sekundär: string; // #004F7B - Freshfoodz Blau
+    weiß: string; // #FFFFFF
+    schwarz: string; // #000000
+    fehler: string; // #DC3545
+    erfolg: string; // #94C456
+    warnung: string; // #FFC107
     deaktiviert: string; // #CCCCCC
   };
-  
+
   /** Freshfoodz Corporate Identity Schriften */
   schrift: {
     überschrift: string; // Antonio Bold
-    text: string;        // Poppins Regular
-    betont: string;      // Poppins Medium
+    text: string; // Poppins Regular
+    betont: string; // Poppins Medium
   };
-  
+
   /** Adaptive Feldgrößen-Definitionen */
   feldgrößen: {
     kompakt: {
@@ -56,7 +56,7 @@ export interface CustomerFieldTheme {
       beschreibung: string;
     };
   };
-  
+
   /** Layout-Einstellungen für adaptives Verhalten */
   layout: {
     spaltenAbstand: string;
@@ -64,7 +64,7 @@ export interface CustomerFieldTheme {
     mindestSpaltenBreite: string;
     umbruchBreite: string; // Breakpoint für Mobilansicht
   };
-  
+
   /** Animationseinstellungen */
   animation: {
     übergangsDauer: string;
@@ -75,7 +75,7 @@ export interface CustomerFieldTheme {
 /** Standard-Theme mit Freshfoodz CI */
 export const standardTheme: CustomerFieldTheme = {
   darstellung: 'standard',
-  
+
   farben: {
     primär: '#94C456',
     sekundär: '#004F7B',
@@ -84,70 +84,72 @@ export const standardTheme: CustomerFieldTheme = {
     fehler: '#DC3545',
     erfolg: '#94C456',
     warnung: '#FFC107',
-    deaktiviert: '#CCCCCC'
+    deaktiviert: '#CCCCCC',
   },
-  
+
   schrift: {
     überschrift: 'Antonio, sans-serif',
     text: 'Poppins, sans-serif',
-    betont: 'Poppins, sans-serif'
+    betont: 'Poppins, sans-serif',
   },
-  
+
   feldgrößen: {
     kompakt: {
       minBreite: '60px',
       maxBreite: '100px',
-      beschreibung: 'PLZ, Hausnummer'
+      beschreibung: 'PLZ, Hausnummer',
     },
     klein: {
       minBreite: '100px',
       maxBreite: '160px',
-      beschreibung: 'Anrede, Titel, kurze Dropdowns'
+      beschreibung: 'Anrede, Titel, kurze Dropdowns',
     },
     mittel: {
       minBreite: '140px',
       maxBreite: '240px',
-      beschreibung: 'Name, Telefon, Ort'
+      beschreibung: 'Name, Telefon, Ort',
     },
     groß: {
       minBreite: '220px',
       maxBreite: '400px',
-      beschreibung: 'E-Mail, Straße, Firma'
+      beschreibung: 'E-Mail, Straße, Firma',
     },
     voll: {
       minBreite: '100%',
       maxBreite: '100%',
-      beschreibung: 'Notizen, Beschreibung'
-    }
+      beschreibung: 'Notizen, Beschreibung',
+    },
   },
-  
+
   layout: {
     spaltenAbstand: '16px',
     zeilenAbstand: '24px',
     mindestSpaltenBreite: '280px',
-    umbruchBreite: '768px'
+    umbruchBreite: '768px',
   },
-  
+
   animation: {
     übergangsDauer: '0.15s',
-    übergangsFunktion: 'ease-out'
-  }
+    übergangsFunktion: 'ease-out',
+  },
 };
 
 /** Adaptives Theme mit dynamischer Anpassung */
 export const adaptivesTheme: CustomerFieldTheme = {
   ...standardTheme,
   darstellung: 'anpassungsfähig',
-  
+
   layout: {
     ...standardTheme.layout,
     mindestSpaltenBreite: '240px', // Kleinere Mindestbreite für besseres Umbruchverhalten
-    umbruchBreite: '640px' // Früherer Umbruch für Mobile
-  }
+    umbruchBreite: '640px', // Früherer Umbruch für Mobile
+  },
 };
 
 /** Theme-Auswahl basierend auf Einstellung */
-export const getTheme = (mode: 'standard' | 'anpassungsfähig' = 'anpassungsfähig'): CustomerFieldTheme => {
+export const getTheme = (
+  mode: 'standard' | 'anpassungsfähig' = 'anpassungsfähig'
+): CustomerFieldTheme => {
   return mode === 'anpassungsfähig' ? adaptivesTheme : standardTheme;
 };
 

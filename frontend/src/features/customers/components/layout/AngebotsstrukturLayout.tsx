@@ -1,6 +1,6 @@
 /**
  * Angebotsstruktur Layout Component
- * 
+ *
  * Strukturiertes Layout für Step 2 Angebotsfelder mit klarer Anordnung
  * und adaptive Theme-Integration.
  */
@@ -34,22 +34,22 @@ const SectionContainer = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.background.default,
   border: `1px solid ${theme.palette.divider}`,
   boxShadow: 'none',
-  
+
   '& .section-title': {
     display: 'flex',
     alignItems: 'center',
     gap: theme.spacing(1),
     marginBottom: theme.spacing(2),
-    
+
     '& .icon': {
-      fontSize: '1.5rem'
-    }
-  }
+      fontSize: '1.5rem',
+    },
+  },
 }));
 
 /**
  * Angebotsstruktur Layout
- * 
+ *
  * Organisiert Angebotsfelder in übersichtlichen Gruppen mit
  * adaptive Theme-Integration für optimale Darstellung.
  */
@@ -58,7 +58,7 @@ export const AngebotsstrukturLayout: React.FC<AngebotsstrukturLayoutProps> = ({
   values,
   errors,
   onChange,
-  onBlur
+  onBlur,
 }) => {
   return (
     <Box>
@@ -70,7 +70,7 @@ export const AngebotsstrukturLayout: React.FC<AngebotsstrukturLayoutProps> = ({
               {group.title}
             </Typography>
           </div>
-          
+
           <DynamicFieldRenderer
             fields={group.fields}
             values={values}

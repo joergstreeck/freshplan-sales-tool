@@ -32,16 +32,26 @@ exports[`CustomerList Snapshot Tests > should match snapshot for loaded state 1`
         Kundenliste
       </h1>
       <div
-        class="customer-list-stats"
+        class="customer-list-actions"
       >
-        <span
-          class="stat-item"
+        <div
+          class="customer-list-stats"
         >
-          <strong>
-            2
-          </strong>
-           Kunden gesamt
-        </span>
+          <span
+            class="stat-item"
+          >
+            <strong>
+              2
+            </strong>
+             Kunden gesamt
+          </span>
+        </div>
+        <a
+          class="btn-new-customer"
+          href="/kundenmanagement/neu"
+        >
+          + Neuer Kunde
+        </a>
       </div>
     </div>
     <div

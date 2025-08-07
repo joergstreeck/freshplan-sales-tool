@@ -21,7 +21,7 @@ export type {
   HelpResponse,
   HelpAnalytics,
   HelpFeedback,
-  UserStruggle
+  UserStruggle,
 } from './types/help.types';
 
 // API

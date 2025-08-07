@@ -1,6 +1,6 @@
 /**
  * Enterprise Logging Service
- * 
+ *
  * @module Logger
  * @description Zentraler Logging-Service mit strukturierten Logs,
  *              Performance Monitoring und Error Tracking.
@@ -16,7 +16,7 @@ export enum LogLevel {
   INFO = 'info',
   WARN = 'warn',
   ERROR = 'error',
-  FATAL = 'fatal'
+  FATAL = 'fatal',
 }
 
 /**
@@ -67,7 +67,7 @@ class Logger {
       enableConsole: true,
       enableRemote: false,
       performanceThreshold: 1000,
-      ...config
+      ...config,
     };
 
     // Start flush interval for remote logging
@@ -124,11 +124,16 @@ class Logger {
    * @param {Error} error - Error object
    */
   fatal(message: string, error: Error): void {
-    this.log(LogLevel.FATAL, message, {
-      errorMessage: error.message,
-      stack: error.stack
-    }, error);
-    
+    this.log(
+      LogLevel.FATAL,
+      message,
+      {
+        errorMessage: error.message,
+        stack: error.stack,
+      },
+      error
+    );
+
     // Immediately flush on fatal
     this.flush();
   }
@@ -145,8 +150,8 @@ class Logger {
       contextDefaults: {
         ...this.config.contextDefaults,
         context,
-        ...defaults
-      }
+        ...defaults,
+      },
     });
   }
 
@@ -157,16 +162,16 @@ class Logger {
    */
   time(operation: string): () => void {
     const startTime = performance.now();
-    
+
     return () => {
       const duration = performance.now() - startTime;
       const level = duration > this.config.performanceThreshold ? LogLevel.WARN : LogLevel.INFO;
-      
+
       this.log(level, `Performance: ${operation}`, {
         operation,
         duration: Math.round(duration),
         threshold: this.config.performanceThreshold,
-        exceeded: duration > this.config.performanceThreshold
+        exceeded: duration > this.config.performanceThreshold,
       });
     };
   }
@@ -192,13 +197,13 @@ class Logger {
       timestamp: new Date().toISOString(),
       data: {
         ...this.config.contextDefaults,
-        ...data
+        ...data,
       },
       error,
       // Add user context if available
       userId: this.getCurrentUserId(),
       sessionId: this.getSessionId(),
-      traceId: this.getTraceId()
+      traceId: this.getTraceId(),
     };
 
     // Console output
@@ -209,7 +214,7 @@ class Logger {
     // Buffer for remote
     if (this.config.enableRemote) {
       this.buffer.push(entry);
-      
+
       // Auto-flush on error or fatal
       if (level === LogLevel.ERROR || level === LogLevel.FATAL) {
         this.flush();
@@ -224,7 +229,7 @@ class Logger {
   private consoleOutput(entry: ILogEntry): void {
     const { level, message, data, error } = entry;
     const prefix = `[${entry.timestamp}] [${level.toUpperCase()}]`;
-    
+
     switch (level) {
       case LogLevel.DEBUG:
         console.debug(prefix, message, data);
@@ -318,9 +323,9 @@ class Logger {
       await fetch(this.config.remoteEndpoint, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ entries })
+        body: JSON.stringify({ entries }),
       });
     } catch (error) {
       // Re-add to buffer on failure
@@ -346,7 +351,7 @@ export const logger = new Logger({
   enableConsole: true,
   enableRemote: import.meta.env.MODE === 'production',
   remoteEndpoint: import.meta.env.VITE_LOG_ENDPOINT,
-  performanceThreshold: 1000
+  performanceThreshold: 1000,
 });
 
 // Export for testing and custom instances

@@ -1,9 +1,9 @@
 /**
  * Field Theme System - Design Standard für FreshPlan
- * 
+ *
  * Definiert konsistente Feldgrößen für alle Formulare.
  * Sprint 2: Implementierung für CustomerOnboardingWizard
- * 
+ *
  * @see /Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/prototypes/FIELD_THEME_SYSTEM_PROTOTYPE.md
  */
 
@@ -19,7 +19,7 @@ export interface FieldSizeTheme {
 
 /**
  * VERBINDLICHER DESIGN-STANDARD FÜR FRESHFOODZ
- * 
+ *
  * Kategorien:
  * - compact: PLZ, Nummern, kurze IDs (2-3 Grid Units)
  * - small: Dropdowns, Status (3-4 Grid Units)
@@ -32,7 +32,7 @@ export const FIELD_THEME: FieldSizeTheme = {
   small: { xs: 12, sm: 6, md: 3 },
   medium: { xs: 12, sm: 6, md: 4 },
   large: { xs: 12, sm: 12, md: 8 },
-  full: { xs: 12, sm: 12, md: 12 }
+  full: { xs: 12, sm: 12, md: 12 },
 };
 
 /**
@@ -42,7 +42,7 @@ export const FIELD_THEME: FieldSizeTheme = {
 export const FIELD_THEME_EXTENDED = {
   ...FIELD_THEME,
   xlarge: { xs: 12, sm: 12, md: 10 },
-  tiny: { xs: 4, sm: 3, md: 1 }
+  tiny: { xs: 4, sm: 3, md: 1 },
 };
 
 /**

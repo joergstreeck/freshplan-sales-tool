@@ -1,6 +1,6 @@
 /**
  * RevenueExpectationSectionV2 Component
- * 
+ *
  * Erfasst die Umsatzerwartung mit EUR-Formatierung und Live-Calculator.
  * Nutzt den neuen EURInput Component mit verbesserter UX.
  */
@@ -35,7 +35,7 @@ export const RevenueExpectationSectionV2: React.FC<RevenueExpectationSectionV2Pr
   onChange,
   onBlur,
   totalLocations = 1,
-  activePainPoints = []
+  activePainPoints = [],
 }) => {
   const currentValue = values[revenueField.key] || 0;
   const hasError = Boolean(errors[revenueField.key]);
@@ -44,12 +44,7 @@ export const RevenueExpectationSectionV2: React.FC<RevenueExpectationSectionV2Pr
     <Box sx={{ mb: 4 }}>
       <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
         💰 Geschäftspotenzial
-        <Chip 
-          label="Vertragsrelevant" 
-          size="small" 
-          color="error"
-          variant="outlined"
-        />
+        <Chip label="Vertragsrelevant" size="small" color="error" variant="outlined" />
       </Typography>
 
       <Alert severity="info" sx={{ mb: 2 }}>
@@ -61,7 +56,7 @@ export const RevenueExpectationSectionV2: React.FC<RevenueExpectationSectionV2Pr
         <Box sx={{ width: '100%', maxWidth: 400 }}>
           <EURInput
             value={currentValue}
-            onChange={(value) => onChange(revenueField.key, value)}
+            onChange={value => onChange(revenueField.key, value)}
             onBlur={() => onBlur(revenueField.key)}
             label={revenueField.label}
             required={revenueField.required}

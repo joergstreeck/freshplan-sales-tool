@@ -18,9 +18,9 @@ interface CustomerFieldThemeProviderProps {
  * Theme Provider für Kundenfelder
  * Stellt das Freshfoodz CI konforme Theme für alle Kundenformulare bereit
  */
-export const CustomerFieldThemeProvider: React.FC<CustomerFieldThemeProviderProps> = ({ 
-  children, 
-  mode = 'anpassungsfähig' 
+export const CustomerFieldThemeProvider: React.FC<CustomerFieldThemeProviderProps> = ({
+  children,
+  mode = 'anpassungsfähig',
 }) => {
   const value = useMemo(() => {
     const theme = getTheme(mode);
@@ -30,10 +30,7 @@ export const CustomerFieldThemeProvider: React.FC<CustomerFieldThemeProviderProp
 
   return (
     <CustomerFieldThemeContext.Provider value={value}>
-      <div 
-        style={value.cssVariables}
-        className="kunde-theme-container"
-      >
+      <div style={value.cssVariables} className="kunde-theme-container">
         {children}
       </div>
     </CustomerFieldThemeContext.Provider>
@@ -46,7 +43,9 @@ export const CustomerFieldThemeProvider: React.FC<CustomerFieldThemeProviderProp
 export const useCustomerFieldTheme = () => {
   const context = useContext(CustomerFieldThemeContext);
   if (!context) {
-    throw new Error('useCustomerFieldTheme muss innerhalb eines CustomerFieldThemeProvider verwendet werden');
+    throw new Error(
+      'useCustomerFieldTheme muss innerhalb eines CustomerFieldThemeProvider verwendet werden'
+    );
   }
   return context;
 };

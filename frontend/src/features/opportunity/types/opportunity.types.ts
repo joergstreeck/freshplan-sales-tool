@@ -1,6 +1,6 @@
 /**
  * Enterprise-grade TypeScript Types für Opportunity Pipeline
- * 
+ *
  * @module OpportunityTypes
  * @description Zentrale Type-Definitionen für das Opportunity Management System.
  *              Basiert auf Backend API v1.0 Definitionen.
@@ -16,21 +16,21 @@
  */
 export enum OpportunityStage {
   /** Neuer, unqualifizierter Lead */
-  NEW_LEAD = "NEW_LEAD",
+  NEW_LEAD = 'NEW_LEAD',
   /** Lead wird qualifiziert */
-  QUALIFICATION = "QUALIFICATION", 
+  QUALIFICATION = 'QUALIFICATION',
   /** Bedarfsanalyse läuft */
-  NEEDS_ANALYSIS = "NEEDS_ANALYSIS",
+  NEEDS_ANALYSIS = 'NEEDS_ANALYSIS',
   /** Angebot wurde erstellt */
-  PROPOSAL = "PROPOSAL",
+  PROPOSAL = 'PROPOSAL',
   /** In Verhandlung */
-  NEGOTIATION = "NEGOTIATION",
+  NEGOTIATION = 'NEGOTIATION',
   /** Erfolgreich abgeschlossen */
-  CLOSED_WON = "CLOSED_WON",
+  CLOSED_WON = 'CLOSED_WON',
   /** Verloren */
-  CLOSED_LOST = "CLOSED_LOST",
+  CLOSED_LOST = 'CLOSED_LOST',
   /** Vertragsverlängerung */
-  RENEWAL = "RENEWAL"
+  RENEWAL = 'RENEWAL',
 }
 
 /**
@@ -240,7 +240,7 @@ export enum OpportunityErrorType {
   /** Generic server error */
   SERVER_ERROR = 'SERVER_ERROR',
   /** Client-side error */
-  CLIENT_ERROR = 'CLIENT_ERROR'
+  CLIENT_ERROR = 'CLIENT_ERROR',
 }
 
 /**

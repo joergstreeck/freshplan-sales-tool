@@ -1,9 +1,9 @@
 /**
  * Detailed Locations Step Component
- * 
+ *
  * Third step of the wizard - manages detailed locations within each location.
  * Allows batch creation and management of sub-locations like departments, stations, etc.
- * 
+ *
  * @see /Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/03-FRONTEND/01-components.md
  * @see /Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/01-TECH-CONCEPT/03-data-model.md
  */
@@ -43,7 +43,7 @@ import {
   List,
   ListItem,
   ListItemText,
-  ListItemSecondaryAction
+  ListItemSecondaryAction,
 } from '@mui/material';
 import {
   ExpandMore as ExpandMoreIcon,
@@ -60,7 +60,7 @@ import {
   Kitchen as KitchenIcon,
   Groups as GroupsIcon,
   FileDownload as DownloadIcon,
-  FileUpload as UploadIcon
+  FileUpload as UploadIcon,
 } from '@mui/icons-material';
 import { useCustomerOnboardingStore } from '../../stores/customerOnboardingStore';
 import { DetailedLocation, DetailedLocationCategory } from '../../types/location.types';
@@ -70,7 +70,7 @@ import {
   getCategoryIcon,
   industryTemplates,
   getIndustryTemplates,
-  hasIndustryTemplates
+  hasIndustryTemplates,
 } from '../../config';
 
 // Configuration data has been externalized to separate files for better maintainability
@@ -87,19 +87,21 @@ interface BatchAddDialogProps {
 /**
  * Dialog for batch adding detailed locations
  */
-const BatchAddDialog: React.FC<BatchAddDialogProps> = ({ 
-  open, 
-  onClose, 
-  onAdd, 
+const BatchAddDialog: React.FC<BatchAddDialogProps> = ({
+  open,
+  onClose,
+  onAdd,
   locationName,
-  industry 
+  industry,
 }) => {
-  const [locations, setLocations] = useState<Array<{
-    name: string;
-    category: DetailedLocationCategory;
-    floor?: string;
-    capacity?: number;
-  }>>([{ name: '', category: 'restaurant' }]);
+  const [locations, setLocations] = useState<
+    Array<{
+      name: string;
+      category: DetailedLocationCategory;
+      floor?: string;
+      capacity?: number;
+    }>
+  >([{ name: '', category: 'restaurant' }]);
 
   const templates = getIndustryTemplates(industry) || [];
 
@@ -118,12 +120,14 @@ const BatchAddDialog: React.FC<BatchAddDialogProps> = ({
   };
 
   const handleLoadTemplate = () => {
-    setLocations(templates.map(t => ({
-      name: t.name,
-      category: t.category,
-      floor: '',
-      capacity: undefined
-    })));
+    setLocations(
+      templates.map(t => ({
+        name: t.name,
+        category: t.category,
+        floor: '',
+        capacity: undefined,
+      }))
+    );
     toast.info(`Template für ${industry} geladen`);
   };
 
@@ -139,9 +143,7 @@ const BatchAddDialog: React.FC<BatchAddDialogProps> = ({
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
-      <DialogTitle>
-        Detail-Standorte für {locationName} hinzufügen
-      </DialogTitle>
+      <DialogTitle>Detail-Standorte für {locationName} hinzufügen</DialogTitle>
       <DialogContent>
         {templates.length > 0 && (
           <Box sx={{ mb: 2 }}>
@@ -155,7 +157,7 @@ const BatchAddDialog: React.FC<BatchAddDialogProps> = ({
             </Button>
           </Box>
         )}
-        
+
         <Table size="small">
           <TableHead>
             <TableRow>
@@ -173,7 +175,7 @@ const BatchAddDialog: React.FC<BatchAddDialogProps> = ({
                   <TextField
                     size="small"
                     value={location.name}
-                    onChange={(e) => handleChange(index, 'name', e.target.value)}
+                    onChange={e => handleChange(index, 'name', e.target.value)}
                     placeholder="z.B. Station 2A"
                     fullWidth
                   />
@@ -182,7 +184,7 @@ const BatchAddDialog: React.FC<BatchAddDialogProps> = ({
                   <Select
                     size="small"
                     value={location.category}
-                    onChange={(e) => handleChange(index, 'category', e.target.value)}
+                    onChange={e => handleChange(index, 'category', e.target.value)}
                     fullWidth
                   >
                     {Object.entries(categoryLabels).map(([value, label]) => (
@@ -196,7 +198,7 @@ const BatchAddDialog: React.FC<BatchAddDialogProps> = ({
                   <TextField
                     size="small"
                     value={location.floor || ''}
-                    onChange={(e) => handleChange(index, 'floor', e.target.value)}
+                    onChange={e => handleChange(index, 'floor', e.target.value)}
                     placeholder="z.B. 1. OG"
                   />
                 </TableCell>
@@ -205,8 +207,13 @@ const BatchAddDialog: React.FC<BatchAddDialogProps> = ({
                     size="small"
                     type="number"
                     value={location.capacity || ''}
-                    onChange={(e) => handleChange(index, 'capacity', 
-                      e.target.value ? parseInt(e.target.value) : undefined)}
+                    onChange={e =>
+                      handleChange(
+                        index,
+                        'capacity',
+                        e.target.value ? parseInt(e.target.value) : undefined
+                      )
+                    }
                     placeholder="50"
                   />
                 </TableCell>
@@ -223,25 +230,21 @@ const BatchAddDialog: React.FC<BatchAddDialogProps> = ({
             ))}
           </TableBody>
         </Table>
-        
+
         <Box sx={{ mt: 2 }}>
-          <Button
-            startIcon={<AddIcon />}
-            onClick={handleAddRow}
-            size="small"
-          >
+          <Button startIcon={<AddIcon />} onClick={handleAddRow} size="small">
             Zeile hinzufügen
           </Button>
         </Box>
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Abbrechen</Button>
-        <Button 
-          onClick={handleSave} 
+        <Button
+          onClick={handleSave}
           variant="contained"
-          sx={{ 
+          sx={{
             bgcolor: '#94C456',
-            '&:hover': { bgcolor: '#7BA345' }
+            '&:hover': { bgcolor: '#7BA345' },
           }}
         >
           Hinzufügen
@@ -253,7 +256,7 @@ const BatchAddDialog: React.FC<BatchAddDialogProps> = ({
 
 /**
  * Detailed Locations Step
- * 
+ *
  * Manages detailed locations within each main location.
  * Supports batch operations and industry-specific templates.
  */
@@ -266,7 +269,7 @@ export const DetailedLocationsStep: React.FC = () => {
     addDetailedLocation,
     updateDetailedLocation,
     removeDetailedLocation,
-    addBatchDetailedLocations
+    addBatchDetailedLocations,
   } = useCustomerOnboardingStore();
 
   const [expandedLocations, setExpandedLocations] = useState<string[]>([]);
@@ -284,10 +287,14 @@ export const DetailedLocationsStep: React.FC = () => {
    */
   const getIndustryIcon = () => {
     switch (industry) {
-      case 'hotel': return <HotelIcon />;
-      case 'krankenhaus': return <HospitalIcon />;
-      case 'restaurant': return <RestaurantIcon />;
-      default: return <BusinessIcon />;
+      case 'hotel':
+        return <HotelIcon />;
+      case 'krankenhaus':
+        return <HospitalIcon />;
+      case 'restaurant':
+        return <RestaurantIcon />;
+      default:
+        return <BusinessIcon />;
     }
   };
 
@@ -296,9 +303,7 @@ export const DetailedLocationsStep: React.FC = () => {
    */
   const toggleExpanded = (locationId: string) => {
     setExpandedLocations(prev =>
-      prev.includes(locationId)
-        ? prev.filter(id => id !== locationId)
-        : [...prev, locationId]
+      prev.includes(locationId) ? prev.filter(id => id !== locationId) : [...prev, locationId]
     );
   };
 
@@ -312,7 +317,10 @@ export const DetailedLocationsStep: React.FC = () => {
   /**
    * Handle batch add
    */
-  const handleBatchAdd = (locationId: string, newLocations: Omit<DetailedLocation, 'id' | 'locationId'>[]) => {
+  const handleBatchAdd = (
+    locationId: string,
+    newLocations: Omit<DetailedLocation, 'id' | 'locationId'>[]
+  ) => {
     addBatchDetailedLocations(locationId, newLocations);
     toast.success(`${newLocations.length} Detail-Standorte hinzugefügt`);
   };
@@ -322,11 +330,14 @@ export const DetailedLocationsStep: React.FC = () => {
    */
   const stats = useMemo(() => {
     const totalDetailedLocations = detailedLocations.length;
-    const byCategory = detailedLocations.reduce((acc, dl) => {
-      acc[dl.category] = (acc[dl.category] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
-    
+    const byCategory = detailedLocations.reduce(
+      (acc, dl) => {
+        acc[dl.category] = (acc[dl.category] || 0) + 1;
+        return acc;
+      },
+      {} as Record<string, number>
+    );
+
     return { total: totalDetailedLocations, byCategory };
   }, [detailedLocations]);
 
@@ -338,10 +349,10 @@ export const DetailedLocationsStep: React.FC = () => {
           Detail-Standorte verwalten
         </Typography>
       </Box>
-      
+
       <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-        Erfassen Sie hier die detaillierten Bereiche innerhalb Ihrer Standorte, 
-        wie z.B. Stationen, Restaurants, Abteilungen oder Verkaufspunkte.
+        Erfassen Sie hier die detaillierten Bereiche innerhalb Ihrer Standorte, wie z.B. Stationen,
+        Restaurants, Abteilungen oder Verkaufspunkte.
       </Typography>
 
       {locations.length === 0 ? (
@@ -375,7 +386,7 @@ export const DetailedLocationsStep: React.FC = () => {
           {locations.map((location, index) => {
             const locationName = locationFieldValues[location.id]?.name || `Standort ${index + 1}`;
             const locationDetailedLocations = getDetailedLocationsForLocation(location.id);
-            
+
             return (
               <Accordion
                 key={location.id}
@@ -386,9 +397,7 @@ export const DetailedLocationsStep: React.FC = () => {
                 <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                   <Box sx={{ display: 'flex', alignItems: 'center', width: '100%', pr: 2 }}>
                     <BusinessIcon sx={{ mr: 1, color: 'primary.main' }} />
-                    <Typography sx={{ flexGrow: 1 }}>
-                      {locationName}
-                    </Typography>
+                    <Typography sx={{ flexGrow: 1 }}>{locationName}</Typography>
                     <Chip
                       label={`${locationDetailedLocations.length} Bereiche`}
                       size="small"
@@ -396,7 +405,7 @@ export const DetailedLocationsStep: React.FC = () => {
                     />
                   </Box>
                 </AccordionSummary>
-                
+
                 <AccordionDetails>
                   <Box>
                     {/* Action Buttons */}
@@ -405,15 +414,17 @@ export const DetailedLocationsStep: React.FC = () => {
                         size="small"
                         variant="outlined"
                         startIcon={<AddIcon />}
-                        onClick={() => setBatchAddDialog({
-                          open: true,
-                          locationId: location.id,
-                          locationName
-                        })}
+                        onClick={() =>
+                          setBatchAddDialog({
+                            open: true,
+                            locationId: location.id,
+                            locationName,
+                          })
+                        }
                       >
                         Bereiche hinzufügen
                       </Button>
-                      
+
                       {locationDetailedLocations.length > 0 && (
                         <Button
                           size="small"
@@ -432,8 +443,8 @@ export const DetailedLocationsStep: React.FC = () => {
                     {/* Detailed Locations List */}
                     {locationDetailedLocations.length === 0 ? (
                       <Alert severity="info" variant="outlined">
-                        Noch keine Detail-Standorte erfasst. 
-                        Klicken Sie auf "Bereiche hinzufügen" um zu beginnen.
+                        Noch keine Detail-Standorte erfasst. Klicken Sie auf "Bereiche hinzufügen"
+                        um zu beginnen.
                       </Alert>
                     ) : (
                       <List disablePadding>
@@ -442,8 +453,9 @@ export const DetailedLocationsStep: React.FC = () => {
                             {dlIndex > 0 && <Divider />}
                             <ListItem
                               sx={{
-                                bgcolor: editingLocation === dl.id ? 'action.selected' : 'transparent',
-                                '&:hover': { bgcolor: 'action.hover' }
+                                bgcolor:
+                                  editingLocation === dl.id ? 'action.selected' : 'transparent',
+                                '&:hover': { bgcolor: 'action.hover' },
                               }}
                             >
                               <Box sx={{ display: 'flex', alignItems: 'center', mr: 2 }}>
@@ -458,7 +470,9 @@ export const DetailedLocationsStep: React.FC = () => {
                                     </Typography>
                                     {dl.floor && (
                                       <>
-                                        <Typography variant="caption" component="span">•</Typography>
+                                        <Typography variant="caption" component="span">
+                                          •
+                                        </Typography>
                                         <Typography variant="caption" component="span">
                                           {dl.floor}
                                         </Typography>
@@ -466,7 +480,9 @@ export const DetailedLocationsStep: React.FC = () => {
                                     )}
                                     {dl.capacity && (
                                       <>
-                                        <Typography variant="caption" component="span">•</Typography>
+                                        <Typography variant="caption" component="span">
+                                          •
+                                        </Typography>
                                         <Typography variant="caption" component="span">
                                           Kapazität: {dl.capacity}
                                         </Typography>
@@ -515,15 +531,15 @@ export const DetailedLocationsStep: React.FC = () => {
           {/* Info Box */}
           <Alert severity="info" sx={{ mt: 3 }} icon={<GroupsIcon />}>
             <AlertTitle>Tipp für {industry}</AlertTitle>
-            {industry === 'hotel' && 
+            {industry === 'hotel' &&
               'Erfassen Sie alle gastronomischen Outlets, Bars und Veranstaltungsräume als separate Bereiche.'}
-            {industry === 'krankenhaus' && 
+            {industry === 'krankenhaus' &&
               'Denken Sie an alle Stationen, Cafeterien und Kioske. Jede Station kann individuelle Anforderungen haben.'}
-            {industry === 'seniorenresidenz' && 
+            {industry === 'seniorenresidenz' &&
               'Unterscheiden Sie zwischen Wohnbereichen, Pflegestationen und allgemeinen Bereichen.'}
-            {industry === 'restaurant' && 
+            {industry === 'restaurant' &&
               'Bei mehreren Räumen oder Außenbereichen erfassen Sie diese als separate Bereiche.'}
-            {industry === 'betriebsrestaurant' && 
+            {industry === 'betriebsrestaurant' &&
               'Unterschiedliche Ausgabestellen oder Themenbereiche können als eigene Bereiche erfasst werden.'}
           </Alert>
         </>
@@ -533,7 +549,7 @@ export const DetailedLocationsStep: React.FC = () => {
       <BatchAddDialog
         open={batchAddDialog.open}
         onClose={() => setBatchAddDialog({ open: false, locationId: '', locationName: '' })}
-        onAdd={(locations) => handleBatchAdd(batchAddDialog.locationId, locations)}
+        onAdd={locations => handleBatchAdd(batchAddDialog.locationId, locations)}
         locationName={batchAddDialog.locationName}
         industry={industry}
       />

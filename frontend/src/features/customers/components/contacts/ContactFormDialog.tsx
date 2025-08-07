@@ -1,9 +1,9 @@
 /**
  * ContactFormDialog Component
- * 
+ *
  * Modal dialog for creating and editing contacts.
  * Uses Theme Architecture components for consistency.
- * 
+ *
  * @see /Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/step3/FRONTEND_FOUNDATION.md
  */
 
@@ -23,7 +23,7 @@ import {
   Tabs,
   Tab,
   useTheme,
-  useMediaQuery
+  useMediaQuery,
 } from '@mui/material';
 
 import { AdaptiveFormContainer } from '../adaptive/AdaptiveFormContainer';
@@ -33,9 +33,9 @@ import { LocationCheckboxList } from '../shared/LocationCheckboxList';
 import type { Contact, CreateContactDTO } from '../../types/contact.types';
 import type { Location } from '../../types/location.types';
 import type { FieldDefinition } from '../../types/field.types';
-import { 
+import {
   contactFieldExtensions,
-  getContactFieldsForGroup 
+  getContactFieldsForGroup,
 } from '../../data/fieldCatalogContactExtensions';
 
 interface ContactFormDialogProps {
@@ -69,7 +69,7 @@ function TabPanel(props: TabPanelProps) {
 
 /**
  * Contact Form Dialog
- * 
+ *
  * Multi-tab form for comprehensive contact data entry.
  */
 export const ContactFormDialog: React.FC<ContactFormDialogProps> = ({
@@ -77,17 +77,17 @@ export const ContactFormDialog: React.FC<ContactFormDialogProps> = ({
   onClose,
   onSubmit,
   contact,
-  locations = []
+  locations = [],
 }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const isEdit = !!contact;
-  
+
   // Form state
   const [formData, setFormData] = useState<Partial<Contact>>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [activeTab, setActiveTab] = useState(0);
-  
+
   // Initialize form data
   useEffect(() => {
     if (contact) {
@@ -100,40 +100,44 @@ export const ContactFormDialog: React.FC<ContactFormDialogProps> = ({
         isPrimary: false,
         isActive: true,
         responsibilityScope: 'all',
-        assignedLocationIds: []
+        assignedLocationIds: [],
       });
     }
     setErrors({});
     setActiveTab(0);
   }, [contact, open]);
-  
+
   // Field groups for tabs
-  const fieldGroups = useMemo(() => [
-    {
-      label: 'Basis',
-      fields: getContactFieldsForGroup('basicInfo').concat(
-        getContactFieldsForGroup('professionalInfo')
-      )
-    },
-    {
-      label: 'Kontakt',
-      fields: getContactFieldsForGroup('contactDetails').concat(
-        getContactFieldsForGroup('responsibility')
-      )
-    },
-    {
-      label: 'Beziehung',
-      fields: getContactFieldsForGroup('relationshipData')
-    }
-  ], []);
-  
+  const fieldGroups = useMemo(
+    () => [
+      {
+        label: 'Basis',
+        fields: getContactFieldsForGroup('basicInfo').concat(
+          getContactFieldsForGroup('professionalInfo')
+        ),
+      },
+      {
+        label: 'Kontakt',
+        fields: getContactFieldsForGroup('contactDetails').concat(
+          getContactFieldsForGroup('responsibility')
+        ),
+      },
+      {
+        label: 'Beziehung',
+        fields: getContactFieldsForGroup('relationshipData'),
+      },
+    ],
+    []
+  );
+
   // Handle field change
   const handleFieldChange = (fieldKey: string, value: any) => {
     setFormData(prev => ({
       ...prev,
-      [fieldKey.replace('contact', '').charAt(0).toLowerCase() + fieldKey.replace('contact', '').slice(1)]: value
+      [fieldKey.replace('contact', '').charAt(0).toLowerCase() +
+      fieldKey.replace('contact', '').slice(1)]: value,
     }));
-    
+
     // Clear error for this field
     if (errors[fieldKey]) {
       setErrors(prev => {
@@ -143,28 +147,28 @@ export const ContactFormDialog: React.FC<ContactFormDialogProps> = ({
       });
     }
   };
-  
+
   // Handle responsibility scope change
   const handleResponsibilityScopeChange = (scope: 'all' | 'specific') => {
     setFormData(prev => ({
       ...prev,
       responsibilityScope: scope,
-      assignedLocationIds: scope === 'all' ? [] : prev.assignedLocationIds || []
+      assignedLocationIds: scope === 'all' ? [] : prev.assignedLocationIds || [],
     }));
   };
-  
+
   // Handle location assignment
   const handleLocationChange = (locationIds: string[]) => {
     setFormData(prev => ({
       ...prev,
-      assignedLocationIds: locationIds
+      assignedLocationIds: locationIds,
     }));
   };
-  
+
   // Validate form
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
-    
+
     // Required fields
     if (!formData.firstName?.trim()) {
       newErrors.contactFirstName = 'Vorname ist erforderlich';
@@ -175,7 +179,7 @@ export const ContactFormDialog: React.FC<ContactFormDialogProps> = ({
     if (!formData.salutation) {
       newErrors.contactSalutation = 'Anrede ist erforderlich';
     }
-    
+
     // Email validation
     if (formData.email) {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -183,21 +187,24 @@ export const ContactFormDialog: React.FC<ContactFormDialogProps> = ({
         newErrors.contactEmail = 'Ungültige E-Mail-Adresse';
       }
     }
-    
+
     // At least one contact method
     if (!formData.email && !formData.phone && !formData.mobile) {
       newErrors.contactEmail = 'Mindestens eine Kontaktmöglichkeit erforderlich';
     }
-    
+
     // Location assignment validation
-    if (formData.responsibilityScope === 'specific' && (!formData.assignedLocationIds || formData.assignedLocationIds.length === 0)) {
+    if (
+      formData.responsibilityScope === 'specific' &&
+      (!formData.assignedLocationIds || formData.assignedLocationIds.length === 0)
+    ) {
       newErrors.assignedLocationIds = 'Bitte wählen Sie mindestens einen Standort';
     }
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-  
+
   // Handle submit
   const handleSubmit = () => {
     if (validateForm()) {
@@ -214,25 +221,19 @@ export const ContactFormDialog: React.FC<ContactFormDialogProps> = ({
       }
     }
   };
-  
+
   // Get field value
   const getFieldValue = (fieldKey: string): any => {
-    const key = fieldKey.replace('contact', '').charAt(0).toLowerCase() + fieldKey.replace('contact', '').slice(1);
+    const key =
+      fieldKey.replace('contact', '').charAt(0).toLowerCase() +
+      fieldKey.replace('contact', '').slice(1);
     return formData[key as keyof Contact];
   };
-  
+
   return (
-    <Dialog
-      open={open}
-      onClose={onClose}
-      maxWidth="md"
-      fullWidth
-      fullScreen={isMobile}
-    >
-      <DialogTitle>
-        {isEdit ? 'Kontakt bearbeiten' : 'Neuen Kontakt anlegen'}
-      </DialogTitle>
-      
+    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth fullScreen={isMobile}>
+      <DialogTitle>{isEdit ? 'Kontakt bearbeiten' : 'Neuen Kontakt anlegen'}</DialogTitle>
+
       <DialogContent dividers>
         {/* Tabs */}
         <Tabs
@@ -242,15 +243,15 @@ export const ContactFormDialog: React.FC<ContactFormDialogProps> = ({
           sx={{ borderBottom: 1, borderColor: 'divider', mb: 2 }}
         >
           {fieldGroups.map((group, index) => (
-            <Tab 
-              key={index} 
+            <Tab
+              key={index}
               label={group.label}
               id={`contact-tab-${index}`}
               aria-controls={`contact-tabpanel-${index}`}
             />
           ))}
         </Tabs>
-        
+
         {/* Tab Panels */}
         {fieldGroups.map((group, index) => (
           <TabPanel key={index} value={activeTab} index={index}>
@@ -258,17 +259,14 @@ export const ContactFormDialog: React.FC<ContactFormDialogProps> = ({
               <DynamicFieldRenderer
                 fields={group.fields}
                 values={Object.fromEntries(
-                  group.fields.map(field => [
-                    field.key,
-                    getFieldValue(field.key)
-                  ])
+                  group.fields.map(field => [field.key, getFieldValue(field.key)])
                 )}
                 errors={errors}
                 onChange={handleFieldChange}
                 onBlur={() => {}}
               />
             </AdaptiveFormContainer>
-            
+
             {/* Special handling for responsibility on Contact tab */}
             {index === 1 && locations.length > 1 && (
               <Box sx={{ mt: 3 }}>
@@ -276,21 +274,21 @@ export const ContactFormDialog: React.FC<ContactFormDialogProps> = ({
                 <Typography variant="subtitle2" gutterBottom>
                   Zuständigkeitsbereich
                 </Typography>
-                
+
                 <Box sx={{ mb: 2 }}>
                   <FormControlLabel
                     control={
                       <Switch
                         checked={formData.responsibilityScope === 'specific'}
-                        onChange={(e) => handleResponsibilityScopeChange(
-                          e.target.checked ? 'specific' : 'all'
-                        )}
+                        onChange={e =>
+                          handleResponsibilityScopeChange(e.target.checked ? 'specific' : 'all')
+                        }
                       />
                     }
                     label="Nur für bestimmte Standorte zuständig"
                   />
                 </Box>
-                
+
                 {formData.responsibilityScope === 'specific' && (
                   <>
                     <LocationCheckboxList
@@ -309,30 +307,30 @@ export const ContactFormDialog: React.FC<ContactFormDialogProps> = ({
             )}
           </TabPanel>
         ))}
-        
+
         {/* Primary Contact Option */}
         <Box sx={{ mt: 3 }}>
           <FormControlLabel
             control={
               <Switch
                 checked={formData.isPrimary || false}
-                onChange={(e) => setFormData(prev => ({
-                  ...prev,
-                  isPrimary: e.target.checked
-                }))}
+                onChange={e =>
+                  setFormData(prev => ({
+                    ...prev,
+                    isPrimary: e.target.checked,
+                  }))
+                }
               />
             }
             label="Als Hauptansprechpartner festlegen"
           />
         </Box>
       </DialogContent>
-      
+
       <DialogActions>
-        <Button onClick={onClose}>
-          Abbrechen
-        </Button>
-        <Button 
-          onClick={handleSubmit} 
+        <Button onClick={onClose}>Abbrechen</Button>
+        <Button
+          onClick={handleSubmit}
           variant="contained"
           disabled={!formData.firstName || !formData.lastName}
         >

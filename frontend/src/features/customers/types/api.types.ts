@@ -1,14 +1,25 @@
 /**
  * API Request/Response Types
- * 
+ *
  * Type definitions for all API endpoints in the Customer Management system.
  * Based on the REST API specification.
- * 
+ *
  * @see /Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/02-BACKEND/03-rest-api.md
  */
 
-import type { Customer, CustomerStatus, CustomerWithFields, CustomerListItem, CustomerSearchCriteria } from './customer.types';
-import type { Location, LocationWithFields, DetailedLocation, DetailedLocationBatch } from './location.types';
+import type {
+  Customer,
+  CustomerStatus,
+  CustomerWithFields,
+  CustomerListItem,
+  CustomerSearchCriteria,
+} from './customer.types';
+import type {
+  Location,
+  LocationWithFields,
+  DetailedLocation,
+  DetailedLocationBatch,
+} from './location.types';
 import type { FieldValue } from './field.types';
 import { EntityType } from './field.types';
 

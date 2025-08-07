@@ -52,9 +52,7 @@ function App() {
               </CardHeader>
               <CardContent>
                 <div className="card-actions">
-                  <p className="card-text">
-                    Revolutionäres Sales Cockpit mit KI-Unterstützung
-                  </p>
+                  <p className="card-text">Revolutionäres Sales Cockpit mit KI-Unterstützung</p>
                   <div className="card-button-wrapper">
                     <Button asChild className="btn-primary">
                       <Link to="/cockpit">Sales Cockpit öffnen 🚀</Link>
@@ -90,7 +88,9 @@ function App() {
               </CardHeader>
               <CardContent>
                 <div className="card-actions">
-                  <p className="card-text">Übersichtliche Kundenliste mit Status und Risikobewertung</p>
+                  <p className="card-text">
+                    Übersichtliche Kundenliste mit Status und Risikobewertung
+                  </p>
                   <div className="card-button-wrapper">
                     <Button asChild>
                       <Link to="/customers">Kundenverwaltung öffnen</Link>
@@ -159,7 +159,9 @@ function App() {
               </CardHeader>
               <CardContent>
                 <div className="card-actions">
-                  <p className="card-text">Testen Sie das neue Help System mit Tooltips, Tours und proaktiver Hilfe</p>
+                  <p className="card-text">
+                    Testen Sie das neue Help System mit Tooltips, Tours und proaktiver Hilfe
+                  </p>
                   <div className="card-button-wrapper">
                     <Button asChild>
                       <Link to="/help-demo">Help System Demo öffnen</Link>

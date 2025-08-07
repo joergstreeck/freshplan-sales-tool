@@ -12,7 +12,7 @@ import {
   Tooltip,
   Button,
   Stack,
-  Paper
+  Paper,
 } from '@mui/material';
 import {
   TrendingUp,
@@ -22,10 +22,17 @@ import {
   Info,
   Refresh,
   Download,
-  Schedule
+  Schedule,
 } from '@mui/icons-material';
 import { useQuery } from '@tanstack/react-query';
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip, Legend } from 'recharts';
+import {
+  PieChart,
+  Pie,
+  Cell,
+  ResponsiveContainer,
+  Tooltip as RechartsTooltip,
+  Legend,
+} from 'recharts';
 import { contactInteractionApi } from '../../services/contactInteractionApi';
 import type { DataQualityMetricsDTO } from '../../types/intelligence.types';
 
@@ -34,7 +41,7 @@ const FRESHNESS_COLORS = {
   fresh: '#4caf50',
   aging: '#ff9800',
   stale: '#f44336',
-  critical: '#b71c1c'
+  critical: '#b71c1c',
 };
 
 interface MetricCardProps {
@@ -46,13 +53,13 @@ interface MetricCardProps {
   icon?: React.ReactNode;
 }
 
-const MetricCard: React.FC<MetricCardProps> = ({ 
-  title, 
-  value, 
-  subtitle, 
-  trend, 
+const MetricCard: React.FC<MetricCardProps> = ({
+  title,
+  value,
+  subtitle,
+  trend,
   color = '#1976d2',
-  icon 
+  icon,
 }) => {
   const getTrendIcon = () => {
     if (!trend) return null;
@@ -102,16 +109,21 @@ const getQualityLabel = (quality: string): { label: string; color: string } => {
     FAIR: { label: 'Befriedigend', color: '#ff9800' },
     POOR: { label: 'Mangelhaft', color: '#ff5722' },
     CRITICAL: { label: 'Kritisch', color: '#f44336' },
-    UNKNOWN: { label: 'Unbekannt', color: '#9e9e9e' }
+    UNKNOWN: { label: 'Unbekannt', color: '#9e9e9e' },
   };
   return map[quality] || map.UNKNOWN;
 };
 
 export const DataHygieneDashboard: React.FC = () => {
-  const { data: metrics, isLoading, error, refetch } = useQuery({
+  const {
+    data: metrics,
+    isLoading,
+    error,
+    refetch,
+  } = useQuery({
     queryKey: ['dataQualityMetrics'],
     queryFn: contactInteractionApi.getDataQualityMetrics,
-    refetchInterval: 60000 // Refresh every minute
+    refetchInterval: 60000, // Refresh every minute
   });
 
   if (isLoading) {
@@ -123,11 +135,7 @@ export const DataHygieneDashboard: React.FC = () => {
   }
 
   if (error) {
-    return (
-      <Alert severity="error">
-        Fehler beim Laden der Datenqualitäts-Metriken
-      </Alert>
-    );
+    return <Alert severity="error">Fehler beim Laden der Datenqualitäts-Metriken</Alert>;
   }
 
   if (!metrics) {
@@ -136,10 +144,26 @@ export const DataHygieneDashboard: React.FC = () => {
 
   // Prepare data for pie chart
   const freshnessData = [
-    { name: 'Aktuell (<90 Tage)', value: metrics.freshContacts || 0, color: FRESHNESS_COLORS.fresh },
-    { name: 'Veraltet (90-180 Tage)', value: metrics.agingContacts || 0, color: FRESHNESS_COLORS.aging },
-    { name: 'Stark veraltet (180-365 Tage)', value: metrics.staleContacts || 0, color: FRESHNESS_COLORS.stale },
-    { name: 'Kritisch (>365 Tage)', value: metrics.criticalContacts || 0, color: FRESHNESS_COLORS.critical }
+    {
+      name: 'Aktuell (<90 Tage)',
+      value: metrics.freshContacts || 0,
+      color: FRESHNESS_COLORS.fresh,
+    },
+    {
+      name: 'Veraltet (90-180 Tage)',
+      value: metrics.agingContacts || 0,
+      color: FRESHNESS_COLORS.aging,
+    },
+    {
+      name: 'Stark veraltet (180-365 Tage)',
+      value: metrics.staleContacts || 0,
+      color: FRESHNESS_COLORS.stale,
+    },
+    {
+      name: 'Kritisch (>365 Tage)',
+      value: metrics.criticalContacts || 0,
+      color: FRESHNESS_COLORS.critical,
+    },
   ].filter(item => item.value > 0);
 
   const qualityInfo = getQualityLabel(metrics.overallDataQuality || 'UNKNOWN');
@@ -176,7 +200,7 @@ export const DataHygieneDashboard: React.FC = () => {
             icon={<CheckCircle sx={{ color: qualityInfo.color }} />}
           />
         </Grid>
-        
+
         <Grid size={{ xs: 12, sm: 6, md: 3 }}>
           <MetricCard
             title="Kontakte mit Interaktionen"
@@ -185,7 +209,7 @@ export const DataHygieneDashboard: React.FC = () => {
             color={metrics.interactionCoverage! >= 50 ? '#4caf50' : '#ff9800'}
           />
         </Grid>
-        
+
         <Grid size={{ xs: 12, sm: 6, md: 3 }}>
           <MetricCard
             title="Ø Interaktionen"
@@ -194,7 +218,7 @@ export const DataHygieneDashboard: React.FC = () => {
             icon={<Schedule sx={{ color: '#1976d2' }} />}
           />
         </Grid>
-        
+
         <Grid size={{ xs: 12, sm: 6, md: 3 }}>
           <MetricCard
             title="Warmth Score Abdeckung"
@@ -213,7 +237,7 @@ export const DataHygieneDashboard: React.FC = () => {
               <Typography variant="h6" gutterBottom>
                 Kontakte nach Aktualität
               </Typography>
-              
+
               {freshnessData.length > 0 ? (
                 <Box height={250}>
                   <ResponsiveContainer width="100%" height="100%">
@@ -239,12 +263,10 @@ export const DataHygieneDashboard: React.FC = () => {
                 </Box>
               ) : (
                 <Box height={250} display="flex" alignItems="center" justifyContent="center">
-                  <Typography color="textSecondary">
-                    Keine Kontaktdaten vorhanden
-                  </Typography>
+                  <Typography color="textSecondary">Keine Kontaktdaten vorhanden</Typography>
                 </Box>
               )}
-              
+
               {metrics.criticalContacts! > 0 && (
                 <Alert severity="error" sx={{ mt: 2 }}>
                   <Typography variant="body2">
@@ -266,7 +288,7 @@ export const DataHygieneDashboard: React.FC = () => {
               <Typography variant="h6" gutterBottom>
                 Empfehlungen zur Datenqualität
               </Typography>
-              
+
               {metrics.showDataCollectionHints && (
                 <Stack spacing={2}>
                   {metrics.criticalDataGaps?.map((gap, index) => (
@@ -274,11 +296,11 @@ export const DataHygieneDashboard: React.FC = () => {
                       {gap}
                     </Alert>
                   ))}
-                  
+
                   <Typography variant="subtitle2" color="textSecondary" sx={{ mt: 2 }}>
                     Verbesserungsvorschläge:
                   </Typography>
-                  
+
                   {metrics.improvementSuggestions?.map((suggestion, index) => (
                     <Paper key={index} sx={{ p: 2, bgcolor: 'grey.50' }}>
                       <Box display="flex" alignItems="center" gap={1}>
@@ -289,11 +311,9 @@ export const DataHygieneDashboard: React.FC = () => {
                   ))}
                 </Stack>
               )}
-              
+
               {!metrics.showDataCollectionHints && (
-                <Alert severity="success">
-                  Ihre Datenqualität ist ausgezeichnet! Weiter so!
-                </Alert>
+                <Alert severity="success">Ihre Datenqualität ist ausgezeichnet! Weiter so!</Alert>
               )}
             </CardContent>
           </Card>
@@ -310,7 +330,7 @@ export const DataHygieneDashboard: React.FC = () => {
             <Typography variant="body2" color="textSecondary" gutterBottom>
               Je mehr Interaktionen erfasst werden, desto präziser werden die Intelligenz-Features
             </Typography>
-            
+
             <Box mt={3}>
               <Stack spacing={2}>
                 <Box>
@@ -323,7 +343,7 @@ export const DataHygieneDashboard: React.FC = () => {
                     Basic CRUD, Manuelle Notizen
                   </Typography>
                 </Box>
-                
+
                 <Box>
                   <Box display="flex" justifyContent="space-between" mb={1}>
                     <Typography variant="body2">Learning Phase (7-30 Tage)</Typography>
@@ -333,7 +353,7 @@ export const DataHygieneDashboard: React.FC = () => {
                     Erste Warmth Trends, Simple Vorschläge
                   </Typography>
                 </Box>
-                
+
                 <Box>
                   <Box display="flex" justifyContent="space-between" mb={1}>
                     <Typography variant="body2">Intelligent Phase (30+ Tage)</Typography>

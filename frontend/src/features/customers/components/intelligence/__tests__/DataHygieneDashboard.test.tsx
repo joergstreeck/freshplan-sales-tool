@@ -13,14 +13,16 @@ const mockedApi = contactInteractionApi as vi.Mocked<typeof contactInteractionAp
 
 // Mock recharts components
 vi.mock('recharts', () => ({
-  PieChart: ({ children }: { children: React.ReactNode }) => <div data-testid="pie-chart">{children}</div>,
+  PieChart: ({ children }: { children: React.ReactNode }) => (
+    <div data-testid="pie-chart">{children}</div>
+  ),
   Pie: () => <div data-testid="pie" />,
   Cell: () => <div data-testid="cell" />,
   ResponsiveContainer: ({ children }: { children: React.ReactNode }) => (
     <div data-testid="responsive-container">{children}</div>
   ),
   Tooltip: () => <div data-testid="tooltip" />,
-  Legend: () => <div data-testid="legend" />
+  Legend: () => <div data-testid="legend" />,
 }));
 
 const theme = createTheme();
@@ -36,9 +38,7 @@ const createWrapper = () => {
 
   return ({ children }: { children: React.ReactNode }) => (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider theme={theme}>
-        {children}
-      </ThemeProvider>
+      <ThemeProvider theme={theme}>{children}</ThemeProvider>
     </QueryClientProvider>
   );
 };
@@ -64,14 +64,14 @@ describe('DataHygieneDashboard Integration Tests', () => {
         showDataCollectionHints: true,
         criticalDataGaps: [
           'Über 50% der Kontakte haben keine Interaktionen',
-          'Datenqualität unter 60%'
+          'Datenqualität unter 60%',
         ],
         improvementSuggestions: [
           'Import von E-Mail-Historie durchführen',
-          'Datenpflege-Kampagne starten'
+          'Datenpflege-Kampagne starten',
         ],
         overallDataQuality: 'CRITICAL',
-        interactionCoverage: 0
+        interactionCoverage: 0,
       };
 
       mockedApi.getDataQualityMetrics.mockResolvedValue(emptyMetrics);
@@ -92,7 +92,9 @@ describe('DataHygieneDashboard Integration Tests', () => {
 
       // Check recommendations section
       expect(screen.getByText('Empfehlungen zur Datenqualität')).toBeInTheDocument();
-      expect(screen.getByText('Über 50% der Kontakte haben keine Interaktionen')).toBeInTheDocument();
+      expect(
+        screen.getByText('Über 50% der Kontakte haben keine Interaktionen')
+      ).toBeInTheDocument();
       expect(screen.getByText('Datenqualität unter 60%')).toBeInTheDocument();
 
       // Check improvement suggestions
@@ -115,7 +117,7 @@ describe('DataHygieneDashboard Integration Tests', () => {
         criticalDataGaps: [],
         improvementSuggestions: [],
         overallDataQuality: 'CRITICAL',
-        interactionCoverage: 0
+        interactionCoverage: 0,
       };
 
       mockedApi.getDataQualityMetrics.mockResolvedValue(emptyMetrics);
@@ -158,7 +160,7 @@ describe('DataHygieneDashboard Integration Tests', () => {
         criticalDataGaps: ['2 Kontakte über 1 Jahr nicht aktualisiert'],
         improvementSuggestions: ['Sofortige Überprüfung kritischer Kontakte'],
         overallDataQuality: 'GOOD',
-        interactionCoverage: 70
+        interactionCoverage: 70,
       };
 
       mockedApi.getDataQualityMetrics.mockResolvedValue(populatedMetrics);
@@ -195,7 +197,7 @@ describe('DataHygieneDashboard Integration Tests', () => {
         criticalDataGaps: [],
         improvementSuggestions: [],
         overallDataQuality: 'EXCELLENT',
-        interactionCoverage: 80
+        interactionCoverage: 80,
       };
 
       mockedApi.getDataQualityMetrics.mockResolvedValue(metricsWithFreshness);
@@ -226,7 +228,7 @@ describe('DataHygieneDashboard Integration Tests', () => {
         criticalDataGaps: ['2 Kontakte über 1 Jahr nicht aktualisiert'],
         improvementSuggestions: ['Sofortige Überprüfung kritischer Kontakte'],
         overallDataQuality: 'FAIR',
-        interactionCoverage: 75
+        interactionCoverage: 75,
       };
 
       mockedApi.getDataQualityMetrics.mockResolvedValue(metricsWithCritical);
@@ -234,7 +236,9 @@ describe('DataHygieneDashboard Integration Tests', () => {
       render(<DataHygieneDashboard />, { wrapper: createWrapper() });
 
       await waitFor(() => {
-        expect(screen.getByText('2 Kontakte wurden über 1 Jahr nicht aktualisiert!')).toBeInTheDocument();
+        expect(
+          screen.getByText('2 Kontakte wurden über 1 Jahr nicht aktualisiert!')
+        ).toBeInTheDocument();
       });
 
       expect(screen.getByText('Kritische Kontakte anzeigen')).toBeInTheDocument();
@@ -255,7 +259,7 @@ describe('DataHygieneDashboard Integration Tests', () => {
         criticalDataGaps: [],
         improvementSuggestions: [],
         overallDataQuality: 'EXCELLENT',
-        interactionCoverage: 95
+        interactionCoverage: 95,
       };
 
       mockedApi.getDataQualityMetrics.mockResolvedValue(excellentMetrics);
@@ -267,7 +271,9 @@ describe('DataHygieneDashboard Integration Tests', () => {
       });
 
       expect(screen.getByText('Exzellent')).toBeInTheDocument();
-      expect(screen.getByText('Ihre Datenqualität ist ausgezeichnet! Weiter so!')).toBeInTheDocument();
+      expect(
+        screen.getByText('Ihre Datenqualität ist ausgezeichnet! Weiter so!')
+      ).toBeInTheDocument();
     });
   });
 
@@ -281,7 +287,9 @@ describe('DataHygieneDashboard Integration Tests', () => {
 
       // Assert
       await waitFor(() => {
-        expect(screen.getByText('Fehler beim Laden der Datenqualitäts-Metriken')).toBeInTheDocument();
+        expect(
+          screen.getByText('Fehler beim Laden der Datenqualitäts-Metriken')
+        ).toBeInTheDocument();
       });
     });
 
@@ -315,7 +323,7 @@ describe('DataHygieneDashboard Integration Tests', () => {
         criticalDataGaps: [],
         improvementSuggestions: [],
         overallDataQuality: 'FAIR',
-        interactionCoverage: 50
+        interactionCoverage: 50,
       };
 
       mockedApi.getDataQualityMetrics.mockResolvedValue(mockMetrics);
@@ -357,7 +365,7 @@ describe('DataHygieneDashboard Integration Tests', () => {
           criticalDataGaps: [],
           improvementSuggestions: [],
           overallDataQuality: quality as any,
-          interactionCoverage: 50
+          interactionCoverage: 50,
         };
 
         mockedApi.getDataQualityMetrics.mockResolvedValue(metrics);

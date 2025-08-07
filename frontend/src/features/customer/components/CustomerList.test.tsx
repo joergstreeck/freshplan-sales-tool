@@ -171,7 +171,7 @@ describe('CustomerList Component', () => {
       const companyHeader = screen.getByText('Firmenname');
       await user.click(companyHeader);
 
-      expect(vi.mocked(customerApi.getCustomers)).toHaveBeenCalledWith(0, 20, 'companyName');
+      expect(vi.mocked(customerApi.getCustomers)).toHaveBeenCalledWith(0, 50, 'companyName');
     });
 
     it('should handle pagination', async () => {
@@ -201,7 +201,7 @@ describe('CustomerList Component', () => {
 
       await user.click(nextButton);
 
-      expect(vi.mocked(customerApi.getCustomers)).toHaveBeenCalledWith(1, 20, 'companyName');
+      expect(vi.mocked(customerApi.getCustomers)).toHaveBeenCalledWith(1, 50, 'companyName');
     });
 
     it('should disable pagination buttons appropriately', async () => {

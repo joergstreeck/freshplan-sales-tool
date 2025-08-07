@@ -61,8 +61,7 @@ export const KeycloakProvider: React.FC<KeycloakProviderProps> = ({ children }) 
                 const event = new CustomEvent('auth-error', {
                   detail: {
                     type: 'token-refresh-failed',
-                    message:
-                      'Ihre Sitzung ist abgelaufen. Bitte melden Sie sich erneut an.',
+                    message: 'Ihre Sitzung ist abgelaufen. Bitte melden Sie sich erneut an.',
                   },
                 });
                 window.dispatchEvent(event);
@@ -82,8 +81,7 @@ export const KeycloakProvider: React.FC<KeycloakProviderProps> = ({ children }) 
             const event = new CustomEvent('auth-error', {
               detail: {
                 type: 'auth-failed',
-                message:
-                  'Authentifizierung fehlgeschlagen. Bitte versuchen Sie es erneut.',
+                message: 'Authentifizierung fehlgeschlagen. Bitte versuchen Sie es erneut.',
               },
             });
             window.dispatchEvent(event);

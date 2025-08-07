@@ -155,11 +155,11 @@ public class ContactService {
         contactRepository
             .findByIdOptional(contactId)
             .orElseThrow(() -> new NotFoundException("Contact not found: " + contactId));
-    
+
     if (!contact.getCustomer().getId().equals(customerId)) {
       throw new NotFoundException("Contact not found: " + contactId);
     }
-    
+
     return contactMapper.toDTO(contact);
   }
 

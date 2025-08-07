@@ -235,7 +235,7 @@ public class TestDataService {
 
     // Mark as test data
     customer.setIsTestData(true);
-    
+
     // Sprint 2 fields - set defaults to avoid NOT NULL constraint violations
     customer.setLocationsGermany(1);
     customer.setLocationsAustria(0);
@@ -268,6 +268,70 @@ public class TestDataService {
     event.setIsTestData(true);
 
     return event;
+  }
+
+  /**
+   * Seeds additional test customers to reach exactly 58 total customers. Call this after
+   * seedTestData() and seedComprehensiveTestData() to get the missing 14 customers.
+   */
+  @Transactional
+  public SeedResult seedAdditionalTestData() {
+    LOG.info("Seeding additional 14 test customers to reach 58 total...");
+
+    List<Customer> createdCustomers = new ArrayList<>();
+
+    try {
+      // Create 14 additional diverse test customers
+      for (int i = 1; i <= 14; i++) {
+        Customer customer = new Customer();
+        customer.setCustomerNumber("ADD-" + String.format("%03d", i));
+        customer.setCompanyName("[TEST] Zusatzkunde " + i);
+        customer.setCustomerType(CustomerType.UNTERNEHMEN);
+        customer.setStatus(
+            i % 4 == 0
+                ? CustomerStatus.AKTIV
+                : i % 3 == 0
+                    ? CustomerStatus.RISIKO
+                    : i % 2 == 0 ? CustomerStatus.INAKTIV : CustomerStatus.LEAD);
+        customer.setIndustry(
+            i % 5 == 0
+                ? Industry.HOTEL
+                : i % 4 == 0
+                    ? Industry.RESTAURANT
+                    : i % 3 == 0
+                        ? Industry.EINZELHANDEL
+                        : i % 2 == 0 ? Industry.CATERING : Industry.SONSTIGE);
+        customer.setLifecycleStage(CustomerLifecycleStage.ACQUISITION);
+        customer.setPaymentTerms(PaymentTerms.NETTO_30);
+        customer.setCreatedBy(TEST_USER);
+        customer.setIsDeleted(false);
+        customer.setIsTestData(true);
+
+        // Sprint 2 fields
+        customer.setLocationsGermany(i);
+        customer.setLocationsAustria(i % 3);
+        customer.setLocationsSwitzerland(i % 4);
+        customer.setLocationsRestEU(i % 2);
+        customer.setTotalLocationsEU(i + (i % 3) + (i % 4) + (i % 2));
+        customer.setPainPoints(new ArrayList<>());
+        customer.setPrimaryFinancing(i % 2 == 0 ? FinancingType.PRIVATE : FinancingType.PUBLIC);
+        customer.setRiskScore(i * 7 % 100);
+
+        if (i % 3 == 0) {
+          customer.setLastContactDate(LocalDateTime.now().minusDays(i * 10));
+        }
+
+        customerRepository.persist(customer);
+        createdCustomers.add(customer);
+      }
+
+      LOG.infof("Successfully seeded %d additional test customers", createdCustomers.size());
+      return new SeedResult(createdCustomers.size(), 0);
+
+    } catch (Exception e) {
+      LOG.error("Error seeding additional test data", e);
+      throw new RuntimeException("Failed to seed additional test data: " + e.getMessage(), e);
+    }
   }
 
   /**

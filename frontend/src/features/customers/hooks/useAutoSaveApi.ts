@@ -1,9 +1,9 @@
 /**
  * Auto Save API Hook
- * 
+ *
  * Enhanced auto-save hook with API integration.
  * Handles network failures gracefully and provides detailed status.
- * 
+ *
  * @see /Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/03-FRONTEND/04-api-integration.md
  * @see /Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/03-FRONTEND/02-state-management.md
  */
@@ -45,7 +45,7 @@ interface UseAutoSaveApiResult {
 
 /**
  * Auto-save hook with full API integration
- * 
+ *
  * Features:
  * - Automatic draft creation if needed
  * - Debounced saving on changes
@@ -54,14 +54,8 @@ interface UseAutoSaveApiResult {
  * - Optional toast notifications
  */
 export const useAutoSaveApi = (options: UseAutoSaveApiOptions = {}): UseAutoSaveApiResult => {
-  const { 
-    delay = 2000, 
-    enabled = true,
-    showNotifications = false,
-    onSuccess,
-    onError
-  } = options;
-  
+  const { delay = 2000, enabled = true, showNotifications = false, onSuccess, onError } = options;
+
   const {
     isDirty,
     draftId,
@@ -70,32 +64,32 @@ export const useAutoSaveApi = (options: UseAutoSaveApiOptions = {}): UseAutoSave
     setDraftId,
     setLastSaved,
     setSaving,
-    setDirty
+    setDirty,
   } = useCustomerOnboardingStore();
-  
+
   const [status, setStatus] = useState<'idle' | 'saving' | 'success' | 'error'>('idle');
   const [lastError, setLastError] = useState<Error | null>(null);
   const [lastSavedDate, setLastSavedDate] = useState<Date | null>(null);
-  
+
   const timeoutRef = useRef<NodeJS.Timeout>();
   const saveCountRef = useRef(0);
-  
+
   // API Mutations
   const createDraftMutation = useCreateCustomerDraft({
-    onSuccess: (data) => {
+    onSuccess: data => {
       setDraftId(data.id);
       if (showNotifications) {
         toast.success('Entwurf erstellt');
       }
     },
-    onError: (error) => {
+    onError: error => {
       setLastError(error as Error);
       if (showNotifications) {
         toast.error('Entwurf konnte nicht erstellt werden');
       }
-    }
+    },
   });
-  
+
   const updateDraftMutation = useUpdateCustomerDraft({
     onSuccess: () => {
       const now = new Date();
@@ -104,25 +98,25 @@ export const useAutoSaveApi = (options: UseAutoSaveApiOptions = {}): UseAutoSave
       setStatus('success');
       setDirty(false);
       saveCountRef.current += 1;
-      
+
       if (showNotifications && saveCountRef.current % 5 === 0) {
         toast.success('Automatisch gespeichert', { autoClose: 1000 });
       }
-      
+
       onSuccess?.();
     },
-    onError: (error) => {
+    onError: error => {
       setLastError(error as Error);
       setStatus('error');
-      
+
       if (showNotifications) {
         toast.error('Speichern fehlgeschlagen - wird erneut versucht');
       }
-      
+
       onError?.(error as Error);
-    }
+    },
   });
-  
+
   /**
    * Save implementation
    */
@@ -131,30 +125,30 @@ export const useAutoSaveApi = (options: UseAutoSaveApiOptions = {}): UseAutoSave
       setStatus('saving');
       setSaving(true);
       setLastError(null);
-      
+
       // Prepare save data
       const saveData = {
         fieldValues: {
           ...customerData,
           // Include location count for quick reference
           _locationCount: locations.length,
-          _lastModified: new Date().toISOString()
-        }
+          _lastModified: new Date().toISOString(),
+        },
       };
-      
+
       if (!draftId) {
         // Create new draft first
         const draft = await createDraftMutation.mutateAsync();
         // Then update with data
         await updateDraftMutation.mutateAsync({
           draftId: draft.id,
-          data: saveData
+          data: saveData,
         });
       } else {
         // Update existing draft
         await updateDraftMutation.mutateAsync({
           draftId,
-          data: saveData
+          data: saveData,
         });
       }
     } catch (error) {
@@ -164,15 +158,15 @@ export const useAutoSaveApi = (options: UseAutoSaveApiOptions = {}): UseAutoSave
       setSaving(false);
     }
   }, [
-    draftId, 
-    customerData, 
+    draftId,
+    customerData,
     locations,
     createDraftMutation,
     updateDraftMutation,
     setSaving,
-    setDraftId
+    setDraftId,
   ]);
-  
+
   /**
    * Manual save trigger
    */
@@ -181,10 +175,10 @@ export const useAutoSaveApi = (options: UseAutoSaveApiOptions = {}): UseAutoSave
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
     }
-    
+
     await performSave();
   }, [performSave]);
-  
+
   /**
    * Retry failed save
    */
@@ -193,7 +187,7 @@ export const useAutoSaveApi = (options: UseAutoSaveApiOptions = {}): UseAutoSave
       await performSave();
     }
   }, [status, lastError, performSave]);
-  
+
   /**
    * Clear error state
    */
@@ -201,7 +195,7 @@ export const useAutoSaveApi = (options: UseAutoSaveApiOptions = {}): UseAutoSave
     setLastError(null);
     setStatus('idle');
   }, []);
-  
+
   /**
    * Auto-save effect
    */
@@ -210,19 +204,19 @@ export const useAutoSaveApi = (options: UseAutoSaveApiOptions = {}): UseAutoSave
       setStatus('idle');
       return;
     }
-    
+
     // Clear existing timeout
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
     }
-    
+
     // Set new timeout
     timeoutRef.current = setTimeout(() => {
       performSave().catch(() => {
         // Error already handled in mutation
       });
     }, delay);
-    
+
     // Cleanup
     return () => {
       if (timeoutRef.current) {
@@ -230,7 +224,7 @@ export const useAutoSaveApi = (options: UseAutoSaveApiOptions = {}): UseAutoSave
       }
     };
   }, [isDirty, enabled, delay, performSave]);
-  
+
   /**
    * Save on unmount if dirty
    */
@@ -242,7 +236,7 @@ export const useAutoSaveApi = (options: UseAutoSaveApiOptions = {}): UseAutoSave
       }
     };
   }, [isDirty, enabled, performSave]);
-  
+
   return {
     isSaving: createDraftMutation.isLoading || updateDraftMutation.isLoading,
     lastSaved: lastSavedDate,
@@ -250,6 +244,6 @@ export const useAutoSaveApi = (options: UseAutoSaveApiOptions = {}): UseAutoSave
     status,
     save,
     retry,
-    clearError
+    clearError,
   };
 };

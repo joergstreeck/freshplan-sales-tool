@@ -1,9 +1,9 @@
 /**
  * FC-005 Feature Flags Configuration
- * 
+ *
  * Zentrale Verwaltung von Feature Flags für Development und Production.
  * Ermöglicht kontrolliertes Ein-/Ausschalten von Features ohne Code-Änderungen.
- * 
+ *
  * @see /Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/07-PERFORMANCE/02-optimization-strategies.md
  * @see /Users/joergstreeck/freshplan-sales-tool/CLAUDE.md#feature-flag-governance
  */
@@ -26,7 +26,7 @@ export interface FeatureFlag {
 
 /**
  * Environment-based feature flag configuration
- * 
+ *
  * @remarks
  * - Production flags are controlled via environment variables
  * - Development flags can be overridden locally
@@ -35,7 +35,7 @@ export interface FeatureFlag {
 export const featureFlags = {
   /**
    * Auth Bypass for Development
-   * 
+   *
    * @deprecated Remove after Keycloak integration is stable
    * @sunsetDate 2025-08-27
    */
@@ -48,13 +48,13 @@ export const featureFlags = {
       createdBy: 'FC-005',
       reason: 'Development velocity during initial implementation',
       securityRisk: 'medium',
-      productionSafe: false
-    }
+      productionSafe: false,
+    },
   },
 
   /**
    * Mock Data in Development
-   * 
+   *
    * @sunsetDate 2025-08-15
    */
   useMockData: {
@@ -64,13 +64,13 @@ export const featureFlags = {
     sunsetDate: '2025-08-15',
     metadata: {
       createdBy: 'FC-005',
-      reason: 'Testing without backend dependency'
-    }
+      reason: 'Testing without backend dependency',
+    },
   },
 
   /**
    * Enhanced Debug Mode
-   * 
+   *
    * @sunsetDate 2025-09-01
    */
   enhancedDebug: {
@@ -80,9 +80,9 @@ export const featureFlags = {
     sunsetDate: '2025-09-01',
     metadata: {
       createdBy: 'FC-005',
-      reason: 'Debugging complex customer data flows'
-    }
-  }
+      reason: 'Debugging complex customer data flows',
+    },
+  },
 } as const;
 
 /**
@@ -92,10 +92,10 @@ export type FeatureFlagName = keyof typeof featureFlags;
 
 /**
  * Check if a feature flag is enabled
- * 
+ *
  * @param flagName - The name of the feature flag
  * @returns Whether the feature is enabled
- * 
+ *
  * @example
  * ```typescript
  * if (isFeatureEnabled('authBypass')) {
@@ -110,7 +110,7 @@ export function isFeatureEnabled(flagName: FeatureFlagName): boolean {
 
 /**
  * Get feature flag metadata
- * 
+ *
  * @param flagName - The name of the feature flag
  * @returns The feature flag object or undefined
  */
@@ -120,14 +120,14 @@ export function getFeatureFlag(flagName: FeatureFlagName): FeatureFlag | undefin
 
 /**
  * Check if a feature flag is past its sunset date
- * 
+ *
  * @param flagName - The name of the feature flag
  * @returns Whether the flag should be removed
  */
 export function isFeatureFlagExpired(flagName: FeatureFlagName): boolean {
   const flag = featureFlags[flagName];
   if (!flag?.sunsetDate) return false;
-  
+
   const sunsetDate = new Date(flag.sunsetDate);
   const today = new Date();
   return today > sunsetDate;
@@ -145,7 +145,7 @@ export function listActiveFeatureFlags(): string[] {
 // Log active feature flags in development
 if (import.meta.env.DEV) {
   console.log('🚩 Active Feature Flags:', listActiveFeatureFlags());
-  
+
   // Warn about expired flags
   Object.entries(featureFlags).forEach(([name, flag]) => {
     if (isFeatureFlagExpired(name as FeatureFlagName)) {

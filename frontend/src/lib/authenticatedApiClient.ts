@@ -57,7 +57,7 @@ apiClient.interceptors.response.use(
         url: error.config?.url,
         method: error.config?.method,
       });
-      
+
       // Dispatch custom event for global error handling
       const event = new CustomEvent('auth-error', {
         detail: {
@@ -66,7 +66,7 @@ apiClient.interceptors.response.use(
         },
       });
       window.dispatchEvent(event);
-      
+
       // Keycloak will handle the redirect to login
       authUtils.login();
     }

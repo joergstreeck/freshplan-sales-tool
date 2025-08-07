@@ -10,7 +10,7 @@ interface LocationProgressProps {
 export const LocationProgress: React.FC<LocationProgressProps> = ({ total, completed }) => {
   const percentage = total > 0 ? (completed / total) * 100 : 0;
   const isComplete = completed === total;
-  
+
   return (
     <Box sx={{ mb: 3 }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
@@ -19,29 +19,24 @@ export const LocationProgress: React.FC<LocationProgressProps> = ({ total, compl
             📍 Standort-Fortschritt
           </Typography>
           {isComplete && (
-            <Chip
-              icon={<CheckCircleIcon />}
-              label="Vollständig"
-              color="success"
-              size="small"
-            />
+            <Chip icon={<CheckCircleIcon />} label="Vollständig" color="success" size="small" />
           )}
         </Box>
         <Typography variant="body2" color="text.secondary">
           {completed} von {total} erfasst
         </Typography>
       </Box>
-      <LinearProgress 
-        variant="determinate" 
-        value={percentage} 
+      <LinearProgress
+        variant="determinate"
+        value={percentage}
         sx={{
           height: 8,
           borderRadius: 1,
           backgroundColor: 'action.hover',
           '& .MuiLinearProgress-bar': {
             borderRadius: 1,
-            backgroundColor: isComplete ? 'success.main' : 'primary.main'
-          }
+            backgroundColor: isComplete ? 'success.main' : 'primary.main',
+          },
         }}
       />
     </Box>

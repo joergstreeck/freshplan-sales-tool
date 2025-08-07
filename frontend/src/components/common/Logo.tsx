@@ -1,6 +1,6 @@
 /**
  * Logo Component mit Fallback
- * 
+ *
  * Zeigt das FreshPlan Logo oder einen Fallback,
  * falls die Bilddatei nicht verfügbar ist
  */
@@ -16,19 +16,19 @@ interface LogoProps {
   showFallback?: boolean;
 }
 
-export const Logo: React.FC<LogoProps> = ({ 
+export const Logo: React.FC<LogoProps> = ({
   variant = 'full',
   height = 40,
   onClick,
-  showFallback = true
+  showFallback = true,
 }) => {
   const [imageError, setImageError] = useState(false);
-  
+
   const logoHeight = typeof height === 'number' ? height : height.sm;
   const mobileHeight = typeof height === 'object' ? height.xs : height * 0.8;
-  
+
   const logoSrc = variant === 'full' ? '/freshplan-logo.png' : '/freshplan-logo-icon.png';
-  
+
   // Fallback Logo Component
   const FallbackLogo = () => (
     <Box
@@ -53,11 +53,11 @@ export const Logo: React.FC<LogoProps> = ({
           flexShrink: 0,
         }}
       >
-        <FloristIcon 
-          sx={{ 
+        <FloristIcon
+          sx={{
             color: '#FFFFFF',
             fontSize: logoHeight * 0.6,
-          }} 
+          }}
         />
       </Box>
       {variant === 'full' && (
@@ -76,11 +76,11 @@ export const Logo: React.FC<LogoProps> = ({
       )}
     </Box>
   );
-  
+
   if (imageError || !showFallback) {
     return <FallbackLogo />;
   }
-  
+
   return (
     <Box
       component="img"
@@ -88,9 +88,9 @@ export const Logo: React.FC<LogoProps> = ({
       alt="FreshPlan Logo"
       onError={() => setImageError(true)}
       sx={{
-        height: { 
-          xs: typeof height === 'object' ? height.xs : mobileHeight, 
-          sm: typeof height === 'object' ? height.sm : logoHeight 
+        height: {
+          xs: typeof height === 'object' ? height.xs : mobileHeight,
+          sm: typeof height === 'object' ? height.sm : logoHeight,
         },
         width: 'auto',
         objectFit: 'contain',

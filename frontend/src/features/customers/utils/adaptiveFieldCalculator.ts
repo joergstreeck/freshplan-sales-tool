@@ -1,6 +1,6 @@
 /**
  * Adaptive Field Calculator
- * 
+ *
  * Berechnet optimale Feldbreiten basierend auf:
  * - Gemessenem Text
  * - Field Type
@@ -21,12 +21,12 @@ const FIELD_MAX_WIDTHS: Record<string, number> = {
   numberOfEmployees: 100,
   houseNumber: 80,
   hausnummer: 80,
-  
+
   // Kleine Felder
   salutation: 150,
   anrede: 150,
   contractType: 180,
-  
+
   // Mittlere Felder
   firstName: 200,
   vorname: 200,
@@ -42,7 +42,7 @@ const FIELD_MAX_WIDTHS: Record<string, number> = {
   chainCustomer: 200,
   country: 200,
   land: 200,
-  
+
   // Große Felder
   email: 400,
   emailAddress: 400,
@@ -57,7 +57,7 @@ const FIELD_MAX_WIDTHS: Record<string, number> = {
   webseite: 400,
   contactPerson: 400,
   ansprechpartner: 400,
-  
+
   // Volle Breite
   notes: 9999,
   notizen: 9999,
@@ -76,26 +76,23 @@ const MIN_FIELD_WIDTH = 80; // Absolute Mindestbreite
 
 /**
  * Berechnet die optimale Feldbreite
- * 
+ *
  * @param field - Felddefinition
  * @param measuredTextWidth - Gemessene Breite des Textes
  * @returns Optimale Breite in Pixeln
  */
-export function calculateFieldWidth(
-  field: FieldDefinition, 
-  measuredTextWidth: number
-): number {
+export function calculateFieldWidth(field: FieldDefinition, measuredTextWidth: number): number {
   // 1. Basis-Breite aus gemessenem Text
   let width = measuredTextWidth + PADDING_BUFFER;
-  
+
   // 2. Minimum aus Field-Typ
   const minWidth = getMinWidthForField(field);
   width = Math.max(width, minWidth);
-  
+
   // 3. Maximum aus Field-Key oder Typ
   const maxWidth = FIELD_MAX_WIDTHS[field.key] || getMaxWidthForType(field.fieldType);
   width = Math.min(width, maxWidth);
-  
+
   return width;
 }
 
@@ -108,7 +105,7 @@ function getMinWidthForField(field: FieldDefinition): number {
     // Mindestbreite ist 50% der Maximalbreite
     return Math.max(MIN_FIELD_WIDTH, FIELD_MAX_WIDTHS[field.key] * 0.5);
   }
-  
+
   // Fallback auf Typ-basierte Mindestbreite
   return getMinWidthForType(field.fieldType);
 }
@@ -169,7 +166,7 @@ function getMaxWidthForType(fieldType: string): number {
  */
 export function getFieldSizeClass(field: FieldDefinition): string {
   const maxWidth = FIELD_MAX_WIDTHS[field.key] || getMaxWidthForType(field.fieldType);
-  
+
   if (maxWidth <= 120) return 'compact';
   if (maxWidth <= 200) return 'small';
   if (maxWidth <= 300) return 'medium';
@@ -184,7 +181,7 @@ export function debugFieldWidth(field: FieldDefinition, value: string): void {
   const measuredWidth = value.length * CHAR_AVERAGE_WIDTH;
   const calculatedWidth = calculateFieldWidth(field, measuredWidth);
   const sizeClass = getFieldSizeClass(field);
-  
+
   console.log('Adaptive Field Debug:', {
     field: field.key,
     value,

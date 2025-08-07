@@ -11,7 +11,7 @@ interface ShortcutConfig {
 
 export function useKeyboardShortcuts() {
   const navigate = useNavigate();
-  
+
   const shortcuts: ShortcutConfig[] = [
     {
       key: 'ctrl+n, cmd+n',
@@ -19,39 +19,43 @@ export function useKeyboardShortcuts() {
       action: () => {
         // Trigger global event
         window.dispatchEvent(new CustomEvent('freshplan:new-customer'));
-      }
+      },
     },
     {
       key: 'ctrl+t, cmd+t',
       description: 'Neue Aufgabe',
       action: () => {
         window.dispatchEvent(new CustomEvent('freshplan:new-task'));
-      }
+      },
     },
     {
       key: 'ctrl+k, cmd+k',
       description: 'Command Palette öffnen',
       action: () => {
         window.dispatchEvent(new CustomEvent('freshplan:command-palette'));
-      }
+      },
     },
     {
       key: 'ctrl+/, cmd+/',
       description: 'Hilfe anzeigen',
       action: () => {
         window.dispatchEvent(new CustomEvent('freshplan:show-help'));
-      }
-    }
+      },
+    },
   ];
-  
+
   // Register all shortcuts
   shortcuts.forEach(({ key, action, preventDefault = true }) => {
-    useHotkeys(key, (e) => {
-      if (preventDefault) e.preventDefault();
-      action();
-    }, { enableOnFormTags: false });
+    useHotkeys(
+      key,
+      e => {
+        if (preventDefault) e.preventDefault();
+        action();
+      },
+      { enableOnFormTags: false }
+    );
   });
-  
+
   return { shortcuts };
 }
 

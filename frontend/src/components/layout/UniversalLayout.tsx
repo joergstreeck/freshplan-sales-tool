@@ -13,14 +13,8 @@ interface UniversalLayoutProps {
   children: React.ReactNode;
 }
 
-export const UniversalLayout: React.FC<UniversalLayoutProps> = ({ 
-  children 
-}) => {
+export const UniversalLayout: React.FC<UniversalLayoutProps> = ({ children }) => {
   // No auth check - just provide the layout
   // Note: ThemeProvider should already be provided by parent
-  return (
-    <MainLayout>
-      {children}
-    </MainLayout>
-  );
+  return <MainLayout>{children}</MainLayout>;
 };

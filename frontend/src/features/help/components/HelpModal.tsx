@@ -16,72 +16,62 @@ import {
   Stack,
   Alert,
   ButtonGroup,
-  TextField
+  TextField,
 } from '@mui/material';
 import {
   Close as CloseIcon,
   ThumbUp as ThumbUpIcon,
   ThumbDown as ThumbDownIcon,
-  PlayCircleOutline as PlayCircleIcon
+  PlayCircleOutline as PlayCircleIcon,
 } from '@mui/icons-material';
 import { CustomerFieldThemeProvider } from '../../customers/theme/CustomerFieldThemeProvider';
 import { useHelpStore } from '../stores/helpStore';
 
 export const HelpModal: React.FC = () => {
-  const { 
-    modalOpen, 
-    modalContent, 
-    closeModal, 
-    submitFeedback,
-    startTour 
-  } = useHelpStore();
-  
+  const { modalOpen, modalContent, closeModal, submitFeedback, startTour } = useHelpStore();
+
   const [feedback, setFeedback] = useState<'helpful' | 'not-helpful' | null>(null);
   const [feedbackComment, setFeedbackComment] = useState('');
   const [activeStep, setActiveStep] = useState(0);
-  
+
   if (!modalContent) return null;
-  
+
   const handleFeedback = async (helpful: boolean) => {
     setFeedback(helpful ? 'helpful' : 'not-helpful');
-    
+
     if (modalContent) {
-      await submitFeedback(
-        modalContent.id, 
-        helpful, 
-        helpful ? undefined : feedbackComment
-      );
+      await submitFeedback(modalContent.id, helpful, helpful ? undefined : feedbackComment);
     }
   };
-  
+
   const handleClose = () => {
     closeModal();
     setFeedback(null);
     setFeedbackComment('');
     setActiveStep(0);
   };
-  
+
   // Parse detailed content as steps if it contains step markers
-  const parseSteps = (content?: string): Array<{label: string; description: string}> => {
+  const parseSteps = (content?: string): Array<{ label: string; description: string }> => {
     if (!content) return [];
-    
+
     const stepRegex = /(\d+)\.\s*([^:]+):\s*([^0-9]+)/g;
-    const steps: Array<{label: string; description: string}> = [];
+    const steps: Array<{ label: string; description: string }> = [];
     let match;
-    
+
     while ((match = stepRegex.exec(content)) !== null) {
       steps.push({
         label: match[2].trim(),
-        description: match[3].trim()
+        description: match[3].trim(),
       });
     }
-    
+
     return steps;
   };
-  
+
   const steps = parseSteps(modalContent.detailedContent);
   const hasSteps = steps.length > 0;
-  
+
   return (
     <CustomerFieldThemeProvider mode="anpassungsfähig">
       <Dialog
@@ -90,7 +80,7 @@ export const HelpModal: React.FC = () => {
         maxWidth="md"
         fullWidth
         PaperProps={{
-          sx: { minHeight: '400px' }
+          sx: { minHeight: '400px' },
         }}
       >
         <DialogTitle>
@@ -98,50 +88,41 @@ export const HelpModal: React.FC = () => {
             <Box>
               <Typography variant="h6">{modalContent.title}</Typography>
               <Stack direction="row" spacing={1} sx={{ mt: 0.5 }}>
-                <Chip 
-                  label={modalContent.helpType} 
-                  size="small" 
-                  variant="outlined" 
-                />
-                <Chip 
-                  label={modalContent.targetUserLevel} 
-                  size="small" 
+                <Chip label={modalContent.helpType} size="small" variant="outlined" />
+                <Chip
+                  label={modalContent.targetUserLevel}
+                  size="small"
                   color="primary"
-                  variant="outlined" 
+                  variant="outlined"
                 />
                 {modalContent.viewCount > 0 && (
-                  <Chip 
-                    label={`${modalContent.viewCount} Aufrufe`} 
-                    size="small" 
-                    variant="outlined" 
+                  <Chip
+                    label={`${modalContent.viewCount} Aufrufe`}
+                    size="small"
+                    variant="outlined"
                   />
                 )}
               </Stack>
             </Box>
-            <IconButton
-              edge="end"
-              color="inherit"
-              onClick={handleClose}
-              aria-label="close"
-            >
+            <IconButton edge="end" color="inherit" onClick={handleClose} aria-label="close">
               <CloseIcon />
             </IconButton>
           </Box>
         </DialogTitle>
-        
+
         <DialogContent dividers>
           {/* Short Content */}
           <Typography variant="body1" paragraph>
             {modalContent.shortContent}
           </Typography>
-          
+
           {/* Medium Content */}
           {modalContent.mediumContent && (
             <Alert severity="info" sx={{ mb: 2 }}>
               {modalContent.mediumContent}
             </Alert>
           )}
-          
+
           {/* Video if available */}
           {modalContent.videoUrl && (
             <Box sx={{ mb: 3, position: 'relative', paddingTop: '56.25%' }}>
@@ -153,12 +134,12 @@ export const HelpModal: React.FC = () => {
                   top: 0,
                   left: 0,
                   width: '100%',
-                  height: '100%'
+                  height: '100%',
                 }}
               />
             </Box>
           )}
-          
+
           {/* Detailed Content as Steps or Plain Text */}
           {hasSteps ? (
             <Stepper activeStep={activeStep} orientation="vertical">
@@ -197,13 +178,13 @@ export const HelpModal: React.FC = () => {
               {modalContent.detailedContent}
             </Typography>
           ) : null}
-          
+
           {/* Feedback Section */}
           <Box sx={{ mt: 3, p: 2, bgcolor: 'grey.100', borderRadius: 1 }}>
             <Typography variant="body2" gutterBottom>
               War diese Erklärung hilfreich?
             </Typography>
-            
+
             <ButtonGroup size="small">
               <Button
                 variant={feedback === 'helpful' ? 'contained' : 'outlined'}
@@ -222,7 +203,7 @@ export const HelpModal: React.FC = () => {
                 Nein ({modalContent.notHelpfulCount})
               </Button>
             </ButtonGroup>
-            
+
             {feedback === 'not-helpful' && (
               <TextField
                 fullWidth
@@ -230,12 +211,12 @@ export const HelpModal: React.FC = () => {
                 rows={2}
                 placeholder="Was war unklar? (optional)"
                 value={feedbackComment}
-                onChange={(e) => setFeedbackComment(e.target.value)}
+                onChange={e => setFeedbackComment(e.target.value)}
                 sx={{ mt: 1 }}
                 onBlur={() => handleFeedback(false)}
               />
             )}
-            
+
             {feedback === 'helpful' && (
               <Alert severity="success" sx={{ mt: 1 }}>
                 Danke für Ihr Feedback!
@@ -243,10 +224,10 @@ export const HelpModal: React.FC = () => {
             )}
           </Box>
         </DialogContent>
-        
+
         <DialogActions>
           {modalContent.helpType === 'TOUR' && (
-            <Button 
+            <Button
               onClick={() => {
                 startTour(modalContent.feature);
                 handleClose();

@@ -7,7 +7,7 @@ import type {
   ContactIntelligenceSummary,
   DataFreshnessLevel,
   DataQualityScore,
-  FreshnessStatistics
+  FreshnessStatistics,
 } from '../types/intelligence.types';
 import type { Contact } from '../types/contact.types';
 
@@ -40,7 +40,9 @@ export const contactInteractionApi = {
    * Calculate warmth score (triggers recalculation)
    */
   calculateWarmthScore: async (contactId: string): Promise<WarmthScoreDTO> => {
-    const response = await httpClient.post(`/api/contact-interactions/warmth/${contactId}/calculate`);
+    const response = await httpClient.post(
+      `/api/contact-interactions/warmth/${contactId}/calculate`
+    );
     return response.data;
   },
 
@@ -57,7 +59,7 @@ export const contactInteractionApi = {
    */
   recordNote: async (contactId: string, note: string): Promise<ContactInteractionDTO> => {
     const response = await httpClient.post(`/api/contact-interactions/note/${contactId}`, {
-      note
+      note,
     });
     return response.data;
   },
@@ -74,7 +76,7 @@ export const contactInteractionApi = {
     const response = await httpClient.post(`/api/contact-interactions/email/${contactId}`, {
       type,
       subject,
-      sentiment
+      sentiment,
     });
     return response.data;
   },
@@ -91,7 +93,7 @@ export const contactInteractionApi = {
     const response = await httpClient.post(`/api/contact-interactions/call/${contactId}`, {
       type,
       duration,
-      outcome
+      outcome,
     });
     return response.data;
   },
@@ -108,7 +110,7 @@ export const contactInteractionApi = {
     const response = await httpClient.post(`/api/contact-interactions/meeting/${contactId}`, {
       type,
       duration,
-      notes
+      notes,
     });
     return response.data;
   },
@@ -116,7 +118,9 @@ export const contactInteractionApi = {
   /**
    * Batch import interactions
    */
-  batchImport: async (request: BatchImportRequest): Promise<{ imported: number; failed: number }> => {
+  batchImport: async (
+    request: BatchImportRequest
+  ): Promise<{ imported: number; failed: number }> => {
     const response = await httpClient.post('/api/contact-interactions/batch-import', request);
     return response.data;
   },
@@ -178,8 +182,12 @@ export const contactInteractionApi = {
   /**
    * Get contacts filtered by freshness level
    */
-  getContactsByFreshnessLevel: async (level: 'fresh' | 'aging' | 'stale' | 'critical'): Promise<Contact[]> => {
-    const response = await httpClient.get(`/api/contact-interactions/contacts-by-freshness/${level}`);
+  getContactsByFreshnessLevel: async (
+    level: 'fresh' | 'aging' | 'stale' | 'critical'
+  ): Promise<Contact[]> => {
+    const response = await httpClient.get(
+      `/api/contact-interactions/contacts-by-freshness/${level}`
+    );
     return response.data;
   },
 
@@ -212,12 +220,12 @@ export const contactInteractionApi = {
   /**
    * Get contacts that need updates (stale + critical)
    */
-  getContactsNeedingUpdate: async (): Promise<{ stale: Contact[], critical: Contact[] }> => {
+  getContactsNeedingUpdate: async (): Promise<{ stale: Contact[]; critical: Contact[] }> => {
     const [stale, critical] = await Promise.all([
       contactInteractionApi.getStaleContacts(),
-      contactInteractionApi.getCriticalContacts()
+      contactInteractionApi.getCriticalContacts(),
     ]);
-    
+
     return { stale, critical };
-  }
+  },
 };
