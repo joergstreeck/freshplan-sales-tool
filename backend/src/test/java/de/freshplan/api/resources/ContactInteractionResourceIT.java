@@ -362,20 +362,4 @@ class ContactInteractionResourceIT {
         .then()
         .statusCode(400);
   }
-
-  @Transactional
-  protected void createTestInteraction(InteractionType type, String content) {
-    ContactInteraction interaction =
-        ContactInteraction.builder()
-            .contact(contactRepository.findById(testContactId))
-            .type(type)
-            .timestamp(LocalDateTime.now())
-            .subject(content)
-            .summary(content)
-            .sentimentScore(0.7)
-            .engagementScore(80)
-            .build();
-
-    interactionRepository.persist(interaction);
-  }
 }
