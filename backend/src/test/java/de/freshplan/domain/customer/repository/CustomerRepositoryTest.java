@@ -698,6 +698,11 @@ class CustomerRepositoryTest {
     customer.setUpdatedBy("test-user");
     customer.setCreatedAt(LocalDateTime.now());
     customer.setUpdatedAt(LocalDateTime.now());
+    // Set other required fields with defaults
+    customer.setStatus(CustomerStatus.LEAD);
+    customer.setPartnerStatus(PartnerStatus.KEIN_PARTNER);
+    customer.setPaymentTerms(PaymentTerms.NETTO_30);
+    customer.setPrimaryFinancing(FinancingType.PRIVATE);
     return customer;
   }
 
@@ -711,6 +716,11 @@ class CustomerRepositoryTest {
     customer.setUpdatedBy("test-user");
     customer.setCreatedAt(LocalDateTime.now());
     customer.setUpdatedAt(LocalDateTime.now());
+    // Set other required fields with defaults
+    customer.setStatus(CustomerStatus.LEAD);
+    customer.setPartnerStatus(PartnerStatus.KEIN_PARTNER);
+    customer.setPaymentTerms(PaymentTerms.NETTO_30);
+    customer.setPrimaryFinancing(FinancingType.PRIVATE);
     return customer;
   }
 }
