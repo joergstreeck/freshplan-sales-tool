@@ -76,7 +76,7 @@ export const navigationConfig: NavigationItemType[] = [
       },
       {
         label: 'Verkaufschancen',
-        path: '/opportunities',  // Angepasst an tatsächliche Route
+        path: '/kundenmanagement/opportunities',  // Korrigierter Pfad zur tatsächlichen Route
       },
       {
         label: 'Aktivitäten',

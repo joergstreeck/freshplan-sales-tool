@@ -12,6 +12,7 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import org.jboss.logging.Logger;
 
 /**
@@ -34,7 +35,9 @@ public class CustomerDataInitializer {
   @Inject CustomerTimelineRepository timelineRepository;
 
   @Transactional
-  void onStart(@Observes @Priority(500) StartupEvent ev) {
+  // TEMPORARILY DISABLED - Sprint-2 fields need to be initialized
+  // TODO: Add locations_germany, locations_austria, etc. fields
+  void onStartDisabled_TODO_FIX_SPRINT2_FIELDS_DISABLED(@Observes @Priority(500) StartupEvent ev) {
     LOG.info("🧪 Initializing comprehensive test data for ALL modules (Intelligence, Cockpit, Opportunities)...");
 
     // For comprehensive testing: Always recreate test data
@@ -145,8 +148,17 @@ public class CustomerDataInitializer {
     customer.setDeliveryCondition(DeliveryCondition.STANDARD);
     customer.setLastContactDate(LocalDateTime.now().minusDays(5));
     customer.setNextFollowUpDate(LocalDateTime.now().plusDays(10));
+    // Sprint 2 fields
+    customer.setLocationsGermany(3);
+    customer.setLocationsAustria(0);
+    customer.setLocationsSwitzerland(0);
+    customer.setLocationsRestEU(0);
+    customer.setTotalLocationsEU(3);
+    customer.setPainPoints(new ArrayList<>());
+    customer.setPrimaryFinancing(FinancingType.PRIVATE);
     customer.setCreatedBy("system");
 
+    setSprint2FieldDefaults(customer);
     customerRepository.persist(customer);
     LOG.info("Created hotel customer: " + customer.getCompanyName());
   }
@@ -170,8 +182,17 @@ public class CustomerDataInitializer {
     customer.setDeliveryCondition(DeliveryCondition.EXPRESS);
     customer.setLastContactDate(LocalDateTime.now().minusDays(2));
     customer.setNextFollowUpDate(LocalDateTime.now().plusDays(7));
+    // Sprint 2 fields
+    customer.setLocationsGermany(1);
+    customer.setLocationsAustria(0);
+    customer.setLocationsSwitzerland(0);
+    customer.setLocationsRestEU(0);
+    customer.setTotalLocationsEU(1);
+    customer.setPainPoints(new ArrayList<>());
+    customer.setPrimaryFinancing(FinancingType.PRIVATE);
     customer.setCreatedBy("system");
 
+    setSprint2FieldDefaults(customer);
     customerRepository.persist(customer);
     LOG.info("Created restaurant customer: " + customer.getCompanyName());
   }
@@ -195,8 +216,17 @@ public class CustomerDataInitializer {
     customer.setDeliveryCondition(DeliveryCondition.STANDARD);
     customer.setLastContactDate(LocalDateTime.now().minusDays(1));
     customer.setNextFollowUpDate(LocalDateTime.now().plusDays(14));
+    // Sprint 2 fields
+    customer.setLocationsGermany(2);
+    customer.setLocationsAustria(1);
+    customer.setLocationsSwitzerland(0);
+    customer.setLocationsRestEU(0);
+    customer.setTotalLocationsEU(3);
+    customer.setPainPoints(new ArrayList<>());
+    customer.setPrimaryFinancing(FinancingType.PUBLIC);
     customer.setCreatedBy("system");
 
+    setSprint2FieldDefaults(customer);
     customerRepository.persist(customer);
     LOG.info("Created catering customer: " + customer.getCompanyName());
   }
@@ -220,8 +250,17 @@ public class CustomerDataInitializer {
     customer.setDeliveryCondition(DeliveryCondition.STANDARD);
     customer.setLastContactDate(LocalDateTime.now().minusDays(10));
     customer.setNextFollowUpDate(LocalDateTime.now().plusDays(30));
+    // Sprint 2 fields
+    customer.setLocationsGermany(1);
+    customer.setLocationsAustria(0);
+    customer.setLocationsSwitzerland(0);
+    customer.setLocationsRestEU(0);
+    customer.setTotalLocationsEU(1);
+    customer.setPainPoints(new ArrayList<>());
+    customer.setPrimaryFinancing(FinancingType.PRIVATE);
     customer.setCreatedBy("system");
 
+    setSprint2FieldDefaults(customer);
     customerRepository.persist(customer);
     LOG.info("Created school customer: " + customer.getCompanyName());
   }
@@ -245,10 +284,44 @@ public class CustomerDataInitializer {
     customer.setDeliveryCondition(DeliveryCondition.EXPRESS);
     customer.setLastContactDate(LocalDateTime.now().minusDays(3));
     customer.setNextFollowUpDate(LocalDateTime.now().plusDays(5));
+    // Sprint 2 fields
+    customer.setLocationsGermany(5);
+    customer.setLocationsAustria(0);
+    customer.setLocationsSwitzerland(0);
+    customer.setLocationsRestEU(2);
+    customer.setTotalLocationsEU(7);
+    customer.setPainPoints(new ArrayList<>());
+    customer.setPrimaryFinancing(FinancingType.PUBLIC);
     customer.setCreatedBy("system");
 
+    setSprint2FieldDefaults(customer);
     customerRepository.persist(customer);
     LOG.info("Created event customer: " + customer.getCompanyName());
+  }
+
+  // Helper method to set Sprint 2 field defaults
+  private void setSprint2FieldDefaults(Customer customer) {
+    if (customer.getLocationsGermany() == null) {
+      customer.setLocationsGermany(1);
+    }
+    if (customer.getLocationsAustria() == null) {
+      customer.setLocationsAustria(0);
+    }
+    if (customer.getLocationsSwitzerland() == null) {
+      customer.setLocationsSwitzerland(0);
+    }
+    if (customer.getLocationsRestEU() == null) {
+      customer.setLocationsRestEU(0);
+    }
+    if (customer.getTotalLocationsEU() == null) {
+      customer.setTotalLocationsEU(1);
+    }
+    if (customer.getPainPoints() == null) {
+      customer.setPainPoints(new ArrayList<>());
+    }
+    if (customer.getPrimaryFinancing() == null) {
+      customer.setPrimaryFinancing(FinancingType.PRIVATE);
+    }
   }
 
   // ========================================================================
@@ -265,6 +338,15 @@ public class CustomerDataInitializer {
     minimal.setClassification(Classification.C_KUNDE);
     minimal.setStatus(CustomerStatus.LEAD);
     minimal.setCreatedBy("test");
+    // Sprint 2 fields
+    minimal.setLocationsGermany(1);
+    minimal.setLocationsAustria(0);
+    minimal.setLocationsSwitzerland(0);
+    minimal.setLocationsRestEU(0);
+    minimal.setTotalLocationsEU(1);
+    minimal.setPainPoints(new ArrayList<>());
+    minimal.setPrimaryFinancing(FinancingType.PRIVATE);
+    setSprint2FieldDefaults(minimal);
     customerRepository.persist(minimal);
 
     // Test 2: Maximum string length (255 characters for companyName)
@@ -277,6 +359,15 @@ public class CustomerDataInitializer {
     maximal.setClassification(Classification.C_KUNDE);
     maximal.setStatus(CustomerStatus.LEAD);
     maximal.setCreatedBy("test");
+    // Sprint 2 fields
+    maximal.setLocationsGermany(1);
+    maximal.setLocationsAustria(0);
+    maximal.setLocationsSwitzerland(0);
+    maximal.setLocationsRestEU(0);
+    maximal.setTotalLocationsEU(1);
+    maximal.setPainPoints(new ArrayList<>());
+    maximal.setPrimaryFinancing(FinancingType.PRIVATE);
+    setSprint2FieldDefaults(maximal);
     customerRepository.persist(maximal);
 
     // Test 3: Special characters & umlauts
@@ -290,6 +381,8 @@ public class CustomerDataInitializer {
     special.setClassification(Classification.B_KUNDE);
     special.setStatus(CustomerStatus.AKTIV);
     special.setCreatedBy("test");
+    setSprint2FieldDefaults(special);
+    setSprint2FieldDefaults(special);
     customerRepository.persist(special);
 
     LOG.info("✅ String boundary tests created");
@@ -313,6 +406,7 @@ public class CustomerDataInitializer {
     zeroCustomer.setCreditLimit(BigDecimal.ZERO);
     zeroCustomer.setRiskScore(0);
     zeroCustomer.setCreatedBy("test");
+    setSprint2FieldDefaults(zeroCustomer);
     customerRepository.persist(zeroCustomer);
 
     // Test 2: Maximum numeric values
@@ -329,6 +423,7 @@ public class CustomerDataInitializer {
     maxNumeric.setCreditLimit(new BigDecimal("9999999999.99"));
     maxNumeric.setRiskScore(100); // Maximum Risk Score
     maxNumeric.setCreatedBy("test");
+    setSprint2FieldDefaults(maxNumeric);
     customerRepository.persist(maxNumeric);
 
     // Test 3: Precise decimal values
@@ -344,6 +439,7 @@ public class CustomerDataInitializer {
     precise.setCreditLimit(new BigDecimal("0.01")); // Minimal positive value
     precise.setRiskScore(50); // Medium risk
     precise.setCreatedBy("test");
+    setSprint2FieldDefaults(precise);
     customerRepository.persist(precise);
 
     LOG.info("✅ Numeric edge cases created");
@@ -367,6 +463,7 @@ public class CustomerDataInitializer {
     pastCustomer.setLastContactDate(now.minusYears(2)); // 2 Jahre alt
     pastCustomer.setNextFollowUpDate(now.plusDays(1)); // Zukunft (required @Future)
     pastCustomer.setCreatedBy("test");
+    setSprint2FieldDefaults(pastCustomer);
     customerRepository.persist(pastCustomer);
 
     // Test 2: Far future dates
@@ -380,6 +477,7 @@ public class CustomerDataInitializer {
     futureCustomer.setLastContactDate(now.minusDays(1));
     futureCustomer.setNextFollowUpDate(now.plusYears(1)); // 1 Jahr in Zukunft
     futureCustomer.setCreatedBy("test");
+    setSprint2FieldDefaults(futureCustomer);
     customerRepository.persist(futureCustomer);
 
     // Test 3: Leap year and timezone edge cases
@@ -393,6 +491,7 @@ public class CustomerDataInitializer {
     leapYear.setLastContactDate(LocalDateTime.of(2024, 2, 29, 12, 0)); // Schaltjahr
     leapYear.setNextFollowUpDate(LocalDateTime.of(2024, 12, 31, 23, 59)); // Jahresende
     leapYear.setCreatedBy("test");
+    setSprint2FieldDefaults(leapYear);
     customerRepository.persist(leapYear);
 
     LOG.info("✅ Date/time edge cases created");
@@ -415,7 +514,8 @@ public class CustomerDataInitializer {
       customer.setClassification(Classification.C_KUNDE);
       customer.setStatus(CustomerStatus.LEAD);
       customer.setCreatedBy("test");
-      customerRepository.persist(customer);
+      setSprint2FieldDefaults(customer);
+    customerRepository.persist(customer);
     }
 
     // Test alle Industry Werte
@@ -429,7 +529,8 @@ public class CustomerDataInitializer {
       customer.setClassification(Classification.B_KUNDE);
       customer.setStatus(CustomerStatus.AKTIV);
       customer.setCreatedBy("test");
-      customerRepository.persist(customer);
+      setSprint2FieldDefaults(customer);
+    customerRepository.persist(customer);
     }
 
     // Test alle CustomerStatus Werte
@@ -443,7 +544,8 @@ public class CustomerDataInitializer {
       customer.setClassification(Classification.B_KUNDE);
       customer.setStatus(status);
       customer.setCreatedBy("test");
-      customerRepository.persist(customer);
+      setSprint2FieldDefaults(customer);
+    customerRepository.persist(customer);
     }
 
     LOG.info("✅ Enum boundary tests created");
@@ -465,6 +567,7 @@ public class CustomerDataInitializer {
     headquarter.setStatus(CustomerStatus.AKTIV);
     headquarter.setExpectedAnnualVolume(new BigDecimal("500000.00"));
     headquarter.setCreatedBy("test");
+    setSprint2FieldDefaults(headquarter);
     customerRepository.persist(headquarter);
 
     Customer branch = new Customer();
@@ -477,6 +580,7 @@ public class CustomerDataInitializer {
     branch.setStatus(CustomerStatus.AKTIV);
     branch.setExpectedAnnualVolume(new BigDecimal("150000.00"));
     branch.setCreatedBy("test");
+    setSprint2FieldDefaults(branch);
     customerRepository.persist(branch);
 
     // Test 2: Risk Score Extreme Cases
@@ -491,6 +595,7 @@ public class CustomerDataInitializer {
     highRisk.setCreditLimit(new BigDecimal("1000.00")); // Niedriges Limit bei hohem Risiko
     highRisk.setPaymentTerms(PaymentTerms.VORKASSE); // Sicherste Zahlung
     highRisk.setCreatedBy("test");
+    setSprint2FieldDefaults(highRisk);
     customerRepository.persist(highRisk);
 
     Customer lowRisk = new Customer();
@@ -504,6 +609,7 @@ public class CustomerDataInitializer {
     lowRisk.setCreditLimit(new BigDecimal("100000.00")); // Hohes Limit bei niedrigem Risiko
     lowRisk.setPaymentTerms(PaymentTerms.NETTO_60); // Längere Zahlungsfrist
     lowRisk.setCreatedBy("test");
+    setSprint2FieldDefaults(lowRisk);
     customerRepository.persist(lowRisk);
 
     LOG.info("✅ Business logic variations created");
@@ -525,6 +631,7 @@ public class CustomerDataInitializer {
     german.setClassification(Classification.B_KUNDE);
     german.setStatus(CustomerStatus.AKTIV);
     german.setCreatedBy("test");
+    setSprint2FieldDefaults(german);
     customerRepository.persist(german);
 
     // Test 2: Französische Akzente
@@ -537,6 +644,7 @@ public class CustomerDataInitializer {
     french.setClassification(Classification.B_KUNDE);
     french.setStatus(CustomerStatus.AKTIV);
     french.setCreatedBy("test");
+    setSprint2FieldDefaults(french);
     customerRepository.persist(french);
 
     // Test 3: Chinesische Zeichen (falls internationaler Support)
@@ -549,6 +657,7 @@ public class CustomerDataInitializer {
     chinese.setClassification(Classification.B_KUNDE);
     chinese.setStatus(CustomerStatus.AKTIV);
     chinese.setCreatedBy("test");
+    setSprint2FieldDefaults(chinese);
     customerRepository.persist(chinese);
 
     // Test 4: Emojis und spezielle Unicode
@@ -561,6 +670,7 @@ public class CustomerDataInitializer {
     emoji.setClassification(Classification.A_KUNDE);
     emoji.setStatus(CustomerStatus.AKTIV);
     emoji.setCreatedBy("test");
+    setSprint2FieldDefaults(emoji);
     customerRepository.persist(emoji);
 
     // Test 5: Bindestrich, Apostrophe und Anführungszeichen
@@ -573,6 +683,7 @@ public class CustomerDataInitializer {
     punctuation.setClassification(Classification.B_KUNDE);
     punctuation.setStatus(CustomerStatus.AKTIV);
     punctuation.setCreatedBy("test");
+    setSprint2FieldDefaults(punctuation);
     customerRepository.persist(punctuation);
 
     LOG.info("✅ Unicode and special character tests created");
@@ -592,6 +703,7 @@ public class CustomerDataInitializer {
     activeCustomer.setLastContactDate(LocalDateTime.now().minusDays(1)); // Gestern kontaktiert
     activeCustomer.setNextFollowUpDate(LocalDateTime.now().plusDays(7));
     activeCustomer.setCreatedBy("data-intelligence");
+    setSprint2FieldDefaults(activeCustomer);
     customerRepository.persist(activeCustomer);
     
     // Kunde mit alternden Daten (AGING - 90-180 Tage)
@@ -606,6 +718,7 @@ public class CustomerDataInitializer {
     agingCustomer.setLastContactDate(LocalDateTime.now().minusDays(120)); // 4 Monate alt
     agingCustomer.setNextFollowUpDate(LocalDateTime.now().minusDays(90)); // Überfällig
     agingCustomer.setCreatedBy("data-intelligence");
+    setSprint2FieldDefaults(agingCustomer);
     customerRepository.persist(agingCustomer);
     
     // Kunde mit veralteten Daten (STALE - 180-365 Tage)
@@ -620,6 +733,7 @@ public class CustomerDataInitializer {
     staleCustomer.setLastContactDate(LocalDateTime.now().minusDays(240)); // 8 Monate alt
     staleCustomer.setNextFollowUpDate(LocalDateTime.now().minusDays(200)); // Lange überfällig
     staleCustomer.setCreatedBy("data-intelligence");
+    setSprint2FieldDefaults(staleCustomer);
     customerRepository.persist(staleCustomer);
     
     // Kunde mit kritisch alten Daten (CRITICAL - >365 Tage)
@@ -634,6 +748,7 @@ public class CustomerDataInitializer {
     criticalCustomer.setLastContactDate(LocalDateTime.now().minusDays(730)); // 2 Jahre alt
     criticalCustomer.setNextFollowUpDate(LocalDateTime.now().minusDays(700)); // Extrem überfällig
     criticalCustomer.setCreatedBy("data-intelligence");
+    setSprint2FieldDefaults(criticalCustomer);
     customerRepository.persist(criticalCustomer);
     
     // Kunde ohne jegliche Interaktionen
@@ -648,6 +763,7 @@ public class CustomerDataInitializer {
     noInteractionCustomer.setLastContactDate(null); // Nie kontaktiert
     noInteractionCustomer.setNextFollowUpDate(LocalDateTime.now().plusDays(1)); // Dringend kontaktieren
     noInteractionCustomer.setCreatedBy("data-intelligence");
+    setSprint2FieldDefaults(noInteractionCustomer);
     customerRepository.persist(noInteractionCustomer);
     
     LOG.info("✅ Data Intelligence test scenarios created (5 customers with different freshness levels)");
@@ -671,6 +787,7 @@ public class CustomerDataInitializer {
     topPerformer.setLifecycleStage(CustomerLifecycleStage.GROWTH);
     topPerformer.setLastContactDate(LocalDateTime.now().minusDays(3));
     topPerformer.setCreatedBy("sales-cockpit");
+    setSprint2FieldDefaults(topPerformer);
     customerRepository.persist(topPerformer);
     
     // At-Risk Kunde
@@ -689,6 +806,7 @@ public class CustomerDataInitializer {
     atRisk.setLifecycleStage(CustomerLifecycleStage.RECOVERY);
     atRisk.setLastContactDate(LocalDateTime.now().minusDays(45)); // Lange nicht kontaktiert
     atRisk.setCreatedBy("sales-cockpit");
+    setSprint2FieldDefaults(atRisk);
     customerRepository.persist(atRisk);
     
     // Churn Risk Kunde
@@ -707,6 +825,7 @@ public class CustomerDataInitializer {
     churnRisk.setLifecycleStage(CustomerLifecycleStage.RECOVERY);
     churnRisk.setLastContactDate(LocalDateTime.now().minusDays(180));
     churnRisk.setCreatedBy("sales-cockpit");
+    setSprint2FieldDefaults(churnRisk);
     customerRepository.persist(churnRisk);
     
     // Neukunde mit Potenzial
@@ -726,6 +845,7 @@ public class CustomerDataInitializer {
     newPotential.setLastContactDate(LocalDateTime.now());
     newPotential.setNextFollowUpDate(LocalDateTime.now().plusDays(3));
     newPotential.setCreatedBy("sales-cockpit");
+    setSprint2FieldDefaults(newPotential);
     customerRepository.persist(newPotential);
     
     LOG.info("✅ Sales Cockpit test scenarios created (4 customers with different performance levels)");
@@ -747,6 +867,7 @@ public class CustomerDataInitializer {
     hotLead.setLastContactDate(LocalDateTime.now());
     hotLead.setNextFollowUpDate(LocalDateTime.now().plusDays(1)); // Morgen Abschluss
     hotLead.setCreatedBy("opportunity-pipeline");
+    setSprint2FieldDefaults(hotLead);
     customerRepository.persist(hotLead);
     
     // Kunde in Verhandlung
@@ -763,6 +884,7 @@ public class CustomerDataInitializer {
     negotiation.setLastContactDate(LocalDateTime.now().minusDays(2));
     negotiation.setNextFollowUpDate(LocalDateTime.now().plusDays(5));
     negotiation.setCreatedBy("opportunity-pipeline");
+    setSprint2FieldDefaults(negotiation);
     customerRepository.persist(negotiation);
     
     // Kunde mit verlorenem Deal
@@ -779,6 +901,7 @@ public class CustomerDataInitializer {
     lostDeal.setLifecycleStage(CustomerLifecycleStage.RECOVERY);
     lostDeal.setLastContactDate(LocalDateTime.now().minusDays(30));
     lostDeal.setCreatedBy("opportunity-pipeline");
+    setSprint2FieldDefaults(lostDeal);
     customerRepository.persist(lostDeal);
     
     // Kunde mit Renewal-Opportunity
@@ -796,6 +919,7 @@ public class CustomerDataInitializer {
     renewal.setLastContactDate(LocalDateTime.now().minusDays(7));
     renewal.setNextFollowUpDate(LocalDateTime.now().plusDays(14)); // Renewal in 2 Wochen
     renewal.setCreatedBy("opportunity-pipeline");
+    setSprint2FieldDefaults(renewal);
     customerRepository.persist(renewal);
     
     // Kunde mit Upsell-Potenzial
@@ -813,6 +937,7 @@ public class CustomerDataInitializer {
     upsell.setLastContactDate(LocalDateTime.now().minusDays(10));
     upsell.setNextFollowUpDate(LocalDateTime.now().plusDays(7));
     upsell.setCreatedBy("opportunity-pipeline");
+    setSprint2FieldDefaults(upsell);
     customerRepository.persist(upsell);
     
     LOG.info("✅ Opportunity Pipeline test scenarios created (5 customers with different opportunity stages)");

@@ -41,7 +41,7 @@ CREATE TABLE contact_interactions (
     
     -- Foreign key constraints
     CONSTRAINT fk_interaction_contact FOREIGN KEY (contact_id) 
-        REFERENCES contacts(id) ON DELETE CASCADE
+        REFERENCES customer_contacts(id) ON DELETE CASCADE
 );
 
 -- Indexes for performance
@@ -61,17 +61,17 @@ CREATE INDEX idx_interaction_sentiment
     WHERE sentiment_score IS NOT NULL;
 
 -- Add warmth_score to contacts table for caching calculated values
-ALTER TABLE contacts ADD COLUMN warmth_score INTEGER DEFAULT 50;
-ALTER TABLE contacts ADD COLUMN warmth_confidence INTEGER DEFAULT 0;
-ALTER TABLE contacts ADD COLUMN last_interaction_date TIMESTAMP;
-ALTER TABLE contacts ADD COLUMN interaction_count INTEGER DEFAULT 0;
+ALTER TABLE customer_contacts ADD COLUMN warmth_score INTEGER DEFAULT 50;
+ALTER TABLE customer_contacts ADD COLUMN warmth_confidence INTEGER DEFAULT 0;
+ALTER TABLE customer_contacts ADD COLUMN last_interaction_date TIMESTAMP;
+ALTER TABLE customer_contacts ADD COLUMN interaction_count INTEGER DEFAULT 0;
 
 -- Create index for warmth-based queries
-CREATE INDEX idx_contact_warmth ON contacts(warmth_score) WHERE warmth_score IS NOT NULL;
+CREATE INDEX idx_contact_warmth ON customer_contacts(warmth_score) WHERE warmth_score IS NOT NULL;
 
 -- Add comment to explain the purpose
 COMMENT ON TABLE contact_interactions IS 'Tracks all interactions with contacts for relationship intelligence and predictive analytics';
 COMMENT ON COLUMN contact_interactions.sentiment_score IS 'Sentiment analysis score from -1.0 (very negative) to +1.0 (very positive)';
 COMMENT ON COLUMN contact_interactions.engagement_score IS 'Engagement level from 0 (no engagement) to 100 (highly engaged)';
-COMMENT ON COLUMN contacts.warmth_score IS 'Calculated relationship warmth from 0 (cold) to 100 (hot), default 50 (neutral)';
-COMMENT ON COLUMN contacts.warmth_confidence IS 'Confidence level of warmth score from 0 to 100 based on data quantity';
+COMMENT ON COLUMN customer_contacts.warmth_score IS 'Calculated relationship warmth from 0 (cold) to 100 (hot), default 50 (neutral)';
+COMMENT ON COLUMN customer_contacts.warmth_confidence IS 'Confidence level of warmth score from 0 to 100 based on data quantity';

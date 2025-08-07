@@ -235,6 +235,15 @@ public class TestDataService {
 
     // Mark as test data
     customer.setIsTestData(true);
+    
+    // Sprint 2 fields - set defaults to avoid NOT NULL constraint violations
+    customer.setLocationsGermany(1);
+    customer.setLocationsAustria(0);
+    customer.setLocationsSwitzerland(0);
+    customer.setLocationsRestEU(0);
+    customer.setTotalLocationsEU(1);
+    customer.setPainPoints(new ArrayList<>());
+    customer.setPrimaryFinancing(FinancingType.PRIVATE);
 
     return customer;
   }

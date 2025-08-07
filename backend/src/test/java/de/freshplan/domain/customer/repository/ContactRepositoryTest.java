@@ -17,29 +17,37 @@ import org.junit.jupiter.api.Test;
  * location-based queries.
  */
 @QuarkusTest
-@TestTransaction
 class ContactRepositoryTest {
 
   @Inject ContactRepository contactRepository;
 
   @Inject CustomerRepository customerRepository;
 
-  private Customer testCustomer;
-
-  @BeforeEach
-  void setUp() {
-    // Create test customer
-    testCustomer = new Customer();
-    testCustomer.setCustomerNumber("TEST-001");
-    testCustomer.setCompanyName("Test Company GmbH");
-    testCustomer.setCreatedBy("test");
-    customerRepository.persist(testCustomer);
+  private Customer createTestCustomer() {
+    // Create test customer with all required Sprint 2 fields
+    Customer customer = new Customer();
+    customer.setCustomerNumber("TEST-" + System.currentTimeMillis());
+    customer.setCompanyName("Test Company GmbH");
+    customer.setCreatedBy("test");
+    // Sprint 2 required fields
+    customer.setLocationsGermany(1);
+    customer.setLocationsAustria(0);
+    customer.setLocationsSwitzerland(0);
+    customer.setLocationsRestEU(0);
+    customer.setTotalLocationsEU(1);
+    customer.setPainPoints(new java.util.ArrayList<>());
+    customer.setPrimaryFinancing(de.freshplan.domain.customer.entity.FinancingType.PRIVATE);
+    customerRepository.persist(customer);
+    customerRepository.flush(); // Ensure customer is persisted before contacts
+    return customer;
   }
 
   @Test
+  @TestTransaction
   void shouldCreateAndFindContact() {
     // Given
-    Contact contact = createTestContact("Max", "Mustermann", true);
+    Customer testCustomer = createTestCustomer();
+    Contact contact = createTestContact(testCustomer, "Max", "Mustermann", true);
     contactRepository.persist(contact);
 
     // When
@@ -53,10 +61,12 @@ class ContactRepositoryTest {
   }
 
   @Test
+  @TestTransaction
   void shouldFindContactsByCustomerId() {
     // Given
-    Contact contact1 = createTestContact("Max", "Mustermann", true);
-    Contact contact2 = createTestContact("Maria", "Musterfrau", false);
+    Customer testCustomer = createTestCustomer();
+    Contact contact1 = createTestContact(testCustomer, "Max", "Mustermann", true);
+    Contact contact2 = createTestContact(testCustomer, "Maria", "Musterfrau", false);
     contactRepository.persist(contact1);
     contactRepository.persist(contact2);
 
@@ -71,10 +81,12 @@ class ContactRepositoryTest {
   }
 
   @Test
+  @TestTransaction
   void shouldFindPrimaryContact() {
     // Given
-    Contact primary = createTestContact("Max", "Mustermann", true);
-    Contact secondary = createTestContact("Maria", "Musterfrau", false);
+    Customer testCustomer = createTestCustomer();
+    Contact primary = createTestContact(testCustomer, "Max", "Mustermann", true);
+    Contact secondary = createTestContact(testCustomer, "Maria", "Musterfrau", false);
     contactRepository.persist(primary);
     contactRepository.persist(secondary);
 
@@ -88,16 +100,19 @@ class ContactRepositoryTest {
   }
 
   @Test
+  @TestTransaction
   void shouldSetPrimaryContact() {
     // Given
-    Contact contact1 = createTestContact("Max", "Mustermann", true);
-    Contact contact2 = createTestContact("Maria", "Musterfrau", false);
+    Customer testCustomer = createTestCustomer();
+    Contact contact1 = createTestContact(testCustomer, "Max", "Mustermann", true);
+    Contact contact2 = createTestContact(testCustomer, "Maria", "Musterfrau", false);
     contactRepository.persist(contact1);
     contactRepository.persist(contact2);
 
     // When
     contactRepository.setPrimaryContact(testCustomer.getId(), contact2.getId());
-    contactRepository.flush(); // Force update
+    contactRepository.getEntityManager().flush(); // Force update
+    contactRepository.getEntityManager().clear(); // Clear persistence context to force reload
 
     // Then
     Contact updated1 = contactRepository.findById(contact1.getId());
@@ -107,13 +122,17 @@ class ContactRepositoryTest {
   }
 
   @Test
+  @TestTransaction
   void shouldHandleSoftDelete() {
     // Given
-    Contact contact = createTestContact("Max", "Mustermann", true);
+    Customer testCustomer = createTestCustomer();
+    Contact contact = createTestContact(testCustomer, "Max", "Mustermann", true);
     contactRepository.persist(contact);
 
     // When
     int deleted = contactRepository.softDelete(contact.getId());
+    contactRepository.getEntityManager().flush(); // Force update
+    contactRepository.getEntityManager().clear(); // Clear persistence context to force reload
 
     // Then
     assertThat(deleted).isEqualTo(1);
@@ -126,11 +145,13 @@ class ContactRepositoryTest {
   }
 
   @Test
+  @TestTransaction
   void shouldFindContactsByEmail() {
     // Given
-    Contact contact1 = createTestContact("Max", "Mustermann", true);
+    Customer testCustomer = createTestCustomer();
+    Contact contact1 = createTestContact(testCustomer, "Max", "Mustermann", true);
     contact1.setEmail("max@example.com");
-    Contact contact2 = createTestContact("Maria", "Musterfrau", false);
+    Contact contact2 = createTestContact(testCustomer, "Maria", "Musterfrau", false);
     contact2.setEmail("MAX@EXAMPLE.COM"); // Different case
     contactRepository.persist(contact1);
     contactRepository.persist(contact2);
@@ -143,11 +164,13 @@ class ContactRepositoryTest {
   }
 
   @Test
+  @TestTransaction
   void shouldCountActiveContacts() {
     // Given
-    Contact active1 = createTestContact("Max", "Mustermann", true);
-    Contact active2 = createTestContact("Maria", "Musterfrau", false);
-    Contact inactive = createTestContact("Hans", "Meier", false);
+    Customer testCustomer = createTestCustomer();
+    Contact active1 = createTestContact(testCustomer, "Max", "Mustermann", true);
+    Contact active2 = createTestContact(testCustomer, "Maria", "Musterfrau", false);
+    Contact inactive = createTestContact(testCustomer, "Hans", "Meier", false);
     inactive.setActive(false);
 
     contactRepository.persist(active1);
@@ -161,15 +184,18 @@ class ContactRepositoryTest {
     assertThat(count).isEqualTo(2);
   }
 
-  private Contact createTestContact(String firstName, String lastName, boolean isPrimary) {
+  private Contact createTestContact(Customer customer, String firstName, String lastName, boolean isPrimary) {
     Contact contact = new Contact();
-    contact.setCustomer(testCustomer);
+    contact.setCustomer(customer);
     contact.setFirstName(firstName);
     contact.setLastName(lastName);
     contact.setPrimary(isPrimary);
     contact.setActive(true);
     contact.setCreatedBy("test");
     contact.setUpdatedBy("test");
+    // Legacy fields for compatibility
+    contact.setIsDecisionMaker(false);
+    contact.setIsDeleted(false);
     return contact;
   }
 }

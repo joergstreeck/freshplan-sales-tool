@@ -226,6 +226,16 @@ public class CustomerMapper {
     // Audit fields
     customer.setCreatedBy(createdBy);
 
+    // Sprint 2 Fields - Set defaults
+    customer.setLocationsGermany(1); // Default: at least one location in Germany
+    customer.setLocationsAustria(0);
+    customer.setLocationsSwitzerland(0);
+    customer.setLocationsRestEU(0);
+    customer.setTotalLocationsEU(1); // Total should match sum
+    customer.setPainPoints(new java.util.ArrayList<>()); // Empty list as default
+    customer.setPrimaryFinancing(de.freshplan.domain.customer.entity.FinancingType.PRIVATE); // Default financing
+    customer.setExpansionPlanned(null); // Default: no expansion planned (nullable field)
+    
     // Calculate initial risk score
     customer.updateRiskScore();
 

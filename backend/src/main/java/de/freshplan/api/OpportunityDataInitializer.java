@@ -41,7 +41,7 @@ public class OpportunityDataInitializer {
   @Inject UserRepository userRepository;
 
   @Transactional
-  void onStart(@Observes @Priority(1000) StartupEvent ev) {
+  void onStart(@Observes @Priority(2000) StartupEvent ev) {
     LOG.info("🎯 Initializing Opportunity test data for Pipeline testing...");
 
     // Prüfe ob bereits Opportunities existieren
