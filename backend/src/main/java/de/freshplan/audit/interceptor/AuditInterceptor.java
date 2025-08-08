@@ -1,5 +1,6 @@
 package de.freshplan.audit.interceptor;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import de.freshplan.audit.entity.AuditLog;
 import de.freshplan.audit.entity.AuditLog.*;
 import de.freshplan.audit.service.AuditService;
@@ -31,6 +32,8 @@ public class AuditInterceptor {
   private static final Logger log = LoggerFactory.getLogger(AuditInterceptor.class);
 
   @Inject AuditService auditService;
+  
+  @Inject ObjectMapper objectMapper;
 
   // Cache für Entity-Type Mapping
   private static final Map<Class<?>, EntityType> ENTITY_TYPE_CACHE = new HashMap<>();
@@ -254,12 +257,14 @@ public class AuditInterceptor {
   }
 
   private Object cloneEntity(Object entity) {
-    // Simple shallow clone für Audit
-    // In Production: Verwende eine richtige Clone-Library
+    // Deep copy der Entity mittels Jackson Serialization
+    // Dies erfasst den tatsächlichen Zustand VOR der Änderung
     try {
-      return entity.getClass().getDeclaredConstructor().newInstance();
+      // Serialisiert und deserialisiert das Objekt für eine echte Deep Copy
+      String json = objectMapper.writeValueAsString(entity);
+      return objectMapper.readValue(json, entity.getClass());
     } catch (Exception e) {
-      log.debug("Could not clone entity for audit", e);
+      log.warn("Could not clone entity for audit. Old values will be missing.", e);
       return null;
     }
   }
