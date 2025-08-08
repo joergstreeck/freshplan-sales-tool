@@ -10,6 +10,7 @@ import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Repository für AuditLog Entity. Bietet spezialisierte Queries für Compliance, Forensik und
@@ -83,10 +84,20 @@ public class AuditRepository implements PanacheRepositoryBase<AuditLog, UUID> {
         .list();
   }
 
-  /** Zählt Aktionen eines Users. */
+  /** Zählt Aktionen eines Users - optimiert mit GROUP BY Query. */
   public Map<AuditAction, Long> countUserActions(UUID userId, LocalDateTime since) {
-    List<AuditLog> logs = find("userId = ?1 AND occurredAt >= ?2", userId, since).list();
-    return logs.stream().collect(Collectors.groupingBy(AuditLog::getAction, Collectors.counting()));
+    return getEntityManager()
+        .createQuery(
+            "SELECT a.action, COUNT(a) FROM AuditLog a " +
+            "WHERE a.userId = :userId AND a.occurredAt >= :since " +
+            "GROUP BY a.action", Object[].class)
+        .setParameter("userId", userId.toString())
+        .setParameter("since", since)
+        .getResultStream()
+        .collect(Collectors.toMap(
+            row -> (AuditAction) row[0],
+            row -> (Long) row[1]
+        ));
   }
 
   /** Findet verdächtige Aktivitäten. */
@@ -119,30 +130,31 @@ public class AuditRepository implements PanacheRepositoryBase<AuditLog, UUID> {
         .getResultList();
   }
 
-  /** Prüft die Hash-Chain Integrität. */
+  /** Prüft die Hash-Chain Integrität - optimiert mit Stream-Processing. */
   public boolean verifyHashChain(LocalDateTime from, LocalDateTime to) {
-    List<AuditLog> logs =
-        find("occurredAt BETWEEN ?1 AND ?2", Sort.by("occurredAt"), from, to).list();
-
-    if (logs.isEmpty()) return true;
-
-    String previousHash = null;
-    for (AuditLog log : logs) {
-      // Erster Eintrag
-      if (previousHash == null) {
-        if (log.getPreviousHash() != null && !log.getPreviousHash().equals("GENESIS")) {
-          return false; // Erster Eintrag sollte GENESIS oder null haben
+    // Verwende Stream statt List für bessere Memory-Effizienz
+    try (Stream<AuditLog> logStream = 
+        find("occurredAt BETWEEN ?1 AND ?2", Sort.by("occurredAt"), from, to).stream()) {
+      
+      // Container für previousHash (mutable reference für Lambda)
+      String[] previousHashHolder = new String[1];
+      
+      return logStream.allMatch(log -> {
+        // Erster Eintrag
+        if (previousHashHolder[0] == null) {
+          if (log.getPreviousHash() != null && !log.getPreviousHash().equals("GENESIS")) {
+            return false; // Erster Eintrag sollte GENESIS oder null haben
+          }
+        } else {
+          // Prüfe ob previousHash mit dem Hash des vorherigen Eintrags übereinstimmt
+          if (!previousHashHolder[0].equals(log.getPreviousHash())) {
+            return false; // Hash-Chain unterbrochen
+          }
         }
-      } else {
-        // Prüfe ob previousHash mit dem Hash des vorherigen Eintrags übereinstimmt
-        if (!previousHash.equals(log.getPreviousHash())) {
-          return false; // Hash-Chain unterbrochen
-        }
-      }
-      previousHash = log.getCurrentHash();
+        previousHashHolder[0] = log.getCurrentHash();
+        return true;
+      });
     }
-
-    return true;
   }
 
   /** Findet Einträge die bald gelöscht werden müssen (DSGVO). */

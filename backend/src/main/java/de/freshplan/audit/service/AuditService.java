@@ -396,18 +396,17 @@ public class AuditService {
       String previousHash = getPreviousHashWithRecovery();
       auditLog.setPreviousHash(previousHash);
 
-      // Berechne Hash für diesen Eintrag
-      String content =
-          String.format(
-              "%s|%s|%s|%s|%s|%s|%s|%s",
-              auditLog.getEntityType(),
-              auditLog.getEntityId(),
-              auditLog.getAction(),
-              auditLog.getUserId(),
-              auditLog.getOccurredAt(),
-              auditLog.getOldValues() != null ? auditLog.getOldValues() : "",
-              auditLog.getNewValues() != null ? auditLog.getNewValues() : "",
-              previousHash);
+      // Berechne Hash mit strukturiertem JSON-Format (robuster als String-Concatenation)
+      Map<String, Object> contentMap = new LinkedHashMap<>();
+      contentMap.put("entityType", auditLog.getEntityType());
+      contentMap.put("entityId", auditLog.getEntityId());
+      contentMap.put("action", auditLog.getAction());
+      contentMap.put("userId", auditLog.getUserId());
+      contentMap.put("occurredAt", auditLog.getOccurredAt().toString());
+      contentMap.put("oldValues", auditLog.getOldValues());
+      contentMap.put("newValues", auditLog.getNewValues());
+      contentMap.put("previousHash", previousHash);
+      String content = objectMapper.writeValueAsString(contentMap);
 
       MessageDigest digest = MessageDigest.getInstance("SHA-256");
       byte[] hash = digest.digest(content.getBytes(StandardCharsets.UTF_8));
