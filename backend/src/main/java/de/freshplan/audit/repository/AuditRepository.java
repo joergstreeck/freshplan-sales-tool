@@ -6,6 +6,7 @@ import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
 import io.quarkus.panache.common.Page;
 import io.quarkus.panache.common.Sort;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -18,6 +19,7 @@ import java.util.stream.Collectors;
  * @since 2.0.0
  */
 @ApplicationScoped
+@Transactional
 public class AuditRepository implements PanacheRepositoryBase<AuditLog, UUID> {
 
   /** Findet Audit-Einträge für eine Entität. */

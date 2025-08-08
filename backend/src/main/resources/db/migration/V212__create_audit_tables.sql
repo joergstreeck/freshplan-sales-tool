@@ -70,30 +70,30 @@ CREATE TABLE IF NOT EXISTS audit_logs (
     current_hash VARCHAR(100)
 );
 
--- Indizes für Performance
-CREATE INDEX idx_audit_entity ON audit_logs(entity_type, entity_id);
-CREATE INDEX idx_audit_user ON audit_logs(user_id);
-CREATE INDEX idx_audit_timestamp ON audit_logs(occurred_at DESC);
-CREATE INDEX idx_audit_action ON audit_logs(action);
-CREATE INDEX idx_audit_compliance ON audit_logs(is_dsgvo_relevant) WHERE is_dsgvo_relevant = TRUE;
-CREATE INDEX idx_audit_transaction ON audit_logs(transaction_id) WHERE transaction_id IS NOT NULL;
+-- Indizes für Performance (IF NOT EXISTS für Idempotenz)
+CREATE INDEX IF NOT EXISTS idx_audit_entity ON audit_logs(entity_type, entity_id);
+CREATE INDEX IF NOT EXISTS idx_audit_user ON audit_logs(user_id);
+CREATE INDEX IF NOT EXISTS idx_audit_timestamp ON audit_logs(occurred_at DESC);
+CREATE INDEX IF NOT EXISTS idx_audit_action ON audit_logs(action);
+CREATE INDEX IF NOT EXISTS idx_audit_compliance ON audit_logs(is_dsgvo_relevant) WHERE is_dsgvo_relevant = TRUE;
+CREATE INDEX IF NOT EXISTS idx_audit_transaction ON audit_logs(transaction_id) WHERE transaction_id IS NOT NULL;
 
 -- Index für kritische Aktionen
-CREATE INDEX idx_audit_critical ON audit_logs(action, occurred_at DESC) 
+CREATE INDEX IF NOT EXISTS idx_audit_critical ON audit_logs(action, occurred_at DESC) 
     WHERE action IN ('DELETE', 'BULK_DELETE', 'PERMISSION_CHANGE', 'DATA_DELETION');
 
 -- Index für User-Activity Reports
-CREATE INDEX idx_audit_user_activity ON audit_logs(user_id, occurred_at DESC);
+CREATE INDEX IF NOT EXISTS idx_audit_user_activity ON audit_logs(user_id, occurred_at DESC);
 
 -- Index für Entity-History
-CREATE INDEX idx_audit_entity_history ON audit_logs(entity_type, entity_id, occurred_at DESC);
+CREATE INDEX IF NOT EXISTS idx_audit_entity_history ON audit_logs(entity_type, entity_id, occurred_at DESC);
 
 -- Index für DSGVO-Reports
-CREATE INDEX idx_audit_dsgvo ON audit_logs(is_dsgvo_relevant, occurred_at DESC) 
+CREATE INDEX IF NOT EXISTS idx_audit_dsgvo ON audit_logs(is_dsgvo_relevant, occurred_at DESC) 
     WHERE is_dsgvo_relevant = TRUE;
 
 -- Index für Hash-Chain Validation
-CREATE INDEX idx_audit_hash_chain ON audit_logs(previous_hash) 
+CREATE INDEX IF NOT EXISTS idx_audit_hash_chain ON audit_logs(previous_hash) 
     WHERE previous_hash IS NOT NULL;
 
 -- Trigger-Funktion für automatische Hash-Berechnung
