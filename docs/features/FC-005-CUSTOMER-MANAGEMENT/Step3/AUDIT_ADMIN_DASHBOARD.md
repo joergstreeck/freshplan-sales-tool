@@ -2,9 +2,10 @@
 
 **Phase:** 1 - Core Requirements  
 **Priorität:** 🔴 KRITISCH - Rechtliche Anforderung & Admin-Tool  
-**Status:** 📋 GEPLANT  
-**Letzte Aktualisierung:** 08.08.2025  
-**Claude-Ready:** ✅ Vollständig navigierbar
+**Status:** 🔄 IN ARBEIT (40% fertig)  
+**Letzte Aktualisierung:** 09.08.2025  
+**Claude-Ready:** ✅ Vollständig navigierbar  
+**Architektur:** Option 2 - Integrierte Lösung mit Rollen-basierter Sichtbarkeit
 
 ## 🧭 NAVIGATION FÜR CLAUDE
 
@@ -30,21 +31,35 @@ touch backend/src/main/java/de/freshplan/audit/admin/service/ComplianceReportSer
 touch backend/src/main/java/de/freshplan/audit/admin/service/AuditStatisticsService.java
 touch backend/src/main/java/de/freshplan/audit/admin/resource/AuditAdminResource.java
 
-# 2. Frontend Admin Dashboard
-mkdir -p frontend/src/features/admin/audit
-touch frontend/src/features/admin/audit/AuditAdminDashboard.tsx
-touch frontend/src/features/admin/audit/components/AuditStatisticsCards.tsx
-touch frontend/src/features/admin/audit/components/AuditActivityHeatmap.tsx
-touch frontend/src/features/admin/audit/components/UserAuditProfile.tsx
-touch frontend/src/features/admin/audit/components/ComplianceStatusPanel.tsx
+# 2. Frontend Admin Infrastructure (NEUE ARCHITEKTUR - Option 2)
+# Protected Routes & Admin Layout
+mkdir -p frontend/src/components/auth
+touch frontend/src/components/auth/ProtectedRoute.tsx
+mkdir -p frontend/src/components/layout
+touch frontend/src/components/layout/AdminLayout.tsx
+touch frontend/src/components/layout/AdminSidebar.tsx
 
-# 3. Admin-spezifische Stores
+# 3. Admin Pages (V2 Theme mit MUI v5)
+mkdir -p frontend/src/pages/admin
+touch frontend/src/pages/admin/AuditAdminPage.tsx
+touch frontend/src/pages/admin/UserManagementPage.tsx
+touch frontend/src/pages/admin/SystemSettingsPage.tsx
+
+# 4. Audit Feature Components (V2 Theme)
+mkdir -p frontend/src/features/audit/admin
+touch frontend/src/features/audit/admin/AuditDashboard.tsx
+touch frontend/src/features/audit/admin/AuditStatisticsCards.tsx
+touch frontend/src/features/audit/admin/AuditActivityHeatmap.tsx
+touch frontend/src/features/audit/admin/UserAuditProfile.tsx
+touch frontend/src/features/audit/admin/ComplianceStatusPanel.tsx
+
+# 5. Admin-spezifische Stores
 mkdir -p frontend/src/stores/admin
 touch frontend/src/stores/admin/auditAdminStore.ts
 
-# 4. Migration für Admin Views (nächste freie Nummer prüfen!)
-ls -la backend/src/main/resources/db/migration/ | tail -5
-# Erstelle V[NEXT]__create_audit_admin_views.sql
+# 6. Migration für Admin Views (V215 ist nächste!)
+/Users/joergstreeck/freshplan-sales-tool/scripts/get-next-migration.sh
+# Erstelle V215__create_audit_admin_views.sql
 ```
 
 ## 🎯 Das Problem: Fehlende Admin-Übersicht & Compliance-Monitoring
@@ -55,6 +70,59 @@ ls -la backend/src/main/resources/db/migration/ | tail -5
 - ⚠️ **Keine Alerts:** Verdächtige Aktivitäten werden nicht erkannt
 - 📈 **Keine Reports:** DSGVO-Auditor fragt nach Dokumentation
 - 🔒 **Keine Kontrolle:** Wer hat Zugriff auf sensible Daten?
+
+## 🏛️ ARCHITEKTUR-ENTSCHEIDUNG: Integrierte Lösung mit Rollen (Option 2)
+
+**Letzte Aktualisierung:** 09.08.2025  
+**Entscheidung:** Integrierte Admin-Features mit Rollen-basierter Sichtbarkeit
+
+### Warum diese Architektur?
+- ✅ **Single Sign-On:** Nutzt bestehendes Keycloak Setup
+- ✅ **Code-Wiederverwendung:** Gemeinsame Components & Services
+- ✅ **Bessere UX:** Keine zweite Anmeldung nötig
+- ✅ **Wartbarkeit:** Ein Repository, ein Deployment
+- ✅ **Best Practice:** Wie GitLab, Grafana, Jira
+
+### Frontend-Struktur mit V2 Theme:
+```
+frontend/src/
+├── components/
+│   ├── auth/
+│   │   └── ProtectedRoute.tsx        # Rollen-basierter Schutz
+│   └── layout/
+│       ├── AdminLayout.tsx           # Admin-spezifisches Layout
+│       └── AdminSidebar.tsx          # Admin-Navigation
+├── pages/
+│   └── admin/                        # Geschützter Admin-Bereich
+│       ├── AuditAdminPage.tsx        # Hauptseite
+│       ├── UserManagementPage.tsx    
+│       └── SystemSettingsPage.tsx
+└── features/
+    └── audit/
+        ├── components/               # Shared Audit Components
+        └── admin/                    # Admin-spezifisch
+```
+
+### Routing mit Rollen-Schutz:
+```typescript
+// In providers.tsx
+<Route path="/admin" element={
+  <ProtectedRoute allowedRoles={['admin', 'auditor']}>
+    <AdminLayout />
+  </ProtectedRoute>
+}>
+  <Route path="audit" element={<AuditAdminPage />} />
+  <Route path="users" element={<UserManagementPage />} />
+  <Route path="settings" element={<SystemSettingsPage />} />
+</Route>
+```
+
+### V2 Theme Verwendung:
+- **Framework:** Material-UI v5 mit sx prop
+- **Farben:** FreshFoodz CI - #94C456 (Primär), #004F7B (Sekundär)  
+- **Schriften:** Antonio Bold (Headlines), Poppins (Body)
+- **Components:** MUI DataGrid, Dialog, Alert, Cards
+- **Keine CSS-Dateien:** Alles über sx prop und theme
 
 ## 💡 DIE LÖSUNG: Enterprise Audit Admin Dashboard
 
@@ -515,13 +583,252 @@ public class AuditAdminService {
 }
 ```
 
-### 2. Frontend Admin Dashboard Component
+### 2. Protected Route Component (NEU)
 
-**Datei:** `frontend/src/features/admin/audit/AuditAdminDashboard.tsx`
+**Datei:** `frontend/src/components/auth/ProtectedRoute.tsx`
 
 ```typescript
-// CLAUDE: Hauptkomponente für Audit Admin Dashboard
-// Pfad: frontend/src/features/admin/audit/AuditAdminDashboard.tsx
+// CLAUDE: Rollen-basierter Routen-Schutz
+// Pfad: frontend/src/components/auth/ProtectedRoute.tsx
+
+import React from 'react';
+import { Navigate, Outlet } from 'react-router-dom';
+import { Box, Alert } from '@mui/material';
+import { useAuth } from '@/contexts/AuthContext';
+
+interface ProtectedRouteProps {
+  allowedRoles?: string[];
+  children?: React.ReactNode;
+}
+
+export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ 
+  allowedRoles = [], 
+  children 
+}) => {
+  const { isAuthenticated, hasAnyRole, isLoading } = useAuth();
+  
+  if (isLoading) {
+    return <Box>Loading...</Box>;
+  }
+  
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+  
+  if (allowedRoles.length > 0 && !hasAnyRole(allowedRoles)) {
+    return (
+      <Box sx={{ p: 3 }}>
+        <Alert severity="error">
+          Sie haben keine Berechtigung für diesen Bereich.
+        </Alert>
+      </Box>
+    );
+  }
+  
+  return children ? <>{children}</> : <Outlet />;
+};
+```
+
+### 3. Admin Layout mit Sidebar (NEU)
+
+**Datei:** `frontend/src/components/layout/AdminLayout.tsx`
+
+```typescript
+// CLAUDE: Admin Layout mit V2 Theme
+// Pfad: frontend/src/components/layout/AdminLayout.tsx
+
+import React, { useState } from 'react';
+import { Outlet } from 'react-router-dom';
+import {
+  Box,
+  Drawer,
+  AppBar,
+  Toolbar,
+  Typography,
+  IconButton,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  Divider,
+  useTheme,
+  useMediaQuery
+} from '@mui/material';
+import {
+  Menu as MenuIcon,
+  Dashboard as DashboardIcon,
+  Security as SecurityIcon,
+  People as PeopleIcon,
+  Settings as SettingsIcon,
+  Assessment as AssessmentIcon,
+  ChevronLeft as ChevronLeftIcon
+} from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
+
+const drawerWidth = 260;
+
+const menuItems = [
+  { 
+    text: 'Audit Dashboard', 
+    icon: <SecurityIcon />, 
+    path: '/admin/audit',
+    roles: ['admin', 'auditor']
+  },
+  { 
+    text: 'Benutzerverwaltung', 
+    icon: <PeopleIcon />, 
+    path: '/admin/users',
+    roles: ['admin']
+  },
+  { 
+    text: 'System-Einstellungen', 
+    icon: <SettingsIcon />, 
+    path: '/admin/settings',
+    roles: ['admin']
+  },
+  { 
+    text: 'Reports', 
+    icon: <AssessmentIcon />, 
+    path: '/admin/reports',
+    roles: ['admin', 'auditor', 'manager']
+  }
+];
+
+export const AdminLayout: React.FC = () => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const [drawerOpen, setDrawerOpen] = useState(!isMobile);
+  const navigate = useNavigate();
+  const { hasAnyRole } = useAuth();
+  
+  const handleDrawerToggle = () => {
+    setDrawerOpen(!drawerOpen);
+  };
+  
+  const filteredMenuItems = menuItems.filter(item => 
+    hasAnyRole(item.roles)
+  );
+  
+  return (
+    <Box sx={{ display: 'flex' }}>
+      <AppBar
+        position="fixed"
+        sx={{
+          width: { md: `calc(100% - ${drawerOpen ? drawerWidth : 0}px)` },
+          ml: { md: `${drawerOpen ? drawerWidth : 0}px` },
+          bgcolor: '#004F7B',
+          transition: theme.transitions.create(['margin', 'width'], {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.leavingScreen,
+          }),
+        }}
+      >
+        <Toolbar>
+          <IconButton
+            color="inherit"
+            aria-label="open drawer"
+            onClick={handleDrawerToggle}
+            edge="start"
+            sx={{ mr: 2 }}
+          >
+            {drawerOpen ? <ChevronLeftIcon /> : <MenuIcon />}
+          </IconButton>
+          <Typography 
+            variant="h6" 
+            noWrap 
+            sx={{ 
+              fontFamily: 'Antonio, sans-serif',
+              fontWeight: 'bold',
+              letterSpacing: '0.5px'
+            }}
+          >
+            FreshPlan Admin Center
+          </Typography>
+        </Toolbar>
+      </AppBar>
+      
+      <Drawer
+        sx={{
+          width: drawerWidth,
+          flexShrink: 0,
+          '& .MuiDrawer-paper': {
+            width: drawerWidth,
+            boxSizing: 'border-box',
+            bgcolor: '#f8f9fa',
+            borderRight: '1px solid #e0e0e0'
+          },
+        }}
+        variant={isMobile ? 'temporary' : 'persistent'}
+        anchor="left"
+        open={drawerOpen}
+        onClose={handleDrawerToggle}
+      >
+        <Toolbar />
+        <Box sx={{ overflow: 'auto' }}>
+          <List>
+            {filteredMenuItems.map((item) => (
+              <ListItem key={item.text} disablePadding>
+                <ListItemButton
+                  onClick={() => navigate(item.path)}
+                  sx={{
+                    '&:hover': {
+                      bgcolor: 'rgba(148, 196, 86, 0.1)',
+                    },
+                    '&.Mui-selected': {
+                      bgcolor: 'rgba(148, 196, 86, 0.2)',
+                      borderLeft: '4px solid #94C456',
+                    }
+                  }}
+                >
+                  <ListItemIcon sx={{ color: '#004F7B' }}>
+                    {item.icon}
+                  </ListItemIcon>
+                  <ListItemText 
+                    primary={item.text}
+                    primaryTypographyProps={{
+                      fontFamily: 'Poppins, sans-serif',
+                      fontSize: '14px',
+                      fontWeight: 500
+                    }}
+                  />
+                </ListItemButton>
+              </ListItem>
+            ))}
+          </List>
+        </Box>
+      </Drawer>
+      
+      <Box
+        component="main"
+        sx={{
+          flexGrow: 1,
+          bgcolor: '#f5f5f5',
+          p: 3,
+          width: { md: `calc(100% - ${drawerOpen ? drawerWidth : 0}px)` },
+          ml: { md: `${drawerOpen ? drawerWidth : 0}px` },
+          transition: theme.transitions.create(['margin', 'width'], {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.leavingScreen,
+          }),
+          minHeight: '100vh',
+          mt: 8
+        }}
+      >
+        <Outlet />
+      </Box>
+    </Box>
+  );
+};
+```
+
+### 4. Audit Admin Page mit V2 Theme
+
+**Datei:** `frontend/src/pages/admin/AuditAdminPage.tsx`
+
+```typescript
+// CLAUDE: Audit Admin Dashboard Hauptseite mit V2 Theme
+// Pfad: frontend/src/pages/admin/AuditAdminPage.tsx
 
 import React, { useState, useEffect } from 'react';
 import {
@@ -1293,27 +1600,35 @@ $$ LANGUAGE plpgsql;
 -- (Requires pg_cron extension or external scheduler)
 ```
 
-## 📋 IMPLEMENTIERUNGS-CHECKLISTE
+## 📋 IMPLEMENTIERUNGS-CHECKLISTE (AKTUALISIERT FÜR OPTION 2)
 
-### Phase 1: Backend Admin Services (90 Min)
+### Phase 1: Frontend Infrastructure (45 Min) 🆕
+- [ ] ProtectedRoute Component für Rollen-Check
+- [ ] AdminLayout mit Sidebar (V2 Theme)
+- [ ] AdminSidebar mit Navigation
+- [ ] Integration in providers.tsx
+- [ ] Rollen-basierte Menü-Filterung
+
+### Phase 2: Backend Admin Services (90 Min)
 - [ ] AuditAdminService mit Dashboard-Statistiken
 - [ ] ComplianceReportService für DSGVO-Reports
 - [ ] AuditStatisticsService für Metriken
 - [ ] SuspiciousActivityDetector
-- [ ] AuditAdminResource REST Endpoints
+- [ ] AuditAdminResource REST Endpoints (@RolesAllowed)
 
-### Phase 2: Database Optimization (30 Min)
-- [ ] Materialized Views für Performance
+### Phase 3: Database Optimization (30 Min)
+- [ ] Materialized Views für Performance (V215)
 - [ ] Indizes für Admin-Queries
 - [ ] Refresh-Strategien implementieren
 - [ ] Partitionierung vorbereiten
 
-### Phase 3: Frontend Dashboard (90 Min)
-- [ ] AuditAdminDashboard Hauptkomponente
-- [ ] StatisticsCards für Metriken
-- [ ] ActivityHeatmap Visualisierung
-- [ ] SuspiciousActivityList
-- [ ] ComplianceStatusPanel
+### Phase 4: Frontend Dashboard mit V2 Theme (90 Min)
+- [ ] AuditAdminPage (Hauptseite mit MUI v5)
+- [ ] AuditDashboard Component
+- [ ] StatisticsCards (mit sx prop styling)
+- [ ] ActivityHeatmap (mit recharts/MUI)
+- [ ] SuspiciousActivityList (MUI DataGrid)
+- [ ] ComplianceStatusPanel (MUI Alert & Cards)
 
 ### Phase 4: Real-time Features (60 Min)
 - [ ] WebSocket für Live-Stream

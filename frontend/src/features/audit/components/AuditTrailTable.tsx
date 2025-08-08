@@ -1,0 +1,274 @@
+import React, { useState, useCallback } from 'react';
+import {
+  Box,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Chip,
+  IconButton,
+  Tooltip,
+  Typography,
+  CircularProgress,
+  Button,
+  TablePagination
+} from '@mui/material';
+import {
+  Visibility as VisibilityIcon,
+  Download as DownloadIcon,
+  Security as SecurityIcon,
+  Warning as WarningIcon
+} from '@mui/icons-material';
+import { useQuery } from '@tanstack/react-query';
+import { format } from 'date-fns';
+import { de } from 'date-fns/locale';
+import type { AuditLog, AuditFilters } from '../types';
+import { auditApi } from '../services/auditApi';
+import { AuditDetailModal } from './AuditDetailModal';
+
+interface AuditTrailTableProps {
+  filters?: AuditFilters;
+  onExport?: () => void;
+}
+
+export const AuditTrailTable: React.FC<AuditTrailTableProps> = ({ filters, onExport }) => {
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(25);
+  const [selectedAudit, setSelectedAudit] = useState<string | null>(null);
+  
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['auditTrail', filters, page, rowsPerPage],
+    queryFn: () => auditApi.getAuditLogs({
+      ...filters,
+      page,
+      pageSize: rowsPerPage
+    })
+  });
+  
+  const handleChangePage = (_: unknown, newPage: number) => {
+    setPage(newPage);
+  };
+  
+  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+  
+  const getActionColor = (action: string) => {
+    if (action.includes('DELETE')) return 'error';
+    if (action.includes('CREATE')) return 'success';
+    if (action.includes('UPDATE')) return 'primary';
+    if (action.includes('PERMISSION')) return 'warning';
+    if (action.includes('LOGIN')) return 'info';
+    return 'default';
+  };
+  
+  const getEntityTypeIcon = (entityType: string) => {
+    switch (entityType) {
+      case 'USER':
+        return '👤';
+      case 'CUSTOMER':
+        return '🏢';
+      case 'OPPORTUNITY':
+        return '💼';
+      case 'CONTRACT':
+        return '📄';
+      case 'SYSTEM':
+        return '⚙️';
+      default:
+        return '📁';
+    }
+  };
+  
+  const formatDateTime = (dateStr: string) => {
+    try {
+      return format(new Date(dateStr), 'dd.MM.yyyy HH:mm:ss', { locale: de });
+    } catch {
+      return dateStr;
+    }
+  };
+  
+  if (isLoading) {
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" minHeight={400}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+  
+  if (error) {
+    return (
+      <Box p={3}>
+        <Typography color="error">
+          Fehler beim Laden der Audit-Daten: {(error as Error).message}
+        </Typography>
+      </Box>
+    );
+  }
+  
+  const auditLogs = data || [];
+  
+  return (
+    <Box>
+      <TableContainer component={Paper}>
+        <Table sx={{ minWidth: 650 }} size="medium">
+          <TableHead>
+            <TableRow sx={{ backgroundColor: 'action.hover' }}>
+              <TableCell width="180">Zeitstempel</TableCell>
+              <TableCell width="150">Benutzer</TableCell>
+              <TableCell width="140">Aktion</TableCell>
+              <TableCell width="120">Objekt</TableCell>
+              <TableCell>Details</TableCell>
+              <TableCell width="100">Grund</TableCell>
+              <TableCell width="80" align="center">Aktionen</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {auditLogs.map((log) => (
+              <TableRow
+                key={log.id}
+                hover
+                sx={{
+                  '&:hover': { backgroundColor: 'action.hover' },
+                  ...(log.isCritical && {
+                    backgroundColor: 'error.light',
+                    '&:hover': { backgroundColor: 'error.light' }
+                  })
+                }}
+              >
+                <TableCell>
+                  <Typography variant="body2" sx={{ fontFamily: 'monospace' }}>
+                    {formatDateTime(log.occurredAt)}
+                  </Typography>
+                </TableCell>
+                
+                <TableCell>
+                  <Box>
+                    <Typography variant="body2" fontWeight="medium">
+                      {log.userName}
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary">
+                      {log.userRole}
+                    </Typography>
+                  </Box>
+                </TableCell>
+                
+                <TableCell>
+                  <Chip
+                    label={log.action}
+                    size="small"
+                    color={getActionColor(log.action) as any}
+                    icon={log.isCritical ? <WarningIcon /> : undefined}
+                  />
+                </TableCell>
+                
+                <TableCell>
+                  <Box display="flex" alignItems="center" gap={0.5}>
+                    <Typography variant="body2">
+                      {getEntityTypeIcon(log.entityType)}
+                    </Typography>
+                    <Box>
+                      <Typography variant="body2">
+                        {log.entityType}
+                      </Typography>
+                      {log.entityName && (
+                        <Typography variant="caption" color="text.secondary">
+                          {log.entityName}
+                        </Typography>
+                      )}
+                    </Box>
+                  </Box>
+                </TableCell>
+                
+                <TableCell>
+                  {log.changedFields && (
+                    <Typography variant="body2" noWrap sx={{ maxWidth: 300 }}>
+                      Geändert: {log.changedFields}
+                    </Typography>
+                  )}
+                  {log.comment && (
+                    <Typography variant="caption" color="text.secondary" noWrap sx={{ maxWidth: 300 }}>
+                      {log.comment}
+                    </Typography>
+                  )}
+                </TableCell>
+                
+                <TableCell>
+                  {log.reason && (
+                    <Tooltip title={log.reason}>
+                      <Typography variant="body2" noWrap sx={{ maxWidth: 150 }}>
+                        {log.reason}
+                      </Typography>
+                    </Tooltip>
+                  )}
+                </TableCell>
+                
+                <TableCell align="center">
+                  <Tooltip title="Details anzeigen">
+                    <IconButton
+                      size="small"
+                      onClick={() => setSelectedAudit(log.id)}
+                      color="primary"
+                    >
+                      <VisibilityIcon fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
+                  {log.isDsgvoRelevant && (
+                    <Tooltip title="DSGVO-relevant">
+                      <SecurityIcon fontSize="small" color="warning" />
+                    </Tooltip>
+                  )}
+                </TableCell>
+              </TableRow>
+            ))}
+            
+            {auditLogs.length === 0 && (
+              <TableRow>
+                <TableCell colSpan={7} align="center" sx={{ py: 5 }}>
+                  <Typography color="text.secondary">
+                    Keine Audit-Einträge gefunden
+                  </Typography>
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </TableContainer>
+      
+      <TablePagination
+        component="div"
+        count={-1} // Unknown total count for now
+        page={page}
+        onPageChange={handleChangePage}
+        rowsPerPage={rowsPerPage}
+        onRowsPerPageChange={handleChangeRowsPerPage}
+        rowsPerPageOptions={[10, 25, 50, 100]}
+        labelRowsPerPage="Einträge pro Seite:"
+        labelDisplayedRows={({ from, to }) => `${from}-${to}`}
+      />
+      
+      {onExport && (
+        <Box sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end' }}>
+          <Button
+            variant="outlined"
+            startIcon={<DownloadIcon />}
+            onClick={onExport}
+          >
+            Export als CSV
+          </Button>
+        </Box>
+      )}
+      
+      {selectedAudit && (
+        <AuditDetailModal
+          auditId={selectedAudit}
+          open={true}
+          onClose={() => setSelectedAudit(null)}
+        />
+      )}
+    </Box>
+  );
+};
