@@ -1,9 +1,9 @@
 /**
  * API Client Base für Customer Management
- * 
+ *
  * Erweitert die globale API-Klasse um Customer-spezifische Features.
  * Implementiert automatische Error-Handling, Retry-Logic und Caching.
- * 
+ *
  * @see /Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/03-FRONTEND/04-api-integration.md
  */
 
@@ -20,25 +20,22 @@ export interface RequestConfig extends RequestInit {
 export class ApiClient {
   private static instance: ApiClient;
   private abortControllers = new Map<string, AbortController>();
-  
+
   static getInstance(): ApiClient {
     if (!ApiClient.instance) {
       ApiClient.instance = new ApiClient();
     }
     return ApiClient.instance;
   }
-  
+
   private constructor() {}
-  
+
   /**
    * Basis HTTP Request mit Error Handling
    */
-  private async request<T>(
-    endpoint: string,
-    config: RequestConfig = {}
-  ): Promise<T> {
+  private async request<T>(endpoint: string, config: RequestConfig = {}): Promise<T> {
     const { params, retry = 0, timeout = 30000, ...fetchConfig } = config;
-    
+
     // Build URL with params
     const url = new URL(`${API_URL}${endpoint}`);
     if (params) {
@@ -48,19 +45,19 @@ export class ApiClient {
         }
       });
     }
-    
+
     // Setup abort controller for timeout
     const abortController = new AbortController();
     const timeoutId = setTimeout(() => abortController.abort(), timeout);
-    
+
     // Store controller for manual cancellation
     const requestKey = `${fetchConfig.method || 'GET'} ${endpoint}`;
     this.abortControllers.set(requestKey, abortController);
-    
+
     try {
       // Get auth token from localStorage/sessionStorage
       const token = this.getAuthToken();
-      
+
       const response = await fetch(url.toString(), {
         ...fetchConfig,
         signal: abortController.signal,
@@ -70,42 +67,42 @@ export class ApiClient {
           ...fetchConfig.headers,
         },
       });
-      
+
       clearTimeout(timeoutId);
       this.abortControllers.delete(requestKey);
-      
+
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         throw this.createApiError(response.status, errorData);
       }
-      
+
       // Handle empty responses
       if (response.status === 204) {
         return {} as T;
       }
-      
+
       return await response.json();
     } catch (error) {
       clearTimeout(timeoutId);
       this.abortControllers.delete(requestKey);
-      
+
       // Retry logic
       if (retry > 0 && this.shouldRetry(error)) {
         await this.delay(1000 * (3 - retry)); // Exponential backoff
         return this.request<T>(endpoint, { ...config, retry: retry - 1 });
       }
-      
+
       throw this.handleError(error);
     }
   }
-  
+
   /**
    * GET Request
    */
   async get<T>(endpoint: string, config?: RequestConfig): Promise<T> {
     return this.request<T>(endpoint, { ...config, method: 'GET' });
   }
-  
+
   /**
    * POST Request
    */
@@ -116,7 +113,7 @@ export class ApiClient {
       body: data ? JSON.stringify(data) : undefined,
     });
   }
-  
+
   /**
    * PUT Request
    */
@@ -127,14 +124,14 @@ export class ApiClient {
       body: data ? JSON.stringify(data) : undefined,
     });
   }
-  
+
   /**
    * DELETE Request
    */
   async delete<T>(endpoint: string, config?: RequestConfig): Promise<T> {
     return this.request<T>(endpoint, { ...config, method: 'DELETE' });
   }
-  
+
   /**
    * PATCH Request
    */
@@ -145,7 +142,7 @@ export class ApiClient {
       body: data ? JSON.stringify(data) : undefined,
     });
   }
-  
+
   /**
    * Cancel a pending request
    */
@@ -157,7 +154,7 @@ export class ApiClient {
       this.abortControllers.delete(key);
     }
   }
-  
+
   /**
    * Cancel all pending requests
    */
@@ -165,7 +162,7 @@ export class ApiClient {
     this.abortControllers.forEach(controller => controller.abort());
     this.abortControllers.clear();
   }
-  
+
   /**
    * Get auth token from storage
    */
@@ -173,18 +170,18 @@ export class ApiClient {
     // Check session storage first (temporary session)
     const sessionToken = sessionStorage.getItem('auth_token');
     if (sessionToken) return sessionToken;
-    
+
     // Check local storage (remember me)
     const localToken = localStorage.getItem('auth_token');
     if (localToken) return localToken;
-    
+
     // Check Keycloak token if integrated
     const keycloakToken = sessionStorage.getItem('kc_token');
     if (keycloakToken) return keycloakToken;
-    
+
     return null;
   }
-  
+
   /**
    * Create standardized API error
    */
@@ -197,24 +194,33 @@ export class ApiClient {
       timestamp: data.timestamp || new Date().toISOString(),
     };
   }
-  
+
   /**
    * Get default error message for status code
    */
   private getDefaultErrorMessage(status: number): string {
     switch (status) {
-      case 400: return 'Ungültige Anfrage';
-      case 401: return 'Nicht autorisiert';
-      case 403: return 'Zugriff verweigert';
-      case 404: return 'Ressource nicht gefunden';
-      case 409: return 'Konflikt - Ressource existiert bereits';
-      case 422: return 'Validierungsfehler';
-      case 500: return 'Interner Serverfehler';
-      case 503: return 'Service nicht verfügbar';
-      default: return `Fehler ${status}`;
+      case 400:
+        return 'Ungültige Anfrage';
+      case 401:
+        return 'Nicht autorisiert';
+      case 403:
+        return 'Zugriff verweigert';
+      case 404:
+        return 'Ressource nicht gefunden';
+      case 409:
+        return 'Konflikt - Ressource existiert bereits';
+      case 422:
+        return 'Validierungsfehler';
+      case 500:
+        return 'Interner Serverfehler';
+      case 503:
+        return 'Service nicht verfügbar';
+      default:
+        return `Fehler ${status}`;
     }
   }
-  
+
   /**
    * Determine if error should trigger retry
    */
@@ -223,7 +229,7 @@ export class ApiClient {
     if (error.status && error.status < 500) return false;
     return true;
   }
-  
+
   /**
    * Handle errors consistently
    */
@@ -234,17 +240,17 @@ export class ApiClient {
         message: 'Anfrage wurde abgebrochen',
       });
     }
-    
+
     if (error.status) {
       throw error; // Already an ApiError
     }
-    
+
     throw this.createApiError(0, {
       code: 'NETWORK_ERROR',
       message: 'Netzwerkfehler - Bitte prüfen Sie Ihre Verbindung',
     });
   }
-  
+
   /**
    * Delay helper for retry logic
    */

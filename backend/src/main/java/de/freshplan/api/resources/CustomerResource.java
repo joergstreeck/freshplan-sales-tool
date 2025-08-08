@@ -145,7 +145,7 @@ public class CustomerResource {
 
     // Validate pagination parameters
     if (page < 0) page = 0;
-    if (size > PaginationConstants.MAX_PAGE_SIZE) size = PaginationConstants.DEFAULT_PAGE_SIZE;
+    if (size > PaginationConstants.MAX_PAGE_SIZE) size = PaginationConstants.MAX_PAGE_SIZE;
 
     CustomerListResponse customers;
 

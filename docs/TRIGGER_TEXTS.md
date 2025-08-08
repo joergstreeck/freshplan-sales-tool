@@ -2,9 +2,9 @@
 
 **WICHTIG: Diese Datei enthält die offiziellen Trigger-Texte. NIEMALS löschen oder überschreiben!**
 
-**Version:** 2.5  
-**Letzte Aktualisierung:** 27.07.2025  
-**Kritischer Fix:** Feature Branch Workflow nach Orientierung
+**Version:** 2.6  
+**Letzte Aktualisierung:** 02.08.2025  
+**Neues Feature:** MIGRATION-CHECK als verpflichtender Schritt 2.5 integriert
 
 ---
 
@@ -124,10 +124,21 @@ Lese alles gründlich durch und befolge strict die Standardübergabe.
     4. Pull Request erstellen
     5. Nach Review: NUR auf direkte Anweisung mergen!
 
+    SCHRITT 2.5 - MIGRATION-CHECK (🚨 PFLICHT bei DB-Arbeit!):
+    🚨🚨🚨 MIGRATION ALERT - V121 FREI 🚨🚨🚨
+    cat docs/FLYWAY_MIGRATION_HISTORY.md | head -20
+    echo -e "\033[1;31m🚨 NÄCHSTE FREIE MIGRATION: V121\033[0m"
+    → Bei Migration-Arbeit ohne klare V121+ Nummer: SESSION UNTERBRECHEN!
+    → Nach neuer Migration: ./scripts/update-flyway-history.sh V121 "name" "beschreibung"
+
     SCHRITT 3 - Pflichtlektüre:
     1. /CLAUDE.md (besonders Session-Ende-Routine)
     2. Letzte Übergabe (besonders TODO-Status)
     3. /docs/STANDARDUERGABE_NEU.md
+    4. 🆕 Prüfe Guide-Updates aus Übergabe:
+       - Wurden Guides aktualisiert? → Lies die Änderungen
+       - Arbeitet diese Session mit Migrationen? → Lies DATABASE_MIGRATION_GUIDE.md
+       - Gab es Debug-Sessions? → Lies DEBUG_COOKBOOK.md Updates
 
     SCHRITT 4 - V5 Fokus prüfen (✅ Auto-Sync):
     cat docs/CRM_COMPLETE_MASTER_PLAN_V5.md | sed -n '15,35p'
@@ -138,6 +149,9 @@ Lese alles gründlich durch und befolge strict die Standardübergabe.
     SCHRITT 5 - TODOs wiederherstellen:
     - Prüfe TODO-Section der letzten Übergabe
     - Führe TodoWrite aus für alle offenen TODOs
+    - 🆕 WICHTIG: Prüfe ob ein TODO "Guide aktualisieren" existiert:
+      → Falls ja: Plane Zeit für Guide-Update ein
+      → Falls Migration-Arbeit: Erstelle TODO "DATABASE_MIGRATION_GUIDE.md aktualisieren"
     - Verifiziere mit TodoRead
 
     SCHRITT 6 - Aktives Modul:
@@ -149,6 +163,8 @@ Lese alles gründlich durch und befolge strict die Standardübergabe.
     - Prüfe genannte Dateien existieren
     - Verifiziere Implementierungsstand
     - cat docs/NEXT_STEP.md (wo genau weitermachen?)
+    - 🆕 Bei Migration-Arbeit: Prüfe letzte Migration-Nummer
+    - 🆕 Bei Debug-Arbeit: Prüfe bekannte Probleme in DEBUG_COOKBOOK.md
 
     MELDE DICH MIT:
     - ✅ Arbeits-Branch: feature/[branch-name]
@@ -156,6 +172,8 @@ Lese alles gründlich durch und befolge strict die Standardübergabe.
     - ✅ Aktives Modul: FC-XXX-MX
     - ✅ V5 Fokus: [Phase/Status aus V5] (✅ Auto-Sync)
     - ✅ Nächster Schritt: [aus NEXT_STEP.md oder TODO]
+    - 🆕 Guide-Status: [Welche Guides sind relevant für diese Session?]
+    - ✅ Migration-Check: [V121 bestätigt/N/A]
     - ⚠️ Diskrepanzen: [Liste - sollten minimal sein dank Auto-Sync]
     - Status: BEREIT FÜR ARBEITSPHASE
 
@@ -173,7 +191,7 @@ Lese alles gründlich durch und befolge strict die Standardübergabe.
 
 **Teil 2:**
 ```
-Feature-Branch checkout → ./scripts/robust-session-start.sh → WORKFLOW-VERBOT verstehen → Docs lesen → ./scripts/get-active-module.sh → ⛔ STOPP: Status melden und auf "ARBEITSSTART" warten!
+Feature-Branch checkout → ./scripts/robust-session-start.sh → WORKFLOW-VERBOT verstehen → MIGRATION-CHECK (bei DB-Arbeit!) → Docs lesen → ./scripts/get-active-module.sh → ⛔ STOPP: Status melden und auf "ARBEITSSTART" warten!
 ```
 
 ---

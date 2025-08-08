@@ -7,88 +7,81 @@
 
 ## 🎯 JETZT GERADE:
 
-**FC-005 CODE REVIEW FEEDBACK VOLLSTÄNDIG ABGEARBEITET ✅**
+**CI FAST GRÜN - NUR NOCH PLAYWRIGHT TEST ROT**
 
-**Stand 27.07.2025 04:57:**
-- ✅ **CR-001:** Conditional Field Visibility mit 6 Operatoren vollständig implementiert
-- ✅ **CR-002:** Dynamic Zod Schema Builder Integration in Store abgeschlossen  
-- ✅ **Testing:** 24 Tests total (17 + 6 + 7) mit Performance & Robustheit validiert
-- ✅ **Field Catalog:** Erweitert mit practical conditional examples und cascading logic
-- ✅ **Schema Builder:** Required field validation und enterprise robustheit gefixt
-- 🚨 **Status:** BEREIT FÜR CR-003 ODER UI INTEGRATION
+**Stand 08.08.2025 01:38:**
+- ✅ **Backend Tests:** ALLE GRÜN!
+- ✅ **Integration Tests:** GRÜN!
+- ✅ **E2E Smoke:** GRÜN!
+- ✅ **Lint/Quality:** ALLE GRÜN!
+- 🔄 **Playwright:** SPA-Routing Fix deployed, läuft noch
+- 🎯 **PR #74:** 8/9 Tests grün (89%)
 
 **🚀 NÄCHSTER SCHRITT:**
 
-**CR-003 Configuration Data externalisieren ODER FC-005 UI Integration**
+**CI-Status prüfen und PR mergen**
 
 ```bash
 cd /Users/joergstreeck/freshplan-sales-tool
 
-# Option A: CR-003 Configuration Data externalisieren  
-# 1. DetailedLocationsStep.tsx:72-134 categoryIcons, industryTemplates auslagern
-# 2. Separate config files für bessere Wartbarkeit erstellen
-# 3. Template-System für branchenspezifische Vorkonfigurationen
+# 1. CI-Status prüfen
+gh pr checks 74
 
-# Option B: FC-005 UI Integration - CustomerOnboardingWizard einbinden
-# 1. Komponenten sind bereit, müssen nur in UI integriert werden  
-# 2. "Neuen Kunden anlegen" Button zur bestehenden Kundenliste hinzufügen
-# 3. Field-Catalog JSON aktivieren für Dynamic Forms
+# 2. Falls Playwright grün → PR mergen
+gh pr merge 74 --squash
 
-# Tests validieren (sollten alle grün sein):
-cd frontend
-npm test -- --run DynamicFieldRenderer
-npm test -- --run ConditionalFieldsLive
-npm test -- --run StoreDynamicValidationSimple
-
-# Pull Request Status prüfen:
-gh pr view 70
+# 3. Falls noch rot → Logs checken
+gh run view [RUN-ID] --log-failed | grep -A 10 "Error:"
 ```
 
-**WICHTIGE DOKUMENTE (NEUE STRUKTUR - 100% FERTIG!):**
-- Hauptübersicht: `/docs/features/FC-005-CUSTOMER-MANAGEMENT/README.md` ⭐
-- Quick Reference: `/docs/features/FC-005-CUSTOMER-MANAGEMENT/CLAUDE_QUICK_REFERENCE.md` 🚀
-- Implementation: `/docs/features/FC-005-CUSTOMER-MANAGEMENT/08-IMPLEMENTATION/README.md` ✅ NEU
-- Tech Konzept: `/docs/features/FC-005-CUSTOMER-MANAGEMENT/01-TECH-CONCEPT/README.md`
-- Backend Docs: `/docs/features/FC-005-CUSTOMER-MANAGEMENT/02-BACKEND/README.md`
-- Frontend Docs: `/docs/features/FC-005-CUSTOMER-MANAGEMENT/03-FRONTEND/README.md`
-- Performance: `/docs/features/FC-005-CUSTOMER-MANAGEMENT/07-PERFORMANCE/README.md`
-- Umstrukturierungs-Plan: `/docs/features/FC-005-CUSTOMER-MANAGEMENT/RESTRUCTURING_PLAN.md` ✅
+**UNTERBROCHEN BEI:**
+- Warten auf Playwright CI-Ergebnis mit SPA-Routing Fix
+- Fix ist deployed: `npx serve -s` für SPA-Mode
+- Erwarte grüne CI in wenigen Minuten
 
-**WICHTIGE DETAILS:**
-- chainCustomer='ja' triggert Standorte-Tab
-- industry bestimmt branchenspezifische Felder
-- Validierungen: Deutsche PLZ, E-Mail, Telefon
-- 3-stufiger Workflow: Kunde → Standorte → Details
+**AKTUELLE POSITION:**
+- ✅ Sprint 2 Integration: 100% abgeschlossen
+- ✅ 58 Testkunden + 31 Opportunities: FUNKTIONSFÄHIG
+- 🔄 CI-Status: 82% grün (9/11 Tests)
+- 🎯 Ziel: 100% grüne CI für PR #74
 
-**ABGESCHLOSSENE FEATURES:**
-- ✅ M4 Opportunity Pipeline (100%)
-- ✅ Customer Backend API
-- ✅ Customer UI Analyse
-
-**OFFENE PRIORITÄTEN:**
-1. Customer UI Implementation (2-3 Tage)
-2. FC-012 Audit Trail UI (1 Tag)
-3. Security-Analyse Quarkus 3.17.4 (4h)
+**WICHTIGE DOKUMENTE:**
+- **AKTUELLE Übergabe:** `/docs/claude-work/daily-work/2025-08-08/2025-08-08_HANDOVER_00-33.md` ⭐ **NEU!**
+- **PR #74:** https://github.com/joergstreeck/freshplan-sales-tool/pull/74
+- Migration Status: V209 als nächste verfügbare Migration  
+- Sprint 2 Integration: Erfolgreich abgeschlossen
 
 ---
 
 ## ⚠️ VOR JEDER IMPLEMENTATION - REALITY CHECK PFLICHT:
 ```bash
-./scripts/reality-check.sh FC-002  # M4 Opportunity Pipeline Check
+# CI Status prüfen:
+gh pr checks 74 | grep -E "fail|pass"
+# Sollte: Nur noch 2 rote Tests zeigen
+
+# Backend Service Status:
+curl http://localhost:8080/api/ping
+# Sollte: JSON Response
+
+# Database Migration Status:
+./scripts/get-next-migration.sh
+# Sollte: V209 als nächste Migration anzeigen
 ```
 
 ---
 
-## 📊 OFFENE TODOS:
+## 📊 AKTUELLER STATUS:
 ```
-🔴 HIGH Priority: 2 TODOs (TODO-2: CI Assertions, TODO-3: UserResourceIT)
-🟡 MEDIUM Priority: 1 TODO (TODO-4: RENEWAL-Spalte)
-🟢 LOW Priority: 1 TODO (TODO-5: Übergabe)
+🟢 React Kompatibilität: ✅ GELÖST (18.3.1)
+🟢 Frontend Tests: ✅ 469 BESTANDEN
+🟢 E2E Smoke Tests: ✅ GRÜN
+🟡 Backend Integration: 🔄 FAST FERTIG (Response-Validierung)
+🟡 Playwright: 🔄 TIMEOUT-ISSUES
+🟢 Gesamt-CI: 82% GRÜN (9/11)
 ```
 
 **Status:**
-- FC-012 Audit Trail System: ✅ PRODUCTION-READY
-- CI Integration Tests: 🟡 2 Assertion-Failures (lösbar in 30 Min)
-- RENEWAL Backend: ✅ 100% implementiert
-- RENEWAL Frontend UI: 🔄 Bereit für Implementation nach CI-Fix
-- Debug-System: ✅ DEPLOYED (umfassende Dokumentation)
+- FC-005 Sprint 2 Integration: ✅ CODE FERTIG
+- CI-Stabilität: 🔄 82% → Ziel 100%
+- PR #74: ⏳ Wartet auf grüne CI
+- Verbleibende Arbeit: ~30-60 Minuten

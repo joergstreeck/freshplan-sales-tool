@@ -1,9 +1,9 @@
 /**
  * Freshfoodz Corporate Identity Theme
- * 
+ *
  * Basiert auf den offiziellen Freshfoodz CI-Vorgaben:
  * - Primärgrün: #94C456
- * - Dunkelblau: #004F7B  
+ * - Dunkelblau: #004F7B
  * - Typography: Antonio Bold (Headlines), Poppins (Text)
  */
 
@@ -33,13 +33,13 @@ export const freshfoodzTheme = createTheme({
   palette: {
     mode: 'light',
     primary: {
-      main: '#94C456',        // Freshfoodz Primärgrün
+      main: '#94C456', // Freshfoodz Primärgrün
       light: '#a8d06d',
       dark: '#7fb03f',
       contrastText: '#ffffff',
     },
     secondary: {
-      main: '#004F7B',        // Freshfoodz Dunkelblau
+      main: '#004F7B', // Freshfoodz Dunkelblau
       light: '#3374a0',
       dark: '#003856',
       contrastText: '#ffffff',
@@ -49,8 +49,8 @@ export const freshfoodzTheme = createTheme({
       paper: '#ffffff',
     },
     text: {
-      primary: '#000000',     // Schwarz für Haupttext
-      secondary: '#004F7B',   // Dunkelblau für sekundären Text
+      primary: '#000000', // Schwarz für Haupttext
+      secondary: '#004F7B', // Dunkelblau für sekundären Text
     },
     divider: '#e0e0e0',
     // Custom Freshfoodz Palette
@@ -349,7 +349,7 @@ export const freshfoodzTheme = createTheme({
     string,
     string,
     string,
-    string
+    string,
   ],
   transitions: {
     easing: {

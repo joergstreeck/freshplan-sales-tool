@@ -1,6 +1,6 @@
 /**
  * End-to-End Tests für RENEWAL Stage Drag & Drop
- * 
+ *
  * @description Testet die komplette User Journey für Contract Renewals
  *              inklusive Drag & Drop Interaktionen und API Integration
  */
@@ -15,27 +15,24 @@ import { OpportunityPipeline } from '../OpportunityPipeline';
 import { OpportunityStage } from '../../types/opportunity.types';
 
 // Mock für API Calls
-const mockUpdateOpportunity = jest.fn();
-const mockGetOpportunities = jest.fn();
+const mockUpdateOpportunity = vi.fn();
+const mockGetOpportunities = vi.fn();
 
 // Mock fetch für API Integration
-global.fetch = jest.fn();
+global.fetch = vi.fn();
 
 // Test Setup für React Query
-const createTestQueryClient = () => new QueryClient({
-  defaultOptions: {
-    queries: { retry: false },
-    mutations: { retry: false },
-  },
-});
+const createTestQueryClient = () =>
+  new QueryClient({
+    defaultOptions: {
+      queries: { retry: false },
+      mutations: { retry: false },
+    },
+  });
 
 const TestWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const queryClient = createTestQueryClient();
-  return (
-    <QueryClientProvider client={queryClient}>
-      {children}
-    </QueryClientProvider>
-  );
+  return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
 };
 
 // Mock Opportunities für E2E Tests
@@ -63,14 +60,13 @@ const mockE2EOpportunities = [
     expectedCloseDate: '2025-09-01',
     createdAt: '2025-06-01T09:15:00Z',
     updatedAt: '2025-07-20T11:45:00Z',
-  }
+  },
 ];
 
 describe('OpportunityPipeline - E2E RENEWAL Tests', () => {
-  
   beforeEach(() => {
     // Mock successful API responses
-    (fetch as jest.MockedFunction<typeof fetch>).mockImplementation((url) => {
+    (fetch as jest.MockedFunction<typeof fetch>).mockImplementation(url => {
       if (url.toString().includes('/api/opportunities')) {
         return Promise.resolve({
           ok: true,
@@ -82,20 +78,20 @@ describe('OpportunityPipeline - E2E RENEWAL Tests', () => {
         json: () => Promise.resolve({}),
       } as Response);
     });
-    
+
     mockUpdateOpportunity.mockClear();
     mockGetOpportunities.mockClear();
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('Complete RENEWAL Workflow', () => {
     test('should complete full contract renewal workflow: CLOSED_WON → RENEWAL → CLOSED_WON', async () => {
       // userEvent wird später für Interaktionen benötigt
       // const user = userEvent.setup();
-      
+
       render(
         <TestWrapper>
           <OpportunityPipeline />
@@ -110,7 +106,7 @@ describe('OpportunityPipeline - E2E RENEWAL Tests', () => {
       // 2. Prüfe dass CLOSED_WON Opportunity sichtbar ist
       const wonOpportunity = screen.getByText('Restaurant Goldener Hirsch - Hauptvertrag');
       expect(wonOpportunity).toBeInTheDocument();
-      
+
       // 3. Prüfe dass RENEWAL Spalte existiert
       const renewalColumn = screen.getByText('Verlängerung');
       expect(renewalColumn).toBeInTheDocument();
@@ -119,19 +115,19 @@ describe('OpportunityPipeline - E2E RENEWAL Tests', () => {
       // (Contract läuft ab und wird zur Verlängerung bewegt)
       const opportunityCard = wonOpportunity.closest('[draggable="true"]');
       const renewalDropZone = renewalColumn.closest('[data-droppable="true"]');
-      
+
       if (opportunityCard && renewalDropZone) {
         // Drag Start
         fireEvent.dragStart(opportunityCard, {
           dataTransfer: {
-            setData: jest.fn(),
-            getData: jest.fn(),
+            setData: vi.fn(),
+            getData: vi.fn(),
           },
         });
 
         // Drag Over RENEWAL Zone
         fireEvent.dragOver(renewalDropZone);
-        
+
         // Drop in RENEWAL
         fireEvent.drop(renewalDropZone);
 
@@ -160,7 +156,7 @@ describe('OpportunityPipeline - E2E RENEWAL Tests', () => {
     test('should handle successful renewal completion: RENEWAL → CLOSED_WON', async () => {
       // userEvent wird später für Interaktionen benötigt
       // const user = userEvent.setup();
-      
+
       render(
         <TestWrapper>
           <OpportunityPipeline />
@@ -174,10 +170,10 @@ describe('OpportunityPipeline - E2E RENEWAL Tests', () => {
       // Simuliere erfolgreiches Renewal: RENEWAL → CLOSED_WON
       const renewalOpportunity = screen.getByText('Hotel Bergblick - Verlängerungsprozess');
       const wonColumn = screen.getByText('Gewonnen');
-      
+
       const opportunityCard = renewalOpportunity.closest('[draggable="true"]');
       const wonDropZone = wonColumn.closest('[data-droppable="true"]');
-      
+
       if (opportunityCard && wonDropZone) {
         fireEvent.dragStart(opportunityCard);
         fireEvent.dragOver(wonDropZone);
@@ -210,10 +206,10 @@ describe('OpportunityPipeline - E2E RENEWAL Tests', () => {
       // Simuliere gescheiterte Verlängerung: RENEWAL → CLOSED_LOST
       const renewalOpportunity = screen.getByText('Hotel Bergblick - Verlängerungsprozess');
       const lostColumn = screen.getByText('Verloren');
-      
+
       const opportunityCard = renewalOpportunity.closest('[draggable="true"]');
       const lostDropZone = lostColumn.closest('[data-droppable="true"]');
-      
+
       if (opportunityCard && lostDropZone) {
         fireEvent.dragStart(opportunityCard);
         fireEvent.dragOver(lostDropZone);
@@ -236,7 +232,7 @@ describe('OpportunityPipeline - E2E RENEWAL Tests', () => {
     test('should prevent invalid drag operations to RENEWAL stage', async () => {
       // Mock console.warn um Validierungsmeldungen zu prüfen
       const consoleSpy = jest.spyOn(console, 'warn').mockImplementation();
-      
+
       render(
         <TestWrapper>
           <OpportunityPipeline />
@@ -245,12 +241,12 @@ describe('OpportunityPipeline - E2E RENEWAL Tests', () => {
 
       // Versuche ungültigen Drag von LEAD zu RENEWAL zu simulieren
       // (sollte verhindert werden durch Business Rules)
-      
+
       // Erwarte Validierungswarnung
       // expect(consoleSpy).toHaveBeenCalledWith(
       //   expect.stringContaining('Invalid stage transition')
       // );
-      
+
       consoleSpy.mockRestore();
     });
 
@@ -265,13 +261,14 @@ describe('OpportunityPipeline - E2E RENEWAL Tests', () => {
         expect(screen.getByText('Restaurant Goldener Hirsch - Hauptvertrag')).toBeInTheDocument();
       });
 
-      const opportunityCard = screen.getByText('Restaurant Goldener Hirsch - Hauptvertrag')
+      const opportunityCard = screen
+        .getByText('Restaurant Goldener Hirsch - Hauptvertrag')
         .closest('[draggable="true"]');
-      
+
       if (opportunityCard) {
         // Starte Drag
         fireEvent.dragStart(opportunityCard);
-        
+
         // Prüfe dass DragOverlay sichtbar wird
         await waitFor(() => {
           // DragOverlay sollte visuelles Feedback zeigen
@@ -290,9 +287,10 @@ describe('OpportunityPipeline - E2E RENEWAL Tests', () => {
         Promise.resolve({
           ok: false,
           status: 400,
-          json: () => Promise.resolve({
-            message: 'Invalid stage transition from NEW_LEAD to RENEWAL'
-          }),
+          json: () =>
+            Promise.resolve({
+              message: 'Invalid stage transition from NEW_LEAD to RENEWAL',
+            }),
         } as Response)
       );
 
@@ -304,7 +302,7 @@ describe('OpportunityPipeline - E2E RENEWAL Tests', () => {
 
       // Simuliere fehlgeschlagenen API Call
       const renewalColumn = screen.getByText('Verlängerung');
-      
+
       // Error-Handling sollte graceful erfolgen
       // User sollte Fehlermeldung sehen, aber App nicht crashen
       await waitFor(() => {
@@ -315,10 +313,9 @@ describe('OpportunityPipeline - E2E RENEWAL Tests', () => {
 
     test('should handle network timeouts during RENEWAL operations', async () => {
       // Mock Network Timeout
-      (fetch as jest.MockedFunction<typeof fetch>).mockImplementationOnce(() =>
-        new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('Network timeout')), 100)
-        )
+      (fetch as jest.MockedFunction<typeof fetch>).mockImplementationOnce(
+        () =>
+          new Promise((_, reject) => setTimeout(() => reject(new Error('Network timeout')), 100))
       );
 
       render(
@@ -341,7 +338,7 @@ describe('OpportunityPipeline - E2E RENEWAL Tests', () => {
         id: `renewal-${i}`,
         name: `Contract Renewal ${i}`,
         stage: OpportunityStage.RENEWAL,
-        value: 15000 + (i * 1000),
+        value: 15000 + i * 1000,
         probability: 75,
         customerName: `Customer ${i}`,
         assignedToName: 'Sales Manager',
@@ -358,7 +355,7 @@ describe('OpportunityPipeline - E2E RENEWAL Tests', () => {
       );
 
       const startTime = performance.now();
-      
+
       render(
         <TestWrapper>
           <OpportunityPipeline />
@@ -380,7 +377,7 @@ describe('OpportunityPipeline - E2E RENEWAL Tests', () => {
   describe('RENEWAL Accessibility in E2E', () => {
     test('should support keyboard navigation for RENEWAL operations', async () => {
       const user = userEvent.setup();
-      
+
       render(
         <TestWrapper>
           <OpportunityPipeline />
@@ -393,11 +390,11 @@ describe('OpportunityPipeline - E2E RENEWAL Tests', () => {
 
       // Test Tab-Navigation durch RENEWAL Spalte
       await user.tab();
-      
+
       // Erste fokussierbare Element sollte erreichbar sein
       const focusedElement = document.activeElement;
       expect(focusedElement).toBeDefined();
-      
+
       // RENEWAL Spalte sollte über Tastatur erreichbar sein
       await user.keyboard('{ArrowRight}');
       // Je nach Implementation der Keyboard Navigation

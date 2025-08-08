@@ -31,6 +31,13 @@ export const keycloakInitOptions = {
  * @returns Promise<boolean> - true wenn erfolgreich initialisiert
  */
 export const initKeycloak = async (): Promise<boolean> => {
+  // Check for auth bypass FIRST
+  if (import.meta.env.DEV && import.meta.env.VITE_AUTH_BYPASS === 'true') {
+    console.log('[Keycloak] Auth bypass enabled - skipping initialization');
+    isInitialized = true;
+    return false; // Not authenticated, but that's OK in bypass mode
+  }
+
   // Prevent multiple initializations
   if (isInitialized) {
     return keycloak.authenticated || false;
@@ -56,20 +63,24 @@ export const initKeycloak = async (): Promise<boolean> => {
             if (refreshed) {
               console.log('Token successfully refreshed proactively');
               // Dispatch success event for app-wide notification
-              window.dispatchEvent(new CustomEvent('auth-token-refreshed', {
-                detail: { timestamp: new Date().toISOString() }
-              }));
+              window.dispatchEvent(
+                new CustomEvent('auth-token-refreshed', {
+                  detail: { timestamp: new Date().toISOString() },
+                })
+              );
             }
           } catch (error) {
             console.error('Proactive token refresh failed:', error);
             // Dispatch error event before redirect
-            window.dispatchEvent(new CustomEvent('auth-error', {
-              detail: {
-                type: 'token-refresh-failed',
-                message: 'Ihre Sitzung ist abgelaufen. Sie werden zur Anmeldung weitergeleitet.',
-                error
-              }
-            }));
+            window.dispatchEvent(
+              new CustomEvent('auth-error', {
+                detail: {
+                  type: 'token-refresh-failed',
+                  message: 'Ihre Sitzung ist abgelaufen. Sie werden zur Anmeldung weitergeleitet.',
+                  error,
+                },
+              })
+            );
             // Graceful redirect after 2 seconds
             setTimeout(() => keycloak.login(), 2000);
           }
@@ -85,12 +96,14 @@ export const initKeycloak = async (): Promise<boolean> => {
         keycloak.onAuthRefreshError = () => {
           console.error('Auth refresh error - clearing token');
           keycloak.clearToken();
-          window.dispatchEvent(new CustomEvent('auth-error', {
-            detail: {
-              type: 'refresh-error',
-              message: 'Authentifizierung fehlgeschlagen. Bitte melden Sie sich erneut an.'
-            }
-          }));
+          window.dispatchEvent(
+            new CustomEvent('auth-error', {
+              detail: {
+                type: 'refresh-error',
+                message: 'Authentifizierung fehlgeschlagen. Bitte melden Sie sich erneut an.',
+              },
+            })
+          );
         };
 
         // Setup periodic token validation (every 30 seconds)
@@ -130,24 +143,23 @@ export const initKeycloak = async (): Promise<boolean> => {
  */
 export const authUtils = {
   isAuthenticated: () => keycloak.authenticated || false,
-  
+
   login: (options?: { redirectUri?: string; prompt?: string }) => {
     return keycloak.login({
       redirectUri: options?.redirectUri || window.location.origin,
-      prompt: options?.prompt || 'login'
+      prompt: options?.prompt || 'login',
     });
   },
-  
+
   logout: (redirectUri?: string) => {
     // Clear any app-specific storage before logout
     window.dispatchEvent(new CustomEvent('auth-logout-initiated'));
     return keycloak.logout({
-      redirectUri: redirectUri || 
-                  import.meta.env.VITE_LOGOUT_REDIRECT_URI || 
-                  window.location.origin,
+      redirectUri:
+        redirectUri || import.meta.env.VITE_LOGOUT_REDIRECT_URI || window.location.origin,
     });
   },
-  
+
   getToken: () => {
     if (!keycloak.authenticated || !keycloak.token) {
       return null;
@@ -159,12 +171,12 @@ export const authUtils = {
     }
     return keycloak.token;
   },
-  
+
   getValidToken: async () => {
     if (!keycloak.authenticated) {
       return null;
     }
-    
+
     try {
       // Ensure token is valid for at least 30 seconds
       if (keycloak.isTokenExpired(30)) {
@@ -176,41 +188,44 @@ export const authUtils = {
       return null;
     }
   },
-  
+
   getUserId: () => keycloak.tokenParsed?.sub,
   getUsername: () => keycloak.tokenParsed?.preferred_username,
   getEmail: () => keycloak.tokenParsed?.email,
   getFullName: () => keycloak.tokenParsed?.name,
-  
+
   hasRole: (role: string) => {
     if (!keycloak.authenticated) return false;
     return keycloak.hasRealmRole(role) || keycloak.hasResourceRole(role);
   },
-  
+
   hasAnyRole: (roles: string[]) => {
     if (!keycloak.authenticated) return false;
     return roles.some(role => authUtils.hasRole(role));
   },
-  
+
   getUserRoles: () => {
     if (!keycloak.authenticated || !keycloak.tokenParsed) return [];
     const realmRoles = keycloak.tokenParsed.realm_access?.roles || [];
-    const resourceRoles = Object.values(keycloak.tokenParsed.resource_access || {})
-      .flatMap((resource: { roles?: string[] }) => resource.roles || []);
+    const resourceRoles = Object.values(keycloak.tokenParsed.resource_access || {}).flatMap(
+      (resource: { roles?: string[] }) => resource.roles || []
+    );
     return [...new Set([...realmRoles, ...resourceRoles])];
   },
-  
+
   updateToken: async (minValidity: number = 30) => {
     if (!keycloak.authenticated) {
       return false;
     }
-    
+
     try {
       const refreshed = await keycloak.updateToken(minValidity);
       if (refreshed) {
-        window.dispatchEvent(new CustomEvent('auth-token-updated', {
-          detail: { timestamp: new Date().toISOString() }
-        }));
+        window.dispatchEvent(
+          new CustomEvent('auth-token-updated', {
+            detail: { timestamp: new Date().toISOString() },
+          })
+        );
       }
       return refreshed;
     } catch (error) {
@@ -218,12 +233,12 @@ export const authUtils = {
       return false;
     }
   },
-  
+
   isTokenExpired: (minValidity?: number) => {
     if (!keycloak.authenticated) return true;
     return keycloak.isTokenExpired ? keycloak.isTokenExpired(minValidity) : true;
   },
-  
+
   getTokenTimeLeft: () => {
     if (!keycloak.authenticated || !keycloak.tokenParsed?.exp) {
       return 0;
@@ -232,7 +247,7 @@ export const authUtils = {
     const now = Date.now();
     return Math.max(0, exp - now);
   },
-  
+
   // Enhanced debugging and monitoring
   getAuthInfo: () => ({
     authenticated: keycloak.authenticated,

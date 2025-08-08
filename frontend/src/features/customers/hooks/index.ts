@@ -1,8 +1,8 @@
 /**
  * Hooks Export
- * 
+ *
  * Central export for all custom hooks.
- * 
+ *
  * @see /Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/03-FRONTEND/README.md
  */
 

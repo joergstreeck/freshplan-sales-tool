@@ -16,7 +16,15 @@ vi.mock('../../hooks/useAuth', () => ({
 
 // Mock für Button-Komponente
 vi.mock('../ui/button', () => ({
-  Button: ({ children, onClick, className }: { children: React.ReactNode; onClick: () => void; className: string }) => (
+  Button: ({
+    children,
+    onClick,
+    className,
+  }: {
+    children: React.ReactNode;
+    onClick: () => void;
+    className: string;
+  }) => (
     <button onClick={onClick} className={className}>
       {children}
     </button>
@@ -123,20 +131,20 @@ describe('LoginPage', () => {
     vi.doMock('../../lib/constants', () => ({
       IS_DEV_MODE: false,
     }));
-    
+
     // Clean module cache and re-import
     vi.resetModules();
     const { LoginPage: LoginPageProd } = await import('./LoginPage');
-    
+
     render(<LoginPageProd />);
 
     // Test-Benutzer sollten NICHT angezeigt werden
     expect(screen.queryByText('Test-Benutzer (nur in Entwicklung):')).not.toBeInTheDocument();
     expect(screen.queryByText('• sales@freshplan.de / sales123')).not.toBeInTheDocument();
-    
+
     // Login-Button sollte aber noch da sein
     expect(screen.getByText('Mit Keycloak anmelden')).toBeInTheDocument();
-    
+
     // Reset mock for other tests
     vi.doUnmock('../../lib/constants');
     vi.doMock('../../lib/constants', () => ({

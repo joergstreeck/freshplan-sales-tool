@@ -120,9 +120,9 @@ export const UserTableMUI = () => {
             variant="contained"
             startIcon={<AddIcon />}
             onClick={openCreateModal}
-            sx={{ 
+            sx={{
               bgcolor: '#94C456',
-              '&:hover': { bgcolor: '#7aa845' }
+              '&:hover': { bgcolor: '#7aa845' },
             }}
           >
             Neuer Benutzer
@@ -135,8 +135,8 @@ export const UserTableMUI = () => {
             fullWidth
             placeholder="Nach Benutzername oder E-Mail suchen..."
             value={searchInput}
-            onChange={(e) => setSearchInput(e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+            onChange={e => setSearchInput(e.target.value)}
+            onKeyPress={e => e.key === 'Enter' && handleSearch()}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
@@ -174,12 +174,24 @@ export const UserTableMUI = () => {
               // Loading skeletons
               [...Array(5)].map((_, index) => (
                 <TableRow key={index}>
-                  <TableCell><Skeleton /></TableCell>
-                  <TableCell><Skeleton /></TableCell>
-                  <TableCell><Skeleton /></TableCell>
-                  <TableCell><Skeleton /></TableCell>
-                  <TableCell><Skeleton /></TableCell>
-                  <TableCell><Skeleton /></TableCell>
+                  <TableCell>
+                    <Skeleton />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton />
+                  </TableCell>
                 </TableRow>
               ))
             ) : users.length === 0 ? (
@@ -191,7 +203,7 @@ export const UserTableMUI = () => {
                 </TableCell>
               </TableRow>
             ) : (
-              users.map((user) => (
+              users.map(user => (
                 <TableRow key={user.id} hover>
                   <TableCell>{user.username}</TableCell>
                   <TableCell>
@@ -199,7 +211,7 @@ export const UserTableMUI = () => {
                   </TableCell>
                   <TableCell>{user.email}</TableCell>
                   <TableCell>
-                    {user.roles.map((role) => (
+                    {user.roles.map(role => (
                       <Chip
                         key={role}
                         label={getRoleLabel(role)}
@@ -219,11 +231,7 @@ export const UserTableMUI = () => {
                     />
                   </TableCell>
                   <TableCell align="right">
-                    <IconButton
-                      size="small"
-                      onClick={() => openEditModal(user.id)}
-                      color="primary"
-                    >
+                    <IconButton size="small" onClick={() => openEditModal(user.id)} color="primary">
                       <EditIcon />
                     </IconButton>
                     <IconButton

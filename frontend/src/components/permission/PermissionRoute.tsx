@@ -7,166 +7,165 @@ import { useAuth } from '../../contexts/AuthContext';
 
 /**
  * Permission-aware routing components for FC-009.
- * 
+ *
  * Protects routes based on required permissions.
  */
 
 interface PermissionRouteProps {
-    /** The permission code required to access this route */
-    permission: string;
-    /** The content to render if permission is granted */
-    children: ReactNode;
-    /** Optional custom access denied component */
-    accessDeniedComponent?: ReactNode;
-    /** Redirect to this path if permission denied (instead of showing access denied) */
-    redirectTo?: string;
+  /** The permission code required to access this route */
+  permission: string;
+  /** The content to render if permission is granted */
+  children: ReactNode;
+  /** Optional custom access denied component */
+  accessDeniedComponent?: ReactNode;
+  /** Redirect to this path if permission denied (instead of showing access denied) */
+  redirectTo?: string;
 }
 
 export const PermissionRoute: React.FC<PermissionRouteProps> = ({
-    permission,
-    children,
-    accessDeniedComponent,
-    redirectTo
+  permission,
+  children,
+  accessDeniedComponent,
+  redirectTo,
 }) => {
-    const { hasPermission, isLoading } = usePermissions();
-    const { isAuthenticated } = useAuth();
-    const location = useLocation();
+  const { hasPermission, isLoading } = usePermissions();
+  const { isAuthenticated } = useAuth();
+  const location = useLocation();
 
-    // Redirect to login if not authenticated
-    if (!isAuthenticated) {
-        return <Navigate to="/login" state={{ from: location }} replace />;
+  // Redirect to login if not authenticated
+  if (!isAuthenticated) {
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+
+  // Show loading while checking permissions
+  if (isLoading) {
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" minHeight="200px">
+        <Typography>Loading...</Typography>
+      </Box>
+    );
+  }
+
+  // Check permission
+  if (!hasPermission(permission)) {
+    if (redirectTo) {
+      return <Navigate to={redirectTo} replace />;
     }
 
-    // Show loading while checking permissions
-    if (isLoading) {
-        return (
-            <Box display="flex" justifyContent="center" alignItems="center" minHeight="200px">
-                <Typography>Loading...</Typography>
-            </Box>
-        );
-    }
+    return accessDeniedComponent || <AccessDeniedDefault permission={permission} />;
+  }
 
-    // Check permission
-    if (!hasPermission(permission)) {
-        if (redirectTo) {
-            return <Navigate to={redirectTo} replace />;
-        }
-
-        return accessDeniedComponent || <AccessDeniedDefault permission={permission} />;
-    }
-
-    return <>{children}</>;
+  return <>{children}</>;
 };
 
 /**
  * Multi-permission route - requires ANY of the permissions.
  */
 interface MultiPermissionRouteProps {
-    /** Array of permission codes - user needs ANY of these */
-    permissions: string[];
-    /** Require ALL permissions instead of ANY */
-    requireAll?: boolean;
-    /** The content to render if permission is granted */
-    children: ReactNode;
-    /** Optional custom access denied component */
-    accessDeniedComponent?: ReactNode;
-    /** Redirect to this path if permission denied */
-    redirectTo?: string;
+  /** Array of permission codes - user needs ANY of these */
+  permissions: string[];
+  /** Require ALL permissions instead of ANY */
+  requireAll?: boolean;
+  /** The content to render if permission is granted */
+  children: ReactNode;
+  /** Optional custom access denied component */
+  accessDeniedComponent?: ReactNode;
+  /** Redirect to this path if permission denied */
+  redirectTo?: string;
 }
 
 export const MultiPermissionRoute: React.FC<MultiPermissionRouteProps> = ({
-    permissions,
-    requireAll = false,
-    children,
-    accessDeniedComponent,
-    redirectTo
+  permissions,
+  requireAll = false,
+  children,
+  accessDeniedComponent,
+  redirectTo,
 }) => {
-    const { hasAnyPermission, hasAllPermissions, isLoading } = usePermissions();
-    const { isAuthenticated } = useAuth();
-    const location = useLocation();
+  const { hasAnyPermission, hasAllPermissions, isLoading } = usePermissions();
+  const { isAuthenticated } = useAuth();
+  const location = useLocation();
 
-    if (!isAuthenticated) {
-        return <Navigate to="/login" state={{ from: location }} replace />;
+  if (!isAuthenticated) {
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+
+  if (isLoading) {
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" minHeight="200px">
+        <Typography>Loading...</Typography>
+      </Box>
+    );
+  }
+
+  const hasRequiredPermissions = requireAll
+    ? hasAllPermissions(permissions)
+    : hasAnyPermission(permissions);
+
+  if (!hasRequiredPermissions) {
+    if (redirectTo) {
+      return <Navigate to={redirectTo} replace />;
     }
 
-    if (isLoading) {
-        return (
-            <Box display="flex" justifyContent="center" alignItems="center" minHeight="200px">
-                <Typography>Loading...</Typography>
-            </Box>
-        );
-    }
+    return accessDeniedComponent || <AccessDeniedDefault permission={permissions.join(', ')} />;
+  }
 
-    const hasRequiredPermissions = requireAll 
-        ? hasAllPermissions(permissions)
-        : hasAnyPermission(permissions);
-
-    if (!hasRequiredPermissions) {
-        if (redirectTo) {
-            return <Navigate to={redirectTo} replace />;
-        }
-
-        return accessDeniedComponent || <AccessDeniedDefault permission={permissions.join(', ')} />;
-    }
-
-    return <>{children}</>;
+  return <>{children}</>;
 };
 
 /**
  * Default access denied component.
  */
 interface AccessDeniedDefaultProps {
-    permission: string;
+  permission: string;
 }
 
 const AccessDeniedDefault: React.FC<AccessDeniedDefaultProps> = ({ permission }) => {
+  return (
+    <Box
+      display="flex"
+      justifyContent="center"
+      alignItems="center"
+      minHeight="calc(100vh - 200px)"
+      p={3}
+    >
+      <Paper
+        elevation={3}
+        sx={{
+          p: 4,
+          textAlign: 'center',
+          maxWidth: 500,
+          width: '100%',
+        }}
+      >
+        <LockIcon
+          sx={{
+            fontSize: 64,
+            color: 'error.main',
+            mb: 2,
+          }}
+        />
 
-    return (
-        <Box
-            display="flex"
-            justifyContent="center"
-            alignItems="center"
-            minHeight="calc(100vh - 200px)"
-            p={3}
+        <Typography variant="h5" gutterBottom color="error">
+          Zugriff verweigert
+        </Typography>
+
+        <Typography variant="body1" color="text.secondary" paragraph>
+          Sie haben keine Berechtigung, auf diese Seite zuzugreifen.
+        </Typography>
+
+        <Typography variant="body2" color="text.secondary" paragraph>
+          Benötigte Berechtigung: <code>{permission}</code>
+        </Typography>
+
+        <Button
+          variant="contained"
+          startIcon={<ArrowBackIcon />}
+          onClick={() => window.history.back()}
+          sx={{ mt: 2 }}
         >
-            <Paper
-                elevation={3}
-                sx={{
-                    p: 4,
-                    textAlign: 'center',
-                    maxWidth: 500,
-                    width: '100%'
-                }}
-            >
-                <LockIcon 
-                    sx={{ 
-                        fontSize: 64, 
-                        color: 'error.main', 
-                        mb: 2 
-                    }} 
-                />
-                
-                <Typography variant="h5" gutterBottom color="error">
-                    Zugriff verweigert
-                </Typography>
-                
-                <Typography variant="body1" color="text.secondary" paragraph>
-                    Sie haben keine Berechtigung, auf diese Seite zuzugreifen.
-                </Typography>
-                
-                <Typography variant="body2" color="text.secondary" paragraph>
-                    Benötigte Berechtigung: <code>{permission}</code>
-                </Typography>
-                
-                <Button
-                    variant="contained"
-                    startIcon={<ArrowBackIcon />}
-                    onClick={() => window.history.back()}
-                    sx={{ mt: 2 }}
-                >
-                    Zurück
-                </Button>
-            </Paper>
-        </Box>
-    );
+          Zurück
+        </Button>
+      </Paper>
+    </Box>
+  );
 };

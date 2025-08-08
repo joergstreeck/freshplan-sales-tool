@@ -1,6 +1,6 @@
 /**
  * MSW Mock Server Setup für FC-005 Integration Tests
- * 
+ *
  * ZWECK: Simuliert Backend-APIs für realistische Integration Tests
  * PHILOSOPHIE: Flexibel konfigurierbar für verschiedene Test-Szenarien
  */
@@ -22,8 +22,8 @@ const mockFieldDefinitions: FieldDefinition[] = [
     industryFilter: null,
     validationRules: {
       minLength: 2,
-      maxLength: 100
-    }
+      maxLength: 100,
+    },
   },
   {
     id: '2',
@@ -37,8 +37,8 @@ const mockFieldDefinitions: FieldDefinition[] = [
     options: [
       { value: 'hotel', label: 'Hotel & Gastronomie' },
       { value: 'office', label: 'Büro & Verwaltung' },
-      { value: 'healthcare', label: 'Gesundheitswesen' }
-    ]
+      { value: 'healthcare', label: 'Gesundheitswesen' },
+    ],
   },
   {
     id: '3',
@@ -51,12 +51,12 @@ const mockFieldDefinitions: FieldDefinition[] = [
     industryFilter: null,
     options: [
       { value: 'ja', label: 'Ja' },
-      { value: 'nein', label: 'Nein' }
+      { value: 'nein', label: 'Nein' },
     ],
     triggerWizardStep: {
       step: 'locations',
-      when: 'ja'
-    }
+      when: 'ja',
+    },
   },
   {
     id: '4',
@@ -70,9 +70,9 @@ const mockFieldDefinitions: FieldDefinition[] = [
     options: [
       { value: '3', label: '3 Sterne' },
       { value: '4', label: '4 Sterne' },
-      { value: '5', label: '5 Sterne' }
-    ]
-  }
+      { value: '5', label: '5 Sterne' },
+    ],
+  },
 ];
 
 // Default Mock Handlers
@@ -82,54 +82,51 @@ const defaultHandlers = [
     const url = new URL(request.url);
     const entityType = url.searchParams.get('entityType');
     const industry = url.searchParams.get('industry');
-    
+
     let filteredFields = mockFieldDefinitions;
-    
+
     if (entityType) {
       filteredFields = filteredFields.filter(field => field.entityType === entityType);
     }
-    
+
     if (industry) {
-      filteredFields = filteredFields.filter(field => 
-        !field.industryFilter || field.industryFilter === industry
+      filteredFields = filteredFields.filter(
+        field => !field.industryFilter || field.industryFilter === industry
       );
     }
-    
+
     return HttpResponse.json({
       success: true,
-      data: filteredFields
+      data: filteredFields,
     });
   }),
 
   // Customer Draft API
   http.post('/api/customers/draft', async ({ request }) => {
-    const body = await request.json() as any;
-    
+    const body = (await request.json()) as any;
+
     // Simuliere verschiedene Erfolgs- und Fehler-Szenarien
     if (body.customerData?.companyName === 'NETWORK_ERROR') {
       return HttpResponse.error();
     }
-    
+
     if (body.customerData?.companyName === 'SERVER_ERROR') {
-      return HttpResponse.json(
-        { success: false, error: 'Internal Server Error' },
-        { status: 500 }
-      );
+      return HttpResponse.json({ success: false, error: 'Internal Server Error' }, { status: 500 });
     }
-    
+
     if (body.customerData?.companyName === 'VALIDATION_ERROR') {
       return HttpResponse.json(
-        { 
-          success: false, 
+        {
+          success: false,
           error: 'Validation failed',
           validationErrors: {
-            companyName: ['Firmenname ist zu kurz']
-          }
+            companyName: ['Firmenname ist zu kurz'],
+          },
         },
         { status: 400 }
       );
     }
-    
+
     // Erfolgreiche Antwort
     return HttpResponse.json({
       success: true,
@@ -138,22 +135,19 @@ const defaultHandlers = [
         savedAt: new Date().toISOString(),
         customerData: body.customerData,
         locations: body.locations || [],
-        detailedLocations: body.detailedLocations || []
-      }
+        detailedLocations: body.detailedLocations || [],
+      },
     });
   }),
 
   // Customer Draft Loading API
   http.get('/api/customers/draft/:draftId', ({ params }) => {
     const { draftId } = params;
-    
+
     if (draftId === 'not-found') {
-      return HttpResponse.json(
-        { success: false, error: 'Draft not found' },
-        { status: 404 }
-      );
+      return HttpResponse.json({ success: false, error: 'Draft not found' }, { status: 404 });
     }
-    
+
     return HttpResponse.json({
       success: true,
       data: {
@@ -162,11 +156,11 @@ const defaultHandlers = [
         customerData: {
           companyName: 'Test GmbH',
           industry: 'hotel',
-          chainCustomer: 'ja'
+          chainCustomer: 'ja',
         },
         locations: [
           { id: 'loc-1', name: 'Berlin' },
-          { id: 'loc-2', name: 'Hamburg' }
+          { id: 'loc-2', name: 'Hamburg' },
         ],
         detailedLocations: [
           {
@@ -174,17 +168,17 @@ const defaultHandlers = [
             locationId: 'loc-1',
             address: 'Berliner Str. 123',
             contactPerson: 'Max Mustermann',
-            phone: '+49 30 123456'
-          }
-        ]
-      }
+            phone: '+49 30 123456',
+          },
+        ],
+      },
     });
   }),
 
   // Final Customer Creation API
   http.post('/api/customers', async ({ request }) => {
-    const body = await request.json() as any;
-    
+    const body = (await request.json()) as any;
+
     // Simuliere Validierungsfehler
     if (!body.customerData?.companyName) {
       return HttpResponse.json(
@@ -192,13 +186,13 @@ const defaultHandlers = [
           success: false,
           error: 'Validation failed',
           validationErrors: {
-            companyName: ['Firmenname ist erforderlich']
-          }
+            companyName: ['Firmenname ist erforderlich'],
+          },
         },
         { status: 400 }
       );
     }
-    
+
     // Erfolgreiche Erstellung
     return HttpResponse.json({
       success: true,
@@ -206,8 +200,8 @@ const defaultHandlers = [
         id: 'customer-456',
         customerId: 'CUST-2025-001',
         createdAt: new Date().toISOString(),
-        ...body
-      }
+        ...body,
+      },
     });
   }),
 
@@ -215,9 +209,9 @@ const defaultHandlers = [
   http.get('/api/health', () => {
     return HttpResponse.json({
       status: 'ok',
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
-  })
+  }),
 ];
 
 // Mock Server Setup
@@ -242,10 +236,7 @@ export const configureMockServer = {
       http.all('/api/*', ({ request }) => {
         requestCount++;
         if (requestCount > 5) {
-          return HttpResponse.json(
-            { error: 'Rate limit exceeded' },
-            { status: 429 }
-          );
+          return HttpResponse.json({ error: 'Rate limit exceeded' }, { status: 429 });
         }
         return new Response(null, { status: 500 }); // Fallback
       })
@@ -258,7 +249,7 @@ export const configureMockServer = {
       http.get('/api/field-definitions', () => {
         return HttpResponse.json({
           success: true,
-          data: fields
+          data: fields,
         });
       })
     );
@@ -270,15 +261,12 @@ export const configureMockServer = {
     mockServer.use(
       http.all('/api/*', () => {
         if (Date.now() - errorStartTime < duration) {
-          return HttpResponse.json(
-            { error: 'Temporary server maintenance' },
-            { status: 503 }
-          );
+          return HttpResponse.json({ error: 'Temporary server maintenance' }, { status: 503 });
         }
         return new Response(null, { status: 500 }); // Fallback
       })
     );
-  }
+  },
 };
 
 // Test Data Helpers
@@ -287,12 +275,12 @@ export const testData = {
     companyName: 'Test Hotel GmbH',
     industry: 'hotel',
     chainCustomer: 'ja',
-    hotelStars: '4'
+    hotelStars: '4',
   },
 
   validLocations: [
     { id: 'loc-1', name: 'Berlin Mitte' },
-    { id: 'loc-2', name: 'Hamburg Altona' }
+    { id: 'loc-2', name: 'Hamburg Altona' },
   ],
 
   validDetailedLocations: [
@@ -302,14 +290,14 @@ export const testData = {
       address: 'Berliner Str. 123, 10179 Berlin',
       contactPerson: 'Anna Schmidt',
       phone: '+49 30 1234567',
-      email: 'anna.schmidt@test-hotel.de'
-    }
+      email: 'anna.schmidt@test-hotel.de',
+    },
   ],
 
   invalidCustomerData: {
     companyName: '', // Empty required field
-    industry: 'invalid-industry'
-  }
+    industry: 'invalid-industry',
+  },
 };
 
 export default mockServer;

@@ -5,7 +5,7 @@ import { KanbanBoardDndKit } from '../features/opportunity/components/KanbanBoar
 
 /**
  * M4 Opportunity Pipeline Page
- * 
+ *
  * Hauptseite für das Verkaufschancen-Management mit Kanban Board.
  * Zeigt alle Opportunities in verschiedenen Verkaufsphasen mit
  * Drag & Drop Funktionalität.

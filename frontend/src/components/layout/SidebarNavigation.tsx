@@ -14,7 +14,7 @@ const DRAWER_WIDTH = 320; // Erhöht von 280px für bessere Textdarstellung
 const DRAWER_WIDTH_COLLAPSED = 64;
 
 const StyledDrawer = styled(Drawer, {
-  shouldForwardProp: (prop) => prop !== 'collapsed',
+  shouldForwardProp: prop => prop !== 'collapsed',
 })<{ collapsed: boolean }>(({ theme, collapsed }) => ({
   width: collapsed ? DRAWER_WIDTH_COLLAPSED : DRAWER_WIDTH,
   flexShrink: 0,
@@ -45,7 +45,7 @@ export const SidebarNavigation: React.FC = () => {
     toggleSubmenu,
     closeAllSubmenus,
     toggleSidebar,
-    addToRecentlyVisited
+    addToRecentlyVisited,
   } = useNavigationStore();
 
   // Keyboard shortcuts
@@ -59,29 +59,29 @@ export const SidebarNavigation: React.FC = () => {
   // Auto-set active menu based on current URL
   useEffect(() => {
     const currentPath = location.pathname;
-    
+
     // Find matching navigation item (including sub-items)
     const matchingItem = navigationConfig.find(item => {
       // Direct path match
       if (currentPath.startsWith(item.path)) {
         return true;
       }
-      
+
       // Sub-item path match
       if (item.subItems) {
         return item.subItems.some(subItem => currentPath.startsWith(subItem.path));
       }
-      
+
       return false;
     });
-    
+
     if (matchingItem) {
       // Always set the active menu to ensure correct highlighting
       setActiveMenu(matchingItem.id);
-      
+
       // Check if we're on a sub-page
       const isOnSubPage = matchingItem.subItems?.some(sub => currentPath.startsWith(sub.path));
-      
+
       // Auto-expand submenu if on a sub-page and not already expanded
       if (isOnSubPage && expandedMenuId !== matchingItem.id) {
         toggleSubmenu(matchingItem.id);
@@ -90,23 +90,22 @@ export const SidebarNavigation: React.FC = () => {
   }, [location.pathname]); // Remove dependencies to always update on path change
 
   // Filter navigation items based on permissions
-  const visibleItems = navigationConfig.filter(item => 
-    !item.permissions || item.permissions.some(p => userPermissions.includes(p))
+  const visibleItems = navigationConfig.filter(
+    item => !item.permissions || item.permissions.some(p => userPermissions.includes(p))
   );
 
   return (
-    <StyledDrawer
-      variant="permanent"
-      collapsed={isCollapsed}
-    >
-      <Box sx={{ 
-        display: 'flex', 
-        alignItems: 'center', 
-        justifyContent: 'space-between',
-        p: 2,
-        minHeight: 64,
-        borderBottom: '1px solid rgba(148, 196, 86, 0.2)',
-      }}>
+    <StyledDrawer variant="permanent" collapsed={isCollapsed}>
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          p: 2,
+          minHeight: 64,
+          borderBottom: '1px solid rgba(148, 196, 86, 0.2)',
+        }}
+      >
         {!isCollapsed && (
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <Box
@@ -114,7 +113,7 @@ export const SidebarNavigation: React.FC = () => {
               src="/freshfoodz-logo.svg"
               alt="FreshPlan"
               sx={{ height: 32 }}
-              onError={(e) => {
+              onError={e => {
                 const target = e.target as HTMLImageElement;
                 target.style.display = 'none';
               }}
@@ -131,9 +130,9 @@ export const SidebarNavigation: React.FC = () => {
             </Typography>
           </Box>
         )}
-        <Tooltip title={isCollapsed ? "Navigation erweitern" : "Navigation einklappen"}>
-          <IconButton 
-            onClick={toggleSidebar} 
+        <Tooltip title={isCollapsed ? 'Navigation erweitern' : 'Navigation einklappen'}>
+          <IconButton
+            onClick={toggleSidebar}
             size="small"
             sx={{
               color: '#94C456',
@@ -148,7 +147,7 @@ export const SidebarNavigation: React.FC = () => {
       </Box>
 
       <List component="nav" sx={{ px: 1 }}>
-        {visibleItems.map((item) => (
+        {visibleItems.map(item => (
           <NavigationItem
             key={item.id}
             item={item}
@@ -165,9 +164,18 @@ export const SidebarNavigation: React.FC = () => {
                 toggleSubmenu(item.id);
               }
             }}
-            onSubItemClick={(subPath) => {
-              navigate(subPath);
-              setActiveMenu(item.id);
+            onSubItemClick={(pathOrAction, isAction) => {
+              if (isAction) {
+                // Handle action
+                if (pathOrAction === 'OPEN_CUSTOMER_WIZARD') {
+                  // Dispatch event to open customer wizard
+                  window.dispatchEvent(new CustomEvent('freshplan:new-customer'));
+                }
+              } else {
+                // Navigate to path
+                navigate(pathOrAction);
+                setActiveMenu(item.id);
+              }
             }}
           />
         ))}

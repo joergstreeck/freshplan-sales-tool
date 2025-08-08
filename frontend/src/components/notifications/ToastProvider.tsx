@@ -1,6 +1,6 @@
 /**
  * Enterprise Toast Notification System
- * 
+ *
  * @module ToastProvider
  * @description Zentrales Toast-System für alle Benachrichtigungen im CRM.
  *              Unterstützt verschiedene Severity-Level, Auto-Dismiss und Actions.
@@ -9,14 +9,7 @@
  */
 
 import React, { createContext, useContext, useState, useCallback } from 'react';
-import {
-  Alert,
-  AlertColor,
-  IconButton,
-  Box,
-  Typography,
-  Button
-} from '@mui/material';
+import { Alert, AlertColor, IconButton, Box, Typography, Button } from '@mui/material';
 import { Close as CloseIcon } from '@mui/icons-material';
 
 /**
@@ -66,45 +59,57 @@ export const useToast = () => {
 export const useEnhancedToast = () => {
   const { addToast, removeToast, clearAll } = useToast();
 
-  const showSuccess = useCallback((message: string, title?: string, action?: Toast['action']) => {
-    addToast({
-      message,
-      title,
-      severity: 'success',
-      duration: 4000,
-      action
-    });
-  }, [addToast]);
+  const showSuccess = useCallback(
+    (message: string, title?: string, action?: Toast['action']) => {
+      addToast({
+        message,
+        title,
+        severity: 'success',
+        duration: 4000,
+        action,
+      });
+    },
+    [addToast]
+  );
 
-  const showError = useCallback((message: string, title?: string, persistent = false) => {
-    addToast({
-      message,
-      title,
-      severity: 'error',
-      duration: persistent ? undefined : 6000,
-      persistent
-    });
-  }, [addToast]);
+  const showError = useCallback(
+    (message: string, title?: string, persistent = false) => {
+      addToast({
+        message,
+        title,
+        severity: 'error',
+        duration: persistent ? undefined : 6000,
+        persistent,
+      });
+    },
+    [addToast]
+  );
 
-  const showWarning = useCallback((message: string, title?: string, action?: Toast['action']) => {
-    addToast({
-      message,
-      title,
-      severity: 'warning',
-      duration: 5000,
-      action
-    });
-  }, [addToast]);
+  const showWarning = useCallback(
+    (message: string, title?: string, action?: Toast['action']) => {
+      addToast({
+        message,
+        title,
+        severity: 'warning',
+        duration: 5000,
+        action,
+      });
+    },
+    [addToast]
+  );
 
-  const showInfo = useCallback((message: string, title?: string, action?: Toast['action']) => {
-    addToast({
-      message,
-      title,
-      severity: 'info',
-      duration: 4000,
-      action
-    });
-  }, [addToast]);
+  const showInfo = useCallback(
+    (message: string, title?: string, action?: Toast['action']) => {
+      addToast({
+        message,
+        title,
+        severity: 'info',
+        duration: 4000,
+        action,
+      });
+    },
+    [addToast]
+  );
 
   return {
     showSuccess,
@@ -112,7 +117,7 @@ export const useEnhancedToast = () => {
     showWarning,
     showInfo,
     removeToast,
-    clearAll
+    clearAll,
   };
 };
 
@@ -126,7 +131,7 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const id = Math.random().toString(36).substr(2, 9);
     const toast: Toast = {
       ...toastData,
-      id
+      id,
     };
 
     setToasts(prev => [...prev, toast]);
@@ -150,20 +155,20 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   return (
     <ToastContext.Provider value={{ addToast, removeToast, clearAll }}>
       {children}
-      
+
       {/* Render all toasts in a container */}
       <Box
         sx={{
           position: 'fixed',
           top: 80,
           right: 24,
-          zIndex: (theme) => theme.zIndex.snackbar,
+          zIndex: theme => theme.zIndex.snackbar,
           display: 'flex',
           flexDirection: 'column',
-          gap: 1
+          gap: 1,
         }}
       >
-        {toasts.map((toast) => (
+        {toasts.map(toast => (
           <Alert
             key={toast.id}
             severity={toast.severity}
@@ -196,8 +201,8 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
               maxWidth: 500,
               boxShadow: 3,
               '& .MuiAlert-message': {
-                width: '100%'
-              }
+                width: '100%',
+              },
             }}
           >
             {toast.title && (
@@ -205,9 +210,7 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
                 {toast.title}
               </Typography>
             )}
-            <Typography variant="body2">
-              {toast.message}
-            </Typography>
+            <Typography variant="body2">{toast.message}</Typography>
           </Alert>
         ))}
       </Box>
@@ -226,14 +229,14 @@ export const CrmToasts = {
     title: 'Stage geändert',
     message: `"${opportunityName}" wurde zu "${stageName}" verschoben.`,
     severity: 'success' as AlertColor,
-    duration: 3000
+    duration: 3000,
   }),
 
   stageChangeFailed: (error: string) => ({
     title: 'Stage-Wechsel fehlgeschlagen',
     message: `Fehler beim Verschieben: ${error}`,
     severity: 'error' as AlertColor,
-    duration: 5000
+    duration: 5000,
   }),
 
   /**
@@ -249,17 +252,17 @@ export const CrmToasts = {
       onClick: () => {
         // Navigate to renewal details
         console.log('Navigate to renewal details');
-      }
-    }
+      },
+    },
   }),
 
   renewalCompleted: (customerName: string, isSuccessful: boolean) => ({
     title: isSuccessful ? 'Renewal erfolgreich' : 'Renewal nicht erfolgreich',
-    message: isSuccessful 
+    message: isSuccessful
       ? `Vertrag mit "${customerName}" wurde erfolgreich verlängert.`
       : `Renewal mit "${customerName}" konnte nicht abgeschlossen werden.`,
     severity: (isSuccessful ? 'success' : 'warning') as AlertColor,
-    duration: 5000
+    duration: 5000,
   }),
 
   /**
@@ -275,15 +278,15 @@ export const CrmToasts = {
       onClick: () => {
         // Navigate to onboarding
         console.log('Start onboarding process');
-      }
-    }
+      },
+    },
   }),
 
   dealLost: (opportunityName: string, reason?: string) => ({
     title: 'Deal verloren',
     message: `"${opportunityName}" wurde als verloren markiert${reason ? `: ${reason}` : ''}.`,
     severity: 'warning' as AlertColor,
-    duration: 4000
+    duration: 4000,
   }),
 
   /**
@@ -292,7 +295,7 @@ export const CrmToasts = {
   autoSaved: () => ({
     message: 'Änderungen automatisch gespeichert',
     severity: 'info' as AlertColor,
-    duration: 2000
+    duration: 2000,
   }),
 
   syncError: (retryAction: () => void) => ({
@@ -302,8 +305,8 @@ export const CrmToasts = {
     persistent: true,
     action: {
       label: 'Wiederholen',
-      onClick: retryAction
-    }
+      onClick: retryAction,
+    },
   }),
 
   /**
@@ -319,9 +322,9 @@ export const CrmToasts = {
       onClick: () => {
         // Start renewal process
         console.log('Start renewal for', customerName);
-      }
-    }
-  })
+      },
+    },
+  }),
 };
 
 export default ToastProvider;

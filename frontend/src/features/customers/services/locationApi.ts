@@ -1,9 +1,9 @@
 /**
  * Location API Service
- * 
+ *
  * Service für alle Location-bezogenen API-Calls.
  * Verwaltet Standorte und DetailedLocations.
- * 
+ *
  * @see /Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/02-BACKEND/03-rest-api.md
  * @see /Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/01-TECH-CONCEPT/02-data-model.md
  */
@@ -24,30 +24,23 @@ import {
 
 export class LocationApi {
   private readonly basePath = '/api/locations';
-  
+
   /**
    * Create new location for customer
    * POST /api/locations
    */
   async createLocation(request: CreateLocationRequest): Promise<LocationResponse> {
-    return apiClient.post<LocationResponse>(
-      this.basePath,
-      request,
-      { retry: 2 }
-    );
+    return apiClient.post<LocationResponse>(this.basePath, request, { retry: 2 });
   }
-  
+
   /**
    * Get location by ID
    * GET /api/locations/{locationId}
    */
   async getLocation(locationId: string): Promise<LocationResponse> {
-    return apiClient.get<LocationResponse>(
-      `${this.basePath}/${locationId}`,
-      { retry: 2 }
-    );
+    return apiClient.get<LocationResponse>(`${this.basePath}/${locationId}`, { retry: 2 });
   }
-  
+
   /**
    * Update location
    * PUT /api/locations/{locationId}
@@ -56,13 +49,9 @@ export class LocationApi {
     locationId: string,
     request: UpdateLocationRequest
   ): Promise<LocationResponse> {
-    return apiClient.put<LocationResponse>(
-      `${this.basePath}/${locationId}`,
-      request,
-      { retry: 1 }
-    );
+    return apiClient.put<LocationResponse>(`${this.basePath}/${locationId}`, request, { retry: 1 });
   }
-  
+
   /**
    * Delete location
    * DELETE /api/locations/{locationId}
@@ -70,7 +59,7 @@ export class LocationApi {
   async deleteLocation(locationId: string): Promise<void> {
     return apiClient.delete<void>(`${this.basePath}/${locationId}`);
   }
-  
+
   /**
    * Get all locations for customer
    * GET /api/customers/{customerId}/locations
@@ -88,7 +77,7 @@ export class LocationApi {
       }
     );
   }
-  
+
   /**
    * Bulk create locations for customer
    * POST /api/customers/{customerId}/locations/bulk
@@ -103,7 +92,7 @@ export class LocationApi {
       { timeout: 30000, retry: 1 }
     );
   }
-  
+
   /**
    * Get detailed locations for a location
    * GET /api/locations/{locationId}/detailed-locations
@@ -121,7 +110,7 @@ export class LocationApi {
       }
     );
   }
-  
+
   /**
    * Create detailed location
    * POST /api/locations/{locationId}/detailed-locations
@@ -136,7 +125,7 @@ export class LocationApi {
       { retry: 2 }
     );
   }
-  
+
   /**
    * Update detailed location
    * PUT /api/locations/{locationId}/detailed-locations/{detailedLocationId}
@@ -152,20 +141,17 @@ export class LocationApi {
       { retry: 1 }
     );
   }
-  
+
   /**
    * Delete detailed location
    * DELETE /api/locations/{locationId}/detailed-locations/{detailedLocationId}
    */
-  async deleteDetailedLocation(
-    locationId: string,
-    detailedLocationId: string
-  ): Promise<void> {
+  async deleteDetailedLocation(locationId: string, detailedLocationId: string): Promise<void> {
     return apiClient.delete<void>(
       `${this.basePath}/${locationId}/detailed-locations/${detailedLocationId}`
     );
   }
-  
+
   /**
    * Bulk create detailed locations
    * POST /api/locations/{locationId}/detailed-locations/bulk
@@ -180,7 +166,7 @@ export class LocationApi {
       { timeout: 30000, retry: 1 }
     );
   }
-  
+
   /**
    * Search locations across all customers
    * GET /api/locations/search
@@ -193,22 +179,19 @@ export class LocationApi {
     page?: number;
     size?: number;
   }): Promise<PaginatedResponse<LocationWithFields>> {
-    return apiClient.get<PaginatedResponse<LocationWithFields>>(
-      `${this.basePath}/search`,
-      {
-        params: {
-          searchTerm: params.searchTerm,
-          city: params.city,
-          postalCode: params.postalCode,
-          country: params.country,
-          page: params.page || 0,
-          size: params.size || 20,
-        },
-        retry: 2,
-      }
-    );
+    return apiClient.get<PaginatedResponse<LocationWithFields>>(`${this.basePath}/search`, {
+      params: {
+        searchTerm: params.searchTerm,
+        city: params.city,
+        postalCode: params.postalCode,
+        country: params.country,
+        page: params.page || 0,
+        size: params.size || 20,
+      },
+      retry: 2,
+    });
   }
-  
+
   /**
    * Get location statistics
    * GET /api/locations/statistics
@@ -221,7 +204,7 @@ export class LocationApi {
   }> {
     return apiClient.get(`${this.basePath}/statistics`, { retry: 2 });
   }
-  
+
   /**
    * Validate address
    * POST /api/locations/validate-address
@@ -241,12 +224,9 @@ export class LocationApi {
       confidence: number;
     }>;
   }> {
-    return apiClient.post(
-      `${this.basePath}/validate-address`,
-      address
-    );
+    return apiClient.post(`${this.basePath}/validate-address`, address);
   }
-  
+
   /**
    * Geocode address
    * POST /api/locations/geocode
@@ -261,10 +241,7 @@ export class LocationApi {
     longitude: number;
     accuracy: string;
   }> {
-    return apiClient.post(
-      `${this.basePath}/geocode`,
-      address
-    );
+    return apiClient.post(`${this.basePath}/geocode`, address);
   }
 }
 

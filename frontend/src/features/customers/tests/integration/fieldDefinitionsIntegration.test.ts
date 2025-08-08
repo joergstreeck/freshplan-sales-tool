@@ -1,6 +1,6 @@
 /**
  * FC-005 Field Definitions Integration Tests
- * 
+ *
  * ZWECK: Testet das Laden und Verarbeiten von Field Definitions aus der API
  * PHILOSOPHIE: Validiert flexible field-basierte Architektur mit Industry-Filtering
  */
@@ -24,18 +24,21 @@ afterAll(() => {
 });
 
 // Helper function to fetch field definitions (simulates the real service)
-async function fetchFieldDefinitions(entityType?: string, industry?: string): Promise<FieldDefinition[]> {
+async function fetchFieldDefinitions(
+  entityType?: string,
+  industry?: string
+): Promise<FieldDefinition[]> {
   const params = new URLSearchParams();
   if (entityType) params.append('entityType', entityType);
   if (industry) params.append('industry', industry);
-  
+
   const response = await fetch(`/api/field-definitions?${params.toString()}`);
   const result = await response.json();
-  
+
   if (!result.success) {
     throw new Error(result.error || 'Failed to fetch field definitions');
   }
-  
+
   return result.data;
 }
 
@@ -204,7 +207,7 @@ describe('FC-005 Field Definitions Integration Tests', () => {
         fetchFieldDefinitions('customer', 'hotel'),
         fetchFieldDefinitions('customer', 'office'),
         fetchFieldDefinitions('customer'),
-        fetchFieldDefinitions('customer', 'hotel')
+        fetchFieldDefinitions('customer', 'hotel'),
       ];
 
       const results = await Promise.all(requests);
@@ -236,11 +239,11 @@ describe('FC-005 Field Definitions Integration Tests', () => {
       configureMockServer.withDelay(1000);
 
       const startTime = Date.now();
-      
+
       try {
         await fetchFieldDefinitions('customer');
         const responseTime = Date.now() - startTime;
-        
+
         // Should handle the latency
         expect(responseTime).toBeGreaterThan(900); // At least close to 1000ms
       } catch (error) {
@@ -253,9 +256,10 @@ describe('FC-005 Field Definitions Integration Tests', () => {
   describe('Error Handling', () => {
     it('should handle API errors gracefully', async () => {
       // Configure server to return error
-      mockServer.use(
+      mockServer
+        .use
         // Override to return error response
-      );
+        ();
 
       try {
         await fetchFieldDefinitions('customer');
@@ -268,9 +272,10 @@ describe('FC-005 Field Definitions Integration Tests', () => {
 
     it('should handle network failures', async () => {
       // Simulate network failure
-      mockServer.use(
+      mockServer
+        .use
         // Override to simulate network error
-      );
+        ();
 
       try {
         await fetchFieldDefinitions('customer');
@@ -287,9 +292,9 @@ describe('FC-005 Field Definitions Integration Tests', () => {
         {
           // Missing required properties
           key: 'invalid-field',
-          label: 'Invalid Field'
+          label: 'Invalid Field',
           // Missing: id, fieldType, entityType, required, sortOrder
-        }
+        },
       ] as any[];
 
       configureMockServer.withCustomFieldCatalog(invalidFields);
@@ -298,11 +303,11 @@ describe('FC-005 Field Definitions Integration Tests', () => {
 
       // Should handle invalid fields gracefully
       expect(Array.isArray(fields)).toBe(true);
-      
+
       // The test shows that invalid fields are returned as-is
       // In a real implementation, there would be validation/filtering
       expect(Array.isArray(fields)).toBe(true);
-      
+
       // Test shows current mock behavior - invalid fields pass through
       // This is acceptable for integration testing of API response handling
     });
@@ -324,11 +329,11 @@ describe('FC-005 Field Definitions Integration Tests', () => {
         type: field.fieldType,
         required: field.required,
         options: field.options || [],
-        validation: field.validationRules || {}
+        validation: field.validationRules || {},
       }));
 
       expect(formConfig.length).toBe(hotelFields.length);
-      
+
       // Verify form config structure
       formConfig.forEach(config => {
         expect(config.name).toBeTruthy();
@@ -352,7 +357,8 @@ describe('FC-005 Field Definitions Integration Tests', () => {
 
       // Simulate different selection
       const userSelectionNo = 'nein';
-      const shouldNotShowLocationsStep = userSelectionNo === chainCustomerField?.triggerWizardStep?.when;
+      const shouldNotShowLocationsStep =
+        userSelectionNo === chainCustomerField?.triggerWizardStep?.when;
       expect(shouldNotShowLocationsStep).toBe(false);
     });
 
@@ -364,7 +370,7 @@ describe('FC-005 Field Definitions Integration Tests', () => {
 
       // Test validation rules
       const rules = companyNameField?.validationRules;
-      
+
       // Too short value
       const shortValue = 'A';
       const isShortValueValid = rules?.minLength ? shortValue.length >= rules.minLength : true;
@@ -372,9 +378,10 @@ describe('FC-005 Field Definitions Integration Tests', () => {
 
       // Valid value
       const validValue = 'Test GmbH';
-      const isValidValueValid = rules?.minLength && rules?.maxLength 
-        ? validValue.length >= rules.minLength && validValue.length <= rules.maxLength 
-        : true;
+      const isValidValueValid =
+        rules?.minLength && rules?.maxLength
+          ? validValue.length >= rules.minLength && validValue.length <= rules.maxLength
+          : true;
       expect(isValidValueValid).toBe(true);
 
       // Too long value

@@ -10,21 +10,18 @@ interface SortableOpportunityCardProps {
   isAnimating?: boolean;
 }
 
-export const SortableOpportunityCard: React.FC<SortableOpportunityCardProps> = ({ opportunity, onQuickAction, isAnimating = false }) => {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id: opportunity.id });
+export const SortableOpportunityCard: React.FC<SortableOpportunityCardProps> = ({
+  opportunity,
+  onQuickAction,
+  isAnimating = false,
+}) => {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: opportunity.id,
+  });
 
   const style = {
     transform: CSS.Transform.toString(transform),
-    transition: isAnimating 
-      ? 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)' 
-      : transition,
+    transition: isAnimating ? 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)' : transition,
     marginBottom: '12px',
     opacity: isDragging ? 0.6 : isAnimating ? 0 : 1,
     scale: isAnimating ? 1.1 : 1,
@@ -36,11 +33,7 @@ export const SortableOpportunityCard: React.FC<SortableOpportunityCardProps> = (
 
   return (
     <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
-      <OpportunityCard 
-        opportunity={opportunity} 
-        onQuickAction={onQuickAction}
-        showActions={true}
-      />
+      <OpportunityCard opportunity={opportunity} onQuickAction={onQuickAction} showActions={true} />
     </div>
   );
 };

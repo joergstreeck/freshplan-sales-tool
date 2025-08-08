@@ -15,7 +15,14 @@ export default defineConfig({
     environment: 'jsdom',
     globals: true,
     setupFiles: './src/test/setup.tsx',
-    exclude: ['tests/**', 'node_modules/**', 'dist/**'],
+    exclude: [
+      'tests/**', 
+      'node_modules/**', 
+      'dist/**',
+      '**/e2e/**',
+      '**/*.e2e.*',
+      '**/*.spec.*'  // Exclude Playwright spec files
+    ],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],

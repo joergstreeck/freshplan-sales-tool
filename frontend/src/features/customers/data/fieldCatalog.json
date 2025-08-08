@@ -2,6 +2,16 @@
   "customer": {
     "base": [
       {
+        "key": "customerNumber",
+        "label": "Kundennummer",
+        "entityType": "customer",
+        "fieldType": "text",
+        "required": false,
+        "maxLength": 20,
+        "placeholder": "z.B. KD-2025-001 (optional)",
+        "helpText": "Optional: Eigene Kundennummer für interne Referenz"
+      },
+      {
         "key": "companyName",
         "label": "Firmenname",
         "entityType": "customer",
@@ -9,8 +19,7 @@
         "required": true,
         "maxLength": 100,
         "placeholder": "z.B. Hotel zur goldenen Krone GmbH",
-        "helpText": "Vollständiger Firmenname wie im Handelsregister",
-        "gridSize": { "xs": 12, "sm": 12, "md": 8 }
+        "helpText": "Vollständiger Firmenname wie im Handelsregister"
       },
       {
         "key": "legalForm",
@@ -19,19 +28,51 @@
         "fieldType": "select",
         "required": true,
         "options": [
-          { "value": "gmbh", "label": "GmbH" },
-          { "value": "gmbh_co_kg", "label": "GmbH & Co. KG" },
-          { "value": "ag", "label": "AG" },
-          { "value": "eg", "label": "eG" },
-          { "value": "einzelunternehmen", "label": "Einzelunternehmen" },
-          { "value": "gbr", "label": "GbR" },
-          { "value": "ohg", "label": "OHG" },
-          { "value": "kg", "label": "KG" },
-          { "value": "verein", "label": "e.V." },
-          { "value": "stiftung", "label": "Stiftung" },
-          { "value": "sonstige", "label": "Sonstige" }
-        ],
-        "gridSize": { "xs": 12, "sm": 6, "md": 4 }
+          {
+            "value": "gmbh",
+            "label": "GmbH"
+          },
+          {
+            "value": "gmbh_co_kg",
+            "label": "GmbH & Co. KG"
+          },
+          {
+            "value": "ag",
+            "label": "AG"
+          },
+          {
+            "value": "eg",
+            "label": "eG"
+          },
+          {
+            "value": "einzelunternehmen",
+            "label": "Einzelunternehmen"
+          },
+          {
+            "value": "gbr",
+            "label": "GbR"
+          },
+          {
+            "value": "ohg",
+            "label": "OHG"
+          },
+          {
+            "value": "kg",
+            "label": "KG"
+          },
+          {
+            "value": "verein",
+            "label": "e.V."
+          },
+          {
+            "value": "stiftung",
+            "label": "Stiftung"
+          },
+          {
+            "value": "sonstige",
+            "label": "Sonstige"
+          }
+        ]
       },
       {
         "key": "industry",
@@ -40,17 +81,40 @@
         "fieldType": "select",
         "required": true,
         "options": [
-          { "value": "hotel", "label": "Hotel" },
-          { "value": "krankenhaus", "label": "Krankenhaus" },
-          { "value": "seniorenresidenz", "label": "Seniorenresidenz" },
-          { "value": "restaurant", "label": "Restaurant" },
-          { "value": "betriebsrestaurant", "label": "Betriebsrestaurant" },
-          { "value": "kantine", "label": "Kantine" },
-          { "value": "catering", "label": "Catering" },
-          { "value": "sonstige", "label": "Sonstige" }
+          {
+            "value": "hotel",
+            "label": "Hotel"
+          },
+          {
+            "value": "krankenhaus",
+            "label": "Krankenhaus"
+          },
+          {
+            "value": "seniorenresidenz",
+            "label": "Seniorenresidenz"
+          },
+          {
+            "value": "restaurant",
+            "label": "Restaurant"
+          },
+          {
+            "value": "betriebsrestaurant",
+            "label": "Betriebsrestaurant"
+          },
+          {
+            "value": "kantine",
+            "label": "Kantine"
+          },
+          {
+            "value": "catering",
+            "label": "Catering"
+          },
+          {
+            "value": "sonstige",
+            "label": "Sonstige"
+          }
         ],
-        "helpText": "Wählen Sie die Hauptbranche des Unternehmens",
-        "gridSize": { "xs": 12, "sm": 6, "md": 4 }
+        "helpText": "Wählen Sie die Hauptbranche des Unternehmens"
       },
       {
         "key": "chainCustomer",
@@ -60,15 +124,43 @@
         "required": true,
         "defaultValue": "nein",
         "options": [
-          { "value": "ja", "label": "Ja" },
-          { "value": "nein", "label": "Nein" }
+          {
+            "value": "ja",
+            "label": "Ja"
+          },
+          {
+            "value": "nein",
+            "label": "Nein"
+          }
         ],
         "helpText": "Hat Ihr Unternehmen mehrere Standorte?",
         "triggerWizardStep": {
           "when": "ja",
           "step": "locations"
-        },
-        "gridSize": { "xs": 12, "sm": 6, "md": 4 }
+        }
+      },
+      {
+        "key": "financingType",
+        "label": "Geschäftsmodell",
+        "entityType": "customer",
+        "fieldType": "select",
+        "required": true,
+        "size": "large",
+        "options": [
+          {
+            "value": "private",
+            "label": "Privatwirtschaftlich (Hotels, Restaurants, Unternehmen)"
+          },
+          {
+            "value": "public",
+            "label": "Öffentlich finanziert (Schulen, Krankenhäuser, Behörden)"
+          },
+          {
+            "value": "mixed",
+            "label": "Mischfinanzierung (z.B. PPP-Projekte)"
+          }
+        ],
+        "helpText": "Die Finanzierungsart beeinflusst Entscheidungsprozesse und Verkaufsargumente"
       },
       {
         "key": "street",
@@ -77,8 +169,7 @@
         "fieldType": "text",
         "required": true,
         "maxLength": 100,
-        "placeholder": "z.B. Hauptstraße 42",
-        "gridSize": { "xs": 12, "sm": 12, "md": 8 }
+        "placeholder": "z.B. Hauptstraße 42"
       },
       {
         "key": "postalCode",
@@ -89,8 +180,7 @@
         "validation": "germanPostalCode",
         "maxLength": 5,
         "placeholder": "12345",
-        "helpText": "5-stellige deutsche Postleitzahl",
-        "gridSize": { "xs": 6, "sm": 4, "md": 2 }
+        "helpText": "5-stellige deutsche Postleitzahl"
       },
       {
         "key": "city",
@@ -99,8 +189,7 @@
         "fieldType": "text",
         "required": true,
         "maxLength": 50,
-        "placeholder": "z.B. Berlin",
-        "gridSize": { "xs": 6, "sm": 8, "md": 6 }
+        "placeholder": "z.B. Berlin"
       },
       {
         "key": "contactName",
@@ -110,8 +199,7 @@
         "required": true,
         "maxLength": 100,
         "placeholder": "Vor- und Nachname",
-        "helpText": "Hauptansprechpartner für Vertriebsthemen",
-        "gridSize": { "xs": 12, "sm": 6, "md": 4 }
+        "helpText": "Hauptansprechpartner für Vertriebsthemen"
       },
       {
         "key": "contactEmail",
@@ -122,8 +210,7 @@
         "validation": "email",
         "maxLength": 100,
         "placeholder": "kontakt@beispiel.de",
-        "helpText": "Hauptkontakt-E-Mail für Angebote und Rechnungen",
-        "gridSize": { "xs": 12, "sm": 6, "md": 4 }
+        "helpText": "Hauptkontakt-E-Mail für Angebote und Rechnungen"
       },
       {
         "key": "contactPhone",
@@ -134,8 +221,120 @@
         "validation": "germanPhone",
         "maxLength": 30,
         "placeholder": "+49 30 123456789",
-        "helpText": "Telefonnummer mit Vorwahl",
-        "gridSize": { "xs": 12, "sm": 6, "md": 4 }
+        "helpText": "Telefonnummer mit Vorwahl"
+      },
+      {
+        "key": "currentSupplier",
+        "label": "Aktueller Lieferant",
+        "entityType": "customer",
+        "fieldType": "text",
+        "required": false,
+        "maxLength": 100,
+        "placeholder": "z.B. Apetito, eigene Küche",
+        "helpText": "Wer beliefert den Kunden aktuell?"
+      },
+      {
+        "key": "contractEndDate",
+        "label": "Vertragsende",
+        "entityType": "customer",
+        "fieldType": "select",
+        "required": false,
+        "size": "medium",
+        "options": [
+          {
+            "value": "open",
+            "label": "Unbefristet / Kein Vertrag"
+          },
+          {
+            "value": "next_3_months",
+            "label": "In den nächsten 3 Monaten"
+          },
+          {
+            "value": "next_6_months",
+            "label": "In 3-6 Monaten"
+          },
+          {
+            "value": "next_12_months",
+            "label": "In 6-12 Monaten"
+          },
+          {
+            "value": "over_12_months",
+            "label": "Über 12 Monate"
+          }
+        ],
+        "helpText": "Wann endet der aktuelle Vertrag? (für automatische Wiedervorlage)",
+        "triggerTaskGeneration": true
+      },
+      {
+        "key": "switchWillingness",
+        "label": "Wechselbereitschaft",
+        "entityType": "customer",
+        "fieldType": "select",
+        "required": false,
+        "size": "medium",
+        "options": [
+          {
+            "value": "immediate",
+            "label": "Sofort wechselbereit"
+          },
+          {
+            "value": "high",
+            "label": "Hoch - aktiv am Suchen"
+          },
+          {
+            "value": "medium",
+            "label": "Mittel - offen für Alternativen"
+          },
+          {
+            "value": "low",
+            "label": "Niedrig - zufrieden mit Status Quo"
+          },
+          {
+            "value": "none",
+            "label": "Keine - fest gebunden"
+          }
+        ],
+        "helpText": "Wie schätzen Sie die Wechselbereitschaft ein?"
+      },
+      {
+        "key": "decisionTimeline",
+        "label": "Entscheidungszeitpunkt",
+        "entityType": "customer",
+        "fieldType": "select",
+        "required": false,
+        "size": "medium",
+        "options": [
+          {
+            "value": "immediate",
+            "label": "Sofortige Entscheidung möglich"
+          },
+          {
+            "value": "1_month",
+            "label": "Innerhalb 1 Monat"
+          },
+          {
+            "value": "3_months",
+            "label": "In 1-3 Monaten"
+          },
+          {
+            "value": "6_months",
+            "label": "In 3-6 Monaten"
+          },
+          {
+            "value": "12_months",
+            "label": "In 6-12 Monaten"
+          },
+          {
+            "value": "over_12_months",
+            "label": "Später als 12 Monate"
+          },
+          {
+            "value": "unknown",
+            "label": "Noch unklar"
+          }
+        ],
+        "helpText": "Wann wird voraussichtlich eine Entscheidung getroffen?",
+        "triggerTaskGeneration": true
       }
     ],
     "industrySpecific": {
@@ -147,19 +346,36 @@
           "fieldType": "select",
           "required": false,
           "options": [
-            { "value": "1", "label": "1 Stern" },
-            { "value": "2", "label": "2 Sterne" },
-            { "value": "3", "label": "3 Sterne" },
-            { "value": "4", "label": "4 Sterne" },
-            { "value": "5", "label": "5 Sterne" },
-            { "value": "none", "label": "Keine Klassifizierung" }
+            {
+              "value": "1",
+              "label": "1 Stern"
+            },
+            {
+              "value": "2",
+              "label": "2 Sterne"
+            },
+            {
+              "value": "3",
+              "label": "3 Sterne"
+            },
+            {
+              "value": "4",
+              "label": "4 Sterne"
+            },
+            {
+              "value": "5",
+              "label": "5 Sterne"
+            },
+            {
+              "value": "none",
+              "label": "Keine Klassifizierung"
+            }
           ],
           "condition": {
             "field": "industry",
             "operator": "equals",
             "value": "hotel"
-          },
-          "gridSize": { "xs": 12, "sm": 6, "md": 3 }
+          }
         },
         {
           "key": "roomCount",
@@ -174,8 +390,7 @@
             "field": "industry",
             "operator": "equals",
             "value": "hotel"
-          },
-          "gridSize": { "xs": 12, "sm": 6, "md": 3 }
+          }
         },
         {
           "key": "hasConferenceRooms",
@@ -185,15 +400,23 @@
           "required": false,
           "defaultValue": "nein",
           "options": [
-            { "value": "ja", "label": "Ja" },
-            { "value": "nein", "label": "Nein" }
+            {
+              "value": "ja",
+              "label": "Ja"
+            },
+            {
+              "value": "nein",
+              "label": "Nein"
+            }
           ],
           "condition": {
             "field": "industry",
             "operator": "in",
-            "value": ["hotel", "betriebsrestaurant"]
-          },
-          "gridSize": { "xs": 12, "sm": 6, "md": 4 }
+            "value": [
+              "hotel",
+              "betriebsrestaurant"
+            ]
+          }
         },
         {
           "key": "conferenceCapacity",
@@ -209,8 +432,7 @@
             "field": "hasConferenceRooms",
             "operator": "equals",
             "value": "ja"
-          },
-          "gridSize": { "xs": 12, "sm": 6, "md": 3 }
+          }
         }
       ],
       "krankenhaus": [
@@ -221,13 +443,27 @@
           "fieldType": "select",
           "required": false,
           "options": [
-            { "value": "university", "label": "Universitätsklinikum" },
-            { "value": "general", "label": "Allgemeinkrankenhaus" },
-            { "value": "specialized", "label": "Fachklinik" },
-            { "value": "rehabilitation", "label": "Rehaklinik" },
-            { "value": "private", "label": "Privatklinik" }
-          ],
-          "gridSize": { "xs": 12, "sm": 6, "md": 4 }
+            {
+              "value": "university",
+              "label": "Universitätsklinikum"
+            },
+            {
+              "value": "general",
+              "label": "Allgemeinkrankenhaus"
+            },
+            {
+              "value": "specialized",
+              "label": "Fachklinik"
+            },
+            {
+              "value": "rehabilitation",
+              "label": "Rehaklinik"
+            },
+            {
+              "value": "private",
+              "label": "Privatklinik"
+            }
+          ]
         },
         {
           "key": "bedCount",
@@ -237,8 +473,7 @@
           "required": false,
           "min": 1,
           "max": 9999,
-          "placeholder": "z.B. 250",
-          "gridSize": { "xs": 12, "sm": 6, "md": 3 }
+          "placeholder": "z.B. 250"
         }
       ],
       "seniorenresidenz": [
@@ -249,14 +484,31 @@
           "fieldType": "multiselect",
           "required": false,
           "options": [
-            { "value": "independent", "label": "Betreutes Wohnen" },
-            { "value": "level1", "label": "Pflegegrad 1" },
-            { "value": "level2", "label": "Pflegegrad 2" },
-            { "value": "level3", "label": "Pflegegrad 3" },
-            { "value": "level4", "label": "Pflegegrad 4" },
-            { "value": "level5", "label": "Pflegegrad 5" }
-          ],
-          "gridSize": { "xs": 12, "sm": 12, "md": 6 }
+            {
+              "value": "independent",
+              "label": "Betreutes Wohnen"
+            },
+            {
+              "value": "level1",
+              "label": "Pflegegrad 1"
+            },
+            {
+              "value": "level2",
+              "label": "Pflegegrad 2"
+            },
+            {
+              "value": "level3",
+              "label": "Pflegegrad 3"
+            },
+            {
+              "value": "level4",
+              "label": "Pflegegrad 4"
+            },
+            {
+              "value": "level5",
+              "label": "Pflegegrad 5"
+            }
+          ]
         },
         {
           "key": "residentCount",
@@ -266,8 +518,7 @@
           "required": false,
           "min": 1,
           "max": 9999,
-          "placeholder": "z.B. 80",
-          "gridSize": { "xs": 12, "sm": 6, "md": 3 }
+          "placeholder": "z.B. 80"
         }
       ],
       "restaurant": [
@@ -278,14 +529,31 @@
           "fieldType": "select",
           "required": false,
           "options": [
-            { "value": "german", "label": "Deutsche Küche" },
-            { "value": "italian", "label": "Italienisch" },
-            { "value": "asian", "label": "Asiatisch" },
-            { "value": "international", "label": "International" },
-            { "value": "vegetarian", "label": "Vegetarisch/Vegan" },
-            { "value": "other", "label": "Sonstige" }
-          ],
-          "gridSize": { "xs": 12, "sm": 6, "md": 4 }
+            {
+              "value": "german",
+              "label": "Deutsche Küche"
+            },
+            {
+              "value": "italian",
+              "label": "Italienisch"
+            },
+            {
+              "value": "asian",
+              "label": "Asiatisch"
+            },
+            {
+              "value": "international",
+              "label": "International"
+            },
+            {
+              "value": "vegetarian",
+              "label": "Vegetarisch/Vegan"
+            },
+            {
+              "value": "other",
+              "label": "Sonstige"
+            }
+          ]
         },
         {
           "key": "seatCount",
@@ -295,8 +563,7 @@
           "required": false,
           "min": 1,
           "max": 9999,
-          "placeholder": "z.B. 60",
-          "gridSize": { "xs": 12, "sm": 6, "md": 3 }
+          "placeholder": "z.B. 60"
         }
       ],
       "betriebsrestaurant": [
@@ -309,8 +576,7 @@
           "min": 1,
           "max": 99999,
           "placeholder": "z.B. 500",
-          "helpText": "Durchschnittliche Anzahl ausgegebener Mahlzeiten",
-          "gridSize": { "xs": 12, "sm": 6, "md": 3 }
+          "helpText": "Durchschnittliche Anzahl ausgegebener Mahlzeiten"
         },
         {
           "key": "operatingDays",
@@ -319,15 +585,35 @@
           "fieldType": "multiselect",
           "required": false,
           "options": [
-            { "value": "monday", "label": "Montag" },
-            { "value": "tuesday", "label": "Dienstag" },
-            { "value": "wednesday", "label": "Mittwoch" },
-            { "value": "thursday", "label": "Donnerstag" },
-            { "value": "friday", "label": "Freitag" },
-            { "value": "saturday", "label": "Samstag" },
-            { "value": "sunday", "label": "Sonntag" }
-          ],
-          "gridSize": { "xs": 12, "sm": 12, "md": 6 }
+            {
+              "value": "monday",
+              "label": "Montag"
+            },
+            {
+              "value": "tuesday",
+              "label": "Dienstag"
+            },
+            {
+              "value": "wednesday",
+              "label": "Mittwoch"
+            },
+            {
+              "value": "thursday",
+              "label": "Donnerstag"
+            },
+            {
+              "value": "friday",
+              "label": "Freitag"
+            },
+            {
+              "value": "saturday",
+              "label": "Samstag"
+            },
+            {
+              "value": "sunday",
+              "label": "Sonntag"
+            }
+          ]
         }
       ]
     }
@@ -342,8 +628,7 @@
         "required": true,
         "maxLength": 100,
         "placeholder": "z.B. Hauptfiliale Berlin",
-        "helpText": "Eindeutige Bezeichnung für diesen Standort",
-        "gridSize": { "xs": 12, "sm": 12, "md": 6 }
+        "helpText": "Eindeutige Bezeichnung für diesen Standort"
       },
       {
         "key": "street",
@@ -352,8 +637,7 @@
         "fieldType": "text",
         "required": true,
         "maxLength": 100,
-        "placeholder": "z.B. Filialstraße 10",
-        "gridSize": { "xs": 12, "sm": 12, "md": 8 }
+        "placeholder": "z.B. Filialstraße 10"
       },
       {
         "key": "postalCode",
@@ -363,8 +647,7 @@
         "required": true,
         "validation": "germanPostalCode",
         "maxLength": 5,
-        "placeholder": "12345",
-        "gridSize": { "xs": 6, "sm": 4, "md": 2 }
+        "placeholder": "12345"
       },
       {
         "key": "city",
@@ -373,8 +656,7 @@
         "fieldType": "text",
         "required": true,
         "maxLength": 50,
-        "placeholder": "z.B. Berlin",
-        "gridSize": { "xs": 6, "sm": 8, "md": 6 }
+        "placeholder": "z.B. Berlin"
       }
     ]
   },

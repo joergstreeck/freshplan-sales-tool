@@ -2,7 +2,15 @@ import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
 
 // Type für Filter-Werte
-export type FilterValue = string | number | boolean | Date | string[] | number[] | [number, number] | null;
+export type FilterValue =
+  | string
+  | number
+  | boolean
+  | Date
+  | string[]
+  | number[]
+  | [number, number]
+  | null;
 
 export interface FilterCriteria {
   id: string;
@@ -71,25 +79,25 @@ interface FocusListStore {
   activeFilters: FilterCriteria[];
   savedViews: SavedView[];
   currentViewId: string | null;
-  
+
   // View State
   viewMode: 'cards' | 'table';
   sortBy: SortCriteria;
   smartSortId: string | null;
   tableColumns: TableColumn[];
-  
+
   // Selection State
   selectedCustomerId: string | null;
-  
+
   // Pagination
   page: number;
   pageSize: number;
-  
+
   // Derived State
   filterCount: number;
   hasActiveFilters: boolean;
   visibleTableColumns: TableColumn[];
-  
+
   // Actions - Search & Filter
   setGlobalSearch: (search: string) => void;
   addFilter: (filter: Omit<FilterCriteria, 'id'>) => void;
@@ -98,28 +106,28 @@ interface FocusListStore {
   clearAllFilters: () => void;
   toggleQuickFilter: (field: string, value: FilterValue) => void;
   hasFilter: (field: string, value: FilterValue) => boolean;
-  
+
   // Actions - View Management
   saveCurrentView: (name: string, description?: string) => void;
   loadSavedView: (viewId: string) => void;
   deleteSavedView: (viewId: string) => void;
   updateCurrentView: () => void;
-  
+
   // Actions - Display
   setViewMode: (mode: 'cards' | 'table') => void;
   setSortBy: (sort: SortCriteria) => void;
   setSmartSort: (smartSortId: string) => void;
   setPage: (page: number) => void;
   setPageSize: (pageSize: number) => void;
-  
+
   // Actions - Table Columns
   toggleColumnVisibility: (columnId: string) => void;
   setColumnOrder: (columnIds: string[]) => void;
   resetTableColumns: () => void;
-  
+
   // Actions - Selection
   setSelectedCustomer: (customerId: string | null) => void;
-  
+
   // API Request Builder
   getSearchRequest: () => CustomerSearchRequest;
 }
@@ -146,12 +154,38 @@ export interface CustomerSearchRequest {
 // Default Tabellen-Spalten
 const DEFAULT_TABLE_COLUMNS: TableColumn[] = [
   { id: 'companyName', label: 'Kunde', field: 'companyName', visible: true, order: 0 },
-  { id: 'customerNumber', label: 'Kundennummer', field: 'customerNumber', visible: false, order: 1 },
+  {
+    id: 'customerNumber',
+    label: 'Kundennummer',
+    field: 'customerNumber',
+    visible: false,
+    order: 1,
+  },
   { id: 'status', label: 'Status', field: 'status', visible: true, order: 2 },
-  { id: 'riskScore', label: 'Risiko', field: 'riskScore', visible: true, order: 3, align: 'center' },
+  {
+    id: 'riskScore',
+    label: 'Risiko',
+    field: 'riskScore',
+    visible: true,
+    order: 3,
+    align: 'center',
+  },
   { id: 'industry', label: 'Branche', field: 'industry', visible: true, order: 4 },
-  { id: 'expectedAnnualVolume', label: 'Jahresumsatz', field: 'expectedAnnualVolume', visible: false, order: 5, align: 'right' },
-  { id: 'lastContactDate', label: 'Letzter Kontakt', field: 'lastContactDate', visible: false, order: 6 },
+  {
+    id: 'expectedAnnualVolume',
+    label: 'Jahresumsatz',
+    field: 'expectedAnnualVolume',
+    visible: false,
+    order: 5,
+    align: 'right',
+  },
+  {
+    id: 'lastContactDate',
+    label: 'Letzter Kontakt',
+    field: 'lastContactDate',
+    visible: false,
+    order: 6,
+  },
   { id: 'assignedTo', label: 'Betreuer', field: 'assignedTo', visible: false, order: 7 },
   { id: 'actions', label: 'Aktionen', field: 'actions', visible: true, order: 8, align: 'right' },
 ];
@@ -171,66 +205,63 @@ export const useFocusListStore = create<FocusListStore>()(
         tableColumns: [...DEFAULT_TABLE_COLUMNS],
         selectedCustomerId: null,
         page: 0,
-        pageSize: 20,
+        pageSize: 50, // Erhöht für bessere Übersicht aller Testkunden
 
         // Derived State
         get filterCount() {
           return get().activeFilters.length;
         },
-        
+
         get hasActiveFilters() {
           return get().globalSearch !== '' || get().activeFilters.length > 0;
         },
-        
+
         get visibleTableColumns() {
-          return get().tableColumns
-            .filter(col => col.visible)
+          return get()
+            .tableColumns.filter(col => col.visible)
             .sort((a, b) => a.order - b.order);
         },
 
         // Search & Filter Actions
-        setGlobalSearch: (search) => 
-          set({ globalSearch: search, page: 0 }),
+        setGlobalSearch: search => set({ globalSearch: search, page: 0 }),
 
-        addFilter: (filter) =>
-          set((state) => ({
-            activeFilters: [
-              ...state.activeFilters,
-              { ...filter, id: crypto.randomUUID() },
-            ],
+        addFilter: filter =>
+          set(state => ({
+            activeFilters: [...state.activeFilters, { ...filter, id: crypto.randomUUID() }],
             page: 0,
           })),
 
-        removeFilter: (filterId) =>
-          set((state) => ({
-            activeFilters: state.activeFilters.filter((f) => f.id !== filterId),
+        removeFilter: filterId =>
+          set(state => ({
+            activeFilters: state.activeFilters.filter(f => f.id !== filterId),
             page: 0,
           })),
 
         updateFilter: (filterId, updates) =>
-          set((state) => ({
-            activeFilters: state.activeFilters.map((f) =>
+          set(state => ({
+            activeFilters: state.activeFilters.map(f =>
               f.id === filterId ? { ...f, ...updates } : f
             ),
             page: 0,
           })),
 
-        clearAllFilters: () =>
-          set({ globalSearch: '', activeFilters: [], page: 0 }),
+        clearAllFilters: () => set({ globalSearch: '', activeFilters: [], page: 0 }),
 
         toggleQuickFilter: (field, value) => {
           const state = get();
-          
+
           // Prüfe ZUERST ob der Filter bereits aktiv ist
-          const isActive = state.activeFilters.length === 1 && 
-            ((field === 'riskScore' && value === '>70' && 
-              state.activeFilters[0].field === 'riskScore' && 
+          const isActive =
+            state.activeFilters.length === 1 &&
+            ((field === 'riskScore' &&
+              value === '>70' &&
+              state.activeFilters[0].field === 'riskScore' &&
               state.activeFilters[0].operator === FilterOperator.GREATER_THAN &&
               state.activeFilters[0].value === 70) ||
-             (field !== 'riskScore' && 
-              state.activeFilters[0].field === field && 
-              state.activeFilters[0].value === value));
-          
+              (field !== 'riskScore' &&
+                state.activeFilters[0].field === field &&
+                state.activeFilters[0].value === value));
+
           if (isActive) {
             // Filter ist aktiv -> deaktivieren (alle Filter löschen)
             set({ activeFilters: [], page: 0 });
@@ -238,23 +269,27 @@ export const useFocusListStore = create<FocusListStore>()(
             // Filter ist nicht aktiv -> aktivieren (alle anderen löschen, neuen setzen)
             if (field === 'riskScore' && value === '>70') {
               set({
-                activeFilters: [{
-                  id: crypto.randomUUID(),
-                  field: 'riskScore',
-                  operator: FilterOperator.GREATER_THAN,
-                  value: 70,
-                }],
-                page: 0
+                activeFilters: [
+                  {
+                    id: crypto.randomUUID(),
+                    field: 'riskScore',
+                    operator: FilterOperator.GREATER_THAN,
+                    value: 70,
+                  },
+                ],
+                page: 0,
               });
             } else {
               set({
-                activeFilters: [{
-                  id: crypto.randomUUID(),
-                  field,
-                  operator: FilterOperator.EQUALS,
-                  value,
-                }],
-                page: 0
+                activeFilters: [
+                  {
+                    id: crypto.randomUUID(),
+                    field,
+                    operator: FilterOperator.EQUALS,
+                    value,
+                  },
+                ],
+                page: 0,
               });
             }
           }
@@ -264,12 +299,13 @@ export const useFocusListStore = create<FocusListStore>()(
           const filters = get().activeFilters;
           if (field === 'riskScore' && value === '>70') {
             return filters.some(
-              (f) => f.field === 'riskScore' && 
-                     f.operator === FilterOperator.GREATER_THAN && 
-                     f.value === 70
+              f =>
+                f.field === 'riskScore' &&
+                f.operator === FilterOperator.GREATER_THAN &&
+                f.value === 70
             );
           }
-          return filters.some((f) => f.field === field && f.value === value);
+          return filters.some(f => f.field === field && f.value === value);
         },
 
         // View Management Actions
@@ -286,14 +322,14 @@ export const useFocusListStore = create<FocusListStore>()(
             createdAt: new Date(),
           };
 
-          set((state) => ({
+          set(state => ({
             savedViews: [...state.savedViews, newView],
             currentViewId: newView.id,
           }));
         },
 
-        loadSavedView: (viewId) => {
-          const view = get().savedViews.find((v) => v.id === viewId);
+        loadSavedView: viewId => {
+          const view = get().savedViews.find(v => v.id === viewId);
           if (view) {
             set({
               globalSearch: view.globalSearch,
@@ -306,9 +342,9 @@ export const useFocusListStore = create<FocusListStore>()(
           }
         },
 
-        deleteSavedView: (viewId) =>
-          set((state) => ({
-            savedViews: state.savedViews.filter((v) => v.id !== viewId),
+        deleteSavedView: viewId =>
+          set(state => ({
+            savedViews: state.savedViews.filter(v => v.id !== viewId),
             currentViewId: state.currentViewId === viewId ? null : state.currentViewId,
           })),
 
@@ -316,8 +352,8 @@ export const useFocusListStore = create<FocusListStore>()(
           const state = get();
           if (!state.currentViewId) return;
 
-          set((state) => ({
-            savedViews: state.savedViews.map((v) =>
+          set(state => ({
+            savedViews: state.savedViews.map(v =>
               v.id === state.currentViewId
                 ? {
                     ...v,
@@ -332,46 +368,45 @@ export const useFocusListStore = create<FocusListStore>()(
         },
 
         // Display Actions
-        setViewMode: (mode) => set({ viewMode: mode }),
-        
-        setSortBy: (sort) => set({ sortBy: sort, smartSortId: null, page: 0 }),
-        
-        setSmartSort: (smartSortId) => {
+        setViewMode: mode => set({ viewMode: mode }),
+
+        setSortBy: sort => set({ sortBy: sort, smartSortId: null, page: 0 }),
+
+        setSmartSort: smartSortId => {
           const smartSort = getSmartSortById(smartSortId);
           if (smartSort) {
-            set({ 
+            set({
               sortBy: smartSort.sorts[0], // Use first sort criterion for backward compatibility
-              smartSortId, 
-              page: 0 
+              smartSortId,
+              page: 0,
             });
           }
         },
-        
-        setPage: (page) => set({ page }),
-        
-        setPageSize: (pageSize) => set({ pageSize, page: 0 }),
-        
+
+        setPage: page => set({ page }),
+
+        setPageSize: pageSize => set({ pageSize, page: 0 }),
+
         // Table Column Actions
-        toggleColumnVisibility: (columnId) => 
-          set((state) => ({
+        toggleColumnVisibility: columnId =>
+          set(state => ({
             tableColumns: state.tableColumns.map(col =>
               col.id === columnId ? { ...col, visible: !col.visible } : col
-            )
+            ),
           })),
-          
-        setColumnOrder: (columnIds) => 
-          set((state) => ({
+
+        setColumnOrder: columnIds =>
+          set(state => ({
             tableColumns: state.tableColumns.map(col => ({
               ...col,
-              order: columnIds.indexOf(col.id)
-            }))
+              order: columnIds.indexOf(col.id),
+            })),
           })),
-          
-        resetTableColumns: () => 
-          set({ tableColumns: [...DEFAULT_TABLE_COLUMNS] }),
-        
+
+        resetTableColumns: () => set({ tableColumns: [...DEFAULT_TABLE_COLUMNS] }),
+
         // Selection Actions
-        setSelectedCustomer: (customerId) => set({ selectedCustomerId: customerId }),
+        setSelectedCustomer: customerId => set({ selectedCustomerId: customerId }),
 
         // API Request Builder
         getSearchRequest: () => {
@@ -383,7 +418,7 @@ export const useFocusListStore = create<FocusListStore>()(
           }
 
           if (state.activeFilters.length > 0) {
-            request.filters = state.activeFilters.map((f) => ({
+            request.filters = state.activeFilters.map(f => ({
               field: f.field,
               operator: f.operator,
               value: f.value,
@@ -417,7 +452,7 @@ export const useFocusListStore = create<FocusListStore>()(
       }),
       {
         name: 'focus-list-store',
-        partialize: (state) => ({
+        partialize: state => ({
           savedViews: state.savedViews,
           viewMode: state.viewMode,
           pageSize: state.pageSize,
@@ -439,8 +474,8 @@ export const SMART_SORT_OPTIONS: SmartSortOption[] = [
     icon: '💰',
     sorts: [
       { field: 'expectedAnnualVolume', ascending: false },
-      { field: 'companyName', ascending: true }
-    ]
+      { field: 'companyName', ascending: true },
+    ],
   },
   {
     id: 'revenue-low-to-high',
@@ -450,8 +485,8 @@ export const SMART_SORT_OPTIONS: SmartSortOption[] = [
     icon: '💡',
     sorts: [
       { field: 'expectedAnnualVolume', ascending: true },
-      { field: 'companyName', ascending: true }
-    ]
+      { field: 'companyName', ascending: true },
+    ],
   },
   {
     id: 'risk-critical-first',
@@ -461,8 +496,8 @@ export const SMART_SORT_OPTIONS: SmartSortOption[] = [
     icon: '🚨',
     sorts: [
       { field: 'riskScore', ascending: false },
-      { field: 'expectedAnnualVolume', ascending: false }
-    ]
+      { field: 'expectedAnnualVolume', ascending: false },
+    ],
   },
   {
     id: 'contracts-expiring',
@@ -472,10 +507,10 @@ export const SMART_SORT_OPTIONS: SmartSortOption[] = [
     icon: '⏰',
     sorts: [
       { field: 'nextFollowUpDate', ascending: true },
-      { field: 'expectedAnnualVolume', ascending: false }
-    ]
+      { field: 'expectedAnnualVolume', ascending: false },
+    ],
   },
-  
+
   // === AKTIVITÄT - Verkaufsaktivität ===
   {
     id: 'last-contact-oldest',
@@ -485,8 +520,8 @@ export const SMART_SORT_OPTIONS: SmartSortOption[] = [
     icon: '🕒',
     sorts: [
       { field: 'lastContactDate', ascending: true },
-      { field: 'expectedAnnualVolume', ascending: false }
-    ]
+      { field: 'expectedAnnualVolume', ascending: false },
+    ],
   },
   {
     id: 'last-contact-recent',
@@ -496,8 +531,8 @@ export const SMART_SORT_OPTIONS: SmartSortOption[] = [
     icon: '📞',
     sorts: [
       { field: 'lastContactDate', ascending: false },
-      { field: 'companyName', ascending: true }
-    ]
+      { field: 'companyName', ascending: true },
+    ],
   },
   {
     id: 'new-customers-first',
@@ -507,10 +542,10 @@ export const SMART_SORT_OPTIONS: SmartSortOption[] = [
     icon: '🌟',
     sorts: [
       { field: 'createdAt', ascending: false },
-      { field: 'expectedAnnualVolume', ascending: false }
-    ]
+      { field: 'expectedAnnualVolume', ascending: false },
+    ],
   },
-  
+
   // === STATUS-BASIERT - Pipeline Management ===
   {
     id: 'hot-leads-first',
@@ -521,8 +556,8 @@ export const SMART_SORT_OPTIONS: SmartSortOption[] = [
     sorts: [
       { field: 'status', ascending: true }, // PROSPECT, LEAD vor AKTIV
       { field: 'expectedAnnualVolume', ascending: false },
-      { field: 'lastContactDate', ascending: true }
-    ]
+      { field: 'lastContactDate', ascending: true },
+    ],
   },
   {
     id: 'active-customers-first',
@@ -532,10 +567,10 @@ export const SMART_SORT_OPTIONS: SmartSortOption[] = [
     icon: '✅',
     sorts: [
       { field: 'status', ascending: false }, // AKTIV zuerst
-      { field: 'expectedAnnualVolume', ascending: false }
-    ]
+      { field: 'expectedAnnualVolume', ascending: false },
+    ],
   },
-  
+
   // === STANDARD - Klassisch ===
   {
     id: 'alphabetical',
@@ -543,9 +578,7 @@ export const SMART_SORT_OPTIONS: SmartSortOption[] = [
     description: 'Firmenname von A bis Z',
     category: 'custom',
     icon: '📋',
-    sorts: [
-      { field: 'companyName', ascending: true }
-    ]
+    sorts: [{ field: 'companyName', ascending: true }],
   },
   {
     id: 'customer-number',
@@ -553,10 +586,8 @@ export const SMART_SORT_OPTIONS: SmartSortOption[] = [
     description: 'Nach Kundennummer sortiert',
     category: 'custom',
     icon: '#️⃣',
-    sorts: [
-      { field: 'customerNumber', ascending: true }
-    ]
-  }
+    sorts: [{ field: 'customerNumber', ascending: true }],
+  },
 ];
 
 // Helper function to get smart sort by ID
@@ -565,6 +596,8 @@ export const getSmartSortById = (id: string): SmartSortOption | undefined => {
 };
 
 // Helper function to get smart sort options by category
-export const getSmartSortsByCategory = (category: SmartSortOption['category']): SmartSortOption[] => {
+export const getSmartSortsByCategory = (
+  category: SmartSortOption['category']
+): SmartSortOption[] => {
   return SMART_SORT_OPTIONS.filter(option => option.category === category);
 };

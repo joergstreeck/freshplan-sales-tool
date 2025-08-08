@@ -15,8 +15,12 @@ function TestComponent() {
       <span data-testid="username">{auth.username || 'no-user'}</span>
       <span data-testid="email">{auth.email || 'no-email'}</span>
       <span data-testid="roles">{auth.userRoles.join(',')}</span>
-      <button onClick={auth.login} data-testid="login-btn">Login</button>
-      <button onClick={() => auth.logout()} data-testid="logout-btn">Logout</button>
+      <button onClick={auth.login} data-testid="login-btn">
+        Login
+      </button>
+      <button onClick={() => auth.logout()} data-testid="logout-btn">
+        Logout
+      </button>
     </div>
   );
 }
@@ -50,7 +54,7 @@ describe('KeycloakContext', () => {
 
   it('handles login action', async () => {
     const { keycloak } = await import('../../lib/keycloak');
-    
+
     const { getByTestId } = render(
       <KeycloakProvider>
         <TestComponent />
@@ -71,7 +75,7 @@ describe('KeycloakContext', () => {
 
   it('handles logout action', async () => {
     const { keycloak } = await import('../../lib/keycloak');
-    
+
     const { getByTestId } = render(
       <KeycloakProvider>
         <TestComponent />

@@ -59,6 +59,36 @@ public class TestDataResource {
   }
 
   @POST
+  @Path("/seed-additional")
+  @Operation(
+      summary = "Seed additional 14 test customers",
+      description = "Seeds 14 additional test customers to reach exactly 58 total")
+  @APIResponse(responseCode = "200", description = "Additional test data seeded successfully")
+  @APIResponse(responseCode = "500", description = "Error seeding additional test data")
+  public Response seedAdditionalTestData() {
+    // Only allow in development mode
+    if (!isDevelopmentMode()) {
+      return Response.status(Response.Status.FORBIDDEN)
+          .entity(new ErrorResponse("Test data operations are only allowed in development mode"))
+          .build();
+    }
+
+    try {
+      var result = testDataService.seedAdditionalTestData();
+      return Response.ok(
+              new SeedResponse(
+                  "Additional 14 test customers seeded successfully! Total should now be 58.",
+                  result.customersCreated(),
+                  result.eventsCreated()))
+          .build();
+    } catch (Exception e) {
+      return Response.serverError()
+          .entity(new ErrorResponse("Failed to seed additional test data: " + e.getMessage()))
+          .build();
+    }
+  }
+
+  @POST
   @Path("/seed-comprehensive")
   @Operation(
       summary = "Seed comprehensive edge-case test data",

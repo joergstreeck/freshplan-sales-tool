@@ -8,8 +8,11 @@ import SettingsIcon from '@mui/icons-material/Settings';
 // Temporär: Direkte Type-Definition um Import-Probleme zu umgehen
 interface NavigationSubItem {
   label: string;
-  path: string;
+  path?: string; // Optional für action-based items
+  action?: string; // NEU für Modal-Trigger
   permissions?: string[];
+  disabled?: boolean; // NEU für disabled items
+  tooltip?: string; // NEU für Erklärung
 }
 
 interface NavigationItemType {
@@ -43,6 +46,8 @@ export const navigationConfig: NavigationItemType[] = [
       {
         label: 'Lead-Erfassung',
         path: '/neukundengewinnung/leads',
+        disabled: true, // Sprint 2: Noch nicht implementiert
+        tooltip: 'Verfügbar in Phase 2 (FC-020 Lead Management)',
       },
       {
         label: 'Kampagnen',
@@ -59,11 +64,15 @@ export const navigationConfig: NavigationItemType[] = [
     subItems: [
       {
         label: 'Alle Kunden',
-        path: '/kundenmanagement/liste',
+        path: '/customers', // Angepasst an tatsächliche Route
+      },
+      {
+        label: 'Neuer Kunde', // NEU für Sprint 2!
+        action: 'OPEN_CUSTOMER_WIZARD', // Triggert Modal statt Navigation
       },
       {
         label: 'Verkaufschancen',
-        path: '/kundenmanagement/opportunities',
+        path: '/kundenmanagement/opportunities', // Korrigierter Pfad zur tatsächlichen Route
       },
       {
         label: 'Aktivitäten',

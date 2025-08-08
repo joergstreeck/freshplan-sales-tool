@@ -1,13 +1,13 @@
 /**
  * TextArea Field Component
- * 
+ *
  * Renders a multi-line text input field.
  * Used for fieldType: 'textarea'
  */
 
 import React from 'react';
 import { TextField as MuiTextField } from '@mui/material';
-import { FieldDefinition } from '../../../types/field.types';
+import type { FieldDefinition } from '../../../types/field.types';
 
 interface TextAreaFieldProps {
   /** Field definition */
@@ -32,7 +32,7 @@ interface TextAreaFieldProps {
 
 /**
  * TextArea Field
- * 
+ *
  * Multi-line text input for longer text content.
  * Useful for notes, descriptions, or comments.
  */
@@ -45,14 +45,14 @@ export const TextAreaField: React.FC<TextAreaFieldProps> = ({
   helperText,
   disabled,
   readOnly,
-  required
+  required,
 }) => {
   return (
     <MuiTextField
       id={field.key}
       name={field.key}
       value={value}
-      onChange={(e) => onChange(e.target.value)}
+      onChange={e => onChange(e.target.value)}
       onBlur={onBlur}
       error={error}
       helperText={helperText}
@@ -70,12 +70,12 @@ export const TextAreaField: React.FC<TextAreaFieldProps> = ({
         'aria-label': field.label,
         'aria-required': required,
         'aria-invalid': error,
-        'aria-multiline': true
+        'aria-multiline': true,
       }}
       sx={{
         '& .MuiInputBase-root': {
-          backgroundColor: readOnly ? 'action.disabledBackground' : 'background.paper'
-        }
+          backgroundColor: readOnly ? 'action.disabledBackground' : 'background.paper',
+        },
       }}
     />
   );

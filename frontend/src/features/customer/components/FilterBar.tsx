@@ -47,13 +47,13 @@ const QuickFilterChip: React.FC<QuickFilterChipProps> = ({
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
         {label}
         {count !== undefined && (
-          <Typography 
-            component="span" 
-            variant="caption" 
-            sx={{ 
+          <Typography
+            component="span"
+            variant="caption"
+            sx={{
               ml: 0.5,
               fontWeight: 600,
-              opacity: 0.8 
+              opacity: 0.8,
             }}
           >
             ({count})
@@ -81,15 +81,15 @@ const QuickFilterChip: React.FC<QuickFilterChipProps> = ({
 );
 
 export const FilterBar: React.FC = () => {
-  const globalSearch = useFocusListStore((state) => state.globalSearch);
-  const setGlobalSearch = useFocusListStore((state) => state.setGlobalSearch);
-  const activeFilters = useFocusListStore((state) => state.activeFilters);
-  const viewMode = useFocusListStore((state) => state.viewMode);
-  const setViewMode = useFocusListStore((state) => state.setViewMode);
-  const toggleQuickFilter = useFocusListStore((state) => state.toggleQuickFilter);
-  const clearAllFilters = useFocusListStore((state) => state.clearAllFilters);
-  const hasFilter = useFocusListStore((state) => state.hasFilter);
-  
+  const globalSearch = useFocusListStore(state => state.globalSearch);
+  const setGlobalSearch = useFocusListStore(state => state.setGlobalSearch);
+  const activeFilters = useFocusListStore(state => state.activeFilters);
+  const viewMode = useFocusListStore(state => state.viewMode);
+  const setViewMode = useFocusListStore(state => state.setViewMode);
+  const toggleQuickFilter = useFocusListStore(state => state.toggleQuickFilter);
+  const clearAllFilters = useFocusListStore(state => state.clearAllFilters);
+  const hasFilter = useFocusListStore(state => state.hasFilter);
+
   const [filterDialogOpen, setFilterDialogOpen] = useState(false);
 
   const filterCount = activeFilters.length;
@@ -97,19 +97,21 @@ export const FilterBar: React.FC = () => {
   return (
     <Box>
       {/* Erste Zeile: Suche + Erweiterte Filter + View Toggle */}
-      <Box sx={{ 
-        display: 'flex', 
-        gap: 2, 
-        alignItems: 'center',
-        mb: 1.5,
-        flexWrap: 'wrap'
-      }}>
+      <Box
+        sx={{
+          display: 'flex',
+          gap: 2,
+          alignItems: 'center',
+          mb: 1.5,
+          flexWrap: 'wrap',
+        }}
+      >
         {/* Suchfeld */}
         <TextField
           size="small"
           placeholder="Kunde, Nummer oder Handelsname suchen..."
           value={globalSearch}
-          onChange={(e) => setGlobalSearch(e.target.value)}
+          onChange={e => setGlobalSearch(e.target.value)}
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
@@ -117,7 +119,7 @@ export const FilterBar: React.FC = () => {
               </InputAdornment>
             ),
           }}
-          sx={{ 
+          sx={{
             flex: '1 1 300px',
             maxWidth: 400,
           }}
@@ -164,32 +166,32 @@ export const FilterBar: React.FC = () => {
         </Box>
 
         {/* Tabellen-Einstellungen nur bei Tabellenansicht */}
-        {viewMode === 'table' && (
-          <TableColumnSettings />
-        )}
+        {viewMode === 'table' && <TableColumnSettings />}
       </Box>
 
       {/* Zweite Zeile: Quick Filters als eigene Gruppe */}
-      <Box sx={{ 
-        display: 'flex', 
-        alignItems: 'center',
-        gap: 1,
-        flexWrap: 'wrap',
-        pt: 1.5,
-        borderTop: 1,
-        borderColor: 'divider'
-      }}>
-        <Typography 
-          variant="caption" 
-          sx={{ 
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 1,
+          flexWrap: 'wrap',
+          pt: 1.5,
+          borderTop: 1,
+          borderColor: 'divider',
+        }}
+      >
+        <Typography
+          variant="caption"
+          sx={{
             color: 'text.secondary',
             fontWeight: 500,
-            mr: 1
+            mr: 1,
           }}
         >
           Quick-Filter:
         </Typography>
-        
+
         <QuickFilterChip
           label="Aktive Kunden"
           active={hasFilter('status', 'AKTIV')}
@@ -197,7 +199,7 @@ export const FilterBar: React.FC = () => {
           color="#94C456"
           icon={<TrendingUpIcon fontSize="small" />}
         />
-        
+
         <QuickFilterChip
           label="Risiko > 70"
           active={hasFilter('riskScore', '>70')}
@@ -205,7 +207,7 @@ export const FilterBar: React.FC = () => {
           color="#FF9800"
           icon={<WarningIcon fontSize="small" />}
         />
-        
+
         <QuickFilterChip
           label="Neue Leads"
           active={hasFilter('status', 'LEAD')}
@@ -229,7 +231,7 @@ export const FilterBar: React.FC = () => {
             >
               Alle zurücksetzen
             </Button>
-            
+
             {activeFilters.length > 0 && (
               <Button
                 variant="text"
@@ -245,10 +247,7 @@ export const FilterBar: React.FC = () => {
       </Box>
 
       {/* Erweiterte Filter Dialog */}
-      <AdvancedFilterDialog
-        open={filterDialogOpen}
-        onClose={() => setFilterDialogOpen(false)}
-      />
+      <AdvancedFilterDialog open={filterDialogOpen} onClose={() => setFilterDialogOpen(false)} />
     </Box>
   );
 };

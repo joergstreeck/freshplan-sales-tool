@@ -1,12 +1,12 @@
 /**
  * MainLayoutV3 - Hauptlayout mit intelligentem Design System V2
- * 
+ *
  * Features:
  * - Intelligente Content-Breiten-Erkennung via SmartLayout
  * - Visuelle Header-Trennung (8px Gap + Shadow)
  * - Optimierte Sidebar-Integration
  * - Freshfoodz CI-konform
- * 
+ *
  * @since 2.0.0
  */
 
@@ -36,29 +36,31 @@ interface MainLayoutV3Props {
   contentBackground?: string;
 }
 
-export const MainLayoutV3: React.FC<MainLayoutV3Props> = ({ 
-  children, 
+export const MainLayoutV3: React.FC<MainLayoutV3Props> = ({
+  children,
   hideHeader = false,
   forceContentWidth,
   noPaper = false,
-  contentBackground = '#FAFAFA'
+  contentBackground = '#FAFAFA',
 }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const { isCollapsed, toggleSidebar } = useNavigationStore();
-  
+
   // Berechne die aktuelle Drawer-Breite
   const drawerWidth = isCollapsed ? DRAWER_WIDTH_COLLAPSED : DRAWER_WIDTH;
-  
+
   // Berechne Header-Höhe basierend auf Gerät
   const headerHeight = isMobile ? HEADER_HEIGHT_MOBILE : HEADER_HEIGHT;
-  
+
   return (
-    <Box sx={{ 
-      display: 'flex', 
-      minHeight: '100vh', 
-      bgcolor: contentBackground 
-    }}>
+    <Box
+      sx={{
+        display: 'flex',
+        minHeight: '100vh',
+        bgcolor: contentBackground,
+      }}
+    >
       {/* Sidebar Container - Immer links */}
       <Box
         component="nav"
@@ -83,16 +85,18 @@ export const MainLayoutV3: React.FC<MainLayoutV3Props> = ({
       >
         <SidebarNavigation />
       </Box>
-      
+
       {/* Haupt-Container mit Header und Content */}
-      <Box sx={{ 
-        display: 'flex',
-        flexDirection: 'column',
-        flexGrow: 1,
-        width: { xs: '100%', md: `calc(100% - ${drawerWidth}px)` },
-        minHeight: '100vh',
-        position: 'relative',
-      }}>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          flexGrow: 1,
+          width: { xs: '100%', md: `calc(100% - ${drawerWidth}px)` },
+          minHeight: '100vh',
+          position: 'relative',
+        }}
+      >
         {/* Header mit visueller Trennung */}
         {!hideHeader && (
           <>
@@ -104,17 +108,14 @@ export const MainLayoutV3: React.FC<MainLayoutV3Props> = ({
                 boxShadow: '0 2px 4px rgba(0,0,0,0.08)',
               }}
             >
-              <HeaderV2 
-                showMenuIcon={isMobile}
-                onMenuClick={toggleSidebar}
-              />
+              <HeaderV2 showMenuIcon={isMobile} onMenuClick={toggleSidebar} />
             </Box>
-            
+
             {/* Visueller Abstand zwischen Header und Content */}
             <Box sx={{ height: HEADER_CONTENT_GAP }} />
           </>
         )}
-        
+
         {/* Main Content Area mit SmartLayout */}
         <Box
           component="main"
@@ -124,21 +125,18 @@ export const MainLayoutV3: React.FC<MainLayoutV3Props> = ({
             overflow: 'auto',
             position: 'relative',
             // Minimale Höhe berechnen
-            minHeight: !hideHeader 
-              ? `calc(100vh - ${headerHeight}px - ${HEADER_CONTENT_GAP}px)` 
+            minHeight: !hideHeader
+              ? `calc(100vh - ${headerHeight}px - ${HEADER_CONTENT_GAP}px)`
               : '100vh',
           }}
         >
           {/* SmartLayout übernimmt die intelligente Breiten-Steuerung */}
-          <SmartLayout 
-            forceWidth={forceContentWidth}
-            noPaper={noPaper}
-          >
+          <SmartLayout forceWidth={forceContentWidth} noPaper={noPaper}>
             {children}
           </SmartLayout>
         </Box>
       </Box>
-      
+
       {/* Mobile Overlay wenn Sidebar offen */}
       {isMobile && !isCollapsed && (
         <Box

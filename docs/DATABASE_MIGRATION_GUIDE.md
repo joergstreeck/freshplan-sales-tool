@@ -2,6 +2,7 @@
 
 **Status:** VERBINDLICH ab 02.08.2025
 **Zielgruppe:** Alle Entwickler (Menschen & KI)
+**Erweitert:** 02.08.2025 - Migration Registry System hinzugefügt
 
 ## 🚨 GOLDENE REGELN - NIEMALS BRECHEN!
 
@@ -10,6 +11,38 @@
 - ❌ NIEMALS: Bestehende Migrationsdateien editieren
 - ❌ NIEMALS: Migrationsdateien löschen oder umbenennen
 - ✅ IMMER: Neue Migration für Korrekturen erstellen
+
+### Regel 1.1: Feature-Branch Exception (NEU: 02.08.2025)
+**In Feature-Branches dürfen nicht-merged Migrationen korrigiert werden, WENN:**
+- ✅ Migration war **niemals im main-Branch** (`git log main -- migration_file.sql` ist leer)
+- ✅ **Kein anderer Entwickler** hat bereits darauf aufgebaut
+- ✅ Änderung ist ein **offensichtlicher Tippfehler/Bug-Fix**
+- ✅ **Team-Lead gibt explizite Freigabe** oder es ist ein Solo-Feature-Branch
+
+**Prozess für Feature-Branch Korrekturen:**
+```bash
+# 1. Verifiziere: Migration war nie im main
+git log main -- backend/src/main/resources/db/migration/VX__file.sql
+# Output muss leer sein!
+
+# 2. Prüfe: Keine abhängigen Migrationen 
+grep -r "VX" backend/src/main/resources/db/migration/V[X+1]* || echo "OK: Keine Abhängigkeiten"
+
+# 3. Dokumentiere Änderung ausführlich
+git add migration_file.sql
+git commit -m "fix(migration): Correct VX table name error
+
+- Problem: VX referenced non-existent 'contacts' table
+- Solution: Changed all 'contacts' references to 'customer_contacts' 
+- Justification: Feature-Branch Exception 1.1 - never in main, obvious typo
+- Verified: No dependent migrations, no other developers affected"
+```
+
+**⚠️ WICHTIGE EINSCHRÄNKUNGEN:**
+- ❌ **Gilt nur für Feature-Branches** - main-Branch bleibt unveränderlich
+- ❌ **Nur für offensichtliche Fehler** - keine fachlichen Änderungen
+- ❌ **Nicht bei komplexen Migrationen** - nur einfache Fixes
+- ❌ **Nie ohne Dokumentation** - ausführliche Commit-Message Pflicht
 
 ### Regel 2: Idempotenz
 **Jede Migration muss mehrfach ausführbar sein ohne Fehler.**
@@ -39,10 +72,16 @@ CREATE INDEX idx_customer_new_field ON customers(new_field);
 ## 📋 Migration Erstellen - Schritt für Schritt
 
 ### 1. Nächste Versionsnummer ermitteln
+🚨 **NEUE REGEL (ab 02.08.2025):**
 ```bash
-ls -la backend/src/main/resources/db/migration/ | grep "^-" | tail -1
-# Beispiel: V35__last_migration.sql → Nächste ist V36
+# IMMER zuerst die Registry prüfen!
+cat docs/MIGRATION_REGISTRY.md | grep "NÄCHSTE VERFÜGBARE NUMMER"
+
+# Oder automatisch aktualisieren
+./scripts/update-migration-registry.sh
 ```
+
+**NIEMALS** einfach die Dateien zählen - es kann Lücken durch Duplikate geben!
 
 ### 2. Migration-Template verwenden
 ```bash

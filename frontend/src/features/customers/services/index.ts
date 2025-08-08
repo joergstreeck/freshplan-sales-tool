@@ -1,8 +1,8 @@
 /**
  * Customer Services Export
- * 
+ *
  * Zentrale Exportstelle für alle Customer Management Services.
- * 
+ *
  * @see /Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/03-FRONTEND/04-api-integration.md
  */
 
@@ -16,7 +16,7 @@ export { locationApi } from './locationApi';
 export {
   // Query Keys
   queryKeys,
-  
+
   // Customer Hooks
   useCreateCustomerDraft,
   useCustomerDraft,
@@ -27,12 +27,12 @@ export {
   useUpdateCustomer,
   useRecentCustomers,
   useCustomerStatistics,
-  
+
   // Location Hooks
   useCustomerLocations,
   useCreateLocation,
   useUpdateLocation,
-  
+
   // Field Definition Hooks
   useFieldDefinitions,
   useIndustries,

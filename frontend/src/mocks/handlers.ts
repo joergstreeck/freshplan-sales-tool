@@ -1,6 +1,75 @@
 import { http, HttpResponse } from 'msw';
 // import { calculatorHandlers } from './calculatorHandlers';
 
+// Mock customer data
+const mockCustomers = [
+  {
+    id: '1',
+    customerNumber: 'K-2025-001',
+    companyName: 'FreshFood GmbH',
+    tradingName: 'FreshFood Berlin',
+    customerType: 'EXISTING',
+    status: 'ACTIVE',
+    industry: 'GASTRONOMY',
+    expectedAnnualVolume: 150000,
+    lastContactDate: '2025-08-01',
+    riskScore: 25,
+    atRisk: false,
+  },
+  {
+    id: '2',
+    customerNumber: 'K-2025-002',
+    companyName: 'Restaurant Zur goldenen Gans',
+    tradingName: null,
+    customerType: 'NEW',
+    status: 'ACTIVE',
+    industry: 'RESTAURANT',
+    expectedAnnualVolume: 85000,
+    lastContactDate: '2025-07-28',
+    riskScore: 15,
+    atRisk: false,
+  },
+  {
+    id: '3',
+    customerNumber: 'K-2025-003',
+    companyName: 'Kantine Plus AG',
+    tradingName: 'Kantine Plus',
+    customerType: 'EXISTING',
+    status: 'AT_RISK',
+    industry: 'CANTEEN',
+    expectedAnnualVolume: 220000,
+    lastContactDate: '2025-06-15',
+    riskScore: 75,
+    atRisk: true,
+  },
+  {
+    id: '4',
+    customerNumber: 'K-2025-004',
+    companyName: 'Hotel Vier Jahreszeiten',
+    tradingName: null,
+    customerType: 'EXISTING',
+    status: 'ACTIVE',
+    industry: 'HOTEL',
+    expectedAnnualVolume: 180000,
+    lastContactDate: '2025-07-30',
+    riskScore: 35,
+    atRisk: false,
+  },
+  {
+    id: '5',
+    customerNumber: 'K-2025-005',
+    companyName: 'Café am Markt',
+    tradingName: 'Marktcafé',
+    customerType: 'NEW',
+    status: 'INACTIVE',
+    industry: 'CAFE_BAR',
+    expectedAnnualVolume: 45000,
+    lastContactDate: '2025-05-20',
+    riskScore: 90,
+    atRisk: true,
+  },
+];
+
 export const handlers = [
   // Mock API endpoints
   http.get('http://localhost:8080/api/ping', () => {
@@ -8,6 +77,41 @@ export const handlers = [
       message: 'pong',
       timestamp: new Date().toISOString(),
       user: 'mock-user',
+    });
+  }),
+
+  // Customer API endpoints
+  http.get('http://localhost:8080/api/customers', ({ request }) => {
+    const url = new URL(request.url);
+    const page = parseInt(url.searchParams.get('page') || '0');
+    const size = parseInt(url.searchParams.get('size') || '20');
+    const sort = url.searchParams.get('sort') || 'companyName';
+
+    // Simple sorting
+    const sortedCustomers = [...mockCustomers].sort((a, b) => {
+      if (sort === 'customerNumber') {
+        return a.customerNumber.localeCompare(b.customerNumber);
+      } else if (sort === 'status') {
+        return a.status.localeCompare(b.status);
+      } else if (sort === 'lastContactDate') {
+        return new Date(b.lastContactDate).getTime() - new Date(a.lastContactDate).getTime();
+      }
+      return a.companyName.localeCompare(b.companyName);
+    });
+
+    // Pagination
+    const start = page * size;
+    const end = start + size;
+    const paginatedCustomers = sortedCustomers.slice(start, end);
+
+    return HttpResponse.json({
+      content: paginatedCustomers,
+      page: page,
+      size: size,
+      totalElements: mockCustomers.length,
+      totalPages: Math.ceil(mockCustomers.length / size),
+      first: page === 0,
+      last: page === Math.ceil(mockCustomers.length / size) - 1,
     });
   }),
 

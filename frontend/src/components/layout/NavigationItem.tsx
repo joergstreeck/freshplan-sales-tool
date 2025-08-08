@@ -1,12 +1,5 @@
 import React from 'react';
-import {
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
-  Collapse,
-  Tooltip,
-  Box,
-} from '@mui/material';
+import { ListItemButton, ListItemIcon, ListItemText, Collapse, Tooltip, Box } from '@mui/material';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { NavigationSubMenu } from './NavigationSubMenu';
@@ -45,7 +38,7 @@ export const NavigationItem: React.FC<NavigationItemProps> = ({
   onSubItemClick,
 }) => {
   const Icon = item.icon;
-  
+
   const button = (
     <ListItemButton
       onClick={onItemClick}
@@ -77,16 +70,18 @@ export const NavigationItem: React.FC<NavigationItemProps> = ({
         },
       }}
     >
-      <ListItemIcon sx={{ 
-        minWidth: 40,
-        color: isActive ? '#94C456' : '#004F7B', // Freshfoodz Farben
-      }}>
+      <ListItemIcon
+        sx={{
+          minWidth: 40,
+          color: isActive ? '#94C456' : '#004F7B', // Freshfoodz Farben
+        }}
+      >
         <Icon />
       </ListItemIcon>
       {!isCollapsed && (
         <>
-          <ListItemText 
-            primary={item.label} 
+          <ListItemText
+            primary={item.label}
             sx={{
               mr: item.subItems ? 1 : 0,
               '& .MuiListItemText-primary': {
@@ -98,22 +93,25 @@ export const NavigationItem: React.FC<NavigationItemProps> = ({
                 // Erlaubt Zeilenumbruch bei sehr langen Texten
                 whiteSpace: 'normal',
                 wordBreak: 'break-word',
-              }
+              },
             }}
           />
           {item.subItems && (
-            <Box sx={{ 
-              ml: 'auto', 
-              display: 'flex', 
-              alignItems: 'center',
-              flexShrink: 0,
-              width: 24,
-              height: 24,
-            }}>
-              {isExpanded ? 
-                <ExpandLessIcon sx={{ fontSize: 20, color: '#94C456' }} /> : 
+            <Box
+              sx={{
+                ml: 'auto',
+                display: 'flex',
+                alignItems: 'center',
+                flexShrink: 0,
+                width: 24,
+                height: 24,
+              }}
+            >
+              {isExpanded ? (
+                <ExpandLessIcon sx={{ fontSize: 20, color: '#94C456' }} />
+              ) : (
                 <ExpandMoreIcon sx={{ fontSize: 20, color: '#94C456' }} />
-              }
+              )}
             </Box>
           )}
         </>
@@ -130,13 +128,10 @@ export const NavigationItem: React.FC<NavigationItemProps> = ({
       ) : (
         button
       )}
-      
+
       {item.subItems && !isCollapsed && (
         <Collapse in={isExpanded} timeout="auto" unmountOnExit>
-          <NavigationSubMenu
-            items={item.subItems}
-            onItemClick={onSubItemClick}
-          />
+          <NavigationSubMenu items={item.subItems} onItemClick={onSubItemClick} />
         </Collapse>
       )}
     </>

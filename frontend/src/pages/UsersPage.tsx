@@ -22,31 +22,35 @@ export const UsersPage = () => {
     <AuthenticatedLayout>
       <div className="min-h-screen bg-background p-8">
         <div className="mx-auto max-w-7xl space-y-8">
-        {/* Main content */}
-        {!isCreateModalOpen && !isEditModalOpen && <UserTable />}
+          {/* Main content */}
+          {!isCreateModalOpen && !isEditModalOpen && <UserTable />}
 
-        {/* Create user form */}
-        {isCreateModalOpen && (
-          <div className="flex justify-center">
-            <UserForm onSuccess={handleFormSuccess} onCancel={closeCreateModal} />
-          </div>
-        )}
-
-        {/* Edit user form */}
-        {isEditModalOpen && selectedUser && (
-          <div className="flex justify-center">
-            <UserForm user={selectedUser} onSuccess={handleFormSuccess} onCancel={closeEditModal} />
-          </div>
-        )}
-
-        {/* Loading state for edit mode */}
-        {isEditModalOpen && !selectedUser && selectedUserId && (
-          <div className="flex justify-center">
-            <div className="p-8">
-              <p>Lade Benutzerdaten...</p>
+          {/* Create user form */}
+          {isCreateModalOpen && (
+            <div className="flex justify-center">
+              <UserForm onSuccess={handleFormSuccess} onCancel={closeCreateModal} />
             </div>
-          </div>
-        )}
+          )}
+
+          {/* Edit user form */}
+          {isEditModalOpen && selectedUser && (
+            <div className="flex justify-center">
+              <UserForm
+                user={selectedUser}
+                onSuccess={handleFormSuccess}
+                onCancel={closeEditModal}
+              />
+            </div>
+          )}
+
+          {/* Loading state for edit mode */}
+          {isEditModalOpen && !selectedUser && selectedUserId && (
+            <div className="flex justify-center">
+              <div className="p-8">
+                <p>Lade Benutzerdaten...</p>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </AuthenticatedLayout>

@@ -1,0 +1,523 @@
+{
+  "chainStructure": [
+    {
+      "key": "totalLocationsEU",
+      "label": "Standorte gesamt (EU)",
+      "entityType": "customer",
+      "fieldType": "number",
+      "required": false,
+      "category": "chain",
+      "displayCondition": "chainCustomer === 'ja'",
+      "min": 1,
+      "placeholder": "0",
+      "sizeHint": "klein",
+      "helpText": "Alle Standorte in Europa"
+    },
+    {
+      "key": "locationsGermany",
+      "label": "davon Deutschland",
+      "entityType": "customer",
+      "fieldType": "number",
+      "required": false,
+      "category": "chain",
+      "displayCondition": "chainCustomer === 'ja'",
+      "placeholder": "0",
+      "sizeHint": "klein"
+    },
+    {
+      "key": "locationsAustria",
+      "label": "davon Österreich",
+      "entityType": "customer",
+      "fieldType": "number",
+      "required": false,
+      "category": "chain",
+      "displayCondition": "chainCustomer === 'ja'",
+      "placeholder": "0",
+      "sizeHint": "klein"
+    },
+    {
+      "key": "locationsSwitzerland",
+      "label": "davon Schweiz",
+      "entityType": "customer",
+      "fieldType": "number",
+      "required": false,
+      "category": "chain",
+      "displayCondition": "chainCustomer === 'ja'",
+      "placeholder": "0",
+      "sizeHint": "klein"
+    },
+    {
+      "key": "locationsRestEU",
+      "label": "davon Rest-EU",
+      "entityType": "customer",
+      "fieldType": "number",
+      "required": false,
+      "category": "chain",
+      "displayCondition": "chainCustomer === 'ja'",
+      "placeholder": "0",
+      "sizeHint": "klein"
+    },
+    {
+      "key": "expansionPlanned",
+      "label": "Expansion geplant",
+      "entityType": "customer",
+      "fieldType": "select",
+      "required": false,
+      "category": "chain",
+      "displayCondition": "chainCustomer === 'ja'",
+      "salesRelevance": "HIGH",
+      "sizeHint": "klein",
+      "options": [
+        { "value": "nein", "label": "Nein" },
+        { "value": "ja", "label": "Ja" }
+      ],
+      "placeholder": "Bitte wählen...",
+      "helpText": "Plant das Unternehmen eine Expansion? Wichtig für Rahmenverträge"
+    },
+    {
+      "key": "decisionStructure",
+      "label": "Entscheidungsstruktur",
+      "entityType": "customer",
+      "fieldType": "select",
+      "required": false,
+      "category": "chain",
+      "displayCondition": "chainCustomer === 'ja'",
+      "options": [
+        { "value": "central", "label": "Zentral (Hauptverwaltung)" },
+        { "value": "decentral", "label": "Dezentral (je Standort)" },
+        { "value": "mixed", "label": "Gemischt" }
+      ],
+      "helpText": "Wer entscheidet über Lieferantenverträge? Zentral = Rahmenvertrag möglich, Dezentral = Einzelverträge pro Standort",
+      "salesRelevance": "HIGH"
+    }
+  ],
+  "businessModel": [
+    {
+      "key": "financingType",
+      "label": "Geschäftsmodell",
+      "entityType": "customer",
+      "fieldType": "select",
+      "required": true,
+      "size": "large",
+      "category": "business",
+      "options": [
+        { "value": "private", "label": "Privatwirtschaftlich" },
+        { "value": "public", "label": "Öffentlich finanziert" },
+        { "value": "mixed", "label": "Mischfinanzierung" }
+      ],
+      "helpText": "Privatwirtschaftlich: Hotels, Restaurants, Unternehmen | Öffentlich: Schulen, Krankenhäuser, Behörden | Mischfinanzierung: PPP-Projekte",
+      "salesRelevance": "CRITICAL"
+    }
+  ],
+  "globalBusiness": [
+    {
+      "key": "expectedAnnualRevenue",
+      "label": "Geplantes Jahresvolumen Freshfoodz (EUR)",
+      "entityType": "customer",
+      "fieldType": "number",
+      "format": "currency",
+      "currency": "EUR",
+      "thousandSeparator": true,
+      "required": true,
+      "category": "business",
+      "sizeHint": "groß",
+      "width": "large",
+      "fontSize": "18px",
+      "textAlign": "right",
+      "salesRelevance": "CRITICAL",
+      "helpText": "Brutto-Jahresvolumen an Freshfoodz-Produkten, das gemeinsam geplant wird. Dieser Wert erscheint 1:1 im Partnerschaftsvertrag.",
+      "tooltip": "Brutto-Jahresvolumen an Freshfoodz-Produkten, das gemeinsam geplant wird. Dieser Wert erscheint 1:1 im Partnerschaftsvertrag.",
+      "min": 0,
+      "validationWarning": 1000000,
+      "placeholder": "z.B. 250.000",
+      "showCalculator": true,
+      "calculatorHint": "100 Betten × 10€/Monat × 12 = 120.000€"
+    }
+  ],
+  "competitorInfo": [
+    {
+      "key": "currentSupplier",
+      "label": "Aktueller Lieferant",
+      "entityType": "customer",
+      "fieldType": "text",
+      "required": false,
+      "category": "competitor",
+      "placeholder": "z.B. Apetito, eigene Küche",
+      "sizeHint": "groß",
+      "salesRelevance": "HIGH"
+    },
+    {
+      "key": "contractEndDate",
+      "label": "Vertragsende",
+      "entityType": "customer",
+      "fieldType": "select",
+      "required": false,
+      "size": "medium",
+      "category": "competitor",
+      "displayCondition": "currentSupplier !== null && currentSupplier !== ''",
+      "options": [
+        { "value": "open", "label": "Unbefristet / Kein Vertrag" },
+        { "value": "next_3_months", "label": "In den nächsten 3 Monaten" },
+        { "value": "next_6_months", "label": "In 3-6 Monaten" },
+        { "value": "next_12_months", "label": "In 6-12 Monaten" },
+        { "value": "over_12_months", "label": "Über 12 Monate" }
+      ],
+      "helpText": "Wann endet der aktuelle Vertrag? (für automatische Wiedervorlage)",
+      "triggerTaskGeneration": true,
+      "salesRelevance": "CRITICAL"
+    },
+    {
+      "key": "switchWillingness",
+      "label": "Wechselbereitschaft",
+      "entityType": "customer",
+      "fieldType": "select",
+      "required": false,
+      "category": "competitor",
+      "displayCondition": "currentSupplier !== null && currentSupplier !== ''",
+      "options": [
+        { "value": "high", "label": "Hoch - aktiv auf der Suche" },
+        { "value": "medium", "label": "Mittel - offen für Alternativen" },
+        { "value": "low", "label": "Niedrig - zufrieden" }
+      ],
+      "salesRelevance": "CRITICAL"
+    },
+    {
+      "key": "decisionTimeline",
+      "label": "Entscheidungszeitpunkt",
+      "entityType": "customer",
+      "fieldType": "select",
+      "required": false,
+      "category": "sales",
+      "size": "medium",
+      "options": [
+        { "value": "immediate", "label": "Sofortige Entscheidung möglich" },
+        { "value": "1_month", "label": "Innerhalb 1 Monat" },
+        { "value": "3_months", "label": "In 1-3 Monaten" },
+        { "value": "6_months", "label": "In 3-6 Monaten" },
+        { "value": "12_months", "label": "In 6-12 Monaten" },
+        { "value": "over_12_months", "label": "Später als 12 Monate" },
+        { "value": "unknown", "label": "Noch unklar" }
+      ],
+      "helpText": "Wann wird voraussichtlich eine Entscheidung getroffen?",
+      "triggerTaskGeneration": true,
+      "salesRelevance": "HIGH"
+    }
+  ],
+  "hotelServices": [
+    {
+      "key": "offersBreakfast",
+      "label": "Frühstück angeboten",
+      "entityType": "customer",
+      "fieldType": "select",
+      "category": "services",
+      "displayCondition": "industry === 'hotel'",
+      "options": [
+        { "value": "nein", "label": "Nein" },
+        { "value": "ja", "label": "Ja" }
+      ],
+      "sizeHint": "klein",
+      "salesRelevance": "HIGH"
+    },
+    {
+      "key": "breakfastWarm",
+      "label": "Warme Frühstückskomponenten",
+      "entityType": "customer",
+      "fieldType": "select",
+      "category": "services",
+      "displayCondition": "industry === 'hotel' && offersBreakfast === 'ja'",
+      "options": [
+        { "value": "nein", "label": "Nein" },
+        { "value": "ja", "label": "Ja" }
+      ],
+      "sizeHint": "klein",
+      "salesImpact": "high-margin",
+      "triggerProducts": ["breakfast-convenience"]
+    },
+    {
+      "key": "breakfastGuestsPerDay",
+      "label": "Frühstücksgäste/Tag (Durchschnitt)",
+      "entityType": "customer",
+      "fieldType": "number",
+      "category": "services",
+      "displayCondition": "industry === 'hotel' && offersBreakfast === 'ja'",
+      "placeholder": "0",
+      "min": 0,
+      "sizeHint": "klein",
+      "helpText": "Basis für Potenzialberechnung"
+    },
+    {
+      "key": "offersLunch",
+      "label": "Mittagessen/Restaurant",
+      "entityType": "customer",
+      "fieldType": "select",
+      "category": "services",
+      "displayCondition": "industry === 'hotel'",
+      "options": [
+        { "value": "nein", "label": "Nein" },
+        { "value": "ja", "label": "Ja" }
+      ],
+      "sizeHint": "klein"
+    },
+    {
+      "key": "offersDinner",
+      "label": "Abendessen/À la carte",
+      "entityType": "customer",
+      "fieldType": "select",
+      "category": "services",
+      "displayCondition": "industry === 'hotel'",
+      "options": [
+        { "value": "nein", "label": "Nein" },
+        { "value": "ja", "label": "Ja" }
+      ],
+      "sizeHint": "klein"
+    },
+    {
+      "key": "offersRoomService",
+      "label": "Roomservice",
+      "entityType": "customer",
+      "fieldType": "select",
+      "category": "services",
+      "displayCondition": "industry === 'hotel'",
+      "options": [
+        { "value": "nein", "label": "Nein" },
+        { "value": "ja", "label": "Ja" }
+      ],
+      "sizeHint": "klein",
+      "salesImpact": "premium-products"
+    },
+    {
+      "key": "offersEvents",
+      "label": "Events/Bankette",
+      "entityType": "customer",
+      "fieldType": "select",
+      "category": "services",
+      "displayCondition": "industry === 'hotel'",
+      "options": [
+        { "value": "nein", "label": "Nein" },
+        { "value": "ja", "label": "Ja" }
+      ],
+      "sizeHint": "klein",
+      "salesImpact": "high-volume"
+    },
+    {
+      "key": "eventCapacity",
+      "label": "Max. Eventgäste",
+      "entityType": "customer",
+      "fieldType": "number",
+      "category": "services",
+      "displayCondition": "industry === 'hotel' && offersEvents === 'ja'",
+      "placeholder": "0",
+      "sizeHint": "klein"
+    },
+    {
+      "key": "roomCount",
+      "label": "Anzahl Zimmer",
+      "entityType": "customer",
+      "fieldType": "number",
+      "category": "capacity",
+      "displayCondition": "industry === 'hotel'",
+      "required": false,
+      "min": 1,
+      "sizeHint": "klein"
+    },
+    {
+      "key": "averageOccupancy",
+      "label": "Durchschnittliche Auslastung (%)",
+      "entityType": "customer",
+      "fieldType": "number",
+      "category": "capacity",
+      "displayCondition": "industry === 'hotel'",
+      "min": 0,
+      "max": 100,
+      "placeholder": "75",
+      "sizeHint": "klein"
+    }
+  ],
+  "painPoints": [
+    {
+      "key": "hasStaffingIssues",
+      "label": "Personalmangel/Fachkräftemangel",
+      "entityType": "customer",
+      "fieldType": "select",
+      "category": "painPoints",
+      "required": false,
+      "options": [
+        { "value": "nein", "label": "Kein Problem" },
+        { "value": "ja", "label": "Ja, großes Problem" }
+      ],
+      "sizeHint": "mittel",
+      "salesRelevance": "CRITICAL",
+      "triggerProducts": ["convenience", "ready-to-serve"],
+      "solutionText": "Cook&Fresh® - Keine Fachkräfte nötig!",
+      "potentialMultiplier": 1.3
+    },
+    {
+      "key": "hasQualityIssues",
+      "label": "Schwankende Qualität",
+      "entityType": "customer",
+      "fieldType": "select",
+      "category": "painPoints",
+      "options": [
+        { "value": "nein", "label": "Kein Problem" },
+        { "value": "ja", "label": "Ja, großes Problem" }
+      ],
+      "sizeHint": "mittel",
+      "required": false,
+      "salesRelevance": "HIGH",
+      "triggerProducts": ["standardized"],
+      "solutionText": "Immer gleiche Premium-Qualität"
+    },
+    {
+      "key": "hasFoodWasteIssues",
+      "label": "Zu viel Lebensmittelverschwendung",
+      "entityType": "customer",
+      "fieldType": "select",
+      "category": "painPoints",
+      "required": false,
+      "options": [
+        { "value": "nein", "label": "Kein Problem" },
+        { "value": "ja", "label": "Ja, großes Problem" }
+      ],
+      "sizeHint": "mittel",
+      "salesRelevance": "HIGH",
+      "triggerProducts": ["long-shelf-life"],
+      "solutionText": "40 Tage Haltbarkeit ohne Qualitätsverlust"
+    },
+    {
+      "key": "hasCostPressure",
+      "label": "Kostendruck",
+      "entityType": "customer",
+      "fieldType": "select",
+      "category": "painPoints",
+      "required": false,
+      "options": [
+        { "value": "nein", "label": "Kein Problem" },
+        { "value": "ja", "label": "Ja, großes Problem" }
+      ],
+      "sizeHint": "mittel",
+      "salesRelevance": "HIGH",
+      "triggerProducts": ["efficiency"],
+      "solutionText": "Kalkulierbare Kosten, weniger Personal"
+    },
+    {
+      "key": "hasFlexibilityIssues",
+      "label": "Mangelnde Flexibilität bei Gästezahlen",
+      "entityType": "customer",
+      "fieldType": "select",
+      "category": "painPoints",
+      "required": false,
+      "options": [
+        { "value": "nein", "label": "Kein Problem" },
+        { "value": "ja", "label": "Ja, großes Problem" }
+      ],
+      "sizeHint": "mittel",
+      "salesRelevance": "MEDIUM",
+      "triggerProducts": ["portion-exact"],
+      "solutionText": "Portionsgenaue Bestellung möglich"
+    }
+  ],
+  "additionalBusiness": [
+    {
+      "key": "vendingInterest",
+      "label": "Interesse an Vending/Automaten (bonPeti)",
+      "entityType": "customer",
+      "fieldType": "select",
+      "category": "additional",
+      "required": false,
+      "options": [
+        { "value": "nein", "label": "Nein" },
+        { "value": "ja", "label": "Ja" }
+      ],
+      "sizeHint": "mittel",
+      "salesRelevance": "MEDIUM",
+      "helpText": "24/7 Versorgung für Mitarbeiter/Gäste",
+      "triggerProducts": ["vending", "bonpeti"]
+    },
+    {
+      "key": "vendingLocations",
+      "label": "Mögliche Automaten-Standorte",
+      "entityType": "customer",
+      "fieldType": "number",
+      "category": "additional",
+      "displayCondition": "vendingInterest === 'ja'",
+      "placeholder": "0",
+      "sizeHint": "klein",
+      "helpText": "z.B. Pausenräume, Lobbys, Stationen"
+    }
+  ],
+  "contactStructured": [
+    {
+      "key": "salutation",
+      "label": "Anrede",
+      "entityType": "contact",
+      "fieldType": "select",
+      "required": true,
+      "category": "contact",
+      "options": [
+        { "value": "herr", "label": "Herr" },
+        { "value": "frau", "label": "Frau" },
+        { "value": "divers", "label": "Divers" },
+        { "value": "keine", "label": "Keine Anrede" }
+      ],
+      "sizeHint": "klein"
+    },
+    {
+      "key": "title",
+      "label": "Titel",
+      "entityType": "contact",
+      "fieldType": "text",
+      "required": false,
+      "category": "contact",
+      "placeholder": "z.B. Dr., Prof.",
+      "maxLength": 50,
+      "sizeHint": "kompakt"
+    },
+    {
+      "key": "firstName",
+      "label": "Vorname",
+      "entityType": "contact",
+      "fieldType": "text",
+      "required": true,
+      "category": "contact",
+      "maxLength": 100,
+      "sizeHint": "mittel"
+    },
+    {
+      "key": "lastName",
+      "label": "Nachname",
+      "entityType": "contact",
+      "fieldType": "text",
+      "required": true,
+      "category": "contact",
+      "maxLength": 100,
+      "sizeHint": "mittel"
+    },
+    {
+      "key": "position",
+      "label": "Position/Funktion",
+      "entityType": "contact",
+      "fieldType": "text",
+      "required": false,
+      "category": "contact",
+      "placeholder": "z.B. Geschäftsführer, F&B Manager",
+      "salesRelevance": "HIGH",
+      "sizeHint": "groß"
+    },
+    {
+      "key": "decisionLevel",
+      "label": "Entscheider-Ebene",
+      "entityType": "contact",
+      "fieldType": "select",
+      "required": false,
+      "category": "contact",
+      "options": [
+        { "value": "decision_maker", "label": "Entscheider" },
+        { "value": "influencer", "label": "Beeinflusser" },
+        { "value": "user", "label": "Anwender" },
+        { "value": "gatekeeper", "label": "Gatekeeper" }
+      ],
+      "salesRelevance": "CRITICAL",
+      "helpText": "Rolle im Kaufentscheidungsprozess"
+    }
+  ]
+}

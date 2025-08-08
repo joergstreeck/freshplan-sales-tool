@@ -10,21 +10,21 @@ vi.mock('react-router-dom', async () => {
   return {
     ...actual,
     useLocation: () => ({
-      pathname: '/kundenmanagement/kunden'
-    })
+      pathname: '/kundenmanagement/kunden',
+    }),
   };
 });
 
 describe('NavigationSubMenu', () => {
   const mockOnItemClick = vi.fn();
-  
+
   const defaultProps = {
     items: [
       { label: 'Alle Kunden', path: '/kundenmanagement/kunden' },
       { label: 'Verkaufschancen', path: '/kundenmanagement/opportunities' },
-      { label: 'Aktivitäten', path: '/kundenmanagement/aktivitaeten' }
+      { label: 'Aktivitäten', path: '/kundenmanagement/aktivitaeten' },
     ],
-    onItemClick: mockOnItemClick
+    onItemClick: mockOnItemClick,
   };
 
   beforeEach(() => {
@@ -37,7 +37,7 @@ describe('NavigationSubMenu', () => {
         <NavigationSubMenu {...defaultProps} />
       </BrowserRouter>
     );
-    
+
     expect(screen.getByText('Alle Kunden')).toBeInTheDocument();
     expect(screen.getByText('Verkaufschancen')).toBeInTheDocument();
     expect(screen.getByText('Aktivitäten')).toBeInTheDocument();
@@ -49,7 +49,7 @@ describe('NavigationSubMenu', () => {
         <NavigationSubMenu {...defaultProps} />
       </BrowserRouter>
     );
-    
+
     // MUI ListItemButton setzt 'selected' prop, aber nicht unbedingt aria-selected
     const activeItem = screen.getByText('Alle Kunden').closest('.MuiListItemButton-root');
     expect(activeItem).toHaveClass('Mui-selected');
@@ -57,16 +57,16 @@ describe('NavigationSubMenu', () => {
 
   it('calls onItemClick when submenu item is clicked', async () => {
     const user = userEvent.setup();
-    
+
     render(
       <BrowserRouter>
         <NavigationSubMenu {...defaultProps} />
       </BrowserRouter>
     );
-    
+
     await user.click(screen.getByText('Verkaufschancen'));
-    
-    expect(mockOnItemClick).toHaveBeenCalledWith('/kundenmanagement/opportunities');
+
+    expect(mockOnItemClick).toHaveBeenCalledWith('/kundenmanagement/opportunities', false);
   });
 
   it('renders with correct styling', () => {
@@ -75,7 +75,7 @@ describe('NavigationSubMenu', () => {
         <NavigationSubMenu {...defaultProps} />
       </BrowserRouter>
     );
-    
+
     // MUI List mit component="div" hat keine role="group"
     const submenuList = document.querySelector('.MuiList-root');
     expect(submenuList).toBeInTheDocument();
@@ -87,7 +87,7 @@ describe('NavigationSubMenu', () => {
         <NavigationSubMenu {...defaultProps} items={[]} />
       </BrowserRouter>
     );
-    
+
     const submenuList = document.querySelector('.MuiList-root');
     expect(submenuList).toBeInTheDocument();
     expect(submenuList?.children).toHaveLength(0);
@@ -95,18 +95,18 @@ describe('NavigationSubMenu', () => {
 
   it('applies hover styling', async () => {
     const user = userEvent.setup();
-    
+
     render(
       <BrowserRouter>
         <NavigationSubMenu {...defaultProps} />
       </BrowserRouter>
     );
-    
+
     const menuItem = screen.getByText('Verkaufschancen').closest('div[role="button"]');
-    
+
     // Hover sollte backgroundColor ändern
     await user.hover(menuItem as Element);
-    
+
     // Da wir die styles nicht direkt testen können, prüfen wir nur ob das Element existiert
     expect(menuItem).toBeInTheDocument();
   });

@@ -44,7 +44,9 @@ import { FALLBACK_USER_ID } from './constants';
 // Helper für Test-Setup
 const constants = await import('./constants');
 const setMockConstants = (isDev: boolean, useKeycloak: boolean) => {
-  (constants as { __setMockValues: (isDev: boolean, useKeycloak: boolean) => void }).__setMockValues(isDev, useKeycloak);
+  (
+    constants as { __setMockValues: (isDev: boolean, useKeycloak: boolean) => void }
+  ).__setMockValues(isDev, useKeycloak);
 };
 
 describe('auth', () => {

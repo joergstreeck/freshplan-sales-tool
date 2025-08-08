@@ -74,7 +74,10 @@ export const UserFormMUI = ({ user, onSuccess, onCancel }: UserFormProps) => {
     } catch (error: unknown) {
       // Handle server validation errors
       if (error && typeof error === 'object' && 'response' in error) {
-        const apiError = error as { response?: { data?: { errors?: Record<string, string> } }; message?: string };
+        const apiError = error as {
+          response?: { data?: { errors?: Record<string, string> } };
+          message?: string;
+        };
         if (apiError.response?.data?.errors) {
           Object.entries(apiError.response.data.errors).forEach(([field, message]) => {
             setError(field as keyof FormData, { message: message as string });
@@ -197,54 +200,44 @@ export const UserFormMUI = ({ user, onSuccess, onCancel }: UserFormProps) => {
                   {...field}
                   multiple
                   label="Rollen"
-                  renderValue={(selected) => (
+                  renderValue={selected => (
                     <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                      {(selected as string[]).map((value) => (
+                      {(selected as string[]).map(value => (
                         <Chip
                           key={value}
-                          label={availableRoles.find((r) => r.value === value)?.label || value}
+                          label={availableRoles.find(r => r.value === value)?.label || value}
                           size="small"
                         />
                       ))}
                     </Box>
                   )}
                 >
-                  {availableRoles.map((role) => (
+                  {availableRoles.map(role => (
                     <MenuItem key={role.value} value={role.value}>
                       {role.label}
                     </MenuItem>
                   ))}
                 </Select>
-                {errors.roles && (
-                  <FormHelperText>{errors.roles.message}</FormHelperText>
-                )}
+                {errors.roles && <FormHelperText>{errors.roles.message}</FormHelperText>}
               </FormControl>
             )}
           />
 
           {/* Error display */}
-          {errors.root && (
-            <Alert severity="error">
-              {errors.root.message}
-            </Alert>
-          )}
+          {errors.root && <Alert severity="error">{errors.root.message}</Alert>}
 
           {/* Actions */}
           <Stack direction="row" spacing={2} justifyContent="flex-end">
-            <Button
-              variant="outlined"
-              onClick={onCancel}
-              disabled={isSubmitting}
-            >
+            <Button variant="outlined" onClick={onCancel} disabled={isSubmitting}>
               Abbrechen
             </Button>
             <Button
               type="submit"
               variant="contained"
               disabled={isSubmitting}
-              sx={{ 
+              sx={{
                 bgcolor: '#94C456',
-                '&:hover': { bgcolor: '#7aa845' }
+                '&:hover': { bgcolor: '#7aa845' },
               }}
             >
               {isSubmitting ? (

@@ -10,9 +10,10 @@ export function CalculatorPageV2() {
         <Typography variant="h4" gutterBottom sx={{ mb: 4 }}>
           FreshPlan Rabatt-Kalkulator
         </Typography>
-        
+
         <Alert severity="info" sx={{ mb: 4 }}>
-          Diese Seite wird gerade auf die neue Architektur migriert. Die volle Funktionalität wird in Kürze verfügbar sein.
+          Diese Seite wird gerade auf die neue Architektur migriert. Die volle Funktionalität wird
+          in Kürze verfügbar sein.
         </Alert>
 
         <Paper sx={{ p: 4 }}>
@@ -42,55 +43,63 @@ export function CalculatorPageV2() {
           <Typography variant="h6" gutterBottom sx={{ mb: 3 }}>
             So funktioniert die Rabatt-Berechnung
           </Typography>
-          
-          <Box sx={{ 
-            display: 'grid', 
-            gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)', lg: 'repeat(4, 1fr)' },
-            gap: 3 
-          }}>
+
+          <Box
+            sx={{
+              display: 'grid',
+              gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)', lg: 'repeat(4, 1fr)' },
+              gap: 3,
+            }}
+          >
             <Box>
               <Typography variant="subtitle2" color="primary" gutterBottom>
                 Mengenrabatt
               </Typography>
               <Typography variant="body2" component="div" color="text.secondary">
-                • Ab 5.000€: 3%<br />
-                • Ab 15.000€: 6%<br />
-                • Ab 30.000€: 8%<br />
-                • Ab 50.000€: 9%<br />
-                • Ab 75.000€: 10%
+                • Ab 5.000€: 3%
+                <br />
+                • Ab 15.000€: 6%
+                <br />
+                • Ab 30.000€: 8%
+                <br />
+                • Ab 50.000€: 9%
+                <br />• Ab 75.000€: 10%
               </Typography>
             </Box>
-            
+
             <Box>
               <Typography variant="subtitle2" color="primary" gutterBottom>
                 Frühbucher-Rabatt
               </Typography>
               <Typography variant="body2" component="div" color="text.secondary">
-                • Ab 10 Tage: +1%<br />
-                • Ab 15 Tage: +2%<br />
-                • Ab 30 Tage: +3%
+                • Ab 10 Tage: +1%
+                <br />
+                • Ab 15 Tage: +2%
+                <br />• Ab 30 Tage: +3%
               </Typography>
             </Box>
-            
+
             <Box>
               <Typography variant="subtitle2" color="primary" gutterBottom>
                 Abhol-Rabatt
               </Typography>
               <Typography variant="body2" component="div" color="text.secondary">
-                • +2% bei Selbstabholung<br />
-                • Nur ab 5.000€ Bestellwert<br />
-                • Abholung am FreshPlan-Standort
+                • +2% bei Selbstabholung
+                <br />
+                • Nur ab 5.000€ Bestellwert
+                <br />• Abholung am FreshPlan-Standort
               </Typography>
             </Box>
-            
+
             <Box>
               <Typography variant="subtitle2" color="primary" gutterBottom>
                 Besondere Konditionen
               </Typography>
               <Typography variant="body2" component="div" color="text.secondary">
-                • Kettenkunden: Individuelle Angebote<br />
-                • Maximum: 15% Gesamtrabatt<br />
-                • Alle Preise netto
+                • Kettenkunden: Individuelle Angebote
+                <br />
+                • Maximum: 15% Gesamtrabatt
+                <br />• Alle Preise netto
               </Typography>
             </Box>
           </Box>

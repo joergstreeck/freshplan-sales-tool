@@ -1,19 +1,21 @@
 /**
  * Select Field Component
- * 
+ *
  * Renders a dropdown select field with predefined options.
  * Used for fieldType: 'select'
  */
 
-import React from 'react';
-import { 
-  FormControl, 
-  Select as MuiSelect, 
-  MenuItem, 
+import React, { useMemo } from 'react';
+import {
+  FormControl,
+  Select as MuiSelect,
+  MenuItem,
   FormHelperText,
-  ListItemText
+  ListItemText,
 } from '@mui/material';
-import { FieldDefinition } from '../../../types/field.types';
+import { useTheme } from '@mui/material/styles';
+import { useDropdownWidth } from '../../../hooks/useDropdownWidth';
+import type { FieldDefinition } from '../../../types/field.types';
 
 interface SelectFieldProps {
   /** Field definition */
@@ -38,7 +40,7 @@ interface SelectFieldProps {
 
 /**
  * Select Field
- * 
+ *
  * Dropdown select with Material-UI styling.
  * Supports placeholder and disabled options.
  */
@@ -51,26 +53,40 @@ export const SelectField: React.FC<SelectFieldProps> = ({
   helperText,
   disabled,
   readOnly,
-  required
+  required,
 }) => {
   const displayValue = value || '';
+  const theme = useTheme();
+
+  // Nutze den neuen Hook für automatische Breiten-Berechnung
+  const dropdownWidth = useDropdownWidth({
+    options: field.options,
+    placeholder: field.placeholder,
+  });
 
   return (
-    <FormControl 
-      fullWidth 
-      size="small" 
+    <FormControl
+      fullWidth
+      size="small"
       error={error}
       required={required}
       disabled={disabled || readOnly}
+      className="field-dropdown-auto"
+      sx={{
+        ...dropdownWidth.style,
+        [theme.breakpoints?.down('sm')]: {
+          width: '100%',
+        },
+      }}
     >
       <MuiSelect
         id={field.key}
         name={field.key}
         value={displayValue}
-        onChange={(e) => onChange(e.target.value as string)}
+        onChange={e => onChange(e.target.value as string)}
         onBlur={onBlur}
         displayEmpty
-        renderValue={(selected) => {
+        renderValue={selected => {
           if (!selected) {
             return (
               <span style={{ color: 'rgba(0, 0, 0, 0.38)' }}>
@@ -84,35 +100,46 @@ export const SelectField: React.FC<SelectFieldProps> = ({
         inputProps={{
           'aria-label': field.label,
           'aria-required': required,
-          'aria-invalid': error
+          'aria-invalid': error,
         }}
         sx={{
-          backgroundColor: readOnly ? 'action.disabledBackground' : 'background.paper'
+          backgroundColor: readOnly ? 'action.disabledBackground' : 'background.paper',
+          '& .MuiSelect-select': {
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            paddingRight: '32px', // Platz für den Dropdown-Pfeil
+          },
         }}
       >
         {/* Placeholder option */}
         <MenuItem value="" disabled>
-          <ListItemText 
-            primary={field.placeholder || 'Bitte wählen...'} 
+          <ListItemText
+            primary={field.placeholder || 'Bitte wählen...'}
             sx={{ color: 'text.disabled' }}
           />
         </MenuItem>
-        
+
         {/* Regular options */}
-        {field.options?.map((option) => (
-          <MenuItem 
-            key={option.value} 
+        {field.options?.map(option => (
+          <MenuItem
+            key={option.value}
             value={option.value}
             disabled={option.disabled}
+            sx={{
+              whiteSpace: 'normal', // Erlaube Zeilenumbruch in der Liste
+              minHeight: 'auto',
+              '& .MuiListItemText-primary': {
+                whiteSpace: 'normal',
+              },
+            }}
           >
             <ListItemText primary={option.label} />
           </MenuItem>
         ))}
       </MuiSelect>
-      
-      {helperText && (
-        <FormHelperText>{helperText}</FormHelperText>
-      )}
+
+      {helperText && <FormHelperText>{helperText}</FormHelperText>}
     </FormControl>
   );
 };

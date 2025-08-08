@@ -5,7 +5,7 @@ interface AuthState {
   setPermissions: (permissions: string[]) => void;
 }
 
-export const useAuthStore = create<AuthState>()((set) => ({
+export const useAuthStore = create<AuthState>()(set => ({
   // Default permissions für Navigation - später aus Keycloak laden
   userPermissions: [
     'cockpit.view',
@@ -14,6 +14,6 @@ export const useAuthStore = create<AuthState>()((set) => ({
     'reports.view',
     'settings.view',
   ],
-  
-  setPermissions: (permissions) => set({ userPermissions: permissions }),
+
+  setPermissions: permissions => set({ userPermissions: permissions }),
 }));

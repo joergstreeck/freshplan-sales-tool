@@ -37,8 +37,10 @@ class CustomerRepositoryTest {
   @Transactional
   void setupCleanDatabase() {
     // Clean database before each test to ensure proper isolation
-    // Delete timeline events first due to foreign key constraints
+    // Delete in correct order due to foreign key constraints
     em.createQuery("DELETE FROM CustomerTimelineEvent").executeUpdate();
+    em.createQuery("DELETE FROM ContactInteraction").executeUpdate();
+    em.createQuery("DELETE FROM CustomerContact").executeUpdate();
     em.createQuery("DELETE FROM Customer").executeUpdate();
     em.flush();
   }
@@ -698,6 +700,11 @@ class CustomerRepositoryTest {
     customer.setUpdatedBy("test-user");
     customer.setCreatedAt(LocalDateTime.now());
     customer.setUpdatedAt(LocalDateTime.now());
+    // Set other required fields with defaults
+    customer.setStatus(CustomerStatus.LEAD);
+    customer.setPartnerStatus(PartnerStatus.KEIN_PARTNER);
+    customer.setPaymentTerms(PaymentTerms.NETTO_30);
+    customer.setPrimaryFinancing(FinancingType.PRIVATE);
     return customer;
   }
 
@@ -711,6 +718,11 @@ class CustomerRepositoryTest {
     customer.setUpdatedBy("test-user");
     customer.setCreatedAt(LocalDateTime.now());
     customer.setUpdatedAt(LocalDateTime.now());
+    // Set other required fields with defaults
+    customer.setStatus(CustomerStatus.LEAD);
+    customer.setPartnerStatus(PartnerStatus.KEIN_PARTNER);
+    customer.setPaymentTerms(PaymentTerms.NETTO_30);
+    customer.setPrimaryFinancing(FinancingType.PRIVATE);
     return customer;
   }
 }

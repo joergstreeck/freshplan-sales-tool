@@ -1,6 +1,6 @@
 /**
  * Smart Sort Selector - Intelligente Sortierung für Sales Cockpit
- * 
+ *
  * Bietet vordefinierte, Sales-orientierte Sortierungsoptionen
  * mit klaren Beschreibungen und Kategorisierung.
  */
@@ -25,10 +25,10 @@ import {
 } from '@mui/icons-material';
 import { useState } from 'react';
 import { useFocusListStore } from '../store/focusListStore';
-import { 
-  getSmartSortById, 
+import {
+  getSmartSortById,
   getSmartSortsByCategory,
-  type SmartSortOption 
+  type SmartSortOption,
 } from '../store/focusListStore';
 
 interface SmartSortSelectorProps {
@@ -36,9 +36,9 @@ interface SmartSortSelectorProps {
   showDescription?: boolean;
 }
 
-export function SmartSortSelector({ 
-  variant = 'full', 
-  showDescription = true 
+export function SmartSortSelector({
+  variant = 'full',
+  showDescription = true,
 }: SmartSortSelectorProps) {
   const { smartSortId, setSmartSort } = useFocusListStore();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -67,21 +67,31 @@ export function SmartSortSelector({
 
   const getCategoryLabel = (category: SmartSortOption['category']) => {
     switch (category) {
-      case 'priority': return '🚨 DRINGEND - Sofort handeln';
-      case 'business': return '💰 HARDFACTS - Umsatz & Geschäft';
-      case 'activity': return '📞 AKTIVITÄT - Verkaufsaktivität';
-      case 'custom': return '📋 STANDARD - Klassische Sortierung';
-      default: return category;
+      case 'priority':
+        return '🚨 DRINGEND - Sofort handeln';
+      case 'business':
+        return '💰 HARDFACTS - Umsatz & Geschäft';
+      case 'activity':
+        return '📞 AKTIVITÄT - Verkaufsaktivität';
+      case 'custom':
+        return '📋 STANDARD - Klassische Sortierung';
+      default:
+        return category;
     }
   };
 
   const getCategoryColor = (category: SmartSortOption['category']) => {
     switch (category) {
-      case 'priority': return '#f44336'; // Rot
-      case 'business': return '#4caf50'; // Grün  
-      case 'activity': return '#2196f3'; // Blau
-      case 'custom': return '#9e9e9e'; // Grau
-      default: return '#9e9e9e';
+      case 'priority':
+        return '#f44336'; // Rot
+      case 'business':
+        return '#4caf50'; // Grün
+      case 'activity':
+        return '#2196f3'; // Blau
+      case 'custom':
+        return '#9e9e9e'; // Grau
+      default:
+        return '#9e9e9e';
     }
   };
 
@@ -91,28 +101,28 @@ export function SmartSortSelector({
     return (
       <Box key={category}>
         <MenuItem disabled sx={{ opacity: 1, py: 1 }}>
-          <Typography 
-            variant="overline" 
-            sx={{ 
-              fontWeight: 600, 
+          <Typography
+            variant="overline"
+            sx={{
+              fontWeight: 600,
               color: getCategoryColor(category),
-              fontSize: '0.75rem'
+              fontSize: '0.75rem',
             }}
           >
             {getCategoryLabel(category)}
           </Typography>
         </MenuItem>
-        {sorts.map((sort) => (
+        {sorts.map(sort => (
           <MenuItem
             key={sort.id}
             onClick={() => handleSortSelect(sort.id)}
             selected={smartSortId === sort.id}
-            sx={{ 
+            sx={{
               pl: 2,
               minHeight: 56,
               '&.Mui-selected': {
                 backgroundColor: 'action.selected',
-              }
+              },
             }}
           >
             <ListItemIcon sx={{ minWidth: 32 }}>
@@ -127,11 +137,11 @@ export function SmartSortSelector({
               secondary={showDescription ? sort.description : undefined}
               primaryTypographyProps={{
                 fontWeight: smartSortId === sort.id ? 600 : 400,
-                color: smartSortId === sort.id ? 'primary.main' : 'text.primary'
+                color: smartSortId === sort.id ? 'primary.main' : 'text.primary',
               }}
               secondaryTypographyProps={{
                 fontSize: '0.75rem',
-                color: 'text.secondary'
+                color: 'text.secondary',
               }}
             />
           </MenuItem>
@@ -151,11 +161,11 @@ export function SmartSortSelector({
             startIcon={<SortIcon />}
             endIcon={<ArrowDownIcon />}
             onClick={handleClick}
-            sx={{ 
+            sx={{
               minWidth: 160,
               textTransform: 'none',
               fontSize: '0.75rem',
-              height: 32
+              height: 32,
             }}
           >
             {currentSort?.icon} {currentSort?.label || 'Sortierung'}
@@ -167,11 +177,11 @@ export function SmartSortSelector({
           open={open}
           onClose={handleClose}
           PaperProps={{
-            sx: { 
+            sx: {
               minWidth: 280,
               maxWidth: 350,
-              maxHeight: 400
-            }
+              maxHeight: 400,
+            },
           }}
           transformOrigin={{ horizontal: 'left', vertical: 'top' }}
           anchorOrigin={{ horizontal: 'left', vertical: 'bottom' }}
@@ -182,7 +192,7 @@ export function SmartSortSelector({
             </Typography>
           </MenuItem>
           <Divider />
-          
+
           {renderSortGroup(prioritySorts, 'priority')}
           {renderSortGroup(businessSorts, 'business')}
           {renderSortGroup(activitySorts, 'activity')}
@@ -198,16 +208,14 @@ export function SmartSortSelector({
         <Button
           startIcon={<SortIcon />}
           onClick={handleClick}
-          sx={{ 
+          sx={{
             justifyContent: 'flex-start',
             minWidth: 200,
-            textTransform: 'none'
+            textTransform: 'none',
           }}
         >
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flex: 1 }}>
-            {currentSort && (
-              <Typography sx={{ fontSize: '1rem' }}>{currentSort.icon}</Typography>
-            )}
+            {currentSort && <Typography sx={{ fontSize: '1rem' }}>{currentSort.icon}</Typography>}
             <Box sx={{ textAlign: 'left', flex: 1 }}>
               <Typography variant="body2" sx={{ fontWeight: 500 }}>
                 {currentSort?.label || 'Sortierung wählen'}
@@ -230,11 +238,11 @@ export function SmartSortSelector({
         open={open}
         onClose={handleClose}
         PaperProps={{
-          sx: { 
+          sx: {
             minWidth: 320,
             maxWidth: 400,
-            maxHeight: 500
-          }
+            maxHeight: 500,
+          },
         }}
         transformOrigin={{ horizontal: 'left', vertical: 'top' }}
         anchorOrigin={{ horizontal: 'left', vertical: 'bottom' }}
@@ -245,7 +253,7 @@ export function SmartSortSelector({
           </Typography>
         </MenuItem>
         <Divider />
-        
+
         {renderSortGroup(prioritySorts, 'priority')}
         {renderSortGroup(businessSorts, 'business')}
         {renderSortGroup(activitySorts, 'activity')}
@@ -263,7 +271,7 @@ export function QuickSortButtons() {
     'revenue-high-to-low',
     'risk-critical-first',
     'contracts-expiring',
-    'last-contact-oldest'
+    'last-contact-oldest',
   ];
 
   return (
@@ -285,7 +293,7 @@ export function QuickSortButtons() {
               cursor: 'pointer',
               '&:hover': {
                 backgroundColor: isActive ? 'primary.dark' : 'action.hover',
-              }
+              },
             }}
           />
         );

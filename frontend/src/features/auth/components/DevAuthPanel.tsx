@@ -1,9 +1,9 @@
 /**
  * FC-005 Development Auth Panel
- * 
+ *
  * Provides a development-only authentication panel for testing different user roles.
  * This component should only be rendered when auth bypass is enabled.
- * 
+ *
  * @see /Users/joergstreeck/freshplan-sales-tool/frontend/src/features/auth/contexts/DevAuthContext.tsx
  * @see /Users/joergstreeck/freshplan-sales-tool/frontend/src/config/featureFlags.ts
  */
@@ -19,7 +19,7 @@ import {
   Alert,
   Divider,
   IconButton,
-  Collapse
+  Collapse,
 } from '@mui/material';
 import {
   AdminPanelSettings as AdminIcon,
@@ -27,7 +27,7 @@ import {
   Person as SalesIcon,
   Logout as LogoutIcon,
   ExpandMore as ExpandMoreIcon,
-  Warning as WarningIcon
+  Warning as WarningIcon,
 } from '@mui/icons-material';
 import { useDevAuth } from '../contexts/DevAuthContext';
 
@@ -41,7 +41,7 @@ interface DevAuthPanelProps {
 
 /**
  * Development Authentication Panel
- * 
+ *
  * @remarks
  * - Shows current auth status
  * - Allows quick role switching
@@ -55,7 +55,7 @@ export const DevAuthPanel: React.FC<DevAuthPanelProps> = ({ compact = false }) =
   const roleIcons = {
     admin: <AdminIcon />,
     manager: <ManagerIcon />,
-    sales: <SalesIcon />
+    sales: <SalesIcon />,
   };
 
   const handleRoleSwitch = async (role: string) => {
@@ -73,7 +73,7 @@ export const DevAuthPanel: React.FC<DevAuthPanelProps> = ({ compact = false }) =
           right: 16,
           p: 1,
           backgroundColor: 'warning.light',
-          cursor: 'pointer'
+          cursor: 'pointer',
         }}
         onClick={() => setExpanded(true)}
       >
@@ -97,7 +97,7 @@ export const DevAuthPanel: React.FC<DevAuthPanelProps> = ({ compact = false }) =
         p: 2,
         backgroundColor: 'background.paper',
         border: '2px solid',
-        borderColor: 'warning.main'
+        borderColor: 'warning.main',
       }}
     >
       {compact && (
@@ -116,9 +116,7 @@ export const DevAuthPanel: React.FC<DevAuthPanelProps> = ({ compact = false }) =
             🚧 Development Auth Mode
           </Typography>
           <Alert severity="warning" sx={{ py: 0.5 }}>
-            <Typography variant="caption">
-              This auth bypass expires on 2025-08-27
-            </Typography>
+            <Typography variant="caption">This auth bypass expires on 2025-08-27</Typography>
           </Alert>
         </Box>
 
@@ -222,9 +220,7 @@ export const DevAuthPanel: React.FC<DevAuthPanelProps> = ({ compact = false }) =
         </Box>
 
         <Alert severity="info" sx={{ py: 0.5 }}>
-          <Typography variant="caption">
-            Use VITE_AUTH_BYPASS=false to disable
-          </Typography>
+          <Typography variant="caption">Use VITE_AUTH_BYPASS=false to disable</Typography>
         </Alert>
       </Stack>
     </Paper>

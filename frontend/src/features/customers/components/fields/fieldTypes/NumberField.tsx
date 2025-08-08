@@ -1,13 +1,13 @@
 /**
  * Number Field Component
- * 
+ *
  * Renders a numeric input field with min/max validation.
  * Used for fieldType: 'number'
  */
 
 import React from 'react';
 import { TextField as MuiTextField, InputAdornment } from '@mui/material';
-import { FieldDefinition } from '../../../types/field.types';
+import type { FieldDefinition } from '../../../types/field.types';
 
 interface NumberFieldProps {
   /** Field definition */
@@ -32,7 +32,7 @@ interface NumberFieldProps {
 
 /**
  * Number Field
- * 
+ *
  * Numeric input with min/max validation and German number formatting.
  * Prevents non-numeric input.
  */
@@ -45,17 +45,17 @@ export const NumberField: React.FC<NumberFieldProps> = ({
   helperText,
   disabled,
   readOnly,
-  required
+  required,
 }) => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value;
-    
+
     // Allow empty value
     if (inputValue === '') {
       onChange('');
       return;
     }
-    
+
     // Parse and validate number
     const numValue = parseFloat(inputValue);
     if (!isNaN(numValue)) {
@@ -98,9 +98,7 @@ export const NumberField: React.FC<NumberFieldProps> = ({
       size="small"
       variant="outlined"
       InputProps={{
-        endAdornment: suffix ? (
-          <InputAdornment position="end">{suffix}</InputAdornment>
-        ) : undefined
+        endAdornment: suffix ? <InputAdornment position="end">{suffix}</InputAdornment> : undefined,
       }}
       inputProps={{
         min: field.min,
@@ -111,21 +109,21 @@ export const NumberField: React.FC<NumberFieldProps> = ({
         'aria-required': required,
         'aria-invalid': error,
         'aria-valuemin': field.min,
-        'aria-valuemax': field.max
+        'aria-valuemax': field.max,
       }}
       sx={{
         '& .MuiInputBase-root': {
-          backgroundColor: readOnly ? 'action.disabledBackground' : 'background.paper'
+          backgroundColor: readOnly ? 'action.disabledBackground' : 'background.paper',
         },
         // Hide number spinner in some browsers
         '& input[type=number]::-webkit-inner-spin-button': {
           WebkitAppearance: 'none',
-          margin: 0
+          margin: 0,
         },
         '& input[type=number]::-webkit-outer-spin-button': {
           WebkitAppearance: 'none',
-          margin: 0
-        }
+          margin: 0,
+        },
       }}
     />
   );

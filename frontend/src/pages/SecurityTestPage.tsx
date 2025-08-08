@@ -6,13 +6,15 @@ import { Button } from '../components/ui/button';
 
 /**
  * Security Test Page
- * 
+ *
  * This page tests the FC-008 Security Foundation implementation.
  * It shows current authentication status and allows testing different endpoints.
  */
 export const SecurityTestPage: React.FC = () => {
   const { isAuthenticated, username, email, userRoles, hasRole } = useAuth();
-  const [testResults, setTestResults] = useState<Record<string, { success: boolean; data?: unknown; error?: string }>>({});
+  const [testResults, setTestResults] = useState<
+    Record<string, { success: boolean; data?: unknown; error?: string }>
+  >({});
   const [loading, setLoading] = useState<Record<string, boolean>>({});
 
   const testEndpoint = async (endpoint: string, name: string) => {
@@ -21,16 +23,16 @@ export const SecurityTestPage: React.FC = () => {
       const response = await apiClient.get(endpoint);
       setTestResults(prev => ({
         ...prev,
-        [name]: { success: true, data: response.data }
+        [name]: { success: true, data: response.data },
       }));
     } catch (error: unknown) {
       setTestResults(prev => ({
         ...prev,
-        [name]: { 
-          success: false, 
+        [name]: {
+          success: false,
           error: error.response?.status || error.message,
-          details: error.response?.data || error
-        }
+          details: error.response?.data || error,
+        },
       }));
     } finally {
       setLoading(prev => ({ ...prev, [name]: false }));
@@ -38,8 +40,16 @@ export const SecurityTestPage: React.FC = () => {
   };
 
   const endpoints = [
-    { name: 'Public', path: '/api/security-test/public', description: 'Sollte ohne Auth funktionieren' },
-    { name: 'Authenticated', path: '/api/security-test/authenticated', description: 'Benötigt Login' },
+    {
+      name: 'Public',
+      path: '/api/security-test/public',
+      description: 'Sollte ohne Auth funktionieren',
+    },
+    {
+      name: 'Authenticated',
+      path: '/api/security-test/authenticated',
+      description: 'Benötigt Login',
+    },
     { name: 'Admin', path: '/api/security-test/admin', description: 'Benötigt Admin-Rolle' },
     { name: 'Manager', path: '/api/security-test/manager', description: 'Benötigt Manager-Rolle' },
     { name: 'Sales', path: '/api/security-test/sales', description: 'Benötigt Sales-Rolle' },
@@ -53,10 +63,18 @@ export const SecurityTestPage: React.FC = () => {
       <Card className="mb-8 p-6">
         <h2 className="text-xl font-semibold mb-4">Aktuelle Authentifizierung</h2>
         <div className="space-y-2">
-          <p><strong>Authentifiziert:</strong> {isAuthenticated ? 'Ja' : 'Nein'}</p>
-          <p><strong>Benutzername:</strong> {username || 'N/A'}</p>
-          <p><strong>Email:</strong> {email || 'N/A'}</p>
-          <p><strong>Rollen:</strong> {userRoles.length > 0 ? userRoles.join(', ') : 'Keine'}</p>
+          <p>
+            <strong>Authentifiziert:</strong> {isAuthenticated ? 'Ja' : 'Nein'}
+          </p>
+          <p>
+            <strong>Benutzername:</strong> {username || 'N/A'}
+          </p>
+          <p>
+            <strong>Email:</strong> {email || 'N/A'}
+          </p>
+          <p>
+            <strong>Rollen:</strong> {userRoles.length > 0 ? userRoles.join(', ') : 'Keine'}
+          </p>
           <div className="mt-4">
             <h3 className="font-semibold mb-2">Rollen-Check:</h3>
             <p>Admin: {hasRole('admin') ? '✅' : '❌'}</p>
@@ -86,11 +104,13 @@ export const SecurityTestPage: React.FC = () => {
                   {loading[endpoint.name] ? 'Teste...' : 'Test'}
                 </Button>
               </div>
-              
+
               {testResults[endpoint.name] && (
-                <div className={`mt-2 p-2 rounded text-sm ${
-                  testResults[endpoint.name].success ? 'bg-green-50' : 'bg-red-50'
-                }`}>
+                <div
+                  className={`mt-2 p-2 rounded text-sm ${
+                    testResults[endpoint.name].success ? 'bg-green-50' : 'bg-red-50'
+                  }`}
+                >
                   {testResults[endpoint.name].success ? (
                     <div>
                       <p className="text-green-700 font-semibold">✅ Erfolgreich</p>

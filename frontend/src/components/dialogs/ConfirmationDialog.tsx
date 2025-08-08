@@ -1,6 +1,6 @@
 /**
  * Enterprise-grade Confirmation Dialog Component
- * 
+ *
  * @module ConfirmationDialog
  * @description Wiederverwendbare Bestätigungsdialoge für kritische Aktionen im CRM.
  *              Unterstützt verschiedene Severity-Level und Custom-Aktionen.
@@ -20,13 +20,13 @@ import {
   Box,
   Typography,
   useTheme,
-  Theme
+  Theme,
 } from '@mui/material';
 import {
   Warning as WarningIcon,
   Error as ErrorIcon,
   Info as InfoIcon,
-  CheckCircle as SuccessIcon
+  CheckCircle as SuccessIcon,
 } from '@mui/icons-material';
 
 /**
@@ -36,7 +36,7 @@ export enum ConfirmationSeverity {
   INFO = 'info',
   WARNING = 'warning',
   ERROR = 'error',
-  SUCCESS = 'success'
+  SUCCESS = 'success',
 }
 
 /**
@@ -76,26 +76,26 @@ function getSeverityConfig(severity: ConfirmationSeverity, theme: Theme) {
       return {
         icon: <ErrorIcon />,
         color: theme.palette.error.main,
-        buttonColor: 'error' as const
+        buttonColor: 'error' as const,
       };
     case ConfirmationSeverity.WARNING:
       return {
         icon: <WarningIcon />,
         color: theme.palette.warning.main,
-        buttonColor: 'warning' as const
+        buttonColor: 'warning' as const,
       };
     case ConfirmationSeverity.SUCCESS:
       return {
         icon: <SuccessIcon />,
         color: theme.palette.success.main,
-        buttonColor: 'success' as const
+        buttonColor: 'success' as const,
       };
     case ConfirmationSeverity.INFO:
     default:
       return {
         icon: <InfoIcon />,
         color: theme.palette.info.main,
-        buttonColor: 'primary' as const
+        buttonColor: 'primary' as const,
       };
   }
 }
@@ -114,7 +114,7 @@ export const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
   isLoading = false,
   onConfirm,
   onCancel,
-  children
+  children,
 }) => {
   const theme = useTheme();
   const { icon, color, buttonColor } = getSeverityConfig(severity, theme);
@@ -128,8 +128,8 @@ export const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
       PaperProps={{
         sx: {
           borderRadius: 2,
-          boxShadow: theme.shadows[8]
-        }
+          boxShadow: theme.shadows[8],
+        },
       }}
     >
       <DialogTitle>
@@ -138,7 +138,7 @@ export const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
             sx={{
               color,
               display: 'flex',
-              alignItems: 'center'
+              alignItems: 'center',
             }}
           >
             {icon}
@@ -154,7 +154,7 @@ export const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
           <Typography variant="body1" sx={{ mb: description ? 1 : 0 }}>
             {message}
           </Typography>
-          
+
           {description && (
             <Typography variant="body2" color="text.secondary">
               {description}
@@ -174,19 +174,11 @@ export const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
           </Alert>
         )}
 
-        {children && (
-          <Box sx={{ mt: 2 }}>
-            {children}
-          </Box>
-        )}
+        {children && <Box sx={{ mt: 2 }}>{children}</Box>}
       </DialogContent>
 
       <DialogActions sx={{ px: 3, pb: 2 }}>
-        <Button
-          onClick={onCancel}
-          variant="outlined"
-          disabled={isLoading}
-        >
+        <Button onClick={onCancel} variant="outlined" disabled={isLoading}>
           {cancelText}
         </Button>
         <Button
@@ -196,7 +188,7 @@ export const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
           disabled={isLoading}
           sx={{
             minWidth: 120,
-            ml: 1
+            ml: 1,
           }}
         >
           {isLoading ? 'Wird bearbeitet...' : confirmText}
@@ -235,11 +227,7 @@ export const ConfirmationDialogs = {
   /**
    * Confirm renewal dialog
    */
-  renewalTransition: (
-    onConfirm: () => void,
-    onCancel: () => void,
-    isLoading?: boolean
-  ) => (
+  renewalTransition: (onConfirm: () => void, onCancel: () => void, isLoading?: boolean) => (
     <ConfirmationDialog
       open={true}
       title="Vertragsverlängerung starten"
@@ -256,32 +244,27 @@ export const ConfirmationDialogs = {
   /**
    * Confirm close deal dialog
    */
-  closeDeal: (
-    isWon: boolean,
-    onConfirm: () => void,
-    onCancel: () => void,
-    isLoading?: boolean
-  ) => (
+  closeDeal: (isWon: boolean, onConfirm: () => void, onCancel: () => void, isLoading?: boolean) => (
     <ConfirmationDialog
       open={true}
-      title={isWon ? "Deal als gewonnen markieren" : "Deal als verloren markieren"}
+      title={isWon ? 'Deal als gewonnen markieren' : 'Deal als verloren markieren'}
       message={
-        isWon 
-          ? "Möchten Sie diese Opportunity als erfolgreich abgeschlossen markieren?"
-          : "Möchten Sie diese Opportunity als verloren markieren?"
+        isWon
+          ? 'Möchten Sie diese Opportunity als erfolgreich abgeschlossen markieren?'
+          : 'Möchten Sie diese Opportunity als verloren markieren?'
       }
       description={
         isWon
-          ? "Der Kunde wird automatisch angelegt und das Onboarding wird gestartet."
-          : "Bitte dokumentieren Sie den Verlustgrund für zukünftige Analysen."
+          ? 'Der Kunde wird automatisch angelegt und das Onboarding wird gestartet.'
+          : 'Bitte dokumentieren Sie den Verlustgrund für zukünftige Analysen.'
       }
       severity={isWon ? ConfirmationSeverity.SUCCESS : ConfirmationSeverity.WARNING}
-      confirmText={isWon ? "Als gewonnen markieren" : "Als verloren markieren"}
+      confirmText={isWon ? 'Als gewonnen markieren' : 'Als verloren markieren'}
       onConfirm={onConfirm}
       onCancel={onCancel}
       isLoading={isLoading}
     />
-  )
+  ),
 };
 
 export default ConfirmationDialog;

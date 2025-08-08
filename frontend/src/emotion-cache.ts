@@ -11,7 +11,7 @@ export const emotionCache = createCache({
 export const createEmotionCacheWithInsertionPoint = () => {
   // Create a meta tag as insertion point for MUI styles
   let insertionPoint: HTMLElement;
-  
+
   if (typeof document !== 'undefined') {
     const existingPoint = document.querySelector('meta[name="emotion-insertion-point"]');
     if (existingPoint) {

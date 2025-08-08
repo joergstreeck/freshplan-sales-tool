@@ -31,6 +31,37 @@ interface AuthContextType {
 export const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
+  // Check for auth bypass mode first
+  if (import.meta.env.DEV && import.meta.env.VITE_AUTH_BYPASS === 'true') {
+    // Provide mock auth context for development
+    const mockContext: AuthContextType = {
+      user: {
+        id: 'dev-user',
+        name: 'Dev User',
+        email: 'dev@freshplan.de',
+        username: 'devuser',
+        roles: ['admin', 'manager', 'sales'],
+      },
+      isAuthenticated: true,
+      isLoading: false,
+      login: async () => {
+        console.log('Mock login');
+      },
+      logout: () => {
+        console.log('Mock logout');
+      },
+      token: 'mock-dev-token',
+      hasRole: (role: string) => ['admin', 'manager', 'sales'].includes(role),
+      hasAnyRole: (roles: string[]) =>
+        roles.some(role => ['admin', 'manager', 'sales'].includes(role)),
+      getValidToken: async () => 'mock-dev-token',
+      refreshToken: async () => true,
+      authInfo: () => ({ mockAuth: true }),
+    };
+
+    return <AuthContext.Provider value={mockContext}>{children}</AuthContext.Provider>;
+  }
+
   const keycloak = useKeycloak();
 
   // Map Keycloak user data to legacy User interface
@@ -62,7 +93,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     hasAnyRole: (roles: string[]) => roles.some(role => keycloak.hasRole(role)),
     getValidToken: async () => {
       if (!keycloak.isAuthenticated) return null;
-      
+
       try {
         // Import authUtils here to avoid circular dependency
         const { authUtils } = await import('../lib/keycloak');
@@ -74,7 +105,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     },
     refreshToken: async () => {
       if (!keycloak.isAuthenticated) return false;
-      
+
       try {
         const { authUtils } = await import('../lib/keycloak');
         return await authUtils.updateToken(30);

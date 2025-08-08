@@ -34,6 +34,13 @@ export const KeycloakProvider: React.FC<KeycloakProviderProps> = ({ children }) 
 
   useEffect(() => {
     const initAuth = async () => {
+      // Check for auth bypass in development
+      if (import.meta.env.DEV && import.meta.env.VITE_AUTH_BYPASS === 'true') {
+        console.log('[KeycloakContext] Auth bypass enabled - skipping initialization');
+        setIsLoading(false);
+        return;
+      }
+
       try {
         const authenticated = await initKeycloak();
 
@@ -54,8 +61,7 @@ export const KeycloakProvider: React.FC<KeycloakProviderProps> = ({ children }) 
                 const event = new CustomEvent('auth-error', {
                   detail: {
                     type: 'token-refresh-failed',
-                    message:
-                      'Ihre Sitzung ist abgelaufen. Bitte melden Sie sich erneut an.',
+                    message: 'Ihre Sitzung ist abgelaufen. Bitte melden Sie sich erneut an.',
                   },
                 });
                 window.dispatchEvent(event);
@@ -75,8 +81,7 @@ export const KeycloakProvider: React.FC<KeycloakProviderProps> = ({ children }) 
             const event = new CustomEvent('auth-error', {
               detail: {
                 type: 'auth-failed',
-                message:
-                  'Authentifizierung fehlgeschlagen. Bitte versuchen Sie es erneut.',
+                message: 'Authentifizierung fehlgeschlagen. Bitte versuchen Sie es erneut.',
               },
             });
             window.dispatchEvent(event);

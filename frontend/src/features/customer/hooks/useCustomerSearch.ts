@@ -29,7 +29,7 @@ export interface PagedResponse<T> {
 
 export const useCustomerSearch = () => {
   const { getSearchRequest, page, pageSize } = useFocusListStore();
-  
+
   return useQuery<PagedResponse<Customer>>({
     queryKey: ['customers', 'search', getSearchRequest(), page, pageSize],
     queryFn: async () => {
@@ -44,11 +44,11 @@ export const useCustomerSearch = () => {
           body: JSON.stringify(searchRequest),
         }
       );
-      
+
       if (!response.ok) {
         throw new Error(`API request failed: ${response.statusText}`);
       }
-      
+
       return response.json();
     },
     placeholderData: keepPreviousData,

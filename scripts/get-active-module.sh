@@ -37,15 +37,31 @@ echo -e "${GREEN}✅ Aktives Feature:${NC} $FEATURE"
 if [ -n "$MODULE" ] && [ "$MODULE" != "null" ]; then
     echo -e "${GREEN}✅ Aktives Modul:${NC} $MODULE"
     
-    # Neue Struktur: Suche in ACTIVE/PLANNED/ARCHIVE Ordnern
+    # Neue Struktur: Suche in verschiedenen möglichen Pfaden
     # Konvertiere Module-Namen zu snake_case für Ordnersuche
     MODULE_FOLDER=$(echo "$MODULE" | tr '[:upper:]' '[:lower:]' | tr ' ' '_')
     
-    # Suche nach Modul-Ordner in der neuen Struktur
+    # Suche nach Modul-Ordner in verschiedenen Strukturen
     FOUND_DOCS=""
     
-    # Prüfe ACTIVE Ordner
-    if [ -d "docs/features/ACTIVE" ]; then
+    # Prüfe zuerst die FC-XXX-BEZEICHNUNG Struktur (z.B. FC-005-CUSTOMER-MANAGEMENT)
+    if [ -d "docs/features" ]; then
+        # Suche nach Feature-spezifischen Ordnern
+        FEATURE_DOC=$(find docs/features -type d -name "${FEATURE}-*" 2>/dev/null | head -1)
+        if [ -n "$FEATURE_DOC" ]; then
+            # Suche nach sprint2 oder ähnlichen Unterordnern
+            if [ -d "$FEATURE_DOC/sprint2" ] && [ -f "$FEATURE_DOC/sprint2/CONTACT_MANAGEMENT_VISION.md" ]; then
+                FOUND_DOCS="$FEATURE_DOC/sprint2/CONTACT_MANAGEMENT_VISION.md"
+                echo -e "${GREEN}⭐ Sprint 2 Vision Dokument:${NC} $FOUND_DOCS"
+            elif [ -f "$FEATURE_DOC/README.md" ]; then
+                FOUND_DOCS="$FEATURE_DOC/README.md"
+                echo -e "${GREEN}⭐ Feature README:${NC} $FOUND_DOCS"
+            fi
+        fi
+    fi
+    
+    # Falls nicht gefunden, prüfe ACTIVE Ordner (falls existiert)
+    if [ -z "$FOUND_DOCS" ] && [ -d "docs/features/ACTIVE" ]; then
         ACTIVE_DOC=$(find docs/features/ACTIVE -type d -name "*${MODULE_FOLDER}*" 2>/dev/null | head -1)
         if [ -n "$ACTIVE_DOC" ] && [ -f "$ACTIVE_DOC/README.md" ]; then
             FOUND_DOCS="$ACTIVE_DOC/README.md"
@@ -62,19 +78,13 @@ if [ -n "$MODULE" ] && [ "$MODULE" != "null" ]; then
         fi
     fi
     
-    # Falls immer noch nicht gefunden, suche nach Feature-Code
-    if [ -z "$FOUND_DOCS" ]; then
-        # Suche nach Ordnern die mit Nummer beginnen (z.B. 01_security_foundation)
-        NUMBERED_DOC=$(find docs/features/ACTIVE -type d -name "[0-9]*" 2>/dev/null | while read dir; do
-            if [ -f "$dir/README.md" ] && grep -q "$FEATURE" "$dir/README.md" 2>/dev/null; then
-                echo "$dir/README.md"
-                break
-            fi
-        done)
-        
-        if [ -n "$NUMBERED_DOC" ]; then
-            FOUND_DOCS="$NUMBERED_DOC"
-            echo -e "${GREEN}⭐ Modul-Dokument gefunden:${NC} $FOUND_DOCS"
+    # Falls immer noch nicht gefunden, suche nach Feature-Code in allen Dokumenten
+    if [ -z "$FOUND_DOCS" ] && [ -d "docs/features" ]; then
+        # Suche nach Dateien die das Feature enthalten
+        FEATURE_FILES=$(find docs/features -name "*.md" -type f | xargs grep -l "$FEATURE" 2>/dev/null | grep -E "(VISION|MASTER_PLAN|README)" | head -1)
+        if [ -n "$FEATURE_FILES" ]; then
+            FOUND_DOCS="$FEATURE_FILES"
+            echo -e "${GREEN}⭐ Feature-Dokument gefunden:${NC} $FOUND_DOCS"
         fi
     fi
     

@@ -1,6 +1,6 @@
 /**
  * Field Type Components Export
- * 
+ *
  * Central export for all field type components.
  * Each component handles a specific fieldType from the Field Catalog.
  */

@@ -1,16 +1,16 @@
 /**
  * Field Wrapper Component
- * 
+ *
  * Provides consistent wrapper for all field types with label, error handling,
  * and DSGVO-compliant sensitive data indicators.
- * 
+ *
  * @see /Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/06-SECURITY/01-dsgvo-compliance.md
  */
 
 import React from 'react';
 import { Box, Typography, Tooltip, Chip } from '@mui/material';
 import { Info as InfoIcon, Lock as LockIcon } from '@mui/icons-material';
-import { FieldDefinition } from '../../types/field.types';
+import type { FieldDefinition } from '../../types/field.types';
 
 interface FieldWrapperProps {
   /** Field definition */
@@ -23,15 +23,11 @@ interface FieldWrapperProps {
 
 /**
  * Field Wrapper
- * 
+ *
  * Wraps field components with consistent styling and metadata display.
  * Shows required indicators, sensitive data warnings, and help text.
  */
-export const FieldWrapper: React.FC<FieldWrapperProps> = ({
-  field,
-  children,
-  error
-}) => {
+export const FieldWrapper: React.FC<FieldWrapperProps> = ({ field, children, error }) => {
   return (
     <Box sx={{ width: '100%' }}>
       {/* Field Label with Indicators */}
@@ -42,7 +38,7 @@ export const FieldWrapper: React.FC<FieldWrapperProps> = ({
           sx={{
             fontSize: '0.875rem',
             fontWeight: 500,
-            color: error ? 'error.main' : 'text.primary'
+            color: error ? 'error.main' : 'text.primary',
           }}
         >
           {field.label}
@@ -56,7 +52,7 @@ export const FieldWrapper: React.FC<FieldWrapperProps> = ({
             </Typography>
           )}
         </Typography>
-        
+
         {/* Sensitive Data Indicator */}
         {field.sensitive && (
           <Tooltip title="Dieses Feld enthält sensible Daten (DSGVO-relevant)">
@@ -69,7 +65,7 @@ export const FieldWrapper: React.FC<FieldWrapperProps> = ({
             />
           </Tooltip>
         )}
-        
+
         {/* Help Icon */}
         {field.helpText && !error && (
           <Tooltip title={field.helpText}>
@@ -78,29 +74,15 @@ export const FieldWrapper: React.FC<FieldWrapperProps> = ({
                 ml: 1,
                 fontSize: 16,
                 color: 'action.active',
-                cursor: 'help'
+                cursor: 'help',
               }}
             />
           </Tooltip>
         )}
       </Box>
-      
+
       {/* Field Component */}
       {children}
-      
-      {/* Error or Help Text */}
-      {(error || field.helpText) && (
-        <Typography
-          variant="caption"
-          sx={{
-            mt: 0.5,
-            display: 'block',
-            color: error ? 'error.main' : 'text.secondary'
-          }}
-        >
-          {error || field.helpText}
-        </Typography>
-      )}
     </Box>
   );
 };

@@ -1,6 +1,6 @@
 /**
  * Shared Components Export
- * 
+ *
  * Central export for shared UI components.
  */
 

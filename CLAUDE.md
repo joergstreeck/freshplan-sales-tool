@@ -38,14 +38,40 @@
 ### Symptom: CI Integration Tests sind rot (HTTP 500 oder andere Fehler)
 ➡️ **CI-Problem** - [CI Debugging Lessons Learned](./docs/guides/CI_DEBUGGING_LESSONS_LEARNED.md) 🎯
 
+### Symptom: "The requested module does not provide an export named 'FieldDefinition'"
+➡️ **TypeScript Import Type Problem** - [TypeScript Import Type Guide](./docs/guides/TYPESCRIPT_IMPORT_TYPE_GUIDE.md) 🆕
+
+### Symptom: Irgendwas funktioniert nicht
+➡️ **Automatische Diagnose** - Führe aus: `./scripts/diagnose-problems.sh`
+
+---
+
+## 🆘 NOTFALL-DIAGNOSE (für Claude nach Übergabe)
+
+### Symptom: Frontend zeigt "Failed to fetch" oder "Connection refused"
+➡️ **Backend-Problem** - [Springe zu Backend-Fix](#backend-fix)
+
+### Symptom: "Keine Kunden gefunden" aber API antwortet
+➡️ **Datenbank leer** - [Springe zu Testdaten-Fix](#testdaten-fix) 
+
+### Symptom: Tests schlagen fehl mit 401 Unauthorized
+➡️ **Security-Problem** - [Springe zu Auth-Fix](#auth-fix)
+
+### Symptom: CI Integration Tests sind rot (HTTP 500 oder andere Fehler)
+➡️ **CI-Problem** - [CI Debugging Lessons Learned](./docs/guides/CI_DEBUGGING_LESSONS_LEARNED.md) 🎯
+
+### Symptom: "The requested module does not provide an export named 'FieldDefinition'"
+➡️ **TypeScript Import Type Problem** - [TypeScript Import Type Guide](./docs/guides/TYPESCRIPT_IMPORT_TYPE_GUIDE.md) 🆕
+
 ### Symptom: Irgendwas funktioniert nicht
 ➡️ **Automatische Diagnose** - Führe aus: `./scripts/diagnose-problems.sh`
 
 ---
 
 ### 🔍 Quick Reference - Direkt zu den Details:
-- [🆘 Notfall-Diagnose](#🆘-notfall-diagnose-für-claude-nach-übergabe)
-- [🎯 CI Debugging Lessons Learned](./docs/guides/CI_DEBUGGING_LESSONS_LEARNED.md) **NEU!**
+- [🚑 Debug Cookbook - Komplette Troubleshooting-Referenz](./docs/guides/DEBUG_COOKBOOK.md) **NEU!**
+- [📚 TypeScript Import Type Guide](./docs/guides/TYPESCRIPT_IMPORT_TYPE_GUIDE.md) **NEU!**
+- [🔍 Debug Session: Import Type Marathon](./docs/claude-work/daily-work/2025-07-27/2025-07-27_DEBUG_typescript-import-type-marathon.md)
 - [0. Grundlegende Arbeitsphilosophie](#0-grundlegende-arbeitsphilosophie)
 - [0.1 Best Practices und Architektur](#01-best-practices-und-architektur-standards)
 - [0.10 Code-Review-Regel](#010-code-review-regel-gründliche-überprüfung-bei-jedem-bedeutenden-abschnitt)
@@ -158,6 +184,29 @@ backend/
 4. Event-Driven Communication zwischen Modulen
 
 ### Frontend-Architektur (React/TypeScript):
+
+#### TypeScript Import/Export Strategie (KRITISCH bei Vite):
+Bei `verbatimModuleSyntax: true` in tsconfig.json MÜSSEN alle Type-Imports explizit sein:
+
+```typescript
+// ✅ RICHTIG - Direkte Exports
+export interface FieldDefinition { ... }
+export type FieldCatalog = { ... }
+
+// ✅ RICHTIG - Type Imports verwenden
+import type { FieldDefinition, FieldCatalog } from './types';
+
+// ❌ FALSCH - Keine Re-Exports für Types
+type Foo = { ... }
+export { Foo };  // NICHT SO!
+
+// ❌ FALSCH - Normale Imports für Types
+import { FieldDefinition } from './types';  // Führt zu Build-Fehlern!
+```
+
+**Siehe:** [TypeScript Import Type Guide](./docs/guides/TYPESCRIPT_IMPORT_TYPE_GUIDE.md) für Details
+
+#### Projekt-Struktur:
 ```
 frontend/
 ├── components/                  # Reusable UI Components
@@ -1147,6 +1196,7 @@ freshplan-sales-tool/
 
 ### Tech-Stack:
 * **Frontend:** React 18 + TypeScript + Vite + MUI + React Query
+  * ⚠️ **TypeScript-Konfiguration:** `verbatimModuleSyntax: true` erfordert explizite `import type` für alle Types
 * **Backend:** Quarkus + RESTEasy Reactive + Hibernate ORM + Flyway
 * **Auth:** Keycloak mit OIDC
 * **Database:** PostgreSQL mit Row-Level Security
@@ -1326,80 +1376,16 @@ Vollständige Dokumentation: [Claude Documentation Structure][claude-doc-structu
 
 ## 🚨 PROBLEMLÖSUNGEN FÜR CLAUDE
 
-### Backend-Fix {#backend-fix}
+### Detaillierte Lösungen {#problemloesungen}
 
-**Problem:** Backend nicht erreichbar (Failed to fetch, Connection refused)  
-**Ursache:** Java-Version + Timeout-Issue
+Die häufigsten Probleme und ihre Lösungen findest du im:
+➡️ **[DEBUG_COOKBOOK](./docs/guides/DEBUG_COOKBOOK.md)**
 
-**SOFORT-LÖSUNG:**
-```bash
-# 1. Java 17 setzen (KRITISCH!)
-export JAVA_HOME=/Library/Java/JavaVirtualMachines/temurin-17.jdk/Contents/Home
-export PATH=$JAVA_HOME/bin:$PATH
-
-# 2. Backend persistent starten (NIEMALS mit Timeout!)
-cd backend
-nohup mvn quarkus:dev > ../logs/backend.log 2>&1 &
-
-# 3. Warten und testen (30 Sekunden)
-sleep 30 && curl http://localhost:8080/q/health
-```
-
-**Oder verwende das Management-Script:**
-```bash
-./scripts/backend-manager.sh start
-./scripts/backend-manager.sh status
-```
-
----
-
-### Testdaten-Fix {#testdaten-fix}
-
-**Problem:** "Keine Kunden gefunden" aber Backend antwortet  
-**Ursache:** Datenbank leer, CustomerDataInitializer nicht gelaufen
-
-**LÖSUNG:**
-```bash
-# Backend neu starten um CustomerDataInitializer zu triggern
-./scripts/backend-manager.sh restart
-
-# Nach 30s testen:
-curl http://localhost:8080/api/customers
-```
-
----
-
-### Auth-Fix {#auth-fix}
-
-**Problem:** Tests schlagen fehl mit 401 Unauthorized  
-**Ursache:** Security-Konfiguration oder @TestSecurity fehlt
-
-**LÖSUNG:**
-```bash
-# 1. Prüfe application.properties
-grep "dev.quarkus.oidc.enabled" backend/src/main/resources/application.properties
-# Sollte: %dev.quarkus.oidc.enabled=false
-
-# 2. Für Tests: @TestSecurity hinzufügen
-@TestSecurity(user = "testuser", roles = {"admin", "manager", "sales"})
-
-# 3. Quarkus 3.17.4 verwenden (für @TestSecurity Support)
-```
-
----
-
-### Automatische Diagnose
-
-**Bei JEDEM unklaren Problem zuerst ausführen:**
-```bash
-./scripts/diagnose-problems.sh
-```
-
-Dieses Script erkennt automatisch:
-- Backend Status (up/down)
-- API Erreichbarkeit
-- Datenbank Status (leer/gefüllt)
-- Java Version (17 check)
-- PostgreSQL Status
+**Quick Links zu Lösungen:**
+- [Backend-Fix](./docs/guides/DEBUG_COOKBOOK.md#backend-down)
+- [Testdaten-Fix](./docs/guides/DEBUG_COOKBOOK.md#no-test-data)
+- [Auth-Fix](./docs/guides/DEBUG_COOKBOOK.md#auth-401)
+- [White Screen Fix](./docs/guides/DEBUG_COOKBOOK.md#white-screen)
+- [TypeScript Import Type Fix](./docs/guides/TYPESCRIPT_IMPORT_TYPE_GUIDE.md) **NEU!**
 
 [claude-doc-structure]: ./docs/CLAUDE_DOCUMENTATION_STRUCTURE.md

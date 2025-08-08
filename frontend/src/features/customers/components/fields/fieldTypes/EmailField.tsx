@@ -1,6 +1,6 @@
 /**
  * Email Field Component
- * 
+ *
  * Specialized text field for email addresses with validation.
  * Used for fieldType: 'email'
  */
@@ -8,7 +8,7 @@
 import React from 'react';
 import { TextField as MuiTextField, InputAdornment } from '@mui/material';
 import { Email as EmailIcon } from '@mui/icons-material';
-import { FieldDefinition } from '../../../types/field.types';
+import type { FieldDefinition } from '../../../types/field.types';
 
 interface EmailFieldProps {
   /** Field definition */
@@ -33,7 +33,7 @@ interface EmailFieldProps {
 
 /**
  * Email Field
- * 
+ *
  * Email input with built-in validation and icon.
  * Validates email format on blur.
  */
@@ -46,7 +46,7 @@ export const EmailField: React.FC<EmailFieldProps> = ({
   helperText,
   disabled,
   readOnly,
-  required
+  required,
 }) => {
   return (
     <MuiTextField
@@ -54,7 +54,7 @@ export const EmailField: React.FC<EmailFieldProps> = ({
       name={field.key}
       type="email"
       value={value}
-      onChange={(e) => onChange(e.target.value)}
+      onChange={e => onChange(e.target.value)}
       onBlur={onBlur}
       error={error}
       helperText={helperText}
@@ -69,7 +69,7 @@ export const EmailField: React.FC<EmailFieldProps> = ({
           <InputAdornment position="start">
             <EmailIcon fontSize="small" color={error ? 'error' : 'action'} />
           </InputAdornment>
-        )
+        ),
       }}
       inputProps={{
         maxLength: field.maxLength || 100,
@@ -77,12 +77,12 @@ export const EmailField: React.FC<EmailFieldProps> = ({
         'aria-label': field.label,
         'aria-required': required,
         'aria-invalid': error,
-        autoComplete: 'email'
+        autoComplete: 'email',
       }}
       sx={{
         '& .MuiInputBase-root': {
-          backgroundColor: readOnly ? 'action.disabledBackground' : 'background.paper'
-        }
+          backgroundColor: readOnly ? 'action.disabledBackground' : 'background.paper',
+        },
       }}
     />
   );

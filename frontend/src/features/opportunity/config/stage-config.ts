@@ -1,6 +1,6 @@
 /**
  * Opportunity Stage Configuration
- * 
+ *
  * @module StageConfiguration
  * @description Zentrale Konfiguration für Opportunity Stages mit Enterprise-Features
  *              wie Performance-Optimierung, Type Safety und i18n-Support.
@@ -24,7 +24,7 @@ export const STAGE_CONFIGURATIONS: ReadonlyArray<IStageConfig> = [
     defaultProbability: 10,
     icon: 'person_add',
     sortOrder: 1,
-    isActive: true
+    isActive: true,
   },
   {
     stage: OpportunityStage.QUALIFICATION,
@@ -36,7 +36,7 @@ export const STAGE_CONFIGURATIONS: ReadonlyArray<IStageConfig> = [
     defaultProbability: 20,
     icon: 'fact_check',
     sortOrder: 2,
-    isActive: true
+    isActive: true,
   },
   {
     stage: OpportunityStage.NEEDS_ANALYSIS,
@@ -48,7 +48,7 @@ export const STAGE_CONFIGURATIONS: ReadonlyArray<IStageConfig> = [
     defaultProbability: 40,
     icon: 'analytics',
     sortOrder: 3,
-    isActive: true
+    isActive: true,
   },
   {
     stage: OpportunityStage.PROPOSAL,
@@ -60,7 +60,7 @@ export const STAGE_CONFIGURATIONS: ReadonlyArray<IStageConfig> = [
     defaultProbability: 60,
     icon: 'description',
     sortOrder: 4,
-    isActive: true
+    isActive: true,
   },
   {
     stage: OpportunityStage.NEGOTIATION,
@@ -72,7 +72,7 @@ export const STAGE_CONFIGURATIONS: ReadonlyArray<IStageConfig> = [
     defaultProbability: 80,
     icon: 'handshake',
     sortOrder: 5,
-    isActive: true
+    isActive: true,
   },
   {
     stage: OpportunityStage.CLOSED_WON,
@@ -84,7 +84,7 @@ export const STAGE_CONFIGURATIONS: ReadonlyArray<IStageConfig> = [
     defaultProbability: 100,
     icon: 'emoji_events',
     sortOrder: 6,
-    isActive: false
+    isActive: false,
   },
   {
     stage: OpportunityStage.CLOSED_LOST,
@@ -96,7 +96,7 @@ export const STAGE_CONFIGURATIONS: ReadonlyArray<IStageConfig> = [
     defaultProbability: 0,
     icon: 'cancel',
     sortOrder: 8,
-    isActive: false
+    isActive: false,
   },
   {
     stage: OpportunityStage.RENEWAL,
@@ -108,8 +108,8 @@ export const STAGE_CONFIGURATIONS: ReadonlyArray<IStageConfig> = [
     defaultProbability: 75,
     icon: 'autorenew',
     sortOrder: 7,
-    isActive: true
-  }
+    isActive: true,
+  },
 ];
 
 /**
@@ -145,12 +145,15 @@ export function getStageConfig(stage: OpportunityStage): IStageConfig | undefine
  * @param {IStageConfig} fallback - Fallback configuration
  * @returns {IStageConfig} Stage configuration or fallback
  */
-export function getStageConfigSafe(stage: OpportunityStage, fallback?: Partial<IStageConfig>): IStageConfig {
+export function getStageConfigSafe(
+  stage: OpportunityStage,
+  fallback?: Partial<IStageConfig>
+): IStageConfig {
   const config = getStageConfig(stage);
   if (config) {
     return config;
   }
-  
+
   // Return fallback or default config
   return {
     stage,
@@ -162,7 +165,7 @@ export function getStageConfigSafe(stage: OpportunityStage, fallback?: Partial<I
     defaultProbability: fallback?.defaultProbability || 0,
     icon: fallback?.icon || 'help',
     sortOrder: fallback?.sortOrder || 999,
-    isActive: fallback?.isActive ?? false
+    isActive: fallback?.isActive ?? false,
   };
 }
 
@@ -188,17 +191,20 @@ export function getClosedStages(): ReadonlyArray<IStageConfig> {
  * @param {OpportunityStage} toStage - Target stage
  * @returns {boolean} Whether transition is allowed
  */
-export function isStageTransitionAllowed(fromStage: OpportunityStage, toStage: OpportunityStage): boolean {
+export function isStageTransitionAllowed(
+  fromStage: OpportunityStage,
+  toStage: OpportunityStage
+): boolean {
   const config = getStageConfig(fromStage);
   if (!config) {
     return false;
   }
-  
+
   // Same stage is always allowed (no-op)
   if (fromStage === toStage) {
     return true;
   }
-  
+
   return config.allowedNextStages.includes(toStage);
 }
 
@@ -209,9 +215,7 @@ export function isStageTransitionAllowed(fromStage: OpportunityStage, toStage: O
  */
 export function getStageByLabel(label: string): OpportunityStage | undefined {
   const normalizedLabel = label.toLowerCase().trim();
-  const config = STAGE_CONFIGURATIONS.find(
-    c => c.label.toLowerCase() === normalizedLabel
-  );
+  const config = STAGE_CONFIGURATIONS.find(c => c.label.toLowerCase() === normalizedLabel);
   return config?.stage;
 }
 
@@ -231,7 +235,7 @@ export interface IStageValidationResult {
  */
 export function validateStage(stage: unknown): IStageValidationResult {
   const errors: string[] = [];
-  
+
   if (!stage) {
     errors.push('Stage is required');
   } else if (typeof stage !== 'string') {
@@ -239,10 +243,10 @@ export function validateStage(stage: unknown): IStageValidationResult {
   } else if (!Object.values(OpportunityStage).includes(stage as OpportunityStage)) {
     errors.push(`Invalid stage: ${stage}`);
   }
-  
+
   return {
     isValid: errors.length === 0,
-    errors
+    errors,
   };
 }
 

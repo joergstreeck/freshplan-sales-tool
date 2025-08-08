@@ -1,13 +1,13 @@
 /**
  * Text Field Component
- * 
+ *
  * Renders a text input field with validation support.
  * Used for fieldType: 'text'
  */
 
 import React from 'react';
 import { TextField as MuiTextField } from '@mui/material';
-import { FieldDefinition } from '../../../types/field.types';
+import type { FieldDefinition } from '../../../types/field.types';
 
 interface TextFieldProps {
   /** Field definition */
@@ -32,7 +32,7 @@ interface TextFieldProps {
 
 /**
  * Text Field
- * 
+ *
  * Standard text input with German locale support.
  * Supports maxLength validation and placeholder text.
  */
@@ -45,14 +45,14 @@ export const TextField: React.FC<TextFieldProps> = ({
   helperText,
   disabled,
   readOnly,
-  required
+  required,
 }) => {
   return (
     <MuiTextField
       id={field.key}
       name={field.key}
       value={value}
-      onChange={(e) => onChange(e.target.value)}
+      onChange={e => onChange(e.target.value)}
       onBlur={onBlur}
       error={error}
       helperText={helperText}
@@ -67,12 +67,23 @@ export const TextField: React.FC<TextFieldProps> = ({
         readOnly,
         'aria-label': field.label,
         'aria-required': required,
-        'aria-invalid': error
+        'aria-invalid': error,
       }}
       sx={{
         '& .MuiInputBase-root': {
-          backgroundColor: readOnly ? 'action.disabledBackground' : 'background.paper'
-        }
+          backgroundColor: readOnly ? 'action.disabledBackground' : 'background.paper',
+        },
+        // Für lange Texte: Kleinere Schrift bei Bedarf
+        '& .MuiInputBase-input': {
+          ...(field.key === 'companyName' &&
+            value.length > 30 && {
+              fontSize: '0.875rem',
+            }),
+          ...(field.key === 'companyName' &&
+            value.length > 50 && {
+              fontSize: '0.8rem',
+            }),
+        },
       }}
     />
   );

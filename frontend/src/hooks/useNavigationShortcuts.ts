@@ -14,7 +14,7 @@ export const useNavigationShortcuts = () => {
         event.preventDefault();
         const index = parseInt(event.key) - 1;
         const navItem = navigationConfig[index];
-        
+
         if (navItem) {
           setActiveMenu(navItem.id);
           navigate(navItem.path);

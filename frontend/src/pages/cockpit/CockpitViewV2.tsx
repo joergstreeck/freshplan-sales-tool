@@ -1,6 +1,6 @@
 /**
  * CockpitViewV2 - MUI-basierte Cockpit-Implementierung
- * 
+ *
  * Clean Slate Implementation ohne CSS-Dateien
  * Nutzt ausschließlich MUI's sx-Prop und Theme
  */
@@ -24,7 +24,7 @@ const PageContainer = styled(Box)(() => ({
 export function CockpitViewV2() {
   // Temporär: Nutze die existierende SalesCockpitMUI Komponente
   // Diese wird in Phase 2 durch einzelne MUI-Komponenten ersetzt
-  
+
   return (
     <PageContainer>
       <Container maxWidth={false} sx={{ height: '100%', p: 0 }}>
