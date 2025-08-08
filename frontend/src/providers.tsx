@@ -27,6 +27,9 @@ import { SettingsPage } from './pages/SettingsPage';
 import { CalculatorPageV2 } from './pages/CalculatorPageV2';
 import { OpportunityPipelinePage } from './pages/OpportunityPipelinePage';
 import { HelpSystemDemoPage } from './pages/HelpSystemDemoPage';
+import { AuditAdminPage } from './pages/admin/AuditAdminPage';
+import { ProtectedRoute } from './components/auth/ProtectedRoute';
+import { AdminLayout } from './components/layout/AdminLayout';
 
 interface AppProvidersProps {
   children?: ReactNode;
@@ -97,6 +100,20 @@ export const AppProviders = ({ children: mainChildren }: AppProvidersProps) => {
                         <Route path="/calculator-v2" element={<CalculatorPageV2 />} />
                         <Route path="/legacy-tool" element={<LegacyToolPage />} />
                         <Route path="/help-demo" element={<HelpSystemDemoPage />} />
+                        
+                        {/* Admin Routes - Protected by Role */}
+                        <Route path="/admin" element={
+                          <ProtectedRoute allowedRoles={['admin', 'auditor']}>
+                            <AdminLayout />
+                          </ProtectedRoute>
+                        }>
+                          <Route path="audit" element={<AuditAdminPage />} />
+                          {/* Weitere Admin-Seiten können hier hinzugefügt werden:
+                          <Route path="users" element={<UserManagementPage />} />
+                          <Route path="settings" element={<SystemSettingsPage />} />
+                          */}
+                        </Route>
+                        
                         {/* Login Bypass temporär reaktiviert - Auto-Login Problem */}
                         {isDevelopmentMode && (
                           <Route path="/login-bypass" element={<LoginBypassPage />} />

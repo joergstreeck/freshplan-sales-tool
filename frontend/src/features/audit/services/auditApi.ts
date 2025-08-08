@@ -1,4 +1,4 @@
-import { api } from '@/services/api';
+import { httpClient } from '@/lib/apiClient';
 import type {
   AuditLog,
   AuditFilters,
