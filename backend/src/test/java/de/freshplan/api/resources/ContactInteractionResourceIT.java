@@ -5,7 +5,6 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import de.freshplan.domain.customer.entity.Contact;
-import de.freshplan.domain.customer.entity.ContactInteraction;
 import de.freshplan.domain.customer.entity.ContactInteraction.InteractionType;
 import de.freshplan.domain.customer.entity.Customer;
 import de.freshplan.domain.customer.entity.CustomerStatus;
@@ -16,10 +15,8 @@ import de.freshplan.domain.customer.repository.ContactInteractionRepository;
 import de.freshplan.domain.customer.repository.ContactRepository;
 import de.freshplan.domain.customer.repository.CustomerRepository;
 import de.freshplan.domain.customer.service.dto.ContactInteractionDTO;
-import de.freshplan.domain.customer.service.dto.DataQualityMetricsDTO;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
-import io.restassured.response.Response;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
@@ -42,14 +39,15 @@ class ContactInteractionResourceIT {
   private UUID testContactId;
 
   private void createTestInteraction(InteractionType type, String summary) {
-    ContactInteractionDTO dto = ContactInteractionDTO.builder()
-        .contactId(testContactId)
-        .type(type)
-        .summary(summary)
-        .sentimentScore(0.7)
-        .engagementScore(75)
-        .timestamp(LocalDateTime.now())
-        .build();
+    ContactInteractionDTO dto =
+        ContactInteractionDTO.builder()
+            .contactId(testContactId)
+            .type(type)
+            .summary(summary)
+            .sentimentScore(0.7)
+            .engagementScore(75)
+            .timestamp(LocalDateTime.now())
+            .build();
 
     given()
         .contentType(ContentType.JSON)
@@ -205,12 +203,13 @@ class ContactInteractionResourceIT {
   void shouldRecordNote() {
     String noteContent = "This is a test note for integration testing";
 
-    ContactInteractionDTO noteDto = ContactInteractionDTO.builder()
-        .contactId(testContactId)
-        .type(InteractionType.NOTE)
-        .summary(noteContent)
-        .timestamp(LocalDateTime.now())
-        .build();
+    ContactInteractionDTO noteDto =
+        ContactInteractionDTO.builder()
+            .contactId(testContactId)
+            .type(InteractionType.NOTE)
+            .summary(noteContent)
+            .timestamp(LocalDateTime.now())
+            .build();
 
     given()
         .contentType(ContentType.JSON)
@@ -230,14 +229,15 @@ class ContactInteractionResourceIT {
   @Test
   @DisplayName("Should record email interaction")
   void shouldRecordEmail() {
-    ContactInteractionDTO dto = ContactInteractionDTO.builder()
-        .contactId(testContactId)
-        .type(InteractionType.EMAIL)
-        .summary("Test Email Subject")
-        .sentimentScore(0.8)
-        .timestamp(LocalDateTime.now())
-        .build();
-    
+    ContactInteractionDTO dto =
+        ContactInteractionDTO.builder()
+            .contactId(testContactId)
+            .type(InteractionType.EMAIL)
+            .summary("Test Email Subject")
+            .sentimentScore(0.8)
+            .timestamp(LocalDateTime.now())
+            .build();
+
     given()
         .contentType(ContentType.JSON)
         .body(dto)
@@ -255,14 +255,15 @@ class ContactInteractionResourceIT {
   @Test
   @DisplayName("Should record call interaction")
   void shouldRecordCall() {
-    ContactInteractionDTO dto = ContactInteractionDTO.builder()
-        .contactId(testContactId)
-        .type(InteractionType.CALL)
-        .summary("Successful discussion")
-        .engagementScore(80)
-        .timestamp(LocalDateTime.now())
-        .build();
-    
+    ContactInteractionDTO dto =
+        ContactInteractionDTO.builder()
+            .contactId(testContactId)
+            .type(InteractionType.CALL)
+            .summary("Successful discussion")
+            .engagementScore(80)
+            .timestamp(LocalDateTime.now())
+            .build();
+
     given()
         .contentType(ContentType.JSON)
         .body(dto)
@@ -280,14 +281,15 @@ class ContactInteractionResourceIT {
   @Test
   @DisplayName("Should record meeting interaction")
   void shouldRecordMeeting() {
-    ContactInteractionDTO dto = ContactInteractionDTO.builder()
-        .contactId(testContactId)
-        .type(InteractionType.MEETING)
-        .summary("Productive meeting")
-        .engagementScore(90)
-        .timestamp(LocalDateTime.now())
-        .build();
-    
+    ContactInteractionDTO dto =
+        ContactInteractionDTO.builder()
+            .contactId(testContactId)
+            .type(InteractionType.MEETING)
+            .summary("Productive meeting")
+            .engagementScore(90)
+            .timestamp(LocalDateTime.now())
+            .build();
+
     given()
         .contentType(ContentType.JSON)
         .body(dto)
@@ -306,7 +308,8 @@ class ContactInteractionResourceIT {
   @DisplayName("Should improve data quality metrics after adding interactions")
   void shouldImproveDataQualityAfterInteractions() {
     // Get initial metrics
-    Float initialScore = given()
+    Float initialScore =
+        given()
             .when()
             .get("/api/contact-interactions/metrics/data-quality")
             .then()

@@ -35,9 +35,7 @@ public class CustomerDataInitializer {
   @Inject CustomerTimelineRepository timelineRepository;
 
   @Transactional
-  // TEMPORARILY DISABLED - Sprint-2 fields need to be initialized
-  // TODO: Add locations_germany, locations_austria, etc. fields
-  void onStartDisabled_TODO_FIX_SPRINT2_FIELDS_DISABLED(@Observes @Priority(500) StartupEvent ev) {
+  void onStart(@Observes @Priority(500) StartupEvent ev) {
     LOG.info(
         "🧪 Initializing comprehensive test data for ALL modules (Intelligence, Cockpit, Opportunities)...");
 
@@ -58,12 +56,12 @@ public class CustomerDataInitializer {
               "audit_trail",
               // Module: Opportunities
               "opportunity_activities", // Must be deleted BEFORE opportunities
-              "opportunities",          // Must be deleted BEFORE customers
+              "opportunities", // Must be deleted BEFORE customers
               // Module: Customers & Contacts
-              "contact_interactions",       // Must be deleted BEFORE customer_contacts
-              "customer_timeline_events",   // Must be deleted BEFORE customers
-              "customer_contacts",          // Must be deleted BEFORE customers
-              "customer_locations",         // Must be deleted BEFORE customers
+              "contact_interactions", // Must be deleted BEFORE customer_contacts
+              "customer_timeline_events", // Must be deleted BEFORE customers
+              "customer_contacts", // Must be deleted BEFORE customers
+              "customer_locations", // Must be deleted BEFORE customers
               "customers");
 
       // Derive allowed tables from the clearing list to ensure consistency
