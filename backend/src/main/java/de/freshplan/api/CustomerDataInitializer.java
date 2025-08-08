@@ -35,9 +35,7 @@ public class CustomerDataInitializer {
   @Inject CustomerTimelineRepository timelineRepository;
 
   @Transactional
-  // TEMPORARILY DISABLED - Sprint-2 fields need to be initialized
-  // TODO: Add locations_germany, locations_austria, etc. fields
-  void onStartDisabled_TODO_FIX_SPRINT2_FIELDS_DISABLED(@Observes @Priority(500) StartupEvent ev) {
+  void onStart(@Observes @Priority(500) StartupEvent ev) {
     LOG.info(
         "🧪 Initializing comprehensive test data for ALL modules (Intelligence, Cockpit, Opportunities)...");
 
@@ -58,12 +56,12 @@ public class CustomerDataInitializer {
               "audit_trail",
               // Module: Opportunities
               "opportunity_activities", // Must be deleted BEFORE opportunities
-              "opportunities",          // Must be deleted BEFORE customers
+              "opportunities", // Must be deleted BEFORE customers
               // Module: Customers & Contacts
-              "contact_interactions",       // Must be deleted BEFORE customer_contacts
-              "customer_timeline_events",   // Must be deleted BEFORE customers
-              "customer_contacts",          // Must be deleted BEFORE customers
-              "customer_locations",         // Must be deleted BEFORE customers
+              "contact_interactions", // Must be deleted BEFORE customer_contacts
+              "customer_timeline_events", // Must be deleted BEFORE customers
+              "customer_contacts", // Must be deleted BEFORE customers
+              "customer_locations", // Must be deleted BEFORE customers
               "customers");
 
       // Derive allowed tables from the clearing list to ensure consistency
@@ -947,5 +945,32 @@ public class CustomerDataInitializer {
 
     LOG.info(
         "✅ Opportunity Pipeline test scenarios created (5 customers with different opportunity stages)");
+        
+    // Final count and summary
+    long totalCustomers = customerRepository.count();
+    LOG.info(
+        "🎯 Comprehensive test data initialized successfully! Total customers: " + totalCustomers);
+    LOG.info("💡 This covers all edge cases and modules for thorough testing");
+    LOG.info("📊 Modules covered: Data Intelligence, Data Freshness, Cockpit, Opportunities");
+    
+    // Log breakdown for debugging
+    LOG.info("📋 Customer breakdown by category:");
+    LOG.info("  - Normal business cases: 5");
+    LOG.info("  - String boundary tests: 10");
+    LOG.info("  - Numeric edge cases: 5");
+    LOG.info("  - Date/time edge cases: 5");
+    LOG.info("  - Enum boundary tests: 8");
+    LOG.info("  - Business logic variations: 10");
+    LOG.info("  - Unicode/special chars: 6");
+    LOG.info("  - Data Intelligence scenarios: 5");
+    LOG.info("  - Sales Cockpit scenarios: 4");
+    LOG.info("  - Opportunity Pipeline scenarios: 5");
+    LOG.info("  ====================================");
+    LOG.info("  TOTAL EXPECTED: 63 customers");
+    LOG.info("  TOTAL ACTUAL: " + totalCustomers + " customers");
+    
+    if (totalCustomers != 63) {
+      LOG.warn("⚠️ MISMATCH: Expected 63 customers but found " + totalCustomers);
+    }
   }
 }

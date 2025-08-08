@@ -64,17 +64,18 @@ public class CustomerContact extends PanacheEntityBase {
   @Column(name = "fax", length = 50)
   private String fax;
 
-  // Role System - Many-to-Many relationship
-  @ManyToMany(
-      cascade = {CascadeType.PERSIST, CascadeType.MERGE},
-      fetch = FetchType.LAZY)
-  @JoinTable(
-      name = "customer_contact_roles",
-      joinColumns = @JoinColumn(name = "contact_id"),
-      inverseJoinColumns = @JoinColumn(name = "role_id"))
-  private Set<ContactRole> roles = new HashSet<>();
+  /**
+   * Role System - Temporary implementation using String-based roles. TODO: Will be replaced with
+   * proper role management in future iteration.
+   *
+   * @since 2.0.0
+   */
+  @Transient private Set<String> roles = new HashSet<>();
 
-  // Hierarchy Support
+  /**
+   * Hierarchical relationship - reference to the contact's supervisor. Supports organizational
+   * hierarchy mapping.
+   */
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "reports_to_id")
   private CustomerContact reportsTo;
@@ -82,7 +83,10 @@ public class CustomerContact extends PanacheEntityBase {
   @OneToMany(mappedBy = "reportsTo", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
   private List<CustomerContact> directReports = new ArrayList<>();
 
-  // Status Flags
+  /**
+   * Indicates if this is the primary contact for the customer. Only one contact per customer should
+   * be marked as primary.
+   */
   @Column(name = "is_primary", nullable = false)
   private Boolean isPrimary = false;
 
@@ -92,7 +96,7 @@ public class CustomerContact extends PanacheEntityBase {
   @Column(name = "is_active", nullable = false)
   private Boolean isActive = true;
 
-  // Communication Preferences
+  /** Preferred communication method for this contact. Defaults to EMAIL if not specified. */
   @Column(name = "preferred_communication_method", length = 20)
   @Enumerated(EnumType.STRING)
   private CommunicationMethod preferredCommunicationMethod = CommunicationMethod.EMAIL;
@@ -170,37 +174,71 @@ public class CustomerContact extends PanacheEntityBase {
     return "";
   }
 
-  /** Adds a role to this contact. */
-  public void addRole(ContactRole role) {
-    if (role != null) {
-      this.roles.add(role);
+  /**
+   * Adds a role to this contact. Automatically updates decision maker status if applicable.
+   *
+   * @param roleName the name of the role to add (case-insensitive)
+   */
+  public void addRole(String roleName) {
+    if (roleName != null && !roleName.isBlank()) {
+      this.roles.add(roleName);
       updateDecisionMakerStatus();
     }
   }
 
-  /** Removes a role from this contact. */
-  public void removeRole(ContactRole role) {
-    if (role != null) {
-      this.roles.remove(role);
+  /**
+   * Removes a role from this contact. Automatically updates decision maker status after removal.
+   *
+   * @param roleName the name of the role to remove
+   */
+  public void removeRole(String roleName) {
+    if (roleName != null) {
+      this.roles.remove(roleName);
       updateDecisionMakerStatus();
     }
   }
 
-  /** Checks if contact has a specific role. */
+  /**
+   * Checks if contact has a specific role. Comparison is case-insensitive.
+   *
+   * @param roleName the role name to check
+   * @return true if the contact has the specified role, false otherwise
+   */
   public boolean hasRole(String roleName) {
-    return roles.stream().anyMatch(role -> role.getRoleName().equalsIgnoreCase(roleName));
+    return roles.stream().anyMatch(role -> role.equalsIgnoreCase(roleName));
   }
 
-  /** Updates decision maker status based on roles. */
+  // Decision maker role constants for better maintainability
+  private static final Set<String> DECISION_MAKER_ROLES =
+      Set.of("DECISION_MAKER", "GESCHÄFTSFÜHRER", "CEO");
+
+  /**
+   * Updates decision maker status based on current roles. Checks for DECISION_MAKER,
+   * GESCHÄFTSFÜHRER, or CEO roles. This method is called automatically when roles change.
+   */
   private void updateDecisionMakerStatus() {
     this.isDecisionMaker =
-        roles.stream().anyMatch(role -> Boolean.TRUE.equals(role.getIsDecisionMakerRole()));
+        roles.stream().map(String::toUpperCase).anyMatch(DECISION_MAKER_ROLES::contains);
   }
 
-  /** Checks if this contact is a subordinate of another contact. */
+  /**
+   * Checks if this contact is a subordinate of another contact. Traverses the hierarchy chain to
+   * check both direct and indirect relationships. Prevents infinite loops in case of circular
+   * references.
+   *
+   * @param potentialSuperior the contact to check against
+   * @return true if this contact reports to the potential superior (directly or indirectly)
+   */
   public boolean isSubordinateOf(CustomerContact potentialSuperior) {
+    Set<UUID> visited = new HashSet<>();
     CustomerContact current = this.reportsTo;
+
     while (current != null) {
+      // Prevent infinite loop in case of circular references
+      if (!visited.add(current.getId())) {
+        return false; // Circular reference detected
+      }
+
       if (current.getId().equals(potentialSuperior.getId())) {
         return true;
       }
@@ -209,13 +247,34 @@ public class CustomerContact extends PanacheEntityBase {
     return false;
   }
 
-  /** Gets all subordinates (direct and indirect). */
+  /**
+   * Gets all subordinates (direct and indirect) of this contact. Recursively traverses the
+   * hierarchy to find all reports. Prevents infinite loops in case of circular references.
+   *
+   * @return list of all subordinate contacts
+   */
   public List<CustomerContact> getAllSubordinates() {
+    return getAllSubordinates(new HashSet<>());
+  }
+
+  /**
+   * Internal helper method to get all subordinates with circular reference protection.
+   *
+   * @param visited set of already visited contact IDs to prevent infinite recursion
+   * @return list of all subordinate contacts
+   */
+  private List<CustomerContact> getAllSubordinates(Set<UUID> visited) {
     List<CustomerContact> allSubordinates = new ArrayList<>();
+
+    // Add current contact ID to visited set
+    if (this.id != null && !visited.add(this.id)) {
+      return allSubordinates; // Already visited, prevent circular reference
+    }
+
     for (CustomerContact directReport : directReports) {
       if (!Boolean.TRUE.equals(directReport.getIsDeleted())) {
         allSubordinates.add(directReport);
-        allSubordinates.addAll(directReport.getAllSubordinates());
+        allSubordinates.addAll(directReport.getAllSubordinates(visited));
       }
     }
     return allSubordinates;
@@ -302,11 +361,11 @@ public class CustomerContact extends PanacheEntityBase {
     this.fax = fax;
   }
 
-  public Set<ContactRole> getRoles() {
+  public Set<String> getRoles() {
     return roles;
   }
 
-  public void setRoles(Set<ContactRole> roles) {
+  public void setRoles(Set<String> roles) {
     this.roles = roles;
     updateDecisionMakerStatus();
   }
