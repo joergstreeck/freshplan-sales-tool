@@ -28,11 +28,9 @@ export function CustomersPageV2({ openWizard = false }: CustomersPageV2Props) {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  // Open wizard when prop changes
+  // Open wizard when prop is true (on mount or prop change)
   useEffect(() => {
-    if (openWizard) {
-      setWizardOpen(true);
-    }
+    setWizardOpen(openWizard);
   }, [openWizard]);
 
   // Listen for new customer event from sidebar

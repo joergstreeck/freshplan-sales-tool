@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import type { Page } from '@playwright/test';
+import { mockBackendAPIs } from '../fixtures/api-mocks';
 
 // Test data
 const testCustomer = {
@@ -128,6 +129,9 @@ async function fillServicesAndOffer(page: Page) {
 
 test.describe('Complete Customer Onboarding Flow', () => {
   test.beforeEach(async ({ page }) => {
+    // Mock all backend API calls BEFORE navigation
+    await mockBackendAPIs(page);
+    
     // Mock authentication
     await page.addInitScript(() => {
       window.localStorage.setItem('auth-token', 'test-token');
