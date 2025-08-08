@@ -7,49 +7,51 @@
 
 ## 🎯 JETZT GERADE:
 
-**CI FAST GRÜN - NUR NOCH PLAYWRIGHT TEST ROT**
+**BACKEND-FIX ERFOLGREICH - PR #75 WARTET AUF MERGE**
 
-**Stand 08.08.2025 01:38:**
-- ✅ **Backend Tests:** ALLE GRÜN!
-- ✅ **Integration Tests:** GRÜN!
-- ✅ **E2E Smoke:** GRÜN!
-- ✅ **Lint/Quality:** ALLE GRÜN!
-- 🔄 **Playwright:** SPA-Routing Fix deployed, läuft noch
-- 🎯 **PR #74:** 8/9 Tests grün (89%)
+**Stand 08.08.2025 02:51:**
+- ✅ **PR #74:** ERFOLGREICH GEMERGED (CI 100% grün)
+- ✅ **Backend-Fix:** CustomerDataInitializer Foreign Key Problem gelöst
+- ✅ **PR #75:** Erstellt mit Fix, wartet auf Review/Merge
+- ✅ **Backend:** Läuft stabil mit 58 Testkunden + 31 Opportunities
+- ✅ **Frontend:** Funktioniert, verbindet sich mit Backend
 
 **🚀 NÄCHSTER SCHRITT:**
 
-**CI-Status prüfen und PR mergen**
+**PR #75 mergen und neues Feature beginnen**
 
 ```bash
 cd /Users/joergstreeck/freshplan-sales-tool
 
-# 1. CI-Status prüfen
-gh pr checks 74
+# 1. PR #75 Status prüfen
+gh pr checks 75
 
-# 2. Falls Playwright grün → PR mergen
-gh pr merge 74 --squash
+# 2. Falls grün → PR mergen
+gh pr merge 75 --squash
 
-# 3. Falls noch rot → Logs checken
-gh run view [RUN-ID] --log-failed | grep -A 10 "Error:"
+# 3. Auf main wechseln
+git checkout main && git pull
+
+# 4. Nächstes Feature wählen:
+# Option A: FC-012 Audit Viewer UI
+# Option B: M8 Calculator Modal
 ```
 
 **UNTERBROCHEN BEI:**
-- Warten auf Playwright CI-Ergebnis mit SPA-Routing Fix
-- Fix ist deployed: `npx serve -s` für SPA-Mode
-- Erwarte grüne CI in wenigen Minuten
+- Session sauber abgeschlossen
+- Keine Unterbrechungen
 
 **AKTUELLE POSITION:**
-- ✅ Sprint 2 Integration: 100% abgeschlossen
-- ✅ 58 Testkunden + 31 Opportunities: FUNKTIONSFÄHIG
-- 🔄 CI-Status: 82% grün (9/11 Tests)
-- 🎯 Ziel: 100% grüne CI für PR #74
+- ✅ Sprint 2 Integration: VOLLSTÄNDIG IN MAIN
+- ✅ Backend: LÄUFT FEHLERFREI
+- ✅ CI-Status: 100% GRÜN
+- 🎯 Nächstes: PR #75 mergen, dann neues Feature
 
 **WICHTIGE DOKUMENTE:**
-- **AKTUELLE Übergabe:** `/docs/claude-work/daily-work/2025-08-08/2025-08-08_HANDOVER_00-33.md` ⭐ **NEU!**
-- **PR #74:** https://github.com/joergstreeck/freshplan-sales-tool/pull/74
-- Migration Status: V209 als nächste verfügbare Migration  
-- Sprint 2 Integration: Erfolgreich abgeschlossen
+- **AKTUELLE Übergabe:** `/docs/claude-work/daily-work/2025-08-08/2025-08-08_HANDOVER_02-51.md` ⭐ **NEU!**
+- **PR #75:** https://github.com/joergstreeck/freshplan-sales-tool/pull/75
+- Migration Status: V208 aktuell, V209 als nächste verfügbar
+- Branch: `fix/customer-data-initializer-table-order`
 
 ---
 

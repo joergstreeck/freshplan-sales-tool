@@ -54,20 +54,22 @@ public class CustomerDataInitializer {
       // IMPORTANT: Tables must be deleted in dependency order (child tables first)
       var tablesToClear =
           java.util.List.of(
-              "contact_interactions", // Must be deleted BEFORE customer_contacts (foreign key)
-              "customer_timeline_events", "customer_contacts", "customer_locations", "customers");
+              // Module: Audit
+              "audit_trail",
+              // Module: Opportunities
+              "opportunity_activities", // Must be deleted BEFORE opportunities
+              "opportunities",          // Must be deleted BEFORE customers
+              // Module: Customers & Contacts
+              "contact_interactions",       // Must be deleted BEFORE customer_contacts
+              "customer_timeline_events",   // Must be deleted BEFORE customers
+              "customer_contacts",          // Must be deleted BEFORE customers
+              "customer_locations",         // Must be deleted BEFORE customers
+              "customers");
 
       // Derive allowed tables from the clearing list to ensure consistency
       var allowedTables = java.util.Set.copyOf(tablesToClear);
 
-      // CRITICAL FIX: Delete opportunities first to avoid foreign key constraint violations
-      LOG.info("Clearing all module data (opportunities, audit) before customers...");
-      em.createNativeQuery("DELETE FROM audit_trail").executeUpdate();
-      // contact_interactions is now handled in tablesToClear list
-      // contact_warmth_scores table doesn't exist yet
-      // em.createNativeQuery("DELETE FROM contact_warmth_scores").executeUpdate();
-      em.createNativeQuery("DELETE FROM opportunity_activities").executeUpdate();
-      em.createNativeQuery("DELETE FROM opportunities").executeUpdate();
+      LOG.info("Clearing all module data before initializing new test data...");
 
       for (String table : tablesToClear) {
         if (!allowedTables.contains(table)) {
