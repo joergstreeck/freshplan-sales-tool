@@ -64,14 +64,13 @@ public class CustomerContact extends PanacheEntityBase {
   @Column(name = "fax", length = 50)
   private String fax;
 
-  // Role System - Many-to-Many relationship
-  @ManyToMany(
-      cascade = {CascadeType.PERSIST, CascadeType.MERGE},
-      fetch = FetchType.LAZY)
-  @JoinTable(
+  // Role System - ElementCollection for Enum
+  @ElementCollection(fetch = FetchType.EAGER)
+  @CollectionTable(
       name = "customer_contact_roles",
-      joinColumns = @JoinColumn(name = "contact_id"),
-      inverseJoinColumns = @JoinColumn(name = "role_id"))
+      joinColumns = @JoinColumn(name = "contact_id"))
+  @Column(name = "role")
+  @Enumerated(EnumType.STRING)
   private Set<ContactRole> roles = new HashSet<>();
 
   // Hierarchy Support

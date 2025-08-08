@@ -4,6 +4,8 @@ import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -57,6 +59,19 @@ public class Contact extends PanacheEntityBase {
   @Column(name = "decision_level", length = 50)
   private String decisionLevel; // executive, manager, operational, influencer
 
+  // Contact Roles - Multi-Role Support
+  @ElementCollection(fetch = FetchType.EAGER)
+  @CollectionTable(
+      name = "contact_roles",
+      joinColumns = @JoinColumn(name = "contact_id"))
+  @Column(name = "role")
+  @Enumerated(EnumType.STRING)
+  private Set<ContactRole> roles = new HashSet<>();
+
+  // Responsibility Scope for Locations
+  @Column(name = "responsibility_scope", length = 20)
+  private String responsibilityScope = "all"; // 'all' or 'specific'
+
   // Contact Info
   @Column(name = "email", length = 255)
   private String email;
@@ -74,10 +89,18 @@ public class Contact extends PanacheEntityBase {
   @Column(name = "is_active", nullable = false)
   private boolean isActive = true;
 
-  // Location Assignment
+  // Location Assignment (Single - kept for backward compatibility)
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "assigned_location_id")
   private CustomerLocation assignedLocation;
+
+  // Multi-Location Assignment (NEW)
+  @ManyToMany(fetch = FetchType.LAZY)
+  @JoinTable(
+      name = "contact_location_assignments",
+      joinColumns = @JoinColumn(name = "contact_id"),
+      inverseJoinColumns = @JoinColumn(name = "location_id"))
+  private Set<CustomerLocation> assignedLocations = new HashSet<>();
 
   // Relationship Data (Beziehungsebene)
   @Column(name = "birthday")
@@ -121,6 +144,16 @@ public class Contact extends PanacheEntityBase {
 
   @Column(name = "is_deleted", nullable = false)
   private Boolean isDeleted = false;
+
+  // Enhanced Soft-Delete Fields
+  @Column(name = "deleted_at")
+  private LocalDateTime deletedAt;
+
+  @Column(name = "deleted_by", length = 100)
+  private String deletedBy;
+
+  @Column(name = "deletion_reason", length = 500)
+  private String deletionReason;
 
   // Audit Fields
   @CreationTimestamp
@@ -418,6 +451,84 @@ public class Contact extends PanacheEntityBase {
       case "divers" -> "";
       default -> salutation;
     };
+  }
+
+  // New getters and setters for Contact Roles
+  public Set<ContactRole> getRoles() {
+    return roles;
+  }
+
+  public void setRoles(Set<ContactRole> roles) {
+    this.roles = roles;
+  }
+
+  public void addRole(ContactRole role) {
+    this.roles.add(role);
+  }
+
+  public void removeRole(ContactRole role) {
+    this.roles.remove(role);
+  }
+
+  public boolean hasRole(ContactRole role) {
+    return this.roles.contains(role);
+  }
+
+  // Responsibility Scope getters/setters
+  public String getResponsibilityScope() {
+    return responsibilityScope;
+  }
+
+  public void setResponsibilityScope(String responsibilityScope) {
+    this.responsibilityScope = responsibilityScope;
+  }
+
+  // Multi-Location Assignment getters/setters
+  public Set<CustomerLocation> getAssignedLocations() {
+    return assignedLocations;
+  }
+
+  public void setAssignedLocations(Set<CustomerLocation> assignedLocations) {
+    this.assignedLocations = assignedLocations;
+  }
+
+  public void addAssignedLocation(CustomerLocation location) {
+    this.assignedLocations.add(location);
+  }
+
+  public void removeAssignedLocation(CustomerLocation location) {
+    this.assignedLocations.remove(location);
+  }
+
+  // Enhanced Soft-Delete getters/setters
+  public LocalDateTime getDeletedAt() {
+    return deletedAt;
+  }
+
+  public void setDeletedAt(LocalDateTime deletedAt) {
+    this.deletedAt = deletedAt;
+  }
+
+  public String getDeletedBy() {
+    return deletedBy;
+  }
+
+  public void setDeletedBy(String deletedBy) {
+    this.deletedBy = deletedBy;
+  }
+
+  public String getDeletionReason() {
+    return deletionReason;
+  }
+
+  public void setDeletionReason(String deletionReason) {
+    this.deletionReason = deletionReason;
+  }
+
+  // Computed soft-delete check
+  @Transient
+  public boolean isSoftDeleted() {
+    return deletedAt != null || Boolean.TRUE.equals(isDeleted);
   }
 
   // Builder pattern for easier construction

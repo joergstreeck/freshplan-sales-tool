@@ -1,112 +1,67 @@
 package de.freshplan.domain.customer.entity;
 
-import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
-import jakarta.persistence.*;
-import java.util.UUID;
-import org.hibernate.annotations.UuidGenerator;
-
 /**
- * Contact role entity representing different roles a contact can have. Examples: CEO, CTO,
- * Procurement Manager, Decision Maker, etc.
- *
- * @author FreshPlan Team
- * @since 2.0.0
+ * Defines the various roles a contact can have within a customer organization.
+ * A contact can have multiple roles simultaneously.
  */
-@Entity
-@Table(
-    name = "contact_roles",
-    indexes = {@Index(name = "idx_contact_role_name", columnList = "role_name", unique = true)})
-public class ContactRole extends PanacheEntityBase {
-
-  @Id
-  @GeneratedValue
-  @UuidGenerator
-  @Column(name = "id", updatable = false, nullable = false)
-  private UUID id;
-
-  @Column(name = "role_name", unique = true, nullable = false, length = 100)
-  private String roleName;
-
-  @Column(name = "description", length = 255)
-  private String description;
-
-  @Column(name = "is_decision_maker_role", nullable = false)
-  private Boolean isDecisionMakerRole = false;
-
-  @Column(name = "hierarchy_level")
-  private Integer hierarchyLevel;
-
-  // Default constructor
-  public ContactRole() {}
-
-  // Constructor for easy creation
-  public ContactRole(String roleName, String description) {
-    this.roleName = roleName;
-    this.description = description;
-  }
-
-  public ContactRole(String roleName, String description, Boolean isDecisionMakerRole) {
-    this.roleName = roleName;
-    this.description = description;
-    this.isDecisionMakerRole = isDecisionMakerRole;
-  }
-
-  // Getters and Setters
-  public UUID getId() {
-    return id;
-  }
-
-  public void setId(UUID id) {
-    this.id = id;
-  }
-
-  public String getRoleName() {
-    return roleName;
-  }
-
-  public void setRoleName(String roleName) {
-    this.roleName = roleName;
-  }
-
-  public String getDescription() {
-    return description;
-  }
-
-  public void setDescription(String description) {
-    this.description = description;
-  }
-
-  public Boolean getIsDecisionMakerRole() {
-    return isDecisionMakerRole;
-  }
-
-  public void setIsDecisionMakerRole(Boolean isDecisionMakerRole) {
-    this.isDecisionMakerRole = isDecisionMakerRole;
-  }
-
-  public Integer getHierarchyLevel() {
-    return hierarchyLevel;
-  }
-
-  public void setHierarchyLevel(Integer hierarchyLevel) {
-    this.hierarchyLevel = hierarchyLevel;
-  }
-
-  @Override
-  public String toString() {
-    return "ContactRole{"
-        + "id="
-        + id
-        + ", roleName='"
-        + roleName
-        + '\''
-        + ", description='"
-        + description
-        + '\''
-        + ", isDecisionMakerRole="
-        + isDecisionMakerRole
-        + ", hierarchyLevel="
-        + hierarchyLevel
-        + '}';
-  }
+public enum ContactRole {
+    /**
+     * The person who makes final purchasing decisions
+     */
+    DECISION_MAKER("Entscheidungsträger", "Trifft finale Kaufentscheidungen"),
+    
+    /**
+     * Technical expert who evaluates solutions
+     */
+    TECHNICAL_CONTACT("Technischer Ansprechpartner", "Bewertet technische Lösungen"),
+    
+    /**
+     * Handles invoicing and payment matters
+     */
+    BILLING_CONTACT("Rechnungsempfänger", "Zuständig für Rechnungen und Zahlungen"),
+    
+    /**
+     * Manages day-to-day operations
+     */
+    OPERATIONS_CONTACT("Operativer Ansprechpartner", "Verwaltet Tagesgeschäft"),
+    
+    /**
+     * Influences decisions but doesn't make final call
+     */
+    INFLUENCER("Beeinflusser", "Beeinflusst Entscheidungen ohne finale Befugnis"),
+    
+    /**
+     * Internal advocate for our solution
+     */
+    CHAMPION("Fürsprecher", "Interner Befürworter unserer Lösung"),
+    
+    /**
+     * Controls access to decision makers
+     */
+    GATEKEEPER("Gatekeeper", "Kontrolliert Zugang zu Entscheidungsträgern");
+    
+    private final String germanLabel;
+    private final String description;
+    
+    ContactRole(String germanLabel, String description) {
+        this.germanLabel = germanLabel;
+        this.description = description;
+    }
+    
+    public String getGermanLabel() {
+        return germanLabel;
+    }
+    
+    public String getDescription() {
+        return description;
+    }
+    
+    // Compatibility methods for CustomerContact.java
+    public String getRoleName() {
+        return this.name();
+    }
+    
+    public boolean getIsDecisionMakerRole() {
+        return this == DECISION_MAKER;
+    }
 }
