@@ -33,6 +33,8 @@ class AuditServiceTest {
   @InjectMock SecurityIdentity securityIdentity;
 
   @InjectMock HttpServerRequest request;
+  
+  // ObjectMapper ist Singleton und kann nicht gemockt werden - verwenden wir den echten
 
   private UUID testUserId;
   private UUID testEntityId;
@@ -81,7 +83,7 @@ class AuditServiceTest {
     assertEquals(testEntityId, captured.getEntityId());
     assertEquals(AuditAction.CREATE, captured.getAction());
     assertEquals(testUserName, captured.getUserName());
-    assertEquals(testUserId, captured.getUserId());
+    assertEquals(testUserId.toString(), captured.getUserIdAsString());
     assertNotNull(captured.getNewValues());
     assertNull(captured.getOldValues());
     assertEquals("192.168.1.100", captured.getIpAddress());
@@ -209,6 +211,7 @@ class AuditServiceTest {
 
     AuditLog captured = captor.getValue();
     assertEquals("SYSTEM", captured.getUserName());
+    assertEquals("SYSTEM", captured.getUserIdAsString());
     assertEquals("SYSTEM", captured.getUserRole());
   }
 

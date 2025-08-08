@@ -78,7 +78,8 @@ class AuditRepositoryTest {
     // Given
     AuditLog log1 = createTestAuditLog(AuditAction.CREATE);
     AuditLog log2 = createTestAuditLog(AuditAction.UPDATE);
-    log2.setUserId(UUID.randomUUID()); // Different user
+    UUID differentUserId = UUID.randomUUID();
+    log2.setUserId(differentUserId); // Different user
 
     auditRepository.persist(log1);
     auditRepository.persist(log2);
@@ -378,7 +379,7 @@ class AuditRepositoryTest {
     log.setEntityId(testEntityId);
     log.setEntityName("Test Customer");
     log.setAction(action);
-    log.setUserId(testUserId);
+    log.setUserId(testUserId); // This will convert UUID to String internally
     log.setUserName("test.user");
     log.setUserRole("admin");
     log.setOccurredAt(testTime);

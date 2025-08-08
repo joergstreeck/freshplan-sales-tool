@@ -35,7 +35,8 @@ public class AuditRepository implements PanacheRepositoryBase<AuditLog, UUID> {
 
   /** Findet Audit-Einträge eines Users. */
   public List<AuditLog> findByUser(UUID userId) {
-    return find("userId", Sort.by("occurredAt").descending(), userId).list();
+    String userIdStr = userId != null ? userId.toString() : null;
+    return find("userId", Sort.by("occurredAt").descending(), userIdStr).list();
   }
 
   /** Findet Audit-Einträge in einem Zeitraum. */
@@ -75,10 +76,11 @@ public class AuditRepository implements PanacheRepositoryBase<AuditLog, UUID> {
 
   /** Findet fehlgeschlagene Login-Versuche. */
   public List<AuditLog> findFailedLogins(UUID userId, LocalDateTime since) {
+    String userIdStr = userId != null ? userId.toString() : null;
     return find(
             "userId = ?1 AND action = ?2 AND occurredAt >= ?3",
             Sort.by("occurredAt").descending(),
-            userId,
+            userIdStr,
             AuditAction.FAILED_LOGIN,
             since)
         .list();
@@ -86,12 +88,14 @@ public class AuditRepository implements PanacheRepositoryBase<AuditLog, UUID> {
 
   /** Zählt Aktionen eines Users - optimiert mit GROUP BY Query. */
   public Map<AuditAction, Long> countUserActions(UUID userId, LocalDateTime since) {
+    // userId in der Entity ist ein String, also konvertieren
+    String userIdStr = userId != null ? userId.toString() : null;
     return getEntityManager()
         .createQuery(
             "SELECT a.action, COUNT(a) FROM AuditLog a " +
             "WHERE a.userId = :userId AND a.occurredAt >= :since " +
             "GROUP BY a.action", Object[].class)
-        .setParameter("userId", userId.toString())
+        .setParameter("userId", userIdStr)
         .setParameter("since", since)
         .getResultStream()
         .collect(Collectors.toMap(
@@ -192,13 +196,13 @@ public class AuditRepository implements PanacheRepositoryBase<AuditLog, UUID> {
         "dsgvoRelevant",
         count("occurredAt BETWEEN ?1 AND ?2 AND isDsgvoRelevant = true", from, to));
 
-    // Unique Users
-    List<UUID> uniqueUsers =
+    // Unique Users (userId is now String)
+    List<String> uniqueUsers =
         getEntityManager()
             .createQuery(
                 "SELECT DISTINCT a.userId FROM AuditLog a "
                     + "WHERE a.occurredAt BETWEEN :from AND :to",
-                UUID.class)
+                String.class)
             .setParameter("from", from)
             .setParameter("to", to)
             .getResultList();
@@ -254,7 +258,7 @@ public class AuditRepository implements PanacheRepositoryBase<AuditLog, UUID> {
 
     if (userId != null) {
       query.append(" AND userId = :userId");
-      params.put("userId", userId);
+      params.put("userId", userId.toString());
     }
 
     if (from != null) {

@@ -51,8 +51,8 @@ public class AuditLog extends PanacheEntityBase {
   private AuditAction action;
 
   // Who made the change
-  @Column(name = "user_id", nullable = false)
-  private UUID userId;
+  @Column(name = "user_id", nullable = false, length = 100)
+  private String userId; // Stored as String for Keycloak sub claim compatibility
 
   @Column(name = "user_name", nullable = false, length = 100)
   private String userName;
@@ -277,10 +277,25 @@ public class AuditLog extends PanacheEntityBase {
   }
 
   public UUID getUserId() {
-    return userId;
+    // Convert String to UUID for backward compatibility
+    if (userId == null) return null;
+    try {
+      return UUID.fromString(userId);
+    } catch (IllegalArgumentException e) {
+      // If not a valid UUID, return a name-based UUID
+      return UUID.nameUUIDFromBytes(userId.getBytes());
+    }
   }
 
   public void setUserId(UUID userId) {
+    this.userId = userId != null ? userId.toString() : null;
+  }
+
+  public String getUserIdAsString() {
+    return userId;
+  }
+
+  public void setUserIdAsString(String userId) {
     this.userId = userId;
   }
 

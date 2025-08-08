@@ -89,6 +89,7 @@ public class AuditService {
     auditLog.setEntityId(entityId);
     auditLog.setEntityName(entityName);
     auditLog.setAction(action);
+    auditLog.setOccurredAt(LocalDateTime.now()); // Set occurred at immediately
     
     extractUserInfo(auditLog);
     extractRequestInfo(auditLog);
@@ -260,16 +261,13 @@ public class AuditService {
       String username = securityIdentity.getPrincipal().getName();
       auditLog.setUserName(username);
 
-      // Try to get UUID from claims
+      // Try to get sub claim directly as String
       if (securityIdentity.getAttributes().containsKey("sub")) {
-        try {
-          auditLog.setUserId(UUID.fromString(securityIdentity.getAttribute("sub").toString()));
-        } catch (Exception e) {
-          // Fallback: use hash of username as UUID
-          auditLog.setUserId(UUID.nameUUIDFromBytes(username.getBytes()));
-        }
+        // Store the sub claim directly as String
+        auditLog.setUserIdAsString(securityIdentity.getAttribute("sub").toString());
       } else {
-        auditLog.setUserId(UUID.nameUUIDFromBytes(username.getBytes()));
+        // Fallback: use username as userId
+        auditLog.setUserIdAsString(username);
       }
 
       // Get role
@@ -279,7 +277,7 @@ public class AuditService {
     } else {
       // System user
       auditLog.setUserName("SYSTEM");
-      auditLog.setUserId(UUID.nameUUIDFromBytes("SYSTEM".getBytes()));
+      auditLog.setUserIdAsString("SYSTEM");
       auditLog.setUserRole("SYSTEM");
     }
   }
@@ -402,7 +400,7 @@ public class AuditService {
       contentMap.put("entityId", auditLog.getEntityId());
       contentMap.put("action", auditLog.getAction());
       contentMap.put("userId", auditLog.getUserId());
-      contentMap.put("occurredAt", auditLog.getOccurredAt().toString());
+      contentMap.put("occurredAt", auditLog.getOccurredAt() != null ? auditLog.getOccurredAt().toString() : "UNKNOWN");
       contentMap.put("oldValues", auditLog.getOldValues());
       contentMap.put("newValues", auditLog.getNewValues());
       contentMap.put("previousHash", previousHash);
