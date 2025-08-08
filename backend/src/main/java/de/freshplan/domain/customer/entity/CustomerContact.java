@@ -208,19 +208,17 @@ public class CustomerContact extends PanacheEntityBase {
     return roles.stream().anyMatch(role -> role.equalsIgnoreCase(roleName));
   }
 
+  // Decision maker role constants for better maintainability
+  private static final Set<String> DECISION_MAKER_ROLES =
+      Set.of("DECISION_MAKER", "GESCHÄFTSFÜHRER", "CEO");
+
   /**
    * Updates decision maker status based on current roles. Checks for DECISION_MAKER,
    * GESCHÄFTSFÜHRER, or CEO roles. This method is called automatically when roles change.
    */
   private void updateDecisionMakerStatus() {
-    // Temporary implementation - check for specific decision maker roles
     this.isDecisionMaker =
-        roles.stream()
-            .anyMatch(
-                role ->
-                    role.equalsIgnoreCase("DECISION_MAKER")
-                        || role.equalsIgnoreCase("GESCHÄFTSFÜHRER")
-                        || role.equalsIgnoreCase("CEO"));
+        roles.stream().map(String::toUpperCase).anyMatch(DECISION_MAKER_ROLES::contains);
   }
 
   /**
@@ -232,8 +230,15 @@ public class CustomerContact extends PanacheEntityBase {
    * @return true if this contact reports to the potential superior (directly or indirectly)
    */
   public boolean isSubordinateOf(CustomerContact potentialSuperior) {
+    Set<UUID> visited = new HashSet<>();
     CustomerContact current = this.reportsTo;
+
     while (current != null) {
+      // Prevent infinite loop in case of circular references
+      if (!visited.add(current.getId())) {
+        return false; // Circular reference detected
+      }
+
       if (current.getId().equals(potentialSuperior.getId())) {
         return true;
       }
@@ -244,16 +249,32 @@ public class CustomerContact extends PanacheEntityBase {
 
   /**
    * Gets all subordinates (direct and indirect) of this contact. Recursively traverses the
-   * hierarchy to find all reports.
+   * hierarchy to find all reports. Prevents infinite loops in case of circular references.
    *
    * @return list of all subordinate contacts
    */
   public List<CustomerContact> getAllSubordinates() {
+    return getAllSubordinates(new HashSet<>());
+  }
+
+  /**
+   * Internal helper method to get all subordinates with circular reference protection.
+   *
+   * @param visited set of already visited contact IDs to prevent infinite recursion
+   * @return list of all subordinate contacts
+   */
+  private List<CustomerContact> getAllSubordinates(Set<UUID> visited) {
     List<CustomerContact> allSubordinates = new ArrayList<>();
+
+    // Add current contact ID to visited set
+    if (this.id != null && !visited.add(this.id)) {
+      return allSubordinates; // Already visited, prevent circular reference
+    }
+
     for (CustomerContact directReport : directReports) {
       if (!Boolean.TRUE.equals(directReport.getIsDeleted())) {
         allSubordinates.add(directReport);
-        allSubordinates.addAll(directReport.getAllSubordinates());
+        allSubordinates.addAll(directReport.getAllSubordinates(visited));
       }
     }
     return allSubordinates;

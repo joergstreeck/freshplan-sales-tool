@@ -18,7 +18,7 @@ Implements a flexible role-based system for customer contacts, replacing the sim
 
 2. **New Column: `responsibility_scope`**
    - Added to `customer_contacts` table
-   - VARCHAR(50) with default 'all'
+   - VARCHAR(20) with default 'all'
    - Defines the scope of responsibility (all, location_specific, department_specific)
 
 3. **Data Migration**
@@ -218,7 +218,7 @@ For migration support, contact the development team through the standard channel
 -- Find all decision makers
 SELECT c.* FROM customer_contacts c
 JOIN contact_roles r ON c.id = r.contact_id
-WHERE r.role = 'DECISION_MAKER' AND c.is_deleted = false;
+WHERE r.role = 'DECISION_MAKER' AND c.deleted_at IS NULL;
 
 -- Get contact distribution by location
 SELECT cl.location_name, COUNT(DISTINCT cla.contact_id) as contact_count

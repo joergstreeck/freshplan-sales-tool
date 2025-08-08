@@ -232,14 +232,14 @@ public class ContactSecurityTest {
 
       // Setup: contact1 reports to contact2
       contact1.setReportsTo(contact2);
-      
+
       // This would create a circular reference
       // In a real scenario, the service layer should prevent contact2.setReportsTo(contact1)
       // For now, we just test that we don't have infinite loops
-      
+
       // Test: contact1 does not report to itself
       assertThat(contact1.isSubordinateOf(contact1)).isFalse();
-      
+
       // Test: contact2 is not a subordinate of contact1 (since contact1 reports to contact2)
       assertThat(contact2.isSubordinateOf(contact1)).isFalse();
     }
