@@ -51,8 +51,10 @@ public class CustomerDataInitializer {
       var em = customerRepository.getEntityManager();
 
       // Security: Define allowed tables for deletion (prevents SQL injection)
+      // IMPORTANT: Tables must be deleted in dependency order (child tables first)
       var tablesToClear =
           java.util.List.of(
+              "contact_interactions", // Must be deleted BEFORE customer_contacts (foreign key)
               "customer_timeline_events", "customer_contacts", "customer_locations", "customers");
 
       // Derive allowed tables from the clearing list to ensure consistency
@@ -61,8 +63,8 @@ public class CustomerDataInitializer {
       // CRITICAL FIX: Delete opportunities first to avoid foreign key constraint violations
       LOG.info("Clearing all module data (opportunities, audit) before customers...");
       em.createNativeQuery("DELETE FROM audit_trail").executeUpdate();
-      // TODO: contact_interactions und contact_warmth_scores Tabellen müssen erst angelegt werden
-      // em.createNativeQuery("DELETE FROM contact_interactions").executeUpdate();
+      // contact_interactions is now handled in tablesToClear list
+      // contact_warmth_scores table doesn't exist yet
       // em.createNativeQuery("DELETE FROM contact_warmth_scores").executeUpdate();
       em.createNativeQuery("DELETE FROM opportunity_activities").executeUpdate();
       em.createNativeQuery("DELETE FROM opportunities").executeUpdate();
