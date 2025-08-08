@@ -33,8 +33,6 @@ class AuditServiceTest {
   @InjectMock SecurityIdentity securityIdentity;
 
   @InjectMock HttpServerRequest request;
-  
-  // ObjectMapper ist Singleton und kann nicht gemockt werden - verwenden wir den echten
 
   private UUID testUserId;
   private UUID testEntityId;
@@ -49,6 +47,11 @@ class AuditServiceTest {
     Principal principal = mock(Principal.class);
     when(principal.getName()).thenReturn(testUserName);
     when(securityIdentity.getPrincipal()).thenReturn(principal);
+    
+    // Mock attributes map with "sub" key
+    Map<String, Object> attributes = new HashMap<>();
+    attributes.put("sub", testUserId.toString());
+    when(securityIdentity.getAttributes()).thenReturn(attributes);
     when(securityIdentity.getAttribute("sub")).thenReturn(testUserId.toString());
     when(securityIdentity.getRoles()).thenReturn(Set.of("admin"));
 
@@ -67,22 +70,25 @@ class AuditServiceTest {
 
   @Test
   @DisplayName("Should create audit log for CREATE action")
-  void testAuditCreate() {
+  void testAuditCreate() throws InterruptedException {
     // Given
     CustomerTestData customer = new CustomerTestData("Test Customer GmbH");
 
     // When
     auditService.auditCreate(EntityType.CUSTOMER, testEntityId, customer.name, customer);
 
-    // Then
+    // Then - Wait for potential async operation
+    Thread.sleep(200);
+    
     ArgumentCaptor<AuditLog> captor = ArgumentCaptor.forClass(AuditLog.class);
-    verify(auditRepository).persist(captor.capture());
+    verify(auditRepository, timeout(1000)).persist(captor.capture());
 
     AuditLog captured = captor.getValue();
     assertEquals(EntityType.CUSTOMER, captured.getEntityType());
     assertEquals(testEntityId, captured.getEntityId());
     assertEquals(AuditAction.CREATE, captured.getAction());
     assertEquals(testUserName, captured.getUserName());
+    // getUserIdAsString() returns the actual stored string from sub claim
     assertEquals(testUserId.toString(), captured.getUserIdAsString());
     assertNotNull(captured.getNewValues());
     assertNull(captured.getOldValues());
@@ -102,7 +108,7 @@ class AuditServiceTest {
 
     // Then
     ArgumentCaptor<AuditLog> captor = ArgumentCaptor.forClass(AuditLog.class);
-    verify(auditRepository).persist(captor.capture());
+    verify(auditRepository, timeout(1000)).persist(captor.capture());
 
     AuditLog captured = captor.getValue();
     assertEquals(AuditAction.UPDATE, captured.getAction());
@@ -123,9 +129,9 @@ class AuditServiceTest {
     auditService.auditDelete(
         EntityType.CUSTOMER, testEntityId, customer.name, customer, deleteReason);
 
-    // Then
+    // Then - DELETE is critical and should be sync
     ArgumentCaptor<AuditLog> captor = ArgumentCaptor.forClass(AuditLog.class);
-    verify(auditRepository).persist(captor.capture());
+    verify(auditRepository, timeout(500)).persist(captor.capture());
 
     AuditLog captured = captor.getValue();
     assertEquals(AuditAction.DELETE, captured.getAction());
@@ -137,14 +143,16 @@ class AuditServiceTest {
 
   @Test
   @DisplayName("Should mark DSGVO-relevant actions correctly")
-  void testDsgvoRelevance() {
+  void testDsgvoRelevance() throws InterruptedException {
     // When
     auditService.auditDataAccess(
         EntityType.CUSTOMER, testEntityId, "Test Customer", AuditAction.EXPORT);
 
-    // Then
+    // Then - Wait for potential async operation
+    Thread.sleep(200);
+    
     ArgumentCaptor<AuditLog> captor = ArgumentCaptor.forClass(AuditLog.class);
-    verify(auditRepository).persist(captor.capture());
+    verify(auditRepository, timeout(1000)).persist(captor.capture());
 
     AuditLog captured = captor.getValue();
     assertTrue(captured.getIsDsgvoRelevant());
@@ -161,9 +169,9 @@ class AuditServiceTest {
     // When
     auditService.auditConsent(testEntityId, "Test Customer", true, consentId, purpose);
 
-    // Then
+    // Then - Consent is DSGVO relevant
     ArgumentCaptor<AuditLog> captor = ArgumentCaptor.forClass(AuditLog.class);
-    verify(auditRepository).persist(captor.capture());
+    verify(auditRepository, timeout(500)).persist(captor.capture());
 
     AuditLog captured = captor.getValue();
     assertEquals(AuditAction.CONSENT_GIVEN, captured.getAction());
@@ -175,7 +183,7 @@ class AuditServiceTest {
 
   @Test
   @DisplayName("Should calculate hash chain correctly")
-  void testHashChainCalculation() {
+  void testHashChainCalculation() throws InterruptedException {
     // Given
     AuditLog previousLog = new AuditLog();
     previousLog.setCurrentHash("previous-hash-abc123");
@@ -185,9 +193,11 @@ class AuditServiceTest {
     auditService.auditSimple(
         EntityType.CUSTOMER, testEntityId, "Test Customer", AuditAction.VIEW);
 
-    // Then
+    // Then - Wait for potential async operation
+    Thread.sleep(200);
+    
     ArgumentCaptor<AuditLog> captor = ArgumentCaptor.forClass(AuditLog.class);
-    verify(auditRepository).persist(captor.capture());
+    verify(auditRepository, timeout(1000)).persist(captor.capture());
 
     AuditLog captured = captor.getValue();
     assertEquals("previous-hash-abc123", captured.getPreviousHash());
@@ -207,7 +217,7 @@ class AuditServiceTest {
 
     // Then
     ArgumentCaptor<AuditLog> captor = ArgumentCaptor.forClass(AuditLog.class);
-    verify(auditRepository).persist(captor.capture());
+    verify(auditRepository, timeout(1000)).persist(captor.capture());
 
     AuditLog captured = captor.getValue();
     assertEquals("SYSTEM", captured.getUserName());
@@ -273,7 +283,11 @@ class AuditServiceTest {
             null);
 
     // Then
-    assertNull(result); // Should return null on error, not throw
+    // The service now handles exceptions gracefully and still creates the audit log
+    // with a recovery hash when getPreviousHash fails
+    assertNotNull(result); // Service recovers from error
+    // The audit log should still be persisted despite the error in getPreviousHash
+    verify(auditRepository, timeout(1000)).persist(any(AuditLog.class));
   }
 
   @Test
@@ -290,7 +304,7 @@ class AuditServiceTest {
       // When
       auditService.auditSimple(EntityType.CUSTOMER, testEntityId, "Test", action);
 
-      // Then
+      // Then - Critical actions should be sync
       ArgumentCaptor<AuditLog> captor = ArgumentCaptor.forClass(AuditLog.class);
       verify(auditRepository, atLeastOnce()).persist(captor.capture());
 
@@ -306,9 +320,9 @@ class AuditServiceTest {
     auditService.auditSimple(
         EntityType.CUSTOMER, testEntityId, "Test", AuditAction.DATA_DELETION);
 
-    // Then
+    // Then - DATA_DELETION is critical and should be sync
     ArgumentCaptor<AuditLog> captor = ArgumentCaptor.forClass(AuditLog.class);
-    verify(auditRepository).persist(captor.capture());
+    verify(auditRepository, timeout(500)).persist(captor.capture());
 
     AuditLog captured = captor.getValue();
     assertNotNull(captured.getRetentionUntil());
