@@ -5,7 +5,6 @@ import de.freshplan.audit.entity.AuditLog.*;
 import de.freshplan.audit.service.AuditService;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.annotation.Priority;
-import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.interceptor.AroundInvoke;
 import jakarta.interceptor.Interceptor;
@@ -27,7 +26,6 @@ import org.slf4j.LoggerFactory;
 @Audited
 @Interceptor
 @Priority(Interceptor.Priority.APPLICATION)
-@ApplicationScoped
 public class AuditInterceptor {
 
   private static final Logger log = LoggerFactory.getLogger(AuditInterceptor.class);

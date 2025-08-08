@@ -43,9 +43,44 @@ safe_exec() {
     echo "$result"
 }
 
-# Check if we're in the right directory
+# Robust project root detection
+find_project_root() {
+    local dir="$PWD"
+    while [ "$dir" != "/" ]; do
+        if [ -d "$dir/.git" ] && [ -f "$dir/CLAUDE.md" ]; then
+            echo "$dir"
+            return 0
+        fi
+        dir=$(dirname "$dir")
+    done
+    # Fallback to script location
+    local script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" 2>/dev/null && pwd)"
+    if [ -n "$script_dir" ]; then
+        local potential_root="$(cd "$script_dir/.." 2>/dev/null && pwd)"
+        if [ -f "$potential_root/CLAUDE.md" ]; then
+            echo "$potential_root"
+            return 0
+        fi
+    fi
+    echo ""
+    return 1
+}
+
+# Find and change to project root
+PROJECT_ROOT=$(find_project_root)
+if [ -z "$PROJECT_ROOT" ]; then
+    error_exit "Could not find FreshPlan project root!"
+fi
+
+# Change to project root if not already there
+if [ "$PWD" != "$PROJECT_ROOT" ]; then
+    info "Changing to project root: $PROJECT_ROOT"
+    cd "$PROJECT_ROOT" || error_exit "Failed to change to project root"
+fi
+
+# Verify we're in the right directory
 if [ ! -f "CLAUDE.md" ] || [ ! -d "backend" ]; then
-    error_exit "Must be run from FreshPlan project root directory!"
+    error_exit "Invalid project structure - missing CLAUDE.md or backend/!"
 fi
 
 # Progress indicator

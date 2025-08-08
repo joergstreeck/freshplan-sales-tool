@@ -17,9 +17,34 @@ MAGENTA='\033[0;35m'
 BOLD='\033[1m'
 NC='\033[0m'
 
-# Configuration
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+# Configuration with robust path detection
+find_project_root() {
+    local dir="$PWD"
+    while [ "$dir" != "/" ]; do
+        if [ -d "$dir/.git" ] && [ -f "$dir/CLAUDE.md" ]; then
+            echo "$dir"
+            return 0
+        fi
+        dir=$(dirname "$dir")
+    done
+    # Fallback to script location
+    local script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" 2>/dev/null && pwd)"
+    if [ -n "$script_dir" ]; then
+        echo "$(cd "$script_dir/.." 2>/dev/null && pwd)"
+        return 0
+    fi
+    echo ""
+    return 1
+}
+
+# Determine project root robustly
+PROJECT_ROOT=$(find_project_root)
+if [ -z "$PROJECT_ROOT" ]; then
+    echo "ERROR: Could not find project root. Please run from within freshplan-sales-tool."
+    exit 1
+fi
+
+SCRIPT_DIR="$PROJECT_ROOT/scripts"
 DATE=$(date +"%Y-%m-%d")
 TIME=$(date +"%H-%M")
 HANDOVER_DIR="$PROJECT_ROOT/docs/claude-work/daily-work/$DATE"
