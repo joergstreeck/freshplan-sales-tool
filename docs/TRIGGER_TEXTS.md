@@ -2,9 +2,9 @@
 
 **WICHTIG: Diese Datei enthält die offiziellen Trigger-Texte. NIEMALS löschen oder überschreiben!**
 
-**Version:** 2.6  
-**Letzte Aktualisierung:** 02.08.2025  
-**Neues Feature:** MIGRATION-CHECK als verpflichtender Schritt 2.5 integriert
+**Version:** 2.8  
+**Letzte Aktualisierung:** 08.08.2025  
+**Neues Feature:** Universelles create-handover.sh Script - funktioniert aus JEDEM Verzeichnis
 
 ---
 
@@ -13,79 +13,58 @@
 ```
 Erstelle eine vollständige Übergabe für die nächste Session.
 
-🎯 CONTEXT: CLAUDE TECH Migration 100% complete (46/46 Features)
-   Alle Features haben optimierte CLAUDE_TECH Dokumente ready für Implementation!
+  # 🛑 ÜBERGABE ERSTELLEN - NUR DIESE SCHRITTE AUSFÜHREN!
 
-SCHRITT 1 - TODO-Status sichern:
-  ⚠️ PFLICHT: Führe TodoRead aus
-  ⚠️ OPTIONAL aber empfohlen: TodoRead > .current-todos.md
-     (macht die automatische Zählung zuverlässiger)
+  ## ⚠️ KRITISCH: Führe NUR diese Schritte aus, dann STOPPE!
 
-SCHRITT 2 - Automatisches Script mit V5 Sync:
-./scripts/handover-with-sync.sh
-(Führt automatisch V5 Master Plan Sync durch + erstellt Template)
+  ### SCHRITT 1: TODO-Status sichern
+  ```bash
+  TodoRead
+  # Optional für bessere Zählung:
+  TodoRead > /tmp/current-todos.txt
 
-SCHRITT 3 - Script-Output prüfen:
-- Falls Fehler/Warnungen → STOPPE und behebe erst das Problem
-- Falls "Kein Spoke-Dokument gefunden" → Prüfe neue V5-Struktur in /docs/features/ACTIVE/
-- Falls TODOs im JSON-Format → Konvertiere mit:
-  cat .current-todos.md | jq -r '.[] | "- [ ] [\(.priority|ascii_upcase)] [ID: \(.id)] \(.content)"'
-- ✅ V5 Master Plan wurde automatisch synchronisiert
+  SCHRITT 2: MIGRATION-CHECK (🚨 PFLICHT bei DB-Arbeit!)
 
-SCHRITT 4 - TODOs einfügen:
-Ersetze {{TODO_LIST}} oder JSON-Format mit:
-- Alle offenen TODOs mit Status und ID
-- Alle erledigten TODOs dieser Session
-- Format: - [ ] [PRIO] [ID: xxx] Beschreibung
+  ./scripts/get-next-migration.sh
+  # Diese Nummer IMMER in Übergabe notieren!
+  # NIEMALS alte Nummern wiederverwenden!
 
-SCHRITT 5 - Ergänze diese Bereiche:
-1. Was wurde gemacht? (git diff zeigt die Änderungen)
-2. Was funktioniert? (nur verifizierte Features)
-3. Welche Fehler? (exakte Fehlermeldungen)
-4. Nächste Schritte (aus TODOs + V5 Arbeits-Dokument)
-5. 🆕 STRATEGISCHE PLÄNE: Verweise auf aktive Planungsdokumente
-   - Format: **Plan:** [Pfad] - [Kurzbeschreibung] - Status: [BEREIT/IN ARBEIT/BLOCKIERT]
-   - Beispiel: **Plan:** /docs/features/ACTIVE/.../FC-XXX_CLAUDE_TECH.md - Feature X Implementation - Status: IN ARBEIT
-6. 🚨 UNTERBRECHUNGEN: Falls interrupted, wo genau warst du?
-   - Format: **Unterbrochen bei:** [TODO-XXX] - [Datei:Zeile] - [Was war der nächste Schritt]
+  # Fallback bei Script-Fehler:
+  ls -la backend/src/main/resources/db/migration/ | tail -3
+  # Manuell nächste V-Nummer berechnen
 
-SCHRITT 6 - NEXT_STEP.md aktualisieren:
-- Prüfe: cat docs/NEXT_STEP.md
-- Update mit aktuellem Stand nach diesem Format:
-🎯 JETZT GERADE:
+  SCHRITT 3: Universelles Handover-Script
 
-  [HAUPTAKTIVITÄT IN GROSSBUCHSTABEN]
+  ./scripts/create-handover.sh
+  # NEU: Funktioniert aus JEDEM Verzeichnis!
+  # Wählt automatisch das beste verfügbare Script:
+  # - handover-with-sync-stable.sh (mit V5 Sync)
+  # - create-handover-improved.sh (verbesserte Version)
+  # - Minimales Fallback-Template wenn nötig
 
-  Stand [Datum Zeit]:
-- ✅ Was ist fertig
-- 🔄 Was läuft gerade
-- 🚨 Wo unterbrochen
+  # Das Script zeigt automatisch die Migration-Nummer prominent an
+  # Bei Fehler wurde Nummer bereits in Schritt 2 ermittelt
 
-  🚀 NÄCHSTER SCHRITT:
+  SCHRITT 4: Template ausfüllen
 
-  [KONKRETER NÄCHSTER SCHRITT (TODO-XX)]
-# Konkrete Befehle
+  Die Übergabe wurde erstellt in:
+  docs/claude-work/daily-work/YYYY-MM-DD/
 
-  UNTERBROCHEN BEI:
-- Exakte Stelle
-- Nächster geplanter Schritt
+  Fülle aus:
+  1. TODO-Status (aus TodoRead)
+  2. MIGRATION-NUMMER (aus Schritt 2) ⚠️ KRITISCH
+  3. Was wurde gemacht? (git diff --stat)
+  4. Bekannte Probleme
+  5. NEXT_STEP.md Update
 
-SCHRITT 7 - Validierungs-Checkliste:
-## ✅ VALIDIERUNG:
-- [ ] TodoRead ausgeführt? (Anzahl: ___)
-- [ ] Alle TODOs in Übergabe? (Anzahl: ___)
-- [ ] Zahlen stimmen überein? ⚠️ KRITISCH
-- [ ] Git-Status korrekt?
-- [ ] Service-Status geprüft?
-- [ ] V5 Fokus dokumentiert? (✅ Auto-Sync durchgeführt)
-- [ ] NEXT_STEP.md aktuell?
-- [ ] Nächste Schritte klar?
-- [ ] Strategische Pläne verlinkt?
+  SCHRITT 5: Validierung
 
-WICHTIG: Ohne TODO-Dokumentation ist die Übergabe UNGÜLTIG!
-⚠️ Die Übergabe MUSS mit folgendem Text beginnen: "WICHTIG: Lies ZUERST diese Dokumente in dieser Reihenfolge: 1) /docs/CLAUDE.md 2) Diese Übergabe 3) /docs/STANDARDUBERGABE_NEU.md als Hauptanleitung".
-Erkläre das 3-STUFEN-SYSTEM: STANDARDUBERGABE_NEU.md (Hauptdokument mit 5 Schritten), STANDARDUBERGABE_KOMPAKT.md (Ultra-kurz für Quick-Reference), STANDARDUBERGABE.md (nur bei Problemen).
-Speichere in /docs/claude-work/daily-work/YYYY-MM-DD/YYYY-MM-DD_HANDOVER_HH-MM.md
+  - Alle TODOs dokumentiert?
+  - MIGRATION-NUMMER in Übergabe? ⚠️ KRITISCH
+  - NEXT_STEP.md aktuell?
+  - Git-Status sauber?
+
+  FERTIG! Übergabe komplett.
 ```
 
 ---
@@ -95,89 +74,56 @@ Speichere in /docs/claude-work/daily-work/YYYY-MM-DD/YYYY-MM-DD_HANDOVER_HH-MM.m
 ```
 Lese alles gründlich durch und befolge strict die Standardübergabe.
 
-    SCHRITT 0 - SOFORT zum Feature-Branch wechseln:
-    git branch --show-current
-    ./scripts/get-current-feature-branch.sh
-    
-    → Falls Feature-Branch gefunden: git checkout feature/[branch-name]
-    → Falls KEIN Feature-Branch: git checkout -b feature/fc-XXX-[description]
-    
-    ⚠️ DU BLEIBST AUF DEM FEATURE-BRANCH FÜR DIE GESAMTE SESSION!
-    ✅ Orientierung und Arbeit erfolgen auf dem gleichen Branch!
+  # 🛑 STANDARDÜBERGABE - STOPPE NACH DIESEN SCHRITTEN!
 
-    SCHRITT 1 - System vorbereiten:
-    ./scripts/robust-session-start.sh
-    → ODER für maximale Sicherheit:
-    ./scripts/safe-run.sh ./scripts/session-start.sh
-    → Bei Fehlern: Check die angezeigte Log-Datei für Details
+  ## ⛔ KRITISCHER HALT
+  **NUR die folgenden Schritte ausführen.**
+  **DANN WARTEN auf "ARBEITSSTART"!**
+  **KEINE eigenmächtige Arbeit!**
 
-    SCHRITT 2 - ABSOLUTES WORKFLOW-VERBOT:
-    🛑 NIEMALS "git push origin main" oder "git commit" auf main Branch!
-    🛑 NIEMALS direkte Änderungen auf main Branch committen!
-    🛑 NIEMALS eigenständig Pull Requests mergen!
-    🛑 AUSNAHMSLOS: Feature Branch → Pull Request → Warten auf Merge-Anweisung
-    
-    WORKFLOW-REGEL (UNVERHANDELBAR):
-    1. git checkout -b feature/[name] (IMMER neuer Branch)
-    2. Code ändern + committen auf Feature Branch
-    3. git push origin feature/[name] 
-    4. Pull Request erstellen
-    5. Nach Review: NUR auf direkte Anweisung mergen!
+  ### SCHNELL-CHECK (3 Min):
 
-    SCHRITT 2.5 - MIGRATION-CHECK (🚨 PFLICHT bei DB-Arbeit!):
-    🚨🚨🚨 MIGRATION ALERT - V121 FREI 🚨🚨🚨
-    cat docs/FLYWAY_MIGRATION_HISTORY.md | head -20
-    echo -e "\033[1;31m🚨 NÄCHSTE FREIE MIGRATION: V121\033[0m"
-    → Bei Migration-Arbeit ohne klare V121+ Nummer: SESSION UNTERBRECHEN!
-    → Nach neuer Migration: ./scripts/update-flyway-history.sh V121 "name" "beschreibung"
+  #### 1. Branch Check
+  ```bash
+  git branch --show-current
+  ./scripts/get-current-feature-branch.sh
 
-    SCHRITT 3 - Pflichtlektüre:
-    1. /CLAUDE.md (besonders Session-Ende-Routine)
-    2. Letzte Übergabe (besonders TODO-Status)
-    3. /docs/STANDARDUERGABE_NEU.md
-    4. 🆕 Prüfe Guide-Updates aus Übergabe:
-       - Wurden Guides aktualisiert? → Lies die Änderungen
-       - Arbeitet diese Session mit Migrationen? → Lies DATABASE_MIGRATION_GUIDE.md
-       - Gab es Debug-Sessions? → Lies DEBUG_COOKBOOK.md Updates
+  # Falls kein Feature-Branch:
+  git checkout -b feature/fc-XXX-[description]
 
-    SCHRITT 4 - V5 Fokus prüfen (✅ Auto-Sync):
-    cat docs/CRM_COMPLETE_MASTER_PLAN_V5.md | sed -n '15,35p'
-    → Notiere: Aktueller Fokus, Status, Arbeits-Dokument (⭐)
-    → Vergleiche mit ./scripts/get-active-module.sh Output
-    → ✅ KEINE DISKREPANZ MEHR: V5 wurde automatisch synchronisiert!
+  2. MIGRATION-CHECK (🚨 PFLICHT bei DB-Arbeit!)
 
-    SCHRITT 5 - TODOs wiederherstellen:
-    - Prüfe TODO-Section der letzten Übergabe
-    - Führe TodoWrite aus für alle offenen TODOs
-    - 🆕 WICHTIG: Prüfe ob ein TODO "Guide aktualisieren" existiert:
-      → Falls ja: Plane Zeit für Guide-Update ein
-      → Falls Migration-Arbeit: Erstelle TODO "DATABASE_MIGRATION_GUIDE.md aktualisieren"
-    - Verifiziere mit TodoRead
+  ./scripts/get-next-migration.sh
+  # Diese Nummer IMMER verwenden!
 
-    SCHRITT 6 - Aktives Modul:
-    ./scripts/get-active-module.sh
-    → Bei "Kein Spoke-Dokument": Prüfe neue Struktur in docs/features/ACTIVE/
+  # Fallback bei Script-Fehler:
+  ls -la backend/src/main/resources/db/migration/ | tail -3
 
-    SCHRITT 7 - Code-Validierung:
-    - git status (stimmt mit Übergabe?)
-    - Prüfe genannte Dateien existieren
-    - Verifiziere Implementierungsstand
-    - cat docs/NEXT_STEP.md (wo genau weitermachen?)
-    - 🆕 Bei Migration-Arbeit: Prüfe letzte Migration-Nummer
-    - 🆕 Bei Debug-Arbeit: Prüfe bekannte Probleme in DEBUG_COOKBOOK.md
+  3. System-Start
 
-    MELDE DICH MIT:
-    - ✅ Arbeits-Branch: feature/[branch-name]
-    - ✅ X offene TODOs wiederhergestellt
-    - ✅ Aktives Modul: FC-XXX-MX
-    - ✅ V5 Fokus: [Phase/Status aus V5] (✅ Auto-Sync)
-    - ✅ Nächster Schritt: [aus NEXT_STEP.md oder TODO]
-    - 🆕 Guide-Status: [Welche Guides sind relevant für diese Session?]
-    - ✅ Migration-Check: [V121 bestätigt/N/A]
-    - ⚠️ Diskrepanzen: [Liste - sollten minimal sein dank Auto-Sync]
-    - Status: BEREIT FÜR ARBEITSPHASE
+  ./scripts/robust-session-start.sh
+  # Bei Fehler: cat docs/NEXT_STEP.md
 
-    ⛔ STOPP: Warte auf "ARBEITSSTART" Bestätigung bevor du mit der Implementierung beginnst!
+  4. Pflichtlektüre
+
+  1. /docs/CLAUDE.md
+  2. Letzte Übergabe in /docs/claude-work/daily-work/
+  3. /docs/STANDARDUERGABE_NEU.md (falls Details fehlen)
+
+  5. TODOs laden
+
+  Aus letzter Übergabe TODO-Status → TodoWrite
+
+  STATUS MELDEN:
+
+  📋 STATUS:
+  - Branch: [name]
+  - TODOs: [X offen]
+  - Migration: [VXXX] ⚠️ BESTÄTIGT
+  - Nächster Schritt: [aus NEXT_STEP.md]
+  - ⛔ WARTE AUF ARBEITSSTART
+
+  ⛔ STOPP! WARTE AUF "ARBEITSSTART"!
 ```
 
 ---
@@ -186,7 +132,7 @@ Lese alles gründlich durch und befolge strict die Standardübergabe.
 
 **Teil 1:** 
 ```
-Übergabe mit ./scripts/handover-with-sync.sh (Auto-Sync!), alle Punkte aus TRIGGER_TEXTS.md Teil 1 beachten.
+Übergabe mit ./scripts/create-handover.sh (Universal-Script mit Auto-Sync!), alle Punkte aus TRIGGER_TEXTS.md Teil 1 beachten.
 ```
 
 **Teil 2:**
@@ -198,16 +144,32 @@ Feature-Branch checkout → ./scripts/robust-session-start.sh → WORKFLOW-VERBO
 
 ## 📋 CHECKLISTE für Übergabe
 
-- [ ] Einleitungstext korrekt
-- [ ] 3-STUFEN-SYSTEM erklärt
-- [ ] Code-Inspektion durchgeführt
-- [ ] ./scripts/handover-with-sync.sh ausgeführt (Auto-Sync V5!)
-- [ ] Scripts ausgeführt
-- [ ] TodoRead genutzt
-- [ ] Alle 6 Fragen beantwortet
-- [ ] "NACH KOMPRIMIERUNG" Abschnitt
-- [ ] Korrekt gespeichert
+- [ ] TodoRead ausgeführt und dokumentiert?
+- [ ] Migration-Nummer geprüft und notiert?
+- [ ] Handover-Script erfolgreich ausgeführt?
+- [ ] Template vollständig ausgefüllt?
+- [ ] NEXT_STEP.md aktualisiert?
+- [ ] Git-Status sauber?
+- [ ] V5 Master Plan synchronisiert?
 
 ---
 
-**⚠️ BACKUP-HINWEIS:** Diese Datei wird auch in .git eingecheckt und ist Teil des Repositories!
+## ⚠️ HÄUFIGE FEHLER VERMEIDEN
+
+1. **NIEMALS** alte Migration-Nummern wiederverwenden
+2. **IMMER** auf Feature-Branch arbeiten
+3. **NIE** direkt auf main committen
+4. **WARTEN** auf "ARBEITSSTART" vor Implementierung
+5. **DOKUMENTIEREN** aller TODOs in Übergabe
+
+---
+
+## 📜 ARCHIV
+
+Vorherige Versionen:
+- v2.7: `/docs/TRIGGER_TEXTS_v2.7_archived.md` (handover-with-sync.sh Version)
+- v2.6: Erste Version mit MIGRATION-CHECK als Pflichtschritt
+
+---
+
+**Ende der Trigger-Texte - Diese Datei ist die offizielle Referenz!**

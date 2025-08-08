@@ -37,22 +37,22 @@ Dieses Dokument ist deine **HAUPTANLEITUNG** für effiziente und nachvollziehbar
 ### 🖥️ Service-Konfiguration & MIGRATION STATUS
 | Service | Port | Technologie | **Migration** |
 |---------|------|-------------|--------------|
-| **Backend** | `8080` | Quarkus mit Java 17 | **🚨 V121 FREI** |
+| **Backend** | `8080` | Quarkus mit Java 17 | **🚨 V213 FREI** |
 | **Frontend** | `5173` | React/Vite | - |
-| **PostgreSQL** | `5432` | PostgreSQL 15+ | **V120 applied** |
+| **PostgreSQL** | `5432` | PostgreSQL 15+ | **V212 applied** |
 | **Keycloak** | `8180` | Auth Service | - |
 
 ### 🚨 MIGRATION-WARNUNG - KRITISCH
 **Bei DB-Arbeit SOFORT prüfen:**
 ```bash
-cat docs/MIGRATION_REGISTRY.md | grep "NÄCHSTE VERFÜGBARE"
-# Aktuell: V121
+# Robustes Script (funktioniert aus jedem Verzeichnis seit 08.08.2025)
+./scripts/get-next-migration.sh
 
-# NEU: Vollständige Historie prüfen
-cat docs/FLYWAY_MIGRATION_HISTORY.md | grep "NÄCHSTE VERFÜGBARE"
-
-# Nach neuer Migration automatisch aktualisieren:
-./scripts/update-flyway-history.sh V121 "feature_name" "Beschreibung"
+# Zeigt:
+# - Die letzten 5 Migrationen (korrekt sortiert)
+# - Die höchste aktuelle Nummer
+# - Die NÄCHSTE FREIE Nummer (aktuell: V213)
+# - Fehlende Nummern (falls vorhanden)
 ```
 **NIEMALS** vergebene Nummern verwenden! Migration-Duplikate = Backend startet nicht!
 
