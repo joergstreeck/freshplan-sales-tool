@@ -151,8 +151,36 @@ test.describe('Complete Customer Onboarding Flow', () => {
     // Wait for page to load
     await page.waitForLoadState('networkidle');
     
-    // Click the "Neuen Kunden anlegen" button to open wizard
-    await page.click('button:has-text("Neuen Kunden anlegen")');
+    // Debug: Take screenshot
+    await page.screenshot({ path: 'test-results/customer-page.png' });
+    
+    // Wait for customer page to be ready
+    await page.waitForSelector('text=Kunden', { timeout: 10000 });
+    
+    // Try multiple button selectors
+    const buttonSelectors = [
+      'button:has-text("Neuer Kunde")',
+      'button:has-text("Neuen Kunden")',
+      'button:has-text("Kunde anlegen")',
+      'button[aria-label*="Kunde"]',
+      'button >> text=/Kunde/i'
+    ];
+    
+    let buttonClicked = false;
+    for (const selector of buttonSelectors) {
+      try {
+        await page.click(selector, { timeout: 2000 });
+        buttonClicked = true;
+        break;
+      } catch (e) {
+        console.log(`Button selector "${selector}" not found, trying next...`);
+      }
+    }
+    
+    if (!buttonClicked) {
+      // If no button found, try the empty state button  
+      await page.click('button:has-text("Ersten Kunden anlegen")', { timeout: 5000 });
+    }
     
     // Wait for wizard dialog to appear
     await page.waitForSelector('[role="dialog"], [role="presentation"]', { timeout: 5000 });

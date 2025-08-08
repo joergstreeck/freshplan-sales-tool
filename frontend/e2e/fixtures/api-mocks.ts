@@ -5,36 +5,10 @@ import { Page, Route } from '@playwright/test';
  * This ensures tests run independently of backend availability
  */
 export async function mockBackendAPIs(page: Page) {
-  // Mock /api/customers endpoint
+  // Mock /api/customers endpoint (GET and POST)
   await page.route('**/api/customers*', async (route: Route) => {
-    await route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify({
-        content: [],
-        totalElements: 0,
-        totalPages: 0,
-        size: 20,
-        number: 0
-      })
-    });
-  });
-
-  // Mock /api/ping endpoint
-  await page.route('**/api/ping', async (route: Route) => {
-    await route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify({
-        status: 'ok',
-        timestamp: new Date().toISOString()
-      })
-    });
-  });
-
-  // Mock customer creation
-  await page.route('**/api/customers', async (route: Route) => {
     if (route.request().method() === 'POST') {
+      // Handle customer creation
       const body = route.request().postDataJSON();
       await route.fulfill({
         status: 201,
@@ -47,8 +21,31 @@ export async function mockBackendAPIs(page: Page) {
         })
       });
     } else {
-      await route.continue();
+      // Handle GET requests
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          content: [],
+          totalElements: 0,
+          totalPages: 0,
+          size: 20,
+          number: 0
+        })
+      });
     }
+  });
+
+  // Mock /api/ping endpoint
+  await page.route('**/api/ping', async (route: Route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        status: 'ok',
+        timestamp: new Date().toISOString()
+      })
+    });
   });
 
   // Mock field definitions
