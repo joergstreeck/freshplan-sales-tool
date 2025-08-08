@@ -135,10 +135,19 @@ test.describe('Complete Customer Onboarding Flow', () => {
     // Mock authentication
     await page.addInitScript(() => {
       window.localStorage.setItem('auth-token', 'test-token');
+      // Also mock user context for auth
+      window.localStorage.setItem('user', JSON.stringify({
+        id: 'test-user',
+        name: 'Test User',
+        role: 'admin'
+      }));
     });
     
-    // Navigate to customer creation
+    // Navigate to customer creation page
     await page.goto('/kundenmanagement/neu');
+    
+    // Wait for the wizard to be visible
+    await page.waitForSelector('[role="dialog"], [role="presentation"]', { timeout: 5000 });
   });
 
   test('should complete full onboarding flow successfully', async ({ page }) => {
