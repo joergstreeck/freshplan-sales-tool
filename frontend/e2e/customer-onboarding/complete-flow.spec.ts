@@ -142,15 +142,21 @@ test.describe('Complete Customer Onboarding Flow', () => {
         role: 'admin'
       }));
     });
-    
-    // Navigate to customer creation page
-    await page.goto('/kundenmanagement/neu');
-    
-    // Wait for the wizard to be visible
-    await page.waitForSelector('[role="dialog"], [role="presentation"]', { timeout: 5000 });
   });
 
   test('should complete full onboarding flow successfully', async ({ page }) => {
+    // Navigate to customers page first
+    await page.goto('/kundenmanagement');
+    
+    // Wait for page to load
+    await page.waitForLoadState('networkidle');
+    
+    // Click the "Neuen Kunden anlegen" button to open wizard
+    await page.click('button:has-text("Neuen Kunden anlegen")');
+    
+    // Wait for wizard dialog to appear
+    await page.waitForSelector('[role="dialog"], [role="presentation"]', { timeout: 5000 });
+    
     // Step 1: Basic Information
     await expect(page.getByText('Basis & Standort')).toBeVisible();
     await fillBasicInfo(page);
@@ -193,6 +199,12 @@ test.describe('Complete Customer Onboarding Flow', () => {
   });
 
   test('should validate required fields in each step', async ({ page }) => {
+    // Navigate to customers page and open wizard
+    await page.goto('/kundenmanagement');
+    await page.waitForLoadState('networkidle');
+    await page.click('button:has-text("Neuen Kunden anlegen")');
+    await page.waitForSelector('[role="dialog"], [role="presentation"]', { timeout: 5000 });
+    
     // Try to proceed without filling required fields
     await page.click('button:has-text("Weiter")');
     
@@ -204,6 +216,12 @@ test.describe('Complete Customer Onboarding Flow', () => {
   });
 
   test('should allow navigation between steps', async ({ page }) => {
+    // Navigate to customers page and open wizard
+    await page.goto('/kundenmanagement');
+    await page.waitForLoadState('networkidle');
+    await page.click('button:has-text("Neuen Kunden anlegen")');
+    await page.waitForSelector('[role="dialog"], [role="presentation"]', { timeout: 5000 });
+    
     // Fill step 1
     await fillBasicInfo(page);
     await page.click('button:has-text("Weiter")');
@@ -221,6 +239,12 @@ test.describe('Complete Customer Onboarding Flow', () => {
   });
 
   test('should show progress indicator', async ({ page }) => {
+    // Navigate to customers page and open wizard
+    await page.goto('/kundenmanagement');
+    await page.waitForLoadState('networkidle');
+    await page.click('button:has-text("Neuen Kunden anlegen")');
+    await page.waitForSelector('[role="dialog"], [role="presentation"]', { timeout: 5000 });
+    
     // Check initial progress
     const progressBar = page.locator('[role="progressbar"]');
     await expect(progressBar).toHaveAttribute('aria-valuenow', '25');
@@ -242,6 +266,12 @@ test.describe('Complete Customer Onboarding Flow', () => {
   });
 
   test('should handle errors gracefully', async ({ page }) => {
+    // Navigate to customers page and open wizard
+    await page.goto('/kundenmanagement');
+    await page.waitForLoadState('networkidle');
+    await page.click('button:has-text("Neuen Kunden anlegen")');
+    await page.waitForSelector('[role="dialog"], [role="presentation"]', { timeout: 5000 });
+    
     // Mock API error
     await page.route('**/api/customers', route => {
       route.fulfill({
@@ -276,6 +306,12 @@ test.describe('Complete Customer Onboarding Flow', () => {
     // Set mobile viewport
     await page.setViewportSize({ width: 375, height: 812 });
     
+    // Navigate to customers page and open wizard
+    await page.goto('/kundenmanagement');
+    await page.waitForLoadState('networkidle');
+    await page.click('button:has-text("Neuen Kunden anlegen")');
+    await page.waitForSelector('[role="dialog"], [role="presentation"]', { timeout: 5000 });
+    
     // Complete flow on mobile
     await fillBasicInfo(page);
     await page.click('button:has-text("Weiter")');
@@ -299,6 +335,12 @@ test.describe('Complete Customer Onboarding Flow', () => {
   });
 
   test('should persist data in browser storage', async ({ page }) => {
+    // Navigate to customers page and open wizard
+    await page.goto('/kundenmanagement');
+    await page.waitForLoadState('networkidle');
+    await page.click('button:has-text("Neuen Kunden anlegen")');
+    await page.waitForSelector('[role="dialog"], [role="presentation"]', { timeout: 5000 });
+    
     // Fill first step
     await fillBasicInfo(page);
     await page.click('button:has-text("Weiter")');
@@ -318,6 +360,12 @@ test.describe('Complete Customer Onboarding Flow', () => {
   });
 
   test('should calculate and display pricing summary', async ({ page }) => {
+    // Navigate to customers page and open wizard
+    await page.goto('/kundenmanagement');
+    await page.waitForLoadState('networkidle');
+    await page.click('button:has-text("Neuen Kunden anlegen")');
+    await page.waitForSelector('[role="dialog"], [role="presentation"]', { timeout: 5000 });
+    
     // Navigate to final step
     await fillBasicInfo(page);
     await page.click('button:has-text("Weiter")');
