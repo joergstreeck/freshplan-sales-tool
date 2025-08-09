@@ -52,7 +52,7 @@ import {
 import { format, formatDistanceToNow } from 'date-fns';
 import { de } from 'date-fns/locale';
 import { useQuery } from '@tanstack/react-query';
-import type { AuditLog } from '../types';
+import type { AuditLog, AuditFilters } from '../types';
 import { auditApi } from '../services/auditApi';
 
 interface UserAuditTimelineProps {
@@ -121,7 +121,7 @@ export const UserAuditTimeline: React.FC<UserAuditTimelineProps> = ({
   } = useQuery({
     queryKey: ['userAuditLogs', userId, dateRange, actionFilter, entityFilter],
     queryFn: async () => {
-      const filters: any = {
+      const filters: AuditFilters = {
         userId,
         limit: maxItems,
       };

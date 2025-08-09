@@ -14,6 +14,7 @@ const mockAuditLogs: AuditLog[] = [
   {
     id: '1',
     timestamp: new Date().toISOString(),
+    occurredAt: new Date().toISOString(), // For UserAuditTimeline compatibility
     userId: 'user-123',
     userName: 'Max Mustermann',
     userEmail: 'max@freshplan.de',
@@ -25,6 +26,7 @@ const mockAuditLogs: AuditLog[] = [
     ipAddress: '192.168.1.1',
     userAgent: 'Mozilla/5.0',
     details: { browser: 'Chrome', os: 'Windows' },
+    changes: null,
     previousHash: 'abc123',
     dataHash: 'def456',
     success: true,
@@ -32,6 +34,7 @@ const mockAuditLogs: AuditLog[] = [
   {
     id: '2',
     timestamp: new Date(Date.now() - 3600000).toISOString(),
+    occurredAt: new Date(Date.now() - 3600000).toISOString(),
     userId: 'user-456',
     userName: 'Anna Schmidt',
     userEmail: 'anna@freshplan.de',
@@ -43,6 +46,7 @@ const mockAuditLogs: AuditLog[] = [
     ipAddress: '192.168.1.2',
     userAgent: 'FreshPlan API Client',
     details: { fields: ['name', 'email'] },
+    changes: { name: { old: 'Alt', new: 'Neu' } },
     previousHash: 'def456',
     dataHash: 'ghi789',
     success: true,
@@ -50,6 +54,7 @@ const mockAuditLogs: AuditLog[] = [
   {
     id: '3',
     timestamp: new Date(Date.now() - 7200000).toISOString(),
+    occurredAt: new Date(Date.now() - 7200000).toISOString(),
     userId: 'user-789',
     userName: 'Peter Weber',
     userEmail: 'peter@freshplan.de',
@@ -61,6 +66,7 @@ const mockAuditLogs: AuditLog[] = [
     ipAddress: '192.168.1.3',
     userAgent: 'Mozilla/5.0',
     details: { reason: 'Insufficient permissions' },
+    changes: null,
     previousHash: 'ghi789',
     dataHash: 'jkl012',
     success: false,
@@ -134,7 +140,15 @@ const mockComplianceAlerts: ComplianceAlert[] = [
 
 export const auditApi = {
   // Get audit logs with filters
-  async getAuditLogs(filters: AuditFilters & { page?: number; pageSize?: number }) {
+  async getAuditLogs(filters: AuditFilters & { 
+    page?: number; 
+    pageSize?: number; 
+    userId?: string;
+    limit?: number;
+    action?: string;
+    from?: string;
+    to?: string;
+  }) {
     // Use mock data in development if enabled
     if (isFeatureEnabled('useMockData') || isFeatureEnabled('authBypass')) {
       return Promise.resolve(mockAuditLogs);
@@ -142,12 +156,42 @@ export const auditApi = {
 
     const params = new URLSearchParams();
 
-    if (filters.dateRange) {
+    // Handle date range - backend expects ISO strings for from/to
+    if (filters.from) {
+      params.append('from', filters.from);
+    } else if (filters.dateRange?.from) {
       params.append('from', filters.dateRange.from.toISOString());
+    }
+    
+    if (filters.to) {
+      params.append('to', filters.to);
+    } else if (filters.dateRange?.to) {
       params.append('to', filters.dateRange.to.toISOString());
     }
+
+    // Map frontend parameters to backend expectations
     if (filters.entityType) params.append('entityType', filters.entityType);
     if (filters.entityId) params.append('entityId', filters.entityId);
+    if (filters.userId) params.append('userId', filters.userId);
+    
+    // Handle action -> eventType mapping
+    if (filters.action) {
+      // Map action to eventType for backend
+      const eventTypeMap: Record<string, string> = {
+        'CREATE': 'CUSTOMER_CREATED',
+        'UPDATE': 'CUSTOMER_UPDATED', 
+        'DELETE': 'CUSTOMER_DELETED',
+        'VIEW': 'CUSTOMER_VIEWED',
+        'EXPORT': 'DATA_EXPORT_STARTED',
+        'LOGIN': 'USER_LOGIN',
+        'ALL': '' // Don't send eventType for ALL
+      };
+      const eventType = eventTypeMap[filters.action] || filters.action;
+      if (eventType) {
+        params.append('eventType', eventType);
+      }
+    }
+    
     if (filters.eventTypes) {
       filters.eventTypes.forEach(type => params.append('eventType', type));
     }
@@ -156,7 +200,10 @@ export const auditApi = {
     }
     if (filters.searchText) params.append('searchText', filters.searchText);
     if (filters.page !== undefined) params.append('page', filters.page.toString());
-    if (filters.pageSize) params.append('size', filters.pageSize.toString());
+    
+    // Handle both limit and pageSize (backend expects 'size')
+    const size = filters.limit || filters.pageSize || 50;
+    params.append('size', size.toString());
 
     const response = await httpClient.get<AuditLog[]>(`/api/audit/search?${params}`);
     return response.data;
