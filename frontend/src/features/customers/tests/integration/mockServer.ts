@@ -257,7 +257,7 @@ export const configureMockServer = {
 
   // Simuliere temporäre Server-Probleme
   withTemporaryServerError: (duration: number) => {
-    let errorStartTime = Date.now();
+    const errorStartTime = Date.now();
     mockServer.use(
       http.all('/api/*', () => {
         if (Date.now() - errorStartTime < duration) {
