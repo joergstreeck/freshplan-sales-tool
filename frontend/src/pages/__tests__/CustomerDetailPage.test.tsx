@@ -1,4 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
+import { useCustomerDetails } from '../../features/customer/hooks/useCustomerDetails';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -73,7 +74,6 @@ describe('CustomerDetailPage', () => {
   });
 
   it('should render loading state initially', () => {
-    const { useCustomerDetails } = require('../../features/customer/hooks/useCustomerDetails');
     useCustomerDetails.mockReturnValue({
       data: null,
       isLoading: true,
@@ -86,7 +86,6 @@ describe('CustomerDetailPage', () => {
   });
 
   it('should render error state when customer not found', () => {
-    const { useCustomerDetails } = require('../../features/customer/hooks/useCustomerDetails');
     useCustomerDetails.mockReturnValue({
       data: null,
       isLoading: false,
@@ -100,7 +99,6 @@ describe('CustomerDetailPage', () => {
   });
 
   it('should render customer details when loaded', async () => {
-    const { useCustomerDetails } = require('../../features/customer/hooks/useCustomerDetails');
     useCustomerDetails.mockReturnValue({
       data: mockCustomer,
       isLoading: false,
@@ -117,7 +115,6 @@ describe('CustomerDetailPage', () => {
   });
 
   it('should show all tabs for authorized users', async () => {
-    const { useCustomerDetails } = require('../../features/customer/hooks/useCustomerDetails');
     useCustomerDetails.mockReturnValue({
       data: mockCustomer,
       isLoading: false,
@@ -142,7 +139,6 @@ describe('CustomerDetailPage', () => {
   });
 
   it('should hide audit tab for unauthorized users', async () => {
-    const { useCustomerDetails } = require('../../features/customer/hooks/useCustomerDetails');
     useCustomerDetails.mockReturnValue({
       data: mockCustomer,
       isLoading: false,
@@ -167,7 +163,6 @@ describe('CustomerDetailPage', () => {
   });
 
   it('should switch between tabs', async () => {
-    const { useCustomerDetails } = require('../../features/customer/hooks/useCustomerDetails');
     useCustomerDetails.mockReturnValue({
       data: mockCustomer,
       isLoading: false,
@@ -198,7 +193,6 @@ describe('CustomerDetailPage', () => {
   });
 
   it('should show audit timeline for authorized users', async () => {
-    const { useCustomerDetails } = require('../../features/customer/hooks/useCustomerDetails');
     useCustomerDetails.mockReturnValue({
       data: mockCustomer,
       isLoading: false,
@@ -229,7 +223,6 @@ describe('CustomerDetailPage', () => {
   });
 
   it('should display customer overview details correctly', async () => {
-    const { useCustomerDetails } = require('../../features/customer/hooks/useCustomerDetails');
     useCustomerDetails.mockReturnValue({
       data: mockCustomer,
       isLoading: false,
@@ -256,7 +249,6 @@ describe('CustomerDetailPage', () => {
   });
 
   it('should navigate back to customers list', async () => {
-    const { useCustomerDetails } = require('../../features/customer/hooks/useCustomerDetails');
     useCustomerDetails.mockReturnValue({
       data: mockCustomer,
       isLoading: false,
