@@ -274,29 +274,33 @@ public class AuditResource {
     }
   }
 
-  // TODO: PR 3 - Implement these methods in AuditRepository
-  /*
   @GET
   @Path("/dashboard/metrics")
   @RolesAllowed({"admin", "auditor"})
   @Operation(summary = "Get audit dashboard metrics")
   public Response getDashboardMetrics() {
+    // Temporäre Implementierung mit Mock-Daten für PR 3
+    // TODO: Echte Implementierung in AuditRepository
     var metrics = Map.of(
-        "coverage", auditRepository.getAuditCoverage(),
-        "integrityStatus", auditRepository.getLastIntegrityCheckStatus(),
-        "retentionCompliance", auditRepository.getRetentionCompliancePercentage(),
-        "lastAudit", auditRepository.getLastAuditTimestamp(),
-        "criticalEventsToday", auditRepository.countCriticalEventsToday(),
-        "activeUsers", auditRepository.countActiveUsersToday(),
-        "totalEventsToday", auditRepository.countEventsToday(),
-        "topEventTypes", auditRepository.getTopEventTypesToday(5)
+        "coverage", 95.5,
+        "integrityStatus", "valid",
+        "retentionCompliance", 98,
+        "lastAudit", Instant.now().toString(),
+        "criticalEventsToday", 2,
+        "activeUsers", 15,
+        "totalEventsToday", 247,
+        "topEventTypes", List.of(
+            Map.of("type", "USER_LOGIN", "count", 89),
+            Map.of("type", "CUSTOMER_UPDATE", "count", 45),
+            Map.of("type", "REPORT_VIEW", "count", 38),
+            Map.of("type", "DATA_EXPORT", "count", 22),
+            Map.of("type", "PERMISSION_CHANGE", "count", 12)
+        )
     );
 
     return Response.ok(metrics).build();
   }
-  */
 
-  /*
   @GET
   @Path("/dashboard/activity-chart")
   @RolesAllowed({"admin", "auditor"})
@@ -305,12 +309,19 @@ public class AuditResource {
       @QueryParam("days") @DefaultValue("7") int days,
       @QueryParam("groupBy") @DefaultValue("hour") String groupBy) {
 
-    var data = auditRepository.getActivityChartData(days, groupBy);
+    // Temporäre Implementierung mit Mock-Daten für PR 3
+    var data = List.of(
+        Map.of("time", "00:00", "value", 5),
+        Map.of("time", "04:00", "value", 4),
+        Map.of("time", "08:00", "value", 45),
+        Map.of("time", "12:00", "value", 48),
+        Map.of("time", "16:00", "value", 42),
+        Map.of("time", "20:00", "value", 8)
+    );
+    
     return Response.ok(data).build();
   }
-  */
 
-  /*
   @GET
   @Path("/dashboard/critical-events")
   @RolesAllowed({"admin", "auditor"})
@@ -318,21 +329,47 @@ public class AuditResource {
   public Response getCriticalEvents(
       @QueryParam("limit") @DefaultValue("10") @Min(1) @Max(50) int limit) {
 
-    var events = auditRepository.findRecentCriticalEvents(limit);
+    // Temporäre Implementierung: Nutze Security Events als Critical Events
+    Instant from = Instant.now().minusSeconds(24 * 3600L);
+    List<AuditEntry> events = auditRepository.findSecurityEvents(from, Instant.now());
+    
+    // Limitiere auf angeforderte Anzahl
+    if (events.size() > limit) {
+      events = events.subList(0, limit);
+    }
+    
     return Response.ok(events).build();
   }
-  */
 
-  /*
   @GET
   @Path("/dashboard/compliance-alerts")
   @RolesAllowed({"admin", "auditor"})
   @Operation(summary = "Get compliance alerts and warnings")
   public Response getComplianceAlerts() {
-    var alerts = auditRepository.getComplianceAlerts();
+    // Temporäre Implementierung mit Mock-Daten für PR 3
+    var alerts = List.of(
+        Map.of(
+            "id", "alert-1",
+            "type", "retention",
+            "severity", "warning",
+            "title", "Datenaufbewahrung überschreitet 90 Tage",
+            "description", "15 Audit-Einträge sind älter als 90 Tage und sollten archiviert werden.",
+            "timestamp", Instant.now().toString(),
+            "resolved", false
+        ),
+        Map.of(
+            "id", "alert-2",
+            "type", "integrity",
+            "severity", "info",
+            "title", "Nächste Integritätsprüfung fällig",
+            "description", "Die monatliche Integritätsprüfung steht in 3 Tagen an.",
+            "timestamp", Instant.now().toString(),
+            "resolved", false
+        )
+    );
+    
     return Response.ok(alerts).build();
   }
-  */
 
   /** Escape CSV special characters */
   private String csvEscape(String value) {
