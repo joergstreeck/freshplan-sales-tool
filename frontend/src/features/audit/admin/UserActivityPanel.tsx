@@ -16,14 +16,14 @@ import {
   TextField,
   InputAdornment,
   Grid,
-  Tooltip
+  Tooltip,
 } from '@mui/material';
 import {
   Search as SearchIcon,
   Visibility as ViewIcon,
   Block as BlockIcon,
   CheckCircle as ActiveIcon,
-  Cancel as InactiveIcon
+  Cancel as InactiveIcon,
 } from '@mui/icons-material';
 import { useQuery } from '@tanstack/react-query';
 import { auditApi } from '../services/auditApi';
@@ -51,7 +51,7 @@ export const UserActivityPanel: React.FC<UserActivityPanelProps> = ({ dateRange 
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [searchTerm, setSearchTerm] = useState('');
-  
+
   // Mock data - würde normalerweise von der API kommen
   const mockUsers: UserActivity[] = [
     {
@@ -63,7 +63,7 @@ export const UserActivityPanel: React.FC<UserActivityPanelProps> = ({ dateRange 
       lastActivity: new Date().toISOString(),
       riskScore: 15,
       status: 'active',
-      criticalActions: 2
+      criticalActions: 2,
     },
     {
       userId: '2',
@@ -74,7 +74,7 @@ export const UserActivityPanel: React.FC<UserActivityPanelProps> = ({ dateRange 
       lastActivity: new Date(Date.now() - 3600000).toISOString(),
       riskScore: 5,
       status: 'active',
-      criticalActions: 0
+      criticalActions: 0,
     },
     {
       userId: '3',
@@ -85,31 +85,32 @@ export const UserActivityPanel: React.FC<UserActivityPanelProps> = ({ dateRange 
       lastActivity: new Date(Date.now() - 7200000).toISOString(),
       riskScore: 25,
       status: 'active',
-      criticalActions: 5
-    }
+      criticalActions: 5,
+    },
   ];
-  
-  const filteredUsers = mockUsers.filter(user =>
-    user.userName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.userRole.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.department?.toLowerCase().includes(searchTerm.toLowerCase())
+
+  const filteredUsers = mockUsers.filter(
+    user =>
+      user.userName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.userRole.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.department?.toLowerCase().includes(searchTerm.toLowerCase())
   );
-  
+
   const handleChangePage = (_: unknown, newPage: number) => {
     setPage(newPage);
   };
-  
+
   const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
-  
+
   const getRiskColor = (score: number) => {
     if (score <= 10) return 'success';
     if (score <= 50) return 'warning';
     return 'error';
   };
-  
+
   const getRoleColor = (role: string) => {
     switch (role) {
       case 'admin':
@@ -122,7 +123,7 @@ export const UserActivityPanel: React.FC<UserActivityPanelProps> = ({ dateRange 
         return 'default';
     }
   };
-  
+
   return (
     <Box>
       <Grid container spacing={3}>
@@ -135,7 +136,7 @@ export const UserActivityPanel: React.FC<UserActivityPanelProps> = ({ dateRange 
                   fullWidth
                   placeholder="Benutzer suchen..."
                   value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onChange={e => setSearchTerm(e.target.value)}
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
@@ -166,7 +167,10 @@ export const UserActivityPanel: React.FC<UserActivityPanelProps> = ({ dateRange 
                     </Typography>
                   </Box>
                   <Box sx={{ textAlign: 'center' }}>
-                    <Typography variant="h4" sx={{ fontFamily: 'Antonio, sans-serif', color: '#ff9800' }}>
+                    <Typography
+                      variant="h4"
+                      sx={{ fontFamily: 'Antonio, sans-serif', color: '#ff9800' }}
+                    >
                       {filteredUsers.filter(u => u.riskScore > 50).length}
                     </Typography>
                     <Typography variant="caption" color="text.secondary">
@@ -174,7 +178,10 @@ export const UserActivityPanel: React.FC<UserActivityPanelProps> = ({ dateRange 
                     </Typography>
                   </Box>
                   <Box sx={{ textAlign: 'center' }}>
-                    <Typography variant="h4" sx={{ fontFamily: 'Antonio, sans-serif', color: '#f44336' }}>
+                    <Typography
+                      variant="h4"
+                      sx={{ fontFamily: 'Antonio, sans-serif', color: '#f44336' }}
+                    >
                       {filteredUsers.reduce((sum, u) => sum + u.criticalActions, 0)}
                     </Typography>
                     <Typography variant="caption" color="text.secondary">
@@ -186,7 +193,7 @@ export const UserActivityPanel: React.FC<UserActivityPanelProps> = ({ dateRange 
             </Grid>
           </Paper>
         </Grid>
-        
+
         {/* User Table */}
         <Grid size={12}>
           <Paper>
@@ -208,11 +215,8 @@ export const UserActivityPanel: React.FC<UserActivityPanelProps> = ({ dateRange 
                 <TableBody>
                   {filteredUsers
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                    .map((user) => (
-                      <TableRow
-                        key={user.userId}
-                        sx={{ '&:hover': { bgcolor: 'action.hover' } }}
-                      >
+                    .map(user => (
+                      <TableRow key={user.userId} sx={{ '&:hover': { bgcolor: 'action.hover' } }}>
                         <TableCell>
                           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                             <Avatar sx={{ bgcolor: '#004F7B', width: 32, height: 32 }}>
@@ -260,7 +264,7 @@ export const UserActivityPanel: React.FC<UserActivityPanelProps> = ({ dateRange 
                               day: '2-digit',
                               month: '2-digit',
                               hour: '2-digit',
-                              minute: '2-digit'
+                              minute: '2-digit',
                             })}
                           </Typography>
                         </TableCell>
@@ -282,11 +286,7 @@ export const UserActivityPanel: React.FC<UserActivityPanelProps> = ({ dateRange 
                               variant="outlined"
                             />
                           ) : (
-                            <Chip
-                              label="Inaktiv"
-                              size="small"
-                              variant="outlined"
-                            />
+                            <Chip label="Inaktiv" size="small" variant="outlined" />
                           )}
                         </TableCell>
                         <TableCell align="center">
@@ -307,20 +307,18 @@ export const UserActivityPanel: React.FC<UserActivityPanelProps> = ({ dateRange 
                         </TableCell>
                       </TableRow>
                     ))}
-                  
+
                   {filteredUsers.length === 0 && (
                     <TableRow>
                       <TableCell colSpan={9} align="center" sx={{ py: 5 }}>
-                        <Typography color="text.secondary">
-                          Keine Benutzer gefunden
-                        </Typography>
+                        <Typography color="text.secondary">Keine Benutzer gefunden</Typography>
                       </TableCell>
                     </TableRow>
                   )}
                 </TableBody>
               </Table>
             </TableContainer>
-            
+
             <TablePagination
               component="div"
               count={filteredUsers.length}
@@ -329,9 +327,7 @@ export const UserActivityPanel: React.FC<UserActivityPanelProps> = ({ dateRange 
               rowsPerPage={rowsPerPage}
               onRowsPerPageChange={handleChangeRowsPerPage}
               labelRowsPerPage="Einträge pro Seite:"
-              labelDisplayedRows={({ from, to, count }) => 
-                `${from}-${to} von ${count}`
-              }
+              labelDisplayedRows={({ from, to, count }) => `${from}-${to} von ${count}`}
             />
           </Paper>
         </Grid>

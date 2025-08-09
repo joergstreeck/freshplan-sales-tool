@@ -1,20 +1,12 @@
 import React, { useEffect } from 'react';
-import {
-  Grid,
-  Paper,
-  Typography,
-  Box,
-  LinearProgress,
-  Chip,
-  Skeleton
-} from '@mui/material';
+import { Grid, Paper, Typography, Box, LinearProgress, Chip, Skeleton } from '@mui/material';
 import {
   TrendingUp as TrendingUpIcon,
   TrendingDown as TrendingDownIcon,
   Security as SecurityIcon,
   Assignment as AssignmentIcon,
   People as PeopleIcon,
-  Warning as WarningIcon
+  Warning as WarningIcon,
 } from '@mui/icons-material';
 import { useAuditAdminStore } from '@/store/admin/auditAdminStore';
 import { AuditStatisticsCards } from './AuditStatisticsCards';
@@ -34,26 +26,28 @@ interface StatCardProps {
   subtitle?: string;
 }
 
-const StatCard: React.FC<StatCardProps> = ({ 
-  title, 
-  value, 
-  icon, 
-  trend, 
+const StatCard: React.FC<StatCardProps> = ({
+  title,
+  value,
+  icon,
+  trend,
   color = '#004F7B',
-  subtitle 
+  subtitle,
 }) => {
   return (
     <Paper sx={{ p: 2, height: '100%' }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
-        <Box sx={{ 
-          width: 48, 
-          height: 48, 
-          borderRadius: 2,
-          bgcolor: `${color}15`,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center'
-        }}>
+        <Box
+          sx={{
+            width: 48,
+            height: 48,
+            borderRadius: 2,
+            bgcolor: `${color}15`,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
           <Box sx={{ color }}>{icon}</Box>
         </Box>
         {trend && (
@@ -66,33 +60,29 @@ const StatCard: React.FC<StatCardProps> = ({
           />
         )}
       </Box>
-      
-      <Typography 
-        variant="h4" 
-        sx={{ 
+
+      <Typography
+        variant="h4"
+        sx={{
           fontFamily: 'Antonio, sans-serif',
           fontWeight: 'bold',
           color: '#333',
-          mb: 0.5
+          mb: 0.5,
         }}
       >
         {value}
       </Typography>
-      
-      <Typography 
-        variant="subtitle2" 
+
+      <Typography
+        variant="subtitle2"
         color="text.secondary"
         sx={{ fontFamily: 'Poppins, sans-serif' }}
       >
         {title}
       </Typography>
-      
+
       {subtitle && (
-        <Typography 
-          variant="caption" 
-          color="text.secondary"
-          sx={{ display: 'block', mt: 0.5 }}
-        >
+        <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 0.5 }}>
           {subtitle}
         </Typography>
       )}
@@ -109,14 +99,11 @@ interface AuditDashboardProps {
   onDateRangeChange?: (range: { from: Date; to: Date }) => void;
 }
 
-export const AuditDashboard: React.FC<AuditDashboardProps> = ({ 
-  metrics,
-  dateRange 
-}) => {
+export const AuditDashboard: React.FC<AuditDashboardProps> = ({ metrics, dateRange }) => {
   if (!metrics) {
     return <Box>Keine Daten verfügbar</Box>;
   }
-  
+
   return (
     <Grid container spacing={3}>
       {/* Statistics Cards */}
@@ -129,7 +116,7 @@ export const AuditDashboard: React.FC<AuditDashboardProps> = ({
           trend={{ value: 12, isUp: true }}
         />
       </Grid>
-      
+
       <Grid size={3}>
         <StatCard
           title="Aktive Benutzer"
@@ -139,7 +126,7 @@ export const AuditDashboard: React.FC<AuditDashboardProps> = ({
           subtitle={`Heute aktiv`}
         />
       </Grid>
-      
+
       <Grid size={3}>
         <StatCard
           title="Kritische Ereignisse"
@@ -149,7 +136,7 @@ export const AuditDashboard: React.FC<AuditDashboardProps> = ({
           trend={metrics.criticalEventsToday > 0 ? { value: 5, isUp: true } : undefined}
         />
       </Grid>
-      
+
       <Grid size={3}>
         <StatCard
           title="Audit Coverage"
@@ -158,18 +145,14 @@ export const AuditDashboard: React.FC<AuditDashboardProps> = ({
           color="#ff9800"
         />
       </Grid>
-      
+
       {/* Compliance Overview */}
       <Grid size={8}>
         <Paper sx={{ p: 3 }}>
-          <Typography 
-            variant="h6" 
-            gutterBottom
-            sx={{ fontFamily: 'Antonio, sans-serif' }}
-          >
+          <Typography variant="h6" gutterBottom sx={{ fontFamily: 'Antonio, sans-serif' }}>
             Compliance Status
           </Typography>
-          
+
           <Grid container spacing={2}>
             <Grid size={6}>
               <Box sx={{ mb: 2 }}>
@@ -179,21 +162,21 @@ export const AuditDashboard: React.FC<AuditDashboardProps> = ({
                     {metrics.retentionCompliance}%
                   </Typography>
                 </Box>
-                <LinearProgress 
-                  variant="determinate" 
+                <LinearProgress
+                  variant="determinate"
                   value={metrics.retentionCompliance}
                   sx={{
                     height: 8,
                     borderRadius: 4,
                     bgcolor: '#e0e0e0',
                     '& .MuiLinearProgress-bar': {
-                      bgcolor: metrics.retentionCompliance >= 80 ? '#94C456' : '#ff9800'
-                    }
+                      bgcolor: metrics.retentionCompliance >= 80 ? '#94C456' : '#ff9800',
+                    },
                   }}
                 />
               </Box>
             </Grid>
-            
+
             <Grid size={6}>
               <Box sx={{ mb: 2 }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
@@ -212,39 +195,33 @@ export const AuditDashboard: React.FC<AuditDashboardProps> = ({
           </Grid>
         </Paper>
       </Grid>
-      
+
       {/* Top Event Types */}
       <Grid size={4}>
         <Paper sx={{ p: 3 }}>
-          <Typography 
-            variant="h6" 
-            gutterBottom
-            sx={{ fontFamily: 'Antonio, sans-serif' }}
-          >
+          <Typography variant="h6" gutterBottom sx={{ fontFamily: 'Antonio, sans-serif' }}>
             Top Ereignistypen
           </Typography>
-          
+
           <Box sx={{ mt: 2 }}>
             {metrics.topEventTypes?.slice(0, 5).map((event, index) => (
-              <Box 
+              <Box
                 key={event.type || event.eventType || `event-${index}`}
-                sx={{ 
-                  display: 'flex', 
+                sx={{
+                  display: 'flex',
                   justifyContent: 'space-between',
                   alignItems: 'center',
                   py: 1,
-                  borderBottom: index < 4 ? '1px solid #e0e0e0' : 'none'
+                  borderBottom: index < 4 ? '1px solid #e0e0e0' : 'none',
                 }}
               >
-                <Typography variant="body2">
-                  {event.type || event.eventType}
-                </Typography>
+                <Typography variant="body2">{event.type || event.eventType}</Typography>
                 <Chip
                   label={event.count.toLocaleString('de-DE')}
                   size="small"
-                  sx={{ 
+                  sx={{
                     bgcolor: '#004F7B15',
-                    color: '#004F7B'
+                    color: '#004F7B',
                   }}
                 />
               </Box>
@@ -252,27 +229,23 @@ export const AuditDashboard: React.FC<AuditDashboardProps> = ({
           </Box>
         </Paper>
       </Grid>
-      
+
       {/* Activity Timeline */}
       <Grid size={12}>
         <Paper sx={{ p: 3 }}>
-          <Typography 
-            variant="h6" 
-            gutterBottom
-            sx={{ fontFamily: 'Antonio, sans-serif' }}
-          >
+          <Typography variant="h6" gutterBottom sx={{ fontFamily: 'Antonio, sans-serif' }}>
             Aktivitätsverlauf (7 Tage)
           </Typography>
-          
+
           {/* Hier würde normalerweise ein Chart kommen */}
-          <Box 
-            sx={{ 
-              height: 200, 
-              display: 'flex', 
-              alignItems: 'center', 
+          <Box
+            sx={{
+              height: 200,
+              display: 'flex',
+              alignItems: 'center',
               justifyContent: 'center',
               bgcolor: '#f5f5f5',
-              borderRadius: 1
+              borderRadius: 1,
             }}
           >
             <Typography color="text.secondary">

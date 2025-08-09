@@ -9,7 +9,7 @@ import {
   Tooltip,
   IconButton,
   Chip,
-  LinearProgress
+  LinearProgress,
 } from '@mui/material';
 import {
   TrendingUp as TrendingUpIcon,
@@ -21,7 +21,7 @@ import {
   Storage as StorageIcon,
   Speed as SpeedIcon,
   Info as InfoIcon,
-  Assessment as AssessmentIcon
+  Assessment as AssessmentIcon,
 } from '@mui/icons-material';
 import { format } from 'date-fns';
 import { de } from 'date-fns/locale';
@@ -59,7 +59,7 @@ interface AuditStatisticsCardsProps {
 export const AuditStatisticsCards: React.FC<AuditStatisticsCardsProps> = ({
   stats,
   dateRange,
-  isLoading = false
+  isLoading = false,
 }) => {
   const formatNumber = (num: number): string => {
     if (num >= 1000000) {
@@ -87,72 +87,81 @@ export const AuditStatisticsCards: React.FC<AuditStatisticsCardsProps> = ({
     return 'error';
   };
 
-  const cards: StatCard[] = stats ? [
-    {
-      title: 'Gesamt-Events',
-      value: formatNumber(stats.totalEvents),
-      icon: <StorageIcon />,
-      color: '#004F7B',
-      subtitle: dateRange ? 
-        `${format(dateRange.from, 'dd.MM.')} - ${format(dateRange.to, 'dd.MM.yyyy')}` : 
-        'Letzten 7 Tage'
-    },
-    {
-      title: 'Kritische Events',
-      value: formatNumber(stats.criticalEvents),
-      icon: <WarningIcon />,
-      color: stats.criticalEvents > 0 ? '#f44336' : '#4caf50',
-      severity: stats.criticalEvents > 10 ? 'error' : 
-               stats.criticalEvents > 5 ? 'warning' : 'success',
-      subtitle: 'DELETE, BULK_DELETE, PERMISSION_CHANGE'
-    },
-    {
-      title: 'DSGVO-Relevant',
-      value: formatNumber(stats.dsgvoRelevantEvents),
-      icon: <SecurityIcon />,
-      color: '#2196f3',
-      subtitle: 'Personenbezogene Daten'
-    },
-    {
-      title: 'Aktive Benutzer',
-      value: formatNumber(stats.activeUsers),
-      icon: <PeopleIcon />,
-      color: '#94C456',
-      subtitle: 'Unique Users im Zeitraum'
-    },
-    {
-      title: 'Compliance Score',
-      value: `${stats.complianceScore.toFixed(1)}%`,
-      icon: <AssessmentIcon />,
-      color: getComplianceColor(stats.complianceScore) === 'success' ? '#4caf50' :
-             getComplianceColor(stats.complianceScore) === 'warning' ? '#ff9800' : '#f44336',
-      severity: getComplianceColor(stats.complianceScore),
-      subtitle: stats.complianceScore < 80 ? 'Maßnahmen erforderlich!' : 'Gut'
-    },
-    {
-      title: 'Sicherheits-Alerts',
-      value: stats.openSecurityAlerts,
-      icon: stats.openSecurityAlerts > 0 ? <WarningIcon /> : <CheckCircleIcon />,
-      color: stats.openSecurityAlerts > 0 ? '#f44336' : '#4caf50',
-      severity: stats.openSecurityAlerts > 0 ? 'error' : 'success',
-      subtitle: stats.openSecurityAlerts > 0 ? 'Sofortige Prüfung!' : 'Keine offenen Alerts'
-    },
-    {
-      title: 'Hash-Chain Status',
-      value: stats.integrityValid ? 'Intakt' : 'Kompromittiert',
-      icon: stats.integrityValid ? <CheckCircleIcon /> : <WarningIcon />,
-      color: stats.integrityValid ? '#4caf50' : '#f44336',
-      severity: stats.integrityValid ? 'success' : 'error',
-      subtitle: stats.integrityValid ? 'Audit-Integrität gewährleistet' : 'MANIPULATION ERKANNT!'
-    },
-    {
-      title: 'Ø Response Time',
-      value: stats.averageResponseTime ? `${stats.averageResponseTime}ms` : '-',
-      icon: <SpeedIcon />,
-      color: stats.averageResponseTime && stats.averageResponseTime < 200 ? '#4caf50' : '#ff9800',
-      subtitle: 'API Performance'
-    }
-  ] : [];
+  const cards: StatCard[] = stats
+    ? [
+        {
+          title: 'Gesamt-Events',
+          value: formatNumber(stats.totalEvents),
+          icon: <StorageIcon />,
+          color: '#004F7B',
+          subtitle: dateRange
+            ? `${format(dateRange.from, 'dd.MM.')} - ${format(dateRange.to, 'dd.MM.yyyy')}`
+            : 'Letzten 7 Tage',
+        },
+        {
+          title: 'Kritische Events',
+          value: formatNumber(stats.criticalEvents),
+          icon: <WarningIcon />,
+          color: stats.criticalEvents > 0 ? '#f44336' : '#4caf50',
+          severity:
+            stats.criticalEvents > 10 ? 'error' : stats.criticalEvents > 5 ? 'warning' : 'success',
+          subtitle: 'DELETE, BULK_DELETE, PERMISSION_CHANGE',
+        },
+        {
+          title: 'DSGVO-Relevant',
+          value: formatNumber(stats.dsgvoRelevantEvents),
+          icon: <SecurityIcon />,
+          color: '#2196f3',
+          subtitle: 'Personenbezogene Daten',
+        },
+        {
+          title: 'Aktive Benutzer',
+          value: formatNumber(stats.activeUsers),
+          icon: <PeopleIcon />,
+          color: '#94C456',
+          subtitle: 'Unique Users im Zeitraum',
+        },
+        {
+          title: 'Compliance Score',
+          value: `${stats.complianceScore.toFixed(1)}%`,
+          icon: <AssessmentIcon />,
+          color:
+            getComplianceColor(stats.complianceScore) === 'success'
+              ? '#4caf50'
+              : getComplianceColor(stats.complianceScore) === 'warning'
+                ? '#ff9800'
+                : '#f44336',
+          severity: getComplianceColor(stats.complianceScore),
+          subtitle: stats.complianceScore < 80 ? 'Maßnahmen erforderlich!' : 'Gut',
+        },
+        {
+          title: 'Sicherheits-Alerts',
+          value: stats.openSecurityAlerts,
+          icon: stats.openSecurityAlerts > 0 ? <WarningIcon /> : <CheckCircleIcon />,
+          color: stats.openSecurityAlerts > 0 ? '#f44336' : '#4caf50',
+          severity: stats.openSecurityAlerts > 0 ? 'error' : 'success',
+          subtitle: stats.openSecurityAlerts > 0 ? 'Sofortige Prüfung!' : 'Keine offenen Alerts',
+        },
+        {
+          title: 'Hash-Chain Status',
+          value: stats.integrityValid ? 'Intakt' : 'Kompromittiert',
+          icon: stats.integrityValid ? <CheckCircleIcon /> : <WarningIcon />,
+          color: stats.integrityValid ? '#4caf50' : '#f44336',
+          severity: stats.integrityValid ? 'success' : 'error',
+          subtitle: stats.integrityValid
+            ? 'Audit-Integrität gewährleistet'
+            : 'MANIPULATION ERKANNT!',
+        },
+        {
+          title: 'Ø Response Time',
+          value: stats.averageResponseTime ? `${stats.averageResponseTime}ms` : '-',
+          icon: <SpeedIcon />,
+          color:
+            stats.averageResponseTime && stats.averageResponseTime < 200 ? '#4caf50' : '#ff9800',
+          subtitle: 'API Performance',
+        },
+      ]
+    : [];
 
   if (isLoading) {
     return (
@@ -175,9 +184,7 @@ export const AuditStatisticsCards: React.FC<AuditStatisticsCardsProps> = ({
   if (!stats) {
     return (
       <Box sx={{ p: 3, textAlign: 'center' }}>
-        <Typography color="text.secondary">
-          Keine Statistikdaten verfügbar
-        </Typography>
+        <Typography color="text.secondary">Keine Statistikdaten verfügbar</Typography>
       </Box>
     );
   }
@@ -186,16 +193,16 @@ export const AuditStatisticsCards: React.FC<AuditStatisticsCardsProps> = ({
     <Grid container spacing={2}>
       {cards.map((card, index) => (
         <Grid size={{ xs: 12, sm: 6, md: 3 }} key={index}>
-          <Card 
-            sx={{ 
+          <Card
+            sx={{
               height: '100%',
               position: 'relative',
               overflow: 'visible',
               transition: 'transform 0.2s, box-shadow 0.2s',
               '&:hover': {
                 transform: 'translateY(-4px)',
-                boxShadow: 4
-              }
+                boxShadow: 4,
+              },
             }}
           >
             {/* Colored accent bar */}
@@ -206,62 +213,66 @@ export const AuditStatisticsCards: React.FC<AuditStatisticsCardsProps> = ({
                 left: 0,
                 right: 0,
                 height: 4,
-                bgcolor: card.color
+                bgcolor: card.color,
               }}
             />
-            
+
             <CardContent>
               <Box display="flex" justifyContent="space-between" alignItems="flex-start">
                 <Box flex={1}>
-                  <Typography 
-                    color="text.secondary" 
-                    gutterBottom 
+                  <Typography
+                    color="text.secondary"
+                    gutterBottom
                     variant="caption"
-                    sx={{ 
+                    sx={{
                       fontFamily: 'Poppins, sans-serif',
                       fontWeight: 500,
                       textTransform: 'uppercase',
-                      letterSpacing: '0.5px'
+                      letterSpacing: '0.5px',
                     }}
                   >
                     {card.title}
                   </Typography>
-                  
-                  <Typography 
-                    variant="h4" 
+
+                  <Typography
+                    variant="h4"
                     component="div"
-                    sx={{ 
+                    sx={{
                       fontFamily: 'Antonio, sans-serif',
                       fontWeight: 'bold',
-                      color: card.severity === 'error' ? 'error.main' :
-                             card.severity === 'warning' ? 'warning.main' :
-                             card.severity === 'success' ? 'success.main' :
-                             'text.primary',
-                      mb: 1
+                      color:
+                        card.severity === 'error'
+                          ? 'error.main'
+                          : card.severity === 'warning'
+                            ? 'warning.main'
+                            : card.severity === 'success'
+                              ? 'success.main'
+                              : 'text.primary',
+                      mb: 1,
                     }}
                   >
                     {card.value}
                   </Typography>
-                  
+
                   {card.subtitle && (
-                    <Typography 
-                      variant="caption" 
+                    <Typography
+                      variant="caption"
                       color="text.secondary"
-                      sx={{ 
+                      sx={{
                         display: 'block',
                         fontFamily: 'Poppins, sans-serif',
-                        fontSize: '0.7rem'
+                        fontSize: '0.7rem',
                       }}
                     >
                       {card.subtitle}
                     </Typography>
                   )}
-                  
+
                   {card.change !== undefined && (
                     <Box display="flex" alignItems="center" gap={0.5} mt={1}>
                       {getChangeIcon(card.change)}
-                      <Typography 
-                        variant="caption" 
+                      <Typography
+                        variant="caption"
                         color={card.change > 0 ? 'success.main' : 'error.main'}
                       >
                         {Math.abs(card.change)}% {card.changeLabel || 'vs. Vorperiode'}
@@ -269,40 +280,40 @@ export const AuditStatisticsCards: React.FC<AuditStatisticsCardsProps> = ({
                     </Box>
                   )}
                 </Box>
-                
-                <Box 
-                  sx={{ 
+
+                <Box
+                  sx={{
                     color: card.color,
-                    opacity: 0.8
+                    opacity: 0.8,
                   }}
                 >
                   {card.icon}
                 </Box>
               </Box>
-              
+
               {/* Progress bar for compliance score */}
               {card.title === 'Compliance Score' && stats && (
                 <Box sx={{ mt: 2 }}>
-                  <LinearProgress 
-                    variant="determinate" 
-                    value={stats.complianceScore} 
+                  <LinearProgress
+                    variant="determinate"
+                    value={stats.complianceScore}
                     color={getComplianceColor(stats.complianceScore)}
                     sx={{ height: 6, borderRadius: 3 }}
                   />
                 </Box>
               )}
-              
+
               {/* Alert chip for critical values */}
               {card.severity === 'error' && (
                 <Chip
                   label="Aktion erforderlich"
                   color="error"
                   size="small"
-                  sx={{ 
+                  sx={{
                     position: 'absolute',
                     top: 8,
                     right: 8,
-                    fontSize: '0.65rem'
+                    fontSize: '0.65rem',
                   }}
                 />
               )}
@@ -310,18 +321,18 @@ export const AuditStatisticsCards: React.FC<AuditStatisticsCardsProps> = ({
           </Card>
         </Grid>
       ))}
-      
+
       {/* Event Type Distribution - Additional Card */}
       {stats.eventsByType && (
         <Grid size={12}>
           <Card>
             <CardContent>
-              <Typography 
-                variant="h6" 
+              <Typography
+                variant="h6"
                 gutterBottom
-                sx={{ 
+                sx={{
                   fontFamily: 'Antonio, sans-serif',
-                  fontWeight: 'bold'
+                  fontWeight: 'bold',
                 }}
               >
                 Event-Verteilung nach Typ
@@ -330,18 +341,18 @@ export const AuditStatisticsCards: React.FC<AuditStatisticsCardsProps> = ({
                 {Object.entries(stats.eventsByType).map(([type, count]) => (
                   <Grid size={{ xs: 6, sm: 4, md: 2 }} key={type}>
                     <Box textAlign="center">
-                      <Typography 
-                        variant="caption" 
+                      <Typography
+                        variant="caption"
                         color="text.secondary"
                         sx={{ fontFamily: 'Poppins, sans-serif' }}
                       >
                         {type}
                       </Typography>
-                      <Typography 
+                      <Typography
                         variant="h6"
-                        sx={{ 
+                        sx={{
                           fontFamily: 'Antonio, sans-serif',
-                          fontWeight: 'bold'
+                          fontWeight: 'bold',
                         }}
                       >
                         {formatNumber(count)}

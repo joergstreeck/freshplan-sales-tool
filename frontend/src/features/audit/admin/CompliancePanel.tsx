@@ -12,7 +12,7 @@ import {
   ListItemText,
   Chip,
   Button,
-  Divider
+  Divider,
 } from '@mui/material';
 import {
   CheckCircle as CheckIcon,
@@ -20,7 +20,7 @@ import {
   Error as ErrorIcon,
   Info as InfoIcon,
   GetApp as DownloadIcon,
-  Schedule as ScheduleIcon
+  Schedule as ScheduleIcon,
 } from '@mui/icons-material';
 import type { ComplianceAlert, AuditDashboardMetrics } from '../types';
 
@@ -33,10 +33,10 @@ interface CompliancePanelProps {
   };
 }
 
-export const CompliancePanel: React.FC<CompliancePanelProps> = ({ 
+export const CompliancePanel: React.FC<CompliancePanelProps> = ({
   alerts = [],
   metrics,
-  dateRange 
+  dateRange,
 }) => {
   const getAlertIcon = (type: string) => {
     switch (type) {
@@ -50,7 +50,7 @@ export const CompliancePanel: React.FC<CompliancePanelProps> = ({
         return <InfoIcon />;
     }
   };
-  
+
   const getSeverityColor = (severity: string) => {
     switch (severity) {
       case 'CRITICAL':
@@ -65,32 +65,34 @@ export const CompliancePanel: React.FC<CompliancePanelProps> = ({
         return 'default';
     }
   };
-  
+
   const criticalAlerts = alerts.filter(a => a.severity === 'CRITICAL' || a.severity === 'HIGH');
   const warningAlerts = alerts.filter(a => a.severity === 'MEDIUM');
   const infoAlerts = alerts.filter(a => a.severity === 'LOW');
-  
+
   return (
     <Box>
       <Grid container spacing={3}>
         {/* Compliance Score Overview */}
         <Grid size={12}>
           <Paper sx={{ p: 3 }}>
-            <Typography 
-              variant="h5" 
-              gutterBottom
-              sx={{ fontFamily: 'Antonio, sans-serif', mb: 3 }}
-            >
+            <Typography variant="h5" gutterBottom sx={{ fontFamily: 'Antonio, sans-serif', mb: 3 }}>
               DSGVO Compliance Übersicht
             </Typography>
-            
+
             <Grid container spacing={3}>
               <Grid size={{ xs: 12, md: 4 }}>
                 <Box sx={{ textAlign: 'center' }}>
-                  <Typography variant="h2" sx={{ 
-                    fontFamily: 'Antonio, sans-serif',
-                    color: metrics?.retentionCompliance && metrics.retentionCompliance >= 80 ? '#94C456' : '#ff9800'
-                  }}>
+                  <Typography
+                    variant="h2"
+                    sx={{
+                      fontFamily: 'Antonio, sans-serif',
+                      color:
+                        metrics?.retentionCompliance && metrics.retentionCompliance >= 80
+                          ? '#94C456'
+                          : '#ff9800',
+                    }}
+                  >
                     {metrics?.retentionCompliance || 0}%
                   </Typography>
                   <Typography variant="subtitle1" color="text.secondary">
@@ -98,14 +100,14 @@ export const CompliancePanel: React.FC<CompliancePanelProps> = ({
                   </Typography>
                 </Box>
               </Grid>
-              
+
               <Grid size={{ xs: 12, md: 8 }}>
                 <List dense>
                   <ListItem>
                     <ListItemIcon>
                       <CheckIcon color="success" />
                     </ListItemIcon>
-                    <ListItemText 
+                    <ListItemText
                       primary="Audit-Logs verschlüsselt"
                       secondary="Alle Audit-Einträge werden verschlüsselt gespeichert"
                     />
@@ -114,19 +116,20 @@ export const CompliancePanel: React.FC<CompliancePanelProps> = ({
                     <ListItemIcon>
                       <CheckIcon color="success" />
                     </ListItemIcon>
-                    <ListItemText 
+                    <ListItemText
                       primary="Hash-Chain intakt"
                       secondary="Manipulationssicherheit durch kryptografische Verkettung"
                     />
                   </ListItem>
                   <ListItem>
                     <ListItemIcon>
-                      {metrics?.integrityStatus === 'valid' ? 
-                        <CheckIcon color="success" /> : 
+                      {metrics?.integrityStatus === 'valid' ? (
+                        <CheckIcon color="success" />
+                      ) : (
                         <WarningIcon color="warning" />
-                      }
+                      )}
                     </ListItemIcon>
-                    <ListItemText 
+                    <ListItemText
                       primary="Integritätsprüfung"
                       secondary={`Status: ${metrics?.integrityStatus === 'valid' ? 'Gültig' : 'Prüfung erforderlich'}`}
                     />
@@ -136,7 +139,7 @@ export const CompliancePanel: React.FC<CompliancePanelProps> = ({
             </Grid>
           </Paper>
         </Grid>
-        
+
         {/* Critical Alerts */}
         {criticalAlerts.length > 0 && (
           <Grid size={12}>
@@ -147,18 +150,11 @@ export const CompliancePanel: React.FC<CompliancePanelProps> = ({
               <List dense>
                 {criticalAlerts.map((alert, index) => (
                   <ListItem key={index}>
-                    <ListItemIcon sx={{ minWidth: 36 }}>
-                      {getAlertIcon(alert.type)}
-                    </ListItemIcon>
-                    <ListItemText 
+                    <ListItemIcon sx={{ minWidth: 36 }}>{getAlertIcon(alert.type)}</ListItemIcon>
+                    <ListItemText
                       primary={alert.message}
                       secondary={
-                        <Chip 
-                          label={alert.severity} 
-                          size="small" 
-                          color="error"
-                          sx={{ mt: 0.5 }}
-                        />
+                        <Chip label={alert.severity} size="small" color="error" sx={{ mt: 0.5 }} />
                       }
                     />
                   </ListItem>
@@ -167,7 +163,7 @@ export const CompliancePanel: React.FC<CompliancePanelProps> = ({
             </Alert>
           </Grid>
         )}
-        
+
         {/* Warning Alerts */}
         {warningAlerts.length > 0 && (
           <Grid size={12}>
@@ -178,9 +174,7 @@ export const CompliancePanel: React.FC<CompliancePanelProps> = ({
               <List dense>
                 {warningAlerts.map((alert, index) => (
                   <ListItem key={index}>
-                    <ListItemIcon sx={{ minWidth: 36 }}>
-                      {getAlertIcon(alert.type)}
-                    </ListItemIcon>
+                    <ListItemIcon sx={{ minWidth: 36 }}>{getAlertIcon(alert.type)}</ListItemIcon>
                     <ListItemText primary={alert.message} />
                   </ListItem>
                 ))}
@@ -188,20 +182,16 @@ export const CompliancePanel: React.FC<CompliancePanelProps> = ({
             </Alert>
           </Grid>
         )}
-        
+
         {/* Info Alerts */}
         {infoAlerts.length > 0 && (
           <Grid size={12}>
             <Alert severity="info">
-              <AlertTitle sx={{ fontWeight: 'bold' }}>
-                Hinweise ({infoAlerts.length})
-              </AlertTitle>
+              <AlertTitle sx={{ fontWeight: 'bold' }}>Hinweise ({infoAlerts.length})</AlertTitle>
               <List dense>
                 {infoAlerts.map((alert, index) => (
                   <ListItem key={index}>
-                    <ListItemIcon sx={{ minWidth: 36 }}>
-                      {getAlertIcon(alert.type)}
-                    </ListItemIcon>
+                    <ListItemIcon sx={{ minWidth: 36 }}>{getAlertIcon(alert.type)}</ListItemIcon>
                     <ListItemText primary={alert.message} />
                   </ListItem>
                 ))}
@@ -209,33 +199,26 @@ export const CompliancePanel: React.FC<CompliancePanelProps> = ({
             </Alert>
           </Grid>
         )}
-        
+
         {/* Retention Policies */}
         <Grid size={{ xs: 12, md: 6 }}>
           <Paper sx={{ p: 3 }}>
-            <Typography 
-              variant="h6" 
-              gutterBottom
-              sx={{ fontFamily: 'Antonio, sans-serif' }}
-            >
+            <Typography variant="h6" gutterBottom sx={{ fontFamily: 'Antonio, sans-serif' }}>
               Aufbewahrungsrichtlinien
             </Typography>
-            
+
             <List>
               <ListItem>
                 <ListItemIcon>
                   <ScheduleIcon />
                 </ListItemIcon>
-                <ListItemText 
-                  primary="Standard Audit-Logs"
-                  secondary="90 Tage Aufbewahrung"
-                />
+                <ListItemText primary="Standard Audit-Logs" secondary="90 Tage Aufbewahrung" />
               </ListItem>
               <ListItem>
                 <ListItemIcon>
                   <ScheduleIcon />
                 </ListItemIcon>
-                <ListItemText 
+                <ListItemText
                   primary="DSGVO-relevante Logs"
                   secondary="Gemäß gesetzlicher Vorgaben"
                 />
@@ -244,7 +227,7 @@ export const CompliancePanel: React.FC<CompliancePanelProps> = ({
                 <ListItemIcon>
                   <ScheduleIcon />
                 </ListItemIcon>
-                <ListItemText 
+                <ListItemText
                   primary="Sicherheitskritische Events"
                   secondary="365 Tage Aufbewahrung"
                 />
@@ -252,23 +235,19 @@ export const CompliancePanel: React.FC<CompliancePanelProps> = ({
             </List>
           </Paper>
         </Grid>
-        
+
         {/* Report Generation */}
         <Grid size={{ xs: 12, md: 6 }}>
           <Paper sx={{ p: 3 }}>
-            <Typography 
-              variant="h6" 
-              gutterBottom
-              sx={{ fontFamily: 'Antonio, sans-serif' }}
-            >
+            <Typography variant="h6" gutterBottom sx={{ fontFamily: 'Antonio, sans-serif' }}>
               Compliance Reports
             </Typography>
-            
+
             <Box sx={{ mt: 2 }}>
               <Typography variant="body2" color="text.secondary" gutterBottom>
                 Generieren Sie DSGVO-konforme Berichte für den ausgewählten Zeitraum
               </Typography>
-              
+
               <Box sx={{ mt: 2, display: 'flex', flexDirection: 'column', gap: 1 }}>
                 <Button
                   variant="outlined"
@@ -298,7 +277,7 @@ export const CompliancePanel: React.FC<CompliancePanelProps> = ({
             </Box>
           </Paper>
         </Grid>
-        
+
         {/* No Issues */}
         {alerts.length === 0 && (
           <Grid size={12}>
@@ -306,7 +285,8 @@ export const CompliancePanel: React.FC<CompliancePanelProps> = ({
               <AlertTitle sx={{ fontWeight: 'bold' }}>
                 Keine Compliance-Probleme gefunden
               </AlertTitle>
-              Alle Compliance-Anforderungen werden erfüllt. Die Audit-Logs sind vollständig und manipulationssicher.
+              Alle Compliance-Anforderungen werden erfüllt. Die Audit-Logs sind vollständig und
+              manipulationssicher.
             </Alert>
           </Grid>
         )}

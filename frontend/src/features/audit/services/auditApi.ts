@@ -6,7 +6,7 @@ import type {
   AuditDashboardMetrics,
   ActivityChartData,
   ComplianceAlert,
-  AuditExportOptions
+  AuditExportOptions,
 } from '../types';
 
 // Mock data for development
@@ -27,7 +27,7 @@ const mockAuditLogs: AuditLog[] = [
     details: { browser: 'Chrome', os: 'Windows' },
     previousHash: 'abc123',
     dataHash: 'def456',
-    success: true
+    success: true,
   },
   {
     id: '2',
@@ -45,7 +45,7 @@ const mockAuditLogs: AuditLog[] = [
     details: { fields: ['name', 'email'] },
     previousHash: 'def456',
     dataHash: 'ghi789',
-    success: true
+    success: true,
   },
   {
     id: '3',
@@ -63,8 +63,8 @@ const mockAuditLogs: AuditLog[] = [
     details: { reason: 'Insufficient permissions' },
     previousHash: 'ghi789',
     dataHash: 'jkl012',
-    success: false
-  }
+    success: false,
+  },
 ];
 
 const mockDashboardMetrics: AuditDashboardMetrics = {
@@ -80,8 +80,8 @@ const mockDashboardMetrics: AuditDashboardMetrics = {
     { type: 'CUSTOMER_UPDATE', count: 45 },
     { type: 'REPORT_VIEW', count: 38 },
     { type: 'DATA_EXPORT', count: 22 },
-    { type: 'PERMISSION_CHANGE', count: 12 }
-  ]
+    { type: 'PERMISSION_CHANGE', count: 12 },
+  ],
 };
 
 const mockActivityChartData: ActivityChartData[] = [
@@ -108,7 +108,7 @@ const mockActivityChartData: ActivityChartData[] = [
   { time: '20:00', value: 8 },
   { time: '21:00', value: 6 },
   { time: '22:00', value: 4 },
-  { time: '23:00', value: 3 }
+  { time: '23:00', value: 3 },
 ];
 
 const mockComplianceAlerts: ComplianceAlert[] = [
@@ -119,7 +119,7 @@ const mockComplianceAlerts: ComplianceAlert[] = [
     title: 'Datenaufbewahrung überschreitet 90 Tage',
     description: '15 Audit-Einträge sind älter als 90 Tage und sollten archiviert werden.',
     timestamp: new Date().toISOString(),
-    resolved: false
+    resolved: false,
   },
   {
     id: 'alert-2',
@@ -128,8 +128,8 @@ const mockComplianceAlerts: ComplianceAlert[] = [
     title: 'Nächste Integritätsprüfung fällig',
     description: 'Die monatliche Integritätsprüfung steht in 3 Tagen an.',
     timestamp: new Date().toISOString(),
-    resolved: false
-  }
+    resolved: false,
+  },
 ];
 
 export const auditApi = {
@@ -141,7 +141,7 @@ export const auditApi = {
     }
 
     const params = new URLSearchParams();
-    
+
     if (filters.dateRange) {
       params.append('from', filters.dateRange.from.toISOString());
       params.append('to', filters.dateRange.to.toISOString());
@@ -157,58 +157,58 @@ export const auditApi = {
     if (filters.searchText) params.append('searchText', filters.searchText);
     if (filters.page !== undefined) params.append('page', filters.page.toString());
     if (filters.pageSize) params.append('size', filters.pageSize.toString());
-    
+
     const response = await httpClient.get<AuditLog[]>(`/api/audit/search?${params}`);
     return response.data;
   },
-  
+
   // Get audit detail
   async getAuditDetail(id: string) {
     if (isFeatureEnabled('useMockData') || isFeatureEnabled('authBypass')) {
       const log = mockAuditLogs.find(l => l.id === id);
       return Promise.resolve(log || mockAuditLogs[0]);
     }
-    
+
     const response = await httpClient.get<AuditLog>(`/api/audit/${id}`);
     return response.data;
   },
-  
+
   // Get entity audit trail
   async getEntityAuditTrail(entityType: string, entityId: string, page = 0, size = 50) {
     if (isFeatureEnabled('useMockData') || isFeatureEnabled('authBypass')) {
-      return Promise.resolve(mockAuditLogs.filter(
-        log => log.entityType === entityType && log.entityId === entityId
-      ));
+      return Promise.resolve(
+        mockAuditLogs.filter(log => log.entityType === entityType && log.entityId === entityId)
+      );
     }
-    
+
     const response = await httpClient.get<AuditLog[]>(
       `/api/audit/entity/${entityType}/${entityId}?page=${page}&size=${size}`
     );
     return response.data;
   },
-  
+
   // Dashboard metrics
   async getDashboardMetrics() {
     if (isFeatureEnabled('useMockData') || isFeatureEnabled('authBypass')) {
       return Promise.resolve(mockDashboardMetrics);
     }
-    
+
     const response = await httpClient.get<AuditDashboardMetrics>('/api/audit/dashboard/metrics');
     return response.data;
   },
-  
+
   // Activity chart data
   async getActivityChartData(days = 7, groupBy = 'hour') {
     if (isFeatureEnabled('useMockData') || isFeatureEnabled('authBypass')) {
       return Promise.resolve(mockActivityChartData);
     }
-    
+
     const response = await httpClient.get<ActivityChartData[]>(
       `/api/audit/dashboard/activity-chart?days=${days}&groupBy=${groupBy}`
     );
     return response.data;
   },
-  
+
   // Critical events
   async getCriticalEvents(limit = 10) {
     if (isFeatureEnabled('useMockData') || isFeatureEnabled('authBypass')) {
@@ -217,34 +217,37 @@ export const auditApi = {
       );
       return Promise.resolve(criticalEvents.slice(0, limit));
     }
-    
+
     const response = await httpClient.get<AuditLog[]>(
       `/api/audit/dashboard/critical-events?limit=${limit}`
     );
     return response.data;
   },
-  
+
   // Compliance alerts
   async getComplianceAlerts() {
     if (isFeatureEnabled('useMockData') || isFeatureEnabled('authBypass')) {
       return Promise.resolve(mockComplianceAlerts);
     }
-    
-    const response = await httpClient.get<ComplianceAlert[]>('/api/audit/dashboard/compliance-alerts');
+
+    const response = await httpClient.get<ComplianceAlert[]>(
+      '/api/audit/dashboard/compliance-alerts'
+    );
     return response.data;
   },
-  
+
   // Export audit logs
   async exportAuditLogs(options: AuditExportOptions) {
     if (isFeatureEnabled('useMockData') || isFeatureEnabled('authBypass')) {
       // Mock export - create CSV content
       const csvContent = [
         'ID,Timestamp,User,Event,Entity,Action,Success',
-        ...mockAuditLogs.map(log => 
-          `${log.id},${log.timestamp},${log.userName},${log.eventType},${log.entityType},${log.action},${log.success}`
-        )
+        ...mockAuditLogs.map(
+          log =>
+            `${log.id},${log.timestamp},${log.userName},${log.eventType},${log.entityType},${log.action},${log.success}`
+        ),
       ].join('\n');
-      
+
       const blob = new Blob([csvContent], { type: 'text/csv' });
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
@@ -256,57 +259,60 @@ export const auditApi = {
       window.URL.revokeObjectURL(url);
       return;
     }
-    
+
     const params = new URLSearchParams();
     params.append('format', options.format);
     params.append('from', options.dateRange.from.toISOString().split('T')[0]);
     params.append('to', options.dateRange.to.toISOString().split('T')[0]);
-    
+
     if (options.filters?.entityType) {
       params.append('entityType', options.filters.entityType);
     }
     if (options.filters?.eventTypes) {
       options.filters.eventTypes.forEach(type => params.append('eventType', type));
     }
-    
+
     const response = await httpClient.get(`/api/audit/export?${params}`, {
-      responseType: 'blob'
+      responseType: 'blob',
     });
-    
+
     // Create download link
     const url = window.URL.createObjectURL(new Blob([response.data]));
     const link = document.createElement('a');
     link.href = url;
-    link.setAttribute('download', `audit_trail_${new Date().toISOString().split('T')[0]}.${options.format}`);
+    link.setAttribute(
+      'download',
+      `audit_trail_${new Date().toISOString().split('T')[0]}.${options.format}`
+    );
     document.body.appendChild(link);
     link.click();
     link.remove();
     window.URL.revokeObjectURL(url);
   },
-  
+
   // Verify integrity
   async verifyIntegrity(from?: Date, to?: Date) {
     if (isFeatureEnabled('useMockData') || isFeatureEnabled('authBypass')) {
       return Promise.resolve({
         status: 'valid' as const,
         message: 'Audit trail integrity verified successfully',
-        issues: []
+        issues: [],
       });
     }
-    
+
     const params = new URLSearchParams();
     if (from) params.append('from', from.toISOString());
     if (to) params.append('to', to.toISOString());
-    
+
     const response = await httpClient.post<{
       status: 'valid' | 'compromised';
       message?: string;
       issues?: string[];
     }>(`/api/audit/verify-integrity?${params}`);
-    
+
     return response.data;
   },
-  
+
   // Get statistics
   async getStatistics(from?: Date, to?: Date) {
     if (isFeatureEnabled('useMockData') || isFeatureEnabled('authBypass')) {
@@ -317,15 +323,15 @@ export const auditApi = {
         failureCount: 12,
         averageEventsPerDay: 82.4,
         mostActiveUser: 'Max Mustermann',
-        mostCommonEvent: 'USER_LOGIN'
+        mostCommonEvent: 'USER_LOGIN',
       });
     }
-    
+
     const params = new URLSearchParams();
     if (from) params.append('from', from.toISOString());
     if (to) params.append('to', to.toISOString());
-    
+
     const response = await httpClient.get<Record<string, any>>(`/api/audit/statistics?${params}`);
     return response.data;
-  }
+  },
 };

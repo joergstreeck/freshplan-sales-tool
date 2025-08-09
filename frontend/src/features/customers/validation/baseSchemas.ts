@@ -23,7 +23,7 @@ export const germanPostalCodeSchema = z
  */
 export const germanPhoneSchema = z
   .string()
-  .regex(/^[\d\s\-+()\/]+$/, 'Ungültige Telefonnummer')
+  .regex(/^[\d\s\-+()/]+$/, 'Ungültige Telefonnummer')
   .refine(val => {
     const digitsOnly = val.replace(/\D/g, '');
     return digitsOnly.length >= 10 && digitsOnly.length <= 15;
@@ -240,7 +240,7 @@ export const bicSchema = z
 export const taxNumberSchema = z
   .string()
   .trim()
-  .regex(/^[0-9\/-]+$/, 'Ungültige Steuernummer')
+  .regex(/^[0-9/-]+$/, 'Ungültige Steuernummer')
   .min(10, 'Steuernummer zu kurz')
   .max(20, 'Steuernummer zu lang')
   .describe('Steuernummer');

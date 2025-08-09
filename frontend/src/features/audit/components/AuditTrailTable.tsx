@@ -14,13 +14,13 @@ import {
   Typography,
   CircularProgress,
   Button,
-  TablePagination
+  TablePagination,
 } from '@mui/material';
 import {
   Visibility as VisibilityIcon,
   Download as DownloadIcon,
   Security as SecurityIcon,
-  Warning as WarningIcon
+  Warning as WarningIcon,
 } from '@mui/icons-material';
 import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
@@ -38,25 +38,26 @@ export const AuditTrailTable: React.FC<AuditTrailTableProps> = ({ filters, onExp
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(25);
   const [selectedAudit, setSelectedAudit] = useState<string | null>(null);
-  
+
   const { data, isLoading, error } = useQuery({
     queryKey: ['auditTrail', filters, page, rowsPerPage],
-    queryFn: () => auditApi.getAuditLogs({
-      ...filters,
-      page,
-      pageSize: rowsPerPage
-    })
+    queryFn: () =>
+      auditApi.getAuditLogs({
+        ...filters,
+        page,
+        pageSize: rowsPerPage,
+      }),
   });
-  
+
   const handleChangePage = (_: unknown, newPage: number) => {
     setPage(newPage);
   };
-  
+
   const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
-  
+
   const getActionColor = (action: string) => {
     if (action.includes('DELETE')) return 'error';
     if (action.includes('CREATE')) return 'success';
@@ -65,7 +66,7 @@ export const AuditTrailTable: React.FC<AuditTrailTableProps> = ({ filters, onExp
     if (action.includes('LOGIN')) return 'info';
     return 'default';
   };
-  
+
   const getEntityTypeIcon = (entityType: string) => {
     switch (entityType) {
       case 'USER':
@@ -82,7 +83,7 @@ export const AuditTrailTable: React.FC<AuditTrailTableProps> = ({ filters, onExp
         return '📁';
     }
   };
-  
+
   const formatDateTime = (dateStr: string) => {
     try {
       return format(new Date(dateStr), 'dd.MM.yyyy HH:mm:ss', { locale: de });
@@ -90,7 +91,7 @@ export const AuditTrailTable: React.FC<AuditTrailTableProps> = ({ filters, onExp
       return dateStr;
     }
   };
-  
+
   if (isLoading) {
     return (
       <Box display="flex" justifyContent="center" alignItems="center" minHeight={400}>
@@ -98,7 +99,7 @@ export const AuditTrailTable: React.FC<AuditTrailTableProps> = ({ filters, onExp
       </Box>
     );
   }
-  
+
   if (error) {
     return (
       <Box p={3}>
@@ -108,9 +109,9 @@ export const AuditTrailTable: React.FC<AuditTrailTableProps> = ({ filters, onExp
       </Box>
     );
   }
-  
+
   const auditLogs = data || [];
-  
+
   return (
     <Box>
       <TableContainer component={Paper}>
@@ -123,11 +124,13 @@ export const AuditTrailTable: React.FC<AuditTrailTableProps> = ({ filters, onExp
               <TableCell width="120">Objekt</TableCell>
               <TableCell>Details</TableCell>
               <TableCell width="100">Grund</TableCell>
-              <TableCell width="80" align="center">Aktionen</TableCell>
+              <TableCell width="80" align="center">
+                Aktionen
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {auditLogs.map((log) => (
+            {auditLogs.map(log => (
               <TableRow
                 key={log.id}
                 hover
@@ -135,8 +138,8 @@ export const AuditTrailTable: React.FC<AuditTrailTableProps> = ({ filters, onExp
                   '&:hover': { backgroundColor: 'action.hover' },
                   ...(log.isCritical && {
                     backgroundColor: 'error.light',
-                    '&:hover': { backgroundColor: 'error.light' }
-                  })
+                    '&:hover': { backgroundColor: 'error.light' },
+                  }),
                 }}
               >
                 <TableCell>
@@ -144,7 +147,7 @@ export const AuditTrailTable: React.FC<AuditTrailTableProps> = ({ filters, onExp
                     {formatDateTime(log.occurredAt)}
                   </Typography>
                 </TableCell>
-                
+
                 <TableCell>
                   <Box>
                     <Typography variant="body2" fontWeight="medium">
@@ -155,7 +158,7 @@ export const AuditTrailTable: React.FC<AuditTrailTableProps> = ({ filters, onExp
                     </Typography>
                   </Box>
                 </TableCell>
-                
+
                 <TableCell>
                   <Chip
                     label={log.action}
@@ -164,16 +167,12 @@ export const AuditTrailTable: React.FC<AuditTrailTableProps> = ({ filters, onExp
                     icon={log.isCritical ? <WarningIcon /> : undefined}
                   />
                 </TableCell>
-                
+
                 <TableCell>
                   <Box display="flex" alignItems="center" gap={0.5}>
-                    <Typography variant="body2">
-                      {getEntityTypeIcon(log.entityType)}
-                    </Typography>
+                    <Typography variant="body2">{getEntityTypeIcon(log.entityType)}</Typography>
                     <Box>
-                      <Typography variant="body2">
-                        {log.entityType}
-                      </Typography>
+                      <Typography variant="body2">{log.entityType}</Typography>
                       {log.entityName && (
                         <Typography variant="caption" color="text.secondary">
                           {log.entityName}
@@ -182,7 +181,7 @@ export const AuditTrailTable: React.FC<AuditTrailTableProps> = ({ filters, onExp
                     </Box>
                   </Box>
                 </TableCell>
-                
+
                 <TableCell>
                   {log.changedFields && (
                     <Typography variant="body2" noWrap sx={{ maxWidth: 300 }}>
@@ -190,12 +189,17 @@ export const AuditTrailTable: React.FC<AuditTrailTableProps> = ({ filters, onExp
                     </Typography>
                   )}
                   {log.comment && (
-                    <Typography variant="caption" color="text.secondary" noWrap sx={{ maxWidth: 300 }}>
+                    <Typography
+                      variant="caption"
+                      color="text.secondary"
+                      noWrap
+                      sx={{ maxWidth: 300 }}
+                    >
                       {log.comment}
                     </Typography>
                   )}
                 </TableCell>
-                
+
                 <TableCell>
                   {log.reason && (
                     <Tooltip title={log.reason}>
@@ -205,7 +209,7 @@ export const AuditTrailTable: React.FC<AuditTrailTableProps> = ({ filters, onExp
                     </Tooltip>
                   )}
                 </TableCell>
-                
+
                 <TableCell align="center">
                   <Tooltip title="Details anzeigen">
                     <IconButton
@@ -224,20 +228,18 @@ export const AuditTrailTable: React.FC<AuditTrailTableProps> = ({ filters, onExp
                 </TableCell>
               </TableRow>
             ))}
-            
+
             {auditLogs.length === 0 && (
               <TableRow>
                 <TableCell colSpan={7} align="center" sx={{ py: 5 }}>
-                  <Typography color="text.secondary">
-                    Keine Audit-Einträge gefunden
-                  </Typography>
+                  <Typography color="text.secondary">Keine Audit-Einträge gefunden</Typography>
                 </TableCell>
               </TableRow>
             )}
           </TableBody>
         </Table>
       </TableContainer>
-      
+
       <TablePagination
         component="div"
         count={-1} // Unknown total count for now
@@ -249,19 +251,15 @@ export const AuditTrailTable: React.FC<AuditTrailTableProps> = ({ filters, onExp
         labelRowsPerPage="Einträge pro Seite:"
         labelDisplayedRows={({ from, to }) => `${from}-${to}`}
       />
-      
+
       {onExport && (
         <Box sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end' }}>
-          <Button
-            variant="outlined"
-            startIcon={<DownloadIcon />}
-            onClick={onExport}
-          >
+          <Button variant="outlined" startIcon={<DownloadIcon />} onClick={onExport}>
             Export als CSV
           </Button>
         </Box>
       )}
-      
+
       {selectedAudit && (
         <AuditDetailModal
           auditId={selectedAudit}

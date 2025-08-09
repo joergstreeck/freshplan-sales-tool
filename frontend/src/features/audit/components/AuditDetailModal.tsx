@@ -14,7 +14,7 @@ import {
   IconButton,
   Alert,
   Tooltip,
-  Skeleton
+  Skeleton,
 } from '@mui/material';
 import {
   Close as CloseIcon,
@@ -24,7 +24,7 @@ import {
   Error as ErrorIcon,
   Info as InfoIcon,
   ContentCopy as CopyIcon,
-  Download as DownloadIcon
+  Download as DownloadIcon,
 } from '@mui/icons-material';
 import { format } from 'date-fns';
 import { de } from 'date-fns/locale';
@@ -39,15 +39,11 @@ interface AuditDetailModalProps {
   onClose: () => void;
 }
 
-export const AuditDetailModal: React.FC<AuditDetailModalProps> = ({
-  auditId,
-  open,
-  onClose
-}) => {
+export const AuditDetailModal: React.FC<AuditDetailModalProps> = ({ auditId, open, onClose }) => {
   const { data: audit, isLoading } = useQuery({
     queryKey: ['auditDetail', auditId],
     queryFn: () => auditApi.getAuditDetail(auditId!),
-    enabled: !!auditId && open
+    enabled: !!auditId && open,
   });
 
   const getActionIcon = (action: string) => {
@@ -89,7 +85,7 @@ export const AuditDetailModal: React.FC<AuditDetailModalProps> = ({
 
   const exportAuditLog = () => {
     if (!audit) return;
-    
+
     const data = JSON.stringify(audit, null, 2);
     const blob = new Blob([data], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
@@ -110,18 +106,18 @@ export const AuditDetailModal: React.FC<AuditDetailModalProps> = ({
       maxWidth="md"
       fullWidth
       PaperProps={{
-        sx: { minHeight: '70vh' }
+        sx: { minHeight: '70vh' },
       }}
     >
       <DialogTitle sx={{ m: 0, p: 2 }}>
         <Box display="flex" alignItems="center" justifyContent="space-between">
           <Box display="flex" alignItems="center" gap={2}>
             {audit && getActionIcon(audit.action)}
-            <Typography 
+            <Typography
               variant="h6"
-              sx={{ 
+              sx={{
                 fontFamily: 'Antonio, sans-serif',
-                fontWeight: 'bold'
+                fontWeight: 'bold',
               }}
             >
               Audit Log Details
@@ -151,9 +147,9 @@ export const AuditDetailModal: React.FC<AuditDetailModalProps> = ({
           <Box>
             {/* Grundinformationen */}
             <Paper sx={{ p: 2, mb: 2, bgcolor: 'background.default' }}>
-              <Typography 
-                variant="subtitle2" 
-                gutterBottom 
+              <Typography
+                variant="subtitle2"
+                gutterBottom
                 color="text.secondary"
                 sx={{ fontFamily: 'Poppins, sans-serif' }}
               >
@@ -211,9 +207,9 @@ export const AuditDetailModal: React.FC<AuditDetailModalProps> = ({
 
             {/* Benutzerinformationen */}
             <Paper sx={{ p: 2, mb: 2, bgcolor: 'background.default' }}>
-              <Typography 
-                variant="subtitle2" 
-                gutterBottom 
+              <Typography
+                variant="subtitle2"
+                gutterBottom
                 color="text.secondary"
                 sx={{ fontFamily: 'Poppins, sans-serif' }}
               >
@@ -224,17 +220,13 @@ export const AuditDetailModal: React.FC<AuditDetailModalProps> = ({
                   <Typography variant="caption" color="text.secondary">
                     Benutzer ID
                   </Typography>
-                  <Typography variant="body2">
-                    {audit.userId}
-                  </Typography>
+                  <Typography variant="body2">{audit.userId}</Typography>
                 </Grid>
                 <Grid size={{ xs: 12, sm: 6 }}>
                   <Typography variant="caption" color="text.secondary">
                     Benutzername
                   </Typography>
-                  <Typography variant="body2">
-                    {audit.userName || audit.username || '-'}
-                  </Typography>
+                  <Typography variant="body2">{audit.userName || audit.username || '-'}</Typography>
                 </Grid>
                 <Grid size={{ xs: 12, sm: 6 }}>
                   <Typography variant="caption" color="text.secondary">
@@ -260,61 +252,69 @@ export const AuditDetailModal: React.FC<AuditDetailModalProps> = ({
             {/* Änderungsdetails */}
             {(audit.changes || audit.oldValues || audit.newValues) && (
               <Paper sx={{ p: 2, mb: 2, bgcolor: 'background.default' }}>
-                <Typography 
-                  variant="subtitle2" 
-                  gutterBottom 
+                <Typography
+                  variant="subtitle2"
+                  gutterBottom
                   color="text.secondary"
                   sx={{ fontFamily: 'Poppins, sans-serif' }}
                 >
                   Änderungsdetails
                 </Typography>
-                
+
                 {audit.oldValues && (
                   <Box sx={{ mb: 2 }}>
                     <Typography variant="caption" color="text.secondary">
                       Vorherige Werte:
                     </Typography>
-                    <Box sx={{ 
-                      maxHeight: 200, 
-                      overflow: 'auto',
-                      bgcolor: 'grey.50',
-                      borderRadius: 1,
-                      p: 1,
-                      mt: 0.5
-                    }}>
-                      <pre style={{ 
-                        fontSize: '0.875rem',
-                        fontFamily: 'monospace',
-                        margin: 0,
-                        whiteSpace: 'pre-wrap',
-                        wordBreak: 'break-word'
-                      }}>
+                    <Box
+                      sx={{
+                        maxHeight: 200,
+                        overflow: 'auto',
+                        bgcolor: 'grey.50',
+                        borderRadius: 1,
+                        p: 1,
+                        mt: 0.5,
+                      }}
+                    >
+                      <pre
+                        style={{
+                          fontSize: '0.875rem',
+                          fontFamily: 'monospace',
+                          margin: 0,
+                          whiteSpace: 'pre-wrap',
+                          wordBreak: 'break-word',
+                        }}
+                      >
                         {JSON.stringify(audit.oldValues, null, 2)}
                       </pre>
                     </Box>
                   </Box>
                 )}
-                
+
                 {audit.newValues && (
                   <Box>
                     <Typography variant="caption" color="text.secondary">
                       Neue Werte:
                     </Typography>
-                    <Box sx={{ 
-                      maxHeight: 200, 
-                      overflow: 'auto',
-                      bgcolor: 'grey.50',
-                      borderRadius: 1,
-                      p: 1,
-                      mt: 0.5
-                    }}>
-                      <pre style={{ 
-                        fontSize: '0.875rem',
-                        fontFamily: 'monospace',
-                        margin: 0,
-                        whiteSpace: 'pre-wrap',
-                        wordBreak: 'break-word'
-                      }}>
+                    <Box
+                      sx={{
+                        maxHeight: 200,
+                        overflow: 'auto',
+                        bgcolor: 'grey.50',
+                        borderRadius: 1,
+                        p: 1,
+                        mt: 0.5,
+                      }}
+                    >
+                      <pre
+                        style={{
+                          fontSize: '0.875rem',
+                          fontFamily: 'monospace',
+                          margin: 0,
+                          whiteSpace: 'pre-wrap',
+                          wordBreak: 'break-word',
+                        }}
+                      >
                         {JSON.stringify(audit.newValues, null, 2)}
                       </pre>
                     </Box>
@@ -326,21 +326,25 @@ export const AuditDetailModal: React.FC<AuditDetailModalProps> = ({
                     <Typography variant="caption" color="text.secondary">
                       Änderungen:
                     </Typography>
-                    <Box sx={{ 
-                      maxHeight: 200, 
-                      overflow: 'auto',
-                      bgcolor: 'grey.50',
-                      borderRadius: 1,
-                      p: 1,
-                      mt: 0.5
-                    }}>
-                      <pre style={{ 
-                        fontSize: '0.875rem',
-                        fontFamily: 'monospace',
-                        margin: 0,
-                        whiteSpace: 'pre-wrap',
-                        wordBreak: 'break-word'
-                      }}>
+                    <Box
+                      sx={{
+                        maxHeight: 200,
+                        overflow: 'auto',
+                        bgcolor: 'grey.50',
+                        borderRadius: 1,
+                        p: 1,
+                        mt: 0.5,
+                      }}
+                    >
+                      <pre
+                        style={{
+                          fontSize: '0.875rem',
+                          fontFamily: 'monospace',
+                          margin: 0,
+                          whiteSpace: 'pre-wrap',
+                          wordBreak: 'break-word',
+                        }}
+                      >
                         {JSON.stringify(audit.changes, null, 2)}
                       </pre>
                     </Box>
@@ -351,9 +355,9 @@ export const AuditDetailModal: React.FC<AuditDetailModalProps> = ({
 
             {/* Sicherheitsinformationen */}
             <Paper sx={{ p: 2, mb: 2, bgcolor: 'background.default' }}>
-              <Typography 
-                variant="subtitle2" 
-                gutterBottom 
+              <Typography
+                variant="subtitle2"
+                gutterBottom
                 color="text.secondary"
                 sx={{ fontFamily: 'Poppins, sans-serif' }}
               >
@@ -364,12 +368,12 @@ export const AuditDetailModal: React.FC<AuditDetailModalProps> = ({
                   <Typography variant="caption" color="text.secondary">
                     Hash-Chain
                   </Typography>
-                  <Typography 
-                    variant="body2" 
-                    fontFamily="monospace" 
-                    sx={{ 
+                  <Typography
+                    variant="body2"
+                    fontFamily="monospace"
+                    sx={{
                       wordBreak: 'break-all',
-                      fontSize: '0.75rem'
+                      fontSize: '0.75rem',
                     }}
                   >
                     {audit.hash || '-'}
@@ -380,12 +384,12 @@ export const AuditDetailModal: React.FC<AuditDetailModalProps> = ({
                     <Typography variant="caption" color="text.secondary">
                       Vorheriger Hash
                     </Typography>
-                    <Typography 
-                      variant="body2" 
-                      fontFamily="monospace" 
-                      sx={{ 
+                    <Typography
+                      variant="body2"
+                      fontFamily="monospace"
+                      sx={{
                         wordBreak: 'break-all',
-                        fontSize: '0.75rem'
+                        fontSize: '0.75rem',
                       }}
                     >
                       {audit.previousHash}
@@ -417,9 +421,9 @@ export const AuditDetailModal: React.FC<AuditDetailModalProps> = ({
             {/* Compliance-Informationen */}
             {(audit.isDsgvoRelevant || audit.retentionPeriod || audit.deletionDate) && (
               <Paper sx={{ p: 2, bgcolor: 'background.default' }}>
-                <Typography 
-                  variant="subtitle2" 
-                  gutterBottom 
+                <Typography
+                  variant="subtitle2"
+                  gutterBottom
                   color="text.secondary"
                   sx={{ fontFamily: 'Poppins, sans-serif' }}
                 >
@@ -448,7 +452,7 @@ export const AuditDetailModal: React.FC<AuditDetailModalProps> = ({
                       Löschung geplant
                     </Typography>
                     <Typography variant="body2">
-                      {audit.deletionDate 
+                      {audit.deletionDate
                         ? format(new Date(audit.deletionDate), 'PP', { locale: de })
                         : 'Nicht geplant'}
                     </Typography>
@@ -460,12 +464,7 @@ export const AuditDetailModal: React.FC<AuditDetailModalProps> = ({
                       </Typography>
                       <Box display="flex" gap={0.5} flexWrap="wrap" mt={0.5}>
                         {audit.dsgvoCategories.map((category: string) => (
-                          <Chip
-                            key={category}
-                            label={category}
-                            size="small"
-                            variant="outlined"
-                          />
+                          <Chip key={category} label={category} size="small" variant="outlined" />
                         ))}
                       </Box>
                     </Grid>
@@ -494,12 +493,12 @@ export const AuditDetailModal: React.FC<AuditDetailModalProps> = ({
       </DialogContent>
 
       <DialogActions sx={{ p: 2 }}>
-        <Button 
+        <Button
           onClick={onClose}
           variant="contained"
-          sx={{ 
+          sx={{
             bgcolor: '#004F7B',
-            '&:hover': { bgcolor: '#003d62' }
+            '&:hover': { bgcolor: '#003d62' },
           }}
         >
           Schließen

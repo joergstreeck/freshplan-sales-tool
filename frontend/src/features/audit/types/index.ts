@@ -7,31 +7,31 @@ export enum AuditAction {
   DELETE = 'DELETE',
   BULK_DELETE = 'BULK_DELETE',
   VIEW = 'VIEW',
-  
+
   // Business Operations
   EXPORT = 'EXPORT',
   IMPORT = 'IMPORT',
   MERGE = 'MERGE',
   ARCHIVE = 'ARCHIVE',
   RESTORE = 'RESTORE',
-  
+
   // Permission & Security
   LOGIN = 'LOGIN',
   LOGOUT = 'LOGOUT',
   FAILED_LOGIN = 'FAILED_LOGIN',
   PERMISSION_CHANGE = 'PERMISSION_CHANGE',
   PASSWORD_CHANGE = 'PASSWORD_CHANGE',
-  
+
   // Compliance
   CONSENT_GIVEN = 'CONSENT_GIVEN',
   CONSENT_WITHDRAWN = 'CONSENT_WITHDRAWN',
   DATA_REQUEST = 'DATA_REQUEST',
   DATA_DELETION = 'DATA_DELETION',
-  
+
   // System
   SYSTEM_EVENT = 'SYSTEM_EVENT',
   CONFIG_CHANGE = 'CONFIG_CHANGE',
-  ERROR = 'ERROR'
+  ERROR = 'ERROR',
 }
 
 export enum EntityType {
@@ -41,7 +41,7 @@ export enum EntityType {
   CONTACT = 'CONTACT',
   USER = 'USER',
   SYSTEM = 'SYSTEM',
-  AUDIT = 'AUDIT'
+  AUDIT = 'AUDIT',
 }
 
 export enum LegalBasis {
@@ -50,7 +50,7 @@ export enum LegalBasis {
   LEGAL_OBLIGATION = 'LEGAL_OBLIGATION',
   VITAL_INTERESTS = 'VITAL_INTERESTS',
   PUBLIC_TASK = 'PUBLIC_TASK',
-  LEGITIMATE_INTERESTS = 'LEGITIMATE_INTERESTS'
+  LEGITIMATE_INTERESTS = 'LEGITIMATE_INTERESTS',
 }
 
 export interface AuditLog {
@@ -60,32 +60,32 @@ export interface AuditLog {
   entityId: string;
   entityName?: string;
   action: AuditAction;
-  
+
   // User information
   userId: string;
   userName: string;
   userRole: string;
-  
+
   // Change details
   oldValues?: string;
   newValues?: string;
   changedFields?: string;
   reason?: string;
   comment?: string;
-  
+
   // Context
   ipAddress?: string;
   userAgent?: string;
   sessionId?: string;
   requestId?: string;
   transactionId?: string;
-  
+
   // Compliance
   isDsgvoRelevant: boolean;
   legalBasis?: LegalBasis;
   consentId?: string;
   retentionUntil?: string;
-  
+
   // Security
   currentHash: string;
   previousHash: string;

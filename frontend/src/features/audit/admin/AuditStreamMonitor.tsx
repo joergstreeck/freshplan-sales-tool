@@ -15,7 +15,7 @@ import {
   CircularProgress,
   Fade,
   Divider,
-  Avatar
+  Avatar,
 } from '@mui/material';
 import {
   PlayArrow as PlayIcon,
@@ -28,7 +28,7 @@ import {
   CheckCircle as CheckIcon,
   Person as PersonIcon,
   Security as SecurityIcon,
-  Storage as StorageIcon
+  Storage as StorageIcon,
 } from '@mui/icons-material';
 import { format } from 'date-fns';
 import { de } from 'date-fns/locale';
@@ -61,7 +61,7 @@ export const AuditStreamMonitor: React.FC<AuditStreamMonitorProps> = ({
   autoScroll = true,
   filterCritical = false,
   onEntryClick,
-  height = 400
+  height = 400,
 }) => {
   const [entries, setEntries] = useState<AuditStreamEntry[]>([]);
   const [isPaused, setIsPaused] = useState(false);
@@ -77,39 +77,46 @@ export const AuditStreamMonitor: React.FC<AuditStreamMonitorProps> = ({
     const connectWebSocket = () => {
       // Simulate connection
       setIsConnected(true);
-      
+
       // Simulate incoming events
-      const interval = setInterval(() => {
-        if (!isPaused) {
-          const mockEntry: AuditStreamEntry = {
-            id: `audit-${Date.now()}`,
-            timestamp: new Date(),
-            userId: `user-${Math.floor(Math.random() * 100)}`,
-            userName: ['Max Mustermann', 'Anna Schmidt', 'Peter Weber'][Math.floor(Math.random() * 3)],
-            action: ['CREATE', 'UPDATE', 'DELETE', 'READ', 'LOGIN', 'EXPORT'][Math.floor(Math.random() * 6)],
-            entityType: ['Customer', 'Order', 'Product', 'User'][Math.floor(Math.random() * 4)],
-            entityId: `entity-${Math.floor(Math.random() * 1000)}`,
-            severity: Math.random() > 0.8 ? 'warning' : Math.random() > 0.95 ? 'error' : 'info',
-            ipAddress: `192.168.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}`,
-            isDsgvoRelevant: Math.random() > 0.7,
-            isCritical: Math.random() > 0.9
-          };
-          
-          setEntries(prev => {
-            const newEntries = [mockEntry, ...prev].slice(0, maxEntries);
-            if (prev.length > 0) {
-              setNewEntriesCount(count => count + 1);
-            }
-            return newEntries;
-          });
-        }
-      }, Math.random() * 3000 + 2000); // Random interval between 2-5 seconds
-      
+      const interval = setInterval(
+        () => {
+          if (!isPaused) {
+            const mockEntry: AuditStreamEntry = {
+              id: `audit-${Date.now()}`,
+              timestamp: new Date(),
+              userId: `user-${Math.floor(Math.random() * 100)}`,
+              userName: ['Max Mustermann', 'Anna Schmidt', 'Peter Weber'][
+                Math.floor(Math.random() * 3)
+              ],
+              action: ['CREATE', 'UPDATE', 'DELETE', 'READ', 'LOGIN', 'EXPORT'][
+                Math.floor(Math.random() * 6)
+              ],
+              entityType: ['Customer', 'Order', 'Product', 'User'][Math.floor(Math.random() * 4)],
+              entityId: `entity-${Math.floor(Math.random() * 1000)}`,
+              severity: Math.random() > 0.8 ? 'warning' : Math.random() > 0.95 ? 'error' : 'info',
+              ipAddress: `192.168.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}`,
+              isDsgvoRelevant: Math.random() > 0.7,
+              isCritical: Math.random() > 0.9,
+            };
+
+            setEntries(prev => {
+              const newEntries = [mockEntry, ...prev].slice(0, maxEntries);
+              if (prev.length > 0) {
+                setNewEntriesCount(count => count + 1);
+              }
+              return newEntries;
+            });
+          }
+        },
+        Math.random() * 3000 + 2000
+      ); // Random interval between 2-5 seconds
+
       return () => clearInterval(interval);
     };
 
     const cleanup = connectWebSocket();
-    
+
     return () => {
       cleanup();
       if (wsRef.current) {
@@ -162,7 +169,7 @@ export const AuditStreamMonitor: React.FC<AuditStreamMonitorProps> = ({
     }
   };
 
-  const filteredEntries = showOnlyCritical 
+  const filteredEntries = showOnlyCritical
     ? entries.filter(e => e.isCritical || e.severity === 'error' || e.severity === 'warning')
     : entries;
 
@@ -174,26 +181,26 @@ export const AuditStreamMonitor: React.FC<AuditStreamMonitorProps> = ({
   return (
     <Paper sx={{ height, display: 'flex', flexDirection: 'column' }}>
       {/* Header */}
-      <Box 
-        sx={{ 
-          p: 2, 
-          borderBottom: 1, 
+      <Box
+        sx={{
+          p: 2,
+          borderBottom: 1,
           borderColor: 'divider',
-          bgcolor: 'background.paper'
+          bgcolor: 'background.paper',
         }}
       >
         <Box display="flex" justifyContent="space-between" alignItems="center">
           <Box display="flex" alignItems="center" gap={1}>
-            <Typography 
+            <Typography
               variant="h6"
-              sx={{ 
+              sx={{
                 fontFamily: 'Antonio, sans-serif',
-                fontWeight: 'bold'
+                fontWeight: 'bold',
               }}
             >
               Live Activity Stream
             </Typography>
-            
+
             {/* Connection Status */}
             <Chip
               icon={isConnected ? <CheckIcon /> : <ErrorIcon />}
@@ -202,7 +209,7 @@ export const AuditStreamMonitor: React.FC<AuditStreamMonitorProps> = ({
               size="small"
               variant="outlined"
             />
-            
+
             {/* New entries badge */}
             {isPaused && newEntriesCount > 0 && (
               <Fade in>
@@ -210,41 +217,41 @@ export const AuditStreamMonitor: React.FC<AuditStreamMonitorProps> = ({
                   label={`${newEntriesCount} neue Events`}
                   color="primary"
                   size="small"
-                  sx={{ 
+                  sx={{
                     animation: 'pulse 1.5s infinite',
                     '@keyframes pulse': {
                       '0%': { opacity: 1 },
                       '50%': { opacity: 0.5 },
-                      '100%': { opacity: 1 }
-                    }
+                      '100%': { opacity: 1 },
+                    },
                   }}
                 />
               </Fade>
             )}
           </Box>
-          
+
           <Box display="flex" alignItems="center" gap={1}>
             {/* Filter Toggle */}
             <FormControlLabel
               control={
                 <Switch
                   checked={showOnlyCritical}
-                  onChange={(e) => setShowOnlyCritical(e.target.checked)}
+                  onChange={e => setShowOnlyCritical(e.target.checked)}
                   size="small"
                 />
               }
               label="Nur kritisch"
-              sx={{ 
-                '& .MuiFormControlLabel-label': { 
+              sx={{
+                '& .MuiFormControlLabel-label': {
                   fontSize: '0.875rem',
-                  fontFamily: 'Poppins, sans-serif'
-                } 
+                  fontFamily: 'Poppins, sans-serif',
+                },
               }}
             />
-            
+
             {/* Control Buttons */}
             <Tooltip title={isPaused ? 'Fortsetzen' : 'Pausieren'}>
-              <IconButton 
+              <IconButton
                 onClick={() => setIsPaused(!isPaused)}
                 color={isPaused ? 'primary' : 'default'}
               >
@@ -253,7 +260,7 @@ export const AuditStreamMonitor: React.FC<AuditStreamMonitorProps> = ({
                 </Badge>
               </IconButton>
             </Tooltip>
-            
+
             <Tooltip title="Leeren">
               <IconButton onClick={handleClear}>
                 <ClearIcon />
@@ -264,19 +271,19 @@ export const AuditStreamMonitor: React.FC<AuditStreamMonitorProps> = ({
       </Box>
 
       {/* Stream Content */}
-      <Box 
+      <Box
         ref={listRef}
-        sx={{ 
-          flex: 1, 
+        sx={{
+          flex: 1,
           overflow: 'auto',
-          bgcolor: 'background.default'
+          bgcolor: 'background.default',
         }}
       >
         {filteredEntries.length === 0 ? (
-          <Box 
-            display="flex" 
-            alignItems="center" 
-            justifyContent="center" 
+          <Box
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
             height="100%"
             flexDirection="column"
             gap={2}
@@ -284,14 +291,10 @@ export const AuditStreamMonitor: React.FC<AuditStreamMonitorProps> = ({
             {isConnected ? (
               <>
                 <CircularProgress sx={{ color: '#94C456' }} />
-                <Typography color="text.secondary">
-                  Warte auf Events...
-                </Typography>
+                <Typography color="text.secondary">Warte auf Events...</Typography>
               </>
             ) : (
-              <Alert severity="error">
-                Keine Verbindung zum Event Stream
-              </Alert>
+              <Alert severity="error">Keine Verbindung zum Event Stream</Alert>
             )}
           </Box>
         ) : (
@@ -305,40 +308,40 @@ export const AuditStreamMonitor: React.FC<AuditStreamMonitorProps> = ({
                     px: 2,
                     cursor: onEntryClick ? 'pointer' : 'default',
                     transition: 'background-color 0.2s',
-                    '&:hover': onEntryClick ? {
-                      bgcolor: 'action.hover'
-                    } : {},
+                    '&:hover': onEntryClick
+                      ? {
+                          bgcolor: 'action.hover',
+                        }
+                      : {},
                     animation: index === 0 && !isPaused ? 'slideIn 0.3s ease-out' : 'none',
                     '@keyframes slideIn': {
-                      from: { 
+                      from: {
                         transform: 'translateY(-20px)',
-                        opacity: 0
+                        opacity: 0,
                       },
-                      to: { 
+                      to: {
                         transform: 'translateY(0)',
-                        opacity: 1
-                      }
-                    }
+                        opacity: 1,
+                      },
+                    },
                   }}
                 >
                   <Box display="flex" gap={2} alignItems="flex-start" width="100%">
                     {/* Time */}
-                    <Typography 
-                      variant="caption" 
-                      sx={{ 
+                    <Typography
+                      variant="caption"
+                      sx={{
                         minWidth: 60,
                         fontFamily: 'monospace',
-                        color: 'text.secondary'
+                        color: 'text.secondary',
                       }}
                     >
                       {format(entry.timestamp, 'HH:mm:ss')}
                     </Typography>
-                    
+
                     {/* Action Icon */}
-                    <Box sx={{ mt: 0.25 }}>
-                      {getActionIcon(entry.action)}
-                    </Box>
-                    
+                    <Box sx={{ mt: 0.25 }}>{getActionIcon(entry.action)}</Box>
+
                     {/* Main Content */}
                     <Box flex={1}>
                       <Box display="flex" gap={1} alignItems="center" flexWrap="wrap">
@@ -350,7 +353,7 @@ export const AuditStreamMonitor: React.FC<AuditStreamMonitorProps> = ({
                           variant="outlined"
                           sx={{ height: 24 }}
                         />
-                        
+
                         {/* Action */}
                         <Chip
                           label={entry.action}
@@ -358,12 +361,12 @@ export const AuditStreamMonitor: React.FC<AuditStreamMonitorProps> = ({
                           color={getSeverityColor(entry.severity)}
                           sx={{ height: 24 }}
                         />
-                        
+
                         {/* Entity */}
                         <Typography variant="body2">
                           {entry.entityType} #{entry.entityId}
                         </Typography>
-                        
+
                         {/* Badges */}
                         {entry.isDsgvoRelevant && (
                           <Chip
@@ -374,7 +377,7 @@ export const AuditStreamMonitor: React.FC<AuditStreamMonitorProps> = ({
                             sx={{ height: 20 }}
                           />
                         )}
-                        
+
                         {entry.isCritical && (
                           <Chip
                             icon={<WarningIcon />}
@@ -385,25 +388,25 @@ export const AuditStreamMonitor: React.FC<AuditStreamMonitorProps> = ({
                           />
                         )}
                       </Box>
-                      
+
                       {/* Details */}
                       {entry.details && (
-                        <Typography 
-                          variant="caption" 
+                        <Typography
+                          variant="caption"
                           color="text.secondary"
                           sx={{ mt: 0.5, display: 'block' }}
                         >
                           {entry.details}
                         </Typography>
                       )}
-                      
+
                       {/* IP Address */}
                       {entry.ipAddress && (
-                        <Typography 
-                          variant="caption" 
-                          sx={{ 
+                        <Typography
+                          variant="caption"
+                          sx={{
                             color: 'text.disabled',
-                            fontFamily: 'monospace'
+                            fontFamily: 'monospace',
                           }}
                         >
                           IP: {entry.ipAddress}
@@ -420,21 +423,21 @@ export const AuditStreamMonitor: React.FC<AuditStreamMonitorProps> = ({
       </Box>
 
       {/* Footer Stats */}
-      <Box 
-        sx={{ 
-          p: 1, 
-          borderTop: 1, 
+      <Box
+        sx={{
+          p: 1,
+          borderTop: 1,
           borderColor: 'divider',
           bgcolor: 'background.paper',
           display: 'flex',
           justifyContent: 'space-between',
-          alignItems: 'center'
+          alignItems: 'center',
         }}
       >
         <Typography variant="caption" color="text.secondary">
           {filteredEntries.length} von {entries.length} Events angezeigt
         </Typography>
-        
+
         <Typography variant="caption" color="text.secondary">
           Max. {maxEntries} Events im Speicher
         </Typography>

@@ -11,12 +11,12 @@ import {
   MenuItem,
   FormControl,
   InputLabel,
-  useTheme
+  useTheme,
 } from '@mui/material';
 import {
   Info as InfoIcon,
   // ZoomIn as ZoomInIcon, // TODO: Use for zoom feature
-  ZoomOut as ZoomOutIcon
+  ZoomOut as ZoomOutIcon,
 } from '@mui/icons-material';
 import { format, startOfWeek, addDays, addHours, isSameDay } from 'date-fns';
 import { de } from 'date-fns/locale';
@@ -51,16 +51,16 @@ export const AuditActivityHeatmap: React.FC<AuditActivityHeatmapProps> = ({
   dateRange,
   isLoading = false,
   onCellClick,
-  height = 400
+  height = 400,
 }) => {
   const theme = useTheme();
 
   // Calculate intensity color based on value
   const getIntensityColor = (value: number, maxValue: number): string => {
     if (value === 0) return theme.palette.grey[100];
-    
+
     const intensity = value / maxValue;
-    
+
     if (intensity < 0.2) return '#e8f5e9'; // Very light green
     if (intensity < 0.4) return '#a5d6a7'; // Light green
     if (intensity < 0.6) return '#66bb6a'; // Medium green
@@ -84,33 +84,36 @@ export const AuditActivityHeatmap: React.FC<AuditActivityHeatmapProps> = ({
       // Create 7 days x 24 hours grid
       const grid: HeatmapDataPoint[][] = [];
       const startDate = dateRange?.from || new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
-      
+
       for (let day = 0; day < 7; day++) {
         const dayData: HeatmapDataPoint[] = [];
         const currentDay = addDays(startDate, day);
-        
+
         for (let hour = 0; hour < 24; hour++) {
           const cellTime = addHours(currentDay, hour);
-          const dataPoint = data.find(d => 
-            isSameDay(new Date(d.timestamp), cellTime) &&
-            new Date(d.timestamp).getHours() === hour
+          const dataPoint = data.find(
+            d =>
+              isSameDay(new Date(d.timestamp), cellTime) &&
+              new Date(d.timestamp).getHours() === hour
           );
-          
-          dayData.push(dataPoint || {
-            timestamp: cellTime,
-            value: 0,
-            details: {
-              totalEvents: 0,
-              uniqueUsers: 0,
-              criticalEvents: 0
+
+          dayData.push(
+            dataPoint || {
+              timestamp: cellTime,
+              value: 0,
+              details: {
+                totalEvents: 0,
+                uniqueUsers: 0,
+                criticalEvents: 0,
+              },
             }
-          });
+          );
         }
         grid.push(dayData);
       }
       return grid;
     }
-    
+
     // For day/week granularity, create a simple grid
     return [data];
   }, [data, granularity, dateRange]);
@@ -130,9 +133,7 @@ export const AuditActivityHeatmap: React.FC<AuditActivityHeatmapProps> = ({
   if (!data || data.length === 0) {
     return (
       <Paper sx={{ p: 2, height, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <Typography color="text.secondary">
-          Keine Aktivitätsdaten verfügbar
-        </Typography>
+        <Typography color="text.secondary">Keine Aktivitätsdaten verfügbar</Typography>
       </Paper>
     );
   }
@@ -141,16 +142,16 @@ export const AuditActivityHeatmap: React.FC<AuditActivityHeatmapProps> = ({
     <Paper sx={{ p: 2, height, overflow: 'auto' }}>
       {/* Header */}
       <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-        <Typography 
+        <Typography
           variant="h6"
-          sx={{ 
+          sx={{
             fontFamily: 'Antonio, sans-serif',
-            fontWeight: 'bold'
+            fontWeight: 'bold',
           }}
         >
           Aktivitäts-Heatmap
         </Typography>
-        
+
         <Box display="flex" gap={1} alignItems="center">
           <FormControl size="small" sx={{ minWidth: 120 }}>
             <InputLabel>Granularität</InputLabel>
@@ -164,7 +165,7 @@ export const AuditActivityHeatmap: React.FC<AuditActivityHeatmapProps> = ({
               <MenuItem value="week">Wöchentlich</MenuItem>
             </Select>
           </FormControl>
-          
+
           <Tooltip title="Info">
             <IconButton size="small">
               <InfoIcon />
@@ -188,7 +189,7 @@ export const AuditActivityHeatmap: React.FC<AuditActivityHeatmapProps> = ({
                 bgcolor: getIntensityColor(intensity * maxValue, maxValue),
                 border: '1px solid',
                 borderColor: 'divider',
-                borderRadius: 0.5
+                borderRadius: 0.5,
               }}
             />
           ))}
@@ -196,11 +197,11 @@ export const AuditActivityHeatmap: React.FC<AuditActivityHeatmapProps> = ({
         <Typography variant="caption" color="text.secondary">
           Viel
         </Typography>
-        
+
         <Box sx={{ ml: 'auto' }}>
-          <Chip 
-            label={`Max: ${maxValue} Events`} 
-            size="small" 
+          <Chip
+            label={`Max: ${maxValue} Events`}
+            size="small"
             variant="outlined"
             sx={{ fontFamily: 'Poppins, sans-serif' }}
           />
@@ -215,13 +216,13 @@ export const AuditActivityHeatmap: React.FC<AuditActivityHeatmapProps> = ({
             <Box display="flex" mb={1}>
               <Box sx={{ width: 100 }} />
               {Array.from({ length: 24 }, (_, i) => (
-                <Box 
-                  key={i} 
-                  sx={{ 
-                    flex: 1, 
+                <Box
+                  key={i}
+                  sx={{
+                    flex: 1,
                     textAlign: 'center',
                     fontSize: '0.75rem',
-                    color: 'text.secondary'
+                    color: 'text.secondary',
                   }}
                 >
                   {i}
@@ -233,19 +234,19 @@ export const AuditActivityHeatmap: React.FC<AuditActivityHeatmapProps> = ({
             {heatmapGrid.map((row, dayIndex) => (
               <Box key={dayIndex} display="flex" mb={0.5}>
                 {/* Day label */}
-                <Box 
-                  sx={{ 
-                    width: 100, 
-                    display: 'flex', 
+                <Box
+                  sx={{
+                    width: 100,
+                    display: 'flex',
                     alignItems: 'center',
-                    pr: 1
+                    pr: 1,
                   }}
                 >
                   <Typography variant="caption" noWrap>
                     {row[0] && format(row[0].timestamp, 'EEE dd.MM', { locale: de })}
                   </Typography>
                 </Box>
-                
+
                 {/* Hour cells */}
                 {row.map((cell, hourIndex) => (
                   <Tooltip
@@ -285,22 +286,27 @@ export const AuditActivityHeatmap: React.FC<AuditActivityHeatmapProps> = ({
                         cursor: cell.value > 0 ? 'pointer' : 'default',
                         position: 'relative',
                         transition: 'all 0.2s',
-                        '&:hover': cell.value > 0 ? {
-                          transform: 'scale(1.1)',
-                          zIndex: 1,
-                          boxShadow: 2
-                        } : {},
+                        '&:hover':
+                          cell.value > 0
+                            ? {
+                                transform: 'scale(1.1)',
+                                zIndex: 1,
+                                boxShadow: 2,
+                              }
+                            : {},
                         // Overlay for critical events
-                        '&::after': cell.details?.criticalEvents ? {
-                          content: '""',
-                          position: 'absolute',
-                          top: 0,
-                          right: 0,
-                          width: 8,
-                          height: 8,
-                          bgcolor: 'error.main',
-                          borderRadius: '50%'
-                        } : {}
+                        '&::after': cell.details?.criticalEvents
+                          ? {
+                              content: '""',
+                              position: 'absolute',
+                              top: 0,
+                              right: 0,
+                              width: 8,
+                              height: 8,
+                              bgcolor: 'error.main',
+                              borderRadius: '50%',
+                            }
+                          : {},
                       }}
                     />
                   </Tooltip>
@@ -323,9 +329,7 @@ export const AuditActivityHeatmap: React.FC<AuditActivityHeatmapProps> = ({
                     {format(point.timestamp, 'PPpp', { locale: de })}
                   </Typography>
                   <br />
-                  <Typography variant="caption">
-                    Events: {point.value}
-                  </Typography>
+                  <Typography variant="caption">Events: {point.value}</Typography>
                 </Box>
               }
             >
@@ -346,8 +350,8 @@ export const AuditActivityHeatmap: React.FC<AuditActivityHeatmapProps> = ({
                   '&:hover': {
                     transform: 'scale(1.1)',
                     zIndex: 1,
-                    boxShadow: 2
-                  }
+                    boxShadow: 2,
+                  },
                 }}
               >
                 <Typography variant="caption" sx={{ fontSize: '0.65rem' }}>
@@ -360,59 +364,49 @@ export const AuditActivityHeatmap: React.FC<AuditActivityHeatmapProps> = ({
       )}
 
       {/* Summary Stats */}
-      <Box 
-        display="flex" 
-        gap={2} 
-        mt={2} 
-        pt={2} 
-        borderTop={1} 
-        borderColor="divider"
-      >
+      <Box display="flex" gap={2} mt={2} pt={2} borderTop={1} borderColor="divider">
         <Box>
           <Typography variant="caption" color="text.secondary">
             Gesamt Events
           </Typography>
-          <Typography 
+          <Typography
             variant="h6"
-            sx={{ 
+            sx={{
               fontFamily: 'Antonio, sans-serif',
-              fontWeight: 'bold'
+              fontWeight: 'bold',
             }}
           >
             {data.reduce((sum, d) => sum + d.value, 0).toLocaleString('de-DE')}
           </Typography>
         </Box>
-        
+
         <Box>
           <Typography variant="caption" color="text.secondary">
             Peak Zeit
           </Typography>
-          <Typography 
+          <Typography
             variant="h6"
-            sx={{ 
+            sx={{
               fontFamily: 'Antonio, sans-serif',
-              fontWeight: 'bold'
+              fontWeight: 'bold',
             }}
           >
-            {data.length > 0 && 
-              format(
-                data.reduce((max, d) => d.value > max.value ? d : max).timestamp,
-                'HH:mm',
-                { locale: de }
-              )
-            }
+            {data.length > 0 &&
+              format(data.reduce((max, d) => (d.value > max.value ? d : max)).timestamp, 'HH:mm', {
+                locale: de,
+              })}
           </Typography>
         </Box>
-        
+
         <Box>
           <Typography variant="caption" color="text.secondary">
             Durchschnitt
           </Typography>
-          <Typography 
+          <Typography
             variant="h6"
-            sx={{ 
+            sx={{
               fontFamily: 'Antonio, sans-serif',
-              fontWeight: 'bold'
+              fontWeight: 'bold',
             }}
           >
             {Math.round(data.reduce((sum, d) => sum + d.value, 0) / Math.max(data.length, 1))}

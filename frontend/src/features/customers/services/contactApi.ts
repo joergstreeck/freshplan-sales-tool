@@ -161,7 +161,7 @@ export const contactValidation = {
    */
   isValidPhone: (phone: string): boolean => {
     // Remove all non-numeric characters for validation
-    const cleanPhone = phone.replace(/[\s\-()\/+]/g, '');
+    const cleanPhone = phone.replace(/[\s\-()+/]/g, '');
     // German phone numbers: landline (3-5 area + 3-8 number) or mobile (15-17 digits with country)
     return /^\d{7,17}$/.test(cleanPhone);
   },
