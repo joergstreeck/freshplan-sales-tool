@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
 public class AuditService {
 
   private static final Logger log = LoggerFactory.getLogger(AuditService.class);
-  
+
   // Constants for better maintainability
   private static final int DEFAULT_RETENTION_DAYS_7_YEARS = 2555; // 7 Jahre (365 * 7)
   private static final int RETENTION_DAYS_DATA_DELETION = 3650; // 10 Jahre
@@ -67,11 +67,11 @@ public class AuditService {
 
     try {
       AuditLog auditLog = createAuditLog(entityType, entityId, entityName, action);
-      
+
       enrichAuditLog(auditLog, oldValue, newValue, reason, comment);
-      
+
       persistAuditLog(auditLog, action);
-      
+
       handlePostPersist(auditLog, action);
 
       return auditLog;
@@ -82,59 +82,63 @@ public class AuditService {
       return null;
     }
   }
-  
-  private AuditLog createAuditLog(EntityType entityType, UUID entityId, String entityName, AuditAction action) {
+
+  private AuditLog createAuditLog(
+      EntityType entityType, UUID entityId, String entityName, AuditAction action) {
     AuditLog auditLog = new AuditLog();
     auditLog.setEntityType(entityType);
     auditLog.setEntityId(entityId);
     auditLog.setEntityName(entityName);
     auditLog.setAction(action);
     auditLog.setOccurredAt(LocalDateTime.now()); // Set occurred at immediately
-    
+
     extractUserInfo(auditLog);
     extractRequestInfo(auditLog);
-    
+
     return auditLog;
   }
-  
-  private void enrichAuditLog(AuditLog auditLog, Object oldValue, Object newValue, String reason, String comment) {
+
+  private void enrichAuditLog(
+      AuditLog auditLog, Object oldValue, Object newValue, String reason, String comment) {
     processChanges(auditLog, oldValue, newValue);
-    
+
     auditLog.setReason(reason);
     auditLog.setComment(comment);
     auditLog.setApplicationVersion(applicationVersion);
-    
+
     determineDsgvoRelevance(auditLog);
     if (auditLog.getIsDsgvoRelevant()) {
       setRetentionPolicy(auditLog);
     }
-    
+
     auditLog.setTransactionId(generateTransactionId());
     calculateHash(auditLog);
   }
-  
+
   private void persistAuditLog(AuditLog auditLog, AuditAction action) {
     if (asyncEnabled && !action.isCritical()) {
       // Async für non-kritische Events
-      CompletableFuture.runAsync(() -> {
-        try {
-          auditRepository.persist(auditLog);
-        } catch (Exception e) {
-          log.error("Failed to persist audit log async", e);
-        }
-      });
+      CompletableFuture.runAsync(
+          () -> {
+            try {
+              auditRepository.persist(auditLog);
+            } catch (Exception e) {
+              log.error("Failed to persist audit log async", e);
+            }
+          });
     } else {
       // Sync für kritische Events
       auditRepository.persist(auditLog);
     }
   }
-  
+
   private void handlePostPersist(AuditLog auditLog, AuditAction action) {
     if (action.isCritical()) {
       triggerSecurityAlert(auditLog);
     }
-    
-    log.debug("Audit logged: {} {} by {}", action, auditLog.getEntityType(), auditLog.getUserName());
+
+    log.debug(
+        "Audit logged: {} {} by {}", action, auditLog.getEntityType(), auditLog.getUserName());
   }
 
   /** Vereinfachte Methode für einfache Aktionen. */
@@ -400,7 +404,9 @@ public class AuditService {
       contentMap.put("entityId", auditLog.getEntityId());
       contentMap.put("action", auditLog.getAction());
       contentMap.put("userId", auditLog.getUserId());
-      contentMap.put("occurredAt", auditLog.getOccurredAt() != null ? auditLog.getOccurredAt().toString() : "UNKNOWN");
+      contentMap.put(
+          "occurredAt",
+          auditLog.getOccurredAt() != null ? auditLog.getOccurredAt().toString() : "UNKNOWN");
       contentMap.put("oldValues", auditLog.getOldValues());
       contentMap.put("newValues", auditLog.getNewValues());
       contentMap.put("previousHash", previousHash);
@@ -418,11 +424,11 @@ public class AuditService {
       auditLog.setCurrentHash("RECOVERY_HASH_" + UUID.randomUUID());
     }
   }
-  
+
   private String getPreviousHashWithRecovery() {
     try {
       Optional<AuditLog> lastEntry = auditRepository.findLastEntry();
-      
+
       if (lastEntry.isPresent()) {
         String hash = lastEntry.get().getCurrentHash();
         if (hash != null && !hash.isEmpty()) {
@@ -432,43 +438,44 @@ public class AuditService {
         log.warn("Last audit entry has no hash, starting recovery chain");
         return "RECOVERY_CHAIN_" + lastEntry.get().getId();
       }
-      
+
       // Keine vorherigen Einträge - Genesis
       return "GENESIS";
-      
+
     } catch (Exception e) {
       log.error("Failed to get previous hash, using recovery", e);
       return "RECOVERY_ERROR_" + System.currentTimeMillis();
     }
   }
-  
+
   /**
-   * Repariert eine gebrochene Hash-Chain.
-   * Sollte nur von Administratoren mit entsprechenden Rechten ausgeführt werden.
+   * Repariert eine gebrochene Hash-Chain. Sollte nur von Administratoren mit entsprechenden Rechten
+   * ausgeführt werden.
    */
   public void repairHashChain(LocalDateTime from, LocalDateTime to, String reason) {
     log.warn("Starting hash chain repair from {} to {} - Reason: {}", from, to, reason);
-    
+
     List<AuditLog> logs = auditRepository.findInPeriod(from, to);
-    
+
     String previousHash = "REPAIR_START_" + System.currentTimeMillis();
-    
+
     for (AuditLog log : logs) {
       if (log.getCurrentHash() == null || log.getCurrentHash().isEmpty()) {
         // Repariere fehlenden Hash
         log.setPreviousHash(previousHash);
-        
+
         try {
-          String content = String.format("%s|%s|%s|REPAIR", 
-              log.getEntityType(), log.getEntityId(), log.getOccurredAt());
+          String content =
+              String.format(
+                  "%s|%s|%s|REPAIR", log.getEntityType(), log.getEntityId(), log.getOccurredAt());
           MessageDigest digest = MessageDigest.getInstance("SHA-256");
           byte[] hash = digest.digest(content.getBytes(StandardCharsets.UTF_8));
           String hashHex = bytesToHex(hash);
           log.setCurrentHash(hashHex);
           previousHash = hashHex;
-          
+
           auditRepository.persist(log);
-          
+
         } catch (Exception ex) {
           AuditService.log.error("Failed to repair hash for audit log: {}", log.getId(), ex);
         }
@@ -476,10 +483,11 @@ public class AuditService {
         previousHash = log.getCurrentHash();
       }
     }
-    
+
     // Logge die Reparatur selbst
-    auditSimple(EntityType.SYSTEM, UUID.randomUUID(), "Hash Chain Repair", AuditAction.SYSTEM_EVENT);
-    
+    auditSimple(
+        EntityType.SYSTEM, UUID.randomUUID(), "Hash Chain Repair", AuditAction.SYSTEM_EVENT);
+
     log.info("Hash chain repair completed for {} entries", logs.size());
   }
 

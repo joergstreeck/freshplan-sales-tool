@@ -291,11 +291,11 @@ public class AuditResource {
         "totalEventsToday", auditRepository.countEventsToday(),
         "topEventTypes", auditRepository.getTopEventTypesToday(5)
     );
-    
+
     return Response.ok(metrics).build();
   }
   */
-  
+
   /*
   @GET
   @Path("/dashboard/activity-chart")
@@ -304,12 +304,12 @@ public class AuditResource {
   public Response getActivityChartData(
       @QueryParam("days") @DefaultValue("7") int days,
       @QueryParam("groupBy") @DefaultValue("hour") String groupBy) {
-    
+
     var data = auditRepository.getActivityChartData(days, groupBy);
     return Response.ok(data).build();
   }
   */
-  
+
   /*
   @GET
   @Path("/dashboard/critical-events")
@@ -317,12 +317,12 @@ public class AuditResource {
   @Operation(summary = "Get recent critical events")
   public Response getCriticalEvents(
       @QueryParam("limit") @DefaultValue("10") @Min(1) @Max(50) int limit) {
-    
+
     var events = auditRepository.findRecentCriticalEvents(limit);
     return Response.ok(events).build();
   }
   */
-  
+
   /*
   @GET
   @Path("/dashboard/compliance-alerts")
