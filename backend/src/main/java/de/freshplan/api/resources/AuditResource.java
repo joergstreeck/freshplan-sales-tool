@@ -274,6 +274,8 @@ public class AuditResource {
     }
   }
 
+  // TODO: PR 3 - Implement these methods in AuditRepository
+  /*
   @GET
   @Path("/dashboard/metrics")
   @RolesAllowed({"admin", "auditor"})
@@ -292,7 +294,9 @@ public class AuditResource {
     
     return Response.ok(metrics).build();
   }
+  */
   
+  /*
   @GET
   @Path("/dashboard/activity-chart")
   @RolesAllowed({"admin", "auditor"})
@@ -304,7 +308,9 @@ public class AuditResource {
     var data = auditRepository.getActivityChartData(days, groupBy);
     return Response.ok(data).build();
   }
+  */
   
+  /*
   @GET
   @Path("/dashboard/critical-events")
   @RolesAllowed({"admin", "auditor"})
@@ -315,7 +321,9 @@ public class AuditResource {
     var events = auditRepository.findRecentCriticalEvents(limit);
     return Response.ok(events).build();
   }
+  */
   
+  /*
   @GET
   @Path("/dashboard/compliance-alerts")
   @RolesAllowed({"admin", "auditor"})
@@ -324,6 +332,7 @@ public class AuditResource {
     var alerts = auditRepository.getComplianceAlerts();
     return Response.ok(alerts).build();
   }
+  */
 
   /** Escape CSV special characters */
   private String csvEscape(String value) {
