@@ -1,10 +1,10 @@
 /**
  * Consolidated Type Definitions
- * 
+ *
  * @module types/consolidated
  * @description Zentrale Type-Definitionen für das gesamte Frontend.
  *              Vermeidet Redundanzen und stellt Single Source of Truth sicher.
- * 
+ *
  * @since 2.0.0
  */
 
@@ -23,7 +23,7 @@ export enum CustomerStatus {
   RISIKO = 'RISIKO',
   INAKTIV = 'INAKTIV',
   ARCHIVIERT = 'ARCHIVIERT',
-  
+
   // Field-Based Architecture Status
   DRAFT = 'DRAFT',
   ACTIVE = 'ACTIVE',
@@ -208,12 +208,7 @@ export function isBaseEntity(obj: unknown): obj is BaseEntity {
  * Type Guard für ApiError
  */
 export function isApiError(obj: unknown): obj is ApiError {
-  return (
-    typeof obj === 'object' &&
-    obj !== null &&
-    'error' in obj &&
-    'message' in obj
-  );
+  return typeof obj === 'object' && obj !== null && 'error' in obj && 'message' in obj;
 }
 
 /**
@@ -224,7 +219,7 @@ export function isPaginatedResponse<T>(obj: unknown): obj is PaginatedResponse<T
     typeof obj === 'object' &&
     obj !== null &&
     'content' in obj &&
-    Array.isArray((obj as any).content) &&
+    Array.isArray((obj as PaginatedResponse<T>).content) &&
     'totalElements' in obj
   );
 }

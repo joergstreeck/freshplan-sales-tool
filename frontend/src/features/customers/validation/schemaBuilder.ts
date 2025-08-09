@@ -238,7 +238,7 @@ function buildCustomSchema(field: FieldDefinition): z.ZodSchema {
     case 'bic':
       return z.string().regex(/^[A-Z]{6}[A-Z0-9]{2}([A-Z0-9]{3})?$/, 'Ungültiger BIC');
     case 'taxNumber':
-      return z.string().regex(/^[0-9\/\-]+$/, 'Ungültige Steuernummer');
+      return z.string().regex(/^[0-9/-]+$/, 'Ungültige Steuernummer');
     default:
       return z.any();
   }

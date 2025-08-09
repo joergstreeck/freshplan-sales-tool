@@ -5,8 +5,12 @@
 # Autor: FreshPlan Team
 # Datum: 2025-08-07
 # Update: 2025-08-08 - Robuster gemacht, funktioniert aus jedem Verzeichnis
+# Update: 2025-08-09 - KRITISCH: Konsistente Berechnung sichergestellt
 
 set -e
+
+# Debug-Modus (setze DEBUG=1 für detaillierte Ausgabe)
+DEBUG=${DEBUG:-0}
 
 # Farben für Output
 RED='\033[0;31m'
@@ -56,25 +60,71 @@ fi
 echo -e "${BLUE}📁 Migration-Verzeichnis: ${NC}$MIGRATION_DIR"
 echo ""
 
-# Zeige die wirklich letzten 5 Migrationen (sortiert nach Versionsnummer)
-echo -e "${YELLOW}📋 Letzte 5 Migrationen (nach Version sortiert):${NC}"
-ls "$MIGRATION_DIR"/*.sql 2>/dev/null | \
-    sed 's/.*\///' | \
-    sort -V | \
-    tail -5 | \
-    while read -r file; do
-        echo "   $file"
-    done
+# Zeige die wirklich letzten 5 Migrationen (NUMERISCH sortiert)
+echo -e "${YELLOW}📋 Letzte 5 Migrationen (numerisch sortiert):${NC}"
+
+# Erstelle temporäre Liste mit Nummer und Dateiname
+for file in "$MIGRATION_DIR"/V*.sql; do
+    if [ -f "$file" ]; then
+        basename "$file"
+    fi
+done | while read -r filename; do
+    # Extrahiere Nummer
+    num=$(echo "$filename" | sed 's/^V//' | sed 's/__.*$//' | sed 's/_.*$//')
+    if [[ "$num" =~ ^[0-9]+$ ]]; then
+        echo "$num $filename"
+    fi
+done | sort -n | tail -5 | while read -r num filename; do
+    echo "   $filename"
+done
 
 echo ""
 
-# Ermittle höchste Nummer (verbesserte Version)
-HIGHEST=$(ls "$MIGRATION_DIR"/*.sql 2>/dev/null | \
-          sed 's/.*\/V//' | \
-          sed 's/[_].*$//' | \
-          grep -E '^[0-9]+$' | \
-          sort -n | \
-          tail -1)
+# Ermittle höchste Nummer (KRITISCH: numerische Sortierung!)
+# Extrahiere nur die Nummer aus V<nummer>__beschreibung.sql
+
+if [ "$DEBUG" = "1" ]; then
+    echo -e "${BLUE}🔍 DEBUG: Analysiere alle Migrations...${NC}"
+    ls "$MIGRATION_DIR"/V*.sql 2>/dev/null | while read -r filepath; do
+        filename=$(basename "$filepath")
+        num=$(echo "$filename" | sed 's/^V//' | sed 's/__.*$//' | sed 's/_.*$//')
+        echo "   $filename -> Nummer: $num"
+    done | head -10
+    echo ""
+fi
+
+# Drei verschiedene Methoden zur Sicherheit
+METHOD1=$(ls "$MIGRATION_DIR"/V*.sql 2>/dev/null | while read -r filepath; do
+    basename "$filepath" | sed 's/^V//' | sed 's/__.*$//' | sed 's/_.*$//'
+done | grep -E '^[0-9]+$' | sort -n | tail -1)
+
+METHOD2=$(find "$MIGRATION_DIR" -name "V*.sql" -type f 2>/dev/null | \
+          sed 's/.*\/V//' | sed 's/[_].*$//' | \
+          grep -E '^[0-9]+$' | sort -n | tail -1)
+
+METHOD3=$(cd "$MIGRATION_DIR" 2>/dev/null && ls V*.sql 2>/dev/null | \
+          sed 's/^V//' | cut -d'_' -f1 | \
+          grep -E '^[0-9]+$' | sort -n | tail -1)
+
+# Verwende Method1 als Standard
+HIGHEST="$METHOD1"
+
+# Konsistenz-Check: Alle Methoden müssen dasselbe Ergebnis liefern
+if [ "$DEBUG" = "1" ]; then
+    echo -e "${BLUE}🔍 DEBUG: Konsistenz-Prüfung der Methoden${NC}"
+    echo "   Method 1 (ls + basename): $METHOD1"
+    echo "   Method 2 (find): $METHOD2"
+    echo "   Method 3 (cd + ls): $METHOD3"
+fi
+
+# Warnung wenn Methoden unterschiedliche Ergebnisse liefern
+if [ -n "$METHOD1" ] && [ -n "$METHOD2" ] && [ "$METHOD1" != "$METHOD2" ]; then
+    echo -e "${RED}⚠️  WARNUNG: Inkonsistente Ergebnisse!${NC}"
+    echo "   Method1: V$METHOD1, Method2: V$METHOD2"
+    # Im Zweifel das höhere nehmen
+    HIGHEST=$(echo -e "$METHOD1\n$METHOD2" | sort -n | tail -1)
+    echo "   Verwende sicherheitshalber: V$HIGHEST"
+fi
 
 if [ -z "$HIGHEST" ]; then
     echo -e "${YELLOW}⚠️  Keine Migrationen gefunden. Starte mit V1${NC}"
@@ -134,6 +184,21 @@ if ls "$MIGRATION_DIR"/V${NEXT}[_]*.sql >/dev/null 2>&1; then
     echo -e "${RED}⚠️  WARNUNG: V${NEXT} existiert bereits!${NC}"
     echo -e "${YELLOW}   Bitte prüfe die Migrations manuell.${NC}"
     exit 1
+fi
+
+# Konsistenz-Check: Verifiziere nochmal
+if [ "$DEBUG" = "1" ]; then
+    echo -e "${BLUE}🔍 DEBUG: Konsistenz-Check${NC}"
+    echo "   Höchste gefundene Migration: V${HIGHEST:-0}"
+    echo "   Nächste freie Migration: V${NEXT}"
+    
+    # Double-Check mit alternativer Methode
+    ALT_HIGHEST=$(find "$MIGRATION_DIR" -name "V*.sql" -type f 2>/dev/null | \
+                   sed 's/.*\/V//' | sed 's/[_].*$//' | \
+                   grep -E '^[0-9]+$' | sort -n | tail -1)
+    if [ -n "$ALT_HIGHEST" ] && [ "$ALT_HIGHEST" != "$HIGHEST" ]; then
+        echo -e "${RED}   ⚠️  WARNUNG: Alternative Methode ergab V${ALT_HIGHEST}${NC}"
+    fi
 fi
 
 # Return nur die Nummer für Scripting

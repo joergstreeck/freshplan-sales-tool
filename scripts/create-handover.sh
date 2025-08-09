@@ -91,7 +91,10 @@ main() {
     echo -e "${BLUE}🚀 Starting handover creation...${NC}"
     
     # Priority order of scripts to try
-    if [ -x "./scripts/handover-with-sync-stable.sh" ]; then
+    if [ -x "./scripts/create-handover-universal.sh" ]; then
+        echo -e "${GREEN}Using: create-handover-universal.sh (universal version)${NC}"
+        exec ./scripts/create-handover-universal.sh "$@"
+    elif [ -x "./scripts/handover-with-sync-stable.sh" ]; then
         echo -e "${GREEN}Using: handover-with-sync-stable.sh (with Master Plan sync)${NC}"
         exec ./scripts/handover-with-sync-stable.sh "$@"
     elif [ -x "./scripts/create-handover-improved.sh" ]; then

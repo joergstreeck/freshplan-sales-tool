@@ -56,9 +56,7 @@ export interface Contact {
 }
 
 // Legacy support
-export interface ContactWithResponsibility extends Contact {
-  // This interface is now merged into Contact
-}
+export type ContactWithResponsibility = Contact; // This type is now merged into Contact
 
 /**
  * DTO for creating a new contact
@@ -98,9 +96,7 @@ export interface CreateContactDTO {
 /**
  * DTO for updating a contact
  */
-export interface UpdateContactDTO extends Partial<CreateContactDTO> {
-  // Allow partial updates
-}
+export type UpdateContactDTO = Partial<CreateContactDTO>; // Allow partial updates
 
 /**
  * Contact validation errors

@@ -5,19 +5,19 @@
  * @description Enterprise-ready Logo-Komponente mit automatischem Fallback auf SVG-Icon
  *              bei fehlenden Bilddateien. Unterstützt responsive Größenanpassung und
  *              verschiedene Darstellungsvarianten.
- * 
+ *
  * @example
  * ```tsx
  * // Standard Logo mit voller Breite
  * <Logo variant="full" height={60} />
- * 
+ *
  * // Icon-only Variante für mobile Ansicht
  * <Logo variant="icon" height={{ xs: 30, sm: 40 }} />
- * 
+ *
  * // Klickbares Logo mit Navigation
  * <Logo onClick={() => navigate('/')} />
  * ```
- * 
+ *
  * @since 2.0.0
  * @author FreshPlan Team
  */
@@ -28,7 +28,7 @@ import { LocalFlorist as FloristIcon } from '@mui/icons-material';
 
 /**
  * Props für die Logo-Komponente
- * 
+ *
  * @interface LogoProps
  * @property {'full' | 'icon'} [variant='full'] - Darstellungsvariante des Logos
  * @property {number | { xs: number; sm: number }} [height=40] - Höhe des Logos (responsive möglich)

@@ -1,176 +1,299 @@
 #!/bin/bash
-# robust-session-start.sh - Fehlerresistente Version mit besserer Fehlerbehandlung
 
-# Exit on error, undefined variables, and pipe failures
-set -euo pipefail
+# =====================================================
+# ROBUSTES SESSION-START-SCRIPT
+# =====================================================
+# Funktioniert aus JEDEM Verzeichnis
+# Startet alle Services intelligent
+# Prüft Voraussetzungen automatisch
+# =====================================================
 
-# Trap errors for cleanup
-trap 'echo -e "\n${RED}❌ Script failed at line $LINENO${NC}"; exit 1' ERR
-
-# Get script directory reliably
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-
-# Source configuration with fallback
-if [[ -f "${SCRIPT_DIR}/config/paths.conf" ]]; then
-    source "${SCRIPT_DIR}/config/paths.conf"
-else
-    echo "⚠️  Configuration not found, using defaults"
-    PROJECT_ROOT="/Users/joergstreeck/freshplan-sales-tool"
-    CLAUDE_MD="${PROJECT_ROOT}/CLAUDE.md"
-fi
-
-# Colors
-GREEN='\033[0;32m'
+# Farben für Output
 RED='\033[0;31m'
-YELLOW='\033[0;33m'
-NC='\033[0m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+CYAN='\033[0;36m'
+NC='\033[0m' # No Color
 
-# Helper function for safe execution
-safe_run() {
-    local cmd="$1"
-    local description="${2:-Running command}"
+# Finde Projekt-Root (suche nach .git und CLAUDE.md)
+find_project_root() {
+    local dir="$PWD"
+    while [[ "$dir" != "/" ]]; do
+        if [[ -d "$dir/.git" ]] && ([[ -f "$dir/CLAUDE.md" ]] || [[ -f "$dir/README.md" ]]); then
+            echo "$dir"
+            return 0
+        fi
+        dir="$(dirname "$dir")"
+    done
     
-    echo -n "$description... "
-    if eval "$cmd" > /tmp/safe_run.log 2>&1; then
-        echo -e "${GREEN}✅${NC}"
+    # Fallback: Bekannte Pfade prüfen
+    for path in \
+        "/Users/joergstreeck/freshplan-sales-tool" \
+        "$HOME/freshplan-sales-tool" \
+        "$HOME/projects/freshplan-sales-tool"; do
+        if [[ -d "$path" ]]; then
+            echo "$path"
+            return 0
+        fi
+    done
+    
+    echo ""
+    return 1
+}
+
+# Service-Check Funktion
+check_service() {
+    local name=$1
+    local port=$2
+    
+    if lsof -Pi :$port -sTCP:LISTEN -t >/dev/null 2>&1; then
+        echo -e "${GREEN}✅ $name läuft auf Port $port${NC}"
         return 0
     else
-        echo -e "${RED}❌${NC}"
-        echo "Error output:"
-        cat /tmp/safe_run.log
+        echo -e "${YELLOW}⚠️  $name nicht aktiv auf Port $port${NC}"
         return 1
     fi
 }
 
-# Main execution
-main() {
-    echo "🚀 FreshPlan Session Start (Robust Version)"
-    echo "=========================================="
-    echo ""
-    echo "📅 $(date '+%A, %d. %B %Y - %H:%M Uhr')"
-    echo ""
+# PostgreSQL starten
+start_postgres() {
+    echo -e "${BLUE}🐘 Prüfe PostgreSQL...${NC}"
     
-    # Check if we're in the right directory
-    if [[ ! -f "package.json" ]]; then
-        echo -e "${YELLOW}⚠️  Not in project root, attempting to navigate...${NC}"
-        if [[ -d "$PROJECT_ROOT" ]]; then
-            cd "$PROJECT_ROOT"
-            echo -e "${GREEN}✅ Changed to project root${NC}"
-        else
-            echo -e "${RED}❌ Project root not found at: $PROJECT_ROOT${NC}"
-            exit 1
-        fi
+    if check_service "PostgreSQL" 5432; then
+        return 0
     fi
     
-    # Step 1: Validate Configuration
-    echo ""
-    echo "1️⃣  Validating Configuration..."
-    if [[ -x "./scripts/validate-config.sh" ]]; then
-        safe_run "./scripts/validate-config.sh" "Checking development tools"
-    else
-        echo -e "${YELLOW}⚠️  validate-config.sh not found or not executable${NC}"
+    echo -e "${YELLOW}Starting PostgreSQL...${NC}"
+    
+    # macOS mit Homebrew
+    if command -v brew &> /dev/null; then
+        brew services start postgresql@14 2>/dev/null || \
+        brew services start postgresql@15 2>/dev/null || \
+        brew services start postgresql 2>/dev/null
     fi
     
-    # Step 2: Check Services
-    echo ""
-    echo "2️⃣  Checking Services..."
-    if [[ -x "./scripts/check-services.sh" ]]; then
-        if ! safe_run "./scripts/check-services.sh" "Checking running services"; then
-            echo -e "${YELLOW}⚠️  Some services might not be running${NC}"
-            echo "Attempting to start services..."
-            if [[ -x "./scripts/start-services.sh" ]]; then
-                safe_run "./scripts/start-services.sh" "Starting services"
-            fi
-        fi
+    # Linux mit systemctl
+    if command -v systemctl &> /dev/null; then
+        sudo systemctl start postgresql 2>/dev/null
     fi
     
-    # Step 3: Git Status (with error handling)
-    echo ""
-    echo "3️⃣  Git Repository Status"
-    echo "------------------------"
-    if command -v git &> /dev/null; then
-        echo "Branch: $(git branch --show-current 2>/dev/null || echo 'unknown')"
-        echo "Status:"
-        git status --short 2>/dev/null || echo "Git status unavailable"
-        echo ""
-        echo "Recent commits:"
-        git log --oneline -5 2>/dev/null || echo "Git log unavailable"
-    else
-        echo -e "${RED}❌ Git not found${NC}"
+    # Docker Fallback
+    if command -v docker &> /dev/null && ! check_service "PostgreSQL" 5432; then
+        echo -e "${CYAN}Starte PostgreSQL in Docker...${NC}"
+        docker run -d --name freshplan-postgres \
+            -e POSTGRES_PASSWORD=freshplan \
+            -e POSTGRES_USER=freshplan \
+            -e POSTGRES_DB=freshplan \
+            -p 5432:5432 \
+            postgres:15 2>/dev/null || \
+        docker start freshplan-postgres 2>/dev/null
     fi
     
-    # Step 4: Current Focus with sync check
-    echo ""
-    echo "4️⃣  Current Focus & Sync Check"
-    echo "-----------------------------"
-    if [[ -f ".current-focus" ]]; then
-        # Safe JSON parsing
-        FEATURE=$(grep '"feature"' .current-focus 2>/dev/null | cut -d'"' -f4 || echo "unknown")
-        echo -e "${GREEN}📍 Feature: $FEATURE${NC}"
-        
-        # Check sync with V5
-        if [[ -x "./scripts/sync-current-focus.sh" ]]; then
-            echo "🔄 Checking focus synchronization..."
-            if ./scripts/sync-current-focus.sh > /dev/null 2>&1; then
-                echo -e "${GREEN}✅ Focus synchronized with V5${NC}"
-            else
-                echo -e "${YELLOW}⚠️  Focus sync failed, manual check needed${NC}"
-            fi
-        fi
-    else
-        echo -e "${YELLOW}⚠️  No .current-focus file found${NC}"
-    fi
-    
-    # Step 5: Find latest handover (with better error handling)
-    echo ""
-    echo "5️⃣  Latest Handover Document"
-    echo "---------------------------"
-    if [[ -d "docs/claude-work/daily-work" ]]; then
-        LATEST_HANDOVER=$(find docs/claude-work/daily-work -name "*HANDOVER*.md" -type f 2>/dev/null | sort -r | head -1)
-        if [[ -n "$LATEST_HANDOVER" ]]; then
-            echo -e "${GREEN}Found: $LATEST_HANDOVER${NC}"
-        else
-            echo -e "${YELLOW}No handover documents found${NC}"
-        fi
-    else
-        echo -e "${YELLOW}Handover directory not found${NC}"
-    fi
-    
-    # Summary
-    echo ""
-    echo "📊 Session Start Summary"
-    echo "======================="
-    
-    # Check critical files
-    local issues=0
-    
-    if [[ ! -f "$CLAUDE_MD" ]]; then
-        echo -e "${RED}❌ CLAUDE.md not found at: $CLAUDE_MD${NC}"
-        ((issues++))
-    else
-        echo -e "${GREEN}✅ CLAUDE.md found${NC}"
-    fi
-    
-    if [[ ! -x "./scripts/get-active-module.sh" ]]; then
-        echo -e "${YELLOW}⚠️  get-active-module.sh not executable${NC}"
-        ((issues++))
-    else
-        echo -e "${GREEN}✅ get-active-module.sh ready${NC}"
-    fi
-    
-    echo ""
-    if [[ $issues -eq 0 ]]; then
-        echo -e "${GREEN}✅ Session ready! All systems operational.${NC}"
-    else
-        echo -e "${YELLOW}⚠️  Session ready with $issues warnings.${NC}"
-    fi
-    
-    echo ""
-    echo "💡 Next steps:"
-    echo "1. Read CLAUDE.md: cat ${CLAUDE_MD}"
-    echo "2. Check active module: ./scripts/get-active-module.sh"
-    echo "3. Read latest handover (if exists)"
+    sleep 2
+    check_service "PostgreSQL" 5432
 }
 
-# Run main function
+# Backend starten
+start_backend() {
+    echo -e "${BLUE}☕ Prüfe Backend...${NC}"
+    
+    if check_service "Quarkus Backend" 8080; then
+        return 0
+    fi
+    
+    local backend_dir="$PROJECT_ROOT/backend"
+    if [[ ! -d "$backend_dir" ]]; then
+        # Vielleicht sind wir schon im backend Ordner?
+        if [[ -f "pom.xml" ]] && [[ -f "mvnw" ]]; then
+            backend_dir="$PWD"
+        else
+            echo -e "${RED}❌ Backend-Verzeichnis nicht gefunden!${NC}"
+            return 1
+        fi
+    fi
+    
+    cd "$backend_dir"
+    
+    echo -e "${CYAN}Starte Quarkus Backend...${NC}"
+    
+    # Maven Wrapper verwenden wenn vorhanden
+    if [[ -f "./mvnw" ]]; then
+        echo "Verwende Maven Wrapper..."
+        nohup ./mvnw quarkus:dev > /tmp/quarkus.log 2>&1 &
+    elif command -v mvn &> /dev/null; then
+        echo "Verwende System Maven..."
+        nohup mvn quarkus:dev > /tmp/quarkus.log 2>&1 &
+    else
+        echo -e "${RED}❌ Maven nicht gefunden! Installiere Maven oder verwende ./mvnw${NC}"
+        return 1
+    fi
+    
+    echo -e "${YELLOW}⏳ Warte auf Backend-Start (max 30 Sekunden)...${NC}"
+    local count=0
+    while [[ $count -lt 30 ]]; do
+        if curl -s http://localhost:8080/q/health >/dev/null 2>&1; then
+            echo -e "${GREEN}✅ Backend erfolgreich gestartet!${NC}"
+            return 0
+        fi
+        sleep 1
+        count=$((count + 1))
+        echo -n "."
+    done
+    
+    echo -e "${RED}❌ Backend Start fehlgeschlagen. Log: /tmp/quarkus.log${NC}"
+    tail -20 /tmp/quarkus.log
+    return 1
+}
+
+# Frontend starten
+start_frontend() {
+    echo -e "${BLUE}⚛️  Prüfe Frontend...${NC}"
+    
+    if check_service "Vite Frontend" 5173; then
+        return 0
+    fi
+    
+    local frontend_dir="$PROJECT_ROOT/frontend"
+    if [[ ! -d "$frontend_dir" ]]; then
+        echo -e "${YELLOW}⚠️  Frontend-Verzeichnis nicht gefunden${NC}"
+        return 1
+    fi
+    
+    cd "$frontend_dir"
+    
+    # Dependencies installieren falls nötig
+    if [[ ! -d "node_modules" ]]; then
+        echo -e "${CYAN}Installiere Frontend Dependencies...${NC}"
+        npm install
+    fi
+    
+    echo -e "${CYAN}Starte Frontend...${NC}"
+    nohup npm run dev > /tmp/vite.log 2>&1 &
+    
+    sleep 3
+    check_service "Vite Frontend" 5173
+}
+
+# Quick Info anzeigen
+show_quick_info() {
+    echo ""
+    echo -e "${CYAN}╔══════════════════════════════════════════════════════╗${NC}"
+    echo -e "${CYAN}║            🚀 FreshPlan Session Status               ║${NC}"
+    echo -e "${CYAN}╚══════════════════════════════════════════════════════╝${NC}"
+    echo ""
+    
+    # Git Status
+    cd "$PROJECT_ROOT"
+    local branch=$(git branch --show-current 2>/dev/null || echo "unbekannt")
+    local changes=$(git status --porcelain 2>/dev/null | wc -l | tr -d ' ')
+    
+    echo -e "${BLUE}📍 Projekt:${NC} $PROJECT_ROOT"
+    echo -e "${BLUE}🌿 Branch:${NC} $branch"
+    echo -e "${BLUE}📝 Änderungen:${NC} $changes Dateien"
+    
+    # Migration Info
+    local migration_dir="$PROJECT_ROOT/backend/src/main/resources/db/migration"
+    if [[ ! -d "$migration_dir" ]]; then
+        migration_dir="$PROJECT_ROOT/src/main/resources/db/migration"
+    fi
+    
+    if [[ -d "$migration_dir" ]]; then
+        local last_migration=$(ls -1 "$migration_dir" 2>/dev/null | tail -1 | grep -oE 'V[0-9]+' | sed 's/V//')
+        local next_migration=$((last_migration + 1))
+        echo -e "${BLUE}🔢 Nächste Migration:${NC} V${next_migration}"
+    fi
+    
+    echo ""
+    echo -e "${CYAN}═══════════════════════════════════════════════════════${NC}"
+    echo ""
+    
+    # Service Status
+    check_service "PostgreSQL" 5432
+    check_service "Backend" 8080
+    check_service "Frontend" 5173
+    
+    echo ""
+    echo -e "${CYAN}═══════════════════════════════════════════════════════${NC}"
+    echo ""
+    
+    # URLs
+    echo -e "${GREEN}📌 URLs:${NC}"
+    echo "   Backend:  http://localhost:8080"
+    echo "   Frontend: http://localhost:5173"
+    echo "   API Docs: http://localhost:8080/q/swagger-ui"
+    echo ""
+    
+    # Logs
+    echo -e "${YELLOW}📜 Logs:${NC}"
+    echo "   Backend:  tail -f /tmp/quarkus.log"
+    echo "   Frontend: tail -f /tmp/vite.log"
+    echo ""
+}
+
+# Hauptfunktion
+main() {
+    echo -e "${CYAN}╔══════════════════════════════════════════════════════╗${NC}"
+    echo -e "${CYAN}║         🚀 FreshPlan Robust Session Start            ║${NC}"
+    echo -e "${CYAN}╚══════════════════════════════════════════════════════╝${NC}"
+    echo ""
+    
+    # Projekt-Root finden
+    PROJECT_ROOT=$(find_project_root)
+    if [[ -z "$PROJECT_ROOT" ]]; then
+        echo -e "${RED}❌ Fehler: FreshPlan Projekt nicht gefunden!${NC}"
+        echo -e "${YELLOW}Bitte im Projekt-Verzeichnis ausführen.${NC}"
+        exit 1
+    fi
+    
+    echo -e "${GREEN}✅ Projekt gefunden: $PROJECT_ROOT${NC}"
+    echo ""
+    
+    # Services starten
+    start_postgres
+    
+    # Optional: Backend und Frontend starten
+    echo ""
+    read -p "Backend starten? (j/n) " -n 1 -r
+    echo ""
+    if [[ $REPLY =~ ^[Jj]$ ]]; then
+        start_backend
+    fi
+    
+    echo ""
+    read -p "Frontend starten? (j/n) " -n 1 -r
+    echo ""
+    if [[ $REPLY =~ ^[Jj]$ ]]; then
+        start_frontend
+    fi
+    
+    # Status anzeigen
+    show_quick_info
+    
+    # NEXT_STEP anzeigen wenn vorhanden
+    if [[ -f "$PROJECT_ROOT/docs/NEXT_STEP.md" ]]; then
+        echo -e "${CYAN}═══════════════════════════════════════════════════════${NC}"
+        echo -e "${BLUE}📋 NEXT_STEP.md (erste 20 Zeilen):${NC}"
+        echo ""
+        head -20 "$PROJECT_ROOT/docs/NEXT_STEP.md"
+    elif [[ -f "$PROJECT_ROOT/NEXT_STEP.md" ]]; then
+        echo -e "${CYAN}═══════════════════════════════════════════════════════${NC}"
+        echo -e "${BLUE}📋 NEXT_STEP.md (erste 20 Zeilen):${NC}"
+        echo ""
+        head -20 "$PROJECT_ROOT/NEXT_STEP.md"
+    fi
+    
+    echo ""
+    echo -e "${GREEN}✨ Session bereit!${NC}"
+    echo ""
+    
+    # Working directory Info
+    echo -e "${YELLOW}💡 Tipp: Du kannst jetzt in folgende Verzeichnisse wechseln:${NC}"
+    echo "   cd $PROJECT_ROOT          # Projekt-Root"
+    echo "   cd $PROJECT_ROOT/backend  # Backend"
+    echo "   cd $PROJECT_ROOT/frontend # Frontend"
+    echo ""
+}
+
+# Script ausführen
 main "$@"

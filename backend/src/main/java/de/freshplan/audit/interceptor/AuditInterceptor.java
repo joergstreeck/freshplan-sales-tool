@@ -1,7 +1,6 @@
 package de.freshplan.audit.interceptor;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import de.freshplan.audit.entity.AuditLog;
 import de.freshplan.audit.entity.AuditLog.*;
 import de.freshplan.audit.service.AuditService;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
@@ -18,8 +17,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Interceptor für automatisches Audit-Logging von Entity-Änderungen.
- * Trackt automatisch alle CREATE, UPDATE und DELETE Operationen.
+ * Interceptor für automatisches Audit-Logging von Entity-Änderungen. Trackt automatisch alle
+ * CREATE, UPDATE und DELETE Operationen.
  *
  * @author FreshPlan Team
  * @since 2.0.0
@@ -32,7 +31,7 @@ public class AuditInterceptor {
   private static final Logger log = LoggerFactory.getLogger(AuditInterceptor.class);
 
   @Inject AuditService auditService;
-  
+
   @Inject ObjectMapper objectMapper;
 
   // Cache für Entity-Type Mapping
@@ -40,8 +39,7 @@ public class AuditInterceptor {
 
   static {
     // Vorkonfigurierte Mappings
-    ENTITY_TYPE_CACHE.put(
-        de.freshplan.domain.customer.entity.Customer.class, EntityType.CUSTOMER);
+    ENTITY_TYPE_CACHE.put(de.freshplan.domain.customer.entity.Customer.class, EntityType.CUSTOMER);
     ENTITY_TYPE_CACHE.put(
         de.freshplan.domain.customer.entity.CustomerContact.class, EntityType.CONTACT);
     ENTITY_TYPE_CACHE.put(
@@ -102,16 +100,22 @@ public class AuditInterceptor {
   private AuditAction determineAction(String methodName) {
     String lowerMethod = methodName.toLowerCase();
 
-    if (lowerMethod.startsWith("create") || lowerMethod.startsWith("persist")
-        || lowerMethod.startsWith("save") || lowerMethod.startsWith("insert")) {
+    if (lowerMethod.startsWith("create")
+        || lowerMethod.startsWith("persist")
+        || lowerMethod.startsWith("save")
+        || lowerMethod.startsWith("insert")) {
       return AuditAction.CREATE;
-    } else if (lowerMethod.startsWith("update") || lowerMethod.startsWith("merge")
-        || lowerMethod.startsWith("modify") || lowerMethod.startsWith("change")) {
+    } else if (lowerMethod.startsWith("update")
+        || lowerMethod.startsWith("merge")
+        || lowerMethod.startsWith("modify")
+        || lowerMethod.startsWith("change")) {
       return AuditAction.UPDATE;
     } else if (lowerMethod.startsWith("delete") || lowerMethod.startsWith("remove")) {
       return AuditAction.DELETE;
-    } else if (lowerMethod.startsWith("find") || lowerMethod.startsWith("get")
-        || lowerMethod.startsWith("load") || lowerMethod.startsWith("read")) {
+    } else if (lowerMethod.startsWith("find")
+        || lowerMethod.startsWith("get")
+        || lowerMethod.startsWith("load")
+        || lowerMethod.startsWith("read")) {
       // Optional: Auch Lesezugriffe tracken (für DSGVO)
       return shouldAuditReads() ? AuditAction.VIEW : null;
     }
@@ -137,8 +141,7 @@ public class AuditInterceptor {
 
   private boolean isEntity(Object obj) {
     // Prüfe ob es eine Panache Entity ist
-    return obj instanceof PanacheEntityBase
-        || ENTITY_TYPE_CACHE.containsKey(obj.getClass());
+    return obj instanceof PanacheEntityBase || ENTITY_TYPE_CACHE.containsKey(obj.getClass());
   }
 
   private void logAuditEvent(Object entity, Object oldEntity, AuditAction action) {
@@ -196,7 +199,7 @@ public class AuditInterceptor {
     if (entity == null) return null;
 
     Class<?> entityClass = entity.getClass();
-    
+
     // Check cache first
     EntityType cached = ENTITY_TYPE_CACHE.get(entityClass);
     if (cached != null) {
@@ -220,7 +223,7 @@ public class AuditInterceptor {
       // Versuche getId() Methode
       Method getIdMethod = entity.getClass().getMethod("getId");
       Object id = getIdMethod.invoke(entity);
-      
+
       if (id instanceof UUID) {
         return (UUID) id;
       } else if (id instanceof String) {
@@ -238,7 +241,7 @@ public class AuditInterceptor {
 
     try {
       // Versuche getName() oder ähnliche Methoden
-      for (String methodName : new String[]{"getName", "getTitle", "getDisplayName", "toString"}) {
+      for (String methodName : new String[] {"getName", "getTitle", "getDisplayName", "toString"}) {
         try {
           Method method = entity.getClass().getMethod(methodName);
           Object name = method.invoke(entity);

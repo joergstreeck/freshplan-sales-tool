@@ -6,7 +6,8 @@
 
 ### 1️⃣ System-Check
 ```bash
-./scripts/validate-config.sh && ./scripts/check-services.sh
+/Users/joergstreeck/freshplan-sales-tool/scripts/robust-session-start.sh
+# Absoluter Pfad - funktioniert aus JEDEM Verzeichnis!
 ```
 
 ### 2️⃣ Orientierung
@@ -23,8 +24,10 @@
 - Analysieren → Dokumentieren → Lösungen vorschlagen
 
 ### 5️⃣ Übergabe
-- Template verwenden
-- Code-Stand verifizieren
+```bash
+/Users/joergstreeck/freshplan-sales-tool/scripts/create-handover.sh
+# Absoluter Pfad - erstellt automatisch vollständige Übergabe!
+```
 - FC-Status dokumentieren
 - "NACH KOMPRIMIERUNG" Abschnitt
 - Speichern: `YYYY-MM-DD_HANDOVER_HH-MM.md`
@@ -41,7 +44,10 @@ cd frontend && npm run dev
 ./mvnw test -Dtest=CustomerResourceIntegrationTest
 
 # Clean
-./scripts/quick-cleanup.sh
+/Users/joergstreeck/freshplan-sales-tool/scripts/quick-cleanup.sh
+
+# Migration Check
+/Users/joergstreeck/freshplan-sales-tool/scripts/get-next-migration.sh
 ```
 
 ## 📍 Ports:

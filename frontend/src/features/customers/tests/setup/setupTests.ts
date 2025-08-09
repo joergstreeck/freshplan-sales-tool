@@ -203,6 +203,7 @@ export { renderWithTheme as render };
 
 // Type augmentation for custom matchers
 declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace Vi {
     interface Assertion {
       toBeVisibleField(fieldId: string): void;

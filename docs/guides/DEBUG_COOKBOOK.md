@@ -14,6 +14,7 @@
 - [Vite Dev Server läuft nicht](#vite-issues) 🟡
 - [Keycloak Auth hängt](#auth-hang) 🔵
 - [TypeScript Import Type Fehler](#typescript-import-type) 🆕
+- [MUI Grid v2 Migration Fehler](#mui-grid-v2) 🆕
 
 ### Backend Probleme  
 - [Backend nicht erreichbar](#backend-down) 🔴
@@ -247,6 +248,95 @@ export { Foo }; // NICHT SO!
 - [TypeScript Import Type Guide](/Users/joergstreeck/freshplan-sales-tool/docs/guides/TYPESCRIPT_IMPORT_TYPE_GUIDE.md)
 - [Debug Session vom 27.07.2025](/Users/joergstreeck/freshplan-sales-tool/docs/claude-work/daily-work/2025-07-27/2025-07-27_DEBUG_typescript-import-type-marathon.md)
 - [Sprint 2 Dokumentation Updates](/Users/joergstreeck/freshplan-sales-tool/docs/claude-work/daily-work/2025-07-27/2025-07-27_IMPL_sprint2-docs-typescript-update.md)
+
+---
+
+### MUI Grid v2 Migration Fehler {#mui-grid-v2}
+
+**Symptome:**
+- Console Warnung: "MUI Grid: The `item` prop has been removed"
+- Console Warnung: "MUI Grid: The `xs` prop has been removed"
+- Console Warnung: "MUI Grid: The `sm` prop has been removed"
+- Console Warnung: "MUI Grid: The `md` prop has been removed"
+
+**Häufigkeit:** Nach MUI Update auf v7, bei Grid-Components
+
+**Quick Fix:**
+```bash
+# Grid v1 Syntax zu Grid v2 konvertieren
+# VORHER:  <Grid item xs={12} sm={6} md={3}>
+# NACHHER: <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+```
+
+**Diagnose:**
+1. MUI Version prüfen: `npm list @mui/material`
+2. Grid Import prüfen: Verwenden wir `Grid` aus `@mui/material`?
+3. Alte Syntax suchen: `grep -r "Grid item" src/`
+4. Funktionierende Beispiele finden: Andere Grid-Verwendungen im Projekt
+
+**Lösung:**
+```typescript
+// ✅ RICHTIG - Grid v2 Syntax (MUI v7)
+import { Grid } from '@mui/material';
+
+<Grid container spacing={3}>
+  <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+    <Component />
+  </Grid>
+  <Grid size="grow">  // Nimmt verfügbaren Platz
+    <Component />
+  </Grid>
+  <Grid size="auto">  // Nimmt nur benötigten Platz
+    <Component />
+  </Grid>
+</Grid>
+
+// ❌ FALSCH - Alte Grid v1 Syntax
+<Grid container spacing={3}>
+  <Grid item xs={12} sm={6} md={3}>  // item prop entfernt!
+    <Component />
+  </Grid>
+  <Grid item xs>  // xs als boolean nicht mehr erlaubt!
+    <Component />
+  </Grid>
+</Grid>
+```
+
+**Migration Pattern:**
+```typescript
+// Systematische Migration:
+// 1. Standard Breakpoints
+<Grid item xs={12} sm={6} md={4}>      → <Grid size={{ xs: 12, sm: 6, md: 4 }}>
+
+// 2. Nur xs (volle Breite)
+<Grid item xs={12}>                    → <Grid size={{ xs: 12 }}>
+
+// 3. Flex-grow (verfügbarer Platz)
+<Grid item xs>                         → <Grid size="grow">
+
+// 4. Auto-sizing
+<Grid item>                            → <Grid size="auto">
+
+// 5. Container bleibt gleich
+<Grid container spacing={3}>           → <Grid container spacing={3}>
+```
+
+**Root Causes:**
+- MUI v7 hat Grid v2 als Standard (Breaking Change)
+- Grid v2 verwendet `size` prop statt `item` + breakpoints
+- Grid2 Component existiert nicht mehr (war nur in v6)
+- Import `Unstable_Grid2` funktioniert nicht in v7
+
+**Prävention:**
+- Bei MUI Updates Migration Guide beachten
+- Konsistente Grid-Syntax im gesamten Projekt
+- ESLint Rule für deprecated Props einrichten
+- Nach Updates Console auf Warnungen prüfen
+
+**Verwandte Dokumentation:**
+- [MUI Grid v2 Migration Guide](https://mui.com/material-ui/migration/upgrade-to-grid-v2/)
+- [Lösung vom 09.08.2025](/Users/joergstreeck/freshplan-sales-tool/docs/claude-work/daily-work/2025-08-09/SOLUTION_MUI_GRID_V2.md)
+- [Debug Plan vom 09.08.2025](/Users/joergstreeck/freshplan-sales-tool/docs/claude-work/daily-work/2025-08-09/DEBUG_PLAN_MUI_GRID_V2.md)
 
 ---
 

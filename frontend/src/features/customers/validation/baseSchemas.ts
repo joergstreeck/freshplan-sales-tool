@@ -23,7 +23,7 @@ export const germanPostalCodeSchema = z
  */
 export const germanPhoneSchema = z
   .string()
-  .regex(/^[\d\s\-\+\(\)\/]+$/, 'Ungültige Telefonnummer')
+  .regex(/^[\d\s\-+()/]+$/, 'Ungültige Telefonnummer')
   .refine(val => {
     const digitsOnly = val.replace(/\D/g, '');
     return digitsOnly.length >= 10 && digitsOnly.length <= 15;
@@ -154,7 +154,7 @@ export const contactPersonSchema = z
   .max(100, 'Name darf maximal 100 Zeichen haben')
   .trim()
   .refine(
-    val => /^[a-zA-ZäöüÄÖÜß\s\-\.]+$/.test(val),
+    val => /^[a-zA-ZäöüÄÖÜß\s\-.]+$/.test(val),
     'Name darf nur Buchstaben, Leerzeichen und Bindestriche enthalten'
   )
   .describe('Kontaktperson');
@@ -178,7 +178,7 @@ export const citySchema = z
   .max(50, 'Ort darf maximal 50 Zeichen haben')
   .trim()
   .refine(
-    val => /^[a-zA-ZäöüÄÖÜß\s\-\.]+$/.test(val),
+    val => /^[a-zA-ZäöüÄÖÜß\s\-.]+$/.test(val),
     'Ort darf nur Buchstaben, Leerzeichen und Bindestriche enthalten'
   )
   .describe('Stadt/Ort');
@@ -240,7 +240,7 @@ export const bicSchema = z
 export const taxNumberSchema = z
   .string()
   .trim()
-  .regex(/^[0-9\/\-]+$/, 'Ungültige Steuernummer')
+  .regex(/^[0-9/-]+$/, 'Ungültige Steuernummer')
   .min(10, 'Steuernummer zu kurz')
   .max(20, 'Steuernummer zu lang')
   .describe('Steuernummer');

@@ -704,7 +704,7 @@ export const useCustomerOnboardingStore = create<CustomerOnboardingState>()(
 
           // Phone validation
           if ((fieldKey === 'phone' || fieldKey === 'mobile') && value) {
-            const phoneRegex = /^[\d\s\-\+\(\)\/]+$/;
+            const phoneRegex = /^[\d\s\-+()/]+$/;
             if (!phoneRegex.test(value)) {
               state.contactValidationErrors[contactId].fieldErrors[fieldKey] =
                 'Ungültige Telefonnummer';

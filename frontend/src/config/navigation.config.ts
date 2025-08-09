@@ -4,6 +4,8 @@ import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import PeopleIcon from '@mui/icons-material/People';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 import SettingsIcon from '@mui/icons-material/Settings';
+// import SecurityIcon from '@mui/icons-material/Security'; // Not used currently
+import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 
 // Temporär: Direkte Type-Definition um Import-Probleme zu umgehen
 interface NavigationSubItem {
@@ -107,5 +109,34 @@ export const navigationConfig: NavigationItemType[] = [
     icon: SettingsIcon,
     path: '/einstellungen',
     permissions: ['settings.view'],
+  },
+  {
+    id: 'admin',
+    label: 'Administration',
+    icon: AdminPanelSettingsIcon,
+    path: '/admin',
+    permissions: ['admin.view', 'auditor.view'],
+    subItems: [
+      {
+        label: 'Audit Dashboard',
+        path: '/admin/audit',
+        permissions: ['admin.view', 'auditor.view'],
+      },
+      {
+        label: 'Benutzerverwaltung',
+        path: '/admin/users',
+        permissions: ['admin.view'],
+      },
+      {
+        label: 'System-Einstellungen',
+        path: '/admin/settings',
+        permissions: ['admin.view'],
+      },
+      {
+        label: 'Compliance Reports',
+        path: '/admin/reports',
+        permissions: ['admin.view', 'auditor.view', 'manager.view'],
+      },
+    ],
   },
 ];

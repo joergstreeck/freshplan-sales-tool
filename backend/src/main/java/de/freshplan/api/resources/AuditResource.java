@@ -274,6 +274,66 @@ public class AuditResource {
     }
   }
 
+  // TODO: PR 3 - Implement these methods in AuditRepository
+  /*
+  @GET
+  @Path("/dashboard/metrics")
+  @RolesAllowed({"admin", "auditor"})
+  @Operation(summary = "Get audit dashboard metrics")
+  public Response getDashboardMetrics() {
+    var metrics = Map.of(
+        "coverage", auditRepository.getAuditCoverage(),
+        "integrityStatus", auditRepository.getLastIntegrityCheckStatus(),
+        "retentionCompliance", auditRepository.getRetentionCompliancePercentage(),
+        "lastAudit", auditRepository.getLastAuditTimestamp(),
+        "criticalEventsToday", auditRepository.countCriticalEventsToday(),
+        "activeUsers", auditRepository.countActiveUsersToday(),
+        "totalEventsToday", auditRepository.countEventsToday(),
+        "topEventTypes", auditRepository.getTopEventTypesToday(5)
+    );
+
+    return Response.ok(metrics).build();
+  }
+  */
+
+  /*
+  @GET
+  @Path("/dashboard/activity-chart")
+  @RolesAllowed({"admin", "auditor"})
+  @Operation(summary = "Get activity data for chart visualization")
+  public Response getActivityChartData(
+      @QueryParam("days") @DefaultValue("7") int days,
+      @QueryParam("groupBy") @DefaultValue("hour") String groupBy) {
+
+    var data = auditRepository.getActivityChartData(days, groupBy);
+    return Response.ok(data).build();
+  }
+  */
+
+  /*
+  @GET
+  @Path("/dashboard/critical-events")
+  @RolesAllowed({"admin", "auditor"})
+  @Operation(summary = "Get recent critical events")
+  public Response getCriticalEvents(
+      @QueryParam("limit") @DefaultValue("10") @Min(1) @Max(50) int limit) {
+
+    var events = auditRepository.findRecentCriticalEvents(limit);
+    return Response.ok(events).build();
+  }
+  */
+
+  /*
+  @GET
+  @Path("/dashboard/compliance-alerts")
+  @RolesAllowed({"admin", "auditor"})
+  @Operation(summary = "Get compliance alerts and warnings")
+  public Response getComplianceAlerts() {
+    var alerts = auditRepository.getComplianceAlerts();
+    return Response.ok(alerts).build();
+  }
+  */
+
   /** Escape CSV special characters */
   private String csvEscape(String value) {
     if (value == null) {

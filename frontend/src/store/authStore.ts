@@ -13,6 +13,8 @@ export const useAuthStore = create<AuthState>()(set => ({
     'customers.view',
     'reports.view',
     'settings.view',
+    'admin.view', // Admin-Bereich Zugriff
+    'auditor.view', // Audit Dashboard Zugriff
   ],
 
   setPermissions: permissions => set({ userPermissions: permissions }),

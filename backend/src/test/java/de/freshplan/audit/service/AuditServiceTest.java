@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import de.freshplan.audit.entity.AuditLog;
 import de.freshplan.audit.entity.AuditLog.*;
 import de.freshplan.audit.repository.AuditRepository;
@@ -47,7 +46,7 @@ class AuditServiceTest {
     Principal principal = mock(Principal.class);
     when(principal.getName()).thenReturn(testUserName);
     when(securityIdentity.getPrincipal()).thenReturn(principal);
-    
+
     // Mock attributes map with "sub" key
     Map<String, Object> attributes = new HashMap<>();
     attributes.put("sub", testUserId.toString());
@@ -79,7 +78,7 @@ class AuditServiceTest {
 
     // Then - Wait for potential async operation
     Thread.sleep(200);
-    
+
     ArgumentCaptor<AuditLog> captor = ArgumentCaptor.forClass(AuditLog.class);
     verify(auditRepository, timeout(1000)).persist(captor.capture());
 
@@ -150,7 +149,7 @@ class AuditServiceTest {
 
     // Then - Wait for potential async operation
     Thread.sleep(200);
-    
+
     ArgumentCaptor<AuditLog> captor = ArgumentCaptor.forClass(AuditLog.class);
     verify(auditRepository, timeout(1000)).persist(captor.capture());
 
@@ -190,12 +189,11 @@ class AuditServiceTest {
     when(auditRepository.findLastEntry()).thenReturn(Optional.of(previousLog));
 
     // When
-    auditService.auditSimple(
-        EntityType.CUSTOMER, testEntityId, "Test Customer", AuditAction.VIEW);
+    auditService.auditSimple(EntityType.CUSTOMER, testEntityId, "Test Customer", AuditAction.VIEW);
 
     // Then - Wait for potential async operation
     Thread.sleep(200);
-    
+
     ArgumentCaptor<AuditLog> captor = ArgumentCaptor.forClass(AuditLog.class);
     verify(auditRepository, timeout(1000)).persist(captor.capture());
 
@@ -273,14 +271,7 @@ class AuditServiceTest {
     // When
     AuditLog result =
         auditService.audit(
-            EntityType.CUSTOMER,
-            testEntityId,
-            "Test",
-            AuditAction.CREATE,
-            null,
-            null,
-            null,
-            null);
+            EntityType.CUSTOMER, testEntityId, "Test", AuditAction.CREATE, null, null, null, null);
 
     // Then
     // The service now handles exceptions gracefully and still creates the audit log
@@ -317,8 +308,7 @@ class AuditServiceTest {
   @DisplayName("Should set retention policy correctly")
   void testRetentionPolicy() {
     // When - Data deletion (10 years retention)
-    auditService.auditSimple(
-        EntityType.CUSTOMER, testEntityId, "Test", AuditAction.DATA_DELETION);
+    auditService.auditSimple(EntityType.CUSTOMER, testEntityId, "Test", AuditAction.DATA_DELETION);
 
     // Then - DATA_DELETION is critical and should be sync
     ArgumentCaptor<AuditLog> captor = ArgumentCaptor.forClass(AuditLog.class);

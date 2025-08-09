@@ -2,9 +2,9 @@
 
 **WICHTIG: Diese Datei enthält die offiziellen Trigger-Texte. NIEMALS löschen oder überschreiben!**
 
-**Version:** 2.8  
+**Version:** 2.9  
 **Letzte Aktualisierung:** 08.08.2025  
-**Neues Feature:** Universelles create-handover.sh Script - funktioniert aus JEDEM Verzeichnis
+**Neues Feature:** Alle Scripts mit absoluten Pfaden - funktionieren IMMER aus JEDEM Verzeichnis
 
 ---
 
@@ -25,7 +25,7 @@ Erstelle eine vollständige Übergabe für die nächste Session.
 
   SCHRITT 2: MIGRATION-CHECK (🚨 PFLICHT bei DB-Arbeit!)
 
-  ./scripts/get-next-migration.sh
+  /Users/joergstreeck/freshplan-sales-tool/scripts/get-next-migration.sh
   # Diese Nummer IMMER in Übergabe notieren!
   # NIEMALS alte Nummern wiederverwenden!
 
@@ -35,9 +35,10 @@ Erstelle eine vollständige Übergabe für die nächste Session.
 
   SCHRITT 3: Universelles Handover-Script
 
-  ./scripts/create-handover.sh
-  # NEU: Funktioniert aus JEDEM Verzeichnis!
+  /Users/joergstreeck/freshplan-sales-tool/scripts/create-handover.sh
+  # ABSOLUTER PFAD - funktioniert IMMER aus JEDEM Verzeichnis!
   # Wählt automatisch das beste verfügbare Script:
+  # - create-handover-universal.sh (NEU: universelle Version)
   # - handover-with-sync-stable.sh (mit V5 Sync)
   # - create-handover-improved.sh (verbesserte Version)
   # - Minimales Fallback-Template wenn nötig
@@ -86,14 +87,14 @@ Lese alles gründlich durch und befolge strict die Standardübergabe.
   #### 1. Branch Check
   ```bash
   git branch --show-current
-  ./scripts/get-current-feature-branch.sh
+  /Users/joergstreeck/freshplan-sales-tool/scripts/get-current-feature-branch.sh
 
   # Falls kein Feature-Branch:
   git checkout -b feature/fc-XXX-[description]
 
   2. MIGRATION-CHECK (🚨 PFLICHT bei DB-Arbeit!)
 
-  ./scripts/get-next-migration.sh
+  /Users/joergstreeck/freshplan-sales-tool/scripts/get-next-migration.sh
   # Diese Nummer IMMER verwenden!
 
   # Fallback bei Script-Fehler:
@@ -101,7 +102,9 @@ Lese alles gründlich durch und befolge strict die Standardübergabe.
 
   3. System-Start
 
-  ./scripts/robust-session-start.sh
+  /Users/joergstreeck/freshplan-sales-tool/scripts/robust-session-start.sh
+  # ABSOLUTER PFAD - funktioniert aus JEDEM Verzeichnis!
+  # Prüft Services, startet PostgreSQL, zeigt Status
   # Bei Fehler: cat docs/NEXT_STEP.md
 
   4. Pflichtlektüre
