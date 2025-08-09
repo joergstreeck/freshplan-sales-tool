@@ -555,15 +555,12 @@ export const KanbanBoardDndKit: React.FC = React.memo(() => {
             createdAt: opp.createdAt || new Date().toISOString(),
             updatedAt: opp.updatedAt || new Date().toISOString(),
           }));
-
-            '✅ KanbanBoard: Setting API opportunities:',
-            apiOpportunities.slice(0, 3).map(o => ({ name: o.name, customer: o.customerName }))
-          );
+          
           setOpportunities(apiOpportunities);
         }
       } catch (error) {
-        console.error('❌ KanbanBoard: Failed to load opportunities:', error);
         // Keep using initialOpportunities as fallback
+        // Error is silently handled - opportunities will remain as initial mock data
       }
     };
 

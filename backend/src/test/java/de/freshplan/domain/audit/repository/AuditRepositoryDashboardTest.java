@@ -2,6 +2,7 @@ package de.freshplan.domain.audit.repository;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import de.freshplan.domain.audit.dto.ComplianceAlertDto;
 import de.freshplan.domain.audit.entity.AuditEntry;
 import de.freshplan.domain.audit.entity.AuditEventType;
 import de.freshplan.domain.audit.entity.AuditSource;
@@ -166,13 +167,13 @@ class AuditRepositoryDashboardTest {
     assertNotNull(alerts);
     assertFalse(alerts.isEmpty());
 
-    // Should have at least maintenance alert
+    // Should have at least maintenance alert (using RETENTION type for maintenance in current impl)
     boolean hasMaintenanceAlert =
-        alerts.stream().anyMatch(a -> "maintenance".equals(a.get("type")));
+        alerts.stream().anyMatch(a -> a.getType() == ComplianceAlertDto.AlertType.RETENTION);
     assertTrue(hasMaintenanceAlert);
 
     // Should have retention alert if old entries exist
-    boolean hasRetentionAlert = alerts.stream().anyMatch(a -> "retention".equals(a.get("type")));
+    boolean hasRetentionAlert = alerts.stream().anyMatch(a -> a.getType() == ComplianceAlertDto.AlertType.RETENTION);
     assertTrue(hasRetentionAlert);
   }
 

@@ -43,14 +43,10 @@ export const OpportunityPipeline: React.FC = () => {
           createdAt: opp.createdAt || new Date().toISOString(),
           updatedAt: opp.updatedAt || new Date().toISOString(),
         }));
-
-          '✅ Setting opportunities:',
-          apiOpportunities.slice(0, 3).map(o => ({ name: o.name, customer: o.customerName }))
-        );
+        
         setOpportunities(apiOpportunities);
         setError(null);
       } catch (err) {
-        console.error('Fehler beim Laden der Opportunities:', err);
         setError('Fehler beim Laden der Opportunities - Backend nicht erreichbar');
         // Leere Liste statt Mock-Daten bei Fehler
         setOpportunities([]);
@@ -121,8 +117,6 @@ export const OpportunityPipeline: React.FC = () => {
 
       // TODO: In echter App würde hier API-Call stehen
       // changeStage.mutate({ id: opportunityId, newStage, reason: '...' });
-    } else {
-    }
   };
 
   // Loading State
