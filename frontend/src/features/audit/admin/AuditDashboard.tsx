@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import {
+  Grid,
   Paper,
   Typography,
   Box,
@@ -7,7 +8,6 @@ import {
   Chip,
   Skeleton
 } from '@mui/material';
-import Grid from '@mui/material/Grid2';
 import {
   TrendingUp as TrendingUpIcon,
   TrendingDown as TrendingDownIcon,
@@ -120,7 +120,7 @@ export const AuditDashboard: React.FC<AuditDashboardProps> = ({
   return (
     <Grid container spacing={3}>
       {/* Statistics Cards */}
-      <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+      <Grid item xs={12} sm={6} md={3}>
         <StatCard
           title="Ereignisse heute"
           value={metrics.totalEventsToday.toLocaleString('de-DE')}
@@ -130,7 +130,7 @@ export const AuditDashboard: React.FC<AuditDashboardProps> = ({
         />
       </Grid>
       
-      <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+      <Grid item xs={12} sm={6} md={3}>
         <StatCard
           title="Aktive Benutzer"
           value={metrics.activeUsers}
@@ -140,7 +140,7 @@ export const AuditDashboard: React.FC<AuditDashboardProps> = ({
         />
       </Grid>
       
-      <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+      <Grid item xs={12} sm={6} md={3}>
         <StatCard
           title="Kritische Ereignisse"
           value={metrics.criticalEventsToday}
@@ -150,7 +150,7 @@ export const AuditDashboard: React.FC<AuditDashboardProps> = ({
         />
       </Grid>
       
-      <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+      <Grid item xs={12} sm={6} md={3}>
         <StatCard
           title="Audit Coverage"
           value={`${metrics.coverage}%`}
@@ -160,7 +160,7 @@ export const AuditDashboard: React.FC<AuditDashboardProps> = ({
       </Grid>
       
       {/* Compliance Overview */}
-      <Grid size={{ xs: 12, md: 8 }}>
+      <Grid item xs={12} md={8}>
         <Paper sx={{ p: 3 }}>
           <Typography 
             variant="h6" 
@@ -171,7 +171,7 @@ export const AuditDashboard: React.FC<AuditDashboardProps> = ({
           </Typography>
           
           <Grid container spacing={2}>
-            <Grid size={{ xs: 12, sm: 6 }}>
+            <Grid item xs={12} sm={6}>
               <Box sx={{ mb: 2 }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                   <Typography variant="body2">DSGVO Compliance</Typography>
@@ -194,7 +194,7 @@ export const AuditDashboard: React.FC<AuditDashboardProps> = ({
               </Box>
             </Grid>
             
-            <Grid size={{ xs: 12, sm: 6 }}>
+            <Grid item xs={12} sm={6}>
               <Box sx={{ mb: 2 }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                   <Typography variant="body2">Integrity Status</Typography>
@@ -214,7 +214,7 @@ export const AuditDashboard: React.FC<AuditDashboardProps> = ({
       </Grid>
       
       {/* Top Event Types */}
-      <Grid size={{ xs: 12, md: 4 }}>
+      <Grid item xs={12} md={4}>
         <Paper sx={{ p: 3 }}>
           <Typography 
             variant="h6" 
@@ -254,7 +254,7 @@ export const AuditDashboard: React.FC<AuditDashboardProps> = ({
       </Grid>
       
       {/* Activity Timeline */}
-      <Grid size={12}>
+      <Grid item xs={12}>
         <Paper sx={{ p: 3 }}>
           <Typography 
             variant="h6" 
