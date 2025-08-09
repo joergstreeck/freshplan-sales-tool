@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import {
-  Grid,
   Paper,
   Typography,
   Box,
@@ -8,6 +7,7 @@ import {
   Chip,
   Skeleton
 } from '@mui/material';
+import Grid from '@mui/material/Unstable_Grid2';
 import {
   TrendingUp as TrendingUpIcon,
   TrendingDown as TrendingDownIcon,
