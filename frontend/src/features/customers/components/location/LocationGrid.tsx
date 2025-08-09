@@ -53,7 +53,7 @@ export const LocationGrid: React.FC<LocationGridProps> = ({
         const isClickable = status !== 'current';
 
         return (
-          <Grid item xs={12} sm={6} md={3} key={location.id}>
+          <Grid size={{ xs: 12, sm: 6, md: 3 }} key={location.id}>
             <Paper
               variant="outlined"
               sx={{

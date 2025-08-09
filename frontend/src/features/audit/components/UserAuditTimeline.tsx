@@ -203,14 +203,18 @@ export const UserAuditTimeline: React.FC<UserAuditTimelineProps> = ({
 
           <Box display="flex" gap={1}>
             <Tooltip title="Aktualisieren">
-              <IconButton onClick={() => refetch()} disabled={isLoading}>
-                <RefreshIcon />
-              </IconButton>
+              <span>
+                <IconButton onClick={() => refetch()} disabled={isLoading}>
+                  <RefreshIcon />
+                </IconButton>
+              </span>
             </Tooltip>
             <Tooltip title="Exportieren">
-              <IconButton onClick={handleExport} disabled={!auditLogs || auditLogs.length === 0}>
-                <DownloadIcon />
-              </IconButton>
+              <span>
+                <IconButton onClick={handleExport} disabled={!auditLogs || auditLogs.length === 0}>
+                  <DownloadIcon />
+                </IconButton>
+              </span>
             </Tooltip>
           </Box>
         </Box>

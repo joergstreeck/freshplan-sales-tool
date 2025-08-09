@@ -80,7 +80,7 @@ export const PermissionDemoPage: React.FC = () => {
 
       <Grid container spacing={3}>
         {/* User Info Card */}
-        <Grid item xs={12} md={4}>
+        <Grid size={{ xs: 12, md: 4 }}>
           <Card>
             <CardContent>
               <Box display="flex" alignItems="center" mb={2}>
@@ -101,7 +101,7 @@ export const PermissionDemoPage: React.FC = () => {
         </Grid>
 
         {/* Permissions List Card */}
-        <Grid item xs={12} md={8}>
+        <Grid size={{ xs: 12, md: 8 }}>
           <Card>
             <CardContent>
               <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
@@ -145,7 +145,7 @@ export const PermissionDemoPage: React.FC = () => {
         </Grid>
 
         {/* Permission Gates Demo */}
-        <Grid item xs={12} md={6}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <Card>
             <CardContent>
               <Typography variant="h6" gutterBottom>
@@ -224,7 +224,7 @@ export const PermissionDemoPage: React.FC = () => {
         </Grid>
 
         {/* Permission Buttons Demo */}
-        <Grid item xs={12} md={6}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <Card>
             <CardContent>
               <Typography variant="h6" gutterBottom>
@@ -283,7 +283,7 @@ export const PermissionDemoPage: React.FC = () => {
         </Grid>
 
         {/* Permission Test Results */}
-        <Grid item xs={12}>
+        <Grid size={{ xs: 12 }}>
           <Card>
             <CardContent>
               <Typography variant="h6" gutterBottom>
@@ -292,7 +292,7 @@ export const PermissionDemoPage: React.FC = () => {
 
               <Grid container spacing={1}>
                 {testPermissions.map(permission => (
-                  <Grid item key={permission}>
+                  <Grid key={permission} size="auto">
                     <PermissionGate
                       permission={permission}
                       fallback={
@@ -315,7 +315,7 @@ export const PermissionDemoPage: React.FC = () => {
         </Grid>
 
         {/* Hook Usage Demo */}
-        <Grid item xs={12}>
+        <Grid size={{ xs: 12 }}>
           <Card>
             <CardContent>
               <Typography variant="h6" gutterBottom>
