@@ -21,7 +21,6 @@ import {
   Box,
   Paper,
   Typography,
-  Chip,
   IconButton,
   Tooltip,
   TextField,

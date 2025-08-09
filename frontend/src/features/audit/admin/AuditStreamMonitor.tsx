@@ -15,7 +15,6 @@ import {
   CircularProgress,
   Fade,
   Divider,
-  Avatar,
 } from '@mui/material';
 import {
   PlayArrow as PlayIcon,
