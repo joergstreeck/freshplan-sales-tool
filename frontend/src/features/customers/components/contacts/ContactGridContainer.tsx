@@ -259,7 +259,7 @@ export const ContactGridContainer: React.FC<ContactGridContainerProps> = ({
       ) : viewMode === 'grid' ? (
         <Grid container spacing={2}>
           {sortedContacts.map((contact) => (
-            <Grid item key={contact.id} xs={12} sm={6} md={4} lg={3}>
+            <Grid key={contact.id} size={{ xs: 12, sm: 6, md: 4, lg: 3 }}>
               {renderContactCard(contact)}
             </Grid>
           ))}
