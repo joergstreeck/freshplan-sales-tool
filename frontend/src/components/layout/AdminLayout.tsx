@@ -18,7 +18,7 @@ import {
   Badge,
   Avatar,
   Menu,
-  MenuItem
+  MenuItem,
 } from '@mui/material';
 import {
   Menu as MenuIcon,
@@ -30,7 +30,7 @@ import {
   Notifications as NotificationsIcon,
   AccountCircle as AccountIcon,
   Logout as LogoutIcon,
-  Dashboard as DashboardIcon
+  Dashboard as DashboardIcon,
 } from '@mui/icons-material';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -45,36 +45,36 @@ interface MenuItem {
 }
 
 const menuItems: MenuItem[] = [
-  { 
-    text: 'Übersicht', 
-    icon: <DashboardIcon />, 
+  {
+    text: 'Übersicht',
+    icon: <DashboardIcon />,
     path: '/admin',
-    roles: ['admin', 'auditor']
+    roles: ['admin', 'auditor'],
   },
-  { 
-    text: 'Audit Dashboard', 
-    icon: <SecurityIcon />, 
+  {
+    text: 'Audit Dashboard',
+    icon: <SecurityIcon />,
     path: '/admin/audit',
-    roles: ['admin', 'auditor']
+    roles: ['admin', 'auditor'],
   },
-  { 
-    text: 'Benutzerverwaltung', 
-    icon: <PeopleIcon />, 
+  {
+    text: 'Benutzerverwaltung',
+    icon: <PeopleIcon />,
     path: '/admin/users',
-    roles: ['admin']
+    roles: ['admin'],
   },
-  { 
-    text: 'Reports', 
-    icon: <AssessmentIcon />, 
+  {
+    text: 'Reports',
+    icon: <AssessmentIcon />,
     path: '/admin/reports',
-    roles: ['admin', 'auditor', 'manager']
+    roles: ['admin', 'auditor', 'manager'],
   },
-  { 
-    text: 'Einstellungen', 
-    icon: <SettingsIcon />, 
+  {
+    text: 'Einstellungen',
+    icon: <SettingsIcon />,
     path: '/admin/settings',
-    roles: ['admin']
-  }
+    roles: ['admin'],
+  },
 ];
 
 export const AdminLayout: React.FC = () => {
@@ -85,34 +85,32 @@ export const AdminLayout: React.FC = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const navigate = useNavigate();
   const { hasRole, username, email, logout } = useAuth();
-  
+
   // Helper function to check if user has any of the allowed roles
   const hasAnyRole = (roles: string[]) => {
     return roles.length === 0 || roles.some(role => hasRole(role));
   };
-  
+
   const handleDrawerToggle = () => {
     setDrawerOpen(!drawerOpen);
   };
-  
+
   const handleUserMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
-  
+
   const handleUserMenuClose = () => {
     setAnchorEl(null);
   };
-  
+
   const handleLogout = () => {
     handleUserMenuClose();
     logout();
     navigate('/');
   };
-  
-  const filteredMenuItems = menuItems.filter(item => 
-    hasAnyRole(item.roles)
-  );
-  
+
+  const filteredMenuItems = menuItems.filter(item => hasAnyRole(item.roles));
+
   return (
     <Box sx={{ display: 'flex' }}>
       <AppBar
@@ -137,44 +135,39 @@ export const AdminLayout: React.FC = () => {
           >
             {drawerOpen ? <ChevronLeftIcon /> : <MenuIcon />}
           </IconButton>
-          
-          <Typography 
-            variant="h6" 
-            noWrap 
-            sx={{ 
+
+          <Typography
+            variant="h6"
+            noWrap
+            sx={{
               fontFamily: 'Antonio, sans-serif',
               fontWeight: 'bold',
               letterSpacing: '0.5px',
-              flexGrow: 1
+              flexGrow: 1,
             }}
           >
             FreshPlan Admin Center
           </Typography>
-          
+
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
             <IconButton color="inherit">
               <Badge badgeContent={4} color="error">
                 <NotificationsIcon />
               </Badge>
             </IconButton>
-            
+
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              <Typography 
-                variant="body2" 
-                sx={{ 
-                  mr: 1, 
+              <Typography
+                variant="body2"
+                sx={{
+                  mr: 1,
                   display: { xs: 'none', sm: 'block' },
-                  fontFamily: 'Poppins, sans-serif'
+                  fontFamily: 'Poppins, sans-serif',
                 }}
               >
                 {username || email || 'Admin'}
               </Typography>
-              <IconButton
-                onClick={handleUserMenuOpen}
-                size="small"
-                sx={{ ml: 1 }}
-                color="inherit"
-              >
+              <IconButton onClick={handleUserMenuOpen} size="small" sx={{ ml: 1 }} color="inherit">
                 <Avatar sx={{ width: 32, height: 32, bgcolor: '#94C456' }}>
                   {username?.charAt(0) || email?.charAt(0) || 'A'}
                 </Avatar>
@@ -183,7 +176,7 @@ export const AdminLayout: React.FC = () => {
           </Box>
         </Toolbar>
       </AppBar>
-      
+
       <Menu
         anchorEl={anchorEl}
         open={Boolean(anchorEl)}
@@ -197,7 +190,12 @@ export const AdminLayout: React.FC = () => {
           horizontal: 'right',
         }}
       >
-        <MenuItem onClick={() => { handleUserMenuClose(); navigate('/profile'); }}>
+        <MenuItem
+          onClick={() => {
+            handleUserMenuClose();
+            navigate('/profile');
+          }}
+        >
           <ListItemIcon>
             <AccountIcon fontSize="small" />
           </ListItemIcon>
@@ -211,7 +209,7 @@ export const AdminLayout: React.FC = () => {
           Abmelden
         </MenuItem>
       </Menu>
-      
+
       <Drawer
         sx={{
           width: drawerOpen ? drawerWidth : 0,
@@ -235,7 +233,7 @@ export const AdminLayout: React.FC = () => {
         <Toolbar />
         <Box sx={{ overflow: 'auto' }}>
           <List>
-            {filteredMenuItems.map((item) => {
+            {filteredMenuItems.map(item => {
               const isActive = location.pathname === item.path;
               return (
                 <ListItem key={item.text} disablePadding>
@@ -256,14 +254,16 @@ export const AdminLayout: React.FC = () => {
                         borderLeft: '4px solid #94C456',
                         '&:hover': {
                           bgcolor: 'rgba(148, 196, 86, 0.2)',
-                        }
-                      }
+                        },
+                      },
                     }}
                   >
-                    <ListItemIcon sx={{ 
-                      color: isActive ? '#94C456' : '#004F7B',
-                      minWidth: 40
-                    }}>
+                    <ListItemIcon
+                      sx={{
+                        color: isActive ? '#94C456' : '#004F7B',
+                        minWidth: 40,
+                      }}
+                    >
                       {item.badge ? (
                         <Badge badgeContent={item.badge} color="error">
                           {item.icon}
@@ -272,13 +272,13 @@ export const AdminLayout: React.FC = () => {
                         item.icon
                       )}
                     </ListItemIcon>
-                    <ListItemText 
+                    <ListItemText
                       primary={item.text}
                       primaryTypographyProps={{
                         fontFamily: 'Poppins, sans-serif',
                         fontSize: '14px',
                         fontWeight: isActive ? 600 : 500,
-                        color: isActive ? '#004F7B' : 'text.primary'
+                        color: isActive ? '#004F7B' : 'text.primary',
                       }}
                     />
                   </ListItemButton>
@@ -288,7 +288,7 @@ export const AdminLayout: React.FC = () => {
           </List>
         </Box>
       </Drawer>
-      
+
       <Box
         component="main"
         sx={{
@@ -302,7 +302,7 @@ export const AdminLayout: React.FC = () => {
             duration: theme.transitions.duration.leavingScreen,
           }),
           minHeight: '100vh',
-          mt: 8
+          mt: 8,
         }}
       >
         <Outlet />

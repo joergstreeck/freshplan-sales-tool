@@ -1,32 +1,32 @@
 /**
  * Permission-based Content Gating Component
- * 
+ *
  * @module components/permission/PermissionGate
  * @description Enterprise-grade permission gating für conditional rendering basierend auf
  *              User-Permissions. Implementiert RBAC (Role-Based Access Control) mit
  *              graceful loading states und flexible fallback options.
- * 
+ *
  * @example
  * ```tsx
  * // Einfache Permission-Prüfung
  * <PermissionGate permission="customers:write">
  *   <Button>Kunde bearbeiten</Button>
  * </PermissionGate>
- * 
+ *
  * // Mit Custom Fallback
- * <PermissionGate 
- *   permission="admin:access" 
+ * <PermissionGate
+ *   permission="admin:access"
  *   fallback={<Alert>Keine Berechtigung</Alert>}
  * >
  *   <AdminPanel />
  * </PermissionGate>
- * 
+ *
  * // Multiple Permissions (OR-Logik)
  * <MultiPermissionGate permissions={["manager:view", "admin:view"]}>
  *   <Dashboard />
  * </MultiPermissionGate>
  * ```
- * 
+ *
  * @since 2.0.0
  * @see {@link usePermissions} - Hook für Permission-Logik
  * @see {@link PermissionButton} - Button mit Permission-Check
@@ -38,7 +38,7 @@ import { usePermissions } from '../../contexts/PermissionContext';
 
 /**
  * Props für PermissionGate Component
- * 
+ *
  * @interface PermissionGateProps
  */
 interface PermissionGateProps {
@@ -74,11 +74,11 @@ export const PermissionGate: React.FC<PermissionGateProps> = ({
 
 /**
  * Multiple Permission Gate Component
- * 
+ *
  * @description Prüft mehrere Permissions mit OR-Logik.
  *              Rendert Content wenn MINDESTENS EINE der angegebenen
  *              Permissions vorhanden ist.
- * 
+ *
  * @interface MultiPermissionGateProps
  */
 interface MultiPermissionGateProps {

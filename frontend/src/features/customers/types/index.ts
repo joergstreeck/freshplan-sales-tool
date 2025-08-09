@@ -9,7 +9,7 @@
  * @see {@link ../../../types/consolidated.types} - Zentrale Type-Definitionen
  * @see /Users/joergstreeck/freshplan-sales-tool/frontend/src/features/customers/data/fieldCatalog.json
  * @see /Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/03-FRONTEND/README.md
- * 
+ *
  * @since 2.0.0
  */
 

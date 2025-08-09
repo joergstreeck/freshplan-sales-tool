@@ -1,9 +1,9 @@
 import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
 // import { auditApi } from '@/features/audit/services/auditApi'; // TODO: Use in PR 3 when connecting to backend
-import type { 
+import type {
   AuditLog,
-  AuditFilters
+  AuditFilters,
   // AuditDashboardMetrics // TODO: Use in PR 3
 } from '@/features/audit/types';
 
@@ -66,7 +66,12 @@ interface UserAuditProfile {
 
 interface SuspiciousActivity {
   id: string;
-  type: 'UNUSUAL_TIME' | 'RAPID_EXPORTS' | 'ACCESS_DELETED' | 'SELF_PERMISSION_CHANGE' | 'EXCESSIVE_ACCESS';
+  type:
+    | 'UNUSUAL_TIME'
+    | 'RAPID_EXPORTS'
+    | 'ACCESS_DELETED'
+    | 'SELF_PERMISSION_CHANGE'
+    | 'EXCESSIVE_ACCESS';
   auditLog?: AuditLog;
   description: string;
   severity: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
@@ -118,18 +123,18 @@ interface AuditAdminState {
   suspiciousActivities: SuspiciousActivity[];
   complianceStatus: ComplianceStatus | null;
   userProfiles: Map<string, UserAuditProfile>;
-  
+
   // UI State
   isLoading: boolean;
   error: string | null;
   selectedTimeRange: DateRange;
   filters: AuditFilters;
-  
+
   // Real-time Stream
   liveStream: AuditStreamEntry[];
   isStreamConnected: boolean;
   streamWebSocket: WebSocket | null;
-  
+
   // Actions - Data Fetching
   fetchDashboardData: (dateRange: DateRange) => Promise<void>;
   fetchActivityHeatmap: (dateRange: DateRange, granularity: string) => Promise<void>;
@@ -137,23 +142,23 @@ interface AuditAdminState {
   fetchUserProfile: (userId: string, dateRange: DateRange) => Promise<void>;
   fetchComplianceStatus: (dateRange: DateRange) => Promise<void>;
   generateComplianceReport: (config: ReportConfig) => Promise<ReportResult>;
-  
+
   // Actions - Real-time
   connectToStream: () => void;
   disconnectFromStream: () => void;
   addStreamEntry: (entry: AuditStreamEntry) => void;
   clearStream: () => void;
-  
+
   // Actions - Filtering
   setFilters: (filters: Partial<AuditFilters>) => void;
   clearFilters: () => void;
   setTimeRange: (range: DateRange) => void;
-  
+
   // Actions - Security
   acknowledgeAlert: (alertId: string) => Promise<void>;
   investigateActivity: (activityId: string) => Promise<any>;
   blockUser: (userId: string, reason: string) => Promise<void>;
-  
+
   // Actions - UI
   clearError: () => void;
   reset: () => void;
@@ -169,12 +174,12 @@ const initialState = {
   error: null,
   selectedTimeRange: {
     from: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
-    to: new Date()
+    to: new Date(),
   },
   filters: {},
   liveStream: [],
   isStreamConnected: false,
-  streamWebSocket: null
+  streamWebSocket: null,
 };
 
 export const useAuditAdminStore = create<AuditAdminState>()(
@@ -182,9 +187,9 @@ export const useAuditAdminStore = create<AuditAdminState>()(
     persist(
       (set, get) => ({
         ...initialState,
-        
+
         // Fetch Dashboard Data
-        fetchDashboardData: async (_dateRange) => {
+        fetchDashboardData: async _dateRange => {
           set({ isLoading: true, error: null });
           try {
             // In production, these would be real API calls
@@ -203,58 +208,59 @@ export const useAuditAdminStore = create<AuditAdminState>()(
                 DELETE: 234,
                 READ: 3456,
                 LOGIN: 234,
-                EXPORT: 34
+                EXPORT: 34,
               },
               topUsersByActivity: [
                 { userId: 'user-1', userName: 'Max Mustermann', activityCount: 234, role: 'admin' },
                 { userId: 'user-2', userName: 'Anna Schmidt', activityCount: 189, role: 'manager' },
-                { userId: 'user-3', userName: 'Peter Weber', activityCount: 156, role: 'sales' }
-              ]
+                { userId: 'user-3', userName: 'Peter Weber', activityCount: 156, role: 'sales' },
+              ],
             };
-            
+
             set({
               dashboardStats: mockStats,
-              isLoading: false
+              isLoading: false,
             });
           } catch (error) {
             set({
               error: error.message || 'Failed to fetch dashboard data',
-              isLoading: false
+              isLoading: false,
             });
           }
         },
-        
+
         // Fetch Activity Heatmap
         fetchActivityHeatmap: async (_dateRange, granularity) => {
           try {
             // Mock heatmap data
             const dataPoints = [];
             const startDate = dateRange.from;
-            
-            for (let i = 0; i < 168; i++) { // 7 days * 24 hours
+
+            for (let i = 0; i < 168; i++) {
+              // 7 days * 24 hours
               const timestamp = new Date(startDate.getTime() + i * 60 * 60 * 1000);
               dataPoints.push({
                 timestamp,
                 totalEvents: Math.floor(Math.random() * 100),
                 uniqueUsers: Math.floor(Math.random() * 20),
                 dsgvoEvents: Math.floor(Math.random() * 10),
-                intensity: Math.random()
+                intensity: Math.random(),
               });
             }
-            
+
             const heatmap: ActivityHeatmap = {
               granularity,
               dataPoints,
               peakHours: ['09:00', '14:00', '16:00'],
-              quietPeriods: ['00:00-06:00', '22:00-24:00']
+              quietPeriods: ['00:00-06:00', '22:00-24:00'],
             };
-            
+
             set({ activityHeatmap: heatmap });
           } catch (error) {
             console.error('Failed to fetch heatmap:', error);
           }
         },
-        
+
         // Fetch Suspicious Activities
         fetchSuspiciousActivities: async () => {
           try {
@@ -266,7 +272,7 @@ export const useAuditAdminStore = create<AuditAdminState>()(
                 description: 'Bulk operation at 03:45 AM',
                 severity: 'MEDIUM',
                 detectedAt: new Date(),
-                acknowledged: false
+                acknowledged: false,
               },
               {
                 id: 'susp-2',
@@ -274,16 +280,16 @@ export const useAuditAdminStore = create<AuditAdminState>()(
                 description: '15 exports in 5 minutes by user-45',
                 severity: 'HIGH',
                 detectedAt: new Date(),
-                acknowledged: false
-              }
+                acknowledged: false,
+              },
             ];
-            
+
             set({ suspiciousActivities: activities });
           } catch (error) {
             console.error('Failed to fetch suspicious activities:', error);
           }
         },
-        
+
         // Fetch User Profile
         fetchUserProfile: async (userId, _dateRange) => {
           try {
@@ -298,7 +304,7 @@ export const useAuditAdminStore = create<AuditAdminState>()(
                 CREATE: 123,
                 UPDATE: 234,
                 DELETE: 23,
-                READ: 76
+                READ: 76,
               },
               entitiesAccessed: 89,
               dsgvoActions: 34,
@@ -306,20 +312,20 @@ export const useAuditAdminStore = create<AuditAdminState>()(
               riskScore: 25,
               ipAddresses: {
                 '192.168.1.100': 234,
-                '192.168.1.101': 123
-              }
+                '192.168.1.101': 123,
+              },
             };
-            
-            set((state) => ({
-              userProfiles: new Map(state.userProfiles).set(userId, profile)
+
+            set(state => ({
+              userProfiles: new Map(state.userProfiles).set(userId, profile),
             }));
           } catch (error) {
             console.error('Failed to fetch user profile:', error);
           }
         },
-        
+
         // Fetch Compliance Status
-        fetchComplianceStatus: async (_dateRange) => {
+        fetchComplianceStatus: async _dateRange => {
           try {
             const status: ComplianceStatus = {
               score: 92.5,
@@ -328,27 +334,27 @@ export const useAuditAdminStore = create<AuditAdminState>()(
                   type: 'MISSING_LEGAL_BASIS',
                   description: '12 DSGVO-relevante Operationen ohne Rechtsgrundlage',
                   severity: 'MEDIUM',
-                  count: 12
+                  count: 12,
                 },
                 {
                   type: 'OVERDUE_DELETION',
                   description: '5 Datensätze überfällig für Löschung',
                   severity: 'HIGH',
-                  count: 5
-                }
+                  count: 5,
+                },
               ],
               lastCheck: new Date(),
-              nextAuditDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+              nextAuditDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
             };
-            
+
             set({ complianceStatus: status });
           } catch (error) {
             console.error('Failed to fetch compliance status:', error);
           }
         },
-        
+
         // Generate Compliance Report
-        generateComplianceReport: async (config) => {
+        generateComplianceReport: async config => {
           set({ isLoading: true });
           try {
             // In production, this would generate a real report
@@ -356,9 +362,9 @@ export const useAuditAdminStore = create<AuditAdminState>()(
             const result: ReportResult = {
               data: mockData,
               filename: `audit-report-${config.format}-${new Date().toISOString()}.${config.format}`,
-              generatedAt: new Date()
+              generatedAt: new Date(),
             };
-            
+
             set({ isLoading: false });
             return result;
           } catch (error) {
@@ -366,14 +372,14 @@ export const useAuditAdminStore = create<AuditAdminState>()(
             throw error;
           }
         },
-        
+
         // Real-time Stream Connection
         connectToStream: () => {
           // In production, connect to real WebSocket
           // For now, just set connected status
           set({ isStreamConnected: true });
         },
-        
+
         disconnectFromStream: () => {
           const ws = get().streamWebSocket;
           if (ws) {
@@ -381,72 +387,72 @@ export const useAuditAdminStore = create<AuditAdminState>()(
           }
           set({ isStreamConnected: false, streamWebSocket: null });
         },
-        
+
         // Add Stream Entry
-        addStreamEntry: (entry) => {
-          set((state) => ({
-            liveStream: [entry, ...state.liveStream].slice(0, 100) // Keep last 100
+        addStreamEntry: entry => {
+          set(state => ({
+            liveStream: [entry, ...state.liveStream].slice(0, 100), // Keep last 100
           }));
         },
-        
+
         clearStream: () => {
           set({ liveStream: [] });
         },
-        
+
         // Security Actions
-        acknowledgeAlert: async (_alertId) => {
+        acknowledgeAlert: async _alertId => {
           // API call to acknowledge
-          set((state) => ({
+          set(state => ({
             suspiciousActivities: state.suspiciousActivities.map(a =>
               a.id === alertId ? { ...a, acknowledged: true } : a
-            )
+            ),
           }));
         },
-        
-        investigateActivity: async (_activityId) => {
+
+        investigateActivity: async _activityId => {
           // API call to investigate
           return { status: 'investigated', details: {} };
         },
-        
+
         blockUser: async (userId, reason) => {
           // API call to block user
           console.log(`Blocking user ${userId}: ${reason}`);
         },
-        
+
         // Filtering
-        setFilters: (filters) => {
-          set((state) => ({
-            filters: { ...state.filters, ...filters }
+        setFilters: filters => {
+          set(state => ({
+            filters: { ...state.filters, ...filters },
           }));
         },
-        
+
         clearFilters: () => {
           set({ filters: {} });
         },
-        
-        setTimeRange: (range) => {
+
+        setTimeRange: range => {
           set({ selectedTimeRange: range });
         },
-        
+
         // UI Actions
         clearError: () => {
           set({ error: null });
         },
-        
+
         reset: () => {
           set(initialState);
-        }
+        },
       }),
       {
         name: 'audit-admin-storage',
-        partialize: (state) => ({
+        partialize: state => ({
           selectedTimeRange: state.selectedTimeRange,
-          filters: state.filters
-        })
+          filters: state.filters,
+        }),
       }
     ),
     {
-      name: 'AuditAdminStore'
+      name: 'AuditAdminStore',
     }
   )
 );
