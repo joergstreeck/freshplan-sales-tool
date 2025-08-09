@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+  Grid,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -7,7 +8,6 @@ import {
   Button,
   Box,
   Typography,
-  Grid,
   Chip,
   Paper,
   Divider,
@@ -431,7 +431,7 @@ export const AuditDetailModal: React.FC<AuditDetailModalProps> = ({ auditId, ope
                 </Typography>
                 <Grid container spacing={2}>
                   {audit.isDsgvoRelevant && (
-                    <Grid item xs={12}>
+                    <Grid size={{ xs: 12 }}>
                       <Alert severity="info" sx={{ py: 0.5 }}>
                         <Typography variant="body2">
                           DSGVO-relevant - unterliegt besonderen Datenschutzbestimmungen
@@ -439,7 +439,7 @@ export const AuditDetailModal: React.FC<AuditDetailModalProps> = ({ auditId, ope
                       </Alert>
                     </Grid>
                   )}
-                  <Grid item xs={12} sm={6}>
+                  <Grid size={{ xs: 12, sm: 6 }}>
                     <Typography variant="caption" color="text.secondary">
                       Aufbewahrungspflicht
                     </Typography>
@@ -447,7 +447,7 @@ export const AuditDetailModal: React.FC<AuditDetailModalProps> = ({ auditId, ope
                       {audit.retentionPeriod || '10 Jahre (Standard)'}
                     </Typography>
                   </Grid>
-                  <Grid item xs={12} sm={6}>
+                  <Grid size={{ xs: 12, sm: 6 }}>
                     <Typography variant="caption" color="text.secondary">
                       Löschung geplant
                     </Typography>
@@ -458,7 +458,7 @@ export const AuditDetailModal: React.FC<AuditDetailModalProps> = ({ auditId, ope
                     </Typography>
                   </Grid>
                   {audit.dsgvoCategories && audit.dsgvoCategories.length > 0 && (
-                    <Grid item xs={12}>
+                    <Grid size={{ xs: 12 }}>
                       <Typography variant="caption" color="text.secondary">
                         DSGVO-Kategorien
                       </Typography>

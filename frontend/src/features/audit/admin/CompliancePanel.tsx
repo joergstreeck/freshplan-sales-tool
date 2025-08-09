@@ -1,11 +1,12 @@
 import React from 'react';
+import { Grid } from '@mui/material';
 import {
   Box,
   Paper,
   Typography,
   Alert,
   AlertTitle,
-  Grid,
+
   List,
   ListItem,
   ListItemIcon,
@@ -74,14 +75,14 @@ export const CompliancePanel: React.FC<CompliancePanelProps> = ({
     <Box>
       <Grid container spacing={3}>
         {/* Compliance Score Overview */}
-        <Grid item xs={12}>
+        <Grid size={{ xs: 12 }}>
           <Paper sx={{ p: 3 }}>
             <Typography variant="h5" gutterBottom sx={{ fontFamily: 'Antonio, sans-serif', mb: 3 }}>
               DSGVO Compliance Übersicht
             </Typography>
 
             <Grid container spacing={3}>
-              <Grid item xs={12} md={4}>
+              <Grid size={{ xs: 12, md: 4 }}>
                 <Box sx={{ textAlign: 'center' }}>
                   <Typography
                     variant="h2"
@@ -101,7 +102,7 @@ export const CompliancePanel: React.FC<CompliancePanelProps> = ({
                 </Box>
               </Grid>
 
-              <Grid item xs={12} md={8}>
+              <Grid size={{ xs: 12, md: 8 }}>
                 <List dense>
                   <ListItem>
                     <ListItemIcon>
@@ -142,7 +143,7 @@ export const CompliancePanel: React.FC<CompliancePanelProps> = ({
 
         {/* Critical Alerts */}
         {criticalAlerts.length > 0 && (
-          <Grid item xs={12}>
+          <Grid size={{ xs: 12 }}>
             <Alert severity="error">
               <AlertTitle sx={{ fontWeight: 'bold' }}>
                 Kritische Compliance-Probleme ({criticalAlerts.length})
@@ -166,7 +167,7 @@ export const CompliancePanel: React.FC<CompliancePanelProps> = ({
 
         {/* Warning Alerts */}
         {warningAlerts.length > 0 && (
-          <Grid item xs={12}>
+          <Grid size={{ xs: 12 }}>
             <Alert severity="warning">
               <AlertTitle sx={{ fontWeight: 'bold' }}>
                 Warnungen ({warningAlerts.length})
@@ -185,7 +186,7 @@ export const CompliancePanel: React.FC<CompliancePanelProps> = ({
 
         {/* Info Alerts */}
         {infoAlerts.length > 0 && (
-          <Grid item xs={12}>
+          <Grid size={{ xs: 12 }}>
             <Alert severity="info">
               <AlertTitle sx={{ fontWeight: 'bold' }}>Hinweise ({infoAlerts.length})</AlertTitle>
               <List dense>
@@ -201,7 +202,7 @@ export const CompliancePanel: React.FC<CompliancePanelProps> = ({
         )}
 
         {/* Retention Policies */}
-        <Grid item xs={12} md={6}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <Paper sx={{ p: 3 }}>
             <Typography variant="h6" gutterBottom sx={{ fontFamily: 'Antonio, sans-serif' }}>
               Aufbewahrungsrichtlinien
@@ -237,7 +238,7 @@ export const CompliancePanel: React.FC<CompliancePanelProps> = ({
         </Grid>
 
         {/* Report Generation */}
-        <Grid item xs={12} md={6}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <Paper sx={{ p: 3 }}>
             <Typography variant="h6" gutterBottom sx={{ fontFamily: 'Antonio, sans-serif' }}>
               Compliance Reports
@@ -280,7 +281,7 @@ export const CompliancePanel: React.FC<CompliancePanelProps> = ({
 
         {/* No Issues */}
         {alerts.length === 0 && (
-          <Grid item xs={12}>
+          <Grid size={{ xs: 12 }}>
             <Alert severity="success">
               <AlertTitle sx={{ fontWeight: 'bold' }}>
                 Keine Compliance-Probleme gefunden
