@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import {
-  LineChart,
-  Line,
   Area,
   AreaChart,
   XAxis,
