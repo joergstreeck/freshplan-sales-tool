@@ -257,11 +257,10 @@ public class AuditRepository implements PanacheRepositoryBase<AuditLog, UUID> {
   }
 
   /** Holt den Timestamp der letzten Audit-Prüfung. */
-  public LocalDateTime getLastAuditTimestamp() {
+  public Optional<LocalDateTime> getLastAuditTimestamp() {
     return find("action = ?1", Sort.by("occurredAt").descending(), AuditAction.SYSTEM_EVENT)
         .firstResultOptional()
-        .map(AuditLog::getOccurredAt)
-        .orElse(LocalDateTime.now());
+        .map(AuditLog::getOccurredAt);
   }
 
   /** Zählt kritische Events heute. */
@@ -351,41 +350,22 @@ public class AuditRepository implements PanacheRepositoryBase<AuditLog, UUID> {
         .list();
   }
 
-  /** Holt Compliance-Warnungen. */
+  /**
+   * @deprecated Use ComplianceService.getComplianceAlerts() instead.
+   * This method will be removed in the next major version.
+   * Business logic should not be in the repository layer.
+   */
+  @Deprecated
   public List<Map<String, Object>> getComplianceAlerts() {
-    List<Map<String, Object>> alerts = new ArrayList<>();
-
-    // Check for missing retention policies
-    long missingRetention = count("isDsgvoRelevant = true AND retentionUntil IS NULL");
-    if (missingRetention > 0) {
-      alerts.add(
-          Map.of(
-              "type", "WARNING",
-              "message", missingRetention + " DSGVO-relevante Einträge ohne Retention-Policy",
-              "severity", "HIGH"));
-    }
-
-    // Check for expiring entries
-    LocalDateTime expiryWarning = LocalDateTime.now().plusDays(30);
-    long expiringSoon = count("retentionUntil <= ?1", expiryWarning);
-    if (expiringSoon > 0) {
-      alerts.add(
-          Map.of(
-              "type", "INFO",
-              "message", expiringSoon + " Einträge laufen in 30 Tagen ab",
-              "severity", "MEDIUM"));
-    }
-
-    // Check hash chain integrity
-    if (!"VALID".equals(getLastIntegrityCheckStatus())) {
-      alerts.add(
-          Map.of(
-              "type", "ERROR",
-              "message", "Hash-Chain Integrität muss überprüft werden",
-              "severity", "CRITICAL"));
-    }
-
-    return alerts;
+    // This method is deprecated and will be removed.
+    // Use ComplianceService instead for compliance alert generation.
+    return new ArrayList<>();
+  }
+  
+  /** Zählt verdächtige Aktivitäten für Compliance-Prüfungen. */
+  public long countSuspiciousActivities() {
+    // Beispiel: Zugriffe außerhalb der Geschäftszeiten
+    return count("HOUR(occurredAt) < 6 OR HOUR(occurredAt) > 22");
   }
 
   /** Paginierte Suche mit Filtern. */

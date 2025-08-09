@@ -20,13 +20,13 @@ export default tseslint.config(
     rules: {
       ...reactHooks.configs.recommended.rules,
       'react-refresh/only-export-components': 'off', // Too noisy for CI, dev-only issue
-      '@typescript-eslint/no-unused-vars': ['warn', { 
+      '@typescript-eslint/no-unused-vars': ['error', { 
         argsIgnorePattern: '^_',
         varsIgnorePattern: '^_' 
       }],
-      '@typescript-eslint/no-explicit-any': 'warn', // Temporarily reduced for PR 2
-      'react-hooks/exhaustive-deps': 'warn', // Temporarily reduced for PR 2
-      'react-hooks/rules-of-hooks': 'warn', // Temporarily reduced for PR 2
+      '@typescript-eslint/no-explicit-any': 'error',
+      'react-hooks/exhaustive-deps': 'error',
+      'react-hooks/rules-of-hooks': 'error'
     },
   },
 )

@@ -167,7 +167,7 @@ export const AuditStatisticsCards: React.FC<AuditStatisticsCardsProps> = ({
     return (
       <Grid container spacing={2}>
         {[...Array(8)].map((_, index) => (
-          <Grid size={{ xs: 12, sm: 6, md: 3 }} key={index}>
+          <Grid item xs={12} sm={6} md={3} key={index}>
             <Card sx={{ height: '100%' }}>
               <CardContent>
                 <Skeleton variant="text" width="60%" />
@@ -192,7 +192,7 @@ export const AuditStatisticsCards: React.FC<AuditStatisticsCardsProps> = ({
   return (
     <Grid container spacing={2}>
       {cards.map((card, index) => (
-        <Grid size={{ xs: 12, sm: 6, md: 3 }} key={index}>
+        <Grid item xs={12} sm={6} md={3} key={index}>
           <Card
             sx={{
               height: '100%',

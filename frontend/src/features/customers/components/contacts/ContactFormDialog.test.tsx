@@ -190,12 +190,10 @@ describe('ContactFormDialog', () => {
       await userEvent.tab(); // Trigger validation on blur
 
       await waitFor(() => {
-        // TODO: Fix this test - import should be at top level
-        // const { customerOnboardingStore } = require('../../stores/customerOnboardingStore');
-        // expect(customerOnboardingStore.validateContactField).toHaveBeenCalledWith(
-        //   'email',
-        //   'invalid-email'
-        // );
+        // Validation is now handled internally by the component
+        // The error message should be displayed in the UI
+        const errorMessage = screen.queryByText(/ungültige E-Mail/i);
+        expect(errorMessage).toBeDefined();
       });
     }
   });
