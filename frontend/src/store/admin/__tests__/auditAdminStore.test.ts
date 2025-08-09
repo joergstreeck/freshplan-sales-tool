@@ -42,7 +42,7 @@ class MockWebSocket {
     }, 10);
   }
 
-  send(data: string) {}
+  send(_data: string) {}
   
   close() {
     this.readyState = MockWebSocket.CLOSED;
@@ -51,7 +51,7 @@ class MockWebSocket {
     }
   }
   
-  simulateMessage(data: any) {
+  simulateMessage(data: unknown) {
     if (this.onmessage) {
       this.onmessage(new MessageEvent('message', { 
         data: JSON.stringify(data) 
@@ -126,7 +126,7 @@ const mockReport = {
 };
 
 describe('auditAdminStore', () => {
-  let originalWebSocket: any;
+  let originalWebSocket: typeof WebSocket;
   let mockWebSocket: MockWebSocket;
   
   beforeEach(() => {

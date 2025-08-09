@@ -224,7 +224,7 @@ export function isPaginatedResponse<T>(obj: unknown): obj is PaginatedResponse<T
     typeof obj === 'object' &&
     obj !== null &&
     'content' in obj &&
-    Array.isArray((obj as any).content) &&
+    Array.isArray((obj as PaginatedResponse<T>).content) &&
     'totalElements' in obj
   );
 }

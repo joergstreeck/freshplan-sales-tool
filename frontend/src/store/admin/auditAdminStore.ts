@@ -1,10 +1,10 @@
 import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
-import { auditApi } from '@/features/audit/services/auditApi';
+// import { auditApi } from '@/features/audit/services/auditApi'; // TODO: Use in PR 3 when connecting to backend
 import type { 
   AuditLog,
-  AuditFilters,
-  AuditDashboardMetrics 
+  AuditFilters
+  // AuditDashboardMetrics // TODO: Use in PR 3
 } from '@/features/audit/types';
 
 interface DateRange {
@@ -60,7 +60,7 @@ interface UserAuditProfile {
   activityTimeline: AuditLog[];
   riskScore: number;
   anomalies?: string[];
-  accessPatterns?: Record<string, any>;
+  accessPatterns?: Record<string, unknown>;
   ipAddresses: Record<string, number>;
 }
 
@@ -184,7 +184,7 @@ export const useAuditAdminStore = create<AuditAdminState>()(
         ...initialState,
         
         // Fetch Dashboard Data
-        fetchDashboardData: async (dateRange) => {
+        fetchDashboardData: async (_dateRange) => {
           set({ isLoading: true, error: null });
           try {
             // In production, these would be real API calls
@@ -216,7 +216,7 @@ export const useAuditAdminStore = create<AuditAdminState>()(
               dashboardStats: mockStats,
               isLoading: false
             });
-          } catch (error: any) {
+          } catch (error) {
             set({
               error: error.message || 'Failed to fetch dashboard data',
               isLoading: false
@@ -225,7 +225,7 @@ export const useAuditAdminStore = create<AuditAdminState>()(
         },
         
         // Fetch Activity Heatmap
-        fetchActivityHeatmap: async (dateRange, granularity) => {
+        fetchActivityHeatmap: async (_dateRange, granularity) => {
           try {
             // Mock heatmap data
             const dataPoints = [];
@@ -285,7 +285,7 @@ export const useAuditAdminStore = create<AuditAdminState>()(
         },
         
         // Fetch User Profile
-        fetchUserProfile: async (userId, dateRange) => {
+        fetchUserProfile: async (userId, _dateRange) => {
           try {
             // Mock user profile
             const profile: UserAuditProfile = {
@@ -319,7 +319,7 @@ export const useAuditAdminStore = create<AuditAdminState>()(
         },
         
         // Fetch Compliance Status
-        fetchComplianceStatus: async (dateRange) => {
+        fetchComplianceStatus: async (_dateRange) => {
           try {
             const status: ComplianceStatus = {
               score: 92.5,
@@ -361,7 +361,7 @@ export const useAuditAdminStore = create<AuditAdminState>()(
             
             set({ isLoading: false });
             return result;
-          } catch (error: any) {
+          } catch (error) {
             set({ isLoading: false, error: error.message });
             throw error;
           }
@@ -394,7 +394,7 @@ export const useAuditAdminStore = create<AuditAdminState>()(
         },
         
         // Security Actions
-        acknowledgeAlert: async (alertId) => {
+        acknowledgeAlert: async (_alertId) => {
           // API call to acknowledge
           set((state) => ({
             suspiciousActivities: state.suspiciousActivities.map(a =>
@@ -403,7 +403,7 @@ export const useAuditAdminStore = create<AuditAdminState>()(
           }));
         },
         
-        investigateActivity: async (activityId) => {
+        investigateActivity: async (_activityId) => {
           // API call to investigate
           return { status: 'investigated', details: {} };
         },

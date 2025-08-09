@@ -4,10 +4,10 @@
  */
 
 import React from 'react';
-import { ThemeProvider } from '@mui/material/styles';
-import { CssBaseline } from '@mui/material';
+// import { ThemeProvider } from '@mui/material/styles'; // Already provided by parent
+// import { CssBaseline } from '@mui/material'; // Already provided by parent
 import { MainLayout } from './MainLayout';
-import freshfoodzTheme from '@/theme/freshfoodz';
+// import freshfoodzTheme from '@/theme/freshfoodz'; // Already provided by parent
 
 interface UniversalLayoutProps {
   children: React.ReactNode;

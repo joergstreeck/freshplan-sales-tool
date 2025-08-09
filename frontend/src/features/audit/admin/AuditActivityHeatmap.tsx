@@ -15,7 +15,7 @@ import {
 } from '@mui/material';
 import {
   Info as InfoIcon,
-  ZoomIn as ZoomInIcon,
+  // ZoomIn as ZoomInIcon, // TODO: Use for zoom feature
   ZoomOut as ZoomOutIcon
 } from '@mui/icons-material';
 import { format, startOfWeek, addDays, addHours, isSameDay } from 'date-fns';

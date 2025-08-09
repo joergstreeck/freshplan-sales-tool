@@ -4,7 +4,7 @@ import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import PeopleIcon from '@mui/icons-material/People';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 import SettingsIcon from '@mui/icons-material/Settings';
-import SecurityIcon from '@mui/icons-material/Security';
+// import SecurityIcon from '@mui/icons-material/Security'; // Not used currently
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 
 // Temporär: Direkte Type-Definition um Import-Probleme zu umgehen
