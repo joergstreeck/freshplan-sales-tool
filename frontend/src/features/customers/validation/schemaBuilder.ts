@@ -48,8 +48,8 @@ const DEFAULT_MESSAGES = {
 /**
  * Build Zod Schema from Field Definition
  */
-export function buildFieldSchema(field: FieldDefinition): z.ZodType<any> {
-  let schema: z.ZodType<any> = z.any();
+export function buildFieldSchema(field: FieldDefinition): z.ZodType<unknown> {
+  let schema: z.ZodType<unknown> = z.any();
 
   // Base schema based on field type
   switch (field.fieldType) {
@@ -247,7 +247,7 @@ function buildCustomSchema(field: FieldDefinition): z.ZodSchema {
 /**
  * Apply custom validations to schema
  */
-function applyCustomValidations(schema: z.ZodType<any>, field: FieldDefinition): z.ZodType<any> {
+function applyCustomValidations(schema: z.ZodType<unknown>, field: FieldDefinition): z.ZodType<unknown> {
   if (!field.validation?.custom) return schema;
 
   field.validation.custom.forEach(validation => {
@@ -293,7 +293,7 @@ export function buildFormSchema(
     includeOptional?: boolean;
   } = {}
 ): z.ZodSchema {
-  const schemaShape: Record<string, z.ZodType<any>> = {};
+  const schemaShape: Record<string, z.ZodType<unknown>> = {};
 
   fields.forEach(field => {
     // Skip disabled fields

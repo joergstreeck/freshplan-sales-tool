@@ -61,7 +61,7 @@ class OfflineQueueService {
     // Try to register for background sync if available
     if ('serviceWorker' in navigator && 'sync' in self.registration) {
       try {
-        await (self.registration as any).sync.register('sync-contact-actions');
+        await (self.registration as unknown).sync.register('sync-contact-actions');
       } catch (error) {
         console.error('Background sync registration failed:', error);
       }

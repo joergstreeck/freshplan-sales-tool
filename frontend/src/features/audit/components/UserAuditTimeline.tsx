@@ -295,7 +295,7 @@ export const UserAuditTimeline: React.FC<UserAuditTimelineProps> = ({
 
                   <TimelineSeparator>
                     <TimelineConnector sx={{ bgcolor: 'grey.300' }} />
-                    <TimelineDot color={actionConfig.color as any}>
+                    <TimelineDot color={actionConfig.color as unknown}>
                       {actionConfig.icon}
                     </TimelineDot>
                     <TimelineConnector sx={{ bgcolor: 'grey.300' }} />

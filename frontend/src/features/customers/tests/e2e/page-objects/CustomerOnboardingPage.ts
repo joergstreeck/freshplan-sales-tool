@@ -268,7 +268,7 @@ export class CustomerOnboardingPage {
     await emailField.fill(locationData.email);
   }
 
-  async addMultipleLocations(locationsData: any[]) {
+  async addMultipleLocations(locationsData: unknown[]) {
     for (let i = 0; i < locationsData.length; i++) {
       await this.addLocation(locationsData[i], i);
     }

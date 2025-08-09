@@ -76,7 +76,7 @@ export const LocationGrid: React.FC<LocationGridProps> = ({
                 <Chip
                   icon={getStatusIcon(status)}
                   label={location.name}
-                  color={getStatusColor(status) as any}
+                  color={getStatusColor(status) as unknown}
                   size="small"
                   sx={{ flexGrow: 1, justifyContent: 'flex-start' }}
                 />

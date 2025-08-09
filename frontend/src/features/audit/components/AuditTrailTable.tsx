@@ -176,7 +176,7 @@ export const AuditTrailTable: React.FC<AuditTrailTableProps> = ({ filters, onExp
                   <Chip
                     label={log.eventType || log.action || 'UNKNOWN'}
                     size="small"
-                    color={getActionColor(log.eventType || log.action) as any}
+                    color={getActionColor(log.eventType || log.action) as unknown}
                     icon={log.isCritical || log.failure ? <WarningIcon /> : undefined}
                   />
                 </TableCell>

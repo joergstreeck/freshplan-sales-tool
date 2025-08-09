@@ -135,7 +135,7 @@ export const customerCrossFieldValidators = {
    * Validate contact information completeness
    */
   validateContactInfo(data: Partial<CustomerData>): ValidationResult {
-    const { email, phone, contactPerson } = data as any;
+    const { email, phone, contactPerson } = data as unknown;
     const warnings: Record<string, string> = {};
 
     // If contact person is provided, email or phone should be provided

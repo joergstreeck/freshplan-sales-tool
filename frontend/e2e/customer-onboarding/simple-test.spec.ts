@@ -17,7 +17,7 @@ test.describe('Simple Customer Page Test', () => {
       }));
       
       // Mock auth state directly on window
-      (window as any).__AUTH_STATE__ = {
+      (window as unknown).__AUTH_STATE__ = {
         isAuthenticated: true,
         user: {
           id: 'test-user',
