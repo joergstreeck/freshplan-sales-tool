@@ -161,7 +161,7 @@ describe('Sprint 2: Feature Integration Tests', () => {
     it('should validate German phone numbers', () => {
       const validateGermanPhone = (phone: string) => {
         // Remove spaces and special chars
-        const cleaned = phone.replace(/[\s\-\(\)]/g, '');
+        const cleaned = phone.replace(/[\s\-()]/g, '');
         // Check if it starts with +49 or 0 and has correct length
         const regex = /^(\+49|0)[1-9]\d{9,11}$/;
         return regex.test(cleaned);

@@ -79,16 +79,14 @@ export interface ApiError {
  * Create customer draft request
  * Empty body - user context from auth
  */
-export interface CreateCustomerDraftRequest {
-  // No fields - user ID comes from security context
-}
+export type CreateCustomerDraftRequest = Record<string, never>; // Empty body - user ID comes from security context
 
 /**
  * Update customer draft request
  */
 export interface UpdateCustomerDraftRequest {
   /** Field values to update */
-  fieldValues: Record<string, any>;
+  fieldValues: Record<string, unknown>;
 }
 
 /**
@@ -96,7 +94,7 @@ export interface UpdateCustomerDraftRequest {
  */
 export interface FinalizeCustomerDraftRequest {
   /** Final field values before activation */
-  fieldValues?: Record<string, any>;
+  fieldValues?: Record<string, unknown>;
   /** Optional comment for audit trail */
   comment?: string;
 }
@@ -114,9 +112,7 @@ export interface CustomerDraftResponse extends CustomerWithFields {
 /**
  * Customer search request
  */
-export interface CustomerSearchRequest extends CustomerSearchCriteria {
-  // Inherits all search criteria
-}
+export type CustomerSearchRequest = CustomerSearchCriteria; // Inherits all search criteria
 
 /**
  * Customer search response
@@ -135,7 +131,7 @@ export interface CreateLocationRequest {
   /** Customer ID */
   customerId: string;
   /** Field values for location */
-  fieldValues: Record<string, any>;
+  fieldValues: Record<string, unknown>;
 }
 
 /**
@@ -143,7 +139,7 @@ export interface CreateLocationRequest {
  */
 export interface UpdateLocationRequest {
   /** Updated field values */
-  fieldValues: Record<string, any>;
+  fieldValues: Record<string, unknown>;
 }
 
 /**
@@ -165,7 +161,7 @@ export interface BulkUpdateFieldValuesRequest {
   /** Entity type */
   entityType: EntityType;
   /** Field values to update */
-  fieldValues: Record<string, any>;
+  fieldValues: Record<string, unknown>;
 }
 
 /**
