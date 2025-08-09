@@ -106,7 +106,7 @@ export const AuditAdminPage: React.FC = () => {
       {/* Header */}
       <Paper sx={{ p: 2, mb: 3 }}>
         <Grid container alignItems="center" spacing={2}>
-          <Grid item xs>
+          <Grid size="grow">
             <Typography 
               variant="h4" 
               component="h1" 
@@ -129,7 +129,7 @@ export const AuditAdminPage: React.FC = () => {
             </Typography>
           </Grid>
           
-          <Grid item>
+          <Grid size="auto">
             <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
               {/* Compliance Score */}
               {metrics && (
