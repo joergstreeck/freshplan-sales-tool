@@ -143,6 +143,8 @@ export interface ActivityChartData {
   period?: string; // Backend might use 'period'
   value?: number; // Frontend uses 'value'
   count?: number; // Backend might use 'count'
+  critical?: number; // Anzahl kritischer Events
+  users?: number; // Anzahl aktiver Benutzer
 }
 
 export interface ComplianceAlert {

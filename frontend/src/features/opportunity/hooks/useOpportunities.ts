@@ -35,7 +35,7 @@ export const opportunityKeys = {
  * @returns Frontend-compatible opportunity
  */
 function mapBackendToFrontend(backendOpportunity: IOpportunity): Opportunity {
-  return {
+  const mapped = {
     id: backendOpportunity.id,
     name: backendOpportunity.name,
     stage: backendOpportunity.stage,
@@ -48,6 +48,16 @@ function mapBackendToFrontend(backendOpportunity: IOpportunity): Opportunity {
     createdAt: backendOpportunity.createdAt,
     updatedAt: backendOpportunity.updatedAt,
   };
+  
+  // Debug first mapping
+  if (backendOpportunity.name === 'Q1 Zielauftrag: Restaurant-Modernisierung') {
+    console.log('🔄 Mapping example:', {
+      backend: { value: backendOpportunity.value, expectedValue: backendOpportunity.expectedValue },
+      frontend: { value: mapped.value }
+    });
+  }
+  
+  return mapped;
 }
 
 /**
@@ -65,7 +75,18 @@ export function useOpportunities(filters?: PipelineFilters, enabled = true) {
 
       try {
         const backendOpportunities = await opportunityApi.getAll(filters);
+        console.log('🎯 useOpportunities received:', {
+          count: backendOpportunities.length,
+          stages: backendOpportunities.reduce((acc, opp) => {
+            acc[opp.stage] = (acc[opp.stage] || 0) + 1;
+            return acc;
+          }, {} as Record<string, number>)
+        });
+        
         const frontendOpportunities = backendOpportunities.map(mapBackendToFrontend);
+        
+        const totalValue = frontendOpportunities.reduce((sum, opp) => sum + (opp.value || 0), 0);
+        console.log('💰 Total value after mapping:', totalValue);
 
         const duration = performance.now() - startTime;
         logger.info(

@@ -236,8 +236,8 @@ public class SalesCockpitService {
   private DashboardStatistics calculateStatistics() {
     DashboardStatistics stats = new DashboardStatistics();
 
-    // Echte Kunden-Statistiken
-    stats.setTotalCustomers((int) customerRepository.countActive());
+    // Echte Kunden-Statistiken aus der Datenbank
+    stats.setTotalCustomers((int) customerRepository.count());
     stats.setActiveCustomers((int) customerRepository.countByStatus(CustomerStatus.AKTIV));
 
     // Risiko-Kunden basierend auf verschiedenen Schwellwerten
@@ -306,12 +306,30 @@ public class SalesCockpitService {
   /**
    * Lädt Dashboard-Daten für die Entwicklungsumgebung.
    *
-   * <p>Diese Methode gibt Mock-Daten zurück und umgeht die User-Validierung. Sie ist nur in der
-   * Entwicklungsumgebung verfügbar.
+   * <p>Diese Methode nutzt echte Daten aus der Datenbank und umgeht die User-Validierung. Sie ist
+   * nur in der Entwicklungsumgebung verfügbar.
    *
-   * @return Mock Dashboard-Daten für Entwicklung
+   * @return Dashboard-Daten mit echten Statistiken für Entwicklung
    */
   public SalesCockpitDashboard getDevDashboardData() {
+    SalesCockpitDashboard dashboard = new SalesCockpitDashboard();
+
+    // Verwende echte Daten statt Mock-Tasks
+    dashboard.setTodaysTasks(loadTodaysTasks(TEST_USER_ID));
+    dashboard.setRiskCustomers(loadRiskCustomers());
+    dashboard.setStatistics(calculateStatistics());
+    dashboard.setAlerts(generateAlerts());
+
+    return dashboard;
+  }
+
+  /**
+   * Legacy-Methode für Mock-Dashboard-Daten (nur für Tests).
+   *
+   * @deprecated Verwende getDevDashboardData() für echte Daten
+   */
+  @Deprecated
+  private SalesCockpitDashboard getMockDashboardData() {
     SalesCockpitDashboard dashboard = new SalesCockpitDashboard();
 
     // Mock Tasks (3 Aufgaben) - Refactored mit Helper-Methoden

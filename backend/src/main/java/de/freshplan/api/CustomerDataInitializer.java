@@ -36,6 +36,13 @@ public class CustomerDataInitializer {
 
   @Transactional
   void onStart(@Observes @Priority(500) StartupEvent ev) {
+    // Skip initialization if we're running in test mode
+    String testProfile = System.getProperty("quarkus.test.profile");
+    if ("test".equals(testProfile) || Boolean.getBoolean("quarkus.test")) {
+      LOG.debug("Skipping customer test data initialization in test mode");
+      return;
+    }
+
     LOG.info(
         "🧪 Initializing comprehensive test data for ALL modules (Intelligence, Cockpit, Opportunities)...");
 

@@ -48,6 +48,7 @@ import { httpClient } from '../../../lib/apiClient';
 const ACTIVE_STAGES = [
   OpportunityStage.NEW_LEAD,
   OpportunityStage.QUALIFICATION,
+  OpportunityStage.NEEDS_ANALYSIS,
   OpportunityStage.PROPOSAL,
   OpportunityStage.NEGOTIATION,
 ];
@@ -540,13 +541,15 @@ export const KanbanBoardDndKit: React.FC = React.memo(() => {
     const loadOpportunities = async () => {
       try {
         console.log('🚀 KanbanBoard: Loading opportunities from API...');
-        const response = await httpClient.get<Opportunity[]>('/api/opportunities');
+        const response = await httpClient.get<Opportunity[]>('/api/opportunities?size=100');
         console.log('📥 KanbanBoard: Received', response.data?.length || 0, 'opportunities');
 
         if (response.data && response.data.length > 0) {
           // Transform API data to match our Opportunity interface
           const apiOpportunities = response.data.map((opp: any) => ({
             ...opp,
+            // Map expectedValue to value if value is null
+            value: opp.value || opp.expectedValue || 0,
             // Ensure all required fields are present
             contactName: opp.contactName || 'Unbekannt',
             assignedToName: opp.assignedToName || 'Nicht zugewiesen',
@@ -713,7 +716,7 @@ export const KanbanBoardDndKit: React.FC = React.memo(() => {
 
         if (action === 'reactivate') {
           // Bei Reaktivierung zurück in Lead-Phase
-          targetStage = OpportunityStage.LEAD;
+          targetStage = OpportunityStage.NEW_LEAD;
         } else {
           targetStage =
             action === 'won' ? OpportunityStage.CLOSED_WON : OpportunityStage.CLOSED_LOST;

@@ -58,17 +58,20 @@ export const AuditTrailTable: React.FC<AuditTrailTableProps> = ({ filters, onExp
     setPage(0);
   };
 
-  const getActionColor = (action: string) => {
-    if (action.includes('DELETE')) return 'error';
-    if (action.includes('CREATE')) return 'success';
-    if (action.includes('UPDATE')) return 'primary';
-    if (action.includes('PERMISSION')) return 'warning';
-    if (action.includes('LOGIN')) return 'info';
+  const getActionColor = (action: string | undefined) => {
+    if (!action) return 'default';
+    const upperAction = action.toUpperCase();
+    if (upperAction.includes('DELETE') || upperAction.includes('FAILURE') || upperAction.includes('DENIED')) return 'error';
+    if (upperAction.includes('CREATE') || upperAction.includes('SUCCESS')) return 'success';
+    if (upperAction.includes('UPDATE') || upperAction.includes('CHANGE')) return 'primary';
+    if (upperAction.includes('PERMISSION') || upperAction.includes('SECURITY')) return 'warning';
+    if (upperAction.includes('LOGIN') || upperAction.includes('LOGOUT')) return 'info';
     return 'default';
   };
 
-  const getEntityTypeIcon = (entityType: string) => {
-    switch (entityType) {
+  const getEntityTypeIcon = (entityType: string | undefined) => {
+    if (!entityType) return '📁';
+    switch (entityType.toUpperCase()) {
       case 'USER':
         return '👤';
       case 'CUSTOMER':
@@ -79,6 +82,16 @@ export const AuditTrailTable: React.FC<AuditTrailTableProps> = ({ filters, onExp
         return '📄';
       case 'SYSTEM':
         return '⚙️';
+      case 'PERMISSION':
+        return '🔐';
+      case 'DATA_OPERATION':
+      case 'EXPORT':
+        return '💾';
+      case 'ACTIVITY':
+        return '📝';
+      case 'CALCULATION':
+        return '🧮';
+      case 'GENERAL':
       default:
         return '📁';
     }
@@ -161,10 +174,10 @@ export const AuditTrailTable: React.FC<AuditTrailTableProps> = ({ filters, onExp
 
                 <TableCell>
                   <Chip
-                    label={log.action}
+                    label={log.eventType || log.action || 'UNKNOWN'}
                     size="small"
-                    color={getActionColor(log.action) as any}
-                    icon={log.isCritical ? <WarningIcon /> : undefined}
+                    color={getActionColor(log.eventType || log.action) as any}
+                    icon={log.isCritical || log.failure ? <WarningIcon /> : undefined}
                   />
                 </TableCell>
 

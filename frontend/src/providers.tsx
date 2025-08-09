@@ -51,6 +51,9 @@ const HelpSystemDemoPage = lazy(() =>
 const AuditAdminPage = lazy(() =>
   import('./pages/admin/AuditAdminPage').then(m => ({ default: m.AuditAdminPage }))
 );
+const CustomerDetailPage = lazy(() =>
+  import('./pages/CustomerDetailPage').then(m => ({ default: m.CustomerDetailPage }))
+);
 
 // Loading component for lazy loaded pages
 const PageLoader = () => (
@@ -115,6 +118,7 @@ export const AppProviders = ({ children: mainChildren }: AppProvidersProps) => {
                           <Route path="/users" element={<UsersPage />} />
                           <Route path="/einstellungen" element={<SettingsPage />} />
                           <Route path="/customers" element={<CustomersPageV2 />} />
+                          <Route path="/customers/:customerId" element={<CustomerDetailPage />} />
                           <Route path="/customers-old" element={<CustomersPage />} />
                           {/* Deutscher Alias für Kundenliste */}
                           <Route path="/kundenmanagement/liste" element={<CustomersPageV2 />} />

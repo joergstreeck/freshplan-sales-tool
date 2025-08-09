@@ -15,6 +15,25 @@
 - `/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/Step3/FRONTEND_FOUNDATION.md` ✅
 - `/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/Step3/SMART_CONTACT_CARDS.md` ✅
 
+## ⚠️ WICHTIG: MUI Grid v2 Syntax
+
+**Auch Mobile-Komponenten verwenden Grid v2 Syntax:**
+```typescript
+// ✅ RICHTIG - Grid v2 für responsive Mobile Layouts
+import { Grid } from '@mui/material';
+
+<Grid container spacing={2}>
+  <Grid size={{ xs: 12, sm: 6 }}>  // Mobile-first approach
+    <SwipeableContactCard contact={contact} />
+  </Grid>
+</Grid>
+
+// ❌ FALSCH - Alte Grid v1 Syntax
+<Grid item xs={12} sm={6}>  // item prop existiert nicht mehr!
+```
+
+**Siehe:** [MUI Grid Migration Guide](/Users/joergstreeck/freshplan-sales-tool/docs/guides/DEBUG_COOKBOOK.md#mui-grid-v2)
+
 ## ⚡ Quick Implementation Guide für Claude
 
 ```bash

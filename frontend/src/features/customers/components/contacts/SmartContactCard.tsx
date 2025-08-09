@@ -80,6 +80,24 @@ export const SmartContactCard: React.FC<SmartContactCardProps> = ({
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [isCardHovered, setIsCardHovered] = useState(false);
 
+  // Helper function - must be defined before use
+  const isBirthdayUpcoming = (birthday?: string): boolean => {
+    if (!birthday) return false;
+    const today = new Date();
+    const birthdayDate = new Date(birthday);
+    const thisYearBirthday = new Date(
+      today.getFullYear(),
+      birthdayDate.getMonth(),
+      birthdayDate.getDate()
+    );
+    
+    const daysUntilBirthday = Math.ceil(
+      (thisYearBirthday.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
+    );
+    
+    return daysUntilBirthday >= 0 && daysUntilBirthday <= 7;
+  };
+
   // Visual state calculation
   const getCardVisualState = () => {
     const state = {
@@ -143,19 +161,6 @@ export const SmartContactCard: React.FC<SmartContactCardProps> = ({
     return configs[contact.decisionLevel || 'nutzer'];
   };
 
-  const isBirthdayUpcoming = (birthday?: string): boolean => {
-    if (!birthday) return false;
-    const today = new Date();
-    const birthdayDate = new Date(birthday);
-    birthdayDate.setFullYear(today.getFullYear());
-    
-    if (birthdayDate < today) {
-      birthdayDate.setFullYear(today.getFullYear() + 1);
-    }
-    
-    const daysUntil = Math.floor((birthdayDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-    return daysUntil >= 0 && daysUntil <= 14;
-  };
 
   const getDaysUntilBirthday = (birthday?: string): number => {
     if (!birthday) return -1;
@@ -277,13 +282,15 @@ export const SmartContactCard: React.FC<SmartContactCardProps> = ({
             )}
 
             {/* Decision Level Chip */}
-            <Chip
-              icon={decisionLevelConfig.icon}
-              label={decisionLevelConfig.label}
-              size="small"
-              color={decisionLevelConfig.color}
-              sx={{ fontWeight: 'medium', mb: 1 }}
-            />
+            {decisionLevelConfig && (
+              <Chip
+                icon={decisionLevelConfig.icon}
+                label={decisionLevelConfig.label}
+                size="small"
+                color={decisionLevelConfig.color}
+                sx={{ fontWeight: 'medium', mb: 1 }}
+              />
+            )}
           </Box>
 
           {/* More Menu Button */}

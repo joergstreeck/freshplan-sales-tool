@@ -4,7 +4,7 @@
  */
 
 import React, { useState } from 'react';
-import { Box, Typography, Card } from '@mui/material';
+import { Box, Typography, Card, Skeleton } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import GroupIcon from '@mui/icons-material/Group';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
@@ -15,6 +15,8 @@ import { MyDayColumnMUI } from './MyDayColumnMUI';
 import { FocusListColumnMUI } from './FocusListColumnMUI';
 import { ActionCenterColumnMUI } from './ActionCenterColumnMUI';
 import { ResizablePanels } from './layout/ResizablePanels';
+import { useDashboardData } from '../hooks/useSalesCockpit';
+import { useAuth } from '../../../hooks/useAuth';
 
 const StatsCard = styled(Card)(({ theme }) => ({
   padding: theme.spacing(1),
@@ -34,6 +36,15 @@ const StatsCard = styled(Card)(({ theme }) => ({
 export function SalesCockpitV2() {
   // State für ausgewählten Kunden
   const [selectedCustomerId, setSelectedCustomerId] = useState<string | undefined>(undefined);
+  
+  // Hole Dashboard-Daten für Header-Statistiken
+  const { userId } = useAuth();
+  const { data: dashboardData, isLoading, refetch } = useDashboardData(userId);
+  
+  // Force refresh on mount für Development (entfernen in Production)
+  React.useEffect(() => {
+    refetch();
+  }, [refetch]);
 
   const handleCustomerSelect = (customerId: string) => {
     setSelectedCustomerId(customerId);
@@ -83,7 +94,11 @@ export function SalesCockpitV2() {
             <GroupIcon sx={{ fontSize: 20, color: 'primary.main' }} />
             <Box>
               <Typography variant="body1" sx={{ lineHeight: 1, fontWeight: 600 }}>
-                156
+                {isLoading ? (
+                  <Skeleton width={30} />
+                ) : (
+                  dashboardData?.statistics?.totalCustomers || 0
+                )}
               </Typography>
               <Typography
                 variant="caption"
@@ -99,7 +114,11 @@ export function SalesCockpitV2() {
             <TrendingUpIcon sx={{ fontSize: 20, color: 'primary.main' }} />
             <Box>
               <Typography variant="body1" sx={{ lineHeight: 1, fontWeight: 600 }}>
-                142
+                {isLoading ? (
+                  <Skeleton width={30} />
+                ) : (
+                  dashboardData?.statistics?.activeCustomers || 0
+                )}
               </Typography>
               <Typography
                 variant="caption"
@@ -115,7 +134,11 @@ export function SalesCockpitV2() {
             <TaskIcon sx={{ fontSize: 20, color: 'secondary.main' }} />
             <Box>
               <Typography variant="body1" sx={{ lineHeight: 1, fontWeight: 600 }}>
-                8
+                {isLoading ? (
+                  <Skeleton width={30} />
+                ) : (
+                  dashboardData?.statistics?.customersAtRisk || 0
+                )}
               </Typography>
               <Typography
                 variant="caption"
@@ -131,7 +154,11 @@ export function SalesCockpitV2() {
             <ErrorIcon sx={{ fontSize: 20, color: 'secondary.main' }} />
             <Box>
               <Typography variant="body1" sx={{ lineHeight: 1, fontWeight: 600 }}>
-                3
+                {isLoading ? (
+                  <Skeleton width={30} />
+                ) : (
+                  dashboardData?.statistics?.overdueItems || 0
+                )}
               </Typography>
               <Typography
                 variant="caption"

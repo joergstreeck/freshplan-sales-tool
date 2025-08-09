@@ -18,7 +18,9 @@ const OPPORTUNITY_BASE_URL = '/api/opportunities';
 
 export const opportunityApi = {
   // CRUD Operations
-  async getAll(filters?: PipelineFilters, page = 0, size = 50): Promise<IOpportunity[]> {
+  async getAll(filters?: PipelineFilters, page = 0, size = 100): Promise<IOpportunity[]> {
+    console.log('🔍 opportunityApi.getAll called with:', { filters, page, size });
+    
     const params = new URLSearchParams();
 
     if (filters?.assignedToId) params.append('assignedToId', filters.assignedToId);
@@ -34,7 +36,16 @@ export const opportunityApi = {
     params.append('page', page.toString());
     params.append('size', size.toString());
 
-    const response = await apiClient.get(`${OPPORTUNITY_BASE_URL}?${params.toString()}`);
+    const url = `${OPPORTUNITY_BASE_URL}?${params.toString()}`;
+    console.log('🌐 Fetching from URL:', url);
+    
+    const response = await apiClient.get(url);
+    console.log('📊 API Response:', {
+      count: response.data.length,
+      firstItem: response.data[0],
+      hasExpectedValue: response.data[0]?.expectedValue !== undefined
+    });
+    
     return response.data;
   },
 

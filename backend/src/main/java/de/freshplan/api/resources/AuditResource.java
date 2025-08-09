@@ -279,26 +279,48 @@ public class AuditResource {
   @RolesAllowed({"admin", "auditor"})
   @Operation(summary = "Get audit dashboard metrics")
   public Response getDashboardMetrics() {
-    // Temporäre Implementierung mit Mock-Daten für PR 3
-    // TODO: Echte Implementierung in AuditRepository
-    var metrics = Map.of(
-        "coverage", 95.5,
-        "integrityStatus", "valid",
-        "retentionCompliance", 98,
-        "lastAudit", Instant.now().toString(),
-        "criticalEventsToday", 2,
-        "activeUsers", 15,
-        "totalEventsToday", 247,
-        "topEventTypes", List.of(
-            Map.of("type", "USER_LOGIN", "count", 89),
-            Map.of("type", "CUSTOMER_UPDATE", "count", 45),
-            Map.of("type", "REPORT_VIEW", "count", 38),
-            Map.of("type", "DATA_EXPORT", "count", 22),
-            Map.of("type", "PERMISSION_CHANGE", "count", 12)
-        )
-    );
+    log.info("Fetching real dashboard metrics from database");
 
-    return Response.ok(metrics).build();
+    try {
+      // Get real metrics from repository
+      var dashboardMetrics = auditRepository.getDashboardMetrics();
+
+      // Convert to response format
+      var metrics =
+          Map.of(
+              "coverage", dashboardMetrics.coverage,
+              "integrityStatus", dashboardMetrics.integrityStatus,
+              "retentionCompliance", dashboardMetrics.retentionCompliance,
+              "lastAudit", dashboardMetrics.lastAudit,
+              "criticalEventsToday", dashboardMetrics.criticalEventsToday,
+              "activeUsers", dashboardMetrics.activeUsers,
+              "totalEventsToday", dashboardMetrics.totalEventsToday,
+              "topEventTypes", dashboardMetrics.topEventTypes);
+
+      return Response.ok(metrics).build();
+    } catch (Exception e) {
+      log.errorf(e, "Failed to fetch dashboard metrics");
+      // Fallback to basic metrics on error
+      var fallbackMetrics =
+          Map.of(
+              "coverage",
+              0.0,
+              "integrityStatus",
+              "error",
+              "retentionCompliance",
+              0,
+              "lastAudit",
+              Instant.now().toString(),
+              "criticalEventsToday",
+              0L,
+              "activeUsers",
+              0L,
+              "totalEventsToday",
+              0L,
+              "topEventTypes",
+              List.of());
+      return Response.ok(fallbackMetrics).build();
+    }
   }
 
   @GET
@@ -309,17 +331,28 @@ public class AuditResource {
       @QueryParam("days") @DefaultValue("7") int days,
       @QueryParam("groupBy") @DefaultValue("hour") String groupBy) {
 
-    // Temporäre Implementierung mit Mock-Daten für PR 3
-    var data = List.of(
-        Map.of("time", "00:00", "value", 5),
-        Map.of("time", "04:00", "value", 4),
-        Map.of("time", "08:00", "value", 45),
-        Map.of("time", "12:00", "value", 48),
-        Map.of("time", "16:00", "value", 42),
-        Map.of("time", "20:00", "value", 8)
-    );
-    
-    return Response.ok(data).build();
+    log.infof("Fetching activity chart data for %d days, grouped by %s", days, groupBy);
+
+    try {
+      // Get real activity data from repository
+      var data = auditRepository.getActivityChartData(days, groupBy);
+
+      if (data.isEmpty()) {
+        // Return default data if no activity
+        data =
+            List.of(
+                Map.of("time", "00:00", "value", 0L),
+                Map.of("time", "06:00", "value", 0L),
+                Map.of("time", "12:00", "value", 0L),
+                Map.of("time", "18:00", "value", 0L));
+      }
+
+      return Response.ok(data).build();
+    } catch (Exception e) {
+      log.errorf(e, "Failed to fetch activity chart data");
+      // Return empty data on error
+      return Response.ok(List.of()).build();
+    }
   }
 
   @GET
@@ -329,16 +362,17 @@ public class AuditResource {
   public Response getCriticalEvents(
       @QueryParam("limit") @DefaultValue("10") @Min(1) @Max(50) int limit) {
 
-    // Temporäre Implementierung: Nutze Security Events als Critical Events
-    Instant from = Instant.now().minusSeconds(24 * 3600L);
-    List<AuditEntry> events = auditRepository.findSecurityEvents(from, Instant.now());
-    
-    // Limitiere auf angeforderte Anzahl
-    if (events.size() > limit) {
-      events = events.subList(0, limit);
+    log.infof("Fetching critical events with limit %d", limit);
+
+    try {
+      // Get real critical events from repository
+      List<AuditEntry> events = auditRepository.getCriticalEvents(limit);
+
+      return Response.ok(events).build();
+    } catch (Exception e) {
+      log.errorf(e, "Failed to fetch critical events");
+      return Response.ok(List.of()).build();
     }
-    
-    return Response.ok(events).build();
   }
 
   @GET
@@ -346,29 +380,18 @@ public class AuditResource {
   @RolesAllowed({"admin", "auditor"})
   @Operation(summary = "Get compliance alerts and warnings")
   public Response getComplianceAlerts() {
-    // Temporäre Implementierung mit Mock-Daten für PR 3
-    var alerts = List.of(
-        Map.of(
-            "id", "alert-1",
-            "type", "retention",
-            "severity", "warning",
-            "title", "Datenaufbewahrung überschreitet 90 Tage",
-            "description", "15 Audit-Einträge sind älter als 90 Tage und sollten archiviert werden.",
-            "timestamp", Instant.now().toString(),
-            "resolved", false
-        ),
-        Map.of(
-            "id", "alert-2",
-            "type", "integrity",
-            "severity", "info",
-            "title", "Nächste Integritätsprüfung fällig",
-            "description", "Die monatliche Integritätsprüfung steht in 3 Tagen an.",
-            "timestamp", Instant.now().toString(),
-            "resolved", false
-        )
-    );
-    
-    return Response.ok(alerts).build();
+    log.info("Fetching compliance alerts");
+
+    try {
+      // Get real compliance alerts from repository
+      var alerts = auditRepository.getComplianceAlerts();
+
+      return Response.ok(alerts).build();
+    } catch (Exception e) {
+      log.errorf(e, "Failed to fetch compliance alerts");
+      // Return empty list on error
+      return Response.ok(List.of()).build();
+    }
   }
 
   /** Escape CSV special characters */

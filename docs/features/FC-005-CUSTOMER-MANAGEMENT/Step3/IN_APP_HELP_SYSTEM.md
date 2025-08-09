@@ -16,6 +16,28 @@
 - Complex UI Components
 - Mobile Features
 
+## ⚠️ WICHTIG: MUI Grid v2 Syntax
+
+**Help-Komponenten müssen MUI v7 Grid v2 Syntax verwenden:**
+```typescript
+// ✅ RICHTIG - Grid v2 für Help Layouts
+import { Grid } from '@mui/material';
+
+<Grid container spacing={2}>
+  <Grid size={{ xs: 12, md: 8 }}>
+    <HelpContent />
+  </Grid>
+  <Grid size={{ xs: 12, md: 4 }}>
+    <HelpSidebar />
+  </Grid>
+</Grid>
+
+// ❌ FALSCH - Alte Grid v1 Syntax
+<Grid item xs={12} md={8}>  // item prop existiert nicht mehr!
+```
+
+**Siehe:** [MUI Grid Migration Guide](/Users/joergstreeck/freshplan-sales-tool/docs/guides/DEBUG_COOKBOOK.md#mui-grid-v2)
+
 ## ⚡ Quick Implementation Guide für Claude
 
 ```bash

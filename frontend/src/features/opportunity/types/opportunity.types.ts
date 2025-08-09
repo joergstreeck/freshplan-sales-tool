@@ -48,6 +48,8 @@ export interface IOpportunity {
   readonly description?: string;
   /** Monetary value in EUR (min 0) */
   readonly value?: number;
+  /** Expected value in EUR (fallback when value is null) */
+  readonly expectedValue?: number;
   /** Probability of closing (0-100) */
   readonly probability: number;
   /** Expected close date in ISO 8601 format */
