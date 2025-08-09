@@ -1,5 +1,6 @@
 package de.freshplan.domain.audit.repository;
 
+import de.freshplan.domain.audit.dto.ComplianceAlertDto;
 import de.freshplan.domain.audit.entity.AuditEntry;
 import de.freshplan.domain.audit.entity.AuditEventType;
 import de.freshplan.domain.audit.entity.AuditSource;
@@ -26,6 +27,7 @@ public class AuditRepository implements PanacheRepositoryBase<AuditEntry, UUID> 
 
   private static final int DEFAULT_PAGE_SIZE = 50;
   private static final int MAX_PAGE_SIZE = 1000;
+  private static final long NINETY_DAYS_IN_SECONDS = 90L * 24 * 60 * 60; // 90 days retention period
 
   /** Find audit entries by entity */
   public List<AuditEntry> findByEntity(String entityType, UUID entityId) {
@@ -303,8 +305,9 @@ public class AuditRepository implements PanacheRepositoryBase<AuditEntry, UUID> 
             todayStart);
 
     // Coverage calculation (percentage of entities with audit logs)
-    // Simplified: if we have events, we have coverage
-    metrics.coverage = metrics.totalEventsToday > 0 ? 95.5 : 0.0;
+    // TODO: Implement proper coverage calculation based on actual entity audit coverage
+    // For now, return -1 to indicate metric is not yet available
+    metrics.coverage = -1.0; // -1 indicates metric not available
 
     // Integrity status
     List<AuditIntegrityIssue> integrityIssues = verifyIntegrity(todayStart, now);
@@ -312,7 +315,7 @@ public class AuditRepository implements PanacheRepositoryBase<AuditEntry, UUID> 
 
     // Retention compliance (percentage of logs within retention period)
     long totalLogs = count();
-    long logsWithinRetention = count("timestamp >= ?1", now.minusSeconds(7776000)); // 90 days
+    long logsWithinRetention = count("timestamp >= ?1", now.minusSeconds(NINETY_DAYS_IN_SECONDS));
     metrics.retentionCompliance =
         totalLogs > 0 ? (int) ((logsWithinRetention * 100.0) / totalLogs) : 100;
 
@@ -421,26 +424,27 @@ public class AuditRepository implements PanacheRepositoryBase<AuditEntry, UUID> 
   }
 
   /** Get compliance alerts */
-  public List<Map<String, Object>> getComplianceAlerts() {
-    List<Map<String, Object>> alerts = new ArrayList<>();
+  public List<ComplianceAlertDto> getComplianceAlerts() {
+    List<ComplianceAlertDto> alerts = new ArrayList<>();
 
     // Check for old audit entries
-    Instant retentionLimit = Instant.now().minusSeconds(7776000); // 90 days
+    Instant retentionLimit = Instant.now().minusSeconds(NINETY_DAYS_IN_SECONDS);
     long oldEntries = count("timestamp < ?1", retentionLimit);
 
     if (oldEntries > 0) {
-      Map<String, Object> alert = new HashMap<>();
-      alert.put("id", "alert-retention-" + UUID.randomUUID());
-      alert.put("type", "retention");
-      alert.put("severity", oldEntries > 100 ? "warning" : "info");
-      alert.put("title", "Datenaufbewahrung überschreitet 90 Tage");
-      alert.put(
-          "description",
-          String.format(
+      ComplianceAlertDto alert = ComplianceAlertDto.builder()
+          .id("alert-retention-" + UUID.randomUUID())
+          .type(ComplianceAlertDto.AlertType.RETENTION)
+          .severity(oldEntries > 100 
+              ? ComplianceAlertDto.AlertSeverity.WARNING 
+              : ComplianceAlertDto.AlertSeverity.INFO)
+          .title("Datenaufbewahrung überschreitet 90 Tage")
+          .description(String.format(
               "%d Audit-Einträge sind älter als 90 Tage und sollten archiviert werden.",
-              oldEntries));
-      alert.put("timestamp", Instant.now().toString());
-      alert.put("resolved", false);
+              oldEntries))
+          .affectedCount(oldEntries)
+          .recommendation("Führen Sie eine Archivierung der alten Audit-Logs durch")
+          .build();
       alerts.add(alert);
     }
 
@@ -449,30 +453,29 @@ public class AuditRepository implements PanacheRepositoryBase<AuditEntry, UUID> 
     List<AuditIntegrityIssue> integrityIssues = verifyIntegrity(checkFrom, Instant.now());
 
     if (!integrityIssues.isEmpty()) {
-      Map<String, Object> alert = new HashMap<>();
-      alert.put("id", "alert-integrity-" + UUID.randomUUID());
-      alert.put("type", "integrity");
-      alert.put("severity", "critical");
-      alert.put("title", "Integritätsprobleme im Audit Trail erkannt");
-      alert.put(
-          "description",
-          String.format(
+      ComplianceAlertDto alert = ComplianceAlertDto.builder()
+          .id("alert-integrity-" + UUID.randomUUID())
+          .type(ComplianceAlertDto.AlertType.INTEGRITY)
+          .severity(ComplianceAlertDto.AlertSeverity.CRITICAL)
+          .title("Integritätsprobleme im Audit Trail erkannt")
+          .description(String.format(
               "%d Integritätsprobleme wurden in den letzten 24 Stunden erkannt.",
-              integrityIssues.size()));
-      alert.put("timestamp", Instant.now().toString());
-      alert.put("resolved", false);
+              integrityIssues.size()))
+          .affectedCount((long) integrityIssues.size())
+          .recommendation("Überprüfen Sie die betroffenen Audit-Einträge sofort")
+          .build();
       alerts.add(alert);
     }
 
-    // Add scheduled maintenance reminder
-    Map<String, Object> maintenanceAlert = new HashMap<>();
-    maintenanceAlert.put("id", "alert-maintenance-" + UUID.randomUUID());
-    maintenanceAlert.put("type", "maintenance");
-    maintenanceAlert.put("severity", "info");
-    maintenanceAlert.put("title", "Nächste Integritätsprüfung fällig");
-    maintenanceAlert.put("description", "Die monatliche Integritätsprüfung steht in 3 Tagen an.");
-    maintenanceAlert.put("timestamp", Instant.now().toString());
-    maintenanceAlert.put("resolved", false);
+    // Add scheduled maintenance reminder (example of info alert)
+    ComplianceAlertDto maintenanceAlert = ComplianceAlertDto.builder()
+        .id("alert-maintenance-" + UUID.randomUUID())
+        .type(ComplianceAlertDto.AlertType.RETENTION)
+        .severity(ComplianceAlertDto.AlertSeverity.INFO)
+        .title("Nächste Integritätsprüfung fällig")
+        .description("Die monatliche Integritätsprüfung steht in 3 Tagen an.")
+        .recommendation("Planen Sie die Wartung in Ihrem Kalender ein")
+        .build();
     alerts.add(maintenanceAlert);
 
     return alerts;

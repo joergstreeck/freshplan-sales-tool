@@ -3,6 +3,7 @@ package de.freshplan.api;
 import de.freshplan.domain.customer.entity.*;
 import de.freshplan.domain.customer.repository.CustomerContactRepository;
 import de.freshplan.domain.customer.repository.CustomerRepository;
+import de.freshplan.infrastructure.util.InitializerUtils;
 import io.quarkus.arc.profile.IfBuildProfile;
 import io.quarkus.runtime.StartupEvent;
 import jakarta.annotation.Priority;
@@ -40,8 +41,7 @@ public class TestDataContactInitializer {
   @Transactional
   void onStart(@Observes @Priority(600) StartupEvent ev) {
     // Skip initialization if we're running in test mode
-    String testProfile = System.getProperty("quarkus.test.profile");
-    if ("test".equals(testProfile) || Boolean.getBoolean("quarkus.test")) {
+    if (InitializerUtils.isTestMode()) {
       LOG.debug("Skipping contact test data initialization in test mode");
       return;
     }
@@ -246,12 +246,9 @@ public class TestDataContactInitializer {
       regionalSued.setReportsTo(ceo);
       regionalWest.setReportsTo(ceo);
       assistenz.setReportsTo(ceo);
-
-      contactRepository.persist(einkauf);
-      contactRepository.persist(regionalNord);
-      contactRepository.persist(regionalSued);
-      contactRepository.persist(regionalWest);
-      contactRepository.persist(assistenz);
+      
+      // Note: createContact() already persists the contacts, so no additional persist() calls needed
+      // The setReportsTo() changes will be persisted automatically when the transaction commits
 
       LOG.info("Created 8 contacts for Müller Gastro Gruppe with complex hierarchy");
     }

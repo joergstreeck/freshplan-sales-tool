@@ -32,9 +32,7 @@ export const OpportunityPipeline: React.FC = () => {
     const fetchOpportunities = async () => {
       try {
         setIsLoading(true);
-        console.log('🚀 Fetching opportunities from API...');
         const response = await httpClient.get<Opportunity[]>('/api/opportunities');
-        console.log('📥 API Response:', response.data?.length || 0, 'opportunities received');
 
         // Transformiere die API-Daten falls nötig
         const apiOpportunities = response.data.map((opp: any) => ({
@@ -46,7 +44,6 @@ export const OpportunityPipeline: React.FC = () => {
           updatedAt: opp.updatedAt || new Date().toISOString(),
         }));
 
-        console.log(
           '✅ Setting opportunities:',
           apiOpportunities.slice(0, 3).map(o => ({ name: o.name, customer: o.customerName }))
         );
@@ -92,18 +89,15 @@ export const OpportunityPipeline: React.FC = () => {
 
   // Drag & Drop Handlers
   const handleDragStart = (event: DragStartEvent) => {
-    console.log('🚀 Drag Started:', event.active.id);
     const opportunity = event.active.data.current?.opportunity as Opportunity;
     setActiveOpportunity(opportunity);
   };
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
-    console.log('🏁 Drag Ended:', { activeId: active.id, overId: over?.id });
     setActiveOpportunity(null);
 
     if (!over) {
-      console.log('❌ No drop target');
       return;
     }
 
@@ -113,7 +107,6 @@ export const OpportunityPipeline: React.FC = () => {
 
     // Nur ändern wenn Stage wirklich unterschiedlich
     if (opportunity && opportunity.stage !== newStage) {
-      console.log(
         `✅ Moving opportunity ${opportunity.name} from ${opportunity.stage} to ${newStage}`
       );
 
@@ -129,7 +122,6 @@ export const OpportunityPipeline: React.FC = () => {
       // TODO: In echter App würde hier API-Call stehen
       // changeStage.mutate({ id: opportunityId, newStage, reason: '...' });
     } else {
-      console.log('⚠️ Same stage or no opportunity data');
     }
   };
 
@@ -290,7 +282,6 @@ export const OpportunityPipeline: React.FC = () => {
                       opportunity={opportunity}
                       onClick={opp => {
                         // TODO: Open opportunity detail modal
-                        console.log('Open opportunity:', opp.id);
                       }}
                     />
                   ))}

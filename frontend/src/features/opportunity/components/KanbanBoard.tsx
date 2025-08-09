@@ -366,34 +366,16 @@ export const KanbanBoard: React.FC = React.memo(() => {
 
   // Pipeline-Statistiken berechnen (memoized)
   const pipelineStats = useMemo(() => {
-    console.log('📈 KanbanBoard calculating stats from:', {
-      totalOpportunities: opportunities.length,
-      opportunities: opportunities.slice(0, 3), // First 3 for debugging
-      stages: opportunities.map(o => o.stage)
-    });
-    
     // Alle Opportunities sind bereits geladen, keine Filter nötig
     // Da aktuell alle Opportunities in aktiven Stages sind
     const activeOpps = opportunities.filter(opp => ACTIVE_STAGES.includes(opp.stage));
     const wonOpps = opportunities.filter(opp => opp.stage === OpportunityStage.CLOSED_WON);
     const lostOpps = opportunities.filter(opp => opp.stage === OpportunityStage.CLOSED_LOST);
-    
-    console.log('🎯 Filtered counts:', {
-      active: activeOpps.length,
-      won: wonOpps.length,
-      lost: lostOpps.length,
-      ACTIVE_STAGES
-    });
 
     const totalClosed = wonOpps.length + lostOpps.length;
     const conversionRate = totalClosed > 0 ? wonOpps.length / totalClosed : 0;
     
     const activeValue = activeOpps.reduce((sum, opp) => sum + (opp.value || 0), 0);
-    console.log('💵 Active value calculation:', {
-      count: activeOpps.length,
-      totalValue: activeValue,
-      sample: activeOpps.slice(0, 2).map(o => ({ name: o.name, value: o.value }))
-    });
 
     return {
       totalActive: activeOpps.length,

@@ -540,9 +540,7 @@ export const KanbanBoardDndKit: React.FC = React.memo(() => {
   useEffect(() => {
     const loadOpportunities = async () => {
       try {
-        console.log('🚀 KanbanBoard: Loading opportunities from API...');
         const response = await httpClient.get<Opportunity[]>('/api/opportunities?size=100');
-        console.log('📥 KanbanBoard: Received', response.data?.length || 0, 'opportunities');
 
         if (response.data && response.data.length > 0) {
           // Transform API data to match our Opportunity interface
@@ -558,7 +556,6 @@ export const KanbanBoardDndKit: React.FC = React.memo(() => {
             updatedAt: opp.updatedAt || new Date().toISOString(),
           }));
 
-          console.log(
             '✅ KanbanBoard: Setting API opportunities:',
             apiOpportunities.slice(0, 3).map(o => ({ name: o.name, customer: o.customerName }))
           );
@@ -566,7 +563,6 @@ export const KanbanBoardDndKit: React.FC = React.memo(() => {
         }
       } catch (error) {
         console.error('❌ KanbanBoard: Failed to load opportunities:', error);
-        console.log('⚠️ KanbanBoard: Using fallback mock data');
         // Keep using initialOpportunities as fallback
       }
     };

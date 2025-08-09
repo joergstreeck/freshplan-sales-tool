@@ -35,6 +35,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { de } from 'date-fns/locale';
 import { useQuery } from '@tanstack/react-query';
 import { customerApi } from '../features/customer/api/customerApi';
+import type { CustomerContact } from '../features/customer/types';
 import type { ContactAction } from '../features/customers/components/contacts/ContactGridContainer';
 
 interface TabPanelProps {
@@ -394,8 +395,9 @@ function CustomerContacts({ customerId }: { customerId: string }) {
   };
 
   // Create warmth data map from actual contacts
+  // TODO: Replace with real warmth data from backend API
   const warmthData = new Map(
-    contacts?.map((contact: any) => {
+    contacts?.map((contact: CustomerContact) => {
       // Calculate warmth based on lastContactDate if available
       const daysSinceContact = contact.lastContactDate 
         ? Math.floor((Date.now() - new Date(contact.lastContactDate).getTime()) / (1000 * 60 * 60 * 24))
@@ -404,25 +406,27 @@ function CustomerContacts({ customerId }: { customerId: string }) {
       let temperature: 'HOT' | 'WARM' | 'COOLING' | 'COLD';
       let score: number;
       
+      // Use deterministic scores based on days since contact
+      // These should eventually come from the backend
       if (daysSinceContact <= 7) {
         temperature = 'HOT';
-        score = 80 + Math.random() * 20; // 80-100
+        score = 90; // Fixed score for HOT contacts
       } else if (daysSinceContact <= 30) {
         temperature = 'WARM';
-        score = 60 + Math.random() * 20; // 60-80
+        score = 70; // Fixed score for WARM contacts
       } else if (daysSinceContact <= 60) {
         temperature = 'COOLING';
-        score = 40 + Math.random() * 20; // 40-60
+        score = 50; // Fixed score for COOLING contacts
       } else {
         temperature = 'COLD';
-        score = 20 + Math.random() * 20; // 20-40
+        score = 30; // Fixed score for COLD contacts
       }
       
       return [contact.id, {
         temperature,
-        score: Math.round(score),
+        score,
         lastInteraction: contact.lastContactDate ? new Date(contact.lastContactDate) : new Date(),
-        interactionCount: Math.floor(Math.random() * 20) + 1,
+        interactionCount: 1, // Default to 1 until backend provides real data
       }];
     }) || []
   );

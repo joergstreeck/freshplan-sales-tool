@@ -3,6 +3,7 @@ package de.freshplan.api;
 import de.freshplan.domain.customer.entity.*;
 import de.freshplan.domain.customer.repository.CustomerRepository;
 import de.freshplan.domain.customer.repository.CustomerTimelineRepository;
+import de.freshplan.infrastructure.util.InitializerUtils;
 import io.quarkus.arc.profile.IfBuildProfile;
 import io.quarkus.runtime.StartupEvent;
 import jakarta.annotation.Priority;
@@ -37,8 +38,7 @@ public class CustomerDataInitializer {
   @Transactional
   void onStart(@Observes @Priority(500) StartupEvent ev) {
     // Skip initialization if we're running in test mode
-    String testProfile = System.getProperty("quarkus.test.profile");
-    if ("test".equals(testProfile) || Boolean.getBoolean("quarkus.test")) {
+    if (InitializerUtils.isTestMode()) {
       LOG.debug("Skipping customer test data initialization in test mode");
       return;
     }
