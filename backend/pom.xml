@@ -76,6 +76,18 @@
       <artifactId>html2pdf</artifactId>
       <version>5.0.5</version>
     </dependency>
+    <!-- CSV Generation -->
+    <dependency>
+      <groupId>com.opencsv</groupId>
+      <artifactId>opencsv</artifactId>
+      <version>5.9</version>
+    </dependency>
+    <!-- Excel Generation -->
+    <dependency>
+      <groupId>org.apache.poi</groupId>
+      <artifactId>poi-ooxml</artifactId>
+      <version>5.2.5</version>
+    </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-junit5</artifactId>
