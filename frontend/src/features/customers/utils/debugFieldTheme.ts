@@ -60,5 +60,5 @@ export function debugCustomerFieldTheme() {
 
 // Export für Browser Console
 if (typeof window !== 'undefined') {
-  (window as any).debugFieldTheme = debugCustomerFieldTheme;
+  (window as unknown).debugFieldTheme = debugCustomerFieldTheme;
 }

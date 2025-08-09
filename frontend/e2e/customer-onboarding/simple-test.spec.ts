@@ -17,7 +17,7 @@ test.describe('Simple Customer Page Test', () => {
       }));
       
       // Mock auth state directly on window
-      (window as any).__AUTH_STATE__ = {
+      (window as unknown).__AUTH_STATE__ = {
         isAuthenticated: true,
         user: {
           id: 'test-user',
@@ -47,7 +47,7 @@ test.describe('Simple Customer Page Test', () => {
     const hasNewButton = await page.locator('button').count() > 0;
     
     console.log('Has Customer heading:', hasCustomerHeading);
-    console.log('Has any button:', hasNewButton);
+    console.log('Has unknown button:', hasNewButton);
     
     // Log all button texts
     const buttons = await page.locator('button').all();

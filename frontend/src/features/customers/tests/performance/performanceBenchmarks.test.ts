@@ -5,8 +5,8 @@
  * PHILOSOPHIE: Validiert Performance bei großen Datasets und komplexen Operationen
  */
 
-import { describe, it, expect, beforeEach } from 'vitest';
-import { renderHook, act } from '@testing-library/react';
+import { describe, it, expect } from 'vitest';
+import { renderHook } from '@testing-library/react';
 import { useCustomerOnboardingStore } from '../../stores/customerOnboardingStore';
 
 describe.skip('FC-005 Performance Benchmarks', () => {
@@ -34,12 +34,12 @@ describe.skip('FC-005 Performance Benchmarks', () => {
 
   const measurePerformance = (operation: () => void) => {
     const startTime = performance.now();
-    const memoryBefore = (performance as any).memory?.usedJSHeapSize || 0;
+    const memoryBefore = (performance as unknown).memory?.usedJSHeapSize || 0;
 
     operation();
 
     const endTime = performance.now();
-    const memoryAfter = (performance as any).memory?.usedJSHeapSize || 0;
+    const memoryAfter = (performance as unknown).memory?.usedJSHeapSize || 0;
 
     return {
       duration: endTime - startTime,
@@ -241,16 +241,16 @@ describe.skip('FC-005 Performance Benchmarks', () => {
       // Create large draft data in localStorage
       const largeDraftData = {
         customerData: {},
-        locations: [] as any[],
+        locations: [] as unknown[],
         locationFieldValues: {},
-        detailedLocations: [] as any[],
+        detailedLocations: [] as unknown[],
         currentStep: 1,
         lastSaved: new Date().toISOString(),
       };
 
       // Generate large dataset
       for (let i = 0; i < 200; i++) {
-        (largeDraftData.customerData as any)[`field_${i}`] = `Large value ${i} `.repeat(10);
+        (largeDraftData.customerData as unknown)[`field_${i}`] = `Large value ${i} `.repeat(10);
       }
 
       localStorage.setItem('customer-onboarding-draft', JSON.stringify(largeDraftData));
@@ -288,7 +288,7 @@ describe.skip('FC-005 Performance Benchmarks', () => {
         }
       });
 
-      const memoryBefore = (performance as any).memory?.usedJSHeapSize || 0;
+      const memoryBefore = (performance as unknown).memory?.usedJSHeapSize || 0;
 
       const metrics = measurePerformance(() => {
         act(() => {
@@ -296,7 +296,7 @@ describe.skip('FC-005 Performance Benchmarks', () => {
         });
       });
 
-      const memoryAfter = (performance as any).memory?.usedJSHeapSize || 0;
+      const memoryAfter = (performance as unknown).memory?.usedJSHeapSize || 0;
 
       // Reset should be fast and free memory
       expect(metrics.duration).toBeLessThan(10); // < 10ms for reset

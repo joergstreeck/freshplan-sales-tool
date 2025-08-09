@@ -59,7 +59,7 @@ export const HelpSystemDemoPage: React.FC = () => {
 
       <Grid container spacing={3}>
         {/* Help Tooltip Demo */}
-        <Grid item xs={12} md={6}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <Card>
             <CardContent>
               <Box display="flex" alignItems="center" mb={2}>
@@ -82,7 +82,7 @@ export const HelpSystemDemoPage: React.FC = () => {
         </Grid>
 
         {/* Feature Tour Demo */}
-        <Grid item xs={12} md={6}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <Card>
             <CardContent>
               <Typography variant="h5" gutterBottom>
@@ -104,7 +104,7 @@ export const HelpSystemDemoPage: React.FC = () => {
         </Grid>
 
         {/* Proactive Help Demo */}
-        <Grid item xs={12} md={6}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <Card>
             <CardContent>
               <Typography variant="h5" gutterBottom>
@@ -129,7 +129,7 @@ export const HelpSystemDemoPage: React.FC = () => {
         </Grid>
 
         {/* Analytics Demo */}
-        <Grid item xs={12} md={6}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <Card>
             <CardContent>
               <Typography variant="h5" gutterBottom>
@@ -170,7 +170,7 @@ export const HelpSystemDemoPage: React.FC = () => {
         </Typography>
 
         <Grid container spacing={2} sx={{ mt: 2 }}>
-          <Grid item xs={4}>
+          <Grid size={{ xs: 4 }}>
             <Box
               className="warmth-indicator"
               sx={{
@@ -184,7 +184,7 @@ export const HelpSystemDemoPage: React.FC = () => {
             </Box>
           </Grid>
 
-          <Grid item xs={4}>
+          <Grid size={{ xs: 4 }}>
             <Box
               className="smart-suggestions"
               sx={{
@@ -198,7 +198,7 @@ export const HelpSystemDemoPage: React.FC = () => {
             </Box>
           </Grid>
 
-          <Grid item xs={4}>
+          <Grid size={{ xs: 4 }}>
             <Box
               className="contact-timeline"
               sx={{

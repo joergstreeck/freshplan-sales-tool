@@ -2,7 +2,7 @@
  * Tests für auth.ts - Authentication Utilities
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { authUtils } from './keycloak';
 
 // Mock für keycloak module

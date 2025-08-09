@@ -156,7 +156,7 @@ interface AuditAdminState {
 
   // Actions - Security
   acknowledgeAlert: (alertId: string) => Promise<void>;
-  investigateActivity: (activityId: string) => Promise<any>;
+  investigateActivity: (activityId: string) => Promise<unknown>;
   blockUser: (userId: string, reason: string) => Promise<void>;
 
   // Actions - UI

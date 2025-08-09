@@ -98,7 +98,7 @@ process.env.VITE_API_URL = 'http://localhost:8080';
  */
 const originalError = console.error;
 beforeAll(() => {
-  console.error = (...args: any[]) => {
+  console.error = (...args: unknown[]) => {
     if (typeof args[0] === 'string' && args[0].includes('Consider adding an error boundary')) {
       return;
     }

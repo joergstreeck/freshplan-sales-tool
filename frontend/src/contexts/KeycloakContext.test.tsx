@@ -2,8 +2,8 @@
  * Tests für KeycloakContext und useKeycloak Hook
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, waitFor, renderHook, act } from '@testing-library/react';
+import { describe, it, expect, vi } from 'vitest';
+import { render, screen, renderHook } from '@testing-library/react';
 import { KeycloakProvider, useKeycloak } from './KeycloakContext';
 import type { ReactNode } from 'react';
 

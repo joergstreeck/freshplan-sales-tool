@@ -55,23 +55,31 @@ export enum LegalBasis {
 
 export interface AuditLog {
   id: string;
-  occurredAt: string;
-  entityType: EntityType;
+  timestamp?: string; // Backend uses timestamp
+  occurredAt?: string; // Frontend compatibility
+  entityType: string; // Backend uses String, not enum
   entityId: string;
   entityName?: string;
-  action: AuditAction;
+  action: string; // Backend uses String for action
+  eventType?: string; // Backend field name
 
   // User information
   userId: string;
   userName: string;
-  userRole: string;
+  userEmail?: string;
+  userRole?: string;
 
   // Change details
-  oldValues?: string;
-  newValues?: string;
+  oldValue?: unknown; // Backend uses oldValue (singular)
+  newValue?: unknown; // Backend uses newValue (singular)
+  oldValues?: string; // Frontend compatibility
+  newValues?: string; // Frontend compatibility
+  changes?: unknown; // Additional changes object
   changedFields?: string;
-  reason?: string;
+  changeReason?: string; // Backend field name
+  reason?: string; // Frontend compatibility
   comment?: string;
+  details?: unknown; // Additional details object
 
   // Context
   ipAddress?: string;
@@ -79,17 +87,20 @@ export interface AuditLog {
   sessionId?: string;
   requestId?: string;
   transactionId?: string;
+  source?: string; // Backend source field (WEB, API, etc.)
 
   // Compliance
-  isDsgvoRelevant: boolean;
+  isDsgvoRelevant?: boolean;
   legalBasis?: LegalBasis;
   consentId?: string;
   retentionUntil?: string;
 
   // Security
-  currentHash: string;
-  previousHash: string;
-  isCritical: boolean;
+  dataHash?: string; // Backend field name
+  currentHash?: string; // Frontend compatibility
+  previousHash?: string;
+  isCritical?: boolean;
+  success?: boolean; // Backend field for operation success
 }
 
 export interface AuditFilters {
@@ -97,11 +108,19 @@ export interface AuditFilters {
     from: Date;
     to: Date;
   };
-  entityType?: EntityType;
+  entityType?: string; // Backend uses String
   entityId?: string;
-  eventTypes?: AuditAction[];
+  eventTypes?: string[]; // Backend uses String array
   users?: string[];
   searchText?: string;
+  // Additional fields for backend compatibility
+  userId?: string;
+  action?: string;
+  limit?: number;
+  page?: number;
+  pageSize?: number;
+  from?: string; // ISO string
+  to?: string; // ISO string
 }
 
 export interface AuditDashboardMetrics {
@@ -113,20 +132,30 @@ export interface AuditDashboardMetrics {
   activeUsers: number;
   totalEventsToday: number;
   topEventTypes: Array<{
-    eventType: string;
+    type?: string; // Frontend uses 'type'
+    eventType?: string; // Backend might use 'eventType'
     count: number;
   }>;
 }
 
 export interface ActivityChartData {
-  period: string;
-  count: number;
+  time?: string; // Frontend uses 'time'
+  period?: string; // Backend might use 'period'
+  value?: number; // Frontend uses 'value'
+  count?: number; // Backend might use 'count'
+  critical?: number; // Anzahl kritischer Events
+  users?: number; // Anzahl aktiver Benutzer
 }
 
 export interface ComplianceAlert {
-  type: 'ERROR' | 'WARNING' | 'INFO';
-  message: string;
-  severity: 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW';
+  id?: string;
+  type?: 'retention' | 'integrity' | 'ERROR' | 'WARNING' | 'INFO';
+  severity?: 'warning' | 'info' | 'error' | 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW';
+  title?: string;
+  description?: string;
+  message?: string;
+  timestamp?: string;
+  resolved?: boolean;
 }
 
 export interface AuditExportOptions {

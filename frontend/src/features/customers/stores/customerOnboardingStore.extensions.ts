@@ -69,26 +69,26 @@ export const createStoreExtensions = (set: any, get: any) => ({
 
   // Actions
   setExpectedRevenue: (amount: number) => {
-    set((state: WritableDraft<any>) => {
+    set((state: WritableDraft<unknown>) => {
       state.customerData.expectedAnnualRevenue = amount;
       state.isDirty = true;
     });
   },
 
   setSelectedLocation: (locationId: string | 'all') => {
-    set((state: WritableDraft<any>) => {
+    set((state: WritableDraft<unknown>) => {
       state.selectedLocationId = locationId;
     });
   },
 
   setApplyToAll: (value: boolean) => {
-    set((state: WritableDraft<any>) => {
+    set((state: WritableDraft<unknown>) => {
       state.applyToAllLocations = value;
     });
   },
 
   saveLocationServices: (data: LocationServiceData) => {
-    set((state: WritableDraft<any>) => {
+    set((state: WritableDraft<unknown>) => {
       const { selectedLocationId, applyToAllLocations, locations } = get();
 
       if (selectedLocationId === 'all' || applyToAllLocations) {
@@ -125,7 +125,7 @@ export const createStoreExtensions = (set: any, get: any) => ({
   },
 
   markLocationCompleted: (locationId: string) => {
-    set((state: WritableDraft<any>) => {
+    set((state: WritableDraft<unknown>) => {
       if (!state.completedLocationIds.includes(locationId)) {
         state.completedLocationIds.push(locationId);
       }

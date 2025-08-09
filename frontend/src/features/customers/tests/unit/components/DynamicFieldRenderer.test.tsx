@@ -2,7 +2,7 @@
  * FC-005 Dynamic Field Renderer Tests (Simplified)
  *
  * Tests für das Kernstück der field-basierten Architektur.
- * Respektiert Flexibilitäts-Philosophie: any Types sind FEATURES!
+ * Respektiert Flexibilitäts-Philosophie: unknown Types sind FEATURES!
  *
  * @see /docs/features/FC-005-CUSTOMER-MANAGEMENT/09-TEST-PLAN/00-PHILOSOPHIE.md
  */
@@ -14,7 +14,7 @@ import { FieldDefinition } from '../../../types/field.types';
 
 // Simple mock for fieldTypes
 vi.mock('../../../components/fields/fieldTypes/TextField', () => ({
-  TextField: ({ field, value, onChange }: any) => (
+  TextField: ({ field, value, onChange }: unknown) => (
     <input
       data-testid={`textfield-${field.key}`}
       value={value || ''}
@@ -24,7 +24,7 @@ vi.mock('../../../components/fields/fieldTypes/TextField', () => ({
 }));
 
 vi.mock('../../../components/fields/fieldTypes/NumberField', () => ({
-  NumberField: ({ field, value, onChange }: any) => (
+  NumberField: ({ field, value, onChange }: unknown) => (
     <input
       type="number"
       data-testid={`numberfield-${field.key}`}
@@ -35,13 +35,13 @@ vi.mock('../../../components/fields/fieldTypes/NumberField', () => ({
 }));
 
 vi.mock('../../../components/fields/fieldTypes/SelectField', () => ({
-  SelectField: ({ field, value, onChange }: any) => (
+  SelectField: ({ field, value, onChange }: unknown) => (
     <select
       data-testid={`selectfield-${field.key}`}
       value={value || ''}
       onChange={e => onChange(field.key, e.target.value)}
     >
-      {field.options?.map((opt: any) => (
+      {field.options?.map((opt: unknown) => (
         <option key={opt.value} value={opt.value}>
           {opt.label}
         </option>
@@ -51,7 +51,7 @@ vi.mock('../../../components/fields/fieldTypes/SelectField', () => ({
 }));
 
 vi.mock('../../../components/fields/fieldTypes/MultiSelectField', () => ({
-  MultiSelectField: ({ field, value, onChange }: any) => (
+  MultiSelectField: ({ field, value, onChange }: unknown) => (
     <select
       multiple
       data-testid={`multiselectfield-${field.key}`}
@@ -67,7 +67,7 @@ vi.mock('../../../components/fields/fieldTypes/MultiSelectField', () => ({
 }));
 
 vi.mock('../../../components/fields/fieldTypes/EmailField', () => ({
-  EmailField: ({ field, value, onChange }: any) => (
+  EmailField: ({ field, value, onChange }: unknown) => (
     <input
       type="email"
       data-testid={`emailfield-${field.key}`}
@@ -78,7 +78,7 @@ vi.mock('../../../components/fields/fieldTypes/EmailField', () => ({
 }));
 
 vi.mock('../../../components/fields/fieldTypes/TextAreaField', () => ({
-  TextAreaField: ({ field, value, onChange }: any) => (
+  TextAreaField: ({ field, value, onChange }: unknown) => (
     <textarea
       data-testid={`textareafield-${field.key}`}
       value={value || ''}
@@ -88,7 +88,7 @@ vi.mock('../../../components/fields/fieldTypes/TextAreaField', () => ({
 }));
 
 vi.mock('../../../components/fields/FieldWrapper', () => ({
-  FieldWrapper: ({ children }: any) => <div data-testid="field-wrapper">{children}</div>,
+  FieldWrapper: ({ children }: unknown) => <div data-testid="field-wrapper">{children}</div>,
 }));
 
 describe.skip('DynamicFieldRenderer - Flexible Field System (ENTERPRISE PHILOSOPHY)', () => {

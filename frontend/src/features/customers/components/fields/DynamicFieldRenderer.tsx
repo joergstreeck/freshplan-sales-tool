@@ -205,7 +205,7 @@ export const DynamicFieldRenderer: React.FC<DynamicFieldRendererProps> = ({
         const gridSize = themeSize;
 
         return (
-          <Grid item key={field.key} xs={gridSize.xs} sm={gridSize.sm} md={gridSize.md}>
+          <Grid key={field.key} size={{ xs: gridSize.xs, sm: gridSize.sm, md: gridSize.md }}>
             {renderField(field)}
           </Grid>
         );

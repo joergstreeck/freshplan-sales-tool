@@ -77,7 +77,7 @@ async function fillChallengesAndPotential(page: Page) {
   await page.click('button[aria-label="Herausforderung hinzufügen"]');
 }
 
-async function addContact(page: Page, contact: any) {
+async function addContact(page: Page, contact: unknown) {
   await page.click('button:has-text("Neuen Kontakt hinzufügen")');
   
   // Basic info
@@ -173,7 +173,7 @@ test.describe.skip('Complete Customer Onboarding Flow', () => {
         await page.click(selector, { timeout: 2000 });
         buttonClicked = true;
         break;
-      } catch (e) {
+      } catch (_e) {
         console.log(`Button selector "${selector}" not found, trying next...`);
       }
     }

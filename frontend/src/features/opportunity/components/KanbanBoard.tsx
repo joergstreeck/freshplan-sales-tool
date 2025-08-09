@@ -31,8 +31,9 @@ import { useOpportunities, useChangeOpportunityStage } from '../hooks/useOpportu
 
 // Aktive Pipeline Stages (immer sichtbar)
 const ACTIVE_STAGES = [
-  OpportunityStage.LEAD,
-  OpportunityStage.QUALIFIED,
+  OpportunityStage.NEW_LEAD,
+  OpportunityStage.QUALIFICATION,
+  OpportunityStage.NEEDS_ANALYSIS,
   OpportunityStage.PROPOSAL,
   OpportunityStage.NEGOTIATION,
 ];
@@ -365,18 +366,22 @@ export const KanbanBoard: React.FC = React.memo(() => {
 
   // Pipeline-Statistiken berechnen (memoized)
   const pipelineStats = useMemo(() => {
+    // Alle Opportunities sind bereits geladen, keine Filter nötig
+    // Da aktuell alle Opportunities in aktiven Stages sind
     const activeOpps = opportunities.filter(opp => ACTIVE_STAGES.includes(opp.stage));
     const wonOpps = opportunities.filter(opp => opp.stage === OpportunityStage.CLOSED_WON);
     const lostOpps = opportunities.filter(opp => opp.stage === OpportunityStage.CLOSED_LOST);
 
     const totalClosed = wonOpps.length + lostOpps.length;
     const conversionRate = totalClosed > 0 ? wonOpps.length / totalClosed : 0;
+    
+    const activeValue = activeOpps.reduce((sum, opp) => sum + (opp.value || 0), 0);
 
     return {
       totalActive: activeOpps.length,
       totalWon: wonOpps.length,
       totalLost: lostOpps.length,
-      activeValue: activeOpps.reduce((sum, opp) => sum + (opp.value || 0), 0),
+      activeValue,
       wonValue: wonOpps.reduce((sum, opp) => sum + (opp.value || 0), 0),
       lostValue: lostOpps.reduce((sum, opp) => sum + (opp.value || 0), 0),
       conversionRate,

@@ -103,7 +103,7 @@ const defaultHandlers = [
 
   // Customer Draft API
   http.post('/api/customers/draft', async ({ request }) => {
-    const body = (await request.json()) as any;
+    const body = (await request.json()) as unknown;
 
     // Simuliere verschiedene Erfolgs- und Fehler-Szenarien
     if (body.customerData?.companyName === 'NETWORK_ERROR') {
@@ -177,7 +177,7 @@ const defaultHandlers = [
 
   // Final Customer Creation API
   http.post('/api/customers', async ({ request }) => {
-    const body = (await request.json()) as any;
+    const body = (await request.json()) as unknown;
 
     // Simuliere Validierungsfehler
     if (!body.customerData?.companyName) {

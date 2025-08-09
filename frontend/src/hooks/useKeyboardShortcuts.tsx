@@ -1,5 +1,3 @@
-import { useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useHotkeys } from 'react-hotkeys-hook';
 
 interface ShortcutConfig {
@@ -10,7 +8,6 @@ interface ShortcutConfig {
 }
 
 export function useKeyboardShortcuts() {
-  const navigate = useNavigate();
 
   const shortcuts: ShortcutConfig[] = [
     {

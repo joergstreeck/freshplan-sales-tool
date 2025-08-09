@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { CustomersPageV2 } from '../CustomersPageV2';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter } from 'react-router-dom';
@@ -46,7 +46,7 @@ vi.mock('../../components/layout/MainLayoutV2', () => ({
 
 // Mock CustomerOnboardingWizardModal to test interactions
 vi.mock('../../features/customers/components/wizard/CustomerOnboardingWizardModal', () => ({
-  CustomerOnboardingWizardModal: ({ open, onClose, onComplete }: any) =>
+  CustomerOnboardingWizardModal: ({ open, onClose, onComplete }: unknown) =>
     open ? (
       <div data-testid="wizard-modal">
         <button onClick={onClose}>Close Modal</button>
@@ -59,7 +59,7 @@ vi.mock('../../features/customers/components/wizard/CustomerOnboardingWizardModa
 
 // Mock missing components
 vi.mock('../../components/common/EmptyStateHero', () => ({
-  EmptyStateHero: ({ title, action }: any) => (
+  EmptyStateHero: ({ titleion }: unknown) => (
     <div>
       <h2>{title}</h2>
       {action && <button onClick={action.onClick}>{action.label}</button>}
@@ -69,9 +69,9 @@ vi.mock('../../components/common/EmptyStateHero', () => ({
 
 // Mock customer components
 vi.mock('../../features/customers/components/CustomerTable', () => ({
-  CustomerTable: ({ customers }: any) => (
+  CustomerTable: ({ customers }: unknown) => (
     <div data-testid="customer-table">
-      {customers.map((c: any) => (
+      {customers.map((c: unknown) => (
         <div key={c.id}>{c.name}</div>
       ))}
     </div>
@@ -79,7 +79,7 @@ vi.mock('../../features/customers/components/CustomerTable', () => ({
 }));
 
 vi.mock('../../features/customers/components/CustomerListHeader', () => ({
-  CustomerListHeader: ({ onAddCustomer }: any) => (
+  CustomerListHeader: ({ onAddCustomer }: unknown) => (
     <button onClick={onAddCustomer}>Add Customer</button>
   ),
 }));
@@ -89,7 +89,7 @@ vi.mock('../../features/customers/components/CustomerListSkeleton', () => ({
 }));
 
 vi.mock('../../components/notifications/ActionToast', () => ({
-  ActionToast: ({ message }: any) => <div>{message}</div>,
+  ActionToast: ({ message }: unknown) => <div>{message}</div>,
 }));
 
 vi.mock('../../services/taskEngine', () => ({

@@ -5,7 +5,7 @@
  * PHILOSOPHIE: Validiert flexible field-basierte Architektur mit Industry-Filtering
  */
 
-import { describe, it, expect, beforeEach, afterEach, beforeAll, afterAll, vi } from 'vitest';
+import { describe, it, expect, beforeAll, afterAll, vi } from 'vitest';
 import { mockServer, configureMockServer } from './mockServer';
 import type { FieldDefinition } from '../../types/field.types';
 
@@ -295,7 +295,7 @@ describe('FC-005 Field Definitions Integration Tests', () => {
           label: 'Invalid Field',
           // Missing: id, fieldType, entityType, required, sortOrder
         },
-      ] as any[];
+      ] as unknown[];
 
       configureMockServer.withCustomFieldCatalog(invalidFields);
 

@@ -26,6 +26,25 @@
 3. ✅ ColdStartDefaults sind implementiert (siehe CRITICAL_SUCCESS_FACTORS)
 4. ✅ API Budget-Limits sind konfiguriert
 
+## ⚠️ WICHTIG: MUI Grid v2 Syntax
+
+**Seit MUI v7 verwenden wir Grid v2 Syntax:**
+```typescript
+// ✅ RICHTIG - Grid v2 Syntax (MUI v7)
+import { Grid } from '@mui/material';
+
+<Grid container spacing={3}>
+  <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+    <Component />
+  </Grid>
+</Grid>
+
+// ❌ FALSCH - Alte Grid v1 Syntax
+<Grid item xs={12} sm={6} md={3}>  // item prop existiert nicht mehr!
+```
+
+**Siehe:** [MUI Grid Migration Guide](/Users/joergstreeck/freshplan-sales-tool/docs/guides/DEBUG_COOKBOOK.md#mui-grid-v2)
+
 ## 🏗️ Architektur-Übersicht
 
 ```

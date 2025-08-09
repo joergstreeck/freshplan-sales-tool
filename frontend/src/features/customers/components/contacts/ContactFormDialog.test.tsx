@@ -1,8 +1,8 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { describe, it, expect, vi } from 'vitest';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ContactFormDialog } from './ContactFormDialog';
-import type { Contact, CreateContactDTO } from '../../types/contact.types';
+import type { ContCreateContactDTO } from '../../types/contact.types';
 import { CustomerFieldThemeProvider } from '../../theme/CustomerFieldThemeProvider';
 import React from 'react';
 
@@ -44,7 +44,7 @@ vi.mock('../../stores/customerOnboardingStore', () => {
       }
     }),
 
-    validateContactField: vi.fn((field: string, value: any) => {
+    validateContactField: vi.fn((field: string, value: unknown) => {
       // Simple validation mock
       if (field === 'email' && value && !value.includes('@')) {
         mockContactValidationErrors[field] = 'Ungültige E-Mail-Adresse';
@@ -97,7 +97,7 @@ describe('ContactFormDialog', () => {
     vi.clearAllMocks();
     // Reset dynamic mocks
     const { customerOnboardingStore } = await import('../../stores/customerOnboardingStore');
-    (customerOnboardingStore as any).reset();
+    (customerOnboardingStore as unknown).reset();
     // Regel 3: Browser APIs mocken
     global.confirm = vi.fn(() => true);
   });

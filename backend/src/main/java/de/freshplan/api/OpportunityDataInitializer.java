@@ -7,6 +7,7 @@ import de.freshplan.domain.opportunity.entity.OpportunityStage;
 import de.freshplan.domain.opportunity.repository.OpportunityRepository;
 import de.freshplan.domain.user.entity.User;
 import de.freshplan.domain.user.repository.UserRepository;
+import de.freshplan.infrastructure.util.InitializerUtils;
 import io.quarkus.arc.profile.IfBuildProfile;
 import io.quarkus.runtime.StartupEvent;
 import jakarta.annotation.Priority;
@@ -42,6 +43,12 @@ public class OpportunityDataInitializer {
 
   @Transactional
   void onStart(@Observes @Priority(2000) StartupEvent ev) {
+    // Skip initialization if we're running in test mode
+    if (InitializerUtils.isTestMode()) {
+      LOG.debug("Skipping opportunity test data initialization in test mode");
+      return;
+    }
+
     LOG.info("🎯 Initializing Opportunity test data for Pipeline testing...");
 
     // Prüfe ob bereits Opportunities existieren

@@ -1,5 +1,5 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { act, renderHook } from '@testing-library/react';
+import { describe, it, expect } from 'vitest';
+import { renderHook } from '@testing-library/react';
 import { useCalculatorStore } from '../store/calculatorStore';
 import type { CalculatorInput, CalculatorResponse } from '../api/calculatorSchemas';
 

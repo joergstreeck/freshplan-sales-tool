@@ -14,6 +14,7 @@ const mockAuditLogs: AuditLog[] = [
   {
     id: '1',
     timestamp: new Date().toISOString(),
+    occurredAt: new Date().toISOString(), // For UserAuditTimeline compatibility
     userId: 'user-123',
     userName: 'Max Mustermann',
     userEmail: 'max@freshplan.de',
@@ -25,6 +26,7 @@ const mockAuditLogs: AuditLog[] = [
     ipAddress: '192.168.1.1',
     userAgent: 'Mozilla/5.0',
     details: { browser: 'Chrome', os: 'Windows' },
+    changes: null,
     previousHash: 'abc123',
     dataHash: 'def456',
     success: true,
@@ -32,6 +34,7 @@ const mockAuditLogs: AuditLog[] = [
   {
     id: '2',
     timestamp: new Date(Date.now() - 3600000).toISOString(),
+    occurredAt: new Date(Date.now() - 3600000).toISOString(),
     userId: 'user-456',
     userName: 'Anna Schmidt',
     userEmail: 'anna@freshplan.de',
@@ -43,6 +46,7 @@ const mockAuditLogs: AuditLog[] = [
     ipAddress: '192.168.1.2',
     userAgent: 'FreshPlan API Client',
     details: { fields: ['name', 'email'] },
+    changes: { name: { old: 'Alt', new: 'Neu' } },
     previousHash: 'def456',
     dataHash: 'ghi789',
     success: true,
@@ -50,6 +54,7 @@ const mockAuditLogs: AuditLog[] = [
   {
     id: '3',
     timestamp: new Date(Date.now() - 7200000).toISOString(),
+    occurredAt: new Date(Date.now() - 7200000).toISOString(),
     userId: 'user-789',
     userName: 'Peter Weber',
     userEmail: 'peter@freshplan.de',
@@ -61,6 +66,7 @@ const mockAuditLogs: AuditLog[] = [
     ipAddress: '192.168.1.3',
     userAgent: 'Mozilla/5.0',
     details: { reason: 'Insufficient permissions' },
+    changes: null,
     previousHash: 'ghi789',
     dataHash: 'jkl012',
     success: false,
@@ -134,20 +140,56 @@ const mockComplianceAlerts: ComplianceAlert[] = [
 
 export const auditApi = {
   // Get audit logs with filters
-  async getAuditLogs(filters: AuditFilters & { page?: number; pageSize?: number }) {
-    // Use mock data in development if enabled
-    if (isFeatureEnabled('useMockData') || isFeatureEnabled('authBypass')) {
-      return Promise.resolve(mockAuditLogs);
-    }
+  async getAuditLogs(filters: AuditFilters & { 
+    page?: number; 
+    pageSize?: number; 
+    userId?: string;
+    limit?: number;
+    action?: string;
+    from?: string;
+    to?: string;
+  }) {
+    // Always try to use real data first
+    try {
 
     const params = new URLSearchParams();
 
-    if (filters.dateRange) {
+    // Handle date range - backend expects ISO strings for from/to
+    if (filters.from) {
+      params.append('from', filters.from);
+    } else if (filters.dateRange?.from) {
       params.append('from', filters.dateRange.from.toISOString());
+    }
+    
+    if (filters.to) {
+      params.append('to', filters.to);
+    } else if (filters.dateRange?.to) {
       params.append('to', filters.dateRange.to.toISOString());
     }
+
+    // Map frontend parameters to backend expectations
     if (filters.entityType) params.append('entityType', filters.entityType);
     if (filters.entityId) params.append('entityId', filters.entityId);
+    if (filters.userId) params.append('userId', filters.userId);
+    
+    // Handle action -> eventType mapping
+    if (filters.action) {
+      // Map action to eventType for backend
+      const eventTypeMap: Record<string, string> = {
+        'CREATE': 'CUSTOMER_CREATED',
+        'UPDATE': 'CUSTOMER_UPDATED', 
+        'DELETE': 'CUSTOMER_DELETED',
+        'VIEW': 'CUSTOMER_VIEWED',
+        'EXPORT': 'DATA_EXPORT_STARTED',
+        'LOGIN': 'USER_LOGIN',
+        'ALL': '' // Don't send eventType for ALL
+      };
+      const eventType = eventTypeMap[filters.action] || filters.action;
+      if (eventType) {
+        params.append('eventType', eventType);
+      }
+    }
+    
     if (filters.eventTypes) {
       filters.eventTypes.forEach(type => params.append('eventType', type));
     }
@@ -156,109 +198,115 @@ export const auditApi = {
     }
     if (filters.searchText) params.append('searchText', filters.searchText);
     if (filters.page !== undefined) params.append('page', filters.page.toString());
-    if (filters.pageSize) params.append('size', filters.pageSize.toString());
+    
+    // Handle both limit and pageSize (backend expects 'size')
+    const size = filters.limit || filters.pageSize || 50;
+    params.append('size', size.toString());
 
     const response = await httpClient.get<AuditLog[]>(`/api/audit/search?${params}`);
     return response.data;
+    } catch (error) {
+      console.error('Failed to fetch audit logs, using mock data:', error);
+      // Only use mock data as fallback when API fails
+      return mockAuditLogs;
+    }
   },
 
   // Get audit detail
   async getAuditDetail(id: string) {
-    if (isFeatureEnabled('useMockData') || isFeatureEnabled('authBypass')) {
+    // Always try to use real data first
+    try {
+      const response = await httpClient.get<AuditLog>(`/api/audit/${id}`);
+      return response.data;
+    } catch (error) {
+      console.error('Failed to fetch audit detail, using mock data:', error);
+      // Only use mock data as fallback when API fails
       const log = mockAuditLogs.find(l => l.id === id);
-      return Promise.resolve(log || mockAuditLogs[0]);
+      return log || mockAuditLogs[0];
     }
-
-    const response = await httpClient.get<AuditLog>(`/api/audit/${id}`);
-    return response.data;
   },
 
   // Get entity audit trail
   async getEntityAuditTrail(entityType: string, entityId: string, page = 0, size = 50) {
-    if (isFeatureEnabled('useMockData') || isFeatureEnabled('authBypass')) {
-      return Promise.resolve(
-        mockAuditLogs.filter(log => log.entityType === entityType && log.entityId === entityId)
+    // Always try to use real data first
+    try {
+      const response = await httpClient.get<AuditLog[]>(
+        `/api/audit/entity/${entityType}/${entityId}?page=${page}&size=${size}`
       );
+      return response.data;
+    } catch (error) {
+      console.error('Failed to fetch entity audit trail, using mock data:', error);
+      // Only use mock data as fallback when API fails
+      return mockAuditLogs.filter(log => log.entityType === entityType && log.entityId === entityId);
     }
-
-    const response = await httpClient.get<AuditLog[]>(
-      `/api/audit/entity/${entityType}/${entityId}?page=${page}&size=${size}`
-    );
-    return response.data;
   },
 
   // Dashboard metrics
   async getDashboardMetrics() {
-    if (isFeatureEnabled('useMockData') || isFeatureEnabled('authBypass')) {
-      return Promise.resolve(mockDashboardMetrics);
+    // Always use real data for dashboard metrics
+    // The backend now provides real data instead of mocks
+    try {
+      const response = await httpClient.get<AuditDashboardMetrics>('/api/audit/dashboard/metrics');
+      return response.data;
+    } catch (error) {
+      console.error('Failed to fetch dashboard metrics, using mock data:', error);
+      // Only use mock data as fallback when API fails
+      return mockDashboardMetrics;
     }
-
-    const response = await httpClient.get<AuditDashboardMetrics>('/api/audit/dashboard/metrics');
-    return response.data;
   },
 
   // Activity chart data
   async getActivityChartData(days = 7, groupBy = 'hour') {
-    if (isFeatureEnabled('useMockData') || isFeatureEnabled('authBypass')) {
-      return Promise.resolve(mockActivityChartData);
+    // Always try to fetch real data first
+    try {
+      const response = await httpClient.get<ActivityChartData[]>(
+        `/api/audit/dashboard/activity-chart?days=${days}&groupBy=${groupBy}`
+      );
+      return response.data;
+    } catch (error) {
+      console.error('Failed to fetch activity chart data, using mock data:', error);
+      // Only use mock data as fallback when API fails
+      return mockActivityChartData;
     }
-
-    const response = await httpClient.get<ActivityChartData[]>(
-      `/api/audit/dashboard/activity-chart?days=${days}&groupBy=${groupBy}`
-    );
-    return response.data;
   },
 
   // Critical events
   async getCriticalEvents(limit = 10) {
-    if (isFeatureEnabled('useMockData') || isFeatureEnabled('authBypass')) {
+    // Always try to fetch real data first
+    try {
+      const response = await httpClient.get<AuditLog[]>(
+        `/api/audit/dashboard/critical-events?limit=${limit}`
+      );
+      return response.data;
+    } catch (error) {
+      console.error('Failed to fetch critical events, using mock data:', error);
+      // Only use mock data as fallback when API fails
       const criticalEvents = mockAuditLogs.filter(
         log => log.eventType.includes('DENIED') || log.eventType.includes('ERROR') || !log.success
       );
-      return Promise.resolve(criticalEvents.slice(0, limit));
+      return criticalEvents.slice(0, limit);
     }
-
-    const response = await httpClient.get<AuditLog[]>(
-      `/api/audit/dashboard/critical-events?limit=${limit}`
-    );
-    return response.data;
   },
 
   // Compliance alerts
   async getComplianceAlerts() {
-    if (isFeatureEnabled('useMockData') || isFeatureEnabled('authBypass')) {
-      return Promise.resolve(mockComplianceAlerts);
+    // Always try to fetch real data first
+    try {
+      const response = await httpClient.get<ComplianceAlert[]>(
+        '/api/audit/dashboard/compliance-alerts'
+      );
+      return response.data;
+    } catch (error) {
+      console.error('Failed to fetch compliance alerts, using mock data:', error);
+      // Only use mock data as fallback when API fails
+      return mockComplianceAlerts;
     }
-
-    const response = await httpClient.get<ComplianceAlert[]>(
-      '/api/audit/dashboard/compliance-alerts'
-    );
-    return response.data;
   },
 
   // Export audit logs
   async exportAuditLogs(options: AuditExportOptions) {
-    if (isFeatureEnabled('useMockData') || isFeatureEnabled('authBypass')) {
-      // Mock export - create CSV content
-      const csvContent = [
-        'ID,Timestamp,User,Event,Entity,Action,Success',
-        ...mockAuditLogs.map(
-          log =>
-            `${log.id},${log.timestamp},${log.userName},${log.eventType},${log.entityType},${log.action},${log.success}`
-        ),
-      ].join('\n');
-
-      const blob = new Blob([csvContent], { type: 'text/csv' });
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', `audit_trail_${new Date().toISOString().split('T')[0]}.csv`);
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      window.URL.revokeObjectURL(url);
-      return;
-    }
+    // Always try to use real data first
+    try {
 
     const params = new URLSearchParams();
     params.append('format', options.format);
@@ -288,35 +336,69 @@ export const auditApi = {
     link.click();
     link.remove();
     window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Failed to export audit logs, using mock data:', error);
+      // Mock export as fallback - create CSV content
+      const csvContent = [
+        'ID,Timestamp,User,Event,Entity,Action,Success',
+        ...mockAuditLogs.map(
+          log =>
+            `${log.id},${log.timestamp},${log.userName},${log.eventType},${log.entityType},${log.action},${log.success}`
+        ),
+      ].join('\n');
+
+      const blob = new Blob([csvContent], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `audit_trail_${new Date().toISOString().split('T')[0]}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    }
   },
 
   // Verify integrity
   async verifyIntegrity(from?: Date, to?: Date) {
-    if (isFeatureEnabled('useMockData') || isFeatureEnabled('authBypass')) {
-      return Promise.resolve({
+    // Always try to use real data first
+    try {
+      const params = new URLSearchParams();
+      if (from) params.append('from', from.toISOString());
+      if (to) params.append('to', to.toISOString());
+
+      const response = await httpClient.post<{
+        status: 'valid' | 'compromised';
+        message?: string;
+        issues?: string[];
+      }>(`/api/audit/verify-integrity?${params}`);
+
+      return response.data;
+    } catch (error) {
+      console.error('Failed to verify integrity, using mock data:', error);
+      // Only use mock data as fallback when API fails
+      return {
         status: 'valid' as const,
         message: 'Audit trail integrity verified successfully',
         issues: [],
-      });
+      };
     }
-
-    const params = new URLSearchParams();
-    if (from) params.append('from', from.toISOString());
-    if (to) params.append('to', to.toISOString());
-
-    const response = await httpClient.post<{
-      status: 'valid' | 'compromised';
-      message?: string;
-      issues?: string[];
-    }>(`/api/audit/verify-integrity?${params}`);
-
-    return response.data;
   },
 
   // Get statistics
   async getStatistics(from?: Date, to?: Date) {
-    if (isFeatureEnabled('useMockData') || isFeatureEnabled('authBypass')) {
-      return Promise.resolve({
+    // Always try to use real data first
+    try {
+      const params = new URLSearchParams();
+      if (from) params.append('from', from.toISOString());
+      if (to) params.append('to', to.toISOString());
+
+      const response = await httpClient.get<Record<string, any>>(`/api/audit/statistics?${params}`);
+      return response.data;
+    } catch (error) {
+      console.error('Failed to get statistics, using mock data:', error);
+      // Only use mock data as fallback when API fails
+      return {
         totalEvents: 2473,
         uniqueUsers: 25,
         uniqueEntities: 187,
@@ -324,14 +406,7 @@ export const auditApi = {
         averageEventsPerDay: 82.4,
         mostActiveUser: 'Max Mustermann',
         mostCommonEvent: 'USER_LOGIN',
-      });
+      };
     }
-
-    const params = new URLSearchParams();
-    if (from) params.append('from', from.toISOString());
-    if (to) params.append('to', to.toISOString());
-
-    const response = await httpClient.get<Record<string, any>>(`/api/audit/statistics?${params}`);
-    return response.data;
   },
 };

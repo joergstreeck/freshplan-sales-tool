@@ -4,7 +4,7 @@
  * Tests modal behavior, responsive design, and event handling.
  */
 
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { vi } from 'vitest';
 import { CustomerOnboardingWizardModal } from '../CustomerOnboardingWizardModal';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -15,7 +15,7 @@ import type { Customer } from '../../../../../types/customer.types';
 
 // Mock CustomerOnboardingWizard
 vi.mock('../CustomerOnboardingWizard', () => ({
-  CustomerOnboardingWizard: ({ onComplete, onCancel, isModal }: any) => (
+  CustomerOnboardingWizard: ({ onComplete, onCancel, isModal }: unknown) => (
     <div data-testid="wizard-mock">
       <button onClick={() => onComplete({ id: '123', name: 'Test Customer' })}>Complete</button>
       <button onClick={onCancel}>Cancel</button>

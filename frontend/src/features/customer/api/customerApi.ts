@@ -48,4 +48,10 @@ export const customerApi = {
     const response = await httpClient.get<CustomerListResponse>(`/api/customers/search?${params}`);
     return response.data;
   },
+
+  // Get contacts for a customer
+  getCustomerContacts: async (customerId: string): Promise<any[]> => {
+    const response = await httpClient.get<any[]>(`/api/customers/${customerId}/contacts`);
+    return response.data;
+  },
 };

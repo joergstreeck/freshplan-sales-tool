@@ -229,7 +229,7 @@ export const Step2AngebotPainpointsV2: React.FC = () => {
             </Typography>
             <Grid container spacing={2}>
               {activePainPoints.map(point => (
-                <Grid item xs={12} md={6} key={point.key}>
+                <Grid size={{ xs: 12, md: 6 }} key={point.key}>
                   <Card variant="outlined">
                     <CardContent>
                       <Typography variant="subtitle1" fontWeight="bold" gutterBottom>

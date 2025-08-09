@@ -75,7 +75,7 @@ export const LocationsStep: React.FC = () => {
       {/* Location Cards */}
       <Grid container spacing={3}>
         {locations.map((location, index) => (
-          <Grid item xs={12} key={location.id}>
+          <Grid size={{ xs: 12 }} key={location.id}>
             <Card variant="outlined">
               <CardContent>
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>

@@ -35,6 +35,25 @@
 - **→ Smart Suggestions:** `/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/Step3/SMART_SUGGESTIONS.md` ✅ GEPLANT  
 - **→ Contact Analytics:** `/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/Step3/CONTACT_ANALYTICS.md` 📄 FUTURE  
 
+### Audit Trail System Integration (NEU 09.08.2025) 🎯
+
+#### PR 3 - Aktuelle PR (IN ARBEIT)
+- **→ Implementation Plan:** `/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/Step3/AUDIT_TIMELINE_IMPLEMENTATION_PLAN.md` 📋 PR3 SCOPE  
+- **→ Team-Entscheidung:** `/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/Step3/AUDIT_TIMELINE_TEAM_DECISION.md` ✅ ENTSCHIEDEN  
+
+#### PR 4 - Nächste Features (GEPLANT)
+- **→ Smart Card Integration:** `/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/Step3/SMART_CONTACT_CARD_AUDIT_INTEGRATION.md` 📇 GEPLANT  
+- **→ Performance Optimizations:** `/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/Step3/PERFORMANCE_OPTIMIZATIONS.md` ⚡ GEPLANT  
+- **→ Export Features:** `/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/Step3/AUDIT_EXPORT_FEATURES.md` 📤 GEPLANT  
+
+#### Sprint 4 - Erweiterte Features (SPÄTER)
+- **→ FAB mit Drawer:** `/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/Step3/FAB_DRAWER_INTEGRATION.md` 🎯 SPRINT 4  
+
+#### Bereits implementiert (ERLEDIGT)
+- **→ Audit Trail System:** `/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/Step3/AUDIT_TRAIL_SYSTEM.md` ✅ IMPLEMENTIERT  
+- **→ Audit Admin Dashboard:** `/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/Step3/AUDIT_ADMIN_DASHBOARD.md` ✅ IMPLEMENTIERT  
+- **→ Diskussion Platzierung:** `/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/Step3/AUDIT_TIMELINE_PLACEMENT_DISCUSSION.md` 📋 ARCHIV  
+
 ### Support-Dokumente (Claude-Ready ✅)
 - **📚 Integration Summary:** `/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/Step3/INTEGRATION_SUMMARY.md` ✅ AKTUALISIERT  
 - **🎯 Consolidated Roadmap:** `/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/Step3/CONSOLIDATED_ROADMAP.md` ✅ AKTUELL  
@@ -57,6 +76,27 @@ Step 3 verwandelt die Kontaktverwaltung in eine **lebendige Beziehungs-Zentrale*
 > "Das, was du hier planst, ist nicht nur technisch absolut empfehlenswert, sondern aus Sicht von Vertrieb, Support, Management und IT best practice."
 
 **[→ Vollständiges Team-Feedback und Integration](/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/Step3/TEAM_FEEDBACK_INTEGRATION.md)** 🎯
+
+## ⚠️ WICHTIGER HINWEIS FÜR ALLE FRONTEND-IMPLEMENTIERUNGEN
+
+**MUI Grid v2 Syntax ist PFLICHT:**
+Seit MUI v7 verwenden wir **ausschließlich Grid v2 Syntax** in allen neuen Komponenten:
+
+```typescript
+// ✅ RICHTIG - Grid v2 Syntax (MUI v7)
+import { Grid } from '@mui/material';
+
+<Grid container spacing={3}>
+  <Grid size={{ xs: 12, sm: 6, md: 4 }}>
+    <Component />
+  </Grid>
+</Grid>
+
+// ❌ FALSCH - Alte Grid v1 Syntax
+<Grid item xs={12} sm={6} md={4}>  // item prop existiert nicht mehr!
+```
+
+**Details:** [MUI Grid Migration Guide](/Users/joergstreeck/freshplan-sales-tool/docs/guides/DEBUG_COOKBOOK.md#mui-grid-v2)
 
 ## ✅ BEREITS ERLEDIGTE ARBEITEN
 

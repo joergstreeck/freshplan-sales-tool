@@ -351,9 +351,8 @@ public class AuditRepository implements PanacheRepositoryBase<AuditLog, UUID> {
   }
 
   /**
-   * @deprecated Use ComplianceService.getComplianceAlerts() instead.
-   * This method will be removed in the next major version.
-   * Business logic should not be in the repository layer.
+   * @deprecated Use ComplianceService.getComplianceAlerts() instead. This method will be removed in
+   *     the next major version. Business logic should not be in the repository layer.
    */
   @Deprecated
   public List<Map<String, Object>> getComplianceAlerts() {
@@ -361,7 +360,7 @@ public class AuditRepository implements PanacheRepositoryBase<AuditLog, UUID> {
     // Use ComplianceService instead for compliance alert generation.
     return new ArrayList<>();
   }
-  
+
   /** Zählt verdächtige Aktivitäten für Compliance-Prüfungen. */
   public long countSuspiciousActivities() {
     // Beispiel: Zugriffe außerhalb der Geschäftszeiten

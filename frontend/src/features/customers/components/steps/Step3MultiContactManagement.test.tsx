@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { describe, it, expect, vi } from 'vitest';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Step3MultiContactManagement } from './Step3MultiContactManagement';
 import type { Contact } from '../../types/contact.types';
@@ -73,13 +73,13 @@ vi.mock('../../data/fieldCatalogContactExtensions', () => ({
 // CustomerFieldThemeProvider is NOT mocked - we use the real one
 
 vi.mock('../adaptive/AdaptiveFormContainer', () => ({
-  AdaptiveFormContainer: ({ children }: any) => (
+  AdaptiveFormContainer: ({ children }: unknown) => (
     <div className="adaptive-form-container">{children}</div>
   ),
 }));
 
 vi.mock('../contacts/ContactFormDialog', () => ({
-  ContactFormDialog: ({ open, onClose, contact }: any) =>
+  ContactFormDialog: ({ open, onClose, contact }: unknown) =>
     open ? <div role="dialog">Contact Form Dialog</div> : null,
 }));
 

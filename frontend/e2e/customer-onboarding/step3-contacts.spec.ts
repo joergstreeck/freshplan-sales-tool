@@ -26,7 +26,7 @@ async function setupMockEnvironment(page: Page) {
     }));
     
     // Mock the customer onboarding store state directly
-    (window as any).__MOCK_STORE_STATE__ = {
+    (window as unknown).__MOCK_STORE_STATE__ = {
       customerData: {
         companyName: 'Test Restaurant GmbH',
         street: 'Teststraße 123',

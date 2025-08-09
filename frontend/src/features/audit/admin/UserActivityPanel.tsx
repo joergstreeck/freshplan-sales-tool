@@ -231,7 +231,7 @@ export const UserActivityPanel: React.FC<UserActivityPanelProps> = ({ dateRange 
                           <Chip
                             label={user.userRole}
                             size="small"
-                            color={getRoleColor(user.userRole) as any}
+                            color={getRoleColor(user.userRole) as unknown}
                             variant="outlined"
                           />
                         </TableCell>
@@ -255,7 +255,7 @@ export const UserActivityPanel: React.FC<UserActivityPanelProps> = ({ dateRange 
                           <Chip
                             label={`${user.riskScore}%`}
                             size="small"
-                            color={getRiskColor(user.riskScore) as any}
+                            color={getRiskColor(user.riskScore) as unknown}
                           />
                         </TableCell>
                         <TableCell>

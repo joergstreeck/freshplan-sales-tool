@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Grid } from '@mui/material';
-import { Paper, Typography, Box, LinearProgress, Chip, Skeleton } from '@mui/material';
+import { Paper, Typography, Box, LinearProgress, Chip } from '@mui/material';
 import {
   TrendingUp as TrendingUpIcon,
   TrendingDown as TrendingDownIcon,
@@ -9,10 +9,7 @@ import {
   People as PeopleIcon,
   Warning as WarningIcon,
 } from '@mui/icons-material';
-import { useAuditAdminStore } from '@/store/admin/auditAdminStore';
-import { AuditStatisticsCards } from './AuditStatisticsCards';
-import { AuditActivityHeatmap } from './AuditActivityHeatmap';
-import { AuditStreamMonitor } from './AuditStreamMonitor';
+import { AuditActivityChart } from './AuditActivityChart';
 import type { AuditDashboardMetrics } from '../types';
 
 interface StatCardProps {
@@ -238,21 +235,12 @@ export const AuditDashboard: React.FC<AuditDashboardProps> = ({ metrics, dateRan
             Aktivitätsverlauf (7 Tage)
           </Typography>
 
-          {/* Hier würde normalerweise ein Chart kommen */}
-          <Box
-            sx={{
-              height: 200,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              bgcolor: '#f5f5f5',
-              borderRadius: 1,
-            }}
-          >
-            <Typography color="text.secondary">
-              Activity Chart Placeholder - Integration mit recharts/MUI Charts
-            </Typography>
-          </Box>
+          {/* Activity Chart with real data */}
+          <AuditActivityChart 
+            days={7} 
+            height={250}
+            showLegend={true}
+          />
         </Paper>
       </Grid>
     </Grid>

@@ -43,7 +43,7 @@ export function SalesCockpitMUI() {
 
       {/* Dashboard Stats */}
       <Grid container spacing={2} sx={{ mb: 3 }}>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
           <StatsCard>
             <GroupIcon sx={{ fontSize: 40, color: 'primary.main' }} />
             <Typography variant="h4">156</Typography>
@@ -52,7 +52,7 @@ export function SalesCockpitMUI() {
             </Typography>
           </StatsCard>
         </Grid>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
           <StatsCard>
             <TrendingUpIcon sx={{ fontSize: 40, color: 'success.main' }} />
             <Typography variant="h4">142</Typography>
@@ -61,7 +61,7 @@ export function SalesCockpitMUI() {
             </Typography>
           </StatsCard>
         </Grid>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
           <StatsCard>
             <TaskIcon sx={{ fontSize: 40, color: 'warning.main' }} />
             <Typography variant="h4">8</Typography>
@@ -70,7 +70,7 @@ export function SalesCockpitMUI() {
             </Typography>
           </StatsCard>
         </Grid>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
           <StatsCard>
             <ErrorIcon sx={{ fontSize: 40, color: 'error.main' }} />
             <Typography variant="h4">3</Typography>
@@ -84,7 +84,7 @@ export function SalesCockpitMUI() {
       {/* 3-Column Layout */}
       <Grid container spacing={2}>
         {/* Column 1: Mein Tag */}
-        <Grid item xs={12} md={4}>
+        <Grid size={{ xs: 12, md: 4 }}>
           <ColumnPaper elevation={1}>
             <Typography variant="h6" gutterBottom sx={{ color: 'secondary.main' }}>
               Mein Tag
@@ -123,7 +123,7 @@ export function SalesCockpitMUI() {
         </Grid>
 
         {/* Column 2: Fokus-Liste */}
-        <Grid item xs={12} md={4}>
+        <Grid size={{ xs: 12, md: 4 }}>
           <ColumnPaper elevation={1}>
             <Typography variant="h6" gutterBottom sx={{ color: 'secondary.main' }}>
               Fokus-Liste
@@ -152,7 +152,7 @@ export function SalesCockpitMUI() {
         </Grid>
 
         {/* Column 3: Aktions-Center */}
-        <Grid item xs={12} md={4}>
+        <Grid size={{ xs: 12, md: 4 }}>
           <ColumnPaper elevation={1}>
             <Typography variant="h6" gutterBottom sx={{ color: 'secondary.main' }}>
               Aktions-Center

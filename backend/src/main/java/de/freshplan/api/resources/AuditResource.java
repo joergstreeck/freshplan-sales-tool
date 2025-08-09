@@ -274,29 +274,55 @@ public class AuditResource {
     }
   }
 
-  // TODO: PR 3 - Implement these methods in AuditRepository
-  /*
   @GET
   @Path("/dashboard/metrics")
   @RolesAllowed({"admin", "auditor"})
   @Operation(summary = "Get audit dashboard metrics")
   public Response getDashboardMetrics() {
-    var metrics = Map.of(
-        "coverage", auditRepository.getAuditCoverage(),
-        "integrityStatus", auditRepository.getLastIntegrityCheckStatus(),
-        "retentionCompliance", auditRepository.getRetentionCompliancePercentage(),
-        "lastAudit", auditRepository.getLastAuditTimestamp(),
-        "criticalEventsToday", auditRepository.countCriticalEventsToday(),
-        "activeUsers", auditRepository.countActiveUsersToday(),
-        "totalEventsToday", auditRepository.countEventsToday(),
-        "topEventTypes", auditRepository.getTopEventTypesToday(5)
-    );
+    log.info("Fetching real dashboard metrics from database");
 
-    return Response.ok(metrics).build();
+    try {
+      // Get real metrics from repository
+      var dashboardMetrics = auditRepository.getDashboardMetrics();
+
+      // Convert to response format
+      var metrics =
+          Map.of(
+              "coverage", dashboardMetrics.coverage,
+              "integrityStatus", dashboardMetrics.integrityStatus,
+              "retentionCompliance", dashboardMetrics.retentionCompliance,
+              "lastAudit", dashboardMetrics.lastAudit,
+              "criticalEventsToday", dashboardMetrics.criticalEventsToday,
+              "activeUsers", dashboardMetrics.activeUsers,
+              "totalEventsToday", dashboardMetrics.totalEventsToday,
+              "topEventTypes", dashboardMetrics.topEventTypes);
+
+      return Response.ok(metrics).build();
+    } catch (Exception e) {
+      log.errorf(e, "Failed to fetch dashboard metrics");
+      // Fallback to basic metrics on error
+      var fallbackMetrics =
+          Map.of(
+              "coverage",
+              0.0,
+              "integrityStatus",
+              "error",
+              "retentionCompliance",
+              0,
+              "lastAudit",
+              Instant.now().toString(),
+              "criticalEventsToday",
+              0L,
+              "activeUsers",
+              0L,
+              "totalEventsToday",
+              0L,
+              "topEventTypes",
+              List.of());
+      return Response.ok(fallbackMetrics).build();
+    }
   }
-  */
 
-  /*
   @GET
   @Path("/dashboard/activity-chart")
   @RolesAllowed({"admin", "auditor"})
@@ -305,12 +331,30 @@ public class AuditResource {
       @QueryParam("days") @DefaultValue("7") int days,
       @QueryParam("groupBy") @DefaultValue("hour") String groupBy) {
 
-    var data = auditRepository.getActivityChartData(days, groupBy);
-    return Response.ok(data).build();
-  }
-  */
+    log.infof("Fetching activity chart data for %d days, grouped by %s", days, groupBy);
 
-  /*
+    try {
+      // Get real activity data from repository
+      var data = auditRepository.getActivityChartData(days, groupBy);
+
+      if (data.isEmpty()) {
+        // Return default data if no activity
+        data =
+            List.of(
+                Map.of("time", "00:00", "value", 0L),
+                Map.of("time", "06:00", "value", 0L),
+                Map.of("time", "12:00", "value", 0L),
+                Map.of("time", "18:00", "value", 0L));
+      }
+
+      return Response.ok(data).build();
+    } catch (Exception e) {
+      log.errorf(e, "Failed to fetch activity chart data");
+      // Return empty data on error
+      return Response.ok(List.of()).build();
+    }
+  }
+
   @GET
   @Path("/dashboard/critical-events")
   @RolesAllowed({"admin", "auditor"})
@@ -318,21 +362,37 @@ public class AuditResource {
   public Response getCriticalEvents(
       @QueryParam("limit") @DefaultValue("10") @Min(1) @Max(50) int limit) {
 
-    var events = auditRepository.findRecentCriticalEvents(limit);
-    return Response.ok(events).build();
-  }
-  */
+    log.infof("Fetching critical events with limit %d", limit);
 
-  /*
+    try {
+      // Get real critical events from repository
+      List<AuditEntry> events = auditRepository.getCriticalEvents(limit);
+
+      return Response.ok(events).build();
+    } catch (Exception e) {
+      log.errorf(e, "Failed to fetch critical events");
+      return Response.ok(List.of()).build();
+    }
+  }
+
   @GET
   @Path("/dashboard/compliance-alerts")
   @RolesAllowed({"admin", "auditor"})
   @Operation(summary = "Get compliance alerts and warnings")
   public Response getComplianceAlerts() {
-    var alerts = auditRepository.getComplianceAlerts();
-    return Response.ok(alerts).build();
+    log.info("Fetching compliance alerts");
+
+    try {
+      // Get real compliance alerts from repository
+      var alerts = auditRepository.getComplianceAlerts();
+
+      return Response.ok(alerts).build();
+    } catch (Exception e) {
+      log.errorf(e, "Failed to fetch compliance alerts");
+      // Return empty list on error
+      return Response.ok(List.of()).build();
+    }
   }
-  */
 
   /** Escape CSV special characters */
   private String csvEscape(String value) {

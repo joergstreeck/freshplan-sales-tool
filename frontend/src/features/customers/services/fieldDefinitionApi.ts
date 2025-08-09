@@ -70,12 +70,12 @@ export class FieldDefinitionApi {
     const cacheKey = 'industries';
 
     if (this.isCacheValid(cacheKey)) {
-      return this.cache.get(cacheKey) as any;
+      return this.cache.get(cacheKey) as unknown;
     }
 
     const industries = await apiClient.get<string[]>(`${this.basePath}/industries`, { retry: 2 });
 
-    this.cache.set(cacheKey, industries as any);
+    this.cache.set(cacheKey, industries as unknown);
     this.cacheExpiry.set(cacheKey, Date.now() + this.CACHE_DURATION);
 
     return industries;
@@ -170,11 +170,11 @@ export class FieldDefinitionApi {
     response: FieldDefinitionsResponse,
     industry?: string
   ): FieldDefinition[] {
-    const fields: FieldDefinition[] = [...response.baseFields] as any;
+    const fields: FieldDefinition[] = [...response.baseFields] as unknown;
 
     // Add industry-specific fields if industry is specified
     if (industry && response.industryFields[industry]) {
-      fields.push(...(response.industryFields[industry] as any));
+      fields.push(...(response.industryFields[industry] as unknown));
     }
 
     // Sort by displayOrder
