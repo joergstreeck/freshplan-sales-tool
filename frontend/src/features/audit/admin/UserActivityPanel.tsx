@@ -127,10 +127,10 @@ export const UserActivityPanel: React.FC<UserActivityPanelProps> = ({ dateRange 
     <Box>
       <Grid container spacing={3}>
         {/* Search and Stats */}
-        <Grid item xs={12}>
+        <Grid size={12}>
           <Paper sx={{ p: 3 }}>
             <Grid container spacing={2} alignItems="center">
-              <Grid item xs={12} md={6}>
+              <Grid size={{ xs: 12, md: 6 }}>
                 <TextField
                   fullWidth
                   placeholder="Benutzer suchen..."
@@ -155,7 +155,7 @@ export const UserActivityPanel: React.FC<UserActivityPanelProps> = ({ dateRange 
                   }}
                 />
               </Grid>
-              <Grid item xs={12} md={6}>
+              <Grid size={{ xs: 12, md: 6 }}>
                 <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
                   <Box sx={{ textAlign: 'center' }}>
                     <Typography variant="h4" sx={{ fontFamily: 'Antonio, sans-serif' }}>
@@ -188,7 +188,7 @@ export const UserActivityPanel: React.FC<UserActivityPanelProps> = ({ dateRange 
         </Grid>
         
         {/* User Table */}
-        <Grid item xs={12}>
+        <Grid size={12}>
           <Paper>
             <TableContainer>
               <Table sx={{ minWidth: 650 }}>

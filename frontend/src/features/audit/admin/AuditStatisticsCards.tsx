@@ -158,7 +158,7 @@ export const AuditStatisticsCards: React.FC<AuditStatisticsCardsProps> = ({
     return (
       <Grid container spacing={2}>
         {[...Array(8)].map((_, index) => (
-          <Grid item xs={12} sm={6} md={3} key={index}>
+          <Grid size={{ xs: 12, sm: 6, md: 3 }} key={index}>
             <Card sx={{ height: '100%' }}>
               <CardContent>
                 <Skeleton variant="text" width="60%" />
@@ -185,7 +185,7 @@ export const AuditStatisticsCards: React.FC<AuditStatisticsCardsProps> = ({
   return (
     <Grid container spacing={2}>
       {cards.map((card, index) => (
-        <Grid item xs={12} sm={6} md={3} key={index}>
+        <Grid size={{ xs: 12, sm: 6, md: 3 }} key={index}>
           <Card 
             sx={{ 
               height: '100%',
@@ -313,7 +313,7 @@ export const AuditStatisticsCards: React.FC<AuditStatisticsCardsProps> = ({
       
       {/* Event Type Distribution - Additional Card */}
       {stats.eventsByType && (
-        <Grid item xs={12}>
+        <Grid size={12}>
           <Card>
             <CardContent>
               <Typography 
@@ -328,7 +328,7 @@ export const AuditStatisticsCards: React.FC<AuditStatisticsCardsProps> = ({
               </Typography>
               <Grid container spacing={2}>
                 {Object.entries(stats.eventsByType).map(([type, count]) => (
-                  <Grid item xs={6} sm={4} md={2} key={type}>
+                  <Grid size={{ xs: 6, sm: 4, md: 2 }} key={type}>
                     <Box textAlign="center">
                       <Typography 
                         variant="caption" 

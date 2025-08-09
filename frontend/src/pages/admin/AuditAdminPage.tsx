@@ -264,7 +264,7 @@ export const AuditAdminPage: React.FC = () => {
             {metricsLoading ? (
               <Grid container spacing={3}>
                 {[1, 2, 3, 4].map((i) => (
-                  <Grid item xs={12} sm={6} md={3} key={i}>
+                  <Grid size={{ xs: 12, sm: 6, md: 3 }} key={i}>
                     <Skeleton variant="rectangular" height={120} />
                   </Grid>
                 ))}
@@ -294,7 +294,7 @@ export const AuditAdminPage: React.FC = () => {
           {/* Tab 2: Security */}
           <TabPanel value={currentTab} index={2}>
             <Grid container spacing={3}>
-              <Grid item xs={12}>
+              <Grid size={12}>
                 <Typography variant="h5" gutterBottom sx={{ fontFamily: 'Antonio, sans-serif' }}>
                   Kritische Ereignisse
                 </Typography>

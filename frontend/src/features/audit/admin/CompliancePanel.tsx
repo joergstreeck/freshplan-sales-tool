@@ -74,7 +74,7 @@ export const CompliancePanel: React.FC<CompliancePanelProps> = ({
     <Box>
       <Grid container spacing={3}>
         {/* Compliance Score Overview */}
-        <Grid item xs={12}>
+        <Grid size={12}>
           <Paper sx={{ p: 3 }}>
             <Typography 
               variant="h5" 
@@ -85,7 +85,7 @@ export const CompliancePanel: React.FC<CompliancePanelProps> = ({
             </Typography>
             
             <Grid container spacing={3}>
-              <Grid item xs={12} md={4}>
+              <Grid size={{ xs: 12, md: 4 }}>
                 <Box sx={{ textAlign: 'center' }}>
                   <Typography variant="h2" sx={{ 
                     fontFamily: 'Antonio, sans-serif',
@@ -99,7 +99,7 @@ export const CompliancePanel: React.FC<CompliancePanelProps> = ({
                 </Box>
               </Grid>
               
-              <Grid item xs={12} md={8}>
+              <Grid size={{ xs: 12, md: 8 }}>
                 <List dense>
                   <ListItem>
                     <ListItemIcon>
@@ -139,7 +139,7 @@ export const CompliancePanel: React.FC<CompliancePanelProps> = ({
         
         {/* Critical Alerts */}
         {criticalAlerts.length > 0 && (
-          <Grid item xs={12}>
+          <Grid size={12}>
             <Alert severity="error">
               <AlertTitle sx={{ fontWeight: 'bold' }}>
                 Kritische Compliance-Probleme ({criticalAlerts.length})
@@ -170,7 +170,7 @@ export const CompliancePanel: React.FC<CompliancePanelProps> = ({
         
         {/* Warning Alerts */}
         {warningAlerts.length > 0 && (
-          <Grid item xs={12}>
+          <Grid size={12}>
             <Alert severity="warning">
               <AlertTitle sx={{ fontWeight: 'bold' }}>
                 Warnungen ({warningAlerts.length})
@@ -191,7 +191,7 @@ export const CompliancePanel: React.FC<CompliancePanelProps> = ({
         
         {/* Info Alerts */}
         {infoAlerts.length > 0 && (
-          <Grid item xs={12}>
+          <Grid size={12}>
             <Alert severity="info">
               <AlertTitle sx={{ fontWeight: 'bold' }}>
                 Hinweise ({infoAlerts.length})
@@ -211,7 +211,7 @@ export const CompliancePanel: React.FC<CompliancePanelProps> = ({
         )}
         
         {/* Retention Policies */}
-        <Grid item xs={12} md={6}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <Paper sx={{ p: 3 }}>
             <Typography 
               variant="h6" 
@@ -254,7 +254,7 @@ export const CompliancePanel: React.FC<CompliancePanelProps> = ({
         </Grid>
         
         {/* Report Generation */}
-        <Grid item xs={12} md={6}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <Paper sx={{ p: 3 }}>
             <Typography 
               variant="h6" 
@@ -301,7 +301,7 @@ export const CompliancePanel: React.FC<CompliancePanelProps> = ({
         
         {/* No Issues */}
         {alerts.length === 0 && (
-          <Grid item xs={12}>
+          <Grid size={12}>
             <Alert severity="success">
               <AlertTitle sx={{ fontWeight: 'bold' }}>
                 Keine Compliance-Probleme gefunden

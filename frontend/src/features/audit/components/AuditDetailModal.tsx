@@ -160,7 +160,7 @@ export const AuditDetailModal: React.FC<AuditDetailModalProps> = ({
                 Grundinformationen
               </Typography>
               <Grid container spacing={2}>
-                <Grid item xs={12} sm={6}>
+                <Grid size={{ xs: 12, sm: 6 }}>
                   <Typography variant="caption" color="text.secondary">
                     ID
                   </Typography>
@@ -177,7 +177,7 @@ export const AuditDetailModal: React.FC<AuditDetailModalProps> = ({
                     </IconButton>
                   </Box>
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid size={{ xs: 12, sm: 6 }}>
                   <Typography variant="caption" color="text.secondary">
                     Zeitstempel
                   </Typography>
@@ -185,7 +185,7 @@ export const AuditDetailModal: React.FC<AuditDetailModalProps> = ({
                     {format(new Date(audit.timestamp || audit.occurredAt), 'PPpp', { locale: de })}
                   </Typography>
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid size={{ xs: 12, sm: 6 }}>
                   <Typography variant="caption" color="text.secondary">
                     Aktion
                   </Typography>
@@ -198,7 +198,7 @@ export const AuditDetailModal: React.FC<AuditDetailModalProps> = ({
                     />
                   </Box>
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid size={{ xs: 12, sm: 6 }}>
                   <Typography variant="caption" color="text.secondary">
                     Entity
                   </Typography>
@@ -220,7 +220,7 @@ export const AuditDetailModal: React.FC<AuditDetailModalProps> = ({
                 Benutzerinformationen
               </Typography>
               <Grid container spacing={2}>
-                <Grid item xs={12} sm={6}>
+                <Grid size={{ xs: 12, sm: 6 }}>
                   <Typography variant="caption" color="text.secondary">
                     Benutzer ID
                   </Typography>
@@ -228,7 +228,7 @@ export const AuditDetailModal: React.FC<AuditDetailModalProps> = ({
                     {audit.userId}
                   </Typography>
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid size={{ xs: 12, sm: 6 }}>
                   <Typography variant="caption" color="text.secondary">
                     Benutzername
                   </Typography>
@@ -236,7 +236,7 @@ export const AuditDetailModal: React.FC<AuditDetailModalProps> = ({
                     {audit.userName || audit.username || '-'}
                   </Typography>
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid size={{ xs: 12, sm: 6 }}>
                   <Typography variant="caption" color="text.secondary">
                     IP-Adresse
                   </Typography>
@@ -244,7 +244,7 @@ export const AuditDetailModal: React.FC<AuditDetailModalProps> = ({
                     {audit.ipAddress || '-'}
                   </Typography>
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid size={{ xs: 12, sm: 6 }}>
                   <Typography variant="caption" color="text.secondary">
                     User Agent
                   </Typography>
@@ -360,7 +360,7 @@ export const AuditDetailModal: React.FC<AuditDetailModalProps> = ({
                 Sicherheit & Integrität
               </Typography>
               <Grid container spacing={2}>
-                <Grid item xs={12}>
+                <Grid size={12}>
                   <Typography variant="caption" color="text.secondary">
                     Hash-Chain
                   </Typography>
@@ -376,7 +376,7 @@ export const AuditDetailModal: React.FC<AuditDetailModalProps> = ({
                   </Typography>
                 </Grid>
                 {audit.previousHash && (
-                  <Grid item xs={12}>
+                  <Grid size={12}>
                     <Typography variant="caption" color="text.secondary">
                       Vorheriger Hash
                     </Typography>
@@ -392,7 +392,7 @@ export const AuditDetailModal: React.FC<AuditDetailModalProps> = ({
                     </Typography>
                   </Grid>
                 )}
-                <Grid item xs={12}>
+                <Grid size={12}>
                   <Box display="flex" alignItems="center" gap={1}>
                     {audit.isValid !== false ? (
                       <>
@@ -427,7 +427,7 @@ export const AuditDetailModal: React.FC<AuditDetailModalProps> = ({
                 </Typography>
                 <Grid container spacing={2}>
                   {audit.isDsgvoRelevant && (
-                    <Grid item xs={12}>
+                    <Grid size={12}>
                       <Alert severity="info" sx={{ py: 0.5 }}>
                         <Typography variant="body2">
                           DSGVO-relevant - unterliegt besonderen Datenschutzbestimmungen
@@ -435,7 +435,7 @@ export const AuditDetailModal: React.FC<AuditDetailModalProps> = ({
                       </Alert>
                     </Grid>
                   )}
-                  <Grid item xs={12} sm={6}>
+                  <Grid size={{ xs: 12, sm: 6 }}>
                     <Typography variant="caption" color="text.secondary">
                       Aufbewahrungspflicht
                     </Typography>
@@ -443,7 +443,7 @@ export const AuditDetailModal: React.FC<AuditDetailModalProps> = ({
                       {audit.retentionPeriod || '10 Jahre (Standard)'}
                     </Typography>
                   </Grid>
-                  <Grid item xs={12} sm={6}>
+                  <Grid size={{ xs: 12, sm: 6 }}>
                     <Typography variant="caption" color="text.secondary">
                       Löschung geplant
                     </Typography>
@@ -454,7 +454,7 @@ export const AuditDetailModal: React.FC<AuditDetailModalProps> = ({
                     </Typography>
                   </Grid>
                   {audit.dsgvoCategories && audit.dsgvoCategories.length > 0 && (
-                    <Grid item xs={12}>
+                    <Grid size={12}>
                       <Typography variant="caption" color="text.secondary">
                         DSGVO-Kategorien
                       </Typography>
