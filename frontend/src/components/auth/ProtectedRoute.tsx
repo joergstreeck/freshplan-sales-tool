@@ -2,6 +2,7 @@ import React from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 import { Box, Alert, CircularProgress } from '@mui/material';
 import { useAuth } from '@/hooks/useAuth';
+import { isFeatureEnabled } from '@/config/featureFlags';
 
 interface ProtectedRouteProps {
   allowedRoles?: string[];
@@ -18,6 +19,29 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   const hasAnyRole = (roles: string[]) => {
     return roles.length === 0 || roles.some(role => hasRole(role));
   };
+  
+  // In development with authBypass, skip authentication check
+  if (isFeatureEnabled('authBypass')) {
+    // Still check roles even with authBypass
+    if (!hasAnyRole(allowedRoles)) {
+      return (
+        <Box sx={{ p: 3 }}>
+          <Alert 
+            severity="error"
+            sx={{
+              '& .MuiAlert-icon': {
+                color: '#d32f2f'
+              }
+            }}
+          >
+            Sie haben keine Berechtigung für diesen Bereich. 
+            Erforderliche Rolle(n): {allowedRoles.join(', ')}
+          </Alert>
+        </Box>
+      );
+    }
+    return children ? <>{children}</> : <Outlet />;
+  }
   
   if (isLoading) {
     return (

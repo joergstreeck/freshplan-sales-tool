@@ -84,7 +84,7 @@ export const AdminLayout: React.FC = () => {
   const [drawerOpen, setDrawerOpen] = useState(!isMobile);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const navigate = useNavigate();
-  const { hasRole, username, logout } = useAuth();
+  const { hasRole, username, email, logout } = useAuth();
   
   // Helper function to check if user has any of the allowed roles
   const hasAnyRole = (roles: string[]) => {
@@ -167,7 +167,7 @@ export const AdminLayout: React.FC = () => {
                   fontFamily: 'Poppins, sans-serif'
                 }}
               >
-                {user?.name || user?.email}
+                {username || email || 'Admin'}
               </Typography>
               <IconButton
                 onClick={handleUserMenuOpen}
@@ -176,7 +176,7 @@ export const AdminLayout: React.FC = () => {
                 color="inherit"
               >
                 <Avatar sx={{ width: 32, height: 32, bgcolor: '#94C456' }}>
-                  {user?.name?.charAt(0) || 'A'}
+                  {username?.charAt(0) || email?.charAt(0) || 'A'}
                 </Avatar>
               </IconButton>
             </Box>

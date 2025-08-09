@@ -29,7 +29,6 @@ import { OpportunityPipelinePage } from './pages/OpportunityPipelinePage';
 import { HelpSystemDemoPage } from './pages/HelpSystemDemoPage';
 import { AuditAdminPage } from './pages/admin/AuditAdminPage';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
-import { AdminLayout } from './components/layout/AdminLayout';
 
 interface AppProvidersProps {
   children?: ReactNode;
@@ -102,17 +101,23 @@ export const AppProviders = ({ children: mainChildren }: AppProvidersProps) => {
                         <Route path="/help-demo" element={<HelpSystemDemoPage />} />
                         
                         {/* Admin Routes - Protected by Role */}
-                        <Route path="/admin" element={
+                        <Route path="/admin/audit" element={
                           <ProtectedRoute allowedRoles={['admin', 'auditor']}>
-                            <AdminLayout />
+                            <AuditAdminPage />
                           </ProtectedRoute>
-                        }>
-                          <Route path="audit" element={<AuditAdminPage />} />
-                          {/* Weitere Admin-Seiten können hier hinzugefügt werden:
-                          <Route path="users" element={<UserManagementPage />} />
-                          <Route path="settings" element={<SystemSettingsPage />} />
-                          */}
-                        </Route>
+                        } />
+                        {/* Weitere Admin-Seiten können hier hinzugefügt werden:
+                        <Route path="/admin/users" element={
+                          <ProtectedRoute allowedRoles={['admin']}>
+                            <UserManagementPage />
+                          </ProtectedRoute>
+                        } />
+                        <Route path="/admin/settings" element={
+                          <ProtectedRoute allowedRoles={['admin']}>
+                            <SystemSettingsPage />
+                          </ProtectedRoute>
+                        } />
+                        */}
                         
                         {/* Login Bypass temporär reaktiviert - Auto-Login Problem */}
                         {isDevelopmentMode && (

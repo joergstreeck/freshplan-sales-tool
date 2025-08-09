@@ -26,6 +26,7 @@ import {
   FilterList as FilterIcon
 } from '@mui/icons-material';
 import { useQuery } from '@tanstack/react-query';
+import { MainLayoutV2 } from '@/components/layout/MainLayoutV2';
 import { AuditTrailTable } from '@/features/audit/components/AuditTrailTable';
 import { AuditDashboard } from '@/features/audit/admin/AuditDashboard';
 import { CompliancePanel } from '@/features/audit/admin/CompliancePanel';
@@ -100,7 +101,8 @@ export const AuditAdminPage: React.FC = () => {
   };
   
   return (
-    <Box>
+    <MainLayoutV2>
+      <Box>
       {/* Header */}
       <Paper sx={{ p: 2, mb: 3 }}>
         <Grid container alignItems="center" spacing={2}>
@@ -342,5 +344,6 @@ export const AuditAdminPage: React.FC = () => {
         </Box>
       </Paper>
     </Box>
+    </MainLayoutV2>
   );
 };
