@@ -16,9 +16,9 @@ import {
 import {
   Info as InfoIcon,
   // ZoomIn as ZoomInIcon, // TODO: Use for zoom feature
-  ZoomOut as ZoomOutIcon,
+  // ZoomOut as ZoomOutIcon, // TODO: Use for zoom feature
 } from '@mui/icons-material';
-import { format, startOfWeek, addDays, addHours, isSameDay } from 'date-fns';
+import { format, addDays, addHours, isSameDay } from 'date-fns';
 import { de } from 'date-fns/locale';
 
 interface HeatmapDataPoint {

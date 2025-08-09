@@ -1,6 +1,6 @@
 import React from 'react';
 import { Grid } from '@mui/material';
-import { Paper, Typography, Box, LinearProgress, Chip, Skeleton } from '@mui/material';
+import { Paper, Typography, Box, LinearProgress, Chip } from '@mui/material';
 import {
   TrendingUp as TrendingUpIcon,
   TrendingDown as TrendingDownIcon,
@@ -9,10 +9,6 @@ import {
   People as PeopleIcon,
   Warning as WarningIcon,
 } from '@mui/icons-material';
-import { useAuditAdminStore } from '@/store/admin/auditAdminStore';
-import { AuditStatisticsCards } from './AuditStatisticsCards';
-import { AuditActivityHeatmap } from './AuditActivityHeatmap';
-import { AuditStreamMonitor } from './AuditStreamMonitor';
 import { AuditActivityChart } from './AuditActivityChart';
 import type { AuditDashboardMetrics } from '../types';
 
