@@ -307,7 +307,7 @@ public class AuditRepository implements PanacheRepositoryBase<AuditEntry, UUID> 
     // Coverage calculation (percentage of entities with audit logs)
     // TODO: Implement proper coverage calculation based on actual entity audit coverage
     // For now, return 0 when no data exists
-    metrics.coverage = totalEventsToday > 0 ? 85.5 : 0.0; // Return 0 for empty dataset
+    metrics.coverage = metrics.totalEventsToday > 0 ? 85.5 : 0.0; // Return 0 for empty dataset
 
     // Integrity status
     List<AuditIntegrityIssue> integrityIssues = verifyIntegrity(todayStart, now);

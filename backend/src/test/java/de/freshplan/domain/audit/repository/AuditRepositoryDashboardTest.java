@@ -96,7 +96,7 @@ class AuditRepositoryDashboardTest {
       // If we have event types, verify one is LOGIN_FAILURE
       boolean hasEventType = metrics.topEventTypes.stream()
           .anyMatch(e -> e.containsKey("type") && e.containsKey("count"));
-      assertTrue("Event types should have 'type' and 'count' fields", hasEventType);
+      assertTrue(hasEventType, "Event types should have 'type' and 'count' fields");
     }
   }
 
