@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { DataHygieneDashboard } from '../DataHygieneDashboard';
@@ -364,7 +364,7 @@ describe('DataHygieneDashboard Integration Tests', () => {
           showDataCollectionHints: true,
           criticalDataGaps: [],
           improvementSuggestions: [],
-          overallDataQuality: quality as any,
+          overallDataQuality: quality as unknown,
           interactionCoverage: 50,
         };
 

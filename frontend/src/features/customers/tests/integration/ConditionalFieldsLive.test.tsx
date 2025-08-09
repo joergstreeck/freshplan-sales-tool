@@ -385,7 +385,7 @@ describe.skip('🔄 CR-001 Live Conditional Fields Integration', () => {
           required: false,
           condition: {
             field: 'someField',
-            operator: 'invalidOperator' as any,
+            operator: 'invalidOperator' as unknown,
             value: 'someValue',
           },
         },

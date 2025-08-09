@@ -2,7 +2,7 @@
  * Enhanced tests for AuthContext - comprehensive coverage for FC-008 Security Foundation
  */
 import { render, screen } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { AuthProvider, useAuth } from '../AuthContext';
 
 // Mock the entire KeycloakContext module

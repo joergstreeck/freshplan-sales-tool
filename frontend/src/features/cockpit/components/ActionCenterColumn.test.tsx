@@ -2,8 +2,8 @@
  * Tests für ActionCenterColumn Komponente
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { describe, it, expect, vi } from 'vitest';
+import { render, screen } from '@testing-library/react';
 import { ActionCenterColumn } from './ActionCenterColumn';
 import { useCockpitStore } from '../../../store/cockpitStore';
 import type { Customer } from '../types';

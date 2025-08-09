@@ -8,7 +8,7 @@
  * @see /docs/features/FC-005-CUSTOMER-MANAGEMENT/09-TEST-PLAN/02-test-examples.md
  */
 
-import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { ApiClient, RequestConfig, apiClient } from '../../../services/api-client';
 
 // Mock fetch

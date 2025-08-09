@@ -56,11 +56,11 @@ describe('🔧 CR-003: Location Configuration', () => {
     });
 
     it('should handle unknown category gracefully', () => {
-      const unknownIcon = getCategoryIcon('unknown' as any);
+      const unknownIcon = getCategoryIcon('unknown' as unknown);
       expect(unknownIcon).toBeDefined();
       // Should return the 'other' icon
 
-      const unknownLabel = getCategoryLabel('unknown' as any);
+      const unknownLabel = getCategoryLabel('unknown' as unknown);
       expect(unknownLabel).toBe('Sonstiges');
     });
   });
@@ -84,14 +84,14 @@ describe('🔧 CR-003: Location Configuration', () => {
     });
 
     it('should return empty array for unknown industry', () => {
-      const unknownTemplates = getIndustryTemplates('unknown' as any);
+      const unknownTemplates = getIndustryTemplates('unknown' as unknown);
       expect(unknownTemplates).toEqual([]);
     });
 
     it('should check if industry has templates', () => {
       expect(hasIndustryTemplates('hotel')).toBe(true);
       expect(hasIndustryTemplates('krankenhaus')).toBe(true);
-      expect(hasIndustryTemplates('unknown' as any)).toBe(false);
+      expect(hasIndustryTemplates('unknown' as unknown)).toBe(false);
     });
 
     it('should have correct structure for templates', () => {

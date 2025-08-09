@@ -6,7 +6,7 @@
  * @see /Users/joergstreeck/freshplan-sales-tool/frontend/src/config/featureFlags.ts
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import {
   isFeatureEnabled,
   getFeatureFlag,
@@ -23,7 +23,7 @@ describe('🚩 Feature Flags', () => {
     });
 
     it('should handle non-existent flags gracefully', () => {
-      const result = isFeatureEnabled('nonExistent' as any);
+      const result = isFeatureEnabled('nonExistent' as unknown);
       expect(result).toBe(false);
     });
   });
@@ -39,7 +39,7 @@ describe('🚩 Feature Flags', () => {
     });
 
     it('should return undefined for non-existent flags', () => {
-      const flag = getFeatureFlag('nonExistent' as any);
+      const flag = getFeatureFlag('nonExistent' as unknown);
       expect(flag).toBeUndefined();
     });
   });
@@ -68,7 +68,7 @@ describe('🚩 Feature Flags', () => {
     });
 
     it('should handle flags without sunset dates', () => {
-      const result = isFeatureFlagExpired('nonExistent' as any);
+      const result = isFeatureFlagExpired('nonExistent' as unknown);
       expect(result).toBe(false);
     });
   });

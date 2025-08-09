@@ -6,7 +6,7 @@
  */
 
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { ThemeProvider, createTheme } from '@mui/material';
 import { SmartContactCard } from '../SmartContactCard';
 import type { Contact } from '../../../types/contact.types';
@@ -89,7 +89,7 @@ describe('SmartContactCard', () => {
 
   describe('Primary Contact Highlighting', () => {
     it('should highlight primary contacts with special styling', () => {
-      const primaryContact = { ...mockContact, isPrimary: true };
+      const primaryContact = { ...mockContisPrimary: true };
       const { container } = renderWithTheme(
         <SmartContactCard {...defaultProps} contact={primaryContact} />
       );
@@ -100,7 +100,7 @@ describe('SmartContactCard', () => {
     });
 
     it('should not show set as primary option for primary contacts', () => {
-      const primaryContact = { ...mockContact, isPrimary: true };
+      const primaryContact = { ...mockContisPrimary: true };
       renderWithTheme(<SmartContactCard {...defaultProps} contact={primaryContact} />);
       
       const moreButton = screen.getByRole('button', { name: '' });
@@ -119,7 +119,7 @@ describe('SmartContactCard', () => {
     });
 
     it('should not show birthday indicator when no birthday', () => {
-      const contactNoBirthday = { ...mockContact, birthday: undefined };
+      const contactNoBirthday = { ...mockContbirthday: undefined };
       renderWithTheme(<SmartContactCard {...defaultProps} contact={contactNoBirthday} />);
       
       expect(screen.queryByText(/\dT/)).not.toBeInTheDocument();
@@ -253,7 +253,7 @@ describe('SmartContactCard', () => {
       
       levels.forEach(level => {
         const { rerender } = renderWithTheme(
-          <SmartContactCard {...defaultProps} contact={{ ...mockContact, decisionLevel: level.value as any }} />
+          <SmartContactCard {...defaultProps} contact={{ ...mockContdecisionLevel: level.value as unknown }} />
         );
         
         expect(screen.getByText(level.label)).toBeInTheDocument();

@@ -1,7 +1,7 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { act, renderHook } from '@testing-library/react';
+import { describe, it, expect, vi } from 'vitest';
+import { renderHook } from '@testing-library/react';
 import { useCustomerOnboardingStore } from '../customerOnboardingStore';
-import type { Contact, CreateContactDTO } from '../../types/contact.types';
+import type { ContCreateContactDTO } from '../../types/contact.types';
 
 // Mock the API
 vi.mock('../../services/contactApi', () => ({

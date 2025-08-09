@@ -95,7 +95,7 @@ describe('🔄 CR-002 Dynamic Validation Integration (Simple)', () => {
         key: 'futureField',
         label: 'Future Field',
         entityType: 'customer',
-        fieldType: 'unknownType' as any, // This is intentional - Flexibility!
+        fieldType: 'unknownType' as unknown, // This is intentional - Flexibility!
         required: false,
       };
 

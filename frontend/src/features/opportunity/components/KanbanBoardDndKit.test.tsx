@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
+import { describe, it, expect, vi } from 'vitest';
+import { render, screen, within } from '@testing-library/react';
 import { ThemeProvider } from '@mui/material/styles';
 import freshfoodzTheme from '../../../theme/freshfoodz';
 import { KanbanBoardDndKit } from './KanbanBoardDndKit';

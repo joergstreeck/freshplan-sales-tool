@@ -5,8 +5,8 @@
  * PHILOSOPHIE: Respektiert field-basierte Architektur mit flexiblen any-Types
  */
 
-import { describe, it, expect, beforeEach, afterEach, beforeAll, afterAll, vi } from 'vitest';
-import { renderHook, act } from '@testing-library/react';
+import { describe, it, expect, beforeAll, afterAll, vi } from 'vitest';
+import { renderHook } from '@testing-library/react';
 import { useCustomerOnboardingStore } from '../../stores/customerOnboardingStore';
 import { mockServer, configureMockServer, testData } from './mockServer';
 

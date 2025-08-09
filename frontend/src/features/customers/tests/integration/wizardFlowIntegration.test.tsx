@@ -5,8 +5,8 @@
  * PHILOSOPHIE: Validiert komplexe User-Journeys mit flexibler field-basierter Architektur
  */
 
-import { describe, it, expect, beforeEach, afterEach, beforeAll, afterAll, vi } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { describe, it, expect, beforeAll, afterAll, vi } from 'vitest';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { mockServer, testData } from './mockServer';
 // Note: Import would be from actual component when it exists

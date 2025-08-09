@@ -5,7 +5,7 @@
  * PHILOSOPHIE: Fokus auf API Contract und Response Handling
  */
 
-import { describe, it, expect, beforeEach, afterEach, beforeAll, afterAll, vi } from 'vitest';
+import { describe, it, expect, beforeAll, afterAll, vi } from 'vitest';
 import { mockServer, testData } from './mockServer';
 
 // Mock Server Setup
@@ -74,7 +74,7 @@ describe('FC-005 API Integration Tests (Simplified)', () => {
         detailedLocations: [],
       };
 
-      const result = await apiClient.post<any>('/api/customers/draft', draftData);
+      const result = await apiClient.post<unknown>('/api/customers/draft', draftData);
 
       expect(result.success).toBe(true);
       expect(result.data.draftId).toBe('draft-123');
@@ -132,7 +132,7 @@ describe('FC-005 API Integration Tests (Simplified)', () => {
 
   describe('Customer Draft Loading Integration', () => {
     it('should load existing draft with all data intact', async () => {
-      const result = await apiClient.get<any>('/api/customers/draft/draft-123');
+      const result = await apiClient.get<unknown>('/api/customers/draft/draft-123');
 
       expect(result.success).toBe(true);
       expect(result.data.draftId).toBe('draft-123');
@@ -171,7 +171,7 @@ describe('FC-005 API Integration Tests (Simplified)', () => {
         detailedLocations: testData.validDetailedLocations,
       };
 
-      const result = await apiClient.post<any>('/api/customers', customerData);
+      const result = await apiClient.post<unknown>('/api/customers', customerData);
 
       expect(result.success).toBe(true);
       expect(result.data.id).toBe('customer-456');
@@ -200,7 +200,7 @@ describe('FC-005 API Integration Tests (Simplified)', () => {
 
   describe('Field Definitions API Integration', () => {
     it('should load field definitions for customer entity', async () => {
-      const result = await apiClient.get<any>('/api/field-definitions?entityType=customer');
+      const result = await apiClient.get<unknown>('/api/field-definitions?entityType=customer');
 
       expect(result.success).toBe(true);
       expect(Array.isArray(result.data)).toBe(true);
@@ -215,7 +215,7 @@ describe('FC-005 API Integration Tests (Simplified)', () => {
     });
 
     it('should filter field definitions by industry', async () => {
-      const hotelFields = await apiClient.get<any>(
+      const hotelFields = await apiClient.get<unknown>(
         '/api/field-definitions?entityType=customer&industry=hotel'
       );
 
@@ -232,7 +232,7 @@ describe('FC-005 API Integration Tests (Simplified)', () => {
     });
 
     it('should provide wizard step triggers in field definitions', async () => {
-      const result = await apiClient.get<any>('/api/field-definitions?entityType=customer');
+      const result = await apiClient.get<unknown>('/api/field-definitions?entityType=customer');
 
       const chainCustomerField = result.data.find((f: unknown) => f.key === 'chainCustomer');
       expect(chainCustomerField).toBeDefined();
@@ -293,7 +293,7 @@ describe('FC-005 API Integration Tests (Simplified)', () => {
         },
       };
 
-      const result = await apiClient.post<any>('/api/customers/draft', complexData);
+      const result = await apiClient.post<unknown>('/api/customers/draft', complexData);
 
       expect(result.success).toBe(true);
 
@@ -309,7 +309,7 @@ describe('FC-005 API Integration Tests (Simplified)', () => {
     });
 
     it('should handle health check for API availability', async () => {
-      const result = await apiClient.get<any>('/api/health');
+      const result = await apiClient.get<unknown>('/api/health');
 
       expect(result.status).toBe('ok');
       expect(result.timestamp).toBeDefined();
@@ -325,7 +325,7 @@ describe('FC-005 API Integration Tests (Simplified)', () => {
   describe('Real-World Integration Scenarios', () => {
     it('should support complete customer onboarding workflow', async () => {
       // Step 1: Load field definitions
-      const fieldDefs = await apiClient.get<any>(
+      const fieldDefs = await apiClient.get<unknown>(
         '/api/field-definitions?entityType=customer&industry=hotel'
       );
       expect(fieldDefs.success).toBe(true);
@@ -337,7 +337,7 @@ describe('FC-005 API Integration Tests (Simplified)', () => {
           industry: 'hotel',
         },
       };
-      const draftResult = await apiClient.post<any>('/api/customers/draft', initialDraft);
+      const draftResult = await apiClient.post<unknown>('/api/customers/draft', initialDraft);
       expect(draftResult.success).toBe(true);
 
       // Step 3: Update draft with more data
@@ -349,7 +349,7 @@ describe('FC-005 API Integration Tests (Simplified)', () => {
         },
         locations: [{ id: 'loc-1', name: 'Berlin Hotel' }],
       };
-      const updateResult = await apiClient.post<any>('/api/customers/draft', updatedDraft);
+      const updateResult = await apiClient.post<unknown>('/api/customers/draft', updatedDraft);
       expect(updateResult.success).toBe(true);
 
       // Step 4: Finalize customer
@@ -365,7 +365,7 @@ describe('FC-005 API Integration Tests (Simplified)', () => {
           },
         ],
       };
-      const finalResult = await apiClient.post<any>('/api/customers', finalCustomer);
+      const finalResult = await apiClient.post<unknown>('/api/customers', finalCustomer);
       expect(finalResult.success).toBe(true);
       expect(finalResult.data.id).toBeDefined();
       expect(finalResult.data.customerId).toBeDefined();
@@ -383,7 +383,7 @@ describe('FC-005 API Integration Tests (Simplified)', () => {
         detailedLocations: [],
       };
 
-      const singleResult = await apiClient.post<any>('/api/customers', singleCustomer);
+      const singleResult = await apiClient.post<unknown>('/api/customers', singleCustomer);
       expect(singleResult.success).toBe(true);
 
       // Chain customer scenario
@@ -415,7 +415,7 @@ describe('FC-005 API Integration Tests (Simplified)', () => {
         ],
       };
 
-      const chainResult = await apiClient.post<any>('/api/customers', chainCustomer);
+      const chainResult = await apiClient.post<unknown>('/api/customers', chainCustomer);
       expect(chainResult.success).toBe(true);
       expect(chainResult.data.locations).toHaveLength(2);
       expect(chainResult.data.detailedLocations).toHaveLength(2);

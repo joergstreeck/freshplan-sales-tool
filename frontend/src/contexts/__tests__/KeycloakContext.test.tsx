@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, waitFor, act } from '@testing-library/react';
+import { describe, it, expect, vi } from 'vitest';
+import { render } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { KeycloakProvider, useKeycloak } from '../KeycloakContext';
 

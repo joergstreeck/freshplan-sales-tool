@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { CustomersPageV2 } from '../CustomersPageV2';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter } from 'react-router-dom';
@@ -59,7 +59,7 @@ vi.mock('../../features/customers/components/wizard/CustomerOnboardingWizardModa
 
 // Mock missing components
 vi.mock('../../components/common/EmptyStateHero', () => ({
-  EmptyStateHero: ({ title, action }: unknown) => (
+  EmptyStateHero: ({ titleion }: unknown) => (
     <div>
       <h2>{title}</h2>
       {action && <button onClick={action.onClick}>{action.label}</button>}

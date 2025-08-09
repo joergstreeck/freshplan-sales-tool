@@ -8,8 +8,8 @@
  * @see /docs/features/FC-005-CUSTOMER-MANAGEMENT/09-TEST-PLAN/02-test-examples.md
  */
 
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { act, renderHook } from '@testing-library/react';
+import { describe, it, expect, vi } from 'vitest';
+import { renderHook } from '@testing-library/react';
 import { FieldDefinition } from '../../../types/field.types';
 
 // Unmock the store for this test file since we want to test the real implementation

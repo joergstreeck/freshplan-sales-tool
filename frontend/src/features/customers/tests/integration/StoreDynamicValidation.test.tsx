@@ -9,7 +9,7 @@
  * @see /Users/joergstreeck/freshplan-sales-tool/frontend/src/features/customers/data/fieldCatalog.json
  */
 
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { useCustomerOnboardingStore } from '../../stores/customerOnboardingStore';
 import { FieldDefinition } from '../../types/field.types';
 
@@ -221,7 +221,7 @@ describe.skip('🔄 CR-002 Store Dynamic Validation Integration', () => {
         key: 'futureField',
         label: 'Future Field Type',
         entityType: 'customer',
-        fieldType: 'unknownType' as any, // This is intentional - Enterprise Flexibility!
+        fieldType: 'unknownType' as unknown, // This is intentional - Enterprise Flexibility!
         required: false,
       };
 

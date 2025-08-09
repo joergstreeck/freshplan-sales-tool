@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { TableColumnSettings } from './TableColumnSettings';
 import { useFocusListStore } from '../store/focusListStore';
 import React from 'react';
