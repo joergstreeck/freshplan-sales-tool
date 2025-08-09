@@ -24,7 +24,7 @@ afterAll(() => {
 
 // Simulate API Client (simplified version of what the real store would use)
 class TestApiClient {
-  async post<T>(endpoint: string, data: any): Promise<T> {
+  async post<T>(endpoint: string, data: unknown): Promise<T> {
     const response = await fetch(endpoint, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -94,7 +94,7 @@ describe('FC-005 API Integration Tests (Simplified)', () => {
       try {
         await apiClient.post('/api/customers/draft', invalidData);
         expect.fail('Should have thrown validation error');
-      } catch (error: any) {
+      } catch (error: unknown) {
         expect(error.message).toContain('HTTP 400');
       }
     });
@@ -109,7 +109,7 @@ describe('FC-005 API Integration Tests (Simplified)', () => {
       try {
         await apiClient.post('/api/customers/draft', serverErrorData);
         expect.fail('Should have thrown server error');
-      } catch (error: any) {
+      } catch (error: unknown) {
         expect(error.message).toContain('HTTP 500');
       }
     });
@@ -124,7 +124,7 @@ describe('FC-005 API Integration Tests (Simplified)', () => {
       try {
         await apiClient.post('/api/customers/draft', networkErrorData);
         expect.fail('Should have thrown network error');
-      } catch (error: any) {
+      } catch (error: unknown) {
         expect(error).toBeDefined();
       }
     });
@@ -157,7 +157,7 @@ describe('FC-005 API Integration Tests (Simplified)', () => {
       try {
         await apiClient.get('/api/customers/draft/not-found');
         expect.fail('Should have thrown not found error');
-      } catch (error: any) {
+      } catch (error: unknown) {
         expect(error.message).toContain('HTTP 404');
       }
     });
@@ -192,7 +192,7 @@ describe('FC-005 API Integration Tests (Simplified)', () => {
       try {
         await apiClient.post('/api/customers', invalidCustomerData);
         expect.fail('Should have thrown validation error');
-      } catch (error: any) {
+      } catch (error: unknown) {
         expect(error.message).toContain('HTTP 400');
       }
     });
@@ -207,7 +207,7 @@ describe('FC-005 API Integration Tests (Simplified)', () => {
       expect(result.data.length).toBeGreaterThan(0);
 
       // Verify field structure
-      const companyNameField = result.data.find((f: any) => f.key === 'companyName');
+      const companyNameField = result.data.find((f: unknown) => f.key === 'companyName');
       expect(companyNameField).toBeDefined();
       expect(companyNameField.fieldType).toBe('text');
       expect(companyNameField.required).toBe(true);
@@ -222,19 +222,19 @@ describe('FC-005 API Integration Tests (Simplified)', () => {
       expect(hotelFields.success).toBe(true);
 
       // Should include hotel-specific fields
-      const hotelStarsField = hotelFields.data.find((f: any) => f.key === 'hotelStars');
+      const hotelStarsField = hotelFields.data.find((f: unknown) => f.key === 'hotelStars');
       expect(hotelStarsField).toBeDefined();
       expect(hotelStarsField.industryFilter).toBe('hotel');
 
       // Verify general fields are still included
-      expect(hotelFields.data.some((f: any) => f.key === 'companyName')).toBe(true);
-      expect(hotelFields.data.some((f: any) => f.key === 'industry')).toBe(true);
+      expect(hotelFields.data.some((f: unknown) => f.key === 'companyName')).toBe(true);
+      expect(hotelFields.data.some((f: unknown) => f.key === 'industry')).toBe(true);
     });
 
     it('should provide wizard step triggers in field definitions', async () => {
       const result = await apiClient.get<any>('/api/field-definitions?entityType=customer');
 
-      const chainCustomerField = result.data.find((f: any) => f.key === 'chainCustomer');
+      const chainCustomerField = result.data.find((f: unknown) => f.key === 'chainCustomer');
       expect(chainCustomerField).toBeDefined();
       expect(chainCustomerField.triggerWizardStep).toBeDefined();
       expect(chainCustomerField.triggerWizardStep.step).toBe('locations');

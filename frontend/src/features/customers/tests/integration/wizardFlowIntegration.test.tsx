@@ -74,7 +74,7 @@ afterAll(() => {
 });
 
 // Helper function to simulate user filling form
-async function fillCustomerDataStep(user: any, customerData: any) {
+async function fillCustomerDataStep(user: unknown, customerData: unknown) {
   // Fill company name
   const companyNameInput = screen.getByLabelText(/firmenname/i);
   await user.clear(companyNameInput);

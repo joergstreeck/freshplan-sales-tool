@@ -2,7 +2,7 @@
  * FC-005 Customer Onboarding Store Tests
  *
  * Tests für den Zustand Store mit Fokus auf Flexibilität.
- * Respektiert die Team-Philosophie: any-Types sind FEATURES, nicht Bugs!
+ * Respektiert die Team-Philosophie: unknown-Types sind FEATURES, nicht Bugs!
  *
  * @see /docs/features/FC-005-CUSTOMER-MANAGEMENT/09-TEST-PLAN/00-PHILOSOPHIE.md
  * @see /docs/features/FC-005-CUSTOMER-MANAGEMENT/09-TEST-PLAN/02-test-examples.md

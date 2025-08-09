@@ -113,7 +113,7 @@ describe.skip('FC-005 Store + API Integration Tests', () => {
       await act(async () => {
         try {
           await result.current.saveAsDraft();
-        } catch (error: any) {
+        } catch (error: unknown) {
           networkErrorEncountered = true;
           expect(error.message).toContain('Network Error');
         }
@@ -134,7 +134,7 @@ describe.skip('FC-005 Store + API Integration Tests', () => {
       await act(async () => {
         try {
           await result.current.saveAsDraft();
-        } catch (error: any) {
+        } catch (error: unknown) {
           validationErrorThrown = true;
           // Validation errors might contain validation details
           expect(error).toBeDefined();
@@ -151,7 +151,7 @@ describe.skip('FC-005 Store + API Integration Tests', () => {
       const { result } = renderHook(() => useCustomerOnboardingStore());
 
       // Mock successful draft loading
-      let loadResult: any;
+      let loadResult: unknown;
       await act(async () => {
         // This would typically be called by loadDraft method if it exists
         // For now we simulate the API call result
@@ -186,7 +186,7 @@ describe.skip('FC-005 Store + API Integration Tests', () => {
 
     it('should handle draft not found scenario', async () => {
       // Test loading non-existent draft
-      let errorResult: any;
+      let errorResult: unknown;
       try {
         const response = await fetch('/api/customers/draft/not-found');
         errorResult = await response.json();
@@ -298,7 +298,7 @@ describe.skip('FC-005 Store + API Integration Tests', () => {
         });
 
         await Promise.race([result.current.saveAsDraft(), timeoutPromise]);
-      } catch (error: any) {
+      } catch (error: unknown) {
         if (error.message === 'Request timeout') {
           timeoutOccurred = true;
         }

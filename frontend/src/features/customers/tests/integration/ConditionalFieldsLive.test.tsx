@@ -17,7 +17,7 @@ import fieldCatalogData from '../../data/fieldCatalog.json';
 
 // Mock für field components
 vi.mock('../../components/fields/fieldTypes/TextField', () => ({
-  TextField: ({ field, value, onChange }: any) => (
+  TextField: ({ field, value, onChange }: unknown) => (
     <input
       data-testid={`textfield-${field.key}`}
       value={value || ''}
@@ -27,7 +27,7 @@ vi.mock('../../components/fields/fieldTypes/TextField', () => ({
 }));
 
 vi.mock('../../components/fields/fieldTypes/NumberField', () => ({
-  NumberField: ({ field, value, onChange }: any) => (
+  NumberField: ({ field, value, onChange }: unknown) => (
     <input
       type="number"
       data-testid={`numberfield-${field.key}`}
@@ -38,14 +38,14 @@ vi.mock('../../components/fields/fieldTypes/NumberField', () => ({
 }));
 
 vi.mock('../../components/fields/fieldTypes/SelectField', () => ({
-  SelectField: ({ field, value, onChange }: any) => (
+  SelectField: ({ field, value, onChange }: unknown) => (
     <select
       data-testid={`selectfield-${field.key}`}
       value={value || ''}
       onChange={e => onChange(e.target.value)}
     >
       <option value="">-- Bitte wählen --</option>
-      {field.options?.map((opt: any) => (
+      {field.options?.map((opt: unknown) => (
         <option key={opt.value} value={opt.value}>
           {opt.label}
         </option>
@@ -55,7 +55,7 @@ vi.mock('../../components/fields/fieldTypes/SelectField', () => ({
 }));
 
 vi.mock('../../components/fields/FieldWrapper', () => ({
-  FieldWrapper: ({ children }: any) => <div data-testid="field-wrapper">{children}</div>,
+  FieldWrapper: ({ children }: unknown) => <div data-testid="field-wrapper">{children}</div>,
 }));
 
 describe.skip('🔄 CR-001 Live Conditional Fields Integration', () => {
@@ -96,7 +96,7 @@ describe.skip('🔄 CR-001 Live Conditional Fields Integration', () => {
           fields={baseFields}
           values={currentValues}
           errors={{}}
-          onChange={(fieldKey: string, value: any) => {
+          onChange={(fieldKey: string, value: unknown) => {
             currentValues = { ...currentValues, [fieldKey]: value };
             mockOnChange(fieldKey, value);
           }}
@@ -122,7 +122,7 @@ describe.skip('🔄 CR-001 Live Conditional Fields Integration', () => {
           fields={baseFields}
           values={currentValues}
           errors={{}}
-          onChange={(fieldKey: string, value: any) => {
+          onChange={(fieldKey: string, value: unknown) => {
             currentValues = { ...currentValues, [fieldKey]: value };
             mockOnChange(fieldKey, value);
           }}
@@ -163,7 +163,7 @@ describe.skip('🔄 CR-001 Live Conditional Fields Integration', () => {
           fields={allFields}
           values={currentValues}
           errors={{}}
-          onChange={(fieldKey: string, value: any) => {
+          onChange={(fieldKey: string, value: unknown) => {
             currentValues = { ...currentValues, [fieldKey]: value };
             mockOnChange(fieldKey, value);
           }}
@@ -184,7 +184,7 @@ describe.skip('🔄 CR-001 Live Conditional Fields Integration', () => {
           fields={allFields}
           values={currentValues}
           errors={{}}
-          onChange={(fieldKey: string, value: any) => {
+          onChange={(fieldKey: string, value: unknown) => {
             currentValues = { ...currentValues, [fieldKey]: value };
             mockOnChange(fieldKey, value);
           }}

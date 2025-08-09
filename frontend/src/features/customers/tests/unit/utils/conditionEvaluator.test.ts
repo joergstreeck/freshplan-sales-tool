@@ -2,7 +2,7 @@
  * FC-005 Condition Evaluator Tests
  *
  * Tests für dynamische Feldlogik und Wizard-Bedingungen.
- * Respektiert Flexibilitäts-Philosophie: any Types sind FEATURES!
+ * Respektiert Flexibilitäts-Philosophie: unknown Types sind FEATURES!
  *
  * @see /docs/features/FC-005-CUSTOMER-MANAGEMENT/09-TEST-PLAN/00-PHILOSOPHIE.md
  */

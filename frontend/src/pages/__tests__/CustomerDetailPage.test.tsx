@@ -14,7 +14,7 @@ vi.mock('../../features/customer/hooks/useCustomerDetails', () => ({
 
 // Mock the EntityAuditTimeline component
 vi.mock('../../features/audit/components/EntityAuditTimeline', () => ({
-  EntityAuditTimeline: ({ entityType, entityId }: any) => (
+  EntityAuditTimeline: ({ entityType, entityId }: unknown) => (
     <div data-testid="audit-timeline">
       Audit Timeline for {entityType} {entityId}
     </div>
@@ -36,7 +36,7 @@ const mockCustomer = {
   updatedAt: '2024-01-02T10:00:00Z',
 };
 
-const createWrapper = (user: any = null) => {
+const createWrapper = (user: unknown = null) => {
   const queryClient = new QueryClient({
     defaultOptions: {
       queries: { retry: false },

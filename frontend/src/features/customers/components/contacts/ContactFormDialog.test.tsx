@@ -44,7 +44,7 @@ vi.mock('../../stores/customerOnboardingStore', () => {
       }
     }),
 
-    validateContactField: vi.fn((field: string, value: any) => {
+    validateContactField: vi.fn((field: string, value: unknown) => {
       // Simple validation mock
       if (field === 'email' && value && !value.includes('@')) {
         mockContactValidationErrors[field] = 'Ungültige E-Mail-Adresse';

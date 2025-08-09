@@ -73,13 +73,13 @@ vi.mock('../../data/fieldCatalogContactExtensions', () => ({
 // CustomerFieldThemeProvider is NOT mocked - we use the real one
 
 vi.mock('../adaptive/AdaptiveFormContainer', () => ({
-  AdaptiveFormContainer: ({ children }: any) => (
+  AdaptiveFormContainer: ({ children }: unknown) => (
     <div className="adaptive-form-container">{children}</div>
   ),
 }));
 
 vi.mock('../contacts/ContactFormDialog', () => ({
-  ContactFormDialog: ({ open, onClose, contact }: any) =>
+  ContactFormDialog: ({ open, onClose, contact }: unknown) =>
     open ? <div role="dialog">Contact Form Dialog</div> : null,
 }));
 

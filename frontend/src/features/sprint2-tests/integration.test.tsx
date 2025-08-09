@@ -109,7 +109,7 @@ describe('Sprint 2: Feature Integration Tests', () => {
 
   describe('Data Quality Dashboard', () => {
     it('should calculate data completeness score', () => {
-      const calculateCompleteness = (data: any) => {
+      const calculateCompleteness = (data: unknown) => {
         const requiredFields = ['name', 'email', 'phone', 'address'];
         const filledFields = requiredFields.filter(field => data[field]);
         return (filledFields.length / requiredFields.length) * 100;
@@ -132,7 +132,7 @@ describe('Sprint 2: Feature Integration Tests', () => {
     });
 
     it('should identify duplicate entries', () => {
-      const findDuplicates = (entries: any[]) => {
+      const findDuplicates = (entries: unknown[]) => {
         const seen = new Set();
         const duplicates = [];
 
@@ -197,7 +197,7 @@ describe('Sprint 2: Feature Integration Tests', () => {
     });
 
     it('should validate complete customer data before submission', () => {
-      const validateCustomer = (customer: any) => {
+      const validateCustomer = (customer: unknown) => {
         const errors = [];
 
         if (!customer.name || customer.name.length < 3) {
@@ -252,7 +252,7 @@ describe('Sprint 2: Feature Integration Tests', () => {
       const startTime = performance.now();
 
       // Simulate complex calculation
-      const calculateComplexPrice = (base: number, options: any) => {
+      const calculateComplexPrice = (base: number, options: unknown) => {
         let price = base;
 
         // Apply various discounts
