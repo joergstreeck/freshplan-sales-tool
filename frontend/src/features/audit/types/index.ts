@@ -70,16 +70,16 @@ export interface AuditLog {
   userRole?: string;
 
   // Change details
-  oldValue?: any; // Backend uses oldValue (singular)
-  newValue?: any; // Backend uses newValue (singular)
+  oldValue?: unknown; // Backend uses oldValue (singular)
+  newValue?: unknown; // Backend uses newValue (singular)
   oldValues?: string; // Frontend compatibility
   newValues?: string; // Frontend compatibility
-  changes?: any; // Additional changes object
+  changes?: unknown; // Additional changes object
   changedFields?: string;
   changeReason?: string; // Backend field name
   reason?: string; // Frontend compatibility
   comment?: string;
-  details?: any; // Additional details object
+  details?: unknown; // Additional details object
 
   // Context
   ipAddress?: string;
