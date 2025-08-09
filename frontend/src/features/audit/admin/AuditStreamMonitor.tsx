@@ -20,7 +20,6 @@ import {
   PlayArrow as PlayIcon,
   Pause as PauseIcon,
   Clear as ClearIcon,
-  FilterList as FilterIcon,
   Info as InfoIcon,
   Warning as WarningIcon,
   Error as ErrorIcon,
