@@ -21,7 +21,7 @@ export interface FeatureFlag {
   /** When this flag should be removed (sunset date) */
   sunsetDate?: string;
   /** Additional metadata */
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 /**
