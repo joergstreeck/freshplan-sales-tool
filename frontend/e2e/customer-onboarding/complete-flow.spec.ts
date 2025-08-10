@@ -135,13 +135,27 @@ test.describe.skip('Complete Customer Onboarding Flow', () => {
     
     // Mock authentication
     await page.addInitScript(() => {
-      window.localStorage.setItem('auth-token', 'test-token');
-      // Also mock user context for auth
-      window.localStorage.setItem('user', JSON.stringify({
-        id: 'test-user',
-        name: 'Test User',
-        role: 'admin'
-      }));
+      try {
+        window.localStorage.setItem('auth-token', 'test-token');
+        // Also mock user context for auth
+        window.localStorage.setItem('user', JSON.stringify({
+          id: 'test-user',
+          name: 'Test User',
+          role: 'admin'
+        }));
+      } catch (e) {
+        console.log('localStorage not available in CI');
+      }
+      
+      // Set auth state on window as fallback
+      (window as any).__AUTH_STATE__ = {
+        isAuthenticated: true,
+        user: {
+          id: 'test-user',
+          name: 'Test User',
+          role: 'admin'
+        }
+      };
     });
   });
 
