@@ -1,18 +1,19 @@
 # 🧭 NEXT STEP NAVIGATION
 
-**Letzte Aktualisierung:** 2025-08-10, 14:35 Uhr  
+**Letzte Aktualisierung:** 2025-08-10, 14:56 Uhr  
 **Aktiver Branch:** `feature/fc-005-enhanced-features`
 **Nächste Migration:** V217 (letzte war V216__add_extended_search_indexes.sql)
 
 ## ✅ STATUS UPDATE:
 
-### Export-Funktionalität KOMPLETT FUNKTIONSFÄHIG! 🎉
-**Alle Export-Formate arbeiten:**
+### Export-Funktionalität KOMPLETT REFACTORED! 🎉
+**Alle Export-Formate arbeiten OHNE externe PDF-Libraries:**
 - ✅ CSV Export mit korrekten Kontaktdaten
 - ✅ JSON Export mit vollständigen Customer-Objekten
 - ✅ Excel Export mit korrekter .xlsx Endung
-- ✅ PDF Export mit robuster HTML-basierter Lösung (keine Library-Abhängigkeiten)
-- **100% production-ready ohne externe Dependencies!**
+- ✅ PDF Export mit robuster HTML-basierter Lösung (keine iTextPDF mehr!)
+- ✅ Backend-Code vollständig auf HTML-Export umgestellt
+- **ExportServiceV2 + ProfileService refactored - 100% robust!**
 
 ## 🎯 JETZT GERADE:
 
@@ -91,16 +92,20 @@ gh pr create --title "feat(FC-005): PR4 Intelligent Filter Bar with Universal Se
    - Highlight-Animation (3x Pulse)
 
 ## 📋 TODO-STATUS:
-- **Completed:** 2 Tasks ✅
+- **Completed:** 4 Tasks ✅
+  - Export-Code im Backend anpassen und fixen
+  - Export-Dokumentation in allen Planungen aktualisieren
   - Backend Kompilierungsfehler beheben
   - Backend starten und testen
-- **Pending:** 8 Tasks
-  - Backend Tests für erweiterte Kontakt-Suche (PRIORITÄT)
-  - E2E Test: Suche → Click → Highlight
-  - Weitere Tasks...
+- **Pending:** 4 Tasks
+  - Backend Tests für ContactRepository erweiterte Suche (PRIORITÄT)
+  - Saved Filter Sets implementieren und testen
+  - Migration zu SalesCockpitV2 abschließen
+  - Weitere ESLint-Fehler beheben (308 verbleibend)
 
 ## 📁 WICHTIGE DATEIEN:
-- **Übergabe:** `/docs/claude-work/daily-work/2025-08-10/2025-08-10_HANDOVER_12-36.md`
+- **Übergabe:** `/docs/claude-work/daily-work/2025-08-10/2025-08-10_HANDOVER_14-55.md`
+- **Export-Lösung:** `/docs/features/EXPORT_SOLUTION_UPDATE.md`
 - **📋 HAUPTDOKUMENTATION PR4:** `/docs/features/FC-005-CUSTOMER-MANAGEMENT/Step3/PR4_INTELLIGENT_FILTER_BAR.md`
 - **Feature-Übersicht:** `/docs/features/FC-005-CUSTOMER-MANAGEMENT/Step3/README.md`
 - **Migrationen:** V215 und V216 bereits erstellt
