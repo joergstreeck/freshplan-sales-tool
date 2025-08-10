@@ -202,7 +202,7 @@ export const useFocusListStore = create<FocusListStore>()(
         viewMode: 'cards',
         sortBy: { field: 'lastContactDate', ascending: false },
         smartSortId: 'revenue-high-to-low',
-        tableColumns: [...DEFAULT_TABLE_COLUMNS],
+        tableColumns: DEFAULT_TABLE_COLUMNS,
         selectedCustomerId: null,
         page: 0,
         pageSize: 50, // Erhöht für bessere Übersicht aller Testkunden
