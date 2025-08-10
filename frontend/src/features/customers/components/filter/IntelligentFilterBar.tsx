@@ -70,6 +70,7 @@ import { useLocalStorage } from '../../hooks/useLocalStorage';
 import { useUniversalSearch } from '../../hooks/useUniversalSearch';
 import { SearchResultsDropdown } from '../search/SearchResultsDropdown';
 import { useNavigate } from 'react-router-dom';
+import { useFocusListStore } from '../../../customer/store/focusListStore';
 import type { 
   FilterConfig, 
   SortConfig, 
@@ -97,7 +98,7 @@ const RISK_LABELS: Record<RiskLevel, string> = {
 interface IntelligentFilterBarProps {
   onFilterChange: (filters: FilterConfig) => void;
   onSortChange: (sort: SortConfig) => void;
-  onColumnChange: (columns: ColumnConfig[]) => void;
+  onColumnChange?: (columns: ColumnConfig[]) => void; // Now optional - uses store if not provided
   totalCount: number;
   filteredCount: number;
   loading?: boolean;
@@ -203,20 +204,26 @@ export function IntelligentFilterBar({
     },
   ];
   
-  // Spalten-Konfiguration
-  const [columns, setColumns] = useState<ColumnConfig[]>([
-    { id: 'customerNumber', label: 'Kundennr.', visible: true, locked: false }, // Nicht mehr locked
-    { id: 'companyName', label: 'Firma', visible: true, locked: true },
-    { id: 'status', label: 'Status', visible: true },
-    { id: 'industry', label: 'Branche', visible: true },
-    { id: 'location', label: 'Standort', visible: true },
-    { id: 'contactCount', label: 'Kontakte', visible: true },
-    { id: 'lastContact', label: 'Letzter Kontakt', visible: true },
-    { id: 'revenue', label: 'Umsatz', visible: false },
-    { id: 'riskLevel', label: 'Risiko', visible: true },
-    { id: 'createdAt', label: 'Erstellt', visible: false },
-    { id: 'tags', label: 'Tags', visible: false },
-  ]);
+  // Use focus list store for columns
+  const { 
+    tableColumns, 
+    toggleColumnVisibility: toggleColumnVisibilityStore,
+    setColumnOrder: setColumnOrderStore,
+    resetTableColumns 
+  } = useFocusListStore();
+  
+  // Convert store columns to ColumnConfig format for compatibility
+  const columns = useMemo(() => 
+    tableColumns
+      .sort((a, b) => a.order - b.order)
+      .map(col => ({
+        id: col.field,
+        label: col.label,
+        visible: col.visible,
+        locked: col.field === 'companyName' // Only company name is locked
+      })),
+    [tableColumns]
+  );
   
   // Sortier-Konfiguration
   const [sortConfig, setSortConfig] = useState<SortConfig>({
@@ -357,32 +364,73 @@ export function IntelligentFilterBar({
     setSelectedFilterSet(null);
   }, [onFilterChange]);
   
-  // Column Drag & Drop Handler
+  // Column Drag & Drop Handler - Use store
   const handleColumnDragEnd = useCallback((result: any) => {
     if (!result.destination) {
       return;
     }
     
-    setColumns(prevColumns => {
-      const items = Array.from(prevColumns);
-      const [reorderedItem] = items.splice(result.source.index, 1);
-      items.splice(result.destination.index, 0, reorderedItem);
-      
-      onColumnChange(items);
-      return items;
+    // Get current visible columns in order
+    const visibleColumns = tableColumns
+      .filter(col => col.visible)
+      .sort((a, b) => a.order - b.order);
+    
+    // Map the dragged item correctly - columns array uses field as id
+    const draggedField = columns[result.source.index].id;
+    const draggedColumn = tableColumns.find(col => col.field === draggedField);
+    
+    if (!draggedColumn) {
+      return;
+    }
+    
+    // Build new order for ALL columns (visible and hidden)
+    const allColumnIds = [...tableColumns].sort((a, b) => a.order - b.order).map(col => col.id);
+    const visibleIds = visibleColumns.map(col => col.id);
+    
+    // Remove and reinsert the dragged column
+    const draggedId = draggedColumn.id;
+    const fromIndex = visibleIds.indexOf(draggedId);
+    visibleIds.splice(fromIndex, 1);
+    visibleIds.splice(result.destination.index, 0, draggedId);
+    
+    // Update all columns order based on new visible order
+    let visibleIndex = 0;
+    const newOrder = allColumnIds.map(id => {
+      if (visibleIds.includes(id)) {
+        return visibleIds[visibleIndex++];
+      }
+      return id;
     });
-  }, [onColumnChange]);
-  
-  // Toggle Column Visibility
-  const toggleColumnVisibility = useCallback((columnId: string) => {
-    setColumns(prevColumns => {
-      const newColumns = prevColumns.map(col => 
-        col.id === columnId ? { ...col, visible: !col.visible } : col
-      );
+    
+    setColumnOrderStore(newOrder);
+    
+    // Call prop callback if provided
+    if (onColumnChange) {
+      const newColumns = columns.map((col, index) => ({
+        ...col,
+        order: index
+      }));
       onColumnChange(newColumns);
-      return newColumns;
-    });
-  }, [onColumnChange]);
+    }
+  }, [tableColumns, setColumnOrderStore, onColumnChange, columns]);
+  
+  // Toggle Column Visibility - Use store
+  const toggleColumnVisibility = useCallback((columnId: string) => {
+    // The columnId from UI is actually the field name
+    // We need to find the column by field and toggle by its id
+    const column = tableColumns.find(col => col.field === columnId || col.id === columnId);
+    if (column) {
+      toggleColumnVisibilityStore(column.id);
+      
+      // Call prop callback if provided
+      if (onColumnChange) {
+        const newColumns = columns.map(col => 
+          col.id === columnId ? { ...col, visible: !col.visible } : col
+        );
+        onColumnChange(newColumns);
+      }
+    }
+  }, [tableColumns, toggleColumnVisibilityStore, onColumnChange, columns]);
   
   // Handle Sort Change
   const handleSortChange = useCallback((field: string) => {

@@ -17,6 +17,7 @@ import { toast } from 'react-hot-toast';
 import { ActionToast } from '../components/notifications/ActionToast';
 import { taskEngine } from '../services/taskEngine';
 import { isFeatureEnabled } from '../config/featureFlags';
+import { useFocusListStore } from '../features/customer/store/focusListStore';
 import type { Customer } from '../types/customer.types';
 import type { FilterConfig, SortConfig, ColumnConfig } from '../features/customers/types/filter.types';
 
@@ -28,17 +29,35 @@ export function CustomersPageV2({ openWizard = false }: CustomersPageV2Props) {
   const [wizardOpen, setWizardOpen] = useState(openWizard);
   const [activeTab, setActiveTab] = useState(0);
   const [filterConfig, setFilterConfig] = useState<FilterConfig>({});
-  const [sortConfig, setSortConfig] = useState<SortConfig>({
-    field: 'companyName',
-    direction: 'asc'
-  });
-  const [columnConfig, setColumnConfig] = useState<ColumnConfig[]>([
-    { id: 'companyName', label: 'Unternehmen', visible: true },
-    { id: 'status', label: 'Status', visible: true },
-    { id: 'industry', label: 'Branche', visible: true },
-    { id: 'lastContactDate', label: 'Letzter Kontakt', visible: true },
-    { id: 'contactCount', label: 'Kontakte', visible: true },
-  ]);
+  
+  // Use focus list store for persistent column and sort configuration
+  const { 
+    tableColumns, 
+    sortBy, 
+    setSortBy,
+    globalSearch,
+    activeFilters 
+  } = useFocusListStore();
+  
+  // Convert store columns to ColumnConfig format for compatibility
+  const columnConfig = useMemo(() => 
+    tableColumns
+      .filter(col => col.visible)
+      .sort((a, b) => a.order - b.order)
+      .map(col => ({
+        id: col.field,
+        label: col.label,
+        visible: col.visible
+      })),
+    [tableColumns]
+  );
+  
+  // Convert store sortBy to SortConfig format
+  const sortConfig = useMemo(() => ({
+    field: sortBy.field,
+    direction: sortBy.ascending ? 'asc' as const : 'desc' as const
+  }), [sortBy]);
+  
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -282,8 +301,12 @@ export function CustomersPageV2({ openWizard = false }: CustomersPageV2Props) {
                 {/* Intelligent Filter Bar */}
                 <IntelligentFilterBar
                   onFilterChange={setFilterConfig}
-                  onSortChange={setSortConfig}
-                  onColumnChange={setColumnConfig}
+                  onSortChange={(config: SortConfig) => {
+                    setSortBy({
+                      field: config.field,
+                      ascending: config.direction === 'asc'
+                    });
+                  }}
                   onExport={handleExport}
                   totalCount={customers.length}
                   filteredCount={filteredCustomers.length}

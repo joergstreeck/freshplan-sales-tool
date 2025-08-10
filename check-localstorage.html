@@ -1,0 +1,32 @@
+<\!DOCTYPE html>
+<html>
+<head>
+    <title>LocalStorage Debug</title>
+</head>
+<body>
+    <h1>LocalStorage Contents</h1>
+    <button onclick="checkStorage()">Check focus-list-store</button>
+    <button onclick="clearStorage()">Clear focus-list-store</button>
+    <pre id="output"></pre>
+    
+    <script>
+        function checkStorage() {
+            const data = localStorage.getItem('focus-list-store');
+            if (data) {
+                const parsed = JSON.parse(data);
+                document.getElementById('output').textContent = JSON.stringify(parsed, null, 2);
+            } else {
+                document.getElementById('output').textContent = 'No data found in localStorage';
+            }
+        }
+        
+        function clearStorage() {
+            localStorage.removeItem('focus-list-store');
+            document.getElementById('output').textContent = 'Cleared\!';
+        }
+        
+        // Auto-check on load
+        window.onload = checkStorage;
+    </script>
+</body>
+</html>

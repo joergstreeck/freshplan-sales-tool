@@ -457,6 +457,10 @@ export const useFocusListStore = create<FocusListStore>()(
           viewMode: state.viewMode,
           pageSize: state.pageSize,
           tableColumns: state.tableColumns,
+          sortBy: state.sortBy,
+          smartSortId: state.smartSortId,
+          globalSearch: state.globalSearch,
+          activeFilters: state.activeFilters,
         }),
       }
     )
