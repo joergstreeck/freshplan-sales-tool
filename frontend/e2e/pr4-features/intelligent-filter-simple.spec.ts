@@ -7,7 +7,7 @@ import { test, expect } from '@playwright/test';
 
 test.describe('PR4: Intelligent Filter Bar (Simplified)', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('http://localhost:5173/customers');
+    await page.goto('/customers');
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(2000); // Give UI time to render
   });
