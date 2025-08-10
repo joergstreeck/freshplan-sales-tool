@@ -130,8 +130,30 @@ public class AuditResource {
       @QueryParam("entityType") String entityType,
       @QueryParam("eventType") List<AuditEventType> eventTypes) {
 
-    // Redirect to new Universal Export Framework endpoint
-    String redirectUrl = String.format("/api/v2/export/audit/%s", format);
+    // Redirect to new Universal Export Framework endpoint, forwarding query parameters
+    StringBuilder redirectUrlBuilder = new StringBuilder(String.format("/api/v2/export/audit/%s", format));
+    boolean firstParam = true;
+
+    if (fromStr != null) {
+        redirectUrlBuilder.append(firstParam ? "?" : "&").append("from=").append(fromStr);
+        firstParam = false;
+    }
+    if (toStr != null) {
+        redirectUrlBuilder.append(firstParam ? "?" : "&").append("to=").append(toStr);
+        firstParam = false;
+    }
+    if (entityType != null) {
+        redirectUrlBuilder.append(firstParam ? "?" : "&").append("entityType=").append(entityType);
+        firstParam = false;
+    }
+    if (eventTypes != null && !eventTypes.isEmpty()) {
+        for (AuditEventType eventType : eventTypes) {
+            redirectUrlBuilder.append(firstParam ? "?" : "&").append("eventType=").append(eventType.name());
+            firstParam = false;
+        }
+    }
+
+    String redirectUrl = redirectUrlBuilder.toString();
     return Response.status(Response.Status.MOVED_PERMANENTLY)
         .header("Location", redirectUrl)
         .entity("This endpoint is deprecated. Please use " + redirectUrl)

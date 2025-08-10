@@ -4,6 +4,7 @@ import de.freshplan.infrastructure.export.*;
 import jakarta.enterprise.context.ApplicationScoped;
 import java.io.ByteArrayOutputStream;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
@@ -185,8 +186,10 @@ public class ApachePoiExcelExporter implements ExportStrategy {
       case DATE:
       case DATETIME:
         if (value instanceof LocalDateTime) {
-          // Convert LocalDateTime to Date for POI
-          cell.setCellValue(value.toString());
+          // Convert LocalDateTime to Date for POI to handle as native Excel date
+          LocalDateTime ldt = (LocalDateTime) value;
+          Date date = Date.from(ldt.atZone(ZoneId.systemDefault()).toInstant());
+          cell.setCellValue(date);
           cell.setCellStyle(dateStyle);
         } else if (value instanceof Date) {
           cell.setCellValue((Date) value);

@@ -207,9 +207,44 @@ public class GenericExportResource {
 
   private List<AuditEntry> fetchAuditData(
       String entityType, UUID entityId, String from, String to, String userId, String eventType) {
-    // Build query based on parameters
-    // This would be replaced with proper query builder
-    return auditRepository.listAll();
+    // Build query with filters
+    var query = new StringBuilder("1=1");
+    var params = new HashMap<String, Object>();
+    
+    if (entityType != null && !entityType.isEmpty()) {
+      query.append(" AND entityType = :entityType");
+      params.put("entityType", entityType);
+    }
+    
+    if (entityId != null) {
+      query.append(" AND entityId = :entityId");
+      params.put("entityId", entityId);
+    }
+    
+    if (userId != null && !userId.isEmpty()) {
+      query.append(" AND userId = :userId");
+      params.put("userId", userId);
+    }
+    
+    if (eventType != null && !eventType.isEmpty()) {
+      query.append(" AND eventType = :eventType");
+      params.put("eventType", eventType);
+    }
+    
+    if (from != null && !from.isEmpty()) {
+      query.append(" AND timestamp >= :from");
+      params.put("from", LocalDateTime.parse(from));
+    }
+    
+    if (to != null && !to.isEmpty()) {
+      query.append(" AND timestamp <= :to");
+      params.put("to", LocalDateTime.parse(to));
+    }
+    
+    // Execute query with parameters
+    return auditRepository
+        .find(query.toString(), params)
+        .list();
   }
 
   private ExportConfig buildCustomerConfig(boolean includeContacts) {

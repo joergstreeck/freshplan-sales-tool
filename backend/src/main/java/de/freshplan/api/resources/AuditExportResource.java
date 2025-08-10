@@ -76,12 +76,36 @@ public class AuditExportResource {
       LocalDate from = fromStr != null ? LocalDate.parse(fromStr) : LocalDate.now().minusDays(30);
       LocalDate to = toStr != null ? LocalDate.parse(toStr) : LocalDate.now();
 
+      // Parse UUIDs with proper error handling
+      UUID parsedEntityId = null;
+      UUID parsedUserId = null;
+      
+      if (entityId != null) {
+        try {
+          parsedEntityId = UUID.fromString(entityId);
+        } catch (IllegalArgumentException e) {
+          return Response.status(Response.Status.BAD_REQUEST)
+              .entity(Map.of("error", "Invalid entityId format: " + entityId))
+              .build();
+        }
+      }
+      
+      if (userId != null) {
+        try {
+          parsedUserId = UUID.fromString(userId);
+        } catch (IllegalArgumentException e) {
+          return Response.status(Response.Status.BAD_REQUEST)
+              .entity(Map.of("error", "Invalid userId format: " + userId))
+              .build();
+        }
+      }
+
       // Build search criteria
       var criteria =
           AuditRepository.AuditSearchCriteria.builder()
               .entityType(entityType)
-              .entityId(entityId != null ? UUID.fromString(entityId) : null)
-              .userId(userId != null ? UUID.fromString(userId) : null)
+              .entityId(parsedEntityId)
+              .userId(parsedUserId)
               .eventTypes(eventTypes)
               .sources(sources)
               .from(from.atStartOfDay(ZoneOffset.UTC).toInstant())

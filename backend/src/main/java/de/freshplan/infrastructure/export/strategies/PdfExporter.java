@@ -242,68 +242,9 @@ public class PdfExporter implements ExportStrategy {
     };
   }
 
-  public Object extractFieldValue(Object record, String fieldKey) {
-    if (record == null || fieldKey == null) {
-      return null;
-    }
-
-    // Handle Map
-    if (record instanceof Map) {
-      return ((Map<?, ?>) record).get(fieldKey);
-    }
-
-    // Handle Object with reflection
-    try {
-      // Try field access
-      try {
-        Field field = record.getClass().getDeclaredField(fieldKey);
-        field.setAccessible(true);
-        return field.get(record);
-      } catch (NoSuchFieldException e) {
-        // Try getter method
-        String getterName = "get" + fieldKey.substring(0, 1).toUpperCase() + fieldKey.substring(1);
-        Method getter = record.getClass().getMethod(getterName);
-        return getter.invoke(record);
-      }
-    } catch (Exception e) {
-      log.warnf("Failed to extract field %s from %s", fieldKey, record.getClass());
-      return null;
-    }
-  }
-
-  public String formatFieldValue(Object value, ExportConfig.FieldConfig field) {
-    if (value == null) {
-      return field.getDefaultValue();
-    }
-
-    // Format based on type
-    switch (field.getType()) {
-      case CURRENCY:
-        if (value instanceof Number) {
-          return String.format("%.2f €", ((Number) value).doubleValue());
-        }
-        break;
-      case PERCENTAGE:
-        if (value instanceof Number) {
-          return String.format("%.1f%%", ((Number) value).doubleValue());
-        }
-        break;
-      case BOOLEAN:
-        if (value instanceof Boolean) {
-          return (Boolean) value ? "Ja" : "Nein";
-        }
-        break;
-      case DATE:
-      case DATETIME:
-        if (value instanceof LocalDateTime) {
-          String pattern = field.getFormat() != null ? field.getFormat() : "dd.MM.yyyy HH:mm";
-          return ((LocalDateTime) value).format(DateTimeFormatter.ofPattern(pattern));
-        }
-        break;
-    }
-
-    return value.toString();
-  }
+  // Use default implementations from ExportStrategy interface
+  // The extractFieldValue and formatFieldValue methods are already provided
+  // by the interface with the exact same logic
 
   private String generateFilename(ExportConfig config) {
     String base =
