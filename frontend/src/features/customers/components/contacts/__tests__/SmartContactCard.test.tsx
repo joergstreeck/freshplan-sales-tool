@@ -6,13 +6,10 @@
  */
 
 import React from 'react';
-import { render, screen, waitFor, fireEvent } from '@testing-library/react';
-import { ThemeProvider, createTheme } from '@mui/material';
+import { render, screen, waitFor, fireEvent } from '../../../../../test/test-utils';
 import { SmartContactCard } from '../SmartContactCard';
 import type { Contact } from '../../../types/contact.types';
 import type { RelationshipWarmth } from '../WarmthIndicator';
-
-const theme = createTheme();
 
 const mockContact: Contact = {
   id: '1',

@@ -26,6 +26,8 @@ interface UniversalExportButtonProps {
   entity: string; // z.B. 'customers', 'audit'
   queryParams?: Record<string, any>; // Optionale Filter-Parameter
   buttonLabel?: string;
+  buttonVariant?: 'text' | 'outlined' | 'contained';
+  buttonColor?: 'primary' | 'secondary' | 'success' | 'error' | 'info' | 'warning';
   onExportStart?: () => void;
   onExportComplete?: (format: ExportFormat) => void;
   onExportError?: (error: Error) => void;
@@ -75,6 +77,8 @@ export const UniversalExportButton: React.FC<UniversalExportButtonProps> = ({
   entity,
   queryParams = {},
   buttonLabel = 'Exportieren',
+  buttonVariant = 'outlined',
+  buttonColor = 'primary',
   onExportStart,
   onExportComplete,
   onExportError,
@@ -168,18 +172,19 @@ export const UniversalExportButton: React.FC<UniversalExportButtonProps> = ({
     <>
       <Button
         className={className}
-        variant="outlined"
+        variant={buttonVariant}
+        color={buttonColor}
         startIcon={exporting ? <CircularProgress size={16} /> : <DownloadIcon />}
         onClick={handleClick}
         disabled={disabled || exporting}
-        sx={{
+        sx={buttonColor === 'primary' ? {
           borderColor: '#94C456',
           color: '#004F7B',
           '&:hover': {
             borderColor: '#7AA348',
             backgroundColor: 'rgba(148, 196, 86, 0.08)'
           }
-        }}
+        } : {}}
       >
         {exporting ? 'Exportiere...' : buttonLabel}
       </Button>

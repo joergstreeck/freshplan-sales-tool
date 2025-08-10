@@ -3,7 +3,7 @@
  */
 
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen, renderHook, waitFor } from '@testing-library/react';
+import { render, screen, renderHook, waitFor } from '../test/test-utils';
 import { KeycloakProvider, useKeycloak } from './KeycloakContext';
 import type { ReactNode } from 'react';
 
