@@ -6,7 +6,7 @@ import de.freshplan.domain.audit.service.AuditService;
 import de.freshplan.domain.customer.entity.Customer;
 import de.freshplan.domain.customer.entity.CustomerContact;
 import de.freshplan.domain.customer.repository.CustomerRepository;
-import de.freshplan.domain.export.service.ExportService;
+import de.freshplan.domain.export.service.ExportServiceV2;
 import de.freshplan.domain.export.service.HtmlExportService;
 import de.freshplan.domain.export.service.dto.ExportRequest;
 import de.freshplan.domain.export.service.dto.ExportOptions;
@@ -48,7 +48,7 @@ public class ExportResource {
     private static final Logger log = Logger.getLogger(ExportResource.class);
     
     @Inject
-    ExportService exportService;
+    ExportServiceV2 exportService;
     
     @Inject
     HtmlExportService htmlExportService;
@@ -127,13 +127,14 @@ public class ExportResource {
     }
     
     /**
-     * Export audit data as PDF
+     * Export audit data as HTML (for PDF printing)
+     * UPDATED: Returns HTML that can be printed to PDF in browser
      */
     @GET
     @Path("/audit/pdf")
     @RolesAllowed({"admin", "auditor", "manager"})
-    @Produces("application/pdf")
-    @Operation(summary = "Export audit trail as PDF report")
+    @Produces("text/html")
+    @Operation(summary = "Export audit trail as HTML report (printable to PDF)")
     public Response exportAuditPdf(
             @QueryParam("entityType") String entityType,
             @QueryParam("entityId") UUID entityId,
@@ -141,7 +142,7 @@ public class ExportResource {
             @QueryParam("to") String to,
             @QueryParam("includeDetails") @DefaultValue("true") boolean includeDetails) {
         
-        log.infof("Exporting audit PDF for entityType=%s, entityId=%s", entityType, entityId);
+        log.infof("Exporting audit HTML for entityType=%s, entityId=%s", entityType, entityId);
         
         ExportRequest request = ExportRequest.builder()
                 .entityType(entityType)
@@ -154,16 +155,13 @@ public class ExportResource {
         // Log export action
         auditService.logExport("AUDIT_PDF", request.toMap());
         
-        // Generate PDF using export service
-        byte[] pdfBytes = exportService.generateAuditPdf(request);
+        // Generate HTML using export service
+        String htmlContent = exportService.generateAuditHtml(request);
         
-        String filename = String.format("audit_report_%s.pdf",
-                LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
-        
-        return Response.ok(pdfBytes)
-                .header("Content-Disposition", "attachment; filename=\"" + filename + "\"")
-                .header("Content-Type", "application/pdf")
-                .header("Content-Length", pdfBytes.length)
+        // Return HTML with appropriate headers
+        return Response.ok(htmlContent)
+                .header("Content-Type", "text/html; charset=UTF-8")
+                .header("Cache-Control", "no-cache, no-store, must-revalidate")
                 .build();
     }
     
@@ -429,14 +427,15 @@ public class ExportResource {
     }
     
     /**
-     * Export compliance report as PDF
+     * Export compliance report as HTML (for PDF printing)
+     * UPDATED: Returns HTML that can be printed to PDF in browser
      */
     @POST
     @Path("/compliance/pdf")
     @RolesAllowed({"admin", "auditor"})
     @Consumes(MediaType.APPLICATION_JSON)
-    @Produces("application/pdf")
-    @Operation(summary = "Generate compliance report PDF")
+    @Produces("text/html")
+    @Operation(summary = "Generate compliance report HTML (printable to PDF)")
     public Response exportComplianceReport(@Valid ExportOptions options) {
         
         log.info("Generating compliance report");
@@ -444,16 +443,13 @@ public class ExportResource {
         // Log export action
         auditService.logExport("COMPLIANCE_REPORT", options.toMap());
         
-        // Generate comprehensive compliance report
-        byte[] pdfBytes = exportService.generateComplianceReport(options);
+        // Generate comprehensive compliance report as HTML
+        String htmlContent = exportService.generateComplianceHtml(options);
         
-        String filename = String.format("compliance_report_%s_%s.pdf",
-                options.getReportType(),
-                LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
-        
-        return Response.ok(pdfBytes)
-                .header("Content-Disposition", "attachment; filename=\"" + filename + "\"")
-                .header("Content-Type", "application/pdf")
+        // Return HTML with appropriate headers
+        return Response.ok(htmlContent)
+                .header("Content-Type", "text/html; charset=UTF-8")
+                .header("Cache-Control", "no-cache, no-store, must-revalidate")
                 .build();
     }
     

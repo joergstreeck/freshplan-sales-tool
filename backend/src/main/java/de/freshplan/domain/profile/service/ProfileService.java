@@ -1,6 +1,6 @@
 package de.freshplan.domain.profile.service;
 
-import com.itextpdf.html2pdf.HtmlConverter;
+// REMOVED: import com.itextpdf.html2pdf.HtmlConverter; - Using HTML-based solution instead
 import de.freshplan.domain.profile.entity.Profile;
 import de.freshplan.domain.profile.repository.ProfileRepository;
 import de.freshplan.domain.profile.service.dto.CreateProfileRequest;
@@ -202,41 +202,137 @@ public class ProfileService {
   }
 
   /**
-   * Export profile as PDF.
+   * Export profile as HTML (for PDF printing).
+   * UPDATED: Returns HTML instead of PDF bytes - no external library dependency!
    *
    * @param id the profile ID
-   * @return PDF content as byte array
+   * @return HTML content as string
    * @throws ProfileNotFoundException if not found
    */
-  public byte[] exportProfileAsPdf(UUID id) {
+  public String exportProfileAsHtml(UUID id) {
     // Defensive validation
     if (id == null) {
       throw new IllegalArgumentException("Profile ID cannot be null");
     }
 
-    LOG.debugf("Exporting profile to PDF with ID: %s", id);
+    LOG.debugf("Exporting profile to HTML with ID: %s", id);
     Profile profile =
         profileRepository.findByIdOptional(id).orElseThrow(() -> new ProfileNotFoundException(id));
 
-    // Generate HTML content
-    String html = generateProfileHtml(profile);
+    // Generate HTML content with enhanced styling for print
+    String html = generateEnhancedProfileHtml(profile);
 
-    // Convert HTML to PDF
-    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-    HtmlConverter.convertToPdf(html, outputStream);
-
-    byte[] pdfContent = outputStream.toByteArray();
     LOG.infof(
-        "Profile PDF generated successfully with ID: %s, size: %d bytes", id, pdfContent.length);
-    return pdfContent;
+        "Profile HTML generated successfully with ID: %s, size: %d bytes", id, html.length());
+    return html;
+  }
+  
+  /**
+   * DEPRECATED: Old PDF export method - use exportProfileAsHtml instead
+   * @deprecated Use exportProfileAsHtml for robust HTML-based solution
+   */
+  @Deprecated
+  public byte[] exportProfileAsPdf(UUID id) {
+    // This method is deprecated - return empty array or throw exception
+    LOG.warn("exportProfileAsPdf is deprecated - use exportProfileAsHtml instead");
+    throw new UnsupportedOperationException(
+        "PDF export via iTextPDF is deprecated. Use HTML export instead.");
   }
 
   /**
-   * Generate HTML content for profile PDF.
+   * Generate enhanced HTML content for profile with print optimization.
    *
    * @param profile the profile entity
    * @return HTML string
    */
+  private String generateEnhancedProfileHtml(Profile profile) {
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
+
+    StringBuilder html = new StringBuilder();
+    html.append("<!DOCTYPE html>");
+    html.append("<html>");
+    html.append("<head>");
+    html.append("<meta charset='UTF-8'/>");
+    html.append("<title>Kundenprofil - ").append(escapeHtml(profile.getCustomerId())).append("</title>");
+    html.append("<style>");
+    // Enhanced styles with FreshPlan CI colors
+    html.append("body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 20px; color: #333; }");
+    html.append(".header { background: linear-gradient(135deg, #004F7B 0%, #0066A1 100%); color: white; padding: 30px; margin: -20px -20px 20px -20px; }");
+    html.append("h1 { margin: 0; font-size: 28px; }");
+    html.append("h2 { color: #004F7B; border-bottom: 2px solid #94C456; padding-bottom: 5px; margin-top: 30px; }");
+    html.append(".info-block { margin: 20px 0; padding: 15px; background: #f9f9f9; border-left: 4px solid #94C456; }");
+    html.append(".label { font-weight: bold; color: #004F7B; }");
+    html.append(".footer { margin-top: 50px; padding-top: 20px; border-top: 2px solid #004F7B; text-align: center; color: #666; font-size: 12px; }");
+    html.append(".print-button { position: fixed; bottom: 20px; right: 20px; background: #94C456; color: white; border: none; ");
+    html.append("padding: 15px 25px; border-radius: 25px; cursor: pointer; font-size: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }");
+    html.append(".print-button:hover { background: #7FA93F; }");
+    html.append("@media print { .no-print { display: none; } body { margin: 0; } .header { margin: 0; } }");
+    html.append("@page { size: A4; margin: 2cm; }");
+    html.append("</style>");
+    html.append("</head>");
+    html.append("<body>");
+
+    // Header with gradient
+    html.append("<div class='header'>");
+    html.append("<h1>Kundenprofil</h1>");
+    html.append("<p style='margin: 5px 0; opacity: 0.9;'>Kundennummer: ").append(escapeHtml(profile.getCustomerId())).append("</p>");
+    html.append("<p style='margin: 5px 0; opacity: 0.9;'>Erstellt am: ").append(LocalDateTime.now().format(formatter)).append("</p>");
+    html.append("</div>");
+
+    // Company Info
+    if (profile.getCompanyInfo() != null) {
+      html.append("<h2>Firmendaten</h2>");
+      html.append("<div class='info-block'>");
+      html.append(escapeHtml(profile.getCompanyInfo()));
+      html.append("</div>");
+    }
+
+    // Contact Info
+    if (profile.getContactInfo() != null) {
+      html.append("<h2>Kontaktdaten</h2>");
+      html.append("<div class='info-block'>");
+      html.append(escapeHtml(profile.getContactInfo()));
+      html.append("</div>");
+    }
+
+    // Financial Info
+    if (profile.getFinancialInfo() != null) {
+      html.append("<h2>Finanzdaten</h2>");
+      html.append("<div class='info-block'>");
+      html.append(escapeHtml(profile.getFinancialInfo()));
+      html.append("</div>");
+    }
+
+    // Notes
+    if (profile.getNotes() != null && !profile.getNotes().isBlank()) {
+      html.append("<h2>Notizen</h2>");
+      html.append("<div class='info-block'>");
+      html.append(escapeHtml(profile.getNotes()));
+      html.append("</div>");
+    }
+
+    // Footer
+    html.append("<div class='footer'>");
+    html.append("<p>Generiert am: ").append(LocalDateTime.now().format(formatter)).append("</p>");
+    html.append("<p>© 2025 FreshPlan - Vertraulich</p>");
+    html.append("</div>");
+
+    // Print button
+    html.append("<button class='print-button no-print' onclick='window.print()'>🖨️ Als PDF drucken</button>");
+
+    html.append("</body>");
+    html.append("</html>");
+
+    return html.toString();
+  }
+
+  /**
+   * DEPRECATED: Old HTML generation method - use generateEnhancedProfileHtml instead
+   *
+   * @param profile the profile entity
+   * @return HTML string
+   */
+  @Deprecated
   private String generateProfileHtml(Profile profile) {
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
 
@@ -307,5 +403,17 @@ public class ProfileService {
     html.append("</html>");
 
     return html.toString();
+  }
+  
+  /**
+   * Escape HTML special characters to prevent XSS
+   */
+  private String escapeHtml(String text) {
+    if (text == null) return "";
+    return text.replace("&", "&amp;")
+               .replace("<", "&lt;")
+               .replace(">", "&gt;")
+               .replace("\"", "&quot;")
+               .replace("'", "&#39;");
   }
 }
