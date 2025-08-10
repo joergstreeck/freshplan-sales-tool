@@ -303,16 +303,15 @@ export const auditApi = {
     }
   },
 
-  // Export audit logs
+  // Export audit logs - DEPRECATED: Use Universal Export Framework via /api/v2/export/audit/{format}
+  // Kept for backward compatibility only
   async exportAuditLogs(options: AuditExportOptions) {
-    // Always try to use real data first
-    try {
-
+    console.warn('exportAuditLogs is deprecated. Use UniversalExportButton component instead.');
+    // Redirect to new Universal Export Framework endpoint
     const params = new URLSearchParams();
-    params.append('format', options.format);
     params.append('from', options.dateRange.from.toISOString().split('T')[0]);
     params.append('to', options.dateRange.to.toISOString().split('T')[0]);
-
+    
     if (options.filters?.entityType) {
       params.append('entityType', options.filters.entityType);
     }
@@ -320,43 +319,11 @@ export const auditApi = {
       options.filters.eventTypes.forEach(type => params.append('eventType', type));
     }
 
-    const response = await httpClient.get(`/api/audit/export?${params}`, {
-      responseType: 'blob',
-    });
-
-    // Create download link
-    const url = window.URL.createObjectURL(new Blob([response.data]));
-    const link = document.createElement('a');
-    link.href = url;
-    link.setAttribute(
-      'download',
-      `audit_trail_${new Date().toISOString().split('T')[0]}.${options.format}`
-    );
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-    window.URL.revokeObjectURL(url);
-    } catch (error) {
-      console.error('Failed to export audit logs, using mock data:', error);
-      // Mock export as fallback - create CSV content
-      const csvContent = [
-        'ID,Timestamp,User,Event,Entity,Action,Success',
-        ...mockAuditLogs.map(
-          log =>
-            `${log.id},${log.timestamp},${log.userName},${log.eventType},${log.entityType},${log.action},${log.success}`
-        ),
-      ].join('\n');
-
-      const blob = new Blob([csvContent], { type: 'text/csv' });
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', `audit_trail_${new Date().toISOString().split('T')[0]}.csv`);
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      window.URL.revokeObjectURL(url);
-    }
+    // Use the new Universal Export endpoint
+    const format = options.format || 'csv';
+    const url = `/api/v2/export/audit/${format}?${params}`;
+    
+    window.open(url, '_blank');
   },
 
   // Verify integrity

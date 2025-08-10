@@ -16,6 +16,10 @@
 - Backup-Strategie
 - System-Integration
 
+## 🆕 Universal Export Framework
+
+> **WICHTIG:** Die Export-Funktionalität wird durch das neue **[Universal Export Framework](/Users/joergstreeck/freshplan-sales-tool/docs/features/UNIVERSAL_EXPORT_FRAMEWORK_PLAN.md)** implementiert, das eine zentrale, wiederverwendbare Export-Architektur für alle Datentypen bietet.
+
 ## ⚡ Quick Implementation Guide für Claude
 
 ```bash

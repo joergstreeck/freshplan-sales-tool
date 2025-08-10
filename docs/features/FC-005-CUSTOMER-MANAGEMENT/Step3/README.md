@@ -279,6 +279,7 @@ npm run test
 - [Field Catalog Extensions](../implementation/FIELD_CATALOG_CONTACTS.md)
 - [Dynamic Field Renderer](../../../03-FRONTEND/03-component-library.md)
 - [API Contract](../../../../API_CONTRACT.md)
+- **🆕 [Universal Export Framework](/Users/joergstreeck/freshplan-sales-tool/docs/features/UNIVERSAL_EXPORT_FRAMEWORK_PLAN.md)** - Zentrale Export-Lösung für alle Datentypen
 
 ---
 

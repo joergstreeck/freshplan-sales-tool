@@ -28,13 +28,13 @@ import { de } from 'date-fns/locale';
 import type { AuditLog, AuditFilters } from '../types';
 import { auditApi } from '../services/auditApi';
 import { AuditDetailModal } from './AuditDetailModal';
+import { UniversalExportButton } from '@/components/export/UniversalExportButton';
 
 interface AuditTrailTableProps {
   filters?: AuditFilters;
-  onExport?: () => void;
 }
 
-export const AuditTrailTable: React.FC<AuditTrailTableProps> = ({ filters, onExport }) => {
+export const AuditTrailTable: React.FC<AuditTrailTableProps> = ({ filters }) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(25);
   const [selectedAudit, setSelectedAudit] = useState<string | null>(null);
@@ -265,13 +265,20 @@ export const AuditTrailTable: React.FC<AuditTrailTableProps> = ({ filters, onExp
         labelDisplayedRows={({ from, to }) => `${from}-${to}`}
       />
 
-      {onExport && (
-        <Box sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end' }}>
-          <Button variant="outlined" startIcon={<DownloadIcon />} onClick={onExport}>
-            Export als CSV
-          </Button>
-        </Box>
-      )}
+      {/* Universal Export Button */}
+      <Box sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end' }}>
+        <UniversalExportButton
+          entity="audit"
+          queryParams={filters ? {
+            ...(filters.dateRange?.from && { from: filters.dateRange.from.toISOString().split('T')[0] }),
+            ...(filters.dateRange?.to && { to: filters.dateRange.to.toISOString().split('T')[0] }),
+            ...(filters.entityType && { entityType: filters.entityType }),
+            ...(filters.entityId && { entityId: filters.entityId }),
+            ...(filters.searchText && { searchText: filters.searchText }),
+          } : {}}
+          buttonLabel="Exportieren"
+        />
+      </Box>
 
       {selectedAudit && (
         <AuditDetailModal

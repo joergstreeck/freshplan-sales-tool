@@ -16,6 +16,8 @@
 
 Ermögliche autorisierten Nutzern (Admin, Auditor) den Export von Audit-Daten in verschiedenen Formaten für Compliance, Reporting und Analyse.
 
+> **🆕 WICHTIG:** Diese Export-Features werden durch das neue **[Universal Export Framework](/Users/joergstreeck/freshplan-sales-tool/docs/features/UNIVERSAL_EXPORT_FRAMEWORK_PLAN.md)** ersetzt werden, das eine zentrale, wiederverwendbare Export-Architektur bietet und Code-Duplikation vermeidet.
+
 ## 📊 Export-Formate
 
 ### Unterstützte Formate

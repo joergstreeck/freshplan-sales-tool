@@ -18,6 +18,7 @@
 **🔗 API Contract:** `/Users/joergstreeck/freshplan-sales-tool/docs/technical/API_CONTRACT.md`  
 **🔗 Frontend Spec:** `/Users/joergstreeck/freshplan-sales-tool/docs/technical/FRONTEND_BACKEND_SPECIFICATION.md`  
 **🔗 Master Plan:** `/Users/joergstreeck/freshplan-sales-tool/docs/CRM_COMPLETE_MASTER_PLAN_V5.md`  
+**🔗 Universal Export Framework:** `/Users/joergstreeck/freshplan-sales-tool/docs/features/UNIVERSAL_EXPORT_FRAMEWORK_PLAN.md`  
 
 ## 🎯 Übersicht
 
@@ -125,7 +126,7 @@ Der onChange Handler muss die `handleSearch` Funktion aufrufen, nicht nur den lo
 - Quick Filter Chips (Aktive, Risiko, etc.)
 - Erweiterte Filter Drawer
 - Column Manager mit Drag & Drop
-- Export Menu (CSV, Excel, PDF, JSON)
+- Export Menu (CSV, Excel, PDF, JSON) - **Siehe:** [Universal Export Framework](/Users/joergstreeck/freshplan-sales-tool/docs/features/UNIVERSAL_EXPORT_FRAMEWORK_PLAN.md)
 - Saved Filter Sets mit LocalStorage
 - Deutsche Übersetzungen
 

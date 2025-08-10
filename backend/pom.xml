@@ -70,12 +70,6 @@
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-smallrye-health</artifactId>
     </dependency>
-    <!-- PDF Generation -->
-    <dependency>
-      <groupId>com.itextpdf</groupId>
-      <artifactId>html2pdf</artifactId>
-      <version>5.0.5</version>
-    </dependency>
     <!-- CSV Generation -->
     <dependency>
       <groupId>com.opencsv</groupId>
@@ -87,6 +81,12 @@
       <groupId>org.apache.poi</groupId>
       <artifactId>poi-ooxml</artifactId>
       <version>5.2.5</version>
+    </dependency>
+    <!-- OpenPDF for PDF generation -->
+    <dependency>
+      <groupId>com.github.librepdf</groupId>
+      <artifactId>openpdf</artifactId>
+      <version>1.3.30</version>
     </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>
@@ -129,26 +129,6 @@
       <groupId>org.awaitility</groupId>
       <artifactId>awaitility</artifactId>
       <scope>test</scope>
-    </dependency>
-    <!-- Export Dependencies -->
-    <!-- CSV Generation -->
-    <dependency>
-      <groupId>com.opencsv</groupId>
-      <artifactId>opencsv</artifactId>
-      <version>5.9</version>
-    </dependency>
-    <!-- PDF Generation -->
-    <dependency>
-      <groupId>com.itextpdf</groupId>
-      <artifactId>itext7-core</artifactId>
-      <version>8.0.2</version>
-      <type>pom</type>
-    </dependency>
-    <!-- Excel Generation -->
-    <dependency>
-      <groupId>org.apache.poi</groupId>
-      <artifactId>poi-ooxml</artifactId>
-      <version>5.2.5</version>
     </dependency>
   </dependencies>
   <build>

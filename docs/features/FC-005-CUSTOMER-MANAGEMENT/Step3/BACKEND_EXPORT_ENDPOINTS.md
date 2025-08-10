@@ -16,6 +16,8 @@
 
 Implementiere Backend-Endpoints für den Export von Audit- und Kundendaten in verschiedene Formate (CSV, PDF, Excel, JSON) mit vollständiger Compliance-Unterstützung.
 
+> **🆕 WICHTIG:** Diese Export-Lösung wird durch das neue **[Universal Export Framework](/Users/joergstreeck/freshplan-sales-tool/docs/features/UNIVERSAL_EXPORT_FRAMEWORK_PLAN.md)** ersetzt werden, das eine zentrale, wiederverwendbare Export-Architektur bietet.
+
 ## 📊 EXPORT-FORMATE
 
 ### Unterstützte Formate

@@ -51,7 +51,6 @@ import {
   Sort as SortIcon,
   Save as SaveIcon,
   Clear as ClearIcon,
-  Download as ExportIcon,
   Close as CloseIcon,
   Add as AddIcon,
   DragIndicator as DragIcon,
@@ -64,10 +63,6 @@ import {
   Schedule as RecentIcon,
   TrendingUp as RevenueIcon,
   Delete as DeleteIcon,
-  FileDownload,
-  PictureAsPdf,
-  TableChart,
-  Code,
 } from '@mui/icons-material';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { useDebounce } from '../../hooks/useDebounce';
@@ -103,7 +98,6 @@ interface IntelligentFilterBarProps {
   onFilterChange: (filters: FilterConfig) => void;
   onSortChange: (sort: SortConfig) => void;
   onColumnChange: (columns: ColumnConfig[]) => void;
-  onExport?: (format: 'csv' | 'excel' | 'json' | 'pdf') => void;
   totalCount: number;
   filteredCount: number;
   loading?: boolean;
@@ -117,7 +111,6 @@ export function IntelligentFilterBar({
   onFilterChange,
   onSortChange,
   onColumnChange,
-  onExport,
   totalCount,
   filteredCount,
   loading = false,
@@ -128,8 +121,6 @@ export function IntelligentFilterBar({
   const searchInputRef = useRef<HTMLInputElement>(null);
   const searchContainerRef = useRef<HTMLDivElement>(null);
   
-  // Export menu anchor
-  const [exportAnchorEl, setExportAnchorEl] = useState<null | HTMLElement>(null);
   // Sort menu anchor
   const [sortMenuAnchor, setSortMenuAnchor] = useState<null | HTMLElement>(null);
   
@@ -419,13 +410,6 @@ export function IntelligentFilterBar({
     return count;
   }, [activeFilters]);
   
-  // Handle Export
-  const handleExport = (format: 'csv' | 'excel' | 'json' | 'pdf') => {
-    if (onExport) {
-      onExport(format);
-    }
-    setExportAnchorEl(null);
-  };
   
   return (
     <Box sx={{ mb: 3 }}>
@@ -524,15 +508,6 @@ export function IntelligentFilterBar({
               <ColumnIcon />
             </IconButton>
           </Tooltip>
-          
-          {/* Export Menu */}
-          {onExport && (
-            <Tooltip title="Exportieren">
-              <IconButton onClick={(e) => setExportAnchorEl(e.currentTarget)}>
-                <ExportIcon />
-              </IconButton>
-            </Tooltip>
-          )}
         </Stack>
         
         {/* Quick Filters */}
@@ -590,37 +565,6 @@ export function IntelligentFilterBar({
         )}
       </Stack>
       
-      {/* Export Menu */}
-      <Menu
-        anchorEl={exportAnchorEl}
-        open={Boolean(exportAnchorEl)}
-        onClose={() => setExportAnchorEl(null)}
-      >
-        <MenuItem onClick={() => handleExport('csv')}>
-          <ListItemIcon>
-            <TableChart fontSize="small" />
-          </ListItemIcon>
-          <ListItemText>CSV Export</ListItemText>
-        </MenuItem>
-        <MenuItem onClick={() => handleExport('excel')}>
-          <ListItemIcon>
-            <TableChart fontSize="small" />
-          </ListItemIcon>
-          <ListItemText>Excel Export</ListItemText>
-        </MenuItem>
-        <MenuItem onClick={() => handleExport('pdf')}>
-          <ListItemIcon>
-            <PictureAsPdf fontSize="small" />
-          </ListItemIcon>
-          <ListItemText>PDF Export</ListItemText>
-        </MenuItem>
-        <MenuItem onClick={() => handleExport('json')}>
-          <ListItemIcon>
-            <Code fontSize="small" />
-          </ListItemIcon>
-          <ListItemText>JSON Export</ListItemText>
-        </MenuItem>
-      </Menu>
       
       {/* Sort Menu */}
       <Menu
