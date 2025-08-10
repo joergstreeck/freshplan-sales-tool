@@ -125,7 +125,12 @@ test.describe('PR4: All Features Quick Test', () => {
     test('shows some data or empty state', async ({ page }) => {
       await page.goto('http://localhost:5173/customers', { waitUntil: 'domcontentloaded' });
       await page.waitForTimeout(1000);
-      const hasData = await page.locator('table, .MuiCard-root, .empty-state, text=/keine daten/i').count();
+      // Split the selector into separate locators and sum their counts
+      const tableCount = await page.locator('table').count();
+      const cardCount = await page.locator('.MuiCard-root').count();
+      const emptyStateCount = await page.locator('.empty-state').count();
+      const keineDatenCount = await page.locator('text=/keine daten/i').count();
+      const hasData = tableCount + cardCount + emptyStateCount + keineDatenCount;
       expect(hasData).toBeGreaterThanOrEqual(0);
     });
   });
