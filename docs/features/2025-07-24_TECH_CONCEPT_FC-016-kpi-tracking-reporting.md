@@ -111,7 +111,9 @@ public class KpiResource {
     @POST
     @Path("/reports/generate")
     public Response generateReport(ReportRequest request) {
-        // PDF/Excel Generation
+        // AKTUALISIERT: HTML-basierte Export-Lösung verwenden
+        // Nutzt HtmlExportService für robuste PDF-Generierung
+        // Keine externe PDF-Library-Abhängigkeiten mehr!
     }
 }
 ```
@@ -463,7 +465,7 @@ const KpiDashboard: React.FC = () => {
 
 #### Sprint 3.2: Export Implementation (1 Tag)
 1. **Tag 8**: 
-   - PDF Generation (JasperReports)
+   - PDF Generation (HtmlExportService - keine externen Libraries!)
    - Excel Export (Apache POI)
    - Scheduled Reports
 

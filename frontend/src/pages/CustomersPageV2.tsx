@@ -151,19 +151,37 @@ export function CustomersPageV2({ openWizard = false }: CustomersPageV2Props) {
       
       if (!response.ok) throw new Error('Export failed');
       
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      // Map format to correct file extension
-      const fileExtension = format === 'excel' ? 'xlsx' : format;
-      a.download = `customers_export_${new Date().toISOString().split('T')[0]}.${fileExtension}`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      window.URL.revokeObjectURL(url);
-      
-      toast.success(`Export als ${format.toUpperCase()} erfolgreich!`);
+      // Special handling for PDF (HTML that opens in new tab for printing)
+      if (format === 'pdf') {
+        const htmlContent = await response.text();
+        const newWindow = window.open('', '_blank');
+        if (newWindow) {
+          newWindow.document.write(htmlContent);
+          newWindow.document.close();
+          // Auto-trigger print dialog after a short delay
+          setTimeout(() => {
+            newWindow.print();
+          }, 500);
+          toast.success('PDF-Export geöffnet! Nutzen Sie die Druckfunktion zum Speichern als PDF.');
+        } else {
+          toast.error('Popup-Blocker verhindert das Öffnen des PDF-Exports');
+        }
+      } else {
+        // Handle CSV, Excel, JSON as before
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        // Map format to correct file extension
+        const fileExtension = format === 'excel' ? 'xlsx' : format;
+        a.download = `customers_export_${new Date().toISOString().split('T')[0]}.${fileExtension}`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+        
+        toast.success(`Export als ${format.toUpperCase()} erfolgreich!`);
+      }
     } catch (error) {
       console.error('Export error:', error);
       toast.error('Export fehlgeschlagen');

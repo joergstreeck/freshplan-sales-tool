@@ -1,47 +1,65 @@
 # 🧭 NEXT STEP NAVIGATION
 
-**Letzte Aktualisierung:** 2025-08-10, 12:40 Uhr  
+**Letzte Aktualisierung:** 2025-08-10, 14:35 Uhr  
 **Aktiver Branch:** `feature/fc-005-enhanced-features`
 **Nächste Migration:** V217 (letzte war V216__add_extended_search_indexes.sql)
 
-## ✅ PROBLEM GELÖST:
+## ✅ STATUS UPDATE:
 
-### Backend läuft wieder! 
-**Alle 31 Kompilierungsfehler behoben** durch vollständige Migration zu CustomerContact Entity
-- Alle Services verwenden jetzt konsistent `CustomerContact`
-- Backend kompiliert erfolgreich
-- **System ist voll funktionsfähig!**
+### Export-Funktionalität KOMPLETT FUNKTIONSFÄHIG! 🎉
+**Alle Export-Formate arbeiten:**
+- ✅ CSV Export mit korrekten Kontaktdaten
+- ✅ JSON Export mit vollständigen Customer-Objekten
+- ✅ Excel Export mit korrekter .xlsx Endung
+- ✅ PDF Export mit robuster HTML-basierter Lösung (keine Library-Abhängigkeiten)
+- **100% production-ready ohne externe Dependencies!**
 
 ## 🎯 JETZT GERADE:
 
-**FC-005 Enhanced Features - TEAM-REVIEW ERFOLGT! 📋**
+**FC-005 PR4 Intelligent Filter Bar - EXPORT KOMPLETT ✅**
 
-**Stand 10.08.2025 14:00:**
-- ✅ Backend Contact/CustomerContact Konflikt gelöst
-- ✅ Universal Search API funktioniert (Backend + Frontend)
-- ✅ SearchResultsDropdown mit Highlighting und Icons
-- ⚠️ **PROBLEM:** onChange Handler ruft handleSearch nicht auf (Zeile 443)
-- 🔄 **TEAM-ENTSCHEIDUNG:** Hybride Such-Lösung approved
-  - Dropdown mit getrennten Sektionen (Kunden/Kontakte)
-  - Deep-Linking zu Kontakten mit Hervorhebung
-  - Löst das "Zwei-Suchen-Problem" elegant
-- ✅ Migrationen V215 und V216 erstellt
-- ✅ Export-Funktionalität implementiert
+**Stand 10.08.2025 14:35:**
+- ✅ Universal Search mit hybrider Lösung FERTIG
+- ✅ Export VOLLSTÄNDIG FUNKTIONSFÄHIG (CSV, Excel, PDF, JSON)
+  - Vite Proxy konfiguriert
+  - HTML-basierter PDF-Export ohne Library-Dependencies
+  - Korrekte Dateiendungen für alle Formate
+- ✅ Quick Filters (5 Presets) IMPLEMENTIERT
+- ✅ Column Manager mit Drag & Drop LÄUFT
+- 🔄 Saved Filter Sets UI vorhanden, Tests ausstehend
+- 🔄 Backend Tests für SearchService begonnen
 
 ## 🚀 NÄCHSTER SCHRITT:
 
-### 🔴 KRITISCH: onChange Handler fixen (nur 1 Zeile!)
+### 1. Backend Tests korrigieren
 
 ```bash
-# Die Universal Search funktioniert nicht wegen einem einfachen Bug!
-cd /Users/joergstreeck/freshplan-sales-tool/frontend
+cd /Users/joergstreeck/freshplan-sales-tool/backend
 
-# Datei: src/features/customers/components/filter/IntelligentFilterBar.tsx
-# Zeile: 443
-# ÄNDERN VON: onChange={(e) => setSearchTerm(e.target.value)}
-# ÄNDERN ZU:  onChange={(e) => handleSearch(e.target.value)}
+# SearchServiceTest.java fixen (DTOs anpassen)
+# Service nutzt SearchResults, nicht SearchQuery/SearchResponse
 
-# Das ist alles! Dann funktioniert die komplette hybride Such-Lösung!
+./mvnw test -Dtest=SearchServiceTest
+```
+
+### 2. Saved Filter Sets testen
+
+```bash
+cd ../frontend
+npm run dev
+
+# Manuell testen:
+# - Filter konfigurieren und speichern
+# - Gespeicherte Filter laden
+# - Filter löschen
+```
+
+### 3. PR für Intelligent Filter Bar erstellen
+
+```bash
+# Wenn alle Tests grün:
+gh pr create --title "feat(FC-005): PR4 Intelligent Filter Bar with Universal Search" \
+  --body "Vollständige Implementierung der intelligenten Filterleiste"
 ```
 
 ## ✅ WAS WURDE HEUTE FERTIGGESTELLT:

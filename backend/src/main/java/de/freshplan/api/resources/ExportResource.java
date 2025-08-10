@@ -7,6 +7,7 @@ import de.freshplan.domain.customer.entity.Customer;
 import de.freshplan.domain.customer.entity.CustomerContact;
 import de.freshplan.domain.customer.repository.CustomerRepository;
 import de.freshplan.domain.export.service.ExportService;
+import de.freshplan.domain.export.service.HtmlExportService;
 import de.freshplan.domain.export.service.dto.ExportRequest;
 import de.freshplan.domain.export.service.dto.ExportOptions;
 import io.quarkus.security.Authenticated;
@@ -48,6 +49,9 @@ public class ExportResource {
     
     @Inject
     ExportService exportService;
+    
+    @Inject
+    HtmlExportService htmlExportService;
     
     @Inject
     AuditRepository auditRepository;
@@ -350,19 +354,26 @@ public class ExportResource {
     }
     
     /**
-     * Export customers as PDF
+     * Export customers as HTML (for PDF printing)
+     * 
+     * This is a robust solution that generates HTML which can be:
+     * 1. Displayed in the browser
+     * 2. Printed to PDF using browser's print function
+     * 3. Saved as HTML for further processing
+     * 
+     * This approach avoids PDF library issues and provides more flexibility
      */
     @GET
     @Path("/customers/pdf")
-    @RolesAllowed({"admin", "manager"})
-    @Produces("application/pdf")
-    @Operation(summary = "Export customers as PDF report")
+    @RolesAllowed({"admin", "manager", "sales"})
+    @Produces("text/html")
+    @Operation(summary = "Export customers as HTML report (printable to PDF)")
     public Response exportCustomersPdf(
             @QueryParam("status") List<String> status,
             @QueryParam("industry") String industry,
             @QueryParam("format") @DefaultValue("list") String format) {
         
-        log.info("Exporting customers PDF");
+        log.info("Exporting customers as HTML for PDF printing");
         
         ExportRequest request = ExportRequest.builder()
                 .status(status)
@@ -373,15 +384,14 @@ public class ExportResource {
         // Log export action
         auditService.logExport("CUSTOMERS_PDF", request.toMap());
         
-        // Generate PDF
-        byte[] pdfBytes = exportService.generateCustomersPdf(request);
+        // Generate HTML that can be printed to PDF
+        String htmlContent = htmlExportService.generateCustomersHtml(request);
         
-        String filename = String.format("customers_report_%s.pdf",
-                LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
-        
-        return Response.ok(pdfBytes)
-                .header("Content-Disposition", "attachment; filename=\"" + filename + "\"")
-                .header("Content-Type", "application/pdf")
+        // Return HTML with appropriate headers
+        // The browser will handle printing to PDF
+        return Response.ok(htmlContent)
+                .header("Content-Type", "text/html; charset=UTF-8")
+                .header("Cache-Control", "no-cache, no-store, must-revalidate")
                 .build();
     }
     

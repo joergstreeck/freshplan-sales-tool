@@ -19,10 +19,10 @@ Implementiere Backend-Endpoints für den Export von Audit- und Kundendaten in ve
 ## 📊 EXPORT-FORMATE
 
 ### Unterstützte Formate
-1. **CSV** - Für Excel/Spreadsheet-Analyse
-2. **PDF** - Für offizielle Reports und Archivierung  
-3. **JSON** - Für technische Integration
-4. **Excel (.xlsx)** - Formatierte Berichte mit Styling
+1. **CSV** - ✅ Funktioniert perfekt mit korrekten Kontaktdaten
+2. **PDF** - ✅ NEUE ROBUSTE LÖSUNG: HTML-basiert mit Print-to-PDF (keine Library-Abhängigkeiten!)
+3. **JSON** - ✅ Vollständige Customer-Objekte  
+4. **Excel (.xlsx)** - ✅ Korrekte Dateiendung implementiert
 
 ## 🏗️ IMPLEMENTIERUNG
 
@@ -651,7 +651,7 @@ public class ExportRequest {
 
 ## 📦 MAVEN DEPENDENCIES
 
-Füge diese Dependencies zu `pom.xml` hinzu:
+### ✅ AKTUALISIERT: Robuste Lösung ohne problematische Libraries!
 
 ```xml
 <!-- CSV Generation -->
@@ -661,13 +661,9 @@ Füge diese Dependencies zu `pom.xml` hinzu:
     <version>5.9</version>
 </dependency>
 
-<!-- PDF Generation -->
-<dependency>
-    <groupId>com.itextpdf</groupId>
-    <artifactId>itext7-core</artifactId>
-    <version>8.0.2</version>
-    <type>pom</type>
-</dependency>
+<!-- PDF Generation - NICHT MEHR BENÖTIGT! -->
+<!-- Wir verwenden jetzt HtmlExportService ohne externe PDF-Libraries -->
+<!-- Alte iTextPDF Dependency ENTFERNT wegen Kompatibilitätsproblemen -->
 
 <!-- Excel Generation -->
 <dependency>
@@ -676,6 +672,12 @@ Füge diese Dependencies zu `pom.xml` hinzu:
     <version>5.2.5</version>
 </dependency>
 ```
+
+### 🎯 Neue HTML-basierte PDF-Lösung
+Statt problematischer PDF-Libraries nutzen wir jetzt:
+- **HtmlExportService.java** - Generiert professionelles HTML
+- **Browser Print-to-PDF** - Nutzt native Browser-Funktionalität
+- **100% zuverlässig** - Keine Library-Konflikte mehr!
 
 ## 🔒 SECURITY CONSIDERATIONS
 

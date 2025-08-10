@@ -38,9 +38,9 @@ import {
   Phone as PhoneIcon,
   Tag as NumberIcon,
   Search as SearchIcon,
+  WorkOutline,
   Star as StarIcon,
   LocationOn as LocationIcon,
-  WorkOutline as DepartmentIcon,
 } from '@mui/icons-material';
 import type { Customer } from '../../types/customer.types';
 
@@ -257,10 +257,10 @@ export const SearchResultsDropdown: React.FC<SearchResultsDropdownProps> = ({
                   </ListItemIcon>
                   <ListItemText
                     primary={
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <span style={{ fontWeight: 500 }}>
                           {highlightText(result.data.companyName, searchQuery)}
-                        </Typography>
+                        </span>
                         <Chip
                           icon={<NumberIcon />}
                           label={highlightText(result.data.customerNumber, searchQuery)}
@@ -278,39 +278,39 @@ export const SearchResultsDropdown: React.FC<SearchResultsDropdownProps> = ({
                           />
                         )}
                         {getMatchIcon(result.matchedFields) && (
-                          <Box sx={{ ml: 'auto', display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                          <span style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '4px' }}>
                             {getMatchIcon(result.matchedFields)}
-                            <Typography variant="caption" color="text.secondary">
+                            <span style={{ fontSize: '0.75rem', color: 'rgba(0, 0, 0, 0.6)' }}>
                               Gefunden in: {result.matchedFields.join(', ')}
-                            </Typography>
-                          </Box>
+                            </span>
+                          </span>
                         )}
-                      </Box>
+                      </span>
                     }
                     secondary={
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mt: 0.5 }}>
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '16px', marginTop: '4px' }}>
                         {result.data.contactEmail && (
-                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                          <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                             <EmailIcon sx={{ fontSize: 14, color: 'text.secondary' }} />
-                            <Typography variant="caption" color="text.secondary">
+                            <span style={{ fontSize: '0.75rem', color: 'rgba(0, 0, 0, 0.6)' }}>
                               {result.data.contactEmail}
-                            </Typography>
-                          </Box>
+                            </span>
+                          </span>
                         )}
                         {result.data.contactPhone && (
-                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                          <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                             <PhoneIcon sx={{ fontSize: 14, color: 'text.secondary' }} />
-                            <Typography variant="caption" color="text.secondary">
+                            <span style={{ fontSize: '0.75rem', color: 'rgba(0, 0, 0, 0.6)' }}>
                               {result.data.contactPhone}
-                            </Typography>
-                          </Box>
+                            </span>
+                          </span>
                         )}
                         {result.data.contactCount && result.data.contactCount > 0 && (
-                          <Typography variant="caption" color="text.secondary">
+                          <span style={{ fontSize: '0.75rem', color: 'rgba(0, 0, 0, 0.6)' }}>
                             {result.data.contactCount} Kontakt{result.data.contactCount > 1 ? 'e' : ''}
-                          </Typography>
+                          </span>
                         )}
-                      </Box>
+                      </span>
                     }
                   />
                 </ListItemButton>
@@ -359,10 +359,10 @@ export const SearchResultsDropdown: React.FC<SearchResultsDropdownProps> = ({
                   </ListItemIcon>
                   <ListItemText
                     primary={
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <span style={{ fontWeight: 500 }}>
                           {highlightText(`${result.data.firstName} ${result.data.lastName}`, searchQuery)}
-                        </Typography>
+                        </span>
                         {result.data.isPrimary && (
                           <Chip
                             icon={<StarIcon />}
@@ -391,35 +391,35 @@ export const SearchResultsDropdown: React.FC<SearchResultsDropdownProps> = ({
                             sx={{ height: 24 }}
                           />
                         )}
-                      </Box>
+                      </span>
                     }
                     secondary={
-                      <Box>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
+                      <span>
+                        <span style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
                           <LocationIcon sx={{ fontSize: 14, color: 'primary.main' }} />
-                          <Typography variant="caption" color="primary" sx={{ fontWeight: 600 }}>
+                          <span style={{ fontSize: '0.875rem', fontWeight: 600, color: '#1976d2' }}>
                             bei: {highlightText(result.data.customerName, searchQuery)}
-                          </Typography>
-                        </Box>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                          </span>
+                        </span>
+                        <span style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
                           {result.data.email && (
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                            <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                               <EmailIcon sx={{ fontSize: 14, color: 'text.secondary' }} />
-                              <Typography variant="caption" color="text.secondary">
+                              <span style={{ fontSize: '0.75rem', color: 'rgba(0, 0, 0, 0.6)' }}>
                                 {highlightText(result.data.email, searchQuery)}
-                              </Typography>
-                            </Box>
+                              </span>
+                            </span>
                           )}
                           {result.data.phone && (
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                            <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                               <PhoneIcon sx={{ fontSize: 14, color: 'text.secondary' }} />
-                              <Typography variant="caption" color="text.secondary">
+                              <span style={{ fontSize: '0.75rem', color: 'rgba(0, 0, 0, 0.6)' }}>
                                 {highlightText(result.data.phone, searchQuery)}
-                              </Typography>
-                            </Box>
+                              </span>
+                            </span>
                           )}
-                        </Box>
-                      </Box>
+                        </span>
+                      </span>
                     }
                   />
                 </ListItemButton>
