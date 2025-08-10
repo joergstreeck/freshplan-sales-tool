@@ -155,7 +155,9 @@ export function CustomersPageV2({ openWizard = false }: CustomersPageV2Props) {
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `customers_export_${new Date().toISOString().split('T')[0]}.${format}`;
+      // Map format to correct file extension
+      const fileExtension = format === 'excel' ? 'xlsx' : format;
+      a.download = `customers_export_${new Date().toISOString().split('T')[0]}.${fileExtension}`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);

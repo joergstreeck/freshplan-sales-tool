@@ -4,6 +4,7 @@ import de.freshplan.domain.audit.entity.AuditEntry;
 import de.freshplan.domain.audit.repository.AuditRepository;
 import de.freshplan.domain.audit.service.AuditService;
 import de.freshplan.domain.customer.entity.Customer;
+import de.freshplan.domain.customer.entity.CustomerContact;
 import de.freshplan.domain.customer.repository.CustomerRepository;
 import de.freshplan.domain.export.service.ExportService;
 import de.freshplan.domain.export.service.dto.ExportRequest;
@@ -478,21 +479,29 @@ public class ExportResource {
         );
     }
     
-    private String formatCustomerContactCsvLine(Customer customer, Object contact) {
-        // This would need proper Contact entity structure
-        return String.format("\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",%s,\"%s\"",
-                customer.getCustomerNumber() != null ? customer.getCustomerNumber() : "",
-                customer.getCompanyName() != null ? customer.getCompanyName() : "",
-                customer.getStatus(),
-                customer.getIndustry() != null ? customer.getIndustry() : "",
-                "",  // City field not available
-                "", // contact.getFullName()
-                "", // contact.getEmail()
-                "", // contact.getPhone()
-                "", // contact.getRole()
-                "", // contact.getDepartment()
-                "false", // contact.isPrimary()
-                "" // contact.getLastContactDate()
-        );
+    private String formatCustomerContactCsvLine(Customer customer, Object contactObj) {
+        // Cast to CustomerContact
+        if (contactObj instanceof CustomerContact) {
+            CustomerContact contact = (CustomerContact) contactObj;
+            String fullName = (contact.getFirstName() != null ? contact.getFirstName() : "") + 
+                            " " + (contact.getLastName() != null ? contact.getLastName() : "");
+            return String.format("\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",%s,\"%s\"",
+                    customer.getCustomerNumber() != null ? customer.getCustomerNumber() : "",
+                    customer.getCompanyName() != null ? customer.getCompanyName() : "",
+                    customer.getStatus(),
+                    customer.getIndustry() != null ? customer.getIndustry() : "",
+                    "",  // City field not available yet
+                    fullName.trim(),
+                    contact.getEmail() != null ? contact.getEmail() : "",
+                    contact.getPhone() != null ? contact.getPhone() : "",
+                    contact.getPosition() != null ? contact.getPosition() : "",
+                    contact.getDepartment() != null ? contact.getDepartment() : "",
+                    contact.getIsPrimary() != null ? contact.getIsPrimary().toString() : "false",
+                    customer.getLastContactDate() != null ? customer.getLastContactDate() : ""
+            );
+        } else {
+            // Fallback for unexpected types
+            return formatCustomerCsvLine(customer);
+        }
     }
 }
