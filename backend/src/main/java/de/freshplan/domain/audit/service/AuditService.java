@@ -163,6 +163,24 @@ public class AuditService {
             .source(AuditSource.SYSTEM)
             .build());
   }
+  
+  /** Log an export event for compliance tracking */
+  @Transactional(Transactional.TxType.REQUIRES_NEW)
+  public UUID logExport(String exportType, Map<String, Object> parameters) {
+    return logSync(
+        AuditContext.builder()
+            .eventType(AuditEventType.DATA_EXPORT_STARTED)
+            .entityType("EXPORT")
+            .entityId(UUID.randomUUID())
+            .newValue(Map.of(
+                "exportType", exportType,
+                "parameters", parameters,
+                "timestamp", Instant.now()
+            ))
+            .changeReason("User initiated export: " + exportType)
+            .source(AuditSource.API)
+            .build());
+  }
 
   /** Build audit entry with all required fields */
   private AuditEntry buildAuditEntry(AuditContext context) {

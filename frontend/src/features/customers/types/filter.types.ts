@@ -30,7 +30,7 @@ export interface FilterConfig {
   hasContacts?: boolean | null;
   lastContactDays?: number | null;
   tags?: string[];
-  createdDays?: number;
+  createdDays?: number | null; // Für "Neue Kunden" Filter
   customFields?: Record<string, any>;
 }
 
@@ -63,7 +63,7 @@ export interface SavedFilterSet {
   name: string;
   filters: FilterConfig;
   columns: ColumnConfig[];
-  sort: SortConfig[];
+  sort: SortConfig;
   createdAt: string;
   shared?: boolean;
   ownerId?: string;

@@ -4,6 +4,7 @@ import './i18n'; // i18n vor allen anderen Imports!
 import './styles/globals.css'; // Legacy base styles
 import './index.css'; // FreshPlan CI Design System (überschreibt Legacy)
 import './styles/variables-mapping.css'; // Map legacy variables to new FreshPlan CI
+import './styles/animations.css'; // Global animations for highlighting
 import { AppProviders } from './providers.tsx';
 
 // Enable MSW for development if backend is not available

@@ -1,6 +1,6 @@
 package de.freshplan.domain.customer.service.mapper;
 
-import de.freshplan.domain.customer.entity.Contact;
+import de.freshplan.domain.customer.entity.CustomerContact;
 import de.freshplan.domain.customer.service.dto.ContactDTO;
 import jakarta.enterprise.context.ApplicationScoped;
 
@@ -17,7 +17,7 @@ public class ContactMapper {
    * @param contact the entity
    * @return the DTO
    */
-  public ContactDTO toDTO(Contact contact) {
+  public ContactDTO toDTO(CustomerContact contact) {
     if (contact == null) {
       return null;
     }
@@ -40,8 +40,8 @@ public class ContactMapper {
     dto.setMobile(contact.getMobile());
 
     // Flags
-    dto.setPrimary(contact.isPrimary());
-    dto.setActive(contact.isActive());
+    dto.setPrimary(contact.getIsPrimary());
+    dto.setActive(contact.getIsActive());
 
     // Location
     if (contact.getAssignedLocation() != null) {
@@ -75,12 +75,12 @@ public class ContactMapper {
    * @param dto the DTO
    * @return the entity
    */
-  public Contact toEntity(ContactDTO dto) {
+  public CustomerContact toEntity(ContactDTO dto) {
     if (dto == null) {
       return null;
     }
 
-    Contact contact = new Contact();
+    CustomerContact contact = new CustomerContact();
 
     // Basic Info
     contact.setSalutation(dto.getSalutation());
@@ -96,8 +96,8 @@ public class ContactMapper {
     contact.setMobile(dto.getMobile());
 
     // Flags
-    contact.setPrimary(dto.isPrimary());
-    contact.setActive(dto.isActive());
+    contact.setIsPrimary(dto.isPrimary());
+    contact.setIsActive(dto.isActive());
 
     // Relationship Data
     contact.setBirthday(dto.getBirthday());
@@ -117,7 +117,7 @@ public class ContactMapper {
    * @param dto the source DTO
    * @param contact the target entity to update
    */
-  public void updateEntityFromDTO(ContactDTO dto, Contact contact) {
+  public void updateEntityFromDTO(ContactDTO dto, CustomerContact contact) {
     if (dto == null || contact == null) {
       return;
     }

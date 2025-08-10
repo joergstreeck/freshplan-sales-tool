@@ -1,6 +1,7 @@
 package de.freshplan.api.resources;
 
-import de.freshplan.domain.customer.entity.Contact;
+import de.freshplan.domain.customer.entity.CustomerContact;
+import de.freshplan.domain.customer.repository.ContactRepository;
 import de.freshplan.domain.customer.service.ContactInteractionService;
 import de.freshplan.domain.customer.service.DataHygieneService;
 import de.freshplan.domain.customer.service.dto.ContactInteractionDTO;
@@ -38,6 +39,8 @@ public class ContactInteractionResource {
   @Inject ContactInteractionService interactionService;
 
   @Inject DataHygieneService dataHygieneService;
+
+  @Inject ContactRepository contactRepository;
 
   @POST
   @Operation(summary = "Create a new contact interaction")
@@ -150,7 +153,8 @@ public class ContactInteractionResource {
   })
   public Response getContactFreshnessLevel(@PathParam("contactId") UUID contactId) {
     try {
-      Contact contact = Contact.findById(contactId);
+      CustomerContact contact = contactRepository.findByIdOptional(contactId)
+          .orElse(null);
       if (contact == null) {
         return Response.status(Response.Status.NOT_FOUND).build();
       }
@@ -173,7 +177,8 @@ public class ContactInteractionResource {
   })
   public Response getContactQualityScore(@PathParam("contactId") UUID contactId) {
     try {
-      Contact contact = Contact.findById(contactId);
+      CustomerContact contact = contactRepository.findByIdOptional(contactId)
+          .orElse(null);
       if (contact == null) {
         return Response.status(Response.Status.NOT_FOUND).build();
       }
@@ -212,7 +217,7 @@ public class ContactInteractionResource {
   public Response getContactsByFreshnessLevel(@PathParam("level") String levelStr) {
     try {
       DataFreshnessLevel level = DataFreshnessLevel.valueOf(levelStr.toUpperCase());
-      List<Contact> contacts = dataHygieneService.findContactsByFreshnessLevel(level);
+      List<CustomerContact> contacts = dataHygieneService.findContactsByFreshnessLevel(level);
       return Response.ok(contacts).build();
     } catch (IllegalArgumentException e) {
       return Response.status(Response.Status.BAD_REQUEST)

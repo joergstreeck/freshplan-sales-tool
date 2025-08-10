@@ -11,6 +11,7 @@ import io.quarkus.panache.common.Sort;
 import jakarta.enterprise.context.ApplicationScoped;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -45,6 +46,122 @@ public class CustomerRepository implements PanacheRepositoryBase<Customer, UUID>
   /** Find deleted customers (for admin/audit purposes). */
   public List<Customer> findDeleted(Page page) {
     return find("isDeleted = true", Sort.by("deletedAt").descending()).page(page).list();
+  }
+
+  // ========== SEARCH QUERIES (FC-005 PR4) ==========
+  
+  /** Full text search across multiple fields. */
+  public List<Customer> searchFullText(String query, int limit) {
+    String searchPattern = "%" + query.toLowerCase() + "%";
+    return find(
+        "isDeleted = false AND (lower(companyName) like ?1 OR lower(tradingName) like ?1 " +
+        "OR customerNumber like ?1)",
+        searchPattern
+    ).page(0, limit).list();
+  }
+  
+  /** Quick search for autocomplete (only company name and customer number). */
+  public List<Customer> quickSearch(String query, int limit) {
+    String searchPattern = "%" + query.toLowerCase() + "%";
+    return find(
+        "isDeleted = false AND (lower(companyName) like ?1 OR customerNumber like ?1)",
+        searchPattern
+    ).page(0, limit).list();
+  }
+  
+  /** Find customers by contact email - searches in contacts. */
+  public List<Customer> findByContactEmail(String email, int limit) {
+    // Since Customer doesn't have email field, return empty for now
+    // TODO: Join with contacts table to search contact emails
+    return new ArrayList<>();
+  }
+  
+  /** Find customers by phone number - searches in contacts. */
+  public List<Customer> findByPhone(String phone, int limit) {
+    // Since Customer doesn't have phone field, return empty for now
+    // TODO: Join with contacts table to search contact phones
+    return new ArrayList<>();
+  }
+  
+  /** Find customers by customer number (prefix search). */
+  public List<Customer> findByCustomerNumberLike(String pattern, int limit) {
+    return find(
+        "isDeleted = false AND customerNumber like ?1",
+        pattern
+    ).page(0, limit).list();
+  }
+
+  // ========== EXPORT QUERIES ==========
+  
+  /** Find customers by filters for export. */
+  public List<Customer> findByFilters(List<String> status, String industry) {
+    StringBuilder query = new StringBuilder("isDeleted = false");
+    
+    if (status != null && !status.isEmpty()) {
+      query.append(" AND status IN ?1");
+      if (industry != null) {
+        query.append(" AND industry = ?2");
+        return find(query.toString(), status, industry).list();
+      }
+      return find(query.toString(), status).list();
+    }
+    
+    if (industry != null) {
+      query.append(" AND industry = ?1");
+      return find(query.toString(), industry).list();
+    }
+    
+    return find(query.toString()).list();
+  }
+  
+  /** Find customers by filters with pagination. */
+  public List<Customer> findByFilters(List<String> status, String industry, int page, int size) {
+    StringBuilder query = new StringBuilder("isDeleted = false");
+    
+    if (status != null && !status.isEmpty()) {
+      query.append(" AND status IN ?1");
+      if (industry != null) {
+        query.append(" AND industry = ?2");
+        return find(query.toString(), status, industry)
+            .page(Page.of(page, size))
+            .list();
+      }
+      return find(query.toString(), status)
+          .page(Page.of(page, size))
+          .list();
+    }
+    
+    if (industry != null) {
+      query.append(" AND industry = ?1");
+      return find(query.toString(), industry)
+          .page(Page.of(page, size))
+          .list();
+    }
+    
+    return find(query.toString())
+        .page(Page.of(page, size))
+        .list();
+  }
+  
+  /** Count customers by filters. */
+  public long countByFilters(List<String> status, String industry) {
+    StringBuilder query = new StringBuilder("isDeleted = false");
+    
+    if (status != null && !status.isEmpty()) {
+      query.append(" AND status IN ?1");
+      if (industry != null) {
+        query.append(" AND industry = ?2");
+        return count(query.toString(), status, industry);
+      }
+      return count(query.toString(), status);
+    }
+    
+    if (industry != null) {
+      query.append(" AND industry = ?1");
+      return count(query.toString(), industry);
+    }
+    
+    return count(query.toString());
   }
 
   // ========== RISK CUSTOMER QUERIES ==========

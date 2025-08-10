@@ -1,84 +1,111 @@
-# 🎯 NEXT STEP - FreshPlan Sales Tool
+# 🧭 NEXT STEP NAVIGATION
 
-**Letzte Aktualisierung:** 2025-08-08, 23:50 Uhr
-**Aktiver Branch:** `main` (PR #78 gemerged)
+**Letzte Aktualisierung:** 2025-08-10, 12:15 Uhr  
+**Aktiver Branch:** `feature/fc-005-enhanced-features`
+**Nächste Migration:** V217 (letzte war V216__add_extended_search_indexes.sql)
+
+## 🚨 KRITISCHES PROBLEM:
+
+### Backend kompiliert nicht! 
+**31 Kompilierungsfehler** durch Inkonsistenz zwischen Contact und CustomerContact Entities
+- ContactRepository nutzt `CustomerContact`
+- Services (ContactService, DataHygieneService, etc.) nutzen noch `Contact`
+- **Backend kann nicht gestartet werden!**
 
 ## 🎯 JETZT GERADE:
 
-**PR 2: AUDIT ADMIN DASHBOARD UI IMPLEMENTIEREN**
+**FC-005 Step3 PR4: BACKEND-FIX ERFORDERLICH! 🚨**
 
-Stand 2025-08-08, 23:50:
-- ✅ PR 1: Core Audit System erfolgreich gemerged (PR #78)
-- ✅ Backend API vollständig implementiert
-- ✅ Alle Tests grün, CI Pipeline stabil
-- 🔄 Frontend UI fehlt noch
+**Stand 10.08.2025 12:15:**
+- ✅ Frontend Universal Search mit Deep-Linking komplett implementiert
+- ✅ SearchResultsDropdown mit Highlighting und Icons
+- ✅ CustomerDetailPage mit highlightContact Parameter
+- ✅ ContactGridContainer mit Highlight-Animation
+- ✅ Migration V216 für erweiterte Search-Indizes
+- ❌ **Backend kompiliert nicht (Contact vs CustomerContact Problem)**
 
 ## 🚀 NÄCHSTER SCHRITT:
 
-**Audit Admin Dashboard Frontend Components erstellen**
+### PRIORITÄT 1: Backend-Kompilierung fixen
+
 ```bash
-# Branch erstellen
-git checkout main && git pull
-git checkout -b feature/fc-005-audit-dashboard-ui
+# 1. Problem analysieren
+cd /Users/joergstreeck/freshplan-sales-tool/backend
+grep -r "import.*Contact;" src/ | grep -v CustomerContact
 
-# Frontend starten
-cd frontend
-npm install && npm run dev
+# 2. Entscheidung treffen:
+# Option A: Alle Services auf CustomerContact migrieren
+# Option B: Contact als Interface/Wrapper definieren
+
+# 3. Nach Fix testen
+./mvnw quarkus:dev
 ```
 
-### Zu erstellende Components:
-1. `src/features/audit/components/AuditLogList.tsx`
-2. `src/features/audit/components/AuditLogDetail.tsx`
-3. `src/features/audit/components/ComplianceReport.tsx`
-4. `src/features/audit/components/HashChainVerification.tsx`
-5. `src/features/audit/pages/AuditDashboard.tsx`
+### Nach Backend-Fix:
 
-### API Service implementieren:
-```typescript
-// src/features/audit/services/auditService.ts
-- getAuditLogs(filters, pagination)
-- getAuditLogDetail(id)
-- getComplianceReport(from, to)
-- verifyHashChain(from, to)
-- exportAuditLogs(format)
+```bash
+# Universal Search testen
+curl -X GET "http://localhost:8080/api/search/universal?query=Müller&includeContacts=true" | jq
+
+# Frontend testen
+cd ../frontend
+npm run dev
+# Browser: Suche testen, auf Kontakt klicken → Deep-Link sollte funktionieren
 ```
 
-## ⚠️ WICHTIGE INFO:
-- **NÄCHSTE MIGRATION-NUMMER: V215** (Letzte: V214)
-- Backend API bereits vorhanden unter `/api/audit/*`
-- Material-UI für UI Components verwenden
+## ✅ WAS WURDE HEUTE FERTIGGESTELLT:
 
-## 📊 Status Overview
+### Frontend (100% fertig):
+1. **SearchResultsDropdown:**
+   - Highlighting von Suchbegriffen
+   - Kategorisierte Sektionen (Kunden/Kontakte)
+   - Icons für gefundene Felder
+   - "Top-Treffer" Badge
+   
+2. **Deep-Linking:**
+   - Navigate zu `/customers/{id}?highlightContact={contactId}`
+   - Auto-Switch zu Kontakte-Tab
+   - Highlight-Animation (3x Pulse)
+   - CSS-Animationen in `animations.css`
 
-**Abgeschlossen heute:**
-- ✅ Core Audit System mit DSGVO-Compliance
-- ✅ CI Pipeline Fixes (UUID -> String für Keycloak)
-- ✅ PR #78 erfolgreich gemerged
-- ✅ 13 Audit Tests alle grün
+3. **Backend-Teile:**
+   - ContactRepository.searchContactsFullText()
+   - SearchService mit Query-Analyse
+   - Migration V216 erstellt
 
-**Offene TODOs:**
-1. PR 2: Audit Admin Dashboard UI (JETZT)
-2. PR 3: Contact Management UI (SPÄTER)
+## 📋 TODO-STATUS:
+- **Completed:** 6 Tasks ✅
+- **Pending:** 9 Tasks
+  - **PRIORITÄT:** Backend Kompilierungsfehler beheben
+  - Backend Tests für erweiterte Kontakt-Suche
+  - E2E Test: Suche → Click → Highlight
+  - ESLint-Fehler (308 verbleibend)
+  - Weitere Tasks...
 
-## 🔗 Quick Links
-
-- **Aktives Feature:** [FC-012 Audit Trail](/docs/features/2025-07-24_TECH_CONCEPT_FC-012-audit-trail-system.md)
-- **Master Plan:** [CRM V5](/docs/CRM_COMPLETE_MASTER_PLAN_V5.md)
-- **TODOs:** 22 offen, 1 erledigt heute
-- **Handover:** [25.07.2025 18:15](/docs/claude-work/daily-work/2025-07-25/2025-07-25_HANDOVER_18-15.md)
+## 📁 WICHTIGE DATEIEN:
+- **Problem-Services:** 
+  - `/backend/src/main/java/de/freshplan/domain/customer/service/ContactService.java`
+  - `/backend/src/main/java/de/freshplan/domain/customer/service/DataHygieneService.java`
+  - `/backend/src/main/java/de/freshplan/domain/customer/service/ContactInteractionService.java`
+- **Funktionierende Teile:**
+  - `/backend/src/main/java/de/freshplan/domain/customer/repository/ContactRepository.java`
+  - `/backend/src/main/java/de/freshplan/domain/search/service/SearchService.java`
 
 ## ⚡ Quick Commands
 
 ```bash
-# AuditResourceTest Probleme analysieren
-cd backend && ./mvnw test -Dtest="AuditResourceTest" -q
+# Backend kompilieren (wird fehlschlagen)
+cd backend
+export JAVA_HOME=/Library/Java/JavaVirtualMachines/temurin-17.jdk/Contents/Home
+./mvnw compile
 
-# Git Status
-git status
-git diff --stat
+# Fehler analysieren
+./mvnw compile 2>&1 | grep "error:" | head -20
 
-# Branch pushen (nach Test-Fixes)
-git add -A
-git commit -m "feat(audit): Fix async context issues - All AuditService tests green"
-git push -u origin feature/fc-012-audit-trail
+# Nach Fix: Backend starten
+./mvnw quarkus:dev
+
+# Frontend läuft bereits
+cd ../frontend
+npm run dev
 ```

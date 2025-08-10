@@ -38,16 +38,17 @@ public class TestDataService {
     List<CustomerTimelineEvent> createdEvents = new ArrayList<>();
 
     try {
-      // 1. Risiko-Kunde (90+ Tage ohne Kontakt)
+      // 1. Risiko-Kunde (90+ Tage ohne Kontakt) - HIGH Risk
       Customer riskCustomer =
           createTestCustomer(
               "90001",
               "[TEST] Bäckerei Schmidt - 90 Tage ohne Kontakt",
-              CustomerStatus.RISIKO,
+              CustomerStatus.AKTIV, // Aktiv aber mit hohem Risiko
               LocalDateTime.now().minusDays(92),
               Industry.EINZELHANDEL // Bäckerei passt zu Einzelhandel
               );
       riskCustomer.setRiskScore(85);
+      riskCustomer.setCreatedAt(LocalDateTime.now().minusDays(365)); // Alt-Kunde
       customerRepository.persist(riskCustomer);
       createdCustomers.add(riskCustomer);
 
@@ -59,17 +60,18 @@ public class TestDataService {
               "Letzter Kontakt vor 3 Monaten - dringend anrufen!",
               LocalDateTime.now().minusDays(92)));
 
-      // 2. Aktiver Partner-Kunde
+      // 2. Aktiver Partner-Kunde - Top-Kunde mit hohem Umsatz
       Customer activeCustomer =
           createTestCustomer(
               "90002",
-              "[TEST] Hotel Sonnenschein - Aktiver Partner",
+              "[TEST] Hotel Sonnenschein - Top-Kunde 150k€",
               CustomerStatus.AKTIV,
               LocalDateTime.now().minusDays(5),
               Industry.HOTEL);
       activeCustomer.setPartnerStatus(PartnerStatus.GOLD_PARTNER);
-      activeCustomer.setExpectedAnnualVolume(new BigDecimal("50000.00"));
+      activeCustomer.setExpectedAnnualVolume(new BigDecimal("150000.00")); // Top-Kunde > 100k
       activeCustomer.setRiskScore(10);
+      activeCustomer.setCreatedAt(LocalDateTime.now().minusDays(200));
       customerRepository.persist(activeCustomer);
       createdCustomers.add(activeCustomer);
 
@@ -80,27 +82,29 @@ public class TestDataService {
               "Neues Angebot für Frühstücksbuffet versendet",
               LocalDateTime.now().minusDays(5)));
 
-      // 3. Neuer Lead ohne Kontakt
+      // 3. Neuer Kunde (erstellt vor 15 Tagen)
       Customer leadCustomer =
           createTestCustomer(
               "90003",
-              "[TEST] Restaurant Mustermeier - Neuer Lead",
-              CustomerStatus.LEAD,
-              null, // Noch nie kontaktiert
+              "[TEST] Restaurant Mustermeier - Neuer Kunde (15 Tage)",
+              CustomerStatus.AKTIV,
+              LocalDateTime.now().minusDays(3),
               Industry.RESTAURANT);
-      leadCustomer.setRiskScore(50);
+      leadCustomer.setRiskScore(20);
+      leadCustomer.setCreatedAt(LocalDateTime.now().minusDays(15)); // Neuer Kunde < 30 Tage
       customerRepository.persist(leadCustomer);
       createdCustomers.add(leadCustomer);
 
-      // 4. Inaktiver Kunde (180+ Tage)
+      // 4. Medium Risk Kunde (45 Tage ohne Kontakt)
       Customer inactiveCustomer =
           createTestCustomer(
               "90004",
-              "[TEST] Catering Service Alt - 180 Tage inaktiv",
-              CustomerStatus.INAKTIV,
-              LocalDateTime.now().minusDays(185),
+              "[TEST] Catering Service - Medium Risk (45 Tage)",
+              CustomerStatus.AKTIV,
+              LocalDateTime.now().minusDays(45),
               Industry.CATERING);
-      inactiveCustomer.setRiskScore(95);
+      inactiveCustomer.setRiskScore(60); // Medium Risk
+      inactiveCustomer.setCreatedAt(LocalDateTime.now().minusDays(400));
       customerRepository.persist(inactiveCustomer);
       createdCustomers.add(inactiveCustomer);
 
@@ -108,20 +112,21 @@ public class TestDataService {
           createTimelineEvent(
               inactiveCustomer,
               EventCategory.PHONE_CALL,
-              "Kunde hat kein Interesse mehr - zu teuer",
-              LocalDateTime.now().minusDays(185)));
+              "Nachfass-Termin vereinbart",
+              LocalDateTime.now().minusDays(45)));
 
-      // 5. Prospect mit überfälligem Follow-up
+      // 5. Weiterer aktiver Kunde für "Aktive Kunden" Filter
       Customer prospectCustomer =
           createTestCustomer(
               "90005",
-              "[TEST] Kantine TechHub - Überfälliger Follow-up",
-              CustomerStatus.PROSPECT,
-              LocalDateTime.now().minusDays(15),
+              "[TEST] Kantine TechHub - Aktiver Kunde",
+              CustomerStatus.AKTIV,
+              LocalDateTime.now().minusDays(2),
               Industry.KANTINE // Kantine passt zu Großverbraucher
               );
-      prospectCustomer.setNextFollowUpDate(LocalDateTime.now().minusDays(3));
-      prospectCustomer.setRiskScore(60);
+      prospectCustomer.setNextFollowUpDate(LocalDateTime.now().plusDays(5));
+      prospectCustomer.setRiskScore(15);
+      prospectCustomer.setCreatedAt(LocalDateTime.now().minusDays(180));
       customerRepository.persist(prospectCustomer);
       createdCustomers.add(prospectCustomer);
 

@@ -1,6 +1,6 @@
 package de.freshplan.domain.customer.service;
 
-import de.freshplan.domain.customer.entity.Contact;
+import de.freshplan.domain.customer.entity.CustomerContact;
 import de.freshplan.domain.customer.entity.ContactInteraction;
 import de.freshplan.domain.customer.entity.ContactInteraction.InteractionType;
 import de.freshplan.domain.customer.repository.ContactInteractionRepository;
@@ -63,7 +63,7 @@ public class ContactInteractionService {
   public ContactInteractionDTO createInteraction(ContactInteractionDTO dto) {
     LOG.infof("Creating interaction for contact %s", dto.getContactId());
 
-    Contact contact = contactRepository.findById(dto.getContactId());
+    CustomerContact contact = contactRepository.findById(dto.getContactId());
     if (contact == null) {
       throw new IllegalArgumentException("Contact not found: " + dto.getContactId());
     }
@@ -87,7 +87,7 @@ public class ContactInteractionService {
 
   /** Get all interactions for a contact */
   public List<ContactInteractionDTO> getInteractionsByContact(UUID contactId, Page page) {
-    Contact contact = contactRepository.findById(contactId);
+    CustomerContact contact = contactRepository.findById(contactId);
     if (contact == null) {
       throw new IllegalArgumentException("Contact not found: " + contactId);
     }
@@ -99,7 +99,7 @@ public class ContactInteractionService {
 
   /** Calculate warmth score for a contact */
   public WarmthScoreDTO calculateWarmthScore(UUID contactId) {
-    Contact contact = contactRepository.findById(contactId);
+    CustomerContact contact = contactRepository.findById(contactId);
     if (contact == null) {
       throw new IllegalArgumentException("Contact not found: " + contactId);
     }
@@ -206,7 +206,7 @@ public class ContactInteractionService {
 
   // Private helper methods
 
-  private void updateContactMetrics(Contact contact) {
+  private void updateContactMetrics(CustomerContact contact) {
     LocalDateTime lastInteraction = interactionRepository.findLastUpdateDate(contact);
     int interactionCount = interactionRepository.find("contact", contact).list().size();
 
@@ -266,7 +266,7 @@ public class ContactInteractionService {
         .orElse(DEFAULT_ENGAGEMENT_SCORE);
   }
 
-  private double calculateResponseScore(Contact contact) {
+  private double calculateResponseScore(CustomerContact contact) {
     Double responseRate = interactionRepository.calculateResponseRate(contact);
     return responseRate != null ? responseRate : DEFAULT_RESPONSE_SCORE;
   }
@@ -327,7 +327,7 @@ public class ContactInteractionService {
 
     for (ContactInteractionDTO dto : dtos) {
       try {
-        Contact contact = contactRepository.findById(dto.getContactId());
+        CustomerContact contact = contactRepository.findById(dto.getContactId());
         if (contact == null) {
           failed++;
           errors.add("Contact not found: " + dto.getContactId());

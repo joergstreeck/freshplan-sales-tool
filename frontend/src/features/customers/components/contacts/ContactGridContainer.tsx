@@ -48,6 +48,7 @@ interface ContactGridContainerProps {
   viewMode?: 'grid' | 'list';
   showFilters?: boolean;
   useSmartCards?: boolean;
+  highlightContactId?: string | null;
 }
 
 /**
@@ -61,6 +62,7 @@ export const ContactGridContainer: React.FC<ContactGridContainerProps> = ({
   viewMode: initialViewMode = 'grid',
   showFilters = true,
   useSmartCards = true,
+  highlightContactId,
 }) => {
   const { gridProps } = useContactGrid();
   const [viewMode, setViewMode] = useState<'grid' | 'list'>(initialViewMode);
@@ -259,7 +261,21 @@ export const ContactGridContainer: React.FC<ContactGridContainerProps> = ({
       ) : viewMode === 'grid' ? (
         <Grid container spacing={2}>
           {sortedContacts.map((contact) => (
-            <Grid key={contact.id} size={{ xs: 12, sm: 6, md: 4, lg: 3 }}>
+            <Grid 
+              key={contact.id} 
+              size={{ xs: 12, sm: 6, md: 4, lg: 3 }}
+              id={`contact-${contact.id}`}
+              sx={{
+                ...(highlightContactId === contact.id && {
+                  animation: 'pulse 1s ease-in-out 3',
+                  '& > *': {
+                    border: '2px solid',
+                    borderColor: 'primary.main',
+                    boxShadow: (theme) => `0 0 20px ${theme.palette.primary.main}40`,
+                  }
+                })
+              }}
+            >
               {renderContactCard(contact)}
             </Grid>
           ))}

@@ -423,6 +423,88 @@ public class AuditRepository implements PanacheRepositoryBase<AuditEntry, UUID> 
         .list();
   }
 
+  /** Find audit entries by filters for export */
+  public List<AuditEntry> findByFilters(de.freshplan.domain.export.service.dto.ExportRequest request) {
+    Map<String, Object> params = new HashMap<>();
+    StringBuilder query = new StringBuilder("1=1");
+    
+    if (request.getEntityType() != null) {
+      query.append(" and entityType = :entityType");
+      params.put("entityType", request.getEntityType());
+    }
+    
+    if (request.getEntityId() != null) {
+      query.append(" and entityId = :entityId");
+      params.put("entityId", request.getEntityId());
+    }
+    
+    if (request.getUserId() != null) {
+      query.append(" and userId = :userId");
+      params.put("userId", request.getUserId());
+    }
+    
+    if (request.getEventType() != null) {
+      query.append(" and eventType = :eventType");
+      params.put("eventType", request.getEventType());
+    }
+    
+    if (request.getDateFrom() != null) {
+      query.append(" and timestamp >= :from");
+      params.put("from", request.getDateFrom());
+    }
+    
+    if (request.getDateTo() != null) {
+      query.append(" and timestamp <= :to");
+      params.put("to", request.getDateTo());
+    }
+    
+    if (request.getPage() > 0 || request.getSize() > 0) {
+      return find(query.toString(), Sort.descending("timestamp"), params)
+          .page(Page.of(request.getPage(), Math.min(request.getSize(), MAX_PAGE_SIZE)))
+          .list();
+    }
+    
+    return find(query.toString(), Sort.descending("timestamp"), params).list();
+  }
+  
+  /** Count audit entries by filters for export */
+  public long countByFilters(de.freshplan.domain.export.service.dto.ExportRequest request) {
+    Map<String, Object> params = new HashMap<>();
+    StringBuilder query = new StringBuilder("1=1");
+    
+    if (request.getEntityType() != null) {
+      query.append(" and entityType = :entityType");
+      params.put("entityType", request.getEntityType());
+    }
+    
+    if (request.getEntityId() != null) {
+      query.append(" and entityId = :entityId");
+      params.put("entityId", request.getEntityId());
+    }
+    
+    if (request.getUserId() != null) {
+      query.append(" and userId = :userId");
+      params.put("userId", request.getUserId());
+    }
+    
+    if (request.getEventType() != null) {
+      query.append(" and eventType = :eventType");
+      params.put("eventType", request.getEventType());
+    }
+    
+    if (request.getDateFrom() != null) {
+      query.append(" and timestamp >= :from");
+      params.put("from", request.getDateFrom());
+    }
+    
+    if (request.getDateTo() != null) {
+      query.append(" and timestamp <= :to");
+      params.put("to", request.getDateTo());
+    }
+    
+    return count(query.toString(), params);
+  }
+
   /** Get compliance alerts */
   public List<ComplianceAlertDto> getComplianceAlerts() {
     List<ComplianceAlertDto> alerts = new ArrayList<>();

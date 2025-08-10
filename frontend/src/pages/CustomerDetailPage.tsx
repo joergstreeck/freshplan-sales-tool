@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import {
   Box,
   Paper,
@@ -69,9 +69,13 @@ function a11yProps(index: number) {
 
 export function CustomerDetailPage() {
   const { customerId } = useParams<{ customerId: string }>();
+  const [searchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState(0);
   const { user } = useAuth();
   const navigate = useNavigate();
+  
+  // Get highlightContact parameter for deep-linking
+  const highlightContactId = searchParams.get('highlightContact');
 
   // Fetch customer data
   const { data: customer, isLoading, error } = useCustomerDetails(customerId);
@@ -80,6 +84,13 @@ export function CustomerDetailPage() {
   const canViewAudit = user?.roles?.some(role =>
     ['admin', 'manager', 'auditor'].includes(role)
   );
+
+  // Auto-switch to contacts tab if highlightContact is present
+  useEffect(() => {
+    if (highlightContactId) {
+      setActiveTab(1); // Assuming contacts tab is index 1
+    }
+  }, [highlightContactId]);
 
   // Scroll to top on mount
   useEffect(() => {
@@ -259,7 +270,10 @@ export function CustomerDetailPage() {
           </TabPanel>
 
           <TabPanel value={activeTab} index={1}>
-            <CustomerContacts customerId={customerId!} />
+            <CustomerContacts 
+              customerId={customerId!} 
+              highlightContactId={highlightContactId}
+            />
           </TabPanel>
 
           <TabPanel value={activeTab} index={2}>
@@ -347,7 +361,13 @@ function DetailRow({ label, value }: { label: string; value?: string | number })
 }
 
 // Customer Contacts with Smart Contact Cards
-function CustomerContacts({ customerId }: { customerId: string }) {
+function CustomerContacts({ 
+  customerId, 
+  highlightContactId 
+}: { 
+  customerId: string;
+  highlightContactId?: string | null;
+}) {
   // Fetch contacts for this customer
   const { data: contacts, isLoading, error } = useQuery({
     queryKey: ['customer-contacts', customerId],
@@ -357,6 +377,27 @@ function CustomerContacts({ customerId }: { customerId: string }) {
     },
     enabled: !!customerId,
   });
+  
+  // Auto-scroll to highlighted contact
+  useEffect(() => {
+    if (highlightContactId && contacts) {
+      // Wait for DOM to be ready
+      setTimeout(() => {
+        const element = document.getElementById(`contact-${highlightContactId}`);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          
+          // Add highlight animation
+          element.classList.add('highlight-animation');
+          
+          // Remove animation class after animation completes
+          setTimeout(() => {
+            element.classList.remove('highlight-animation');
+          }, 3000);
+        }
+      }, 100);
+    }
+  }, [highlightContactId, contacts]);
 
   // Handle contact actions
   const handleContactAction = (action: ContactAction) => {
@@ -491,6 +532,7 @@ function CustomerContacts({ customerId }: { customerId: string }) {
         viewMode="grid"
         showFilters={true}
         useSmartCards={true}
+        highlightContactId={highlightContactId}
       />
     </Box>
   );

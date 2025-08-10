@@ -72,23 +72,42 @@ import {
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { useDebounce } from '../../hooks/useDebounce';
 import { useLocalStorage } from '../../hooks/useLocalStorage';
+import { useUniversalSearch } from '../../hooks/useUniversalSearch';
+import { SearchResultsDropdown } from '../search/SearchResultsDropdown';
+import { useNavigate } from 'react-router-dom';
 import type { 
   FilterConfig, 
   SortConfig, 
   ColumnConfig,
-  SavedFilterSet,
-  RiskLevel 
+  SavedFilterSet
 } from '../../types/filter.types';
+import { RiskLevel } from '../../types/filter.types';
 import { CustomerStatus } from '../../types/customer.types';
+
+// Deutsche Übersetzungen
+const STATUS_LABELS: Record<CustomerStatus, string> = {
+  [CustomerStatus.DRAFT]: 'Entwurf',
+  [CustomerStatus.ACTIVE]: 'Aktiv',
+  [CustomerStatus.INACTIVE]: 'Inaktiv',
+  [CustomerStatus.DELETED]: 'Gelöscht',
+};
+
+const RISK_LABELS: Record<RiskLevel, string> = {
+  [RiskLevel.LOW]: 'Niedrig',
+  [RiskLevel.MEDIUM]: 'Mittel',
+  [RiskLevel.HIGH]: 'Hoch',
+  [RiskLevel.CRITICAL]: 'Kritisch',
+};
 
 interface IntelligentFilterBarProps {
   onFilterChange: (filters: FilterConfig) => void;
-  onSortChange: (sort: SortConfig[]) => void;
+  onSortChange: (sort: SortConfig) => void;
   onColumnChange: (columns: ColumnConfig[]) => void;
   onExport?: (format: 'csv' | 'excel' | 'json' | 'pdf') => void;
   totalCount: number;
   filteredCount: number;
   loading?: boolean;
+  enableUniversalSearch?: boolean; // Enable contact search
 }
 
 /**
@@ -102,15 +121,21 @@ export function IntelligentFilterBar({
   totalCount,
   filteredCount,
   loading = false,
+  enableUniversalSearch = true,
 }: IntelligentFilterBarProps) {
+  const navigate = useNavigate();
   const theme = useTheme();
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const searchContainerRef = useRef<HTMLDivElement>(null);
   
   // Export menu anchor
   const [exportAnchorEl, setExportAnchorEl] = useState<null | HTMLElement>(null);
+  // Sort menu anchor
+  const [sortMenuAnchor, setSortMenuAnchor] = useState<null | HTMLElement>(null);
   
   // State Management
   const [searchTerm, setSearchTerm] = useState('');
+  const [showSearchResults, setShowSearchResults] = useState(false);
   const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
   const [columnDrawerOpen, setColumnDrawerOpen] = useState(false);
   const [saveDialogOpen, setSaveDialogOpen] = useState(false);
@@ -137,6 +162,21 @@ export function IntelligentFilterBar({
   
   // Debounced Search
   const debouncedSearchTerm = useDebounce(searchTerm, 300);
+  
+  // Universal Search Hook
+  const {
+    searchResults,
+    isLoading: isSearching,
+    error: searchError,
+    search: performUniversalSearch,
+    clearResults,
+  } = useUniversalSearch({
+    includeContacts: enableUniversalSearch,
+    includeInactive: false,
+    limit: 15,
+    debounceMs: 300,
+    minQueryLength: 2,
+  });
   
   // Quick Filter Presets
   const quickFilters = [
@@ -174,7 +214,7 @@ export function IntelligentFilterBar({
   
   // Spalten-Konfiguration
   const [columns, setColumns] = useState<ColumnConfig[]>([
-    { id: 'customerNumber', label: 'Kundennr.', visible: true, locked: true },
+    { id: 'customerNumber', label: 'Kundennr.', visible: true, locked: false }, // Nicht mehr locked
     { id: 'companyName', label: 'Firma', visible: true, locked: true },
     { id: 'status', label: 'Status', visible: true },
     { id: 'industry', label: 'Branche', visible: true },
@@ -188,17 +228,30 @@ export function IntelligentFilterBar({
   ]);
   
   // Sortier-Konfiguration
-  const [sortConfig, setSortConfig] = useState<SortConfig[]>([
-    { field: 'companyName', direction: 'asc', priority: 0 },
-  ]);
+  const [sortConfig, setSortConfig] = useState<SortConfig>({
+    field: 'companyName', 
+    direction: 'asc', 
+    priority: 0
+  });
   
   // Universal Search Handler
   const handleSearch = useCallback((value: string) => {
     setSearchTerm(value);
+    
+    // For table filtering
     const newFilters = { ...activeFilters, text: value };
     setActiveFilters(newFilters);
     onFilterChange(newFilters);
-  }, [activeFilters, onFilterChange]);
+    
+    // For universal search
+    if (enableUniversalSearch && value.length >= 2) {
+      performUniversalSearch(value);
+      setShowSearchResults(true);
+    } else if (value.length < 2) {
+      clearResults();
+      setShowSearchResults(false);
+    }
+  }, [activeFilters, onFilterChange, enableUniversalSearch, performUniversalSearch, clearResults]);
   
   // Effect for debounced search
   React.useEffect(() => {
@@ -208,6 +261,39 @@ export function IntelligentFilterBar({
       onFilterChange(newFilters);
     }
   }, [debouncedSearchTerm]);
+  
+  // Click outside handler for search results
+  React.useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (searchContainerRef.current && 
+          !searchContainerRef.current.contains(event.target as Node)) {
+        setShowSearchResults(false);
+      }
+    };
+    
+    if (showSearchResults) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showSearchResults]);
+  
+  // Search Result Handlers
+  const handleCustomerClick = useCallback((customerId: string) => {
+    navigate(`/customers/${customerId}`);
+    setShowSearchResults(false);
+    clearResults();
+  }, [navigate, clearResults]);
+  
+  const handleContactClick = useCallback((customerId: string, contactId: string) => {
+    // Navigate to customer page with contact highlight (Deep-Linking)
+    navigate(`/customers/${customerId}?highlightContact=${contactId}`);
+    setShowSearchResults(false);
+    clearResults();
+    setSearchTerm(''); // Clear search field after navigation
+  }, [navigate, clearResults]);
   
   // Filter Application
   const applyFilters = useCallback(() => {
@@ -282,24 +368,41 @@ export function IntelligentFilterBar({
   
   // Column Drag & Drop Handler
   const handleColumnDragEnd = useCallback((result: any) => {
-    if (!result.destination) return;
+    if (!result.destination) {
+      return;
+    }
     
-    const items = Array.from(columns);
-    const [reorderedItem] = items.splice(result.source.index, 1);
-    items.splice(result.destination.index, 0, reorderedItem);
-    
-    setColumns(items);
-    onColumnChange(items);
-  }, [columns, onColumnChange]);
+    setColumns(prevColumns => {
+      const items = Array.from(prevColumns);
+      const [reorderedItem] = items.splice(result.source.index, 1);
+      items.splice(result.destination.index, 0, reorderedItem);
+      
+      onColumnChange(items);
+      return items;
+    });
+  }, [onColumnChange]);
   
   // Toggle Column Visibility
   const toggleColumnVisibility = useCallback((columnId: string) => {
-    const newColumns = columns.map(col => 
-      col.id === columnId ? { ...col, visible: !col.visible } : col
-    );
-    setColumns(newColumns);
-    onColumnChange(newColumns);
-  }, [columns, onColumnChange]);
+    setColumns(prevColumns => {
+      const newColumns = prevColumns.map(col => 
+        col.id === columnId ? { ...col, visible: !col.visible } : col
+      );
+      onColumnChange(newColumns);
+      return newColumns;
+    });
+  }, [onColumnChange]);
+  
+  // Handle Sort Change
+  const handleSortChange = useCallback((field: string) => {
+    const newSort: SortConfig = {
+      field,
+      direction: sortConfig.field === field && sortConfig.direction === 'asc' ? 'desc' : 'asc',
+      priority: 0
+    };
+    setSortConfig(newSort);
+    onSortChange(newSort);
+  }, [sortConfig, onSortChange]);
   
   // Active Filter Count
   const activeFilterCount = useMemo(() => {
@@ -331,13 +434,23 @@ export function IntelligentFilterBar({
         {/* Search & Action Bar */}
         <Stack direction="row" spacing={2} alignItems="center">
           {/* Universal Search */}
-          <TextField
+          <Box ref={searchContainerRef} sx={{ position: 'relative', flex: 1 }}>
+            <TextField
             ref={searchInputRef}
             fullWidth
-            placeholder="Suche nach Kunden, Kontakten, E-Mails, Telefonnummern..."
+            placeholder="Suche nach Firma, Kundennummer..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
+            autoComplete="off"
             disabled={loading}
+            inputProps={{
+              autoComplete: 'off',
+              'data-form-type': 'other',
+              'data-lpignore': 'true',
+              autoCorrect: 'off',
+              autoCapitalize: 'off',
+              spellCheck: 'false',
+            }}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
@@ -351,6 +464,8 @@ export function IntelligentFilterBar({
                     onClick={() => {
                       setSearchTerm('');
                       handleSearch('');
+                      setShowSearchResults(false);
+                      clearResults();
                     }}
                   >
                     <ClearIcon />
@@ -358,12 +473,31 @@ export function IntelligentFilterBar({
                 </InputAdornment>
               ),
             }}
+            onFocus={() => {
+              if (enableUniversalSearch && searchTerm.length >= 2) {
+                setShowSearchResults(true);
+              }
+            }}
             sx={{
               '& .MuiOutlinedInput-root': {
                 backgroundColor: theme.palette.background.paper,
               },
             }}
           />
+          
+          {/* Search Results Dropdown */}
+          {enableUniversalSearch && showSearchResults && (
+            <SearchResultsDropdown
+              searchQuery={searchTerm}
+              searchResults={searchResults}
+              isLoading={isSearching}
+              error={searchError}
+              onCustomerClick={handleCustomerClick}
+              onContactClick={handleContactClick}
+              onClose={() => setShowSearchResults(false)}
+            />
+          )}
+        </Box>
           
           {/* Filter Button */}
           <Tooltip title="Erweiterte Filter">
@@ -374,6 +508,13 @@ export function IntelligentFilterBar({
               <Badge badgeContent={activeFilterCount} color="primary">
                 <FilterIcon />
               </Badge>
+            </IconButton>
+          </Tooltip>
+          
+          {/* Sort Menu */}
+          <Tooltip title={`Sortiert nach: ${columns.find(c => c.id === sortConfig.field)?.label} (${sortConfig.direction === 'asc' ? '↑' : '↓'})`}>
+            <IconButton onClick={(e) => setSortMenuAnchor(e.currentTarget)}>
+              <SortIcon />
             </IconButton>
           </Tooltip>
           
@@ -481,6 +622,29 @@ export function IntelligentFilterBar({
         </MenuItem>
       </Menu>
       
+      {/* Sort Menu */}
+      <Menu
+        anchorEl={sortMenuAnchor}
+        open={Boolean(sortMenuAnchor)}
+        onClose={() => setSortMenuAnchor(null)}
+      >
+        <MenuItem onClick={() => { handleSortChange('companyName'); setSortMenuAnchor(null); }}>
+          <ListItemText>Firma</ListItemText>
+        </MenuItem>
+        <MenuItem onClick={() => { handleSortChange('customerNumber'); setSortMenuAnchor(null); }}>
+          <ListItemText>Kundennummer</ListItemText>
+        </MenuItem>
+        <MenuItem onClick={() => { handleSortChange('status'); setSortMenuAnchor(null); }}>
+          <ListItemText>Status</ListItemText>
+        </MenuItem>
+        <MenuItem onClick={() => { handleSortChange('lastContactDate'); setSortMenuAnchor(null); }}>
+          <ListItemText>Letzter Kontakt</ListItemText>
+        </MenuItem>
+        <MenuItem onClick={() => { handleSortChange('createdAt'); setSortMenuAnchor(null); }}>
+          <ListItemText>Erstellt am</ListItemText>
+        </MenuItem>
+      </Menu>
+      
       {/* Filter Drawer */}
       <FilterDrawer
         open={filterDrawerOpen}
@@ -566,7 +730,7 @@ function FilterDrawer({
                     }}
                   />
                 }
-                label={status}
+                label={STATUS_LABELS[status] || status}
               />
             ))}
           </FormGroup>
@@ -590,7 +754,7 @@ function FilterDrawer({
                     }}
                   />
                 }
-                label={level}
+                label={RISK_LABELS[level] || level}
               />
             ))}
           </FormGroup>
@@ -678,6 +842,8 @@ function ColumnManagerDrawer({
   onColumnToggle,
   onDragEnd,
 }: ColumnManagerDrawerProps) {
+  const theme = useTheme();
+  
   return (
     <Drawer
       anchor="right"
@@ -717,9 +883,10 @@ function ColumnManagerDrawer({
                       <ListItem
                         ref={provided.innerRef}
                         {...provided.draggableProps}
-                        sx={{
+                        style={{
+                          ...provided.draggableProps.style,
                           backgroundColor: snapshot.isDragging 
-                            ? alpha(theme.palette.primary.main, 0.1)
+                            ? theme.palette.action.hover
                             : 'transparent',
                         }}
                       >
