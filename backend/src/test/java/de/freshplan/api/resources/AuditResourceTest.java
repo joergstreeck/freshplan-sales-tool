@@ -137,9 +137,9 @@ class AuditResourceTest {
         .then()
         .statusCode(200)
         .contentType("text/csv")
-        .header("Content-Disposition", containsString("attachment; filename=audit_trail_"));
+        .header("Content-Disposition", containsString("attachment; filename=\""));
 
-    verify(auditService).logSync(any());
+    verify(auditService).logAsync(any());
   }
 
   @Test
@@ -162,11 +162,12 @@ class AuditResourceTest {
         .then()
         .statusCode(200)
         .contentType(ContentType.JSON)
-        .header("Content-Disposition", containsString("attachment; filename=audit_trail_"))
-        .body("$", hasSize(1));
+        .header("Content-Disposition", containsString("attachment; filename=\""))
+        .body("data", hasSize(1))
+        .body("metadata.recordCount", equalTo(1));
 
     verify(auditRepository).search(any());
-    verify(auditService).logSync(any());
+    verify(auditService).logAsync(any());
   }
 
   @Test

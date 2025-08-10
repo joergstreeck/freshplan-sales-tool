@@ -4,7 +4,7 @@ import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-import de.freshplan.domain.customer.entity.Contact;
+import de.freshplan.domain.customer.entity.CustomerContact;
 import de.freshplan.domain.customer.entity.ContactInteraction.InteractionType;
 import de.freshplan.domain.customer.entity.Customer;
 import de.freshplan.domain.customer.entity.CustomerStatus;
@@ -80,7 +80,7 @@ class ContactInteractionResourceIT {
     testCustomerId = testCustomer.getId();
 
     // Create test contact
-    Contact testContact = new Contact();
+    CustomerContact testContact = new CustomerContact();
     testContact.setFirstName("Max");
     testContact.setLastName("Mustermann");
     testContact.setEmail("max@company.com");
