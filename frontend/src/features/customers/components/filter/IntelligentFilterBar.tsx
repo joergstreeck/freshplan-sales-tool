@@ -438,9 +438,9 @@ export function IntelligentFilterBar({
             <TextField
             ref={searchInputRef}
             fullWidth
-            placeholder="Suche nach Firma, Kundennummer..."
+            placeholder="Suche nach Firma, Kundennummer, Kontakten..."
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) => handleSearch(e.target.value)}
             autoComplete="off"
             disabled={loading}
             inputProps={{
