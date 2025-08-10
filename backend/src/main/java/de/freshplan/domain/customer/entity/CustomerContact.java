@@ -186,6 +186,7 @@ public class CustomerContact extends PanacheEntityBase {
   @PrePersist
   protected void onCreate() {
     createdAt = LocalDateTime.now();
+    updatedAt = LocalDateTime.now(); // Set updatedAt on creation as well
     if (isDeleted == null) {
       isDeleted = false;
     }
