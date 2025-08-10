@@ -1,8 +1,8 @@
 package de.freshplan.domain.customer.service;
 
-import de.freshplan.domain.customer.entity.CustomerContact;
 import de.freshplan.domain.customer.entity.ContactInteraction;
 import de.freshplan.domain.customer.entity.ContactInteraction.InteractionType;
+import de.freshplan.domain.customer.entity.CustomerContact;
 import de.freshplan.domain.customer.repository.ContactInteractionRepository;
 import de.freshplan.domain.customer.repository.ContactRepository;
 import de.freshplan.domain.customer.service.dto.ContactInteractionDTO;

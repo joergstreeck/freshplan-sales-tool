@@ -12,7 +12,6 @@ import de.freshplan.domain.profile.service.mapper.ProfileMapper;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
-import java.io.ByteArrayOutputStream;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -202,8 +201,8 @@ public class ProfileService {
   }
 
   /**
-   * Export profile as HTML (for PDF printing).
-   * UPDATED: Returns HTML instead of PDF bytes - no external library dependency!
+   * Export profile as HTML (for PDF printing). UPDATED: Returns HTML instead of PDF bytes - no
+   * external library dependency!
    *
    * @param id the profile ID
    * @return HTML content as string
@@ -222,13 +221,13 @@ public class ProfileService {
     // Generate HTML content with enhanced styling for print
     String html = generateEnhancedProfileHtml(profile);
 
-    LOG.infof(
-        "Profile HTML generated successfully with ID: %s, size: %d bytes", id, html.length());
+    LOG.infof("Profile HTML generated successfully with ID: %s, size: %d bytes", id, html.length());
     return html;
   }
-  
+
   /**
    * DEPRECATED: Old PDF export method - use exportProfileAsHtml instead
+   *
    * @deprecated Use exportProfileAsHtml for robust HTML-based solution
    */
   @Deprecated
@@ -253,20 +252,30 @@ public class ProfileService {
     html.append("<html>");
     html.append("<head>");
     html.append("<meta charset='UTF-8'/>");
-    html.append("<title>Kundenprofil - ").append(escapeHtml(profile.getCustomerId())).append("</title>");
+    html.append("<title>Kundenprofil - ")
+        .append(escapeHtml(profile.getCustomerId()))
+        .append("</title>");
     html.append("<style>");
     // Enhanced styles with FreshPlan CI colors
-    html.append("body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 20px; color: #333; }");
-    html.append(".header { background: linear-gradient(135deg, #004F7B 0%, #0066A1 100%); color: white; padding: 30px; margin: -20px -20px 20px -20px; }");
+    html.append(
+        "body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 20px; color: #333; }");
+    html.append(
+        ".header { background: linear-gradient(135deg, #004F7B 0%, #0066A1 100%); color: white; padding: 30px; margin: -20px -20px 20px -20px; }");
     html.append("h1 { margin: 0; font-size: 28px; }");
-    html.append("h2 { color: #004F7B; border-bottom: 2px solid #94C456; padding-bottom: 5px; margin-top: 30px; }");
-    html.append(".info-block { margin: 20px 0; padding: 15px; background: #f9f9f9; border-left: 4px solid #94C456; }");
+    html.append(
+        "h2 { color: #004F7B; border-bottom: 2px solid #94C456; padding-bottom: 5px; margin-top: 30px; }");
+    html.append(
+        ".info-block { margin: 20px 0; padding: 15px; background: #f9f9f9; border-left: 4px solid #94C456; }");
     html.append(".label { font-weight: bold; color: #004F7B; }");
-    html.append(".footer { margin-top: 50px; padding-top: 20px; border-top: 2px solid #004F7B; text-align: center; color: #666; font-size: 12px; }");
-    html.append(".print-button { position: fixed; bottom: 20px; right: 20px; background: #94C456; color: white; border: none; ");
-    html.append("padding: 15px 25px; border-radius: 25px; cursor: pointer; font-size: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }");
+    html.append(
+        ".footer { margin-top: 50px; padding-top: 20px; border-top: 2px solid #004F7B; text-align: center; color: #666; font-size: 12px; }");
+    html.append(
+        ".print-button { position: fixed; bottom: 20px; right: 20px; background: #94C456; color: white; border: none; ");
+    html.append(
+        "padding: 15px 25px; border-radius: 25px; cursor: pointer; font-size: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }");
     html.append(".print-button:hover { background: #7FA93F; }");
-    html.append("@media print { .no-print { display: none; } body { margin: 0; } .header { margin: 0; } }");
+    html.append(
+        "@media print { .no-print { display: none; } body { margin: 0; } .header { margin: 0; } }");
     html.append("@page { size: A4; margin: 2cm; }");
     html.append("</style>");
     html.append("</head>");
@@ -275,8 +284,12 @@ public class ProfileService {
     // Header with gradient
     html.append("<div class='header'>");
     html.append("<h1>Kundenprofil</h1>");
-    html.append("<p style='margin: 5px 0; opacity: 0.9;'>Kundennummer: ").append(escapeHtml(profile.getCustomerId())).append("</p>");
-    html.append("<p style='margin: 5px 0; opacity: 0.9;'>Erstellt am: ").append(LocalDateTime.now().format(formatter)).append("</p>");
+    html.append("<p style='margin: 5px 0; opacity: 0.9;'>Kundennummer: ")
+        .append(escapeHtml(profile.getCustomerId()))
+        .append("</p>");
+    html.append("<p style='margin: 5px 0; opacity: 0.9;'>Erstellt am: ")
+        .append(LocalDateTime.now().format(formatter))
+        .append("</p>");
     html.append("</div>");
 
     // Company Info
@@ -318,7 +331,8 @@ public class ProfileService {
     html.append("</div>");
 
     // Print button
-    html.append("<button class='print-button no-print' onclick='window.print()'>🖨️ Als PDF drucken</button>");
+    html.append(
+        "<button class='print-button no-print' onclick='window.print()'>🖨️ Als PDF drucken</button>");
 
     html.append("</body>");
     html.append("</html>");
@@ -404,16 +418,14 @@ public class ProfileService {
 
     return html.toString();
   }
-  
-  /**
-   * Escape HTML special characters to prevent XSS
-   */
+
+  /** Escape HTML special characters to prevent XSS */
   private String escapeHtml(String text) {
     if (text == null) return "";
     return text.replace("&", "&amp;")
-               .replace("<", "&lt;")
-               .replace(">", "&gt;")
-               .replace("\"", "&quot;")
-               .replace("'", "&#39;");
+        .replace("<", "&lt;")
+        .replace(">", "&gt;")
+        .replace("\"", "&quot;")
+        .replace("'", "&#39;");
   }
 }

@@ -66,7 +66,8 @@ public class DataHygieneService {
     try {
       // Finde veraltete Kontakte (über 6 Monate)
       LocalDateTime sixMonthsAgo = LocalDateTime.now().minusMonths(MONTHS_STALE_THRESHOLD);
-      List<CustomerContact> staleContacts = contactRepository.find("updatedAt < ?1", sixMonthsAgo).list();
+      List<CustomerContact> staleContacts =
+          contactRepository.find("updatedAt < ?1", sixMonthsAgo).list();
 
       LOG.info(
           "Found {} stale contacts (> {} months old)",
@@ -79,7 +80,8 @@ public class DataHygieneService {
 
       // Finde kritische Kontakte (über 1 Jahr)
       LocalDateTime oneYearAgo = LocalDateTime.now().minusYears(YEARS_CRITICAL_THRESHOLD);
-      List<CustomerContact> criticalContacts = contactRepository.find("updatedAt < ?1", oneYearAgo).list();
+      List<CustomerContact> criticalContacts =
+          contactRepository.find("updatedAt < ?1", oneYearAgo).list();
 
       LOG.info(
           "Found {} critical contacts (> {} year old)",

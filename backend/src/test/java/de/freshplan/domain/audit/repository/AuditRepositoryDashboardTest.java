@@ -87,15 +87,16 @@ class AuditRepositoryDashboardTest {
     assertEquals("valid", metrics.integrityStatus);
     assertEquals(100, metrics.retentionCompliance); // All entries are recent
     assertNotNull(metrics.lastAudit);
-    
+
     // Verify top event types structure
     assertNotNull(metrics.topEventTypes);
     // Note: topEventTypes might be empty if the entries were not created today
     // This depends on how the database query interprets "today"
     if (!metrics.topEventTypes.isEmpty()) {
       // If we have event types, verify one is LOGIN_FAILURE
-      boolean hasEventType = metrics.topEventTypes.stream()
-          .anyMatch(e -> e.containsKey("type") && e.containsKey("count"));
+      boolean hasEventType =
+          metrics.topEventTypes.stream()
+              .anyMatch(e -> e.containsKey("type") && e.containsKey("count"));
       assertTrue(hasEventType, "Event types should have 'type' and 'count' fields");
     }
   }
@@ -177,7 +178,8 @@ class AuditRepositoryDashboardTest {
     assertTrue(hasMaintenanceAlert);
 
     // Should have retention alert if old entries exist
-    boolean hasRetentionAlert = alerts.stream().anyMatch(a -> a.getType() == ComplianceAlertDto.AlertType.RETENTION);
+    boolean hasRetentionAlert =
+        alerts.stream().anyMatch(a -> a.getType() == ComplianceAlertDto.AlertType.RETENTION);
     assertTrue(hasRetentionAlert);
   }
 

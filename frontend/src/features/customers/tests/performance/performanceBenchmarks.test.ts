@@ -5,6 +5,7 @@
  * PHILOSOPHIE: Validiert Performance bei großen Datasets und komplexen Operationen
  */
 
+import { act } from 'react';
 import { describe, it, expect } from 'vitest';
 import { renderHook } from '@testing-library/react';
 import { useCustomerOnboardingStore } from '../../stores/customerOnboardingStore';

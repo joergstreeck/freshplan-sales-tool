@@ -1,8 +1,8 @@
 package de.freshplan.domain.customer.repository;
 
-import de.freshplan.domain.customer.entity.CustomerContact;
 import de.freshplan.domain.customer.entity.ContactInteraction;
 import de.freshplan.domain.customer.entity.ContactInteraction.InteractionType;
+import de.freshplan.domain.customer.entity.CustomerContact;
 import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
 import io.quarkus.panache.common.Page;
 import io.quarkus.panache.common.Parameters;
@@ -32,7 +32,8 @@ public class ContactInteractionRepository
   }
 
   /** Find interactions by type for a contact */
-  public List<ContactInteraction> findByContactAndType(CustomerContact contact, InteractionType type) {
+  public List<ContactInteraction> findByContactAndType(
+      CustomerContact contact, InteractionType type) {
     return find(
             "contact = :contact and type = :type",
             Sort.by("timestamp").descending(),

@@ -21,8 +21,11 @@ import {
   Alert,
   IconButton,
   Tooltip,
+  Button,
   useTheme,
   alpha,
+} from '@mui/material';
+import {
   Timeline,
   TimelineItem,
   TimelineSeparator,
@@ -30,7 +33,7 @@ import {
   TimelineConnector,
   TimelineContent,
   TimelineOppositeContent,
-} from '@mui/material';
+} from '@mui/lab';
 import {
   ExpandMore as ExpandMoreIcon,
   History as HistoryIcon,
@@ -51,7 +54,7 @@ import { de } from 'date-fns/locale';
 import { useQuery } from '@tanstack/react-query';
 import { auditApi } from '../services/auditApi';
 import type { AuditEntry } from '../types/audit.types';
-import { useAuth } from '../../../hooks/useAuth';
+import { useAuth } from '../../../contexts/AuthContext';
 
 interface MiniAuditTimelineProps {
   entityType: string;
@@ -77,18 +80,29 @@ export function MiniAuditTimeline({
   const { user } = useAuth();
   const [expanded, setExpanded] = useState(false);
   
+  // Props are now validated through TypeScript
+  
   // Check if user has permission to view audit
-  const canViewAudit = user?.roles?.some(role => 
+  // In development with authBypass, always allow audit viewing
+  const isDevelopment = import.meta.env.DEV;
+  const canViewAudit = isDevelopment || user?.roles?.some(role => 
     ['admin', 'manager', 'auditor'].includes(role)
   );
+  
+  // Permissions checked via role-based access
   
   // Fetch audit data
   const { data: auditEntries, isLoading, error } = useQuery({
     queryKey: ['audit', entityType, entityId, maxEntries],
-    queryFn: () => auditApi.getEntityAuditTrail(entityType, entityId, 0, maxEntries),
+    queryFn: async () => {
+      // Fetching audit trail with proper entity identification
+      const result = await auditApi.getEntityAuditTrail(entityType, entityId, 0, maxEntries);
+      console.log('Audit trail result:', result);
+      return result;
+    },
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes cache
-    enabled: canViewAudit,
+    enabled: canViewAudit && !!entityId, // Also check that entityId exists
   });
   
   // Get last change summary

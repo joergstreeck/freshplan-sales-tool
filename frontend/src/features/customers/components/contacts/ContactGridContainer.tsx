@@ -18,6 +18,7 @@ import {
   TextField,
   MenuItem,
   InputAdornment,
+  Skeleton,
 } from '@mui/material';
 import {
   GridView as GridViewIcon,
@@ -32,6 +33,7 @@ import { ContactCard } from './ContactCard';
 import { EmptyContactState } from './EmptyContactState';
 import type { RelationshipWarmth } from './WarmthIndicator';
 import { useContactGrid } from '../../hooks/useContactGrid';
+import { LazyComponent } from '../../../../components/common/LazyComponent';
 
 export interface ContactAction {
   type: 'add' | 'edit' | 'delete' | 'setPrimary' | 'assignLocation' | 'viewTimeline' | 'quickAction';
@@ -49,6 +51,7 @@ interface ContactGridContainerProps {
   showFilters?: boolean;
   useSmartCards?: boolean;
   highlightContactId?: string | null;
+  customerId?: string;
 }
 
 /**
@@ -63,6 +66,7 @@ export const ContactGridContainer: React.FC<ContactGridContainerProps> = ({
   showFilters = true,
   useSmartCards = true,
   highlightContactId,
+  customerId,
 }) => {
   const { gridProps } = useContactGrid();
   const [viewMode, setViewMode] = useState<'grid' | 'list'>(initialViewMode);
@@ -134,25 +138,26 @@ export const ContactGridContainer: React.FC<ContactGridContainerProps> = ({
     return <EmptyContactState onAddContact={() => onContactAction({ type: 'add' })} />;
   }
 
-  const renderContactCard = (contact: Contact) => {
+  const renderContactCard = (contact: Contact, index: number) => {
     const warmth = warmthData?.get(contact.id);
+    
+    // Use lazy loading for cards beyond the first 6 (two rows on desktop)
+    const shouldLazyLoad = index >= 6;
 
-    if (useSmartCards) {
-      return (
-        <SmartContactCard
-          contact={contact}
-          warmth={warmth}
-          onEdit={(c) => onContactAction({ type: 'edit', contact: c })}
-          onDelete={(id) => onContactAction({ type: 'delete', contactId: id })}
-          onSetPrimary={(id) => onContactAction({ type: 'setPrimary', contactId: id })}
-          onAssignLocation={(id) => onContactAction({ type: 'assignLocation', contactId: id })}
-          onViewTimeline={(id) => onContactAction({ type: 'viewTimeline', contactId: id })}
-          onQuickAction={(action, id) => onContactAction({ type: 'quickAction', contactId: id, action })}
-        />
-      );
-    }
-
-    return (
+    const cardContent = useSmartCards ? (
+      <SmartContactCard
+        contact={contact}
+        warmth={warmth}
+        onEdit={(c) => onContactAction({ type: 'edit', contact: c })}
+        onDelete={(id) => onContactAction({ type: 'delete', contactId: id })}
+        onSetPrimary={(id) => onContactAction({ type: 'setPrimary', contactId: id })}
+        onAssignLocation={(id) => onContactAction({ type: 'assignLocation', contactId: id })}
+        onViewTimeline={(id) => onContactAction({ type: 'viewTimeline', contactId: id })}
+        onQuickAction={(action, id) => onContactAction({ type: 'quickAction', contactId: id, action })}
+        showAuditTrail={true}
+        customerId={customerId}
+      />
+    ) : (
       <ContactCard
         contact={contact}
         onEdit={(c) => onContactAction({ type: 'edit', contact: c })}
@@ -160,6 +165,27 @@ export const ContactGridContainer: React.FC<ContactGridContainerProps> = ({
         onSetPrimary={(id) => onContactAction({ type: 'setPrimary', contactId: id })}
       />
     );
+
+    if (shouldLazyLoad) {
+      return (
+        <LazyComponent
+          minHeight={250}
+          threshold={0.1}
+          rootMargin="100px"
+          placeholder={
+            <Box sx={{ p: 2, bgcolor: 'background.paper', borderRadius: 1, height: 250 }}>
+              <Skeleton variant="circular" width={56} height={56} />
+              <Skeleton variant="text" sx={{ mt: 2 }} />
+              <Skeleton variant="text" width="60%" />
+            </Box>
+          }
+        >
+          {cardContent}
+        </LazyComponent>
+      );
+    }
+
+    return cardContent;
   };
 
   return (
@@ -260,7 +286,7 @@ export const ContactGridContainer: React.FC<ContactGridContainerProps> = ({
         </Box>
       ) : viewMode === 'grid' ? (
         <Grid container spacing={2}>
-          {sortedContacts.map((contact) => (
+          {sortedContacts.map((contact, index) => (
             <Grid 
               key={contact.id} 
               size={{ xs: 12, sm: 6, md: 4, lg: 3 }}
@@ -276,14 +302,14 @@ export const ContactGridContainer: React.FC<ContactGridContainerProps> = ({
                 })
               }}
             >
-              {renderContactCard(contact)}
+              {renderContactCard(contact, index)}
             </Grid>
           ))}
         </Grid>
       ) : (
         <Stack spacing={2}>
-          {sortedContacts.map((contact) => (
-            <Box key={contact.id}>{renderContactCard(contact)}</Box>
+          {sortedContacts.map((contact, index) => (
+            <Box key={contact.id}>{renderContactCard(contact, index)}</Box>
           ))}
         </Stack>
       )}

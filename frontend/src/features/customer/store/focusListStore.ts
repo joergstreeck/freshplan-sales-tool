@@ -190,22 +190,45 @@ const DEFAULT_TABLE_COLUMNS: TableColumn[] = [
   { id: 'actions', label: 'Aktionen', field: 'actions', visible: true, order: 8, align: 'right' },
 ];
 
-export const useFocusListStore = create<FocusListStore>()(
+// Load persisted state from localStorage
+const getPersistedState = () => {
+  try {
+    const stored = localStorage.getItem('focus-list-store');
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      return parsed.state || {};
+    }
+  } catch (e) {
+    // Silently fail - no console output for production
+  }
+  return {};
+};
+
+// Get initial state with persisted values
+const getInitialState = () => {
+  const persisted = getPersistedState();
+  return {
+    globalSearch: persisted.globalSearch || '',
+    activeFilters: persisted.activeFilters || [],
+    savedViews: persisted.savedViews || [],
+    currentViewId: null,
+    viewMode: persisted.viewMode || 'cards',
+    sortBy: persisted.sortBy || { field: 'lastContactDate', ascending: false },
+    smartSortId: persisted.smartSortId || 'revenue-high-to-low',
+    tableColumns: persisted.tableColumns || [...DEFAULT_TABLE_COLUMNS],
+    selectedCustomerId: null,
+    page: 0,
+    pageSize: persisted.pageSize || 50,
+  };
+};
+
+// Store instance for debugging
+const storeInstance = create<FocusListStore>()(
   devtools(
     persist(
       (set, get) => ({
-        // Initial State
-        globalSearch: '',
-        activeFilters: [],
-        savedViews: [],
-        currentViewId: null,
-        viewMode: 'cards',
-        sortBy: { field: 'lastContactDate', ascending: false },
-        smartSortId: 'revenue-high-to-low',
-        tableColumns: DEFAULT_TABLE_COLUMNS,
-        selectedCustomerId: null,
-        page: 0,
-        pageSize: 50, // Erhöht für bessere Übersicht aller Testkunden
+        // Use initial state with persisted values
+        ...getInitialState(),
 
         // Derived State
         get filterCount() {
@@ -605,3 +628,6 @@ export const getSmartSortsByCategory = (
 ): SmartSortOption[] => {
   return SMART_SORT_OPTIONS.filter(option => option.category === category);
 };
+
+// Export store instance
+export const useFocusListStore = storeInstance;

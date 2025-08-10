@@ -153,8 +153,7 @@ public class ContactInteractionResource {
   })
   public Response getContactFreshnessLevel(@PathParam("contactId") UUID contactId) {
     try {
-      CustomerContact contact = contactRepository.findByIdOptional(contactId)
-          .orElse(null);
+      CustomerContact contact = contactRepository.findByIdOptional(contactId).orElse(null);
       if (contact == null) {
         return Response.status(Response.Status.NOT_FOUND).build();
       }
@@ -177,8 +176,7 @@ public class ContactInteractionResource {
   })
   public Response getContactQualityScore(@PathParam("contactId") UUID contactId) {
     try {
-      CustomerContact contact = contactRepository.findByIdOptional(contactId)
-          .orElse(null);
+      CustomerContact contact = contactRepository.findByIdOptional(contactId).orElse(null);
       if (contact == null) {
         return Response.status(Response.Status.NOT_FOUND).build();
       }

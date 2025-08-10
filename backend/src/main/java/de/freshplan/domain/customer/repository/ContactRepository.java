@@ -4,16 +4,14 @@ import de.freshplan.domain.customer.entity.CustomerContact;
 import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 /**
- * Repository for CustomerContact entity providing custom queries for multi-contact management, primary
- * contact handling, and location-based searches.
+ * Repository for CustomerContact entity providing custom queries for multi-contact management,
+ * primary contact handling, and location-based searches.
  */
 @ApplicationScoped
 public class ContactRepository implements PanacheRepositoryBase<CustomerContact, UUID> {
@@ -43,10 +41,9 @@ public class ContactRepository implements PanacheRepositoryBase<CustomerContact,
   }
 
   // ========== SEARCH QUERIES (FC-005 PR4 - Extended for Hybrid Solution) ==========
-  
+
   /**
-   * Search contacts by full text in multiple fields.
-   * Basic search for backward compatibility.
+   * Search contacts by full text in multiple fields. Basic search for backward compatibility.
    *
    * @param query the search query
    * @param limit maximum number of results
@@ -55,38 +52,41 @@ public class ContactRepository implements PanacheRepositoryBase<CustomerContact,
   public List<CustomerContact> searchContacts(String query, int limit) {
     String searchPattern = "%" + query.toLowerCase() + "%";
     return find(
-        "isActive = true AND (lower(firstName || ' ' || lastName) like ?1 " +
-        "OR lower(email) like ?1 OR lower(position) like ?1)",
-        searchPattern
-    ).page(0, limit).list();
+            "isActive = true AND (lower(firstName || ' ' || lastName) like ?1 "
+                + "OR lower(email) like ?1 OR lower(position) like ?1)",
+            searchPattern)
+        .page(0, limit)
+        .list();
   }
-  
+
   /**
-   * Extended full-text search across ALL contact fields.
-   * Searches in: firstName, lastName, email, phone, mobile, position, department
-   * 
+   * Extended full-text search across ALL contact fields. Searches in: firstName, lastName, email,
+   * phone, mobile, position, department
+   *
    * @param query the search query
    * @param limit maximum number of results
    * @return list of matching contacts
    */
   public List<CustomerContact> searchContactsFullText(String query, int limit) {
     String searchPattern = "%" + query.toLowerCase() + "%";
-    return find("""
+    return find(
+            """
         isActive = true AND (
-            lower(firstName) like ?1 OR 
-            lower(lastName) like ?1 OR 
+            lower(firstName) like ?1 OR
+            lower(lastName) like ?1 OR
             lower(firstName || ' ' || lastName) like ?1 OR
-            lower(email) like ?1 OR 
-            lower(phone) like ?1 OR 
+            lower(email) like ?1 OR
+            lower(phone) like ?1 OR
             lower(mobile) like ?1 OR
             lower(position) like ?1 OR
             lower(department) like ?1
         )
-        """, searchPattern)
+        """,
+            searchPattern)
         .page(0, limit)
         .list();
   }
-  
+
   /**
    * Find contacts by email address (exact match, case-insensitive).
    *
@@ -95,12 +95,9 @@ public class ContactRepository implements PanacheRepositoryBase<CustomerContact,
    * @return list of matching contacts
    */
   public List<CustomerContact> findByEmail(String email, int limit) {
-    return find(
-        "isActive = true AND lower(email) = lower(?1)",
-        email
-    ).page(0, limit).list();
+    return find("isActive = true AND lower(email) = lower(?1)", email).page(0, limit).list();
   }
-  
+
   /**
    * Find contacts by phone number (partial match).
    *
@@ -109,16 +106,15 @@ public class ContactRepository implements PanacheRepositoryBase<CustomerContact,
    * @return list of matching contacts
    */
   public List<CustomerContact> findByPhoneLike(String phone, int limit) {
-    return find(
-        "isActive = true AND (phone like ?1 OR mobile like ?1)",
-        phone
-    ).page(0, limit).list();
+    return find("isActive = true AND (phone like ?1 OR mobile like ?1)", phone)
+        .page(0, limit)
+        .list();
   }
-  
+
   /**
-   * Find contacts by phone OR mobile number with normalization.
-   * Removes all non-numeric characters except + for comparison.
-   * 
+   * Find contacts by phone OR mobile number with normalization. Removes all non-numeric characters
+   * except + for comparison.
+   *
    * @param phone the phone number to search (will be normalized)
    * @param limit maximum number of results
    * @return list of matching contacts
@@ -127,40 +123,42 @@ public class ContactRepository implements PanacheRepositoryBase<CustomerContact,
     // Normalize the search phone number (keep only digits and +)
     String normalizedPhone = phone.replaceAll("[^0-9+]", "");
     String searchPattern = "%" + normalizedPhone + "%";
-    
+
     // Note: REGEXP_REPLACE is PostgreSQL specific
     // For H2 in tests, we'd need a different approach
-    String dbProduct = getEntityManager()
-        .getEntityManagerFactory()
-        .getProperties()
-        .get("javax.persistence.database-product-name")
-        .toString();
-    
+    String dbProduct =
+        getEntityManager()
+            .getEntityManagerFactory()
+            .getProperties()
+            .get("javax.persistence.database-product-name")
+            .toString();
+
     if (dbProduct != null && dbProduct.toLowerCase().contains("h2")) {
       // H2 Database (for tests) - simple LIKE without normalization
-      return find(
-          "isActive = true AND (phone like ?1 OR mobile like ?1)",
-          searchPattern
-      ).page(0, limit).list();
+      return find("isActive = true AND (phone like ?1 OR mobile like ?1)", searchPattern)
+          .page(0, limit)
+          .list();
     } else {
       // PostgreSQL - use REGEXP_REPLACE for normalization
       return getEntityManager()
-          .createQuery("""
-              SELECT c FROM CustomerContact c 
-              WHERE c.isActive = true 
+          .createQuery(
+              """
+              SELECT c FROM CustomerContact c
+              WHERE c.isActive = true
               AND (
                   REGEXP_REPLACE(c.phone, '[^0-9+]', '', 'g') LIKE :phone OR
                   REGEXP_REPLACE(c.mobile, '[^0-9+]', '', 'g') LIKE :phone
               )
-              """, CustomerContact.class)
+              """,
+              CustomerContact.class)
           .setParameter("phone", searchPattern)
           .setMaxResults(limit)
           .getResultList();
     }
   }
-  
+
   // ========== EXISTING METHODS ==========
-  
+
   /**
    * Find contacts assigned to a specific location
    *
@@ -230,8 +228,8 @@ public class ContactRepository implements PanacheRepositoryBase<CustomerContact,
   }
 
   /**
-   * Find contacts with upcoming birthdays
-   * NOTE: Birthday field not yet implemented in CustomerContact entity
+   * Find contacts with upcoming birthdays NOTE: Birthday field not yet implemented in
+   * CustomerContact entity
    *
    * @param daysAhead number of days to look ahead
    * @return list of contacts with birthdays in the next N days
@@ -240,7 +238,7 @@ public class ContactRepository implements PanacheRepositoryBase<CustomerContact,
     // TODO: Implement when birthday field is added to CustomerContact entity
     // For now, return empty list
     return new ArrayList<>();
-    
+
     /* Original implementation for future reference:
     // Calculate date range in Java to avoid database-specific syntax
     LocalDate today = LocalDate.now();

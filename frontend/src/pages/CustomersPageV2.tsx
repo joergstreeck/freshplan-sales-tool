@@ -5,6 +5,7 @@ import { MainLayoutV2 } from '../components/layout/MainLayoutV2';
 import { CustomerOnboardingWizardModal } from '../features/customers/components/wizard/CustomerOnboardingWizardModal';
 import { EmptyStateHero } from '../components/common/EmptyStateHero';
 import { CustomerTable } from '../features/customers/components/CustomerTable';
+import { VirtualizedCustomerTable } from '../features/customers/components/VirtualizedCustomerTable';
 import { CustomerListHeader } from '../features/customers/components/CustomerListHeader';
 import { CustomerListSkeleton } from '../features/customers/components/CustomerListSkeleton';
 import { DataHygieneDashboard } from '../features/customers/components/intelligence/DataHygieneDashboard';
@@ -307,19 +308,28 @@ export function CustomersPageV2({ openWizard = false }: CustomersPageV2Props) {
                       ascending: config.direction === 'asc'
                     });
                   }}
-                  onExport={handleExport}
                   totalCount={customers.length}
                   filteredCount={filteredCustomers.length}
                   loading={isLoading}
                 />
                 
-                {/* Customer Table with filtered data */}
-                <CustomerTable
-                  customers={filteredCustomers}
-                  onRowClick={customer => navigate(`/customers/${customer.id}`)}
-                  highlightNew
-                  columns={columnConfig}
-                />
+                {/* Customer Table - Use virtualized version for > 20 items */}
+                {filteredCustomers.length > 20 ? (
+                  <VirtualizedCustomerTable
+                    customers={filteredCustomers}
+                    columns={columnConfig}
+                    onRowClick={customer => navigate(`/customers/${customer.id}`)}
+                    height={600}
+                    rowHeight={72}
+                  />
+                ) : (
+                  <CustomerTable
+                    customers={filteredCustomers}
+                    onRowClick={customer => navigate(`/customers/${customer.id}`)}
+                    highlightNew
+                    columns={columnConfig}
+                  />
+                )}
               </Box>
             ))}
 

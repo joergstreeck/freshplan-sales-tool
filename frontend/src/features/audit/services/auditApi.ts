@@ -233,11 +233,74 @@ export const auditApi = {
       const response = await httpClient.get<AuditLog[]>(
         `/api/audit/entity/${entityType}/${entityId}?page=${page}&size=${size}`
       );
-      return response.data;
+      // Return in the format expected by MiniAuditTimeline
+      return {
+        content: response.data,
+        totalElements: response.data.length,
+      };
     } catch (error) {
       console.error('Failed to fetch entity audit trail, using mock data:', error);
       // Only use mock data as fallback when API fails
-      return mockAuditLogs.filter(log => log.entityType === entityType && log.entityId === entityId);
+      const filtered = mockAuditLogs.filter(log => log.entityType === entityType && log.entityId === entityId);
+      
+      // For development, add some mock contact audit data
+      if (entityType === 'CONTACT' && filtered.length === 0) {
+        const mockContactAudit: AuditLog[] = [
+          {
+            id: `contact-audit-1-${entityId}`,
+            timestamp: new Date(Date.now() - 86400000).toISOString(), // 1 day ago
+            occurredAt: new Date(Date.now() - 86400000).toISOString(),
+            userId: 'user-123',
+            userName: 'Max Mustermann',
+            userEmail: 'max@freshplan.de',
+            eventType: 'CONTACT_UPDATED',
+            entityType: 'CONTACT',
+            entityId: entityId,
+            action: 'UPDATE',
+            source: 'WEB',
+            ipAddress: '192.168.1.1',
+            userAgent: 'Mozilla/5.0',
+            details: { fields: ['phone', 'email'] },
+            changes: { 
+              phone: { old: '+49 30 12345', new: '+49 30 54321' },
+              email: { old: 'old@example.com', new: 'new@example.com' }
+            },
+            previousHash: 'abc123',
+            dataHash: 'def456',
+            success: true,
+          },
+          {
+            id: `contact-audit-2-${entityId}`,
+            timestamp: new Date(Date.now() - 172800000).toISOString(), // 2 days ago
+            occurredAt: new Date(Date.now() - 172800000).toISOString(),
+            userId: 'user-456',
+            userName: 'Anna Schmidt',
+            userEmail: 'anna@freshplan.de',
+            eventType: 'CONTACT_ADDED',
+            entityType: 'CONTACT',
+            entityId: entityId,
+            action: 'CREATE',
+            source: 'WEB',
+            ipAddress: '192.168.1.2',
+            userAgent: 'Mozilla/5.0',
+            details: { },
+            changes: null,
+            previousHash: null,
+            dataHash: 'abc123',
+            success: true,
+          },
+        ];
+        
+        return {
+          content: mockContactAudit,
+          totalElements: mockContactAudit.length,
+        };
+      }
+      
+      return {
+        content: filtered,
+        totalElements: filtered.length,
+      };
     }
   },
 

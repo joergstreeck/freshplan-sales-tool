@@ -53,7 +53,8 @@ import {
   Clear as ClearIcon,
   Close as CloseIcon,
   Add as AddIcon,
-  DragIndicator as DragIcon,
+  ArrowUpward as ArrowUpIcon,
+  ArrowDownward as ArrowDownIcon,
   Visibility as VisibilityIcon,
   VisibilityOff as VisibilityOffIcon,
   Star as StarIcon,
@@ -64,7 +65,6 @@ import {
   TrendingUp as RevenueIcon,
   Delete as DeleteIcon,
 } from '@mui/icons-material';
-import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { useDebounce } from '../../hooks/useDebounce';
 import { useLocalStorage } from '../../hooks/useLocalStorage';
 import { useUniversalSearch } from '../../hooks/useUniversalSearch';
@@ -328,10 +328,12 @@ export function IntelligentFilterBar({
     const set = savedFilters.find(s => s.id === setId);
     if (set) {
       setActiveFilters(set.filters);
-      setColumns(set.columns);
+      // Apply columns if available
+      if (set.columns && onColumnChange) {
+        onColumnChange(set.columns);
+      }
       setSortConfig(set.sort);
       onFilterChange(set.filters);
-      onColumnChange(set.columns);
       onSortChange(set.sort);
       setSelectedFilterSet(setId);
     }
@@ -364,55 +366,39 @@ export function IntelligentFilterBar({
     setSelectedFilterSet(null);
   }, [onFilterChange]);
   
-  // Column Drag & Drop Handler - Use store
-  const handleColumnDragEnd = useCallback((result: any) => {
-    if (!result.destination) {
-      return;
-    }
+  // Move column up/down
+  const moveColumn = useCallback((columnId: string, direction: 'up' | 'down') => {
+    const currentIndex = columns.findIndex(c => c.id === columnId);
+    if (currentIndex === -1) return;
     
-    // Get current visible columns in order
-    const visibleColumns = tableColumns
-      .filter(col => col.visible)
-      .sort((a, b) => a.order - b.order);
+    const newIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
     
-    // Map the dragged item correctly - columns array uses field as id
-    const draggedField = columns[result.source.index].id;
-    const draggedColumn = tableColumns.find(col => col.field === draggedField);
+    // Check bounds
+    if (newIndex < 0 || newIndex >= columns.length) return;
     
-    if (!draggedColumn) {
-      return;
-    }
+    // Create new columns array with swapped positions
+    const newColumns = [...columns];
+    [newColumns[currentIndex], newColumns[newIndex]] = [newColumns[newIndex], newColumns[currentIndex]];
     
-    // Build new order for ALL columns (visible and hidden)
-    const allColumnIds = [...tableColumns].sort((a, b) => a.order - b.order).map(col => col.id);
-    const visibleIds = visibleColumns.map(col => col.id);
+    // Update store with new order
+    const newColumnOrder = tableColumns
+      .map(col => {
+        const visibleIndex = newColumns.findIndex(c => c.id === col.field);
+        if (visibleIndex !== -1) {
+          return { ...col, order: visibleIndex };
+        }
+        return { ...col, order: col.order + newColumns.length };
+      })
+      .sort((a, b) => a.order - b.order)
+      .map(col => col.id);
     
-    // Remove and reinsert the dragged column
-    const draggedId = draggedColumn.id;
-    const fromIndex = visibleIds.indexOf(draggedId);
-    visibleIds.splice(fromIndex, 1);
-    visibleIds.splice(result.destination.index, 0, draggedId);
-    
-    // Update all columns order based on new visible order
-    let visibleIndex = 0;
-    const newOrder = allColumnIds.map(id => {
-      if (visibleIds.includes(id)) {
-        return visibleIds[visibleIndex++];
-      }
-      return id;
-    });
-    
-    setColumnOrderStore(newOrder);
+    setColumnOrderStore(newColumnOrder);
     
     // Call prop callback if provided
     if (onColumnChange) {
-      const newColumns = columns.map((col, index) => ({
-        ...col,
-        order: index
-      }));
       onColumnChange(newColumns);
     }
-  }, [tableColumns, setColumnOrderStore, onColumnChange, columns]);
+  }, [columns, tableColumns, setColumnOrderStore, onColumnChange]);
   
   // Toggle Column Visibility - Use store
   const toggleColumnVisibility = useCallback((columnId: string) => {
@@ -653,7 +639,7 @@ export function IntelligentFilterBar({
         onClose={() => setColumnDrawerOpen(false)}
         columns={columns}
         onColumnToggle={toggleColumnVisibility}
-        onDragEnd={handleColumnDragEnd}
+        onColumnMove={moveColumn}
       />
     </Box>
   );
@@ -824,7 +810,7 @@ interface ColumnManagerDrawerProps {
   onClose: () => void;
   columns: ColumnConfig[];
   onColumnToggle: (columnId: string) => void;
-  onDragEnd: (result: any) => void;
+  onColumnMove: (columnId: string, direction: 'up' | 'down') => void;
 }
 
 function ColumnManagerDrawer({
@@ -832,7 +818,7 @@ function ColumnManagerDrawer({
   onClose,
   columns,
   onColumnToggle,
-  onDragEnd,
+  onColumnMove,
 }: ColumnManagerDrawerProps) {
   const theme = useTheme();
   
@@ -859,57 +845,51 @@ function ColumnManagerDrawer({
         
         <Divider />
         
-        {/* Column List with Drag & Drop */}
-        <DragDropContext onDragEnd={onDragEnd}>
-          <Droppable droppableId="columns">
-            {(provided) => (
-              <List {...provided.droppableProps} ref={provided.innerRef}>
-                {columns.map((column, index) => (
-                  <Draggable 
-                    key={column.id} 
-                    draggableId={column.id} 
-                    index={index}
-                    isDragDisabled={column.locked}
-                  >
-                    {(provided, snapshot) => (
-                      <ListItem
-                        ref={provided.innerRef}
-                        {...provided.draggableProps}
-                        style={{
-                          ...provided.draggableProps.style,
-                          backgroundColor: snapshot.isDragging 
-                            ? theme.palette.action.hover
-                            : 'transparent',
-                        }}
+        {/* Column List with Arrow Controls */}
+        <List>
+          {columns.map((column, index) => (
+            <ListItem key={column.id}>
+              <ListItemText 
+                primary={column.label}
+                secondary={column.locked ? 'Fixiert' : undefined}
+              />
+              <ListItemSecondaryAction>
+                <Stack direction="row" spacing={1} alignItems="center">
+                  {/* Move Up/Down Buttons */}
+                  {!column.locked && (
+                    <>
+                      <IconButton
+                        size="small"
+                        onClick={() => onColumnMove(column.id, 'up')}
+                        disabled={index === 0}
                       >
-                        <ListItemIcon {...provided.dragHandleProps}>
-                          <DragIcon color={column.locked ? 'disabled' : 'inherit'} />
-                        </ListItemIcon>
-                        <ListItemText 
-                          primary={column.label}
-                          secondary={column.locked ? 'Fixiert' : undefined}
-                        />
-                        <ListItemSecondaryAction>
-                          <Switch
-                            edge="end"
-                            checked={column.visible}
-                            onChange={() => onColumnToggle(column.id)}
-                            disabled={column.locked}
-                          />
-                        </ListItemSecondaryAction>
-                      </ListItem>
-                    )}
-                  </Draggable>
-                ))}
-                {provided.placeholder}
-              </List>
-            )}
-          </Droppable>
-        </DragDropContext>
+                        <ArrowUpIcon fontSize="small" />
+                      </IconButton>
+                      <IconButton
+                        size="small"
+                        onClick={() => onColumnMove(column.id, 'down')}
+                        disabled={index === columns.length - 1}
+                      >
+                        <ArrowDownIcon fontSize="small" />
+                      </IconButton>
+                    </>
+                  )}
+                  {/* Visibility Toggle */}
+                  <Switch
+                    edge="end"
+                    checked={column.visible}
+                    onChange={() => onColumnToggle(column.id)}
+                    disabled={column.locked}
+                  />
+                </Stack>
+              </ListItemSecondaryAction>
+            </ListItem>
+          ))}
+        </List>
         
         {/* Info */}
         <Alert severity="info">
-          Ziehen Sie die Spalten, um die Reihenfolge zu ändern. 
+          Verwenden Sie die Pfeile, um die Reihenfolge zu ändern. 
           Fixierte Spalten können nicht verschoben oder ausgeblendet werden.
         </Alert>
       </Stack>

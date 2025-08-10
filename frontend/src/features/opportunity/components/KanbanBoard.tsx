@@ -245,10 +245,10 @@ interface KanbanColumnProps {
   opportunities: Opportunity[];
 }
 
-const KanbanColumn: React.FC<KanbanColumnProps> = React.memo(({ stage, opportunities }) => {
+const KanbanColumn: React.FC<KanbanColumnProps> = React.memo(({ stage, opportunities = [] }) => {
   const theme = useTheme();
   const config = STAGE_CONFIGS_RECORD[stage];
-  const totalValue = opportunities.reduce((sum, opp) => sum + (opp.value || 0), 0);
+  const totalValue = opportunities?.reduce((sum, opp) => sum + (opp.value || 0), 0) || 0;
 
   return (
     <Paper

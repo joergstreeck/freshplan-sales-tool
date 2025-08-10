@@ -1,7 +1,7 @@
 package de.freshplan.domain.customer.service;
 
-import de.freshplan.domain.customer.entity.CustomerContact;
 import de.freshplan.domain.customer.entity.Customer;
+import de.freshplan.domain.customer.entity.CustomerContact;
 import de.freshplan.domain.customer.repository.ContactRepository;
 import de.freshplan.domain.customer.repository.CustomerRepository;
 import de.freshplan.domain.customer.service.dto.ContactDTO;

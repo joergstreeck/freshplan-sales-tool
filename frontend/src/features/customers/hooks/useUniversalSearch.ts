@@ -71,10 +71,23 @@ interface UseUniversalSearchReturn {
   clearResults: () => void;
 }
 
-// Cache for search results
+// Cache for search results with size limits
+const MAX_CACHE_SIZE = 100; // Maximum number of cached searches
 const searchCache = new Map<string, SearchResults>();
 const CACHE_TTL = 60000; // 1 minute
 const cacheTimestamps = new Map<string, number>();
+
+// LRU cache eviction when size limit reached
+function evictOldestCacheEntry() {
+  if (searchCache.size >= MAX_CACHE_SIZE) {
+    const oldestKey = Array.from(cacheTimestamps.entries())
+      .sort((a, b) => a[1] - b[1])[0]?.[0];
+    if (oldestKey) {
+      searchCache.delete(oldestKey);
+      cacheTimestamps.delete(oldestKey);
+    }
+  }
+}
 
 /**
  * Hook for universal search functionality
@@ -152,8 +165,9 @@ export const useUniversalSearch = (
         limit: limit.toString(),
       });
 
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080';
       const response = await fetch(
-        `http://localhost:8080/api/search/universal?${params.toString()}`,
+        `${apiUrl}/api/search/universal?${params.toString()}`,
         {
           signal: abortControllerRef.current.signal,
           headers: {
@@ -178,7 +192,8 @@ export const useUniversalSearch = (
         metadata: data.metadata,
       };
 
-      // Update cache
+      // Update cache with size limit check
+      evictOldestCacheEntry(); // Ensure we don't exceed cache size
       searchCache.set(cacheKey, transformedResults);
       cacheTimestamps.set(cacheKey, Date.now());
 

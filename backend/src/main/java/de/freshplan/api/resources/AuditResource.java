@@ -15,16 +15,10 @@ import jakarta.validation.constraints.Min;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.core.StreamingOutput;
-import java.io.BufferedWriter;
-import java.io.OutputStreamWriter;
 import java.time.Instant;
-import java.time.LocalDate;
-import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Stream;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
@@ -135,7 +129,7 @@ public class AuditResource {
       @QueryParam("to") String toStr,
       @QueryParam("entityType") String entityType,
       @QueryParam("eventType") List<AuditEventType> eventTypes) {
-    
+
     // Redirect to new Universal Export Framework endpoint
     String redirectUrl = String.format("/api/v2/export/audit/%s", format);
     return Response.status(Response.Status.MOVED_PERMANENTLY)

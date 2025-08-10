@@ -405,20 +405,30 @@ function CustomerContacts({
     
     switch (action.type) {
       case 'add':
-        // Navigate to add contact form
-        console.log('Add new contact');
+        // TODO: Implement add contact modal
+        alert('Kontakt hinzufügen - Modal wird noch implementiert');
         break;
       case 'edit':
-        // Navigate to edit contact form
-        console.log('Edit contact:', action.contactId);
+        // TODO: Implement edit contact modal
+        if (action.contact) {
+          alert(`Kontakt bearbeiten: ${action.contact.firstName} ${action.contact.lastName}\n\nDiese Funktion wird noch implementiert.`);
+        } else {
+          alert('Kontakt bearbeiten - Modal wird noch implementiert');
+        }
         break;
       case 'delete':
         // Show delete confirmation dialog
-        console.log('Delete contact:', action.contactId);
+        if (confirm('Möchten Sie diesen Kontakt wirklich löschen?')) {
+          console.log('Delete contact:', action.contactId);
+          // TODO: Implement actual delete API call
+          alert('Kontakt löschen - API-Aufruf wird noch implementiert');
+        }
         break;
       case 'setPrimary':
         // Update primary contact
         console.log('Set primary contact:', action.contactId);
+        // TODO: Implement API call to set primary contact
+        alert('Als Hauptkontakt setzen - API-Aufruf wird noch implementiert');
         break;
       case 'quickAction':
         // Handle quick actions (email, phone, etc.)
@@ -533,6 +543,7 @@ function CustomerContacts({
         showFilters={true}
         useSmartCards={true}
         highlightContactId={highlightContactId}
+        customerId={customerId}
       />
     </Box>
   );
