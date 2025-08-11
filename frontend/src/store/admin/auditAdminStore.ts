@@ -92,7 +92,7 @@ interface ComplianceStatus {
 }
 
 interface ReportConfig {
-  dateRange: DateRange;
+  _dateRange: DateRange;
   format: 'pdf' | 'excel' | 'csv';
   includeDetails: boolean;
   reportType?: 'compliance' | 'security' | 'activity' | 'full';
@@ -136,11 +136,11 @@ interface AuditAdminState {
   streamWebSocket: WebSocket | null;
 
   // Actions - Data Fetching
-  fetchDashboardData: (dateRange: DateRange) => Promise<void>;
-  fetchActivityHeatmap: (dateRange: DateRange, granularity: string) => Promise<void>;
+  fetchDashboardData: (_dateRange: DateRange) => Promise<void>;
+  fetchActivityHeatmap: (_dateRange: DateRange, granularity: string) => Promise<void>;
   fetchSuspiciousActivities: () => Promise<void>;
-  fetchUserProfile: (userId: string, dateRange: DateRange) => Promise<void>;
-  fetchComplianceStatus: (dateRange: DateRange) => Promise<void>;
+  fetchUserProfile: (userId: string, _dateRange: DateRange) => Promise<void>;
+  fetchComplianceStatus: (_dateRange: DateRange) => Promise<void>;
   generateComplianceReport: (config: ReportConfig) => Promise<ReportResult>;
 
   // Actions - Real-time
@@ -230,7 +230,7 @@ export const useAuditAdminStore = create<AuditAdminState>()(
         },
 
         // Fetch Activity Heatmap
-        fetchActivityHeatmap: async (_dateRange, granularity) => {
+        fetchActivityHeatmap: async (__dateRange, granularity) => {
           try {
             // Mock heatmap data
             const dataPoints = [];
@@ -291,7 +291,7 @@ export const useAuditAdminStore = create<AuditAdminState>()(
         },
 
         // Fetch User Profile
-        fetchUserProfile: async (userId, _dateRange) => {
+        fetchUserProfile: async (userId, __dateRange) => {
           try {
             // Mock user profile
             const profile: UserAuditProfile = {

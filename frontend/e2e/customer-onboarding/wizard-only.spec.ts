@@ -30,7 +30,7 @@ test.describe('Customer Wizard Tests - Isolated', () => {
     await page.addInitScript(() => {
       try {
         window.localStorage.setItem('auth-token', 'test-token');
-      } catch (_e) {
+      } catch {
         console.log('localStorage not available in CI');
       }
       

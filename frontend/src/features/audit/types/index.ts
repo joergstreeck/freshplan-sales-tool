@@ -160,7 +160,7 @@ export interface ComplianceAlert {
 
 export interface AuditExportOptions {
   format: 'csv' | 'json' | 'pdf' | 'excel';
-  dateRange: {
+  _dateRange: {
     from: Date;
     to: Date;
   };

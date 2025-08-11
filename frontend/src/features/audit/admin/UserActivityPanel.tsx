@@ -29,7 +29,7 @@ import { useQuery } from '@tanstack/react-query';
 import { auditApi } from '../services/auditApi';
 
 interface UserActivityPanelProps {
-  dateRange: {
+  _dateRange: {
     from: Date;
     to: Date;
   };

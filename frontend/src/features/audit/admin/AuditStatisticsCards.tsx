@@ -58,7 +58,7 @@ interface AuditStatisticsCardsProps {
 
 export const AuditStatisticsCards: React.FC<AuditStatisticsCardsProps> = ({
   stats,
-  dateRange,
+  _dateRange,
   isLoading = false,
 }) => {
   const formatNumber = (num: number): string => {

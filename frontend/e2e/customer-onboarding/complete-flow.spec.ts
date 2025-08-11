@@ -143,7 +143,7 @@ test.describe.skip('Complete Customer Onboarding Flow', () => {
           name: 'Test User',
           role: 'admin'
         }));
-      } catch (_e) {
+      } catch {
         console.log('localStorage not available in CI');
       }
       
@@ -187,7 +187,7 @@ test.describe.skip('Complete Customer Onboarding Flow', () => {
         await page.click(selector, { timeout: 2000 });
         buttonClicked = true;
         break;
-      } catch (_e) {
+      } catch {
         console.log(`Button selector "${selector}" not found, trying next...`);
       }
     }

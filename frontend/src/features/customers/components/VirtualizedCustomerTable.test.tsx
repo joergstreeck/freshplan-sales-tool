@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor as _waitFor } from '@testing-library/react';
 import { VirtualizedCustomerTable } from './VirtualizedCustomerTable';
 import { FixedSizeList } from 'react-window';
 

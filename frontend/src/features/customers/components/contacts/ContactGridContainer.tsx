@@ -24,7 +24,7 @@ import {
   GridView as GridViewIcon,
   ViewList as ListIcon,
   Search as SearchIcon,
-  FilterList as FilterIcon,
+  FilterList as _FilterIcon,
 } from '@mui/icons-material';
 
 import type { Contact } from '../../types/contact.types';
@@ -68,7 +68,7 @@ export const ContactGridContainer: React.FC<ContactGridContainerProps> = ({
   highlightContactId,
   customerId,
 }) => {
-  const { gridProps } = useContactGrid();
+  const { gridProps: _gridProps } = useContactGrid();
   const [viewMode, setViewMode] = useState<'grid' | 'list'>(initialViewMode);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterDecisionLevel, setFilterDecisionLevel] = useState<string>('all');
@@ -118,10 +118,11 @@ export const ContactGridContainer: React.FC<ContactGridContainerProps> = ({
             }
           }
           break;
-        case 'recent':
+        case 'recent': {
           const dateA = new Date(a.updatedAt || a.createdAt).getTime();
           const dateB = new Date(b.updatedAt || b.createdAt).getTime();
           return dateB - dateA;
+        }
         case 'name':
         default:
           return `${a.lastName} ${a.firstName}`.localeCompare(`${b.lastName} ${b.firstName}`);

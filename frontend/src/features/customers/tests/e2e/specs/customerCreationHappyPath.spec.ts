@@ -83,7 +83,7 @@ test.describe('FC-005 Customer Creation Happy Path', () => {
     });
   });
 
-  test('should handle industry change and show/hide fields dynamically', async ({ page }) => {
+  test('should handle industry change and show/hide fields dynamically', async ({ page: _page }) => {
     // Start with hotel industry
     await test.step('Select hotel industry', async () => {
       await onboardingPage.fillCustomerBasicData({

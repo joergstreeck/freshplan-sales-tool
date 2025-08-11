@@ -102,7 +102,7 @@ const formatEntityType = (entityType: string): string => {
 export const UserAuditTimeline: React.FC<UserAuditTimelineProps> = ({
   userId,
   userName,
-  dateRange,
+  _dateRange,
   maxItems = 50,
   showFilters = true,
   onExport,
@@ -118,14 +118,14 @@ export const UserAuditTimeline: React.FC<UserAuditTimelineProps> = ({
     error,
     refetch,
   } = useQuery({
-    queryKey: ['userAuditLogs', userId, dateRange, actionFilter, entityFilter],
+    queryKey: ['userAuditLogs', userId, _dateRange, actionFilter, entityFilter],
     queryFn: async () => {
       const filters: AuditFilters = {
         userId,
         limit: maxItems,
       };
 
-      if (dateRange) {
+      if (_dateRange) {
         filters.from = dateRange.from.toISOString();
         filters.to = dateRange.to.toISOString();
       }

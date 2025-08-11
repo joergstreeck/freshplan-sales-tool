@@ -25,7 +25,7 @@ async function setupMockEnvironment(page: Page) {
         email: 'test@example.com',
         role: 'admin'
       }));
-    } catch (_e) {
+    } catch {
       console.log('localStorage not available in CI');
     }
     

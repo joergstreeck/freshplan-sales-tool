@@ -22,11 +22,9 @@ import {
   Security as SecurityIcon,
   Warning as WarningIcon,
 } from '@mui/icons-material';
-import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { de } from 'date-fns/locale';
 import type { AuditLog, AuditFilters } from '../types';
-import { auditApi } from '../services/auditApi';
 import { AuditDetailModal } from './AuditDetailModal';
 import { UniversalExportButton } from '@/components/export/UniversalExportButton';
 

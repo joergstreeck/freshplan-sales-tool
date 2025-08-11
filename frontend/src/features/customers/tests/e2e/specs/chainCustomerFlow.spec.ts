@@ -295,7 +295,7 @@ test.describe('FC-005 Chain Customer Flow', () => {
   });
 
   test('should maintain performance with many locations and detailed locations', async ({
-    page,
+    page: _page,
   }) => {
     // Setup chain customer
     await test.step('Setup chain customer', async () => {

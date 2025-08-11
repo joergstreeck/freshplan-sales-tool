@@ -90,7 +90,7 @@ const StatCard: React.FC<StatCardProps> = ({
 
 interface AuditDashboardProps {
   metrics?: AuditDashboardMetrics;
-  dateRange: {
+  _dateRange: {
     from: Date;
     to: Date;
   };

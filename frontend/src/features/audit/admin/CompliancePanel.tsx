@@ -28,7 +28,7 @@ import type { ComplianceAlert, AuditDashboardMetrics } from '../types';
 interface CompliancePanelProps {
   alerts?: ComplianceAlert[];
   metrics?: AuditDashboardMetrics;
-  dateRange: {
+  _dateRange: {
     from: Date;
     to: Date;
   };
@@ -37,7 +37,7 @@ interface CompliancePanelProps {
 export const CompliancePanel: React.FC<CompliancePanelProps> = ({
   alerts = [],
   metrics,
-  dateRange,
+  _dateRange,
 }) => {
   const getAlertIcon = (type: string) => {
     switch (type) {
