@@ -35,7 +35,7 @@ export const LocationsStep: React.FC = () => {
     validationErrors,
   } = useCustomerOnboardingStore();
 
-  const { locationFields, getIndustryFields } = useFieldDefinitions();
+  const { locationFields, getIndustryFields: _getIndustryFields } = useFieldDefinitions();
 
   // Get industry-specific location fields
   const industry = customerData.industry || '';
@@ -50,7 +50,7 @@ export const LocationsStep: React.FC = () => {
   /**
    * Handle location field change
    */
-  const handleLocationFieldChange = (locationId: string, fieldKey: string, value: any) => {
+  const handleLocationFieldChange = (locationId: string, fieldKey: string, value: unknown) => {
     setLocationField(locationId, fieldKey, value);
   };
 

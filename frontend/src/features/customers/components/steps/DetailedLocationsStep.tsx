@@ -101,7 +101,7 @@ const BatchAddDialog: React.FC<BatchAddDialogProps> = ({
     setLocations(locations.filter((_, i) => i !== index));
   };
 
-  const handleChange = (index: number, field: string, value: any) => {
+  const handleChange = (index: number, field: string, value: unknown) => {
     const updated = [...locations];
     updated[index] = { ...updated[index], [field]: value };
     setLocations(updated);
@@ -254,8 +254,8 @@ export const DetailedLocationsStep: React.FC = () => {
     locationFieldValues,
     detailedLocations,
     customerData,
-    addDetailedLocation,
-    updateDetailedLocation,
+    addDetailedLocation: _addDetailedLocation,
+    updateDetailedLocation: _updateDetailedLocation,
     removeDetailedLocation,
     addBatchDetailedLocations,
   } = useCustomerOnboardingStore();
