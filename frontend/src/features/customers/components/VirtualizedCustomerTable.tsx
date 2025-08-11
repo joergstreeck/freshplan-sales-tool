@@ -146,7 +146,7 @@ export function VirtualizedCustomerTable({
                     <Chip
                       label={value as string}
                       size="small"
-                      color={getStatusColor(value as string) as any}
+                      color={getStatusColor(value as string) as 'default' | 'primary' | 'secondary' | 'error' | 'info' | 'success' | 'warning'}
                     />
                   </Box>
                 );
@@ -158,7 +158,7 @@ export function VirtualizedCustomerTable({
                       <Chip
                         label={`${value}%`}
                         size="small"
-                        color={getRiskColor(value as number) as any}
+                        color={getRiskColor(value as number) as 'default' | 'primary' | 'secondary' | 'error' | 'info' | 'success' | 'warning'}
                         variant="outlined"
                       />
                     )}

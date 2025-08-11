@@ -145,7 +145,7 @@ export function LocationsForm({
         onTotalLocationsChange(total);
       }
     }
-  }, [formData, onTotalLocationsChange]);
+  }, [formData, onTotalLocationsChange, calculateTotalLocations]);
 
   const renderIndustryFields = () => {
     switch (customerIndustry) {

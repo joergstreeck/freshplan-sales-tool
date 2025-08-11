@@ -131,7 +131,7 @@ export const ContactFormDialog: React.FC<ContactFormDialogProps> = ({
   );
 
   // Handle field change
-  const handleFieldChange = (fieldKey: string, value: any) => {
+  const handleFieldChange = (fieldKey: string, value: string | number | boolean | null) => {
     setFormData(prev => ({
       ...prev,
       [fieldKey.replace('contact', '').charAt(0).toLowerCase() +

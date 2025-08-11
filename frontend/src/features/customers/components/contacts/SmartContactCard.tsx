@@ -45,7 +45,7 @@ import {
 } from '@mui/icons-material';
 
 import type { Contact } from '../../types/contact.types';
-import { getContactFullName, DECISION_LEVELS } from '../../types/contact.types';
+import { getContactFullName, DECISION_LEVELS as _DECISION_LEVELS } from '../../types/contact.types';
 import { WarmthIndicator, type RelationshipWarmth } from './WarmthIndicator';
 import { ContactQuickActions } from './ContactQuickActions';
 import { MiniAuditTimeline } from '../../../audit/components/MiniAuditTimeline';
