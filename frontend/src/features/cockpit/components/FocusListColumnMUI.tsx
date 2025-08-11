@@ -34,7 +34,7 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { format } from 'date-fns';
 import { de } from 'date-fns/locale';
 import { FixedSizeList } from 'react-window';
-import { LazyComponent } from '../../../components/common/LazyComponent';
+import { LazyComponent as _LazyComponent } from '../../../components/common/LazyComponent';
 import React from 'react';
 
 interface FocusListColumnMUIProps {
@@ -42,7 +42,7 @@ interface FocusListColumnMUIProps {
 }
 
 // Virtual Row Component für react-window
-const VirtualRow = React.memo(({ index, style, data }: any) => {
+const VirtualRow = React.memo(({ index, style, data }: { index: number; style: React.CSSProperties; data: unknown }) => {
   const { customers, columns, selectedId, onSelect, renderCell } = data;
   const customer = customers[index];
   
@@ -64,7 +64,7 @@ const VirtualRow = React.memo(({ index, style, data }: any) => {
       <Table size="small">
         <TableBody>
           <TableRow>
-            {columns.map((column: any) => (
+            {columns.map((column: { field: string; align?: string }) => (
               <TableCell
                 key={`${customer.id}-${column.id}`}
                 align={column.align || 'left'}

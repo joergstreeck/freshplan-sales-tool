@@ -19,7 +19,7 @@ import {
   Alert,
   Divider,
   IconButton,
-  Collapse,
+  Collapse as _Collapse,
 } from '@mui/material';
 import {
   AdminPanelSettings as AdminIcon,

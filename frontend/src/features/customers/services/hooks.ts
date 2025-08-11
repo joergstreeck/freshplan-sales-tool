@@ -313,7 +313,7 @@ export function useUpdateLocation(
     ApiError,
     {
       locationId: string;
-      data: Record<string, any>;
+      data: Record<string, unknown>;
     }
   >
 ) {
@@ -324,7 +324,7 @@ export function useUpdateLocation(
     ApiError,
     {
       locationId: string;
-      data: Record<string, any>;
+      data: Record<string, unknown>;
     }
   >({
     mutationFn: ({ locationId, data }) =>

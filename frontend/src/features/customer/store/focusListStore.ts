@@ -198,7 +198,7 @@ const getPersistedState = () => {
       const parsed = JSON.parse(stored);
       return parsed.state || {};
     }
-  } catch (e) {
+  } catch {
     // Silently fail - no console output for production
   }
   return {};

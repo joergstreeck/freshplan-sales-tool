@@ -423,7 +423,7 @@ export const auditApi = {
       if (from) params.append('from', from.toISOString());
       if (to) params.append('to', to.toISOString());
 
-      const response = await httpClient.get<Record<string, any>>(`/api/audit/statistics?${params}`);
+      const response = await httpClient.get<Record<string, unknown>>(`/api/audit/statistics?${params}`);
       return response.data;
     } catch (error) {
       console.error('Failed to get statistics, using mock data:', error);

@@ -19,7 +19,7 @@ import {
   Stack,
   Skeleton,
   Alert,
-  IconButton,
+  IconButton as _IconButton,
   Tooltip,
   Button,
   useTheme,
