@@ -78,7 +78,8 @@ export function CustomersPageV2({ openWizard = false }: CustomersPageV2Props) {
 
   // Use existing useCustomers hook with pagination
   const { data, isLoading, refetch } = useCustomers(0, 1000); // Get all for now
-  const customers = data?.content || [];
+  
+  const customers = useMemo(() => data?.content || [], [data]);
 
   // Apply filters and sorting to customers
   const filteredCustomers = useMemo(() => {

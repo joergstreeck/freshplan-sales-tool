@@ -558,7 +558,7 @@ export const KanbanBoardDndKit: React.FC = React.memo(() => {
           
           setOpportunities(apiOpportunities);
         }
-      } catch (error) {
+      } catch {
         // Keep using initialOpportunities as fallback
         // Error is silently handled - opportunities will remain as initial mock data
       }

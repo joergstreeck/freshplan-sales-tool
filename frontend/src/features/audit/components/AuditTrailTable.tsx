@@ -27,6 +27,7 @@ import { de } from 'date-fns/locale';
 import type { AuditLog as _AuditLog, AuditFilters } from '../types';
 import { AuditDetailModal } from './AuditDetailModal';
 import { UniversalExportButton } from '@/components/export/UniversalExportButton';
+import { useQuery } from '@tanstack/react-query';
 
 interface AuditTrailTableProps {
   filters?: AuditFilters;
