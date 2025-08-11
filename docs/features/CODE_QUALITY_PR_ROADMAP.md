@@ -41,7 +41,59 @@ Dies ist die Baseline für weitere Code-Quality Verbesserungen."
 
 ### 🗓️ Sprint 1 (12.-16.08.2025) - Quick Wins
 
-#### PR #1: Console Cleanup Frontend
+#### PR #1: Security & MSW Hardening 🔒 NEU!
+**Branch:** `feature/security-msw-hardening`
+**Umfang:** ~5-10 Dateien
+**Priorität:** 🔴 KRITISCH (Security!)
+**Review-Zeit:** ~30 Min
+
+```bash
+# Branch erstellen
+git checkout main
+git pull
+git checkout -b feature/security-msw-hardening
+
+# 1. MSW Token nur bei expliziter Aktivierung
+# In frontend/src/main.tsx:
+if (import.meta.env.VITE_USE_MSW === 'true') {
+  localStorage.setItem('auth-token', 'MOCK_JWT_TOKEN');
+} else {
+  localStorage.removeItem('auth-token');
+}
+
+# 2. Environment Variables externalisieren
+cat > .env.example << 'EOF'
+# Keycloak
+KEYCLOAK_ADMIN=admin
+KEYCLOAK_ADMIN_PASSWORD=changeme
+POSTGRES_PASSWORD=changeme
+
+# API
+VITE_API_URL=http://localhost:8080
+VITE_USE_MSW=false
+EOF
+
+# 3. Docker Compose absichern
+# docker-compose.keycloak.yml anpassen:
+# Ersetze hardcoded passwords mit ${KEYCLOAK_ADMIN_PASSWORD}
+
+# Tests
+npm test
+npm run build
+
+# Commit
+git add -A
+git commit -m "fix: harden security and MSW token handling
+
+- MSW token only set when explicitly enabled
+- Externalized environment variables
+- Removed hardcoded credentials from docker-compose
+- Added .env.example for documentation
+
+BREAKING CHANGE: Requires .env file for docker-compose"
+```
+
+#### PR #2: Console Cleanup Frontend (verschoben von #1)
 **Branch:** `feature/console-cleanup-frontend`
 **Umfang:** ~87 Dateien
 **Priorität:** 🔴 Hoch
@@ -112,7 +164,7 @@ gh pr create --title "chore: remove console statements from frontend" \
   --body "Part of Code Quality Initiative - Sprint 1"
 ```
 
-#### PR #2: TypeScript any[] → Proper Types
+#### PR #3: TypeScript any[] → Proper Types (verschoben von #2)
 **Branch:** `feature/typescript-array-types`
 **Umfang:** ~40 Dateien
 **Priorität:** 🟠 Hoch
@@ -167,7 +219,7 @@ git commit -m "fix: replace any[] with proper array types
 - Type safety verbessert"
 ```
 
-#### PR #3: Event Handler Types
+#### PR #4: Event Handler Types (verschoben von #3)
 **Branch:** `feature/event-handler-types`
 **Umfang:** ~30 Dateien
 **Priorität:** 🟠 Hoch
@@ -341,10 +393,11 @@ npm run test        # Zeigt Test-Errors
 ## 📈 Fortschritt-Tracking
 
 ### Sprint 1 Status:
-- [ ] Baseline PR (54 Commits) - **ZUERST MACHEN!**
-- [ ] PR #1: Console Cleanup Frontend
-- [ ] PR #2: TypeScript array types
-- [ ] PR #3: Event handler types
+- [x] Baseline PR (55 Commits) - **✅ ERLEDIGT als PR #83!**
+- [ ] PR #1: Security & MSW Hardening 🔒 **NEU!**
+- [ ] PR #2: Console Cleanup Frontend
+- [ ] PR #3: TypeScript array types
+- [ ] PR #4: Event handler types
 
 ### Sprint 2 Status:
 - [ ] PR #4: Large components refactor
