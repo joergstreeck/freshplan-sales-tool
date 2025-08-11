@@ -104,10 +104,10 @@ const createWrapper = () => {
 describe('IntelligentFilterBar - Enterprise Tests', () => {
   const mockOnFilterChange = vi.fn();
   const mockOnSortChange = vi.fn();
-  const mockOnSearchChange = vi.fn();
-  const mockOnQuickFilterToggle = vi.fn();
+  const _mockOnSearchChange = vi.fn();
+  const _mockOnQuickFilterToggle = vi.fn();
   const mockOnAdvancedFiltersOpen = vi.fn();
-  const mockOnViewChange = vi.fn();
+  const _mockOnViewChange = vi.fn();
   const mockOnColumnManagementOpen = vi.fn();
   const mockOnExport = vi.fn();
 

@@ -95,7 +95,7 @@ describe('VirtualizedCustomerTable', () => {
     render(
       <VirtualizedCustomerTable
         {...defaultProps}
-        customers={customersWithMissingData as any}
+        customers={customersWithMissingData as Customer[]}
       />
     );
 
@@ -119,7 +119,7 @@ describe('VirtualizedCustomerTable', () => {
     render(
       <VirtualizedCustomerTable
         {...defaultProps}
-        customers={customersWithBadDates as any}
+        customers={customersWithBadDates as Customer[]}
       />
     );
 

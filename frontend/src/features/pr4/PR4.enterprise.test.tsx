@@ -124,7 +124,7 @@ describe('PR4 Enterprise Test Suite', () => {
     };
 
     it('renders and displays customer count', () => {
-      const props = {
+      const _props = {
         ...filterProps,
         totalCount: 100,
         filteredCount: 58,
@@ -325,7 +325,7 @@ describe('PR4 Enterprise Test Suite', () => {
     });
 
     it('shows export menu on click', async () => {
-      const user = userEvent.setup();
+      const _user = userEvent.setup();
       render(<UniversalExportButton {...exportProps} />, { wrapper: createWrapper() });
 
       const button = screen.getByRole('button');
@@ -387,7 +387,7 @@ describe('PR4 Enterprise Test Suite', () => {
     });
 
     it('handles customer selection', async () => {
-      const user = userEvent.setup();
+      const _user = userEvent.setup();
       const mockOnRowClick = vi.fn();
       render(<VirtualizedCustomerTable {...tableProps} onRowClick={mockOnRowClick} />, {
         wrapper: createWrapper(),

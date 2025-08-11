@@ -258,8 +258,6 @@ describe('IntelligentFilterBar Integration Tests', () => {
 
   describe('View Mode', () => {
     it('should handle view mode toggles', async () => {
-      const user = userEvent.setup();
-
       render(
         <IntelligentFilterBar
           {...defaultProps}
@@ -269,11 +267,7 @@ describe('IntelligentFilterBar Integration Tests', () => {
 
       // Look for view toggle buttons
       const buttons = screen.getAllByRole('button');
-      const viewButtons = buttons.filter(btn => 
-        btn.querySelector('[data-testid*="view"]') ||
-        btn.querySelector('[data-testid*="View"]')
-      );
-
+      
       // Component should have view toggle capability
       expect(buttons.length).toBeGreaterThan(0);
     });

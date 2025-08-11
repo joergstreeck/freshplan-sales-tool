@@ -264,7 +264,7 @@ describe('LazyComponent', () => {
 
   describe('Performance', () => {
     it('should only create one observer per component', () => {
-      const { rerender } = render(
+      const { rerender: _rerender } = render(
         <LazyComponent fallback={fallback}>
           <TestComponent />
         </LazyComponent>
@@ -328,7 +328,7 @@ describe('LazyComponent', () => {
       mockInView = true;
       
       // Rerender to trigger the effect
-      const { rerender } = render(
+      const { rerender: _rerender } = render(
         <LazyComponent placeholder={<button data-testid="fallback-button">Loading</button>}>
           <button data-testid="loaded-button">Loaded</button>
         </LazyComponent>
