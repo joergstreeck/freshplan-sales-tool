@@ -77,11 +77,14 @@ export const Step3AnsprechpartnerV2: React.FC = () => {
   // Initialisiere Kontakte aus customerData wenn vorhanden
   const [contacts, setContacts] = useState<ContactFormData[]>(() => {
     if (customerData.contacts && Array.isArray(customerData.contacts)) {
-      return customerData.contacts.map((contact: any) => ({
-        ...contact,
-        responsibilityScope: contact.responsibilityScope || 'all',
-        assignedLocationIds: contact.assignedLocationIds || [],
-      }));
+      return customerData.contacts.map((contact: unknown) => {
+        const c = contact as Record<string, unknown>;
+        return {
+          ...c,
+          responsibilityScope: (c.responsibilityScope as string) || 'all',
+          assignedLocationIds: (c.assignedLocationIds as string[]) || [],
+        };
+      });
     }
     // Standard: Ein leerer Hauptansprechpartner
     return [

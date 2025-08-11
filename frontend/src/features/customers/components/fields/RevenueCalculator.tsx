@@ -57,7 +57,7 @@ export const RevenueCalculator: React.FC<RevenueCalculatorProps> = ({
       baseRevenue,
       totalRevenue,
     });
-  }, [customerData, locations, calculatePainPointBonus]);
+  }, [customerData, locations]);
 
   // Branchen-spezifische Durchschnittswerte
   const getAverageRevenueByIndustry = (industry?: string): number => {

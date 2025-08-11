@@ -47,7 +47,10 @@ export const Step4AngebotServices: React.FC = () => {
   // Check if single location mode
   const isSingleLocation = chainCustomer === 'nein' || locations.length === 1;
   const currentLocation = locations[currentLocationIndex];
-  const currentServices = getLocationServices(currentLocation?.id) || {};
+  const currentServices = useMemo(
+    () => getLocationServices(currentLocation?.id) || {},
+    [currentLocation?.id, getLocationServices]
+  );
 
   // Handlers
   const handleServiceChange = useCallback(

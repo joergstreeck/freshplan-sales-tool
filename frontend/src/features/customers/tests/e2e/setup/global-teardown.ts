@@ -7,7 +7,6 @@
 
 import { FullConfig } from '@playwright/test';
 import fs from 'fs';
-import path from 'path';
 
 async function globalTeardown(config: FullConfig) {
   console.log('🧹 FC-005 E2E Tests - Global Teardown startet...');
@@ -66,7 +65,7 @@ async function cleanupTestData(baseURL: string) {
           filter: { companyName: companyName },
         }),
       });
-    } catch (error) {
+    } catch {
       // Ignore individual cleanup failures
     }
   }
@@ -80,7 +79,7 @@ async function cleanupTestData(baseURL: string) {
         action: 'delete-e2e-drafts',
       }),
     });
-  } catch (error) {
+  } catch {
     // Ignore draft cleanup failures
   }
 }
