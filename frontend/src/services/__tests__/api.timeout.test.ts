@@ -22,7 +22,7 @@ describe('ApiService Timeout', () => {
     fetchSpy.mockResolvedValueOnce({
       ok: true,
       json: vi.fn().mockResolvedValueOnce(mockResponse),
-    } as any);
+    } as unknown as Response);
 
     await ApiService.ping();
 
@@ -70,7 +70,7 @@ describe('ApiService Timeout', () => {
     fetchSpy.mockResolvedValueOnce({
       ok: true,
       json: vi.fn().mockResolvedValueOnce(mockResponse),
-    } as any);
+    } as unknown as Response);
 
     await ApiService.ping();
 

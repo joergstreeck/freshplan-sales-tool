@@ -40,7 +40,7 @@ class MockIntersectionObserver {
   }
 
   trigger(entries: Partial<IntersectionObserverEntry>[]) {
-    this.callback(entries as IntersectionObserverEntry[], this as any);
+    this.callback(entries as IntersectionObserverEntry[], this as unknown as IntersectionObserver);
   }
 }
 
@@ -52,7 +52,7 @@ describe('LazyComponent', () => {
 
   beforeEach(() => {
     mockObserverInstances.clear();
-    global.IntersectionObserver = MockIntersectionObserver as any;
+    global.IntersectionObserver = MockIntersectionObserver as unknown as typeof IntersectionObserver;
     mockInView = false; // Reset to not in view by default
   });
 

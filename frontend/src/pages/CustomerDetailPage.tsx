@@ -298,7 +298,7 @@ export function CustomerDetailPage() {
 }
 
 // Customer Overview Component
-function CustomerOverview({ customer }: { customer: any }) {
+function CustomerOverview({ customer }: { customer: Customer }) {
   return (
     <Grid container spacing={3}>
       <Grid size={{ xs: 12, md: 6 }}>
@@ -550,7 +550,7 @@ function CustomerContacts({
 }
 
 // Placeholder for Customer Activities
-function CustomerActivities({ customerId }: { customerId: string }) {
+function CustomerActivities({ _customerId }: { _customerId: string }) {
   return (
     <Box>
       <Alert severity="info" sx={{ mb: 2 }}>

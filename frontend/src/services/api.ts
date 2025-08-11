@@ -32,9 +32,9 @@ export class ApiService {
       }
 
       return response.json();
-    } catch (error: any) {
+    } catch (error: unknown) {
       // Handle timeout specifically
-      if (error.name === 'TimeoutError' || error.name === 'AbortError') {
+      if (error instanceof Error && (error.name === 'TimeoutError' || error.name === 'AbortError')) {
         const timeoutError: ApiError = {
           code: 'TIMEOUT',
           message: 'Request timeout - the server took too long to respond',

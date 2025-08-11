@@ -1,6 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Box, Button, Typography, Tabs, Tab } from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
+import { Box, Tabs, Tab } from '@mui/material';
 import { MainLayoutV2 } from '../components/layout/MainLayoutV2';
 import { CustomerOnboardingWizardModal } from '../features/customers/components/wizard/CustomerOnboardingWizardModal';
 import { EmptyStateHero } from '../components/common/EmptyStateHero';
@@ -20,7 +19,7 @@ import { taskEngine } from '../services/taskEngine';
 import { isFeatureEnabled } from '../config/featureFlags';
 import { useFocusListStore } from '../features/customer/store/focusListStore';
 import type { Customer } from '../types/customer.types';
-import type { FilterConfig, SortConfig, ColumnConfig } from '../features/customers/types/filter.types';
+import type { FilterConfig, SortConfig } from '../features/customers/types/filter.types';
 
 interface CustomersPageV2Props {
   openWizard?: boolean;
@@ -36,8 +35,8 @@ export function CustomersPageV2({ openWizard = false }: CustomersPageV2Props) {
     tableColumns, 
     sortBy, 
     setSortBy,
-    globalSearch,
-    activeFilters 
+    // globalSearch,
+    // activeFilters 
   } = useFocusListStore();
   
   // Convert store columns to ColumnConfig format for compatibility
@@ -152,7 +151,7 @@ export function CustomersPageV2({ openWizard = false }: CustomersPageV2Props) {
     return filtered;
   }, [customers, filterConfig, sortConfig]);
 
-  const handleExport = async (format: string) => {
+  const _handleExport = async (format: string) => {
     try {
       // Build query params from filter config
       const params = new URLSearchParams();

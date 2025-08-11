@@ -1,11 +1,11 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 
 describe('MSW Token Security', () => {
-  let originalEnv: any;
+  let originalEnv: ImportMetaEnv;
 
   beforeEach(() => {
     // Save original env
-    originalEnv = { ...import.meta.env };
+    originalEnv = { ...import.meta.env } as ImportMetaEnv;
     // Clear localStorage
     localStorage.clear();
   });
