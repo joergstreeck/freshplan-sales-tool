@@ -10,7 +10,7 @@ interface ProtectedRouteProps {
 }
 
 export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ allowedRoles = [], children }) => {
-  const { isAuthenticated, hasRole, userRoles, isLoading } = useAuth();
+  const { isAuthenticated, hasRole, isLoading } = useAuth();
 
   // Helper function to check if user has any of the allowed roles
   const hasAnyRole = (roles: string[]) => {

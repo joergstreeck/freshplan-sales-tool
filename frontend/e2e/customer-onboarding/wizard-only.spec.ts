@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import type { Page } from '@playwright/test';
+// import type { Page } from '@playwright/test';
 
 // Test data
 const testCustomer = {
@@ -16,7 +16,7 @@ test.describe('Customer Wizard Tests - Isolated', () => {
   test.beforeEach(async ({ page }) => {
     // Mock all API responses
     await page.route('**/api/**', async route => {
-      const url = route.request().url();
+      // const url = route.request().url();
       
       // Default response for all API calls
       await route.fulfill({
@@ -30,12 +30,12 @@ test.describe('Customer Wizard Tests - Isolated', () => {
     await page.addInitScript(() => {
       try {
         window.localStorage.setItem('auth-token', 'test-token');
-      } catch (e) {
+      } catch (_e) {
         console.log('localStorage not available in CI');
       }
       
       // Set auth state on window as fallback
-      (window as any).__AUTH_STATE__ = {
+      (window as Record<string, unknown>).__AUTH_STATE__ = {
         isAuthenticated: true,
         user: { id: 'test-user', name: 'Test User', role: 'admin' }
       };

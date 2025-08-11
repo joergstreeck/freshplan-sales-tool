@@ -25,12 +25,12 @@ async function setupMockEnvironment(page: Page) {
         email: 'test@example.com',
         role: 'admin'
       }));
-    } catch (e) {
+    } catch (_e) {
       console.log('localStorage not available in CI');
     }
     
     // Set auth state on window as fallback
-    (window as any).__AUTH_STATE__ = {
+    (window as Record<string, unknown>).__AUTH_STATE__ = {
       isAuthenticated: true,
       user: {
         id: 'test-user-id',
@@ -56,7 +56,7 @@ async function setupMockEnvironment(page: Page) {
 }
 
 // Create a test page that directly renders Step 3
-async function createStep3TestPage(page: Page) {
+async function _createStep3TestPage(page: Page) {
   // Create a minimal test page that renders just Step 3
   await page.goto('data:text/html,<!DOCTYPE html><html><head><meta charset="utf-8"><title>Step 3 Test</title></head><body><div id="root"></div></body></html>');
   

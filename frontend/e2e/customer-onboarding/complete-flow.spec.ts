@@ -143,12 +143,12 @@ test.describe.skip('Complete Customer Onboarding Flow', () => {
           name: 'Test User',
           role: 'admin'
         }));
-      } catch (e) {
+      } catch (_e) {
         console.log('localStorage not available in CI');
       }
       
       // Set auth state on window as fallback
-      (window as any).__AUTH_STATE__ = {
+      (window as Record<string, unknown>).__AUTH_STATE__ = {
         isAuthenticated: true,
         user: {
           id: 'test-user',

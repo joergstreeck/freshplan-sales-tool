@@ -41,17 +41,27 @@ export function useKeyboardShortcuts() {
     },
   ];
 
-  // Register all shortcuts
-  shortcuts.forEach(({ key, action, preventDefault = true }) => {
-    useHotkeys(
-      key,
-      e => {
-        if (preventDefault) e.preventDefault();
-        action();
-      },
-      { enableOnFormTags: false }
-    );
-  });
+  // Register shortcuts one by one (React Hooks rules)
+  // We need to call hooks at the top level, not in loops
+  useHotkeys(shortcuts[0].key, e => {
+    if (shortcuts[0].preventDefault !== false) e.preventDefault();
+    shortcuts[0].action();
+  }, { enableOnFormTags: false });
+
+  useHotkeys(shortcuts[1].key, e => {
+    if (shortcuts[1].preventDefault !== false) e.preventDefault();
+    shortcuts[1].action();
+  }, { enableOnFormTags: false });
+
+  useHotkeys(shortcuts[2].key, e => {
+    if (shortcuts[2].preventDefault !== false) e.preventDefault();
+    shortcuts[2].action();
+  }, { enableOnFormTags: false });
+
+  useHotkeys(shortcuts[3].key, e => {
+    if (shortcuts[3].preventDefault !== false) e.preventDefault();
+    shortcuts[3].action();
+  }, { enableOnFormTags: false });
 
   return { shortcuts };
 }

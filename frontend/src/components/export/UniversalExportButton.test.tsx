@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { UniversalExportButton } from './UniversalExportButton';
 
@@ -19,7 +19,7 @@ global.fetch = vi.fn(() =>
     blob: async () => new Blob(['test'], { type: 'text/plain' }),
     json: async () => ({}),
   })
-) as any;
+) as unknown as typeof fetch;
 
 // Mock URL.createObjectURL and URL.revokeObjectURL
 global.URL.createObjectURL = vi.fn(() => 'blob:mock-url');
