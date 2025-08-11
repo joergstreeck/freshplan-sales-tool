@@ -46,7 +46,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 @Tag(name = "User Management", description = "Operations for managing users")
 @RolesAllowed("admin")
 @SecurityAudit
-@UnlessBuildProfile("dev")
+// @UnlessBuildProfile("dev") - Enabled in dev for better testing
 public class UserResource {
 
   private final UserService userService;
