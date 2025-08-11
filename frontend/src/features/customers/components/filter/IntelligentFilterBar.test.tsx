@@ -22,9 +22,9 @@ vi.mock('../../hooks/useLocalStorage', () => ({
 vi.mock('../../hooks/useUniversalSearch', () => ({
   useUniversalSearch: vi.fn(() => ({
     searchResults: [],
-    isSearching: false,
-    searchError: null,
-    performUniversalSearch: vi.fn(),
+    isLoading: false,
+    error: null,
+    search: vi.fn(),
     clearResults: vi.fn(),
   })),
 }));

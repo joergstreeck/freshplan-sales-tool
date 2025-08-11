@@ -237,10 +237,10 @@ export function IntelligentFilterBar({
       onFilterChange(newFilters);
 
       // For universal search
-      if (enableUniversalSearch && value.length >= 2) {
+      if (enableUniversalSearch && performUniversalSearch && value.length >= 2) {
         performUniversalSearch(value);
         setShowSearchResults(true);
-      } else if (value.length < 2) {
+      } else if (clearResults && value.length < 2) {
         clearResults();
         setShowSearchResults(false);
       }
