@@ -144,12 +144,10 @@ export function listActiveFeatureFlags(): string[] {
 
 // Log active feature flags in development
 if (import.meta.env.DEV) {
-  console.log('🚩 Active Feature Flags:', listActiveFeatureFlags());
 
   // Warn about expired flags
   Object.entries(featureFlags).forEach(([name, flag]) => {
     if (isFeatureFlagExpired(name as FeatureFlagName)) {
-      console.warn(`⚠️ Feature flag '${name}' is past its sunset date (${flag.sunsetDate})`);
     }
   });
 }

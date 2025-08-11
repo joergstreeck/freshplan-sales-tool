@@ -207,7 +207,6 @@ export const auditApi = {
       const response = await httpClient.get<AuditLog[]>(`/api/audit/search?${params}`);
       return response.data;
     } catch (error) {
-      console.error('Failed to fetch audit logs, using mock data:', error);
       // Only use mock data as fallback when API fails
       return mockAuditLogs;
     }
@@ -220,7 +219,6 @@ export const auditApi = {
       const response = await httpClient.get<AuditLog>(`/api/audit/${id}`);
       return response.data;
     } catch (error) {
-      console.error('Failed to fetch audit detail, using mock data:', error);
       // Only use mock data as fallback when API fails
       const log = mockAuditLogs.find(l => l.id === id);
       return log || mockAuditLogs[0];
@@ -240,7 +238,6 @@ export const auditApi = {
         totalElements: response.data.length,
       };
     } catch (error) {
-      console.error('Failed to fetch entity audit trail, using mock data:', error);
       // Only use mock data as fallback when API fails
       const filtered = mockAuditLogs.filter(
         log => log.entityType === entityType && log.entityId === entityId
@@ -315,7 +312,6 @@ export const auditApi = {
       const response = await httpClient.get<AuditDashboardMetrics>('/api/audit/dashboard/metrics');
       return response.data;
     } catch (error) {
-      console.error('Failed to fetch dashboard metrics, using mock data:', error);
       // Only use mock data as fallback when API fails
       return mockDashboardMetrics;
     }
@@ -330,7 +326,6 @@ export const auditApi = {
       );
       return response.data;
     } catch (error) {
-      console.error('Failed to fetch activity chart data, using mock data:', error);
       // Only use mock data as fallback when API fails
       return mockActivityChartData;
     }
@@ -345,7 +340,6 @@ export const auditApi = {
       );
       return response.data;
     } catch (error) {
-      console.error('Failed to fetch critical events, using mock data:', error);
       // Only use mock data as fallback when API fails
       const criticalEvents = mockAuditLogs.filter(
         log => log.eventType.includes('DENIED') || log.eventType.includes('ERROR') || !log.success
@@ -363,7 +357,6 @@ export const auditApi = {
       );
       return response.data;
     } catch (error) {
-      console.error('Failed to fetch compliance alerts, using mock data:', error);
       // Only use mock data as fallback when API fails
       return mockComplianceAlerts;
     }
@@ -372,7 +365,6 @@ export const auditApi = {
   // Export audit logs - DEPRECATED: Use Universal Export Framework via /api/v2/export/audit/{format}
   // Kept for backward compatibility only
   async exportAuditLogs(options: AuditExportOptions) {
-    console.warn('exportAuditLogs is deprecated. Use UniversalExportButton component instead.');
     // Redirect to new Universal Export Framework endpoint
     const params = new URLSearchParams();
     params.append('from', options.dateRange.from.toISOString().split('T')[0]);
@@ -408,7 +400,6 @@ export const auditApi = {
 
       return response.data;
     } catch (error) {
-      console.error('Failed to verify integrity, using mock data:', error);
       // Only use mock data as fallback when API fails
       return {
         status: 'valid' as const,
@@ -431,7 +422,6 @@ export const auditApi = {
       );
       return response.data;
     } catch (error) {
-      console.error('Failed to get statistics, using mock data:', error);
       // Only use mock data as fallback when API fails
       return {
         totalEvents: 2473,

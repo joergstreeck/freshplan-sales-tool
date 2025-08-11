@@ -137,7 +137,6 @@ export const DynamicFieldRenderer: React.FC<DynamicFieldRendererProps> = ({
         break;
 
       default:
-        console.warn(`Unknown field type: ${field.fieldType} for field: ${field.key}`);
         fieldComponent = <TextField {...commonProps} />;
     }
 

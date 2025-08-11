@@ -69,14 +69,7 @@ export const SegmentedRevenueCalculator: React.FC<SegmentedRevenueCalculatorProp
   const totalLocations =
     locationsGermany + locationsAustria + locationsSwitzerland + locationsRestEU;
 
-  // Debug-Ausgabe
-  console.log('Filialanzahlen:', {
-    locationsGermany,
-    locationsAustria,
-    locationsSwitzerland,
-    locationsRestEU,
-    totalLocations,
-  });
+  // Debug-Ausgabe entfernt
 
   const [segments, setSegments] = useState<HotelSegment[]>([
     {

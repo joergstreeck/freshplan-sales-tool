@@ -73,7 +73,6 @@ export const ProactiveHelp: React.FC = () => {
             icon: <PlayCircleIcon />,
             action: () => {
               // TODO: Open video tutorial
-              console.log('Open video tutorial');
             },
           },
           {
@@ -88,7 +87,6 @@ export const ProactiveHelp: React.FC = () => {
             icon: <ContactSupportIcon />,
             action: () => {
               // TODO: Open support chat
-              console.log('Open support chat');
             },
           }
         );
@@ -111,7 +109,6 @@ export const ProactiveHelp: React.FC = () => {
             icon: <AccountTreeIcon />,
             action: () => {
               // TODO: Show sitemap
-              console.log('Show sitemap');
             },
           },
           {

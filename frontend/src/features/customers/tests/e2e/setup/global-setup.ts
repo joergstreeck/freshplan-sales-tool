@@ -8,7 +8,6 @@
 import { chromium, FullConfig } from '@playwright/test';
 
 async function globalSetup(config: FullConfig) {
-  console.log('🚀 FC-005 E2E Tests - Global Setup startet...');
 
   // Check if development server is available
   const baseURL = config.projects[0].use.baseURL || 'http://localhost:5173';
@@ -16,31 +15,23 @@ async function globalSetup(config: FullConfig) {
   try {
     const response = await fetch(`${baseURL}/api/health`);
     if (!response.ok) {
-      console.warn('⚠️ Backend API nicht verfügbar - Tests können eingeschränkt sein');
     } else {
-      console.log('✅ Backend API verfügbar');
     }
   } catch (error) {
-    console.warn('⚠️ Konnte Backend API nicht erreichen:', error);
   }
 
   // Setup test data if needed
   try {
     await seedTestData(baseURL);
-    console.log('✅ Test-Daten initialisiert');
   } catch (error) {
-    console.warn('⚠️ Test-Daten konnten nicht initialisiert werden:', error);
   }
 
   // Setup authentication state for tests that need it
   try {
     await setupAuthState(config);
-    console.log('✅ Auth State vorbereitet');
   } catch (error) {
-    console.warn('⚠️ Auth State Setup fehlgeschlagen:', error);
   }
 
-  console.log('✅ FC-005 E2E Tests - Global Setup abgeschlossen');
 }
 
 async function seedTestData(baseURL: string) {
@@ -77,7 +68,6 @@ async function seedTestData(baseURL: string) {
       });
 
       if (!response.ok) {
-        console.warn(`Kunde konnte nicht angelegt werden: ${customer.customerData.companyName}`);
       }
     } catch {
       // Ignore individual seed failures
@@ -111,7 +101,6 @@ async function setupAuthState(config: FullConfig) {
       await context.storageState({ path: './e2e-auth-state.json' });
     }
   } catch {
-    console.log('ℹ️ Kein Login erforderlich oder Login nicht verfügbar');
   } finally {
     await browser.close();
   }

@@ -78,7 +78,6 @@ export const ContactQuickActions: React.FC<ContactQuickActionsProps> = ({
   const handleCopy = (text: string, type: string) => {
     navigator.clipboard.writeText(text).then(() => {
       // Could show a toast here
-      console.log(`${type} copied to clipboard`);
     });
   };
 

@@ -73,7 +73,6 @@ export const ResizablePanels: React.FC<ResizablePanelsProps> = ({
           setSizes(parsed);
         }
       } catch (error) {
-        console.error('Fehler beim Laden der Spaltengrößen:', error);
       }
     }
   }, [storageKey, children.length]);

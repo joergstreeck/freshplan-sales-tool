@@ -44,7 +44,6 @@ export function CustomerListHeader({ totalCount, onAddCustomer }: CustomerListHe
           entity="customers"
           buttonLabel="Exportieren"
           onExportComplete={format => {
-            console.log(`Customers exported as ${format}`);
           }}
         />
 

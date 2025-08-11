@@ -53,7 +53,6 @@ export const PermissionProvider: React.FC<PermissionProviderProps> = ({ children
     } catch (error) {
       // Log errors in development only
       if (import.meta.env.DEV) {
-        console.error('Failed to load user permissions:', error);
       }
       setPermissions(new Set());
     } finally {

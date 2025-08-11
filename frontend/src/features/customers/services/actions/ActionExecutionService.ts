@@ -184,7 +184,6 @@ export class ActionExecutionService {
   private async addQuickNote(contact: Contact): Promise<void> {
     // This would typically open a modal or navigate to a note-taking interface
     // For now, we'll just log it
-    console.log('Add note for contact:', contact.id);
 
     // In a real implementation, this would:
     // 1. Open a note dialog
@@ -332,7 +331,6 @@ END:VCALENDAR`;
       await navigator.clipboard.writeText(phoneNumber);
       alert(`Telefonnummer ${phoneNumber} wurde in die Zwischenablage kopiert`);
     } catch (error) {
-      console.error('Could not copy phone number:', error);
       alert(`Telefonnummer: ${phoneNumber}`);
     }
   }
@@ -361,7 +359,6 @@ END:VCALENDAR`;
    */
   private trackAction(action: QuickAction, contact: Contact): void {
     // Analytics tracking would go here
-    console.log('Track action:', {
       actionType: action.type,
       contactId: contact.id,
       urgency: action.urgency,

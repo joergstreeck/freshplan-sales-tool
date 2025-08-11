@@ -247,7 +247,6 @@ export function debugFieldLayout(fields: FieldDefinition[]): string {
  * Zeigt die berechneten Größen für alle Dropdown-Felder
  */
 export function debugDropdownSizes(fields: FieldDefinition[]): void {
-  console.log('=== Dropdown Size Debug ===');
 
   fields.forEach(field => {
     if (field.fieldType === 'select' || field.fieldType === 'dropdown') {
@@ -263,22 +262,11 @@ export function debugDropdownSizes(fields: FieldDefinition[]): void {
         );
       }
 
-      console.log(`Field: ${field.key}`);
-      console.log(`  - Label: "${field.label}"`);
-      console.log(`  - Longest option: ${longestLabel} chars`);
-      console.log(`  - Calculated grid size: ${gridSize}`);
-      console.log(`  - Has explicit size: ${field.size || 'no'}`);
-      console.log(
-        `  - In CUSTOMER_FIELD_MAPPINGS: ${field.key in CUSTOMER_FIELD_MAPPINGS ? 'yes' : 'no'}`
-      );
-
       if (field.options && field.options.length > 0) {
-        console.log(`  - Options:`);
         field.options.forEach(opt => {
-          console.log(`    * "${opt.label}" (${opt.label.length} chars)`);
+          // Options processed
         });
       }
-      console.log('');
     }
   });
 }

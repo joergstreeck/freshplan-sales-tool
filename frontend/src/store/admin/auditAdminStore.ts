@@ -257,7 +257,6 @@ export const useAuditAdminStore = create<AuditAdminState>()(
 
             set({ activityHeatmap: heatmap });
           } catch (error) {
-            console.error('Failed to fetch heatmap:', error);
           }
         },
 
@@ -286,7 +285,6 @@ export const useAuditAdminStore = create<AuditAdminState>()(
 
             set({ suspiciousActivities: activities });
           } catch (error) {
-            console.error('Failed to fetch suspicious activities:', error);
           }
         },
 
@@ -320,7 +318,6 @@ export const useAuditAdminStore = create<AuditAdminState>()(
               userProfiles: new Map(state.userProfiles).set(userId, profile),
             }));
           } catch (error) {
-            console.error('Failed to fetch user profile:', error);
           }
         },
 
@@ -349,7 +346,6 @@ export const useAuditAdminStore = create<AuditAdminState>()(
 
             set({ complianceStatus: status });
           } catch (error) {
-            console.error('Failed to fetch compliance status:', error);
           }
         },
 
@@ -416,7 +412,6 @@ export const useAuditAdminStore = create<AuditAdminState>()(
 
         blockUser: async (userId, reason) => {
           // API call to block user
-          console.log(`Blocking user ${userId}: ${reason}`);
         },
 
         // Filtering

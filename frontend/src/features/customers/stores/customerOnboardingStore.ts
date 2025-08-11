@@ -354,7 +354,6 @@ export const useCustomerOnboardingStore = create<CustomerOnboardingState>()(
           });
         } catch (error) {
           // Fallback for unexpected errors (respecting Enterprise Flexibility Philosophy)
-          console.warn(`Validation error for field ${fieldKey}:`, error);
           set(draft => {
             draft.validationErrors[fieldKey] = `${field.label} konnte nicht validiert werden`;
           });
@@ -414,7 +413,6 @@ export const useCustomerOnboardingStore = create<CustomerOnboardingState>()(
           return validationErrors.size === 0;
         } catch (error) {
           // Fallback for unexpected errors (Enterprise Flexibility Philosophy)
-          console.warn('Step validation error:', error);
 
           // Basic fallback validation
           const errors: Record<string, string> = {};
@@ -452,19 +450,6 @@ export const useCustomerOnboardingStore = create<CustomerOnboardingState>()(
 
           const requiredFields = state.customerFields.filter(
             f => f.required && step1Fields.includes(f.key)
-          );
-
-          console.log(
-            'Step 0 - Required fields for Step 1:',
-            requiredFields.map(f => ({
-              key: f.key,
-              label: f.label,
-              value: state.customerData[f.key],
-              isValid:
-                state.customerData[f.key] !== undefined &&
-                state.customerData[f.key] !== '' &&
-                state.customerData[f.key] !== null,
-            }))
           );
 
           return requiredFields.every(field => {

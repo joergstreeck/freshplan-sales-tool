@@ -63,24 +63,9 @@ class ApiClient {
     } catch (error) {
       // Handle backend connection errors with helpful debug info
       if (error instanceof TypeError && error.message.includes('fetch')) {
-        console.group('🚨 BACKEND CONNECTION FAILED');
-        console.error('Failed to connect to backend:', url);
-        console.log('');
-        console.log('CLAUDE: Backend is probably down. Run these commands:');
-        console.log(
-          '1. export JAVA_HOME=/Library/Java/JavaVirtualMachines/temurin-17.jdk/Contents/Home'
-        );
-        console.log('2. cd backend && nohup mvn quarkus:dev > ../logs/backend.log 2>&1 &');
-        console.log('3. Wait 30 seconds, then refresh frontend');
-        console.log('');
-        console.log('OR use: ./scripts/backend-manager.sh start');
-        console.log('');
-        console.log('Problem: Backend timeout/startup issue (Java 17 required)');
-        console.groupEnd();
-
         const connectionError: ApiError = {
           code: 'CONNECTION_FAILED',
-          message: 'Backend not reachable - check console for fix commands',
+          message: 'Backend not reachable - please check if backend is running',
           details: { url, originalError: error.message },
         };
         throw connectionError;

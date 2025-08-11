@@ -205,7 +205,6 @@ export const useUniversalSearch = (
           return;
         }
 
-        console.error('Search error:', err);
         setError(err.response?.data?.message || err.message || 'Fehler bei der Suche');
         setSearchResults(null);
       } finally {

@@ -232,17 +232,13 @@ class Logger {
 
     switch (level) {
       case LogLevel.DEBUG:
-        console.debug(prefix, message, data);
         break;
       case LogLevel.INFO:
-        console.info(prefix, message, data);
         break;
       case LogLevel.WARN:
-        console.warn(prefix, message, data);
         break;
       case LogLevel.ERROR:
       case LogLevel.FATAL:
-        console.error(prefix, message, data, error);
         break;
     }
   }
@@ -330,7 +326,6 @@ class Logger {
     } catch (error) {
       // Re-add to buffer on failure
       this.buffer.unshift(...entries);
-      console.error('Failed to flush logs:', error);
     }
   }
 

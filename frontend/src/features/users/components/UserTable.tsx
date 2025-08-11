@@ -47,7 +47,6 @@ export const UserTable = () => {
       try {
         await deleteUser.mutateAsync(user.id);
       } catch (error) {
-        console.error('Failed to delete user:', error);
       }
     }
   };
@@ -59,7 +58,6 @@ export const UserTable = () => {
         enabled: !user.enabled,
       });
     } catch (error) {
-      console.error('Failed to toggle user status:', error);
     }
   };
 

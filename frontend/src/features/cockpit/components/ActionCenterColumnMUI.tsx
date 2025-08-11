@@ -78,7 +78,6 @@ export function ActionCenterColumnMUI({ selectedCustomerId, onClose }: ActionCen
   const [newNote, setNewNote] = useState('');
 
   // Debug logging
-  console.log('ActionCenterColumnMUI - selectedCustomerId:', selectedCustomerId);
 
   // Lade Kundendaten
   const { data: customer, isLoading, isError } = useCustomerDetails(selectedCustomerId);
@@ -169,17 +168,14 @@ export function ActionCenterColumnMUI({ selectedCustomerId, onClose }: ActionCen
 
   const handleCalculatorClick = () => {
     // TODO: Calculator-Modul öffnen
-    console.log('Calculator für Kunde:', customer.id);
   };
 
   const handleQuoteClick = () => {
     // TODO: Angebots-Modul öffnen
-    console.log('Angebot erstellen für:', customer.id);
   };
 
   const handleAddNote = () => {
     // TODO: API-Call zum Speichern der Notiz
-    console.log('Neue Notiz:', newNote);
     setNoteDialogOpen(false);
     setNewNote('');
   };

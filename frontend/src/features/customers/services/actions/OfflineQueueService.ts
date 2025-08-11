@@ -19,7 +19,6 @@ class OfflineQueueService {
   constructor() {
     // Auto-process queue when coming online
     window.addEventListener('online', () => {
-      console.log('Connection restored, processing offline queue...');
       this.processQueue();
     });
 
@@ -63,7 +62,6 @@ class OfflineQueueService {
       try {
         await (self.registration as unknown).sync.register('sync-contact-actions');
       } catch (error) {
-        console.error('Background sync registration failed:', error);
       }
     }
   }
@@ -80,7 +78,6 @@ class OfflineQueueService {
     const queue = this.getQueue();
     const pending = [...queue];
 
-    console.log(`Processing ${pending.length} queued actions...`);
 
     for (const item of pending) {
       try {
@@ -91,7 +88,6 @@ class OfflineQueueService {
         this.removeFromQueue(item.id);
         this.notifySuccess(item);
       } catch (error) {
-        console.error('Failed to execute queued action:', error);
         item.retryCount++;
 
         if (item.retryCount >= item.maxRetries) {
@@ -124,7 +120,6 @@ class OfflineQueueService {
         timestamp: new Date(item.timestamp),
       }));
     } catch (error) {
-      console.error('Failed to load offline queue:', error);
       return [];
     }
   }
@@ -150,7 +145,6 @@ class OfflineQueueService {
     try {
       localStorage.setItem(this.STORAGE_KEY, JSON.stringify(queue));
     } catch (error) {
-      console.error('Failed to save offline queue:', error);
     }
   }
 

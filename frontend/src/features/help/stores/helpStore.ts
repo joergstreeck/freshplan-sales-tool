@@ -105,7 +105,6 @@ export const useHelpStore = create<HelpState>()(
         const results = await helpApi.searchHelp(query);
         return results;
       } catch (error) {
-        console.error('Help search failed:', error);
         return [];
       }
     },
@@ -131,7 +130,6 @@ export const useHelpStore = create<HelpState>()(
           }
         });
       } catch (error) {
-        console.error('Failed to submit feedback:', error);
       }
     },
 
@@ -148,7 +146,6 @@ export const useHelpStore = create<HelpState>()(
           }
         });
       } catch (error) {
-        console.error('Failed to track view:', error);
       }
     },
 
@@ -160,7 +157,6 @@ export const useHelpStore = create<HelpState>()(
           state.analytics = analytics;
         });
       } catch (error) {
-        console.error('Failed to load analytics:', error);
       }
     },
 
@@ -273,7 +269,6 @@ export const useHelpStore = create<HelpState>()(
           context: struggle.context,
         });
       } catch (error) {
-        console.error('Failed to report struggle:', error);
       }
     },
 

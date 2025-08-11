@@ -182,13 +182,5 @@ export function debugFieldWidth(field: FieldDefinition, value: string): void {
   const calculatedWidth = calculateFieldWidth(field, measuredWidth);
   const sizeClass = getFieldSizeClass(field);
 
-  console.log('Adaptive Field Debug:', {
-    field: field.key,
-    value,
-    valueLength: value.length,
-    measuredWidth,
-    calculatedWidth,
-    sizeClass,
-    maxWidth: FIELD_MAX_WIDTHS[field.key] || 'type-based',
-  });
+  // Size class calculated
 }

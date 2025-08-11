@@ -208,7 +208,6 @@ export function CustomersPageV2({ openWizard = false }: CustomersPageV2Props) {
         toast.success(`Export als ${format.toUpperCase()} erfolgreich!`);
       }
     } catch (error) {
-      console.error('Export error:', error);
       toast.error('Export fehlgeschlagen');
     }
   };
@@ -226,7 +225,6 @@ export function CustomersPageV2({ openWizard = false }: CustomersPageV2Props) {
         });
         taskId = tasks[0]?.id;
       } catch (error) {
-        console.error('Task generation failed:', error);
         // Nicht blockierend - Customer wurde trotzdem angelegt
       }
     }

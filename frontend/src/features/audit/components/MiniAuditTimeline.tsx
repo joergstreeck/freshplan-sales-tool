@@ -100,7 +100,6 @@ export function MiniAuditTimeline({
     queryFn: async () => {
       // Fetching audit trail with proper entity identification
       const result = await auditApi.getEntityAuditTrail(entityType, entityId, 0, maxEntries);
-      console.log('Audit trail result:', result);
       return result;
     },
     staleTime: 5 * 60 * 1000, // 5 minutes

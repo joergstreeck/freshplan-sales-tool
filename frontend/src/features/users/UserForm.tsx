@@ -58,7 +58,6 @@ export const UserForm = ({ user, onSuccess, onCancel }: UserFormProps) => {
       onSuccess?.();
     } catch (error) {
       // Error handling is done in the mutation hooks
-      console.error('Form submission failed:', error);
     }
   };
 

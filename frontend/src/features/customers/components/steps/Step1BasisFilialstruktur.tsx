@@ -61,10 +61,7 @@ export const Step1BasisFilialstruktur: React.FC = () => {
     if (process.env.NODE_ENV === 'development') {
       fields.forEach(field => {
         const size = getFieldSize(field);
-        console.log(
-          `Field: ${field.key}, Grid size: ${size.md}, Options:`,
-          field.options?.map(o => o.label)
-        );
+        // Field size calculated
       });
     }
 

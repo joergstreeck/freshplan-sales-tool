@@ -70,7 +70,6 @@ export const useCreateUser = () => {
       queryClient.setQueryData(userKeys.detail(newUser.id), newUser);
     },
     onError: error => {
-      console.error('Failed to create user:', error);
     },
   });
 };
@@ -95,7 +94,6 @@ export const useUpdateUser = () => {
       queryClient.invalidateQueries({ queryKey: userKeys.lists() });
     },
     onError: error => {
-      console.error('Failed to update user:', error);
     },
   });
 };
@@ -117,7 +115,6 @@ export const useDeleteUser = () => {
       queryClient.invalidateQueries({ queryKey: userKeys.lists() });
     },
     onError: error => {
-      console.error('Failed to delete user:', error);
     },
   });
 };
@@ -139,7 +136,6 @@ export const useToggleUserStatus = () => {
       queryClient.invalidateQueries({ queryKey: userKeys.lists() });
     },
     onError: error => {
-      console.error('Failed to toggle user status:', error);
     },
   });
 };

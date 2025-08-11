@@ -67,7 +67,6 @@ export const EURInput: React.FC<EURInputProps> = ({
 
       // Parse zu Zahl und update
       const numValue = parseEUR(formatted);
-      console.log('EURInput handleChange:', { inputValue, formatted, numValue });
       onChange(numValue);
 
       // Check für Warnung
@@ -100,7 +99,6 @@ export const EURInput: React.FC<EURInputProps> = ({
   // Handle Apply from Calculator
   const handleApplyCalculation = useCallback(
     (calculatedValue: number) => {
-      console.log('EURInput handleApplyCalculation:', calculatedValue);
       // Update value immediately
       onChange(calculatedValue);
       // Update display immediately

@@ -378,7 +378,6 @@ export function usePreloadFieldDefinitions() {
     mutationFn: () => fieldDefinitionApi.preloadCommonDefinitions(),
     onSuccess: () => {
       // Definitions are now cached
-      console.log('Field definitions preloaded');
     },
   });
 }

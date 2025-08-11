@@ -24,7 +24,6 @@ export const getCurrentUserId = (): string => {
 
   // Fallback für Dev-Mode oder wenn Keycloak nicht verfügbar
   if (IS_DEV_MODE) {
-    console.warn('Using fallback user ID in development mode');
     return FALLBACK_USER_ID;
   }
 

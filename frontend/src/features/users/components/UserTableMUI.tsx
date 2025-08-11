@@ -61,7 +61,6 @@ export const UserTableMUI = () => {
       try {
         await deleteUser.mutateAsync(user.id);
       } catch (error) {
-        console.error('Failed to delete user:', error);
       }
     }
   };
@@ -70,7 +69,6 @@ export const UserTableMUI = () => {
     try {
       await toggleUserStatus.mutateAsync({ userId: user.id, active: !user.active });
     } catch (error) {
-      console.error('Failed to toggle user status:', error);
     }
   };
 

@@ -95,7 +95,6 @@ export const HeaderV2: React.FC<HeaderV2Props> = ({ onMenuClick, showMenuIcon = 
     e.preventDefault();
     if (searchValue.trim()) {
       // TODO: Implement global search
-      console.log('Search:', searchValue);
     }
   };
 

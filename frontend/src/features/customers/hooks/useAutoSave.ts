@@ -51,9 +51,7 @@ export const useAutoSave = (options: UseAutoSaveOptions = {}): UseAutoSaveResult
     timeoutRef.current = setTimeout(async () => {
       try {
         await saveAsDraft();
-        console.log('Auto-saved draft:', draftId || 'new draft');
       } catch (error) {
-        console.error('Auto-save failed:', error);
       }
     }, delay);
 

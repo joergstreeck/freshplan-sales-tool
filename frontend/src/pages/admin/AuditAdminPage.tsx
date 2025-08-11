@@ -163,7 +163,6 @@ export const AuditAdminPage: React.FC = () => {
                   }}
                   buttonLabel="Export"
                   onExportComplete={format => {
-                    console.log(`Audit export completed: ${format}`);
                   }}
                 />
               </Box>

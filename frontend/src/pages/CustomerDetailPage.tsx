@@ -395,7 +395,6 @@ function CustomerContacts({
 
   // Handle contact actions
   const handleContactAction = (action: ContactAction) => {
-    console.log('Contact action:', action);
 
     switch (action.type) {
       case 'add':
@@ -415,14 +414,12 @@ function CustomerContacts({
       case 'delete':
         // Show delete confirmation dialog
         if (confirm('Möchten Sie diesen Kontakt wirklich löschen?')) {
-          console.log('Delete contact:', action.contactId);
           // TODO: Implement actual delete API call
           alert('Kontakt löschen - API-Aufruf wird noch implementiert');
         }
         break;
       case 'setPrimary':
         // Update primary contact
-        console.log('Set primary contact:', action.contactId);
         // TODO: Implement API call to set primary contact
         alert('Als Hauptkontakt setzen - API-Aufruf wird noch implementiert');
         break;
@@ -437,7 +434,6 @@ function CustomerContacts({
         }
         break;
       default:
-        console.log('Unknown action:', action);
     }
   };
 
