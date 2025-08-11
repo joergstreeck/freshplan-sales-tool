@@ -47,7 +47,7 @@ BEGIN
                 WHERE p.proname = 'create_audit_partition'
                 AND n.nspname = 'public'
             ) THEN
-                PERFORM create_audit_partition(CURRENT_DATE);
+                PERFORM create_audit_partition(CURRENT_DATE::date);
                 RAISE NOTICE 'Created partition %', current_partition;
             ELSE
                 -- Manually create partition if function doesn't exist
@@ -74,7 +74,7 @@ BEGIN
                 WHERE p.proname = 'create_audit_partition'
                 AND n.nspname = 'public'
             ) THEN
-                PERFORM create_audit_partition(CURRENT_DATE + interval '1 month');
+                PERFORM create_audit_partition((CURRENT_DATE + interval '1 month')::date);
                 RAISE NOTICE 'Created partition %', next_partition;
             ELSE
                 -- Manually create partition if function doesn't exist
