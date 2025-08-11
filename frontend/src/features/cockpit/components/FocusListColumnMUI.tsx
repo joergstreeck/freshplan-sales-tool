@@ -65,7 +65,7 @@ const VirtualRow = React.memo(
         <Table size="small">
           <TableBody>
             <TableRow>
-              {columns.map((column: { field: string; align?: string }) => (
+              {columns.map((column: { id: string; align?: string; minWidth?: number }) => (
                 <TableCell
                   key={`${customer.id}-${column.id}`}
                   align={column.align || 'left'}

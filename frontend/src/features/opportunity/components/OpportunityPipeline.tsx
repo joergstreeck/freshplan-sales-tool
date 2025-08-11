@@ -103,10 +103,6 @@ export const OpportunityPipeline: React.FC = () => {
 
     // Nur ändern wenn Stage wirklich unterschiedlich
     if (opportunity && opportunity.stage !== newStage) {
-      console.log(
-        `✅ Moving opportunity ${opportunity.name} from ${opportunity.stage} to ${newStage}`
-      );
-
       // State aktualisieren - Opportunity Stage ändern
       setOpportunities(prevOpportunities =>
         prevOpportunities.map(opp =>
