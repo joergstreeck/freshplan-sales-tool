@@ -195,7 +195,7 @@ describe('useDropdownWidth', () => {
         },
       ];
 
-      testCases.forEach(({ field, options, expectedMinWidth }) => {
+      testCases.forEach(({ options, expectedMinWidth }) => {
         const width = calculateDropdownWidth(options);
         expect(width).toBeGreaterThanOrEqual(expectedMinWidth);
       });

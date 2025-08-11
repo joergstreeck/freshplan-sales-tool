@@ -48,7 +48,7 @@ export const WizardNavigation: React.FC<WizardNavigationProps> = ({
   onBack,
   onNext,
   onFinish,
-  onCancel,
+  onCancel: _onCancel,
 }) => {
   const isFirstStep = currentStep === 0;
   const isLastStep = currentStep === totalSteps - 1;

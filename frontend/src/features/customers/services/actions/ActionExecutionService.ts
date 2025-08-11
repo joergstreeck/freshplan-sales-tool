@@ -20,7 +20,6 @@ export class ActionExecutionService {
     action: QuickAction,
     contact: Contact
   ): Promise<ActionResult> {
-    const startTime = Date.now();
     
     try {
       // Track action for analytics
@@ -261,7 +260,7 @@ FreshPlan Team
   /**
    * Generate calendar URL
    */
-  private generateCalendarUrl(event: any): string {
+  private generateCalendarUrl(event: unknown): string {
     const startDate = new Date();
     startDate.setHours(startDate.getHours() + 1);
     const endDate = new Date(startDate);
@@ -290,7 +289,7 @@ FreshPlan Team
   /**
    * Download ICS file for calendar
    */
-  private downloadICSFile(event: any, contact: Contact): void {
+  private downloadICSFile(event: unknown, contact: Contact): void {
     const startDate = new Date();
     startDate.setHours(startDate.getHours() + 1);
     const endDate = new Date(startDate);

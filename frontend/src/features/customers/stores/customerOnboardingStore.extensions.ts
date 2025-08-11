@@ -59,7 +59,7 @@ export interface CustomerOnboardingActionsExtensions {
  *
  * Diese Funktionen können in den bestehenden Store integriert werden.
  */
-export const createStoreExtensions = (set: any, get: any) => ({
+export const createStoreExtensions = (set: unknown, get: unknown) => ({
   // State
   expectedAnnualRevenue: undefined,
   selectedLocationId: 'all',
@@ -93,7 +93,7 @@ export const createStoreExtensions = (set: any, get: any) => ({
 
       if (selectedLocationId === 'all' || applyToAllLocations) {
         // Speichere für alle Standorte
-        locations.forEach((loc: any) => {
+        locations.forEach((loc: unknown) => {
           state.locationServices.set(loc.id, { ...data });
         });
         state.locationServices.set('all', { ...data });
@@ -134,7 +134,7 @@ export const createStoreExtensions = (set: any, get: any) => ({
 
   getAllLocationsWithServices: () => {
     const { locations, locationServices } = get();
-    return locations.map((loc: any) => ({
+    return locations.map((loc: unknown) => ({
       locationId: loc.id,
       services: locationServices.get(loc.id) || {},
     }));
@@ -142,7 +142,7 @@ export const createStoreExtensions = (set: any, get: any) => ({
 
   hasAllLocationsCompleted: () => {
     const { locations, completedLocationIds } = get();
-    return locations.every((loc: any) => completedLocationIds.includes(loc.id));
+    return locations.every((loc: unknown) => completedLocationIds.includes((loc as {id: string}).id));
   },
 });
 

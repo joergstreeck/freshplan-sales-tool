@@ -11,7 +11,6 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter } from 'react-router-dom';
 import { ThemeProvider } from '@mui/material/styles';
 import { createTheme } from '@mui/material/styles';
-import type { Customer } from '../../../../../types/customer.types';
 
 // Mock CustomerOnboardingWizard
 vi.mock('../CustomerOnboardingWizard', () => ({
