@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ContactFormDialog } from './ContactFormDialog';
-import type { ContCreateContactDTO } from '../../types/contact.types';
+import type { ContCreateContactDTO as _ContCreateContactDTO } from '../../types/contact.types';
 import { CustomerFieldThemeProvider } from '../../theme/CustomerFieldThemeProvider';
 import React from 'react';
 

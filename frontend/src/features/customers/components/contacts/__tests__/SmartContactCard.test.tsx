@@ -86,7 +86,7 @@ describe('SmartContactCard', () => {
 
   describe('Primary Contact Highlighting', () => {
     it('should highlight primary contacts with special styling', () => {
-      const primaryContact = { ...mockContisPrimary: true };
+      const primaryContact = { ...mockContact, isPrimary: true };
       const { container } = renderWithTheme(
         <SmartContactCard {...defaultProps} contact={primaryContact} />
       );
@@ -97,7 +97,7 @@ describe('SmartContactCard', () => {
     });
 
     it('should not show set as primary option for primary contacts', () => {
-      const primaryContact = { ...mockContisPrimary: true };
+      const primaryContact = { ...mockContact, isPrimary: true };
       renderWithTheme(<SmartContactCard {...defaultProps} contact={primaryContact} />);
       
       const moreButton = screen.getByRole('button', { name: '' });

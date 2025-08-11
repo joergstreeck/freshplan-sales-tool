@@ -223,7 +223,7 @@ export const ContactFormDialog: React.FC<ContactFormDialogProps> = ({
   };
 
   // Get field value
-  const getFieldValue = (fieldKey: string): any => {
+  const getFieldValue = (fieldKey: string): string | number | boolean | null | undefined => {
     const key =
       fieldKey.replace('contact', '').charAt(0).toLowerCase() +
       fieldKey.replace('contact', '').slice(1);
