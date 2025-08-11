@@ -30,11 +30,11 @@ import { AdaptiveFormContainer } from '../adaptive/AdaptiveFormContainer';
 import { DynamicFieldRenderer } from '../fields/DynamicFieldRenderer';
 import { LocationCheckboxList } from '../shared/LocationCheckboxList';
 
-import type { Contact, CreateContactDTO } from '../../types/contact.types';
+import type { Contact, CreateContactDTO as _CreateContactDTO } from '../../types/contact.types';
 import type { Location } from '../../types/location.types';
-import type { FieldDefinition } from '../../types/field.types';
+import type { FieldDefinition as _FieldDefinition } from '../../types/field.types';
 import {
-  contactFieldExtensions,
+  contactFieldExtensions as _contactFieldExtensions,
   getContactFieldsForGroup,
 } from '../../data/fieldCatalogContactExtensions';
 

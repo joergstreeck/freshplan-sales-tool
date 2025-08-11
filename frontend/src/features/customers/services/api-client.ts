@@ -135,7 +135,7 @@ export class ApiClient {
   /**
    * PATCH Request
    */
-  async patch<T>(endpoint: string, data?: any, config?: RequestConfig): Promise<T> {
+  async patch<T>(endpoint: string, data?: unknown, config?: RequestConfig): Promise<T> {
     return this.request<T>(endpoint, {
       ...config,
       method: 'PATCH',

@@ -3,12 +3,12 @@ import { FixedSizeList as List } from 'react-window';
 import InfiniteLoader from 'react-window-infinite-loader';
 import {
   Box,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
+  Table as _Table,
+  TableBody as _TableBody,
+  TableCell as _TableCell,
+  TableContainer as _TableContainer,
+  TableHead as _TableHead,
+  TableRow as _TableRow,
   Paper,
   Chip,
   IconButton,

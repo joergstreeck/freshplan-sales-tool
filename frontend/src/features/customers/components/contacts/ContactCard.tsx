@@ -30,11 +30,11 @@ import {
   Business as BusinessIcon,
   Cake as CakeIcon,
   LocationOn as LocationIcon,
-  TrendingUp as TrendingUpIcon,
+  TrendingUp as _TrendingUpIcon,
 } from '@mui/icons-material';
 
 import type { Contact } from '../../types/contact.types';
-import { getContactFullName, getContactDisplayName } from '../../types/contact.types';
+import { getContactFullName, getContactDisplayName as _getContactDisplayName } from '../../types/contact.types';
 
 interface ContactCardProps {
   contact: Contact;

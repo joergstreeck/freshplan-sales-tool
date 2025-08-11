@@ -49,7 +49,7 @@ export interface Customer {
  */
 export interface CustomerWithFields extends Customer {
   /** Resolved field values from field_values table */
-  fields: Record<string, any>;
+  fields: Record<string, unknown>;
   /** Number of associated locations (if chain customer) */
   locationCount?: number;
 }

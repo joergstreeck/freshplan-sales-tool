@@ -121,7 +121,7 @@ export interface FieldDefinition {
   /** Validation rules */
   validation?: FieldValidation | string;
   /** Default value */
-  defaultValue?: any;
+  defaultValue?: string | number | boolean | null;
   /** Maximum length hint */
   maxLength?: number;
   /** Minimum value hint */

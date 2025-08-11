@@ -327,8 +327,8 @@ export const useQuickSearch = (
       const data = await response.json() as SearchResults;
       setSearchResults(data);
       setError(null);
-    } catch (err: any) {
-      if (err.name === 'AbortError') return;
+    } catch (err) {
+      if (err instanceof Error && err.name === 'AbortError') return;
       
       setError('Fehler bei der Schnellsuche');
       setSearchResults(null);
