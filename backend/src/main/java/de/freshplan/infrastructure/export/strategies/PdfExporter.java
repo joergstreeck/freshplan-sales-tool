@@ -11,8 +11,6 @@ import de.freshplan.infrastructure.export.ExportStrategy;
 import jakarta.enterprise.context.ApplicationScoped;
 import java.awt.Color;
 import java.io.ByteArrayOutputStream;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;

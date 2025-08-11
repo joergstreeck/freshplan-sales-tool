@@ -2,10 +2,10 @@ package de.freshplan.domain.customer.service;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import de.freshplan.domain.customer.entity.CustomerContact;
 import de.freshplan.domain.customer.entity.ContactInteraction;
 import de.freshplan.domain.customer.entity.ContactInteraction.InteractionType;
 import de.freshplan.domain.customer.entity.Customer;
+import de.freshplan.domain.customer.entity.CustomerContact;
 import de.freshplan.domain.customer.repository.ContactInteractionRepository;
 import de.freshplan.domain.customer.repository.ContactRepository;
 import de.freshplan.domain.customer.repository.CustomerRepository;
