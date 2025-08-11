@@ -9,23 +9,31 @@ import { AppProviders } from './providers.tsx';
 
 // Enable MSW for development if backend is not available
 async function enableMocking() {
-  // TEMPORARY: Disable MSW to use real backend data
-  const USE_MSW = import.meta.env.VITE_USE_MSW === 'true' || false;
+  // Security: MSW must be explicitly enabled via environment variable
+  const USE_MSW = import.meta.env.VITE_USE_MSW === 'true';
 
-  if (!import.meta.env.DEV || !USE_MSW) {
-    // In production/preview mode, don't use MSW but still check backend availability
-    // This prevents the app from hanging if backend is slow to start
-    console.log('MSW disabled: Using real backend API');
+  // Security: Never use MSW in production
+  if (!import.meta.env.DEV) {
     return;
   }
 
-  // Set mock token ONLY when MSW is explicitly enabled
+  // Security: Only set mock token when MSW is explicitly enabled
   if (USE_MSW) {
-    localStorage.setItem('auth-token', 'MOCK_JWT_TOKEN');
-    console.log('MSW enabled: Mock token set');
+    // Security: Use a more secure mock token format
+    const mockToken = `mock_${Date.now()}_${Math.random().toString(36).substring(7)}`;
+    localStorage.setItem('auth-token', mockToken);
+    
+    if (import.meta.env.DEV) {
+      console.log('[DEV] MSW enabled with mock authentication');
+    }
   } else {
-    // Clean up any existing mock token when MSW is disabled
+    // Security: Always clean up mock tokens when MSW is disabled
     localStorage.removeItem('auth-token');
+    
+    if (import.meta.env.DEV) {
+      console.log('[DEV] MSW disabled: Using real backend API');
+    }
+    return;
   }
 
   // Check if backend is available with longer timeout for CI
