@@ -10,7 +10,7 @@ import {
   Typography,
   Chip,
   Paper,
-  Divider,
+  Divider as _Divider,
   IconButton,
   Alert,
   Tooltip,

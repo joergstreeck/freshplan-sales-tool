@@ -13,7 +13,7 @@ import {
   ListItemText,
   Chip,
   Button,
-  Divider,
+  Divider as _Divider,
 } from '@mui/material';
 import {
   CheckCircle as CheckIcon,

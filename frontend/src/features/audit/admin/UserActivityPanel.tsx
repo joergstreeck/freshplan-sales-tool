@@ -25,8 +25,8 @@ import {
   CheckCircle as ActiveIcon,
   Cancel as InactiveIcon,
 } from '@mui/icons-material';
-import { useQuery } from '@tanstack/react-query';
-import { auditApi } from '../services/auditApi';
+import { useQuery as _useQuery } from '@tanstack/react-query';
+import { auditApi as _auditApi } from '../services/auditApi';
 
 interface UserActivityPanelProps {
   _dateRange: {

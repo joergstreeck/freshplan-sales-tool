@@ -21,7 +21,7 @@ import {
 } from '@mui/lab';
 import {
   Box,
-  Paper,
+  Paper as _Paper,
   Typography,
   Chip,
   IconButton,

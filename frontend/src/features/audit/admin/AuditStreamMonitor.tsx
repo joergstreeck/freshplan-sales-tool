@@ -29,7 +29,7 @@ import {
   Storage as StorageIcon,
 } from '@mui/icons-material';
 import { format } from 'date-fns';
-import { de } from 'date-fns/locale';
+import { de as _de } from 'date-fns/locale';
 
 interface AuditStreamEntry {
   id: string;

@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback as _useCallback } from 'react';
 import {
   Box,
   Table,

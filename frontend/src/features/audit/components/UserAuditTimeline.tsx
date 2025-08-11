@@ -25,7 +25,7 @@ import {
   Tooltip,
   TextField,
   MenuItem,
-  Button,
+  Button as _Button,
   Skeleton,
   Alert,
   Avatar,
