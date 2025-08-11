@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Grid } from '@mui/material';
 import {
   Box,
@@ -22,7 +22,7 @@ import {
   Warning as WarningIcon,
   People as PeopleIcon,
   Timeline as TimelineIcon,
-  Download as DownloadIcon,
+  // Download as DownloadIcon,
   Refresh as RefreshIcon,
   FilterList as FilterIcon,
 } from '@mui/icons-material';
@@ -276,7 +276,7 @@ export const AuditAdminPage: React.FC = () => {
                   </Typography>
                   {criticalEvents && criticalEvents.length > 0 ? (
                     <Paper sx={{ p: 2 }}>
-                      {criticalEvents.map((event: any) => (
+                      {criticalEvents.map((event) => (
                         <Alert key={event.id} severity="error" sx={{ mb: 1 }}>
                           <Typography variant="subtitle2">
                             {event.userName} - {event.action}

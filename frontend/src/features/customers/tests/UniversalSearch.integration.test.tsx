@@ -123,7 +123,7 @@ describe('Universal Search Integration', () => {
     vi.clearAllMocks();
     
     // Setup fetch mocks
-    (global.fetch as any).mockImplementation(async (url: string) => {
+    (global.fetch as ReturnType<typeof vi.fn>).mockImplementation(async (url: string) => {
       // Universal search endpoint
       if (url.includes('/api/search/universal') && url.includes('Schmidt')) {
         return {
