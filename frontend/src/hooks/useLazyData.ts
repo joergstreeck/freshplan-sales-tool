@@ -1,9 +1,9 @@
 /**
  * useLazyData Hook
- * 
+ *
  * Custom hook for lazy loading data with intersection observer.
  * Useful for deferring expensive API calls until component is visible.
- * 
+ *
  * @module useLazyData
  * @since FC-005 PR4
  */
@@ -30,7 +30,7 @@ interface UseLazyDataResult<T> {
 
 /**
  * Hook for lazy loading data when element comes into view
- * 
+ *
  * @param fetcher - Function that fetches the data
  * @param options - Configuration options
  * @returns Object with data, loading state, error, ref, and reload function
@@ -80,7 +80,7 @@ export function useLazyData<T>(
       }
 
       const result = await fetcher();
-      
+
       // Check if request was aborted
       if (!abortControllerRef.current?.signal.aborted) {
         setData(result);
@@ -90,7 +90,7 @@ export function useLazyData<T>(
       if (err instanceof Error && err.name === 'AbortError') {
         return;
       }
-      
+
       setError(err instanceof Error ? err : new Error('Failed to load data'));
     } finally {
       setLoading(false);
@@ -153,7 +153,7 @@ export function useLazyInfiniteData<T>(
   ref: (node?: Element | null) => void;
 } {
   const { pageSize = 20, ...lazyOptions } = options;
-  
+
   const [data, setData] = useState<T[]>([]);
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
@@ -174,11 +174,11 @@ export function useLazyInfiniteData<T>(
 
     try {
       const newData = await fetcher(page);
-      
+
       if (newData.length === 0 || newData.length < pageSize) {
         setHasMore(false);
       }
-      
+
       setData(prev => [...prev, ...newData]);
       setPage(prev => prev + 1);
     } catch (err) {

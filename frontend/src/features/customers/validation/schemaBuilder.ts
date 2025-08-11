@@ -247,7 +247,10 @@ function buildCustomSchema(field: FieldDefinition): z.ZodSchema {
 /**
  * Apply custom validations to schema
  */
-function applyCustomValidations(schema: z.ZodType<unknown>, field: FieldDefinition): z.ZodType<unknown> {
+function applyCustomValidations(
+  schema: z.ZodType<unknown>,
+  field: FieldDefinition
+): z.ZodType<unknown> {
   if (!field.validation?.custom) return schema;
 
   field.validation.custom.forEach(validation => {

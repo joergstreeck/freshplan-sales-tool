@@ -97,7 +97,10 @@ interface AuditDashboardProps {
   onDateRangeChange?: (range: { from: Date; to: Date }) => void;
 }
 
-export const AuditDashboard: React.FC<AuditDashboardProps> = ({ metrics, dateRange: _dateRange }) => {
+export const AuditDashboard: React.FC<AuditDashboardProps> = ({
+  metrics,
+  dateRange: _dateRange,
+}) => {
   if (!metrics) {
     return <Box>Keine Daten verfügbar</Box>;
   }
@@ -236,11 +239,7 @@ export const AuditDashboard: React.FC<AuditDashboardProps> = ({ metrics, dateRan
           </Typography>
 
           {/* Activity Chart with real data */}
-          <AuditActivityChart 
-            days={7} 
-            height={250}
-            showLegend={true}
-          />
+          <AuditActivityChart days={7} height={250} showLegend={true} />
         </Paper>
       </Grid>
     </Grid>

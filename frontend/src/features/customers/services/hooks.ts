@@ -374,7 +374,6 @@ export function useIndustries(options?: UseQueryOptions<string[], ApiError>) {
  * Hook to preload field definitions
  */
 export function usePreloadFieldDefinitions() {
-
   return useMutation({
     mutationFn: () => fieldDefinitionApi.preloadCommonDefinitions(),
     onSuccess: () => {

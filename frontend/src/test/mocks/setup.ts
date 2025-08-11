@@ -37,7 +37,11 @@ vi.mock('react-intersection-observer', () => ({
     inView: true,
     entry: undefined,
   }),
-  InView: ({ children }: { children: (args: { inView: boolean; ref: () => void }) => React.ReactNode }) => children({ inView: true, ref: vi.fn() }),
+  InView: ({
+    children,
+  }: {
+    children: (args: { inView: boolean; ref: () => void }) => React.ReactNode;
+  }) => children({ inView: true, ref: vi.fn() }),
 }));
 
 // Mock useUniversalSearch hook

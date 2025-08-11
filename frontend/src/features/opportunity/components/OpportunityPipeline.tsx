@@ -43,7 +43,7 @@ export const OpportunityPipeline: React.FC = () => {
           createdAt: opp.createdAt || new Date().toISOString(),
           updatedAt: opp.updatedAt || new Date().toISOString(),
         }));
-        
+
         setOpportunities(apiOpportunities);
         setError(null);
       } catch {
@@ -276,7 +276,7 @@ export const OpportunityPipeline: React.FC = () => {
                     <OpportunityCard
                       key={opportunity.id}
                       opportunity={opportunity}
-                      onClick={(_opp) => {
+                      onClick={_opp => {
                         // TODO: Open opportunity detail modal
                       }}
                     />
@@ -318,6 +318,6 @@ export const OpportunityPipeline: React.FC = () => {
       {/* TODO: Mutation Loading/Error für API Integration */}
     </Box>
   );
-}
+};
 
 export default OpportunityPipeline;

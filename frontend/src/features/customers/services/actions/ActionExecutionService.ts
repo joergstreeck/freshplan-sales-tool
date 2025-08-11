@@ -1,9 +1,9 @@
 /**
  * Action Execution Service
- * 
+ *
  * Handles execution of contact actions with offline support.
  * Part of FC-005 Contact Management UI - Mobile Actions.
- * 
+ *
  * @see /docs/features/FC-005-CUSTOMER-MANAGEMENT/Step3/MOBILE_CONTACT_ACTIONS.md
  */
 
@@ -16,11 +16,7 @@ export class ActionExecutionService {
   /**
    * Execute a contact action
    */
-  async executeAction(
-    action: QuickAction,
-    contact: Contact
-  ): Promise<ActionResult> {
-    
+  async executeAction(action: QuickAction, contact: Contact): Promise<ActionResult> {
     try {
       // Track action for analytics
       this.trackAction(action, contact);
@@ -140,9 +136,7 @@ export class ActionExecutionService {
     }
 
     const message = this.generateWhatsAppMessage(contact);
-    const whatsappUrl = `https://wa.me/${formattedNumber}?text=${encodeURIComponent(
-      message
-    )}`;
+    const whatsappUrl = `https://wa.me/${formattedNumber}?text=${encodeURIComponent(message)}`;
 
     window.open(whatsappUrl, '_blank');
   }
@@ -191,7 +185,7 @@ export class ActionExecutionService {
     // This would typically open a modal or navigate to a note-taking interface
     // For now, we'll just log it
     console.log('Add note for contact:', contact.id);
-    
+
     // In a real implementation, this would:
     // 1. Open a note dialog
     // 2. Save the note to the backend
@@ -211,7 +205,7 @@ export class ActionExecutionService {
    */
   private generateEmailSubject(contact: Contact): string {
     const greeting = actionSuggestionService.getTimeBasedGreeting();
-    
+
     // Check for special occasions
     if (this.isBirthdayToday(contact.birthday)) {
       return 'Herzlichen Glückwunsch zum Geburtstag! 🎂';
@@ -269,9 +263,7 @@ FreshPlan Team
     const params = new URLSearchParams({
       action: 'TEMPLATE',
       text: event.title,
-      dates: `${this.formatDateForCalendar(startDate)}/${this.formatDateForCalendar(
-        endDate
-      )}`,
+      dates: `${this.formatDateForCalendar(startDate)}/${this.formatDateForCalendar(endDate)}`,
       location: event.location,
       details: event.details,
     });
@@ -283,7 +275,10 @@ FreshPlan Team
    * Format date for calendar URL
    */
   private formatDateForCalendar(date: Date): string {
-    return date.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
+    return date
+      .toISOString()
+      .replace(/[-:]/g, '')
+      .replace(/\.\d{3}/, '');
   }
 
   /**
@@ -322,7 +317,10 @@ END:VCALENDAR`;
    * Format date for ICS file
    */
   private formatDateForICS(date: Date): string {
-    return date.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
+    return date
+      .toISOString()
+      .replace(/[-:]/g, '')
+      .replace(/\.\d{3}/, '');
   }
 
   /**
@@ -342,17 +340,11 @@ END:VCALENDAR`;
   /**
    * Record interaction in the system
    */
-  private async recordInteraction(
-    contactId: string,
-    type: string,
-    outcome: string
-  ): Promise<void> {
+  private async recordInteraction(contactId: string, type: string, outcome: string): Promise<void> {
     // This would typically call an API to record the interaction
     // For now, we'll just store it in localStorage
-    const interactions = JSON.parse(
-      localStorage.getItem('contact_interactions') || '[]'
-    );
-    
+    const interactions = JSON.parse(localStorage.getItem('contact_interactions') || '[]');
+
     interactions.push({
       contactId,
       type,
@@ -392,9 +384,7 @@ END:VCALENDAR`;
     if (!birthday) return false;
     const today = new Date();
     const bday = new Date(birthday);
-    return (
-      today.getDate() === bday.getDate() && today.getMonth() === bday.getMonth()
-    );
+    return today.getDate() === bday.getDate() && today.getMonth() === bday.getMonth();
   }
 
   /**

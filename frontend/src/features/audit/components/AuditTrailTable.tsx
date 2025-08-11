@@ -60,7 +60,12 @@ export const AuditTrailTable: React.FC<AuditTrailTableProps> = ({ filters }) => 
   const getActionColor = (action: string | undefined) => {
     if (!action) return 'default';
     const upperAction = action.toUpperCase();
-    if (upperAction.includes('DELETE') || upperAction.includes('FAILURE') || upperAction.includes('DENIED')) return 'error';
+    if (
+      upperAction.includes('DELETE') ||
+      upperAction.includes('FAILURE') ||
+      upperAction.includes('DENIED')
+    )
+      return 'error';
     if (upperAction.includes('CREATE') || upperAction.includes('SUCCESS')) return 'success';
     if (upperAction.includes('UPDATE') || upperAction.includes('CHANGE')) return 'primary';
     if (upperAction.includes('PERMISSION') || upperAction.includes('SECURITY')) return 'warning';
@@ -268,13 +273,21 @@ export const AuditTrailTable: React.FC<AuditTrailTableProps> = ({ filters }) => 
       <Box sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end' }}>
         <UniversalExportButton
           entity="audit"
-          queryParams={filters ? {
-            ...(filters.dateRange?.from && { from: filters.dateRange.from.toISOString().split('T')[0] }),
-            ...(filters.dateRange?.to && { to: filters.dateRange.to.toISOString().split('T')[0] }),
-            ...(filters.entityType && { entityType: filters.entityType }),
-            ...(filters.entityId && { entityId: filters.entityId }),
-            ...(filters.searchText && { searchText: filters.searchText }),
-          } : {}}
+          queryParams={
+            filters
+              ? {
+                  ...(filters.dateRange?.from && {
+                    from: filters.dateRange.from.toISOString().split('T')[0],
+                  }),
+                  ...(filters.dateRange?.to && {
+                    to: filters.dateRange.to.toISOString().split('T')[0],
+                  }),
+                  ...(filters.entityType && { entityType: filters.entityType }),
+                  ...(filters.entityId && { entityId: filters.entityId }),
+                  ...(filters.searchText && { searchText: filters.searchText }),
+                }
+              : {}
+          }
           buttonLabel="Exportieren"
         />
       </Box>

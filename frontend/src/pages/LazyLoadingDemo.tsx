@@ -1,24 +1,15 @@
 /**
  * Lazy Loading Demo Page
- * 
+ *
  * Demonstrates the lazy loading capabilities implemented in PR4.
  * Shows lazy images, components, and data loading with intersection observer.
- * 
+ *
  * @module LazyLoadingDemo
  * @since FC-005 PR4
  */
 
 import React from 'react';
-import {
-  Box,
-  Container,
-  Typography,
-  Paper,
-  Stack,
-  Chip,
-  Alert,
-  Grid,
-} from '@mui/material';
+import { Box, Container, Typography, Paper, Stack, Chip, Alert, Grid } from '@mui/material';
 import { MainLayoutV2 } from '../components/layout/MainLayoutV2';
 import { LazyImage } from '../components/common/LazyImage';
 import { LazyComponent } from '../components/common/LazyComponent';
@@ -37,8 +28,12 @@ const HeavyComponent: React.FC<{ title: string; content: string }> = ({ title, c
 
   return (
     <Paper sx={{ p: 3 }}>
-      <Typography variant="h6" gutterBottom>{title}</Typography>
-      <Typography variant="body2" color="text.secondary">{content}</Typography>
+      <Typography variant="h6" gutterBottom>
+        {title}
+      </Typography>
+      <Typography variant="body2" color="text.secondary">
+        {content}
+      </Typography>
       <Typography variant="caption" display="block" sx={{ mt: 1 }}>
         Computed value: {computed.toFixed(2)}
       </Typography>
@@ -67,11 +62,11 @@ export function LazyLoadingDemo() {
         <Typography variant="h4" gutterBottom>
           Lazy Loading Demo
         </Typography>
-        
+
         <Alert severity="info" sx={{ mb: 4 }}>
-          Diese Seite demonstriert die Lazy Loading Features aus PR4. 
-          Scrollen Sie nach unten, um zu sehen, wie Komponenten, Bilder und Daten 
-          erst geladen werden, wenn sie in den Viewport kommen.
+          Diese Seite demonstriert die Lazy Loading Features aus PR4. Scrollen Sie nach unten, um zu
+          sehen, wie Komponenten, Bilder und Daten erst geladen werden, wenn sie in den Viewport
+          kommen.
         </Alert>
 
         <Stack spacing={4}>
@@ -81,10 +76,10 @@ export function LazyLoadingDemo() {
               1. Lazy Loading Images
             </Typography>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-              Bilder werden erst geladen, wenn sie sichtbar werden. 
-              Öffnen Sie die Netzwerk-Konsole, um den verzögerten Ladevorgang zu sehen.
+              Bilder werden erst geladen, wenn sie sichtbar werden. Öffnen Sie die Netzwerk-Konsole,
+              um den verzögerten Ladevorgang zu sehen.
             </Typography>
-            
+
             <Grid container spacing={2}>
               {[1, 2, 3, 4, 5, 6].map(i => (
                 <Grid key={i} size={{ xs: 12, sm: 6, md: 4 }}>
@@ -104,7 +99,9 @@ export function LazyLoadingDemo() {
           </Paper>
 
           {/* Spacer to demonstrate scrolling */}
-          <Box sx={{ height: 400, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <Box
+            sx={{ height: 400, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+          >
             <Typography variant="h6" color="text.secondary">
               ⬇️ Scrollen Sie weiter für mehr Demos ⬇️
             </Typography>
@@ -116,10 +113,10 @@ export function LazyLoadingDemo() {
               2. Lazy Loading Components
             </Typography>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-              Schwere Komponenten werden erst gerendert, wenn sie sichtbar werden.
-              Dies verbessert die initiale Ladezeit erheblich.
+              Schwere Komponenten werden erst gerendert, wenn sie sichtbar werden. Dies verbessert
+              die initiale Ladezeit erheblich.
             </Typography>
-            
+
             <Stack spacing={2}>
               {[1, 2, 3].map(i => (
                 <LazyComponent
@@ -143,7 +140,9 @@ export function LazyLoadingDemo() {
           </Paper>
 
           {/* Another spacer */}
-          <Box sx={{ height: 400, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <Box
+            sx={{ height: 400, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+          >
             <Typography variant="h6" color="text.secondary">
               ⬇️ Noch mehr Lazy Loading ⬇️
             </Typography>
@@ -155,48 +154,72 @@ export function LazyLoadingDemo() {
               3. Lazy Data Loading
             </Typography>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-              API-Aufrufe werden erst ausgeführt, wenn die Komponente sichtbar wird.
-              Perfekt für schwere Datenabfragen.
+              API-Aufrufe werden erst ausgeführt, wenn die Komponente sichtbar wird. Perfekt für
+              schwere Datenabfragen.
             </Typography>
-            
+
             <Stack spacing={2}>
               <Box ref={lazyData1.ref}>
-                <Paper sx={{ p: 2, bgcolor: lazyData1.loading ? 'action.hover' : 'background.paper' }}>
+                <Paper
+                  sx={{ p: 2, bgcolor: lazyData1.loading ? 'action.hover' : 'background.paper' }}
+                >
                   <Typography variant="subtitle2">Data Block #1</Typography>
                   {lazyData1.loading && <Typography>Loading...</Typography>}
-                  {lazyData1.error && <Typography color="error">Error: {lazyData1.error.message}</Typography>}
+                  {lazyData1.error && (
+                    <Typography color="error">Error: {lazyData1.error.message}</Typography>
+                  )}
                   {lazyData1.data && (
                     <Box>
                       <Typography variant="body2">{lazyData1.data.data}</Typography>
-                      <Chip label={lazyData1.inView ? 'In View' : 'Out of View'} size="small" sx={{ mt: 1 }} />
+                      <Chip
+                        label={lazyData1.inView ? 'In View' : 'Out of View'}
+                        size="small"
+                        sx={{ mt: 1 }}
+                      />
                     </Box>
                   )}
                 </Paper>
               </Box>
 
               <Box ref={lazyData2.ref}>
-                <Paper sx={{ p: 2, bgcolor: lazyData2.loading ? 'action.hover' : 'background.paper' }}>
+                <Paper
+                  sx={{ p: 2, bgcolor: lazyData2.loading ? 'action.hover' : 'background.paper' }}
+                >
                   <Typography variant="subtitle2">Data Block #2</Typography>
                   {lazyData2.loading && <Typography>Loading...</Typography>}
-                  {lazyData2.error && <Typography color="error">Error: {lazyData2.error.message}</Typography>}
+                  {lazyData2.error && (
+                    <Typography color="error">Error: {lazyData2.error.message}</Typography>
+                  )}
                   {lazyData2.data && (
                     <Box>
                       <Typography variant="body2">{lazyData2.data.data}</Typography>
-                      <Chip label={lazyData2.inView ? 'In View' : 'Out of View'} size="small" sx={{ mt: 1 }} />
+                      <Chip
+                        label={lazyData2.inView ? 'In View' : 'Out of View'}
+                        size="small"
+                        sx={{ mt: 1 }}
+                      />
                     </Box>
                   )}
                 </Paper>
               </Box>
 
               <Box ref={lazyData3.ref}>
-                <Paper sx={{ p: 2, bgcolor: lazyData3.loading ? 'action.hover' : 'background.paper' }}>
+                <Paper
+                  sx={{ p: 2, bgcolor: lazyData3.loading ? 'action.hover' : 'background.paper' }}
+                >
                   <Typography variant="subtitle2">Data Block #3</Typography>
                   {lazyData3.loading && <Typography>Loading...</Typography>}
-                  {lazyData3.error && <Typography color="error">Error: {lazyData3.error.message}</Typography>}
+                  {lazyData3.error && (
+                    <Typography color="error">Error: {lazyData3.error.message}</Typography>
+                  )}
                   {lazyData3.data && (
                     <Box>
                       <Typography variant="body2">{lazyData3.data.data}</Typography>
-                      <Chip label={lazyData3.inView ? 'In View' : 'Out of View'} size="small" sx={{ mt: 1 }} />
+                      <Chip
+                        label={lazyData3.inView ? 'In View' : 'Out of View'}
+                        size="small"
+                        sx={{ mt: 1 }}
+                      />
                     </Box>
                   )}
                 </Paper>

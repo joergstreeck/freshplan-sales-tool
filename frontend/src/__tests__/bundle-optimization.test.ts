@@ -6,7 +6,7 @@ describe('Bundle Optimization Configuration', () => {
   it('should have vite config with manual chunks configured', () => {
     const viteConfigPath = path.resolve(__dirname, '../../vite.config.ts');
     const viteConfig = fs.readFileSync(viteConfigPath, 'utf-8');
-    
+
     // Check that manual chunks are configured
     expect(viteConfig).toContain('manualChunks');
     expect(viteConfig).toContain('vendor-react');
@@ -17,7 +17,7 @@ describe('Bundle Optimization Configuration', () => {
   it('should have terser configured for minification', () => {
     const viteConfigPath = path.resolve(__dirname, '../../vite.config.ts');
     const viteConfig = fs.readFileSync(viteConfigPath, 'utf-8');
-    
+
     // Check that terser is configured
     expect(viteConfig).toContain("minify: 'terser'");
     expect(viteConfig).toContain('terserOptions');
@@ -27,7 +27,7 @@ describe('Bundle Optimization Configuration', () => {
   it('should have terser as a dev dependency', () => {
     const packageJsonPath = path.resolve(__dirname, '../../package.json');
     const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'));
-    
+
     // Check that terser is installed
     expect(packageJson.devDependencies).toHaveProperty('terser');
   });
@@ -35,7 +35,7 @@ describe('Bundle Optimization Configuration', () => {
   it('should have source maps disabled for production', () => {
     const viteConfigPath = path.resolve(__dirname, '../../vite.config.ts');
     const viteConfig = fs.readFileSync(viteConfigPath, 'utf-8');
-    
+
     // Check that sourcemaps are disabled
     expect(viteConfig).toContain('sourcemap: false');
   });
@@ -43,7 +43,7 @@ describe('Bundle Optimization Configuration', () => {
   it('should use lazy loading for heavy pages', () => {
     const providersPath = path.resolve(__dirname, '../../src/providers.tsx');
     const providers = fs.readFileSync(providersPath, 'utf-8');
-    
+
     // Check that lazy loading is used
     expect(providers).toContain('lazy(');
     expect(providers).toContain('UsersPage = lazy(');

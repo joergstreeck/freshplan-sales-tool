@@ -171,7 +171,7 @@ describe.skip('DynamicFieldRenderer - Flexible Field System (ENTERPRISE PHILOSOP
         undefined,
       ];
 
-      testValues.forEach((value) => {
+      testValues.forEach(value => {
         // Clear DOM before each test
         document.body.innerHTML = '';
 

@@ -62,9 +62,7 @@ const createWrapper = () => {
   return ({ children }: { children: React.ReactNode }) => (
     <BrowserRouter>
       <QueryClientProvider client={queryClient}>
-        <ThemeProvider theme={theme}>
-          {children}
-        </ThemeProvider>
+        <ThemeProvider theme={theme}>{children}</ThemeProvider>
       </QueryClientProvider>
     </BrowserRouter>
   );
@@ -95,56 +93,47 @@ describe('IntelligentFilterBar Integration Tests', () => {
 
   describe('Component Rendering', () => {
     it('should render without crashing', () => {
-      const { container } = render(
-        <IntelligentFilterBar {...defaultProps} />,
-        { wrapper: createWrapper() }
-      );
-      
+      const { container } = render(<IntelligentFilterBar {...defaultProps} />, {
+        wrapper: createWrapper(),
+      });
+
       expect(container.firstChild).toBeTruthy();
     });
 
     it('should display customer count from database', () => {
-      render(
-        <IntelligentFilterBar {...defaultProps} />,
-        { wrapper: createWrapper() }
-      );
-      
+      render(<IntelligentFilterBar {...defaultProps} />, { wrapper: createWrapper() });
+
       // We have 58 test customers in the database
       expect(screen.getByText(/58 Kunden/)).toBeInTheDocument();
     });
 
     it('should show correct singular/plural forms', () => {
-      const { rerender } = render(
-        <IntelligentFilterBar {...defaultProps} resultCount={1} />,
-        { wrapper: createWrapper() }
-      );
-      
+      const { rerender } = render(<IntelligentFilterBar {...defaultProps} resultCount={1} />, {
+        wrapper: createWrapper(),
+      });
+
       expect(screen.getByText(/1 Kunde(?!n)/)).toBeInTheDocument();
-      
-      rerender(
-        <IntelligentFilterBar {...defaultProps} resultCount={2} />
-      );
-      
+
+      rerender(<IntelligentFilterBar {...defaultProps} resultCount={2} />);
+
       expect(screen.getByText(/2 Kunden/)).toBeInTheDocument();
     });
 
     it('should show "Keine Kunden" when count is 0', () => {
-      render(
-        <IntelligentFilterBar {...defaultProps} resultCount={0} />,
-        { wrapper: createWrapper() }
-      );
-      
+      render(<IntelligentFilterBar {...defaultProps} resultCount={0} />, {
+        wrapper: createWrapper(),
+      });
+
       expect(screen.getByText(/Keine Kunden/)).toBeInTheDocument();
     });
   });
 
   describe('Search Functionality', () => {
     it('should have a search input field', () => {
-      const { container } = render(
-        <IntelligentFilterBar {...defaultProps} />,
-        { wrapper: createWrapper() }
-      );
-      
+      const { container } = render(<IntelligentFilterBar {...defaultProps} />, {
+        wrapper: createWrapper(),
+      });
+
       const searchInput = container.querySelector('input[type="text"]');
       expect(searchInput).toBeInTheDocument();
     });
@@ -156,10 +145,10 @@ describe('IntelligentFilterBar Integration Tests', () => {
         <IntelligentFilterBar {...defaultProps} onSearchChange={mockOnSearchChange} />,
         { wrapper: createWrapper() }
       );
-      
+
       const searchInput = container.querySelector('input[type="text"]') as HTMLInputElement;
       await user.type(searchInput, 'FreshFood');
-      
+
       await waitFor(() => {
         expect(mockOnSearchChange).toHaveBeenCalled();
       });
@@ -170,7 +159,7 @@ describe('IntelligentFilterBar Integration Tests', () => {
         <IntelligentFilterBar {...defaultProps} searchValue="Test GmbH" />,
         { wrapper: createWrapper() }
       );
-      
+
       const searchInput = container.querySelector('input[type="text"]') as HTMLInputElement;
       expect(searchInput.value).toBe('Test GmbH');
     });
@@ -178,43 +167,46 @@ describe('IntelligentFilterBar Integration Tests', () => {
 
   describe('Filter Controls', () => {
     it('should have filter and column management buttons', () => {
-      render(
-        <IntelligentFilterBar {...defaultProps} />,
-        { wrapper: createWrapper() }
-      );
-      
+      render(<IntelligentFilterBar {...defaultProps} />, { wrapper: createWrapper() });
+
       const buttons = screen.getAllByRole('button');
       expect(buttons.length).toBeGreaterThan(0);
-      
+
       // Should have at least filter and column buttons
-      const hasFilterButton = buttons.some(btn => 
-        btn.querySelector('[data-testid*="Filter"]') || 
-        btn.textContent?.toLowerCase().includes('filter')
+      const hasFilterButton = buttons.some(
+        btn =>
+          btn.querySelector('[data-testid*="Filter"]') ||
+          btn.textContent?.toLowerCase().includes('filter')
       );
-      
-      const hasColumnButton = buttons.some(btn => 
-        btn.querySelector('[data-testid*="Column"]') || 
-        btn.textContent?.toLowerCase().includes('spalten')
+
+      const hasColumnButton = buttons.some(
+        btn =>
+          btn.querySelector('[data-testid*="Column"]') ||
+          btn.textContent?.toLowerCase().includes('spalten')
       );
-      
+
       expect(hasFilterButton || hasColumnButton).toBeTruthy();
     });
 
     it('should call onAdvancedFiltersOpen when filter button clicked', async () => {
       const user = userEvent.setup();
       const mockOnAdvancedFiltersOpen = vi.fn();
-      
+
       render(
-        <IntelligentFilterBar {...defaultProps} onAdvancedFiltersOpen={mockOnAdvancedFiltersOpen} />,
+        <IntelligentFilterBar
+          {...defaultProps}
+          onAdvancedFiltersOpen={mockOnAdvancedFiltersOpen}
+        />,
         { wrapper: createWrapper() }
       );
-      
+
       const buttons = screen.getAllByRole('button');
-      const filterButton = buttons.find(btn => 
-        btn.querySelector('[data-testid*="Filter"]') || 
-        btn.textContent?.toLowerCase().includes('filter')
+      const filterButton = buttons.find(
+        btn =>
+          btn.querySelector('[data-testid*="Filter"]') ||
+          btn.textContent?.toLowerCase().includes('filter')
       );
-      
+
       if (filterButton) {
         await user.click(filterButton);
         expect(mockOnAdvancedFiltersOpen).toHaveBeenCalled();
@@ -228,12 +220,11 @@ describe('IntelligentFilterBar Integration Tests', () => {
         { id: 'active', label: 'Aktive Kunden', active: false },
         { id: 'risk', label: 'Hohe Priorität', active: true },
       ];
-      
-      render(
-        <IntelligentFilterBar {...defaultProps} quickFilters={quickFilters} />,
-        { wrapper: createWrapper() }
-      );
-      
+
+      render(<IntelligentFilterBar {...defaultProps} quickFilters={quickFilters} />, {
+        wrapper: createWrapper(),
+      });
+
       expect(screen.getByText('Aktive Kunden')).toBeInTheDocument();
       expect(screen.getByText('Hohe Priorität')).toBeInTheDocument();
     });
@@ -241,22 +232,20 @@ describe('IntelligentFilterBar Integration Tests', () => {
     it('should call onQuickFilterToggle when chip clicked', async () => {
       const user = userEvent.setup();
       const mockOnQuickFilterToggle = vi.fn();
-      const quickFilters = [
-        { id: 'active', label: 'Aktive Kunden', active: false },
-      ];
-      
+      const quickFilters = [{ id: 'active', label: 'Aktive Kunden', active: false }];
+
       render(
-        <IntelligentFilterBar 
-          {...defaultProps} 
+        <IntelligentFilterBar
+          {...defaultProps}
           quickFilters={quickFilters}
           onQuickFilterToggle={mockOnQuickFilterToggle}
         />,
         { wrapper: createWrapper() }
       );
-      
+
       const chip = screen.getByText('Aktive Kunden');
       await user.click(chip);
-      
+
       expect(mockOnQuickFilterToggle).toHaveBeenCalledWith('active');
     });
   });
@@ -264,16 +253,16 @@ describe('IntelligentFilterBar Integration Tests', () => {
   describe('View Mode', () => {
     it('should handle view mode changes', () => {
       const mockOnViewChange = vi.fn();
-      
+
       render(
-        <IntelligentFilterBar 
-          {...defaultProps} 
+        <IntelligentFilterBar
+          {...defaultProps}
           currentView="list"
           onViewChange={mockOnViewChange}
         />,
         { wrapper: createWrapper() }
       );
-      
+
       // Component should respect current view
       expect(defaultProps.currentView).toBe('list');
     });
@@ -285,12 +274,11 @@ describe('IntelligentFilterBar Integration Tests', () => {
         status: ['ACTIVE', 'INACTIVE'],
         riskLevel: ['HIGH'],
       };
-      
-      render(
-        <IntelligentFilterBar {...defaultProps} activeFilters={activeFilters} />,
-        { wrapper: createWrapper() }
-      );
-      
+
+      render(<IntelligentFilterBar {...defaultProps} activeFilters={activeFilters} />, {
+        wrapper: createWrapper(),
+      });
+
       // Should show badge with count of active filter types (2)
       const badges = screen.queryAllByText('2');
       expect(badges.length).toBeGreaterThan(0);
@@ -300,42 +288,38 @@ describe('IntelligentFilterBar Integration Tests', () => {
   describe('Accessibility', () => {
     it('should be keyboard navigable', async () => {
       const user = userEvent.setup();
-      const { container } = render(
-        <IntelligentFilterBar {...defaultProps} />,
-        { wrapper: createWrapper() }
-      );
-      
+      const { container } = render(<IntelligentFilterBar {...defaultProps} />, {
+        wrapper: createWrapper(),
+      });
+
       // Start tabbing through the component
       await user.tab();
-      
+
       // Active element should be within the component
       const activeElement = document.activeElement;
       expect(container.contains(activeElement)).toBeTruthy();
     });
 
     it('should have proper ARIA labels on interactive elements', () => {
-      const { container } = render(
-        <IntelligentFilterBar {...defaultProps} />,
-        { wrapper: createWrapper() }
-      );
-      
+      const { container } = render(<IntelligentFilterBar {...defaultProps} />, {
+        wrapper: createWrapper(),
+      });
+
       // Search input should have some accessible label
       const searchInput = container.querySelector('input[type="text"]');
       if (searchInput) {
-        const hasAccessibleName = 
-          searchInput.getAttribute('aria-label') || 
+        const hasAccessibleName =
+          searchInput.getAttribute('aria-label') ||
           searchInput.getAttribute('placeholder') ||
           searchInput.getAttribute('title');
         expect(hasAccessibleName).toBeTruthy();
       }
-      
+
       // Buttons should have accessible names
       const buttons = screen.getAllByRole('button');
       buttons.forEach(button => {
-        const hasAccessibleName = 
-          button.getAttribute('aria-label') || 
-          button.textContent || 
-          button.getAttribute('title');
+        const hasAccessibleName =
+          button.getAttribute('aria-label') || button.textContent || button.getAttribute('title');
         expect(hasAccessibleName).toBeTruthy();
       });
     });
@@ -344,36 +328,34 @@ describe('IntelligentFilterBar Integration Tests', () => {
   describe('Performance', () => {
     it('should handle rapid input without errors', async () => {
       const user = userEvent.setup({ delay: 10 });
-      const { container } = render(
-        <IntelligentFilterBar {...defaultProps} />,
-        { wrapper: createWrapper() }
-      );
-      
+      const { container } = render(<IntelligentFilterBar {...defaultProps} />, {
+        wrapper: createWrapper(),
+      });
+
       const searchInput = container.querySelector('input[type="text"]') as HTMLInputElement;
-      
+
       // Type rapidly
       await user.type(searchInput, 'Test123456789');
-      
+
       // Should not crash and value should be set
       expect(searchInput.value).toBe('Test123456789');
     });
 
     it('should handle prop updates smoothly', () => {
-      const { rerender } = render(
-        <IntelligentFilterBar {...defaultProps} />,
-        { wrapper: createWrapper() }
-      );
-      
+      const { rerender } = render(<IntelligentFilterBar {...defaultProps} />, {
+        wrapper: createWrapper(),
+      });
+
       // Update multiple props at once
       rerender(
-        <IntelligentFilterBar 
+        <IntelligentFilterBar
           {...defaultProps}
           resultCount={100}
           searchValue="Updated"
           currentView="grid"
         />
       );
-      
+
       // Should update without errors
       expect(screen.getByText(/100 Kunden/)).toBeInTheDocument();
     });
@@ -383,13 +365,13 @@ describe('IntelligentFilterBar Integration Tests', () => {
     it('should work with actual customer counts', () => {
       // Test with various real counts from our database
       const realCounts = [58, 31, 15, 5, 1, 0]; // Based on actual data
-      
+
       realCounts.forEach(count => {
         const { rerender } = render(
           <IntelligentFilterBar {...defaultProps} resultCount={count} />,
           { wrapper: createWrapper() }
         );
-        
+
         if (count === 0) {
           expect(screen.getByText(/Keine Kunden/)).toBeInTheDocument();
         } else if (count === 1) {
@@ -397,7 +379,7 @@ describe('IntelligentFilterBar Integration Tests', () => {
         } else {
           expect(screen.getByText(new RegExp(`${count} Kunden`))).toBeInTheDocument();
         }
-        
+
         rerender(<></>); // Clean up for next iteration
       });
     });
@@ -409,12 +391,11 @@ describe('IntelligentFilterBar Integration Tests', () => {
         industry: ['Gastronomie', 'Hotellerie'],
         revenueRange: { min: 10000, max: 100000 },
       };
-      
-      render(
-        <IntelligentFilterBar {...defaultProps} activeFilters={complexFilters} />,
-        { wrapper: createWrapper() }
-      );
-      
+
+      render(<IntelligentFilterBar {...defaultProps} activeFilters={complexFilters} />, {
+        wrapper: createWrapper(),
+      });
+
       // Should show correct badge count (4 filter types)
       const badges = screen.queryAllByText('4');
       expect(badges.length).toBeGreaterThan(0);

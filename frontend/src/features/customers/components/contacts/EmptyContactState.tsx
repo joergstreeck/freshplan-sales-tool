@@ -1,23 +1,15 @@
 /**
  * EmptyContactState Component
- * 
+ *
  * Displays a friendly empty state when no contacts are available.
  * Part of FC-005 Contact Management UI - Smart Contact Cards.
- * 
+ *
  * @see /docs/features/FC-005-CUSTOMER-MANAGEMENT/Step3/SMART_CONTACT_CARDS.md
  */
 
 import React from 'react';
-import {
-  Box,
-  Typography,
-  Button,
-  Avatar,
-} from '@mui/material';
-import {
-  PersonAdd as PersonAddIcon,
-  Add as AddIcon,
-} from '@mui/icons-material';
+import { Box, Typography, Button, Avatar } from '@mui/material';
+import { PersonAdd as PersonAddIcon, Add as AddIcon } from '@mui/icons-material';
 
 interface EmptyContactStateProps {
   onAddContact: () => void;
@@ -69,7 +61,7 @@ export const EmptyContactState: React.FC<EmptyContactStateProps> = ({ onAddConta
       <Button
         variant="contained"
         startIcon={<AddIcon />}
-        onClick={(e) => {
+        onClick={e => {
           e.stopPropagation();
           onAddContact();
         }}

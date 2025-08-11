@@ -34,7 +34,10 @@ import {
 } from '@mui/icons-material';
 
 import type { Contact } from '../../types/contact.types';
-import { getContactFullName, getContactDisplayName as _getContactDisplayName } from '../../types/contact.types';
+import {
+  getContactFullName,
+  getContactDisplayName as _getContactDisplayName,
+} from '../../types/contact.types';
 
 interface ContactCardProps {
   contact: Contact;

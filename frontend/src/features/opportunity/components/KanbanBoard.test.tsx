@@ -51,13 +51,13 @@ vi.mock('../types', () => ({
     { stage: 'RENEWAL', label: 'Verlängerung', color: '#00bcd4' },
   ],
   STAGE_CONFIGS_RECORD: {
-    'NEW_LEAD': { stage: 'NEW_LEAD', label: 'Lead', color: '#9e9e9e' },
-    'QUALIFICATION': { stage: 'QUALIFICATION', label: 'Qualifiziert', color: '#2196f3' },
-    'PROPOSAL': { stage: 'PROPOSAL', label: 'Angebot', color: '#ff9800' },
-    'NEGOTIATION': { stage: 'NEGOTIATION', label: 'Verhandlung', color: '#9c27b0' },
-    'CLOSED_WON': { stage: 'CLOSED_WON', label: 'Gewonnen', color: '#4caf50' },
-    'CLOSED_LOST': { stage: 'CLOSED_LOST', label: 'Verloren', color: '#f44336' },
-    'RENEWAL': { stage: 'RENEWAL', label: 'Verlängerung', color: '#00bcd4' },
+    NEW_LEAD: { stage: 'NEW_LEAD', label: 'Lead', color: '#9e9e9e' },
+    QUALIFICATION: { stage: 'QUALIFICATION', label: 'Qualifiziert', color: '#2196f3' },
+    PROPOSAL: { stage: 'PROPOSAL', label: 'Angebot', color: '#ff9800' },
+    NEGOTIATION: { stage: 'NEGOTIATION', label: 'Verhandlung', color: '#9c27b0' },
+    CLOSED_WON: { stage: 'CLOSED_WON', label: 'Gewonnen', color: '#4caf50' },
+    CLOSED_LOST: { stage: 'CLOSED_LOST', label: 'Verloren', color: '#f44336' },
+    RENEWAL: { stage: 'RENEWAL', label: 'Verlängerung', color: '#00bcd4' },
   },
 }));
 

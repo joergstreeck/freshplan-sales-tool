@@ -1,11 +1,11 @@
 /**
  * Entity Audit Timeline Component
- * 
+ *
  * Generic audit timeline for any entity type (customer, contact, etc.)
  * with filtering and export capabilities.
- * 
+ *
  * Part of FC-005 Contact Management UI - PR 3.
- * 
+ *
  * @see /docs/features/FC-005-CUSTOMER-MANAGEMENT/Step3/AUDIT_TIMELINE_IMPLEMENTATION_PLAN.md
  */
 
@@ -141,10 +141,10 @@ const getEventConfig = (eventType: string) => {
  */
 const formatChangedFields = (oldValue: unknown, newValue: unknown): string[] => {
   if (!oldValue || !newValue) return [];
-  
+
   // Type guard to ensure objects
   if (typeof oldValue !== 'object' || typeof newValue !== 'object') return [];
-  
+
   const oldObj = oldValue as Record<string, unknown>;
   const newObj = newValue as Record<string, unknown>;
 
@@ -366,9 +366,7 @@ export function EntityAuditTimeline({
               )}
 
               <TimelineSeparator>
-                <TimelineDot sx={{ bgcolor: config.color }}>
-                  {config.icon}
-                </TimelineDot>
+                <TimelineDot sx={{ bgcolor: config.color }}>{config.icon}</TimelineDot>
                 {index < filteredEntries.length - 1 && <TimelineConnector />}
               </TimelineSeparator>
 
@@ -397,9 +395,7 @@ export function EntityAuditTimeline({
 
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
                       <PersonIcon fontSize="small" color="action" />
-                      <Typography variant="body2">
-                        {entry.userName}
-                      </Typography>
+                      <Typography variant="body2">{entry.userName}</Typography>
                       <Chip label={entry.userRole} size="small" variant="outlined" />
                     </Box>
 
@@ -416,7 +412,12 @@ export function EntityAuditTimeline({
                             Geänderte Felder:
                           </Typography>
                           {formatChangedFields(entry.oldValue, entry.newValue).map((change, i) => (
-                            <Typography key={i} variant="caption" display="block" sx={{ fontFamily: 'monospace' }}>
+                            <Typography
+                              key={i}
+                              variant="caption"
+                              display="block"
+                              sx={{ fontFamily: 'monospace' }}
+                            >
                               {change}
                             </Typography>
                           ))}

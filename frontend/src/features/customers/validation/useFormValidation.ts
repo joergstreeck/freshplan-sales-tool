@@ -150,7 +150,15 @@ export function useFormValidation<T extends FieldValues = FieldValues>(
         return false;
       }
     },
-    [fields, trigger, setError, clearFormErrors, setValidationError, clearValidationError, validateField]
+    [
+      fields,
+      trigger,
+      setError,
+      clearFormErrors,
+      setValidationError,
+      clearValidationError,
+      validateField,
+    ]
   );
 
   // Debounced version for real-time validation

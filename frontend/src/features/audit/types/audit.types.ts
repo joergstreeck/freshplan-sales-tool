@@ -1,6 +1,6 @@
 /**
  * Audit Types for Mini Timeline
- * 
+ *
  * @module audit.types
  * @since FC-005 PR4
  */

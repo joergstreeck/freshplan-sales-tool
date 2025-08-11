@@ -280,7 +280,10 @@ export class CustomerOnboardingPage {
   }
 
   // Step 3 - Detailed Locations methods
-  async addDetailedLocation(detailedLocationData: Record<string, unknown>, _locationIndex: number = 0) {
+  async addDetailedLocation(
+    detailedLocationData: Record<string, unknown>,
+    _locationIndex: number = 0
+  ) {
     await this.addDetailedLocationButton.click();
 
     await this.detailedLocationNameField.fill(detailedLocationData.name as string);
@@ -288,9 +291,15 @@ export class CustomerOnboardingPage {
     await this.detailedLocationFloorField.fill(detailedLocationData.floor as string);
     await this.detailedLocationCapacityField.fill(detailedLocationData.capacity as string);
     await this.detailedLocationHoursField.fill(detailedLocationData.operatingHours as string);
-    await this.detailedLocationResponsibleField.fill(detailedLocationData.responsiblePerson as string);
-    await this.detailedLocationInternalPhoneField.fill(detailedLocationData.internalPhone as string);
-    await this.detailedLocationRequirementsField.fill(detailedLocationData.specialRequirements as string);
+    await this.detailedLocationResponsibleField.fill(
+      detailedLocationData.responsiblePerson as string
+    );
+    await this.detailedLocationInternalPhoneField.fill(
+      detailedLocationData.internalPhone as string
+    );
+    await this.detailedLocationRequirementsField.fill(
+      detailedLocationData.specialRequirements as string
+    );
   }
 
   // Validation methods

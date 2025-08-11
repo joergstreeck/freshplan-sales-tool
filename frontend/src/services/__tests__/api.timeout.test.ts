@@ -77,7 +77,7 @@ describe('ApiService Timeout', () => {
     // Check that the signal is an AbortSignal with timeout
     const callArgs = fetchSpy.mock.calls[0];
     const signal = callArgs[1]?.signal;
-    
+
     expect(signal).toBeInstanceOf(AbortSignal);
   });
 });

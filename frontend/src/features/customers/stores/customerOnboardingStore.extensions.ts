@@ -142,7 +142,9 @@ export const createStoreExtensions = (set: unknown, get: unknown) => ({
 
   hasAllLocationsCompleted: () => {
     const { locations, completedLocationIds } = get();
-    return locations.every((loc: unknown) => completedLocationIds.includes((loc as {id: string}).id));
+    return locations.every((loc: unknown) =>
+      completedLocationIds.includes((loc as { id: string }).id)
+    );
   },
 });
 

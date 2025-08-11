@@ -12,10 +12,7 @@ import type {
   CustomerListItem,
   CustomerSearchCriteria,
 } from './customer.types';
-import type {
-  LocationWithFields,
-  DetailedLocation,
-} from './location.types';
+import type { LocationWithFields, DetailedLocation } from './location.types';
 import type { FieldValue } from './field.types';
 import { EntityType } from './field.types';
 

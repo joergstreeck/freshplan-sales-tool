@@ -141,7 +141,10 @@ export const getVisibleFields = (
 /**
  * Get required fields that are currently visible
  */
-export const getRequiredFields = (fields: FieldDefinition[], values: Record<string, unknown>): string[] => {
+export const getRequiredFields = (
+  fields: FieldDefinition[],
+  values: Record<string, unknown>
+): string[] => {
   const visibleFields = getVisibleFields(fields, values);
   return visibleFields.filter(field => field.required).map(field => field.key);
 };

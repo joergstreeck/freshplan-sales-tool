@@ -56,23 +56,24 @@ vi.mock('../../customer/store/focusListStore', () => ({
 
 vi.mock('../audit/services/auditApi', () => ({
   auditApi: {
-    getAuditHistory: () => Promise.resolve({
-      entries: [
-        {
-          id: '1',
-          entityType: 'CUSTOMER',
-          entityId: '1',
-          action: 'UPDATE',
-          fieldName: 'status',
-          oldValue: 'INACTIVE',
-          newValue: 'ACTIVE',
-          userId: 'user-1',
-          userName: 'Admin User',
-          timestamp: new Date().toISOString(),
-        },
-      ],
-      totalCount: 1,
-    }),
+    getAuditHistory: () =>
+      Promise.resolve({
+        entries: [
+          {
+            id: '1',
+            entityType: 'CUSTOMER',
+            entityId: '1',
+            action: 'UPDATE',
+            fieldName: 'status',
+            oldValue: 'INACTIVE',
+            newValue: 'ACTIVE',
+            userId: 'user-1',
+            userName: 'Admin User',
+            timestamp: new Date().toISOString(),
+          },
+        ],
+        totalCount: 1,
+      }),
   },
 }));
 
@@ -96,16 +97,13 @@ const createWrapper = () => {
   return ({ children }: { children: React.ReactNode }) => (
     <BrowserRouter>
       <QueryClientProvider client={queryClient}>
-        <ThemeProvider theme={theme}>
-          {children}
-        </ThemeProvider>
+        <ThemeProvider theme={theme}>{children}</ThemeProvider>
       </QueryClientProvider>
     </BrowserRouter>
   );
 };
 
 describe('PR4 Enterprise Test Suite', () => {
-  
   describe('1. IntelligentFilterBar - Core Features', () => {
     const filterProps = {
       onFilterChange: vi.fn(),
@@ -132,11 +130,10 @@ describe('PR4 Enterprise Test Suite', () => {
 
     it('handles search input', async () => {
       const user = userEvent.setup();
-      const { container: _container } = render(
-        <IntelligentFilterBar {...filterProps} />, 
-        { wrapper: createWrapper() }
-      );
-      
+      const { container: _container } = render(<IntelligentFilterBar {...filterProps} />, {
+        wrapper: createWrapper(),
+      });
+
       const searchInput = container.querySelector('input[type="text"]');
       if (searchInput) {
         await user.type(searchInput, 'Test');
@@ -153,9 +150,7 @@ describe('PR4 Enterprise Test Suite', () => {
     it('handles quick filters', () => {
       const props = {
         ...filterProps,
-        quickFilters: [
-          { id: 'active', label: 'Aktive', active: true },
-        ],
+        quickFilters: [{ id: 'active', label: 'Aktive', active: true }],
       };
       render(<IntelligentFilterBar {...props} />, { wrapper: createWrapper() });
       expect(screen.getByText('Aktive')).toBeInTheDocument();
@@ -182,7 +177,7 @@ describe('PR4 Enterprise Test Suite', () => {
     it('renders and shows loading state', async () => {
       render(<MiniAuditTimeline {...auditProps} />, { wrapper: createWrapper() });
       expect(screen.getByRole('progressbar')).toBeInTheDocument();
-      
+
       await waitFor(() => {
         expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
       });
@@ -190,7 +185,7 @@ describe('PR4 Enterprise Test Suite', () => {
 
     it('displays audit entries after loading', async () => {
       render(<MiniAuditTimeline {...auditProps} />, { wrapper: createWrapper() });
-      
+
       await waitFor(() => {
         expect(screen.getByText('Admin User')).toBeInTheDocument();
       });
@@ -198,10 +193,10 @@ describe('PR4 Enterprise Test Suite', () => {
 
     it('works in compact mode', async () => {
       const { container: _container } = render(
-        <MiniAuditTimeline {...auditProps} compact={true} />, 
+        <MiniAuditTimeline {...auditProps} compact={true} />,
         { wrapper: createWrapper() }
       );
-      
+
       await waitFor(() => {
         const accordion = container.querySelector('.MuiAccordion-root');
         expect(accordion).toBeInTheDocument();
@@ -210,10 +205,10 @@ describe('PR4 Enterprise Test Suite', () => {
 
     it('works in full mode', async () => {
       const { container: _container } = render(
-        <MiniAuditTimeline {...auditProps} compact={false} />, 
+        <MiniAuditTimeline {...auditProps} compact={false} />,
         { wrapper: createWrapper() }
       );
-      
+
       await waitFor(() => {
         const timeline = container.querySelector('.MuiTimeline-root');
         expect(timeline).toBeInTheDocument();
@@ -230,7 +225,7 @@ describe('PR4 Enterprise Test Suite', () => {
         </LazyComponent>,
         { wrapper: createWrapper() }
       );
-      
+
       // Should have a container
       expect(container.firstChild).toBeInTheDocument();
     });
@@ -243,7 +238,7 @@ describe('PR4 Enterprise Test Suite', () => {
         </LazyComponent>,
         { wrapper: createWrapper() }
       );
-      
+
       // Component should render without errors
       expect(document.body).toBeInTheDocument();
     });
@@ -251,23 +246,21 @@ describe('PR4 Enterprise Test Suite', () => {
     it('accepts custom placeholder', () => {
       const TestChild = () => <div>Content</div>;
       const CustomPlaceholder = () => <div>Loading...</div>;
-      
+
       render(
         <LazyComponent placeholder={<CustomPlaceholder />}>
           <TestChild />
         </LazyComponent>,
         { wrapper: createWrapper() }
       );
-      
+
       expect(screen.getByText('Loading...')).toBeInTheDocument();
     });
   });
 
   describe('4. UniversalExportButton - Export Functionality', () => {
     const exportProps = {
-      data: [
-        { id: 1, name: 'Test Customer', status: 'ACTIVE' },
-      ],
+      data: [{ id: 1, name: 'Test Customer', status: 'ACTIVE' }],
       columns: [
         { field: 'name', headerName: 'Name' },
         { field: 'status', headerName: 'Status' },
@@ -284,10 +277,10 @@ describe('PR4 Enterprise Test Suite', () => {
     it('shows export menu on click', async () => {
       const user = userEvent.setup();
       render(<UniversalExportButton {...exportProps} />, { wrapper: createWrapper() });
-      
+
       const button = screen.getByRole('button');
       await user.click(button);
-      
+
       // Should show export options
       await waitFor(() => {
         expect(screen.getByText(/CSV/i)).toBeInTheDocument();
@@ -295,18 +288,14 @@ describe('PR4 Enterprise Test Suite', () => {
     });
 
     it('handles custom button text', () => {
-      render(
-        <UniversalExportButton {...exportProps} buttonText="Download" />, 
-        { wrapper: createWrapper() }
-      );
+      render(<UniversalExportButton {...exportProps} buttonText="Download" />, {
+        wrapper: createWrapper(),
+      });
       expect(screen.getByText('Download')).toBeInTheDocument();
     });
 
     it('works with empty data', () => {
-      render(
-        <UniversalExportButton {...exportProps} data={[]} />, 
-        { wrapper: createWrapper() }
-      );
+      render(<UniversalExportButton {...exportProps} data={[]} />, { wrapper: createWrapper() });
       const button = screen.getByRole('button');
       expect(button).toBeInTheDocument();
     });
@@ -345,11 +334,10 @@ describe('PR4 Enterprise Test Suite', () => {
     it('handles customer selection', async () => {
       const user = userEvent.setup();
       const mockOnSelect = vi.fn();
-      render(
-        <VirtualizedCustomerTable {...tableProps} onCustomerSelect={mockOnSelect} />, 
-        { wrapper: createWrapper() }
-      );
-      
+      render(<VirtualizedCustomerTable {...tableProps} onCustomerSelect={mockOnSelect} />, {
+        wrapper: createWrapper(),
+      });
+
       const firstRow = screen.getByText('Test GmbH').closest('tr');
       if (firstRow) {
         await user.click(firstRow);
@@ -365,10 +353,9 @@ describe('PR4 Enterprise Test Suite', () => {
     });
 
     it('handles empty customer list', () => {
-      render(
-        <VirtualizedCustomerTable {...tableProps} customers={[]} />, 
-        { wrapper: createWrapper() }
-      );
+      render(<VirtualizedCustomerTable {...tableProps} customers={[]} />, {
+        wrapper: createWrapper(),
+      });
       expect(screen.getByText(/keine kunden|no customers|leer/i)).toBeInTheDocument();
     });
 
@@ -381,12 +368,12 @@ describe('PR4 Enterprise Test Suite', () => {
         riskScore: 50,
         lastContactDate: new Date().toISOString(),
       }));
-      
+
       const { container: _container } = render(
-        <VirtualizedCustomerTable {...tableProps} customers={manyCustomers} />, 
+        <VirtualizedCustomerTable {...tableProps} customers={manyCustomers} />,
         { wrapper: createWrapper() }
       );
-      
+
       // Should use virtual scrolling
       const virtualList = container.querySelector('[style*="height"]');
       expect(virtualList).toBeInTheDocument();
@@ -406,7 +393,7 @@ describe('PR4 Enterprise Test Suite', () => {
           lastContactDate: new Date().toISOString(),
         },
       ];
-      
+
       const { container: _container } = render(
         <div>
           <IntelligentFilterBar
@@ -434,7 +421,7 @@ describe('PR4 Enterprise Test Suite', () => {
         </div>,
         { wrapper: createWrapper() }
       );
-      
+
       // Both components should render
       expect(screen.getByText(/1 Kunde/)).toBeInTheDocument();
       expect(screen.getByText('Active Customer')).toBeInTheDocument();
@@ -447,11 +434,11 @@ describe('PR4 Enterprise Test Suite', () => {
           <MiniAuditTimeline entityType="CONTACT" entityId="1" compact={true} />
         </div>
       );
-      
+
       render(<ContactCard />, { wrapper: createWrapper() });
-      
+
       expect(screen.getByText('Contact Information')).toBeInTheDocument();
-      
+
       await waitFor(() => {
         expect(screen.getByText('Admin User')).toBeInTheDocument();
       });
@@ -459,10 +446,8 @@ describe('PR4 Enterprise Test Suite', () => {
 
     it('Export works with filtered data', async () => {
       const user = userEvent.setup();
-      const filteredData = [
-        { id: 1, name: 'Filtered Customer', status: 'ACTIVE' },
-      ];
-      
+      const filteredData = [{ id: 1, name: 'Filtered Customer', status: 'ACTIVE' }];
+
       render(
         <UniversalExportButton
           data={filteredData}
@@ -474,10 +459,10 @@ describe('PR4 Enterprise Test Suite', () => {
         />,
         { wrapper: createWrapper() }
       );
-      
+
       const exportButton = screen.getByRole('button');
       await user.click(exportButton);
-      
+
       // Export menu should open
       await waitFor(() => {
         expect(screen.getByText(/Excel/i)).toBeInTheDocument();
@@ -488,7 +473,7 @@ describe('PR4 Enterprise Test Suite', () => {
   describe('7. Performance & Accessibility', () => {
     it('Components are keyboard accessible', async () => {
       const user = userEvent.setup();
-      
+
       render(
         <IntelligentFilterBar
           onFilterChange={vi.fn()}
@@ -509,7 +494,7 @@ describe('PR4 Enterprise Test Suite', () => {
         />,
         { wrapper: createWrapper() }
       );
-      
+
       // Tab through component
       await user.tab();
       expect(document.activeElement).not.toBe(document.body);
@@ -537,7 +522,7 @@ describe('PR4 Enterprise Test Suite', () => {
         />,
         { wrapper: createWrapper() }
       );
-      
+
       const searchInput = container.querySelector('input[type="text"]') as HTMLInputElement;
       if (searchInput) {
         await user.type(searchInput, 'RapidTyping123');

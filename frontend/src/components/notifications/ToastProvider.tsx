@@ -131,22 +131,25 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     setToasts(prev => prev.filter(toast => toast.id !== id));
   }, []);
 
-  const addToast = useCallback((toastData: Omit<Toast, 'id'>) => {
-    const id = Math.random().toString(36).substr(2, 9);
-    const toast: Toast = {
-      ...toastData,
-      id,
-    };
+  const addToast = useCallback(
+    (toastData: Omit<Toast, 'id'>) => {
+      const id = Math.random().toString(36).substr(2, 9);
+      const toast: Toast = {
+        ...toastData,
+        id,
+      };
 
-    setToasts(prev => [...prev, toast]);
+      setToasts(prev => [...prev, toast]);
 
-    // Auto-dismiss nach duration (falls nicht persistent)
-    if (!toast.persistent && toast.duration !== undefined) {
-      setTimeout(() => {
-        removeToast(id);
-      }, toast.duration);
-    }
-  }, [removeToast]);
+      // Auto-dismiss nach duration (falls nicht persistent)
+      if (!toast.persistent && toast.duration !== undefined) {
+        setTimeout(() => {
+          removeToast(id);
+        }, toast.duration);
+      }
+    },
+    [removeToast]
+  );
 
   const clearAll = useCallback(() => {
     setToasts([]);

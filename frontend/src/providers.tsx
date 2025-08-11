@@ -55,7 +55,9 @@ const CustomerDetailPage = lazy(() =>
   import('./pages/CustomerDetailPage').then(m => ({ default: m.CustomerDetailPage }))
 );
 const TestAuditTimeline = lazy(() => import('./pages/TestAuditTimeline'));
-const LazyLoadingDemo = lazy(() => import('./pages/LazyLoadingDemo').then(m => ({ default: m.LazyLoadingDemo })));
+const LazyLoadingDemo = lazy(() =>
+  import('./pages/LazyLoadingDemo').then(m => ({ default: m.LazyLoadingDemo }))
+);
 
 // Loading component for lazy loaded pages
 const PageLoader = () => (

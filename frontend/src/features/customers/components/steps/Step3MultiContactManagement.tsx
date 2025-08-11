@@ -131,7 +131,6 @@ export const Step3MultiContactManagement: React.FC = () => {
     [editingContact, updateContact, addContact]
   );
 
-
   return (
     <Box data-testid="adaptive-form-container">
       {/* Header Section */}

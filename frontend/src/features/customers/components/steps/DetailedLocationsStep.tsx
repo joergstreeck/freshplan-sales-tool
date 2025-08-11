@@ -55,11 +55,7 @@ import {
 import { useCustomerOnboardingStore } from '../../stores/customerOnboardingStore';
 import { DetailedLocation, DetailedLocationCategory } from '../../types/location.types';
 import { toast } from 'react-toastify';
-import {
-  categoryLabels,
-  getCategoryIcon,
-  getIndustryTemplates,
-} from '../../config';
+import { categoryLabels, getCategoryIcon, getIndustryTemplates } from '../../config';
 
 // Configuration data has been externalized to separate files for better maintainability
 // See: /Users/joergstreeck/freshplan-sales-tool/frontend/src/features/customers/config/

@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Grid } from '@mui/material';
 import {
   Box,
-
   Paper,
   Typography,
   Tabs,
@@ -163,7 +162,7 @@ export const AuditAdminPage: React.FC = () => {
                     to: dateRange.to.toISOString().split('T')[0],
                   }}
                   buttonLabel="Export"
-                  onExportComplete={(format) => {
+                  onExportComplete={format => {
                     console.log(`Audit export completed: ${format}`);
                   }}
                 />
@@ -276,7 +275,7 @@ export const AuditAdminPage: React.FC = () => {
                   </Typography>
                   {criticalEvents && criticalEvents.length > 0 ? (
                     <Paper sx={{ p: 2 }}>
-                      {criticalEvents.map((event) => (
+                      {criticalEvents.map(event => (
                         <Alert key={event.id} severity="error" sx={{ mb: 1 }}>
                           <Typography variant="subtitle2">
                             {event.userName} - {event.action}

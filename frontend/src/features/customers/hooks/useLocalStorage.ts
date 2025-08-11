@@ -1,6 +1,6 @@
 /**
  * Local Storage Hook for persistent state
- * 
+ *
  * @module useLocalStorage
  * @since FC-005 PR4
  */
@@ -9,7 +9,7 @@ import { useState, useEffect, useCallback } from 'react';
 
 /**
  * Manages state in localStorage with automatic sync
- * 
+ *
  * @param key - The localStorage key
  * @param initialValue - Initial value if key doesn't exist
  * @returns Tuple of [value, setValue]
@@ -35,13 +35,13 @@ export function useLocalStorage<T>(
       try {
         // Allow value to be a function like useState
         const valueToStore = value instanceof Function ? value(storedValue) : value;
-        
+
         // Save state
         setStoredValue(valueToStore);
-        
+
         // Save to localStorage
         window.localStorage.setItem(key, JSON.stringify(valueToStore));
-        
+
         // Dispatch storage event for other tabs
         window.dispatchEvent(
           new StorageEvent('storage', {

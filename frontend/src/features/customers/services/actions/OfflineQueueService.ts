@@ -1,9 +1,9 @@
 /**
  * Offline Queue Service
- * 
+ *
  * Manages queued actions when offline for later execution.
  * Part of FC-005 Contact Management UI - Mobile Actions.
- * 
+ *
  * @see /docs/features/FC-005-CUSTOMER-MANAGEMENT/Step3/MOBILE_CONTACT_ACTIONS.md
  */
 
@@ -159,7 +159,7 @@ class OfflineQueueService {
    */
   private removeFromQueue(id: string): void {
     const queue = this.getQueue();
-    const filtered = queue.filter((item) => item.id !== id);
+    const filtered = queue.filter(item => item.id !== id);
     this.saveQueue(filtered);
   }
 
@@ -168,7 +168,7 @@ class OfflineQueueService {
    */
   private updateQueueItem(item: QueuedAction): void {
     const queue = this.getQueue();
-    const index = queue.findIndex((q) => q.id === item.id);
+    const index = queue.findIndex(q => q.id === item.id);
     if (index !== -1) {
       queue[index] = item;
       this.saveQueue(queue);
@@ -181,7 +181,7 @@ class OfflineQueueService {
   private async executeQueuedAction(item: QueuedAction): Promise<void> {
     // Dynamically import to avoid circular dependency
     const { actionExecutionService } = await import('./ActionExecutionService');
-    
+
     // Reconstruct minimal contact object
     const contact: Partial<Contact> = {
       id: item.contactId,
@@ -196,10 +196,7 @@ class OfflineQueueService {
       updatedAt: '',
     };
 
-    const result = await actionExecutionService.executeAction(
-      item.action,
-      contact as Contact
-    );
+    const result = await actionExecutionService.executeAction(item.action, contact as Contact);
 
     if (!result.success) {
       throw new Error(result.message || 'Action execution failed');

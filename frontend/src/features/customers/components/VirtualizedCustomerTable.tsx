@@ -51,19 +51,16 @@ export function VirtualizedCustomerTable({
   rowHeight = 72,
 }: VirtualizedCustomerTableProps) {
   const theme = useTheme();
-  
+
   // Calculate visible columns
-  const visibleColumns = useMemo(() => 
-    columns.filter(col => col.visible),
-    [columns]
-  );
+  const visibleColumns = useMemo(() => columns.filter(col => col.visible), [columns]);
 
   // Item count for infinite loading
   const itemCount = hasMore ? customers.length + 1 : customers.length;
-  
+
   // Check if item is loaded
-  const isItemLoaded = useCallback((index: number) => 
-    !hasMore || index < customers.length,
+  const isItemLoaded = useCallback(
+    (index: number) => !hasMore || index < customers.length,
     [hasMore, customers.length]
   );
 
@@ -105,15 +102,19 @@ export function VirtualizedCustomerTable({
     // Calculate status color
     const getStatusColor = (status: string) => {
       switch (status) {
-        case 'ACTIVE': return 'success';
-        case 'INACTIVE': return 'default';
-        case 'DRAFT': return 'warning';
-        default: return 'default';
+        case 'ACTIVE':
+          return 'success';
+        case 'INACTIVE':
+          return 'default';
+        case 'DRAFT':
+          return 'warning';
+        default:
+          return 'default';
       }
     };
 
     return (
-      <div 
+      <div
         style={{
           ...style,
           borderBottom: `1px solid ${theme.palette.divider}`,
@@ -129,15 +130,17 @@ export function VirtualizedCustomerTable({
             py: 1,
             gap: 2,
             height: rowHeight,
-            '&:hover': onRowClick ? {
-              backgroundColor: theme.palette.action.hover,
-            } : undefined,
+            '&:hover': onRowClick
+              ? {
+                  backgroundColor: theme.palette.action.hover,
+                }
+              : undefined,
           }}
         >
           {/* Render visible columns */}
-          {visibleColumns.map((column) => {
+          {visibleColumns.map(column => {
             const value = customer[column.id as keyof Customer];
-            
+
             // Special rendering for certain columns
             switch (column.id) {
               case 'status':
@@ -146,11 +149,20 @@ export function VirtualizedCustomerTable({
                     <Chip
                       label={value as string}
                       size="small"
-                      color={getStatusColor(value as string) as 'default' | 'primary' | 'secondary' | 'error' | 'info' | 'success' | 'warning'}
+                      color={
+                        getStatusColor(value as string) as
+                          | 'default'
+                          | 'primary'
+                          | 'secondary'
+                          | 'error'
+                          | 'info'
+                          | 'success'
+                          | 'warning'
+                      }
                     />
                   </Box>
                 );
-                
+
               case 'riskScore':
                 return (
                   <Box key={column.id} sx={{ flex: 1, minWidth: 100 }}>
@@ -158,22 +170,29 @@ export function VirtualizedCustomerTable({
                       <Chip
                         label={`${value}%`}
                         size="small"
-                        color={getRiskColor(value as number) as 'default' | 'primary' | 'secondary' | 'error' | 'info' | 'success' | 'warning'}
+                        color={
+                          getRiskColor(value as number) as
+                            | 'default'
+                            | 'primary'
+                            | 'secondary'
+                            | 'error'
+                            | 'info'
+                            | 'success'
+                            | 'warning'
+                        }
                         variant="outlined"
                       />
                     )}
                   </Box>
                 );
-                
+
               case 'expectedAnnualVolume':
                 return (
                   <Box key={column.id} sx={{ flex: 1, minWidth: 120 }}>
-                    <Typography variant="body2">
-                      {formatCurrency(value as number)}
-                    </Typography>
+                    <Typography variant="body2">{formatCurrency(value as number)}</Typography>
                   </Box>
                 );
-                
+
               case 'lastContactDate':
               case 'createdAt':
                 return (
@@ -183,13 +202,13 @@ export function VirtualizedCustomerTable({
                     </Typography>
                   </Box>
                 );
-                
+
               case 'actions':
                 return (
-                  <Box 
-                    key={column.id} 
+                  <Box
+                    key={column.id}
                     sx={{ flex: 0, minWidth: 120, display: 'flex', gap: 1 }}
-                    onClick={(e) => e.stopPropagation()}
+                    onClick={e => e.stopPropagation()}
                   >
                     {onEdit && (
                       <IconButton size="small" onClick={() => onEdit(customer)}>
@@ -200,17 +219,13 @@ export function VirtualizedCustomerTable({
                       <ViewIcon fontSize="small" />
                     </IconButton>
                     {onDelete && (
-                      <IconButton 
-                        size="small" 
-                        color="error"
-                        onClick={() => onDelete(customer)}
-                      >
+                      <IconButton size="small" color="error" onClick={() => onDelete(customer)}>
                         <DeleteIcon fontSize="small" />
                       </IconButton>
                     )}
                   </Box>
                 );
-                
+
               default:
                 return (
                   <Box key={column.id} sx={{ flex: 1, minWidth: 120 }}>
@@ -240,14 +255,19 @@ export function VirtualizedCustomerTable({
         fontWeight: 600,
       }}
     >
-      {visibleColumns.map((column) => (
+      {visibleColumns.map(column => (
         <Box
           key={column.id}
           sx={{
             flex: column.id === 'actions' ? 0 : 1,
-            minWidth: column.id === 'actions' ? 120 : 
-                     column.id === 'expectedAnnualVolume' ? 120 : 
-                     column.id === 'lastContactDate' ? 120 : 100,
+            minWidth:
+              column.id === 'actions'
+                ? 120
+                : column.id === 'expectedAnnualVolume'
+                  ? 120
+                  : column.id === 'lastContactDate'
+                    ? 120
+                    : 100,
           }}
         >
           <Typography variant="subtitle2" fontWeight={600}>
@@ -262,7 +282,7 @@ export function VirtualizedCustomerTable({
     <Paper sx={{ height: height + 48, display: 'flex', flexDirection: 'column' }}>
       {/* Fixed Header */}
       <Header />
-      
+
       {/* Virtualized List */}
       <Box sx={{ flex: 1 }}>
         {customers.length > 0 ? (

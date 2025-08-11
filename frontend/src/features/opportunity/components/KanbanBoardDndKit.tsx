@@ -555,7 +555,7 @@ export const KanbanBoardDndKit: React.FC = React.memo(() => {
             createdAt: opp.createdAt || new Date().toISOString(),
             updatedAt: opp.updatedAt || new Date().toISOString(),
           }));
-          
+
           setOpportunities(apiOpportunities);
         }
       } catch {

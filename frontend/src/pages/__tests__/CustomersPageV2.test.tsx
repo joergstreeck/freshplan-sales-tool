@@ -59,7 +59,13 @@ vi.mock('../../features/customers/components/wizard/CustomerOnboardingWizardModa
 
 // Mock missing components
 vi.mock('../../components/common/EmptyStateHero', () => ({
-  EmptyStateHero: ({ title, action }: { title: string; action?: { onClick: () => void; label: string } }) => (
+  EmptyStateHero: ({
+    title,
+    action,
+  }: {
+    title: string;
+    action?: { onClick: () => void; label: string };
+  }) => (
     <div>
       <h2>{title}</h2>
       {action && <button onClick={action.onClick}>{action.label}</button>}

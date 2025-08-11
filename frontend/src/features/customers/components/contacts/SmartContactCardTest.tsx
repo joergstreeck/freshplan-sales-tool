@@ -1,6 +1,6 @@
 /**
  * Test Component for SmartContactCard with MiniAuditTimeline
- * 
+ *
  * This is a test page to verify the integration of the Mini Audit Timeline
  * into the SmartContactCard component.
  */
@@ -74,10 +74,10 @@ export function SmartContactCardTest() {
       <Typography variant="h4" gutterBottom>
         SmartContactCard mit Mini Audit Timeline Test
       </Typography>
-      
+
       <Typography variant="body1" color="text.secondary" paragraph>
-        Diese Seite testet die Integration der Mini Audit Timeline in die SmartContactCard.
-        Die Timeline sollte als Accordion am unteren Rand der Karte erscheinen.
+        Diese Seite testet die Integration der Mini Audit Timeline in die SmartContactCard. Die
+        Timeline sollte als Accordion am unteren Rand der Karte erscheinen.
       </Typography>
 
       <Grid container spacing={3}>
@@ -135,7 +135,7 @@ export function SmartContactCardTest() {
           <li>Performance-optimiert mit React Query Caching (5 Minuten)</li>
           <li>"Vollständige Historie anzeigen" Link bei mehr als 5 Einträgen</li>
         </ul>
-        
+
         <Typography variant="body2" paragraph sx={{ mt: 2 }}>
           <strong>🎨 Design-Highlights:</strong>
         </Typography>

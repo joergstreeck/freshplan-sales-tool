@@ -1,13 +1,13 @@
 /**
  * Universal Search Integration Test
- * 
+ *
  * Testet den kompletten Flow:
  * 1. Suche nach Kontakt "Schmidt"
  * 2. Klick auf Kontakt-Ergebnis
  * 3. Navigation zu Customer-Seite mit highlightContact Parameter
  * 4. Auto-Switch zu Kontakte-Tab
  * 5. Scroll zu Kontakt und Highlight-Animation
- * 
+ *
  * @module UniversalSearch.integration.test
  * @since FC-005 PR4
  */
@@ -111,17 +111,17 @@ const _mockUser = {
 describe('Universal Search Integration', () => {
   let queryClient: QueryClient;
   const user = userEvent.setup();
-  
+
   beforeEach(() => {
     queryClient = new QueryClient({
       defaultOptions: {
         queries: { retry: false },
       },
     });
-    
+
     // Reset mocks
     vi.clearAllMocks();
-    
+
     // Setup fetch mocks
     (global.fetch as ReturnType<typeof vi.fn>).mockImplementation(async (url: string) => {
       // Universal search endpoint
@@ -131,7 +131,7 @@ describe('Universal Search Integration', () => {
           json: async () => mockSearchResults,
         };
       }
-      
+
       // Customer details endpoint
       if (url.includes('/api/customers/customer-456')) {
         return {
@@ -139,7 +139,7 @@ describe('Universal Search Integration', () => {
           json: async () => mockCustomer,
         };
       }
-      
+
       // Customer contacts endpoint
       if (url.includes('/api/customers/customer-456/contacts')) {
         return {
@@ -147,30 +147,33 @@ describe('Universal Search Integration', () => {
           json: async () => mockContacts,
         };
       }
-      
+
       return {
         ok: true,
         json: async () => ({ customers: [], contacts: [], totalCount: 0 }),
       };
     });
   });
-  
+
   const renderWithRouter = (initialRoute = '/customers') => {
     return render(
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
           <MemoryRouter initialEntries={[initialRoute]}>
             <Routes>
-              <Route path="/customers" element={
-                <IntelligentFilterBar
-                  onFilterChange={() => {}}
-                  onSortChange={() => {}}
-                  onColumnChange={() => {}}
-                  totalCount={100}
-                  filteredCount={50}
-                  enableUniversalSearch={true}
-                />
-              } />
+              <Route
+                path="/customers"
+                element={
+                  <IntelligentFilterBar
+                    onFilterChange={() => {}}
+                    onSortChange={() => {}}
+                    onColumnChange={() => {}}
+                    totalCount={100}
+                    filteredCount={50}
+                    enableUniversalSearch={true}
+                  />
+                }
+              />
               <Route path="/customers/:customerId" element={<CustomerDetailPage />} />
             </Routes>
           </MemoryRouter>
@@ -178,16 +181,16 @@ describe('Universal Search Integration', () => {
       </QueryClientProvider>
     );
   };
-  
+
   it('sollte kompletten Such-Flow durchführen: Suche → Klick → Navigation → Highlight', async () => {
     const { container } = renderWithRouter();
-    
+
     // 1. Finde Suchfeld und gebe "Schmidt" ein
     const searchInput = screen.getByPlaceholderText(/Suche nach Firma, Kundennummer, Kontakten/i);
     expect(searchInput).toBeInTheDocument();
-    
+
     await user.type(searchInput, 'Schmidt');
-    
+
     // 2. Warte auf Suchergebnisse
     await waitFor(() => {
       expect(global.fetch).toHaveBeenCalledWith(
@@ -195,22 +198,22 @@ describe('Universal Search Integration', () => {
         expect.any(Object)
       );
     });
-    
+
     // 3. Prüfe ob Dropdown mit Kontakt erscheint
     await waitFor(() => {
       const contactResult = screen.getByText('Lisa Schmidt');
       expect(contactResult).toBeInTheDocument();
     });
-    
+
     // Prüfe Details im Dropdown
     expect(screen.getByText('Manager')).toBeInTheDocument();
     expect(screen.getByText(/bei: Test GmbH/)).toBeInTheDocument();
     expect(screen.getByText('Hauptkontakt')).toBeInTheDocument(); // isPrimary Badge
-    
+
     // 4. Klicke auf Kontakt-Ergebnis
     const contactResult = screen.getByText('Lisa Schmidt');
     fireEvent.click(contactResult);
-    
+
     // 5. Prüfe Navigation zur Customer-Seite mit highlightContact Parameter
     await waitFor(() => {
       // CustomerDetailPage sollte geladen werden
@@ -219,17 +222,17 @@ describe('Universal Search Integration', () => {
         expect.any(Object)
       );
     });
-    
+
     // 6. Prüfe ob Kontakte-Tab aktiv ist (durch highlightContact Parameter)
     await waitFor(() => {
       const contactsTab = screen.getByRole('tab', { name: /Kontakte/i });
       expect(contactsTab).toHaveAttribute('aria-selected', 'true');
     });
-    
+
     // 7. Prüfe ob richtiger Kontakt das ID-Attribut hat
     const highlightedContact = container.querySelector('#contact-contact-123');
     expect(highlightedContact).toBeInTheDocument();
-    
+
     // 8. Prüfe ob scrollIntoView aufgerufen wurde
     await waitFor(() => {
       expect(Element.prototype.scrollIntoView).toHaveBeenCalledWith({
@@ -237,60 +240,60 @@ describe('Universal Search Integration', () => {
         block: 'center',
       });
     });
-    
+
     // 9. Prüfe ob Highlight-Animation Klasse hinzugefügt wurde
     expect(highlightedContact).toHaveClass('highlight-animation');
-    
+
     // 10. Prüfe ob Animation nach 3 Sekunden entfernt wird
     vi.advanceTimersByTime(3000);
     await waitFor(() => {
       expect(highlightedContact).not.toHaveClass('highlight-animation');
     });
   });
-  
+
   it('sollte Suchfeld leeren nach Navigation', async () => {
     renderWithRouter();
-    
+
     const searchInput = screen.getByPlaceholderText(/Suche nach Firma, Kundennummer, Kontakten/i);
     await user.type(searchInput, 'Schmidt');
-    
+
     await waitFor(() => {
       const contactResult = screen.getByText('Lisa Schmidt');
       expect(contactResult).toBeInTheDocument();
     });
-    
+
     fireEvent.click(screen.getByText('Lisa Schmidt'));
-    
+
     // Nach Navigation sollte Suchfeld geleert sein
     await waitFor(() => {
       expect(searchInput).toHaveValue('');
     });
   });
-  
+
   it('sollte Dropdown schließen bei Klick außerhalb', async () => {
     const { container } = renderWithRouter();
-    
+
     const searchInput = screen.getByPlaceholderText(/Suche nach Firma, Kundennummer, Kontakten/i);
     await user.type(searchInput, 'Schmidt');
-    
+
     await waitFor(() => {
       expect(screen.getByText('Lisa Schmidt')).toBeInTheDocument();
     });
-    
+
     // Klick außerhalb des Dropdowns
     fireEvent.mouseDown(container);
-    
+
     await waitFor(() => {
       expect(screen.queryByText('Lisa Schmidt')).not.toBeInTheDocument();
     });
   });
-  
+
   it('sollte keine Ergebnisse zeigen bei Suchanfrage < 2 Zeichen', async () => {
     renderWithRouter();
-    
+
     const searchInput = screen.getByPlaceholderText(/Suche nach Firma, Kundennummer, Kontakten/i);
     await user.type(searchInput, 'S');
-    
+
     // API sollte nicht aufgerufen werden
     await waitFor(() => {
       expect(global.fetch).not.toHaveBeenCalledWith(
@@ -298,25 +301,25 @@ describe('Universal Search Integration', () => {
         expect.any(Object)
       );
     });
-    
+
     // Kein Dropdown sollte erscheinen
     expect(screen.queryByText(/Kontakte gefunden/)).not.toBeInTheDocument();
   });
-  
+
   it('sollte Clear-Button funktionieren', async () => {
     renderWithRouter();
-    
+
     const searchInput = screen.getByPlaceholderText(/Suche nach Firma, Kundennummer, Kontakten/i);
     await user.type(searchInput, 'Schmidt');
-    
+
     await waitFor(() => {
       expect(screen.getByText('Lisa Schmidt')).toBeInTheDocument();
     });
-    
+
     // Clear-Button klicken
     const clearButton = screen.getByRole('button', { name: /clear/i });
     fireEvent.click(clearButton);
-    
+
     await waitFor(() => {
       expect(searchInput).toHaveValue('');
       expect(screen.queryByText('Lisa Schmidt')).not.toBeInTheDocument();

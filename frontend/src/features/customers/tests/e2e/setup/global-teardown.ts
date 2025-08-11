@@ -178,9 +178,7 @@ async function generateTestSummary() {
 
 ## Browser-Kompatibilität
 ${Object.entries(summary.browsers)
-  .map(
-    ([browser, stats]) => `- **${browser}:** ${stats.passed} ✅ / ${stats.failed} ❌`
-  )
+  .map(([browser, stats]) => `- **${browser}:** ${stats.passed} ✅ / ${stats.failed} ❌`)
   .join('\n')}
 
 ## Status

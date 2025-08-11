@@ -1,9 +1,9 @@
 /**
  * LazyComponent
- * 
+ *
  * Generic lazy loading wrapper for heavy components.
  * Uses intersection observer to defer rendering until visible.
- * 
+ *
  * @module LazyComponent
  * @since FC-005 PR4
  */
@@ -37,7 +37,7 @@ export const LazyComponent: React.FC<LazyComponentProps> = ({
   forceRender = false,
 }) => {
   const [shouldRender, setShouldRender] = useState(forceRender);
-  
+
   const { ref, inView } = useInView({
     threshold,
     rootMargin,
@@ -70,22 +70,14 @@ export const LazyComponent: React.FC<LazyComponentProps> = ({
           justifyContent: 'center',
         }}
       >
-        {placeholder || (
-          <CircularProgress size={24} sx={{ color: 'text.disabled' }} />
-        )}
+        {placeholder || <CircularProgress size={24} sx={{ color: 'text.disabled' }} />}
       </Box>
     );
   }
 
   return (
     <Box ref={ref}>
-      {fallback ? (
-        <React.Suspense fallback={fallback}>
-          {children}
-        </React.Suspense>
-      ) : (
-        children
-      )}
+      {fallback ? <React.Suspense fallback={fallback}>{children}</React.Suspense> : children}
     </Box>
   );
 };

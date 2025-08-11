@@ -140,71 +140,72 @@ const mockComplianceAlerts: ComplianceAlert[] = [
 
 export const auditApi = {
   // Get audit logs with filters
-  async getAuditLogs(filters: AuditFilters & { 
-    page?: number; 
-    pageSize?: number; 
-    userId?: string;
-    limit?: number;
-    action?: string;
-    from?: string;
-    to?: string;
-  }) {
+  async getAuditLogs(
+    filters: AuditFilters & {
+      page?: number;
+      pageSize?: number;
+      userId?: string;
+      limit?: number;
+      action?: string;
+      from?: string;
+      to?: string;
+    }
+  ) {
     // Always try to use real data first
     try {
+      const params = new URLSearchParams();
 
-    const params = new URLSearchParams();
-
-    // Handle date range - backend expects ISO strings for from/to
-    if (filters.from) {
-      params.append('from', filters.from);
-    } else if (filters.dateRange?.from) {
-      params.append('from', filters.dateRange.from.toISOString());
-    }
-    
-    if (filters.to) {
-      params.append('to', filters.to);
-    } else if (filters.dateRange?.to) {
-      params.append('to', filters.dateRange.to.toISOString());
-    }
-
-    // Map frontend parameters to backend expectations
-    if (filters.entityType) params.append('entityType', filters.entityType);
-    if (filters.entityId) params.append('entityId', filters.entityId);
-    if (filters.userId) params.append('userId', filters.userId);
-    
-    // Handle action -> eventType mapping
-    if (filters.action) {
-      // Map action to eventType for backend
-      const eventTypeMap: Record<string, string> = {
-        'CREATE': 'CUSTOMER_CREATED',
-        'UPDATE': 'CUSTOMER_UPDATED', 
-        'DELETE': 'CUSTOMER_DELETED',
-        'VIEW': 'CUSTOMER_VIEWED',
-        'EXPORT': 'DATA_EXPORT_STARTED',
-        'LOGIN': 'USER_LOGIN',
-        'ALL': '' // Don't send eventType for ALL
-      };
-      const eventType = eventTypeMap[filters.action] || filters.action;
-      if (eventType) {
-        params.append('eventType', eventType);
+      // Handle date range - backend expects ISO strings for from/to
+      if (filters.from) {
+        params.append('from', filters.from);
+      } else if (filters.dateRange?.from) {
+        params.append('from', filters.dateRange.from.toISOString());
       }
-    }
-    
-    if (filters.eventTypes) {
-      filters.eventTypes.forEach(type => params.append('eventType', type));
-    }
-    if (filters.users) {
-      filters.users.forEach(user => params.append('userId', user));
-    }
-    if (filters.searchText) params.append('searchText', filters.searchText);
-    if (filters.page !== undefined) params.append('page', filters.page.toString());
-    
-    // Handle both limit and pageSize (backend expects 'size')
-    const size = filters.limit || filters.pageSize || 50;
-    params.append('size', size.toString());
 
-    const response = await httpClient.get<AuditLog[]>(`/api/audit/search?${params}`);
-    return response.data;
+      if (filters.to) {
+        params.append('to', filters.to);
+      } else if (filters.dateRange?.to) {
+        params.append('to', filters.dateRange.to.toISOString());
+      }
+
+      // Map frontend parameters to backend expectations
+      if (filters.entityType) params.append('entityType', filters.entityType);
+      if (filters.entityId) params.append('entityId', filters.entityId);
+      if (filters.userId) params.append('userId', filters.userId);
+
+      // Handle action -> eventType mapping
+      if (filters.action) {
+        // Map action to eventType for backend
+        const eventTypeMap: Record<string, string> = {
+          CREATE: 'CUSTOMER_CREATED',
+          UPDATE: 'CUSTOMER_UPDATED',
+          DELETE: 'CUSTOMER_DELETED',
+          VIEW: 'CUSTOMER_VIEWED',
+          EXPORT: 'DATA_EXPORT_STARTED',
+          LOGIN: 'USER_LOGIN',
+          ALL: '', // Don't send eventType for ALL
+        };
+        const eventType = eventTypeMap[filters.action] || filters.action;
+        if (eventType) {
+          params.append('eventType', eventType);
+        }
+      }
+
+      if (filters.eventTypes) {
+        filters.eventTypes.forEach(type => params.append('eventType', type));
+      }
+      if (filters.users) {
+        filters.users.forEach(user => params.append('userId', user));
+      }
+      if (filters.searchText) params.append('searchText', filters.searchText);
+      if (filters.page !== undefined) params.append('page', filters.page.toString());
+
+      // Handle both limit and pageSize (backend expects 'size')
+      const size = filters.limit || filters.pageSize || 50;
+      params.append('size', size.toString());
+
+      const response = await httpClient.get<AuditLog[]>(`/api/audit/search?${params}`);
+      return response.data;
     } catch (error) {
       console.error('Failed to fetch audit logs, using mock data:', error);
       // Only use mock data as fallback when API fails
@@ -241,8 +242,10 @@ export const auditApi = {
     } catch (error) {
       console.error('Failed to fetch entity audit trail, using mock data:', error);
       // Only use mock data as fallback when API fails
-      const filtered = mockAuditLogs.filter(log => log.entityType === entityType && log.entityId === entityId);
-      
+      const filtered = mockAuditLogs.filter(
+        log => log.entityType === entityType && log.entityId === entityId
+      );
+
       // For development, add some mock contact audit data
       if (entityType === 'CONTACT' && filtered.length === 0) {
         const mockContactAudit: AuditLog[] = [
@@ -261,9 +264,9 @@ export const auditApi = {
             ipAddress: '192.168.1.1',
             userAgent: 'Mozilla/5.0',
             details: { fields: ['phone', 'email'] },
-            changes: { 
+            changes: {
               phone: { old: '+49 30 12345', new: '+49 30 54321' },
-              email: { old: 'old@example.com', new: 'new@example.com' }
+              email: { old: 'old@example.com', new: 'new@example.com' },
             },
             previousHash: 'abc123',
             dataHash: 'def456',
@@ -283,20 +286,20 @@ export const auditApi = {
             source: 'WEB',
             ipAddress: '192.168.1.2',
             userAgent: 'Mozilla/5.0',
-            details: { },
+            details: {},
             changes: null,
             previousHash: null,
             dataHash: 'abc123',
             success: true,
           },
         ];
-        
+
         return {
           content: mockContactAudit,
           totalElements: mockContactAudit.length,
         };
       }
-      
+
       return {
         content: filtered,
         totalElements: filtered.length,
@@ -374,7 +377,7 @@ export const auditApi = {
     const params = new URLSearchParams();
     params.append('from', options.dateRange.from.toISOString().split('T')[0]);
     params.append('to', options.dateRange.to.toISOString().split('T')[0]);
-    
+
     if (options.filters?.entityType) {
       params.append('entityType', options.filters.entityType);
     }
@@ -385,7 +388,7 @@ export const auditApi = {
     // Use the new Universal Export endpoint
     const format = options.format || 'csv';
     const url = `/api/v2/export/audit/${format}?${params}`;
-    
+
     window.open(url, '_blank');
   },
 
@@ -423,7 +426,9 @@ export const auditApi = {
       if (from) params.append('from', from.toISOString());
       if (to) params.append('to', to.toISOString());
 
-      const response = await httpClient.get<Record<string, unknown>>(`/api/audit/statistics?${params}`);
+      const response = await httpClient.get<Record<string, unknown>>(
+        `/api/audit/statistics?${params}`
+      );
       return response.data;
     } catch (error) {
       console.error('Failed to get statistics, using mock data:', error);

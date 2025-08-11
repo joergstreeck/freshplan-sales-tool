@@ -41,36 +41,36 @@ const exportOptions: ExportOption[] = [
     label: 'CSV (Excel-kompatibel)',
     icon: <TableChartIcon />,
     mimeType: 'text/csv',
-    extension: '.csv'
+    extension: '.csv',
   },
   {
     format: 'excel',
     label: 'Excel (XLSX)',
     icon: <DescriptionIcon />,
     mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-    extension: '.xlsx'
+    extension: '.xlsx',
   },
   {
     format: 'json',
     label: 'JSON (Datenformat)',
     icon: <CodeIcon />,
     mimeType: 'application/json',
-    extension: '.json'
+    extension: '.json',
   },
   {
     format: 'html',
     label: 'HTML (Webseite)',
     icon: <DescriptionIcon />,
     mimeType: 'text/html',
-    extension: '.html'
+    extension: '.html',
   },
   {
     format: 'pdf',
     label: 'PDF (Druckversion)',
     icon: <PictureAsPdfIcon />,
     mimeType: 'application/pdf',
-    extension: '.pdf'
-  }
+    extension: '.pdf',
+  },
 ];
 
 export const UniversalExportButton: React.FC<UniversalExportButtonProps> = ({
@@ -83,7 +83,7 @@ export const UniversalExportButton: React.FC<UniversalExportButtonProps> = ({
   onExportComplete,
   onExportError,
   disabled = false,
-  className
+  className,
 }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [exporting, setExporting] = useState(false);
@@ -116,9 +116,9 @@ export const UniversalExportButton: React.FC<UniversalExportButtonProps> = ({
       const response = await fetch(url, {
         method: 'GET',
         headers: {
-          'Accept': option.mimeType,
+          Accept: option.mimeType,
         },
-        credentials: 'include'
+        credentials: 'include',
       });
 
       if (!response.ok) {
@@ -129,7 +129,7 @@ export const UniversalExportButton: React.FC<UniversalExportButtonProps> = ({
       // Get the filename from Content-Disposition header or generate one
       const contentDisposition = response.headers.get('Content-Disposition');
       let filename = `${entity}_export_${new Date().toISOString().split('T')[0]}${option.extension}`;
-      
+
       if (contentDisposition) {
         const filenameMatch = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
         if (filenameMatch && filenameMatch[1]) {
@@ -150,7 +150,7 @@ export const UniversalExportButton: React.FC<UniversalExportButtonProps> = ({
 
       // Success notification
       toast.success(`Export als ${option.label} erfolgreich heruntergeladen!`);
-      
+
       if (onExportComplete) {
         onExportComplete(option.format);
       }
@@ -158,7 +158,7 @@ export const UniversalExportButton: React.FC<UniversalExportButtonProps> = ({
       console.error('Export error:', error);
       const errorMessage = error instanceof Error ? error.message : 'Export fehlgeschlagen';
       toast.error(errorMessage);
-      
+
       if (onExportError) {
         onExportError(error instanceof Error ? error : new Error(errorMessage));
       }
@@ -177,18 +177,22 @@ export const UniversalExportButton: React.FC<UniversalExportButtonProps> = ({
         startIcon={exporting ? <CircularProgress size={16} /> : <DownloadIcon />}
         onClick={handleClick}
         disabled={disabled || exporting}
-        sx={buttonColor === 'primary' ? {
-          borderColor: '#94C456',
-          color: '#004F7B',
-          '&:hover': {
-            borderColor: '#7AA348',
-            backgroundColor: 'rgba(148, 196, 86, 0.08)'
-          }
-        } : {}}
+        sx={
+          buttonColor === 'primary'
+            ? {
+                borderColor: '#94C456',
+                color: '#004F7B',
+                '&:hover': {
+                  borderColor: '#7AA348',
+                  backgroundColor: 'rgba(148, 196, 86, 0.08)',
+                },
+              }
+            : {}
+        }
       >
         {exporting ? 'Exportiere...' : buttonLabel}
       </Button>
-      
+
       <Menu
         anchorEl={anchorEl}
         open={open}
@@ -202,23 +206,12 @@ export const UniversalExportButton: React.FC<UniversalExportButtonProps> = ({
           horizontal: 'right',
         }}
       >
-        {exportOptions.map((option) => (
-          <MenuItem
-            key={option.format}
-            onClick={() => handleExport(option)}
-            disabled={exporting}
-          >
+        {exportOptions.map(option => (
+          <MenuItem key={option.format} onClick={() => handleExport(option)} disabled={exporting}>
             <ListItemIcon>
-              {exportingFormat === option.format ? (
-                <CircularProgress size={20} />
-              ) : (
-                option.icon
-              )}
+              {exportingFormat === option.format ? <CircularProgress size={20} /> : option.icon}
             </ListItemIcon>
-            <ListItemText 
-              primary={option.label}
-              secondary={option.extension}
-            />
+            <ListItemText primary={option.label} secondary={option.extension} />
           </MenuItem>
         ))}
       </Menu>

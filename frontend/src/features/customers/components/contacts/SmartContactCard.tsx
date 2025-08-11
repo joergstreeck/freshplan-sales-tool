@@ -1,11 +1,11 @@
 /**
  * SmartContactCard Component
- * 
+ *
  * Enhanced contact card with relationship intelligence, visual warmth indicators,
  * and quick actions for efficient contact management.
- * 
+ *
  * Part of FC-005 Contact Management UI - PR 3.
- * 
+ *
  * @see /docs/features/FC-005-CUSTOMER-MANAGEMENT/Step3/SMART_CONTACT_CARDS.md
  */
 
@@ -87,13 +87,13 @@ export const SmartContactCard: React.FC<SmartContactCardProps> = ({
   const { user } = useAuth();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [isCardHovered, setIsCardHovered] = useState(false);
-  
+
   // Check if user can view audit trail
   // In development with authBypass, always allow audit viewing
   const isDevelopment = import.meta.env.DEV;
-  const canViewAudit = showAuditTrail && (isDevelopment || user?.roles?.some(role => 
-    ['admin', 'manager', 'auditor'].includes(role)
-  ));
+  const canViewAudit =
+    showAuditTrail &&
+    (isDevelopment || user?.roles?.some(role => ['admin', 'manager', 'auditor'].includes(role)));
 
   // Helper function - must be defined before use
   const isBirthdayUpcoming = (birthday?: string): boolean => {
@@ -105,11 +105,11 @@ export const SmartContactCard: React.FC<SmartContactCardProps> = ({
       birthdayDate.getMonth(),
       birthdayDate.getDate()
     );
-    
+
     const daysUntilBirthday = Math.ceil(
       (thisYearBirthday.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
     );
-    
+
     return daysUntilBirthday >= 0 && daysUntilBirthday <= 7;
   };
 
@@ -161,7 +161,8 @@ export const SmartContactCard: React.FC<SmartContactCardProps> = ({
 
   const getAvatarColor = () => {
     const colors = ['#94C456', '#004F7B', '#FF8800', '#2196F3', '#9C27B0'];
-    const index = (contact.firstName.charCodeAt(0) + contact.lastName.charCodeAt(0)) % colors.length;
+    const index =
+      (contact.firstName.charCodeAt(0) + contact.lastName.charCodeAt(0)) % colors.length;
     return colors[index];
   };
 
@@ -176,17 +177,16 @@ export const SmartContactCard: React.FC<SmartContactCardProps> = ({
     return configs[contact.decisionLevel || 'nutzer'];
   };
 
-
   const getDaysUntilBirthday = (birthday?: string): number => {
     if (!birthday) return -1;
     const today = new Date();
     const birthdayDate = new Date(birthday);
     birthdayDate.setFullYear(today.getFullYear());
-    
+
     if (birthdayDate < today) {
       birthdayDate.setFullYear(today.getFullYear() + 1);
     }
-    
+
     return Math.floor((birthdayDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
   };
 
@@ -311,7 +311,7 @@ export const SmartContactCard: React.FC<SmartContactCardProps> = ({
           {/* More Menu Button */}
           <IconButton
             size="small"
-            onClick={(e) => {
+            onClick={e => {
               e.stopPropagation();
               setAnchorEl(e.currentTarget);
             }}
@@ -379,7 +379,7 @@ export const SmartContactCard: React.FC<SmartContactCardProps> = ({
           <Box sx={{ mt: 2, pt: 1, borderTop: 1, borderColor: 'divider' }}>
             {contact.hobbies && contact.hobbies.length > 0 && (
               <Stack direction="row" spacing={0.5} flexWrap="wrap" sx={{ mb: 1 }}>
-                {contact.hobbies.slice(0, 3).map((hobby) => (
+                {contact.hobbies.slice(0, 3).map(hobby => (
                   <Chip
                     key={hobby}
                     label={hobby}
@@ -430,7 +430,7 @@ export const SmartContactCard: React.FC<SmartContactCardProps> = ({
         <CardActions sx={{ justifyContent: 'center', py: 1, borderTop: 1, borderColor: 'divider' }}>
           <ContactQuickActions
             contact={contact}
-            onAction={(action) => onQuickAction(action, contact.id)}
+            onAction={action => onQuickAction(action, contact.id)}
             variant="compact"
           />
         </CardActions>

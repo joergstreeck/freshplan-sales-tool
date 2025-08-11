@@ -1,9 +1,9 @@
 /**
  * LazyImage Component
- * 
+ *
  * Optimized image loading with intersection observer for performance.
  * Shows skeleton while loading and handles errors gracefully.
- * 
+ *
  * @module LazyImage
  * @since FC-005 PR4
  */
@@ -57,18 +57,18 @@ export const LazyImage: React.FC<LazyImageProps> = ({
     if (inView && src) {
       // Start loading the image
       const img = new Image();
-      
+
       img.onload = () => {
         setImageSrc(src);
         setIsLoaded(true);
         onLoad?.();
       };
-      
+
       img.onerror = () => {
         setImageError(true);
         onError?.();
       };
-      
+
       img.src = src;
     }
   }, [inView, src, onLoad, onError]);
@@ -99,12 +99,7 @@ export const LazyImage: React.FC<LazyImageProps> = ({
     return (
       <Box ref={ref} sx={{ width, height }} className={className}>
         {placeholder || (
-          <Skeleton
-            variant="rectangular"
-            width={width}
-            height={height}
-            animation="wave"
-          />
+          <Skeleton variant="rectangular" width={width} height={height} animation="wave" />
         )}
       </Box>
     );

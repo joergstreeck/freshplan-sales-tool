@@ -1,6 +1,6 @@
 /**
  * Filter Types for Intelligent Customer Filter Bar
- * 
+ *
  * @module filter.types
  * @since FC-005 PR4
  */
@@ -14,7 +14,7 @@ export enum RiskLevel {
   LOW = 'LOW',
   MEDIUM = 'MEDIUM',
   HIGH = 'HIGH',
-  CRITICAL = 'CRITICAL'
+  CRITICAL = 'CRITICAL',
 }
 
 /**
@@ -79,15 +79,15 @@ export type FilterOperator = 'AND' | 'OR';
  */
 export interface AdvancedFilter {
   field: string;
-  operator: 
-    | 'equals' 
-    | 'contains' 
-    | 'starts_with' 
-    | 'ends_with' 
-    | 'greater' 
-    | 'less' 
-    | 'between' 
-    | 'in' 
+  operator:
+    | 'equals'
+    | 'contains'
+    | 'starts_with'
+    | 'ends_with'
+    | 'greater'
+    | 'less'
+    | 'between'
+    | 'in'
     | 'not_in';
   value: unknown;
   caseSensitive?: boolean;

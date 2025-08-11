@@ -8,15 +8,7 @@
  */
 
 import React, { useCallback, useMemo } from 'react';
-import {
-  Box,
-  Typography,
-  Alert,
-  AlertTitle,
-  Divider,
-  Card,
-  CardContent,
-} from '@mui/material';
+import { Box, Typography, Alert, AlertTitle, Divider, Card, CardContent } from '@mui/material';
 import { useCustomerOnboardingStore } from '../../stores/customerOnboardingStore';
 import { useFieldDefinitions } from '../../hooks/useFieldDefinitions';
 import { DynamicFieldRenderer } from '../fields/DynamicFieldRenderer';

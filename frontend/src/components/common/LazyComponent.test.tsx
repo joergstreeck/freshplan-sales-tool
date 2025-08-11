@@ -11,8 +11,8 @@ vi.mock('react-intersection-observer', () => ({
   useInView: vi.fn(() => ({
     ref: mockRef,
     inView: mockInView,
-    entry: undefined
-  }))
+    entry: undefined,
+  })),
 }));
 
 // Mock IntersectionObserver for fallback
@@ -52,7 +52,8 @@ describe('LazyComponent', () => {
 
   beforeEach(() => {
     mockObserverInstances.clear();
-    global.IntersectionObserver = MockIntersectionObserver as unknown as typeof IntersectionObserver;
+    global.IntersectionObserver =
+      MockIntersectionObserver as unknown as typeof IntersectionObserver;
     mockInView = false; // Reset to not in view by default
   });
 
@@ -76,7 +77,7 @@ describe('LazyComponent', () => {
     it('should render component when intersecting', async () => {
       // Set mock to in view
       mockInView = true;
-      
+
       render(
         <LazyComponent fallback={fallback}>
           <TestComponent />
@@ -240,11 +241,7 @@ describe('LazyComponent', () => {
     });
 
     it('should handle null children', () => {
-      render(
-        <LazyComponent fallback={fallback}>
-          {null}
-        </LazyComponent>
-      );
+      render(<LazyComponent fallback={fallback}>{null}</LazyComponent>);
 
       expect(screen.getByTestId('fallback')).toBeInTheDocument();
     });

@@ -1,28 +1,16 @@
 /**
  * SwipeableContactCard Component
- * 
+ *
  * Touch-optimized contact card with swipe gestures for quick actions.
  * Part of FC-005 Contact Management UI - Mobile Actions.
- * 
+ *
  * @see /docs/features/FC-005-CUSTOMER-MANAGEMENT/Step3/MOBILE_CONTACT_ACTIONS.md
  */
 
 import React, { useState, useEffect } from 'react';
 import { useSwipeable } from 'react-swipeable';
-import {
-  Box,
-  Card,
-  CardContent,
-  Typography,
-  Fade,
-  IconButton,
-  Zoom,
-} from '@mui/material';
-import {
-  Phone as PhoneIcon,
-  Email as EmailIcon,
-  Close as CloseIcon,
-} from '@mui/icons-material';
+import { Box, Card, CardContent, Typography, Fade, IconButton, Zoom } from '@mui/material';
+import { Phone as PhoneIcon, Email as EmailIcon, Close as CloseIcon } from '@mui/icons-material';
 
 import { SmartContactCard } from '../contacts/SmartContactCard';
 import { MobileActionBar } from './MobileActionBar';
@@ -75,7 +63,7 @@ export const SwipeableContactCard: React.FC<SwipeableContactCardProps> = ({
   }, [contact, intelligence, showInstructions]);
 
   const handlers = useSwipeable({
-    onSwiping: (eventData) => {
+    onSwiping: eventData => {
       const progress = Math.min(Math.abs(eventData.deltaX) / 100, 1);
       setSwipeProgress(progress);
       setSwipeDirection(eventData.deltaX < 0 ? 'left' : 'right');
@@ -134,18 +122,10 @@ export const SwipeableContactCard: React.FC<SwipeableContactCardProps> = ({
     >
       {/* Swipe Action Indicators */}
       {swipeDirection === 'left' && swipeActions?.left && (
-        <SwipeIndicator
-          direction="left"
-          action={swipeActions.left}
-          progress={swipeProgress}
-        />
+        <SwipeIndicator direction="left" action={swipeActions.left} progress={swipeProgress} />
       )}
       {swipeDirection === 'right' && swipeActions?.right && (
-        <SwipeIndicator
-          direction="right"
-          action={swipeActions.right}
-          progress={swipeProgress}
-        />
+        <SwipeIndicator direction="right" action={swipeActions.right} progress={swipeProgress} />
       )}
 
       {/* Main Card with Transform */}
@@ -176,15 +156,13 @@ export const SwipeableContactCard: React.FC<SwipeableContactCardProps> = ({
           <MobileActionBar
             contact={contact}
             suggestions={actionSuggestionService.getSuggestedActions(contact, intelligence)}
-            onAction={(action) => onAction(action, contact.id)}
+            onAction={action => onAction(action, contact.id)}
           />
         )}
       </Box>
 
       {/* Swipe Instructions Overlay */}
-      {showSwipeInstructions && (
-        <SwipeInstructions onDismiss={dismissInstructions} />
-      )}
+      {showSwipeInstructions && <SwipeInstructions onDismiss={dismissInstructions} />}
     </Box>
   );
 };
@@ -283,9 +261,7 @@ const SwipeInstructions: React.FC<{
             <Box sx={{ my: 3 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                 <EmailIcon sx={{ fontSize: 40, color: '#2196F3', mr: 2 }} />
-                <Typography variant="body1">
-                  👈 Nach links für E-Mail
-                </Typography>
+                <Typography variant="body1">👈 Nach links für E-Mail</Typography>
               </Box>
 
               <Box sx={{ display: 'flex', alignItems: 'center' }}>

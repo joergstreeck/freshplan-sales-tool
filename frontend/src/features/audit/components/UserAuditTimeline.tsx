@@ -1,9 +1,9 @@
 /**
  * User Audit Timeline Component
- * 
+ *
  * Displays audit history for a specific user with filtering and export capabilities.
  * Part of FC-005 Contact Management UI - PR 3.
- * 
+ *
  * @see /docs/features/FC-005-CUSTOMER-MANAGEMENT/Step3/AUDIT_TRAIL_SYSTEM.md
  */
 
@@ -144,7 +144,7 @@ export const UserAuditTimeline: React.FC<UserAuditTimelineProps> = ({
   });
 
   const toggleExpanded = (logId: string) => {
-    setExpandedItems((prev) => {
+    setExpandedItems(prev => {
       const newSet = new Set(prev);
       if (newSet.has(logId)) {
         newSet.delete(logId);
@@ -173,9 +173,7 @@ export const UserAuditTimeline: React.FC<UserAuditTimelineProps> = ({
 
   if (error) {
     return (
-      <Alert severity="error">
-        Fehler beim Laden der Audit-Logs: {(error as Error).message}
-      </Alert>
+      <Alert severity="error">Fehler beim Laden der Audit-Logs: {(error as Error).message}</Alert>
     );
   }
 
@@ -226,7 +224,7 @@ export const UserAuditTimeline: React.FC<UserAuditTimelineProps> = ({
               size="small"
               label="Aktion"
               value={actionFilter}
-              onChange={(e) => setActionFilter(e.target.value)}
+              onChange={e => setActionFilter(e.target.value)}
               sx={{ minWidth: 150 }}
             >
               <MenuItem value="ALL">Alle Aktionen</MenuItem>
@@ -242,7 +240,7 @@ export const UserAuditTimeline: React.FC<UserAuditTimelineProps> = ({
               size="small"
               label="Entität"
               value={entityFilter}
-              onChange={(e) => setEntityFilter(e.target.value)}
+              onChange={e => setEntityFilter(e.target.value)}
               sx={{ minWidth: 150 }}
             >
               <MenuItem value="ALL">Alle Entitäten</MenuItem>
@@ -259,7 +257,7 @@ export const UserAuditTimeline: React.FC<UserAuditTimelineProps> = ({
       <Paper sx={{ p: 2 }}>
         {isLoading ? (
           <Box>
-            {[1, 2, 3].map((i) => (
+            {[1, 2, 3].map(i => (
               <Skeleton key={i} variant="rectangular" height={80} sx={{ mb: 2 }} />
             ))}
           </Box>
