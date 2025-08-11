@@ -150,11 +150,131 @@ if (!response.ok) {
 ## 📚 Referenzen
 
 - Original Code Review Feedback in Session vom 11.08.2025
+- Enterprise Code Review vom 11.08.2025
 - CLAUDE.md für Entwicklungsrichtlinien
 - Frontend: React + TypeScript + Vite
 - Backend: Quarkus + PostgreSQL
 
 ---
 
+# 🏢 PHASE 2: Enterprise-Standard Improvements
+
+**Basierend auf Enterprise Code Review vom 11.08.2025**
+
+## 📋 Geplante PRs für Enterprise-Standard
+
+### PR #1: Code Review Quick Fixes (DIESER PR)
+**Branch:** `feature/code-review-improvements`
+**Status:** 🔄 In Arbeit
+**Inhalt:**
+- ✅ Duplikat-Ordner entfernt
+- ✅ MSW Mock-Token abgesichert
+- ✅ ApiService Timeout hinzugefügt
+- ✅ UserResource in Dev aktiviert
+- 🔄 Error Boundaries (KÖNNEN NOCH REIN - 2h Aufwand)
+- 🔄 Bundle-Size Quick Wins (KÖNNEN NOCH REIN - 2h Aufwand)
+
+### PR #2: Security & Validation
+**Branch:** `feature/security-hardening`
+**Geschätzter Aufwand:** 1 Tag
+**Priorität:** HOCH
+**Inhalt:**
+- Environment Variables für Credentials (.env Setup)
+- Basis Input-Validierung (Required, Length, Email)
+- XSS-Protection Headers
+- Content Security Policy
+
+### PR #3: Testing Foundation
+**Branch:** `feature/integration-tests`
+**Geschätzter Aufwand:** 2-3 Tage
+**Priorität:** KRITISCH
+**Inhalt:**
+- 10 Critical Path Integration Tests
+- 5 Happy Path E2E Tests
+- Test-Utilities und Fixtures
+- CI Integration für Tests
+
+### PR #4: Performance Optimizations
+**Branch:** `feature/performance-boost`
+**Geschätzter Aufwand:** 2 Tage
+**Priorität:** MITTEL
+**Inhalt:**
+- Bundle-Size Optimierung (Ziel: <500KB)
+- Code-Splitting für große Module
+- React Query Caching optimieren
+- Lazy Loading für Routen
+
+### PR #5: API Improvements
+**Branch:** `feature/api-v1`
+**Geschätzter Aufwand:** 1 Tag
+**Priorität:** NIEDRIG (aber wichtig für Zukunft)
+**Inhalt:**
+- API Versionierung (/api/v1/*)
+- Konsistente Error Responses
+- OpenAPI Dokumentation vervollständigen
+- Rate Limiting (Dev-Profile ausgenommen)
+
+### PR #6: Monitoring & Observability
+**Branch:** `feature/monitoring`
+**Geschätzter Aufwand:** 2 Tage
+**Priorität:** MITTEL
+**Inhalt:**
+- Health Checks (/health/ready, /health/live)
+- Structured Logging
+- Error Tracking vorbereiten (Sentry-Ready)
+- Basic Metrics (Response Times)
+
+## 🎯 Was können wir NOCH in den aktuellen PR packen?
+
+### Option A: Error Boundaries (2h) ✅ EMPFOHLEN
+**Warum:** Verhindert White Screen of Death
+```tsx
+// Nur 1 Datei: frontend/src/components/ErrorBoundary.tsx
+// Plus Integration in App.tsx
+```
+
+### Option B: Bundle-Size Quick Wins (2h) ✅ EMPFOHLEN
+**Warum:** Mobile Performance sofort besser
+```bash
+# 1. Analyse
+npm run build && npx vite-bundle-visualizer
+
+# 2. Lodash optimieren
+# 3. Moment.js ersetzen
+```
+
+### Option C: Basic Validation (4h) ⚠️ Zu groß für diesen PR
+**Besser:** Eigener Security-PR
+
+## 📊 Zeitplan für Enterprise-Standard
+
+### Woche 1 (diese Woche):
+- **Mo-Di:** PR #1 fertig (Code Review Improvements + Error Boundaries)
+- **Mi-Do:** PR #2 (Security & Validation)
+- **Fr:** Review & Merge
+
+### Woche 2:
+- **Mo-Mi:** PR #3 (Testing Foundation) - KRITISCH!
+- **Do-Fr:** PR #4 (Performance)
+
+### Woche 3:
+- **Mo-Di:** PR #5 (API Improvements)
+- **Mi-Do:** PR #6 (Monitoring)
+- **Fr:** Enterprise-Standard Level 1 erreicht! 🎉
+
+## 🏆 Ziele
+
+### Nach PR #1-3 (Ende Woche 1):
+- **Sicherheit:** Basis-Schutz vorhanden
+- **Stabilität:** Error Boundaries + Tests
+- **Performance:** Bundle <800KB
+
+### Nach PR #4-6 (Ende Woche 3):
+- **Enterprise Level 1:** 85/100 Punkte
+- **Production-Ready:** Kann deployed werden
+- **Monitoring:** Observability vorhanden
+
+---
+
 **Hinweis für nächste Claude-Session:**
-Dieser Plan dokumentiert alle geplanten Änderungen. Bei Fortsetzung mit Schritt 2 (MSW Mock-Token) beginnen.
+Dieser Plan dokumentiert alle geplanten Änderungen. Aktueller Stand: PR #1 mit 4 von 6 möglichen Verbesserungen.
