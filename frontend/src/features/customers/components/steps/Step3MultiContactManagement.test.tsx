@@ -79,7 +79,7 @@ vi.mock('../adaptive/AdaptiveFormContainer', () => ({
 }));
 
 vi.mock('../contacts/ContactFormDialog', () => ({
-  ContactFormDialog: ({ open, onClose, contact }: unknown) =>
+  ContactFormDialog: ({ open }: unknown) =>
     open ? <div role="dialog">Contact Form Dialog</div> : null,
 }));
 

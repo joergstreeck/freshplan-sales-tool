@@ -95,7 +95,7 @@ export const Step1BasisFilialstruktur: React.FC = () => {
   }, [customerData.totalLocationsEU]);
 
   const handleFieldChange = useCallback(
-    (fieldKey: string, value: any) => {
+    (fieldKey: string, value: unknown) => {
       setCustomerField(fieldKey, value);
     },
     [setCustomerField]
@@ -115,7 +115,7 @@ export const Step1BasisFilialstruktur: React.FC = () => {
       const fieldError = validationErrors[field.key];
 
       // Handle field change
-      const handleChange = (value: any) => {
+      const handleChange = (value: unknown) => {
         handleFieldChange(field.key, value);
       };
 

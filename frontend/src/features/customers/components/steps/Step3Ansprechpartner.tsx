@@ -14,7 +14,6 @@ import {
   Alert,
   AlertTitle,
   Divider,
-  Chip,
   Card,
   CardContent,
 } from '@mui/material';
@@ -56,7 +55,7 @@ export const Step3Ansprechpartner: React.FC = () => {
   }, [getFieldByKey]);
 
   const handleFieldChange = useCallback(
-    (fieldKey: string, value: any) => {
+    (fieldKey: string, value: unknown) => {
       setCustomerField(fieldKey, value);
     },
     [setCustomerField]

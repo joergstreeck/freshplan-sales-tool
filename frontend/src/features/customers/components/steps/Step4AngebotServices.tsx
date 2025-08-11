@@ -31,12 +31,10 @@ export const Step4AngebotServices: React.FC = () => {
   const { locations, customerData, chainCustomer } = useCustomerOnboardingStore();
 
   const {
-    locationServices,
     currentLocationIndex,
     completedLocationIds,
     applyToAll,
     saveLocationServices,
-    copyLocationServices,
     setCurrentLocationIndex,
     setApplyToAll,
     applyToAllRemaining,
@@ -44,7 +42,7 @@ export const Step4AngebotServices: React.FC = () => {
   } = useLocationServicesStore();
 
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [errors, _setErrors] = useState<Record<string, string>>({});
 
   // Check if single location mode
   const isSingleLocation = chainCustomer === 'nein' || locations.length === 1;
@@ -53,7 +51,7 @@ export const Step4AngebotServices: React.FC = () => {
 
   // Handlers
   const handleServiceChange = useCallback(
-    (field: string, value: any) => {
+    (field: string, value: unknown) => {
       if (!currentLocation) return;
 
       const updatedServices: LocationServiceData = {
@@ -65,9 +63,6 @@ export const Step4AngebotServices: React.FC = () => {
 
       // Apply to all if checkbox is checked
       if (applyToAll && locations.length > 1) {
-        const remainingLocations = locations.filter(
-          loc => loc.id !== currentLocation.id && !completedLocationIds.includes(loc.id)
-        );
         applyToAllRemaining(locations, updatedServices);
       }
     },
