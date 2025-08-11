@@ -4,8 +4,8 @@
  * Tests actual component behavior with minimal mocking
  */
 
-import { describe, it, expect, vi, beforeAll, afterAll } from 'vitest';
-import { render, screen, waitFor, within } from '@testing-library/react';
+import { describe, it, expect, vi, beforeAll as _beforeAll, afterAll as _afterAll } from 'vitest';
+import { render, screen, waitFor, within as _within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
@@ -21,11 +21,11 @@ import { VirtualizedCustomerTable } from '../customers/components/VirtualizedCus
 
 // Setup mocks
 vi.mock('../customers/hooks/useDebounce', () => ({
-  useDebounce: (value: any) => value,
+  useDebounce: (value: unknown) => value,
 }));
 
 vi.mock('../customers/hooks/useLocalStorage', () => ({
-  useLocalStorage: (key: string, defaultValue: any) => [defaultValue, vi.fn()],
+  useLocalStorage: (key: string, defaultValue: unknown) => [defaultValue, vi.fn()],
 }));
 
 vi.mock('../customers/hooks/useUniversalSearch', () => ({
@@ -132,7 +132,7 @@ describe('PR4 Enterprise Test Suite', () => {
 
     it('handles search input', async () => {
       const user = userEvent.setup();
-      const { container } = render(
+      const { container: _container } = render(
         <IntelligentFilterBar {...filterProps} />, 
         { wrapper: createWrapper() }
       );
@@ -197,7 +197,7 @@ describe('PR4 Enterprise Test Suite', () => {
     });
 
     it('works in compact mode', async () => {
-      const { container } = render(
+      const { container: _container } = render(
         <MiniAuditTimeline {...auditProps} compact={true} />, 
         { wrapper: createWrapper() }
       );
@@ -209,7 +209,7 @@ describe('PR4 Enterprise Test Suite', () => {
     });
 
     it('works in full mode', async () => {
-      const { container } = render(
+      const { container: _container } = render(
         <MiniAuditTimeline {...auditProps} compact={false} />, 
         { wrapper: createWrapper() }
       );
@@ -224,7 +224,7 @@ describe('PR4 Enterprise Test Suite', () => {
   describe('3. LazyComponent - Lazy Loading', () => {
     it('renders placeholder initially', () => {
       const TestChild = () => <div>Loaded Content</div>;
-      const { container } = render(
+      const { container: _container } = render(
         <LazyComponent>
           <TestChild />
         </LazyComponent>,
@@ -382,7 +382,7 @@ describe('PR4 Enterprise Test Suite', () => {
         lastContactDate: new Date().toISOString(),
       }));
       
-      const { container } = render(
+      const { container: _container } = render(
         <VirtualizedCustomerTable {...tableProps} customers={manyCustomers} />, 
         { wrapper: createWrapper() }
       );
@@ -407,7 +407,7 @@ describe('PR4 Enterprise Test Suite', () => {
         },
       ];
       
-      const { container } = render(
+      const { container: _container } = render(
         <div>
           <IntelligentFilterBar
             onFilterChange={mockOnFilterChange}
@@ -517,7 +517,7 @@ describe('PR4 Enterprise Test Suite', () => {
 
     it('Handles rapid interactions without errors', async () => {
       const user = userEvent.setup({ delay: 5 });
-      const { container } = render(
+      const { container: _container } = render(
         <IntelligentFilterBar
           onFilterChange={vi.fn()}
           onSortChange={vi.fn()}

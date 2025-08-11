@@ -154,7 +154,7 @@ export const AuditStreamMonitor: React.FC<AuditStreamMonitorProps> = ({
     }
   };
 
-  const getSeverityColor = (severity?: string) => {
+  const _getSeverityColor = (severity?: string) => {
     switch (severity) {
       case 'error':
         return 'error';

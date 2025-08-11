@@ -47,7 +47,7 @@ interface UserActivity {
   criticalActions: number;
 }
 
-export const UserActivityPanel: React.FC<UserActivityPanelProps> = ({ dateRange }) => {
+export const UserActivityPanel: React.FC<UserActivityPanelProps> = ({ dateRange: _dateRange }) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [searchTerm, setSearchTerm] = useState('');

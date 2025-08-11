@@ -52,7 +52,7 @@ export const CompliancePanel: React.FC<CompliancePanelProps> = ({
     }
   };
 
-  const getSeverityColor = (severity: string) => {
+  const _getSeverityColor = (severity: string) => {
     switch (severity) {
       case 'CRITICAL':
         return 'error';

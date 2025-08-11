@@ -61,7 +61,7 @@ export const AuditDetailModal: React.FC<AuditDetailModalProps> = ({ auditId, ope
     }
   };
 
-  const getSeverityColor = (severity?: string): 'error' | 'warning' | 'info' | 'default' => {
+  const _getSeverityColor = (severity?: string): 'error' | 'warning' | 'info' | 'default' => {
     switch (severity) {
       case 'HIGH':
         return 'error';

@@ -20,11 +20,11 @@ import {
   CheckCircle as CheckCircleIcon,
   Storage as StorageIcon,
   Speed as SpeedIcon,
-  Info as InfoIcon,
+  Info as _InfoIcon,
   Assessment as AssessmentIcon,
 } from '@mui/icons-material';
 import { format } from 'date-fns';
-import { de } from 'date-fns/locale';
+import { de as _de } from 'date-fns/locale';
 
 interface StatCard {
   title: string;
