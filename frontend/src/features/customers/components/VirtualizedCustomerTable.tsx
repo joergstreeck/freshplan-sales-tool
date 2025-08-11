@@ -292,20 +292,23 @@ export function VirtualizedCustomerTable({
             loadMoreItems={loadMoreItems}
           >
             {({ onItemsRendered, ref }) => (
-              <List
-                ref={ref}
-                height={height}
-                itemCount={itemCount}
-                itemSize={rowHeight}
-                onItemsRendered={onItemsRendered}
-                width="100%"
-              >
-                {Row}
-              </List>
+              <div data-testid="virtual-list">
+                <List
+                  ref={ref}
+                  height={height}
+                  itemCount={itemCount}
+                  itemSize={rowHeight}
+                  onItemsRendered={onItemsRendered}
+                  width="100%"
+                >
+                  {Row}
+                </List>
+              </div>
             )}
           </InfiniteLoader>
         ) : (
           <Box
+            data-testid="virtual-list"
             sx={{
               display: 'flex',
               alignItems: 'center',

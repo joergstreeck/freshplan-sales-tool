@@ -229,11 +229,12 @@ export function MiniAuditTimeline({
   }
 
   return (
-    <Accordion
-      expanded={expanded}
-      onChange={(_, isExpanded) => setExpanded(isExpanded)}
-      sx={{
-        boxShadow: 'none',
+    <Box data-testid="mini-audit-timeline">
+      <Accordion
+        expanded={expanded}
+        onChange={(_, isExpanded) => setExpanded(isExpanded)}
+        sx={{
+          boxShadow: 'none',
         borderTop: `1px solid ${theme.palette.divider}`,
         '&:before': { display: 'none' },
         backgroundColor: 'transparent',
@@ -363,5 +364,6 @@ export function MiniAuditTimeline({
         )}
       </AccordionDetails>
     </Accordion>
+    </Box>
   );
 }

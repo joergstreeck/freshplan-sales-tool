@@ -6,6 +6,7 @@
  */
 
 import React from 'react';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor, fireEvent } from '../../../../../test/test-utils';
 import { SmartContactCard } from '../SmartContactCard';
 import type { Contact } from '../../../types/contact.types';
@@ -42,21 +43,22 @@ const mockWarmth: RelationshipWarmth = {
 
 const defaultProps = {
   contact: mockContact,
-  onEdit: jest.fn(),
-  onDelete: jest.fn(),
-  onSetPrimary: jest.fn(),
-  onAssignLocation: jest.fn(),
-  onViewTimeline: jest.fn(),
-  onQuickAction: jest.fn(),
+  onEdit: vi.fn(),
+  onDelete: vi.fn(),
+  onSetPrimary: vi.fn(),
+  onAssignLocation: vi.fn(),
+  onViewTimeline: vi.fn(),
+  onQuickAction: vi.fn(),
 };
 
 const renderWithTheme = (component: React.ReactElement) => {
-  return render(<ThemeProvider theme={theme}>{component}</ThemeProvider>);
+  // render already includes all providers via test-utils
+  return render(component);
 };
 
 describe('SmartContactCard', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('Basic Rendering', () => {
@@ -153,7 +155,7 @@ describe('SmartContactCard', () => {
     });
 
     it('should call onDelete after confirmation', async () => {
-      window.confirm = jest.fn(() => true);
+      window.confirm = vi.fn(() => true);
       renderWithTheme(<SmartContactCard {...defaultProps} />);
 
       const moreButton = screen.getByRole('button', { name: '' });
@@ -169,7 +171,7 @@ describe('SmartContactCard', () => {
     });
 
     it('should not delete when confirmation is cancelled', async () => {
-      window.confirm = jest.fn(() => false);
+      window.confirm = vi.fn(() => false);
       renderWithTheme(<SmartContactCard {...defaultProps} />);
 
       const moreButton = screen.getByRole('button', { name: '' });
