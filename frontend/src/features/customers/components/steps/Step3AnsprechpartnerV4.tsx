@@ -126,7 +126,7 @@ export const Step3AnsprechpartnerV4: React.FC = () => {
   }, []);
 
   const handleFieldChange = useCallback(
-    (fieldKey: string, value: any) => {
+    (fieldKey: string, value: unknown) => {
       setCustomerField(fieldKey, value);
     },
     [setCustomerField]

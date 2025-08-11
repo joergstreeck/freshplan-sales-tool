@@ -119,7 +119,7 @@ class OfflineQueueService {
 
       const queue = JSON.parse(stored);
       // Convert date strings back to Date objects
-      return queue.map((item: any) => ({
+      return queue.map((item: unknown) => ({
         ...item,
         timestamp: new Date(item.timestamp),
       }));

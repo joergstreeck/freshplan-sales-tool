@@ -199,9 +199,9 @@ export const useUniversalSearch = (
 
       setSearchResults(transformedResults);
       setError(null);
-    } catch (err: any) {
+    } catch (err) {
       // Ignore aborted requests
-      if (err.name === 'AbortError') {
+      if (err instanceof Error && err.name === 'AbortError') {
         return;
       }
 

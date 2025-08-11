@@ -85,7 +85,7 @@ export const Step2HerausforderungenPotenzialV3: React.FC = () => {
 
   // Handlers
   const handleFieldChange = useCallback(
-    (fieldKey: string, value: any) => {
+    (fieldKey: string, value: unknown) => {
       setCustomerField(fieldKey, value);
     },
     [setCustomerField]

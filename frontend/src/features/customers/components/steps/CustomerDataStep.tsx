@@ -38,7 +38,7 @@ export const CustomerDataStep: React.FC = () => {
    * Handle field value change
    */
   const handleFieldChange = useCallback(
-    (fieldKey: string, value: any) => {
+    (fieldKey: string, value: unknown) => {
       setCustomerField(fieldKey, value);
 
       // If industry changed, clear industry-specific field values

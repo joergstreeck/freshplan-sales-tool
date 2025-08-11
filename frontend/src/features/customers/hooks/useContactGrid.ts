@@ -16,7 +16,7 @@ export interface ContactGridConfig {
   gridProps: {
     container: boolean;
     spacing: number;
-    sx: any;
+    sx: Record<string, unknown>;
   };
 }
 
