@@ -384,7 +384,7 @@ describe('VirtualizedCustomerTable', () => {
       render(
         <VirtualizedCustomerTable 
           {...defaultProps} 
-          customers={customersWithMissingData as any}
+          customers={customersWithMissingData as Array<Partial<typeof mockCustomers[0]>>}
         />
       );
       

@@ -13,7 +13,7 @@ export interface AuditEntry {
   entityId: string;
   userName?: string;
   userId: string;
-  changes?: any;
+  changes?: Record<string, unknown>;
   ipAddress?: string;
   userAgent?: string;
   source?: string;

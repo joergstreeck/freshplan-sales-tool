@@ -1,6 +1,15 @@
 import { httpClient } from '../../../lib/apiClient';
 import type { CustomerListResponse, CustomerResponse } from '../types/customer.types';
 
+interface Contact {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email?: string;
+  phone?: string;
+  position?: string;
+}
+
 export const customerApi = {
   // Get single customer by ID
   getCustomer: async (customerId: string): Promise<CustomerResponse> => {
@@ -50,8 +59,8 @@ export const customerApi = {
   },
 
   // Get contacts for a customer
-  getCustomerContacts: async (customerId: string): Promise<any[]> => {
-    const response = await httpClient.get<any[]>(`/api/customers/${customerId}/contacts`);
+  getCustomerContacts: async (customerId: string): Promise<Contact[]> => {
+    const response = await httpClient.get<Contact[]>(`/api/customers/${customerId}/contacts`);
     return response.data;
   },
 };

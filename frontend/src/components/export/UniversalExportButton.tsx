@@ -24,7 +24,7 @@ interface ExportOption {
 
 interface UniversalExportButtonProps {
   entity: string; // z.B. 'customers', 'audit'
-  queryParams?: Record<string, any>; // Optionale Filter-Parameter
+  queryParams?: Record<string, string | number | boolean | undefined>; // Optionale Filter-Parameter
   buttonLabel?: string;
   buttonVariant?: 'text' | 'outlined' | 'contained';
   buttonColor?: 'primary' | 'secondary' | 'success' | 'error' | 'info' | 'warning';
