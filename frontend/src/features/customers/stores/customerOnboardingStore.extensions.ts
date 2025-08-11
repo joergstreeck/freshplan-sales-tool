@@ -22,7 +22,7 @@ export interface LocationServiceData {
   averageOccupancy?: number;
 
   // Andere Branchen können hier ergänzt werden
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 // Erweiterung des Store-States

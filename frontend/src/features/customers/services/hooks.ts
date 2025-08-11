@@ -209,7 +209,7 @@ export function useUpdateCustomer(
     ApiError,
     {
       customerId: string;
-      fieldValues: Record<string, any>;
+      fieldValues: Record<string, unknown>;
     }
   >
 ) {
@@ -220,7 +220,7 @@ export function useUpdateCustomer(
     ApiError,
     {
       customerId: string;
-      fieldValues: Record<string, any>;
+      fieldValues: Record<string, unknown>;
     }
   >({
     mutationFn: ({ customerId, fieldValues }) =>

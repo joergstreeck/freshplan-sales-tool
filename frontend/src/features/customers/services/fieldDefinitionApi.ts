@@ -108,7 +108,7 @@ export class FieldDefinitionApi {
    */
   async validateFieldValue(
     fieldId: string,
-    value: any
+    value: unknown
   ): Promise<{ valid: boolean; errors?: string[] }> {
     return apiClient.post(`${this.basePath}/validate`, { fieldId, value });
   }

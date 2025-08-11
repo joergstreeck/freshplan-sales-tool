@@ -5,7 +5,7 @@ import { CustomerOnboardingWizard as OriginalWizard } from './CustomerOnboarding
 interface CustomerOnboardingWizardProps {
   open: boolean;
   onClose: () => void;
-  onComplete: (customer: any) => void;
+  onComplete: (customer: unknown) => void;
 }
 
 export function CustomerOnboardingWizard({
