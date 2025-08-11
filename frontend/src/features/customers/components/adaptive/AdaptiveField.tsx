@@ -36,7 +36,7 @@ const MeasureSpan = styled('span')({
   zIndex: -1,
 });
 
-const StyledTextField = styled(TextField)(({ theme }) => ({
+const StyledTextField = styled(TextField)(() => ({
   '& .MuiInputBase-root': {
     transition: `width var(--kunde-übergang, 0.15s ease-out)`,
     minHeight: '44px', // Touch-friendly Mindesthöhe

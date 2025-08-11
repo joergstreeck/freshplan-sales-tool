@@ -117,8 +117,10 @@ export const AuditStreamMonitor: React.FC<AuditStreamMonitorProps> = ({
 
     return () => {
       cleanup();
-      if (wsRef.current) {
-        wsRef.current.close();
+      // Copy ref value to avoid stale closure warning
+      const ws = wsRef.current;
+      if (ws) {
+        ws.close();
       }
     };
   }, [isPaused, maxEntries]);

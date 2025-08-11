@@ -12,7 +12,7 @@
 
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen as _screen } from '@testing-library/react';
-import userEvent as _userEvent from '@testing-library/user-event';
+import _userEvent from '@testing-library/user-event';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 // Test utilities

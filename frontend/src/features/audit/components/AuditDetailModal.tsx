@@ -78,7 +78,7 @@ export const AuditDetailModal: React.FC<AuditDetailModalProps> = ({ auditId, ope
     try {
       await navigator.clipboard.writeText(text);
       toast.success(`${label} kopiert!`);
-    } catch (error) {
+    } catch {
       toast.error('Kopieren fehlgeschlagen');
     }
   };

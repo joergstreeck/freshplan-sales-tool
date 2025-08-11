@@ -31,6 +31,9 @@ interface AuthContextType {
 export const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
+  // Hook must be called unconditionally before any conditional returns
+  const keycloak = useKeycloak();
+  
   // Check for auth bypass mode first
   if (import.meta.env.DEV && import.meta.env.VITE_AUTH_BYPASS === 'true') {
     // Provide mock auth context for development
@@ -61,8 +64,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     return <AuthContext.Provider value={mockContext}>{children}</AuthContext.Provider>;
   }
-
-  const keycloak = useKeycloak();
 
   // Map Keycloak user data to legacy User interface
   const user: User | null =

@@ -116,7 +116,7 @@ describe('SmartContactCard', () => {
     });
 
     it('should not show birthday indicator when no birthday', () => {
-      const contactNoBirthday = { ...mockContbirthday: undefined };
+      const contactNoBirthday = { ...mockContact, birthday: undefined };
       renderWithTheme(<SmartContactCard {...defaultProps} contact={contactNoBirthday} />);
       
       expect(screen.queryByText(/\dT/)).not.toBeInTheDocument();
