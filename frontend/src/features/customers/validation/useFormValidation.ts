@@ -40,7 +40,7 @@ interface UseFormValidationResult<T extends FieldValues = FieldValues> {
   /** React Hook Form instance */
   form: ReturnType<typeof useForm<T>>;
   /** Validate single field */
-  validateField: (fieldName: Path<T>, value: any) => Promise<boolean>;
+  validateField: (fieldName: Path<T>, value: unknown) => Promise<boolean>;
   /** Validate all fields */
   validateAll: () => Promise<boolean>;
   /** Clear validation errors */
@@ -125,7 +125,7 @@ export function useFormValidation<T extends FieldValues = FieldValues>(
    * Validate single field with debouncing
    */
   const validateFieldImmediate = useCallback(
-    async (fieldName: Path<T>, value: any): Promise<boolean> => {
+    async (fieldName: Path<T>, value: unknown): Promise<boolean> => {
       // Find field definition
       const fieldDef = fields?.find(f => f.key === fieldName);
       if (!fieldDef) {
@@ -150,7 +150,7 @@ export function useFormValidation<T extends FieldValues = FieldValues>(
         return false;
       }
     },
-    [fields, trigger, setError, clearFormErrors, setValidationError, clearValidationError]
+    [fields, trigger, setError, clearFormErrors, setValidationError, clearValidationError, validateField]
   );
 
   // Debounced version for real-time validation
@@ -222,7 +222,7 @@ export function useFormValidation<T extends FieldValues = FieldValues>(
  * Hook for step validation in multi-step forms
  */
 export function useStepValidation(currentStep: number) {
-  const { customerData, locations, detailedLocations } = useCustomerOnboardingStore();
+  const { customerData, locations } = useCustomerOnboardingStore();
 
   /**
    * Validate current step
@@ -272,7 +272,7 @@ export function useStepValidation(currentStep: number) {
       isValid: errors.size === 0,
       errors,
     };
-  }, [currentStep, customerData, locations, detailedLocations]);
+  }, [currentStep, customerData, locations]);
 
   /**
    * Check if can proceed to next step

@@ -114,11 +114,11 @@ export const AuditStreamMonitor: React.FC<AuditStreamMonitorProps> = ({
     };
 
     const cleanup = connectWebSocket();
+    // Copy ref value immediately to avoid stale closure warning
+    const ws = wsRef.current;
 
     return () => {
       cleanup();
-      // Copy ref value to avoid stale closure warning
-      const ws = wsRef.current;
       if (ws) {
         ws.close();
       }

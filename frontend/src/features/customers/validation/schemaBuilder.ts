@@ -9,7 +9,7 @@
  */
 
 import { z } from 'zod';
-import type { FieldDefinition, FieldType } from '../types/field.types';
+import type { FieldDefinition } from '../types/field.types';
 import {
   emailSchema,
   germanPhoneSchema,
@@ -24,7 +24,7 @@ import {
 /**
  * Custom Validation Function Type
  */
-type CustomValidator = (value: any) => boolean | Promise<boolean>;
+type CustomValidator = (value: unknown) => boolean | Promise<boolean>;
 
 /**
  * Validation Error Messages
@@ -321,7 +321,7 @@ export function buildFormSchema(
  */
 export async function validateField(
   field: FieldDefinition,
-  value: any
+  value: unknown
 ): Promise<{ isValid: boolean; error?: string }> {
   const schema = buildFieldSchema(field);
 
@@ -346,7 +346,7 @@ export async function validateField(
  * Validate multiple fields
  */
 export async function validateFields(
-  fields: Array<{ field: FieldDefinition; value: any }>
+  fields: Array<{ field: FieldDefinition; value: unknown }>
 ): Promise<Map<string, string>> {
   const errors = new Map<string, string>();
 

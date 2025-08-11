@@ -35,7 +35,7 @@ export const OpportunityPipeline: React.FC = () => {
         const response = await httpClient.get<Opportunity[]>('/api/opportunities');
 
         // Transformiere die API-Daten falls nötig
-        const apiOpportunities = response.data.map((opp: any) => ({
+        const apiOpportunities = response.data.map((opp: Partial<Opportunity>) => ({
           ...opp,
           // Stelle sicher, dass alle erforderlichen Felder vorhanden sind
           assignedToName: opp.assignedToName || 'Nicht zugewiesen',
@@ -46,7 +46,7 @@ export const OpportunityPipeline: React.FC = () => {
         
         setOpportunities(apiOpportunities);
         setError(null);
-      } catch (err) {
+      } catch {
         setError('Fehler beim Laden der Opportunities - Backend nicht erreichbar');
         // Leere Liste statt Mock-Daten bei Fehler
         setOpportunities([]);
@@ -118,6 +118,7 @@ export const OpportunityPipeline: React.FC = () => {
 
       // TODO: In echter App würde hier API-Call stehen
       // changeStage.mutate({ id: opportunityId, newStage, reason: '...' });
+    }
   };
 
   // Loading State
@@ -275,7 +276,7 @@ export const OpportunityPipeline: React.FC = () => {
                     <OpportunityCard
                       key={opportunity.id}
                       opportunity={opportunity}
-                      onClick={opp => {
+                      onClick={(_opp) => {
                         // TODO: Open opportunity detail modal
                       }}
                     />
@@ -317,6 +318,6 @@ export const OpportunityPipeline: React.FC = () => {
       {/* TODO: Mutation Loading/Error für API Integration */}
     </Box>
   );
-};
+}
 
 export default OpportunityPipeline;

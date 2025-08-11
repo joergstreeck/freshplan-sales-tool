@@ -87,8 +87,8 @@ export const evaluateCondition = (
  */
 export const shouldShowWizardStep = (
   step: string,
-  fieldDefinitions: unknown[],
-  values: Record<string, any>
+  fieldDefinitions: FieldDefinition[],
+  values: Record<string, unknown>
 ): boolean => {
   // Find fields that trigger this step
   const triggerFields = fieldDefinitions.filter(field => field.triggerWizardStep?.step === step);
@@ -119,7 +119,7 @@ export const shouldShowWizardStep = (
  */
 export const getVisibleFields = (
   fields: FieldDefinition[],
-  values: Record<string, any>,
+  values: Record<string, unknown>,
   currentStep?: string
 ): FieldDefinition[] => {
   return fields.filter(field => {
@@ -141,7 +141,7 @@ export const getVisibleFields = (
 /**
  * Get required fields that are currently visible
  */
-export const getRequiredFields = (fields: unknown[], values: Record<string, any>): string[] => {
+export const getRequiredFields = (fields: FieldDefinition[], values: Record<string, unknown>): string[] => {
   const visibleFields = getVisibleFields(fields, values);
   return visibleFields.filter(field => field.required).map(field => field.key);
 };
