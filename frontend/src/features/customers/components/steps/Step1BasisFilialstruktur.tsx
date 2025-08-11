@@ -8,7 +8,7 @@
  */
 
 import React, { useCallback, useMemo } from 'react';
-import { Box, Typography, Alert, AlertTitle, Divider, Chip } from '@mui/material';
+import { Box, Typography, Alert, AlertTitle, Divider } from '@mui/material';
 import { useCustomerOnboardingStore } from '../../stores/customerOnboardingStore';
 import { useFieldDefinitions } from '../../hooks/useFieldDefinitions';
 import { DynamicFieldRenderer } from '../fields/DynamicFieldRenderer';
@@ -31,7 +31,7 @@ export const Step1BasisFilialstruktur: React.FC = () => {
   const { customerData, validationErrors, setCustomerField, validateField } =
     useCustomerOnboardingStore();
 
-  const { customerFields, getFieldByKey } = useFieldDefinitions();
+  const { customerFields: _customerFields, getFieldByKey } = useFieldDefinitions();
 
   // Field groups for better organization
   const baseFields = useMemo(() => {

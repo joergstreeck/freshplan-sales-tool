@@ -19,7 +19,6 @@ import { AdditionalBusinessSection } from '../sections/AdditionalBusinessSection
 import { LocationServicesSection } from '../sections/LocationServicesSection';
 
 // Import Store Extensions
-import type { LocationServiceData } from '../../stores/customerOnboardingStore.extensions';
 import type { FieldDefinition } from '../../types/field.types';
 
 // Pain Point Solutions Mapping (unverändert)
@@ -79,7 +78,7 @@ export const Step2AngebotPainpointsV2: React.FC = () => {
     getLocationServices,
   } = useCustomerOnboardingStore();
 
-  const { getFieldByKey, fieldDefinitions } = useFieldDefinitions();
+  const { getFieldByKey, fieldDefinitions: _fieldDefinitions } = useFieldDefinitions();
 
   // Field Groups
   const painPointFields = useMemo(() => {
