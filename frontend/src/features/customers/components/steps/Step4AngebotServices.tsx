@@ -72,7 +72,6 @@ export const Step4AngebotServices: React.FC = () => {
       saveLocationServices,
       applyToAll,
       locations,
-      completedLocationIds,
       applyToAllRemaining,
     ]
   );

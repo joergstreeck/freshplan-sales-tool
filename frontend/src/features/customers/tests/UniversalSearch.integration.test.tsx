@@ -102,7 +102,7 @@ const mockContacts = [
   },
 ];
 
-const mockUser = {
+const _mockUser = {
   id: 'user-1',
   email: 'test@test.de',
   roles: ['admin'],

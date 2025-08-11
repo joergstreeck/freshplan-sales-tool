@@ -13,11 +13,10 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
-import { CustomerStatus } from '../types/customer.types';
 import type { FieldDefinition } from '../types/field.types';
 import type { Location, DetailedLocation } from '../types/location.types';
 import type { Contact, ContactValidationError, CreateContactDTO } from '../types/contact.types';
-import { buildFieldSchema, buildFormSchema, validateField, validateFields } from '../validation';
+import { validateField, validateFields } from '../validation';
 import { getVisibleFields } from '../utils/conditionEvaluator';
 import type { LocationServiceData } from './customerOnboardingStore.extensions';
 

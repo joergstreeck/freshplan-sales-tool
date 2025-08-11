@@ -14,7 +14,7 @@ import { z } from 'zod';
 import { useCallback, useEffect, useMemo } from 'react';
 import type { FieldDefinition, EntityType } from '../types/field.types';
 import { useCustomerOnboardingStore } from '../stores/customerOnboardingStore';
-import { buildFormSchema, validateField } from './schemaBuilder';
+import { buildFormSchema } from './schemaBuilder';
 import { getCustomerSchema, getCustomerDraftSchema } from './customerSchemas';
 import { getLocationSchema } from './locationSchemas';
 import { debounce } from '../utils/debounce';

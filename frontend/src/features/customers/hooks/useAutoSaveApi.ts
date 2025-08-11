@@ -164,7 +164,6 @@ export const useAutoSaveApi = (options: UseAutoSaveApiOptions = {}): UseAutoSave
     createDraftMutation,
     updateDraftMutation,
     setSaving,
-    setDraftId,
   ]);
 
   /**

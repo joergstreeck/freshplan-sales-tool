@@ -57,7 +57,7 @@ export const useFieldDefinitions = (): UseFieldDefinitionsResult => {
       }
     });
     return fields;
-  }, []);
+  }, [extensions]);
 
   // Create a map for quick field lookup
   const fieldMap = useMemo(() => {
