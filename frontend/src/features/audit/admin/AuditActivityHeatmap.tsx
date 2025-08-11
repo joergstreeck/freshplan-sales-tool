@@ -116,7 +116,7 @@ export const AuditActivityHeatmap: React.FC<AuditActivityHeatmapProps> = ({
 
     // For day/week granularity, create a simple grid
     return [data];
-  }, [data, granularity, dateRange]);
+  }, [data, granularity]);
 
   const maxValue = useMemo(() => {
     return Math.max(...data.map(d => d.value), 1);

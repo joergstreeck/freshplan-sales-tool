@@ -21,7 +21,7 @@ export function OriginalCalculator() {
       pickup,
       chain,
     });
-  }, [orderValue, leadTime, pickup, chain]);
+  }, [orderValue, leadTime, pickup, chain, calculateMutation]);
 
   const result = calculateMutation.data;
 

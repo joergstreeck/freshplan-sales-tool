@@ -251,7 +251,7 @@ export function IntelligentFilterBar({
       setActiveFilters(newFilters);
       onFilterChange(newFilters);
     }
-  }, [debouncedSearchTerm]);
+  }, [debouncedSearchTerm, activeFilters, onFilterChange]);
   
   // Click outside handler for search results
   React.useEffect(() => {

@@ -43,7 +43,7 @@ export const LocationsStep: React.FC = () => {
     // For locations, we might have different industry fields
     // This is a placeholder - adjust based on actual field catalog structure
     return [];
-  }, [industry]);
+  }, []);
 
   const allLocationFields = [...locationFields, ...industryLocationFields];
 
