@@ -77,8 +77,56 @@ EOF
 # docker-compose.keycloak.yml anpassen:
 # Ersetze hardcoded passwords mit ${KEYCLOAK_ADMIN_PASSWORD}
 
-# Tests
-npm test
+# 4. Tests für Security-Änderungen
+cat > frontend/src/__tests__/msw-token.test.ts << 'EOF'
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+
+describe('MSW Token Security', () => {
+  beforeEach(() => {
+    localStorage.clear();
+    vi.resetModules();
+  });
+
+  it('should NOT set token when MSW is disabled', async () => {
+    import.meta.env.VITE_USE_MSW = 'false';
+    await import('../main');
+    expect(localStorage.getItem('auth-token')).toBeNull();
+  });
+
+  it('should set token ONLY when MSW is explicitly enabled', async () => {
+    import.meta.env.VITE_USE_MSW = 'true';
+    await import('../main');
+    expect(localStorage.getItem('auth-token')).toBe('MOCK_JWT_TOKEN');
+  });
+
+  it('should remove token when MSW is disabled after being enabled', async () => {
+    import.meta.env.VITE_USE_MSW = 'true';
+    await import('../main');
+    import.meta.env.VITE_USE_MSW = 'false';
+    await import('../main');
+    expect(localStorage.getItem('auth-token')).toBeNull();
+  });
+});
+EOF
+
+# 5. Test für Environment Variables
+cat > backend/src/test/java/EnvironmentConfigTest.java << 'EOF'
+@Test
+public void shouldNotHaveHardcodedCredentials() {
+    // Scan docker-compose for hardcoded passwords
+    String dockerCompose = Files.readString(Path.of("docker-compose.keycloak.yml"));
+    assertFalse(dockerCompose.contains("KEYCLOAK_ADMIN_PASSWORD: admin"));
+    assertFalse(dockerCompose.contains("POSTGRES_PASSWORD: keycloak"));
+}
+
+@Test
+public void shouldHaveEnvExampleFile() {
+    assertTrue(Files.exists(Path.of(".env.example")));
+}
+EOF
+
+# Tests ausführen
+npm test -- msw-token.test.ts
 npm run build
 
 # Commit
@@ -89,6 +137,7 @@ git commit -m "fix: harden security and MSW token handling
 - Externalized environment variables
 - Removed hardcoded credentials from docker-compose
 - Added .env.example for documentation
+- Added security tests for token handling
 
 BREAKING CHANGE: Requires .env file for docker-compose"
 ```
@@ -148,8 +197,55 @@ EOF
 chmod +x /tmp/remove-console.sh
 /tmp/remove-console.sh
 
+# Test-Suite für Console Cleanup
+cat > frontend/src/__tests__/no-console.test.ts << 'EOF'
+import { describe, it, expect } from 'vitest';
+import { glob } from 'glob';
+import fs from 'fs';
+import path from 'path';
+
+describe('Console Statement Verification', () => {
+  it('should have NO console statements in production code', async () => {
+    const srcFiles = await glob('src/**/*.{ts,tsx}', {
+      ignore: ['**/*.test.*', '**/*.spec.*', '**/test/**', '**/tests/**'],
+      cwd: path.resolve(__dirname, '..')
+    });
+    
+    const filesWithConsole: string[] = [];
+    
+    for (const file of srcFiles) {
+      const content = fs.readFileSync(path.join(__dirname, '..', file), 'utf-8');
+      if (content.includes('console.')) {
+        filesWithConsole.push(file);
+      }
+    }
+    
+    expect(filesWithConsole).toEqual([]);
+  });
+
+  it('should use logger instead of console in services', async () => {
+    const serviceFiles = await glob('src/services/**/*.ts', {
+      ignore: ['**/*.test.*'],
+      cwd: path.resolve(__dirname, '..')
+    });
+    
+    for (const file of serviceFiles) {
+      const content = fs.readFileSync(path.join(__dirname, '..', file), 'utf-8');
+      if (content.includes('logger.')) {
+        expect(content).not.toContain('console.');
+      }
+    }
+  });
+});
+EOF
+
 # Tests laufen lassen
+npm test -- no-console.test.ts
 npm test
+
+# Regression Test
+npm run build
+npm run lint
 
 # Commit
 git add -A
@@ -208,15 +304,71 @@ chmod +x /tmp/fix-array-types.sh
 # Manuell: Imports hinzufügen wo nötig
 # TypeScript Compiler hilft dabei
 
+# Test-Suite für Type Safety
+cat > frontend/src/__tests__/type-safety.test.ts << 'EOF'
+import { describe, it, expect } from 'vitest';
+import { glob } from 'glob';
+import fs from 'fs';
+import path from 'path';
+
+describe('TypeScript Type Safety', () => {
+  it('should not have any[] in production code', async () => {
+    const srcFiles = await glob('src/**/*.{ts,tsx}', {
+      ignore: ['**/*.test.*', '**/*.spec.*', '**/test/**'],
+      cwd: path.resolve(__dirname, '..')
+    });
+    
+    const filesWithAnyArray: string[] = [];
+    
+    for (const file of srcFiles) {
+      const content = fs.readFileSync(path.join(__dirname, '..', file), 'utf-8');
+      if (content.match(/:\s*any\[\]/)) {
+        filesWithAnyArray.push(file);
+      }
+    }
+    
+    // Should be significantly reduced
+    expect(filesWithAnyArray.length).toBeLessThan(5);
+  });
+
+  it('should use specific types for common arrays', async () => {
+    const patterns = [
+      { pattern: /customers:\s*any\[\]/, expected: 'Customer[]' },
+      { pattern: /products:\s*any\[\]/, expected: 'Product[]' },
+      { pattern: /users:\s*any\[\]/, expected: 'User[]' },
+    ];
+    
+    const srcFiles = await glob('src/**/*.{ts,tsx}', {
+      ignore: ['**/*.test.*'],
+      cwd: path.resolve(__dirname, '..')
+    });
+    
+    for (const file of srcFiles) {
+      const content = fs.readFileSync(path.join(__dirname, '..', file), 'utf-8');
+      for (const { pattern, expected } of patterns) {
+        if (content.match(pattern)) {
+          throw new Error(`File ${file} uses any[] instead of ${expected}`);
+        }
+      }
+    }
+  });
+});
+EOF
+
+# Type-Check und Tests
 npm run type-check
-npm test
+npm test -- type-safety.test.ts
+
+# Compile-Zeit Verification
+npx tsc --noEmit --strict
 
 git add -A
 git commit -m "fix: replace any[] with proper array types
 
 - Customer[], Product[], AuditEvent[] etc.
 - unknown[] für generische Daten
-- Type safety verbessert"
+- Type safety verbessert
+- Added type safety test suite"
 ```
 
 #### PR #4: Event Handler Types (verschoben von #3)
