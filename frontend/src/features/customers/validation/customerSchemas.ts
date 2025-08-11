@@ -20,7 +20,7 @@ import {
   positiveIntegerSchema,
   optionalPositiveIntegerSchema,
   optionalPositiveIntegerWithMaxSchema,
-  contactPersonSchema,
+  contactPersonSchema as _contactPersonSchema,
   euroAmountSchema,
   percentageSchema,
 } from './baseSchemas';

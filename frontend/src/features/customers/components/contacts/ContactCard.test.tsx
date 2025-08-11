@@ -63,7 +63,7 @@ describe('ContactCard', () => {
 
   it('should render contact basic information', () => {
     const contact = createMockContact();
-    const { container } = render(
+    render(
       <ContactCard contact={contact} onEdit={vi.fn()} onDelete={vi.fn()} onSetPrimary={vi.fn()} />
     );
 

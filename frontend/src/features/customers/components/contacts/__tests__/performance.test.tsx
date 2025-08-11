@@ -105,13 +105,13 @@ describe.skip('Contact Components Performance', () => {
       contacts,
     });
 
-    const { rerender } = render(<Step3MultiContactManagement />);
+    render(<Step3MultiContactManagement />);
 
     // Measure filter performance
     const start = performance.now();
 
     // Simulate search filter (component should handle this internally)
-    const filteredContacts = contacts.filter(
+    const _filteredContacts = contacts.filter(
       c =>
         c.firstName.toLowerCase().includes('vorname1') ||
         c.lastName.toLowerCase().includes('vorname1')
@@ -243,7 +243,7 @@ describe.skip('Contact Components Performance', () => {
     const start = performance.now();
 
     // Simulate initial render with basic info
-    const loadedContacts = basicContacts.slice(0, 10);
+    basicContacts.slice(0, 10);
 
     const end = performance.now();
     const lazyLoadTime = end - start;
