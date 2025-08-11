@@ -21,7 +21,12 @@ vi.mock('../../hooks/useLocalStorage', () => ({
 
 vi.mock('../../hooks/useUniversalSearch', () => ({
   useUniversalSearch: vi.fn(() => ({
-    searchResults: [],
+    searchResults: {
+      customers: [],
+      contacts: [],
+      totalCount: 0,
+      executionTime: 0,
+    },
     isLoading: false,
     error: null,
     search: vi.fn(),
@@ -40,11 +45,11 @@ vi.mock('../../../customer/store/focusListStore', () => ({
     setVisibleTableColumns: vi.fn(),
     // Add missing tableColumns property
     tableColumns: [
-      { field: 'companyName', label: 'Firma', visible: true, order: 0 },
-      { field: 'customerNumber', label: 'Kundennummer', visible: true, order: 1 },
-      { field: 'status', label: 'Status', visible: true, order: 2 },
-      { field: 'category', label: 'Kategorie', visible: true, order: 3 },
-      { field: 'lastContact', label: 'Letzter Kontakt', visible: true, order: 4 },
+      { id: 'col1', field: 'companyName', label: 'Firma', visible: true, order: 0 },
+      { id: 'col2', field: 'customerNumber', label: 'Kundennummer', visible: true, order: 1 },
+      { id: 'col3', field: 'status', label: 'Status', visible: true, order: 2 },
+      { id: 'col4', field: 'category', label: 'Kategorie', visible: true, order: 3 },
+      { id: 'col5', field: 'lastContact', label: 'Letzter Kontakt', visible: true, order: 4 },
     ],
     toggleColumnVisibility: vi.fn(),
     setColumnOrder: vi.fn(),

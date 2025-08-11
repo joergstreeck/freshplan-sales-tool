@@ -161,7 +161,10 @@ export const SearchResultsDropdown: React.FC<SearchResultsDropdownProps> = ({
   }
 
   const hasResults =
-    searchResults && (searchResults.customers.length > 0 || searchResults.contacts.length > 0);
+    searchResults && 
+    searchResults.customers && 
+    searchResults.contacts && 
+    (searchResults.customers.length > 0 || searchResults.contacts.length > 0);
 
   return (
     <Paper
@@ -222,7 +225,7 @@ export const SearchResultsDropdown: React.FC<SearchResultsDropdownProps> = ({
       {!isLoading && !error && hasResults && (
         <List sx={{ py: 0 }}>
           {/* Customer Results */}
-          {searchResults.customers.length > 0 && (
+          {searchResults?.customers?.length > 0 && (
             <>
               <ListItem
                 sx={{
@@ -237,11 +240,11 @@ export const SearchResultsDropdown: React.FC<SearchResultsDropdownProps> = ({
               >
                 <CustomerIcon sx={{ mr: 1, color: 'primary.main' }} />
                 <Typography variant="overline" sx={{ fontWeight: 600, color: 'primary.main' }}>
-                  Kunden ({searchResults.customers.length})
+                  Kunden ({searchResults?.customers?.length || 0})
                 </Typography>
               </ListItem>
 
-              {searchResults.customers.map(result => (
+              {searchResults?.customers?.map(result => (
                 <ListItemButton
                   key={result.id}
                   onClick={() => {
@@ -336,10 +339,10 @@ export const SearchResultsDropdown: React.FC<SearchResultsDropdownProps> = ({
           )}
 
           {/* Divider between sections */}
-          {searchResults.customers.length > 0 && searchResults.contacts.length > 0 && <Divider />}
+          {searchResults?.customers?.length > 0 && searchResults?.contacts?.length > 0 && <Divider />}
 
           {/* Contact Results */}
-          {searchResults.contacts.length > 0 && (
+          {searchResults?.contacts?.length > 0 && (
             <>
               <ListItem
                 sx={{
@@ -354,11 +357,11 @@ export const SearchResultsDropdown: React.FC<SearchResultsDropdownProps> = ({
               >
                 <ContactIcon sx={{ mr: 1, color: 'secondary.main' }} />
                 <Typography variant="overline" sx={{ fontWeight: 600, color: 'secondary.main' }}>
-                  Ansprechpartner ({searchResults.contacts.length})
+                  Ansprechpartner ({searchResults?.contacts?.length || 0})
                 </Typography>
               </ListItem>
 
-              {searchResults.contacts.map(result => (
+              {searchResults?.contacts?.map(result => (
                 <ListItemButton
                   key={result.id}
                   onClick={() => {
