@@ -14,11 +14,11 @@ interface GlobalChallengesSectionProps {
   /** Pain Point Felder */
   painPointFields: FieldDefinition[];
   /** Aktuelle Werte */
-  values: Record<string, any>;
+  values: Record<string, unknown>;
   /** Validierungsfehler */
   errors: Record<string, string>;
   /** Change Handler */
-  onChange: (fieldKey: string, value: any) => void;
+  onChange: (fieldKey: string, value: unknown) => void;
   /** Blur Handler */
   onBlur: (fieldKey: string) => void;
 }

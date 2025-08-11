@@ -41,7 +41,7 @@ export const LocationNavigator: React.FC<LocationNavigatorProps> = ({
     loc => completedIds.includes(loc.id) && loc.id !== currentLocation?.id
   );
 
-  const handleLocationChange = (event: any) => {
+  const handleLocationChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedId = event.target.value;
     const index = locations.findIndex(loc => loc.id === selectedId);
     if (index >= 0) {

@@ -19,7 +19,7 @@ interface FilialstrukturLayoutProps {
   /** Render-Funktion für einzelne Felder */
   renderField: (field: FieldDefinition) => React.ReactNode;
   /** Aktuelle Formular-Werte */
-  values: Record<string, any>;
+  values: Record<string, unknown>;
 }
 
 const LabelsContainer = styled(Box)(({ theme }) => ({

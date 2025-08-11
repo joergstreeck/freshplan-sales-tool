@@ -17,7 +17,7 @@ interface ServiceFieldGroup {
 interface ServiceFieldsContainerProps {
   location: CustomerLocation;
   services: LocationServiceData;
-  onChange: (field: string, value: any) => void;
+  onChange: (field: string, value: unknown) => void;
   onBlur?: (field: string) => void;
   industry: string;
   errors?: Record<string, string>;
