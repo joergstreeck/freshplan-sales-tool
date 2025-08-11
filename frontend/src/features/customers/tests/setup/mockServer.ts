@@ -73,7 +73,7 @@ const mockFieldDefinitions: FieldDefinition[] = [
   },
 ];
 
-const mockDrafts = new Map<string, any>();
+const mockDrafts = new Map<string, unknown>();
 const mockCustomers = new Map<string, Customer>();
 
 // =============================================================================

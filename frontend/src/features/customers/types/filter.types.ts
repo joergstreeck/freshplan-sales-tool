@@ -31,7 +31,7 @@ export interface FilterConfig {
   lastContactDays?: number | null;
   tags?: string[];
   createdDays?: number | null; // Für "Neue Kunden" Filter
-  customFields?: Record<string, any>;
+  customFields?: Record<string, unknown>;
 }
 
 /**
@@ -89,7 +89,7 @@ export interface AdvancedFilter {
     | 'between' 
     | 'in' 
     | 'not_in';
-  value: any;
+  value: unknown;
   caseSensitive?: boolean;
 }
 
@@ -114,7 +114,7 @@ export type QueryType = 'email' | 'phone' | 'customerNumber' | 'text';
 export interface SearchResult {
   type: 'customer' | 'contact';
   id: string;
-  data: any;
+  data: unknown;
   relevanceScore: number;
   matchedFields: string[];
 }

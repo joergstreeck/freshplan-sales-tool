@@ -9,7 +9,7 @@
  */
 
 import { describe, it, expect, vi } from 'vitest';
-import { ApiClient, RequestConfig, apiClient } from '../../../services/api-client';
+import { apiClient } from '../../../services/api-client';
 
 // Mock fetch
 const mockFetch = vi.fn();

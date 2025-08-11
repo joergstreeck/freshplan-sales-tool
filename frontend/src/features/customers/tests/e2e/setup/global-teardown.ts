@@ -113,15 +113,17 @@ async function generateTestSummary() {
       },
 
       // Browser-specific results
-      browsers: {} as Record<string, any>,
+      browsers: {} as Record<string, { passed: number; failed: number }>,
     };
 
     // Analyze test results
     if (results.suites) {
-      results.suites.forEach((suite: any) => {
-        if (suite.specs) {
-          suite.specs.forEach((spec: any) => {
-            const title = spec.title?.toLowerCase() || '';
+      results.suites.forEach((suite: unknown) => {
+        const s = suite as Record<string, unknown>;
+        if (s.specs) {
+          (s.specs as unknown[]).forEach((spec: unknown) => {
+            const sp = spec as Record<string, unknown>;
+            const title = (sp.title as string)?.toLowerCase() || '';
 
             if (title.includes('happy path')) summary.categories.happyPath++;
             if (title.includes('chain customer')) summary.categories.chainCustomer++;
@@ -130,14 +132,15 @@ async function generateTestSummary() {
             if (title.includes('error')) summary.categories.errorHandling++;
 
             // Track browser results
-            if (spec.tests) {
-              spec.tests.forEach((test: any) => {
-                const project = test.projectName || 'unknown';
+            if (sp.tests) {
+              (sp.tests as unknown[]).forEach((test: unknown) => {
+                const t = test as Record<string, unknown>;
+                const project = (t.projectName as string) || 'unknown';
                 if (!summary.browsers[project]) {
                   summary.browsers[project] = { passed: 0, failed: 0 };
                 }
 
-                if (test.status === 'passed') {
+                if (t.status === 'passed') {
                   summary.browsers[project].passed++;
                 } else {
                   summary.browsers[project].failed++;
@@ -176,7 +179,7 @@ async function generateTestSummary() {
 ## Browser-Kompatibilität
 ${Object.entries(summary.browsers)
   .map(
-    ([browser, stats]: [string, any]) => `- **${browser}:** ${stats.passed} ✅ / ${stats.failed} ❌`
+    ([browser, stats]) => `- **${browser}:** ${stats.passed} ✅ / ${stats.failed} ❌`
   )
   .join('\n')}
 

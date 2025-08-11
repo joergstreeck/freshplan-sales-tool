@@ -152,6 +152,6 @@ export interface ContactUpdateWizardProps {
 // Bulk Update Request
 export interface BulkUpdateRequest {
   contactIds: string[];
-  fieldsToUpdate: Record<string, any>;
+  fieldsToUpdate: Record<string, unknown>;
   reason: string;
 }

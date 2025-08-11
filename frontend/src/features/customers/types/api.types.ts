@@ -15,7 +15,6 @@ import type {
 import type {
   LocationWithFields,
   DetailedLocation,
-  DetailedLocationBatch,
 } from './location.types';
 import type { FieldValue } from './field.types';
 import { EntityType } from './field.types';

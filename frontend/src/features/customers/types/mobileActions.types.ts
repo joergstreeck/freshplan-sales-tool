@@ -134,7 +134,7 @@ export interface QueuedAction {
   id: string;
   action: QuickAction;
   contactId: string;
-  contactData: any; // Minimal contact data for offline execution
+  contactData: unknown; // Minimal contact data for offline execution
   timestamp: Date;
   retryCount: number;
   maxRetries: number;

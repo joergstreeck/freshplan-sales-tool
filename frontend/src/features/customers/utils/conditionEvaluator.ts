@@ -15,7 +15,7 @@ import type { TriggerCondition, FieldCondition, FieldDefinition } from '../types
  */
 export const evaluateTriggerCondition = (
   condition: TriggerCondition,
-  values: Record<string, any>
+  values: Record<string, unknown>
 ): boolean => {
   // Handle array of trigger values
   if (Array.isArray(condition.when)) {
@@ -31,7 +31,7 @@ export const evaluateTriggerCondition = (
  */
 export const evaluateFieldCondition = (
   condition: FieldCondition,
-  values: Record<string, any>
+  values: Record<string, unknown>
 ): boolean => {
   const fieldValue = values[condition.field];
 
@@ -71,7 +71,7 @@ export const evaluateFieldCondition = (
  */
 export const evaluateCondition = (
   condition: TriggerCondition | FieldCondition,
-  values: Record<string, any>
+  values: Record<string, unknown>
 ): boolean => {
   // Check if it's a TriggerCondition (has 'when' and 'step' properties)
   if ('when' in condition && 'step' in condition) {

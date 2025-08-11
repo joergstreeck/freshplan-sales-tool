@@ -408,7 +408,7 @@ describe.skip('ConditionEvaluator - Mit Flexibilitäts-Philosophie', () => {
         chainCustomer: 'nein',
       };
 
-      const einzelRequired = getRequiredFields(complexFields, einzelValues);
+      getRequiredFields(complexFields, einzelValues);
       expect(gmbhChainRequired).toEqual(['companyName', 'vatNumber', 'chainHeadquarters']);
     });
   });
