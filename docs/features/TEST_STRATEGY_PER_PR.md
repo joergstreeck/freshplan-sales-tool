@@ -3,6 +3,14 @@
 **Erstellt:** 12.08.2025  
 **Prinzip:** Jede PR braucht Tests, die die Änderungen validieren und Regressionen verhindern
 
+---
+
+**Navigation:**  
+⬅️ Zurück zu: [`CODE_QUALITY_PR_ROADMAP.md`](/docs/features/CODE_QUALITY_PR_ROADMAP.md) | [`ENTERPRISE_CODE_REVIEW_2025.md`](/docs/features/ENTERPRISE_CODE_REVIEW_2025.md)  
+➡️ Weiter zu: [`CODE_QUALITY_UPDATE_ANALYSIS.md`](/docs/features/CODE_QUALITY_UPDATE_ANALYSIS.md)
+
+---
+
 ## 📋 Übersicht Test-Strategien pro PR
 
 | PR | Fokus | Test-Strategie | Coverage-Ziel |
@@ -357,3 +365,9 @@ npm audit
 2. Regressionen verhindert
 3. Als Dokumentation der Änderungen dient
 4. In CI/CD automatisch läuft
+
+---
+
+**Navigation:**  
+⬅️ Zurück zu: [`CODE_QUALITY_PR_ROADMAP.md`](/docs/features/CODE_QUALITY_PR_ROADMAP.md)  
+➡️ Weiter zu: [`CODE_QUALITY_UPDATE_ANALYSIS.md`](/docs/features/CODE_QUALITY_UPDATE_ANALYSIS.md)

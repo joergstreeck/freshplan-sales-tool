@@ -4,6 +4,14 @@
 **Status:** 🔄 In Arbeit  
 **Strategie:** Granulare PRs für optimale Reviewbarkeit
 
+---
+
+**Navigation:**  
+⬅️ Zurück zu: [`NEXT_STEP.md`](/docs/NEXT_STEP.md) | [`CODE_QUALITY_START_HERE.md`](/docs/CODE_QUALITY_START_HERE.md)  
+➡️ Verwandte: [`ENTERPRISE_CODE_REVIEW_2025.md`](/docs/features/ENTERPRISE_CODE_REVIEW_2025.md) | [`TEST_STRATEGY_PER_PR.md`](/docs/features/TEST_STRATEGY_PER_PR.md)
+
+---
+
 ## 📍 Aktueller Stand (11.08.2025)
 
 ### ✅ Bereits erreicht:
@@ -563,9 +571,18 @@ npm run test        # Zeigt Test-Errors
 
 ## 🔗 Verwandte Dokumente
 
-- **Hauptplan:** `/docs/features/ENTERPRISE_CODE_REVIEW_2025.md`
+- **Start hier:** [`/docs/CODE_QUALITY_START_HERE.md`](/docs/CODE_QUALITY_START_HERE.md)
+- **Hauptplan:** [`/docs/features/ENTERPRISE_CODE_REVIEW_2025.md`](/docs/features/ENTERPRISE_CODE_REVIEW_2025.md)
+- **Test-Strategie:** [`/docs/features/TEST_STRATEGY_PER_PR.md`](/docs/features/TEST_STRATEGY_PER_PR.md)
+- **Status-Analyse:** [`/docs/features/CODE_QUALITY_UPDATE_ANALYSIS.md`](/docs/features/CODE_QUALITY_UPDATE_ANALYSIS.md)
 - **Detaillierte Analyse:** `/docs/claude-work/daily-work/2025-08-11/`
 - **Original-Review:** Two-Pass Enterprise Review Session
+
+---
+
+**Navigation:**  
+⬅️ Zurück zu: [`NEXT_STEP.md`](/docs/NEXT_STEP.md)  
+➡️ Weiter zu: [`TEST_STRATEGY_PER_PR.md`](/docs/features/TEST_STRATEGY_PER_PR.md)
 
 ## 💡 Pro-Tipps
 

@@ -4,6 +4,14 @@
 **Branch:** feature/code-review-improvements  
 **Status:** 🔄 In Arbeit
 
+---
+
+**Navigation:**  
+⬅️ Zurück zu: [`CODE_QUALITY_PR_ROADMAP.md`](/docs/features/CODE_QUALITY_PR_ROADMAP.md)  
+➡️ Verwandte: [`TEST_STRATEGY_PER_PR.md`](/docs/features/TEST_STRATEGY_PER_PR.md) | [`CODE_QUALITY_UPDATE_ANALYSIS.md`](/docs/features/CODE_QUALITY_UPDATE_ANALYSIS.md)
+
+---
+
 ## 📊 Executive Summary
 
 Nach einer umfassenden Two-Pass Enterprise Review mit **exakten Messungen** haben wir erhebliche technische Schulden identifiziert. Dieser Aktionsplan dokumentiert die tatsächlichen Findings und definiert einen klaren Weg zur Code-Qualitätsverbesserung.
@@ -481,3 +489,9 @@ npm run build -- --analyze
 **Autor:** Claude & Jörg  
 **Review:** Pending  
 **Approval:** Pending
+
+---
+
+**Navigation:**  
+⬅️ Zurück zu: [`CODE_QUALITY_PR_ROADMAP.md`](/docs/features/CODE_QUALITY_PR_ROADMAP.md)  
+➡️ Weiter zu: [`TEST_STRATEGY_PER_PR.md`](/docs/features/TEST_STRATEGY_PER_PR.md)

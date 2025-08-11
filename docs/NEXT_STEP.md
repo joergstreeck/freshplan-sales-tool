@@ -46,9 +46,17 @@ Details siehe: /docs/features/CODE_QUALITY_PR_ROADMAP.md"
 - **Test Coverage:** 89.1% (Ziel: 95%)
 
 ### 📍 Wichtige Dateien für neuen Claude:
-- **Roadmap:** `/docs/features/CODE_QUALITY_PR_ROADMAP.md` ← LIES DIES ZUERST!
-- **Review:** `/docs/features/ENTERPRISE_CODE_REVIEW_2025.md`
+- **Start:** [`/docs/CODE_QUALITY_START_HERE.md`](/docs/CODE_QUALITY_START_HERE.md) ← BEI CODE QUALITY HIER STARTEN!
+- **Roadmap:** [`/docs/features/CODE_QUALITY_PR_ROADMAP.md`](/docs/features/CODE_QUALITY_PR_ROADMAP.md) ← Detaillierter Plan
+- **Review:** [`/docs/features/ENTERPRISE_CODE_REVIEW_2025.md`](/docs/features/ENTERPRISE_CODE_REVIEW_2025.md) ← Alle Findings
+- **Tests:** [`/docs/features/TEST_STRATEGY_PER_PR.md`](/docs/features/TEST_STRATEGY_PER_PR.md) ← Test-Pläne
 - **Letzte Übergabe:** `/docs/claude-work/daily-work/2025-08-11/`
+
+---
+
+**Navigation:**  
+⬅️ Zurück zu: [`CODE_QUALITY_START_HERE.md`](/docs/CODE_QUALITY_START_HERE.md)  
+➡️ Weiter zu: [`CODE_QUALITY_PR_ROADMAP.md`](/docs/features/CODE_QUALITY_PR_ROADMAP.md)
 
 ---
 

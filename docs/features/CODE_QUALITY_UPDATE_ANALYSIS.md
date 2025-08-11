@@ -3,6 +3,14 @@
 **Datum:** 12.08.2025  
 **Status-Check:** Was wurde bereits erledigt, was ist noch offen?
 
+---
+
+**Navigation:**  
+⬅️ Zurück zu: [`TEST_STRATEGY_PER_PR.md`](/docs/features/TEST_STRATEGY_PER_PR.md) | [`CODE_QUALITY_PR_ROADMAP.md`](/docs/features/CODE_QUALITY_PR_ROADMAP.md)  
+➡️ Start: [`CODE_QUALITY_START_HERE.md`](/docs/CODE_QUALITY_START_HERE.md)
+
+---
+
 ## 🔍 Status-Analyse der 6 ursprünglichen Punkte
 
 ### 1. ✅ frontend/frontend löschen
@@ -187,3 +195,9 @@ Diese Reihenfolge macht Sinn weil:
 ---
 
 **Letzte Aktualisierung:** 12.08.2025 00:15
+
+---
+
+**Navigation:**  
+⬅️ Zurück zu: [`CODE_QUALITY_PR_ROADMAP.md`](/docs/features/CODE_QUALITY_PR_ROADMAP.md)  
+⬆️ Nach oben: [`CODE_QUALITY_START_HERE.md`](/docs/CODE_QUALITY_START_HERE.md)
