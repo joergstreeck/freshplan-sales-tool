@@ -169,7 +169,7 @@ export function MiniAuditTimeline({
   };
   
   // Format change details
-  const formatChangeDetails = (changes: any): string => {
+  const formatChangeDetails = (changes: unknown): string => {
     if (!changes) return '';
     
     try {

@@ -64,8 +64,8 @@ interface AuditEntry {
   userName: string;
   userRole: string;
   changeReason?: string;
-  oldValue?: any;
-  newValue?: any;
+  oldValue?: unknown;
+  newValue?: unknown;
   ipAddress?: string;
   source?: string;
 }
@@ -139,15 +139,21 @@ const getEventConfig = (eventType: string) => {
 /**
  * Format changed fields for display
  */
-const formatChangedFields = (oldValue: any, newValue: any): string[] => {
+const formatChangedFields = (oldValue: unknown, newValue: unknown): string[] => {
   if (!oldValue || !newValue) return [];
+  
+  // Type guard to ensure objects
+  if (typeof oldValue !== 'object' || typeof newValue !== 'object') return [];
+  
+  const oldObj = oldValue as Record<string, unknown>;
+  const newObj = newValue as Record<string, unknown>;
 
   const changes: string[] = [];
-  const allKeys = new Set([...Object.keys(oldValue), ...Object.keys(newValue)]);
+  const allKeys = new Set([...Object.keys(oldObj), ...Object.keys(newObj)]);
 
   allKeys.forEach(key => {
-    if (oldValue[key] !== newValue[key]) {
-      changes.push(`${key}: ${oldValue[key] || '-'} → ${newValue[key] || '-'}`);
+    if (oldObj[key] !== newObj[key]) {
+      changes.push(`${key}: ${oldObj[key] || '-'} → ${newObj[key] || '-'}`);
     }
   });
 

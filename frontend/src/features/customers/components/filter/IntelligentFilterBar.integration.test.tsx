@@ -3,7 +3,7 @@
  * Tests with real backend data and minimal mocking
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach as _afterEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { IntelligentFilterBar } from './IntelligentFilterBar';
@@ -14,11 +14,11 @@ import React from 'react';
 
 // Minimal mocks - only what's absolutely necessary
 vi.mock('../../hooks/useDebounce', () => ({
-  useDebounce: (value: any) => value,
+  useDebounce: (value: unknown) => value,
 }));
 
 vi.mock('../../hooks/useLocalStorage', () => ({
-  useLocalStorage: (key: string, defaultValue: any) => {
+  useLocalStorage: (key: string, defaultValue: unknown) => {
     return [defaultValue, vi.fn()];
   },
 }));
