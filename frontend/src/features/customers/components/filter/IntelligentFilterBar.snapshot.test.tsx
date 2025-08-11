@@ -14,15 +14,15 @@ import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { BrowserRouter } from 'react-router-dom';
 import React from 'react';
 import { IntelligentFilterBar } from './IntelligentFilterBar';
-import type { FilterConfig, SortConfig, ColumnConfig } from '../../types/filter.types';
+import type { FilterConfig as _FilterConfig, SortConfig as _SortConfig, ColumnConfig as _ColumnConfig } from '../../types/filter.types';
 
 // Mock the hooks
 vi.mock('../../hooks/useDebounce', () => ({
-  useDebounce: (value: any) => value,
+  useDebounce: (value: unknown) => value,
 }));
 
 vi.mock('../../hooks/useLocalStorage', () => ({
-  useLocalStorage: (key: string, defaultValue: any) => [defaultValue, vi.fn()],
+  useLocalStorage: (key: string, defaultValue: unknown) => [defaultValue, vi.fn()],
 }));
 
 vi.mock('../../hooks/useUniversalSearch', () => ({

@@ -11,7 +11,7 @@ interface RevenueCalculatorProps {
 }
 
 export const RevenueCalculator: React.FC<RevenueCalculatorProps> = ({
-  currentValue,
+  currentValue: _currentValue,
   hint,
   onApplyCalculation,
 }) => {

@@ -250,7 +250,7 @@ describe('SmartContactCard', () => {
       
       levels.forEach(level => {
         const { rerender } = renderWithTheme(
-          <SmartContactCard {...defaultProps} contact={{ ...mockContdecisionLevel: level.value as unknown }} />
+          <SmartContactCard {...defaultProps} contact={{ ...mockContact, decisionLevel: level.value as unknown }} />
         );
         
         expect(screen.getByText(level.label)).toBeInTheDocument();

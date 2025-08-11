@@ -5,7 +5,7 @@
  * Used for fieldType: 'select'
  */
 
-import React, { useMemo } from 'react';
+import React from 'react';
 import {
   FormControl,
   Select as MuiSelect,

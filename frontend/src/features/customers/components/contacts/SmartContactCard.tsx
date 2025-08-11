@@ -81,7 +81,7 @@ export const SmartContactCard: React.FC<SmartContactCardProps> = ({
   onQuickAction,
   showQuickActions = true,
   showAuditTrail = true,
-  customerId,
+  customerId: _customerId,
 }) => {
   const theme = useTheme();
   const { user } = useAuth();
