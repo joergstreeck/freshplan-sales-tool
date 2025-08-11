@@ -89,7 +89,7 @@ export const CustomerList: React.FC = () => {
           <UniversalExportButton
             entity="customers"
             buttonLabel="Liste exportieren"
-            onExportComplete={(format) => {
+            onExportComplete={format => {
               console.log(`Export completed: ${format}`);
             }}
           />

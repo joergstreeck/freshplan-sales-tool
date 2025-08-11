@@ -1,9 +1,9 @@
 /**
  * Universal Search Hook
- * 
+ *
  * Custom hook for performing universal search across customers and contacts
  * with debouncing, caching, and error handling.
- * 
+ *
  * @module useUniversalSearch
  * @since FC-005 PR4
  */
@@ -80,8 +80,7 @@ const cacheTimestamps = new Map<string, number>();
 // LRU cache eviction when size limit reached
 function evictOldestCacheEntry() {
   if (searchCache.size >= MAX_CACHE_SIZE) {
-    const oldestKey = Array.from(cacheTimestamps.entries())
-      .sort((a, b) => a[1] - b[1])[0]?.[0];
+    const oldestKey = Array.from(cacheTimestamps.entries()).sort((a, b) => a[1] - b[1])[0]?.[0];
     if (oldestKey) {
       searchCache.delete(oldestKey);
       cacheTimestamps.delete(oldestKey);
@@ -107,16 +106,19 @@ export const useUniversalSearch = (
   const [searchResults, setSearchResults] = useState<SearchResults | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  
+
   const abortControllerRef = useRef<AbortController | null>(null);
   const debouncedQuery = useDebounce(searchQuery, debounceMs);
 
   /**
    * Generates cache key from search parameters
    */
-  const getCacheKey = useCallback((query: string): string => {
-    return `${query}-${includeContacts}-${includeInactive}-${limit}`;
-  }, [includeContacts, includeInactive, limit]);
+  const getCacheKey = useCallback(
+    (query: string): string => {
+      return `${query}-${includeContacts}-${includeInactive}-${limit}`;
+    },
+    [includeContacts, includeInactive, limit]
+  );
 
   /**
    * Checks if cached result is still valid
@@ -130,99 +132,88 @@ export const useUniversalSearch = (
   /**
    * Performs the search API call
    */
-  const performSearch = useCallback(async (query: string) => {
-    // Check minimum query length
-    if (query.length < minQueryLength) {
-      setSearchResults(null);
-      setError(null);
-      return;
-    }
-
-    // Check cache first
-    const cacheKey = getCacheKey(query);
-    if (searchCache.has(cacheKey) && isCacheValid(cacheKey)) {
-      setSearchResults(searchCache.get(cacheKey)!);
-      setError(null);
-      return;
-    }
-
-    // Cancel previous request
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort();
-    }
-
-    // Create new abort controller
-    abortControllerRef.current = new AbortController();
-
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      const params = new URLSearchParams({
-        query,
-        includeContacts: includeContacts.toString(),
-        includeInactive: includeInactive.toString(),
-        limit: limit.toString(),
-      });
-
-      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080';
-      const response = await fetch(
-        `${apiUrl}/api/search/universal?${params.toString()}`,
-        {
-          signal: abortControllerRef.current.signal,
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-          },
-        }
-      );
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      
-      const data = await response.json() as SearchResults;
-
-      // Transform backend response to frontend format
-      const transformedResults: SearchResults = {
-        customers: data.customers || [],
-        contacts: data.contacts || [],
-        totalCount: data.totalCount || 0,
-        executionTime: data.executionTime || 0,
-        metadata: data.metadata,
-      };
-
-      // Update cache with size limit check
-      evictOldestCacheEntry(); // Ensure we don't exceed cache size
-      searchCache.set(cacheKey, transformedResults);
-      cacheTimestamps.set(cacheKey, Date.now());
-
-      setSearchResults(transformedResults);
-      setError(null);
-    } catch (err: any) {
-      // Ignore aborted requests
-      if (err.name === 'AbortError') {
+  const performSearch = useCallback(
+    async (query: string) => {
+      // Check minimum query length
+      if (query.length < minQueryLength) {
+        setSearchResults(null);
+        setError(null);
         return;
       }
 
-      console.error('Search error:', err);
-      setError(
-        err.response?.data?.message || 
-        err.message || 
-        'Fehler bei der Suche'
-      );
-      setSearchResults(null);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [
-    minQueryLength,
-    includeContacts,
-    includeInactive,
-    limit,
-    getCacheKey,
-    isCacheValid,
-  ]);
+      // Check cache first
+      const cacheKey = getCacheKey(query);
+      if (searchCache.has(cacheKey) && isCacheValid(cacheKey)) {
+        setSearchResults(searchCache.get(cacheKey)!);
+        setError(null);
+        return;
+      }
+
+      // Cancel previous request
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+
+      // Create new abort controller
+      abortControllerRef.current = new AbortController();
+
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        const params = new URLSearchParams({
+          query,
+          includeContacts: includeContacts.toString(),
+          includeInactive: includeInactive.toString(),
+          limit: limit.toString(),
+        });
+
+        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+        const response = await fetch(`${apiUrl}/api/search/universal?${params.toString()}`, {
+          signal: abortControllerRef.current.signal,
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = (await response.json()) as SearchResults;
+
+        // Transform backend response to frontend format
+        const transformedResults: SearchResults = {
+          customers: data.customers || [],
+          contacts: data.contacts || [],
+          totalCount: data.totalCount || 0,
+          executionTime: data.executionTime || 0,
+          metadata: data.metadata,
+        };
+
+        // Update cache with size limit check
+        evictOldestCacheEntry(); // Ensure we don't exceed cache size
+        searchCache.set(cacheKey, transformedResults);
+        cacheTimestamps.set(cacheKey, Date.now());
+
+        setSearchResults(transformedResults);
+        setError(null);
+      } catch (err) {
+        // Ignore aborted requests
+        if (err instanceof Error && err.name === 'AbortError') {
+          return;
+        }
+
+        console.error('Search error:', err);
+        setError(err.response?.data?.message || err.message || 'Fehler bei der Suche');
+        setSearchResults(null);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [minQueryLength, includeContacts, includeInactive, limit, getCacheKey, isCacheValid]
+  );
 
   /**
    * Public search function
@@ -238,7 +229,7 @@ export const useUniversalSearch = (
     setSearchQuery('');
     setSearchResults(null);
     setError(null);
-    
+
     // Cancel any pending request
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
@@ -284,58 +275,61 @@ export const useQuickSearch = (
   const [searchResults, setSearchResults] = useState<SearchResults | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  
+
   const abortControllerRef = useRef<AbortController | null>(null);
   const debouncedQuery = useDebounce(searchQuery, debounceMs);
 
-  const performQuickSearch = useCallback(async (query: string) => {
-    if (query.length < 1) {
-      setSearchResults(null);
-      return;
-    }
-
-    // Cancel previous request
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort();
-    }
-
-    abortControllerRef.current = new AbortController();
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      const params = new URLSearchParams({
-        query,
-        limit: limit.toString(),
-      });
-
-      const response = await fetch(
-        `http://localhost:8080/api/search/quick?${params.toString()}`,
-        {
-          signal: abortControllerRef.current.signal,
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-          },
-        }
-      );
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+  const performQuickSearch = useCallback(
+    async (query: string) => {
+      if (query.length < 1) {
+        setSearchResults(null);
+        return;
       }
-      
-      const data = await response.json() as SearchResults;
-      setSearchResults(data);
+
+      // Cancel previous request
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+
+      abortControllerRef.current = new AbortController();
+      setIsLoading(true);
       setError(null);
-    } catch (err: any) {
-      if (err.name === 'AbortError') return;
-      
-      setError('Fehler bei der Schnellsuche');
-      setSearchResults(null);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [limit]);
+
+      try {
+        const params = new URLSearchParams({
+          query,
+          limit: limit.toString(),
+        });
+
+        const response = await fetch(
+          `http://localhost:8080/api/search/quick?${params.toString()}`,
+          {
+            signal: abortControllerRef.current.signal,
+            headers: {
+              Accept: 'application/json',
+              'Content-Type': 'application/json',
+            },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = (await response.json()) as SearchResults;
+        setSearchResults(data);
+        setError(null);
+      } catch (err) {
+        if (err instanceof Error && err.name === 'AbortError') return;
+
+        setError('Fehler bei der Schnellsuche');
+        setSearchResults(null);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [limit]
+  );
 
   const search = useCallback((query: string) => {
     setSearchQuery(query);

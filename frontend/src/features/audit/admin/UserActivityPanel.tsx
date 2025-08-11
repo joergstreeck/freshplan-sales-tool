@@ -25,11 +25,11 @@ import {
   CheckCircle as ActiveIcon,
   Cancel as InactiveIcon,
 } from '@mui/icons-material';
-import { useQuery } from '@tanstack/react-query';
-import { auditApi } from '../services/auditApi';
+import { useQuery as _useQuery } from '@tanstack/react-query';
+import { auditApi as _auditApi } from '../services/auditApi';
 
 interface UserActivityPanelProps {
-  dateRange: {
+  _dateRange: {
     from: Date;
     to: Date;
   };
@@ -47,7 +47,7 @@ interface UserActivity {
   criticalActions: number;
 }
 
-export const UserActivityPanel: React.FC<UserActivityPanelProps> = ({ dateRange }) => {
+export const UserActivityPanel: React.FC<UserActivityPanelProps> = ({ dateRange: _dateRange }) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [searchTerm, setSearchTerm] = useState('');

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { TextField, Box, InputAdornment } from '@mui/material';
-import type { TextFieldProps } from '@mui/material';
+import type { TextFieldProps as _TextFieldProps } from '@mui/material';
 import {
   formatEUR,
   parseEUR,
@@ -37,7 +37,7 @@ export const EURInput: React.FC<EURInputProps> = ({
   disabled = false,
   fullWidth = true,
   size = 'medium',
-  calculatorHint,
+  calculatorHint: _calculatorHint,
   validationWarning = 1000000,
 }) => {
   const [displayValue, setDisplayValue] = useState('');

@@ -2,10 +2,10 @@ package de.freshplan.domain.customer.service;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import de.freshplan.domain.customer.entity.CustomerContact;
 import de.freshplan.domain.customer.entity.ContactInteraction;
 import de.freshplan.domain.customer.entity.ContactInteraction.InteractionType;
 import de.freshplan.domain.customer.entity.Customer;
+import de.freshplan.domain.customer.entity.CustomerContact;
 import de.freshplan.domain.customer.repository.ContactInteractionRepository;
 import de.freshplan.domain.customer.repository.ContactRepository;
 import de.freshplan.domain.customer.repository.CustomerRepository;
@@ -53,6 +53,12 @@ class ContactInteractionServiceIT {
     testCustomer.setCustomerNumber("TEST-001");
     testCustomer.setCreatedBy("test-user");
     testCustomer.setUpdatedBy("test-user");
+    // Set Sprint 2 fields to avoid NOT NULL constraint violations
+    testCustomer.setLocationsGermany(0);
+    testCustomer.setLocationsAustria(0);
+    testCustomer.setLocationsSwitzerland(0);
+    testCustomer.setLocationsRestEU(0);
+    testCustomer.setTotalLocationsEU(0);
     // Customer has no email field anymore
     customerRepository.persist(testCustomer);
     testCustomerId = testCustomer.getId();
@@ -62,6 +68,8 @@ class ContactInteractionServiceIT {
     testContact.setFirstName("Max");
     testContact.setLastName("Mustermann");
     testContact.setEmail("max@company.com");
+    testContact.setCreatedBy("test-user");
+    testContact.setUpdatedBy("test-user");
     testContact.setCustomer(testCustomer);
     // Note: updatedAt is set automatically by @UpdateTimestamp
     contactRepository.persist(testContact);

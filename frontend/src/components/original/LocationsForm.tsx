@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import '../../styles/legacy/forms.css';
 import '../../styles/legacy/locations.css';
@@ -100,7 +100,7 @@ export function LocationsForm({
   };
 
   // Calculate total locations based on industry
-  const calculateTotalLocations = () => {
+  const calculateTotalLocations = useCallback(() => {
     let total = 0;
 
     switch (customerIndustry) {
@@ -135,7 +135,7 @@ export function LocationsForm({
     }
 
     return total;
-  };
+  }, [customerIndustry, formData]);
 
   useEffect(() => {
     const total = calculateTotalLocations();
@@ -145,7 +145,7 @@ export function LocationsForm({
         onTotalLocationsChange(total);
       }
     }
-  }, [formData, onTotalLocationsChange]);
+  }, [formData, onTotalLocationsChange, calculateTotalLocations]);
 
   const renderIndustryFields = () => {
     switch (customerIndustry) {

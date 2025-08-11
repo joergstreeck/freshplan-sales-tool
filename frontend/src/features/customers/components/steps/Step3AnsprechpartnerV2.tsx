@@ -7,7 +7,7 @@
  * @see /Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/wizard/STEP3_ANSPRECHPARTNER_V2.md
  */
 
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   Box,
   Typography,
@@ -77,11 +77,14 @@ export const Step3AnsprechpartnerV2: React.FC = () => {
   // Initialisiere Kontakte aus customerData wenn vorhanden
   const [contacts, setContacts] = useState<ContactFormData[]>(() => {
     if (customerData.contacts && Array.isArray(customerData.contacts)) {
-      return customerData.contacts.map((contact: any) => ({
-        ...contact,
-        responsibilityScope: contact.responsibilityScope || 'all',
-        assignedLocationIds: contact.assignedLocationIds || [],
-      }));
+      return customerData.contacts.map((contact: unknown) => {
+        const c = contact as Record<string, unknown>;
+        return {
+          ...c,
+          responsibilityScope: (c.responsibilityScope as string) || 'all',
+          assignedLocationIds: (c.assignedLocationIds as string[]) || [],
+        };
+      });
     }
     // Standard: Ein leerer Hauptansprechpartner
     return [
@@ -114,7 +117,7 @@ export const Step3AnsprechpartnerV2: React.FC = () => {
   );
 
   const handleContactChange = useCallback(
-    (index: number, field: keyof ContactFormData, value: any) => {
+    (index: number, field: keyof ContactFormData, value: unknown) => {
       const newContacts = [...contacts];
       newContacts[index] = {
         ...newContacts[index],

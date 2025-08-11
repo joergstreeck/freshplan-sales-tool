@@ -34,7 +34,7 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { format } from 'date-fns';
 import { de } from 'date-fns/locale';
 import { FixedSizeList } from 'react-window';
-import { LazyComponent } from '../../../components/common/LazyComponent';
+import { LazyComponent as _LazyComponent } from '../../../components/common/LazyComponent';
 import React from 'react';
 
 interface FocusListColumnMUIProps {
@@ -42,43 +42,45 @@ interface FocusListColumnMUIProps {
 }
 
 // Virtual Row Component für react-window
-const VirtualRow = React.memo(({ index, style, data }: any) => {
-  const { customers, columns, selectedId, onSelect, renderCell } = data;
-  const customer = customers[index];
-  
-  return (
-    <Box
-      style={style}
-      sx={{
-        display: 'flex',
-        alignItems: 'center',
-        borderBottom: '1px solid rgba(224, 224, 224, 1)',
-        cursor: 'pointer',
-        backgroundColor: selectedId === customer.id ? 'action.selected' : 'transparent',
-        '&:hover': {
-          backgroundColor: 'action.hover',
-        },
-      }}
-      onClick={() => onSelect(customer.id)}
-    >
-      <Table size="small">
-        <TableBody>
-          <TableRow>
-            {columns.map((column: any) => (
-              <TableCell
-                key={`${customer.id}-${column.id}`}
-                align={column.align || 'left'}
-                style={{ minWidth: column.minWidth }}
-              >
-                {renderCell(customer, column.id)}
-              </TableCell>
-            ))}
-          </TableRow>
-        </TableBody>
-      </Table>
-    </Box>
-  );
-});
+const VirtualRow = React.memo(
+  ({ index, style, data }: { index: number; style: React.CSSProperties; data: unknown }) => {
+    const { customers, columns, selectedId, onSelect, renderCell } = data;
+    const customer = customers[index];
+
+    return (
+      <Box
+        style={style}
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          borderBottom: '1px solid rgba(224, 224, 224, 1)',
+          cursor: 'pointer',
+          backgroundColor: selectedId === customer.id ? 'action.selected' : 'transparent',
+          '&:hover': {
+            backgroundColor: 'action.hover',
+          },
+        }}
+        onClick={() => onSelect(customer.id)}
+      >
+        <Table size="small">
+          <TableBody>
+            <TableRow>
+              {columns.map((column: { id: string; align?: string; minWidth?: number }) => (
+                <TableCell
+                  key={`${customer.id}-${column.id}`}
+                  align={column.align || 'left'}
+                  style={{ minWidth: column.minWidth }}
+                >
+                  {renderCell(customer, column.id)}
+                </TableCell>
+              ))}
+            </TableRow>
+          </TableBody>
+        </Table>
+      </Box>
+    );
+  }
+);
 
 VirtualRow.displayName = 'VirtualRow';
 
@@ -344,92 +346,90 @@ export function FocusListColumnMUI({ onCustomerSelect }: FocusListColumnMUIProps
                   />
                 ))}
               </Box>
-            ) : (
-              // Tabellenansicht mit Virtual Scrolling für große Listen
-              searchResults.content.length > 20 ? (
-                // Virtual Scrolling für > 20 Einträge
-                <Box>
-                  {/* Table Header */}
-                  <Table size="small" stickyHeader>
-                    <TableHead>
-                      <TableRow>
-                        {visibleTableColumns.map(column => (
-                          <TableCell
-                            key={column.id}
-                            align={column.align || 'left'}
-                            style={{ minWidth: column.minWidth }}
-                            sx={{ fontWeight: 600 }}
-                          >
-                            {column.label}
-                          </TableCell>
-                        ))}
-                      </TableRow>
-                    </TableHead>
-                  </Table>
-                  
-                  {/* Virtual List Body */}
-                  <FixedSizeList
-                    height={400}
-                    itemCount={searchResults.content.length}
-                    itemSize={52}
-                    width="100%"
-                    itemData={{
-                      customers: searchResults.content,
-                      columns: visibleTableColumns,
-                      selectedId: selectedCustomerId,
-                      onSelect: handleCustomerSelect,
-                      renderCell: renderCellContent,
-                    }}
-                  >
-                    {VirtualRow}
-                  </FixedSizeList>
-                </Box>
-              ) : (
-                // Normale Tabelle für <= 20 Einträge
-                <TableContainer>
-                  <Table size="small" stickyHeader>
-                    <TableHead>
-                      <TableRow>
-                        {visibleTableColumns.map(column => (
-                          <TableCell
-                            key={column.id}
-                            align={column.align || 'left'}
-                            style={{ minWidth: column.minWidth }}
-                            sx={{ fontWeight: 600 }}
-                          >
-                            {column.label}
-                          </TableCell>
-                        ))}
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {searchResults.content.map(customer => (
-                        <TableRow
-                          key={customer.id}
-                          hover
-                          selected={selectedCustomerId === customer.id}
-                          onClick={() => handleCustomerSelect(customer.id)}
-                          sx={{
-                            cursor: 'pointer',
-                            '&.Mui-selected': {
-                              backgroundColor: 'action.selected',
-                            },
-                          }}
+            ) : // Tabellenansicht mit Virtual Scrolling für große Listen
+            searchResults.content.length > 20 ? (
+              // Virtual Scrolling für > 20 Einträge
+              <Box>
+                {/* Table Header */}
+                <Table size="small" stickyHeader>
+                  <TableHead>
+                    <TableRow>
+                      {visibleTableColumns.map(column => (
+                        <TableCell
+                          key={column.id}
+                          align={column.align || 'left'}
+                          style={{ minWidth: column.minWidth }}
+                          sx={{ fontWeight: 600 }}
                         >
-                          {visibleTableColumns.map(column => (
-                            <TableCell
-                              key={`${customer.id}-${column.id}`}
-                              align={column.align || 'left'}
-                            >
-                              {renderCellContent(customer, column.id)}
-                            </TableCell>
-                          ))}
-                        </TableRow>
+                          {column.label}
+                        </TableCell>
                       ))}
-                    </TableBody>
-                  </Table>
-                </TableContainer>
-              )
+                    </TableRow>
+                  </TableHead>
+                </Table>
+
+                {/* Virtual List Body */}
+                <FixedSizeList
+                  height={400}
+                  itemCount={searchResults.content.length}
+                  itemSize={52}
+                  width="100%"
+                  itemData={{
+                    customers: searchResults.content,
+                    columns: visibleTableColumns,
+                    selectedId: selectedCustomerId,
+                    onSelect: handleCustomerSelect,
+                    renderCell: renderCellContent,
+                  }}
+                >
+                  {VirtualRow}
+                </FixedSizeList>
+              </Box>
+            ) : (
+              // Normale Tabelle für <= 20 Einträge
+              <TableContainer>
+                <Table size="small" stickyHeader>
+                  <TableHead>
+                    <TableRow>
+                      {visibleTableColumns.map(column => (
+                        <TableCell
+                          key={column.id}
+                          align={column.align || 'left'}
+                          style={{ minWidth: column.minWidth }}
+                          sx={{ fontWeight: 600 }}
+                        >
+                          {column.label}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {searchResults.content.map(customer => (
+                      <TableRow
+                        key={customer.id}
+                        hover
+                        selected={selectedCustomerId === customer.id}
+                        onClick={() => handleCustomerSelect(customer.id)}
+                        sx={{
+                          cursor: 'pointer',
+                          '&.Mui-selected': {
+                            backgroundColor: 'action.selected',
+                          },
+                        }}
+                      >
+                        {visibleTableColumns.map(column => (
+                          <TableCell
+                            key={`${customer.id}-${column.id}`}
+                            align={column.align || 'left'}
+                          >
+                            {renderCellContent(customer, column.id)}
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
             )}
 
             {/* Pagination Controls - Responsive Layout */}

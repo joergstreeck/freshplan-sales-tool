@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback as _useCallback } from 'react';
 import {
   Box,
   Table,
@@ -13,22 +13,21 @@ import {
   Tooltip,
   Typography,
   CircularProgress,
-  Button,
+  Button as _Button,
   TablePagination,
 } from '@mui/material';
 import {
   Visibility as VisibilityIcon,
-  Download as DownloadIcon,
+  Download as _DownloadIcon,
   Security as SecurityIcon,
   Warning as WarningIcon,
 } from '@mui/icons-material';
-import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { de } from 'date-fns/locale';
-import type { AuditLog, AuditFilters } from '../types';
-import { auditApi } from '../services/auditApi';
+import type { AuditLog as _AuditLog, AuditFilters } from '../types';
 import { AuditDetailModal } from './AuditDetailModal';
 import { UniversalExportButton } from '@/components/export/UniversalExportButton';
+import { useQuery } from '@tanstack/react-query';
 
 interface AuditTrailTableProps {
   filters?: AuditFilters;
@@ -61,7 +60,12 @@ export const AuditTrailTable: React.FC<AuditTrailTableProps> = ({ filters }) => 
   const getActionColor = (action: string | undefined) => {
     if (!action) return 'default';
     const upperAction = action.toUpperCase();
-    if (upperAction.includes('DELETE') || upperAction.includes('FAILURE') || upperAction.includes('DENIED')) return 'error';
+    if (
+      upperAction.includes('DELETE') ||
+      upperAction.includes('FAILURE') ||
+      upperAction.includes('DENIED')
+    )
+      return 'error';
     if (upperAction.includes('CREATE') || upperAction.includes('SUCCESS')) return 'success';
     if (upperAction.includes('UPDATE') || upperAction.includes('CHANGE')) return 'primary';
     if (upperAction.includes('PERMISSION') || upperAction.includes('SECURITY')) return 'warning';
@@ -269,13 +273,21 @@ export const AuditTrailTable: React.FC<AuditTrailTableProps> = ({ filters }) => 
       <Box sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end' }}>
         <UniversalExportButton
           entity="audit"
-          queryParams={filters ? {
-            ...(filters.dateRange?.from && { from: filters.dateRange.from.toISOString().split('T')[0] }),
-            ...(filters.dateRange?.to && { to: filters.dateRange.to.toISOString().split('T')[0] }),
-            ...(filters.entityType && { entityType: filters.entityType }),
-            ...(filters.entityId && { entityId: filters.entityId }),
-            ...(filters.searchText && { searchText: filters.searchText }),
-          } : {}}
+          queryParams={
+            filters
+              ? {
+                  ...(filters.dateRange?.from && {
+                    from: filters.dateRange.from.toISOString().split('T')[0],
+                  }),
+                  ...(filters.dateRange?.to && {
+                    to: filters.dateRange.to.toISOString().split('T')[0],
+                  }),
+                  ...(filters.entityType && { entityType: filters.entityType }),
+                  ...(filters.entityId && { entityId: filters.entityId }),
+                  ...(filters.searchText && { searchText: filters.searchText }),
+                }
+              : {}
+          }
           buttonLabel="Exportieren"
         />
       </Box>

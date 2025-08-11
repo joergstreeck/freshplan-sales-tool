@@ -11,7 +11,7 @@ interface RevenueCalculatorProps {
 }
 
 export const RevenueCalculator: React.FC<RevenueCalculatorProps> = ({
-  currentValue,
+  currentValue: _currentValue,
   hint,
   onApplyCalculation,
 }) => {
@@ -24,26 +24,26 @@ export const RevenueCalculator: React.FC<RevenueCalculatorProps> = ({
     totalRevenue: 0,
   });
 
-  // Berechne Pain Point Bonus
-  const calculatePainPointBonus = () => {
-    let count = 0;
-    const painPointFields = [
-      'hasStaffingIssues',
-      'hasQualityIssues',
-      'hasFoodWasteIssues',
-      'hasCostPressure',
-      'hasFlexibilityIssues',
-    ];
-
-    painPointFields.forEach(field => {
-      if (customerData[field] === 'ja') count++;
-    });
-
-    return count * 0.1; // 10% pro Pain Point
-  };
-
   // Update Kalkulation
   useEffect(() => {
+    // Berechne Pain Point Bonus
+    const calculatePainPointBonus = () => {
+      let count = 0;
+      const painPointFields = [
+        'hasStaffingIssues',
+        'hasQualityIssues',
+        'hasFoodWasteIssues',
+        'hasCostPressure',
+        'hasFlexibilityIssues',
+      ];
+
+      painPointFields.forEach(field => {
+        if (customerData[field] === 'ja') count++;
+      });
+
+      return count * 0.1; // 10% pro Pain Point
+    };
+
     const locationCount = customerData.totalLocationsEU || locations.length || 1;
     const painPointBonus = calculatePainPointBonus();
     const avgRevenue = getAverageRevenueByIndustry(customerData.industry);

@@ -1,9 +1,9 @@
 /**
  * Intelligent Filter Bar Component
- * 
+ *
  * Advanced filtering interface for customer list with universal search,
  * multi-criteria filters, column management, and export capabilities.
- * 
+ *
  * @module IntelligentFilterBar
  * @since FC-005 PR4
  */
@@ -23,7 +23,6 @@ import {
   Typography,
   Divider,
   FormControl,
-  Select,
   MenuItem,
   FormGroup,
   FormControlLabel,
@@ -31,7 +30,6 @@ import {
   Alert,
   useTheme,
   alpha,
-  Paper,
   FormLabel,
   RadioGroup,
   Radio,
@@ -39,7 +37,6 @@ import {
   List,
   ListItem,
   ListItemText,
-  ListItemIcon,
   ListItemSecondaryAction,
   Switch,
   Menu,
@@ -49,16 +46,12 @@ import {
   FilterList as FilterIcon,
   ViewColumn as ColumnIcon,
   Sort as SortIcon,
-  Save as SaveIcon,
   Clear as ClearIcon,
   Close as CloseIcon,
   Add as AddIcon,
   ArrowUpward as ArrowUpIcon,
   ArrowDownward as ArrowDownIcon,
-  Visibility as VisibilityIcon,
-  VisibilityOff as VisibilityOffIcon,
   Star as StarIcon,
-  StarBorder as StarBorderIcon,
   Business as BusinessIcon,
   Warning as RiskIcon,
   Schedule as RecentIcon,
@@ -71,11 +64,11 @@ import { useUniversalSearch } from '../../hooks/useUniversalSearch';
 import { SearchResultsDropdown } from '../search/SearchResultsDropdown';
 import { useNavigate } from 'react-router-dom';
 import { useFocusListStore } from '../../../customer/store/focusListStore';
-import type { 
-  FilterConfig, 
-  SortConfig, 
+import type {
+  FilterConfig,
+  SortConfig,
   ColumnConfig,
-  SavedFilterSet
+  SavedFilterSet,
 } from '../../types/filter.types';
 import { RiskLevel } from '../../types/filter.types';
 import { CustomerStatus } from '../../types/customer.types';
@@ -121,18 +114,18 @@ export function IntelligentFilterBar({
   const theme = useTheme();
   const searchInputRef = useRef<HTMLInputElement>(null);
   const searchContainerRef = useRef<HTMLDivElement>(null);
-  
+
   // Sort menu anchor
   const [sortMenuAnchor, setSortMenuAnchor] = useState<null | HTMLElement>(null);
-  
+
   // State Management
   const [searchTerm, setSearchTerm] = useState('');
   const [showSearchResults, setShowSearchResults] = useState(false);
   const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
   const [columnDrawerOpen, setColumnDrawerOpen] = useState(false);
-  const [saveDialogOpen, setSaveDialogOpen] = useState(false);
+  const [_saveDialogOpen, _setSaveDialogOpen] = useState(false);
   const [filterSetName, setFilterSetName] = useState('');
-  
+
   const [activeFilters, setActiveFilters] = useState<FilterConfig>({
     text: '',
     status: [],
@@ -144,17 +137,17 @@ export function IntelligentFilterBar({
     lastContactDays: null,
     tags: [],
   });
-  
+
   // Gespeicherte Filtersets
   const [savedFilters, setSavedFilters] = useLocalStorage<SavedFilterSet[]>(
     'customerFilterSets',
     []
   );
   const [selectedFilterSet, setSelectedFilterSet] = useState<string | null>(null);
-  
+
   // Debounced Search
   const debouncedSearchTerm = useDebounce(searchTerm, 300);
-  
+
   // Universal Search Hook
   const {
     searchResults,
@@ -169,88 +162,92 @@ export function IntelligentFilterBar({
     debounceMs: 300,
     minQueryLength: 2,
   });
-  
+
   // Quick Filter Presets
   const quickFilters = [
-    { 
-      id: 'active', 
-      label: 'Aktive Kunden', 
+    {
+      id: 'active',
+      label: 'Aktive Kunden',
       icon: <BusinessIcon fontSize="small" />,
-      filter: { status: [CustomerStatus.ACTIVE] } 
+      filter: { status: [CustomerStatus.ACTIVE] },
     },
-    { 
-      id: 'at-risk', 
-      label: 'Risiko-Kunden', 
+    {
+      id: 'at-risk',
+      label: 'Risiko-Kunden',
       icon: <RiskIcon fontSize="small" />,
-      filter: { riskLevel: [RiskLevel.HIGH, RiskLevel.MEDIUM] } 
+      filter: { riskLevel: [RiskLevel.HIGH, RiskLevel.MEDIUM] },
     },
-    { 
-      id: 'no-contact', 
-      label: 'Lange kein Kontakt', 
+    {
+      id: 'no-contact',
+      label: 'Lange kein Kontakt',
       icon: <RecentIcon fontSize="small" />,
-      filter: { lastContactDays: 90 } 
+      filter: { lastContactDays: 90 },
     },
-    { 
-      id: 'high-value', 
-      label: 'Top-Kunden', 
+    {
+      id: 'high-value',
+      label: 'Top-Kunden',
       icon: <RevenueIcon fontSize="small" />,
-      filter: { revenueRange: { min: 100000, max: null } } 
+      filter: { revenueRange: { min: 100000, max: null } },
     },
-    { 
-      id: 'new', 
-      label: 'Neue Kunden', 
+    {
+      id: 'new',
+      label: 'Neue Kunden',
       icon: <AddIcon fontSize="small" />,
-      filter: { createdDays: 30 } 
+      filter: { createdDays: 30 },
     },
   ];
-  
+
   // Use focus list store for columns
-  const { 
-    tableColumns, 
+  const {
+    tableColumns,
     toggleColumnVisibility: toggleColumnVisibilityStore,
     setColumnOrder: setColumnOrderStore,
-    resetTableColumns 
+    resetTableColumns: _resetTableColumns,
   } = useFocusListStore();
-  
+
   // Convert store columns to ColumnConfig format for compatibility
-  const columns = useMemo(() => 
-    tableColumns
-      .sort((a, b) => a.order - b.order)
-      .map(col => ({
-        id: col.field,
-        label: col.label,
-        visible: col.visible,
-        locked: col.field === 'companyName' // Only company name is locked
-      })),
+  const columns = useMemo(
+    () =>
+      tableColumns
+        .sort((a, b) => a.order - b.order)
+        .map(col => ({
+          id: col.field,
+          label: col.label,
+          visible: col.visible,
+          locked: col.field === 'companyName', // Only company name is locked
+        })),
     [tableColumns]
   );
-  
+
   // Sortier-Konfiguration
   const [sortConfig, setSortConfig] = useState<SortConfig>({
-    field: 'companyName', 
-    direction: 'asc', 
-    priority: 0
+    field: 'companyName',
+    direction: 'asc',
+    priority: 0,
   });
-  
+
   // Universal Search Handler
-  const handleSearch = useCallback((value: string) => {
-    setSearchTerm(value);
-    
-    // For table filtering
-    const newFilters = { ...activeFilters, text: value };
-    setActiveFilters(newFilters);
-    onFilterChange(newFilters);
-    
-    // For universal search
-    if (enableUniversalSearch && value.length >= 2) {
-      performUniversalSearch(value);
-      setShowSearchResults(true);
-    } else if (value.length < 2) {
-      clearResults();
-      setShowSearchResults(false);
-    }
-  }, [activeFilters, onFilterChange, enableUniversalSearch, performUniversalSearch, clearResults]);
-  
+  const handleSearch = useCallback(
+    (value: string) => {
+      setSearchTerm(value);
+
+      // For table filtering
+      const newFilters = { ...activeFilters, text: value };
+      setActiveFilters(newFilters);
+      onFilterChange(newFilters);
+
+      // For universal search
+      if (enableUniversalSearch && performUniversalSearch && value.length >= 2) {
+        performUniversalSearch(value);
+        setShowSearchResults(true);
+      } else if (clearResults && value.length < 2) {
+        clearResults();
+        setShowSearchResults(false);
+      }
+    },
+    [activeFilters, onFilterChange, enableUniversalSearch, performUniversalSearch, clearResults]
+  );
+
   // Effect for debounced search
   React.useEffect(() => {
     if (debouncedSearchTerm !== activeFilters.text) {
@@ -258,58 +255,69 @@ export function IntelligentFilterBar({
       setActiveFilters(newFilters);
       onFilterChange(newFilters);
     }
-  }, [debouncedSearchTerm]);
-  
+  }, [debouncedSearchTerm, activeFilters, onFilterChange]);
+
   // Click outside handler for search results
   React.useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (searchContainerRef.current && 
-          !searchContainerRef.current.contains(event.target as Node)) {
+      if (
+        searchContainerRef.current &&
+        !searchContainerRef.current.contains(event.target as Node)
+      ) {
         setShowSearchResults(false);
       }
     };
-    
+
     if (showSearchResults) {
       document.addEventListener('mousedown', handleClickOutside);
     }
-    
+
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [showSearchResults]);
-  
+
   // Search Result Handlers
-  const handleCustomerClick = useCallback((customerId: string) => {
-    navigate(`/customers/${customerId}`);
-    setShowSearchResults(false);
-    clearResults();
-  }, [navigate, clearResults]);
-  
-  const handleContactClick = useCallback((customerId: string, contactId: string) => {
-    // Navigate to customer page with contact highlight (Deep-Linking)
-    navigate(`/customers/${customerId}?highlightContact=${contactId}`);
-    setShowSearchResults(false);
-    clearResults();
-    setSearchTerm(''); // Clear search field after navigation
-  }, [navigate, clearResults]);
-  
+  const handleCustomerClick = useCallback(
+    (customerId: string) => {
+      navigate(`/customers/${customerId}`);
+      setShowSearchResults(false);
+      clearResults();
+    },
+    [navigate, clearResults]
+  );
+
+  const handleContactClick = useCallback(
+    (customerId: string, contactId: string) => {
+      // Navigate to customer page with contact highlight (Deep-Linking)
+      navigate(`/customers/${customerId}?highlightContact=${contactId}`);
+      setShowSearchResults(false);
+      clearResults();
+      setSearchTerm(''); // Clear search field after navigation
+    },
+    [navigate, clearResults]
+  );
+
   // Filter Application
   const applyFilters = useCallback(() => {
     onFilterChange(activeFilters);
     setFilterDrawerOpen(false);
   }, [activeFilters, onFilterChange]);
-  
+
   // Quick Filter Toggle
-  const toggleQuickFilter = useCallback((quickFilter: any) => {
-    const newFilters = { ...activeFilters, ...quickFilter.filter };
-    setActiveFilters(newFilters);
-    onFilterChange(newFilters);
-  }, [activeFilters, onFilterChange]);
-  
+  const toggleQuickFilter = useCallback(
+    (quickFilter: unknown) => {
+      const newFilters = { ...activeFilters, ...quickFilter.filter };
+      setActiveFilters(newFilters);
+      onFilterChange(newFilters);
+    },
+    [activeFilters, onFilterChange]
+  );
+
   // Save Current Filter Set
-  const saveFilterSet = useCallback(() => {
+  const _saveFilterSet = useCallback(() => {
     if (!filterSetName) return;
-    
+
     const newSet: SavedFilterSet = {
       id: Date.now().toString(),
       name: filterSetName,
@@ -320,33 +328,39 @@ export function IntelligentFilterBar({
     };
     setSavedFilters([...savedFilters, newSet]);
     setFilterSetName('');
-    setSaveDialogOpen(false);
+    _setSaveDialogOpen(false);
   }, [activeFilters, columns, sortConfig, savedFilters, setSavedFilters, filterSetName]);
-  
+
   // Load Filter Set
-  const loadFilterSet = useCallback((setId: string) => {
-    const set = savedFilters.find(s => s.id === setId);
-    if (set) {
-      setActiveFilters(set.filters);
-      // Apply columns if available
-      if (set.columns && onColumnChange) {
-        onColumnChange(set.columns);
+  const loadFilterSet = useCallback(
+    (setId: string) => {
+      const set = savedFilters.find(s => s.id === setId);
+      if (set) {
+        setActiveFilters(set.filters);
+        // Apply columns if available
+        if (set.columns && onColumnChange) {
+          onColumnChange(set.columns);
+        }
+        setSortConfig(set.sort);
+        onFilterChange(set.filters);
+        onSortChange(set.sort);
+        setSelectedFilterSet(setId);
       }
-      setSortConfig(set.sort);
-      onFilterChange(set.filters);
-      onSortChange(set.sort);
-      setSelectedFilterSet(setId);
-    }
-  }, [savedFilters, onFilterChange, onColumnChange, onSortChange]);
-  
+    },
+    [savedFilters, onFilterChange, onColumnChange, onSortChange]
+  );
+
   // Delete Filter Set
-  const deleteFilterSet = useCallback((setId: string) => {
-    setSavedFilters(savedFilters.filter(s => s.id !== setId));
-    if (selectedFilterSet === setId) {
-      setSelectedFilterSet(null);
-    }
-  }, [savedFilters, setSavedFilters, selectedFilterSet]);
-  
+  const deleteFilterSet = useCallback(
+    (setId: string) => {
+      setSavedFilters(savedFilters.filter(s => s.id !== setId));
+      if (selectedFilterSet === setId) {
+        setSelectedFilterSet(null);
+      }
+    },
+    [savedFilters, setSavedFilters, selectedFilterSet]
+  );
+
   // Clear All Filters
   const clearAllFilters = useCallback(() => {
     const emptyFilters: FilterConfig = {
@@ -365,70 +379,82 @@ export function IntelligentFilterBar({
     onFilterChange(emptyFilters);
     setSelectedFilterSet(null);
   }, [onFilterChange]);
-  
+
   // Move column up/down
-  const moveColumn = useCallback((columnId: string, direction: 'up' | 'down') => {
-    const currentIndex = columns.findIndex(c => c.id === columnId);
-    if (currentIndex === -1) return;
-    
-    const newIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
-    
-    // Check bounds
-    if (newIndex < 0 || newIndex >= columns.length) return;
-    
-    // Create new columns array with swapped positions
-    const newColumns = [...columns];
-    [newColumns[currentIndex], newColumns[newIndex]] = [newColumns[newIndex], newColumns[currentIndex]];
-    
-    // Update store with new order
-    const newColumnOrder = tableColumns
-      .map(col => {
-        const visibleIndex = newColumns.findIndex(c => c.id === col.field);
-        if (visibleIndex !== -1) {
-          return { ...col, order: visibleIndex };
-        }
-        return { ...col, order: col.order + newColumns.length };
-      })
-      .sort((a, b) => a.order - b.order)
-      .map(col => col.id);
-    
-    setColumnOrderStore(newColumnOrder);
-    
-    // Call prop callback if provided
-    if (onColumnChange) {
-      onColumnChange(newColumns);
-    }
-  }, [columns, tableColumns, setColumnOrderStore, onColumnChange]);
-  
-  // Toggle Column Visibility - Use store
-  const toggleColumnVisibility = useCallback((columnId: string) => {
-    // The columnId from UI is actually the field name
-    // We need to find the column by field and toggle by its id
-    const column = tableColumns.find(col => col.field === columnId || col.id === columnId);
-    if (column) {
-      toggleColumnVisibilityStore(column.id);
-      
+  const moveColumn = useCallback(
+    (columnId: string, direction: 'up' | 'down') => {
+      const currentIndex = columns.findIndex(c => c.id === columnId);
+      if (currentIndex === -1) return;
+
+      const newIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
+
+      // Check bounds
+      if (newIndex < 0 || newIndex >= columns.length) return;
+
+      // Create new columns array with swapped positions
+      const newColumns = [...columns];
+      [newColumns[currentIndex], newColumns[newIndex]] = [
+        newColumns[newIndex],
+        newColumns[currentIndex],
+      ];
+
+      // Update store with new order
+      const newColumnOrder = tableColumns
+        .map(col => {
+          const visibleIndex = newColumns.findIndex(c => c.id === col.field);
+          if (visibleIndex !== -1) {
+            return { ...col, order: visibleIndex };
+          }
+          return { ...col, order: col.order + newColumns.length };
+        })
+        .sort((a, b) => a.order - b.order)
+        .map(col => col.id);
+
+      setColumnOrderStore(newColumnOrder);
+
       // Call prop callback if provided
       if (onColumnChange) {
-        const newColumns = columns.map(col => 
-          col.id === columnId ? { ...col, visible: !col.visible } : col
-        );
         onColumnChange(newColumns);
       }
-    }
-  }, [tableColumns, toggleColumnVisibilityStore, onColumnChange, columns]);
-  
+    },
+    [columns, tableColumns, setColumnOrderStore, onColumnChange]
+  );
+
+  // Toggle Column Visibility - Use store
+  const toggleColumnVisibility = useCallback(
+    (columnId: string) => {
+      // The columnId from UI is actually the field name
+      // We need to find the column by field and toggle by its id
+      const column = tableColumns.find(col => col.field === columnId || col.id === columnId);
+      if (column) {
+        toggleColumnVisibilityStore(column.id);
+
+        // Call prop callback if provided
+        if (onColumnChange) {
+          const newColumns = columns.map(col =>
+            col.id === columnId ? { ...col, visible: !col.visible } : col
+          );
+          onColumnChange(newColumns);
+        }
+      }
+    },
+    [tableColumns, toggleColumnVisibilityStore, onColumnChange, columns]
+  );
+
   // Handle Sort Change
-  const handleSortChange = useCallback((field: string) => {
-    const newSort: SortConfig = {
-      field,
-      direction: sortConfig.field === field && sortConfig.direction === 'asc' ? 'desc' : 'asc',
-      priority: 0
-    };
-    setSortConfig(newSort);
-    onSortChange(newSort);
-  }, [sortConfig, onSortChange]);
-  
+  const handleSortChange = useCallback(
+    (field: string) => {
+      const newSort: SortConfig = {
+        field,
+        direction: sortConfig.field === field && sortConfig.direction === 'asc' ? 'desc' : 'asc',
+        priority: 0,
+      };
+      setSortConfig(newSort);
+      onSortChange(newSort);
+    },
+    [sortConfig, onSortChange]
+  );
+
   // Active Filter Count
   const activeFilterCount = useMemo(() => {
     let count = 0;
@@ -443,8 +469,7 @@ export function IntelligentFilterBar({
     if (activeFilters.tags?.length) count++;
     return count;
   }, [activeFilters]);
-  
-  
+
   return (
     <Box sx={{ mb: 3 }}>
       {/* Main Filter Bar */}
@@ -454,69 +479,69 @@ export function IntelligentFilterBar({
           {/* Universal Search */}
           <Box ref={searchContainerRef} sx={{ position: 'relative', flex: 1 }}>
             <TextField
-            ref={searchInputRef}
-            fullWidth
-            placeholder="Suche nach Firma, Kundennummer, Kontakten..."
-            value={searchTerm}
-            onChange={(e) => handleSearch(e.target.value)}
-            autoComplete="off"
-            disabled={loading}
-            inputProps={{
-              autoComplete: 'off',
-              'data-form-type': 'other',
-              'data-lpignore': 'true',
-              autoCorrect: 'off',
-              autoCapitalize: 'off',
-              spellCheck: 'false',
-            }}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon />
-                </InputAdornment>
-              ),
-              endAdornment: searchTerm && (
-                <InputAdornment position="end">
-                  <IconButton 
-                    size="small" 
-                    onClick={() => {
-                      setSearchTerm('');
-                      handleSearch('');
-                      setShowSearchResults(false);
-                      clearResults();
-                    }}
-                  >
-                    <ClearIcon />
-                  </IconButton>
-                </InputAdornment>
-              ),
-            }}
-            onFocus={() => {
-              if (enableUniversalSearch && searchTerm.length >= 2) {
-                setShowSearchResults(true);
-              }
-            }}
-            sx={{
-              '& .MuiOutlinedInput-root': {
-                backgroundColor: theme.palette.background.paper,
-              },
-            }}
-          />
-          
-          {/* Search Results Dropdown */}
-          {enableUniversalSearch && showSearchResults && (
-            <SearchResultsDropdown
-              searchQuery={searchTerm}
-              searchResults={searchResults}
-              isLoading={isSearching}
-              error={searchError}
-              onCustomerClick={handleCustomerClick}
-              onContactClick={handleContactClick}
-              onClose={() => setShowSearchResults(false)}
+              ref={searchInputRef}
+              fullWidth
+              placeholder="Suche nach Firma, Kundennummer, Kontakten..."
+              value={searchTerm}
+              onChange={e => handleSearch(e.target.value)}
+              autoComplete="off"
+              disabled={loading}
+              inputProps={{
+                autoComplete: 'off',
+                'data-form-type': 'other',
+                'data-lpignore': 'true',
+                autoCorrect: 'off',
+                autoCapitalize: 'off',
+                spellCheck: 'false',
+              }}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon />
+                  </InputAdornment>
+                ),
+                endAdornment: searchTerm && (
+                  <InputAdornment position="end">
+                    <IconButton
+                      size="small"
+                      onClick={() => {
+                        setSearchTerm('');
+                        handleSearch('');
+                        setShowSearchResults(false);
+                        clearResults();
+                      }}
+                    >
+                      <ClearIcon />
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+              onFocus={() => {
+                if (enableUniversalSearch && searchTerm.length >= 2) {
+                  setShowSearchResults(true);
+                }
+              }}
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  backgroundColor: theme.palette.background.paper,
+                },
+              }}
             />
-          )}
-        </Box>
-          
+
+            {/* Search Results Dropdown */}
+            {enableUniversalSearch && showSearchResults && (
+              <SearchResultsDropdown
+                searchQuery={searchTerm}
+                searchResults={searchResults}
+                isLoading={isSearching}
+                error={searchError}
+                onCustomerClick={handleCustomerClick}
+                onContactClick={handleContactClick}
+                onClose={() => setShowSearchResults(false)}
+              />
+            )}
+          </Box>
+
           {/* Filter Button */}
           <Tooltip title="Erweiterte Filter">
             <IconButton
@@ -528,14 +553,16 @@ export function IntelligentFilterBar({
               </Badge>
             </IconButton>
           </Tooltip>
-          
+
           {/* Sort Menu */}
-          <Tooltip title={`Sortiert nach: ${columns.find(c => c.id === sortConfig.field)?.label} (${sortConfig.direction === 'asc' ? '↑' : '↓'})`}>
-            <IconButton onClick={(e) => setSortMenuAnchor(e.currentTarget)}>
+          <Tooltip
+            title={`Sortiert nach: ${columns.find(c => c.id === sortConfig.field)?.label} (${sortConfig.direction === 'asc' ? '↑' : '↓'})`}
+          >
+            <IconButton onClick={e => setSortMenuAnchor(e.currentTarget)}>
               <SortIcon />
             </IconButton>
           </Tooltip>
-          
+
           {/* Column Manager */}
           <Tooltip title="Spalten verwalten">
             <IconButton onClick={() => setColumnDrawerOpen(true)}>
@@ -543,10 +570,10 @@ export function IntelligentFilterBar({
             </IconButton>
           </Tooltip>
         </Stack>
-        
+
         {/* Quick Filters */}
         <Stack direction="row" spacing={1} sx={{ overflowX: 'auto', pb: 1 }}>
-          {quickFilters.map((qf) => (
+          {quickFilters.map(qf => (
             <Chip
               key={qf.id}
               icon={qf.icon}
@@ -562,12 +589,12 @@ export function IntelligentFilterBar({
               }}
             />
           ))}
-          
+
           {/* Saved Filter Sets */}
           {savedFilters.length > 0 && (
             <>
               <Divider orientation="vertical" flexItem />
-              {savedFilters.slice(0, 3).map((set) => (
+              {savedFilters.slice(0, 3).map(set => (
                 <Chip
                   key={set.id}
                   icon={<StarIcon fontSize="small" />}
@@ -583,11 +610,11 @@ export function IntelligentFilterBar({
             </>
           )}
         </Stack>
-        
+
         {/* Filter Summary */}
         {activeFilterCount > 0 && (
-          <Alert 
-            severity="info" 
+          <Alert
+            severity="info"
             action={
               <Button size="small" onClick={clearAllFilters}>
                 Alle löschen
@@ -598,31 +625,55 @@ export function IntelligentFilterBar({
           </Alert>
         )}
       </Stack>
-      
-      
+
       {/* Sort Menu */}
       <Menu
         anchorEl={sortMenuAnchor}
         open={Boolean(sortMenuAnchor)}
         onClose={() => setSortMenuAnchor(null)}
       >
-        <MenuItem onClick={() => { handleSortChange('companyName'); setSortMenuAnchor(null); }}>
+        <MenuItem
+          onClick={() => {
+            handleSortChange('companyName');
+            setSortMenuAnchor(null);
+          }}
+        >
           <ListItemText>Firma</ListItemText>
         </MenuItem>
-        <MenuItem onClick={() => { handleSortChange('customerNumber'); setSortMenuAnchor(null); }}>
+        <MenuItem
+          onClick={() => {
+            handleSortChange('customerNumber');
+            setSortMenuAnchor(null);
+          }}
+        >
           <ListItemText>Kundennummer</ListItemText>
         </MenuItem>
-        <MenuItem onClick={() => { handleSortChange('status'); setSortMenuAnchor(null); }}>
+        <MenuItem
+          onClick={() => {
+            handleSortChange('status');
+            setSortMenuAnchor(null);
+          }}
+        >
           <ListItemText>Status</ListItemText>
         </MenuItem>
-        <MenuItem onClick={() => { handleSortChange('lastContactDate'); setSortMenuAnchor(null); }}>
+        <MenuItem
+          onClick={() => {
+            handleSortChange('lastContactDate');
+            setSortMenuAnchor(null);
+          }}
+        >
           <ListItemText>Letzter Kontakt</ListItemText>
         </MenuItem>
-        <MenuItem onClick={() => { handleSortChange('createdAt'); setSortMenuAnchor(null); }}>
+        <MenuItem
+          onClick={() => {
+            handleSortChange('createdAt');
+            setSortMenuAnchor(null);
+          }}
+        >
           <ListItemText>Erstellt am</ListItemText>
         </MenuItem>
       </Menu>
-      
+
       {/* Filter Drawer */}
       <FilterDrawer
         open={filterDrawerOpen}
@@ -632,7 +683,7 @@ export function IntelligentFilterBar({
         onApply={applyFilters}
         onClear={clearAllFilters}
       />
-      
+
       {/* Column Manager Drawer */}
       <ColumnManagerDrawer
         open={columnDrawerOpen}
@@ -665,8 +716,8 @@ function FilterDrawer({
   onApply,
   onClear,
 }: FilterDrawerProps) {
-  const theme = useTheme();
-  
+  const _theme = useTheme();
+
   return (
     <Drawer
       anchor="right"
@@ -687,20 +738,20 @@ function FilterDrawer({
             <CloseIcon />
           </IconButton>
         </Stack>
-        
+
         <Divider />
-        
+
         {/* Status Filter */}
         <FormControl fullWidth>
           <FormLabel>Status</FormLabel>
           <FormGroup>
-            {Object.values(CustomerStatus).map((status) => (
+            {Object.values(CustomerStatus).map(status => (
               <FormControlLabel
                 key={status}
                 control={
                   <Checkbox
                     checked={filters.status?.includes(status) || false}
-                    onChange={(e) => {
+                    onChange={e => {
                       const newStatus = e.target.checked
                         ? [...(filters.status || []), status]
                         : filters.status?.filter(s => s !== status) || [];
@@ -713,18 +764,18 @@ function FilterDrawer({
             ))}
           </FormGroup>
         </FormControl>
-        
+
         {/* Risk Level Filter */}
         <FormControl fullWidth>
           <FormLabel>Risiko-Level</FormLabel>
           <FormGroup>
-            {Object.values(RiskLevel).map((level) => (
+            {Object.values(RiskLevel).map(level => (
               <FormControlLabel
                 key={level}
                 control={
                   <Checkbox
                     checked={filters.riskLevel?.includes(level) || false}
-                    onChange={(e) => {
+                    onChange={e => {
                       const newLevels = e.target.checked
                         ? [...(filters.riskLevel || []), level]
                         : filters.riskLevel?.filter(l => l !== level) || [];
@@ -737,13 +788,13 @@ function FilterDrawer({
             ))}
           </FormGroup>
         </FormControl>
-        
+
         {/* Has Contacts Filter */}
         <FormControl fullWidth>
           <FormLabel>Kontakte</FormLabel>
           <RadioGroup
             value={filters.hasContacts === null ? 'all' : filters.hasContacts ? 'yes' : 'no'}
-            onChange={(e) => {
+            onChange={e => {
               const value = e.target.value;
               onFiltersChange({
                 ...filters,
@@ -756,12 +807,10 @@ function FilterDrawer({
             <FormControlLabel value="no" control={<Radio />} label="Ohne Kontakte" />
           </RadioGroup>
         </FormControl>
-        
+
         {/* Last Contact Days */}
         <FormControl fullWidth>
-          <FormLabel>
-            Letzter Kontakt vor mehr als {filters.lastContactDays || 30} Tagen
-          </FormLabel>
+          <FormLabel>Letzter Kontakt vor mehr als {filters.lastContactDays || 30} Tagen</FormLabel>
           <Slider
             value={filters.lastContactDays || 30}
             onChange={(_, value) => {
@@ -779,21 +828,13 @@ function FilterDrawer({
             valueLabelDisplay="auto"
           />
         </FormControl>
-        
+
         {/* Action Buttons */}
         <Stack direction="row" spacing={2} sx={{ mt: 'auto' }}>
-          <Button 
-            variant="outlined" 
-            fullWidth 
-            onClick={onClear}
-          >
+          <Button variant="outlined" fullWidth onClick={onClear}>
             Zurücksetzen
           </Button>
-          <Button 
-            variant="contained" 
-            fullWidth 
-            onClick={onApply}
-          >
+          <Button variant="contained" fullWidth onClick={onApply}>
             Anwenden
           </Button>
         </Stack>
@@ -820,8 +861,8 @@ function ColumnManagerDrawer({
   onColumnToggle,
   onColumnMove,
 }: ColumnManagerDrawerProps) {
-  const theme = useTheme();
-  
+  const _theme = useTheme();
+
   return (
     <Drawer
       anchor="right"
@@ -842,14 +883,14 @@ function ColumnManagerDrawer({
             <CloseIcon />
           </IconButton>
         </Stack>
-        
+
         <Divider />
-        
+
         {/* Column List with Arrow Controls */}
         <List>
           {columns.map((column, index) => (
             <ListItem key={column.id}>
-              <ListItemText 
+              <ListItemText
                 primary={column.label}
                 secondary={column.locked ? 'Fixiert' : undefined}
               />
@@ -886,11 +927,11 @@ function ColumnManagerDrawer({
             </ListItem>
           ))}
         </List>
-        
+
         {/* Info */}
         <Alert severity="info">
-          Verwenden Sie die Pfeile, um die Reihenfolge zu ändern. 
-          Fixierte Spalten können nicht verschoben oder ausgeblendet werden.
+          Verwenden Sie die Pfeile, um die Reihenfolge zu ändern. Fixierte Spalten können nicht
+          verschoben oder ausgeblendet werden.
         </Alert>
       </Stack>
     </Drawer>

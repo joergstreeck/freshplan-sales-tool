@@ -222,7 +222,7 @@ export const configureMockServer = {
   // Simuliere Netzwerk-Latenz
   withDelay: (ms: number) => {
     mockServer.use(
-      http.all('*', async ({ request }) => {
+      http.all('*', async () => {
         await new Promise(resolve => setTimeout(resolve, ms));
         return new Response(null, { status: 500 }); // Fallback
       })
@@ -233,7 +233,7 @@ export const configureMockServer = {
   withRateLimit: () => {
     let requestCount = 0;
     mockServer.use(
-      http.all('/api/*', ({ request }) => {
+      http.all('/api/*', () => {
         requestCount++;
         if (requestCount > 5) {
           return HttpResponse.json({ error: 'Rate limit exceeded' }, { status: 429 });

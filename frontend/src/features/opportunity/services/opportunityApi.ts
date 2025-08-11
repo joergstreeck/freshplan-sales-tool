@@ -35,9 +35,9 @@ export const opportunityApi = {
     params.append('size', size.toString());
 
     const url = `${OPPORTUNITY_BASE_URL}?${params.toString()}`;
-    
+
     const response = await apiClient.get(url);
-    
+
     return response.data;
   },
 

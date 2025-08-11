@@ -47,7 +47,10 @@ export const AuditActivityChart: React.FC<AuditActivityChartProps> = ({
     fetchData();
   }, [days, viewMode]);
 
-  const handleViewModeChange = (_: React.MouseEvent<HTMLElement>, newMode: 'hour' | 'day' | null) => {
+  const handleViewModeChange = (
+    _: React.MouseEvent<HTMLElement>,
+    newMode: 'hour' | 'day' | null
+  ) => {
     if (newMode !== null) {
       setViewMode(newMode);
     }
@@ -90,12 +93,7 @@ export const AuditActivityChart: React.FC<AuditActivityChartProps> = ({
     <Box>
       {/* View Mode Toggle */}
       <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
-        <ToggleButtonGroup
-          value={viewMode}
-          exclusive
-          onChange={handleViewModeChange}
-          size="small"
-        >
+        <ToggleButtonGroup value={viewMode} exclusive onChange={handleViewModeChange} size="small">
           <ToggleButton value="hour" sx={{ textTransform: 'none' }}>
             Stündlich
           </ToggleButton>
@@ -107,10 +105,7 @@ export const AuditActivityChart: React.FC<AuditActivityChartProps> = ({
 
       {/* Chart */}
       <ResponsiveContainer width="100%" height={height}>
-        <AreaChart
-          data={chartData}
-          margin={{ top: 5, right: 5, left: 5, bottom: 5 }}
-        >
+        <AreaChart data={chartData} margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
           <defs>
             <linearGradient id="colorEvents" x1="0" y1="0" x2="0" y2="1">
               <stop offset="5%" stopColor="#004F7B" stopOpacity={0.8} />
@@ -128,10 +123,7 @@ export const AuditActivityChart: React.FC<AuditActivityChartProps> = ({
             stroke="#666"
             interval={viewMode === 'hour' ? 3 : 0}
           />
-          <YAxis
-            tick={{ fontSize: 12 }}
-            stroke="#666"
-          />
+          <YAxis tick={{ fontSize: 12 }} stroke="#666" />
           <Tooltip
             contentStyle={{
               backgroundColor: 'rgba(255, 255, 255, 0.95)',
@@ -140,12 +132,7 @@ export const AuditActivityChart: React.FC<AuditActivityChartProps> = ({
             }}
             labelStyle={{ color: '#333', fontWeight: 'bold' }}
           />
-          {showLegend && (
-            <Legend
-              wrapperStyle={{ paddingTop: '20px' }}
-              iconType="rect"
-            />
-          )}
+          {showLegend && <Legend wrapperStyle={{ paddingTop: '20px' }} iconType="rect" />}
           <Area
             type="monotone"
             dataKey="events"

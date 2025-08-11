@@ -51,7 +51,7 @@ export const Step3AnsprechpartnerV3: React.FC = () => {
   const { customerData, validationErrors, setCustomerField, validateField } =
     useCustomerOnboardingStore();
 
-  const { getFieldByKey, getFieldsByCategory } = useFieldDefinitions();
+  const { getFieldByKey, getFieldsByCategory: _getFieldsByCategory } = useFieldDefinitions();
 
   // Hole die Contact-Felder aus der Field Catalog Extension
   const contactFields = useMemo(() => {
@@ -78,7 +78,7 @@ export const Step3AnsprechpartnerV3: React.FC = () => {
   }, [getFieldByKey]);
 
   const handleFieldChange = useCallback(
-    (fieldKey: string, value: any) => {
+    (fieldKey: string, value: unknown) => {
       setCustomerField(fieldKey, value);
     },
     [setCustomerField]

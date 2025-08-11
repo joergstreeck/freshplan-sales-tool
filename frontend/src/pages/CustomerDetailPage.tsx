@@ -12,7 +12,7 @@ import {
   Link,
   Chip,
   Button,
-  Grid
+  Grid,
 } from '@mui/material';
 import {
   ArrowBack as ArrowBackIcon,
@@ -24,7 +24,7 @@ import {
   Business as BusinessIcon,
   LocationOn as LocationIcon,
   Category as CategoryIcon,
-  PersonAdd as PersonAddIcon
+  PersonAdd as PersonAddIcon,
 } from '@mui/icons-material';
 import { MainLayoutV2 } from '../components/layout/MainLayoutV2';
 import { useAuth } from '../contexts/AuthContext';
@@ -73,7 +73,7 @@ export function CustomerDetailPage() {
   const [activeTab, setActiveTab] = useState(0);
   const { user } = useAuth();
   const navigate = useNavigate();
-  
+
   // Get highlightContact parameter for deep-linking
   const highlightContactId = searchParams.get('highlightContact');
 
@@ -81,9 +81,7 @@ export function CustomerDetailPage() {
   const { data: customer, isLoading, error } = useCustomerDetails(customerId);
 
   // Check if user can view audit trail
-  const canViewAudit = user?.roles?.some(role =>
-    ['admin', 'manager', 'auditor'].includes(role)
-  );
+  const canViewAudit = user?.roles?.some(role => ['admin', 'manager', 'auditor'].includes(role));
 
   // Auto-switch to contacts tab if highlightContact is present
   useEffect(() => {
@@ -196,15 +194,20 @@ export function CustomerDetailPage() {
                 )}
               </Box>
               <Typography variant="body2" color="text.secondary">
-                Erstellt {formatDistanceToNow(new Date(customer.createdAt), {
+                Erstellt{' '}
+                {formatDistanceToNow(new Date(customer.createdAt), {
                   addSuffix: true,
                   locale: de,
                 })}
                 {customer.updatedAt && customer.updatedAt !== customer.createdAt && (
-                  <> • Aktualisiert {formatDistanceToNow(new Date(customer.updatedAt), {
-                    addSuffix: true,
-                    locale: de,
-                  })}</>
+                  <>
+                    {' '}
+                    • Aktualisiert{' '}
+                    {formatDistanceToNow(new Date(customer.updatedAt), {
+                      addSuffix: true,
+                      locale: de,
+                    })}
+                  </>
                 )}
               </Typography>
             </Box>
@@ -236,18 +239,8 @@ export function CustomerDetailPage() {
             scrollButtons="auto"
             sx={{ borderBottom: 1, borderColor: 'divider' }}
           >
-            <Tab
-              label="Übersicht"
-              icon={<InfoIcon />}
-              iconPosition="start"
-              {...a11yProps(0)}
-            />
-            <Tab
-              label="Kontakte"
-              icon={<ContactsIcon />}
-              iconPosition="start"
-              {...a11yProps(1)}
-            />
+            <Tab label="Übersicht" icon={<InfoIcon />} iconPosition="start" {...a11yProps(0)} />
+            <Tab label="Kontakte" icon={<ContactsIcon />} iconPosition="start" {...a11yProps(1)} />
             <Tab
               label="Aktivitäten"
               icon={<AssessmentIcon />}
@@ -270,10 +263,7 @@ export function CustomerDetailPage() {
           </TabPanel>
 
           <TabPanel value={activeTab} index={1}>
-            <CustomerContacts 
-              customerId={customerId!} 
-              highlightContactId={highlightContactId}
-            />
+            <CustomerContacts customerId={customerId!} highlightContactId={highlightContactId} />
           </TabPanel>
 
           <TabPanel value={activeTab} index={2}>
@@ -298,7 +288,7 @@ export function CustomerDetailPage() {
 }
 
 // Customer Overview Component
-function CustomerOverview({ customer }: { customer: any }) {
+function CustomerOverview({ customer }: { customer: Customer }) {
   return (
     <Grid container spacing={3}>
       <Grid size={{ xs: 12, md: 6 }}>
@@ -361,15 +351,19 @@ function DetailRow({ label, value }: { label: string; value?: string | number })
 }
 
 // Customer Contacts with Smart Contact Cards
-function CustomerContacts({ 
-  customerId, 
-  highlightContactId 
-}: { 
+function CustomerContacts({
+  customerId,
+  highlightContactId,
+}: {
   customerId: string;
   highlightContactId?: string | null;
 }) {
   // Fetch contacts for this customer
-  const { data: contacts, isLoading, error } = useQuery({
+  const {
+    data: contacts,
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: ['customer-contacts', customerId],
     queryFn: async () => {
       // Use real API to fetch contacts
@@ -377,7 +371,7 @@ function CustomerContacts({
     },
     enabled: !!customerId,
   });
-  
+
   // Auto-scroll to highlighted contact
   useEffect(() => {
     if (highlightContactId && contacts) {
@@ -386,10 +380,10 @@ function CustomerContacts({
         const element = document.getElementById(`contact-${highlightContactId}`);
         if (element) {
           element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          
+
           // Add highlight animation
           element.classList.add('highlight-animation');
-          
+
           // Remove animation class after animation completes
           setTimeout(() => {
             element.classList.remove('highlight-animation');
@@ -402,7 +396,7 @@ function CustomerContacts({
   // Handle contact actions
   const handleContactAction = (action: ContactAction) => {
     console.log('Contact action:', action);
-    
+
     switch (action.type) {
       case 'add':
         // TODO: Implement add contact modal
@@ -411,7 +405,9 @@ function CustomerContacts({
       case 'edit':
         // TODO: Implement edit contact modal
         if (action.contact) {
-          alert(`Kontakt bearbeiten: ${action.contact.firstName} ${action.contact.lastName}\n\nDiese Funktion wird noch implementiert.`);
+          alert(
+            `Kontakt bearbeiten: ${action.contact.firstName} ${action.contact.lastName}\n\nDiese Funktion wird noch implementiert.`
+          );
         } else {
           alert('Kontakt bearbeiten - Modal wird noch implementiert');
         }
@@ -450,13 +446,15 @@ function CustomerContacts({
   const warmthData = new Map(
     contacts?.map((contact: CustomerContact) => {
       // Calculate warmth based on lastContactDate if available
-      const daysSinceContact = contact.lastContactDate 
-        ? Math.floor((Date.now() - new Date(contact.lastContactDate).getTime()) / (1000 * 60 * 60 * 24))
+      const daysSinceContact = contact.lastContactDate
+        ? Math.floor(
+            (Date.now() - new Date(contact.lastContactDate).getTime()) / (1000 * 60 * 60 * 24)
+          )
         : 999;
-      
+
       let temperature: 'HOT' | 'WARM' | 'COOLING' | 'COLD';
       let score: number;
-      
+
       // Use deterministic scores based on days since contact
       // These should eventually come from the backend
       if (daysSinceContact <= 7) {
@@ -472,13 +470,16 @@ function CustomerContacts({
         temperature = 'COLD';
         score = 30; // Fixed score for COLD contacts
       }
-      
-      return [contact.id, {
-        temperature,
-        score,
-        lastInteraction: contact.lastContactDate ? new Date(contact.lastContactDate) : new Date(),
-        interactionCount: 1, // Default to 1 until backend provides real data
-      }];
+
+      return [
+        contact.id,
+        {
+          temperature,
+          score,
+          lastInteraction: contact.lastContactDate ? new Date(contact.lastContactDate) : new Date(),
+          interactionCount: 1, // Default to 1 until backend provides real data
+        },
+      ];
     }) || []
   );
 
@@ -534,7 +535,7 @@ function CustomerContacts({
           Kontakt hinzufügen
         </Button>
       </Box>
-      
+
       <ContactGridContainer
         contacts={contacts}
         warmthData={warmthData}
@@ -550,7 +551,7 @@ function CustomerContacts({
 }
 
 // Placeholder for Customer Activities
-function CustomerActivities({ customerId }: { customerId: string }) {
+function CustomerActivities({ _customerId }: { _customerId: string }) {
   return (
     <Box>
       <Alert severity="info" sx={{ mb: 2 }}>

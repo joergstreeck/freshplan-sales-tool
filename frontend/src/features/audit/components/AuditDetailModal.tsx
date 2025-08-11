@@ -10,7 +10,7 @@ import {
   Typography,
   Chip,
   Paper,
-  Divider,
+  Divider as _Divider,
   IconButton,
   Alert,
   Tooltip,
@@ -29,7 +29,7 @@ import {
 import { format } from 'date-fns';
 import { de } from 'date-fns/locale';
 import { useQuery } from '@tanstack/react-query';
-import type { AuditLog } from '../types';
+import type { AuditLog as _AuditLog } from '../types';
 import { auditApi } from '../services/auditApi';
 import toast from 'react-hot-toast';
 
@@ -61,7 +61,7 @@ export const AuditDetailModal: React.FC<AuditDetailModalProps> = ({ auditId, ope
     }
   };
 
-  const getSeverityColor = (severity?: string): 'error' | 'warning' | 'info' | 'default' => {
+  const _getSeverityColor = (severity?: string): 'error' | 'warning' | 'info' | 'default' => {
     switch (severity) {
       case 'HIGH':
         return 'error';
@@ -78,7 +78,7 @@ export const AuditDetailModal: React.FC<AuditDetailModalProps> = ({ auditId, ope
     try {
       await navigator.clipboard.writeText(text);
       toast.success(`${label} kopiert!`);
-    } catch (error) {
+    } catch {
       toast.error('Kopieren fehlgeschlagen');
     }
   };

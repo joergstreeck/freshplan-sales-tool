@@ -48,7 +48,7 @@ interface AuditActivityHeatmapProps {
 export const AuditActivityHeatmap: React.FC<AuditActivityHeatmapProps> = ({
   data = [],
   granularity = 'hour',
-  dateRange,
+  _dateRange,
   isLoading = false,
   onCellClick,
   height = 400,
@@ -69,7 +69,7 @@ export const AuditActivityHeatmap: React.FC<AuditActivityHeatmapProps> = ({
   };
 
   // Get color for critical events
-  const getCriticalColor = (criticalEvents: number): string => {
+  const _getCriticalColor = (criticalEvents: number): string => {
     if (criticalEvents === 0) return 'transparent';
     if (criticalEvents < 5) return '#fff3e0'; // Light orange
     if (criticalEvents < 10) return '#ffcc80'; // Medium orange
@@ -116,7 +116,7 @@ export const AuditActivityHeatmap: React.FC<AuditActivityHeatmapProps> = ({
 
     // For day/week granularity, create a simple grid
     return [data];
-  }, [data, granularity, dateRange]);
+  }, [data, granularity]);
 
   const maxValue = useMemo(() => {
     return Math.max(...data.map(d => d.value), 1);

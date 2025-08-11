@@ -17,8 +17,6 @@ import { useAutoSave } from '../../hooks/useAutoSave';
 import { SaveIndicator } from '../shared/SaveIndicator';
 import { LoadingScreen } from '../shared/LoadingScreen';
 import { WizardNavigation } from './WizardNavigation';
-import { CustomerDataStep } from '../steps/CustomerDataStep';
-import { LocationsStep } from '../steps/LocationsStep';
 import { Step1BasisFilialstruktur } from '../steps/Step1BasisFilialstruktur';
 import { Step2HerausforderungenPotenzialV3 } from '../steps/Step2HerausforderungenPotenzialV3';
 import { Step3MultiContactManagement } from '../steps/Step3MultiContactManagement';
@@ -60,7 +58,7 @@ const WIZARD_STEPS = [
 ];
 
 interface CustomerOnboardingWizardProps {
-  onComplete?: (customer: any) => void;
+  onComplete?: (customer: unknown) => void;
   onCancel?: () => void;
   isModal?: boolean;
 }

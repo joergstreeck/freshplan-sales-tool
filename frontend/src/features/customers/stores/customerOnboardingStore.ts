@@ -13,11 +13,10 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
-import { CustomerStatus } from '../types/customer.types';
 import type { FieldDefinition } from '../types/field.types';
 import type { Location, DetailedLocation } from '../types/location.types';
 import type { Contact, ContactValidationError, CreateContactDTO } from '../types/contact.types';
-import { buildFieldSchema, buildFormSchema, validateField, validateFields } from '../validation';
+import { validateField, validateFields } from '../validation';
 import { getVisibleFields } from '../utils/conditionEvaluator';
 import type { LocationServiceData } from './customerOnboardingStore.extensions';
 
@@ -38,11 +37,11 @@ interface CustomerOnboardingState {
 
   // ===== Data State =====
   /** Customer field values */
-  customerData: Record<string, any>;
+  customerData: Record<string, unknown>;
   /** Customer locations (for chain customers) */
   locations: Location[];
   /** Location field values by location ID */
-  locationFieldValues: Record<string, Record<string, any>>;
+  locationFieldValues: Record<string, Record<string, unknown>>;
   /** Detailed locations (sub-locations within locations) */
   detailedLocations: DetailedLocation[];
   /** Validation errors by field key */
@@ -74,9 +73,9 @@ interface CustomerOnboardingState {
 
   // ===== Actions =====
   /** Set a customer field value */
-  setCustomerField: (fieldKey: string, value: any) => void;
+  setCustomerField: (fieldKey: string, value: unknown) => void;
   /** Set location field value */
-  setLocationField: (locationId: string, fieldKey: string, value: any) => void;
+  setLocationField: (locationId: string, fieldKey: string, value: unknown) => void;
   /** Set current wizard step */
   setCurrentStep: (step: number) => void;
   /** Add a new location */
@@ -129,7 +128,7 @@ interface CustomerOnboardingState {
   /** Set primary contact */
   setPrimaryContact: (id: string) => void;
   /** Validate contact field */
-  validateContactField: (contactId: string, fieldKey: string, value: any) => void;
+  validateContactField: (contactId: string, fieldKey: string, value: unknown) => void;
   /** Validate all contacts */
   validateContacts: () => Promise<boolean>;
   /** Get contact by ID */

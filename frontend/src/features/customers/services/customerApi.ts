@@ -20,7 +20,6 @@ import {
   CustomerExportRequest,
   CustomerImportRequest,
   ImportResultResponse,
-  PaginatedResponse,
   CustomerListItem,
 } from '../types/api.types';
 import { Customer } from '../types/customer.types';
@@ -123,7 +122,7 @@ export class CustomerApi {
    */
   async updateCustomer(
     customerId: string,
-    fieldValues: Record<string, any>
+    fieldValues: Record<string, unknown>
   ): Promise<CustomerWithFields> {
     return apiClient.put<CustomerWithFields>(
       `${this.basePath}/${customerId}`,
@@ -205,7 +204,7 @@ export class CustomerApi {
   async validateImport(file: File): Promise<{
     valid: boolean;
     errors?: string[];
-    preview?: Array<Record<string, any>>;
+    preview?: Array<Record<string, unknown>>;
   }> {
     const formData = new FormData();
     formData.append('file', file);
@@ -245,7 +244,7 @@ export class CustomerApi {
    */
   async bulkUpdate(
     customerIds: string[],
-    fieldValues: Record<string, any>
+    fieldValues: Record<string, unknown>
   ): Promise<{ updated: number; failed: number; errors?: Array<{ id: string; error: string }> }> {
     return apiClient.post(
       `${this.basePath}/bulk-update`,

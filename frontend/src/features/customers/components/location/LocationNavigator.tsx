@@ -41,7 +41,7 @@ export const LocationNavigator: React.FC<LocationNavigatorProps> = ({
     loc => completedIds.includes(loc.id) && loc.id !== currentLocation?.id
   );
 
-  const handleLocationChange = (event: any) => {
+  const handleLocationChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedId = event.target.value;
     const index = locations.findIndex(loc => loc.id === selectedId);
     if (index >= 0) {
@@ -67,7 +67,7 @@ export const LocationNavigator: React.FC<LocationNavigatorProps> = ({
             onChange={handleLocationChange}
             label="Aktueller Standort"
           >
-            {locations.map((location, index) => (
+            {locations.map((location, _index) => (
               <MenuItem key={location.id} value={location.id}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, width: '100%' }}>
                   <Typography>{location.name}</Typography>

@@ -87,7 +87,7 @@ export const SidebarNavigation: React.FC = () => {
         toggleSubmenu(matchingItem.id);
       }
     }
-  }, [location.pathname]); // Remove dependencies to always update on path change
+  }, [location.pathname, expandedMenuId, setActiveMenu, toggleSubmenu]);
 
   // Filter navigation items based on permissions
   const visibleItems = navigationConfig.filter(

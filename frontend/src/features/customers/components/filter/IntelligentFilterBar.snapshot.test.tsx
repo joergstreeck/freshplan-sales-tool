@@ -1,8 +1,8 @@
 /**
  * Snapshot Tests for IntelligentFilterBar Component
- * 
+ *
  * Tests UI consistency and visual regression for the filter bar.
- * 
+ *
  * @module IntelligentFilterBar.snapshot.test
  * @since FC-005 PR4
  */
@@ -14,15 +14,19 @@ import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { BrowserRouter } from 'react-router-dom';
 import React from 'react';
 import { IntelligentFilterBar } from './IntelligentFilterBar';
-import type { FilterConfig, SortConfig, ColumnConfig } from '../../types/filter.types';
+import type {
+  FilterConfig as _FilterConfig,
+  SortConfig as _SortConfig,
+  ColumnConfig as _ColumnConfig,
+} from '../../types/filter.types';
 
 // Mock the hooks
 vi.mock('../../hooks/useDebounce', () => ({
-  useDebounce: (value: any) => value,
+  useDebounce: (value: unknown) => value,
 }));
 
 vi.mock('../../hooks/useLocalStorage', () => ({
-  useLocalStorage: (key: string, defaultValue: any) => [defaultValue, vi.fn()],
+  useLocalStorage: (key: string, defaultValue: unknown) => [defaultValue, vi.fn()],
 }));
 
 vi.mock('../../hooks/useUniversalSearch', () => ({
@@ -68,9 +72,7 @@ const createWrapper = () => {
   return ({ children }: { children: React.ReactNode }) => (
     <BrowserRouter>
       <QueryClientProvider client={queryClient}>
-        <ThemeProvider theme={theme}>
-          {children}
-        </ThemeProvider>
+        <ThemeProvider theme={theme}>{children}</ThemeProvider>
       </QueryClientProvider>
     </BrowserRouter>
   );
@@ -96,30 +98,26 @@ describe('IntelligentFilterBar - Snapshot Tests', () => {
   };
 
   it('should match snapshot - default state', () => {
-    const { container } = render(
-      <IntelligentFilterBar {...defaultProps} />,
-      { wrapper: createWrapper() }
-    );
-    
+    const { container } = render(<IntelligentFilterBar {...defaultProps} />, {
+      wrapper: createWrapper(),
+    });
+
     expect(container.firstChild).toMatchSnapshot('default-state');
   });
 
   it('should match snapshot - with search term', () => {
     const { container } = render(
-      <IntelligentFilterBar 
-        {...defaultProps} 
-        searchValue="Test Company"
-      />,
+      <IntelligentFilterBar {...defaultProps} searchValue="Test Company" />,
       { wrapper: createWrapper() }
     );
-    
+
     expect(container.firstChild).toMatchSnapshot('with-search');
   });
 
   it('should match snapshot - with active filters', () => {
     const { container } = render(
-      <IntelligentFilterBar 
-        {...defaultProps} 
+      <IntelligentFilterBar
+        {...defaultProps}
         activeFilters={{
           status: ['ACTIVE', 'INACTIVE'],
           riskLevel: ['HIGH'],
@@ -128,14 +126,14 @@ describe('IntelligentFilterBar - Snapshot Tests', () => {
       />,
       { wrapper: createWrapper() }
     );
-    
+
     expect(container.firstChild).toMatchSnapshot('with-filters');
   });
 
   it('should match snapshot - with quick filters', () => {
     const { container } = render(
-      <IntelligentFilterBar 
-        {...defaultProps} 
+      <IntelligentFilterBar
+        {...defaultProps}
         quickFilters={[
           { id: 'active', label: 'Aktive', active: true },
           { id: 'risky', label: 'Risikoreich', active: false },
@@ -144,74 +142,55 @@ describe('IntelligentFilterBar - Snapshot Tests', () => {
       />,
       { wrapper: createWrapper() }
     );
-    
+
     expect(container.firstChild).toMatchSnapshot('with-quick-filters');
   });
 
   it('should match snapshot - loading state', () => {
-    const { container } = render(
-      <IntelligentFilterBar 
-        {...defaultProps} 
-        loading={true}
-      />,
-      { wrapper: createWrapper() }
-    );
-    
+    const { container } = render(<IntelligentFilterBar {...defaultProps} loading={true} />, {
+      wrapper: createWrapper(),
+    });
+
     expect(container.firstChild).toMatchSnapshot('loading-state');
   });
 
   it('should match snapshot - error state', () => {
     const { container } = render(
-      <IntelligentFilterBar 
-        {...defaultProps} 
-        error="Fehler beim Laden der Filter"
-      />,
+      <IntelligentFilterBar {...defaultProps} error="Fehler beim Laden der Filter" />,
       { wrapper: createWrapper() }
     );
-    
+
     expect(container.firstChild).toMatchSnapshot('error-state');
   });
 
   it('should match snapshot - grid view', () => {
-    const { container } = render(
-      <IntelligentFilterBar 
-        {...defaultProps} 
-        currentView="grid"
-      />,
-      { wrapper: createWrapper() }
-    );
-    
+    const { container } = render(<IntelligentFilterBar {...defaultProps} currentView="grid" />, {
+      wrapper: createWrapper(),
+    });
+
     expect(container.firstChild).toMatchSnapshot('grid-view');
   });
 
   it('should match snapshot - with many results', () => {
-    const { container } = render(
-      <IntelligentFilterBar 
-        {...defaultProps} 
-        resultCount={1337}
-      />,
-      { wrapper: createWrapper() }
-    );
-    
+    const { container } = render(<IntelligentFilterBar {...defaultProps} resultCount={1337} />, {
+      wrapper: createWrapper(),
+    });
+
     expect(container.firstChild).toMatchSnapshot('many-results');
   });
 
   it('should match snapshot - no results', () => {
-    const { container } = render(
-      <IntelligentFilterBar 
-        {...defaultProps} 
-        resultCount={0}
-      />,
-      { wrapper: createWrapper() }
-    );
-    
+    const { container } = render(<IntelligentFilterBar {...defaultProps} resultCount={0} />, {
+      wrapper: createWrapper(),
+    });
+
     expect(container.firstChild).toMatchSnapshot('no-results');
   });
 
   it('should match snapshot - with saved filter sets', () => {
     const { container } = render(
-      <IntelligentFilterBar 
-        {...defaultProps} 
+      <IntelligentFilterBar
+        {...defaultProps}
         savedFilterSets={[
           { id: '1', name: 'Meine Top Kunden', filters: {} },
           { id: '2', name: 'Risikokunden', filters: {} },
@@ -219,45 +198,37 @@ describe('IntelligentFilterBar - Snapshot Tests', () => {
       />,
       { wrapper: createWrapper() }
     );
-    
+
     expect(container.firstChild).toMatchSnapshot('with-saved-filters');
   });
 
   it('should match snapshot - compact mode', () => {
-    const { container } = render(
-      <IntelligentFilterBar 
-        {...defaultProps} 
-        compact={true}
-      />,
-      { wrapper: createWrapper() }
-    );
-    
+    const { container } = render(<IntelligentFilterBar {...defaultProps} compact={true} />, {
+      wrapper: createWrapper(),
+    });
+
     expect(container.firstChild).toMatchSnapshot('compact-mode');
   });
 
   it('should match snapshot - with all features enabled', () => {
     const { container } = render(
-      <IntelligentFilterBar 
+      <IntelligentFilterBar
         {...defaultProps}
         searchValue="Fresh"
         activeFilters={{
           status: ['ACTIVE'],
           riskLevel: ['LOW', 'MEDIUM'],
         }}
-        quickFilters={[
-          { id: 'premium', label: 'Premium', active: true },
-        ]}
+        quickFilters={[{ id: 'premium', label: 'Premium', active: true }]}
         resultCount={58}
-        savedFilterSets={[
-          { id: '1', name: 'Favoriten', filters: {} },
-        ]}
+        savedFilterSets={[{ id: '1', name: 'Favoriten', filters: {} }]}
         enableUniversalSearch={true}
         enableExport={true}
         enableColumnManagement={true}
       />,
       { wrapper: createWrapper() }
     );
-    
+
     expect(container.firstChild).toMatchSnapshot('all-features');
   });
 
@@ -269,13 +240,10 @@ describe('IntelligentFilterBar - Snapshot Tests', () => {
       value: 375,
     });
 
-    const { container } = render(
-      <IntelligentFilterBar 
-        {...defaultProps} 
-      />,
-      { wrapper: createWrapper() }
-    );
-    
+    const { container } = render(<IntelligentFilterBar {...defaultProps} />, {
+      wrapper: createWrapper(),
+    });
+
     expect(container.firstChild).toMatchSnapshot('mobile-view');
   });
 
@@ -289,18 +257,15 @@ describe('IntelligentFilterBar - Snapshot Tests', () => {
     const DarkWrapper = ({ children }: { children: React.ReactNode }) => (
       <BrowserRouter>
         <QueryClientProvider client={new QueryClient()}>
-          <ThemeProvider theme={darkTheme}>
-            {children}
-          </ThemeProvider>
+          <ThemeProvider theme={darkTheme}>{children}</ThemeProvider>
         </QueryClientProvider>
       </BrowserRouter>
     );
 
-    const { container } = render(
-      <IntelligentFilterBar {...defaultProps} />,
-      { wrapper: DarkWrapper }
-    );
-    
+    const { container } = render(<IntelligentFilterBar {...defaultProps} />, {
+      wrapper: DarkWrapper,
+    });
+
     expect(container.firstChild).toMatchSnapshot('dark-mode');
   });
 });

@@ -83,7 +83,9 @@ test.describe('FC-005 Customer Creation Happy Path', () => {
     });
   });
 
-  test('should handle industry change and show/hide fields dynamically', async ({ page }) => {
+  test('should handle industry change and show/hide fields dynamically', async ({
+    page: _page,
+  }) => {
     // Start with hotel industry
     await test.step('Select hotel industry', async () => {
       await onboardingPage.fillCustomerBasicData({
@@ -119,7 +121,7 @@ test.describe('FC-005 Customer Creation Happy Path', () => {
     });
   });
 
-  test('should maintain form state during navigation', async ({ page }) => {
+  test('should maintain form state during navigation', async ({ _page }) => {
     const testData = {
       companyName: 'State Persistence Test GmbH',
       industry: 'hotel',
@@ -156,7 +158,7 @@ test.describe('FC-005 Customer Creation Happy Path', () => {
     });
   });
 
-  test('should show proper progress indication', async ({ page }) => {
+  test('should show proper progress indication', async ({ _page }) => {
     // Check initial step indicator
     await test.step('Verify initial step indicator', async () => {
       await onboardingPage.expectStepNumber(1);

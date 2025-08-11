@@ -8,18 +8,11 @@
  */
 
 import type {
-  Customer,
-  CustomerStatus,
   CustomerWithFields,
   CustomerListItem,
   CustomerSearchCriteria,
 } from './customer.types';
-import type {
-  Location,
-  LocationWithFields,
-  DetailedLocation,
-  DetailedLocationBatch,
-} from './location.types';
+import type { LocationWithFields, DetailedLocation } from './location.types';
 import type { FieldValue } from './field.types';
 import { EntityType } from './field.types';
 

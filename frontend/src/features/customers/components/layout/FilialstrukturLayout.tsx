@@ -19,7 +19,7 @@ interface FilialstrukturLayoutProps {
   /** Render-Funktion für einzelne Felder */
   renderField: (field: FieldDefinition) => React.ReactNode;
   /** Aktuelle Formular-Werte */
-  values: Record<string, any>;
+  values: Record<string, unknown>;
 }
 
 const LabelsContainer = styled(Box)(({ theme }) => ({
@@ -125,9 +125,9 @@ const FieldLabel = styled(Typography)(({ theme }) => ({
 export const FilialstrukturLayout: React.FC<FilialstrukturLayoutProps> = ({
   fields,
   renderField,
-  values,
+  values: _values,
 }) => {
-  const theme = useTheme();
+  const _theme = useTheme();
 
   // Sortiere Felder in der gewünschten Reihenfolge
   const fieldOrder = [

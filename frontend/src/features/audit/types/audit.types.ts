@@ -1,6 +1,6 @@
 /**
  * Audit Types for Mini Timeline
- * 
+ *
  * @module audit.types
  * @since FC-005 PR4
  */
@@ -13,7 +13,7 @@ export interface AuditEntry {
   entityId: string;
   userName?: string;
   userId: string;
-  changes?: any;
+  changes?: Record<string, unknown>;
   ipAddress?: string;
   userAgent?: string;
   source?: string;

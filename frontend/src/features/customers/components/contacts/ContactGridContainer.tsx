@@ -1,9 +1,9 @@
 /**
  * ContactGridContainer Component
- * 
+ *
  * Manages the responsive grid layout for contact cards with sorting and filtering.
  * Part of FC-005 Contact Management UI - Smart Contact Cards.
- * 
+ *
  * @see /docs/features/FC-005-CUSTOMER-MANAGEMENT/Step3/SMART_CONTACT_CARDS.md
  */
 
@@ -24,7 +24,7 @@ import {
   GridView as GridViewIcon,
   ViewList as ListIcon,
   Search as SearchIcon,
-  FilterList as FilterIcon,
+  FilterList as _FilterIcon,
 } from '@mui/icons-material';
 
 import type { Contact } from '../../types/contact.types';
@@ -36,7 +36,14 @@ import { useContactGrid } from '../../hooks/useContactGrid';
 import { LazyComponent } from '../../../../components/common/LazyComponent';
 
 export interface ContactAction {
-  type: 'add' | 'edit' | 'delete' | 'setPrimary' | 'assignLocation' | 'viewTimeline' | 'quickAction';
+  type:
+    | 'add'
+    | 'edit'
+    | 'delete'
+    | 'setPrimary'
+    | 'assignLocation'
+    | 'viewTimeline'
+    | 'quickAction';
   contact?: Contact;
   contactId?: string;
   action?: string;
@@ -68,7 +75,7 @@ export const ContactGridContainer: React.FC<ContactGridContainerProps> = ({
   highlightContactId,
   customerId,
 }) => {
-  const { gridProps } = useContactGrid();
+  const { gridProps: _gridProps } = useContactGrid();
   const [viewMode, setViewMode] = useState<'grid' | 'list'>(initialViewMode);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterDecisionLevel, setFilterDecisionLevel] = useState<string>('all');
@@ -82,7 +89,7 @@ export const ContactGridContainer: React.FC<ContactGridContainerProps> = ({
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       filtered = filtered.filter(
-        (contact) =>
+        contact =>
           contact.firstName.toLowerCase().includes(query) ||
           contact.lastName.toLowerCase().includes(query) ||
           contact.email?.toLowerCase().includes(query) ||
@@ -92,7 +99,7 @@ export const ContactGridContainer: React.FC<ContactGridContainerProps> = ({
 
     // Decision level filter
     if (filterDecisionLevel !== 'all') {
-      filtered = filtered.filter((contact) => contact.decisionLevel === filterDecisionLevel);
+      filtered = filtered.filter(contact => contact.decisionLevel === filterDecisionLevel);
     }
 
     return filtered;
@@ -118,10 +125,11 @@ export const ContactGridContainer: React.FC<ContactGridContainerProps> = ({
             }
           }
           break;
-        case 'recent':
+        case 'recent': {
           const dateA = new Date(a.updatedAt || a.createdAt).getTime();
           const dateB = new Date(b.updatedAt || b.createdAt).getTime();
           return dateB - dateA;
+        }
         case 'name':
         default:
           return `${a.lastName} ${a.firstName}`.localeCompare(`${b.lastName} ${b.firstName}`);
@@ -140,7 +148,7 @@ export const ContactGridContainer: React.FC<ContactGridContainerProps> = ({
 
   const renderContactCard = (contact: Contact, index: number) => {
     const warmth = warmthData?.get(contact.id);
-    
+
     // Use lazy loading for cards beyond the first 6 (two rows on desktop)
     const shouldLazyLoad = index >= 6;
 
@@ -148,21 +156,23 @@ export const ContactGridContainer: React.FC<ContactGridContainerProps> = ({
       <SmartContactCard
         contact={contact}
         warmth={warmth}
-        onEdit={(c) => onContactAction({ type: 'edit', contact: c })}
-        onDelete={(id) => onContactAction({ type: 'delete', contactId: id })}
-        onSetPrimary={(id) => onContactAction({ type: 'setPrimary', contactId: id })}
-        onAssignLocation={(id) => onContactAction({ type: 'assignLocation', contactId: id })}
-        onViewTimeline={(id) => onContactAction({ type: 'viewTimeline', contactId: id })}
-        onQuickAction={(action, id) => onContactAction({ type: 'quickAction', contactId: id, action })}
+        onEdit={c => onContactAction({ type: 'edit', contact: c })}
+        onDelete={id => onContactAction({ type: 'delete', contactId: id })}
+        onSetPrimary={id => onContactAction({ type: 'setPrimary', contactId: id })}
+        onAssignLocation={id => onContactAction({ type: 'assignLocation', contactId: id })}
+        onViewTimeline={id => onContactAction({ type: 'viewTimeline', contactId: id })}
+        onQuickAction={(action, id) =>
+          onContactAction({ type: 'quickAction', contactId: id, action })
+        }
         showAuditTrail={true}
         customerId={customerId}
       />
     ) : (
       <ContactCard
         contact={contact}
-        onEdit={(c) => onContactAction({ type: 'edit', contact: c })}
-        onDelete={(id) => onContactAction({ type: 'delete', contactId: id })}
-        onSetPrimary={(id) => onContactAction({ type: 'setPrimary', contactId: id })}
+        onEdit={c => onContactAction({ type: 'edit', contact: c })}
+        onDelete={id => onContactAction({ type: 'delete', contactId: id })}
+        onSetPrimary={id => onContactAction({ type: 'setPrimary', contactId: id })}
       />
     );
 
@@ -198,7 +208,7 @@ export const ContactGridContainer: React.FC<ContactGridContainerProps> = ({
             <TextField
               placeholder="Kontakte suchen..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={e => setSearchQuery(e.target.value)}
               size="small"
               sx={{ flex: 1, maxWidth: 400 }}
               InputProps={{
@@ -231,7 +241,7 @@ export const ContactGridContainer: React.FC<ContactGridContainerProps> = ({
               select
               label="Entscheidungsebene"
               value={filterDecisionLevel}
-              onChange={(e) => setFilterDecisionLevel(e.target.value)}
+              onChange={e => setFilterDecisionLevel(e.target.value)}
               size="small"
               sx={{ minWidth: 200 }}
             >
@@ -247,7 +257,7 @@ export const ContactGridContainer: React.FC<ContactGridContainerProps> = ({
               select
               label="Sortierung"
               value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as unknown)}
+              onChange={e => setSortBy(e.target.value as unknown)}
               size="small"
               sx={{ minWidth: 150 }}
             >
@@ -287,8 +297,8 @@ export const ContactGridContainer: React.FC<ContactGridContainerProps> = ({
       ) : viewMode === 'grid' ? (
         <Grid container spacing={2}>
           {sortedContacts.map((contact, index) => (
-            <Grid 
-              key={contact.id} 
+            <Grid
+              key={contact.id}
               size={{ xs: 12, sm: 6, md: 4, lg: 3 }}
               id={`contact-${contact.id}`}
               sx={{
@@ -297,9 +307,9 @@ export const ContactGridContainer: React.FC<ContactGridContainerProps> = ({
                   '& > *': {
                     border: '2px solid',
                     borderColor: 'primary.main',
-                    boxShadow: (theme) => `0 0 20px ${theme.palette.primary.main}40`,
-                  }
-                })
+                    boxShadow: theme => `0 0 20px ${theme.palette.primary.main}40`,
+                  },
+                }),
               }}
             >
               {renderContactCard(contact, index)}

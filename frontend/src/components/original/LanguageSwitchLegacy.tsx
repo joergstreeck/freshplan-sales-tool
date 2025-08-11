@@ -19,7 +19,7 @@ export function LanguageSwitchLegacy({ onLanguageChange }: LanguageSwitchLegacyP
   // Sync initial language
   useEffect(() => {
     onLanguageChange?.(currentLanguage);
-  }, []);
+  }, [currentLanguage, onLanguageChange]);
 
   return (
     <select

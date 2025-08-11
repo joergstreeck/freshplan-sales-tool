@@ -1,6 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Box, Button, Typography, Tabs, Tab } from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
+import { Box, Tabs, Tab } from '@mui/material';
 import { MainLayoutV2 } from '../components/layout/MainLayoutV2';
 import { CustomerOnboardingWizardModal } from '../features/customers/components/wizard/CustomerOnboardingWizardModal';
 import { EmptyStateHero } from '../components/common/EmptyStateHero';
@@ -20,7 +19,7 @@ import { taskEngine } from '../services/taskEngine';
 import { isFeatureEnabled } from '../config/featureFlags';
 import { useFocusListStore } from '../features/customer/store/focusListStore';
 import type { Customer } from '../types/customer.types';
-import type { FilterConfig, SortConfig, ColumnConfig } from '../features/customers/types/filter.types';
+import type { FilterConfig, SortConfig } from '../features/customers/types/filter.types';
 
 interface CustomersPageV2Props {
   openWizard?: boolean;
@@ -30,35 +29,39 @@ export function CustomersPageV2({ openWizard = false }: CustomersPageV2Props) {
   const [wizardOpen, setWizardOpen] = useState(openWizard);
   const [activeTab, setActiveTab] = useState(0);
   const [filterConfig, setFilterConfig] = useState<FilterConfig>({});
-  
+
   // Use focus list store for persistent column and sort configuration
-  const { 
-    tableColumns, 
-    sortBy, 
+  const {
+    tableColumns,
+    sortBy,
     setSortBy,
-    globalSearch,
-    activeFilters 
+    // globalSearch,
+    // activeFilters
   } = useFocusListStore();
-  
+
   // Convert store columns to ColumnConfig format for compatibility
-  const columnConfig = useMemo(() => 
-    tableColumns
-      .filter(col => col.visible)
-      .sort((a, b) => a.order - b.order)
-      .map(col => ({
-        id: col.field,
-        label: col.label,
-        visible: col.visible
-      })),
+  const columnConfig = useMemo(
+    () =>
+      tableColumns
+        .filter(col => col.visible)
+        .sort((a, b) => a.order - b.order)
+        .map(col => ({
+          id: col.field,
+          label: col.label,
+          visible: col.visible,
+        })),
     [tableColumns]
   );
-  
+
   // Convert store sortBy to SortConfig format
-  const sortConfig = useMemo(() => ({
-    field: sortBy.field,
-    direction: sortBy.ascending ? 'asc' as const : 'desc' as const
-  }), [sortBy]);
-  
+  const sortConfig = useMemo(
+    () => ({
+      field: sortBy.field,
+      direction: sortBy.ascending ? ('asc' as const) : ('desc' as const),
+    }),
+    [sortBy]
+  );
+
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -75,11 +78,12 @@ export function CustomersPageV2({ openWizard = false }: CustomersPageV2Props) {
   }, []);
 
   // Verkäuferschutz: Nur eigene Kunden für Sales-Rolle
-  const filter = user?.role === 'sales' ? { assignedTo: user.id } : undefined;
+  const _filter = user?.role === 'sales' ? { assignedTo: user.id } : undefined;
 
   // Use existing useCustomers hook with pagination
   const { data, isLoading, refetch } = useCustomers(0, 1000); // Get all for now
-  const customers = data?.content || [];
+
+  const customers = useMemo(() => data?.content || [], [data]);
 
   // Apply filters and sorting to customers
   const filteredCustomers = useMemo(() => {
@@ -88,39 +92,38 @@ export function CustomersPageV2({ openWizard = false }: CustomersPageV2Props) {
     // Apply text search
     if (filterConfig.text) {
       const searchText = filterConfig.text.toLowerCase();
-      filtered = filtered.filter(customer => 
-        customer.companyName?.toLowerCase().includes(searchText) ||
-        customer.customerNumber?.toLowerCase().includes(searchText) ||
-        customer.industry?.toLowerCase().includes(searchText)
+      filtered = filtered.filter(
+        customer =>
+          customer.companyName?.toLowerCase().includes(searchText) ||
+          customer.customerNumber?.toLowerCase().includes(searchText) ||
+          customer.industry?.toLowerCase().includes(searchText)
       );
     }
 
     // Apply status filter
     if (filterConfig.status && filterConfig.status.length > 0) {
-      filtered = filtered.filter(customer => 
-        filterConfig.status?.includes(customer.status)
-      );
+      filtered = filtered.filter(customer => filterConfig.status?.includes(customer.status));
     }
 
     // Apply industry filter
     if (filterConfig.industry && filterConfig.industry.length > 0) {
-      filtered = filtered.filter(customer => 
-        filterConfig.industry?.includes(customer.industry)
-      );
+      filtered = filtered.filter(customer => filterConfig.industry?.includes(customer.industry));
     }
 
     // Apply risk level filter
     if (filterConfig.riskLevel && filterConfig.riskLevel.length > 0) {
       filtered = filtered.filter(customer => {
         // Calculate risk level based on business logic
-        const daysSinceContact = customer.lastContactDate 
-          ? Math.floor((Date.now() - new Date(customer.lastContactDate).getTime()) / (1000 * 60 * 60 * 24))
+        const daysSinceContact = customer.lastContactDate
+          ? Math.floor(
+              (Date.now() - new Date(customer.lastContactDate).getTime()) / (1000 * 60 * 60 * 24)
+            )
           : 999;
-        
+
         let riskLevel = 'LOW';
         if (daysSinceContact > 90) riskLevel = 'HIGH';
         else if (daysSinceContact > 30) riskLevel = 'MEDIUM';
-        
+
         return filterConfig.riskLevel?.includes(riskLevel);
       });
     }
@@ -129,7 +132,9 @@ export function CustomersPageV2({ openWizard = false }: CustomersPageV2Props) {
     if (filterConfig.createdDays) {
       filtered = filtered.filter(customer => {
         const daysSinceCreated = customer.createdAt
-          ? Math.floor((Date.now() - new Date(customer.createdAt).getTime()) / (1000 * 60 * 60 * 24))
+          ? Math.floor(
+              (Date.now() - new Date(customer.createdAt).getTime()) / (1000 * 60 * 60 * 24)
+            )
           : 999;
         return daysSinceCreated <= filterConfig.createdDays;
       });
@@ -140,10 +145,10 @@ export function CustomersPageV2({ openWizard = false }: CustomersPageV2Props) {
       filtered.sort((a, b) => {
         const aValue = a[sortConfig.field as keyof Customer];
         const bValue = b[sortConfig.field as keyof Customer];
-        
+
         if (aValue === null || aValue === undefined) return 1;
         if (bValue === null || bValue === undefined) return -1;
-        
+
         const comparison = aValue < bValue ? -1 : aValue > bValue ? 1 : 0;
         return sortConfig.direction === 'asc' ? comparison : -comparison;
       });
@@ -152,7 +157,7 @@ export function CustomersPageV2({ openWizard = false }: CustomersPageV2Props) {
     return filtered;
   }, [customers, filterConfig, sortConfig]);
 
-  const handleExport = async (format: string) => {
+  const _handleExport = async (format: string) => {
     try {
       // Build query params from filter config
       const params = new URLSearchParams();
@@ -162,15 +167,15 @@ export function CustomersPageV2({ openWizard = false }: CustomersPageV2Props) {
       if (filterConfig.industry && filterConfig.industry.length > 0) {
         params.append('industry', filterConfig.industry[0]);
       }
-      
+
       const response = await fetch(`/api/export/customers/${format}?${params.toString()}`, {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('authToken')}`
-        }
+          Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+        },
       });
-      
+
       if (!response.ok) throw new Error('Export failed');
-      
+
       // Special handling for PDF (HTML that opens in new tab for printing)
       if (format === 'pdf') {
         const htmlContent = await response.text();
@@ -199,7 +204,7 @@ export function CustomersPageV2({ openWizard = false }: CustomersPageV2Props) {
         a.click();
         document.body.removeChild(a);
         window.URL.revokeObjectURL(url);
-        
+
         toast.success(`Export als ${format.toUpperCase()} erfolgreich!`);
       }
     } catch (error) {
@@ -305,14 +310,14 @@ export function CustomersPageV2({ openWizard = false }: CustomersPageV2Props) {
                   onSortChange={(config: SortConfig) => {
                     setSortBy({
                       field: config.field,
-                      ascending: config.direction === 'asc'
+                      ascending: config.direction === 'asc',
                     });
                   }}
                   totalCount={customers.length}
                   filteredCount={filteredCustomers.length}
                   loading={isLoading}
                 />
-                
+
                 {/* Customer Table - Use virtualized version for > 20 items */}
                 {filteredCustomers.length > 20 ? (
                   <VirtualizedCustomerTable

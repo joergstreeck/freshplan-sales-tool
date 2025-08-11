@@ -1,15 +1,15 @@
 /**
  * Search Results Dropdown Component
- * 
+ *
  * Displays universal search results for both customers and contacts
  * in a dropdown overlay beneath the search field.
- * 
+ *
  * Features:
  * - Highlighting of search terms in results
  * - Visual separation of customer and contact sections
  * - Relevance scoring indicators
  * - Deep-linking support for contacts
- * 
+ *
  * @module SearchResultsDropdown
  * @since FC-005 PR4
  */
@@ -42,7 +42,6 @@ import {
   Star as StarIcon,
   LocationOn as LocationIcon,
 } from '@mui/icons-material';
-import type { Customer } from '../../types/customer.types';
 
 // Search Result Types
 interface ContactSearchResult {
@@ -118,10 +117,10 @@ export const SearchResultsDropdown: React.FC<SearchResultsDropdownProps> = ({
       // Escape special regex characters in query
       const escapedQuery = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
       const parts = text.split(new RegExp(`(${escapedQuery})`, 'gi'));
-      
+
       return (
         <>
-          {parts.map((part, index) => 
+          {parts.map((part, index) =>
             part.toLowerCase() === query.toLowerCase() ? (
               <Box
                 key={index}
@@ -148,7 +147,8 @@ export const SearchResultsDropdown: React.FC<SearchResultsDropdownProps> = ({
   // Get icon based on matched field
   const getMatchIcon = (matchedFields: string[]) => {
     if (matchedFields.includes('email')) return <EmailIcon sx={{ fontSize: 16 }} />;
-    if (matchedFields.includes('phone') || matchedFields.includes('mobile')) return <PhoneIcon sx={{ fontSize: 16 }} />;
+    if (matchedFields.includes('phone') || matchedFields.includes('mobile'))
+      return <PhoneIcon sx={{ fontSize: 16 }} />;
     if (matchedFields.includes('customerNumber')) return <NumberIcon sx={{ fontSize: 16 }} />;
     if (matchedFields.includes('position')) return <WorkOutline sx={{ fontSize: 16 }} />;
     if (matchedFields.includes('department')) return <DepartmentIcon sx={{ fontSize: 16 }} />;
@@ -160,7 +160,10 @@ export const SearchResultsDropdown: React.FC<SearchResultsDropdownProps> = ({
     return null;
   }
 
-  const hasResults = searchResults && 
+  const hasResults =
+    searchResults && 
+    searchResults.customers && 
+    searchResults.contacts && 
     (searchResults.customers.length > 0 || searchResults.contacts.length > 0);
 
   return (
@@ -222,24 +225,26 @@ export const SearchResultsDropdown: React.FC<SearchResultsDropdownProps> = ({
       {!isLoading && !error && hasResults && (
         <List sx={{ py: 0 }}>
           {/* Customer Results */}
-          {searchResults.customers.length > 0 && (
+          {searchResults?.customers?.length > 0 && (
             <>
-              <ListItem sx={{ 
-                py: 0.5, 
-                px: 2,
-                backgroundColor: alpha(theme.palette.primary.main, 0.05),
-                position: 'sticky',
-                top: 0,
-                zIndex: 1,
-                borderBottom: `2px solid ${theme.palette.primary.main}`,
-              }}>
+              <ListItem
+                sx={{
+                  py: 0.5,
+                  px: 2,
+                  backgroundColor: alpha(theme.palette.primary.main, 0.05),
+                  position: 'sticky',
+                  top: 0,
+                  zIndex: 1,
+                  borderBottom: `2px solid ${theme.palette.primary.main}`,
+                }}
+              >
                 <CustomerIcon sx={{ mr: 1, color: 'primary.main' }} />
                 <Typography variant="overline" sx={{ fontWeight: 600, color: 'primary.main' }}>
-                  Kunden ({searchResults.customers.length})
+                  Kunden ({searchResults?.customers?.length || 0})
                 </Typography>
               </ListItem>
-              
-              {searchResults.customers.map((result) => (
+
+              {searchResults?.customers?.map(result => (
                 <ListItemButton
                   key={result.id}
                   onClick={() => {
@@ -278,7 +283,14 @@ export const SearchResultsDropdown: React.FC<SearchResultsDropdownProps> = ({
                           />
                         )}
                         {getMatchIcon(result.matchedFields) && (
-                          <span style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                          <span
+                            style={{
+                              marginLeft: 'auto',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '4px',
+                            }}
+                          >
                             {getMatchIcon(result.matchedFields)}
                             <span style={{ fontSize: '0.75rem', color: 'rgba(0, 0, 0, 0.6)' }}>
                               Gefunden in: {result.matchedFields.join(', ')}
@@ -288,7 +300,14 @@ export const SearchResultsDropdown: React.FC<SearchResultsDropdownProps> = ({
                       </span>
                     }
                     secondary={
-                      <span style={{ display: 'flex', alignItems: 'center', gap: '16px', marginTop: '4px' }}>
+                      <span
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '16px',
+                          marginTop: '4px',
+                        }}
+                      >
                         {result.data.contactEmail && (
                           <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                             <EmailIcon sx={{ fontSize: 14, color: 'text.secondary' }} />
@@ -307,7 +326,8 @@ export const SearchResultsDropdown: React.FC<SearchResultsDropdownProps> = ({
                         )}
                         {result.data.contactCount && result.data.contactCount > 0 && (
                           <span style={{ fontSize: '0.75rem', color: 'rgba(0, 0, 0, 0.6)' }}>
-                            {result.data.contactCount} Kontakt{result.data.contactCount > 1 ? 'e' : ''}
+                            {result.data.contactCount} Kontakt
+                            {result.data.contactCount > 1 ? 'e' : ''}
                           </span>
                         )}
                       </span>
@@ -319,29 +339,29 @@ export const SearchResultsDropdown: React.FC<SearchResultsDropdownProps> = ({
           )}
 
           {/* Divider between sections */}
-          {searchResults.customers.length > 0 && searchResults.contacts.length > 0 && (
-            <Divider />
-          )}
+          {searchResults?.customers?.length > 0 && searchResults?.contacts?.length > 0 && <Divider />}
 
           {/* Contact Results */}
-          {searchResults.contacts.length > 0 && (
+          {searchResults?.contacts?.length > 0 && (
             <>
-              <ListItem sx={{ 
-                py: 0.5, 
-                px: 2,
-                backgroundColor: alpha(theme.palette.secondary.main, 0.05),
-                position: 'sticky',
-                top: 0,
-                zIndex: 1,
-                borderBottom: `2px solid ${theme.palette.secondary.main}`,
-              }}>
+              <ListItem
+                sx={{
+                  py: 0.5,
+                  px: 2,
+                  backgroundColor: alpha(theme.palette.secondary.main, 0.05),
+                  position: 'sticky',
+                  top: 0,
+                  zIndex: 1,
+                  borderBottom: `2px solid ${theme.palette.secondary.main}`,
+                }}
+              >
                 <ContactIcon sx={{ mr: 1, color: 'secondary.main' }} />
                 <Typography variant="overline" sx={{ fontWeight: 600, color: 'secondary.main' }}>
-                  Ansprechpartner ({searchResults.contacts.length})
+                  Ansprechpartner ({searchResults?.contacts?.length || 0})
                 </Typography>
               </ListItem>
-              
-              {searchResults.contacts.map((result) => (
+
+              {searchResults?.contacts?.map(result => (
                 <ListItemButton
                   key={result.id}
                   onClick={() => {
@@ -361,7 +381,10 @@ export const SearchResultsDropdown: React.FC<SearchResultsDropdownProps> = ({
                     primary={
                       <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <span style={{ fontWeight: 500 }}>
-                          {highlightText(`${result.data.firstName} ${result.data.lastName}`, searchQuery)}
+                          {highlightText(
+                            `${result.data.firstName} ${result.data.lastName}`,
+                            searchQuery
+                          )}
                         </span>
                         {result.data.isPrimary && (
                           <Chip
@@ -395,7 +418,14 @@ export const SearchResultsDropdown: React.FC<SearchResultsDropdownProps> = ({
                     }
                     secondary={
                       <span>
-                        <span style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                        <span
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '8px',
+                            marginBottom: '4px',
+                          }}
+                        >
                           <LocationIcon sx={{ fontSize: 14, color: 'primary.main' }} />
                           <span style={{ fontSize: '0.875rem', fontWeight: 600, color: '#1976d2' }}>
                             bei: {highlightText(result.data.customerName, searchQuery)}
@@ -429,15 +459,17 @@ export const SearchResultsDropdown: React.FC<SearchResultsDropdownProps> = ({
 
           {/* Search Metadata Footer */}
           {searchResults && (
-            <ListItem sx={{ 
-              py: 1, 
-              px: 2,
-              backgroundColor: alpha(theme.palette.action.hover, 0.05),
-              borderTop: `1px solid ${theme.palette.divider}`,
-            }}>
+            <ListItem
+              sx={{
+                py: 1,
+                px: 2,
+                backgroundColor: alpha(theme.palette.action.hover, 0.05),
+                borderTop: `1px solid ${theme.palette.divider}`,
+              }}
+            >
               <Typography variant="caption" color="text.secondary">
-                {searchResults.totalCount} Ergebnis{searchResults.totalCount !== 1 ? 'se' : ''} 
-                {' '}in {searchResults.executionTime}ms
+                {searchResults.totalCount} Ergebnis{searchResults.totalCount !== 1 ? 'se' : ''} in{' '}
+                {searchResults.executionTime}ms
               </Typography>
             </ListItem>
           )}

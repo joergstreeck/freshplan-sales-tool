@@ -3,7 +3,7 @@
 
 interface TaskEvent {
   type: string;
-  context: any;
+  context: unknown;
 }
 
 interface Task {

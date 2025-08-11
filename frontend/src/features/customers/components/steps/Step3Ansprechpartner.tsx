@@ -8,16 +8,7 @@
  */
 
 import React, { useCallback, useMemo } from 'react';
-import {
-  Box,
-  Typography,
-  Alert,
-  AlertTitle,
-  Divider,
-  Chip,
-  Card,
-  CardContent,
-} from '@mui/material';
+import { Box, Typography, Alert, AlertTitle, Divider, Card, CardContent } from '@mui/material';
 import { useCustomerOnboardingStore } from '../../stores/customerOnboardingStore';
 import { useFieldDefinitions } from '../../hooks/useFieldDefinitions';
 import { DynamicFieldRenderer } from '../fields/DynamicFieldRenderer';
@@ -56,7 +47,7 @@ export const Step3Ansprechpartner: React.FC = () => {
   }, [getFieldByKey]);
 
   const handleFieldChange = useCallback(
-    (fieldKey: string, value: any) => {
+    (fieldKey: string, value: unknown) => {
       setCustomerField(fieldKey, value);
     },
     [setCustomerField]

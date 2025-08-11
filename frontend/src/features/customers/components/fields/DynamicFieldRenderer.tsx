@@ -28,11 +28,11 @@ interface DynamicFieldRendererProps {
   /** Field definitions to render */
   fields: FieldDefinition[];
   /** Current field values */
-  values: Record<string, any>;
+  values: Record<string, unknown>;
   /** Validation errors */
   errors: Record<string, string>;
   /** Field change handler */
-  onChange: (fieldKey: string, value: any) => void;
+  onChange: (fieldKey: string, value: unknown) => void;
   /** Field blur handler */
   onBlur: (fieldKey: string) => void;
   /** Loading state */
@@ -99,7 +99,7 @@ export const DynamicFieldRenderer: React.FC<DynamicFieldRendererProps> = ({
     const commonProps = {
       field,
       value,
-      onChange: (newValue: any) => onChange(field.key, newValue),
+      onChange: (newValue: unknown) => onChange(field.key, newValue),
       onBlur: () => onBlur(field.key),
       error: !!error,
       helperText: error || undefined,

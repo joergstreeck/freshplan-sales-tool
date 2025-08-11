@@ -58,8 +58,8 @@ export const MultiSelectField: React.FC<MultiSelectFieldProps> = ({
 }) => {
   const selectedValues = value || [];
 
-  const handleChange = (event: any) => {
-    const newValue = event.target.value;
+  const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+    const newValue = event.target.value as string | string[];
     onChange(typeof newValue === 'string' ? newValue.split(',') : newValue);
   };
 

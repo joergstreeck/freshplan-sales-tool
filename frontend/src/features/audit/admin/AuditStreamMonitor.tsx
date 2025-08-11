@@ -29,7 +29,7 @@ import {
   Storage as StorageIcon,
 } from '@mui/icons-material';
 import { format } from 'date-fns';
-import { de } from 'date-fns/locale';
+import { de as _de } from 'date-fns/locale';
 
 interface AuditStreamEntry {
   id: string;
@@ -114,11 +114,13 @@ export const AuditStreamMonitor: React.FC<AuditStreamMonitorProps> = ({
     };
 
     const cleanup = connectWebSocket();
+    // Copy ref value immediately to avoid stale closure warning
+    const ws = wsRef.current;
 
     return () => {
       cleanup();
-      if (wsRef.current) {
-        wsRef.current.close();
+      if (ws) {
+        ws.close();
       }
     };
   }, [isPaused, maxEntries]);
@@ -154,7 +156,7 @@ export const AuditStreamMonitor: React.FC<AuditStreamMonitorProps> = ({
     }
   };
 
-  const getSeverityColor = (severity?: string) => {
+  const _getSeverityColor = (severity?: string) => {
     switch (severity) {
       case 'error':
         return 'error';

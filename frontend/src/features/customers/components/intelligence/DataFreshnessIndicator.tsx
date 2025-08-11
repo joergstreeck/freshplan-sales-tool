@@ -68,8 +68,8 @@ export const DataFreshnessIndicator: React.FC<DataFreshnessIndicatorProps> = ({
   }
 
   const daysSinceUpdate = getDaysSinceLastUpdate(contact);
-  const isCritical = freshnessLevel.key === 'critical';
-  const isStale = freshnessLevel.key === 'stale';
+  const _isCritical = freshnessLevel.key === 'critical';
+  const _isStale = freshnessLevel.key === 'stale';
 
   const handleUpdateClick = () => {
     if (onUpdateClick) {

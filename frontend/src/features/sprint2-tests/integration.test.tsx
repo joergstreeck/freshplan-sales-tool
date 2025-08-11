@@ -11,8 +11,8 @@
  */
 
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { render, screen as _screen } from '@testing-library/react';
+import _userEvent from '@testing-library/user-event';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 // Test utilities
@@ -24,7 +24,7 @@ const createTestQueryClient = () =>
     },
   });
 
-const renderWithProviders = (component: React.ReactNode) => {
+const _renderWithProviders = (component: React.ReactNode) => {
   const queryClient = createTestQueryClient();
   return render(<QueryClientProvider client={queryClient}>{component}</QueryClientProvider>);
 };

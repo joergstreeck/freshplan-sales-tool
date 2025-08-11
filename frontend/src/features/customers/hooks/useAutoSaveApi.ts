@@ -157,15 +157,7 @@ export const useAutoSaveApi = (options: UseAutoSaveApiOptions = {}): UseAutoSave
     } finally {
       setSaving(false);
     }
-  }, [
-    draftId,
-    customerData,
-    locations,
-    createDraftMutation,
-    updateDraftMutation,
-    setSaving,
-    setDraftId,
-  ]);
+  }, [draftId, customerData, locations, createDraftMutation, updateDraftMutation, setSaving]);
 
   /**
    * Manual save trigger

@@ -1,11 +1,11 @@
 /**
  * Entity Audit Timeline Component
- * 
+ *
  * Generic audit timeline for any entity type (customer, contact, etc.)
  * with filtering and export capabilities.
- * 
+ *
  * Part of FC-005 Contact Management UI - PR 3.
- * 
+ *
  * @see /docs/features/FC-005-CUSTOMER-MANAGEMENT/Step3/AUDIT_TIMELINE_IMPLEMENTATION_PLAN.md
  */
 
@@ -21,18 +21,18 @@ import {
 } from '@mui/lab';
 import {
   Box,
-  Paper,
+  Paper as _Paper,
   Typography,
   Chip,
   IconButton,
-  Tooltip,
+  Tooltip as _Tooltip,
   TextField,
   MenuItem,
   Button,
   Skeleton,
   Alert,
   Collapse,
-  Stack,
+  Stack as _Stack,
   Card,
   CardContent,
 } from '@mui/material';
@@ -42,7 +42,7 @@ import {
   Delete as DeleteIcon,
   Security as SecurityIcon,
   Download as DownloadIcon,
-  FilterList as FilterIcon,
+  FilterList as _FilterIcon,
   Refresh as RefreshIcon,
   ExpandMore as ExpandMoreIcon,
   ExpandLess as ExpandLessIcon,
@@ -64,8 +64,8 @@ interface AuditEntry {
   userName: string;
   userRole: string;
   changeReason?: string;
-  oldValue?: any;
-  newValue?: any;
+  oldValue?: unknown;
+  newValue?: unknown;
   ipAddress?: string;
   source?: string;
 }
@@ -139,15 +139,21 @@ const getEventConfig = (eventType: string) => {
 /**
  * Format changed fields for display
  */
-const formatChangedFields = (oldValue: any, newValue: any): string[] => {
+const formatChangedFields = (oldValue: unknown, newValue: unknown): string[] => {
   if (!oldValue || !newValue) return [];
 
+  // Type guard to ensure objects
+  if (typeof oldValue !== 'object' || typeof newValue !== 'object') return [];
+
+  const oldObj = oldValue as Record<string, unknown>;
+  const newObj = newValue as Record<string, unknown>;
+
   const changes: string[] = [];
-  const allKeys = new Set([...Object.keys(oldValue), ...Object.keys(newValue)]);
+  const allKeys = new Set([...Object.keys(oldObj), ...Object.keys(newObj)]);
 
   allKeys.forEach(key => {
-    if (oldValue[key] !== newValue[key]) {
-      changes.push(`${key}: ${oldValue[key] || '-'} → ${newValue[key] || '-'}`);
+    if (oldObj[key] !== newObj[key]) {
+      changes.push(`${key}: ${oldObj[key] || '-'} → ${newObj[key] || '-'}`);
     }
   });
 
@@ -165,7 +171,7 @@ export function EntityAuditTimeline({
 }: EntityAuditTimelineProps) {
   const [entries, setEntries] = useState<AuditEntry[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, _setError] = useState<string | null>(null);
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
   const [filterType, setFilterType] = useState<string>('all');
 
@@ -360,9 +366,7 @@ export function EntityAuditTimeline({
               )}
 
               <TimelineSeparator>
-                <TimelineDot sx={{ bgcolor: config.color }}>
-                  {config.icon}
-                </TimelineDot>
+                <TimelineDot sx={{ bgcolor: config.color }}>{config.icon}</TimelineDot>
                 {index < filteredEntries.length - 1 && <TimelineConnector />}
               </TimelineSeparator>
 
@@ -391,9 +395,7 @@ export function EntityAuditTimeline({
 
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
                       <PersonIcon fontSize="small" color="action" />
-                      <Typography variant="body2">
-                        {entry.userName}
-                      </Typography>
+                      <Typography variant="body2">{entry.userName}</Typography>
                       <Chip label={entry.userRole} size="small" variant="outlined" />
                     </Box>
 
@@ -410,7 +412,12 @@ export function EntityAuditTimeline({
                             Geänderte Felder:
                           </Typography>
                           {formatChangedFields(entry.oldValue, entry.newValue).map((change, i) => (
-                            <Typography key={i} variant="caption" display="block" sx={{ fontFamily: 'monospace' }}>
+                            <Typography
+                              key={i}
+                              variant="caption"
+                              display="block"
+                              sx={{ fontFamily: 'monospace' }}
+                            >
                               {change}
                             </Typography>
                           ))}

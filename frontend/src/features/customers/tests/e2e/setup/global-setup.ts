@@ -79,7 +79,7 @@ async function seedTestData(baseURL: string) {
       if (!response.ok) {
         console.warn(`Kunde konnte nicht angelegt werden: ${customer.customerData.companyName}`);
       }
-    } catch (error) {
+    } catch {
       // Ignore individual seed failures
     }
   }
@@ -110,7 +110,7 @@ async function setupAuthState(config: FullConfig) {
       // Save authentication state
       await context.storageState({ path: './e2e-auth-state.json' });
     }
-  } catch (error) {
+  } catch {
     console.log('ℹ️ Kein Login erforderlich oder Login nicht verfügbar');
   } finally {
     await browser.close();

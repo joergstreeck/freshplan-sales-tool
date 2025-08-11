@@ -104,19 +104,19 @@ public class Customer extends PanacheEntityBase {
 
   // Chain Structure - NEW for Sprint 2
   @Column(name = "total_locations_eu")
-  private Integer totalLocationsEU;
+  private Integer totalLocationsEU = 0;
 
   @Column(name = "locations_germany")
-  private Integer locationsGermany;
+  private Integer locationsGermany = 0;
 
   @Column(name = "locations_austria")
-  private Integer locationsAustria;
+  private Integer locationsAustria = 0;
 
   @Column(name = "locations_switzerland")
-  private Integer locationsSwitzerland;
+  private Integer locationsSwitzerland = 0;
 
   @Column(name = "locations_rest_eu")
-  private Integer locationsRestEU;
+  private Integer locationsRestEU = 0;
 
   @Column(name = "expansion_planned", length = 10)
   private String expansionPlanned;

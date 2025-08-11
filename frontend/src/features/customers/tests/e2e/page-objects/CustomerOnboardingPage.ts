@@ -187,54 +187,54 @@ export class CustomerOnboardingPage {
   }
 
   // Step 1 - Customer Data methods
-  async fillCustomerBasicData(customerData: any) {
-    await this.companyNameField.fill(customerData.companyName);
+  async fillCustomerBasicData(customerData: Record<string, unknown>) {
+    await this.companyNameField.fill(customerData.companyName as string);
 
     if (customerData.industry) {
-      await this.industrySelect.selectOption(customerData.industry);
+      await this.industrySelect.selectOption(customerData.industry as string);
     }
 
     if (customerData.chainCustomer) {
-      await this.chainCustomerSelect.selectOption(customerData.chainCustomer);
+      await this.chainCustomerSelect.selectOption(customerData.chainCustomer as string);
     }
 
     if (customerData.email) {
-      await this.emailField.fill(customerData.email);
+      await this.emailField.fill(customerData.email as string);
     }
 
     if (customerData.phone) {
-      await this.phoneField.fill(customerData.phone);
+      await this.phoneField.fill(customerData.phone as string);
     }
 
     if (customerData.website) {
-      await this.websiteField.fill(customerData.website);
+      await this.websiteField.fill(customerData.website as string);
     }
   }
 
-  async fillIndustrySpecificFields(customerData: any) {
+  async fillIndustrySpecificFields(customerData: Record<string, unknown>) {
     // Hotel industry fields
     if (customerData.hotelStars && (await this.hotelStarsSelect.isVisible())) {
-      await this.hotelStarsSelect.selectOption(customerData.hotelStars);
+      await this.hotelStarsSelect.selectOption(customerData.hotelStars as string);
     }
 
     // Office industry fields
     if (customerData.employees && (await this.employeeCountField.isVisible())) {
-      await this.employeeCountField.fill(customerData.employees);
+      await this.employeeCountField.fill(customerData.employees as string);
     }
 
     // Healthcare industry fields
     if (customerData.bedCount && (await this.bedCountField.isVisible())) {
-      await this.bedCountField.fill(customerData.bedCount);
+      await this.bedCountField.fill(customerData.bedCount as string);
     }
   }
 
-  async fillCompleteCustomerData(customerData: any) {
+  async fillCompleteCustomerData(customerData: Record<string, unknown>) {
     await this.fillCustomerBasicData(customerData);
     await this.fillIndustrySpecificFields(customerData);
   }
 
   // Step 2 - Locations methods
-  async addLocation(locationData: any, index: number = 0) {
+  async addLocation(locationData: Record<string, unknown>, index: number = 0) {
     await this.addLocationButton.click();
 
     const nameField = this.page.locator(
@@ -259,13 +259,13 @@ export class CustomerOnboardingPage {
       `[data-testid="location-email-${index}"], input[name="locations[${index}].email"]`
     );
 
-    await nameField.fill(locationData.name);
-    await streetField.fill(locationData.street);
-    await postalCodeField.fill(locationData.postalCode);
-    await cityField.fill(locationData.city);
-    await contactField.fill(locationData.contactPerson);
-    await phoneField.fill(locationData.phone);
-    await emailField.fill(locationData.email);
+    await nameField.fill(locationData.name as string);
+    await streetField.fill(locationData.street as string);
+    await postalCodeField.fill(locationData.postalCode as string);
+    await cityField.fill(locationData.city as string);
+    await contactField.fill(locationData.contactPerson as string);
+    await phoneField.fill(locationData.phone as string);
+    await emailField.fill(locationData.email as string);
   }
 
   async addMultipleLocations(locationsData: unknown[]) {
@@ -280,17 +280,26 @@ export class CustomerOnboardingPage {
   }
 
   // Step 3 - Detailed Locations methods
-  async addDetailedLocation(detailedLocationData: any, locationIndex: number = 0) {
+  async addDetailedLocation(
+    detailedLocationData: Record<string, unknown>,
+    _locationIndex: number = 0
+  ) {
     await this.addDetailedLocationButton.click();
 
-    await this.detailedLocationNameField.fill(detailedLocationData.name);
-    await this.detailedLocationCategorySelect.selectOption(detailedLocationData.category);
-    await this.detailedLocationFloorField.fill(detailedLocationData.floor);
-    await this.detailedLocationCapacityField.fill(detailedLocationData.capacity);
-    await this.detailedLocationHoursField.fill(detailedLocationData.operatingHours);
-    await this.detailedLocationResponsibleField.fill(detailedLocationData.responsiblePerson);
-    await this.detailedLocationInternalPhoneField.fill(detailedLocationData.internalPhone);
-    await this.detailedLocationRequirementsField.fill(detailedLocationData.specialRequirements);
+    await this.detailedLocationNameField.fill(detailedLocationData.name as string);
+    await this.detailedLocationCategorySelect.selectOption(detailedLocationData.category as string);
+    await this.detailedLocationFloorField.fill(detailedLocationData.floor as string);
+    await this.detailedLocationCapacityField.fill(detailedLocationData.capacity as string);
+    await this.detailedLocationHoursField.fill(detailedLocationData.operatingHours as string);
+    await this.detailedLocationResponsibleField.fill(
+      detailedLocationData.responsiblePerson as string
+    );
+    await this.detailedLocationInternalPhoneField.fill(
+      detailedLocationData.internalPhone as string
+    );
+    await this.detailedLocationRequirementsField.fill(
+      detailedLocationData.specialRequirements as string
+    );
   }
 
   // Validation methods
@@ -373,7 +382,7 @@ export class CustomerOnboardingPage {
     return Date.now() - startTime;
   }
 
-  async measureFormFillTime(customerData: any): Promise<number> {
+  async measureFormFillTime(customerData: Record<string, unknown>): Promise<number> {
     const startTime = Date.now();
     await this.fillCompleteCustomerData(customerData);
     return Date.now() - startTime;

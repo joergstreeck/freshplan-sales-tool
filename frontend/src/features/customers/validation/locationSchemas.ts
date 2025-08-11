@@ -184,8 +184,8 @@ export const getLocationSchema = (industry?: string) => {
  * Adress-Validierung (Cross-Field)
  * Wenn ein Adressfeld ausgefüllt ist, müssen alle ausgefüllt sein
  */
-export const validateCompleteAddress = (data: any) => {
-  const { street, postalCode, city } = data;
+export const validateCompleteAddress = (data: Record<string, unknown>) => {
+  const { street, postalCode, city } = data as Record<string, string>;
   const hasAnyAddress = street || postalCode || city;
   const hasCompleteAddress = street && postalCode && city;
 

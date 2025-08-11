@@ -121,7 +121,7 @@ export interface FieldDefinition {
   /** Validation rules */
   validation?: FieldValidation | string;
   /** Default value */
-  defaultValue?: any;
+  defaultValue?: string | number | boolean | null;
   /** Maximum length hint */
   maxLength?: number;
   /** Minimum value hint */
@@ -159,7 +159,7 @@ export interface FieldValue {
   /** Type of entity */
   entityType: EntityType;
   /** Actual stored value (JSONB) */
-  value: any;
+  value: unknown;
   /** Last update timestamp */
   updatedAt: string;
 }
@@ -171,7 +171,7 @@ export interface FormFieldValue {
   /** Field definition key */
   key: string;
   /** Current value */
-  value: any;
+  value: unknown;
   /** Validation errors */
   error?: string;
   /** Field has been touched */

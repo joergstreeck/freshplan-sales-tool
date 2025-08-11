@@ -180,7 +180,9 @@ describe('CustomerDetailPage', () => {
     fireEvent.click(contactsTab);
 
     await waitFor(() => {
-      expect(screen.getByText(/Die Kontaktverwaltung wird in Sprint 3 implementiert/i)).toBeInTheDocument();
+      expect(
+        screen.getByText(/Die Kontaktverwaltung wird in Sprint 3 implementiert/i)
+      ).toBeInTheDocument();
     });
 
     // Click on Activities tab
@@ -188,7 +190,9 @@ describe('CustomerDetailPage', () => {
     fireEvent.click(activitiesTab);
 
     await waitFor(() => {
-      expect(screen.getByText(/Das Aktivitäten-Tracking wird in Sprint 4 implementiert/i)).toBeInTheDocument();
+      expect(
+        screen.getByText(/Das Aktivitäten-Tracking wird in Sprint 4 implementiert/i)
+      ).toBeInTheDocument();
     });
   });
 
@@ -236,12 +240,12 @@ describe('CustomerDetailPage', () => {
       expect(screen.getByText('Unternehmensdaten')).toBeInTheDocument();
       expect(screen.getByText('Test GmbH')).toBeInTheDocument();
       expect(screen.getByText(/premium/i)).toBeInTheDocument();
-      
+
       // Address data
       expect(screen.getByText('Adresse')).toBeInTheDocument();
       expect(screen.getByText('Teststraße 1')).toBeInTheDocument();
       expect(screen.getByText('10115')).toBeInTheDocument();
-      
+
       // Notes
       expect(screen.getByText('Notizen')).toBeInTheDocument();
       expect(screen.getByText('Test notes')).toBeInTheDocument();

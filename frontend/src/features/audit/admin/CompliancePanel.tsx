@@ -6,14 +6,13 @@ import {
   Typography,
   Alert,
   AlertTitle,
-
   List,
   ListItem,
   ListItemIcon,
   ListItemText,
   Chip,
   Button,
-  Divider,
+  Divider as _Divider,
 } from '@mui/material';
 import {
   CheckCircle as CheckIcon,
@@ -28,7 +27,7 @@ import type { ComplianceAlert, AuditDashboardMetrics } from '../types';
 interface CompliancePanelProps {
   alerts?: ComplianceAlert[];
   metrics?: AuditDashboardMetrics;
-  dateRange: {
+  _dateRange: {
     from: Date;
     to: Date;
   };
@@ -37,7 +36,7 @@ interface CompliancePanelProps {
 export const CompliancePanel: React.FC<CompliancePanelProps> = ({
   alerts = [],
   metrics,
-  dateRange,
+  _dateRange,
 }) => {
   const getAlertIcon = (type: string) => {
     switch (type) {
@@ -52,7 +51,7 @@ export const CompliancePanel: React.FC<CompliancePanelProps> = ({
     }
   };
 
-  const getSeverityColor = (severity: string) => {
+  const _getSeverityColor = (severity: string) => {
     switch (severity) {
       case 'CRITICAL':
         return 'error';

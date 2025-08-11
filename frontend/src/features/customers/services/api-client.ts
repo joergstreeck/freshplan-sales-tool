@@ -106,7 +106,7 @@ export class ApiClient {
   /**
    * POST Request
    */
-  async post<T>(endpoint: string, data?: any, config?: RequestConfig): Promise<T> {
+  async post<T>(endpoint: string, data?: unknown, config?: RequestConfig): Promise<T> {
     return this.request<T>(endpoint, {
       ...config,
       method: 'POST',
@@ -117,7 +117,7 @@ export class ApiClient {
   /**
    * PUT Request
    */
-  async put<T>(endpoint: string, data?: any, config?: RequestConfig): Promise<T> {
+  async put<T>(endpoint: string, data?: unknown, config?: RequestConfig): Promise<T> {
     return this.request<T>(endpoint, {
       ...config,
       method: 'PUT',
@@ -135,7 +135,7 @@ export class ApiClient {
   /**
    * PATCH Request
    */
-  async patch<T>(endpoint: string, data?: any, config?: RequestConfig): Promise<T> {
+  async patch<T>(endpoint: string, data?: unknown, config?: RequestConfig): Promise<T> {
     return this.request<T>(endpoint, {
       ...config,
       method: 'PATCH',
@@ -185,13 +185,14 @@ export class ApiClient {
   /**
    * Create standardized API error
    */
-  private createApiError(status: number, data: any): ApiError {
+  private createApiError(status: number, data: unknown): ApiError {
+    const errorData = data as Record<string, unknown>;
     return {
       status,
-      code: data.code || `HTTP_${status}`,
-      message: data.message || this.getDefaultErrorMessage(status),
-      fieldErrors: data.fieldErrors,
-      timestamp: data.timestamp || new Date().toISOString(),
+      code: (errorData?.code as string) || `HTTP_${status}`,
+      message: (errorData?.message as string) || this.getDefaultErrorMessage(status),
+      fieldErrors: errorData?.fieldErrors as Record<string, string[]> | undefined,
+      timestamp: (errorData?.timestamp as string) || new Date().toISOString(),
     };
   }
 
@@ -224,24 +225,26 @@ export class ApiClient {
   /**
    * Determine if error should trigger retry
    */
-  private shouldRetry(error: any): boolean {
-    if (error.name === 'AbortError') return false;
-    if (error.status && error.status < 500) return false;
+  private shouldRetry(error: unknown): boolean {
+    const err = error as Record<string, unknown>;
+    if (err?.name === 'AbortError') return false;
+    if (err?.status && err.status < 500) return false;
     return true;
   }
 
   /**
    * Handle errors consistently
    */
-  private handleError(error: any): never {
-    if (error.name === 'AbortError') {
+  private handleError(error: unknown): never {
+    const err = error as Record<string, unknown>;
+    if (err?.name === 'AbortError') {
       throw this.createApiError(0, {
         code: 'REQUEST_ABORTED',
         message: 'Anfrage wurde abgebrochen',
       });
     }
 
-    if (error.status) {
+    if ((error as Record<string, unknown>).status) {
       throw error; // Already an ApiError
     }
 

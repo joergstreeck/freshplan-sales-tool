@@ -15,11 +15,11 @@ interface RevenueExpectationSectionV2Props {
   /** Umsatzerwartungs-Feld */
   revenueField: FieldDefinition;
   /** Aktuelle Werte */
-  values: Record<string, any>;
+  values: Record<string, unknown>;
   /** Validierungsfehler */
   errors: Record<string, string>;
   /** Change Handler */
-  onChange: (fieldKey: string, value: any) => void;
+  onChange: (fieldKey: string, value: unknown) => void;
   /** Blur Handler */
   onBlur: (fieldKey: string) => void;
   /** Anzahl Standorte für Kalkulation */
@@ -34,8 +34,8 @@ export const RevenueExpectationSectionV2: React.FC<RevenueExpectationSectionV2Pr
   errors,
   onChange,
   onBlur,
-  totalLocations = 1,
-  activePainPoints = [],
+  totalLocations: _totalLocations = 1,
+  activePainPoints: _activePainPoints = [],
 }) => {
   const currentValue = values[revenueField.key] || 0;
   const hasError = Boolean(errors[revenueField.key]);

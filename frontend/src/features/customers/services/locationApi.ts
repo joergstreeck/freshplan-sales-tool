@@ -16,7 +16,6 @@ import {
   PaginatedResponse,
 } from '../types/api.types';
 import {
-  Location,
   LocationWithFields,
   DetailedLocation,
   DetailedLocationBatch,
@@ -84,7 +83,7 @@ export class LocationApi {
    */
   async bulkCreateLocations(
     customerId: string,
-    locations: Array<{ fieldValues: Record<string, any> }>
+    locations: Array<{ fieldValues: Record<string, unknown> }>
   ): Promise<LocationResponse[]> {
     return apiClient.post<LocationResponse[]>(
       `/api/customers/${customerId}/locations/bulk`,

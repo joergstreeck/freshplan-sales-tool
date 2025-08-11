@@ -30,11 +30,11 @@ import { AdaptiveFormContainer } from '../adaptive/AdaptiveFormContainer';
 import { DynamicFieldRenderer } from '../fields/DynamicFieldRenderer';
 import { LocationCheckboxList } from '../shared/LocationCheckboxList';
 
-import type { Contact, CreateContactDTO } from '../../types/contact.types';
+import type { Contact, CreateContactDTO as _CreateContactDTO } from '../../types/contact.types';
 import type { Location } from '../../types/location.types';
-import type { FieldDefinition } from '../../types/field.types';
+import type { FieldDefinition as _FieldDefinition } from '../../types/field.types';
 import {
-  contactFieldExtensions,
+  contactFieldExtensions as _contactFieldExtensions,
   getContactFieldsForGroup,
 } from '../../data/fieldCatalogContactExtensions';
 
@@ -131,7 +131,7 @@ export const ContactFormDialog: React.FC<ContactFormDialogProps> = ({
   );
 
   // Handle field change
-  const handleFieldChange = (fieldKey: string, value: any) => {
+  const handleFieldChange = (fieldKey: string, value: string | number | boolean | null) => {
     setFormData(prev => ({
       ...prev,
       [fieldKey.replace('contact', '').charAt(0).toLowerCase() +
@@ -223,7 +223,7 @@ export const ContactFormDialog: React.FC<ContactFormDialogProps> = ({
   };
 
   // Get field value
-  const getFieldValue = (fieldKey: string): any => {
+  const getFieldValue = (fieldKey: string): string | number | boolean | null | undefined => {
     const key =
       fieldKey.replace('contact', '').charAt(0).toLowerCase() +
       fieldKey.replace('contact', '').slice(1);

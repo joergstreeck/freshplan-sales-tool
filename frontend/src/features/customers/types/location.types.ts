@@ -43,7 +43,7 @@ export interface Location {
  */
 export interface LocationWithFields extends Location {
   /** Resolved field values */
-  fields: Record<string, any>;
+  fields: Record<string, unknown>;
   /** Number of detailed locations */
   detailedLocationCount?: number;
 }
@@ -113,7 +113,7 @@ export interface LocationFormData {
   /** Type of location */
   locationType: LocationType;
   /** Industry-specific fields */
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 /**

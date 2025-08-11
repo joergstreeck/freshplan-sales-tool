@@ -544,7 +544,7 @@ export const KanbanBoardDndKit: React.FC = React.memo(() => {
 
         if (response.data && response.data.length > 0) {
           // Transform API data to match our Opportunity interface
-          const apiOpportunities = response.data.map((opp: any) => ({
+          const apiOpportunities = response.data.map((opp: Record<string, unknown>) => ({
             ...opp,
             // Map expectedValue to value if value is null
             value: opp.value || opp.expectedValue || 0,
@@ -555,10 +555,10 @@ export const KanbanBoardDndKit: React.FC = React.memo(() => {
             createdAt: opp.createdAt || new Date().toISOString(),
             updatedAt: opp.updatedAt || new Date().toISOString(),
           }));
-          
+
           setOpportunities(apiOpportunities);
         }
-      } catch (error) {
+      } catch {
         // Keep using initialOpportunities as fallback
         // Error is silently handled - opportunities will remain as initial mock data
       }

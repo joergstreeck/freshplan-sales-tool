@@ -372,7 +372,7 @@ describe.skip('FC-005 Store + API Integration Tests', () => {
       let firstAttemptFailed = false;
       try {
         await result.current.saveAsDraft();
-      } catch (error) {
+      } catch {
         firstAttemptFailed = true;
       }
 

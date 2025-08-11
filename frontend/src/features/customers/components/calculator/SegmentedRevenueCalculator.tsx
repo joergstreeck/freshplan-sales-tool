@@ -56,7 +56,7 @@ interface SegmentedRevenueCalculatorProps {
 
 export const SegmentedRevenueCalculator: React.FC<SegmentedRevenueCalculatorProps> = ({
   onApplyCalculation,
-  currentValue,
+  currentValue: _currentValue,
 }) => {
   // Hole die Filialanzahlen aus den Customer-Daten
   const customerData = useCustomerOnboardingStore(state => state.customerData);
@@ -114,7 +114,7 @@ export const SegmentedRevenueCalculator: React.FC<SegmentedRevenueCalculatorProp
     return segments.reduce((sum, segment) => sum + calculateSegmentTotal(segment), 0);
   };
 
-  const updateSegment = (index: number, field: string, value: any) => {
+  const updateSegment = (index: number, field: string, value: string | number) => {
     const newSegments = [...segments];
     if (field === 'count') {
       newSegments[index].count = parseInt(value) || 0;

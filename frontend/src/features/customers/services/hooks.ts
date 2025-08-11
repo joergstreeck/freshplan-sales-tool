@@ -209,7 +209,7 @@ export function useUpdateCustomer(
     ApiError,
     {
       customerId: string;
-      fieldValues: Record<string, any>;
+      fieldValues: Record<string, unknown>;
     }
   >
 ) {
@@ -220,7 +220,7 @@ export function useUpdateCustomer(
     ApiError,
     {
       customerId: string;
-      fieldValues: Record<string, any>;
+      fieldValues: Record<string, unknown>;
     }
   >({
     mutationFn: ({ customerId, fieldValues }) =>
@@ -313,7 +313,7 @@ export function useUpdateLocation(
     ApiError,
     {
       locationId: string;
-      data: Record<string, any>;
+      data: Record<string, unknown>;
     }
   >
 ) {
@@ -324,7 +324,7 @@ export function useUpdateLocation(
     ApiError,
     {
       locationId: string;
-      data: Record<string, any>;
+      data: Record<string, unknown>;
     }
   >({
     mutationFn: ({ locationId, data }) =>
@@ -374,8 +374,6 @@ export function useIndustries(options?: UseQueryOptions<string[], ApiError>) {
  * Hook to preload field definitions
  */
 export function usePreloadFieldDefinitions() {
-  const queryClient = useQueryClient();
-
   return useMutation({
     mutationFn: () => fieldDefinitionApi.preloadCommonDefinitions(),
     onSuccess: () => {

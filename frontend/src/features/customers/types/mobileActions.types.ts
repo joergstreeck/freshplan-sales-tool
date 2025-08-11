@@ -1,9 +1,9 @@
 /**
  * Mobile Actions Type Definitions
- * 
+ *
  * Types for mobile-optimized contact actions and swipe gestures.
  * Part of FC-005 Contact Management UI - Mobile Actions.
- * 
+ *
  * @see /docs/features/FC-005-CUSTOMER-MANAGEMENT/Step3/MOBILE_CONTACT_ACTIONS.md
  */
 
@@ -18,18 +18,18 @@ export interface QuickAction {
   label: string;
   icon: ReactNode;
   color: string;
-  primary?: boolean;      // User-defined primary action
-  contextual?: boolean;   // Based on contact data availability
+  primary?: boolean; // User-defined primary action
+  contextual?: boolean; // Based on contact data availability
   urgency?: 'high' | 'medium' | 'low';
-  enabled?: boolean;      // Whether action is currently available
+  enabled?: boolean; // Whether action is currently available
 }
 
 /**
  * Swipe action configuration
  */
 export interface SwipeActions {
-  left: QuickAction | null;   // Swipe left action
-  right: QuickAction | null;  // Swipe right action
+  left: QuickAction | null; // Swipe left action
+  right: QuickAction | null; // Swipe right action
 }
 
 /**
@@ -60,8 +60,8 @@ export interface ActionHistory {
  * Mobile gesture configuration
  */
 export interface GestureConfig {
-  swipeThreshold: number;  // Minimum distance for swipe (pixels)
-  swipeVelocity: number;   // Minimum velocity for swipe
+  swipeThreshold: number; // Minimum distance for swipe (pixels)
+  swipeVelocity: number; // Minimum velocity for swipe
   hapticFeedback: boolean; // Enable haptic feedback
   showInstructions: boolean; // Show swipe instructions
 }
@@ -70,12 +70,12 @@ export interface GestureConfig {
  * Contact intelligence for smart suggestions
  */
 export interface ContactIntelligence {
-  warmthScore: number;     // 0-100
+  warmthScore: number; // 0-100
   freshnessLevel: 'fresh' | 'stale' | 'critical';
   trendDirection: 'improving' | 'stable' | 'declining';
   lastInteractionDays: number;
   preferredChannel?: 'call' | 'email' | 'whatsapp';
-  bestCallTime?: string;   // e.g., "morning", "afternoon"
+  bestCallTime?: string; // e.g., "morning", "afternoon"
 }
 
 /**
@@ -134,7 +134,7 @@ export interface QueuedAction {
   id: string;
   action: QuickAction;
   contactId: string;
-  contactData: any; // Minimal contact data for offline execution
+  contactData: unknown; // Minimal contact data for offline execution
   timestamp: Date;
   retryCount: number;
   maxRetries: number;

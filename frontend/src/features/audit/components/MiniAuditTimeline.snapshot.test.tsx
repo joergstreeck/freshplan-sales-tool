@@ -1,14 +1,14 @@
 /**
  * Snapshot Tests for MiniAuditTimeline Component
- * 
+ *
  * Tests visual consistency of the audit timeline component.
- * 
+ *
  * @module MiniAuditTimeline.snapshot.test
  * @since FC-005 PR4
  */
 
 import { describe, it, expect, vi } from 'vitest';
-import { render, waitFor } from '@testing-library/react';
+import { render, waitFor as _waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import React from 'react';
@@ -19,60 +19,64 @@ import { auditApi } from '../services/auditApi';
 // Mock the API
 vi.mock('../services/auditApi', () => ({
   auditApi: {
-    getEntityAuditTrail: vi.fn(() => Promise.resolve({
-      entries: [
-        {
-          id: '1',
-          entityType: 'CUSTOMER',
-          entityId: '1',
-          action: 'UPDATE',
-          fieldName: 'status',
-          oldValue: 'INACTIVE',
-          newValue: 'ACTIVE',
-          userId: 'user-1',
-          userName: 'Max Mustermann',
-          timestamp: '2024-01-15T10:30:00Z',
-          details: 'Status wurde auf aktiv gesetzt',
-        },
-        {
-          id: '2',
-          entityType: 'CUSTOMER',
-          entityId: '1',
-          action: 'UPDATE',
-          fieldName: 'revenue',
-          oldValue: '500000',
-          newValue: '750000',
-          userId: 'user-2',
-          userName: 'Anna Schmidt',
-          timestamp: '2024-01-14T15:45:00Z',
-          details: 'Umsatz aktualisiert',
-        },
-        {
-          id: '3',
-          entityType: 'CUSTOMER',
-          entityId: '1',
-          action: 'CREATE',
-          userId: 'user-3',
-          userName: 'Peter Weber',
-          timestamp: '2024-01-10T09:00:00Z',
-          details: 'Kunde angelegt',
-        },
-      ] as AuditEntry[],
-      totalCount: 3,
-      hasMore: false,
-    })),
-    getLatestChange: vi.fn(() => Promise.resolve({
-      id: '1',
-      entityType: 'CUSTOMER',
-      entityId: '1',
-      action: 'UPDATE',
-      fieldName: 'status',
-      oldValue: 'INACTIVE',
-      newValue: 'ACTIVE',
-      userId: 'user-1',
-      userName: 'Max Mustermann',
-      timestamp: '2024-01-15T10:30:00Z',
-    } as AuditEntry)),
+    getEntityAuditTrail: vi.fn(() =>
+      Promise.resolve({
+        entries: [
+          {
+            id: '1',
+            entityType: 'CUSTOMER',
+            entityId: '1',
+            action: 'UPDATE',
+            fieldName: 'status',
+            oldValue: 'INACTIVE',
+            newValue: 'ACTIVE',
+            userId: 'user-1',
+            userName: 'Max Mustermann',
+            timestamp: '2024-01-15T10:30:00Z',
+            details: 'Status wurde auf aktiv gesetzt',
+          },
+          {
+            id: '2',
+            entityType: 'CUSTOMER',
+            entityId: '1',
+            action: 'UPDATE',
+            fieldName: 'revenue',
+            oldValue: '500000',
+            newValue: '750000',
+            userId: 'user-2',
+            userName: 'Anna Schmidt',
+            timestamp: '2024-01-14T15:45:00Z',
+            details: 'Umsatz aktualisiert',
+          },
+          {
+            id: '3',
+            entityType: 'CUSTOMER',
+            entityId: '1',
+            action: 'CREATE',
+            userId: 'user-3',
+            userName: 'Peter Weber',
+            timestamp: '2024-01-10T09:00:00Z',
+            details: 'Kunde angelegt',
+          },
+        ] as AuditEntry[],
+        totalCount: 3,
+        hasMore: false,
+      })
+    ),
+    getLatestChange: vi.fn(() =>
+      Promise.resolve({
+        id: '1',
+        entityType: 'CUSTOMER',
+        entityId: '1',
+        action: 'UPDATE',
+        fieldName: 'status',
+        oldValue: 'INACTIVE',
+        newValue: 'ACTIVE',
+        userId: 'user-1',
+        userName: 'Max Mustermann',
+        timestamp: '2024-01-15T10:30:00Z',
+      } as AuditEntry)
+    ),
   },
 }));
 
@@ -102,9 +106,7 @@ const createWrapper = () => {
 
   return ({ children }: { children: React.ReactNode }) => (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider theme={theme}>
-        {children}
-      </ThemeProvider>
+      <ThemeProvider theme={theme}>{children}</ThemeProvider>
     </QueryClientProvider>
   );
 };
@@ -116,29 +118,27 @@ describe('MiniAuditTimeline - Snapshot Tests', () => {
   };
 
   it('should match snapshot - compact mode (default)', async () => {
-    const { container } = render(
-      <MiniAuditTimeline {...defaultProps} />,
-      { wrapper: createWrapper() }
-    );
-    
+    const { container } = render(<MiniAuditTimeline {...defaultProps} />, {
+      wrapper: createWrapper(),
+    });
+
     // Wait for data to load
     await vi.waitFor(() => {
       expect(container.querySelector('.MuiAccordion-root')).toBeTruthy();
     });
-    
+
     expect(container.firstChild).toMatchSnapshot('compact-mode');
   });
 
   it('should match snapshot - expanded mode', async () => {
-    const { container } = render(
-      <MiniAuditTimeline {...defaultProps} compact={false} />,
-      { wrapper: createWrapper() }
-    );
-    
+    const { container } = render(<MiniAuditTimeline {...defaultProps} compact={false} />, {
+      wrapper: createWrapper(),
+    });
+
     await vi.waitFor(() => {
       expect(container.querySelector('.MuiTimeline-root')).toBeTruthy();
     });
-    
+
     expect(container.firstChild).toMatchSnapshot('expanded-mode');
   });
 
@@ -147,11 +147,11 @@ describe('MiniAuditTimeline - Snapshot Tests', () => {
       <MiniAuditTimeline {...defaultProps} showDetails={true} compact={false} />,
       { wrapper: createWrapper() }
     );
-    
+
     await vi.waitFor(() => {
       expect(container.querySelector('.MuiTimeline-root')).toBeTruthy();
     });
-    
+
     expect(container.firstChild).toMatchSnapshot('with-details');
   });
 
@@ -160,11 +160,11 @@ describe('MiniAuditTimeline - Snapshot Tests', () => {
       <MiniAuditTimeline {...defaultProps} maxEntries={2} compact={false} />,
       { wrapper: createWrapper() }
     );
-    
+
     await vi.waitFor(() => {
       expect(container.querySelector('.MuiTimeline-root')).toBeTruthy();
     });
-    
+
     expect(container.firstChild).toMatchSnapshot('limited-entries');
   });
 
@@ -173,12 +173,11 @@ describe('MiniAuditTimeline - Snapshot Tests', () => {
     vi.mocked(auditApi.getEntityAuditTrail).mockImplementation(
       () => new Promise(() => {}) // Never resolves
     );
-    
-    const { container } = render(
-      <MiniAuditTimeline {...defaultProps} />,
-      { wrapper: createWrapper() }
-    );
-    
+
+    const { container } = render(<MiniAuditTimeline {...defaultProps} />, {
+      wrapper: createWrapper(),
+    });
+
     expect(container.firstChild).toMatchSnapshot('loading-state');
   });
 
@@ -189,16 +188,15 @@ describe('MiniAuditTimeline - Snapshot Tests', () => {
       totalCount: 0,
       hasMore: false,
     });
-    
-    const { container } = render(
-      <MiniAuditTimeline {...defaultProps} />,
-      { wrapper: createWrapper() }
-    );
-    
+
+    const { container } = render(<MiniAuditTimeline {...defaultProps} />, {
+      wrapper: createWrapper(),
+    });
+
     await vi.waitFor(() => {
       expect(container.textContent).toContain('Keine Änderungshistorie');
     });
-    
+
     expect(container.firstChild).toMatchSnapshot('empty-state');
   });
 
@@ -207,57 +205,56 @@ describe('MiniAuditTimeline - Snapshot Tests', () => {
     vi.mocked(auditApi.getEntityAuditTrail).mockRejectedValueOnce(
       new Error('Failed to load audit history')
     );
-    
-    const { container } = render(
-      <MiniAuditTimeline {...defaultProps} />,
-      { wrapper: createWrapper() }
-    );
-    
+
+    const { container } = render(<MiniAuditTimeline {...defaultProps} />, {
+      wrapper: createWrapper(),
+    });
+
     await vi.waitFor(() => {
       expect(container.textContent).toContain('Fehler');
     });
-    
+
     expect(container.firstChild).toMatchSnapshot('error-state');
   });
 
   it('should match snapshot - with show more button', async () => {
     // Mock response with more entries available
     vi.mocked(auditApi.getEntityAuditTrail).mockResolvedValueOnce({
-      entries: Array(5).fill(null).map((_, i) => ({
-        id: `${i}`,
-        entityType: 'CUSTOMER',
-        entityId: '1',
-        action: 'UPDATE',
-        userId: 'user-1',
-        userName: 'Test User',
-        timestamp: new Date().toISOString(),
-      })),
+      entries: Array(5)
+        .fill(null)
+        .map((_, i) => ({
+          id: `${i}`,
+          entityType: 'CUSTOMER',
+          entityId: '1',
+          action: 'UPDATE',
+          userId: 'user-1',
+          userName: 'Test User',
+          timestamp: new Date().toISOString(),
+        })),
       totalCount: 20,
       hasMore: true,
     });
-    
-    const { container } = render(
-      <MiniAuditTimeline {...defaultProps} onShowMore={vi.fn()} />,
-      { wrapper: createWrapper() }
-    );
-    
+
+    const { container } = render(<MiniAuditTimeline {...defaultProps} onShowMore={vi.fn()} />, {
+      wrapper: createWrapper(),
+    });
+
     await vi.waitFor(() => {
       expect(container.querySelector('button')).toBeTruthy();
     });
-    
+
     expect(container.firstChild).toMatchSnapshot('with-show-more');
   });
 
   it('should match snapshot - different entity types', async () => {
-    const { container } = render(
-      <MiniAuditTimeline entityType="CONTACT" entityId="contact-1" />,
-      { wrapper: createWrapper() }
-    );
-    
+    const { container } = render(<MiniAuditTimeline entityType="CONTACT" entityId="contact-1" />, {
+      wrapper: createWrapper(),
+    });
+
     await vi.waitFor(() => {
       expect(container.querySelector('.MuiAccordion-root')).toBeTruthy();
     });
-    
+
     expect(container.firstChild).toMatchSnapshot('contact-entity');
   });
 
@@ -270,21 +267,16 @@ describe('MiniAuditTimeline - Snapshot Tests', () => {
 
     const DarkWrapper = ({ children }: { children: React.ReactNode }) => (
       <QueryClientProvider client={new QueryClient()}>
-        <ThemeProvider theme={darkTheme}>
-          {children}
-        </ThemeProvider>
+        <ThemeProvider theme={darkTheme}>{children}</ThemeProvider>
       </QueryClientProvider>
     );
 
-    const { container } = render(
-      <MiniAuditTimeline {...defaultProps} />,
-      { wrapper: DarkWrapper }
-    );
-    
+    const { container } = render(<MiniAuditTimeline {...defaultProps} />, { wrapper: DarkWrapper });
+
     await vi.waitFor(() => {
       expect(container.querySelector('.MuiAccordion-root')).toBeTruthy();
     });
-    
+
     expect(container.firstChild).toMatchSnapshot('dark-mode');
   });
 
@@ -331,11 +323,11 @@ describe('MiniAuditTimeline - Snapshot Tests', () => {
       <MiniAuditTimeline {...defaultProps} compact={false} showDetails={true} />,
       { wrapper: createWrapper() }
     );
-    
+
     await vi.waitFor(() => {
       expect(container.querySelector('.MuiTimeline-root')).toBeTruthy();
     });
-    
+
     expect(container.firstChild).toMatchSnapshot('all-action-types');
   });
 });

@@ -24,8 +24,8 @@ export const customerCrossFieldValidators = {
    * Validate complete address
    * If one address field is filled, all must be filled
    */
-  validateAddress(data: Record<string, any>): ValidationResult {
-    const { street, postalCode, city } = data;
+  validateAddress(data: Record<string, unknown>): ValidationResult {
+    const { street, postalCode, city } = data as Record<string, string>;
     const hasAnyAddress = !!(street || postalCode || city);
     const hasCompleteAddress = !!(street && postalCode && city);
 
@@ -47,7 +47,7 @@ export const customerCrossFieldValidators = {
   /**
    * Validate hotel-specific requirements
    */
-  validateHotelRequirements(data: any): ValidationResult {
+  validateHotelRequirements(data: Record<string, unknown>): ValidationResult {
     if (data.industry !== 'hotel') return { isValid: true };
 
     const errors: Record<string, string> = {};
@@ -84,7 +84,7 @@ export const customerCrossFieldValidators = {
   /**
    * Validate hospital-specific requirements
    */
-  validateHospitalRequirements(data: any): ValidationResult {
+  validateHospitalRequirements(data: Record<string, unknown>): ValidationResult {
     if (data.industry !== 'krankenhaus') return { isValid: true };
 
     const errors: Record<string, string> = {};
@@ -201,7 +201,7 @@ export const locationCrossFieldValidators = {
   /**
    * Validate location capacity based on industry
    */
-  validateCapacity(data: any, industry: string): ValidationResult {
+  validateCapacity(data: Record<string, unknown>, industry: string): ValidationResult {
     const warnings: Record<string, string> = {};
 
     switch (industry) {

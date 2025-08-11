@@ -1,9 +1,9 @@
 /**
  * MobileActionBar Component
- * 
+ *
  * Touch-optimized action bar for mobile contact management.
  * Part of FC-005 Contact Management UI - Mobile Actions.
- * 
+ *
  * @see /docs/features/FC-005-CUSTOMER-MANAGEMENT/Step3/MOBILE_CONTACT_ACTIONS.md
  */
 
@@ -21,10 +21,7 @@ import {
   Stack,
   Chip,
 } from '@mui/material';
-import {
-  MoreVert as MoreVertIcon,
-  Close as CloseIcon,
-} from '@mui/icons-material';
+import { MoreVert as MoreVertIcon, Close as CloseIcon } from '@mui/icons-material';
 
 import type { Contact } from '../../types/contact.types';
 import type { QuickAction } from '../../types/mobileActions.types';
@@ -41,7 +38,7 @@ interface MobileActionBarProps {
  * Mobile-optimized action bar with quick access buttons
  */
 export const MobileActionBar: React.FC<MobileActionBarProps> = ({
-  contact,
+  contact: _contact,
   suggestions,
   onAction,
   variant = 'compact',
@@ -52,17 +49,15 @@ export const MobileActionBar: React.FC<MobileActionBarProps> = ({
   const [speedDialOpen, setSpeedDialOpen] = useState(false);
 
   // Filter enabled actions
-  const enabledActions = suggestions.filter((action) => action.enabled !== false);
-  
+  const enabledActions = suggestions.filter(action => action.enabled !== false);
+
   // Get primary actions (max 3 for compact view)
   const primaryActions = enabledActions
-    .filter((action) => action.primary || action.urgency === 'high')
+    .filter(action => action.primary || action.urgency === 'high')
     .slice(0, 3);
-  
+
   // Get remaining actions for speed dial
-  const secondaryActions = enabledActions.filter(
-    (action) => !primaryActions.includes(action)
-  );
+  const secondaryActions = enabledActions.filter(action => !primaryActions.includes(action));
 
   const handleAction = (action: QuickAction) => {
     // Haptic feedback on mobile
@@ -87,15 +82,11 @@ export const MobileActionBar: React.FC<MobileActionBarProps> = ({
         onOpen={() => setSpeedDialOpen(true)}
         onClose={() => setSpeedDialOpen(false)}
       >
-        {enabledActions.map((action) => (
+        {enabledActions.map(action => (
           <SpeedDialAction
             key={action.id}
             icon={
-              <Badge
-                color="error"
-                variant="dot"
-                invisible={action.urgency !== 'high'}
-              >
+              <Badge color="error" variant="dot" invisible={action.urgency !== 'high'}>
                 {action.icon}
               </Badge>
             }
@@ -132,7 +123,7 @@ export const MobileActionBar: React.FC<MobileActionBarProps> = ({
         }}
       >
         <Stack direction="row" spacing={1} flexWrap="wrap">
-          {enabledActions.map((action) => (
+          {enabledActions.map(action => (
             <Chip
               key={action.id}
               icon={action.icon as React.ReactElement}
@@ -169,7 +160,7 @@ export const MobileActionBar: React.FC<MobileActionBarProps> = ({
     >
       {/* Primary Actions */}
       <Stack direction="row" spacing={0.5}>
-        {primaryActions.map((action) => (
+        {primaryActions.map(action => (
           <Tooltip key={action.id} title={action.label}>
             <IconButton
               onClick={() => handleAction(action)}
@@ -184,11 +175,7 @@ export const MobileActionBar: React.FC<MobileActionBarProps> = ({
               }}
               size={isMobile ? 'large' : 'medium'}
             >
-              <Badge
-                color="error"
-                variant="dot"
-                invisible={action.urgency !== 'high'}
-              >
+              <Badge color="error" variant="dot" invisible={action.urgency !== 'high'}>
                 {action.icon}
               </Badge>
             </IconButton>
@@ -219,7 +206,7 @@ export const MobileActionBar: React.FC<MobileActionBarProps> = ({
               },
             }}
           >
-            {secondaryActions.map((action) => (
+            {secondaryActions.map(action => (
               <SpeedDialAction
                 key={action.id}
                 icon={action.icon}

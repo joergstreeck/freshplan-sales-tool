@@ -5,13 +5,13 @@ import { CustomerOnboardingWizard as OriginalWizard } from './CustomerOnboarding
 interface CustomerOnboardingWizardProps {
   open: boolean;
   onClose: () => void;
-  onComplete: (customer: any) => void;
+  onComplete: (customer: unknown) => void;
 }
 
 export function CustomerOnboardingWizard({
   open,
   onClose,
-  onComplete,
+  onComplete: _onComplete,
 }: CustomerOnboardingWizardProps) {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));

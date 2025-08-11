@@ -180,7 +180,7 @@ export const Step2AngebotPainpoints: React.FC = () => {
   }, [customerData]);
 
   const handleFieldChange = useCallback(
-    (fieldKey: string, value: any) => {
+    (fieldKey: string, value: unknown) => {
       setCustomerField(fieldKey, value);
     },
     [setCustomerField]

@@ -30,7 +30,7 @@ export function CalculatorLayout({ leftContent, rightContent }: CalculatorLayout
       pickup,
       chain: false, // TODO: Kettenkundenrabatt implementieren
     });
-  }, [orderValue, leadTime, pickup]); // calculateDiscount.mutate ist stabil
+  }, [orderValue, leadTime, pickup, calculateDiscount]);
 
   // Handler für Beispielszenarien
   const applyScenario = (

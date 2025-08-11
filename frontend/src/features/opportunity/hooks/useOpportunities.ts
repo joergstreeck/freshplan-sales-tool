@@ -48,7 +48,7 @@ function mapBackendToFrontend(backendOpportunity: IOpportunity): Opportunity {
     createdAt: backendOpportunity.createdAt,
     updatedAt: backendOpportunity.updatedAt,
   };
-  
+
   return mapped;
 }
 
@@ -67,7 +67,7 @@ export function useOpportunities(filters?: PipelineFilters, enabled = true) {
 
       try {
         const backendOpportunities = await opportunityApi.getAll(filters);
-        
+
         const frontendOpportunities = backendOpportunities.map(mapBackendToFrontend);
 
         const duration = performance.now() - startTime;

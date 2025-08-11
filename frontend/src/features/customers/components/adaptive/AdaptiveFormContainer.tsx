@@ -137,7 +137,7 @@ export const AdaptiveFormContainer: React.FC<AdaptiveFormContainerProps> = ({
   variant = 'flexbox', // Flexbox als Standard für besseres Umbruchverhalten
   className = '',
 }) => {
-  const { theme, cssVariables } = useCustomerFieldTheme();
+  const { theme: _theme, cssVariables } = useCustomerFieldTheme();
   const Container = variant === 'grid' ? GridContainer : FlexContainer;
 
   return (

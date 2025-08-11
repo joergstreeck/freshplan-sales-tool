@@ -11,9 +11,15 @@ import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import TaskIcon from '@mui/icons-material/Task';
 import ErrorIcon from '@mui/icons-material/Error';
 // Feature-Komponenten importieren (MUI Versionen) - mit Lazy Loading
-const MyDayColumnMUI = React.lazy(() => import('./MyDayColumnMUI').then(m => ({ default: m.MyDayColumnMUI })));
-const FocusListColumnMUI = React.lazy(() => import('./FocusListColumnMUI').then(m => ({ default: m.FocusListColumnMUI })));
-const ActionCenterColumnMUI = React.lazy(() => import('./ActionCenterColumnMUI').then(m => ({ default: m.ActionCenterColumnMUI })));
+const MyDayColumnMUI = React.lazy(() =>
+  import('./MyDayColumnMUI').then(m => ({ default: m.MyDayColumnMUI }))
+);
+const FocusListColumnMUI = React.lazy(() =>
+  import('./FocusListColumnMUI').then(m => ({ default: m.FocusListColumnMUI }))
+);
+const ActionCenterColumnMUI = React.lazy(() =>
+  import('./ActionCenterColumnMUI').then(m => ({ default: m.ActionCenterColumnMUI }))
+);
 import { ResizablePanels } from './layout/ResizablePanels';
 import { useDashboardData } from '../hooks/useSalesCockpit';
 import { useAuth } from '../../../hooks/useAuth';
@@ -29,12 +35,14 @@ const ColumnSkeleton: React.FC<{ title: string }> = ({ title }) => (
       <Skeleton variant="rectangular" height={40} />
       <Skeleton variant="rectangular" height={40} />
       <Skeleton variant="rectangular" height={40} />
-      <Box sx={{ 
-        display: 'flex', 
-        justifyContent: 'center', 
-        alignItems: 'center', 
-        flex: 1 
-      }}>
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          flex: 1,
+        }}
+      >
         <CircularProgress size={40} />
       </Box>
     </Box>
@@ -59,11 +67,11 @@ const StatsCard = styled(Card)(({ theme }) => ({
 export function SalesCockpitV2() {
   // State für ausgewählten Kunden
   const [selectedCustomerId, setSelectedCustomerId] = useState<string | undefined>(undefined);
-  
+
   // Hole Dashboard-Daten für Header-Statistiken
   const { userId } = useAuth();
   const { data: dashboardData, isLoading, refetch } = useDashboardData(userId);
-  
+
   // Force refresh on mount für Development (entfernen in Production)
   React.useEffect(() => {
     refetch();
@@ -177,11 +185,7 @@ export function SalesCockpitV2() {
             <ErrorIcon sx={{ fontSize: 20, color: 'secondary.main' }} />
             <Box>
               <Typography variant="body1" sx={{ lineHeight: 1, fontWeight: 600 }}>
-                {isLoading ? (
-                  <Skeleton width={30} />
-                ) : (
-                  dashboardData?.statistics?.overdueItems || 0
-                )}
+                {isLoading ? <Skeleton width={30} /> : dashboardData?.statistics?.overdueItems || 0}
               </Typography>
               <Typography
                 variant="caption"

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { UniversalExportButton } from './UniversalExportButton';
 
@@ -12,14 +12,14 @@ vi.mock('react-hot-toast', () => ({
 }));
 
 // Mock fetch API with proper headers
-global.fetch = vi.fn(() => 
+global.fetch = vi.fn(() =>
   Promise.resolve({
     ok: true,
     headers: new Headers(),
     blob: async () => new Blob(['test'], { type: 'text/plain' }),
     json: async () => ({}),
   })
-) as any;
+) as unknown as typeof fetch;
 
 // Mock URL.createObjectURL and URL.revokeObjectURL
 global.URL.createObjectURL = vi.fn(() => 'blob:mock-url');
@@ -43,7 +43,7 @@ describe('UniversalExportButton', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    
+
     // Mock createElement for anchor element
     document.createElement = vi.fn((tagName: string) => {
       const element = originalCreateElement(tagName);
@@ -62,20 +62,20 @@ describe('UniversalExportButton', () => {
   describe('Rendering', () => {
     it('should render export button with label', () => {
       render(<UniversalExportButton {...defaultProps} />);
-      
+
       expect(screen.getByText('Exportieren')).toBeInTheDocument();
     });
 
     it('should render with custom button variant', () => {
       render(<UniversalExportButton {...defaultProps} buttonVariant="outlined" />);
-      
+
       const button = screen.getByRole('button', { name: /exportieren/i });
       expect(button).toHaveClass('MuiButton-outlined');
     });
 
     it('should render with custom button color', () => {
       render(<UniversalExportButton {...defaultProps} buttonColor="secondary" />);
-      
+
       const button = screen.getByRole('button', { name: /exportieren/i });
       expect(button).toHaveClass('MuiButton-root');
       // Color is applied via MUI's color prop, not directly as a class
@@ -83,7 +83,7 @@ describe('UniversalExportButton', () => {
 
     it('should be disabled when disabled prop is true', () => {
       render(<UniversalExportButton {...defaultProps} disabled={true} />);
-      
+
       const button = screen.getByRole('button', { name: /exportieren/i });
       expect(button).toBeDisabled();
     });
@@ -93,20 +93,20 @@ describe('UniversalExportButton', () => {
     it('should open menu when button is clicked', async () => {
       const user = userEvent.setup();
       render(<UniversalExportButton {...defaultProps} />);
-      
+
       const button = screen.getByRole('button', { name: /exportieren/i });
       await user.click(button);
-      
+
       expect(screen.getByRole('menu')).toBeInTheDocument();
     });
 
     it('should show all export format options', async () => {
       const user = userEvent.setup();
       render(<UniversalExportButton {...defaultProps} />);
-      
+
       const button = screen.getByRole('button', { name: /exportieren/i });
       await user.click(button);
-      
+
       // Check for actual labels used in the component
       expect(screen.getByText('CSV (Excel-kompatibel)')).toBeInTheDocument();
       expect(screen.getByText('Excel (XLSX)')).toBeInTheDocument();
@@ -119,15 +119,15 @@ describe('UniversalExportButton', () => {
       // Skipped: MUI Menu behavior is difficult to test without real DOM
       const user = userEvent.setup();
       render(<UniversalExportButton {...defaultProps} />);
-      
+
       const button = screen.getByRole('button', { name: /exportieren/i });
       await user.click(button);
-      
+
       expect(screen.getByRole('menu')).toBeInTheDocument();
-      
+
       // Click outside
       await user.click(document.body);
-      
+
       await waitFor(() => {
         expect(screen.queryByRole('menu')).not.toBeInTheDocument();
       });
@@ -135,20 +135,20 @@ describe('UniversalExportButton', () => {
 
     it('should close menu after selecting format', async () => {
       const user = userEvent.setup();
-      (global.fetch as any).mockResolvedValueOnce({
+      (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
         ok: true,
         headers: new Headers(),
         blob: async () => new Blob(['test'], { type: 'text/csv' }),
       });
-      
+
       render(<UniversalExportButton {...defaultProps} />);
-      
+
       const button = screen.getByRole('button', { name: /exportieren/i });
       await user.click(button);
-      
+
       const csvOption = screen.getByText('CSV (Excel-kompatibel)');
       await user.click(csvOption);
-      
+
       await waitFor(() => {
         expect(screen.queryByRole('menu')).not.toBeInTheDocument();
       });
@@ -160,29 +160,29 @@ describe('UniversalExportButton', () => {
       it('should export as CSV when CSV option is selected', async () => {
         const user = userEvent.setup();
         const mockBlob = new Blob(['test,data'], { type: 'text/csv' });
-        (global.fetch as any).mockResolvedValueOnce({
+        (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
           ok: true,
           headers: new Headers(),
           blob: async () => mockBlob,
         });
-        
+
         render(<UniversalExportButton {...defaultProps} />);
-        
+
         const button = screen.getByRole('button', { name: /exportieren/i });
         await user.click(button);
-        
+
         const csvOption = screen.getByText('CSV (Excel-kompatibel)');
         await user.click(csvOption);
-        
+
         await waitFor(() => {
           expect(global.fetch).toHaveBeenCalledWith(
             '/api/v2/export/customers/csv',
             expect.objectContaining({
               method: 'GET',
               headers: expect.objectContaining({
-                'Accept': 'text/csv',
+                Accept: 'text/csv',
               }),
-              credentials: 'include'
+              credentials: 'include',
             })
           );
           expect(mockOnExportComplete).toHaveBeenCalledWith('csv');
@@ -192,20 +192,20 @@ describe('UniversalExportButton', () => {
       it.skip('should trigger download with correct filename', async () => {
         // Skipped: Document.createElement mock not working as expected in test environment
         const user = userEvent.setup();
-        (global.fetch as any).mockResolvedValueOnce({
+        (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
           ok: true,
           headers: new Headers(),
           blob: async () => new Blob(['test'], { type: 'text/csv' }),
         });
-        
+
         render(<UniversalExportButton {...defaultProps} />);
-        
+
         const button = screen.getByRole('button', { name: /exportieren/i });
         await user.click(button);
-        
+
         const csvOption = screen.getByText('CSV (Excel-kompatibel)');
         await user.click(csvOption);
-        
+
         await waitFor(() => {
           expect(mockClick).toHaveBeenCalled();
           expect(mockRemove).toHaveBeenCalled();
@@ -216,32 +216,32 @@ describe('UniversalExportButton', () => {
     describe('Excel Export', () => {
       it('should export as Excel when Excel option is selected', async () => {
         const user = userEvent.setup();
-        const mockBlob = new Blob(['excel'], { 
-          type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' 
+        const mockBlob = new Blob(['excel'], {
+          type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         });
-        (global.fetch as any).mockResolvedValueOnce({
+        (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
           ok: true,
           headers: new Headers(),
           blob: async () => mockBlob,
         });
-        
+
         render(<UniversalExportButton {...defaultProps} />);
-        
+
         const button = screen.getByRole('button', { name: /exportieren/i });
         await user.click(button);
-        
+
         const excelOption = screen.getByText('Excel (XLSX)');
         await user.click(excelOption);
-        
+
         await waitFor(() => {
           expect(global.fetch).toHaveBeenCalledWith(
             '/api/v2/export/customers/excel',
             expect.objectContaining({
               method: 'GET',
               headers: expect.objectContaining({
-                'Accept': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                Accept: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
               }),
-              credentials: 'include'
+              credentials: 'include',
             })
           );
           expect(mockOnExportComplete).toHaveBeenCalledWith('excel');
@@ -253,29 +253,29 @@ describe('UniversalExportButton', () => {
       it('should export as JSON when JSON option is selected', async () => {
         const user = userEvent.setup();
         const mockBlob = new Blob(['{"test":"data"}'], { type: 'application/json' });
-        (global.fetch as any).mockResolvedValueOnce({
+        (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
           ok: true,
           headers: new Headers(),
           blob: async () => mockBlob,
         });
-        
+
         render(<UniversalExportButton {...defaultProps} />);
-        
+
         const button = screen.getByRole('button', { name: /exportieren/i });
         await user.click(button);
-        
+
         const jsonOption = screen.getByText('JSON (Datenformat)');
         await user.click(jsonOption);
-        
+
         await waitFor(() => {
           expect(global.fetch).toHaveBeenCalledWith(
             '/api/v2/export/customers/json',
             expect.objectContaining({
               method: 'GET',
               headers: expect.objectContaining({
-                'Accept': 'application/json',
+                Accept: 'application/json',
               }),
-              credentials: 'include'
+              credentials: 'include',
             })
           );
           expect(mockOnExportComplete).toHaveBeenCalledWith('json');
@@ -287,29 +287,29 @@ describe('UniversalExportButton', () => {
       it('should export as PDF when PDF option is selected', async () => {
         const user = userEvent.setup();
         const mockBlob = new Blob(['pdf'], { type: 'application/pdf' });
-        (global.fetch as any).mockResolvedValueOnce({
+        (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
           ok: true,
           headers: new Headers(),
           blob: async () => mockBlob,
         });
-        
+
         render(<UniversalExportButton {...defaultProps} />);
-        
+
         const button = screen.getByRole('button', { name: /exportieren/i });
         await user.click(button);
-        
+
         const pdfOption = screen.getByText('PDF (Druckversion)');
         await user.click(pdfOption);
-        
+
         await waitFor(() => {
           expect(global.fetch).toHaveBeenCalledWith(
             '/api/v2/export/customers/pdf',
             expect.objectContaining({
               method: 'GET',
               headers: expect.objectContaining({
-                'Accept': 'application/pdf',
+                Accept: 'application/pdf',
               }),
-              credentials: 'include'
+              credentials: 'include',
             })
           );
           expect(mockOnExportComplete).toHaveBeenCalledWith('pdf');
@@ -321,29 +321,29 @@ describe('UniversalExportButton', () => {
       it('should export as HTML when HTML option is selected', async () => {
         const user = userEvent.setup();
         const mockBlob = new Blob(['<html></html>'], { type: 'text/html' });
-        (global.fetch as any).mockResolvedValueOnce({
+        (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
           ok: true,
           headers: new Headers(),
           blob: async () => mockBlob,
         });
-        
+
         render(<UniversalExportButton {...defaultProps} />);
-        
+
         const button = screen.getByRole('button', { name: /exportieren/i });
         await user.click(button);
-        
+
         const htmlOption = screen.getByText('HTML (Webseite)');
         await user.click(htmlOption);
-        
+
         await waitFor(() => {
           expect(global.fetch).toHaveBeenCalledWith(
             '/api/v2/export/customers/html',
             expect.objectContaining({
               method: 'GET',
               headers: expect.objectContaining({
-                'Accept': 'text/html',
+                Accept: 'text/html',
               }),
-              credentials: 'include'
+              credentials: 'include',
             })
           );
           expect(mockOnExportComplete).toHaveBeenCalledWith('html');
@@ -355,31 +355,31 @@ describe('UniversalExportButton', () => {
   describe('Loading State', () => {
     it('should show loading indicator during export', async () => {
       const user = userEvent.setup();
-      let resolvePromise: (value: any) => void;
-      const promise = new Promise((resolve) => {
+      let resolvePromise: (value: unknown) => void;
+      const promise = new Promise(resolve => {
         resolvePromise = resolve;
       });
-      
-      (global.fetch as any).mockReturnValueOnce(promise);
-      
+
+      (global.fetch as ReturnType<typeof vi.fn>).mockReturnValueOnce(promise);
+
       render(<UniversalExportButton {...defaultProps} />);
-      
+
       const button = screen.getByRole('button', { name: /exportieren/i });
       await user.click(button);
-      
+
       const csvOption = screen.getByText('CSV (Excel-kompatibel)');
       await user.click(csvOption);
-      
+
       // Should show loading state
       expect(screen.getByRole('progressbar')).toBeInTheDocument();
-      
+
       // Resolve the promise
       resolvePromise!({
         ok: true,
         headers: new Headers(),
         blob: async () => new Blob(['test'], { type: 'text/csv' }),
       });
-      
+
       await waitFor(() => {
         expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
       });
@@ -387,31 +387,31 @@ describe('UniversalExportButton', () => {
 
     it('should disable button during export', async () => {
       const user = userEvent.setup();
-      let resolvePromise: (value: any) => void;
-      const promise = new Promise((resolve) => {
+      let resolvePromise: (value: unknown) => void;
+      const promise = new Promise(resolve => {
         resolvePromise = resolve;
       });
-      
-      (global.fetch as any).mockReturnValueOnce(promise);
-      
+
+      (global.fetch as ReturnType<typeof vi.fn>).mockReturnValueOnce(promise);
+
       render(<UniversalExportButton {...defaultProps} />);
-      
+
       const button = screen.getByRole('button', { name: /exportieren/i });
       await user.click(button);
-      
+
       const csvOption = screen.getByText('CSV (Excel-kompatibel)');
       await user.click(csvOption);
-      
+
       // Button should be disabled
       expect(button).toBeDisabled();
-      
+
       // Resolve the promise
       resolvePromise!({
         ok: true,
         headers: new Headers(),
         blob: async () => new Blob(['test'], { type: 'text/csv' }),
       });
-      
+
       await waitFor(() => {
         expect(button).not.toBeDisabled();
       });
@@ -423,42 +423,40 @@ describe('UniversalExportButton', () => {
       const user = userEvent.setup();
       const consoleError = console.error;
       console.error = vi.fn();
-      
-      (global.fetch as any).mockRejectedValueOnce(new Error('Network error'));
-      
+
+      (global.fetch as ReturnType<typeof vi.fn>).mockRejectedValueOnce(new Error('Network error'));
+
       render(<UniversalExportButton {...defaultProps} />);
-      
+
       const button = screen.getByRole('button', { name: /exportieren/i });
       await user.click(button);
-      
+
       const csvOption = screen.getByText('CSV (Excel-kompatibel)');
       await user.click(csvOption);
-      
+
       await waitFor(() => {
-        expect(mockOnExportError).toHaveBeenCalledWith(
-          expect.any(Error)
-        );
+        expect(mockOnExportError).toHaveBeenCalledWith(expect.any(Error));
       });
-      
+
       console.error = consoleError;
     });
 
     it('should handle HTTP error responses', async () => {
       const user = userEvent.setup();
-      (global.fetch as any).mockResolvedValueOnce({
+      (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
         ok: false,
         status: 500,
         statusText: 'Internal Server Error',
       });
-      
+
       render(<UniversalExportButton {...defaultProps} />);
-      
+
       const button = screen.getByRole('button', { name: /exportieren/i });
       await user.click(button);
-      
+
       const csvOption = screen.getByText('CSV (Excel-kompatibel)');
       await user.click(csvOption);
-      
+
       await waitFor(() => {
         expect(mockOnExportError).toHaveBeenCalled();
       });
@@ -468,20 +466,18 @@ describe('UniversalExportButton', () => {
       // Skipped: Toast mock not working correctly with dynamic import
       const user = userEvent.setup();
       const { toast } = await import('react-hot-toast');
-      (global.fetch as any).mockRejectedValueOnce(new Error('Export failed'));
-      
+      (global.fetch as ReturnType<typeof vi.fn>).mockRejectedValueOnce(new Error('Export failed'));
+
       render(<UniversalExportButton {...defaultProps} />);
-      
+
       const button = screen.getByRole('button', { name: /exportieren/i });
       await user.click(button);
-      
+
       const csvOption = screen.getByText('CSV (Excel-kompatibel)');
       await user.click(csvOption);
-      
+
       await waitFor(() => {
-        expect(toast.error).toHaveBeenCalledWith(
-          expect.stringContaining('Export fehlgeschlagen')
-        );
+        expect(toast.error).toHaveBeenCalledWith(expect.stringContaining('Export fehlgeschlagen'));
       });
     });
   });
@@ -490,17 +486,12 @@ describe('UniversalExportButton', () => {
     it('should use custom export formats when provided', async () => {
       const user = userEvent.setup();
       const customFormats = ['csv', 'json'] as const;
-      
-      render(
-        <UniversalExportButton 
-          {...defaultProps} 
-          exportFormats={customFormats}
-        />
-      );
-      
+
+      render(<UniversalExportButton {...defaultProps} exportFormats={customFormats} />);
+
       const button = screen.getByRole('button', { name: /exportieren/i });
       await user.click(button);
-      
+
       expect(screen.getByText('CSV (Excel-kompatibel)')).toBeInTheDocument();
       expect(screen.getByText('JSON (Datenformat)')).toBeInTheDocument();
       expect(screen.queryByText('Excel Export')).not.toBeInTheDocument();
@@ -510,25 +501,20 @@ describe('UniversalExportButton', () => {
 
     it('should use custom API endpoint when provided', async () => {
       const user = userEvent.setup();
-      (global.fetch as any).mockResolvedValueOnce({
+      (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
         ok: true,
         headers: new Headers(),
         blob: async () => new Blob(['test'], { type: 'text/csv' }),
       });
-      
-      render(
-        <UniversalExportButton 
-          {...defaultProps} 
-          apiEndpoint="/custom/export"
-        />
-      );
-      
+
+      render(<UniversalExportButton {...defaultProps} apiEndpoint="/custom/export" />);
+
       const button = screen.getByRole('button', { name: /exportieren/i });
       await user.click(button);
-      
+
       const csvOption = screen.getByText('CSV (Excel-kompatibel)');
       await user.click(csvOption);
-      
+
       await waitFor(() => {
         expect(global.fetch).toHaveBeenCalledWith('/custom/export/customers/csv');
       });
@@ -538,7 +524,7 @@ describe('UniversalExportButton', () => {
   describe('Accessibility', () => {
     it('should have proper ARIA attributes', () => {
       render(<UniversalExportButton {...defaultProps} />);
-      
+
       const button = screen.getByRole('button', { name: /exportieren/i });
       // MUI Button handles ARIA attributes dynamically
       expect(button).toBeInTheDocument();
@@ -547,16 +533,16 @@ describe('UniversalExportButton', () => {
     it('should be keyboard navigable', async () => {
       const user = userEvent.setup();
       render(<UniversalExportButton {...defaultProps} />);
-      
+
       // Tab to button
       await user.tab();
       const button = screen.getByRole('button', { name: /exportieren/i });
       expect(button).toHaveFocus();
-      
+
       // Open menu with Enter
       await user.keyboard('{Enter}');
       expect(screen.getByRole('menu')).toBeInTheDocument();
-      
+
       // Navigate menu with arrow keys
       await user.keyboard('{ArrowDown}');
       const firstOption = screen.getByText('CSV (Excel-kompatibel)');
@@ -567,20 +553,20 @@ describe('UniversalExportButton', () => {
     it('should announce export completion to screen readers', async () => {
       const user = userEvent.setup();
       const { toast } = await import('react-hot-toast');
-      (global.fetch as any).mockResolvedValueOnce({
+      (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
         ok: true,
         headers: new Headers(),
         blob: async () => new Blob(['test'], { type: 'text/csv' }),
       });
-      
+
       render(<UniversalExportButton {...defaultProps} />);
-      
+
       const button = screen.getByRole('button', { name: /exportieren/i });
       await user.click(button);
-      
+
       const csvOption = screen.getByText('CSV (Excel-kompatibel)');
       await user.click(csvOption);
-      
+
       await waitFor(() => {
         expect(toast.success).toHaveBeenCalledWith(
           expect.stringContaining('erfolgreich heruntergeladen')
@@ -592,20 +578,20 @@ describe('UniversalExportButton', () => {
   describe('Performance', () => {
     it('should cleanup blob URLs after download', async () => {
       const user = userEvent.setup();
-      (global.fetch as any).mockResolvedValueOnce({
+      (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
         ok: true,
         headers: new Headers(),
         blob: async () => new Blob(['test'], { type: 'text/csv' }),
       });
-      
+
       render(<UniversalExportButton {...defaultProps} />);
-      
+
       const button = screen.getByRole('button', { name: /exportieren/i });
       await user.click(button);
-      
+
       const csvOption = screen.getByText('CSV (Excel-kompatibel)');
       await user.click(csvOption);
-      
+
       await waitFor(() => {
         expect(URL.revokeObjectURL).toHaveBeenCalledWith('blob:mock-url');
       });
@@ -613,22 +599,22 @@ describe('UniversalExportButton', () => {
 
     it('should not make duplicate requests during export', async () => {
       const user = userEvent.setup();
-      (global.fetch as any).mockResolvedValue({
+      (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
         ok: true,
         blob: async () => new Blob(['test'], { type: 'text/csv' }),
       });
-      
+
       render(<UniversalExportButton {...defaultProps} />);
-      
+
       const button = screen.getByRole('button', { name: /exportieren/i });
       await user.click(button);
-      
+
       const csvOption = screen.getByText('CSV (Excel-kompatibel)');
-      
+
       // Click multiple times quickly
       await user.click(csvOption);
       await user.click(csvOption);
-      
+
       await waitFor(() => {
         // Should only make one request
         expect(global.fetch).toHaveBeenCalledTimes(1);

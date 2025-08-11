@@ -1,21 +1,14 @@
 /**
  * WarmthIndicator Component
- * 
+ *
  * Visualizes relationship warmth with a contact using color-coded indicators.
  * Part of FC-005 Contact Management UI - Smart Contact Cards.
- * 
+ *
  * @see /docs/features/FC-005-CUSTOMER-MANAGEMENT/Step3/SMART_CONTACT_CARDS.md
  */
 
 import React from 'react';
-import {
-  Box,
-  LinearProgress,
-  Typography,
-  Tooltip,
-  Chip,
-  Stack,
-} from '@mui/material';
+import { Box, LinearProgress, Typography, Tooltip, Chip, Stack } from '@mui/material';
 import {
   Whatshot as WhatshotIcon,
   AcUnit as AcUnitIcon,
@@ -119,7 +112,7 @@ export const WarmthIndicator: React.FC<WarmthIndicatorProps> = ({
           Beziehungsstatus: {config.label}
         </Typography>
       </Stack>
-      
+
       <LinearProgress
         variant="determinate"
         value={warmth.score}
@@ -132,7 +125,7 @@ export const WarmthIndicator: React.FC<WarmthIndicatorProps> = ({
           },
         }}
       />
-      
+
       {showDetails && (
         <Box sx={{ mt: 1 }}>
           <Typography variant="caption" color="text.secondary">

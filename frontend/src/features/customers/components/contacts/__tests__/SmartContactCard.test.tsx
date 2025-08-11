@@ -1,11 +1,12 @@
 /**
  * SmartContactCard Component Tests
- * 
+ *
  * Test suite for the enhanced contact card with relationship intelligence.
  * Part of FC-005 Contact Management UI.
  */
 
 import React from 'react';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor, fireEvent } from '../../../../../test/test-utils';
 import { SmartContactCard } from '../SmartContactCard';
 import type { Contact } from '../../../types/contact.types';
@@ -42,27 +43,28 @@ const mockWarmth: RelationshipWarmth = {
 
 const defaultProps = {
   contact: mockContact,
-  onEdit: jest.fn(),
-  onDelete: jest.fn(),
-  onSetPrimary: jest.fn(),
-  onAssignLocation: jest.fn(),
-  onViewTimeline: jest.fn(),
-  onQuickAction: jest.fn(),
+  onEdit: vi.fn(),
+  onDelete: vi.fn(),
+  onSetPrimary: vi.fn(),
+  onAssignLocation: vi.fn(),
+  onViewTimeline: vi.fn(),
+  onQuickAction: vi.fn(),
 };
 
 const renderWithTheme = (component: React.ReactElement) => {
-  return render(<ThemeProvider theme={theme}>{component}</ThemeProvider>);
+  // render already includes all providers via test-utils
+  return render(component);
 };
 
 describe('SmartContactCard', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('Basic Rendering', () => {
     it('should render contact information correctly', () => {
       renderWithTheme(<SmartContactCard {...defaultProps} />);
-      
+
       expect(screen.getByText('Dr. Max Mustermann')).toBeInTheDocument();
       expect(screen.getByText('Geschäftsführer')).toBeInTheDocument();
       expect(screen.getByText('Entscheider')).toBeInTheDocument();
@@ -72,37 +74,37 @@ describe('SmartContactCard', () => {
 
     it('should show initials in avatar', () => {
       renderWithTheme(<SmartContactCard {...defaultProps} />);
-      
+
       const avatar = screen.getByText('MM');
       expect(avatar).toBeInTheDocument();
     });
 
     it('should display location responsibility', () => {
       renderWithTheme(<SmartContactCard {...defaultProps} />);
-      
+
       expect(screen.getByText('Alle Standorte')).toBeInTheDocument();
     });
   });
 
   describe('Primary Contact Highlighting', () => {
     it('should highlight primary contacts with special styling', () => {
-      const primaryContact = { ...mockContisPrimary: true };
+      const primaryContact = { ...mockContact, isPrimary: true };
       const { container } = renderWithTheme(
         <SmartContactCard {...defaultProps} contact={primaryContact} />
       );
-      
+
       expect(screen.getByText('HAUPT')).toBeInTheDocument();
       const card = container.querySelector('.MuiCard-root');
       expect(card).toHaveStyle({ borderWidth: '2px' });
     });
 
     it('should not show set as primary option for primary contacts', () => {
-      const primaryContact = { ...mockContisPrimary: true };
+      const primaryContact = { ...mockContact, isPrimary: true };
       renderWithTheme(<SmartContactCard {...defaultProps} contact={primaryContact} />);
-      
+
       const moreButton = screen.getByRole('button', { name: '' });
       fireEvent.click(moreButton);
-      
+
       expect(screen.queryByText('Als Hauptkontakt')).not.toBeInTheDocument();
     });
   });
@@ -110,15 +112,15 @@ describe('SmartContactCard', () => {
   describe('Birthday Indicator', () => {
     it('should show birthday indicator when birthday is upcoming', () => {
       renderWithTheme(<SmartContactCard {...defaultProps} />);
-      
+
       const birthdayChip = screen.getByText(/5T/);
       expect(birthdayChip).toBeInTheDocument();
     });
 
     it('should not show birthday indicator when no birthday', () => {
-      const contactNoBirthday = { ...mockContbirthday: undefined };
+      const contactNoBirthday = { ...mockContact, birthday: undefined };
       renderWithTheme(<SmartContactCard {...defaultProps} contact={contactNoBirthday} />);
-      
+
       expect(screen.queryByText(/\dT/)).not.toBeInTheDocument();
     });
   });
@@ -126,13 +128,13 @@ describe('SmartContactCard', () => {
   describe('Warmth Indicator', () => {
     it('should display warmth indicator when data is provided', () => {
       renderWithTheme(<SmartContactCard {...defaultProps} warmth={mockWarmth} />);
-      
+
       expect(screen.getByText('Beziehungsstatus: Heiß')).toBeInTheDocument();
     });
 
     it('should not display warmth indicator when no data', () => {
       renderWithTheme(<SmartContactCard {...defaultProps} />);
-      
+
       expect(screen.queryByText(/Beziehungsstatus/)).not.toBeInTheDocument();
     });
   });
@@ -140,74 +142,74 @@ describe('SmartContactCard', () => {
   describe('Interactions', () => {
     it('should call onEdit when edit is clicked', async () => {
       renderWithTheme(<SmartContactCard {...defaultProps} />);
-      
+
       const moreButton = screen.getByRole('button', { name: '' });
       fireEvent.click(moreButton);
-      
+
       await waitFor(() => {
         const editMenuItem = screen.getByText('Bearbeiten');
         fireEvent.click(editMenuItem);
       });
-      
+
       expect(defaultProps.onEdit).toHaveBeenCalledWith(mockContact);
     });
 
     it('should call onDelete after confirmation', async () => {
-      window.confirm = jest.fn(() => true);
+      window.confirm = vi.fn(() => true);
       renderWithTheme(<SmartContactCard {...defaultProps} />);
-      
+
       const moreButton = screen.getByRole('button', { name: '' });
       fireEvent.click(moreButton);
-      
+
       await waitFor(() => {
         const deleteMenuItem = screen.getByText('Löschen');
         fireEvent.click(deleteMenuItem);
       });
-      
+
       expect(window.confirm).toHaveBeenCalled();
       expect(defaultProps.onDelete).toHaveBeenCalledWith(mockContact.id);
     });
 
     it('should not delete when confirmation is cancelled', async () => {
-      window.confirm = jest.fn(() => false);
+      window.confirm = vi.fn(() => false);
       renderWithTheme(<SmartContactCard {...defaultProps} />);
-      
+
       const moreButton = screen.getByRole('button', { name: '' });
       fireEvent.click(moreButton);
-      
+
       await waitFor(() => {
         const deleteMenuItem = screen.getByText('Löschen');
         fireEvent.click(deleteMenuItem);
       });
-      
+
       expect(defaultProps.onDelete).not.toHaveBeenCalled();
     });
 
     it('should call onSetPrimary when option is selected', async () => {
       renderWithTheme(<SmartContactCard {...defaultProps} />);
-      
+
       const moreButton = screen.getByRole('button', { name: '' });
       fireEvent.click(moreButton);
-      
+
       await waitFor(() => {
         const setPrimaryMenuItem = screen.getByText('Als Hauptkontakt');
         fireEvent.click(setPrimaryMenuItem);
       });
-      
+
       expect(defaultProps.onSetPrimary).toHaveBeenCalledWith(mockContact.id);
     });
 
     it('should call onViewTimeline when timeline is clicked', async () => {
       renderWithTheme(<SmartContactCard {...defaultProps} />);
-      
+
       const moreButton = screen.getByRole('button', { name: '' });
       fireEvent.click(moreButton);
-      
+
       await waitFor(() => {
         const timelineMenuItem = screen.getByText('Aktivitätsverlauf');
         fireEvent.click(timelineMenuItem);
       });
-      
+
       expect(defaultProps.onViewTimeline).toHaveBeenCalledWith(mockContact.id);
     });
   });
@@ -215,11 +217,11 @@ describe('SmartContactCard', () => {
   describe('Hover Effects', () => {
     it('should show quick actions on hover when enabled', () => {
       renderWithTheme(<SmartContactCard {...defaultProps} showQuickActions={true} />);
-      
+
       const card = screen.getByText('Dr. Max Mustermann').closest('.MuiCard-root');
       if (card) {
         fireEvent.mouseEnter(card);
-        
+
         // Quick actions should be visible
         expect(screen.getByTestId('quick-actions')).toBeInTheDocument();
       }
@@ -227,11 +229,11 @@ describe('SmartContactCard', () => {
 
     it('should show additional details on hover', () => {
       renderWithTheme(<SmartContactCard {...defaultProps} warmth={mockWarmth} />);
-      
+
       const card = screen.getByText('Dr. Max Mustermann').closest('.MuiCard-root');
       if (card) {
         fireEvent.mouseEnter(card);
-        
+
         // Warmth details should expand
         expect(screen.getByText('Sehr aktive Beziehung')).toBeInTheDocument();
       }
@@ -247,12 +249,15 @@ describe('SmartContactCard', () => {
         { value: 'nutzer', label: 'Nutzer' },
         { value: 'gatekeeper', label: 'Gatekeeper' },
       ];
-      
+
       levels.forEach(level => {
         const { rerender } = renderWithTheme(
-          <SmartContactCard {...defaultProps} contact={{ ...mockContdecisionLevel: level.value as unknown }} />
+          <SmartContactCard
+            {...defaultProps}
+            contact={{ ...mockContact, decisionLevel: level.value as unknown }}
+          />
         );
-        
+
         expect(screen.getByText(level.label)).toBeInTheDocument();
         rerender(<></>);
       });
@@ -262,17 +267,17 @@ describe('SmartContactCard', () => {
   describe('Accessibility', () => {
     it('should have proper ARIA labels', () => {
       renderWithTheme(<SmartContactCard {...defaultProps} />);
-      
+
       const moreButton = screen.getByRole('button', { name: '' });
       expect(moreButton).toBeInTheDocument();
     });
 
     it('should be keyboard navigable', () => {
       renderWithTheme(<SmartContactCard {...defaultProps} />);
-      
+
       const moreButton = screen.getByRole('button', { name: '' });
       moreButton.focus();
-      
+
       fireEvent.keyDown(moreButton, { key: 'Enter' });
       expect(screen.getByText('Bearbeiten')).toBeInTheDocument();
     });

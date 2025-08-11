@@ -59,7 +59,13 @@ vi.mock('../../features/customers/components/wizard/CustomerOnboardingWizardModa
 
 // Mock missing components
 vi.mock('../../components/common/EmptyStateHero', () => ({
-  EmptyStateHero: ({ titleion }: unknown) => (
+  EmptyStateHero: ({
+    title,
+    action,
+  }: {
+    title: string;
+    action?: { onClick: () => void; label: string };
+  }) => (
     <div>
       <h2>{title}</h2>
       {action && <button onClick={action.onClick}>{action.label}</button>}
@@ -236,7 +242,7 @@ describe('CustomersPageV2', () => {
 
     // Custom event should be triggered
     await waitFor(() => {
-      const customEvent = new CustomEvent('freshplan:new-customer');
+      // Just check that window.dispatchEvent is available
       expect(window.dispatchEvent).toBeDefined();
     });
   });

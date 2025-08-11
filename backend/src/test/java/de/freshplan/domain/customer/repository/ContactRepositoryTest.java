@@ -2,8 +2,8 @@ package de.freshplan.domain.customer.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import de.freshplan.domain.customer.entity.CustomerContact;
 import de.freshplan.domain.customer.entity.Customer;
+import de.freshplan.domain.customer.entity.CustomerContact;
 import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
@@ -94,7 +94,8 @@ class ContactRepositoryTest {
     contactRepository.flush();
 
     // When
-    Optional<CustomerContact> found = contactRepository.findPrimaryByCustomerId(testCustomer.getId());
+    Optional<CustomerContact> found =
+        contactRepository.findPrimaryByCustomerId(testCustomer.getId());
 
     // Then
     assertThat(found).isPresent();

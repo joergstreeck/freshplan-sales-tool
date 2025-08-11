@@ -301,10 +301,10 @@ export const mockApiError = (message = 'API Error', delay = 100) => {
  * Mock auto-save behavior
  */
 export const mockAutoSave = () => {
-  let savedData: any = null;
+  let savedData: unknown = null;
 
   return {
-    save: (data: any) => {
+    save: (data: unknown) => {
       savedData = data;
       return mockApiSuccess({ success: true });
     },

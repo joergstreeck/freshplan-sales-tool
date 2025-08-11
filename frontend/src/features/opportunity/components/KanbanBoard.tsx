@@ -252,7 +252,7 @@ const KanbanColumn: React.FC<KanbanColumnProps> = React.memo(({ stage, opportuni
     label: stage,
     icon: <AssignmentIcon />,
     bgColor: '#f5f5f5',
-    borderColor: '#e0e0e0'
+    borderColor: '#e0e0e0',
   };
   const totalValue = opportunities?.reduce((sum, opp) => sum + (opp.value || 0), 0) || 0;
 
@@ -380,7 +380,7 @@ export const KanbanBoard: React.FC = React.memo(() => {
 
     const totalClosed = wonOpps.length + lostOpps.length;
     const conversionRate = totalClosed > 0 ? wonOpps.length / totalClosed : 0;
-    
+
     const activeValue = activeOpps.reduce((sum, opp) => sum + (opp.value || 0), 0);
 
     return {

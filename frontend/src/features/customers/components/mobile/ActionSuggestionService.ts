@@ -1,9 +1,9 @@
 /**
  * Action Suggestion Service
- * 
+ *
  * Intelligent action suggestions based on contact context and relationship data.
  * Part of FC-005 Contact Management UI - Mobile Actions.
- * 
+ *
  * @see /docs/features/FC-005-CUSTOMER-MANAGEMENT/Step3/MOBILE_CONTACT_ACTIONS.md
  */
 
@@ -25,7 +25,6 @@ import type {
   QuickAction,
   SwipeActions,
   ContactIntelligence,
-  ACTION_PRIORITIES,
 } from '../../types/mobileActions.types';
 import { DEFAULT_SWIPE_ACTIONS, ACTION_COLORS } from '../../types/mobileActions.types';
 
@@ -34,10 +33,7 @@ export class ActionSuggestionService {
    * Generate context-based action suggestions
    * Prioritized by: Urgency → Warmth → Availability → History
    */
-  getSuggestedActions(
-    contact: Contact,
-    intelligence?: ContactIntelligence
-  ): QuickAction[] {
+  getSuggestedActions(contact: Contact, intelligence?: ContactIntelligence): QuickAction[] {
     const actions: QuickAction[] = [];
 
     // 1. URGENT: Birthday coming up
@@ -85,7 +81,7 @@ export class ActionSuggestionService {
 
     // 4. STANDARD: Based on available contact data
     if (contact.phone || contact.mobile) {
-      const phoneNumber = contact.mobile || contact.phone;
+      const _phoneNumber = contact.mobile || contact.phone;
       actions.push({
         id: 'call-standard',
         type: 'call',
@@ -167,8 +163,7 @@ export class ActionSuggestionService {
       // Urgency first
       const urgencyOrder = { high: 0, medium: 1, low: 2, undefined: 3 };
       const urgencyDiff =
-        urgencyOrder[a.urgency || 'undefined'] -
-        urgencyOrder[b.urgency || 'undefined'];
+        urgencyOrder[a.urgency || 'undefined'] - urgencyOrder[b.urgency || 'undefined'];
       if (urgencyDiff !== 0) return urgencyDiff;
 
       // Primary actions second
@@ -193,31 +188,19 @@ export class ActionSuggestionService {
   /**
    * Generate optimal swipe actions based on context
    */
-  getSwipeActions(
-    contact: Contact,
-    intelligence?: ContactIntelligence
-  ): SwipeActions {
+  getSwipeActions(contact: Contact, intelligence?: ContactIntelligence): SwipeActions {
     const suggestions = this.getSuggestedActions(contact, intelligence);
-    
+
     // Find best actions for left/right swipe
-    const callAction = suggestions.find(
-      (a) => a.type === 'call' && a.enabled
-    );
-    const emailAction = suggestions.find(
-      (a) => a.type === 'email' && a.enabled
-    );
-    const whatsappAction = suggestions.find(
-      (a) => a.type === 'whatsapp' && a.enabled
-    );
+    const callAction = suggestions.find(a => a.type === 'call' && a.enabled);
+    const emailAction = suggestions.find(a => a.type === 'email' && a.enabled);
+    const whatsappAction = suggestions.find(a => a.type === 'whatsapp' && a.enabled);
 
     // Right swipe = Primary action (usually call)
     let rightAction: QuickAction | null = null;
     if (callAction && callAction.urgency === 'high') {
       rightAction = callAction;
-    } else if (
-      whatsappAction &&
-      intelligence?.preferredChannel === 'whatsapp'
-    ) {
+    } else if (whatsappAction && intelligence?.preferredChannel === 'whatsapp') {
       rightAction = whatsappAction;
     } else if (callAction) {
       rightAction = callAction;
@@ -264,9 +247,7 @@ export class ActionSuggestionService {
       birthdayDate.setFullYear(today.getFullYear() + 1);
     }
 
-    const daysUntil = Math.ceil(
-      (birthdayDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
-    );
+    const daysUntil = Math.ceil((birthdayDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
 
     return daysUntil >= 0 && daysUntil <= 14;
   }
@@ -285,9 +266,7 @@ export class ActionSuggestionService {
       birthdayDate.setFullYear(today.getFullYear() + 1);
     }
 
-    return Math.ceil(
-      (birthdayDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
-    );
+    return Math.ceil((birthdayDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
   }
 
   /**

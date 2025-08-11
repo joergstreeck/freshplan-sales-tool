@@ -11,7 +11,7 @@ import { renderHook } from '@testing-library/react';
 import { useCustomerOnboardingStore } from '../../stores/customerOnboardingStore';
 
 describe.skip('FC-005 Performance Benchmarks', () => {
-  let performanceMetrics: {
+  let _performanceMetrics: {
     startTime: number;
     endTime: number;
     memoryBefore: number;
@@ -180,11 +180,11 @@ describe.skip('FC-005 Performance Benchmarks', () => {
       const metrics = measurePerformance(() => {
         act(() => {
           // Validate all steps
-          const step1Valid = result.current.validateCurrentStep();
+          result.current.validateCurrentStep();
           result.current.setCurrentStep(2);
-          const step2Valid = result.current.validateCurrentStep();
+          result.current.validateCurrentStep();
           result.current.setCurrentStep(3);
-          const step3Valid = result.current.validateCurrentStep();
+          result.current.validateCurrentStep();
         });
       });
 

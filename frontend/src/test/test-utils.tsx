@@ -22,15 +22,16 @@ const testTheme = createTheme({
 });
 
 // Create a test query client with shorter defaults
-const createTestQueryClient = () => new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: false,
-      staleTime: 0,
-      gcTime: 0,
+const createTestQueryClient = () =>
+  new QueryClient({
+    defaultOptions: {
+      queries: {
+        retry: false,
+        staleTime: 0,
+        gcTime: 0,
+      },
     },
-  },
-});
+  });
 
 interface AllTheProvidersProps {
   children: React.ReactNode;
@@ -39,24 +40,20 @@ interface AllTheProvidersProps {
 // All providers that components might need
 const AllTheProviders: React.FC<AllTheProvidersProps> = ({ children }) => {
   const queryClient = createTestQueryClient();
-  
+
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider theme={testTheme}>
         <CssBaseline />
-        <BrowserRouter>
-          {children}
-        </BrowserRouter>
+        <BrowserRouter>{children}</BrowserRouter>
       </ThemeProvider>
     </QueryClientProvider>
   );
 };
 
 // Custom render function
-const customRender = (
-  ui: ReactElement,
-  options?: Omit<RenderOptions, 'wrapper'>
-) => render(ui, { wrapper: AllTheProviders, ...options });
+const customRender = (ui: ReactElement, options?: Omit<RenderOptions, 'wrapper'>) =>
+  render(ui, { wrapper: AllTheProviders, ...options });
 
 // Re-export everything
 export * from '@testing-library/react';

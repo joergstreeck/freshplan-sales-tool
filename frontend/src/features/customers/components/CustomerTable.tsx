@@ -30,10 +30,15 @@ interface CustomerTableProps {
   columns?: ColumnConfig[];
 }
 
-export function CustomerTable({ customers, onRowClick, highlightNew, columns }: CustomerTableProps) {
+export function CustomerTable({
+  customers,
+  onRowClick,
+  highlightNew,
+  columns,
+}: CustomerTableProps) {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(25);
-  
+
   // Default columns if none provided
   const defaultColumns: ColumnConfig[] = [
     { id: 'customerNumber', label: 'Kundennr.', visible: true },
@@ -45,7 +50,7 @@ export function CustomerTable({ customers, onRowClick, highlightNew, columns }: 
     { id: 'lastContactDate', label: 'Letzter Kontakt', visible: true },
     { id: 'riskScore', label: 'Risiko', visible: true },
   ];
-  
+
   const activeColumns = columns || defaultColumns;
   const visibleColumns = activeColumns.filter(col => col.visible);
 
@@ -95,7 +100,7 @@ export function CustomerTable({ customers, onRowClick, highlightNew, columns }: 
           <TableHead>
             <TableRow>
               {visibleColumns.map(column => (
-                <TableCell 
+                <TableCell
                   key={column.id}
                   align={column.id === 'expectedAnnualVolume' ? 'right' : 'left'}
                 >
@@ -174,9 +179,7 @@ export function CustomerTable({ customers, onRowClick, highlightNew, columns }: 
                       case 'contactCount':
                         return (
                           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                            <Typography variant="body2">
-                              {customer.contactCount || 0}
-                            </Typography>
+                            <Typography variant="body2">{customer.contactCount || 0}</Typography>
                             {customer.contactCount > 0 && (
                               <Typography variant="caption" color="text.secondary">
                                 Kontakt{customer.contactCount > 1 ? 'e' : ''}
@@ -194,12 +197,7 @@ export function CustomerTable({ customers, onRowClick, highlightNew, columns }: 
                         return customer.tags?.length > 0 ? (
                           <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap' }}>
                             {customer.tags.slice(0, 2).map((tag, index) => (
-                              <Chip
-                                key={index}
-                                label={tag}
-                                size="small"
-                                variant="outlined"
-                              />
+                              <Chip key={index} label={tag} size="small" variant="outlined" />
                             ))}
                             {customer.tags.length > 2 && (
                               <Typography variant="caption" color="text.secondary">
@@ -207,7 +205,9 @@ export function CustomerTable({ customers, onRowClick, highlightNew, columns }: 
                               </Typography>
                             )}
                           </Box>
-                        ) : '-';
+                        ) : (
+                          '-'
+                        );
                       case 'riskScore':
                         return (
                           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -243,9 +243,9 @@ export function CustomerTable({ customers, onRowClick, highlightNew, columns }: 
                         return '-';
                     }
                   };
-                  
+
                   return (
-                    <TableCell 
+                    <TableCell
                       key={column.id}
                       align={column.id === 'expectedAnnualVolume' ? 'right' : 'left'}
                     >

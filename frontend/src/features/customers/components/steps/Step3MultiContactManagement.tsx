@@ -20,7 +20,6 @@ import {
   Alert,
   Tooltip,
   Divider,
-  Badge,
   Paper,
   Stack,
   Collapse,
@@ -38,24 +37,15 @@ import {
   LocationOn as LocationIcon,
   Phone as PhoneIcon,
   Email as EmailIcon,
-  Business as BusinessIcon,
 } from '@mui/icons-material';
 
 import { useCustomerOnboardingStore } from '../../stores/customerOnboardingStore';
 import { AdaptiveFormContainer } from '../adaptive/AdaptiveFormContainer';
-import { DynamicFieldRenderer } from '../fields/DynamicFieldRenderer';
-import { LocationCheckboxList } from '../shared/LocationCheckboxList';
-import { ContactCard } from '../contacts/ContactCard';
 import { ContactFormDialog } from '../contacts/ContactFormDialog';
 import { ContactQuickActions } from '../contacts/ContactQuickActions';
 
 import type { Contact } from '../../types/contact.types';
-import type { FieldDefinition } from '../../types/field.types';
-import {
-  contactFieldExtensions,
-  getContactFieldsForGroup,
-} from '../../data/fieldCatalogContactExtensions';
-import { getContactFullName, getContactBadgeInfo } from '../../types/contact.types';
+import { getContactFullName } from '../../types/contact.types';
 
 /**
  * Step 3: Multi-Contact Management
@@ -76,7 +66,6 @@ export const Step3MultiContactManagement: React.FC = () => {
     updateContact,
     removeContact,
     setPrimaryContact,
-    validateContactField,
   } = useCustomerOnboardingStore();
 
   // Dialog state
@@ -140,14 +129,6 @@ export const Step3MultiContactManagement: React.FC = () => {
       setEditingContact(null);
     },
     [editingContact, updateContact, addContact]
-  );
-
-  // Get validation errors for a contact
-  const getContactErrors = useCallback(
-    (contactId: string) => {
-      return contactValidationErrors[contactId]?.fieldErrors || {};
-    },
-    [contactValidationErrors]
   );
 
   return (

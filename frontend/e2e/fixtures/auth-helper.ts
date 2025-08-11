@@ -2,7 +2,9 @@
  * Helper for safely mocking authentication in E2E tests
  * Handles cases where localStorage/sessionStorage might not be available
  */
-export async function mockAuth(page: any) {
+import type { Page } from '@playwright/test';
+
+export async function mockAuth(page: Page) {
   // Set up auth mocking BEFORE any navigation
   await page.addInitScript(() => {
     const mockUser = {
@@ -37,7 +39,7 @@ export async function mockAuth(page: any) {
       window.localStorage.setItem('user', JSON.stringify(mockUser));
       window.sessionStorage.setItem('auth-token', 'test-token');
       window.sessionStorage.setItem('user', JSON.stringify(mockUser));
-    } catch (e) {
+    } catch {
       // localStorage is not accessible, override it
       console.log('Storage not accessible, using mock implementation');
       
@@ -58,20 +60,20 @@ export async function mockAuth(page: any) {
     }
     
     // Always set auth state on window object as a fallback
-    (window as any).__AUTH_STATE__ = {
+    (window as Record<string, unknown>).__AUTH_STATE__ = {
       isAuthenticated: true,
       user: mockUser
     };
     
     // Mock the auth methods that the app might use
-    (window as any).__mockAuth = {
+    (window as Record<string, unknown>).__mockAuth = {
       getToken: () => 'test-token',
       getUser: () => mockUser,
       isAuthenticated: () => true
     };
     
     // Override any auth checks in the app
-    (window as any).isAuthenticated = true;
-    (window as any).currentUser = mockUser;
+    (window as Record<string, unknown>).isAuthenticated = true;
+    (window as Record<string, unknown>).currentUser = mockUser;
   });
 }

@@ -79,7 +79,7 @@ public class AuditExportResource {
       // Parse UUIDs with proper error handling
       UUID parsedEntityId = null;
       UUID parsedUserId = null;
-      
+
       if (entityId != null) {
         try {
           parsedEntityId = UUID.fromString(entityId);
@@ -89,7 +89,7 @@ public class AuditExportResource {
               .build();
         }
       }
-      
+
       if (userId != null) {
         try {
           parsedUserId = UUID.fromString(userId);

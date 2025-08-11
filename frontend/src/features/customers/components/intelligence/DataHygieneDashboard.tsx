@@ -34,7 +34,6 @@ import {
   Legend,
 } from 'recharts';
 import { contactInteractionApi } from '../../services/contactInteractionApi';
-import type { DataQualityMetricsDTO } from '../../types/intelligence.types';
 
 // Color scheme for data freshness
 const FRESHNESS_COLORS = {
@@ -95,7 +94,7 @@ const MetricCard: React.FC<MetricCardProps> = ({
   );
 };
 
-const getQualityColor = (score: number): string => {
+const _getQualityColor = (score: number): string => {
   if (score >= 80) return '#4caf50';
   if (score >= 60) return '#ff9800';
   if (score >= 40) return '#ff5722';
