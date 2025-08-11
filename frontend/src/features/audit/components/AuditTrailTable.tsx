@@ -13,18 +13,18 @@ import {
   Tooltip,
   Typography,
   CircularProgress,
-  Button,
+  Button as _Button,
   TablePagination,
 } from '@mui/material';
 import {
   Visibility as VisibilityIcon,
-  Download as DownloadIcon,
+  Download as _DownloadIcon,
   Security as SecurityIcon,
   Warning as WarningIcon,
 } from '@mui/icons-material';
 import { format } from 'date-fns';
 import { de } from 'date-fns/locale';
-import type { AuditLog, AuditFilters } from '../types';
+import type { AuditLog as _AuditLog, AuditFilters } from '../types';
 import { AuditDetailModal } from './AuditDetailModal';
 import { UniversalExportButton } from '@/components/export/UniversalExportButton';
 

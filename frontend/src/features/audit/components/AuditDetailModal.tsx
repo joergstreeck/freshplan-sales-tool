@@ -29,7 +29,7 @@ import {
 import { format } from 'date-fns';
 import { de } from 'date-fns/locale';
 import { useQuery } from '@tanstack/react-query';
-import type { AuditLog } from '../types';
+import type { AuditLog as _AuditLog } from '../types';
 import { auditApi } from '../services/auditApi';
 import toast from 'react-hot-toast';
 

@@ -25,14 +25,14 @@ import {
   Typography,
   Chip,
   IconButton,
-  Tooltip,
+  Tooltip as _Tooltip,
   TextField,
   MenuItem,
   Button,
   Skeleton,
   Alert,
   Collapse,
-  Stack,
+  Stack as _Stack,
   Card,
   CardContent,
 } from '@mui/material';
@@ -42,7 +42,7 @@ import {
   Delete as DeleteIcon,
   Security as SecurityIcon,
   Download as DownloadIcon,
-  FilterList as FilterIcon,
+  FilterList as _FilterIcon,
   Refresh as RefreshIcon,
   ExpandMore as ExpandMoreIcon,
   ExpandLess as ExpandLessIcon,
@@ -165,7 +165,7 @@ export function EntityAuditTimeline({
 }: EntityAuditTimelineProps) {
   const [entries, setEntries] = useState<AuditEntry[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, _setError] = useState<string | null>(null);
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
   const [filterType, setFilterType] = useState<string>('all');
 

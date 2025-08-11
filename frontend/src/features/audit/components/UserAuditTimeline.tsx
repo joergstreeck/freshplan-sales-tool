@@ -40,18 +40,18 @@ import {
   Person as PersonIcon,
   Email as EmailIcon,
   Phone as PhoneIcon,
-  LocationOn as LocationIcon,
+  LocationOn as _LocationIcon,
   Business as BusinessIcon,
   ExpandMore as ExpandMoreIcon,
   ExpandLess as ExpandLessIcon,
   Download as DownloadIcon,
-  FilterList as FilterIcon,
+  FilterList as _FilterIcon,
   Refresh as RefreshIcon,
 } from '@mui/icons-material';
 import { format, formatDistanceToNow } from 'date-fns';
 import { de } from 'date-fns/locale';
 import { useQuery } from '@tanstack/react-query';
-import type { AuditLog, AuditFilters } from '../types';
+import type { AuditLog as _AuditLog, AuditFilters } from '../types';
 import { auditApi } from '../services/auditApi';
 
 interface UserAuditTimelineProps {
