@@ -19,8 +19,14 @@ async function enableMocking() {
     return;
   }
 
-  // Set mock token for development
-  localStorage.setItem('auth-token', 'MOCK_JWT_TOKEN');
+  // Set mock token ONLY when MSW is explicitly enabled
+  if (USE_MSW) {
+    localStorage.setItem('auth-token', 'MOCK_JWT_TOKEN');
+    console.log('MSW enabled: Mock token set');
+  } else {
+    // Clean up any existing mock token when MSW is disabled
+    localStorage.removeItem('auth-token');
+  }
 
   // Check if backend is available with longer timeout for CI
   try {
