@@ -8,6 +8,7 @@ import {
   customerStatusColors,
 } from '../types/customer.types';
 import { LoadingSpinner } from '../../../components/ui/LoadingSpinner';
+import { UniversalExportButton } from '../../../components/export';
 import './CustomerList.css';
 
 export const CustomerList: React.FC = () => {
@@ -85,6 +86,13 @@ export const CustomerList: React.FC = () => {
               <strong>{data.totalElements}</strong> Kunden gesamt
             </span>
           </div>
+          <UniversalExportButton
+            entity="customers"
+            buttonLabel="Liste exportieren"
+            onExportComplete={(format) => {
+              console.log(`Export completed: ${format}`);
+            }}
+          />
           <a href="/kundenmanagement/neu" className="btn-new-customer">
             + Neuer Kunde
           </a>

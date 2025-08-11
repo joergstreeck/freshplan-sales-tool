@@ -2,6 +2,7 @@
  * Tests für den Cockpit Zustand Store
  */
 
+import { act } from 'react';
 import { describe, it, expect } from 'vitest';
 import { renderHook } from '@testing-library/react';
 import { useCockpitStore } from './cockpitStore';

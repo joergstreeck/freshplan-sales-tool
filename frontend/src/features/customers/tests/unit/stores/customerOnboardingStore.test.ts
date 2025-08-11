@@ -8,6 +8,7 @@
  * @see /docs/features/FC-005-CUSTOMER-MANAGEMENT/09-TEST-PLAN/02-test-examples.md
  */
 
+import { act } from 'react';
 import { describe, it, expect, vi } from 'vitest';
 import { renderHook } from '@testing-library/react';
 import { FieldDefinition } from '../../../types/field.types';

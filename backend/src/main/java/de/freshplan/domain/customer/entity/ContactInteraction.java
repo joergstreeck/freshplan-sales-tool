@@ -30,7 +30,7 @@ public class ContactInteraction extends PanacheEntityBase {
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "contact_id", nullable = false)
-  private Contact contact;
+  private CustomerContact contact;
 
   @Enumerated(EnumType.STRING)
   @Column(name = "type", nullable = false, length = 50)
@@ -130,11 +130,11 @@ public class ContactInteraction extends PanacheEntityBase {
     this.id = id;
   }
 
-  public Contact getContact() {
+  public CustomerContact getContact() {
     return contact;
   }
 
-  public void setContact(Contact contact) {
+  public void setContact(CustomerContact contact) {
     this.contact = contact;
   }
 
@@ -315,7 +315,7 @@ public class ContactInteraction extends PanacheEntityBase {
   public static class Builder {
     private final ContactInteraction interaction = new ContactInteraction();
 
-    public Builder contact(Contact contact) {
+    public Builder contact(CustomerContact contact) {
       interaction.setContact(contact);
       return this;
     }

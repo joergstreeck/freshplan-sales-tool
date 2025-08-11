@@ -1,0 +1,41 @@
+/**
+ * Global Animation Styles
+ * 
+ * @module animations
+ * @since FC-005 PR4
+ */
+
+/* Pulse animation for highlighted contacts */
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.02);
+    opacity: 0.9;
+  }
+}
+
+/* Highlight animation class for contact cards */
+.highlight-animation {
+  animation: pulse 1s ease-in-out 3;
+  border: 2px solid var(--mui-palette-primary-main) !important;
+  box-shadow: 0 0 20px rgba(25, 118, 210, 0.4) !important;
+  transition: all 0.3s ease;
+}
+
+/* Smooth scroll behavior */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Contact card hover effect */
+.contact-card-hover {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.contact-card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}

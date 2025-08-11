@@ -1,6 +1,7 @@
 import { Box, Typography, Button, Chip } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { useEffect } from 'react';
+import { UniversalExportButton } from '../../../components/export';
 
 interface CustomerListHeaderProps {
   totalCount: number;
@@ -38,29 +39,39 @@ export function CustomerListHeader({ totalCount, onAddCustomer }: CustomerListHe
         />
       </Box>
 
-      <Button
-        variant="contained"
-        startIcon={<AddIcon />}
-        onClick={onAddCustomer}
-        sx={{
-          bgcolor: '#94C456', // Freshfoodz Grün
-          '&:hover': {
-            bgcolor: '#7BA545',
-          },
-        }}
-      >
-        Neuer Kunde
-        <Typography
-          component="span"
+      <Box sx={{ display: 'flex', gap: 2 }}>
+        <UniversalExportButton
+          entity="customers"
+          buttonLabel="Exportieren"
+          onExportComplete={(format) => {
+            console.log(`Customers exported as ${format}`);
+          }}
+        />
+        
+        <Button
+          variant="contained"
+          startIcon={<AddIcon />}
+          onClick={onAddCustomer}
           sx={{
-            ml: 1,
-            fontSize: '0.75rem',
-            opacity: 0.7,
+            bgcolor: '#94C456', // Freshfoodz Grün
+            '&:hover': {
+              bgcolor: '#7BA545',
+            },
           }}
         >
-          Strg+N
-        </Typography>
-      </Button>
+          Neuer Kunde
+          <Typography
+            component="span"
+            sx={{
+              ml: 1,
+              fontSize: '0.75rem',
+              opacity: 0.7,
+            }}
+          >
+            Strg+N
+          </Typography>
+        </Button>
+      </Box>
     </Box>
   );
 }

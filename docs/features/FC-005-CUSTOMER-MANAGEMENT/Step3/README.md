@@ -37,14 +37,14 @@
 
 ### Audit Trail System Integration (NEU 09.08.2025) 🎯
 
-#### PR 3 - Aktuelle PR (IN ARBEIT)
-- **→ Implementation Plan:** `/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/Step3/AUDIT_TIMELINE_IMPLEMENTATION_PLAN.md` 📋 PR3 SCOPE  
+#### PR 3 - Contact Management UI (✅ MERGED)
+- **→ Implementation Plan:** `/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/Step3/AUDIT_TIMELINE_IMPLEMENTATION_PLAN.md` ✅ ABGESCHLOSSEN  
 - **→ Team-Entscheidung:** `/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/Step3/AUDIT_TIMELINE_TEAM_DECISION.md` ✅ ENTSCHIEDEN  
 
-#### PR 4 - Nächste Features (GEPLANT)
-- **→ Smart Card Integration:** `/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/Step3/SMART_CONTACT_CARD_AUDIT_INTEGRATION.md` 📇 GEPLANT  
-- **→ Performance Optimizations:** `/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/Step3/PERFORMANCE_OPTIMIZATIONS.md` ⚡ GEPLANT  
-- **→ Export Features:** `/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/Step3/AUDIT_EXPORT_FEATURES.md` 📤 GEPLANT  
+#### PR 4 - IntelligentFilterBar mit Universal Search (🔄 IN ARBEIT)
+- **→ HAUPTDOKUMENT:** `/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/Step3/PR4_INTELLIGENT_FILTER_BAR.md` 🎯 AKTUELL  
+- **→ Export Features:** `/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/Step3/AUDIT_EXPORT_FEATURES.md` ✅ IMPLEMENTIERT  
+- **→ Performance Optimizations:** `/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/Step3/PERFORMANCE_OPTIMIZATIONS.md` ⏳ TEILWEISE  
 
 #### Sprint 4 - Erweiterte Features (SPÄTER)
 - **→ FAB mit Drawer:** `/Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/Step3/FAB_DRAWER_INTEGRATION.md` 🎯 SPRINT 4  
@@ -279,6 +279,7 @@ npm run test
 - [Field Catalog Extensions](../implementation/FIELD_CATALOG_CONTACTS.md)
 - [Dynamic Field Renderer](../../../03-FRONTEND/03-component-library.md)
 - [API Contract](../../../../API_CONTRACT.md)
+- **🆕 [Universal Export Framework](/Users/joergstreeck/freshplan-sales-tool/docs/features/UNIVERSAL_EXPORT_FRAMEWORK_PLAN.md)** - Zentrale Export-Lösung für alle Datentypen
 
 ---
 

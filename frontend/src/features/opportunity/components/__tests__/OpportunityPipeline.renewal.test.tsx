@@ -6,7 +6,7 @@
  */
 
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import { DndContext } from '@dnd-kit/core';
 import '@testing-library/jest-dom';
 

@@ -1,6 +1,6 @@
 package de.freshplan.domain.customer.service;
 
-import de.freshplan.domain.customer.entity.Contact;
+import de.freshplan.domain.customer.entity.CustomerContact;
 import de.freshplan.domain.customer.repository.ContactRepository;
 import de.freshplan.domain.customer.service.dto.DataFreshnessLevel;
 // import io.quarkus.scheduler.Scheduled; // TODO: Add scheduler dependency
@@ -66,7 +66,8 @@ public class DataHygieneService {
     try {
       // Finde veraltete Kontakte (über 6 Monate)
       LocalDateTime sixMonthsAgo = LocalDateTime.now().minusMonths(MONTHS_STALE_THRESHOLD);
-      List<Contact> staleContacts = contactRepository.find("updatedAt < ?1", sixMonthsAgo).list();
+      List<CustomerContact> staleContacts =
+          contactRepository.find("updatedAt < ?1", sixMonthsAgo).list();
 
       LOG.info(
           "Found {} stale contacts (> {} months old)",
@@ -79,7 +80,8 @@ public class DataHygieneService {
 
       // Finde kritische Kontakte (über 1 Jahr)
       LocalDateTime oneYearAgo = LocalDateTime.now().minusYears(YEARS_CRITICAL_THRESHOLD);
-      List<Contact> criticalContacts = contactRepository.find("updatedAt < ?1", oneYearAgo).list();
+      List<CustomerContact> criticalContacts =
+          contactRepository.find("updatedAt < ?1", oneYearAgo).list();
 
       LOG.info(
           "Found {} critical contacts (> {} year old)",
@@ -104,10 +106,10 @@ public class DataHygieneService {
     LOG.info("Starting daily data quality score update");
 
     try {
-      List<Contact> allContacts = contactRepository.listAll();
+      List<CustomerContact> allContacts = contactRepository.listAll();
       int updated = 0;
 
-      for (Contact contact : allContacts) {
+      for (CustomerContact contact : allContacts) {
         DataQualityScore qualityScore = calculateDataQualityScore(contact);
 
         // Update nur wenn sich Score geändert hat
@@ -130,7 +132,7 @@ public class DataHygieneService {
   }
 
   /** Berechnet das Freshness Level eines Kontakts basierend auf dem letzten Update. */
-  public DataFreshnessLevel getDataFreshnessLevel(Contact contact) {
+  public DataFreshnessLevel getDataFreshnessLevel(CustomerContact contact) {
     if (contact.getUpdatedAt() == null) {
       return DataFreshnessLevel.CRITICAL;
     }
@@ -150,7 +152,7 @@ public class DataHygieneService {
   }
 
   /** Berechnet einen umfassenden Data Quality Score (0-100). */
-  public DataQualityScore calculateDataQualityScore(Contact contact) {
+  public DataQualityScore calculateDataQualityScore(CustomerContact contact) {
     int score = 100;
     List<String> recommendations = new ArrayList<>();
 
@@ -228,11 +230,11 @@ public class DataHygieneService {
   }
 
   /** Verarbeitung von veralteten Kontakten (6+ Monate). */
-  private void processStaleContacts(List<Contact> staleContacts) {
+  private void processStaleContacts(List<CustomerContact> staleContacts) {
     // Gruppiere nach verantwortlichem User (später implementieren)
     // Für jetzt: Log und markiere für Update
 
-    for (Contact contact : staleContacts) {
+    for (CustomerContact contact : staleContacts) {
       LOG.debug(
           "Stale contact found: {} (last updated: {})",
           contact.getFirstName() + " " + contact.getLastName(),
@@ -249,8 +251,8 @@ public class DataHygieneService {
   }
 
   /** Verarbeitung von kritischen Kontakten (1+ Jahr). */
-  private void processCriticalContacts(List<Contact> criticalContacts) {
-    for (Contact contact : criticalContacts) {
+  private void processCriticalContacts(List<CustomerContact> criticalContacts) {
+    for (CustomerContact contact : criticalContacts) {
       LOG.warn(
           "Critical contact found: {} (last updated: {})",
           contact.getFirstName() + " " + contact.getLastName(),
@@ -271,15 +273,15 @@ public class DataHygieneService {
 
   /** Gibt Statistiken zur Datenfreshness zurück. */
   public Map<DataFreshnessLevel, Long> getDataFreshnessStatistics() {
-    List<Contact> allContacts = contactRepository.listAll();
+    List<CustomerContact> allContacts = contactRepository.listAll();
 
     return allContacts.stream()
         .collect(Collectors.groupingBy(this::getDataFreshnessLevel, Collectors.counting()));
   }
 
   /** Findet alle Kontakte mit einem bestimmten Freshness Level. */
-  public List<Contact> findContactsByFreshnessLevel(DataFreshnessLevel level) {
-    List<Contact> allContacts = contactRepository.listAll();
+  public List<CustomerContact> findContactsByFreshnessLevel(DataFreshnessLevel level) {
+    List<CustomerContact> allContacts = contactRepository.listAll();
 
     return allContacts.stream()
         .filter(contact -> getDataFreshnessLevel(contact) == level)

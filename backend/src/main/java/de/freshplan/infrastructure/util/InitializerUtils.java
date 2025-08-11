@@ -1,8 +1,7 @@
 package de.freshplan.infrastructure.util;
 
 /**
- * Utility class for data initializers.
- * Provides common functionality for test data initialization.
+ * Utility class for data initializers. Provides common functionality for test data initialization.
  *
  * @author FreshPlan Team
  * @since 2.0.0
@@ -14,9 +13,8 @@ public class InitializerUtils {
   }
 
   /**
-   * Check if the application is running in test mode.
-   * Test data initializers should skip initialization when running tests
-   * to avoid interfering with test data setup.
+   * Check if the application is running in test mode. Test data initializers should skip
+   * initialization when running tests to avoid interfering with test data setup.
    *
    * @return true if running in test mode, false otherwise
    */
@@ -26,8 +24,8 @@ public class InitializerUtils {
   }
 
   /**
-   * Check if test data initialization should be performed.
-   * This is the inverse of isTestMode() for readability.
+   * Check if test data initialization should be performed. This is the inverse of isTestMode() for
+   * readability.
    *
    * @return true if test data should be initialized, false if in test mode
    */

@@ -1,8 +1,14 @@
 import '@testing-library/jest-dom';
-import { cleanup } from '@testing-library/react';
+import { cleanup, configure } from '@testing-library/react';
 import { afterEach, vi } from 'vitest';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import React from 'react';
+
+// Configure Testing Library with shorter timeouts
+configure({
+  asyncUtilTimeout: 1000, // 1 second instead of default 3s
+  computedStyleSupportsPseudoElements: false,
+});
 
 // Cleanup nach jedem Test
 afterEach(() => {

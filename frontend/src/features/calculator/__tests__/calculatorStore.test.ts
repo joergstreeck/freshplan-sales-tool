@@ -1,4 +1,6 @@
+import { act } from 'react';
 import { describe, it, expect } from 'vitest';
+import { act } from 'react';
 import { renderHook } from '@testing-library/react';
 import { useCalculatorStore } from '../store/calculatorStore';
 import type { CalculatorInput, CalculatorResponse } from '../api/calculatorSchemas';

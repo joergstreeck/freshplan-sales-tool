@@ -2,7 +2,7 @@ package de.freshplan.domain.customer.service;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import de.freshplan.domain.customer.entity.Contact;
+import de.freshplan.domain.customer.entity.CustomerContact;
 import de.freshplan.domain.customer.entity.ContactInteraction;
 import de.freshplan.domain.customer.entity.ContactInteraction.InteractionType;
 import de.freshplan.domain.customer.entity.Customer;
@@ -37,7 +37,7 @@ class ContactInteractionServiceIT {
 
   private UUID testCustomerId;
   private UUID testContactId;
-  private Contact testContact;
+  private CustomerContact testContact;
 
   @BeforeEach
   @Transactional
@@ -58,7 +58,7 @@ class ContactInteractionServiceIT {
     testCustomerId = testCustomer.getId();
 
     // Create test contact
-    testContact = new Contact();
+    testContact = new CustomerContact();
     testContact.setFirstName("Max");
     testContact.setLastName("Mustermann");
     testContact.setEmail("max@company.com");
@@ -97,7 +97,7 @@ class ContactInteractionServiceIT {
     assertEquals(85, result.getEngagementScore());
 
     // Verify contact was updated
-    Contact updatedContact = contactRepository.findById(testContactId);
+    CustomerContact updatedContact = contactRepository.findById(testContactId);
     assertEquals(1, updatedContact.getInteractionCount());
     assertNotNull(updatedContact.getLastInteractionDate());
   }
@@ -160,8 +160,8 @@ class ContactInteractionServiceIT {
   @DisplayName("Should calculate data quality metrics accurately")
   void shouldCalculateDataQualityMetricsAccurately() {
     // Arrange - Create additional contacts and interactions
-    Contact contact2 = createAdditionalContact("Anna", "Schmidt");
-    Contact contact3 = createAdditionalContact("Peter", "Müller");
+    CustomerContact contact2 = createAdditionalContact("Anna", "Schmidt");
+    CustomerContact contact3 = createAdditionalContact("Peter", "Müller");
 
     // Contact 1: Multiple recent interactions
     createInteraction(InteractionType.EMAIL, 0.8, 85, -5);
@@ -210,13 +210,13 @@ class ContactInteractionServiceIT {
     // Arrange - Create contacts with interactions
     createInteraction(InteractionType.EMAIL, 0.8, 85, -30); // Main test contact
 
-    Contact contact2 = createAdditionalContact("Second", "Contact");
+    CustomerContact contact2 = createAdditionalContact("Second", "Contact");
     createInteractionForContact(contact2.getId(), InteractionType.NOTE, 0.5, 60, -120);
 
-    Contact contact3 = createAdditionalContact("Third", "Contact");
+    CustomerContact contact3 = createAdditionalContact("Third", "Contact");
     createInteractionForContact(contact3.getId(), InteractionType.CALL, 0.3, 40, -200);
 
-    Contact contact4 = createAdditionalContact("Fourth", "Contact");
+    CustomerContact contact4 = createAdditionalContact("Fourth", "Contact");
     createInteractionForContact(contact4.getId(), InteractionType.EMAIL, 0.2, 30, -400);
 
     // Act
@@ -336,7 +336,7 @@ class ContactInteractionServiceIT {
   @Transactional
   protected void createInteractionForContact(
       UUID contactId, InteractionType type, double sentiment, int engagement, int daysAgo) {
-    Contact contact = contactRepository.findById(contactId);
+    CustomerContact contact = contactRepository.findById(contactId);
     ContactInteraction interaction =
         ContactInteraction.builder()
             .contact(contact)
@@ -374,9 +374,9 @@ class ContactInteractionServiceIT {
   }
 
   @Transactional
-  protected Contact createAdditionalContact(String firstName, String lastName) {
+  protected CustomerContact createAdditionalContact(String firstName, String lastName) {
     Customer customer = customerRepository.findById(testCustomerId);
-    Contact contact = new Contact();
+    CustomerContact contact = new CustomerContact();
     contact.setFirstName(firstName);
     contact.setLastName(lastName);
     contact.setEmail(firstName.toLowerCase() + "@company.com");

@@ -34,7 +34,7 @@ Ein umfassendes KPI-Tracking & Reporting System mit Fokus auf Renewal-Management
 - **Performance**: Komplexe KPI-Berechnungen in <500ms
 - **Skalierbarkeit**: Materialized Views für historische Daten
 - **Real-Time**: Live-Updates für kritische Metriken via WebSocket
-- **Export**: Standardisierte Berichte in PDF/Excel/CSV
+- **Export**: Standardisierte Berichte in PDF/Excel/CSV via **[Universal Export Framework](/Users/joergstreeck/freshplan-sales-tool/docs/features/UNIVERSAL_EXPORT_FRAMEWORK_PLAN.md)**
 
 ## Technische Architektur
 
@@ -111,7 +111,9 @@ public class KpiResource {
     @POST
     @Path("/reports/generate")
     public Response generateReport(ReportRequest request) {
-        // PDF/Excel Generation
+        // AKTUALISIERT: Nutzt Universal Export Framework
+        // Siehe: /Users/joergstreeck/freshplan-sales-tool/docs/features/UNIVERSAL_EXPORT_FRAMEWORK_PLAN.md
+        // Keine Code-Duplikation, zentrale Export-Logik für alle Formate
     }
 }
 ```
@@ -463,8 +465,8 @@ const KpiDashboard: React.FC = () => {
 
 #### Sprint 3.2: Export Implementation (1 Tag)
 1. **Tag 8**: 
-   - PDF Generation (JasperReports)
-   - Excel Export (Apache POI)
+   - Universal Export Framework Integration
+   - Alle Formate (PDF, Excel, CSV, JSON) über zentralen Service
    - Scheduled Reports
 
 ### Phase 4: Testing & Documentation (1 Tag)

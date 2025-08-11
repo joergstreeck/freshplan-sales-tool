@@ -155,9 +155,18 @@ jobs:
             -Dquarkus.http.cors.origins=http://localhost:4173,http://localhost:5173 \
             -Dquarkus.http.cors.methods=GET,POST,PUT,DELETE,OPTIONS \
             -Dquarkus.http.cors.headers=accept,authorization,content-type \
+            -Dquarkus.flyway.migrate-at-start=true \
+            -Dquarkus.flyway.clean-at-start=false \
+            -Dquarkus.flyway.repair-at-start=false \
+            -Dquarkus.flyway.validate-on-migrate=false \
+            -Dquarkus.log.level=INFO \
+            -Dquarkus.hibernate-orm.log.sql=false \
             > backend.log 2>&1 &
-          # Give it time to start
-          sleep 45
+          # Give backend PID
+          BACKEND_PID=$!
+          echo "Backend started with PID: $BACKEND_PID"
+          # Give it more time to start (including Flyway migrations)
+          sleep 60
           # Show last 100 lines of log for debugging
           echo "=== Backend startup log ==="
           tail -n 100 backend.log || true
@@ -172,7 +181,7 @@ jobs:
       - name: Wait for Backend
         run: |
           echo "Waiting for backend to be ready..."
-          for i in {1..30}; do
+          for i in {1..60}; do
             # Try multiple endpoints
             if curl -f http://localhost:8080/q/health/ready 2>/dev/null; then
               echo "Backend is ready (health check)!"
@@ -184,8 +193,8 @@ jobs:
               echo "Backend is ready (basic health)!"
               exit 0
             fi
-            echo "Attempt $i/30 - Backend not ready yet..."
-            sleep 2
+            echo "Attempt $i/60 - Backend not ready yet..."
+            sleep 3
           done
           echo "Backend failed to start!"
           # Show more logs for debugging

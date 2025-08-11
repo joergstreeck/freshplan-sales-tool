@@ -4,7 +4,7 @@
  * Tests modal behavior, responsive design, and event handling.
  */
 
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import { vi } from 'vitest';
 import { CustomerOnboardingWizardModal } from '../CustomerOnboardingWizardModal';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';

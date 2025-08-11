@@ -15,16 +15,10 @@ import jakarta.validation.constraints.Min;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.core.StreamingOutput;
-import java.io.BufferedWriter;
-import java.io.OutputStreamWriter;
 import java.time.Instant;
-import java.time.LocalDate;
-import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Stream;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
@@ -121,94 +115,49 @@ public class AuditResource {
     return Response.ok(entries).build();
   }
 
+  /**
+   * @deprecated Use /api/v2/export/audit/{format} endpoint with Universal Export Framework instead
+   */
   @GET
   @Path("/export")
   @RolesAllowed({"admin", "auditor"})
-  @Operation(summary = "Export audit trail data")
-  @Produces({"text/csv", "application/json"})
+  @Operation(summary = "Export audit trail data - DEPRECATED", deprecated = true)
+  @Deprecated(since = "2.0", forRemoval = true)
   public Response exportAuditTrail(
       @QueryParam("format") @DefaultValue("csv") String format,
-      @QueryParam("from") @Parameter(description = "ISO date") String fromStr,
-      @QueryParam("to") @Parameter(description = "ISO date") String toStr,
+      @QueryParam("from") String fromStr,
+      @QueryParam("to") String toStr,
       @QueryParam("entityType") String entityType,
       @QueryParam("eventType") List<AuditEventType> eventTypes) {
 
-    LocalDate from = fromStr != null ? LocalDate.parse(fromStr) : LocalDate.now().minusDays(30);
-    LocalDate to = toStr != null ? LocalDate.parse(toStr) : LocalDate.now();
+    // Redirect to new Universal Export Framework endpoint, forwarding query parameters
+    StringBuilder redirectUrlBuilder = new StringBuilder(String.format("/api/v2/export/audit/%s", format));
+    boolean firstParam = true;
 
-    // Build search criteria
-    var criteria =
-        AuditRepository.AuditSearchCriteria.builder()
-            .entityType(entityType)
-            .eventTypes(eventTypes)
-            .from(from.atStartOfDay(ZoneOffset.UTC).toInstant())
-            .to(to.plusDays(1).atStartOfDay(ZoneOffset.UTC).toInstant())
-            .build();
-
-    // Log the export request
-    auditService.logSync(
-        AuditContext.builder()
-            .eventType(AuditEventType.DATA_EXPORT_STARTED)
-            .entityType("audit_trail")
-            .entityId(UUID.randomUUID())
-            .newValue(
-                Map.of(
-                    "format", format,
-                    "from", from,
-                    "to", to,
-                    "filters", criteria))
-            .build());
-
-    if ("json".equalsIgnoreCase(format)) {
-      List<AuditEntry> entries = auditRepository.search(criteria);
-      return Response.ok(entries)
-          .type(MediaType.APPLICATION_JSON)
-          .header(
-              "Content-Disposition",
-              "attachment; filename=audit_trail_" + LocalDate.now() + ".json")
-          .build();
-    } else {
-      // Stream CSV for memory efficiency
-      StreamingOutput stream =
-          output -> {
-            try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(output));
-                Stream<AuditEntry> entries = auditRepository.streamForExport(criteria)) {
-
-              // Write CSV header
-              writer.write(
-                  "Timestamp,Event Type,Entity Type,Entity ID,User,User Role,Change Reason,IP Address,Source\n");
-
-              // Write entries
-              entries.forEach(
-                  entry -> {
-                    try {
-                      writer.write(
-                          String.format(
-                              "%s,%s,%s,%s,%s,%s,%s,%s,%s\n",
-                              entry.getTimestamp(),
-                              entry.getEventType(),
-                              entry.getEntityType(),
-                              entry.getEntityId(),
-                              entry.getUserName(),
-                              entry.getUserRole(),
-                              csvEscape(entry.getChangeReason()),
-                              entry.getIpAddress(),
-                              entry.getSource()));
-                    } catch (Exception e) {
-                      log.errorf(e, "Error writing audit entry to CSV");
-                    }
-                  });
-
-              writer.flush();
-            }
-          };
-
-      return Response.ok(stream)
-          .type("text/csv")
-          .header(
-              "Content-Disposition", "attachment; filename=audit_trail_" + LocalDate.now() + ".csv")
-          .build();
+    if (fromStr != null) {
+        redirectUrlBuilder.append(firstParam ? "?" : "&").append("from=").append(fromStr);
+        firstParam = false;
     }
+    if (toStr != null) {
+        redirectUrlBuilder.append(firstParam ? "?" : "&").append("to=").append(toStr);
+        firstParam = false;
+    }
+    if (entityType != null) {
+        redirectUrlBuilder.append(firstParam ? "?" : "&").append("entityType=").append(entityType);
+        firstParam = false;
+    }
+    if (eventTypes != null && !eventTypes.isEmpty()) {
+        for (AuditEventType eventType : eventTypes) {
+            redirectUrlBuilder.append(firstParam ? "?" : "&").append("eventType=").append(eventType.name());
+            firstParam = false;
+        }
+    }
+
+    String redirectUrl = redirectUrlBuilder.toString();
+    return Response.status(Response.Status.MOVED_PERMANENTLY)
+        .header("Location", redirectUrl)
+        .entity("This endpoint is deprecated. Please use " + redirectUrl)
+        .build();
   }
 
   @GET

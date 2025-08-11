@@ -39,6 +39,12 @@ public class CustomerContact extends PanacheEntityBase {
   private Customer customer;
 
   // Basic Contact Information
+  @Column(name = "salutation", length = 20)
+  private String salutation; // herr, frau, divers
+
+  @Column(name = "title", length = 50)
+  private String title; // Dr., Prof., etc.
+
   @Column(name = "first_name", nullable = false, length = 100)
   private String firstName;
 
@@ -50,6 +56,9 @@ public class CustomerContact extends PanacheEntityBase {
 
   @Column(name = "department", length = 100)
   private String department;
+
+  @Column(name = "decision_level", length = 50)
+  private String decisionLevel; // executive, manager, operational, influencer
 
   // Contact Details
   @Column(name = "email", length = 255)
@@ -104,9 +113,48 @@ public class CustomerContact extends PanacheEntityBase {
   @Column(name = "language_preference", length = 10)
   private String languagePreference = "DE";
 
+  // Location Assignment
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "assigned_location_id")
+  private CustomerLocation assignedLocation;
+
+  // Personal Information (for relationship building)
+  @Column(name = "birthday")
+  private java.time.LocalDate birthday;
+
+  @Column(name = "hobbies", length = 500)
+  private String hobbies; // Comma-separated list
+
+  @Column(name = "family_status", length = 50)
+  private String familyStatus; // single, married, divorced, widowed
+
+  @Column(name = "children_count")
+  private Integer childrenCount;
+
+  @Column(name = "personal_notes", columnDefinition = "TEXT")
+  private String personalNotes;
+
   // Contact Metadata
   @Column(name = "last_contact_date")
   private LocalDateTime lastContactDate;
+
+  @Column(name = "last_interaction_date")
+  private LocalDateTime lastInteractionDate;
+
+  @Column(name = "interaction_count")
+  private Integer interactionCount = 0;
+
+  @Column(name = "warmth_score")
+  private Integer warmthScore = 50;
+
+  @Column(name = "warmth_confidence")
+  private Integer warmthConfidence = 0;
+
+  @Column(name = "data_quality_recommendations", columnDefinition = "TEXT")
+  private String dataQualityRecommendations;
+
+  @Column(name = "data_quality_score")
+  private Integer dataQualityScore;
 
   @Column(name = "notes", columnDefinition = "TEXT")
   private String notes;
@@ -138,6 +186,7 @@ public class CustomerContact extends PanacheEntityBase {
   @PrePersist
   protected void onCreate() {
     createdAt = LocalDateTime.now();
+    updatedAt = LocalDateTime.now(); // Set updatedAt on creation as well
     if (isDeleted == null) {
       isDeleted = false;
     }
@@ -496,6 +545,131 @@ public class CustomerContact extends PanacheEntityBase {
 
   public void setUpdatedBy(String updatedBy) {
     this.updatedBy = updatedBy;
+  }
+
+  // New getters and setters for added fields
+  public String getSalutation() {
+    return salutation;
+  }
+
+  public void setSalutation(String salutation) {
+    this.salutation = salutation;
+  }
+
+  public String getTitle() {
+    return title;
+  }
+
+  public void setTitle(String title) {
+    this.title = title;
+  }
+
+  public String getDecisionLevel() {
+    return decisionLevel;
+  }
+
+  public void setDecisionLevel(String decisionLevel) {
+    this.decisionLevel = decisionLevel;
+  }
+
+  public CustomerLocation getAssignedLocation() {
+    return assignedLocation;
+  }
+
+  public void setAssignedLocation(CustomerLocation assignedLocation) {
+    this.assignedLocation = assignedLocation;
+  }
+
+  public java.time.LocalDate getBirthday() {
+    return birthday;
+  }
+
+  public void setBirthday(java.time.LocalDate birthday) {
+    this.birthday = birthday;
+  }
+
+  public String getHobbies() {
+    return hobbies;
+  }
+
+  public void setHobbies(String hobbies) {
+    this.hobbies = hobbies;
+  }
+
+  public String getFamilyStatus() {
+    return familyStatus;
+  }
+
+  public void setFamilyStatus(String familyStatus) {
+    this.familyStatus = familyStatus;
+  }
+
+  public Integer getChildrenCount() {
+    return childrenCount;
+  }
+
+  public void setChildrenCount(Integer childrenCount) {
+    this.childrenCount = childrenCount;
+  }
+
+  public String getPersonalNotes() {
+    return personalNotes;
+  }
+
+  public void setPersonalNotes(String personalNotes) {
+    this.personalNotes = personalNotes;
+  }
+
+  public LocalDateTime getLastInteractionDate() {
+    return lastInteractionDate;
+  }
+
+  public void setLastInteractionDate(LocalDateTime lastInteractionDate) {
+    this.lastInteractionDate = lastInteractionDate;
+  }
+
+  public Integer getInteractionCount() {
+    return interactionCount;
+  }
+
+  public void setInteractionCount(Integer interactionCount) {
+    this.interactionCount = interactionCount;
+  }
+
+  public Integer getWarmthScore() {
+    return warmthScore;
+  }
+
+  public void setWarmthScore(Integer warmthScore) {
+    this.warmthScore = warmthScore;
+  }
+
+  public Integer getWarmthConfidence() {
+    return warmthConfidence;
+  }
+
+  public void setWarmthConfidence(Integer warmthConfidence) {
+    this.warmthConfidence = warmthConfidence;
+  }
+
+  public String getDataQualityRecommendations() {
+    return dataQualityRecommendations;
+  }
+
+  public void setDataQualityRecommendations(String dataQualityRecommendations) {
+    this.dataQualityRecommendations = dataQualityRecommendations;
+  }
+
+  public Integer getDataQualityScore() {
+    return dataQualityScore;
+  }
+
+  public void setDataQualityScore(Integer dataQualityScore) {
+    this.dataQualityScore = dataQualityScore;
+  }
+
+  public String getDisplayName() {
+    return firstName + " " + lastName;
   }
 
   @Override

@@ -28,7 +28,17 @@ test.describe('Customer Wizard Tests - Isolated', () => {
     
     // Mock auth
     await page.addInitScript(() => {
-      window.localStorage.setItem('auth-token', 'test-token');
+      try {
+        window.localStorage.setItem('auth-token', 'test-token');
+      } catch (e) {
+        console.log('localStorage not available in CI');
+      }
+      
+      // Set auth state on window as fallback
+      (window as any).__AUTH_STATE__ = {
+        isAuthenticated: true,
+        user: { id: 'test-user', name: 'Test User', role: 'admin' }
+      };
     });
   });
 

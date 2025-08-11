@@ -48,6 +48,9 @@ import type { Contact } from '../../types/contact.types';
 import { getContactFullName, DECISION_LEVELS } from '../../types/contact.types';
 import { WarmthIndicator, type RelationshipWarmth } from './WarmthIndicator';
 import { ContactQuickActions } from './ContactQuickActions';
+import { MiniAuditTimeline } from '../../../audit/components/MiniAuditTimeline';
+import { useAuth } from '../../../../contexts/AuthContext';
+import { LazyComponent } from '../../../../components/common/LazyComponent';
 
 export interface SmartContactCardProps {
   contact: Contact;
@@ -60,6 +63,8 @@ export interface SmartContactCardProps {
   onQuickAction?: (action: string, contactId: string) => void;
   isHovered?: boolean;
   showQuickActions?: boolean;
+  showAuditTrail?: boolean;
+  customerId?: string;
 }
 
 /**
@@ -75,10 +80,20 @@ export const SmartContactCard: React.FC<SmartContactCardProps> = ({
   onViewTimeline,
   onQuickAction,
   showQuickActions = true,
+  showAuditTrail = true,
+  customerId,
 }) => {
   const theme = useTheme();
+  const { user } = useAuth();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [isCardHovered, setIsCardHovered] = useState(false);
+  
+  // Check if user can view audit trail
+  // In development with authBypass, always allow audit viewing
+  const isDevelopment = import.meta.env.DEV;
+  const canViewAudit = showAuditTrail && (isDevelopment || user?.roles?.some(role => 
+    ['admin', 'manager', 'auditor'].includes(role)
+  ));
 
   // Helper function - must be defined before use
   const isBirthdayUpcoming = (birthday?: string): boolean => {
@@ -386,6 +401,29 @@ export const SmartContactCard: React.FC<SmartContactCardProps> = ({
           </Box>
         )}
       </CardContent>
+
+      {/* Audit Timeline Integration with Lazy Loading */}
+      {canViewAudit && contact.id && (
+        <LazyComponent
+          minHeight={60}
+          threshold={0.2}
+          rootMargin="50px"
+          placeholder={
+            <Typography variant="caption" color="text.secondary" sx={{ p: 1 }}>
+              Lade Änderungshistorie...
+            </Typography>
+          }
+        >
+          <MiniAuditTimeline
+            entityType="CONTACT"
+            entityId={contact.id}
+            maxEntries={5}
+            showDetails={false}
+            compact={true}
+            onShowMore={onViewTimeline ? () => onViewTimeline(contact.id) : undefined}
+          />
+        </LazyComponent>
+      )}
 
       {/* Quick Actions (visible on hover) */}
       {isCardHovered && showQuickActions && onQuickAction && (

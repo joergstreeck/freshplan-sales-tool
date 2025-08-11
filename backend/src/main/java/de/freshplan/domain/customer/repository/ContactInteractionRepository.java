@@ -1,8 +1,8 @@
 package de.freshplan.domain.customer.repository;
 
-import de.freshplan.domain.customer.entity.Contact;
 import de.freshplan.domain.customer.entity.ContactInteraction;
 import de.freshplan.domain.customer.entity.ContactInteraction.InteractionType;
+import de.freshplan.domain.customer.entity.CustomerContact;
 import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
 import io.quarkus.panache.common.Page;
 import io.quarkus.panache.common.Parameters;
@@ -22,17 +22,18 @@ public class ContactInteractionRepository
     implements PanacheRepositoryBase<ContactInteraction, UUID> {
 
   /** Find all interactions for a specific contact, ordered by timestamp descending */
-  public List<ContactInteraction> findByContact(Contact contact) {
+  public List<ContactInteraction> findByContact(CustomerContact contact) {
     return find("contact", Sort.by("timestamp").descending(), contact).list();
   }
 
   /** Find interactions for a contact with pagination */
-  public List<ContactInteraction> findByContactPaginated(Contact contact, Page page) {
+  public List<ContactInteraction> findByContactPaginated(CustomerContact contact, Page page) {
     return find("contact", Sort.by("timestamp").descending(), contact).page(page).list();
   }
 
   /** Find interactions by type for a contact */
-  public List<ContactInteraction> findByContactAndType(Contact contact, InteractionType type) {
+  public List<ContactInteraction> findByContactAndType(
+      CustomerContact contact, InteractionType type) {
     return find(
             "contact = :contact and type = :type",
             Sort.by("timestamp").descending(),
@@ -41,7 +42,7 @@ public class ContactInteractionRepository
   }
 
   /** Find recent interactions for warmth calculation */
-  public List<ContactInteraction> findRecentInteractions(Contact contact, int days) {
+  public List<ContactInteraction> findRecentInteractions(CustomerContact contact, int days) {
     LocalDateTime since = LocalDateTime.now().minusDays(days);
     return find(
             "contact = :contact and timestamp >= :since",
@@ -51,7 +52,7 @@ public class ContactInteractionRepository
   }
 
   /** Count interactions by type for a contact */
-  public Map<InteractionType, Long> countInteractionsByType(Contact contact) {
+  public Map<InteractionType, Long> countInteractionsByType(CustomerContact contact) {
     return find(
             "select i.type, count(i) from ContactInteraction i "
                 + "where i.contact = :contact group by i.type",
@@ -75,7 +76,7 @@ public class ContactInteractionRepository
 
   /** Find interactions by sentiment range */
   public List<ContactInteraction> findBySentiment(
-      Contact contact, Double minSentiment, Double maxSentiment) {
+      CustomerContact contact, Double minSentiment, Double maxSentiment) {
     return find(
             "contact = :contact and sentimentScore between :min and :max",
             Sort.by("timestamp").descending(),
@@ -84,7 +85,7 @@ public class ContactInteractionRepository
   }
 
   /** Calculate average sentiment for a contact */
-  public Double calculateAverageSentiment(Contact contact) {
+  public Double calculateAverageSentiment(CustomerContact contact) {
     return find(
             "select avg(i.sentimentScore) from ContactInteraction i "
                 + "where i.contact = :contact and i.sentimentScore is not null",
@@ -94,12 +95,12 @@ public class ContactInteractionRepository
   }
 
   /** Find last interaction for a contact */
-  public ContactInteraction findLastInteraction(Contact contact) {
+  public ContactInteraction findLastInteraction(CustomerContact contact) {
     return find("contact", Sort.by("timestamp").descending(), contact).firstResult();
   }
 
   /** Find interactions initiated by customer */
-  public List<ContactInteraction> findCustomerInitiated(Contact contact) {
+  public List<ContactInteraction> findCustomerInitiated(CustomerContact contact) {
     return find(
             "contact = :contact and initiatedBy = 'CUSTOMER'",
             Sort.by("timestamp").descending(),
@@ -108,7 +109,7 @@ public class ContactInteractionRepository
   }
 
   /** Calculate response rate (customer-initiated with sales response) */
-  public Double calculateResponseRate(Contact contact) {
+  public Double calculateResponseRate(CustomerContact contact) {
     Long customerInitiated =
         count(
             "contact = :contact and initiatedBy = 'CUSTOMER'", Parameters.with("contact", contact));
@@ -124,7 +125,7 @@ public class ContactInteractionRepository
   }
 
   /** Find interactions for data freshness check */
-  public LocalDateTime findLastUpdateDate(Contact contact) {
+  public LocalDateTime findLastUpdateDate(CustomerContact contact) {
     ContactInteraction lastInteraction = findLastInteraction(contact);
     return lastInteraction != null ? lastInteraction.getTimestamp() : contact.getCreatedAt();
   }

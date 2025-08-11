@@ -33,6 +33,7 @@ import { AuditDashboard } from '@/features/audit/admin/AuditDashboard';
 import { CompliancePanel } from '@/features/audit/admin/CompliancePanel';
 import { UserActivityPanel } from '@/features/audit/admin/UserActivityPanel';
 import { auditApi } from '@/features/audit/services/auditApi';
+import { UniversalExportButton } from '@/components/export/UniversalExportButton';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -84,15 +85,6 @@ export const AuditAdminPage: React.FC = () => {
 
   const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
     setCurrentTab(newValue);
-  };
-
-  const handleExport = async () => {
-    await auditApi.exportAuditLogs({
-      format: 'csv',
-      dateRange,
-      includeDetails: true,
-      anonymize: false,
-    });
   };
 
   const getComplianceColor = (score: number) => {
@@ -163,18 +155,18 @@ export const AuditAdminPage: React.FC = () => {
                   <FilterIcon />
                 </IconButton>
 
-                {/* Export Button */}
-                <Button
-                  variant="contained"
-                  startIcon={<DownloadIcon />}
-                  onClick={handleExport}
-                  sx={{
-                    bgcolor: '#94C456',
-                    '&:hover': { bgcolor: '#7BA045' },
+                {/* Export Button using Universal Export Framework */}
+                <UniversalExportButton
+                  entity="audit"
+                  queryParams={{
+                    from: dateRange.from.toISOString().split('T')[0],
+                    to: dateRange.to.toISOString().split('T')[0],
                   }}
-                >
-                  Export
-                </Button>
+                  buttonLabel="Export"
+                  onExportComplete={(format) => {
+                    console.log(`Audit export completed: ${format}`);
+                  }}
+                />
               </Box>
             </Grid>
           </Grid>
@@ -272,7 +264,6 @@ export const AuditAdminPage: React.FC = () => {
                     to: dateRange.to,
                   },
                 }}
-                onExport={handleExport}
               />
             </TabPanel>
 

@@ -1,0 +1,3614 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`IntelligentFilterBar - Snapshot Tests > should match snapshot - compact mode > compact-mode 1`] = `
+<div
+  class="MuiBox-root css-i3pbo"
+>
+  <div
+    class="MuiStack-root css-1sazv7p-MuiStack-root"
+  >
+    <div
+      class="MuiStack-root css-1sos3zc-MuiStack-root"
+    >
+      <div
+        class="MuiBox-root css-1jlnwea"
+      >
+        <div
+          class="MuiFormControl-root MuiFormControl-fullWidth MuiTextField-root css-6ecae7-MuiFormControl-root-MuiTextField-root"
+        >
+          <div
+            class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedStart css-ot336b-MuiInputBase-root-MuiOutlinedInput-root"
+          >
+            <div
+              class="MuiInputAdornment-root MuiInputAdornment-positionStart MuiInputAdornment-outlined MuiInputAdornment-sizeMedium css-1nowbqt-MuiInputAdornment-root"
+            >
+              <span
+                aria-hidden="true"
+                class="notranslate"
+              >
+                ​
+              </span>
+              <svg
+                aria-hidden="true"
+                class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1umw9bq-MuiSvgIcon-root"
+                data-testid="SearchIcon"
+                focusable="false"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"
+                />
+              </svg>
+            </div>
+            <input
+              aria-invalid="false"
+              autocapitalize="off"
+              autocomplete="off"
+              autocorrect="off"
+              class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputAdornedStart css-2u11ia-MuiInputBase-input-MuiOutlinedInput-input"
+              data-form-type="other"
+              data-lpignore="true"
+              id=":r2h:"
+              placeholder="Suche nach Firma, Kundennummer, Kontakten..."
+              spellcheck="false"
+              type="text"
+              value=""
+            />
+            <fieldset
+              aria-hidden="true"
+              class="MuiOutlinedInput-notchedOutline css-18p5xg2-MuiNotchedOutlined-root-MuiOutlinedInput-notchedOutline"
+            >
+              <legend
+                class="css-1nf2c5d-MuiNotchedOutlined-root"
+              >
+                <span
+                  aria-hidden="true"
+                  class="notranslate"
+                >
+                  ​
+                </span>
+              </legend>
+            </fieldset>
+          </div>
+        </div>
+      </div>
+      <button
+        aria-label="Erweiterte Filter"
+        class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium css-53g0n7-MuiButtonBase-root-MuiIconButton-root"
+        data-mui-internal-clone-element="true"
+        tabindex="0"
+        type="button"
+      >
+        <span
+          class="MuiBadge-root css-63ezxx-MuiBadge-root"
+        >
+          <svg
+            aria-hidden="true"
+            class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1umw9bq-MuiSvgIcon-root"
+            data-testid="FilterListIcon"
+            focusable="false"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M10 18h4v-2h-4zM3 6v2h18V6zm3 7h12v-2H6z"
+            />
+          </svg>
+          <span
+            class="MuiBadge-badge MuiBadge-standard MuiBadge-invisible MuiBadge-anchorOriginTopRight MuiBadge-anchorOriginTopRightRectangular MuiBadge-overlapRectangular MuiBadge-colorPrimary css-aikwdp-MuiBadge-badge"
+          />
+        </span>
+      </button>
+      <button
+        aria-label="Sortiert nach: Unternehmen (↑)"
+        class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium css-53g0n7-MuiButtonBase-root-MuiIconButton-root"
+        data-mui-internal-clone-element="true"
+        tabindex="0"
+        type="button"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1umw9bq-MuiSvgIcon-root"
+          data-testid="SortIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M3 18h6v-2H3zM3 6v2h18V6zm0 7h12v-2H3z"
+          />
+        </svg>
+      </button>
+      <button
+        aria-label="Spalten verwalten"
+        class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium css-53g0n7-MuiButtonBase-root-MuiIconButton-root"
+        data-mui-internal-clone-element="true"
+        tabindex="0"
+        type="button"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1umw9bq-MuiSvgIcon-root"
+          data-testid="ViewColumnIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M14.67 5v14H9.33V5zm1 14H21V5h-5.33zm-7.34 0V5H3v14z"
+          />
+        </svg>
+      </button>
+    </div>
+    <div
+      class="MuiStack-root css-14llwso-MuiStack-root"
+    >
+      <div
+        class="MuiButtonBase-root MuiChip-root MuiChip-outlined MuiChip-sizeSmall MuiChip-colorDefault MuiChip-clickable MuiChip-clickableColorDefault MuiChip-outlinedDefault css-h76bs3-MuiButtonBase-root-MuiChip-root"
+        role="button"
+        tabindex="0"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall MuiChip-icon MuiChip-iconSmall MuiChip-iconColorDefault css-120dh41-MuiSvgIcon-root"
+          data-testid="BusinessIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M12 7V3H2v18h20V7zM6 19H4v-2h2zm0-4H4v-2h2zm0-4H4V9h2zm0-4H4V5h2zm4 12H8v-2h2zm0-4H8v-2h2zm0-4H8V9h2zm0-4H8V5h2zm10 12h-8v-2h2v-2h-2v-2h2v-2h-2V9h8zm-2-8h-2v2h2zm0 4h-2v2h2z"
+          />
+        </svg>
+        <span
+          class="MuiChip-label MuiChip-labelSmall css-19m61dl-MuiChip-label"
+        >
+          Aktive Kunden
+        </span>
+      </div>
+      <div
+        class="MuiButtonBase-root MuiChip-root MuiChip-outlined MuiChip-sizeSmall MuiChip-colorDefault MuiChip-clickable MuiChip-clickableColorDefault MuiChip-outlinedDefault css-h76bs3-MuiButtonBase-root-MuiChip-root"
+        role="button"
+        tabindex="0"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall MuiChip-icon MuiChip-iconSmall MuiChip-iconColorDefault css-120dh41-MuiSvgIcon-root"
+          data-testid="WarningIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M1 21h22L12 2zm12-3h-2v-2h2zm0-4h-2v-4h2z"
+          />
+        </svg>
+        <span
+          class="MuiChip-label MuiChip-labelSmall css-19m61dl-MuiChip-label"
+        >
+          Risiko-Kunden
+        </span>
+      </div>
+      <div
+        class="MuiButtonBase-root MuiChip-root MuiChip-outlined MuiChip-sizeSmall MuiChip-colorDefault MuiChip-clickable MuiChip-clickableColorDefault MuiChip-outlinedDefault css-h76bs3-MuiButtonBase-root-MuiChip-root"
+        role="button"
+        tabindex="0"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall MuiChip-icon MuiChip-iconSmall MuiChip-iconColorDefault css-120dh41-MuiSvgIcon-root"
+          data-testid="ScheduleIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2M12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8"
+          />
+          <path
+            d="M12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z"
+          />
+        </svg>
+        <span
+          class="MuiChip-label MuiChip-labelSmall css-19m61dl-MuiChip-label"
+        >
+          Lange kein Kontakt
+        </span>
+      </div>
+      <div
+        class="MuiButtonBase-root MuiChip-root MuiChip-outlined MuiChip-sizeSmall MuiChip-colorDefault MuiChip-clickable MuiChip-clickableColorDefault MuiChip-outlinedDefault css-h76bs3-MuiButtonBase-root-MuiChip-root"
+        role="button"
+        tabindex="0"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall MuiChip-icon MuiChip-iconSmall MuiChip-iconColorDefault css-120dh41-MuiSvgIcon-root"
+          data-testid="TrendingUpIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="m16 6 2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"
+          />
+        </svg>
+        <span
+          class="MuiChip-label MuiChip-labelSmall css-19m61dl-MuiChip-label"
+        >
+          Top-Kunden
+        </span>
+      </div>
+      <div
+        class="MuiButtonBase-root MuiChip-root MuiChip-outlined MuiChip-sizeSmall MuiChip-colorDefault MuiChip-clickable MuiChip-clickableColorDefault MuiChip-outlinedDefault css-h76bs3-MuiButtonBase-root-MuiChip-root"
+        role="button"
+        tabindex="0"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall MuiChip-icon MuiChip-iconSmall MuiChip-iconColorDefault css-120dh41-MuiSvgIcon-root"
+          data-testid="AddIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6z"
+          />
+        </svg>
+        <span
+          class="MuiChip-label MuiChip-labelSmall css-19m61dl-MuiChip-label"
+        >
+          Neue Kunden
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`IntelligentFilterBar - Snapshot Tests > should match snapshot - dark mode > dark-mode 1`] = `
+<div
+  class="MuiBox-root css-i3pbo"
+>
+  <div
+    class="MuiStack-root css-1sazv7p-MuiStack-root"
+  >
+    <div
+      class="MuiStack-root css-1sos3zc-MuiStack-root"
+    >
+      <div
+        class="MuiBox-root css-1jlnwea"
+      >
+        <div
+          class="MuiFormControl-root MuiFormControl-fullWidth MuiTextField-root css-ikte88-MuiFormControl-root-MuiTextField-root"
+        >
+          <div
+            class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedStart css-1rs2f26-MuiInputBase-root-MuiOutlinedInput-root"
+          >
+            <div
+              class="MuiInputAdornment-root MuiInputAdornment-positionStart MuiInputAdornment-outlined MuiInputAdornment-sizeMedium css-1vbptb3-MuiInputAdornment-root"
+            >
+              <span
+                aria-hidden="true"
+                class="notranslate"
+              >
+                ​
+              </span>
+              <svg
+                aria-hidden="true"
+                class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1umw9bq-MuiSvgIcon-root"
+                data-testid="SearchIcon"
+                focusable="false"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"
+                />
+              </svg>
+            </div>
+            <input
+              aria-invalid="false"
+              autocapitalize="off"
+              autocomplete="off"
+              autocorrect="off"
+              class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputAdornedStart css-hyt7bp-MuiInputBase-input-MuiOutlinedInput-input"
+              data-form-type="other"
+              data-lpignore="true"
+              id=":r39:"
+              placeholder="Suche nach Firma, Kundennummer, Kontakten..."
+              spellcheck="false"
+              type="text"
+              value=""
+            />
+            <fieldset
+              aria-hidden="true"
+              class="MuiOutlinedInput-notchedOutline css-vy4cj6-MuiNotchedOutlined-root-MuiOutlinedInput-notchedOutline"
+            >
+              <legend
+                class="css-1nf2c5d-MuiNotchedOutlined-root"
+              >
+                <span
+                  aria-hidden="true"
+                  class="notranslate"
+                >
+                  ​
+                </span>
+              </legend>
+            </fieldset>
+          </div>
+        </div>
+      </div>
+      <button
+        aria-label="Erweiterte Filter"
+        class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium css-hjc5kd-MuiButtonBase-root-MuiIconButton-root"
+        data-mui-internal-clone-element="true"
+        tabindex="0"
+        type="button"
+      >
+        <span
+          class="MuiBadge-root css-63ezxx-MuiBadge-root"
+        >
+          <svg
+            aria-hidden="true"
+            class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1umw9bq-MuiSvgIcon-root"
+            data-testid="FilterListIcon"
+            focusable="false"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M10 18h4v-2h-4zM3 6v2h18V6zm3 7h12v-2H6z"
+            />
+          </svg>
+          <span
+            class="MuiBadge-badge MuiBadge-standard MuiBadge-invisible MuiBadge-anchorOriginTopRight MuiBadge-anchorOriginTopRightRectangular MuiBadge-overlapRectangular MuiBadge-colorPrimary css-8ky3fj-MuiBadge-badge"
+          />
+        </span>
+      </button>
+      <button
+        aria-label="Sortiert nach: Unternehmen (↑)"
+        class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium css-hjc5kd-MuiButtonBase-root-MuiIconButton-root"
+        data-mui-internal-clone-element="true"
+        tabindex="0"
+        type="button"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1umw9bq-MuiSvgIcon-root"
+          data-testid="SortIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M3 18h6v-2H3zM3 6v2h18V6zm0 7h12v-2H3z"
+          />
+        </svg>
+      </button>
+      <button
+        aria-label="Spalten verwalten"
+        class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium css-hjc5kd-MuiButtonBase-root-MuiIconButton-root"
+        data-mui-internal-clone-element="true"
+        tabindex="0"
+        type="button"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1umw9bq-MuiSvgIcon-root"
+          data-testid="ViewColumnIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M14.67 5v14H9.33V5zm1 14H21V5h-5.33zm-7.34 0V5H3v14z"
+          />
+        </svg>
+      </button>
+    </div>
+    <div
+      class="MuiStack-root css-14llwso-MuiStack-root"
+    >
+      <div
+        class="MuiButtonBase-root MuiChip-root MuiChip-outlined MuiChip-sizeSmall MuiChip-colorDefault MuiChip-clickable MuiChip-clickableColorDefault MuiChip-outlinedDefault css-voh43f-MuiButtonBase-root-MuiChip-root"
+        role="button"
+        tabindex="0"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall MuiChip-icon MuiChip-iconSmall MuiChip-iconColorDefault css-120dh41-MuiSvgIcon-root"
+          data-testid="BusinessIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M12 7V3H2v18h20V7zM6 19H4v-2h2zm0-4H4v-2h2zm0-4H4V9h2zm0-4H4V5h2zm4 12H8v-2h2zm0-4H8v-2h2zm0-4H8V9h2zm0-4H8V5h2zm10 12h-8v-2h2v-2h-2v-2h2v-2h-2V9h8zm-2-8h-2v2h2zm0 4h-2v2h2z"
+          />
+        </svg>
+        <span
+          class="MuiChip-label MuiChip-labelSmall css-19m61dl-MuiChip-label"
+        >
+          Aktive Kunden
+        </span>
+      </div>
+      <div
+        class="MuiButtonBase-root MuiChip-root MuiChip-outlined MuiChip-sizeSmall MuiChip-colorDefault MuiChip-clickable MuiChip-clickableColorDefault MuiChip-outlinedDefault css-voh43f-MuiButtonBase-root-MuiChip-root"
+        role="button"
+        tabindex="0"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall MuiChip-icon MuiChip-iconSmall MuiChip-iconColorDefault css-120dh41-MuiSvgIcon-root"
+          data-testid="WarningIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M1 21h22L12 2zm12-3h-2v-2h2zm0-4h-2v-4h2z"
+          />
+        </svg>
+        <span
+          class="MuiChip-label MuiChip-labelSmall css-19m61dl-MuiChip-label"
+        >
+          Risiko-Kunden
+        </span>
+      </div>
+      <div
+        class="MuiButtonBase-root MuiChip-root MuiChip-outlined MuiChip-sizeSmall MuiChip-colorDefault MuiChip-clickable MuiChip-clickableColorDefault MuiChip-outlinedDefault css-voh43f-MuiButtonBase-root-MuiChip-root"
+        role="button"
+        tabindex="0"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall MuiChip-icon MuiChip-iconSmall MuiChip-iconColorDefault css-120dh41-MuiSvgIcon-root"
+          data-testid="ScheduleIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2M12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8"
+          />
+          <path
+            d="M12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z"
+          />
+        </svg>
+        <span
+          class="MuiChip-label MuiChip-labelSmall css-19m61dl-MuiChip-label"
+        >
+          Lange kein Kontakt
+        </span>
+      </div>
+      <div
+        class="MuiButtonBase-root MuiChip-root MuiChip-outlined MuiChip-sizeSmall MuiChip-colorDefault MuiChip-clickable MuiChip-clickableColorDefault MuiChip-outlinedDefault css-voh43f-MuiButtonBase-root-MuiChip-root"
+        role="button"
+        tabindex="0"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall MuiChip-icon MuiChip-iconSmall MuiChip-iconColorDefault css-120dh41-MuiSvgIcon-root"
+          data-testid="TrendingUpIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="m16 6 2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"
+          />
+        </svg>
+        <span
+          class="MuiChip-label MuiChip-labelSmall css-19m61dl-MuiChip-label"
+        >
+          Top-Kunden
+        </span>
+      </div>
+      <div
+        class="MuiButtonBase-root MuiChip-root MuiChip-outlined MuiChip-sizeSmall MuiChip-colorDefault MuiChip-clickable MuiChip-clickableColorDefault MuiChip-outlinedDefault css-voh43f-MuiButtonBase-root-MuiChip-root"
+        role="button"
+        tabindex="0"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall MuiChip-icon MuiChip-iconSmall MuiChip-iconColorDefault css-120dh41-MuiSvgIcon-root"
+          data-testid="AddIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6z"
+          />
+        </svg>
+        <span
+          class="MuiChip-label MuiChip-labelSmall css-19m61dl-MuiChip-label"
+        >
+          Neue Kunden
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`IntelligentFilterBar - Snapshot Tests > should match snapshot - default state > default-state 1`] = `
+<div
+  class="MuiBox-root css-i3pbo"
+>
+  <div
+    class="MuiStack-root css-1sazv7p-MuiStack-root"
+  >
+    <div
+      class="MuiStack-root css-1sos3zc-MuiStack-root"
+    >
+      <div
+        class="MuiBox-root css-1jlnwea"
+      >
+        <div
+          class="MuiFormControl-root MuiFormControl-fullWidth MuiTextField-root css-6ecae7-MuiFormControl-root-MuiTextField-root"
+        >
+          <div
+            class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedStart css-ot336b-MuiInputBase-root-MuiOutlinedInput-root"
+          >
+            <div
+              class="MuiInputAdornment-root MuiInputAdornment-positionStart MuiInputAdornment-outlined MuiInputAdornment-sizeMedium css-1nowbqt-MuiInputAdornment-root"
+            >
+              <span
+                aria-hidden="true"
+                class="notranslate"
+              >
+                ​
+              </span>
+              <svg
+                aria-hidden="true"
+                class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1umw9bq-MuiSvgIcon-root"
+                data-testid="SearchIcon"
+                focusable="false"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"
+                />
+              </svg>
+            </div>
+            <input
+              aria-invalid="false"
+              autocapitalize="off"
+              autocomplete="off"
+              autocorrect="off"
+              class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputAdornedStart css-2u11ia-MuiInputBase-input-MuiOutlinedInput-input"
+              data-form-type="other"
+              data-lpignore="true"
+              id=":r1:"
+              placeholder="Suche nach Firma, Kundennummer, Kontakten..."
+              spellcheck="false"
+              type="text"
+              value=""
+            />
+            <fieldset
+              aria-hidden="true"
+              class="MuiOutlinedInput-notchedOutline css-18p5xg2-MuiNotchedOutlined-root-MuiOutlinedInput-notchedOutline"
+            >
+              <legend
+                class="css-1nf2c5d-MuiNotchedOutlined-root"
+              >
+                <span
+                  aria-hidden="true"
+                  class="notranslate"
+                >
+                  ​
+                </span>
+              </legend>
+            </fieldset>
+          </div>
+        </div>
+      </div>
+      <button
+        aria-label="Erweiterte Filter"
+        class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium css-53g0n7-MuiButtonBase-root-MuiIconButton-root"
+        data-mui-internal-clone-element="true"
+        tabindex="0"
+        type="button"
+      >
+        <span
+          class="MuiBadge-root css-63ezxx-MuiBadge-root"
+        >
+          <svg
+            aria-hidden="true"
+            class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1umw9bq-MuiSvgIcon-root"
+            data-testid="FilterListIcon"
+            focusable="false"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M10 18h4v-2h-4zM3 6v2h18V6zm3 7h12v-2H6z"
+            />
+          </svg>
+          <span
+            class="MuiBadge-badge MuiBadge-standard MuiBadge-invisible MuiBadge-anchorOriginTopRight MuiBadge-anchorOriginTopRightRectangular MuiBadge-overlapRectangular MuiBadge-colorPrimary css-aikwdp-MuiBadge-badge"
+          />
+        </span>
+      </button>
+      <button
+        aria-label="Sortiert nach: Unternehmen (↑)"
+        class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium css-53g0n7-MuiButtonBase-root-MuiIconButton-root"
+        data-mui-internal-clone-element="true"
+        tabindex="0"
+        type="button"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1umw9bq-MuiSvgIcon-root"
+          data-testid="SortIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M3 18h6v-2H3zM3 6v2h18V6zm0 7h12v-2H3z"
+          />
+        </svg>
+      </button>
+      <button
+        aria-label="Spalten verwalten"
+        class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium css-53g0n7-MuiButtonBase-root-MuiIconButton-root"
+        data-mui-internal-clone-element="true"
+        tabindex="0"
+        type="button"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1umw9bq-MuiSvgIcon-root"
+          data-testid="ViewColumnIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M14.67 5v14H9.33V5zm1 14H21V5h-5.33zm-7.34 0V5H3v14z"
+          />
+        </svg>
+      </button>
+    </div>
+    <div
+      class="MuiStack-root css-14llwso-MuiStack-root"
+    >
+      <div
+        class="MuiButtonBase-root MuiChip-root MuiChip-outlined MuiChip-sizeSmall MuiChip-colorDefault MuiChip-clickable MuiChip-clickableColorDefault MuiChip-outlinedDefault css-h76bs3-MuiButtonBase-root-MuiChip-root"
+        role="button"
+        tabindex="0"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall MuiChip-icon MuiChip-iconSmall MuiChip-iconColorDefault css-120dh41-MuiSvgIcon-root"
+          data-testid="BusinessIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M12 7V3H2v18h20V7zM6 19H4v-2h2zm0-4H4v-2h2zm0-4H4V9h2zm0-4H4V5h2zm4 12H8v-2h2zm0-4H8v-2h2zm0-4H8V9h2zm0-4H8V5h2zm10 12h-8v-2h2v-2h-2v-2h2v-2h-2V9h8zm-2-8h-2v2h2zm0 4h-2v2h2z"
+          />
+        </svg>
+        <span
+          class="MuiChip-label MuiChip-labelSmall css-19m61dl-MuiChip-label"
+        >
+          Aktive Kunden
+        </span>
+      </div>
+      <div
+        class="MuiButtonBase-root MuiChip-root MuiChip-outlined MuiChip-sizeSmall MuiChip-colorDefault MuiChip-clickable MuiChip-clickableColorDefault MuiChip-outlinedDefault css-h76bs3-MuiButtonBase-root-MuiChip-root"
+        role="button"
+        tabindex="0"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall MuiChip-icon MuiChip-iconSmall MuiChip-iconColorDefault css-120dh41-MuiSvgIcon-root"
+          data-testid="WarningIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M1 21h22L12 2zm12-3h-2v-2h2zm0-4h-2v-4h2z"
+          />
+        </svg>
+        <span
+          class="MuiChip-label MuiChip-labelSmall css-19m61dl-MuiChip-label"
+        >
+          Risiko-Kunden
+        </span>
+      </div>
+      <div
+        class="MuiButtonBase-root MuiChip-root MuiChip-outlined MuiChip-sizeSmall MuiChip-colorDefault MuiChip-clickable MuiChip-clickableColorDefault MuiChip-outlinedDefault css-h76bs3-MuiButtonBase-root-MuiChip-root"
+        role="button"
+        tabindex="0"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall MuiChip-icon MuiChip-iconSmall MuiChip-iconColorDefault css-120dh41-MuiSvgIcon-root"
+          data-testid="ScheduleIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2M12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8"
+          />
+          <path
+            d="M12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z"
+          />
+        </svg>
+        <span
+          class="MuiChip-label MuiChip-labelSmall css-19m61dl-MuiChip-label"
+        >
+          Lange kein Kontakt
+        </span>
+      </div>
+      <div
+        class="MuiButtonBase-root MuiChip-root MuiChip-outlined MuiChip-sizeSmall MuiChip-colorDefault MuiChip-clickable MuiChip-clickableColorDefault MuiChip-outlinedDefault css-h76bs3-MuiButtonBase-root-MuiChip-root"
+        role="button"
+        tabindex="0"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall MuiChip-icon MuiChip-iconSmall MuiChip-iconColorDefault css-120dh41-MuiSvgIcon-root"
+          data-testid="TrendingUpIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="m16 6 2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"
+          />
+        </svg>
+        <span
+          class="MuiChip-label MuiChip-labelSmall css-19m61dl-MuiChip-label"
+        >
+          Top-Kunden
+        </span>
+      </div>
+      <div
+        class="MuiButtonBase-root MuiChip-root MuiChip-outlined MuiChip-sizeSmall MuiChip-colorDefault MuiChip-clickable MuiChip-clickableColorDefault MuiChip-outlinedDefault css-h76bs3-MuiButtonBase-root-MuiChip-root"
+        role="button"
+        tabindex="0"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall MuiChip-icon MuiChip-iconSmall MuiChip-iconColorDefault css-120dh41-MuiSvgIcon-root"
+          data-testid="AddIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6z"
+          />
+        </svg>
+        <span
+          class="MuiChip-label MuiChip-labelSmall css-19m61dl-MuiChip-label"
+        >
+          Neue Kunden
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`IntelligentFilterBar - Snapshot Tests > should match snapshot - error state > error-state 1`] = `
+<div
+  class="MuiBox-root css-i3pbo"
+>
+  <div
+    class="MuiStack-root css-1sazv7p-MuiStack-root"
+  >
+    <div
+      class="MuiStack-root css-1sos3zc-MuiStack-root"
+    >
+      <div
+        class="MuiBox-root css-1jlnwea"
+      >
+        <div
+          class="MuiFormControl-root MuiFormControl-fullWidth MuiTextField-root css-6ecae7-MuiFormControl-root-MuiTextField-root"
+        >
+          <div
+            class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedStart css-ot336b-MuiInputBase-root-MuiOutlinedInput-root"
+          >
+            <div
+              class="MuiInputAdornment-root MuiInputAdornment-positionStart MuiInputAdornment-outlined MuiInputAdornment-sizeMedium css-1nowbqt-MuiInputAdornment-root"
+            >
+              <span
+                aria-hidden="true"
+                class="notranslate"
+              >
+                ​
+              </span>
+              <svg
+                aria-hidden="true"
+                class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1umw9bq-MuiSvgIcon-root"
+                data-testid="SearchIcon"
+                focusable="false"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"
+                />
+              </svg>
+            </div>
+            <input
+              aria-invalid="false"
+              autocapitalize="off"
+              autocomplete="off"
+              autocorrect="off"
+              class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputAdornedStart css-2u11ia-MuiInputBase-input-MuiOutlinedInput-input"
+              data-form-type="other"
+              data-lpignore="true"
+              id=":r19:"
+              placeholder="Suche nach Firma, Kundennummer, Kontakten..."
+              spellcheck="false"
+              type="text"
+              value=""
+            />
+            <fieldset
+              aria-hidden="true"
+              class="MuiOutlinedInput-notchedOutline css-18p5xg2-MuiNotchedOutlined-root-MuiOutlinedInput-notchedOutline"
+            >
+              <legend
+                class="css-1nf2c5d-MuiNotchedOutlined-root"
+              >
+                <span
+                  aria-hidden="true"
+                  class="notranslate"
+                >
+                  ​
+                </span>
+              </legend>
+            </fieldset>
+          </div>
+        </div>
+      </div>
+      <button
+        aria-label="Erweiterte Filter"
+        class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium css-53g0n7-MuiButtonBase-root-MuiIconButton-root"
+        data-mui-internal-clone-element="true"
+        tabindex="0"
+        type="button"
+      >
+        <span
+          class="MuiBadge-root css-63ezxx-MuiBadge-root"
+        >
+          <svg
+            aria-hidden="true"
+            class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1umw9bq-MuiSvgIcon-root"
+            data-testid="FilterListIcon"
+            focusable="false"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M10 18h4v-2h-4zM3 6v2h18V6zm3 7h12v-2H6z"
+            />
+          </svg>
+          <span
+            class="MuiBadge-badge MuiBadge-standard MuiBadge-invisible MuiBadge-anchorOriginTopRight MuiBadge-anchorOriginTopRightRectangular MuiBadge-overlapRectangular MuiBadge-colorPrimary css-aikwdp-MuiBadge-badge"
+          />
+        </span>
+      </button>
+      <button
+        aria-label="Sortiert nach: Unternehmen (↑)"
+        class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium css-53g0n7-MuiButtonBase-root-MuiIconButton-root"
+        data-mui-internal-clone-element="true"
+        tabindex="0"
+        type="button"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1umw9bq-MuiSvgIcon-root"
+          data-testid="SortIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M3 18h6v-2H3zM3 6v2h18V6zm0 7h12v-2H3z"
+          />
+        </svg>
+      </button>
+      <button
+        aria-label="Spalten verwalten"
+        class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium css-53g0n7-MuiButtonBase-root-MuiIconButton-root"
+        data-mui-internal-clone-element="true"
+        tabindex="0"
+        type="button"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1umw9bq-MuiSvgIcon-root"
+          data-testid="ViewColumnIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M14.67 5v14H9.33V5zm1 14H21V5h-5.33zm-7.34 0V5H3v14z"
+          />
+        </svg>
+      </button>
+    </div>
+    <div
+      class="MuiStack-root css-14llwso-MuiStack-root"
+    >
+      <div
+        class="MuiButtonBase-root MuiChip-root MuiChip-outlined MuiChip-sizeSmall MuiChip-colorDefault MuiChip-clickable MuiChip-clickableColorDefault MuiChip-outlinedDefault css-h76bs3-MuiButtonBase-root-MuiChip-root"
+        role="button"
+        tabindex="0"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall MuiChip-icon MuiChip-iconSmall MuiChip-iconColorDefault css-120dh41-MuiSvgIcon-root"
+          data-testid="BusinessIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M12 7V3H2v18h20V7zM6 19H4v-2h2zm0-4H4v-2h2zm0-4H4V9h2zm0-4H4V5h2zm4 12H8v-2h2zm0-4H8v-2h2zm0-4H8V9h2zm0-4H8V5h2zm10 12h-8v-2h2v-2h-2v-2h2v-2h-2V9h8zm-2-8h-2v2h2zm0 4h-2v2h2z"
+          />
+        </svg>
+        <span
+          class="MuiChip-label MuiChip-labelSmall css-19m61dl-MuiChip-label"
+        >
+          Aktive Kunden
+        </span>
+      </div>
+      <div
+        class="MuiButtonBase-root MuiChip-root MuiChip-outlined MuiChip-sizeSmall MuiChip-colorDefault MuiChip-clickable MuiChip-clickableColorDefault MuiChip-outlinedDefault css-h76bs3-MuiButtonBase-root-MuiChip-root"
+        role="button"
+        tabindex="0"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall MuiChip-icon MuiChip-iconSmall MuiChip-iconColorDefault css-120dh41-MuiSvgIcon-root"
+          data-testid="WarningIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M1 21h22L12 2zm12-3h-2v-2h2zm0-4h-2v-4h2z"
+          />
+        </svg>
+        <span
+          class="MuiChip-label MuiChip-labelSmall css-19m61dl-MuiChip-label"
+        >
+          Risiko-Kunden
+        </span>
+      </div>
+      <div
+        class="MuiButtonBase-root MuiChip-root MuiChip-outlined MuiChip-sizeSmall MuiChip-colorDefault MuiChip-clickable MuiChip-clickableColorDefault MuiChip-outlinedDefault css-h76bs3-MuiButtonBase-root-MuiChip-root"
+        role="button"
+        tabindex="0"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall MuiChip-icon MuiChip-iconSmall MuiChip-iconColorDefault css-120dh41-MuiSvgIcon-root"
+          data-testid="ScheduleIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2M12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8"
+          />
+          <path
+            d="M12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z"
+          />
+        </svg>
+        <span
+          class="MuiChip-label MuiChip-labelSmall css-19m61dl-MuiChip-label"
+        >
+          Lange kein Kontakt
+        </span>
+      </div>
+      <div
+        class="MuiButtonBase-root MuiChip-root MuiChip-outlined MuiChip-sizeSmall MuiChip-colorDefault MuiChip-clickable MuiChip-clickableColorDefault MuiChip-outlinedDefault css-h76bs3-MuiButtonBase-root-MuiChip-root"
+        role="button"
+        tabindex="0"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall MuiChip-icon MuiChip-iconSmall MuiChip-iconColorDefault css-120dh41-MuiSvgIcon-root"
+          data-testid="TrendingUpIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="m16 6 2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"
+          />
+        </svg>
+        <span
+          class="MuiChip-label MuiChip-labelSmall css-19m61dl-MuiChip-label"
+        >
+          Top-Kunden
+        </span>
+      </div>
+      <div
+        class="MuiButtonBase-root MuiChip-root MuiChip-outlined MuiChip-sizeSmall MuiChip-colorDefault MuiChip-clickable MuiChip-clickableColorDefault MuiChip-outlinedDefault css-h76bs3-MuiButtonBase-root-MuiChip-root"
+        role="button"
+        tabindex="0"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall MuiChip-icon MuiChip-iconSmall MuiChip-iconColorDefault css-120dh41-MuiSvgIcon-root"
+          data-testid="AddIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6z"
+          />
+        </svg>
+        <span
+          class="MuiChip-label MuiChip-labelSmall css-19m61dl-MuiChip-label"
+        >
+          Neue Kunden
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`IntelligentFilterBar - Snapshot Tests > should match snapshot - grid view > grid-view 1`] = `
+<div
+  class="MuiBox-root css-i3pbo"
+>
+  <div
+    class="MuiStack-root css-1sazv7p-MuiStack-root"
+  >
+    <div
+      class="MuiStack-root css-1sos3zc-MuiStack-root"
+    >
+      <div
+        class="MuiBox-root css-1jlnwea"
+      >
+        <div
+          class="MuiFormControl-root MuiFormControl-fullWidth MuiTextField-root css-6ecae7-MuiFormControl-root-MuiTextField-root"
+        >
+          <div
+            class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedStart css-ot336b-MuiInputBase-root-MuiOutlinedInput-root"
+          >
+            <div
+              class="MuiInputAdornment-root MuiInputAdornment-positionStart MuiInputAdornment-outlined MuiInputAdornment-sizeMedium css-1nowbqt-MuiInputAdornment-root"
+            >
+              <span
+                aria-hidden="true"
+                class="notranslate"
+              >
+                ​
+              </span>
+              <svg
+                aria-hidden="true"
+                class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1umw9bq-MuiSvgIcon-root"
+                data-testid="SearchIcon"
+                focusable="false"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"
+                />
+              </svg>
+            </div>
+            <input
+              aria-invalid="false"
+              autocapitalize="off"
+              autocomplete="off"
+              autocorrect="off"
+              class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputAdornedStart css-2u11ia-MuiInputBase-input-MuiOutlinedInput-input"
+              data-form-type="other"
+              data-lpignore="true"
+              id=":r1h:"
+              placeholder="Suche nach Firma, Kundennummer, Kontakten..."
+              spellcheck="false"
+              type="text"
+              value=""
+            />
+            <fieldset
+              aria-hidden="true"
+              class="MuiOutlinedInput-notchedOutline css-18p5xg2-MuiNotchedOutlined-root-MuiOutlinedInput-notchedOutline"
+            >
+              <legend
+                class="css-1nf2c5d-MuiNotchedOutlined-root"
+              >
+                <span
+                  aria-hidden="true"
+                  class="notranslate"
+                >
+                  ​
+                </span>
+              </legend>
+            </fieldset>
+          </div>
+        </div>
+      </div>
+      <button
+        aria-label="Erweiterte Filter"
+        class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium css-53g0n7-MuiButtonBase-root-MuiIconButton-root"
+        data-mui-internal-clone-element="true"
+        tabindex="0"
+        type="button"
+      >
+        <span
+          class="MuiBadge-root css-63ezxx-MuiBadge-root"
+        >
+          <svg
+            aria-hidden="true"
+            class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1umw9bq-MuiSvgIcon-root"
+            data-testid="FilterListIcon"
+            focusable="false"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M10 18h4v-2h-4zM3 6v2h18V6zm3 7h12v-2H6z"
+            />
+          </svg>
+          <span
+            class="MuiBadge-badge MuiBadge-standard MuiBadge-invisible MuiBadge-anchorOriginTopRight MuiBadge-anchorOriginTopRightRectangular MuiBadge-overlapRectangular MuiBadge-colorPrimary css-aikwdp-MuiBadge-badge"
+          />
+        </span>
+      </button>
+      <button
+        aria-label="Sortiert nach: Unternehmen (↑)"
+        class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium css-53g0n7-MuiButtonBase-root-MuiIconButton-root"
+        data-mui-internal-clone-element="true"
+        tabindex="0"
+        type="button"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1umw9bq-MuiSvgIcon-root"
+          data-testid="SortIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M3 18h6v-2H3zM3 6v2h18V6zm0 7h12v-2H3z"
+          />
+        </svg>
+      </button>
+      <button
+        aria-label="Spalten verwalten"
+        class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium css-53g0n7-MuiButtonBase-root-MuiIconButton-root"
+        data-mui-internal-clone-element="true"
+        tabindex="0"
+        type="button"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1umw9bq-MuiSvgIcon-root"
+          data-testid="ViewColumnIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M14.67 5v14H9.33V5zm1 14H21V5h-5.33zm-7.34 0V5H3v14z"
+          />
+        </svg>
+      </button>
+    </div>
+    <div
+      class="MuiStack-root css-14llwso-MuiStack-root"
+    >
+      <div
+        class="MuiButtonBase-root MuiChip-root MuiChip-outlined MuiChip-sizeSmall MuiChip-colorDefault MuiChip-clickable MuiChip-clickableColorDefault MuiChip-outlinedDefault css-h76bs3-MuiButtonBase-root-MuiChip-root"
+        role="button"
+        tabindex="0"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall MuiChip-icon MuiChip-iconSmall MuiChip-iconColorDefault css-120dh41-MuiSvgIcon-root"
+          data-testid="BusinessIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M12 7V3H2v18h20V7zM6 19H4v-2h2zm0-4H4v-2h2zm0-4H4V9h2zm0-4H4V5h2zm4 12H8v-2h2zm0-4H8v-2h2zm0-4H8V9h2zm0-4H8V5h2zm10 12h-8v-2h2v-2h-2v-2h2v-2h-2V9h8zm-2-8h-2v2h2zm0 4h-2v2h2z"
+          />
+        </svg>
+        <span
+          class="MuiChip-label MuiChip-labelSmall css-19m61dl-MuiChip-label"
+        >
+          Aktive Kunden
+        </span>
+      </div>
+      <div
+        class="MuiButtonBase-root MuiChip-root MuiChip-outlined MuiChip-sizeSmall MuiChip-colorDefault MuiChip-clickable MuiChip-clickableColorDefault MuiChip-outlinedDefault css-h76bs3-MuiButtonBase-root-MuiChip-root"
+        role="button"
+        tabindex="0"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall MuiChip-icon MuiChip-iconSmall MuiChip-iconColorDefault css-120dh41-MuiSvgIcon-root"
+          data-testid="WarningIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M1 21h22L12 2zm12-3h-2v-2h2zm0-4h-2v-4h2z"
+          />
+        </svg>
+        <span
+          class="MuiChip-label MuiChip-labelSmall css-19m61dl-MuiChip-label"
+        >
+          Risiko-Kunden
+        </span>
+      </div>
+      <div
+        class="MuiButtonBase-root MuiChip-root MuiChip-outlined MuiChip-sizeSmall MuiChip-colorDefault MuiChip-clickable MuiChip-clickableColorDefault MuiChip-outlinedDefault css-h76bs3-MuiButtonBase-root-MuiChip-root"
+        role="button"
+        tabindex="0"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall MuiChip-icon MuiChip-iconSmall MuiChip-iconColorDefault css-120dh41-MuiSvgIcon-root"
+          data-testid="ScheduleIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2M12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8"
+          />
+          <path
+            d="M12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z"
+          />
+        </svg>
+        <span
+          class="MuiChip-label MuiChip-labelSmall css-19m61dl-MuiChip-label"
+        >
+          Lange kein Kontakt
+        </span>
+      </div>
+      <div
+        class="MuiButtonBase-root MuiChip-root MuiChip-outlined MuiChip-sizeSmall MuiChip-colorDefault MuiChip-clickable MuiChip-clickableColorDefault MuiChip-outlinedDefault css-h76bs3-MuiButtonBase-root-MuiChip-root"
+        role="button"
+        tabindex="0"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall MuiChip-icon MuiChip-iconSmall MuiChip-iconColorDefault css-120dh41-MuiSvgIcon-root"
+          data-testid="TrendingUpIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="m16 6 2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"
+          />
+        </svg>
+        <span
+          class="MuiChip-label MuiChip-labelSmall css-19m61dl-MuiChip-label"
+        >
+          Top-Kunden
+        </span>
+      </div>
+      <div
+        class="MuiButtonBase-root MuiChip-root MuiChip-outlined MuiChip-sizeSmall MuiChip-colorDefault MuiChip-clickable MuiChip-clickableColorDefault MuiChip-outlinedDefault css-h76bs3-MuiButtonBase-root-MuiChip-root"
+        role="button"
+        tabindex="0"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall MuiChip-icon MuiChip-iconSmall MuiChip-iconColorDefault css-120dh41-MuiSvgIcon-root"
+          data-testid="AddIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6z"
+          />
+        </svg>
+        <span
+          class="MuiChip-label MuiChip-labelSmall css-19m61dl-MuiChip-label"
+        >
+          Neue Kunden
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`IntelligentFilterBar - Snapshot Tests > should match snapshot - loading state > loading-state 1`] = `
+<div
+  class="MuiBox-root css-i3pbo"
+>
+  <div
+    class="MuiStack-root css-1sazv7p-MuiStack-root"
+  >
+    <div
+      class="MuiStack-root css-1sos3zc-MuiStack-root"
+    >
+      <div
+        class="MuiBox-root css-1jlnwea"
+      >
+        <div
+          class="MuiFormControl-root MuiFormControl-fullWidth MuiTextField-root css-6ecae7-MuiFormControl-root-MuiTextField-root"
+        >
+          <div
+            class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary Mui-disabled MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedStart css-ot336b-MuiInputBase-root-MuiOutlinedInput-root"
+          >
+            <div
+              class="MuiInputAdornment-root MuiInputAdornment-positionStart MuiInputAdornment-outlined MuiInputAdornment-sizeMedium css-1nowbqt-MuiInputAdornment-root"
+            >
+              <span
+                aria-hidden="true"
+                class="notranslate"
+              >
+                ​
+              </span>
+              <svg
+                aria-hidden="true"
+                class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1umw9bq-MuiSvgIcon-root"
+                data-testid="SearchIcon"
+                focusable="false"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"
+                />
+              </svg>
+            </div>
+            <input
+              aria-invalid="false"
+              autocapitalize="off"
+              autocomplete="off"
+              autocorrect="off"
+              class="MuiInputBase-input MuiOutlinedInput-input Mui-disabled MuiInputBase-inputAdornedStart css-2u11ia-MuiInputBase-input-MuiOutlinedInput-input"
+              data-form-type="other"
+              data-lpignore="true"
+              disabled=""
+              id=":r11:"
+              placeholder="Suche nach Firma, Kundennummer, Kontakten..."
+              spellcheck="false"
+              type="text"
+              value=""
+            />
+            <fieldset
+              aria-hidden="true"
+              class="MuiOutlinedInput-notchedOutline css-18p5xg2-MuiNotchedOutlined-root-MuiOutlinedInput-notchedOutline"
+            >
+              <legend
+                class="css-1nf2c5d-MuiNotchedOutlined-root"
+              >
+                <span
+                  aria-hidden="true"
+                  class="notranslate"
+                >
+                  ​
+                </span>
+              </legend>
+            </fieldset>
+          </div>
+        </div>
+      </div>
+      <button
+        aria-label="Erweiterte Filter"
+        class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium css-53g0n7-MuiButtonBase-root-MuiIconButton-root"
+        data-mui-internal-clone-element="true"
+        tabindex="0"
+        type="button"
+      >
+        <span
+          class="MuiBadge-root css-63ezxx-MuiBadge-root"
+        >
+          <svg
+            aria-hidden="true"
+            class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1umw9bq-MuiSvgIcon-root"
+            data-testid="FilterListIcon"
+            focusable="false"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M10 18h4v-2h-4zM3 6v2h18V6zm3 7h12v-2H6z"
+            />
+          </svg>
+          <span
+            class="MuiBadge-badge MuiBadge-standard MuiBadge-invisible MuiBadge-anchorOriginTopRight MuiBadge-anchorOriginTopRightRectangular MuiBadge-overlapRectangular MuiBadge-colorPrimary css-aikwdp-MuiBadge-badge"
+          />
+        </span>
+      </button>
+      <button
+        aria-label="Sortiert nach: Unternehmen (↑)"
+        class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium css-53g0n7-MuiButtonBase-root-MuiIconButton-root"
+        data-mui-internal-clone-element="true"
+        tabindex="0"
+        type="button"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1umw9bq-MuiSvgIcon-root"
+          data-testid="SortIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M3 18h6v-2H3zM3 6v2h18V6zm0 7h12v-2H3z"
+          />
+        </svg>
+      </button>
+      <button
+        aria-label="Spalten verwalten"
+        class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium css-53g0n7-MuiButtonBase-root-MuiIconButton-root"
+        data-mui-internal-clone-element="true"
+        tabindex="0"
+        type="button"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1umw9bq-MuiSvgIcon-root"
+          data-testid="ViewColumnIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M14.67 5v14H9.33V5zm1 14H21V5h-5.33zm-7.34 0V5H3v14z"
+          />
+        </svg>
+      </button>
+    </div>
+    <div
+      class="MuiStack-root css-14llwso-MuiStack-root"
+    >
+      <div
+        class="MuiButtonBase-root MuiChip-root MuiChip-outlined MuiChip-sizeSmall MuiChip-colorDefault MuiChip-clickable MuiChip-clickableColorDefault MuiChip-outlinedDefault css-h76bs3-MuiButtonBase-root-MuiChip-root"
+        role="button"
+        tabindex="0"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall MuiChip-icon MuiChip-iconSmall MuiChip-iconColorDefault css-120dh41-MuiSvgIcon-root"
+          data-testid="BusinessIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M12 7V3H2v18h20V7zM6 19H4v-2h2zm0-4H4v-2h2zm0-4H4V9h2zm0-4H4V5h2zm4 12H8v-2h2zm0-4H8v-2h2zm0-4H8V9h2zm0-4H8V5h2zm10 12h-8v-2h2v-2h-2v-2h2v-2h-2V9h8zm-2-8h-2v2h2zm0 4h-2v2h2z"
+          />
+        </svg>
+        <span
+          class="MuiChip-label MuiChip-labelSmall css-19m61dl-MuiChip-label"
+        >
+          Aktive Kunden
+        </span>
+      </div>
+      <div
+        class="MuiButtonBase-root MuiChip-root MuiChip-outlined MuiChip-sizeSmall MuiChip-colorDefault MuiChip-clickable MuiChip-clickableColorDefault MuiChip-outlinedDefault css-h76bs3-MuiButtonBase-root-MuiChip-root"
+        role="button"
+        tabindex="0"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall MuiChip-icon MuiChip-iconSmall MuiChip-iconColorDefault css-120dh41-MuiSvgIcon-root"
+          data-testid="WarningIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M1 21h22L12 2zm12-3h-2v-2h2zm0-4h-2v-4h2z"
+          />
+        </svg>
+        <span
+          class="MuiChip-label MuiChip-labelSmall css-19m61dl-MuiChip-label"
+        >
+          Risiko-Kunden
+        </span>
+      </div>
+      <div
+        class="MuiButtonBase-root MuiChip-root MuiChip-outlined MuiChip-sizeSmall MuiChip-colorDefault MuiChip-clickable MuiChip-clickableColorDefault MuiChip-outlinedDefault css-h76bs3-MuiButtonBase-root-MuiChip-root"
+        role="button"
+        tabindex="0"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall MuiChip-icon MuiChip-iconSmall MuiChip-iconColorDefault css-120dh41-MuiSvgIcon-root"
+          data-testid="ScheduleIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2M12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8"
+          />
+          <path
+            d="M12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z"
+          />
+        </svg>
+        <span
+          class="MuiChip-label MuiChip-labelSmall css-19m61dl-MuiChip-label"
+        >
+          Lange kein Kontakt
+        </span>
+      </div>
+      <div
+        class="MuiButtonBase-root MuiChip-root MuiChip-outlined MuiChip-sizeSmall MuiChip-colorDefault MuiChip-clickable MuiChip-clickableColorDefault MuiChip-outlinedDefault css-h76bs3-MuiButtonBase-root-MuiChip-root"
+        role="button"
+        tabindex="0"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall MuiChip-icon MuiChip-iconSmall MuiChip-iconColorDefault css-120dh41-MuiSvgIcon-root"
+          data-testid="TrendingUpIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="m16 6 2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"
+          />
+        </svg>
+        <span
+          class="MuiChip-label MuiChip-labelSmall css-19m61dl-MuiChip-label"
+        >
+          Top-Kunden
+        </span>
+      </div>
+      <div
+        class="MuiButtonBase-root MuiChip-root MuiChip-outlined MuiChip-sizeSmall MuiChip-colorDefault MuiChip-clickable MuiChip-clickableColorDefault MuiChip-outlinedDefault css-h76bs3-MuiButtonBase-root-MuiChip-root"
+        role="button"
+        tabindex="0"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall MuiChip-icon MuiChip-iconSmall MuiChip-iconColorDefault css-120dh41-MuiSvgIcon-root"
+          data-testid="AddIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6z"
+          />
+        </svg>
+        <span
+          class="MuiChip-label MuiChip-labelSmall css-19m61dl-MuiChip-label"
+        >
+          Neue Kunden
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`IntelligentFilterBar - Snapshot Tests > should match snapshot - mobile view > mobile-view 1`] = `
+<div
+  class="MuiBox-root css-i3pbo"
+>
+  <div
+    class="MuiStack-root css-1sazv7p-MuiStack-root"
+  >
+    <div
+      class="MuiStack-root css-1sos3zc-MuiStack-root"
+    >
+      <div
+        class="MuiBox-root css-1jlnwea"
+      >
+        <div
+          class="MuiFormControl-root MuiFormControl-fullWidth MuiTextField-root css-6ecae7-MuiFormControl-root-MuiTextField-root"
+        >
+          <div
+            class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedStart css-ot336b-MuiInputBase-root-MuiOutlinedInput-root"
+          >
+            <div
+              class="MuiInputAdornment-root MuiInputAdornment-positionStart MuiInputAdornment-outlined MuiInputAdornment-sizeMedium css-1nowbqt-MuiInputAdornment-root"
+            >
+              <span
+                aria-hidden="true"
+                class="notranslate"
+              >
+                ​
+              </span>
+              <svg
+                aria-hidden="true"
+                class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1umw9bq-MuiSvgIcon-root"
+                data-testid="SearchIcon"
+                focusable="false"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"
+                />
+              </svg>
+            </div>
+            <input
+              aria-invalid="false"
+              autocapitalize="off"
+              autocomplete="off"
+              autocorrect="off"
+              class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputAdornedStart css-2u11ia-MuiInputBase-input-MuiOutlinedInput-input"
+              data-form-type="other"
+              data-lpignore="true"
+              id=":r31:"
+              placeholder="Suche nach Firma, Kundennummer, Kontakten..."
+              spellcheck="false"
+              type="text"
+              value=""
+            />
+            <fieldset
+              aria-hidden="true"
+              class="MuiOutlinedInput-notchedOutline css-18p5xg2-MuiNotchedOutlined-root-MuiOutlinedInput-notchedOutline"
+            >
+              <legend
+                class="css-1nf2c5d-MuiNotchedOutlined-root"
+              >
+                <span
+                  aria-hidden="true"
+                  class="notranslate"
+                >
+                  ​
+                </span>
+              </legend>
+            </fieldset>
+          </div>
+        </div>
+      </div>
+      <button
+        aria-label="Erweiterte Filter"
+        class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium css-53g0n7-MuiButtonBase-root-MuiIconButton-root"
+        data-mui-internal-clone-element="true"
+        tabindex="0"
+        type="button"
+      >
+        <span
+          class="MuiBadge-root css-63ezxx-MuiBadge-root"
+        >
+          <svg
+            aria-hidden="true"
+            class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1umw9bq-MuiSvgIcon-root"
+            data-testid="FilterListIcon"
+            focusable="false"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M10 18h4v-2h-4zM3 6v2h18V6zm3 7h12v-2H6z"
+            />
+          </svg>
+          <span
+            class="MuiBadge-badge MuiBadge-standard MuiBadge-invisible MuiBadge-anchorOriginTopRight MuiBadge-anchorOriginTopRightRectangular MuiBadge-overlapRectangular MuiBadge-colorPrimary css-aikwdp-MuiBadge-badge"
+          />
+        </span>
+      </button>
+      <button
+        aria-label="Sortiert nach: Unternehmen (↑)"
+        class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium css-53g0n7-MuiButtonBase-root-MuiIconButton-root"
+        data-mui-internal-clone-element="true"
+        tabindex="0"
+        type="button"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1umw9bq-MuiSvgIcon-root"
+          data-testid="SortIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M3 18h6v-2H3zM3 6v2h18V6zm0 7h12v-2H3z"
+          />
+        </svg>
+      </button>
+      <button
+        aria-label="Spalten verwalten"
+        class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium css-53g0n7-MuiButtonBase-root-MuiIconButton-root"
+        data-mui-internal-clone-element="true"
+        tabindex="0"
+        type="button"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1umw9bq-MuiSvgIcon-root"
+          data-testid="ViewColumnIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M14.67 5v14H9.33V5zm1 14H21V5h-5.33zm-7.34 0V5H3v14z"
+          />
+        </svg>
+      </button>
+    </div>
+    <div
+      class="MuiStack-root css-14llwso-MuiStack-root"
+    >
+      <div
+        class="MuiButtonBase-root MuiChip-root MuiChip-outlined MuiChip-sizeSmall MuiChip-colorDefault MuiChip-clickable MuiChip-clickableColorDefault MuiChip-outlinedDefault css-h76bs3-MuiButtonBase-root-MuiChip-root"
+        role="button"
+        tabindex="0"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall MuiChip-icon MuiChip-iconSmall MuiChip-iconColorDefault css-120dh41-MuiSvgIcon-root"
+          data-testid="BusinessIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M12 7V3H2v18h20V7zM6 19H4v-2h2zm0-4H4v-2h2zm0-4H4V9h2zm0-4H4V5h2zm4 12H8v-2h2zm0-4H8v-2h2zm0-4H8V9h2zm0-4H8V5h2zm10 12h-8v-2h2v-2h-2v-2h2v-2h-2V9h8zm-2-8h-2v2h2zm0 4h-2v2h2z"
+          />
+        </svg>
+        <span
+          class="MuiChip-label MuiChip-labelSmall css-19m61dl-MuiChip-label"
+        >
+          Aktive Kunden
+        </span>
+      </div>
+      <div
+        class="MuiButtonBase-root MuiChip-root MuiChip-outlined MuiChip-sizeSmall MuiChip-colorDefault MuiChip-clickable MuiChip-clickableColorDefault MuiChip-outlinedDefault css-h76bs3-MuiButtonBase-root-MuiChip-root"
+        role="button"
+        tabindex="0"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall MuiChip-icon MuiChip-iconSmall MuiChip-iconColorDefault css-120dh41-MuiSvgIcon-root"
+          data-testid="WarningIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M1 21h22L12 2zm12-3h-2v-2h2zm0-4h-2v-4h2z"
+          />
+        </svg>
+        <span
+          class="MuiChip-label MuiChip-labelSmall css-19m61dl-MuiChip-label"
+        >
+          Risiko-Kunden
+        </span>
+      </div>
+      <div
+        class="MuiButtonBase-root MuiChip-root MuiChip-outlined MuiChip-sizeSmall MuiChip-colorDefault MuiChip-clickable MuiChip-clickableColorDefault MuiChip-outlinedDefault css-h76bs3-MuiButtonBase-root-MuiChip-root"
+        role="button"
+        tabindex="0"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall MuiChip-icon MuiChip-iconSmall MuiChip-iconColorDefault css-120dh41-MuiSvgIcon-root"
+          data-testid="ScheduleIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2M12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8"
+          />
+          <path
+            d="M12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z"
+          />
+        </svg>
+        <span
+          class="MuiChip-label MuiChip-labelSmall css-19m61dl-MuiChip-label"
+        >
+          Lange kein Kontakt
+        </span>
+      </div>
+      <div
+        class="MuiButtonBase-root MuiChip-root MuiChip-outlined MuiChip-sizeSmall MuiChip-colorDefault MuiChip-clickable MuiChip-clickableColorDefault MuiChip-outlinedDefault css-h76bs3-MuiButtonBase-root-MuiChip-root"
+        role="button"
+        tabindex="0"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall MuiChip-icon MuiChip-iconSmall MuiChip-iconColorDefault css-120dh41-MuiSvgIcon-root"
+          data-testid="TrendingUpIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="m16 6 2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"
+          />
+        </svg>
+        <span
+          class="MuiChip-label MuiChip-labelSmall css-19m61dl-MuiChip-label"
+        >
+          Top-Kunden
+        </span>
+      </div>
+      <div
+        class="MuiButtonBase-root MuiChip-root MuiChip-outlined MuiChip-sizeSmall MuiChip-colorDefault MuiChip-clickable MuiChip-clickableColorDefault MuiChip-outlinedDefault css-h76bs3-MuiButtonBase-root-MuiChip-root"
+        role="button"
+        tabindex="0"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall MuiChip-icon MuiChip-iconSmall MuiChip-iconColorDefault css-120dh41-MuiSvgIcon-root"
+          data-testid="AddIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6z"
+          />
+        </svg>
+        <span
+          class="MuiChip-label MuiChip-labelSmall css-19m61dl-MuiChip-label"
+        >
+          Neue Kunden
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`IntelligentFilterBar - Snapshot Tests > should match snapshot - no results > no-results 1`] = `
+<div
+  class="MuiBox-root css-i3pbo"
+>
+  <div
+    class="MuiStack-root css-1sazv7p-MuiStack-root"
+  >
+    <div
+      class="MuiStack-root css-1sos3zc-MuiStack-root"
+    >
+      <div
+        class="MuiBox-root css-1jlnwea"
+      >
+        <div
+          class="MuiFormControl-root MuiFormControl-fullWidth MuiTextField-root css-6ecae7-MuiFormControl-root-MuiTextField-root"
+        >
+          <div
+            class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedStart css-ot336b-MuiInputBase-root-MuiOutlinedInput-root"
+          >
+            <div
+              class="MuiInputAdornment-root MuiInputAdornment-positionStart MuiInputAdornment-outlined MuiInputAdornment-sizeMedium css-1nowbqt-MuiInputAdornment-root"
+            >
+              <span
+                aria-hidden="true"
+                class="notranslate"
+              >
+                ​
+              </span>
+              <svg
+                aria-hidden="true"
+                class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1umw9bq-MuiSvgIcon-root"
+                data-testid="SearchIcon"
+                focusable="false"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"
+                />
+              </svg>
+            </div>
+            <input
+              aria-invalid="false"
+              autocapitalize="off"
+              autocomplete="off"
+              autocorrect="off"
+              class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputAdornedStart css-2u11ia-MuiInputBase-input-MuiOutlinedInput-input"
+              data-form-type="other"
+              data-lpignore="true"
+              id=":r21:"
+              placeholder="Suche nach Firma, Kundennummer, Kontakten..."
+              spellcheck="false"
+              type="text"
+              value=""
+            />
+            <fieldset
+              aria-hidden="true"
+              class="MuiOutlinedInput-notchedOutline css-18p5xg2-MuiNotchedOutlined-root-MuiOutlinedInput-notchedOutline"
+            >
+              <legend
+                class="css-1nf2c5d-MuiNotchedOutlined-root"
+              >
+                <span
+                  aria-hidden="true"
+                  class="notranslate"
+                >
+                  ​
+                </span>
+              </legend>
+            </fieldset>
+          </div>
+        </div>
+      </div>
+      <button
+        aria-label="Erweiterte Filter"
+        class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium css-53g0n7-MuiButtonBase-root-MuiIconButton-root"
+        data-mui-internal-clone-element="true"
+        tabindex="0"
+        type="button"
+      >
+        <span
+          class="MuiBadge-root css-63ezxx-MuiBadge-root"
+        >
+          <svg
+            aria-hidden="true"
+            class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1umw9bq-MuiSvgIcon-root"
+            data-testid="FilterListIcon"
+            focusable="false"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M10 18h4v-2h-4zM3 6v2h18V6zm3 7h12v-2H6z"
+            />
+          </svg>
+          <span
+            class="MuiBadge-badge MuiBadge-standard MuiBadge-invisible MuiBadge-anchorOriginTopRight MuiBadge-anchorOriginTopRightRectangular MuiBadge-overlapRectangular MuiBadge-colorPrimary css-aikwdp-MuiBadge-badge"
+          />
+        </span>
+      </button>
+      <button
+        aria-label="Sortiert nach: Unternehmen (↑)"
+        class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium css-53g0n7-MuiButtonBase-root-MuiIconButton-root"
+        data-mui-internal-clone-element="true"
+        tabindex="0"
+        type="button"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1umw9bq-MuiSvgIcon-root"
+          data-testid="SortIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M3 18h6v-2H3zM3 6v2h18V6zm0 7h12v-2H3z"
+          />
+        </svg>
+      </button>
+      <button
+        aria-label="Spalten verwalten"
+        class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium css-53g0n7-MuiButtonBase-root-MuiIconButton-root"
+        data-mui-internal-clone-element="true"
+        tabindex="0"
+        type="button"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1umw9bq-MuiSvgIcon-root"
+          data-testid="ViewColumnIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M14.67 5v14H9.33V5zm1 14H21V5h-5.33zm-7.34 0V5H3v14z"
+          />
+        </svg>
+      </button>
+    </div>
+    <div
+      class="MuiStack-root css-14llwso-MuiStack-root"
+    >
+      <div
+        class="MuiButtonBase-root MuiChip-root MuiChip-outlined MuiChip-sizeSmall MuiChip-colorDefault MuiChip-clickable MuiChip-clickableColorDefault MuiChip-outlinedDefault css-h76bs3-MuiButtonBase-root-MuiChip-root"
+        role="button"
+        tabindex="0"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall MuiChip-icon MuiChip-iconSmall MuiChip-iconColorDefault css-120dh41-MuiSvgIcon-root"
+          data-testid="BusinessIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M12 7V3H2v18h20V7zM6 19H4v-2h2zm0-4H4v-2h2zm0-4H4V9h2zm0-4H4V5h2zm4 12H8v-2h2zm0-4H8v-2h2zm0-4H8V9h2zm0-4H8V5h2zm10 12h-8v-2h2v-2h-2v-2h2v-2h-2V9h8zm-2-8h-2v2h2zm0 4h-2v2h2z"
+          />
+        </svg>
+        <span
+          class="MuiChip-label MuiChip-labelSmall css-19m61dl-MuiChip-label"
+        >
+          Aktive Kunden
+        </span>
+      </div>
+      <div
+        class="MuiButtonBase-root MuiChip-root MuiChip-outlined MuiChip-sizeSmall MuiChip-colorDefault MuiChip-clickable MuiChip-clickableColorDefault MuiChip-outlinedDefault css-h76bs3-MuiButtonBase-root-MuiChip-root"
+        role="button"
+        tabindex="0"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall MuiChip-icon MuiChip-iconSmall MuiChip-iconColorDefault css-120dh41-MuiSvgIcon-root"
+          data-testid="WarningIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M1 21h22L12 2zm12-3h-2v-2h2zm0-4h-2v-4h2z"
+          />
+        </svg>
+        <span
+          class="MuiChip-label MuiChip-labelSmall css-19m61dl-MuiChip-label"
+        >
+          Risiko-Kunden
+        </span>
+      </div>
+      <div
+        class="MuiButtonBase-root MuiChip-root MuiChip-outlined MuiChip-sizeSmall MuiChip-colorDefault MuiChip-clickable MuiChip-clickableColorDefault MuiChip-outlinedDefault css-h76bs3-MuiButtonBase-root-MuiChip-root"
+        role="button"
+        tabindex="0"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall MuiChip-icon MuiChip-iconSmall MuiChip-iconColorDefault css-120dh41-MuiSvgIcon-root"
+          data-testid="ScheduleIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2M12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8"
+          />
+          <path
+            d="M12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z"
+          />
+        </svg>
+        <span
+          class="MuiChip-label MuiChip-labelSmall css-19m61dl-MuiChip-label"
+        >
+          Lange kein Kontakt
+        </span>
+      </div>
+      <div
+        class="MuiButtonBase-root MuiChip-root MuiChip-outlined MuiChip-sizeSmall MuiChip-colorDefault MuiChip-clickable MuiChip-clickableColorDefault MuiChip-outlinedDefault css-h76bs3-MuiButtonBase-root-MuiChip-root"
+        role="button"
+        tabindex="0"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall MuiChip-icon MuiChip-iconSmall MuiChip-iconColorDefault css-120dh41-MuiSvgIcon-root"
+          data-testid="TrendingUpIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="m16 6 2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"
+          />
+        </svg>
+        <span
+          class="MuiChip-label MuiChip-labelSmall css-19m61dl-MuiChip-label"
+        >
+          Top-Kunden
+        </span>
+      </div>
+      <div
+        class="MuiButtonBase-root MuiChip-root MuiChip-outlined MuiChip-sizeSmall MuiChip-colorDefault MuiChip-clickable MuiChip-clickableColorDefault MuiChip-outlinedDefault css-h76bs3-MuiButtonBase-root-MuiChip-root"
+        role="button"
+        tabindex="0"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall MuiChip-icon MuiChip-iconSmall MuiChip-iconColorDefault css-120dh41-MuiSvgIcon-root"
+          data-testid="AddIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6z"
+          />
+        </svg>
+        <span
+          class="MuiChip-label MuiChip-labelSmall css-19m61dl-MuiChip-label"
+        >
+          Neue Kunden
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`IntelligentFilterBar - Snapshot Tests > should match snapshot - with active filters > with-filters 1`] = `
+<div
+  class="MuiBox-root css-i3pbo"
+>
+  <div
+    class="MuiStack-root css-1sazv7p-MuiStack-root"
+  >
+    <div
+      class="MuiStack-root css-1sos3zc-MuiStack-root"
+    >
+      <div
+        class="MuiBox-root css-1jlnwea"
+      >
+        <div
+          class="MuiFormControl-root MuiFormControl-fullWidth MuiTextField-root css-6ecae7-MuiFormControl-root-MuiTextField-root"
+        >
+          <div
+            class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedStart css-ot336b-MuiInputBase-root-MuiOutlinedInput-root"
+          >
+            <div
+              class="MuiInputAdornment-root MuiInputAdornment-positionStart MuiInputAdornment-outlined MuiInputAdornment-sizeMedium css-1nowbqt-MuiInputAdornment-root"
+            >
+              <span
+                aria-hidden="true"
+                class="notranslate"
+              >
+                ​
+              </span>
+              <svg
+                aria-hidden="true"
+                class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1umw9bq-MuiSvgIcon-root"
+                data-testid="SearchIcon"
+                focusable="false"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"
+                />
+              </svg>
+            </div>
+            <input
+              aria-invalid="false"
+              autocapitalize="off"
+              autocomplete="off"
+              autocorrect="off"
+              class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputAdornedStart css-2u11ia-MuiInputBase-input-MuiOutlinedInput-input"
+              data-form-type="other"
+              data-lpignore="true"
+              id=":rh:"
+              placeholder="Suche nach Firma, Kundennummer, Kontakten..."
+              spellcheck="false"
+              type="text"
+              value=""
+            />
+            <fieldset
+              aria-hidden="true"
+              class="MuiOutlinedInput-notchedOutline css-18p5xg2-MuiNotchedOutlined-root-MuiOutlinedInput-notchedOutline"
+            >
+              <legend
+                class="css-1nf2c5d-MuiNotchedOutlined-root"
+              >
+                <span
+                  aria-hidden="true"
+                  class="notranslate"
+                >
+                  ​
+                </span>
+              </legend>
+            </fieldset>
+          </div>
+        </div>
+      </div>
+      <button
+        aria-label="Erweiterte Filter"
+        class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium css-53g0n7-MuiButtonBase-root-MuiIconButton-root"
+        data-mui-internal-clone-element="true"
+        tabindex="0"
+        type="button"
+      >
+        <span
+          class="MuiBadge-root css-63ezxx-MuiBadge-root"
+        >
+          <svg
+            aria-hidden="true"
+            class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1umw9bq-MuiSvgIcon-root"
+            data-testid="FilterListIcon"
+            focusable="false"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M10 18h4v-2h-4zM3 6v2h18V6zm3 7h12v-2H6z"
+            />
+          </svg>
+          <span
+            class="MuiBadge-badge MuiBadge-standard MuiBadge-invisible MuiBadge-anchorOriginTopRight MuiBadge-anchorOriginTopRightRectangular MuiBadge-overlapRectangular MuiBadge-colorPrimary css-aikwdp-MuiBadge-badge"
+          />
+        </span>
+      </button>
+      <button
+        aria-label="Sortiert nach: Unternehmen (↑)"
+        class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium css-53g0n7-MuiButtonBase-root-MuiIconButton-root"
+        data-mui-internal-clone-element="true"
+        tabindex="0"
+        type="button"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1umw9bq-MuiSvgIcon-root"
+          data-testid="SortIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M3 18h6v-2H3zM3 6v2h18V6zm0 7h12v-2H3z"
+          />
+        </svg>
+      </button>
+      <button
+        aria-label="Spalten verwalten"
+        class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium css-53g0n7-MuiButtonBase-root-MuiIconButton-root"
+        data-mui-internal-clone-element="true"
+        tabindex="0"
+        type="button"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1umw9bq-MuiSvgIcon-root"
+          data-testid="ViewColumnIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M14.67 5v14H9.33V5zm1 14H21V5h-5.33zm-7.34 0V5H3v14z"
+          />
+        </svg>
+      </button>
+    </div>
+    <div
+      class="MuiStack-root css-14llwso-MuiStack-root"
+    >
+      <div
+        class="MuiButtonBase-root MuiChip-root MuiChip-outlined MuiChip-sizeSmall MuiChip-colorDefault MuiChip-clickable MuiChip-clickableColorDefault MuiChip-outlinedDefault css-h76bs3-MuiButtonBase-root-MuiChip-root"
+        role="button"
+        tabindex="0"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall MuiChip-icon MuiChip-iconSmall MuiChip-iconColorDefault css-120dh41-MuiSvgIcon-root"
+          data-testid="BusinessIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M12 7V3H2v18h20V7zM6 19H4v-2h2zm0-4H4v-2h2zm0-4H4V9h2zm0-4H4V5h2zm4 12H8v-2h2zm0-4H8v-2h2zm0-4H8V9h2zm0-4H8V5h2zm10 12h-8v-2h2v-2h-2v-2h2v-2h-2V9h8zm-2-8h-2v2h2zm0 4h-2v2h2z"
+          />
+        </svg>
+        <span
+          class="MuiChip-label MuiChip-labelSmall css-19m61dl-MuiChip-label"
+        >
+          Aktive Kunden
+        </span>
+      </div>
+      <div
+        class="MuiButtonBase-root MuiChip-root MuiChip-outlined MuiChip-sizeSmall MuiChip-colorDefault MuiChip-clickable MuiChip-clickableColorDefault MuiChip-outlinedDefault css-h76bs3-MuiButtonBase-root-MuiChip-root"
+        role="button"
+        tabindex="0"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall MuiChip-icon MuiChip-iconSmall MuiChip-iconColorDefault css-120dh41-MuiSvgIcon-root"
+          data-testid="WarningIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M1 21h22L12 2zm12-3h-2v-2h2zm0-4h-2v-4h2z"
+          />
+        </svg>
+        <span
+          class="MuiChip-label MuiChip-labelSmall css-19m61dl-MuiChip-label"
+        >
+          Risiko-Kunden
+        </span>
+      </div>
+      <div
+        class="MuiButtonBase-root MuiChip-root MuiChip-outlined MuiChip-sizeSmall MuiChip-colorDefault MuiChip-clickable MuiChip-clickableColorDefault MuiChip-outlinedDefault css-h76bs3-MuiButtonBase-root-MuiChip-root"
+        role="button"
+        tabindex="0"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall MuiChip-icon MuiChip-iconSmall MuiChip-iconColorDefault css-120dh41-MuiSvgIcon-root"
+          data-testid="ScheduleIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2M12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8"
+          />
+          <path
+            d="M12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z"
+          />
+        </svg>
+        <span
+          class="MuiChip-label MuiChip-labelSmall css-19m61dl-MuiChip-label"
+        >
+          Lange kein Kontakt
+        </span>
+      </div>
+      <div
+        class="MuiButtonBase-root MuiChip-root MuiChip-outlined MuiChip-sizeSmall MuiChip-colorDefault MuiChip-clickable MuiChip-clickableColorDefault MuiChip-outlinedDefault css-h76bs3-MuiButtonBase-root-MuiChip-root"
+        role="button"
+        tabindex="0"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall MuiChip-icon MuiChip-iconSmall MuiChip-iconColorDefault css-120dh41-MuiSvgIcon-root"
+          data-testid="TrendingUpIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="m16 6 2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"
+          />
+        </svg>
+        <span
+          class="MuiChip-label MuiChip-labelSmall css-19m61dl-MuiChip-label"
+        >
+          Top-Kunden
+        </span>
+      </div>
+      <div
+        class="MuiButtonBase-root MuiChip-root MuiChip-outlined MuiChip-sizeSmall MuiChip-colorDefault MuiChip-clickable MuiChip-clickableColorDefault MuiChip-outlinedDefault css-h76bs3-MuiButtonBase-root-MuiChip-root"
+        role="button"
+        tabindex="0"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall MuiChip-icon MuiChip-iconSmall MuiChip-iconColorDefault css-120dh41-MuiSvgIcon-root"
+          data-testid="AddIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6z"
+          />
+        </svg>
+        <span
+          class="MuiChip-label MuiChip-labelSmall css-19m61dl-MuiChip-label"
+        >
+          Neue Kunden
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`IntelligentFilterBar - Snapshot Tests > should match snapshot - with all features enabled > all-features 1`] = `
+<div
+  class="MuiBox-root css-i3pbo"
+>
+  <div
+    class="MuiStack-root css-1sazv7p-MuiStack-root"
+  >
+    <div
+      class="MuiStack-root css-1sos3zc-MuiStack-root"
+    >
+      <div
+        class="MuiBox-root css-1jlnwea"
+      >
+        <div
+          class="MuiFormControl-root MuiFormControl-fullWidth MuiTextField-root css-6ecae7-MuiFormControl-root-MuiTextField-root"
+        >
+          <div
+            class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedStart css-ot336b-MuiInputBase-root-MuiOutlinedInput-root"
+          >
+            <div
+              class="MuiInputAdornment-root MuiInputAdornment-positionStart MuiInputAdornment-outlined MuiInputAdornment-sizeMedium css-1nowbqt-MuiInputAdornment-root"
+            >
+              <span
+                aria-hidden="true"
+                class="notranslate"
+              >
+                ​
+              </span>
+              <svg
+                aria-hidden="true"
+                class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1umw9bq-MuiSvgIcon-root"
+                data-testid="SearchIcon"
+                focusable="false"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"
+                />
+              </svg>
+            </div>
+            <input
+              aria-invalid="false"
+              autocapitalize="off"
+              autocomplete="off"
+              autocorrect="off"
+              class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputAdornedStart css-2u11ia-MuiInputBase-input-MuiOutlinedInput-input"
+              data-form-type="other"
+              data-lpignore="true"
+              id=":r2p:"
+              placeholder="Suche nach Firma, Kundennummer, Kontakten..."
+              spellcheck="false"
+              type="text"
+              value=""
+            />
+            <fieldset
+              aria-hidden="true"
+              class="MuiOutlinedInput-notchedOutline css-18p5xg2-MuiNotchedOutlined-root-MuiOutlinedInput-notchedOutline"
+            >
+              <legend
+                class="css-1nf2c5d-MuiNotchedOutlined-root"
+              >
+                <span
+                  aria-hidden="true"
+                  class="notranslate"
+                >
+                  ​
+                </span>
+              </legend>
+            </fieldset>
+          </div>
+        </div>
+      </div>
+      <button
+        aria-label="Erweiterte Filter"
+        class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium css-53g0n7-MuiButtonBase-root-MuiIconButton-root"
+        data-mui-internal-clone-element="true"
+        tabindex="0"
+        type="button"
+      >
+        <span
+          class="MuiBadge-root css-63ezxx-MuiBadge-root"
+        >
+          <svg
+            aria-hidden="true"
+            class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1umw9bq-MuiSvgIcon-root"
+            data-testid="FilterListIcon"
+            focusable="false"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M10 18h4v-2h-4zM3 6v2h18V6zm3 7h12v-2H6z"
+            />
+          </svg>
+          <span
+            class="MuiBadge-badge MuiBadge-standard MuiBadge-invisible MuiBadge-anchorOriginTopRight MuiBadge-anchorOriginTopRightRectangular MuiBadge-overlapRectangular MuiBadge-colorPrimary css-aikwdp-MuiBadge-badge"
+          />
+        </span>
+      </button>
+      <button
+        aria-label="Sortiert nach: Unternehmen (↑)"
+        class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium css-53g0n7-MuiButtonBase-root-MuiIconButton-root"
+        data-mui-internal-clone-element="true"
+        tabindex="0"
+        type="button"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1umw9bq-MuiSvgIcon-root"
+          data-testid="SortIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M3 18h6v-2H3zM3 6v2h18V6zm0 7h12v-2H3z"
+          />
+        </svg>
+      </button>
+      <button
+        aria-label="Spalten verwalten"
+        class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium css-53g0n7-MuiButtonBase-root-MuiIconButton-root"
+        data-mui-internal-clone-element="true"
+        tabindex="0"
+        type="button"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1umw9bq-MuiSvgIcon-root"
+          data-testid="ViewColumnIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M14.67 5v14H9.33V5zm1 14H21V5h-5.33zm-7.34 0V5H3v14z"
+          />
+        </svg>
+      </button>
+    </div>
+    <div
+      class="MuiStack-root css-14llwso-MuiStack-root"
+    >
+      <div
+        class="MuiButtonBase-root MuiChip-root MuiChip-outlined MuiChip-sizeSmall MuiChip-colorDefault MuiChip-clickable MuiChip-clickableColorDefault MuiChip-outlinedDefault css-h76bs3-MuiButtonBase-root-MuiChip-root"
+        role="button"
+        tabindex="0"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall MuiChip-icon MuiChip-iconSmall MuiChip-iconColorDefault css-120dh41-MuiSvgIcon-root"
+          data-testid="BusinessIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M12 7V3H2v18h20V7zM6 19H4v-2h2zm0-4H4v-2h2zm0-4H4V9h2zm0-4H4V5h2zm4 12H8v-2h2zm0-4H8v-2h2zm0-4H8V9h2zm0-4H8V5h2zm10 12h-8v-2h2v-2h-2v-2h2v-2h-2V9h8zm-2-8h-2v2h2zm0 4h-2v2h2z"
+          />
+        </svg>
+        <span
+          class="MuiChip-label MuiChip-labelSmall css-19m61dl-MuiChip-label"
+        >
+          Aktive Kunden
+        </span>
+      </div>
+      <div
+        class="MuiButtonBase-root MuiChip-root MuiChip-outlined MuiChip-sizeSmall MuiChip-colorDefault MuiChip-clickable MuiChip-clickableColorDefault MuiChip-outlinedDefault css-h76bs3-MuiButtonBase-root-MuiChip-root"
+        role="button"
+        tabindex="0"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall MuiChip-icon MuiChip-iconSmall MuiChip-iconColorDefault css-120dh41-MuiSvgIcon-root"
+          data-testid="WarningIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M1 21h22L12 2zm12-3h-2v-2h2zm0-4h-2v-4h2z"
+          />
+        </svg>
+        <span
+          class="MuiChip-label MuiChip-labelSmall css-19m61dl-MuiChip-label"
+        >
+          Risiko-Kunden
+        </span>
+      </div>
+      <div
+        class="MuiButtonBase-root MuiChip-root MuiChip-outlined MuiChip-sizeSmall MuiChip-colorDefault MuiChip-clickable MuiChip-clickableColorDefault MuiChip-outlinedDefault css-h76bs3-MuiButtonBase-root-MuiChip-root"
+        role="button"
+        tabindex="0"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall MuiChip-icon MuiChip-iconSmall MuiChip-iconColorDefault css-120dh41-MuiSvgIcon-root"
+          data-testid="ScheduleIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2M12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8"
+          />
+          <path
+            d="M12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z"
+          />
+        </svg>
+        <span
+          class="MuiChip-label MuiChip-labelSmall css-19m61dl-MuiChip-label"
+        >
+          Lange kein Kontakt
+        </span>
+      </div>
+      <div
+        class="MuiButtonBase-root MuiChip-root MuiChip-outlined MuiChip-sizeSmall MuiChip-colorDefault MuiChip-clickable MuiChip-clickableColorDefault MuiChip-outlinedDefault css-h76bs3-MuiButtonBase-root-MuiChip-root"
+        role="button"
+        tabindex="0"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall MuiChip-icon MuiChip-iconSmall MuiChip-iconColorDefault css-120dh41-MuiSvgIcon-root"
+          data-testid="TrendingUpIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="m16 6 2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"
+          />
+        </svg>
+        <span
+          class="MuiChip-label MuiChip-labelSmall css-19m61dl-MuiChip-label"
+        >
+          Top-Kunden
+        </span>
+      </div>
+      <div
+        class="MuiButtonBase-root MuiChip-root MuiChip-outlined MuiChip-sizeSmall MuiChip-colorDefault MuiChip-clickable MuiChip-clickableColorDefault MuiChip-outlinedDefault css-h76bs3-MuiButtonBase-root-MuiChip-root"
+        role="button"
+        tabindex="0"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall MuiChip-icon MuiChip-iconSmall MuiChip-iconColorDefault css-120dh41-MuiSvgIcon-root"
+          data-testid="AddIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6z"
+          />
+        </svg>
+        <span
+          class="MuiChip-label MuiChip-labelSmall css-19m61dl-MuiChip-label"
+        >
+          Neue Kunden
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`IntelligentFilterBar - Snapshot Tests > should match snapshot - with many results > many-results 1`] = `
+<div
+  class="MuiBox-root css-i3pbo"
+>
+  <div
+    class="MuiStack-root css-1sazv7p-MuiStack-root"
+  >
+    <div
+      class="MuiStack-root css-1sos3zc-MuiStack-root"
+    >
+      <div
+        class="MuiBox-root css-1jlnwea"
+      >
+        <div
+          class="MuiFormControl-root MuiFormControl-fullWidth MuiTextField-root css-6ecae7-MuiFormControl-root-MuiTextField-root"
+        >
+          <div
+            class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedStart css-ot336b-MuiInputBase-root-MuiOutlinedInput-root"
+          >
+            <div
+              class="MuiInputAdornment-root MuiInputAdornment-positionStart MuiInputAdornment-outlined MuiInputAdornment-sizeMedium css-1nowbqt-MuiInputAdornment-root"
+            >
+              <span
+                aria-hidden="true"
+                class="notranslate"
+              >
+                ​
+              </span>
+              <svg
+                aria-hidden="true"
+                class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1umw9bq-MuiSvgIcon-root"
+                data-testid="SearchIcon"
+                focusable="false"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"
+                />
+              </svg>
+            </div>
+            <input
+              aria-invalid="false"
+              autocapitalize="off"
+              autocomplete="off"
+              autocorrect="off"
+              class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputAdornedStart css-2u11ia-MuiInputBase-input-MuiOutlinedInput-input"
+              data-form-type="other"
+              data-lpignore="true"
+              id=":r1p:"
+              placeholder="Suche nach Firma, Kundennummer, Kontakten..."
+              spellcheck="false"
+              type="text"
+              value=""
+            />
+            <fieldset
+              aria-hidden="true"
+              class="MuiOutlinedInput-notchedOutline css-18p5xg2-MuiNotchedOutlined-root-MuiOutlinedInput-notchedOutline"
+            >
+              <legend
+                class="css-1nf2c5d-MuiNotchedOutlined-root"
+              >
+                <span
+                  aria-hidden="true"
+                  class="notranslate"
+                >
+                  ​
+                </span>
+              </legend>
+            </fieldset>
+          </div>
+        </div>
+      </div>
+      <button
+        aria-label="Erweiterte Filter"
+        class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium css-53g0n7-MuiButtonBase-root-MuiIconButton-root"
+        data-mui-internal-clone-element="true"
+        tabindex="0"
+        type="button"
+      >
+        <span
+          class="MuiBadge-root css-63ezxx-MuiBadge-root"
+        >
+          <svg
+            aria-hidden="true"
+            class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1umw9bq-MuiSvgIcon-root"
+            data-testid="FilterListIcon"
+            focusable="false"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M10 18h4v-2h-4zM3 6v2h18V6zm3 7h12v-2H6z"
+            />
+          </svg>
+          <span
+            class="MuiBadge-badge MuiBadge-standard MuiBadge-invisible MuiBadge-anchorOriginTopRight MuiBadge-anchorOriginTopRightRectangular MuiBadge-overlapRectangular MuiBadge-colorPrimary css-aikwdp-MuiBadge-badge"
+          />
+        </span>
+      </button>
+      <button
+        aria-label="Sortiert nach: Unternehmen (↑)"
+        class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium css-53g0n7-MuiButtonBase-root-MuiIconButton-root"
+        data-mui-internal-clone-element="true"
+        tabindex="0"
+        type="button"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1umw9bq-MuiSvgIcon-root"
+          data-testid="SortIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M3 18h6v-2H3zM3 6v2h18V6zm0 7h12v-2H3z"
+          />
+        </svg>
+      </button>
+      <button
+        aria-label="Spalten verwalten"
+        class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium css-53g0n7-MuiButtonBase-root-MuiIconButton-root"
+        data-mui-internal-clone-element="true"
+        tabindex="0"
+        type="button"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1umw9bq-MuiSvgIcon-root"
+          data-testid="ViewColumnIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M14.67 5v14H9.33V5zm1 14H21V5h-5.33zm-7.34 0V5H3v14z"
+          />
+        </svg>
+      </button>
+    </div>
+    <div
+      class="MuiStack-root css-14llwso-MuiStack-root"
+    >
+      <div
+        class="MuiButtonBase-root MuiChip-root MuiChip-outlined MuiChip-sizeSmall MuiChip-colorDefault MuiChip-clickable MuiChip-clickableColorDefault MuiChip-outlinedDefault css-h76bs3-MuiButtonBase-root-MuiChip-root"
+        role="button"
+        tabindex="0"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall MuiChip-icon MuiChip-iconSmall MuiChip-iconColorDefault css-120dh41-MuiSvgIcon-root"
+          data-testid="BusinessIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M12 7V3H2v18h20V7zM6 19H4v-2h2zm0-4H4v-2h2zm0-4H4V9h2zm0-4H4V5h2zm4 12H8v-2h2zm0-4H8v-2h2zm0-4H8V9h2zm0-4H8V5h2zm10 12h-8v-2h2v-2h-2v-2h2v-2h-2V9h8zm-2-8h-2v2h2zm0 4h-2v2h2z"
+          />
+        </svg>
+        <span
+          class="MuiChip-label MuiChip-labelSmall css-19m61dl-MuiChip-label"
+        >
+          Aktive Kunden
+        </span>
+      </div>
+      <div
+        class="MuiButtonBase-root MuiChip-root MuiChip-outlined MuiChip-sizeSmall MuiChip-colorDefault MuiChip-clickable MuiChip-clickableColorDefault MuiChip-outlinedDefault css-h76bs3-MuiButtonBase-root-MuiChip-root"
+        role="button"
+        tabindex="0"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall MuiChip-icon MuiChip-iconSmall MuiChip-iconColorDefault css-120dh41-MuiSvgIcon-root"
+          data-testid="WarningIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M1 21h22L12 2zm12-3h-2v-2h2zm0-4h-2v-4h2z"
+          />
+        </svg>
+        <span
+          class="MuiChip-label MuiChip-labelSmall css-19m61dl-MuiChip-label"
+        >
+          Risiko-Kunden
+        </span>
+      </div>
+      <div
+        class="MuiButtonBase-root MuiChip-root MuiChip-outlined MuiChip-sizeSmall MuiChip-colorDefault MuiChip-clickable MuiChip-clickableColorDefault MuiChip-outlinedDefault css-h76bs3-MuiButtonBase-root-MuiChip-root"
+        role="button"
+        tabindex="0"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall MuiChip-icon MuiChip-iconSmall MuiChip-iconColorDefault css-120dh41-MuiSvgIcon-root"
+          data-testid="ScheduleIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2M12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8"
+          />
+          <path
+            d="M12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z"
+          />
+        </svg>
+        <span
+          class="MuiChip-label MuiChip-labelSmall css-19m61dl-MuiChip-label"
+        >
+          Lange kein Kontakt
+        </span>
+      </div>
+      <div
+        class="MuiButtonBase-root MuiChip-root MuiChip-outlined MuiChip-sizeSmall MuiChip-colorDefault MuiChip-clickable MuiChip-clickableColorDefault MuiChip-outlinedDefault css-h76bs3-MuiButtonBase-root-MuiChip-root"
+        role="button"
+        tabindex="0"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall MuiChip-icon MuiChip-iconSmall MuiChip-iconColorDefault css-120dh41-MuiSvgIcon-root"
+          data-testid="TrendingUpIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="m16 6 2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"
+          />
+        </svg>
+        <span
+          class="MuiChip-label MuiChip-labelSmall css-19m61dl-MuiChip-label"
+        >
+          Top-Kunden
+        </span>
+      </div>
+      <div
+        class="MuiButtonBase-root MuiChip-root MuiChip-outlined MuiChip-sizeSmall MuiChip-colorDefault MuiChip-clickable MuiChip-clickableColorDefault MuiChip-outlinedDefault css-h76bs3-MuiButtonBase-root-MuiChip-root"
+        role="button"
+        tabindex="0"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall MuiChip-icon MuiChip-iconSmall MuiChip-iconColorDefault css-120dh41-MuiSvgIcon-root"
+          data-testid="AddIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6z"
+          />
+        </svg>
+        <span
+          class="MuiChip-label MuiChip-labelSmall css-19m61dl-MuiChip-label"
+        >
+          Neue Kunden
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`IntelligentFilterBar - Snapshot Tests > should match snapshot - with quick filters > with-quick-filters 1`] = `
+<div
+  class="MuiBox-root css-i3pbo"
+>
+  <div
+    class="MuiStack-root css-1sazv7p-MuiStack-root"
+  >
+    <div
+      class="MuiStack-root css-1sos3zc-MuiStack-root"
+    >
+      <div
+        class="MuiBox-root css-1jlnwea"
+      >
+        <div
+          class="MuiFormControl-root MuiFormControl-fullWidth MuiTextField-root css-6ecae7-MuiFormControl-root-MuiTextField-root"
+        >
+          <div
+            class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedStart css-ot336b-MuiInputBase-root-MuiOutlinedInput-root"
+          >
+            <div
+              class="MuiInputAdornment-root MuiInputAdornment-positionStart MuiInputAdornment-outlined MuiInputAdornment-sizeMedium css-1nowbqt-MuiInputAdornment-root"
+            >
+              <span
+                aria-hidden="true"
+                class="notranslate"
+              >
+                ​
+              </span>
+              <svg
+                aria-hidden="true"
+                class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1umw9bq-MuiSvgIcon-root"
+                data-testid="SearchIcon"
+                focusable="false"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"
+                />
+              </svg>
+            </div>
+            <input
+              aria-invalid="false"
+              autocapitalize="off"
+              autocomplete="off"
+              autocorrect="off"
+              class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputAdornedStart css-2u11ia-MuiInputBase-input-MuiOutlinedInput-input"
+              data-form-type="other"
+              data-lpignore="true"
+              id=":rp:"
+              placeholder="Suche nach Firma, Kundennummer, Kontakten..."
+              spellcheck="false"
+              type="text"
+              value=""
+            />
+            <fieldset
+              aria-hidden="true"
+              class="MuiOutlinedInput-notchedOutline css-18p5xg2-MuiNotchedOutlined-root-MuiOutlinedInput-notchedOutline"
+            >
+              <legend
+                class="css-1nf2c5d-MuiNotchedOutlined-root"
+              >
+                <span
+                  aria-hidden="true"
+                  class="notranslate"
+                >
+                  ​
+                </span>
+              </legend>
+            </fieldset>
+          </div>
+        </div>
+      </div>
+      <button
+        aria-label="Erweiterte Filter"
+        class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium css-53g0n7-MuiButtonBase-root-MuiIconButton-root"
+        data-mui-internal-clone-element="true"
+        tabindex="0"
+        type="button"
+      >
+        <span
+          class="MuiBadge-root css-63ezxx-MuiBadge-root"
+        >
+          <svg
+            aria-hidden="true"
+            class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1umw9bq-MuiSvgIcon-root"
+            data-testid="FilterListIcon"
+            focusable="false"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M10 18h4v-2h-4zM3 6v2h18V6zm3 7h12v-2H6z"
+            />
+          </svg>
+          <span
+            class="MuiBadge-badge MuiBadge-standard MuiBadge-invisible MuiBadge-anchorOriginTopRight MuiBadge-anchorOriginTopRightRectangular MuiBadge-overlapRectangular MuiBadge-colorPrimary css-aikwdp-MuiBadge-badge"
+          />
+        </span>
+      </button>
+      <button
+        aria-label="Sortiert nach: Unternehmen (↑)"
+        class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium css-53g0n7-MuiButtonBase-root-MuiIconButton-root"
+        data-mui-internal-clone-element="true"
+        tabindex="0"
+        type="button"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1umw9bq-MuiSvgIcon-root"
+          data-testid="SortIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M3 18h6v-2H3zM3 6v2h18V6zm0 7h12v-2H3z"
+          />
+        </svg>
+      </button>
+      <button
+        aria-label="Spalten verwalten"
+        class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium css-53g0n7-MuiButtonBase-root-MuiIconButton-root"
+        data-mui-internal-clone-element="true"
+        tabindex="0"
+        type="button"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1umw9bq-MuiSvgIcon-root"
+          data-testid="ViewColumnIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M14.67 5v14H9.33V5zm1 14H21V5h-5.33zm-7.34 0V5H3v14z"
+          />
+        </svg>
+      </button>
+    </div>
+    <div
+      class="MuiStack-root css-14llwso-MuiStack-root"
+    >
+      <div
+        class="MuiButtonBase-root MuiChip-root MuiChip-outlined MuiChip-sizeSmall MuiChip-colorDefault MuiChip-clickable MuiChip-clickableColorDefault MuiChip-outlinedDefault css-h76bs3-MuiButtonBase-root-MuiChip-root"
+        role="button"
+        tabindex="0"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall MuiChip-icon MuiChip-iconSmall MuiChip-iconColorDefault css-120dh41-MuiSvgIcon-root"
+          data-testid="BusinessIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M12 7V3H2v18h20V7zM6 19H4v-2h2zm0-4H4v-2h2zm0-4H4V9h2zm0-4H4V5h2zm4 12H8v-2h2zm0-4H8v-2h2zm0-4H8V9h2zm0-4H8V5h2zm10 12h-8v-2h2v-2h-2v-2h2v-2h-2V9h8zm-2-8h-2v2h2zm0 4h-2v2h2z"
+          />
+        </svg>
+        <span
+          class="MuiChip-label MuiChip-labelSmall css-19m61dl-MuiChip-label"
+        >
+          Aktive Kunden
+        </span>
+      </div>
+      <div
+        class="MuiButtonBase-root MuiChip-root MuiChip-outlined MuiChip-sizeSmall MuiChip-colorDefault MuiChip-clickable MuiChip-clickableColorDefault MuiChip-outlinedDefault css-h76bs3-MuiButtonBase-root-MuiChip-root"
+        role="button"
+        tabindex="0"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall MuiChip-icon MuiChip-iconSmall MuiChip-iconColorDefault css-120dh41-MuiSvgIcon-root"
+          data-testid="WarningIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M1 21h22L12 2zm12-3h-2v-2h2zm0-4h-2v-4h2z"
+          />
+        </svg>
+        <span
+          class="MuiChip-label MuiChip-labelSmall css-19m61dl-MuiChip-label"
+        >
+          Risiko-Kunden
+        </span>
+      </div>
+      <div
+        class="MuiButtonBase-root MuiChip-root MuiChip-outlined MuiChip-sizeSmall MuiChip-colorDefault MuiChip-clickable MuiChip-clickableColorDefault MuiChip-outlinedDefault css-h76bs3-MuiButtonBase-root-MuiChip-root"
+        role="button"
+        tabindex="0"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall MuiChip-icon MuiChip-iconSmall MuiChip-iconColorDefault css-120dh41-MuiSvgIcon-root"
+          data-testid="ScheduleIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2M12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8"
+          />
+          <path
+            d="M12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z"
+          />
+        </svg>
+        <span
+          class="MuiChip-label MuiChip-labelSmall css-19m61dl-MuiChip-label"
+        >
+          Lange kein Kontakt
+        </span>
+      </div>
+      <div
+        class="MuiButtonBase-root MuiChip-root MuiChip-outlined MuiChip-sizeSmall MuiChip-colorDefault MuiChip-clickable MuiChip-clickableColorDefault MuiChip-outlinedDefault css-h76bs3-MuiButtonBase-root-MuiChip-root"
+        role="button"
+        tabindex="0"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall MuiChip-icon MuiChip-iconSmall MuiChip-iconColorDefault css-120dh41-MuiSvgIcon-root"
+          data-testid="TrendingUpIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="m16 6 2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"
+          />
+        </svg>
+        <span
+          class="MuiChip-label MuiChip-labelSmall css-19m61dl-MuiChip-label"
+        >
+          Top-Kunden
+        </span>
+      </div>
+      <div
+        class="MuiButtonBase-root MuiChip-root MuiChip-outlined MuiChip-sizeSmall MuiChip-colorDefault MuiChip-clickable MuiChip-clickableColorDefault MuiChip-outlinedDefault css-h76bs3-MuiButtonBase-root-MuiChip-root"
+        role="button"
+        tabindex="0"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall MuiChip-icon MuiChip-iconSmall MuiChip-iconColorDefault css-120dh41-MuiSvgIcon-root"
+          data-testid="AddIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6z"
+          />
+        </svg>
+        <span
+          class="MuiChip-label MuiChip-labelSmall css-19m61dl-MuiChip-label"
+        >
+          Neue Kunden
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`IntelligentFilterBar - Snapshot Tests > should match snapshot - with saved filter sets > with-saved-filters 1`] = `
+<div
+  class="MuiBox-root css-i3pbo"
+>
+  <div
+    class="MuiStack-root css-1sazv7p-MuiStack-root"
+  >
+    <div
+      class="MuiStack-root css-1sos3zc-MuiStack-root"
+    >
+      <div
+        class="MuiBox-root css-1jlnwea"
+      >
+        <div
+          class="MuiFormControl-root MuiFormControl-fullWidth MuiTextField-root css-6ecae7-MuiFormControl-root-MuiTextField-root"
+        >
+          <div
+            class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedStart css-ot336b-MuiInputBase-root-MuiOutlinedInput-root"
+          >
+            <div
+              class="MuiInputAdornment-root MuiInputAdornment-positionStart MuiInputAdornment-outlined MuiInputAdornment-sizeMedium css-1nowbqt-MuiInputAdornment-root"
+            >
+              <span
+                aria-hidden="true"
+                class="notranslate"
+              >
+                ​
+              </span>
+              <svg
+                aria-hidden="true"
+                class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1umw9bq-MuiSvgIcon-root"
+                data-testid="SearchIcon"
+                focusable="false"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"
+                />
+              </svg>
+            </div>
+            <input
+              aria-invalid="false"
+              autocapitalize="off"
+              autocomplete="off"
+              autocorrect="off"
+              class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputAdornedStart css-2u11ia-MuiInputBase-input-MuiOutlinedInput-input"
+              data-form-type="other"
+              data-lpignore="true"
+              id=":r29:"
+              placeholder="Suche nach Firma, Kundennummer, Kontakten..."
+              spellcheck="false"
+              type="text"
+              value=""
+            />
+            <fieldset
+              aria-hidden="true"
+              class="MuiOutlinedInput-notchedOutline css-18p5xg2-MuiNotchedOutlined-root-MuiOutlinedInput-notchedOutline"
+            >
+              <legend
+                class="css-1nf2c5d-MuiNotchedOutlined-root"
+              >
+                <span
+                  aria-hidden="true"
+                  class="notranslate"
+                >
+                  ​
+                </span>
+              </legend>
+            </fieldset>
+          </div>
+        </div>
+      </div>
+      <button
+        aria-label="Erweiterte Filter"
+        class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium css-53g0n7-MuiButtonBase-root-MuiIconButton-root"
+        data-mui-internal-clone-element="true"
+        tabindex="0"
+        type="button"
+      >
+        <span
+          class="MuiBadge-root css-63ezxx-MuiBadge-root"
+        >
+          <svg
+            aria-hidden="true"
+            class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1umw9bq-MuiSvgIcon-root"
+            data-testid="FilterListIcon"
+            focusable="false"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M10 18h4v-2h-4zM3 6v2h18V6zm3 7h12v-2H6z"
+            />
+          </svg>
+          <span
+            class="MuiBadge-badge MuiBadge-standard MuiBadge-invisible MuiBadge-anchorOriginTopRight MuiBadge-anchorOriginTopRightRectangular MuiBadge-overlapRectangular MuiBadge-colorPrimary css-aikwdp-MuiBadge-badge"
+          />
+        </span>
+      </button>
+      <button
+        aria-label="Sortiert nach: Unternehmen (↑)"
+        class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium css-53g0n7-MuiButtonBase-root-MuiIconButton-root"
+        data-mui-internal-clone-element="true"
+        tabindex="0"
+        type="button"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1umw9bq-MuiSvgIcon-root"
+          data-testid="SortIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M3 18h6v-2H3zM3 6v2h18V6zm0 7h12v-2H3z"
+          />
+        </svg>
+      </button>
+      <button
+        aria-label="Spalten verwalten"
+        class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium css-53g0n7-MuiButtonBase-root-MuiIconButton-root"
+        data-mui-internal-clone-element="true"
+        tabindex="0"
+        type="button"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1umw9bq-MuiSvgIcon-root"
+          data-testid="ViewColumnIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M14.67 5v14H9.33V5zm1 14H21V5h-5.33zm-7.34 0V5H3v14z"
+          />
+        </svg>
+      </button>
+    </div>
+    <div
+      class="MuiStack-root css-14llwso-MuiStack-root"
+    >
+      <div
+        class="MuiButtonBase-root MuiChip-root MuiChip-outlined MuiChip-sizeSmall MuiChip-colorDefault MuiChip-clickable MuiChip-clickableColorDefault MuiChip-outlinedDefault css-h76bs3-MuiButtonBase-root-MuiChip-root"
+        role="button"
+        tabindex="0"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall MuiChip-icon MuiChip-iconSmall MuiChip-iconColorDefault css-120dh41-MuiSvgIcon-root"
+          data-testid="BusinessIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M12 7V3H2v18h20V7zM6 19H4v-2h2zm0-4H4v-2h2zm0-4H4V9h2zm0-4H4V5h2zm4 12H8v-2h2zm0-4H8v-2h2zm0-4H8V9h2zm0-4H8V5h2zm10 12h-8v-2h2v-2h-2v-2h2v-2h-2V9h8zm-2-8h-2v2h2zm0 4h-2v2h2z"
+          />
+        </svg>
+        <span
+          class="MuiChip-label MuiChip-labelSmall css-19m61dl-MuiChip-label"
+        >
+          Aktive Kunden
+        </span>
+      </div>
+      <div
+        class="MuiButtonBase-root MuiChip-root MuiChip-outlined MuiChip-sizeSmall MuiChip-colorDefault MuiChip-clickable MuiChip-clickableColorDefault MuiChip-outlinedDefault css-h76bs3-MuiButtonBase-root-MuiChip-root"
+        role="button"
+        tabindex="0"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall MuiChip-icon MuiChip-iconSmall MuiChip-iconColorDefault css-120dh41-MuiSvgIcon-root"
+          data-testid="WarningIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M1 21h22L12 2zm12-3h-2v-2h2zm0-4h-2v-4h2z"
+          />
+        </svg>
+        <span
+          class="MuiChip-label MuiChip-labelSmall css-19m61dl-MuiChip-label"
+        >
+          Risiko-Kunden
+        </span>
+      </div>
+      <div
+        class="MuiButtonBase-root MuiChip-root MuiChip-outlined MuiChip-sizeSmall MuiChip-colorDefault MuiChip-clickable MuiChip-clickableColorDefault MuiChip-outlinedDefault css-h76bs3-MuiButtonBase-root-MuiChip-root"
+        role="button"
+        tabindex="0"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall MuiChip-icon MuiChip-iconSmall MuiChip-iconColorDefault css-120dh41-MuiSvgIcon-root"
+          data-testid="ScheduleIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2M12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8"
+          />
+          <path
+            d="M12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z"
+          />
+        </svg>
+        <span
+          class="MuiChip-label MuiChip-labelSmall css-19m61dl-MuiChip-label"
+        >
+          Lange kein Kontakt
+        </span>
+      </div>
+      <div
+        class="MuiButtonBase-root MuiChip-root MuiChip-outlined MuiChip-sizeSmall MuiChip-colorDefault MuiChip-clickable MuiChip-clickableColorDefault MuiChip-outlinedDefault css-h76bs3-MuiButtonBase-root-MuiChip-root"
+        role="button"
+        tabindex="0"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall MuiChip-icon MuiChip-iconSmall MuiChip-iconColorDefault css-120dh41-MuiSvgIcon-root"
+          data-testid="TrendingUpIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="m16 6 2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"
+          />
+        </svg>
+        <span
+          class="MuiChip-label MuiChip-labelSmall css-19m61dl-MuiChip-label"
+        >
+          Top-Kunden
+        </span>
+      </div>
+      <div
+        class="MuiButtonBase-root MuiChip-root MuiChip-outlined MuiChip-sizeSmall MuiChip-colorDefault MuiChip-clickable MuiChip-clickableColorDefault MuiChip-outlinedDefault css-h76bs3-MuiButtonBase-root-MuiChip-root"
+        role="button"
+        tabindex="0"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall MuiChip-icon MuiChip-iconSmall MuiChip-iconColorDefault css-120dh41-MuiSvgIcon-root"
+          data-testid="AddIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6z"
+          />
+        </svg>
+        <span
+          class="MuiChip-label MuiChip-labelSmall css-19m61dl-MuiChip-label"
+        >
+          Neue Kunden
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`IntelligentFilterBar - Snapshot Tests > should match snapshot - with search term > with-search 1`] = `
+<div
+  class="MuiBox-root css-i3pbo"
+>
+  <div
+    class="MuiStack-root css-1sazv7p-MuiStack-root"
+  >
+    <div
+      class="MuiStack-root css-1sos3zc-MuiStack-root"
+    >
+      <div
+        class="MuiBox-root css-1jlnwea"
+      >
+        <div
+          class="MuiFormControl-root MuiFormControl-fullWidth MuiTextField-root css-6ecae7-MuiFormControl-root-MuiTextField-root"
+        >
+          <div
+            class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedStart css-ot336b-MuiInputBase-root-MuiOutlinedInput-root"
+          >
+            <div
+              class="MuiInputAdornment-root MuiInputAdornment-positionStart MuiInputAdornment-outlined MuiInputAdornment-sizeMedium css-1nowbqt-MuiInputAdornment-root"
+            >
+              <span
+                aria-hidden="true"
+                class="notranslate"
+              >
+                ​
+              </span>
+              <svg
+                aria-hidden="true"
+                class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1umw9bq-MuiSvgIcon-root"
+                data-testid="SearchIcon"
+                focusable="false"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"
+                />
+              </svg>
+            </div>
+            <input
+              aria-invalid="false"
+              autocapitalize="off"
+              autocomplete="off"
+              autocorrect="off"
+              class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputAdornedStart css-2u11ia-MuiInputBase-input-MuiOutlinedInput-input"
+              data-form-type="other"
+              data-lpignore="true"
+              id=":r9:"
+              placeholder="Suche nach Firma, Kundennummer, Kontakten..."
+              spellcheck="false"
+              type="text"
+              value=""
+            />
+            <fieldset
+              aria-hidden="true"
+              class="MuiOutlinedInput-notchedOutline css-18p5xg2-MuiNotchedOutlined-root-MuiOutlinedInput-notchedOutline"
+            >
+              <legend
+                class="css-1nf2c5d-MuiNotchedOutlined-root"
+              >
+                <span
+                  aria-hidden="true"
+                  class="notranslate"
+                >
+                  ​
+                </span>
+              </legend>
+            </fieldset>
+          </div>
+        </div>
+      </div>
+      <button
+        aria-label="Erweiterte Filter"
+        class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium css-53g0n7-MuiButtonBase-root-MuiIconButton-root"
+        data-mui-internal-clone-element="true"
+        tabindex="0"
+        type="button"
+      >
+        <span
+          class="MuiBadge-root css-63ezxx-MuiBadge-root"
+        >
+          <svg
+            aria-hidden="true"
+            class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1umw9bq-MuiSvgIcon-root"
+            data-testid="FilterListIcon"
+            focusable="false"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M10 18h4v-2h-4zM3 6v2h18V6zm3 7h12v-2H6z"
+            />
+          </svg>
+          <span
+            class="MuiBadge-badge MuiBadge-standard MuiBadge-invisible MuiBadge-anchorOriginTopRight MuiBadge-anchorOriginTopRightRectangular MuiBadge-overlapRectangular MuiBadge-colorPrimary css-aikwdp-MuiBadge-badge"
+          />
+        </span>
+      </button>
+      <button
+        aria-label="Sortiert nach: Unternehmen (↑)"
+        class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium css-53g0n7-MuiButtonBase-root-MuiIconButton-root"
+        data-mui-internal-clone-element="true"
+        tabindex="0"
+        type="button"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1umw9bq-MuiSvgIcon-root"
+          data-testid="SortIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M3 18h6v-2H3zM3 6v2h18V6zm0 7h12v-2H3z"
+          />
+        </svg>
+      </button>
+      <button
+        aria-label="Spalten verwalten"
+        class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium css-53g0n7-MuiButtonBase-root-MuiIconButton-root"
+        data-mui-internal-clone-element="true"
+        tabindex="0"
+        type="button"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1umw9bq-MuiSvgIcon-root"
+          data-testid="ViewColumnIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M14.67 5v14H9.33V5zm1 14H21V5h-5.33zm-7.34 0V5H3v14z"
+          />
+        </svg>
+      </button>
+    </div>
+    <div
+      class="MuiStack-root css-14llwso-MuiStack-root"
+    >
+      <div
+        class="MuiButtonBase-root MuiChip-root MuiChip-outlined MuiChip-sizeSmall MuiChip-colorDefault MuiChip-clickable MuiChip-clickableColorDefault MuiChip-outlinedDefault css-h76bs3-MuiButtonBase-root-MuiChip-root"
+        role="button"
+        tabindex="0"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall MuiChip-icon MuiChip-iconSmall MuiChip-iconColorDefault css-120dh41-MuiSvgIcon-root"
+          data-testid="BusinessIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M12 7V3H2v18h20V7zM6 19H4v-2h2zm0-4H4v-2h2zm0-4H4V9h2zm0-4H4V5h2zm4 12H8v-2h2zm0-4H8v-2h2zm0-4H8V9h2zm0-4H8V5h2zm10 12h-8v-2h2v-2h-2v-2h2v-2h-2V9h8zm-2-8h-2v2h2zm0 4h-2v2h2z"
+          />
+        </svg>
+        <span
+          class="MuiChip-label MuiChip-labelSmall css-19m61dl-MuiChip-label"
+        >
+          Aktive Kunden
+        </span>
+      </div>
+      <div
+        class="MuiButtonBase-root MuiChip-root MuiChip-outlined MuiChip-sizeSmall MuiChip-colorDefault MuiChip-clickable MuiChip-clickableColorDefault MuiChip-outlinedDefault css-h76bs3-MuiButtonBase-root-MuiChip-root"
+        role="button"
+        tabindex="0"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall MuiChip-icon MuiChip-iconSmall MuiChip-iconColorDefault css-120dh41-MuiSvgIcon-root"
+          data-testid="WarningIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M1 21h22L12 2zm12-3h-2v-2h2zm0-4h-2v-4h2z"
+          />
+        </svg>
+        <span
+          class="MuiChip-label MuiChip-labelSmall css-19m61dl-MuiChip-label"
+        >
+          Risiko-Kunden
+        </span>
+      </div>
+      <div
+        class="MuiButtonBase-root MuiChip-root MuiChip-outlined MuiChip-sizeSmall MuiChip-colorDefault MuiChip-clickable MuiChip-clickableColorDefault MuiChip-outlinedDefault css-h76bs3-MuiButtonBase-root-MuiChip-root"
+        role="button"
+        tabindex="0"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall MuiChip-icon MuiChip-iconSmall MuiChip-iconColorDefault css-120dh41-MuiSvgIcon-root"
+          data-testid="ScheduleIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2M12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8"
+          />
+          <path
+            d="M12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z"
+          />
+        </svg>
+        <span
+          class="MuiChip-label MuiChip-labelSmall css-19m61dl-MuiChip-label"
+        >
+          Lange kein Kontakt
+        </span>
+      </div>
+      <div
+        class="MuiButtonBase-root MuiChip-root MuiChip-outlined MuiChip-sizeSmall MuiChip-colorDefault MuiChip-clickable MuiChip-clickableColorDefault MuiChip-outlinedDefault css-h76bs3-MuiButtonBase-root-MuiChip-root"
+        role="button"
+        tabindex="0"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall MuiChip-icon MuiChip-iconSmall MuiChip-iconColorDefault css-120dh41-MuiSvgIcon-root"
+          data-testid="TrendingUpIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="m16 6 2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"
+          />
+        </svg>
+        <span
+          class="MuiChip-label MuiChip-labelSmall css-19m61dl-MuiChip-label"
+        >
+          Top-Kunden
+        </span>
+      </div>
+      <div
+        class="MuiButtonBase-root MuiChip-root MuiChip-outlined MuiChip-sizeSmall MuiChip-colorDefault MuiChip-clickable MuiChip-clickableColorDefault MuiChip-outlinedDefault css-h76bs3-MuiButtonBase-root-MuiChip-root"
+        role="button"
+        tabindex="0"
+      >
+        <svg
+          aria-hidden="true"
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall MuiChip-icon MuiChip-iconSmall MuiChip-iconColorDefault css-120dh41-MuiSvgIcon-root"
+          data-testid="AddIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6z"
+          />
+        </svg>
+        <span
+          class="MuiChip-label MuiChip-labelSmall css-19m61dl-MuiChip-label"
+        >
+          Neue Kunden
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+`;

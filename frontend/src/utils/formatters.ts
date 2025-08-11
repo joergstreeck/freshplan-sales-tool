@@ -5,7 +5,10 @@
 /**
  * Format currency values
  */
-export const formatCurrency = (value: number): string => {
+export const formatCurrency = (value: number | undefined | null): string => {
+  if (value === undefined || value === null) {
+    return '-';
+  }
   return new Intl.NumberFormat('de-DE', {
     style: 'currency',
     currency: 'EUR',
@@ -17,8 +20,14 @@ export const formatCurrency = (value: number): string => {
 /**
  * Format date values
  */
-export const formatDate = (date: Date | string): string => {
+export const formatDate = (date: Date | string | undefined | null): string => {
+  if (!date) {
+    return '-';
+  }
   const d = typeof date === 'string' ? new Date(date) : date;
+  if (isNaN(d.getTime())) {
+    return '-';
+  }
   return new Intl.DateTimeFormat('de-DE', {
     day: '2-digit',
     month: '2-digit',

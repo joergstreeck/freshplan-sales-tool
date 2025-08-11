@@ -1,31 +1,14 @@
 import { test, expect } from '@playwright/test';
 import { mockBackendAPIs } from '../fixtures/api-mocks';
+import { mockAuth } from '../fixtures/auth-helper';
 
 test.describe('Simple Customer Page Test', () => {
   test.beforeEach(async ({ page }) => {
     // Mock all backend API calls
     await mockBackendAPIs(page);
     
-    // Mock authentication
-    await page.addInitScript(() => {
-      // Mock localStorage
-      window.localStorage.setItem('auth-token', 'test-token');
-      window.localStorage.setItem('user', JSON.stringify({
-        id: 'test-user',
-        name: 'Test User',
-        role: 'admin'
-      }));
-      
-      // Mock auth state directly on window
-      (window as unknown).__AUTH_STATE__ = {
-        isAuthenticated: true,
-        user: {
-          id: 'test-user',
-          name: 'Test User',
-          role: 'admin'
-        }
-      };
-    });
+    // Mock authentication using safe helper
+    await mockAuth(page);
   });
 
   test('should load customer page', async ({ page }) => {

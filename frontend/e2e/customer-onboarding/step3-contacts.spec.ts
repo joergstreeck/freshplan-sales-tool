@@ -16,14 +16,29 @@ async function setupMockEnvironment(page: Page) {
   
   // Mock auth state
   await page.addInitScript(() => {
-    // Mock localStorage auth items
-    window.localStorage.setItem('auth-token', 'test-token');
-    window.localStorage.setItem('user', JSON.stringify({
-      id: 'test-user-id',
-      username: 'testuser',
-      email: 'test@example.com',
-      role: 'admin'
-    }));
+    // Mock localStorage auth items (with error handling)
+    try {
+      window.localStorage.setItem('auth-token', 'test-token');
+      window.localStorage.setItem('user', JSON.stringify({
+        id: 'test-user-id',
+        username: 'testuser',
+        email: 'test@example.com',
+        role: 'admin'
+      }));
+    } catch (e) {
+      console.log('localStorage not available in CI');
+    }
+    
+    // Set auth state on window as fallback
+    (window as any).__AUTH_STATE__ = {
+      isAuthenticated: true,
+      user: {
+        id: 'test-user-id',
+        username: 'testuser',
+        email: 'test@example.com',
+        role: 'admin'
+      }
+    };
     
     // Mock the customer onboarding store state directly
     (window as unknown).__MOCK_STORE_STATE__ = {

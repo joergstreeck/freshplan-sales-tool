@@ -1,7 +1,7 @@
 package de.freshplan.domain.customer.service;
 
-import de.freshplan.domain.customer.entity.Contact;
 import de.freshplan.domain.customer.entity.Customer;
+import de.freshplan.domain.customer.entity.CustomerContact;
 import de.freshplan.domain.customer.repository.ContactRepository;
 import de.freshplan.domain.customer.repository.CustomerRepository;
 import de.freshplan.domain.customer.service.dto.ContactDTO;
@@ -46,7 +46,7 @@ public class ContactService {
             .orElseThrow(() -> new NotFoundException("Customer not found: " + customerId));
 
     // Create contact entity
-    Contact contact = contactMapper.toEntity(contactDTO);
+    CustomerContact contact = contactMapper.toEntity(contactDTO);
     contact.setCustomer(customer);
 
     // Set audit fields
@@ -56,7 +56,7 @@ public class ContactService {
 
     // If this is the first contact, make it primary
     if (!contactRepository.hasContacts(customerId)) {
-      contact.setPrimary(true);
+      contact.setIsPrimary(true);
     }
 
     // Persist and return
@@ -72,7 +72,7 @@ public class ContactService {
    * @return updated contact DTO
    */
   public ContactDTO updateContact(UUID contactId, ContactDTO contactDTO) {
-    Contact contact =
+    CustomerContact contact =
         contactRepository
             .findByIdOptional(contactId)
             .orElseThrow(() -> new NotFoundException("Contact not found: " + contactId));
@@ -97,7 +97,7 @@ public class ContactService {
    * @return updated contact DTO
    */
   public ContactDTO updateContact(UUID customerId, UUID contactId, ContactDTO contactDTO) {
-    Contact contact =
+    CustomerContact contact =
         contactRepository
             .findByIdOptional(contactId)
             .orElseThrow(() -> new NotFoundException("Contact not found: " + contactId));
@@ -136,7 +136,7 @@ public class ContactService {
    * @return contact DTO
    */
   public ContactDTO getContact(UUID contactId) {
-    Contact contact =
+    CustomerContact contact =
         contactRepository
             .findByIdOptional(contactId)
             .orElseThrow(() -> new NotFoundException("Contact not found: " + contactId));
@@ -151,7 +151,7 @@ public class ContactService {
    * @return contact DTO
    */
   public ContactDTO getContact(UUID customerId, UUID contactId) {
-    Contact contact =
+    CustomerContact contact =
         contactRepository
             .findByIdOptional(contactId)
             .orElseThrow(() -> new NotFoundException("Contact not found: " + contactId));
@@ -171,7 +171,7 @@ public class ContactService {
    */
   public void setPrimaryContact(UUID customerId, UUID contactId) {
     // Verify contact belongs to customer
-    Contact contact =
+    CustomerContact contact =
         contactRepository
             .findByIdOptional(contactId)
             .orElseThrow(() -> new NotFoundException("Contact not found: " + contactId));
@@ -190,13 +190,13 @@ public class ContactService {
    * @param contactId the contact ID
    */
   public void deleteContact(UUID contactId) {
-    Contact contact =
+    CustomerContact contact =
         contactRepository
             .findByIdOptional(contactId)
             .orElseThrow(() -> new NotFoundException("Contact not found: " + contactId));
 
     // Don't delete primary contact if there are other contacts
-    if (contact.isPrimary()) {
+    if (contact.getIsPrimary()) {
       long contactCount = contactRepository.countActiveByCustomerId(contact.getCustomer().getId());
       if (contactCount > 1) {
         throw new IllegalStateException(
@@ -205,7 +205,7 @@ public class ContactService {
     }
 
     // Soft delete
-    contact.setActive(false);
+    contact.setIsActive(false);
     contact.setUpdatedBy(securityIdentity.getPrincipal().getName());
   }
 
@@ -216,7 +216,7 @@ public class ContactService {
    * @param contactId the contact ID
    */
   public void deleteContact(UUID customerId, UUID contactId) {
-    Contact contact =
+    CustomerContact contact =
         contactRepository
             .findByIdOptional(contactId)
             .orElseThrow(() -> new NotFoundException("Contact not found: " + contactId));
@@ -226,7 +226,7 @@ public class ContactService {
     }
 
     // Don't delete primary contact if there are other contacts
-    if (contact.isPrimary()) {
+    if (contact.getIsPrimary()) {
       long contactCount = contactRepository.countActiveByCustomerId(contact.getCustomer().getId());
       if (contactCount > 1) {
         throw new IllegalStateException(
@@ -235,7 +235,7 @@ public class ContactService {
     }
 
     // Soft delete
-    contact.setActive(false);
+    contact.setIsActive(false);
     contact.setUpdatedBy(securityIdentity.getPrincipal().getName());
   }
 
@@ -282,7 +282,7 @@ public class ContactService {
    * @return true if email is already in use
    */
   public boolean isEmailInUse(String email, UUID excludeContactId) {
-    List<Contact> contacts = contactRepository.findByEmail(email);
+    List<CustomerContact> contacts = contactRepository.findByEmail(email);
     if (excludeContactId == null) {
       return !contacts.isEmpty();
     }

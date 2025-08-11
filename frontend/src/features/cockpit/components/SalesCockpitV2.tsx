@@ -3,20 +3,43 @@
  * Angepasst für das neue Standard-Layout ohne feste Höhenberechnungen
  */
 
-import React, { useState } from 'react';
-import { Box, Typography, Card, Skeleton } from '@mui/material';
+import React, { useState, Suspense } from 'react';
+import { Box, Typography, Card, Skeleton, CircularProgress } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import GroupIcon from '@mui/icons-material/Group';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import TaskIcon from '@mui/icons-material/Task';
 import ErrorIcon from '@mui/icons-material/Error';
-// Feature-Komponenten importieren (MUI Versionen)
-import { MyDayColumnMUI } from './MyDayColumnMUI';
-import { FocusListColumnMUI } from './FocusListColumnMUI';
-import { ActionCenterColumnMUI } from './ActionCenterColumnMUI';
+// Feature-Komponenten importieren (MUI Versionen) - mit Lazy Loading
+const MyDayColumnMUI = React.lazy(() => import('./MyDayColumnMUI').then(m => ({ default: m.MyDayColumnMUI })));
+const FocusListColumnMUI = React.lazy(() => import('./FocusListColumnMUI').then(m => ({ default: m.FocusListColumnMUI })));
+const ActionCenterColumnMUI = React.lazy(() => import('./ActionCenterColumnMUI').then(m => ({ default: m.ActionCenterColumnMUI })));
 import { ResizablePanels } from './layout/ResizablePanels';
 import { useDashboardData } from '../hooks/useSalesCockpit';
 import { useAuth } from '../../../hooks/useAuth';
+
+// Loading Skeleton für Lazy Loading der Spalten
+const ColumnSkeleton: React.FC<{ title: string }> = ({ title }) => (
+  <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column', p: 2 }}>
+    <Typography variant="h6" sx={{ mb: 2 }}>
+      {title}
+    </Typography>
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, flex: 1 }}>
+      <Skeleton variant="rectangular" height={60} />
+      <Skeleton variant="rectangular" height={40} />
+      <Skeleton variant="rectangular" height={40} />
+      <Skeleton variant="rectangular" height={40} />
+      <Box sx={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        flex: 1 
+      }}>
+        <CircularProgress size={40} />
+      </Box>
+    </Box>
+  </Card>
+);
 
 const StatsCard = styled(Card)(({ theme }) => ({
   padding: theme.spacing(1),
@@ -179,17 +202,23 @@ export function SalesCockpitV2() {
           defaultSizes={[30, 40, 30]}
           minSizes={[20, 30, 20]}
         >
-          {/* Column 1: Mein Tag */}
-          <MyDayColumnMUI />
+          {/* Column 1: Mein Tag - mit Lazy Loading */}
+          <Suspense fallback={<ColumnSkeleton title="Mein Tag" />}>
+            <MyDayColumnMUI />
+          </Suspense>
 
-          {/* Column 2: Fokus-Liste */}
-          <FocusListColumnMUI onCustomerSelect={handleCustomerSelect} />
+          {/* Column 2: Fokus-Liste - mit Lazy Loading */}
+          <Suspense fallback={<ColumnSkeleton title="Arbeitsliste" />}>
+            <FocusListColumnMUI onCustomerSelect={handleCustomerSelect} />
+          </Suspense>
 
-          {/* Column 3: Aktions-Center */}
-          <ActionCenterColumnMUI
-            selectedCustomerId={selectedCustomerId}
-            onClose={() => setSelectedCustomerId(undefined)}
-          />
+          {/* Column 3: Aktions-Center - mit Lazy Loading */}
+          <Suspense fallback={<ColumnSkeleton title="Aktions-Center" />}>
+            <ActionCenterColumnMUI
+              selectedCustomerId={selectedCustomerId}
+              onClose={() => setSelectedCustomerId(undefined)}
+            />
+          </Suspense>
         </ResizablePanels>
       </Box>
     </Box>

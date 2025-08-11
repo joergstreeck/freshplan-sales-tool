@@ -246,8 +246,9 @@ public class TestDataContactInitializer {
       regionalSued.setReportsTo(ceo);
       regionalWest.setReportsTo(ceo);
       assistenz.setReportsTo(ceo);
-      
-      // Note: createContact() already persists the contacts, so no additional persist() calls needed
+
+      // Note: createContact() already persists the contacts, so no additional persist() calls
+      // needed
       // The setReportsTo() changes will be persisted automatically when the transaction commits
 
       LOG.info("Created 8 contacts for Müller Gastro Gruppe with complex hierarchy");

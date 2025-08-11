@@ -5,6 +5,7 @@
  * PHILOSOPHIE: Respektiert field-basierte Architektur mit flexiblen any-Types
  */
 
+import { act } from 'react';
 import { describe, it, expect, beforeAll, afterAll, vi } from 'vitest';
 import { renderHook } from '@testing-library/react';
 import { useCustomerOnboardingStore } from '../../stores/customerOnboardingStore';

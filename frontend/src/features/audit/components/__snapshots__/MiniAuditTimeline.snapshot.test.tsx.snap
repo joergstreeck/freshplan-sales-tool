@@ -1,0 +1,20 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`MiniAuditTimeline - Snapshot Tests > should match snapshot - empty state > empty-state 1`] = `
+<span
+  class="MuiTypography-root MuiTypography-caption css-1frpshr-MuiTypography-root"
+>
+  Keine Änderungshistorie verfügbar
+</span>
+`;
+
+exports[`MiniAuditTimeline - Snapshot Tests > should match snapshot - loading state > loading-state 1`] = `
+<div
+  class="MuiBox-root css-hpgf8j"
+>
+  <span
+    class="MuiSkeleton-root MuiSkeleton-text MuiSkeleton-pulse css-kkcbhd-MuiSkeleton-root"
+    style="width: 80%; height: 20px;"
+  />
+</div>
+`;

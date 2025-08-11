@@ -423,6 +423,89 @@ public class AuditRepository implements PanacheRepositoryBase<AuditEntry, UUID> 
         .list();
   }
 
+  /** Find audit entries by filters for export */
+  public List<AuditEntry> findByFilters(
+      de.freshplan.domain.export.service.dto.ExportRequest request) {
+    Map<String, Object> params = new HashMap<>();
+    StringBuilder query = new StringBuilder("1=1");
+
+    if (request.getEntityType() != null) {
+      query.append(" and entityType = :entityType");
+      params.put("entityType", request.getEntityType());
+    }
+
+    if (request.getEntityId() != null) {
+      query.append(" and entityId = :entityId");
+      params.put("entityId", request.getEntityId());
+    }
+
+    if (request.getUserId() != null) {
+      query.append(" and userId = :userId");
+      params.put("userId", request.getUserId());
+    }
+
+    if (request.getEventType() != null) {
+      query.append(" and eventType = :eventType");
+      params.put("eventType", request.getEventType());
+    }
+
+    if (request.getDateFrom() != null) {
+      query.append(" and timestamp >= :from");
+      params.put("from", request.getDateFrom());
+    }
+
+    if (request.getDateTo() != null) {
+      query.append(" and timestamp <= :to");
+      params.put("to", request.getDateTo());
+    }
+
+    if (request.getPage() > 0 || request.getSize() > 0) {
+      return find(query.toString(), Sort.descending("timestamp"), params)
+          .page(Page.of(request.getPage(), Math.min(request.getSize(), MAX_PAGE_SIZE)))
+          .list();
+    }
+
+    return find(query.toString(), Sort.descending("timestamp"), params).list();
+  }
+
+  /** Count audit entries by filters for export */
+  public long countByFilters(de.freshplan.domain.export.service.dto.ExportRequest request) {
+    Map<String, Object> params = new HashMap<>();
+    StringBuilder query = new StringBuilder("1=1");
+
+    if (request.getEntityType() != null) {
+      query.append(" and entityType = :entityType");
+      params.put("entityType", request.getEntityType());
+    }
+
+    if (request.getEntityId() != null) {
+      query.append(" and entityId = :entityId");
+      params.put("entityId", request.getEntityId());
+    }
+
+    if (request.getUserId() != null) {
+      query.append(" and userId = :userId");
+      params.put("userId", request.getUserId());
+    }
+
+    if (request.getEventType() != null) {
+      query.append(" and eventType = :eventType");
+      params.put("eventType", request.getEventType());
+    }
+
+    if (request.getDateFrom() != null) {
+      query.append(" and timestamp >= :from");
+      params.put("from", request.getDateFrom());
+    }
+
+    if (request.getDateTo() != null) {
+      query.append(" and timestamp <= :to");
+      params.put("to", request.getDateTo());
+    }
+
+    return count(query.toString(), params);
+  }
+
   /** Get compliance alerts */
   public List<ComplianceAlertDto> getComplianceAlerts() {
     List<ComplianceAlertDto> alerts = new ArrayList<>();
@@ -432,19 +515,22 @@ public class AuditRepository implements PanacheRepositoryBase<AuditEntry, UUID> 
     long oldEntries = count("timestamp < ?1", retentionLimit);
 
     if (oldEntries > 0) {
-      ComplianceAlertDto alert = ComplianceAlertDto.builder()
-          .id("alert-retention-" + UUID.randomUUID())
-          .type(ComplianceAlertDto.AlertType.RETENTION)
-          .severity(oldEntries > 100 
-              ? ComplianceAlertDto.AlertSeverity.WARNING 
-              : ComplianceAlertDto.AlertSeverity.INFO)
-          .title("Datenaufbewahrung überschreitet 90 Tage")
-          .description(String.format(
-              "%d Audit-Einträge sind älter als 90 Tage und sollten archiviert werden.",
-              oldEntries))
-          .affectedCount(oldEntries)
-          .recommendation("Führen Sie eine Archivierung der alten Audit-Logs durch")
-          .build();
+      ComplianceAlertDto alert =
+          ComplianceAlertDto.builder()
+              .id("alert-retention-" + UUID.randomUUID())
+              .type(ComplianceAlertDto.AlertType.RETENTION)
+              .severity(
+                  oldEntries > 100
+                      ? ComplianceAlertDto.AlertSeverity.WARNING
+                      : ComplianceAlertDto.AlertSeverity.INFO)
+              .title("Datenaufbewahrung überschreitet 90 Tage")
+              .description(
+                  String.format(
+                      "%d Audit-Einträge sind älter als 90 Tage und sollten archiviert werden.",
+                      oldEntries))
+              .affectedCount(oldEntries)
+              .recommendation("Führen Sie eine Archivierung der alten Audit-Logs durch")
+              .build();
       alerts.add(alert);
     }
 
@@ -453,29 +539,32 @@ public class AuditRepository implements PanacheRepositoryBase<AuditEntry, UUID> 
     List<AuditIntegrityIssue> integrityIssues = verifyIntegrity(checkFrom, Instant.now());
 
     if (!integrityIssues.isEmpty()) {
-      ComplianceAlertDto alert = ComplianceAlertDto.builder()
-          .id("alert-integrity-" + UUID.randomUUID())
-          .type(ComplianceAlertDto.AlertType.INTEGRITY)
-          .severity(ComplianceAlertDto.AlertSeverity.CRITICAL)
-          .title("Integritätsprobleme im Audit Trail erkannt")
-          .description(String.format(
-              "%d Integritätsprobleme wurden in den letzten 24 Stunden erkannt.",
-              integrityIssues.size()))
-          .affectedCount((long) integrityIssues.size())
-          .recommendation("Überprüfen Sie die betroffenen Audit-Einträge sofort")
-          .build();
+      ComplianceAlertDto alert =
+          ComplianceAlertDto.builder()
+              .id("alert-integrity-" + UUID.randomUUID())
+              .type(ComplianceAlertDto.AlertType.INTEGRITY)
+              .severity(ComplianceAlertDto.AlertSeverity.CRITICAL)
+              .title("Integritätsprobleme im Audit Trail erkannt")
+              .description(
+                  String.format(
+                      "%d Integritätsprobleme wurden in den letzten 24 Stunden erkannt.",
+                      integrityIssues.size()))
+              .affectedCount((long) integrityIssues.size())
+              .recommendation("Überprüfen Sie die betroffenen Audit-Einträge sofort")
+              .build();
       alerts.add(alert);
     }
 
     // Add scheduled maintenance reminder (example of info alert)
-    ComplianceAlertDto maintenanceAlert = ComplianceAlertDto.builder()
-        .id("alert-maintenance-" + UUID.randomUUID())
-        .type(ComplianceAlertDto.AlertType.RETENTION)
-        .severity(ComplianceAlertDto.AlertSeverity.INFO)
-        .title("Nächste Integritätsprüfung fällig")
-        .description("Die monatliche Integritätsprüfung steht in 3 Tagen an.")
-        .recommendation("Planen Sie die Wartung in Ihrem Kalender ein")
-        .build();
+    ComplianceAlertDto maintenanceAlert =
+        ComplianceAlertDto.builder()
+            .id("alert-maintenance-" + UUID.randomUUID())
+            .type(ComplianceAlertDto.AlertType.RETENTION)
+            .severity(ComplianceAlertDto.AlertSeverity.INFO)
+            .title("Nächste Integritätsprüfung fällig")
+            .description("Die monatliche Integritätsprüfung steht in 3 Tagen an.")
+            .recommendation("Planen Sie die Wartung in Ihrem Kalender ein")
+            .build();
     alerts.add(maintenanceAlert);
 
     return alerts;

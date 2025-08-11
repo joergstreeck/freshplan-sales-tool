@@ -23,6 +23,7 @@ import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
+import AssignmentIcon from '@mui/icons-material/Assignment';
 
 import { OpportunityStage, STAGE_CONFIGS, type Opportunity } from '../types';
 import { logger } from '../../../lib/logger';
@@ -245,10 +246,15 @@ interface KanbanColumnProps {
   opportunities: Opportunity[];
 }
 
-const KanbanColumn: React.FC<KanbanColumnProps> = React.memo(({ stage, opportunities }) => {
+const KanbanColumn: React.FC<KanbanColumnProps> = React.memo(({ stage, opportunities = [] }) => {
   const theme = useTheme();
-  const config = STAGE_CONFIGS_RECORD[stage];
-  const totalValue = opportunities.reduce((sum, opp) => sum + (opp.value || 0), 0);
+  const config = STAGE_CONFIGS_RECORD[stage] || {
+    label: stage,
+    icon: <AssignmentIcon />,
+    bgColor: '#f5f5f5',
+    borderColor: '#e0e0e0'
+  };
+  const totalValue = opportunities?.reduce((sum, opp) => sum + (opp.value || 0), 0) || 0;
 
   return (
     <Paper
@@ -258,7 +264,7 @@ const KanbanColumn: React.FC<KanbanColumnProps> = React.memo(({ stage, opportuni
         minWidth: 280,
         maxWidth: 450,
         p: 2,
-        bgcolor: config.bgColor,
+        bgcolor: config?.bgColor || '#f5f5f5',
         border: '1px solid rgba(0, 0, 0, 0.12)',
         borderRadius: 2,
       }}
@@ -269,13 +275,13 @@ const KanbanColumn: React.FC<KanbanColumnProps> = React.memo(({ stage, opportuni
           <Typography
             variant="h6"
             sx={{
-              color: config.color,
+              color: config?.color || '#666',
               fontFamily: 'Antonio, sans-serif',
               fontWeight: 700,
               fontSize: '1.1rem',
             }}
           >
-            {config.label}
+            {config?.label || stage}
           </Typography>
 
           <Badge
@@ -283,7 +289,7 @@ const KanbanColumn: React.FC<KanbanColumnProps> = React.memo(({ stage, opportuni
             color="primary"
             sx={{
               '& .MuiBadge-badge': {
-                bgcolor: config.color,
+                bgcolor: config?.color || '#94C456',
                 color: 'white',
                 fontWeight: 600,
               },
@@ -309,7 +315,7 @@ const KanbanColumn: React.FC<KanbanColumnProps> = React.memo(({ stage, opportuni
           <Box
             ref={provided.innerRef}
             {...provided.droppableProps}
-            data-testid={`droppable-${stage.toLowerCase()}`}
+            data-testid={`droppable-${stage?.toLowerCase() || 'unknown'}`}
             sx={{
               minHeight: 300,
               bgcolor: snapshot.isDraggingOver ? 'rgba(148, 196, 86, 0.08)' : 'transparent',

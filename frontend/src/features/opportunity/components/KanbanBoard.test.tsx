@@ -5,7 +5,7 @@
  */
 
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { KanbanBoard } from './KanbanBoard';
@@ -50,6 +50,15 @@ vi.mock('../types', () => ({
     { stage: 'CLOSED_LOST', label: 'Verloren', color: '#f44336' },
     { stage: 'RENEWAL', label: 'Verlängerung', color: '#00bcd4' },
   ],
+  STAGE_CONFIGS_RECORD: {
+    'NEW_LEAD': { stage: 'NEW_LEAD', label: 'Lead', color: '#9e9e9e' },
+    'QUALIFICATION': { stage: 'QUALIFICATION', label: 'Qualifiziert', color: '#2196f3' },
+    'PROPOSAL': { stage: 'PROPOSAL', label: 'Angebot', color: '#ff9800' },
+    'NEGOTIATION': { stage: 'NEGOTIATION', label: 'Verhandlung', color: '#9c27b0' },
+    'CLOSED_WON': { stage: 'CLOSED_WON', label: 'Gewonnen', color: '#4caf50' },
+    'CLOSED_LOST': { stage: 'CLOSED_LOST', label: 'Verloren', color: '#f44336' },
+    'RENEWAL': { stage: 'RENEWAL', label: 'Verlängerung', color: '#00bcd4' },
+  },
 }));
 
 // Mock data for opportunities to match test expectations
