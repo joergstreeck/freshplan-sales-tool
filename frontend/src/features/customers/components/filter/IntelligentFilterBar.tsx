@@ -23,7 +23,6 @@ import {
   Typography,
   Divider,
   FormControl,
-  Select,
   MenuItem,
   FormGroup,
   FormControlLabel,
@@ -31,7 +30,6 @@ import {
   Alert,
   useTheme,
   alpha,
-  Paper,
   FormLabel,
   RadioGroup,
   Radio,
@@ -39,7 +37,6 @@ import {
   List,
   ListItem,
   ListItemText,
-  ListItemIcon,
   ListItemSecondaryAction,
   Switch,
   Menu,
@@ -49,16 +46,12 @@ import {
   FilterList as FilterIcon,
   ViewColumn as ColumnIcon,
   Sort as SortIcon,
-  Save as SaveIcon,
   Clear as ClearIcon,
   Close as CloseIcon,
   Add as AddIcon,
   ArrowUpward as ArrowUpIcon,
   ArrowDownward as ArrowDownIcon,
-  Visibility as VisibilityIcon,
-  VisibilityOff as VisibilityOffIcon,
   Star as StarIcon,
-  StarBorder as StarBorderIcon,
   Business as BusinessIcon,
   Warning as RiskIcon,
   Schedule as RecentIcon,
@@ -130,7 +123,7 @@ export function IntelligentFilterBar({
   const [showSearchResults, setShowSearchResults] = useState(false);
   const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
   const [columnDrawerOpen, setColumnDrawerOpen] = useState(false);
-  const [saveDialogOpen, setSaveDialogOpen] = useState(false);
+  const [saveDialogOpen, _setSaveDialogOpen] = useState(false);
   const [filterSetName, setFilterSetName] = useState('');
   
   const [activeFilters, setActiveFilters] = useState<FilterConfig>({
