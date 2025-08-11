@@ -30,6 +30,7 @@ describe('ApiService', () => {
           'Content-Type': 'application/json',
           Authorization: 'Bearer test-token',
         },
+        signal: expect.any(AbortSignal),
       });
 
       expect(result).toEqual(mockResponse);
@@ -53,6 +54,7 @@ describe('ApiService', () => {
         headers: {
           'Content-Type': 'application/json',
         },
+        signal: expect.any(AbortSignal),
       });
     });
 
