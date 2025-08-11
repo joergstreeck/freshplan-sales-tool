@@ -41,7 +41,7 @@ interface MobileActionBarProps {
  * Mobile-optimized action bar with quick access buttons
  */
 export const MobileActionBar: React.FC<MobileActionBarProps> = ({
-  contact,
+  contact: _contact,
   suggestions,
   onAction,
   variant = 'compact',

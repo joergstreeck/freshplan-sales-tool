@@ -24,7 +24,7 @@ interface ServiceFieldsContainerProps {
 }
 
 export const ServiceFieldsContainer: React.FC<ServiceFieldsContainerProps> = ({
-  location,
+  location: _location,
   services,
   onChange,
   onBlur = () => {},

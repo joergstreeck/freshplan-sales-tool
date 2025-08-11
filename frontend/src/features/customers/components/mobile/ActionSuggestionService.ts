@@ -25,7 +25,6 @@ import type {
   QuickAction,
   SwipeActions,
   ContactIntelligence,
-  ACTION_PRIORITIES,
 } from '../../types/mobileActions.types';
 import { DEFAULT_SWIPE_ACTIONS, ACTION_COLORS } from '../../types/mobileActions.types';
 
@@ -85,7 +84,7 @@ export class ActionSuggestionService {
 
     // 4. STANDARD: Based on available contact data
     if (contact.phone || contact.mobile) {
-      const phoneNumber = contact.mobile || contact.phone;
+      const _phoneNumber = contact.mobile || contact.phone;
       actions.push({
         id: 'call-standard',
         type: 'call',

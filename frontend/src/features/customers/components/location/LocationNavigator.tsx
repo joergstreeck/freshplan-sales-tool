@@ -67,7 +67,7 @@ export const LocationNavigator: React.FC<LocationNavigatorProps> = ({
             onChange={handleLocationChange}
             label="Aktueller Standort"
           >
-            {locations.map((location, index) => (
+            {locations.map((location, _index) => (
               <MenuItem key={location.id} value={location.id}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, width: '100%' }}>
                   <Typography>{location.name}</Typography>

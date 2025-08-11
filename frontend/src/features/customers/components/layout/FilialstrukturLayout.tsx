@@ -125,9 +125,9 @@ const FieldLabel = styled(Typography)(({ theme }) => ({
 export const FilialstrukturLayout: React.FC<FilialstrukturLayoutProps> = ({
   fields,
   renderField,
-  values,
+  values: _values,
 }) => {
-  const theme = useTheme();
+  const _theme = useTheme();
 
   // Sortiere Felder in der gewünschten Reihenfolge
   const fieldOrder = [

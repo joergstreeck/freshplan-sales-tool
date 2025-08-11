@@ -34,8 +34,8 @@ export const RevenueExpectationSectionV2: React.FC<RevenueExpectationSectionV2Pr
   errors,
   onChange,
   onBlur,
-  totalLocations = 1,
-  activePainPoints = [],
+  totalLocations: _totalLocations = 1,
+  activePainPoints: _activePainPoints = [],
 }) => {
   const currentValue = values[revenueField.key] || 0;
   const hasError = Boolean(errors[revenueField.key]);

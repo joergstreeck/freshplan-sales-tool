@@ -13,10 +13,7 @@ import {
   Box,
   Typography,
   Button,
-  Card,
-  CardContent,
   IconButton,
-  Grid,
   Alert,
   AlertTitle,
   Accordion,
@@ -30,14 +27,11 @@ import {
   TextField,
   Select,
   MenuItem,
-  FormControl,
-  InputLabel,
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableRow,
-  Checkbox,
   Tooltip,
   Divider,
   List,
@@ -55,12 +49,8 @@ import {
   Hotel as HotelIcon,
   Restaurant as RestaurantIcon,
   Business as BusinessIcon,
-  Room as RoomIcon,
-  MedicalServices as MedicalIcon,
-  Kitchen as KitchenIcon,
   Groups as GroupsIcon,
   FileDownload as DownloadIcon,
-  FileUpload as UploadIcon,
 } from '@mui/icons-material';
 import { useCustomerOnboardingStore } from '../../stores/customerOnboardingStore';
 import { DetailedLocation, DetailedLocationCategory } from '../../types/location.types';
@@ -68,9 +58,7 @@ import { toast } from 'react-toastify';
 import {
   categoryLabels,
   getCategoryIcon,
-  industryTemplates,
   getIndustryTemplates,
-  hasIndustryTemplates,
 } from '../../config';
 
 // Configuration data has been externalized to separate files for better maintainability

@@ -42,7 +42,6 @@ import {
   Star as StarIcon,
   LocationOn as LocationIcon,
 } from '@mui/icons-material';
-import type { Customer } from '../../types/customer.types';
 
 // Search Result Types
 interface ContactSearchResult {

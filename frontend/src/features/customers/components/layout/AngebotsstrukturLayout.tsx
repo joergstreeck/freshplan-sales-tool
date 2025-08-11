@@ -6,7 +6,7 @@
  */
 
 import React from 'react';
-import { Box, Typography, Grid, Paper } from '@mui/material';
+import { Box, Typography, Paper } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { DynamicFieldRenderer } from '../fields/DynamicFieldRenderer';
 import type { FieldDefinition } from '../../types/field.types';
@@ -19,11 +19,11 @@ interface AngebotsstrukturLayoutProps {
     fields: FieldDefinition[];
   }[];
   /** Aktuelle Formular-Werte */
-  values: Record<string, any>;
+  values: Record<string, unknown>;
   /** Validierungsfehler */
   errors: Record<string, string>;
   /** Change Handler */
-  onChange: (fieldKey: string, value: any) => void;
+  onChange: (fieldKey: string, value: unknown) => void;
   /** Blur Handler */
   onBlur: (fieldKey: string) => void;
 }

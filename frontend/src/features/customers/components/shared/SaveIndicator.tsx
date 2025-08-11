@@ -6,7 +6,7 @@
  */
 
 import React from 'react';
-import { Box, Typography, CircularProgress, Chip } from '@mui/material';
+import { Box, CircularProgress, Chip } from '@mui/material';
 import {
   Save as SaveIcon,
   Check as CheckIcon,

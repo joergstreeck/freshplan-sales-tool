@@ -123,7 +123,7 @@ export function IntelligentFilterBar({
   const [showSearchResults, setShowSearchResults] = useState(false);
   const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
   const [columnDrawerOpen, setColumnDrawerOpen] = useState(false);
-  const [saveDialogOpen, _setSaveDialogOpen] = useState(false);
+  const [_saveDialogOpen, _setSaveDialogOpen] = useState(false);
   const [filterSetName, setFilterSetName] = useState('');
   
   const [activeFilters, setActiveFilters] = useState<FilterConfig>({
@@ -202,7 +202,7 @@ export function IntelligentFilterBar({
     tableColumns, 
     toggleColumnVisibility: toggleColumnVisibilityStore,
     setColumnOrder: setColumnOrderStore,
-    resetTableColumns 
+    resetTableColumns: _resetTableColumns 
   } = useFocusListStore();
   
   // Convert store columns to ColumnConfig format for compatibility
@@ -293,14 +293,14 @@ export function IntelligentFilterBar({
   }, [activeFilters, onFilterChange]);
   
   // Quick Filter Toggle
-  const toggleQuickFilter = useCallback((quickFilter: any) => {
+  const toggleQuickFilter = useCallback((quickFilter: unknown) => {
     const newFilters = { ...activeFilters, ...quickFilter.filter };
     setActiveFilters(newFilters);
     onFilterChange(newFilters);
   }, [activeFilters, onFilterChange]);
   
   // Save Current Filter Set
-  const saveFilterSet = useCallback(() => {
+  const _saveFilterSet = useCallback(() => {
     if (!filterSetName) return;
     
     const newSet: SavedFilterSet = {
@@ -313,7 +313,7 @@ export function IntelligentFilterBar({
     };
     setSavedFilters([...savedFilters, newSet]);
     setFilterSetName('');
-    setSaveDialogOpen(false);
+    _setSaveDialogOpen(false);
   }, [activeFilters, columns, sortConfig, savedFilters, setSavedFilters, filterSetName]);
   
   // Load Filter Set
@@ -658,7 +658,7 @@ function FilterDrawer({
   onApply,
   onClear,
 }: FilterDrawerProps) {
-  const theme = useTheme();
+  const _theme = useTheme();
   
   return (
     <Drawer
@@ -813,7 +813,7 @@ function ColumnManagerDrawer({
   onColumnToggle,
   onColumnMove,
 }: ColumnManagerDrawerProps) {
-  const theme = useTheme();
+  const _theme = useTheme();
   
   return (
     <Drawer

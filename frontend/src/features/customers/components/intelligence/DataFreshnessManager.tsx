@@ -8,7 +8,6 @@ import {
   Alert,
   AlertTitle,
   Grid,
-  Chip,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -20,7 +19,6 @@ import {
   ListItemSecondaryAction,
   CircularProgress,
   Tooltip,
-  Divider,
 } from '@mui/material';
 import {
   Refresh as RefreshIcon,
@@ -36,7 +34,6 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { contactInteractionApi } from '../../services/contactInteractionApi';
 import { DataFreshnessIndicator } from './DataFreshnessIndicator';
 import type { Contact } from '../../types/contact.types';
-import type { FreshnessStatistics } from '../../types/intelligence.types';
 
 /**
  * Erweiterte Komponente für Data Freshness Management.
@@ -110,7 +107,7 @@ export const DataFreshnessManager: React.FC = () => {
     );
   }
 
-  const totalContacts = statistics
+  const _totalContacts = statistics
     ? statistics.FRESH + statistics.AGING + statistics.STALE + statistics.CRITICAL
     : 0;
 
