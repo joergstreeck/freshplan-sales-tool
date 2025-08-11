@@ -8,7 +8,7 @@
 
 import { setupServer } from 'msw/node';
 import { rest } from 'msw';
-import type { Customer, CustomerDraftResponse, FieldDefinition, Location } from '../../types';
+import type { Customer, CustomerDraftResponse, FieldDefinition } from '../../types';
 
 // =============================================================================
 // Test Data
