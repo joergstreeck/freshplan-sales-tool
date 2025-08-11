@@ -408,7 +408,7 @@ describe('VirtualizedCustomerTable', () => {
       render(
         <VirtualizedCustomerTable 
           {...defaultProps} 
-          customers={customersWithBadDates as any}
+          customers={customersWithBadDates as unknown as Customer[]}
         />
       );
       

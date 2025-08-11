@@ -544,7 +544,7 @@ export const KanbanBoardDndKit: React.FC = React.memo(() => {
 
         if (response.data && response.data.length > 0) {
           // Transform API data to match our Opportunity interface
-          const apiOpportunities = response.data.map((opp: any) => ({
+          const apiOpportunities = response.data.map((opp: Record<string, unknown>) => ({
             ...opp,
             // Map expectedValue to value if value is null
             value: opp.value || opp.expectedValue || 0,

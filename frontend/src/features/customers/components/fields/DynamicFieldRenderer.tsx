@@ -99,7 +99,7 @@ export const DynamicFieldRenderer: React.FC<DynamicFieldRendererProps> = ({
     const commonProps = {
       field,
       value,
-      onChange: (newValue: any) => onChange(field.key, newValue),
+      onChange: (newValue: unknown) => onChange(field.key, newValue),
       onBlur: () => onBlur(field.key),
       error: !!error,
       helperText: error || undefined,
