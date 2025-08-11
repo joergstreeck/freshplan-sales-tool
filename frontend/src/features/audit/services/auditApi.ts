@@ -1,5 +1,5 @@
 import { httpClient } from '@/lib/apiClient';
-import { isFeatureEnabled } from '@/config/featureFlags';
+import { isFeatureEnabled as _isFeatureEnabled } from '@/config/featureFlags';
 import type {
   AuditLog,
   AuditFilters,
