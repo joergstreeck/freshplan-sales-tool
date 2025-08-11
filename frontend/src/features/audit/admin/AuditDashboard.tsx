@@ -97,7 +97,7 @@ interface AuditDashboardProps {
   onDateRangeChange?: (range: { from: Date; to: Date }) => void;
 }
 
-export const AuditDashboard: React.FC<AuditDashboardProps> = ({ metrics, dateRange }) => {
+export const AuditDashboard: React.FC<AuditDashboardProps> = ({ metrics, dateRange: _dateRange }) => {
   if (!metrics) {
     return <Box>Keine Daten verfügbar</Box>;
   }

@@ -39,7 +39,7 @@ export async function mockAuth(page: Page) {
       window.localStorage.setItem('user', JSON.stringify(mockUser));
       window.sessionStorage.setItem('auth-token', 'test-token');
       window.sessionStorage.setItem('user', JSON.stringify(mockUser));
-    } catch (_e) {
+    } catch {
       // localStorage is not accessible, override it
       console.log('Storage not accessible, using mock implementation');
       

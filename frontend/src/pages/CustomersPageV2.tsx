@@ -74,7 +74,7 @@ export function CustomersPageV2({ openWizard = false }: CustomersPageV2Props) {
   }, []);
 
   // Verkäuferschutz: Nur eigene Kunden für Sales-Rolle
-  const filter = user?.role === 'sales' ? { assignedTo: user.id } : undefined;
+  const _filter = user?.role === 'sales' ? { assignedTo: user.id } : undefined;
 
   // Use existing useCustomers hook with pagination
   const { data, isLoading, refetch } = useCustomers(0, 1000); // Get all for now

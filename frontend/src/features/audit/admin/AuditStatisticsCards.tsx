@@ -6,8 +6,8 @@ import {
   Typography,
   Box,
   Skeleton,
-  Tooltip,
-  IconButton,
+  Tooltip as _Tooltip,
+  IconButton as _IconButton,
   Chip,
   LinearProgress,
 } from '@mui/material';
