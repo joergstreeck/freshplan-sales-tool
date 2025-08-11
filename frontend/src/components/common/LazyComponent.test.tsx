@@ -20,11 +20,12 @@ class MockIntersectionObserver {
   callback: IntersectionObserverCallback;
   options?: IntersectionObserverInit;
   elements: Set<Element> = new Set();
+  static instances = new Set<MockIntersectionObserver>();
 
   constructor(callback: IntersectionObserverCallback, options?: IntersectionObserverInit) {
     this.callback = callback;
     this.options = options;
-    mockObserverInstances.add(this);
+    MockIntersectionObserver.instances.add(this);
   }
 
   observe(element: Element) {
@@ -37,6 +38,7 @@ class MockIntersectionObserver {
 
   disconnect() {
     this.elements.clear();
+    MockIntersectionObserver.instances.delete(this);
   }
 
   trigger(entries: Partial<IntersectionObserverEntry>[]) {
@@ -44,14 +46,12 @@ class MockIntersectionObserver {
   }
 }
 
-const mockObserverInstances = new Set<MockIntersectionObserver>();
-
 describe('LazyComponent', () => {
   const TestComponent = () => <div data-testid="test-component">Loaded Content</div>;
   const fallback = <div data-testid="fallback">Loading...</div>;
 
   beforeEach(() => {
-    mockObserverInstances.clear();
+    MockIntersectionObserver.instances.clear();
     global.IntersectionObserver =
       MockIntersectionObserver as unknown as typeof IntersectionObserver;
     mockInView = false; // Reset to not in view by default
@@ -174,7 +174,7 @@ describe('LazyComponent', () => {
         </>
       );
 
-      const observers = Array.from(mockObserverInstances);
+      const observers = Array.from(MockIntersectionObserver.instances);
       expect(observers).toHaveLength(2);
 
       // Trigger first component
@@ -270,7 +270,7 @@ describe('LazyComponent', () => {
         </LazyComponent>
       );
 
-      const initialCount = mockObserverInstances.size;
+      const initialCount = MockIntersectionObserver.instances.size;
 
       // Rerender with same props
       rerender(
@@ -279,7 +279,7 @@ describe('LazyComponent', () => {
         </LazyComponent>
       );
 
-      expect(mockObserverInstances.size).toBe(initialCount);
+      expect(MockIntersectionObserver.instances.size).toBe(initialCount);
     });
 
     it('should not re-observe after loading', async () => {
@@ -289,7 +289,7 @@ describe('LazyComponent', () => {
         </LazyComponent>
       );
 
-      const observer = Array.from(mockObserverInstances)[0];
+      const observer = Array.from(MockIntersectionObserver.instances)[0];
       const observeSpy = vi.spyOn(observer, 'observe');
 
       // Trigger intersection
