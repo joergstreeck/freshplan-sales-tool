@@ -12,37 +12,29 @@
 
 ---
 
-## 📍 Aktueller Stand (11.08.2025)
+## 📍 Aktueller Stand (13.08.2025)
 
 ### ✅ Bereits erreicht:
-- **Branch:** `feature/code-review-improvements`
-- **54 Commits** mit 100% ESLint Compliance
+- **Branch:** `feature/refactor-large-components` (aktiver Branch)
+- **Basis-PR #83:** 54 Commits mit 100% ESLint Compliance ✅ GEMERGED
 - **Test-Coverage:** 89.1% (590 von 662 Tests grün)
 - **Dokumentation:** ENTERPRISE_CODE_REVIEW_2025.md erstellt
+- **PR #4 IN ARBEIT:** Refactoring großer Components (Tests ausstehend)
 
-### 🎯 Nächster Schritt für neuen Claude:
-**WICHTIG:** Zuerst Baseline-PR erstellen mit den 54 bestehenden Commits!
+### 🎯 Nächster Schritt:
+**Tests für PR #4 implementieren und PR erstellen!**
 
 ```bash
-# 1. Branch prüfen
+# 1. Aktuellen Branch prüfen
 git branch --show-current
-# Sollte sein: feature/code-review-improvements
+# Sollte sein: feature/refactor-large-components
 
-# 2. Push und PR erstellen
-git push origin feature/code-review-improvements
-gh pr create --title "feat: code quality baseline - 100% ESLint compliance" \
-  --body "## 🎯 Zusammenfassung
-- 100% ESLint Compliance erreicht (von 421 auf 0 Errors)
-- Test-Erfolgsrate: 89.1% (590 von 662 Tests)
-- 54 Commits mit gezielten Verbesserungen
-- Dokumentation in ENTERPRISE_CODE_REVIEW_2025.md
+# 2. Tests implementieren (siehe TEST_STRATEGY_PER_PR.md)
+npm test
 
-## 📊 Metriken
-- ESLint Errors: 0 ✅
-- Test Coverage: 89.1%
-- Commits: 54
-
-Dies ist die Baseline für weitere Code-Quality Verbesserungen."
+# 3. Nach erfolgreichen Tests: PR erstellen
+gh pr create --title "feat: refactor large frontend components" \
+  --body "Siehe detaillierte Beschreibung unten"
 ```
 
 ## 📋 PR-Roadmap - Sprint-Planung
@@ -421,27 +413,48 @@ chmod +x /tmp/find-event-handlers.sh
 
 ### 🗓️ Sprint 2 (19.-23.08.2025) - Strukturelle Verbesserungen
 
-#### PR #4: Refactor Top 5 Frontend Components
+#### PR #4: Refactor Frontend Components 🔄 IN ARBEIT
 **Branch:** `feature/refactor-large-components`
-**Umfang:** 5 Dateien
-**Priorität:** 🟡 Mittel
+**Status:** 🔄 **TESTS AUSSTEHEND** (13.08.2025)
+**Umfang:** 2 von 5 Komponenten refactored (Rest verschoben)
 
-**Zu refactoren:**
-1. `SalesCockpitV2.tsx` (1247 Zeilen) → Aufteilen in:
-   - `SalesCockpitContainer.tsx`
-   - `SalesCockpitHeader.tsx`
-   - `SalesCockpitGrid.tsx`
-   - `SalesCockpitFilters.tsx`
+**✅ Erfolgreich refactored:**
+1. ✅ `KanbanBoardDndKit.tsx` (1053 → 429 Zeilen, -59%)
+   - Aufgeteilt in 7 Sub-Components
+   - Drag & Drop Offset-Problem behoben
+   - Theme v2 Status-Farben integriert
 
-2. `CustomerOnboardingWizard.tsx` (987 Zeilen) → Aufteilen in:
-   - `WizardContainer.tsx`
-   - `WizardStep1.tsx`, `WizardStep2.tsx`, etc.
-   - `WizardNavigation.tsx`
+2. ✅ `IntelligentFilterBar.tsx` (939 → 592 Zeilen + 6 Sub-Components)
+   - `FilterDrawer.tsx` (190 Zeilen)
+   - `ColumnManagerDrawer.tsx` (170 Zeilen)
+   - `QuickFilters.tsx` (76 Zeilen)
+   - `SearchBar.tsx` (85 Zeilen)
+   - `constants.ts` (50 Zeilen)
+   - Saubere Modul-Struktur
 
-3. `OpportunityPipeline.tsx` (876 Zeilen) → Aufteilen in:
-   - `PipelineContainer.tsx`
-   - `PipelineColumn.tsx`
-   - `OpportunityCard.tsx`
+**✅ Filter-Funktionalität komplett überarbeitet:**
+- Quick Filters: Nur noch Aktiv/Inaktiv für Klarheit
+- Erweiterte Filter: LEAD/PROSPECT/RISIKO aus Status entfernt
+- Kontakte-Filter implementiert (Mit/Ohne Kontakte)
+- Risiko-Level kompakter mit Bereichen (0-29, 30-59, 60-79, 80-100)
+- Umsatz-Range-Slider hinzugefügt (0-500k€)
+- UI optimiert für bessere Platznutzung
+
+**✅ Backend-Erweiterungen:**
+- CustomerResponse um `contactsCount` erweitert
+- CustomerMapper berechnet aktive Kontakte
+- Filter-Logik für null-Werte robust gemacht
+
+**⏳ Tests noch zu implementieren:**
+- [ ] KanbanBoardDndKit Component Tests
+- [ ] IntelligentFilterBar Component Tests
+- [ ] Filter-Logik Unit Tests
+- [ ] Integration Tests für CustomersPageV2
+
+**📝 Verschoben auf späteren PR:**
+- `LocationsForm.tsx` (807 Zeilen)
+- `KanbanBoard.tsx` (799 Zeilen)
+- `CustomerDetailPage.tsx` (560 Zeilen)
 
 #### PR #5: Refactor Top 5 Backend Services
 **Branch:** `feature/refactor-large-services`
@@ -553,14 +566,14 @@ npm run test        # Zeigt Test-Errors
 ## 📈 Fortschritt-Tracking
 
 ### Sprint 1 Status:
-- [x] Baseline PR (55 Commits) - **✅ ERLEDIGT als PR #83!**
-- [ ] PR #1: Security & MSW Hardening 🔒 **NEU!**
+- [x] Baseline PR (54 Commits) - **✅ ERLEDIGT als PR #83!**
+- [ ] PR #1: Security & MSW Hardening 🔒 **NÄCHSTER SCHRITT**
 - [ ] PR #2: Console Cleanup Frontend
 - [ ] PR #3: TypeScript array types
 - [ ] PR #4: Event handler types
 
 ### Sprint 2 Status:
-- [ ] PR #4: Large components refactor
+- [ ] PR #4: Large components refactor 🔄 **IN ARBEIT** (Tests ausstehend)
 - [ ] PR #5: Large services refactor
 - [ ] PR #6: Props & State types
 
