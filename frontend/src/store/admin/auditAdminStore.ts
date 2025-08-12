@@ -222,9 +222,9 @@ export const useAuditAdminStore = create<AuditAdminState>()(
               isLoading: false,
             });
           } catch (_error) {
-            void _error;
+            const errorMessage = _error instanceof Error ? _error.message : 'Failed to fetch dashboard data';
             set({
-              error: 'Failed to fetch dashboard data',
+              error: errorMessage,
               isLoading: false,
             });
           }
@@ -258,7 +258,6 @@ export const useAuditAdminStore = create<AuditAdminState>()(
 
             set({ activityHeatmap: heatmap });
           } catch (_error) {
-            void _error;
             // Log error but don't break the UI
             if (_error instanceof Error) {
               set({ error: `Failed to fetch activity heatmap: ${_error.message}` });
@@ -291,7 +290,6 @@ export const useAuditAdminStore = create<AuditAdminState>()(
 
             set({ suspiciousActivities: activities });
           } catch (_error) {
-            void _error;
             // Log error but don't break the UI
             if (_error instanceof Error) {
               set({ error: `Failed to fetch suspicious activities: ${_error.message}` });
@@ -329,7 +327,6 @@ export const useAuditAdminStore = create<AuditAdminState>()(
               userProfiles: new Map(state.userProfiles).set(userId, profile),
             }));
           } catch (_error) {
-            void _error;
             // Log error but don't break the UI
             if (_error instanceof Error) {
               set({ error: `Failed to fetch user profile: ${_error.message}` });
@@ -362,7 +359,6 @@ export const useAuditAdminStore = create<AuditAdminState>()(
 
             set({ complianceStatus: status });
           } catch (_error) {
-            void _error;
             // Log error but don't break the UI
             if (_error instanceof Error) {
               set({ error: `Failed to fetch compliance status: ${_error.message}` });
@@ -385,7 +381,6 @@ export const useAuditAdminStore = create<AuditAdminState>()(
             set({ isLoading: false });
             return result;
           } catch (_error) {
-            void _error;
             const errorMessage = _error instanceof Error ? _error.message : 'An error occurred';
             set({ isLoading: false, error: errorMessage });
             throw _error;

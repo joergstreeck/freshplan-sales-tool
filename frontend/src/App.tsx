@@ -30,7 +30,6 @@ function App() {
       const result = await ApiService.ping(token);
       setPingResult(JSON.stringify(result, null, 2));
     } catch (_error) {
-      void _error;
       const errorMessage = _error instanceof Error ? _error.message : 'An unknown error occurred';
       setPingResult(`Error: ${errorMessage}`);
     }
