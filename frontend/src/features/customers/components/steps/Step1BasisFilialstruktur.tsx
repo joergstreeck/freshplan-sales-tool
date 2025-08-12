@@ -60,7 +60,7 @@ export const Step1BasisFilialstruktur: React.FC = () => {
     // DEBUG: Log die berechneten Größen
     if (process.env.NODE_ENV === 'development') {
       fields.forEach(field => {
-        const size = getFieldSize(field);
+        const _size = getFieldSize(field);
         // Field size calculated
       });
     }

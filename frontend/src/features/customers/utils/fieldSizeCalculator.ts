@@ -193,7 +193,7 @@ export function calculateOptimalRows(fields: FieldDefinition[]): FieldDefinition
   let currentRowSize = 0;
 
   fields.forEach(field => {
-    const size = getFieldSize(field);
+    const _size = getFieldSize(field);
     const fieldSize = size.md || 12; // Desktop-Größe als Basis
 
     // Neue Zeile beginnen, wenn 12 überschritten würde
@@ -230,7 +230,7 @@ export function debugFieldLayout(fields: FieldDefinition[]): string {
     let totalSize = 0;
 
     row.forEach(field => {
-      const size = getFieldSize(field);
+      const _size = getFieldSize(field);
       const fieldSize = size.md || 12;
       totalSize += fieldSize;
       output += `[${field.key}:${fieldSize}] `;
@@ -249,7 +249,7 @@ export function debugFieldLayout(fields: FieldDefinition[]): string {
 export function debugDropdownSizes(fields: FieldDefinition[]): void {
   fields.forEach(field => {
     if (field.fieldType === 'select' || field.fieldType === 'dropdown') {
-      const size = getFieldSize(field);
+      const _size = getFieldSize(field);
       const _gridSize = size.md || 12;
 
       // Längste Option finden

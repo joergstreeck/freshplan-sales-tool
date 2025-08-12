@@ -179,8 +179,8 @@ export function getFieldSizeClass(field: FieldDefinition): string {
  */
 export function debugFieldWidth(field: FieldDefinition, value: string): void {
   const measuredWidth = value.length * CHAR_AVERAGE_WIDTH;
-  const calculatedWidth = calculateFieldWidth(field, measuredWidth);
-  const sizeClass = getFieldSizeClass(field);
+  const _calculatedWidth = calculateFieldWidth(field, measuredWidth);
+  const _sizeClass = getFieldSizeClass(field);
 
   // Size class calculated
 }

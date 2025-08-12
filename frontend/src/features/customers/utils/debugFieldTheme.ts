@@ -10,15 +10,15 @@ import customerFieldCatalog from '../data/fieldCatalog.json';
 export function debugCustomerFieldTheme() {
   // Base Fields
   customerFieldCatalog.customer.base.forEach(field => {
-    const calculatedSize = getFieldSize(field);
-    const hasGridSize = !!field.gridSize;
+    const _calculatedSize = getFieldSize(field);
+    const _hasGridSize = !!field.gridSize;
   });
 
   // Debug Layout
 
   // Summary
-  const fieldsWithGridSize = customerFieldCatalog.customer.base.filter(f => f.gridSize).length;
-  const totalFields = customerFieldCatalog.customer.base.length;
+  const _fieldsWithGridSize = customerFieldCatalog.customer.base.filter(f => f.gridSize).length;
+  const _totalFields = customerFieldCatalog.customer.base.length;
 
   // Comparison
   customerFieldCatalog.customer.base.forEach(field => {
