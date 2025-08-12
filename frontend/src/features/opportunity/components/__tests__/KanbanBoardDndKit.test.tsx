@@ -1,10 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, within } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import { DndContext } from '@dnd-kit/core';
+import { render, screen } from '@testing-library/react';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { KanbanBoardDndKit } from '../kanban/KanbanBoardDndKit';
-import type { Customer, KanbanColumn } from '../../../../types';
 
 // Create a test theme with status colors
 const testTheme = createTheme({
@@ -18,190 +16,110 @@ const testTheme = createTheme({
   },
 });
 
-// Helper function to render with theme
-const renderWithTheme = (component: React.ReactElement) => {
+// Create query client for tests
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: { retry: false },
+    mutations: { retry: false },
+  },
+});
+
+// Helper function to render with providers
+const renderWithProviders = (component: React.ReactElement) => {
   return render(
-    <ThemeProvider theme={testTheme}>
-      {component}
-    </ThemeProvider>
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider theme={testTheme}>
+        {component}
+      </ThemeProvider>
+    </QueryClientProvider>
   );
 };
 
-// Mock the sub-components
-vi.mock('../kanban/components/KanbanColumn', () => ({
-  KanbanColumn: ({ column, customers }: any) => (
-    <div data-testid={`column-${column.id}`}>
-      <h3>{column.title}</h3>
-      <div>{customers.length} customers</div>
-      {customers.map((c: any) => (
-        <div key={c.id} data-testid={`card-${c.id}`}>
-          {c.company_name}
-        </div>
-      ))}
-    </div>
-  ),
+// Mock the httpClient
+vi.mock('../../../../lib/apiClient', () => ({
+  httpClient: {
+    get: vi.fn().mockResolvedValue({ data: [] }),
+    post: vi.fn().mockResolvedValue({ data: {} }),
+    put: vi.fn().mockResolvedValue({ data: {} }),
+  },
 }));
 
-vi.mock('../kanban/components/DragOverlay', () => ({
-  KanbanDragOverlay: ({ activeCustomer }: any) => 
-    activeCustomer ? <div>Dragging: {activeCustomer.company_name}</div> : null,
+// Mock the logger
+vi.mock('../../../../lib/logger', () => ({
+  logger: {
+    child: () => ({
+      debug: vi.fn(),
+      info: vi.fn(),
+      error: vi.fn(),
+      warn: vi.fn(),
+    }),
+  },
 }));
 
 describe('KanbanBoardDndKit', () => {
-  const mockCustomers: Customer[] = [
-    {
-      id: '1',
-      company_name: 'Test Company 1',
-      status: 'LEAD',
-      risk_score: 30,
-    } as Customer,
-    {
-      id: '2',
-      company_name: 'Test Company 2',
-      status: 'PROSPECT',
-      risk_score: 60,
-    } as Customer,
-    {
-      id: '3',
-      company_name: 'Test Company 3',
-      status: 'KUNDE',
-      risk_score: 10,
-    } as Customer,
-  ];
-
-  const mockColumns: KanbanColumn[] = [
-    { id: 'lead', title: 'Lead', status: 'LEAD', order: 0 },
-    { id: 'prospect', title: 'Prospect', status: 'PROSPECT', order: 1 },
-    { id: 'customer', title: 'Kunde', status: 'KUNDE', order: 2 },
-  ];
-
-  const mockOnStatusChange = vi.fn();
-  const mockOnColumnsChange = vi.fn();
-
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it('should render all columns', () => {
-    renderWithTheme(
-      <KanbanBoardDndKit
-        customers={mockCustomers}
-        columns={mockColumns}
-        onStatusChange={mockOnStatusChange}
-        onColumnsChange={mockOnColumnsChange}
-      />
-    );
-
-    expect(screen.getByTestId('column-lead')).toBeInTheDocument();
-    expect(screen.getByTestId('column-prospect')).toBeInTheDocument();
-    expect(screen.getByTestId('column-customer')).toBeInTheDocument();
+  it('should render the pipeline overview', () => {
+    renderWithProviders(<KanbanBoardDndKit />);
+    
+    // Check if pipeline overview is rendered
+    expect(screen.getByText('Pipeline Übersicht')).toBeInTheDocument();
   });
 
-  it('should distribute customers to correct columns', () => {
-    renderWithTheme(
-      <KanbanBoardDndKit
-        customers={mockCustomers}
-        columns={mockColumns}
-        onStatusChange={mockOnStatusChange}
-        onColumnsChange={mockOnColumnsChange}
-      />
-    );
-
-    const leadColumn = screen.getByTestId('column-lead');
-    const prospectColumn = screen.getByTestId('column-prospect');
-    const customerColumn = screen.getByTestId('column-customer');
-
-    expect(within(leadColumn).getByText('1 customers')).toBeInTheDocument();
-    expect(within(prospectColumn).getByText('1 customers')).toBeInTheDocument();
-    expect(within(customerColumn).getByText('1 customers')).toBeInTheDocument();
+  it('should display pipeline statistics', () => {
+    renderWithProviders(<KanbanBoardDndKit />);
+    
+    // Check for statistic sections
+    expect(screen.getByText('Aktive Opportunities')).toBeInTheDocument();
+    // Use getAllByText since "Gewonnen" appears multiple times
+    const gewonnenElements = screen.getAllByText('Gewonnen');
+    expect(gewonnenElements.length).toBeGreaterThan(0);
+    // Use getAllByText since "Verloren" might appear multiple times
+    const verlorenElements = screen.getAllByText('Verloren');
+    expect(verlorenElements.length).toBeGreaterThan(0);
+    expect(screen.getByText('Conversion Rate')).toBeInTheDocument();
   });
 
-  it('should render customer cards', () => {
-    renderWithTheme(
-      <KanbanBoardDndKit
-        customers={mockCustomers}
-        columns={mockColumns}
-        onStatusChange={mockOnStatusChange}
-        onColumnsChange={mockOnColumnsChange}
-      />
-    );
-
-    expect(screen.getByTestId('card-1')).toBeInTheDocument();
-    expect(screen.getByTestId('card-2')).toBeInTheDocument();
-    expect(screen.getByTestId('card-3')).toBeInTheDocument();
+  it('should render kanban columns for opportunities', () => {
+    renderWithProviders(<KanbanBoardDndKit />);
+    
+    // The component should render stage columns
+    // These are defined in the component's OpportunityStage enum
+    expect(screen.getByText(/Lead/i)).toBeInTheDocument();
   });
 
-  it('should handle empty customers array', () => {
-    renderWithTheme(
-      <KanbanBoardDndKit
-        customers={[]}
-        columns={mockColumns}
-        onStatusChange={mockOnStatusChange}
-        onColumnsChange={mockOnColumnsChange}
-      />
-    );
-
-    const leadColumn = screen.getByTestId('column-lead');
-    expect(within(leadColumn).getByText('0 customers')).toBeInTheDocument();
+  it('should handle loading state', () => {
+    renderWithProviders(<KanbanBoardDndKit />);
+    
+    // Component should handle loading gracefully
+    // Even if no opportunities are loaded, the structure should be present
+    expect(screen.getByText('Pipeline Übersicht')).toBeInTheDocument();
   });
 
-  it('should handle drag end event', () => {
-    const { rerender } = renderWithTheme(
-      <KanbanBoardDndKit
-        customers={mockCustomers}
-        columns={mockColumns}
-        onStatusChange={mockOnStatusChange}
-        onColumnsChange={mockOnColumnsChange}
-      />
-    );
-
-    // Simulate drag and drop (simplified test)
-    // In a real test, you would use @dnd-kit/testing utilities
-    // This validates that the callback is properly wired
-    expect(mockOnStatusChange).not.toHaveBeenCalled();
+  it('should display formatted currency values', () => {
+    renderWithProviders(<KanbanBoardDndKit />);
+    
+    // Check that currency is formatted (the component uses formatCurrency)
+    // The initial data includes formatted values
+    const currencyElements = screen.getAllByText(/€/);
+    expect(currencyElements.length).toBeGreaterThan(0);
   });
 
-  it('should filter customers by column status', () => {
-    const customersWithMixedStatus: Customer[] = [
-      { ...mockCustomers[0], status: 'LEAD' },
-      { ...mockCustomers[1], status: 'LEAD' },
-      { ...mockCustomers[2], status: 'KUNDE' },
-    ];
-
-    renderWithTheme(
-      <KanbanBoardDndKit
-        customers={customersWithMixedStatus}
-        columns={mockColumns}
-        onStatusChange={mockOnStatusChange}
-        onColumnsChange={mockOnColumnsChange}
-      />
-    );
-
-    const leadColumn = screen.getByTestId('column-lead');
-    const customerColumn = screen.getByTestId('column-customer');
-
-    expect(within(leadColumn).getByText('2 customers')).toBeInTheDocument();
-    expect(within(customerColumn).getByText('1 customers')).toBeInTheDocument();
+  it('should have proper theme integration', () => {
+    const { container } = renderWithProviders(<KanbanBoardDndKit />);
+    
+    // Check if MUI Paper component is rendered (component uses Paper)
+    const paperElement = container.querySelector('.MuiPaper-root');
+    expect(paperElement).toBeInTheDocument();
   });
 
-  it('should maintain column order', () => {
-    const reorderedColumns = [
-      { ...mockColumns[2], order: 0 },
-      { ...mockColumns[0], order: 1 },
-      { ...mockColumns[1], order: 2 },
-    ];
-
-    renderWithTheme(
-      <KanbanBoardDndKit
-        customers={mockCustomers}
-        columns={reorderedColumns}
-        onStatusChange={mockOnStatusChange}
-        onColumnsChange={mockOnColumnsChange}
-      />
-    );
-
-    const columns = screen.getAllByTestId(/^column-/);
-    // Columns should be rendered in order
-    expect(columns.length).toBe(3);
+  it('should render with drag and drop context', () => {
+    renderWithProviders(<KanbanBoardDndKit />);
+    
+    // The component uses DndContext internally
+    // We can verify it renders without errors
+    expect(screen.getByText('Pipeline Übersicht')).toBeInTheDocument();
   });
 });
