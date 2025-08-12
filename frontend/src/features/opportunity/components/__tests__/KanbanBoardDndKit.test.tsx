@@ -2,8 +2,30 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { DndContext } from '@dnd-kit/core';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { KanbanBoardDndKit } from '../kanban/KanbanBoardDndKit';
 import type { Customer, KanbanColumn } from '../../../../types';
+
+// Create a test theme with status colors
+const testTheme = createTheme({
+  palette: {
+    status: {
+      won: '#4caf50',
+      lost: '#f44336',
+      inProgress: '#2196f3',
+      new: '#ff9800',
+    },
+  },
+});
+
+// Helper function to render with theme
+const renderWithTheme = (component: React.ReactElement) => {
+  return render(
+    <ThemeProvider theme={testTheme}>
+      {component}
+    </ThemeProvider>
+  );
+};
 
 // Mock the sub-components
 vi.mock('../kanban/components/KanbanColumn', () => ({
@@ -61,7 +83,7 @@ describe('KanbanBoardDndKit', () => {
   });
 
   it('should render all columns', () => {
-    render(
+    renderWithTheme(
       <KanbanBoardDndKit
         customers={mockCustomers}
         columns={mockColumns}
@@ -76,7 +98,7 @@ describe('KanbanBoardDndKit', () => {
   });
 
   it('should distribute customers to correct columns', () => {
-    render(
+    renderWithTheme(
       <KanbanBoardDndKit
         customers={mockCustomers}
         columns={mockColumns}
@@ -95,7 +117,7 @@ describe('KanbanBoardDndKit', () => {
   });
 
   it('should render customer cards', () => {
-    render(
+    renderWithTheme(
       <KanbanBoardDndKit
         customers={mockCustomers}
         columns={mockColumns}
@@ -110,7 +132,7 @@ describe('KanbanBoardDndKit', () => {
   });
 
   it('should handle empty customers array', () => {
-    render(
+    renderWithTheme(
       <KanbanBoardDndKit
         customers={[]}
         columns={mockColumns}
@@ -124,7 +146,7 @@ describe('KanbanBoardDndKit', () => {
   });
 
   it('should handle drag end event', () => {
-    const { rerender } = render(
+    const { rerender } = renderWithTheme(
       <KanbanBoardDndKit
         customers={mockCustomers}
         columns={mockColumns}
@@ -146,7 +168,7 @@ describe('KanbanBoardDndKit', () => {
       { ...mockCustomers[2], status: 'KUNDE' },
     ];
 
-    render(
+    renderWithTheme(
       <KanbanBoardDndKit
         customers={customersWithMixedStatus}
         columns={mockColumns}
@@ -169,7 +191,7 @@ describe('KanbanBoardDndKit', () => {
       { ...mockColumns[1], order: 2 },
     ];
 
-    render(
+    renderWithTheme(
       <KanbanBoardDndKit
         customers={mockCustomers}
         columns={reorderedColumns}
