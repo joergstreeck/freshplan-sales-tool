@@ -227,7 +227,7 @@ class Logger {
    * @private
    */
   private consoleOutput(entry: ILogEntry): void {
-    const { level, message, data, error } = entry;
+    const { level, message: _message, data: _data, error: _error } = entry;
     const _prefix = `[${entry.timestamp}] [${level.toUpperCase()}]`;
 
     switch (level) {
