@@ -111,7 +111,7 @@ export function FocusListColumnMUI({ onCustomerSelect }: FocusListColumnMUIProps
     // Callback an parent component
     if (onCustomerSelect) {
       onCustomerSelect(customerId);
-    } else {
+    } else { void 0;
     }
   };
 

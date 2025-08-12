@@ -14,7 +14,7 @@ async function globalSetup(config: FullConfig) {
   try {
     const response = await fetch(`${baseURL}/api/health`);
     if (!response.ok) {
-    } else {
+    } else { void 0;
     }
   } catch (error) {}
 

@@ -128,7 +128,7 @@ async function generateTestSummary() {
 
                 if (t.status === 'passed') {
                   summary.browsers[project].passed++;
-                } else {
+                } else { void 0;
                   summary.browsers[project].failed++;
                 }
               });

@@ -92,7 +92,7 @@ class OfflineQueueService {
           // Max retries reached, remove and notify
           this.removeFromQueue(item.id);
           this.notifyFailed(item);
-        } else {
+        } else { void 0;
           // Update retry count and try again later
           this.updateQueueItem(item);
           setTimeout(() => this.processQueue(), this.RETRY_DELAY);
