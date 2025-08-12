@@ -14,7 +14,9 @@ async function globalTeardown(config: FullConfig) {
   // Cleanup test data
   try {
     await cleanupTestData(baseURL);
-  } catch (error) {}
+  } catch (_error) {
+        void _error;    // Cleanup failed, continue
+  }
 
   // Clean up auth state file
   try {
@@ -22,12 +24,16 @@ async function globalTeardown(config: FullConfig) {
     if (fs.existsSync(authStatePath)) {
       fs.unlinkSync(authStatePath);
     }
-  } catch (error) {}
+  } catch (_error) {
+        void _error;    // Cleanup failed, continue
+  }
 
   // Generate test summary
   try {
     await generateTestSummary();
-  } catch (error) {}
+  } catch (_error) {
+        void _error;    // Cleanup failed, continue
+  }
 }
 
 async function cleanupTestData(baseURL: string) {
@@ -172,7 +178,9 @@ ${summary.failed === 0 ? '🎉 **ALLE TESTS ERFOLGREICH**' : `⚠️ **${summary
 `;
 
     fs.writeFileSync('../../../../../test-results/e2e-summary.md', readableSummary);
-  } catch (error) {}
+  } catch (_error) {
+        void _error;    // Cleanup failed, continue
+  }
 }
 
 export default globalTeardown;

@@ -14,19 +14,27 @@ async function globalSetup(config: FullConfig) {
   try {
     const response = await fetch(`${baseURL}/api/health`);
     if (!response.ok) {
-    } else { void 0;
+      // Server not healthy
+    } else { 
+      void 0;
     }
-  } catch (error) {}
+  } catch (_error) {
+        void _error;    // Server not reachable
+  }
 
   // Setup test data if needed
   try {
     await seedTestData(baseURL);
-  } catch (error) {}
+  } catch (_error) {
+        void _error;    // Test data seeding failed
+  }
 
   // Setup authentication state for tests that need it
   try {
     await setupAuthState(config);
-  } catch (error) {}
+  } catch (_error) {
+        void _error;    // Auth setup failed
+  }
 }
 
 async function seedTestData(baseURL: string) {
@@ -63,6 +71,7 @@ async function seedTestData(baseURL: string) {
       });
 
       if (!response.ok) {
+        // Seed failed
       }
     } catch {
       // Ignore individual seed failures

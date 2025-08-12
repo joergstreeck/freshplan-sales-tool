@@ -61,7 +61,9 @@ class OfflineQueueService {
     if ('serviceWorker' in navigator && 'sync' in self.registration) {
       try {
         await (self.registration as unknown).sync.register('sync-contact-actions');
-      } catch (_error) {}
+      } catch (_error) {
+        void _error;        // Background sync not available
+      }
     }
   }
 
@@ -85,8 +87,8 @@ class OfflineQueueService {
         // Remove from queue on success
         this.removeFromQueue(item.id);
         this.notifySuccess(item);
-      } catch (_error) { void _error;
-        item.retryCount++;
+      } catch (_error) {
+        void _error;        item.retryCount++;
 
         if (item.retryCount >= item.maxRetries) {
           // Max retries reached, remove and notify
@@ -117,8 +119,8 @@ class OfflineQueueService {
         ...item,
         timestamp: new Date(item.timestamp),
       }));
-    } catch (_error) { void _error;
-      return [];
+    } catch (_error) {
+        void _error;      return [];
     }
   }
 
@@ -142,7 +144,10 @@ class OfflineQueueService {
   private saveQueue(queue: QueuedAction[]): void {
     try {
       localStorage.setItem(this.STORAGE_KEY, JSON.stringify(queue));
-    } catch (_error) {}
+    } catch (_error) {
+      void _error;
+      // Ignore localStorage errors
+    }
   }
 
   /**

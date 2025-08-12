@@ -221,8 +221,8 @@ export const useAuditAdminStore = create<AuditAdminState>()(
               dashboardStats: mockStats,
               isLoading: false,
             });
-          } catch (_error) { void _error;
-            set({
+          } catch (_error) {
+        void _error;            set({
               error: error.message || 'Failed to fetch dashboard data',
               isLoading: false,
             });
@@ -256,8 +256,8 @@ export const useAuditAdminStore = create<AuditAdminState>()(
             };
 
             set({ activityHeatmap: heatmap });
-          } catch (_error) { void _error;
-            // Log error but don't break the UI
+          } catch (_error) {
+        void _error;            // Log error but don't break the UI
             if (error instanceof Error) {
               set({ error: `Failed to fetch activity heatmap: ${error.message}` });
             }
@@ -288,8 +288,8 @@ export const useAuditAdminStore = create<AuditAdminState>()(
             ];
 
             set({ suspiciousActivities: activities });
-          } catch (_error) { void _error;
-            // Log error but don't break the UI
+          } catch (_error) {
+        void _error;            // Log error but don't break the UI
             if (error instanceof Error) {
               set({ error: `Failed to fetch suspicious activities: ${error.message}` });
             }
@@ -325,8 +325,8 @@ export const useAuditAdminStore = create<AuditAdminState>()(
             set(state => ({
               userProfiles: new Map(state.userProfiles).set(userId, profile),
             }));
-          } catch (_error) { void _error;
-            // Log error but don't break the UI
+          } catch (_error) {
+        void _error;            // Log error but don't break the UI
             if (error instanceof Error) {
               set({ error: `Failed to fetch user profile: ${error.message}` });
             }
@@ -357,8 +357,8 @@ export const useAuditAdminStore = create<AuditAdminState>()(
             };
 
             set({ complianceStatus: status });
-          } catch (_error) { void _error;
-            // Log error but don't break the UI
+          } catch (_error) {
+        void _error;            // Log error but don't break the UI
             if (error instanceof Error) {
               set({ error: `Failed to fetch compliance status: ${error.message}` });
             }
@@ -379,8 +379,8 @@ export const useAuditAdminStore = create<AuditAdminState>()(
 
             set({ isLoading: false });
             return result;
-          } catch (_error) { void _error;
-            set({ isLoading: false, error: error.message });
+          } catch (_error) {
+        void _error;            set({ isLoading: false, error: error.message });
             throw error;
           }
         },
@@ -426,7 +426,7 @@ export const useAuditAdminStore = create<AuditAdminState>()(
           return { status: 'investigated', details: {} };
         },
 
-        blockUser: async (userId, reason) => {
+        blockUser: async (_userId, _reason) => {
           // API call to block user
         },
 

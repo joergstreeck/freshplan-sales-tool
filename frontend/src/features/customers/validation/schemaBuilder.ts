@@ -256,7 +256,7 @@ function applyCustomValidations(
       case 'unique':
         // This would need async validation
         schema = schema.refine(
-          async val => {
+          async _val => {
             // In real implementation, this would call an API
             return true;
           },

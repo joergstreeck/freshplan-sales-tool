@@ -46,7 +46,9 @@ export const UserTable = () => {
     if (window.confirm(`Benutzer "${user.username}" wirklich löschen?`)) {
       try {
         await deleteUser.mutateAsync(user.id);
-      } catch (error) {}
+      } catch (_error) {
+        void _error;        // Delete failed, error already handled by mutation
+      }
     }
   };
 
@@ -56,7 +58,10 @@ export const UserTable = () => {
         id: user.id,
         enabled: !user.enabled,
       });
-    } catch (error) {}
+    } catch (_error) {
+      void _error;
+      // Toggle failed
+    }
   };
 
   if (error) {

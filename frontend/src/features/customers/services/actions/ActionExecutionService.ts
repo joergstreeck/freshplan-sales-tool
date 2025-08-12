@@ -356,7 +356,7 @@ END:VCALENDAR`;
   /**
    * Track action for analytics
    */
-  private trackAction(action: QuickAction, contact: Contact): void {
+  private trackAction(_action: QuickAction, _contact: Contact): void {
     // Analytics tracking would go here
     // Removed incomplete console.log statement
   }
