@@ -76,7 +76,7 @@ export const DynamicFieldRenderer: React.FC<DynamicFieldRendererProps> = ({
    */
   const renderField = (field: FieldDefinition): React.ReactElement | null => {
     const value = values[field.key] ?? field.defaultValue ?? '';
-    const error = errors[field.key];
+    const _error = errors[field.key];
 
     // Für adaptive Felder (alle Text-basierten Typen)
     if (useAdaptiveLayout && ['text', 'email', 'number'].includes(field.fieldType)) {
