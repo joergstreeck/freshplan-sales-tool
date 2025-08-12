@@ -253,7 +253,7 @@ export function debugDropdownSizes(fields: FieldDefinition[]): void {
       const _gridSize = size.md || 12;
 
       // Längste Option finden
-      let _longestLabel = 0;
+      const _longestLabel = 0;
       if (field.options) {
         const _longestLabel = Math.max(
           ...field.options.map(opt => opt.label.length),
