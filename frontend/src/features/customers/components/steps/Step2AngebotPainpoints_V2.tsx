@@ -19,7 +19,6 @@ import { AdditionalBusinessSection } from '../sections/AdditionalBusinessSection
 import { LocationServicesSection } from '../sections/LocationServicesSection';
 
 // Import Store Extensions
-import type { FieldDefinition } from '../../types/field.types';
 
 // Pain Point Solutions Mapping (unverändert)
 const PAIN_POINT_SOLUTIONS = {

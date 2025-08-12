@@ -79,7 +79,7 @@ enableMocking()
       </StrictMode>
     );
   })
-  .catch(error => {
+  .catch(_error => {
     // Failed to initialize app - error handled
     // Render app anyway - don't let initialization errors block the entire app
     createRoot(rootElement).render(

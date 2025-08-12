@@ -12,7 +12,6 @@ import { Box, Typography, Alert, AlertTitle, Divider, Card, CardContent } from '
 import { useCustomerOnboardingStore } from '../../stores/customerOnboardingStore';
 import { useFieldDefinitions } from '../../hooks/useFieldDefinitions';
 import { DynamicFieldRenderer } from '../fields/DynamicFieldRenderer';
-import type { FieldDefinition } from '../../types/FieldDefinition';
 
 export const Step3Ansprechpartner: React.FC = () => {
   const { customerData, validationErrors, setCustomerField, validateField } =

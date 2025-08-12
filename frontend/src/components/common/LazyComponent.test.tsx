@@ -7,7 +7,7 @@ import { useInView } from 'react-intersection-observer';
 // Mock react-intersection-observer with control over inView state
 let mockInView = false;
 const mockRef = vi.fn();
-const mockInViewInstances: Array<{ ref: any; inView: boolean; setInView: (value: boolean) => void }> = [];
+const mockInViewInstances: Array<{ ref: unknown; inView: boolean; setInView: (value: boolean) => void }> = [];
 
 vi.mock('react-intersection-observer', () => ({
   useInView: vi.fn(() => {
@@ -311,7 +311,7 @@ describe('LazyComponent', () => {
 
   describe('Performance', () => {
     it('should only create one observer per component', () => {
-      const callCountBefore = vi.mocked(useInView).mock.calls.length;
+      const _callCountBefore = vi.mocked(useInView).mock.calls.length;
       
       const { rerender } = render(
         <LazyComponent fallback={fallback}>

@@ -17,7 +17,6 @@ import { GlobalChallengesSection } from '../sections/GlobalChallengesSection';
 import { RevenueExpectationSectionV2 } from '../sections/RevenueExpectationSectionV2';
 import { AdditionalBusinessSection } from '../sections/AdditionalBusinessSection';
 
-import type { FieldDefinition } from '../../types/field.types';
 
 // Pain Point Solutions Mapping (unverändert)
 const PAIN_POINT_SOLUTIONS = {

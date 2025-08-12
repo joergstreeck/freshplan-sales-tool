@@ -23,7 +23,6 @@ import { useCustomerOnboardingStore } from '../../stores/customerOnboardingStore
 import { useFieldDefinitions } from '../../hooks/useFieldDefinitions';
 import { DynamicFieldRenderer } from '../fields/DynamicFieldRenderer';
 import { AngebotsstrukturLayout } from '../layout/AngebotsstrukturLayout';
-import type { FieldDefinition } from '../../types/field.types';
 import { debugDropdownSizes } from '../../utils/fieldSizeCalculator';
 
 // Pain Point Solutions Mapping
