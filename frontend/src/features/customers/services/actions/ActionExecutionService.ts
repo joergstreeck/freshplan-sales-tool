@@ -84,7 +84,7 @@ export class ActionExecutionService {
   /**
    * Initiate a phone call
    */
-  private async initiateCall(contact: Contact): Promise<void> {
+  private async initiateCall(_contact: Contact): Promise<void> {
     const phoneNumber = contact.mobile || contact.phone;
     if (!phoneNumber) {
       throw new Error('Keine Telefonnummer verfügbar');
@@ -105,7 +105,7 @@ export class ActionExecutionService {
   /**
    * Compose an email
    */
-  private async composeEmail(contact: Contact): Promise<void> {
+  private async composeEmail(_contact: Contact): Promise<void> {
     if (!contact.email) {
       throw new Error('Keine E-Mail-Adresse verfügbar');
     }
@@ -123,7 +123,7 @@ export class ActionExecutionService {
   /**
    * Open WhatsApp chat
    */
-  private async openWhatsApp(contact: Contact): Promise<void> {
+  private async openWhatsApp(_contact: Contact): Promise<void> {
     const phoneNumber = contact.mobile?.replace(/\D/g, '');
     if (!phoneNumber) {
       throw new Error('Keine Mobilnummer für WhatsApp verfügbar');
@@ -144,7 +144,7 @@ export class ActionExecutionService {
   /**
    * Compose SMS message
    */
-  private async composeSMS(contact: Contact): Promise<void> {
+  private async composeSMS(_contact: Contact): Promise<void> {
     const phoneNumber = contact.mobile;
     if (!phoneNumber) {
       throw new Error('Keine Mobilnummer für SMS verfügbar');
@@ -159,7 +159,7 @@ export class ActionExecutionService {
   /**
    * Schedule an appointment
    */
-  private async scheduleAppointment(contact: Contact): Promise<void> {
+  private async scheduleAppointment(_contact: Contact): Promise<void> {
     // Generate calendar event
     const event = {
       title: `Termin mit ${contact.firstName} ${contact.lastName}`,
@@ -181,7 +181,7 @@ export class ActionExecutionService {
   /**
    * Add a quick note
    */
-  private async addQuickNote(contact: Contact): Promise<void> {
+  private async addQuickNote(_contact: Contact): Promise<void> {
     // This would typically open a modal or navigate to a note-taking interface
     // For now, we'll just log it
     // In a real implementation, this would:
@@ -193,7 +193,7 @@ export class ActionExecutionService {
   /**
    * Schedule a meeting
    */
-  private async scheduleMeeting(contact: Contact): Promise<void> {
+  private async scheduleMeeting(_contact: Contact): Promise<void> {
     // Similar to appointment but with meeting-specific logic
     await this.scheduleAppointment(contact);
   }
@@ -201,7 +201,7 @@ export class ActionExecutionService {
   /**
    * Generate email subject based on context
    */
-  private generateEmailSubject(contact: Contact): string {
+  private generateEmailSubject(_contact: Contact): string {
     const greeting = actionSuggestionService.getTimeBasedGreeting();
 
     // Check for special occasions
@@ -215,7 +215,7 @@ export class ActionExecutionService {
   /**
    * Generate email body template
    */
-  private generateEmailBody(contact: Contact): string {
+  private generateEmailBody(_contact: Contact): string {
     const greeting = actionSuggestionService.getTimeBasedGreeting();
     const salutation = contact.salutation || '';
     const title = contact.title || '';
@@ -237,7 +237,7 @@ FreshPlan Team
   /**
    * Generate WhatsApp message template
    */
-  private generateWhatsAppMessage(contact: Contact): string {
+  private generateWhatsAppMessage(_contact: Contact): string {
     const greeting = actionSuggestionService.getTimeBasedGreeting();
     return `${greeting} ${contact.firstName}, kurze Frage: Haben Sie gerade 5 Minuten Zeit? 😊`;
   }
@@ -245,7 +245,7 @@ FreshPlan Team
   /**
    * Generate SMS message template
    */
-  private generateSMSMessage(contact: Contact): string {
+  private generateSMSMessage(_contact: Contact): string {
     return `Hallo ${contact.firstName}, kurze Info von FreshPlan:`;
   }
 
@@ -382,7 +382,7 @@ END:VCALENDAR`;
   /**
    * Get full contact name
    */
-  private getContactFullName(contact: Contact): string {
+  private getContactFullName(_contact: Contact): string {
     const parts = [];
     if (contact.salutation) parts.push(contact.salutation);
     if (contact.title) parts.push(contact.title);
