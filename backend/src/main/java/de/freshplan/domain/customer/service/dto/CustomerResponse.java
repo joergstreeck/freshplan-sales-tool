@@ -62,7 +62,7 @@ public record CustomerResponse(
     // Business Model - NEW for Sprint 2
     FinancingType primaryFinancing,
     List<String> painPoints,
-    
+
     // Contact Information
     Integer contactsCount,
 
@@ -125,10 +125,9 @@ public record CustomerResponse(
         // Business Model - NEW for Sprint 2 (null for minimal)
         null,
         List.of(),
-        
+
         // Contact Information (null for minimal)
         null,
-        
         createdAt,
         null,
         null,
