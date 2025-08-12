@@ -30,7 +30,6 @@ export class CockpitErrorBoundary extends Component<Props, State> {
   }
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-
     // TODO: Report to error monitoring service (e.g., Sentry)
     // errorReportingService.captureException(error, { extra: errorInfo });
   }

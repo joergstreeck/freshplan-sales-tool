@@ -51,8 +51,7 @@ export const useAutoSave = (options: UseAutoSaveOptions = {}): UseAutoSaveResult
     timeoutRef.current = setTimeout(async () => {
       try {
         await saveAsDraft();
-      } catch (error) {
-      }
+      } catch (error) {}
     }, delay);
 
     // Cleanup

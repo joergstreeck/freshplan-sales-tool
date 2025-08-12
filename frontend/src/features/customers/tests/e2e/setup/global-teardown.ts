@@ -9,14 +9,12 @@ import { FullConfig } from '@playwright/test';
 import fs from 'fs';
 
 async function globalTeardown(config: FullConfig) {
-
   const baseURL = config.projects[0].use.baseURL || 'http://localhost:5173';
 
   // Cleanup test data
   try {
     await cleanupTestData(baseURL);
-  } catch (error) {
-  }
+  } catch (error) {}
 
   // Clean up auth state file
   try {
@@ -24,15 +22,12 @@ async function globalTeardown(config: FullConfig) {
     if (fs.existsSync(authStatePath)) {
       fs.unlinkSync(authStatePath);
     }
-  } catch (error) {
-  }
+  } catch (error) {}
 
   // Generate test summary
   try {
     await generateTestSummary();
-  } catch (error) {
-  }
-
+  } catch (error) {}
 }
 
 async function cleanupTestData(baseURL: string) {
@@ -177,8 +172,7 @@ ${summary.failed === 0 ? '🎉 **ALLE TESTS ERFOLGREICH**' : `⚠️ **${summary
 `;
 
     fs.writeFileSync('../../../../../test-results/e2e-summary.md', readableSummary);
-  } catch (error) {
-  }
+  } catch (error) {}
 }
 
 export default globalTeardown;

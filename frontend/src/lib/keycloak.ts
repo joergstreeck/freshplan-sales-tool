@@ -105,8 +105,7 @@ export const initKeycloak = async (): Promise<boolean> => {
         setInterval(() => {
           if (keycloak.authenticated && keycloak.isTokenExpired(180)) {
             // Token expires in less than 3 minutes - refresh it
-            keycloak.updateToken(180).catch(() => {
-            });
+            keycloak.updateToken(180).catch(() => {});
           }
         }, 30000);
       }

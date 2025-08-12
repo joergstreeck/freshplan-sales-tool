@@ -22,14 +22,14 @@ async function enableMocking() {
     // Security: Use a more secure mock token format
     const mockToken = `mock_${Date.now()}_${Math.random().toString(36).substring(7)}`;
     localStorage.setItem('auth-token', mockToken);
-    
+
     if (import.meta.env.DEV) {
       console.log('[DEV] MSW enabled with mock authentication');
     }
   } else {
     // Security: Always clean up mock tokens when MSW is disabled
     localStorage.removeItem('auth-token');
-    
+
     if (import.meta.env.DEV) {
       console.log('[DEV] MSW disabled: Using real backend API');
     }

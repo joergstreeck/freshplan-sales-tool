@@ -41,6 +41,7 @@ import {
   WorkOutline,
   Star as StarIcon,
   LocationOn as LocationIcon,
+  BusinessCenter as DepartmentIcon,
 } from '@mui/icons-material';
 
 // Search Result Types
@@ -161,9 +162,9 @@ export const SearchResultsDropdown: React.FC<SearchResultsDropdownProps> = ({
   }
 
   const hasResults =
-    searchResults && 
-    searchResults.customers && 
-    searchResults.contacts && 
+    searchResults &&
+    searchResults.customers &&
+    searchResults.contacts &&
     (searchResults.customers.length > 0 || searchResults.contacts.length > 0);
 
   return (
@@ -339,7 +340,9 @@ export const SearchResultsDropdown: React.FC<SearchResultsDropdownProps> = ({
           )}
 
           {/* Divider between sections */}
-          {searchResults?.customers?.length > 0 && searchResults?.contacts?.length > 0 && <Divider />}
+          {searchResults?.customers?.length > 0 && searchResults?.contacts?.length > 0 && (
+            <Divider />
+          )}
 
           {/* Contact Results */}
           {searchResults?.contacts?.length > 0 && (

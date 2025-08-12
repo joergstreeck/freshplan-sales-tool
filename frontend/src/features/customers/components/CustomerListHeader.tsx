@@ -43,8 +43,7 @@ export function CustomerListHeader({ totalCount, onAddCustomer }: CustomerListHe
         <UniversalExportButton
           entity="customers"
           buttonLabel="Exportieren"
-          onExportComplete={format => {
-          }}
+          onExportComplete={format => {}}
         />
 
         <Button

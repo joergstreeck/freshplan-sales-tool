@@ -72,8 +72,7 @@ export const ResizablePanels: React.FC<ResizablePanelsProps> = ({
         if (Array.isArray(parsed) && parsed.length === children.length) {
           setSizes(parsed);
         }
-      } catch (error) {
-      }
+      } catch (error) {}
     }
   }, [storageKey, children.length]);
 

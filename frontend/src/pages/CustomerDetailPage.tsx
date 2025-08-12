@@ -395,7 +395,6 @@ function CustomerContacts({
 
   // Handle contact actions
   const handleContactAction = (action: ContactAction) => {
-
     switch (action.type) {
       case 'add':
         // TODO: Implement add contact modal

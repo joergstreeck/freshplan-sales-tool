@@ -184,7 +184,6 @@ export class ActionExecutionService {
   private async addQuickNote(contact: Contact): Promise<void> {
     // This would typically open a modal or navigate to a note-taking interface
     // For now, we'll just log it
-
     // In a real implementation, this would:
     // 1. Open a note dialog
     // 2. Save the note to the backend
@@ -359,11 +358,7 @@ END:VCALENDAR`;
    */
   private trackAction(action: QuickAction, contact: Contact): void {
     // Analytics tracking would go here
-      actionType: action.type,
-      contactId: contact.id,
-      urgency: action.urgency,
-      device: actionSuggestionService.isMobileDevice() ? 'mobile' : 'desktop',
-    });
+    // Removed incomplete console.log statement
   }
 
   /**

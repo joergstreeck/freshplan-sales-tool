@@ -234,135 +234,135 @@ export function MiniAuditTimeline({
         onChange={(_, isExpanded) => setExpanded(isExpanded)}
         sx={{
           boxShadow: 'none',
-        borderTop: `1px solid ${theme.palette.divider}`,
-        '&:before': { display: 'none' },
-        backgroundColor: 'transparent',
-      }}
-    >
-      <AccordionSummary
-        expandIcon={<ExpandMoreIcon fontSize="small" />}
-        sx={{
-          minHeight: 36,
-          '& .MuiAccordionSummary-content': {
-            margin: '4px 0',
-            alignItems: 'center',
-          },
+          borderTop: `1px solid ${theme.palette.divider}`,
+          '&:before': { display: 'none' },
+          backgroundColor: 'transparent',
         }}
       >
-        <Stack direction="row" spacing={1} alignItems="center">
-          <HistoryIcon fontSize="small" color="action" />
-          <Typography variant="caption" color="text.secondary">
-            {lastChange
-              ? `Zuletzt geändert ${lastChange.time} von ${lastChange.user}`
-              : 'Keine Änderungen'}
-          </Typography>
-          {lastChange && (
-            <Chip
-              label={formatActionLabel(lastChange.action)}
-              size="small"
-              color={getActionColor(lastChange.action)}
-              sx={{ height: 18, fontSize: '0.7rem' }}
-            />
-          )}
-        </Stack>
-      </AccordionSummary>
-
-      <AccordionDetails sx={{ pt: 0, pb: 2 }}>
-        {compact ? (
-          // Compact view - simple list
-          <Stack spacing={1}>
-            {auditEntries.content.slice(0, maxEntries).map((entry: AuditEntry) => (
-              <Stack
-                key={entry.id}
-                direction="row"
-                spacing={1}
-                alignItems="flex-start"
-                sx={{
-                  p: 1,
-                  borderRadius: 1,
-                  backgroundColor: alpha(theme.palette.background.default, 0.5),
-                  '&:hover': {
-                    backgroundColor: alpha(theme.palette.primary.main, 0.05),
-                  },
-                }}
-              >
-                {getActionIcon(entry.eventType)}
-                <Box sx={{ flex: 1, minWidth: 0 }}>
-                  <Typography variant="caption" sx={{ fontWeight: 500 }}>
-                    {formatActionLabel(entry.eventType)}
-                  </Typography>
-                  {entry.changes && (
-                    <Typography
-                      variant="caption"
-                      color="text.secondary"
-                      sx={{
-                        display: 'block',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        whiteSpace: 'nowrap',
-                      }}
-                    >
-                      {formatChangeDetails(entry.changes)}
-                    </Typography>
-                  )}
-                  <Typography variant="caption" color="text.secondary">
-                    {format(new Date(entry.timestamp), 'dd.MM.yyyy HH:mm', { locale: de })}
-                    {' • '}
-                    {entry.userName || 'System'}
-                  </Typography>
-                </Box>
-              </Stack>
-            ))}
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon fontSize="small" />}
+          sx={{
+            minHeight: 36,
+            '& .MuiAccordionSummary-content': {
+              margin: '4px 0',
+              alignItems: 'center',
+            },
+          }}
+        >
+          <Stack direction="row" spacing={1} alignItems="center">
+            <HistoryIcon fontSize="small" color="action" />
+            <Typography variant="caption" color="text.secondary">
+              {lastChange
+                ? `Zuletzt geändert ${lastChange.time} von ${lastChange.user}`
+                : 'Keine Änderungen'}
+            </Typography>
+            {lastChange && (
+              <Chip
+                label={formatActionLabel(lastChange.action)}
+                size="small"
+                color={getActionColor(lastChange.action)}
+                sx={{ height: 18, fontSize: '0.7rem' }}
+              />
+            )}
           </Stack>
-        ) : (
-          // Detailed view - timeline
-          <Timeline position="right" sx={{ p: 0, m: 0 }}>
-            {auditEntries.content.slice(0, maxEntries).map((entry: AuditEntry, index: number) => (
-              <TimelineItem key={entry.id} sx={{ minHeight: 60 }}>
-                <TimelineOppositeContent sx={{ flex: 0.3, px: 1 }}>
-                  <Typography variant="caption" color="text.secondary">
-                    {format(new Date(entry.timestamp), 'HH:mm')}
-                  </Typography>
-                  <Typography variant="caption" color="text.secondary" display="block">
-                    {format(new Date(entry.timestamp), 'dd.MM.yy')}
-                  </Typography>
-                </TimelineOppositeContent>
+        </AccordionSummary>
 
-                <TimelineSeparator>
-                  <TimelineDot color={getActionColor(entry.eventType)}>
-                    {getActionIcon(entry.eventType)}
-                  </TimelineDot>
-                  {index < auditEntries.content.length - 1 && <TimelineConnector />}
-                </TimelineSeparator>
-
-                <TimelineContent sx={{ px: 1 }}>
-                  <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                    {formatActionLabel(entry.eventType)}
-                  </Typography>
-                  {entry.changes && (
-                    <Typography variant="caption" color="text.secondary">
-                      {formatChangeDetails(entry.changes)}
+        <AccordionDetails sx={{ pt: 0, pb: 2 }}>
+          {compact ? (
+            // Compact view - simple list
+            <Stack spacing={1}>
+              {auditEntries.content.slice(0, maxEntries).map((entry: AuditEntry) => (
+                <Stack
+                  key={entry.id}
+                  direction="row"
+                  spacing={1}
+                  alignItems="flex-start"
+                  sx={{
+                    p: 1,
+                    borderRadius: 1,
+                    backgroundColor: alpha(theme.palette.background.default, 0.5),
+                    '&:hover': {
+                      backgroundColor: alpha(theme.palette.primary.main, 0.05),
+                    },
+                  }}
+                >
+                  {getActionIcon(entry.eventType)}
+                  <Box sx={{ flex: 1, minWidth: 0 }}>
+                    <Typography variant="caption" sx={{ fontWeight: 500 }}>
+                      {formatActionLabel(entry.eventType)}
                     </Typography>
-                  )}
-                  <Typography variant="caption" color="text.secondary" display="block">
-                    von {entry.userName || 'System'}
-                  </Typography>
-                </TimelineContent>
-              </TimelineItem>
-            ))}
-          </Timeline>
-        )}
+                    {entry.changes && (
+                      <Typography
+                        variant="caption"
+                        color="text.secondary"
+                        sx={{
+                          display: 'block',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap',
+                        }}
+                      >
+                        {formatChangeDetails(entry.changes)}
+                      </Typography>
+                    )}
+                    <Typography variant="caption" color="text.secondary">
+                      {format(new Date(entry.timestamp), 'dd.MM.yyyy HH:mm', { locale: de })}
+                      {' • '}
+                      {entry.userName || 'System'}
+                    </Typography>
+                  </Box>
+                </Stack>
+              ))}
+            </Stack>
+          ) : (
+            // Detailed view - timeline
+            <Timeline position="right" sx={{ p: 0, m: 0 }}>
+              {auditEntries.content.slice(0, maxEntries).map((entry: AuditEntry, index: number) => (
+                <TimelineItem key={entry.id} sx={{ minHeight: 60 }}>
+                  <TimelineOppositeContent sx={{ flex: 0.3, px: 1 }}>
+                    <Typography variant="caption" color="text.secondary">
+                      {format(new Date(entry.timestamp), 'HH:mm')}
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary" display="block">
+                      {format(new Date(entry.timestamp), 'dd.MM.yy')}
+                    </Typography>
+                  </TimelineOppositeContent>
 
-        {/* Show more button */}
-        {onShowMore && auditEntries.totalElements > maxEntries && (
-          <Box sx={{ mt: 2, textAlign: 'center' }}>
-            <Button size="small" onClick={onShowMore} startIcon={<HistoryIcon />}>
-              Vollständige Historie anzeigen ({auditEntries.totalElements} Einträge)
-            </Button>
-          </Box>
-        )}
-      </AccordionDetails>
-    </Accordion>
+                  <TimelineSeparator>
+                    <TimelineDot color={getActionColor(entry.eventType)}>
+                      {getActionIcon(entry.eventType)}
+                    </TimelineDot>
+                    {index < auditEntries.content.length - 1 && <TimelineConnector />}
+                  </TimelineSeparator>
+
+                  <TimelineContent sx={{ px: 1 }}>
+                    <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                      {formatActionLabel(entry.eventType)}
+                    </Typography>
+                    {entry.changes && (
+                      <Typography variant="caption" color="text.secondary">
+                        {formatChangeDetails(entry.changes)}
+                      </Typography>
+                    )}
+                    <Typography variant="caption" color="text.secondary" display="block">
+                      von {entry.userName || 'System'}
+                    </Typography>
+                  </TimelineContent>
+                </TimelineItem>
+              ))}
+            </Timeline>
+          )}
+
+          {/* Show more button */}
+          {onShowMore && auditEntries.totalElements > maxEntries && (
+            <Box sx={{ mt: 2, textAlign: 'center' }}>
+              <Button size="small" onClick={onShowMore} startIcon={<HistoryIcon />}>
+                Vollständige Historie anzeigen ({auditEntries.totalElements} Einträge)
+              </Button>
+            </Box>
+          )}
+        </AccordionDetails>
+      </Accordion>
     </Box>
   );
 }

@@ -8,7 +8,6 @@
 import { chromium, FullConfig } from '@playwright/test';
 
 async function globalSetup(config: FullConfig) {
-
   // Check if development server is available
   const baseURL = config.projects[0].use.baseURL || 'http://localhost:5173';
 
@@ -17,21 +16,17 @@ async function globalSetup(config: FullConfig) {
     if (!response.ok) {
     } else {
     }
-  } catch (error) {
-  }
+  } catch (error) {}
 
   // Setup test data if needed
   try {
     await seedTestData(baseURL);
-  } catch (error) {
-  }
+  } catch (error) {}
 
   // Setup authentication state for tests that need it
   try {
     await setupAuthState(config);
-  } catch (error) {
-  }
-
+  } catch (error) {}
 }
 
 async function seedTestData(baseURL: string) {

@@ -47,10 +47,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       },
       isAuthenticated: true,
       isLoading: false,
-      login: async () => {
-      },
-      logout: () => {
-      },
+      login: async () => {},
+      logout: () => {},
       token: 'mock-dev-token',
       hasRole: (role: string) => ['admin', 'manager', 'sales'].includes(role),
       hasAnyRole: (roles: string[]) =>

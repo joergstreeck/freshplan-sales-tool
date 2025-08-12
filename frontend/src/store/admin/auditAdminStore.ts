@@ -256,8 +256,7 @@ export const useAuditAdminStore = create<AuditAdminState>()(
             };
 
             set({ activityHeatmap: heatmap });
-          } catch (error) {
-          }
+          } catch (error) {}
         },
 
         // Fetch Suspicious Activities
@@ -284,8 +283,7 @@ export const useAuditAdminStore = create<AuditAdminState>()(
             ];
 
             set({ suspiciousActivities: activities });
-          } catch (error) {
-          }
+          } catch (error) {}
         },
 
         // Fetch User Profile
@@ -317,8 +315,7 @@ export const useAuditAdminStore = create<AuditAdminState>()(
             set(state => ({
               userProfiles: new Map(state.userProfiles).set(userId, profile),
             }));
-          } catch (error) {
-          }
+          } catch (error) {}
         },
 
         // Fetch Compliance Status
@@ -345,8 +342,7 @@ export const useAuditAdminStore = create<AuditAdminState>()(
             };
 
             set({ complianceStatus: status });
-          } catch (error) {
-          }
+          } catch (error) {}
         },
 
         // Generate Compliance Report

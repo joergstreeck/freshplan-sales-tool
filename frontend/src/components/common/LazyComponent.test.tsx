@@ -93,7 +93,7 @@ describe('LazyComponent', () => {
     it('should not render component when not intersecting', () => {
       // Keep mockInView as false
       mockInView = false;
-      
+
       render(
         <LazyComponent fallback={fallback}>
           <TestComponent />
@@ -209,7 +209,7 @@ describe('LazyComponent', () => {
 
     it('should render component when already loaded', async () => {
       mockInView = true;
-      
+
       render(
         <LazyComponent fallback={fallback}>
           <TestComponent />
@@ -313,7 +313,7 @@ describe('LazyComponent', () => {
   describe('Accessibility', () => {
     it('should maintain focus when component loads', async () => {
       mockInView = false;
-      
+
       render(
         <LazyComponent placeholder={<button data-testid="fallback-button">Loading</button>}>
           <button data-testid="loaded-button">Loaded</button>
@@ -326,7 +326,7 @@ describe('LazyComponent', () => {
 
       // Set to in view to trigger loading
       mockInView = true;
-      
+
       // Rerender to trigger the effect
       const { rerender: _rerender } = render(
         <LazyComponent placeholder={<button data-testid="fallback-button">Loading</button>}>

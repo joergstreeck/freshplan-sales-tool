@@ -8,12 +8,10 @@ import { getFieldSize, debugFieldLayout } from './fieldSizeCalculator';
 import customerFieldCatalog from '../data/fieldCatalog.json';
 
 export function debugCustomerFieldTheme() {
-
   // Base Fields
   customerFieldCatalog.customer.base.forEach(field => {
     const calculatedSize = getFieldSize(field);
     const hasGridSize = !!field.gridSize;
-
   });
 
   // Debug Layout
@@ -21,7 +19,6 @@ export function debugCustomerFieldTheme() {
   // Summary
   const fieldsWithGridSize = customerFieldCatalog.customer.base.filter(f => f.gridSize).length;
   const totalFields = customerFieldCatalog.customer.base.length;
-
 
   // Comparison
   customerFieldCatalog.customer.base.forEach(field => {

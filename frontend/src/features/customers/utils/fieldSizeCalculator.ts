@@ -247,7 +247,6 @@ export function debugFieldLayout(fields: FieldDefinition[]): string {
  * Zeigt die berechneten Größen für alle Dropdown-Felder
  */
 export function debugDropdownSizes(fields: FieldDefinition[]): void {
-
   fields.forEach(field => {
     if (field.fieldType === 'select' || field.fieldType === 'dropdown') {
       const size = getFieldSize(field);

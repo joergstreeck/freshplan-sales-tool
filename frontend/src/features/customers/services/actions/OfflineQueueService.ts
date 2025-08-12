@@ -61,8 +61,7 @@ class OfflineQueueService {
     if ('serviceWorker' in navigator && 'sync' in self.registration) {
       try {
         await (self.registration as unknown).sync.register('sync-contact-actions');
-      } catch (error) {
-      }
+      } catch (error) {}
     }
   }
 
@@ -77,7 +76,6 @@ class OfflineQueueService {
     this.isProcessing = true;
     const queue = this.getQueue();
     const pending = [...queue];
-
 
     for (const item of pending) {
       try {
@@ -144,8 +142,7 @@ class OfflineQueueService {
   private saveQueue(queue: QueuedAction[]): void {
     try {
       localStorage.setItem(this.STORAGE_KEY, JSON.stringify(queue));
-    } catch (error) {
-    }
+    } catch (error) {}
   }
 
   /**

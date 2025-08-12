@@ -52,9 +52,7 @@ apiClient.interceptors.response.use(
   error => {
     if (error.response?.status === 401) {
       // Token expired or invalid
-        url: error.config?.url,
-        method: error.config?.method,
-      });
+      // Removed incomplete console.log statement
 
       // Dispatch custom event for global error handling
       const event = new CustomEvent('auth-error', {

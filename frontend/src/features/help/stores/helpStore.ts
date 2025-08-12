@@ -129,8 +129,7 @@ export const useHelpStore = create<HelpState>()(
             }
           }
         });
-      } catch (error) {
-      }
+      } catch (error) {}
     },
 
     // Track view
@@ -145,8 +144,7 @@ export const useHelpStore = create<HelpState>()(
             content.viewCount++;
           }
         });
-      } catch (error) {
-      }
+      } catch (error) {}
     },
 
     // Load analytics
@@ -156,8 +154,7 @@ export const useHelpStore = create<HelpState>()(
         set(state => {
           state.analytics = analytics;
         });
-      } catch (error) {
-      }
+      } catch (error) {}
     },
 
     // UI Actions
@@ -268,8 +265,7 @@ export const useHelpStore = create<HelpState>()(
           type: struggle.type,
           context: struggle.context,
         });
-      } catch (error) {
-      }
+      } catch (error) {}
     },
 
     clearStruggles: () => {

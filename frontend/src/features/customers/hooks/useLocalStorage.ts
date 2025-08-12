@@ -50,8 +50,7 @@ export function useLocalStorage<T>(
             storageArea: window.localStorage,
           })
         );
-      } catch (error) {
-      }
+      } catch (error) {}
     },
     [key, storedValue]
   );
@@ -62,8 +61,7 @@ export function useLocalStorage<T>(
       if (e.key === key && e.newValue !== null) {
         try {
           setStoredValue(JSON.parse(e.newValue));
-        } catch (error) {
-        }
+        } catch (error) {}
       }
     };
 

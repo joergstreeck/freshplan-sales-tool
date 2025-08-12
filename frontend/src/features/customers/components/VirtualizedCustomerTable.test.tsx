@@ -117,10 +117,7 @@ describe('VirtualizedCustomerTable', () => {
     ];
 
     render(
-      <VirtualizedCustomerTable
-        {...defaultProps}
-        customers={customersWithBadDates as Customer[]}
-      />
+      <VirtualizedCustomerTable {...defaultProps} customers={customersWithBadDates as Customer[]} />
     );
 
     // Should render without crashing
