@@ -250,19 +250,19 @@ export function debugDropdownSizes(fields: FieldDefinition[]): void {
   fields.forEach(field => {
     if (field.fieldType === 'select' || field.fieldType === 'dropdown') {
       const size = getFieldSize(field);
-      const gridSize = size.md || 12;
+      const _gridSize = size.md || 12;
 
       // Längste Option finden
-      let longestLabel = 0;
+      let _longestLabel = 0;
       if (field.options) {
-        longestLabel = Math.max(
+        const _longestLabel = Math.max(
           ...field.options.map(opt => opt.label.length),
           field.placeholder?.length || 0
         );
       }
 
       if (field.options && field.options.length > 0) {
-        field.options.forEach(opt => {
+        field.options.forEach(_opt => {
           // Options processed
         });
       }

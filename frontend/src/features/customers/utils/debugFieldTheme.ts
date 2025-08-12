@@ -4,7 +4,7 @@
  * Zeigt die berechneten Feldgrößen für alle Felder im CustomerOnboardingWizard
  */
 
-import { getFieldSize, debugFieldLayout } from './fieldSizeCalculator';
+import { getFieldSize, debugFieldLayout as _debugFieldLayout } from './fieldSizeCalculator';
 import customerFieldCatalog from '../data/fieldCatalog.json';
 
 export function debugCustomerFieldTheme() {
