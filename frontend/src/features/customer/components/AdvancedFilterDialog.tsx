@@ -17,6 +17,7 @@ import {
   FormLabel,
   IconButton,
   Divider,
+  SelectChangeEvent,
 } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -222,7 +223,7 @@ export const AdvancedFilterDialog: React.FC<AdvancedFilterDialogProps> = ({ open
               <Select
                 multiple
                 value={filters.industry}
-                onChange={e => setFilters({ ...filters, industry: e.target.value as Industry[] })}
+                onChange={(e: SelectChangeEvent<Industry[]>) => setFilters({ ...filters, industry: e.target.value as Industry[] })}
                 renderValue={selected => (
                   <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                     {selected.map(value => (

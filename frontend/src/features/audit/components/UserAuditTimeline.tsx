@@ -224,7 +224,7 @@ export const UserAuditTimeline: React.FC<UserAuditTimelineProps> = ({
               size="small"
               label="Aktion"
               value={actionFilter}
-              onChange={e => setActionFilter(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setActionFilter(e.target.value)}
               sx={{ minWidth: 150 }}
             >
               <MenuItem value="ALL">Alle Aktionen</MenuItem>
@@ -240,7 +240,7 @@ export const UserAuditTimeline: React.FC<UserAuditTimelineProps> = ({
               size="small"
               label="Entität"
               value={entityFilter}
-              onChange={e => setEntityFilter(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setEntityFilter(e.target.value)}
               sx={{ minWidth: 150 }}
             >
               <MenuItem value="ALL">Alle Entitäten</MenuItem>

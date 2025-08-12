@@ -180,7 +180,7 @@ export const SegmentedRevenueCalculator: React.FC<SegmentedRevenueCalculatorProp
                 size="small"
                 fullWidth
                 value={segment.count}
-                onChange={e => updateSegment(index, 'count', e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateSegment(index, 'count', e.target.value)}
                 inputProps={{ min: 0 }}
               />
             </Grid>
@@ -191,7 +191,7 @@ export const SegmentedRevenueCalculator: React.FC<SegmentedRevenueCalculatorProp
                   control={
                     <Checkbox
                       checked={segment.services.breakfast}
-                      onChange={e => updateSegment(index, 'breakfast', e.target.checked)}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateSegment(index, 'breakfast', e.target.checked)}
                       disabled={segment.count === 0}
                     />
                   }
@@ -201,7 +201,7 @@ export const SegmentedRevenueCalculator: React.FC<SegmentedRevenueCalculatorProp
                   control={
                     <Checkbox
                       checked={segment.services.alacarte}
-                      onChange={e => updateSegment(index, 'alacarte', e.target.checked)}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateSegment(index, 'alacarte', e.target.checked)}
                       disabled={segment.count === 0}
                     />
                   }
@@ -211,7 +211,7 @@ export const SegmentedRevenueCalculator: React.FC<SegmentedRevenueCalculatorProp
                   control={
                     <Checkbox
                       checked={segment.services.banquet}
-                      onChange={e => updateSegment(index, 'banquet', e.target.checked)}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateSegment(index, 'banquet', e.target.checked)}
                       disabled={segment.count === 0}
                     />
                   }
@@ -221,7 +221,7 @@ export const SegmentedRevenueCalculator: React.FC<SegmentedRevenueCalculatorProp
                   control={
                     <Checkbox
                       checked={segment.services.roomservice}
-                      onChange={e => updateSegment(index, 'roomservice', e.target.checked)}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateSegment(index, 'roomservice', e.target.checked)}
                       disabled={segment.count === 0}
                     />
                   }

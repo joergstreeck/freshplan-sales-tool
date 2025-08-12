@@ -61,7 +61,7 @@ export const EmptyContactState: React.FC<EmptyContactStateProps> = ({ onAddConta
       <Button
         variant="contained"
         startIcon={<AddIcon />}
-        onClick={e => {
+        onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
           e.stopPropagation();
           onAddContact();
         }}

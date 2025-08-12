@@ -17,6 +17,7 @@ import {
   Typography,
   Divider,
   Chip,
+  SelectChangeEvent,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
@@ -91,7 +92,7 @@ export const LocationSelector: React.FC<LocationSelectorProps> = ({
         <Select
           labelId="location-selector-label"
           value={selectedLocationId}
-          onChange={e => onLocationChange(e.target.value as string | 'all')}
+          onChange={(e: SelectChangeEvent) => onLocationChange(e.target.value as string | 'all')}
           label="Für welchen Standort erfassen?"
         >
           <MenuItem value="all">
@@ -135,7 +136,7 @@ export const LocationSelector: React.FC<LocationSelectorProps> = ({
           control={
             <Checkbox
               checked={applyToAll}
-              onChange={e => onApplyToAllChange(e.target.checked)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => onApplyToAllChange(e.target.checked)}
               color="primary"
             />
           }

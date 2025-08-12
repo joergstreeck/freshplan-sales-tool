@@ -211,7 +211,7 @@ export const HelpModal: React.FC = () => {
                 rows={2}
                 placeholder="Was war unklar? (optional)"
                 value={feedbackComment}
-                onChange={e => setFeedbackComment(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setFeedbackComment(e.target.value)}
                 sx={{ mt: 1 }}
                 onBlur={() => handleFeedback(false)}
               />

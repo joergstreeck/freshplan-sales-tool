@@ -196,7 +196,7 @@ export const HeaderV2: React.FC<HeaderV2Props> = ({ onMenuClick, showMenuIcon = 
                 size="small"
                 placeholder="Suche nach Kunden, Aufträgen oder Produkten..."
                 value={searchValue}
-                onChange={e => setSearchValue(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchValue(e.target.value)}
                 onFocus={() => setIsSearchFocused(true)}
                 onBlur={() => setIsSearchFocused(false)}
                 InputProps={{
@@ -366,7 +366,7 @@ export const HeaderV2: React.FC<HeaderV2Props> = ({ onMenuClick, showMenuIcon = 
               size="small"
               placeholder="Suchen..."
               value={searchValue}
-              onChange={e => setSearchValue(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchValue(e.target.value)}
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">

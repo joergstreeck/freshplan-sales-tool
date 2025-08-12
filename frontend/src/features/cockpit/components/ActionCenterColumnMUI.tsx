@@ -528,7 +528,7 @@ export function ActionCenterColumnMUI({ selectedCustomerId, onClose }: ActionCen
             variant="outlined"
             placeholder="Notiz eingeben..."
             value={newNote}
-            onChange={e => setNewNote(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewNote(e.target.value)}
             sx={{ mt: 1 }}
           />
         </DialogContent>

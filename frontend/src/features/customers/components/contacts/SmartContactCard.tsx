@@ -311,7 +311,7 @@ export const SmartContactCard: React.FC<SmartContactCardProps> = ({
           {/* More Menu Button */}
           <IconButton
             size="small"
-            onClick={e => {
+            onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
               e.stopPropagation();
               setAnchorEl(e.currentTarget);
             }}

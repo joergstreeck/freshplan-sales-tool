@@ -131,7 +131,7 @@ export const UserTableMUI = () => {
             fullWidth
             placeholder="Nach Benutzername oder E-Mail suchen..."
             value={searchInput}
-            onChange={e => setSearchInput(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchInput(e.target.value)}
             onKeyPress={e => e.key === 'Enter' && handleSearch()}
             InputProps={{
               startAdornment: (

@@ -97,8 +97,8 @@ export const UserTable = () => {
             <Input
               placeholder="Benutzer suchen..."
               value={searchInput}
-              onChange={e => setSearchInput(e.target.value)}
-              onKeyDown={e => e.key === 'Enter' && handleSearch()}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchInput(e.target.value)}
+              onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => e.key === 'Enter' && handleSearch()}
               className="max-w-sm"
             />
             <Button onClick={handleSearch} variant="outline">
