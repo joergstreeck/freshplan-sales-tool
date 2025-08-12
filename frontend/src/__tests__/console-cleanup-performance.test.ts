@@ -123,7 +123,7 @@ describe('Performance after Console Removal', () => {
 
           // Result should be empty (no console statements found)
           expect(result.trim()).toBe('');
-        } catch (error) {
+        } catch (_error) {
           // Grep returns non-zero if no matches found, which is what we want
           expect(true).toBe(true);
         }
