@@ -52,7 +52,7 @@ export const TextAreaField: React.FC<TextAreaFieldProps> = ({
       id={field.key}
       name={field.key}
       value={value}
-      onChange={(e: React.ChangeEvent<HTMLInputElement>) => onChange(e.target.value)}
+      onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => onChange(e.target.value)}
       onBlur={onBlur}
       error={error}
       helperText={helperText}

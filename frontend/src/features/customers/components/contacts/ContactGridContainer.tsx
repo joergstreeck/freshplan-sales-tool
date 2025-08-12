@@ -257,7 +257,7 @@ export const ContactGridContainer: React.FC<ContactGridContainerProps> = ({
               select
               label="Sortierung"
               value={sortBy}
-              onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setSortBy(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setSortBy(e.target.value as 'name' | 'warmth' | 'recent')}
               size="small"
               sx={{ minWidth: 150 }}
             >

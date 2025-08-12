@@ -208,7 +208,7 @@ export function VirtualizedCustomerTable({
                   <Box
                     key={column.id}
                     sx={{ flex: 0, minWidth: 120, display: 'flex', gap: 1 }}
-                    onClick={(e: React.MouseEvent<HTMLButtonElement>) => e.stopPropagation()}
+                    onClick={(e: React.MouseEvent<HTMLDivElement>) => e.stopPropagation()}
                   >
                     {onEdit && (
                       <IconButton size="small" onClick={() => onEdit(customer)}>

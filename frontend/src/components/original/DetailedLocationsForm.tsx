@@ -142,7 +142,7 @@ export function DetailedLocationsForm({ totalLocations = 0 }: DetailedLocationsF
                   <select
                     className="location-category"
                     value={location.category}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateLocation(location.id, 'category', e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) => updateLocation(location.id, 'category', e.target.value)}
                   >
                     <option value="">{t('pleaseSelect')}</option>
                     <option value="hauptstandort">{t('categories.mainLocation')}</option>
