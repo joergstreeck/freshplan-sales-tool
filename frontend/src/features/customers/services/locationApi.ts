@@ -83,7 +83,7 @@ export class LocationApi {
    */
   async bulkCreateLocations(
     customerId: string,
-    locations: Array<{ fieldValues: Record<string, unknown> }>
+    locations: Omit<CreateLocationRequest, 'customerId'>[]
   ): Promise<LocationResponse[]> {
     return apiClient.post<LocationResponse[]>(
       `/api/customers/${customerId}/locations/bulk`,
