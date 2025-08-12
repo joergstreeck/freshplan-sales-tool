@@ -206,7 +206,7 @@ export const auditApi = {
 
       const response = await httpClient.get<AuditLog[]>(`/api/audit/search?${params}`);
       return response.data;
-    } catch (error) {
+    } catch (_error) { void _error;
       // Only use mock data as fallback when API fails
       return mockAuditLogs;
     }
@@ -218,7 +218,7 @@ export const auditApi = {
     try {
       const response = await httpClient.get<AuditLog>(`/api/audit/${id}`);
       return response.data;
-    } catch (error) {
+    } catch (_error) { void _error;
       // Only use mock data as fallback when API fails
       const log = mockAuditLogs.find(l => l.id === id);
       return log || mockAuditLogs[0];
@@ -237,7 +237,7 @@ export const auditApi = {
         content: response.data,
         totalElements: response.data.length,
       };
-    } catch (error) {
+    } catch (_error) { void _error;
       // Only use mock data as fallback when API fails
       const filtered = mockAuditLogs.filter(
         log => log.entityType === entityType && log.entityId === entityId
@@ -311,7 +311,7 @@ export const auditApi = {
     try {
       const response = await httpClient.get<AuditDashboardMetrics>('/api/audit/dashboard/metrics');
       return response.data;
-    } catch (error) {
+    } catch (_error) { void _error;
       // Only use mock data as fallback when API fails
       return mockDashboardMetrics;
     }
@@ -325,7 +325,7 @@ export const auditApi = {
         `/api/audit/dashboard/activity-chart?days=${days}&groupBy=${groupBy}`
       );
       return response.data;
-    } catch (error) {
+    } catch (_error) { void _error;
       // Only use mock data as fallback when API fails
       return mockActivityChartData;
     }
@@ -339,7 +339,7 @@ export const auditApi = {
         `/api/audit/dashboard/critical-events?limit=${limit}`
       );
       return response.data;
-    } catch (error) {
+    } catch (_error) { void _error;
       // Only use mock data as fallback when API fails
       const criticalEvents = mockAuditLogs.filter(
         log => log.eventType.includes('DENIED') || log.eventType.includes('ERROR') || !log.success
@@ -356,7 +356,7 @@ export const auditApi = {
         '/api/audit/dashboard/compliance-alerts'
       );
       return response.data;
-    } catch (error) {
+    } catch (_error) { void _error;
       // Only use mock data as fallback when API fails
       return mockComplianceAlerts;
     }
@@ -399,7 +399,7 @@ export const auditApi = {
       }>(`/api/audit/verify-integrity?${params}`);
 
       return response.data;
-    } catch (error) {
+    } catch (_error) { void _error;
       // Only use mock data as fallback when API fails
       return {
         status: 'valid' as const,
@@ -421,7 +421,7 @@ export const auditApi = {
         `/api/audit/statistics?${params}`
       );
       return response.data;
-    } catch (error) {
+    } catch (_error) { void _error;
       // Only use mock data as fallback when API fails
       return {
         totalEvents: 2473,

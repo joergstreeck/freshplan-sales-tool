@@ -34,7 +34,7 @@ export function CalculatorForm() {
 
       setResult(result);
       addToHistory(data, result, selectedScenario || undefined);
-    } catch (error) {
+    } catch (_error) { void _error;
       if (import.meta.env.DEV) {
       }
     } finally {

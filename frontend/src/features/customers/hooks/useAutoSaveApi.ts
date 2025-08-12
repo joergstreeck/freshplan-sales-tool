@@ -151,7 +151,7 @@ export const useAutoSaveApi = (options: UseAutoSaveApiOptions = {}): UseAutoSave
           data: saveData,
         });
       }
-    } catch (error) {
+    } catch (_error) { void _error;
       throw error;
     } finally {
       setSaving(false);

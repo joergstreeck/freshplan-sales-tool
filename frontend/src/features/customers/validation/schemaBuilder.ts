@@ -328,7 +328,7 @@ export async function validateField(
   try {
     await schema.parseAsync(value);
     return { isValid: true };
-  } catch (error) {
+  } catch (_error) { void _error;
     if (error instanceof z.ZodError) {
       return {
         isValid: false,
