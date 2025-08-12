@@ -12,7 +12,7 @@ import { Box, Typography, Alert, AlertTitle, Divider, Card, CardContent } from '
 import { useCustomerOnboardingStore } from '../../stores/customerOnboardingStore';
 import { useFieldDefinitions } from '../../hooks/useFieldDefinitions';
 import { DynamicFieldRenderer } from '../fields/DynamicFieldRenderer';
-import type { FieldDefinition } from '../../types/FieldDefinition';
+import { isFieldDefinition } from '../../types/field.types';
 
 export const Step3Ansprechpartner: React.FC = () => {
   const { customerData, validationErrors, setCustomerField, validateField } =
@@ -24,26 +24,26 @@ export const Step3Ansprechpartner: React.FC = () => {
   const contactBaseFields = useMemo(() => {
     return ['salutation', 'title', 'firstName', 'lastName', 'position', 'decisionLevel']
       .map(key => getFieldByKey(key))
-      .filter(Boolean) as FieldDefinition[];
+      .filter(isFieldDefinition);
   }, [getFieldByKey]);
 
   // Contact method fields
   const contactMethodFields = useMemo(() => {
     return ['emailBusiness', 'phoneBusiness', 'phoneMobile', 'preferredChannel', 'bestCallTime']
       .map(key => getFieldByKey(key))
-      .filter(Boolean) as FieldDefinition[];
+      .filter(isFieldDefinition);
   }, [getFieldByKey]);
 
   // Relationship building fields
   const relationshipFields = useMemo(() => {
     return ['birthday', 'contactNotes', 'contactTags', 'nextContactDate']
       .map(key => getFieldByKey(key))
-      .filter(Boolean) as FieldDefinition[];
+      .filter(isFieldDefinition);
   }, [getFieldByKey]);
 
   // Social media fields (optional)
   const socialMediaFields = useMemo(() => {
-    return ['linkedIn', 'xing'].map(key => getFieldByKey(key)).filter(Boolean) as FieldDefinition[];
+    return ['linkedIn', 'xing'].map(key => getFieldByKey(key)).filter(isFieldDefinition);
   }, [getFieldByKey]);
 
   const handleFieldChange = useCallback(

@@ -16,8 +16,8 @@ import { useFieldDefinitions } from '../../hooks/useFieldDefinitions';
 import { GlobalChallengesSection } from '../sections/GlobalChallengesSection';
 import { RevenueExpectationSectionV2 } from '../sections/RevenueExpectationSectionV2';
 import { AdditionalBusinessSection } from '../sections/AdditionalBusinessSection';
+import { isFieldDefinition } from '../../types/field.types';
 
-import type { FieldDefinition } from '../../types/field.types';
 
 // Pain Point Solutions Mapping (unverändert)
 const PAIN_POINT_SOLUTIONS = {
@@ -63,7 +63,7 @@ export const Step2HerausforderungenPotenzialV3: React.FC = () => {
   const painPointFields = useMemo(() => {
     return Object.keys(PAIN_POINT_SOLUTIONS)
       .map(key => getFieldByKey(key))
-      .filter(Boolean) as FieldDefinition[];
+      .filter(isFieldDefinition);
   }, [getFieldByKey]);
 
   const revenueField = useMemo(() => {
@@ -73,7 +73,7 @@ export const Step2HerausforderungenPotenzialV3: React.FC = () => {
   const additionalFields = useMemo(() => {
     return ['vendingInterest', 'vendingLocations']
       .map(key => getFieldByKey(key))
-      .filter(Boolean) as FieldDefinition[];
+      .filter(isFieldDefinition);
   }, [getFieldByKey]);
 
   // Active Pain Points

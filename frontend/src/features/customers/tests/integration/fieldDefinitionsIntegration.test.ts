@@ -298,7 +298,7 @@ describe('FC-005 Field Definitions Integration Tests', () => {
           label: 'Invalid Field',
           // Missing: id, fieldType, entityType, required, sortOrder
         },
-      ] as unknown[];
+      ];
 
       configureMockServer.withCustomFieldCatalog(invalidFields);
 

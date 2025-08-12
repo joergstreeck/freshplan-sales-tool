@@ -209,3 +209,12 @@ export interface FieldCatalog {
     }
   >;
 }
+
+/**
+ * Type guard to filter out null/undefined values from FieldDefinition arrays
+ * @param field - Field to check
+ * @returns True if field is not null/undefined
+ */
+export function isFieldDefinition(field: FieldDefinition | null | undefined): field is FieldDefinition {
+  return field !== null && field !== undefined;
+}

@@ -23,7 +23,7 @@ import { useCustomerOnboardingStore } from '../../stores/customerOnboardingStore
 import { useFieldDefinitions } from '../../hooks/useFieldDefinitions';
 import { DynamicFieldRenderer } from '../fields/DynamicFieldRenderer';
 import { AngebotsstrukturLayout } from '../layout/AngebotsstrukturLayout';
-import type { FieldDefinition } from '../../types/field.types';
+import { isFieldDefinition } from '../../types/field.types';
 import { debugDropdownSizes } from '../../utils/fieldSizeCalculator';
 
 // Pain Point Solutions Mapping
@@ -91,28 +91,28 @@ export const Step2AngebotPainpoints: React.FC = () => {
           icon: '☕',
           fields: ['offersBreakfast', 'breakfastWarm', 'breakfastGuestsPerDay']
             .map(key => getFieldByKey(key))
-            .filter(Boolean) as FieldDefinition[],
+            .filter(isFieldDefinition),
         },
         {
           title: 'Mittag- und Abendessen',
           icon: '🍽️',
           fields: ['offersLunch', 'offersDinner']
             .map(key => getFieldByKey(key))
-            .filter(Boolean) as FieldDefinition[],
+            .filter(isFieldDefinition),
         },
         {
           title: 'Zusatzservices',
           icon: '🛎️',
           fields: ['offersRoomService', 'offersEvents', 'eventCapacity']
             .map(key => getFieldByKey(key))
-            .filter(Boolean) as FieldDefinition[],
+            .filter(isFieldDefinition),
         },
         {
           title: 'Kapazität',
           icon: '🏨',
           fields: ['roomCount', 'averageOccupancy']
             .map(key => getFieldByKey(key))
-            .filter(Boolean) as FieldDefinition[],
+            .filter(isFieldDefinition),
         },
       ].filter(group => group.fields.length > 0);
     }
@@ -125,14 +125,14 @@ export const Step2AngebotPainpoints: React.FC = () => {
   const painPointFields = useMemo(() => {
     return Object.keys(PAIN_POINT_SOLUTIONS)
       .map(key => getFieldByKey(key))
-      .filter(Boolean) as FieldDefinition[];
+      .filter(isFieldDefinition);
   }, [getFieldByKey]);
 
   // Additional business fields
   const additionalFields = useMemo(() => {
     return ['vendingInterest', 'vendingLocations']
       .map(key => getFieldByKey(key))
-      .filter(Boolean) as FieldDefinition[];
+      .filter(isFieldDefinition);
   }, [getFieldByKey]);
 
   // Calculate potential based on services and pain points

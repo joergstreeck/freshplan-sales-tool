@@ -17,6 +17,7 @@ import { TextField } from '../fields/fieldTypes/TextField';
 import { NumberField } from '../fields/fieldTypes/NumberField';
 import { SelectField } from '../fields/fieldTypes/SelectField';
 import type { FieldDefinition } from '../../types/field.types';
+import { isFieldDefinition } from '../../types/field.types';
 import { getFieldSize } from '../../utils/fieldSizeCalculator';
 
 /**
@@ -37,13 +38,13 @@ export const Step1BasisFilialstruktur: React.FC = () => {
   const baseFields = useMemo(() => {
     return ['customerNumber', 'companyName', 'legalForm', 'industry', 'chainCustomer']
       .map(key => getFieldByKey(key))
-      .filter(Boolean) as FieldDefinition[];
+      .filter(isFieldDefinition);
   }, [getFieldByKey]);
 
   const addressFields = useMemo(() => {
     return ['street', 'houseNumber', 'postalCode', 'city']
       .map(key => getFieldByKey(key))
-      .filter(Boolean) as FieldDefinition[];
+      .filter(isFieldDefinition);
   }, [getFieldByKey]);
 
   const businessModelFields = useMemo(() => {
@@ -55,7 +56,7 @@ export const Step1BasisFilialstruktur: React.FC = () => {
       'decisionTimeline',
     ]
       .map(key => getFieldByKey(key))
-      .filter(Boolean) as FieldDefinition[];
+      .filter(isFieldDefinition);
 
     // DEBUG: Log die berechneten Größen
     if (process.env.NODE_ENV === 'development') {
@@ -79,7 +80,7 @@ export const Step1BasisFilialstruktur: React.FC = () => {
       'decisionStructure',
     ]
       .map(key => getFieldByKey(key))
-      .filter(Boolean) as FieldDefinition[];
+      .filter(isFieldDefinition);
   }, [getFieldByKey]);
 
   // Calculate potential for chains

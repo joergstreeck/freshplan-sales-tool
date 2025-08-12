@@ -24,6 +24,15 @@ import {
 } from '../types/api.types';
 import { Customer } from '../types/customer.types';
 
+/**
+ * Import validation response type
+ */
+interface ImportValidationResponse {
+  valid: boolean;
+  errors?: string[];
+  preview?: CustomerListItem[];
+}
+
 export class CustomerApi {
   private readonly basePath = '/api/customers';
 
@@ -201,11 +210,7 @@ export class CustomerApi {
    * Validate import file
    * POST /api/customers/import/validate
    */
-  async validateImport(file: File): Promise<{
-    valid: boolean;
-    errors?: string[];
-    preview?: Array<Record<string, unknown>>;
-  }> {
+  async validateImport(file: File): Promise<ImportValidationResponse> {
     const formData = new FormData();
     formData.append('file', file);
 

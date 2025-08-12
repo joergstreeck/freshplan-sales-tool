@@ -10,6 +10,7 @@ import React, { useCallback, useMemo } from 'react';
 import { Box, Typography, Divider, Card, CardContent, Grid, Chip } from '@mui/material';
 import { useCustomerOnboardingStore } from '../../stores/customerOnboardingStore';
 import { useFieldDefinitions } from '../../hooks/useFieldDefinitions';
+import { isFieldDefinition } from '../../types/field.types';
 
 // Import neue Komponenten
 import { LocationSelector } from '../location/LocationSelector';
@@ -19,7 +20,6 @@ import { AdditionalBusinessSection } from '../sections/AdditionalBusinessSection
 import { LocationServicesSection } from '../sections/LocationServicesSection';
 
 // Import Store Extensions
-import type { FieldDefinition } from '../../types/field.types';
 
 // Pain Point Solutions Mapping (unverändert)
 const PAIN_POINT_SOLUTIONS = {
@@ -84,7 +84,7 @@ export const Step2AngebotPainpointsV2: React.FC = () => {
   const painPointFields = useMemo(() => {
     return Object.keys(PAIN_POINT_SOLUTIONS)
       .map(key => getFieldByKey(key))
-      .filter(Boolean) as FieldDefinition[];
+      .filter(isFieldDefinition);
   }, [getFieldByKey]);
 
   const revenueField = useMemo(() => {
@@ -94,7 +94,7 @@ export const Step2AngebotPainpointsV2: React.FC = () => {
   const additionalFields = useMemo(() => {
     return ['vendingInterest', 'vendingLocations']
       .map(key => getFieldByKey(key))
-      .filter(Boolean) as FieldDefinition[];
+      .filter(isFieldDefinition);
   }, [getFieldByKey]);
 
   // Service Field Groups basierend auf Branche
@@ -109,28 +109,28 @@ export const Step2AngebotPainpointsV2: React.FC = () => {
           icon: '☕',
           fields: ['offersBreakfast', 'breakfastWarm', 'breakfastGuestsPerDay']
             .map(key => getFieldByKey(key))
-            .filter(Boolean) as FieldDefinition[],
+            .filter(isFieldDefinition),
         },
         {
           title: 'Mittag- und Abendessen',
           icon: '🍽️',
           fields: ['offersLunch', 'offersDinner']
             .map(key => getFieldByKey(key))
-            .filter(Boolean) as FieldDefinition[],
+            .filter(isFieldDefinition),
         },
         {
           title: 'Zusatzservices',
           icon: '🛎️',
           fields: ['offersRoomService', 'offersEvents', 'eventCapacity']
             .map(key => getFieldByKey(key))
-            .filter(Boolean) as FieldDefinition[],
+            .filter(isFieldDefinition),
         },
         {
           title: 'Kapazität',
           icon: '🏨',
           fields: ['roomCount', 'averageOccupancy']
             .map(key => getFieldByKey(key))
-            .filter(Boolean) as FieldDefinition[],
+            .filter(isFieldDefinition),
         },
       ].filter(group => group.fields.length > 0);
     }

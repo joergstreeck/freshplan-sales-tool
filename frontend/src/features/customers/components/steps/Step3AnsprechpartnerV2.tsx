@@ -82,7 +82,9 @@ export const Step3AnsprechpartnerV2: React.FC = () => {
         return {
           ...c,
           responsibilityScope: (c.responsibilityScope as string) || 'all',
-          assignedLocationIds: (c.assignedLocationIds as string[]) || [],
+          assignedLocationIds: Array.isArray(c.assignedLocationIds) 
+            ? c.assignedLocationIds.filter((id): id is string => typeof id === 'string')
+            : [],
         };
       });
     }

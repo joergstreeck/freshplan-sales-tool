@@ -12,6 +12,7 @@ import { Box, Typography, useTheme, Tooltip } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { Info as InfoIcon } from '@mui/icons-material';
 import type { FieldDefinition } from '../../types/field.types';
+import { isFieldDefinition } from '../../types/field.types';
 
 interface FilialstrukturLayoutProps {
   /** Filialstruktur-Felder */
@@ -142,7 +143,7 @@ export const FilialstrukturLayout: React.FC<FilialstrukturLayoutProps> = ({
 
   const sortedFields = fieldOrder
     .map(key => fields.find(f => f.key === key))
-    .filter(Boolean) as FieldDefinition[];
+    .filter(isFieldDefinition);
 
   return (
     <Box>

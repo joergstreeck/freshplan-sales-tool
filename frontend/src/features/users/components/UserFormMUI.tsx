@@ -202,7 +202,7 @@ export const UserFormMUI = ({ user, onSuccess, onCancel }: UserFormProps) => {
                   label="Rollen"
                   renderValue={selected => (
                     <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                      {(selected as string[]).map(value => (
+                      {Array.isArray(selected) && selected.map(value => (
                         <Chip
                           key={value}
                           label={availableRoles.find(r => r.value === value)?.label || value}

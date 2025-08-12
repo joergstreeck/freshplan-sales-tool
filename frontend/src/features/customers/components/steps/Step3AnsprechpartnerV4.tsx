@@ -13,6 +13,7 @@ import { useCustomerOnboardingStore } from '../../stores/customerOnboardingStore
 import { useFieldDefinitions } from '../../hooks/useFieldDefinitions';
 import { DynamicFieldRenderer } from '../fields/DynamicFieldRenderer';
 import type { FieldDefinition } from '../../types/field.types';
+import { isFieldDefinition } from '../../types/field.types';
 
 export const Step3AnsprechpartnerV4: React.FC = () => {
   const { customerData, validationErrors, setCustomerField, validateField } =
@@ -24,7 +25,7 @@ export const Step3AnsprechpartnerV4: React.FC = () => {
   const contactBaseFields = useMemo(() => {
     return ['contactName', 'contactEmail', 'contactPhone']
       .map(key => getFieldByKey(key))
-      .filter(Boolean) as FieldDefinition[];
+      .filter(isFieldDefinition);
   }, [getFieldByKey]);
 
   // Erweiterte Contact Fields mit custom Dropdowns

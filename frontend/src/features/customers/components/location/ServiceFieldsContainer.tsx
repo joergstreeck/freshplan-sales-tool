@@ -5,6 +5,7 @@ import { DynamicFieldRenderer } from '../fields/DynamicFieldRenderer';
 import type { CustomerLocation } from '../../types/customer.types';
 import type { LocationServiceData } from '../../stores/locationServicesStore';
 import type { FieldDefinition } from '../../types/field.types';
+import { isFieldDefinition } from '../../types/field.types';
 import { useFieldDefinitions } from '../../hooks/useFieldDefinitions';
 
 interface ServiceFieldGroup {
@@ -44,7 +45,7 @@ export const ServiceFieldsContainer: React.FC<ServiceFieldsContainerProps> = ({
             icon: '☕',
             fields: ['offersBreakfast', 'breakfastWarm', 'breakfastGuestsPerDay']
               .map(key => getFieldByKey(key))
-              .filter(Boolean) as FieldDefinition[],
+              .filter(isFieldDefinition),
           },
           {
             id: 'meals',
@@ -52,7 +53,7 @@ export const ServiceFieldsContainer: React.FC<ServiceFieldsContainerProps> = ({
             icon: '🍽️',
             fields: ['offersLunch', 'offersDinner']
               .map(key => getFieldByKey(key))
-              .filter(Boolean) as FieldDefinition[],
+              .filter(isFieldDefinition),
           },
           {
             id: 'additional',
@@ -60,7 +61,7 @@ export const ServiceFieldsContainer: React.FC<ServiceFieldsContainerProps> = ({
             icon: '🛎️',
             fields: ['offersRoomService', 'offersEvents', 'eventCapacity']
               .map(key => getFieldByKey(key))
-              .filter(Boolean) as FieldDefinition[],
+              .filter(isFieldDefinition),
           },
           {
             id: 'capacity',
@@ -68,7 +69,7 @@ export const ServiceFieldsContainer: React.FC<ServiceFieldsContainerProps> = ({
             icon: '🏨',
             fields: ['roomCount', 'averageOccupancy']
               .map(key => getFieldByKey(key))
-              .filter(Boolean) as FieldDefinition[],
+              .filter(isFieldDefinition),
           },
         ];
 

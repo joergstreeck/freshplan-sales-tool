@@ -10,6 +10,7 @@
 
 import { apiClient } from './api-client';
 import type { Contact, CreateContactDTO, UpdateContactDTO } from '../types/contact.types';
+import type { ContactInteractionDTO } from '../types/intelligence.types';
 
 /**
  * Contact API Service
@@ -123,7 +124,7 @@ export const contactApi = {
    * Get contact activity timeline
    * Returns all interactions with a contact
    */
-  getContactTimeline: async (customerId: string, contactId: string): Promise<unknown[]> => {
+  getContactTimeline: async (customerId: string, contactId: string): Promise<ContactInteractionDTO[]> => {
     const response = await apiClient.get(`/customers/${customerId}/contacts/${contactId}/timeline`);
     return response.data;
   },
