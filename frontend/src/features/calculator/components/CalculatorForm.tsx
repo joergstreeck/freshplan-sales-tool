@@ -36,6 +36,7 @@ export function CalculatorForm() {
       addToHistory(data, result, selectedScenario || undefined);
     } catch (_error) { void _error;
       if (import.meta.env.DEV) {
+        // Development mode check
       }
     } finally {
       setIsCalculating(false);

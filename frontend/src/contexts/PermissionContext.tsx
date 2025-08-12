@@ -53,6 +53,7 @@ export const PermissionProvider: React.FC<PermissionProviderProps> = ({ children
     } catch (_error) { void _error;
       // Log errors in development only
       if (import.meta.env.DEV) {
+      // Development mode check
       }
       setPermissions(new Set());
     } finally {

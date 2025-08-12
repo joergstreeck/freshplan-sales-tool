@@ -98,6 +98,7 @@ export class ErrorBoundary extends Component<IErrorBoundaryProps, IErrorBoundary
 
     // Log to console in development
     if (import.meta.env.DEV) {
+      // Development mode check
     }
 
     // Log with structured data

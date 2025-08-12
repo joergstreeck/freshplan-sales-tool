@@ -147,6 +147,7 @@ if (import.meta.env.DEV) {
   // Warn about expired flags
   Object.entries(featureFlags).forEach(([name, flag]) => {
     if (isFeatureFlagExpired(name as FeatureFlagName)) {
+      // Feature flag expired check
     }
   });
 }
