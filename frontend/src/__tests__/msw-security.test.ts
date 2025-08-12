@@ -79,7 +79,7 @@ describe('MSW Security Configuration', () => {
   it('should NEVER enable MSW in production mode', () => {
     // Simulate production mode
     const IS_DEV = false;
-    const IS_PROD = true;
+    const _IS_PROD = true;
     const USE_MSW = 'true';
 
     // Even with MSW enabled, should not set token in production
