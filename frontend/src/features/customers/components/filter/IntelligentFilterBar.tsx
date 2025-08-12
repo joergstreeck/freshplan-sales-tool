@@ -183,38 +183,35 @@ export function IntelligentFilterBar({
 
   const handleColumnMove = useCallback(
     (columnId: string, direction: 'up' | 'down') => {
-      // Sortiere die Spalten nach ihrer aktuellen Reihenfolge
-      const sortedColumns = [...tableColumns].sort((a, b) => a.order - b.order);
-      const currentIndex = sortedColumns.findIndex(col => col.field === columnId);
+      // Arbeite direkt mit tableColumns aus dem Store
+      const sortedTableColumns = [...tableColumns].sort((a, b) => a.order - b.order);
+      const currentIndex = sortedTableColumns.findIndex(col => col.field === columnId);
       
       if (currentIndex === -1) return;
 
       const newIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
-      if (newIndex < 0 || newIndex >= sortedColumns.length) return;
-
-      // Tausche die Elemente im Array
-      const columnToMove = sortedColumns[currentIndex];
-      const columnToSwap = sortedColumns[newIndex];
       
-      // Tausche die order Werte
-      const tempOrder = columnToMove.order;
-      columnToMove.order = columnToSwap.order;
-      columnToSwap.order = tempOrder;
+      // Check bounds
+      if (newIndex < 0 || newIndex >= sortedTableColumns.length) return;
 
-      // Aktualisiere den Store für beide betroffene Spalten
-      setColumnOrderStore(columnToMove.field, columnToMove.order);
-      setColumnOrderStore(columnToSwap.field, columnToSwap.order);
+      // Erstelle ein neues Array mit allen IDs in der neuen Reihenfolge
+      const newOrder = [...sortedTableColumns];
+      const temp = newOrder[currentIndex];
+      newOrder[currentIndex] = newOrder[newIndex];
+      newOrder[newIndex] = temp;
+
+      // Extrahiere die IDs in der neuen Reihenfolge
+      const newColumnIds = newOrder.map(col => col.id);
+      setColumnOrderStore(newColumnIds);
 
       // Call parent callback if provided
       if (onColumnChange) {
-        const updatedColumns = sortedColumns
-          .sort((a, b) => a.order - b.order)
-          .map(col => ({
-            id: col.field,
-            label: col.label,
-            visible: col.visible,
-            locked: col.locked,
-          }));
+        const updatedColumns = newOrder.map(col => ({
+          id: col.field,
+          label: col.label,
+          visible: col.visible,
+          locked: col.locked,
+        }));
         onColumnChange(updatedColumns);
       }
     },

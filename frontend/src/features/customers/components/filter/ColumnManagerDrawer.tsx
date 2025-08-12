@@ -72,44 +72,50 @@ export function ColumnManagerDrawer({
 
         {/* Column List with Arrow Controls */}
         <List>
-          {columns.map((column, index) => (
-            <ListItem key={column.id}>
-              <ListItemText
-                primary={column.label}
-                secondary={column.locked ? 'Fixiert' : undefined}
-              />
-              <ListItemSecondaryAction>
-                <Stack direction="row" spacing={1} alignItems="center">
-                  {/* Move Up/Down Buttons */}
-                  {!column.locked && (
-                    <>
-                      <IconButton
-                        size="small"
-                        onClick={() => onColumnMove(column.id, 'up')}
-                        disabled={index === 0}
-                      >
-                        <ArrowUpIcon fontSize="small" />
-                      </IconButton>
-                      <IconButton
-                        size="small"
-                        onClick={() => onColumnMove(column.id, 'down')}
-                        disabled={index === columns.length - 1}
-                      >
-                        <ArrowDownIcon fontSize="small" />
-                      </IconButton>
-                    </>
-                  )}
-                  {/* Visibility Toggle */}
-                  <Switch
-                    edge="end"
-                    checked={column.visible}
-                    onChange={() => onColumnToggle(column.id)}
-                    disabled={column.locked}
-                  />
-                </Stack>
-              </ListItemSecondaryAction>
-            </ListItem>
-          ))}
+          {columns.map((column, index) => {
+            // Prüfe ob es noch bewegliche Spalten vor/nach dieser gibt
+            const canMoveUp = !column.locked && index > 0;
+            const canMoveDown = !column.locked && index < columns.length - 1;
+            
+            return (
+              <ListItem key={column.id}>
+                <ListItemText
+                  primary={column.label}
+                  secondary={column.locked ? 'Fixiert' : undefined}
+                />
+                <ListItemSecondaryAction>
+                  <Stack direction="row" spacing={1} alignItems="center">
+                    {/* Move Up/Down Buttons */}
+                    {!column.locked && (
+                      <>
+                        <IconButton
+                          size="small"
+                          onClick={() => onColumnMove(column.id, 'up')}
+                          disabled={!canMoveUp}
+                        >
+                          <ArrowUpIcon fontSize="small" />
+                        </IconButton>
+                        <IconButton
+                          size="small"
+                          onClick={() => onColumnMove(column.id, 'down')}
+                          disabled={!canMoveDown}
+                        >
+                          <ArrowDownIcon fontSize="small" />
+                        </IconButton>
+                      </>
+                    )}
+                    {/* Visibility Toggle */}
+                    <Switch
+                      edge="end"
+                      checked={column.visible}
+                      onChange={() => onColumnToggle(column.id)}
+                      disabled={column.locked}
+                    />
+                  </Stack>
+                </ListItemSecondaryAction>
+              </ListItem>
+            );
+          })}
         </List>
 
         {/* Info */}
