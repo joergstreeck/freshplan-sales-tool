@@ -48,6 +48,7 @@ public class TestDataService {
               Industry.EINZELHANDEL // Bäckerei passt zu Einzelhandel
               );
       riskCustomer.setRiskScore(85);
+      riskCustomer.setExpectedAnnualVolume(new BigDecimal("65000.00")); // Mittlerer Umsatz
       riskCustomer.setCreatedAt(LocalDateTime.now().minusDays(365)); // Alt-Kunde
       customerRepository.persist(riskCustomer);
       createdCustomers.add(riskCustomer);
@@ -91,6 +92,7 @@ public class TestDataService {
               LocalDateTime.now().minusDays(3),
               Industry.RESTAURANT);
       leadCustomer.setRiskScore(20);
+      leadCustomer.setExpectedAnnualVolume(new BigDecimal("45000.00")); // Kleinerer Umsatz
       leadCustomer.setCreatedAt(LocalDateTime.now().minusDays(15)); // Neuer Kunde < 30 Tage
       customerRepository.persist(leadCustomer);
       createdCustomers.add(leadCustomer);
@@ -104,6 +106,7 @@ public class TestDataService {
               LocalDateTime.now().minusDays(45),
               Industry.CATERING);
       inactiveCustomer.setRiskScore(60); // Medium Risk
+      inactiveCustomer.setExpectedAnnualVolume(new BigDecimal("75000.00")); // Mittlerer Umsatz
       inactiveCustomer.setCreatedAt(LocalDateTime.now().minusDays(400));
       customerRepository.persist(inactiveCustomer);
       createdCustomers.add(inactiveCustomer);
@@ -126,6 +129,7 @@ public class TestDataService {
               );
       prospectCustomer.setNextFollowUpDate(LocalDateTime.now().plusDays(5));
       prospectCustomer.setRiskScore(15);
+      prospectCustomer.setExpectedAnnualVolume(new BigDecimal("85000.00")); // Guter Umsatz
       prospectCustomer.setCreatedAt(LocalDateTime.now().minusDays(180));
       customerRepository.persist(prospectCustomer);
       createdCustomers.add(prospectCustomer);

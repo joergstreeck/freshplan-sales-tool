@@ -113,29 +113,43 @@ export function CustomersPageV2({ openWizard = false }: CustomersPageV2Props) {
     // Apply risk level filter
     if (filterConfig.riskLevel && filterConfig.riskLevel.length > 0) {
       filtered = filtered.filter(customer => {
-        // Calculate risk level based on business logic
-        const daysSinceContact = customer.lastContactDate
-          ? Math.floor(
-              (Date.now() - new Date(customer.lastContactDate).getTime()) / (1000 * 60 * 60 * 24)
-            )
-          : 999;
-
-        let riskLevel = 'LOW';
-        if (daysSinceContact > 90) riskLevel = 'HIGH';
-        else if (daysSinceContact > 30) riskLevel = 'MEDIUM';
-
-        return filterConfig.riskLevel?.includes(riskLevel);
+        // Use riskScore if available, otherwise calculate from lastContactDate
+        if (customer.riskScore !== null && customer.riskScore !== undefined) {
+          // Use riskScore: HIGH >= 60, MEDIUM 30-59, LOW < 30
+          let riskLevel = 'LOW';
+          if (customer.riskScore >= 60) {
+            riskLevel = 'HIGH';
+          } else if (customer.riskScore >= 30) {
+            riskLevel = 'MEDIUM';
+          }
+          return filterConfig.riskLevel?.includes(riskLevel);
+        }
+        
+        // Fallback to lastContactDate only if it exists
+        if (customer.lastContactDate) {
+          const daysSinceContact = Math.floor(
+            (Date.now() - new Date(customer.lastContactDate).getTime()) / (1000 * 60 * 60 * 24)
+          );
+          let riskLevel = 'LOW';
+          if (daysSinceContact > 90) riskLevel = 'HIGH';
+          else if (daysSinceContact > 30) riskLevel = 'MEDIUM';
+          return filterConfig.riskLevel?.includes(riskLevel);
+        }
+        
+        // No riskScore and no lastContactDate = exclude from risk filter
+        return false;
       });
     }
 
     // Apply lastContactDays filter (für "Lange kein Kontakt")
     if (filterConfig.lastContactDays) {
       filtered = filtered.filter(customer => {
-        const daysSinceContact = customer.lastContactDate
-          ? Math.floor(
-              (Date.now() - new Date(customer.lastContactDate).getTime()) / (1000 * 60 * 60 * 24)
-            )
-          : 999;
+        // Only consider customers with lastContactDate
+        if (!customer.lastContactDate) return false;
+        
+        const daysSinceContact = Math.floor(
+          (Date.now() - new Date(customer.lastContactDate).getTime()) / (1000 * 60 * 60 * 24)
+        );
         return daysSinceContact >= filterConfig.lastContactDays;
       });
     }
@@ -143,7 +157,12 @@ export function CustomersPageV2({ openWizard = false }: CustomersPageV2Props) {
     // Apply revenue range filter (für "Top-Kunden")
     if (filterConfig.revenueRange) {
       filtered = filtered.filter(customer => {
-        const revenue = customer.expectedAnnualVolume || 0;
+        // Only consider customers with expectedAnnualVolume
+        if (customer.expectedAnnualVolume === null || customer.expectedAnnualVolume === undefined) {
+          return false;
+        }
+        
+        const revenue = customer.expectedAnnualVolume;
         const { min, max } = filterConfig.revenueRange || {};
         
         if (min !== null && min !== undefined && revenue < min) return false;
