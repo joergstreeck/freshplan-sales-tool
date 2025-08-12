@@ -24,14 +24,14 @@ async function enableMocking() {
     localStorage.setItem('auth-token', mockToken);
 
     if (import.meta.env.DEV) {
-      console.log('[DEV] MSW enabled with mock authentication');
+      // MSW enabled with mock authentication
     }
   } else {
     // Security: Always clean up mock tokens when MSW is disabled
     localStorage.removeItem('auth-token');
 
     if (import.meta.env.DEV) {
-      console.log('[DEV] MSW disabled: Using real backend API');
+      // MSW disabled: Using real backend API
     }
     return;
   }
@@ -44,12 +44,12 @@ async function enableMocking() {
     });
     if (response.ok) {
       // Backend is available, using real API
-      console.log('Backend available: Using real API');
+      // Backend available: Using real API
       return;
     }
   } catch (_error) { void _error;
     // Backend not available, starting MSW mock server
-    console.log('Backend not available, starting MSW:', error);
+    // Backend not available, starting MSW
   }
 
   const { worker } = await import('./mocks/browser');
@@ -80,7 +80,7 @@ enableMocking()
     );
   })
   .catch(error => {
-    console.error('Failed to initialize app:', error);
+    // Failed to initialize app - error handled
     // Render app anyway - don't let initialization errors block the entire app
     createRoot(rootElement).render(
       <StrictMode>

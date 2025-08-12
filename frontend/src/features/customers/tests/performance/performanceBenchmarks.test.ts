@@ -65,8 +65,8 @@ describe.skip('FC-005 Performance Benchmarks', () => {
 
       // Performance requirements for Enterprise usage
       expect(metrics.duration).toBeLessThan(100); // < 100ms for 1000 updates
-      console.log(`✅ 1000 field updates: ${metrics.duration.toFixed(2)}ms`);
-      console.log(`📊 Memory used: ${(metrics.memoryUsed / 1024).toFixed(2)} KB`);
+      if (process.env.DEBUG_PERF) console.log(`✅ 1000 field updates: ${metrics.duration.toFixed(2)}ms`);
+      if (process.env.DEBUG_PERF) console.log(`📊 Memory used: ${(metrics.memoryUsed / 1024).toFixed(2)} KB`);
 
       // Verify data integrity
       expect(Object.keys(result.current.customerData)).toHaveLength(1000);
@@ -99,8 +99,8 @@ describe.skip('FC-005 Performance Benchmarks', () => {
       expect(metrics.duration).toBeLessThan(200); // < 200ms for 100 locations
       expect(result.current.locations).toHaveLength(100);
 
-      console.log(`✅ 100 locations with fields: ${metrics.duration.toFixed(2)}ms`);
-      console.log(`📊 Memory used: ${(metrics.memoryUsed / 1024).toFixed(2)} KB`);
+      if (process.env.DEBUG_PERF) console.log(`✅ 100 locations with fields: ${metrics.duration.toFixed(2)}ms`);
+      if (process.env.DEBUG_PERF) console.log(`📊 Memory used: ${(metrics.memoryUsed / 1024).toFixed(2)} KB`);
 
       // Verify data structure integrity
       expect(result.current.locations[99].name).toBe('Location 100');
@@ -141,8 +141,8 @@ describe.skip('FC-005 Performance Benchmarks', () => {
       expect(metrics.duration).toBeLessThan(500); // < 500ms for 1000 detailed locations
       expect(result.current.detailedLocations).toHaveLength(1000);
 
-      console.log(`✅ 1000 detailed locations: ${metrics.duration.toFixed(2)}ms`);
-      console.log(`📊 Memory used: ${(metrics.memoryUsed / 1024 / 1024).toFixed(2)} MB`);
+      if (process.env.DEBUG_PERF) console.log(`✅ 1000 detailed locations: ${metrics.duration.toFixed(2)}ms`);
+      if (process.env.DEBUG_PERF) console.log(`📊 Memory used: ${(metrics.memoryUsed / 1024 / 1024).toFixed(2)} MB`);
 
       // Memory usage should be reasonable (< 10 MB for 1000 items)
       expect(metrics.memoryUsed).toBeLessThan(10 * 1024 * 1024); // < 10 MB
@@ -190,7 +190,7 @@ describe.skip('FC-005 Performance Benchmarks', () => {
 
       // Validation should be fast even for large datasets
       expect(metrics.duration).toBeLessThan(50); // < 50ms for validation
-      console.log(`✅ Large form validation: ${metrics.duration.toFixed(2)}ms`);
+      if (process.env.DEBUG_PERF) console.log(`✅ Large form validation: ${metrics.duration.toFixed(2)}ms`);
     });
   });
 
@@ -228,7 +228,7 @@ describe.skip('FC-005 Performance Benchmarks', () => {
 
       // localStorage operations should be fast
       expect(metrics.duration).toBeLessThan(100); // < 100ms for save
-      console.log(`✅ Large draft save: ${metrics.duration.toFixed(2)}ms`);
+      if (process.env.DEBUG_PERF) console.log(`✅ Large draft save: ${metrics.duration.toFixed(2)}ms`);
 
       // Verify data was saved
       const savedData = localStorage.getItem('customer-onboarding-draft');
@@ -268,8 +268,8 @@ describe.skip('FC-005 Performance Benchmarks', () => {
       expect(metrics.duration).toBeLessThan(50); // < 50ms for load
       expect(Object.keys(result.current.customerData)).toHaveLength(200);
 
-      console.log(`✅ Large draft load: ${metrics.duration.toFixed(2)}ms`);
-      console.log(`📊 Loaded ${Object.keys(result.current.customerData).length} fields`);
+      if (process.env.DEBUG_PERF) console.log(`✅ Large draft load: ${metrics.duration.toFixed(2)}ms`);
+      if (process.env.DEBUG_PERF) console.log(`📊 Loaded ${Object.keys(result.current.customerData).length} fields`);
     });
   });
 
@@ -304,8 +304,8 @@ describe.skip('FC-005 Performance Benchmarks', () => {
       expect(Object.keys(result.current.customerData)).toHaveLength(0);
       expect(result.current.locations).toHaveLength(0);
 
-      console.log(`✅ Large dataset reset: ${metrics.duration.toFixed(2)}ms`);
-      console.log(`📊 Memory freed: ${((memoryBefore - memoryAfter) / 1024).toFixed(2)} KB`);
+      if (process.env.DEBUG_PERF) console.log(`✅ Large dataset reset: ${metrics.duration.toFixed(2)}ms`);
+      if (process.env.DEBUG_PERF) console.log(`📊 Memory freed: ${((memoryBefore - memoryAfter) / 1024).toFixed(2)} KB`);
     });
   });
 
@@ -337,7 +337,7 @@ describe.skip('FC-005 Performance Benchmarks', () => {
       expect(metrics.duration).toBeLessThan(150); // < 150ms for 300 operations
       expect(result.current.customerData.concurrent_99).toBe('value_99');
 
-      console.log(`✅ 300 concurrent operations: ${metrics.duration.toFixed(2)}ms`);
+      if (process.env.DEBUG_PERF) console.log(`✅ 300 concurrent operations: ${metrics.duration.toFixed(2)}ms`);
     });
   });
 });

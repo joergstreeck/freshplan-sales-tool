@@ -66,7 +66,7 @@ describe.skip('Contact Components Performance', () => {
     const end = performance.now();
     const renderTime = end - start;
 
-    console.log(`Rendered 50 contacts in ${renderTime.toFixed(2)}ms`);
+    if (process.env.DEBUG_PERF) console.log(`Rendered 50 contacts in ${renderTime.toFixed(2)}ms`);
     expect(renderTime).toBeLessThan(200);
   });
 
@@ -93,7 +93,7 @@ describe.skip('Contact Components Performance', () => {
     const end = performance.now();
     const operationTime = end - start;
 
-    console.log(`Added 10 contacts in ${operationTime.toFixed(2)}ms`);
+    if (process.env.DEBUG_PERF) console.log(`Added 10 contacts in ${operationTime.toFixed(2)}ms`);
     expect(operationTime).toBeLessThan(50); // Should be very fast as it's just function calls
   });
 
@@ -120,7 +120,7 @@ describe.skip('Contact Components Performance', () => {
     const end = performance.now();
     const filterTime = end - start;
 
-    console.log(`Filtered 100 contacts in ${filterTime.toFixed(2)}ms`);
+    if (process.env.DEBUG_PERF) console.log(`Filtered 100 contacts in ${filterTime.toFixed(2)}ms`);
     expect(filterTime).toBeLessThan(10); // Filtering should be very fast
   });
 
@@ -143,7 +143,7 @@ describe.skip('Contact Components Performance', () => {
     const end = performance.now();
     const renderTime = end - start;
 
-    console.log(`Rendered contact with large data in ${renderTime.toFixed(2)}ms`);
+    if (process.env.DEBUG_PERF) console.log(`Rendered contact with large data in ${renderTime.toFixed(2)}ms`);
     expect(renderTime).toBeLessThan(50);
   });
 
@@ -166,7 +166,7 @@ describe.skip('Contact Components Performance', () => {
     const end = performance.now();
     const loadTime = end - start;
 
-    console.log(`Loaded page of ${PAGE_SIZE} contacts in ${loadTime.toFixed(2)}ms`);
+    if (process.env.DEBUG_PERF) console.log(`Loaded page of ${PAGE_SIZE} contacts in ${loadTime.toFixed(2)}ms`);
     expect(loadTime).toBeLessThan(20);
     expect(firstPage).toHaveLength(PAGE_SIZE);
   });
@@ -197,7 +197,7 @@ describe.skip('Contact Components Performance', () => {
     const end = performance.now();
     const searchTime = end - start;
 
-    console.log(`Processed ${searches.length} search queries in ${searchTime.toFixed(2)}ms`);
+    if (process.env.DEBUG_PERF) console.log(`Processed ${searches.length} search queries in ${searchTime.toFixed(2)}ms`);
     expect(searchTime).toBeLessThan(10);
 
     // With proper debouncing, should be called less than the number of searches
@@ -225,7 +225,7 @@ describe.skip('Contact Components Performance', () => {
     const end = performance.now();
     const bulkUpdateTime = end - start;
 
-    console.log(`Bulk updated 50 contacts in ${bulkUpdateTime.toFixed(2)}ms`);
+    if (process.env.DEBUG_PERF) console.log(`Bulk updated 50 contacts in ${bulkUpdateTime.toFixed(2)}ms`);
     expect(bulkUpdateTime).toBeLessThan(100);
   });
 
@@ -248,7 +248,7 @@ describe.skip('Contact Components Performance', () => {
     const end = performance.now();
     const lazyLoadTime = end - start;
 
-    console.log(`Lazy loaded 10 contact summaries in ${lazyLoadTime.toFixed(2)}ms`);
+    if (process.env.DEBUG_PERF) console.log(`Lazy loaded 10 contact summaries in ${lazyLoadTime.toFixed(2)}ms`);
     expect(lazyLoadTime).toBeLessThan(5);
   });
 
@@ -283,7 +283,7 @@ describe.skip('Contact Components Performance', () => {
     const end = performance.now();
     const scrollSimulationTime = end - start;
 
-    console.log(`Simulated virtual scrolling in ${scrollSimulationTime.toFixed(2)}ms`);
+    if (process.env.DEBUG_PERF) console.log(`Simulated virtual scrolling in ${scrollSimulationTime.toFixed(2)}ms`);
     expect(scrollSimulationTime).toBeLessThan(10);
   });
 
