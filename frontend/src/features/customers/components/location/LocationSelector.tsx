@@ -17,8 +17,8 @@ import {
   Typography,
   Divider,
   Chip,
-  SelectChangeEvent,
 } from '@mui/material';
+import type { SelectChangeEvent } from '@mui/material/Select';
 import AddIcon from '@mui/icons-material/Add';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import type { CustomerLocation } from '../../types/customer.types';

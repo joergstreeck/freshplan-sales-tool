@@ -22,7 +22,6 @@ import {
   Chip,
   Dialog,
   DialogTitle,
-  SelectChangeEvent,
   DialogContent,
   DialogActions,
   TextField,
@@ -40,6 +39,7 @@ import {
   ListItemText,
   ListItemSecondaryAction,
 } from '@mui/material';
+import type { SelectChangeEvent } from '@mui/material/Select';
 import {
   ExpandMore as ExpandMoreIcon,
   Add as AddIcon,

@@ -27,8 +27,8 @@ import {
   FormGroup,
   Chip,
   Autocomplete,
-  SelectChangeEvent,
 } from '@mui/material';
+import type { SelectChangeEvent } from '@mui/material/Select';
 import { Add as AddIcon, Delete as DeleteIcon, Person as PersonIcon } from '@mui/icons-material';
 import { useCustomerOnboardingStore } from '../../stores/customerOnboardingStore';
 import { AdaptiveFormContainer } from '../adaptive/AdaptiveFormContainer';
