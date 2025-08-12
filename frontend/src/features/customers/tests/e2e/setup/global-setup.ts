@@ -96,6 +96,7 @@ async function setupAuthState(config: FullConfig) {
       await context.storageState({ path: './e2e-auth-state.json' });
     }
   } catch {
+      // Error ignored intentionally
   } finally {
     await browser.close();
   }
