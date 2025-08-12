@@ -95,7 +95,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         // Import authUtils here to avoid circular dependency
         const { authUtils } = await import('../lib/keycloak');
         return await authUtils.getValidToken();
-      } catch (error) {
+      } catch (_error) {
+        // Error handled silently, return null as fallback
         return null;
       }
     },
@@ -105,7 +106,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       try {
         const { authUtils } = await import('../lib/keycloak');
         return await authUtils.updateToken(30);
-      } catch (error) {
+      } catch (_error) {
+        // Error handled silently, return false as fallback
         return false;
       }
     },

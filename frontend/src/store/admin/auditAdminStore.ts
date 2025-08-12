@@ -256,7 +256,12 @@ export const useAuditAdminStore = create<AuditAdminState>()(
             };
 
             set({ activityHeatmap: heatmap });
-          } catch (error) {}
+          } catch (error) {
+            // Log error but don't break the UI
+            if (error instanceof Error) {
+              set({ error: `Failed to fetch activity heatmap: ${error.message}` });
+            }
+          }
         },
 
         // Fetch Suspicious Activities
@@ -283,7 +288,12 @@ export const useAuditAdminStore = create<AuditAdminState>()(
             ];
 
             set({ suspiciousActivities: activities });
-          } catch (error) {}
+          } catch (error) {
+            // Log error but don't break the UI
+            if (error instanceof Error) {
+              set({ error: `Failed to fetch suspicious activities: ${error.message}` });
+            }
+          }
         },
 
         // Fetch User Profile
@@ -315,7 +325,12 @@ export const useAuditAdminStore = create<AuditAdminState>()(
             set(state => ({
               userProfiles: new Map(state.userProfiles).set(userId, profile),
             }));
-          } catch (error) {}
+          } catch (error) {
+            // Log error but don't break the UI
+            if (error instanceof Error) {
+              set({ error: `Failed to fetch user profile: ${error.message}` });
+            }
+          }
         },
 
         // Fetch Compliance Status
@@ -342,7 +357,12 @@ export const useAuditAdminStore = create<AuditAdminState>()(
             };
 
             set({ complianceStatus: status });
-          } catch (error) {}
+          } catch (error) {
+            // Log error but don't break the UI
+            if (error instanceof Error) {
+              set({ error: `Failed to fetch compliance status: ${error.message}` });
+            }
+          }
         },
 
         // Generate Compliance Report

@@ -4,7 +4,7 @@ import path from 'path';
 import { execSync } from 'child_process';
 
 describe('Performance after Console Removal', () => {
-  let bundleStats: {
+  const bundleStats: {
     originalSize?: number;
     currentSize?: number;
     files?: number;
