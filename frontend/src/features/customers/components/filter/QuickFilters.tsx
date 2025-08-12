@@ -20,7 +20,8 @@ import { useTheme } from '@mui/material/styles';
 
 import type { FilterConfig } from '../../types/filter.types';
 import { RiskLevel } from '../../types/filter.types';
-import { CustomerStatus } from '../../types/customer.types';
+// Import the correct CustomerStatus from the customer feature
+import { CustomerStatus } from '../../../customer/types/customer.types';
 
 export interface QuickFilter {
   id: string;
@@ -35,7 +36,7 @@ export const QUICK_FILTERS: QuickFilter[] = [
     id: 'active',
     label: 'Aktive Kunden',
     icon: <BusinessIcon fontSize="small" />,
-    filter: { status: [CustomerStatus.ACTIVE] },
+    filter: { status: [CustomerStatus.AKTIV] },
   },
   {
     id: 'at-risk',

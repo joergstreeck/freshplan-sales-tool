@@ -128,6 +128,31 @@ export function CustomersPageV2({ openWizard = false }: CustomersPageV2Props) {
       });
     }
 
+    // Apply lastContactDays filter (für "Lange kein Kontakt")
+    if (filterConfig.lastContactDays) {
+      filtered = filtered.filter(customer => {
+        const daysSinceContact = customer.lastContactDate
+          ? Math.floor(
+              (Date.now() - new Date(customer.lastContactDate).getTime()) / (1000 * 60 * 60 * 24)
+            )
+          : 999;
+        return daysSinceContact >= filterConfig.lastContactDays;
+      });
+    }
+
+    // Apply revenue range filter (für "Top-Kunden")
+    if (filterConfig.revenueRange) {
+      filtered = filtered.filter(customer => {
+        const revenue = customer.expectedAnnualVolume || 0;
+        const { min, max } = filterConfig.revenueRange || {};
+        
+        if (min !== null && min !== undefined && revenue < min) return false;
+        if (max !== null && max !== undefined && revenue > max) return false;
+        
+        return true;
+      });
+    }
+
     // Apply createdDays filter (für "Neue Kunden")
     if (filterConfig.createdDays) {
       filtered = filtered.filter(customer => {

@@ -5,15 +5,18 @@
  * @since FC-005 PR4
  */
 
-import { CustomerStatus } from '../../types/customer.types';
+// Import the correct CustomerStatus from the customer feature
+import { CustomerStatus } from '../../../customer/types/customer.types';
 import { RiskLevel } from '../../types/filter.types';
 
 // Deutsche Übersetzungen
 export const STATUS_LABELS: Record<CustomerStatus, string> = {
-  [CustomerStatus.DRAFT]: 'Entwurf',
-  [CustomerStatus.ACTIVE]: 'Aktiv',
-  [CustomerStatus.INACTIVE]: 'Inaktiv',
-  [CustomerStatus.DELETED]: 'Gelöscht',
+  [CustomerStatus.LEAD]: 'Lead',
+  [CustomerStatus.PROSPECT]: 'Interessent',
+  [CustomerStatus.AKTIV]: 'Aktiv',
+  [CustomerStatus.RISIKO]: 'Risiko',
+  [CustomerStatus.INAKTIV]: 'Inaktiv',
+  [CustomerStatus.ARCHIVIERT]: 'Archiviert',
 };
 
 export const RISK_LABELS: Record<RiskLevel, string> = {
