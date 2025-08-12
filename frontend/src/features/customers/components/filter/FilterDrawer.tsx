@@ -148,7 +148,9 @@ export function FilterDrawer({
           <Slider
             value={filters.lastContactDays || 30}
             onChange={(_, value) => {
-              onFiltersChange({ ...filters, lastContactDays: value as number });
+              // Set the filter value without activating quick filters
+              const newValue = value as number;
+              onFiltersChange({ ...filters, lastContactDays: newValue });
             }}
             min={0}
             max={365}

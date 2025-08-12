@@ -10,15 +10,12 @@
 import React from 'react';
 import { Stack, Chip } from '@mui/material';
 import {
-  Business as BusinessIcon,
-  Warning as RiskIcon,
-  Schedule as RecentIcon,
-  TrendingUp as RevenueIcon,
+  CheckCircle as ActiveIcon,
+  Cancel as InactiveIcon,
 } from '@mui/icons-material';
 import { useTheme } from '@mui/material/styles';
 
 import type { FilterConfig } from '../../types/filter.types';
-import { RiskLevel } from '../../types/filter.types';
 // Import the correct CustomerStatus from the customer feature
 import { CustomerStatus } from '../../../customer/types/customer.types';
 
@@ -29,31 +26,19 @@ export interface QuickFilter {
   filter: Partial<FilterConfig>;
 }
 
-// Quick Filter Presets
+// Quick Filter Presets - Simple and clear status filters only
 export const QUICK_FILTERS: QuickFilter[] = [
   {
     id: 'active',
     label: 'Aktive Kunden',
-    icon: <BusinessIcon fontSize="small" />,
+    icon: <ActiveIcon fontSize="small" />,
     filter: { status: [CustomerStatus.AKTIV] },
   },
   {
-    id: 'at-risk',
-    label: 'Risiko-Kunden',
-    icon: <RiskIcon fontSize="small" />,
-    filter: { riskLevel: [RiskLevel.HIGH, RiskLevel.MEDIUM] },
-  },
-  {
-    id: 'no-contact',
-    label: 'Lange kein Kontakt',
-    icon: <RecentIcon fontSize="small" />,
-    filter: { lastContactDays: 90 },
-  },
-  {
-    id: 'high-value',
-    label: 'Top-Kunden',
-    icon: <RevenueIcon fontSize="small" />,
-    filter: { revenueRange: { min: 100000, max: null } },
+    id: 'inactive',
+    label: 'Inaktive Kunden',
+    icon: <InactiveIcon fontSize="small" />,
+    filter: { status: [CustomerStatus.INAKTIV] },
   },
 ];
 
