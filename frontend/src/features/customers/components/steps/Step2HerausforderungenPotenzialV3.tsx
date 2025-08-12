@@ -63,7 +63,7 @@ export const Step2HerausforderungenPotenzialV3: React.FC = () => {
   const painPointFields = useMemo(() => {
     return Object.keys(PAIN_POINT_SOLUTIONS)
       .map(key => getFieldByKey(key))
-      .filter(Boolean) as FieldDefinition[];
+      .filter(isFieldDefinition);
   }, [getFieldByKey]);
 
   const revenueField = useMemo(() => {
@@ -73,7 +73,7 @@ export const Step2HerausforderungenPotenzialV3: React.FC = () => {
   const additionalFields = useMemo(() => {
     return ['vendingInterest', 'vendingLocations']
       .map(key => getFieldByKey(key))
-      .filter(Boolean) as FieldDefinition[];
+      .filter(isFieldDefinition);
   }, [getFieldByKey]);
 
   // Active Pain Points

@@ -142,7 +142,7 @@ export const FilialstrukturLayout: React.FC<FilialstrukturLayoutProps> = ({
 
   const sortedFields = fieldOrder
     .map(key => fields.find(f => f.key === key))
-    .filter(Boolean) as FieldDefinition[];
+    .filter(isFieldDefinition);
 
   return (
     <Box>

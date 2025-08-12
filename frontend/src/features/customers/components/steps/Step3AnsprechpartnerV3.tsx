@@ -58,17 +58,17 @@ export const Step3AnsprechpartnerV3: React.FC = () => {
     // Die wichtigsten Kontaktfelder für die erste Zeile
     const nameFields = ['salutation', 'title', 'firstName', 'lastName']
       .map(key => getFieldByKey(key))
-      .filter(Boolean) as FieldDefinition[];
+      .filter(isFieldDefinition);
 
     // Position und Entscheider-Ebene
     const roleFields = ['position', 'decisionLevel']
       .map(key => getFieldByKey(key))
-      .filter(Boolean) as FieldDefinition[];
+      .filter(isFieldDefinition);
 
     // Kontaktdaten
     const contactInfoFields = ['contactEmail', 'contactPhone', 'contactMobile']
       .map(key => getFieldByKey(key))
-      .filter(Boolean) as FieldDefinition[];
+      .filter(isFieldDefinition);
 
     return {
       nameFields,

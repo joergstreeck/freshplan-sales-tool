@@ -24,7 +24,7 @@ export const Step3AnsprechpartnerV4: React.FC = () => {
   const contactBaseFields = useMemo(() => {
     return ['contactName', 'contactEmail', 'contactPhone']
       .map(key => getFieldByKey(key))
-      .filter(Boolean) as FieldDefinition[];
+      .filter(isFieldDefinition);
   }, [getFieldByKey]);
 
   // Erweiterte Contact Fields mit custom Dropdowns
