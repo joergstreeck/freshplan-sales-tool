@@ -154,12 +154,13 @@ export const UniversalExportButton: React.FC<UniversalExportButtonProps> = ({
       if (onExportComplete) {
         onExportComplete(option.format);
       }
-    } catch (_error) { void _error;
-      const errorMessage = error instanceof Error ? error.message : 'Export fehlgeschlagen';
+    } catch (_error) {
+      void _error;
+      const errorMessage = _error instanceof Error ? _error.message : 'Export fehlgeschlagen';
       toast.error(errorMessage);
 
       if (onExportError) {
-        onExportError(error instanceof Error ? error : new Error(errorMessage));
+        onExportError(_error instanceof Error ? _error : new Error(errorMessage));
       }
     } finally {
       setExporting(false);

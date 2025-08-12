@@ -92,7 +92,7 @@ export class ErrorBoundary extends Component<IErrorBoundaryProps, IErrorBoundary
    * @param {Error} error - The error that was caught
    * @param {ErrorInfo} errorInfo - React error info with component stack
    */
-  public componentDidCatch(_error: Error, _errorInfo: ErrorInfo): void {
+  public componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
     const { onError, context } = this.props;
     const { errorId } = this.state;
 

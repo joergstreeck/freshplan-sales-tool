@@ -60,26 +60,27 @@ class ApiClient {
         status: response.status,
         statusText: response.statusText,
       };
-    } catch (_error) { void _error;
+    } catch (_error) {
+      void _error;
       // Handle backend connection errors with helpful debug info
-      if (error instanceof TypeError && error.message.includes('fetch')) {
+      if (_error instanceof TypeError && _error.message.includes('fetch')) {
         const connectionError: ApiError = {
           code: 'CONNECTION_FAILED',
           message: 'Backend not reachable - please check if backend is running',
-          details: { url, originalError: error.message },
+          details: { url, originalError: _error.message },
         };
         throw connectionError;
       }
 
-      if (error instanceof Error && 'code' in error) {
-        throw error; // Re-throw our custom ApiError
+      if (_error instanceof Error && 'code' in _error) {
+        throw _error; // Re-throw our custom ApiError
       }
 
       // Handle network errors
       const apiError: ApiError = {
         code: 'NETWORK_ERROR',
-        message: error instanceof Error ? error.message : 'Network request failed',
-        details: { originalError: error },
+        message: _error instanceof Error ? _error.message : 'Network request failed',
+        details: { originalError: _error },
       };
       throw apiError;
     }
