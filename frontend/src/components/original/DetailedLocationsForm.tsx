@@ -134,7 +134,7 @@ export function DetailedLocationsForm({ totalLocations = 0 }: DetailedLocationsF
                     type="text"
                     className="location-name"
                     value={location.name}
-                    onChange={e => updateLocation(location.id, 'name', e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateLocation(location.id, 'name', e.target.value)}
                   />
                 </div>
                 <div className="form-group">
@@ -142,7 +142,7 @@ export function DetailedLocationsForm({ totalLocations = 0 }: DetailedLocationsF
                   <select
                     className="location-category"
                     value={location.category}
-                    onChange={e => updateLocation(location.id, 'category', e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateLocation(location.id, 'category', e.target.value)}
                   >
                     <option value="">{t('pleaseSelect')}</option>
                     <option value="hauptstandort">{t('categories.mainLocation')}</option>
@@ -160,7 +160,7 @@ export function DetailedLocationsForm({ totalLocations = 0 }: DetailedLocationsF
                     type="text"
                     className="location-street"
                     value={location.street}
-                    onChange={e => updateLocation(location.id, 'street', e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateLocation(location.id, 'street', e.target.value)}
                   />
                 </div>
               </div>
@@ -171,7 +171,7 @@ export function DetailedLocationsForm({ totalLocations = 0 }: DetailedLocationsF
                     type="text"
                     className="location-postalcode"
                     value={location.postalCode}
-                    onChange={e => updateLocation(location.id, 'postalCode', e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateLocation(location.id, 'postalCode', e.target.value)}
                     maxLength={5}
                   />
                 </div>
@@ -181,7 +181,7 @@ export function DetailedLocationsForm({ totalLocations = 0 }: DetailedLocationsF
                     type="text"
                     className="location-city"
                     value={location.city}
-                    onChange={e => updateLocation(location.id, 'city', e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateLocation(location.id, 'city', e.target.value)}
                   />
                 </div>
               </div>
@@ -194,7 +194,7 @@ export function DetailedLocationsForm({ totalLocations = 0 }: DetailedLocationsF
                     type="text"
                     className="location-contact-name"
                     value={location.contactName}
-                    onChange={e => updateLocation(location.id, 'contactName', e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateLocation(location.id, 'contactName', e.target.value)}
                   />
                 </div>
                 <div className="form-group">
@@ -203,7 +203,7 @@ export function DetailedLocationsForm({ totalLocations = 0 }: DetailedLocationsF
                     type="tel"
                     className="location-contact-phone"
                     value={location.contactPhone}
-                    onChange={e => updateLocation(location.id, 'contactPhone', e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateLocation(location.id, 'contactPhone', e.target.value)}
                   />
                 </div>
               </div>
@@ -214,7 +214,7 @@ export function DetailedLocationsForm({ totalLocations = 0 }: DetailedLocationsF
                     type="email"
                     className="location-contact-email"
                     value={location.contactEmail}
-                    onChange={e => updateLocation(location.id, 'contactEmail', e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateLocation(location.id, 'contactEmail', e.target.value)}
                   />
                 </div>
               </div>

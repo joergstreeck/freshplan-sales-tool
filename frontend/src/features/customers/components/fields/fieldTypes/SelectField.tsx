@@ -12,6 +12,7 @@ import {
   MenuItem,
   FormHelperText,
   ListItemText,
+  SelectChangeEvent,
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { useDropdownWidth } from '../../../hooks/useDropdownWidth';
@@ -83,7 +84,7 @@ export const SelectField: React.FC<SelectFieldProps> = ({
         id={field.key}
         name={field.key}
         value={displayValue}
-        onChange={e => onChange(e.target.value as string)}
+        onChange={(e: SelectChangeEvent) => onChange(e.target.value)}
         onBlur={onBlur}
         displayEmpty
         renderValue={selected => {

@@ -225,7 +225,7 @@ export function FocusListColumnMUI({ onCustomerSelect }: FocusListColumnMUIProps
         return (
           <IconButton
             size="small"
-            onClick={e => {
+            onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
               e.stopPropagation();
               // TODO: Aktionen-Menü öffnen
             }}

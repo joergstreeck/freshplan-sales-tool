@@ -204,7 +204,7 @@ export const CustomerCard: React.FC<CustomerCardProps> = ({
           <Tooltip title="E-Mail senden">
             <IconButton
               size="small"
-              onClick={e => {
+              onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
                 e.stopPropagation();
                 // TODO: E-Mail-Funktion implementieren
               }}
@@ -215,7 +215,7 @@ export const CustomerCard: React.FC<CustomerCardProps> = ({
           <Tooltip title="Anrufen">
             <IconButton
               size="small"
-              onClick={e => {
+              onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
                 e.stopPropagation();
                 // TODO: Anruf-Funktion implementieren
               }}

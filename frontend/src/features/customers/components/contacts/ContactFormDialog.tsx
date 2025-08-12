@@ -280,7 +280,7 @@ export const ContactFormDialog: React.FC<ContactFormDialogProps> = ({
                     control={
                       <Switch
                         checked={formData.responsibilityScope === 'specific'}
-                        onChange={e =>
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                           handleResponsibilityScopeChange(e.target.checked ? 'specific' : 'all')
                         }
                       />
@@ -314,7 +314,7 @@ export const ContactFormDialog: React.FC<ContactFormDialogProps> = ({
             control={
               <Switch
                 checked={formData.isPrimary || false}
-                onChange={e =>
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                   setFormData(prev => ({
                     ...prev,
                     isPrimary: e.target.checked,

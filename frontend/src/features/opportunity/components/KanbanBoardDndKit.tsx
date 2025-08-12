@@ -302,7 +302,7 @@ export const OpportunityCard: React.FC<OpportunityCardProps> = React.memo(
                       <Tooltip title="Als gewonnen markieren">
                         <IconButton
                           size="small"
-                          onClick={e => {
+                          onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
                             e.stopPropagation();
                             onQuickAction(opportunity.id, 'won');
                           }}
@@ -325,7 +325,7 @@ export const OpportunityCard: React.FC<OpportunityCardProps> = React.memo(
                       <Tooltip title="Als verloren markieren">
                         <IconButton
                           size="small"
-                          onClick={e => {
+                          onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
                             e.stopPropagation();
                             onQuickAction(opportunity.id, 'lost');
                           }}
@@ -353,7 +353,7 @@ export const OpportunityCard: React.FC<OpportunityCardProps> = React.memo(
                     <Tooltip title="Opportunity reaktivieren">
                       <IconButton
                         size="small"
-                        onClick={e => {
+                        onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
                           e.stopPropagation();
                           onQuickAction(opportunity.id, 'reactivate');
                         }}

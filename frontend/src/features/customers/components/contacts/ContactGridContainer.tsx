@@ -208,7 +208,7 @@ export const ContactGridContainer: React.FC<ContactGridContainerProps> = ({
             <TextField
               placeholder="Kontakte suchen..."
               value={searchQuery}
-              onChange={e => setSearchQuery(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
               size="small"
               sx={{ flex: 1, maxWidth: 400 }}
               InputProps={{
@@ -241,7 +241,7 @@ export const ContactGridContainer: React.FC<ContactGridContainerProps> = ({
               select
               label="Entscheidungsebene"
               value={filterDecisionLevel}
-              onChange={e => setFilterDecisionLevel(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setFilterDecisionLevel(e.target.value)}
               size="small"
               sx={{ minWidth: 200 }}
             >
@@ -257,7 +257,7 @@ export const ContactGridContainer: React.FC<ContactGridContainerProps> = ({
               select
               label="Sortierung"
               value={sortBy}
-              onChange={e => setSortBy(e.target.value as unknown)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setSortBy(e.target.value)}
               size="small"
               sx={{ minWidth: 150 }}
             >

@@ -111,7 +111,7 @@ export const FilterBar: React.FC = () => {
           size="small"
           placeholder="Kunde, Nummer oder Handelsname suchen..."
           value={globalSearch}
-          onChange={e => setGlobalSearch(e.target.value)}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setGlobalSearch(e.target.value)}
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">

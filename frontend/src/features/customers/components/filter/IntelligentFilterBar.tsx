@@ -483,7 +483,7 @@ export function IntelligentFilterBar({
               fullWidth
               placeholder="Suche nach Firma, Kundennummer, Kontakten..."
               value={searchTerm}
-              onChange={e => handleSearch(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleSearch(e.target.value)}
               autoComplete="off"
               disabled={loading}
               inputProps={{
@@ -558,7 +558,7 @@ export function IntelligentFilterBar({
           <Tooltip
             title={`Sortiert nach: ${columns.find(c => c.id === sortConfig.field)?.label} (${sortConfig.direction === 'asc' ? '↑' : '↓'})`}
           >
-            <IconButton onClick={e => setSortMenuAnchor(e.currentTarget)}>
+            <IconButton onClick={(e: React.MouseEvent<HTMLButtonElement>) => setSortMenuAnchor(e.currentTarget)}>
               <SortIcon />
             </IconButton>
           </Tooltip>
@@ -751,7 +751,7 @@ function FilterDrawer({
                 control={
                   <Checkbox
                     checked={filters.status?.includes(status) || false}
-                    onChange={e => {
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                       const newStatus = e.target.checked
                         ? [...(filters.status || []), status]
                         : filters.status?.filter(s => s !== status) || [];
@@ -775,7 +775,7 @@ function FilterDrawer({
                 control={
                   <Checkbox
                     checked={filters.riskLevel?.includes(level) || false}
-                    onChange={e => {
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                       const newLevels = e.target.checked
                         ? [...(filters.riskLevel || []), level]
                         : filters.riskLevel?.filter(l => l !== level) || [];
@@ -794,7 +794,7 @@ function FilterDrawer({
           <FormLabel>Kontakte</FormLabel>
           <RadioGroup
             value={filters.hasContacts === null ? 'all' : filters.hasContacts ? 'yes' : 'no'}
-            onChange={e => {
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
               const value = e.target.value;
               onFiltersChange({
                 ...filters,

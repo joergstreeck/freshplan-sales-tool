@@ -119,7 +119,7 @@ export const AdaptiveField: React.FC<AdaptiveFieldProps> = ({
           field.fieldType === 'email' ? 'email' : field.fieldType === 'number' ? 'number' : 'text'
         }
         value={value}
-        onChange={e => onChange(e.target.value)}
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) => onChange(e.target.value)}
         onBlur={onBlur}
         placeholder={field.placeholder}
         disabled={disabled}

@@ -62,7 +62,7 @@ export function OriginalCalculator() {
             max="100000"
             step="1000"
             value={orderValue}
-            onChange={e => setOrderValue(Number(e.target.value))}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setOrderValue(Number(e.target.value))}
             style={updateSliderProgress(orderValue, 1000, 100000)}
           />
         </div>
@@ -79,7 +79,7 @@ export function OriginalCalculator() {
             min="0"
             max="60"
             value={leadTime}
-            onChange={e => setLeadTime(Number(e.target.value))}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setLeadTime(Number(e.target.value))}
             style={updateSliderProgress(leadTime, 0, 60)}
           />
         </div>
@@ -87,11 +87,11 @@ export function OriginalCalculator() {
         {/* Checkboxes */}
         <div className="checkbox-group">
           <label className="checkbox-label">
-            <input type="checkbox" checked={pickup} onChange={e => setPickup(e.target.checked)} />
+            <input type="checkbox" checked={pickup} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPickup(e.target.checked)} />
             <span>Abholung (Mindestbestellwert: 5.000€ netto)</span>
           </label>
           <label className="checkbox-label">
-            <input type="checkbox" checked={chain} onChange={e => setChain(e.target.checked)} />
+            <input type="checkbox" checked={chain} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setChain(e.target.checked)} />
             <span>Kettenkunde</span>
           </label>
         </div>

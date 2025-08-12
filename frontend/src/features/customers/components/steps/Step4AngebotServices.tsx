@@ -183,7 +183,7 @@ export const Step4AngebotServices: React.FC = () => {
       {locations.length > 1 && (
         <FormControlLabel
           control={
-            <Checkbox checked={applyToAll} onChange={e => setApplyToAll(e.target.checked)} />
+            <Checkbox checked={applyToAll} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setApplyToAll(e.target.checked)} />
           }
           label="Für alle restlichen Standorte übernehmen"
           sx={{ mb: 2 }}

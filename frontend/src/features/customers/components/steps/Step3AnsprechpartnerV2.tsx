@@ -27,6 +27,7 @@ import {
   FormGroup,
   Chip,
   Autocomplete,
+  SelectChangeEvent,
 } from '@mui/material';
 import { Add as AddIcon, Delete as DeleteIcon, Person as PersonIcon } from '@mui/icons-material';
 import { useCustomerOnboardingStore } from '../../stores/customerOnboardingStore';
@@ -225,7 +226,7 @@ export const Step3AnsprechpartnerV2: React.FC = () => {
                   <InputLabel>Anrede</InputLabel>
                   <Select
                     value={contact.salutation}
-                    onChange={e => handleContactChange(index, 'salutation', e.target.value)}
+                    onChange={(e: SelectChangeEvent) => handleContactChange(index, 'salutation', e.target.value)}
                     label="Anrede"
                   >
                     <MenuItem value="Herr">Herr</MenuItem>
@@ -250,7 +251,7 @@ export const Step3AnsprechpartnerV2: React.FC = () => {
                 <TextField
                   label="Vorname"
                   value={contact.firstName}
-                  onChange={e => handleContactChange(index, 'firstName', e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleContactChange(index, 'firstName', e.target.value)}
                   required
                   size="small"
                   sx={{ flex: 1, minWidth: 150 }}
@@ -259,7 +260,7 @@ export const Step3AnsprechpartnerV2: React.FC = () => {
                 <TextField
                   label="Nachname"
                   value={contact.lastName}
-                  onChange={e => handleContactChange(index, 'lastName', e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleContactChange(index, 'lastName', e.target.value)}
                   required
                   size="small"
                   sx={{ flex: 1, minWidth: 150 }}
@@ -290,7 +291,7 @@ export const Step3AnsprechpartnerV2: React.FC = () => {
                   <InputLabel>Entscheider-Ebene</InputLabel>
                   <Select
                     value={contact.decisionLevel}
-                    onChange={e => handleContactChange(index, 'decisionLevel', e.target.value)}
+                    onChange={(e: SelectChangeEvent) => handleContactChange(index, 'decisionLevel', e.target.value)}
                     label="Entscheider-Ebene"
                   >
                     <MenuItem value="decision_maker">Entscheider</MenuItem>
@@ -307,7 +308,7 @@ export const Step3AnsprechpartnerV2: React.FC = () => {
                   label="E-Mail"
                   type="email"
                   value={contact.email}
-                  onChange={e => handleContactChange(index, 'email', e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleContactChange(index, 'email', e.target.value)}
                   required
                   size="small"
                   sx={{ flex: 1, minWidth: 250 }}
@@ -316,7 +317,7 @@ export const Step3AnsprechpartnerV2: React.FC = () => {
                 <TextField
                   label="Telefon"
                   value={contact.phone}
-                  onChange={e => handleContactChange(index, 'phone', e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleContactChange(index, 'phone', e.target.value)}
                   size="small"
                   sx={{ flex: 1, minWidth: 200 }}
                   placeholder="+49 30 123456"
@@ -325,7 +326,7 @@ export const Step3AnsprechpartnerV2: React.FC = () => {
                 <TextField
                   label="Mobil"
                   value={contact.mobile}
-                  onChange={e => handleContactChange(index, 'mobile', e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleContactChange(index, 'mobile', e.target.value)}
                   size="small"
                   sx={{ flex: 1, minWidth: 200 }}
                   placeholder="+49 170 123456"
@@ -362,7 +363,7 @@ export const Step3AnsprechpartnerV2: React.FC = () => {
                             control={
                               <Checkbox
                                 checked={contact.assignedLocationIds.includes(location.id)}
-                                onChange={e => {
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                                   const newIds = e.target.checked
                                     ? [...contact.assignedLocationIds, location.id]
                                     : contact.assignedLocationIds.filter(id => id !== location.id);

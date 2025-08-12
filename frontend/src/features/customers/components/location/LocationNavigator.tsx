@@ -10,6 +10,7 @@ import {
   Typography,
   IconButton,
   Tooltip,
+  SelectChangeEvent,
 } from '@mui/material';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
@@ -124,7 +125,7 @@ export const LocationNavigator: React.FC<LocationNavigatorProps> = ({
               <InputLabel>Daten kopieren von</InputLabel>
               <Select
                 value={copySourceId}
-                onChange={e => setCopySourceId(e.target.value)}
+                onChange={(e: SelectChangeEvent) => setCopySourceId(e.target.value)}
                 label="Daten kopieren von"
                 size="small"
               >

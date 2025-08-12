@@ -54,7 +54,7 @@ export const EmailField: React.FC<EmailFieldProps> = ({
       name={field.key}
       type="email"
       value={value}
-      onChange={e => onChange(e.target.value)}
+      onChange={(e: React.ChangeEvent<HTMLInputElement>) => onChange(e.target.value)}
       onBlur={onBlur}
       error={error}
       helperText={helperText}
