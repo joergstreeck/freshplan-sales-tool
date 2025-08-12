@@ -294,7 +294,30 @@ export const SearchResultsDropdown: React.FC<SearchResultsDropdownProps> = ({
                           >
                             {getMatchIcon(result.matchedFields)}
                             <span style={{ fontSize: '0.75rem', color: 'rgba(0, 0, 0, 0.6)' }}>
-                              Gefunden in: {result.matchedFields.join(', ')}
+                              Gefunden in: {result.matchedFields.map(field => {
+                                // Übersetze Feldnamen ins Deutsche
+                                const fieldTranslations: Record<string, string> = {
+                                  'companyName': 'Firmenname',
+                                  'tradingName': 'Handelsname',
+                                  'customerNumber': 'Kundennummer',
+                                  'email': 'E-Mail',
+                                  'phone': 'Telefon',
+                                  'mobile': 'Mobil',
+                                  'position': 'Position',
+                                  'department': 'Abteilung',
+                                  'firstName': 'Vorname',
+                                  'lastName': 'Nachname',
+                                  'status': 'Status',
+                                  'location': 'Standort',
+                                  'tags': 'Schlagwörter',
+                                  'notes': 'Notizen',
+                                  'address': 'Adresse',
+                                  'city': 'Stadt',
+                                  'postalCode': 'PLZ',
+                                  'country': 'Land',
+                                };
+                                return fieldTranslations[field] || field;
+                              }).join(', ')}
                             </span>
                           </span>
                         )}
