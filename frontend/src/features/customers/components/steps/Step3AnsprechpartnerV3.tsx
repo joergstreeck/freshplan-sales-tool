@@ -12,6 +12,7 @@ import { Box, Typography, Autocomplete, TextField } from '@mui/material';
 import { useCustomerOnboardingStore } from '../../stores/customerOnboardingStore';
 import { useFieldDefinitions } from '../../hooks/useFieldDefinitions';
 import { DynamicFieldRenderer } from '../fields/DynamicFieldRenderer';
+import { isFieldDefinition } from '../../types/field.types';
 
 // Vordefinierte Titel-Optionen (nur Dr. und Prof.)
 const TITLE_OPTIONS = ['Dr.', 'Prof.'];

@@ -10,6 +10,7 @@ import React, { useCallback, useMemo } from 'react';
 import { Box, Typography, Divider, Card, CardContent, Grid, Chip } from '@mui/material';
 import { useCustomerOnboardingStore } from '../../stores/customerOnboardingStore';
 import { useFieldDefinitions } from '../../hooks/useFieldDefinitions';
+import { isFieldDefinition } from '../../types/field.types';
 
 // Import neue Komponenten
 import { LocationSelector } from '../location/LocationSelector';

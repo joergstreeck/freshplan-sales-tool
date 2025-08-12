@@ -13,6 +13,7 @@ import { useCustomerOnboardingStore } from '../../stores/customerOnboardingStore
 import { useFieldDefinitions } from '../../hooks/useFieldDefinitions';
 import { DynamicFieldRenderer } from '../fields/DynamicFieldRenderer';
 import type { FieldDefinition } from '../../types/field.types';
+import { isFieldDefinition } from '../../types/field.types';
 
 export const Step3AnsprechpartnerV4: React.FC = () => {
   const { customerData, validationErrors, setCustomerField, validateField } =

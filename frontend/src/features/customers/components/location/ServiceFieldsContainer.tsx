@@ -5,6 +5,7 @@ import { DynamicFieldRenderer } from '../fields/DynamicFieldRenderer';
 import type { CustomerLocation } from '../../types/customer.types';
 import type { LocationServiceData } from '../../stores/locationServicesStore';
 import type { FieldDefinition } from '../../types/field.types';
+import { isFieldDefinition } from '../../types/field.types';
 import { useFieldDefinitions } from '../../hooks/useFieldDefinitions';
 
 interface ServiceFieldGroup {

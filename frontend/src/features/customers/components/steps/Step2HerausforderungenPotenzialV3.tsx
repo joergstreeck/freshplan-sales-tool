@@ -16,6 +16,7 @@ import { useFieldDefinitions } from '../../hooks/useFieldDefinitions';
 import { GlobalChallengesSection } from '../sections/GlobalChallengesSection';
 import { RevenueExpectationSectionV2 } from '../sections/RevenueExpectationSectionV2';
 import { AdditionalBusinessSection } from '../sections/AdditionalBusinessSection';
+import { isFieldDefinition } from '../../types/field.types';
 
 
 // Pain Point Solutions Mapping (unverändert)
