@@ -148,7 +148,7 @@ export const CustomerOnboardingWizard: React.FC<CustomerOnboardingWizardProps> =
           state: { message: 'Kunde erfolgreich angelegt!' },
         });
       }
-    } catch (err) {
+    } catch (_err) { void _err;
       setError('Fehler beim Speichern des Kunden. Bitte versuchen Sie es erneut.');
     } finally {
       setFinalizing(false);

@@ -46,7 +46,7 @@ export function IntegrationTestPage() {
           duration,
         },
       }));
-    } catch (error) {
+    } catch (_error) { void _error;
       setResults(prev => ({
         ...prev,
         [testName]: {

@@ -47,7 +47,7 @@ async function enableMocking() {
       console.log('Backend available: Using real API');
       return;
     }
-  } catch (error) {
+  } catch (_error) { void _error;
     // Backend not available, starting MSW mock server
     console.log('Backend not available, starting MSW:', error);
   }

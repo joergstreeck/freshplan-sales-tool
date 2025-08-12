@@ -85,7 +85,7 @@ export function useLazyData<T>(
       if (!abortControllerRef.current?.signal.aborted) {
         setData(result);
       }
-    } catch (err) {
+    } catch (_err) { void _err;
       // Ignore abort errors
       if (err instanceof Error && err.name === 'AbortError') {
         return;
@@ -181,7 +181,7 @@ export function useLazyInfiniteData<T>(
 
       setData(prev => [...prev, ...newData]);
       setPage(prev => prev + 1);
-    } catch (err) {
+    } catch (_err) { void _err;
       setError(err instanceof Error ? err : new Error('Failed to load more data'));
     } finally {
       setLoading(false);

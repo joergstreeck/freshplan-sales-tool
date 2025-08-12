@@ -60,7 +60,7 @@ class ApiClient {
         status: response.status,
         statusText: response.statusText,
       };
-    } catch (error) {
+    } catch (_error) { void _error;
       // Handle backend connection errors with helpful debug info
       if (error instanceof TypeError && error.message.includes('fetch')) {
         const connectionError: ApiError = {

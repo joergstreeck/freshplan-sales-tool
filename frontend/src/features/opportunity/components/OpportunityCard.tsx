@@ -93,7 +93,7 @@ export const OpportunityCard: React.FC<OpportunityCardProps> = React.memo(
           month: '2-digit',
           year: '2-digit',
         });
-      } catch (error) {
+      } catch (_error) { void _error;
         componentLogger.warn('Invalid date format', { dateString, error });
         return '-';
       }
@@ -112,7 +112,7 @@ export const OpportunityCard: React.FC<OpportunityCardProps> = React.memo(
           minimumFractionDigits: 0,
           maximumFractionDigits: 0,
         }).format(value);
-      } catch (error) {
+      } catch (_error) { void _error;
         componentLogger.warn('Error formatting value', { value, error });
         return `${value} €`;
       }
@@ -150,7 +150,7 @@ export const OpportunityCard: React.FC<OpportunityCardProps> = React.memo(
             try {
               componentLogger.debug('Card clicked', { opportunityId: opportunity.id });
               onClick(opportunity);
-            } catch (error) {
+            } catch (_error) { void _error;
               componentLogger.error('Error in onClick handler', { error });
               errorHandler(error as Error);
             }

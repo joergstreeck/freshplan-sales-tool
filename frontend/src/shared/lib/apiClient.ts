@@ -60,7 +60,7 @@ class ApiClient {
         status: response.status,
         statusText: response.statusText,
       };
-    } catch (error) {
+    } catch (_error) { void _error;
       if (error instanceof Error && 'code' in error) {
         throw error; // Re-throw our custom ApiError
       }

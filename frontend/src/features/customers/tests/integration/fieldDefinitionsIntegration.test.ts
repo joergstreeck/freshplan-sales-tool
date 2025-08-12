@@ -246,7 +246,7 @@ describe('FC-005 Field Definitions Integration Tests', () => {
 
         // Should handle the latency
         expect(responseTime).toBeGreaterThan(900); // At least close to 1000ms
-      } catch (error) {
+      } catch (_error) { void _error;
         // If timeout occurs, it should be handled gracefully
         expect(error).toBeInstanceOf(Error);
       }
@@ -265,7 +265,7 @@ describe('FC-005 Field Definitions Integration Tests', () => {
         await fetchFieldDefinitions('customer');
         // Should not reach here
         expect(true).toBe(false);
-      } catch (error) {
+      } catch (_error) { void _error;
         expect(error).toBeInstanceOf(Error);
       }
     });
@@ -281,7 +281,7 @@ describe('FC-005 Field Definitions Integration Tests', () => {
         await fetchFieldDefinitions('customer');
         // Should not reach here
         expect(true).toBe(false);
-      } catch (error) {
+      } catch (_error) { void _error;
         expect(error).toBeInstanceOf(Error);
       }
     });

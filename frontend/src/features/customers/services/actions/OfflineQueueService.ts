@@ -85,7 +85,7 @@ class OfflineQueueService {
         // Remove from queue on success
         this.removeFromQueue(item.id);
         this.notifySuccess(item);
-      } catch (error) {
+      } catch (_error) { void _error;
         item.retryCount++;
 
         if (item.retryCount >= item.maxRetries) {
@@ -117,7 +117,7 @@ class OfflineQueueService {
         ...item,
         timestamp: new Date(item.timestamp),
       }));
-    } catch (error) {
+    } catch (_error) { void _error;
       return [];
     }
   }

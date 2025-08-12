@@ -56,7 +56,7 @@ export const UserForm = ({ user, onSuccess, onCancel }: UserFormProps) => {
         await createUser.mutateAsync(data as CreateUserData);
       }
       onSuccess?.();
-    } catch (error) {
+    } catch (_error) { void _error;
       // Error handling is done in the mutation hooks
     }
   };

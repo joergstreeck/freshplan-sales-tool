@@ -199,7 +199,7 @@ export const useUniversalSearch = (
 
         setSearchResults(transformedResults);
         setError(null);
-      } catch (err) {
+      } catch (_err) { void _err;
         // Ignore aborted requests
         if (err instanceof Error && err.name === 'AbortError') {
           return;
@@ -318,7 +318,7 @@ export const useQuickSearch = (
         const data = (await response.json()) as SearchResults;
         setSearchResults(data);
         setError(null);
-      } catch (err) {
+      } catch (_err) { void _err;
         if (err instanceof Error && err.name === 'AbortError') return;
 
         setError('Fehler bei der Schnellsuche');

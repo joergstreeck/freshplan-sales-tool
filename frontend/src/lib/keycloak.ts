@@ -67,7 +67,7 @@ export const initKeycloak = async (): Promise<boolean> => {
                 })
               );
             }
-          } catch (error) {
+          } catch (_error) { void _error;
             // Dispatch error event before redirect
             window.dispatchEvent(
               new CustomEvent('auth-error', {
@@ -111,7 +111,7 @@ export const initKeycloak = async (): Promise<boolean> => {
       }
 
       return authenticated;
-    } catch (error) {
+    } catch (_error) { void _error;
       isInitialized = false;
       initializationPromise = null;
       // Dispatch error event for global handling
@@ -174,7 +174,7 @@ export const authUtils = {
         await keycloak.updateToken(30);
       }
       return keycloak.token;
-    } catch (error) {
+    } catch (_error) { void _error;
       return null;
     }
   },
@@ -218,7 +218,7 @@ export const authUtils = {
         );
       }
       return refreshed;
-    } catch (error) {
+    } catch (_error) { void _error;
       return false;
     }
   },

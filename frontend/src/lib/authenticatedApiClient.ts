@@ -31,7 +31,7 @@ apiClient.interceptors.request.use(
           if (newToken) {
             config.headers.Authorization = `Bearer ${newToken}`;
           }
-        } catch (error) {
+        } catch (_error) { void _error;
           // Let the request continue, will be caught by 401 handler
         }
       } else {
