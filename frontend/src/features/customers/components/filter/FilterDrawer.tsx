@@ -105,32 +105,66 @@ export function FilterDrawer({
           </FormGroup>
         </FormControl>
 
-        {/* Risk Level Filter mit Erklärung */}
+        {/* Risk Level Filter mit kompakter Anzeige */}
         <FormControl fullWidth>
-          <FormLabel>
-            Risiko-Level
-            <Typography variant="caption" color="textSecondary" display="block" sx={{ mt: 0.5, fontWeight: 'normal' }}>
-              Niedrig: 0-29 | Mittel: 30-59 | Hoch: 60-79 | Kritisch: 80-100
-            </Typography>
-          </FormLabel>
+          <FormLabel>Risiko-Level</FormLabel>
           <FormGroup>
-            {Object.values(RiskLevel).map(level => (
-              <FormControlLabel
-                key={level}
-                control={
-                  <Checkbox
-                    checked={filters.riskLevel?.includes(level) || false}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                      const newLevels = e.target.checked
-                        ? [...(filters.riskLevel || []), level]
-                        : filters.riskLevel?.filter(l => l !== level) || [];
-                      onFiltersChange({ ...filters, riskLevel: newLevels });
-                    }}
-                  />
-                }
-                label={RISK_LABELS[level] || level}
-              />
-            ))}
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={filters.riskLevel?.includes(RiskLevel.LOW) || false}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                    const newLevels = e.target.checked
+                      ? [...(filters.riskLevel || []), RiskLevel.LOW]
+                      : filters.riskLevel?.filter(l => l !== RiskLevel.LOW) || [];
+                    onFiltersChange({ ...filters, riskLevel: newLevels });
+                  }}
+                />
+              }
+              label="Niedrig (0-29)"
+            />
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={filters.riskLevel?.includes(RiskLevel.MEDIUM) || false}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                    const newLevels = e.target.checked
+                      ? [...(filters.riskLevel || []), RiskLevel.MEDIUM]
+                      : filters.riskLevel?.filter(l => l !== RiskLevel.MEDIUM) || [];
+                    onFiltersChange({ ...filters, riskLevel: newLevels });
+                  }}
+                />
+              }
+              label="Mittel (30-59)"
+            />
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={filters.riskLevel?.includes(RiskLevel.HIGH) || false}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                    const newLevels = e.target.checked
+                      ? [...(filters.riskLevel || []), RiskLevel.HIGH]
+                      : filters.riskLevel?.filter(l => l !== RiskLevel.HIGH) || [];
+                    onFiltersChange({ ...filters, riskLevel: newLevels });
+                  }}
+                />
+              }
+              label="Hoch (60-79)"
+            />
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={filters.riskLevel?.includes(RiskLevel.CRITICAL) || false}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                    const newLevels = e.target.checked
+                      ? [...(filters.riskLevel || []), RiskLevel.CRITICAL]
+                      : filters.riskLevel?.filter(l => l !== RiskLevel.CRITICAL) || [];
+                    onFiltersChange({ ...filters, riskLevel: newLevels });
+                  }}
+                />
+              }
+              label="Kritisch (80-100)"
+            />
           </FormGroup>
         </FormControl>
 
@@ -151,6 +185,46 @@ export function FilterDrawer({
             <FormControlLabel value="yes" control={<Radio />} label="Mit Kontakten" />
             <FormControlLabel value="no" control={<Radio />} label="Ohne Kontakte" />
           </RadioGroup>
+        </FormControl>
+
+        {/* Revenue Range Slider */}
+        <FormControl fullWidth>
+          <FormLabel>
+            Erwarteter Jahresumsatz
+            {filters.revenueRange?.min || filters.revenueRange?.max ? (
+              <Typography variant="caption" color="primary" sx={{ ml: 1 }}>
+                {filters.revenueRange?.min ? `${(filters.revenueRange.min / 1000).toFixed(0)}k` : '0'} - 
+                {filters.revenueRange?.max ? ` ${(filters.revenueRange.max / 1000).toFixed(0)}k` : ' Max'} €
+              </Typography>
+            ) : null}
+          </FormLabel>
+          <Slider
+            value={[
+              filters.revenueRange?.min || 0,
+              filters.revenueRange?.max || 500000
+            ]}
+            onChange={(_, value) => {
+              const [min, max] = value as number[];
+              onFiltersChange({ 
+                ...filters, 
+                revenueRange: { 
+                  min: min === 0 ? null : min, 
+                  max: max === 500000 ? null : max 
+                }
+              });
+            }}
+            min={0}
+            max={500000}
+            step={10000}
+            marks={[
+              { value: 0, label: '0' },
+              { value: 100000, label: '100k' },
+              { value: 250000, label: '250k' },
+              { value: 500000, label: '500k+' },
+            ]}
+            valueLabelDisplay="auto"
+            valueLabelFormat={(value) => `${(value / 1000).toFixed(0)}k €`}
+          />
         </FormControl>
 
         {/* Last Contact Days */}
