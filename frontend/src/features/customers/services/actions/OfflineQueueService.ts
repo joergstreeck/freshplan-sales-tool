@@ -61,7 +61,7 @@ class OfflineQueueService {
     if ('serviceWorker' in navigator && 'sync' in self.registration) {
       try {
         await (self.registration as unknown).sync.register('sync-contact-actions');
-      } catch (error) {}
+      } catch (_error) {}
     }
   }
 
@@ -142,7 +142,7 @@ class OfflineQueueService {
   private saveQueue(queue: QueuedAction[]): void {
     try {
       localStorage.setItem(this.STORAGE_KEY, JSON.stringify(queue));
-    } catch (error) {}
+    } catch (_error) {}
   }
 
   /**
