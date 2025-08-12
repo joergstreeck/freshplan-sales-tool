@@ -25,6 +25,7 @@ export interface CustomerResponse {
   atRisk: boolean;
   lastContactDate?: string;
   nextFollowUpDate?: string;
+  contactsCount?: number;
   createdAt: string;
   createdBy: string;
   updatedAt?: string;

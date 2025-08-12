@@ -75,33 +75,44 @@ export function FilterDrawer({
 
         <Divider />
 
-        {/* Status Filter */}
+        {/* Status Filter - ohne LEAD, PROSPECT und RISIKO */}
         <FormControl fullWidth>
           <FormLabel>Status</FormLabel>
           <FormGroup>
-            {Object.values(CustomerStatus).map(status => (
-              <FormControlLabel
-                key={status}
-                control={
-                  <Checkbox
-                    checked={filters.status?.includes(status) || false}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                      const newStatus = e.target.checked
-                        ? [...(filters.status || []), status]
-                        : filters.status?.filter(s => s !== status) || [];
-                      onFiltersChange({ ...filters, status: newStatus });
-                    }}
-                  />
-                }
-                label={STATUS_LABELS[status] || status}
-              />
-            ))}
+            {Object.values(CustomerStatus)
+              .filter(status => 
+                status !== CustomerStatus.LEAD && 
+                status !== CustomerStatus.PROSPECT && 
+                status !== CustomerStatus.RISIKO
+              )
+              .map(status => (
+                <FormControlLabel
+                  key={status}
+                  control={
+                    <Checkbox
+                      checked={filters.status?.includes(status) || false}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                        const newStatus = e.target.checked
+                          ? [...(filters.status || []), status]
+                          : filters.status?.filter(s => s !== status) || [];
+                        onFiltersChange({ ...filters, status: newStatus });
+                      }}
+                    />
+                  }
+                  label={STATUS_LABELS[status] || status}
+                />
+              ))}
           </FormGroup>
         </FormControl>
 
-        {/* Risk Level Filter */}
+        {/* Risk Level Filter mit Erklärung */}
         <FormControl fullWidth>
-          <FormLabel>Risiko-Level</FormLabel>
+          <FormLabel>
+            Risiko-Level
+            <Typography variant="caption" color="textSecondary" display="block" sx={{ mt: 0.5, fontWeight: 'normal' }}>
+              Niedrig: 0-29 | Mittel: 30-59 | Hoch: 60-79 | Kritisch: 80-100
+            </Typography>
+          </FormLabel>
           <FormGroup>
             {Object.values(RiskLevel).map(level => (
               <FormControlLabel

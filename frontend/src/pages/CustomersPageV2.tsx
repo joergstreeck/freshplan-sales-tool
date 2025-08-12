@@ -113,11 +113,17 @@ export function CustomersPageV2({ openWizard = false }: CustomersPageV2Props) {
     // Apply risk level filter
     if (filterConfig.riskLevel && filterConfig.riskLevel.length > 0) {
       filtered = filtered.filter(customer => {
-        // Use riskScore if available, otherwise calculate from lastContactDate
+        // Use riskScore if available
         if (customer.riskScore !== null && customer.riskScore !== undefined) {
-          // Use riskScore: HIGH >= 60, MEDIUM 30-59, LOW < 30
+          // Definierte Risiko-Level-Bereiche:
+          // CRITICAL: 80-100
+          // HIGH: 60-79
+          // MEDIUM: 30-59
+          // LOW: 0-29
           let riskLevel = 'LOW';
-          if (customer.riskScore >= 60) {
+          if (customer.riskScore >= 80) {
+            riskLevel = 'CRITICAL';
+          } else if (customer.riskScore >= 60) {
             riskLevel = 'HIGH';
           } else if (customer.riskScore >= 30) {
             riskLevel = 'MEDIUM';
@@ -125,19 +131,16 @@ export function CustomersPageV2({ openWizard = false }: CustomersPageV2Props) {
           return filterConfig.riskLevel?.includes(riskLevel);
         }
         
-        // Fallback to lastContactDate only if it exists
-        if (customer.lastContactDate) {
-          const daysSinceContact = Math.floor(
-            (Date.now() - new Date(customer.lastContactDate).getTime()) / (1000 * 60 * 60 * 24)
-          );
-          let riskLevel = 'LOW';
-          if (daysSinceContact > 90) riskLevel = 'HIGH';
-          else if (daysSinceContact > 30) riskLevel = 'MEDIUM';
-          return filterConfig.riskLevel?.includes(riskLevel);
-        }
-        
-        // No riskScore and no lastContactDate = exclude from risk filter
+        // No riskScore = exclude from risk filter (we don't calculate from lastContactDate anymore)
         return false;
+      });
+    }
+
+    // Apply hasContacts filter (für "Mit/Ohne Kontakte")
+    if (filterConfig.hasContacts !== null && filterConfig.hasContacts !== undefined) {
+      filtered = filtered.filter(customer => {
+        const hasContacts = (customer.contactsCount || 0) > 0;
+        return filterConfig.hasContacts === hasContacts;
       });
     }
 

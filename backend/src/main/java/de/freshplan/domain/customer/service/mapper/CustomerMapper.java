@@ -86,6 +86,10 @@ public class CustomerMapper {
         // Business Model - NEW for Sprint 2
         customer.getPrimaryFinancing(),
         customer.getPainPoints(),
+        
+        // Contact Information
+        customer.getActiveContacts() != null ? customer.getActiveContacts().size() : 0,
+        
         customer.getCreatedAt(),
         customer.getCreatedBy(),
         customer.getUpdatedAt(),
@@ -141,6 +145,10 @@ public class CustomerMapper {
         null, // expansionPlanned
         null, // primaryFinancing
         List.of(), // painPoints
+        
+        // Contact Information - NEEDED FOR FILTERS
+        customer.getActiveContacts() != null ? customer.getActiveContacts().size() : 0,
+        
         customer.getCreatedAt(),
         null, // createdBy
         null, // updatedAt
