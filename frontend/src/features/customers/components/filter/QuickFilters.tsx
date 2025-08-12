@@ -14,7 +14,6 @@ import {
   Warning as RiskIcon,
   Schedule as RecentIcon,
   TrendingUp as RevenueIcon,
-  Add as AddIcon,
 } from '@mui/icons-material';
 import { useTheme } from '@mui/material/styles';
 
@@ -55,12 +54,6 @@ export const QUICK_FILTERS: QuickFilter[] = [
     label: 'Top-Kunden',
     icon: <RevenueIcon fontSize="small" />,
     filter: { revenueRange: { min: 100000, max: null } },
-  },
-  {
-    id: 'new',
-    label: 'Neue Kunden',
-    icon: <AddIcon fontSize="small" />,
-    filter: { createdDays: 30 },
   },
 ];
 
