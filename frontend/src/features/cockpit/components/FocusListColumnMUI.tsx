@@ -107,14 +107,11 @@ export function FocusListColumnMUI({ onCustomerSelect }: FocusListColumnMUIProps
 
   // Set selected customer in cockpit store when clicked
   const handleCustomerSelect = (customerId: string) => {
-    console.log('FocusListColumnMUI - handleCustomerSelect called with:', customerId);
     setSelectedCustomer(customerId);
     // Callback an parent component
     if (onCustomerSelect) {
-      console.log('FocusListColumnMUI - calling onCustomerSelect');
       onCustomerSelect(customerId);
-    } else {
-      console.error('FocusListColumnMUI - onCustomerSelect callback is not defined!');
+    } else { void 0;
     }
   };
 

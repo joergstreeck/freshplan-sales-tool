@@ -63,7 +63,7 @@ describe.skip('FC-005 Store + API Integration Tests', () => {
         try {
           await result.current.saveAsDraft();
           saveSuccessful = true;
-        } catch (error) {
+        } catch (_error) { void _error;
           console.error('Save draft failed:', error);
         }
       });
@@ -91,7 +91,7 @@ describe.skip('FC-005 Store + API Integration Tests', () => {
       await act(async () => {
         try {
           await result.current.saveAsDraft();
-        } catch (error) {
+        } catch (_error) { void _error;
           errorThrown = true;
           expect(error).toBeDefined();
         }
@@ -191,7 +191,7 @@ describe.skip('FC-005 Store + API Integration Tests', () => {
       try {
         const response = await fetch('/api/customers/draft/not-found');
         errorResult = await response.json();
-      } catch (error) {
+      } catch (_error) { void _error;
         expect(error).toBeDefined();
       }
 
@@ -340,7 +340,7 @@ describe.skip('FC-005 Store + API Integration Tests', () => {
         try {
           await result.current.saveAsDraft();
           saveSuccessful = true;
-        } catch (error) {
+        } catch (_error) { void _error;
           console.error('Concurrent save failed:', error);
         }
       });
@@ -387,7 +387,7 @@ describe.skip('FC-005 Store + API Integration Tests', () => {
         try {
           await result.current.saveAsDraft();
           secondAttemptSuccessful = true;
-        } catch (error) {
+        } catch (_error) { void _error;
           console.error('Second attempt failed:', error);
         }
       });

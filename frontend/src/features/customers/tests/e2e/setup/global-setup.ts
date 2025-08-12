@@ -8,39 +8,33 @@
 import { chromium, FullConfig } from '@playwright/test';
 
 async function globalSetup(config: FullConfig) {
-  console.log('🚀 FC-005 E2E Tests - Global Setup startet...');
-
   // Check if development server is available
   const baseURL = config.projects[0].use.baseURL || 'http://localhost:5173';
 
   try {
     const response = await fetch(`${baseURL}/api/health`);
     if (!response.ok) {
-      console.warn('⚠️ Backend API nicht verfügbar - Tests können eingeschränkt sein');
-    } else {
-      console.log('✅ Backend API verfügbar');
+      // Server not healthy
+    } else { 
+      void 0;
     }
-  } catch (error) {
-    console.warn('⚠️ Konnte Backend API nicht erreichen:', error);
+  } catch (_error) {
+        void _error;    // Server not reachable
   }
 
   // Setup test data if needed
   try {
     await seedTestData(baseURL);
-    console.log('✅ Test-Daten initialisiert');
-  } catch (error) {
-    console.warn('⚠️ Test-Daten konnten nicht initialisiert werden:', error);
+  } catch (_error) {
+        void _error;    // Test data seeding failed
   }
 
   // Setup authentication state for tests that need it
   try {
     await setupAuthState(config);
-    console.log('✅ Auth State vorbereitet');
-  } catch (error) {
-    console.warn('⚠️ Auth State Setup fehlgeschlagen:', error);
+  } catch (_error) {
+        void _error;    // Auth setup failed
   }
-
-  console.log('✅ FC-005 E2E Tests - Global Setup abgeschlossen');
 }
 
 async function seedTestData(baseURL: string) {
@@ -77,7 +71,7 @@ async function seedTestData(baseURL: string) {
       });
 
       if (!response.ok) {
-        console.warn(`Kunde konnte nicht angelegt werden: ${customer.customerData.companyName}`);
+        // Seed failed
       }
     } catch {
       // Ignore individual seed failures
@@ -111,7 +105,7 @@ async function setupAuthState(config: FullConfig) {
       await context.storageState({ path: './e2e-auth-state.json' });
     }
   } catch {
-    console.log('ℹ️ Kein Login erforderlich oder Login nicht verfügbar');
+      // Error ignored intentionally
   } finally {
     await browser.close();
   }

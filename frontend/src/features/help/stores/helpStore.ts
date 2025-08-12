@@ -91,7 +91,7 @@ export const useHelpStore = create<HelpState>()(
           });
           state.loading = false;
         });
-      } catch (error) {
+      } catch (_error) { void _error;
         set(state => {
           state.error = error instanceof Error ? error.message : 'Failed to load help content';
           state.loading = false;
@@ -104,8 +104,7 @@ export const useHelpStore = create<HelpState>()(
       try {
         const results = await helpApi.searchHelp(query);
         return results;
-      } catch (error) {
-        console.error('Help search failed:', error);
+      } catch (_error) { void _error;
         return [];
       }
     },
@@ -130,9 +129,7 @@ export const useHelpStore = create<HelpState>()(
             }
           }
         });
-      } catch (error) {
-        console.error('Failed to submit feedback:', error);
-      }
+      } catch (_error) { void _error;}
     },
 
     // Track view
@@ -147,9 +144,7 @@ export const useHelpStore = create<HelpState>()(
             content.viewCount++;
           }
         });
-      } catch (error) {
-        console.error('Failed to track view:', error);
-      }
+      } catch (_error) { void _error;}
     },
 
     // Load analytics
@@ -159,9 +154,7 @@ export const useHelpStore = create<HelpState>()(
         set(state => {
           state.analytics = analytics;
         });
-      } catch (error) {
-        console.error('Failed to load analytics:', error);
-      }
+      } catch (_error) { void _error;}
     },
 
     // UI Actions
@@ -272,9 +265,7 @@ export const useHelpStore = create<HelpState>()(
           type: struggle.type,
           context: struggle.context,
         });
-      } catch (error) {
-        console.error('Failed to report struggle:', error);
-      }
+      } catch (_error) { void _error;}
     },
 
     clearStruggles: () => {

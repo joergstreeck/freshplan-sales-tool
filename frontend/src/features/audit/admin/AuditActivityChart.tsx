@@ -36,9 +36,8 @@ export const AuditActivityChart: React.FC<AuditActivityChartProps> = ({
       try {
         const chartData = await auditApi.getActivityChartData(days, viewMode);
         setData(chartData);
-      } catch (err) {
+      } catch (_err) { void _err;
         setError('Fehler beim Laden der Aktivitätsdaten');
-        console.error('Failed to fetch activity data:', err);
       } finally {
         setLoading(false);
       }

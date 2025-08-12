@@ -43,9 +43,7 @@ export function CustomerListHeader({ totalCount, onAddCustomer }: CustomerListHe
         <UniversalExportButton
           entity="customers"
           buttonLabel="Exportieren"
-          onExportComplete={format => {
-            console.log(`Customers exported as ${format}`);
-          }}
+          onExportComplete={_format => {}}
         />
 
         <Button

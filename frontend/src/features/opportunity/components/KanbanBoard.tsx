@@ -413,9 +413,10 @@ export const KanbanBoard: React.FC = React.memo(() => {
       if (navigator.vibrate) {
         navigator.vibrate(50);
       }
-    } catch (error) {
-      componentLogger.error('Error in handleDragStart', { error });
-      errorHandler(error as Error);
+    } catch (_error) { 
+      void _error;
+      componentLogger.error('Error in handleDragStart', { error: _error });
+      errorHandler(_error as Error);
     }
   }, [errorHandler]);
 
@@ -494,9 +495,10 @@ export const KanbanBoard: React.FC = React.memo(() => {
             },
           }
         );
-      } catch (error) {
-        componentLogger.error('Error in handleDragEnd', { error });
-        errorHandler(error as Error);
+      } catch (_error) { 
+        void _error;
+        componentLogger.error('Error in handleDragEnd', { error: _error });
+        errorHandler(_error as Error);
       } finally {
         timer();
       }

@@ -4,6 +4,8 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { CssBaseline } from '@mui/material';
+import { AuthProvider } from '../contexts/AuthContext';
+import { KeycloakProvider } from '../contexts/KeycloakContext';
 
 // Create a default theme for tests
 const testTheme = createTheme({
@@ -45,7 +47,11 @@ const AllTheProviders: React.FC<AllTheProvidersProps> = ({ children }) => {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider theme={testTheme}>
         <CssBaseline />
-        <BrowserRouter>{children}</BrowserRouter>
+        <BrowserRouter>
+          <KeycloakProvider>
+            <AuthProvider>{children}</AuthProvider>
+          </KeycloakProvider>
+        </BrowserRouter>
       </ThemeProvider>
     </QueryClientProvider>
   );

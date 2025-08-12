@@ -61,7 +61,6 @@ export const evaluateFieldCondition = (
       return fieldValue === undefined || fieldValue === null || fieldValue === '';
 
     default:
-      console.warn(`Unknown condition operator: ${condition.operator}`);
       return true;
   }
 };

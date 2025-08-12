@@ -107,7 +107,6 @@ export const FormWithStruggleDetection: React.FC = () => {
       // Report struggle after 3 failed attempts
       if (errors >= 2) {
         // This will trigger ProactiveHelp
-        console.log('User struggling with form');
       }
     }
   };

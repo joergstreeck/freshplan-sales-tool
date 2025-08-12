@@ -60,41 +60,26 @@ class ApiClient {
         status: response.status,
         statusText: response.statusText,
       };
-    } catch (error) {
+    } catch (_error) {
       // Handle backend connection errors with helpful debug info
-      if (error instanceof TypeError && error.message.includes('fetch')) {
-        console.group('🚨 BACKEND CONNECTION FAILED');
-        console.error('Failed to connect to backend:', url);
-        console.log('');
-        console.log('CLAUDE: Backend is probably down. Run these commands:');
-        console.log(
-          '1. export JAVA_HOME=/Library/Java/JavaVirtualMachines/temurin-17.jdk/Contents/Home'
-        );
-        console.log('2. cd backend && nohup mvn quarkus:dev > ../logs/backend.log 2>&1 &');
-        console.log('3. Wait 30 seconds, then refresh frontend');
-        console.log('');
-        console.log('OR use: ./scripts/backend-manager.sh start');
-        console.log('');
-        console.log('Problem: Backend timeout/startup issue (Java 17 required)');
-        console.groupEnd();
-
+      if (_error instanceof TypeError && _error.message.includes('fetch')) {
         const connectionError: ApiError = {
           code: 'CONNECTION_FAILED',
-          message: 'Backend not reachable - check console for fix commands',
-          details: { url, originalError: error.message },
+          message: 'Backend not reachable - please check if backend is running',
+          details: { url, originalError: _error.message },
         };
         throw connectionError;
       }
 
-      if (error instanceof Error && 'code' in error) {
-        throw error; // Re-throw our custom ApiError
+      if (_error instanceof Error && 'code' in _error) {
+        throw _error; // Re-throw our custom ApiError
       }
 
       // Handle network errors
       const apiError: ApiError = {
         code: 'NETWORK_ERROR',
-        message: error instanceof Error ? error.message : 'Network request failed',
-        details: { originalError: error },
+        message: _error instanceof Error ? _error.message : 'Network request failed',
+        details: { originalError: _error },
       };
       throw apiError;
     }

@@ -69,8 +69,8 @@ export const useCreateUser = () => {
       // Optionally add the new user to the cache
       queryClient.setQueryData(userKeys.detail(newUser.id), newUser);
     },
-    onError: error => {
-      console.error('Failed to create user:', error);
+    onError: _error => {
+      // Error handled by mutation
     },
   });
 };
@@ -94,8 +94,8 @@ export const useUpdateUser = () => {
       // Invalidate users list to show updated data
       queryClient.invalidateQueries({ queryKey: userKeys.lists() });
     },
-    onError: error => {
-      console.error('Failed to update user:', error);
+    onError: _error => {
+      // Error handled by mutation
     },
   });
 };
@@ -116,8 +116,8 @@ export const useDeleteUser = () => {
       // Invalidate users list to refetch without deleted user
       queryClient.invalidateQueries({ queryKey: userKeys.lists() });
     },
-    onError: error => {
-      console.error('Failed to delete user:', error);
+    onError: _error => {
+      // Error handled by mutation
     },
   });
 };
@@ -138,8 +138,8 @@ export const useToggleUserStatus = () => {
       queryClient.invalidateQueries({ queryKey: userKeys.detail(id) });
       queryClient.invalidateQueries({ queryKey: userKeys.lists() });
     },
-    onError: error => {
-      console.error('Failed to toggle user status:', error);
+    onError: _error => {
+      // Error handled by mutation
     },
   });
 };

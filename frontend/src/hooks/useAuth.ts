@@ -52,8 +52,12 @@ export function useAuth() {
   return {
     isAuthenticated: false,
     isLoading: false,
-    login: () => console.warn('No auth provider available'),
-    logout: () => console.warn('No auth provider available'),
+    login: () => {
+      // No auth provider available - handled silently
+    },
+    logout: () => {
+      // No auth provider available - handled silently
+    },
     token: undefined,
     userId: undefined,
     username: undefined,

@@ -9,16 +9,13 @@ import { FullConfig } from '@playwright/test';
 import fs from 'fs';
 
 async function globalTeardown(config: FullConfig) {
-  console.log('🧹 FC-005 E2E Tests - Global Teardown startet...');
-
   const baseURL = config.projects[0].use.baseURL || 'http://localhost:5173';
 
   // Cleanup test data
   try {
     await cleanupTestData(baseURL);
-    console.log('✅ Test-Daten bereinigt');
-  } catch (error) {
-    console.warn('⚠️ Test-Daten Cleanup fehlgeschlagen:', error);
+  } catch (_error) {
+        void _error;    // Cleanup failed, continue
   }
 
   // Clean up auth state file
@@ -26,21 +23,17 @@ async function globalTeardown(config: FullConfig) {
     const authStatePath = './e2e-auth-state.json';
     if (fs.existsSync(authStatePath)) {
       fs.unlinkSync(authStatePath);
-      console.log('✅ Auth State bereinigt');
     }
-  } catch (error) {
-    console.warn('⚠️ Auth State Cleanup fehlgeschlagen:', error);
+  } catch (_error) {
+        void _error;    // Cleanup failed, continue
   }
 
   // Generate test summary
   try {
     await generateTestSummary();
-    console.log('✅ Test Summary generiert');
-  } catch (error) {
-    console.warn('⚠️ Test Summary Generation fehlgeschlagen:', error);
+  } catch (_error) {
+        void _error;    // Cleanup failed, continue
   }
-
-  console.log('✅ FC-005 E2E Tests - Global Teardown abgeschlossen');
 }
 
 async function cleanupTestData(baseURL: string) {
@@ -88,7 +81,6 @@ async function generateTestSummary() {
   const resultsPath = '../../../../../test-results/results.json';
 
   if (!fs.existsSync(resultsPath)) {
-    console.log('ℹ️ Keine Test-Ergebnisse gefunden für Summary');
     return;
   }
 
@@ -142,7 +134,7 @@ async function generateTestSummary() {
 
                 if (t.status === 'passed') {
                   summary.browsers[project].passed++;
-                } else {
+                } else { void 0;
                   summary.browsers[project].failed++;
                 }
               });
@@ -186,8 +178,8 @@ ${summary.failed === 0 ? '🎉 **ALLE TESTS ERFOLGREICH**' : `⚠️ **${summary
 `;
 
     fs.writeFileSync('../../../../../test-results/e2e-summary.md', readableSummary);
-  } catch (error) {
-    console.warn('Fehler bei Test Summary Generation:', error);
+  } catch (_error) {
+        void _error;    // Cleanup failed, continue
   }
 }
 

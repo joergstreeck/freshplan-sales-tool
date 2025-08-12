@@ -193,7 +193,7 @@ export function calculateOptimalRows(fields: FieldDefinition[]): FieldDefinition
   let currentRowSize = 0;
 
   fields.forEach(field => {
-    const size = getFieldSize(field);
+    const _size = getFieldSize(field);
     const fieldSize = size.md || 12; // Desktop-Größe als Basis
 
     // Neue Zeile beginnen, wenn 12 überschritten würde
@@ -230,7 +230,7 @@ export function debugFieldLayout(fields: FieldDefinition[]): string {
     let totalSize = 0;
 
     row.forEach(field => {
-      const size = getFieldSize(field);
+      const _size = getFieldSize(field);
       const fieldSize = size.md || 12;
       totalSize += fieldSize;
       output += `[${field.key}:${fieldSize}] `;
@@ -247,38 +247,25 @@ export function debugFieldLayout(fields: FieldDefinition[]): string {
  * Zeigt die berechneten Größen für alle Dropdown-Felder
  */
 export function debugDropdownSizes(fields: FieldDefinition[]): void {
-  console.log('=== Dropdown Size Debug ===');
-
   fields.forEach(field => {
     if (field.fieldType === 'select' || field.fieldType === 'dropdown') {
-      const size = getFieldSize(field);
-      const gridSize = size.md || 12;
+      const _size = getFieldSize(field);
+      const _gridSize = size.md || 12;
 
       // Längste Option finden
-      let longestLabel = 0;
+      const _longestLabel = 0;
       if (field.options) {
-        longestLabel = Math.max(
+        const _longestLabel = Math.max(
           ...field.options.map(opt => opt.label.length),
           field.placeholder?.length || 0
         );
       }
 
-      console.log(`Field: ${field.key}`);
-      console.log(`  - Label: "${field.label}"`);
-      console.log(`  - Longest option: ${longestLabel} chars`);
-      console.log(`  - Calculated grid size: ${gridSize}`);
-      console.log(`  - Has explicit size: ${field.size || 'no'}`);
-      console.log(
-        `  - In CUSTOMER_FIELD_MAPPINGS: ${field.key in CUSTOMER_FIELD_MAPPINGS ? 'yes' : 'no'}`
-      );
-
       if (field.options && field.options.length > 0) {
-        console.log(`  - Options:`);
-        field.options.forEach(opt => {
-          console.log(`    * "${opt.label}" (${opt.label.length} chars)`);
+        field.options.forEach(_opt => {
+          // Options processed
         });
       }
-      console.log('');
     }
   });
 }

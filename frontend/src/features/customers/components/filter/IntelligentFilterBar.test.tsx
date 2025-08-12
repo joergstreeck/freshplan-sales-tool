@@ -166,9 +166,12 @@ describe('IntelligentFilterBar - Enterprise Tests', () => {
 
     it('should display correct result count formatting', () => {
       // Test singular
-      const { rerender } = render(<IntelligentFilterBar {...defaultProps} totalCount={1} filteredCount={1} />, {
-        wrapper: createWrapper(),
-      });
+      const { rerender } = render(
+        <IntelligentFilterBar {...defaultProps} totalCount={1} filteredCount={1} />,
+        {
+          wrapper: createWrapper(),
+        }
+      );
       // Component should render without errors
       expect(screen.getByRole('textbox')).toBeInTheDocument();
 
@@ -299,7 +302,7 @@ describe('IntelligentFilterBar - Enterprise Tests', () => {
       // Search input should have proper attributes
       const searchInput = container.querySelector('input[type="text"]');
       if (searchInput) {
-        const hasAccessibleName = 
+        const hasAccessibleName =
           searchInput.getAttribute('aria-label') ||
           searchInput.getAttribute('placeholder') ||
           searchInput.getAttribute('title');

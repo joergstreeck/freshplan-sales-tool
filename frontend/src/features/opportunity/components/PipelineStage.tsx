@@ -93,7 +93,7 @@ export const PipelineStage: React.FC<PipelineStageProps> = React.memo(
           currency: 'EUR',
           minimumFractionDigits: 0,
         }).format(totalValue);
-      } catch (error) {
+      } catch (_error) { void _error;
         componentLogger.warn('Error formatting currency', { totalValue, error });
         return `${totalValue} €`;
       }

@@ -47,12 +47,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       },
       isAuthenticated: true,
       isLoading: false,
-      login: async () => {
-        console.log('Mock login');
-      },
-      logout: () => {
-        console.log('Mock logout');
-      },
+      login: async () => {},
+      logout: () => {},
       token: 'mock-dev-token',
       hasRole: (role: string) => ['admin', 'manager', 'sales'].includes(role),
       hasAnyRole: (roles: string[]) =>
@@ -99,8 +95,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         // Import authUtils here to avoid circular dependency
         const { authUtils } = await import('../lib/keycloak');
         return await authUtils.getValidToken();
-      } catch (error) {
-        console.error('Failed to get valid token:', error);
+      } catch (_error) { void _error;
+        // Error handled silently, return null as fallback
         return null;
       }
     },
@@ -110,8 +106,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       try {
         const { authUtils } = await import('../lib/keycloak');
         return await authUtils.updateToken(30);
-      } catch (error) {
-        console.error('Failed to refresh token:', error);
+      } catch (_error) { void _error;
+        // Error handled silently, return false as fallback
         return false;
       }
     },

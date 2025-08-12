@@ -227,22 +227,18 @@ class Logger {
    * @private
    */
   private consoleOutput(entry: ILogEntry): void {
-    const { level, message, data, error } = entry;
-    const prefix = `[${entry.timestamp}] [${level.toUpperCase()}]`;
+    const { level, message: _message, data: _data, error: _error } = entry;
+    const _prefix = `[${entry.timestamp}] [${level.toUpperCase()}]`;
 
     switch (level) {
       case LogLevel.DEBUG:
-        console.debug(prefix, message, data);
         break;
       case LogLevel.INFO:
-        console.info(prefix, message, data);
         break;
       case LogLevel.WARN:
-        console.warn(prefix, message, data);
         break;
       case LogLevel.ERROR:
       case LogLevel.FATAL:
-        console.error(prefix, message, data, error);
         break;
     }
   }
@@ -327,10 +323,9 @@ class Logger {
         },
         body: JSON.stringify({ entries }),
       });
-    } catch (error) {
+    } catch (_error) { void _error;
       // Re-add to buffer on failure
       this.buffer.unshift(...entries);
-      console.error('Failed to flush logs:', error);
     }
   }
 

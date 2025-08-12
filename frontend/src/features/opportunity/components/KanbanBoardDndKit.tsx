@@ -617,7 +617,7 @@ export const KanbanBoardDndKit: React.FC = React.memo(() => {
       try {
         componentLogger.debug('Drag operation started', { activeId: event.active.id });
         setActiveId(event.active.id as string);
-      } catch (error) {
+      } catch (_error) { void _error;
         componentLogger.error('Error in handleDragStart', { error });
         errorHandler(error as Error);
       }
@@ -692,7 +692,7 @@ export const KanbanBoardDndKit: React.FC = React.memo(() => {
           opportunityId: active.id,
           toStage: targetStage,
         });
-      } catch (error) {
+      } catch (_error) { void _error;
         componentLogger.error('Error in handleDragEnd', { error });
         errorHandler(error as Error);
       } finally {
@@ -739,7 +739,7 @@ export const KanbanBoardDndKit: React.FC = React.memo(() => {
             });
           }, 500);
         }, 300);
-      } catch (error) {
+      } catch (_error) { void _error;
         componentLogger.error('Error in handleQuickAction', { error });
         errorHandler(error as Error);
       }
@@ -796,7 +796,7 @@ export const KanbanBoardDndKit: React.FC = React.memo(() => {
           scrollPercentage: Math.round(scrollPercentage * 100),
           indicatorWidth: Math.round(indicatorWidth),
         });
-      } catch (error) {
+      } catch (_error) { void _error;
         componentLogger.error('Error in scroll handler', { error });
         errorHandler(error as Error);
       } finally {
@@ -834,7 +834,7 @@ export const KanbanBoardDndKit: React.FC = React.memo(() => {
         clientWidth,
         indicatorWidth: Math.round((clientWidth / scrollWidth) * 100),
       });
-    } catch (error) {
+    } catch (_error) { void _error;
       componentLogger.error('Error initializing scroll indicator', { error });
     }
   }, []);

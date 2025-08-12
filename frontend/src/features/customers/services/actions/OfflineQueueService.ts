@@ -19,7 +19,6 @@ class OfflineQueueService {
   constructor() {
     // Auto-process queue when coming online
     window.addEventListener('online', () => {
-      console.log('Connection restored, processing offline queue...');
       this.processQueue();
     });
 
@@ -62,8 +61,8 @@ class OfflineQueueService {
     if ('serviceWorker' in navigator && 'sync' in self.registration) {
       try {
         await (self.registration as unknown).sync.register('sync-contact-actions');
-      } catch (error) {
-        console.error('Background sync registration failed:', error);
+      } catch (_error) {
+        void _error;        // Background sync not available
       }
     }
   }
@@ -80,8 +79,6 @@ class OfflineQueueService {
     const queue = this.getQueue();
     const pending = [...queue];
 
-    console.log(`Processing ${pending.length} queued actions...`);
-
     for (const item of pending) {
       try {
         // Attempt to execute action
@@ -90,15 +87,14 @@ class OfflineQueueService {
         // Remove from queue on success
         this.removeFromQueue(item.id);
         this.notifySuccess(item);
-      } catch (error) {
-        console.error('Failed to execute queued action:', error);
-        item.retryCount++;
+      } catch (_error) {
+        void _error;        item.retryCount++;
 
         if (item.retryCount >= item.maxRetries) {
           // Max retries reached, remove and notify
           this.removeFromQueue(item.id);
           this.notifyFailed(item);
-        } else {
+        } else { void 0;
           // Update retry count and try again later
           this.updateQueueItem(item);
           setTimeout(() => this.processQueue(), this.RETRY_DELAY);
@@ -123,9 +119,8 @@ class OfflineQueueService {
         ...item,
         timestamp: new Date(item.timestamp),
       }));
-    } catch (error) {
-      console.error('Failed to load offline queue:', error);
-      return [];
+    } catch (_error) {
+        void _error;      return [];
     }
   }
 
@@ -149,8 +144,9 @@ class OfflineQueueService {
   private saveQueue(queue: QueuedAction[]): void {
     try {
       localStorage.setItem(this.STORAGE_KEY, JSON.stringify(queue));
-    } catch (error) {
-      console.error('Failed to save offline queue:', error);
+    } catch (_error) {
+      void _error;
+      // Ignore localStorage errors
     }
   }
 

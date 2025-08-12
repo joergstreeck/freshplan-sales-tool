@@ -254,7 +254,6 @@ export const CrmToasts = {
       label: 'Details',
       onClick: () => {
         // Navigate to renewal details
-        console.log('Navigate to renewal details');
       },
     },
   }),
@@ -280,7 +279,6 @@ export const CrmToasts = {
       label: 'Onboarding starten',
       onClick: () => {
         // Navigate to onboarding
-        console.log('Start onboarding process');
       },
     },
   }),
@@ -324,7 +322,6 @@ export const CrmToasts = {
       label: 'Renewal starten',
       onClick: () => {
         // Start renewal process
-        console.log('Start renewal for', customerName);
       },
     },
   }),

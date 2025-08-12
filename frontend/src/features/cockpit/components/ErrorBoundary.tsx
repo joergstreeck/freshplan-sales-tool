@@ -29,9 +29,7 @@ export class CockpitErrorBoundary extends Component<Props, State> {
     return { hasError: true, error, retryCount: 0 };
   }
 
-  public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error('Sales Cockpit error:', error, errorInfo);
-
+  public componentDidCatch(_error: Error, _errorInfo: ErrorInfo) {
     // TODO: Report to error monitoring service (e.g., Sentry)
     // errorReportingService.captureException(error, { extra: errorInfo });
   }

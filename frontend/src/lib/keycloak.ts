@@ -33,7 +33,6 @@ export const keycloakInitOptions = {
 export const initKeycloak = async (): Promise<boolean> => {
   // Check for auth bypass FIRST
   if (import.meta.env.DEV && import.meta.env.VITE_AUTH_BYPASS === 'true') {
-    console.log('[Keycloak] Auth bypass enabled - skipping initialization');
     isInitialized = true;
     return false; // Not authenticated, but that's OK in bypass mode
   }
@@ -61,7 +60,6 @@ export const initKeycloak = async (): Promise<boolean> => {
           try {
             const refreshed = await keycloak.updateToken(120); // 2 minutes buffer
             if (refreshed) {
-              console.log('Token successfully refreshed proactively');
               // Dispatch success event for app-wide notification
               window.dispatchEvent(
                 new CustomEvent('auth-token-refreshed', {
@@ -69,8 +67,7 @@ export const initKeycloak = async (): Promise<boolean> => {
                 })
               );
             }
-          } catch (error) {
-            console.error('Proactive token refresh failed:', error);
+          } catch (_error) { void _error;
             // Dispatch error event before redirect
             window.dispatchEvent(
               new CustomEvent('auth-error', {
@@ -88,13 +85,11 @@ export const initKeycloak = async (): Promise<boolean> => {
 
         // Success handler with token validation
         keycloak.onAuthRefreshSuccess = () => {
-          console.log('Auth refresh successful - token validated');
           window.dispatchEvent(new CustomEvent('auth-refresh-success'));
         };
 
         // Enhanced error handling
         keycloak.onAuthRefreshError = () => {
-          console.error('Auth refresh error - clearing token');
           keycloak.clearToken();
           window.dispatchEvent(
             new CustomEvent('auth-error', {
@@ -110,16 +105,13 @@ export const initKeycloak = async (): Promise<boolean> => {
         setInterval(() => {
           if (keycloak.authenticated && keycloak.isTokenExpired(180)) {
             // Token expires in less than 3 minutes - refresh it
-            keycloak.updateToken(180).catch(() => {
-              console.warn('Background token refresh failed');
-            });
+            keycloak.updateToken(180).catch(() => {});
           }
         }, 30000);
       }
 
       return authenticated;
-    } catch (error) {
-      console.error('Keycloak initialization failed:', error);
+    } catch (_error) { void _error;
       isInitialized = false;
       initializationPromise = null;
       // Dispatch error event for global handling
@@ -166,7 +158,6 @@ export const authUtils = {
     }
     // Validate token is not expired
     if (keycloak.isTokenExpired(30)) {
-      console.warn('Token is expired or expires soon');
       return null;
     }
     return keycloak.token;
@@ -183,8 +174,7 @@ export const authUtils = {
         await keycloak.updateToken(30);
       }
       return keycloak.token;
-    } catch (error) {
-      console.error('Failed to get valid token:', error);
+    } catch (_error) { void _error;
       return null;
     }
   },
@@ -228,8 +218,7 @@ export const authUtils = {
         );
       }
       return refreshed;
-    } catch (error) {
-      console.error('Token update failed:', error);
+    } catch (_error) { void _error;
       return false;
     }
   },

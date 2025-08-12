@@ -162,7 +162,6 @@ export const RevenueCalculator: React.FC<RevenueCalculatorProps> = ({
             onClick={() => {
               // Runde auf 100.000
               const roundedValue = Math.round(calculation.totalRevenue / 100000) * 100000;
-              console.log('RevenueCalculator applying:', roundedValue);
               onApplyCalculation(roundedValue);
             }}
           >

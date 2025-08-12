@@ -106,9 +106,7 @@ beforeAll(() => {
   };
 });
 
-afterAll(() => {
-  console.error = originalError;
-});
+afterAll(() => {});
 
 // =============================================================================
 // Custom Test Matchers

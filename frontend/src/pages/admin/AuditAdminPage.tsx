@@ -162,9 +162,7 @@ export const AuditAdminPage: React.FC = () => {
                     to: dateRange.to.toISOString().split('T')[0],
                   }}
                   buttonLabel="Export"
-                  onExportComplete={format => {
-                    console.log(`Audit export completed: ${format}`);
-                  }}
+                  onExportComplete={_format => {}}
                 />
               </Box>
             </Grid>

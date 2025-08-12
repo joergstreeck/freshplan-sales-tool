@@ -110,14 +110,7 @@ export const CustomerOnboardingWizard: React.FC<CustomerOnboardingWizardProps> =
    * Handle step navigation
    */
   const handleNext = async () => {
-    console.log('handleNext Debug:', {
-      currentStep,
-      customerData,
-      canProgress: canProgressToNextStep(),
-    });
-
     const isValid = await validateCurrentStep();
-    console.log('Validation result:', isValid);
 
     if (isValid) {
       await manualSave();
@@ -155,9 +148,8 @@ export const CustomerOnboardingWizard: React.FC<CustomerOnboardingWizardProps> =
           state: { message: 'Kunde erfolgreich angelegt!' },
         });
       }
-    } catch (err) {
+    } catch (_err) { void _err;
       setError('Fehler beim Speichern des Kunden. Bitte versuchen Sie es erneut.');
-      console.error('Failed to finalize customer:', err);
     } finally {
       setFinalizing(false);
     }

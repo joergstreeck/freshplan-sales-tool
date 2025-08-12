@@ -36,7 +36,6 @@ export const KeycloakProvider: React.FC<KeycloakProviderProps> = ({ children }) 
     const initAuth = async () => {
       // Check for auth bypass in development
       if (import.meta.env.DEV && import.meta.env.VITE_AUTH_BYPASS === 'true') {
-        console.log('[KeycloakContext] Auth bypass enabled - skipping initialization');
         setIsLoading(false);
         return;
       }

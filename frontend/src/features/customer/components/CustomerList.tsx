@@ -89,9 +89,7 @@ export const CustomerList: React.FC = () => {
           <UniversalExportButton
             entity="customers"
             buttonLabel="Liste exportieren"
-            onExportComplete={format => {
-              console.log(`Export completed: ${format}`);
-            }}
+            onExportComplete={_format => {}}
           />
           <a href="/kundenmanagement/neu" className="btn-new-customer">
             + Neuer Kunde

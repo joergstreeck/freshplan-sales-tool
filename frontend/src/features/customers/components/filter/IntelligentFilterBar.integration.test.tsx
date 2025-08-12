@@ -98,9 +98,12 @@ describe('IntelligentFilterBar Integration Tests', () => {
     });
 
     it('should show correct singular/plural forms', () => {
-      const { rerender } = render(<IntelligentFilterBar {...defaultProps} totalCount={1} filteredCount={1} />, {
-        wrapper: createWrapper(),
-      });
+      const { rerender } = render(
+        <IntelligentFilterBar {...defaultProps} totalCount={1} filteredCount={1} />,
+        {
+          wrapper: createWrapper(),
+        }
+      );
 
       // Component should render
       expect(screen.getByRole('textbox')).toBeInTheDocument();
@@ -133,10 +136,9 @@ describe('IntelligentFilterBar Integration Tests', () => {
 
     it('should call onSearchChange when typing', async () => {
       const user = userEvent.setup();
-      const { container } = render(
-        <IntelligentFilterBar {...defaultProps} />,
-        { wrapper: createWrapper() }
-      );
+      const { container } = render(<IntelligentFilterBar {...defaultProps} />, {
+        wrapper: createWrapper(),
+      });
 
       const searchInput = container.querySelector('input[type="text"]') as HTMLInputElement;
       await user.type(searchInput, 'FreshFood');
@@ -147,10 +149,9 @@ describe('IntelligentFilterBar Integration Tests', () => {
     });
 
     it('should display search value', () => {
-      const { container } = render(
-        <IntelligentFilterBar {...defaultProps} />,
-        { wrapper: createWrapper() }
-      );
+      const { container } = render(<IntelligentFilterBar {...defaultProps} />, {
+        wrapper: createWrapper(),
+      });
 
       const searchInput = container.querySelector('input[type="text"]') as HTMLInputElement;
       expect(searchInput).toBeInTheDocument();
@@ -183,12 +184,7 @@ describe('IntelligentFilterBar Integration Tests', () => {
     it('should open filter drawer when filter button clicked', async () => {
       const user = userEvent.setup();
 
-      render(
-        <IntelligentFilterBar
-          {...defaultProps}
-        />,
-        { wrapper: createWrapper() }
-      );
+      render(<IntelligentFilterBar {...defaultProps} />, { wrapper: createWrapper() });
 
       const buttons = screen.getAllByRole('button');
       const filterButton = buttons.find(
@@ -210,7 +206,7 @@ describe('IntelligentFilterBar Integration Tests', () => {
   describe('Quick Filters', () => {
     it('should handle quick filter chips', async () => {
       const user = userEvent.setup();
-      
+
       render(<IntelligentFilterBar {...defaultProps} />, {
         wrapper: createWrapper(),
       });
@@ -237,13 +233,9 @@ describe('IntelligentFilterBar Integration Tests', () => {
       const user = userEvent.setup();
       const mockOnFilterChange = vi.fn();
 
-      render(
-        <IntelligentFilterBar
-          {...defaultProps}
-          onFilterChange={mockOnFilterChange}
-        />,
-        { wrapper: createWrapper() }
-      );
+      render(<IntelligentFilterBar {...defaultProps} onFilterChange={mockOnFilterChange} />, {
+        wrapper: createWrapper(),
+      });
 
       // Type in search field
       const searchInput = screen.getByRole('textbox');
@@ -258,16 +250,11 @@ describe('IntelligentFilterBar Integration Tests', () => {
 
   describe('View Mode', () => {
     it('should handle view mode toggles', async () => {
-      render(
-        <IntelligentFilterBar
-          {...defaultProps}
-        />,
-        { wrapper: createWrapper() }
-      );
+      render(<IntelligentFilterBar {...defaultProps} />, { wrapper: createWrapper() });
 
       // Look for view toggle buttons
       const buttons = screen.getAllByRole('button');
-      
+
       // Component should have view toggle capability
       expect(buttons.length).toBeGreaterThan(0);
     });
@@ -362,13 +349,7 @@ describe('IntelligentFilterBar Integration Tests', () => {
       });
 
       // Update multiple props at once
-      rerender(
-        <IntelligentFilterBar
-          {...defaultProps}
-          totalCount={100}
-          filteredCount={100}
-        />
-      );
+      rerender(<IntelligentFilterBar {...defaultProps} totalCount={100} filteredCount={100} />);
 
       // Component should still render
       expect(screen.getByRole('textbox')).toBeInTheDocument();
@@ -397,20 +378,14 @@ describe('IntelligentFilterBar Integration Tests', () => {
       const user = userEvent.setup();
       const mockOnFilterChange = vi.fn();
 
-      render(
-        <IntelligentFilterBar 
-          {...defaultProps} 
-          onFilterChange={mockOnFilterChange}
-        />, 
-        {
-          wrapper: createWrapper(),
-        }
-      );
+      render(<IntelligentFilterBar {...defaultProps} onFilterChange={mockOnFilterChange} />, {
+        wrapper: createWrapper(),
+      });
 
       // Component should be able to handle complex filter scenarios
       const searchInput = screen.getByRole('textbox');
       await user.type(searchInput, 'Gastronomie');
-      
+
       await waitFor(() => {
         expect(searchInput.value).toBe('Gastronomie');
       });

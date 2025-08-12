@@ -101,7 +101,6 @@ export function buildFieldSchema(field: FieldDefinition): z.ZodType<unknown> {
       break;
 
     default:
-      console.warn(`Unknown field type: ${field.fieldType}`);
       schema = z.any();
   }
 
@@ -196,7 +195,6 @@ function buildNumberSchema(field: FieldDefinition): z.ZodSchema {
  */
 function buildSelectSchema(field: FieldDefinition): z.ZodSchema {
   if (!field.options || field.options.length === 0) {
-    console.warn(`Select field ${field.key} has no options`);
     return z.string();
   }
 
@@ -258,9 +256,8 @@ function applyCustomValidations(
       case 'unique':
         // This would need async validation
         schema = schema.refine(
-          async val => {
+          async _val => {
             // In real implementation, this would call an API
-            console.log(`Checking uniqueness for ${field.key}: ${val}`);
             return true;
           },
           validation.message || `${field.label} muss eindeutig sein`
@@ -331,7 +328,7 @@ export async function validateField(
   try {
     await schema.parseAsync(value);
     return { isValid: true };
-  } catch (error) {
+  } catch (_error) { void _error;
     if (error instanceof z.ZodError) {
       return {
         isValid: false,

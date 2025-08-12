@@ -255,7 +255,6 @@ export function EntityAuditTimeline({
 
   const handleExport = () => {
     // TODO: Implement export functionality
-    console.log('Export audit entries', entries);
   };
 
   const filteredEntries = entries.filter(entry => {

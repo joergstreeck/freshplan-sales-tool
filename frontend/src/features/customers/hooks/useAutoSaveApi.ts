@@ -151,8 +151,7 @@ export const useAutoSaveApi = (options: UseAutoSaveApiOptions = {}): UseAutoSave
           data: saveData,
         });
       }
-    } catch (error) {
-      console.error('Auto-save error:', error);
+    } catch (_error) { void _error;
       throw error;
     } finally {
       setSaving(false);
@@ -224,7 +223,9 @@ export const useAutoSaveApi = (options: UseAutoSaveApiOptions = {}): UseAutoSave
     return () => {
       if (isDirty && enabled) {
         // Attempt synchronous save on unmount
-        performSave().catch(console.error);
+        performSave().catch(() => {
+          // Error already handled in mutation
+        });
       }
     };
   }, [isDirty, enabled, performSave]);

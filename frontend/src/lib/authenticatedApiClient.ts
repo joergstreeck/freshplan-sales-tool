@@ -31,8 +31,7 @@ apiClient.interceptors.request.use(
           if (newToken) {
             config.headers.Authorization = `Bearer ${newToken}`;
           }
-        } catch (error) {
-          console.error('Failed to refresh token:', error);
+        } catch (_error) { void _error;
           // Let the request continue, will be caught by 401 handler
         }
       } else {
@@ -53,10 +52,7 @@ apiClient.interceptors.response.use(
   error => {
     if (error.response?.status === 401) {
       // Token expired or invalid
-      console.error('API returned 401 Unauthorized:', {
-        url: error.config?.url,
-        method: error.config?.method,
-      });
+      // Removed incomplete console.log statement
 
       // Dispatch custom event for global error handling
       const event = new CustomEvent('auth-error', {

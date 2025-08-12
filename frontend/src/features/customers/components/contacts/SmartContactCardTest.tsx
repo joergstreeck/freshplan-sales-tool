@@ -49,25 +49,15 @@ const mockWarmth: RelationshipWarmth = {
 };
 
 export function SmartContactCardTest() {
-  const handleEdit = (contact: Contact) => {
-    console.log('Edit contact:', contact);
-  };
+  const handleEdit = (_contact: Contact) => {};
 
-  const handleDelete = (contactId: string) => {
-    console.log('Delete contact:', contactId);
-  };
+  const handleDelete = (_contactId: string) => {};
 
-  const handleSetPrimary = (contactId: string) => {
-    console.log('Set primary:', contactId);
-  };
+  const handleSetPrimary = (_contactId: string) => {};
 
-  const handleViewTimeline = (contactId: string) => {
-    console.log('View full timeline:', contactId);
-  };
+  const handleViewTimeline = (_contactId: string) => {};
 
-  const handleQuickAction = (action: string, contactId: string) => {
-    console.log('Quick action:', action, 'for contact:', contactId);
-  };
+  const handleQuickAction = (_action: string, _contactId: string) => {};
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
