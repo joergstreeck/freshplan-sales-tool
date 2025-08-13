@@ -6,9 +6,12 @@
 
 ---
 
-**Navigation:**  
-⬅️ Zurück zu: [`NEXT_STEP.md`](/docs/NEXT_STEP.md) | [`CODE_QUALITY_START_HERE.md`](/docs/CODE_QUALITY_START_HERE.md)  
-➡️ Verwandte: [`ENTERPRISE_CODE_REVIEW_2025.md`](/docs/features/ENTERPRISE_CODE_REVIEW_2025.md) | [`TEST_STRATEGY_PER_PR.md`](/docs/features/TEST_STRATEGY_PER_PR.md)
+## 📑 Navigation (Lesereihenfolge)
+
+**Du bist hier:** Dokument 4 von 7  
+**⬅️ Zurück:** [`ENTERPRISE_CODE_REVIEW_2025.md`](/Users/joergstreeck/freshplan-sales-tool/docs/features/Code_Verbesserung_08_25/ENTERPRISE_CODE_REVIEW_2025.md)  
+**➡️ Weiter:** [`PR_5_BACKEND_SERVICES_REFACTORING.md`](/Users/joergstreeck/freshplan-sales-tool/docs/features/Code_Verbesserung_08_25/PR_5_BACKEND_SERVICES_REFACTORING.md)  
+**🎯 Ziel:** [`PR_5_BACKEND_SERVICES_REFACTORING.md`](/Users/joergstreeck/freshplan-sales-tool/docs/features/Code_Verbesserung_08_25/PR_5_BACKEND_SERVICES_REFACTORING.md)
 
 ---
 
@@ -617,6 +620,12 @@ npm run test        # Zeigt Test-Errors
    - PR-Beschreibung ausführlich
    - Screenshots bei UI-Änderungen
    - Before/After Metriken
+
+---
+
+**Navigation:**  
+⬅️ Zurück zu: [`ENTERPRISE_CODE_REVIEW_2025.md`](/Users/joergstreeck/freshplan-sales-tool/docs/features/Code_Verbesserung_08_25/ENTERPRISE_CODE_REVIEW_2025.md)  
+➡️ Weiter zu: [`PR_5_BACKEND_SERVICES_REFACTORING.md`](/Users/joergstreeck/freshplan-sales-tool/docs/features/Code_Verbesserung_08_25/PR_5_BACKEND_SERVICES_REFACTORING.md)
 
 ---
 

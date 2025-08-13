@@ -6,9 +6,12 @@
 
 ---
 
-**Navigation:**  
-⬅️ Zurück zu: [`CODE_QUALITY_PR_ROADMAP.md`](/docs/features/CODE_QUALITY_PR_ROADMAP.md)  
-➡️ Verwandte: [`TEST_STRATEGY_PER_PR.md`](/docs/features/TEST_STRATEGY_PER_PR.md) | [`CODE_QUALITY_UPDATE_ANALYSIS.md`](/docs/features/CODE_QUALITY_UPDATE_ANALYSIS.md)
+## 📑 Navigation (Lesereihenfolge)
+
+**Du bist hier:** Dokument 3 von 7  
+**⬅️ Zurück:** [`CODE_QUALITY_START_HERE.md`](/Users/joergstreeck/freshplan-sales-tool/docs/features/Code_Verbesserung_08_25/CODE_QUALITY_START_HERE.md)  
+**➡️ Weiter:** [`CODE_QUALITY_PR_ROADMAP.md`](/Users/joergstreeck/freshplan-sales-tool/docs/features/Code_Verbesserung_08_25/CODE_QUALITY_PR_ROADMAP.md)  
+**🎯 Ziel:** [`PR_5_BACKEND_SERVICES_REFACTORING.md`](/Users/joergstreeck/freshplan-sales-tool/docs/features/Code_Verbesserung_08_25/PR_5_BACKEND_SERVICES_REFACTORING.md)
 
 ---
 
@@ -493,5 +496,5 @@ npm run build -- --analyze
 ---
 
 **Navigation:**  
-⬅️ Zurück zu: [`CODE_QUALITY_PR_ROADMAP.md`](/docs/features/CODE_QUALITY_PR_ROADMAP.md)  
-➡️ Weiter zu: [`TEST_STRATEGY_PER_PR.md`](/docs/features/TEST_STRATEGY_PER_PR.md)
+⬅️ Zurück zu: [`CODE_QUALITY_START_HERE.md`](/Users/joergstreeck/freshplan-sales-tool/docs/features/Code_Verbesserung_08_25/CODE_QUALITY_START_HERE.md)  
+➡️ Weiter zu: [`CODE_QUALITY_PR_ROADMAP.md`](/Users/joergstreeck/freshplan-sales-tool/docs/features/Code_Verbesserung_08_25/CODE_QUALITY_PR_ROADMAP.md)
