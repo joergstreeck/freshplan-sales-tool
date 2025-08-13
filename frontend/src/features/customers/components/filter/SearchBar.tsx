@@ -17,7 +17,7 @@ import {
   Search as SearchIcon,
   Clear as ClearIcon,
 } from '@mui/icons-material';
-// import { useTheme } from '@mui/material/styles'; // Currently unused
+import { useTheme } from '@mui/material/styles';
 
 interface SearchBarProps {
   value: string;
@@ -40,7 +40,7 @@ export const SearchBar = forwardRef<HTMLInputElement, SearchBarProps>(
     },
     ref
   ) => {
-    // const theme = useTheme(); // Currently unused
+    const theme = useTheme();
 
     return (
       <TextField
