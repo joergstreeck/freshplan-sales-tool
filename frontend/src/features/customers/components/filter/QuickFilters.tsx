@@ -13,7 +13,7 @@ import {
   CheckCircle as ActiveIcon,
   Cancel as InactiveIcon,
 } from '@mui/icons-material';
-import { useTheme } from '@mui/material/styles';
+// import { useTheme } from '@mui/material/styles'; // Currently unused
 
 import type { FilterConfig } from '../../types/filter.types';
 // Import the correct CustomerStatus from the customer feature
@@ -48,7 +48,7 @@ interface QuickFiltersProps {
 }
 
 export function QuickFilters({ activeQuickFilters, onToggleQuickFilter }: QuickFiltersProps) {
-  const theme = useTheme();
+  // const theme = useTheme(); // Currently unused
 
   return (
     <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>

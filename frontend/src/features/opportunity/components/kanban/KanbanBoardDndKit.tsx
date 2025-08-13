@@ -32,7 +32,7 @@ const DRAG_OFFSET_X = CARD_WIDTH; // Horizontale Korrektur für Cursor-Position
 
 // Vertikaler Offset: Kompensiert Browser-Unterschiede beim Drag-Start
 // Chrome/Edge: 30px, Firefox: 25px, Safari: 35px - wir nehmen den Mittelwert
-const DRAG_OFFSET_Y = 30; 
+// const DRAG_OFFSET_Y = 30; // Currently unused, kept for future drag improvements 
 
 // Browser-Detection für feinere Anpassungen (falls nötig)
 const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);

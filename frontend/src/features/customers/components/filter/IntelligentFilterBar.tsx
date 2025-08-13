@@ -24,17 +24,13 @@ import {
   Tooltip,
   Typography,
   Chip,
-  Alert,
   Menu,
   MenuItem,
   Divider,
-  useTheme,
-  alpha,
 } from '@mui/material';
 import {
   FilterList as FilterIcon,
   ViewColumn as ColumnIcon,
-  Sort as SortIcon,
   Star as StarIcon,
   Delete as DeleteIcon,
   ArrowUpward as ArrowUpIcon,
@@ -58,7 +54,7 @@ import type {
 // Import refactored components
 import { FilterDrawer } from './FilterDrawer';
 import { ColumnManagerDrawer } from './ColumnManagerDrawer';
-import { QuickFilters, QUICK_FILTERS, type QuickFilter } from './QuickFilters';
+import { QuickFilters, type QuickFilter } from './QuickFilters';
 import { SearchBar } from './SearchBar';
 
 interface IntelligentFilterBarProps {
@@ -84,7 +80,6 @@ export function IntelligentFilterBar({
   enableUniversalSearch = true,
 }: IntelligentFilterBarProps) {
   const navigate = useNavigate();
-  const theme = useTheme();
   const searchInputRef = useRef<HTMLInputElement>(null);
   const searchContainerRef = useRef<HTMLDivElement>(null);
 
@@ -96,7 +91,7 @@ export function IntelligentFilterBar({
   const [showSearchResults, setShowSearchResults] = useState(false);
   const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
   const [columnDrawerOpen, setColumnDrawerOpen] = useState(false);
-  const [filterSetName, setFilterSetName] = useState('');
+  // const [filterSetName, setFilterSetName] = useState(''); // For future save filter functionality
 
   const [activeFilters, setActiveFilters] = useState<FilterConfig>({
     text: '',
@@ -340,19 +335,20 @@ export function IntelligentFilterBar({
   }, [onFilterChange]);
 
   // Save current filter set
-  const saveFilterSet = useCallback(() => {
-    if (!filterSetName) return;
+  // TODO: Implement save filter functionality
+  // const saveFilterSet = useCallback(() => {
+  //   if (!filterSetName) return;
 
-    const newFilterSet: SavedFilterSet = {
-      id: Date.now().toString(),
-      name: filterSetName,
-      filters: activeFilters,
-      createdAt: new Date().toISOString(),
-    };
+  //   const newFilterSet: SavedFilterSet = {
+  //     id: Date.now().toString(),
+  //     name: filterSetName,
+  //     filters: activeFilters,
+  //     createdAt: new Date().toISOString(),
+  //   };
 
-    setSavedFilters(prev => [...prev, newFilterSet]);
-    setFilterSetName('');
-  }, [filterSetName, activeFilters, setSavedFilters]);
+  //   setSavedFilters(prev => [...prev, newFilterSet]);
+  //   setFilterSetName('');
+  // }, [filterSetName, activeFilters, setSavedFilters]);
 
   // Load saved filter set
   const loadFilterSet = useCallback(

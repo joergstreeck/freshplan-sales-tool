@@ -26,7 +26,7 @@ import {
   ArrowUpward as ArrowUpIcon,
   ArrowDownward as ArrowDownIcon,
 } from '@mui/icons-material';
-import { useTheme } from '@mui/material/styles';
+// import { useTheme } from '@mui/material/styles'; // Currently unused
 
 import type { ColumnConfig } from '../../types/filter.types';
 
@@ -45,7 +45,7 @@ export function ColumnManagerDrawer({
   onColumnToggle,
   onColumnMove,
 }: ColumnManagerDrawerProps) {
-  const theme = useTheme();
+  // const theme = useTheme(); // Currently unused
 
   return (
     <Drawer

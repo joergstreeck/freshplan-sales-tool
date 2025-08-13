@@ -31,7 +31,7 @@ import type { FilterConfig } from '../../types/filter.types';
 import { RiskLevel } from '../../types/filter.types';
 // Import the correct CustomerStatus from the customer feature
 import { CustomerStatus } from '../../../customer/types/customer.types';
-import { STATUS_LABELS, RISK_LABELS } from './constants';
+import { STATUS_LABELS } from './constants';
 
 interface FilterDrawerProps {
   open: boolean;
