@@ -1,18 +1,15 @@
-package de.freshplan.domain.audit.service;
+package de.freshplan.domain.audit.service.command;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import de.freshplan.domain.audit.dto.ComplianceAlertDto;
 import de.freshplan.domain.audit.entity.AuditEntry;
 import de.freshplan.domain.audit.entity.AuditEventType;
 import de.freshplan.domain.audit.entity.AuditSource;
 import de.freshplan.domain.audit.repository.AuditRepository;
-import de.freshplan.domain.audit.service.command.AuditCommandService;
+import de.freshplan.domain.audit.service.AuditService;
+import de.freshplan.domain.audit.service.AuditableApplicationEvent;
 import de.freshplan.domain.audit.service.dto.AuditContext;
-import de.freshplan.domain.audit.service.query.AuditQueryService;
-import de.freshplan.domain.export.service.dto.ExportRequest;
 import de.freshplan.shared.util.SecurityUtils;
-import io.quarkus.runtime.Startup;
 import io.vertx.core.http.HttpServerRequest;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -25,32 +22,34 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
-import java.util.*;
+import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.stream.Stream;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.logging.Logger;
 
 /**
- * Enterprise-grade Audit Service with async processing and integrity verification
+ * Audit Command Service - CQRS Write Side
  *
- * <p>FACADE PATTERN: Dieser Service fungiert als Facade für die CQRS-aufgeteilten Services.
- * Mit Feature Flag kann zwischen Legacy-Implementierung und CQRS umgeschaltet werden.
+ * <p>Behandelt alle schreibenden Operationen für Audit-Einträge:
+ * - Async und Sync Logging
+ * - Security Events
+ * - Export Tracking
+ * - Hash-Chain Management
+ * - Event Processing
  *
- * <p>Features: - Async audit logging to prevent performance impact - Cryptographic hash chaining
- * for tamper detection - Automatic context enrichment - Event-driven architecture support -
- * Configurable retention policies
+ * <p>WICHTIG: Dieser Service ist eine EXAKTE KOPIE der Command-Methoden
+ * aus AuditService für 100% Kompatibilität.
  *
  * @author FreshPlan Team
  * @since 2.0.0
  */
 @ApplicationScoped
-@Startup
-public class AuditService {
+public class AuditCommandService {
 
-  private static final Logger log = Logger.getLogger(AuditService.class);
+  private static final Logger log = Logger.getLogger(AuditCommandService.class);
 
   @Inject AuditRepository auditRepository;
 
@@ -58,27 +57,18 @@ public class AuditService {
 
   @Inject SecurityUtils securityUtils;
 
-  @Inject Event<AuditEvent> auditEventBus;
+  @Inject Event<AuditService.AuditEvent> auditEventBus;
 
-  @Inject AuditConfiguration configuration;
+  @Inject AuditService.AuditConfiguration configuration;
 
   @Inject Instance<HttpServerRequest> httpRequestInstance;
-  
-  // CQRS Services (NEU)
-  @Inject AuditCommandService commandService;
-  
-  @Inject AuditQueryService queryService;
-  
-  // Feature Flag für CQRS
-  @ConfigProperty(name = "features.cqrs.enabled", defaultValue = "false")
-  boolean cqrsEnabled;
 
   private ExecutorService auditExecutor;
   private volatile String lastGlobalHash = null;
 
   @PostConstruct
   void init() {
-    // Initialize async executor for audit logging
+    // Initialize async executor for audit logging (EXAKTE KOPIE Zeile 62-76)
     this.auditExecutor =
         Executors.newFixedThreadPool(
             configuration.getAsyncThreadPoolSize(),
@@ -90,10 +80,14 @@ public class AuditService {
             });
 
     log.infof(
-        "Audit Service initialized with %d async threads", configuration.getAsyncThreadPoolSize());
+        "Audit Command Service initialized with %d async threads", 
+        configuration.getAsyncThreadPoolSize());
   }
 
-  /** Log an audit event asynchronously */
+  /**
+   * Log an audit event asynchronously
+   * EXAKTE KOPIE von AuditService.logAsync() Zeile 79-96
+   */
   public CompletableFuture<UUID> logAsync(
       AuditEventType eventType,
       String entityType,
@@ -101,11 +95,6 @@ public class AuditService {
       Object oldValue,
       Object newValue,
       String reason) {
-    
-    if (cqrsEnabled) {
-      log.debugf("CQRS mode: delegating to AuditCommandService");
-      return commandService.logAsync(eventType, entityType, entityId, oldValue, newValue, reason);
-    }
 
     return logAsync(
         AuditContext.builder()
@@ -118,12 +107,11 @@ public class AuditService {
             .build());
   }
 
-  /** Log an audit event with full context asynchronously */
+  /**
+   * Log an audit event with full context asynchronously
+   * EXAKTE KOPIE von AuditService.logAsync(AuditContext) Zeile 99-114
+   */
   public CompletableFuture<UUID> logAsync(AuditContext context) {
-    if (cqrsEnabled) {
-      log.debugf("CQRS mode: delegating to AuditCommandService");
-      return commandService.logAsync(context);
-    }
     // Capture request context before async execution
     final var capturedContext = captureCurrentContext(context);
 
@@ -134,20 +122,19 @@ public class AuditService {
           } catch (Exception e) {
             log.errorf(e, "Failed to log audit event: %s", context.getEventType());
             // Re-throw to propagate through CompletableFuture
-            throw new AuditException("Failed to log audit event", e);
+            throw new AuditService.AuditException("Failed to log audit event", e);
           }
         },
         auditExecutor);
   }
 
-  /** Log an audit event synchronously (use sparingly) */
+  /**
+   * Log an audit event synchronously (use sparingly)
+   * EXAKTE KOPIE von AuditService.logSync() Zeile 117-152
+   */
   @Transactional(Transactional.TxType.REQUIRES_NEW)
   @jakarta.enterprise.context.control.ActivateRequestContext
   public UUID logSync(AuditContext context) {
-    if (cqrsEnabled) {
-      log.debugf("CQRS mode: delegating to AuditCommandService");
-      return commandService.logSync(context);
-    }
     try {
       // Build audit entry
       AuditEntry entry = buildAuditEntry(context);
@@ -160,7 +147,7 @@ public class AuditService {
 
       // Fire event for real-time monitoring
       if (configuration.isEventBusEnabled()) {
-        auditEventBus.fireAsync(new AuditEvent(entry));
+        auditEventBus.fireAsync(new AuditService.AuditEvent(entry));
       }
 
       // Check if notification required
@@ -178,17 +165,16 @@ public class AuditService {
       log.error("Critical: Failed to log audit event", e);
       // Log to fallback mechanism (file, external service)
       logToFallback(context, e);
-      throw new AuditException("Failed to log audit event", e);
+      throw new AuditService.AuditException("Failed to log audit event", e);
     }
   }
 
-  /** Log a security event (always synchronous for immediate recording) */
+  /**
+   * Log a security event (always synchronous for immediate recording)
+   * EXAKTE KOPIE von AuditService.logSecurityEvent() Zeile 155-165
+   */
   @Transactional(Transactional.TxType.REQUIRES_NEW)
   public UUID logSecurityEvent(AuditEventType eventType, String details) {
-    if (cqrsEnabled) {
-      log.debugf("CQRS mode: delegating to AuditCommandService");
-      return commandService.logSecurityEvent(eventType, details);
-    }
     return logSync(
         AuditContext.builder()
             .eventType(eventType)
@@ -199,13 +185,12 @@ public class AuditService {
             .build());
   }
 
-  /** Log an export event for compliance tracking */
+  /**
+   * Log an export event for compliance tracking
+   * EXAKTE KOPIE von AuditService.logExport() Zeile 168-183
+   */
   @Transactional(Transactional.TxType.REQUIRES_NEW)
   public UUID logExport(String exportType, Map<String, Object> parameters) {
-    if (cqrsEnabled) {
-      log.debugf("CQRS mode: delegating to AuditCommandService");
-      return commandService.logExport(exportType, parameters);
-    }
     return logSync(
         AuditContext.builder()
             .eventType(AuditEventType.DATA_EXPORT_STARTED)
@@ -221,7 +206,22 @@ public class AuditService {
             .build());
   }
 
-  /** Build audit entry with all required fields */
+  /**
+   * Handle audit events from CDI event bus
+   * EXAKTE KOPIE von AuditService.onApplicationEvent() Zeile 425-427
+   */
+  public void onApplicationEvent(@Observes AuditableApplicationEvent event) {
+    logAsync(event.toAuditContext());
+  }
+
+  // =====================================
+  // PRIVATE HELPER METHODS (EXAKTE KOPIEN)
+  // =====================================
+
+  /**
+   * Build audit entry with all required fields
+   * EXAKTE KOPIE von AuditService.buildAuditEntry() Zeile 186-242
+   */
   private AuditEntry buildAuditEntry(AuditContext context) {
     Instant now = Instant.now();
     String previousHash = getPreviousHash(context.getEntityType());
@@ -280,7 +280,10 @@ public class AuditService {
     return entry.toBuilder().dataHash(dataHash).build();
   }
 
-  /** Capture current request/security context */
+  /**
+   * Capture current request/security context
+   * EXAKTE KOPIE von AuditService.captureCurrentContext() Zeile 245-265
+   */
   private AuditContext captureCurrentContext(AuditContext context) {
     return context.toBuilder()
         .userId(
@@ -303,7 +306,10 @@ public class AuditService {
         .build();
   }
 
-  /** Determine audit source based on context */
+  /**
+   * Determine audit source based on context
+   * EXAKTE KOPIE von AuditService.determineSource() Zeile 268-290
+   */
   private AuditSource determineSource() {
     if (!httpRequestInstance.isResolvable()) {
       return AuditSource.SYSTEM;
@@ -328,7 +334,10 @@ public class AuditService {
     }
   }
 
-  /** Get client IP address with proxy support */
+  /**
+   * Get client IP address with proxy support
+   * EXAKTE KOPIE von AuditService.getClientIpAddress() Zeile 293-318
+   */
   private String getClientIpAddress() {
     if (!httpRequestInstance.isResolvable()) {
       return "SYSTEM";
@@ -356,7 +365,10 @@ public class AuditService {
     }
   }
 
-  /** Get user agent */
+  /**
+   * Get user agent
+   * EXAKTE KOPIE von AuditService.getUserAgent() Zeile 321-333
+   */
   private String getUserAgent() {
     if (!httpRequestInstance.isResolvable()) {
       return "SYSTEM";
@@ -371,7 +383,10 @@ public class AuditService {
     }
   }
 
-  /** Get API endpoint */
+  /**
+   * Get API endpoint
+   * EXAKTE KOPIE von AuditService.getApiEndpoint() Zeile 336-349
+   */
   private String getApiEndpoint() {
     if (!httpRequestInstance.isResolvable()) {
       return null;
@@ -387,7 +402,10 @@ public class AuditService {
     }
   }
 
-  /** Convert object to JSON string */
+  /**
+   * Convert object to JSON string
+   * EXAKTE KOPIE von AuditService.toJson() Zeile 352-363
+   */
   private String toJson(Object value) {
     if (value == null) {
       return null;
@@ -401,7 +419,10 @@ public class AuditService {
     }
   }
 
-  /** Calculate SHA-256 hash for integrity */
+  /**
+   * Calculate SHA-256 hash for integrity
+   * EXAKTE KOPIE von AuditService.calculateHash() Zeile 366-396
+   */
   private String calculateHash(AuditEntry entry, String previousHash) {
     try {
       MessageDigest digest = MessageDigest.getInstance("SHA-256");
@@ -434,7 +455,10 @@ public class AuditService {
     }
   }
 
-  /** Get previous hash for global chaining */
+  /**
+   * Get previous hash for global chaining
+   * EXAKTE KOPIE von AuditService.getPreviousHash() Zeile 399-407
+   */
   private String getPreviousHash(String entityType) {
     // Check global cache first
     if (lastGlobalHash != null) {
@@ -445,136 +469,29 @@ public class AuditService {
     return auditRepository.getLastHash().orElse(null);
   }
 
-  /** Notify security team for critical events */
+  /**
+   * Notify security team for critical events
+   * EXAKTE KOPIE von AuditService.notifySecurityTeam() Zeile 410-414
+   */
   private void notifySecurityTeam(AuditEntry entry) {
     // Implementation depends on notification service
     log.warnf(
-        "Security notification required for event: %s - %s", entry.getEventType(), entry.getId());
+        "Security notification required for event: %s - %s", 
+        entry.getEventType(), 
+        entry.getId());
   }
 
-  /** Fallback logging mechanism */
+  /**
+   * Fallback logging mechanism
+   * EXAKTE KOPIE von AuditService.logToFallback() Zeile 417-422
+   */
   private void logToFallback(AuditContext context, Exception error) {
     // Log to file or external service as fallback
     log.errorf(
         "AUDIT_FALLBACK: %s %s %s - Error: %s",
-        context.getEventType(), context.getEntityType(), context.getEntityId(), error.getMessage());
-  }
-
-  /** Handle audit events from CDI event bus */
-  public void onApplicationEvent(@Observes AuditableApplicationEvent event) {
-    if (cqrsEnabled) {
-      commandService.onApplicationEvent(event);
-      return;
-    }
-    logAsync(event.toAuditContext());
-  }
-
-  // =====================================
-  // QUERY OPERATIONS (NEU für CQRS)
-  // =====================================
-  
-  /**
-   * Find audit entries by entity
-   * Delegiert an AuditQueryService
-   */
-  public List<AuditEntry> findByEntity(String entityType, UUID entityId) {
-    if (cqrsEnabled) {
-      return queryService.findByEntity(entityType, entityId);
-    }
-    // Legacy: direkt vom Repository
-    return auditRepository.findByEntity(entityType, entityId);
-  }
-  
-  /**
-   * Find audit entries by entity with pagination
-   * Delegiert an AuditQueryService
-   */
-  public List<AuditEntry> findByEntity(String entityType, UUID entityId, int page, int size) {
-    if (cqrsEnabled) {
-      return queryService.findByEntity(entityType, entityId, page, size);
-    }
-    // Legacy: direkt vom Repository
-    return auditRepository.findByEntity(entityType, entityId, page, size);
-  }
-  
-  /**
-   * Get dashboard metrics for Admin UI
-   * Delegiert an AuditQueryService
-   */
-  public AuditRepository.DashboardMetrics getDashboardMetrics() {
-    if (cqrsEnabled) {
-      return queryService.getDashboardMetrics();
-    }
-    // Legacy: direkt vom Repository
-    return auditRepository.getDashboardMetrics();
-  }
-  
-  /**
-   * Get compliance alerts
-   * Delegiert an AuditQueryService
-   */
-  public List<ComplianceAlertDto> getComplianceAlerts() {
-    if (cqrsEnabled) {
-      return queryService.getComplianceAlerts();
-    }
-    // Legacy: direkt vom Repository
-    return auditRepository.getComplianceAlerts();
-  }
-  
-  /**
-   * Find audit entries by filters for export
-   * Delegiert an AuditQueryService
-   */
-  public List<AuditEntry> findByFilters(ExportRequest request) {
-    if (cqrsEnabled) {
-      return queryService.findByFilters(request);
-    }
-    // Legacy: direkt vom Repository
-    return auditRepository.findByFilters(request);
-  }
-  
-  /**
-   * Stream audit entries for export (memory-efficient)
-   * Delegiert an AuditQueryService
-   */
-  public Stream<AuditEntry> streamForExport(AuditRepository.AuditSearchCriteria criteria) {
-    if (cqrsEnabled) {
-      return queryService.streamForExport(criteria);
-    }
-    // Legacy: direkt vom Repository
-    return auditRepository.streamForExport(criteria);
-  }
-
-  /** Audit service configuration */
-  @ApplicationScoped
-  public static class AuditConfiguration {
-    // These would typically come from application.properties
-    public int getAsyncThreadPoolSize() {
-      return 5;
-    }
-
-    public boolean isEventBusEnabled() {
-      return true;
-    }
-  }
-
-  /** Audit event for CDI event bus */
-  public static class AuditEvent {
-    private final AuditEntry entry;
-
-    public AuditEvent(AuditEntry entry) {
-      this.entry = entry;
-    }
-
-    public AuditEntry getEntry() {
-      return entry;
-    }
-  }
-
-  /** Exception for audit failures */
-  public static class AuditException extends RuntimeException {
-    public AuditException(String message, Throwable cause) {
-      super(message, cause);
-    }
+        context.getEventType(), 
+        context.getEntityType(), 
+        context.getEntityId(), 
+        error.getMessage());
   }
 }
