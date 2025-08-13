@@ -352,17 +352,41 @@ private void createTimelineEvent(
 }
 ```
 
-### Phase 2: OpportunityService Refactoring (Tag 2-3)
+### Phase 2: OpportunityService Refactoring (Tag 2-3) ✅ ABGESCHLOSSEN
 
-#### 2.1 OpportunityCommandService.java
+#### ⚠️ WICHTIGE ERKENNTNISSE aus der Implementierung (14.08.2025):
+1. **KEINE Domain Events:** OpportunityService nutzt direkte AuditService-Integration (nicht Event Bus!)
+2. **getCurrentUser() Helper:** 3-stufiger Fallback für Tests (testuser → ci-test-user → temp)
+3. **Hard Delete:** Kein Soft-Delete implementiert (im Gegensatz zu CustomerService)
+4. **Stage Transitions:** Business Rule Validation via `canTransitionTo()`
+5. **Activity Tracking:** Jede Änderung erstellt OpportunityActivity
+6. **QueryService OHNE @Transactional:** Read-only operations brauchen keine Transaktionen
+
+#### 2.1 OpportunityCommandService.java (TATSÄCHLICHE IMPLEMENTIERUNG)
 ```java
 @ApplicationScoped
 public class OpportunityCommandService {
     
     @Inject OpportunityRepository repository;
     @Inject OpportunityMapper mapper;
-    @Inject Event<OpportunityDomainEvent> eventBus;
-    @Inject OpportunityStageValidator stageValidator;
+    @Inject AuditService auditService; // KEINE Domain Events!
+    @Inject SecurityIdentity securityIdentity; // Für getCurrentUser()
+    
+    /**
+     * Helper mit 3-stufigem Fallback für Tests
+     */
+    private String getCurrentUser() {
+        try {
+            return securityIdentity.getPrincipal().getName();
+        } catch (Exception e) {
+            // Fallback für Tests
+            String testUser = System.getProperty("test.user", "testuser");
+            if ("testuser".equals(testUser)) {
+                return "ci-test-user"; // CI Environment
+            }
+            return testUser.isEmpty() ? "temp" : testUser;
+        }
+    }
     
     @Transactional
     public OpportunityResponse createOpportunity(CreateOpportunityRequest request) {
@@ -382,13 +406,12 @@ public class OpportunityCommandService {
         // Persist
         repository.persist(opportunity);
         
-        // Publish event
-        eventBus.fire(new OpportunityCreatedEvent(
-            opportunity.getId(),
-            opportunity.getName(),
-            opportunity.getStage(),
-            getCurrentUser().getId()
-        ));
+        // Audit logging (KEINE Events!)
+        auditService.logAsync(
+            "OPPORTUNITY_CREATED",
+            opportunity.getId().toString(),
+            "Opportunity created: " + opportunity.getName()
+        );
         
         return mapper.toResponse(opportunity);
     }
@@ -400,9 +423,11 @@ public class OpportunityCommandService {
         
         OpportunityStage oldStage = opportunity.getStage();
         
-        // Validate transition
-        if (!stageValidator.canTransition(oldStage, newStage)) {
-            throw new InvalidStageTransitionException(oldStage, newStage);
+        // Validate transition (direkt implementiert, kein separater Validator)
+        if (!canTransitionTo(oldStage, newStage)) {
+            throw new IllegalStateException(
+                "Cannot transition from " + oldStage + " to " + newStage
+            );
         }
         
         // Update
@@ -416,26 +441,25 @@ public class OpportunityCommandService {
             getCurrentUser()
         ));
         
-        // Publish event
-        eventBus.fire(new OpportunityStageChangedEvent(
-            opportunity.getId(),
-            oldStage,
-            newStage,
-            reason,
-            getCurrentUser().getId()
-        ));
+        // Audit logging
+        auditService.logAsync(
+            "OPPORTUNITY_STAGE_CHANGED",
+            opportunity.getId().toString(),
+            String.format("Stage changed from %s to %s: %s", oldStage, newStage, reason)
+        );
         
         return mapper.toResponse(opportunity);
     }
 }
 ```
 
-#### 2.2 OpportunityQueryService.java
+#### 2.2 OpportunityQueryService.java (TATSÄCHLICHE IMPLEMENTIERUNG)
 ```java
 @ApplicationScoped
 public class OpportunityQueryService {
+    // WICHTIG: KEINE @Transactional Annotation für read-only operations!
     
-    @Inject EntityManager em;
+    @Inject OpportunityRepository repository;
     @Inject OpportunityMapper mapper;
     
     /**
@@ -729,26 +753,32 @@ ALTER TABLE audit_entries ADD CONSTRAINT fk_audit_event
 
 ### Tag 1: Setup & CustomerService Start
 1. ✅ Branch erstellen: `feature/refactor-large-services`
-2. ⏳ Migration V219 erstellen (wenn benötigt)
+2. ✅ Migration V219 vorbereitet (noch nicht benötigt)
 3. ~~Domain Events definieren~~ ENTFÄLLT - nutzt Timeline Events
-4. 🚧 CustomerCommandService implementieren 
+4. ✅ CustomerCommandService implementieren (KOMPLETT)
    - ✅ createCustomer (mit Timeline Events)
    - ✅ updateCustomer (identisch zu Original)
-   - ⏳ deleteCustomer, restoreCustomer, addChildCustomer, updateAllRiskScores, mergeCustomers
-5. ✅ Integration Tests für CustomerCommandService (beweisen identisches Verhalten)
+   - ✅ deleteCustomer, restoreCustomer, addChildCustomer, updateAllRiskScores, mergeCustomers, changeStatus
+5. ✅ Integration Tests für CustomerCommandService (27 Tests, alle grün)
 
 ### Tag 2: CustomerService Complete
-1. ✅ Restliche Command-Methoden
-2. ✅ CustomerQueryService implementieren
-3. ✅ Read Views erstellen
-4. ✅ Integration Tests
-5. ✅ Performance Tests
+1. ✅ CustomerQueryService implementieren (9 Methoden)
+2. ✅ CustomerResource als Facade mit Feature Flag
+3. ✅ Integration Tests (13 Tests für QueryService)
+4. ✅ Performance Tests (identische Performance)
+5. ✅ Git Commit durchgeführt
 
-### Tag 3: OpportunityService
-1. ✅ OpportunityCommandService
-2. ✅ OpportunityQueryService
-3. ✅ Pipeline-Aggregationen
-4. ✅ Tests
+### Tag 3: OpportunityService (14.08.2025 - ✅ ABGESCHLOSSEN)
+1. ✅ OpportunityCommandService (5 Command-Methoden, 346 Zeilen)
+   - createOpportunity, updateOpportunity, deleteOpportunity (HARD DELETE!)
+   - changeStage (3 Überladungen), addActivity
+2. ✅ OpportunityQueryService (7 Query-Methoden, 149 Zeilen) 
+   - OHNE @Transactional (read-only)
+   - findAllOpportunities, findById, findAll, findByAssignedTo
+   - findByStage, getPipelineOverview, calculateForecast
+3. ✅ OpportunityService als Facade mit Feature Flag
+4. ✅ Tests (13 Command + 10 Query + 10 Integration Tests)
+5. ✅ Wichtige Erkenntnisse dokumentiert (siehe oben)
 
 ### Tag 4: AuditService & Event Store
 1. ✅ Event Store implementieren

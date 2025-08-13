@@ -1,4 +1,4 @@
-package de.freshplan.domain.opportunity.service;
+package de.freshplan.domain.opportunity.service.command;
 
 import de.freshplan.domain.audit.entity.AuditEventType;
 import de.freshplan.domain.audit.service.AuditService;
@@ -7,46 +7,43 @@ import de.freshplan.domain.opportunity.entity.Opportunity;
 import de.freshplan.domain.opportunity.entity.OpportunityActivity;
 import de.freshplan.domain.opportunity.entity.OpportunityStage;
 import de.freshplan.domain.opportunity.repository.OpportunityRepository;
-import de.freshplan.domain.opportunity.service.command.OpportunityCommandService;
+import de.freshplan.domain.opportunity.service.dto.ChangeStageRequest;
 import de.freshplan.domain.opportunity.service.dto.CreateOpportunityRequest;
 import de.freshplan.domain.opportunity.service.dto.OpportunityResponse;
-import de.freshplan.domain.opportunity.service.dto.PipelineOverviewResponse;
 import de.freshplan.domain.opportunity.service.dto.UpdateOpportunityRequest;
 import de.freshplan.domain.opportunity.service.exception.InvalidStageTransitionException;
 import de.freshplan.domain.opportunity.service.exception.OpportunityNotFoundException;
 import de.freshplan.domain.opportunity.service.mapper.OpportunityMapper;
-import de.freshplan.domain.opportunity.service.query.OpportunityQueryService;
 import de.freshplan.domain.user.entity.User;
 import de.freshplan.domain.user.repository.UserRepository;
-import io.quarkus.panache.common.Page;
 import io.quarkus.security.identity.SecurityIdentity;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
-import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Collectors;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Opportunity Service - Business Logic für Sales Pipeline
+ * Opportunity Command Service - CQRS Write Side
  *
- * <p>FACADE PATTERN: Dieser Service fungiert als Facade für die CQRS-aufgeteilten Services.
- * Mit Feature Flag kann zwischen Legacy-Implementierung und CQRS umgeschaltet werden.
+ * <p>Behandelt alle schreibenden Operationen für Opportunities:
+ * - Create, Update, Delete
+ * - Stage Transitions
+ * - Activity Management
+ *
+ * <p>WICHTIG: Dieser Service ist eine 1:1 Kopie der Command-Methoden aus OpportunityService
+ * um 100% Kompatibilität zu gewährleisten.
  *
  * @author FreshPlan Team
  * @since 2.0.0
  */
 @ApplicationScoped
-@Transactional
-public class OpportunityService {
+public class OpportunityCommandService {
 
-  private static final Logger logger = LoggerFactory.getLogger(OpportunityService.class);
+  private static final Logger logger = LoggerFactory.getLogger(OpportunityCommandService.class);
 
   @Inject OpportunityRepository opportunityRepository;
 
@@ -58,26 +55,16 @@ public class OpportunityService {
 
   @Inject AuditService auditService;
 
-  // CQRS Services (NEU)
-  @Inject OpportunityCommandService commandService;
-
-  @Inject OpportunityQueryService queryService;
-
-  // Feature Flag für CQRS
-  @ConfigProperty(name = "features.cqrs.enabled", defaultValue = "false")
-  boolean cqrsEnabled;
-
   // =====================================
-  // CRUD OPERATIONS
+  // CREATE OPERATION
   // =====================================
 
-  /** Erstellt eine neue Opportunity */
+  /**
+   * Erstellt eine neue Opportunity
+   * EXAKTE KOPIE von OpportunityService.createOpportunity() Zeile 63-132
+   */
+  @Transactional
   public OpportunityResponse createOpportunity(CreateOpportunityRequest request) {
-    if (cqrsEnabled) {
-      logger.debug("CQRS mode: delegating to OpportunityCommandService");
-      return commandService.createOpportunity(request);
-    }
-    
     logger.info("Creating new opportunity: {}", request.getName());
 
     // Validation
@@ -148,38 +135,16 @@ public class OpportunityService {
     return opportunityMapper.toResponse(opportunity);
   }
 
-  /** Findet alle Opportunities mit Paginierung */
-  public List<OpportunityResponse> findAllOpportunities(Page page) {
-    if (cqrsEnabled) {
-      logger.debug("CQRS mode: delegating to OpportunityQueryService");
-      return queryService.findAllOpportunities(page);
-    }
-    
-    List<Opportunity> opportunities = opportunityRepository.findAllActive(page);
-    return opportunities.stream().map(opportunityMapper::toResponse).collect(Collectors.toList());
-  }
+  // =====================================
+  // UPDATE OPERATION
+  // =====================================
 
-  /** Findet eine Opportunity by ID */
-  public OpportunityResponse findById(UUID id) {
-    if (cqrsEnabled) {
-      logger.debug("CQRS mode: delegating to OpportunityQueryService");
-      return queryService.findById(id);
-    }
-    
-    Opportunity opportunity =
-        opportunityRepository
-            .findByIdOptional(id)
-            .orElseThrow(() -> new OpportunityNotFoundException(id));
-    return opportunityMapper.toResponse(opportunity);
-  }
-
-  /** Aktualisiert eine Opportunity */
+  /**
+   * Aktualisiert eine Opportunity
+   * EXAKTE KOPIE von OpportunityService.updateOpportunity() Zeile 150-189
+   */
+  @Transactional
   public OpportunityResponse updateOpportunity(UUID id, UpdateOpportunityRequest request) {
-    if (cqrsEnabled) {
-      logger.debug("CQRS mode: delegating to OpportunityCommandService");
-      return commandService.updateOpportunity(id, request);
-    }
-    
     logger.info("Updating opportunity: {}", id);
 
     Opportunity opportunity =
@@ -222,27 +187,48 @@ public class OpportunityService {
   }
 
   // =====================================
+  // DELETE OPERATION
+  // =====================================
+
+  /**
+   * Delete an opportunity.
+   * EXAKTE KOPIE von OpportunityService.deleteOpportunity() Zeile 409-419
+   *
+   * @param id the opportunity ID
+   */
+  @Transactional
+  public void deleteOpportunity(UUID id) {
+    logger.info("Deleting opportunity with ID: {}", id);
+
+    Opportunity opportunity =
+        opportunityRepository
+            .findByIdOptional(id)
+            .orElseThrow(() -> new OpportunityNotFoundException(id));
+
+    opportunityRepository.delete(opportunity);
+    logger.info("Successfully deleted opportunity: {}", id);
+  }
+
+  // =====================================
   // STAGE MANAGEMENT
   // =====================================
 
-  /** Ändert die Stage einer Opportunity mit Business Rules Validation */
-  /** Changes the stage of an opportunity with default reason. */
+  /**
+   * Changes the stage of an opportunity with default reason.
+   * EXAKTE KOPIE von OpportunityService.changeStage() Zeile 198-200
+   */
+  @Transactional
   public OpportunityResponse changeStage(UUID opportunityId, OpportunityStage newStage) {
-    if (cqrsEnabled) {
-      logger.debug("CQRS mode: delegating to OpportunityCommandService");
-      return commandService.changeStage(opportunityId, newStage);
-    }
-    
     return changeStage(opportunityId, newStage, "Stage change");
   }
 
+  /**
+   * Ändert die Stage einer Opportunity mit Business Rules Validation
+   * EXAKTE KOPIE von OpportunityService.changeStage() Zeile 202-252
+   */
+  @Transactional
   public OpportunityResponse changeStage(
       UUID opportunityId, OpportunityStage newStage, String reason) {
-    if (cqrsEnabled) {
-      logger.debug("CQRS mode: delegating to OpportunityCommandService");
-      return commandService.changeStage(opportunityId, newStage, reason);
-    }
-    
     logger.info("Changing stage for opportunity {} to {}", opportunityId, newStage);
 
     Opportunity opportunity =
@@ -293,122 +279,12 @@ public class OpportunityService {
     return opportunityMapper.toResponse(opportunity);
   }
 
-  // =====================================
-  // PIPELINE ANALYTICS
-  // =====================================
-
-  /** Pipeline Übersicht mit Stage-Statistiken */
-  public PipelineOverviewResponse getPipelineOverview() {
-    if (cqrsEnabled) {
-      logger.debug("CQRS mode: delegating to OpportunityQueryService");
-      return queryService.getPipelineOverview();
-    }
-    
-    logger.debug("Generating pipeline overview");
-
-    List<Object[]> stageStats = opportunityRepository.getPipelineOverview();
-    BigDecimal totalForecast = opportunityRepository.calculateForecast();
-    Double conversionRate = opportunityRepository.getConversionRate();
-
-    List<Opportunity> highPriority = opportunityRepository.findHighPriorityOpportunities(5);
-    List<Opportunity> overdue = opportunityRepository.findOverdueOpportunities();
-
-    return PipelineOverviewResponse.builder()
-        .stageStatistics(
-            stageStats.stream()
-                .map(
-                    stat ->
-                        PipelineOverviewResponse.StageStatistic.builder()
-                            .stage((OpportunityStage) stat[0])
-                            .count((Long) stat[1])
-                            .totalValue((BigDecimal) stat[2])
-                            .build())
-                .collect(Collectors.toList()))
-        .totalForecast(totalForecast)
-        .conversionRate(conversionRate)
-        .highPriorityOpportunities(
-            highPriority.stream().map(opportunityMapper::toResponse).collect(Collectors.toList()))
-        .overdueOpportunities(
-            overdue.stream().map(opportunityMapper::toResponse).collect(Collectors.toList()))
-        .build();
-  }
-
-  /** Findet Opportunities eines bestimmten Verkäufers */
-  public List<OpportunityResponse> findByAssignedTo(UUID userId) {
-    if (cqrsEnabled) {
-      logger.debug("CQRS mode: delegating to OpportunityQueryService");
-      return queryService.findByAssignedTo(userId);
-    }
-    
-    User user =
-        userRepository
-            .findByIdOptional(userId)
-            .orElseThrow(() -> new RuntimeException("User not found: " + userId));
-
-    List<Opportunity> opportunities = opportunityRepository.findByAssignedTo(user);
-    return opportunities.stream().map(opportunityMapper::toResponse).collect(Collectors.toList());
-  }
-
-  /** Findet Opportunities nach Stage */
-  public List<OpportunityResponse> findByStage(OpportunityStage stage) {
-    if (cqrsEnabled) {
-      logger.debug("CQRS mode: delegating to OpportunityQueryService");
-      return queryService.findByStage(stage);
-    }
-    
-    List<Opportunity> opportunities = opportunityRepository.findByStage(stage);
-    return opportunities.stream().map(opportunityMapper::toResponse).collect(Collectors.toList());
-  }
-
-  // =====================================
-  // ACTIVITY MANAGEMENT
-  // =====================================
-
-  /** Fügt eine Activity zu einer Opportunity hinzu */
-  public OpportunityResponse addActivity(
-      UUID opportunityId, OpportunityActivity.ActivityType type, String title, String description) {
-    if (cqrsEnabled) {
-      logger.debug("CQRS mode: delegating to OpportunityCommandService");
-      return commandService.addActivity(opportunityId, type, title, description);
-    }
-    
-    Opportunity opportunity =
-        opportunityRepository
-            .findByIdOptional(opportunityId)
-            .orElseThrow(() -> new OpportunityNotFoundException(opportunityId));
-
-    User currentUser = getCurrentUser();
-    OpportunityActivity activity =
-        new OpportunityActivity(opportunity, currentUser, type, title, description);
-    opportunity.addActivity(activity);
-
-    opportunityRepository.persist(opportunity);
-    return opportunityMapper.toResponse(opportunity);
-  }
-
-  // =====================================
-  // ANALYTICS & FORECASTING
-  // =====================================
-
-  /** Berechnet den Forecast basierend auf erwarteten Werten und Wahrscheinlichkeiten */
-  public BigDecimal calculateForecast() {
-    if (cqrsEnabled) {
-      logger.debug("CQRS mode: delegating to OpportunityQueryService");
-      return queryService.calculateForecast();
-    }
-    
-    logger.debug("Calculating opportunity forecast");
-    return opportunityRepository.calculateForecast();
-  }
-
-  /** Ändert die Stage einer Opportunity (überladene Methode für ChangeStageRequest) */
-  public OpportunityResponse changeStage(
-      UUID opportunityId, de.freshplan.domain.opportunity.service.dto.ChangeStageRequest request) {
-    if (cqrsEnabled) {
-      logger.debug("CQRS mode: delegating to OpportunityCommandService");
-      return commandService.changeStage(opportunityId, request);
-    }
-    
+  /**
+   * Ändert die Stage einer Opportunity (überladene Methode für ChangeStageRequest)
+   * EXAKTE KOPIE von OpportunityService.changeStage() Zeile 338-391
+   */
+  @Transactional
+  public OpportunityResponse changeStage(UUID opportunityId, ChangeStageRequest request) {
     if (request.getStage() == null) {
       throw new IllegalArgumentException("Stage cannot be null");
     }
@@ -462,49 +338,39 @@ public class OpportunityService {
     return opportunityMapper.toResponse(opportunity);
   }
 
-  /**
-   * Find all opportunities without pagination.
-   *
-   * @return list of all opportunities
-   */
-  public List<OpportunityResponse> findAll() {
-    if (cqrsEnabled) {
-      logger.debug("CQRS mode: delegating to OpportunityQueryService");
-      return queryService.findAll();
-    }
-    
-    logger.debug("Finding all opportunities");
-    List<Opportunity> opportunities = opportunityRepository.listAll();
-    return opportunities.stream().map(opportunityMapper::toResponse).collect(Collectors.toList());
-  }
+  // =====================================
+  // ACTIVITY MANAGEMENT
+  // =====================================
 
   /**
-   * Delete an opportunity.
-   *
-   * @param id the opportunity ID
+   * Fügt eine Activity zu einer Opportunity hinzu
+   * EXAKTE KOPIE von OpportunityService.addActivity() Zeile 311-325
    */
-  public void deleteOpportunity(UUID id) {
-    if (cqrsEnabled) {
-      logger.debug("CQRS mode: delegating to OpportunityCommandService");
-      commandService.deleteOpportunity(id);
-      return;
-    }
-    
-    logger.info("Deleting opportunity with ID: {}", id);
-
+  @Transactional
+  public OpportunityResponse addActivity(
+      UUID opportunityId, OpportunityActivity.ActivityType type, String title, String description) {
     Opportunity opportunity =
         opportunityRepository
-            .findByIdOptional(id)
-            .orElseThrow(() -> new OpportunityNotFoundException(id));
+            .findByIdOptional(opportunityId)
+            .orElseThrow(() -> new OpportunityNotFoundException(opportunityId));
 
-    opportunityRepository.delete(opportunity);
-    logger.info("Successfully deleted opportunity: {}", id);
+    User currentUser = getCurrentUser();
+    OpportunityActivity activity =
+        new OpportunityActivity(opportunity, currentUser, type, title, description);
+    opportunity.addActivity(activity);
+
+    opportunityRepository.persist(opportunity);
+    return opportunityMapper.toResponse(opportunity);
   }
 
   // =====================================
   // PRIVATE HELPER METHODS
   // =====================================
 
+  /**
+   * Ermittelt den aktuellen Benutzer
+   * EXAKTE KOPIE von OpportunityService.getCurrentUser() Zeile 425-450
+   */
   private User getCurrentUser() {
     try {
       String username = securityIdentity.getPrincipal().getName();
