@@ -88,7 +88,7 @@ public class CustomerMapper {
         customer.getPainPoints(),
 
         // Contact Information
-        customer.getActiveContacts() != null ? customer.getActiveContacts().size() : 0,
+        customer.getActiveContactsCount(),
         customer.getCreatedAt(),
         customer.getCreatedBy(),
         customer.getUpdatedAt(),
@@ -146,7 +146,7 @@ public class CustomerMapper {
         List.of(), // painPoints
 
         // Contact Information - NEEDED FOR FILTERS
-        customer.getActiveContacts() != null ? customer.getActiveContacts().size() : 0,
+        customer.getActiveContactsCount(),
         customer.getCreatedAt(),
         null, // createdBy
         null, // updatedAt
