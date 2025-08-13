@@ -63,6 +63,9 @@ public record CustomerResponse(
     FinancingType primaryFinancing,
     List<String> painPoints,
 
+    // Contact Information
+    Integer contactsCount,
+
     // Audit Information
     LocalDateTime createdAt,
     String createdBy,
@@ -122,6 +125,9 @@ public record CustomerResponse(
         // Business Model - NEW for Sprint 2 (null for minimal)
         null,
         List.of(),
+
+        // Contact Information (null for minimal)
+        null,
         createdAt,
         null,
         null,

@@ -10,8 +10,8 @@ import {
   Typography,
   IconButton,
   Tooltip,
-  SelectChangeEvent,
 } from '@mui/material';
+import type { SelectChangeEvent } from '@mui/material/Select';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';

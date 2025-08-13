@@ -649,6 +649,12 @@ public class Customer extends PanacheEntityBase {
         .toList();
   }
 
+  /** Gets the count of active contacts for this customer. */
+  public int getActiveContactsCount() {
+    java.util.List<CustomerContact> activeContacts = getActiveContacts();
+    return activeContacts != null ? activeContacts.size() : 0;
+  }
+
   /** Adds a location to this customer. */
   public void addLocation(CustomerLocation location) {
     if (location != null) {

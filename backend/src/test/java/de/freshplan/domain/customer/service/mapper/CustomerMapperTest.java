@@ -173,6 +173,9 @@ class CustomerMapperTest {
       assertThat(result.lastContactDate()).isEqualTo(testCustomer.getLastContactDate());
       assertThat(result.nextFollowUpDate()).isEqualTo(testCustomer.getNextFollowUpDate());
 
+      // Contact Information
+      assertThat(result.contactsCount()).isEqualTo(0); // testCustomer has no contacts in setup
+
       // Audit fields
       assertThat(result.createdAt()).isEqualTo(testCustomer.getCreatedAt());
       assertThat(result.createdBy()).isEqualTo(testCustomer.getCreatedBy());
@@ -210,14 +213,24 @@ class CustomerMapperTest {
       assertThat(result.hierarchyType()).isNull();
       assertThat(result.lifecycleStage()).isNull();
       assertThat(result.partnerStatus()).isNull();
-      assertThat(result.expectedAnnualVolume()).isNull();
+      // expectedAnnualVolume is NOT null in minimal response - it's needed for filters
+      assertThat(result.expectedAnnualVolume()).isEqualTo(testCustomer.getExpectedAnnualVolume());
       assertThat(result.actualAnnualVolume()).isNull();
       assertThat(result.paymentTerms()).isNull();
       assertThat(result.creditLimit()).isNull();
       assertThat(result.deliveryCondition()).isNull();
-      assertThat(result.atRisk()).isFalse();
-      assertThat(result.lastContactDate()).isNull();
+      
+      // Risk fields are included in minimal response
+      assertThat(result.riskScore()).isEqualTo(testCustomer.getRiskScore());
+      assertThat(result.atRisk()).isEqualTo(testCustomer.isAtRisk());
+      
+      // lastContactDate is NOT null in minimal response - it's needed for filters
+      assertThat(result.lastContactDate()).isEqualTo(testCustomer.getLastContactDate());
       assertThat(result.nextFollowUpDate()).isNull();
+      
+      // Contact Information (added after Sprint 2)
+      assertThat(result.contactsCount()).isEqualTo(0); // testCustomer has no contacts
+      
       assertThat(result.createdBy()).isNull();
       assertThat(result.updatedAt()).isNull();
       assertThat(result.updatedBy()).isNull();
@@ -253,6 +266,7 @@ class CustomerMapperTest {
       assertThat(result.industry()).isNull();
       assertThat(result.expectedAnnualVolume()).isNull();
       assertThat(result.riskScore()).isEqualTo(0);
+      assertThat(result.contactsCount()).isEqualTo(0); // No contacts means count is 0
     }
   }
 

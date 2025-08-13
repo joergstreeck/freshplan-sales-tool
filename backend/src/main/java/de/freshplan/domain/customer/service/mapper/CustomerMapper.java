@@ -86,6 +86,9 @@ public class CustomerMapper {
         // Business Model - NEW for Sprint 2
         customer.getPrimaryFinancing(),
         customer.getPainPoints(),
+
+        // Contact Information
+        customer.getActiveContactsCount(),
         customer.getCreatedAt(),
         customer.getCreatedBy(),
         customer.getUpdatedAt(),
@@ -107,15 +110,50 @@ public class CustomerMapper {
       return null;
     }
 
+    // Extended minimal response to include fields needed for filtering
     return new CustomerResponse(
         customer.getId().toString(),
         customer.getCustomerNumber(),
         customer.getCompanyName(),
-        customer.getStatus(),
+        null, // tradingName
+        null, // legalForm
         customer.getCustomerType(),
         customer.getIndustry(),
+        null, // classification
+        null, // parentCustomerId
+        null, // hierarchyType
+        List.of(), // childCustomerIds
+        false, // hasChildren
+        customer.getStatus(),
+        null, // lifecycleStage
+        null, // partnerStatus
+        customer.getExpectedAnnualVolume(), // NEEDED FOR FILTERS
+        null, // actualAnnualVolume
+        null, // paymentTerms
+        null, // creditLimit
+        null, // deliveryCondition
         customer.getRiskScore(),
-        customer.getCreatedAt());
+        customer.isAtRisk(),
+        customer.getLastContactDate(), // NEEDED FOR FILTERS
+        null, // nextFollowUpDate
+        null, // totalLocationsEU
+        null, // locationsGermany
+        null, // locationsAustria
+        null, // locationsSwitzerland
+        null, // locationsRestEU
+        null, // expansionPlanned
+        null, // primaryFinancing
+        List.of(), // painPoints
+
+        // Contact Information - NEEDED FOR FILTERS
+        customer.getActiveContactsCount(),
+        customer.getCreatedAt(),
+        null, // createdBy
+        null, // updatedAt
+        null, // updatedBy
+        false, // isDeleted
+        null, // deletedAt
+        null); // deletedBy
   }
 
   /**

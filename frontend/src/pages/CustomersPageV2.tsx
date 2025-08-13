@@ -113,18 +113,65 @@ export function CustomersPageV2({ openWizard = false }: CustomersPageV2Props) {
     // Apply risk level filter
     if (filterConfig.riskLevel && filterConfig.riskLevel.length > 0) {
       filtered = filtered.filter(customer => {
-        // Calculate risk level based on business logic
-        const daysSinceContact = customer.lastContactDate
-          ? Math.floor(
-              (Date.now() - new Date(customer.lastContactDate).getTime()) / (1000 * 60 * 60 * 24)
-            )
-          : 999;
+        // Use riskScore if available
+        if (customer.riskScore !== null && customer.riskScore !== undefined) {
+          // Definierte Risiko-Level-Bereiche:
+          // CRITICAL: 80-100
+          // HIGH: 60-79
+          // MEDIUM: 30-59
+          // LOW: 0-29
+          let riskLevel = 'LOW';
+          if (customer.riskScore >= 80) {
+            riskLevel = 'CRITICAL';
+          } else if (customer.riskScore >= 60) {
+            riskLevel = 'HIGH';
+          } else if (customer.riskScore >= 30) {
+            riskLevel = 'MEDIUM';
+          }
+          return filterConfig.riskLevel?.includes(riskLevel);
+        }
+        
+        // No riskScore = exclude from risk filter (we don't calculate from lastContactDate anymore)
+        return false;
+      });
+    }
 
-        let riskLevel = 'LOW';
-        if (daysSinceContact > 90) riskLevel = 'HIGH';
-        else if (daysSinceContact > 30) riskLevel = 'MEDIUM';
+    // Apply hasContacts filter (für "Mit/Ohne Kontakte")
+    if (filterConfig.hasContacts !== null && filterConfig.hasContacts !== undefined) {
+      filtered = filtered.filter(customer => {
+        const hasContacts = (customer.contactsCount || 0) > 0;
+        return filterConfig.hasContacts === hasContacts;
+      });
+    }
 
-        return filterConfig.riskLevel?.includes(riskLevel);
+    // Apply lastContactDays filter (für "Lange kein Kontakt")
+    if (filterConfig.lastContactDays) {
+      filtered = filtered.filter(customer => {
+        // Only consider customers with lastContactDate
+        if (!customer.lastContactDate) return false;
+        
+        const daysSinceContact = Math.floor(
+          (Date.now() - new Date(customer.lastContactDate).getTime()) / (1000 * 60 * 60 * 24)
+        );
+        return daysSinceContact >= filterConfig.lastContactDays;
+      });
+    }
+
+    // Apply revenue range filter (für "Top-Kunden")
+    if (filterConfig.revenueRange) {
+      filtered = filtered.filter(customer => {
+        // Only consider customers with expectedAnnualVolume
+        if (customer.expectedAnnualVolume === null || customer.expectedAnnualVolume === undefined) {
+          return false;
+        }
+        
+        const revenue = customer.expectedAnnualVolume;
+        const { min, max } = filterConfig.revenueRange || {};
+        
+        if (min !== null && min !== undefined && revenue < min) return false;
+        if (max !== null && max !== undefined && revenue > max) return false;
+        
+        return true;
       });
     }
 

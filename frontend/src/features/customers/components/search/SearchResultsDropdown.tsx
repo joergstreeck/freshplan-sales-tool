@@ -44,6 +44,28 @@ import {
   BusinessCenter as DepartmentIcon,
 } from '@mui/icons-material';
 
+// Field translations for German localization
+const FIELD_TRANSLATIONS: Record<string, string> = {
+  'companyName': 'Firmenname',
+  'tradingName': 'Handelsname',
+  'customerNumber': 'Kundennummer',
+  'email': 'E-Mail',
+  'phone': 'Telefon',
+  'mobile': 'Mobil',
+  'position': 'Position',
+  'department': 'Abteilung',
+  'firstName': 'Vorname',
+  'lastName': 'Nachname',
+  'status': 'Status',
+  'location': 'Standort',
+  'tags': 'Schlagwörter',
+  'notes': 'Notizen',
+  'address': 'Adresse',
+  'city': 'Stadt',
+  'postalCode': 'PLZ',
+  'country': 'Land',
+};
+
 // Search Result Types
 interface ContactSearchResult {
   id: string;
@@ -294,7 +316,9 @@ export const SearchResultsDropdown: React.FC<SearchResultsDropdownProps> = ({
                           >
                             {getMatchIcon(result.matchedFields)}
                             <span style={{ fontSize: '0.75rem', color: 'rgba(0, 0, 0, 0.6)' }}>
-                              Gefunden in: {result.matchedFields.join(', ')}
+                              Gefunden in: {result.matchedFields
+                                .map(field => FIELD_TRANSLATIONS[field] || field)
+                                .join(', ')}
                             </span>
                           </span>
                         )}

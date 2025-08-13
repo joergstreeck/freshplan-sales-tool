@@ -17,6 +17,14 @@ declare module '@mui/material/styles' {
       success: string;
       background: string;
     };
+    status: {
+      won: string;
+      lost: string;
+      reactivate: string;
+      probabilityHigh: string;
+      probabilityMedium: string;
+      probabilityLow: string;
+    };
   }
 
   interface PaletteOptions {
@@ -25,6 +33,14 @@ declare module '@mui/material/styles' {
       secondary?: string;
       success?: string;
       background?: string;
+    };
+    status?: {
+      won?: string;
+      lost?: string;
+      reactivate?: string;
+      probabilityHigh?: string;
+      probabilityMedium?: string;
+      probabilityLow?: string;
     };
   }
 }
@@ -59,6 +75,15 @@ export const freshfoodzTheme = createTheme({
       secondary: '#004F7B',
       success: '#94C456',
       background: '#ffffff',
+    },
+    // Status Colors for Application States
+    status: {
+      won: '#66BB6A',           // Grün für Erfolg/Gewonnen
+      lost: '#EF5350',          // Rot für Verloren
+      reactivate: '#2196F3',    // Blau für Reaktivierung
+      probabilityHigh: '#66BB6A',    // Grün für hohe Wahrscheinlichkeit (80%+)
+      probabilityMedium: '#FFA726',  // Orange für mittlere Wahrscheinlichkeit (40-60%)
+      probabilityLow: '#FF7043',     // Orange-Rot für niedrige Wahrscheinlichkeit (20-40%)
     },
   },
   typography: {

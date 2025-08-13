@@ -12,8 +12,8 @@ import {
   MenuItem,
   FormHelperText,
   ListItemText,
-  SelectChangeEvent,
 } from '@mui/material';
+import type { SelectChangeEvent } from '@mui/material/Select';
 import { useTheme } from '@mui/material/styles';
 import { useDropdownWidth } from '../../../hooks/useDropdownWidth';
 import type { FieldDefinition } from '../../../types/field.types';

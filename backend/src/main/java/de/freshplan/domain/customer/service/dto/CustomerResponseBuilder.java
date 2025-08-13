@@ -64,6 +64,9 @@ public final class CustomerResponseBuilder {
   private FinancingType primaryFinancing;
   private List<String> painPoints = new ArrayList<>();
 
+  // Contact Information
+  private Integer contactsCount;
+
   // Audit Information
   private LocalDateTime createdAt;
   private String createdBy;
@@ -334,6 +337,9 @@ public final class CustomerResponseBuilder {
     this.primaryFinancing = customer.getPrimaryFinancing();
     this.painPoints = customer.getPainPoints();
 
+    // Contact Information
+    this.contactsCount = customer.getActiveContactsCount();
+
     return this;
   }
 
@@ -375,6 +381,10 @@ public final class CustomerResponseBuilder {
         // Business Model - NEW for Sprint 2
         primaryFinancing,
         painPoints,
+        
+        // Contact Information
+        contactsCount,
+        
         createdAt,
         createdBy,
         updatedAt,
