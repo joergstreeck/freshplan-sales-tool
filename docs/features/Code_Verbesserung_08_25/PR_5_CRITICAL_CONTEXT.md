@@ -43,12 +43,12 @@
 
 ## 📊 Aktuelle Produktions-Statistiken
 
-**Stand: 14.08.2025 - Nach Phase 3**
+**Stand: 14.08.2025 - Nach Phase 4**
 - **69 Test-Kunden** im System (CustomerDataInitializer)
 - **25 Kontakte** verknüpft
 - **31 Opportunities** in verschiedenen Stages
 - **Frontend** erwartet diese Datenstruktur!
-- **Phase 1-3 CQRS Migration:** ✅ CustomerService, OpportunityService, AuditService erfolgreich migriert
+- **Phase 1-4 CQRS Migration:** ✅ CustomerService, OpportunityService, AuditService, CustomerTimelineService erfolgreich migriert
 
 ---
 
