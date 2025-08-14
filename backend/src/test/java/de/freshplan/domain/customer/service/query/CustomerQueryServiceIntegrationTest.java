@@ -50,8 +50,9 @@ class CustomerQueryServiceIntegrationTest {
     @BeforeEach
     @Transactional
     void setUp() {
-        // Clean up any test data
-        customerRepository.deleteAll();
+        // Clean up any test data - skip foreign key constraints by using query
+        customerRepository.getEntityManager().createQuery("DELETE FROM CustomerTimelineEvent").executeUpdate();
+        customerRepository.getEntityManager().createQuery("DELETE FROM Customer").executeUpdate();
         customerRepository.flush();
         
         // Create a test customer directly in DB for read tests

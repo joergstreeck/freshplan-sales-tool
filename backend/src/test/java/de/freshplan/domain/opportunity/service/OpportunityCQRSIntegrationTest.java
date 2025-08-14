@@ -238,14 +238,3 @@ class OpportunityCQRSIntegrationTest {
   }
 }
 
-/**
- * Test Profile to enable CQRS for integration tests
- */
-class OpportunityCQRSTestProfile implements io.quarkus.test.junit.QuarkusTestProfile {
-  @Override
-  public java.util.Map<String, String> getConfigOverrides() {
-    return java.util.Map.of(
-        "features.cqrs.enabled", "true"
-    );
-  }
-}

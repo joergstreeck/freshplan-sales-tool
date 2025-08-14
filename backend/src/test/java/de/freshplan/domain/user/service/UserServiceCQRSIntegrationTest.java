@@ -18,6 +18,7 @@ import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
 import io.quarkus.test.junit.mockito.InjectMock;
 import jakarta.inject.Inject;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -49,39 +50,39 @@ class UserServiceCQRSIntegrationTest {
   void setUp() {
     testUserId = UUID.randomUUID();
 
-    // Setup test user
-    testUser = new User();
-    testUser.setId(testUserId);
-    testUser.setUsername("testuser");
-    testUser.setEmail("test@example.com");
-    testUser.setFirstName("Test");
-    testUser.setLastName("User");
-    testUser.setEnabled(true);
+    // Setup test user using constructor
+    testUser = new User("testuser", "Test", "User", "test@example.com");
+    setFieldValue(testUser, "id", testUserId);
+    setFieldValue(testUser, "roles", Arrays.asList("sales", "manager"));
 
-    // Setup response
-    testUserResponse = new UserResponse();
-    testUserResponse.setId(testUserId);
-    testUserResponse.setUsername("testuser");
-    testUserResponse.setEmail("test@example.com");
-    testUserResponse.setFirstName("Test");
-    testUserResponse.setLastName("User");
-    testUserResponse.setEnabled(true);
+    // Setup response using builder
+    testUserResponse = UserResponse.builder()
+        .id(testUserId)
+        .username("testuser")
+        .email("test@example.com")
+        .firstName("Test")
+        .lastName("User")
+        .enabled(true)
+        .roles(Arrays.asList("sales", "manager"))
+        .createdAt(Instant.now())
+        .updatedAt(Instant.now())
+        .build();
 
-    // Setup requests
-    createRequest = new CreateUserRequest();
-    createRequest.setUsername("newuser");
-    createRequest.setEmail("new@example.com");
-    createRequest.setFirstName("New");
-    createRequest.setLastName("User");
-    createRequest.setEnabled(true);
-    createRequest.setRoles(Arrays.asList("sales"));
+    // Setup requests using constructors or builders
+    createRequest = CreateUserRequest.builder()
+        .username("newuser")
+        .email("new@example.com")
+        .firstName("New")
+        .lastName("User")
+        .build();
 
-    updateRequest = new UpdateUserRequest();
-    updateRequest.setUsername("updateduser");
-    updateRequest.setEmail("updated@example.com");
-    updateRequest.setFirstName("Updated");
-    updateRequest.setLastName("User");
-    updateRequest.setEnabled(false);
+    updateRequest = new UpdateUserRequest(
+        "updateduser",
+        "Updated",
+        "User",
+        "updated@example.com",
+        false
+    );
 
     // Reset mocks
     reset(userRepository, userMapper);
@@ -137,7 +138,7 @@ class UserServiceCQRSIntegrationTest {
   @Test
   void enableUser_withCQRSEnabled_shouldDelegateToCommandService() {
     // Given
-    testUser.setEnabled(false);
+    setFieldValue(testUser, "enabled", false);
     when(userRepository.findByIdOptional(testUserId)).thenReturn(Optional.of(testUser));
     when(userMapper.toResponse(testUser)).thenReturn(testUserResponse);
 
@@ -260,21 +261,22 @@ class UserServiceCQRSIntegrationTest {
     verify(userRepository).delete(testUser);
   }
 
-  // ========== HELPER METHOD ==========
+  // ========== HELPER METHODS ==========
 
   private void verifyNoWriteOperations() {
-    verify(userRepository, never()).persist(any());
+    verify(userRepository, never()).persist((User) any());
     verify(userRepository, never()).delete(any());
     verify(userRepository, never()).flush();
   }
-}
-
-/**
- * Test profile to enable CQRS for integration tests.
- */
-class UserServiceCQRSTestProfile implements io.quarkus.test.junit.QuarkusTestProfile {
-  @Override
-  public java.util.Map<String, String> getConfigOverrides() {
-    return java.util.Map.of("features.cqrs.enabled", "true");
+  
+  // Helper method to set private fields via reflection
+  private void setFieldValue(Object obj, String fieldName, Object value) {
+    try {
+      java.lang.reflect.Field field = obj.getClass().getDeclaredField(fieldName);
+      field.setAccessible(true);
+      field.set(obj, value);
+    } catch (Exception e) {
+      throw new RuntimeException("Failed to set field " + fieldName, e);
+    }
   }
 }

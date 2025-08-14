@@ -46,11 +46,26 @@ public class CustomerDataInitializer {
     LOG.info(
         "🧪 Initializing comprehensive test data for ALL modules (Intelligence, Cockpit, Opportunities)...");
 
-    // For comprehensive testing: Always recreate test data
-    // Clear existing data - SQL-based cascade deletion approach
+    // IMPROVED: Check if test data already exists before clearing
+    // This prevents loss of existing test customers on backend restart
     long existingCount = customerRepository.count();
-    if (existingCount > 0) {
-      LOG.info("Found " + existingCount + " existing customers, clearing for fresh test data...");
+    long testCustomerCount = customerRepository.getEntityManager()
+        .createNativeQuery("SELECT COUNT(*) FROM customers WHERE company_name LIKE '[TEST]%'")
+        .getSingleResult() instanceof Number ? 
+        ((Number) customerRepository.getEntityManager()
+            .createNativeQuery("SELECT COUNT(*) FROM customers WHERE company_name LIKE '[TEST]%'")
+            .getSingleResult()).longValue() : 0L;
+    
+    // If we already have test customers, skip initialization to preserve data
+    if (testCustomerCount > 20) {  // Expected around 58 test customers
+      LOG.info("Found " + testCustomerCount + " existing [TEST] customers. Skipping initialization to preserve data.");
+      LOG.info("Total customers in database: " + existingCount);
+      return;
+    }
+    
+    // Only clear data if we have insufficient test data
+    if (existingCount > 0 && testCustomerCount < 20) {
+      LOG.info("Found " + existingCount + " existing customers but only " + testCustomerCount + " test customers, clearing for fresh test data...");
       // Use SQL directly to avoid Hibernate/JPA cascade issues
       // Delete in dependency order: child tables first, then parent tables
       var em = customerRepository.getEntityManager();
@@ -139,7 +154,7 @@ public class CustomerDataInitializer {
   private void createHotelCustomer() {
     Customer customer = new Customer();
     customer.setCustomerNumber("KD-2025-00001");
-    customer.setCompanyName("Grand Hotel Berlin");
+    customer.setCompanyName("[TEST] Grand Hotel Berlin");
     customer.setTradingName("Grand Hotel");
     customer.setLegalForm("GmbH");
     customer.setCustomerType(CustomerType.UNTERNEHMEN);
@@ -173,7 +188,7 @@ public class CustomerDataInitializer {
   private void createRestaurantCustomer() {
     Customer customer = new Customer();
     customer.setCustomerNumber("KD-2025-00002");
-    customer.setCompanyName("Bella Italia Restaurant");
+    customer.setCompanyName("[TEST] Bella Italia Restaurant");
     customer.setTradingName("Bella Italia");
     customer.setLegalForm("Einzelunternehmen");
     customer.setCustomerType(CustomerType.UNTERNEHMEN);
@@ -207,7 +222,7 @@ public class CustomerDataInitializer {
   private void createCateringCustomer() {
     Customer customer = new Customer();
     customer.setCustomerNumber("KD-2025-00003");
-    customer.setCompanyName("Event Catering München GmbH");
+    customer.setCompanyName("[TEST] Event Catering München GmbH");
     customer.setTradingName("Event Catering");
     customer.setLegalForm("GmbH");
     customer.setCustomerType(CustomerType.UNTERNEHMEN);
@@ -241,7 +256,7 @@ public class CustomerDataInitializer {
   private void createSchoolCustomer() {
     Customer customer = new Customer();
     customer.setCustomerNumber("KD-2025-00004");
-    customer.setCompanyName("Städtische Grundschule Nord");
+    customer.setCompanyName("[TEST] Städtische Grundschule Nord");
     customer.setTradingName("Grundschule Nord");
     customer.setLegalForm("Öffentliche Einrichtung");
     customer.setCustomerType(CustomerType.INSTITUTION);
@@ -275,7 +290,7 @@ public class CustomerDataInitializer {
   private void createEventCustomer() {
     Customer customer = new Customer();
     customer.setCustomerNumber("KD-2025-00005");
-    customer.setCompanyName("Messe Frankfurt Event GmbH");
+    customer.setCompanyName("[TEST] Messe Frankfurt Event GmbH");
     customer.setTradingName("Messe Frankfurt");
     customer.setLegalForm("GmbH");
     customer.setCustomerType(CustomerType.UNTERNEHMEN);
@@ -339,7 +354,7 @@ public class CustomerDataInitializer {
     // Test 1: Minimal string length (1 character)
     Customer minimal = new Customer();
     minimal.setCustomerNumber("MIN-001");
-    minimal.setCompanyName("A"); // Minimal 1 Zeichen
+    minimal.setCompanyName("[TEST] A"); // Minimal 1 Zeichen
     minimal.setCustomerType(CustomerType.UNTERNEHMEN);
     minimal.setIndustry(Industry.SONSTIGE);
     minimal.setClassification(Classification.C_KUNDE);
@@ -359,8 +374,8 @@ public class CustomerDataInitializer {
     // Test 2: Maximum string length (255 characters for companyName)
     Customer maximal = new Customer();
     maximal.setCustomerNumber("MAX-001");
-    String maxName = "X".repeat(254) + "Z"; // Exakt 255 Zeichen
-    maximal.setCompanyName(maxName);
+    String maxName = "X".repeat(247) + "Z"; // Exakt 248 Zeichen + "[TEST] " = 255 Zeichen
+    maximal.setCompanyName("[TEST] " + maxName);
     maximal.setCustomerType(CustomerType.UNTERNEHMEN);
     maximal.setIndustry(Industry.SONSTIGE);
     maximal.setClassification(Classification.C_KUNDE);
@@ -380,7 +395,7 @@ public class CustomerDataInitializer {
     // Test 3: Special characters & umlauts
     Customer special = new Customer();
     special.setCustomerNumber("SPEC-001");
-    special.setCompanyName("Café & Restaurant 'Zur Sonne' - Inh. Müller");
+    special.setCompanyName("[TEST] Café & Restaurant 'Zur Sonne' - Inh. Müller");
     special.setTradingName("Café 'L'Étoile'");
     special.setLegalForm("GmbH & Co. KG");
     special.setCustomerType(CustomerType.UNTERNEHMEN);
@@ -403,7 +418,7 @@ public class CustomerDataInitializer {
     // Test 1: Zero values
     Customer zeroCustomer = new Customer();
     zeroCustomer.setCustomerNumber("ZERO-001");
-    zeroCustomer.setCompanyName("Zero Values Test Company");
+    zeroCustomer.setCompanyName("[TEST] Zero Values Test Company");
     zeroCustomer.setCustomerType(CustomerType.UNTERNEHMEN);
     zeroCustomer.setIndustry(Industry.SONSTIGE);
     zeroCustomer.setClassification(Classification.C_KUNDE);
@@ -419,7 +434,7 @@ public class CustomerDataInitializer {
     // Test 2: Maximum numeric values
     Customer maxNumeric = new Customer();
     maxNumeric.setCustomerNumber("MAXNUM-001");
-    maxNumeric.setCompanyName("Maximum Numbers Test Company");
+    maxNumeric.setCompanyName("[TEST] Maximum Numbers Test Company");
     maxNumeric.setCustomerType(CustomerType.UNTERNEHMEN);
     maxNumeric.setIndustry(Industry.SONSTIGE);
     maxNumeric.setClassification(Classification.A_KUNDE);
@@ -436,7 +451,7 @@ public class CustomerDataInitializer {
     // Test 3: Precise decimal values
     Customer precise = new Customer();
     precise.setCustomerNumber("PREC-001");
-    precise.setCompanyName("Decimal Precision Test Company");
+    precise.setCompanyName("[TEST] Decimal Precision Test Company");
     precise.setCustomerType(CustomerType.UNTERNEHMEN);
     precise.setIndustry(Industry.SONSTIGE);
     precise.setClassification(Classification.B_KUNDE);
@@ -462,7 +477,7 @@ public class CustomerDataInitializer {
     // Test 1: Past dates
     Customer pastCustomer = new Customer();
     pastCustomer.setCustomerNumber("PAST-001");
-    pastCustomer.setCompanyName("Past Dates Test Company");
+    pastCustomer.setCompanyName("[TEST] Past Dates Test Company");
     pastCustomer.setCustomerType(CustomerType.UNTERNEHMEN);
     pastCustomer.setIndustry(Industry.SONSTIGE);
     pastCustomer.setClassification(Classification.C_KUNDE);
@@ -476,7 +491,7 @@ public class CustomerDataInitializer {
     // Test 2: Far future dates
     Customer futureCustomer = new Customer();
     futureCustomer.setCustomerNumber("FUTURE-001");
-    futureCustomer.setCompanyName("Future Dates Test Company");
+    futureCustomer.setCompanyName("[TEST] Future Dates Test Company");
     futureCustomer.setCustomerType(CustomerType.UNTERNEHMEN);
     futureCustomer.setIndustry(Industry.SONSTIGE);
     futureCustomer.setClassification(Classification.B_KUNDE);
@@ -490,7 +505,7 @@ public class CustomerDataInitializer {
     // Test 3: Leap year and timezone edge cases
     Customer leapYear = new Customer();
     leapYear.setCustomerNumber("LEAP-001");
-    leapYear.setCompanyName("Leap Year Test Company");
+    leapYear.setCompanyName("[TEST] Leap Year Test Company");
     leapYear.setCustomerType(CustomerType.UNTERNEHMEN);
     leapYear.setIndustry(Industry.SONSTIGE);
     leapYear.setClassification(Classification.B_KUNDE);
@@ -515,7 +530,7 @@ public class CustomerDataInitializer {
     for (CustomerType type : CustomerType.values()) {
       Customer customer = new Customer();
       customer.setCustomerNumber("TYPE-" + String.format("%03d", counter++));
-      customer.setCompanyName("Test Company for " + type.name());
+      customer.setCompanyName("[TEST] Test Company for " + type.name());
       customer.setCustomerType(type);
       customer.setIndustry(Industry.SONSTIGE);
       customer.setClassification(Classification.C_KUNDE);
@@ -530,7 +545,7 @@ public class CustomerDataInitializer {
     for (Industry industry : Industry.values()) {
       Customer customer = new Customer();
       customer.setCustomerNumber("IND-" + String.format("%03d", counter++));
-      customer.setCompanyName("Test Company for " + industry.name());
+      customer.setCompanyName("[TEST] Test Company for " + industry.name());
       customer.setCustomerType(CustomerType.UNTERNEHMEN);
       customer.setIndustry(industry);
       customer.setClassification(Classification.B_KUNDE);
@@ -545,7 +560,7 @@ public class CustomerDataInitializer {
     for (CustomerStatus status : CustomerStatus.values()) {
       Customer customer = new Customer();
       customer.setCustomerNumber("STAT-" + String.format("%03d", counter++));
-      customer.setCompanyName("Test Company for " + status.name());
+      customer.setCompanyName("[TEST] Test Company for " + status.name());
       customer.setCustomerType(CustomerType.UNTERNEHMEN);
       customer.setIndustry(Industry.SONSTIGE);
       customer.setClassification(Classification.B_KUNDE);
@@ -566,7 +581,7 @@ public class CustomerDataInitializer {
     // Test 1: Hierarchie-Ketten (Headquarter -> Branch -> Subsidiary)
     Customer headquarter = new Customer();
     headquarter.setCustomerNumber("HQ-001");
-    headquarter.setCompanyName("Global Catering Headquarter");
+    headquarter.setCompanyName("[TEST] Global Catering Headquarter");
     headquarter.setCustomerType(CustomerType.UNTERNEHMEN);
     headquarter.setIndustry(Industry.CATERING);
     headquarter.setClassification(Classification.A_KUNDE);
@@ -579,7 +594,7 @@ public class CustomerDataInitializer {
 
     Customer branch = new Customer();
     branch.setCustomerNumber("BR-001");
-    branch.setCompanyName("Global Catering Branch Berlin");
+    branch.setCompanyName("[TEST] Global Catering Branch Berlin");
     branch.setCustomerType(CustomerType.UNTERNEHMEN);
     branch.setIndustry(Industry.CATERING);
     branch.setClassification(Classification.A_KUNDE);
@@ -593,7 +608,7 @@ public class CustomerDataInitializer {
     // Test 2: Risk Score Extreme Cases
     Customer highRisk = new Customer();
     highRisk.setCustomerNumber("RISK-HIGH");
-    highRisk.setCompanyName("High Risk Customer Ltd.");
+    highRisk.setCompanyName("[TEST] High Risk Customer Ltd.");
     highRisk.setCustomerType(CustomerType.UNTERNEHMEN);
     highRisk.setIndustry(Industry.SONSTIGE);
     highRisk.setClassification(Classification.C_KUNDE);
@@ -607,7 +622,7 @@ public class CustomerDataInitializer {
 
     Customer lowRisk = new Customer();
     lowRisk.setCustomerNumber("RISK-LOW");
-    lowRisk.setCompanyName("Premium Low Risk Customer GmbH");
+    lowRisk.setCompanyName("[TEST] Premium Low Risk Customer GmbH");
     lowRisk.setCustomerType(CustomerType.UNTERNEHMEN);
     lowRisk.setIndustry(Industry.HOTEL);
     lowRisk.setClassification(Classification.A_KUNDE);
@@ -630,7 +645,7 @@ public class CustomerDataInitializer {
     // Test 1: Deutsche Umlaute und Sonderzeichen
     Customer german = new Customer();
     german.setCustomerNumber("UNI-DE");
-    german.setCompanyName("Bäckerei Müßigmann GmbH & Co. KG");
+    german.setCompanyName("[TEST] Bäckerei Müßigmann GmbH & Co. KG");
     german.setTradingName("Bäckerei Müßigmann");
     german.setLegalForm("GmbH & Co. KG");
     german.setCustomerType(CustomerType.UNTERNEHMEN);
@@ -644,7 +659,7 @@ public class CustomerDataInitializer {
     // Test 2: Französische Akzente
     Customer french = new Customer();
     french.setCustomerNumber("UNI-FR");
-    french.setCompanyName("Café L'Étoile - Spécialités Françaises");
+    french.setCompanyName("[TEST] Café L'Étoile - Spécialités Françaises");
     french.setTradingName("Café L'Étoile");
     french.setCustomerType(CustomerType.UNTERNEHMEN);
     french.setIndustry(Industry.RESTAURANT);
@@ -657,7 +672,7 @@ public class CustomerDataInitializer {
     // Test 3: Chinesische Zeichen (falls internationaler Support)
     Customer chinese = new Customer();
     chinese.setCustomerNumber("UNI-CN");
-    chinese.setCompanyName("北京烤鸭餐厅"); // "Beijing Roast Duck Restaurant"
+    chinese.setCompanyName("[TEST] 北京烤鸭餐厅"); // "Beijing Roast Duck Restaurant"
     chinese.setTradingName("Beijing Restaurant");
     chinese.setCustomerType(CustomerType.UNTERNEHMEN);
     chinese.setIndustry(Industry.RESTAURANT);
@@ -670,7 +685,7 @@ public class CustomerDataInitializer {
     // Test 4: Emojis und spezielle Unicode
     Customer emoji = new Customer();
     emoji.setCustomerNumber("UNI-EMOJI");
-    emoji.setCompanyName("🏨 Hotel Emoji & Wellness Resort");
+    emoji.setCompanyName("[TEST] 🏨 Hotel Emoji & Wellness Resort");
     emoji.setTradingName("Hotel Emoji");
     emoji.setCustomerType(CustomerType.UNTERNEHMEN);
     emoji.setIndustry(Industry.HOTEL);
@@ -683,7 +698,7 @@ public class CustomerDataInitializer {
     // Test 5: Bindestrich, Apostrophe und Anführungszeichen
     Customer punctuation = new Customer();
     punctuation.setCustomerNumber("UNI-PUNCT");
-    punctuation.setCompanyName("O'Connor's Irish Pub - \"The Best\" Food & Drinks");
+    punctuation.setCompanyName("[TEST] O'Connor's Irish Pub - \"The Best\" Food & Drinks");
     punctuation.setTradingName("O'Connor's");
     punctuation.setCustomerType(CustomerType.UNTERNEHMEN);
     punctuation.setIndustry(Industry.RESTAURANT);
@@ -701,7 +716,7 @@ public class CustomerDataInitializer {
     // Kunde mit vielen aktuellen Interaktionen (FRESH)
     Customer activeCustomer = new Customer();
     activeCustomer.setCustomerNumber("DI-FRESH-001");
-    activeCustomer.setCompanyName("Fresh Contact GmbH - Sehr aktiver Kunde");
+    activeCustomer.setCompanyName("[TEST] Fresh Contact GmbH - Sehr aktiver Kunde");
     activeCustomer.setTradingName("Fresh Contact");
     activeCustomer.setCustomerType(CustomerType.UNTERNEHMEN);
     activeCustomer.setIndustry(Industry.HOTEL);
@@ -716,7 +731,7 @@ public class CustomerDataInitializer {
     // Kunde mit alternden Daten (AGING - 90-180 Tage)
     Customer agingCustomer = new Customer();
     agingCustomer.setCustomerNumber("DI-AGING-002");
-    agingCustomer.setCompanyName("Aging Data AG - Kontakt vor 4 Monaten");
+    agingCustomer.setCompanyName("[TEST] Aging Data AG - Kontakt vor 4 Monaten");
     agingCustomer.setTradingName("Aging Data");
     agingCustomer.setCustomerType(CustomerType.UNTERNEHMEN);
     agingCustomer.setIndustry(Industry.RESTAURANT);
@@ -731,7 +746,7 @@ public class CustomerDataInitializer {
     // Kunde mit veralteten Daten (STALE - 180-365 Tage)
     Customer staleCustomer = new Customer();
     staleCustomer.setCustomerNumber("DI-STALE-003");
-    staleCustomer.setCompanyName("Stale Records Ltd - Kontakt vor 8 Monaten");
+    staleCustomer.setCompanyName("[TEST] Stale Records Ltd - Kontakt vor 8 Monaten");
     staleCustomer.setTradingName("Stale Records");
     staleCustomer.setCustomerType(CustomerType.UNTERNEHMEN);
     staleCustomer.setIndustry(Industry.CATERING);
@@ -746,7 +761,7 @@ public class CustomerDataInitializer {
     // Kunde mit kritisch alten Daten (CRITICAL - >365 Tage)
     Customer criticalCustomer = new Customer();
     criticalCustomer.setCustomerNumber("DI-CRITICAL-004");
-    criticalCustomer.setCompanyName("Critical Alert Inc - Kontakt vor 2 Jahren");
+    criticalCustomer.setCompanyName("[TEST] Critical Alert Inc - Kontakt vor 2 Jahren");
     criticalCustomer.setTradingName("Critical Alert");
     criticalCustomer.setCustomerType(CustomerType.UNTERNEHMEN);
     criticalCustomer.setIndustry(Industry.BILDUNG);
@@ -761,7 +776,7 @@ public class CustomerDataInitializer {
     // Kunde ohne jegliche Interaktionen
     Customer noInteractionCustomer = new Customer();
     noInteractionCustomer.setCustomerNumber("DI-NO-INT-005");
-    noInteractionCustomer.setCompanyName("Never Contacted Corp - Noch nie kontaktiert");
+    noInteractionCustomer.setCompanyName("[TEST] Never Contacted Corp - Noch nie kontaktiert");
     noInteractionCustomer.setTradingName("Never Contacted");
     noInteractionCustomer.setCustomerType(CustomerType.UNTERNEHMEN);
     noInteractionCustomer.setIndustry(Industry.SONSTIGE);
@@ -783,7 +798,7 @@ public class CustomerDataInitializer {
     // Top-Performer Kunde
     Customer topPerformer = new Customer();
     topPerformer.setCustomerNumber("SC-TOP-001");
-    topPerformer.setCompanyName("Top Performer GmbH - Hoher Umsatz");
+    topPerformer.setCompanyName("[TEST] Top Performer GmbH - Hoher Umsatz");
     topPerformer.setTradingName("Top Performer");
     topPerformer.setCustomerType(CustomerType.UNTERNEHMEN);
     topPerformer.setIndustry(Industry.HOTEL);
@@ -802,7 +817,7 @@ public class CustomerDataInitializer {
     // At-Risk Kunde
     Customer atRisk = new Customer();
     atRisk.setCustomerNumber("SC-RISK-002");
-    atRisk.setCompanyName("At Risk Ltd - Umsatz rückläufig");
+    atRisk.setCompanyName("[TEST] At Risk Ltd - Umsatz rückläufig");
     atRisk.setTradingName("At Risk");
     atRisk.setCustomerType(CustomerType.UNTERNEHMEN);
     atRisk.setIndustry(Industry.RESTAURANT);
@@ -821,7 +836,7 @@ public class CustomerDataInitializer {
     // Churn Risk Kunde
     Customer churnRisk = new Customer();
     churnRisk.setCustomerNumber("SC-CHURN-003");
-    churnRisk.setCompanyName("Churn Alert AG - Kurz vor Verlust");
+    churnRisk.setCompanyName("[TEST] Churn Alert AG - Kurz vor Verlust");
     churnRisk.setTradingName("Churn Alert");
     churnRisk.setCustomerType(CustomerType.UNTERNEHMEN);
     churnRisk.setIndustry(Industry.CATERING);
@@ -840,7 +855,7 @@ public class CustomerDataInitializer {
     // Neukunde mit Potenzial
     Customer newPotential = new Customer();
     newPotential.setCustomerNumber("SC-NEW-004");
-    newPotential.setCompanyName("New Potential GmbH - Vielversprechender Neukunde");
+    newPotential.setCompanyName("[TEST] New Potential GmbH - Vielversprechend");
     newPotential.setTradingName("New Potential");
     newPotential.setCustomerType(CustomerType.UNTERNEHMEN);
     newPotential.setIndustry(Industry.VERANSTALTUNG);
@@ -866,7 +881,7 @@ public class CustomerDataInitializer {
     // Kunde mit Hot Lead
     Customer hotLead = new Customer();
     hotLead.setCustomerNumber("OP-HOT-001");
-    hotLead.setCompanyName("Hot Opportunity AG - Kurz vor Abschluss");
+    hotLead.setCompanyName("[TEST] Hot Opportunity AG - Kurz vor Abschluss");
     hotLead.setTradingName("Hot Opportunity");
     hotLead.setCustomerType(CustomerType.UNTERNEHMEN);
     hotLead.setIndustry(Industry.HOTEL);
@@ -883,7 +898,7 @@ public class CustomerDataInitializer {
     // Kunde in Verhandlung
     Customer negotiation = new Customer();
     negotiation.setCustomerNumber("OP-NEGO-002");
-    negotiation.setCompanyName("Negotiation Inc - In Preisverhandlung");
+    negotiation.setCompanyName("[TEST] Negotiation Inc - In Preisverhandlung");
     negotiation.setTradingName("Negotiation");
     negotiation.setCustomerType(CustomerType.UNTERNEHMEN);
     negotiation.setIndustry(Industry.CATERING);
@@ -900,7 +915,7 @@ public class CustomerDataInitializer {
     // Kunde mit verlorenem Deal
     Customer lostDeal = new Customer();
     lostDeal.setCustomerNumber("OP-LOST-003");
-    lostDeal.setCompanyName("Lost Deal Ltd - An Konkurrenz verloren");
+    lostDeal.setCompanyName("[TEST] Lost Deal Ltd - An Konkurrenz verloren");
     lostDeal.setTradingName("Lost Deal");
     lostDeal.setCustomerType(CustomerType.UNTERNEHMEN);
     lostDeal.setIndustry(Industry.RESTAURANT);
@@ -917,7 +932,7 @@ public class CustomerDataInitializer {
     // Kunde mit Renewal-Opportunity
     Customer renewal = new Customer();
     renewal.setCustomerNumber("OP-RENEWAL-004");
-    renewal.setCompanyName("Renewal Corp - Vertragsverlängerung anstehend");
+    renewal.setCompanyName("[TEST] Renewal Corp - Vertragsverlängerung anstehend");
     renewal.setTradingName("Renewal");
     renewal.setCustomerType(CustomerType.UNTERNEHMEN);
     renewal.setIndustry(Industry.BILDUNG);
@@ -935,7 +950,7 @@ public class CustomerDataInitializer {
     // Kunde mit Upsell-Potenzial
     Customer upsell = new Customer();
     upsell.setCustomerNumber("OP-UPSELL-005");
-    upsell.setCompanyName("Upsell Potential GmbH - Erweiterung möglich");
+    upsell.setCompanyName("[TEST] Upsell Potential GmbH - Erweiterung möglich");
     upsell.setTradingName("Upsell Potential");
     upsell.setCustomerType(CustomerType.UNTERNEHMEN);
     upsell.setIndustry(Industry.VERANSTALTUNG);
