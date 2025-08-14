@@ -46,8 +46,7 @@ public class CustomerDataInitializer {
     LOG.info(
         "🧪 Initializing comprehensive test data for ALL modules (Intelligence, Cockpit, Opportunities)...");
 
-    // IMPROVED: Check if test data already exists before clearing
-    // This prevents loss of existing test customers on backend restart
+    // IMPROVED: Check if test data already exists - NEVER DELETE, ONLY ADD MISSING DATA
     long existingCount = customerRepository.count();
     long testCustomerCount = customerRepository.getEntityManager()
         .createNativeQuery("SELECT COUNT(*) FROM customers WHERE company_name LIKE '[TEST]%'")
@@ -56,77 +55,31 @@ public class CustomerDataInitializer {
             .createNativeQuery("SELECT COUNT(*) FROM customers WHERE company_name LIKE '[TEST]%'")
             .getSingleResult()).longValue() : 0L;
     
-    // If we already have test customers, skip initialization to preserve data
-    if (testCustomerCount > 20) {  // Expected around 58 test customers
-      LOG.info("Found " + testCustomerCount + " existing [TEST] customers. Skipping initialization to preserve data.");
-      LOG.info("Total customers in database: " + existingCount);
+    // FIXED: NIEMALS LÖSCHEN - nur ergänzen wenn zu wenig Test-Daten vorhanden
+    // Erwartete Anzahl: mindestens 58 Test-Kunden
+    final long EXPECTED_TEST_CUSTOMERS = 58;
+    
+    if (testCustomerCount >= EXPECTED_TEST_CUSTOMERS) {
+      LOG.info("✅ Found " + testCustomerCount + " existing [TEST] customers (sufficient). Total: " + existingCount);
+      LOG.info("Skipping initialization to preserve existing data.");
       return;
     }
     
-    // Only clear data if we have insufficient test data
-    if (existingCount > 0 && testCustomerCount < 20) {
-      LOG.info("Found " + existingCount + " existing customers but only " + testCustomerCount + " test customers, clearing for fresh test data...");
-      // Use SQL directly to avoid Hibernate/JPA cascade issues
-      // Delete in dependency order: child tables first, then parent tables
-      var em = customerRepository.getEntityManager();
-
-      // Security: Define allowed tables for deletion (prevents SQL injection)
-      // IMPORTANT: Tables must be deleted in dependency order (child tables first)
-      var tablesToClear =
-          java.util.List.of(
-              // Module: Audit
-              "audit_trail",
-              // Module: Opportunities
-              "opportunity_activities", // Must be deleted BEFORE opportunities
-              "opportunities", // Must be deleted BEFORE customers
-              // Module: Customers & Contacts
-              "contact_interactions", // Must be deleted BEFORE customer_contacts
-              "customer_timeline_events", // Must be deleted BEFORE customers
-              "customer_contacts", // Must be deleted BEFORE customers
-              "customer_locations", // Must be deleted BEFORE customers
-              "customers");
-
-      // Derive allowed tables from the clearing list to ensure consistency
-      var allowedTables = java.util.Set.copyOf(tablesToClear);
-
-      LOG.info("Clearing all module data before initializing new test data...");
-
-      // FIXED: Nur Test-Daten löschen, nicht alle Daten!
-      for (String table : tablesToClear) {
-        if (!allowedTables.contains(table)) {
-          throw new IllegalArgumentException("Invalid table name for deletion: " + table);
-        }
-        
-        // Intelligente Löschung je nach Tabelle
-        String deleteQuery;
-        long deleted;
-        
-        switch (table) {
-          case "customers":
-            deleteQuery = "DELETE FROM " + table + " WHERE is_test_data = true OR company_name LIKE '[TEST]%'";
-            break;
-          case "customer_contacts":
-            deleteQuery = "DELETE FROM " + table + " WHERE customer_id IN (SELECT id FROM customers WHERE is_test_data = true OR company_name LIKE '[TEST]%')";
-            break;
-          case "customer_timeline_events":
-            deleteQuery = "DELETE FROM " + table + " WHERE is_test_data = true OR customer_id IN (SELECT id FROM customers WHERE is_test_data = true OR company_name LIKE '[TEST]%')";
-            break;
-          case "opportunities":
-            deleteQuery = "DELETE FROM " + table + " WHERE customer_id IN (SELECT id FROM customers WHERE is_test_data = true OR company_name LIKE '[TEST]%')";
-            break;
-          case "audit_entries":
-            deleteQuery = "DELETE FROM " + table + " WHERE entity_id IN (SELECT CAST(id AS VARCHAR) FROM customers WHERE is_test_data = true OR company_name LIKE '[TEST]%')";
-            break;
-          default:
-            LOG.warn("Unknown table for selective deletion: " + table + " - skipping");
-            continue;
-        }
-        
-        deleted = em.createNativeQuery(deleteQuery).executeUpdate();
-        LOG.info("Deleted " + deleted + " TEST records from table: " + table);
-      }
-      LOG.info("Existing TEST data cleared via selective SQL (preserving real customer data)");
+    if (testCustomerCount > 0) {
+      // Wir haben einige Test-Kunden, aber nicht genug
+      LOG.info("📊 Found " + testCustomerCount + " [TEST] customers (expecting " + EXPECTED_TEST_CUSTOMERS + ")");
+      LOG.info("Will add " + (EXPECTED_TEST_CUSTOMERS - testCustomerCount) + " more test customers");
+      LOG.info("Total customers in database: " + existingCount);
+      // Der Code unten wird nur die fehlenden Test-Kunden ergänzen
+    } else {
+      // Keine Test-Kunden vorhanden
+      LOG.info("No test customers found. Creating full set of " + EXPECTED_TEST_CUSTOMERS + " test customers...");
+      LOG.info("Existing non-test customers: " + (existingCount - testCustomerCount));
     }
+    
+    // WICHTIG: KEINE LÖSCH-LOGIK MEHR!
+    // Wir erstellen nur neue Test-Daten, wenn sie fehlen
+    // Die Create-Methoden unten sollten prüfen, ob der Kunde bereits existiert
 
     // 1. NORMAL BUSINESS CASES (Realistische Szenarien)
     LOG.info("Creating normal business test cases...");
@@ -178,11 +131,31 @@ public class CustomerDataInitializer {
     LOG.info("💡 This covers all edge cases and modules for thorough testing");
     LOG.info("📊 Modules covered: Data Intelligence, Data Freshness, Cockpit, Opportunities");
   }
+  
+  /**
+   * Hilfsmethode: Prüft ob ein Kunde bereits existiert
+   * @param companyName Der Firmenname des zu prüfenden Kunden
+   * @return true wenn der Kunde bereits existiert, false sonst
+   */
+  private boolean customerExists(String companyName) {
+    long existing = customerRepository.count("companyName = ?1", companyName);
+    if (existing > 0) {
+      LOG.debug("Customer already exists: " + companyName);
+      return true;
+    }
+    return false;
+  }
 
   private void createHotelCustomer() {
+    // Prüfe ob dieser Kunde bereits existiert
+    String companyName = "[TEST] Grand Hotel Berlin";
+    if (customerExists(companyName)) {
+      return;
+    }
+    
     Customer customer = new Customer();
     customer.setCustomerNumber("KD-2025-00001");
-    customer.setCompanyName("[TEST] Grand Hotel Berlin");
+    customer.setCompanyName(companyName);
     customer.setTradingName("Grand Hotel");
     customer.setLegalForm("GmbH");
     customer.setCustomerType(CustomerType.UNTERNEHMEN);
@@ -207,6 +180,7 @@ public class CustomerDataInitializer {
     customer.setPainPoints(new ArrayList<>());
     customer.setPrimaryFinancing(FinancingType.PRIVATE);
     customer.setCreatedBy("system");
+    customer.setIsTestData(true); // Markiere als Test-Daten
 
     setSprint2FieldDefaults(customer);
     customerRepository.persist(customer);
