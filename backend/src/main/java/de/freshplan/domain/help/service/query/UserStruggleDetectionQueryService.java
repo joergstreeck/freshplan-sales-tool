@@ -1,69 +1,61 @@
-package de.freshplan.domain.help.service;
+package de.freshplan.domain.help.service.query;
 
 import de.freshplan.domain.help.service.command.UserStruggleDetectionCommandService;
+import de.freshplan.domain.help.service.command.UserStruggleDetectionCommandService.UserAction;
+import de.freshplan.domain.help.service.command.UserStruggleDetectionCommandService.UserBehaviorSession;
 import de.freshplan.domain.help.service.dto.UserStruggle;
-import de.freshplan.domain.help.service.query.UserStruggleDetectionQueryService;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * FACADE Service für User Struggle Detection - CQRS Migration mit Feature Flag
+ * CQRS Query Service für User Struggle Detection - Analysis & Detection
  *
- * <p>Dieses Service agiert als Facade während der CQRS-Migration und delegiert
- * an die neuen Command und Query Services basierend auf dem Feature Flag.
+ * <p>Handles all read operations for user behavior analysis:
+ * - Struggle pattern detection and analysis
+ * - Behavioral analytics and insights  
+ * - Session data queries and reporting
  * 
- * <p>Analysiert User-Verhalten und erkennt: - Wiederholte fehlgeschlagene Versuche - Hektische
- * Navigation - Lange Pausen nach dem Start - Abgebrochene Workflows
+ * <p>This service accesses the shared session state managed by the Command service
+ * to perform real-time struggle detection without modifying the underlying data.
  * 
- * <p>Part of Phase 12 CQRS migration.
+ * <p>Part of Phase 12 CQRS migration from UserStruggleDetectionService.
  *
  * @since Phase 12 CQRS Migration
  */
 @ApplicationScoped
-public class UserStruggleDetectionService {
+public class UserStruggleDetectionQueryService {
 
-  private static final Logger LOG = LoggerFactory.getLogger(UserStruggleDetectionService.class);
+  private static final Logger LOG = LoggerFactory.getLogger(UserStruggleDetectionQueryService.class);
 
-  @ConfigProperty(name = "features.cqrs.enabled", defaultValue = "false")
-  boolean cqrsEnabled;
-
-  @Inject UserStruggleDetectionCommandService commandService;
-  @Inject UserStruggleDetectionQueryService queryService;
-
-  // Legacy In-Memory Tracking (wenn CQRS disabled)
-  private final Map<String, UserBehaviorSession> userSessions = new ConcurrentHashMap<>();
-
-  // Legacy Struggle Detection Thresholds
+  // Struggle Detection Thresholds (exakte Kopie vom Original)
   private static final int REPEATED_FAILURE_THRESHOLD = 3;
   private static final int RAPID_NAVIGATION_THRESHOLD = 5; // 5 Seitenwechsel in 2 Minuten
   private static final Duration IDLE_THRESHOLD = Duration.ofMinutes(2);
   private static final int ABANDONED_WORKFLOW_THRESHOLD = 2;
 
-  /** Erkennt User Struggle basierend auf aktuellem Kontext */
+  /**
+   * Detects user struggle based on current context and session history.
+   * 
+   * This is the main public method, matching the original UserStruggleDetectionService API.
+   * It performs read-only analysis of user behavior patterns to detect struggles.
+   *
+   * @param userId The user ID
+   * @param feature The feature being used
+   * @param context Additional context information
+   * @return UserStruggle with detection results and suggestions
+   */
   public UserStruggle detectStruggle(String userId, String feature, Map<String, Object> context) {
-    if (cqrsEnabled) {
-      LOG.debug("Using CQRS implementation for user struggle detection");
-      // 1. Record user action (Command)
-      commandService.recordUserAction(userId, feature, context);
-      // 2. Detect struggle (Query)
-      return queryService.detectStruggle(userId, feature, context);
+    UserBehaviorSession session = getUserSession(userId);
+    
+    if (session == null) {
+      LOG.debug("No session found for user: {} - no struggle detected", userId);
+      return UserStruggle.noStruggle(userId, feature);
     }
-
-    LOG.debug("Using legacy implementation for user struggle detection");
-    // Legacy implementation (exakte Kopie des Original-Codes)
-    UserBehaviorSession session = getOrCreateSession(userId);
-
-    // Aktuelle Aktion registrieren
-    session.recordAction(feature, context);
 
     // Verschiedene Struggle-Patterns analysieren
     UserStruggle.StruggleType detectedType = analyzeStrugglePatterns(session, feature);
@@ -93,7 +85,49 @@ public class UserStruggleDetectionService {
     return UserStruggle.noStruggle(userId, feature);
   }
 
-  /** Analysiert verschiedene Struggle-Patterns */
+  /**
+   * Gets user session statistics for analytics.
+   */
+  public UserSessionStats getUserSessionStats(String userId) {
+    UserBehaviorSession session = getUserSession(userId);
+    
+    if (session == null) {
+      return UserSessionStats.empty(userId);
+    }
+
+    return UserSessionStats.builder()
+        .userId(userId)
+        .totalActions(session.getActionCount())
+        .totalFailures(session.getTotalFailures())
+        .helpRequestCount(session.getHelpRequestCount())
+        .lastActivity(session.getLastActivity())
+        .sessionDuration(Duration.between(
+            session.getRecentActions(Duration.ofHours(24)).isEmpty() 
+                ? LocalDateTime.now() 
+                : session.getRecentActions(Duration.ofHours(24)).get(0).timestamp,
+            session.getLastActivity()
+        ))
+        .build();
+  }
+
+  /**
+   * Gets recent user actions for debugging or analytics.
+   */
+  public List<UserAction> getRecentUserActions(String userId, Duration window) {
+    UserBehaviorSession session = getUserSession(userId);
+    
+    if (session == null) {
+      return List.of();
+    }
+
+    return session.getRecentActions(window);
+  }
+
+  // Private Methods - exakte Kopie der Analyse-Logic vom Original
+
+  /**
+   * Analysiert verschiedene Struggle-Patterns (exakte Kopie)
+   */
   private UserStruggle.StruggleType analyzeStrugglePatterns(
       UserBehaviorSession session, String feature) {
     // 1. Wiederholte fehlgeschlagene Versuche
@@ -193,7 +227,9 @@ public class UserStruggleDetectionService {
     return formFieldChanges > 10 && !hasSubmit;
   }
 
-  /** Berechnet Severity basierend auf Struggle-Typ und Session-History */
+  /**
+   * Berechnet Severity basierend auf Struggle-Typ und Session-History (exakte Kopie)
+   */
   private int calculateSeverity(UserBehaviorSession session, UserStruggle.StruggleType type) {
     int baseSeverity =
         switch (type) {
@@ -219,7 +255,9 @@ public class UserStruggleDetectionService {
     return Math.min(10, Math.max(1, baseSeverity));
   }
 
-  /** Generiert Suggestions basierend auf Struggle-Typ */
+  /**
+   * Generiert Suggestions basierend auf Struggle-Typ (exakte Kopie)
+   */
   private List<UserStruggle.Suggestion> generateSuggestions(
       UserStruggle.StruggleType type, String feature) {
 
@@ -256,7 +294,7 @@ public class UserStruggleDetectionService {
     };
   }
 
-  // Helper Methods für Action Classification
+  // Helper Methods für Action Classification (exakte Kopie)
 
   private boolean isFailureAction(UserAction action) {
     return action.context.containsKey("error")
@@ -292,63 +330,73 @@ public class UserStruggleDetectionService {
         || "form_submit".equals(action.context.get("action"));
   }
 
-  private UserBehaviorSession getOrCreateSession(String userId) {
-    return userSessions.computeIfAbsent(userId, k -> new UserBehaviorSession(userId));
+  /**
+   * Helper method to get user session from Command service's shared state
+   */
+  private UserBehaviorSession getUserSession(String userId) {
+    Map<String, UserBehaviorSession> sessions = UserStruggleDetectionCommandService.getUserSessions();
+    return sessions.get(userId);
   }
 
-  // Inner Classes
-
-  private static class UserBehaviorSession {
+  // DTO for session statistics
+  public static class UserSessionStats {
     private final String userId;
-    private final List<UserAction> actions = new java.util.ArrayList<>();
-    private int totalFailures = 0;
-    private int helpRequestCount = 0;
+    private final int totalActions;
+    private final int totalFailures;
+    private final int helpRequestCount;
+    private final LocalDateTime lastActivity;
+    private final Duration sessionDuration;
 
-    public UserBehaviorSession(String userId) {
-      this.userId = userId;
+    private UserSessionStats(Builder builder) {
+      this.userId = builder.userId;
+      this.totalActions = builder.totalActions;
+      this.totalFailures = builder.totalFailures;
+      this.helpRequestCount = builder.helpRequestCount;
+      this.lastActivity = builder.lastActivity;
+      this.sessionDuration = builder.sessionDuration;
     }
 
-    public void recordAction(String feature, Map<String, Object> context) {
-      UserAction action = new UserAction(feature, LocalDateTime.now(), context);
-      actions.add(action);
+    public static Builder builder() {
+      return new Builder();
+    }
 
-      // Track counters
-      if (context.containsKey("error")) {
-        totalFailures++;
+    public static UserSessionStats empty(String userId) {
+      return builder()
+          .userId(userId)
+          .totalActions(0)
+          .totalFailures(0)
+          .helpRequestCount(0)
+          .lastActivity(null)
+          .sessionDuration(Duration.ZERO)
+          .build();
+    }
+
+    // Getters
+    public String getUserId() { return userId; }
+    public int getTotalActions() { return totalActions; }
+    public int getTotalFailures() { return totalFailures; }
+    public int getHelpRequestCount() { return helpRequestCount; }
+    public LocalDateTime getLastActivity() { return lastActivity; }
+    public Duration getSessionDuration() { return sessionDuration; }
+
+    public static class Builder {
+      private String userId;
+      private int totalActions;
+      private int totalFailures;
+      private int helpRequestCount;
+      private LocalDateTime lastActivity;
+      private Duration sessionDuration;
+
+      public Builder userId(String userId) { this.userId = userId; return this; }
+      public Builder totalActions(int totalActions) { this.totalActions = totalActions; return this; }
+      public Builder totalFailures(int totalFailures) { this.totalFailures = totalFailures; return this; }
+      public Builder helpRequestCount(int helpRequestCount) { this.helpRequestCount = helpRequestCount; return this; }
+      public Builder lastActivity(LocalDateTime lastActivity) { this.lastActivity = lastActivity; return this; }
+      public Builder sessionDuration(Duration sessionDuration) { this.sessionDuration = sessionDuration; return this; }
+
+      public UserSessionStats build() {
+        return new UserSessionStats(this);
       }
-      if ("help_request".equals(context.get("action"))) {
-        helpRequestCount++;
-      }
-
-      // Cleanup alte Actions (max 1000 Actions pro Session)
-      if (actions.size() > 1000) {
-        actions.subList(0, 500).clear();
-      }
-    }
-
-    public List<UserAction> getRecentActions(Duration window) {
-      LocalDateTime cutoff = LocalDateTime.now().minus(window);
-      return actions.stream().filter(action -> action.timestamp.isAfter(cutoff)).toList();
-    }
-
-    public int getTotalFailures() {
-      return totalFailures;
-    }
-
-    public int getHelpRequestCount() {
-      return helpRequestCount;
-    }
-  }
-
-  private static class UserAction {
-    public final String feature;
-    public final LocalDateTime timestamp;
-    public final Map<String, Object> context;
-
-    public UserAction(String feature, LocalDateTime timestamp, Map<String, Object> context) {
-      this.feature = feature;
-      this.timestamp = timestamp;
-      this.context = new HashMap<>(context);
     }
   }
 }
