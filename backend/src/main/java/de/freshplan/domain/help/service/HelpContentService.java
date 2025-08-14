@@ -3,6 +3,7 @@ package de.freshplan.domain.help.service;
 import de.freshplan.domain.help.entity.HelpContent;
 import de.freshplan.domain.help.entity.HelpType;
 import de.freshplan.domain.help.entity.UserLevel;
+import de.freshplan.domain.help.events.HelpContentViewedEvent;
 import de.freshplan.domain.help.repository.HelpContentRepository;
 import de.freshplan.domain.help.service.command.HelpContentCommandService;
 import de.freshplan.domain.help.service.dto.HelpAnalytics;
@@ -10,6 +11,7 @@ import de.freshplan.domain.help.service.dto.HelpRequest;
 import de.freshplan.domain.help.service.dto.HelpResponse;
 import de.freshplan.domain.help.service.dto.UserStruggle;
 import de.freshplan.domain.help.service.query.HelpContentQueryService;
+import de.freshplan.infrastructure.events.EventBus;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -47,6 +49,8 @@ public class HelpContentService {
   
   @Inject HelpContentQueryService queryService;
 
+  @Inject EventBus eventBus;
+
   // Legacy Dependencies (when CQRS disabled)
   @Inject HelpContentRepository helpRepository;
 
@@ -57,23 +61,26 @@ public class HelpContentService {
   /** Holt die beste Hilfe für eine Feature-Anfrage */
   public HelpResponse getHelpForFeature(HelpRequest request) {
     if (cqrsEnabled) {
-      LOG.debug("Using CQRS implementation for help content delivery");
+      LOG.debug("Using CQRS Event-Driven implementation for help content delivery");
       
-      // HYBRID APPROACH: Query first, then Command for side effects
+      // EVENT-DRIVEN APPROACH: Pure Query + Async Event for Side Effects
       
       // 1. Get help content (Pure Query - no side effects)
       HelpResponse helpResponse = queryService.getHelpForFeature(request);
       
-      // 2. Handle side effects AFTER successful query (Command)
+      // 2. Publish event for side effects (asynchronous)
       if (helpResponse.id() != null) {
-        // Increment view count asynchronously (Command)
-        commandService.incrementViewCount(helpResponse.id());
-        
-        // Track analytics (already handled by Command service in recordFeedback)
-        // For getHelpForFeature, we let HelpAnalyticsService handle this directly
         UserStruggle struggle = struggleDetectionService.detectStruggle(
             request.userId(), request.feature(), request.context());
-        analyticsService.trackHelpRequest(request, createContentFromResponse(helpResponse), struggle);
+        
+        HelpContentViewedEvent event = HelpContentViewedEvent.create(
+            helpResponse.id(), request, struggle);
+        
+        // Publish asynchronously - no blocking, no transaction coupling
+        eventBus.publishAsync(event);
+        
+        LOG.debug("Published HelpContentViewedEvent for content: {} by user: {}", 
+            helpResponse.id(), request.userId());
       }
       
       return helpResponse;
