@@ -4,6 +4,8 @@ import de.freshplan.domain.customer.entity.Customer;
 import de.freshplan.domain.customer.entity.CustomerContact;
 import de.freshplan.domain.customer.repository.ContactRepository;
 import de.freshplan.domain.customer.repository.CustomerRepository;
+import de.freshplan.domain.customer.service.command.ContactCommandService;
+import de.freshplan.domain.customer.service.query.ContactQueryService;
 import de.freshplan.domain.customer.service.dto.ContactDTO;
 import de.freshplan.domain.customer.service.mapper.ContactMapper;
 import io.quarkus.security.identity.SecurityIdentity;
@@ -14,10 +16,16 @@ import jakarta.ws.rs.NotFoundException;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 /**
- * Service layer for Contact management. Handles business logic for multi-contact support, primary
- * contact management, and audit trail through Hibernate Envers.
+ * Service layer for Contact management. 
+ * 
+ * This service now acts as a FACADE with Feature Flag support for gradual CQRS migration.
+ * When cqrs.enabled=true, it delegates to ContactCommandService and ContactQueryService.
+ * When cqrs.enabled=false, it uses the legacy implementation.
+ * 
+ * @deprecated Will be removed once CQRS migration is complete
  */
 @ApplicationScoped
 @Transactional
@@ -30,6 +38,14 @@ public class ContactService {
   @Inject ContactMapper contactMapper;
 
   @Inject SecurityIdentity securityIdentity;
+  
+  // CQRS Services
+  @Inject ContactCommandService commandService;
+  @Inject ContactQueryService queryService;
+  
+  // Feature Flag for CQRS
+  @ConfigProperty(name = "features.cqrs.enabled", defaultValue = "false")
+  boolean cqrsEnabled;
 
   /**
    * Create a new contact for a customer
@@ -39,6 +55,10 @@ public class ContactService {
    * @return created contact DTO
    */
   public ContactDTO createContact(UUID customerId, ContactDTO contactDTO) {
+    if (cqrsEnabled) {
+      return commandService.createContact(customerId, contactDTO);
+    }
+    // Legacy implementation below
     // Verify customer exists
     Customer customer =
         customerRepository
@@ -72,6 +92,10 @@ public class ContactService {
    * @return updated contact DTO
    */
   public ContactDTO updateContact(UUID contactId, ContactDTO contactDTO) {
+    if (cqrsEnabled) {
+      return commandService.updateContact(contactId, contactDTO);
+    }
+    // Legacy implementation below
     CustomerContact contact =
         contactRepository
             .findByIdOptional(contactId)
@@ -97,6 +121,10 @@ public class ContactService {
    * @return updated contact DTO
    */
   public ContactDTO updateContact(UUID customerId, UUID contactId, ContactDTO contactDTO) {
+    if (cqrsEnabled) {
+      return commandService.updateContact(customerId, contactId, contactDTO);
+    }
+    // Legacy implementation below
     CustomerContact contact =
         contactRepository
             .findByIdOptional(contactId)
@@ -124,6 +152,10 @@ public class ContactService {
    * @return list of contact DTOs
    */
   public List<ContactDTO> getContactsByCustomerId(UUID customerId) {
+    if (cqrsEnabled) {
+      return queryService.getContactsByCustomerId(customerId);
+    }
+    // Legacy implementation below
     return contactRepository.findByCustomerId(customerId).stream()
         .map(contactMapper::toDTO)
         .collect(Collectors.toList());
@@ -136,6 +168,10 @@ public class ContactService {
    * @return contact DTO
    */
   public ContactDTO getContact(UUID contactId) {
+    if (cqrsEnabled) {
+      return queryService.getContact(contactId);
+    }
+    // Legacy implementation below
     CustomerContact contact =
         contactRepository
             .findByIdOptional(contactId)
@@ -151,6 +187,10 @@ public class ContactService {
    * @return contact DTO
    */
   public ContactDTO getContact(UUID customerId, UUID contactId) {
+    if (cqrsEnabled) {
+      return queryService.getContact(customerId, contactId);
+    }
+    // Legacy implementation below
     CustomerContact contact =
         contactRepository
             .findByIdOptional(contactId)
@@ -170,6 +210,11 @@ public class ContactService {
    * @param contactId the contact ID to set as primary
    */
   public void setPrimaryContact(UUID customerId, UUID contactId) {
+    if (cqrsEnabled) {
+      commandService.setPrimaryContact(customerId, contactId);
+      return;
+    }
+    // Legacy implementation below
     // Verify contact belongs to customer
     CustomerContact contact =
         contactRepository
@@ -190,6 +235,11 @@ public class ContactService {
    * @param contactId the contact ID
    */
   public void deleteContact(UUID contactId) {
+    if (cqrsEnabled) {
+      commandService.deleteContact(contactId);
+      return;
+    }
+    // Legacy implementation below
     CustomerContact contact =
         contactRepository
             .findByIdOptional(contactId)
@@ -216,6 +266,11 @@ public class ContactService {
    * @param contactId the contact ID
    */
   public void deleteContact(UUID customerId, UUID contactId) {
+    if (cqrsEnabled) {
+      commandService.deleteContact(customerId, contactId);
+      return;
+    }
+    // Legacy implementation below
     CustomerContact contact =
         contactRepository
             .findByIdOptional(contactId)
@@ -246,6 +301,10 @@ public class ContactService {
    * @return list of contact DTOs
    */
   public List<ContactDTO> getContactsByLocationId(UUID locationId) {
+    if (cqrsEnabled) {
+      return queryService.getContactsByLocationId(locationId);
+    }
+    // Legacy implementation below
     return contactRepository.findByLocationId(locationId).stream()
         .map(contactMapper::toDTO)
         .collect(Collectors.toList());
@@ -259,6 +318,10 @@ public class ContactService {
    * @return number of updated contacts
    */
   public int assignContactsToLocation(List<UUID> contactIds, UUID locationId) {
+    if (cqrsEnabled) {
+      return commandService.assignContactsToLocation(contactIds, locationId);
+    }
+    // Legacy implementation below
     return contactRepository.updateLocationAssignment(contactIds, locationId);
   }
 
@@ -269,6 +332,10 @@ public class ContactService {
    * @return list of contact DTOs with birthdays
    */
   public List<ContactDTO> getUpcomingBirthdays(int daysAhead) {
+    if (cqrsEnabled) {
+      return queryService.getUpcomingBirthdays(daysAhead);
+    }
+    // Legacy implementation below
     return contactRepository.findUpcomingBirthdays(daysAhead).stream()
         .map(contactMapper::toDTO)
         .collect(Collectors.toList());
@@ -282,6 +349,10 @@ public class ContactService {
    * @return true if email is already in use
    */
   public boolean isEmailInUse(String email, UUID excludeContactId) {
+    if (cqrsEnabled) {
+      return queryService.isEmailInUse(email, excludeContactId);
+    }
+    // Legacy implementation below
     List<CustomerContact> contacts = contactRepository.findByEmail(email);
     if (excludeContactId == null) {
       return !contacts.isEmpty();
