@@ -91,13 +91,41 @@ public class CustomerDataInitializer {
 
       LOG.info("Clearing all module data before initializing new test data...");
 
+      // FIXED: Nur Test-Daten löschen, nicht alle Daten!
       for (String table : tablesToClear) {
         if (!allowedTables.contains(table)) {
           throw new IllegalArgumentException("Invalid table name for deletion: " + table);
         }
-        em.createNativeQuery("DELETE FROM " + table).executeUpdate();
+        
+        // Intelligente Löschung je nach Tabelle
+        String deleteQuery;
+        long deleted;
+        
+        switch (table) {
+          case "customers":
+            deleteQuery = "DELETE FROM " + table + " WHERE is_test_data = true OR company_name LIKE '[TEST]%'";
+            break;
+          case "customer_contacts":
+            deleteQuery = "DELETE FROM " + table + " WHERE customer_id IN (SELECT id FROM customers WHERE is_test_data = true OR company_name LIKE '[TEST]%')";
+            break;
+          case "customer_timeline_events":
+            deleteQuery = "DELETE FROM " + table + " WHERE is_test_data = true OR customer_id IN (SELECT id FROM customers WHERE is_test_data = true OR company_name LIKE '[TEST]%')";
+            break;
+          case "opportunities":
+            deleteQuery = "DELETE FROM " + table + " WHERE customer_id IN (SELECT id FROM customers WHERE is_test_data = true OR company_name LIKE '[TEST]%')";
+            break;
+          case "audit_entries":
+            deleteQuery = "DELETE FROM " + table + " WHERE entity_id IN (SELECT CAST(id AS VARCHAR) FROM customers WHERE is_test_data = true OR company_name LIKE '[TEST]%')";
+            break;
+          default:
+            LOG.warn("Unknown table for selective deletion: " + table + " - skipping");
+            continue;
+        }
+        
+        deleted = em.createNativeQuery(deleteQuery).executeUpdate();
+        LOG.info("Deleted " + deleted + " TEST records from table: " + table);
       }
-      LOG.info("Existing data for all modules cleared via SQL");
+      LOG.info("Existing TEST data cleared via selective SQL (preserving real customer data)");
     }
 
     // 1. NORMAL BUSINESS CASES (Realistische Szenarien)

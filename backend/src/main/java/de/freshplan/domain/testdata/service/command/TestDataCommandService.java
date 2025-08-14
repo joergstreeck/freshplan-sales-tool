@@ -1,10 +1,9 @@
-package de.freshplan.domain.testdata.service;
+package de.freshplan.domain.testdata.service.command;
 
 import de.freshplan.domain.customer.entity.*;
 import de.freshplan.domain.customer.repository.CustomerRepository;
 import de.freshplan.domain.customer.repository.CustomerTimelineRepository;
-import de.freshplan.domain.testdata.service.command.TestDataCommandService;
-import de.freshplan.domain.testdata.service.query.TestDataQueryService;
+import de.freshplan.domain.testdata.service.TestDataService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -12,34 +11,22 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.logging.Logger;
 
 /**
- * Service for managing test data in the development environment. Provides clean seeding and removal
- * of test data.
+ * Command service for managing test data operations. Handles all write operations for test data
+ * seeding, cleanup, and management.
  * 
- * CQRS Refactoring: This service now acts as a facade that delegates to Command and Query services
- * based on a feature flag. When cqrs.enabled=true, it uses the new split services.
- * When false, it falls back to the legacy implementation.
+ * CQRS Pattern: This service contains only write operations (Commands) that modify database state.
+ * All Command operations are transactional and handle complex business logic for test data management.
  */
 @ApplicationScoped
-public class TestDataService {
+public class TestDataCommandService {
 
-  private static final Logger LOG = Logger.getLogger(TestDataService.class);
+  private static final Logger LOG = Logger.getLogger(TestDataCommandService.class);
   private static final String TEST_USER = "test-data-seeder";
 
-  @ConfigProperty(name = "features.cqrs.enabled", defaultValue = "false")
-  boolean cqrsEnabled;
-
-  @Inject
-  TestDataCommandService commandService;
-
-  @Inject
-  TestDataQueryService queryService;
-
   @Inject CustomerRepository customerRepository;
-
   @Inject CustomerTimelineRepository timelineRepository;
 
   /**
@@ -47,13 +34,7 @@ public class TestDataService {
    * true and prefixed with [TEST].
    */
   @Transactional
-  public SeedResult seedTestData() {
-    if (cqrsEnabled) {
-      LOG.debugf("CQRS enabled - delegating seedTestData to TestDataCommandService");
-      return commandService.seedTestData();
-    }
-    
-    // Legacy implementation
+  public TestDataService.SeedResult seedTestData() {
     LOG.info("Starting test data seeding...");
 
     List<Customer> createdCustomers = new ArrayList<>();
@@ -172,7 +153,7 @@ public class TestDataService {
           "Successfully seeded %d test customers with %d timeline events",
           createdCustomers.size(), createdEvents.size());
 
-      return new SeedResult(createdCustomers.size(), createdEvents.size());
+      return new TestDataService.SeedResult(createdCustomers.size(), createdEvents.size());
 
     } catch (Exception e) {
       LOG.error("Error seeding test data", e);
@@ -182,13 +163,7 @@ public class TestDataService {
 
   /** Removes all test data from the database. */
   @Transactional
-  public CleanupResult cleanTestData() {
-    if (cqrsEnabled) {
-      LOG.debugf("CQRS enabled - delegating cleanTestData to TestDataCommandService");
-      return commandService.cleanTestData();
-    }
-    
-    // Legacy implementation
+  public TestDataService.CleanupResult cleanTestData() {
     LOG.info("Starting test data cleanup...");
 
     try {
@@ -202,7 +177,7 @@ public class TestDataService {
           "Successfully cleaned up %d customers and %d timeline events",
           deletedCustomers, deletedEvents);
 
-      return new CleanupResult(deletedCustomers, deletedEvents);
+      return new TestDataService.CleanupResult(deletedCustomers, deletedEvents);
 
     } catch (Exception e) {
       LOG.error("Error cleaning test data", e);
@@ -210,32 +185,12 @@ public class TestDataService {
     }
   }
 
-  /** Counts existing test data in the database. */
-  public TestDataStats getTestDataStats() {
-    if (cqrsEnabled) {
-      LOG.debugf("CQRS enabled - delegating getTestDataStats to TestDataQueryService");
-      return queryService.getTestDataStats();
-    }
-    
-    // Legacy implementation
-    long customerCount = customerRepository.count("isTestData", true);
-    long eventCount = timelineRepository.count("isTestData", true);
-
-    return new TestDataStats(customerCount, eventCount);
-  }
-
   /**
    * Removes old test data (non-[TEST] prefixed) from the database. This is a one-time cleanup
    * operation.
    */
   @Transactional
-  public CleanupResult cleanOldTestData() {
-    if (cqrsEnabled) {
-      LOG.debugf("CQRS enabled - delegating cleanOldTestData to TestDataCommandService");
-      return commandService.cleanOldTestData();
-    }
-    
-    // Legacy implementation
+  public TestDataService.CleanupResult cleanOldTestData() {
     LOG.info("Starting old test data cleanup...");
 
     try {
@@ -253,13 +208,134 @@ public class TestDataService {
           "Successfully cleaned up %d old customers and %d timeline events",
           deletedCustomers, deletedEvents);
 
-      return new CleanupResult(deletedCustomers, deletedEvents);
+      return new TestDataService.CleanupResult(deletedCustomers, deletedEvents);
 
     } catch (Exception e) {
       LOG.error("Error cleaning old test data", e);
       throw new RuntimeException("Failed to clean old test data: " + e.getMessage(), e);
     }
   }
+
+  /**
+   * Seeds additional test customers to reach exactly 58 total customers. Call this after
+   * seedTestData() and seedComprehensiveTestData() to get the missing 14 customers.
+   */
+  @Transactional
+  public TestDataService.SeedResult seedAdditionalTestData() {
+    LOG.info("Seeding additional 14 test customers to reach 58 total...");
+
+    List<Customer> createdCustomers = new ArrayList<>();
+
+    try {
+      // Create 14 additional diverse test customers
+      for (int i = 1; i <= 14; i++) {
+        Customer customer = new Customer();
+        customer.setCustomerNumber("ADD-" + String.format("%03d", i));
+        customer.setCompanyName("[TEST] Zusatzkunde " + i);
+        customer.setCustomerType(CustomerType.UNTERNEHMEN);
+        customer.setStatus(
+            i % 4 == 0
+                ? CustomerStatus.AKTIV
+                : i % 3 == 0
+                    ? CustomerStatus.RISIKO
+                    : i % 2 == 0 ? CustomerStatus.INAKTIV : CustomerStatus.LEAD);
+        customer.setIndustry(
+            i % 5 == 0
+                ? Industry.HOTEL
+                : i % 4 == 0
+                    ? Industry.RESTAURANT
+                    : i % 3 == 0
+                        ? Industry.EINZELHANDEL
+                        : i % 2 == 0 ? Industry.CATERING : Industry.SONSTIGE);
+        customer.setLifecycleStage(CustomerLifecycleStage.ACQUISITION);
+        customer.setPaymentTerms(PaymentTerms.NETTO_30);
+        customer.setCreatedBy(TEST_USER);
+        customer.setIsDeleted(false);
+        customer.setIsTestData(true);
+
+        // Sprint 2 fields
+        customer.setLocationsGermany(i);
+        customer.setLocationsAustria(i % 3);
+        customer.setLocationsSwitzerland(i % 4);
+        customer.setLocationsRestEU(i % 2);
+        customer.setTotalLocationsEU(i + (i % 3) + (i % 4) + (i % 2));
+        customer.setPainPoints(new ArrayList<>());
+        customer.setPrimaryFinancing(i % 2 == 0 ? FinancingType.PRIVATE : FinancingType.PUBLIC);
+        customer.setRiskScore(i * 7 % 100);
+
+        if (i % 3 == 0) {
+          customer.setLastContactDate(LocalDateTime.now().minusDays(i * 10));
+        }
+
+        customerRepository.persist(customer);
+        createdCustomers.add(customer);
+      }
+
+      LOG.infof("Successfully seeded %d additional test customers", createdCustomers.size());
+      return new TestDataService.SeedResult(createdCustomers.size(), 0);
+
+    } catch (Exception e) {
+      LOG.error("Error seeding additional test data", e);
+      throw new RuntimeException("Failed to seed additional test data: " + e.getMessage(), e);
+    }
+  }
+
+  /**
+   * Seeds comprehensive edge-case test data for thorough testing.
+   *
+   * <p>This creates systematic test data to catch bugs early: - String boundary tests (min/max
+   * lengths, special chars) - Numeric edge cases (zero, max values, precision) - Date/time edge
+   * cases (past, future, timezones) - All enum combinations - Business logic variations - Unicode &
+   * special character tests
+   */
+  @Transactional
+  public TestDataService.SeedResult seedComprehensiveTestData() {
+    LOG.info("🧪 Starting comprehensive edge-case test data seeding...");
+
+    List<Customer> createdCustomers = new ArrayList<>();
+
+    try {
+      // 1. STRING BOUNDARY TESTS
+      LOG.info("Creating string boundary test cases...");
+      createdCustomers.addAll(createStringBoundaryTests());
+
+      // 2. NUMERIC EDGE CASES
+      LOG.info("Creating numeric edge case tests...");
+      createdCustomers.addAll(createNumericEdgeCases());
+
+      // 3. DATE/TIME EDGE CASES
+      LOG.info("Creating date/time edge cases...");
+      createdCustomers.addAll(createDateTimeEdgeCases());
+
+      // 4. ENUM BOUNDARY TESTING
+      LOG.info("Creating enum boundary tests...");
+      createdCustomers.addAll(createEnumBoundaryTests());
+
+      // 5. BUSINESS LOGIC VARIATIONS
+      LOG.info("Creating business logic variation tests...");
+      createdCustomers.addAll(createBusinessLogicVariations());
+
+      // 6. UNICODE & SPECIAL CHARACTER TESTS
+      LOG.info("Creating unicode and special character tests...");
+      createdCustomers.addAll(createUnicodeTests());
+
+      // Persist all customers
+      for (Customer customer : createdCustomers) {
+        customerRepository.persist(customer);
+      }
+
+      LOG.infof("🎯 Comprehensive test data seeded! Total customers: %d", createdCustomers.size());
+      LOG.info("💡 This covers all edge cases for thorough testing");
+
+      return new TestDataService.SeedResult(createdCustomers.size(), 0);
+
+    } catch (Exception e) {
+      LOG.error("Error seeding comprehensive test data", e);
+      throw new RuntimeException("Failed to seed comprehensive test data: " + e.getMessage(), e);
+    }
+  }
+
+  // ================== PRIVATE HELPER METHODS (EXACT COPIES) ==================
 
   private Customer createTestCustomer(
       String customerNumber,
@@ -317,137 +393,6 @@ public class TestDataService {
     event.setIsTestData(true);
 
     return event;
-  }
-
-  /**
-   * Seeds additional test customers to reach exactly 58 total customers. Call this after
-   * seedTestData() and seedComprehensiveTestData() to get the missing 14 customers.
-   */
-  @Transactional
-  public SeedResult seedAdditionalTestData() {
-    if (cqrsEnabled) {
-      LOG.debugf("CQRS enabled - delegating seedAdditionalTestData to TestDataCommandService");
-      return commandService.seedAdditionalTestData();
-    }
-    
-    // Legacy implementation
-    LOG.info("Seeding additional 14 test customers to reach 58 total...");
-
-    List<Customer> createdCustomers = new ArrayList<>();
-
-    try {
-      // Create 14 additional diverse test customers
-      for (int i = 1; i <= 14; i++) {
-        Customer customer = new Customer();
-        customer.setCustomerNumber("ADD-" + String.format("%03d", i));
-        customer.setCompanyName("[TEST] Zusatzkunde " + i);
-        customer.setCustomerType(CustomerType.UNTERNEHMEN);
-        customer.setStatus(
-            i % 4 == 0
-                ? CustomerStatus.AKTIV
-                : i % 3 == 0
-                    ? CustomerStatus.RISIKO
-                    : i % 2 == 0 ? CustomerStatus.INAKTIV : CustomerStatus.LEAD);
-        customer.setIndustry(
-            i % 5 == 0
-                ? Industry.HOTEL
-                : i % 4 == 0
-                    ? Industry.RESTAURANT
-                    : i % 3 == 0
-                        ? Industry.EINZELHANDEL
-                        : i % 2 == 0 ? Industry.CATERING : Industry.SONSTIGE);
-        customer.setLifecycleStage(CustomerLifecycleStage.ACQUISITION);
-        customer.setPaymentTerms(PaymentTerms.NETTO_30);
-        customer.setCreatedBy(TEST_USER);
-        customer.setIsDeleted(false);
-        customer.setIsTestData(true);
-
-        // Sprint 2 fields
-        customer.setLocationsGermany(i);
-        customer.setLocationsAustria(i % 3);
-        customer.setLocationsSwitzerland(i % 4);
-        customer.setLocationsRestEU(i % 2);
-        customer.setTotalLocationsEU(i + (i % 3) + (i % 4) + (i % 2));
-        customer.setPainPoints(new ArrayList<>());
-        customer.setPrimaryFinancing(i % 2 == 0 ? FinancingType.PRIVATE : FinancingType.PUBLIC);
-        customer.setRiskScore(i * 7 % 100);
-
-        if (i % 3 == 0) {
-          customer.setLastContactDate(LocalDateTime.now().minusDays(i * 10));
-        }
-
-        customerRepository.persist(customer);
-        createdCustomers.add(customer);
-      }
-
-      LOG.infof("Successfully seeded %d additional test customers", createdCustomers.size());
-      return new SeedResult(createdCustomers.size(), 0);
-
-    } catch (Exception e) {
-      LOG.error("Error seeding additional test data", e);
-      throw new RuntimeException("Failed to seed additional test data: " + e.getMessage(), e);
-    }
-  }
-
-  /**
-   * Seeds comprehensive edge-case test data for thorough testing.
-   *
-   * <p>This creates systematic test data to catch bugs early: - String boundary tests (min/max
-   * lengths, special chars) - Numeric edge cases (zero, max values, precision) - Date/time edge
-   * cases (past, future, timezones) - All enum combinations - Business logic variations - Unicode &
-   * special character tests
-   */
-  @Transactional
-  public SeedResult seedComprehensiveTestData() {
-    if (cqrsEnabled) {
-      LOG.debugf("CQRS enabled - delegating seedComprehensiveTestData to TestDataCommandService");
-      return commandService.seedComprehensiveTestData();
-    }
-    
-    // Legacy implementation
-    LOG.info("🧪 Starting comprehensive edge-case test data seeding...");
-
-    List<Customer> createdCustomers = new ArrayList<>();
-
-    try {
-      // 1. STRING BOUNDARY TESTS
-      LOG.info("Creating string boundary test cases...");
-      createdCustomers.addAll(createStringBoundaryTests());
-
-      // 2. NUMERIC EDGE CASES
-      LOG.info("Creating numeric edge case tests...");
-      createdCustomers.addAll(createNumericEdgeCases());
-
-      // 3. DATE/TIME EDGE CASES
-      LOG.info("Creating date/time edge cases...");
-      createdCustomers.addAll(createDateTimeEdgeCases());
-
-      // 4. ENUM BOUNDARY TESTING
-      LOG.info("Creating enum boundary tests...");
-      createdCustomers.addAll(createEnumBoundaryTests());
-
-      // 5. BUSINESS LOGIC VARIATIONS
-      LOG.info("Creating business logic variation tests...");
-      createdCustomers.addAll(createBusinessLogicVariations());
-
-      // 6. UNICODE & SPECIAL CHARACTER TESTS
-      LOG.info("Creating unicode and special character tests...");
-      createdCustomers.addAll(createUnicodeTests());
-
-      // Persist all customers
-      for (Customer customer : createdCustomers) {
-        customerRepository.persist(customer);
-      }
-
-      LOG.infof("🎯 Comprehensive test data seeded! Total customers: %d", createdCustomers.size());
-      LOG.info("💡 This covers all edge cases for thorough testing");
-
-      return new SeedResult(createdCustomers.size(), 0);
-
-    } catch (Exception e) {
-      LOG.error("Error seeding comprehensive test data", e);
-      throw new RuntimeException("Failed to seed comprehensive test data: " + e.getMessage(), e);
-    }
   }
 
   private List<Customer> createStringBoundaryTests() {
@@ -743,11 +688,4 @@ public class TestDataService {
 
     return customers;
   }
-
-  // Result classes
-  public record SeedResult(int customersCreated, int eventsCreated) {}
-
-  public record CleanupResult(long customersDeleted, long eventsDeleted) {}
-
-  public record TestDataStats(long customerCount, long eventCount) {}
 }
