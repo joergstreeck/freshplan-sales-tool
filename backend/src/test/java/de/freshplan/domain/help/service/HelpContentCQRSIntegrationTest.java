@@ -408,6 +408,14 @@ class HelpContentCQRSIntegrationTest {
     // 2. Feedback geben
     facadeService.recordFeedback(testHelpContentId, testUserId, true, 45, "Great help!");
     
+    // Force database sync for feedback (synchronous operation)
+    helpRepository.getEntityManager().flush();
+    helpRepository.getEntityManager().clear();
+    
+    // Verify feedback was recorded immediately (synchronous)
+    var afterFeedback = helpRepository.findByIdOptional(testHelpContentId).get();
+    assertThat(afterFeedback.helpfulCount).isEqualTo(1);
+    
     // 3. Content suchen
     List<HelpResponse> searchResults = facadeService.searchHelp("Test", "BEGINNER", List.of("admin"));
     assertThat(searchResults).isNotEmpty();
@@ -416,14 +424,14 @@ class HelpContentCQRSIntegrationTest {
     HelpAnalytics analytics = facadeService.getAnalytics();
     assertThat(analytics).isNotNull();
 
-    // Then: View count sollte durch Event Handler erhöht worden sein
+    // Then: View count sollte durch Event Handler erhöht worden sein (asynchronous)
     await().atMost(Duration.ofSeconds(5))
         .pollInterval(Duration.ofMillis(100))
         .untilAsserted(() -> {
             var updatedContent = testHelper.findHelpContent(testHelpContentId);
             assertThat(updatedContent).isNotNull();
             assertThat(updatedContent.viewCount).isGreaterThan(0);
-            assertThat(updatedContent.helpfulCount).isEqualTo(1);
+            // helpfulCount was already verified above (synchronous operation)
         });
   }
 
