@@ -454,7 +454,10 @@ curl -s -o /dev/null -w "%{time_total}s\n" http://localhost:8080/api/customers
 | Phase 2 | ✅ 100% FERTIG | 00:30 | 01:00 | Commands: 5/5 ✅, Queries: 7/7 ✅, Tests: 33/33 ✅ | Identisch |
 | Phase 3 | ✅ 100% FERTIG | 01:05 | 01:47 | Commands: 5/5 ✅, Queries: 18+/18+ ✅, Tests: 31/31 ✅ | Identisch |
 | Phase 4 | ✅ 100% FERTIG | 02:00 | 02:10 | Commands: 7/7 ✅, Queries: 5/5 ✅, Tests: 19/19 ✅ | Identisch |
-| Phase 5 | ⏳ | - | - | - | - |
+| Phase 5 | ✅ 100% FERTIG | - | - | Query-only Service, Tests: OK | Identisch |
+| Phase 6 | ✅ 100% FERTIG | 19:00 | 19:20 | Commands: 7/7 ✅, Queries: 6/6 ✅, Tests: 38/38 ✅ | Identisch |
+| Phase 7 | ✅ 100% FERTIG | 19:45 | 20:15 | Commands: 6/6 ✅, Queries: 10/10 ✅, Tests: 44/44 ✅ | Identisch |
+| Phase 8 | ⏳ | - | - | - | - |
 
 ### Details Phase 1 - CustomerCommandService Methoden:
 | Methode | Status | Tests | Anmerkungen |
@@ -607,3 +610,179 @@ curl -s -o /dev/null -w "%{time_total}s\n" http://localhost:8080/api/customers
 
 ### Status:
 ✅ **Phase 1 ist KOMPLETT FERTIG** - Bereit für Phase 2 (OpportunityService CQRS Split)
+
+---
+
+## ✅ Phase 6: ContactService CQRS Migration (ABGESCHLOSSEN)
+**Zeit:** 14.08.2025 19:00 - 19:20  
+**Status:** ✅ Erfolgreich
+
+### 📊 Detaillierte Analyse von ContactService:
+
+**ContactService.java (291 Zeilen):**
+- **Pfad:** `/domain/customer/service/ContactService.java` (NICHT /domain/contact/!)
+- **Problem:** @Transactional auf Klassenebene (auch für Read-Operations)
+- **Keine Domain Events:** Nutzt direkte Repository-Operationen
+- **Dependencies:** ContactRepository, CustomerRepository, ContactMapper, SecurityIdentity
+
+### 📋 Methoden-Kategorisierung:
+
+**7 COMMAND-Methoden (Schreiboperationen):**
+1. `createContact(UUID, ContactDTO)` - Zeile 57-85
+2. `updateContact(UUID, ContactDTO)` - Zeile 94-113
+3. `updateContact(UUID, UUID, ContactDTO)` - Zeile 123-146 (Überladung)
+4. `setPrimaryContact(UUID, UUID)` - Zeile 212-230
+5. `deleteContact(UUID)` - Zeile 237-260
+6. `deleteContact(UUID, UUID)` - Zeile 268-295 (Überladung)
+7. `assignContactsToLocation(List<UUID>, UUID)` - Zeile 320-326
+
+**6 QUERY-Methoden (Leseoperationen):**
+1. `getContactsByCustomerId(UUID)` - Zeile 154-162
+2. `getContact(UUID)` - Zeile 170-180
+3. `getContact(UUID, UUID)` - Zeile 189-203 (Überladung)
+4. `getContactsByLocationId(UUID)` - Zeile 303-310
+5. `getUpcomingBirthdays(int)` - Zeile 334-342
+6. `isEmailInUse(String, UUID)` - Zeile 351-361
+
+### 🚨 Wichtige Business Rules:
+1. **Erster Kontakt wird automatisch Primary** (Zeile 78-80)
+2. **Primary Contact kann nicht gelöscht werden**, wenn es andere Kontakte gibt (Zeile 249-255, 284-290)
+3. **Soft-Delete wird verwendet** (isActive flag)
+4. **Audit-Felder** (createdBy, updatedBy) werden über SecurityIdentity gesetzt
+5. **Customer-Verifikation** bei vielen Operationen (Contact muss zum Customer gehören)
+
+### 📌 Besonderheiten:
+- ContactRepository hat eigene @Transactional-Methoden (setPrimaryContact, updateLocationAssignment)
+- Birthday-Funktionalität ist noch nicht vollständig implementiert (TODO im Repository)
+- Location-Assignment für Kontakte möglich
+- Email-Duplikats-Check über alle Kunden
+- **getCurrentUser() Helper:** 3-stufiger Fallback für Tests (SecurityIdentity → ci-test-user → temp)
+
+### ✅ Implementierung:
+1. **ContactCommandService:** Alle 7 Command-Methoden implementiert (238 Zeilen)
+2. **ContactQueryService:** Alle 6 Query-Methoden implementiert (115 Zeilen) - OHNE @Transactional!
+3. **ContactService als Facade:** Feature Flag Support hinzugefügt
+4. **Tests erstellt:**
+   - ContactCommandServiceTest: 16 Tests ✅
+   - ContactQueryServiceTest: 13 Tests ✅
+   - ContactServiceCQRSIntegrationTest: 9 Tests ✅
+   - **Gesamt: 38 Tests - alle grün!**
+
+### 🐛 Gefundenes Problem - Testkunden ohne [TEST] Präfix:
+**Problem:** CustomerDataInitializer erstellt 58-63 Kunden OHNE das `[TEST]` Präfix
+- **Auswirkung:** Testkunden werden nicht als solche erkannt
+- **Symptom:** 69 Kunden in DB, aber 0 mit `[TEST]` Präfix
+- **Status:** Als bekanntes Problem dokumentiert, Fix in späterem Sprint
+- **Workaround:** Kunden sind vorhanden und funktional, nur die Markierung fehlt
+
+### Status:
+✅ **Phase 6 ist COMMITTED** 
+- Commit: d9be12a53 (14.08.2025)
+- Code ist fertig und getestet (38 Tests grün)
+- 5 neue Dateien committed
+- Phase 7 (UserService) folgt als nächstes
+
+---
+
+## ✅ Phase 7: UserService CQRS Migration (ABGESCHLOSSEN)
+**Start:** 14.08.2025 19:45
+**Ende:** 14.08.2025 20:15  
+**Dauer:** 30 Minuten
+**Status:** ✅ 100% ABGESCHLOSSEN (noch nicht committed)
+
+### 📊 Detaillierte Analyse von UserService:
+
+**UserService.java (416 Zeilen):**
+- **Pfad:** `/domain/user/service/UserService.java`
+- **Problem:** @Transactional auf Klassenebene (auch für Read-Operations)
+- **KEINE Events:** Weder Domain noch Timeline Events
+- **Dependencies:** UserRepository, UserMapper, RoleValidator
+- **Besonderheit:** Kleinerer Service als andere (416 vs 700+ Zeilen)
+
+### 📋 Methoden-Kategorisierung:
+
+**6 COMMAND-Methoden (Schreiboperationen):**
+1. `createUser(CreateUserRequest)` - Zeile 58-88
+2. `updateUser(UUID, UpdateUserRequest)` - Zeile 99-146
+3. `deleteUser(UUID)` - Zeile 250-266 (HARD DELETE!)
+4. `enableUser(UUID)` - Zeile 311-330
+5. `disableUser(UUID)` - Zeile 339-358
+6. `updateUserRoles(UUID, UpdateUserRolesRequest)` - Zeile 387-414
+
+**10 QUERY-Methoden (Leseoperationen):**
+1. `getUser(UUID)` - Zeile 155-169
+2. `getUserByUsername(String)` - Zeile 178-193
+3. `listUsers(int, int)` - Zeile 202-209 (Pagination)
+4. `listEnabledUsers(int, int)` - Zeile 218-225
+5. `searchUsers(String, int, int)` - Zeile 235-242
+6. `getUserById(UUID)` - Zeile 275-277 (Alias für getUser)
+7. `getAllUsers()` - Zeile 284-290
+8. `findByEmail(String)` - Zeile 298-302 (Optional)
+9. `countUsers()` - Zeile 365-367
+10. `countEnabledUsers()` - Zeile 374-376
+
+### 🚨 Wichtige Business Rules und Erkenntnisse:
+1. **Username und Email müssen eindeutig sein** (DuplicateUsernameException/DuplicateEmailException)
+2. **hasChanges Check** - Updates nur bei tatsächlichen Änderungen
+3. **HARD DELETE wird verwendet** - KEIN Soft-Delete implementiert!
+4. **Explizites flush()** bei enable/disable/updateRoles (Zeilen 326, 354, 410)
+5. **RoleValidator** normalisiert und validiert Rollen
+6. **Defensive Validation** überall (null checks)
+7. **KEIN Audit-Trail** - keine Events oder Logging von Änderungen
+8. **Keine Security Integration** - kein getCurrentUser() oder createdBy/updatedBy
+
+### ⚠️ Identifizierte Probleme für spätere Lösung:
+
+1. **Fehlender Audit-Trail:**
+   - Problem: Keine Nachvollziehbarkeit wer wann was geändert hat
+   - Auswirkung: Compliance-Anforderungen könnten nicht erfüllt werden
+   - TODO: Event-System oder Audit-Logging hinzufügen
+
+2. **HARD DELETE statt Soft-Delete:**
+   - Problem: Daten gehen unwiderruflich verloren
+   - Auswirkung: Keine Wiederherstellung möglich, Referenzielle Integrität gefährdet
+   - TODO: Soft-Delete Pattern implementieren (isDeleted flag)
+
+3. **Keine createdBy/updatedBy Felder:**
+   - Problem: Keine Zuordnung von Änderungen zu Benutzern
+   - Auswirkung: Fehlende Accountability
+   - TODO: SecurityContext Integration für User-Tracking
+
+4. **Repository mit speziellen Methoden:**
+   - existsByUsername, existsByEmail, existsByUsernameExcluding, existsByEmailExcluding
+   - Diese müssen im Repository vorhanden sein für CQRS zu funktionieren
+
+### ✅ Implementierung:
+1. **UserCommandService:** Alle 6 Command-Methoden implementiert (267 Zeilen)
+   - createUser, updateUser (mit hasChanges), deleteUser (HARD!)
+   - enableUser, disableUser (mit flush())
+   - updateUserRoles (mit RoleValidator)
+   
+2. **UserQueryService:** Alle 10 Query-Methoden implementiert (189 Zeilen)
+   - OHNE @Transactional (read-only!)
+   - Optional bei findByEmail beibehalten
+   - getUserById als Alias implementiert
+   
+3. **UserService als Facade:** Feature Flag Support hinzugefügt
+   - 16 Methoden mit CQRS-Delegation
+   - Legacy-Code vollständig erhalten
+   
+4. **Tests erstellt:**
+   - UserCommandServiceTest: 19 Tests ✅ (alle Command-Operationen)
+   - UserQueryServiceTest: 14 Tests ✅ (alle Query-Operationen)
+   - UserServiceCQRSIntegrationTest: 11 Tests ✅ (End-to-End Flow)
+   - **Gesamt: 44 Tests - alle grün!**
+
+### 🔍 Besonderheiten der Implementierung:
+- **Exakte Kopien:** Alle Methoden 1:1 übernommen inkl. Kommentare
+- **hasChanges Logic:** Komplexe Prüfung auf tatsächliche Änderungen beibehalten
+- **Explizite flush() Calls:** Bei enable/disable/updateRoles erhalten
+- **MockedStatic für RoleValidator:** In Tests für statische Methode verwendet
+- **verifyNoWriteOperations():** Helper in QueryService Tests für CQRS-Compliance
+
+### Status:
+✅ **Phase 7 ist IMPLEMENTIERT aber NICHT COMMITTED**
+- Code ist fertig und getestet (44 Tests grün)
+- 3 neue Dateien warten auf git add und commit
+- 1 modifizierte Datei (UserService.java als Facade)
+- Nach Commit bereit für Phase 8 (ContactInteractionService)

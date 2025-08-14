@@ -2,6 +2,8 @@ package de.freshplan.domain.user.service;
 
 import de.freshplan.domain.user.entity.User;
 import de.freshplan.domain.user.repository.UserRepository;
+import de.freshplan.domain.user.service.command.UserCommandService;
+import de.freshplan.domain.user.service.query.UserQueryService;
 import de.freshplan.domain.user.service.dto.CreateUserRequest;
 import de.freshplan.domain.user.service.dto.UpdateUserRequest;
 import de.freshplan.domain.user.service.dto.UpdateUserRolesRequest;
@@ -22,13 +24,15 @@ import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.logging.Logger;
 
 /**
  * Service layer for User management operations.
  *
- * <p>This service encapsulates the business logic for user management, providing a clean API for
- * user operations while handling validation, error cases, and data transformation.
+ * <p>This service now acts as a Facade for CQRS pattern implementation.
+ * When cqrsEnabled is true, it delegates to UserCommandService and UserQueryService.
+ * When false, it uses the legacy implementation for backward compatibility.
  *
  * @author FreshPlan Team
  * @since 2.0.0
@@ -39,13 +43,24 @@ public class UserService {
 
   private static final Logger LOG = Logger.getLogger(UserService.class);
 
+  @ConfigProperty(name = "features.cqrs.enabled", defaultValue = "false")
+  boolean cqrsEnabled;
+
   private final UserRepository userRepository;
   private final UserMapper userMapper;
+  private final UserCommandService commandService;
+  private final UserQueryService queryService;
 
   @Inject
-  public UserService(UserRepository userRepository, UserMapper userMapper) {
+  public UserService(
+      UserRepository userRepository,
+      UserMapper userMapper,
+      UserCommandService commandService,
+      UserQueryService queryService) {
     this.userRepository = userRepository;
     this.userMapper = userMapper;
+    this.commandService = commandService;
+    this.queryService = queryService;
   }
 
   /**
@@ -56,6 +71,12 @@ public class UserService {
    * @throws UserAlreadyExistsException if username or email already exists
    */
   public UserResponse createUser(@Valid @NotNull CreateUserRequest request) {
+    if (cqrsEnabled) {
+      LOG.debugf("CQRS enabled - delegating createUser to UserCommandService");
+      return commandService.createUser(request);
+    }
+
+    // Legacy implementation
     // Defensive validation
     if (request == null) {
       throw new IllegalArgumentException("CreateUserRequest cannot be null");
@@ -97,6 +118,12 @@ public class UserService {
    * @throws UserAlreadyExistsException if new username/email already exists
    */
   public UserResponse updateUser(@NotNull UUID id, @Valid @NotNull UpdateUserRequest request) {
+    if (cqrsEnabled) {
+      LOG.debugf("CQRS enabled - delegating updateUser to UserCommandService");
+      return commandService.updateUser(id, request);
+    }
+
+    // Legacy implementation
     // Defensive validation
     if (id == null) {
       throw new IllegalArgumentException("User ID cannot be null");
@@ -153,6 +180,12 @@ public class UserService {
    * @throws UserNotFoundException if user not found
    */
   public UserResponse getUser(@NotNull UUID id) {
+    if (cqrsEnabled) {
+      LOG.debugf("CQRS enabled - delegating getUser to UserQueryService");
+      return queryService.getUser(id);
+    }
+
+    // Legacy implementation
     // Defensive validation
     if (id == null) {
       throw new IllegalArgumentException("User ID cannot be null");
@@ -176,6 +209,12 @@ public class UserService {
    * @throws UserNotFoundException if user not found
    */
   public UserResponse getUserByUsername(@NotNull String username) {
+    if (cqrsEnabled) {
+      LOG.debugf("CQRS enabled - delegating getUserByUsername to UserQueryService");
+      return queryService.getUserByUsername(username);
+    }
+
+    // Legacy implementation
     // Defensive validation
     if (username == null || username.trim().isEmpty()) {
       throw new IllegalArgumentException("Username cannot be null or empty");
@@ -200,6 +239,12 @@ public class UserService {
    * @return list of user responses
    */
   public List<UserResponse> listUsers(int pageIndex, int pageSize) {
+    if (cqrsEnabled) {
+      LOG.debugf("CQRS enabled - delegating listUsers to UserQueryService");
+      return queryService.listUsers(pageIndex, pageSize);
+    }
+
+    // Legacy implementation
     LOG.debugf("Listing users - page: %d, size: %d", pageIndex, pageSize);
 
     Page page = Page.of(pageIndex, pageSize);
@@ -216,6 +261,12 @@ public class UserService {
    * @return list of enabled user responses
    */
   public List<UserResponse> listEnabledUsers(int pageIndex, int pageSize) {
+    if (cqrsEnabled) {
+      LOG.debugf("CQRS enabled - delegating listEnabledUsers to UserQueryService");
+      return queryService.listEnabledUsers(pageIndex, pageSize);
+    }
+
+    // Legacy implementation
     LOG.debugf("Listing enabled users - page: %d, size: %d", pageIndex, pageSize);
 
     Page page = Page.of(pageIndex, pageSize);
@@ -233,6 +284,12 @@ public class UserService {
    * @return list of matching user responses
    */
   public List<UserResponse> searchUsers(String searchTerm, int pageIndex, int pageSize) {
+    if (cqrsEnabled) {
+      LOG.debugf("CQRS enabled - delegating searchUsers to UserQueryService");
+      return queryService.searchUsers(searchTerm, pageIndex, pageSize);
+    }
+
+    // Legacy implementation
     LOG.debugf("Searching users with term: %s", searchTerm);
 
     Page page = Page.of(pageIndex, pageSize);
@@ -248,6 +305,13 @@ public class UserService {
    * @throws UserNotFoundException if user not found
    */
   public void deleteUser(@NotNull UUID id) {
+    if (cqrsEnabled) {
+      LOG.debugf("CQRS enabled - delegating deleteUser to UserCommandService");
+      commandService.deleteUser(id);
+      return;
+    }
+
+    // Legacy implementation
     // Defensive validation
     if (id == null) {
       throw new IllegalArgumentException("User ID cannot be null");
@@ -273,6 +337,10 @@ public class UserService {
    * @throws UserNotFoundException if user not found
    */
   public UserResponse getUserById(@NotNull UUID id) {
+    if (cqrsEnabled) {
+      LOG.debugf("CQRS enabled - delegating getUserById to UserQueryService");
+      return queryService.getUserById(id);
+    }
     return getUser(id);
   }
 
@@ -282,6 +350,12 @@ public class UserService {
    * @return list of all user responses
    */
   public List<UserResponse> getAllUsers() {
+    if (cqrsEnabled) {
+      LOG.debugf("CQRS enabled - delegating getAllUsers to UserQueryService");
+      return queryService.getAllUsers();
+    }
+
+    // Legacy implementation
     LOG.debug("Retrieving all users");
 
     List<User> users = userRepository.listAll();
@@ -296,6 +370,12 @@ public class UserService {
    * @return Optional containing the user response if found
    */
   public java.util.Optional<UserResponse> findByEmail(String email) {
+    if (cqrsEnabled) {
+      LOG.debugf("CQRS enabled - delegating findByEmail to UserQueryService");
+      return queryService.findByEmail(email);
+    }
+
+    // Legacy implementation
     LOG.debugf("Finding user by email: %s", email);
 
     return userRepository.findByEmail(email).map(userMapper::toResponse);
@@ -309,6 +389,12 @@ public class UserService {
    * @throws UserNotFoundException if user not found
    */
   public UserResponse enableUser(@NotNull UUID id) {
+    if (cqrsEnabled) {
+      LOG.debugf("CQRS enabled - delegating enableUser to UserCommandService");
+      return commandService.enableUser(id);
+    }
+
+    // Legacy implementation
     // Defensive validation
     if (id == null) {
       throw new IllegalArgumentException("User ID cannot be null");
@@ -337,6 +423,12 @@ public class UserService {
    * @throws UserNotFoundException if user not found
    */
   public UserResponse disableUser(@NotNull UUID id) {
+    if (cqrsEnabled) {
+      LOG.debugf("CQRS enabled - delegating disableUser to UserCommandService");
+      return commandService.disableUser(id);
+    }
+
+    // Legacy implementation
     // Defensive validation
     if (id == null) {
       throw new IllegalArgumentException("User ID cannot be null");
@@ -363,6 +455,10 @@ public class UserService {
    * @return total user count
    */
   public long countUsers() {
+    if (cqrsEnabled) {
+      LOG.debugf("CQRS enabled - delegating countUsers to UserQueryService");
+      return queryService.countUsers();
+    }
     return userRepository.count();
   }
 
@@ -372,6 +468,10 @@ public class UserService {
    * @return enabled user count
    */
   public long countEnabledUsers() {
+    if (cqrsEnabled) {
+      LOG.debugf("CQRS enabled - delegating countEnabledUsers to UserQueryService");
+      return queryService.countEnabledUsers();
+    }
     return userRepository.countEnabled();
   }
 
@@ -387,6 +487,12 @@ public class UserService {
   @Transactional
   public UserResponse updateUserRoles(
       @NotNull UUID id, @Valid @NotNull UpdateUserRolesRequest request) {
+    if (cqrsEnabled) {
+      LOG.debugf("CQRS enabled - delegating updateUserRoles to UserCommandService");
+      return commandService.updateUserRoles(id, request);
+    }
+
+    // Legacy implementation
     // Defensive validation
     if (id == null) {
       throw new IllegalArgumentException("User ID cannot be null");
