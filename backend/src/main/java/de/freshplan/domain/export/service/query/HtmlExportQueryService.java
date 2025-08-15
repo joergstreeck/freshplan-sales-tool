@@ -1,59 +1,53 @@
-package de.freshplan.domain.export.service;
+package de.freshplan.domain.export.service.query;
 
 import de.freshplan.domain.customer.entity.Customer;
 import de.freshplan.domain.customer.entity.CustomerContact;
 import de.freshplan.domain.customer.repository.CustomerRepository;
 import de.freshplan.domain.export.service.dto.ExportRequest;
-import de.freshplan.domain.export.service.query.HtmlExportQueryService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.logging.Logger;
 
 /**
- * CQRS Facade for HTML export functionality.
+ * Query service for HTML export operations following CQRS pattern.
  * 
- * This service acts as a facade that routes export requests to either the new CQRS-based
- * HtmlExportQueryService or the legacy implementation, controlled by feature flag.
+ * This is a read-only service that generates HTML reports for customers.
+ * It was extracted from HtmlExportService during Phase 13 CQRS migration.
  * 
- * Since HtmlExportService is read-only (no write operations), only a QueryService is needed.
- * Note: @Transactional was removed as this is a read-only service.
+ * Key characteristics:
+ * - NO @Transactional annotation (read-only operations)
+ * - No state modifications
+ * - Optimized for report generation
+ * - Uses FreshPlan CI colors (#004F7B, #94C456)
  * 
  * @author FreshPlan Team
- * @since 2.0.0 (CQRS migration: Phase 13)
+ * @since Phase 13 CQRS Migration
  */
 @ApplicationScoped
-public class HtmlExportService {
+public class HtmlExportQueryService {
 
-  private static final Logger log = Logger.getLogger(HtmlExportService.class);
+  private static final Logger log = Logger.getLogger(HtmlExportQueryService.class);
 
-  // Feature flag for CQRS migration
-  @ConfigProperty(name = "features.cqrs.enabled", defaultValue = "false")
-  boolean cqrsEnabled;
-
-  // CQRS Services
-  @Inject HtmlExportQueryService queryService;
-
-  // Legacy dependencies
   @Inject CustomerRepository customerRepository;
 
   /**
    * Generate HTML report for customers that can be printed to PDF.
-   * Routes to CQRS QueryService when enabled, otherwise uses legacy implementation.
+   * This is an EXACT COPY from HtmlExportService to ensure 100% compatibility.
+   * 
+   * The HTML includes:
+   * - Professional styling with FreshPlan CI
+   * - Print optimization with @media queries
+   * - Statistics dashboard
+   * - Customer table with all details
+   * - XSS protection through HTML escaping
    * 
    * @param request Export parameters (filters)
    * @return Complete HTML document as string
    */
   public String generateCustomersHtml(ExportRequest request) {
-    if (cqrsEnabled) {
-      log.debug("Using CQRS QueryService for HTML export");
-      return queryService.generateCustomersHtml(request);
-    }
-    
-    // Legacy implementation
     log.info("Generating HTML report for customers");
 
     StringBuilder html = new StringBuilder();
@@ -317,7 +311,13 @@ public class HtmlExportService {
     return html.toString();
   }
 
-  /** Escape HTML special characters to prevent XSS */
+  /** 
+   * Escape HTML special characters to prevent XSS.
+   * EXACT COPY from HtmlExportService to ensure identical behavior.
+   * 
+   * @param value Object to escape (null-safe)
+   * @return Escaped string or empty string for null
+   */
   private String escapeHtml(Object value) {
     if (value == null) {
       return "";

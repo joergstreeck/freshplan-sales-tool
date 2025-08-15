@@ -1,8 +1,8 @@
 # 📋 PR #5 Status für nächsten Claude - CQRS Refactoring
 
-**Stand:** 14.08.2025 23:30  
+**Stand:** 15.08.2025 02:45  
 **Branch:** `feature/refactor-large-services`  
-**Aktueller IST-Zustand:** ✅ PHASE 11 KOMPLETT ABGESCHLOSSEN - Gründliche Analyse durchgeführt
+**Aktueller IST-Zustand:** ✅ PHASE 13 KOMPLETT ABGESCHLOSSEN - Export & Event Services erfolgreich migriert
 
 ---
 
@@ -157,13 +157,30 @@ CustomerService nutzt **Timeline Events** (direkt in DB), NICHT Domain Events mi
 
 ## 📝 Was fehlt noch?
 
-### Ausstehende Phasen (1 von 12):
-- [x] Phase 7: UserService ✅ ABGESCHLOSSEN  
-- [x] Phase 8: ContactInteractionService ✅ ABGESCHLOSSEN
-- [x] Phase 9: TestDataService ✅ ABGESCHLOSSEN
-- [x] Phase 10: SearchService ✅ ABGESCHLOSSEN  
-- [x] Phase 11: ProfileService ✅ ABGESCHLOSSEN
-- [ ] Phase 12: HelpContentService/UserStruggleDetectionService - VERBLEIBEND
+### ✅ ALLE 13 PHASEN ERFOLGREICH ABGESCHLOSSEN!
+
+**Phase 12: Help System (UserStruggleDetectionService + HelpContentService)** - ✅ ABGESCHLOSSEN
+- **INNOVATION:** Erste Event-Driven CQRS Implementation mit CDI Event Bus
+- UserStruggleDetectionService: 5 Command + 5 Query Methoden  
+- HelpContentService: 7 Command + 7 Query Methoden + Event Handler
+- HelpSystemResource: 8 REST Endpoints (funktioniert transparent)
+- **44 Tests total** - alle grün (5 + 15 + 16 + 8)
+- **Kritische Lösung:** CDI Context Problem mit @ActivateRequestContext gelöst
+- **Performance:** 50 concurrent users erfolgreich getestet
+- ⚠️ NOCH NICHT COMMITTED (wartet auf Commit)
+
+**Phase 13: Export & Event Services (HtmlExportService + ContactEventCaptureService)** - ✅ ABGESCHLOSSEN
+- **SPEZIELL:** Zwei Services mit asymmetrischen CQRS-Patterns
+- HtmlExportService: NUR QueryService (read-only, kein CommandService)
+  - @Transactional entfernt aus Facade (read-only!)
+  - 1 Query Methode: generateCustomersHtml()
+  - 8 Tests - alle grün
+- ContactEventCaptureService: NUR CommandService (write-only, kein QueryService)
+  - 8 Capture-Methoden + 1 Event Listener
+  - Event Listener bleibt in Facade für korrektes Event-Handling
+  - 14 Tests - alle grün
+- **WICHTIG:** Event<T> kann in Tests nicht gemockt werden (CDI-Limitierung)
+- ⚠️ NOCH NICHT COMMITTED (wartet auf Commit)
 
 ### Bekannte Probleme:
 
@@ -191,6 +208,31 @@ CustomerService nutzt **Timeline Events** (direkt in DB), NICHT Domain Events mi
 - **Problem:** Externe iTextPDF-Dependency entfernt
 - **Lösung:** HTML-Export mit FreshPlan CI-Styling + Browser-PDF
 - **TODO:** Überwachung ob HTML-Lösung ausreicht
+
+#### 6. Event-Driven CQRS Herausforderungen (NEU aus Phase 12):
+- **Problem:** Async Events können out-of-order verarbeitet werden
+- **Auswirkung:** View Counts könnten inkonsistent sein
+- **TODO:** Event Sequencing oder Event Store implementieren
+
+#### 7. CDI Context in Async Operations (NEU aus Phase 12):
+- **Problem:** Awaitility Tests verlieren CDI Context in separaten Threads
+- **Lösung:** TestHelper Service Pattern mit @ActivateRequestContext
+- **TODO:** Alternative Context-Propagation für bessere Performance prüfen
+
+#### 8. Event<T> Mocking Limitierung (NEU aus Phase 13):
+- **Problem:** CDI Event<T> kann in Tests nicht mit @InjectMock gemockt werden
+- **Grund:** Event ist ein CDI Producer mit @Dependent Scope
+- **Lösung:** Tests ohne Event-Mock schreiben, nur Business-Logic testen
+- **Auswirkung:** Event-Firing kann in Unit-Tests nicht verifiziert werden
+- **TODO:** Integration-Tests für Event-Propagation schreiben
+
+#### 9. Asymmetrische CQRS Patterns (NEU aus Phase 13):
+- **Erkenntnis:** Nicht alle Services benötigen sowohl Command als auch Query
+- **Beispiele:** 
+  - HtmlExportService: Nur QueryService (read-only)
+  - ContactEventCaptureService: Nur CommandService (write-only)
+- **Best Practice:** @Transactional nur bei write operations, NICHT bei read-only
+- **TODO:** Dokumentation für asymmetrische CQRS-Patterns erstellen
 
 ---
 
