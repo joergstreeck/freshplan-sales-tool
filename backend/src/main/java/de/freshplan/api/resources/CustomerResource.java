@@ -50,6 +50,9 @@ public class CustomerResource {
   @ConfigProperty(name = "features.cqrs.enabled", defaultValue = "false")
   boolean cqrsEnabled;
 
+  @ConfigProperty(name = "features.cqrs.customers.list.enabled", defaultValue = "false")
+  boolean customersListCqrsEnabled;
+
   @Inject CustomerService customerService;  // Legacy service
   
   @Inject CustomerCommandService commandService;  // New CQRS command service
@@ -199,8 +202,12 @@ public class CustomerResource {
 
     CustomerListResponse customers;
 
-    if (cqrsEnabled) {
-      log.debug("Using CQRS QueryService for getAllCustomers");
+    // Check if CQRS is enabled AND if list operations should use CQRS
+    // This allows fine-grained control over performance-critical endpoints
+    boolean useCqrsForList = cqrsEnabled && customersListCqrsEnabled;
+    
+    if (useCqrsForList) {
+      log.debug("Using CQRS QueryService for getAllCustomers (both flags enabled)");
       if (status != null) {
         customers = queryService.getCustomersByStatus(status, page, size);
       } else if (industry != null) {
@@ -209,7 +216,8 @@ public class CustomerResource {
         customers = queryService.getAllCustomers(page, size);
       }
     } else {
-      log.debug("Using legacy CustomerService for getAllCustomers");
+      log.debug("Using legacy CustomerService for getAllCustomers (cqrs={}, list={})", 
+                cqrsEnabled, customersListCqrsEnabled);
       if (status != null) {
         customers = customerService.getCustomersByStatus(status, page, size);
       } else if (industry != null) {

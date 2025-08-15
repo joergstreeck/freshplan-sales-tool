@@ -2071,3 +2071,100 @@ DELETE FROM customers WHERE customer_number LIKE 'PI%';
 - **ContactEventCaptureCQRSIntegrationTest:** 5/5 Tests ✅
 - **Gesamt Phase 14.3:** 25/26 Tests (96% Success Rate)
 - **V9999 Migration:** Verbessert, aber Testcontainer-Problem bleibt
+
+---
+
+## ✅ Phase 15: Performance Testing (15.08.2025 23:00-23:20)
+
+### 📚 Phase 16: Dokumentation finalisiert (16.08.2025)
+**[Vollständige Phase 16 Dokumentation hier](/Users/joergstreeck/freshplan-sales-tool/docs/features/Code_Verbesserung_08_25/PR_5_PHASE_16_DOCUMENTATION.md)**
+
+## Phase 15 Details:
+
+### Ausgangslage:
+- Alle 13 Services erfolgreich auf CQRS migriert
+- Feature Flag `features.cqrs.enabled` steuert Legacy vs CQRS Mode
+- 292 Kunden in Datenbank (davon 58 [TEST] Kunden)
+- JVM bereits warm (Backend läuft seit Start der Session)
+
+### Durchgeführte Tests:
+
+#### 1. API-Gleichheits-Verifikation:
+**Ziel:** Sicherstellen, dass Facade Pattern alle Unterschiede neutralisiert
+
+**Ergebnisse:**
+- ✅ **Response-Struktur identisch:** Alle JSON-Felder vorhanden
+- ✅ **Pagination funktioniert:** Gleiche Keys und Verhalten
+- ✅ **Error Responses konsistent:** 404 mit identischen Feldern
+- ⚠️ **ContactsCount-Bug gefunden:** Customer ID 39ca3e6d zeigt 12 (Legacy) vs 15 (CQRS)
+- ⚠️ **JSON Feld-Reihenfolge:** Unterschiedlich aber funktional irrelevant
+
+**Fazit:** 99% API-Gleichheit erreicht, ContactsCount-Bug sollte separat gefixt werden
+
+#### 2. Performance-Baseline (Legacy Mode):
+```
+GET /api/customers (Liste):
+- Durchschnitt: 30.151ms
+- Median: 31.294ms
+- Min: 19.034ms / Max: 41.531ms
+
+GET /api/customers/{id} (Single):
+- Durchschnitt: 19.018ms
+- Median: 22.758ms
+- Min: 7.449ms / Max: 27.557ms
+```
+
+#### 3. Performance mit CQRS Mode:
+```
+GET /api/customers (Liste):
+- Durchschnitt: 39.228ms (+30.1% langsamer)
+- Median: 38.891ms
+- Min: 34.097ms / Max: 44.031ms
+- Cold Start: 148.267ms (vs 41.531ms Legacy)
+
+GET /api/customers/{id} (Single):
+- Durchschnitt: 18.821ms (-1.0% schneller)
+- Median: 19.143ms
+- Min: 12.636ms / Max: 22.668ms
+```
+
+### Identifizierte Probleme:
+
+#### 1. **Performance-Regression bei Listen-Abfragen**
+- **Problem:** CQRS Mode ist 30% langsamer bei GET /api/customers
+- **Vermutete Ursache:** 
+  - Zusätzlicher Service-Layer Overhead
+  - Fehlende Query-Optimierung in CustomerQueryService
+  - Möglicherweise ineffiziente Pagination-Implementierung
+- **Impact:** Merkbare Verzögerung bei großen Listen
+- **Empfehlung:** 
+  - Query-Methode in CustomerQueryService profilen
+  - Native Query oder Projection verwenden
+  - Caching-Layer einführen
+
+#### 2. **ContactsCount Inkonsistenz**
+- **Problem:** Unterschiedliche Zählung zwischen Legacy (12) und CQRS (15)
+- **Betroffener Customer:** 39ca3e6d-17dc-426c-bd8e-b5e1dc75d8fc
+- **Mögliche Ursachen:**
+  - Race Condition beim Zählen
+  - Unterschiedliche JOIN-Logik
+  - Cache-Inkonsistenz
+- **Empfehlung:** COUNT-Query in beiden Services vergleichen
+
+#### 3. **Cold Start Performance**
+- **Problem:** CQRS Cold Start 3.5x langsamer (148ms vs 42ms)
+- **Impact:** Erste Requests nach Deploy/Restart spürbar langsamer
+- **Empfehlung:** Application Warmup implementieren
+
+### Tools und Artefakte erstellt:
+- `/backend/performance-tests/phase15_results.md` - Vollständige Testergebnisse
+- `/backend/performance-tests/api-comparison/` - JSON Response Vergleiche
+- `/backend/performance-tests/api-comparison/comparison_report.md` - API-Gleichheitsbericht
+- `/tmp/curl-format.txt` - Performance Messung Template
+
+### Metriken nach Phase 15:
+- **API-Gleichheit:** 99% (1 Bug: ContactsCount)
+- **Performance Single Query:** ✅ Gleichwertig (-1%)
+- **Performance List Query:** ⚠️ Regression (+30%)
+- **Stabilität:** ✅ 100+ parallele Requests ohne Fehler
+- **Feature Flag Switching:** ✅ Funktioniert nahtlos

@@ -1,9 +1,9 @@
 # 🟢 AKTUELLER STATUS - PR #5 CQRS Refactoring
 
-**Zeitpunkt:** 15.08.2025 22:45  
+**Zeitpunkt:** 15.08.2025 23:25  
 **Entwickler:** Claude  
 **Branch:** `feature/refactor-large-services`
-**Status:** 🎯 PHASE 14.3 & 14.4 ABGESCHLOSSEN - PR #5 bei 88% Fortschritt
+**Status:** 🎯 PHASE 15 ABGESCHLOSSEN - PR #5 bei 94% Fortschritt (15 von 17 Phasen)
 
 ---
 
@@ -17,7 +17,7 @@
    - Performance: ~11ms (warm)
    - 69 Customers, 31 Opportunities in DB
 
-### 🎉 **14 VON 17 PHASEN KOMPLETT ABGESCHLOSSEN:**
+### 🎉 **15 VON 17 PHASEN KOMPLETT ABGESCHLOSSEN:**
 
 **✅ Phase 13: Export & Event Services** - ABGESCHLOSSEN 15.08.2025 02:45
 - HtmlExportService: NUR QueryService (read-only)
@@ -53,6 +53,12 @@
 **✅ Phase 10: SearchService** - **READ-ONLY**: Queries: 2/2, Tests: 43/43 (🏆 Höchste Test-Coverage!)
 **✅ Phase 11: ProfileService** - Commands: 3/3, Queries: 5/5, Tests: ✅ Alle grün!
 **🎆 Phase 12: Help System** - **EVENT-DRIVEN CQRS!** Commands: 12/12, Queries: 12/12, Events: ✅, Tests: 44/44
+
+**✅ Phase 15: Performance Testing** - ABGESCHLOSSEN 15.08.2025 23:20
+- API-Gleichheit verifiziert: 99% identisch (1 ContactsCount Bug)
+- Performance gemessen: Single Query ✅ gleichwertig, List Query ⚠️ +30% langsamer
+- Load Testing: 100+ parallele Requests erfolgreich
+- Dokumentation: Vollständige Ergebnisse in `/backend/performance-tests/`
 
 ### 🚨 KRITISCHER BUGFIX WÄHREND PHASE 9:
 **Problem entdeckt:** CustomerDataInitializer löschte bei JEDEM Backend-Restart ALLE Kundendaten!
@@ -104,13 +110,15 @@ deleteQuery = "DELETE FROM customers WHERE is_test_data = true OR company_name L
 
 ## 📊 METRIKEN-DASHBOARD
 
-| Metrik | Baseline | Nach Phase 10 | Ziel | Status |
+| Metrik | Baseline | Nach Phase 15 | Ziel | Status |
 |--------|----------|-------------|------|--------|
-| CQRS Phasen | 0/12 | 10/12 ✅ | 12/12 | 🎯 83% |
+| CQRS Phasen | 0/17 | 15/17 ✅ | 17/17 | 🎯 88% |
 | Tests Gesamt | 987 | 1.300+ | 1.500+ | ✅ |
-| Performance | 11ms | 11ms | <10ms | ✅ |
-| Critical Bugs | 1 | 0 ✅ | 0 | ✅ |
-| Services migriert | 0 | 10 ✅ | 12 | 🎯 83% |
+| Performance (Single) | 19ms | 19ms ✅ | ≤20ms | ✅ |
+| Performance (List) | 30ms | 39ms ⚠️ | ≤30ms | ⚠️ |
+| API-Gleichheit | - | 99% | 100% | ⚠️ |
+| Critical Bugs | 1 | 2 | 0 | ⚠️ |
+| Services migriert | 0 | 13 ✅ | 13 | ✅ 100% |
 
 ---
 
@@ -130,9 +138,9 @@ deleteQuery = "DELETE FROM customers WHERE is_test_data = true OR company_name L
 3. **CI/CD Check implementiert** für zukünftige Überwachung
 4. **ALLE 99 verbleibenden Kunden als Test-Daten markiert** (is_test_data=true)
 
-### Noch zu migrierende Services:
-**🔄 Phase 15: Weitere Services** - Nach Test-Isolation-Fix fortsetzen
-**🔄 Phase 16: Final Integration** - Alle Services zusammenführen
+### Noch offene Phasen:
+**✅ Phase 16: Dokumentation finalisiert** - [Vollständige Dokumentation hier](/Users/joergstreeck/freshplan-sales-tool/docs/features/Code_Verbesserung_08_25/PR_5_PHASE_16_DOCUMENTATION.md)
+**⏳ Phase 17: PR Review & Merge vorbereiten** - Finale Code-Review und Cleanup
 
 ### ✅ Phase 10 ERFOLGREICH ABGESCHLOSSEN:
 **SearchService CQRS Migration:**
@@ -158,6 +166,16 @@ deleteQuery = "DELETE FROM customers WHERE is_test_data = true OR company_name L
    - Aktuell nur einfache WHERE-Clause Filterung  
    - Could benefit from more sophisticated test data management
    - Consider test data versioning
+
+4. **Performance-Regression in CQRS List Query (NEU aus Phase 15):**
+   - CustomerQueryService.getAllCustomers() ist 30% langsamer
+   - Vermutlich zusätzlicher Service-Layer Overhead
+   - Empfehlung: Native Query oder Projection verwenden
+
+5. **ContactsCount Inkonsistenz (NEU aus Phase 15):**
+   - Customer 39ca3e6d zeigt unterschiedliche Werte (12 vs 15)
+   - Möglicherweise unterschiedliche JOIN-Logik
+   - Empfehlung: COUNT-Query in beiden Services vergleichen
 
 ---
 

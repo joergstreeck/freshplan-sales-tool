@@ -25,6 +25,7 @@ import static org.mockito.Mockito.*;
  * Verifies that the correct service is called based on the feature flag setting.
  * 
  * This is a unit test that ensures the delegation logic works correctly.
+ * Tests both global CQRS flag and per-use-case flags.
  */
 @QuarkusTest
 @TestSecurity(user = "testuser", roles = {"admin", "manager", "sales"})
@@ -159,6 +160,110 @@ class CustomerResourceFeatureFlagTest {
         verify(customerService, never()).changeStatus(any(), any(), any());
     }
     
+    // ========== Per-Use-Case Flag Tests for List Operations ==========
+    
+    @Test
+    @DisplayName("When both flags disabled, getAllCustomers should use legacy service")
+    void testGetAllCustomers_BothFlagsDisabled_UsesLegacy() {
+        // Given
+        customerResource.cqrsEnabled = false;
+        customerResource.customersListCqrsEnabled = false;
+        CustomerListResponse mockResponse = createMockListResponse();
+        when(customerService.getAllCustomers(anyInt(), anyInt())).thenReturn(mockResponse);
+        
+        // When
+        customerResource.getAllCustomers(0, 20, null, null);
+        
+        // Then
+        verify(customerService, times(1)).getAllCustomers(0, 20);
+        verify(queryService, never()).getAllCustomers(anyInt(), anyInt());
+    }
+    
+    @Test
+    @DisplayName("When CQRS disabled but list enabled, getAllCustomers should still use legacy")
+    void testGetAllCustomers_CqrsDisabledListEnabled_UsesLegacy() {
+        // Given - list flag has no effect when global CQRS is disabled
+        customerResource.cqrsEnabled = false;
+        customerResource.customersListCqrsEnabled = true;
+        CustomerListResponse mockResponse = createMockListResponse();
+        when(customerService.getAllCustomers(anyInt(), anyInt())).thenReturn(mockResponse);
+        
+        // When
+        customerResource.getAllCustomers(0, 20, null, null);
+        
+        // Then
+        verify(customerService, times(1)).getAllCustomers(0, 20);
+        verify(queryService, never()).getAllCustomers(anyInt(), anyInt());
+    }
+    
+    @Test
+    @DisplayName("When CQRS enabled but list disabled, getAllCustomers should use legacy")
+    void testGetAllCustomers_CqrsEnabledListDisabled_UsesLegacy() {
+        // Given - this is the key configuration for performance mitigation
+        customerResource.cqrsEnabled = true;
+        customerResource.customersListCqrsEnabled = false;
+        CustomerListResponse mockResponse = createMockListResponse();
+        when(customerService.getAllCustomers(anyInt(), anyInt())).thenReturn(mockResponse);
+        
+        // When
+        customerResource.getAllCustomers(0, 20, null, null);
+        
+        // Then - list uses legacy while other operations would use CQRS
+        verify(customerService, times(1)).getAllCustomers(0, 20);
+        verify(queryService, never()).getAllCustomers(anyInt(), anyInt());
+    }
+    
+    @Test
+    @DisplayName("When both flags enabled, getAllCustomers should use CQRS")
+    void testGetAllCustomers_BothFlagsEnabled_UsesCQRS() {
+        // Given
+        customerResource.cqrsEnabled = true;
+        customerResource.customersListCqrsEnabled = true;
+        CustomerListResponse mockResponse = createMockListResponse();
+        when(queryService.getAllCustomers(anyInt(), anyInt())).thenReturn(mockResponse);
+        
+        // When
+        customerResource.getAllCustomers(0, 20, null, null);
+        
+        // Then
+        verify(queryService, times(1)).getAllCustomers(0, 20);
+        verify(customerService, never()).getAllCustomers(anyInt(), anyInt());
+    }
+    
+    @Test
+    @DisplayName("Per-use-case flag should not affect getCustomer (single)")
+    void testGetCustomer_NotAffectedByListFlag() {
+        // Given - list flag should not affect single customer retrieval
+        customerResource.cqrsEnabled = true;
+        customerResource.customersListCqrsEnabled = false; // List disabled but CQRS enabled
+        CustomerResponse mockResponse = createMockCustomerResponse();
+        when(queryService.getCustomer(testId)).thenReturn(mockResponse);
+        
+        // When
+        customerResource.getCustomer(testId);
+        
+        // Then - single customer still uses CQRS
+        verify(queryService, times(1)).getCustomer(testId);
+        verify(customerService, never()).getCustomer(any());
+    }
+    
+    @Test
+    @DisplayName("List filtering with status should respect per-use-case flag")
+    void testGetAllCustomersWithStatus_RespectsListFlag() {
+        // Given
+        customerResource.cqrsEnabled = true;
+        customerResource.customersListCqrsEnabled = false;
+        CustomerListResponse mockResponse = createMockListResponse();
+        when(customerService.getCustomersByStatus(any(), anyInt(), anyInt())).thenReturn(mockResponse);
+        
+        // When
+        customerResource.getAllCustomers(0, 20, CustomerStatus.AKTIV, null);
+        
+        // Then
+        verify(customerService, times(1)).getCustomersByStatus(CustomerStatus.AKTIV, 0, 20);
+        verify(queryService, never()).getCustomersByStatus(any(), anyInt(), anyInt());
+    }
+    
     // Helper methods to create mock responses
     private CustomerResponse createMockCustomerResponse() {
         // Use null for all parameters - we're only testing delegation, not data
@@ -166,6 +271,11 @@ class CustomerResourceFeatureFlagTest {
     }
     
     private CustomerDashboardResponse createMockDashboardResponse() {
+        // Use null for simplicity - we're only testing delegation
+        return null; // Mock will return this, but we don't verify the content
+    }
+    
+    private CustomerListResponse createMockListResponse() {
         // Use null for simplicity - we're only testing delegation
         return null; // Mock will return this, but we don't verify the content
     }
