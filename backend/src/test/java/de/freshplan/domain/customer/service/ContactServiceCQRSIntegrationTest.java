@@ -5,9 +5,8 @@ import de.freshplan.domain.customer.repository.ContactRepository;
 import de.freshplan.domain.customer.repository.CustomerRepository;
 import de.freshplan.domain.customer.service.dto.ContactDTO;
 import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.junit.TestProfile;
-import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
+import io.quarkus.test.TestTransaction;import io.quarkus.test.junit.TestProfile;
+import io.quarkus.test.TestTransaction;import jakarta.inject.Inject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -41,7 +40,7 @@ class ContactServiceCQRSIntegrationTest {
     private Customer testCustomer;
     
     @BeforeEach
-    @Transactional
+    @TestTransaction
     void setUp() {
         // Clean up
         contactRepository.deleteAll();

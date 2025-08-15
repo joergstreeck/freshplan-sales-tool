@@ -8,11 +8,11 @@ import de.freshplan.domain.customer.entity.CustomerType;
 import de.freshplan.domain.customer.entity.Industry;
 import de.freshplan.domain.customer.repository.CustomerRepository;
 import de.freshplan.domain.export.service.dto.ExportRequest;
+import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
 import io.quarkus.test.security.TestSecurity;
 import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -57,7 +57,7 @@ class HtmlExportCQRSIntegrationTest {
     private Customer testCustomer2;
     
     @BeforeEach
-    @Transactional
+    @TestTransaction
     void setUp() {
         // Create test data for export
         String uniqueSuffix = String.valueOf(System.currentTimeMillis());
@@ -248,7 +248,7 @@ class HtmlExportCQRSIntegrationTest {
     // =====================================
     
     @Test
-    @Transactional
+    @TestTransaction
     @DisplayName("Export with pagination should respect page and size")
     void generateCustomersHtml_withPagination_shouldRespectLimits() {
         // Given - Create additional customers

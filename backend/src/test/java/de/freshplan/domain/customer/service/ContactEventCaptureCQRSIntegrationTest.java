@@ -13,12 +13,11 @@ import de.freshplan.domain.customer.repository.ContactInteractionRepository;
 import de.freshplan.domain.customer.repository.ContactRepository;
 import de.freshplan.domain.customer.repository.CustomerRepository;
 import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.junit.TestProfile;
-import io.quarkus.test.security.TestSecurity;
-import io.quarkus.narayana.jta.QuarkusTransaction;
+import io.quarkus.test.TestTransaction;import io.quarkus.test.junit.TestProfile;
+import io.quarkus.test.TestTransaction;import io.quarkus.test.security.TestSecurity;
+import io.quarkus.test.TestTransaction;import io.quarkus.narayana.jta.QuarkusTransaction;
 import jakarta.enterprise.context.control.ActivateRequestContext;
 import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -71,7 +70,7 @@ class ContactEventCaptureCQRSIntegrationTest {
     private CustomerContact testContact;
     
     @BeforeEach
-    @Transactional
+    @TestTransaction
     void setUp() {
         // Create test customer and contact
         String uniqueSuffix = String.valueOf(System.currentTimeMillis());

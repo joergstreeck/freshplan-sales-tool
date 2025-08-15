@@ -9,9 +9,9 @@ import de.freshplan.domain.customer.repository.CustomerTimelineRepository;
 import de.freshplan.domain.testdata.service.command.TestDataCommandService;
 import de.freshplan.domain.testdata.service.query.TestDataQueryService;
 import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.junit.TestProfile;
-import io.quarkus.test.InjectMock;
-import jakarta.inject.Inject;
+import io.quarkus.test.TestTransaction;import io.quarkus.test.junit.TestProfile;
+import io.quarkus.test.TestTransaction;import io.quarkus.test.InjectMock;
+import io.quarkus.test.TestTransaction;import jakarta.inject.Inject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

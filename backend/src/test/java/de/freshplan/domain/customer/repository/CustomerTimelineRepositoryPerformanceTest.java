@@ -6,9 +6,8 @@ import de.freshplan.domain.customer.entity.*;
 import de.freshplan.test.BaseIntegrationTest;
 import io.quarkus.panache.common.Page;
 import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.security.TestSecurity;
-import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
+import io.quarkus.test.TestTransaction;import io.quarkus.test.security.TestSecurity;
+import io.quarkus.test.TestTransaction;import jakarta.inject.Inject;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -37,7 +36,7 @@ class CustomerTimelineRepositoryPerformanceTest extends BaseIntegrationTest {
   private Statistics hibernateStats;
 
   @BeforeEach
-  @Transactional
+  @TestTransaction
   void setUp() {
     // Clean only test-specific data to preserve CustomerDataInitializer test customers
     timelineRepository.deleteAll();
@@ -81,7 +80,7 @@ class CustomerTimelineRepositoryPerformanceTest extends BaseIntegrationTest {
   }
 
   @Test
-  @Transactional
+  @TestTransaction
   void findByCustomerId_shouldNotCauseN1Queries() {
     // Given: Statistics are cleared and enabled
     hibernateStats.clear();
@@ -106,7 +105,7 @@ class CustomerTimelineRepositoryPerformanceTest extends BaseIntegrationTest {
   }
 
   @Test
-  @Transactional
+  @TestTransaction
   void findByCustomerIdAndCategory_shouldNotCauseN1Queries() {
     // Given: Statistics are cleared
     hibernateStats.clear();
@@ -129,7 +128,7 @@ class CustomerTimelineRepositoryPerformanceTest extends BaseIntegrationTest {
   }
 
   @Test
-  @Transactional
+  @TestTransaction
   void searchByCustomerIdAndText_shouldNotCauseN1Queries() {
     // Given: Statistics are cleared
     hibernateStats.clear();
@@ -151,7 +150,7 @@ class CustomerTimelineRepositoryPerformanceTest extends BaseIntegrationTest {
   }
 
   @Test
-  @Transactional
+  @TestTransaction
   void countByCustomerId_shouldUseDirectColumnAccess() {
     // Given: Statistics are cleared
     hibernateStats.clear();

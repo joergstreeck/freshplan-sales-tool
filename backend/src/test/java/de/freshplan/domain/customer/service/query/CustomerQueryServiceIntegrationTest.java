@@ -12,8 +12,7 @@ import de.freshplan.domain.customer.service.dto.CustomerResponse;
 import de.freshplan.domain.customer.service.dto.CreateCustomerRequest;
 import de.freshplan.domain.customer.service.exception.CustomerNotFoundException;
 import io.quarkus.test.junit.QuarkusTest;
-import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
+import io.quarkus.test.TestTransaction;import jakarta.inject.Inject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -48,7 +47,7 @@ class CustomerQueryServiceIntegrationTest {
     private String testCustomerNumber;
     
     @BeforeEach
-    @Transactional
+    @TestTransaction
     void setUp() {
         // Clean up any test data - skip foreign key constraints by using query
         customerRepository.getEntityManager().createQuery("DELETE FROM CustomerTimelineEvent").executeUpdate();
@@ -324,7 +323,7 @@ class CustomerQueryServiceIntegrationTest {
     
     // ========== HELPER METHODS ==========
     
-    @Transactional
+    @TestTransaction
     void createAdditionalTestCustomers(int count) {
         for (int i = 1; i <= count; i++) {
             Customer customer = new Customer();
@@ -343,7 +342,7 @@ class CustomerQueryServiceIntegrationTest {
         customerRepository.flush();
     }
     
-    @Transactional
+    @TestTransaction
     void createCustomerWithStatus(CustomerStatus status, String name) {
         Customer customer = new Customer();
         customer.setCustomerNumber("KD-2025-" + UUID.randomUUID().toString().substring(0, 5));
@@ -360,7 +359,7 @@ class CustomerQueryServiceIntegrationTest {
         customerRepository.flush();
     }
     
-    @Transactional
+    @TestTransaction
     void createCustomerWithIndustry(Industry industry, String name) {
         Customer customer = new Customer();
         customer.setCustomerNumber("KD-2025-" + UUID.randomUUID().toString().substring(0, 5));
@@ -377,7 +376,7 @@ class CustomerQueryServiceIntegrationTest {
         customerRepository.flush();
     }
     
-    @Transactional
+    @TestTransaction
     void createCustomerWithRiskScore(int riskScore, String name) {
         Customer customer = new Customer();
         customer.setCustomerNumber("KD-2025-" + UUID.randomUUID().toString().substring(0, 5));
@@ -394,7 +393,7 @@ class CustomerQueryServiceIntegrationTest {
         customerRepository.flush();
     }
     
-    @Transactional
+    @TestTransaction
     void createCustomerWithLastContact(LocalDateTime lastContact, String name) {
         Customer customer = new Customer();
         customer.setCustomerNumber("KD-2025-" + UUID.randomUUID().toString().substring(0, 5));
@@ -413,7 +412,7 @@ class CustomerQueryServiceIntegrationTest {
         customerRepository.flush();
     }
     
-    @Transactional
+    @TestTransaction
     void createCustomerWithName(String name) {
         Customer customer = new Customer();
         customer.setCustomerNumber("KD-2025-" + UUID.randomUUID().toString().substring(0, 5));
@@ -430,7 +429,7 @@ class CustomerQueryServiceIntegrationTest {
         customerRepository.flush();
     }
     
-    @Transactional
+    @TestTransaction
     void createCustomerWithLifecycleStage(CustomerLifecycleStage stage, String name) {
         Customer customer = new Customer();
         customer.setCustomerNumber("KD-2025-" + UUID.randomUUID().toString().substring(0, 5));

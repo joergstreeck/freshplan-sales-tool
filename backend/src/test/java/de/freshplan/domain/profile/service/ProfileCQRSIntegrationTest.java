@@ -6,10 +6,9 @@ import de.freshplan.domain.profile.entity.Profile;
 import de.freshplan.domain.profile.repository.ProfileRepository;
 import de.freshplan.domain.profile.service.dto.*;
 import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.junit.TestProfile;
-import io.quarkus.test.security.TestSecurity;
-import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
+import io.quarkus.test.TestTransaction;import io.quarkus.test.junit.TestProfile;
+import io.quarkus.test.TestTransaction;import io.quarkus.test.security.TestSecurity;
+import io.quarkus.test.TestTransaction;import jakarta.inject.Inject;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -52,7 +51,7 @@ class ProfileCQRSIntegrationTest {
     private String uniqueSuffix;
     
     @BeforeEach
-    @Transactional
+    @TestTransaction
     void setUp() {
         uniqueSuffix = String.valueOf(System.currentTimeMillis());
         testCustomerId = "CUST-" + uniqueSuffix;
@@ -75,7 +74,7 @@ class ProfileCQRSIntegrationTest {
     // =====================================
     
     @Test
-    @Transactional
+    @TestTransaction
     @DisplayName("Create profile should delegate to CommandService")
     void createProfile_inCQRSMode_shouldCreateSuccessfully() {
         // Given
@@ -124,7 +123,7 @@ class ProfileCQRSIntegrationTest {
     }
     
     @Test
-    @Transactional
+    @TestTransaction
     @DisplayName("Update profile should delegate to CommandService")
     void updateProfile_inCQRSMode_shouldUpdateSuccessfully() {
         // Given - Create a profile first
@@ -158,7 +157,7 @@ class ProfileCQRSIntegrationTest {
     }
     
     @Test
-    @Transactional
+    @TestTransaction
     @DisplayName("Delete profile should delegate to CommandService")
     void deleteProfile_inCQRSMode_shouldDeleteSuccessfully() {
         // Given - Create a profile first
@@ -183,7 +182,7 @@ class ProfileCQRSIntegrationTest {
     // =====================================
     
     @Test
-    @Transactional
+    @TestTransaction
     @DisplayName("Get profile by ID should delegate to QueryService")
     void getProfile_inCQRSMode_shouldReturnProfile() {
         // Given - Create a profile first
@@ -206,7 +205,7 @@ class ProfileCQRSIntegrationTest {
     }
     
     @Test
-    @Transactional
+    @TestTransaction
     @DisplayName("Get profile by customer ID should delegate to QueryService")
     void getProfileByCustomerId_inCQRSMode_shouldReturnProfile() {
         // Given - Create a profile first
@@ -228,7 +227,7 @@ class ProfileCQRSIntegrationTest {
     }
     
     @Test
-    @Transactional
+    @TestTransaction
     @DisplayName("Get all profiles should delegate to QueryService")
     void getAllProfiles_inCQRSMode_shouldReturnList() {
         // Given - Create multiple profiles
@@ -312,7 +311,7 @@ class ProfileCQRSIntegrationTest {
     // =====================================
     
     @Test
-    @Transactional
+    @TestTransaction
     @DisplayName("CQRS mode should properly delegate all operations")
     void cqrsMode_shouldProperlyDelegateAllOperations() {
         // This test verifies that with the feature flag enabled,

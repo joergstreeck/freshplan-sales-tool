@@ -7,9 +7,8 @@ import de.freshplan.domain.opportunity.service.dto.CreateOpportunityRequest;
 import de.freshplan.domain.opportunity.service.dto.OpportunityResponse;
 import de.freshplan.domain.opportunity.service.dto.UpdateOpportunityRequest;
 import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.junit.TestProfile;
-import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
+import io.quarkus.test.TestTransaction;import io.quarkus.test.junit.TestProfile;
+import io.quarkus.test.TestTransaction;import jakarta.inject.Inject;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
@@ -37,7 +36,7 @@ class OpportunityCQRSIntegrationTest {
   private CreateOpportunityRequest createRequest;
 
   @BeforeEach
-  @Transactional
+  @TestTransaction
   void setUp() {
     // Setup test data
     testCustomerId = UUID.randomUUID();
@@ -62,7 +61,7 @@ class OpportunityCQRSIntegrationTest {
   // =====================================
 
   @Test
-  @Transactional
+  @TestTransaction
   void createOpportunity_inCQRSMode_shouldCreateSuccessfully() {
     // When
     OpportunityResponse response = opportunityService.createOpportunity(createRequest);
@@ -76,7 +75,7 @@ class OpportunityCQRSIntegrationTest {
   }
 
   @Test
-  @Transactional
+  @TestTransaction
   void createAndRetrieve_inCQRSMode_shouldWorkEndToEnd() {
     // Create
     OpportunityResponse created = opportunityService.createOpportunity(createRequest);
@@ -97,7 +96,7 @@ class OpportunityCQRSIntegrationTest {
   // =====================================
 
   @Test
-  @Transactional
+  @TestTransaction
   void updateOpportunity_inCQRSMode_shouldUpdateSuccessfully() {
     // Create
     OpportunityResponse created = opportunityService.createOpportunity(createRequest);
@@ -127,7 +126,7 @@ class OpportunityCQRSIntegrationTest {
   // =====================================
 
   @Test
-  @Transactional
+  @TestTransaction
   void changeStage_inCQRSMode_shouldTransitionCorrectly() {
     // Create
     OpportunityResponse created = opportunityService.createOpportunity(createRequest);
@@ -148,7 +147,7 @@ class OpportunityCQRSIntegrationTest {
   }
 
   @Test
-  @Transactional
+  @TestTransaction
   void changeStage_withInvalidTransition_shouldThrowException() {
     // Create
     OpportunityResponse created = opportunityService.createOpportunity(createRequest);
@@ -168,7 +167,7 @@ class OpportunityCQRSIntegrationTest {
   // =====================================
 
   @Test
-  @Transactional
+  @TestTransaction
   void findByStage_inCQRSMode_shouldReturnFilteredResults() {
     // Create opportunities in different stages
     OpportunityResponse opp1 = opportunityService.createOpportunity(createRequest);
@@ -194,7 +193,7 @@ class OpportunityCQRSIntegrationTest {
   }
 
   @Test
-  @Transactional
+  @TestTransaction
   void calculateForecast_inCQRSMode_shouldCalculateCorrectly() {
     // Create opportunities with different values
     createRequest.setExpectedValue(new BigDecimal("100000"));
@@ -219,7 +218,7 @@ class OpportunityCQRSIntegrationTest {
   // =====================================
 
   @Test
-  @Transactional
+  @TestTransaction
   void deleteOpportunity_inCQRSMode_shouldDeleteSuccessfully() {
     // Create
     OpportunityResponse created = opportunityService.createOpportunity(createRequest);

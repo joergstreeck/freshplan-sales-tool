@@ -9,12 +9,11 @@ import de.freshplan.domain.audit.entity.AuditSource;
 import de.freshplan.domain.audit.repository.AuditRepository;
 import de.freshplan.domain.audit.service.dto.AuditContext;
 import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.junit.TestProfile;
-import io.quarkus.test.security.TestSecurity;
-import io.quarkus.narayana.jta.QuarkusTransaction;
+import io.quarkus.test.TestTransaction;import io.quarkus.test.junit.TestProfile;
+import io.quarkus.test.TestTransaction;import io.quarkus.test.security.TestSecurity;
+import io.quarkus.test.TestTransaction;import io.quarkus.narayana.jta.QuarkusTransaction;
 import jakarta.enterprise.context.control.ActivateRequestContext;
 import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -92,7 +91,7 @@ class AuditCQRSIntegrationTest {
     // =====================================
     
     @Test
-    @Transactional
+    @TestTransaction
     @ActivateRequestContext
     @DisplayName("Async audit logging should delegate to CommandService")
     void logAsync_inCQRSMode_shouldCreateAuditEntry() {
@@ -118,7 +117,7 @@ class AuditCQRSIntegrationTest {
     }
     
     @Test
-    @Transactional
+    @TestTransaction
     @DisplayName("Sync audit logging should work in CQRS mode")
     void logSync_inCQRSMode_shouldCreateAuditEntry() {
         // When - Log audit entry synchronously
@@ -134,7 +133,7 @@ class AuditCQRSIntegrationTest {
     }
     
     @Test
-    @Transactional
+    @TestTransaction
     @DisplayName("Security event logging should work")
     void logSecurityEvent_inCQRSMode_shouldCreateEntry() {
         // When - Log security event
@@ -156,7 +155,7 @@ class AuditCQRSIntegrationTest {
     // =====================================
     
     @Test
-    @Transactional
+    @TestTransaction
     @DisplayName("Find by entity should delegate to QueryService")
     void findByEntity_inCQRSMode_shouldReturnEntries() {
         // Given - Create audit entries
@@ -237,7 +236,7 @@ class AuditCQRSIntegrationTest {
     // =====================================
     
     @Test
-    @Transactional
+    @TestTransaction
     @ActivateRequestContext
     @DisplayName("Write and read should show eventual consistency")
     void writeAndRead_inCQRSMode_shouldShowEventualConsistency() {
@@ -318,7 +317,7 @@ class AuditCQRSIntegrationTest {
     // =====================================
     
     @Test
-    @Transactional
+    @TestTransaction
     @DisplayName("CQRS mode should properly delegate all operations")
     void cqrsMode_shouldProperlyDelegateAllOperations() {
         // This test verifies complete CQRS delegation

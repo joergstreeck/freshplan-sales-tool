@@ -6,8 +6,8 @@ import de.freshplan.domain.help.service.command.UserStruggleDetectionCommandServ
 import de.freshplan.domain.help.service.dto.UserStruggle;
 import de.freshplan.domain.help.service.query.UserStruggleDetectionQueryService;
 import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.junit.TestProfile;
-import jakarta.inject.Inject;
+import io.quarkus.test.TestTransaction;import io.quarkus.test.junit.TestProfile;
+import io.quarkus.test.TestTransaction;import jakarta.inject.Inject;
 import java.time.Duration;
 import java.util.Map;
 import java.util.UUID;

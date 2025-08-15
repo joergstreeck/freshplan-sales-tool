@@ -15,10 +15,9 @@ import de.freshplan.domain.help.service.dto.HelpResponse;
 import de.freshplan.domain.help.service.query.HelpContentQueryService;
 import de.freshplan.infrastructure.events.EventBus;
 import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.junit.TestProfile;
-import jakarta.enterprise.context.ApplicationScoped;
+import io.quarkus.test.TestTransaction;import io.quarkus.test.junit.TestProfile;
+import io.quarkus.test.TestTransaction;import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
@@ -65,7 +64,7 @@ class HelpContentCQRSIntegrationTest {
   public static class TestHelper {
     @Inject HelpContentRepository helpRepository;
     
-    @Transactional
+    @TestTransaction
     public HelpContent findHelpContent(UUID helpId) {
       return helpRepository.findByIdOptional(helpId).orElse(null);
     }
@@ -78,7 +77,7 @@ class HelpContentCQRSIntegrationTest {
   private String testFeature;
 
   @BeforeEach
-  @Transactional
+  @TestTransaction
   void setUp() {
     // Unique test identifiers to avoid conflicts
     String uniqueId = UUID.randomUUID().toString().substring(0, 8);
@@ -110,7 +109,7 @@ class HelpContentCQRSIntegrationTest {
 
   @Test
   @DisplayName("Feature Flag: CQRS Mode aktiviert")
-  @Transactional
+  @TestTransaction
   void featureFlag_cqrsMode_shouldUseEventDrivenArchitecture() {
     // Given: CQRS ist via TestProfile aktiviert
     assertThat(cqrsEnabled).isTrue();
@@ -177,7 +176,7 @@ class HelpContentCQRSIntegrationTest {
 
   @Test
   @DisplayName("Command Service: View Count Increment")
-  @Transactional
+  @TestTransaction
   void commandService_incrementViewCount_shouldUpdateCounter() {
     // Given: Initial view count (fresh from database)
     helpRepository.getEntityManager().flush();
@@ -199,7 +198,7 @@ class HelpContentCQRSIntegrationTest {
 
   @Test
   @DisplayName("Command Service: Content Toggle")
-  @Transactional
+  @TestTransaction
   void commandService_toggleContent_shouldUpdateStatus() {
     // Given: Ensure initial state is active
     helpRepository.getEntityManager().flush();
@@ -292,7 +291,7 @@ class HelpContentCQRSIntegrationTest {
 
   @Test
   @DisplayName("Event-Driven: Help Content Viewed Event Publishing")
-  @Transactional
+  @TestTransaction
   void eventDriven_helpContentViewed_shouldPublishEventAsync() {
     // Given: Fresh state
     helpRepository.getEntityManager().flush();
@@ -323,7 +322,7 @@ class HelpContentCQRSIntegrationTest {
 
   @Test
   @DisplayName("Event-Driven: Direct Event Publishing")
-  @Transactional
+  @TestTransaction
   void eventDriven_directEventPublish_shouldTriggerHandler() {
     // Given: Fresh state from database
     helpRepository.getEntityManager().flush();
@@ -353,7 +352,7 @@ class HelpContentCQRSIntegrationTest {
 
   @Test
   @DisplayName("Event-Driven: Multiple Events Processing")
-  @Transactional
+  @TestTransaction
   void eventDriven_multipleEvents_shouldProcessAllAsync() {
     // Given: Fresh state
     helpRepository.getEntityManager().flush();
@@ -390,7 +389,7 @@ class HelpContentCQRSIntegrationTest {
 
   @Test
   @DisplayName("Facade Integration: Full CQRS Flow")
-  @Transactional
+  @TestTransaction
   void facade_fullFlow_shouldIntegrateAllComponents() {
     // Given: Fresh state
     helpRepository.getEntityManager().flush();
@@ -441,7 +440,7 @@ class HelpContentCQRSIntegrationTest {
 
   @Test
   @DisplayName("Performance: Query Operations Are Non-Blocking")
-  @Transactional
+  @TestTransaction
   void performance_queryOperations_shouldNotBlockOnSideEffects() {
     // Given: Fresh state
     helpRepository.getEntityManager().flush();

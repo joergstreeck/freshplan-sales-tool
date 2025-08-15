@@ -8,10 +8,9 @@ import de.freshplan.domain.customer.entity.CustomerType;
 import de.freshplan.domain.customer.entity.Industry;
 import de.freshplan.domain.customer.service.dto.*;
 import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.junit.TestProfile;
-import io.quarkus.test.security.TestSecurity;
-import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
+import io.quarkus.test.TestTransaction;import io.quarkus.test.junit.TestProfile;
+import io.quarkus.test.TestTransaction;import io.quarkus.test.security.TestSecurity;
+import io.quarkus.test.TestTransaction;import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -75,7 +74,7 @@ class CustomerCQRSIntegrationTest {
     // =====================================
     
     @Test
-    @Transactional
+    @TestTransaction
     void createCustomer_inCQRSMode_shouldCreateSuccessfully() {
         // When
         var response = customerResource.createCustomer(validCreateRequest);
@@ -95,7 +94,7 @@ class CustomerCQRSIntegrationTest {
     }
     
     @Test
-    @Transactional
+    @TestTransaction
     @DisplayName("Create and retrieve customer should work end-to-end")
     void createAndRetrieve_inCQRSMode_shouldWorkEndToEnd() {
         // Create
@@ -117,7 +116,7 @@ class CustomerCQRSIntegrationTest {
     }
     
     @Test
-    @Transactional
+    @TestTransaction
     void createCustomer_withDuplicateName_shouldThrowException() {
         // Create first customer
         customerResource.createCustomer(validCreateRequest);
@@ -134,7 +133,7 @@ class CustomerCQRSIntegrationTest {
     // =====================================
     
     @Test
-    @Transactional
+    @TestTransaction
     void updateCustomer_inCQRSMode_shouldUpdateSuccessfully() {
         // Create customer first
         var createResponse = customerResource.createCustomer(validCreateRequest);
@@ -165,7 +164,7 @@ class CustomerCQRSIntegrationTest {
     // =====================================
     
     @Test
-    @Transactional
+    @TestTransaction
     @DisplayName("Delete customer should soft delete with reason")
     void deleteCustomer_inCQRSMode_shouldSoftDelete() {
         // Create customer
@@ -194,7 +193,7 @@ class CustomerCQRSIntegrationTest {
     }
     
     @Test
-    @Transactional
+    @TestTransaction
     void restoreCustomer_inCQRSMode_shouldRestoreDeleted() {
         // Create customer
         var createResponse = customerResource.createCustomer(validCreateRequest);
@@ -225,7 +224,7 @@ class CustomerCQRSIntegrationTest {
     // =====================================
     
     @Test
-    @Transactional
+    @TestTransaction
     @DisplayName("Get all customers should return paginated list")
     void getAllCustomers_inCQRSMode_shouldReturnList() {
         // Create a few customers first with unique names to avoid conflicts
@@ -266,7 +265,7 @@ class CustomerCQRSIntegrationTest {
     }
     
     @Test
-    @Transactional
+    @TestTransaction
     @DisplayName("Get customers by status should filter correctly")
     void getCustomersByStatus_inCQRSMode_shouldFilterCorrectly() {
         // Create customers with different statuses (Note: can't set status in CreateRequest)
@@ -310,7 +309,7 @@ class CustomerCQRSIntegrationTest {
     }
     
     @Test
-    @Transactional
+    @TestTransaction
     @DisplayName("Get customers at risk should return high risk customers")
     void getCustomersAtRisk_inCQRSMode_shouldReturnHighRiskCustomers() {
         // Create customers with unique names to avoid duplicates
@@ -363,7 +362,7 @@ class CustomerCQRSIntegrationTest {
     }
     
     @Test
-    @Transactional
+    @TestTransaction
     @DisplayName("Get dashboard data should return statistics")
     void getDashboardData_inCQRSMode_shouldReturnStatistics() {
         // Create test data
@@ -402,7 +401,7 @@ class CustomerCQRSIntegrationTest {
     // =====================================
     
     @Test
-    @Transactional
+    @TestTransaction
     void addChildCustomer_inCQRSMode_shouldCreateHierarchy() {
         // Create parent customer
         var parentResponse = customerResource.createCustomer(
@@ -445,7 +444,7 @@ class CustomerCQRSIntegrationTest {
     // =====================================
     
     @Test
-    @Transactional
+    @TestTransaction
     @DisplayName("Batch update customer risk scores")
     void batchUpdateRiskScores_inCQRSMode_shouldUpdateMultipleCustomers() {
         // Create customers
@@ -494,7 +493,7 @@ class CustomerCQRSIntegrationTest {
     }
     
     @Test
-    @Transactional
+    @TestTransaction
     @DisplayName("Merge customers should merge data")
     void mergeCustomers_inCQRSMode_shouldMergeData() {
         // Create source customer with unique name
@@ -545,7 +544,7 @@ class CustomerCQRSIntegrationTest {
     }
     
     @Test
-    @Transactional
+    @TestTransaction
     @DisplayName("Change customer status should update with validation")
     void changeStatus_inCQRSMode_shouldUpdateStatus() {
         // Create customer
@@ -569,7 +568,7 @@ class CustomerCQRSIntegrationTest {
     // =====================================
     
     @Test
-    @Transactional
+    @TestTransaction
     @DisplayName("Check duplicates should find similar company names")
     void checkDuplicates_inCQRSMode_shouldFindSimilarNames() {
         // Create customer
@@ -615,7 +614,7 @@ class CustomerCQRSIntegrationTest {
     // =====================================
     
     @Test
-    @Transactional
+    @TestTransaction
     @DisplayName("Get customers by industry should filter correctly")
     void getCustomersByIndustry_inCQRSMode_shouldFilterCorrectly() {
         // Create customers with different industries
@@ -659,7 +658,7 @@ class CustomerCQRSIntegrationTest {
     }
     
     @Test
-    @Transactional
+    @TestTransaction
     @DisplayName("Pagination should work correctly")
     void pagination_inCQRSMode_shouldWorkCorrectly() {
         // Create multiple customers for pagination test with unique names

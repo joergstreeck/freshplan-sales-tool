@@ -6,9 +6,8 @@ import de.freshplan.domain.customer.entity.Customer;
 import de.freshplan.domain.customer.entity.CustomerContact;
 import de.freshplan.domain.customer.repository.CustomerRepository;
 import io.quarkus.test.junit.QuarkusTest;
-import jakarta.inject.Inject;
+import io.quarkus.test.TestTransaction;import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
-import jakarta.transaction.Transactional;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -41,7 +40,7 @@ public class ContactPerformanceTest {
   private Customer testCustomer;
 
   @BeforeEach
-  @Transactional
+  @TestTransaction
   void setUp() {
     // Create test customer
     testCustomer = new Customer();
@@ -52,7 +51,7 @@ public class ContactPerformanceTest {
 
   @Test
   @DisplayName("Should handle bulk insert of 1000 contacts efficiently")
-  @Transactional
+  @TestTransaction
   void testBulkInsertPerformance() {
     // Arrange
     int contactCount = 1000;
@@ -98,7 +97,7 @@ public class ContactPerformanceTest {
 
   @Test
   @DisplayName("Should query contacts with roles efficiently")
-  @Transactional
+  @TestTransaction
   void testRoleQueryPerformance() {
     // Arrange - Create contacts with various roles
     createContactsWithRoles(100);
@@ -170,7 +169,7 @@ public class ContactPerformanceTest {
 
   @Test
   @DisplayName("Should update contacts in bulk efficiently")
-  @Transactional
+  @TestTransaction
   void testBulkUpdatePerformance() {
     // Arrange
     createContactsWithRoles(500);
@@ -198,7 +197,7 @@ public class ContactPerformanceTest {
 
   @Test
   @DisplayName("Should handle complex hierarchy queries efficiently")
-  @Transactional
+  @TestTransaction
   void testHierarchyQueryPerformance() {
     // Arrange - Create hierarchical structure
     createHierarchicalContacts(3, 5); // 3 levels, 5 contacts per level
@@ -227,7 +226,7 @@ public class ContactPerformanceTest {
 
   @Test
   @DisplayName("Should paginate large result sets efficiently")
-  @Transactional
+  @TestTransaction
   void testPaginationPerformance() {
     // Arrange
     createContactsWithRoles(1000);
@@ -265,7 +264,7 @@ public class ContactPerformanceTest {
 
   @Test
   @DisplayName("Should handle role assignments efficiently")
-  @Transactional
+  @TestTransaction
   void testRoleAssignmentPerformance() {
     // Arrange
     CustomerContact contact = createTestContact(1);
@@ -306,7 +305,7 @@ public class ContactPerformanceTest {
     return contact;
   }
 
-  @Transactional
+  @TestTransaction
   void createContactsWithRoles(int count) {
     for (int i = 0; i < count; i++) {
       CustomerContact contact = createTestContact(i);
@@ -327,7 +326,7 @@ public class ContactPerformanceTest {
     entityManager.flush();
   }
 
-  @Transactional
+  @TestTransaction
   void createHierarchicalContacts(int levels, int contactsPerLevel) {
     CustomerContact topLevel = null;
 
@@ -354,7 +353,7 @@ public class ContactPerformanceTest {
     entityManager.flush();
   }
 
-  @Transactional
+  @TestTransaction
   void performReadOperation() {
     entityManager
         .createQuery("SELECT COUNT(c) FROM CustomerContact c WHERE c.isActive = true", Long.class)

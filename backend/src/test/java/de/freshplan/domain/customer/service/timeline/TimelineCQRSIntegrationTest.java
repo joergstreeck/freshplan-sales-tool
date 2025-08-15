@@ -12,10 +12,9 @@ import de.freshplan.domain.customer.repository.CustomerRepository;
 import de.freshplan.domain.customer.service.CustomerTimelineService;
 import de.freshplan.domain.customer.service.dto.timeline.*;
 import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.junit.TestProfile;
-import io.quarkus.test.security.TestSecurity;
-import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
+import io.quarkus.test.TestTransaction;import io.quarkus.test.junit.TestProfile;
+import io.quarkus.test.TestTransaction;import io.quarkus.test.security.TestSecurity;
+import io.quarkus.test.TestTransaction;import jakarta.inject.Inject;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -61,7 +60,7 @@ class TimelineCQRSIntegrationTest {
     private String uniqueSuffix;
     
     @BeforeEach
-    @Transactional
+    @TestTransaction
     void setUp() {
         uniqueSuffix = String.valueOf(System.currentTimeMillis());
         
@@ -94,7 +93,7 @@ class TimelineCQRSIntegrationTest {
     // =====================================
     
     @Test
-    @Transactional
+    @TestTransaction
     @DisplayName("Create timeline event should delegate to CommandService")
     void createEvent_inCQRSMode_shouldCreateSuccessfully() {
         // Given
@@ -121,7 +120,7 @@ class TimelineCQRSIntegrationTest {
     }
     
     @Test
-    @Transactional
+    @TestTransaction
     @DisplayName("Create note should delegate to CommandService")
     void createNote_inCQRSMode_shouldCreateSuccessfully() {
         // Given
@@ -142,7 +141,7 @@ class TimelineCQRSIntegrationTest {
     }
     
     @Test
-    @Transactional
+    @TestTransaction
     @DisplayName("Create communication event should delegate to CommandService")
     void createCommunication_inCQRSMode_shouldCreateSuccessfully() {
         // Given
@@ -164,7 +163,7 @@ class TimelineCQRSIntegrationTest {
     }
     
     @Test
-    @Transactional
+    @TestTransaction
     @DisplayName("Update timeline event should delegate to CommandService")
     void updateEvent_inCQRSMode_shouldUpdateSuccessfully() {
         // Given - Create an event first
@@ -206,7 +205,7 @@ class TimelineCQRSIntegrationTest {
     // =====================================
     
     @Test
-    @Transactional
+    @TestTransaction
     @DisplayName("Get customer timeline should delegate to QueryService")
     void getCustomerTimeline_inCQRSMode_shouldReturnEvents() {
         // Given - Create multiple events
@@ -242,7 +241,7 @@ class TimelineCQRSIntegrationTest {
     }
     
     @Test
-    @Transactional
+    @TestTransaction
     @DisplayName("Get follow-up events should delegate to QueryService")
     void getFollowUpEvents_inCQRSMode_shouldReturnFollowUps() {
         // Given - Create a follow-up event with requiresFollowUp flag
@@ -269,7 +268,7 @@ class TimelineCQRSIntegrationTest {
     }
     
     @Test
-    @Transactional
+    @TestTransaction
     @DisplayName("Get overdue follow-ups should delegate to QueryService")
     void getOverdueFollowUps_inCQRSMode_shouldReturnOverdueEvents() {
         // Given - Create an event with overdue follow-up
@@ -296,7 +295,7 @@ class TimelineCQRSIntegrationTest {
     }
     
     @Test
-    @Transactional
+    @TestTransaction
     @DisplayName("Get recent communications should delegate to QueryService")
     void getRecentCommunications_inCQRSMode_shouldReturnRecentComms() {
         // Given - Create recent communication events
@@ -325,7 +324,7 @@ class TimelineCQRSIntegrationTest {
     }
     
     @Test
-    @Transactional
+    @TestTransaction
     @DisplayName("Get timeline summary should delegate to QueryService")
     void getTimelineSummary_inCQRSMode_shouldReturnSummary() {
         // Given - Create various events
@@ -405,7 +404,7 @@ class TimelineCQRSIntegrationTest {
     // =====================================
     
     @Test
-    @Transactional
+    @TestTransaction
     @DisplayName("CQRS mode should properly delegate all operations")
     void cqrsMode_shouldProperlyDelegateAllOperations() {
         // This test verifies complete CQRS delegation

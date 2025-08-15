@@ -9,9 +9,8 @@ import de.freshplan.domain.opportunity.entity.OpportunityStage;
 import de.freshplan.domain.user.entity.User;
 import de.freshplan.domain.user.repository.UserRepository;
 import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.security.TestSecurity;
-import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
+import io.quarkus.test.TestTransaction;import io.quarkus.test.security.TestSecurity;
+import io.quarkus.test.TestTransaction;import jakarta.inject.Inject;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -36,7 +35,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 @TestSecurity(
     user = "testuser",
     roles = {"admin", "manager", "sales"})
-@Transactional
+@TestTransaction
 public class OpportunityRepositoryTest {
 
   @Inject OpportunityRepository opportunityRepository;
@@ -468,7 +467,7 @@ public class OpportunityRepositoryTest {
 
   // Helper methods
 
-  @Transactional
+  @TestTransaction
   Customer getOrCreateCustomer(String companyName, String email) {
     var existingCustomer = customerRepository.find("companyName", companyName).firstResult();
     if (existingCustomer != null) {
@@ -484,7 +483,7 @@ public class OpportunityRepositoryTest {
     return customer;
   }
 
-  @Transactional
+  @TestTransaction
   User getOrCreateUser(String username, String firstName, String lastName) {
     var existingUser = userRepository.find("username", username).firstResult();
     if (existingUser != null) {
@@ -495,18 +494,18 @@ public class OpportunityRepositoryTest {
         "Test user '" + username + "' not found - TestDataInitializer may not have run properly");
   }
 
-  @Transactional
+  @TestTransaction
   Opportunity createTestOpportunity(String name, OpportunityStage stage, User assignedTo) {
     return createTestOpportunity(name, stage, assignedTo, null);
   }
 
-  @Transactional
+  @TestTransaction
   Opportunity createTestOpportunity(
       String name, OpportunityStage stage, User assignedTo, LocalDate expectedCloseDate) {
     return createTestOpportunity(name, stage, assignedTo, expectedCloseDate, testCustomer1);
   }
 
-  @Transactional
+  @TestTransaction
   Opportunity createTestOpportunity(
       String name,
       OpportunityStage stage,
@@ -525,13 +524,13 @@ public class OpportunityRepositoryTest {
     return opportunity;
   }
 
-  @Transactional
+  @TestTransaction
   Opportunity createOpportunityWithValue(
       String name, OpportunityStage stage, BigDecimal expectedValue, Integer probability) {
     return createOpportunityWithValue(name, stage, expectedValue, probability, testUser1);
   }
 
-  @Transactional
+  @TestTransaction
   Opportunity createOpportunityWithValue(
       String name,
       OpportunityStage stage,
