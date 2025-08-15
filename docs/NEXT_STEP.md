@@ -9,17 +9,17 @@
 
 **PR #5: BACKEND CQRS REFACTORING - 84% ABGESCHLOSSEN**
 
-**Stand 15.08.2025 16:25:**
+**Stand 15.08.2025 20:50:**
 - ✅ **Phase 1-13 KOMPLETT:** Alle 13 Services erfolgreich in CQRS gesplittet
 - ✅ **Phase 14.1 KOMPLETT:** 10 Test-Fehler behoben (Security, Mocking, Enums)
-- ✅ **Phase 14.2 KOMPLETT:** CustomerCQRSIntegrationTest mit 19 Tests (79% grün)
-- ⏳ **Phase 14.3 IN ARBEIT:** Feature Flag Switching Tests
-  - ✅ ProfileCQRSIntegrationTest korrigiert und grün
-  - ✅ TimelineCQRSIntegrationTest korrigiert und grün
-  - ✅ AuditCQRSIntegrationTest neu geschrieben
-  - ⏳ SearchCQRSIntegrationTest benötigt Korrektur
-  - ⏳ HtmlExportCQRSIntegrationTest benötigt Korrektur
-  - ⏳ ContactEventCaptureCQRSIntegrationTest benötigt Korrektur
+- ✅ **Phase 14.2 KOMPLETT:** CustomerCQRSIntegrationTest mit 19 Tests (100% grün! 🎉)
+  - Alle 3 Fehler behoben (Soft-Delete, Duplicate-Check, Merge-Operation)
+  - Test-Isolation mit unique Suffixes implementiert
+- ⏳ **Phase 14.3 IN ARBEIT:** Feature Flag Switching Tests  
+  - ✅ AuditCQRSIntegrationTest: 10/10 Tests grün
+  - 🔧 ContactEventCaptureCQRSIntegrationTest: Test-Isolation gefixt, noch nicht getestet
+  - ❌ SearchCQRSIntegrationTest: Test-Isolation fehlt (4 Failures + 1 Error)
+  - ❌ HtmlExportCQRSIntegrationTest: Test-Isolation fehlt (5 Failures)
 - ⏳ **Phase 14.4 NÄCHSTER SCHRITT:** End-to-End Tests mit enabled/disabled Flag
 - ⏰ **Phase 15:** Performance Testing
 - ⏰ **Phase 16:** Dokumentation Update
@@ -32,7 +32,11 @@
 1. **SOFORT: Letzte Übergabe lesen!**
 ```bash
 # Aktuelle Session-Übergabe:
-cat /Users/joergstreeck/freshplan-sales-tool/docs/claude-work/daily-work/2025-08-15/2025-08-15_HANDOVER_16-25.md
+cat /Users/joergstreeck/freshplan-sales-tool/docs/claude-work/daily-work/2025-08-15/2025-08-15_HANDOVER_19-11.md
+
+# KRITISCH: Test-Daten-Explosion vermeiden!
+# - IMMER @TestTransaction auf Test-Methoden, NIE auf @BeforeEach
+# - Status: 99 Kunden in DB, alle mit is_test_data=true markiert
 ```
 
 2. **DANN: Phase 14.3 fortsetzen - 3 Integration Tests korrigieren**

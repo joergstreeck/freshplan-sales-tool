@@ -87,7 +87,7 @@ public class CustomerRepository implements PanacheRepositoryBase<Customer, UUID>
 
   /** Find customers by customer number (prefix search). */
   public List<Customer> findByCustomerNumberLike(String pattern, int limit) {
-    return find("isDeleted = false AND customerNumber like ?1", pattern).page(0, limit).list();
+    return find("isDeleted = false AND customerNumber LIKE ?1", pattern).page(0, limit).list();
   }
 
   // ========== EXPORT QUERIES ==========
@@ -337,10 +337,8 @@ public class CustomerRepository implements PanacheRepositoryBase<Customer, UUID>
             """
                 isDeleted = false
                 AND LOWER(companyName) LIKE ?1
-                AND companyName != ?2
                 """,
-            searchPattern,
-            companyName)
+            searchPattern)
         .list();
   }
 

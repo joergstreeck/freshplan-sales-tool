@@ -43,7 +43,7 @@ public class SearchQueryService {
   private static final Pattern EMAIL_PATTERN =
       Pattern.compile("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$");
   private static final Pattern PHONE_PATTERN = Pattern.compile("^[\\d\\s+\\-()]+$");
-  private static final Pattern CUSTOMER_NUMBER_PATTERN = Pattern.compile("^[A-Z0-9\\-]+$");
+  private static final Pattern CUSTOMER_NUMBER_PATTERN = Pattern.compile("^[A-Za-z0-9\\-]+$");
 
   @Inject CustomerRepository customerRepository;
 

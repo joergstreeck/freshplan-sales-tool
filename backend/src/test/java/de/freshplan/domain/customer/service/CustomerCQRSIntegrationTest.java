@@ -7,10 +7,12 @@ import de.freshplan.domain.customer.entity.CustomerStatus;
 import de.freshplan.domain.customer.entity.CustomerType;
 import de.freshplan.domain.customer.entity.Industry;
 import de.freshplan.domain.customer.service.dto.*;
+import de.freshplan.domain.customer.service.exception.CustomerNotFoundException;
 import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.TestTransaction;import io.quarkus.test.junit.TestProfile;
-import io.quarkus.test.TestTransaction;import io.quarkus.test.security.TestSecurity;
-import io.quarkus.test.TestTransaction;import jakarta.inject.Inject;
+import io.quarkus.test.TestTransaction;
+import io.quarkus.test.junit.TestProfile;
+import io.quarkus.test.security.TestSecurity;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -51,9 +53,10 @@ class CustomerCQRSIntegrationTest {
     
     @BeforeEach
     void setUp() {
-        // Create valid request for tests
+        // Create valid request with unique company name to avoid test conflicts
+        String uniqueSuffix = "_" + System.currentTimeMillis() + "_" + UUID.randomUUID().toString().substring(0, 8);
         validCreateRequest = CreateCustomerRequest.builder()
-            .companyName("CQRS Test Company GmbH")
+            .companyName("CQRS Test Company" + uniqueSuffix)
             .customerType(CustomerType.NEUKUNDE)
             .industry(Industry.SONSTIGE)
             .expectedAnnualVolume(new BigDecimal("100000"))
@@ -85,7 +88,7 @@ class CustomerCQRSIntegrationTest {
         CustomerResponse customer = (CustomerResponse) response.getEntity();
         assertThat(customer).isNotNull();
         assertThat(customer.customerNumber()).startsWith("KD-");
-        assertThat(customer.companyName()).isEqualTo("CQRS Test Company GmbH");
+        assertThat(customer.companyName()).isEqualTo(validCreateRequest.companyName());
         assertThat(customer.customerType()).isEqualTo(CustomerType.NEUKUNDE);
         assertThat(customer.status()).isEqualTo(CustomerStatus.LEAD);
         
@@ -118,13 +121,23 @@ class CustomerCQRSIntegrationTest {
     @Test
     @TestTransaction
     void createCustomer_withDuplicateName_shouldThrowException() {
-        // Create first customer
-        customerResource.createCustomer(validCreateRequest);
+        // Create unique request to avoid conflicts with other tests
+        String uniqueSuffix = "_duplicate_test_" + System.currentTimeMillis();
+        CreateCustomerRequest uniqueRequest = CreateCustomerRequest.builder()
+            .companyName("Duplicate Test Company" + uniqueSuffix)
+            .customerType(CustomerType.NEUKUNDE)
+            .industry(Industry.SONSTIGE)
+            .expectedAnnualVolume(new BigDecimal("100000"))
+            .build();
         
-        // Try to create duplicate
+        // Create first customer
+        customerResource.createCustomer(uniqueRequest);
+        
+        // Try to create duplicate with same name
         assertThatThrownBy(() -> 
-            customerResource.createCustomer(validCreateRequest)
+            customerResource.createCustomer(uniqueRequest)
         )
+        .isInstanceOf(RuntimeException.class) // CustomerAlreadyExistsException wrapped in RuntimeException
         .hasMessageContaining("Customer with similar company name already exists");
     }
     
@@ -177,19 +190,11 @@ class CustomerCQRSIntegrationTest {
         var deleteResponse = customerResource.deleteCustomer(customerId, deleteReason);
         assertThat(deleteResponse.getStatus()).isEqualTo(204); // No Content
         
-        // Try to retrieve - soft-deleted customers are typically not retrievable
-        // but implementation may vary
-        assertThatCode(() -> {
-            var getResponse = customerResource.getCustomer(customerId);
-            if (getResponse.getStatus() == 200) {
-                CustomerResponse deleted = (CustomerResponse) getResponse.getEntity();
-                // If still retrievable, should be marked as archived
-                assertThat(deleted.status()).isEqualTo(CustomerStatus.ARCHIVIERT);
-            } else {
-                // Should return 404 for deleted customers
-                assertThat(getResponse.getStatus()).isEqualTo(404);
-            }
-        }).doesNotThrowAnyException();
+        // Try to retrieve - soft-deleted customers should NOT be retrievable
+        // They should throw CustomerNotFoundException
+        assertThatThrownBy(() -> customerResource.getCustomer(customerId))
+            .isInstanceOf(CustomerNotFoundException.class)
+            .hasMessageContaining("Customer not found with ID: " + customerId);
     }
     
     @Test
@@ -527,20 +532,17 @@ class CustomerCQRSIntegrationTest {
         var mergeResponse = customerResource.mergeCustomers(targetId, mergeRequest);
         assertThat(mergeResponse.getStatus()).isEqualTo(200);
         
-        // Source should be deleted or archived
-        var checkSourceResponse = customerResource.getCustomer(sourceId);
-        if (checkSourceResponse.getStatus() == 200) {
-            CustomerResponse deletedSource = (CustomerResponse) checkSourceResponse.getEntity();
-            assertThat(deletedSource.status()).isEqualTo(CustomerStatus.ARCHIVIERT);
-        } else {
-            assertThat(checkSourceResponse.getStatus()).isEqualTo(404);
-        }
+        // Source should be soft-deleted and not retrievable via normal API
+        assertThatThrownBy(() -> customerResource.getCustomer(sourceId))
+            .isInstanceOf(CustomerNotFoundException.class)
+            .hasMessageContaining("Customer not found with ID: " + sourceId);
         
-        // Target should have merged data
+        // Target should have merged data and be retrievable
         var checkTargetResponse = customerResource.getCustomer(targetId);
         CustomerResponse merged = (CustomerResponse) checkTargetResponse.getEntity();
         assertThat(merged).isNotNull();
-        // Note: Verify specific merged fields based on implementation
+        assertThat(merged.id()).isEqualTo(targetId.toString());
+        // The merged customer should have the better annual volume (75000 from target)
     }
     
     @Test

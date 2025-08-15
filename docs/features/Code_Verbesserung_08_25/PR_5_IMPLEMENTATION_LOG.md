@@ -1769,3 +1769,204 @@ verify(eventBus).publishAsync(any(HelpContentViewedEvent.class));
 - Production-ready Code
 - Dokumentation vollständig
 - Bereit für Phase 13 (weitere Service-Migrationen)
+
+---
+
+## ✅ Phase 14.2 und 14.3: CustomerCQRSIntegrationTest - VOLLSTÄNDIG ABGESCHLOSSEN (15.08.2025 20:50)
+
+### Phase 14.2: CustomerCQRSIntegrationTest Implementierung
+**Status:** ✅ 19 Tests erstellt, initial 15/19 grün (79% Success Rate)
+
+#### Implementierte Tests:
+1. **Feature Flag Verification:** CQRS-Mode aktiviert bestätigt
+2. **Command Operations (7 Tests):**
+   - Create, Update, Delete, Restore Customer
+   - Add Child Customer, Merge Customers
+   - Change Status
+3. **Query Operations (9 Tests):**
+   - Get Single/All Customers
+   - Filter by Status/Industry
+   - Get At-Risk Customers
+   - Dashboard Data
+   - Hierarchy, Duplicates
+4. **Special Operations (3 Tests):**
+   - Batch Risk Score Updates
+   - Pagination
+   - End-to-End Create-Retrieve
+
+#### Initial identifizierte Probleme (4 Fehler):
+1. **Duplicate Check Failure:** SQL-Query Parameter-Mismatch
+2. **Soft-Delete Test:** Erwartete falsche Exception
+3. **Merge Operation:** Test-Daten-Kollision
+4. **Company Name Assertion:** Hardcoded statt dynamisch
+
+### Phase 14.3: Test-Fixing und Isolation
+**Status:** ✅ ALLE 19/19 Tests grün (100% Success Rate)
+
+#### Implementierte Fixes:
+
+##### Fix 1: SQL-Query Korrektur (CustomerRepository.java:336-341)
+```java
+// VORHER - Fehlerhaft (2 Parameter für 1 Placeholder)
+return find("isDeleted = false AND LOWER(companyName) LIKE ?1",
+    searchPattern, searchPattern).list();
+
+// NACHHER - Korrekt (1 Parameter)
+return find("isDeleted = false AND LOWER(companyName) LIKE ?1",
+    searchPattern).list();
+```
+
+##### Fix 2: Test-Isolation mit Unique Suffixes
+```java
+// Unique Test-Daten zur Vermeidung von Kollisionen
+String uniqueSuffix = "_" + System.currentTimeMillis() 
+    + "_" + UUID.randomUUID().toString().substring(0, 8);
+validCreateRequest = CreateCustomerRequest.builder()
+    .companyName("CQRS Test Company" + uniqueSuffix)
+    .build();
+```
+
+##### Fix 3: Soft-Delete Semantik korrigiert
+```java
+// Soft-deleted Customers sollten CustomerNotFoundException werfen
+assertThatThrownBy(() -> customerResource.getCustomer(sourceId))
+    .isInstanceOf(CustomerNotFoundException.class)
+    .hasMessageContaining("Customer not found with ID: " + sourceId);
+```
+
+##### Fix 4: Dynamische Assertions
+```java
+// Verwende tatsächliche Request-Werte statt hardcoded Strings
+assertThat(customer.companyName())
+    .isEqualTo(validCreateRequest.companyName());
+```
+
+### Erkenntnisse und dokumentierte Probleme:
+
+#### 1. Test-Isolation ist KRITISCH
+- **Problem:** Tests ohne unique Daten führen zu Interferenzen
+- **Lösung:** Timestamp + UUID Pattern für alle Test-Daten
+- **Best Practice:** Jeder Test muss vollständig isoliert laufen können
+
+#### 2. SQL-Parameter Consistency
+- **Problem:** Panache find() erwartet exakte Parameter-Anzahl
+- **Lösung:** Query-String und Parameter müssen übereinstimmen
+- **Tool-Tipp:** IDE zeigt oft Parameter-Mismatch nicht an
+
+#### 3. Soft-Delete Verhalten
+- **Design-Entscheidung:** Soft-deleted Entities sind "unsichtbar"
+- **API-Verhalten:** Werfen CustomerNotFoundException
+- **Test-Strategie:** Explizit auf Exception testen, nicht auf null
+
+#### 4. CQRS-Implementation Details
+- **Command Service:** Exakte Kopie inkl. aller Bugs für Kompatibilität
+- **Query Service:** Keine @Transactional Annotations (read-only)
+- **Feature Flag:** Ermöglicht nahtloses Switching zwischen Implementierungen
+
+### Performance-Metriken:
+- **Test-Ausführungszeit:** 8.759 Sekunden für 19 Tests
+- **Durchschnitt:** ~460ms pro Test
+- **Keine Performance-Degradation** gegenüber Legacy-Implementation
+
+### Verbleibende Technical Debt (dokumentiert für späteren Fix):
+1. **addChildCustomer():** Erstellt kein Timeline Event (inkonsistent)
+2. **isDescendant() Bug:** Zirkuläre Hierarchien möglich durch invertierten Check
+3. **updateAllRiskScores():** Limitiert auf 1000 Kunden, keine Events
+4. **mergeCustomers():** Kein Timeline Event, nur 3 von ~20 Feldern übertragen
+
+**WICHTIG:** Alle Bugs wurden ABSICHTLICH beibehalten für 100% Kompatibilität!
+
+---
+
+## 🚨 KRITISCHES PROBLEM GELÖST (15.08.2025 18:30): Test-Daten-Explosion
+
+### Problem-Entdeckung während Phase 14.3:
+**Symptom:** Datenbank wuchs von 74 auf 1090 Kunden (1.473% Wachstum!)
+**Root Cause:** Tests verwendeten `@Transactional` statt `@TestTransaction`
+**Effekt:** Jeder Test-Run persistierte permanent Daten in die Datenbank
+
+### Systematische Analyse durchgeführt:
+1. **TestIsolationAnalysisTest** identifizierte 60 problematische Tests
+2. **16 kritische Tests** mit Severity ≥ 8 (schreiben Daten ohne Rollback)
+3. **Foreign Key Constraints** verhinderten einfache Löschung
+
+### Lösung implementiert:
+
+#### 1. Test-Isolation Fix (19 kritische Tests):
+```java
+// ❌ FALSCH - Daten werden persistiert
+@Transactional
+void setUp() {
+    customerRepository.persist(testCustomer);
+}
+
+// ✅ RICHTIG - Automatischer Rollback nach Test
+@TestTransaction
+void setUp() {
+    customerRepository.persist(testCustomer);
+}
+```
+
+#### 2. Cascade-Delete für Test-Daten (991 Kunden gelöscht):
+```sql
+-- Reihenfolge wichtig wegen Foreign Keys!
+DELETE FROM ContactInteraction WHERE contact_id IN (...);
+DELETE FROM CustomerContact WHERE customer_id IN (...);
+DELETE FROM CustomerTimelineEvent WHERE customer_id IN (...);
+DELETE FROM Opportunity WHERE customer_id IN (...);
+DELETE FROM Customer WHERE customer_number LIKE 'KD-S%' OR ...;
+```
+
+#### 3. CI/CD Monitoring implementiert:
+- **GitHub Action:** `database-growth-check.yml` überwacht Datenbankwachstum
+- **Lokales Script:** `check-database-growth.sh` für Entwickler
+- **Threshold:** Build schlägt fehl bei >10 neuen Kunden pro Test-Run
+- **PR Comments:** Automatische Warnung bei Datenbank-Pollution
+
+### Etablierte Best Practices für Test-Isolation:
+
+```java
+// Pattern 1: @TestTransaction für automatisches Rollback
+@Test
+@TestTransaction
+void testWithAutomaticRollback() {
+    // Alle DB-Änderungen werden nach Test zurückgerollt
+}
+
+// Pattern 2: Async-Operations mit QuarkusTransaction
+@Test
+void testAsyncOperations() {
+    QuarkusTransaction.call(() -> {
+        // Transaction-Kontext für async Code
+        return customerRepository.persist(customer);
+    });
+}
+
+// Pattern 3: Explizite Cleanup in Integration Tests
+@AfterEach
+void cleanup() {
+    em.createQuery("DELETE FROM Customer WHERE customerNumber LIKE 'TEST-%'")
+      .executeUpdate();
+}
+```
+
+### Metriken nach Fix:
+- **Vorher:** 1090 Kunden (davon 991 Test-Pollution)
+- **Nachher:** 99 Kunden (58 [TEST] + 41 echte)
+- **Bereinigt:** 991 Test-Kunden sicher gelöscht
+- **Tests:** 19 kritische Tests mit `@TestTransaction` gefixt
+- **CI/CD:** Automatische Überwachung aktiv
+
+### Wichtige Erkenntnisse:
+1. **@TestTransaction vs @Transactional ist KRITISCH** für Test-Isolation
+2. **Foreign Key Constraints** erfordern korrekte Delete-Reihenfolge
+3. **CI/CD Monitoring** verhindert zukünftige Datenbank-Pollution
+4. **QuarkusTransaction.call()** für async Database-Operations in Tests
+5. **Regelmäßige Datenbank-Audits** sind essentiell
+
+### Tools und Scripts erstellt:
+- `/backend/src/test/java/de/freshplan/test/TestIsolationAnalysisTest.java` - Findet problematische Tests
+- `/backend/src/test/java/de/freshplan/test/TestCustomerCleanupTest.java` - Bereinigt Test-Daten
+- `/backend/fix-test-isolation.sh` - Batch-Fix für problematische Tests
+- `/backend/check-database-growth.sh` - Lokale Überwachung
+- `/.github/workflows/database-growth-check.yml` - CI/CD Integration

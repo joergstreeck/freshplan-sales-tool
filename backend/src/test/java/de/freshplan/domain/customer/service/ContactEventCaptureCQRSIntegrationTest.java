@@ -13,9 +13,10 @@ import de.freshplan.domain.customer.repository.ContactInteractionRepository;
 import de.freshplan.domain.customer.repository.ContactRepository;
 import de.freshplan.domain.customer.repository.CustomerRepository;
 import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.TestTransaction;import io.quarkus.test.junit.TestProfile;
-import io.quarkus.test.TestTransaction;import io.quarkus.test.security.TestSecurity;
-import io.quarkus.test.TestTransaction;import io.quarkus.narayana.jta.QuarkusTransaction;
+import io.quarkus.test.TestTransaction;
+import io.quarkus.test.junit.TestProfile;
+import io.quarkus.test.security.TestSecurity;
+import io.quarkus.narayana.jta.QuarkusTransaction;
 import jakarta.enterprise.context.control.ActivateRequestContext;
 import jakarta.inject.Inject;
 import java.math.BigDecimal;
@@ -23,10 +24,13 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.Callable;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.jboss.logging.Logger;
 
 /**
  * Integration Test for ContactEventCaptureService CQRS Implementation.
@@ -51,6 +55,8 @@ import org.junit.jupiter.api.Test;
 @DisplayName("ContactEventCapture Service CQRS Integration Test")
 class ContactEventCaptureCQRSIntegrationTest {
 
+    private static final Logger LOG = Logger.getLogger(ContactEventCaptureCQRSIntegrationTest.class);
+
     @Inject
     ContactEventCaptureService captureService; // Test via Facade to verify Feature Flag switching
     
@@ -66,42 +72,78 @@ class ContactEventCaptureCQRSIntegrationTest {
     @ConfigProperty(name = "features.cqrs.enabled")
     boolean cqrsEnabled;
     
-    private Customer testCustomer;
-    private CustomerContact testContact;
+    private UUID testCustomerId;
+    private UUID testContactId;
+    private String testRunId;
     
     @BeforeEach
-    @TestTransaction
     void setUp() {
-        // Create test customer and contact
-        String uniqueSuffix = String.valueOf(System.currentTimeMillis());
-        
-        // Create customer
-        testCustomer = new Customer();
-        testCustomer.setCustomerNumber("KD-EVT-" + uniqueSuffix.substring(7));
-        testCustomer.setCompanyName("Event Test Company " + uniqueSuffix);
-        testCustomer.setCustomerType(CustomerType.UNTERNEHMEN);
-        testCustomer.setStatus(CustomerStatus.AKTIV);
-        testCustomer.setIndustry(Industry.HOTEL);
-        testCustomer.setExpectedAnnualVolume(new BigDecimal("250000"));
-        testCustomer.setCreatedBy("testuser");
-        testCustomer.setCreatedAt(LocalDateTime.now());
-        customerRepository.persist(testCustomer);
-        
-        // Create contact
-        testContact = new CustomerContact();
-        testContact.setCustomer(testCustomer);
-        testContact.setFirstName("Max");
-        testContact.setLastName("Mustermann");
-        testContact.setEmail("max.mustermann@test.com");
-        testContact.setPhone("+49 123 456789");
-        testContact.setPosition("Geschäftsführer");
-        testContact.setIsPrimary(true);
-        testContact.setCreatedBy("testuser");
-        testContact.setCreatedAt(LocalDateTime.now());
-        contactRepository.persist(testContact);
-        
-        customerRepository.flush();
-        contactRepository.flush();
+        // Generate unique test run ID to identify our test data
+        testRunId = UUID.randomUUID().toString().substring(0, 8);
+        LOG.infof("Starting test run with ID: %s", testRunId);
+    }
+    
+    @AfterEach
+    void cleanup() {
+        // Clean up test data after each test
+        if (testContactId != null || testCustomerId != null) {
+            QuarkusTransaction.requiringNew().run(() -> {
+                // Delete interactions first (foreign key)
+                if (testContactId != null) {
+                    interactionRepository.delete("contact.id", testContactId);
+                }
+                // Delete contact
+                if (testContactId != null) {
+                    contactRepository.deleteById(testContactId);
+                }
+                // Delete customer
+                if (testCustomerId != null) {
+                    customerRepository.deleteById(testCustomerId);
+                }
+                LOG.infof("Cleaned up test data for run: %s", testRunId);
+            });
+        }
+    }
+    
+    /**
+     * Creates test data in a separate committed transaction.
+     * This ensures the data is visible to services running in their own transactions.
+     */
+    private void createAndPersistTestData() {
+        QuarkusTransaction.requiringNew().run(() -> {
+            // Create customer
+            Customer customer = new Customer();
+            customer.setCustomerNumber("EVT-" + testRunId);
+            customer.setCompanyName("[TEST-" + testRunId + "] Event Company");
+            customer.setCustomerType(CustomerType.UNTERNEHMEN);
+            customer.setStatus(CustomerStatus.AKTIV);
+            customer.setIndustry(Industry.HOTEL);
+            customer.setExpectedAnnualVolume(new BigDecimal("250000"));
+            customer.setIsTestData(true);
+            customer.setCreatedBy("testuser");
+            customer.setCreatedAt(LocalDateTime.now());
+            customerRepository.persist(customer);
+            testCustomerId = customer.getId();
+            
+            // Create contact
+            CustomerContact contact = new CustomerContact();
+            contact.setCustomer(customer);
+            contact.setFirstName("Max");
+            contact.setLastName("Test-" + testRunId);
+            contact.setEmail("max." + testRunId + "@test.com");
+            contact.setPhone("+49 123 456789");
+            contact.setPosition("Test Manager");
+            contact.setIsPrimary(true);
+            contact.setCreatedBy("testuser");
+            contact.setCreatedAt(LocalDateTime.now());
+            contactRepository.persist(contact);
+            testContactId = contact.getId();
+            
+            customerRepository.flush();
+            contactRepository.flush();
+            
+            LOG.infof("Created test data - Customer: %s, Contact: %s", testCustomerId, testContactId);
+        });
     }
     
     @Test
@@ -119,15 +161,20 @@ class ContactEventCaptureCQRSIntegrationTest {
     @Test
     @DisplayName("Capture contact view event should be processed")
     void captureContactView_shouldBeProcessed() {
-        // When - Capture a contact view event
-        captureService.captureContactView(testContact.getId(), "testuser");
+        // Given - Create test data in separate transaction
+        createAndPersistTestData();
         
-        // Then - Event should be captured (async processing may occur)
-        // Note: This is fire-and-forget, so we just verify no exception
-        assertThat(testContact.getId()).isNotNull();
+        // When - Capture a contact view event (fire-and-forget)
+        QuarkusTransaction.requiringNew().run(() -> {
+            captureService.captureContactView(testContactId, "testuser");
+        });
         
-        // Event processing is async, so we don't verify immediate database changes
-        // The event is fired for analytics tracking
+        // Then - Event should be captured without exception
+        // This is a fire-and-forget event for analytics
+        assertThat(testContactId).isNotNull();
+        
+        // No database verification needed as this event 
+        // doesn't create interactions, only analytics events
     }
     
     // =====================================
@@ -137,38 +184,35 @@ class ContactEventCaptureCQRSIntegrationTest {
     @Test
     @DisplayName("Capture contact update should create interaction")
     void captureContactUpdate_shouldCreateInteraction() {
-        // Given - Initial interaction count
-        long initialCount = interactionRepository.count();
+        // Given - Create test data in separate transaction
+        createAndPersistTestData();
         
-        // When - Capture a contact update event
-        captureService.captureContactUpdate(
-            testContact.getId(), 
-            "testuser", 
-            "email"
-        );
-        
-        // Then - Should create an interaction (may be async)
-        await()
-            .atMost(Duration.ofSeconds(5))
-            .until(() -> {
-                return QuarkusTransaction.call(() -> {
-                    long newCount = interactionRepository.count();
-                    return newCount > initialCount;
-                });
-            });
-        
-        // Verify the interaction details
-        List<ContactInteraction> interactions = interactionRepository
-            .find("contact.id", testContact.getId())
-            .list();
-        
-        assertThat(interactions)
-            .isNotEmpty()
-            .anyMatch(i -> 
-                i.getType() == ContactInteraction.InteractionType.NOTE &&
-                i.getSummary() != null &&
-                i.getSummary().contains("email")
+        // When - Capture event in service's own transaction
+        QuarkusTransaction.requiringNew().run(() -> {
+            captureService.captureContactUpdate(
+                testContactId, 
+                "testuser", 
+                "email"
             );
+        });
+        
+        // Then - Verify in separate transaction
+        Boolean interactionCreated = QuarkusTransaction.requiringNew().call(() -> {
+            List<ContactInteraction> interactions = interactionRepository
+                .find("contact.id", testContactId)
+                .list();
+            
+            return interactions.stream()
+                .anyMatch(i -> 
+                    i.getType() == ContactInteraction.InteractionType.NOTE &&
+                    i.getSummary() != null &&
+                    i.getSummary().contains("email")
+                );
+        });
+        
+        assertThat(interactionCreated)
+            .as("Should have created an interaction for contact update")
+            .isTrue();
     }
     
     // =====================================
@@ -178,39 +222,43 @@ class ContactEventCaptureCQRSIntegrationTest {
     @Test
     @DisplayName("Capture email sent should create email interaction")
     void captureEmailSent_shouldCreateEmailInteraction() {
-        // Given - Email details
+        // Given - Create test data
+        createAndPersistTestData();
+        
+        // Email details
         String subject = "Meeting Proposal";
         String content = "Dear Mr. Mustermann, I would like to propose a meeting...";
         
-        // When - Capture email sent event
-        captureService.captureEmailSent(
-            testContact.getId(),
-            "testuser",
-            subject,
-            content
-        );
+        // When - Capture email sent event in service transaction
+        QuarkusTransaction.requiringNew().run(() -> {
+            captureService.captureEmailSent(
+                testContactId,
+                "testuser",
+                subject,
+                content
+            );
+        });
         
-        // Then - Should create an email interaction
-        await()
-            .atMost(Duration.ofSeconds(5))
-            .pollInterval(Duration.ofMillis(500))
-            .until(() -> {
-                return QuarkusTransaction.call(() -> {
-                    List<ContactInteraction> interactions = interactionRepository
-                        .find("contact.id = ?1 and type = ?2", 
-                              testContact.getId(), 
-                              ContactInteraction.InteractionType.EMAIL)
-                        .list();
-                    
-                    return !interactions.isEmpty() &&
-                           interactions.stream().anyMatch(i -> 
-                               i.getSubject() != null &&
-                               i.getSubject().equals(subject) &&
-                               i.getFullContent() != null &&
-                               i.getFullContent().equals(content)
-                           );
-                });
-            });
+        // Then - Verify in separate transaction
+        Boolean emailInteractionCreated = QuarkusTransaction.requiringNew().call(() -> {
+            List<ContactInteraction> interactions = interactionRepository
+                .find("contact.id = ?1 and type = ?2", 
+                      testContactId, 
+                      ContactInteraction.InteractionType.EMAIL)
+                .list();
+            
+            return interactions.stream()
+                .anyMatch(i -> 
+                    i.getSubject() != null &&
+                    i.getSubject().equals(subject) &&
+                    i.getFullContent() != null &&
+                    i.getFullContent().equals(content)
+                );
+        });
+        
+        assertThat(emailInteractionCreated)
+            .as("Should have created an email interaction")
+            .isTrue();
     }
     
     // =====================================
@@ -220,40 +268,45 @@ class ContactEventCaptureCQRSIntegrationTest {
     @Test
     @DisplayName("Capture phone call should create call interaction")
     void capturePhoneCall_shouldCreateCallInteraction() {
-        // Given - Call details
+        // Given - Create test data
+        createAndPersistTestData();
+        
+        // Call details
         Integer durationMinutes = 15;
         String outcome = "Positive - Interest in product demo";
         String notes = "Customer is interested in our premium package";
         
-        // When - Capture phone call event
-        captureService.capturePhoneCall(
-            testContact.getId(),
-            "testuser",
-            durationMinutes,
-            outcome,
-            notes
-        );
+        // When - Capture phone call event in service transaction
+        QuarkusTransaction.requiringNew().run(() -> {
+            captureService.capturePhoneCall(
+                testContactId,
+                "testuser",
+                durationMinutes,
+                outcome,
+                notes
+            );
+        });
         
-        // Then - Should create a call interaction
-        await()
-            .atMost(Duration.ofSeconds(5))
-            .until(() -> {
-                return QuarkusTransaction.call(() -> {
-                    List<ContactInteraction> interactions = interactionRepository
-                        .find("contact.id = ?1 and type = ?2",
-                              testContact.getId(),
-                              ContactInteraction.InteractionType.CALL)
-                        .list();
-                    
-                    return !interactions.isEmpty() &&
-                           interactions.stream().anyMatch(i -> 
-                               i.getOutcome() != null &&
-                               i.getOutcome().equals(outcome) &&
-                               i.getSummary() != null &&
-                               i.getSummary().equals(notes)
-                           );
-                });
-            });
+        // Then - Verify in separate transaction
+        Boolean callInteractionCreated = QuarkusTransaction.requiringNew().call(() -> {
+            List<ContactInteraction> interactions = interactionRepository
+                .find("contact.id = ?1 and type = ?2",
+                      testContactId,
+                      ContactInteraction.InteractionType.CALL)
+                .list();
+            
+            return interactions.stream()
+                .anyMatch(i -> 
+                    i.getOutcome() != null &&
+                    i.getOutcome().equals(outcome) &&
+                    i.getSummary() != null &&
+                    i.getSummary().equals(notes)
+                );
+        });
+        
+        assertThat(callInteractionCreated)
+            .as("Should have created a call interaction")
+            .isTrue();
     }
     
     // =====================================
@@ -263,38 +316,43 @@ class ContactEventCaptureCQRSIntegrationTest {
     @Test
     @DisplayName("Capture meeting scheduled should create event interaction")
     void captureMeetingScheduled_shouldCreateEventInteraction() {
-        // Given - Meeting details
+        // Given - Create test data
+        createAndPersistTestData();
+        
+        // Meeting details
         LocalDateTime meetingDate = LocalDateTime.now().plusDays(7);
         String agenda = "Product demonstration and pricing discussion";
         
-        // When - Capture meeting scheduled event
-        captureService.captureMeetingScheduled(
-            testContact.getId(),
-            "testuser",
-            meetingDate,
-            agenda
-        );
+        // When - Capture meeting scheduled event in service transaction
+        QuarkusTransaction.requiringNew().run(() -> {
+            captureService.captureMeetingScheduled(
+                testContactId,
+                "testuser",
+                meetingDate,
+                agenda
+            );
+        });
         
-        // Then - Should create an event interaction
-        await()
-            .atMost(Duration.ofSeconds(5))
-            .until(() -> {
-                return QuarkusTransaction.call(() -> {
-                    List<ContactInteraction> interactions = interactionRepository
-                        .find("contact.id = ?1 and type = ?2",
-                              testContact.getId(),
-                              ContactInteraction.InteractionType.EVENT)
-                        .list();
-                    
-                    return !interactions.isEmpty() &&
-                           interactions.stream().anyMatch(i -> 
-                               i.getNextActionDate() != null &&
-                               i.getNextActionDate().equals(meetingDate) &&
-                               i.getSummary() != null &&
-                               i.getSummary().equals(agenda)
-                           );
-                });
-            });
+        // Then - Verify in separate transaction
+        Boolean eventInteractionCreated = QuarkusTransaction.requiringNew().call(() -> {
+            List<ContactInteraction> interactions = interactionRepository
+                .find("contact.id = ?1 and type = ?2",
+                      testContactId,
+                      ContactInteraction.InteractionType.EVENT)
+                .list();
+            
+            return interactions.stream()
+                .anyMatch(i -> 
+                    i.getNextActionDate() != null &&
+                    i.getNextActionDate().equals(meetingDate) &&
+                    i.getSummary() != null &&
+                    i.getSummary().equals(agenda)
+                );
+        });
+        
+        assertThat(eventInteractionCreated)
+            .as("Should have created an event interaction")
+            .isTrue();
     }
     
     // =====================================
@@ -304,48 +362,54 @@ class ContactEventCaptureCQRSIntegrationTest {
     @Test
     @DisplayName("Multiple events should be captured independently")
     void multipleEvents_shouldBeCapturedIndependently() {
-        // When - Capture multiple different events
-        captureService.captureContactView(testContact.getId(), "user1");
-        captureService.captureContactUpdate(testContact.getId(), "user2", "phone");
-        captureService.captureEmailSent(
-            testContact.getId(), 
-            "user3", 
-            "Follow-up", 
-            "Following up on our conversation..."
-        );
-        captureService.capturePhoneCall(
-            testContact.getId(),
-            "user4",
-            10,
-            "Left voicemail",
-            "Will call back tomorrow"
-        );
+        // Given - Create test data
+        createAndPersistTestData();
         
-        // Then - All events should be processed (async)
-        await()
-            .atMost(Duration.ofSeconds(10))
-            .until(() -> {
-                return QuarkusTransaction.call(() -> {
-                    List<ContactInteraction> allInteractions = interactionRepository
-                        .find("contact.id", testContact.getId())
-                        .list();
-                    
-                    // Should have multiple interactions
-                    if (allInteractions.size() < 3) {
-                        return false;
-                    }
-                    
-                    // Check for different types
-                    boolean hasNote = allInteractions.stream()
-                        .anyMatch(i -> i.getType() == ContactInteraction.InteractionType.NOTE);
-                    boolean hasEmail = allInteractions.stream()
-                        .anyMatch(i -> i.getType() == ContactInteraction.InteractionType.EMAIL);
-                    boolean hasCall = allInteractions.stream()
-                        .anyMatch(i -> i.getType() == ContactInteraction.InteractionType.CALL);
-                    
-                    return hasNote || hasEmail || hasCall;
-                });
-            });
+        // When - Capture multiple different events in service transaction
+        QuarkusTransaction.requiringNew().run(() -> {
+            captureService.captureContactView(testContactId, "user1");
+            captureService.captureContactUpdate(testContactId, "user2", "phone");
+            captureService.captureEmailSent(
+                testContactId, 
+                "user3", 
+                "Follow-up", 
+                "Following up on our conversation..."
+            );
+            captureService.capturePhoneCall(
+                testContactId,
+                "user4",
+                10,
+                "Left voicemail",
+                "Will call back tomorrow"
+            );
+        });
+        
+        // Then - Verify all events were processed
+        Integer interactionCount = QuarkusTransaction.requiringNew().call(() -> {
+            List<ContactInteraction> allInteractions = interactionRepository
+                .find("contact.id", testContactId)
+                .list();
+            
+            LOG.infof("Found %d interactions for contact %s", allInteractions.size(), testContactId);
+            
+            // Check for different types
+            boolean hasNote = allInteractions.stream()
+                .anyMatch(i -> i.getType() == ContactInteraction.InteractionType.NOTE);
+            boolean hasEmail = allInteractions.stream()
+                .anyMatch(i -> i.getType() == ContactInteraction.InteractionType.EMAIL);
+            boolean hasCall = allInteractions.stream()
+                .anyMatch(i -> i.getType() == ContactInteraction.InteractionType.CALL);
+            
+            assertThat(hasNote || hasEmail || hasCall)
+                .as("Should have at least one of NOTE, EMAIL or CALL interaction")
+                .isTrue();
+            
+            return allInteractions.size();
+        });
+        
+        assertThat(interactionCount)
+            .as("Should have created multiple interactions")
+            .isGreaterThanOrEqualTo(3);
     }
     
     // =====================================
@@ -373,23 +437,26 @@ class ContactEventCaptureCQRSIntegrationTest {
     @Test
     @DisplayName("CQRS mode should properly delegate all capture operations")
     void cqrsMode_shouldProperlyDelegateAllOperations() {
+        // Given - Create test data
+        createAndPersistTestData();
+        
         // This test verifies that the facade properly delegates to CommandService
         
         // All capture operations should work in CQRS mode
-        assertThatCode(() -> {
+        QuarkusTransaction.requiringNew().run(() -> {
             // View capture
-            captureService.captureContactView(testContact.getId(), "testuser");
+            captureService.captureContactView(testContactId, "testuser");
             
             // Update capture
             captureService.captureContactUpdate(
-                testContact.getId(), 
+                testContactId, 
                 "testuser", 
                 "position"
             );
             
             // Email capture
             captureService.captureEmailSent(
-                testContact.getId(),
+                testContactId,
                 "testuser",
                 "Test Subject",
                 "Test Content"
@@ -397,7 +464,7 @@ class ContactEventCaptureCQRSIntegrationTest {
             
             // Phone call capture
             captureService.capturePhoneCall(
-                testContact.getId(),
+                testContactId,
                 "testuser",
                 5,
                 "Brief call",
@@ -406,14 +473,23 @@ class ContactEventCaptureCQRSIntegrationTest {
             
             // Meeting capture
             captureService.captureMeetingScheduled(
-                testContact.getId(),
+                testContactId,
                 "testuser",
                 LocalDateTime.now().plusDays(3),
                 "Initial meeting"
             );
-        }).doesNotThrowAnyException();
+        });
         
         // Verify CQRS is enabled
         assertThat(cqrsEnabled).isTrue();
+        
+        // Verify some interactions were created
+        Long totalInteractions = QuarkusTransaction.requiringNew().call(() -> {
+            return interactionRepository.find("contact.id", testContactId).count();
+        });
+        
+        assertThat(totalInteractions)
+            .as("CQRS mode should have created interactions")
+            .isGreaterThan(0L);
     }
 }

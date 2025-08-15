@@ -9,6 +9,7 @@ import jakarta.inject.Inject;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.jboss.logging.Logger;
 
 /**
@@ -198,6 +199,22 @@ public class HtmlExportQueryService {
     // Fetch customers
     List<Customer> customers =
         customerRepository.findByFilters(request.getStatus(), request.getIndustry());
+    
+    // Apply date range filter if specified
+    if (request.getDateFrom() != null || request.getDateTo() != null) {
+      customers = customers.stream()
+          .filter(c -> {
+            if (c.getCreatedAt() == null) return false;
+            if (request.getDateFrom() != null && c.getCreatedAt().isBefore(request.getDateFrom())) {
+              return false;
+            }
+            if (request.getDateTo() != null && c.getCreatedAt().isAfter(request.getDateTo())) {
+              return false;
+            }
+            return true;
+          })
+          .collect(Collectors.toList());
+    }
 
     // Statistics - always show for now since includeStats is not in DTO yet
     if (true) { // TODO: Add includeStats to ExportRequest DTO when needed
@@ -227,21 +244,27 @@ public class HtmlExportQueryService {
       html.append("</div>\n");
     }
 
-    // Customer table
-    html.append("<table>\n");
-    html.append("<thead>\n");
-    html.append("<tr>\n");
-    html.append("  <th>Kundennr.</th>\n");
-    html.append("  <th>Firma</th>\n");
-    html.append("  <th>Status</th>\n");
-    html.append("  <th>Branche</th>\n");
-    html.append("  <th>Kontakte</th>\n");
-    html.append("  <th>Letzter Kontakt</th>\n");
-    html.append("</tr>\n");
-    html.append("</thead>\n");
-    html.append("<tbody>\n");
+    // Customer table or empty message
+    if (customers.isEmpty()) {
+      html.append("<div style=\"text-align: center; padding: 40px; color: #666;\">\n");
+      html.append("  <h3>Keine Kunden gefunden</h3>\n");
+      html.append("  <p>Es wurden keine Kunden mit den angegebenen Filterkriterien gefunden.</p>\n");
+      html.append("</div>\n");
+    } else {
+      html.append("<table>\n");
+      html.append("<thead>\n");
+      html.append("<tr>\n");
+      html.append("  <th>Kundennr.</th>\n");
+      html.append("  <th>Firma</th>\n");
+      html.append("  <th>Status</th>\n");
+      html.append("  <th>Branche</th>\n");
+      html.append("  <th>Kontakte</th>\n");
+      html.append("  <th>Letzter Kontakt</th>\n");
+      html.append("</tr>\n");
+      html.append("</thead>\n");
+      html.append("<tbody>\n");
 
-    for (Customer customer : customers) {
+      for (Customer customer : customers) {
       html.append("<tr>\n");
       html.append("  <td>").append(escapeHtml(customer.getCustomerNumber())).append("</td>\n");
       html.append("  <td><strong>")
@@ -297,8 +320,9 @@ public class HtmlExportQueryService {
       html.append("</tr>\n");
     }
 
-    html.append("</tbody>\n");
-    html.append("</table>\n");
+      html.append("</tbody>\n");
+      html.append("</table>\n");
+    }
 
     // Footer
     html.append("<div class=\"footer\">\n");
