@@ -1,6 +1,9 @@
 package de.freshplan.domain.customer.service.command;
 
 import de.freshplan.domain.customer.entity.Customer;
+import de.freshplan.domain.customer.entity.CustomerStatus;
+import de.freshplan.domain.customer.entity.CustomerType;
+import de.freshplan.domain.customer.entity.Industry;
 import de.freshplan.domain.customer.repository.CustomerRepository;
 import de.freshplan.domain.customer.service.CustomerNumberGeneratorService;
 import de.freshplan.domain.customer.service.dto.CreateCustomerRequest;
@@ -50,9 +53,6 @@ class CustomerCommandServiceTest {
     
     @BeforeEach
     void setUp() {
-        // We'll create the request dynamically in each test
-        // since we don't know the exact constructor signature
-        
         // Setup mock customer
         mockCustomer = new Customer();
         mockCustomer.setId(UUID.randomUUID());
@@ -62,15 +62,31 @@ class CustomerCommandServiceTest {
         // Mock response will be created by the mapper
     }
     
+    private CreateCustomerRequest createValidRequest() {
+        return CreateCustomerRequest.builder()
+            .companyName("Test Company GmbH")
+            .customerType(CustomerType.NEUKUNDE)
+            .industry(Industry.SONSTIGE)
+            .expectedAnnualVolume(BigDecimal.ZERO)
+            .build();
+    }
+    
     @Test
     void createCustomer_withValidRequest_shouldSucceed() {
         // Given
-        CreateCustomerRequest request = mock(CreateCustomerRequest.class);
-        when(request.companyName()).thenReturn("Test Company GmbH");
+        CreateCustomerRequest request = createValidRequest();
         
-        CustomerResponse response = mock(CustomerResponse.class);
-        when(response.customerNumber()).thenReturn("KD-2025-00001");
-        when(response.companyName()).thenReturn("Test Company GmbH");
+        // Create real CustomerResponse using the short constructor
+        CustomerResponse response = new CustomerResponse(
+            mockCustomer.getId().toString(),
+            "KD-2025-00001",
+            "Test Company GmbH",
+            CustomerStatus.LEAD,
+            CustomerType.NEUKUNDE,
+            Industry.SONSTIGE,
+            0, // riskScore
+            null // lastContactDate
+        );
         
         when(customerRepository.findPotentialDuplicates(anyString()))
             .thenReturn(Collections.emptyList());
@@ -100,8 +116,7 @@ class CustomerCommandServiceTest {
     @Test
     void createCustomer_withDuplicateName_shouldThrowException() {
         // Given
-        CreateCustomerRequest request = mock(CreateCustomerRequest.class);
-        when(request.companyName()).thenReturn("Test Company GmbH");
+        CreateCustomerRequest request = createValidRequest();
         
         Customer existingCustomer = new Customer();
         existingCustomer.setCompanyName("Test Company GmbH");
@@ -134,7 +149,7 @@ class CustomerCommandServiceTest {
     @Test
     void createCustomer_withNullCreatedBy_shouldThrowException() {
         // Given
-        CreateCustomerRequest request = mock(CreateCustomerRequest.class);
+        CreateCustomerRequest request = createValidRequest();
         
         // When & Then
         assertThatThrownBy(() -> 

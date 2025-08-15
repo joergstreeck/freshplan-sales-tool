@@ -100,14 +100,26 @@ public class CustomerRepository implements PanacheRepositoryBase<Customer, UUID>
       query.append(" AND status IN ?1");
       if (industry != null) {
         query.append(" AND industry = ?2");
-        return find(query.toString(), status, industry).list();
+        try {
+          Industry industryEnum = Industry.valueOf(industry);
+          return find(query.toString(), status, industryEnum).list();
+        } catch (IllegalArgumentException e) {
+          // Invalid industry - return empty list
+          return List.of();
+        }
       }
       return find(query.toString(), status).list();
     }
 
     if (industry != null) {
       query.append(" AND industry = ?1");
-      return find(query.toString(), industry).list();
+      try {
+        Industry industryEnum = Industry.valueOf(industry);
+        return find(query.toString(), industryEnum).list();
+      } catch (IllegalArgumentException e) {
+        // Invalid industry - return empty list
+        return List.of();
+      }
     }
 
     return find(query.toString()).list();
@@ -121,14 +133,26 @@ public class CustomerRepository implements PanacheRepositoryBase<Customer, UUID>
       query.append(" AND status IN ?1");
       if (industry != null) {
         query.append(" AND industry = ?2");
-        return find(query.toString(), status, industry).page(Page.of(page, size)).list();
+        try {
+          Industry industryEnum = Industry.valueOf(industry);
+          return find(query.toString(), status, industryEnum).page(Page.of(page, size)).list();
+        } catch (IllegalArgumentException e) {
+          // Invalid industry - return empty list
+          return List.of();
+        }
       }
       return find(query.toString(), status).page(Page.of(page, size)).list();
     }
 
     if (industry != null) {
       query.append(" AND industry = ?1");
-      return find(query.toString(), industry).page(Page.of(page, size)).list();
+      try {
+        Industry industryEnum = Industry.valueOf(industry);
+        return find(query.toString(), industryEnum).page(Page.of(page, size)).list();
+      } catch (IllegalArgumentException e) {
+        // Invalid industry - return empty list
+        return List.of();
+      }
     }
 
     return find(query.toString()).page(Page.of(page, size)).list();

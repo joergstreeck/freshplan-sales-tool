@@ -7,6 +7,7 @@ import de.freshplan.domain.customer.service.query.CustomerQueryService;
 import de.freshplan.domain.customer.service.dto.*;
 import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.security.TestSecurity;
 import jakarta.inject.Inject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -26,6 +27,7 @@ import static org.mockito.Mockito.*;
  * This is a unit test that ensures the delegation logic works correctly.
  */
 @QuarkusTest
+@TestSecurity(user = "testuser", roles = {"admin", "manager", "sales"})
 @DisplayName("CustomerResource Feature Flag Tests")
 class CustomerResourceFeatureFlagTest {
 

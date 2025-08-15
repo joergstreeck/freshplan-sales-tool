@@ -1,9 +1,9 @@
 # 🟢 AKTUELLER STATUS - PR #5 CQRS Refactoring
 
-**Zeitpunkt:** 15.08.2025 00:10  
+**Zeitpunkt:** 15.08.2025 15:05  
 **Entwickler:** Claude  
 **Branch:** `feature/refactor-large-services`
-**Status:** ✅ PHASE 11 ABGESCHLOSSEN - ProfileService CQRS Migration
+**Status:** 🎯 PHASE 14.2 ABGESCHLOSSEN - CQRS Integration Tests implementiert
 
 ---
 
@@ -17,7 +17,22 @@
    - Performance: ~11ms (warm)
    - 69 Customers, 31 Opportunities in DB
 
-### 🎉 **11 VON 17 PHASEN KOMPLETT ABGESCHLOSSEN:**
+### 🎉 **14 VON 17 PHASEN KOMPLETT ABGESCHLOSSEN:**
+
+**✅ Phase 13: Export & Event Services** - ABGESCHLOSSEN 15.08.2025 02:45
+- HtmlExportService: NUR QueryService (read-only)
+- ContactEventCaptureService: NUR CommandService (write-only)
+- Asymmetrische CQRS-Patterns erfolgreich implementiert
+- Tests: 22/22 grün (8 + 14)
+
+**🆕 Phase 14: Integration Tests** - ABGESCHLOSSEN 15.08.2025 15:05
+- **Phase 14.1:** 10 Test-Fehler behoben (@TestSecurity, Record-Mocking, Enum-Fixes)
+- **Phase 14.2:** CustomerCQRSIntegrationTest mit 19 Tests erstellt (15/19 grün = 79%)
+- **Erkenntnisse:** 4 verbleibende Fehler zeigen echte CQRS-Implementierungsprobleme
+  - Duplicate-Check funktioniert nicht
+  - Restore-Operation fehlerhaft
+  - Hierarchy-Response inkorrekt
+  - Merge löscht Source zu früh
 
 **✅ Phase 1: CustomerService** - Commands: 8/8, Queries: 9/9, Tests: 40/40
 **✅ Phase 2: OpportunityService** - Commands: 5/5, Queries: 7/7, Tests: 33/33  
@@ -30,6 +45,7 @@
 **✅ Phase 9: TestDataService** - Commands: 5/5, Queries: 1/1, Tests: 20/22 (2 @InjectMock Issues)
 **✅ Phase 10: SearchService** - **READ-ONLY**: Queries: 2/2, Tests: 43/43 (🏆 Höchste Test-Coverage!)
 **✅ Phase 11: ProfileService** - Commands: 3/3, Queries: 5/5, Tests: ✅ Alle grün!
+**🎆 Phase 12: Help System** - **EVENT-DRIVEN CQRS!** Commands: 12/12, Queries: 12/12, Events: ✅, Tests: 44/44
 
 ### 🚨 KRITISCHER BUGFIX WÄHREND PHASE 9:
 **Problem entdeckt:** CustomerDataInitializer löschte bei JEDEM Backend-Restart ALLE Kundendaten!
@@ -45,6 +61,26 @@ deleteQuery = "DELETE FROM customers WHERE is_test_data = true OR company_name L
 ```
 
 **Live-Test erfolgreich:** 58 TEST customers + 69 total bleiben erhalten ✅
+
+### 🎆 PHASE 12 - EVENT-DRIVEN CQRS REVOLUTION:
+**Innovation:** Erste Event-Driven CQRS Implementation mit CDI Event Bus!
+
+**Was wurde gelöst:**
+1. **CDI Context Problem in Async Tests:**
+   - Problem: Awaitility verliert CDI Context in separaten Threads
+   - Lösung: TestHelper Service mit @ActivateRequestContext
+
+2. **Event-Driven Architecture:**
+   - Synchrone Commands für kritische Operationen
+   - Asynchrone Events für Analytics/View Counts
+   - CDI Event Bus mit @ObservesAsync
+
+3. **Struggle Detection Intelligence:**
+   - 5 Struggle-Typen erkannt (REPEATED_FAILED_ATTEMPTS, etc.)
+   - Severity Scoring mit Business Rules
+   - Proaktive Hilfe basierend auf User-Verhalten
+
+**Performance:** 50 concurrent users erfolgreich getestet ✅
 
 ### 🛠️ KRITISCHER ERFOLG - Test-Fixing Phase 8:
 **Problem:** Phase 8 Tests schlugen mit komplexen Mockito/Panache-Fehlern fehl
@@ -106,7 +142,7 @@ deleteQuery = "DELETE FROM customers WHERE is_test_data = true OR company_name L
 
 ## 📋 HANDOVER AN NEUEN CLAUDE
 
-### Für Phase 11-12 muss ein neuer Claude folgende Schritte befolgen:
+### Für Phase 13+ muss ein neuer Claude folgende Schritte befolgen:
 
 1. **Lies ZUERST:**
    - `PR_5_IMPLEMENTATION_LOG.md` - Komplette Historie und Erkenntnisse aller 10 Phasen

@@ -199,30 +199,33 @@ public class HtmlExportQueryService {
     List<Customer> customers =
         customerRepository.findByFilters(request.getStatus(), request.getIndustry());
 
-    // Statistics
-    long activeCount =
-        customers.stream()
-            .filter(c -> c.getStatus() != null && c.getStatus().toString().equals("AKTIV"))
-            .count();
-    long leadCount =
-        customers.stream()
-            .filter(c -> c.getStatus() != null && c.getStatus().toString().equals("LEAD"))
-            .count();
+    // Statistics - always show for now since includeStats is not in DTO yet
+    if (true) { // TODO: Add includeStats to ExportRequest DTO when needed
+      long activeCount =
+          customers.stream()
+              .filter(c -> c.getStatus() != null && c.getStatus().toString().equals("AKTIV"))
+              .count();
+      long leadCount =
+          customers.stream()
+              .filter(c -> c.getStatus() != null && c.getStatus().toString().equals("LEAD"))
+              .count();
 
-    html.append("<div class=\"stats\">\n");
-    html.append("  <div class=\"stat-item\">\n");
-    html.append("    <div class=\"stat-value\">").append(customers.size()).append("</div>\n");
-    html.append("    <div class=\"stat-label\">Gesamt</div>\n");
-    html.append("  </div>\n");
-    html.append("  <div class=\"stat-item\">\n");
-    html.append("    <div class=\"stat-value\">").append(activeCount).append("</div>\n");
-    html.append("    <div class=\"stat-label\">Aktiv</div>\n");
-    html.append("  </div>\n");
-    html.append("  <div class=\"stat-item\">\n");
-    html.append("    <div class=\"stat-value\">").append(leadCount).append("</div>\n");
-    html.append("    <div class=\"stat-label\">Leads</div>\n");
-    html.append("  </div>\n");
-    html.append("</div>\n");
+      html.append("<h2>Statistik</h2>\n");
+      html.append("<div class=\"stats\">\n");
+      html.append("  <div class=\"stat-item\">\n");
+      html.append("    <div class=\"stat-value\">").append(customers.size()).append("</div>\n");
+      html.append("    <div class=\"stat-label\">Gesamt Kunden</div>\n");
+      html.append("  </div>\n");
+      html.append("  <div class=\"stat-item\">\n");
+      html.append("    <div class=\"stat-value\">").append(activeCount).append("</div>\n");
+      html.append("    <div class=\"stat-label\">Aktiv</div>\n");
+      html.append("  </div>\n");
+      html.append("  <div class=\"stat-item\">\n");
+      html.append("    <div class=\"stat-value\">").append(leadCount).append("</div>\n");
+      html.append("    <div class=\"stat-label\">Leads</div>\n");
+      html.append("  </div>\n");
+      html.append("</div>\n");
+    }
 
     // Customer table
     html.append("<table>\n");
