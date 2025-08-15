@@ -245,9 +245,11 @@ class HtmlExportCQRSIntegrationTest {
             return htmlExportService.generateCustomersHtml(request);
         });
         
-        // Then - Should only include recent customer
-        assertThat(html).contains(customerNames[0]);
-        assertThat(html).doesNotContain(customerNames[1]);
+        // Then - Check if our specific test customers are correctly filtered
+        // Customer 1 (created now) should be included
+        assertThat(html).contains("[TEST-" + testRunId + "] Export Hotel");
+        // Customer 2 (created 30 days ago) should NOT be included  
+        assertThat(html).doesNotContain("[TEST-" + testRunId + "] Export Restaurant");
     }
     
     // =====================================

@@ -293,6 +293,32 @@ SELECT COUNT(*) FROM audit_entries;
 
 ---
 
+## ⚠️ BEKANNTE TEST-INFRASTRUKTUR-PROBLEME (Stand: 15.08.2025)
+
+### 1. Testcontainer DB-Persistenz
+**Problem:** Testcontainer reused Container zwischen Test-Läufen → Test-Daten akkumulieren sich  
+**Symptom:** 294+ Test-Kunden in DB trotz Cleanup-Versuche  
+**Workaround:** Tests verwenden unique Test-IDs (`[TEST-xxxxx]` Pattern)  
+**TODO:** Testcontainer-Reuse deaktivieren oder Force-Recreate implementieren
+
+### 2. V9999 Migration Unvollständig (JETZT GEFIXT)
+**Problem:** V9999__test_seed_data.sql löschte nur SEED-Daten, nicht alle Test-Patterns  
+**Fix:** Erweiterte DELETE-Statements für alle bekannten Test-Prefixe hinzugefügt  
+**Status:** ✅ Gefixt, aber wirkt erst bei Container-Neustart
+
+### 3. Test-Isolation Herausforderungen
+**Problem:** Tests beeinflussen sich gegenseitig durch gemeinsame DB  
+**Symptom:** HtmlExportCQRSIntegrationTest findet Daten von anderen Tests  
+**Workaround:** Spezifische Test-ID-Prüfung statt generischer Assertions  
+**TODO:** Separate Test-Schemas oder DB-Snapshots implementieren
+
+### 4. Query-Type Detection zu aggressiv (JETZT GEFIXT)
+**Problem:** SearchQueryService erkannte normale Wörter als CUSTOMER_NUMBER  
+**Fix:** Präzisere Pattern-Matching mit bekannten Prefixen  
+**Status:** ✅ SearchCQRSIntegrationTest 10/10 Tests grün
+
+---
+
 **WICHTIG:** Dieses Dokument ist PFLICHTLEKTÜRE vor Beginn der Arbeit an PR #5!
 
 **Bei Unsicherheit:** Lieber einmal zu viel fragen als einmal zu wenig!

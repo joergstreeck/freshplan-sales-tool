@@ -11,11 +11,26 @@ BEGIN
     -- Prüfe ob wir in einer Test-Datenbank sind
     IF current_database() LIKE '%test%' THEN
         
-        -- Bereinige alte Test-Daten
+        -- Bereinige ALLE Test-Daten (nicht nur SEED)
         DELETE FROM contact_interactions;
         DELETE FROM customer_contacts;
         DELETE FROM customer_timeline_events;
         DELETE FROM opportunities;
+        -- Lösche ALLE Test-Kunden (SEED + von Tests erstellte)
+        DELETE FROM customers WHERE is_test_data = true;
+        -- Zusätzlich: Lösche alle Kunden mit Test-Patterns im Namen
+        DELETE FROM customers WHERE company_name LIKE '%[TEST-%]%';
+        DELETE FROM customers WHERE company_name LIKE '%[SEED]%';
+        -- Sicherheitshalber: Lösche alle mit typischen Test-Prefixen
+        DELETE FROM customers WHERE customer_number LIKE 'PF%-%';
+        DELETE FROM customers WHERE customer_number LIKE 'S1%';
+        DELETE FROM customers WHERE customer_number LIKE 'S2%';
+        DELETE FROM customers WHERE customer_number LIKE 'E1%';
+        DELETE FROM customers WHERE customer_number LIKE 'E2%';
+        DELETE FROM customers WHERE customer_number LIKE 'ACT%';
+        DELETE FROM customers WHERE customer_number LIKE 'INA%';
+        DELETE FROM customers WHERE customer_number LIKE 'PA%';
+        DELETE FROM customers WHERE customer_number LIKE 'PI%';
         DELETE FROM customers WHERE customer_number LIKE 'SEED-%';
         
         -- ============================================================================

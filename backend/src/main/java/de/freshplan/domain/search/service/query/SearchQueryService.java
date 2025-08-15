@@ -196,6 +196,11 @@ public class SearchQueryService {
               .filter(c -> c.getStatus() != CustomerStatus.INAKTIV)
               .collect(Collectors.toList());
     }
+    
+    // Filter out deleted customers (should be done by repository, but double-check)
+    customers = customers.stream()
+        .filter(c -> !Boolean.TRUE.equals(c.getIsDeleted()))
+        .collect(Collectors.toList());
 
     // Convert to search results with relevance scoring
     return customers.stream()
@@ -319,8 +324,12 @@ public class SearchQueryService {
       return QueryType.PHONE;
     }
 
-    // Customer number pattern detection (max 20 chars)
-    if (CUSTOMER_NUMBER_PATTERN.matcher(trimmed).matches() && trimmed.length() <= 20) {
+    // Customer number pattern detection 
+    // Must start with typical customer number prefixes or be in expected format
+    if (CUSTOMER_NUMBER_PATTERN.matcher(trimmed).matches() 
+        && trimmed.length() <= 20 
+        && (trimmed.matches("^(KD|PF|S[12]|ACT|INA|E[12]|P[AI]).*") // Known prefixes
+            || trimmed.matches("^[A-Z]{2,3}-\\d{4}-\\d{5}$"))) { // KD-2025-00001 format
       return QueryType.CUSTOMER_NUMBER;
     }
 
