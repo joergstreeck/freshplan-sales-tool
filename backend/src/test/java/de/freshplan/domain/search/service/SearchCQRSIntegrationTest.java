@@ -146,9 +146,29 @@ class SearchCQRSIntegrationTest {
     @TestTransaction
     @DisplayName("Universal search should respect includeInactive flag")
     void universalSearch_withInactiveFlag_shouldFilterResults() {
-        // Given - Make one customer inactive
-        testCustomer2.setStatus(CustomerStatus.INAKTIV);
-        testCustomer2 = customerRepository.getEntityManager().merge(testCustomer2);
+        // Given - Create test data directly in this test
+        String uniqueSuffix = String.valueOf(System.currentTimeMillis());
+        
+        Customer activeCustomer = new Customer();
+        activeCustomer.setCustomerNumber("KD-S-ACT-" + uniqueSuffix);
+        activeCustomer.setCompanyName("Active Restaurant " + uniqueSuffix);
+        activeCustomer.setCustomerType(CustomerType.UNTERNEHMEN);
+        activeCustomer.setStatus(CustomerStatus.AKTIV);
+        activeCustomer.setIndustry(Industry.RESTAURANT);
+        activeCustomer.setCreatedBy("testuser");
+        activeCustomer.setCreatedAt(LocalDateTime.now());
+        customerRepository.persist(activeCustomer);
+        
+        Customer inactiveCustomer = new Customer();
+        inactiveCustomer.setCustomerNumber("KD-S-INA-" + uniqueSuffix);
+        inactiveCustomer.setCompanyName("Inactive Restaurant " + uniqueSuffix);
+        inactiveCustomer.setCustomerType(CustomerType.NEUKUNDE);
+        inactiveCustomer.setStatus(CustomerStatus.INAKTIV);
+        inactiveCustomer.setIndustry(Industry.RESTAURANT);
+        inactiveCustomer.setCreatedBy("testuser");
+        inactiveCustomer.setCreatedAt(LocalDateTime.now());
+        customerRepository.persist(inactiveCustomer);
+        
         customerRepository.flush();
         
         // When - Search without inactive
@@ -167,9 +187,20 @@ class SearchCQRSIntegrationTest {
             10    // limit
         );
         
-        // Then - Results should differ
-        assertThat(resultsWithoutInactive.getCustomers()).isEmpty();
-        assertThat(resultsWithInactive.getCustomers()).isNotEmpty();
+        // Then - Without inactive should only find active customer
+        assertThat(resultsWithoutInactive.getCustomers())
+            .hasSize(1)
+            .extracting(SearchResult::getId)
+            .containsExactly(activeCustomer.getId().toString());
+        
+        // Then - With inactive should find both
+        assertThat(resultsWithInactive.getCustomers())
+            .hasSize(2)
+            .extracting(SearchResult::getId)
+            .containsExactlyInAnyOrder(
+                activeCustomer.getId().toString(), 
+                inactiveCustomer.getId().toString()
+            );
     }
     
     @Test
