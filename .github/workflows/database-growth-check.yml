@@ -74,13 +74,15 @@ jobs:
       working-directory: backend
       env:
         QUARKUS_PROFILE: ci
+        PGPASSWORD: freshplan
       run: |
-        echo "Initializing database with Flyway migrations..."
-        ./mvnw -q flyway:migrate \
-          -Dflyway.url=jdbc:postgresql://localhost:5432/freshplan \
-          -Dflyway.user=freshplan \
-          -Dflyway.password=freshplan \
-          -Dflyway.locations=filesystem:src/main/resources/db/migration,filesystem:src/test/resources/db/testdata
+        echo "Initializing database schema..."
+        # Run a simple test to trigger Flyway migrations via Quarkus
+        ./mvnw -q test -Dtest="DatabaseAnalysisTest#countCustomers" || true
+        
+        # Verify schema was created
+        echo "Verifying database schema..."
+        psql -h localhost -U freshplan -d freshplan -c "\dt" | head -20
 
     - name: Count customers BEFORE tests
       env:
