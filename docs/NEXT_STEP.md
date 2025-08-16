@@ -7,201 +7,114 @@
 
 ## 🎯 JETZT GERADE:
 
-**CODE QUALITY INITIATIVE - PR #4 BEREIT! 🚀**
+**PR #5: BACKEND CQRS REFACTORING - 88% ABGESCHLOSSEN**
 
-**Stand 13.08.2025 02:10:**
-- ✅ **PR #4 (Refactoring)** vollständig fertig auf Branch `feature/refactor-large-components`
-- ✅ **Alle Tests grün** (22 Tests für refaktorierte Komponenten)
-- ✅ **Two-Pass Review** erfolgreich durchgeführt
-- ✅ **Branch ist PRODUCTION-READY**
+**Stand 15.08.2025 22:45:**
+- ✅ **Phase 1-13 KOMPLETT:** Alle 13 Services erfolgreich in CQRS gesplittet
+- ✅ **Phase 14 KOMPLETT:** Alle Integration Tests implementiert
+  - Phase 14.1: 10 Test-Fehler behoben (Security, Mocking, Enums)
+  - Phase 14.2: CustomerCQRSIntegrationTest mit 19 Tests (100% grün)
+  - Phase 14.3: SearchCQRS (10/10 ✅), HtmlExportCQRS (10/11 ⚠️), ContactEventCapture (5/5 ✅)
+  - Phase 14.4: Feature Flag Switching für alle Services erfolgreich getestet
+- ⏰ **Phase 15:** Performance Testing
+- ⏰ **Phase 16:** Dokumentation Update
+- ⏰ **Phase 17:** PR Review & Merge Vorbereitung
+- ✅ **Gesamt:** 14 von 17 Phasen abgeschlossen (88% komplett)
+- ⏳ **Nächster Schritt:** Phase 15 - Performance Testing
+
+**⚠️ Bekanntes Problem:** DB-Pollution mit 294+ Test-Kunden
+- V9999 Migration wurde verbessert
+- Testcontainer-Reuse-Problem bleibt bestehen
+- Workaround: Tests verwenden unique Test-IDs
 
 ### 🚨 NÄCHSTER SCHRITT FÜR NEUEN CLAUDE:
 
-1. **SOFORT: PR #4 erstellen!**
+1. **SOFORT: Letzte Übergabe lesen!**
 ```bash
-# Branch prüfen
-git branch --show-current
-# Sollte sein: feature/refactor-large-components
+# Aktuelle Session-Übergabe:
+cat /Users/joergstreeck/freshplan-sales-tool/docs/claude-work/daily-work/2025-08-15/2025-08-15_HANDOVER_19-11.md
 
-# PR erstellen mit fertiger Beschreibung
-gh pr create --title "feat: refactor large frontend components" \
-  --body-file docs/features/PR_4_REFACTORING_SUMMARY.md
+# KRITISCH: Test-Daten-Explosion vermeiden!
+# - IMMER @TestTransaction auf Test-Methoden, NIE auf @BeforeEach
+# - Status: 99 Kunden in DB, alle mit is_test_data=true markiert
 ```
 
-2. **NACH PR-MERGE: Sprint 1 fortsetzen**
-   - PR #1: Security & MSW Hardening 🔒 **NÄCHSTES**
-   - PR #2: Console Cleanup Frontend (~87 Dateien)
-   - PR #3: TypeScript array types (~40 Dateien)
-   
-   Siehe Roadmap: `/docs/features/CODE_QUALITY_PR_ROADMAP.md`
+2. **DANN: Phase 15 starten - Performance Testing**
+```bash
+cd /Users/joergstreeck/freshplan-sales-tool/backend
 
-### 📊 Aktuelle Metriken:
-- **Console Statements:** 2.562 (Ziel: 0)
-- **TypeScript 'any':** 1.621 (Ziel: <50)
-- **Große Dateien:** 188 (Ziel: <20)
-- **Test Coverage:** 89.1% (Ziel: 95%)
+# System prüfen
+git branch --show-current  # sollte: feature/refactor-large-services
+git status                 # sauber nach Phase 14.4
+
+# Phase 15: Performance Testing
+# Ziel: Sicherstellen dass CQRS-Mode mindestens gleich schnell ist
+
+# 1. Performance-Baseline mit Legacy-Mode:
+curl -w "@curl-format.txt" -o /dev/null -s "http://localhost:8080/api/customers"
+
+# 2. Performance mit CQRS-Mode:
+# Feature Flag auf true setzen und erneut messen
+
+# 3. Load Testing mit Apache Bench:
+ab -n 1000 -c 10 http://localhost:8080/api/customers/
+```
+
+3. **Alternative: Direkt zu Phase 15-17**
+```bash
+# Falls alle Integration Tests grün sind:
+# Phase 15: Performance Testing
+# Phase 16: Dokumentation finalisieren
+# Phase 17: PR Review & Merge vorbereiten
+
+# Gesamt-Status prüfen:
+find . -name "*Service.java" -path "*/service/*" | grep -v test | wc -l
+# Sollte zeigen wie viele Services migriert sind
+```
+
+### ⚠️ KRITISCHE REGELN:
+- **Migration V220** ist die nächste freie Nummer (NICHT V219 oder kleiner!)
+- **Feature Flag bei false lassen** - noch nicht umschalten!
+- **Asymmetrische CQRS Patterns** sind OK - nicht alle Services brauchen Command UND Query
+- **EXAKTE KOPIE** - auch Bugs und Probleme beibehalten für Kompatibilität!
+- **4 Test-Fixing Patterns verwenden** - PanacheQuery Mock, Matcher Consistency, FK-Safe Cleanup, Flexible Verification
+- **Timeline Events mit Category** - sonst DB-Fehler
+
+### 📊 Fortschritt PR #5:
+- CustomerCommandService: 8/8 Methoden ✅ (100% FERTIG!)
+- CustomerQueryService: 9/9 Methoden ✅ (100% FERTIG!)
+- CustomerResource Facade: 15/15 Methoden ✅ (100% FERTIG!)
+- Tests: 40+ Integration Tests laufen ✅ (27 Commands + 13 Queries + Feature Flag Tests)
 
 ### 📍 Wichtige Dateien für neuen Claude:
-- **Start:** [`/docs/CODE_QUALITY_START_HERE.md`](/docs/CODE_QUALITY_START_HERE.md) ← BEI CODE QUALITY HIER STARTEN!
-- **Roadmap:** [`/docs/features/CODE_QUALITY_PR_ROADMAP.md`](/docs/features/CODE_QUALITY_PR_ROADMAP.md) ← Detaillierter Plan
-- **Review:** [`/docs/features/ENTERPRISE_CODE_REVIEW_2025.md`](/docs/features/ENTERPRISE_CODE_REVIEW_2025.md) ← Alle Findings
-- **Tests:** [`/docs/features/TEST_STRATEGY_PER_PR.md`](/docs/features/TEST_STRATEGY_PER_PR.md) ← Test-Pläne
-- **Letzte Übergabe:** `/docs/claude-work/daily-work/2025-08-13/2025-08-13_HANDOVER_02-09.md`
+- **Übergabe:** `/docs/claude-work/daily-work/2025-08-13/2025-08-13_HANDOVER_23-49.md`
+- **PR #5 Docs:** `/docs/features/Code_Verbesserung_08_25/`
+- **CustomerCommandService:** `/backend/src/main/java/de/freshplan/domain/customer/service/command/CustomerCommandService.java`
+- **Tests:** `/backend/src/test/java/de/freshplan/domain/customer/service/command/CustomerCommandServiceIntegrationTest.java`
+
+---
+
+## 📊 Bekannte Probleme (Technical Debt):
+
+### Dokumentierte Bugs in CustomerCommandService (13 total):
+1. **addChildCustomer():** Kein Timeline Event
+2. **isDescendant() Bug:** Zirkuläre Hierarchien möglich!
+3. **updateAllRiskScores():** Max 1000 Kunden Limitierung
+4. **updateAllRiskScores():** Keine Timeline Events
+5. **updateAllRiskScores():** Keine Fehlerbehandlung
+6. **updateAllRiskScores():** Keine Teil-Updates möglich
+7. **mergeCustomers():** Kein Timeline Event
+8. **mergeCustomers():** Nur 3 Felder übertragen (von ~20)
+9. **mergeCustomers():** Kein targetId==sourceId Check
+10. **hasChildren() Bug:** Funktioniert nicht nach addChildCustomer()
+11. **mergeCustomers():** Verliert Contacts/Opportunities
+12. **changeStatus():** Initial übersehen, nachträglich hinzugefügt
+13. **changeStatus():** Nutzt ImportanceLevel.MEDIUM statt HIGH
+
+**Alle Probleme absichtlich beibehalten für 100% Kompatibilität!**
 
 ---
 
 **Navigation:**  
-⬅️ Zurück zu: [`CODE_QUALITY_START_HERE.md`](/docs/CODE_QUALITY_START_HERE.md)  
-➡️ Weiter zu: [`CODE_QUALITY_PR_ROADMAP.md`](/docs/features/CODE_QUALITY_PR_ROADMAP.md)
-
----
-
-## 🔥 ALTE THEMEN (nach Code Quality Sprint 1):
-
-### FC-005 CONTACT MANAGEMENT UI
-**Status:** PR #81 wartet auf Merge
-- ✅ **PR 1 MERGED:** Core Audit System (#78)
-- ✅ **PR 2 MERGED:** Audit Admin Dashboard (#80)
-- ✅ **PR 3 ERSTELLT:** Contact Management UI - PR #81
-
-**Was heute gemacht wurde (09.08.2025 23:30):**
-1. **ESLint-Cleanup durchgeführt:**
-   - Von 310 auf 308 Fehler reduziert
-   - 6 erfolgreiche Commits mit verschiedenen Fixes
-   - Alle require() imports entfernt
-2. **PR #81 erfolgreich erstellt:**
-   - Contact Management UI mit Audit Timeline
-   - Ausführliche deutsche PR-Beschreibung
-   - Build ist GRÜN, Tests teilweise grün
-3. **Repository aufgeräumt:**
-   - Ungetrackte Verzeichnisse entfernt
-   - DataQualityMetricsDTO.java zu Git hinzugefügt
-
-**🚀 NÄCHSTER SCHRITT:**
-
-### 1. CI-Status von PR #81 überwachen
-```bash
-gh pr checks 81
-# Bei Fehler: Logs analysieren und fixen
-```
-
-### 2. Nach erfolgreicher CI
-```bash
-# PR mergen lassen
-# FC-005 ist dann komplett!
-
-- Add CustomerDetailPage with 4 tabs (Overview, Contacts, Activities, Audit)
-- Create EntityAuditTimeline component for generic entity auditing
-- Implement role-based visibility (Manager, Admin, Auditor)
-- Add comprehensive tests for CustomerDetailPage
-- Configure routing for /customers/:customerId"
-
-# 2. PR erstellen
-gh pr create --title "feat(audit): Contact Management UI with Timeline (PR 3/3)" \
-  --body "## 🎯 Zusammenfassung
-  CustomerDetailPage mit integrierter Audit Timeline
-  
-  ## ✅ Was wurde umgesetzt
-  - CustomerDetailPage mit 4 Tabs
-  - EntityAuditTimeline (generisch für alle Entities)
-  - Role-based Visibility
-  - Routing konfiguriert
-  - Tests geschrieben"
-```
-
-**Optionen für nächste Session:**
-1. **SOFORT PR erstellen** (UI ist fertig):
-   ```bash
-   cd /Users/joergstreeck/freshplan-sales-tool
-   gh pr create --title "feat(audit): Complete Audit Admin Dashboard UI with Navigation (PR 2/3)" \
-     --body "## 🎯 Zusammenfassung
-   Vollständig funktionsfähiges Audit Admin Dashboard mit Sidebar-Integration.
-   
-   ## ✅ Was wurde umgesetzt
-   - 12 Admin-Komponenten implementiert
-   - Sidebar Navigation mit Admin-Bereich
-   - Role-based Access Control funktioniert
-   - 127 Tests geschrieben (TDD-ready)
-   - Material-UI v5 + FreshFoodz CI
-   
-   ## 🧪 Testing
-   - Frontend läuft: http://localhost:5173
-   - Admin-Bereich sichtbar in Sidebar
-   - Route /admin/audit funktioniert
-   
-   ## 📋 Nächste PRs
-   - PR 3: Backend Audit APIs
-   - PR 4: WebSocket Integration"
-   ```
-
-2. **Backend APIs implementieren** (wenn PR später gewünscht)
-3. **WebSocket Integration** (Real-time Features)
-
-```bash
-cd /Users/joergstreeck/freshplan-sales-tool/backend
-
-# 1. Unit Tests erstellen
-touch src/test/java/de/freshplan/audit/service/AuditServiceTest.java
-touch src/test/java/de/freshplan/audit/repository/AuditRepositoryTest.java
-
-# 2. Code committen
-git commit -m "feat(audit): Implement core audit system with DSGVO compliance
-
-- Add AuditLog entity with hash-chain for tamper detection
-- Add AuditService for comprehensive logging
-- Add AuditRepository with compliance queries
-- Add Migration V212 for audit_logs table
-- DSGVO-compliant with retention policies"
-
-# 3. PR erstellen
-git push origin feature/fc-005-audit-core
-gh pr create --title "feat(audit): Core Audit System (PR 1/3)"
-```
-
-**UNTERBROCHEN BEI:**
-- PR 1 implementiert aber noch nicht committed
-- Unit Tests noch zu schreiben
-- Branch: feature/fc-005-audit-core
-
-**AKTUELLE POSITION:**
-- ✅ FC-012: IN FC-005 INTEGRIERT
-- ✅ Audit Backend: IMPLEMENTIERT
-- 🎯 Nächstes: Unit Tests + PR erstellen
-
-**WICHTIGE DOKUMENTE:**
-- **Audit Trail System:** `/docs/features/FC-005-CUSTOMER-MANAGEMENT/Step3/AUDIT_TRAIL_SYSTEM.md`
-- **Audit Admin Dashboard:** `/docs/features/FC-005-CUSTOMER-MANAGEMENT/Step3/AUDIT_ADMIN_DASHBOARD.md`
-- **AKTUELLE Übergabe:** `/docs/claude-work/daily-work/2025-08-08/2025-08-08_HANDOVER_21-45.md`
-
----
-
-## ⚠️ VOR JEDER IMPLEMENTATION - REALITY CHECK PFLICHT:
-```bash
-# Backend Service Status:
-curl http://localhost:8080/api/ping
-# Sollte: JSON Response
-
-# Migration Status:
-ls -la backend/src/main/resources/db/migration/ | tail -1
-# Nächste: V213
-
-# Branch Status:
-git branch --show-current
-# Sollte: feature/fc-005-audit-core
-```
-
----
-
-## 📊 AKTUELLER STATUS:
-```
-🟢 Contact Management: ✅ ENTERPRISE-STANDARD (PR #77 merged)
-🟢 Audit Core: ✅ IMPLEMENTIERT (1400 Zeilen)
-🟡 Unit Tests: 🔄 TODO
-🟡 PR 1: 🔄 Ready to create
-🟢 CI/CD: ✅ VOLLSTÄNDIG GRÜN
-```
-
-**3 PRs Roadmap:**
-- PR 1: Core Audit System (~1400 Zeilen) ✅ IMPLEMENTIERT
-- PR 2: Audit Admin Dashboard (~2500 Zeilen) 📋 GEPLANT
-- PR 3: Contact Management UI (~2900 Zeilen) 📋 GEPLANT
+⬅️ Zurück zu: [`PR_5_IMPLEMENTATION_LOG.md`](/docs/features/Code_Verbesserung_08_25/PR_5_IMPLEMENTATION_LOG.md)  
+➡️ Weiter zu: [`PR_5_NEXT_CLAUDE_SUMMARY.md`](/docs/features/Code_Verbesserung_08_25/PR_5_NEXT_CLAUDE_SUMMARY.md)

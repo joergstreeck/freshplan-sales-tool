@@ -2,7 +2,7 @@ name: Backend CI
 
 on:
   push:
-    branches: [main, feature/user-management]
+    branches: [main, feature/*]
     paths:
       - 'backend/**'
       - '.github/workflows/backend-ci.yml'
@@ -11,9 +11,14 @@ on:
     paths:
       - 'backend/**'
 
+concurrency:
+  group: backend-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   test:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
 
     services:
       postgres:
@@ -25,10 +30,10 @@ jobs:
         ports:
           - 5432:5432
         options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
+          --health-cmd="pg_isready -U freshplan -d freshplan"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
 
     steps:
       - uses: actions/checkout@v4
@@ -38,16 +43,119 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-          cache: maven
+      
+      - name: Cache Maven dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-m2-${{ hashFiles('backend/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2-
           
-      - name: Run tests
+      - name: Install PostgreSQL client
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client
+      
+      - name: Wait for PostgreSQL
+        env:
+          PGPASSWORD: freshplan
+        run: |
+          for i in {1..30}; do
+            pg_isready -h localhost -p 5432 -U freshplan -d freshplan && break
+            echo "Waiting for PostgreSQL... ($i/30)"
+            sleep 2
+          done
+          psql -h localhost -U freshplan -d freshplan -c "SELECT version();" || exit 1
+      
+      - name: Reset DB schema for clean state
+        env:
+          PGPASSWORD: freshplan
+        run: |
+          psql -h localhost -U freshplan -d freshplan -v ON_ERROR_STOP=1 -c "DROP SCHEMA IF EXISTS public CASCADE; CREATE SCHEMA public;"
+          echo "Database schema reset successfully"
+      
+      - name: Bootstrap migrations with CI profile
         working-directory: backend
         env:
-          DATABASE_URL: postgresql://freshplan:freshplan@localhost:5432/freshplan
+          QUARKUS_PROFILE: ci
         run: |
-          mvn -B clean test \
-            -Dquarkus.profile=test \
+          echo "Running migration bootstrap to ensure schema is ready..."
+          ./mvnw -q -Dtest=de.freshplan.test.MigrationBootstrapIT test \
+            -Dquarkus.devservices.enabled=false \
             -Dquarkus.datasource.devservices.enabled=false \
-            -Dquarkus.devservices.enabled=false
+            -Dquarkus.flyway.migrate-at-start=true \
+            -Dquarkus.flyway.out-of-order=true \
+            -Dquarkus.flyway.locations=classpath:db/migration,classpath:db/testdata,classpath:db/ci-migrations \
+            -Dquarkus.datasource.jdbc.url=jdbc:postgresql://localhost:5432/freshplan \
+            -Dquarkus.datasource.username=freshplan \
+            -Dquarkus.datasource.password=freshplan
+          echo "✅ Migrations completed successfully"
+      
+      - name: Verify CI migrations applied
+        env:
+          PGPASSWORD: freshplan
+        run: |
+          echo "Checking that V9000 CI migration was applied..."
+          psql -h localhost -U freshplan -d freshplan -c \
+            "SELECT version, description, success FROM flyway_schema_history WHERE version >= '9000' ORDER BY installed_rank DESC;"
+          
+          # Verify FK actions
+          echo "Verifying FK CASCADE configuration..."
+          psql -h localhost -U freshplan -d freshplan -c \
+            "SELECT conname, conrelid::regclass AS child, 
+                    CASE confdeltype 
+                      WHEN 'c' THEN 'CASCADE' 
+                      WHEN 'n' THEN 'SET NULL' 
+                      WHEN 'a' THEN 'NO ACTION'
+                      WHEN 'r' THEN 'RESTRICT'
+                      ELSE confdeltype 
+                    END as delete_action
+             FROM pg_constraint 
+             WHERE contype='f' AND confrelid='public.customers'::regclass;"
+      
+      - name: Run FK Sanity Check first
+        working-directory: backend
+        env:
+          QUARKUS_PROFILE: ci
+        run: |
+          echo "Running FK sanity check to fail fast if CASCADE not configured..."
+          ./mvnw -q -Dtest=de.freshplan.test.CiFkSanityIT test \
+            -Dquarkus.devservices.enabled=false \
+            -Dquarkus.datasource.devservices.enabled=false \
+            -Dquarkus.flyway.migrate-at-start=true \
+            -Dquarkus.flyway.out-of-order=true \
+            -Dquarkus.flyway.locations=classpath:db/migration,classpath:db/testdata,classpath:db/ci-migrations \
+            -Dquarkus.datasource.jdbc.url=jdbc:postgresql://localhost:5432/freshplan \
+            -Dquarkus.datasource.username=freshplan \
+            -Dquarkus.datasource.password=freshplan
+          echo "✅ FK configuration verified"
+      
+      - name: Run tests with CI profile
+        working-directory: backend
+        env:
+          QUARKUS_PROFILE: ci
+          MAVEN_OPTS: -Xmx2g -XX:MaxMetaspaceSize=512m
+          RUN_SUFFIX: ${{ github.run_id }}
+        run: |
+          ./mvnw -B clean test \
+            -Djunit.jupiter.execution.timeout.default=2m \
+            -Dmaven.test.failure.ignore=false \
+            -DtrimStackTrace=false \
+            -DRUN_SUFFIX=${{ github.run_id }} \
+            -Dquarkus.devservices.enabled=false \
+            -Dquarkus.datasource.devservices.enabled=false \
+            -Dquarkus.flyway.migrate-at-start=true \
+            -Dquarkus.flyway.out-of-order=true \
+            -Dquarkus.flyway.locations=classpath:db/migration,classpath:db/testdata,classpath:db/ci-migrations \
+            -Dquarkus.datasource.jdbc.url=jdbc:postgresql://localhost:5432/freshplan \
+            -Dquarkus.datasource.username=freshplan \
+            -Dquarkus.datasource.password=freshplan
+      
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-test-reports-${{ github.run_number }}
+          path: |
+            backend/target/surefire-reports/**
+            backend/target/failsafe-reports/**
           
       # Test reporter removed - causes permission issues

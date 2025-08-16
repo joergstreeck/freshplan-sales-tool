@@ -1,31 +1,48 @@
 package de.freshplan.domain.help.service;
 
+import de.freshplan.domain.help.service.command.UserStruggleDetectionCommandService;
 import de.freshplan.domain.help.service.dto.UserStruggle;
+import de.freshplan.domain.help.service.query.UserStruggleDetectionQueryService;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Service zur Erkennung von User Struggles
+ * FACADE Service für User Struggle Detection - CQRS Migration mit Feature Flag
+ *
+ * <p>Dieses Service agiert als Facade während der CQRS-Migration und delegiert an die neuen Command
+ * und Query Services basierend auf dem Feature Flag.
  *
  * <p>Analysiert User-Verhalten und erkennt: - Wiederholte fehlgeschlagene Versuche - Hektische
  * Navigation - Lange Pausen nach dem Start - Abgebrochene Workflows
+ *
+ * <p>Part of Phase 12 CQRS migration.
+ *
+ * @since Phase 12 CQRS Migration
  */
 @ApplicationScoped
 public class UserStruggleDetectionService {
 
   private static final Logger LOG = LoggerFactory.getLogger(UserStruggleDetectionService.class);
 
-  // In-Memory Tracking für Demo (in Production: Redis oder DB)
+  @ConfigProperty(name = "features.cqrs.enabled", defaultValue = "false")
+  boolean cqrsEnabled;
+
+  @Inject UserStruggleDetectionCommandService commandService;
+  @Inject UserStruggleDetectionQueryService queryService;
+
+  // Legacy In-Memory Tracking (wenn CQRS disabled)
   private final Map<String, UserBehaviorSession> userSessions = new ConcurrentHashMap<>();
 
-  // Struggle Detection Thresholds
+  // Legacy Struggle Detection Thresholds
   private static final int REPEATED_FAILURE_THRESHOLD = 3;
   private static final int RAPID_NAVIGATION_THRESHOLD = 5; // 5 Seitenwechsel in 2 Minuten
   private static final Duration IDLE_THRESHOLD = Duration.ofMinutes(2);
@@ -33,6 +50,16 @@ public class UserStruggleDetectionService {
 
   /** Erkennt User Struggle basierend auf aktuellem Kontext */
   public UserStruggle detectStruggle(String userId, String feature, Map<String, Object> context) {
+    if (cqrsEnabled) {
+      LOG.debug("Using CQRS implementation for user struggle detection");
+      // 1. Record user action (Command)
+      commandService.recordUserAction(userId, feature, context);
+      // 2. Detect struggle (Query)
+      return queryService.detectStruggle(userId, feature, context);
+    }
+
+    LOG.debug("Using legacy implementation for user struggle detection");
+    // Legacy implementation (exakte Kopie des Original-Codes)
     UserBehaviorSession session = getOrCreateSession(userId);
 
     // Aktuelle Aktion registrieren

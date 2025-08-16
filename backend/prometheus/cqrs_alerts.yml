@@ -1,0 +1,135 @@
+groups:
+- name: cqrs-service
+  interval: 30s
+  rules:
+  
+  # Latency Alerts für Kundenliste
+  - alert: ApiLatencyP95ListHigh
+    expr: |
+      histogram_quantile(0.95, 
+        sum(rate(http_server_requests_seconds_bucket{uri="/api/customers",method="GET"}[5m])) 
+        by (le,mode)
+      ) > 0.035
+    for: 10m
+    labels:
+      severity: warning
+      team: backend
+      component: cqrs
+    annotations:
+      summary: "Kundenliste p95 > 35ms (mode={{ $labels.mode }})"
+      description: "Die p95 Latency für GET /api/customers liegt seit 10 Minuten über 35ms. Aktuell: {{ $value | humanizeDuration }}"
+      runbook_url: "https://wiki.freshplan.de/runbook/cqrs-latency"
+
+  - alert: ApiLatencyP99ListHigh
+    expr: |
+      histogram_quantile(0.99, 
+        sum(rate(http_server_requests_seconds_bucket{uri="/api/customers",method="GET"}[5m])) 
+        by (le,mode)
+      ) > 0.060
+    for: 10m
+    labels:
+      severity: critical
+      team: backend
+      component: cqrs
+      page: true
+    annotations:
+      summary: "Kundenliste p99 > 60ms (mode={{ $labels.mode }})"
+      description: "KRITISCH: Die p99 Latency für GET /api/customers liegt seit 10 Minuten über 60ms. Sofortiger Rollback empfohlen! Aktuell: {{ $value | humanizeDuration }}"
+      runbook_url: "https://wiki.freshplan.de/runbook/cqrs-rollback"
+
+  # Error Rate Alerts
+  - alert: ApiErrorRateHigh
+    expr: |
+      sum(rate(http_server_requests_seconds_count{status=~"5.."}[5m])) 
+      / sum(rate(http_server_requests_seconds_count[5m])) > 0.001
+    for: 5m
+    labels:
+      severity: critical
+      team: backend
+      component: api
+      page: true
+    annotations:
+      summary: "API Error Rate > 0.1%"
+      description: "Die API Error Rate (5xx) liegt über 0.1%. Aktuell: {{ $value | humanizePercentage }}. Sofortige Untersuchung erforderlich!"
+      runbook_url: "https://wiki.freshplan.de/runbook/api-errors"
+
+  # CQRS vs Legacy Performance Vergleich
+  - alert: CqrsSlowerThanLegacy
+    expr: |
+      (
+        histogram_quantile(0.95, 
+          sum(rate(http_server_requests_seconds_bucket{mode="cqrs"}[5m])) 
+          by (le,uri)
+        ) 
+        / 
+        histogram_quantile(0.95, 
+          sum(rate(http_server_requests_seconds_bucket{mode="legacy"}[5m])) 
+          by (le,uri)
+        )
+      ) > 1.2
+    for: 15m
+    labels:
+      severity: warning
+      team: backend
+      component: cqrs
+    annotations:
+      summary: "CQRS ist >20% langsamer als Legacy ({{ $labels.uri }})"
+      description: "CQRS Mode ist mehr als 20% langsamer als Legacy für {{ $labels.uri }}. Ratio: {{ $value | humanizePercentage }}"
+      runbook_url: "https://wiki.freshplan.de/runbook/cqrs-performance"
+
+  # Database Performance
+  - alert: DatabaseSlowQueries
+    expr: |
+      rate(pg_stat_statements_mean_exec_time[5m]) > 100
+    for: 10m
+    labels:
+      severity: warning
+      team: backend
+      component: database
+    annotations:
+      summary: "Datenbank Slow Queries > 100ms"
+      description: "Die durchschnittliche Query-Zeit liegt über 100ms. Prüfe pg_stat_statements für Details."
+      runbook_url: "https://wiki.freshplan.de/runbook/db-performance"
+
+  # Memory & Resource Alerts
+  - alert: JvmMemoryHigh
+    expr: |
+      jvm_memory_used_bytes{area="heap"} 
+      / jvm_memory_max_bytes{area="heap"} > 0.8
+    for: 10m
+    labels:
+      severity: warning
+      team: backend
+      component: jvm
+    annotations:
+      summary: "JVM Heap Usage > 80%"
+      description: "JVM Heap Memory Nutzung liegt bei {{ $value | humanizePercentage }}. GC-Analyse empfohlen."
+      runbook_url: "https://wiki.freshplan.de/runbook/jvm-memory"
+
+  # Shadow Mode Diskrepanzen
+  - alert: ShadowModeDifferencesHigh
+    expr: |
+      rate(shadow_mode_differences_total[5m]) > 0.01
+    for: 30m
+    labels:
+      severity: warning
+      team: backend
+      component: cqrs
+    annotations:
+      summary: "Shadow Mode zeigt Diskrepanzen > 1%"
+      description: "Shadow Mode Vergleiche zeigen Unterschiede zwischen Legacy und CQRS bei {{ $value | humanizePercentage }} der Requests."
+      runbook_url: "https://wiki.freshplan.de/runbook/shadow-mode"
+
+  # Feature Flag Status Monitoring
+  - alert: FeatureFlagInconsistent
+    expr: |
+      count(count by (features_cqrs_enabled) (features_cqrs_enabled)) > 1
+    for: 5m
+    labels:
+      severity: warning
+      team: backend
+      component: config
+    annotations:
+      summary: "Feature Flag Status inkonsistent zwischen Instanzen"
+      description: "Nicht alle Instanzen haben den gleichen Feature Flag Status. Prüfe die Konfiguration!"
+      runbook_url: "https://wiki.freshplan.de/runbook/feature-flags"

@@ -77,20 +77,8 @@ CREATE POLICY audit_trail_no_delete ON audit_trail
     FOR DELETE
     USING (false);
 
--- Function to automatically set timestamp
-CREATE OR REPLACE FUNCTION audit_trail_set_timestamp()
-RETURNS TRIGGER AS $$
-BEGIN
-    NEW.timestamp = CURRENT_TIMESTAMP;
-    RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
--- Trigger to enforce timestamp
-CREATE TRIGGER audit_trail_timestamp_trigger
-    BEFORE INSERT ON audit_trail
-    FOR EACH ROW
-    EXECUTE FUNCTION audit_trail_set_timestamp();
+-- Timestamp is handled by DEFAULT constraint, no trigger needed
+-- This avoids issues with triggers on partitioned tables
 
 -- Partitioning setup for scalability (monthly partitions)
 -- Note: Actual partitions should be created by a maintenance job

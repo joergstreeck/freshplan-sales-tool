@@ -4,7 +4,9 @@ import de.freshplan.domain.customer.constants.CustomerConstants;
 import de.freshplan.domain.customer.entity.CustomerStatus;
 import de.freshplan.domain.customer.entity.Industry;
 import de.freshplan.domain.customer.service.CustomerService;
+import de.freshplan.domain.customer.service.command.CustomerCommandService;
 import de.freshplan.domain.customer.service.dto.*;
+import de.freshplan.domain.customer.service.query.CustomerQueryService;
 import de.freshplan.infrastructure.security.CurrentUser;
 import de.freshplan.infrastructure.security.SecurityAudit;
 import de.freshplan.infrastructure.security.SecurityContextProvider;
@@ -19,6 +21,9 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.util.List;
 import java.util.UUID;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * REST API for Customer Management. Provides comprehensive CRUD operations, search, analytics, and
@@ -26,6 +31,9 @@ import java.util.UUID;
  *
  * <p>All endpoints follow RESTful conventions and return consistent JSON responses. Authentication
  * and authorization are handled at the application level.
+ *
+ * <p>This resource acts as a Facade and can switch between legacy CustomerService and the new CQRS
+ * services (CustomerCommandService/CustomerQueryService) via feature flag.
  *
  * @author FreshPlan Team
  * @since 2.0.0
@@ -37,7 +45,19 @@ import java.util.UUID;
 @SecurityAudit
 public class CustomerResource {
 
-  @Inject CustomerService customerService;
+  private static final Logger log = LoggerFactory.getLogger(CustomerResource.class);
+
+  @ConfigProperty(name = "features.cqrs.enabled", defaultValue = "false")
+  boolean cqrsEnabled;
+
+  @ConfigProperty(name = "features.cqrs.customers.list.enabled", defaultValue = "false")
+  boolean customersListCqrsEnabled;
+
+  @Inject CustomerService customerService; // Legacy service
+
+  @Inject CustomerCommandService commandService; // New CQRS command service
+
+  @Inject CustomerQueryService queryService; // New CQRS query service
 
   @Inject SecurityContextProvider securityContext;
 
@@ -57,7 +77,14 @@ public class CustomerResource {
     // Additional security: verify role programmatically for audit
     securityContext.requireAnyRole("admin", "manager");
 
-    CustomerResponse customer = customerService.createCustomer(request, currentUser.getUsername());
+    CustomerResponse customer;
+    if (cqrsEnabled) {
+      log.debug("Using CQRS CommandService for createCustomer");
+      customer = commandService.createCustomer(request, currentUser.getUsername());
+    } else {
+      log.debug("Using legacy CustomerService for createCustomer");
+      customer = customerService.createCustomer(request, currentUser.getUsername());
+    }
 
     return Response.status(Response.Status.CREATED).entity(customer).build();
   }
@@ -71,7 +98,14 @@ public class CustomerResource {
   @GET
   @Path("/{id}")
   public Response getCustomer(@PathParam("id") UUID id) {
-    CustomerResponse customer = customerService.getCustomer(id);
+    CustomerResponse customer;
+    if (cqrsEnabled) {
+      log.debug("Using CQRS QueryService for getCustomer");
+      customer = queryService.getCustomer(id);
+    } else {
+      log.debug("Using legacy CustomerService for getCustomer");
+      customer = customerService.getCustomer(id);
+    }
     return Response.ok(customer).build();
   }
 
@@ -88,8 +122,14 @@ public class CustomerResource {
   public Response updateCustomer(@PathParam("id") UUID id, @Valid UpdateCustomerRequest request) {
     securityContext.requireAnyRole("admin", "manager");
 
-    CustomerResponse customer =
-        customerService.updateCustomer(id, request, currentUser.getUsername());
+    CustomerResponse customer;
+    if (cqrsEnabled) {
+      log.debug("Using CQRS CommandService for updateCustomer");
+      customer = commandService.updateCustomer(id, request, currentUser.getUsername());
+    } else {
+      log.debug("Using legacy CustomerService for updateCustomer");
+      customer = customerService.updateCustomer(id, request, currentUser.getUsername());
+    }
     return Response.ok(customer).build();
   }
 
@@ -108,7 +148,13 @@ public class CustomerResource {
       @QueryParam("reason") @DefaultValue("No reason provided") String reason) {
     securityContext.requireRole("admin");
 
-    customerService.deleteCustomer(id, currentUser.getUsername(), reason);
+    if (cqrsEnabled) {
+      log.debug("Using CQRS CommandService for deleteCustomer");
+      commandService.deleteCustomer(id, currentUser.getUsername(), reason);
+    } else {
+      log.debug("Using legacy CustomerService for deleteCustomer");
+      customerService.deleteCustomer(id, currentUser.getUsername(), reason);
+    }
     return Response.noContent().build();
   }
 
@@ -121,7 +167,14 @@ public class CustomerResource {
   @PUT
   @Path("/{id}/restore")
   public Response restoreCustomer(@PathParam("id") UUID id) {
-    CustomerResponse customer = customerService.restoreCustomer(id, currentUser.getUsername());
+    CustomerResponse customer;
+    if (cqrsEnabled) {
+      log.debug("Using CQRS CommandService for restoreCustomer");
+      customer = commandService.restoreCustomer(id, currentUser.getUsername());
+    } else {
+      log.debug("Using legacy CustomerService for restoreCustomer");
+      customer = customerService.restoreCustomer(id, currentUser.getUsername());
+    }
     return Response.ok(customer).build();
   }
 
@@ -149,12 +202,31 @@ public class CustomerResource {
 
     CustomerListResponse customers;
 
-    if (status != null) {
-      customers = customerService.getCustomersByStatus(status, page, size);
-    } else if (industry != null) {
-      customers = customerService.getCustomersByIndustry(industry, page, size);
+    // Check if CQRS is enabled AND if list operations should use CQRS
+    // This allows fine-grained control over performance-critical endpoints
+    boolean useCqrsForList = cqrsEnabled && customersListCqrsEnabled;
+
+    if (useCqrsForList) {
+      log.debug("Using CQRS QueryService for getAllCustomers (both flags enabled)");
+      if (status != null) {
+        customers = queryService.getCustomersByStatus(status, page, size);
+      } else if (industry != null) {
+        customers = queryService.getCustomersByIndustry(industry, page, size);
+      } else {
+        customers = queryService.getAllCustomers(page, size);
+      }
     } else {
-      customers = customerService.getAllCustomers(page, size);
+      log.debug(
+          "Using legacy CustomerService for getAllCustomers (cqrs={}, list={})",
+          cqrsEnabled,
+          customersListCqrsEnabled);
+      if (status != null) {
+        customers = customerService.getCustomersByStatus(status, page, size);
+      } else if (industry != null) {
+        customers = customerService.getCustomersByIndustry(industry, page, size);
+      } else {
+        customers = customerService.getAllCustomers(page, size);
+      }
     }
 
     return Response.ok(customers).build();
@@ -173,7 +245,14 @@ public class CustomerResource {
   @GET
   @Path("/dashboard")
   public Response getDashboardData() {
-    CustomerDashboardResponse dashboard = customerService.getDashboardData();
+    CustomerDashboardResponse dashboard;
+    if (cqrsEnabled) {
+      log.debug("Using CQRS QueryService for getDashboardData");
+      dashboard = queryService.getDashboardData();
+    } else {
+      log.debug("Using legacy CustomerService for getDashboardData");
+      dashboard = customerService.getDashboardData();
+    }
     return Response.ok(dashboard).build();
   }
 
@@ -202,7 +281,14 @@ public class CustomerResource {
       minRiskScore = CustomerConstants.DEFAULT_RISK_THRESHOLD;
     }
 
-    CustomerListResponse customers = customerService.getCustomersAtRisk(minRiskScore, page, size);
+    CustomerListResponse customers;
+    if (cqrsEnabled) {
+      log.debug("Using CQRS QueryService for getCustomersAtRisk");
+      customers = queryService.getCustomersAtRisk(minRiskScore, page, size);
+    } else {
+      log.debug("Using legacy CustomerService for getCustomersAtRisk");
+      customers = customerService.getCustomersAtRisk(minRiskScore, page, size);
+    }
     return Response.ok(customers).build();
   }
 
@@ -217,7 +303,14 @@ public class CustomerResource {
   @GET
   @Path("/{id}/hierarchy")
   public Response getCustomerHierarchy(@PathParam("id") UUID id) {
-    CustomerResponse hierarchy = customerService.getCustomerHierarchy(id);
+    CustomerResponse hierarchy;
+    if (cqrsEnabled) {
+      log.debug("Using CQRS QueryService for getCustomerHierarchy");
+      hierarchy = queryService.getCustomerHierarchy(id);
+    } else {
+      log.debug("Using legacy CustomerService for getCustomerHierarchy");
+      hierarchy = customerService.getCustomerHierarchy(id);
+    }
     return Response.ok(hierarchy).build();
   }
 
@@ -232,8 +325,16 @@ public class CustomerResource {
   @Path("/{parentId}/children")
   public Response addChildCustomer(
       @PathParam("parentId") UUID parentId, AddChildCustomerRequest request) {
-    CustomerResponse child =
-        customerService.addChildCustomer(parentId, request.childId(), currentUser.getUsername());
+    CustomerResponse child;
+    if (cqrsEnabled) {
+      log.debug("Using CQRS CommandService for addChildCustomer");
+      child =
+          commandService.addChildCustomer(parentId, request.childId(), currentUser.getUsername());
+    } else {
+      log.debug("Using legacy CustomerService for addChildCustomer");
+      child =
+          customerService.addChildCustomer(parentId, request.childId(), currentUser.getUsername());
+    }
     return Response.ok(child).build();
   }
 
@@ -248,7 +349,14 @@ public class CustomerResource {
   @POST
   @Path("/check-duplicates")
   public Response checkDuplicates(@Valid CheckDuplicatesRequest request) {
-    List<CustomerResponse> duplicates = customerService.checkDuplicates(request.companyName());
+    List<CustomerResponse> duplicates;
+    if (cqrsEnabled) {
+      log.debug("Using CQRS QueryService for checkDuplicates");
+      duplicates = queryService.checkDuplicates(request.companyName());
+    } else {
+      log.debug("Using legacy CustomerService for checkDuplicates");
+      duplicates = customerService.checkDuplicates(request.companyName());
+    }
     return Response.ok(duplicates).build();
   }
 
@@ -263,8 +371,16 @@ public class CustomerResource {
   @Path("/{targetId}/merge")
   public Response mergeCustomers(
       @PathParam("targetId") UUID targetId, @Valid MergeCustomersRequest request) {
-    CustomerResponse customer =
-        customerService.mergeCustomers(targetId, request.sourceId(), currentUser.getUsername());
+    CustomerResponse customer;
+    if (cqrsEnabled) {
+      log.debug("Using CQRS CommandService for mergeCustomers");
+      customer =
+          commandService.mergeCustomers(targetId, request.sourceId(), currentUser.getUsername());
+    } else {
+      log.debug("Using legacy CustomerService for mergeCustomers");
+      customer =
+          customerService.mergeCustomers(targetId, request.sourceId(), currentUser.getUsername());
+    }
     return Response.ok(customer).build();
   }
 
@@ -279,8 +395,14 @@ public class CustomerResource {
   @Path("/{id}/status")
   public Response changeCustomerStatus(
       @PathParam("id") UUID id, @Valid ChangeStatusRequest request) {
-    CustomerResponse customer =
-        customerService.changeStatus(id, request.newStatus(), currentUser.getUsername());
+    CustomerResponse customer;
+    if (cqrsEnabled) {
+      log.debug("Using CQRS CommandService for changeStatus");
+      customer = commandService.changeStatus(id, request.newStatus(), currentUser.getUsername());
+    } else {
+      log.debug("Using legacy CustomerService for changeStatus");
+      customer = customerService.changeStatus(id, request.newStatus(), currentUser.getUsername());
+    }
     return Response.ok(customer).build();
   }
 }

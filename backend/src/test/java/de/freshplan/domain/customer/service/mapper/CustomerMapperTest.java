@@ -7,6 +7,7 @@ import static org.mockito.Mockito.when;
 import de.freshplan.domain.customer.entity.*;
 import de.freshplan.domain.customer.repository.CustomerRepository;
 import de.freshplan.domain.customer.service.dto.*;
+import de.freshplan.test.TestDataBuilder;
 import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.security.TestSecurity;
@@ -59,7 +60,7 @@ class CustomerMapperTest {
     // Create test customer entity
     testCustomer = new Customer();
     testCustomer.setId(UUID.randomUUID());
-    testCustomer.setCustomerNumber("KD-2025-00001");
+    testCustomer.setCustomerNumber(TestDataBuilder.uniqueCustomerNumber());
     testCustomer.setCompanyName("Test Hotel GmbH");
     testCustomer.setTradingName("Hotel Test");
     testCustomer.setLegalForm("GmbH");
@@ -86,7 +87,7 @@ class CustomerMapperTest {
     // Add some child customers
     Customer childCustomer = new Customer();
     childCustomer.setId(UUID.randomUUID());
-    childCustomer.setCustomerNumber("KD-2025-00002");
+    childCustomer.setCustomerNumber(TestDataBuilder.uniqueCustomerNumber());
     childCustomer.setCompanyName("Child Hotel");
     childCustomer.setParentCustomer(testCustomer);
     testCustomer.getChildCustomers().add(childCustomer);
@@ -219,18 +220,18 @@ class CustomerMapperTest {
       assertThat(result.paymentTerms()).isNull();
       assertThat(result.creditLimit()).isNull();
       assertThat(result.deliveryCondition()).isNull();
-      
+
       // Risk fields are included in minimal response
       assertThat(result.riskScore()).isEqualTo(testCustomer.getRiskScore());
       assertThat(result.atRisk()).isEqualTo(testCustomer.isAtRisk());
-      
+
       // lastContactDate is NOT null in minimal response - it's needed for filters
       assertThat(result.lastContactDate()).isEqualTo(testCustomer.getLastContactDate());
       assertThat(result.nextFollowUpDate()).isNull();
-      
+
       // Contact Information (added after Sprint 2)
       assertThat(result.contactsCount()).isEqualTo(0); // testCustomer has no contacts
-      
+
       assertThat(result.createdBy()).isNull();
       assertThat(result.updatedAt()).isNull();
       assertThat(result.updatedBy()).isNull();

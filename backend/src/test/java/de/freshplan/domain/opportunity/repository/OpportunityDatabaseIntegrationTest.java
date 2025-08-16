@@ -147,8 +147,8 @@ public class OpportunityDatabaseIntegrationTest {
 
   @Test
   @Transactional
-  @DisplayName("Opportunity with negative expected value should be allowed")
-  void opportunityWithNegativeValue_shouldBeAllowed() {
+  @DisplayName("Opportunity with negative expected value should NOT be allowed")
+  void opportunityWithNegativeValue_shouldNotBeAllowed() {
     // Given
     Customer testCustomer =
         createTestCustomer("CUST-NEG-" + UUID.randomUUID().toString().substring(0, 8));
@@ -164,16 +164,14 @@ public class OpportunityDatabaseIntegrationTest {
     opportunity.setCustomer(testCustomer);
     opportunity.setAssignedTo(testUser);
 
-    // When/Then - Should not throw exception
-    assertThatCode(
+    // When/Then - Should throw exception due to check constraint
+    assertThatThrownBy(
             () -> {
               opportunityRepository.persist(opportunity);
               entityManager.flush();
             })
-        .doesNotThrowAnyException();
-
-    // Verify value is persisted correctly
-    assertThat(opportunity.getExpectedValue()).isEqualTo(new BigDecimal("-2500.00"));
+        .isInstanceOf(jakarta.persistence.PersistenceException.class)
+        .hasMessageContaining("expected_value");
   }
 
   @Test

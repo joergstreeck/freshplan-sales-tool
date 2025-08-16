@@ -2,10 +2,14 @@
 
 **⚠️ KRITISCH:** Dies sind sensible Code-Änderungen. Lies ALLES bevor du handelst!
 
-## 🎯 Dein Einstiegspunkt
+---
 
-**Du bist hier:** `/docs/CODE_QUALITY_START_HERE.md`  
-**Nächstes Dokument:** [`/docs/NEXT_STEP.md`](/docs/NEXT_STEP.md)
+## 📑 Navigation (Lesereihenfolge)
+
+**Du bist hier:** Dokument 2 von 7  
+**⬅️ Zurück:** [`PR_5_CRITICAL_CONTEXT.md`](/Users/joergstreeck/freshplan-sales-tool/docs/features/Code_Verbesserung_08_25/PR_5_CRITICAL_CONTEXT.md)  
+**➡️ Weiter:** [`ENTERPRISE_CODE_REVIEW_2025.md`](/Users/joergstreeck/freshplan-sales-tool/docs/features/Code_Verbesserung_08_25/ENTERPRISE_CODE_REVIEW_2025.md)  
+**🎯 Ziel:** [`PR_5_BACKEND_SERVICES_REFACTORING.md`](/Users/joergstreeck/freshplan-sales-tool/docs/features/Code_Verbesserung_08_25/PR_5_BACKEND_SERVICES_REFACTORING.md)
 
 ---
 

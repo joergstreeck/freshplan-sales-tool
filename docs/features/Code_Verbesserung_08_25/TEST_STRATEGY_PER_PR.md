@@ -5,9 +5,12 @@
 
 ---
 
-**Navigation:**  
-⬅️ Zurück zu: [`CODE_QUALITY_PR_ROADMAP.md`](/docs/features/CODE_QUALITY_PR_ROADMAP.md) | [`ENTERPRISE_CODE_REVIEW_2025.md`](/docs/features/ENTERPRISE_CODE_REVIEW_2025.md)  
-➡️ Weiter zu: [`CODE_QUALITY_UPDATE_ANALYSIS.md`](/docs/features/CODE_QUALITY_UPDATE_ANALYSIS.md)
+## 📑 Navigation (Lesereihenfolge)
+
+**Du bist hier:** Dokument 6 von 7  
+**⬅️ Zurück:** [`PR_5_BACKEND_SERVICES_REFACTORING.md`](/Users/joergstreeck/freshplan-sales-tool/docs/features/Code_Verbesserung_08_25/PR_5_BACKEND_SERVICES_REFACTORING.md)  
+**➡️ Weiter:** [`HANDOVER_CHECKLIST.md`](/Users/joergstreeck/freshplan-sales-tool/docs/features/Code_Verbesserung_08_25/HANDOVER_CHECKLIST.md)  
+**🏠 Start:** [`README.md`](/Users/joergstreeck/freshplan-sales-tool/docs/features/Code_Verbesserung_08_25/README.md)
 
 ---
 
@@ -225,46 +228,111 @@ describe('Component Performance', () => {
 
 ---
 
-## 🔨 PR #6: Service Refactoring
+## 🔨 PR #5: Backend Service Refactoring (CQRS)
 
-### Test-Suite: Service Tests
+### Test-Suite: CQRS Service Tests
+
+#### Command Service Tests:
 ```java
-@Test
-class RefactoredServiceTests {
-  @Test void shouldMaintainBackwardsCompatibility()
-  @Test void shouldImproveQueryPerformance()
-  @Test void shouldReduceCyclomaticComplexity()
-  @Test void shouldFollowCQRSPattern()
+@QuarkusTest
+class CustomerCommandServiceTest {
+  @Test void createCustomer_shouldPublishDomainEvent()
+  @Test void updateCustomer_shouldAuditChanges()
+  @Test void deleteCustomer_shouldCheckForChildren()
+  @Test void commandsShould_beTransactional()
+  @Test void commandsShould_validateInput()
 }
 ```
 
-### Integration Tests:
+#### Query Service Tests:
+```java
+@QuarkusTest
+class CustomerQueryServiceTest {
+  @Test void searchCustomers_shouldUseOptimizedView()
+  @Test void getStatistics_shouldBeCached()
+  @Test void findById_shouldNotRequireTransaction()
+  @Test void complexQueries_shouldCompleteUnder200ms()
+}
+```
+
+#### Event Integration Tests:
 ```java
 @QuarkusIntegrationTest
-class ServiceIntegrationTests {
-  @Test void shouldHandleCommandsCorrectly()
-  @Test void shouldHandleQueriesEfficiently()
-  @Test void shouldMaintainTransactionBoundaries()
+class CQRSEventFlowTest {
+  @Test void createCommand_shouldUpdateReadModel()
+  @Test void eventOrdering_shouldBePreserved()
+  @Test void eventualConsistency_shouldWorkWithin2Seconds()
+  @Test void eventReplay_shouldRebuildProjections()
 }
 ```
 
 ### Performance Benchmarks:
 ```java
-@BenchmarkMode(Mode.AverageTime)
-@OutputTimeUnit(TimeUnit.MILLISECONDS)
-class ServiceBenchmark {
-  @Benchmark
-  public void measureQueryPerformance() { }
+@Test
+class ServicePerformanceTest {
+  @Test void queryPerformance_before_vs_after() {
+    // Baseline: 300-500ms
+    long baseline = measureOldService();
+    
+    // After CQRS: < 200ms
+    long optimized = measureQueryService();
+    
+    assertThat(optimized).isLessThan(baseline * 0.7); // 30% improvement
+  }
   
-  @Benchmark
-  public void measureCommandPerformance() { }
+  @Test void writePerformance_shouldNotDegrade() {
+    // Commands should maintain same performance
+  }
+}
+```
+
+### Audit & Event Store Tests:
+```java
+@Test
+class EventStoreTest {
+  @Test void appendEvent_shouldCalculateHashChain()
+  @Test void verifyIntegrity_shouldDetectTampering()
+  @Test void rebuildProjection_fromEventStore()
+  @Test void eventStore_shouldHandleConcurrentWrites()
 }
 ```
 
 **Metriken:**
-- All services < 250 lines
-- Test coverage > 92%
-- Query performance improvement ≥ 20%
+- Each service < 300 lines
+- Test coverage > 90% 
+- Query performance < 200ms
+- Event processing < 100ms
+- 100% backward compatibility
+
+## 🔨 PR #6: TypeScript Props & State Types
+
+### Test-Suite: Props & State Type Safety
+```typescript
+describe('Props and State Type Safety', () => {
+  it('should have typed props for all components')
+  it('should have typed state for stateful components')
+  it('should not use any for props or state')
+  it('should have proper generic types')
+});
+```
+
+### Component Type Tests:
+```typescript
+// Type-level tests
+type ComponentPropsTest = {
+  // Should compile
+  validProps: CustomerListProps;
+  
+  // Should not compile (caught at build time)
+  // @ts-expect-error
+  invalidProps: { unknownProp: string };
+};
+```
+
+**Metriken:**
+- 0 any in props/state
+- 100% typed components
+- Type coverage > 98%
 
 ---
 
@@ -369,5 +437,5 @@ npm audit
 ---
 
 **Navigation:**  
-⬅️ Zurück zu: [`CODE_QUALITY_PR_ROADMAP.md`](/docs/features/CODE_QUALITY_PR_ROADMAP.md)  
-➡️ Weiter zu: [`CODE_QUALITY_UPDATE_ANALYSIS.md`](/docs/features/CODE_QUALITY_UPDATE_ANALYSIS.md)
+⬅️ Zurück zu: [`PR_5_BACKEND_SERVICES_REFACTORING.md`](/Users/joergstreeck/freshplan-sales-tool/docs/features/Code_Verbesserung_08_25/PR_5_BACKEND_SERVICES_REFACTORING.md)  
+➡️ Weiter zu: [`HANDOVER_CHECKLIST.md`](/Users/joergstreeck/freshplan-sales-tool/docs/features/Code_Verbesserung_08_25/HANDOVER_CHECKLIST.md)
