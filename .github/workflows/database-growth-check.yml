@@ -49,23 +49,39 @@ jobs:
       run: |
         cd backend
         # Run a simple test to initialize the database
-        ./mvnw test -Dtest="DatabaseAnalysisTest#countCustomers" -q || true
+        ./mvnw test -Dtest="DatabaseAnalysisTest#countCustomers" -q \
+          -Dquarkus.datasource.devservices.enabled=false \
+          -Dquarkus.datasource.jdbc.url=jdbc:postgresql://localhost:5432/freshplan \
+          -Dquarkus.datasource.username=freshplan \
+          -Dquarkus.datasource.password=freshplan || true
         
         # Count customers before
-        CUSTOMERS_BEFORE=$(./mvnw test -Dtest="DatabaseAnalysisTest#countCustomers" -q | grep "Total Customers:" | awk '{print $3}')
+        CUSTOMERS_BEFORE=$(./mvnw test -Dtest="DatabaseAnalysisTest#countCustomers" -q \
+          -Dquarkus.datasource.devservices.enabled=false \
+          -Dquarkus.datasource.jdbc.url=jdbc:postgresql://localhost:5432/freshplan \
+          -Dquarkus.datasource.username=freshplan \
+          -Dquarkus.datasource.password=freshplan | grep "Total Customers:" | awk '{print $3}')
         echo "CUSTOMERS_BEFORE=$CUSTOMERS_BEFORE" >> $GITHUB_ENV
         echo "Customers before tests: $CUSTOMERS_BEFORE"
 
     - name: Run all tests
       run: |
         cd backend
-        ./mvnw test
+        ./mvnw test \
+          -Dquarkus.datasource.devservices.enabled=false \
+          -Dquarkus.datasource.jdbc.url=jdbc:postgresql://localhost:5432/freshplan \
+          -Dquarkus.datasource.username=freshplan \
+          -Dquarkus.datasource.password=freshplan
 
     - name: Check database growth
       run: |
         cd backend
         # Count customers after
-        CUSTOMERS_AFTER=$(./mvnw test -Dtest="DatabaseAnalysisTest#countCustomers" -q | grep "Total Customers:" | awk '{print $3}')
+        CUSTOMERS_AFTER=$(./mvnw test -Dtest="DatabaseAnalysisTest#countCustomers" -q \
+          -Dquarkus.datasource.devservices.enabled=false \
+          -Dquarkus.datasource.jdbc.url=jdbc:postgresql://localhost:5432/freshplan \
+          -Dquarkus.datasource.username=freshplan \
+          -Dquarkus.datasource.password=freshplan | grep "Total Customers:" | awk '{print $3}')
         echo "CUSTOMERS_AFTER=$CUSTOMERS_AFTER" >> $GITHUB_ENV
         echo "Customers after tests: $CUSTOMERS_AFTER"
         
