@@ -407,7 +407,7 @@ class CustomerCQRSIntegrationTest {
     var parentResponse =
         customerResource.createCustomer(
             CreateCustomerRequest.builder()
-                .companyName("Parent Company AG")
+                .companyName("[TEST] Parent Company AG " + System.currentTimeMillis())
                 .customerType(CustomerType.UNTERNEHMEN)
                 .build());
     CustomerResponse parent = (CustomerResponse) parentResponse.getEntity();
@@ -417,7 +417,7 @@ class CustomerCQRSIntegrationTest {
     var childResponse =
         customerResource.createCustomer(
             CreateCustomerRequest.builder()
-                .companyName("Child Company GmbH")
+                .companyName("[TEST] Child Company GmbH " + System.currentTimeMillis())
                 .customerType(CustomerType.UNTERNEHMEN)
                 .build());
     CustomerResponse child = (CustomerResponse) childResponse.getEntity();
@@ -502,7 +502,7 @@ class CustomerCQRSIntegrationTest {
     var sourceResponse =
         customerResource.createCustomer(
             CreateCustomerRequest.builder()
-                .companyName("Source Company" + uniqueSuffix)
+                .companyName("[TEST] Source Company" + uniqueSuffix)
                 .customerType(CustomerType.UNTERNEHMEN)
                 .industry(Industry.SONSTIGE)
                 .expectedAnnualVolume(new BigDecimal("50000"))
@@ -514,7 +514,7 @@ class CustomerCQRSIntegrationTest {
     var targetResponse =
         customerResource.createCustomer(
             CreateCustomerRequest.builder()
-                .companyName("Target Company" + uniqueSuffix)
+                .companyName("[TEST] Target Company" + uniqueSuffix)
                 .customerType(CustomerType.UNTERNEHMEN)
                 .industry(Industry.SONSTIGE)
                 .expectedAnnualVolume(new BigDecimal("75000"))
