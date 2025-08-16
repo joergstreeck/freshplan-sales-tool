@@ -72,6 +72,62 @@ jobs:
           psql -h localhost -U freshplan -d freshplan -v ON_ERROR_STOP=1 -c "DROP SCHEMA IF EXISTS public CASCADE; CREATE SCHEMA public;"
           echo "Database schema reset successfully"
       
+      - name: Bootstrap migrations with CI profile
+        working-directory: backend
+        env:
+          QUARKUS_PROFILE: ci
+        run: |
+          echo "Running migration bootstrap to ensure schema is ready..."
+          ./mvnw -q -Dtest=de.freshplan.test.MigrationBootstrapIT test \
+            -Dquarkus.devservices.enabled=false \
+            -Dquarkus.datasource.devservices.enabled=false \
+            -Dquarkus.flyway.migrate-at-start=true \
+            -Dquarkus.flyway.out-of-order=true \
+            -Dquarkus.flyway.locations=classpath:db/migration,classpath:db/testdata,classpath:db/ci-migrations \
+            -Dquarkus.datasource.jdbc.url=jdbc:postgresql://localhost:5432/freshplan \
+            -Dquarkus.datasource.username=freshplan \
+            -Dquarkus.datasource.password=freshplan
+          echo "✅ Migrations completed successfully"
+      
+      - name: Verify CI migrations applied
+        env:
+          PGPASSWORD: freshplan
+        run: |
+          echo "Checking that V9000 CI migration was applied..."
+          psql -h localhost -U freshplan -d freshplan -c \
+            "SELECT version, description, success FROM flyway_schema_history WHERE version >= '9000' ORDER BY installed_rank DESC;"
+          
+          # Verify FK actions
+          echo "Verifying FK CASCADE configuration..."
+          psql -h localhost -U freshplan -d freshplan -c \
+            "SELECT conname, conrelid::regclass AS child, 
+                    CASE confdeltype 
+                      WHEN 'c' THEN 'CASCADE' 
+                      WHEN 'n' THEN 'SET NULL' 
+                      WHEN 'a' THEN 'NO ACTION'
+                      WHEN 'r' THEN 'RESTRICT'
+                      ELSE confdeltype 
+                    END as delete_action
+             FROM pg_constraint 
+             WHERE contype='f' AND confrelid='public.customers'::regclass;"
+      
+      - name: Run FK Sanity Check first
+        working-directory: backend
+        env:
+          QUARKUS_PROFILE: ci
+        run: |
+          echo "Running FK sanity check to fail fast if CASCADE not configured..."
+          ./mvnw -q -Dtest=de.freshplan.test.CiFkSanityIT test \
+            -Dquarkus.devservices.enabled=false \
+            -Dquarkus.datasource.devservices.enabled=false \
+            -Dquarkus.flyway.migrate-at-start=true \
+            -Dquarkus.flyway.out-of-order=true \
+            -Dquarkus.flyway.locations=classpath:db/migration,classpath:db/testdata,classpath:db/ci-migrations \
+            -Dquarkus.datasource.jdbc.url=jdbc:postgresql://localhost:5432/freshplan \
+            -Dquarkus.datasource.username=freshplan \
+            -Dquarkus.datasource.password=freshplan
+          echo "✅ FK configuration verified"
+      
       - name: Run tests with CI profile
         working-directory: backend
         env:
@@ -86,6 +142,9 @@ jobs:
             -DRUN_SUFFIX=${{ github.run_id }} \
             -Dquarkus.devservices.enabled=false \
             -Dquarkus.datasource.devservices.enabled=false \
+            -Dquarkus.flyway.migrate-at-start=true \
+            -Dquarkus.flyway.out-of-order=true \
+            -Dquarkus.flyway.locations=classpath:db/migration,classpath:db/testdata,classpath:db/ci-migrations \
             -Dquarkus.datasource.jdbc.url=jdbc:postgresql://localhost:5432/freshplan \
             -Dquarkus.datasource.username=freshplan \
             -Dquarkus.datasource.password=freshplan

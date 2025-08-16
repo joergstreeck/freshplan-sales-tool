@@ -66,10 +66,28 @@ jobs:
         ./mvnw -q -Dtest=de.freshplan.test.MigrationBootstrapIT test \
           -Dquarkus.devservices.enabled=false \
           -Dquarkus.datasource.devservices.enabled=false \
+          -Dquarkus.flyway.migrate-at-start=true \
+          -Dquarkus.flyway.out-of-order=true \
+          -Dquarkus.flyway.locations=classpath:db/migration,classpath:db/testdata,classpath:db/ci-migrations \
           -Dquarkus.datasource.jdbc.url=jdbc:postgresql://localhost:5432/freshplan \
           -Dquarkus.datasource.username=freshplan \
           -Dquarkus.datasource.password=freshplan
         echo "✅ Migrations completed successfully"
+    
+    - name: Verify CI migrations applied
+      env:
+        PGPASSWORD: freshplan
+      run: |
+        echo "Checking that V9000 CI migration was applied..."
+        psql -h localhost -U freshplan -d freshplan -c \
+          "SELECT version, description FROM flyway_schema_history WHERE version >= '9000' ORDER BY installed_rank DESC LIMIT 5;"
+        
+        # Check FK configuration
+        echo "Verifying FK CASCADE configuration..."
+        FK_COUNT=$(psql -h localhost -U freshplan -d freshplan -tAc \
+          "SELECT COUNT(*) FROM pg_constraint 
+           WHERE contype='f' AND confrelid='public.customers'::regclass AND confdeltype='c'")
+        echo "Found $FK_COUNT CASCADE FKs to customers table"
     
     - name: Count customers BEFORE tests
       env:
@@ -98,6 +116,9 @@ jobs:
           -DRUN_SUFFIX=${{ github.run_id }} \
           -Dquarkus.devservices.enabled=false \
           -Dquarkus.datasource.devservices.enabled=false \
+          -Dquarkus.flyway.migrate-at-start=true \
+          -Dquarkus.flyway.out-of-order=true \
+          -Dquarkus.flyway.locations=classpath:db/migration,classpath:db/testdata,classpath:db/ci-migrations \
           -Dquarkus.datasource.jdbc.url=jdbc:postgresql://localhost:5432/freshplan \
           -Dquarkus.datasource.username=freshplan \
           -Dquarkus.datasource.password=freshplan
