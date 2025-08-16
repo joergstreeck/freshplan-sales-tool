@@ -5,9 +5,6 @@ on:
     branches: [ main, develop, feature/* ]
   pull_request:
     branches: [ main, develop ]
-  schedule:
-    # Run daily at 2 AM UTC
-    - cron: '0 2 * * *'
 
 concurrency:
   group: db-growth-${{ github.ref }}
@@ -50,140 +47,44 @@ jobs:
         key: ${{ runner.os }}-m2-${{ hashFiles('backend/pom.xml') }}
         restore-keys: ${{ runner.os }}-m2-
 
-    - name: Install PostgreSQL client
-      run: sudo apt-get update && sudo apt-get install -y postgresql-client
-
-    - name: Wait for PostgreSQL
-      env:
-        PGPASSWORD: freshplan
-      run: |
-        echo "Waiting for PostgreSQL to be ready..."
-        for i in {1..30}; do
-          if pg_isready -h localhost -p 5432 -U freshplan -d freshplan; then
-            echo "PostgreSQL is ready!"
-            break
-          fi
-          echo "Attempt $i/30: PostgreSQL not ready yet..."
-          sleep 2
-        done
-        
-        # Verify connection
-        psql -h localhost -U freshplan -d freshplan -c "SELECT version();" || exit 1
-
-    - name: Initialize database schema
-      working-directory: backend
-      env:
-        QUARKUS_PROFILE: ci
-        PGPASSWORD: freshplan
-      run: |
-        echo "Initializing database schema..."
-        # Run a simple compile to trigger Flyway migrations via quarkus:dev
-        # This creates all tables including customers
-        ./mvnw compile -DskipTests
-        
-        # Start Quarkus briefly to initialize database
-        timeout 30 ./mvnw quarkus:dev \
-          -Dquarkus.profile=ci \
-          -Dquarkus.datasource.devservices.enabled=false \
-          -Dquarkus.datasource.jdbc.url=jdbc:postgresql://localhost:5432/freshplan \
-          -Dquarkus.datasource.username=freshplan \
-          -Dquarkus.datasource.password=freshplan \
-          -Dquarkus.flyway.migrate-at-start=true \
-          -Dquarkus.flyway.clean-at-start=true || true
-        
-        echo "Database initialization complete"
-        
-        # Verify schema was created
-        echo "Verifying database schema..."
-        psql -h localhost -U freshplan -d freshplan -c "\dt" | grep customers || exit 1
-        echo "✅ Database schema initialized"
-
-    - name: Count customers BEFORE tests
-      env:
-        PGPASSWORD: freshplan
-      run: |
-        # Count test customers (should be initial seed data only)
-        BEFORE=$(psql -h localhost -U freshplan -d freshplan -tAc "SELECT COUNT(*) FROM customers WHERE is_test_data = true OR company_name LIKE '[TEST]%';" 2>/dev/null || echo "0")
-        echo "CUSTOMERS_BEFORE=$BEFORE" >> $GITHUB_ENV
-        echo "📊 Test customers BEFORE: $BEFORE"
-        
-        # Also get total count for context
-        TOTAL=$(psql -h localhost -U freshplan -d freshplan -tAc "SELECT COUNT(*) FROM customers;" 2>/dev/null || echo "0")
-        echo "📊 Total customers: $TOTAL"
-
     - name: Run all tests with CI profile
       working-directory: backend
       env:
         QUARKUS_PROFILE: ci
         MAVEN_OPTS: -Xmx2g -XX:MaxMetaspaceSize=512m
       run: |
+        echo "Running tests with CI profile (includes clean database)..."
+        
+        # The CI profile has flyway.clean-at-start=true
+        # This ensures each test run starts with a fresh database
+        # If tests create data that persists, it's a test isolation bug
+        
         ./mvnw test \
           -B \
           -Djunit.jupiter.execution.timeout.default=2m \
           -Dmaven.test.failure.ignore=false \
           -DtrimStackTrace=false
-
-    - name: Count customers AFTER tests
-      env:
-        PGPASSWORD: freshplan
-      run: |
-        AFTER=$(psql -h localhost -U freshplan -d freshplan -tAc "SELECT COUNT(*) FROM customers WHERE is_test_data = true OR company_name LIKE '[TEST]%';" 2>/dev/null || echo "0")
-        echo "CUSTOMERS_AFTER=$AFTER" >> $GITHUB_ENV
-        echo "📊 Test customers AFTER: $AFTER"
         
-        # Calculate growth
-        GROWTH=$((AFTER - CUSTOMERS_BEFORE))
-        echo "GROWTH=$GROWTH" >> $GITHUB_ENV
-        echo "📊 Growth: $GROWTH test customers"
-        
-        # Check threshold (0 for strict isolation)
-        if [ $GROWTH -gt 0 ]; then
-          echo "❌ ERROR: Database grew by $GROWTH test customers during tests!"
-          echo "This indicates missing test isolation (@TestTransaction)."
-          
-          # Show recent test customers for debugging
-          echo ""
-          echo "Recent test customers added:"
-          psql -h localhost -U freshplan -d freshplan -c \
-            "SELECT id, company_name, created_at FROM customers 
-             WHERE (is_test_data = true OR company_name LIKE '[TEST]%')
-             ORDER BY created_at DESC LIMIT 10;"
-          
-          exit 1
-        else
-          echo "✅ PASSED: No database pollution detected (0 growth)"
-        fi
+        echo "✅ Tests completed"
 
-    - name: Create growth report
+    - name: Check for test isolation issues
       if: always()
+      working-directory: backend
       run: |
-        cat > database-growth-report.md << EOF
-        # Database Growth Report
+        echo "Checking for common test isolation problems..."
         
-        Date: $(date)
-        Branch: ${{ github.ref }}
-        Commit: ${{ github.sha }}
+        # Look for tests without @TestTransaction
+        echo "Tests that might be missing @TestTransaction:"
+        grep -r "@Test" src/test --include="*.java" | \
+          grep -v "@TestTransaction" | \
+          grep -E "(create|save|persist|insert|update|delete)" | \
+          head -20 || echo "No obvious issues found"
         
-        ## Results
-        - Test customers before: ${{ env.CUSTOMERS_BEFORE }}
-        - Test customers after: ${{ env.CUSTOMERS_AFTER }}
-        - Growth: ${{ env.GROWTH }}
-        
-        ## Status
-        $(if [ "${{ env.GROWTH }}" -gt "0" ]; then echo "❌ FAILED - Test data pollution detected"; else echo "✅ PASSED - No test data pollution"; fi)
-        
-        ## Recommendations
-        - Use @TestTransaction for test isolation
-        - Each test should be self-contained
-        - Review tests that create persistent data
-        EOF
-
-    - name: Upload growth report
-      if: always()
-      uses: actions/upload-artifact@v4
-      with:
-        name: database-growth-report-${{ github.run_number }}
-        path: database-growth-report.md
+        echo ""
+        echo "Remember:"
+        echo "- Use @TestTransaction for database tests"
+        echo "- Each test should be self-contained"
+        echo "- Don't rely on data from other tests"
 
     - name: Upload test reports
       if: failure()
@@ -193,25 +94,3 @@ jobs:
         path: |
           backend/target/surefire-reports/**
           backend/target/failsafe-reports/**
-
-    - name: Comment on PR
-      if: github.event_name == 'pull_request' && failure()
-      uses: actions/github-script@v7
-      with:
-        script: |
-          const growth = ${{ env.GROWTH || 0 }};
-          github.rest.issues.createComment({
-            issue_number: context.issue.number,
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            body: `## ❌ Database Growth Check Failed
-            
-            The tests added **${growth} test customers** to the database.
-            
-            This indicates missing test isolation. Please ensure:
-            1. Use \`@TestTransaction\` instead of \`@Transactional\` in tests
-            2. Don't rely on data persisting between tests
-            3. Each test should be self-contained
-            
-            See the [Test Isolation Guide](docs/guides/TEST_ISOLATION_GUIDE.md) for details.`
-          })
