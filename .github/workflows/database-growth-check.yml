@@ -77,12 +77,12 @@ jobs:
         PGPASSWORD: freshplan
       run: |
         echo "Initializing database schema..."
-        # Run a simple test to trigger Flyway migrations via Quarkus
-        ./mvnw -q test -Dtest="DatabaseAnalysisTest#countCustomers" || true
+        # Note: CI profile now does clean-at-start=true, so DB starts fresh
+        # This ensures consistent test conditions
         
-        # Verify schema was created
-        echo "Verifying database schema..."
-        psql -h localhost -U freshplan -d freshplan -c "\dt" | head -20
+        # Verify empty database before tests
+        echo "Verifying fresh database..."
+        psql -h localhost -U freshplan -d freshplan -c "\dt" 2>/dev/null || echo "No tables yet - expected"
 
     - name: Count customers BEFORE tests
       env:
