@@ -112,12 +112,10 @@ public final class TestFixtures {
 
     public OpportunityBuilder() {
       // Set sensible defaults with positive values
-      opportunity.setTitle("Test Opportunity " + UUID.randomUUID().toString().substring(0, 8));
+      opportunity.setName("Test Opportunity " + UUID.randomUUID().toString().substring(0, 8));
       opportunity.setStage(OpportunityStage.QUALIFICATION);
       opportunity.setExpectedValue(BigDecimal.valueOf(2500 + Math.random() * 10000));
       opportunity.setProbability(50);
-      opportunity.setCreatedAt(LocalDateTime.now());
-      opportunity.setUpdatedAt(LocalDateTime.now());
     }
 
     public OpportunityBuilder withCustomer(Customer customer) {
@@ -125,8 +123,8 @@ public final class TestFixtures {
       return this;
     }
 
-    public OpportunityBuilder withTitle(String title) {
-      opportunity.setTitle(title);
+    public OpportunityBuilder withName(String name) {
+      opportunity.setName(name);
       return this;
     }
 
