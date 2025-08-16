@@ -39,7 +39,8 @@ public class OpportunityMapperTest {
     // Create test customer
     testCustomer = new Customer();
     testCustomer.setId(UUID.randomUUID());
-    testCustomer.setCompanyName("Test Company Ltd.");
+    testCustomer.setCompanyName("[TEST] Test Company Ltd.");
+    testCustomer.setIsTestData(true);  // Mark as test data
 
     // Create test user (using proper constructor)
     testUser = new User("testuser", "Test", "User", "test@example.com");

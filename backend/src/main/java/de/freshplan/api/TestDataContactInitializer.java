@@ -649,15 +649,20 @@ public class TestDataContactInitializer {
       Industry industry,
       int employees,
       int locations) {
-    Customer customer = customerRepository.find("companyName", name).firstResult();
+    // Search for customer with or without [TEST] prefix
+    Customer customer = customerRepository.find("companyName", "[TEST] " + name).firstResult();
+    if (customer == null) {
+      customer = customerRepository.find("companyName", name).firstResult();
+    }
 
     if (customer == null) {
       customer = new Customer();
       customer.setCustomerNumber(testId);
-      customer.setCompanyName(name);
+      customer.setCompanyName("[TEST] " + name);  // Add [TEST] prefix
       customer.setCustomerType(type);
       customer.setIndustry(industry);
       customer.setStatus(CustomerStatus.AKTIV);
+      customer.setIsTestData(true);  // Mark as test data
       customer.setCreatedBy(TEST_USER);
       customer.setUpdatedBy(TEST_USER);
 

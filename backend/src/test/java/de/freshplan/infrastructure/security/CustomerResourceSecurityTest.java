@@ -420,14 +420,14 @@ class CustomerResourceSecurityTest {
   // Helper methods
   private CreateCustomerRequest createValidCustomerRequest() {
     return CreateCustomerRequest.builder()
-        .companyName("Test Company Security " + UUID.randomUUID().toString().substring(0, 8))
+        .companyName("[TEST] Test Company Security " + UUID.randomUUID().toString().substring(0, 8))
         .customerType(de.freshplan.domain.customer.entity.CustomerType.NEUKUNDE)
         .build();
   }
 
   private UpdateCustomerRequest createValidUpdateRequest() {
     return UpdateCustomerRequest.builder()
-        .companyName("Updated Test Company " + UUID.randomUUID().toString().substring(0, 8))
+        .companyName("[TEST] Updated Test Company " + UUID.randomUUID().toString().substring(0, 8))
         .build();
   }
 

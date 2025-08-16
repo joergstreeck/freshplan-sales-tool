@@ -215,7 +215,7 @@ public class OpportunityDatabaseIntegrationTest {
   /** Helper method to create a test customer with unique customer number */
   private Customer createTestCustomer(String customerNumber) {
     Customer customer = new Customer();
-    customer.setCompanyName("Test Company " + customerNumber);
+    customer.setCompanyName("[TEST] Test Company " + customerNumber);
     customer.setCustomerNumber(customerNumber);
     customer.setIsTestData(true);
     customer.setIsDeleted(false);

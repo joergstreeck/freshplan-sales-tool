@@ -19,7 +19,8 @@ public class OpportunityTestHelper {
     // Create new customer using repository
     customer = new Customer();
     customer.setCustomerNumber("TEST-" + System.currentTimeMillis());
-    customer.setCompanyName("Test Company GmbH");
+    customer.setCompanyName("[TEST] Test Company GmbH");
+    customer.setIsTestData(true);  // Mark as test data
     // Set only the fields that exist in Customer entity
     // Street, postal code etc. might be in a separate address entity
 

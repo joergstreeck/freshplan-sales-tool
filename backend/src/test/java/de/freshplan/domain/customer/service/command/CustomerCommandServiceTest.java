@@ -58,7 +58,7 @@ class CustomerCommandServiceTest {
 
   private CreateCustomerRequest createValidRequest() {
     return CreateCustomerRequest.builder()
-        .companyName("Test Company GmbH")
+        .companyName("[TEST] Test Company GmbH")
         .customerType(CustomerType.NEUKUNDE)
         .industry(Industry.SONSTIGE)
         .expectedAnnualVolume(BigDecimal.ZERO)

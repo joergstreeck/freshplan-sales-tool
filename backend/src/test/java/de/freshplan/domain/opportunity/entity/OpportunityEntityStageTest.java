@@ -37,7 +37,8 @@ public class OpportunityEntityStageTest {
     // Create test customer
     testCustomer = new Customer();
     testCustomer.setId(UUID.randomUUID());
-    testCustomer.setCompanyName("Test Company");
+    testCustomer.setCompanyName("[TEST] Test Company");
+    testCustomer.setIsTestData(true);  // Mark as test data
 
     // Create test user
     testUser = new User("testuser", "Test", "User", "test@example.com");

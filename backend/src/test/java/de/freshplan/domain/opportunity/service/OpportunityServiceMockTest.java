@@ -74,8 +74,9 @@ public class OpportunityServiceMockTest {
     // Create test customer
     testCustomer = new Customer();
     testCustomer.setId(customerId);
-    testCustomer.setCompanyName("Test Company GmbH");
+    testCustomer.setCompanyName("[TEST] Test Company GmbH");
     testCustomer.setCustomerNumber("TEST-001");
+    testCustomer.setIsTestData(true);  // Mark as test data
 
     // Create test user (mocked)
     testUser = mock(User.class);
