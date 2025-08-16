@@ -68,11 +68,12 @@ class ContactInteractionResourceIT {
 
     // Create test customer with all required fields
     Customer testCustomer = new Customer();
-    testCustomer.setCompanyName("Test Company GmbH");
+    testCustomer.setCompanyName("[TEST] Test Company GmbH");
     testCustomer.setCustomerNumber("CUST-" + UUID.randomUUID().toString().substring(0, 8));
     testCustomer.setPartnerStatus(PartnerStatus.KEIN_PARTNER);
     testCustomer.setPaymentTerms(PaymentTerms.NETTO_30);
     testCustomer.setStatus(CustomerStatus.LEAD);
+    testCustomer.setIsTestData(true);  // Mark as test data
     testCustomer.setCreatedBy("system");
     // Sprint 2 fields
     testCustomer.setPrimaryFinancing(FinancingType.PRIVATE);

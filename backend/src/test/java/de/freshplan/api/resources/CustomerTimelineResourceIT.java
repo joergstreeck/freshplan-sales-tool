@@ -46,10 +46,11 @@ class CustomerTimelineResourceIT {
   UUID createTestCustomerInTransaction() {
     Customer customer = new Customer();
     customer.setCustomerNumber("IT-TEST-001");
-    customer.setCompanyName("Integration Test Company");
+    customer.setCompanyName("[TEST] Integration Test Company");
     customer.setStatus(CustomerStatus.AKTIV);
     customer.setCustomerType(CustomerType.UNTERNEHMEN);
     customer.setIndustry(Industry.SONSTIGE);
+    customer.setIsTestData(true);  // Mark as test data
     customer.setCreatedAt(LocalDateTime.now());
     customer.setCreatedBy("test");
     customerRepository.persist(customer);

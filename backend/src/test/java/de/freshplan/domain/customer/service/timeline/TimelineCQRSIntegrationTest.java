@@ -66,11 +66,12 @@ class TimelineCQRSIntegrationTest {
     // Create a test customer for timeline events
     testCustomer = new Customer();
     testCustomer.setCustomerNumber("KD" + uniqueSuffix.substring(7, 13));
-    testCustomer.setCompanyName("Timeline Test Company " + uniqueSuffix);
+    testCustomer.setCompanyName("[TEST] Timeline Test Company " + uniqueSuffix);
     testCustomer.setCustomerType(CustomerType.UNTERNEHMEN);
     testCustomer.setStatus(CustomerStatus.AKTIV);
     testCustomer.setIndustry(Industry.HOTEL);
     testCustomer.setExpectedAnnualVolume(new BigDecimal("100000"));
+    testCustomer.setIsTestData(true);  // Mark as test data
     testCustomer.setCreatedBy("testuser");
     testCustomer.setCreatedAt(LocalDateTime.now());
 

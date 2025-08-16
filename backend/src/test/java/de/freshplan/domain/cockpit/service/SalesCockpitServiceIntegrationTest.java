@@ -168,7 +168,8 @@ class SalesCockpitServiceIntegrationTest {
     // Aktiver Kunde mit kürzlichem Kontakt
     Customer activeCustomer1 = new Customer();
     activeCustomer1.setCustomerNumber("C001_" + suffix);
-    activeCustomer1.setCompanyName("Aktiv GmbH");
+    activeCustomer1.setCompanyName("[TEST] Aktiv GmbH");
+    activeCustomer1.setIsTestData(true);
     activeCustomer1.setCustomerType(CustomerType.UNTERNEHMEN);
     activeCustomer1.setStatus(CustomerStatus.AKTIV);
     activeCustomer1.setLastContactDate(LocalDateTime.now().minusDays(5));
@@ -178,7 +179,8 @@ class SalesCockpitServiceIntegrationTest {
     // Aktiver Kunde ohne kürzlichen Kontakt (mittleres Risiko)
     Customer activeCustomer2 = new Customer();
     activeCustomer2.setCustomerNumber("C002_" + suffix);
-    activeCustomer2.setCompanyName("Mittel Risiko AG");
+    activeCustomer2.setCompanyName("[TEST] Mittel Risiko AG");
+    activeCustomer2.setIsTestData(true);
     activeCustomer2.setCustomerType(CustomerType.UNTERNEHMEN);
     activeCustomer2.setStatus(CustomerStatus.AKTIV);
     activeCustomer2.setLastContactDate(LocalDateTime.now().minusDays(100));
@@ -188,7 +190,8 @@ class SalesCockpitServiceIntegrationTest {
     // Aktiver Kunde mit sehr langem Kontaktausfall (hohes Risiko)
     Customer highRiskCustomer = new Customer();
     highRiskCustomer.setCustomerNumber("C003_" + suffix);
-    highRiskCustomer.setCompanyName("Lange Nicht Kontaktiert GmbH");
+    highRiskCustomer.setCompanyName("[TEST] Lange Nicht Kontaktiert GmbH");
+    highRiskCustomer.setIsTestData(true);
     highRiskCustomer.setCustomerType(CustomerType.UNTERNEHMEN);
     highRiskCustomer.setStatus(CustomerStatus.AKTIV);
     highRiskCustomer.setLastContactDate(LocalDateTime.now().minusDays(150));
@@ -198,7 +201,8 @@ class SalesCockpitServiceIntegrationTest {
     // Kunde der noch nie kontaktiert wurde
     Customer neverContactedCustomer = new Customer();
     neverContactedCustomer.setCustomerNumber("C004_" + suffix);
-    neverContactedCustomer.setCompanyName("Nie Kontaktiert AG");
+    neverContactedCustomer.setCompanyName("[TEST] Nie Kontaktiert AG");
+    neverContactedCustomer.setIsTestData(true);
     neverContactedCustomer.setCustomerType(CustomerType.UNTERNEHMEN);
     neverContactedCustomer.setStatus(CustomerStatus.AKTIV);
     neverContactedCustomer.setLastContactDate(null);
@@ -208,7 +212,8 @@ class SalesCockpitServiceIntegrationTest {
     // Inaktiver Kunde (sollte nicht in Risiko-Liste erscheinen)
     Customer inactiveCustomer = new Customer();
     inactiveCustomer.setCustomerNumber("C005_" + suffix);
-    inactiveCustomer.setCompanyName("Inaktiv GmbH");
+    inactiveCustomer.setCompanyName("[TEST] Inaktiv GmbH");
+    inactiveCustomer.setIsTestData(true);
     inactiveCustomer.setCustomerType(CustomerType.UNTERNEHMEN);
     inactiveCustomer.setStatus(CustomerStatus.INAKTIV);
     inactiveCustomer.setLastContactDate(LocalDateTime.now().minusDays(200));

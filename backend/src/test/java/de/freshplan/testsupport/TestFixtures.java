@@ -39,7 +39,7 @@ public final class TestFixtures {
       // Set sensible defaults
       customer.setCustomerNumber(UniqueData.customerNumber("TEST", 
           (int)(Math.random() * 1000)));
-      customer.setCompanyName("Test Company " + UUID.randomUUID().toString().substring(0, 8));
+      customer.setCompanyName("[TEST] Test Company " + UUID.randomUUID().toString().substring(0, 8));
       customer.setLegalForm("GmbH");
       customer.setStatus(CustomerStatus.AKTIV);
       customer.setIndustry(Industry.HOTEL);
