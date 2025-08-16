@@ -61,8 +61,8 @@ jobs:
       env:
         PGPASSWORD: freshplan
       run: |
-        # Initialize schema first
-        cd backend && ./mvnw flyway:migrate -Dquarkus.profile=ci -q
+        # Initialize schema first with Quarkus (includes Flyway)
+        cd backend && ./mvnw compile -Dquarkus.profile=ci -DskipTests -q
         BEFORE=$(psql -h localhost -U freshplan -d freshplan -tAc "SELECT COUNT(*) FROM customers;" 2>/dev/null || echo "0")
         echo "CUSTOMERS_BEFORE=$BEFORE" >> $GITHUB_ENV
         echo "Customers before tests: $BEFORE"
