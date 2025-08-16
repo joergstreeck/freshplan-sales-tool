@@ -3,6 +3,7 @@ package de.freshplan.test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import de.freshplan.domain.customer.repository.CustomerRepository;
+import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import org.jboss.logging.Logger;
@@ -10,6 +11,7 @@ import org.junit.jupiter.api.Test;
 
 /** Verifiziert, dass die Test-Kunden korrekt erstellt wurden. */
 @QuarkusTest
+@TestTransaction  // CI-Fix: Rollback nach Test für Database Growth Check
 public class TestCustomerVerificationTest {
 
   private static final Logger LOG = Logger.getLogger(TestCustomerVerificationTest.class);

@@ -1,6 +1,7 @@
 package de.freshplan.test;
 
 import de.freshplan.domain.customer.repository.CustomerRepository;
+import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -8,6 +9,7 @@ import org.junit.jupiter.api.Test;
 
 /** Analyse und Cleanup der Test-Datenbank */
 @QuarkusTest
+@TestTransaction  // CI-Fix: Rollback nach Test für Database Growth Check
 public class DatabaseCleanupTest {
 
   @Inject CustomerRepository customerRepository;

@@ -2,6 +2,7 @@ package de.freshplan.test;
 
 import de.freshplan.domain.customer.entity.Customer;
 import de.freshplan.domain.customer.repository.CustomerRepository;
+import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
@@ -16,6 +17,7 @@ import org.junit.jupiter.api.Test;
  * <p>Diese Kunden sind keine produktiven Daten, sondern Teil der Test-Umgebung.
  */
 @QuarkusTest
+@TestTransaction  // CI-Fix: Rollback nach Test für Database Growth Check
 public class MarkRealCustomersAsTestDataTest {
 
   @Inject EntityManager em;

@@ -3,6 +3,7 @@ package de.freshplan.test.utils;
 import de.freshplan.domain.customer.entity.Customer;
 import de.freshplan.domain.customer.repository.CustomerRepository;
 import io.quarkus.narayana.jta.QuarkusTransaction;
+import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
@@ -17,6 +18,7 @@ import org.junit.jupiter.api.Test;
  * @since Emergency Cleanup
  */
 @QuarkusTest
+@TestTransaction  // CI-Fix: Rollback nach Test für Database Growth Check
 public class DirectDatabaseCleanupTest {
 
   private static final Logger LOG = Logger.getLogger(DirectDatabaseCleanupTest.class);

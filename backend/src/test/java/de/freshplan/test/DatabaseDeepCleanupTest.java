@@ -4,6 +4,7 @@ import de.freshplan.domain.customer.repository.ContactInteractionRepository;
 import de.freshplan.domain.customer.repository.ContactRepository;
 import de.freshplan.domain.customer.repository.CustomerRepository;
 import de.freshplan.domain.opportunity.repository.OpportunityRepository;
+import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
@@ -12,6 +13,7 @@ import org.junit.jupiter.api.Test;
 
 /** KRITISCH: Bereinigung der 1090 Test-Kunden mit Foreign Key Beachtung */
 @QuarkusTest
+@TestTransaction  // CI-Fix: Rollback nach Test für Database Growth Check
 public class DatabaseDeepCleanupTest {
 
   @Inject EntityManager em;
