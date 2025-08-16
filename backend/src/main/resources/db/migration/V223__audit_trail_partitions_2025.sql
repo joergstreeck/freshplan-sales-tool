@@ -1,6 +1,6 @@
 -- V223__audit_trail_partitions_2025.sql
 -- Robust: runs only when audit_trail exists and is partitioned
--- Uses proper identifier quoting and guards
+-- Fixed: Proper identifier quoting with format() and zero-padding with to_char()
 -- Created: 2025-08-16
 
 DO $$
@@ -34,13 +34,14 @@ BEGIN
     RAISE NOTICE 'Created default partition audit_trail_default';
   END IF;
 
-  -- Create monthly partitions for 2025 (using UTC dates)
+  -- Create monthly partitions for 2025 with proper zero-padding via to_char()
   FOR m IN 1..12 LOOP
     start_date := make_date(2025, m, 1);
     end_date   := (start_date + INTERVAL '1 month')::date;
-    part_name  := format('audit_trail_y%sm%02s', 2025, m);
+    part_name  := 'audit_trail_y2025m' || to_char(m, 'FM00');  -- e.g. audit_trail_y2025m01
 
-    IF to_regclass('public.'||part_name) IS NULL THEN
+    -- IMPORTANT: Properly quote schema.name, NO string concatenation in to_regclass
+    IF to_regclass(format('%I.%I', 'public', part_name)) IS NULL THEN
       EXECUTE format(
         'CREATE TABLE %I PARTITION OF public.audit_trail
          FOR VALUES FROM (%L) TO (%L)',
@@ -49,4 +50,4 @@ BEGIN
       RAISE NOTICE 'Created partition %', part_name;
     END IF;
   END LOOP;
-END $$;
+END $$ LANGUAGE plpgsql;

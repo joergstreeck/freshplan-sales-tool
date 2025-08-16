@@ -83,7 +83,12 @@ jobs:
             -Djunit.jupiter.execution.timeout.default=2m \
             -Dmaven.test.failure.ignore=false \
             -DtrimStackTrace=false \
-            -DRUN_SUFFIX=${{ github.run_id }}
+            -DRUN_SUFFIX=${{ github.run_id }} \
+            -Dquarkus.devservices.enabled=false \
+            -Dquarkus.datasource.devservices.enabled=false \
+            -Dquarkus.datasource.jdbc.url=jdbc:postgresql://localhost:5432/freshplan \
+            -Dquarkus.datasource.username=freshplan \
+            -Dquarkus.datasource.password=freshplan
       
       - name: Upload test reports
         if: always()
