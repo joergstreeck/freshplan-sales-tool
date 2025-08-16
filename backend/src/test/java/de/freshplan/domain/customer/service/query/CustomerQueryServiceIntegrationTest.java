@@ -30,6 +30,7 @@ import org.junit.jupiter.api.Test;
  * switching via feature flag.
  */
 @QuarkusTest
+@TestTransaction
 class CustomerQueryServiceIntegrationTest {
 
   @Inject CustomerQueryService queryService;
@@ -42,7 +43,6 @@ class CustomerQueryServiceIntegrationTest {
   private String testCustomerNumber;
 
   @BeforeEach
-  @TestTransaction
   void setUp() {
     // Clean up any test data - skip foreign key constraints by using query
     customerRepository

@@ -15,7 +15,7 @@ import de.freshplan.domain.customer.service.dto.UpdateCustomerRequest;
 import de.freshplan.domain.customer.service.exception.CustomerNotFoundException;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
+import io.quarkus.test.TestTransaction;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -38,7 +38,7 @@ class CustomerCommandServiceIntegrationTest {
   @Inject CustomerRepository customerRepository;
 
   @Test
-  @Transactional
+  @TestTransaction
   void createCustomer_shouldProduceSameResultAsOriginalService() {
     // Given - a minimal valid request
     CreateCustomerRequest request =
@@ -117,7 +117,7 @@ class CustomerCommandServiceIntegrationTest {
   }
 
   @Test
-  @Transactional
+  @TestTransaction
   void updateCustomer_shouldProduceSameResultAsOriginalService() {
     // Given - create customers first
     CreateCustomerRequest createRequest1 =
@@ -211,7 +211,7 @@ class CustomerCommandServiceIntegrationTest {
   }
 
   @Test
-  @Transactional
+  @TestTransaction
   void deleteCustomer_shouldProduceSameResultAsOriginalService() {
     // Given - create customers for deletion test
     CreateCustomerRequest createRequest1 =
@@ -251,7 +251,7 @@ class CustomerCommandServiceIntegrationTest {
   }
 
   @Test
-  @Transactional
+  @TestTransaction
   void restoreCustomer_shouldProduceSameResultAsOriginalService() {
     // Given - create and delete customers first
     CreateCustomerRequest createRequest1 =
@@ -308,7 +308,7 @@ class CustomerCommandServiceIntegrationTest {
   }
 
   @Test
-  @Transactional
+  @TestTransaction
   void restoreCustomer_shouldFailForNonDeletedCustomer() {
     // Given - create an active customer
     CreateCustomerRequest createRequest =
@@ -331,7 +331,7 @@ class CustomerCommandServiceIntegrationTest {
   }
 
   @Test
-  @Transactional
+  @TestTransaction
   void addChildCustomer_shouldProduceSameResultAsOriginalService() {
     // Given - create parent and child customers
     CreateCustomerRequest parentRequest =
@@ -386,7 +386,7 @@ class CustomerCommandServiceIntegrationTest {
   }
 
   @Test
-  @Transactional
+  @TestTransaction
   void addChildCustomer_shouldFailForChildWithExistingParent() {
     // Given - create three customers: parent1, parent2, and child
     CreateCustomerRequest parent1Request =
@@ -443,7 +443,7 @@ class CustomerCommandServiceIntegrationTest {
   }
 
   @Test
-  @Transactional
+  @TestTransaction
   void addChildCustomer_shouldNotPreventCircularHierarchy_dueToExistingBug() {
     // NOTE: There's a bug in the original CustomerService where the circular hierarchy
     // check is inverted. The code calls isDescendant(parent, child) but should call
@@ -556,7 +556,7 @@ class CustomerCommandServiceIntegrationTest {
   }
 
   @Test
-  @Transactional
+  @TestTransaction
   void updateAllRiskScores_shouldUpdateScoresIdenticallyToBothServices() {
     // Given - create test customers with different statuses for both services
     // Customers for original service
@@ -617,7 +617,7 @@ class CustomerCommandServiceIntegrationTest {
   }
 
   @Test
-  @Transactional
+  @TestTransaction
   void updateAllRiskScores_shouldHandleEmptyDatabase() {
     // Given - ensure we have a known state (may have test data from other tests)
     // We can't delete all customers, so we just test that it doesn't crash
@@ -633,7 +633,7 @@ class CustomerCommandServiceIntegrationTest {
   }
 
   @Test
-  @Transactional
+  @TestTransaction
   void updateAllRiskScores_shouldRespect1000CustomerLimit() {
     // This test documents the limitation that only 1000 customers are processed
     // We don't actually create 1001 customers in the test, but document the behavior
@@ -648,7 +648,7 @@ class CustomerCommandServiceIntegrationTest {
   }
 
   @Test
-  @Transactional
+  @TestTransaction
   void mergeCustomers_shouldProduceSameResultAsOriginalService() {
     // Given - create target and source customers for both services
     CreateCustomerRequest targetRequest1 =
@@ -747,7 +747,7 @@ class CustomerCommandServiceIntegrationTest {
   }
 
   @Test
-  @Transactional
+  @TestTransaction
   void mergeCustomers_withSourceHavingChildren_shouldNotFailDueToBug() {
     // NOTE: There's a bug in the original implementation where hasChildren() doesn't work
     // correctly after addChildCustomer() because the childCustomers collection is not
@@ -863,7 +863,7 @@ class CustomerCommandServiceIntegrationTest {
   }
 
   @Test
-  @Transactional
+  @TestTransaction
   void mergeCustomers_withDeletedSource_shouldFail() {
     // Given - create and delete a source customer
     CreateCustomerRequest targetRequest =
@@ -911,7 +911,7 @@ class CustomerCommandServiceIntegrationTest {
   }
 
   @Test
-  @Transactional
+  @TestTransaction
   void mergeCustomers_shouldNotCreateTimelineEvent() {
     // This test documents that mergeCustomers does NOT create a Timeline Event
     // This is a bug/inconsistency but we maintain it for compatibility
@@ -951,7 +951,7 @@ class CustomerCommandServiceIntegrationTest {
   // ========== changeStatus() Tests ==========
 
   @Test
-  @Transactional
+  @TestTransaction
   void changeStatus_shouldProduceSameResultAsOriginalService() {
     // Given - create a customer
     CreateCustomerRequest request =
@@ -989,7 +989,7 @@ class CustomerCommandServiceIntegrationTest {
   }
 
   @Test
-  @Transactional
+  @TestTransaction
   void changeStatus_withInvalidTransition_shouldThrowSameException() {
     // Given - create a customer and set to ARCHIVIERT
     CreateCustomerRequest request =
@@ -1018,7 +1018,7 @@ class CustomerCommandServiceIntegrationTest {
   }
 
   @Test
-  @Transactional
+  @TestTransaction
   void changeStatus_withValidTransitionFromArchiviert_shouldSucceed() {
     // Given - create a customer and set to ARCHIVIERT
     CreateCustomerRequest request =
@@ -1053,7 +1053,7 @@ class CustomerCommandServiceIntegrationTest {
   }
 
   @Test
-  @Transactional
+  @TestTransaction
   void changeStatus_withNonExistentCustomer_shouldThrowSameException() {
     // Given - non-existent customer ID
     UUID nonExistentId = UUID.randomUUID();
@@ -1069,7 +1069,7 @@ class CustomerCommandServiceIntegrationTest {
   }
 
   @Test
-  @Transactional
+  @TestTransaction
   void changeStatus_shouldUpdateRiskScore() {
     // Given - create a customer
     CreateCustomerRequest request =

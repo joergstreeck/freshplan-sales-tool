@@ -39,6 +39,7 @@ import org.junit.jupiter.api.Test;
 @TestSecurity(
     user = "testuser",
     roles = {"admin", "manager", "sales"})
+@TestTransaction
 @DisplayName("Customer CQRS Integration Test")
 class CustomerCQRSIntegrationTest {
 
