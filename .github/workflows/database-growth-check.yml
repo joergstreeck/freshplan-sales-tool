@@ -9,9 +9,14 @@ on:
     # Run daily at 2 AM UTC
     - cron: '0 2 * * *'
 
+concurrency:
+  group: db-growth-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   check-database-growth:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     
     services:
       postgres:
@@ -20,13 +25,13 @@ jobs:
           POSTGRES_USER: freshplan
           POSTGRES_PASSWORD: freshplan
           POSTGRES_DB: freshplan
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
         ports:
           - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U freshplan -d freshplan"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
 
     steps:
     - name: Checkout code
@@ -39,64 +44,97 @@ jobs:
         distribution: 'temurin'
 
     - name: Cache Maven dependencies
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
-        path: ~/.m2
-        key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
-        restore-keys: ${{ runner.os }}-m2
+        path: ~/.m2/repository
+        key: ${{ runner.os }}-m2-${{ hashFiles('backend/pom.xml') }}
+        restore-keys: ${{ runner.os }}-m2-
 
-    - name: Record database state before tests
+    - name: Install PostgreSQL client
+      run: sudo apt-get update && sudo apt-get install -y postgresql-client
+
+    - name: Wait for PostgreSQL
+      env:
+        PGPASSWORD: freshplan
       run: |
-        cd backend
-        # Run a simple test to initialize the database
-        ./mvnw test -Dtest="DatabaseAnalysisTest#countCustomers" -q \
-          -Dquarkus.datasource.devservices.enabled=false \
-          -Dquarkus.datasource.jdbc.url=jdbc:postgresql://localhost:5432/freshplan \
-          -Dquarkus.datasource.username=freshplan \
-          -Dquarkus.datasource.password=freshplan || true
+        echo "Waiting for PostgreSQL to be ready..."
+        for i in {1..30}; do
+          if pg_isready -h localhost -p 5432 -U freshplan -d freshplan; then
+            echo "PostgreSQL is ready!"
+            break
+          fi
+          echo "Attempt $i/30: PostgreSQL not ready yet..."
+          sleep 2
+        done
         
-        # Count customers before
-        CUSTOMERS_BEFORE=$(./mvnw test -Dtest="DatabaseAnalysisTest#countCustomers" -q \
-          -Dquarkus.datasource.devservices.enabled=false \
-          -Dquarkus.datasource.jdbc.url=jdbc:postgresql://localhost:5432/freshplan \
-          -Dquarkus.datasource.username=freshplan \
-          -Dquarkus.datasource.password=freshplan | grep "Total Customers:" | awk '{print $3}')
-        echo "CUSTOMERS_BEFORE=$CUSTOMERS_BEFORE" >> $GITHUB_ENV
-        echo "Customers before tests: $CUSTOMERS_BEFORE"
+        # Verify connection
+        psql -h localhost -U freshplan -d freshplan -c "SELECT version();" || exit 1
 
-    - name: Run all tests
+    - name: Initialize database schema
+      working-directory: backend
+      env:
+        QUARKUS_PROFILE: ci
       run: |
-        cd backend
+        echo "Initializing database with Flyway migrations..."
+        ./mvnw -q flyway:migrate \
+          -Dflyway.url=jdbc:postgresql://localhost:5432/freshplan \
+          -Dflyway.user=freshplan \
+          -Dflyway.password=freshplan \
+          -Dflyway.locations=filesystem:src/main/resources/db/migration,filesystem:src/test/resources/db/testdata
+
+    - name: Count customers BEFORE tests
+      env:
+        PGPASSWORD: freshplan
+      run: |
+        BEFORE=$(psql -h localhost -U freshplan -d freshplan -tAc "SELECT COUNT(*) FROM customers WHERE is_test_data = true OR company_name LIKE '[TEST]%';")
+        echo "CUSTOMERS_BEFORE=$BEFORE" >> $GITHUB_ENV
+        echo "📊 Test customers BEFORE: $BEFORE"
+        
+        # Also get total count for context
+        TOTAL=$(psql -h localhost -U freshplan -d freshplan -tAc "SELECT COUNT(*) FROM customers;")
+        echo "📊 Total customers: $TOTAL"
+
+    - name: Run all tests with CI profile
+      working-directory: backend
+      env:
+        QUARKUS_PROFILE: ci
+        MAVEN_OPTS: -Xmx2g -XX:MaxMetaspaceSize=512m
+      run: |
         ./mvnw test \
-          -Dquarkus.datasource.devservices.enabled=false \
-          -Dquarkus.datasource.jdbc.url=jdbc:postgresql://localhost:5432/freshplan \
-          -Dquarkus.datasource.username=freshplan \
-          -Dquarkus.datasource.password=freshplan
+          -B \
+          -Djunit.jupiter.execution.timeout.default=2m \
+          -Dmaven.test.failure.ignore=false \
+          -DtrimStackTrace=false
 
-    - name: Check database growth
+    - name: Count customers AFTER tests
+      env:
+        PGPASSWORD: freshplan
       run: |
-        cd backend
-        # Count customers after
-        CUSTOMERS_AFTER=$(./mvnw test -Dtest="DatabaseAnalysisTest#countCustomers" -q \
-          -Dquarkus.datasource.devservices.enabled=false \
-          -Dquarkus.datasource.jdbc.url=jdbc:postgresql://localhost:5432/freshplan \
-          -Dquarkus.datasource.username=freshplan \
-          -Dquarkus.datasource.password=freshplan | grep "Total Customers:" | awk '{print $3}')
-        echo "CUSTOMERS_AFTER=$CUSTOMERS_AFTER" >> $GITHUB_ENV
-        echo "Customers after tests: $CUSTOMERS_AFTER"
+        AFTER=$(psql -h localhost -U freshplan -d freshplan -tAc "SELECT COUNT(*) FROM customers WHERE is_test_data = true OR company_name LIKE '[TEST]%';")
+        echo "CUSTOMERS_AFTER=$AFTER" >> $GITHUB_ENV
+        echo "📊 Test customers AFTER: $AFTER"
         
         # Calculate growth
-        GROWTH=$((CUSTOMERS_AFTER - CUSTOMERS_BEFORE))
-        echo "Database growth: $GROWTH customers"
+        GROWTH=$((AFTER - CUSTOMERS_BEFORE))
+        echo "GROWTH=$GROWTH" >> $GITHUB_ENV
+        echo "📊 Growth: $GROWTH test customers"
         
-        # Fail if growth exceeds threshold
-        if [ $GROWTH -gt 10 ]; then
-          echo "❌ ERROR: Database grew by $GROWTH customers during tests!"
+        # Check threshold (0 for strict isolation)
+        if [ $GROWTH -gt 0 ]; then
+          echo "❌ ERROR: Database grew by $GROWTH test customers during tests!"
           echo "This indicates missing test isolation (@TestTransaction)."
-          echo "Please fix the tests to use proper isolation."
+          
+          # Show recent test customers for debugging
+          echo ""
+          echo "Recent test customers added:"
+          psql -h localhost -U freshplan -d freshplan -c \
+            "SELECT id, company_name, created_at FROM customers 
+             WHERE (is_test_data = true OR company_name LIKE '[TEST]%')
+             ORDER BY created_at DESC LIMIT 10;"
+          
           exit 1
         else
-          echo "✅ Database growth is acceptable: $GROWTH customers"
+          echo "✅ PASSED: No database pollution detected (0 growth)"
         fi
 
     - name: Create growth report
@@ -110,16 +148,16 @@ jobs:
         Commit: ${{ github.sha }}
         
         ## Results
-        - Customers before tests: ${{ env.CUSTOMERS_BEFORE }}
-        - Customers after tests: ${{ env.CUSTOMERS_AFTER }}
-        - Growth: $((${{ env.CUSTOMERS_AFTER }} - ${{ env.CUSTOMERS_BEFORE }}))
+        - Test customers before: ${{ env.CUSTOMERS_BEFORE }}
+        - Test customers after: ${{ env.CUSTOMERS_AFTER }}
+        - Growth: ${{ env.GROWTH }}
         
         ## Status
-        $(if [ $((${{ env.CUSTOMERS_AFTER }} - ${{ env.CUSTOMERS_BEFORE }})) -gt 10 ]; then echo "❌ FAILED - Excessive growth detected"; else echo "✅ PASSED - Growth within limits"; fi)
+        $(if [ "${{ env.GROWTH }}" -gt "0" ]; then echo "❌ FAILED - Test data pollution detected"; else echo "✅ PASSED - No test data pollution"; fi)
         
         ## Recommendations
         - Use @TestTransaction for test isolation
-        - Implement cleanup in @AfterEach if needed
+        - Each test should be self-contained
         - Review tests that create persistent data
         EOF
 
@@ -127,27 +165,36 @@ jobs:
       if: always()
       uses: actions/upload-artifact@v4
       with:
-        name: database-growth-report
+        name: database-growth-report-${{ github.run_number }}
         path: database-growth-report.md
+
+    - name: Upload test reports
+      if: failure()
+      uses: actions/upload-artifact@v4
+      with:
+        name: test-reports-${{ github.run_number }}
+        path: |
+          backend/target/surefire-reports/**
+          backend/target/failsafe-reports/**
 
     - name: Comment on PR
       if: github.event_name == 'pull_request' && failure()
       uses: actions/github-script@v7
       with:
         script: |
-          const growth = ${{ env.CUSTOMERS_AFTER }} - ${{ env.CUSTOMERS_BEFORE }};
+          const growth = ${{ env.GROWTH || 0 }};
           github.rest.issues.createComment({
             issue_number: context.issue.number,
             owner: context.repo.owner,
             repo: context.repo.repo,
             body: `## ❌ Database Growth Check Failed
             
-            The tests added **${growth} customers** to the database, exceeding the threshold of 10.
+            The tests added **${growth} test customers** to the database.
             
-            This typically means tests are missing proper isolation. Please ensure:
+            This indicates missing test isolation. Please ensure:
             1. Use \`@TestTransaction\` instead of \`@Transactional\` in tests
             2. Don't rely on data persisting between tests
             3. Each test should be self-contained
             
-            See the [Test Isolation Guide](docs/guides/TEST_ISOLATION_GUIDE.md) for more details.`
+            See the [Test Isolation Guide](docs/guides/TEST_ISOLATION_GUIDE.md) for details.`
           })
