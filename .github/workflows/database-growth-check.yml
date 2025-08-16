@@ -77,15 +77,21 @@ jobs:
         PGPASSWORD: freshplan
       run: |
         echo "Initializing database schema..."
-        # Run a single test to trigger Flyway migrations
+        # Run a simple compile to trigger Flyway migrations via quarkus:dev
         # This creates all tables including customers
-        ./mvnw test -Dtest="DatabaseAnalysisTest#countCustomers" \
-          -Dquarkus.test.profile=ci \
+        ./mvnw compile -DskipTests
+        
+        # Start Quarkus briefly to initialize database
+        timeout 30 ./mvnw quarkus:dev \
+          -Dquarkus.profile=ci \
           -Dquarkus.datasource.devservices.enabled=false \
           -Dquarkus.datasource.jdbc.url=jdbc:postgresql://localhost:5432/freshplan \
           -Dquarkus.datasource.username=freshplan \
           -Dquarkus.datasource.password=freshplan \
-          -DfailIfNoTests=false || true
+          -Dquarkus.flyway.migrate-at-start=true \
+          -Dquarkus.flyway.clean-at-start=true || true
+        
+        echo "Database initialization complete"
         
         # Verify schema was created
         echo "Verifying database schema..."
