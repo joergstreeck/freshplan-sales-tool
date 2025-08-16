@@ -166,7 +166,8 @@
             <maven.home>${maven.home}</maven.home>
             <quarkus.profile>test</quarkus.profile>
           </systemPropertyVariables>
-          <argLine>${jacocoArgLine}</argLine>
+          <!-- CI Fix: Set German locale for consistent test behavior -->
+          <argLine>${jacocoArgLine} -Duser.language=de -Duser.country=DE</argLine>
         </configuration>
       </plugin>
       <!-- JaCoCo Plugin für Code Coverage -->

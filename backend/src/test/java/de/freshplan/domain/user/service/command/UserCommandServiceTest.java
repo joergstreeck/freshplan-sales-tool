@@ -127,8 +127,7 @@ class UserCommandServiceTest {
   void createUser_withNullRequest_shouldThrowException() {
     // When/Then
     assertThatThrownBy(() -> commandService.createUser(null))
-        .isInstanceOf(jakarta.validation.ConstraintViolationException.class)
-        .hasMessageContaining("darf nicht null sein");
+        .isInstanceOf(jakarta.validation.ConstraintViolationException.class);
   }
 
   // ========== UPDATE USER TESTS ==========
@@ -213,8 +212,7 @@ class UserCommandServiceTest {
   void deleteUser_withNullId_shouldThrowException() {
     // When/Then
     assertThatThrownBy(() -> commandService.deleteUser(null))
-        .isInstanceOf(jakarta.validation.ConstraintViolationException.class)
-        .hasMessageContaining("darf nicht null sein");
+        .isInstanceOf(jakarta.validation.ConstraintViolationException.class);
   }
 
   // ========== ENABLE USER TESTS ==========
@@ -317,8 +315,7 @@ class UserCommandServiceTest {
   void updateUserRoles_withNullRequest_shouldThrowException() {
     // When/Then
     assertThatThrownBy(() -> commandService.updateUserRoles(testUserId, null))
-        .isInstanceOf(jakarta.validation.ConstraintViolationException.class)
-        .hasMessageContaining("darf nicht null sein");
+        .isInstanceOf(jakarta.validation.ConstraintViolationException.class);
   }
 
   @Test

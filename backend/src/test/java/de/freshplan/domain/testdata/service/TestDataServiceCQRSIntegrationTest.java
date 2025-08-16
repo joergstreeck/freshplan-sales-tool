@@ -113,9 +113,9 @@ class TestDataServiceCQRSIntegrationTest {
     assertThat(result.customersDeleted()).isEqualTo(8L);
     assertThat(result.eventsDeleted()).isEqualTo(15L);
 
-    // Verify exact query delegation
-    verify(timelineRepository).delete(expectedEventsQuery);
-    verify(customerRepository).delete(expectedCustomersQuery);
+    // Verify exact query delegation - using eq() matcher for consistency
+    verify(timelineRepository).delete(eq(expectedEventsQuery));
+    verify(customerRepository).delete(eq(expectedCustomersQuery));
   }
 
   @Test

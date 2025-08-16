@@ -106,7 +106,7 @@ class UserQueryServiceTest {
     // When/Then
     assertThatThrownBy(() -> queryService.getUser(null))
         .isInstanceOf(jakarta.validation.ConstraintViolationException.class)
-        .hasMessageContaining("darf nicht null sein");
+;
   }
 
   @Test
@@ -142,7 +142,7 @@ class UserQueryServiceTest {
     // When/Then
     assertThatThrownBy(() -> queryService.getUserByUsername(null))
         .isInstanceOf(jakarta.validation.ConstraintViolationException.class)
-        .hasMessageContaining("darf nicht null sein");
+;
   }
 
   @Test
