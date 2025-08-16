@@ -22,6 +22,8 @@ BEGIN
 
   FOR r IN
     SELECT conname,
+           conrelid,  -- OID für JOINs behalten
+           confrelid, -- OID für JOINs behalten
            conrelid::regclass AS child,
            confrelid::regclass AS parent,
            conkey, confkey,
@@ -49,7 +51,7 @@ BEGIN
       CONTINUE;
     END IF;
 
-    -- Spaltenlisten für FK neu ermitteln
+    -- Spaltenlisten für FK neu ermitteln (mit OIDs)
     SELECT string_agg(quote_ident(a.attname), ', ' ORDER BY u.i) INTO child_cols
     FROM unnest(r.conkey) WITH ORDINALITY AS u(attnum, i)
     JOIN pg_attribute a ON a.attrelid = r.conrelid AND a.attnum = u.attnum;
