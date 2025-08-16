@@ -1,6 +1,6 @@
 freshplan:
   seed:
-    enabled: false  # keine dev-Seeds in CI
+    enabled: true  # Seeds für Tests erforderlich
   test:
     isolation: true
 

@@ -2,6 +2,7 @@ package de.freshplan.domain.permission.entity;
 
 import static org.assertj.core.api.Assertions.*;
 
+import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.transaction.Transactional;
 import java.time.Instant;
@@ -12,6 +13,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 @QuarkusTest
+@TestTransaction
 @DisplayName("Role Entity Tests")
 class RoleTest {
 

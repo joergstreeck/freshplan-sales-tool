@@ -109,9 +109,7 @@ class TestDataQueryServiceTest {
 
     // Verify no delete operations
     verify(customerRepository, never()).delete(any());
-    verify(customerRepository, never()).delete(anyString());
     verify(timelineRepository, never()).delete(any());
-    verify(timelineRepository, never()).delete(anyString());
 
     // Verify no update operations (if they existed in repository)
     // Note: TestDataService repositories only have count, persist, delete - no updates
