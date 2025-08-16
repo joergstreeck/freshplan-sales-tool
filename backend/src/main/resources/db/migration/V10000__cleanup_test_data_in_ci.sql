@@ -1,103 +1,82 @@
--- V9999: CI Test Data Cleanup Migration
--- This migration runs in CI to clean up test data from previous runs
--- It should be the LAST migration to ensure all test data is removed
+-- V10000: CI Test Data Cleanup Migration
+-- This migration runs in CI to clean up ONLY problematic test data from previous runs
+-- It targets SPECIFIC patterns that cause issues, not all test data
 
--- Only run in test/ci profile (check if we have test data)
+-- Only run in test/ci profile (check if we have problematic test data)
 DO $$
 BEGIN
-    -- Only clean if we find obvious test data patterns
+    -- Only clean if we find the SPECIFIC problematic patterns from failed CI runs
     IF EXISTS (
         SELECT 1 FROM customers 
-        WHERE company_name LIKE '%Company %' 
-        AND company_name ~ '\d{10,}$'  -- ends with timestamp
+        WHERE company_name IN ('Parent Company 1755379439908', 'Child Company 1755379439715', 
+                               'Source Company 1755379439775', 'Target Company 1755379439896')
+           OR (company_name LIKE '%Company %' AND company_name ~ '\d{13}$')  -- ends with 13-digit timestamp
     ) THEN
         
-        RAISE NOTICE 'Found test data from previous CI runs, cleaning up...';
+        RAISE NOTICE 'Found problematic test data from previous CI runs, cleaning up...';
         
         -- Delete in correct order due to foreign keys
         
-        -- 1. Delete timeline events for test customers
+        -- 1. Delete timeline events for problematic test customers ONLY
         DELETE FROM customer_timeline_events
         WHERE customer_id IN (
             SELECT id FROM customers 
             WHERE (
-                -- Timestamp pattern at end (e.g., "Company 1755379439715")
-                company_name ~ '\d{10,}$'
-                -- Or explicit test patterns
-                OR company_name LIKE 'Parent Company%'
-                OR company_name LIKE 'Child Company%'
-                OR company_name LIKE 'Source Company%'
-                OR company_name LIKE 'Target Company%'
-                OR company_name LIKE 'Test Company%'
-                OR company_name LIKE 'Status Test Company%'
-                OR customer_number LIKE 'CUST-%'
-                OR customer_number LIKE 'TEST-%'
-                OR customer_number LIKE 'KD-TEST%'
-                -- Or marked as test data
-                OR is_test_data = true
+                -- ONLY customers with 13-digit timestamps (milliseconds since epoch)
+                company_name ~ '\d{13}$'
+                -- ONLY these specific problematic patterns without [TEST] prefix
+                OR (company_name LIKE 'Parent Company %' AND company_name NOT LIKE '[TEST]%')
+                OR (company_name LIKE 'Child Company %' AND company_name NOT LIKE '[TEST]%')
+                OR (company_name LIKE 'Source Company %' AND company_name NOT LIKE '[TEST]%')
+                OR (company_name LIKE 'Target Company %' AND company_name NOT LIKE '[TEST]%')
+                OR (company_name LIKE 'Status Test Company %' AND company_name ~ '\d{10,}$')
             )
         );
         
-        -- 2. Delete opportunities for test customers
+        -- 2. Delete opportunities for problematic test customers ONLY
         DELETE FROM opportunities
         WHERE customer_id IN (
             SELECT id FROM customers 
             WHERE (
-                company_name ~ '\d{10,}$'
-                OR company_name LIKE 'Parent Company%'
-                OR company_name LIKE 'Child Company%'
-                OR company_name LIKE 'Source Company%'
-                OR company_name LIKE 'Target Company%'
-                OR company_name LIKE 'Test Company%'
-                OR company_name LIKE 'Status Test Company%'
-                OR customer_number LIKE 'CUST-%'
-                OR customer_number LIKE 'TEST-%'
-                OR customer_number LIKE 'KD-TEST%'
-                OR is_test_data = true
+                company_name ~ '\d{13}$'
+                OR (company_name LIKE 'Parent Company %' AND company_name NOT LIKE '[TEST]%')
+                OR (company_name LIKE 'Child Company %' AND company_name NOT LIKE '[TEST]%')
+                OR (company_name LIKE 'Source Company %' AND company_name NOT LIKE '[TEST]%')
+                OR (company_name LIKE 'Target Company %' AND company_name NOT LIKE '[TEST]%')
+                OR (company_name LIKE 'Status Test Company %' AND company_name ~ '\d{10,}$')
             )
         );
         
-        -- 3. Delete customer contacts
+        -- 3. Delete customer contacts for problematic test customers ONLY
         DELETE FROM customer_contacts
         WHERE customer_id IN (
             SELECT id FROM customers 
             WHERE (
-                company_name ~ '\d{10,}$'
-                OR company_name LIKE 'Parent Company%'
-                OR company_name LIKE 'Child Company%'
-                OR company_name LIKE 'Source Company%'
-                OR company_name LIKE 'Target Company%'
-                OR company_name LIKE 'Test Company%'
-                OR company_name LIKE 'Status Test Company%'
-                OR customer_number LIKE 'CUST-%'
-                OR customer_number LIKE 'TEST-%'
-                OR customer_number LIKE 'KD-TEST%'
-                OR is_test_data = true
+                company_name ~ '\d{13}$'
+                OR (company_name LIKE 'Parent Company %' AND company_name NOT LIKE '[TEST]%')
+                OR (company_name LIKE 'Child Company %' AND company_name NOT LIKE '[TEST]%')
+                OR (company_name LIKE 'Source Company %' AND company_name NOT LIKE '[TEST]%')
+                OR (company_name LIKE 'Target Company %' AND company_name NOT LIKE '[TEST]%')
+                OR (company_name LIKE 'Status Test Company %' AND company_name ~ '\d{10,}$')
             )
         );
         
-        -- 4. Finally delete the test customers themselves
+        -- 4. Finally delete ONLY the problematic test customers
         DELETE FROM customers 
         WHERE (
-            -- Timestamp pattern at end
-            company_name ~ '\d{10,}$'
-            -- Explicit test patterns
-            OR company_name LIKE 'Parent Company%'
-            OR company_name LIKE 'Child Company%'
-            OR company_name LIKE 'Source Company%'
-            OR company_name LIKE 'Target Company%'
-            OR company_name LIKE 'Test Company%'
-            OR company_name LIKE 'Status Test Company%'
-            OR customer_number LIKE 'CUST-%'
-            OR customer_number LIKE 'TEST-%'
-            OR customer_number LIKE 'KD-TEST%'
-            -- Or marked as test data
-            OR is_test_data = true
+            -- ONLY customers with 13-digit timestamps (milliseconds)
+            company_name ~ '\d{13}$'
+            -- ONLY these specific patterns WITHOUT [TEST] prefix
+            OR (company_name LIKE 'Parent Company %' AND company_name NOT LIKE '[TEST]%')
+            OR (company_name LIKE 'Child Company %' AND company_name NOT LIKE '[TEST]%')
+            OR (company_name LIKE 'Source Company %' AND company_name NOT LIKE '[TEST]%')
+            OR (company_name LIKE 'Target Company %' AND company_name NOT LIKE '[TEST]%')
+            OR (company_name LIKE 'Status Test Company %' AND company_name ~ '\d{10,}$')
         );
         
-        RAISE NOTICE 'Test data cleanup completed';
+        RAISE NOTICE 'Problematic test data cleanup completed';
         
     ELSE
-        RAISE NOTICE 'No obvious test data found, skipping cleanup';
+        RAISE NOTICE 'No problematic test data found, skipping cleanup';
     END IF;
 END $$;
