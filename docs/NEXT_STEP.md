@@ -9,11 +9,11 @@
 
 **PR #89: CQRS MIGRATION - CI FIXES BENÖTIGT**
 
-**Stand 16.08.2025 19:25:**
-- ✅ **ALLE CI-PROBLEME GELÖST:** 4 Commits gepusht, Tests lokal grün
-- ✅ **Fork-Safe Fix funktioniert:** Keine Duplicate Key Violations mehr
-- ✅ **Dokumentation finalisiert:** backend/docs/CI_FIX_DOCUMENTATION.md komplett
-- ⏳ **CI läuft noch:** Warte auf Ergebnisse von PR #89
+**Stand 16.08.2025 20:05:**
+- ✅ **Root Cause gefunden:** Database Growth durch fehlende @TestTransaction
+- ✅ **Fix implementiert:** @TestTransaction zu 8 Test-Klassen hinzugefügt
+- ✅ **Commit gepusht:** 55410cd39 - fix(ci): add @TestTransaction
+- ⏳ **CI läuft:** Warte auf Ergebnisse der neuen Tests
 
 **✅ Erfolgreich gelöste Probleme:**
 1. **Mockito Matcher Errors** - Gelöst ✅
