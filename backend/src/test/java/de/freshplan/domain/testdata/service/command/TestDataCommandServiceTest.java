@@ -38,6 +38,7 @@ class TestDataCommandServiceTest {
   void setUp() {
     // Reset mocks for each test
     reset(customerRepository, timelineRepository);
+    // Each test will configure its own specific mocks
   }
 
   @Test
@@ -130,8 +131,8 @@ class TestDataCommandServiceTest {
   @Test
   void cleanTestData_shouldDeleteEventsBeforeCustomers() {
     // Given - Pattern 3: Foreign Key-Safe Cleanup order simulation
-    when(timelineRepository.delete(eq("isTestData"), eq(true))).thenReturn(10L);
-    when(customerRepository.delete(eq("isTestData"), eq(true))).thenReturn(5L);
+    when(timelineRepository.delete("isTestData", true)).thenReturn(10L);
+    when(customerRepository.delete("isTestData", true)).thenReturn(5L);
 
     // When
     TestDataService.CleanupResult result = commandService.cleanTestData();
@@ -142,8 +143,8 @@ class TestDataCommandServiceTest {
 
     // Pattern 3: Verify FK-safe delete order (events first, then customers)
     var inOrder = inOrder(timelineRepository, customerRepository);
-    inOrder.verify(timelineRepository).delete(eq("isTestData"), eq(true));
-    inOrder.verify(customerRepository).delete(eq("isTestData"), eq(true));
+    inOrder.verify(timelineRepository).delete("isTestData", true);
+    inOrder.verify(customerRepository).delete("isTestData", true);
   }
 
   @Test
@@ -151,7 +152,7 @@ class TestDataCommandServiceTest {
     // Given
     doThrow(new RuntimeException("Database error"))
         .when(timelineRepository)
-        .delete(eq("isTestData"), eq(true));
+        .delete("isTestData", true);
 
     // When & Then
     assertThatThrownBy(() -> commandService.cleanTestData())
