@@ -15,23 +15,23 @@ import de.freshplan.infrastructure.events.EventBus;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * FACADE Service für Help Content Management - CQRS Migration mit Feature Flag
  *
- * <p>Dieses Service agiert als Facade während der CQRS-Migration und delegiert
- * an die neuen Command und Query Services basierend auf dem Feature Flag.
- * 
+ * <p>Dieses Service agiert als Facade während der CQRS-Migration und delegiert an die neuen Command
+ * und Query Services basierend auf dem Feature Flag.
+ *
  * <p>Zentrale Business Logic für: - Kontextuelle Hilfe-Bereitstellung - User Struggle Detection -
  * Hilfe-Analytics und Feedback - Adaptive Help Delivery
- * 
+ *
  * <p>Part of Phase 12.2 CQRS migration.
  *
  * @since Phase 12.2 CQRS Migration
@@ -46,7 +46,7 @@ public class HelpContentService {
   boolean cqrsEnabled;
 
   @Inject HelpContentCommandService commandService;
-  
+
   @Inject HelpContentQueryService queryService;
 
   @Inject EventBus eventBus;
@@ -62,32 +62,35 @@ public class HelpContentService {
   public HelpResponse getHelpForFeature(HelpRequest request) {
     if (cqrsEnabled) {
       LOG.debug("Using CQRS Event-Driven implementation for help content delivery");
-      
+
       // EVENT-DRIVEN APPROACH: Pure Query + Async Event for Side Effects
-      
+
       // 1. Get help content (Pure Query - no side effects)
       HelpResponse helpResponse = queryService.getHelpForFeature(request);
-      
+
       // 2. Publish event for side effects (asynchronous)
       if (helpResponse.id() != null) {
-        UserStruggle struggle = struggleDetectionService.detectStruggle(
-            request.userId(), request.feature(), request.context());
-        
-        HelpContentViewedEvent event = HelpContentViewedEvent.create(
-            helpResponse.id(), request, struggle);
-        
+        UserStruggle struggle =
+            struggleDetectionService.detectStruggle(
+                request.userId(), request.feature(), request.context());
+
+        HelpContentViewedEvent event =
+            HelpContentViewedEvent.create(helpResponse.id(), request, struggle);
+
         // Publish asynchronously - no blocking, no transaction coupling
         eventBus.publishAsync(event);
-        
-        LOG.debug("Published HelpContentViewedEvent for content: {} by user: {}", 
-            helpResponse.id(), request.userId());
+
+        LOG.debug(
+            "Published HelpContentViewedEvent for content: {} by user: {}",
+            helpResponse.id(),
+            request.userId());
       }
-      
+
       return helpResponse;
     }
 
     LOG.debug("Using legacy implementation for help content delivery");
-    
+
     // Legacy implementation (exakte Kopie des Original-Codes)
     LOG.debug(
         "Getting help for feature: {} (user: {}, level: {})",
@@ -260,9 +263,7 @@ public class HelpContentService {
     };
   }
 
-  /**
-   * Helper method to create a minimal HelpContent object from HelpResponse for analytics.
-   */
+  /** Helper method to create a minimal HelpContent object from HelpResponse for analytics. */
   private HelpContent createContentFromResponse(HelpResponse response) {
     // Create a minimal HelpContent object for analytics tracking
     // This is only used in CQRS mode when we need to pass a HelpContent to analytics
@@ -358,8 +359,15 @@ public class HelpContentService {
     if (cqrsEnabled) {
       LOG.debug("Using CQRS implementation for content creation");
       return commandService.createOrUpdateHelpContent(
-          feature, type, title, shortContent, mediumContent, detailedContent,
-          userLevel, roles, createdBy);
+          feature,
+          type,
+          title,
+          shortContent,
+          mediumContent,
+          detailedContent,
+          userLevel,
+          roles,
+          createdBy);
     }
 
     LOG.info("Creating help content: {} - {} ({})", feature, title, type);

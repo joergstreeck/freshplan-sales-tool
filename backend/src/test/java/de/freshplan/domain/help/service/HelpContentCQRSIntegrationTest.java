@@ -14,15 +14,15 @@ import de.freshplan.domain.help.service.dto.HelpRequest;
 import de.freshplan.domain.help.service.dto.HelpResponse;
 import de.freshplan.domain.help.service.query.HelpContentQueryService;
 import de.freshplan.infrastructure.events.EventBus;
+import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.TestTransaction;import io.quarkus.test.junit.TestProfile;
-import io.quarkus.test.TestTransaction;import jakarta.enterprise.context.ApplicationScoped;
+import io.quarkus.test.junit.TestProfile;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicInteger;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -31,12 +31,9 @@ import org.junit.jupiter.api.Test;
 /**
  * Integration Test für Phase 12.2 - HelpContentService Event-Driven CQRS
  *
- * <p>Testet die komplette Event-Driven CQRS-Implementierung:
- * - Command/Query Service Integration
- * - Event-Driven Side Effects Processing
- * - Facade Pattern mit Feature Flag
- * - Async Event Handling
- * - Performance und Reliability
+ * <p>Testet die komplette Event-Driven CQRS-Implementierung: - Command/Query Service Integration -
+ * Event-Driven Side Effects Processing - Facade Pattern mit Feature Flag - Async Event Handling -
+ * Performance und Reliability
  */
 @QuarkusTest
 @TestProfile(HelpContentCQRSIntegrationTest.CQRSTestProfile.class)
@@ -57,19 +54,19 @@ class HelpContentCQRSIntegrationTest {
   boolean cqrsEnabled;
 
   /**
-   * Helper service for async tests that need fresh transaction context.
-   * Awaitility lambdas don't have CDI context, so we need this workaround.
+   * Helper service for async tests that need fresh transaction context. Awaitility lambdas don't
+   * have CDI context, so we need this workaround.
    */
   @ApplicationScoped
   public static class TestHelper {
     @Inject HelpContentRepository helpRepository;
-    
+
     @TestTransaction
     public HelpContent findHelpContent(UUID helpId) {
       return helpRepository.findByIdOptional(helpId).orElse(null);
     }
   }
-  
+
   @Inject TestHelper testHelper;
 
   private UUID testHelpContentId;
@@ -83,21 +80,21 @@ class HelpContentCQRSIntegrationTest {
     String uniqueId = UUID.randomUUID().toString().substring(0, 8);
     testUserId = "test-user-" + uniqueId;
     testFeature = "test-feature-" + uniqueId;
-    
+
     // Create test help content
-    HelpContent testContent = commandService.createOrUpdateHelpContent(
-        testFeature,
-        HelpType.TOOLTIP,
-        "Test Help Content " + uniqueId,
-        "Short help text",
-        "Medium help text",
-        "Detailed help text for beginners",
-        UserLevel.BEGINNER,
-        List.of("admin", "user"),
-        "test-system"
-    );
+    HelpContent testContent =
+        commandService.createOrUpdateHelpContent(
+            testFeature,
+            HelpType.TOOLTIP,
+            "Test Help Content " + uniqueId,
+            "Short help text",
+            "Medium help text",
+            "Detailed help text for beginners",
+            UserLevel.BEGINNER,
+            List.of("admin", "user"),
+            "test-system");
     testHelpContentId = testContent.id;
-    
+
     // Ensure the content is persisted and visible
     helpRepository.getEntityManager().flush();
     helpRepository.getEntityManager().clear();
@@ -113,7 +110,7 @@ class HelpContentCQRSIntegrationTest {
   void featureFlag_cqrsMode_shouldUseEventDrivenArchitecture() {
     // Given: CQRS ist via TestProfile aktiviert
     assertThat(cqrsEnabled).isTrue();
-    
+
     // Given: Fresh state
     helpRepository.getEntityManager().flush();
     helpRepository.getEntityManager().clear();
@@ -137,24 +134,24 @@ class HelpContentCQRSIntegrationTest {
   @DisplayName("Command Service: Content Creation")
   void commandService_createContent_shouldPersistSuccessfully() {
     // When: Neuen Hilfe-Inhalt erstellen
-    HelpContent newContent = commandService.createOrUpdateHelpContent(
-        "new-feature",
-        HelpType.TUTORIAL,
-        "New Tutorial",
-        "Quick help",
-        "Detailed tutorial",
-        "Expert-level explanation",
-        UserLevel.EXPERT,
-        List.of("admin"),
-        "test-creator"
-    );
+    HelpContent newContent =
+        commandService.createOrUpdateHelpContent(
+            "new-feature",
+            HelpType.TUTORIAL,
+            "New Tutorial",
+            "Quick help",
+            "Detailed tutorial",
+            "Expert-level explanation",
+            UserLevel.EXPERT,
+            List.of("admin"),
+            "test-creator");
 
     // Then: Content sollte gespeichert sein
     assertThat(newContent.id).isNotNull();
     assertThat(newContent.feature).isEqualTo("new-feature");
     assertThat(newContent.helpType).isEqualTo(HelpType.TUTORIAL);
     assertThat(newContent.targetUserLevel).isEqualTo(UserLevel.EXPERT);
-    
+
     // Verify persistence
     var persistedContent = helpRepository.findByIdOptional(newContent.id);
     assertThat(persistedContent).isPresent();
@@ -171,7 +168,8 @@ class HelpContentCQRSIntegrationTest {
     var updatedContent = helpRepository.findByIdOptional(testHelpContentId);
     assertThat(updatedContent).isPresent();
     assertThat(updatedContent.get().helpfulCount).isEqualTo(1);
-    assertThat(updatedContent.get().getHelpfulnessRate()).isCloseTo(100.0, org.assertj.core.data.Offset.offset(0.1));
+    assertThat(updatedContent.get().getHelpfulnessRate())
+        .isCloseTo(100.0, org.assertj.core.data.Offset.offset(0.1));
   }
 
   @Test
@@ -186,7 +184,7 @@ class HelpContentCQRSIntegrationTest {
 
     // When: View count erhöhen
     commandService.incrementViewCount(testHelpContentId);
-    
+
     // Force database sync
     helpRepository.getEntityManager().flush();
     helpRepository.getEntityManager().clear();
@@ -205,10 +203,10 @@ class HelpContentCQRSIntegrationTest {
     helpRepository.getEntityManager().clear();
     var initialContent = helpRepository.findByIdOptional(testHelpContentId).get();
     boolean initialActive = initialContent.isActive;
-    
+
     // When: Content deaktivieren
     commandService.toggleHelpContent(testHelpContentId, false, "test-admin");
-    
+
     // Force database sync
     helpRepository.getEntityManager().flush();
     helpRepository.getEntityManager().clear();
@@ -220,7 +218,7 @@ class HelpContentCQRSIntegrationTest {
 
     // When: Content wieder aktivieren
     commandService.toggleHelpContent(testHelpContentId, true, "test-admin");
-    
+
     // Force database sync
     helpRepository.getEntityManager().flush();
     helpRepository.getEntityManager().clear();
@@ -239,7 +237,7 @@ class HelpContentCQRSIntegrationTest {
   void queryService_getHelpForFeature_shouldReturnPureQuery() {
     // Given: Help Request
     HelpRequest request = createTestHelpRequest();
-    
+
     // When: Help Content über Query Service abrufen
     HelpResponse result = queryService.getHelpForFeature(request);
 
@@ -255,7 +253,8 @@ class HelpContentCQRSIntegrationTest {
   @DisplayName("Query Service: Content Search")
   void queryService_searchHelp_shouldReturnMatchingContent() {
     // When: Nach Hilfe-Inhalt suchen
-    List<HelpResponse> results = queryService.searchHelp("Test Help", "BEGINNER", List.of("admin", "user"));
+    List<HelpResponse> results =
+        queryService.searchHelp("Test Help", "BEGINNER", List.of("admin", "user"));
 
     // Then: Matching Content sollte gefunden werden
     assertThat(results).isNotEmpty();
@@ -296,7 +295,7 @@ class HelpContentCQRSIntegrationTest {
     // Given: Fresh state
     helpRepository.getEntityManager().flush();
     helpRepository.getEntityManager().clear();
-    
+
     // Given: View count vor der Operation
     var initialContent = helpRepository.findByIdOptional(testHelpContentId).get();
     long initialViewCount = initialContent.viewCount;
@@ -311,13 +310,15 @@ class HelpContentCQRSIntegrationTest {
     assertThat(result.title()).contains("Test Help Content");
 
     // And: Event sollte asynchron verarbeitet werden (view count update)
-    await().atMost(Duration.ofSeconds(5))
+    await()
+        .atMost(Duration.ofSeconds(5))
         .pollInterval(Duration.ofMillis(100))
-        .untilAsserted(() -> {
-            var updatedContent = testHelper.findHelpContent(testHelpContentId);
-            assertThat(updatedContent).isNotNull();
-            assertThat(updatedContent.viewCount).isEqualTo(initialViewCount + 1);
-        });
+        .untilAsserted(
+            () -> {
+              var updatedContent = testHelper.findHelpContent(testHelpContentId);
+              assertThat(updatedContent).isNotNull();
+              assertThat(updatedContent.viewCount).isEqualTo(initialViewCount + 1);
+            });
   }
 
   @Test
@@ -327,11 +328,10 @@ class HelpContentCQRSIntegrationTest {
     // Given: Fresh state from database
     helpRepository.getEntityManager().flush();
     helpRepository.getEntityManager().clear();
-    
+
     // Given: Event erstellen
     HelpRequest request = createTestHelpRequest();
-    HelpContentViewedEvent event = HelpContentViewedEvent.create(
-        testHelpContentId, request, null);
+    HelpContentViewedEvent event = HelpContentViewedEvent.create(testHelpContentId, request, null);
 
     // Given: View count vor Event
     var initialContent = helpRepository.findByIdOptional(testHelpContentId).get();
@@ -341,13 +341,15 @@ class HelpContentCQRSIntegrationTest {
     eventBus.publishAsync(event);
 
     // Then: Event Handler sollte asynchron ausgeführt werden
-    await().atMost(Duration.ofSeconds(5))
+    await()
+        .atMost(Duration.ofSeconds(5))
         .pollInterval(Duration.ofMillis(100))
-        .untilAsserted(() -> {
-            var updatedContent = testHelper.findHelpContent(testHelpContentId);
-            assertThat(updatedContent).isNotNull();
-            assertThat(updatedContent.viewCount).isEqualTo(initialViewCount + 1);
-        });
+        .untilAsserted(
+            () -> {
+              var updatedContent = testHelper.findHelpContent(testHelpContentId);
+              assertThat(updatedContent).isNotNull();
+              assertThat(updatedContent.viewCount).isEqualTo(initialViewCount + 1);
+            });
   }
 
   @Test
@@ -357,30 +359,32 @@ class HelpContentCQRSIntegrationTest {
     // Given: Fresh state
     helpRepository.getEntityManager().flush();
     helpRepository.getEntityManager().clear();
-    
+
     // Given: Initial view count
     var initialContent = helpRepository.findByIdOptional(testHelpContentId).get();
     long initialViewCount = initialContent.viewCount;
-    
+
     // Given: Mehrere Events für verschiedene Users
     int numberOfEvents = 3; // Reduced for more reliable testing
 
     // When: Mehrere Events parallel publishen
     for (int i = 0; i < numberOfEvents; i++) {
-        String userId = "user-" + i;
-        HelpRequest request = createTestHelpRequest(userId);
-        facadeService.getHelpForFeature(request);
+      String userId = "user-" + i;
+      HelpRequest request = createTestHelpRequest(userId);
+      facadeService.getHelpForFeature(request);
     }
 
     // Then: Alle Events sollten verarbeitet werden
-    await().atMost(Duration.ofSeconds(8))
+    await()
+        .atMost(Duration.ofSeconds(8))
         .pollInterval(Duration.ofMillis(200))
-        .untilAsserted(() -> {
-            var finalContent = testHelper.findHelpContent(testHelpContentId);
-            assertThat(finalContent).isNotNull();
-            // View count sollte um die Anzahl der Events erhöht sein
-            assertThat(finalContent.viewCount).isEqualTo(initialViewCount + numberOfEvents);
-        });
+        .untilAsserted(
+            () -> {
+              var finalContent = testHelper.findHelpContent(testHelpContentId);
+              assertThat(finalContent).isNotNull();
+              // View count sollte um die Anzahl der Events erhöht sein
+              assertThat(finalContent.viewCount).isEqualTo(initialViewCount + numberOfEvents);
+            });
   }
 
   // =========================================================================================
@@ -394,44 +398,47 @@ class HelpContentCQRSIntegrationTest {
     // Given: Fresh state
     helpRepository.getEntityManager().flush();
     helpRepository.getEntityManager().clear();
-    
+
     // When: Mehrere Operationen über Facade
     HelpRequest request = createTestHelpRequest();
-    
+
     // 1. Help Content abrufen
     HelpResponse helpResponse = facadeService.getHelpForFeature(request);
     assertThat(helpResponse).isNotNull();
     assertThat(helpResponse.feature()).isEqualTo(testFeature);
     assertThat(helpResponse.title()).contains("Test Help Content");
-    
+
     // 2. Feedback geben
     facadeService.recordFeedback(testHelpContentId, testUserId, true, 45, "Great help!");
-    
+
     // Force database sync for feedback (synchronous operation)
     helpRepository.getEntityManager().flush();
     helpRepository.getEntityManager().clear();
-    
+
     // Verify feedback was recorded immediately (synchronous)
     var afterFeedback = helpRepository.findByIdOptional(testHelpContentId).get();
     assertThat(afterFeedback.helpfulCount).isEqualTo(1);
-    
+
     // 3. Content suchen
-    List<HelpResponse> searchResults = facadeService.searchHelp("Test", "BEGINNER", List.of("admin"));
+    List<HelpResponse> searchResults =
+        facadeService.searchHelp("Test", "BEGINNER", List.of("admin"));
     assertThat(searchResults).isNotEmpty();
-    
+
     // 4. Analytics abrufen
     HelpAnalytics analytics = facadeService.getAnalytics();
     assertThat(analytics).isNotNull();
 
     // Then: View count sollte durch Event Handler erhöht worden sein (asynchronous)
-    await().atMost(Duration.ofSeconds(5))
+    await()
+        .atMost(Duration.ofSeconds(5))
         .pollInterval(Duration.ofMillis(100))
-        .untilAsserted(() -> {
-            var updatedContent = testHelper.findHelpContent(testHelpContentId);
-            assertThat(updatedContent).isNotNull();
-            assertThat(updatedContent.viewCount).isGreaterThan(0);
-            // helpfulCount was already verified above (synchronous operation)
-        });
+        .untilAsserted(
+            () -> {
+              var updatedContent = testHelper.findHelpContent(testHelpContentId);
+              assertThat(updatedContent).isNotNull();
+              assertThat(updatedContent.viewCount).isGreaterThan(0);
+              // helpfulCount was already verified above (synchronous operation)
+            });
   }
 
   // =========================================================================================
@@ -445,7 +452,7 @@ class HelpContentCQRSIntegrationTest {
     // Given: Fresh state
     helpRepository.getEntityManager().flush();
     helpRepository.getEntityManager().clear();
-    
+
     // Given: Request vorbereiten
     HelpRequest request = createTestHelpRequest();
 
@@ -458,28 +465,31 @@ class HelpContentCQRSIntegrationTest {
     assertThat(result).isNotNull();
     assertThat(result.feature()).isEqualTo(testFeature);
     assertThat(queryTime).isLessThan(500); // Sollte unter 500ms sein (relaxed for CI)
-    
+
     // Side Effects passieren asynchron danach
-    await().atMost(Duration.ofSeconds(3))
+    await()
+        .atMost(Duration.ofSeconds(3))
         .pollInterval(Duration.ofMillis(100))
-        .untilAsserted(() -> {
-            var updatedContent = testHelper.findHelpContent(testHelpContentId);
-            assertThat(updatedContent).isNotNull();
-            assertThat(updatedContent.viewCount).isGreaterThan(0);
-        });
+        .untilAsserted(
+            () -> {
+              var updatedContent = testHelper.findHelpContent(testHelpContentId);
+              assertThat(updatedContent).isNotNull();
+              assertThat(updatedContent.viewCount).isGreaterThan(0);
+            });
   }
 
   @Test
   @DisplayName("Reliability: Side Effect Failures Don't Affect Main Operation")
   void reliability_sideEffectFailures_shouldNotAffectMainOperation() {
     // Given: Request für nicht-existierenden Content (simuliert Fehler)
-    HelpRequest request = HelpRequest.builder()
-        .userId(testUserId)
-        .feature("non-existent-feature")
-        .userLevel("BEGINNER")
-        .userRoles(List.of("admin"))
-        .context(Map.of("test", "reliability"))
-        .build();
+    HelpRequest request =
+        HelpRequest.builder()
+            .userId(testUserId)
+            .feature("non-existent-feature")
+            .userLevel("BEGINNER")
+            .userRoles(List.of("admin"))
+            .context(Map.of("test", "reliability"))
+            .build();
 
     // When: Operation ausführen
     HelpResponse result = facadeService.getHelpForFeature(request);
@@ -487,7 +497,7 @@ class HelpContentCQRSIntegrationTest {
     // Then: Main Operation sollte erfolgreich sein (empty response)
     assertThat(result).isNotNull();
     assertThat(result.feature()).isEqualTo("non-existent-feature");
-    
+
     // Und: Keine Exception sollte geworfen werden, auch wenn Side Effects fehlschlagen
     // (Events für non-existierenden Content werden graceful gehandelt)
   }
@@ -517,16 +527,14 @@ class HelpContentCQRSIntegrationTest {
   // TEST CONFIGURATION
   // =========================================================================================
 
-  /**
-   * Test Profile um CQRS zu aktivieren
-   */
+  /** Test Profile um CQRS zu aktivieren */
   public static class CQRSTestProfile implements io.quarkus.test.junit.QuarkusTestProfile {
     @Override
     public java.util.Map<String, String> getConfigOverrides() {
       return java.util.Map.of(
           "features.cqrs.enabled", "true", // KRITISCH: CQRS für Test aktivieren
-          "quarkus.log.level", "WARN"      // Weniger Logs während Tests
-      );
+          "quarkus.log.level", "WARN" // Weniger Logs während Tests
+          );
     }
   }
 }

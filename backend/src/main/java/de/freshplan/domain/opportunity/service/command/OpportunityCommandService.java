@@ -29,13 +29,11 @@ import org.slf4j.LoggerFactory;
 /**
  * Opportunity Command Service - CQRS Write Side
  *
- * <p>Behandelt alle schreibenden Operationen für Opportunities:
- * - Create, Update, Delete
- * - Stage Transitions
- * - Activity Management
+ * <p>Behandelt alle schreibenden Operationen für Opportunities: - Create, Update, Delete - Stage
+ * Transitions - Activity Management
  *
- * <p>WICHTIG: Dieser Service ist eine 1:1 Kopie der Command-Methoden aus OpportunityService
- * um 100% Kompatibilität zu gewährleisten.
+ * <p>WICHTIG: Dieser Service ist eine 1:1 Kopie der Command-Methoden aus OpportunityService um 100%
+ * Kompatibilität zu gewährleisten.
  *
  * @author FreshPlan Team
  * @since 2.0.0
@@ -60,8 +58,8 @@ public class OpportunityCommandService {
   // =====================================
 
   /**
-   * Erstellt eine neue Opportunity
-   * EXAKTE KOPIE von OpportunityService.createOpportunity() Zeile 63-132
+   * Erstellt eine neue Opportunity EXAKTE KOPIE von OpportunityService.createOpportunity() Zeile
+   * 63-132
    */
   @Transactional
   public OpportunityResponse createOpportunity(CreateOpportunityRequest request) {
@@ -140,8 +138,8 @@ public class OpportunityCommandService {
   // =====================================
 
   /**
-   * Aktualisiert eine Opportunity
-   * EXAKTE KOPIE von OpportunityService.updateOpportunity() Zeile 150-189
+   * Aktualisiert eine Opportunity EXAKTE KOPIE von OpportunityService.updateOpportunity() Zeile
+   * 150-189
    */
   @Transactional
   public OpportunityResponse updateOpportunity(UUID id, UpdateOpportunityRequest request) {
@@ -191,8 +189,7 @@ public class OpportunityCommandService {
   // =====================================
 
   /**
-   * Delete an opportunity.
-   * EXAKTE KOPIE von OpportunityService.deleteOpportunity() Zeile 409-419
+   * Delete an opportunity. EXAKTE KOPIE von OpportunityService.deleteOpportunity() Zeile 409-419
    *
    * @param id the opportunity ID
    */
@@ -214,8 +211,8 @@ public class OpportunityCommandService {
   // =====================================
 
   /**
-   * Changes the stage of an opportunity with default reason.
-   * EXAKTE KOPIE von OpportunityService.changeStage() Zeile 198-200
+   * Changes the stage of an opportunity with default reason. EXAKTE KOPIE von
+   * OpportunityService.changeStage() Zeile 198-200
    */
   @Transactional
   public OpportunityResponse changeStage(UUID opportunityId, OpportunityStage newStage) {
@@ -223,8 +220,8 @@ public class OpportunityCommandService {
   }
 
   /**
-   * Ändert die Stage einer Opportunity mit Business Rules Validation
-   * EXAKTE KOPIE von OpportunityService.changeStage() Zeile 202-252
+   * Ändert die Stage einer Opportunity mit Business Rules Validation EXAKTE KOPIE von
+   * OpportunityService.changeStage() Zeile 202-252
    */
   @Transactional
   public OpportunityResponse changeStage(
@@ -280,8 +277,8 @@ public class OpportunityCommandService {
   }
 
   /**
-   * Ändert die Stage einer Opportunity (überladene Methode für ChangeStageRequest)
-   * EXAKTE KOPIE von OpportunityService.changeStage() Zeile 338-391
+   * Ändert die Stage einer Opportunity (überladene Methode für ChangeStageRequest) EXAKTE KOPIE von
+   * OpportunityService.changeStage() Zeile 338-391
    */
   @Transactional
   public OpportunityResponse changeStage(UUID opportunityId, ChangeStageRequest request) {
@@ -343,8 +340,8 @@ public class OpportunityCommandService {
   // =====================================
 
   /**
-   * Fügt eine Activity zu einer Opportunity hinzu
-   * EXAKTE KOPIE von OpportunityService.addActivity() Zeile 311-325
+   * Fügt eine Activity zu einer Opportunity hinzu EXAKTE KOPIE von OpportunityService.addActivity()
+   * Zeile 311-325
    */
   @Transactional
   public OpportunityResponse addActivity(
@@ -368,8 +365,8 @@ public class OpportunityCommandService {
   // =====================================
 
   /**
-   * Ermittelt den aktuellen Benutzer
-   * EXAKTE KOPIE von OpportunityService.getCurrentUser() Zeile 425-450
+   * Ermittelt den aktuellen Benutzer EXAKTE KOPIE von OpportunityService.getCurrentUser() Zeile
+   * 425-450
    */
   private User getCurrentUser() {
     try {

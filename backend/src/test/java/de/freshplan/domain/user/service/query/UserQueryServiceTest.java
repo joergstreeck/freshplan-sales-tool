@@ -23,9 +23,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
- * Unit tests for UserQueryService.
- * Tests all query operations with mocked dependencies.
- * IMPORTANT: Verifies that NO write operations are performed.
+ * Unit tests for UserQueryService. Tests all query operations with mocked dependencies. IMPORTANT:
+ * Verifies that NO write operations are performed.
  */
 @QuarkusTest
 class UserQueryServiceTest {
@@ -57,29 +56,29 @@ class UserQueryServiceTest {
     setFieldValue(testUser2, "enabled", false);
 
     // Setup responses - UserResponse has all-args constructor
-    testUserResponse = new UserResponse(
-        testUserId,
-        "testuser",
-        "Test",
-        "User",
-        "test@example.com",
-        true,
-        Arrays.asList("sales"),
-        null,
-        null
-    );
+    testUserResponse =
+        new UserResponse(
+            testUserId,
+            "testuser",
+            "Test",
+            "User",
+            "test@example.com",
+            true,
+            Arrays.asList("sales"),
+            null,
+            null);
 
-    testUserResponse2 = new UserResponse(
-        userId2,
-        "testuser2",
-        "Test2",
-        "User2",
-        "test2@example.com",
-        false,
-        Arrays.asList("sales"),
-        null,
-        null
-    );
+    testUserResponse2 =
+        new UserResponse(
+            userId2,
+            "testuser2",
+            "Test2",
+            "User2",
+            "test2@example.com",
+            false,
+            Arrays.asList("sales"),
+            null,
+            null);
 
     // Reset mocks
     reset(userRepository, userMapper);
@@ -330,8 +329,8 @@ class UserQueryServiceTest {
   // ========== HELPER METHOD ==========
 
   /**
-   * Verifies that no write operations (persist, delete, flush) are performed.
-   * This is critical for CQRS - Query services must be read-only!
+   * Verifies that no write operations (persist, delete, flush) are performed. This is critical for
+   * CQRS - Query services must be read-only!
    */
   private void verifyNoWriteOperations() {
     verify(userRepository, never()).persist(any(User.class));
@@ -340,8 +339,8 @@ class UserQueryServiceTest {
     verify(userRepository, never()).getEntityManager();
     // Verify no @Transactional operations
     verify(userMapper, never()).updateEntity(any(), any());
-    }
-  
+  }
+
   // Helper method to set private fields via reflection
   private void setFieldValue(Object obj, String fieldName, Object value) {
     try {

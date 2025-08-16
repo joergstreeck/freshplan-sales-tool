@@ -5,9 +5,9 @@ import de.freshplan.domain.customer.entity.CustomerContact;
 import de.freshplan.domain.customer.repository.ContactRepository;
 import de.freshplan.domain.customer.repository.CustomerRepository;
 import de.freshplan.domain.customer.service.command.ContactCommandService;
-import de.freshplan.domain.customer.service.query.ContactQueryService;
 import de.freshplan.domain.customer.service.dto.ContactDTO;
 import de.freshplan.domain.customer.service.mapper.ContactMapper;
+import de.freshplan.domain.customer.service.query.ContactQueryService;
 import io.quarkus.security.identity.SecurityIdentity;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -19,12 +19,12 @@ import java.util.stream.Collectors;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 /**
- * Service layer for Contact management. 
- * 
- * This service now acts as a FACADE with Feature Flag support for gradual CQRS migration.
- * When cqrs.enabled=true, it delegates to ContactCommandService and ContactQueryService.
- * When cqrs.enabled=false, it uses the legacy implementation.
- * 
+ * Service layer for Contact management.
+ *
+ * <p>This service now acts as a FACADE with Feature Flag support for gradual CQRS migration. When
+ * cqrs.enabled=true, it delegates to ContactCommandService and ContactQueryService. When
+ * cqrs.enabled=false, it uses the legacy implementation.
+ *
  * @deprecated Will be removed once CQRS migration is complete
  */
 @ApplicationScoped
@@ -38,11 +38,11 @@ public class ContactService {
   @Inject ContactMapper contactMapper;
 
   @Inject SecurityIdentity securityIdentity;
-  
+
   // CQRS Services
   @Inject ContactCommandService commandService;
   @Inject ContactQueryService queryService;
-  
+
   // Feature Flag for CQRS
   @ConfigProperty(name = "features.cqrs.enabled", defaultValue = "false")
   boolean cqrsEnabled;

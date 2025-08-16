@@ -3,7 +3,6 @@ package de.freshplan.domain.user.service.command;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 import de.freshplan.domain.user.entity.User;
@@ -27,13 +26,9 @@ import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 import org.mockito.MockedStatic;
 
-/**
- * Unit tests for UserCommandService.
- * Tests all command operations with mocked dependencies.
- */
+/** Unit tests for UserCommandService. Tests all command operations with mocked dependencies. */
 @QuarkusTest
 class UserCommandServiceTest {
 
@@ -52,41 +47,31 @@ class UserCommandServiceTest {
   @BeforeEach
   void setUp() {
     testUserId = UUID.randomUUID();
-    
+
     // Setup test user using constructor
     testUser = new User("testuser", "Test", "User", "test@example.com");
     setFieldValue(testUser, "id", testUserId);
     setFieldValue(testUser, "roles", Arrays.asList("sales", "manager"));
 
     // Setup response using constructor
-    testUserResponse = new UserResponse(
-        testUserId,
-        "testuser",
-        "Test",
-        "User",
-        "test@example.com",
-        true,
-        Arrays.asList("sales", "manager"),
-        Instant.now(),
-        Instant.now()
-    );
+    testUserResponse =
+        new UserResponse(
+            testUserId,
+            "testuser",
+            "Test",
+            "User",
+            "test@example.com",
+            true,
+            Arrays.asList("sales", "manager"),
+            Instant.now(),
+            Instant.now());
 
     // Setup create request using constructor
-    createRequest = new CreateUserRequest(
-        "newuser",
-        "New",
-        "User",
-        "new@example.com"
-    );
+    createRequest = new CreateUserRequest("newuser", "New", "User", "new@example.com");
 
     // Setup update request using constructor (username, firstName, lastName, email, enabled)
-    updateRequest = new UpdateUserRequest(
-        "updateduser",
-        "Updated",
-        "User",
-        "updated@example.com",
-        false
-    );
+    updateRequest =
+        new UpdateUserRequest("updateduser", "Updated", "User", "updated@example.com", false);
 
     // Reset mocks
     reset(userRepository, userMapper);
@@ -120,7 +105,7 @@ class UserCommandServiceTest {
     assertThatThrownBy(() -> commandService.createUser(createRequest))
         .isInstanceOf(DuplicateUsernameException.class)
         .hasMessage("Username already exists: newuser");
-    
+
     verify(userRepository, never()).persist(any(User.class));
   }
 
@@ -134,7 +119,7 @@ class UserCommandServiceTest {
     assertThatThrownBy(() -> commandService.createUser(createRequest))
         .isInstanceOf(DuplicateEmailException.class)
         .hasMessage("Email already exists: new@example.com");
-    
+
     verify(userRepository, never()).persist(any(User.class));
   }
 
@@ -153,7 +138,8 @@ class UserCommandServiceTest {
     // Given
     when(userRepository.findByIdOptional(testUserId)).thenReturn(Optional.of(testUser));
     when(userRepository.existsByUsernameExcluding("updateduser", testUserId)).thenReturn(false);
-    when(userRepository.existsByEmailExcluding("updated@example.com", testUserId)).thenReturn(false);
+    when(userRepository.existsByEmailExcluding("updated@example.com", testUserId))
+        .thenReturn(false);
     when(userMapper.toResponse(testUser)).thenReturn(testUserResponse);
 
     // When
@@ -183,15 +169,10 @@ class UserCommandServiceTest {
     when(userRepository.existsByUsernameExcluding("testuser", testUserId)).thenReturn(false);
     when(userRepository.existsByEmailExcluding("test@example.com", testUserId)).thenReturn(false);
     when(userMapper.toResponse(testUser)).thenReturn(testUserResponse);
-    
+
     // Create an update request with same values (username, firstName, lastName, email, enabled)
-    UpdateUserRequest sameRequest = new UpdateUserRequest(
-        "testuser",
-        "Test",
-        "User",
-        "test@example.com",
-        true
-    );
+    UpdateUserRequest sameRequest =
+        new UpdateUserRequest("testuser", "Test", "User", "test@example.com", true);
 
     // When
     UserResponse result = commandService.updateUser(testUserId, sameRequest);
@@ -224,7 +205,7 @@ class UserCommandServiceTest {
     assertThatThrownBy(() -> commandService.deleteUser(testUserId))
         .isInstanceOf(UserNotFoundException.class)
         .hasMessage("User not found with ID: " + testUserId);
-    
+
     verify(userRepository, never()).delete(any());
   }
 
@@ -310,16 +291,16 @@ class UserCommandServiceTest {
   @org.junit.jupiter.api.Disabled("Requires mockito-inline for static mocking")
   void updateUserRoles_withValidRoles_shouldUpdate() {
     // Given
-    UpdateUserRolesRequest rolesRequest = new UpdateUserRolesRequest(
-        Arrays.asList("admin", "sales")
-    );
-    
+    UpdateUserRolesRequest rolesRequest =
+        new UpdateUserRolesRequest(Arrays.asList("admin", "sales"));
+
     when(userRepository.findByIdOptional(testUserId)).thenReturn(Optional.of(testUser));
     when(userMapper.toResponse(testUser)).thenReturn(testUserResponse);
 
     // Mock static RoleValidator
     try (MockedStatic<RoleValidator> roleValidator = mockStatic(RoleValidator.class)) {
-      roleValidator.when(() -> RoleValidator.normalizeAndValidateRoles(rolesRequest.getRoles()))
+      roleValidator
+          .when(() -> RoleValidator.normalizeAndValidateRoles(rolesRequest.getRoles()))
           .thenReturn(Arrays.asList("admin", "sales"));
 
       // When
@@ -346,17 +327,16 @@ class UserCommandServiceTest {
     // Given
     List<String> inputRoles = Arrays.asList("ADMIN", "Sales", "manager");
     List<String> normalizedRoles = Arrays.asList("admin", "sales", "manager");
-    
-    UpdateUserRolesRequest rolesRequest = new UpdateUserRolesRequest(
-        inputRoles
-    );
-    
+
+    UpdateUserRolesRequest rolesRequest = new UpdateUserRolesRequest(inputRoles);
+
     when(userRepository.findByIdOptional(testUserId)).thenReturn(Optional.of(testUser));
     when(userMapper.toResponse(testUser)).thenReturn(testUserResponse);
 
     // Mock static RoleValidator to normalize roles
     try (MockedStatic<RoleValidator> roleValidator = mockStatic(RoleValidator.class)) {
-      roleValidator.when(() -> RoleValidator.normalizeAndValidateRoles(inputRoles))
+      roleValidator
+          .when(() -> RoleValidator.normalizeAndValidateRoles(inputRoles))
           .thenReturn(normalizedRoles);
 
       // When
@@ -372,15 +352,14 @@ class UserCommandServiceTest {
   @org.junit.jupiter.api.Disabled("Requires mockito-inline for static mocking")
   void updateUserRoles_withInvalidRole_shouldThrowException() {
     // Given
-    UpdateUserRolesRequest rolesRequest = new UpdateUserRolesRequest(
-        Arrays.asList("invalid_role")
-    );
-    
+    UpdateUserRolesRequest rolesRequest = new UpdateUserRolesRequest(Arrays.asList("invalid_role"));
+
     when(userRepository.findByIdOptional(testUserId)).thenReturn(Optional.of(testUser));
 
     // Mock static RoleValidator to throw exception
     try (MockedStatic<RoleValidator> roleValidator = mockStatic(RoleValidator.class)) {
-      roleValidator.when(() -> RoleValidator.normalizeAndValidateRoles(rolesRequest.getRoles()))
+      roleValidator
+          .when(() -> RoleValidator.normalizeAndValidateRoles(rolesRequest.getRoles()))
           .thenThrow(new IllegalArgumentException("Invalid role: invalid_role"));
 
       // When/Then
@@ -389,7 +368,7 @@ class UserCommandServiceTest {
           .hasMessage("Invalid role: invalid_role");
     }
   }
-  
+
   // Helper method to set private fields via reflection
   private void setFieldValue(Object obj, String fieldName, Object value) {
     try {

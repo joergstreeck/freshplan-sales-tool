@@ -15,14 +15,12 @@ import org.slf4j.LoggerFactory;
 /**
  * CQRS Query Service für User Struggle Detection - Analysis & Detection
  *
- * <p>Handles all read operations for user behavior analysis:
- * - Struggle pattern detection and analysis
- * - Behavioral analytics and insights  
- * - Session data queries and reporting
- * 
- * <p>This service accesses the shared session state managed by the Command service
- * to perform real-time struggle detection without modifying the underlying data.
- * 
+ * <p>Handles all read operations for user behavior analysis: - Struggle pattern detection and
+ * analysis - Behavioral analytics and insights - Session data queries and reporting
+ *
+ * <p>This service accesses the shared session state managed by the Command service to perform
+ * real-time struggle detection without modifying the underlying data.
+ *
  * <p>Part of Phase 12 CQRS migration from UserStruggleDetectionService.
  *
  * @since Phase 12 CQRS Migration
@@ -30,7 +28,8 @@ import org.slf4j.LoggerFactory;
 @ApplicationScoped
 public class UserStruggleDetectionQueryService {
 
-  private static final Logger LOG = LoggerFactory.getLogger(UserStruggleDetectionQueryService.class);
+  private static final Logger LOG =
+      LoggerFactory.getLogger(UserStruggleDetectionQueryService.class);
 
   // Struggle Detection Thresholds (exakte Kopie vom Original)
   private static final int REPEATED_FAILURE_THRESHOLD = 3;
@@ -40,9 +39,9 @@ public class UserStruggleDetectionQueryService {
 
   /**
    * Detects user struggle based on current context and session history.
-   * 
-   * This is the main public method, matching the original UserStruggleDetectionService API.
-   * It performs read-only analysis of user behavior patterns to detect struggles.
+   *
+   * <p>This is the main public method, matching the original UserStruggleDetectionService API. It
+   * performs read-only analysis of user behavior patterns to detect struggles.
    *
    * @param userId The user ID
    * @param feature The feature being used
@@ -51,7 +50,7 @@ public class UserStruggleDetectionQueryService {
    */
   public UserStruggle detectStruggle(String userId, String feature, Map<String, Object> context) {
     UserBehaviorSession session = getUserSession(userId);
-    
+
     if (session == null) {
       LOG.debug("No session found for user: {} - no struggle detected", userId);
       return UserStruggle.noStruggle(userId, feature);
@@ -85,12 +84,10 @@ public class UserStruggleDetectionQueryService {
     return UserStruggle.noStruggle(userId, feature);
   }
 
-  /**
-   * Gets user session statistics for analytics.
-   */
+  /** Gets user session statistics for analytics. */
   public UserSessionStats getUserSessionStats(String userId) {
     UserBehaviorSession session = getUserSession(userId);
-    
+
     if (session == null) {
       return UserSessionStats.empty(userId);
     }
@@ -101,21 +98,19 @@ public class UserStruggleDetectionQueryService {
         .totalFailures(session.getTotalFailures())
         .helpRequestCount(session.getHelpRequestCount())
         .lastActivity(session.getLastActivity())
-        .sessionDuration(Duration.between(
-            session.getRecentActions(Duration.ofHours(24)).isEmpty() 
-                ? LocalDateTime.now() 
-                : session.getRecentActions(Duration.ofHours(24)).get(0).timestamp,
-            session.getLastActivity()
-        ))
+        .sessionDuration(
+            Duration.between(
+                session.getRecentActions(Duration.ofHours(24)).isEmpty()
+                    ? LocalDateTime.now()
+                    : session.getRecentActions(Duration.ofHours(24)).get(0).timestamp,
+                session.getLastActivity()))
         .build();
   }
 
-  /**
-   * Gets recent user actions for debugging or analytics.
-   */
+  /** Gets recent user actions for debugging or analytics. */
   public List<UserAction> getRecentUserActions(String userId, Duration window) {
     UserBehaviorSession session = getUserSession(userId);
-    
+
     if (session == null) {
       return List.of();
     }
@@ -125,9 +120,7 @@ public class UserStruggleDetectionQueryService {
 
   // Private Methods - exakte Kopie der Analyse-Logic vom Original
 
-  /**
-   * Analysiert verschiedene Struggle-Patterns (exakte Kopie)
-   */
+  /** Analysiert verschiedene Struggle-Patterns (exakte Kopie) */
   private UserStruggle.StruggleType analyzeStrugglePatterns(
       UserBehaviorSession session, String feature) {
     // 1. Wiederholte fehlgeschlagene Versuche
@@ -227,9 +220,7 @@ public class UserStruggleDetectionQueryService {
     return formFieldChanges > 10 && !hasSubmit;
   }
 
-  /**
-   * Berechnet Severity basierend auf Struggle-Typ und Session-History (exakte Kopie)
-   */
+  /** Berechnet Severity basierend auf Struggle-Typ und Session-History (exakte Kopie) */
   private int calculateSeverity(UserBehaviorSession session, UserStruggle.StruggleType type) {
     int baseSeverity =
         switch (type) {
@@ -255,9 +246,7 @@ public class UserStruggleDetectionQueryService {
     return Math.min(10, Math.max(1, baseSeverity));
   }
 
-  /**
-   * Generiert Suggestions basierend auf Struggle-Typ (exakte Kopie)
-   */
+  /** Generiert Suggestions basierend auf Struggle-Typ (exakte Kopie) */
   private List<UserStruggle.Suggestion> generateSuggestions(
       UserStruggle.StruggleType type, String feature) {
 
@@ -330,11 +319,10 @@ public class UserStruggleDetectionQueryService {
         || "form_submit".equals(action.context.get("action"));
   }
 
-  /**
-   * Helper method to get user session from Command service's shared state
-   */
+  /** Helper method to get user session from Command service's shared state */
   private UserBehaviorSession getUserSession(String userId) {
-    Map<String, UserBehaviorSession> sessions = UserStruggleDetectionCommandService.getUserSessions();
+    Map<String, UserBehaviorSession> sessions =
+        UserStruggleDetectionCommandService.getUserSessions();
     return sessions.get(userId);
   }
 
@@ -372,12 +360,29 @@ public class UserStruggleDetectionQueryService {
     }
 
     // Getters
-    public String getUserId() { return userId; }
-    public int getTotalActions() { return totalActions; }
-    public int getTotalFailures() { return totalFailures; }
-    public int getHelpRequestCount() { return helpRequestCount; }
-    public LocalDateTime getLastActivity() { return lastActivity; }
-    public Duration getSessionDuration() { return sessionDuration; }
+    public String getUserId() {
+      return userId;
+    }
+
+    public int getTotalActions() {
+      return totalActions;
+    }
+
+    public int getTotalFailures() {
+      return totalFailures;
+    }
+
+    public int getHelpRequestCount() {
+      return helpRequestCount;
+    }
+
+    public LocalDateTime getLastActivity() {
+      return lastActivity;
+    }
+
+    public Duration getSessionDuration() {
+      return sessionDuration;
+    }
 
     public static class Builder {
       private String userId;
@@ -387,12 +392,35 @@ public class UserStruggleDetectionQueryService {
       private LocalDateTime lastActivity;
       private Duration sessionDuration;
 
-      public Builder userId(String userId) { this.userId = userId; return this; }
-      public Builder totalActions(int totalActions) { this.totalActions = totalActions; return this; }
-      public Builder totalFailures(int totalFailures) { this.totalFailures = totalFailures; return this; }
-      public Builder helpRequestCount(int helpRequestCount) { this.helpRequestCount = helpRequestCount; return this; }
-      public Builder lastActivity(LocalDateTime lastActivity) { this.lastActivity = lastActivity; return this; }
-      public Builder sessionDuration(Duration sessionDuration) { this.sessionDuration = sessionDuration; return this; }
+      public Builder userId(String userId) {
+        this.userId = userId;
+        return this;
+      }
+
+      public Builder totalActions(int totalActions) {
+        this.totalActions = totalActions;
+        return this;
+      }
+
+      public Builder totalFailures(int totalFailures) {
+        this.totalFailures = totalFailures;
+        return this;
+      }
+
+      public Builder helpRequestCount(int helpRequestCount) {
+        this.helpRequestCount = helpRequestCount;
+        return this;
+      }
+
+      public Builder lastActivity(LocalDateTime lastActivity) {
+        this.lastActivity = lastActivity;
+        return this;
+      }
+
+      public Builder sessionDuration(Duration sessionDuration) {
+        this.sessionDuration = sessionDuration;
+        return this;
+      }
 
       public UserSessionStats build() {
         return new UserSessionStats(this);

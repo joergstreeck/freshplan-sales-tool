@@ -20,15 +20,12 @@ import org.slf4j.LoggerFactory;
 /**
  * CQRS Query Service für Help Content Management - Read Operations
  *
- * <p>Handles all read operations for help content management:
- * - Help content retrieval and selection
- * - Content search and filtering  
- * - Analytics and reporting
- * - Feature coverage analysis
- * 
- * <p>This service provides pure read operations without side effects,
- * following CQRS principles for optimal query performance.
- * 
+ * <p>Handles all read operations for help content management: - Help content retrieval and
+ * selection - Content search and filtering - Analytics and reporting - Feature coverage analysis
+ *
+ * <p>This service provides pure read operations without side effects, following CQRS principles for
+ * optimal query performance.
+ *
  * <p>Part of Phase 12.2 CQRS migration from HelpContentService.
  *
  * @since Phase 12.2 CQRS Migration
@@ -46,9 +43,9 @@ public class HelpContentQueryService {
 
   /**
    * Gets the best help content for a feature request.
-   * 
-   * This is a PURE QUERY operation - no side effects like view count updates.
-   * The caller is responsible for triggering view count updates via Command service.
+   *
+   * <p>This is a PURE QUERY operation - no side effects like view count updates. The caller is
+   * responsible for triggering view count updates via Command service.
    *
    * @param request The help request with context
    * @return HelpResponse with selected content, or empty response if none found
@@ -89,7 +86,7 @@ public class HelpContentQueryService {
 
   /**
    * Searches help content based on search term and user context.
-   * 
+   *
    * @param searchTerm The search query
    * @param userLevel User's experience level
    * @param userRoles User's roles for content filtering
@@ -119,7 +116,7 @@ public class HelpContentQueryService {
 
   /**
    * Gets overall help system analytics.
-   * 
+   *
    * @return Comprehensive analytics data
    */
   public HelpAnalytics getAnalytics() {
@@ -128,7 +125,7 @@ public class HelpContentQueryService {
 
   /**
    * Identifies features that lack adequate help content coverage.
-   * 
+   *
    * @return List of features needing help content
    */
   public List<String> getFeatureCoverageGaps() {
@@ -147,7 +144,7 @@ public class HelpContentQueryService {
 
   /**
    * Gets detailed help content for administrative purposes.
-   * 
+   *
    * @param helpId The help content ID
    * @return Optional help content with full details
    */
@@ -157,7 +154,7 @@ public class HelpContentQueryService {
 
   /**
    * Gets all help content for a specific feature.
-   * 
+   *
    * @param feature The feature name
    * @return List of all help content for the feature
    */
@@ -167,7 +164,7 @@ public class HelpContentQueryService {
 
   /**
    * Gets help content statistics for performance monitoring.
-   * 
+   *
    * @return Content statistics
    */
   public HelpContentStats getContentStatistics() {
@@ -175,10 +172,8 @@ public class HelpContentQueryService {
     long totalViews = helpRepository.getTotalViews();
     double avgHelpfulness = helpRepository.getOverallHelpfulnessRate();
     List<HelpContent> mostRequested = helpRepository.findMostRequested(10);
-    List<String> topFeatures = mostRequested.stream()
-        .map(content -> content.feature)
-        .distinct()
-        .toList();
+    List<String> topFeatures =
+        mostRequested.stream().map(content -> content.feature).distinct().toList();
 
     return HelpContentStats.builder()
         .totalActiveContent(mostRequested.size()) // Approximation
@@ -191,9 +186,7 @@ public class HelpContentQueryService {
 
   // Private Helper Methods - exakte Kopie der Original-Logic
 
-  /**
-   * Wählt den besten Hilfe-Inhalt basierend auf Kontext aus (exakte Kopie)
-   */
+  /** Wählt den besten Hilfe-Inhalt basierend auf Kontext aus (exakte Kopie) */
   private HelpContent selectBestContent(
       List<HelpContent> contents, HelpRequest request, UserStruggle struggle) {
     if (contents.isEmpty()) {
@@ -252,9 +245,7 @@ public class HelpContentQueryService {
         .orElse(contents.get(0));
   }
 
-  /**
-   * Baut die Help Response auf (exakte Kopie)
-   */
+  /** Baut die Help Response auf (exakte Kopie) */
   private HelpResponse buildHelpResponse(
       HelpContent content, UserStruggle struggle, HelpRequest request) {
     HelpResponse.Builder builder =
@@ -293,9 +284,7 @@ public class HelpContentQueryService {
     return builder.build();
   }
 
-  /**
-   * Wählt passenden Content für User Level (exakte Kopie)
-   */
+  /** Wählt passenden Content für User Level (exakte Kopie) */
   private String selectContentByLevel(HelpContent content, String userLevel) {
     UserLevel level = UserLevel.valueOf(userLevel.toUpperCase());
 
@@ -351,11 +340,25 @@ public class HelpContentQueryService {
     }
 
     // Getters
-    public long getTotalActiveContent() { return totalActiveContent; }
-    public long getTotalViews() { return totalViews; }
-    public double getAverageHelpfulness() { return averageHelpfulness; }
-    public List<String> getTopRequestedFeatures() { return topRequestedFeatures; }
-    public java.time.LocalDateTime getLastUpdated() { return lastUpdated; }
+    public long getTotalActiveContent() {
+      return totalActiveContent;
+    }
+
+    public long getTotalViews() {
+      return totalViews;
+    }
+
+    public double getAverageHelpfulness() {
+      return averageHelpfulness;
+    }
+
+    public List<String> getTopRequestedFeatures() {
+      return topRequestedFeatures;
+    }
+
+    public java.time.LocalDateTime getLastUpdated() {
+      return lastUpdated;
+    }
 
     public static class Builder {
       private long totalActiveContent;
@@ -364,25 +367,29 @@ public class HelpContentQueryService {
       private List<String> topRequestedFeatures;
       private java.time.LocalDateTime lastUpdated;
 
-      public Builder totalActiveContent(long totalActiveContent) { 
-        this.totalActiveContent = totalActiveContent; 
-        return this; 
+      public Builder totalActiveContent(long totalActiveContent) {
+        this.totalActiveContent = totalActiveContent;
+        return this;
       }
-      public Builder totalViews(long totalViews) { 
-        this.totalViews = totalViews; 
-        return this; 
+
+      public Builder totalViews(long totalViews) {
+        this.totalViews = totalViews;
+        return this;
       }
-      public Builder averageHelpfulness(double averageHelpfulness) { 
-        this.averageHelpfulness = averageHelpfulness; 
-        return this; 
+
+      public Builder averageHelpfulness(double averageHelpfulness) {
+        this.averageHelpfulness = averageHelpfulness;
+        return this;
       }
-      public Builder topRequestedFeatures(List<String> topRequestedFeatures) { 
-        this.topRequestedFeatures = topRequestedFeatures; 
-        return this; 
+
+      public Builder topRequestedFeatures(List<String> topRequestedFeatures) {
+        this.topRequestedFeatures = topRequestedFeatures;
+        return this;
       }
-      public Builder lastUpdated(java.time.LocalDateTime lastUpdated) { 
-        this.lastUpdated = lastUpdated; 
-        return this; 
+
+      public Builder lastUpdated(java.time.LocalDateTime lastUpdated) {
+        this.lastUpdated = lastUpdated;
+        return this;
       }
 
       public HelpContentStats build() {

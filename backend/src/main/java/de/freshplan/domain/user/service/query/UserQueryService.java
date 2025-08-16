@@ -16,10 +16,10 @@ import java.util.stream.Collectors;
 import org.jboss.logging.Logger;
 
 /**
- * Query service for User read operations.
- * Part of CQRS refactoring - handles all read operations for users.
- * 
- * This is an EXACT COPY of read methods from UserService to ensure 100% compatibility.
+ * Query service for User read operations. Part of CQRS refactoring - handles all read operations
+ * for users.
+ *
+ * <p>This is an EXACT COPY of read methods from UserService to ensure 100% compatibility.
  * IMPORTANT: No @Transactional annotation on class or methods (read-only operations)!
  */
 @ApplicationScoped
@@ -37,8 +37,7 @@ public class UserQueryService {
   }
 
   /**
-   * Retrieves a user by ID.
-   * EXACT COPY from UserService lines 155-169
+   * Retrieves a user by ID. EXACT COPY from UserService lines 155-169
    *
    * @param id the user ID
    * @return the user response
@@ -61,8 +60,7 @@ public class UserQueryService {
   }
 
   /**
-   * Retrieves a user by username.
-   * EXACT COPY from UserService lines 178-193
+   * Retrieves a user by username. EXACT COPY from UserService lines 178-193
    *
    * @param username the username
    * @return the user response
@@ -86,8 +84,7 @@ public class UserQueryService {
   }
 
   /**
-   * Lists all users with pagination.
-   * EXACT COPY from UserService lines 202-209
+   * Lists all users with pagination. EXACT COPY from UserService lines 202-209
    *
    * @param pageIndex the page index (0-based)
    * @param pageSize the page size
@@ -103,8 +100,7 @@ public class UserQueryService {
   }
 
   /**
-   * Lists enabled users with pagination.
-   * EXACT COPY from UserService lines 218-225
+   * Lists enabled users with pagination. EXACT COPY from UserService lines 218-225
    *
    * @param pageIndex the page index (0-based)
    * @param pageSize the page size
@@ -120,8 +116,7 @@ public class UserQueryService {
   }
 
   /**
-   * Searches for users by search term.
-   * EXACT COPY from UserService lines 235-242
+   * Searches for users by search term. EXACT COPY from UserService lines 235-242
    *
    * @param searchTerm the search term
    * @param pageIndex the page index
@@ -138,8 +133,8 @@ public class UserQueryService {
   }
 
   /**
-   * Retrieves a user by ID. Alias for getUser for backward compatibility.
-   * EXACT COPY from UserService lines 275-277
+   * Retrieves a user by ID. Alias for getUser for backward compatibility. EXACT COPY from
+   * UserService lines 275-277
    *
    * @param id the user ID
    * @return the user response
@@ -150,8 +145,7 @@ public class UserQueryService {
   }
 
   /**
-   * Retrieves all users.
-   * EXACT COPY from UserService lines 284-290
+   * Retrieves all users. EXACT COPY from UserService lines 284-290
    *
    * @return list of all user responses
    */
@@ -164,8 +158,7 @@ public class UserQueryService {
   }
 
   /**
-   * Finds a user by email.
-   * EXACT COPY from UserService lines 298-302
+   * Finds a user by email. EXACT COPY from UserService lines 298-302
    *
    * @param email the email address
    * @return Optional containing the user response if found
@@ -177,8 +170,7 @@ public class UserQueryService {
   }
 
   /**
-   * Counts total users.
-   * EXACT COPY from UserService lines 365-367
+   * Counts total users. EXACT COPY from UserService lines 365-367
    *
    * @return total user count
    */
@@ -187,8 +179,7 @@ public class UserQueryService {
   }
 
   /**
-   * Counts enabled users.
-   * EXACT COPY from UserService lines 374-376
+   * Counts enabled users. EXACT COPY from UserService lines 374-376
    *
    * @return enabled user count
    */

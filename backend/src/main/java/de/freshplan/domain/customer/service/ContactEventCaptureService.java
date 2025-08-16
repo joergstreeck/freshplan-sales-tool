@@ -14,12 +14,13 @@ import org.jboss.logging.Logger;
 
 /**
  * CQRS Facade for contact event capture functionality.
- * 
- * This service acts as a facade that routes capture requests to either the new CQRS-based
+ *
+ * <p>This service acts as a facade that routes capture requests to either the new CQRS-based
  * ContactEventCaptureCommandService or the legacy implementation, controlled by feature flag.
- * 
- * Since ContactEventCaptureService is write-only (no read operations), only a CommandService is needed.
- * 
+ *
+ * <p>Since ContactEventCaptureService is write-only (no read operations), only a CommandService is
+ * needed.
+ *
  * @author FreshPlan Team
  * @since 2.0.0 (CQRS migration: Phase 13)
  */
@@ -41,8 +42,8 @@ public class ContactEventCaptureService {
   @Inject Event<ContactInteractionCaptured> interactionCapturedEvent;
 
   /**
-   * Capture when a contact is viewed.
-   * Routes to CQRS CommandService when enabled, otherwise uses legacy implementation.
+   * Capture when a contact is viewed. Routes to CQRS CommandService when enabled, otherwise uses
+   * legacy implementation.
    */
   public void captureContactView(UUID contactId, String userId) {
     if (cqrsEnabled) {
@@ -50,7 +51,7 @@ public class ContactEventCaptureService {
       commandService.captureContactView(contactId, userId);
       return;
     }
-    
+
     // Legacy implementation
     LOG.debugf("Capturing contact view for %s by user %s", contactId, userId);
 
@@ -61,8 +62,8 @@ public class ContactEventCaptureService {
   }
 
   /**
-   * Capture when contact details are updated.
-   * Routes to CQRS CommandService when enabled, otherwise uses legacy implementation.
+   * Capture when contact details are updated. Routes to CQRS CommandService when enabled, otherwise
+   * uses legacy implementation.
    */
   public void captureContactUpdate(UUID contactId, String userId, String fieldUpdated) {
     if (cqrsEnabled) {
@@ -70,7 +71,7 @@ public class ContactEventCaptureService {
       commandService.captureContactUpdate(contactId, userId, fieldUpdated);
       return;
     }
-    
+
     // Legacy implementation
     LOG.infof(
         "Capturing contact update for %s by user %s - field: %s", contactId, userId, fieldUpdated);
@@ -95,8 +96,8 @@ public class ContactEventCaptureService {
   }
 
   /**
-   * Capture email sent to contact.
-   * Routes to CQRS CommandService when enabled, otherwise uses legacy implementation.
+   * Capture email sent to contact. Routes to CQRS CommandService when enabled, otherwise uses
+   * legacy implementation.
    */
   public void captureEmailSent(UUID contactId, String userId, String subject, String content) {
     if (cqrsEnabled) {
@@ -104,7 +105,7 @@ public class ContactEventCaptureService {
       commandService.captureEmailSent(contactId, userId, subject, content);
       return;
     }
-    
+
     // Legacy implementation
     LOG.infof("Capturing email sent to %s by user %s", contactId, userId);
 
@@ -130,8 +131,8 @@ public class ContactEventCaptureService {
   }
 
   /**
-   * Capture phone call logged.
-   * Routes to CQRS CommandService when enabled, otherwise uses legacy implementation.
+   * Capture phone call logged. Routes to CQRS CommandService when enabled, otherwise uses legacy
+   * implementation.
    */
   public void capturePhoneCall(
       UUID contactId, String userId, Integer durationMinutes, String outcome, String notes) {
@@ -140,7 +141,7 @@ public class ContactEventCaptureService {
       commandService.capturePhoneCall(contactId, userId, durationMinutes, outcome, notes);
       return;
     }
-    
+
     // Legacy implementation
     LOG.infof(
         "Capturing phone call to %s by user %s - duration: %d min",
@@ -171,8 +172,8 @@ public class ContactEventCaptureService {
   }
 
   /**
-   * Capture meeting scheduled.
-   * Routes to CQRS CommandService when enabled, otherwise uses legacy implementation.
+   * Capture meeting scheduled. Routes to CQRS CommandService when enabled, otherwise uses legacy
+   * implementation.
    */
   public void captureMeetingScheduled(
       UUID contactId, String userId, LocalDateTime meetingDate, String agenda) {
@@ -181,7 +182,7 @@ public class ContactEventCaptureService {
       commandService.captureMeetingScheduled(contactId, userId, meetingDate, agenda);
       return;
     }
-    
+
     // Legacy implementation
     LOG.infof("Capturing meeting scheduled with %s by user %s", contactId, userId);
 
@@ -207,8 +208,8 @@ public class ContactEventCaptureService {
   }
 
   /**
-   * Capture document shared.
-   * Routes to CQRS CommandService when enabled, otherwise uses legacy implementation.
+   * Capture document shared. Routes to CQRS CommandService when enabled, otherwise uses legacy
+   * implementation.
    */
   public void captureDocumentShared(
       UUID contactId, String userId, String documentName, String documentType) {
@@ -217,7 +218,7 @@ public class ContactEventCaptureService {
       commandService.captureDocumentShared(contactId, userId, documentName, documentType);
       return;
     }
-    
+
     // Legacy implementation
     LOG.infof(
         "Capturing document shared with %s by user %s - doc: %s", contactId, userId, documentName);
@@ -242,8 +243,8 @@ public class ContactEventCaptureService {
   }
 
   /**
-   * Capture task created for contact.
-   * Routes to CQRS CommandService when enabled, otherwise uses legacy implementation.
+   * Capture task created for contact. Routes to CQRS CommandService when enabled, otherwise uses
+   * legacy implementation.
    */
   public void captureTaskCreated(
       UUID contactId, String userId, String taskDescription, LocalDateTime dueDate) {
@@ -252,7 +253,7 @@ public class ContactEventCaptureService {
       commandService.captureTaskCreated(contactId, userId, taskDescription, dueDate);
       return;
     }
-    
+
     // Legacy implementation
     LOG.infof("Capturing task created for %s by user %s", contactId, userId);
 
@@ -277,10 +278,10 @@ public class ContactEventCaptureService {
   }
 
   /**
-   * Listen for domain events and capture interactions.
-   * Routes to CQRS CommandService when enabled, otherwise uses legacy implementation.
-   * 
-   * IMPORTANT: When CQRS is enabled, this method delegates to avoid duplicate event handling.
+   * Listen for domain events and capture interactions. Routes to CQRS CommandService when enabled,
+   * otherwise uses legacy implementation.
+   *
+   * <p>IMPORTANT: When CQRS is enabled, this method delegates to avoid duplicate event handling.
    */
   public void onContactEvent(@Observes ContactDomainEvent event) {
     if (cqrsEnabled) {
@@ -289,7 +290,7 @@ public class ContactEventCaptureService {
       LOG.debugf("CQRS enabled - event handling is managed by CommandService");
       return;
     }
-    
+
     // Legacy implementation
     LOG.debugf("Received contact domain event: %s", event.getEventType());
 

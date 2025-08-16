@@ -10,8 +10,8 @@ import de.freshplan.domain.customer.entity.CustomerStatus;
 import de.freshplan.domain.customer.entity.Industry;
 import de.freshplan.domain.customer.repository.CustomerRepository;
 import de.freshplan.domain.export.service.dto.ExportRequest;
-import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.InjectMock;
+import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -24,25 +24,19 @@ import org.mockito.Mockito;
 
 /**
  * Tests for HtmlExportQueryService following established CQRS test patterns.
- * 
- * This is a read-only service, so we focus on:
- * - HTML generation correctness
- * - XSS protection (HTML escaping)
- * - Statistics calculation
- * - Filter application
- * - NO write operations (verified)
- * 
+ *
+ * <p>This is a read-only service, so we focus on: - HTML generation correctness - XSS protection
+ * (HTML escaping) - Statistics calculation - Filter application - NO write operations (verified)
+ *
  * @author FreshPlan Team
  * @since Phase 13 CQRS Migration
  */
 @QuarkusTest
 class HtmlExportQueryServiceTest {
 
-  @Inject
-  HtmlExportQueryService queryService;
+  @Inject HtmlExportQueryService queryService;
 
-  @InjectMock
-  CustomerRepository customerRepository;
+  @InjectMock CustomerRepository customerRepository;
 
   private Customer testCustomer1;
   private Customer testCustomer2;
@@ -109,9 +103,8 @@ class HtmlExportQueryServiceTest {
     // Given
     ExportRequest request = new ExportRequest();
     List<Customer> customers = Arrays.asList(testCustomer1, testCustomer2);
-    
-    when(customerRepository.findByFilters(any(), any()))
-        .thenReturn(customers);
+
+    when(customerRepository.findByFilters(any(), any())).thenReturn(customers);
 
     // When
     String html = queryService.generateCustomersHtml(request);
@@ -128,10 +121,9 @@ class HtmlExportQueryServiceTest {
     // Given
     testCustomer1.setCompanyName("<script>alert('XSS')</script>");
     testCustomer1.setIndustry(null); // Will be tested as null value
-    
+
     ExportRequest request = new ExportRequest();
-    when(customerRepository.findByFilters(any(), any()))
-        .thenReturn(Arrays.asList(testCustomer1));
+    when(customerRepository.findByFilters(any(), any())).thenReturn(Arrays.asList(testCustomer1));
 
     // When
     String html = queryService.generateCustomersHtml(request);
@@ -145,8 +137,7 @@ class HtmlExportQueryServiceTest {
   void generateCustomersHtml_withEmptyResult_shouldGenerateValidHtmlWithZeroStats() {
     // Given
     ExportRequest request = new ExportRequest();
-    when(customerRepository.findByFilters(any(), any()))
-        .thenReturn(Collections.emptyList());
+    when(customerRepository.findByFilters(any(), any())).thenReturn(Collections.emptyList());
 
     // When
     String html = queryService.generateCustomersHtml(request);
@@ -163,10 +154,9 @@ class HtmlExportQueryServiceTest {
     testCustomer1.setIndustry(null);
     testCustomer1.setLastContactDate(null);
     testCustomer1.setContacts(null);
-    
+
     ExportRequest request = new ExportRequest();
-    when(customerRepository.findByFilters(any(), any()))
-        .thenReturn(Arrays.asList(testCustomer1));
+    when(customerRepository.findByFilters(any(), any())).thenReturn(Arrays.asList(testCustomer1));
 
     // When
     String html = queryService.generateCustomersHtml(request);
@@ -182,8 +172,7 @@ class HtmlExportQueryServiceTest {
   void generateCustomersHtml_shouldIncludePrintOptimization() {
     // Given
     ExportRequest request = new ExportRequest();
-    when(customerRepository.findByFilters(any(), any()))
-        .thenReturn(Collections.emptyList());
+    when(customerRepository.findByFilters(any(), any())).thenReturn(Collections.emptyList());
 
     // When
     String html = queryService.generateCustomersHtml(request);
@@ -201,9 +190,8 @@ class HtmlExportQueryServiceTest {
     ExportRequest request = new ExportRequest();
     request.setStatus(Arrays.asList("AKTIV", "LEAD"));
     request.setIndustry("IT");
-    
-    when(customerRepository.findByFilters(any(), any()))
-        .thenReturn(Collections.emptyList());
+
+    when(customerRepository.findByFilters(any(), any())).thenReturn(Collections.emptyList());
 
     // When
     String html = queryService.generateCustomersHtml(request);
@@ -217,8 +205,7 @@ class HtmlExportQueryServiceTest {
   void verifyNoWriteOperations() {
     // Given
     ExportRequest request = new ExportRequest();
-    when(customerRepository.findByFilters(any(), any()))
-        .thenReturn(Collections.emptyList());
+    when(customerRepository.findByFilters(any(), any())).thenReturn(Collections.emptyList());
 
     // When
     queryService.generateCustomersHtml(request);
@@ -228,7 +215,7 @@ class HtmlExportQueryServiceTest {
     verify(customerRepository, never()).persistAndFlush(any());
     verify(customerRepository, never()).delete(any());
     verify(customerRepository, never()).deleteById(any());
-    
+
     // Only read operations allowed
     verify(customerRepository, times(1)).findByFilters(any(), any());
   }

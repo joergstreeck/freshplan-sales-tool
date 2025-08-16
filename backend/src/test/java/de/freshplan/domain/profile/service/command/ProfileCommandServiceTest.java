@@ -23,8 +23,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
 /**
- * Unit tests for ProfileCommandService.
- * Tests all write operations for profiles with CQRS pattern.
+ * Unit tests for ProfileCommandService. Tests all write operations for profiles with CQRS pattern.
  */
 @QuarkusTest
 class ProfileCommandServiceTest {
@@ -44,7 +43,7 @@ class ProfileCommandServiceTest {
   @BeforeEach
   void setUp() {
     testId = UUID.randomUUID();
-    
+
     // Setup test profile
     testProfile = new Profile();
     testProfile.setId(testId);
@@ -57,38 +56,35 @@ class ProfileCommandServiceTest {
     testProfile.setUpdatedBy("system");
     testProfile.setCreatedAt(LocalDateTime.now());
     testProfile.setUpdatedAt(LocalDateTime.now());
-    
+
     // Setup test response using builder
-    testResponse = ProfileResponse.builder()
-        .id(testId)
-        .customerId("CUST-001")
-        .notes("Test notes")
-        .build();
-    
+    testResponse =
+        ProfileResponse.builder().id(testId).customerId("CUST-001").notes("Test notes").build();
+
     // Setup create request with nested DTOs
     createRequest = new CreateProfileRequest();
     createRequest.setCustomerId("CUST-001");
-    
+
     CreateProfileRequest.CompanyInfo companyInfo = new CreateProfileRequest.CompanyInfo();
     companyInfo.setName("Test Company");
     companyInfo.setIndustry("Technology");
     createRequest.setCompanyInfo(companyInfo);
-    
+
     CreateProfileRequest.ContactInfo contactInfo = new CreateProfileRequest.ContactInfo();
     contactInfo.setEmail("test@example.com");
     contactInfo.setPhone("+49 123 456789");
     createRequest.setContactInfo(contactInfo);
-    
+
     createRequest.setNotes("Test notes");
-    
+
     // Setup update request with nested DTOs (uses CreateProfileRequest's nested classes)
     updateRequest = new UpdateProfileRequest();
-    
+
     CreateProfileRequest.CompanyInfo updateCompanyInfo = new CreateProfileRequest.CompanyInfo();
     updateCompanyInfo.setName("Updated Company");
     updateCompanyInfo.setIndustry("Updated Industry");
     updateRequest.setCompanyInfo(updateCompanyInfo);
-    
+
     CreateProfileRequest.ContactInfo updateContactInfo = new CreateProfileRequest.ContactInfo();
     updateContactInfo.setEmail("updated@example.com");
     updateContactInfo.setPhone("+49 987 654321");
@@ -101,18 +97,18 @@ class ProfileCommandServiceTest {
     when(profileRepository.existsByCustomerId("CUST-001")).thenReturn(false);
     when(profileMapper.toEntity(any(CreateProfileRequest.class))).thenReturn(testProfile);
     when(profileMapper.toResponse(any(Profile.class))).thenReturn(testResponse);
-    
+
     // When
     ProfileResponse result = commandService.createProfile(createRequest);
-    
+
     // Then
     assertNotNull(result);
     assertEquals("CUST-001", result.getCustomerId());
-    
+
     // Verify profile was persisted
     ArgumentCaptor<Profile> profileCaptor = ArgumentCaptor.forClass(Profile.class);
     verify(profileRepository).persist(profileCaptor.capture());
-    
+
     Profile persistedProfile = profileCaptor.getValue();
     assertEquals("system", persistedProfile.getCreatedBy());
     assertEquals("system", persistedProfile.getUpdatedBy());
@@ -131,7 +127,7 @@ class ProfileCommandServiceTest {
   void createProfile_withNullCustomerId_shouldThrowException() {
     // Given
     createRequest.setCustomerId(null);
-    
+
     // When & Then
     assertThrows(
         IllegalArgumentException.class,
@@ -143,7 +139,7 @@ class ProfileCommandServiceTest {
   void createProfile_withEmptyCustomerId_shouldThrowException() {
     // Given
     createRequest.setCustomerId("  ");
-    
+
     // When & Then
     assertThrows(
         IllegalArgumentException.class,
@@ -155,12 +151,11 @@ class ProfileCommandServiceTest {
   void createProfile_withDuplicateCustomerId_shouldThrowException() {
     // Given
     when(profileRepository.existsByCustomerId("CUST-001")).thenReturn(true);
-    
+
     // When & Then
     assertThrows(
-        DuplicateProfileException.class,
-        () -> commandService.createProfile(createRequest));
-    
+        DuplicateProfileException.class, () -> commandService.createProfile(createRequest));
+
     // Verify no persistence happened
     verify(profileRepository, never()).persist(any(Profile.class));
   }
@@ -170,20 +165,20 @@ class ProfileCommandServiceTest {
     // Given
     when(profileRepository.findByIdOptional(testId)).thenReturn(Optional.of(testProfile));
     when(profileMapper.toResponse(any(Profile.class))).thenReturn(testResponse);
-    
+
     // When
     ProfileResponse result = commandService.updateProfile(testId, updateRequest);
-    
+
     // Then
     assertNotNull(result);
-    
+
     // Verify mapper was called to update entity
     verify(profileMapper).updateEntity(testProfile, updateRequest);
-    
+
     // Verify audit fields were updated
     ArgumentCaptor<Profile> profileCaptor = ArgumentCaptor.forClass(Profile.class);
     verify(profileRepository).persist(profileCaptor.capture());
-    
+
     Profile updatedProfile = profileCaptor.getValue();
     assertEquals("system", updatedProfile.getUpdatedBy());
     assertNotNull(updatedProfile.getUpdatedAt());
@@ -211,12 +206,11 @@ class ProfileCommandServiceTest {
   void updateProfile_withNonExistentId_shouldThrowException() {
     // Given
     when(profileRepository.findByIdOptional(testId)).thenReturn(Optional.empty());
-    
+
     // When & Then
     assertThrows(
-        ProfileNotFoundException.class,
-        () -> commandService.updateProfile(testId, updateRequest));
-    
+        ProfileNotFoundException.class, () -> commandService.updateProfile(testId, updateRequest));
+
     // Verify no persistence happened
     verify(profileRepository, never()).persist(any(Profile.class));
   }
@@ -225,10 +219,10 @@ class ProfileCommandServiceTest {
   void deleteProfile_withValidId_shouldDeleteSuccessfully() {
     // Given
     when(profileRepository.findByIdOptional(testId)).thenReturn(Optional.of(testProfile));
-    
+
     // When
     commandService.deleteProfile(testId);
-    
+
     // Then
     verify(profileRepository).delete(testProfile);
   }
@@ -246,12 +240,10 @@ class ProfileCommandServiceTest {
   void deleteProfile_withNonExistentId_shouldThrowException() {
     // Given
     when(profileRepository.findByIdOptional(testId)).thenReturn(Optional.empty());
-    
+
     // When & Then
-    assertThrows(
-        ProfileNotFoundException.class,
-        () -> commandService.deleteProfile(testId));
-    
+    assertThrows(ProfileNotFoundException.class, () -> commandService.deleteProfile(testId));
+
     // Verify no deletion happened
     verify(profileRepository, never()).delete(any(Profile.class));
   }
@@ -260,21 +252,21 @@ class ProfileCommandServiceTest {
   void verifyNoWriteOperationsInQueryContext() {
     // This test ensures CommandService only does write operations
     // All methods should result in persist or delete calls
-    
+
     // Create operation
     when(profileRepository.existsByCustomerId("CUST-002")).thenReturn(false);
     when(profileMapper.toEntity(any(CreateProfileRequest.class))).thenReturn(testProfile);
     when(profileMapper.toResponse(any(Profile.class))).thenReturn(testResponse);
-    
+
     createRequest.setCustomerId("CUST-002");
     commandService.createProfile(createRequest);
     verify(profileRepository, atLeastOnce()).persist(any(Profile.class));
-    
+
     // Update operation
     when(profileRepository.findByIdOptional(testId)).thenReturn(Optional.of(testProfile));
     commandService.updateProfile(testId, updateRequest);
     verify(profileRepository, atLeast(2)).persist(any(Profile.class));
-    
+
     // Delete operation
     when(profileRepository.findByIdOptional(testId)).thenReturn(Optional.of(testProfile));
     commandService.deleteProfile(testId);

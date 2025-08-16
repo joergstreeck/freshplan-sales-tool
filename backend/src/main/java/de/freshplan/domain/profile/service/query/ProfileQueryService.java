@@ -15,13 +15,12 @@ import java.util.stream.Collectors;
 import org.jboss.logging.Logger;
 
 /**
- * Query service for Profile read operations.
- * Handles all read-only operations for profiles.
- * 
- * IMPORTANT: NO @Transactional annotation - read-only operations don't need transactions!
- * 
- * Part of CQRS refactoring - Phase 11
- * 
+ * Query service for Profile read operations. Handles all read-only operations for profiles.
+ *
+ * <p>IMPORTANT: NO @Transactional annotation - read-only operations don't need transactions!
+ *
+ * <p>Part of CQRS refactoring - Phase 11
+ *
  * @author FreshPlan Team
  * @since 2.0.0
  */
@@ -35,8 +34,7 @@ public class ProfileQueryService {
   @Inject ProfileMapper profileMapper;
 
   /**
-   * Get profile by ID.
-   * EXACT COPY from ProfileService.getProfile() lines 84-95
+   * Get profile by ID. EXACT COPY from ProfileService.getProfile() lines 84-95
    *
    * @param id the profile ID
    * @return the profile response
@@ -56,8 +54,8 @@ public class ProfileQueryService {
   }
 
   /**
-   * Get profile by customer ID.
-   * EXACT COPY from ProfileService.getProfileByCustomerId() lines 104-117
+   * Get profile by customer ID. EXACT COPY from ProfileService.getProfileByCustomerId() lines
+   * 104-117
    *
    * @param customerId the customer ID
    * @return the profile response
@@ -79,11 +77,10 @@ public class ProfileQueryService {
   }
 
   /**
-   * Get all profiles.
-   * EXACT COPY from ProfileService.getAllProfiles() lines 177-185
-   * 
-   * WARNING: No pagination implemented - could be performance issue with many profiles!
-   * TODO: Add pagination support for large datasets
+   * Get all profiles. EXACT COPY from ProfileService.getAllProfiles() lines 177-185
+   *
+   * <p>WARNING: No pagination implemented - could be performance issue with many profiles! TODO:
+   * Add pagination support for large datasets
    *
    * @return list of all profile responses
    */
@@ -98,8 +95,8 @@ public class ProfileQueryService {
   }
 
   /**
-   * Check if a profile exists for a customer ID.
-   * EXACT COPY from ProfileService.profileExists() lines 193-201
+   * Check if a profile exists for a customer ID. EXACT COPY from ProfileService.profileExists()
+   * lines 193-201
    *
    * @param customerId the customer ID
    * @return true if exists, false otherwise
@@ -115,9 +112,8 @@ public class ProfileQueryService {
   }
 
   /**
-   * Export profile as HTML (for PDF printing).
-   * EXACT COPY from ProfileService.exportProfileAsHtml() lines 211-226
-   * UPDATED: Returns HTML instead of PDF bytes - no external library dependency!
+   * Export profile as HTML (for PDF printing). EXACT COPY from ProfileService.exportProfileAsHtml()
+   * lines 211-226 UPDATED: Returns HTML instead of PDF bytes - no external library dependency!
    *
    * @param id the profile ID
    * @return HTML content as string
@@ -141,8 +137,8 @@ public class ProfileQueryService {
   }
 
   /**
-   * Generate enhanced HTML content for profile with print optimization.
-   * EXACT COPY from ProfileService.generateEnhancedProfileHtml() lines 247-341
+   * Generate enhanced HTML content for profile with print optimization. EXACT COPY from
+   * ProfileService.generateEnhancedProfileHtml() lines 247-341
    *
    * @param profile the profile entity
    * @return HTML string
@@ -243,9 +239,9 @@ public class ProfileQueryService {
     return html.toString();
   }
 
-  /** 
-   * Escape HTML special characters to prevent XSS
-   * EXACT COPY from ProfileService.escapeHtml() lines 423-430
+  /**
+   * Escape HTML special characters to prevent XSS EXACT COPY from ProfileService.escapeHtml() lines
+   * 423-430
    */
   private String escapeHtml(String text) {
     if (text == null) return "";

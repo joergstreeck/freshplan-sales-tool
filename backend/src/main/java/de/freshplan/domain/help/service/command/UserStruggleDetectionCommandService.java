@@ -12,11 +12,9 @@ import org.slf4j.LoggerFactory;
 /**
  * CQRS Command Service für User Struggle Detection - Session Management
  *
- * <p>Handles all write operations for user behavior tracking:
- * - Session creation and management
- * - Action recording and state updates
- * - Session cleanup and maintenance
- * 
+ * <p>Handles all write operations for user behavior tracking: - Session creation and management -
+ * Action recording and state updates - Session cleanup and maintenance
+ *
  * <p>Part of Phase 12 CQRS migration from UserStruggleDetectionService.
  *
  * @since Phase 12 CQRS Migration
@@ -24,7 +22,8 @@ import org.slf4j.LoggerFactory;
 @ApplicationScoped
 public class UserStruggleDetectionCommandService {
 
-  private static final Logger LOG = LoggerFactory.getLogger(UserStruggleDetectionCommandService.class);
+  private static final Logger LOG =
+      LoggerFactory.getLogger(UserStruggleDetectionCommandService.class);
 
   // Shared in-memory state (in Production: Redis oder DB)
   // WICHTIG: Static für Shared State zwischen Command und Query Service
@@ -32,9 +31,9 @@ public class UserStruggleDetectionCommandService {
 
   /**
    * Records a user action and updates the session state.
-   * 
-   * This method handles the WRITE aspect of user behavior tracking,
-   * maintaining session state for later analysis by the Query service.
+   *
+   * <p>This method handles the WRITE aspect of user behavior tracking, maintaining session state
+   * for later analysis by the Query service.
    *
    * @param userId The user ID
    * @param feature The feature being used
@@ -43,40 +42,41 @@ public class UserStruggleDetectionCommandService {
   @Transactional
   public void recordUserAction(String userId, String feature, Map<String, Object> context) {
     LOG.debug("Recording user action: user={}, feature={}, context={}", userId, feature, context);
-    
+
     UserBehaviorSession session = getOrCreateSession(userId);
     session.recordAction(feature, context);
-    
+
     LOG.debug("User session updated: {} actions total", session.getActionCount());
   }
 
   /**
    * Cleans up old user sessions to prevent memory leaks.
-   * 
-   * Removes sessions that haven't been active for a specified duration.
+   *
+   * <p>Removes sessions that haven't been active for a specified duration.
    */
   @Transactional
   public void cleanupOldSessions() {
     LOG.debug("Starting session cleanup");
-    
+
     final LocalDateTime cutoff = LocalDateTime.now().minusHours(24);
     final int[] removedCount = {0}; // Array für mutable variable in lambda
-    
-    userSessions.entrySet().removeIf(entry -> {
-      UserBehaviorSession session = entry.getValue();
-      if (session.getLastActivity().isBefore(cutoff)) {
-        removedCount[0]++;
-        return true;
-      }
-      return false;
-    });
-    
+
+    userSessions
+        .entrySet()
+        .removeIf(
+            entry -> {
+              UserBehaviorSession session = entry.getValue();
+              if (session.getLastActivity().isBefore(cutoff)) {
+                removedCount[0]++;
+                return true;
+              }
+              return false;
+            });
+
     LOG.info("Session cleanup completed: {} sessions removed", removedCount[0]);
   }
 
-  /**
-   * Resets a user's session (for testing or explicit cleanup).
-   */
+  /** Resets a user's session (for testing or explicit cleanup). */
   @Transactional
   public void resetUserSession(String userId) {
     LOG.debug("Resetting session for user: {}", userId);
@@ -85,21 +85,23 @@ public class UserStruggleDetectionCommandService {
 
   /**
    * Gets or creates a user behavior session.
-   * 
+   *
    * @param userId The user ID
    * @return The user's behavior session
    */
   private UserBehaviorSession getOrCreateSession(String userId) {
-    return userSessions.computeIfAbsent(userId, k -> {
-      LOG.debug("Creating new session for user: {}", userId);
-      return new UserBehaviorSession(userId);
-    });
+    return userSessions.computeIfAbsent(
+        userId,
+        k -> {
+          LOG.debug("Creating new session for user: {}", userId);
+          return new UserBehaviorSession(userId);
+        });
   }
 
   /**
    * Static method to provide access to sessions for Query service.
-   * 
-   * WICHTIG: Ermöglicht Query Service Zugriff auf Shared State
+   *
+   * <p>WICHTIG: Ermöglicht Query Service Zugriff auf Shared State
    */
   public static Map<String, UserBehaviorSession> getUserSessions() {
     return userSessions;

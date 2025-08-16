@@ -6,9 +6,10 @@ import de.freshplan.domain.opportunity.entity.OpportunityStage;
 import de.freshplan.domain.opportunity.service.dto.CreateOpportunityRequest;
 import de.freshplan.domain.opportunity.service.dto.OpportunityResponse;
 import de.freshplan.domain.opportunity.service.dto.UpdateOpportunityRequest;
+import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.TestTransaction;import io.quarkus.test.junit.TestProfile;
-import io.quarkus.test.TestTransaction;import jakarta.inject.Inject;
+import io.quarkus.test.junit.TestProfile;
+import jakarta.inject.Inject;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
@@ -19,9 +20,9 @@ import org.junit.jupiter.api.Test;
 
 /**
  * Integration Test für CQRS-Implementation des OpportunityService
- * 
- * Dieser Test stellt sicher, dass beide Implementierungen (Legacy und CQRS)
- * identisches Verhalten aufweisen.
+ *
+ * <p>Dieser Test stellt sicher, dass beide Implementierungen (Legacy und CQRS) identisches
+ * Verhalten aufweisen.
  */
 @QuarkusTest
 @TestProfile(OpportunityCQRSTestProfile.class)
@@ -40,14 +41,15 @@ class OpportunityCQRSIntegrationTest {
   void setUp() {
     // Setup test data
     testCustomerId = UUID.randomUUID();
-    
-    createRequest = CreateOpportunityRequest.builder()
-        .name("Integration Test Opportunity")
-        .customerId(testCustomerId)
-        .description("Test description")
-        .expectedValue(new BigDecimal("50000"))
-        .expectedCloseDate(LocalDate.now().plusDays(90))
-        .build();
+
+    createRequest =
+        CreateOpportunityRequest.builder()
+            .name("Integration Test Opportunity")
+            .customerId(testCustomerId)
+            .description("Test description")
+            .expectedValue(new BigDecimal("50000"))
+            .expectedCloseDate(LocalDate.now().plusDays(90))
+            .build();
   }
 
   @Test
@@ -83,7 +85,7 @@ class OpportunityCQRSIntegrationTest {
 
     // Retrieve
     OpportunityResponse retrieved = opportunityService.findById(created.getId());
-    
+
     // Compare
     assertThat(retrieved).isNotNull();
     assertThat(retrieved.getId()).isEqualTo(created.getId());
@@ -102,17 +104,16 @@ class OpportunityCQRSIntegrationTest {
     OpportunityResponse created = opportunityService.createOpportunity(createRequest);
 
     // Update
-    UpdateOpportunityRequest updateRequest = UpdateOpportunityRequest.builder()
-        .name("Updated Opportunity Name")
-        .description("Updated description")
-        .expectedValue(new BigDecimal("75000"))
-        .probability(80)
-        .build();
+    UpdateOpportunityRequest updateRequest =
+        UpdateOpportunityRequest.builder()
+            .name("Updated Opportunity Name")
+            .description("Updated description")
+            .expectedValue(new BigDecimal("75000"))
+            .probability(80)
+            .build();
 
-    OpportunityResponse updated = opportunityService.updateOpportunity(
-        created.getId(), 
-        updateRequest
-    );
+    OpportunityResponse updated =
+        opportunityService.updateOpportunity(created.getId(), updateRequest);
 
     // Verify
     assertThat(updated.getName()).isEqualTo("Updated Opportunity Name");
@@ -132,11 +133,9 @@ class OpportunityCQRSIntegrationTest {
     OpportunityResponse created = opportunityService.createOpportunity(createRequest);
 
     // Change stage
-    OpportunityResponse changed = opportunityService.changeStage(
-        created.getId(),
-        OpportunityStage.QUALIFICATION,
-        "Moving to qualification phase"
-    );
+    OpportunityResponse changed =
+        opportunityService.changeStage(
+            created.getId(), OpportunityStage.QUALIFICATION, "Moving to qualification phase");
 
     // Verify
     assertThat(changed.getStage()).isEqualTo(OpportunityStage.QUALIFICATION);
@@ -153,13 +152,11 @@ class OpportunityCQRSIntegrationTest {
     OpportunityResponse created = opportunityService.createOpportunity(createRequest);
 
     // Try invalid transition (NEW_LEAD -> CLOSED_WON)
-    assertThatThrownBy(() -> 
-        opportunityService.changeStage(
-            created.getId(),
-            OpportunityStage.CLOSED_WON,
-            "Invalid jump"
-        )
-    ).hasMessageContaining("Invalid stage transition");
+    assertThatThrownBy(
+            () ->
+                opportunityService.changeStage(
+                    created.getId(), OpportunityStage.CLOSED_WON, "Invalid jump"))
+        .hasMessageContaining("Invalid stage transition");
   }
 
   // =====================================
@@ -171,13 +168,14 @@ class OpportunityCQRSIntegrationTest {
   void findByStage_inCQRSMode_shouldReturnFilteredResults() {
     // Create opportunities in different stages
     OpportunityResponse opp1 = opportunityService.createOpportunity(createRequest);
-    
-    CreateOpportunityRequest request2 = CreateOpportunityRequest.builder()
-        .name("Second Opportunity")
-        .customerId(testCustomerId)
-        .build();
+
+    CreateOpportunityRequest request2 =
+        CreateOpportunityRequest.builder()
+            .name("Second Opportunity")
+            .customerId(testCustomerId)
+            .build();
     OpportunityResponse opp2 = opportunityService.createOpportunity(request2);
-    
+
     // Move one to PROPOSAL stage
     opportunityService.changeStage(opp2.getId(), OpportunityStage.QUALIFICATION, "Test");
     opportunityService.changeStage(opp2.getId(), OpportunityStage.NEEDS_ANALYSIS, "Test");
@@ -199,11 +197,12 @@ class OpportunityCQRSIntegrationTest {
     createRequest.setExpectedValue(new BigDecimal("100000"));
     opportunityService.createOpportunity(createRequest);
 
-    CreateOpportunityRequest request2 = CreateOpportunityRequest.builder()
-        .name("High Value Opportunity")
-        .customerId(testCustomerId)
-        .expectedValue(new BigDecimal("200000"))
-        .build();
+    CreateOpportunityRequest request2 =
+        CreateOpportunityRequest.builder()
+            .name("High Value Opportunity")
+            .customerId(testCustomerId)
+            .expectedValue(new BigDecimal("200000"))
+            .build();
     opportunityService.createOpportunity(request2);
 
     // Calculate forecast
@@ -232,8 +231,6 @@ class OpportunityCQRSIntegrationTest {
     opportunityService.deleteOpportunity(id);
 
     // Verify it's deleted
-    assertThatThrownBy(() -> opportunityService.findById(id))
-        .hasMessageContaining("not found");
+    assertThatThrownBy(() -> opportunityService.findById(id)).hasMessageContaining("not found");
   }
 }
-

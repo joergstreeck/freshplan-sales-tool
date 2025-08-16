@@ -30,15 +30,9 @@ CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_customers_next_follow_up
 ON customers(next_follow_up_date)
 WHERE is_deleted = false AND next_follow_up_date IS NOT NULL;
 
--- Analyze the table to update statistics for the query planner
-ANALYZE customers;
-
--- Log completion
-DO $$
-BEGIN
-    RAISE NOTICE 'Performance indexes created successfully for customers table';
-    RAISE NOTICE 'Expected improvements:';
-    RAISE NOTICE '  - List queries: 50-70% faster';
-    RAISE NOTICE '  - Search queries: 40-60% faster';
-    RAISE NOTICE '  - Dashboard queries: 30-50% faster';
-END $$;
+-- Note: ANALYZE must be run separately outside of transaction
+-- Run manually after migration: ANALYZE customers;
+-- Expected improvements:
+--   - List queries: 50-70% faster
+--   - Search queries: 40-60% faster
+--   - Dashboard queries: 30-50% faster

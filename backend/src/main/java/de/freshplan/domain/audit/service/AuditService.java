@@ -36,8 +36,8 @@ import org.jboss.logging.Logger;
 /**
  * Enterprise-grade Audit Service with async processing and integrity verification
  *
- * <p>FACADE PATTERN: Dieser Service fungiert als Facade für die CQRS-aufgeteilten Services.
- * Mit Feature Flag kann zwischen Legacy-Implementierung und CQRS umgeschaltet werden.
+ * <p>FACADE PATTERN: Dieser Service fungiert als Facade für die CQRS-aufgeteilten Services. Mit
+ * Feature Flag kann zwischen Legacy-Implementierung und CQRS umgeschaltet werden.
  *
  * <p>Features: - Async audit logging to prevent performance impact - Cryptographic hash chaining
  * for tamper detection - Automatic context enrichment - Event-driven architecture support -
@@ -63,12 +63,12 @@ public class AuditService {
   @Inject AuditConfiguration configuration;
 
   @Inject Instance<HttpServerRequest> httpRequestInstance;
-  
+
   // CQRS Services (NEU)
   @Inject AuditCommandService commandService;
-  
+
   @Inject AuditQueryService queryService;
-  
+
   // Feature Flag für CQRS
   @ConfigProperty(name = "features.cqrs.enabled", defaultValue = "false")
   boolean cqrsEnabled;
@@ -101,7 +101,7 @@ public class AuditService {
       Object oldValue,
       Object newValue,
       String reason) {
-    
+
     if (cqrsEnabled) {
       log.debugf("CQRS mode: delegating to AuditCommandService");
       return commandService.logAsync(eventType, entityType, entityId, oldValue, newValue, reason);
@@ -472,11 +472,8 @@ public class AuditService {
   // =====================================
   // QUERY OPERATIONS (NEU für CQRS)
   // =====================================
-  
-  /**
-   * Find audit entries by entity
-   * Delegiert an AuditQueryService
-   */
+
+  /** Find audit entries by entity Delegiert an AuditQueryService */
   public List<AuditEntry> findByEntity(String entityType, UUID entityId) {
     if (cqrsEnabled) {
       return queryService.findByEntity(entityType, entityId);
@@ -484,11 +481,8 @@ public class AuditService {
     // Legacy: direkt vom Repository
     return auditRepository.findByEntity(entityType, entityId);
   }
-  
-  /**
-   * Find audit entries by entity with pagination
-   * Delegiert an AuditQueryService
-   */
+
+  /** Find audit entries by entity with pagination Delegiert an AuditQueryService */
   public List<AuditEntry> findByEntity(String entityType, UUID entityId, int page, int size) {
     if (cqrsEnabled) {
       return queryService.findByEntity(entityType, entityId, page, size);
@@ -496,11 +490,8 @@ public class AuditService {
     // Legacy: direkt vom Repository
     return auditRepository.findByEntity(entityType, entityId, page, size);
   }
-  
-  /**
-   * Get dashboard metrics for Admin UI
-   * Delegiert an AuditQueryService
-   */
+
+  /** Get dashboard metrics for Admin UI Delegiert an AuditQueryService */
   public AuditRepository.DashboardMetrics getDashboardMetrics() {
     if (cqrsEnabled) {
       return queryService.getDashboardMetrics();
@@ -508,11 +499,8 @@ public class AuditService {
     // Legacy: direkt vom Repository
     return auditRepository.getDashboardMetrics();
   }
-  
-  /**
-   * Get compliance alerts
-   * Delegiert an AuditQueryService
-   */
+
+  /** Get compliance alerts Delegiert an AuditQueryService */
   public List<ComplianceAlertDto> getComplianceAlerts() {
     if (cqrsEnabled) {
       return queryService.getComplianceAlerts();
@@ -520,11 +508,8 @@ public class AuditService {
     // Legacy: direkt vom Repository
     return auditRepository.getComplianceAlerts();
   }
-  
-  /**
-   * Find audit entries by filters for export
-   * Delegiert an AuditQueryService
-   */
+
+  /** Find audit entries by filters for export Delegiert an AuditQueryService */
   public List<AuditEntry> findByFilters(ExportRequest request) {
     if (cqrsEnabled) {
       return queryService.findByFilters(request);
@@ -532,11 +517,8 @@ public class AuditService {
     // Legacy: direkt vom Repository
     return auditRepository.findByFilters(request);
   }
-  
-  /**
-   * Stream audit entries for export (memory-efficient)
-   * Delegiert an AuditQueryService
-   */
+
+  /** Stream audit entries for export (memory-efficient) Delegiert an AuditQueryService */
   public Stream<AuditEntry> streamForExport(AuditRepository.AuditSearchCriteria criteria) {
     if (cqrsEnabled) {
       return queryService.streamForExport(criteria);

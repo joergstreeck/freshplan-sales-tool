@@ -16,9 +16,10 @@ import org.jboss.logging.Logger;
 /**
  * Command service for managing test data operations. Handles all write operations for test data
  * seeding, cleanup, and management.
- * 
- * CQRS Pattern: This service contains only write operations (Commands) that modify database state.
- * All Command operations are transactional and handle complex business logic for test data management.
+ *
+ * <p>CQRS Pattern: This service contains only write operations (Commands) that modify database
+ * state. All Command operations are transactional and handle complex business logic for test data
+ * management.
  */
 @ApplicationScoped
 public class TestDataCommandService {

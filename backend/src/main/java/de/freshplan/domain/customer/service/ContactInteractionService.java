@@ -6,11 +6,11 @@ import de.freshplan.domain.customer.entity.CustomerContact;
 import de.freshplan.domain.customer.repository.ContactInteractionRepository;
 import de.freshplan.domain.customer.repository.ContactRepository;
 import de.freshplan.domain.customer.service.command.ContactInteractionCommandService;
-import de.freshplan.domain.customer.service.query.ContactInteractionQueryService;
 import de.freshplan.domain.customer.service.dto.ContactInteractionDTO;
 import de.freshplan.domain.customer.service.dto.DataQualityMetricsDTO;
 import de.freshplan.domain.customer.service.dto.WarmthScoreDTO;
 import de.freshplan.domain.customer.service.mapper.ContactInteractionMapper;
+import de.freshplan.domain.customer.service.query.ContactInteractionQueryService;
 import io.quarkus.panache.common.Page;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -28,10 +28,10 @@ import org.jboss.logging.Logger;
 /**
  * Service for managing contact interactions and calculating intelligence metrics. Core component of
  * the Data Strategy Intelligence feature.
- * 
- * CQRS Refactoring: This service now acts as a facade that delegates to Command and Query services
- * based on a feature flag. When cqrs.enabled=true, it uses the new split services.
- * When false, it falls back to the legacy implementation.
+ *
+ * <p>CQRS Refactoring: This service now acts as a facade that delegates to Command and Query
+ * services based on a feature flag. When cqrs.enabled=true, it uses the new split services. When
+ * false, it falls back to the legacy implementation.
  */
 @ApplicationScoped
 @Transactional
@@ -42,11 +42,9 @@ public class ContactInteractionService {
   @ConfigProperty(name = "features.cqrs.enabled", defaultValue = "false")
   boolean cqrsEnabled;
 
-  @Inject
-  ContactInteractionCommandService commandService;
+  @Inject ContactInteractionCommandService commandService;
 
-  @Inject
-  ContactInteractionQueryService queryService;
+  @Inject ContactInteractionQueryService queryService;
 
   // Warmth Score calculation weights
   private static final double WARMTH_WEIGHT_FREQUENCY = 0.3;
@@ -81,7 +79,7 @@ public class ContactInteractionService {
       LOG.debugf("CQRS enabled - delegating createInteraction to ContactInteractionCommandService");
       return commandService.createInteraction(dto);
     }
-    
+
     // Legacy implementation
     LOG.infof("Creating interaction for contact %s", dto.getContactId());
 
@@ -110,10 +108,11 @@ public class ContactInteractionService {
   /** Get all interactions for a contact */
   public List<ContactInteractionDTO> getInteractionsByContact(UUID contactId, Page page) {
     if (cqrsEnabled) {
-      LOG.debugf("CQRS enabled - delegating getInteractionsByContact to ContactInteractionQueryService");
+      LOG.debugf(
+          "CQRS enabled - delegating getInteractionsByContact to ContactInteractionQueryService");
       return queryService.getInteractionsByContact(contactId, page);
     }
-    
+
     // Legacy implementation
     CustomerContact contact = contactRepository.findById(contactId);
     if (contact == null) {
@@ -131,13 +130,14 @@ public class ContactInteractionService {
       LOG.debugf("CQRS enabled - using split calculateWarmthScore");
       // First calculate the score using the query service (read-only)
       WarmthScoreDTO scoreDTO = queryService.calculateWarmthScore(contactId);
-      
+
       // Then update the contact with the calculated values using the command service
-      commandService.updateWarmthScore(contactId, scoreDTO.getWarmthScore(), scoreDTO.getConfidence());
-      
+      commandService.updateWarmthScore(
+          contactId, scoreDTO.getWarmthScore(), scoreDTO.getConfidence());
+
       return scoreDTO;
     }
-    
+
     // Legacy implementation
     CustomerContact contact = contactRepository.findById(contactId);
     if (contact == null) {
@@ -196,10 +196,11 @@ public class ContactInteractionService {
   /** Get data quality metrics for intelligence features */
   public DataQualityMetricsDTO getDataQualityMetrics() {
     if (cqrsEnabled) {
-      LOG.debugf("CQRS enabled - delegating getDataQualityMetrics to ContactInteractionQueryService");
+      LOG.debugf(
+          "CQRS enabled - delegating getDataQualityMetrics to ContactInteractionQueryService");
       return queryService.getDataQualityMetrics();
     }
-    
+
     // Legacy implementation
     long totalContacts = contactRepository.count();
     long contactsWithInteractions =
@@ -240,7 +241,7 @@ public class ContactInteractionService {
       LOG.debugf("CQRS enabled - delegating recordNote to ContactInteractionCommandService");
       return commandService.recordNote(contactId, note, createdBy);
     }
-    
+
     // Legacy implementation
     ContactInteractionDTO dto =
         ContactInteractionDTO.builder()
@@ -369,12 +370,14 @@ public class ContactInteractionService {
    */
   public BatchImportResult batchImportInteractions(List<ContactInteractionDTO> dtos) {
     if (cqrsEnabled) {
-      LOG.debugf("CQRS enabled - delegating batchImportInteractions to ContactInteractionCommandService");
-      ContactInteractionCommandService.BatchImportResult result = commandService.batchImportInteractions(dtos);
+      LOG.debugf(
+          "CQRS enabled - delegating batchImportInteractions to ContactInteractionCommandService");
+      ContactInteractionCommandService.BatchImportResult result =
+          commandService.batchImportInteractions(dtos);
       // Convert to local BatchImportResult for backward compatibility
       return new BatchImportResult(result.imported, result.failed, result.errors);
     }
-    
+
     // Legacy implementation
     LOG.infof("Starting batch import of %d interactions", dtos.size());
 

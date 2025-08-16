@@ -5,25 +5,25 @@ import de.freshplan.domain.help.service.dto.UserStruggle;
 import de.freshplan.domain.help.service.query.UserStruggleDetectionQueryService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * FACADE Service für User Struggle Detection - CQRS Migration mit Feature Flag
  *
- * <p>Dieses Service agiert als Facade während der CQRS-Migration und delegiert
- * an die neuen Command und Query Services basierend auf dem Feature Flag.
- * 
+ * <p>Dieses Service agiert als Facade während der CQRS-Migration und delegiert an die neuen Command
+ * und Query Services basierend auf dem Feature Flag.
+ *
  * <p>Analysiert User-Verhalten und erkennt: - Wiederholte fehlgeschlagene Versuche - Hektische
  * Navigation - Lange Pausen nach dem Start - Abgebrochene Workflows
- * 
+ *
  * <p>Part of Phase 12 CQRS migration.
  *
  * @since Phase 12 CQRS Migration

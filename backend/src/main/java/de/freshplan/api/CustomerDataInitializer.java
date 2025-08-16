@@ -48,35 +48,57 @@ public class CustomerDataInitializer {
 
     // IMPROVED: Check if test data already exists - NEVER DELETE, ONLY ADD MISSING DATA
     long existingCount = customerRepository.count();
-    long testCustomerCount = customerRepository.getEntityManager()
-        .createNativeQuery("SELECT COUNT(*) FROM customers WHERE company_name LIKE '[TEST]%'")
-        .getSingleResult() instanceof Number ? 
-        ((Number) customerRepository.getEntityManager()
-            .createNativeQuery("SELECT COUNT(*) FROM customers WHERE company_name LIKE '[TEST]%'")
-            .getSingleResult()).longValue() : 0L;
-    
+    long testCustomerCount =
+        customerRepository
+                    .getEntityManager()
+                    .createNativeQuery(
+                        "SELECT COUNT(*) FROM customers WHERE company_name LIKE '[TEST]%'")
+                    .getSingleResult()
+                instanceof Number
+            ? ((Number)
+                    customerRepository
+                        .getEntityManager()
+                        .createNativeQuery(
+                            "SELECT COUNT(*) FROM customers WHERE company_name LIKE '[TEST]%'")
+                        .getSingleResult())
+                .longValue()
+            : 0L;
+
     // FIXED: NIEMALS LÖSCHEN - nur ergänzen wenn zu wenig Test-Daten vorhanden
     // Erwartete Anzahl: mindestens 58 Test-Kunden
     final long EXPECTED_TEST_CUSTOMERS = 58;
-    
+
     if (testCustomerCount >= EXPECTED_TEST_CUSTOMERS) {
-      LOG.info("✅ Found " + testCustomerCount + " existing [TEST] customers (sufficient). Total: " + existingCount);
+      LOG.info(
+          "✅ Found "
+              + testCustomerCount
+              + " existing [TEST] customers (sufficient). Total: "
+              + existingCount);
       LOG.info("Skipping initialization to preserve existing data.");
       return;
     }
-    
+
     if (testCustomerCount > 0) {
       // Wir haben einige Test-Kunden, aber nicht genug
-      LOG.info("📊 Found " + testCustomerCount + " [TEST] customers (expecting " + EXPECTED_TEST_CUSTOMERS + ")");
-      LOG.info("Will add " + (EXPECTED_TEST_CUSTOMERS - testCustomerCount) + " more test customers");
+      LOG.info(
+          "📊 Found "
+              + testCustomerCount
+              + " [TEST] customers (expecting "
+              + EXPECTED_TEST_CUSTOMERS
+              + ")");
+      LOG.info(
+          "Will add " + (EXPECTED_TEST_CUSTOMERS - testCustomerCount) + " more test customers");
       LOG.info("Total customers in database: " + existingCount);
       // Der Code unten wird nur die fehlenden Test-Kunden ergänzen
     } else {
       // Keine Test-Kunden vorhanden
-      LOG.info("No test customers found. Creating full set of " + EXPECTED_TEST_CUSTOMERS + " test customers...");
+      LOG.info(
+          "No test customers found. Creating full set of "
+              + EXPECTED_TEST_CUSTOMERS
+              + " test customers...");
       LOG.info("Existing non-test customers: " + (existingCount - testCustomerCount));
     }
-    
+
     // WICHTIG: KEINE LÖSCH-LOGIK MEHR!
     // Wir erstellen nur neue Test-Daten, wenn sie fehlen
     // Die Create-Methoden unten sollten prüfen, ob der Kunde bereits existiert
@@ -131,9 +153,10 @@ public class CustomerDataInitializer {
     LOG.info("💡 This covers all edge cases and modules for thorough testing");
     LOG.info("📊 Modules covered: Data Intelligence, Data Freshness, Cockpit, Opportunities");
   }
-  
+
   /**
    * Hilfsmethode: Prüft ob ein Kunde bereits existiert
+   *
    * @param companyName Der Firmenname des zu prüfenden Kunden
    * @return true wenn der Kunde bereits existiert, false sonst
    */
@@ -152,7 +175,7 @@ public class CustomerDataInitializer {
     if (customerExists(companyName)) {
       return;
     }
-    
+
     Customer customer = new Customer();
     customer.setCustomerNumber("KD-2025-00001");
     customer.setCompanyName(companyName);

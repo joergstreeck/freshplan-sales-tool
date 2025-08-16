@@ -4,7 +4,9 @@ import de.freshplan.domain.customer.constants.CustomerConstants;
 import de.freshplan.domain.customer.entity.CustomerStatus;
 import de.freshplan.domain.customer.entity.Industry;
 import de.freshplan.domain.customer.service.CustomerService;
+import de.freshplan.domain.customer.service.command.CustomerCommandService;
 import de.freshplan.domain.customer.service.dto.*;
+import de.freshplan.domain.customer.service.query.CustomerQueryService;
 import de.freshplan.infrastructure.security.CurrentUser;
 import de.freshplan.infrastructure.security.SecurityAudit;
 import de.freshplan.infrastructure.security.SecurityContextProvider;
@@ -20,8 +22,6 @@ import jakarta.ws.rs.core.Response;
 import java.util.List;
 import java.util.UUID;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
-import de.freshplan.domain.customer.service.command.CustomerCommandService;
-import de.freshplan.domain.customer.service.query.CustomerQueryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,9 +31,9 @@ import org.slf4j.LoggerFactory;
  *
  * <p>All endpoints follow RESTful conventions and return consistent JSON responses. Authentication
  * and authorization are handled at the application level.
- * 
- * <p>This resource acts as a Facade and can switch between legacy CustomerService and the new 
- * CQRS services (CustomerCommandService/CustomerQueryService) via feature flag.
+ *
+ * <p>This resource acts as a Facade and can switch between legacy CustomerService and the new CQRS
+ * services (CustomerCommandService/CustomerQueryService) via feature flag.
  *
  * @author FreshPlan Team
  * @since 2.0.0
@@ -53,11 +53,11 @@ public class CustomerResource {
   @ConfigProperty(name = "features.cqrs.customers.list.enabled", defaultValue = "false")
   boolean customersListCqrsEnabled;
 
-  @Inject CustomerService customerService;  // Legacy service
-  
-  @Inject CustomerCommandService commandService;  // New CQRS command service
-  
-  @Inject CustomerQueryService queryService;  // New CQRS query service
+  @Inject CustomerService customerService; // Legacy service
+
+  @Inject CustomerCommandService commandService; // New CQRS command service
+
+  @Inject CustomerQueryService queryService; // New CQRS query service
 
   @Inject SecurityContextProvider securityContext;
 
@@ -205,7 +205,7 @@ public class CustomerResource {
     // Check if CQRS is enabled AND if list operations should use CQRS
     // This allows fine-grained control over performance-critical endpoints
     boolean useCqrsForList = cqrsEnabled && customersListCqrsEnabled;
-    
+
     if (useCqrsForList) {
       log.debug("Using CQRS QueryService for getAllCustomers (both flags enabled)");
       if (status != null) {
@@ -216,8 +216,10 @@ public class CustomerResource {
         customers = queryService.getAllCustomers(page, size);
       }
     } else {
-      log.debug("Using legacy CustomerService for getAllCustomers (cqrs={}, list={})", 
-                cqrsEnabled, customersListCqrsEnabled);
+      log.debug(
+          "Using legacy CustomerService for getAllCustomers (cqrs={}, list={})",
+          cqrsEnabled,
+          customersListCqrsEnabled);
       if (status != null) {
         customers = customerService.getCustomersByStatus(status, page, size);
       } else if (industry != null) {
@@ -326,10 +328,12 @@ public class CustomerResource {
     CustomerResponse child;
     if (cqrsEnabled) {
       log.debug("Using CQRS CommandService for addChildCustomer");
-      child = commandService.addChildCustomer(parentId, request.childId(), currentUser.getUsername());
+      child =
+          commandService.addChildCustomer(parentId, request.childId(), currentUser.getUsername());
     } else {
       log.debug("Using legacy CustomerService for addChildCustomer");
-      child = customerService.addChildCustomer(parentId, request.childId(), currentUser.getUsername());
+      child =
+          customerService.addChildCustomer(parentId, request.childId(), currentUser.getUsername());
     }
     return Response.ok(child).build();
   }
@@ -370,10 +374,12 @@ public class CustomerResource {
     CustomerResponse customer;
     if (cqrsEnabled) {
       log.debug("Using CQRS CommandService for mergeCustomers");
-      customer = commandService.mergeCustomers(targetId, request.sourceId(), currentUser.getUsername());
+      customer =
+          commandService.mergeCustomers(targetId, request.sourceId(), currentUser.getUsername());
     } else {
       log.debug("Using legacy CustomerService for mergeCustomers");
-      customer = customerService.mergeCustomers(targetId, request.sourceId(), currentUser.getUsername());
+      customer =
+          customerService.mergeCustomers(targetId, request.sourceId(), currentUser.getUsername());
     }
     return Response.ok(customer).build();
   }

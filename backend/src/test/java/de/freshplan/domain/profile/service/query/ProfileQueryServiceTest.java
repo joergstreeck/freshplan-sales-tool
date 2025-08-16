@@ -21,10 +21,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
- * Unit tests for ProfileQueryService.
- * Tests all read operations for profiles with CQRS pattern.
- * 
- * IMPORTANT: Verifies that NO write operations occur in query service!
+ * Unit tests for ProfileQueryService. Tests all read operations for profiles with CQRS pattern.
+ *
+ * <p>IMPORTANT: Verifies that NO write operations occur in query service!
  */
 @QuarkusTest
 class ProfileQueryServiceTest {
@@ -42,7 +41,7 @@ class ProfileQueryServiceTest {
   @BeforeEach
   void setUp() {
     testId = UUID.randomUUID();
-    
+
     // Setup test profile
     testProfile = new Profile();
     testProfile.setId(testId);
@@ -55,13 +54,10 @@ class ProfileQueryServiceTest {
     testProfile.setUpdatedBy("system");
     testProfile.setCreatedAt(LocalDateTime.now());
     testProfile.setUpdatedAt(LocalDateTime.now());
-    
+
     // Setup test response using builder
-    testResponse = ProfileResponse.builder()
-        .id(testId)
-        .customerId("CUST-001")
-        .notes("Test notes")
-        .build();
+    testResponse =
+        ProfileResponse.builder().id(testId).customerId("CUST-001").notes("Test notes").build();
   }
 
   @Test
@@ -69,15 +65,15 @@ class ProfileQueryServiceTest {
     // Given
     when(profileRepository.findByIdOptional(testId)).thenReturn(Optional.of(testProfile));
     when(profileMapper.toResponse(testProfile)).thenReturn(testResponse);
-    
+
     // When
     ProfileResponse result = queryService.getProfile(testId);
-    
+
     // Then
     assertNotNull(result);
     assertEquals(testId, result.getId());
     assertEquals("CUST-001", result.getCustomerId());
-    
+
     // Verify NO write operations
     verifyNoWriteOperations();
   }
@@ -89,7 +85,7 @@ class ProfileQueryServiceTest {
         IllegalArgumentException.class,
         () -> queryService.getProfile(null),
         "Profile ID cannot be null");
-    
+
     verifyNoWriteOperations();
   }
 
@@ -97,12 +93,10 @@ class ProfileQueryServiceTest {
   void getProfile_withNonExistentId_shouldThrowException() {
     // Given
     when(profileRepository.findByIdOptional(testId)).thenReturn(Optional.empty());
-    
+
     // When & Then
-    assertThrows(
-        ProfileNotFoundException.class,
-        () -> queryService.getProfile(testId));
-    
+    assertThrows(ProfileNotFoundException.class, () -> queryService.getProfile(testId));
+
     verifyNoWriteOperations();
   }
 
@@ -111,14 +105,14 @@ class ProfileQueryServiceTest {
     // Given
     when(profileRepository.findByCustomerId("CUST-001")).thenReturn(Optional.of(testProfile));
     when(profileMapper.toResponse(testProfile)).thenReturn(testResponse);
-    
+
     // When
     ProfileResponse result = queryService.getProfileByCustomerId("CUST-001");
-    
+
     // Then
     assertNotNull(result);
     assertEquals("CUST-001", result.getCustomerId());
-    
+
     verifyNoWriteOperations();
   }
 
@@ -129,7 +123,7 @@ class ProfileQueryServiceTest {
         IllegalArgumentException.class,
         () -> queryService.getProfileByCustomerId(null),
         "Customer ID cannot be null or empty");
-    
+
     verifyNoWriteOperations();
   }
 
@@ -140,7 +134,7 @@ class ProfileQueryServiceTest {
         IllegalArgumentException.class,
         () -> queryService.getProfileByCustomerId("  "),
         "Customer ID cannot be null or empty");
-    
+
     verifyNoWriteOperations();
   }
 
@@ -148,12 +142,11 @@ class ProfileQueryServiceTest {
   void getProfileByCustomerId_withNonExistentId_shouldThrowException() {
     // Given
     when(profileRepository.findByCustomerId("CUST-999")).thenReturn(Optional.empty());
-    
+
     // When & Then
     assertThrows(
-        ProfileNotFoundException.class,
-        () -> queryService.getProfileByCustomerId("CUST-999"));
-    
+        ProfileNotFoundException.class, () -> queryService.getProfileByCustomerId("CUST-999"));
+
     verifyNoWriteOperations();
   }
 
@@ -163,25 +156,23 @@ class ProfileQueryServiceTest {
     Profile profile2 = new Profile();
     profile2.setId(UUID.randomUUID());
     profile2.setCustomerId("CUST-002");
-    
-    ProfileResponse response2 = ProfileResponse.builder()
-        .customerId("CUST-002")
-        .build();
-    
+
+    ProfileResponse response2 = ProfileResponse.builder().customerId("CUST-002").build();
+
     List<Profile> profiles = Arrays.asList(testProfile, profile2);
     when(profileRepository.listAll()).thenReturn(profiles);
     when(profileMapper.toResponse(testProfile)).thenReturn(testResponse);
     when(profileMapper.toResponse(profile2)).thenReturn(response2);
-    
+
     // When
     List<ProfileResponse> result = queryService.getAllProfiles();
-    
+
     // Then
     assertNotNull(result);
     assertEquals(2, result.size());
     assertEquals("CUST-001", result.get(0).getCustomerId());
     assertEquals("CUST-002", result.get(1).getCustomerId());
-    
+
     verifyNoWriteOperations();
   }
 
@@ -189,14 +180,14 @@ class ProfileQueryServiceTest {
   void getAllProfiles_withEmptyDatabase_shouldReturnEmptyList() {
     // Given
     when(profileRepository.listAll()).thenReturn(Arrays.asList());
-    
+
     // When
     List<ProfileResponse> result = queryService.getAllProfiles();
-    
+
     // Then
     assertNotNull(result);
     assertTrue(result.isEmpty());
-    
+
     verifyNoWriteOperations();
   }
 
@@ -204,13 +195,13 @@ class ProfileQueryServiceTest {
   void profileExists_withExistingCustomer_shouldReturnTrue() {
     // Given
     when(profileRepository.existsByCustomerId("CUST-001")).thenReturn(true);
-    
+
     // When
     boolean result = queryService.profileExists("CUST-001");
-    
+
     // Then
     assertTrue(result);
-    
+
     verifyNoWriteOperations();
   }
 
@@ -218,13 +209,13 @@ class ProfileQueryServiceTest {
   void profileExists_withNonExistingCustomer_shouldReturnFalse() {
     // Given
     when(profileRepository.existsByCustomerId("CUST-999")).thenReturn(false);
-    
+
     // When
     boolean result = queryService.profileExists("CUST-999");
-    
+
     // Then
     assertFalse(result);
-    
+
     verifyNoWriteOperations();
   }
 
@@ -235,7 +226,7 @@ class ProfileQueryServiceTest {
         IllegalArgumentException.class,
         () -> queryService.profileExists(null),
         "Customer ID cannot be null or empty");
-    
+
     verifyNoWriteOperations();
   }
 
@@ -243,10 +234,10 @@ class ProfileQueryServiceTest {
   void exportProfileAsHtml_withValidId_shouldReturnHtml() {
     // Given
     when(profileRepository.findByIdOptional(testId)).thenReturn(Optional.of(testProfile));
-    
+
     // When
     String html = queryService.exportProfileAsHtml(testId);
-    
+
     // Then
     assertNotNull(html);
     assertTrue(html.contains("<!DOCTYPE html>"));
@@ -254,7 +245,7 @@ class ProfileQueryServiceTest {
     assertTrue(html.contains("Test Company"));
     assertTrue(html.contains("#004F7B")); // FreshPlan CI color
     assertTrue(html.contains("#94C456")); // FreshPlan CI color
-    
+
     verifyNoWriteOperations();
   }
 
@@ -265,7 +256,7 @@ class ProfileQueryServiceTest {
         IllegalArgumentException.class,
         () -> queryService.exportProfileAsHtml(null),
         "Profile ID cannot be null");
-    
+
     verifyNoWriteOperations();
   }
 
@@ -273,12 +264,10 @@ class ProfileQueryServiceTest {
   void exportProfileAsHtml_withNonExistentId_shouldThrowException() {
     // Given
     when(profileRepository.findByIdOptional(testId)).thenReturn(Optional.empty());
-    
+
     // When & Then
-    assertThrows(
-        ProfileNotFoundException.class,
-        () -> queryService.exportProfileAsHtml(testId));
-    
+    assertThrows(ProfileNotFoundException.class, () -> queryService.exportProfileAsHtml(testId));
+
     verifyNoWriteOperations();
   }
 
@@ -288,23 +277,24 @@ class ProfileQueryServiceTest {
     testProfile.setCompanyInfo("Test & Company <script>alert('xss')</script>");
     testProfile.setNotes("Notes with \"quotes\" and 'apostrophes'");
     when(profileRepository.findByIdOptional(testId)).thenReturn(Optional.of(testProfile));
-    
+
     // When
     String html = queryService.exportProfileAsHtml(testId);
-    
+
     // Then
     assertNotNull(html);
     // Verify XSS protection
-    assertTrue(html.contains("Test &amp; Company &lt;script&gt;alert(&#39;xss&#39;)&lt;/script&gt;"));
+    assertTrue(
+        html.contains("Test &amp; Company &lt;script&gt;alert(&#39;xss&#39;)&lt;/script&gt;"));
     assertTrue(html.contains("Notes with &quot;quotes&quot; and &#39;apostrophes&#39;"));
     assertFalse(html.contains("<script>alert"));
-    
+
     verifyNoWriteOperations();
   }
 
   /**
-   * Helper method to verify that NO write operations occur in QueryService.
-   * This is critical for CQRS compliance!
+   * Helper method to verify that NO write operations occur in QueryService. This is critical for
+   * CQRS compliance!
    */
   private void verifyNoWriteOperations() {
     verify(profileRepository, never()).persist(any(Profile.class));

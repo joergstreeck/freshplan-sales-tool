@@ -18,7 +18,6 @@ import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -28,9 +27,9 @@ import org.junit.jupiter.api.Test;
 
 /**
  * Unit Tests für OpportunityQueryService
- * 
- * Diese Tests stellen sicher, dass der OpportunityQueryService
- * nur lesende Operationen durchführt und keine Transaktionen verwendet.
+ *
+ * <p>Diese Tests stellen sicher, dass der OpportunityQueryService nur lesende Operationen
+ * durchführt und keine Transaktionen verwendet.
  */
 @QuarkusTest
 class OpportunityQueryServiceTest {
@@ -67,19 +66,21 @@ class OpportunityQueryServiceTest {
     testOpportunity2.setExpectedValue(new BigDecimal("20000"));
 
     // Test-Responses Setup
-    testResponse1 = OpportunityResponse.builder()
-        .id(testOpportunity1.getId())
-        .name("Opportunity 1")
-        .stage(OpportunityStage.NEW_LEAD)
-        .expectedValue(new BigDecimal("10000"))
-        .build();
+    testResponse1 =
+        OpportunityResponse.builder()
+            .id(testOpportunity1.getId())
+            .name("Opportunity 1")
+            .stage(OpportunityStage.NEW_LEAD)
+            .expectedValue(new BigDecimal("10000"))
+            .build();
 
-    testResponse2 = OpportunityResponse.builder()
-        .id(testOpportunity2.getId())
-        .name("Opportunity 2")
-        .stage(OpportunityStage.PROPOSAL)
-        .expectedValue(new BigDecimal("20000"))
-        .build();
+    testResponse2 =
+        OpportunityResponse.builder()
+            .id(testOpportunity2.getId())
+            .name("Opportunity 2")
+            .stage(OpportunityStage.PROPOSAL)
+            .expectedValue(new BigDecimal("20000"))
+            .build();
   }
 
   // =====================================
@@ -91,7 +92,7 @@ class OpportunityQueryServiceTest {
     // Given
     Page page = Page.of(0, 20);
     List<Opportunity> opportunities = Arrays.asList(testOpportunity1, testOpportunity2);
-    
+
     when(opportunityRepository.findAllActive(page)).thenReturn(opportunities);
     when(opportunityMapper.toResponse(testOpportunity1)).thenReturn(testResponse1);
     when(opportunityMapper.toResponse(testOpportunity2)).thenReturn(testResponse2);
@@ -102,7 +103,7 @@ class OpportunityQueryServiceTest {
     // Then
     assertThat(responses).hasSize(2);
     assertThat(responses).containsExactly(testResponse1, testResponse2);
-    
+
     // Verify NO persist was called (read-only operation)
     verify(opportunityRepository, never()).persist(any(Opportunity.class));
   }
@@ -111,8 +112,7 @@ class OpportunityQueryServiceTest {
   void findById_withExistingId_shouldReturnOpportunity() {
     // Given
     UUID id = testOpportunity1.getId();
-    when(opportunityRepository.findByIdOptional(id))
-        .thenReturn(Optional.of(testOpportunity1));
+    when(opportunityRepository.findByIdOptional(id)).thenReturn(Optional.of(testOpportunity1));
     when(opportunityMapper.toResponse(testOpportunity1)).thenReturn(testResponse1);
 
     // When
@@ -128,8 +128,7 @@ class OpportunityQueryServiceTest {
   void findById_withNonExistentId_shouldThrowException() {
     // Given
     UUID nonExistentId = UUID.randomUUID();
-    when(opportunityRepository.findByIdOptional(nonExistentId))
-        .thenReturn(Optional.empty());
+    when(opportunityRepository.findByIdOptional(nonExistentId)).thenReturn(Optional.empty());
 
     // When & Then
     assertThatThrownBy(() -> queryService.findById(nonExistentId))
@@ -159,8 +158,7 @@ class OpportunityQueryServiceTest {
   @Test
   void findByAssignedTo_withValidUserId_shouldReturnUserOpportunities() {
     // Given
-    when(userRepository.findByIdOptional(testUserId))
-        .thenReturn(Optional.of(testUser));
+    when(userRepository.findByIdOptional(testUserId)).thenReturn(Optional.of(testUser));
     when(opportunityRepository.findByAssignedTo(testUser))
         .thenReturn(Arrays.asList(testOpportunity1, testOpportunity2));
     when(opportunityMapper.toResponse(testOpportunity1)).thenReturn(testResponse1);
@@ -178,8 +176,7 @@ class OpportunityQueryServiceTest {
   void findByAssignedTo_withNonExistentUserId_shouldThrowException() {
     // Given
     UUID nonExistentUserId = UUID.randomUUID();
-    when(userRepository.findByIdOptional(nonExistentUserId))
-        .thenReturn(Optional.empty());
+    when(userRepository.findByIdOptional(nonExistentUserId)).thenReturn(Optional.empty());
 
     // When & Then
     assertThatThrownBy(() -> queryService.findByAssignedTo(nonExistentUserId))
@@ -191,8 +188,7 @@ class OpportunityQueryServiceTest {
   void findByStage_shouldReturnOpportunitiesInStage() {
     // Given
     OpportunityStage stage = OpportunityStage.PROPOSAL;
-    when(opportunityRepository.findByStage(stage))
-        .thenReturn(Arrays.asList(testOpportunity2));
+    when(opportunityRepository.findByStage(stage)).thenReturn(Arrays.asList(testOpportunity2));
     when(opportunityMapper.toResponse(testOpportunity2)).thenReturn(testResponse2);
 
     // When
@@ -211,14 +207,10 @@ class OpportunityQueryServiceTest {
   void getPipelineOverview_shouldReturnAggregatedData() {
     // Given
     // Mock repository pipeline overview
-    Object[] stageStats = new Object[]{
-        OpportunityStage.NEW_LEAD, 
-        5L, 
-        new BigDecimal("50000")
-    };
+    Object[] stageStats = new Object[] {OpportunityStage.NEW_LEAD, 5L, new BigDecimal("50000")};
     List<Object[]> stageStatsList = new java.util.ArrayList<>();
     stageStatsList.add(stageStats);
-    
+
     when(opportunityRepository.getPipelineOverview()).thenReturn(stageStatsList);
     when(opportunityRepository.calculateForecast()).thenReturn(new BigDecimal("100000"));
     when(opportunityRepository.getConversionRate()).thenReturn(25.0);
@@ -237,12 +229,12 @@ class OpportunityQueryServiceTest {
     assertThat(response.getTotalForecast()).isEqualTo(new BigDecimal("100000"));
     assertThat(response.getConversionRate()).isEqualTo(25.0);
     assertThat(response.getStageStatistics()).hasSize(1);
-    
+
     PipelineOverviewResponse.StageStatistic stat = response.getStageStatistics().get(0);
     assertThat(stat.getStage()).isEqualTo(OpportunityStage.NEW_LEAD);
     assertThat(stat.getCount()).isEqualTo(5L);
     assertThat(stat.getTotalValue()).isEqualTo(new BigDecimal("50000"));
-    
+
     assertThat(response.getHighPriorityOpportunities()).hasSize(1);
     assertThat(response.getOverdueOpportunities()).hasSize(1);
   }
@@ -269,7 +261,7 @@ class OpportunityQueryServiceTest {
     // Given
     Page page = Page.of(0, 10);
     UUID id = UUID.randomUUID();
-    
+
     when(opportunityRepository.findAllActive(any())).thenReturn(Arrays.asList());
     when(opportunityRepository.findByIdOptional(any())).thenReturn(Optional.empty());
     when(opportunityRepository.listAll()).thenReturn(Arrays.asList());
@@ -277,19 +269,22 @@ class OpportunityQueryServiceTest {
     when(opportunityRepository.getPipelineOverview()).thenReturn(Arrays.asList());
     when(opportunityRepository.calculateForecast()).thenReturn(BigDecimal.ZERO);
     when(opportunityRepository.getConversionRate()).thenReturn(0.0);
-    when(opportunityRepository.findHighPriorityOpportunities(anyInt()))
-        .thenReturn(Arrays.asList());
+    when(opportunityRepository.findHighPriorityOpportunities(anyInt())).thenReturn(Arrays.asList());
     when(opportunityRepository.findOverdueOpportunities()).thenReturn(Arrays.asList());
 
     // When - Call all query methods
     try {
       queryService.findAllOpportunities(page);
-    } catch (Exception e) { /* ignore */ }
-    
+    } catch (Exception e) {
+      /* ignore */
+    }
+
     try {
       queryService.findById(id);
-    } catch (Exception e) { /* ignore */ }
-    
+    } catch (Exception e) {
+      /* ignore */
+    }
+
     queryService.findAll();
     queryService.findByStage(OpportunityStage.NEW_LEAD);
     queryService.getPipelineOverview();

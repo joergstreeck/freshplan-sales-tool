@@ -21,11 +21,11 @@ import java.util.UUID;
 import org.jboss.logging.Logger;
 
 /**
- * Command service for User write operations.
- * Part of CQRS refactoring - handles all write operations for users.
- * 
- * This is an EXACT COPY of write methods from UserService to ensure 100% compatibility.
- * All business logic, validation, and even potential bugs are preserved.
+ * Command service for User write operations. Part of CQRS refactoring - handles all write
+ * operations for users.
+ *
+ * <p>This is an EXACT COPY of write methods from UserService to ensure 100% compatibility. All
+ * business logic, validation, and even potential bugs are preserved.
  */
 @ApplicationScoped
 public class UserCommandService {
@@ -42,8 +42,7 @@ public class UserCommandService {
   }
 
   /**
-   * Creates a new user.
-   * EXACT COPY from UserService lines 58-88
+   * Creates a new user. EXACT COPY from UserService lines 58-88
    *
    * @param request the user creation request
    * @return the created user response
@@ -84,8 +83,7 @@ public class UserCommandService {
   }
 
   /**
-   * Updates an existing user.
-   * EXACT COPY from UserService lines 99-146
+   * Updates an existing user. EXACT COPY from UserService lines 99-146
    *
    * @param id the user ID
    * @param request the update request
@@ -145,10 +143,9 @@ public class UserCommandService {
   }
 
   /**
-   * Deletes a user.
-   * EXACT COPY from UserService lines 250-266
-   * 
-   * NOTE: This is a HARD DELETE - no soft delete implemented!
+   * Deletes a user. EXACT COPY from UserService lines 250-266
+   *
+   * <p>NOTE: This is a HARD DELETE - no soft delete implemented!
    *
    * @param id the user ID
    * @throws UserNotFoundException if user not found
@@ -173,8 +170,7 @@ public class UserCommandService {
   }
 
   /**
-   * Enables a user and returns the updated user.
-   * EXACT COPY from UserService lines 311-330
+   * Enables a user and returns the updated user. EXACT COPY from UserService lines 311-330
    *
    * @param id the user ID
    * @return the updated user response
@@ -203,8 +199,7 @@ public class UserCommandService {
   }
 
   /**
-   * Disables a user and returns the updated user.
-   * EXACT COPY from UserService lines 339-358
+   * Disables a user and returns the updated user. EXACT COPY from UserService lines 339-358
    *
    * @param id the user ID
    * @return the updated user response
@@ -233,10 +228,9 @@ public class UserCommandService {
   }
 
   /**
-   * Updates the roles of a user.
-   * EXACT COPY from UserService lines 387-414
-   * 
-   * NOTE: Has its own @Transactional annotation in original!
+   * Updates the roles of a user. EXACT COPY from UserService lines 387-414
+   *
+   * <p>NOTE: Has its own @Transactional annotation in original!
    *
    * @param id the user ID
    * @param request the roles update request

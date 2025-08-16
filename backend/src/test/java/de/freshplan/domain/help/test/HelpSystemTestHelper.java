@@ -11,39 +11,32 @@ import java.util.UUID;
 /**
  * Test Helper Service für Phase 12.4 Integration Tests
  *
- * <p>Dieser Service löst das CDI Context Problem bei Awaitility Tests.
- * Awaitility läuft in separaten Threads ohne CDI Request Context.
- * Mit @ActivateRequestContext stellen wir sicher, dass Repository-Zugriffe funktionieren.
+ * <p>Dieser Service löst das CDI Context Problem bei Awaitility Tests. Awaitility läuft in
+ * separaten Threads ohne CDI Request Context. Mit @ActivateRequestContext stellen wir sicher, dass
+ * Repository-Zugriffe funktionieren.
  *
  * @since Phase 12.4 CQRS Testing
  */
 @ApplicationScoped
 public class HelpSystemTestHelper {
 
-    @Inject HelpContentRepository helpRepository;
+  @Inject HelpContentRepository helpRepository;
 
-    /**
-     * Findet HelpContent mit aktivem Request Context.
-     * Wird von Awaitility Assertions aufgerufen.
-     */
-    @ActivateRequestContext
-    public Optional<HelpContent> findHelpContentById(UUID id) {
-        return helpRepository.findByIdOptional(id);
-    }
+  /** Findet HelpContent mit aktivem Request Context. Wird von Awaitility Assertions aufgerufen. */
+  @ActivateRequestContext
+  public Optional<HelpContent> findHelpContentById(UUID id) {
+    return helpRepository.findByIdOptional(id);
+  }
 
-    /**
-     * Zählt alle HelpContent Einträge mit aktivem Request Context.
-     */
-    @ActivateRequestContext
-    public long countAllHelpContent() {
-        return helpRepository.count();
-    }
+  /** Zählt alle HelpContent Einträge mit aktivem Request Context. */
+  @ActivateRequestContext
+  public long countAllHelpContent() {
+    return helpRepository.count();
+  }
 
-    /**
-     * Prüft ob HelpContent existiert mit aktivem Request Context.
-     */
-    @ActivateRequestContext
-    public boolean helpContentExists(UUID id) {
-        return helpRepository.findByIdOptional(id).isPresent();
-    }
+  /** Prüft ob HelpContent existiert mit aktivem Request Context. */
+  @ActivateRequestContext
+  public boolean helpContentExists(UUID id) {
+    return helpRepository.findByIdOptional(id).isPresent();
+  }
 }

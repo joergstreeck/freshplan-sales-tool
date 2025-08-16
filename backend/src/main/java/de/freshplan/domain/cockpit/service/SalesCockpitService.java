@@ -14,7 +14,6 @@ import io.quarkus.panache.common.Page;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -22,14 +21,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 /**
  * Service layer für das Sales Cockpit Dashboard - NOW A FACADE.
- * 
- * This service acts as a Facade for backward compatibility during CQRS migration.
- * It delegates to SalesCockpitQueryService when CQRS is enabled.
- * 
- * NOTE: @Transactional is kept for legacy code path compatibility.
+ *
+ * <p>This service acts as a Facade for backward compatibility during CQRS migration. It delegates
+ * to SalesCockpitQueryService when CQRS is enabled.
+ *
+ * <p>NOTE: @Transactional is kept for legacy code path compatibility.
  *
  * @author FreshPlan Team
  * @since 2.0.0
@@ -54,9 +54,8 @@ public class SalesCockpitService {
   private static final UUID TEST_USER_ID = UUID.fromString("00000000-0000-0000-0000-000000000000");
 
   // CQRS Services (NEW for PR #5)
-  @Inject
-  SalesCockpitQueryService queryService;
-  
+  @Inject SalesCockpitQueryService queryService;
+
   // Feature flag for CQRS pattern
   @ConfigProperty(name = "features.cqrs.enabled", defaultValue = "false")
   boolean cqrsEnabled;
@@ -72,8 +71,8 @@ public class SalesCockpitService {
 
   /**
    * Lädt alle Dashboard-Daten für einen bestimmten Benutzer.
-   * 
-   * FACADE METHOD: Delegates to QueryService when CQRS is enabled.
+   *
+   * <p>FACADE METHOD: Delegates to QueryService when CQRS is enabled.
    *
    * @param userId Die ID des Benutzers
    * @return Aggregierte Dashboard-Daten
@@ -84,7 +83,7 @@ public class SalesCockpitService {
     if (cqrsEnabled) {
       return queryService.getDashboardData(userId);
     }
-    
+
     // LEGACY: Original implementation below
     // Input validation
     if (userId == null) {
@@ -325,8 +324,8 @@ public class SalesCockpitService {
 
   /**
    * Lädt Dashboard-Daten für die Entwicklungsumgebung.
-   * 
-   * FACADE METHOD: Delegates to QueryService when CQRS is enabled.
+   *
+   * <p>FACADE METHOD: Delegates to QueryService when CQRS is enabled.
    *
    * <p>Diese Methode nutzt echte Daten aus der Datenbank und umgeht die User-Validierung. Sie ist
    * nur in der Entwicklungsumgebung verfügbar.
@@ -338,7 +337,7 @@ public class SalesCockpitService {
     if (cqrsEnabled) {
       return queryService.getDevDashboardData();
     }
-    
+
     // LEGACY: Original implementation below
     SalesCockpitDashboard dashboard = new SalesCockpitDashboard();
 

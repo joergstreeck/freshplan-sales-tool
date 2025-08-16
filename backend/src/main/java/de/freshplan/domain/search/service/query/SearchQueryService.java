@@ -22,16 +22,14 @@ import org.jboss.logging.Logger;
 
 /**
  * CQRS Query Service for universal search functionality across multiple entities.
- * 
- * This service handles all read-only search operations with intelligent query analysis,
- * parallel search, and relevance scoring. Part of the CQRS migration from SearchService.
- * 
- * Key Features:
- * - Query type detection (EMAIL, PHONE, CUSTOMER_NUMBER, TEXT)
- * - Multi-entity search (customers and contacts)
- * - Relevance scoring algorithms
- * - Performance-optimized quick search for autocomplete
- * 
+ *
+ * <p>This service handles all read-only search operations with intelligent query analysis, parallel
+ * search, and relevance scoring. Part of the CQRS migration from SearchService.
+ *
+ * <p>Key Features: - Query type detection (EMAIL, PHONE, CUSTOMER_NUMBER, TEXT) - Multi-entity
+ * search (customers and contacts) - Relevance scoring algorithms - Performance-optimized quick
+ * search for autocomplete
+ *
  * @since Phase 10 CQRS Migration
  */
 @ApplicationScoped
@@ -51,9 +49,9 @@ public class SearchQueryService {
 
   /**
    * Performs universal search across customers and contacts.
-   * 
-   * Analyzes the query to determine its type (email, phone, customer number, or text)
-   * and applies appropriate search strategies for optimal performance and relevance.
+   *
+   * <p>Analyzes the query to determine its type (email, phone, customer number, or text) and
+   * applies appropriate search strategies for optimal performance and relevance.
    *
    * @param query The search query
    * @param includeContacts Whether to include contacts in search results
@@ -84,7 +82,8 @@ public class SearchQueryService {
 
     // Calculate execution time
     long executionTime = System.currentTimeMillis() - startTime;
-    LOG.debugf("Universal search completed in %dms: %d customers, %d contacts found", 
+    LOG.debugf(
+        "Universal search completed in %dms: %d customers, %d contacts found",
         executionTime, customerResults.size(), contactResults.size());
 
     // Build and return results
@@ -97,10 +96,10 @@ public class SearchQueryService {
   }
 
   /**
-   * Quick search for autocomplete functionality. 
-   * 
-   * Returns minimal data for performance, optimized for fast response times.
-   * Only searches customer names and numbers for simplicity.
+   * Quick search for autocomplete functionality.
+   *
+   * <p>Returns minimal data for performance, optimized for fast response times. Only searches
+   * customer names and numbers for simplicity.
    *
    * @param query The search query
    * @param limit Maximum number of results
@@ -148,12 +147,10 @@ public class SearchQueryService {
 
   /**
    * Searches for customers based on query and detected type.
-   * 
-   * Uses different search strategies based on query type:
-   * - EMAIL: Search in contact email fields
-   * - PHONE: Search in phone fields
-   * - CUSTOMER_NUMBER: Exact or prefix match on customer number
-   * - TEXT: Full text search across multiple fields
+   *
+   * <p>Uses different search strategies based on query type: - EMAIL: Search in contact email
+   * fields - PHONE: Search in phone fields - CUSTOMER_NUMBER: Exact or prefix match on customer
+   * number - TEXT: Full text search across multiple fields
    */
   private List<SearchResult> searchCustomers(
       String query, QueryType queryType, boolean includeInactive, int limit) {
@@ -196,18 +193,19 @@ public class SearchQueryService {
               .filter(c -> c.getStatus() != CustomerStatus.INAKTIV)
               .collect(Collectors.toList());
     }
-    
+
     // Filter out deleted customers (should be done by repository, but double-check)
-    customers = customers.stream()
-        .filter(c -> !Boolean.TRUE.equals(c.getIsDeleted()))
-        .collect(Collectors.toList());
+    customers =
+        customers.stream()
+            .filter(c -> !Boolean.TRUE.equals(c.getIsDeleted()))
+            .collect(Collectors.toList());
 
     // Convert to search results with relevance scoring
     return customers.stream()
         .map(
             customer -> {
               int score = calculateRelevanceScore(customer, query, queryType);
-              
+
               // Create DTO to avoid lazy loading issues
               CustomerSearchDto dto = new CustomerSearchDto();
               dto.setId(customer.getId().toString());
@@ -230,8 +228,8 @@ public class SearchQueryService {
 
   /**
    * Searches for contacts based on query and type.
-   * 
-   * Uses extended search methods optimized for contact-specific fields.
+   *
+   * <p>Uses extended search methods optimized for contact-specific fields.
    */
   private List<SearchResult> searchContacts(String query, QueryType queryType, int limit) {
 
@@ -275,7 +273,7 @@ public class SearchQueryService {
         .map(
             contact -> {
               int score = calculateContactRelevanceScore(contact, query, queryType);
-              
+
               // Create DTO to avoid lazy loading issues
               ContactSearchDto dto = new ContactSearchDto();
               dto.setId(contact.getId().toString());
@@ -303,9 +301,9 @@ public class SearchQueryService {
 
   /**
    * Detects the type of query based on pattern matching.
-   * 
-   * This intelligent detection allows for optimized search strategies
-   * based on the nature of the user's query.
+   *
+   * <p>This intelligent detection allows for optimized search strategies based on the nature of the
+   * user's query.
    */
   private QueryType detectQueryType(String query) {
     if (query == null || query.trim().isEmpty()) {
@@ -324,10 +322,10 @@ public class SearchQueryService {
       return QueryType.PHONE;
     }
 
-    // Customer number pattern detection 
+    // Customer number pattern detection
     // Must start with typical customer number prefixes or be in expected format
-    if (CUSTOMER_NUMBER_PATTERN.matcher(trimmed).matches() 
-        && trimmed.length() <= 20 
+    if (CUSTOMER_NUMBER_PATTERN.matcher(trimmed).matches()
+        && trimmed.length() <= 20
         && (trimmed.matches("^(KD|PF|S[12]|ACT|INA|E[12]|P[AI]).*") // Known prefixes
             || trimmed.matches("^[A-Z]{2,3}-\\d{4}-\\d{5}$"))) { // KD-2025-00001 format
       return QueryType.CUSTOMER_NUMBER;
@@ -339,11 +337,10 @@ public class SearchQueryService {
 
   /**
    * Calculates relevance score for customer results.
-   * 
-   * Higher score indicates more relevant results. Factors include:
-   * - Exact matches vs partial matches
-   * - Customer status (active customers prioritized)
-   * - Recent activity (recent contact dates boosted)
+   *
+   * <p>Higher score indicates more relevant results. Factors include: - Exact matches vs partial
+   * matches - Customer status (active customers prioritized) - Recent activity (recent contact
+   * dates boosted)
    */
   private int calculateRelevanceScore(Customer customer, String query, QueryType queryType) {
     int score = 0;
@@ -359,11 +356,11 @@ public class SearchQueryService {
     if (customer.getCompanyName() != null) {
       String lowerName = customer.getCompanyName().toLowerCase();
       if (lowerName.equals(lowerQuery)) {
-        score += 90;  // Exact match
+        score += 90; // Exact match
       } else if (lowerName.startsWith(lowerQuery)) {
-        score += 70;  // Prefix match
+        score += 70; // Prefix match
       } else if (lowerName.contains(lowerQuery)) {
-        score += 50;  // Contains match
+        score += 50; // Contains match
       }
     }
 
@@ -377,7 +374,7 @@ public class SearchQueryService {
       long daysSinceContact =
           java.time.Duration.between(customer.getLastContactDate(), LocalDateTime.now()).toDays();
       if (daysSinceContact < 30) {
-        score += 10;  // Recent activity bonus
+        score += 10; // Recent activity bonus
       }
     }
 
@@ -386,8 +383,8 @@ public class SearchQueryService {
 
   /**
    * Calculates relevance score for contact results.
-   * 
-   * Factors include email/name matches and primary contact status.
+   *
+   * <p>Factors include email/name matches and primary contact status.
    */
   private int calculateContactRelevanceScore(
       CustomerContact contact, String query, QueryType queryType) {
@@ -404,11 +401,11 @@ public class SearchQueryService {
     // Full name matching
     String fullName = (contact.getFirstName() + " " + contact.getLastName()).toLowerCase();
     if (fullName.equals(lowerQuery)) {
-      score += 90;   // Exact full name match
+      score += 90; // Exact full name match
     } else if (fullName.startsWith(lowerQuery)) {
-      score += 70;   // Name starts with query
+      score += 70; // Name starts with query
     } else if (fullName.contains(lowerQuery)) {
-      score += 50;   // Name contains query
+      score += 50; // Name contains query
     }
 
     // Primary contact bonus (primary contacts are more important)

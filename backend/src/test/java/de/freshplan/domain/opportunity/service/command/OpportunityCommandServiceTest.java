@@ -36,9 +36,9 @@ import org.mockito.ArgumentCaptor;
 
 /**
  * Unit Tests für OpportunityCommandService
- * 
- * Diese Tests stellen sicher, dass der OpportunityCommandService
- * identisches Verhalten zum originalen OpportunityService aufweist.
+ *
+ * <p>Diese Tests stellen sicher, dass der OpportunityCommandService identisches Verhalten zum
+ * originalen OpportunityService aufweist.
  */
 @QuarkusTest
 class OpportunityCommandServiceTest {
@@ -74,13 +74,14 @@ class OpportunityCommandServiceTest {
     testOpportunity.setExpectedCloseDate(LocalDate.now().plusDays(30));
 
     // Test-Response Setup
-    testResponse = OpportunityResponse.builder()
-        .id(testOpportunityId)
-        .name("Test Opportunity")
-        .stage(OpportunityStage.NEW_LEAD)
-        .expectedValue(new BigDecimal("10000"))
-        .expectedCloseDate(LocalDate.now().plusDays(30))
-        .build();
+    testResponse =
+        OpportunityResponse.builder()
+            .id(testOpportunityId)
+            .name("Test Opportunity")
+            .stage(OpportunityStage.NEW_LEAD)
+            .expectedValue(new BigDecimal("10000"))
+            .expectedCloseDate(LocalDate.now().plusDays(30))
+            .build();
 
     // Security Mock
     Principal principal = mock(Principal.class);
@@ -96,13 +97,14 @@ class OpportunityCommandServiceTest {
   @Test
   void createOpportunity_withValidRequest_shouldCreateSuccessfully() {
     // Given
-    CreateOpportunityRequest request = CreateOpportunityRequest.builder()
-        .name("New Opportunity")
-        .customerId(UUID.randomUUID())
-        .description("Test description")
-        .expectedValue(new BigDecimal("5000"))
-        .expectedCloseDate(LocalDate.now().plusDays(60))
-        .build();
+    CreateOpportunityRequest request =
+        CreateOpportunityRequest.builder()
+            .name("New Opportunity")
+            .customerId(UUID.randomUUID())
+            .description("Test description")
+            .expectedValue(new BigDecimal("5000"))
+            .expectedCloseDate(LocalDate.now().plusDays(60))
+            .build();
 
     when(opportunityMapper.toResponse(any(Opportunity.class))).thenReturn(testResponse);
 
@@ -129,10 +131,8 @@ class OpportunityCommandServiceTest {
   @Test
   void createOpportunity_withNullCustomerId_shouldThrowException() {
     // Given
-    CreateOpportunityRequest request = CreateOpportunityRequest.builder()
-        .name("New Opportunity")
-        .customerId(null)
-        .build();
+    CreateOpportunityRequest request =
+        CreateOpportunityRequest.builder().name("New Opportunity").customerId(null).build();
 
     // When & Then
     assertThatThrownBy(() -> commandService.createOpportunity(request))
@@ -143,11 +143,12 @@ class OpportunityCommandServiceTest {
   @Test
   void createOpportunity_withPastCloseDate_shouldThrowException() {
     // Given
-    CreateOpportunityRequest request = CreateOpportunityRequest.builder()
-        .name("New Opportunity")
-        .customerId(UUID.randomUUID())
-        .expectedCloseDate(LocalDate.now().minusDays(1))
-        .build();
+    CreateOpportunityRequest request =
+        CreateOpportunityRequest.builder()
+            .name("New Opportunity")
+            .customerId(UUID.randomUUID())
+            .expectedCloseDate(LocalDate.now().minusDays(1))
+            .build();
 
     // When & Then
     assertThatThrownBy(() -> commandService.createOpportunity(request))
@@ -162,13 +163,14 @@ class OpportunityCommandServiceTest {
   @Test
   void updateOpportunity_withValidRequest_shouldUpdateSuccessfully() {
     // Given
-    UpdateOpportunityRequest request = UpdateOpportunityRequest.builder()
-        .name("Updated Opportunity")
-        .description("Updated description")
-        .expectedValue(new BigDecimal("15000"))
-        .expectedCloseDate(LocalDate.now().plusDays(45))
-        .probability(75)
-        .build();
+    UpdateOpportunityRequest request =
+        UpdateOpportunityRequest.builder()
+            .name("Updated Opportunity")
+            .description("Updated description")
+            .expectedValue(new BigDecimal("15000"))
+            .expectedCloseDate(LocalDate.now().plusDays(45))
+            .probability(75)
+            .build();
 
     when(opportunityRepository.findByIdOptional(testOpportunityId))
         .thenReturn(Optional.of(testOpportunity));
@@ -191,12 +193,10 @@ class OpportunityCommandServiceTest {
   void updateOpportunity_withNonExistentId_shouldThrowException() {
     // Given
     UUID nonExistentId = UUID.randomUUID();
-    UpdateOpportunityRequest request = UpdateOpportunityRequest.builder()
-        .name("Updated Opportunity")
-        .build();
+    UpdateOpportunityRequest request =
+        UpdateOpportunityRequest.builder().name("Updated Opportunity").build();
 
-    when(opportunityRepository.findByIdOptional(nonExistentId))
-        .thenReturn(Optional.empty());
+    when(opportunityRepository.findByIdOptional(nonExistentId)).thenReturn(Optional.empty());
 
     // When & Then
     assertThatThrownBy(() -> commandService.updateOpportunity(nonExistentId, request))
@@ -224,8 +224,7 @@ class OpportunityCommandServiceTest {
   void deleteOpportunity_withNonExistentId_shouldThrowException() {
     // Given
     UUID nonExistentId = UUID.randomUUID();
-    when(opportunityRepository.findByIdOptional(nonExistentId))
-        .thenReturn(Optional.empty());
+    when(opportunityRepository.findByIdOptional(nonExistentId)).thenReturn(Optional.empty());
 
     // When & Then
     assertThatThrownBy(() -> commandService.deleteOpportunity(nonExistentId))
@@ -245,11 +244,9 @@ class OpportunityCommandServiceTest {
     when(opportunityMapper.toResponse(testOpportunity)).thenReturn(testResponse);
 
     // When
-    OpportunityResponse response = commandService.changeStage(
-        testOpportunityId, 
-        OpportunityStage.QUALIFICATION, 
-        "Moving to qualification"
-    );
+    OpportunityResponse response =
+        commandService.changeStage(
+            testOpportunityId, OpportunityStage.QUALIFICATION, "Moving to qualification");
 
     // Then
     assertThat(response).isNotNull();
@@ -258,7 +255,7 @@ class OpportunityCommandServiceTest {
     // Verify Audit Log
     ArgumentCaptor<AuditContext> auditCaptor = ArgumentCaptor.forClass(AuditContext.class);
     verify(auditService).logAsync(auditCaptor.capture());
-    
+
     AuditContext audit = auditCaptor.getValue();
     assertThat(audit.getEventType()).isEqualTo(AuditEventType.OPPORTUNITY_STAGE_CHANGED);
     assertThat(audit.getChangeReason()).isEqualTo("Moving to qualification");
@@ -275,10 +272,10 @@ class OpportunityCommandServiceTest {
 
     // Mock canTransitionTo to return false for invalid transition
     OpportunityStage invalidStage = OpportunityStage.CLOSED_WON;
-    
+
     // When & Then
-    assertThatThrownBy(() -> 
-        commandService.changeStage(testOpportunityId, invalidStage, "Invalid transition"))
+    assertThatThrownBy(
+            () -> commandService.changeStage(testOpportunityId, invalidStage, "Invalid transition"))
         .isInstanceOf(InvalidStageTransitionException.class);
   }
 
@@ -291,14 +288,12 @@ class OpportunityCommandServiceTest {
     when(opportunityMapper.toResponse(testOpportunity)).thenReturn(testResponse);
 
     // When
-    OpportunityResponse response = commandService.changeStage(
-        testOpportunityId, 
-        OpportunityStage.QUALIFICATION
-    );
+    OpportunityResponse response =
+        commandService.changeStage(testOpportunityId, OpportunityStage.QUALIFICATION);
 
     // Then
     assertThat(response).isNotNull();
-    
+
     // Verify default reason was used
     ArgumentCaptor<AuditContext> auditCaptor = ArgumentCaptor.forClass(AuditContext.class);
     verify(auditService).logAsync(auditCaptor.capture());
@@ -355,17 +350,17 @@ class OpportunityCommandServiceTest {
     when(opportunityMapper.toResponse(testOpportunity)).thenReturn(testResponse);
 
     // When
-    OpportunityResponse response = commandService.addActivity(
-        testOpportunityId,
-        OpportunityActivity.ActivityType.NOTE,
-        "Test Activity",
-        "Test Description"
-    );
+    OpportunityResponse response =
+        commandService.addActivity(
+            testOpportunityId,
+            OpportunityActivity.ActivityType.NOTE,
+            "Test Activity",
+            "Test Description");
 
     // Then
     assertThat(response).isNotNull();
     assertThat(testOpportunity.getActivities()).hasSize(1);
-    
+
     OpportunityActivity activity = testOpportunity.getActivities().get(0);
     assertThat(activity.getTitle()).isEqualTo("Test Activity");
     assertThat(activity.getDescription()).isEqualTo("Test Description");
@@ -382,12 +377,10 @@ class OpportunityCommandServiceTest {
   void getCurrentUser_withSecurityIdentity_shouldReturnUser() {
     // This is implicitly tested in other tests, but we can add explicit test
     // The getCurrentUser method is private, so it's tested through public methods
-    
+
     // Given
-    CreateOpportunityRequest request = CreateOpportunityRequest.builder()
-        .name("Test")
-        .customerId(UUID.randomUUID())
-        .build();
+    CreateOpportunityRequest request =
+        CreateOpportunityRequest.builder().name("Test").customerId(UUID.randomUUID()).build();
 
     when(opportunityMapper.toResponse(any())).thenReturn(testResponse);
 
@@ -404,10 +397,8 @@ class OpportunityCommandServiceTest {
     when(securityIdentity.getPrincipal()).thenThrow(new RuntimeException("No security"));
     when(userRepository.findByUsername("testuser")).thenReturn(Optional.of(testUser));
 
-    CreateOpportunityRequest request = CreateOpportunityRequest.builder()
-        .name("Test")
-        .customerId(UUID.randomUUID())
-        .build();
+    CreateOpportunityRequest request =
+        CreateOpportunityRequest.builder().name("Test").customerId(UUID.randomUUID()).build();
 
     when(opportunityMapper.toResponse(any())).thenReturn(testResponse);
 

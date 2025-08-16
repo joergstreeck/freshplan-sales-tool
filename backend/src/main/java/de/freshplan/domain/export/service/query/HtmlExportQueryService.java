@@ -14,16 +14,13 @@ import org.jboss.logging.Logger;
 
 /**
  * Query service for HTML export operations following CQRS pattern.
- * 
- * This is a read-only service that generates HTML reports for customers.
- * It was extracted from HtmlExportService during Phase 13 CQRS migration.
- * 
- * Key characteristics:
- * - NO @Transactional annotation (read-only operations)
- * - No state modifications
- * - Optimized for report generation
- * - Uses FreshPlan CI colors (#004F7B, #94C456)
- * 
+ *
+ * <p>This is a read-only service that generates HTML reports for customers. It was extracted from
+ * HtmlExportService during Phase 13 CQRS migration.
+ *
+ * <p>Key characteristics: - NO @Transactional annotation (read-only operations) - No state
+ * modifications - Optimized for report generation - Uses FreshPlan CI colors (#004F7B, #94C456)
+ *
  * @author FreshPlan Team
  * @since Phase 13 CQRS Migration
  */
@@ -35,16 +32,13 @@ public class HtmlExportQueryService {
   @Inject CustomerRepository customerRepository;
 
   /**
-   * Generate HTML report for customers that can be printed to PDF.
-   * This is an EXACT COPY from HtmlExportService to ensure 100% compatibility.
-   * 
-   * The HTML includes:
-   * - Professional styling with FreshPlan CI
-   * - Print optimization with @media queries
-   * - Statistics dashboard
-   * - Customer table with all details
-   * - XSS protection through HTML escaping
-   * 
+   * Generate HTML report for customers that can be printed to PDF. This is an EXACT COPY from
+   * HtmlExportService to ensure 100% compatibility.
+   *
+   * <p>The HTML includes: - Professional styling with FreshPlan CI - Print optimization with @media
+   * queries - Statistics dashboard - Customer table with all details - XSS protection through HTML
+   * escaping
+   *
    * @param request Export parameters (filters)
    * @return Complete HTML document as string
    */
@@ -199,21 +193,25 @@ public class HtmlExportQueryService {
     // Fetch customers
     List<Customer> customers =
         customerRepository.findByFilters(request.getStatus(), request.getIndustry());
-    
+
     // Apply date range filter if specified
     if (request.getDateFrom() != null || request.getDateTo() != null) {
-      customers = customers.stream()
-          .filter(c -> {
-            if (c.getCreatedAt() == null) return false;
-            if (request.getDateFrom() != null && c.getCreatedAt().isBefore(request.getDateFrom())) {
-              return false;
-            }
-            if (request.getDateTo() != null && c.getCreatedAt().isAfter(request.getDateTo())) {
-              return false;
-            }
-            return true;
-          })
-          .collect(Collectors.toList());
+      customers =
+          customers.stream()
+              .filter(
+                  c -> {
+                    if (c.getCreatedAt() == null) return false;
+                    if (request.getDateFrom() != null
+                        && c.getCreatedAt().isBefore(request.getDateFrom())) {
+                      return false;
+                    }
+                    if (request.getDateTo() != null
+                        && c.getCreatedAt().isAfter(request.getDateTo())) {
+                      return false;
+                    }
+                    return true;
+                  })
+              .collect(Collectors.toList());
     }
 
     // Statistics - always show for now since includeStats is not in DTO yet
@@ -248,7 +246,8 @@ public class HtmlExportQueryService {
     if (customers.isEmpty()) {
       html.append("<div style=\"text-align: center; padding: 40px; color: #666;\">\n");
       html.append("  <h3>Keine Kunden gefunden</h3>\n");
-      html.append("  <p>Es wurden keine Kunden mit den angegebenen Filterkriterien gefunden.</p>\n");
+      html.append(
+          "  <p>Es wurden keine Kunden mit den angegebenen Filterkriterien gefunden.</p>\n");
       html.append("</div>\n");
     } else {
       html.append("<table>\n");
@@ -265,60 +264,60 @@ public class HtmlExportQueryService {
       html.append("<tbody>\n");
 
       for (Customer customer : customers) {
-      html.append("<tr>\n");
-      html.append("  <td>").append(escapeHtml(customer.getCustomerNumber())).append("</td>\n");
-      html.append("  <td><strong>")
-          .append(escapeHtml(customer.getCompanyName()))
-          .append("</strong></td>\n");
+        html.append("<tr>\n");
+        html.append("  <td>").append(escapeHtml(customer.getCustomerNumber())).append("</td>\n");
+        html.append("  <td><strong>")
+            .append(escapeHtml(customer.getCompanyName()))
+            .append("</strong></td>\n");
 
-      // Status with color coding
-      String status = customer.getStatus() != null ? customer.getStatus().toString() : "";
-      String statusClass = "status-" + status.toLowerCase();
-      html.append("  <td class=\"")
-          .append(statusClass)
-          .append("\">")
-          .append(escapeHtml(status))
-          .append("</td>\n");
+        // Status with color coding
+        String status = customer.getStatus() != null ? customer.getStatus().toString() : "";
+        String statusClass = "status-" + status.toLowerCase();
+        html.append("  <td class=\"")
+            .append(statusClass)
+            .append("\">")
+            .append(escapeHtml(status))
+            .append("</td>\n");
 
-      html.append("  <td>").append(escapeHtml(customer.getIndustry())).append("</td>\n");
+        html.append("  <td>").append(escapeHtml(customer.getIndustry())).append("</td>\n");
 
-      // Contact count and primary contact
-      int contactCount = customer.getContacts() != null ? customer.getContacts().size() : 0;
-      html.append("  <td>");
-      if (contactCount > 0) {
-        html.append(contactCount).append(" ");
-        // Show primary contact name if available
-        CustomerContact primaryContact =
-            customer.getContacts().stream()
-                .filter(
-                    c ->
-                        c instanceof CustomerContact
-                            && ((CustomerContact) c).getIsPrimary() != null
-                            && ((CustomerContact) c).getIsPrimary())
-                .map(c -> (CustomerContact) c)
-                .findFirst()
-                .orElse(null);
-        if (primaryContact != null) {
-          html.append("<br><small>")
-              .append(escapeHtml(primaryContact.getFirstName()))
-              .append(" ")
-              .append(escapeHtml(primaryContact.getLastName()))
-              .append("</small>");
+        // Contact count and primary contact
+        int contactCount = customer.getContacts() != null ? customer.getContacts().size() : 0;
+        html.append("  <td>");
+        if (contactCount > 0) {
+          html.append(contactCount).append(" ");
+          // Show primary contact name if available
+          CustomerContact primaryContact =
+              customer.getContacts().stream()
+                  .filter(
+                      c ->
+                          c instanceof CustomerContact
+                              && ((CustomerContact) c).getIsPrimary() != null
+                              && ((CustomerContact) c).getIsPrimary())
+                  .map(c -> (CustomerContact) c)
+                  .findFirst()
+                  .orElse(null);
+          if (primaryContact != null) {
+            html.append("<br><small>")
+                .append(escapeHtml(primaryContact.getFirstName()))
+                .append(" ")
+                .append(escapeHtml(primaryContact.getLastName()))
+                .append("</small>");
+          }
+        } else {
+          html.append("-");
         }
-      } else {
-        html.append("-");
-      }
-      html.append("</td>\n");
+        html.append("</td>\n");
 
-      // Last contact date
-      String lastContact = "-";
-      if (customer.getLastContactDate() != null) {
-        lastContact =
-            customer.getLastContactDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+        // Last contact date
+        String lastContact = "-";
+        if (customer.getLastContactDate() != null) {
+          lastContact =
+              customer.getLastContactDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+        }
+        html.append("  <td>").append(lastContact).append("</td>\n");
+        html.append("</tr>\n");
       }
-      html.append("  <td>").append(lastContact).append("</td>\n");
-      html.append("</tr>\n");
-    }
 
       html.append("</tbody>\n");
       html.append("</table>\n");
@@ -338,10 +337,10 @@ public class HtmlExportQueryService {
     return html.toString();
   }
 
-  /** 
-   * Escape HTML special characters to prevent XSS.
-   * EXACT COPY from HtmlExportService to ensure identical behavior.
-   * 
+  /**
+   * Escape HTML special characters to prevent XSS. EXACT COPY from HtmlExportService to ensure
+   * identical behavior.
+   *
    * @param value Object to escape (null-safe)
    * @return Escaped string or empty string for null
    */

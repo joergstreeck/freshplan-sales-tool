@@ -25,12 +25,12 @@ import org.jboss.logging.Logger;
 
 /**
  * CQRS Facade for universal search functionality across multiple entities.
- * 
- * This service acts as a facade that routes search requests to either the new CQRS-based
+ *
+ * <p>This service acts as a facade that routes search requests to either the new CQRS-based
  * SearchQueryService or the legacy implementation, controlled by feature flag.
- * 
- * Since SearchService is read-only (no write operations), only a QueryService is needed.
- * 
+ *
+ * <p>Since SearchService is read-only (no write operations), only a QueryService is needed.
+ *
  * @since Phase 10 CQRS Migration
  */
 @ApplicationScoped
@@ -59,7 +59,7 @@ public class SearchService {
   /**
    * Performs universal search across customers and contacts.
    *
-   * Routes to CQRS SearchQueryService if enabled, otherwise uses legacy implementation.
+   * <p>Routes to CQRS SearchQueryService if enabled, otherwise uses legacy implementation.
    *
    * @param query The search query
    * @param includeContacts Whether to include contacts
@@ -83,7 +83,7 @@ public class SearchService {
   /**
    * Quick search for autocomplete functionality. Returns minimal data for performance.
    *
-   * Routes to CQRS SearchQueryService if enabled, otherwise uses legacy implementation.
+   * <p>Routes to CQRS SearchQueryService if enabled, otherwise uses legacy implementation.
    *
    * @param query The search query
    * @param limit Maximum results
@@ -103,9 +103,7 @@ public class SearchService {
   // =================== LEGACY IMPLEMENTATIONS ===================
   // Preserved for fallback when CQRS is disabled
 
-  /**
-   * Legacy implementation of universalSearch (preserved for fallback).
-   */
+  /** Legacy implementation of universalSearch (preserved for fallback). */
   private SearchResults legacyUniversalSearch(
       String query, boolean includeContacts, boolean includeInactive, int limit) {
 
@@ -139,9 +137,7 @@ public class SearchService {
         .build();
   }
 
-  /**
-   * Legacy implementation of quickSearch (preserved for fallback).
-   */
+  /** Legacy implementation of quickSearch (preserved for fallback). */
   private SearchResults legacyQuickSearch(String query, int limit) {
     long startTime = System.currentTimeMillis();
 

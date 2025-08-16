@@ -18,10 +18,10 @@ import org.jboss.logging.Logger;
 /**
  * Service for managing test data in the development environment. Provides clean seeding and removal
  * of test data.
- * 
- * CQRS Refactoring: This service now acts as a facade that delegates to Command and Query services
- * based on a feature flag. When cqrs.enabled=true, it uses the new split services.
- * When false, it falls back to the legacy implementation.
+ *
+ * <p>CQRS Refactoring: This service now acts as a facade that delegates to Command and Query
+ * services based on a feature flag. When cqrs.enabled=true, it uses the new split services. When
+ * false, it falls back to the legacy implementation.
  */
 @ApplicationScoped
 public class TestDataService {
@@ -32,11 +32,9 @@ public class TestDataService {
   @ConfigProperty(name = "features.cqrs.enabled", defaultValue = "false")
   boolean cqrsEnabled;
 
-  @Inject
-  TestDataCommandService commandService;
+  @Inject TestDataCommandService commandService;
 
-  @Inject
-  TestDataQueryService queryService;
+  @Inject TestDataQueryService queryService;
 
   @Inject CustomerRepository customerRepository;
 
@@ -52,7 +50,7 @@ public class TestDataService {
       LOG.debugf("CQRS enabled - delegating seedTestData to TestDataCommandService");
       return commandService.seedTestData();
     }
-    
+
     // Legacy implementation
     LOG.info("Starting test data seeding...");
 
@@ -187,7 +185,7 @@ public class TestDataService {
       LOG.debugf("CQRS enabled - delegating cleanTestData to TestDataCommandService");
       return commandService.cleanTestData();
     }
-    
+
     // Legacy implementation
     LOG.info("Starting test data cleanup...");
 
@@ -216,7 +214,7 @@ public class TestDataService {
       LOG.debugf("CQRS enabled - delegating getTestDataStats to TestDataQueryService");
       return queryService.getTestDataStats();
     }
-    
+
     // Legacy implementation
     long customerCount = customerRepository.count("isTestData", true);
     long eventCount = timelineRepository.count("isTestData", true);
@@ -234,7 +232,7 @@ public class TestDataService {
       LOG.debugf("CQRS enabled - delegating cleanOldTestData to TestDataCommandService");
       return commandService.cleanOldTestData();
     }
-    
+
     // Legacy implementation
     LOG.info("Starting old test data cleanup...");
 
@@ -329,7 +327,7 @@ public class TestDataService {
       LOG.debugf("CQRS enabled - delegating seedAdditionalTestData to TestDataCommandService");
       return commandService.seedAdditionalTestData();
     }
-    
+
     // Legacy implementation
     LOG.info("Seeding additional 14 test customers to reach 58 total...");
 
@@ -403,7 +401,7 @@ public class TestDataService {
       LOG.debugf("CQRS enabled - delegating seedComprehensiveTestData to TestDataCommandService");
       return commandService.seedComprehensiveTestData();
     }
-    
+
     // Legacy implementation
     LOG.info("🧪 Starting comprehensive edge-case test data seeding...");
 

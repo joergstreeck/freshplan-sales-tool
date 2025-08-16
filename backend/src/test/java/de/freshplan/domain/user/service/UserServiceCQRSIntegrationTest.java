@@ -2,22 +2,18 @@ package de.freshplan.domain.user.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 import de.freshplan.domain.user.entity.User;
 import de.freshplan.domain.user.repository.UserRepository;
-import de.freshplan.domain.user.service.command.UserCommandService;
-import de.freshplan.domain.user.service.query.UserQueryService;
 import de.freshplan.domain.user.service.dto.CreateUserRequest;
 import de.freshplan.domain.user.service.dto.UpdateUserRequest;
-import de.freshplan.domain.user.service.dto.UpdateUserRolesRequest;
 import de.freshplan.domain.user.service.dto.UserResponse;
 import de.freshplan.domain.user.service.mapper.UserMapper;
 import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.TestTransaction;import io.quarkus.test.junit.TestProfile;
-import io.quarkus.test.TestTransaction;import io.quarkus.test.junit.mockito.InjectMock;
-import io.quarkus.test.TestTransaction;import jakarta.inject.Inject;
+import io.quarkus.test.junit.TestProfile;
+import io.quarkus.test.junit.mockito.InjectMock;
+import jakarta.inject.Inject;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
@@ -27,8 +23,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
- * Integration tests for UserService with CQRS pattern enabled.
- * Tests the complete flow through the facade to command and query services.
+ * Integration tests for UserService with CQRS pattern enabled. Tests the complete flow through the
+ * facade to command and query services.
  */
 @QuarkusTest
 @TestProfile(UserServiceCQRSTestProfile.class)
@@ -56,33 +52,30 @@ class UserServiceCQRSIntegrationTest {
     setFieldValue(testUser, "roles", Arrays.asList("sales", "manager"));
 
     // Setup response using builder
-    testUserResponse = UserResponse.builder()
-        .id(testUserId)
-        .username("testuser")
-        .email("test@example.com")
-        .firstName("Test")
-        .lastName("User")
-        .enabled(true)
-        .roles(Arrays.asList("sales", "manager"))
-        .createdAt(Instant.now())
-        .updatedAt(Instant.now())
-        .build();
+    testUserResponse =
+        UserResponse.builder()
+            .id(testUserId)
+            .username("testuser")
+            .email("test@example.com")
+            .firstName("Test")
+            .lastName("User")
+            .enabled(true)
+            .roles(Arrays.asList("sales", "manager"))
+            .createdAt(Instant.now())
+            .updatedAt(Instant.now())
+            .build();
 
     // Setup requests using constructors or builders
-    createRequest = CreateUserRequest.builder()
-        .username("newuser")
-        .email("new@example.com")
-        .firstName("New")
-        .lastName("User")
-        .build();
+    createRequest =
+        CreateUserRequest.builder()
+            .username("newuser")
+            .email("new@example.com")
+            .firstName("New")
+            .lastName("User")
+            .build();
 
-    updateRequest = new UpdateUserRequest(
-        "updateduser",
-        "Updated",
-        "User",
-        "updated@example.com",
-        false
-    );
+    updateRequest =
+        new UpdateUserRequest("updateduser", "Updated", "User", "updated@example.com", false);
 
     // Reset mocks
     reset(userRepository, userMapper);
@@ -112,7 +105,8 @@ class UserServiceCQRSIntegrationTest {
     // Given
     when(userRepository.findByIdOptional(testUserId)).thenReturn(Optional.of(testUser));
     when(userRepository.existsByUsernameExcluding("updateduser", testUserId)).thenReturn(false);
-    when(userRepository.existsByEmailExcluding("updated@example.com", testUserId)).thenReturn(false);
+    when(userRepository.existsByEmailExcluding("updated@example.com", testUserId))
+        .thenReturn(false);
     when(userMapper.toResponse(testUser)).thenReturn(testUserResponse);
 
     // When
@@ -236,7 +230,7 @@ class UserServiceCQRSIntegrationTest {
     when(userRepository.existsByEmail("new@example.com")).thenReturn(false);
     when(userMapper.toEntity(createRequest)).thenReturn(testUser);
     when(userMapper.toResponse(testUser)).thenReturn(testUserResponse);
-    
+
     UserResponse createdUser = userService.createUser(createRequest);
     assertThat(createdUser).isNotNull();
     verify(userRepository).persist(testUser);
@@ -248,7 +242,8 @@ class UserServiceCQRSIntegrationTest {
 
     // 3. Update user
     when(userRepository.existsByUsernameExcluding("updateduser", testUserId)).thenReturn(false);
-    when(userRepository.existsByEmailExcluding("updated@example.com", testUserId)).thenReturn(false);
+    when(userRepository.existsByEmailExcluding("updated@example.com", testUserId))
+        .thenReturn(false);
     UserResponse updatedUser = userService.updateUser(testUserId, updateRequest);
     assertThat(updatedUser).isNotNull();
 
@@ -268,7 +263,7 @@ class UserServiceCQRSIntegrationTest {
     verify(userRepository, never()).delete(any());
     verify(userRepository, never()).flush();
   }
-  
+
   // Helper method to set private fields via reflection
   private void setFieldValue(Object obj, String fieldName, Object value) {
     try {

@@ -19,14 +19,11 @@ import java.util.stream.Collectors;
 import org.jboss.logging.Logger;
 
 /**
- * Command service for contact interactions - handles all write operations.
- * Part of CQRS refactoring to separate commands from queries.
- * 
- * This service is responsible for:
- * - Creating new interactions
- * - Updating contact metrics
- * - Batch importing interactions
- * - Updating warmth scores on contacts
+ * Command service for contact interactions - handles all write operations. Part of CQRS refactoring
+ * to separate commands from queries.
+ *
+ * <p>This service is responsible for: - Creating new interactions - Updating contact metrics -
+ * Batch importing interactions - Updating warmth scores on contacts
  */
 @ApplicationScoped
 public class ContactInteractionCommandService {
@@ -40,9 +37,9 @@ public class ContactInteractionCommandService {
   @Inject ContactInteractionMapper mapper;
 
   /**
-   * Create a new interaction and update contact metrics.
-   * This is an exact copy of the original ContactInteractionService.createInteraction method.
-   * 
+   * Create a new interaction and update contact metrics. This is an exact copy of the original
+   * ContactInteractionService.createInteraction method.
+   *
    * @param dto The interaction data transfer object
    * @return The created interaction as DTO
    * @throws IllegalArgumentException if contact is not found
@@ -74,9 +71,9 @@ public class ContactInteractionCommandService {
   }
 
   /**
-   * Record a note as an interaction.
-   * This is an exact copy of the original ContactInteractionService.recordNote method.
-   * 
+   * Record a note as an interaction. This is an exact copy of the original
+   * ContactInteractionService.recordNote method.
+   *
    * @param contactId The contact ID
    * @param note The note content
    * @param createdBy The user creating the note
@@ -99,9 +96,9 @@ public class ContactInteractionCommandService {
   }
 
   /**
-   * Batch import interactions for better performance.
-   * This is an exact copy of the original ContactInteractionService.batchImportInteractions method.
-   * Processes all interactions in a single transaction.
+   * Batch import interactions for better performance. This is an exact copy of the original
+   * ContactInteractionService.batchImportInteractions method. Processes all interactions in a
+   * single transaction.
    *
    * @param dtos List of interaction DTOs to import
    * @return Import result with success/failure counts
@@ -157,10 +154,10 @@ public class ContactInteractionCommandService {
   }
 
   /**
-   * Update warmth score and confidence for a contact.
-   * This is the WRITE part extracted from the original calculateWarmthScore method.
-   * Should be called after the Query service calculates the score.
-   * 
+   * Update warmth score and confidence for a contact. This is the WRITE part extracted from the
+   * original calculateWarmthScore method. Should be called after the Query service calculates the
+   * score.
+   *
    * @param contactId The contact ID
    * @param warmthScore The calculated warmth score (0-100)
    * @param confidence The confidence level (0-100)
@@ -168,8 +165,9 @@ public class ContactInteractionCommandService {
    */
   @Transactional
   public void updateWarmthScore(UUID contactId, int warmthScore, int confidence) {
-    LOG.debugf("Updating warmth score for contact %s: score=%d, confidence=%d", 
-               contactId, warmthScore, confidence);
+    LOG.debugf(
+        "Updating warmth score for contact %s: score=%d, confidence=%d",
+        contactId, warmthScore, confidence);
 
     CustomerContact contact = contactRepository.findById(contactId);
     if (contact == null) {
@@ -187,8 +185,7 @@ public class ContactInteractionCommandService {
   // ========== Private helper methods (exact copies from original) ==========
 
   /**
-   * Update contact metrics after interaction.
-   * Exact copy from original ContactInteractionService.
+   * Update contact metrics after interaction. Exact copy from original ContactInteractionService.
    */
   private void updateContactMetrics(CustomerContact contact) {
     LocalDateTime lastInteraction = interactionRepository.findLastUpdateDate(contact);
@@ -199,18 +196,15 @@ public class ContactInteractionCommandService {
     contactRepository.persist(contact);
   }
 
-  /**
-   * Count words in text.
-   * Exact copy from original ContactInteractionService.
-   */
+  /** Count words in text. Exact copy from original ContactInteractionService. */
   private int countWords(String text) {
     if (text == null || text.isBlank()) return 0;
     return text.trim().split("\\s+").length;
   }
 
   /**
-   * Update last interaction dates for multiple contacts efficiently.
-   * Exact copy from original ContactInteractionService.
+   * Update last interaction dates for multiple contacts efficiently. Exact copy from original
+   * ContactInteractionService.
    */
   private void updateContactsLastInteraction(List<ContactInteraction> interactions) {
     // Group by contact to find latest interaction per contact
@@ -230,10 +224,7 @@ public class ContactInteractionCommandService {
         });
   }
 
-  /**
-   * Result of batch import operation.
-   * Exact copy from original ContactInteractionService.
-   */
+  /** Result of batch import operation. Exact copy from original ContactInteractionService. */
   public static class BatchImportResult {
     public final int imported;
     public final int failed;

@@ -12,14 +12,13 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
- * Query service for Contact management.
- * Handles all read operations for contacts.
- * 
- * This service is part of the CQRS pattern implementation, separating
- * query (read) operations from command (write) operations.
- * 
- * IMPORTANT: No @Transactional annotation on this service as all operations are read-only!
- * 
+ * Query service for Contact management. Handles all read operations for contacts.
+ *
+ * <p>This service is part of the CQRS pattern implementation, separating query (read) operations
+ * from command (write) operations.
+ *
+ * <p>IMPORTANT: No @Transactional annotation on this service as all operations are read-only!
+ *
  * @author FreshPlan Team
  * @since 2.0.0 - CQRS Refactoring Phase 6
  */
@@ -30,8 +29,8 @@ public class ContactQueryService {
   @Inject ContactMapper contactMapper;
 
   /**
-   * Get all contacts for a customer.
-   * Contacts are sorted by primary status (primary first) and then by name.
+   * Get all contacts for a customer. Contacts are sorted by primary status (primary first) and then
+   * by name.
    *
    * @param customerId the customer ID
    * @return list of contact DTOs
@@ -58,8 +57,8 @@ public class ContactQueryService {
   }
 
   /**
-   * Get a single contact by ID, verifying it belongs to the specified customer.
-   * Additional security check for customer-scoped operations.
+   * Get a single contact by ID, verifying it belongs to the specified customer. Additional security
+   * check for customer-scoped operations.
    *
    * @param customerId the customer ID
    * @param contactId the contact ID
@@ -92,8 +91,8 @@ public class ContactQueryService {
   }
 
   /**
-   * Get contacts with upcoming birthdays.
-   * Note: Birthday functionality is not yet implemented in entity.
+   * Get contacts with upcoming birthdays. Note: Birthday functionality is not yet implemented in
+   * entity.
    *
    * @param daysAhead number of days to look ahead
    * @return list of contact DTOs with birthdays
@@ -105,8 +104,8 @@ public class ContactQueryService {
   }
 
   /**
-   * Check if email is already used by another contact.
-   * Useful for validation before creating/updating contacts.
+   * Check if email is already used by another contact. Useful for validation before
+   * creating/updating contacts.
    *
    * @param email the email to check
    * @param excludeContactId optional contact ID to exclude from check (for updates)

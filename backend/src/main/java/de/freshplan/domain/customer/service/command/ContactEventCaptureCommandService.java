@@ -16,16 +16,14 @@ import org.jboss.logging.Logger;
 
 /**
  * Command service for contact event capture operations following CQRS pattern.
- * 
- * This is a write-only service that captures user actions as contact interactions.
- * It was extracted from ContactEventCaptureService during Phase 13 CQRS migration.
- * 
- * Key characteristics:
- * - @Transactional annotation for write operations
- * - Event publishing for captured interactions
- * - Delegates to ContactInteractionService for persistence
- * - Listens to domain events via @Observes
- * 
+ *
+ * <p>This is a write-only service that captures user actions as contact interactions. It was
+ * extracted from ContactEventCaptureService during Phase 13 CQRS migration.
+ *
+ * <p>Key characteristics: - @Transactional annotation for write operations - Event publishing for
+ * captured interactions - Delegates to ContactInteractionService for persistence - Listens to
+ * domain events via @Observes
+ *
  * @author FreshPlan Team
  * @since Phase 13 CQRS Migration
  */
@@ -40,8 +38,8 @@ public class ContactEventCaptureCommandService {
   @Inject Event<ContactInteractionCaptured> interactionCapturedEvent;
 
   /**
-   * Capture when a contact is viewed.
-   * EXACT COPY from ContactEventCaptureService to ensure 100% compatibility.
+   * Capture when a contact is viewed. EXACT COPY from ContactEventCaptureService to ensure 100%
+   * compatibility.
    */
   public void captureContactView(UUID contactId, String userId) {
     LOG.debugf("Capturing contact view for %s by user %s", contactId, userId);
@@ -53,8 +51,8 @@ public class ContactEventCaptureCommandService {
   }
 
   /**
-   * Capture when contact details are updated.
-   * EXACT COPY from ContactEventCaptureService to ensure 100% compatibility.
+   * Capture when contact details are updated. EXACT COPY from ContactEventCaptureService to ensure
+   * 100% compatibility.
    */
   public void captureContactUpdate(UUID contactId, String userId, String fieldUpdated) {
     LOG.infof(
@@ -80,8 +78,8 @@ public class ContactEventCaptureCommandService {
   }
 
   /**
-   * Capture email sent to contact.
-   * EXACT COPY from ContactEventCaptureService to ensure 100% compatibility.
+   * Capture email sent to contact. EXACT COPY from ContactEventCaptureService to ensure 100%
+   * compatibility.
    */
   public void captureEmailSent(UUID contactId, String userId, String subject, String content) {
     LOG.infof("Capturing email sent to %s by user %s", contactId, userId);
@@ -108,8 +106,8 @@ public class ContactEventCaptureCommandService {
   }
 
   /**
-   * Capture phone call logged.
-   * EXACT COPY from ContactEventCaptureService to ensure 100% compatibility.
+   * Capture phone call logged. EXACT COPY from ContactEventCaptureService to ensure 100%
+   * compatibility.
    */
   public void capturePhoneCall(
       UUID contactId, String userId, Integer durationMinutes, String outcome, String notes) {
@@ -142,8 +140,8 @@ public class ContactEventCaptureCommandService {
   }
 
   /**
-   * Capture meeting scheduled.
-   * EXACT COPY from ContactEventCaptureService to ensure 100% compatibility.
+   * Capture meeting scheduled. EXACT COPY from ContactEventCaptureService to ensure 100%
+   * compatibility.
    */
   public void captureMeetingScheduled(
       UUID contactId, String userId, LocalDateTime meetingDate, String agenda) {
@@ -171,8 +169,8 @@ public class ContactEventCaptureCommandService {
   }
 
   /**
-   * Capture document shared.
-   * EXACT COPY from ContactEventCaptureService to ensure 100% compatibility.
+   * Capture document shared. EXACT COPY from ContactEventCaptureService to ensure 100%
+   * compatibility.
    */
   public void captureDocumentShared(
       UUID contactId, String userId, String documentName, String documentType) {
@@ -199,8 +197,8 @@ public class ContactEventCaptureCommandService {
   }
 
   /**
-   * Capture task created for contact.
-   * EXACT COPY from ContactEventCaptureService to ensure 100% compatibility.
+   * Capture task created for contact. EXACT COPY from ContactEventCaptureService to ensure 100%
+   * compatibility.
    */
   public void captureTaskCreated(
       UUID contactId, String userId, String taskDescription, LocalDateTime dueDate) {
@@ -227,9 +225,9 @@ public class ContactEventCaptureCommandService {
   }
 
   /**
-   * Listen for domain events and capture interactions.
-   * EXACT COPY from ContactEventCaptureService to ensure 100% compatibility.
-   * Note: This method will NOT be active when CQRS is enabled to avoid duplicate event handling.
+   * Listen for domain events and capture interactions. EXACT COPY from ContactEventCaptureService
+   * to ensure 100% compatibility. Note: This method will NOT be active when CQRS is enabled to
+   * avoid duplicate event handling.
    */
   public void onContactEvent(@Observes ContactDomainEvent event) {
     LOG.debugf("Received contact domain event: %s", event.getEventType());

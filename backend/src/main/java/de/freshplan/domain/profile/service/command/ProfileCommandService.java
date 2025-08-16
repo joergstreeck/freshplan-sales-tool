@@ -16,11 +16,10 @@ import java.util.UUID;
 import org.jboss.logging.Logger;
 
 /**
- * Command service for Profile write operations.
- * Handles all state-changing operations for profiles.
- * 
- * Part of CQRS refactoring - Phase 11
- * 
+ * Command service for Profile write operations. Handles all state-changing operations for profiles.
+ *
+ * <p>Part of CQRS refactoring - Phase 11
+ *
  * @author FreshPlan Team
  * @since 2.0.0
  */
@@ -34,8 +33,7 @@ public class ProfileCommandService {
   @Inject ProfileMapper profileMapper;
 
   /**
-   * Create a new profile.
-   * EXACT COPY from ProfileService.createProfile() lines 45-75
+   * Create a new profile. EXACT COPY from ProfileService.createProfile() lines 45-75
    *
    * @param request the create request
    * @return the created profile response
@@ -75,8 +73,7 @@ public class ProfileCommandService {
   }
 
   /**
-   * Update an existing profile.
-   * EXACT COPY from ProfileService.updateProfile() lines 127-150
+   * Update an existing profile. EXACT COPY from ProfileService.updateProfile() lines 127-150
    *
    * @param id the profile ID
    * @param request the update request
@@ -110,11 +107,10 @@ public class ProfileCommandService {
   }
 
   /**
-   * Delete a profile.
-   * EXACT COPY from ProfileService.deleteProfile() lines 158-170
-   * 
-   * IMPORTANT: This is a HARD DELETE - no soft delete implemented!
-   * TODO: Consider implementing soft delete for data recovery
+   * Delete a profile. EXACT COPY from ProfileService.deleteProfile() lines 158-170
+   *
+   * <p>IMPORTANT: This is a HARD DELETE - no soft delete implemented! TODO: Consider implementing
+   * soft delete for data recovery
    *
    * @param id the profile ID
    * @throws ProfileNotFoundException if not found

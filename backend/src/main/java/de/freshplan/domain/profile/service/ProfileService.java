@@ -4,13 +4,13 @@ package de.freshplan.domain.profile.service;
 import de.freshplan.domain.profile.entity.Profile;
 import de.freshplan.domain.profile.repository.ProfileRepository;
 import de.freshplan.domain.profile.service.command.ProfileCommandService;
-import de.freshplan.domain.profile.service.query.ProfileQueryService;
 import de.freshplan.domain.profile.service.dto.CreateProfileRequest;
 import de.freshplan.domain.profile.service.dto.ProfileResponse;
 import de.freshplan.domain.profile.service.dto.UpdateProfileRequest;
 import de.freshplan.domain.profile.service.exception.DuplicateProfileException;
 import de.freshplan.domain.profile.service.exception.ProfileNotFoundException;
 import de.freshplan.domain.profile.service.mapper.ProfileMapper;
+import de.freshplan.domain.profile.service.query.ProfileQueryService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -24,10 +24,10 @@ import org.jboss.logging.Logger;
 
 /**
  * Service layer for Profile management operations.
- * 
- * CQRS REFACTORING: This service now acts as a facade that delegates to
- * ProfileCommandService (write operations) and ProfileQueryService (read operations)
- * based on the feature flag 'features.cqrs.enabled'.
+ *
+ * <p>CQRS REFACTORING: This service now acts as a facade that delegates to ProfileCommandService
+ * (write operations) and ProfileQueryService (read operations) based on the feature flag
+ * 'features.cqrs.enabled'.
  *
  * @author FreshPlan Team
  * @since 1.0.0
@@ -41,11 +41,11 @@ public class ProfileService {
   @Inject ProfileRepository profileRepository;
 
   @Inject ProfileMapper profileMapper;
-  
+
   // CQRS Services
   @Inject ProfileCommandService commandService;
   @Inject ProfileQueryService queryService;
-  
+
   // Feature flag for CQRS migration
   @ConfigProperty(name = "features.cqrs.enabled", defaultValue = "false")
   boolean cqrsEnabled;
@@ -62,7 +62,7 @@ public class ProfileService {
       LOG.debug("CQRS enabled - delegating to ProfileCommandService");
       return commandService.createProfile(request);
     }
-    
+
     // Legacy implementation
     // Defensive validation
     if (request == null) {
@@ -107,7 +107,7 @@ public class ProfileService {
       LOG.debug("CQRS enabled - delegating to ProfileQueryService");
       return queryService.getProfile(id);
     }
-    
+
     // Legacy implementation
     // Defensive validation
     if (id == null) {
@@ -133,7 +133,7 @@ public class ProfileService {
       LOG.debug("CQRS enabled - delegating to ProfileQueryService");
       return queryService.getProfileByCustomerId(customerId);
     }
-    
+
     // Legacy implementation
     // Defensive validation
     if (customerId == null || customerId.trim().isEmpty()) {
@@ -162,7 +162,7 @@ public class ProfileService {
       LOG.debug("CQRS enabled - delegating to ProfileCommandService");
       return commandService.updateProfile(id, request);
     }
-    
+
     // Legacy implementation
     // Defensive validation
     if (id == null) {
@@ -200,7 +200,7 @@ public class ProfileService {
       commandService.deleteProfile(id);
       return;
     }
-    
+
     // Legacy implementation
     // Defensive validation
     if (id == null) {
@@ -225,7 +225,7 @@ public class ProfileService {
       LOG.debug("CQRS enabled - delegating to ProfileQueryService");
       return queryService.getAllProfiles();
     }
-    
+
     // Legacy implementation
     LOG.debug("Retrieving all profiles");
     List<ProfileResponse> profiles =
@@ -247,7 +247,7 @@ public class ProfileService {
       LOG.debug("CQRS enabled - delegating to ProfileQueryService");
       return queryService.profileExists(customerId);
     }
-    
+
     // Legacy implementation
     // Defensive validation
     if (customerId == null || customerId.trim().isEmpty()) {
@@ -271,7 +271,7 @@ public class ProfileService {
       LOG.debug("CQRS enabled - delegating to ProfileQueryService");
       return queryService.exportProfileAsHtml(id);
     }
-    
+
     // Legacy implementation
     // Defensive validation
     if (id == null) {

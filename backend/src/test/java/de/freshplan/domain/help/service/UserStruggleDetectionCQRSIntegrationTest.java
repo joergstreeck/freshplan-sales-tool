@@ -6,8 +6,8 @@ import de.freshplan.domain.help.service.command.UserStruggleDetectionCommandServ
 import de.freshplan.domain.help.service.dto.UserStruggle;
 import de.freshplan.domain.help.service.query.UserStruggleDetectionQueryService;
 import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.TestTransaction;import io.quarkus.test.junit.TestProfile;
-import io.quarkus.test.TestTransaction;import jakarta.inject.Inject;
+import io.quarkus.test.junit.TestProfile;
+import jakarta.inject.Inject;
 import java.time.Duration;
 import java.util.Map;
 import java.util.UUID;
@@ -19,12 +19,9 @@ import org.junit.jupiter.api.Test;
 /**
  * Integration Test für Phase 12.1 - UserStruggleDetectionService CQRS Migration
  *
- * <p>Testet alle kritischen Aspekte der CQRS-Implementierung:
- * - Feature Flag Switching zwischen Legacy und CQRS
- * - Command/Query Service Integration
- * - Shared State zwischen Command und Query
- * - Struggle Detection Logic in beiden Modi
- * - Session Management und Cleanup
+ * <p>Testet alle kritischen Aspekte der CQRS-Implementierung: - Feature Flag Switching zwischen
+ * Legacy und CQRS - Command/Query Service Integration - Shared State zwischen Command und Query -
+ * Struggle Detection Logic in beiden Modi - Session Management und Cleanup
  */
 @QuarkusTest
 @TestProfile(UserStruggleDetectionCQRSIntegrationTest.CQRSTestProfile.class)
@@ -47,7 +44,7 @@ class UserStruggleDetectionCQRSIntegrationTest {
   void setUp() {
     testUserId = "test-user-" + UUID.randomUUID().toString().substring(0, 8);
     testFeature = "test-feature";
-    
+
     // Cleanup: Reset User Session vor jedem Test
     commandService.resetUserSession(testUserId);
   }
@@ -80,7 +77,8 @@ class UserStruggleDetectionCQRSIntegrationTest {
   @DisplayName("Command Service: Action Recording")
   void commandService_recordAction_shouldCreateSession() {
     // When: User Action aufzeichnen
-    Map<String, Object> context = Map.of("action", "start", "timestamp", System.currentTimeMillis());
+    Map<String, Object> context =
+        Map.of("action", "start", "timestamp", System.currentTimeMillis());
     commandService.recordUserAction(testUserId, testFeature, context);
 
     // Then: Session sollte existieren
@@ -144,11 +142,13 @@ class UserStruggleDetectionCQRSIntegrationTest {
   void queryService_repeatedFailures_shouldDetectStruggle() {
     // Given: Wiederholte Fehler aufzeichnen (Command)
     for (int i = 0; i < 4; i++) {
-      commandService.recordUserAction(testUserId, testFeature, Map.of("error", "validation_failed"));
+      commandService.recordUserAction(
+          testUserId, testFeature, Map.of("error", "validation_failed"));
     }
 
     // When: Struggle Detection (Query)
-    UserStruggle result = queryService.detectStruggle(testUserId, testFeature, Map.of("context", "test"));
+    UserStruggle result =
+        queryService.detectStruggle(testUserId, testFeature, Map.of("context", "test"));
 
     // Then: REPEATED_FAILED_ATTEMPTS erkannt
     assertThat(result.isDetected()).isTrue();
@@ -169,7 +169,8 @@ class UserStruggleDetectionCQRSIntegrationTest {
 
     // Then: Beide Aktionen sollten "recent" sein
     assertThat(recentActions).hasSize(2);
-    assertThat(recentActions).extracting(action -> action.context.get("action"))
+    assertThat(recentActions)
+        .extracting(action -> action.context.get("action"))
         .containsExactly("action1", "action2");
   }
 
@@ -201,11 +202,12 @@ class UserStruggleDetectionCQRSIntegrationTest {
   @DisplayName("Facade Integration: Full CQRS Flow")
   void facade_fullFlow_shouldIntegrateCommandAndQuery() {
     // Given: Mehrere Aktionen über Facade (sollte Command aufrufen)
-    Map<String, Object> errorContext = Map.of("error", "critical_error", "timestamp", System.currentTimeMillis());
-    
+    Map<String, Object> errorContext =
+        Map.of("error", "critical_error", "timestamp", System.currentTimeMillis());
+
     // When: Erste Detection (erstellt Session via Command)
     UserStruggle result1 = facadeService.detectStruggle(testUserId, testFeature, errorContext);
-    
+
     // Then: Noch kein Struggle (erst 1 Fehler)
     assertThat(result1.isDetected()).isFalse();
 
@@ -224,17 +226,17 @@ class UserStruggleDetectionCQRSIntegrationTest {
   void facade_sharedState_shouldBeConsistentBetweenCommandAndQuery() {
     // Given: Actions über Command Service direkt
     commandService.recordUserAction(testUserId, testFeature, Map.of("test", "direct_command"));
-    
+
     // When: Über Query Service lesen
     var recentActions = queryService.getRecentUserActions(testUserId, Duration.ofMinutes(1));
-    
+
     // Then: Action sollte sichtbar sein (Shared State funktioniert)
     assertThat(recentActions).hasSize(1);
     assertThat(recentActions.get(0).context.get("test")).isEqualTo("direct_command");
-    
+
     // When: Über Facade weitere Action hinzufügen
     facadeService.detectStruggle(testUserId, testFeature, Map.of("test", "via_facade"));
-    
+
     // Then: Beide Actions sollten sichtbar sein
     var allActions = queryService.getRecentUserActions(testUserId, Duration.ofMinutes(1));
     assertThat(allActions).hasSize(2);
@@ -249,8 +251,8 @@ class UserStruggleDetectionCQRSIntegrationTest {
   void struggleDetection_complexForm_shouldDetectPattern() {
     // Given: Viele Feld-Änderungen ohne Submit
     for (int i = 0; i < 12; i++) {
-      commandService.recordUserAction(testUserId, testFeature, 
-          Map.of("action", "field_change", "field", "field_" + i));
+      commandService.recordUserAction(
+          testUserId, testFeature, Map.of("action", "field_change", "field", "field_" + i));
     }
 
     // When: Struggle Detection
@@ -317,16 +319,14 @@ class UserStruggleDetectionCQRSIntegrationTest {
   // TEST CONFIGURATION
   // =========================================================================================
 
-  /**
-   * Test Profile um CQRS zu aktivieren
-   */
+  /** Test Profile um CQRS zu aktivieren */
   public static class CQRSTestProfile implements io.quarkus.test.junit.QuarkusTestProfile {
     @Override
     public java.util.Map<String, String> getConfigOverrides() {
       return java.util.Map.of(
           "features.cqrs.enabled", "true", // KRITISCH: CQRS für Test aktivieren
           "quarkus.log.level", "WARN" // Weniger Logs während Tests
-      );
+          );
     }
   }
 }

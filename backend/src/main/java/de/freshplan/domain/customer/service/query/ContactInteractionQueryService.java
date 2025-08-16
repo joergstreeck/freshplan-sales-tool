@@ -19,16 +19,13 @@ import java.util.stream.Collectors;
 import org.jboss.logging.Logger;
 
 /**
- * Query service for contact interactions - handles all read operations.
- * Part of CQRS refactoring to separate queries from commands.
- * 
- * This service is responsible for:
- * - Retrieving interactions for contacts
- * - Calculating warmth scores (without persisting)
- * - Providing data quality metrics
- * - Analyzing interaction patterns
- * 
- * IMPORTANT: This service does NOT have @Transactional as it only reads data!
+ * Query service for contact interactions - handles all read operations. Part of CQRS refactoring to
+ * separate queries from commands.
+ *
+ * <p>This service is responsible for: - Retrieving interactions for contacts - Calculating warmth
+ * scores (without persisting) - Providing data quality metrics - Analyzing interaction patterns
+ *
+ * <p>IMPORTANT: This service does NOT have @Transactional as it only reads data!
  */
 @ApplicationScoped
 public class ContactInteractionQueryService {
@@ -63,9 +60,9 @@ public class ContactInteractionQueryService {
   @Inject ContactInteractionMapper mapper;
 
   /**
-   * Get all interactions for a contact with pagination.
-   * This is an exact copy of the original ContactInteractionService.getInteractionsByContact method.
-   * 
+   * Get all interactions for a contact with pagination. This is an exact copy of the original
+   * ContactInteractionService.getInteractionsByContact method.
+   *
    * @param contactId The contact ID
    * @param page Pagination parameters
    * @return List of interaction DTOs
@@ -83,14 +80,14 @@ public class ContactInteractionQueryService {
   }
 
   /**
-   * Calculate warmth score for a contact WITHOUT persisting it.
-   * This is the READ part extracted from the original calculateWarmthScore method.
-   * The actual persistence should be done by the Command service.
-   * 
-   * IMPORTANT CHANGE: This method no longer updates the contact entity!
-   * It only calculates and returns the score. The CommandService.updateWarmthScore
-   * should be called separately if persistence is needed.
-   * 
+   * Calculate warmth score for a contact WITHOUT persisting it. This is the READ part extracted
+   * from the original calculateWarmthScore method. The actual persistence should be done by the
+   * Command service.
+   *
+   * <p>IMPORTANT CHANGE: This method no longer updates the contact entity! It only calculates and
+   * returns the score. The CommandService.updateWarmthScore should be called separately if
+   * persistence is needed.
+   *
    * @param contactId The contact ID
    * @return Calculated warmth score data
    * @throws IllegalArgumentException if contact is not found
@@ -149,9 +146,9 @@ public class ContactInteractionQueryService {
   }
 
   /**
-   * Get data quality metrics for intelligence features.
-   * This is an exact copy of the original ContactInteractionService.getDataQualityMetrics method.
-   * 
+   * Get data quality metrics for intelligence features. This is an exact copy of the original
+   * ContactInteractionService.getDataQualityMetrics method.
+   *
    * @return Data quality metrics
    */
   public DataQualityMetricsDTO getDataQualityMetrics() {
@@ -191,8 +188,8 @@ public class ContactInteractionQueryService {
   // ========== Private helper methods for calculations (exact copies from original) ==========
 
   /**
-   * Calculate frequency score based on interaction patterns.
-   * Exact copy from original ContactInteractionService.
+   * Calculate frequency score based on interaction patterns. Exact copy from original
+   * ContactInteractionService.
    */
   private double calculateFrequencyScore(List<ContactInteraction> interactions) {
     if (interactions.isEmpty()) return 0;
@@ -210,8 +207,8 @@ public class ContactInteractionQueryService {
   }
 
   /**
-   * Calculate average sentiment score from interactions.
-   * Exact copy from original ContactInteractionService.
+   * Calculate average sentiment score from interactions. Exact copy from original
+   * ContactInteractionService.
    */
   private double calculateSentimentScore(List<ContactInteraction> interactions) {
     List<Double> sentiments =
@@ -230,8 +227,8 @@ public class ContactInteractionQueryService {
   }
 
   /**
-   * Calculate engagement score from interactions.
-   * Exact copy from original ContactInteractionService.
+   * Calculate engagement score from interactions. Exact copy from original
+   * ContactInteractionService.
    */
   private double calculateEngagementScore(List<ContactInteraction> interactions) {
     List<Integer> engagements =
@@ -248,18 +245,15 @@ public class ContactInteractionQueryService {
         .orElse(DEFAULT_ENGAGEMENT_SCORE);
   }
 
-  /**
-   * Calculate response score for a contact.
-   * Exact copy from original ContactInteractionService.
-   */
+  /** Calculate response score for a contact. Exact copy from original ContactInteractionService. */
   private double calculateResponseScore(CustomerContact contact) {
     Double responseRate = interactionRepository.calculateResponseRate(contact);
     return responseRate != null ? responseRate : DEFAULT_RESPONSE_SCORE;
   }
 
   /**
-   * Count fresh contacts (updated within 90 days).
-   * Exact copy from original ContactInteractionService.
+   * Count fresh contacts (updated within 90 days). Exact copy from original
+   * ContactInteractionService.
    */
   private long countFreshContacts() {
     LocalDateTime ninetyDaysAgo = LocalDateTime.now().minusDays(DAYS_FRESH);
@@ -267,8 +261,8 @@ public class ContactInteractionQueryService {
   }
 
   /**
-   * Count aging contacts (updated between 90-180 days ago).
-   * Exact copy from original ContactInteractionService.
+   * Count aging contacts (updated between 90-180 days ago). Exact copy from original
+   * ContactInteractionService.
    */
   private long countAgingContacts() {
     LocalDateTime ninetyDaysAgo = LocalDateTime.now().minusDays(DAYS_FRESH);
@@ -278,8 +272,8 @@ public class ContactInteractionQueryService {
   }
 
   /**
-   * Count stale contacts (updated between 180-365 days ago).
-   * Exact copy from original ContactInteractionService.
+   * Count stale contacts (updated between 180-365 days ago). Exact copy from original
+   * ContactInteractionService.
    */
   private long countStaleContacts() {
     LocalDateTime oneEightyDaysAgo = LocalDateTime.now().minusDays(DAYS_AGING);
@@ -289,18 +283,15 @@ public class ContactInteractionQueryService {
   }
 
   /**
-   * Count critical contacts (not updated for over a year).
-   * Exact copy from original ContactInteractionService.
+   * Count critical contacts (not updated for over a year). Exact copy from original
+   * ContactInteractionService.
    */
   private long countCriticalContacts() {
     LocalDateTime oneYearAgo = LocalDateTime.now().minusDays(DAYS_STALE);
     return contactRepository.count("updatedAt < ?1", oneYearAgo);
   }
 
-  /**
-   * Calculate data completeness percentage.
-   * Exact copy from original ContactInteractionService.
-   */
+  /** Calculate data completeness percentage. Exact copy from original ContactInteractionService. */
   private double calculateDataCompleteness() {
     // Simple completeness calculation - can be enhanced
     long totalContacts = contactRepository.count();

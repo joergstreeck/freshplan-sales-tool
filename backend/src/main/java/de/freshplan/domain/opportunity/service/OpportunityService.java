@@ -36,8 +36,8 @@ import org.slf4j.LoggerFactory;
 /**
  * Opportunity Service - Business Logic für Sales Pipeline
  *
- * <p>FACADE PATTERN: Dieser Service fungiert als Facade für die CQRS-aufgeteilten Services.
- * Mit Feature Flag kann zwischen Legacy-Implementierung und CQRS umgeschaltet werden.
+ * <p>FACADE PATTERN: Dieser Service fungiert als Facade für die CQRS-aufgeteilten Services. Mit
+ * Feature Flag kann zwischen Legacy-Implementierung und CQRS umgeschaltet werden.
  *
  * @author FreshPlan Team
  * @since 2.0.0
@@ -77,7 +77,7 @@ public class OpportunityService {
       logger.debug("CQRS mode: delegating to OpportunityCommandService");
       return commandService.createOpportunity(request);
     }
-    
+
     logger.info("Creating new opportunity: {}", request.getName());
 
     // Validation
@@ -154,7 +154,7 @@ public class OpportunityService {
       logger.debug("CQRS mode: delegating to OpportunityQueryService");
       return queryService.findAllOpportunities(page);
     }
-    
+
     List<Opportunity> opportunities = opportunityRepository.findAllActive(page);
     return opportunities.stream().map(opportunityMapper::toResponse).collect(Collectors.toList());
   }
@@ -165,7 +165,7 @@ public class OpportunityService {
       logger.debug("CQRS mode: delegating to OpportunityQueryService");
       return queryService.findById(id);
     }
-    
+
     Opportunity opportunity =
         opportunityRepository
             .findByIdOptional(id)
@@ -179,7 +179,7 @@ public class OpportunityService {
       logger.debug("CQRS mode: delegating to OpportunityCommandService");
       return commandService.updateOpportunity(id, request);
     }
-    
+
     logger.info("Updating opportunity: {}", id);
 
     Opportunity opportunity =
@@ -232,7 +232,7 @@ public class OpportunityService {
       logger.debug("CQRS mode: delegating to OpportunityCommandService");
       return commandService.changeStage(opportunityId, newStage);
     }
-    
+
     return changeStage(opportunityId, newStage, "Stage change");
   }
 
@@ -242,7 +242,7 @@ public class OpportunityService {
       logger.debug("CQRS mode: delegating to OpportunityCommandService");
       return commandService.changeStage(opportunityId, newStage, reason);
     }
-    
+
     logger.info("Changing stage for opportunity {} to {}", opportunityId, newStage);
 
     Opportunity opportunity =
@@ -303,7 +303,7 @@ public class OpportunityService {
       logger.debug("CQRS mode: delegating to OpportunityQueryService");
       return queryService.getPipelineOverview();
     }
-    
+
     logger.debug("Generating pipeline overview");
 
     List<Object[]> stageStats = opportunityRepository.getPipelineOverview();
@@ -339,7 +339,7 @@ public class OpportunityService {
       logger.debug("CQRS mode: delegating to OpportunityQueryService");
       return queryService.findByAssignedTo(userId);
     }
-    
+
     User user =
         userRepository
             .findByIdOptional(userId)
@@ -355,7 +355,7 @@ public class OpportunityService {
       logger.debug("CQRS mode: delegating to OpportunityQueryService");
       return queryService.findByStage(stage);
     }
-    
+
     List<Opportunity> opportunities = opportunityRepository.findByStage(stage);
     return opportunities.stream().map(opportunityMapper::toResponse).collect(Collectors.toList());
   }
@@ -371,7 +371,7 @@ public class OpportunityService {
       logger.debug("CQRS mode: delegating to OpportunityCommandService");
       return commandService.addActivity(opportunityId, type, title, description);
     }
-    
+
     Opportunity opportunity =
         opportunityRepository
             .findByIdOptional(opportunityId)
@@ -396,7 +396,7 @@ public class OpportunityService {
       logger.debug("CQRS mode: delegating to OpportunityQueryService");
       return queryService.calculateForecast();
     }
-    
+
     logger.debug("Calculating opportunity forecast");
     return opportunityRepository.calculateForecast();
   }
@@ -408,7 +408,7 @@ public class OpportunityService {
       logger.debug("CQRS mode: delegating to OpportunityCommandService");
       return commandService.changeStage(opportunityId, request);
     }
-    
+
     if (request.getStage() == null) {
       throw new IllegalArgumentException("Stage cannot be null");
     }
@@ -472,7 +472,7 @@ public class OpportunityService {
       logger.debug("CQRS mode: delegating to OpportunityQueryService");
       return queryService.findAll();
     }
-    
+
     logger.debug("Finding all opportunities");
     List<Opportunity> opportunities = opportunityRepository.listAll();
     return opportunities.stream().map(opportunityMapper::toResponse).collect(Collectors.toList());
@@ -489,7 +489,7 @@ public class OpportunityService {
       commandService.deleteOpportunity(id);
       return;
     }
-    
+
     logger.info("Deleting opportunity with ID: {}", id);
 
     Opportunity opportunity =

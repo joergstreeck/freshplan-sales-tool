@@ -219,18 +219,18 @@ class CustomerMapperTest {
       assertThat(result.paymentTerms()).isNull();
       assertThat(result.creditLimit()).isNull();
       assertThat(result.deliveryCondition()).isNull();
-      
+
       // Risk fields are included in minimal response
       assertThat(result.riskScore()).isEqualTo(testCustomer.getRiskScore());
       assertThat(result.atRisk()).isEqualTo(testCustomer.isAtRisk());
-      
+
       // lastContactDate is NOT null in minimal response - it's needed for filters
       assertThat(result.lastContactDate()).isEqualTo(testCustomer.getLastContactDate());
       assertThat(result.nextFollowUpDate()).isNull();
-      
+
       // Contact Information (added after Sprint 2)
       assertThat(result.contactsCount()).isEqualTo(0); // testCustomer has no contacts
-      
+
       assertThat(result.createdBy()).isNull();
       assertThat(result.updatedAt()).isNull();
       assertThat(result.updatedBy()).isNull();

@@ -22,13 +22,13 @@ import java.util.stream.Collectors;
 
 /**
  * Query service for Sales Cockpit Dashboard - READ ONLY operations.
- * 
- * This service handles all read operations for the Sales Cockpit,
- * aggregating data from various sources for dashboard display.
- * 
- * IMPORTANT: This is a pure query service - NO @Transactional needed!
- * All operations are read-only.
- * 
+ *
+ * <p>This service handles all read operations for the Sales Cockpit, aggregating data from various
+ * sources for dashboard display.
+ *
+ * <p>IMPORTANT: This is a pure query service - NO @Transactional needed! All operations are
+ * read-only.
+ *
  * @author FreshPlan Team
  * @since 2.0.0
  */
@@ -54,15 +54,16 @@ public class SalesCockpitQueryService {
   private final UserRepository userRepository;
 
   @Inject
-  public SalesCockpitQueryService(CustomerRepository customerRepository, UserRepository userRepository) {
+  public SalesCockpitQueryService(
+      CustomerRepository customerRepository, UserRepository userRepository) {
     this.customerRepository = customerRepository;
     this.userRepository = userRepository;
   }
 
   /**
    * Lädt alle Dashboard-Daten für einen bestimmten Benutzer.
-   * 
-   * NOTE: NO @Transactional annotation - this is a read-only operation!
+   *
+   * <p>NOTE: NO @Transactional annotation - this is a read-only operation!
    *
    * @param userId Die ID des Benutzers
    * @return Aggregierte Dashboard-Daten
@@ -100,8 +101,8 @@ public class SalesCockpitQueryService {
    *
    * <p>Diese Methode nutzt echte Daten aus der Datenbank und umgeht die User-Validierung. Sie ist
    * nur in der Entwicklungsumgebung verfügbar.
-   * 
-   * NOTE: NO @Transactional annotation - this is a read-only operation!
+   *
+   * <p>NOTE: NO @Transactional annotation - this is a read-only operation!
    *
    * @return Dashboard-Daten mit echten Statistiken für Entwicklung
    */
@@ -117,13 +118,14 @@ public class SalesCockpitQueryService {
 
     // Falls weniger als 3 Tasks vorhanden sind, füge Mock-Tasks hinzu
     while (tasks.size() < 3) {
-      DashboardTask mockTask = createMockTask(
-          "Mock-Task " + (tasks.size() + 1),
-          "Automatisch generierte Aufgabe für Tests",
-          DashboardTask.TaskType.CALL,
-          DashboardTask.TaskPriority.LOW,
-          "Test-Kunde " + (tasks.size() + 1),
-          LocalDateTime.now().plusHours(tasks.size() + 1));
+      DashboardTask mockTask =
+          createMockTask(
+              "Mock-Task " + (tasks.size() + 1),
+              "Automatisch generierte Aufgabe für Tests",
+              DashboardTask.TaskType.CALL,
+              DashboardTask.TaskPriority.LOW,
+              "Test-Kunde " + (tasks.size() + 1),
+              LocalDateTime.now().plusHours(tasks.size() + 1));
       tasks.add(mockTask);
     }
 
@@ -138,15 +140,16 @@ public class SalesCockpitQueryService {
 
     // Falls weniger als 2 Risk Customers vorhanden sind, füge Mock-Kunden hinzu
     while (riskCustomers.size() < 2) {
-      RiskCustomer mockRiskCustomer = createMockRiskCustomer(
-          "K-TEST-" + (riskCustomers.size() + 1),
-          "Test-Risiko-Kunde " + (riskCustomers.size() + 1),
-          90 + (riskCustomers.size() * 30),
-          riskCustomers.size() == 0
-              ? RiskCustomer.RiskLevel.MEDIUM
-              : RiskCustomer.RiskLevel.HIGH,
-          "Test-Risiko-Grund",
-          "Test-Empfehlung");
+      RiskCustomer mockRiskCustomer =
+          createMockRiskCustomer(
+              "K-TEST-" + (riskCustomers.size() + 1),
+              "Test-Risiko-Kunde " + (riskCustomers.size() + 1),
+              90 + (riskCustomers.size() * 30),
+              riskCustomers.size() == 0
+                  ? RiskCustomer.RiskLevel.MEDIUM
+                  : RiskCustomer.RiskLevel.HIGH,
+              "Test-Risiko-Grund",
+              "Test-Empfehlung");
       riskCustomers.add(mockRiskCustomer);
     }
 
@@ -161,11 +164,12 @@ public class SalesCockpitQueryService {
 
     // Falls keine Alerts vorhanden sind, füge einen Mock-Alert hinzu
     if (alerts.isEmpty()) {
-      DashboardAlert mockAlert = createMockAlert(
-          "Test-Alert",
-          "Automatisch generierter Alert für Tests",
-          "Test-Kunde",
-          "/customers/test");
+      DashboardAlert mockAlert =
+          createMockAlert(
+              "Test-Alert",
+              "Automatisch generierter Alert für Tests",
+              "Test-Kunde",
+              "/customers/test");
       alerts.add(mockAlert);
     }
 
@@ -199,23 +203,24 @@ public class SalesCockpitQueryService {
 
     // 1. Überfällige Follow-ups (höchste Priorität)
     List<Customer> overdueCustomers = customerRepository.findOverdueFollowUps(Page.of(0, 2));
-    overdueCustomers.forEach(customer -> {
-      DashboardTask task = new DashboardTask();
-      task.setId(UUID.randomUUID());
-      task.setTitle("ÜBERFÄLLIG: Follow-up mit " + customer.getCompanyName());
-      task.setDescription(
-          "Geplanter Follow-up seit "
-              + (customer.getNextFollowUpDate() != null
-                  ? customer.getNextFollowUpDate().toLocalDate()
-                  : "unbekannt"));
-      task.setType(DashboardTask.TaskType.CALL);
-      task.setPriority(DashboardTask.TaskPriority.HIGH);
-      task.setCustomerId(customer.getId());
-      task.setCustomerName(customer.getCompanyName());
-      task.setDueDate(LocalDateTime.now().minusHours(1)); // Bereits überfällig
-      task.setCompleted(false);
-      tasks.add(task);
-    });
+    overdueCustomers.forEach(
+        customer -> {
+          DashboardTask task = new DashboardTask();
+          task.setId(UUID.randomUUID());
+          task.setTitle("ÜBERFÄLLIG: Follow-up mit " + customer.getCompanyName());
+          task.setDescription(
+              "Geplanter Follow-up seit "
+                  + (customer.getNextFollowUpDate() != null
+                      ? customer.getNextFollowUpDate().toLocalDate()
+                      : "unbekannt"));
+          task.setType(DashboardTask.TaskType.CALL);
+          task.setPriority(DashboardTask.TaskPriority.HIGH);
+          task.setCustomerId(customer.getId());
+          task.setCustomerName(customer.getCompanyName());
+          task.setDueDate(LocalDateTime.now().minusHours(1)); // Bereits überfällig
+          task.setCompleted(false);
+          tasks.add(task);
+        });
 
     // 2. Risiko-Kunden kontaktieren (mittlere Priorität)
     LocalDateTime riskThreshold = LocalDateTime.now().minusDays(RISK_THRESHOLD_LOW_DAYS);
@@ -224,39 +229,41 @@ public class SalesCockpitQueryService {
             .limit(3)
             .toList();
 
-    riskCustomers.forEach(customer -> {
-      DashboardTask task = new DashboardTask();
-      task.setId(UUID.randomUUID());
-      task.setTitle("Risiko-Kunde kontaktieren: " + customer.getCompanyName());
-      task.setDescription(
-          "Kein Kontakt seit "
-              + (customer.getLastContactDate() != null
-                  ? customer.getLastContactDate().toLocalDate()
-                  : "Beginn der Geschäftsbeziehung"));
-      task.setType(DashboardTask.TaskType.EMAIL);
-      task.setPriority(DashboardTask.TaskPriority.MEDIUM);
-      task.setCustomerId(customer.getId());
-      task.setCustomerName(customer.getCompanyName());
-      task.setDueDate(LocalDateTime.now().plusHours(4));
-      task.setCompleted(false);
-      tasks.add(task);
-    });
+    riskCustomers.forEach(
+        customer -> {
+          DashboardTask task = new DashboardTask();
+          task.setId(UUID.randomUUID());
+          task.setTitle("Risiko-Kunde kontaktieren: " + customer.getCompanyName());
+          task.setDescription(
+              "Kein Kontakt seit "
+                  + (customer.getLastContactDate() != null
+                      ? customer.getLastContactDate().toLocalDate()
+                      : "Beginn der Geschäftsbeziehung"));
+          task.setType(DashboardTask.TaskType.EMAIL);
+          task.setPriority(DashboardTask.TaskPriority.MEDIUM);
+          task.setCustomerId(customer.getId());
+          task.setCustomerName(customer.getCompanyName());
+          task.setDueDate(LocalDateTime.now().plusHours(4));
+          task.setCompleted(false);
+          tasks.add(task);
+        });
 
     // 3. Neue Kunden begrüßen (niedrige Priorität)
     List<Customer> newCustomers = customerRepository.findRecentlyCreated(7, Page.of(0, 2));
-    newCustomers.forEach(customer -> {
-      DashboardTask task = new DashboardTask();
-      task.setId(UUID.randomUUID());
-      task.setTitle("Willkommen-Anruf: " + customer.getCompanyName());
-      task.setDescription("Neuer Kunde seit " + customer.getCreatedAt().toLocalDate());
-      task.setType(DashboardTask.TaskType.CALL);
-      task.setPriority(DashboardTask.TaskPriority.LOW);
-      task.setCustomerId(customer.getId());
-      task.setCustomerName(customer.getCompanyName());
-      task.setDueDate(LocalDateTime.now().plusHours(8));
-      task.setCompleted(false);
-      tasks.add(task);
-    });
+    newCustomers.forEach(
+        customer -> {
+          DashboardTask task = new DashboardTask();
+          task.setId(UUID.randomUUID());
+          task.setTitle("Willkommen-Anruf: " + customer.getCompanyName());
+          task.setDescription("Neuer Kunde seit " + customer.getCreatedAt().toLocalDate());
+          task.setType(DashboardTask.TaskType.CALL);
+          task.setPriority(DashboardTask.TaskPriority.LOW);
+          task.setCustomerId(customer.getId());
+          task.setCustomerName(customer.getCompanyName());
+          task.setDueDate(LocalDateTime.now().plusHours(8));
+          task.setCompleted(false);
+          tasks.add(task);
+        });
 
     return tasks;
   }
@@ -367,20 +374,21 @@ public class SalesCockpitQueryService {
 
     highValueCustomers.stream()
         .limit(2)
-        .forEach(customer -> {
-          DashboardAlert alert = new DashboardAlert();
-          alert.setId(UUID.randomUUID());
-          alert.setTitle("Umsatzchance bei " + customer.getCompanyName());
-          alert.setMessage(
-              "Kunde hatte lange keinen Kontakt - idealer Zeitpunkt für Cross-Selling");
-          alert.setType(DashboardAlert.AlertType.OPPORTUNITY);
-          alert.setSeverity(DashboardAlert.AlertSeverity.INFO);
-          alert.setCustomerId(customer.getId());
-          alert.setCustomerName(customer.getCompanyName());
-          alert.setCreatedAt(LocalDateTime.now());
-          alert.setActionLink("/customers/" + customer.getId());
-          alerts.add(alert);
-        });
+        .forEach(
+            customer -> {
+              DashboardAlert alert = new DashboardAlert();
+              alert.setId(UUID.randomUUID());
+              alert.setTitle("Umsatzchance bei " + customer.getCompanyName());
+              alert.setMessage(
+                  "Kunde hatte lange keinen Kontakt - idealer Zeitpunkt für Cross-Selling");
+              alert.setType(DashboardAlert.AlertType.OPPORTUNITY);
+              alert.setSeverity(DashboardAlert.AlertSeverity.INFO);
+              alert.setCustomerId(customer.getId());
+              alert.setCustomerName(customer.getCompanyName());
+              alert.setCreatedAt(LocalDateTime.now());
+              alert.setActionLink("/customers/" + customer.getId());
+              alerts.add(alert);
+            });
 
     return alerts;
   }

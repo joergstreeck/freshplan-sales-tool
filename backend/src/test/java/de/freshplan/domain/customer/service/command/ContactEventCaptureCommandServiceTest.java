@@ -5,11 +5,10 @@ import static org.mockito.Mockito.*;
 
 import de.freshplan.domain.customer.entity.ContactInteraction.InteractionType;
 import de.freshplan.domain.customer.service.ContactEventCaptureService.ContactDomainEvent;
-import de.freshplan.domain.customer.service.ContactEventCaptureService.ContactInteractionCaptured;
 import de.freshplan.domain.customer.service.ContactInteractionService;
 import de.freshplan.domain.customer.service.dto.ContactInteractionDTO;
-import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.InjectMock;
+import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -22,25 +21,19 @@ import org.mockito.Mockito;
 
 /**
  * Tests for ContactEventCaptureCommandService following established CQRS test patterns.
- * 
- * This is a write-only service, so we focus on:
- * - Event capture correctness
- * - Interaction creation with proper fields
- * - Event publishing
- * - Error handling
- * - NO read operations (verified)
- * 
+ *
+ * <p>This is a write-only service, so we focus on: - Event capture correctness - Interaction
+ * creation with proper fields - Event publishing - Error handling - NO read operations (verified)
+ *
  * @author FreshPlan Team
  * @since Phase 13 CQRS Migration
  */
 @QuarkusTest
 class ContactEventCaptureCommandServiceTest {
 
-  @Inject
-  ContactEventCaptureCommandService commandService;
+  @Inject ContactEventCaptureCommandService commandService;
 
-  @InjectMock
-  ContactInteractionService interactionService;
+  @InjectMock ContactInteractionService interactionService;
 
   private UUID testContactId;
   private String testUserId;
@@ -75,7 +68,7 @@ class ContactEventCaptureCommandServiceTest {
     commandService.captureContactUpdate(testContactId, testUserId, fieldUpdated);
 
     // Then
-    ArgumentCaptor<ContactInteractionDTO> dtoCaptor = 
+    ArgumentCaptor<ContactInteractionDTO> dtoCaptor =
         ArgumentCaptor.forClass(ContactInteractionDTO.class);
     verify(interactionService).createInteraction(dtoCaptor.capture());
 
@@ -98,7 +91,7 @@ class ContactEventCaptureCommandServiceTest {
     commandService.captureEmailSent(testContactId, testUserId, subject, content);
 
     // Then
-    ArgumentCaptor<ContactInteractionDTO> dtoCaptor = 
+    ArgumentCaptor<ContactInteractionDTO> dtoCaptor =
         ArgumentCaptor.forClass(ContactInteractionDTO.class);
     verify(interactionService).createInteraction(dtoCaptor.capture());
 
@@ -124,7 +117,7 @@ class ContactEventCaptureCommandServiceTest {
     commandService.capturePhoneCall(testContactId, testUserId, durationMinutes, outcome, notes);
 
     // Then
-    ArgumentCaptor<ContactInteractionDTO> dtoCaptor = 
+    ArgumentCaptor<ContactInteractionDTO> dtoCaptor =
         ArgumentCaptor.forClass(ContactInteractionDTO.class);
     verify(interactionService).createInteraction(dtoCaptor.capture());
 
@@ -148,7 +141,7 @@ class ContactEventCaptureCommandServiceTest {
     commandService.capturePhoneCall(testContactId, testUserId, durationMinutes, null, null);
 
     // Then
-    ArgumentCaptor<ContactInteractionDTO> dtoCaptor = 
+    ArgumentCaptor<ContactInteractionDTO> dtoCaptor =
         ArgumentCaptor.forClass(ContactInteractionDTO.class);
     verify(interactionService).createInteraction(dtoCaptor.capture());
 
@@ -165,7 +158,7 @@ class ContactEventCaptureCommandServiceTest {
     commandService.capturePhoneCall(testContactId, testUserId, durationMinutes, null, null);
 
     // Then
-    ArgumentCaptor<ContactInteractionDTO> dtoCaptor = 
+    ArgumentCaptor<ContactInteractionDTO> dtoCaptor =
         ArgumentCaptor.forClass(ContactInteractionDTO.class);
     verify(interactionService).createInteraction(dtoCaptor.capture());
 
@@ -183,7 +176,7 @@ class ContactEventCaptureCommandServiceTest {
     commandService.captureMeetingScheduled(testContactId, testUserId, meetingDate, agenda);
 
     // Then
-    ArgumentCaptor<ContactInteractionDTO> dtoCaptor = 
+    ArgumentCaptor<ContactInteractionDTO> dtoCaptor =
         ArgumentCaptor.forClass(ContactInteractionDTO.class);
     verify(interactionService).createInteraction(dtoCaptor.capture());
 
@@ -208,7 +201,7 @@ class ContactEventCaptureCommandServiceTest {
     commandService.captureDocumentShared(testContactId, testUserId, documentName, documentType);
 
     // Then
-    ArgumentCaptor<ContactInteractionDTO> dtoCaptor = 
+    ArgumentCaptor<ContactInteractionDTO> dtoCaptor =
         ArgumentCaptor.forClass(ContactInteractionDTO.class);
     verify(interactionService).createInteraction(dtoCaptor.capture());
 
@@ -231,7 +224,7 @@ class ContactEventCaptureCommandServiceTest {
     commandService.captureTaskCreated(testContactId, testUserId, taskDescription, dueDate);
 
     // Then
-    ArgumentCaptor<ContactInteractionDTO> dtoCaptor = 
+    ArgumentCaptor<ContactInteractionDTO> dtoCaptor =
         ArgumentCaptor.forClass(ContactInteractionDTO.class);
     verify(interactionService).createInteraction(dtoCaptor.capture());
 
@@ -249,8 +242,8 @@ class ContactEventCaptureCommandServiceTest {
   void onContactEvent_withContactViewed_shouldCaptureView() {
     // Given
     Map<String, String> metadata = new HashMap<>();
-    ContactDomainEvent event = new ContactDomainEvent(
-        "CONTACT_VIEWED", testContactId, testUserId, metadata);
+    ContactDomainEvent event =
+        new ContactDomainEvent("CONTACT_VIEWED", testContactId, testUserId, metadata);
 
     // When
     commandService.onContactEvent(event);
@@ -265,8 +258,8 @@ class ContactEventCaptureCommandServiceTest {
     // Given
     Map<String, String> metadata = new HashMap<>();
     metadata.put("field", "phone");
-    ContactDomainEvent event = new ContactDomainEvent(
-        "CONTACT_UPDATED", testContactId, testUserId, metadata);
+    ContactDomainEvent event =
+        new ContactDomainEvent("CONTACT_UPDATED", testContactId, testUserId, metadata);
 
     // When
     commandService.onContactEvent(event);
@@ -281,8 +274,8 @@ class ContactEventCaptureCommandServiceTest {
     Map<String, String> metadata = new HashMap<>();
     metadata.put("subject", "Test Subject");
     metadata.put("content", "Test Content");
-    ContactDomainEvent event = new ContactDomainEvent(
-        "EMAIL_SENT", testContactId, testUserId, metadata);
+    ContactDomainEvent event =
+        new ContactDomainEvent("EMAIL_SENT", testContactId, testUserId, metadata);
 
     // When
     commandService.onContactEvent(event);
@@ -295,7 +288,8 @@ class ContactEventCaptureCommandServiceTest {
   void captureWithException_shouldLogError() {
     // Given
     doThrow(new RuntimeException("Database error"))
-        .when(interactionService).createInteraction(any());
+        .when(interactionService)
+        .createInteraction(any());
 
     // When
     commandService.captureContactUpdate(testContactId, testUserId, "test");

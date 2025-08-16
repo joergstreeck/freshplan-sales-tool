@@ -18,12 +18,10 @@ import org.slf4j.LoggerFactory;
 /**
  * CQRS Command Service für Help Content Management - Write Operations
  *
- * <p>Handles all write operations for help content management:
- * - Content creation and updates
- * - Feedback recording and analytics
- * - Content status management (activate/deactivate)
- * - View count tracking and maintenance
- * 
+ * <p>Handles all write operations for help content management: - Content creation and updates -
+ * Feedback recording and analytics - Content status management (activate/deactivate) - View count
+ * tracking and maintenance
+ *
  * <p>Part of Phase 12.2 CQRS migration from HelpContentService.
  *
  * @since Phase 12.2 CQRS Migration
@@ -40,9 +38,9 @@ public class HelpContentCommandService {
 
   /**
    * Records user feedback for help content.
-   * 
-   * This includes updating the help content's feedback counters and 
-   * tracking analytics for improvement insights.
+   *
+   * <p>This includes updating the help content's feedback counters and tracking analytics for
+   * improvement insights.
    *
    * @param helpId The help content ID
    * @param userId The user providing feedback
@@ -78,9 +76,9 @@ public class HelpContentCommandService {
 
   /**
    * Creates or updates help content.
-   * 
-   * Creates new help content with all necessary metadata and
-   * makes it immediately available for users.
+   *
+   * <p>Creates new help content with all necessary metadata and makes it immediately available for
+   * users.
    *
    * @param feature The feature this help is for
    * @param type The type of help content
@@ -127,9 +125,8 @@ public class HelpContentCommandService {
 
   /**
    * Activates or deactivates help content.
-   * 
-   * Manages the lifecycle of help content by enabling/disabling
-   * its visibility to users.
+   *
+   * <p>Manages the lifecycle of help content by enabling/disabling its visibility to users.
    *
    * @param helpId The help content ID
    * @param active Whether to activate or deactivate
@@ -155,9 +152,9 @@ public class HelpContentCommandService {
 
   /**
    * Increments view count for help content.
-   * 
-   * This is called when help content is actually viewed by users.
-   * Separated from the query operations to maintain CQRS principles.
+   *
+   * <p>This is called when help content is actually viewed by users. Separated from the query
+   * operations to maintain CQRS principles.
    *
    * @param helpId The help content ID
    */
@@ -173,18 +170,19 @@ public class HelpContentCommandService {
     content.incrementViewCount();
     helpRepository.persist(content);
 
-    LOG.debug("View count incremented for help '{}': {} total views", content.title, content.viewCount);
+    LOG.debug(
+        "View count incremented for help '{}': {} total views", content.title, content.viewCount);
   }
 
   /**
    * Bulk operation to reset view counts (for maintenance/testing).
-   * 
+   *
    * @param helpIds List of help content IDs to reset
    */
   @Transactional
   public void resetViewCounts(List<UUID> helpIds) {
     LOG.info("Resetting view counts for {} help contents", helpIds.size());
-    
+
     for (UUID helpId : helpIds) {
       Optional<HelpContent> contentOpt = helpRepository.findByIdOptional(helpId);
       if (contentOpt.isPresent()) {
@@ -193,13 +191,13 @@ public class HelpContentCommandService {
         helpRepository.persist(content);
       }
     }
-    
+
     LOG.info("View count reset completed for {} contents", helpIds.size());
   }
 
   /**
    * Updates help content metadata without changing the actual content.
-   * 
+   *
    * @param helpId The help content ID
    * @param priority New priority value
    * @param updatedBy Who made this change

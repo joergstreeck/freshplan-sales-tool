@@ -9,9 +9,9 @@ import de.freshplan.domain.customer.entity.Customer;
 import de.freshplan.domain.customer.entity.CustomerStatus;
 import de.freshplan.domain.customer.repository.CustomerRepository;
 import de.freshplan.domain.user.entity.User;
-import io.quarkus.hibernate.orm.panache.PanacheQuery;
 import de.freshplan.domain.user.repository.UserRepository;
 import de.freshplan.domain.user.service.exception.UserNotFoundException;
+import io.quarkus.hibernate.orm.panache.PanacheQuery;
 import io.quarkus.panache.common.Page;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -28,10 +28,10 @@ import org.mockito.junit.jupiter.MockitoSettings;
 
 /**
  * Unit tests for SalesCockpitQueryService.
- * 
- * Verifies that all query operations work correctly and that
- * NO write operations occur (pure read-only service).
- * 
+ *
+ * <p>Verifies that all query operations work correctly and that NO write operations occur (pure
+ * read-only service).
+ *
  * @author FreshPlan Team
  * @since 2.0.0
  */
@@ -39,14 +39,11 @@ import org.mockito.junit.jupiter.MockitoSettings;
 @MockitoSettings(strictness = org.mockito.quality.Strictness.LENIENT)
 class SalesCockpitQueryServiceTest {
 
-  @Mock
-  private CustomerRepository customerRepository;
+  @Mock private CustomerRepository customerRepository;
 
-  @Mock
-  private UserRepository userRepository;
+  @Mock private UserRepository userRepository;
 
-  @InjectMocks
-  private SalesCockpitQueryService queryService;
+  @InjectMocks private SalesCockpitQueryService queryService;
 
   private UUID testUserId;
   private UUID testUserId2;
@@ -58,10 +55,10 @@ class SalesCockpitQueryServiceTest {
   void setUp() {
     testUserId = UUID.randomUUID();
     testUserId2 = UUID.randomUUID();
-    
+
     // Setup test user - don't stub in setUp to avoid unnecessary stubbing
     testUser = mock(User.class);
-    
+
     // Setup mock customers
     mockCustomers = createMockCustomers();
   }
@@ -71,20 +68,20 @@ class SalesCockpitQueryServiceTest {
     // Given
     when(userRepository.findById(testUserId)).thenReturn(testUser);
     setupMockRepositoryResponses();
-    
+
     // When
     SalesCockpitDashboard result = queryService.getDashboardData(testUserId);
-    
+
     // Then
     assertNotNull(result);
     assertNotNull(result.getTodaysTasks());
     assertNotNull(result.getRiskCustomers());
     assertNotNull(result.getStatistics());
     assertNotNull(result.getAlerts());
-    
+
     // Verify user validation occurred
     verify(userRepository).findById(testUserId);
-    
+
     // Verify NO write operations
     verifyNoWriteOperations();
   }
@@ -93,16 +90,16 @@ class SalesCockpitQueryServiceTest {
   void testGetDashboardData_withTestUserId_shouldSkipUserValidation() {
     // Given
     setupMockRepositoryResponses();
-    
+
     // When
     SalesCockpitDashboard result = queryService.getDashboardData(TEST_USER_ID);
-    
+
     // Then
     assertNotNull(result);
-    
+
     // Verify user validation was skipped for TEST_USER_ID
     verify(userRepository, never()).findById(TEST_USER_ID);
-    
+
     // Verify NO write operations
     verifyNoWriteOperations();
   }
@@ -110,13 +107,11 @@ class SalesCockpitQueryServiceTest {
   @Test
   void testGetDashboardData_withNullUserId_shouldThrowException() {
     // When & Then
-    IllegalArgumentException exception = assertThrows(
-        IllegalArgumentException.class,
-        () -> queryService.getDashboardData(null)
-    );
-    
+    IllegalArgumentException exception =
+        assertThrows(IllegalArgumentException.class, () -> queryService.getDashboardData(null));
+
     assertEquals("User ID must not be null", exception.getMessage());
-    
+
     // Verify no repository calls were made
     verifyNoInteractions(customerRepository);
     verifyNoInteractions(userRepository);
@@ -127,13 +122,12 @@ class SalesCockpitQueryServiceTest {
     // Given
     UUID unknownUserId = UUID.randomUUID();
     when(userRepository.findById(unknownUserId)).thenReturn(null);
-    
+
     // When & Then
-    UserNotFoundException exception = assertThrows(
-        UserNotFoundException.class,
-        () -> queryService.getDashboardData(unknownUserId)
-    );
-    
+    UserNotFoundException exception =
+        assertThrows(
+            UserNotFoundException.class, () -> queryService.getDashboardData(unknownUserId));
+
     assertTrue(exception.getMessage().contains("User not found"));
     assertTrue(exception.getMessage().contains(unknownUserId.toString()));
   }
@@ -142,24 +136,25 @@ class SalesCockpitQueryServiceTest {
   void testGetDevDashboardData_shouldReturnConsistentData() {
     // Given
     setupMockRepositoryResponses();
-    
+
     // When
     SalesCockpitDashboard result = queryService.getDevDashboardData();
-    
+
     // Then
     assertNotNull(result);
     assertNotNull(result.getStatistics());
-    
+
     // Verify consistent test data
     assertNotNull(result.getTodaysTasks());
     assertEquals(3, result.getTodaysTasks().size(), "Should have exactly 3 tasks for tests");
-    
+
     assertNotNull(result.getRiskCustomers());
-    assertEquals(2, result.getRiskCustomers().size(), "Should have exactly 2 risk customers for tests");
-    
+    assertEquals(
+        2, result.getRiskCustomers().size(), "Should have exactly 2 risk customers for tests");
+
     assertNotNull(result.getAlerts());
     assertEquals(1, result.getAlerts().size(), "Should have exactly 1 alert for tests");
-    
+
     // Verify NO write operations
     verifyNoWriteOperations();
   }
@@ -177,23 +172,21 @@ class SalesCockpitQueryServiceTest {
         .thenReturn(new ArrayList<>());
     setupStatisticsResponses();
     setupFindMocks(); // Add find mocks for alerts generation
-    
+
     // When
     SalesCockpitDashboard result = queryService.getDashboardData(testUserId);
-    
+
     // Then
     List<DashboardTask> tasks = result.getTodaysTasks();
     assertFalse(tasks.isEmpty());
-    
-    DashboardTask overdueTask = tasks.stream()
-        .filter(t -> t.getTitle().startsWith("ÜBERFÄLLIG"))
-        .findFirst()
-        .orElse(null);
-    
+
+    DashboardTask overdueTask =
+        tasks.stream().filter(t -> t.getTitle().startsWith("ÜBERFÄLLIG")).findFirst().orElse(null);
+
     assertNotNull(overdueTask);
     assertEquals(DashboardTask.TaskPriority.HIGH, overdueTask.getPriority());
     assertEquals(DashboardTask.TaskType.CALL, overdueTask.getType());
-    
+
     // Verify NO write operations
     verifyNoWriteOperations();
   }
@@ -204,48 +197,50 @@ class SalesCockpitQueryServiceTest {
     Customer highRiskCustomer = createCustomerWithDaysSinceContact(125);
     Customer mediumRiskCustomer = createCustomerWithDaysSinceContact(95);
     Customer lowRiskCustomer = createCustomerWithDaysSinceContact(65);
-    
+
     when(userRepository.findById(testUserId)).thenReturn(testUser);
     when(customerRepository.findActiveCustomersWithoutRecentContact(any(LocalDateTime.class)))
         .thenReturn(List.of(highRiskCustomer, mediumRiskCustomer, lowRiskCustomer));
-    
+
     // Setup other required mocks
-    when(customerRepository.findOverdueFollowUps(any(Page.class)))
-        .thenReturn(new ArrayList<>());
+    when(customerRepository.findOverdueFollowUps(any(Page.class))).thenReturn(new ArrayList<>());
     when(customerRepository.findRecentlyCreated(anyInt(), any(Page.class)))
         .thenReturn(new ArrayList<>());
     setupStatisticsResponses();
     setupFindMocks();
-    
+
     // When
     SalesCockpitDashboard result = queryService.getDashboardData(testUserId);
-    
+
     // Then
     List<RiskCustomer> riskCustomers = result.getRiskCustomers();
     assertEquals(3, riskCustomers.size());
-    
+
     // Verify risk levels are correctly assigned
-    RiskCustomer high = riskCustomers.stream()
-        .filter(rc -> rc.getDaysSinceLastContact() > 120)
-        .findFirst()
-        .orElse(null);
+    RiskCustomer high =
+        riskCustomers.stream()
+            .filter(rc -> rc.getDaysSinceLastContact() > 120)
+            .findFirst()
+            .orElse(null);
     assertNotNull(high);
     assertEquals(RiskCustomer.RiskLevel.HIGH, high.getRiskLevel());
-    
-    RiskCustomer medium = riskCustomers.stream()
-        .filter(rc -> rc.getDaysSinceLastContact() > 90 && rc.getDaysSinceLastContact() <= 120)
-        .findFirst()
-        .orElse(null);
+
+    RiskCustomer medium =
+        riskCustomers.stream()
+            .filter(rc -> rc.getDaysSinceLastContact() > 90 && rc.getDaysSinceLastContact() <= 120)
+            .findFirst()
+            .orElse(null);
     assertNotNull(medium);
     assertEquals(RiskCustomer.RiskLevel.MEDIUM, medium.getRiskLevel());
-    
-    RiskCustomer low = riskCustomers.stream()
-        .filter(rc -> rc.getDaysSinceLastContact() > 60 && rc.getDaysSinceLastContact() <= 90)
-        .findFirst()
-        .orElse(null);
+
+    RiskCustomer low =
+        riskCustomers.stream()
+            .filter(rc -> rc.getDaysSinceLastContact() > 60 && rc.getDaysSinceLastContact() <= 90)
+            .findFirst()
+            .orElse(null);
     assertNotNull(low);
     assertEquals(RiskCustomer.RiskLevel.LOW, low.getRiskLevel());
-    
+
     // Verify NO write operations
     verifyNoWriteOperations();
   }
@@ -261,10 +256,10 @@ class SalesCockpitQueryServiceTest {
     when(customerRepository.countOverdueFollowUps()).thenReturn(5L);
     setupTaskAndRiskResponses();
     setupFindMocks(); // Add find mocks for alerts generation
-    
+
     // When
     SalesCockpitDashboard result = queryService.getDashboardData(testUserId);
-    
+
     // Then
     DashboardStatistics stats = result.getStatistics();
     assertNotNull(stats);
@@ -272,7 +267,7 @@ class SalesCockpitQueryServiceTest {
     assertEquals(140, stats.getActiveCustomers());
     assertEquals(10, stats.getCustomersAtRisk());
     assertEquals(5, stats.getOverdueItems());
-    
+
     // Verify NO write operations
     verifyNoWriteOperations();
   }
@@ -282,31 +277,31 @@ class SalesCockpitQueryServiceTest {
     // Given
     Customer customerWithoutRecentContact = createCustomerWithDaysSinceContact(35);
     when(userRepository.findById(testUserId)).thenReturn(testUser);
-    
+
     // Mock the find query specifically for alerts
     PanacheQuery<Customer> mockQuery = mock(PanacheQuery.class);
     when(mockQuery.list()).thenReturn(List.of(customerWithoutRecentContact));
     when(customerRepository.find(anyString(), any(CustomerStatus.class), any(LocalDateTime.class)))
         .thenReturn(mockQuery);
-    
+
     // Setup other required mocks
     setupTaskAndRiskResponses();
     setupStatisticsResponses();
-    
+
     // When
     SalesCockpitDashboard result = queryService.getDashboardData(testUserId);
-    
+
     // Then
     List<DashboardAlert> alerts = result.getAlerts();
     assertNotNull(alerts);
     assertFalse(alerts.isEmpty());
-    
+
     DashboardAlert alert = alerts.get(0);
     assertEquals(DashboardAlert.AlertType.OPPORTUNITY, alert.getType());
     assertEquals(DashboardAlert.AlertSeverity.INFO, alert.getSeverity());
     assertTrue(alert.getTitle().contains("Umsatzchance"));
     assertTrue(alert.getMessage().contains("Cross-Selling"));
-    
+
     // Verify NO write operations
     verifyNoWriteOperations();
   }
@@ -315,24 +310,24 @@ class SalesCockpitQueryServiceTest {
   void testNoWriteOperations_inAnyMethod() {
     // Given
     setupMockRepositoryResponses();
-    
+
     // When - Execute all public methods
     queryService.getDashboardData(TEST_USER_ID);
     queryService.getDevDashboardData();
-    
+
     // Then - Verify absolutely NO write operations occurred
     verify(customerRepository, never()).persist((Customer) any());
     verify(customerRepository, never()).persistAndFlush(any());
     verify(customerRepository, never()).delete(any());
     verify(customerRepository, never()).deleteById(any());
     verify(customerRepository, never()).flush();
-    
+
     verify(userRepository, never()).persist((User) any());
     verify(userRepository, never()).persistAndFlush(any());
     verify(userRepository, never()).delete(any());
     verify(userRepository, never()).deleteById(any());
     verify(userRepository, never()).flush();
-    
+
     // Verify only read operations occurred
     verify(customerRepository, atLeastOnce()).count();
     verify(customerRepository, atLeastOnce()).countByStatus(any());
@@ -345,26 +340,25 @@ class SalesCockpitQueryServiceTest {
     setupStatisticsResponses();
     setupFindMocks();
   }
-  
+
   private void setupFindMocks() {
     // Create a mock query that returns empty list for alerts generation
     PanacheQuery<Customer> mockQuery = mock(PanacheQuery.class);
     when(mockQuery.list()).thenReturn(new ArrayList<>());
-    
+
     // Mock all variations of find() method
     when(customerRepository.find(anyString(), any(CustomerStatus.class), any(LocalDateTime.class)))
         .thenReturn(mockQuery);
-    when(customerRepository.find(anyString(), any(Object[].class)))
-        .thenReturn(mockQuery);
-    
+    when(customerRepository.find(anyString(), any(Object[].class))).thenReturn(mockQuery);
+
     // Use lenient for edge cases
-    Mockito.lenient().when(customerRepository.find(anyString(), any(Object.class), any(Object.class)))
+    Mockito.lenient()
+        .when(customerRepository.find(anyString(), any(Object.class), any(Object.class)))
         .thenReturn(mockQuery);
   }
 
   private void setupTaskAndRiskResponses() {
-    when(customerRepository.findOverdueFollowUps(any(Page.class)))
-        .thenReturn(new ArrayList<>());
+    when(customerRepository.findOverdueFollowUps(any(Page.class))).thenReturn(new ArrayList<>());
     when(customerRepository.findActiveCustomersWithoutRecentContact(any(LocalDateTime.class)))
         .thenReturn(new ArrayList<>());
     when(customerRepository.findRecentlyCreated(anyInt(), any(Page.class)))
@@ -378,7 +372,6 @@ class SalesCockpitQueryServiceTest {
         .thenReturn(5L);
     when(customerRepository.countOverdueFollowUps()).thenReturn(3L);
   }
-
 
   private void verifyNoWriteOperations() {
     verify(customerRepository, never()).persist((Customer) any());
@@ -424,5 +417,4 @@ class SalesCockpitQueryServiceTest {
     customer.setCreatedAt(LocalDateTime.now().minusDays(days + 30));
     return customer;
   }
-
 }

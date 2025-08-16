@@ -3,7 +3,6 @@ package de.freshplan.domain.user.service;
 import de.freshplan.domain.user.entity.User;
 import de.freshplan.domain.user.repository.UserRepository;
 import de.freshplan.domain.user.service.command.UserCommandService;
-import de.freshplan.domain.user.service.query.UserQueryService;
 import de.freshplan.domain.user.service.dto.CreateUserRequest;
 import de.freshplan.domain.user.service.dto.UpdateUserRequest;
 import de.freshplan.domain.user.service.dto.UpdateUserRolesRequest;
@@ -14,6 +13,7 @@ import de.freshplan.domain.user.service.exception.InvalidRoleException;
 import de.freshplan.domain.user.service.exception.UserAlreadyExistsException;
 import de.freshplan.domain.user.service.exception.UserNotFoundException;
 import de.freshplan.domain.user.service.mapper.UserMapper;
+import de.freshplan.domain.user.service.query.UserQueryService;
 import de.freshplan.domain.user.service.validation.RoleValidator;
 import io.quarkus.panache.common.Page;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -30,9 +30,9 @@ import org.jboss.logging.Logger;
 /**
  * Service layer for User management operations.
  *
- * <p>This service now acts as a Facade for CQRS pattern implementation.
- * When cqrsEnabled is true, it delegates to UserCommandService and UserQueryService.
- * When false, it uses the legacy implementation for backward compatibility.
+ * <p>This service now acts as a Facade for CQRS pattern implementation. When cqrsEnabled is true,
+ * it delegates to UserCommandService and UserQueryService. When false, it uses the legacy
+ * implementation for backward compatibility.
  *
  * @author FreshPlan Team
  * @since 2.0.0

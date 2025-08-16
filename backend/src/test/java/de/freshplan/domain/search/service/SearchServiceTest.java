@@ -13,412 +13,410 @@ import de.freshplan.domain.search.service.dto.ContactSearchDto;
 import de.freshplan.domain.search.service.dto.CustomerSearchDto;
 import de.freshplan.domain.search.service.dto.SearchResult;
 import de.freshplan.domain.search.service.dto.SearchResults;
-import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.InjectMock;
+import io.quarkus.test.junit.QuarkusTest;
+import jakarta.inject.Inject;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
-import jakarta.inject.Inject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
  * Comprehensive tests for SearchService following established CQRS test patterns.
- * 
- * Test Coverage:
- * - universalSearch() - complex multi-entity search
- * - quickSearch() - autocomplete functionality  
- * - Query type detection (EMAIL, PHONE, CUSTOMER_NUMBER, TEXT)
- * - Relevance scoring algorithms
- * - Repository integration and error handling
- * 
- * Applied Test-Fixing Patterns from previous phases:
- * 1. PanacheQuery-Mocking (if needed)
- * 2. Mockito Matcher-Consistency (all parameters as matchers)
- * 3. Foreign Key-Safe Cleanup (not applicable - read-only)
- * 4. Flexible Verification (atLeastOnce() instead of exact times())
+ *
+ * <p>Test Coverage: - universalSearch() - complex multi-entity search - quickSearch() -
+ * autocomplete functionality - Query type detection (EMAIL, PHONE, CUSTOMER_NUMBER, TEXT) -
+ * Relevance scoring algorithms - Repository integration and error handling
+ *
+ * <p>Applied Test-Fixing Patterns from previous phases: 1. PanacheQuery-Mocking (if needed) 2.
+ * Mockito Matcher-Consistency (all parameters as matchers) 3. Foreign Key-Safe Cleanup (not
+ * applicable - read-only) 4. Flexible Verification (atLeastOnce() instead of exact times())
  */
 @QuarkusTest
 class SearchServiceTest {
 
-    @Inject
-    SearchService searchService;
+  @Inject SearchService searchService;
 
-    @InjectMock
-    CustomerRepository customerRepository;
+  @InjectMock CustomerRepository customerRepository;
 
-    @InjectMock
-    ContactRepository contactRepository;
+  @InjectMock ContactRepository contactRepository;
 
-    // Test data
-    private Customer testCustomer1;
-    private Customer testCustomer2;
-    private Customer inactiveCustomer;
-    private CustomerContact testContact1;
-    private CustomerContact testContact2;
+  // Test data
+  private Customer testCustomer1;
+  private Customer testCustomer2;
+  private Customer inactiveCustomer;
+  private CustomerContact testContact1;
+  private CustomerContact testContact2;
 
-    @BeforeEach
-    void setUp() {
-        // Reset mocks
-        reset(customerRepository, contactRepository);
-        
-        // Create test customers
-        testCustomer1 = createTestCustomer(
-            "KD-2025-00001", 
-            "Bäckerei Schmidt GmbH", 
+  @BeforeEach
+  void setUp() {
+    // Reset mocks
+    reset(customerRepository, contactRepository);
+
+    // Create test customers
+    testCustomer1 =
+        createTestCustomer(
+            "KD-2025-00001",
+            "Bäckerei Schmidt GmbH",
             CustomerStatus.AKTIV,
-            LocalDateTime.now().minusDays(10)
-        );
-        
-        testCustomer2 = createTestCustomer(
-            "KD-2025-00002", 
-            "Metzgerei Müller", 
+            LocalDateTime.now().minusDays(10));
+
+    testCustomer2 =
+        createTestCustomer(
+            "KD-2025-00002",
+            "Metzgerei Müller",
             CustomerStatus.LEAD,
-            LocalDateTime.now().minusDays(45)
-        );
-        
-        inactiveCustomer = createTestCustomer(
-            "KD-2025-00003", 
-            "Geschlossener Betrieb", 
+            LocalDateTime.now().minusDays(45));
+
+    inactiveCustomer =
+        createTestCustomer(
+            "KD-2025-00003",
+            "Geschlossener Betrieb",
             CustomerStatus.INAKTIV,
-            LocalDateTime.now().minusDays(200)
-        );
-        
-        // Create test contacts
-        testContact1 = createTestContact(
-            "Hans", 
-            "Schmidt", 
-            "schmidt@baeckerei.de", 
+            LocalDateTime.now().minusDays(200));
+
+    // Create test contacts
+    testContact1 =
+        createTestContact(
+            "Hans",
+            "Schmidt",
+            "schmidt@baeckerei.de",
             "+49-123-456789",
             true, // isPrimary
-            testCustomer1
-        );
-        
-        testContact2 = createTestContact(
-            "Maria", 
-            "Müller", 
-            "mueller@metzgerei.de", 
+            testCustomer1);
+
+    testContact2 =
+        createTestContact(
+            "Maria",
+            "Müller",
+            "mueller@metzgerei.de",
             "+49-987-654321",
             false, // isPrimary
-            testCustomer2
-        );
-    }
+            testCustomer2);
+  }
 
-    @Test
-    void universalSearch_withTextQuery_shouldReturnCustomersAndContacts() {
-        // Given
-        String query = "schmidt";
-        
-        when(customerRepository.searchFullText(eq(query), eq(20)))
-            .thenReturn(Arrays.asList(testCustomer1));
-        when(contactRepository.searchContactsFullText(eq(query), eq(20)))
-            .thenReturn(Arrays.asList(testContact1));
+  @Test
+  void universalSearch_withTextQuery_shouldReturnCustomersAndContacts() {
+    // Given
+    String query = "schmidt";
 
-        // When
-        SearchResults results = searchService.universalSearch(query, true, false, 20);
+    when(customerRepository.searchFullText(eq(query), eq(20)))
+        .thenReturn(Arrays.asList(testCustomer1));
+    when(contactRepository.searchContactsFullText(eq(query), eq(20)))
+        .thenReturn(Arrays.asList(testContact1));
 
-        // Then
-        assertThat(results.getCustomers()).hasSize(1);
-        assertThat(results.getContacts()).hasSize(1);
-        assertThat(results.getTotalCount()).isEqualTo(2);
-        assertThat(results.getExecutionTime()).isGreaterThanOrEqualTo(0);
+    // When
+    SearchResults results = searchService.universalSearch(query, true, false, 20);
 
-        // Verify customer result
-        SearchResult customerResult = results.getCustomers().get(0);
-        assertThat(customerResult.getType()).isEqualTo("customer");
-        assertThat(customerResult.getRelevanceScore()).isGreaterThan(0);
-        
-        CustomerSearchDto customerDto = (CustomerSearchDto) customerResult.getData();
-        assertThat(customerDto.getCompanyName()).isEqualTo("Bäckerei Schmidt GmbH");
+    // Then
+    assertThat(results.getCustomers()).hasSize(1);
+    assertThat(results.getContacts()).hasSize(1);
+    assertThat(results.getTotalCount()).isEqualTo(2);
+    assertThat(results.getExecutionTime()).isGreaterThanOrEqualTo(0);
 
-        // Pattern 4: Flexible Verification
-        verify(customerRepository, atLeastOnce()).searchFullText(eq(query), eq(20));
-        verify(contactRepository, atLeastOnce()).searchContactsFullText(eq(query), eq(20));
-    }
+    // Verify customer result
+    SearchResult customerResult = results.getCustomers().get(0);
+    assertThat(customerResult.getType()).isEqualTo("customer");
+    assertThat(customerResult.getRelevanceScore()).isGreaterThan(0);
 
-    @Test
-    void universalSearch_withEmailQuery_shouldDetectEmailAndSearchAccordingly() {
-        // Given
-        String emailQuery = "schmidt@baeckerei.de";
-        
-        when(customerRepository.findByContactEmail(eq(emailQuery), eq(20)))
-            .thenReturn(Arrays.asList(testCustomer1));
-        when(contactRepository.findByEmail(eq(emailQuery), eq(20)))
-            .thenReturn(Arrays.asList(testContact1));
+    CustomerSearchDto customerDto = (CustomerSearchDto) customerResult.getData();
+    assertThat(customerDto.getCompanyName()).isEqualTo("Bäckerei Schmidt GmbH");
 
-        // When
-        SearchResults results = searchService.universalSearch(emailQuery, true, false, 20);
+    // Pattern 4: Flexible Verification
+    verify(customerRepository, atLeastOnce()).searchFullText(eq(query), eq(20));
+    verify(contactRepository, atLeastOnce()).searchContactsFullText(eq(query), eq(20));
+  }
 
-        // Then
-        assertThat(results.getCustomers()).hasSize(1);
-        assertThat(results.getContacts()).hasSize(1);
-        
-        // Verify correct email search methods were called
-        verify(customerRepository).findByContactEmail(eq(emailQuery), eq(20));
-        verify(contactRepository).findByEmail(eq(emailQuery), eq(20));
-        
-        // Verify text search was NOT called
-        verify(customerRepository, never()).searchFullText(anyString(), anyInt());
-    }
+  @Test
+  void universalSearch_withEmailQuery_shouldDetectEmailAndSearchAccordingly() {
+    // Given
+    String emailQuery = "schmidt@baeckerei.de";
 
-    @Test
-    void universalSearch_withPhoneQuery_shouldDetectPhoneAndSearchAccordingly() {
-        // Given
-        String phoneQuery = "+49-123-456789";
-        
-        when(customerRepository.findByPhone(eq(phoneQuery), eq(20)))
-            .thenReturn(Arrays.asList(testCustomer1));
-        when(contactRepository.findByPhoneOrMobile(eq(phoneQuery), eq(20)))
-            .thenReturn(Arrays.asList(testContact1));
+    when(customerRepository.findByContactEmail(eq(emailQuery), eq(20)))
+        .thenReturn(Arrays.asList(testCustomer1));
+    when(contactRepository.findByEmail(eq(emailQuery), eq(20)))
+        .thenReturn(Arrays.asList(testContact1));
 
-        // When
-        SearchResults results = searchService.universalSearch(phoneQuery, true, false, 20);
+    // When
+    SearchResults results = searchService.universalSearch(emailQuery, true, false, 20);
 
-        // Then
-        assertThat(results.getCustomers()).hasSize(1);
-        assertThat(results.getContacts()).hasSize(1);
-        
-        // Verify correct phone search methods were called
-        verify(customerRepository).findByPhone(eq(phoneQuery), eq(20));
-        verify(contactRepository).findByPhoneOrMobile(eq(phoneQuery), eq(20));
-    }
+    // Then
+    assertThat(results.getCustomers()).hasSize(1);
+    assertThat(results.getContacts()).hasSize(1);
 
-    @Test
-    void universalSearch_withCustomerNumberQuery_shouldDetectAndSearchByNumber() {
-        // Given
-        String customerNumberQuery = "KD-2025-00001";
-        
-        when(customerRepository.findByCustomerNumberLike(eq(customerNumberQuery + "%"), eq(20)))
-            .thenReturn(Arrays.asList(testCustomer1));
-        when(contactRepository.searchContactsFullText(eq(customerNumberQuery), eq(20)))
-            .thenReturn(Arrays.asList());
+    // Verify correct email search methods were called
+    verify(customerRepository).findByContactEmail(eq(emailQuery), eq(20));
+    verify(contactRepository).findByEmail(eq(emailQuery), eq(20));
 
-        // When
-        SearchResults results = searchService.universalSearch(customerNumberQuery, true, false, 20);
+    // Verify text search was NOT called
+    verify(customerRepository, never()).searchFullText(anyString(), anyInt());
+  }
 
-        // Then
-        assertThat(results.getCustomers()).hasSize(1);
-        assertThat(results.getContacts()).hasSize(0);
-        
-        // Verify customer number search was called
-        verify(customerRepository).findByCustomerNumberLike(eq(customerNumberQuery + "%"), eq(20));
-    }
+  @Test
+  void universalSearch_withPhoneQuery_shouldDetectPhoneAndSearchAccordingly() {
+    // Given
+    String phoneQuery = "+49-123-456789";
 
-    @Test
-    void universalSearch_withIncludeInactiveTrue_shouldIncludeInactiveCustomers() {
-        // Given
-        String query = "betrieb";
-        
-        when(customerRepository.searchFullText(eq(query), eq(20)))
-            .thenReturn(Arrays.asList(testCustomer1, inactiveCustomer));
+    when(customerRepository.findByPhone(eq(phoneQuery), eq(20)))
+        .thenReturn(Arrays.asList(testCustomer1));
+    when(contactRepository.findByPhoneOrMobile(eq(phoneQuery), eq(20)))
+        .thenReturn(Arrays.asList(testContact1));
 
-        // When
-        SearchResults results = searchService.universalSearch(query, false, true, 20);
+    // When
+    SearchResults results = searchService.universalSearch(phoneQuery, true, false, 20);
 
-        // Then
-        assertThat(results.getCustomers()).hasSize(2);
-        
-        // Verify both active and inactive customers are included
-        List<String> customerNames = results.getCustomers().stream()
+    // Then
+    assertThat(results.getCustomers()).hasSize(1);
+    assertThat(results.getContacts()).hasSize(1);
+
+    // Verify correct phone search methods were called
+    verify(customerRepository).findByPhone(eq(phoneQuery), eq(20));
+    verify(contactRepository).findByPhoneOrMobile(eq(phoneQuery), eq(20));
+  }
+
+  @Test
+  void universalSearch_withCustomerNumberQuery_shouldDetectAndSearchByNumber() {
+    // Given
+    String customerNumberQuery = "KD-2025-00001";
+
+    when(customerRepository.findByCustomerNumberLike(eq(customerNumberQuery + "%"), eq(20)))
+        .thenReturn(Arrays.asList(testCustomer1));
+    when(contactRepository.searchContactsFullText(eq(customerNumberQuery), eq(20)))
+        .thenReturn(Arrays.asList());
+
+    // When
+    SearchResults results = searchService.universalSearch(customerNumberQuery, true, false, 20);
+
+    // Then
+    assertThat(results.getCustomers()).hasSize(1);
+    assertThat(results.getContacts()).hasSize(0);
+
+    // Verify customer number search was called
+    verify(customerRepository).findByCustomerNumberLike(eq(customerNumberQuery + "%"), eq(20));
+  }
+
+  @Test
+  void universalSearch_withIncludeInactiveTrue_shouldIncludeInactiveCustomers() {
+    // Given
+    String query = "betrieb";
+
+    when(customerRepository.searchFullText(eq(query), eq(20)))
+        .thenReturn(Arrays.asList(testCustomer1, inactiveCustomer));
+
+    // When
+    SearchResults results = searchService.universalSearch(query, false, true, 20);
+
+    // Then
+    assertThat(results.getCustomers()).hasSize(2);
+
+    // Verify both active and inactive customers are included
+    List<String> customerNames =
+        results.getCustomers().stream()
             .map(result -> ((CustomerSearchDto) result.getData()).getCompanyName())
             .toList();
-        assertThat(customerNames).contains("Bäckerei Schmidt GmbH", "Geschlossener Betrieb");
-    }
+    assertThat(customerNames).contains("Bäckerei Schmidt GmbH", "Geschlossener Betrieb");
+  }
 
-    @Test
-    void universalSearch_withIncludeInactiveFalse_shouldFilterOutInactiveCustomers() {
-        // Given
-        String query = "betrieb";
-        
-        when(customerRepository.searchFullText(eq(query), eq(20)))
-            .thenReturn(Arrays.asList(testCustomer1, inactiveCustomer));
+  @Test
+  void universalSearch_withIncludeInactiveFalse_shouldFilterOutInactiveCustomers() {
+    // Given
+    String query = "betrieb";
 
-        // When
-        SearchResults results = searchService.universalSearch(query, false, false, 20);
+    when(customerRepository.searchFullText(eq(query), eq(20)))
+        .thenReturn(Arrays.asList(testCustomer1, inactiveCustomer));
 
-        // Then
-        assertThat(results.getCustomers()).hasSize(1);
-        
-        CustomerSearchDto customerDto = (CustomerSearchDto) results.getCustomers().get(0).getData();
-        assertThat(customerDto.getCompanyName()).isEqualTo("Bäckerei Schmidt GmbH");
-        assertThat(customerDto.getStatus()).isEqualTo("AKTIV");
-    }
+    // When
+    SearchResults results = searchService.universalSearch(query, false, false, 20);
 
-    @Test
-    void universalSearch_withIncludeContactsFalse_shouldNotSearchContacts() {
-        // Given
-        String query = "schmidt";
-        
-        when(customerRepository.searchFullText(eq(query), eq(20)))
-            .thenReturn(Arrays.asList(testCustomer1));
+    // Then
+    assertThat(results.getCustomers()).hasSize(1);
 
-        // When
-        SearchResults results = searchService.universalSearch(query, false, false, 20);
+    CustomerSearchDto customerDto = (CustomerSearchDto) results.getCustomers().get(0).getData();
+    assertThat(customerDto.getCompanyName()).isEqualTo("Bäckerei Schmidt GmbH");
+    assertThat(customerDto.getStatus()).isEqualTo("AKTIV");
+  }
 
-        // Then
-        assertThat(results.getCustomers()).hasSize(1);
-        assertThat(results.getContacts()).hasSize(0);
-        
-        // Verify contact repository was never called
-        verifyNoInteractions(contactRepository);
-    }
+  @Test
+  void universalSearch_withIncludeContactsFalse_shouldNotSearchContacts() {
+    // Given
+    String query = "schmidt";
 
-    @Test
-    void quickSearch_shouldReturnLimitedResultsWithMinimalData() {
-        // Given
-        String query = "bäckerei";
-        
-        when(customerRepository.quickSearch(eq(query), eq(5)))
-            .thenReturn(Arrays.asList(testCustomer1));
+    when(customerRepository.searchFullText(eq(query), eq(20)))
+        .thenReturn(Arrays.asList(testCustomer1));
 
-        // When
-        SearchResults results = searchService.quickSearch(query, 5);
+    // When
+    SearchResults results = searchService.universalSearch(query, false, false, 20);
 
-        // Then
-        assertThat(results.getCustomers()).hasSize(1);
-        assertThat(results.getContacts()).hasSize(0); // Quick search doesn't include contacts
-        assertThat(results.getExecutionTime()).isGreaterThanOrEqualTo(0);
-        
-        // Verify quick search method was called
-        verify(customerRepository).quickSearch(eq(query), eq(5));
-        
-        // Verify relevance score is set to default for quick search
-        SearchResult result = results.getCustomers().get(0);
-        assertThat(result.getRelevanceScore()).isEqualTo(100);
-    }
+    // Then
+    assertThat(results.getCustomers()).hasSize(1);
+    assertThat(results.getContacts()).hasSize(0);
 
-    @Test
-    void universalSearch_shouldCalculateRelevanceScores() {
-        // Given
-        String query = "schmidt";
-        Customer exactMatchCustomer = createTestCustomer(
-            "KD-2025-00001", 
+    // Verify contact repository was never called
+    verifyNoInteractions(contactRepository);
+  }
+
+  @Test
+  void quickSearch_shouldReturnLimitedResultsWithMinimalData() {
+    // Given
+    String query = "bäckerei";
+
+    when(customerRepository.quickSearch(eq(query), eq(5))).thenReturn(Arrays.asList(testCustomer1));
+
+    // When
+    SearchResults results = searchService.quickSearch(query, 5);
+
+    // Then
+    assertThat(results.getCustomers()).hasSize(1);
+    assertThat(results.getContacts()).hasSize(0); // Quick search doesn't include contacts
+    assertThat(results.getExecutionTime()).isGreaterThanOrEqualTo(0);
+
+    // Verify quick search method was called
+    verify(customerRepository).quickSearch(eq(query), eq(5));
+
+    // Verify relevance score is set to default for quick search
+    SearchResult result = results.getCustomers().get(0);
+    assertThat(result.getRelevanceScore()).isEqualTo(100);
+  }
+
+  @Test
+  void universalSearch_shouldCalculateRelevanceScores() {
+    // Given
+    String query = "schmidt";
+    Customer exactMatchCustomer =
+        createTestCustomer(
+            "KD-2025-00001",
             "schmidt", // Exact company name match
             CustomerStatus.AKTIV,
             LocalDateTime.now().minusDays(5) // Recent contact
-        );
-        
-        Customer partialMatchCustomer = createTestCustomer(
-            "KD-2025-00002", 
+            );
+
+    Customer partialMatchCustomer =
+        createTestCustomer(
+            "KD-2025-00002",
             "Bäckerei Schmidt GmbH", // Contains query
             CustomerStatus.LEAD,
             LocalDateTime.now().minusDays(60) // Older contact
-        );
-        
-        when(customerRepository.searchFullText(eq(query), eq(20)))
-            .thenReturn(Arrays.asList(exactMatchCustomer, partialMatchCustomer));
+            );
 
-        // When
-        SearchResults results = searchService.universalSearch(query, false, false, 20);
+    when(customerRepository.searchFullText(eq(query), eq(20)))
+        .thenReturn(Arrays.asList(exactMatchCustomer, partialMatchCustomer));
 
-        // Then
-        assertThat(results.getCustomers()).hasSize(2);
-        
-        // Results should be sorted by relevance score (highest first)
-        SearchResult firstResult = results.getCustomers().get(0);
-        SearchResult secondResult = results.getCustomers().get(1);
-        
-        assertThat(firstResult.getRelevanceScore()).isGreaterThan(secondResult.getRelevanceScore());
-        
-        // Exact match should have higher score
-        CustomerSearchDto firstDto = (CustomerSearchDto) firstResult.getData();
-        assertThat(firstDto.getCompanyName()).isEqualTo("schmidt");
+    // When
+    SearchResults results = searchService.universalSearch(query, false, false, 20);
+
+    // Then
+    assertThat(results.getCustomers()).hasSize(2);
+
+    // Results should be sorted by relevance score (highest first)
+    SearchResult firstResult = results.getCustomers().get(0);
+    SearchResult secondResult = results.getCustomers().get(1);
+
+    assertThat(firstResult.getRelevanceScore()).isGreaterThan(secondResult.getRelevanceScore());
+
+    // Exact match should have higher score
+    CustomerSearchDto firstDto = (CustomerSearchDto) firstResult.getData();
+    assertThat(firstDto.getCompanyName()).isEqualTo("schmidt");
+  }
+
+  @Test
+  void universalSearch_withContactRelevanceScoring_shouldScoreCorrectly() {
+    // Given
+    String query = "hans";
+    CustomerContact primaryContact =
+        createTestContact("Hans", "Schmidt", "hans@test.de", "+49-123-456", true, testCustomer1);
+    CustomerContact secondaryContact =
+        createTestContact("Hans", "Müller", "hans.m@test.de", "+49-987-654", false, testCustomer2);
+
+    when(customerRepository.searchFullText(eq(query), eq(20))).thenReturn(Arrays.asList());
+    when(contactRepository.searchContactsFullText(eq(query), eq(20)))
+        .thenReturn(Arrays.asList(primaryContact, secondaryContact));
+
+    // When
+    SearchResults results = searchService.universalSearch(query, true, false, 20);
+
+    // Then
+    assertThat(results.getContacts()).hasSize(2);
+
+    // Primary contact should have higher relevance score
+    SearchResult firstResult = results.getContacts().get(0);
+    SearchResult secondResult = results.getContacts().get(1);
+
+    ContactSearchDto firstContact = (ContactSearchDto) firstResult.getData();
+    ContactSearchDto secondContact = (ContactSearchDto) secondResult.getData();
+
+    // Primary contact should be scored higher
+    if (firstContact.getIsPrimary()) {
+      assertThat(firstResult.getRelevanceScore()).isGreaterThan(secondResult.getRelevanceScore());
     }
+  }
 
-    @Test
-    void universalSearch_withContactRelevanceScoring_shouldScoreCorrectly() {
-        // Given
-        String query = "hans";
-        CustomerContact primaryContact = createTestContact(
-            "Hans", "Schmidt", "hans@test.de", "+49-123-456", true, testCustomer1);
-        CustomerContact secondaryContact = createTestContact(
-            "Hans", "Müller", "hans.m@test.de", "+49-987-654", false, testCustomer2);
-        
-        when(customerRepository.searchFullText(eq(query), eq(20)))
-            .thenReturn(Arrays.asList());
-        when(contactRepository.searchContactsFullText(eq(query), eq(20)))
-            .thenReturn(Arrays.asList(primaryContact, secondaryContact));
+  @Test
+  void universalSearch_withEmptyResults_shouldReturnEmptySearchResults() {
+    // Given
+    String query = "nonexistent";
 
-        // When
-        SearchResults results = searchService.universalSearch(query, true, false, 20);
+    when(customerRepository.searchFullText(eq(query), eq(20))).thenReturn(Arrays.asList());
+    when(contactRepository.searchContactsFullText(eq(query), eq(20))).thenReturn(Arrays.asList());
 
-        // Then
-        assertThat(results.getContacts()).hasSize(2);
-        
-        // Primary contact should have higher relevance score
-        SearchResult firstResult = results.getContacts().get(0);
-        SearchResult secondResult = results.getContacts().get(1);
-        
-        ContactSearchDto firstContact = (ContactSearchDto) firstResult.getData();
-        ContactSearchDto secondContact = (ContactSearchDto) secondResult.getData();
-        
-        // Primary contact should be scored higher
-        if (firstContact.getIsPrimary()) {
-            assertThat(firstResult.getRelevanceScore()).isGreaterThan(secondResult.getRelevanceScore());
-        }
+    // When
+    SearchResults results = searchService.universalSearch(query, true, false, 20);
+
+    // Then
+    assertThat(results.getCustomers()).hasSize(0);
+    assertThat(results.getContacts()).hasSize(0);
+    assertThat(results.getTotalCount()).isEqualTo(0);
+    assertThat(results.getExecutionTime()).isGreaterThanOrEqualTo(0);
+  }
+
+  @Test
+  void universalSearch_withRepositoryException_shouldPropagateException() {
+    // Given
+    String query = "error";
+
+    when(customerRepository.searchFullText(eq(query), eq(20)))
+        .thenThrow(new RuntimeException("Database connection failed"));
+
+    // When & Then
+    try {
+      searchService.universalSearch(query, true, false, 20);
+      throw new AssertionError("Expected RuntimeException to be thrown");
+    } catch (RuntimeException e) {
+      assertThat(e.getMessage()).isEqualTo("Database connection failed");
     }
+  }
 
-    @Test
-    void universalSearch_withEmptyResults_shouldReturnEmptySearchResults() {
-        // Given
-        String query = "nonexistent";
-        
-        when(customerRepository.searchFullText(eq(query), eq(20)))
-            .thenReturn(Arrays.asList());
-        when(contactRepository.searchContactsFullText(eq(query), eq(20)))
-            .thenReturn(Arrays.asList());
+  // Helper methods for creating test data
+  private Customer createTestCustomer(
+      String customerNumber,
+      String companyName,
+      CustomerStatus status,
+      LocalDateTime lastContactDate) {
+    Customer customer = new Customer();
+    customer.setId(UUID.randomUUID());
+    customer.setCustomerNumber(customerNumber);
+    customer.setCompanyName(companyName);
+    customer.setStatus(status);
+    customer.setLastContactDate(lastContactDate);
+    return customer;
+  }
 
-        // When
-        SearchResults results = searchService.universalSearch(query, true, false, 20);
-
-        // Then
-        assertThat(results.getCustomers()).hasSize(0);
-        assertThat(results.getContacts()).hasSize(0);
-        assertThat(results.getTotalCount()).isEqualTo(0);
-        assertThat(results.getExecutionTime()).isGreaterThanOrEqualTo(0);
-    }
-
-    @Test
-    void universalSearch_withRepositoryException_shouldPropagateException() {
-        // Given
-        String query = "error";
-        
-        when(customerRepository.searchFullText(eq(query), eq(20)))
-            .thenThrow(new RuntimeException("Database connection failed"));
-
-        // When & Then
-        try {
-            searchService.universalSearch(query, true, false, 20);
-            throw new AssertionError("Expected RuntimeException to be thrown");
-        } catch (RuntimeException e) {
-            assertThat(e.getMessage()).isEqualTo("Database connection failed");
-        }
-    }
-
-    // Helper methods for creating test data
-    private Customer createTestCustomer(String customerNumber, String companyName, 
-                                       CustomerStatus status, LocalDateTime lastContactDate) {
-        Customer customer = new Customer();
-        customer.setId(UUID.randomUUID());
-        customer.setCustomerNumber(customerNumber);
-        customer.setCompanyName(companyName);
-        customer.setStatus(status);
-        customer.setLastContactDate(lastContactDate);
-        return customer;
-    }
-
-    private CustomerContact createTestContact(String firstName, String lastName, 
-                                            String email, String phone, boolean isPrimary,
-                                            Customer customer) {
-        CustomerContact contact = new CustomerContact();
-        contact.setId(UUID.randomUUID());
-        contact.setFirstName(firstName);
-        contact.setLastName(lastName);
-        contact.setEmail(email);
-        contact.setPhone(phone);
-        contact.setIsPrimary(isPrimary);
-        contact.setCustomer(customer);
-        return contact;
-    }
+  private CustomerContact createTestContact(
+      String firstName,
+      String lastName,
+      String email,
+      String phone,
+      boolean isPrimary,
+      Customer customer) {
+    CustomerContact contact = new CustomerContact();
+    contact.setId(UUID.randomUUID());
+    contact.setFirstName(firstName);
+    contact.setLastName(lastName);
+    contact.setEmail(email);
+    contact.setPhone(phone);
+    contact.setIsPrimary(isPrimary);
+    contact.setCustomer(customer);
+    return contact;
+  }
 }

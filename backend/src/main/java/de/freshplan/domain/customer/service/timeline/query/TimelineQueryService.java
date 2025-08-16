@@ -17,13 +17,13 @@ import java.util.stream.Collectors;
 import org.jboss.logging.Logger;
 
 /**
- * Query service for reading customer timeline events.
- * Handles all read operations for customer interaction history.
- * 
- * This is part of the CQRS refactoring (PR #5) to separate read and write operations.
- * All methods are exact copies from CustomerTimelineService to ensure 100% compatibility.
- * 
- * IMPORTANT: No @Transactional annotation on class or methods as these are read-only operations.
+ * Query service for reading customer timeline events. Handles all read operations for customer
+ * interaction history.
+ *
+ * <p>This is part of the CQRS refactoring (PR #5) to separate read and write operations. All
+ * methods are exact copies from CustomerTimelineService to ensure 100% compatibility.
+ *
+ * <p>IMPORTANT: No @Transactional annotation on class or methods as these are read-only operations.
  *
  * @author FreshPlan Team
  * @since 2.0.0
@@ -48,10 +48,10 @@ public class TimelineQueryService {
   }
 
   /**
-   * Gets paginated timeline events for a customer.
-   * EXACT COPY from CustomerTimelineService lines 171-215
-   * 
-   * NOTE: No @Transactional annotation as this is a read-only operation
+   * Gets paginated timeline events for a customer. EXACT COPY from CustomerTimelineService lines
+   * 171-215
+   *
+   * <p>NOTE: No @Transactional annotation as this is a read-only operation
    */
   public TimelineListResponse getCustomerTimeline(
       @NotNull UUID customerId, int page, int size, String category, String search) {
@@ -100,10 +100,9 @@ public class TimelineQueryService {
   }
 
   /**
-   * Gets timeline events requiring follow-up.
-   * EXACT COPY from CustomerTimelineService lines 218-224
-   * 
-   * NOTE: No @Transactional annotation as this is a read-only operation
+   * Gets timeline events requiring follow-up. EXACT COPY from CustomerTimelineService lines 218-224
+   *
+   * <p>NOTE: No @Transactional annotation as this is a read-only operation
    */
   public List<TimelineEventResponse> getFollowUpEvents(@NotNull UUID customerId) {
     LOG.debugf("Getting follow-up events for customer %s", customerId);
@@ -114,10 +113,9 @@ public class TimelineQueryService {
   }
 
   /**
-   * Gets overdue follow-up events.
-   * EXACT COPY from CustomerTimelineService lines 227-233
-   * 
-   * NOTE: No @Transactional annotation as this is a read-only operation
+   * Gets overdue follow-up events. EXACT COPY from CustomerTimelineService lines 227-233
+   *
+   * <p>NOTE: No @Transactional annotation as this is a read-only operation
    */
   public List<TimelineEventResponse> getOverdueFollowUps(@NotNull UUID customerId) {
     LOG.debugf("Getting overdue follow-ups for customer %s", customerId);
@@ -128,10 +126,9 @@ public class TimelineQueryService {
   }
 
   /**
-   * Gets recent communication history.
-   * EXACT COPY from CustomerTimelineService lines 236-244
-   * 
-   * NOTE: No @Transactional annotation as this is a read-only operation
+   * Gets recent communication history. EXACT COPY from CustomerTimelineService lines 236-244
+   *
+   * <p>NOTE: No @Transactional annotation as this is a read-only operation
    */
   public List<TimelineEventResponse> getRecentCommunications(@NotNull UUID customerId, int days) {
 
@@ -144,10 +141,9 @@ public class TimelineQueryService {
   }
 
   /**
-   * Gets timeline summary statistics.
-   * EXACT COPY from CustomerTimelineService lines 298-310
-   * 
-   * NOTE: No @Transactional annotation as this is a read-only operation
+   * Gets timeline summary statistics. EXACT COPY from CustomerTimelineService lines 298-310
+   *
+   * <p>NOTE: No @Transactional annotation as this is a read-only operation
    */
   public TimelineSummaryResponse getTimelineSummary(@NotNull UUID customerId) {
     LOG.debugf("Getting timeline summary for customer %s", customerId);

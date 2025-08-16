@@ -22,13 +22,11 @@ import org.slf4j.LoggerFactory;
 /**
  * Opportunity Query Service - CQRS Read Side
  *
- * <p>Behandelt alle lesenden Operationen für Opportunities:
- * - Find operations
- * - Pipeline analytics
+ * <p>Behandelt alle lesenden Operationen für Opportunities: - Find operations - Pipeline analytics
  * - Forecasting
  *
- * <p>WICHTIG: Dieser Service hat KEINE @Transactional Annotation,
- * da nur lesende Operationen durchgeführt werden.
+ * <p>WICHTIG: Dieser Service hat KEINE @Transactional Annotation, da nur lesende Operationen
+ * durchgeführt werden.
  *
  * @author FreshPlan Team
  * @since 2.0.0
@@ -49,18 +47,15 @@ public class OpportunityQueryService {
   // =====================================
 
   /**
-   * Findet alle Opportunities mit Paginierung
-   * EXAKTE KOPIE von OpportunityService.findAllOpportunities() Zeile 135-138
+   * Findet alle Opportunities mit Paginierung EXAKTE KOPIE von
+   * OpportunityService.findAllOpportunities() Zeile 135-138
    */
   public List<OpportunityResponse> findAllOpportunities(Page page) {
     List<Opportunity> opportunities = opportunityRepository.findAllActive(page);
     return opportunities.stream().map(opportunityMapper::toResponse).collect(Collectors.toList());
   }
 
-  /**
-   * Findet eine Opportunity by ID
-   * EXAKTE KOPIE von OpportunityService.findById() Zeile 141-147
-   */
+  /** Findet eine Opportunity by ID EXAKTE KOPIE von OpportunityService.findById() Zeile 141-147 */
   public OpportunityResponse findById(UUID id) {
     Opportunity opportunity =
         opportunityRepository
@@ -70,8 +65,8 @@ public class OpportunityQueryService {
   }
 
   /**
-   * Find all opportunities without pagination.
-   * EXAKTE KOPIE von OpportunityService.findAll() Zeile 398-402
+   * Find all opportunities without pagination. EXAKTE KOPIE von OpportunityService.findAll() Zeile
+   * 398-402
    *
    * @return list of all opportunities
    */
@@ -86,8 +81,8 @@ public class OpportunityQueryService {
   // =====================================
 
   /**
-   * Findet Opportunities eines bestimmten Verkäufers
-   * EXAKTE KOPIE von OpportunityService.findByAssignedTo() Zeile 290-298
+   * Findet Opportunities eines bestimmten Verkäufers EXAKTE KOPIE von
+   * OpportunityService.findByAssignedTo() Zeile 290-298
    */
   public List<OpportunityResponse> findByAssignedTo(UUID userId) {
     User user =
@@ -100,8 +95,7 @@ public class OpportunityQueryService {
   }
 
   /**
-   * Findet Opportunities nach Stage
-   * EXAKTE KOPIE von OpportunityService.findByStage() Zeile 301-304
+   * Findet Opportunities nach Stage EXAKTE KOPIE von OpportunityService.findByStage() Zeile 301-304
    */
   public List<OpportunityResponse> findByStage(OpportunityStage stage) {
     List<Opportunity> opportunities = opportunityRepository.findByStage(stage);
@@ -113,8 +107,8 @@ public class OpportunityQueryService {
   // =====================================
 
   /**
-   * Pipeline Übersicht mit Stage-Statistiken
-   * EXAKTE KOPIE von OpportunityService.getPipelineOverview() Zeile 259-287
+   * Pipeline Übersicht mit Stage-Statistiken EXAKTE KOPIE von
+   * OpportunityService.getPipelineOverview() Zeile 259-287
    */
   public PipelineOverviewResponse getPipelineOverview() {
     logger.debug("Generating pipeline overview");
@@ -151,8 +145,8 @@ public class OpportunityQueryService {
   // =====================================
 
   /**
-   * Berechnet den Forecast basierend auf erwarteten Werten und Wahrscheinlichkeiten
-   * EXAKTE KOPIE von OpportunityService.calculateForecast() Zeile 332-335
+   * Berechnet den Forecast basierend auf erwarteten Werten und Wahrscheinlichkeiten EXAKTE KOPIE
+   * von OpportunityService.calculateForecast() Zeile 332-335
    */
   public BigDecimal calculateForecast() {
     logger.debug("Calculating opportunity forecast");

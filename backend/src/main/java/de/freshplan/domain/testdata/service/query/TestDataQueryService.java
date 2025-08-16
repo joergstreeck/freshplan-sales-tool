@@ -10,9 +10,9 @@ import org.jboss.logging.Logger;
 /**
  * Query service for test data statistics and read operations. Handles all read-only operations
  * related to test data without any transactional overhead.
- * 
- * CQRS Pattern: This service contains only read operations (Queries) that do not modify
- * database state. No @Transactional annotations are used for optimal read performance.
+ *
+ * <p>CQRS Pattern: This service contains only read operations (Queries) that do not modify database
+ * state. No @Transactional annotations are used for optimal read performance.
  */
 @ApplicationScoped
 public class TestDataQueryService {
@@ -23,11 +23,11 @@ public class TestDataQueryService {
   @Inject CustomerTimelineRepository timelineRepository;
 
   /**
-   * Counts existing test data in the database. Returns statistics about test customers
-   * and timeline events marked with isTestData = true.
-   * 
-   * This is a read-only operation without @Transactional for optimal performance.
-   * 
+   * Counts existing test data in the database. Returns statistics about test customers and timeline
+   * events marked with isTestData = true.
+   *
+   * <p>This is a read-only operation without @Transactional for optimal performance.
+   *
    * @return TestDataStats containing counts of test customers and events
    */
   public TestDataService.TestDataStats getTestDataStats() {

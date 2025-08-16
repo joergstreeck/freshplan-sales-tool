@@ -15,11 +15,11 @@ import java.util.UUID;
 import org.jboss.logging.Logger;
 
 /**
- * Command service for managing customer timeline events.
- * Handles all write operations for customer interaction history.
- * 
- * This is part of the CQRS refactoring (PR #5) to separate read and write operations.
- * All methods are exact copies from CustomerTimelineService to ensure 100% compatibility.
+ * Command service for managing customer timeline events. Handles all write operations for customer
+ * interaction history.
+ *
+ * <p>This is part of the CQRS refactoring (PR #5) to separate read and write operations. All
+ * methods are exact copies from CustomerTimelineService to ensure 100% compatibility.
  *
  * @author FreshPlan Team
  * @since 2.0.0
@@ -44,8 +44,8 @@ public class TimelineCommandService {
   }
 
   /**
-   * Creates a new timeline event for a customer.
-   * EXACT COPY from CustomerTimelineService lines 48-107
+   * Creates a new timeline event for a customer. EXACT COPY from CustomerTimelineService lines
+   * 48-107
    */
   @Transactional
   public TimelineEventResponse createEvent(
@@ -109,10 +109,7 @@ public class TimelineCommandService {
     return timelineMapper.toResponse(event);
   }
 
-  /**
-   * Creates a quick note event.
-   * EXACT COPY from CustomerTimelineService lines 110-132
-   */
+  /** Creates a quick note event. EXACT COPY from CustomerTimelineService lines 110-132 */
   @Transactional
   public TimelineEventResponse createNote(
       @NotNull UUID customerId, @Valid @NotNull CreateNoteRequest request) {
@@ -139,8 +136,8 @@ public class TimelineCommandService {
   }
 
   /**
-   * Creates a communication event (call, email, etc.).
-   * EXACT COPY from CustomerTimelineService lines 135-168
+   * Creates a communication event (call, email, etc.). EXACT COPY from CustomerTimelineService
+   * lines 135-168
    */
   @Transactional
   public TimelineEventResponse createCommunication(
@@ -178,10 +175,7 @@ public class TimelineCommandService {
     return timelineMapper.toResponse(event);
   }
 
-  /**
-   * Marks a follow-up as completed.
-   * EXACT COPY from CustomerTimelineService lines 247-252
-   */
+  /** Marks a follow-up as completed. EXACT COPY from CustomerTimelineService lines 247-252 */
   @Transactional
   public void completeFollowUp(@NotNull UUID eventId, @NotNull String completedBy) {
 
@@ -190,10 +184,7 @@ public class TimelineCommandService {
     timelineRepository.completeFollowUp(eventId, completedBy);
   }
 
-  /**
-   * Updates an existing timeline event.
-   * EXACT COPY from CustomerTimelineService lines 255-288
-   */
+  /** Updates an existing timeline event. EXACT COPY from CustomerTimelineService lines 255-288 */
   @Transactional
   public TimelineEventResponse updateEvent(
       @NotNull UUID eventId, @Valid @NotNull UpdateTimelineEventRequest request) {
@@ -230,10 +221,7 @@ public class TimelineCommandService {
     return timelineMapper.toResponse(event);
   }
 
-  /**
-   * Soft deletes a timeline event.
-   * EXACT COPY from CustomerTimelineService lines 291-295
-   */
+  /** Soft deletes a timeline event. EXACT COPY from CustomerTimelineService lines 291-295 */
   @Transactional
   public void deleteEvent(@NotNull UUID eventId, @NotNull String deletedBy) {
     LOG.infof("Soft deleting timeline event %s by %s", eventId, deletedBy);
@@ -242,11 +230,10 @@ public class TimelineCommandService {
   }
 
   /**
-   * Creates a system event (for audit trail).
-   * EXACT COPY from CustomerTimelineService lines 313-325
-   * 
-   * NOTE: This method is package-private in the original service but needs to be public
-   * for CQRS access. The original visibility might have been a mistake.
+   * Creates a system event (for audit trail). EXACT COPY from CustomerTimelineService lines 313-325
+   *
+   * <p>NOTE: This method is package-private in the original service but needs to be public for CQRS
+   * access. The original visibility might have been a mistake.
    */
   @Transactional
   public void createSystemEvent(

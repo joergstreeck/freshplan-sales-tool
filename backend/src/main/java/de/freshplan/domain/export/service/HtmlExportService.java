@@ -15,13 +15,13 @@ import org.jboss.logging.Logger;
 
 /**
  * CQRS Facade for HTML export functionality.
- * 
- * This service acts as a facade that routes export requests to either the new CQRS-based
+ *
+ * <p>This service acts as a facade that routes export requests to either the new CQRS-based
  * HtmlExportQueryService or the legacy implementation, controlled by feature flag.
- * 
- * Since HtmlExportService is read-only (no write operations), only a QueryService is needed.
+ *
+ * <p>Since HtmlExportService is read-only (no write operations), only a QueryService is needed.
  * Note: @Transactional was removed as this is a read-only service.
- * 
+ *
  * @author FreshPlan Team
  * @since 2.0.0 (CQRS migration: Phase 13)
  */
@@ -41,9 +41,9 @@ public class HtmlExportService {
   @Inject CustomerRepository customerRepository;
 
   /**
-   * Generate HTML report for customers that can be printed to PDF.
-   * Routes to CQRS QueryService when enabled, otherwise uses legacy implementation.
-   * 
+   * Generate HTML report for customers that can be printed to PDF. Routes to CQRS QueryService when
+   * enabled, otherwise uses legacy implementation.
+   *
    * @param request Export parameters (filters)
    * @return Complete HTML document as string
    */
@@ -52,7 +52,7 @@ public class HtmlExportService {
       log.debug("Using CQRS QueryService for HTML export");
       return queryService.generateCustomersHtml(request);
     }
-    
+
     // Legacy implementation
     log.info("Generating HTML report for customers");
 

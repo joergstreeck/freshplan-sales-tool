@@ -33,15 +33,11 @@ import org.jboss.logging.Logger;
 /**
  * Audit Command Service - CQRS Write Side
  *
- * <p>Behandelt alle schreibenden Operationen für Audit-Einträge:
- * - Async und Sync Logging
- * - Security Events
- * - Export Tracking
- * - Hash-Chain Management
- * - Event Processing
+ * <p>Behandelt alle schreibenden Operationen für Audit-Einträge: - Async und Sync Logging -
+ * Security Events - Export Tracking - Hash-Chain Management - Event Processing
  *
- * <p>WICHTIG: Dieser Service ist eine EXAKTE KOPIE der Command-Methoden
- * aus AuditService für 100% Kompatibilität.
+ * <p>WICHTIG: Dieser Service ist eine EXAKTE KOPIE der Command-Methoden aus AuditService für 100%
+ * Kompatibilität.
  *
  * @author FreshPlan Team
  * @since 2.0.0
@@ -80,14 +76,11 @@ public class AuditCommandService {
             });
 
     log.infof(
-        "Audit Command Service initialized with %d async threads", 
+        "Audit Command Service initialized with %d async threads",
         configuration.getAsyncThreadPoolSize());
   }
 
-  /**
-   * Log an audit event asynchronously
-   * EXAKTE KOPIE von AuditService.logAsync() Zeile 79-96
-   */
+  /** Log an audit event asynchronously EXAKTE KOPIE von AuditService.logAsync() Zeile 79-96 */
   public CompletableFuture<UUID> logAsync(
       AuditEventType eventType,
       String entityType,
@@ -108,8 +101,8 @@ public class AuditCommandService {
   }
 
   /**
-   * Log an audit event with full context asynchronously
-   * EXAKTE KOPIE von AuditService.logAsync(AuditContext) Zeile 99-114
+   * Log an audit event with full context asynchronously EXAKTE KOPIE von
+   * AuditService.logAsync(AuditContext) Zeile 99-114
    */
   public CompletableFuture<UUID> logAsync(AuditContext context) {
     // Capture request context before async execution
@@ -129,8 +122,8 @@ public class AuditCommandService {
   }
 
   /**
-   * Log an audit event synchronously (use sparingly)
-   * EXAKTE KOPIE von AuditService.logSync() Zeile 117-152
+   * Log an audit event synchronously (use sparingly) EXAKTE KOPIE von AuditService.logSync() Zeile
+   * 117-152
    */
   @Transactional(Transactional.TxType.REQUIRES_NEW)
   @jakarta.enterprise.context.control.ActivateRequestContext
@@ -170,8 +163,8 @@ public class AuditCommandService {
   }
 
   /**
-   * Log a security event (always synchronous for immediate recording)
-   * EXAKTE KOPIE von AuditService.logSecurityEvent() Zeile 155-165
+   * Log a security event (always synchronous for immediate recording) EXAKTE KOPIE von
+   * AuditService.logSecurityEvent() Zeile 155-165
    */
   @Transactional(Transactional.TxType.REQUIRES_NEW)
   public UUID logSecurityEvent(AuditEventType eventType, String details) {
@@ -186,8 +179,8 @@ public class AuditCommandService {
   }
 
   /**
-   * Log an export event for compliance tracking
-   * EXAKTE KOPIE von AuditService.logExport() Zeile 168-183
+   * Log an export event for compliance tracking EXAKTE KOPIE von AuditService.logExport() Zeile
+   * 168-183
    */
   @Transactional(Transactional.TxType.REQUIRES_NEW)
   public UUID logExport(String exportType, Map<String, Object> parameters) {
@@ -207,8 +200,8 @@ public class AuditCommandService {
   }
 
   /**
-   * Handle audit events from CDI event bus
-   * EXAKTE KOPIE von AuditService.onApplicationEvent() Zeile 425-427
+   * Handle audit events from CDI event bus EXAKTE KOPIE von AuditService.onApplicationEvent() Zeile
+   * 425-427
    */
   public void onApplicationEvent(@Observes AuditableApplicationEvent event) {
     logAsync(event.toAuditContext());
@@ -219,8 +212,8 @@ public class AuditCommandService {
   // =====================================
 
   /**
-   * Build audit entry with all required fields
-   * EXAKTE KOPIE von AuditService.buildAuditEntry() Zeile 186-242
+   * Build audit entry with all required fields EXAKTE KOPIE von AuditService.buildAuditEntry()
+   * Zeile 186-242
    */
   private AuditEntry buildAuditEntry(AuditContext context) {
     Instant now = Instant.now();
@@ -281,8 +274,8 @@ public class AuditCommandService {
   }
 
   /**
-   * Capture current request/security context
-   * EXAKTE KOPIE von AuditService.captureCurrentContext() Zeile 245-265
+   * Capture current request/security context EXAKTE KOPIE von AuditService.captureCurrentContext()
+   * Zeile 245-265
    */
   private AuditContext captureCurrentContext(AuditContext context) {
     return context.toBuilder()
@@ -307,8 +300,8 @@ public class AuditCommandService {
   }
 
   /**
-   * Determine audit source based on context
-   * EXAKTE KOPIE von AuditService.determineSource() Zeile 268-290
+   * Determine audit source based on context EXAKTE KOPIE von AuditService.determineSource() Zeile
+   * 268-290
    */
   private AuditSource determineSource() {
     if (!httpRequestInstance.isResolvable()) {
@@ -335,8 +328,8 @@ public class AuditCommandService {
   }
 
   /**
-   * Get client IP address with proxy support
-   * EXAKTE KOPIE von AuditService.getClientIpAddress() Zeile 293-318
+   * Get client IP address with proxy support EXAKTE KOPIE von AuditService.getClientIpAddress()
+   * Zeile 293-318
    */
   private String getClientIpAddress() {
     if (!httpRequestInstance.isResolvable()) {
@@ -365,10 +358,7 @@ public class AuditCommandService {
     }
   }
 
-  /**
-   * Get user agent
-   * EXAKTE KOPIE von AuditService.getUserAgent() Zeile 321-333
-   */
+  /** Get user agent EXAKTE KOPIE von AuditService.getUserAgent() Zeile 321-333 */
   private String getUserAgent() {
     if (!httpRequestInstance.isResolvable()) {
       return "SYSTEM";
@@ -383,10 +373,7 @@ public class AuditCommandService {
     }
   }
 
-  /**
-   * Get API endpoint
-   * EXAKTE KOPIE von AuditService.getApiEndpoint() Zeile 336-349
-   */
+  /** Get API endpoint EXAKTE KOPIE von AuditService.getApiEndpoint() Zeile 336-349 */
   private String getApiEndpoint() {
     if (!httpRequestInstance.isResolvable()) {
       return null;
@@ -402,10 +389,7 @@ public class AuditCommandService {
     }
   }
 
-  /**
-   * Convert object to JSON string
-   * EXAKTE KOPIE von AuditService.toJson() Zeile 352-363
-   */
+  /** Convert object to JSON string EXAKTE KOPIE von AuditService.toJson() Zeile 352-363 */
   private String toJson(Object value) {
     if (value == null) {
       return null;
@@ -420,8 +404,8 @@ public class AuditCommandService {
   }
 
   /**
-   * Calculate SHA-256 hash for integrity
-   * EXAKTE KOPIE von AuditService.calculateHash() Zeile 366-396
+   * Calculate SHA-256 hash for integrity EXAKTE KOPIE von AuditService.calculateHash() Zeile
+   * 366-396
    */
   private String calculateHash(AuditEntry entry, String previousHash) {
     try {
@@ -456,8 +440,8 @@ public class AuditCommandService {
   }
 
   /**
-   * Get previous hash for global chaining
-   * EXAKTE KOPIE von AuditService.getPreviousHash() Zeile 399-407
+   * Get previous hash for global chaining EXAKTE KOPIE von AuditService.getPreviousHash() Zeile
+   * 399-407
    */
   private String getPreviousHash(String entityType) {
     // Check global cache first
@@ -470,28 +454,20 @@ public class AuditCommandService {
   }
 
   /**
-   * Notify security team for critical events
-   * EXAKTE KOPIE von AuditService.notifySecurityTeam() Zeile 410-414
+   * Notify security team for critical events EXAKTE KOPIE von AuditService.notifySecurityTeam()
+   * Zeile 410-414
    */
   private void notifySecurityTeam(AuditEntry entry) {
     // Implementation depends on notification service
     log.warnf(
-        "Security notification required for event: %s - %s", 
-        entry.getEventType(), 
-        entry.getId());
+        "Security notification required for event: %s - %s", entry.getEventType(), entry.getId());
   }
 
-  /**
-   * Fallback logging mechanism
-   * EXAKTE KOPIE von AuditService.logToFallback() Zeile 417-422
-   */
+  /** Fallback logging mechanism EXAKTE KOPIE von AuditService.logToFallback() Zeile 417-422 */
   private void logToFallback(AuditContext context, Exception error) {
     // Log to file or external service as fallback
     log.errorf(
         "AUDIT_FALLBACK: %s %s %s - Error: %s",
-        context.getEventType(), 
-        context.getEntityType(), 
-        context.getEntityId(), 
-        error.getMessage());
+        context.getEventType(), context.getEntityType(), context.getEntityId(), error.getMessage());
   }
 }

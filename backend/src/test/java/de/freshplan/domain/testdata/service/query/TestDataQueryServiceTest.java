@@ -7,33 +7,29 @@ import static org.mockito.Mockito.*;
 import de.freshplan.domain.customer.repository.CustomerRepository;
 import de.freshplan.domain.customer.repository.CustomerTimelineRepository;
 import de.freshplan.domain.testdata.service.TestDataService;
-import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.InjectMock;
+import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
- * Tests for TestDataQueryService - the simplest QueryService in all CQRS phases.
- * Only 1 query method to test!
- * 
- * Applied Test-Fixing Patterns:
- * 2. Mockito Matcher-Consistency (all parameters as matchers)
- * 4. Flexible Verification (atLeastOnce() when appropriate)
- * 
- * Note: PanacheQuery-Mocking and FK-Safe Cleanup not needed for simple count queries.
+ * Tests for TestDataQueryService - the simplest QueryService in all CQRS phases. Only 1 query
+ * method to test!
+ *
+ * <p>Applied Test-Fixing Patterns: 2. Mockito Matcher-Consistency (all parameters as matchers) 4.
+ * Flexible Verification (atLeastOnce() when appropriate)
+ *
+ * <p>Note: PanacheQuery-Mocking and FK-Safe Cleanup not needed for simple count queries.
  */
 @QuarkusTest
 class TestDataQueryServiceTest {
 
-  @Inject
-  TestDataQueryService queryService;
+  @Inject TestDataQueryService queryService;
 
-  @InjectMock
-  CustomerRepository customerRepository;
+  @InjectMock CustomerRepository customerRepository;
 
-  @InjectMock
-  CustomerTimelineRepository timelineRepository;
+  @InjectMock CustomerTimelineRepository timelineRepository;
 
   @BeforeEach
   void setUp() {
@@ -101,20 +97,22 @@ class TestDataQueryServiceTest {
   }
 
   /**
-   * Helper method to verify that no write operations are performed in QueryService.
-   * This is critical for CQRS compliance - Query services must be read-only.
+   * Helper method to verify that no write operations are performed in QueryService. This is
+   * critical for CQRS compliance - Query services must be read-only.
    */
   private void verifyNoWriteOperationsForQuery() {
     // Verify no persist operations
-    verify(customerRepository, never()).persist((de.freshplan.domain.customer.entity.Customer) any());
-    verify(timelineRepository, never()).persist((de.freshplan.domain.customer.entity.CustomerTimelineEvent) any());
-    
+    verify(customerRepository, never())
+        .persist((de.freshplan.domain.customer.entity.Customer) any());
+    verify(timelineRepository, never())
+        .persist((de.freshplan.domain.customer.entity.CustomerTimelineEvent) any());
+
     // Verify no delete operations
     verify(customerRepository, never()).delete(any());
     verify(customerRepository, never()).delete(anyString());
     verify(timelineRepository, never()).delete(any());
     verify(timelineRepository, never()).delete(anyString());
-    
+
     // Verify no update operations (if they existed in repository)
     // Note: TestDataService repositories only have count, persist, delete - no updates
   }

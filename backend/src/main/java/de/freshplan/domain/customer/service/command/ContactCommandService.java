@@ -15,12 +15,12 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * Command service for Contact management.
- * Handles all write operations (create, update, delete) for contacts.
- * 
- * This service is part of the CQRS pattern implementation, separating
- * command (write) operations from query (read) operations.
- * 
+ * Command service for Contact management. Handles all write operations (create, update, delete) for
+ * contacts.
+ *
+ * <p>This service is part of the CQRS pattern implementation, separating command (write) operations
+ * from query (read) operations.
+ *
  * @author FreshPlan Team
  * @since 2.0.0 - CQRS Refactoring Phase 6
  */
@@ -33,8 +33,7 @@ public class ContactCommandService {
   @Inject SecurityIdentity securityIdentity;
 
   /**
-   * Create a new contact for a customer.
-   * First contact automatically becomes primary.
+   * Create a new contact for a customer. First contact automatically becomes primary.
    *
    * @param customerId the customer ID
    * @param contactDTO the contact data
@@ -68,8 +67,8 @@ public class ContactCommandService {
   }
 
   /**
-   * Helper method to get current user with fallback for tests.
-   * Uses same 3-step fallback as other services.
+   * Helper method to get current user with fallback for tests. Uses same 3-step fallback as other
+   * services.
    */
   private String getCurrentUser() {
     try {
@@ -85,8 +84,7 @@ public class ContactCommandService {
   }
 
   /**
-   * Update an existing contact.
-   * Note: isPrimary is not updated here, use setPrimaryContact method.
+   * Update an existing contact. Note: isPrimary is not updated here, use setPrimaryContact method.
    *
    * @param contactId the contact ID
    * @param contactDTO the updated contact data
@@ -111,8 +109,8 @@ public class ContactCommandService {
   }
 
   /**
-   * Update an existing contact, verifying it belongs to the specified customer.
-   * Note: isPrimary is not updated here, use setPrimaryContact method.
+   * Update an existing contact, verifying it belongs to the specified customer. Note: isPrimary is
+   * not updated here, use setPrimaryContact method.
    *
    * @param customerId the customer ID
    * @param contactId the contact ID
@@ -142,8 +140,7 @@ public class ContactCommandService {
   }
 
   /**
-   * Set a contact as primary for a customer.
-   * Unsets all other primary flags for this customer.
+   * Set a contact as primary for a customer. Unsets all other primary flags for this customer.
    *
    * @param customerId the customer ID
    * @param contactId the contact ID to set as primary
@@ -165,8 +162,7 @@ public class ContactCommandService {
   }
 
   /**
-   * Soft delete a contact.
-   * Cannot delete primary contact if there are other contacts.
+   * Soft delete a contact. Cannot delete primary contact if there are other contacts.
    *
    * @param contactId the contact ID
    */
@@ -192,8 +188,8 @@ public class ContactCommandService {
   }
 
   /**
-   * Soft delete a contact, verifying it belongs to the specified customer.
-   * Cannot delete primary contact if there are other contacts.
+   * Soft delete a contact, verifying it belongs to the specified customer. Cannot delete primary
+   * contact if there are other contacts.
    *
    * @param customerId the customer ID
    * @param contactId the contact ID
@@ -224,8 +220,8 @@ public class ContactCommandService {
   }
 
   /**
-   * Assign contacts to a location.
-   * This method updates the location assignment for multiple contacts.
+   * Assign contacts to a location. This method updates the location assignment for multiple
+   * contacts.
    *
    * @param contactIds list of contact IDs
    * @param locationId the location ID (null to unassign)

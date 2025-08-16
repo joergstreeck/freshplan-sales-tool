@@ -24,10 +24,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 /**
  * Unit tests for TimelineCommandService.
- * 
- * Verifies that all command operations work correctly and maintain
- * identical behavior to the original CustomerTimelineService.
- * 
+ *
+ * <p>Verifies that all command operations work correctly and maintain identical behavior to the
+ * original CustomerTimelineService.
+ *
  * @author FreshPlan Team
  * @since 2.0.0
  */
@@ -48,12 +48,12 @@ class TimelineCommandServiceTest {
   @BeforeEach
   void setUp() {
     testCustomerId = UUID.randomUUID();
-    
+
     testCustomer = new Customer();
     testCustomer.setId(testCustomerId);
     testCustomer.setCompanyName("Test Company");
     testCustomer.setCustomerNumber("KD-2025-00001");
-    
+
     testEvent = new CustomerTimelineEvent();
     testEvent.setId(UUID.randomUUID());
     testEvent.setCustomer(testCustomer);
@@ -64,7 +64,7 @@ class TimelineCommandServiceTest {
     testEvent.setImportance(ImportanceLevel.HIGH);
     testEvent.setEventDate(LocalDateTime.now());
     testEvent.setPerformedBy("testuser");
-    
+
     testResponse = new TimelineEventResponse();
     testResponse.setId(testEvent.getId());
     testResponse.setEventType(testEvent.getEventType());
@@ -88,23 +88,21 @@ class TimelineCommandServiceTest {
     request.setRequiresFollowUp(true);
     request.setFollowUpDate(LocalDateTime.now().plusDays(7));
     request.setFollowUpNotes("Check customer satisfaction");
-    
-    when(customerRepository.findByIdOptional(testCustomerId))
-        .thenReturn(Optional.of(testCustomer));
-    when(timelineMapper.toResponse(any(CustomerTimelineEvent.class)))
-        .thenReturn(testResponse);
-    
+
+    when(customerRepository.findByIdOptional(testCustomerId)).thenReturn(Optional.of(testCustomer));
+    when(timelineMapper.toResponse(any(CustomerTimelineEvent.class))).thenReturn(testResponse);
+
     // When
     TimelineEventResponse result = commandService.createEvent(testCustomerId, request);
-    
+
     // Then
     assertNotNull(result);
     assertEquals(testResponse.getId(), result.getId());
-    
-    ArgumentCaptor<CustomerTimelineEvent> eventCaptor = 
+
+    ArgumentCaptor<CustomerTimelineEvent> eventCaptor =
         ArgumentCaptor.forClass(CustomerTimelineEvent.class);
     verify(timelineRepository).persist(eventCaptor.capture());
-    
+
     CustomerTimelineEvent capturedEvent = eventCaptor.getValue();
     assertEquals(testCustomer, capturedEvent.getCustomer());
     assertEquals("CUSTOMER_UPDATED", capturedEvent.getEventType());
@@ -126,15 +124,16 @@ class TimelineCommandServiceTest {
     request.setTitle("Test");
     request.setCategory(EventCategory.NOTE);
     request.setPerformedBy("testuser");
-    
-    when(customerRepository.findByIdOptional(testCustomerId))
-        .thenReturn(Optional.empty());
-    
+
+    when(customerRepository.findByIdOptional(testCustomerId)).thenReturn(Optional.empty());
+
     // When & Then
-    assertThrows(CustomerNotFoundException.class, () -> {
-      commandService.createEvent(testCustomerId, request);
-    });
-    
+    assertThrows(
+        CustomerNotFoundException.class,
+        () -> {
+          commandService.createEvent(testCustomerId, request);
+        });
+
     verify(timelineRepository, never()).persist(any(CustomerTimelineEvent.class));
   }
 
@@ -144,22 +143,20 @@ class TimelineCommandServiceTest {
     CreateNoteRequest request = new CreateNoteRequest();
     request.setNote("Important customer note");
     request.setPerformedBy("testuser");
-    
-    when(customerRepository.findByIdOptional(testCustomerId))
-        .thenReturn(Optional.of(testCustomer));
-    when(timelineMapper.toResponse(any(CustomerTimelineEvent.class)))
-        .thenReturn(testResponse);
-    
+
+    when(customerRepository.findByIdOptional(testCustomerId)).thenReturn(Optional.of(testCustomer));
+    when(timelineMapper.toResponse(any(CustomerTimelineEvent.class))).thenReturn(testResponse);
+
     // When
     TimelineEventResponse result = commandService.createNote(testCustomerId, request);
-    
+
     // Then
     assertNotNull(result);
-    
-    ArgumentCaptor<CustomerTimelineEvent> eventCaptor = 
+
+    ArgumentCaptor<CustomerTimelineEvent> eventCaptor =
         ArgumentCaptor.forClass(CustomerTimelineEvent.class);
     verify(timelineRepository).persist(eventCaptor.capture());
-    
+
     CustomerTimelineEvent capturedEvent = eventCaptor.getValue();
     assertEquals("NOTE", capturedEvent.getEventType());
     assertEquals("Notiz", capturedEvent.getTitle());
@@ -182,25 +179,23 @@ class TimelineCommandServiceTest {
     request.setRequiresFollowUp(true);
     request.setFollowUpDate(LocalDateTime.now().plusDays(3));
     request.setFollowUpNotes("Check response");
-    
-    when(customerRepository.findByIdOptional(testCustomerId))
-        .thenReturn(Optional.of(testCustomer));
-    when(timelineMapper.toResponse(any(CustomerTimelineEvent.class)))
-        .thenReturn(testResponse);
-    
+
+    when(customerRepository.findByIdOptional(testCustomerId)).thenReturn(Optional.of(testCustomer));
+    when(timelineMapper.toResponse(any(CustomerTimelineEvent.class))).thenReturn(testResponse);
+
     // When
     TimelineEventResponse result = commandService.createCommunication(testCustomerId, request);
-    
+
     // Then
     assertNotNull(result);
-    
+
     // Verify that persist was called
     // Note: We cannot mock the static CustomerTimelineEvent.createCommunicationEvent method
     // but we can verify that the repository persist was called
-    ArgumentCaptor<CustomerTimelineEvent> eventCaptor = 
+    ArgumentCaptor<CustomerTimelineEvent> eventCaptor =
         ArgumentCaptor.forClass(CustomerTimelineEvent.class);
     verify(timelineRepository).persist(eventCaptor.capture());
-    
+
     CustomerTimelineEvent capturedEvent = eventCaptor.getValue();
     assertNotNull(capturedEvent);
     // The actual event properties are set by the static factory method
@@ -212,10 +207,10 @@ class TimelineCommandServiceTest {
     // Given
     UUID eventId = UUID.randomUUID();
     String completedBy = "testuser";
-    
+
     // When
     commandService.completeFollowUp(eventId, completedBy);
-    
+
     // Then
     verify(timelineRepository).completeFollowUp(eventId, completedBy);
   }
@@ -231,15 +226,13 @@ class TimelineCommandServiceTest {
     request.setTags(List.of("updated", "important"));
     request.setBusinessImpact("HIGH");
     request.setUpdatedBy("testuser");
-    
-    when(timelineRepository.findByIdOptional(eventId))
-        .thenReturn(Optional.of(testEvent));
-    when(timelineMapper.toResponse(testEvent))
-        .thenReturn(testResponse);
-    
+
+    when(timelineRepository.findByIdOptional(eventId)).thenReturn(Optional.of(testEvent));
+    when(timelineMapper.toResponse(testEvent)).thenReturn(testResponse);
+
     // When
     TimelineEventResponse result = commandService.updateEvent(eventId, request);
-    
+
     // Then
     assertNotNull(result);
     assertEquals("Updated Title", testEvent.getTitle());
@@ -248,7 +241,7 @@ class TimelineCommandServiceTest {
     assertEquals("updated,important", testEvent.getTags());
     assertEquals("HIGH", testEvent.getBusinessImpact());
     assertEquals("testuser", testEvent.getUpdatedBy());
-    
+
     verify(timelineRepository).persist(testEvent);
   }
 
@@ -259,15 +252,17 @@ class TimelineCommandServiceTest {
     UpdateTimelineEventRequest request = new UpdateTimelineEventRequest();
     request.setTitle("Updated");
     request.setUpdatedBy("testuser");
-    
-    when(timelineRepository.findByIdOptional(eventId))
-        .thenReturn(Optional.empty());
-    
+
+    when(timelineRepository.findByIdOptional(eventId)).thenReturn(Optional.empty());
+
     // When & Then
-    IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-      commandService.updateEvent(eventId, request);
-    });
-    
+    IllegalArgumentException exception =
+        assertThrows(
+            IllegalArgumentException.class,
+            () -> {
+              commandService.updateEvent(eventId, request);
+            });
+
     assertTrue(exception.getMessage().contains("Timeline event not found"));
     verify(timelineRepository, never()).persist(any(CustomerTimelineEvent.class));
   }
@@ -277,10 +272,10 @@ class TimelineCommandServiceTest {
     // Given
     UUID eventId = UUID.randomUUID();
     String deletedBy = "testuser";
-    
+
     // When
     commandService.deleteEvent(eventId, deletedBy);
-    
+
     // Then
     verify(timelineRepository).softDelete(eventId, deletedBy);
   }
@@ -291,18 +286,18 @@ class TimelineCommandServiceTest {
     String eventType = "CUSTOMER_STATUS_CHANGED";
     String description = "Customer status changed to ACTIVE";
     String performedBy = "SYSTEM";
-    
+
     // When
     commandService.createSystemEvent(testCustomer, eventType, description, performedBy);
-    
+
     // Then
     // Verify that persist was called
     // Note: We cannot mock the static CustomerTimelineEvent.createSystemEvent method
     // but we can verify that the repository persist was called
-    ArgumentCaptor<CustomerTimelineEvent> eventCaptor = 
+    ArgumentCaptor<CustomerTimelineEvent> eventCaptor =
         ArgumentCaptor.forClass(CustomerTimelineEvent.class);
     verify(timelineRepository).persist(eventCaptor.capture());
-    
+
     CustomerTimelineEvent capturedEvent = eventCaptor.getValue();
     assertNotNull(capturedEvent);
     assertEquals(testCustomer, capturedEvent.getCustomer());

@@ -23,10 +23,10 @@ import org.jboss.logging.Logger;
 /**
  * Service for managing customer timeline events. Handles creation, retrieval, and management of
  * customer interaction history.
- * 
- * As part of the CQRS refactoring (PR #5), this service now acts as a Facade that delegates
- * to separate Command and Query services based on a feature flag. This ensures backward
- * compatibility while allowing gradual migration to CQRS pattern.
+ *
+ * <p>As part of the CQRS refactoring (PR #5), this service now acts as a Facade that delegates to
+ * separate Command and Query services based on a feature flag. This ensures backward compatibility
+ * while allowing gradual migration to CQRS pattern.
  *
  * @author FreshPlan Team
  * @since 2.0.0
@@ -40,11 +40,11 @@ public class CustomerTimelineService {
   private final CustomerTimelineRepository timelineRepository;
   private final CustomerRepository customerRepository;
   private final CustomerTimelineMapper timelineMapper;
-  
+
   // CQRS Services (NEW for PR #5)
   @Inject TimelineCommandService commandService;
   @Inject TimelineQueryService queryService;
-  
+
   // Feature flag for CQRS pattern
   @ConfigProperty(name = "features.cqrs.enabled", defaultValue = "false")
   boolean cqrsEnabled;
@@ -62,12 +62,12 @@ public class CustomerTimelineService {
   /** Creates a new timeline event for a customer. */
   public TimelineEventResponse createEvent(
       @NotNull UUID customerId, @Valid @NotNull CreateTimelineEventRequest request) {
-    
+
     if (cqrsEnabled) {
       LOG.debugf("Using CQRS CommandService for createEvent");
       return commandService.createEvent(customerId, request);
     }
-    
+
     // Legacy implementation below
     LOG.infof("Creating timeline event for customer %s: %s", customerId, request.getEventType());
 
@@ -130,12 +130,12 @@ public class CustomerTimelineService {
   /** Creates a quick note event. */
   public TimelineEventResponse createNote(
       @NotNull UUID customerId, @Valid @NotNull CreateNoteRequest request) {
-    
+
     if (cqrsEnabled) {
       LOG.debugf("Using CQRS CommandService for createNote");
       return commandService.createNote(customerId, request);
     }
-    
+
     // Legacy implementation below
     LOG.infof("Creating note for customer %s", customerId);
 
@@ -161,12 +161,12 @@ public class CustomerTimelineService {
   /** Creates a communication event (call, email, etc.). */
   public TimelineEventResponse createCommunication(
       @NotNull UUID customerId, @Valid @NotNull CreateCommunicationRequest request) {
-    
+
     if (cqrsEnabled) {
       LOG.debugf("Using CQRS CommandService for createCommunication");
       return commandService.createCommunication(customerId, request);
     }
-    
+
     // Legacy implementation below
     LOG.infof(
         "Creating communication event for customer %s via %s", customerId, request.getChannel());
@@ -203,12 +203,12 @@ public class CustomerTimelineService {
   /** Gets paginated timeline events for a customer. */
   public TimelineListResponse getCustomerTimeline(
       @NotNull UUID customerId, int page, int size, String category, String search) {
-    
+
     if (cqrsEnabled) {
       LOG.debugf("Using CQRS QueryService for getCustomerTimeline");
       return queryService.getCustomerTimeline(customerId, page, size, category, search);
     }
-    
+
     // Legacy implementation below
     // Enforce maximum page size for performance
     int maxSize = 100;
@@ -259,7 +259,7 @@ public class CustomerTimelineService {
       LOG.debugf("Using CQRS QueryService for getFollowUpEvents");
       return queryService.getFollowUpEvents(customerId);
     }
-    
+
     // Legacy implementation below
     LOG.debugf("Getting follow-up events for customer %s", customerId);
 
@@ -274,7 +274,7 @@ public class CustomerTimelineService {
       LOG.debugf("Using CQRS QueryService for getOverdueFollowUps");
       return queryService.getOverdueFollowUps(customerId);
     }
-    
+
     // Legacy implementation below
     LOG.debugf("Getting overdue follow-ups for customer %s", customerId);
 
@@ -285,12 +285,12 @@ public class CustomerTimelineService {
 
   /** Gets recent communication history. */
   public List<TimelineEventResponse> getRecentCommunications(@NotNull UUID customerId, int days) {
-    
+
     if (cqrsEnabled) {
       LOG.debugf("Using CQRS QueryService for getRecentCommunications");
       return queryService.getRecentCommunications(customerId, days);
     }
-    
+
     // Legacy implementation below
     LOG.debugf("Getting recent communications for customer %s (last %d days)", customerId, days);
 
@@ -302,13 +302,13 @@ public class CustomerTimelineService {
 
   /** Marks a follow-up as completed. */
   public void completeFollowUp(@NotNull UUID eventId, @NotNull String completedBy) {
-    
+
     if (cqrsEnabled) {
       LOG.debugf("Using CQRS CommandService for completeFollowUp");
       commandService.completeFollowUp(eventId, completedBy);
       return;
     }
-    
+
     // Legacy implementation below
     LOG.infof("Completing follow-up for event %s by %s", eventId, completedBy);
 
@@ -318,12 +318,12 @@ public class CustomerTimelineService {
   /** Updates an existing timeline event. */
   public TimelineEventResponse updateEvent(
       @NotNull UUID eventId, @Valid @NotNull UpdateTimelineEventRequest request) {
-    
+
     if (cqrsEnabled) {
       LOG.debugf("Using CQRS CommandService for updateEvent");
       return commandService.updateEvent(eventId, request);
     }
-    
+
     // Legacy implementation below
     LOG.infof("Updating timeline event %s", eventId);
 
@@ -364,7 +364,7 @@ public class CustomerTimelineService {
       commandService.deleteEvent(eventId, deletedBy);
       return;
     }
-    
+
     // Legacy implementation below
     LOG.infof("Soft deleting timeline event %s by %s", eventId, deletedBy);
 
@@ -377,7 +377,7 @@ public class CustomerTimelineService {
       LOG.debugf("Using CQRS QueryService for getTimelineSummary");
       return queryService.getTimelineSummary(customerId);
     }
-    
+
     // Legacy implementation below
     LOG.debugf("Getting timeline summary for customer %s", customerId);
 
@@ -398,13 +398,13 @@ public class CustomerTimelineService {
       @NotNull String eventType,
       @NotNull String description,
       @NotNull String performedBy) {
-    
+
     if (cqrsEnabled) {
       LOG.debugf("Using CQRS CommandService for createSystemEvent");
       commandService.createSystemEvent(customer, eventType, description, performedBy);
       return;
     }
-    
+
     // Legacy implementation below
     LOG.debugf("Creating system event for customer %s: %s", customer.getId(), eventType);
 
