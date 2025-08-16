@@ -1,4 +1,5 @@
 #!/bin/bash
+set -euo pipefail
 
 # Local Database Growth Check
 # Run this before committing to ensure tests don't pollute the database
@@ -36,7 +37,7 @@ echo "After:  $AFTER customers"
 echo "Growth: $GROWTH customers"
 echo ""
 
-if [ $GROWTH -gt 10 ]; then
+if [ $GROWTH -gt 0 ]; then
     echo "❌ FAILED: Database grew by $GROWTH customers!"
     echo ""
     echo "This indicates missing test isolation."
@@ -46,7 +47,7 @@ if [ $GROWTH -gt 10 ]; then
     echo "3. Implement cleanup in @AfterEach if needed"
     exit 1
 else
-    echo "✅ PASSED: Growth is within acceptable limits"
+    echo "✅ PASSED: No database pollution detected (0 growth)"
     echo ""
     echo "Safe to commit!"
 fi

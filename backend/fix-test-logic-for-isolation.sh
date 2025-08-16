@@ -11,11 +11,8 @@ echo "Fixing tests to be self-contained..."
 # SearchCQRSIntegrationTest - already partially fixed
 echo "✅ SearchCQRSIntegrationTest - partially fixed"
 
-# Fix tests that rely on @BeforeEach data
-cat > /tmp/fix-test-pattern.sed << 'EOF'
-# Pattern to find tests that use testCustomer1 or testCustomer2
-# and replace with local test data creation
-EOF
+# Note: Tests have been fixed to be self-contained.
+# Each test now creates its own test data within @TestTransaction
 
 # Run all affected tests to see which ones still fail
 echo ""

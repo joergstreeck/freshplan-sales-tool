@@ -123,11 +123,7 @@ groups:
   # Feature Flag Status Monitoring
   - alert: FeatureFlagInconsistent
     expr: |
-      count(count by (instance) (features_cqrs_enabled)) 
-      != 
-      count(count by (instance) (features_cqrs_enabled == 1))
-      and 
-      count(count by (instance) (features_cqrs_enabled == 0))
+      count(count by (features_cqrs_enabled) (features_cqrs_enabled)) > 1
     for: 5m
     labels:
       severity: warning

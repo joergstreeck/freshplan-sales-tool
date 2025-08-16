@@ -48,21 +48,7 @@ public class CustomerDataInitializer {
 
     // IMPROVED: Check if test data already exists - NEVER DELETE, ONLY ADD MISSING DATA
     long existingCount = customerRepository.count();
-    long testCustomerCount =
-        customerRepository
-                    .getEntityManager()
-                    .createNativeQuery(
-                        "SELECT COUNT(*) FROM customers WHERE company_name LIKE '[TEST]%'")
-                    .getSingleResult()
-                instanceof Number
-            ? ((Number)
-                    customerRepository
-                        .getEntityManager()
-                        .createNativeQuery(
-                            "SELECT COUNT(*) FROM customers WHERE company_name LIKE '[TEST]%'")
-                        .getSingleResult())
-                .longValue()
-            : 0L;
+    long testCustomerCount = customerRepository.count("companyName like ?1", "[TEST]%");
 
     // FIXED: NIEMALS LÖSCHEN - nur ergänzen wenn zu wenig Test-Daten vorhanden
     // Erwartete Anzahl: mindestens 58 Test-Kunden
