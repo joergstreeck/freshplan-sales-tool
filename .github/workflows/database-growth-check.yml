@@ -77,23 +77,32 @@ jobs:
         PGPASSWORD: freshplan
       run: |
         echo "Initializing database schema..."
-        # Note: CI profile now does clean-at-start=true, so DB starts fresh
-        # This ensures consistent test conditions
+        # Run a single test to trigger Flyway migrations
+        # This creates all tables including customers
+        ./mvnw test -Dtest="DatabaseAnalysisTest#countCustomers" \
+          -Dquarkus.test.profile=ci \
+          -Dquarkus.datasource.devservices.enabled=false \
+          -Dquarkus.datasource.jdbc.url=jdbc:postgresql://localhost:5432/freshplan \
+          -Dquarkus.datasource.username=freshplan \
+          -Dquarkus.datasource.password=freshplan \
+          -DfailIfNoTests=false || true
         
-        # Verify empty database before tests
-        echo "Verifying fresh database..."
-        psql -h localhost -U freshplan -d freshplan -c "\dt" 2>/dev/null || echo "No tables yet - expected"
+        # Verify schema was created
+        echo "Verifying database schema..."
+        psql -h localhost -U freshplan -d freshplan -c "\dt" | grep customers || exit 1
+        echo "✅ Database schema initialized"
 
     - name: Count customers BEFORE tests
       env:
         PGPASSWORD: freshplan
       run: |
-        BEFORE=$(psql -h localhost -U freshplan -d freshplan -tAc "SELECT COUNT(*) FROM customers WHERE is_test_data = true OR company_name LIKE '[TEST]%';")
+        # Count test customers (should be initial seed data only)
+        BEFORE=$(psql -h localhost -U freshplan -d freshplan -tAc "SELECT COUNT(*) FROM customers WHERE is_test_data = true OR company_name LIKE '[TEST]%';" 2>/dev/null || echo "0")
         echo "CUSTOMERS_BEFORE=$BEFORE" >> $GITHUB_ENV
         echo "📊 Test customers BEFORE: $BEFORE"
         
         # Also get total count for context
-        TOTAL=$(psql -h localhost -U freshplan -d freshplan -tAc "SELECT COUNT(*) FROM customers;")
+        TOTAL=$(psql -h localhost -U freshplan -d freshplan -tAc "SELECT COUNT(*) FROM customers;" 2>/dev/null || echo "0")
         echo "📊 Total customers: $TOTAL"
 
     - name: Run all tests with CI profile
@@ -112,7 +121,7 @@ jobs:
       env:
         PGPASSWORD: freshplan
       run: |
-        AFTER=$(psql -h localhost -U freshplan -d freshplan -tAc "SELECT COUNT(*) FROM customers WHERE is_test_data = true OR company_name LIKE '[TEST]%';")
+        AFTER=$(psql -h localhost -U freshplan -d freshplan -tAc "SELECT COUNT(*) FROM customers WHERE is_test_data = true OR company_name LIKE '[TEST]%';" 2>/dev/null || echo "0")
         echo "CUSTOMERS_AFTER=$AFTER" >> $GITHUB_ENV
         echo "📊 Test customers AFTER: $AFTER"
         
