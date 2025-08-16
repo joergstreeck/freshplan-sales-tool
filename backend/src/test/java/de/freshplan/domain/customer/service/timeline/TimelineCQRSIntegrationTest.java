@@ -59,10 +59,12 @@ class TimelineCQRSIntegrationTest {
   private String uniqueSuffix;
 
   @BeforeEach
-  @TestTransaction
   void setUp() {
+    // Just prepare the unique suffix, customer will be created in each test
     uniqueSuffix = String.valueOf(System.currentTimeMillis());
-
+  }
+  
+  private void createTestCustomer() {
     // Create a test customer for timeline events
     testCustomer = new Customer();
     testCustomer.setCustomerNumber("KD" + uniqueSuffix.substring(7, 13));
@@ -94,6 +96,9 @@ class TimelineCQRSIntegrationTest {
   @TestTransaction
   @DisplayName("Create timeline event should delegate to CommandService")
   void createEvent_inCQRSMode_shouldCreateSuccessfully() {
+    // Setup
+    createTestCustomer();
+    
     // Given
     CreateTimelineEventRequest request = new CreateTimelineEventRequest();
     request.setEventType("CUSTOMER_UPDATED");
@@ -121,6 +126,9 @@ class TimelineCQRSIntegrationTest {
   @TestTransaction
   @DisplayName("Create note should delegate to CommandService")
   void createNote_inCQRSMode_shouldCreateSuccessfully() {
+    // Setup
+    createTestCustomer();
+    
     // Given
     CreateNoteRequest noteRequest =
         new CreateNoteRequest("Important customer feedback about service quality", "testuser");
@@ -140,6 +148,9 @@ class TimelineCQRSIntegrationTest {
   @TestTransaction
   @DisplayName("Create communication event should delegate to CommandService")
   void createCommunication_inCQRSMode_shouldCreateSuccessfully() {
+    // Setup
+    createTestCustomer();
+    
     // Given
     CreateCommunicationRequest commRequest =
         CreateCommunicationRequest.builder()
@@ -163,6 +174,9 @@ class TimelineCQRSIntegrationTest {
   @TestTransaction
   @DisplayName("Update timeline event should delegate to CommandService")
   void updateEvent_inCQRSMode_shouldUpdateSuccessfully() {
+    // Setup
+    createTestCustomer();
+    
     // Given - Create an event first
     CreateTimelineEventRequest createRequest = new CreateTimelineEventRequest();
     createRequest.setEventType("INITIAL_EVENT");
@@ -202,6 +216,9 @@ class TimelineCQRSIntegrationTest {
   @TestTransaction
   @DisplayName("Get customer timeline should delegate to QueryService")
   void getCustomerTimeline_inCQRSMode_shouldReturnEvents() {
+    // Setup
+    createTestCustomer();
+    
     // Given - Create multiple events
     for (int i = 1; i <= 3; i++) {
       CreateTimelineEventRequest request = new CreateTimelineEventRequest();
@@ -239,6 +256,9 @@ class TimelineCQRSIntegrationTest {
   @TestTransaction
   @DisplayName("Get follow-up events should delegate to QueryService")
   void getFollowUpEvents_inCQRSMode_shouldReturnFollowUps() {
+    // Setup
+    createTestCustomer();
+    
     // Given - Create a follow-up event with requiresFollowUp flag
     CreateTimelineEventRequest request = new CreateTimelineEventRequest();
     request.setEventType("MEETING");
@@ -266,6 +286,9 @@ class TimelineCQRSIntegrationTest {
   @TestTransaction
   @DisplayName("Get overdue follow-ups should delegate to QueryService")
   void getOverdueFollowUps_inCQRSMode_shouldReturnOverdueEvents() {
+    // Setup
+    createTestCustomer();
+    
     // Given - Create an event with overdue follow-up
     CreateTimelineEventRequest request = new CreateTimelineEventRequest();
     request.setEventType("PHONE_CALL");
@@ -293,6 +316,9 @@ class TimelineCQRSIntegrationTest {
   @TestTransaction
   @DisplayName("Get recent communications should delegate to QueryService")
   void getRecentCommunications_inCQRSMode_shouldReturnRecentComms() {
+    // Setup
+    createTestCustomer();
+    
     // Given - Create recent communication events
     for (int i = 0; i < 3; i++) {
       CreateCommunicationRequest commRequest =
@@ -321,6 +347,9 @@ class TimelineCQRSIntegrationTest {
   @TestTransaction
   @DisplayName("Get timeline summary should delegate to QueryService")
   void getTimelineSummary_inCQRSMode_shouldReturnSummary() {
+    // Setup
+    createTestCustomer();
+    
     // Given - Create various events
     CreateTimelineEventRequest note = new CreateTimelineEventRequest();
     note.setEventType("NOTE");
@@ -400,6 +429,9 @@ class TimelineCQRSIntegrationTest {
   @TestTransaction
   @DisplayName("CQRS mode should properly delegate all operations")
   void cqrsMode_shouldProperlyDelegateAllOperations() {
+    // Setup
+    createTestCustomer();
+    
     // This test verifies complete CQRS delegation
 
     // 1. Create event (Command)
