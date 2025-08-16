@@ -47,25 +47,60 @@ jobs:
         key: ${{ runner.os }}-m2-${{ hashFiles('backend/pom.xml') }}
         restore-keys: ${{ runner.os }}-m2-
 
+    - name: Install PostgreSQL client
+      run: sudo apt-get update && sudo apt-get install -y postgresql-client
+    
+    - name: Reset DB schema for clean state
+      env:
+        PGPASSWORD: freshplan
+      run: |
+        psql -h localhost -U freshplan -d freshplan -v ON_ERROR_STOP=1 -c "DROP SCHEMA IF EXISTS public CASCADE; CREATE SCHEMA public;"
+        echo "Database schema reset successfully"
+    
+    - name: Count customers BEFORE tests
+      env:
+        PGPASSWORD: freshplan
+      run: |
+        # Initialize schema first
+        cd backend && ./mvnw flyway:migrate -Dquarkus.profile=ci -q
+        BEFORE=$(psql -h localhost -U freshplan -d freshplan -tAc "SELECT COUNT(*) FROM customers;" 2>/dev/null || echo "0")
+        echo "CUSTOMERS_BEFORE=$BEFORE" >> $GITHUB_ENV
+        echo "Customers before tests: $BEFORE"
+    
     - name: Run all tests with CI profile
       working-directory: backend
       env:
         QUARKUS_PROFILE: ci
         MAVEN_OPTS: -Xmx2g -XX:MaxMetaspaceSize=512m
+        RUN_SUFFIX: ${{ github.run_id }}
       run: |
-        echo "Running tests with CI profile (includes clean database)..."
-        
-        # The CI profile has flyway.clean-at-start=true
-        # This ensures each test run starts with a fresh database
-        # If tests create data that persists, it's a test isolation bug
+        echo "Running tests with CI profile..."
         
         ./mvnw test \
           -B \
           -Djunit.jupiter.execution.timeout.default=2m \
           -Dmaven.test.failure.ignore=false \
-          -DtrimStackTrace=false
+          -DtrimStackTrace=false \
+          -DRUN_SUFFIX=${{ github.run_id }}
         
         echo "✅ Tests completed"
+    
+    - name: Count customers AFTER tests & verify no growth
+      env:
+        PGPASSWORD: freshplan
+      run: |
+        AFTER=$(psql -h localhost -U freshplan -d freshplan -tAc "SELECT COUNT(*) FROM customers;" 2>/dev/null || echo "0")
+        echo "Customers after tests: $AFTER"
+        echo "Customers before tests: ${CUSTOMERS_BEFORE:-0}"
+        DELTA=$((AFTER - ${CUSTOMERS_BEFORE:-0}))
+        echo "Delta: $DELTA customers"
+        
+        if [ "$DELTA" -gt "0" ]; then
+          echo "::error::Database grew by $DELTA customers during tests. Tests are not cleaning up properly!"
+          exit 1
+        else
+          echo "✅ No database growth detected - tests are properly isolated"
+        fi
 
     - name: Check for test isolation issues
       if: always()
