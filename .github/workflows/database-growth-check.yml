@@ -57,13 +57,21 @@ jobs:
         psql -h localhost -U freshplan -d freshplan -v ON_ERROR_STOP=1 -c "DROP SCHEMA IF EXISTS public CASCADE; CREATE SCHEMA public;"
         echo "Database schema reset successfully"
     
+    - name: Bootstrap migrations (CI profile)
+      working-directory: backend
+      env:
+        QUARKUS_PROFILE: ci
+      run: |
+        echo "Running migration bootstrap to ensure schema is ready..."
+        ./mvnw -q -Dtest=MigrationBootstrapIT test
+        echo "✅ Migrations completed successfully"
+    
     - name: Count customers BEFORE tests
       env:
         PGPASSWORD: freshplan
       run: |
-        # Initialize schema first with Quarkus (includes Flyway)
-        cd backend && ./mvnw compile -Dquarkus.profile=ci -DskipTests -q
-        BEFORE=$(psql -h localhost -U freshplan -d freshplan -tAc "SELECT COUNT(*) FROM customers;" 2>/dev/null || echo "0")
+        # Now count after migrations are complete
+        BEFORE=$(psql -h localhost -U freshplan -d freshplan -tAc "SELECT COUNT(*) FROM customers;")
         echo "CUSTOMERS_BEFORE=$BEFORE" >> $GITHUB_ENV
         echo "Customers before tests: $BEFORE"
     
@@ -78,6 +86,7 @@ jobs:
         
         ./mvnw test \
           -B \
+          -T 1C \
           -Djunit.jupiter.execution.timeout.default=2m \
           -Dmaven.test.failure.ignore=false \
           -DtrimStackTrace=false \
@@ -89,7 +98,7 @@ jobs:
       env:
         PGPASSWORD: freshplan
       run: |
-        AFTER=$(psql -h localhost -U freshplan -d freshplan -tAc "SELECT COUNT(*) FROM customers;" 2>/dev/null || echo "0")
+        AFTER=$(psql -h localhost -U freshplan -d freshplan -tAc "SELECT COUNT(*) FROM customers;")
         echo "Customers after tests: $AFTER"
         echo "Customers before tests: ${CUSTOMERS_BEFORE:-0}"
         DELTA=$((AFTER - ${CUSTOMERS_BEFORE:-0}))
