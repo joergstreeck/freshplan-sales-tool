@@ -323,7 +323,7 @@ class CustomerQueryServiceIntegrationTest {
   void createAdditionalTestCustomers(int count) {
     for (int i = 1; i <= count; i++) {
       Customer customer = new Customer();
-      customer.setCustomerNumber(String.format("KD-2025-%05d", i + 1));
+      customer.setCustomerNumber(de.freshplan.testsupport.UniqueData.customerNumber("KD", i + 1));
       customer.setCompanyName("Test Company " + i);
       customer.setLegalForm("GmbH");
       customer.setStatus(CustomerStatus.AKTIV);
@@ -333,6 +333,7 @@ class CustomerQueryServiceIntegrationTest {
       customer.setCreatedBy("test-user");
       customer.setUpdatedBy("test-user");
       customer.setIsDeleted(false);
+      customer.setIsTestData(true);
       customerRepository.persist(customer);
     }
     customerRepository.flush();
@@ -341,7 +342,8 @@ class CustomerQueryServiceIntegrationTest {
   @TestTransaction
   void createCustomerWithStatus(CustomerStatus status, String name) {
     Customer customer = new Customer();
-    customer.setCustomerNumber("KD-2025-" + UUID.randomUUID().toString().substring(0, 5));
+    customer.setCustomerNumber(de.freshplan.testsupport.UniqueData.customerNumber("KD", 
+        (int)(Math.random() * 10000)));
     customer.setCompanyName(name);
     customer.setLegalForm("GmbH");
     customer.setStatus(status);
@@ -351,6 +353,7 @@ class CustomerQueryServiceIntegrationTest {
     customer.setCreatedBy("test-user");
     customer.setUpdatedBy("test-user");
     customer.setIsDeleted(false);
+    customer.setIsTestData(true);
     customerRepository.persist(customer);
     customerRepository.flush();
   }
@@ -358,7 +361,7 @@ class CustomerQueryServiceIntegrationTest {
   @TestTransaction
   void createCustomerWithIndustry(Industry industry, String name) {
     Customer customer = new Customer();
-    customer.setCustomerNumber("KD-2025-" + UUID.randomUUID().toString().substring(0, 5));
+    customer.setCustomerNumber(de.freshplan.testsupport.UniqueData.customerNumber("KD", (int)(Math.random() * 10000)));
     customer.setCompanyName(name);
     customer.setLegalForm("GmbH");
     customer.setStatus(CustomerStatus.AKTIV);
@@ -368,6 +371,7 @@ class CustomerQueryServiceIntegrationTest {
     customer.setCreatedBy("test-user");
     customer.setUpdatedBy("test-user");
     customer.setIsDeleted(false);
+    customer.setIsTestData(true);
     customerRepository.persist(customer);
     customerRepository.flush();
   }
@@ -375,7 +379,7 @@ class CustomerQueryServiceIntegrationTest {
   @TestTransaction
   void createCustomerWithRiskScore(int riskScore, String name) {
     Customer customer = new Customer();
-    customer.setCustomerNumber("KD-2025-" + UUID.randomUUID().toString().substring(0, 5));
+    customer.setCustomerNumber(de.freshplan.testsupport.UniqueData.customerNumber("KD", (int)(Math.random() * 10000)));
     customer.setCompanyName(name);
     customer.setLegalForm("GmbH");
     customer.setStatus(CustomerStatus.AKTIV);
@@ -385,6 +389,7 @@ class CustomerQueryServiceIntegrationTest {
     customer.setCreatedBy("test-user");
     customer.setUpdatedBy("test-user");
     customer.setIsDeleted(false);
+    customer.setIsTestData(true);
     customerRepository.persist(customer);
     customerRepository.flush();
   }
@@ -392,7 +397,7 @@ class CustomerQueryServiceIntegrationTest {
   @TestTransaction
   void createCustomerWithLastContact(LocalDateTime lastContact, String name) {
     Customer customer = new Customer();
-    customer.setCustomerNumber("KD-2025-" + UUID.randomUUID().toString().substring(0, 5));
+    customer.setCustomerNumber(de.freshplan.testsupport.UniqueData.customerNumber("KD", (int)(Math.random() * 10000)));
     customer.setCompanyName(name);
     customer.setLegalForm("GmbH");
     customer.setStatus(CustomerStatus.AKTIV);
@@ -404,6 +409,7 @@ class CustomerQueryServiceIntegrationTest {
     customer.setCreatedBy("test-user");
     customer.setUpdatedBy("test-user");
     customer.setIsDeleted(false);
+    customer.setIsTestData(true);
     customerRepository.persist(customer);
     customerRepository.flush();
   }
@@ -411,7 +417,7 @@ class CustomerQueryServiceIntegrationTest {
   @TestTransaction
   void createCustomerWithName(String name) {
     Customer customer = new Customer();
-    customer.setCustomerNumber("KD-2025-" + UUID.randomUUID().toString().substring(0, 5));
+    customer.setCustomerNumber(de.freshplan.testsupport.UniqueData.customerNumber("KD", (int)(Math.random() * 10000)));
     customer.setCompanyName(name);
     customer.setLegalForm("GmbH");
     customer.setStatus(CustomerStatus.AKTIV);
@@ -421,6 +427,7 @@ class CustomerQueryServiceIntegrationTest {
     customer.setCreatedBy("test-user");
     customer.setUpdatedBy("test-user");
     customer.setIsDeleted(false);
+    customer.setIsTestData(true);
     customerRepository.persist(customer);
     customerRepository.flush();
   }
@@ -428,7 +435,7 @@ class CustomerQueryServiceIntegrationTest {
   @TestTransaction
   void createCustomerWithLifecycleStage(CustomerLifecycleStage stage, String name) {
     Customer customer = new Customer();
-    customer.setCustomerNumber("KD-2025-" + UUID.randomUUID().toString().substring(0, 5));
+    customer.setCustomerNumber(de.freshplan.testsupport.UniqueData.customerNumber("KD", (int)(Math.random() * 10000)));
     customer.setCompanyName(name);
     customer.setLegalForm("GmbH");
     customer.setStatus(CustomerStatus.AKTIV);
@@ -438,6 +445,7 @@ class CustomerQueryServiceIntegrationTest {
     customer.setCreatedBy("test-user");
     customer.setUpdatedBy("test-user");
     customer.setIsDeleted(false);
+    customer.setIsTestData(true);
     customerRepository.persist(customer);
     customerRepository.flush();
   }

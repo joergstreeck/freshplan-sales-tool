@@ -477,8 +477,10 @@ public class OpportunityRepositoryTest {
 
     var customer = new Customer();
     customer.setCompanyName(companyName);
-    customer.setCustomerNumber("TEST-" + System.currentTimeMillis());
+    customer.setCustomerNumber(de.freshplan.testsupport.UniqueData.customerNumber("TEST", 
+        (int)(Math.random() * 1000)));
     customer.setCreatedBy("testuser");
+    customer.setIsTestData(true);
     // Customer email field not available
     customerRepository.persist(customer);
     return customer;
@@ -543,7 +545,8 @@ public class OpportunityRepositoryTest {
     opportunity.setStage(stage);
     opportunity.setAssignedTo(assignedTo);
     opportunity.setCustomer(testCustomer1);
-    opportunity.setExpectedValue(expectedValue);
+    // Ensure positive value to avoid constraint violations
+    opportunity.setExpectedValue(expectedValue != null ? expectedValue.abs() : BigDecimal.ZERO);
     opportunity.setProbability(probability);
     opportunityRepository.persist(opportunity);
     return opportunity;
