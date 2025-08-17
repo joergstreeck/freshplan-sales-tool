@@ -10,6 +10,7 @@ import jakarta.inject.Inject;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
+import de.freshplan.test.builders.CustomerBuilder;
 
 /**
  * Unit tests for ContactRepository. Tests multi-contact support, primary contact handling, and
@@ -21,24 +22,18 @@ class ContactRepositoryTest {
   @Inject ContactRepository contactRepository;
 
   @Inject CustomerRepository customerRepository;
+  
+  @Inject CustomerBuilder customerBuilder;
 
   private Customer createTestCustomer() {
-    // Create test customer with all required Sprint 2 fields
-    Customer customer = new Customer();
-    customer.setCustomerNumber("TEST-" + System.currentTimeMillis());
-    customer.setCompanyName("Test Company GmbH");
-    customer.setCreatedBy("test");
-    customer.setUpdatedBy("test");
-    // Sprint 2 required fields
-    customer.setLocationsGermany(1);
-    customer.setLocationsAustria(0);
-    customer.setLocationsSwitzerland(0);
-    customer.setLocationsRestEU(0);
-    customer.setTotalLocationsEU(1);
-    customer.setPainPoints(new java.util.ArrayList<>());
-    customer.setPrimaryFinancing(de.freshplan.domain.customer.entity.FinancingType.PRIVATE);
-    customerRepository.persist(customer);
-    customerRepository.flush(); // Ensure customer is persisted before contacts
+    // Create test customer with all required Sprint 2 fields using CustomerBuilder
+    // Der Builder setzt automatisch alle required fields inkl. Sprint 2 Felder
+    Customer customer = customerBuilder
+        .withCompanyName("Test Company GmbH")
+        .withLocationsGermany(1)
+        .withLocationsAustria(0)
+        .withLocationsSwitzerland(0)
+        .persist(); // persist() für Integration-Test mit @TestTransaction
     return customer;
   }
 

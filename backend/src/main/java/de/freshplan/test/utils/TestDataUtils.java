@@ -16,19 +16,22 @@ public class TestDataUtils {
     
     /**
      * Generates a unique ID for test data.
-     * Format: {timestamp}-{counter}-{threadId}
+     * Format: {shortTimestamp}-{counter}
      * 
      * This ensures uniqueness across:
-     * - Time (millisecond precision)
-     * - Sequential counter
-     * - Thread (for parallel test execution)
+     * - Time (last 6 digits of timestamp)
+     * - Sequential counter (modulo 10000)
+     * 
+     * Maximum length: 6 + 1 + 4 = 11 characters
+     * With "TEST-" prefix: 16 characters (fits in varchar(20))
      * 
      * @return a unique identifier string
      */
     public static String uniqueId() {
-        return System.currentTimeMillis() + "-" + 
-               COUNTER.incrementAndGet() + "-" +
-               Thread.currentThread().getId();
+        // Use last 6 digits of timestamp + counter (max 4 digits)
+        long timestamp = System.currentTimeMillis() % 1000000;
+        long counter = COUNTER.incrementAndGet() % 10000;
+        return timestamp + "-" + counter;
     }
     
     /**
