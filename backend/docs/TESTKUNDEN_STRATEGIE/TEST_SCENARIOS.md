@@ -8,7 +8,7 @@
 
 ## 📋 Test-Matrix
 
-| Szenario | V9995 | V9999 | V10000 | V10001 | Erwartetes Ergebnis |
+| Szenario | V10004 | V10005 | V10000 | V10001 | Erwartetes Ergebnis |
 |----------|-------|-------|---------|---------|---------------------|
 | **Szenario 1: CI Frischer Start** | ✓ | ✓ | ✓ | ✓ | 20 SEEDs, keine Warnings |
 | **Szenario 2: CI mit 150+ Test-Daten** | ✓ | ✓ | ✓ | ✓ | Cleanup ausgelöst, Warning |
@@ -30,8 +30,8 @@ SET ci.build = 'true';
 ```
 
 **Ablauf:**
-1. V9995 läuft → Nichts zu löschen
-2. V9999 läuft → 20 SEEDs erstellt
+1. V10004 läuft → Nichts zu löschen
+2. V10005 läuft → 20 SEEDs erstellt
 3. V10000 läuft → Threshold nicht erreicht (20 < 100)
 4. V10001 läuft → Alle Checks OK
 
@@ -62,8 +62,8 @@ SET ci.build = 'true';
 ```
 
 **Ablauf:**
-1. V9995 läuft → Keine spurious SEEDs
-2. V9999 läuft → 20 SEEDs hinzugefügt/aktualisiert
+1. V10004 läuft → Keine spurious SEEDs
+2. V10005 läuft → 20 SEEDs hinzugefügt/aktualisiert
 3. V10000 läuft → **CLEANUP TRIGGERED** (170 > 100)
 4. V10001 läuft → **WARNING**: High test data count
 
@@ -88,8 +88,8 @@ RESET ci.build;
 ```
 
 **Ablauf:**
-1. V9995 → **SKIP** (Guard blockiert)
-2. V9999 → **SKIP** (Guard blockiert)
+1. V10004 → **SKIP** (Guard blockiert)
+2. V10005 → **SKIP** (Guard blockiert)
 3. V10000 → **SKIP** (Guard blockiert)
 4. V10001 → **LÄUFT** (kein Guard, nur Monitoring)
 
@@ -118,8 +118,8 @@ SET ci.build = 'true';
 ```
 
 **Ablauf:**
-1. V9995 → Löscht SEED-021 (spurious)
-2. V9999 → **DO UPDATE** heilt SEED-001, SEED-002
+1. V10004 → Löscht SEED-021 (spurious)
+2. V10005 → **DO UPDATE** heilt SEED-001, SEED-002
 3. V10000 → Kein Cleanup nötig
 4. V10001 → Checks OK
 
@@ -203,12 +203,12 @@ psql -d freshplan_test -f validate_scenario_2.sql
 
 ## ✅ Acceptance Criteria
 
-### Für V9995:
+### Für V10004:
 - [ ] Löscht nur spurious SEEDs
 - [ ] Behält SEED-001 bis SEED-020
 - [ ] Läuft nur mit ci.build=true
 
-### Für V9999:
+### Für V10005:
 - [ ] Erstellt genau 20 SEEDs
 - [ ] DO UPDATE korrigiert falsche Daten
 - [ ] Idempotent (mehrfach ausführbar)

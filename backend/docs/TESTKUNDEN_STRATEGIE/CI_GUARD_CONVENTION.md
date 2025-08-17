@@ -30,32 +30,38 @@ END $$;
 
 ## 📋 Wo wird das Flag gesetzt?
 
-### 1. CI Pipeline (GitHub Actions)
+### ✅ **BEVORZUGTE METHODE: JDBC-URL options**
+
 ```yaml
+# 1. CI Pipeline (GitHub Actions) - EMPFOHLEN
 - name: Run tests
   run: |
     ./mvnw test \
       -Dquarkus.datasource.jdbc.url=jdbc:postgresql://localhost:5432/freshplan?options=-c%20ci.build%3Dtrue
 ```
 
-### 2. Test Environment (application-test.properties)
 ```properties
-# Setzt ci.build Flag für Test-Umgebung
+# 2. Test Environment (application-test.properties) - EMPFOHLEN
 quarkus.datasource.jdbc.url=jdbc:postgresql://localhost:5432/freshplan?options=-c%20ci.build%3Dtrue
+```
+
+### ⚠️ **ALTERNATIVE METHODE: init-sql (Fallback)**
+
+```properties
+# Nur verwenden, wenn JDBC-URL nicht möglich
 quarkus.flyway.init-sql=SET ci.build = 'true';
 ```
 
-### 3. Lokales Testing (manuell)
+### 🔧 **Lokales Testing (manuell)**
 ```bash
-# Option 1: Via JDBC URL
+# Option 1: Via JDBC URL (empfohlen)
 export DB_URL="jdbc:postgresql://localhost:5432/freshplan?options=-c%20ci.build%3Dtrue"
 
-# Option 2: Via psql
+# Option 2: Via psql (temporär)
 psql -d freshplan -c "SET ci.build = 'true';"
-
-# Option 3: Permanent für Datenbank
-ALTER DATABASE freshplan SET ci.build = 'true';
 ```
+
+**💡 Copy&Paste-Fehler vermeiden:** Nutze durchgängig JDBC-URL options als Standard!
 
 ---
 
@@ -65,10 +71,15 @@ ALTER DATABASE freshplan SET ci.build = 'true';
 |-----------|-------|--------------|
 | **V10000** | Zwei-Stufen-Cleanup | ✅ ci.build |
 | **V10001** | Contract Guard | ❌ Kein Guard (läuft immer für Monitoring) |
-| **V10002** | Unique Constraints | ❌ Kein Guard (strukturelle Migration) |
+| **V10002** | Unique Constraints | ⚠️ Teilweise (verhaltensgesteuert per ci.build) |
 | **V10003** | Dashboard View | ❌ Kein Guard (strukturelle Migration) |
-| **V10004** | Cleanup spurious SEEDs (ex-V9995) | ✅ ci.build |
-| **V10005** | Create 20 SEEDs (ex-V9999) | ✅ ci.build |
+| **V10004** | Cleanup spurious SEEDs | ✅ ci.build (nur in test/) |
+| **V10005** | Create 20 SEEDs | ✅ ci.build (nur in test/) |
+
+### Erklärung V10002:
+V10002 läuft immer, entscheidet aber per `ci.build` über den Verhaltenspfad:
+- **CI-Umgebung**: Cleanup von Test-Duplikaten
+- **Außerhalb CI**: Exception bei Duplikaten (Schutz für Production)
 
 ---
 

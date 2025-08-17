@@ -63,8 +63,8 @@ CHAOS-INVENTAR:
 │   ├── V10005__test_seed_data.sql (20 SEED)
 │   └── V10000__cleanup_test_data_in_ci.sql (CI-Cleanup)
 │
-└── 233 Test-Stellen
-    └── new Customer() überall verstreut
+└── 69 Test-Stellen (aktuell gemessen)
+    └── new Customer() in 37 Dateien verstreut
 ```
 
 ### 2.2 Abhängigkeiten
@@ -75,7 +75,7 @@ CHAOS-INVENTAR:
 | TestDataContactInitializer | Contact-Tests | MITTEL |
 | V10005 | E2E-Tests | HOCH |
 | V219/V220 | Keine (Feature-Branch) | NIEDRIG |
-| new Customer() | 233 Tests | SEHR HOCH |
+| new Customer() | 69 Tests (in 37 Dateien) | SEHR HOCH |
 
 ---
 
@@ -744,11 +744,19 @@ BEGIN
     -- 1. Contact Interactions → 2. Customer Contacts → 3. Timeline Events
     -- 4. Opportunities → 5. Audit Trail → 6. Customers
     
-    -- 6. Finally: Delete old test customers (keep recent ones and SEEDs)
-    DELETE FROM customers 
-    WHERE is_test_data = true
-      AND created_at < NOW() - INTERVAL '1 day'
-      AND customer_number NOT LIKE 'SEED-%';  -- Never delete SEED data
+    -- 6. Finally: Apply Two-Stage Cleanup Strategy
+    IF test_count > 100 THEN
+        -- HARD: Delete all test data (except SEEDs)
+        DELETE FROM customers 
+        WHERE is_test_data = true
+          AND customer_number NOT LIKE 'SEED-%';
+    ELSIF test_count > 50 THEN
+        -- SOFT: Delete only old test data (90 minutes window)
+        DELETE FROM customers 
+        WHERE is_test_data = true
+          AND created_at < NOW() - INTERVAL '90 minutes'
+          AND customer_number NOT LIKE 'SEED-%';
+    END IF;
     
     RAISE NOTICE 'V10000: Test data after cleanup: % records', test_count;
 END $$;
@@ -841,85 +849,234 @@ Part of test data cleanup initiative"
 
 ## 7. Phase 3: UMBAU 🔄
 **Dauer: 2-3 Tage**
+**Stand: 17.08.2025 - AKTUALISIERT nach Team-Feedback**
 
-### 7.1 Test-Migration Strategy (VORSICHT bei Mass-Refactoring!)
+### 7.1 NEUES 4-STUFIGES SICHERHEITSNETZ 🛡️
 
-#### A. Quick-Win Tests (Tag 1)
-Tests die bereits @TestTransaction haben:
-
+#### Stufe 1: Grep-Checks (sofort)
 ```bash
-# WICHTIG: Zwei unterschiedliche Replacements!
-# Für Unit-Tests (ohne DB):
-find src/test/java -path "*/unit/*" -name "*.java" -exec sed -i.bak \
-  's/new Customer()/testDataBuilder.customer().build()/g' {} \;
+# audit-testdata.sh - Ausführen vor jeder Migration
+#!/bin/bash
+# 1) Direkte Konstruktoren
+rg -n --no-heading -S 'new\s+Customer\s*\(\s*\)' src/test/java || true
 
-# Für Integration-Tests (mit DB):
-find src/test/java -path "*/integration/*" -name "*.java" -exec sed -i.bak \
-  's/new Customer()/testDataBuilder.customer().persist()/g' {} \;
+# 2) Direkte persist() außerhalb Builder
+rg -n --no-heading -S '\.persist\s*\(' src/test/java | \
+  grep -v 'TestDataBuilder\|CustomerBuilder' || true
 
-# Imports hinzufügen
-find src/test/java -name "*.java" -exec sed -i.bak \
-  '1s/^/import de.freshplan.test.TestDataBuilder;\n/' {} \;
+# 3) Hardcodierte Kundennummern
+rg -n --no-heading -S '"(CUST-|KD-|TEST-00|TEST-[0-9]{3})"' src/test/java || true
+
+# 4) Legacy TestFixtures
+rg -n --no-heading -S 'TestFixtures\.' src/test/java || true
+
+# Zielzustand: Alle 0 Treffer!
 ```
 
-#### B. Manuelle Migration (Tag 2-3)
-
-**Beispiel-Migration:**
-
+#### Stufe 2: ArchUnit-Regel
 ```java
-// ALT: Test mit Initializer-Abhängigkeit
-@Test
-void testWithExistingCustomer() {
-    // Erwartet dass TEST-001 existiert
-    Customer customer = customerRepository
-        .find("customerNumber", "TEST-001")
-        .firstResult();
-    
-    assertThat(customer).isNotNull();
-    // Test-Logik...
-}
-
-// NEU: Test mit TestDataBuilder
-@Test
-@TestTransaction  // Wichtig!
-void testWithExistingCustomer() {
-    // Erstelle eigenen Test-Kunden
-    Customer customer = testDataBuilder.customer()
-        .withCompanyName("My Test Customer")
-        .persist();
-    
-    assertThat(customer).isNotNull();
-    // Test-Logik...
+@AnalyzeClasses(packages = "de.freshplan")
+public class TestDataBuilderEnforcementTest {
+  @ArchTest
+  static final void noDirectCustomerConstruction(JavaClasses classes) {
+    ArchRuleDefinition.noClasses()
+      .that().haveSimpleNameEndingWith("Test")
+      .should().callConstructor(Customer.class)
+      .because("Tests müssen TestDataBuilder verwenden");
+  }
 }
 ```
 
-### 7.2 Systematische Test-Migration
+#### Stufe 3: Audit-Test (Runtime)
+```java
+@QuarkusTest
+class TestDataAuditIT {
+  @Test
+  void seedsPresentAndExactly20() {
+    // CI: Exakt 20 SEEDs
+    // Lokal: 20-40 (Toleranz für parallele Tests)
+    long seedCount = countSeeds();
+    if ("true".equals(System.getProperty("CI"))) {
+      assertThat(seedCount).isEqualTo(20L);
+    } else {
+      assertThat(seedCount).isBetween(20L, 40L);
+    }
+  }
+}
+```
 
-#### Schritt 1: Affected Tests identifizieren
+#### Stufe 4: CI-Guards
+```yaml
+# .github/workflows/backend-ci.yml
+- name: Test Data Audit
+  run: ./scripts/audit-testdata.sh
+  # Fail-fast bei Violations!
+```
+
+### 7.2 NEUE @TestTransaction-Strategie ✅
+
+| Test-Typ | Annotation | Builder-Methode | DB-Zugriff | Beispiel |
+|----------|------------|-----------------|------------|----------|
+| **Unit-Test** | KEINE | `.build()` | NEIN | MapperTest, Service mit Mocks |
+| **Integration-Test** | @TestTransaction | `.persist()` | JA | Repository, Service-Integration |
+| **E2E-Test** | KEINE | nutzt SEEDs | JA | REST-Endpoints, UI-Tests |
+
+### 7.3 Migration in 3 Risiko-Stufen
+
+#### Phase 3.1: Low-Risk Migration (Tag 1)
+**25 Tests MIT @TestTransaction - Batch-Migration möglich**
 
 ```bash
-# Liste der betroffenen Tests
-cat affected-tests.txt
-
-# Pro Test-Datei:
-for test in $(cat affected-tests.txt); do
-    echo "=== Migrating: $test ==="
-    
-    # 1. Backup
-    cp $test $test.backup
-    
-    # 2. Inject TestDataBuilder
-    # (manuell oder mit Script)
-    
-    # 3. Test ausführen
-    ./mvnw test -Dtest=$(basename $test .java)
-    
-    # 4. Bei Erfolg: Commit
-    if [ $? -eq 0 ]; then
-        git add $test
-        git commit -m "test: Migrate $(basename $test) to TestDataBuilder"
+# Automatisierte Migration für Tests mit Transaction
+for file in $(grep -l "@TestTransaction" src/test/java -r --include="*.java"); do
+    # Nur wenn file auch new Customer() enthält
+    if grep -q "new Customer()" "$file"; then
+        echo "Migrating: $file"
+        # Backup
+        cp "$file" "$file.backup"
+        # Replace
+        sed -i 's/new Customer()/testDataBuilder.customer().persist()/g' "$file"
+        # Add import if missing
+        if ! grep -q "import.*TestDataBuilder" "$file"; then
+            sed -i '1a\import de.freshplan.test.TestDataBuilder;' "$file"
+        fi
+        # Test immediately
+        TEST_CLASS=$(basename "$file" .java)
+        if ./mvnw test -Dtest="$TEST_CLASS"; then
+            echo "✅ $TEST_CLASS migrated successfully"
+        else
+            echo "❌ $TEST_CLASS failed - reverting"
+            mv "$file.backup" "$file"
+        fi
     fi
 done
+```
+
+#### Phase 3.2: Medium-Risk Migration (Tag 2)
+**20 Unit-Tests OHNE Transaction - Semi-automatisch**
+
+```java
+// Unit-Test Migration (OHNE DB)
+// ALT:
+@Test
+void testCustomerMapping() {
+    Customer customer = new Customer();
+    customer.setCompanyName("Test GmbH");
+    
+    CustomerResponse response = mapper.toResponse(customer);
+    assertThat(response.getCompanyName()).isEqualTo("Test GmbH");
+}
+
+// NEU:
+@Test
+void testCustomerMapping() {
+    // Nutze .build() für Unit-Tests (keine DB!)
+    Customer customer = testDataBuilder.customer()
+        .withCompanyName("Test GmbH")
+        .build();  // ← WICHTIG: build() nicht persist()!
+    
+    CustomerResponse response = mapper.toResponse(customer);
+    assertThat(response.getCompanyName()).isEqualTo("Test GmbH");
+}
+```
+
+#### Phase 3.3: High-Risk Migration (Tag 3)
+**5 kritische Dateien - Manuelle Migration**
+
+1. **CustomerMapperTest** (9 Vorkommen)
+   - Manuell prüfen und migrieren
+   - Kein @TestTransaction nötig (Unit-Test)
+   - Nutze `.build()` statt `.persist()`
+
+2. **TestFixtures als Facade**
+```java
+@Deprecated(since = "2.0", forRemoval = true)
+public class TestFixtures {
+    @Inject TestDataBuilder builder;
+    
+    // Alte API bleibt, delegiert zu Builder
+    public Customer createCustomer() {
+        return builder.customer().build();
+    }
+    
+    public Customer persistCustomer() {
+        return builder.customer().persist();
+    }
+}
+```
+
+3. **Helper-Klassen** anpassen
+4. **Performance-Tests** individuell prüfen
+5. **E2E-Tests** auf SEEDs umstellen
+
+### 7.4 AKTUELLE ZAHLEN (Stand: 17.08.2025)
+
+**Analyse-Ergebnis:**
+- **69 Vorkommen** von `new Customer()` (NICHT 233!)
+- **37 betroffene Dateien**
+- **Gute Nachricht:** Alle Repository-Tests haben bereits @TestTransaction!
+
+#### Verteilung nach Risiko:
+```
+Low-Risk (mit @TestTransaction):    25 Tests ✅
+Medium-Risk (Unit-Tests):           20 Tests ⚠️
+High-Risk (CustomerMapperTest etc): 5 Dateien ⚠️
+```
+
+### 7.5 Definition of Done für Phase 3
+
+```bash
+# Diese Checks MÜSSEN alle 0 ergeben:
+✅ rg -P 'new\s+Customer\b\s*\(' → 0 (außer TestDataBuilder selbst)
+✅ rg -P '\.persist\s*\(' ohne Builder → 0 Funde  
+✅ Hardcodierte Kundennummern → 0 Funde (außer SEEDs)
+✅ TestFixtures direkte Nutzung → 0 oder nur Delegation
+✅ ArchUnit-Regel → GRÜN
+✅ Audit-Test → GRÜN
+✅ CI-Pipeline → GRÜN
+✅ Database-Growth → nur is_test_data=true
+✅ Performance → >30% schneller
+✅ Akzeptanz-Check → Kein new Customer() außer TestDataBuilder-Whitelist
+✅ @TestTransaction → Alle Integration-Tests haben Annotation
+```
+
+### 7.7 Akzeptanz-Check für Vollständigkeit
+
+**Audit-Test (einmal pro CI-Run):**
+```java
+@Test
+void noUncontrolledCustomerCreation() {
+    // Kein new Customer() in Tests, außer in TestDataBuilder-Whitelist
+    // Alle Integration-Tests mit @TestTransaction
+    // Maschinell verifiziert via Grep/ArchUnit
+}
+```
+
+**Reduziert Blind Spots und hält Doku und Code dauerhaft deckungsgleich.**
+
+### 7.6 Migration-Scripts (NEU - Team-Approved)
+
+#### audit-testdata-v2.sh
+```bash
+#!/bin/bash
+# Präzise PCRE Patterns mit Word Boundaries
+# CI vs Local Unterscheidung
+# Verfügbar in: scripts/audit-testdata-v2.sh
+
+# Verwendung:
+./scripts/audit-testdata-v2.sh  # Local
+CI=true ./scripts/audit-testdata-v2.sh  # CI-Simulation
+```
+
+#### migrate-batch-lowrisk.sh
+```bash
+#!/bin/bash
+# Automatische Migration für Tests mit @TestTransaction
+# Verfügbar in: scripts/migrate-batch-lowrisk.sh
+
+# Verwendung:
+./scripts/migrate-batch-lowrisk.sh
+# Migriert automatisch und testet sofort
 ```
 
 #### Schritt 2: E2E Tests anpassen

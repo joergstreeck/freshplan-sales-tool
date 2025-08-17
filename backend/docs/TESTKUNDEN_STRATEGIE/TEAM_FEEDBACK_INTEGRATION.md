@@ -102,13 +102,13 @@ Nach Review durch externen Experten wurden folgende kritische Inkonsistenzen beh
 #### 1. **Guard-Signale vereinheitlicht** ✅
 - **Problem:** Uneinheitliche Guards (freshplan.environment vs. ci.build)
 - **Lösung:** Alle Migrationen nutzen jetzt konsistent `ci.build`
-- **Umgesetzt in:** V9995, V9999, V10000, V10001
+- **Umgesetzt in:** V10004, V10005, V10000, V10001
 
 #### 2. **Separation of Concerns bei Migrationen** ✅
-- **Problem:** V9995 sollte Cleanup UND Seeds machen (Vermischung)
+- **Problem:** V10004 sollte Cleanup UND Seeds machen (Vermischung)
 - **Lösung:** 
-  - V9995: NUR Cleanup von spurious test data
-  - V9999: NUR Seeds (20 SEED Kunden)
+  - V10004: NUR Cleanup von spurious test data
+  - V10005: NUR Seeds (20 SEED Kunden)
 - **Vorteil:** Klare Verantwortlichkeiten, keine Überschneidungen
 
 #### 3. **DO UPDATE statt DO NOTHING** ✅
@@ -118,7 +118,7 @@ Nach Review durch externen Experten wurden folgende kritische Inkonsistenzen beh
 
 #### 4. **pgcrypto Extension gesichert** ✅
 - **Problem:** gen_random_uuid() Dependency nicht überall gesichert
-- **Lösung:** CREATE EXTENSION IF NOT EXISTS pgcrypto in V9999
+- **Lösung:** CREATE EXTENSION IF NOT EXISTS pgcrypto in V10005
 - **Resultat:** Keine fehlenden UUID-Funktionen mehr
 
 #### 5. **CI-Flag korrekt gesetzt** ✅

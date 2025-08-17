@@ -1,12 +1,20 @@
 # 🎯 FINALE MIGRATION-STRATEGIE - Test Data Management
 ## Die optimierte Lösung nach detaillierter Analyse
 
-**Version:** 1.0  
+**Version:** 2.0  
 **Status:** IMPLEMENTATION COMPLETE ✅  
 **Datum:** 17.08.2025  
-**Autor:** Claude & Jörg (nach Sicherheitsanalyse)
+**Autor:** Claude & Jörg (nach Sicherheitsanalyse + Audit-Feedback)
 
 ---
+
+## 📋 **MIGRATION MAPPING (Alt → Neu):**
+```
+V10004 → V10004 (test/resources/db/migration/)
+V10005 → V10005 (test/resources/db/migration/) 
+V10000 → V10000 (main/resources/db/migration/)
+V10001 → V10001 (main/resources/db/migration/)
+```
 
 ## 📊 Executive Summary
 
@@ -14,18 +22,18 @@ Nach detaillierter Analyse und unter der Devise **"Sicherheit geht vor Schnellig
 
 ### Die 4 Säulen der finalen Strategie:
 
-| Migration | Zweck | Sicherheit | Auswirkung |
-|-----------|-------|------------|------------|
-| **V9995** | Cleanup spurious SEEDs | Guard: ci.build | Minimal |
-| **V9999** | Create 20 SEEDs | Guard: ci.build, DO UPDATE | Idempotent |
-| **V10000** | Threshold Cleanup | Guard: ci.build, Threshold 100 | Conditional |
-| **V10001** | Contract Monitoring | Warnings only | Non-blocking |
+| Migration | Zweck | Location | Sicherheit | Auswirkung |
+|-----------|-------|----------|------------|------------|
+| **V10004** | Cleanup spurious SEEDs | test/ | Guard: ci.build | Minimal |
+| **V10005** | Create 20 SEEDs | test/ | Guard: ci.build, DO UPDATE | Idempotent |
+| **V10000** | Threshold Cleanup | main/ | Guard: ci.build, Threshold 100 | Conditional |
+| **V10001** | Contract Monitoring | main/ | Warnings only | Non-blocking |
 
 ---
 
 ## 🔒 Sicherheits-Features
 
-### 1. V9995 - Spurious SEED Cleanup
+### 1. V10004 - Spurious SEED Cleanup
 ```sql
 -- NUR löscht SEED-Daten die nicht in der kanonischen Liste sind
 -- Sehr fokussiert, minimales Risiko
@@ -35,7 +43,7 @@ WHERE is_test_data = true
   AND customer_number NOT IN ('SEED-001'...'SEED-020');
 ```
 
-### 2. V9999 - Idempotente SEED-Erstellung
+### 2. V10005 - Idempotente SEED-Erstellung
 ```sql
 -- DO UPDATE heilt falsch markierte Altbestände
 ON CONFLICT (customer_number) DO UPDATE
@@ -55,9 +63,9 @@ IF test_count <= threshold THEN
     RETURN;  -- Kein Cleanup nötig
 END IF;
 
--- 2. Zeitbasiert (nur alte Daten)
+-- 2. Zeitbasiert (nur alte Daten) - 90 Minuten Fenster!
 WHERE is_test_data = true
-  AND created_at < NOW() - INTERVAL '1 day'
+  AND created_at < NOW() - INTERVAL '90 minutes'
   
 -- 3. SEED-Schutz
   AND customer_number NOT LIKE 'SEED-%';
@@ -79,8 +87,8 @@ END IF;
 
 ```
 Development/Test Environment:
-├── 1. V9995 läuft → Cleanup spurious SEEDs
-├── 2. V9999 läuft → Create/Update 20 SEEDs
+├── 1. V10004 läuft → Cleanup spurious SEEDs
+├── 2. V10005 läuft → Create/Update 20 SEEDs
 ├── 3. Tests laufen → Erstellen dynamische Test-Daten
 ├── 4. V10001 läuft → Monitoring & Warnings
 └── 5. V10000 läuft → NUR wenn > 100 Test-Daten
@@ -127,8 +135,8 @@ Die implementierte Lösung weicht bewusst von der ursprünglichen Planung ab:
 
 ## 📋 Checkliste für Production
 
-- [x] V9995 implementiert und getestet
-- [x] V9999 mit DO UPDATE implementiert
+- [x] V10004 implementiert und getestet
+- [x] V10005 mit DO UPDATE implementiert
 - [x] V10000 mit Threshold-Logik neu geschrieben
 - [x] V10001 als Warning-Migration erstellt
 - [x] ci.build Flag in application-test.properties
@@ -143,18 +151,19 @@ Die implementierte Lösung weicht bewusst von der ursprünglichen Planung ab:
 
 Falls Probleme auftreten:
 
-```sql
--- 1. Deaktiviere problematische Migration
-UPDATE flyway_schema_history 
-SET success = false 
-WHERE version IN ('10000', '10001');
-
--- 2. Repair Flyway
+```bash
+# 1. Flyway Repair für Checksums/Failed Entries (EMPFOHLEN)
 ./mvnw flyway:repair
 
--- 3. Rollback zu stabilem Stand
+# 2. Oder saubere vorwärtsgerichtete Korrektur-Migration
+# V10006__rollback_cleanup.sql mit entsprechender Logik
+
+# 3. Bei gravierenden Problemen: Code-Rollback
 git checkout <stable-commit>
 ```
+
+**⚠️ NICHT empfohlen:** Manuelle Manipulation der `flyway_schema_history` Tabelle.
+Nutze stattdessen `flyway:repair` oder vorwärtsgerichtete Korrektur-Migrationen.
 
 ---
 

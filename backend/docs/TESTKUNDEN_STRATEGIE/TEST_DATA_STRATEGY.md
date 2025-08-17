@@ -150,7 +150,7 @@ Ein System, eine Wahrheit, keine Magie
 Chaos-Zustand:
 ├── 6 verschiedene Initializers
 ├── 4 Test-Migrationen
-├── 233 Stellen die Daten erstellen
+├── 69 Stellen die Daten erstellen
 └── Niemand weiß, woher welche Daten kommen
 ```
 
@@ -1212,21 +1212,73 @@ END IF;
 
 ### 12.1 Fortschritt
 
-**Stand: 17.08.2025**
+**Stand: 17.08.2025 - AKTUALISIERT nach Team-Feedback**
 
 | Phase | Status | Details |
 |-------|--------|---------|
 | **Phase 0: Vorbereitung** | ✅ Abgeschlossen | Alle Migrationen V10000-V10005 implementiert |
 | **Phase 1: Abriss** | ✅ Abgeschlossen | Alte Initializers entfernt |
 | **Phase 2: Neubau** | ✅ Abgeschlossen | TestDataBuilder vollständig implementiert |
-| **Phase 3: Umbau** | 🔄 In Arbeit | 233 Tests müssen migriert werden |
+| **Phase 3: Umbau** | 🔄 In Arbeit | **69 Tests** (nicht 233!) müssen migriert werden |
 | **Phase 4: Validierung** | ⏳ Ausstehend | CI-Pipeline, Performance-Tests |
 
-### 12.2 Nächste Schritte
+### 12.2 NEUES 4-Stufiges Sicherheitsnetz (Team-Approved) ✅
 
-1. **Aktuelle Aufgabe:** Tests von `new Customer()` zu `testDataBuilder.customer()` migrieren
-2. **Betroffene Tests:** ~233 Stellen im Code
-3. **Priorität:** Integration-Tests zuerst, dann Unit-Tests
+1. **Grep-Checks** ✅ - `audit-testdata.sh` erstellt
+2. **ArchUnit-Regel** ⏳ - Verhindert `new Customer()` in Tests
+3. **Audit-Test** ⏳ - TestDataAuditIT für Runtime-Checks
+4. **CI-Guards** ⏳ - Fail-fast bei Violations
+
+### 12.3 Neue @TestTransaction-Strategie ✅
+
+| Test-Typ | Annotation | Builder-Methode | DB-Zugriff |
+|----------|------------|-----------------|------------|
+| **Unit-Test** | KEINE | `.build()` | ❌ |
+| **Integration-Test** | @TestTransaction | `.persist()` | ✅ |
+| **E2E-Test** | KEINE | nutzt SEEDs | ✅ |
+
+### 12.4 Aktuelle Zahlen (17.08.2025)
+
+- **69 Vorkommen** von `new Customer()` (nicht 233!)
+- **37 betroffene Dateien**
+- **Verteilung:**
+  - Low-Risk (mit @TestTransaction): 25 Tests ✅
+  - Medium-Risk (Unit-Tests): 20 Tests ⚠️
+  - High-Risk (CustomerMapperTest etc): 5 Dateien ⚠️
+
+### 12.5 Nächste Schritte
+
+1. **Heute:** Pilot-Test mit ContactCommandServiceTest
+2. **Montag:** Phase 3.1 - Low-Risk Batch-Migration (25 Tests)
+3. **Dienstag:** Phase 3.2 - Medium-Risk Migration (20 Tests)
+4. **Mittwoch:** Phase 3.3 - High-Risk manuelle Migration (5 Dateien)
+
+### 12.6 Team-Feedback Integration (17.08.2025)
+
+#### ✅ Team-Entscheidungen:
+- **Migration:** Pilot → Batch → Manuell (nicht alles auf einmal)
+- **Sicherheitsnetz:** 4-stufig implementiert
+- **@TestTransaction:** Unit=build(), Integration=persist()
+- **TestFixtures:** Facade-Pattern für Übergang
+- **SEED-Count:** CI=20 (strikt), Local=20-40 (tolerant)
+
+#### 📄 Neue Dokumente:
+- `PHASE3_IMPLEMENTATION_GUIDE.md` - Schritt-für-Schritt Anleitung
+- `scripts/audit-testdata-v2.sh` - Verbesserter Audit mit PCRE
+- `scripts/migrate-batch-lowrisk.sh` - Automatische Batch-Migration
+
+#### 🔧 Verbesserte Patterns:
+```bash
+# Präziser mit Word Boundary
+rg -P 'new\s+Customer\b\s*\('  # Verhindert CustomerBuilder Match
+
+# CI vs Local
+if [ "$CI" = "true" ]; then
+    assertThat(seedCount).isEqualTo(20L);  # Strikt
+else
+    assertThat(seedCount).isBetween(20L, 40L);  # Tolerant
+fi
+```
 
 ---
 

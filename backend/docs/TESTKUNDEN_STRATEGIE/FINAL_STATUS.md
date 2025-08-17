@@ -16,7 +16,7 @@ Die Test-Daten-Migration ist vollständig implementiert und produktionsreif. All
 ### Die wichtigsten Erfolge:
 
 1. **✅ Migrations-Reihenfolge korrigiert** 
-   - ALT: V9995, V9999 würden VOR V10002/V10003 laufen (FEHLER!)
+   - ALT: V10004, V10005 würden VOR V10002/V10003 laufen (FEHLER!)
    - NEU: V10004, V10005 laufen NACH V10002/V10003 (KORREKT!)
 
 2. **✅ Zwei-Stufen-Cleanup implementiert**
@@ -46,10 +46,10 @@ Die Test-Daten-Migration ist vollständig implementiert und produktionsreif. All
 | **V10001** | main/ | test_data_contract_guard | Warning-basiertes Monitoring | Kein Guard | ✅ |
 | **V10002** | main/ | ensure_unique_constraints | Grundlagen (Constraints, is_test_data, adaptiv) | Teilweise | ✅ |
 | **V10003** | main/ | test_data_dashboard | Monitoring View & Functions | Kein Guard | ✅ |
-| **V10004** | test/ | cleanup_test_seed | Spurious SEEDs löschen (ex-V9995) | ci.build | ✅ |
-| **V10005** | test/ | test_seed_data | 20 SEED-Kunden erstellen (ex-V9999) | ci.build | ✅ |
+| **V10004** | test/ | cleanup_test_seed | Spurious SEEDs löschen (ex-V10004) | ci.build | ✅ |
+| **V10005** | test/ | test_seed_data | 20 SEED-Kunden erstellen (ex-V10005) | ci.build | ✅ |
 
-**✅ GELÖST:** V10004 und V10005 (vorher V9995/V9999) laufen jetzt NACH den Grundlagen-Migrationen!
+**✅ GELÖST:** V10004 und V10005 (vorher V10004/V10005) laufen jetzt NACH den Grundlagen-Migrationen!
 
 ---
 
@@ -179,7 +179,7 @@ SELECT test_data_summary();
 
 ### Alle kritischen Punkte behoben:
 
-- [x] **Migrations-Reihenfolge:** V9995→V10004, V9999→V10005 umbenannt
+- [x] **Migrations-Reihenfolge:** V10004→V10004, V10005→V10005 umbenannt
 - [x] **Zwei-Stufen-Cleanup:** HARD/SOFT/NONE Modi implementiert
 - [x] **Duplikate-Sicherheit:** Nur Test-Daten in CI, Exception außerhalb
 - [x] **Adaptive Spalten:** code vs permission_code automatisch erkannt
@@ -242,7 +242,7 @@ SELECT test_data_summary();
 
 **✅ ALLE KRITISCHEN PUNKTE BEHOBEN:**
 
-1. **Migrations-Reihenfolge:** V9995→V10004, V9999→V10005 - läuft jetzt korrekt!
+1. **Migrations-Reihenfolge:** V10004→V10004, V10005→V10005 - läuft jetzt korrekt!
 2. **Zwei-Stufen-Cleanup:** Intelligente Schwellwerte verhindern Daten-Explosion
 3. **Duplikate-Sicherheit:** In CI nur Test-Daten, sonst Exception
 4. **Adaptive Implementierung:** Funktioniert mit verschiedenen Schema-Varianten
