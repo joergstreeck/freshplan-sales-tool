@@ -15,12 +15,12 @@ import de.freshplan.domain.customer.service.dto.DataQualityMetricsDTO;
 import de.freshplan.domain.customer.service.dto.WarmthScoreDTO;
 import io.quarkus.panache.common.Page;
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.TestTransaction;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -42,14 +42,7 @@ class ContactInteractionServiceIT {
   private UUID testContactId;
   private CustomerContact testContact;
 
-  @BeforeEach
-  @Transactional
-  void setUp() {
-    // Clean slate for each test
-    interactionRepository.deleteAll();
-    contactRepository.deleteAll();
-    customerRepository.deleteAll();
-
+  private void setupTestData() {
     // Create test customer using CustomerBuilder
     Customer testCustomer = customerBuilder
         .withCompanyName("Test Company GmbH")
@@ -84,9 +77,11 @@ class ContactInteractionServiceIT {
   }
 
   @Test
+  @TestTransaction
   @DisplayName("Should create interaction and update contact intelligence data")
-  @Transactional
   void shouldCreateInteractionAndUpdateContact() {
+    // Setup test data
+    setupTestData();
     // Arrange
     ContactInteractionDTO dto =
         ContactInteractionDTO.builder()
@@ -118,9 +113,11 @@ class ContactInteractionServiceIT {
   }
 
   @Test
+  @TestTransaction
   @DisplayName("Should calculate warmth score with multiple interaction factors")
-  @Transactional
   void shouldCalculateWarmthScoreWithMultipleFactors() {
+    // Setup test data
+    setupTestData();
     // Arrange - Create diverse interactions
     createInteraction(InteractionType.EMAIL, 0.9, 90, -5); // Recent, positive
     createInteraction(InteractionType.EMAIL, 0.8, 85, -10); // Recent response
@@ -145,9 +142,11 @@ class ContactInteractionServiceIT {
   }
 
   @Test
+  @TestTransaction
   @DisplayName("Should handle low data scenario with appropriate confidence")
-  @Transactional
   void shouldHandleLowDataScenario() {
+    // Setup test data
+    setupTestData();
     // Arrange - Only one interaction
     createInteraction(InteractionType.NOTE, 0.5, 60, -1);
 
@@ -172,8 +171,11 @@ class ContactInteractionServiceIT {
   }
 
   @Test
+  @TestTransaction
   @DisplayName("Should calculate data quality metrics accurately")
   void shouldCalculateDataQualityMetricsAccurately() {
+    // Setup test data
+    setupTestData();
     // Arrange - Create additional contacts and interactions
     CustomerContact contact2 = createAdditionalContact("Anna", "Schmidt");
     CustomerContact contact3 = createAdditionalContact("Peter", "Müller");
@@ -214,9 +216,11 @@ class ContactInteractionServiceIT {
   }
 
   @Test
+  @TestTransaction
   @DisplayName("Should track data freshness categories correctly")
-  @Transactional
   void shouldTrackDataFreshnessCorrectly() {
+    // Setup test data
+    setupTestData();
     // NOTE: Due to @UpdateTimestamp on Contact.updatedAt, we cannot test aging categories in this
     // integration test
     // as Hibernate automatically overwrites updatedAt with current time. This test verifies the
@@ -266,9 +270,11 @@ class ContactInteractionServiceIT {
   }
 
   @Test
+  @TestTransaction
   @DisplayName("Should get interactions for contact chronologically")
-  @Transactional
   void shouldGetInteractionsChronologically() {
+    // Setup test data
+    setupTestData();
     // Arrange - Create interactions at different times
     LocalDateTime now = LocalDateTime.now();
     createInteractionAtTime(InteractionType.EMAIL, "First", now.minusDays(3));
@@ -292,9 +298,11 @@ class ContactInteractionServiceIT {
   }
 
   @Test
+  @TestTransaction
   @DisplayName("Should record different interaction types correctly")
-  @Transactional
   void shouldRecordDifferentInteractionTypes() {
+    // Setup test data
+    setupTestData();
     // Test note recording
     ContactInteractionDTO note =
         contactInteractionService.recordNote(testContactId, "Test note content", "test-user");
@@ -342,13 +350,11 @@ class ContactInteractionServiceIT {
   }
 
   // Helper methods
-  @Transactional
   protected void createInteraction(
       InteractionType type, double sentiment, int engagement, int daysAgo) {
     createInteractionForContact(testContactId, type, sentiment, engagement, daysAgo);
   }
 
-  @Transactional
   protected void createInteractionForContact(
       UUID contactId, InteractionType type, double sentiment, int engagement, int daysAgo) {
     CustomerContact contact = contactRepository.findById(contactId);
@@ -371,7 +377,6 @@ class ContactInteractionServiceIT {
     contactRepository.persist(contact);
   }
 
-  @Transactional
   protected void createInteractionAtTime(
       InteractionType type, String subject, LocalDateTime timestamp) {
     ContactInteraction interaction =
@@ -388,7 +393,6 @@ class ContactInteractionServiceIT {
     interactionRepository.persist(interaction);
   }
 
-  @Transactional
   protected CustomerContact createAdditionalContact(String firstName, String lastName) {
     Customer customer = customerRepository.findById(testCustomerId);
     CustomerContact contact = new CustomerContact();
@@ -396,6 +400,8 @@ class ContactInteractionServiceIT {
     contact.setLastName(lastName);
     contact.setEmail(firstName.toLowerCase() + "@company.com");
     contact.setCustomer(customer);
+    contact.setCreatedBy("test-user");
+    contact.setUpdatedBy("test-user");
     // Note: updatedAt is set automatically by @UpdateTimestamp
     contactRepository.persist(contact);
     return contact;

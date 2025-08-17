@@ -194,13 +194,13 @@ WARN [co.ar.at.arjuna] ARJUNA012095: Abort of action invoked while multiple thre
 | Priorität | Anzahl | Status |
 |-----------|--------|--------|
 | KRITISCH  | 1      | ✅ 1 behoben |
-| HOCH      | 5      | ✅ 1 gelöst, 🔧 3 Lösung verfügbar, ⏳ 1 offen |
+| HOCH      | 5      | ✅ 2 gelöst, 🔧 2 Lösung verfügbar, ⏳ 1 offen |
 | MITTEL    | 8      | 🔧 1 Lösung verfügbar, ⏳ 7 offen |
 | NIEDRIG   | 3      | ⏳ 3 offen |
 
 **Gesamt:** 17 Probleme gefunden
-- ✅ 2 vollständig gelöst
-- 🔧 4 mit verfügbarer Lösung (basierend auf Problem #2)
+- ✅ 3 vollständig gelöst (Problem #1, #2, #14)
+- 🔧 3 mit verfügbarer Lösung (Problem #8, #10, #17)
 - ⏳ 11 noch offen
 
 ---
@@ -410,9 +410,9 @@ Bei neuen Funden während der Migration hier ergänzen:
 
 ---
 
-### 14. ContactInteractionServiceIT - FK Constraint wegen Opportunities
+### 14. ContactInteractionServiceIT - FK Constraint wegen Opportunities ✅ GELÖST
 **Severity:** HOCH
-**Status:** ⏳ Offen → 🔧 Lösung verfügbar
+**Status:** ✅ Gelöst am 2025-08-17
 **Gefunden am:** 2025-08-17
 **Betroffene Komponente:** ContactInteractionServiceIT
 
@@ -428,8 +428,11 @@ Bei neuen Funden während der Migration hier ergänzen:
 - Datenlecks zwischen Tests
 - CI-Pipeline rot
 
-**Empfohlene Lösung (basierend auf Problem #2):**
-**BESTE LÖSUNG: setUp() komplett entfernen und @TestTransaction verwenden**
+**Implementierte Lösung:**
+- setUp() Method entfernt
+- @TestTransaction zu allen Test-Methoden hinzugefügt
+- setupTestData() Helper-Method erstellt, die in jedem Test aufgerufen wird
+- created_by/updated_by Felder in Helper-Methoden gesetzt
 
 ```java
 @QuarkusTest

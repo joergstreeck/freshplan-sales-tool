@@ -20,9 +20,14 @@ import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
+import de.freshplan.domain.customer.entity.ContactInteraction;
+import de.freshplan.domain.opportunity.repository.OpportunityRepository;
+import de.freshplan.domain.customer.repository.CustomerTimelineEventRepository;
+import jakarta.persistence.EntityManager;
 import java.time.LocalDateTime;
 import java.util.UUID;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -37,6 +42,12 @@ class ContactInteractionResourceIT {
   @Inject ContactInteractionRepository interactionRepository;
   
   @Inject CustomerBuilder customerBuilder;
+  
+  @Inject OpportunityRepository opportunityRepository;
+  
+  @Inject CustomerTimelineEventRepository timelineEventRepository;
+  
+  @Inject EntityManager entityManager;
 
   private UUID testCustomerId;
   private UUID testContactId;
@@ -64,11 +75,15 @@ class ContactInteractionResourceIT {
   @BeforeEach
   @Transactional
   void setUp() {
-    // Clean slate for each test
-    interactionRepository.deleteAll();
-    contactRepository.deleteAll();
-    customerRepository.deleteAll();
-
+    // Clean up using native SQL in correct dependency order
+    entityManager.createNativeQuery("DELETE FROM contact_interactions").executeUpdate();
+    entityManager.createNativeQuery("DELETE FROM customer_timeline_events").executeUpdate();
+    entityManager.createNativeQuery("DELETE FROM opportunity_activities").executeUpdate();
+    entityManager.createNativeQuery("DELETE FROM opportunities").executeUpdate();
+    entityManager.createNativeQuery("DELETE FROM customer_contacts").executeUpdate();
+    entityManager.createNativeQuery("DELETE FROM customers").executeUpdate();
+    entityManager.flush();
+    
     // Create test customer using CustomerBuilder
     Customer testCustomer = customerBuilder
         .withCompanyName("[TEST] Test Company GmbH")
@@ -94,6 +109,19 @@ class ContactInteractionResourceIT {
     testContact.setCustomer(testCustomer);
     contactRepository.persist(testContact);
     testContactId = testContact.getId();
+  }
+  
+  @AfterEach
+  @Transactional
+  void tearDown() {
+    // Clean up using native SQL in correct dependency order
+    entityManager.createNativeQuery("DELETE FROM contact_interactions").executeUpdate();
+    entityManager.createNativeQuery("DELETE FROM customer_timeline_events").executeUpdate();
+    entityManager.createNativeQuery("DELETE FROM opportunity_activities").executeUpdate();
+    entityManager.createNativeQuery("DELETE FROM opportunities").executeUpdate();
+    entityManager.createNativeQuery("DELETE FROM customer_contacts").executeUpdate();
+    entityManager.createNativeQuery("DELETE FROM customers").executeUpdate();
+    entityManager.flush();
   }
 
   @Test
