@@ -69,7 +69,7 @@ jobs:
           -Dquarkus.flyway.migrate-at-start=true \
           -Dquarkus.flyway.out-of-order=true \
           -Dquarkus.flyway.locations=classpath:db/migration,classpath:db/testdata,classpath:db/ci-migrations \
-          -Dquarkus.datasource.jdbc.url=jdbc:postgresql://localhost:5432/freshplan \
+          -Dquarkus.datasource.jdbc.url="jdbc:postgresql://localhost:5432/freshplan?options=-c%20ci.build%3Dtrue" \
           -Dquarkus.datasource.username=freshplan \
           -Dquarkus.datasource.password=freshplan
         echo "✅ Migrations completed successfully"
@@ -119,7 +119,7 @@ jobs:
           -Dquarkus.flyway.migrate-at-start=true \
           -Dquarkus.flyway.out-of-order=true \
           -Dquarkus.flyway.locations=classpath:db/migration,classpath:db/testdata,classpath:db/ci-migrations \
-          -Dquarkus.datasource.jdbc.url=jdbc:postgresql://localhost:5432/freshplan \
+          -Dquarkus.datasource.jdbc.url="jdbc:postgresql://localhost:5432/freshplan?options=-c%20ci.build%3Dtrue" \
           -Dquarkus.datasource.username=freshplan \
           -Dquarkus.datasource.password=freshplan
         

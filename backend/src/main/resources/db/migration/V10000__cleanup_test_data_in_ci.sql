@@ -6,7 +6,18 @@
 DO $$
 DECLARE
     customer_count INTEGER;
+    ci_mode BOOLEAN;
 BEGIN
+    -- Check if we are in CI mode
+    ci_mode := current_setting('ci.build', true) = 'true';
+    
+    IF NOT ci_mode THEN
+        RAISE NOTICE 'V10000: Skipping cleanup - not in CI mode (ci.build != true)';
+        RETURN;
+    END IF;
+    
+    RAISE NOTICE 'V10000: Running in CI mode - starting test data cleanup';
+    
     -- Check if we have any unmarked test data
     SELECT COUNT(*) INTO customer_count 
     FROM customers 

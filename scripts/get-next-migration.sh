@@ -6,6 +6,7 @@
 # Datum: 2025-08-07
 # Update: 2025-08-08 - Robuster gemacht, funktioniert aus jedem Verzeichnis
 # Update: 2025-08-09 - KRITISCH: Konsistente Berechnung sichergestellt
+# Update: 2025-08-17 - WICHTIG: Ignoriere V10000+ (Test-Cleanup, nicht für Production)
 
 set -e
 
@@ -60,8 +61,8 @@ fi
 echo -e "${BLUE}📁 Migration-Verzeichnis: ${NC}$MIGRATION_DIR"
 echo ""
 
-# Zeige die wirklich letzten 5 Migrationen (NUMERISCH sortiert)
-echo -e "${YELLOW}📋 Letzte 5 Migrationen (numerisch sortiert):${NC}"
+# Zeige die wirklich letzten 5 Produktions-Migrationen (NUMERISCH sortiert, < V10000)
+echo -e "${YELLOW}📋 Letzte 5 Produktions-Migrationen (< V10000):${NC}"
 
 # Erstelle temporäre Liste mit Nummer und Dateiname
 for file in "$MIGRATION_DIR"/V*.sql; do
@@ -71,7 +72,7 @@ for file in "$MIGRATION_DIR"/V*.sql; do
 done | while read -r filename; do
     # Extrahiere Nummer
     num=$(echo "$filename" | sed 's/^V//' | sed 's/__.*$//' | sed 's/_.*$//')
-    if [[ "$num" =~ ^[0-9]+$ ]]; then
+    if [[ "$num" =~ ^[0-9]+$ ]] && [ "$num" -lt 10000 ]; then
         echo "$num $filename"
     fi
 done | sort -n | tail -5 | while read -r num filename; do
@@ -94,17 +95,18 @@ if [ "$DEBUG" = "1" ]; then
 fi
 
 # Drei verschiedene Methoden zur Sicherheit
+# WICHTIG: Ignoriere Migrationen >= V10000 (nur für Test-Cleanup, gehen nicht in main)
 METHOD1=$(ls "$MIGRATION_DIR"/V*.sql 2>/dev/null | while read -r filepath; do
     basename "$filepath" | sed 's/^V//' | sed 's/__.*$//' | sed 's/_.*$//'
-done | grep -E '^[0-9]+$' | sort -n | tail -1)
+done | grep -E '^[0-9]+$' | awk '$1 < 10000' | sort -n | tail -1)
 
 METHOD2=$(find "$MIGRATION_DIR" -name "V*.sql" -type f 2>/dev/null | \
           sed 's/.*\/V//' | sed 's/[_].*$//' | \
-          grep -E '^[0-9]+$' | sort -n | tail -1)
+          grep -E '^[0-9]+$' | awk '$1 < 10000' | sort -n | tail -1)
 
 METHOD3=$(cd "$MIGRATION_DIR" 2>/dev/null && ls V*.sql 2>/dev/null | \
           sed 's/^V//' | cut -d'_' -f1 | \
-          grep -E '^[0-9]+$' | sort -n | tail -1)
+          grep -E '^[0-9]+$' | awk '$1 < 10000' | sort -n | tail -1)
 
 # Verwende Method1 als Standard
 HIGHEST="$METHOD1"
@@ -127,11 +129,12 @@ if [ -n "$METHOD1" ] && [ -n "$METHOD2" ] && [ "$METHOD1" != "$METHOD2" ]; then
 fi
 
 if [ -z "$HIGHEST" ]; then
-    echo -e "${YELLOW}⚠️  Keine Migrationen gefunden. Starte mit V1${NC}"
+    echo -e "${YELLOW}⚠️  Keine Produktions-Migrationen gefunden. Starte mit V1${NC}"
     NEXT=1
 else
     NEXT=$((HIGHEST + 1))
-    echo -e "${GREEN}✅ Höchste Migration: V${HIGHEST}${NC}"
+    echo -e "${GREEN}✅ Höchste Produktions-Migration: V${HIGHEST}${NC}"
+    echo -e "${BLUE}   (Migrationen >= V10000 werden ignoriert - nur für Test-Cleanup)${NC}"
     
     # Zeige auch die aktuelle höchste Migration-Datei
     HIGHEST_FILE=$(ls "$MIGRATION_DIR"/V${HIGHEST}*.sql 2>/dev/null | head -1 | sed 's/.*\///')
@@ -192,10 +195,10 @@ if [ "$DEBUG" = "1" ]; then
     echo "   Höchste gefundene Migration: V${HIGHEST:-0}"
     echo "   Nächste freie Migration: V${NEXT}"
     
-    # Double-Check mit alternativer Methode
+    # Double-Check mit alternativer Methode (ignoriere >= V10000)
     ALT_HIGHEST=$(find "$MIGRATION_DIR" -name "V*.sql" -type f 2>/dev/null | \
                    sed 's/.*\/V//' | sed 's/[_].*$//' | \
-                   grep -E '^[0-9]+$' | sort -n | tail -1)
+                   grep -E '^[0-9]+$' | awk '$1 < 10000' | sort -n | tail -1)
     if [ -n "$ALT_HIGHEST" ] && [ "$ALT_HIGHEST" != "$HIGHEST" ]; then
         echo -e "${RED}   ⚠️  WARNUNG: Alternative Methode ergab V${ALT_HIGHEST}${NC}"
     fi

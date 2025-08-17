@@ -12,8 +12,22 @@ DECLARE
   changed_cascade int := 0;
   changed_set_null int := 0;
   total_seen int := 0;
+  env_setting text;
 BEGIN
-  RAISE NOTICE 'CI FK Migration V9000 starting...';
+  -- GUARD: Only run in CI/Test environments!
+  env_setting := current_setting('freshplan.environment', true);
+  IF env_setting IS NOT NULL AND env_setting NOT IN ('ci', 'test') THEN
+    RAISE NOTICE 'V9000 skipped - only for CI/Test environments (current: %)', env_setting;
+    RETURN;
+  END IF;
+  
+  -- Alternative check: ci.build flag
+  IF current_setting('ci.build', true) != 'true' THEN
+    RAISE NOTICE 'V9000 skipped - ci.build is not true';
+    RETURN;
+  END IF;
+  
+  RAISE NOTICE 'CI FK Migration V9000 starting (environment: %, ci.build: true)...', COALESCE(env_setting, 'unknown');
 
   IF to_regclass('public.customers') IS NULL THEN
     RAISE NOTICE 'customers table missing -> skip CI FK migration';
