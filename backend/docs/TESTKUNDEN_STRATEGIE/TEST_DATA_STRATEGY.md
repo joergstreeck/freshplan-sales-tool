@@ -1,49 +1,143 @@
 # 🎯 TEST DATA STRATEGY - Die neue Testkunden-Architektur
 ## Produktbeschreibung & Referenzhandbuch
 
-**Version:** 4.0  
+**Version:** 5.0  
 **Status:** TEAM-APPROVED & PRODUCTION-READY  
 **Datum:** 17.08.2025  
 **Autor:** Claude & Jörg (Architektur-Session) + Team-Expertise
+**Zweck:** Zentrale Referenz für alle Entwickler (intern & extern) sowie für neue Claude-Sessions
 
 ---
 
-## 📚 Inhaltsverzeichnis
+## 📚 NAVIGATION - Schnellzugriff
+
+### 🚀 Quick Start für neue Entwickler
+- [Was ist das? → Executive Summary](#1-executive-summary)
+- [Wo finde ich die Builder? → Verzeichnisstruktur](#31-verzeichnisstruktur)
+- [Wie nutze ich den TestDataBuilder? → Code-Beispiele](#42-verwendung-im-test)
+- [Was muss ich bei Tests beachten? → Best Practices](#8-best-practices)
+
+### 🏗️ Architektur & Implementation
+- [Gesamtarchitektur → Übersicht](#3-architektur-übersicht)
+- [TestDataBuilder Details → Implementierung](#4-der-testdatabuilder)
+- [Builder-Klassen → Alle Builder](#43-die-builder-klassen-im-detail)
+- [Race-Condition Safety → PermissionHelper](#5-race-condition-safe-helpers)
+
+### 🔧 Praktische Anwendung
+- [Test-Patterns → Unit vs Integration](#6-test-kategorien--patterns)
+- [Migration bestehender Tests → Anleitung](#64-migration-bestehender-tests)
+- [Neue Features hinzufügen → Erweiterung](#7-erweiterung-für-neue-features)
+- [CI/CD Integration → Pipeline-Config](#9-ci-integration-kritisch)
+
+### 📊 Monitoring & Troubleshooting
+- [Dashboard & Metriken → Monitoring](#10-monitoring--metriken)
+- [Häufige Probleme → Troubleshooting](#11-troubleshooting-guide)
+- [Migration Status → Fortschritt](#12-migration-status)
+
+---
+
+## 📚 Detailliertes Inhaltsverzeichnis
 
 1. [Executive Summary](#1-executive-summary)
+   - [1.1 Was ist das?](#11-was-ist-das)
+   - [1.2 Die drei Säulen](#12-die-drei-säulen)
+   - [1.3 Warum diese Architektur?](#13-warum-diese-architektur)
+
 2. [Die Philosophie](#2-die-philosophie)
+   - [2.1 Grundprinzipien](#21-grundprinzipien)
+   - [2.2 Anti-Patterns vermeiden](#22-anti-patterns-die-wir-vermeiden)
+
 3. [Architektur-Übersicht](#3-architektur-übersicht)
+   - [3.1 Verzeichnisstruktur](#31-verzeichnisstruktur)
+   - [3.2 Komponenten-Diagramm](#32-komponenten-diagramm)
+   - [3.3 Datenfluss](#33-datenfluss)
+
 4. [Der TestDataBuilder](#4-der-testdatabuilder)
-5. [Race-Condition-Safe Helpers](#5-race-condition-safe-helpers-neu)
+   - [4.1 Zentrale Facade](#41-zentrale-facade)
+   - [4.2 Verwendung im Test](#42-verwendung-im-test)
+   - [4.3 Die Builder-Klassen im Detail](#43-die-builder-klassen-im-detail)
+   - [4.4 Vordefinierte Szenarien](#44-vordefinierte-szenarien)
+
+5. [Race-Condition-Safe Helpers](#5-race-condition-safe-helpers)
+   - [5.1 PermissionHelperPg](#51-permissionhelperpg)
+   - [5.2 PostgreSQL ON CONFLICT](#52-postgresql-on-conflict-pattern)
+
 6. [Test-Kategorien & Patterns](#6-test-kategorien--patterns)
+   - [6.1 Unit-Tests](#61-unit-tests)
+   - [6.2 Integration-Tests](#62-integration-tests)
+   - [6.3 E2E-Tests](#63-e2e-tests)
+   - [6.4 Migration bestehender Tests](#64-migration-bestehender-tests)
+
 7. [Erweiterung für neue Features](#7-erweiterung-für-neue-features)
+   - [7.1 Neuen Builder hinzufügen](#71-neuen-builder-hinzufügen)
+   - [7.2 Szenarien erweitern](#72-szenarien-erweitern)
+
 8. [Best Practices](#8-best-practices)
+   - [8.1 DO's](#81-dos)
+   - [8.2 DON'Ts](#82-donts)
+   - [8.3 Code Review Checkliste](#83-code-review-checkliste)
+
 9. [CI-Integration](#9-ci-integration-kritisch)
+   - [9.1 Pipeline-Konfiguration](#91-pipeline-konfiguration)
+   - [9.2 Cleanup-Strategien](#92-cleanup-strategien)
+   - [9.3 Guard-Mechanismen](#93-guard-mechanismen)
+
 10. [Monitoring & Metriken](#10-monitoring--metriken)
+    - [10.1 Test-Daten Dashboard](#101-test-daten-dashboard)
+    - [10.2 Performance-Metriken](#102-performance-metriken)
+    - [10.3 Health-Checks](#103-health-checks)
+
+11. [Troubleshooting Guide](#11-troubleshooting-guide)
+    - [11.1 Häufige Fehler](#111-häufige-fehler)
+    - [11.2 Debug-Strategien](#112-debug-strategien)
+
+12. [Migration Status](#12-migration-status)
+    - [12.1 Fortschritt](#121-fortschritt)
+    - [12.2 Nächste Schritte](#122-nächste-schritte)
 
 ---
 
 ## 1. Executive Summary
 
-### Was ist das?
+### 1.1 Was ist das?
+
 Eine **zentrale, erweiterbare Test-Daten-Architektur** die:
 - ✅ Test-Isolation garantiert
-- ✅ CI-Stabilität sicherstellt
+- ✅ CI-Stabilität sicherstellt  
 - ✅ Neue Features einfach integriert
 - ✅ Von jedem Entwickler in 5 Minuten verstanden wird
 
-### Kernprinzip
+**🚀 Quick Start für neue Entwickler:**
+```java
+// 1. Builder injizieren
+@Inject TestDataBuilder testData;
+
+// 2. Test-Daten erstellen
+Customer customer = testData.customer()
+    .asPremiumCustomer()
+    .withCompanyName("Test GmbH")
+    .persist();  // oder .build() für Unit-Tests ohne DB
+
+// 3. Das war's! Automatisches Cleanup durch @TestTransaction
+```
+
+### 1.2 Die drei Säulen
+
+| Säule | Zweck | Implementierung | Wo zu finden |
+|-------|-------|-----------------|--------------|
+| **SEED-Daten** | Stabile E2E-Tests | V10005 Migration (20 Einträge) | `src/test/resources/db/migration/` |
+| **TestDataBuilder** | Dynamische Test-Daten | Java Builder Pattern | `src/main/java/de/freshplan/test/` |
+| **Test-Isolation** | Unabhängige Tests | @TestTransaction | Automatisch in Tests |
+
+### 1.3 Warum diese Architektur?
+
+**Vorher:** 6 verschiedene Systeme, 73+ unkontrollierte Test-Kunden, CI rot
+**Nachher:** 1 System, 20 stabile SEEDs + dynamische Builder, CI grün
+
+**Kernprinzip:**
 ```
 Ein System, eine Wahrheit, keine Magie
 ```
-
-### Die drei Säulen
-
-| Säule | Zweck | Implementierung |
-|-------|-------|-----------------|
-| **SEED-Daten** | Stabile E2E-Tests | V9999 Migration (20 Einträge) |
-| **TestDataBuilder** | Dynamische Test-Daten | Java Builder Pattern |
-| **Test-Isolation** | Unabhängige Tests | @TestTransaction |
 
 ---
 
@@ -64,7 +158,7 @@ Chaos-Zustand:
 ```
 Klare Struktur:
 ├── 1 TestDataBuilder (Single Source of Truth)
-├── 1 SEED-Migration (V9999)
+├── 1 SEED-Migration (V10005)
 └── Klare Verantwortlichkeiten
 ```
 
@@ -104,7 +198,106 @@ Customer c = testDataBuilder.customer()
 
 ## 3. Architektur-Übersicht
 
-### 3.1 Gesamt-Architektur
+### 3.1 Verzeichnisstruktur
+
+**🎯 WICHTIG: Hier findest du alle TestDataBuilder-Komponenten!**
+
+```
+backend/
+├── src/
+│   ├── main/java/de/freshplan/test/        # ← HIER SIND DIE BUILDER!
+│   │   ├── TestDataBuilder.java            # Zentrale Facade
+│   │   ├── builders/                       # Alle Builder-Klassen
+│   │   │   ├── CustomerBuilder.java        # Customer mit build()/persist()
+│   │   │   ├── ContactBuilder.java         # Contacts mit Rollen
+│   │   │   ├── OpportunityBuilder.java     # Sales Opportunities
+│   │   │   ├── TimelineEventBuilder.java   # Timeline Events
+│   │   │   └── UserBuilder.java            # User mit Permissions
+│   │   ├── helpers/
+│   │   │   └── PermissionHelperPg.java     # Race-safe Permission Creation
+│   │   └── utils/
+│   │       └── TestDataUtils.java          # Shared Utilities (uniqueId, etc.)
+│   │
+│   ├── main/resources/db/migration/
+│   │   ├── V10000__cleanup_test_data_in_ci.sql  # Zwei-Stufen-Cleanup
+│   │   ├── V10001__test_data_contract_guard.sql # Contract Validation
+│   │   ├── V10002__ensure_unique_constraints.sql # DB Constraints
+│   │   └── V10003__test_data_dashboard.sql      # Monitoring Views
+│   │
+│   └── test/
+│       └── resources/db/migration/
+│           ├── V10004__cleanup_test_seed.sql    # Spurious SEED Cleanup
+│           └── V10005__test_seed_data.sql       # 20 SEED Customers
+│
+└── target/classes/de/freshplan/test/       # Kompilierte Klassen
+    ├── TestDataBuilder.class
+    ├── TestDataBuilder$ScenarioBuilder.class
+    ├── builders/
+    │   ├── CustomerBuilder.class
+    │   ├── ContactBuilder.class
+    │   ├── OpportunityBuilder.class
+    │   ├── TimelineEventBuilder.class
+    │   └── UserBuilder.class
+    ├── helpers/
+    │   └── PermissionHelperPg.class
+    └── utils/
+        └── TestDataUtils.class
+```
+
+**Navigation Shortcuts:**
+- 🏗️ Builder-Implementierungen: `backend/src/main/java/de/freshplan/test/builders/`
+- 📝 Migrationen Prod: `backend/src/main/resources/db/migration/V100*`
+- 🧪 Migrationen Test: `backend/src/test/resources/db/migration/V100*`
+- 📦 Kompilierte Klassen: `backend/target/classes/de/freshplan/test/`
+
+### 3.2 Komponenten-Diagramm
+
+```
+┌────────────────────────────────────────────────┐
+│             TestDataBuilder (Facade)           │
+│                                                │
+│  @Inject CustomerBuilder customerBuilder       │
+│  @Inject ContactBuilder contactBuilder         │
+│  @Inject OpportunityBuilder opportunityBuilder │
+│  @Inject TimelineEventBuilder timelineBuilder  │
+│  @Inject UserBuilder userBuilder               │
+│                                                │
+│  customer() → returns CustomerBuilder          │
+│  contact() → returns ContactBuilder            │
+│  opportunity() → returns OpportunityBuilder    │
+│  timeline() → returns TimelineEventBuilder     │
+│  user() → returns UserBuilder                  │
+│  scenario() → returns ScenarioBuilder          │
+└────────────────────────────────────────────────┘
+                      ↓ uses
+┌────────────────────────────────────────────────┐
+│              Individual Builders               │
+├────────────────────────────────────────────────┤
+│ CustomerBuilder                                │
+│  - reset()                                     │
+│  - withCompanyName(String)                     │
+│  - withStatus(CustomerStatus)                  │
+│  - asPremiumCustomer()                         │
+│  - asRiskCustomer()                            │
+│  - build() → Customer (ohne DB)                │
+│  - persist() → Customer (mit DB)               │
+├────────────────────────────────────────────────┤
+│ ContactBuilder                                 │
+│  - forCustomer(Customer)                       │
+│  - asCEO(), asCTO(), asSales()                │
+│  - build() → CustomerContact                   │
+│  - persist() → CustomerContact                 │
+├────────────────────────────────────────────────┤
+│ OpportunityBuilder                              │
+│  - forCustomer(Customer)                       │
+│  - asNewLead(), asProposal(), asWon()         │
+│  - withExpectedValue(BigDecimal)               │
+│  - build() → Opportunity                       │
+│  - persist() → Opportunity                     │
+└────────────────────────────────────────────────┘
+```
+
+### 3.3 Gesamt-Architektur
 
 ```
 ┌─────────────────────────────────────────────────────────┐
@@ -125,7 +318,7 @@ Customer c = testDataBuilder.customer()
 │                      TESTING                            │
 │                                                         │
 │  ┌─────────────────────────────────────────────────┐   │
-│  │         V9999 SEED-Daten (20 Einträge)          │   │
+│  │         V10005 SEED-Daten (20 Einträge)         │   │
 │  │              Stabile Referenz-Daten              │   │
 │  └─────────────────────────────────────────────────┘   │
 │                           +                             │
@@ -550,7 +743,7 @@ class CustomerE2ETest {
     
     @Test
     void completeCustomerJourney() {
-        // SEED-001 existiert immer (aus V9999)
+        // SEED-001 existiert immer (aus V10005)
         
         // 1. Read existing customer
         given()
@@ -686,7 +879,7 @@ void aiRecommendation_forSeasonalCustomer_suggestsStockIncrease() {
 Nur wenn E2E-Tests das Feature brauchen:
 
 ```sql
--- In V9999 ergänzen:
+-- In V10005 ergänzen:
 INSERT INTO customers (customer_number, company_name, business_type, is_test_data)
 VALUES ('SEED-AI-001', '[SEED] Seasonal Ice Cream Shop', 'SEASONAL', true);
 ```
@@ -798,7 +991,7 @@ Long id = c.getId();
 
 | Prefix | Verwendung | Beispiel |
 |--------|------------|----------|
-| `[SEED]` | Stabile E2E-Daten aus V9999 | `[SEED] Restaurant München` |
+| `[SEED]` | Stabile E2E-Daten aus V10005 | `[SEED] Restaurant München` |
 | `[TEST-{id}]` | Dynamische Test-Daten | `[TEST-1234567] Test Customer` |
 | `[DEV]` | Manuelle Dev-Daten | `[DEV] Demo Restaurant` |
 
@@ -1015,6 +1208,133 @@ END IF;
 
 ---
 
+## 12. Migration Status
+
+### 12.1 Fortschritt
+
+**Stand: 17.08.2025**
+
+| Phase | Status | Details |
+|-------|--------|---------|
+| **Phase 0: Vorbereitung** | ✅ Abgeschlossen | Alle Migrationen V10000-V10005 implementiert |
+| **Phase 1: Abriss** | ✅ Abgeschlossen | Alte Initializers entfernt |
+| **Phase 2: Neubau** | ✅ Abgeschlossen | TestDataBuilder vollständig implementiert |
+| **Phase 3: Umbau** | 🔄 In Arbeit | 233 Tests müssen migriert werden |
+| **Phase 4: Validierung** | ⏳ Ausstehend | CI-Pipeline, Performance-Tests |
+
+### 12.2 Nächste Schritte
+
+1. **Aktuelle Aufgabe:** Tests von `new Customer()` zu `testDataBuilder.customer()` migrieren
+2. **Betroffene Tests:** ~233 Stellen im Code
+3. **Priorität:** Integration-Tests zuerst, dann Unit-Tests
+
+---
+
+## 13. Referenz für neue Claude-Sessions
+
+### 13.1 Quick Context für Claude
+
+**Du bist Claude und arbeitest am FreshPlan Sales Tool Projekt.**
+
+**Wichtigste Fakten:**
+- **TestDataBuilder EXISTIERT** in `backend/src/main/java/de/freshplan/test/`
+- **Alle Builder sind IMPLEMENTIERT** (Customer, Contact, Opportunity, Timeline, User)
+- **build()** = Objekt ohne DB, **persist()** = Objekt mit DB
+- **Migrationen:** V10000-V10003 (main), V10004-V10005 (test)
+- **SEED-Daten:** 20 stabile Kunden (SEED-001 bis SEED-020)
+- **is_test_data Flag:** IMMER true für Test-Daten
+
+### 13.2 Häufige Claude-Aufgaben
+
+#### Test-Daten erstellen:
+```java
+@Inject TestDataBuilder testData;
+
+Customer c = testData.customer()
+    .asPremiumCustomer()
+    .persist();
+```
+
+#### Test migrieren:
+```java
+// ALT:
+Customer c = new Customer();
+c.setName("Test");
+
+// NEU:
+Customer c = testData.customer()
+    .withCompanyName("Test")
+    .build();  // oder .persist() für DB
+```
+
+#### Neue Builder-Methode hinzufügen:
+```java
+// In CustomerBuilder.java:
+public CustomerBuilder asB2BCustomer() {
+    this.customerType = CustomerType.B2B;
+    this.paymentTerms = PaymentTerms.NETTO_60;
+    return this;
+}
+```
+
+### 13.3 Wichtige Pfade
+
+```bash
+# Builder-Implementierungen
+cd backend/src/main/java/de/freshplan/test/
+
+# Migrationen prüfen
+ls backend/src/main/resources/db/migration/V100*
+ls backend/src/test/resources/db/migration/V100*
+
+# Tests finden die Migration brauchen
+grep -r "new Customer()" backend/src/test/java --include="*.java"
+```
+
+### 13.4 Status-Checks
+
+```bash
+# Nächste Migration-Nummer
+./scripts/get-next-migration.sh
+
+# Test-Daten in DB
+psql -d freshplan -c "SELECT COUNT(*) FROM customers WHERE is_test_data = true;"
+
+# Builder verwenden
+grep -r "testDataBuilder" backend/src/test/java --include="*.java" | wc -l
+```
+
+---
+
+## 14. Troubleshooting Guide
+
+### 11.1 Häufige Fehler
+
+#### "Cannot find TestDataBuilder"
+**Lösung:** Builder ist in `src/main/java/de/freshplan/test/`, nicht in test/java!
+
+#### "Duplicate key violation"
+**Lösung:** TestDataUtils.uniqueId() verwenden, nie hardcoded IDs
+
+#### "Test data not cleaned up"
+**Lösung:** @TestTransaction vergessen? Oder @Transactional.TxType.REQUIRES_NEW verwendet?
+
+### 11.2 Debug-Strategien
+
+```java
+// Test-Daten-Count prüfen
+@Test
+void debugTestDataCount() {
+    long count = em.createQuery(
+        "SELECT COUNT(c) FROM Customer c WHERE c.isTestData = true", 
+        Long.class
+    ).getSingleResult();
+    System.out.println("Test data count: " + count);
+}
+```
+
+---
+
 *"Simplicity is the ultimate sophistication" - Leonardo da Vinci*
 
-**Ende der Produktbeschreibung**
+**Ende der Produktbeschreibung - Version 5.0**

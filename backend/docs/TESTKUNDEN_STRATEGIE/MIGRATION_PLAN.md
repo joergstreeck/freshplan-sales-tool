@@ -60,7 +60,7 @@ CHAOS-INVENTAR:
 ├── 4 Migrationen
 │   ├── V219__basic_test_customers.sql (5 Kunden)
 │   ├── V220__cleanup_test_pollution.sql (Cleanup)
-│   ├── V9999__test_seed_data.sql (50 SEED)
+│   ├── V10005__test_seed_data.sql (20 SEED)
 │   └── V10000__cleanup_test_data_in_ci.sql (CI-Cleanup)
 │
 └── 233 Test-Stellen
@@ -73,7 +73,7 @@ CHAOS-INVENTAR:
 |------------|---------------|--------------|
 | CustomerDataInitializer | Dev-Umgebung, manche Tests | HOCH |
 | TestDataContactInitializer | Contact-Tests | MITTEL |
-| V9999 | E2E-Tests | HOCH |
+| V10005 | E2E-Tests | HOCH |
 | V219/V220 | Keine (Feature-Branch) | NIEDRIG |
 | new Customer() | 233 Tests | SEHR HOCH |
 
@@ -97,8 +97,8 @@ NEUE ORDNUNG:
 │   ├── V10001__test_data_contract_guard.sql (Warnings)
 │   ├── V10002__ensure_unique_constraints.sql (Grundlagen + adaptiv)
 │   ├── V10003__test_data_dashboard.sql (Monitoring)
-│   ├── V10004__cleanup_test_seed.sql (ex-V9995, läuft NACH V10002/V10003!)
-│   └── V10005__test_seed_data.sql (ex-V9999, läuft NACH V10004!)
+│   ├── V10004__cleanup_test_seed.sql (läuft NACH V10002/V10003!)
+│   └── V10005__test_seed_data.sql (läuft NACH V10004!)
 │
 └── 0 Initializers (alle gelöscht!)
 ```
@@ -107,7 +107,7 @@ NEUE ORDNUNG:
 
 ```
 Tests → TestDataBuilder → @TestTransaction → Rollback
-E2E → V9999 SEED-Daten → Stabil
+E2E → V10005 SEED-Daten → Stabil
 ```
 
 ---
@@ -294,7 +294,7 @@ git rm src/main/java/de/freshplan/api/OpportunityDataInitializer.java
 git rm src/main/resources/db/migration/V219__basic_test_customers.sql
 git rm src/main/resources/db/migration/V220__cleanup_test_pollution.sql
 
-# V9999 und V10000 behalten für Umbau
+# V10004 und V10005 bereits umbenannt
 ```
 
 #### C. Commit Abriss
@@ -351,7 +351,7 @@ Nach Review mit externem Experten gelten folgende **unumstößliche Regeln**:
    - KEIN blindes TRUNCATE (außer als letzter Fallback)
 
 4. **SEPARATION OF CONCERNS**
-   - V9999: NUR Seeds erstellen (kein Cleanup)
+   - V10005: NUR Seeds erstellen (kein Cleanup)
    - V10000: NUR Cleanup (keine Seeds)
    - V10001: NUR Validation (Contract-Check)
 
@@ -560,26 +560,26 @@ public class PermissionHelperPg {
 }
 ```
 
-### 6.3 V9995 Cleanup Migration (NEU) ✅ IMPLEMENTIERT
+### 6.3 V10004 Cleanup Migration ✅ IMPLEMENTIERT
 
 **SEPARATION OF CONCERNS:**
 - ✅ NUR Cleanup von Spurious Test-Daten
-- ✅ Keine Seeds (macht V9999)
+- ✅ Keine Seeds (macht V10005)
 - ✅ Guard mit ci.build
 
 ```sql
--- src/test/resources/db/migration/V9995__cleanup_test_seed.sql
+-- src/test/resources/db/migration/V10004__cleanup_test_seed.sql
 -- CI-only Cleanup of spurious test SEED customers
 
 DO $$
 BEGIN
     -- Guard: Only run in CI/Test environments
     IF current_setting('ci.build', true) <> 'true' THEN
-        RAISE NOTICE 'V9995 cleanup skipped (not CI, ci.build=%)', current_setting('ci.build', true);
+        RAISE NOTICE 'V10004 cleanup skipped (not CI, ci.build=%)', current_setting('ci.build', true);
         RETURN;
     END IF;
 
-    RAISE NOTICE 'V9995 cleanup starting in CI environment';
+    RAISE NOTICE 'V10004 cleanup starting in CI environment';
 
     -- Remove any spurious test SEED customers not in our canonical list
     DELETE FROM customers
@@ -597,32 +597,32 @@ BEGIN
     WHERE is_test_data = true
       AND customer_number LIKE 'SEED-TEST-%';
 
-    RAISE NOTICE 'V9995 cleanup completed';
+    RAISE NOTICE 'V10004 cleanup completed';
 END $$;
 ```
 
-### 6.4 V9999 Seeds - IDEMPOTENT & SCHEMA-DRIFT-FREI ✅ UMGESETZT
+### 6.4 V10005 Seeds - IDEMPOTENT & SCHEMA-DRIFT-FREI ✅ UMGESETZT
 
 **KRITISCHE VERBESSERUNGEN:**
 - ✅ Idempotent durch ON CONFLICT DO UPDATE (heilt falsche Daten)
 - ✅ Guard gegen Prod-Ausführung mit ci.build
 - ✅ pgcrypto Extension für gen_random_uuid()
 - ✅ KEIN Schema-Drift (keine is_test_data wo sie nicht existiert)
-- ✅ KEIN Cleanup hier (macht V9995 separat)
+- ✅ KEIN Cleanup hier (macht V10004 separat)
 
 ```sql
--- src/test/resources/db/migration/V9999__test_seed_data.sql
+-- src/test/resources/db/migration/V10005__test_seed_data.sql
 -- IDEMPOTENTE SEED-DATEN (20 Stück) - NUR für CI/Test
 
 DO $$
 BEGIN
     -- GUARD: Nur in CI/Test ausführen
     IF current_setting('ci.build', true) <> 'true' THEN
-        RAISE NOTICE 'V9999 seeds skipped (not CI, ci.build=%)', current_setting('ci.build', true);
+        RAISE NOTICE 'V10005 seeds skipped (not CI, ci.build=%)', current_setting('ci.build', true);
         RETURN;
     END IF;
     
-    RAISE NOTICE 'V9999 seed data starting in CI environment';
+    RAISE NOTICE 'V10005 seed data starting in CI environment';
     
     -- Ensure pgcrypto extension for gen_random_uuid()
     CREATE EXTENSION IF NOT EXISTS pgcrypto;
@@ -689,7 +689,7 @@ BEGIN
             customer_type = EXCLUDED.customer_type,
             status = EXCLUDED.status;
     
-    RAISE NOTICE 'V9999 seed data completed - 20 SEED customers ensured';
+    RAISE NOTICE 'V10005 seed data completed - 20 SEED customers ensured';
 END $$;
 ```
 
@@ -824,13 +824,13 @@ FROM customers;
 
 ```bash
 git add src/main/java/de/freshplan/test/TestDataBuilder.java
-git add src/test/resources/db/migration/V9999__test_seed_data.sql
+git add src/test/resources/db/migration/V10005__test_seed_data.sql
 git add src/main/resources/db/migration/V10000__cleanup_test_data_in_ci.sql
 
 git commit -m "feat: Implement new TestDataBuilder architecture
 
 - Added central TestDataBuilder with builders for all entities
-- Optimized V9999 to only 20 SEED customers
+- Optimized V10005 to only 20 SEED customers
 - Updated V10000 for CI-specific cleanup
 - All test data now marked and prefixed
 
@@ -1117,7 +1117,7 @@ psql freshplan < backup_before_migration.sql
 |-----|-------|-------------|-----------|
 | **Mo** | Abriss | Initializers löschen, Migrationen entfernen | Alte Struktur entfernt ✅ |
 | **Di** | Neubau | TestDataBuilder implementieren | Builder funktioniert ✅ |
-| **Mi** | Neubau | V9999/V10000 optimieren | Migrationen ready ✅ |
+| **Mi** | Neubau | V10004/V10005 optimieren | Migrationen ready ✅ |
 | **Do** | Umbau | Quick-Win Tests migrieren | 50% Tests grün ✅ |
 | **Fr** | Umbau | Komplexe Tests migrieren | 80% Tests grün ✅ |
 
@@ -1312,11 +1312,14 @@ public class TestDataDisciplineRules {
 - [x] Alle alten Initializers gelöscht ✅
 - [x] V219 und V220 Migrationen entfernt ✅
 
-### Phase 2-4 (TODO)
-- [ ] TestDataBuilder mit build()/persist() implementiert
-- [ ] PermissionHelperPg mit ON CONFLICT implementiert
-- [ ] V9999 auf 20 SEED-Daten reduziert
-- [ ] V10001 Guard Migration aktiv
+### Phase 2 (✅ ABGESCHLOSSEN - 17.08.2025)
+- [x] TestDataBuilder mit build()/persist() implementiert ✅
+- [x] PermissionHelperPg mit ON CONFLICT implementiert ✅
+- [x] Alle Builder-Klassen erstellt (Customer, Contact, Opportunity, Timeline, User) ✅
+- [x] V10005 auf 20 SEED-Daten reduziert ✅
+- [x] V10001 Guard Migration aktiv ✅
+
+### Phase 3-4 (TODO)
 - [ ] Concurrency-Test grün
 - [ ] Alle Tests migriert und grün
 - [ ] CI Pipeline grün
