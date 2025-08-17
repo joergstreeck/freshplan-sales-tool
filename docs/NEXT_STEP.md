@@ -7,14 +7,14 @@
 
 ## 🎯 JETZT GERADE:
 
-**TEST-DATEN-MIGRATION BEREIT - BACKEND BLOCKIERT!**
+**PHASE 0 ABGESCHLOSSEN - BEREIT FÜR PHASE 1 (ABRISS)**
 
-**Stand 17.08.2025 03:45:**
-- ✅ **Strategie finalisiert:** MIGRATION_PLAN.md v3.0 + TEST_DATA_STRATEGY.md v5.0
-- ✅ **Team-Feedback integriert:** 4 kritische Verbesserungen eingebaut
-- ✅ **PR #89 zurückgezogen:** Für Test-Daten-Cleanup
-- 🔴 **BACKEND KANN NICHT STARTEN:** CustomerDataInitializer Duplikate!
-- ⚡ **DRINGEND:** Test-Daten-Migration starten!
+**Stand 17.08.2025 04:15:**
+- ✅ **Phase 0 komplett:** Alle CI-Infrastruktur vorbereitet
+- ✅ **Migrationen bereit:** V10002, V10003, Guards in V9000/V10000
+- ✅ **Script angepasst:** Nur V1-V7999 für Production
+- 🔴 **BACKEND BLOCKIERT:** CustomerDataInitializer Duplikate!
+- ⚡ **NÄCHSTER SCHRITT:** Phase 1 - Initializers löschen!
 
 **Backend-Status:**
 - ❌ **dev-Profil:** Startet nicht (Duplikate KD-2025-00001)
@@ -30,25 +30,29 @@
 
 ### 🚨 NÄCHSTER SCHRITT FÜR NEUEN CLAUDE:
 
-**OPTION A: Team hat GO gegeben → IMPLEMENTIERUNG STARTEN**
+**PHASE 1: ABRISS - Alte Test-Daten-Infrastruktur entfernen**
 
-1. **Phase 0: CI-Konfiguration (KRITISCH!)**
 ```bash
-# JDBC-URL in GitHub Actions anpassen:
-# -Dquarkus.datasource.jdbc.url=jdbc:postgresql://localhost:5432/freshplan?options=-c%20ci.build%3Dtrue
-
-# Dokumentation:
+# 1. Dokumentation lesen (Section 5):
 cat /Users/joergstreeck/freshplan-sales-tool/backend/docs/TESTKUNDEN_STRATEGIE/MIGRATION_PLAN.md
+
+# 2. Diese Initializers löschen:
+git rm backend/src/main/java/de/freshplan/api/CustomerDataInitializer.java
+git rm backend/src/main/java/de/freshplan/api/TestDataContactInitializer.java
+git rm backend/src/main/java/de/freshplan/api/DevDataInitializer.java
+git rm backend/src/main/java/de/freshplan/api/E2EDataInitializer.java
+git rm backend/src/main/java/de/freshplan/api/OpportunityDataInitializer.java
+git rm backend/src/main/java/de/freshplan/test/AuditTestDataInitializer.java
+
+# 3. Diese Migrationen entfernen:
+git rm backend/src/main/resources/db/migration/V219__basic_test_customers.sql
+git rm backend/src/main/resources/db/migration/V220__cleanup_test_pollution.sql
+
+# 4. Commit erstellen:
+git commit -m "refactor: Remove old test data initializers and migrations"
 ```
 
-2. **Phase 1: Abriss beginnen**
-```bash
-# 6 Initializers löschen
-# V219 und V220 Migrationen entfernen
-# Details in MIGRATION_PLAN.md Phase 1
-```
-
-**OPTION B: Noch kein GO → Status prüfen**
+**Erwartung:** Tests werden fehlschlagen - das ist OK und erwartet!
 
 1. **Team-Status erfragen**
 ```bash

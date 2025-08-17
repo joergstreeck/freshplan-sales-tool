@@ -1005,9 +1005,11 @@ public class TestDataDisciplineRules {
 - [x] V10000 für CI optimiert (ci.build check)
 - [x] Backup-Branch erstellt (backup/before-test-cleanup-20250817)
 
-### Phase 1-4 (TODO)
-- [ ] Alle alten Initializers gelöscht
-- [ ] V219 und V220 Migrationen entfernt
+### Phase 1 (ABGESCHLOSSEN ✅ - 17.08.2025)
+- [x] Alle alten Initializers gelöscht ✅
+- [x] V219 und V220 Migrationen entfernt ✅
+
+### Phase 2-4 (TODO)
 - [ ] TestDataBuilder mit build()/persist() implementiert
 - [ ] PermissionHelperPg mit ON CONFLICT implementiert
 - [ ] V9999 auf 20 SEED-Daten reduziert
