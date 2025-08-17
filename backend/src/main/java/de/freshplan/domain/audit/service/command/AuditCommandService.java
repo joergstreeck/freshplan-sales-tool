@@ -12,6 +12,7 @@ import de.freshplan.domain.audit.service.dto.AuditContext;
 import de.freshplan.shared.util.SecurityUtils;
 import io.vertx.core.http.HttpServerRequest;
 import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Event;
 import jakarta.enterprise.event.Observes;
@@ -78,6 +79,30 @@ public class AuditCommandService {
     log.infof(
         "Audit Command Service initialized with %d async threads",
         configuration.getAsyncThreadPoolSize());
+  }
+
+  @PreDestroy
+  void cleanup() {
+    if (auditExecutor != null) {
+      log.info("Shutting down audit executor service...");
+      auditExecutor.shutdown();
+      try {
+        // Wait for existing tasks to complete
+        if (!auditExecutor.awaitTermination(10, java.util.concurrent.TimeUnit.SECONDS)) {
+          log.warn("Audit executor did not terminate in time, forcing shutdown");
+          auditExecutor.shutdownNow();
+          // Wait a bit for tasks to respond to cancellation
+          if (!auditExecutor.awaitTermination(5, java.util.concurrent.TimeUnit.SECONDS)) {
+            log.error("Audit executor did not terminate after forced shutdown");
+          }
+        }
+        log.info("Audit executor service shut down successfully");
+      } catch (InterruptedException e) {
+        log.error("Interrupted while shutting down audit executor", e);
+        auditExecutor.shutdownNow();
+        Thread.currentThread().interrupt();
+      }
+    }
   }
 
   /** Log an audit event asynchronously EXAKTE KOPIE von AuditService.logAsync() Zeile 79-96 */

@@ -8,6 +8,7 @@ import de.freshplan.domain.opportunity.entity.Opportunity;
 import de.freshplan.domain.opportunity.entity.OpportunityStage;
 import de.freshplan.domain.user.entity.User;
 import de.freshplan.domain.user.repository.UserRepository;
+import de.freshplan.test.builders.CustomerBuilder;
 import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.security.TestSecurity;
@@ -44,6 +45,8 @@ public class OpportunityRepositoryTest {
   @Inject CustomerRepository customerRepository;
 
   @Inject UserRepository userRepository;
+  
+  @Inject CustomerBuilder customerBuilder;
 
   private Customer testCustomer1;
   private Customer testCustomer2;
@@ -475,11 +478,14 @@ public class OpportunityRepositoryTest {
       return existingCustomer;
     }
 
-    var customer = new Customer();
+    var customer = customerBuilder
+        .withCompanyName(companyName)
+        .build();
+    
+    // Override to use exact company name and unique customer number
     customer.setCompanyName(companyName);
     customer.setCustomerNumber(de.freshplan.testsupport.UniqueData.customerNumber("TEST", 
         (int)(Math.random() * 1000)));
-    customer.setCreatedBy("testuser");
     customer.setIsTestData(true);
     // Customer email field not available
     customerRepository.persist(customer);

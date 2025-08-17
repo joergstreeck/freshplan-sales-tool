@@ -16,6 +16,7 @@ import org.hibernate.Session;
 import org.hibernate.stat.Statistics;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import de.freshplan.test.builders.CustomerBuilder;
 
 /**
  * Performance tests to verify N+1 query fixes in CustomerTimelineRepository.
@@ -32,6 +33,8 @@ class CustomerTimelineRepositoryPerformanceTest extends BaseIntegrationTest {
   @Inject CustomerTimelineRepository timelineRepository;
 
   @Inject CustomerRepository customerRepository;
+  
+  @Inject CustomerBuilder customerBuilder;
 
   private UUID testCustomerId;
   private Statistics hibernateStats;
@@ -41,15 +44,16 @@ class CustomerTimelineRepositoryPerformanceTest extends BaseIntegrationTest {
     timelineRepository.deleteAll();
     customerRepository.delete("customerNumber LIKE ?1", "PERF-TEST-%");
 
-    // Create test customer
-    Customer customer = new Customer();
+    // Create test customer using CustomerBuilder
+    Customer customer = customerBuilder
+        .withCompanyName("Performance Test Company")
+        .withStatus(CustomerStatus.AKTIV)
+        .withType(CustomerType.UNTERNEHMEN)
+        .withIndustry(Industry.SONSTIGE)
+        .build();
+    // Override auto-generated values
     customer.setCustomerNumber("PERF-TEST-001");
-    customer.setCompanyName("Performance Test Company");
-    customer.setStatus(CustomerStatus.AKTIV);
-    customer.setCustomerType(CustomerType.UNTERNEHMEN);
-    customer.setIndustry(Industry.SONSTIGE);
-    customer.setCreatedAt(LocalDateTime.now());
-    customer.setCreatedBy("test");
+    customer.setCompanyName("Performance Test Company"); // Remove [TEST-xxx] prefix
     customerRepository.persist(customer);
     testCustomerId = customer.getId();
 

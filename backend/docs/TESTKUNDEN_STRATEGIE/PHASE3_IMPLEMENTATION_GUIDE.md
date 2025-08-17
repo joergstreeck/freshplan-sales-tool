@@ -329,15 +329,18 @@ Closes #TICKET"
 ```markdown
 ## Phase 3 Migration Progress
 
-### Pilot ✅
-- [x] ContactCommandServiceTest
+### Pilot ✅ ABGESCHLOSSEN (17.08.2025 20:27)
+- [x] ContactCommandServiceTest - ERFOLGREICH
+  - Commit: 27e19e6e7
+  - Strategie: CustomerBuilder direkt instanziiert
+  - Methode: .build() für Unit-Test
 
-### Batch Low-Risk (25)
-- [x] Batch 1 (5 Tests) - DATE
+### Batch Low-Risk (27)
+- [ ] Batch 1 (5 Tests)
 - [ ] Batch 2 (5 Tests)
 - [ ] Batch 3 (5 Tests)
 - [ ] Batch 4 (5 Tests)
-- [ ] Batch 5 (5 Tests)
+- [ ] Batch 5 (7 Tests)
 
 ### Manual High-Risk (5)
 - [ ] CustomerMapperTest (9)

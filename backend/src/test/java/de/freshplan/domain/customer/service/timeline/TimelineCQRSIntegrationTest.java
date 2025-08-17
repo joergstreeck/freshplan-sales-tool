@@ -9,6 +9,7 @@ import de.freshplan.domain.customer.entity.EventCategory;
 import de.freshplan.domain.customer.entity.ImportanceLevel;
 import de.freshplan.domain.customer.entity.Industry;
 import de.freshplan.domain.customer.repository.CustomerRepository;
+import de.freshplan.test.builders.CustomerBuilder;
 import de.freshplan.domain.customer.service.CustomerTimelineService;
 import de.freshplan.domain.customer.service.dto.timeline.*;
 import io.quarkus.test.TestTransaction;
@@ -50,6 +51,8 @@ class TimelineCQRSIntegrationTest {
   CustomerTimelineService timelineService; // Test via Facade to verify Feature Flag switching
 
   @Inject CustomerRepository customerRepository;
+  
+  @Inject CustomerBuilder customerBuilder;
 
   @ConfigProperty(name = "features.cqrs.enabled")
   boolean cqrsEnabled;
@@ -65,17 +68,20 @@ class TimelineCQRSIntegrationTest {
   }
   
   private void createTestCustomer() {
-    // Create a test customer for timeline events
-    testCustomer = new Customer();
+    // Create a test customer for timeline events using CustomerBuilder
+    testCustomer = customerBuilder
+        .withCompanyName("[TEST] Timeline Test Company " + uniqueSuffix)
+        .withStatus(CustomerStatus.AKTIV)
+        .withIndustry(Industry.HOTEL)
+        .withExpectedAnnualVolume(new BigDecimal("100000"))
+        .build();
+    
+    // Override specific fields to maintain test requirements
     testCustomer.setCustomerNumber("KD" + uniqueSuffix.substring(7, 13));
     testCustomer.setCompanyName("[TEST] Timeline Test Company " + uniqueSuffix);
     testCustomer.setCustomerType(CustomerType.UNTERNEHMEN);
-    testCustomer.setStatus(CustomerStatus.AKTIV);
-    testCustomer.setIndustry(Industry.HOTEL);
-    testCustomer.setExpectedAnnualVolume(new BigDecimal("100000"));
     testCustomer.setIsTestData(true);  // Mark as test data
     testCustomer.setCreatedBy("testuser");
-    testCustomer.setCreatedAt(LocalDateTime.now());
 
     customerRepository.persist(testCustomer);
     customerRepository.flush();

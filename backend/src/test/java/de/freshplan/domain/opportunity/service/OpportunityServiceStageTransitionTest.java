@@ -12,6 +12,7 @@ import de.freshplan.domain.opportunity.service.exception.InvalidStageTransitionE
 import de.freshplan.domain.opportunity.service.exception.OpportunityNotFoundException;
 import de.freshplan.domain.user.entity.User;
 import de.freshplan.domain.user.repository.UserRepository;
+import de.freshplan.test.builders.CustomerBuilder;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.security.TestSecurity;
 import jakarta.inject.Inject;
@@ -56,6 +57,8 @@ public class OpportunityServiceStageTransitionTest {
   @Inject UserRepository userRepository;
 
   @Inject EntityManager entityManager;
+  
+  @Inject CustomerBuilder customerBuilder;
 
   @Inject UserTransaction userTransaction;
 
@@ -525,15 +528,15 @@ public class OpportunityServiceStageTransitionTest {
       return existingCustomer;
     }
 
-    // Create minimal test customer with all required fields
-    var customer = new Customer();
-    customer.setCompanyName(companyName);
-
-    // Set required NOT NULL fields to avoid constraint violations
+    // Create minimal test customer with all required fields using CustomerBuilder
+    var customer = customerBuilder
+        .withCompanyName(companyName)
+        .build();
+    
+    // Override specific fields to maintain test requirements
+    customer.setCompanyName(companyName); // Override to use exact name without [TEST-xxx] prefix
     customer.setCustomerNumber("TEST-" + System.currentTimeMillis()); // Unique customer number
     customer.setIsTestData(true); // Mark as test data
-    customer.setIsDeleted(false); // Not deleted
-    customer.setCreatedAt(java.time.LocalDateTime.now()); // Set created timestamp
     customer.setCreatedBy("test-system"); // Set created by
 
     customerRepository.persist(customer);

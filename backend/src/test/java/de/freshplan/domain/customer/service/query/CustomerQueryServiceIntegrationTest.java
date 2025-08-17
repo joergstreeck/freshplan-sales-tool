@@ -7,6 +7,7 @@ import de.freshplan.domain.customer.entity.CustomerLifecycleStage;
 import de.freshplan.domain.customer.entity.CustomerStatus;
 import de.freshplan.domain.customer.entity.Industry;
 import de.freshplan.domain.customer.repository.CustomerRepository;
+import de.freshplan.test.builders.CustomerBuilder;
 import de.freshplan.domain.customer.service.CustomerService;
 import de.freshplan.domain.customer.service.dto.CustomerDashboardResponse;
 import de.freshplan.domain.customer.service.dto.CustomerListResponse;
@@ -38,6 +39,8 @@ class CustomerQueryServiceIntegrationTest {
   @Inject CustomerService originalService;
 
   @Inject CustomerRepository customerRepository;
+  
+  @Inject CustomerBuilder customerBuilder;
 
   private UUID testCustomerId;
   private String testCustomerNumber;
@@ -52,16 +55,20 @@ class CustomerQueryServiceIntegrationTest {
     customerRepository.getEntityManager().createQuery("DELETE FROM Customer").executeUpdate();
     customerRepository.flush();
 
-    // Create a test customer directly in DB for read tests
-    Customer testCustomer = new Customer();
+    // Create a test customer directly in DB for read tests using CustomerBuilder
+    Customer testCustomer = customerBuilder
+        .withCompanyName("Test Company GmbH")
+        .withStatus(CustomerStatus.AKTIV)
+        .withIndustry(Industry.HOTEL)
+        .withExpectedAnnualVolume(new BigDecimal("100000.00"))
+        .build();
+    
+    // Override specific fields to maintain test requirements
     testCustomer.setCustomerNumber("KD-2025-00001");
     testCustomer.setCompanyName("Test Company GmbH");
     testCustomer.setLegalForm("GmbH");
-    testCustomer.setStatus(CustomerStatus.AKTIV);
-    testCustomer.setIndustry(Industry.HOTEL);
     testCustomer.setLifecycleStage(CustomerLifecycleStage.GROWTH);
     testCustomer.setRiskScore(50);
-    testCustomer.setExpectedAnnualVolume(new BigDecimal("100000.00"));
     testCustomer.setActualAnnualVolume(new BigDecimal("80000.00"));
     testCustomer.setLastContactDate(LocalDateTime.now().minusDays(5));
     testCustomer.setCreatedBy("test-user");
@@ -322,12 +329,16 @@ class CustomerQueryServiceIntegrationTest {
   @TestTransaction
   void createAdditionalTestCustomers(int count) {
     for (int i = 1; i <= count; i++) {
-      Customer customer = new Customer();
+      Customer customer = customerBuilder
+          .withCompanyName("Test Company " + i)
+          .withStatus(CustomerStatus.AKTIV)
+          .withIndustry(Industry.HOTEL)
+          .build();
+      
+      // Override specific fields to maintain test requirements
       customer.setCustomerNumber(de.freshplan.testsupport.UniqueData.customerNumber("KD", i + 1));
       customer.setCompanyName("Test Company " + i);
       customer.setLegalForm("GmbH");
-      customer.setStatus(CustomerStatus.AKTIV);
-      customer.setIndustry(Industry.HOTEL);
       customer.setLifecycleStage(CustomerLifecycleStage.GROWTH);
       customer.setRiskScore(40 + i);
       customer.setCreatedBy("test-user");
@@ -341,13 +352,16 @@ class CustomerQueryServiceIntegrationTest {
 
   @TestTransaction
   void createCustomerWithStatus(CustomerStatus status, String name) {
-    Customer customer = new Customer();
+    Customer customer = customerBuilder
+        .withCompanyName(name)
+        .withStatus(status)
+        .withIndustry(Industry.HOTEL)
+        .build();
+    
     customer.setCustomerNumber(de.freshplan.testsupport.UniqueData.customerNumber("KD", 
         (int)(Math.random() * 10000)));
     customer.setCompanyName(name);
     customer.setLegalForm("GmbH");
-    customer.setStatus(status);
-    customer.setIndustry(Industry.HOTEL);
     customer.setLifecycleStage(CustomerLifecycleStage.GROWTH);
     customer.setRiskScore(50);
     customer.setCreatedBy("test-user");
@@ -360,12 +374,15 @@ class CustomerQueryServiceIntegrationTest {
 
   @TestTransaction
   void createCustomerWithIndustry(Industry industry, String name) {
-    Customer customer = new Customer();
+    Customer customer = customerBuilder
+        .withCompanyName(name)
+        .withStatus(CustomerStatus.AKTIV)
+        .withIndustry(industry)
+        .build();
+    
     customer.setCustomerNumber(de.freshplan.testsupport.UniqueData.customerNumber("KD", (int)(Math.random() * 10000)));
     customer.setCompanyName(name);
     customer.setLegalForm("GmbH");
-    customer.setStatus(CustomerStatus.AKTIV);
-    customer.setIndustry(industry);
     customer.setLifecycleStage(CustomerLifecycleStage.GROWTH);
     customer.setRiskScore(50);
     customer.setCreatedBy("test-user");
@@ -378,12 +395,15 @@ class CustomerQueryServiceIntegrationTest {
 
   @TestTransaction
   void createCustomerWithRiskScore(int riskScore, String name) {
-    Customer customer = new Customer();
+    Customer customer = customerBuilder
+        .withCompanyName(name)
+        .withStatus(CustomerStatus.AKTIV)
+        .withIndustry(Industry.HOTEL)
+        .build();
+    
     customer.setCustomerNumber(de.freshplan.testsupport.UniqueData.customerNumber("KD", (int)(Math.random() * 10000)));
     customer.setCompanyName(name);
     customer.setLegalForm("GmbH");
-    customer.setStatus(CustomerStatus.AKTIV);
-    customer.setIndustry(Industry.HOTEL);
     customer.setLifecycleStage(CustomerLifecycleStage.GROWTH);
     customer.setRiskScore(riskScore);
     customer.setCreatedBy("test-user");
@@ -396,12 +416,15 @@ class CustomerQueryServiceIntegrationTest {
 
   @TestTransaction
   void createCustomerWithLastContact(LocalDateTime lastContact, String name) {
-    Customer customer = new Customer();
+    Customer customer = customerBuilder
+        .withCompanyName(name)
+        .withStatus(CustomerStatus.AKTIV)
+        .withIndustry(Industry.HOTEL)
+        .build();
+    
     customer.setCustomerNumber(de.freshplan.testsupport.UniqueData.customerNumber("KD", (int)(Math.random() * 10000)));
     customer.setCompanyName(name);
     customer.setLegalForm("GmbH");
-    customer.setStatus(CustomerStatus.AKTIV);
-    customer.setIndustry(Industry.HOTEL);
     customer.setLifecycleStage(CustomerLifecycleStage.GROWTH);
     customer.setRiskScore(50);
     customer.setLastContactDate(lastContact);
@@ -416,12 +439,15 @@ class CustomerQueryServiceIntegrationTest {
 
   @TestTransaction
   void createCustomerWithName(String name) {
-    Customer customer = new Customer();
+    Customer customer = customerBuilder
+        .withCompanyName(name)
+        .withStatus(CustomerStatus.AKTIV)
+        .withIndustry(Industry.HOTEL)
+        .build();
+    
     customer.setCustomerNumber(de.freshplan.testsupport.UniqueData.customerNumber("KD", (int)(Math.random() * 10000)));
     customer.setCompanyName(name);
     customer.setLegalForm("GmbH");
-    customer.setStatus(CustomerStatus.AKTIV);
-    customer.setIndustry(Industry.HOTEL);
     customer.setLifecycleStage(CustomerLifecycleStage.GROWTH);
     customer.setRiskScore(50);
     customer.setCreatedBy("test-user");
@@ -434,12 +460,15 @@ class CustomerQueryServiceIntegrationTest {
 
   @TestTransaction
   void createCustomerWithLifecycleStage(CustomerLifecycleStage stage, String name) {
-    Customer customer = new Customer();
+    Customer customer = customerBuilder
+        .withCompanyName(name)
+        .withStatus(CustomerStatus.AKTIV)
+        .withIndustry(Industry.HOTEL)
+        .build();
+    
     customer.setCustomerNumber(de.freshplan.testsupport.UniqueData.customerNumber("KD", (int)(Math.random() * 10000)));
     customer.setCompanyName(name);
     customer.setLegalForm("GmbH");
-    customer.setStatus(CustomerStatus.AKTIV);
-    customer.setIndustry(Industry.HOTEL);
     customer.setLifecycleStage(stage);
     customer.setRiskScore(50);
     customer.setCreatedBy("test-user");

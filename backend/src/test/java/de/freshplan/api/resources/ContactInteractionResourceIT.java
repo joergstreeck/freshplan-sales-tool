@@ -15,6 +15,7 @@ import de.freshplan.domain.customer.repository.ContactInteractionRepository;
 import de.freshplan.domain.customer.repository.ContactRepository;
 import de.freshplan.domain.customer.repository.CustomerRepository;
 import de.freshplan.domain.customer.service.dto.ContactInteractionDTO;
+import de.freshplan.test.builders.CustomerBuilder;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
 import jakarta.inject.Inject;
@@ -34,6 +35,8 @@ class ContactInteractionResourceIT {
   @Inject ContactRepository contactRepository;
 
   @Inject ContactInteractionRepository interactionRepository;
+  
+  @Inject CustomerBuilder customerBuilder;
 
   private UUID testCustomerId;
   private UUID testContactId;
@@ -66,17 +69,20 @@ class ContactInteractionResourceIT {
     contactRepository.deleteAll();
     customerRepository.deleteAll();
 
-    // Create test customer with all required fields
-    Customer testCustomer = new Customer();
+    // Create test customer using CustomerBuilder
+    Customer testCustomer = customerBuilder
+        .withCompanyName("[TEST] Test Company GmbH")
+        .withStatus(CustomerStatus.LEAD)
+        .withPartnerStatus(PartnerStatus.KEIN_PARTNER)
+        .withPaymentTerms(PaymentTerms.NETTO_30)
+        .build();
+    
+    // Keep the [TEST] prefix and custom customer number
     testCustomer.setCompanyName("[TEST] Test Company GmbH");
     testCustomer.setCustomerNumber("CUST-" + UUID.randomUUID().toString().substring(0, 8));
-    testCustomer.setPartnerStatus(PartnerStatus.KEIN_PARTNER);
-    testCustomer.setPaymentTerms(PaymentTerms.NETTO_30);
-    testCustomer.setStatus(CustomerStatus.LEAD);
     testCustomer.setIsTestData(true);  // Mark as test data
-    testCustomer.setCreatedBy("system");
-    // Sprint 2 fields
-    testCustomer.setPrimaryFinancing(FinancingType.PRIVATE);
+    testCustomer.setPrimaryFinancing(FinancingType.PRIVATE);  // Sprint 2 field
+    
     customerRepository.persist(testCustomer);
     testCustomerId = testCustomer.getId();
 

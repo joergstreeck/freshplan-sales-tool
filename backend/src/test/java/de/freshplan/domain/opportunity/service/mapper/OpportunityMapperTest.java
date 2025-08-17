@@ -6,6 +6,7 @@ import de.freshplan.domain.customer.entity.Customer;
 import de.freshplan.domain.opportunity.entity.Opportunity;
 import de.freshplan.domain.opportunity.entity.OpportunityStage;
 import de.freshplan.domain.user.entity.User;
+import de.freshplan.test.builders.CustomerBuilder;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import java.math.BigDecimal;
@@ -29,6 +30,8 @@ import org.junit.jupiter.api.Test;
 public class OpportunityMapperTest {
 
   @Inject OpportunityMapper opportunityMapper;
+  
+  @Inject CustomerBuilder customerBuilder;
 
   private Opportunity testOpportunity;
   private Customer testCustomer;
@@ -36,10 +39,12 @@ public class OpportunityMapperTest {
 
   @BeforeEach
   void setUp() {
-    // Create test customer
-    testCustomer = new Customer();
+    // Create test customer using CustomerBuilder
+    testCustomer = customerBuilder
+        .withCompanyName("Test Company Ltd.")
+        .build();
     testCustomer.setId(UUID.randomUUID());
-    testCustomer.setCompanyName("[TEST] Test Company Ltd.");
+    testCustomer.setCompanyName("Test Company Ltd.");  // Override [TEST-xxx] prefix from builder
     testCustomer.setIsTestData(true);  // Mark as test data
 
     // Create test user (using proper constructor)

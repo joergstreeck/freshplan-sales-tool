@@ -27,6 +27,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import de.freshplan.test.builders.CustomerBuilder;
 
 /**
  * Integration Test for ContactEventCaptureService CQRS Implementation.
@@ -59,6 +60,8 @@ class ContactEventCaptureCQRSIntegrationTest {
   @Inject ContactRepository contactRepository;
 
   @Inject ContactInteractionRepository interactionRepository;
+  
+  @Inject CustomerBuilder customerBuilder;
 
   @ConfigProperty(name = "features.cqrs.enabled")
   boolean cqrsEnabled;
@@ -107,16 +110,16 @@ class ContactEventCaptureCQRSIntegrationTest {
         .run(
             () -> {
               // Create customer
-              Customer customer = new Customer();
+              Customer customer = customerBuilder
+                  .withCompanyName("[TEST-" + testRunId + "] Event Company")
+                  .withType(CustomerType.UNTERNEHMEN)
+                  .withStatus(CustomerStatus.AKTIV)
+                  .withIndustry(Industry.HOTEL)
+                  .withExpectedAnnualVolume(new BigDecimal("250000"))
+                  .build();
               customer.setCustomerNumber("EVT-" + testRunId);
-              customer.setCompanyName("[TEST-" + testRunId + "] Event Company");
-              customer.setCustomerType(CustomerType.UNTERNEHMEN);
-              customer.setStatus(CustomerStatus.AKTIV);
-              customer.setIndustry(Industry.HOTEL);
-              customer.setExpectedAnnualVolume(new BigDecimal("250000"));
+              customer.setCompanyName("[TEST-" + testRunId + "] Event Company"); // Keep [TEST-x] prefix
               customer.setIsTestData(true);
-              customer.setCreatedBy("testuser");
-              customer.setCreatedAt(LocalDateTime.now());
               customerRepository.persist(customer);
               testCustomerId = customer.getId();
 

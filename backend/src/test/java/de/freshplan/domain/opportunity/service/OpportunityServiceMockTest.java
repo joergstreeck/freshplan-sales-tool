@@ -30,6 +30,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import de.freshplan.test.builders.CustomerBuilder;
 
 /**
  * Mock-basierte Unit Tests für OpportunityService
@@ -48,6 +49,8 @@ public class OpportunityServiceMockTest {
   @InjectMock OpportunityRepository opportunityRepository;
 
   @InjectMock CustomerRepository customerRepository;
+  
+  @Inject CustomerBuilder customerBuilder;
 
   @InjectMock UserRepository userRepository;
 
@@ -72,9 +75,11 @@ public class OpportunityServiceMockTest {
     opportunityId = UUID.randomUUID();
 
     // Create test customer
-    testCustomer = new Customer();
+    testCustomer = customerBuilder
+        .withCompanyName("[TEST] Test Company GmbH")
+        .build();
     testCustomer.setId(customerId);
-    testCustomer.setCompanyName("[TEST] Test Company GmbH");
+    testCustomer.setCompanyName("[TEST] Test Company GmbH"); // Keep [TEST] prefix
     testCustomer.setCustomerNumber("TEST-001");
     testCustomer.setIsTestData(true);  // Mark as test data
 

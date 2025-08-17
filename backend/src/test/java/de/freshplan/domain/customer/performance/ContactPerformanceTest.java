@@ -22,6 +22,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
+import de.freshplan.test.builders.CustomerBuilder;
 
 /**
  * Performance tests for Contact-related operations. Tests bulk operations, query performance, and
@@ -37,16 +38,21 @@ public class ContactPerformanceTest {
   @Inject EntityManager entityManager;
 
   @Inject CustomerRepository customerRepository;
+  
+  @Inject CustomerBuilder customerBuilder;
 
   private Customer testCustomer;
 
   @BeforeEach
   @TestTransaction
   void setUp() {
-    // Create test customer
-    testCustomer = new Customer();
-    testCustomer.setCompanyName("Performance Test Company");
+    // Create test customer using CustomerBuilder
+    testCustomer = customerBuilder
+        .withCompanyName("Performance Test Company")
+        .build();
+    // Override auto-generated values for performance test
     testCustomer.setCustomerNumber("PERF-" + UUID.randomUUID().toString().substring(0, 8));
+    testCustomer.setCompanyName("Performance Test Company"); // Remove [TEST-xxx] prefix
     customerRepository.persist(testCustomer);
   }
 

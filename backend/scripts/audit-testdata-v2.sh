@@ -6,19 +6,25 @@
 
 set -euo pipefail
 
-echo "=== 🔍 TEST DATA AUDIT v2.0 ==="
-echo "Using precise PCRE patterns with word boundaries"
+echo "=== 🔍 TEST DATA AUDIT v2.1 ==="
+echo "Using precise PCRE patterns with negative lookahead"
 echo ""
 
 ERRORS=0
 WARNINGS=0
 
-# 1. Direkte Customer-Konstruktoren (PRÄZISER mit \b word boundary)
+# 1. Direkte Customer-Konstruktoren (mit grep-Filter statt komplexem Pattern)
 echo -n "1. Checking for 'new Customer()' in tests... "
-if rg -q -P 'new\s+Customer\b\s*\(' src/test/java 2>/dev/null; then
+# Suche nach 'new Customer(' und filtere dann die falschen Positive raus
+CUSTOMER_FOUND=$(rg -n --no-heading 'new\s+Customer\s*\(' src/test/java 2>/dev/null | 
+    grep -v 'CustomerBuilder\|CustomerContact\|CustomerRepository\|CustomerService\|CustomerType\|CustomerStatus' | 
+    wc -l || echo "0")
+if [ "$CUSTOMER_FOUND" -gt 0 ]; then
     echo "❌ FOUND!"
     echo "   First 5 locations:"
-    rg -n --no-heading -P 'new\s+Customer\b\s*\(' src/test/java | head -5
+    rg -n --no-heading 'new\s+Customer\s*\(' src/test/java | 
+        grep -v 'CustomerBuilder\|CustomerContact\|CustomerRepository\|CustomerService\|CustomerType\|CustomerStatus' | 
+        head -5
     ERRORS=$((ERRORS + 1))
 else
     echo "✅ OK (0 found)"

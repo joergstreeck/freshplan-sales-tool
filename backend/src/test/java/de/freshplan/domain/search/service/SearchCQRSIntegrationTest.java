@@ -23,6 +23,7 @@ import org.jboss.logging.Logger;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import de.freshplan.test.builders.CustomerBuilder;
 
 /**
  * FIXED Integration Test for SearchService CQRS Implementation.
@@ -45,6 +46,7 @@ class SearchCQRSIntegrationTest {
 
   @Inject SearchService searchService;
   @Inject CustomerRepository customerRepository;
+  @Inject CustomerBuilder customerBuilder;
 
   @ConfigProperty(name = "features.cqrs.enabled")
   boolean cqrsEnabled;
@@ -167,16 +169,17 @@ class SearchCQRSIntegrationTest {
   void search_withLargeDataset_shouldPerformWell() {
     // Given - Create 100 test customers
     for (int i = 0; i < 100; i++) {
-      Customer c = new Customer();
+      Customer c = customerBuilder
+          .withCompanyName("[TEST] Performance Test " + i)
+          .withType(CustomerType.UNTERNEHMEN)
+          .withStatus(i % 3 == 0 ? CustomerStatus.AKTIV : CustomerStatus.LEAD)
+          .withIndustry(Industry.values()[i % Industry.values().length])
+          .withExpectedAnnualVolume(new BigDecimal(100000 + i * 1000))
+          .build();
+      // Override auto-generated values for test
       c.setCustomerNumber("PERF" + i);
-      c.setCompanyName("[TEST] Performance Test " + i);
-      c.setCustomerType(CustomerType.UNTERNEHMEN);
-      c.setStatus(i % 3 == 0 ? CustomerStatus.AKTIV : CustomerStatus.LEAD);
-      c.setIndustry(Industry.values()[i % Industry.values().length]);
-      c.setExpectedAnnualVolume(new BigDecimal(100000 + i * 1000));
+      c.setCompanyName("[TEST] Performance Test " + i); // Override to remove builder prefix
       c.setIsTestData(true);
-      c.setCreatedBy("testuser");
-      c.setCreatedAt(LocalDateTime.now());
       customerRepository.persist(c);
     }
     customerRepository.flush();
@@ -264,15 +267,16 @@ class SearchCQRSIntegrationTest {
   // Helper method
   private Customer createTestCustomer(
       String number, String name, CustomerType type, CustomerStatus status, Industry industry) {
-    Customer customer = new Customer();
+    Customer customer = customerBuilder
+        .withCompanyName(name)
+        .withType(type)
+        .withStatus(status)
+        .withIndustry(industry)
+        .build();
+    // Override auto-generated values for test specifics
     customer.setCustomerNumber(number);
-    customer.setCompanyName(name);
-    customer.setCustomerType(type);
-    customer.setStatus(status);
-    customer.setIndustry(industry);
+    customer.setCompanyName(name); // Override to remove builder prefix
     customer.setIsTestData(true);
-    customer.setCreatedBy("testuser");
-    customer.setCreatedAt(LocalDateTime.now());
     customerRepository.persist(customer);
     return customer;
   }

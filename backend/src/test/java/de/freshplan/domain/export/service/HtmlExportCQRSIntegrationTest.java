@@ -22,6 +22,7 @@ import org.jboss.logging.Logger;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import de.freshplan.test.builders.CustomerBuilder;
 
 /**
  * FIXED Integration Test for HtmlExportService CQRS Implementation.
@@ -44,6 +45,7 @@ class HtmlExportCQRSIntegrationTest {
 
   @Inject HtmlExportService htmlExportService;
   @Inject CustomerRepository customerRepository;
+  @Inject CustomerBuilder customerBuilder;
 
   @ConfigProperty(name = "features.cqrs.enabled")
   boolean cqrsEnabled;
@@ -429,16 +431,16 @@ class HtmlExportCQRSIntegrationTest {
   // Helper method
   private Customer createTestCustomer(
       String number, String name, CustomerType type, CustomerStatus status, Industry industry) {
-    Customer customer = new Customer();
+    Customer customer = customerBuilder
+        .withCompanyName(name)
+        .withType(type)
+        .withStatus(status)
+        .withIndustry(industry)
+        .withExpectedAnnualVolume(new BigDecimal("100000"))
+        .build();
     customer.setCustomerNumber(number);
-    customer.setCompanyName(name);
-    customer.setCustomerType(type);
-    customer.setStatus(status);
-    customer.setIndustry(industry);
-    customer.setExpectedAnnualVolume(new BigDecimal("100000"));
+    customer.setCompanyName(name); // Override to remove [TEST-xxx] prefix
     customer.setIsTestData(true);
-    customer.setCreatedBy("testuser");
-    customer.setCreatedAt(LocalDateTime.now());
     customerRepository.persist(customer);
     return customer;
   }

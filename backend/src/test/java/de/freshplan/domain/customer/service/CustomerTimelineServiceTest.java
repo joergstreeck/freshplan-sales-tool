@@ -24,6 +24,7 @@ import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import de.freshplan.test.builders.CustomerBuilder;
 
 /**
  * Unit tests for CustomerTimelineService.
@@ -44,6 +45,8 @@ class CustomerTimelineServiceTest {
   @InjectMock CustomerRepository customerRepository;
 
   @InjectMock CustomerTimelineMapper timelineMapper;
+  
+  @Inject CustomerBuilder customerBuilder;
 
   private UUID customerId;
   private Customer customer;
@@ -54,10 +57,12 @@ class CustomerTimelineServiceTest {
   void setUp() {
     customerId = UUID.randomUUID();
 
-    customer = new Customer();
+    customer = customerBuilder
+        .withCompanyName("Test Company")
+        .build();
     customer.setId(customerId);
     customer.setCustomerNumber("CUST001");
-    customer.setCompanyName("Test Company");
+    customer.setCompanyName("Test Company"); // Override to remove [TEST-xxx] prefix
 
     timelineEvent = new CustomerTimelineEvent();
     timelineEvent.setId(UUID.randomUUID());

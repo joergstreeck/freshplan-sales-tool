@@ -8,6 +8,7 @@ import de.freshplan.domain.opportunity.entity.Opportunity;
 import de.freshplan.domain.opportunity.entity.OpportunityStage;
 import de.freshplan.domain.user.entity.User;
 import de.freshplan.domain.user.repository.UserRepository;
+import de.freshplan.test.builders.CustomerBuilder;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.security.TestSecurity;
 import jakarta.inject.Inject;
@@ -39,6 +40,8 @@ public class OpportunityDatabaseIntegrationTest {
   @Inject CustomerRepository customerRepository;
 
   @Inject UserRepository userRepository;
+  
+  @Inject CustomerBuilder customerBuilder;
 
   @Inject EntityManager entityManager;
 
@@ -214,12 +217,15 @@ public class OpportunityDatabaseIntegrationTest {
 
   /** Helper method to create a test customer with unique customer number */
   private Customer createTestCustomer(String customerNumber) {
-    Customer customer = new Customer();
+    Customer customer = customerBuilder
+        .withCompanyName("[TEST] Test Company " + customerNumber)
+        .build();
+    
+    // Keep exact company name and customer number
     customer.setCompanyName("[TEST] Test Company " + customerNumber);
     customer.setCustomerNumber(customerNumber);
     customer.setIsTestData(true);
-    customer.setIsDeleted(false);
-    customer.setCreatedBy("testuser");
+    
     customerRepository.persist(customer);
     return customer;
   }

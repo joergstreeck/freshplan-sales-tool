@@ -9,6 +9,7 @@ import de.freshplan.domain.customer.entity.CustomerContact;
 import de.freshplan.domain.customer.repository.ContactInteractionRepository;
 import de.freshplan.domain.customer.repository.ContactRepository;
 import de.freshplan.domain.customer.repository.CustomerRepository;
+import de.freshplan.test.builders.CustomerBuilder;
 import de.freshplan.domain.customer.service.dto.ContactInteractionDTO;
 import de.freshplan.domain.customer.service.dto.DataQualityMetricsDTO;
 import de.freshplan.domain.customer.service.dto.WarmthScoreDTO;
@@ -34,6 +35,8 @@ class ContactInteractionServiceIT {
   @Inject ContactRepository contactRepository;
 
   @Inject ContactInteractionRepository interactionRepository;
+  
+  @Inject CustomerBuilder customerBuilder;
 
   private UUID testCustomerId;
   private UUID testContactId;
@@ -47,9 +50,13 @@ class ContactInteractionServiceIT {
     contactRepository.deleteAll();
     customerRepository.deleteAll();
 
-    // Create test customer
-    Customer testCustomer = new Customer();
-    testCustomer.setCompanyName("Test Company GmbH");
+    // Create test customer using CustomerBuilder
+    Customer testCustomer = customerBuilder
+        .withCompanyName("Test Company GmbH")
+        .build();
+    
+    // Override specific fields to maintain test requirements
+    testCustomer.setCompanyName("Test Company GmbH"); // Override to use exact name without [TEST-xxx] prefix
     testCustomer.setCustomerNumber("TEST-001");
     testCustomer.setCreatedBy("test-user");
     testCustomer.setUpdatedBy("test-user");

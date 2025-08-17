@@ -13,6 +13,7 @@ import de.freshplan.domain.opportunity.service.dto.CreateOpportunityRequest;
 import de.freshplan.domain.opportunity.service.dto.UpdateOpportunityRequest;
 import de.freshplan.domain.user.entity.User;
 import de.freshplan.domain.user.repository.UserRepository;
+import de.freshplan.test.builders.CustomerBuilder;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.security.TestSecurity;
 import io.restassured.http.ContentType;
@@ -49,6 +50,8 @@ public class OpportunityResourceIntegrationTest {
   @Inject UserRepository userRepository;
 
   @Inject EntityManager entityManager;
+  
+  @Inject CustomerBuilder customerBuilder;
 
   private Customer testCustomer;
   private User testUser;
@@ -681,16 +684,15 @@ public class OpportunityResourceIntegrationTest {
       return existingCustomer;
     }
 
-    // Create minimal test customer with all required fields
-    var customer = new Customer();
+    // Create test customer using CustomerBuilder
+    var customer = customerBuilder
+        .withCompanyName(companyName)
+        .build();
+    
+    // Override to use exact company name without [TEST-xxx] prefix
     customer.setCompanyName(companyName);
-
-    // Set required NOT NULL fields to avoid constraint violations
-    customer.setCustomerNumber("TEST-" + System.currentTimeMillis()); // Unique customer number
+    customer.setCustomerNumber("TEST-" + System.currentTimeMillis()); // Keep unique customer number
     customer.setIsTestData(true); // Mark as test data
-    customer.setIsDeleted(false); // Not deleted
-    customer.setCreatedAt(java.time.LocalDateTime.now()); // Set created timestamp
-    customer.setCreatedBy("test-system"); // Set created by
 
     customerRepository.persist(customer);
     return customer;

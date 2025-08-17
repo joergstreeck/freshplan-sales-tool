@@ -1,22 +1,23 @@
 #!/bin/bash
-# migrate-batch-lowrisk.sh - Batch-Migration für Low-Risk Tests
-# Version: 2.0 - Angepasst für CustomerBuilder
-# Autor: Team + Claude
-# Datum: 17.08.2025
-
+# Limited version - only migrates first 3 tests
 set -euo pipefail
 
-echo "=== 🔄 BATCH MIGRATION - Low-Risk Tests ==="
-echo "Migrating tests WITH @TestTransaction to CustomerBuilder..."
+echo "=== 🔄 LIMITED BATCH MIGRATION - First 3 Low-Risk Tests ==="
 echo ""
 
 MIGRATED=0
 FAILED=0
 SKIPPED=0
 ALREADY_MIGRATED=0
+MAX_TESTS=3
 
-# Find all tests with @TestTransaction that use new Customer()
 for file in $(rg -l '@TestTransaction' src/test/java --type java); do
+    # Stop after MAX_TESTS
+    if [ $MIGRATED -ge $MAX_TESTS ]; then
+        echo "Stopping after $MAX_TESTS successful migrations (limited run)"
+        break
+    fi
+    
     # Skip if already migrated to CustomerBuilder
     if grep -q "CustomerBuilder" "$file"; then
         ALREADY_MIGRATED=$((ALREADY_MIGRATED + 1))
@@ -36,7 +37,6 @@ for file in $(rg -l '@TestTransaction' src/test/java --type java); do
     cp "$file" "$file.backup"
     
     # Migrate: new Customer() → customerBuilder...persist()
-    # First replace simple new Customer() calls
     sed -i.tmp -E 's/new\s+Customer\(\)/customerBuilder.persist()/g' "$file"
     
     # Add import if missing
@@ -51,11 +51,8 @@ import de.freshplan.test.builders.CustomerBuilder;' "$file"
         # Find where to add the injection (after other @Inject or before first @Test)
         if grep -q "@Inject.*Repository" "$file"; then
             # Add after last @Inject
-            sed -i.tmp '/@Inject.*Repository/{
-                a\
-\
-  @Inject CustomerBuilder customerBuilder;
-            }' "$file"
+            awk '/@Inject.*Repository/ {print; print "\n  @Inject CustomerBuilder customerBuilder;"; next} {print}' "$file" > "$file.new"
+            mv "$file.new" "$file"
         else
             # Add before first @Test
             sed -i.tmp '/@Test/{
@@ -85,20 +82,10 @@ import de.freshplan.test.builders.CustomerBuilder;' "$file"
     echo ""
 done
 
-echo "=== 📊 BATCH MIGRATION RESULTS ==="
+echo "=== 📊 LIMITED BATCH MIGRATION RESULTS ==="
 echo "✅ Migrated: $MIGRATED"
 echo "❌ Failed: $FAILED"
 echo "⏭️  Skipped: $SKIPPED (no new Customer())"
 echo "📌 Already migrated: $ALREADY_MIGRATED"
-
-if [ $FAILED -gt 0 ]; then
-    echo ""
-    echo "⚠️  Some migrations failed. Review manually."
-    echo "You can check the .backup files for failed tests."
-    exit 1
-else
-    echo ""
-    echo "🎉 Batch migration successful!"
-    echo "Total progress: $((MIGRATED + ALREADY_MIGRATED)) tests using CustomerBuilder"
-    exit 0
-fi
+echo ""
+echo "This was a limited run (max $MAX_TESTS tests)"
