@@ -6,7 +6,7 @@
 # Datum: 2025-08-07
 # Update: 2025-08-08 - Robuster gemacht, funktioniert aus jedem Verzeichnis
 # Update: 2025-08-09 - KRITISCH: Konsistente Berechnung sichergestellt
-# Update: 2025-08-17 - WICHTIG: Ignoriere V10000+ (Test-Cleanup, nicht für Production)
+# Update: 2025-08-17 - WICHTIG: Ignoriere V8000+ (nur V1-V7999 für Production)
 
 set -e
 
@@ -61,8 +61,8 @@ fi
 echo -e "${BLUE}📁 Migration-Verzeichnis: ${NC}$MIGRATION_DIR"
 echo ""
 
-# Zeige die wirklich letzten 5 Produktions-Migrationen (NUMERISCH sortiert, < V10000)
-echo -e "${YELLOW}📋 Letzte 5 Produktions-Migrationen (< V10000):${NC}"
+# Zeige die wirklich letzten 5 Produktions-Migrationen (NUMERISCH sortiert, < V8000)
+echo -e "${YELLOW}📋 Letzte 5 Produktions-Migrationen (< V8000):${NC}"
 
 # Erstelle temporäre Liste mit Nummer und Dateiname
 for file in "$MIGRATION_DIR"/V*.sql; do
@@ -72,7 +72,7 @@ for file in "$MIGRATION_DIR"/V*.sql; do
 done | while read -r filename; do
     # Extrahiere Nummer
     num=$(echo "$filename" | sed 's/^V//' | sed 's/__.*$//' | sed 's/_.*$//')
-    if [[ "$num" =~ ^[0-9]+$ ]] && [ "$num" -lt 10000 ]; then
+    if [[ "$num" =~ ^[0-9]+$ ]] && [ "$num" -lt 8000 ]; then
         echo "$num $filename"
     fi
 done | sort -n | tail -5 | while read -r num filename; do
@@ -95,18 +95,18 @@ if [ "$DEBUG" = "1" ]; then
 fi
 
 # Drei verschiedene Methoden zur Sicherheit
-# WICHTIG: Ignoriere Migrationen >= V10000 (nur für Test-Cleanup, gehen nicht in main)
+# WICHTIG: Nur Migrationen V1-V7999 sind für Production (V8000+ sind Test/CI-only)
 METHOD1=$(ls "$MIGRATION_DIR"/V*.sql 2>/dev/null | while read -r filepath; do
     basename "$filepath" | sed 's/^V//' | sed 's/__.*$//' | sed 's/_.*$//'
-done | grep -E '^[0-9]+$' | awk '$1 < 10000' | sort -n | tail -1)
+done | grep -E '^[0-9]+$' | awk '$1 < 8000' | sort -n | tail -1)
 
 METHOD2=$(find "$MIGRATION_DIR" -name "V*.sql" -type f 2>/dev/null | \
           sed 's/.*\/V//' | sed 's/[_].*$//' | \
-          grep -E '^[0-9]+$' | awk '$1 < 10000' | sort -n | tail -1)
+          grep -E '^[0-9]+$' | awk '$1 < 8000' | sort -n | tail -1)
 
 METHOD3=$(cd "$MIGRATION_DIR" 2>/dev/null && ls V*.sql 2>/dev/null | \
           sed 's/^V//' | cut -d'_' -f1 | \
-          grep -E '^[0-9]+$' | awk '$1 < 10000' | sort -n | tail -1)
+          grep -E '^[0-9]+$' | awk '$1 < 8000' | sort -n | tail -1)
 
 # Verwende Method1 als Standard
 HIGHEST="$METHOD1"
@@ -134,13 +134,28 @@ if [ -z "$HIGHEST" ]; then
 else
     NEXT=$((HIGHEST + 1))
     echo -e "${GREEN}✅ Höchste Produktions-Migration: V${HIGHEST}${NC}"
-    echo -e "${BLUE}   (Migrationen >= V10000 werden ignoriert - nur für Test-Cleanup)${NC}"
+    echo -e "${BLUE}   (Nur V1-V7999 für Production, V8000+ sind Test/CI-only)${NC}"
     
     # Zeige auch die aktuelle höchste Migration-Datei
     HIGHEST_FILE=$(ls "$MIGRATION_DIR"/V${HIGHEST}*.sql 2>/dev/null | head -1 | sed 's/.*\///')
     if [ -n "$HIGHEST_FILE" ]; then
         echo -e "${BLUE}   Datei: $HIGHEST_FILE${NC}"
     fi
+fi
+
+# Warnung wenn wir uns der Produktions-Grenze nähern
+if [ "$NEXT" -ge 7900 ] && [ "$NEXT" -lt 8000 ]; then
+    echo -e "${YELLOW}⚠️  ACHTUNG: Näherung an Produktions-Limit (V8000)${NC}"
+    echo -e "${YELLOW}   Nur noch $((8000 - NEXT)) Produktions-Migrationen möglich!${NC}"
+    echo ""
+fi
+
+# Kritischer Check: Keine Produktions-Migrationen über V7999
+if [ "$NEXT" -ge 8000 ]; then
+    echo -e "${RED}❌ FEHLER: Produktions-Limit erreicht!${NC}"
+    echo -e "${RED}   V8000+ ist für Test/CI-Migrationen reserviert.${NC}"
+    echo -e "${YELLOW}   Bitte mit dem Team besprechen, wie weiter vorgegangen werden soll.${NC}"
+    exit 1
 fi
 
 # Ausgabe der nächsten Nummer
@@ -195,10 +210,10 @@ if [ "$DEBUG" = "1" ]; then
     echo "   Höchste gefundene Migration: V${HIGHEST:-0}"
     echo "   Nächste freie Migration: V${NEXT}"
     
-    # Double-Check mit alternativer Methode (ignoriere >= V10000)
+    # Double-Check mit alternativer Methode (ignoriere >= V8000)
     ALT_HIGHEST=$(find "$MIGRATION_DIR" -name "V*.sql" -type f 2>/dev/null | \
                    sed 's/.*\/V//' | sed 's/[_].*$//' | \
-                   grep -E '^[0-9]+$' | awk '$1 < 10000' | sort -n | tail -1)
+                   grep -E '^[0-9]+$' | awk '$1 < 8000' | sort -n | tail -1)
     if [ -n "$ALT_HIGHEST" ] && [ "$ALT_HIGHEST" != "$HIGHEST" ]; then
         echo -e "${RED}   ⚠️  WARNUNG: Alternative Methode ergab V${ALT_HIGHEST}${NC}"
     fi
