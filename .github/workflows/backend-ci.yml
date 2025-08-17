@@ -111,6 +111,17 @@ jobs:
              FROM pg_constraint 
              WHERE contype='f' AND confrelid='public.customers'::regclass;"
       
+      - name: Check for Mockito varargs antipattern
+        run: |
+          echo "Checking for Mockito eq() with varargs methods..."
+          if grep -r "when.*delete.*eq(" backend/src/test/java --include="*.java" 2>/dev/null; then
+            echo "❌ ERROR: Found eq() matcher with varargs method!"
+            echo "Use any() instead of eq() for Panache delete methods"
+            echo "Example: when(repository.delete(any())).thenReturn(1L);"
+            exit 1
+          fi
+          echo "✅ No Mockito varargs antipattern found"
+      
       - name: Run FK Sanity Check first
         working-directory: backend
         env:

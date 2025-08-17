@@ -59,18 +59,20 @@ public class DatabaseGrowthTrackerTest {
         
         if (initial != null && finalCount != null) {
             long growth = finalCount - initial;
-            System.out.printf("TOTAL GROWTH: %d customers added during test run%n", growth);
+            System.out.printf("TOTAL GROWTH: %d test customers added during test run (is_test_data=true only)%n", growth);
             
             if (growth > 0) {
-                System.out.println("\n### GROWTH TIMELINE ###");
+                System.out.println("\n### TEST DATA GROWTH TIMELINE ###");
                 growthLog.forEach(System.out::println);
                 
-                System.out.println("\n### PROBLEM AREAS ###");
+                System.out.println("\n### PROBLEM AREAS (Tests not cleaning up) ###");
                 checkpoints.forEach((checkpoint, count) -> {
                     if (initial != null && count > initial) {
-                        System.out.printf("%s: +%d customers%n", checkpoint, count - initial);
+                        System.out.printf("%s: +%d test customers (is_test_data=true)%n", checkpoint, count - initial);
                     }
                 });
+                
+                System.out.println("\n⚠️  Tests should use @TestTransaction for automatic cleanup!");
             }
         }
         
@@ -78,20 +80,22 @@ public class DatabaseGrowthTrackerTest {
     }
     
     private void captureState(String checkpoint) {
-        long count = customerRepository.count();
+        // IMPORTANT: Only count test data (is_test_data = true)
+        // This prevents false positives from production seed data
+        long count = customerRepository.count("isTestData", true);
         Long previousCount = checkpoints.isEmpty() ? null : 
             checkpoints.values().stream().reduce((first, second) -> second).orElse(null);
         
         checkpoints.put(checkpoint, count);
         
-        String message = String.format("[%s] Customers: %d", checkpoint, count);
+        String message = String.format("[%s] Test Customers (is_test_data=true): %d", checkpoint, count);
         if (previousCount != null && count != previousCount) {
             long diff = count - previousCount;
             message += String.format(" (CHANGE: %+d)", diff);
             
             // Log significant changes
             if (Math.abs(diff) > 0) {
-                growthLog.add(String.format("%s: %d → %d (%+d)", 
+                growthLog.add(String.format("%s: %d → %d (%+d test customers)", 
                     checkpoint, previousCount, count, diff));
             }
         }
