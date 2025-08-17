@@ -1,10 +1,11 @@
 # 🔨 MIGRATION PLAN - Der Bauplan zur neuen Test-Daten-Architektur
 ## Schritt-für-Schritt vom Chaos zur Ordnung
 
-**Version:** 2.0  
-**Status:** TEAM-APPROVED & ENHANCED  
+**Version:** 3.0  
+**Status:** TEAM-APPROVED & IN PROGRESS (Phase 0 ✅)  
 **Datum:** 17.08.2025  
 **Autor:** Claude & Jörg (Architektur-Session) + Team-Feedback
+**Fortschritt:** Phase 0 ABGESCHLOSSEN ✅
 
 ---
 
@@ -107,8 +108,8 @@ E2E → V9999 SEED-Daten → Stabil
 
 ---
 
-## 4. Phase 0: VORBEREITUNG 🛠️ (NEU)
-**Dauer: 0.5 Tag**
+## 4. Phase 0: VORBEREITUNG 🛠️ ✅ ABGESCHLOSSEN (17.08.2025)
+**Dauer: 0.5 Tag** *(Tatsächlich: 1 Stunde)*
 **KRITISCH für CI-Erfolg!**
 
 ### 4.1 CI-Konfiguration anpassen (KRITISCH!)
@@ -813,6 +814,12 @@ psql freshplan < backup_before_migration.sql
 
 ## 10. Zeitplan 📅
 
+### Phase 0: ✅ ERLEDIGT (17.08.2025)
+- CI-Konfiguration angepasst
+- Migrations vorbereitet
+- ArchUnit-Regeln implementiert
+- Backup erstellt
+
 ### Woche 1: Umbau
 
 | Tag | Phase | Aktivitäten | Milestone |
@@ -987,19 +994,25 @@ public class TestDataDisciplineRules {
 
 ## ✅ Definition of Done
 
-- [ ] CI JDBC-URL mit ci.build Flag konfiguriert
-- [ ] V9000 Guard-Logik für Environment-Check eingebaut
-- [ ] Database Growth Check filtert auf is_test_data = true
-- [ ] Mockito CI-Check für varargs antipattern aktiv
-- [ ] ArchUnit-Regel für Builder-Enforcement implementiert
-- [ ] PermissionHelperPg mit ON CONFLICT implementiert
-- [ ] Concurrency-Test grün
+### Phase 0 (ABGESCHLOSSEN ✅ - 17.08.2025)
+- [x] CI JDBC-URL mit ci.build Flag konfiguriert
+- [x] V9000 Guard-Logik für Environment-Check eingebaut
+- [x] Database Growth Check filtert auf is_test_data = true
+- [x] Mockito CI-Check für varargs antipattern aktiv
+- [x] ArchUnit-Regel für Builder-Enforcement implementiert
+- [x] V10002 Unique Constraints Migration erstellt
+- [x] V10003 Test-Daten-Dashboard View erstellt
+- [x] V10000 für CI optimiert (ci.build check)
+- [x] Backup-Branch erstellt (backup/before-test-cleanup-20250817)
+
+### Phase 1-4 (TODO)
 - [ ] Alle alten Initializers gelöscht
+- [ ] V219 und V220 Migrationen entfernt
 - [ ] TestDataBuilder mit build()/persist() implementiert
+- [ ] PermissionHelperPg mit ON CONFLICT implementiert
 - [ ] V9999 auf 20 SEED-Daten reduziert
-- [ ] V10000 für CI optimiert
 - [ ] V10001 Guard Migration aktiv
-- [ ] Test-Daten-Dashboard View erstellt
+- [ ] Concurrency-Test grün
 - [ ] Alle Tests migriert und grün
 - [ ] CI Pipeline grün
 - [ ] Performance verbessert (>30%)
