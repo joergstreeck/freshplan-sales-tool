@@ -11,6 +11,7 @@ import de.freshplan.domain.customer.repository.ContactRepository;
 import de.freshplan.domain.customer.repository.CustomerRepository;
 import de.freshplan.domain.customer.service.dto.ContactDTO;
 import de.freshplan.domain.customer.service.mapper.ContactMapper;
+import de.freshplan.test.builders.CustomerBuilder;
 import io.quarkus.security.identity.SecurityIdentity;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.mockito.InjectMock;
@@ -33,6 +34,9 @@ class ContactCommandServiceTest {
 
   @Inject ContactCommandService commandService;
 
+  // CustomerBuilder for unit tests (without CDI)
+  private final CustomerBuilder customerBuilder = new CustomerBuilder();
+
   @InjectMock ContactRepository contactRepository;
 
   @InjectMock CustomerRepository customerRepository;
@@ -48,10 +52,11 @@ class ContactCommandServiceTest {
 
   @BeforeEach
   void setUp() {
-    // Setup mock customer
-    mockCustomer = new Customer();
+    // Setup mock customer using CustomerBuilder directly
+    mockCustomer = customerBuilder
+        .withCompanyName("Test Company GmbH")
+        .build();  // Using build() for unit test (no DB)
     mockCustomer.setId(UUID.randomUUID());
-    mockCustomer.setCompanyName("Test Company GmbH");
 
     // Setup mock contact
     mockContact = new CustomerContact();
