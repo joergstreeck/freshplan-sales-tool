@@ -89,6 +89,73 @@ jobs:
             -Dquarkus.datasource.password=freshplan
           echo "✅ Migrations completed successfully"
       
+      - name: Run smoke tests for test data setup
+        env:
+          PGPASSWORD: freshplan
+        run: |
+          echo "=== Running smoke tests for test data setup ==="
+          
+          # 1. Guard aktiv?
+          echo "1. Checking CI guard flag..."
+          CI_FLAG=$(psql -h localhost -U freshplan -d freshplan -t -c "SELECT current_setting('ci.build', true);")
+          if [[ "$CI_FLAG" == *"true"* ]]; then
+            echo "✅ Guard flag is active: ci.build = true"
+          else
+            echo "❌ Guard flag not active!"
+            exit 1
+          fi
+          
+          # 2. Grundlagen nach V10002
+          echo "2. Checking V10002 foundations..."
+          
+          # is_test_data vorhanden & NOT NULL?
+          psql -h localhost -U freshplan -d freshplan -c "
+            SELECT table_name, column_name 
+            FROM information_schema.columns
+            WHERE column_name='is_test_data'
+              AND table_name IN ('customers','customer_contacts','opportunities','audit_trail')
+              AND is_nullable = 'NO';" | grep -q "customers" || \
+          (echo "❌ is_test_data column missing or nullable!" && exit 1)
+          echo "✅ is_test_data columns present and NOT NULL"
+          
+          # Unique-Constraint auf customer_number vorhanden?
+          psql -h localhost -U freshplan -d freshplan -c "
+            SELECT 1 FROM pg_constraint c
+            JOIN pg_class r ON r.oid=c.conrelid
+            WHERE r.relname='customers' AND c.contype='u';" | grep -q "1" || \
+          (echo "❌ Unique constraint on customer_number missing!" && exit 1)
+          echo "✅ Unique constraint on customer_number exists"
+          
+          # 3. Seeds nach V10005 (sollten noch nicht existieren, da Tests noch nicht gelaufen)
+          echo "3. Checking SEED data (might not exist yet before tests)..."
+          SEED_COUNT=$(psql -h localhost -U freshplan -d freshplan -t -c \
+            "SELECT COUNT(*) FROM customers WHERE customer_number LIKE 'SEED-%';")
+          echo "Current SEED count: $SEED_COUNT (will be populated during tests)"
+          
+          # 4. Monitoring nach V10003
+          echo "4. Checking monitoring views..."
+          psql -h localhost -U freshplan -d freshplan -c \
+            "SELECT * FROM test_data_dashboard;" || \
+          (echo "❌ test_data_dashboard view missing!" && exit 1)
+          echo "✅ Monitoring dashboard view exists"
+          
+          psql -h localhost -U freshplan -d freshplan -c \
+            "SELECT * FROM check_test_data_health();" || \
+          (echo "❌ check_test_data_health function missing!" && exit 1)
+          echo "✅ Health check function exists"
+          
+          echo "=== All smoke tests passed ✅ ==="
+      
+      - name: Verify CI guard flag is set
+        env:
+          PGPASSWORD: freshplan
+        run: |
+          echo "Verifying that ci.build flag is properly set..."
+          psql -h localhost -U freshplan -d freshplan \
+               -c "SELECT current_setting('ci.build', true);" | grep -q "true" || \
+          (echo "❌ ERROR: ci.build flag not set in CI!" && exit 1)
+          echo "✅ ci.build flag is correctly set to 'true'"
+      
       - name: Verify CI migrations applied
         env:
           PGPASSWORD: freshplan
@@ -159,6 +226,84 @@ jobs:
             -Dquarkus.datasource.jdbc.url="jdbc:postgresql://localhost:5432/freshplan?options=-c%20ci.build%3Dtrue" \
             -Dquarkus.datasource.username=freshplan \
             -Dquarkus.datasource.password=freshplan
+      
+      - name: Verify test data cleanup and final smoke tests
+        if: always()
+        env:
+          PGPASSWORD: freshplan
+        run: |
+          echo "=== Final smoke tests after test execution ==="
+          
+          # 1. Test data count check
+          echo "1. Checking test data counts..."
+          TEST_COUNT=$(psql -h localhost -U freshplan -d freshplan -t -c \
+            "SELECT COUNT(*) FROM customers WHERE is_test_data = true;")
+          SEED_COUNT=$(psql -h localhost -U freshplan -d freshplan -t -c \
+            "SELECT COUNT(*) FROM customers WHERE customer_number LIKE 'SEED-%';")
+          MARKED_COUNT=$(psql -h localhost -U freshplan -d freshplan -t -c \
+            "SELECT COUNT(*) FROM customers WHERE is_test_data = true;")
+          
+          echo "Total test data: $TEST_COUNT"
+          echo "SEED data: $SEED_COUNT" 
+          echo "Marked as test: $MARKED_COUNT"
+          
+          # 2. Verify SEEDs are exactly 20
+          echo "2. Verifying SEED data integrity..."
+          if [ "$SEED_COUNT" -ne 20 ]; then
+            echo "❌ ERROR: Expected exactly 20 SEED customers, found $SEED_COUNT"
+            psql -h localhost -U freshplan -d freshplan -c \
+              "SELECT customer_number, company_name FROM customers 
+               WHERE customer_number LIKE 'SEED-%' 
+               ORDER BY customer_number;"
+            exit 1
+          else
+            echo "✅ All 20 SEED customers are intact"
+          fi
+          
+          # 3. Test cleanup effectiveness (Zwei-Stufen-Cleanup)
+          echo "3. Checking cleanup thresholds..."
+          if [ "$TEST_COUNT" -gt 100 ]; then
+            echo "❌ CRITICAL: Test data exceeds hard threshold ($TEST_COUNT > 100)"
+            echo "V10000 should have triggered HARD cleanup!"
+            psql -h localhost -U freshplan -d freshplan -c \
+              "SELECT company_name, customer_number, created_at FROM customers 
+               WHERE is_test_data = true 
+               ORDER BY created_at DESC LIMIT 10;"
+            exit 1
+          elif [ "$TEST_COUNT" -gt 50 ]; then
+            echo "⚠️ WARNING: Test data in SOFT threshold range ($TEST_COUNT > 50)"
+            echo "Old data should have been cleaned"
+          else
+            echo "✅ Test data within optimal range (<= 50)"
+          fi
+          
+          # 4. All test data is marked correctly
+          echo "4. Verifying test data marking..."
+          UNMARKED=$(psql -h localhost -U freshplan -d freshplan -t -c \
+            "SELECT COUNT(*) FROM customers 
+             WHERE (company_name LIKE '[TEST-%' OR company_name LIKE '[SEED]%')
+               AND is_test_data = false;")
+          if [ "$UNMARKED" -gt 0 ]; then
+            echo "❌ ERROR: Found $UNMARKED unmarked test customers!"
+            exit 1
+          else
+            echo "✅ All test data properly marked"
+          fi
+          
+          # 5. Monitoring status check
+          echo "5. Checking monitoring dashboard..."
+          psql -h localhost -U freshplan -d freshplan -c \
+            "SELECT * FROM test_data_dashboard;" || exit 1
+          
+          HEALTH_STATUS=$(psql -h localhost -U freshplan -d freshplan -t -c \
+            "SELECT string_agg(result, ', ') FROM check_test_data_health() WHERE result != 'OK';")
+          if [[ -n "$HEALTH_STATUS" && "$HEALTH_STATUS" != " " ]]; then
+            echo "⚠️ Health check warnings: $HEALTH_STATUS"
+          else
+            echo "✅ All health checks passed"
+          fi
+          
+          echo "=== All final smoke tests completed ✅ ==="
       
       - name: Upload test reports
         if: always()

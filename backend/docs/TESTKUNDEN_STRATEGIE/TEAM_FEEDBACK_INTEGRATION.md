@@ -95,6 +95,39 @@ c.setCustomerNumber("TEST-" + uniqueId());  // GARANTIERT unique!
 
 ## 🆕 Finale Team-Empfehlungen integriert (17.08.2025)
 
+### Experten-Feedback umgesetzt - "Last Mile" Fixes ✅
+
+Nach Review durch externen Experten wurden folgende kritische Inkonsistenzen behoben:
+
+#### 1. **Guard-Signale vereinheitlicht** ✅
+- **Problem:** Uneinheitliche Guards (freshplan.environment vs. ci.build)
+- **Lösung:** Alle Migrationen nutzen jetzt konsistent `ci.build`
+- **Umgesetzt in:** V9995, V9999, V10000, V10001
+
+#### 2. **Separation of Concerns bei Migrationen** ✅
+- **Problem:** V9995 sollte Cleanup UND Seeds machen (Vermischung)
+- **Lösung:** 
+  - V9995: NUR Cleanup von spurious test data
+  - V9999: NUR Seeds (20 SEED Kunden)
+- **Vorteil:** Klare Verantwortlichkeiten, keine Überschneidungen
+
+#### 3. **DO UPDATE statt DO NOTHING** ✅
+- **Problem:** ON CONFLICT DO NOTHING kann falsch markierte Daten nicht heilen
+- **Lösung:** ON CONFLICT DO UPDATE setzt `is_test_data = TRUE`
+- **Effekt:** Heilt automatisch Altbestände bei Seed-Lauf
+
+#### 4. **pgcrypto Extension gesichert** ✅
+- **Problem:** gen_random_uuid() Dependency nicht überall gesichert
+- **Lösung:** CREATE EXTENSION IF NOT EXISTS pgcrypto in V9999
+- **Resultat:** Keine fehlenden UUID-Funktionen mehr
+
+#### 5. **CI-Flag korrekt gesetzt** ✅
+- **Konfiguration in application-test.properties:**
+```properties
+quarkus.datasource.jdbc.url=jdbc:postgresql://localhost:5432/freshplan?options=-c%20ci.build%3Dtrue
+quarkus.flyway.init-sql=SET ci.build = 'true';
+```
+
 ### Die 4 kritischen Punkte wurden hinzugefügt:
 
 1. **ArchUnit-Regel für Builder-Enforcement** ✅

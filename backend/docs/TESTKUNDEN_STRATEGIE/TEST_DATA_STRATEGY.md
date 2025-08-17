@@ -191,20 +191,45 @@ DB ist wieder sauber!
 
 ---
 
-## 4. Der TestDataBuilder
+## 4. Der TestDataBuilder ✅ IMPLEMENTIERT (17.08.2025)
 
-### 4.1 Konzept
+### 4.1 Konzept & Struktur
 
-Der `TestDataBuilder` ist die **zentrale Fabrik** für alle Test-Daten:
+Der `TestDataBuilder` wurde als **modulare Architektur** mit separaten Dateien implementiert:
+
+```
+test/
+├── TestDataBuilder.java              # Zentrale Facade (222 Zeilen)
+├── builders/                          
+│   ├── CustomerBuilder.java          # 338 Zeilen - 15 Enums, 6 Szenarien
+│   ├── ContactBuilder.java           # 269 Zeilen - Rollen & Kommunikation
+│   ├── OpportunityBuilder.java       # 263 Zeilen - Sales-Stages
+│   ├── TimelineEventBuilder.java     # 352 Zeilen - 10 Event-Typen
+│   └── UserBuilder.java              # 220 Zeilen - 6 Rollen-Szenarien
+└── utils/
+    └── TestDataUtils.java            # 69 Zeilen - Shared Utilities
+```
+
+**Vorteile der Aufteilung:**
+- ✅ Bessere Wartbarkeit (200-350 Zeilen statt 1500+)
+- ✅ Single Responsibility Principle
+- ✅ Parallele Entwicklung möglich
+- ✅ Einfacheres Testing der Builder
 
 ```java
 @ApplicationScoped
 public class TestDataBuilder {
-    // Ein Builder für jede Entity
-    public CustomerBuilder customer() { ... }
-    public ContactBuilder contact() { ... }
-    public OpportunityBuilder opportunity() { ... }
-    public UserBuilder user() { ... }
+    // Injection der separaten Builder
+    @Inject CustomerBuilder customerBuilder;
+    @Inject ContactBuilder contactBuilder;
+    @Inject OpportunityBuilder opportunityBuilder;
+    @Inject TimelineEventBuilder timelineEventBuilder;
+    @Inject UserBuilder userBuilder;
+    
+    // Reset() für frische Instanzen
+    public CustomerBuilder customer() { 
+        return customerBuilder.reset(); 
+    }
     
     // Komplette Szenarien
     public ScenarioBuilder scenario() { ... }
@@ -337,7 +362,7 @@ Bei parallelen Tests entstehen Race Conditions bei gemeinsamen Referenzdaten:
 - Industries
 - Alle Enum-ähnlichen Entities
 
-### 5.2 Die Lösung: PermissionHelper mit PostgreSQL ON CONFLICT
+### 5.2 Die Lösung: PermissionHelper mit PostgreSQL ON CONFLICT ✅ OHNE REQUIRES_NEW
 
 ```java
 @ApplicationScoped
@@ -347,23 +372,41 @@ public class PermissionHelperPg {
 
     /**
      * Race-safe Permission-Erstellung mit PostgreSQL ON CONFLICT
-     * - Atomar auf DB-Ebene
-     * - Keine Exception-Flows
+     * - ON CONFLICT ist atomisch genug - KEIN REQUIRES_NEW nötig!
+     * - Adaptiv: Erkennt ob 'code' oder 'permission_code' existiert
      * - 100% Thread-safe
      */
-    @Transactional(REQUIRES_NEW)
+    @Transactional
     public Permission findOrCreatePermission(String code, String description) {
-        Long id = ((Number) em.createNativeQuery("""
-            INSERT INTO permissions (code, description, is_test_data)
-            VALUES (:code, :desc, true)
-            ON CONFLICT (code) DO UPDATE
-              SET description = COALESCE(permissions.description, EXCLUDED.description)
+        // Test-Markierung über Description (permissions hat kein is_test_data!)
+        String testDesc = "[TEST] " + (description != null ? description : code);
+        
+        UUID id = (UUID) em.createNativeQuery("""
+            INSERT INTO permissions (
+                id, permission_code, name, description, resource, action, created_at
+            )
+            VALUES (
+                gen_random_uuid(), :code, :name, :desc, :resource, :action, CURRENT_TIMESTAMP
+            )
+            ON CONFLICT (permission_code) DO NOTHING
             RETURNING id
             """)
             .setParameter("code", code)
-            .setParameter("desc", description)
-            .getSingleResult()).longValue();
-
+            .setParameter("name", code.replace(":", " "))
+            .setParameter("desc", testDesc)
+            .setParameter("resource", code.split(":")[0])
+            .setParameter("action", code.split(":")[1])
+            .getSingleResult();
+            
+        // Falls ON CONFLICT: hole existierende Permission
+        if (id == null) {
+            return em.createQuery(
+                "SELECT p FROM Permission p WHERE p.permissionCode = :code", 
+                Permission.class)
+                .setParameter("code", code)
+                .getSingleResult();
+        }
+        
         return em.find(Permission.class, id);
     }
 }
@@ -797,20 +840,39 @@ BEGIN
 END $$;
 ```
 
-### 9.4 CI-spezifische Cleanup
+### 9.4 CI-spezifische Zwei-Stufen-Cleanup ✅ IMPLEMENTIERT
 
 ```sql
 -- V10000__cleanup_test_data_in_ci.sql
 DO $$
+DECLARE
+    test_count INTEGER;
+    hard_threshold INTEGER := 100;
+    soft_threshold INTEGER := 50;
 BEGIN
     -- NUR in CI ausführen!
-    IF current_setting('ci.build', true) = 'true' THEN
+    IF current_setting('ci.build', true) <> 'true' THEN
+        RETURN;
+    END IF;
+    
+    SELECT COUNT(*) INTO test_count 
+    FROM customers WHERE is_test_data = true;
+    
+    IF test_count > hard_threshold THEN
+        -- HARD CLEANUP: Lösche ALLE Test-Daten
+        DELETE FROM customers WHERE is_test_data = true;
+        RAISE NOTICE 'HARD cleanup: Deleted all % test records', test_count;
+        
+    ELSIF test_count > soft_threshold THEN
+        -- SOFT CLEANUP: Nur alte Daten (>90 Minuten)
         DELETE FROM customers 
         WHERE is_test_data = true 
-           OR company_name LIKE '[TEST-%]%'
-           OR created_at < NOW() - INTERVAL '1 day';
-           
-        RAISE NOTICE 'CI Cleanup executed';
+          AND created_at < NOW() - INTERVAL '90 minutes';
+        RAISE NOTICE 'SOFT cleanup: Deleted old test records';
+        
+    ELSE
+        -- NO CLEANUP: Alles OK
+        RAISE NOTICE 'No cleanup needed: % test records', test_count;
     END IF;
 END $$;
 ```

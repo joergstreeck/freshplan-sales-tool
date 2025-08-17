@@ -7,7 +7,7 @@ WITH stats AS (
     SELECT 
         COUNT(*) as total_test_data,
         COUNT(*) FILTER (WHERE company_name LIKE '[SEED]%') as seed_data,
-        COUNT(*) FILTER (WHERE company_name LIKE '[TEST-%]%') as dynamic_test_data,
+        COUNT(*) FILTER (WHERE company_name LIKE '[TEST-%') as dynamic_test_data,  -- Fixed: removed extra %
         COUNT(*) FILTER (WHERE company_name LIKE '[DEV]%') as dev_data,
         COUNT(*) FILTER (WHERE created_at > NOW() - INTERVAL '1 hour') as created_last_hour,
         COUNT(*) FILTER (WHERE created_at < NOW() - INTERVAL '7 days') as older_than_week
@@ -66,7 +66,7 @@ BEGIN
         END::TEXT,
         FORMAT('%s unmarked test records found', COUNT(*))::TEXT
     FROM customers
-    WHERE (company_name LIKE '[TEST%]%' OR company_name LIKE '[SEED]%')
+    WHERE (company_name LIKE '[TEST-%' OR company_name LIKE '[SEED]%')  -- Fixed LIKE pattern
       AND is_test_data = false;
 
     -- Check 3: Old test data
@@ -93,7 +93,7 @@ BEGIN
         FORMAT('%s test records without proper [TEST]/[SEED] prefix', COUNT(*))::TEXT
     FROM customers
     WHERE is_test_data = true
-      AND company_name NOT LIKE '[TEST%]%'
+      AND company_name NOT LIKE '[TEST-%'  -- Fixed: removed extra %
       AND company_name NOT LIKE '[SEED]%'
       AND company_name NOT LIKE '[DEV]%';
 END;
