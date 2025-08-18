@@ -1,0 +1,6 @@
+-- ============================================================================
+-- V10006: DEPRECATED - Keep for Flyway history consistency
+-- ============================================================================
+-- This migration was replaced by afterMigrate__ensure_seed_data.sql callback
+-- The empty file remains to prevent Flyway validation errors
+-- ============================================================================

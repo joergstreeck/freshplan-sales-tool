@@ -51,9 +51,9 @@ public class GlobalTestResourceManager implements QuarkusTestResourceLifecycleMa
     config.put("quarkus.flyway.repair-at-start", "false");
     config.put("quarkus.flyway.out-of-order", "true");
     
-    // Include test data migrations
+    // Include test data migrations AND callbacks for SEED data
     config.put("quarkus.flyway.locations", 
-               "classpath:db/migration,classpath:db/testdata,classpath:db/ci-migrations");
+               "classpath:db/migration,classpath:db/testdata,classpath:db/ci-migrations,classpath:db/callbacks");
     
     LOG.info("Configuration applied:");
     config.forEach((k, v) -> LOG.infof("  %s = %s", k, v));
