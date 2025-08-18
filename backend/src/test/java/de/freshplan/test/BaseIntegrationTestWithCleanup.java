@@ -93,12 +93,11 @@ public abstract class BaseIntegrationTestWithCleanup {
 
   /** Cleanup customers (parent entity). */
   private void cleanupCustomers() {
-    // Delete test customers
-    long deleted =
-        customerRepository.delete(
-            "isTestData = true OR customerNumber LIKE 'KD-TEST-%' OR companyName LIKE '%Test%'");
+    // Delete test customers - BUT NEVER SEED DATA!
+    // Use the new safe cleanup method that protects SEED customers
+    long deleted = customerRepository.deleteAllTestDataExceptSeeds();
     if (deleted > 0) {
-      LOG.debug("Deleted " + deleted + " test customers");
+      LOG.debug("Deleted " + deleted + " test customers (SEED data preserved)");
     }
   }
 

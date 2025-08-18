@@ -99,11 +99,11 @@ public class TestDataCleanup {
                   }
                 }
 
-                // Clean up test data flag customers (safety net)
-                // Note: Using portable date arithmetic instead of INTERVAL
-                long deletedTestData = customerRepository.delete("isTestData = true");
+                // Clean up test data flag customers (safety net) - BUT PROTECT SEEDs
+                // Use the safe cleanup method that protects SEED customers
+                long deletedTestData = customerRepository.deleteAllTestDataExceptSeeds();
                 if (deletedTestData > 0) {
-                  LOG.infof("Cleaned up %d recent test data customers", deletedTestData);
+                  LOG.infof("Cleaned up %d recent test data customers (SEED data preserved)", deletedTestData);
                 }
 
               } catch (Exception e) {
@@ -118,18 +118,12 @@ public class TestDataCleanup {
         .run(
             () -> {
               try {
-                // Delete all test customers
-                long deleted = customerRepository.delete("isTestData = true");
+                // Delete all test customers - BUT PROTECT SEEDs!
+                // Use the safe cleanup method that protects SEED customers
+                long deleted = customerRepository.deleteAllTestDataExceptSeeds();
 
                 if (deleted > 0) {
-                  LOG.infof("Cleaned up %d test customers", deleted);
-                }
-
-                // Also clean up customers with TEST prefix
-                long deletedWithPrefix = customerRepository.delete("companyName LIKE '[TEST%'");
-
-                if (deletedWithPrefix > 0) {
-                  LOG.infof("Cleaned up %d TEST-prefixed customers", deletedWithPrefix);
+                  LOG.infof("Cleaned up %d test customers (SEED data preserved)", deleted);
                 }
 
               } catch (Exception e) {

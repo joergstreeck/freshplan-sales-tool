@@ -47,11 +47,13 @@ class CustomerServiceIntegrationTest {
   void setUp() {
     // Clean database before each test using native queries for consistency
     // Delete in correct order to respect foreign key constraints
-    entityManager.createNativeQuery("DELETE FROM customer_timeline_events").executeUpdate();
-    entityManager.createNativeQuery("DELETE FROM customer_contacts").executeUpdate();
-    entityManager.createNativeQuery("DELETE FROM customer_locations").executeUpdate();
-    entityManager.createNativeQuery("DELETE FROM opportunities").executeUpdate();
-    entityManager.createNativeQuery("DELETE FROM customers").executeUpdate();
+    // Clean up test data - BUT NEVER DELETE SEED DATA!
+    entityManager.createNativeQuery("DELETE FROM customer_timeline_events WHERE customer_id NOT IN (SELECT id FROM customers WHERE customer_number LIKE 'SEED-%')").executeUpdate();
+    entityManager.createNativeQuery("DELETE FROM customer_contacts WHERE customer_id NOT IN (SELECT id FROM customers WHERE customer_number LIKE 'SEED-%')").executeUpdate();
+    entityManager.createNativeQuery("DELETE FROM customer_locations WHERE customer_id NOT IN (SELECT id FROM customers WHERE customer_number LIKE 'SEED-%')").executeUpdate();
+    entityManager.createNativeQuery("DELETE FROM opportunities WHERE customer_id NOT IN (SELECT id FROM customers WHERE customer_number LIKE 'SEED-%')").executeUpdate();
+    // Use the safe cleanup method that protects SEED customers
+    customerRepository.deleteAllTestDataExceptSeeds();
     entityManager.flush();
 
     // Create valid request DTOs for integration tests

@@ -410,4 +410,56 @@ public class CustomerRepository implements PanacheRepositoryBase<Customer, UUID>
 
     return result != null ? (Integer) result : null;
   }
+
+  // ========== TEST DATA CLEANUP (SEED-SAFE) ==========
+
+  /**
+   * Delete all test data EXCEPT SEED customers.
+   * This is the ONLY method that should be used in tests for cleanup.
+   * 
+   * SEED customers (customer_number LIKE 'SEED-%') are protected and never deleted.
+   * Only deletes:
+   * - Customers with is_test_data = true
+   * - Customers with customer_number LIKE 'TEST-%'
+   * - Customers with company_name LIKE '[TEST%'
+   * 
+   * @return Number of customers deleted
+   */
+  public long deleteAllTestDataExceptSeeds() {
+    // IMPORTANT: Never delete SEED customers!
+    return delete("""
+        (isTestData = true 
+         OR customerNumber LIKE 'TEST-%' 
+         OR companyName LIKE '[TEST%')
+        AND customerNumber NOT LIKE 'SEED-%'
+        AND companyName NOT LIKE '[SEED]%'
+        """);
+  }
+
+  /**
+   * Delete all customers EXCEPT SEED customers.
+   * USE WITH EXTREME CAUTION - Only for complete test resets.
+   * 
+   * @return Number of customers deleted
+   */
+  public long deleteAllExceptSeeds() {
+    // NEVER delete SEED customers under any circumstances
+    return delete("""
+        customerNumber NOT LIKE 'SEED-%'
+        AND companyName NOT LIKE '[SEED]%'
+        """);
+  }
+
+  /**
+   * DANGEROUS: Delete ALL customers including SEEDs.
+   * NEVER USE IN TESTS! Only for complete database resets.
+   * 
+   * @deprecated Use deleteAllTestDataExceptSeeds() instead
+   */
+  @Deprecated
+  public long deleteAllIncludingSeeds() {
+    throw new UnsupportedOperationException(
+        "deleteAll() is forbidden in tests! Use deleteAllTestDataExceptSeeds() instead. " +
+        "SEED data must be preserved for test stability.");
+  }
 }
