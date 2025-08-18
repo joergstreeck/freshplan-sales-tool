@@ -43,8 +43,8 @@ class SimpleSeedTest {
     // Wenn SEED-Kunden vorhanden sind, sollten sie korrekt markiert sein
     if (!seedCustomers.isEmpty()) {
       assertThat(seedCustomers)
-          .as("All SEED customers should be marked as test data")
-          .allMatch(c -> Boolean.TRUE.equals(c.getIsTestData()))
+          .as("All SEED customers should be protected from cleanup (is_test_data=false)")
+          .allMatch(c -> Boolean.FALSE.equals(c.getIsTestData()))  // FALSE to protect from cleanup!
           .allMatch(c -> c.getCompanyName().startsWith("[SEED]"));
     } else {
       LOG.info("No SEED customers found - this is expected after TestDataBuilder migration");
