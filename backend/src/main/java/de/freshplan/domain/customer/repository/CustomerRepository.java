@@ -330,26 +330,29 @@ public class CustomerRepository implements PanacheRepositoryBase<Customer, UUID>
       return List.of();
     }
 
-    // For duplicate detection, we use a simpler approach
-    // Remove common test prefixes for comparison
-    String nameForComparison = companyName;
-    if (companyName.startsWith("[TEST]")) {
-      nameForComparison = companyName.substring(6).trim();
+    // Normalize the name for comparison - remove [TEST] prefix if present
+    String normalizedName = companyName;
+    if (companyName.startsWith("[TEST] ")) {
+      normalizedName = companyName.substring(7); // Remove "[TEST] " prefix
+    } else if (companyName.startsWith("[TEST]")) {
+      normalizedName = companyName.substring(6); // Remove "[TEST]" prefix  
     }
     
-    // Use case-insensitive exact match for duplicates
-    // This is more reliable than LIKE with special characters
+    // Use normalized comparison - compare the core names without test prefixes
+    // This handles cases like "[TEST] Hotel Name" matching "hotel name" as duplicates
+    String searchPattern = "%" + normalizedName.toLowerCase() + "%";
+    
+    // Find similar names, handling [TEST] prefix variations
     return find(
             """
                 isDeleted = false
                 AND (
-                  LOWER(companyName) = LOWER(?1)
-                  OR LOWER(REPLACE(companyName, '[TEST] ', '')) = LOWER(?2)
-                  OR LOWER(REPLACE(companyName, '[TEST]', '')) = LOWER(?2)
+                  LOWER(REPLACE(REPLACE(companyName, '[TEST] ', ''), '[TEST]', '')) LIKE ?1
                 )
+                AND companyName != ?2
                 """,
-            companyName,
-            nameForComparison)
+            searchPattern,
+            companyName)
         .list();
   }
 
