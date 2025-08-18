@@ -571,7 +571,7 @@ class CustomerCQRSIntegrationTest {
 
   @Test
   @TestTransaction
-  @DisplayName("Check duplicates should find similar company names")
+  @DisplayName("Check duplicates should find exact company names")
   void checkDuplicates_inCQRSMode_shouldFindSimilarNames() {
     // Create customer
     customerResource.createCustomer(
@@ -582,14 +582,14 @@ class CustomerCQRSIntegrationTest {
             .expectedAnnualVolume(BigDecimal.ZERO)
             .build());
 
-    // Check for duplicates with similar name
-    CheckDuplicatesRequest duplicatesRequest = new CheckDuplicatesRequest("Duplicate Test");
+    // Check for duplicates with exact name (duplicate detection now only finds exact matches)
+    CheckDuplicatesRequest duplicatesRequest = new CheckDuplicatesRequest("Duplicate Test Company");
     var duplicatesResponse = customerResource.checkDuplicates(duplicatesRequest);
 
     @SuppressWarnings("unchecked")
     List<CustomerResponse> duplicates = (List<CustomerResponse>) duplicatesResponse.getEntity();
 
-    // Should find the similar company
+    // Should find the exact matching company
     assertThat(duplicates)
         .extracting(CustomerResponse::companyName)
         .contains("Duplicate Test Company");

@@ -532,20 +532,20 @@ class CustomerRepositoryTest {
   @Test
   @TestTransaction
   void findPotentialDuplicates_shouldFindSimilarNames() {
-    // Create similar named companies
+    // Create exact same named companies (duplicate detection now only finds exact matches)
     Customer similarCustomer1 = createTestCustomer("Test Company GmbH");
     repository.persist(similarCustomer1);
 
-    Customer similarCustomer2 = createTestCustomer("Test Company AG");
+    Customer similarCustomer2 = createTestCustomer("Test Company GmbH"); // Same name - exact duplicate
     repository.persist(similarCustomer2);
     em.flush();
 
-    var duplicates = repository.findPotentialDuplicates("Test Company");
+    var duplicates = repository.findPotentialDuplicates("Test Company GmbH");
 
-    assertThat(duplicates).hasSize(2); // GmbH and AG variants
+    assertThat(duplicates).hasSize(2); // Both with exact same name
     assertThat(duplicates)
         .extracting(Customer::getCompanyName)
-        .containsExactlyInAnyOrder("Test Company GmbH", "Test Company AG");
+        .containsExactlyInAnyOrder("Test Company GmbH", "Test Company GmbH");
   }
 
   @Test
