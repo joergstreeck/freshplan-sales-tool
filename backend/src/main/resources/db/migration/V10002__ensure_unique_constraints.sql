@@ -16,7 +16,7 @@ BEGIN
         WHERE rel.relname = 'customers'
           AND con.contype = 'u'  -- unique constraint
         GROUP BY con.oid
-        HAVING array_agg(att.attname ORDER BY att.attnum) = ARRAY['customer_number']::text[]
+        HAVING array_agg(att.attname ORDER BY att.attnum)::text[] = ARRAY['customer_number']::text[]
     ) INTO has_unique_constraint;
     
     IF NOT has_unique_constraint THEN
