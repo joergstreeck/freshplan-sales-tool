@@ -11,19 +11,13 @@ import org.jboss.logging.Logger;
  * but tests run on another.
  * 
  * This manager is applied globally via META-INF/services configuration.
+ * 
+ * Note: ResourceScope is only available in Quarkus 3.x+
+ * For older versions, this resource is automatically shared when registered via services.
  */
 public class GlobalTestResourceManager implements QuarkusTestResourceLifecycleManager {
   
   private static final Logger LOG = Logger.getLogger(GlobalTestResourceManager.class);
-  
-  /**
-   * GLOBAL scope ensures this resource is shared across ALL test classes.
-   * This is critical to prevent multiple database containers.
-   */
-  @Override
-  public ResourceScope scope() {
-    return ResourceScope.GLOBAL;
-  }
   
   @Override
   public Map<String, String> start() {
@@ -75,11 +69,5 @@ public class GlobalTestResourceManager implements QuarkusTestResourceLifecycleMa
   @Override
   public void inject(TestInjector testInjector) {
     // Optional: inject resources into test classes if needed
-  }
-  
-  @Override
-  public int order() {
-    // Run first (lower number = higher priority)
-    return 0;
   }
 }
