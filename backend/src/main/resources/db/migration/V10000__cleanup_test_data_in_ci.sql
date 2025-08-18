@@ -31,10 +31,11 @@ BEGIN
         RETURN;
     END IF;
     
-    -- Count current test data
+    -- Count current test data (excluding SEED data)
     SELECT COUNT(*) INTO test_count 
     FROM customers 
-    WHERE is_test_data = true;
+    WHERE is_test_data = true
+      AND customer_number NOT LIKE 'SEED-%';
     
     RAISE NOTICE 'V10000: Found % test data records (threshold: %)', test_count, threshold;
     

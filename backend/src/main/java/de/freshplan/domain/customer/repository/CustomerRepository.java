@@ -331,7 +331,14 @@ public class CustomerRepository implements PanacheRepositoryBase<Customer, UUID>
     }
 
     // Simple LIKE-based duplicate detection
-    String searchPattern = "%" + companyName.toLowerCase() + "%";
+    // Escape special characters for LIKE pattern
+    String escapedName = companyName.toLowerCase()
+        .replace("\\", "\\\\")
+        .replace("%", "\\%")
+        .replace("_", "\\_")
+        .replace("[", "\\[")
+        .replace("]", "\\]");
+    String searchPattern = "%" + escapedName + "%";
 
     // Find similar names but exclude exact match (for updates)
     return find(

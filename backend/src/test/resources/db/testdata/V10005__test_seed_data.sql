@@ -7,6 +7,8 @@
 -- ============================================================================
 
 DO $$
+DECLARE
+  seed_count INTEGER;
 BEGIN
   -- Guard: Only run in CI/Test environments
   IF current_setting('ci.build', true) <> 'true' THEN
@@ -19,6 +21,18 @@ BEGIN
   -- Ensure pgcrypto extension for gen_random_uuid()
   CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
+  -- Always recreate SEED data if missing (idempotent)
+  -- First, check if SEED data exists
+  SELECT COUNT(*) INTO seed_count FROM customers WHERE customer_number LIKE 'SEED-%';
+  IF seed_count < 20 THEN
+    RAISE NOTICE 'V10005: Only % SEED customers found, recreating all 20', seed_count;
+    -- Delete incomplete SEED data
+    DELETE FROM customers WHERE customer_number LIKE 'SEED-%';
+  ELSE
+    RAISE NOTICE 'V10005: All 20 SEED customers already exist, skipping';
+    RETURN;
+  END IF;
+  
   -- Insert or update all 20 SEED customers
   INSERT INTO customers (
       id, 
