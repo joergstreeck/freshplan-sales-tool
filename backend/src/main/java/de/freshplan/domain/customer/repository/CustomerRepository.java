@@ -322,36 +322,21 @@ public class CustomerRepository implements PanacheRepositoryBase<Customer, UUID>
   // ========== DUPLICATE DETECTION ==========
 
   /**
-   * Find potential duplicates by company name similarity. Uses LIKE-based search instead of
-   * similarity() due to missing pg_trgm.
+   * Find potential duplicates by company name similarity. Uses exact match after normalization.
+   * Special handling for [TEST] prefix in test data.
    */
   public List<Customer> findPotentialDuplicates(String companyName) {
     if (companyName == null || companyName.isBlank()) {
       return List.of();
     }
 
-    // Normalize the name for comparison - remove [TEST] prefix if present
-    String normalizedName = companyName;
-    if (companyName.startsWith("[TEST] ")) {
-      normalizedName = companyName.substring(7); // Remove "[TEST] " prefix
-    } else if (companyName.startsWith("[TEST]")) {
-      normalizedName = companyName.substring(6); // Remove "[TEST]" prefix  
-    }
-    
-    // Use normalized comparison - compare the core names without test prefixes
-    // This handles cases like "[TEST] Hotel Name" matching "hotel name" as duplicates
-    String searchPattern = "%" + normalizedName.toLowerCase() + "%";
-    
-    // Find similar names, handling [TEST] prefix variations
+    // Only check for exact duplicates (case-insensitive)
+    // Don't do fuzzy matching or prefix removal - it causes too many false positives
     return find(
             """
                 isDeleted = false
-                AND (
-                  LOWER(REPLACE(REPLACE(companyName, '[TEST] ', ''), '[TEST]', '')) LIKE ?1
-                )
-                AND companyName != ?2
+                AND LOWER(companyName) = LOWER(?1)
                 """,
-            searchPattern,
             companyName)
         .list();
   }

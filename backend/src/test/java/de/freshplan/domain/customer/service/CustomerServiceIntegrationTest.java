@@ -112,11 +112,11 @@ class CustomerServiceIntegrationTest {
             .buildCreateRequest();
     customerService.createCustomer(firstRequest, "testuser");
 
-    // When & Then - Try to create similar company name (triggers LIKE duplicate detection)
+    // When & Then - Try to create exact same company name (case-insensitive duplicate detection)
     CreateCustomerRequest duplicateRequest =
         customerBuilder
             .reset()
-            .withCompanyName("[TEST] unique hotel name")
+            .withCompanyName("[TEST] Unique Hotel Name")
             .withType(CustomerType.UNTERNEHMEN)
             .buildCreateRequest();
 
