@@ -391,11 +391,13 @@ public class CustomerResourceIntegrationTest extends BaseIntegrationTest {
 
   @Test
   void checkDuplicates_shouldReturnPotentialDuplicates() {
-    // Create customers with exact same name (duplicate detection now only finds exact matches)
-    createTestCustomerViaAPI("[TEST] ABC Company GmbH");
-    createTestCustomerViaAPI("[TEST] ABC Company GmbH"); // Same name - exact duplicate
+    // Create customer first
+    String uniqueSuffix = UUID.randomUUID().toString().substring(0, 8);
+    String companyName = "[TEST] ABC Company GmbH " + uniqueSuffix;
+    createTestCustomerViaAPI(companyName);
 
-    CheckDuplicatesRequest request = new CheckDuplicatesRequest("[TEST] ABC Company GmbH");
+    // Now check for duplicates - should find the one we just created
+    CheckDuplicatesRequest request = new CheckDuplicatesRequest(companyName);
 
     List<CustomerResponse> duplicates =
         given()
@@ -408,9 +410,9 @@ public class CustomerResourceIntegrationTest extends BaseIntegrationTest {
             .extract()
             .as(new TypeRef<List<CustomerResponse>>() {});
 
-    // Should find at least 2 with exact same name
-    assertTrue(duplicates.size() >= 2);
-    assertTrue(duplicates.stream().allMatch(c -> c.companyName().equals("[TEST] ABC Company GmbH")));
+    // Should find exactly 1 with this unique name
+    assertEquals(1, duplicates.size());
+    assertEquals(companyName, duplicates.get(0).companyName());
   }
 
   @Test
