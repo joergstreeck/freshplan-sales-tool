@@ -391,11 +391,11 @@ public class CustomerResourceIntegrationTest extends BaseIntegrationTest {
 
   @Test
   void checkDuplicates_shouldReturnPotentialDuplicates() {
-    // Create customers with similar names
+    // Create customers with exact same name (duplicate detection now only finds exact matches)
     createTestCustomerViaAPI("[TEST] ABC Company GmbH");
-    createTestCustomerViaAPI("[TEST] ABC Company AG");
+    createTestCustomerViaAPI("[TEST] ABC Company GmbH"); // Same name - exact duplicate
 
-    CheckDuplicatesRequest request = new CheckDuplicatesRequest("ABC Company");
+    CheckDuplicatesRequest request = new CheckDuplicatesRequest("[TEST] ABC Company GmbH");
 
     List<CustomerResponse> duplicates =
         given()
@@ -408,8 +408,9 @@ public class CustomerResourceIntegrationTest extends BaseIntegrationTest {
             .extract()
             .as(new TypeRef<List<CustomerResponse>>() {});
 
+    // Should find at least 2 with exact same name
     assertTrue(duplicates.size() >= 2);
-    assertTrue(duplicates.stream().allMatch(c -> c.companyName().contains("ABC Company")));
+    assertTrue(duplicates.stream().allMatch(c -> c.companyName().equals("[TEST] ABC Company GmbH")));
   }
 
   @Test
