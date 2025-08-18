@@ -32,7 +32,7 @@ import org.mockito.Mockito;
  * @since 2.0.0
  */
 @QuarkusTest
-@Disabled("TODO: Fix mock injection issues - tracked in JIRA-123")
+@Disabled("Mock injection issues need to be fixed - mocks return null")
 class SalesCockpitCQRSIntegrationTest {
 
   @Inject SalesCockpitService salesCockpitService;

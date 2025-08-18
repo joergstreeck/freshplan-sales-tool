@@ -333,11 +333,12 @@ public class CustomerRepository implements PanacheRepositoryBase<Customer, UUID>
     // Simple LIKE-based duplicate detection
     String searchPattern = "%" + companyName.toLowerCase() + "%";
 
+    // Find similar names but exclude exact match (for updates)
     return find(
             """
                 isDeleted = false
                 AND LOWER(companyName) LIKE ?1
-                AND companyName != ?2
+                AND LOWER(companyName) != LOWER(?2)
                 """,
             searchPattern,
             companyName)

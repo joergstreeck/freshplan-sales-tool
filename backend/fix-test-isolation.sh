@@ -8,9 +8,11 @@ echo "=================================="
 
 # Detect OS for sed compatibility
 if [[ "$OSTYPE" == "darwin"* ]]; then
-    SED_INPLACE="sed -i ''"
+    # macOS requires backup extension
+    SED_CMD="sed -i.bak"
 else
-    SED_INPLACE="sed -i"
+    # Linux doesn't need backup
+    SED_CMD="sed -i"
 fi
 
 # Find all test files that need fixing
@@ -30,15 +32,20 @@ for test in $TEST_FILES; do
         
         # Add import if not present
         if ! grep -q "import io.quarkus.test.TestTransaction;" "$test"; then
-            $SED_INPLACE '/import io.quarkus.test/a\
+            $SED_CMD '/import io.quarkus.test/a\
 import io.quarkus.test.TestTransaction;' "$test"
         fi
         
         # Remove import jakarta.transaction.Transactional if present
-        $SED_INPLACE '/import jakarta.transaction.Transactional;/d' "$test"
+        $SED_CMD '/import jakarta.transaction.Transactional;/d' "$test"
         
         # Replace @Transactional with @TestTransaction
-        $SED_INPLACE 's/@Transactional/@TestTransaction/g' "$test"
+        $SED_CMD 's/@Transactional/@TestTransaction/g' "$test"
+        
+        # Clean up backup files on macOS
+        if [[ "$OSTYPE" == "darwin"* ]]; then
+            rm -f "${test}.bak"
+        fi
         
         echo "  ✅ Fixed: $(basename $test)"
     fi
