@@ -4,6 +4,9 @@ import static org.assertj.core.api.Assertions.*;
 
 import de.freshplan.domain.customer.entity.Customer;
 import de.freshplan.domain.user.entity.User;
+import de.freshplan.test.builders.CustomerTestDataFactory;
+import de.freshplan.test.builders.OpportunityTestDataFactory;
+import de.freshplan.test.builders.UserTestDataFactory;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -34,14 +37,19 @@ public class OpportunityEntityStageTest {
 
   @BeforeEach
   void setUp() {
-    // Create test customer
-    testCustomer = new Customer();
+    // Create test customer using TestDataFactory
+    testCustomer = CustomerTestDataFactory.builder().withCompanyName("[TEST] Test Company").build();
     testCustomer.setId(UUID.randomUUID());
-    testCustomer.setCompanyName("[TEST] Test Company");
-    testCustomer.setIsTestData(true);  // Mark as test data
+    testCustomer.setIsTestData(true); // Mark as test data
 
-    // Create test user
-    testUser = new User("testuser", "Test", "User", "test@example.com");
+    // Create test user using TestDataFactory
+    testUser =
+        UserTestDataFactory.builder()
+            .withUsername("testuser")
+            .withFirstName("Test")
+            .withLastName("User")
+            .withEmail("test@example.com")
+            .build();
   }
 
   @Nested
@@ -260,9 +268,14 @@ public class OpportunityEntityStageTest {
     @DisplayName("Should work with newly created opportunity")
     void changeStage_newOpportunity_shouldWork() {
       // Arrange
-      var opportunity = new Opportunity("New Opp", OpportunityStage.NEW_LEAD, testUser);
-      opportunity.setCustomer(testCustomer);
-      opportunity.setExpectedValue(BigDecimal.valueOf(10000));
+      var opportunity =
+          OpportunityTestDataFactory.builder()
+              .withName("New Opp")
+              .inStage(OpportunityStage.NEW_LEAD)
+              .assignedTo(testUser)
+              .forCustomer(testCustomer)
+              .withExpectedValue(BigDecimal.valueOf(10000))
+              .build();
 
       // Act
       opportunity.changeStage(OpportunityStage.QUALIFICATION);
@@ -275,10 +288,15 @@ public class OpportunityEntityStageTest {
 
   // Helper methods
   private Opportunity createTestOpportunity(String name, OpportunityStage stage) {
-    var opportunity = new Opportunity(name, OpportunityStage.NEW_LEAD, testUser);
+    var opportunity =
+        OpportunityTestDataFactory.builder()
+            .withName(name)
+            .inStage(OpportunityStage.NEW_LEAD)
+            .assignedTo(testUser)
+            .forCustomer(testCustomer)
+            .withExpectedValue(BigDecimal.valueOf(10000))
+            .build();
     opportunity.setId(UUID.randomUUID());
-    opportunity.setCustomer(testCustomer);
-    opportunity.setExpectedValue(BigDecimal.valueOf(10000));
 
     // Use reflection to set stage directly if not NEW_LEAD to avoid business logic
     if (stage != OpportunityStage.NEW_LEAD) {

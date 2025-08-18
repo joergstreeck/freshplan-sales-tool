@@ -238,10 +238,15 @@ class ProfileCQRSIntegrationTest {
     // When
     List<ProfileResponse> profiles = profileService.getAllProfiles();
 
-    // Then
-    assertThat(profiles).isNotNull().hasSize(3);
+    // Then - filter for our unique profiles to avoid test isolation issues
+    List<ProfileResponse> ourProfiles =
+        profiles.stream()
+            .filter(p -> p.getCustomerId().startsWith("CUST-" + uniqueSuffix))
+            .toList();
 
-    assertThat(profiles)
+    assertThat(ourProfiles).isNotNull().hasSize(3);
+
+    assertThat(ourProfiles)
         .extracting(ProfileResponse::getCustomerId)
         .containsExactlyInAnyOrder(
             "CUST-" + uniqueSuffix + "-1",
@@ -332,9 +337,11 @@ class ProfileCQRSIntegrationTest {
     ProfileResponse updated = profileService.updateProfile(created.getId(), updateRequest);
     assertThat(updated.getNotes()).isEqualTo("Updated via CQRS");
 
-    // 5. List All (Query)
+    // 5. List All (Query) - filter for our unique profile to avoid test isolation issues
     List<ProfileResponse> all = profileService.getAllProfiles();
-    assertThat(all).hasSize(1);
+    List<ProfileResponse> ourProfiles =
+        all.stream().filter(p -> p.getCustomerId().equals(testCustomerId)).toList();
+    assertThat(ourProfiles).hasSize(1);
 
     // 6. Delete (Command)
     profileService.deleteProfile(created.getId());

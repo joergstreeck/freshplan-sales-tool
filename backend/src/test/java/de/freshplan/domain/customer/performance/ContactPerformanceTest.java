@@ -5,6 +5,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import de.freshplan.domain.customer.entity.Customer;
 import de.freshplan.domain.customer.entity.CustomerContact;
 import de.freshplan.domain.customer.repository.CustomerRepository;
+import de.freshplan.test.builders.ContactTestDataFactory;
+import de.freshplan.test.builders.CustomerBuilder;
 import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
@@ -22,7 +24,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
-import de.freshplan.test.builders.CustomerBuilder;
 
 /**
  * Performance tests for Contact-related operations. Tests bulk operations, query performance, and
@@ -38,7 +39,7 @@ public class ContactPerformanceTest {
   @Inject EntityManager entityManager;
 
   @Inject CustomerRepository customerRepository;
-  
+
   @Inject CustomerBuilder customerBuilder;
 
   private Customer testCustomer;
@@ -47,9 +48,7 @@ public class ContactPerformanceTest {
   @TestTransaction
   void setUp() {
     // Create test customer using CustomerBuilder
-    testCustomer = customerBuilder
-        .withCompanyName("Performance Test Company")
-        .build();
+    testCustomer = customerBuilder.withCompanyName("Performance Test Company").build();
     // Override auto-generated values for performance test
     testCustomer.setCustomerNumber("PERF-" + UUID.randomUUID().toString().substring(0, 8));
     testCustomer.setCompanyName("Performance Test Company"); // Remove [TEST-xxx] prefix
@@ -302,12 +301,14 @@ public class ContactPerformanceTest {
   // Helper methods
 
   private CustomerContact createTestContact(int index) {
-    CustomerContact contact = new CustomerContact();
-    contact.setCustomer(testCustomer);
-    contact.setFirstName("Test" + index);
-    contact.setLastName("Contact" + index);
-    contact.setEmail("test" + index + "@example.com");
-    contact.setIsPrimary(index == 0);
+    CustomerContact contact =
+        ContactTestDataFactory.builder()
+            .forCustomer(testCustomer)
+            .withFirstName("Test" + index)
+            .withLastName("Contact" + index)
+            .withEmail("test" + index + "@example.com")
+            .withIsPrimary(index == 0)
+            .build();
     contact.setIsActive(true);
     return contact;
   }

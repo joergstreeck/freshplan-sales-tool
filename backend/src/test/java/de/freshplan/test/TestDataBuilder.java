@@ -4,14 +4,13 @@ import de.freshplan.domain.customer.entity.*;
 import de.freshplan.domain.opportunity.entity.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Utility class for creating unique test data to avoid constraint violations.
- * 
- * <p>Each method generates unique values to prevent duplicate key violations
- * and other constraint issues in parallel test execution.
+ *
+ * <p>Each method generates unique values to prevent duplicate key violations and other constraint
+ * issues in parallel test execution.
  */
 public class TestDataBuilder {
 
@@ -19,18 +18,17 @@ public class TestDataBuilder {
   private static final AtomicInteger opportunityCounter = new AtomicInteger(1);
 
   /**
-   * Creates a unique customer number for testing.
-   * Format: KD-TEST-TIMESTAMP-XXXX to ensure absolute uniqueness
+   * Creates a unique customer number for testing. Format: KD-TEST-TIMESTAMP-XXXX to ensure absolute
+   * uniqueness
    */
   public static String uniqueCustomerNumber() {
-    return String.format("KD-TEST-%d-%04d", 
-        System.currentTimeMillis() % 100000, 
-        customerCounter.getAndIncrement());
+    return String.format(
+        "KD-TEST-%d-%04d", System.currentTimeMillis() % 100000, customerCounter.getAndIncrement());
   }
 
   /**
-   * Creates a test customer with all required fields set.
-   * Uses unique customer number to avoid duplicate key violations.
+   * Creates a test customer with all required fields set. Uses unique customer number to avoid
+   * duplicate key violations.
    */
   public static Customer createTestCustomer(String companyName) {
     Customer customer = new Customer();
@@ -47,8 +45,8 @@ public class TestDataBuilder {
   }
 
   /**
-   * Creates a test opportunity with all required fields set.
-   * Ensures positive expected value to avoid check constraint violations.
+   * Creates a test opportunity with all required fields set. Ensures positive expected value to
+   * avoid check constraint violations.
    */
   public static Opportunity createTestOpportunity(String name, Customer customer) {
     Opportunity opportunity = new Opportunity();
@@ -60,10 +58,9 @@ public class TestDataBuilder {
     return opportunity;
   }
 
-  /**
-   * Creates a test contact with all required fields set.
-   */
-  public static CustomerContact createTestContact(Customer customer, String firstName, String lastName) {
+  /** Creates a test contact with all required fields set. */
+  public static CustomerContact createTestContact(
+      Customer customer, String firstName, String lastName) {
     CustomerContact contact = new CustomerContact();
     contact.setCustomer(customer);
     contact.setFirstName(firstName);
@@ -81,9 +78,7 @@ public class TestDataBuilder {
     return contact;
   }
 
-  /**
-   * Creates a test timeline event with all required fields set.
-   */
+  /** Creates a test timeline event with all required fields set. */
   public static CustomerTimelineEvent createTestTimelineEvent(Customer customer, String eventType) {
     CustomerTimelineEvent event = new CustomerTimelineEvent();
     event.setCustomer(customer);
@@ -99,8 +94,7 @@ public class TestDataBuilder {
   }
 
   /**
-   * Reset counters for isolated test execution.
-   * Call this in @BeforeAll or @BeforeEach if needed.
+   * Reset counters for isolated test execution. Call this in @BeforeAll or @BeforeEach if needed.
    */
   public static void resetCounters() {
     customerCounter.set(1);

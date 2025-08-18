@@ -9,9 +9,9 @@ import de.freshplan.domain.customer.entity.EventCategory;
 import de.freshplan.domain.customer.entity.ImportanceLevel;
 import de.freshplan.domain.customer.entity.Industry;
 import de.freshplan.domain.customer.repository.CustomerRepository;
-import de.freshplan.test.builders.CustomerBuilder;
 import de.freshplan.domain.customer.service.CustomerTimelineService;
 import de.freshplan.domain.customer.service.dto.timeline.*;
+import de.freshplan.test.builders.CustomerBuilder;
 import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
@@ -51,7 +51,7 @@ class TimelineCQRSIntegrationTest {
   CustomerTimelineService timelineService; // Test via Facade to verify Feature Flag switching
 
   @Inject CustomerRepository customerRepository;
-  
+
   @Inject CustomerBuilder customerBuilder;
 
   @ConfigProperty(name = "features.cqrs.enabled")
@@ -66,21 +66,22 @@ class TimelineCQRSIntegrationTest {
     // Just prepare the unique suffix, customer will be created in each test
     uniqueSuffix = String.valueOf(System.currentTimeMillis());
   }
-  
+
   private void createTestCustomer() {
     // Create a test customer for timeline events using CustomerBuilder
-    testCustomer = customerBuilder
-        .withCompanyName("[TEST] Timeline Test Company " + uniqueSuffix)
-        .withStatus(CustomerStatus.AKTIV)
-        .withIndustry(Industry.HOTEL)
-        .withExpectedAnnualVolume(new BigDecimal("100000"))
-        .build();
-    
+    testCustomer =
+        customerBuilder
+            .withCompanyName("[TEST] Timeline Test Company " + uniqueSuffix)
+            .withStatus(CustomerStatus.AKTIV)
+            .withIndustry(Industry.HOTEL)
+            .withExpectedAnnualVolume(new BigDecimal("100000"))
+            .build();
+
     // Override specific fields to maintain test requirements
     testCustomer.setCustomerNumber("KD" + uniqueSuffix.substring(7, 13));
     testCustomer.setCompanyName("[TEST] Timeline Test Company " + uniqueSuffix);
     testCustomer.setCustomerType(CustomerType.UNTERNEHMEN);
-    testCustomer.setIsTestData(true);  // Mark as test data
+    testCustomer.setIsTestData(true); // Mark as test data
     testCustomer.setCreatedBy("testuser");
 
     customerRepository.persist(testCustomer);
@@ -104,7 +105,7 @@ class TimelineCQRSIntegrationTest {
   void createEvent_inCQRSMode_shouldCreateSuccessfully() {
     // Setup
     createTestCustomer();
-    
+
     // Given
     CreateTimelineEventRequest request = new CreateTimelineEventRequest();
     request.setEventType("CUSTOMER_UPDATED");
@@ -134,7 +135,7 @@ class TimelineCQRSIntegrationTest {
   void createNote_inCQRSMode_shouldCreateSuccessfully() {
     // Setup
     createTestCustomer();
-    
+
     // Given
     CreateNoteRequest noteRequest =
         new CreateNoteRequest("Important customer feedback about service quality", "testuser");
@@ -156,7 +157,7 @@ class TimelineCQRSIntegrationTest {
   void createCommunication_inCQRSMode_shouldCreateSuccessfully() {
     // Setup
     createTestCustomer();
-    
+
     // Given
     CreateCommunicationRequest commRequest =
         CreateCommunicationRequest.builder()
@@ -182,7 +183,7 @@ class TimelineCQRSIntegrationTest {
   void updateEvent_inCQRSMode_shouldUpdateSuccessfully() {
     // Setup
     createTestCustomer();
-    
+
     // Given - Create an event first
     CreateTimelineEventRequest createRequest = new CreateTimelineEventRequest();
     createRequest.setEventType("INITIAL_EVENT");
@@ -224,7 +225,7 @@ class TimelineCQRSIntegrationTest {
   void getCustomerTimeline_inCQRSMode_shouldReturnEvents() {
     // Setup
     createTestCustomer();
-    
+
     // Given - Create multiple events
     for (int i = 1; i <= 3; i++) {
       CreateTimelineEventRequest request = new CreateTimelineEventRequest();
@@ -264,7 +265,7 @@ class TimelineCQRSIntegrationTest {
   void getFollowUpEvents_inCQRSMode_shouldReturnFollowUps() {
     // Setup
     createTestCustomer();
-    
+
     // Given - Create a follow-up event with requiresFollowUp flag
     CreateTimelineEventRequest request = new CreateTimelineEventRequest();
     request.setEventType("MEETING");
@@ -294,7 +295,7 @@ class TimelineCQRSIntegrationTest {
   void getOverdueFollowUps_inCQRSMode_shouldReturnOverdueEvents() {
     // Setup
     createTestCustomer();
-    
+
     // Given - Create an event with overdue follow-up
     CreateTimelineEventRequest request = new CreateTimelineEventRequest();
     request.setEventType("PHONE_CALL");
@@ -324,7 +325,7 @@ class TimelineCQRSIntegrationTest {
   void getRecentCommunications_inCQRSMode_shouldReturnRecentComms() {
     // Setup
     createTestCustomer();
-    
+
     // Given - Create recent communication events
     for (int i = 0; i < 3; i++) {
       CreateCommunicationRequest commRequest =
@@ -355,7 +356,7 @@ class TimelineCQRSIntegrationTest {
   void getTimelineSummary_inCQRSMode_shouldReturnSummary() {
     // Setup
     createTestCustomer();
-    
+
     // Given - Create various events
     CreateTimelineEventRequest note = new CreateTimelineEventRequest();
     note.setEventType("NOTE");
@@ -437,7 +438,7 @@ class TimelineCQRSIntegrationTest {
   void cqrsMode_shouldProperlyDelegateAllOperations() {
     // Setup
     createTestCustomer();
-    
+
     // This test verifies complete CQRS delegation
 
     // 1. Create event (Command)

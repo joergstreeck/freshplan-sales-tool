@@ -10,6 +10,8 @@ import de.freshplan.domain.customer.repository.CustomerRepository;
 import de.freshplan.domain.user.entity.User;
 import de.freshplan.domain.user.repository.UserRepository;
 import de.freshplan.domain.user.service.exception.UserNotFoundException;
+import de.freshplan.test.builders.CustomerBuilder;
+import de.freshplan.test.builders.UserTestDataFactory;
 import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.security.TestSecurity;
@@ -18,7 +20,6 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import de.freshplan.test.builders.CustomerBuilder;
 
 /**
  * Integration-Tests für den SalesCockpitService.
@@ -38,7 +39,7 @@ class SalesCockpitServiceIntegrationTest {
   @Inject CustomerRepository customerRepository;
 
   @Inject UserRepository userRepository;
-  
+
   @Inject CustomerBuilder customerBuilder;
 
   private User testUser;
@@ -51,12 +52,14 @@ class SalesCockpitServiceIntegrationTest {
   @Test
   void testGetDashboardData_Success() {
     // Setup test data
+    String timestamp = String.valueOf(System.currentTimeMillis());
     testUser =
-        new User(
-            "test.user." + System.currentTimeMillis(),
-            "Test",
-            "User",
-            "test" + System.currentTimeMillis() + "@example.com");
+        UserTestDataFactory.builder()
+            .withUsername("test.user." + timestamp)
+            .withFirstName("Test")
+            .withLastName("User")
+            .withEmail("test" + timestamp + "@example.com")
+            .build();
     userRepository.persist(testUser);
     userRepository.flush();
     createTestCustomers();
@@ -107,12 +110,14 @@ class SalesCockpitServiceIntegrationTest {
   @Test
   void testRiskCustomerMapping() {
     // Setup test data
+    String timestamp = String.valueOf(System.currentTimeMillis());
     testUser =
-        new User(
-            "test.user." + System.currentTimeMillis(),
-            "Test",
-            "User",
-            "test" + System.currentTimeMillis() + "@example.com");
+        UserTestDataFactory.builder()
+            .withUsername("test.user." + timestamp)
+            .withFirstName("Test")
+            .withLastName("User")
+            .withEmail("test" + timestamp + "@example.com")
+            .build();
     userRepository.persist(testUser);
     userRepository.flush();
     createTestCustomers();
@@ -139,12 +144,14 @@ class SalesCockpitServiceIntegrationTest {
   @Test
   void testNeverContactedCustomer() {
     // Setup test data
+    String timestamp = String.valueOf(System.currentTimeMillis());
     testUser =
-        new User(
-            "test.user." + System.currentTimeMillis(),
-            "Test",
-            "User",
-            "test" + System.currentTimeMillis() + "@example.com");
+        UserTestDataFactory.builder()
+            .withUsername("test.user." + timestamp)
+            .withFirstName("Test")
+            .withLastName("User")
+            .withEmail("test" + timestamp + "@example.com")
+            .build();
     userRepository.persist(testUser);
     userRepository.flush();
     createTestCustomers();
@@ -169,11 +176,12 @@ class SalesCockpitServiceIntegrationTest {
     String suffix = String.valueOf(System.currentTimeMillis() % 10000);
 
     // Aktiver Kunde mit kürzlichem Kontakt
-    Customer activeCustomer1 = customerBuilder
-        .withCompanyName("[TEST] Aktiv GmbH")
-        .withType(CustomerType.UNTERNEHMEN)
-        .withStatus(CustomerStatus.AKTIV)
-        .build();
+    Customer activeCustomer1 =
+        customerBuilder
+            .withCompanyName("[TEST] Aktiv GmbH")
+            .withType(CustomerType.UNTERNEHMEN)
+            .withStatus(CustomerStatus.AKTIV)
+            .build();
     activeCustomer1.setCustomerNumber("C001_" + suffix);
     activeCustomer1.setCompanyName("[TEST] Aktiv GmbH"); // Keep [TEST] prefix
     activeCustomer1.setIsTestData(true);
@@ -181,11 +189,12 @@ class SalesCockpitServiceIntegrationTest {
     customerRepository.persist(activeCustomer1);
 
     // Aktiver Kunde ohne kürzlichen Kontakt (mittleres Risiko)
-    Customer activeCustomer2 = customerBuilder
-        .withCompanyName("[TEST] Mittel Risiko AG")
-        .withType(CustomerType.UNTERNEHMEN)
-        .withStatus(CustomerStatus.AKTIV)
-        .build();
+    Customer activeCustomer2 =
+        customerBuilder
+            .withCompanyName("[TEST] Mittel Risiko AG")
+            .withType(CustomerType.UNTERNEHMEN)
+            .withStatus(CustomerStatus.AKTIV)
+            .build();
     activeCustomer2.setCustomerNumber("C002_" + suffix);
     activeCustomer2.setCompanyName("[TEST] Mittel Risiko AG"); // Keep [TEST] prefix
     activeCustomer2.setIsTestData(true);
@@ -193,11 +202,12 @@ class SalesCockpitServiceIntegrationTest {
     customerRepository.persist(activeCustomer2);
 
     // Aktiver Kunde mit sehr langem Kontaktausfall (hohes Risiko)
-    Customer highRiskCustomer = customerBuilder
-        .withCompanyName("[TEST] Lange Nicht Kontaktiert GmbH")
-        .withType(CustomerType.UNTERNEHMEN)
-        .withStatus(CustomerStatus.AKTIV)
-        .build();
+    Customer highRiskCustomer =
+        customerBuilder
+            .withCompanyName("[TEST] Lange Nicht Kontaktiert GmbH")
+            .withType(CustomerType.UNTERNEHMEN)
+            .withStatus(CustomerStatus.AKTIV)
+            .build();
     highRiskCustomer.setCustomerNumber("C003_" + suffix);
     highRiskCustomer.setCompanyName("[TEST] Lange Nicht Kontaktiert GmbH"); // Keep [TEST] prefix
     highRiskCustomer.setIsTestData(true);
@@ -205,11 +215,12 @@ class SalesCockpitServiceIntegrationTest {
     customerRepository.persist(highRiskCustomer);
 
     // Kunde der noch nie kontaktiert wurde
-    Customer neverContactedCustomer = customerBuilder
-        .withCompanyName("[TEST] Nie Kontaktiert AG")
-        .withType(CustomerType.UNTERNEHMEN)
-        .withStatus(CustomerStatus.AKTIV)
-        .build();
+    Customer neverContactedCustomer =
+        customerBuilder
+            .withCompanyName("[TEST] Nie Kontaktiert AG")
+            .withType(CustomerType.UNTERNEHMEN)
+            .withStatus(CustomerStatus.AKTIV)
+            .build();
     neverContactedCustomer.setCustomerNumber("C004_" + suffix);
     neverContactedCustomer.setCompanyName("[TEST] Nie Kontaktiert AG"); // Keep [TEST] prefix
     neverContactedCustomer.setIsTestData(true);
@@ -217,11 +228,12 @@ class SalesCockpitServiceIntegrationTest {
     customerRepository.persist(neverContactedCustomer);
 
     // Inaktiver Kunde (sollte nicht in Risiko-Liste erscheinen)
-    Customer inactiveCustomer = customerBuilder
-        .withCompanyName("[TEST] Inaktiv GmbH")
-        .withType(CustomerType.UNTERNEHMEN)
-        .withStatus(CustomerStatus.INAKTIV)
-        .build();
+    Customer inactiveCustomer =
+        customerBuilder
+            .withCompanyName("[TEST] Inaktiv GmbH")
+            .withType(CustomerType.UNTERNEHMEN)
+            .withStatus(CustomerStatus.INAKTIV)
+            .build();
     inactiveCustomer.setCustomerNumber("C005_" + suffix);
     inactiveCustomer.setCompanyName("[TEST] Inaktiv GmbH"); // Keep [TEST] prefix
     inactiveCustomer.setIsTestData(true);

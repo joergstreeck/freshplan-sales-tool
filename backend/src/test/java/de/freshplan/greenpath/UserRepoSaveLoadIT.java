@@ -2,8 +2,8 @@ package de.freshplan.greenpath;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import de.freshplan.domain.user.entity.User;
 import de.freshplan.domain.user.repository.UserRepository;
+import de.freshplan.test.builders.UserTestDataFactory;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -21,7 +21,13 @@ class UserRepoSaveLoadIT {
   @Test
   @Transactional
   void saveLoad() {
-    var u = new User("testuser", "Test", "User", "test@example.com");
+    var u =
+        UserTestDataFactory.builder()
+            .withUsername("testuser_" + System.currentTimeMillis())
+            .withFirstName("Test")
+            .withLastName("User")
+            .withEmail("test" + System.currentTimeMillis() + "@example.com")
+            .build();
     repo.persistAndFlush(u);
     assertThat(repo.findById(u.getId())).isNotNull();
   }

@@ -16,6 +16,7 @@ import de.freshplan.domain.customer.service.dto.CreateCustomerRequest;
 import de.freshplan.domain.customer.service.dto.CustomerResponse;
 import de.freshplan.domain.customer.service.exception.CustomerAlreadyExistsException;
 import de.freshplan.domain.customer.service.mapper.CustomerMapper;
+import de.freshplan.test.builders.CustomerTestDataFactory;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.mockito.InjectMock;
 import jakarta.inject.Inject;
@@ -47,11 +48,13 @@ class CustomerCommandServiceTest {
 
   @BeforeEach
   void setUp() {
-    // Setup mock customer
-    mockCustomer = new Customer();
+    // Setup mock customer using TestDataFactory
+    mockCustomer =
+        CustomerTestDataFactory.builder()
+            .withCustomerNumber("KD-2025-00001")
+            .withCompanyName("[TEST] Test Company GmbH")
+            .build();
     mockCustomer.setId(UUID.randomUUID());
-    mockCustomer.setCustomerNumber("KD-2025-00001");
-    mockCustomer.setCompanyName("Test Company GmbH");
 
     // Mock response will be created by the mapper
   }
@@ -75,7 +78,7 @@ class CustomerCommandServiceTest {
         new CustomerResponse(
             mockCustomer.getId().toString(),
             "KD-2025-00001",
-            "Test Company GmbH",
+            "[TEST] Test Company GmbH",
             CustomerStatus.LEAD,
             CustomerType.NEUKUNDE,
             Industry.SONSTIGE,
@@ -83,7 +86,7 @@ class CustomerCommandServiceTest {
             null // lastContactDate
             );
 
-    when(customerRepository.findPotentialDuplicates(anyString()))
+    when(customerRepository.findPotentialDuplicates("[TEST] Test Company GmbH"))
         .thenReturn(Collections.emptyList());
     when(numberGenerator.generateNext()).thenReturn("KD-2025-00001");
     when(customerMapper.toEntity(any(), anyString(), anyString())).thenReturn(mockCustomer);
@@ -95,10 +98,10 @@ class CustomerCommandServiceTest {
     // Then
     assertThat(result).isNotNull();
     assertThat(result.customerNumber()).isEqualTo("KD-2025-00001");
-    assertThat(result.companyName()).isEqualTo("Test Company GmbH");
+    assertThat(result.companyName()).isEqualTo("[TEST] Test Company GmbH");
 
     // Verify interactions
-    verify(customerRepository).findPotentialDuplicates("Test Company GmbH");
+    verify(customerRepository).findPotentialDuplicates("[TEST] Test Company GmbH");
     verify(numberGenerator).generateNext();
     verify(customerMapper).toEntity(request, "KD-2025-00001", "testuser");
     verify(customerRepository).persist(mockCustomer);
@@ -110,10 +113,10 @@ class CustomerCommandServiceTest {
     // Given
     CreateCustomerRequest request = createValidRequest();
 
-    Customer existingCustomer = new Customer();
-    existingCustomer.setCompanyName("Test Company GmbH");
+    Customer existingCustomer =
+        CustomerTestDataFactory.builder().withCompanyName("[TEST] Test Company GmbH").build();
 
-    when(customerRepository.findPotentialDuplicates(anyString()))
+    when(customerRepository.findPotentialDuplicates("[TEST] Test Company GmbH"))
         .thenReturn(List.of(existingCustomer));
 
     // When & Then

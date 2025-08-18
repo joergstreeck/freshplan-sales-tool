@@ -14,6 +14,9 @@ import de.freshplan.domain.customer.service.dto.ContactInteractionDTO;
 import de.freshplan.domain.customer.service.dto.DataQualityMetricsDTO;
 import de.freshplan.domain.customer.service.dto.WarmthScoreDTO;
 import de.freshplan.domain.customer.service.mapper.ContactInteractionMapper;
+import de.freshplan.test.builders.ContactInteractionBuilder;
+import de.freshplan.test.builders.ContactTestDataFactory;
+import de.freshplan.test.builders.CustomerBuilder;
 import io.quarkus.panache.common.Page;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
@@ -42,6 +45,10 @@ class ContactInteractionServiceCQRSIntegrationTest {
 
   @InjectMock ContactInteractionMapper mapper;
 
+  @Inject ContactInteractionBuilder interactionBuilder;
+
+  @Inject CustomerBuilder customerBuilder;
+
   private UUID contactId;
   private CustomerContact testContact;
   private ContactInteraction testInteraction;
@@ -51,23 +58,31 @@ class ContactInteractionServiceCQRSIntegrationTest {
   void setUp() {
     contactId = UUID.randomUUID();
 
-    // Setup test contact
-    testContact = new CustomerContact();
-    testContact.setId(contactId);
-    testContact.setFirstName("John");
-    testContact.setLastName("Doe");
-    testContact.setEmail("john.doe@example.com");
+    // Create test customer using builder
+    var testCustomer = customerBuilder.withCompanyName("Test Company").build();
 
-    // Setup test interaction
-    testInteraction = new ContactInteraction();
+    // Setup test contact using ContactTestDataFactory
+    testContact =
+        ContactTestDataFactory.builder()
+            .withFirstName("John")
+            .withLastName("Doe")
+            .withEmail("john.doe@example.com")
+            .forCustomer(testCustomer)
+            .build();
+    testContact.setId(contactId);
+
+    // Setup test interaction using builder
+    testInteraction =
+        interactionBuilder
+            .forContact(testContact)
+            .ofType(InteractionType.EMAIL)
+            .at(LocalDateTime.now())
+            .withSummary("Test interaction")
+            .withFullContent("This is a test interaction content")
+            .withSentiment(0.5)
+            .withEngagement(75)
+            .build();
     testInteraction.setId(UUID.randomUUID());
-    testInteraction.setContact(testContact);
-    testInteraction.setType(InteractionType.EMAIL);
-    testInteraction.setTimestamp(LocalDateTime.now());
-    testInteraction.setSummary("Test interaction");
-    testInteraction.setFullContent("This is a test interaction content");
-    testInteraction.setSentimentScore(0.5);
-    testInteraction.setEngagementScore(75);
 
     // Setup test DTO
     testDTO =

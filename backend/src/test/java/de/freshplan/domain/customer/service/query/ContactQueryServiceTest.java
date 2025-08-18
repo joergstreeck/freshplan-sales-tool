@@ -9,6 +9,8 @@ import de.freshplan.domain.customer.entity.CustomerContact;
 import de.freshplan.domain.customer.repository.ContactRepository;
 import de.freshplan.domain.customer.service.dto.ContactDTO;
 import de.freshplan.domain.customer.service.mapper.ContactMapper;
+import de.freshplan.test.builders.ContactTestDataFactory;
+import de.freshplan.test.builders.CustomerBuilder;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.mockito.InjectMock;
 import jakarta.inject.Inject;
@@ -24,15 +26,23 @@ import org.junit.jupiter.api.Test;
 /**
  * Unit tests for ContactQueryService. Verifies that the service behaves EXACTLY like ContactService
  * for query operations. Note: No @Transactional annotation should be present on query methods!
+ *
+ * <p>Now uses TestDataBuilder pattern for creating test data.
+ *
+ * @since Migration Phase 4
  */
 @QuarkusTest
 class ContactQueryServiceTest {
 
   @Inject ContactQueryService queryService;
+  @Inject CustomerBuilder customerBuilder;
 
   @InjectMock ContactRepository contactRepository;
 
   @InjectMock ContactMapper contactMapper;
+
+  // testRunId für Test-Isolation
+  private final String testRunId = UUID.randomUUID().toString().substring(0, 8);
 
   private Customer mockCustomer;
   private CustomerContact mockContact1;
@@ -42,30 +52,30 @@ class ContactQueryServiceTest {
 
   @BeforeEach
   void setUp() {
-    // Setup mock customer
-    mockCustomer = new Customer();
-    mockCustomer.setId(UUID.randomUUID());
-    mockCustomer.setCompanyName("Test Company GmbH");
+    // Setup mock customer mit Builder
+    mockCustomer = customerBuilder.withCompanyName("[TEST] Test Company GmbH " + testRunId).build();
+    mockCustomer.setId(UUID.randomUUID()); // Set ID after build for mock
 
-    // Setup first mock contact
-    mockContact1 = new CustomerContact();
-    mockContact1.setId(UUID.randomUUID());
-    mockContact1.setCustomer(mockCustomer);
-    mockContact1.setFirstName("Max");
-    mockContact1.setLastName("Mustermann");
-    mockContact1.setEmail("max@test.de");
-    mockContact1.setIsPrimary(true);
-    mockContact1.setIsActive(true);
+    // Setup first mock contact mit Factory
+    mockContact1 =
+        ContactTestDataFactory.builder()
+            .forCustomer(mockCustomer)
+            .withFirstName("Max")
+            .withLastName("Mustermann")
+            .withEmail("max@test.de")
+            .asPrimary()
+            .build();
+    mockContact1.setId(UUID.randomUUID()); // Set ID after build for mock
 
-    // Setup second mock contact
-    mockContact2 = new CustomerContact();
-    mockContact2.setId(UUID.randomUUID());
-    mockContact2.setCustomer(mockCustomer);
-    mockContact2.setFirstName("Erika");
-    mockContact2.setLastName("Musterfrau");
-    mockContact2.setEmail("erika@test.de");
-    mockContact2.setIsPrimary(false);
-    mockContact2.setIsActive(true);
+    // Setup second mock contact mit Factory
+    mockContact2 =
+        ContactTestDataFactory.builder()
+            .forCustomer(mockCustomer)
+            .withFirstName("Erika")
+            .withLastName("Musterfrau")
+            .withEmail("erika@test.de")
+            .build();
+    mockContact2.setId(UUID.randomUUID()); // Set ID after build for mock
 
     // Setup mock DTOs
     mockContactDTO1 = new ContactDTO();

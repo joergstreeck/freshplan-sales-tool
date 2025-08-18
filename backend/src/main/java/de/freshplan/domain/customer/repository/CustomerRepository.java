@@ -337,8 +337,10 @@ public class CustomerRepository implements PanacheRepositoryBase<Customer, UUID>
             """
                 isDeleted = false
                 AND LOWER(companyName) LIKE ?1
+                AND companyName != ?2
                 """,
-            searchPattern)
+            searchPattern,
+            companyName)
         .list();
   }
 

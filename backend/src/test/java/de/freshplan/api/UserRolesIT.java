@@ -6,6 +6,7 @@ import static org.hamcrest.Matchers.*;
 import de.freshplan.domain.user.entity.User;
 import de.freshplan.domain.user.repository.UserRepository;
 import de.freshplan.domain.user.service.dto.UpdateUserRolesRequest;
+import de.freshplan.test.builders.UserTestDataFactory;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.security.TestSecurity;
 import io.restassured.http.ContentType;
@@ -35,7 +36,13 @@ class UserRolesIT {
     // Clean up and create test user
     userRepository.deleteAll();
 
-    testUser = new User("john.doe", "John", "Doe", "john.doe@example.com");
+    testUser =
+        UserTestDataFactory.builder()
+            .withUsername("john.doe")
+            .withFirstName("John")
+            .withLastName("Doe")
+            .withEmail("john.doe@example.com")
+            .build();
     userRepository.persist(testUser);
     userRepository.flush();
   }

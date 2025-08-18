@@ -18,8 +18,8 @@ import org.junit.jupiter.api.Test;
 
 /**
  * Integration tests for basic search functionality of CustomerSearchService.
- * 
- * Tests basic search operations without filters, global search, and empty results.
+ *
+ * <p>Tests basic search operations without filters, global search, and empty results.
  */
 @QuarkusTest
 @DisplayName("CustomerSearchService - Basic Search Tests")
@@ -36,7 +36,7 @@ class CustomerSearchBasicTest {
     // Given: Remember initial count and create test customers
     CustomerSearchRequest initialRequest = new CustomerSearchRequest();
     long initialCount = searchService.search(initialRequest, 0, 1).getTotalElements();
-    
+
     createAndPersistSampleCustomers();
     CustomerSearchRequest request = new CustomerSearchRequest();
 
@@ -101,7 +101,7 @@ class CustomerSearchBasicTest {
     // Given: Remember initial count and create test customers
     CustomerSearchRequest initialRequest = new CustomerSearchRequest();
     long initialCount = searchService.search(initialRequest, 0, 1).getTotalElements();
-    
+
     createAndPersistMultipleCustomers(5);
     CustomerSearchRequest request = new CustomerSearchRequest();
 
@@ -115,8 +115,7 @@ class CustomerSearchBasicTest {
     // Verify our test customers are present
     for (int i = 1; i <= 5; i++) {
       final String expectedName = "Test Customer " + i;
-      assertThat(result.getContent())
-          .anyMatch(c -> c.companyName().equals(expectedName));
+      assertThat(result.getContent()).anyMatch(c -> c.companyName().equals(expectedName));
     }
   }
 
@@ -126,14 +125,14 @@ class CustomerSearchBasicTest {
   void shouldHandleCaseInsensitiveGlobalSearch() {
     // Given: Create test customers
     createAndPersistSampleCustomers();
-    
+
     // When: Search with different cases
     CustomerSearchRequest upperRequest = new CustomerSearchRequest();
     upperRequest.setGlobalSearch("BERLIN");
-    
+
     CustomerSearchRequest lowerRequest = new CustomerSearchRequest();
     lowerRequest.setGlobalSearch("berlin");
-    
+
     CustomerSearchService.PagedResponse<CustomerResponse> upperResult =
         searchService.search(upperRequest, 0, 10);
     CustomerSearchService.PagedResponse<CustomerResponse> lowerResult =
@@ -146,24 +145,26 @@ class CustomerSearchBasicTest {
   }
 
   // Helper methods
-  
+
   private void createAndPersistSampleCustomers() {
-    Customer customer1 = customerBuilder
-        .withCompanyName("Berlin Restaurant GmbH")
-        .withStatus(CustomerStatus.AKTIV)
-        .withExpectedAnnualVolume(BigDecimal.valueOf(50000))
-        .withIndustry(Industry.RESTAURANT)
-        .build();
+    Customer customer1 =
+        customerBuilder
+            .withCompanyName("Berlin Restaurant GmbH")
+            .withStatus(CustomerStatus.AKTIV)
+            .withExpectedAnnualVolume(BigDecimal.valueOf(50000))
+            .withIndustry(Industry.RESTAURANT)
+            .build();
     customer1.setCompanyName("Berlin Restaurant GmbH"); // Override to remove [TEST-xxx] prefix
     customer1.setCreatedAt(LocalDate.now().minusDays(30).atStartOfDay());
     customerRepository.persist(customer1);
 
-    Customer customer2 = customerBuilder
-        .withCompanyName("Munich Catering Services")
-        .withStatus(CustomerStatus.AKTIV)
-        .withExpectedAnnualVolume(BigDecimal.valueOf(75000))
-        .withIndustry(Industry.CATERING)
-        .build();
+    Customer customer2 =
+        customerBuilder
+            .withCompanyName("Munich Catering Services")
+            .withStatus(CustomerStatus.AKTIV)
+            .withExpectedAnnualVolume(BigDecimal.valueOf(75000))
+            .withIndustry(Industry.CATERING)
+            .build();
     customer2.setCompanyName("Munich Catering Services"); // Override to remove [TEST-xxx] prefix
     customer2.setCreatedAt(LocalDate.now().minusDays(15).atStartOfDay());
     customerRepository.persist(customer2);
@@ -171,12 +172,13 @@ class CustomerSearchBasicTest {
 
   private void createAndPersistMultipleCustomers(int count) {
     for (int i = 0; i < count; i++) {
-      Customer customer = customerBuilder
-          .withCompanyName("Test Customer " + (i + 1))
-          .withStatus(CustomerStatus.AKTIV)
-          .withExpectedAnnualVolume(BigDecimal.valueOf(10000 + (i * 5000)))
-          .withIndustry(Industry.HOTEL)
-          .build();
+      Customer customer =
+          customerBuilder
+              .withCompanyName("Test Customer " + (i + 1))
+              .withStatus(CustomerStatus.AKTIV)
+              .withExpectedAnnualVolume(BigDecimal.valueOf(10000 + (i * 5000)))
+              .withIndustry(Industry.HOTEL)
+              .build();
       customer.setCompanyName("Test Customer " + (i + 1)); // Override prefix
       customerRepository.persist(customer);
     }

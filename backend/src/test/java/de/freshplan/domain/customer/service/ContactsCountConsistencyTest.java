@@ -8,11 +8,12 @@ import de.freshplan.domain.customer.repository.CustomerContactRepository;
 import de.freshplan.domain.customer.repository.CustomerRepository;
 import de.freshplan.domain.customer.service.dto.CustomerResponse;
 import de.freshplan.domain.customer.service.query.CustomerQueryService;
+import de.freshplan.test.builders.ContactTestDataFactory;
+import de.freshplan.test.builders.CustomerBuilder;
 import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import org.junit.jupiter.api.Test;
-import de.freshplan.test.builders.CustomerBuilder;
 
 /**
  * Test zur Verifikation der ContactsCount-Konsistenz zwischen Legacy und CQRS Services. Stellt
@@ -28,18 +29,19 @@ public class ContactsCountConsistencyTest {
   @Inject CustomerService customerService; // Legacy
 
   @Inject CustomerQueryService queryService; // CQRS
-  
+
   @Inject CustomerBuilder customerBuilder;
 
   @Test
   @TestTransaction
   void testContactsCountConsistencyForNewCustomer() {
     // 1. Neuen Kunden erstellen
-    Customer customer = customerBuilder
-        .withCompanyName("Test ContactCount Company")
-        .withStatus(de.freshplan.domain.customer.entity.CustomerStatus.AKTIV)
-        .withIndustry(de.freshplan.domain.customer.entity.Industry.BILDUNG)
-        .build();
+    Customer customer =
+        customerBuilder
+            .withCompanyName("Test ContactCount Company")
+            .withStatus(de.freshplan.domain.customer.entity.CustomerStatus.AKTIV)
+            .withIndustry(de.freshplan.domain.customer.entity.Industry.BILDUNG)
+            .build();
     // Override auto-generated values
     customer.setCustomerNumber("TCT-" + (System.currentTimeMillis() % 10000000));
     customer.setCompanyName("Test ContactCount Company"); // Remove [TEST-xxx] prefix
@@ -47,14 +49,16 @@ public class ContactsCountConsistencyTest {
 
     // 2. Kontakte hinzufügen
     for (int i = 0; i < 5; i++) {
-      CustomerContact cc = new CustomerContact();
-      cc.setCustomer(customer);
-      cc.setFirstName("Contact");
-      cc.setLastName("Number" + i);
-      cc.setEmail("contact" + i + "@test.com");
+      CustomerContact cc =
+          ContactTestDataFactory.builder()
+              .forCustomer(customer)
+              .withFirstName("Contact")
+              .withLastName("Number" + i)
+              .withEmail("contact" + i + "@test.com")
+              .withIsPrimary(i == 0) // Nur der erste ist Primary
+              .build();
       cc.setIsActive(true);
       cc.setIsDeleted(false);
-      cc.setIsPrimary(i == 0); // Nur der erste ist Primary
       cc.setCreatedBy("test");
       cc.setUpdatedBy("test");
       customerContactRepository.persist(cc);
@@ -109,11 +113,12 @@ public class ContactsCountConsistencyTest {
   @TestTransaction
   void testContactsCountWithAllInactiveContacts() {
     // Customer mit nur inaktiven Kontakten
-    Customer customer = customerBuilder
-        .withCompanyName("Test All Inactive Company")
-        .withStatus(de.freshplan.domain.customer.entity.CustomerStatus.AKTIV)
-        .withIndustry(de.freshplan.domain.customer.entity.Industry.BILDUNG)
-        .build();
+    Customer customer =
+        customerBuilder
+            .withCompanyName("Test All Inactive Company")
+            .withStatus(de.freshplan.domain.customer.entity.CustomerStatus.AKTIV)
+            .withIndustry(de.freshplan.domain.customer.entity.Industry.BILDUNG)
+            .build();
     // Override auto-generated values
     customer.setCustomerNumber("TCI-" + (System.currentTimeMillis() % 10000000));
     customer.setCompanyName("Test All Inactive Company"); // Remove [TEST-xxx] prefix
@@ -121,14 +126,16 @@ public class ContactsCountConsistencyTest {
 
     // Nur inaktive Kontakte hinzufügen
     for (int i = 0; i < 3; i++) {
-      CustomerContact cc = new CustomerContact();
-      cc.setCustomer(customer);
-      cc.setFirstName("Inactive");
-      cc.setLastName("Contact" + i);
-      cc.setEmail("inactive" + i + "@test.com");
+      CustomerContact cc =
+          ContactTestDataFactory.builder()
+              .forCustomer(customer)
+              .withFirstName("Inactive")
+              .withLastName("Contact" + i)
+              .withEmail("inactive" + i + "@test.com")
+              .withIsPrimary(false)
+              .build();
       cc.setIsActive(false); // Alle inaktiv
       cc.setIsDeleted(false);
-      cc.setIsPrimary(false);
       cc.setCreatedBy("test");
       cc.setUpdatedBy("test");
       customerContactRepository.persist(cc);
@@ -156,11 +163,12 @@ public class ContactsCountConsistencyTest {
   @TestTransaction
   void testContactsCountWithAllDeletedContacts() {
     // Customer mit nur gelöschten Kontakten
-    Customer customer = customerBuilder
-        .withCompanyName("Test All Deleted Company")
-        .withStatus(de.freshplan.domain.customer.entity.CustomerStatus.AKTIV)
-        .withIndustry(de.freshplan.domain.customer.entity.Industry.BILDUNG)
-        .build();
+    Customer customer =
+        customerBuilder
+            .withCompanyName("Test All Deleted Company")
+            .withStatus(de.freshplan.domain.customer.entity.CustomerStatus.AKTIV)
+            .withIndustry(de.freshplan.domain.customer.entity.Industry.BILDUNG)
+            .build();
     // Override auto-generated values
     customer.setCustomerNumber("TCD-" + (System.currentTimeMillis() % 10000000));
     customer.setCompanyName("Test All Deleted Company"); // Remove [TEST-xxx] prefix
@@ -168,14 +176,16 @@ public class ContactsCountConsistencyTest {
 
     // Nur gelöschte Kontakte hinzufügen
     for (int i = 0; i < 3; i++) {
-      CustomerContact cc = new CustomerContact();
-      cc.setCustomer(customer);
-      cc.setFirstName("Deleted");
-      cc.setLastName("Contact" + i);
-      cc.setEmail("deleted" + i + "@test.com");
+      CustomerContact cc =
+          ContactTestDataFactory.builder()
+              .forCustomer(customer)
+              .withFirstName("Deleted")
+              .withLastName("Contact" + i)
+              .withEmail("deleted" + i + "@test.com")
+              .withIsPrimary(false)
+              .build();
       cc.setIsActive(true);
       cc.setIsDeleted(true); // Alle gelöscht
-      cc.setIsPrimary(false);
       cc.setCreatedBy("test");
       cc.setUpdatedBy("test");
       customerContactRepository.persist(cc);

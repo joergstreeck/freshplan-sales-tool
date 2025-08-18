@@ -2,6 +2,7 @@ package de.freshplan.test;
 
 import de.freshplan.domain.user.entity.User;
 import de.freshplan.domain.user.repository.UserRepository;
+import de.freshplan.test.builders.UserTestDataFactory;
 import io.quarkus.arc.profile.IfBuildProfile;
 import io.quarkus.runtime.StartupEvent;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -43,7 +44,13 @@ public class TestDataInitializer {
 
   private void createUser(
       String username, String firstName, String lastName, String email, String... roles) {
-    User user = new User(username, firstName, lastName, email);
+    User user =
+        UserTestDataFactory.builder()
+            .withUsername(username)
+            .withFirstName(firstName)
+            .withLastName(lastName)
+            .withEmail(email)
+            .build();
     user.setRoles(Arrays.asList(roles));
     userRepository.persist(user);
     LOG.infof("Created test user: %s with roles: %s", username, String.join(", ", roles));

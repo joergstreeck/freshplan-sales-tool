@@ -15,6 +15,7 @@ import de.freshplan.domain.customer.service.dto.timeline.TimelineListResponse;
 import de.freshplan.domain.customer.service.dto.timeline.TimelineSummaryResponse;
 import de.freshplan.domain.customer.service.exception.CustomerNotFoundException;
 import de.freshplan.domain.customer.service.mapper.CustomerTimelineMapper;
+import de.freshplan.test.builders.CustomerTestDataFactory;
 import io.quarkus.panache.common.Page;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -97,7 +98,8 @@ class TimelineQueryServiceTest {
     int size = 10;
     long totalElements = 25;
 
-    Customer mockCustomer = new Customer();
+    Customer mockCustomer =
+        CustomerTestDataFactory.builder().withCompanyName("Test Company").build();
     mockCustomer.setId(testCustomerId);
     when(customerRepository.findByIdOptional(testCustomerId))
         .thenReturn(Optional.of(mockCustomer)); // Just to indicate customer exists
@@ -133,7 +135,8 @@ class TimelineQueryServiceTest {
     String search = "email";
     long totalElements = 5;
 
-    Customer mockCustomer = new Customer();
+    Customer mockCustomer =
+        CustomerTestDataFactory.builder().withCompanyName("Test Company").build();
     mockCustomer.setId(testCustomerId);
     when(customerRepository.findByIdOptional(testCustomerId)).thenReturn(Optional.of(mockCustomer));
     when(timelineRepository.searchByCustomerIdAndText(
@@ -163,7 +166,8 @@ class TimelineQueryServiceTest {
     String category = "EMAIL";
     long totalElements = 8;
 
-    Customer mockCustomer = new Customer();
+    Customer mockCustomer =
+        CustomerTestDataFactory.builder().withCompanyName("Test Company").build();
     mockCustomer.setId(testCustomerId);
     when(customerRepository.findByIdOptional(testCustomerId)).thenReturn(Optional.of(mockCustomer));
     when(timelineRepository.findByCustomerIdAndCategory(
@@ -205,7 +209,8 @@ class TimelineQueryServiceTest {
     int page = 0;
     int requestedSize = 500; // Exceeds max of 100
 
-    Customer mockCustomer = new Customer();
+    Customer mockCustomer =
+        CustomerTestDataFactory.builder().withCompanyName("Test Company").build();
     mockCustomer.setId(testCustomerId);
     when(customerRepository.findByIdOptional(testCustomerId)).thenReturn(Optional.of(mockCustomer));
     when(timelineRepository.findByCustomerId(eq(testCustomerId), any(Page.class)))
@@ -322,7 +327,8 @@ class TimelineQueryServiceTest {
     // This test ensures that the query service never performs write operations
 
     // Execute various query operations
-    Customer mockCustomer = new Customer();
+    Customer mockCustomer =
+        CustomerTestDataFactory.builder().withCompanyName("Test Company").build();
     mockCustomer.setId(testCustomerId);
     when(customerRepository.findByIdOptional(testCustomerId)).thenReturn(Optional.of(mockCustomer));
     when(timelineRepository.findByCustomerId(eq(testCustomerId), any(Page.class)))

@@ -12,6 +12,8 @@ import de.freshplan.domain.customer.entity.Industry;
 import de.freshplan.domain.customer.repository.ContactInteractionRepository;
 import de.freshplan.domain.customer.repository.ContactRepository;
 import de.freshplan.domain.customer.repository.CustomerRepository;
+import de.freshplan.test.builders.ContactTestDataFactory;
+import de.freshplan.test.builders.CustomerBuilder;
 import io.quarkus.narayana.jta.QuarkusTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
@@ -27,7 +29,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import de.freshplan.test.builders.CustomerBuilder;
 
 /**
  * Integration Test for ContactEventCaptureService CQRS Implementation.
@@ -60,7 +61,7 @@ class ContactEventCaptureCQRSIntegrationTest {
   @Inject ContactRepository contactRepository;
 
   @Inject ContactInteractionRepository interactionRepository;
-  
+
   @Inject CustomerBuilder customerBuilder;
 
   @ConfigProperty(name = "features.cqrs.enabled")
@@ -110,28 +111,32 @@ class ContactEventCaptureCQRSIntegrationTest {
         .run(
             () -> {
               // Create customer
-              Customer customer = customerBuilder
-                  .withCompanyName("[TEST-" + testRunId + "] Event Company")
-                  .withType(CustomerType.UNTERNEHMEN)
-                  .withStatus(CustomerStatus.AKTIV)
-                  .withIndustry(Industry.HOTEL)
-                  .withExpectedAnnualVolume(new BigDecimal("250000"))
-                  .build();
+              Customer customer =
+                  customerBuilder
+                      .withCompanyName("[TEST-" + testRunId + "] Event Company")
+                      .withType(CustomerType.UNTERNEHMEN)
+                      .withStatus(CustomerStatus.AKTIV)
+                      .withIndustry(Industry.HOTEL)
+                      .withExpectedAnnualVolume(new BigDecimal("250000"))
+                      .build();
               customer.setCustomerNumber("EVT-" + testRunId);
-              customer.setCompanyName("[TEST-" + testRunId + "] Event Company"); // Keep [TEST-x] prefix
+              customer.setCompanyName(
+                  "[TEST-" + testRunId + "] Event Company"); // Keep [TEST-x] prefix
               customer.setIsTestData(true);
               customerRepository.persist(customer);
               testCustomerId = customer.getId();
 
-              // Create contact
-              CustomerContact contact = new CustomerContact();
-              contact.setCustomer(customer);
-              contact.setFirstName("Max");
-              contact.setLastName("Test-" + testRunId);
-              contact.setEmail("max." + testRunId + "@test.com");
-              contact.setPhone("+49 123 456789");
-              contact.setPosition("Test Manager");
-              contact.setIsPrimary(true);
+              // Create contact using ContactTestDataFactory
+              CustomerContact contact =
+                  ContactTestDataFactory.builder()
+                      .withFirstName("Max")
+                      .withLastName("Test-" + testRunId)
+                      .withEmail("max." + testRunId + "@test.com")
+                      .withPhone("+49 123 456789")
+                      .withPosition("Test Manager")
+                      .withIsPrimary(true)
+                      .forCustomer(customer)
+                      .build();
               contact.setCreatedBy("testuser");
               contact.setCreatedAt(LocalDateTime.now());
               contactRepository.persist(contact);

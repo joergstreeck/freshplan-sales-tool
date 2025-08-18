@@ -19,9 +19,9 @@ import org.junit.jupiter.api.Test;
 
 /**
  * Integration tests for filter functionality of CustomerSearchService.
- * 
- * Tests various filter operations including status, date range, numeric range,
- * and combined filters.
+ *
+ * <p>Tests various filter operations including status, date range, numeric range, and combined
+ * filters.
  */
 @QuarkusTest
 @DisplayName("CustomerSearchService - Filter Tests")
@@ -100,8 +100,10 @@ class CustomerSearchFilterTest {
     // Only customers with volume > 60000 should be returned
     assertThat(result.getContent()).hasSize(2); // 75000 and 100000
     assertThat(result.getContent())
-        .allMatch(customer -> customer.expectedAnnualVolume() != null 
-            && customer.expectedAnnualVolume().compareTo(BigDecimal.valueOf(60000)) > 0);
+        .allMatch(
+            customer ->
+                customer.expectedAnnualVolume() != null
+                    && customer.expectedAnnualVolume().compareTo(BigDecimal.valueOf(60000)) > 0);
   }
 
   @Test
@@ -135,17 +137,17 @@ class CustomerSearchFilterTest {
     // Given: Create diverse customers
     createDiverseCustomers();
     CustomerSearchRequest request = new CustomerSearchRequest();
-    
+
     FilterCriteria statusFilter = new FilterCriteria();
     statusFilter.setField("status");
     statusFilter.setOperator(FilterOperator.EQUALS);
     statusFilter.setValue("AKTIV");
-    
+
     FilterCriteria volumeFilter = new FilterCriteria();
     volumeFilter.setField("expectedAnnualVolume");
     volumeFilter.setOperator(FilterOperator.GREATER_THAN);
     volumeFilter.setValue("50000");
-    
+
     request.setFilters(List.of(statusFilter, volumeFilter));
 
     // When
@@ -155,8 +157,10 @@ class CustomerSearchFilterTest {
     // Then
     assertThat(result).isNotNull();
     assertThat(result.getContent())
-        .allMatch(customer -> "AKTIV".equals(customer.status().toString()) 
-            && customer.expectedAnnualVolume().compareTo(BigDecimal.valueOf(50000)) > 0);
+        .allMatch(
+            customer ->
+                "AKTIV".equals(customer.status().toString())
+                    && customer.expectedAnnualVolume().compareTo(BigDecimal.valueOf(50000)) > 0);
   }
 
   @Test
@@ -185,133 +189,126 @@ class CustomerSearchFilterTest {
   // Helper methods
 
   private void createCustomersWithDifferentStatuses() {
-    Customer active = customerBuilder
-        .withCompanyName("Active Company")
-        .withStatus(CustomerStatus.AKTIV)
-        .build();
+    Customer active =
+        customerBuilder.withCompanyName("Active Company").withStatus(CustomerStatus.AKTIV).build();
     active.setCompanyName("Active Company");
     customerRepository.persist(active);
 
-    Customer inactive = customerBuilder
-        .withCompanyName("Inactive Company")
-        .withStatus(CustomerStatus.INAKTIV)
-        .build();
+    Customer inactive =
+        customerBuilder
+            .withCompanyName("Inactive Company")
+            .withStatus(CustomerStatus.INAKTIV)
+            .build();
     inactive.setCompanyName("Inactive Company");
     customerRepository.persist(inactive);
 
-    Customer potential = customerBuilder
-        .withCompanyName("Potential Company")
-        .withStatus(CustomerStatus.PROSPECT)
-        .build();
+    Customer potential =
+        customerBuilder
+            .withCompanyName("Potential Company")
+            .withStatus(CustomerStatus.PROSPECT)
+            .build();
     potential.setCompanyName("Potential Company");
     customerRepository.persist(potential);
   }
 
   private void createCustomersWithDifferentDates() {
-    Customer recent = customerBuilder
-        .withCompanyName("Recent Company")
-        .build();
+    Customer recent = customerBuilder.withCompanyName("Recent Company").build();
     recent.setCompanyName("Recent Company");
     recent.setCreatedAt(LocalDate.now().minusDays(5).atStartOfDay());
     customerRepository.persist(recent);
 
-    Customer older = customerBuilder
-        .withCompanyName("Older Company")
-        .build();
+    Customer older = customerBuilder.withCompanyName("Older Company").build();
     older.setCompanyName("Older Company");
     older.setCreatedAt(LocalDate.now().minusDays(30).atStartOfDay());
     customerRepository.persist(older);
 
-    Customer oldest = customerBuilder
-        .withCompanyName("Oldest Company")
-        .build();
+    Customer oldest = customerBuilder.withCompanyName("Oldest Company").build();
     oldest.setCompanyName("Oldest Company");
     oldest.setCreatedAt(LocalDate.now().minusDays(90).atStartOfDay());
     customerRepository.persist(oldest);
   }
 
   private void createCustomersWithDifferentVolumes() {
-    Customer small = customerBuilder
-        .withCompanyName("Small Company")
-        .withExpectedAnnualVolume(BigDecimal.valueOf(25000))
-        .build();
+    Customer small =
+        customerBuilder
+            .withCompanyName("Small Company")
+            .withExpectedAnnualVolume(BigDecimal.valueOf(25000))
+            .build();
     small.setCompanyName("Small Company");
     customerRepository.persist(small);
 
-    Customer medium = customerBuilder
-        .withCompanyName("Medium Company")
-        .withExpectedAnnualVolume(BigDecimal.valueOf(50000))
-        .build();
+    Customer medium =
+        customerBuilder
+            .withCompanyName("Medium Company")
+            .withExpectedAnnualVolume(BigDecimal.valueOf(50000))
+            .build();
     medium.setCompanyName("Medium Company");
     customerRepository.persist(medium);
 
-    Customer large = customerBuilder
-        .withCompanyName("Large Company")
-        .withExpectedAnnualVolume(BigDecimal.valueOf(75000))
-        .build();
+    Customer large =
+        customerBuilder
+            .withCompanyName("Large Company")
+            .withExpectedAnnualVolume(BigDecimal.valueOf(75000))
+            .build();
     large.setCompanyName("Large Company");
     customerRepository.persist(large);
 
-    Customer enterprise = customerBuilder
-        .withCompanyName("Enterprise Company")
-        .withExpectedAnnualVolume(BigDecimal.valueOf(100000))
-        .build();
+    Customer enterprise =
+        customerBuilder
+            .withCompanyName("Enterprise Company")
+            .withExpectedAnnualVolume(BigDecimal.valueOf(100000))
+            .build();
     enterprise.setCompanyName("Enterprise Company");
     customerRepository.persist(enterprise);
   }
 
   private void createCustomersWithDifferentIndustries() {
-    Customer hotel1 = customerBuilder
-        .withCompanyName("Hotel One")
-        .withIndustry(Industry.HOTEL)
-        .build();
+    Customer hotel1 =
+        customerBuilder.withCompanyName("Hotel One").withIndustry(Industry.HOTEL).build();
     hotel1.setCompanyName("Hotel One");
     customerRepository.persist(hotel1);
 
-    Customer hotel2 = customerBuilder
-        .withCompanyName("Hotel Two")
-        .withIndustry(Industry.HOTEL)
-        .build();
+    Customer hotel2 =
+        customerBuilder.withCompanyName("Hotel Two").withIndustry(Industry.HOTEL).build();
     hotel2.setCompanyName("Hotel Two");
     customerRepository.persist(hotel2);
 
-    Customer restaurant = customerBuilder
-        .withCompanyName("Restaurant")
-        .withIndustry(Industry.RESTAURANT)
-        .build();
+    Customer restaurant =
+        customerBuilder.withCompanyName("Restaurant").withIndustry(Industry.RESTAURANT).build();
     restaurant.setCompanyName("Restaurant");
     customerRepository.persist(restaurant);
 
-    Customer catering = customerBuilder
-        .withCompanyName("Catering Service")
-        .withIndustry(Industry.CATERING)
-        .build();
+    Customer catering =
+        customerBuilder.withCompanyName("Catering Service").withIndustry(Industry.CATERING).build();
     catering.setCompanyName("Catering Service");
     customerRepository.persist(catering);
   }
 
   private void createDiverseCustomers() {
-    Customer active1 = customerBuilder
-        .withCompanyName("Active High Volume")
-        .withStatus(CustomerStatus.AKTIV)
-        .withExpectedAnnualVolume(BigDecimal.valueOf(75000))
-        .build();
+    Customer active1 =
+        customerBuilder
+            .withCompanyName("Active High Volume")
+            .withStatus(CustomerStatus.AKTIV)
+            .withExpectedAnnualVolume(BigDecimal.valueOf(75000))
+            .build();
     active1.setCompanyName("Active High Volume");
     customerRepository.persist(active1);
 
-    Customer active2 = customerBuilder
-        .withCompanyName("Active Low Volume")
-        .withStatus(CustomerStatus.AKTIV)
-        .withExpectedAnnualVolume(BigDecimal.valueOf(25000))
-        .build();
+    Customer active2 =
+        customerBuilder
+            .withCompanyName("Active Low Volume")
+            .withStatus(CustomerStatus.AKTIV)
+            .withExpectedAnnualVolume(BigDecimal.valueOf(25000))
+            .build();
     active2.setCompanyName("Active Low Volume");
     customerRepository.persist(active2);
 
-    Customer inactive = customerBuilder
-        .withCompanyName("Inactive High Volume")
-        .withStatus(CustomerStatus.INAKTIV)
-        .withExpectedAnnualVolume(BigDecimal.valueOf(100000))
-        .build();
+    Customer inactive =
+        customerBuilder
+            .withCompanyName("Inactive High Volume")
+            .withStatus(CustomerStatus.INAKTIV)
+            .withExpectedAnnualVolume(BigDecimal.valueOf(100000))
+            .build();
     inactive.setCompanyName("Inactive High Volume");
     customerRepository.persist(inactive);
   }

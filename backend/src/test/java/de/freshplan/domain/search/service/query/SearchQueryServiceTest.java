@@ -13,6 +13,8 @@ import de.freshplan.domain.search.service.dto.ContactSearchDto;
 import de.freshplan.domain.search.service.dto.CustomerSearchDto;
 import de.freshplan.domain.search.service.dto.SearchResult;
 import de.freshplan.domain.search.service.dto.SearchResults;
+import de.freshplan.test.builders.ContactTestDataFactory;
+import de.freshplan.test.builders.CustomerBuilder;
 import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
@@ -38,6 +40,7 @@ import org.junit.jupiter.api.Test;
 class SearchQueryServiceTest {
 
   @Inject SearchQueryService searchQueryService;
+  @Inject CustomerBuilder customerBuilder;
 
   @InjectMock CustomerRepository customerRepository;
 
@@ -388,17 +391,16 @@ class SearchQueryServiceTest {
     }
   }
 
-  // Helper methods for creating test data (identical to SearchServiceTest)
+  // Helper methods for creating test data (migrated to use TestDataBuilder)
   private Customer createTestCustomer(
       String customerNumber,
       String companyName,
       CustomerStatus status,
       LocalDateTime lastContactDate) {
-    Customer customer = new Customer();
+    Customer customer = customerBuilder.withCompanyName(companyName).withStatus(status).build();
     customer.setId(UUID.randomUUID());
     customer.setCustomerNumber(customerNumber);
-    customer.setCompanyName(companyName);
-    customer.setStatus(status);
+    customer.setCompanyName(companyName); // Override to remove [TEST] prefix for mock tests
     customer.setLastContactDate(lastContactDate);
     return customer;
   }
@@ -410,12 +412,20 @@ class SearchQueryServiceTest {
       String phone,
       boolean isPrimary,
       Customer customer) {
-    CustomerContact contact = new CustomerContact();
+    var builder =
+        ContactTestDataFactory.builder()
+            .forCustomer(customer)
+            .withFirstName(firstName)
+            .withLastName(lastName)
+            .withEmail(email)
+            .withPhone(phone);
+
+    if (isPrimary) {
+      builder.asPrimary();
+    }
+
+    CustomerContact contact = builder.build();
     contact.setId(UUID.randomUUID());
-    contact.setFirstName(firstName);
-    contact.setLastName(lastName);
-    contact.setEmail(email);
-    contact.setPhone(phone);
     contact.setIsPrimary(isPrimary);
     contact.setCustomer(customer);
     return contact;

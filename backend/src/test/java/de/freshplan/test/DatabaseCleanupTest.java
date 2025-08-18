@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 
 /** Analyse und Cleanup der Test-Datenbank */
 @QuarkusTest
-@TestTransaction  // CI-Fix: Rollback nach Test für Database Growth Check
+@TestTransaction // CI-Fix: Rollback nach Test für Database Growth Check
 public class DatabaseCleanupTest {
 
   @Inject CustomerRepository customerRepository;

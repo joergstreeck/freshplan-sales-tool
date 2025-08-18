@@ -10,45 +10,46 @@ import jakarta.inject.Inject;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 @QuarkusTest
 @TestSecurity(
     user = "testuser",
     roles = {"admin", "manager", "sales"})
-@TestTransaction
 class ProfileRepositoryTest {
 
   @Inject ProfileRepository profileRepository;
 
-  private Profile testProfile;
+  private long initialProfileCount;
 
-  @BeforeEach
-  void setUp() {
-    // Clear repository
-    profileRepository.deleteAll();
-
-    // Create test profile
-    testProfile = new Profile();
-    testProfile.setCustomerId("CUST-001");
-    testProfile.setCreatedAt(LocalDateTime.now());
-    testProfile.setUpdatedAt(LocalDateTime.now());
+  private Profile createTestProfile(String customerId) {
+    Profile profile = new Profile();
+    profile.setCustomerId(customerId);
+    profile.setCreatedAt(LocalDateTime.now());
+    profile.setUpdatedAt(LocalDateTime.now());
+    return profile;
   }
 
   @Test
+  @TestTransaction
   void persist_shouldSaveProfileWithGeneratedId() {
+    // Given
+    long initialCount = profileRepository.count();
+    Profile testProfile = createTestProfile("CUST-001");
+
     // When
     profileRepository.persist(testProfile);
 
     // Then
     assertThat(testProfile.getId()).isNotNull();
-    assertThat(profileRepository.count()).isEqualTo(1);
+    assertThat(profileRepository.count()).isEqualTo(initialCount + 1);
   }
 
   @Test
+  @TestTransaction
   void findByCustomerId_withExistingCustomerId_shouldReturnProfile() {
     // Given
+    Profile testProfile = createTestProfile("CUST-001");
     profileRepository.persist(testProfile);
 
     // When
@@ -60,8 +61,10 @@ class ProfileRepositoryTest {
   }
 
   @Test
+  @TestTransaction
   void findByCustomerId_withNonExistingCustomerId_shouldReturnEmpty() {
     // Given
+    Profile testProfile = createTestProfile("CUST-001");
     profileRepository.persist(testProfile);
 
     // When
@@ -72,8 +75,10 @@ class ProfileRepositoryTest {
   }
 
   @Test
+  @TestTransaction
   void findByIdOptional_withExistingId_shouldReturnProfile() {
     // Given
+    Profile testProfile = createTestProfile("CUST-001");
     profileRepository.persist(testProfile);
     UUID profileId = testProfile.getId();
 
@@ -86,8 +91,10 @@ class ProfileRepositoryTest {
   }
 
   @Test
+  @TestTransaction
   void update_shouldModifyExistingProfile() {
     // Given
+    Profile testProfile = createTestProfile("CUST-001");
     profileRepository.persist(testProfile);
     Profile saved = profileRepository.findByCustomerId("CUST-001").orElseThrow();
 
@@ -103,29 +110,35 @@ class ProfileRepositoryTest {
   }
 
   @Test
+  @TestTransaction
   void delete_shouldRemoveProfile() {
     // Given
+    long initialCount = profileRepository.count();
+    Profile testProfile = createTestProfile("CUST-001");
     profileRepository.persist(testProfile);
-    assertThat(profileRepository.count()).isEqualTo(1);
+    assertThat(profileRepository.count()).isEqualTo(initialCount + 1);
 
     // When
     profileRepository.delete(testProfile);
 
     // Then
-    assertThat(profileRepository.count()).isEqualTo(0);
+    assertThat(profileRepository.count()).isEqualTo(initialCount);
     assertThat(profileRepository.findByCustomerId("CUST-001")).isEmpty();
   }
 
   @Test
+  @TestTransaction
   void listAll_shouldReturnAllProfiles() {
     // Given
+    int initialSize = profileRepository.listAll().size();
+
     Profile profile1 = new Profile();
-    profile1.setCustomerId("CUST-001");
+    profile1.setCustomerId("CUST-TEST-001");
     profile1.setCreatedAt(LocalDateTime.now());
     profile1.setUpdatedAt(LocalDateTime.now());
 
     Profile profile2 = new Profile();
-    profile2.setCustomerId("CUST-002");
+    profile2.setCustomerId("CUST-TEST-002");
     profile2.setCreatedAt(LocalDateTime.now());
     profile2.setUpdatedAt(LocalDateTime.now());
 
@@ -136,23 +149,25 @@ class ProfileRepositoryTest {
     var profiles = profileRepository.listAll();
 
     // Then
-    assertThat(profiles).hasSize(2);
+    assertThat(profiles).hasSize(initialSize + 2);
     assertThat(profiles)
         .extracting(Profile::getCustomerId)
-        .containsExactlyInAnyOrder("CUST-001", "CUST-002");
+        .contains("CUST-TEST-001", "CUST-TEST-002");
   }
 
   @Test
+  @TestTransaction
   void count_shouldReturnNumberOfProfiles() {
     // Given
-    assertThat(profileRepository.count()).isEqualTo(0);
+    long initialCount = profileRepository.count();
 
+    Profile testProfile = createTestProfile("CUST-001");
     profileRepository.persist(testProfile);
 
     // When
     long count = profileRepository.count();
 
     // Then
-    assertThat(count).isEqualTo(1);
+    assertThat(count).isEqualTo(initialCount + 1);
   }
 }

@@ -10,20 +10,19 @@ import de.freshplan.domain.customer.repository.CustomerRepository;
 import de.freshplan.domain.search.service.dto.CustomerSearchDto;
 import de.freshplan.domain.search.service.dto.SearchResult;
 import de.freshplan.domain.search.service.dto.SearchResults;
+import de.freshplan.test.builders.CustomerBuilder;
 import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
 import io.quarkus.test.security.TestSecurity;
 import jakarta.inject.Inject;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.UUID;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.logging.Logger;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import de.freshplan.test.builders.CustomerBuilder;
 
 /**
  * FIXED Integration Test for SearchService CQRS Implementation.
@@ -169,13 +168,14 @@ class SearchCQRSIntegrationTest {
   void search_withLargeDataset_shouldPerformWell() {
     // Given - Create 100 test customers
     for (int i = 0; i < 100; i++) {
-      Customer c = customerBuilder
-          .withCompanyName("[TEST] Performance Test " + i)
-          .withType(CustomerType.UNTERNEHMEN)
-          .withStatus(i % 3 == 0 ? CustomerStatus.AKTIV : CustomerStatus.LEAD)
-          .withIndustry(Industry.values()[i % Industry.values().length])
-          .withExpectedAnnualVolume(new BigDecimal(100000 + i * 1000))
-          .build();
+      Customer c =
+          customerBuilder
+              .withCompanyName("[TEST] Performance Test " + i)
+              .withType(CustomerType.UNTERNEHMEN)
+              .withStatus(i % 3 == 0 ? CustomerStatus.AKTIV : CustomerStatus.LEAD)
+              .withIndustry(Industry.values()[i % Industry.values().length])
+              .withExpectedAnnualVolume(new BigDecimal(100000 + i * 1000))
+              .build();
       // Override auto-generated values for test
       c.setCustomerNumber("PERF" + i);
       c.setCompanyName("[TEST] Performance Test " + i); // Override to remove builder prefix
@@ -267,12 +267,13 @@ class SearchCQRSIntegrationTest {
   // Helper method
   private Customer createTestCustomer(
       String number, String name, CustomerType type, CustomerStatus status, Industry industry) {
-    Customer customer = customerBuilder
-        .withCompanyName(name)
-        .withType(type)
-        .withStatus(status)
-        .withIndustry(industry)
-        .build();
+    Customer customer =
+        customerBuilder
+            .withCompanyName(name)
+            .withType(type)
+            .withStatus(status)
+            .withIndustry(industry)
+            .build();
     // Override auto-generated values for test specifics
     customer.setCustomerNumber(number);
     customer.setCompanyName(name); // Override to remove builder prefix

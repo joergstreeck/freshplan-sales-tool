@@ -14,6 +14,8 @@ import de.freshplan.domain.opportunity.service.dto.UpdateOpportunityRequest;
 import de.freshplan.domain.user.entity.User;
 import de.freshplan.domain.user.repository.UserRepository;
 import de.freshplan.test.builders.CustomerBuilder;
+import de.freshplan.test.builders.OpportunityBuilder;
+import de.freshplan.test.builders.UserTestDataFactory;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.security.TestSecurity;
 import io.restassured.http.ContentType;
@@ -50,8 +52,10 @@ public class OpportunityResourceIntegrationTest {
   @Inject UserRepository userRepository;
 
   @Inject EntityManager entityManager;
-  
+
   @Inject CustomerBuilder customerBuilder;
+
+  @Inject OpportunityBuilder opportunityBuilder;
 
   private Customer testCustomer;
   private User testUser;
@@ -69,8 +73,14 @@ public class OpportunityResourceIntegrationTest {
     // Get or create test user for CI environment
     testUser = userRepository.find("username", "testuser").firstResult();
     if (testUser == null) {
-      // Create a test user if none exists (happens in CI)
-      testUser = new User("testuser", "Test", "User", "testuser@test.com");
+      // Create a test user if none exists (happens in CI) using TestDataFactory
+      testUser =
+          UserTestDataFactory.builder()
+              .withUsername("testuser")
+              .withFirstName("Test")
+              .withLastName("User")
+              .withEmail("testuser@test.com")
+              .build();
       testUser.setRoles(Arrays.asList("admin", "manager", "sales"));
       userRepository.persist(testUser);
     }
@@ -181,7 +191,10 @@ public class OpportunityResourceIntegrationTest {
           .statusCode(200)
           .contentType(ContentType.JSON)
           .body("id", equalTo(opportunity.getId().toString()))
-          .body("name", equalTo("Test Opportunity"))
+          .body(
+              "name",
+              containsString(
+                  "Test Opportunity")) // Changed to containsString to handle [TEST] prefix
           .body("stage", equalTo("PROPOSAL"))
           .body("probability", equalTo(60)); // Default for PROPOSAL
     }
@@ -685,10 +698,8 @@ public class OpportunityResourceIntegrationTest {
     }
 
     // Create test customer using CustomerBuilder
-    var customer = customerBuilder
-        .withCompanyName(companyName)
-        .build();
-    
+    var customer = customerBuilder.withCompanyName(companyName).build();
+
     // Override to use exact company name without [TEST-xxx] prefix
     customer.setCompanyName(companyName);
     customer.setCustomerNumber("TEST-" + System.currentTimeMillis()); // Keep unique customer number
@@ -712,9 +723,13 @@ public class OpportunityResourceIntegrationTest {
 
   @Transactional
   Opportunity createTestOpportunity(String name, OpportunityStage stage) {
-    var opportunity = new Opportunity(name, stage, testUser);
-    opportunity.setCustomer(testCustomer);
-    opportunityRepository.persist(opportunity);
+    var opportunity =
+        opportunityBuilder
+            .withName(name)
+            .inStage(stage)
+            .assignedTo(testUser)
+            .forCustomer(testCustomer)
+            .persist();
     return opportunity;
   }
 

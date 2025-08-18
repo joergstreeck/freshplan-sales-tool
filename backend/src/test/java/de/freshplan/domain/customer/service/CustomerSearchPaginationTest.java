@@ -20,8 +20,8 @@ import org.junit.jupiter.api.Test;
 
 /**
  * Integration tests for pagination functionality of CustomerSearchService.
- * 
- * Tests page navigation, page size handling, and pagination edge cases.
+ *
+ * <p>Tests page navigation, page size handling, and pagination edge cases.
  */
 @QuarkusTest
 @DisplayName("CustomerSearchService - Pagination Tests")
@@ -209,11 +209,11 @@ class CustomerSearchPaginationTest {
     CustomerSearchRequest request = new CustomerSearchRequest();
 
     // When: Get all pages
-    CustomerSearchService.PagedResponse<CustomerResponse> page1 = 
+    CustomerSearchService.PagedResponse<CustomerResponse> page1 =
         searchService.search(request, 0, 5);
-    CustomerSearchService.PagedResponse<CustomerResponse> page2 = 
+    CustomerSearchService.PagedResponse<CustomerResponse> page2 =
         searchService.search(request, 1, 5);
-    CustomerSearchService.PagedResponse<CustomerResponse> page3 = 
+    CustomerSearchService.PagedResponse<CustomerResponse> page3 =
         searchService.search(request, 2, 5);
 
     // Then: Collect all IDs and check for uniqueness
@@ -256,12 +256,13 @@ class CustomerSearchPaginationTest {
 
   private void createMultipleCustomers(int count) {
     for (int i = 1; i <= count; i++) {
-      Customer customer = customerBuilder
-          .withCompanyName("Customer " + String.format("%03d", i))
-          .withStatus(CustomerStatus.AKTIV)
-          .withExpectedAnnualVolume(BigDecimal.valueOf(10000 + (i * 1000)))
-          .withIndustry(Industry.HOTEL)
-          .build();
+      Customer customer =
+          customerBuilder
+              .withCompanyName("Customer " + String.format("%03d", i))
+              .withStatus(CustomerStatus.AKTIV)
+              .withExpectedAnnualVolume(BigDecimal.valueOf(10000 + (i * 1000)))
+              .withIndustry(Industry.HOTEL)
+              .build();
       customer.setCompanyName("Customer " + String.format("%03d", i));
       customerRepository.persist(customer);
     }
@@ -270,10 +271,8 @@ class CustomerSearchPaginationTest {
   private void createCustomersWithMixedStatuses(int total) {
     for (int i = 1; i <= total; i++) {
       CustomerStatus status = (i % 2 == 0) ? CustomerStatus.AKTIV : CustomerStatus.INAKTIV;
-      Customer customer = customerBuilder
-          .withCompanyName("Customer " + i)
-          .withStatus(status)
-          .build();
+      Customer customer =
+          customerBuilder.withCompanyName("Customer " + i).withStatus(status).build();
       customer.setCompanyName("Customer " + i);
       customerRepository.persist(customer);
     }

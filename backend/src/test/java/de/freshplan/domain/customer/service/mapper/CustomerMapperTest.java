@@ -38,7 +38,7 @@ class CustomerMapperTest {
   @Inject CustomerMapper customerMapper;
 
   @InjectMock CustomerRepository customerRepository;
-  
+
   @Inject CustomerBuilder customerBuilder;
 
   private Customer testCustomer;
@@ -48,10 +48,8 @@ class CustomerMapperTest {
   @BeforeEach
   void setUp() {
     // Setup mock parent customer for parent reference tests
-    Customer mockParentCustomer = customerBuilder
-        .withCompanyName("Parent Company")
-        .withStatus(CustomerStatus.AKTIV)
-        .build();
+    Customer mockParentCustomer =
+        customerBuilder.withCompanyName("Parent Company").withStatus(CustomerStatus.AKTIV).build();
     mockParentCustomer.setId(UUID.fromString("54b985b7-8bb0-4a8d-bd0c-fefd24bc1255"));
     mockParentCustomer.setCompanyName("Parent Company");
     mockParentCustomer.setCustomerType(CustomerType.UNTERNEHMEN);
@@ -62,17 +60,18 @@ class CustomerMapperTest {
         .thenReturn(Optional.of(mockParentCustomer));
 
     // Create test customer entity using CustomerBuilder
-    testCustomer = customerBuilder
-        .withCompanyName("Test Hotel GmbH")
-        .withIndustry(Industry.HOTEL)
-        .withClassification(Classification.A_KUNDE)
-        .withStatus(CustomerStatus.AKTIV)
-        .withExpectedAnnualVolume(new BigDecimal("50000.00"))
-        .withPaymentTerms(PaymentTerms.NETTO_30)
-        .withCreditLimit(new BigDecimal("10000.00"))
-        .withDeliveryCondition(DeliveryCondition.STANDARD)
-        .build();
-    
+    testCustomer =
+        customerBuilder
+            .withCompanyName("Test Hotel GmbH")
+            .withIndustry(Industry.HOTEL)
+            .withClassification(Classification.A_KUNDE)
+            .withStatus(CustomerStatus.AKTIV)
+            .withExpectedAnnualVolume(new BigDecimal("50000.00"))
+            .withPaymentTerms(PaymentTerms.NETTO_30)
+            .withCreditLimit(new BigDecimal("10000.00"))
+            .withDeliveryCondition(DeliveryCondition.STANDARD)
+            .build();
+
     // Override specific fields not supported by builder
     testCustomer.setId(UUID.randomUUID());
     testCustomer.setCustomerNumber(TestDataBuilder.uniqueCustomerNumber());
@@ -92,10 +91,8 @@ class CustomerMapperTest {
     testCustomer.setUpdatedBy("update-user");
 
     // Add some child customers using CustomerBuilder
-    Customer childCustomer = customerBuilder
-        .withCompanyName("Child Hotel")
-        .withStatus(CustomerStatus.AKTIV)
-        .build();
+    Customer childCustomer =
+        customerBuilder.withCompanyName("Child Hotel").withStatus(CustomerStatus.AKTIV).build();
     childCustomer.setId(UUID.randomUUID());
     childCustomer.setCustomerNumber(TestDataBuilder.uniqueCustomerNumber());
     childCustomer.setCompanyName("Child Hotel");
@@ -255,10 +252,11 @@ class CustomerMapperTest {
     @DisplayName("Should handle null values gracefully")
     void toResponse_withNullValues_shouldHandleGracefully() {
       // Given - using CustomerBuilder for minimal entity
-      Customer customerWithNulls = customerBuilder
-          .withCompanyName("Minimal Company")
-          .withStatus(CustomerStatus.LEAD)
-          .build();
+      Customer customerWithNulls =
+          customerBuilder
+              .withCompanyName("Minimal Company")
+              .withStatus(CustomerStatus.LEAD)
+              .build();
       customerWithNulls.setId(UUID.randomUUID());
       customerWithNulls.setCustomerNumber("KD-2025-99999");
       customerWithNulls.setCompanyName("Minimal Company");
@@ -385,10 +383,11 @@ class CustomerMapperTest {
     @DisplayName("Should update entity from update request")
     void updateEntity_withUpdateRequest_shouldUpdateAllFields() {
       // Given - using CustomerBuilder
-      Customer originalCustomer = customerBuilder
-          .withCompanyName("Original Company")
-          .withStatus(CustomerStatus.LEAD)
-          .build();
+      Customer originalCustomer =
+          customerBuilder
+              .withCompanyName("Original Company")
+              .withStatus(CustomerStatus.LEAD)
+              .build();
       originalCustomer.setId(UUID.randomUUID());
       originalCustomer.setCustomerNumber("KD-2025-00008");
       originalCustomer.setCompanyName("Original Company");
@@ -439,10 +438,8 @@ class CustomerMapperTest {
     @DisplayName("Should handle null values in update request")
     void updateEntity_withNullValues_shouldHandleGracefully() {
       // Given - using CustomerBuilder
-      Customer originalCustomer = customerBuilder
-          .withCompanyName("Original Company")
-          .withIndustry(Industry.HOTEL)
-          .build();
+      Customer originalCustomer =
+          customerBuilder.withCompanyName("Original Company").withIndustry(Industry.HOTEL).build();
       originalCustomer.setCompanyName("Original Company");
       originalCustomer.setTradingName("Original Trading");
 
@@ -533,10 +530,11 @@ class CustomerMapperTest {
     @DisplayName("Should handle empty collections")
     void mapEmptyCollections_shouldHandleGracefully() {
       // Given - using CustomerBuilder
-      Customer customerWithEmptyCollections = customerBuilder
-          .withCompanyName("Empty Collections Company")
-          .withStatus(CustomerStatus.LEAD)
-          .build();
+      Customer customerWithEmptyCollections =
+          customerBuilder
+              .withCompanyName("Empty Collections Company")
+              .withStatus(CustomerStatus.LEAD)
+              .build();
       customerWithEmptyCollections.setId(UUID.randomUUID());
       customerWithEmptyCollections.setCustomerNumber("KD-2025-00999");
       customerWithEmptyCollections.setCompanyName("Empty Collections Company");
@@ -587,10 +585,11 @@ class CustomerMapperTest {
     @DisplayName("Should handle large collections efficiently")
     void mapLargeCollections_shouldPerformWell() {
       // Given - using CustomerBuilder
-      Customer customerWithManyChildren = customerBuilder
-          .withCompanyName("Company with Many Children")
-          .withStatus(CustomerStatus.AKTIV)
-          .build();
+      Customer customerWithManyChildren =
+          customerBuilder
+              .withCompanyName("Company with Many Children")
+              .withStatus(CustomerStatus.AKTIV)
+              .build();
       customerWithManyChildren.setId(UUID.randomUUID());
       customerWithManyChildren.setCustomerNumber("KD-2025-LARGE");
       customerWithManyChildren.setCompanyName("Company with Many Children");
@@ -602,10 +601,11 @@ class CustomerMapperTest {
 
       // Add many child customers using CustomerBuilder
       for (int i = 0; i < 100; i++) {
-        Customer child = customerBuilder
-            .withCompanyName("Child Company " + i)
-            .withStatus(CustomerStatus.AKTIV)
-            .build();
+        Customer child =
+            customerBuilder
+                .withCompanyName("Child Company " + i)
+                .withStatus(CustomerStatus.AKTIV)
+                .build();
         child.setId(UUID.randomUUID());
         child.setCustomerNumber("KD-2025-CHILD-" + i);
         child.setCompanyName("Child Company " + i);

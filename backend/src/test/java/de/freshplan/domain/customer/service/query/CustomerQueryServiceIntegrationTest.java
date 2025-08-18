@@ -7,12 +7,12 @@ import de.freshplan.domain.customer.entity.CustomerLifecycleStage;
 import de.freshplan.domain.customer.entity.CustomerStatus;
 import de.freshplan.domain.customer.entity.Industry;
 import de.freshplan.domain.customer.repository.CustomerRepository;
-import de.freshplan.test.builders.CustomerBuilder;
 import de.freshplan.domain.customer.service.CustomerService;
 import de.freshplan.domain.customer.service.dto.CustomerDashboardResponse;
 import de.freshplan.domain.customer.service.dto.CustomerListResponse;
 import de.freshplan.domain.customer.service.dto.CustomerResponse;
 import de.freshplan.domain.customer.service.exception.CustomerNotFoundException;
+import de.freshplan.test.builders.CustomerBuilder;
 import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
@@ -20,7 +20,6 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -31,7 +30,6 @@ import org.junit.jupiter.api.Test;
  * switching via feature flag.
  */
 @QuarkusTest
-@TestTransaction
 class CustomerQueryServiceIntegrationTest {
 
   @Inject CustomerQueryService queryService;
@@ -39,32 +37,25 @@ class CustomerQueryServiceIntegrationTest {
   @Inject CustomerService originalService;
 
   @Inject CustomerRepository customerRepository;
-  
+
   @Inject CustomerBuilder customerBuilder;
 
   private UUID testCustomerId;
   private String testCustomerNumber;
 
-  @BeforeEach
-  void setUp() {
-    // Clean up any test data - skip foreign key constraints by using query
-    customerRepository
-        .getEntityManager()
-        .createQuery("DELETE FROM CustomerTimelineEvent")
-        .executeUpdate();
-    customerRepository.getEntityManager().createQuery("DELETE FROM Customer").executeUpdate();
-    customerRepository.flush();
-
+  private void setupTestData() {
     // Create a test customer directly in DB for read tests using CustomerBuilder
-    Customer testCustomer = customerBuilder
-        .withCompanyName("Test Company GmbH")
-        .withStatus(CustomerStatus.AKTIV)
-        .withIndustry(Industry.HOTEL)
-        .withExpectedAnnualVolume(new BigDecimal("100000.00"))
-        .build();
-    
+    Customer testCustomer =
+        customerBuilder
+            .withCompanyName("Test Company GmbH")
+            .withStatus(CustomerStatus.AKTIV)
+            .withIndustry(Industry.HOTEL)
+            .withExpectedAnnualVolume(new BigDecimal("100000.00"))
+            .build();
+
     // Override specific fields to maintain test requirements
-    testCustomer.setCustomerNumber("KD-2025-00001");
+    // Use unique customer number to avoid constraint violations
+    testCustomer.setCustomerNumber("KD-TEST-" + UUID.randomUUID().toString().substring(0, 8));
     testCustomer.setCompanyName("Test Company GmbH");
     testCustomer.setLegalForm("GmbH");
     testCustomer.setLifecycleStage(CustomerLifecycleStage.GROWTH);
@@ -85,7 +76,9 @@ class CustomerQueryServiceIntegrationTest {
   // ========== TEST: getCustomer() ==========
 
   @Test
+  @TestTransaction
   void getCustomer_shouldReturnIdenticalResults() {
+    setupTestData();
     // When: Call both services
     CustomerResponse fromOriginal = originalService.getCustomer(testCustomerId);
     CustomerResponse fromQuery = queryService.getCustomer(testCustomerId);
@@ -99,7 +92,9 @@ class CustomerQueryServiceIntegrationTest {
   }
 
   @Test
+  @TestTransaction
   void getCustomer_withNullId_shouldThrowSameException() {
+    // No test data needed for null ID test
     // When/Then: Both should throw IllegalArgumentException
     assertThatThrownBy(() -> originalService.getCustomer(null))
         .isInstanceOf(IllegalArgumentException.class)
@@ -111,7 +106,9 @@ class CustomerQueryServiceIntegrationTest {
   }
 
   @Test
+  @TestTransaction
   void getCustomer_withNonExistentId_shouldThrowSameException() {
+    // No test data needed for non-existent ID test
     UUID nonExistentId = UUID.randomUUID();
 
     // When/Then: Both should throw CustomerNotFoundException
@@ -125,7 +122,9 @@ class CustomerQueryServiceIntegrationTest {
   // ========== TEST: getAllCustomers() ==========
 
   @Test
+  @TestTransaction
   void getAllCustomers_shouldReturnIdenticalResults() {
+    setupTestData();
     // Given: Add more test customers
     createAdditionalTestCustomers(5);
 
@@ -146,7 +145,9 @@ class CustomerQueryServiceIntegrationTest {
   }
 
   @Test
+  @TestTransaction
   void getAllCustomers_withPagination_shouldReturnIdenticalResults() {
+    setupTestData();
     // Given: Add more test customers for pagination
     createAdditionalTestCustomers(15);
 
@@ -165,7 +166,9 @@ class CustomerQueryServiceIntegrationTest {
   // ========== TEST: getCustomersByStatus() ==========
 
   @Test
+  @TestTransaction
   void getCustomersByStatus_shouldReturnIdenticalResults() {
+    setupTestData();
     // Given: Create customers with different statuses
     createCustomerWithStatus(CustomerStatus.AKTIV, "Active Company 1");
     createCustomerWithStatus(CustomerStatus.AKTIV, "Active Company 2");
@@ -174,12 +177,20 @@ class CustomerQueryServiceIntegrationTest {
 
     // When: Query for AKTIV status
     CustomerListResponse fromOriginal =
-        originalService.getCustomersByStatus(CustomerStatus.AKTIV, 0, 10);
-    CustomerListResponse fromQuery = queryService.getCustomersByStatus(CustomerStatus.AKTIV, 0, 10);
+        originalService.getCustomersByStatus(CustomerStatus.AKTIV, 0, 20);
+    CustomerListResponse fromQuery = queryService.getCustomersByStatus(CustomerStatus.AKTIV, 0, 20);
 
-    // Then: Must return same customers
-    assertThat(fromQuery.content()).hasSize(3); // Original test customer + 2 new active
+    // Then: Must return same customers - including seed data
+    // Services should return identical results
     assertThat(fromQuery.totalElements()).isEqualTo(fromOriginal.totalElements());
+    assertThat(fromQuery.content()).hasSize(fromOriginal.content().size());
+
+    // Verify our test customers are included
+    assertThat(fromQuery.content())
+        .extracting(CustomerResponse::companyName)
+        .contains("Test Company GmbH", "Active Company 1", "Active Company 2");
+
+    // Compare that both services return the same results
     assertThat(fromQuery.content())
         .usingRecursiveFieldByFieldElementComparator()
         .containsExactlyInAnyOrderElementsOf(fromOriginal.content());
@@ -188,7 +199,9 @@ class CustomerQueryServiceIntegrationTest {
   // ========== TEST: getCustomersByIndustry() ==========
 
   @Test
+  @TestTransaction
   void getCustomersByIndustry_shouldReturnIdenticalResults() {
+    setupTestData();
     // Given: Create customers with different industries
     createCustomerWithIndustry(Industry.HOTEL, "Hotel Company 1");
     createCustomerWithIndustry(Industry.HOTEL, "Hotel Company 2");
@@ -209,7 +222,9 @@ class CustomerQueryServiceIntegrationTest {
   // ========== TEST: getCustomerHierarchy() ==========
 
   @Test
+  @TestTransaction
   void getCustomerHierarchy_shouldReturnIdenticalResults() {
+    setupTestData();
     // When: Get hierarchy for test customer
     CustomerResponse fromOriginal = originalService.getCustomerHierarchy(testCustomerId);
     CustomerResponse fromQuery = queryService.getCustomerHierarchy(testCustomerId);
@@ -219,7 +234,9 @@ class CustomerQueryServiceIntegrationTest {
   }
 
   @Test
+  @TestTransaction
   void getCustomerHierarchy_withNonExistentId_shouldThrowSameException() {
+    // No test data needed for non-existent ID test
     UUID nonExistentId = UUID.randomUUID();
 
     // When/Then: Both should throw CustomerNotFoundException
@@ -233,19 +250,34 @@ class CustomerQueryServiceIntegrationTest {
   // ========== TEST: getCustomersAtRisk() ==========
 
   @Test
+  @TestTransaction
   void getCustomersAtRisk_shouldReturnIdenticalResults() {
+    setupTestData();
     // Given: Create customers with different risk scores
     createCustomerWithRiskScore(80, "High Risk Company 1");
     createCustomerWithRiskScore(75, "High Risk Company 2");
     createCustomerWithRiskScore(30, "Low Risk Company");
 
     // When: Query for risk score >= 70
-    CustomerListResponse fromOriginal = originalService.getCustomersAtRisk(70, 0, 10);
-    CustomerListResponse fromQuery = queryService.getCustomersAtRisk(70, 0, 10);
+    CustomerListResponse fromOriginal = originalService.getCustomersAtRisk(70, 0, 20);
+    CustomerListResponse fromQuery = queryService.getCustomersAtRisk(70, 0, 20);
 
-    // Then: Must return same high-risk customers
-    assertThat(fromQuery.content()).hasSize(2);
+    // Then: Must return same high-risk customers - including any seed data with high risk
+    // Services should return identical results
     assertThat(fromQuery.totalElements()).isEqualTo(fromOriginal.totalElements());
+    assertThat(fromQuery.content()).hasSize(fromOriginal.content().size());
+
+    // Verify our test high-risk customers are included
+    assertThat(fromQuery.content())
+        .extracting(CustomerResponse::companyName)
+        .contains("High Risk Company 1", "High Risk Company 2");
+
+    // Verify low risk customer is NOT included
+    assertThat(fromQuery.content())
+        .extracting(CustomerResponse::companyName)
+        .doesNotContain("Low Risk Company");
+
+    // Compare that both services return the same results
     assertThat(fromQuery.content())
         .usingRecursiveFieldByFieldElementComparator()
         .containsExactlyInAnyOrderElementsOf(fromOriginal.content());
@@ -254,7 +286,9 @@ class CustomerQueryServiceIntegrationTest {
   // ========== TEST: getOverdueFollowUps() ==========
 
   @Test
+  @TestTransaction
   void getOverdueFollowUps_shouldReturnIdenticalResults() {
+    setupTestData();
     // Given: Create customers with overdue follow-ups
     createCustomerWithLastContact(LocalDateTime.now().minusDays(35), "Overdue Company 1");
     createCustomerWithLastContact(LocalDateTime.now().minusDays(40), "Overdue Company 2");
@@ -274,7 +308,9 @@ class CustomerQueryServiceIntegrationTest {
   // ========== TEST: checkDuplicates() ==========
 
   @Test
+  @TestTransaction
   void checkDuplicates_shouldReturnIdenticalResults() {
+    setupTestData();
     // Given: Create similar company names
     createCustomerWithName("ACME Corporation");
     createCustomerWithName("ACME Corp");
@@ -295,7 +331,9 @@ class CustomerQueryServiceIntegrationTest {
   // ========== TEST: getDashboardData() ==========
 
   @Test
+  @TestTransaction
   void getDashboardData_shouldReturnIdenticalResults() {
+    setupTestData();
     // Given: Create diverse customer data for dashboard
     createCustomerWithStatus(CustomerStatus.AKTIV, "Active 1");
     createCustomerWithStatus(CustomerStatus.AKTIV, "Active 2");
@@ -329,12 +367,13 @@ class CustomerQueryServiceIntegrationTest {
   @TestTransaction
   void createAdditionalTestCustomers(int count) {
     for (int i = 1; i <= count; i++) {
-      Customer customer = customerBuilder
-          .withCompanyName("Test Company " + i)
-          .withStatus(CustomerStatus.AKTIV)
-          .withIndustry(Industry.HOTEL)
-          .build();
-      
+      Customer customer =
+          customerBuilder
+              .withCompanyName("Test Company " + i)
+              .withStatus(CustomerStatus.AKTIV)
+              .withIndustry(Industry.HOTEL)
+              .build();
+
       // Override specific fields to maintain test requirements
       customer.setCustomerNumber(de.freshplan.testsupport.UniqueData.customerNumber("KD", i + 1));
       customer.setCompanyName("Test Company " + i);
@@ -352,14 +391,15 @@ class CustomerQueryServiceIntegrationTest {
 
   @TestTransaction
   void createCustomerWithStatus(CustomerStatus status, String name) {
-    Customer customer = customerBuilder
-        .withCompanyName(name)
-        .withStatus(status)
-        .withIndustry(Industry.HOTEL)
-        .build();
-    
-    customer.setCustomerNumber(de.freshplan.testsupport.UniqueData.customerNumber("KD", 
-        (int)(Math.random() * 10000)));
+    Customer customer =
+        customerBuilder
+            .withCompanyName(name)
+            .withStatus(status)
+            .withIndustry(Industry.HOTEL)
+            .build();
+
+    customer.setCustomerNumber(
+        de.freshplan.testsupport.UniqueData.customerNumber("KD", (int) (Math.random() * 10000)));
     customer.setCompanyName(name);
     customer.setLegalForm("GmbH");
     customer.setLifecycleStage(CustomerLifecycleStage.GROWTH);
@@ -374,13 +414,15 @@ class CustomerQueryServiceIntegrationTest {
 
   @TestTransaction
   void createCustomerWithIndustry(Industry industry, String name) {
-    Customer customer = customerBuilder
-        .withCompanyName(name)
-        .withStatus(CustomerStatus.AKTIV)
-        .withIndustry(industry)
-        .build();
-    
-    customer.setCustomerNumber(de.freshplan.testsupport.UniqueData.customerNumber("KD", (int)(Math.random() * 10000)));
+    Customer customer =
+        customerBuilder
+            .withCompanyName(name)
+            .withStatus(CustomerStatus.AKTIV)
+            .withIndustry(industry)
+            .build();
+
+    customer.setCustomerNumber(
+        de.freshplan.testsupport.UniqueData.customerNumber("KD", (int) (Math.random() * 10000)));
     customer.setCompanyName(name);
     customer.setLegalForm("GmbH");
     customer.setLifecycleStage(CustomerLifecycleStage.GROWTH);
@@ -395,13 +437,15 @@ class CustomerQueryServiceIntegrationTest {
 
   @TestTransaction
   void createCustomerWithRiskScore(int riskScore, String name) {
-    Customer customer = customerBuilder
-        .withCompanyName(name)
-        .withStatus(CustomerStatus.AKTIV)
-        .withIndustry(Industry.HOTEL)
-        .build();
-    
-    customer.setCustomerNumber(de.freshplan.testsupport.UniqueData.customerNumber("KD", (int)(Math.random() * 10000)));
+    Customer customer =
+        customerBuilder
+            .withCompanyName(name)
+            .withStatus(CustomerStatus.AKTIV)
+            .withIndustry(Industry.HOTEL)
+            .build();
+
+    customer.setCustomerNumber(
+        de.freshplan.testsupport.UniqueData.customerNumber("KD", (int) (Math.random() * 10000)));
     customer.setCompanyName(name);
     customer.setLegalForm("GmbH");
     customer.setLifecycleStage(CustomerLifecycleStage.GROWTH);
@@ -416,13 +460,15 @@ class CustomerQueryServiceIntegrationTest {
 
   @TestTransaction
   void createCustomerWithLastContact(LocalDateTime lastContact, String name) {
-    Customer customer = customerBuilder
-        .withCompanyName(name)
-        .withStatus(CustomerStatus.AKTIV)
-        .withIndustry(Industry.HOTEL)
-        .build();
-    
-    customer.setCustomerNumber(de.freshplan.testsupport.UniqueData.customerNumber("KD", (int)(Math.random() * 10000)));
+    Customer customer =
+        customerBuilder
+            .withCompanyName(name)
+            .withStatus(CustomerStatus.AKTIV)
+            .withIndustry(Industry.HOTEL)
+            .build();
+
+    customer.setCustomerNumber(
+        de.freshplan.testsupport.UniqueData.customerNumber("KD", (int) (Math.random() * 10000)));
     customer.setCompanyName(name);
     customer.setLegalForm("GmbH");
     customer.setLifecycleStage(CustomerLifecycleStage.GROWTH);
@@ -439,13 +485,15 @@ class CustomerQueryServiceIntegrationTest {
 
   @TestTransaction
   void createCustomerWithName(String name) {
-    Customer customer = customerBuilder
-        .withCompanyName(name)
-        .withStatus(CustomerStatus.AKTIV)
-        .withIndustry(Industry.HOTEL)
-        .build();
-    
-    customer.setCustomerNumber(de.freshplan.testsupport.UniqueData.customerNumber("KD", (int)(Math.random() * 10000)));
+    Customer customer =
+        customerBuilder
+            .withCompanyName(name)
+            .withStatus(CustomerStatus.AKTIV)
+            .withIndustry(Industry.HOTEL)
+            .build();
+
+    customer.setCustomerNumber(
+        de.freshplan.testsupport.UniqueData.customerNumber("KD", (int) (Math.random() * 10000)));
     customer.setCompanyName(name);
     customer.setLegalForm("GmbH");
     customer.setLifecycleStage(CustomerLifecycleStage.GROWTH);
@@ -460,13 +508,15 @@ class CustomerQueryServiceIntegrationTest {
 
   @TestTransaction
   void createCustomerWithLifecycleStage(CustomerLifecycleStage stage, String name) {
-    Customer customer = customerBuilder
-        .withCompanyName(name)
-        .withStatus(CustomerStatus.AKTIV)
-        .withIndustry(Industry.HOTEL)
-        .build();
-    
-    customer.setCustomerNumber(de.freshplan.testsupport.UniqueData.customerNumber("KD", (int)(Math.random() * 10000)));
+    Customer customer =
+        customerBuilder
+            .withCompanyName(name)
+            .withStatus(CustomerStatus.AKTIV)
+            .withIndustry(Industry.HOTEL)
+            .build();
+
+    customer.setCustomerNumber(
+        de.freshplan.testsupport.UniqueData.customerNumber("KD", (int) (Math.random() * 10000)));
     customer.setCompanyName(name);
     customer.setLegalForm("GmbH");
     customer.setLifecycleStage(stage);

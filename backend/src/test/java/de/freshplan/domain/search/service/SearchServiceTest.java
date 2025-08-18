@@ -13,6 +13,8 @@ import de.freshplan.domain.search.service.dto.ContactSearchDto;
 import de.freshplan.domain.search.service.dto.CustomerSearchDto;
 import de.freshplan.domain.search.service.dto.SearchResult;
 import de.freshplan.domain.search.service.dto.SearchResults;
+import de.freshplan.test.builders.ContactTestDataFactory;
+import de.freshplan.test.builders.CustomerTestDataFactory;
 import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
@@ -393,12 +395,14 @@ class SearchServiceTest {
       String companyName,
       CustomerStatus status,
       LocalDateTime lastContactDate) {
-    Customer customer = new Customer();
+    Customer customer =
+        CustomerTestDataFactory.builder()
+            .withCompanyName(companyName)
+            .withCustomerNumber(customerNumber)
+            .withStatus(status)
+            .withLastContactDate(lastContactDate)
+            .build();
     customer.setId(UUID.randomUUID());
-    customer.setCustomerNumber(customerNumber);
-    customer.setCompanyName(companyName);
-    customer.setStatus(status);
-    customer.setLastContactDate(lastContactDate);
     return customer;
   }
 
@@ -409,14 +413,20 @@ class SearchServiceTest {
       String phone,
       boolean isPrimary,
       Customer customer) {
-    CustomerContact contact = new CustomerContact();
+    var builder =
+        ContactTestDataFactory.builder()
+            .forCustomer(customer)
+            .withFirstName(firstName)
+            .withLastName(lastName)
+            .withEmail(email)
+            .withPhone(phone);
+
+    if (isPrimary) {
+      builder.asPrimary();
+    }
+
+    CustomerContact contact = builder.build();
     contact.setId(UUID.randomUUID());
-    contact.setFirstName(firstName);
-    contact.setLastName(lastName);
-    contact.setEmail(email);
-    contact.setPhone(phone);
-    contact.setIsPrimary(isPrimary);
-    contact.setCustomer(customer);
     return contact;
   }
 }

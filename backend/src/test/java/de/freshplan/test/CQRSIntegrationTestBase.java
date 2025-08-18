@@ -4,14 +4,12 @@ import io.quarkus.test.junit.QuarkusTestProfile;
 import java.util.Map;
 
 /**
- * Base class for CQRS integration tests.
- * Provides common configuration and utilities for testing CQRS implementations.
+ * Base class for CQRS integration tests. Provides common configuration and utilities for testing
+ * CQRS implementations.
  */
 public abstract class CQRSIntegrationTestBase extends BaseIntegrationTestWithCleanup {
 
-  /**
-   * Test profile that enables CQRS and disables test data initialization.
-   */
+  /** Test profile that enables CQRS and disables test data initialization. */
   public static class CQRSEnabledTestProfile implements QuarkusTestProfile {
     @Override
     public Map<String, String> getConfigOverrides() {
@@ -23,14 +21,11 @@ public abstract class CQRSIntegrationTestBase extends BaseIntegrationTestWithCle
           // Use test profile for DB
           "quarkus.datasource.db-kind", "postgresql",
           // Clean database before tests
-          "quarkus.flyway.clean-at-start", "true"
-      );
+          "quarkus.flyway.clean-at-start", "true");
     }
   }
 
-  /**
-   * Test profile that disables CQRS for legacy mode testing.
-   */
+  /** Test profile that disables CQRS for legacy mode testing. */
   public static class CQRSDisabledTestProfile implements QuarkusTestProfile {
     @Override
     public Map<String, String> getConfigOverrides() {
@@ -42,8 +37,7 @@ public abstract class CQRSIntegrationTestBase extends BaseIntegrationTestWithCle
           // Use test profile for DB
           "quarkus.datasource.db-kind", "postgresql",
           // Clean database before tests
-          "quarkus.flyway.clean-at-start", "true"
-      );
+          "quarkus.flyway.clean-at-start", "true");
     }
   }
 }

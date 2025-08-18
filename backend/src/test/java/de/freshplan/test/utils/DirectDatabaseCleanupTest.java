@@ -18,7 +18,7 @@ import org.junit.jupiter.api.Test;
  * @since Emergency Cleanup
  */
 @QuarkusTest
-@TestTransaction  // CI-Fix: Rollback nach Test für Database Growth Check
+@TestTransaction // CI-Fix: Rollback nach Test für Database Growth Check
 public class DirectDatabaseCleanupTest {
 
   private static final Logger LOG = Logger.getLogger(DirectDatabaseCleanupTest.class);

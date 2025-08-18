@@ -7,6 +7,8 @@ import static org.mockito.Mockito.*;
 import de.freshplan.domain.audit.entity.AuditEventType;
 import de.freshplan.domain.audit.service.AuditService;
 import de.freshplan.domain.audit.service.dto.AuditContext;
+import de.freshplan.domain.customer.entity.Customer;
+import de.freshplan.domain.customer.repository.CustomerRepository;
 import de.freshplan.domain.opportunity.entity.Opportunity;
 import de.freshplan.domain.opportunity.entity.OpportunityActivity;
 import de.freshplan.domain.opportunity.entity.OpportunityStage;
@@ -20,6 +22,9 @@ import de.freshplan.domain.opportunity.service.exception.OpportunityNotFoundExce
 import de.freshplan.domain.opportunity.service.mapper.OpportunityMapper;
 import de.freshplan.domain.user.entity.User;
 import de.freshplan.domain.user.repository.UserRepository;
+import de.freshplan.test.TestDataBuilder;
+import de.freshplan.test.builders.OpportunityTestDataFactory;
+import de.freshplan.test.builders.UserTestDataFactory;
 import io.quarkus.security.identity.SecurityIdentity;
 import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
@@ -47,6 +52,8 @@ class OpportunityCommandServiceTest {
 
   @InjectMock OpportunityRepository opportunityRepository;
 
+  @InjectMock CustomerRepository customerRepository;
+
   @InjectMock UserRepository userRepository;
 
   @InjectMock OpportunityMapper opportunityMapper;
@@ -56,22 +63,40 @@ class OpportunityCommandServiceTest {
   @InjectMock AuditService auditService;
 
   private User testUser;
+  private Customer testCustomer;
   private Opportunity testOpportunity;
   private UUID testOpportunityId;
+  private UUID testCustomerId;
   private OpportunityResponse testResponse;
 
   @BeforeEach
   void setUp() {
     // Test-User Setup
-    testUser = new User("testuser", "Test", "User", "test@example.com");
-    testUser.setRoles(Arrays.asList("admin", "manager", "sales"));
+    testUser =
+        UserTestDataFactory.builder()
+            .withUsername("testuser")
+            .withFirstName("Test")
+            .withLastName("User")
+            .withEmail("test@example.com")
+            .withRoles(Arrays.asList("admin", "manager", "sales"))
+            .build();
+
+    // Test-Customer Setup
+    testCustomerId = UUID.randomUUID();
+    testCustomer = TestDataBuilder.createTestCustomer("Test Customer GmbH");
+    testCustomer.setId(testCustomerId);
 
     // Test-Opportunity Setup
     testOpportunityId = UUID.randomUUID();
-    testOpportunity = new Opportunity("Test Opportunity", OpportunityStage.NEW_LEAD, testUser);
+    testOpportunity =
+        OpportunityTestDataFactory.builder()
+            .withName("Test Opportunity")
+            .inStage(OpportunityStage.NEW_LEAD)
+            .assignedTo(testUser)
+            .withExpectedValue(new BigDecimal("10000"))
+            .withExpectedCloseDate(LocalDate.now().plusDays(30))
+            .build();
     testOpportunity.setId(testOpportunityId);
-    testOpportunity.setExpectedValue(new BigDecimal("10000"));
-    testOpportunity.setExpectedCloseDate(LocalDate.now().plusDays(30));
 
     // Test-Response Setup
     testResponse =
@@ -100,12 +125,13 @@ class OpportunityCommandServiceTest {
     CreateOpportunityRequest request =
         CreateOpportunityRequest.builder()
             .name("New Opportunity")
-            .customerId(UUID.randomUUID())
+            .customerId(testCustomerId)
             .description("Test description")
             .expectedValue(new BigDecimal("5000"))
             .expectedCloseDate(LocalDate.now().plusDays(60))
             .build();
 
+    when(customerRepository.findByIdOptional(testCustomerId)).thenReturn(Optional.of(testCustomer));
     when(opportunityMapper.toResponse(any(Opportunity.class))).thenReturn(testResponse);
 
     // When
@@ -380,8 +406,9 @@ class OpportunityCommandServiceTest {
 
     // Given
     CreateOpportunityRequest request =
-        CreateOpportunityRequest.builder().name("Test").customerId(UUID.randomUUID()).build();
+        CreateOpportunityRequest.builder().name("Test").customerId(testCustomerId).build();
 
+    when(customerRepository.findByIdOptional(testCustomerId)).thenReturn(Optional.of(testCustomer));
     when(opportunityMapper.toResponse(any())).thenReturn(testResponse);
 
     // When
@@ -398,8 +425,9 @@ class OpportunityCommandServiceTest {
     when(userRepository.findByUsername("testuser")).thenReturn(Optional.of(testUser));
 
     CreateOpportunityRequest request =
-        CreateOpportunityRequest.builder().name("Test").customerId(UUID.randomUUID()).build();
+        CreateOpportunityRequest.builder().name("Test").customerId(testCustomerId).build();
 
+    when(customerRepository.findByIdOptional(testCustomerId)).thenReturn(Optional.of(testCustomer));
     when(opportunityMapper.toResponse(any())).thenReturn(testResponse);
 
     // When

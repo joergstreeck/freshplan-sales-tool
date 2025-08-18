@@ -8,6 +8,7 @@ import static org.mockito.Mockito.*;
 
 import de.freshplan.domain.customer.entity.ContactInteraction;
 import de.freshplan.domain.customer.entity.ContactInteraction.InteractionType;
+import de.freshplan.domain.customer.entity.Customer;
 import de.freshplan.domain.customer.entity.CustomerContact;
 import de.freshplan.domain.customer.repository.ContactInteractionRepository;
 import de.freshplan.domain.customer.repository.ContactRepository;
@@ -15,6 +16,9 @@ import de.freshplan.domain.customer.service.dto.ContactInteractionDTO;
 import de.freshplan.domain.customer.service.dto.DataQualityMetricsDTO;
 import de.freshplan.domain.customer.service.dto.WarmthScoreDTO;
 import de.freshplan.domain.customer.service.mapper.ContactInteractionMapper;
+import de.freshplan.test.builders.ContactInteractionBuilder;
+import de.freshplan.test.builders.ContactTestDataFactory;
+import de.freshplan.test.builders.CustomerBuilder;
 import io.quarkus.panache.common.Page;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.mockito.InjectMock;
@@ -42,6 +46,10 @@ class ContactInteractionQueryServiceTest {
 
   @InjectMock ContactInteractionMapper mapper;
 
+  @Inject ContactInteractionBuilder interactionBuilder;
+
+  @Inject CustomerBuilder customerBuilder;
+
   private UUID contactId;
   private CustomerContact testContact;
   private ContactInteraction testInteraction;
@@ -53,25 +61,35 @@ class ContactInteractionQueryServiceTest {
     contactId = UUID.randomUUID();
     defaultPage = Page.of(0, 10);
 
+    // Create test customer using builder
+    Customer testCustomer = customerBuilder.withCompanyName("Test Company").build();
+    testCustomer.setId(UUID.randomUUID());
+    testCustomer.setIsTestData(true);
+
     // Setup test contact
-    testContact = new CustomerContact();
+    testContact =
+        ContactTestDataFactory.builder()
+            .forCustomer(testCustomer)
+            .withFirstName("John")
+            .withLastName("Doe")
+            .withEmail("john.doe@example.com")
+            .build();
     testContact.setId(contactId);
-    testContact.setFirstName("John");
-    testContact.setLastName("Doe");
-    testContact.setEmail("john.doe@example.com");
     testContact.setWarmthScore(75);
     testContact.setWarmthConfidence(80);
 
-    // Setup test interaction
-    testInteraction = new ContactInteraction();
+    // Setup test interaction using builder
+    testInteraction =
+        interactionBuilder
+            .forContact(testContact)
+            .ofType(InteractionType.EMAIL)
+            .at(LocalDateTime.now())
+            .withSummary("Test interaction")
+            .withFullContent("This is a test interaction content")
+            .withSentiment(0.7)
+            .withOutcome("Positive")
+            .build();
     testInteraction.setId(UUID.randomUUID());
-    testInteraction.setContact(testContact);
-    testInteraction.setType(InteractionType.EMAIL);
-    testInteraction.setTimestamp(LocalDateTime.now());
-    testInteraction.setSummary("Test interaction");
-    testInteraction.setFullContent("This is a test interaction content");
-    testInteraction.setSentimentScore(0.7);
-    testInteraction.setOutcome("Positive");
 
     // Setup test DTO
     testDTO =
@@ -159,10 +177,13 @@ class ContactInteractionQueryServiceTest {
     testInteraction.setTimestamp(now.minusDays(2));
     testInteraction.setSentimentScore(0.8);
 
-    ContactInteraction recentInteraction = new ContactInteraction();
-    recentInteraction.setTimestamp(now.minusHours(3));
-    recentInteraction.setSentimentScore(0.9);
-    recentInteraction.setType(InteractionType.MEETING);
+    ContactInteraction recentInteraction =
+        interactionBuilder
+            .forContact(testContact)
+            .ofType(InteractionType.MEETING)
+            .hoursAgo(3)
+            .withSentiment(0.9)
+            .build();
 
     when(contactRepository.findById(contactId)).thenReturn(testContact);
     when(interactionRepository.findRecentInteractions(testContact, 90))
@@ -209,20 +230,29 @@ class ContactInteractionQueryServiceTest {
     // Given
     LocalDateTime now = LocalDateTime.now();
 
-    ContactInteraction emailInteraction = new ContactInteraction();
-    emailInteraction.setType(InteractionType.EMAIL);
-    emailInteraction.setTimestamp(now.minusDays(1));
-    emailInteraction.setSentimentScore(0.5);
+    ContactInteraction emailInteraction =
+        interactionBuilder
+            .forContact(testContact)
+            .ofType(InteractionType.EMAIL)
+            .daysAgo(1)
+            .withSentiment(0.5)
+            .build();
 
-    ContactInteraction meetingInteraction = new ContactInteraction();
-    meetingInteraction.setType(InteractionType.MEETING);
-    meetingInteraction.setTimestamp(now.minusDays(2));
-    meetingInteraction.setSentimentScore(0.5);
+    ContactInteraction meetingInteraction =
+        interactionBuilder
+            .forContact(testContact)
+            .ofType(InteractionType.MEETING)
+            .daysAgo(2)
+            .withSentiment(0.5)
+            .build();
 
-    ContactInteraction callInteraction = new ContactInteraction();
-    callInteraction.setType(InteractionType.CALL);
-    callInteraction.setTimestamp(now.minusDays(3));
-    callInteraction.setSentimentScore(0.5);
+    ContactInteraction callInteraction =
+        interactionBuilder
+            .forContact(testContact)
+            .ofType(InteractionType.CALL)
+            .daysAgo(3)
+            .withSentiment(0.5)
+            .build();
 
     when(contactRepository.findById(contactId)).thenReturn(testContact);
     when(interactionRepository.findRecentInteractions(testContact, 90))
@@ -243,10 +273,13 @@ class ContactInteractionQueryServiceTest {
   @Test
   void calculateWarmthScore_withOldInteractions_shouldHaveLowerScore() {
     // Given
-    ContactInteraction oldInteraction = new ContactInteraction();
-    oldInteraction.setType(InteractionType.EMAIL);
-    oldInteraction.setTimestamp(LocalDateTime.now().minusDays(90)); // Very old
-    oldInteraction.setSentimentScore(0.9); // High sentiment
+    ContactInteraction oldInteraction =
+        interactionBuilder
+            .forContact(testContact)
+            .ofType(InteractionType.EMAIL)
+            .daysAgo(90) // Very old
+            .withSentiment(0.9) // High sentiment
+            .build();
 
     when(contactRepository.findById(contactId)).thenReturn(testContact);
     when(interactionRepository.findRecentInteractions(testContact, 90))

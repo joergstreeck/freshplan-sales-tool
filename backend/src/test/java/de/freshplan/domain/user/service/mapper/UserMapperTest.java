@@ -6,6 +6,7 @@ import de.freshplan.domain.user.entity.User;
 import de.freshplan.domain.user.service.dto.CreateUserRequest;
 import de.freshplan.domain.user.service.dto.UpdateUserRequest;
 import de.freshplan.domain.user.service.dto.UserResponse;
+import de.freshplan.test.builders.UserTestDataFactory;
 import java.time.Instant;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,8 +18,10 @@ import org.junit.jupiter.api.Test;
  * <p>Tests the conversion between User entities and DTOs. Follows the principle of short, readable
  * code lines.
  *
+ * <p>Now uses TestDataBuilder pattern for creating test data.
+ *
  * @author FreshPlan Team
- * @since 2.0.0
+ * @since 2.0.0 - Updated in Migration Phase 4
  */
 class UserMapperTest {
 
@@ -164,11 +167,22 @@ class UserMapperTest {
   // Helper methods
 
   private User createTestUser() {
-    return new User("john.doe", "John", "Doe", "john.doe@freshplan.de");
+    return UserTestDataFactory.builder()
+        .withUsername("john.doe")
+        .withFirstName("John")
+        .withLastName("Doe")
+        .withEmail("john.doe@freshplan.de")
+        .build();
   }
 
   private User createTestUserWithId() {
-    User user = createTestUser();
+    User user =
+        UserTestDataFactory.builder()
+            .withUsername("john.doe")
+            .withFirstName("John")
+            .withLastName("Doe")
+            .withEmail("john.doe@freshplan.de")
+            .build();
 
     // Use reflection to set private fields for testing
     setPrivateField(user, "id", UUID.randomUUID());

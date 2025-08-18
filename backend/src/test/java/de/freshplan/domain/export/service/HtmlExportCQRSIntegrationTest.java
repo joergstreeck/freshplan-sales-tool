@@ -8,6 +8,7 @@ import de.freshplan.domain.customer.entity.CustomerType;
 import de.freshplan.domain.customer.entity.Industry;
 import de.freshplan.domain.customer.repository.CustomerRepository;
 import de.freshplan.domain.export.service.dto.ExportRequest;
+import de.freshplan.test.builders.CustomerBuilder;
 import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
@@ -22,7 +23,6 @@ import org.jboss.logging.Logger;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import de.freshplan.test.builders.CustomerBuilder;
 
 /**
  * FIXED Integration Test for HtmlExportService CQRS Implementation.
@@ -431,13 +431,14 @@ class HtmlExportCQRSIntegrationTest {
   // Helper method
   private Customer createTestCustomer(
       String number, String name, CustomerType type, CustomerStatus status, Industry industry) {
-    Customer customer = customerBuilder
-        .withCompanyName(name)
-        .withType(type)
-        .withStatus(status)
-        .withIndustry(industry)
-        .withExpectedAnnualVolume(new BigDecimal("100000"))
-        .build();
+    Customer customer =
+        customerBuilder
+            .withCompanyName(name)
+            .withType(type)
+            .withStatus(status)
+            .withIndustry(industry)
+            .withExpectedAnnualVolume(new BigDecimal("100000"))
+            .build();
     customer.setCustomerNumber(number);
     customer.setCompanyName(name); // Override to remove [TEST-xxx] prefix
     customer.setIsTestData(true);

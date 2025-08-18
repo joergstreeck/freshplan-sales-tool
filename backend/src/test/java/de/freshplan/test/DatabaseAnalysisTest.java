@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 
 /** Simple test for CI/CD database growth monitoring */
 @QuarkusTest
-@TestTransaction  // CI-Fix: Rollback nach Test für Database Growth Check
+@TestTransaction // CI-Fix: Rollback nach Test für Database Growth Check
 public class DatabaseAnalysisTest {
 
   @Inject CustomerRepository customerRepository;

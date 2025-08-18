@@ -10,6 +10,7 @@ import de.freshplan.domain.customer.repository.CustomerTimelineRepository;
 import de.freshplan.domain.customer.service.dto.timeline.*;
 import de.freshplan.domain.customer.service.exception.CustomerNotFoundException;
 import de.freshplan.domain.customer.service.mapper.CustomerTimelineMapper;
+import de.freshplan.test.builders.CustomerTestDataFactory;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -49,10 +50,12 @@ class TimelineCommandServiceTest {
   void setUp() {
     testCustomerId = UUID.randomUUID();
 
-    testCustomer = new Customer();
+    testCustomer =
+        CustomerTestDataFactory.builder()
+            .withCompanyName("Test Company")
+            .withCustomerNumber("KD-2025-00001")
+            .build();
     testCustomer.setId(testCustomerId);
-    testCustomer.setCompanyName("Test Company");
-    testCustomer.setCustomerNumber("KD-2025-00001");
 
     testEvent = new CustomerTimelineEvent();
     testEvent.setId(UUID.randomUUID());

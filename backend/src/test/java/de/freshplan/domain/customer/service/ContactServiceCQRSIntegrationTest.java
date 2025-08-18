@@ -4,8 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import de.freshplan.domain.customer.entity.Customer;
-import de.freshplan.domain.customer.repository.ContactRepository;
-import de.freshplan.domain.customer.repository.CustomerRepository;
 import de.freshplan.domain.customer.service.dto.ContactDTO;
 import de.freshplan.test.BaseIntegrationTestWithCleanup;
 import de.freshplan.test.TestDataBuilder;
@@ -13,10 +11,7 @@ import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
 import jakarta.inject.Inject;
-import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -47,7 +42,7 @@ class ContactServiceCQRSIntegrationTest extends BaseIntegrationTestWithCleanup {
   void createContact_shouldWorkIdenticallyInBothModes() {
     // Setup
     setupTestCustomer();
-    
+
     // Given
     ContactDTO contactDTO = new ContactDTO();
     contactDTO.setFirstName("Integration");
@@ -78,7 +73,7 @@ class ContactServiceCQRSIntegrationTest extends BaseIntegrationTestWithCleanup {
   void createMultipleContacts_onlyFirstShouldBePrimary() {
     // Setup
     setupTestCustomer();
-    
+
     // Given
     ContactDTO contact1 = new ContactDTO();
     contact1.setFirstName("First");
@@ -109,7 +104,7 @@ class ContactServiceCQRSIntegrationTest extends BaseIntegrationTestWithCleanup {
   void updateContact_shouldPreserveBusinessRules() {
     // Setup
     setupTestCustomer();
-    
+
     // Given - create contact
     ContactDTO contactDTO = new ContactDTO();
     contactDTO.setFirstName("Original");
@@ -139,7 +134,7 @@ class ContactServiceCQRSIntegrationTest extends BaseIntegrationTestWithCleanup {
   void setPrimaryContact_shouldUpdatePrimaryStatus() {
     // Setup
     setupTestCustomer();
-    
+
     // Given - create two contacts
     ContactDTO contact1 = new ContactDTO();
     contact1.setFirstName("First");
@@ -160,7 +155,10 @@ class ContactServiceCQRSIntegrationTest extends BaseIntegrationTestWithCleanup {
     // When - set second contact as primary
     contactService.setPrimaryContact(testCustomer.getId(), created2.getId());
 
-    // Then
+    // Force flush and clear to ensure changes are visible
+    flushAndClear();
+
+    // Then - re-fetch contacts to get updated state
     List<ContactDTO> contacts = contactService.getContactsByCustomerId(testCustomer.getId());
     ContactDTO updatedFirst =
         contacts.stream().filter(c -> c.getId().equals(created1.getId())).findFirst().orElseThrow();
@@ -176,7 +174,7 @@ class ContactServiceCQRSIntegrationTest extends BaseIntegrationTestWithCleanup {
   void deleteContact_shouldEnforceBusinessRules() {
     // Setup
     setupTestCustomer();
-    
+
     // Given - create two contacts
     ContactDTO contact1 = new ContactDTO();
     contact1.setFirstName("Primary");
@@ -218,7 +216,7 @@ class ContactServiceCQRSIntegrationTest extends BaseIntegrationTestWithCleanup {
   void assignContactsToLocation_shouldUpdateAssignments() {
     // Setup
     setupTestCustomer();
-    
+
     // Given - create contacts
     ContactDTO contact1 = new ContactDTO();
     contact1.setFirstName("Contact1");
@@ -235,7 +233,7 @@ class ContactServiceCQRSIntegrationTest extends BaseIntegrationTestWithCleanup {
 
     // For now, skip location assignment as customer_locations table doesn't exist yet
     // This test will be re-enabled when location management is implemented
-    
+
     // Then - verify contacts were created
     assertThat(created1).isNotNull();
     assertThat(created2).isNotNull();
@@ -246,7 +244,7 @@ class ContactServiceCQRSIntegrationTest extends BaseIntegrationTestWithCleanup {
   void isEmailInUse_shouldCheckCorrectly() {
     // Setup
     setupTestCustomer();
-    
+
     // Given - create contact
     ContactDTO contact = new ContactDTO();
     contact.setFirstName("Test");
@@ -269,7 +267,7 @@ class ContactServiceCQRSIntegrationTest extends BaseIntegrationTestWithCleanup {
   void getUpcomingBirthdays_shouldReturnBirthdayContacts() {
     // Setup
     setupTestCustomer();
-    
+
     // Note: Birthday functionality not fully implemented in entity
     // This test verifies the method works without errors
 

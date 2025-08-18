@@ -10,6 +10,7 @@ import de.freshplan.domain.user.repository.UserRepository;
 import de.freshplan.domain.user.service.dto.UserResponse;
 import de.freshplan.domain.user.service.exception.UserNotFoundException;
 import de.freshplan.domain.user.service.mapper.UserMapper;
+import de.freshplan.test.builders.UserTestDataFactory;
 import io.quarkus.hibernate.orm.panache.PanacheQuery;
 import io.quarkus.panache.common.Page;
 import io.quarkus.test.junit.QuarkusTest;
@@ -46,14 +47,26 @@ class UserQueryServiceTest {
     testUserId = UUID.randomUUID();
     UUID userId2 = UUID.randomUUID();
 
-    // Setup test users - User has a constructor that takes username, firstName, lastName, email
-    testUser = new User("testuser", "Test", "User", "test@example.com");
+    // Setup test users using UserTestDataFactory
+    testUser =
+        UserTestDataFactory.builder()
+            .withUsername("testuser")
+            .withFirstName("Test")
+            .withLastName("User")
+            .withEmail("test@example.com")
+            .build();
     // Use reflection to set the ID since it's private and set by JPA
     setFieldValue(testUser, "id", testUserId);
 
-    testUser2 = new User("testuser2", "Test2", "User2", "test2@example.com");
+    testUser2 =
+        UserTestDataFactory.builder()
+            .withUsername("testuser2")
+            .withFirstName("Test2")
+            .withLastName("User2")
+            .withEmail("test2@example.com")
+            .asDisabled()
+            .build();
     setFieldValue(testUser2, "id", userId2);
-    setFieldValue(testUser2, "enabled", false);
 
     // Setup responses - UserResponse has all-args constructor
     testUserResponse =
@@ -105,8 +118,7 @@ class UserQueryServiceTest {
   void getUser_withNullId_shouldThrowException() {
     // When/Then
     assertThatThrownBy(() -> queryService.getUser(null))
-        .isInstanceOf(jakarta.validation.ConstraintViolationException.class)
-;
+        .isInstanceOf(jakarta.validation.ConstraintViolationException.class);
   }
 
   @Test
@@ -141,8 +153,7 @@ class UserQueryServiceTest {
   void getUserByUsername_withNullUsername_shouldThrowException() {
     // When/Then
     assertThatThrownBy(() -> queryService.getUserByUsername(null))
-        .isInstanceOf(jakarta.validation.ConstraintViolationException.class)
-;
+        .isInstanceOf(jakarta.validation.ConstraintViolationException.class);
   }
 
   @Test

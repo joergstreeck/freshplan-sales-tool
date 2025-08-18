@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import de.freshplan.domain.customer.entity.*;
 import de.freshplan.test.BaseIntegrationTest;
+import de.freshplan.test.builders.CustomerBuilder;
 import io.quarkus.panache.common.Page;
 import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
@@ -14,9 +15,7 @@ import java.util.List;
 import java.util.UUID;
 import org.hibernate.Session;
 import org.hibernate.stat.Statistics;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import de.freshplan.test.builders.CustomerBuilder;
 
 /**
  * Performance tests to verify N+1 query fixes in CustomerTimelineRepository.
@@ -33,7 +32,7 @@ class CustomerTimelineRepositoryPerformanceTest extends BaseIntegrationTest {
   @Inject CustomerTimelineRepository timelineRepository;
 
   @Inject CustomerRepository customerRepository;
-  
+
   @Inject CustomerBuilder customerBuilder;
 
   private UUID testCustomerId;
@@ -45,12 +44,13 @@ class CustomerTimelineRepositoryPerformanceTest extends BaseIntegrationTest {
     customerRepository.delete("customerNumber LIKE ?1", "PERF-TEST-%");
 
     // Create test customer using CustomerBuilder
-    Customer customer = customerBuilder
-        .withCompanyName("Performance Test Company")
-        .withStatus(CustomerStatus.AKTIV)
-        .withType(CustomerType.UNTERNEHMEN)
-        .withIndustry(Industry.SONSTIGE)
-        .build();
+    Customer customer =
+        customerBuilder
+            .withCompanyName("Performance Test Company")
+            .withStatus(CustomerStatus.AKTIV)
+            .withType(CustomerType.UNTERNEHMEN)
+            .withIndustry(Industry.SONSTIGE)
+            .build();
     // Override auto-generated values
     customer.setCustomerNumber("PERF-TEST-001");
     customer.setCompanyName("Performance Test Company"); // Remove [TEST-xxx] prefix
@@ -87,7 +87,7 @@ class CustomerTimelineRepositoryPerformanceTest extends BaseIntegrationTest {
   void findByCustomerId_shouldNotCauseN1Queries() {
     // Setup test data within the transaction
     setupTestData();
-    
+
     // Given: Statistics are cleared and enabled
     hibernateStats.clear();
     long queriesBeforeTest = hibernateStats.getQueryExecutionCount();
@@ -117,7 +117,7 @@ class CustomerTimelineRepositoryPerformanceTest extends BaseIntegrationTest {
   void findByCustomerIdAndCategory_shouldNotCauseN1Queries() {
     // Setup test data within the transaction
     setupTestData();
-    
+
     // Given: Statistics are cleared
     hibernateStats.clear();
     long queriesBeforeTest = hibernateStats.getQueryExecutionCount();
@@ -136,7 +136,9 @@ class CustomerTimelineRepositoryPerformanceTest extends BaseIntegrationTest {
     long executedQueries = queriesAfterTest - queriesBeforeTest;
 
     // Allow up to 3 queries in CI environment
-    assertThat(executedQueries).as("Should execute minimal queries with JOIN FETCH").isLessThanOrEqualTo(3);
+    assertThat(executedQueries)
+        .as("Should execute minimal queries with JOIN FETCH")
+        .isLessThanOrEqualTo(3);
   }
 
   @Test
@@ -144,7 +146,7 @@ class CustomerTimelineRepositoryPerformanceTest extends BaseIntegrationTest {
   void searchByCustomerIdAndText_shouldNotCauseN1Queries() {
     // Setup test data within the transaction
     setupTestData();
-    
+
     // Given: Statistics are cleared
     hibernateStats.clear();
     long queriesBeforeTest = hibernateStats.getQueryExecutionCount();
@@ -162,7 +164,9 @@ class CustomerTimelineRepositoryPerformanceTest extends BaseIntegrationTest {
     long executedQueries = queriesAfterTest - queriesBeforeTest;
 
     // Allow up to 3 queries in CI environment
-    assertThat(executedQueries).as("Should execute minimal queries with JOIN FETCH").isLessThanOrEqualTo(3);
+    assertThat(executedQueries)
+        .as("Should execute minimal queries with JOIN FETCH")
+        .isLessThanOrEqualTo(3);
   }
 
   @Test
@@ -170,7 +174,7 @@ class CustomerTimelineRepositoryPerformanceTest extends BaseIntegrationTest {
   void countByCustomerId_shouldUseDirectColumnAccess() {
     // Setup test data within the transaction
     setupTestData();
-    
+
     // Given: Statistics are cleared
     hibernateStats.clear();
     long queriesBeforeTest = hibernateStats.getQueryExecutionCount();

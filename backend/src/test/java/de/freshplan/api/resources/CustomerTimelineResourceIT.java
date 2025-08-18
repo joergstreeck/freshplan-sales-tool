@@ -8,6 +8,7 @@ import de.freshplan.domain.customer.entity.*;
 import de.freshplan.domain.customer.repository.CustomerRepository;
 import de.freshplan.domain.customer.repository.CustomerTimelineRepository;
 import de.freshplan.domain.customer.service.dto.timeline.*;
+import de.freshplan.test.builders.CustomerBuilder;
 import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.security.TestSecurity;
@@ -19,7 +20,6 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import de.freshplan.test.builders.CustomerBuilder;
 
 /**
  * Integration tests for CustomerTimelineResource.
@@ -34,7 +34,7 @@ class CustomerTimelineResourceIT {
   @Inject CustomerRepository customerRepository;
 
   @Inject CustomerTimelineRepository timelineRepository;
-  
+
   @Inject CustomerBuilder customerBuilder;
 
   @BeforeEach
@@ -47,15 +47,16 @@ class CustomerTimelineResourceIT {
 
   @Transactional
   UUID createTestCustomerInTransaction() {
-    Customer customer = customerBuilder
-        .withCompanyName("[TEST] Integration Test Company")
-        .withStatus(CustomerStatus.AKTIV)
-        .withType(CustomerType.UNTERNEHMEN)
-        .withIndustry(Industry.SONSTIGE)
-        .build();
+    Customer customer =
+        customerBuilder
+            .withCompanyName("[TEST] Integration Test Company")
+            .withStatus(CustomerStatus.AKTIV)
+            .withType(CustomerType.UNTERNEHMEN)
+            .withIndustry(Industry.SONSTIGE)
+            .build();
     customer.setCustomerNumber("IT-TEST-001");
     customer.setCompanyName("[TEST] Integration Test Company"); // Keep [TEST] prefix
-    customer.setIsTestData(true);  // Mark as test data
+    customer.setIsTestData(true); // Mark as test data
     customerRepository.persist(customer);
     return customer.getId();
   }

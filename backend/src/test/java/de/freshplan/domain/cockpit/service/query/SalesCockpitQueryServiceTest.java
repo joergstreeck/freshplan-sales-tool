@@ -11,6 +11,7 @@ import de.freshplan.domain.customer.repository.CustomerRepository;
 import de.freshplan.domain.user.entity.User;
 import de.freshplan.domain.user.repository.UserRepository;
 import de.freshplan.domain.user.service.exception.UserNotFoundException;
+import de.freshplan.test.builders.CustomerTestDataFactory;
 import io.quarkus.hibernate.orm.panache.PanacheQuery;
 import io.quarkus.panache.common.Page;
 import java.time.LocalDateTime;
@@ -384,7 +385,7 @@ class SalesCockpitQueryServiceTest {
   private List<Customer> createMockCustomers() {
     List<Customer> customers = new ArrayList<>();
     for (int i = 0; i < 3; i++) {
-      Customer customer = new Customer();
+      Customer customer = CustomerTestDataFactory.builder().build();
       customer.setId(UUID.randomUUID());
       customer.setCustomerNumber("KD-2025-000" + (i + 1));
       customer.setCompanyName("Test Company " + (i + 1));
@@ -397,22 +398,26 @@ class SalesCockpitQueryServiceTest {
   }
 
   private Customer createCustomerWithOverdueFollowUp() {
-    Customer customer = new Customer();
+    Customer customer =
+        CustomerTestDataFactory.builder()
+            .withCustomerNumber("KD-2025-0001")
+            .withCompanyName("Overdue Customer GmbH")
+            .withStatus(CustomerStatus.AKTIV)
+            .build();
     customer.setId(UUID.randomUUID());
-    customer.setCustomerNumber("KD-2025-0001");
-    customer.setCompanyName("Overdue Customer GmbH");
-    customer.setStatus(CustomerStatus.AKTIV);
     customer.setNextFollowUpDate(LocalDateTime.now().minusDays(5));
     customer.setCreatedAt(LocalDateTime.now().minusDays(60));
     return customer;
   }
 
   private Customer createCustomerWithDaysSinceContact(int days) {
-    Customer customer = new Customer();
+    Customer customer =
+        CustomerTestDataFactory.builder()
+            .withCustomerNumber("KD-2025-00" + days)
+            .withCompanyName("Risk Customer " + days + " GmbH")
+            .withStatus(CustomerStatus.AKTIV)
+            .build();
     customer.setId(UUID.randomUUID());
-    customer.setCustomerNumber("KD-2025-00" + days);
-    customer.setCompanyName("Risk Customer " + days + " GmbH");
-    customer.setStatus(CustomerStatus.AKTIV);
     customer.setLastContactDate(LocalDateTime.now().minusDays(days));
     customer.setCreatedAt(LocalDateTime.now().minusDays(days + 30));
     return customer;

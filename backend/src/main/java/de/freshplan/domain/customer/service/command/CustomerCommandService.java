@@ -316,9 +316,8 @@ public class CustomerCommandService {
     }
 
     // Prevent circular references
-    // BUG: This check is inverted! Should be isDescendant(child, parent) to prevent cycles
-    // But we keep it as-is for exact compatibility with CustomerService
-    if (isDescendant(parent, child)) {
+    // Fixed: Correct hierarchy check to prevent cycles
+    if (isDescendant(child, parent)) {
       log.error("Circular hierarchy detected - parent: {}, child: {}", parentId, childId);
       throw new IllegalStateException("Cannot create circular hierarchy");
     }

@@ -7,11 +7,15 @@ import static org.mockito.Mockito.*;
 
 import de.freshplan.domain.customer.entity.ContactInteraction;
 import de.freshplan.domain.customer.entity.ContactInteraction.InteractionType;
+import de.freshplan.domain.customer.entity.Customer;
 import de.freshplan.domain.customer.entity.CustomerContact;
 import de.freshplan.domain.customer.repository.ContactInteractionRepository;
 import de.freshplan.domain.customer.repository.ContactRepository;
 import de.freshplan.domain.customer.service.dto.ContactInteractionDTO;
 import de.freshplan.domain.customer.service.mapper.ContactInteractionMapper;
+import de.freshplan.test.builders.ContactInteractionBuilder;
+import de.freshplan.test.builders.ContactTestDataFactory;
+import de.freshplan.test.builders.CustomerBuilder;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.mockito.InjectMock;
 import jakarta.inject.Inject;
@@ -37,7 +41,12 @@ class ContactInteractionCommandServiceTest {
 
   @InjectMock ContactInteractionMapper mapper;
 
+  @Inject ContactInteractionBuilder interactionBuilder;
+
+  @Inject CustomerBuilder customerBuilder;
+
   private UUID contactId;
+  private Customer testCustomer;
   private CustomerContact testContact;
   private ContactInteraction testInteraction;
   private ContactInteractionDTO testDTO;
@@ -46,22 +55,30 @@ class ContactInteractionCommandServiceTest {
   void setUp() {
     contactId = UUID.randomUUID();
 
-    // Setup test contact
-    testContact = new CustomerContact();
-    testContact.setId(contactId);
-    testContact.setFirstName("John");
-    testContact.setLastName("Doe");
-    testContact.setEmail("john.doe@example.com");
+    // Setup test customer using builder
+    testCustomer = customerBuilder.withCompanyName("Test Company GmbH").build();
+    testCustomer.setId(UUID.randomUUID());
 
-    // Setup test interaction
-    testInteraction = new ContactInteraction();
+    // Setup test contact using ContactTestDataFactory
+    testContact =
+        ContactTestDataFactory.builder()
+            .withFirstName("John")
+            .withLastName("Doe")
+            .withEmail("john.doe@example.com")
+            .forCustomer(testCustomer)
+            .build();
+    testContact.setId(contactId);
+
+    // Setup test interaction using builder
+    testInteraction =
+        interactionBuilder
+            .forContact(testContact)
+            .ofType(InteractionType.EMAIL)
+            .at(LocalDateTime.now())
+            .withSummary("Test interaction")
+            .withFullContent("This is a test interaction content")
+            .build();
     testInteraction.setId(UUID.randomUUID());
-    testInteraction.setContact(testContact);
-    testInteraction.setType(InteractionType.EMAIL);
-    testInteraction.setTimestamp(LocalDateTime.now());
-    testInteraction.setSummary("Test interaction");
-    testInteraction.setFullContent("This is a test interaction content");
-    testInteraction.setWordCount(6);
 
     // Setup test DTO
     testDTO =
@@ -230,7 +247,13 @@ class ContactInteractionCommandServiceTest {
   void batchImportInteractions_withValidData_shouldImportAll() {
     // Given
     UUID contactId2 = UUID.randomUUID();
-    CustomerContact contact2 = new CustomerContact();
+    CustomerContact contact2 =
+        ContactTestDataFactory.builder()
+            .withFirstName("Contact2")
+            .withLastName("Test2")
+            .withEmail("contact2@test.com")
+            .forCustomer(testCustomer)
+            .build();
     contact2.setId(contactId2);
 
     List<ContactInteractionDTO> dtos =
@@ -248,10 +271,19 @@ class ContactInteractionCommandServiceTest {
                 .summary("Call 1")
                 .build());
 
-    ContactInteraction interaction1 = new ContactInteraction();
-    interaction1.setContact(testContact);
-    ContactInteraction interaction2 = new ContactInteraction();
-    interaction2.setContact(contact2);
+    ContactInteraction interaction1 =
+        interactionBuilder
+            .forContact(testContact)
+            .ofType(InteractionType.EMAIL)
+            .withSummary("Email 1")
+            .build();
+
+    ContactInteraction interaction2 =
+        interactionBuilder
+            .forContact(contact2)
+            .ofType(InteractionType.CALL)
+            .withSummary("Call 1")
+            .build();
 
     when(contactRepository.findById(contactId)).thenReturn(testContact);
     when(contactRepository.findById(contactId2)).thenReturn(contact2);

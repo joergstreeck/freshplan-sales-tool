@@ -13,6 +13,8 @@ import de.freshplan.domain.opportunity.service.exception.OpportunityNotFoundExce
 import de.freshplan.domain.opportunity.service.mapper.OpportunityMapper;
 import de.freshplan.domain.user.entity.User;
 import de.freshplan.domain.user.repository.UserRepository;
+import de.freshplan.test.builders.OpportunityTestDataFactory;
+import de.freshplan.test.builders.UserTestDataFactory;
 import io.quarkus.panache.common.Page;
 import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
@@ -53,17 +55,33 @@ class OpportunityQueryServiceTest {
   void setUp() {
     // Test-User Setup
     testUserId = UUID.randomUUID();
-    testUser = new User("testuser", "Test", "User", "test@example.com");
+    testUser =
+        UserTestDataFactory.builder()
+            .withUsername("testuser")
+            .withFirstName("Test")
+            .withLastName("User")
+            .withEmail("test@example.com")
+            .build();
     // User ID cannot be set directly - it's auto-generated
 
     // Test-Opportunities Setup
-    testOpportunity1 = new Opportunity("Opportunity 1", OpportunityStage.NEW_LEAD, testUser);
+    testOpportunity1 =
+        OpportunityTestDataFactory.builder()
+            .withName("Opportunity 1")
+            .inStage(OpportunityStage.NEW_LEAD)
+            .assignedTo(testUser)
+            .withExpectedValue(new BigDecimal("10000"))
+            .build();
     testOpportunity1.setId(UUID.randomUUID());
-    testOpportunity1.setExpectedValue(new BigDecimal("10000"));
 
-    testOpportunity2 = new Opportunity("Opportunity 2", OpportunityStage.PROPOSAL, testUser);
+    testOpportunity2 =
+        OpportunityTestDataFactory.builder()
+            .withName("Opportunity 2")
+            .inStage(OpportunityStage.PROPOSAL)
+            .assignedTo(testUser)
+            .withExpectedValue(new BigDecimal("20000"))
+            .build();
     testOpportunity2.setId(UUID.randomUUID());
-    testOpportunity2.setExpectedValue(new BigDecimal("20000"));
 
     // Test-Responses Setup
     testResponse1 =

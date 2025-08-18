@@ -15,6 +15,7 @@ import de.freshplan.domain.user.service.exception.DuplicateEmailException;
 import de.freshplan.domain.user.service.exception.DuplicateUsernameException;
 import de.freshplan.domain.user.service.exception.UserNotFoundException;
 import de.freshplan.domain.user.service.mapper.UserMapper;
+import de.freshplan.test.builders.UserTestDataFactory;
 import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.security.TestSecurity;
@@ -305,11 +306,21 @@ class UserServiceTest {
   // Helper methods
 
   private User createTestUser() {
-    return new User("john.doe", "John", "Doe", "john.doe@freshplan.de");
+    return UserTestDataFactory.builder()
+        .withUsername("john.doe")
+        .withFirstName("John")
+        .withLastName("Doe")
+        .withEmail("john.doe@freshplan.de")
+        .build();
   }
 
   private User createAnotherTestUser() {
-    return new User("jane.smith", "Jane", "Smith", "jane.smith@freshplan.de");
+    return UserTestDataFactory.builder()
+        .withUsername("jane.smith")
+        .withFirstName("Jane")
+        .withLastName("Smith")
+        .withEmail("jane.smith@freshplan.de")
+        .build();
   }
 
   private UserResponse createTestUserResponse() {

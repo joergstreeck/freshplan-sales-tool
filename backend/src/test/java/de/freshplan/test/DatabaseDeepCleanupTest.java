@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 
 /** KRITISCH: Bereinigung der 1090 Test-Kunden mit Foreign Key Beachtung */
 @QuarkusTest
-@TestTransaction  // CI-Fix: Rollback nach Test für Database Growth Check
+@TestTransaction // CI-Fix: Rollback nach Test für Database Growth Check
 public class DatabaseDeepCleanupTest {
 
   @Inject EntityManager em;

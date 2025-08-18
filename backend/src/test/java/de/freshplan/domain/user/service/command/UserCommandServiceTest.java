@@ -16,6 +16,7 @@ import de.freshplan.domain.user.service.exception.DuplicateUsernameException;
 import de.freshplan.domain.user.service.exception.UserNotFoundException;
 import de.freshplan.domain.user.service.mapper.UserMapper;
 import de.freshplan.domain.user.service.validation.RoleValidator;
+import de.freshplan.test.builders.UserTestDataFactory;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.mockito.InjectMock;
 import jakarta.inject.Inject;
@@ -48,10 +49,16 @@ class UserCommandServiceTest {
   void setUp() {
     testUserId = UUID.randomUUID();
 
-    // Setup test user using constructor
-    testUser = new User("testuser", "Test", "User", "test@example.com");
+    // Setup test user using UserTestDataFactory
+    testUser =
+        UserTestDataFactory.builder()
+            .withUsername("testuser")
+            .withFirstName("Test")
+            .withLastName("User")
+            .withEmail("test@example.com")
+            .withRoles(Arrays.asList("sales", "manager"))
+            .build();
     setFieldValue(testUser, "id", testUserId);
-    setFieldValue(testUser, "roles", Arrays.asList("sales", "manager"));
 
     // Setup response using constructor
     testUserResponse =

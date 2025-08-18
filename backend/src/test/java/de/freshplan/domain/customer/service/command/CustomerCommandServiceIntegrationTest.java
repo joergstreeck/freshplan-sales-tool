@@ -13,9 +13,10 @@ import de.freshplan.domain.customer.service.dto.CreateCustomerRequest;
 import de.freshplan.domain.customer.service.dto.CustomerResponse;
 import de.freshplan.domain.customer.service.dto.UpdateCustomerRequest;
 import de.freshplan.domain.customer.service.exception.CustomerNotFoundException;
+import de.freshplan.test.builders.CustomerBuilder;
+import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
-import io.quarkus.test.TestTransaction;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -37,15 +38,18 @@ class CustomerCommandServiceIntegrationTest {
 
   @Inject CustomerRepository customerRepository;
 
+  @Inject CustomerBuilder customerBuilder;
+
   @Test
   @TestTransaction
   void createCustomer_shouldProduceSameResultAsOriginalService() {
     // Given - a minimal valid request
     CreateCustomerRequest request =
-        new CreateCustomerRequest(
-            "Integration Test Company " + System.currentTimeMillis(), // Unique name
-            CustomerType.NEUKUNDE // Minimum required fields
-            );
+        customerBuilder
+            .reset()
+            .withCompanyName("[TEST] Integration Test Company " + System.currentTimeMillis())
+            .withType(CustomerType.NEUKUNDE)
+            .buildCreateRequest();
 
     String createdBy = "integration-test";
 
@@ -54,8 +58,11 @@ class CustomerCommandServiceIntegrationTest {
 
     // Create another request with different name to avoid duplicate
     CreateCustomerRequest request2 =
-        new CreateCustomerRequest(
-            "Integration Test Company 2 " + System.currentTimeMillis(), CustomerType.NEUKUNDE);
+        customerBuilder
+            .reset()
+            .withCompanyName("[TEST] Integration Test Company 2 " + System.currentTimeMillis())
+            .withType(CustomerType.NEUKUNDE)
+            .buildCreateRequest();
     CustomerResponse commandResult = commandService.createCustomer(request2, createdBy);
 
     // Then - both should produce similar results (except IDs and names)
@@ -98,7 +105,11 @@ class CustomerCommandServiceIntegrationTest {
   void createCustomer_withNullCreatedBy_shouldFailSameWay() {
     // Given
     CreateCustomerRequest request =
-        new CreateCustomerRequest("Test Company", CustomerType.NEUKUNDE);
+        customerBuilder
+            .reset()
+            .withCompanyName("[TEST] Test Company")
+            .withType(CustomerType.NEUKUNDE)
+            .buildCreateRequest();
 
     // Both services should throw the same exception for null createdBy
     try {
@@ -121,11 +132,17 @@ class CustomerCommandServiceIntegrationTest {
   void updateCustomer_shouldProduceSameResultAsOriginalService() {
     // Given - create customers first
     CreateCustomerRequest createRequest1 =
-        new CreateCustomerRequest(
-            "Update Test Company 1 " + System.currentTimeMillis(), CustomerType.NEUKUNDE);
+        customerBuilder
+            .reset()
+            .withCompanyName("[TEST] Update Test Company 1 " + System.currentTimeMillis())
+            .withType(CustomerType.NEUKUNDE)
+            .buildCreateRequest();
     CreateCustomerRequest createRequest2 =
-        new CreateCustomerRequest(
-            "Update Test Company 2 " + System.currentTimeMillis(), CustomerType.NEUKUNDE);
+        customerBuilder
+            .reset()
+            .withCompanyName("[TEST] Update Test Company 2 " + System.currentTimeMillis())
+            .withType(CustomerType.NEUKUNDE)
+            .buildCreateRequest();
 
     String createdBy = "test-user";
     String updatedBy = "update-user";

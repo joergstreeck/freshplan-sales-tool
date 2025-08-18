@@ -13,6 +13,7 @@ import de.freshplan.domain.opportunity.service.exception.OpportunityNotFoundExce
 import de.freshplan.domain.user.entity.User;
 import de.freshplan.domain.user.repository.UserRepository;
 import de.freshplan.test.builders.CustomerBuilder;
+import de.freshplan.test.builders.OpportunityBuilder;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.security.TestSecurity;
 import jakarta.inject.Inject;
@@ -57,8 +58,10 @@ public class OpportunityServiceStageTransitionTest {
   @Inject UserRepository userRepository;
 
   @Inject EntityManager entityManager;
-  
+
   @Inject CustomerBuilder customerBuilder;
+
+  @Inject OpportunityBuilder opportunityBuilder;
 
   @Inject UserTransaction userTransaction;
 
@@ -189,6 +192,10 @@ public class OpportunityServiceStageTransitionTest {
     void changeStage_sameStage_shouldBeNoOp() {
       // Arrange
       var opportunity = createTestOpportunity("Test Opportunity", OpportunityStage.PROPOSAL);
+      // The opportunity should already have the correct probability for PROPOSAL stage
+      assertThat(opportunity.getProbability())
+          .as("Created opportunity should have PROPOSAL probability")
+          .isEqualTo(60);
       var originalTimestamp = opportunity.getStageChangedAt();
       var request = ChangeStageRequest.builder().stage(OpportunityStage.PROPOSAL).build();
 
@@ -279,15 +286,15 @@ public class OpportunityServiceStageTransitionTest {
 
     @Test
     @org.junit.jupiter.api.Disabled(
-        "Temporary disable due to CDI @Transactional limitation in nested classes - will fix in separate issue")
+        "CDI limitation: @Transactional cannot be used in nested test classes")
     @DisplayName("Should update probability according to stage default")
-    void changeStage_shouldUpdateProbabilityToStageDefault() throws Exception {
-      // Arrange - Manual transaction management
-      userTransaction.begin();
+    void changeStage_shouldUpdateProbabilityToStageDefault() {
+      // Arrange
       var opportunity = createTestOpportunity("Test Opportunity", OpportunityStage.NEW_LEAD);
+      // Manually update probability after creation to test override behavior
       opportunity.setProbability(50); // Custom probability
       opportunityRepository.persist(opportunity);
-      userTransaction.commit();
+      opportunityRepository.flush();
 
       var request = ChangeStageRequest.builder().stage(OpportunityStage.PROPOSAL).build();
 
@@ -380,7 +387,7 @@ public class OpportunityServiceStageTransitionTest {
               updated -> {
                 assertThat(updated.getName()).isEqualTo(originalName);
                 assertThat(updated.getDescription()).isEqualTo(originalDescription);
-                assertThat(updated.getExpectedValue()).isEqualTo(originalExpectedValue);
+                assertThat(updated.getExpectedValue()).isEqualByComparingTo(originalExpectedValue);
                 assertThat(updated.getCustomerId()).isEqualTo(originalCustomer.getId());
                 assertThat(updated.getAssignedToId()).isEqualTo(originalAssignedTo.getId());
                 assertThat(updated.getStage()).isEqualTo(OpportunityStage.PROPOSAL); // Changed
@@ -529,10 +536,8 @@ public class OpportunityServiceStageTransitionTest {
     }
 
     // Create minimal test customer with all required fields using CustomerBuilder
-    var customer = customerBuilder
-        .withCompanyName(companyName)
-        .build();
-    
+    var customer = customerBuilder.withCompanyName(companyName).build();
+
     // Override specific fields to maintain test requirements
     customer.setCompanyName(companyName); // Override to use exact name without [TEST-xxx] prefix
     customer.setCustomerNumber("TEST-" + System.currentTimeMillis()); // Unique customer number
@@ -557,12 +562,13 @@ public class OpportunityServiceStageTransitionTest {
 
   @Transactional
   Opportunity createTestOpportunity(String name, OpportunityStage stage) {
-    var opportunity = new Opportunity();
-    opportunity.setName(name);
-    opportunity.setStage(stage);
-    opportunity.setCustomer(testCustomer);
-    opportunity.setAssignedTo(testUser);
-    opportunityRepository.persist(opportunity);
+    var opportunity =
+        opportunityBuilder
+            .withName(name)
+            .inStage(stage)
+            .forCustomer(testCustomer)
+            .assignedTo(testUser)
+            .persist();
     return opportunity;
   }
 }

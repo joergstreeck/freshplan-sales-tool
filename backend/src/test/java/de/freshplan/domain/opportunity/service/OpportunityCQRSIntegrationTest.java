@@ -2,10 +2,12 @@ package de.freshplan.domain.opportunity.service;
 
 import static org.assertj.core.api.Assertions.*;
 
+import de.freshplan.domain.customer.entity.Customer;
 import de.freshplan.domain.opportunity.entity.OpportunityStage;
 import de.freshplan.domain.opportunity.service.dto.CreateOpportunityRequest;
 import de.freshplan.domain.opportunity.service.dto.OpportunityResponse;
 import de.freshplan.domain.opportunity.service.dto.UpdateOpportunityRequest;
+import de.freshplan.test.builders.CustomerBuilder;
 import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
@@ -15,7 +17,6 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -30,17 +31,20 @@ class OpportunityCQRSIntegrationTest {
 
   @Inject OpportunityService opportunityService;
 
+  @Inject CustomerBuilder customerBuilder;
+
   @ConfigProperty(name = "features.cqrs.enabled")
   boolean cqrsEnabled;
 
   private UUID testCustomerId;
   private CreateOpportunityRequest createRequest;
 
-  @BeforeEach
-  @TestTransaction
-  void setUp() {
-    // Setup test data
-    testCustomerId = UUID.randomUUID();
+  private void setupTestData() {
+    // Create a real test customer within current transaction
+    Customer testCustomer =
+        customerBuilder.reset().withCompanyName("[TEST] Opportunity Test Customer").persist();
+
+    testCustomerId = testCustomer.getId();
 
     createRequest =
         CreateOpportunityRequest.builder()
@@ -65,6 +69,9 @@ class OpportunityCQRSIntegrationTest {
   @Test
   @TestTransaction
   void createOpportunity_inCQRSMode_shouldCreateSuccessfully() {
+    // Setup test data in transaction
+    setupTestData();
+
     // When
     OpportunityResponse response = opportunityService.createOpportunity(createRequest);
 
@@ -79,6 +86,9 @@ class OpportunityCQRSIntegrationTest {
   @Test
   @TestTransaction
   void createAndRetrieve_inCQRSMode_shouldWorkEndToEnd() {
+    // Setup test data in transaction
+    setupTestData();
+
     // Create
     OpportunityResponse created = opportunityService.createOpportunity(createRequest);
     assertThat(created.getId()).isNotNull();
@@ -100,6 +110,9 @@ class OpportunityCQRSIntegrationTest {
   @Test
   @TestTransaction
   void updateOpportunity_inCQRSMode_shouldUpdateSuccessfully() {
+    // Setup test data in transaction
+    setupTestData();
+
     // Create
     OpportunityResponse created = opportunityService.createOpportunity(createRequest);
 
@@ -129,6 +142,9 @@ class OpportunityCQRSIntegrationTest {
   @Test
   @TestTransaction
   void changeStage_inCQRSMode_shouldTransitionCorrectly() {
+    // Setup test data in transaction
+    setupTestData();
+
     // Create
     OpportunityResponse created = opportunityService.createOpportunity(createRequest);
 
@@ -148,6 +164,9 @@ class OpportunityCQRSIntegrationTest {
   @Test
   @TestTransaction
   void changeStage_withInvalidTransition_shouldThrowException() {
+    // Setup test data in transaction
+    setupTestData();
+
     // Create
     OpportunityResponse created = opportunityService.createOpportunity(createRequest);
 
@@ -166,6 +185,9 @@ class OpportunityCQRSIntegrationTest {
   @Test
   @TestTransaction
   void findByStage_inCQRSMode_shouldReturnFilteredResults() {
+    // Setup test data in transaction
+    setupTestData();
+
     // Create opportunities in different stages
     OpportunityResponse opp1 = opportunityService.createOpportunity(createRequest);
 
@@ -193,6 +215,9 @@ class OpportunityCQRSIntegrationTest {
   @Test
   @TestTransaction
   void calculateForecast_inCQRSMode_shouldCalculateCorrectly() {
+    // Setup test data in transaction
+    setupTestData();
+
     // Create opportunities with different values
     createRequest.setExpectedValue(new BigDecimal("100000"));
     opportunityService.createOpportunity(createRequest);
@@ -219,6 +244,9 @@ class OpportunityCQRSIntegrationTest {
   @Test
   @TestTransaction
   void deleteOpportunity_inCQRSMode_shouldDeleteSuccessfully() {
+    // Setup test data in transaction
+    setupTestData();
+
     // Create
     OpportunityResponse created = opportunityService.createOpportunity(createRequest);
     UUID id = created.getId();

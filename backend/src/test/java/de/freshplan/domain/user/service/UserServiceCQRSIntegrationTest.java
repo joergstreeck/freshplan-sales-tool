@@ -10,6 +10,7 @@ import de.freshplan.domain.user.service.dto.CreateUserRequest;
 import de.freshplan.domain.user.service.dto.UpdateUserRequest;
 import de.freshplan.domain.user.service.dto.UserResponse;
 import de.freshplan.domain.user.service.mapper.UserMapper;
+import de.freshplan.test.builders.UserTestDataFactory;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
 import io.quarkus.test.junit.mockito.InjectMock;
@@ -46,8 +47,14 @@ class UserServiceCQRSIntegrationTest {
   void setUp() {
     testUserId = UUID.randomUUID();
 
-    // Setup test user using constructor
-    testUser = new User("testuser", "Test", "User", "test@example.com");
+    // Setup test user using TestDataFactory
+    testUser =
+        UserTestDataFactory.builder()
+            .withUsername("testuser")
+            .withFirstName("Test")
+            .withLastName("User")
+            .withEmail("test@example.com")
+            .build();
     setFieldValue(testUser, "id", testUserId);
     setFieldValue(testUser, "roles", Arrays.asList("sales", "manager"));
 

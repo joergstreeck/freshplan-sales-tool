@@ -17,7 +17,7 @@ import org.junit.jupiter.api.Test;
  * <p>Diese Kunden sind keine produktiven Daten, sondern Teil der Test-Umgebung.
  */
 @QuarkusTest
-@TestTransaction  // CI-Fix: Rollback nach Test für Database Growth Check
+@TestTransaction // CI-Fix: Rollback nach Test für Database Growth Check
 public class MarkRealCustomersAsTestDataTest {
 
   @Inject EntityManager em;

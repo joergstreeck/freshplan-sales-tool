@@ -16,6 +16,8 @@ import de.freshplan.domain.opportunity.service.exception.OpportunityNotFoundExce
 import de.freshplan.domain.opportunity.service.mapper.OpportunityMapper;
 import de.freshplan.domain.user.entity.User;
 import de.freshplan.domain.user.repository.UserRepository;
+import de.freshplan.test.builders.CustomerBuilder;
+import de.freshplan.test.builders.OpportunityTestDataFactory;
 import io.quarkus.security.identity.SecurityIdentity;
 import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
@@ -30,7 +32,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import de.freshplan.test.builders.CustomerBuilder;
 
 /**
  * Mock-basierte Unit Tests für OpportunityService
@@ -49,7 +50,7 @@ public class OpportunityServiceMockTest {
   @InjectMock OpportunityRepository opportunityRepository;
 
   @InjectMock CustomerRepository customerRepository;
-  
+
   @Inject CustomerBuilder customerBuilder;
 
   @InjectMock UserRepository userRepository;
@@ -75,13 +76,11 @@ public class OpportunityServiceMockTest {
     opportunityId = UUID.randomUUID();
 
     // Create test customer
-    testCustomer = customerBuilder
-        .withCompanyName("[TEST] Test Company GmbH")
-        .build();
+    testCustomer = customerBuilder.withCompanyName("[TEST] Test Company GmbH").build();
     testCustomer.setId(customerId);
     testCustomer.setCompanyName("[TEST] Test Company GmbH"); // Keep [TEST] prefix
     testCustomer.setCustomerNumber("TEST-001");
-    testCustomer.setIsTestData(true);  // Mark as test data
+    testCustomer.setIsTestData(true); // Mark as test data
 
     // Create test user (mocked)
     testUser = mock(User.class);
@@ -173,12 +172,14 @@ public class OpportunityServiceMockTest {
   @DisplayName("Should find opportunity by ID")
   void findById_withExistingId_shouldReturnOpportunity() {
     // Arrange
-    Opportunity existingOpp = new Opportunity();
+    Opportunity existingOpp =
+        OpportunityTestDataFactory.builder()
+            .withName("Existing Opportunity")
+            .forCustomer(testCustomer)
+            .inStage(OpportunityStage.PROPOSAL)
+            .withProbability(60)
+            .build();
     existingOpp.setId(opportunityId);
-    existingOpp.setName("Existing Opportunity");
-    existingOpp.setCustomer(testCustomer);
-    existingOpp.setStage(OpportunityStage.PROPOSAL);
-    existingOpp.setProbability(60);
 
     when(opportunityRepository.findByIdOptional(opportunityId))
         .thenReturn(Optional.of(existingOpp));
@@ -208,12 +209,14 @@ public class OpportunityServiceMockTest {
   @DisplayName("Should update opportunity with valid data")
   void updateOpportunity_withValidData_shouldReturnUpdatedOpportunity() {
     // Arrange
-    Opportunity existingOpp = new Opportunity();
+    Opportunity existingOpp =
+        OpportunityTestDataFactory.builder()
+            .withName("Original Name")
+            .withDescription("Original Description")
+            .forCustomer(testCustomer)
+            .inStage(OpportunityStage.NEW_LEAD)
+            .build();
     existingOpp.setId(opportunityId);
-    existingOpp.setName("Original Name");
-    existingOpp.setDescription("Original Description");
-    existingOpp.setCustomer(testCustomer);
-    existingOpp.setStage(OpportunityStage.NEW_LEAD);
 
     when(opportunityRepository.findByIdOptional(opportunityId))
         .thenReturn(Optional.of(existingOpp));
@@ -242,7 +245,8 @@ public class OpportunityServiceMockTest {
   @DisplayName("Should delete opportunity")
   void deleteOpportunity_withExistingId_shouldDeleteSuccessfully() {
     // Arrange
-    Opportunity existingOpp = new Opportunity();
+    Opportunity existingOpp =
+        OpportunityTestDataFactory.builder().withName("Test Opportunity").build();
     existingOpp.setId(opportunityId);
     when(opportunityRepository.findByIdOptional(opportunityId))
         .thenReturn(Optional.of(existingOpp));
@@ -283,12 +287,14 @@ public class OpportunityServiceMockTest {
   @DisplayName("Should change opportunity stage")
   void changeStage_withValidTransition_shouldUpdateStage() {
     // Arrange
-    Opportunity existingOpp = new Opportunity();
+    Opportunity existingOpp =
+        OpportunityTestDataFactory.builder()
+            .withName("Test Opportunity")
+            .forCustomer(testCustomer)
+            .inStage(OpportunityStage.NEW_LEAD)
+            .withProbability(10)
+            .build();
     existingOpp.setId(opportunityId);
-    existingOpp.setName("Test Opportunity");
-    existingOpp.setCustomer(testCustomer);
-    existingOpp.setStage(OpportunityStage.NEW_LEAD);
-    existingOpp.setProbability(10);
 
     when(opportunityRepository.findByIdOptional(opportunityId))
         .thenReturn(Optional.of(existingOpp));

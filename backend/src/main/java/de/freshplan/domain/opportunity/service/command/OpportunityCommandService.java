@@ -3,6 +3,8 @@ package de.freshplan.domain.opportunity.service.command;
 import de.freshplan.domain.audit.entity.AuditEventType;
 import de.freshplan.domain.audit.service.AuditService;
 import de.freshplan.domain.audit.service.dto.AuditContext;
+import de.freshplan.domain.customer.entity.Customer;
+import de.freshplan.domain.customer.repository.CustomerRepository;
 import de.freshplan.domain.opportunity.entity.Opportunity;
 import de.freshplan.domain.opportunity.entity.OpportunityActivity;
 import de.freshplan.domain.opportunity.entity.OpportunityStage;
@@ -44,6 +46,8 @@ public class OpportunityCommandService {
   private static final Logger logger = LoggerFactory.getLogger(OpportunityCommandService.class);
 
   @Inject OpportunityRepository opportunityRepository;
+
+  @Inject CustomerRepository customerRepository;
 
   @Inject UserRepository userRepository;
 
@@ -94,12 +98,30 @@ public class OpportunityCommandService {
       opportunity.setExpectedCloseDate(request.getExpectedCloseDate());
     }
 
-    // Customer zuweisen - für Tests Mock-unterstützung
+    // Customer zuweisen
     if (request.getCustomerId() != null) {
-      // TODO: Echte Customer Repository Integration
-      // Für jetzt: Test-Mock-Unterstützung
-      logger.debug(
-          "Customer ID: {} - will be assigned via repository lookup", request.getCustomerId());
+      Customer customer =
+          customerRepository
+              .findByIdOptional(request.getCustomerId())
+              .orElseThrow(
+                  () ->
+                      new IllegalArgumentException(
+                          "Customer not found with ID: " + request.getCustomerId()));
+      opportunity.setCustomer(customer);
+      logger.debug("Assigned customer {} to opportunity", customer.getCompanyName());
+    }
+
+    // User zuweisen wenn angegeben
+    if (request.getAssignedTo() != null) {
+      User assignedUser =
+          userRepository
+              .findByIdOptional(request.getAssignedTo())
+              .orElseThrow(
+                  () ->
+                      new IllegalArgumentException(
+                          "User not found with ID: " + request.getAssignedTo()));
+      opportunity.setAssignedTo(assignedUser);
+      logger.debug("Assigned user {} to opportunity", assignedUser.getUsername());
     }
 
     // Speichern

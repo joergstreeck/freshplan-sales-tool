@@ -34,8 +34,8 @@ public class TestcontainersProfile implements QuarkusTestProfile {
     // Enable Flyway for real migration tests
     config.put("quarkus.flyway.migrate-at-start", "true");
     config.put("quarkus.flyway.baseline-on-migrate", "true");
-    // Clean database before migrations to avoid checksum issues
-    config.put("quarkus.flyway.clean-at-start", "true");
+    // Disable clean-at-start due to flyway.cleanDisabled=true in application.properties
+    config.put("quarkus.flyway.clean-at-start", "false");
     // Use validate mode with real PostgreSQL
     config.put("quarkus.hibernate-orm.database.generation", "validate");
     // Disable OIDC for tests

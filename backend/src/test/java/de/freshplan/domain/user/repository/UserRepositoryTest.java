@@ -3,6 +3,7 @@ package de.freshplan.domain.user.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import de.freshplan.domain.user.entity.User;
+import de.freshplan.test.builders.UserTestDataFactory;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.security.TestSecurity;
 import jakarta.inject.Inject;
@@ -229,7 +230,13 @@ class UserRepositoryTest {
   @Transactional
   void testPersistAndFlush_ShouldGenerateId() {
     // Given
-    User newUser = new User("new.user", "New", "User", "new.user@freshplan.de");
+    User newUser =
+        UserTestDataFactory.builder()
+            .withUsername("new.user")
+            .withFirstName("New")
+            .withLastName("User")
+            .withEmail("new.user@freshplan.de")
+            .build();
 
     // When
     userRepository.persist(newUser);
@@ -311,7 +318,13 @@ class UserRepositoryTest {
 
   private User createAndPersistUser(
       String username, String firstName, String lastName, String email) {
-    User user = new User(username, firstName, lastName, email);
+    User user =
+        UserTestDataFactory.builder()
+            .withUsername(username)
+            .withFirstName(firstName)
+            .withLastName(lastName)
+            .withEmail(email)
+            .build();
     userRepository.persist(user);
     userRepository.flush();
 

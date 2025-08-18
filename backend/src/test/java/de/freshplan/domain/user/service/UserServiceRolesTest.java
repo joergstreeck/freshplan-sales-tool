@@ -11,6 +11,7 @@ import de.freshplan.domain.user.service.dto.UserResponse;
 import de.freshplan.domain.user.service.exception.InvalidRoleException;
 import de.freshplan.domain.user.service.exception.UserNotFoundException;
 import de.freshplan.domain.user.service.mapper.UserMapper;
+import de.freshplan.test.builders.UserTestDataFactory;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -42,7 +43,13 @@ class UserServiceRolesTest {
   @BeforeEach
   void setUp() {
     userId = UUID.randomUUID();
-    testUser = new User("john.doe", "John", "Doe", "john.doe@example.com");
+    testUser =
+        UserTestDataFactory.builder()
+            .withUsername("john.doe")
+            .withFirstName("John")
+            .withLastName("Doe")
+            .withEmail("john.doe@example.com")
+            .build();
     // Use reflection to set the ID (since it's generated)
     try {
       var idField = User.class.getDeclaredField("id");

@@ -11,6 +11,7 @@ import de.freshplan.domain.customer.repository.ContactRepository;
 import de.freshplan.domain.customer.repository.CustomerRepository;
 import de.freshplan.domain.customer.service.dto.ContactDTO;
 import de.freshplan.domain.customer.service.mapper.ContactMapper;
+import de.freshplan.test.builders.ContactTestDataFactory;
 import de.freshplan.test.builders.CustomerBuilder;
 import io.quarkus.security.identity.SecurityIdentity;
 import io.quarkus.test.junit.QuarkusTest;
@@ -53,18 +54,21 @@ class ContactCommandServiceTest {
   @BeforeEach
   void setUp() {
     // Setup mock customer using CustomerBuilder directly
-    mockCustomer = customerBuilder
-        .withCompanyName("Test Company GmbH")
-        .build();  // Using build() for unit test (no DB)
+    mockCustomer =
+        customerBuilder
+            .withCompanyName("Test Company GmbH")
+            .build(); // Using build() for unit test (no DB)
     mockCustomer.setId(UUID.randomUUID());
 
-    // Setup mock contact
-    mockContact = new CustomerContact();
+    // Setup mock contact using ContactTestDataFactory
+    mockContact =
+        ContactTestDataFactory.builder()
+            .forCustomer(mockCustomer)
+            .withFirstName("Max")
+            .withLastName("Mustermann")
+            .withEmail("max@test.de")
+            .build();
     mockContact.setId(UUID.randomUUID());
-    mockContact.setCustomer(mockCustomer);
-    mockContact.setFirstName("Max");
-    mockContact.setLastName("Mustermann");
-    mockContact.setEmail("max@test.de");
     mockContact.setIsPrimary(false);
     mockContact.setIsActive(true);
 

@@ -3,6 +3,7 @@ package de.freshplan.test.utils;
 import de.freshplan.domain.customer.repository.ContactInteractionRepository;
 import de.freshplan.domain.customer.repository.ContactRepository;
 import de.freshplan.domain.customer.repository.CustomerRepository;
+import de.freshplan.domain.opportunity.repository.OpportunityRepository;
 import io.quarkus.narayana.jta.QuarkusTransaction;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -28,6 +29,8 @@ public class TestDataCleanup {
 
   @Inject ContactInteractionRepository interactionRepository;
 
+  @Inject OpportunityRepository opportunityRepository;
+
   /**
    * Clean up all test customers with the given test run ID. This method should be called
    * in @AfterEach of integration tests.
@@ -44,7 +47,29 @@ public class TestDataCleanup {
         .run(
             () -> {
               try {
-                // Clean up customers created with this test run ID
+                // First clean up opportunities that reference test customers
+                // (to avoid foreign key constraint violations)
+                long deletedOpportunities =
+                    opportunityRepository.delete("name LIKE ?1", "%[TEST]%" + testRunId + "%");
+
+                if (deletedOpportunities > 0) {
+                  LOG.infof(
+                      "Cleaned up %d test opportunities for run: %s",
+                      deletedOpportunities, testRunId);
+                }
+
+                // Also delete opportunities by customer company name pattern
+                deletedOpportunities =
+                    opportunityRepository.delete(
+                        "customer.companyName LIKE ?1", "%[TEST]%" + testRunId + "%");
+
+                if (deletedOpportunities > 0) {
+                  LOG.infof(
+                      "Cleaned up %d additional test opportunities for run: %s",
+                      deletedOpportunities, testRunId);
+                }
+
+                // Now clean up customers created with this test run ID
                 long deletedCustomers =
                     customerRepository.delete(
                         "companyName LIKE ?1 OR customerNumber LIKE ?2",

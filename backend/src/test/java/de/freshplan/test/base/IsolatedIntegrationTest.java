@@ -1,5 +1,6 @@
 package de.freshplan.test.base;
 
+import de.freshplan.test.builders.CustomerBuilder;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
@@ -27,6 +28,7 @@ public abstract class IsolatedIntegrationTest {
   private static final Logger LOG = Logger.getLogger(IsolatedIntegrationTest.class);
 
   @Inject protected EntityManager em;
+  @Inject protected CustomerBuilder customerBuilder;
 
   // Konstanten für Seed-Daten
   protected static final int SEED_CUSTOMER_COUNT = 50;
@@ -101,19 +103,10 @@ public abstract class IsolatedIntegrationTest {
    * @return Die ID des erstellten Kunden
    */
   protected String createTestCustomer(String name) {
-    String customerNumber = "TEST-" + System.currentTimeMillis();
-    String companyName = TEST_PREFIX + " " + name;
+    var customer =
+        customerBuilder.reset().withCompanyName(TEST_PREFIX + " " + name).asNewLead().persist();
 
-    em.createNativeQuery(
-            "INSERT INTO customers (id, customer_number, company_name, "
-                + "customer_type, status, is_test_data, created_by, created_at) "
-                + "VALUES (gen_random_uuid(), :number, :name, 'NEUKUNDE', 'LEAD', "
-                + "true, 'test', NOW())")
-        .setParameter("number", customerNumber)
-        .setParameter("name", companyName)
-        .executeUpdate();
-
-    return customerNumber;
+    return customer.getCustomerNumber();
   }
 
   /**

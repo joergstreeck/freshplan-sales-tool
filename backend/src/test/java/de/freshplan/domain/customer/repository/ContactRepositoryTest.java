@@ -4,13 +4,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import de.freshplan.domain.customer.entity.Customer;
 import de.freshplan.domain.customer.entity.CustomerContact;
+import de.freshplan.test.builders.ContactTestDataFactory;
+import de.freshplan.test.builders.CustomerBuilder;
 import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
-import de.freshplan.test.builders.CustomerBuilder;
 
 /**
  * Unit tests for ContactRepository. Tests multi-contact support, primary contact handling, and
@@ -22,18 +23,19 @@ class ContactRepositoryTest {
   @Inject ContactRepository contactRepository;
 
   @Inject CustomerRepository customerRepository;
-  
+
   @Inject CustomerBuilder customerBuilder;
 
   private Customer createTestCustomer() {
     // Create test customer with all required Sprint 2 fields using CustomerBuilder
     // Der Builder setzt automatisch alle required fields inkl. Sprint 2 Felder
-    Customer customer = customerBuilder
-        .withCompanyName("Test Company GmbH")
-        .withLocationsGermany(1)
-        .withLocationsAustria(0)
-        .withLocationsSwitzerland(0)
-        .persist(); // persist() für Integration-Test mit @TestTransaction
+    Customer customer =
+        customerBuilder
+            .withCompanyName("Test Company GmbH")
+            .withLocationsGermany(1)
+            .withLocationsAustria(0)
+            .withLocationsSwitzerland(0)
+            .persist(); // persist() für Integration-Test mit @TestTransaction
     return customer;
   }
 
@@ -189,11 +191,17 @@ class ContactRepositoryTest {
 
   private CustomerContact createTestContact(
       Customer customer, String firstName, String lastName, boolean isPrimary) {
-    CustomerContact contact = new CustomerContact();
-    contact.setCustomer(customer);
-    contact.setFirstName(firstName);
-    contact.setLastName(lastName);
-    contact.setIsPrimary(isPrimary);
+    var builder =
+        ContactTestDataFactory.builder()
+            .forCustomer(customer)
+            .withFirstName(firstName)
+            .withLastName(lastName);
+
+    if (isPrimary) {
+      builder.asPrimary();
+    }
+
+    CustomerContact contact = builder.build();
     contact.setIsActive(true);
     contact.setCreatedBy("test");
     contact.setUpdatedBy("test");

@@ -213,6 +213,10 @@ class PermissionTest {
   @Transactional
   @DisplayName("Should find permissions by resource using named query")
   void namedQuery_findByResource_shouldWork() {
+    // Clean up any existing test permissions first to ensure isolation
+    Permission.delete("permissionCode like ?1", "test:%");
+    Permission.flush();
+
     // Arrange
     Permission perm1 = new Permission("test:read", "Test Read", null);
     Permission perm2 = new Permission("test:write", "Test Write", null);
@@ -221,6 +225,7 @@ class PermissionTest {
     perm1.persist();
     perm2.persist();
     perm3.persist();
+    Permission.flush();
 
     // Act
     List<Permission> found =
