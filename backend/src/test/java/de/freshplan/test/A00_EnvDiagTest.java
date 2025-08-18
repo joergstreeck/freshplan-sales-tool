@@ -6,6 +6,7 @@ import jakarta.inject.Inject;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import org.eclipse.microprofile.config.ConfigProvider;
 import org.jboss.logging.Logger;
 import org.junit.jupiter.api.Test;
 
@@ -26,6 +27,18 @@ public class A00_EnvDiagTest {
     LOG.info("Test class: " + this.getClass().getName());
     LOG.info("Test instance: " + this.hashCode());
     LOG.info("=".repeat(80));
+    
+    // Log effective Flyway configuration
+    var cfg = ConfigProvider.getConfig();
+    LOG.info("\n📋 EFFECTIVE FLYWAY CONFIGURATION:");
+    LOG.info("flyway.locations (resolved): " +
+        cfg.getOptionalValue("quarkus.flyway.locations", String.class).orElse("<unset>"));
+    LOG.info("migrate-at-start: " +
+        cfg.getOptionalValue("quarkus.flyway.migrate-at-start", String.class).orElse("<unset>"));
+    LOG.info("clean-at-start: " +
+        cfg.getOptionalValue("quarkus.flyway.clean-at-start", String.class).orElse("<unset>"));
+    LOG.info("out-of-order: " +
+        cfg.getOptionalValue("quarkus.flyway.out-of-order", String.class).orElse("<unset>"));
     
     try (Connection c = ds.getConnection(); Statement st = c.createStatement()) {
       // Database connection details

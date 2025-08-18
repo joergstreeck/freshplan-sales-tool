@@ -55,6 +55,10 @@ public class GlobalTestResourceManager implements QuarkusTestResourceLifecycleMa
     config.put("quarkus.flyway.locations", 
                "classpath:db/migration,classpath:db/testdata,classpath:db/ci-migrations,classpath:db/callbacks");
     
+    // Ensure DevServices are completely disabled
+    config.put("%test.quarkus.datasource.devservices.enabled", "false");
+    config.put("%ci.quarkus.datasource.devservices.enabled", "false");
+    
     LOG.info("Configuration applied:");
     config.forEach((k, v) -> LOG.infof("  %s = %s", k, v));
     

@@ -83,7 +83,7 @@ jobs:
             -Dquarkus.datasource.devservices.enabled=false \
             -Dquarkus.flyway.migrate-at-start=true \
             -Dquarkus.flyway.out-of-order=true \
-            -Dquarkus.flyway.locations=classpath:db/migration,classpath:db/testdata,classpath:db/ci-migrations \
+            -Dquarkus.flyway.locations=classpath:db/migration,classpath:db/testdata,classpath:db/ci-migrations,classpath:db/callbacks \
             -Dquarkus.datasource.jdbc.url="jdbc:postgresql://localhost:5432/freshplan?options=-c%20ci.build%3Dtrue" \
             -Dquarkus.datasource.username=freshplan \
             -Dquarkus.datasource.password=freshplan
@@ -201,7 +201,7 @@ jobs:
             -Dquarkus.datasource.devservices.enabled=false \
             -Dquarkus.flyway.migrate-at-start=true \
             -Dquarkus.flyway.out-of-order=true \
-            -Dquarkus.flyway.locations=classpath:db/migration,classpath:db/testdata,classpath:db/ci-migrations \
+            -Dquarkus.flyway.locations=classpath:db/migration,classpath:db/testdata,classpath:db/ci-migrations,classpath:db/callbacks \
             -Dquarkus.datasource.jdbc.url="jdbc:postgresql://localhost:5432/freshplan?options=-c%20ci.build%3Dtrue" \
             -Dquarkus.datasource.username=freshplan \
             -Dquarkus.datasource.password=freshplan
@@ -223,7 +223,7 @@ jobs:
             -Dquarkus.datasource.devservices.enabled=false \
             -Dquarkus.flyway.migrate-at-start=true \
             -Dquarkus.flyway.out-of-order=true \
-            -Dquarkus.flyway.locations=classpath:db/migration,classpath:db/testdata,classpath:db/ci-migrations \
+            -Dquarkus.flyway.locations=classpath:db/migration,classpath:db/testdata,classpath:db/ci-migrations,classpath:db/callbacks \
             -Dquarkus.datasource.jdbc.url="jdbc:postgresql://localhost:5432/freshplan?options=-c%20ci.build%3Dtrue" \
             -Dquarkus.datasource.username=freshplan \
             -Dquarkus.datasource.password=freshplan
