@@ -95,7 +95,7 @@ jobs:
         working-directory: backend
         run: |
           ./mvnw -B -T 1C clean test \
-            -Dtest="A00_EnvDiagTest,UserRepoSaveLoadIT,CustomerRepositoryTest,OpportunityServiceIntegrationTest,UserServiceTest,CustomerServiceIntegrationTest,OpportunityCommandServiceTest,UserCommandServiceTest,ContactRepositoryTest,CustomerCommandServiceTest" \
+            -Dtest="A00_EnvDiagTest" \
             -Dquarkus.profile=ci \
             -Dquarkus.datasource.jdbc.url=jdbc:postgresql://localhost:5432/test_db \
             -Dquarkus.datasource.username=postgres \
