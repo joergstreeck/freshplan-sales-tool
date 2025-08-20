@@ -23,24 +23,11 @@ public class TestDataInitializer {
 
   @Inject UserRepository userRepository;
 
-  @Transactional
-  void onStart(@Observes StartupEvent ev) {
-    LOG.info("Initializing test data...");
-
-    // Check if we already have users
-    if (userRepository.count() > 0) {
-      LOG.info("Test users already exist, skipping initialization");
-      return;
-    }
-
-    // Create test users for tests
-    createUser("testuser", "Test", "User", "testuser@test.com", "admin", "manager", "sales");
-    createUser("admin", "Admin", "User", "admin@test.com", "admin");
-    createUser("manager", "Manager", "User", "manager@test.com", "manager");
-    createUser("sales", "Sales", "User", "sales@test.com", "sales");
-
-    LOG.info("Test data initialized successfully");
-  }
+  // DISABLED: In SEED-free setup, tests must create their own data
+  // @Transactional
+  // void onStart(@Observes StartupEvent ev) {
+  //   LOG.info("DISABLED: TestDataInitializer - Tests must use TestDataFactory");
+  // }
 
   private void createUser(
       String username, String firstName, String lastName, String email, String... roles) {

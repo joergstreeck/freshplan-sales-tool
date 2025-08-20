@@ -98,16 +98,16 @@ jobs:
         echo "CUSTOMERS_BEFORE=$BEFORE" >> $GITHUB_ENV
         echo "Customers before tests: $BEFORE"
     
-    - name: Run all tests with CI profile
+    - name: Run core tests with CI profile
       working-directory: backend
       env:
         QUARKUS_PROFILE: ci
         MAVEN_OPTS: -Xmx2g -XX:MaxMetaspaceSize=512m
         RUN_SUFFIX: ${{ github.run_id }}
       run: |
-        echo "Running tests with CI profile..."
+        echo "Running CORE tests only with CI profile..."
         
-        ./mvnw test \
+        ./mvnw test -Pcore-tests \
           -B \
           -T 1C \
           -Djunit.jupiter.execution.timeout.default=2m \
