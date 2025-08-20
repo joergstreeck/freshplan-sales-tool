@@ -19,14 +19,14 @@ import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
+import org.junit.jupiter.api.Tag;
 /**
  * Unit tests for ProfileQueryService. Tests all read operations for profiles with CQRS pattern.
  *
  * <p>IMPORTANT: Verifies that NO write operations occur in query service!
  */
 @QuarkusTest
-class ProfileQueryServiceTest {
+@Tag("migrate")class ProfileQueryServiceTest {
 
   @Inject ProfileQueryService queryService;
 

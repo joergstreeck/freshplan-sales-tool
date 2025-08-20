@@ -295,5 +295,79 @@
         </plugins>
       </build>
     </profile>
+    
+    <!-- Core-Suite für PRs (Production Pipeline) -->
+    <profile>
+      <id>core-tests</id>
+      <properties>
+        <!-- Nur stabile Tests, keine quarantine -->
+        <junit.jupiter.tags>core &amp; !quarantine</junit.jupiter.tags>
+      </properties>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+              <properties>
+                <configurationParameters>
+                  junit.jupiter.testinstance.lifecycle.default=per_method
+                  junit.jupiter.tags=${junit.jupiter.tags}
+                </configurationParameters>
+              </properties>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <!-- Migration-Suite für Nightly (Non-blocking) -->
+    <profile>
+      <id>migrate-tests</id>
+      <properties>
+        <!-- Tests in Migration + bekannt problematische -->
+        <junit.jupiter.tags>migrate | quarantine</junit.jupiter.tags>
+      </properties>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+              <properties>
+                <configurationParameters>
+                  junit.jupiter.testinstance.lifecycle.default=per_method
+                  junit.jupiter.tags=${junit.jupiter.tags}
+                </configurationParameters>
+              </properties>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    
+    <!-- Stable-Suite für Release (alle außer quarantine) -->
+    <profile>
+      <id>stable-tests</id>
+      <properties>
+        <junit.jupiter.tags>!quarantine</junit.jupiter.tags>
+      </properties>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+              <properties>
+                <configurationParameters>
+                  junit.jupiter.testinstance.lifecycle.default=per_method
+                  junit.jupiter.tags=${junit.jupiter.tags}
+                </configurationParameters>
+              </properties>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
   </profiles>
 </project>

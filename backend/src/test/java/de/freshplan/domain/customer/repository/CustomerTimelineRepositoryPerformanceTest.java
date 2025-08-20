@@ -16,7 +16,7 @@ import java.util.UUID;
 import org.hibernate.Session;
 import org.hibernate.stat.Statistics;
 import org.junit.jupiter.api.Test;
-
+import org.junit.jupiter.api.Tag;
 /**
  * Performance tests to verify N+1 query fixes in CustomerTimelineRepository.
  *
@@ -24,7 +24,7 @@ import org.junit.jupiter.api.Test;
  * @since 2.0.0
  */
 @QuarkusTest
-@TestSecurity(
+@Tag("migrate")@TestSecurity(
     user = "testuser",
     roles = {"admin", "manager", "sales"})
 class CustomerTimelineRepositoryPerformanceTest extends BaseIntegrationTest {

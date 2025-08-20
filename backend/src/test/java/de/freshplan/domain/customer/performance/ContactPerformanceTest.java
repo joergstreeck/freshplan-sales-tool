@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
+import org.junit.jupiter.api.Tag;import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 
 /**
  * Performance tests for Contact-related operations. Tests bulk operations, query performance, and
@@ -32,7 +32,7 @@ import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
  * <p>Run with: mvn test -Dtest=ContactPerformanceTest -Dperformance.tests.enabled=true
  */
 @QuarkusTest
-@DisplayName("Contact Performance Tests")
+@Tag("migrate")@DisplayName("Contact Performance Tests")
 @EnabledIfSystemProperty(named = "performance.tests.enabled", matches = "true")
 public class ContactPerformanceTest {
 

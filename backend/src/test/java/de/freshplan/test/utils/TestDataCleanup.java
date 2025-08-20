@@ -1,5 +1,6 @@
 package de.freshplan.test.utils;
 
+import org.junit.jupiter.api.Tag;
 import de.freshplan.domain.customer.repository.ContactInteractionRepository;
 import de.freshplan.domain.customer.repository.ContactRepository;
 import de.freshplan.domain.customer.repository.CustomerRepository;
@@ -19,7 +20,7 @@ import org.jboss.logging.Logger;
  * @since Phase 14.3 - Test Data Management
  */
 @ApplicationScoped
-public class TestDataCleanup {
+@Tag("quarantine")public class TestDataCleanup {
 
   private static final Logger LOG = Logger.getLogger(TestDataCleanup.class);
 
@@ -99,11 +100,10 @@ public class TestDataCleanup {
                   }
                 }
 
-                // Clean up test data flag customers (safety net) - BUT PROTECT SEEDs
-                // Use the safe cleanup method that protects SEED customers
-                long deletedTestData = customerRepository.deleteAllTestDataExceptSeeds();
+                // Clean up test data flag customers (safety net)
+                long deletedTestData = customerRepository.deleteAllTestData();
                 if (deletedTestData > 0) {
-                  LOG.infof("Cleaned up %d recent test data customers (SEED data preserved)", deletedTestData);
+                  LOG.infof("Cleaned up %d recent test data customers", deletedTestData);
                 }
 
               } catch (Exception e) {
@@ -118,12 +118,11 @@ public class TestDataCleanup {
         .run(
             () -> {
               try {
-                // Delete all test customers - BUT PROTECT SEEDs!
-                // Use the safe cleanup method that protects SEED customers
-                long deleted = customerRepository.deleteAllTestDataExceptSeeds();
+                // Delete all test customers
+                long deleted = customerRepository.deleteAllTestData();
 
                 if (deleted > 0) {
-                  LOG.infof("Cleaned up %d test customers (SEED data preserved)", deleted);
+                  LOG.infof("Cleaned up %d test customers", deleted);
                 }
 
               } catch (Exception e) {

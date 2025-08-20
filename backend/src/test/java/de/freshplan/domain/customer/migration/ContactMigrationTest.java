@@ -9,13 +9,13 @@ import jakarta.transaction.Transactional;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
+import org.junit.jupiter.api.Tag;
 /**
  * Integration tests for Contact-related database migrations V209, V210, V211. Validates that the
  * migrations create the correct database structure.
  */
 @QuarkusTest
-@DisplayName("Contact Migration Tests")
+@Tag("migrate")@DisplayName("Contact Migration Tests")
 public class ContactMigrationTest {
 
   @Inject EntityManager entityManager;

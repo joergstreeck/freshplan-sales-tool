@@ -4,9 +4,9 @@ import jakarta.inject.Inject;
 import java.util.UUID;
 import org.jboss.logging.Logger;
 import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-
+import org.junit.jupiter.api.Tag;import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Tag;import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 /**
  * Base class for integration tests that automatically handles test data cleanup.
  *

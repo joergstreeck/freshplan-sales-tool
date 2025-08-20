@@ -20,13 +20,13 @@ import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
+import org.junit.jupiter.api.Tag;import org.mockito.ArgumentCaptor;
 
 /**
  * Unit tests for ProfileCommandService. Tests all write operations for profiles with CQRS pattern.
  */
 @QuarkusTest
-class ProfileCommandServiceTest {
+@Tag("migrate")class ProfileCommandServiceTest {
 
   @Inject ProfileCommandService commandService;
 

@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import de.freshplan.test.builders.UserTestDataFactory;
 import org.junit.jupiter.api.Test;
-
+import org.junit.jupiter.api.Tag;
 /**
  * Unit tests for User entity.
  *
@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test;
  * @author FreshPlan Team
  * @since 2.0.0 - Updated in Migration Phase 4
  */
-class UserTest {
+@Tag("core")class UserTest {
 
   @Test
   void testConstructor_ShouldCreateEnabledUser() {

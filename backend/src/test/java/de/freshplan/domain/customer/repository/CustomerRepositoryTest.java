@@ -17,13 +17,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
+import org.junit.jupiter.api.Tag;
 /**
  * Comprehensive test suite for CustomerRepository. Tests all repository methods including soft
  * delete support, search functionality, hierarchy management, and specialized queries.
  */
 @QuarkusTest
-class CustomerRepositoryTest {
+@Tag("core")class CustomerRepositoryTest {
 
   @Inject CustomerRepository repository;
 

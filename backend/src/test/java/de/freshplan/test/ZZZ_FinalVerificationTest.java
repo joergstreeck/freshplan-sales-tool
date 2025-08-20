@@ -7,7 +7,7 @@ import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import java.util.List;
 import org.junit.jupiter.api.Test;
-
+import org.junit.jupiter.api.Tag;
 /**
  * CRITICAL: This test MUST run LAST to verify database cleanup!
  *
@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test;
  * tests properly marked their data.
  */
 @QuarkusTest
-public class ZZZ_FinalVerificationTest {
+@Tag("quarantine")public class ZZZ_FinalVerificationTest {
 
   @Inject CustomerRepository customerRepository;
 

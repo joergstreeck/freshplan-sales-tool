@@ -8,7 +8,7 @@ import jakarta.inject.Inject;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.Tag;import org.junit.jupiter.api.TestMethodOrder;
 
 /**
  * CI Debug Test - Sammelt präzise Informationen über den Zustand der CI-Datenbank
@@ -16,7 +16,7 @@ import org.junit.jupiter.api.TestMethodOrder;
  * <p>WICHTIG: Dieser Test läuft ZUERST (Order 1) um den initialen Zustand zu erfassen!
  */
 @QuarkusTest
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@Tag("quarantine")@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class CIDebugTest {
 
   @Inject CustomerRepository customerRepository;

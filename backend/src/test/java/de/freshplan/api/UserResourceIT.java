@@ -21,7 +21,7 @@ import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.Tag;import org.junit.jupiter.api.TestMethodOrder;
 
 /**
  * Integration tests for UserResource REST API.
@@ -33,7 +33,7 @@ import org.junit.jupiter.api.TestMethodOrder;
  * @since 2.0.0
  */
 @QuarkusTest
-@TestHTTPEndpoint(UserResource.class)
+@Tag("migrate")@TestHTTPEndpoint(UserResource.class)
 @TestMethodOrder(OrderAnnotation.class)
 class UserResourceIT {
 

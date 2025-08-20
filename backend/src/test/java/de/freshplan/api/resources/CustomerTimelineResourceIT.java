@@ -20,7 +20,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
+import org.junit.jupiter.api.Tag;
 /**
  * Integration tests for CustomerTimelineResource.
  *
@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test;
  * @since 2.0.0
  */
 @QuarkusTest
-@TestHTTPEndpoint(CustomerTimelineResource.class)
+@Tag("migrate")@TestHTTPEndpoint(CustomerTimelineResource.class)
 class CustomerTimelineResourceIT {
 
   @Inject CustomerRepository customerRepository;

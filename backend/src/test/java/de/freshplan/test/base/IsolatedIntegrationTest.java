@@ -6,8 +6,8 @@ import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import org.jboss.logging.Logger;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-
+import org.junit.jupiter.api.Tag;import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 /**
  * Basis-Klasse für ALLE Integration Tests mit vollständiger Isolation.
  *
@@ -23,7 +23,7 @@ import org.junit.jupiter.api.BeforeEach;
  * @since Phase 14.3 - Professionelle Test-Isolation
  */
 @QuarkusTest
-public abstract class IsolatedIntegrationTest {
+@Tag("migrate")public abstract class IsolatedIntegrationTest {
 
   private static final Logger LOG = Logger.getLogger(IsolatedIntegrationTest.class);
 

@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
+import org.junit.jupiter.api.Tag;import org.mockito.Mockito;
 
 /**
  * Tests for HtmlExportQueryService following established CQRS test patterns.
@@ -34,7 +34,7 @@ import org.mockito.Mockito;
  * @since Phase 13 CQRS Migration
  */
 @QuarkusTest
-class HtmlExportQueryServiceTest {
+@Tag("core")class HtmlExportQueryServiceTest {
 
   @Inject HtmlExportQueryService queryService;
 

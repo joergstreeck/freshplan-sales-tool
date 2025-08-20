@@ -16,7 +16,7 @@ import java.time.LocalDate;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
+import org.junit.jupiter.api.Tag;
 /**
  * Integration tests for filter functionality of CustomerSearchService.
  *
@@ -24,7 +24,7 @@ import org.junit.jupiter.api.Test;
  * filters.
  */
 @QuarkusTest
-@DisplayName("CustomerSearchService - Filter Tests")
+@Tag("migrate")@DisplayName("CustomerSearchService - Filter Tests")
 class CustomerSearchFilterTest {
 
   @Inject CustomerSearchService searchService;

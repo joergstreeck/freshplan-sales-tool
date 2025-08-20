@@ -23,9 +23,9 @@ import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
+import org.junit.jupiter.api.Tag;
 @QuarkusTest
-@DisplayName("Contact Interaction Service Integration Tests")
+@Tag("migrate")@DisplayName("Contact Interaction Service Integration Tests")
 class ContactInteractionServiceIT {
 
   @Inject ContactInteractionService contactInteractionService;

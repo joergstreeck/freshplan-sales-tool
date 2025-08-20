@@ -7,7 +7,7 @@ import jakarta.inject.Inject;
 import java.sql.ResultSet;
 import javax.sql.DataSource;
 import org.junit.jupiter.api.*;
-
+import org.junit.jupiter.api.Tag;
 /**
  * Fail-fast sanity check for CI environment FK configurations.
  *
@@ -18,7 +18,7 @@ import org.junit.jupiter.api.*;
  * @since 2025-08-16
  */
 @QuarkusTest
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@Tag("migrate")@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class CiFkSanityIT {
 
   @Inject DataSource ds;

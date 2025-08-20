@@ -26,7 +26,7 @@ import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
+import org.junit.jupiter.api.Tag;
 /**
  * Unit Tests für OpportunityQueryService
  *
@@ -34,7 +34,7 @@ import org.junit.jupiter.api.Test;
  * durchführt und keine Transaktionen verwendet.
  */
 @QuarkusTest
-class OpportunityQueryServiceTest {
+@Tag("core")class OpportunityQueryServiceTest {
 
   @Inject OpportunityQueryService queryService;
 

@@ -20,7 +20,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-
+import org.junit.jupiter.api.Tag;
 /**
  * Performance tests for CustomerSearchResource.
  *
@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test;
  * datasets. Some tests are disabled by default to avoid impacting regular test runs.
  */
 @QuarkusTest
-@TestSecurity(
+@Tag("migrate")@TestSecurity(
     user = "testuser",
     roles = {"admin", "manager", "sales"})
 class CustomerSearchPerformanceTest {

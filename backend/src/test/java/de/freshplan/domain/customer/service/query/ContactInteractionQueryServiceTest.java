@@ -30,13 +30,13 @@ import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
+import org.junit.jupiter.api.Tag;
 /**
  * Unit tests for ContactInteractionQueryService. Tests all query operations with mocked
  * dependencies. IMPORTANT: Verifies that NO write operations are performed.
  */
 @QuarkusTest
-class ContactInteractionQueryServiceTest {
+@Tag("core")class ContactInteractionQueryServiceTest {
 
   @Inject ContactInteractionQueryService queryService;
 

@@ -28,13 +28,13 @@ import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
+import org.junit.jupiter.api.Tag;
 /**
  * Integration tests for ContactInteractionService with CQRS pattern enabled. Tests the complete
  * flow through the facade to command and query services.
  */
 @QuarkusTest
-@TestProfile(ContactInteractionServiceCQRSTestProfile.class)
+@Tag("migrate")@TestProfile(ContactInteractionServiceCQRSTestProfile.class)
 class ContactInteractionServiceCQRSIntegrationTest {
 
   @Inject ContactInteractionService facadeService;

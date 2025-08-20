@@ -17,7 +17,7 @@ import jakarta.ws.rs.core.MediaType;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
+import org.junit.jupiter.api.Tag;
 /**
  * Integration tests for SearchResource API endpoints.
  *
@@ -29,7 +29,7 @@ import org.junit.jupiter.api.Test;
  * isolation - RestAssured for HTTP API testing
  */
 @QuarkusTest
-class SearchResourceTest {
+@Tag("migrate")class SearchResourceTest {
 
   @InjectMock SearchService searchService;
 

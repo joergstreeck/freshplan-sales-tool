@@ -25,13 +25,13 @@ import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
+import org.junit.jupiter.api.Tag;import org.mockito.ArgumentCaptor;
 
 /**
  * Unit tests for ContactInteractionCommandService. Verifies all command operations work correctly.
  */
 @QuarkusTest
-class ContactInteractionCommandServiceTest {
+@Tag("core")class ContactInteractionCommandServiceTest {
 
   @Inject ContactInteractionCommandService commandService;
 

@@ -3,8 +3,11 @@ package de.freshplan.test.builders;
 import de.freshplan.domain.customer.entity.Customer;
 import de.freshplan.domain.customer.entity.CustomerContact;
 import de.freshplan.domain.customer.repository.ContactRepository;
+import de.freshplan.domain.customer.repository.CustomerRepository;
 import io.quarkus.arc.Arc;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -13,12 +16,20 @@ import java.util.UUID;
 
 /**
  * Test data builder for CustomerContact entities. Provides fluent API for creating test contacts.
+ * CDI-enabled for Integration-Tests mit echter Database.
  *
  * @author Claude
  * @since Migration Phase 4 - Quick Wins
+ * @since Phase 2B - Enhanced CDI integration with persist methods
  */
 @ApplicationScoped
 public class ContactBuilder {
+
+  @Inject
+  CustomerRepository customerRepository;
+  
+  @Inject
+  EntityManager entityManager;
 
   // Repository wird nur bei persist() verwendet, daher lazy loading
   private ContactRepository getContactRepository() {
@@ -276,7 +287,72 @@ public class ContactBuilder {
   @Transactional
   public CustomerContact persist() {
     CustomerContact contact = build();
-    getContactRepository().persist(contact);
+    ContactRepository contactRepo = getContactRepository();
+    if (contactRepo != null) {
+      contactRepo.persist(contact);
+    } else {
+      // Fallback via EntityManager
+      entityManager.persist(contact);
+    }
+    return contact;
+  }
+
+  /**
+   * Create contact with auto-generated test customer.
+   * Für Integration-Tests mit echter Database.
+   *
+   * @return The persisted contact entity with new customer
+   */
+  @Transactional
+  public CustomerContact createTestContact() {
+    // Customer erstellen und persistieren
+    Customer customer = CustomerTestDataFactory.builder()
+        .withCompanyName("[TEST] Auto-Generated Customer for Contact")
+        .build();
+    customerRepository.persistAndFlush(customer);
+    
+    // Contact erstellen und persistieren
+    CustomerContact contact = ContactTestDataFactory.builder()
+        .forCustomer(customer)
+        .withEmail("auto.contact." + System.currentTimeMillis() + "@test.com")
+        .build();
+    
+    // Contact persistieren
+    ContactRepository contactRepo = getContactRepository();
+    if (contactRepo != null) {
+      contactRepo.persistAndFlush(contact);
+    } else {
+      // Fallback via EntityManager
+      entityManager.persist(contact);
+      entityManager.flush();
+    }
+    
+    return contact;
+  }
+
+  /**
+   * Create contact for existing customer.
+   * Für Tests die bereits einen Customer haben.
+   *
+   * @param customer The existing customer entity
+   * @return The persisted contact entity
+   */
+  @Transactional
+  public CustomerContact createContactForCustomer(Customer customer) {
+    CustomerContact contact = ContactTestDataFactory.builder()
+        .forCustomer(customer)
+        .withEmail("contact." + customer.getCustomerNumber() + "." + System.currentTimeMillis() + "@test.com")
+        .build();
+    
+    ContactRepository contactRepo = getContactRepository();
+    if (contactRepo != null) {
+      contactRepo.persistAndFlush(contact);
+    } else {
+      // Fallback via EntityManager
+      entityManager.persist(contact);
+      entityManager.flush();
+    }
+    
     return contact;
   }
 
@@ -298,8 +374,8 @@ public class ContactBuilder {
     this.notes = null;
     this.reportsTo = null;
     this.createdAt = LocalDateTime.now();
-    this.createdBy = "test";
+    this.createdBy = "test-system";
     this.updatedAt = LocalDateTime.now();
-    this.updatedBy = "test";
+    this.updatedBy = "test-system";
   }
 }

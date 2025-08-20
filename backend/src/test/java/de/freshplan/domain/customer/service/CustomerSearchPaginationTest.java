@@ -17,14 +17,14 @@ import java.util.List;
 import java.util.Set;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
+import org.junit.jupiter.api.Tag;
 /**
  * Integration tests for pagination functionality of CustomerSearchService.
  *
  * <p>Tests page navigation, page size handling, and pagination edge cases.
  */
 @QuarkusTest
-@DisplayName("CustomerSearchService - Pagination Tests")
+@Tag("migrate")@DisplayName("CustomerSearchService - Pagination Tests")
 class CustomerSearchPaginationTest {
 
   @Inject CustomerSearchService searchService;

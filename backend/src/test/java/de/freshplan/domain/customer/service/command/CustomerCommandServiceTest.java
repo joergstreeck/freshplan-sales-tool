@@ -26,13 +26,13 @@ import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
+import org.junit.jupiter.api.Tag;
 /**
  * Unit tests for CustomerCommandService. Verifies that the service behaves EXACTLY like
  * CustomerService.
  */
 @QuarkusTest
-class CustomerCommandServiceTest {
+@Tag("core")class CustomerCommandServiceTest {
 
   @Inject CustomerCommandService commandService;
 

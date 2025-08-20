@@ -6,10 +6,10 @@ import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import java.util.List;
 import org.junit.jupiter.api.Test;
-
+import org.junit.jupiter.api.Tag;
 /** Test Data Integrity Check - Findet inkonsistente Test-Daten */
 @QuarkusTest
-public class TestDataIntegrityCheckTest {
+@Tag("quarantine")public class TestDataIntegrityCheckTest {
 
   @Inject CustomerRepository customerRepository;
 

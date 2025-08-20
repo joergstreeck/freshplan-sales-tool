@@ -22,13 +22,13 @@ import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
+import org.junit.jupiter.api.Tag;
 /**
  * Integration tests for UserService with CQRS pattern enabled. Tests the complete flow through the
  * facade to command and query services.
  */
 @QuarkusTest
-@TestProfile(UserServiceCQRSTestProfile.class)
+@Tag("core")@TestProfile(UserServiceCQRSTestProfile.class)
 class UserServiceCQRSIntegrationTest {
 
   @Inject UserService userService;

@@ -15,7 +15,7 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
+import org.junit.jupiter.api.Tag;
 /**
  * Integration Test für Phase 12.1 - UserStruggleDetectionService CQRS Migration
  *
@@ -24,7 +24,7 @@ import org.junit.jupiter.api.Test;
  * Struggle Detection Logic in beiden Modi - Session Management und Cleanup
  */
 @QuarkusTest
-@TestProfile(UserStruggleDetectionCQRSIntegrationTest.CQRSTestProfile.class)
+@Tag("migrate")@TestProfile(UserStruggleDetectionCQRSIntegrationTest.CQRSTestProfile.class)
 @DisplayName("Phase 12.1: UserStruggleDetectionService CQRS Integration")
 class UserStruggleDetectionCQRSIntegrationTest {
 

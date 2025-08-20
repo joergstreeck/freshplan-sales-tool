@@ -13,7 +13,7 @@ import java.util.UUID;
 import java.util.concurrent.*;
 import java.util.stream.IntStream;
 import org.junit.jupiter.api.Test;
-
+import org.junit.jupiter.api.Tag;
 /**
  * Tests for PermissionHelperPg race-condition safety.
  *
@@ -21,7 +21,7 @@ import org.junit.jupiter.api.Test;
  * conditions or duplicate entries.
  */
 @QuarkusTest
-class PermissionHelperPgTest {
+@Tag("migrate")class PermissionHelperPgTest {
 
   @Inject PermissionHelperPg permissionHelper;
 

@@ -7,6 +7,7 @@ import de.freshplan.domain.customer.entity.PaymentTerms;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Test data factory for Customer entities. Provides builder pattern for creating test customers
@@ -14,8 +15,47 @@ import java.time.LocalDateTime;
  *
  * @author Claude
  * @since Migration Phase 4 - Quick Wins
+ * @since Phase 2A - Enhanced with collision-free ID generation
  */
 public class CustomerTestDataFactory {
+
+  // KOLLISIONSFREIE ID-GENERIERUNG - Thread-Safe & CI-kompatibel
+  private static final AtomicLong SEQ = new AtomicLong();
+  
+  /**
+   * Run-ID für eindeutige Test-Identifikation.
+   * Nutzt test.run.id (CI) -> GITHUB_RUN_ID (Fallback) -> "LOCAL"
+   */
+  private static String runId() { 
+    return System.getProperty("test.run.id", 
+           System.getenv().getOrDefault("GITHUB_RUN_ID", "LOCAL")); 
+  }
+  
+  /**
+   * Generiert eindeutige Kundennummer: KD-TEST-{RUN_ID}-{SEQ}
+   * Format erlaubt Spurensuche bei CI-Problemen.
+   */
+  private static String nextNumber() { 
+    return "KD-TEST-" + runId() + "-" + String.format("%05d", SEQ.incrementAndGet()); 
+  }
+  
+  /**
+   * Realistische Firmennamen statt "Test Company".
+   * Präfix [TEST] für eindeutige Markierung.
+   */
+  private static String generateCompanyName() {
+    String[] prefixes = {"[TEST]", "[TEST-DATA]"};
+    String[] companies = {
+      "Müller GmbH", "Schmidt AG", "Weber & Co", "Fischer Solutions", 
+      "Becker Industries", "Koch Logistics", "Richter Consulting",
+      "Hoffmann Group", "Schulz Systems", "Wagner Analytics"
+    };
+    
+    // Pseudo-Random basierend auf nanoTime für Variety
+    String prefix = prefixes[(int)(System.nanoTime() % prefixes.length)];
+    String company = companies[(int)(System.nanoTime() % companies.length)];
+    return prefix + " " + company;
+  }
 
   /** Create a new builder instance. */
   public static Builder builder() {
@@ -23,9 +63,9 @@ public class CustomerTestDataFactory {
   }
 
   public static class Builder {
-    // Default values
-    private String companyName = "Test Company GmbH";
-    private String customerNumber;
+    // Default values - now with realistic defaults
+    private String companyName = generateCompanyName();
+    private String customerNumber; // wird automatisch generiert
     private CustomerStatus status = CustomerStatus.LEAD;
     private Industry industry = Industry.SONSTIGE;
     private String website;
@@ -243,6 +283,11 @@ public class CustomerTestDataFactory {
      * @return The built customer entity
      */
     public Customer build() {
+      // Automatische customerNumber-Generierung falls nicht explizit gesetzt
+      if (customerNumber == null) {
+        customerNumber = nextNumber();
+      }
+      
       Customer customer = new Customer();
 
       // Set all fields
@@ -268,9 +313,11 @@ public class CustomerTestDataFactory {
       // customer.setNotes(notes);
       customer.setLastContactDate(lastContactDate);
       // customer.setNextContactDate(nextContactDate);
-      customer.setRiskScore(riskScore);
+      
+      // Realistische Defaults für Tests
+      customer.setRiskScore(riskScore != null ? riskScore : 2); // Low-Risk Default
       // customer.setExpectedMonthlyVolume(expectedMonthlyVolume);
-      customer.setExpectedAnnualVolume(expectedAnnualVolume);
+      customer.setExpectedAnnualVolume(expectedAnnualVolume != null ? expectedAnnualVolume : BigDecimal.valueOf(50000)); // 50k€ Default
       // customer.setContractStartDate(contractStartDate);
       // customer.setContractEndDate(contractEndDate);
       // customer.setResponsibleSales(responsibleSales);
@@ -278,7 +325,8 @@ public class CustomerTestDataFactory {
       if (paymentTerms != null) {
         customer.setPaymentTerms(PaymentTerms.valueOf(paymentTerms));
       }
-      customer.setIsTestData(isTestData);
+      // KRITISCH: Immer true für Tests - überschreibt auch explizite false-Werte
+      customer.setIsTestData(true);
       customer.setCreatedBy(createdBy);
 
       // Set created at if needed (normally done by JPA)
@@ -290,6 +338,19 @@ public class CustomerTestDataFactory {
     /** Build a minimal test customer. Convenience method for common test case. */
     public Customer buildMinimal() {
       return withCompanyName("Test Company GmbH").withStatus(CustomerStatus.LEAD).build();
+    }
+
+    /**
+     * Build and persist to database.
+     * Für Integration-Tests mit Repository-Injection.
+     * 
+     * @param repository The CustomerRepository to use for persistence
+     * @return The persisted customer entity
+     */
+    public Customer buildAndPersist(de.freshplan.domain.customer.repository.CustomerRepository repository) {
+      Customer customer = build();
+      repository.persistAndFlush(customer);
+      return customer;
     }
   }
 }

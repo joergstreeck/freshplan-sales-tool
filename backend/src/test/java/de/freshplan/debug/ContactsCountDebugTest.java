@@ -14,12 +14,12 @@ import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
-
+import org.junit.jupiter.api.Tag;
 /**
  * Debug-Test für ContactsCount-Bug. Legacy zeigt 12, CQRS zeigt 15 Kontakte für denselben Kunden.
  */
 @QuarkusTest
-public class ContactsCountDebugTest {
+@Tag("quarantine")public class ContactsCountDebugTest {
 
   @Inject CustomerRepository customerRepository;
 

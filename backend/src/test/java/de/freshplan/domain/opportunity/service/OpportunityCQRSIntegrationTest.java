@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.UUID;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.junit.jupiter.api.Test;
-
+import org.junit.jupiter.api.Tag;
 /**
  * Integration Test für CQRS-Implementation des OpportunityService
  *
@@ -26,7 +26,7 @@ import org.junit.jupiter.api.Test;
  * Verhalten aufweisen.
  */
 @QuarkusTest
-@TestProfile(OpportunityCQRSTestProfile.class)
+@Tag("core")@TestProfile(OpportunityCQRSTestProfile.class)
 class OpportunityCQRSIntegrationTest {
 
   @Inject OpportunityService opportunityService;

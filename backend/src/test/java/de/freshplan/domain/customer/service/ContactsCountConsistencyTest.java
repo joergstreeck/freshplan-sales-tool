@@ -14,13 +14,13 @@ import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import org.junit.jupiter.api.Test;
-
+import org.junit.jupiter.api.Tag;
 /**
  * Test zur Verifikation der ContactsCount-Konsistenz zwischen Legacy und CQRS Services. Stellt
  * sicher, dass beide Services denselben Count zurückgeben.
  */
 @QuarkusTest
-public class ContactsCountConsistencyTest {
+@Tag("migrate")public class ContactsCountConsistencyTest {
 
   @Inject CustomerRepository customerRepository;
 

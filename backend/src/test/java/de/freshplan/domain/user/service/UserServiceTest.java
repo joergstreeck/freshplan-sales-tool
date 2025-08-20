@@ -26,7 +26,7 @@ import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
+import org.junit.jupiter.api.Tag;
 /**
  * Unit tests for UserService.
  *
@@ -37,7 +37,7 @@ import org.junit.jupiter.api.Test;
  * @since 2.0.0
  */
 @QuarkusTest
-@TestSecurity(
+@Tag("core")@TestSecurity(
     user = "testuser",
     roles = {"admin", "manager", "sales"})
 class UserServiceTest {

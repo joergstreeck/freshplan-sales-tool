@@ -11,7 +11,7 @@ import java.time.Instant;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
+import org.junit.jupiter.api.Tag;
 /**
  * Unit tests for UserMapper.
  *
@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test;
  * @author FreshPlan Team
  * @since 2.0.0 - Updated in Migration Phase 4
  */
-class UserMapperTest {
+@Tag("core")class UserMapperTest {
 
   private UserMapper mapper;
 

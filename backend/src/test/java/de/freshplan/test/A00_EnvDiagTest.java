@@ -3,115 +3,244 @@ package de.freshplan.test;
 import io.agroal.api.AgroalDataSource;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
-import org.eclipse.microprofile.config.ConfigProvider;
-import org.jboss.logging.Logger;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import java.util.*;
+import java.sql.*;
 
 /**
- * Diagnostic test to identify database container issues.
- * Runs first alphabetically to capture environment state.
+ * A00 Smart Environment Diagnostics - sammelt ALLE Abweichungen und erklärt Root-Causes.
+ * Statt beim ersten Fehler zu stoppen, sammelt A00 komplette Problemübersicht.
  */
 @QuarkusTest
-public class A00_EnvDiagTest {
-  private static final Logger LOG = Logger.getLogger(A00_EnvDiagTest.class);
-
-  @Inject AgroalDataSource ds;
-
-  @Test
-  void fingerprintDb() throws Exception {
-    LOG.info("\n" + "=".repeat(80));
-    LOG.info("=== DATABASE FINGERPRINT AT TEST START ===");
-    LOG.info("Test class: " + this.getClass().getName());
-    LOG.info("Test instance: " + this.hashCode());
-    LOG.info("=".repeat(80));
+@Tag("core")
+class A00_EnvDiagTest {
     
-    // Log effective Flyway configuration
-    var cfg = ConfigProvider.getConfig();
-    LOG.info("\n📋 EFFECTIVE FLYWAY CONFIGURATION:");
-    LOG.info("flyway.locations (resolved): " +
-        cfg.getOptionalValue("quarkus.flyway.locations", String.class).orElse("<unset>"));
-    LOG.info("migrate-at-start: " +
-        cfg.getOptionalValue("quarkus.flyway.migrate-at-start", String.class).orElse("<unset>"));
-    LOG.info("clean-at-start: " +
-        cfg.getOptionalValue("quarkus.flyway.clean-at-start", String.class).orElse("<unset>"));
-    LOG.info("out-of-order: " +
-        cfg.getOptionalValue("quarkus.flyway.out-of-order", String.class).orElse("<unset>"));
+    @Inject 
+    AgroalDataSource dataSource;
     
-    try (Connection c = ds.getConnection(); Statement st = c.createStatement()) {
-      // Database connection details
-      LOG.info("JDBC URL  : " + c.getMetaData().getURL());
-      LOG.info("User      : " + c.getMetaData().getUserName());
-
-      // Database server info
-      ResultSet rs1 = st.executeQuery(
-        "SELECT current_database(), current_schema, version(), " +
-        "inet_server_addr()::text, inet_server_port()");
-      if (rs1.next()) {
-        LOG.info("DB=" + rs1.getString(1) + " schema=" + rs1.getString(2) +
-                 " host=" + rs1.getString(4) + " port=" + rs1.getInt(5));
-        LOG.info("Version: " + rs1.getString(3));
-      }
-      
-      // Search path
-      ResultSet rs2 = st.executeQuery("SHOW search_path");
-      if (rs2.next()) {
-        LOG.info("search_path=" + rs2.getString(1));
-      }
-
-      // Flyway migration history
-      LOG.info("\n📜 Flyway Migration History (last 5):");
-      ResultSet rs3 = st.executeQuery(
-        "SELECT installed_rank, version, description, success " +
-        "FROM flyway_schema_history " +
-        "ORDER BY installed_rank DESC LIMIT 5");
-      while (rs3.next()) {
-        LOG.info(String.format("  Flyway #%d: V%s - %s (%s)", 
-          rs3.getInt(1), 
-          rs3.getString(2), 
-          rs3.getString(3),
-          rs3.getBoolean(4) ? "✅" : "❌"));
-      }
-
-      // SEED data count
-      ResultSet rs4 = st.executeQuery(
-        "SELECT COUNT(*) FROM customers WHERE customer_number LIKE 'SEED-%'");
-      rs4.next();
-      int seedCount = rs4.getInt(1);
-      LOG.info("\n🌱 SEED count at test bootstrap = " + seedCount);
-      
-      if (seedCount == 0) {
-        LOG.error("⚠️ NO SEED DATA FOUND! Expected 20 SEED customers.");
+    private final List<String> problems = new ArrayList<>();
+    
+    @Test
+    void verifyEnvironment() throws Exception {
+        var config = (io.smallrye.config.SmallRyeConfig) org.eclipse.microprofile.config.ConfigProvider.getConfig();
         
-        // Check if they exist with wrong flag
-        ResultSet rs5 = st.executeQuery(
-          "SELECT COUNT(*), " +
-          "SUM(CASE WHEN is_test_data = true THEN 1 ELSE 0 END) as with_true, " +
-          "SUM(CASE WHEN is_test_data = false THEN 1 ELSE 0 END) as with_false " +
-          "FROM customers WHERE company_name LIKE '[SEED]%'");
-        if (rs5.next()) {
-          LOG.info("SEED-like customers: total=" + rs5.getInt(1) + 
-                   " with is_test_data=true:" + rs5.getInt(2) +
-                   " with is_test_data=false:" + rs5.getInt(3));
+        System.out.println("=== A00 Smart Environment Diagnostics ===");
+        
+        // 1) CONFIG + QUELLE - zeigt wo Werte herkommen
+        checkFlywayLocations(config);
+        checkDevServices(config);
+        checkDatabaseGeneration(config);
+        
+        // 2) DB FINGERPRINT + STARTZUSTAND
+        try (var connection = dataSource.getConnection(); 
+             var statement = connection.createStatement()) {
+            
+            logDatabaseFingerprint(statement);
+            checkCleanStart(statement);
+            logNonEmptyTables(statement);
+            logFlywayHistory(statement);
+            logRunIdPrefixes(statement);
         }
-      } else {
-        LOG.info("✅ SEED data present: " + seedCount + " customers");
-      }
-      
-      // Total customer count
-      ResultSet rs6 = st.executeQuery("SELECT COUNT(*) FROM customers");
-      rs6.next();
-      LOG.info("Total customers in DB: " + rs6.getInt(1));
-      
-      // CI flag check
-      ResultSet rs7 = st.executeQuery("SELECT current_setting('ci.build', true)");
-      rs7.next();
-      String ciFlag = rs7.getString(1);
-      LOG.info("CI flag (ci.build): " + ciFlag);
-      
-      LOG.info("=".repeat(80) + "\n");
+        
+        // 3) CI SUMMARY (falls GitHub Actions)
+        writeGitHubSummaryIfPresent();
+        
+        // 4) FAIL MIT SAMMELLISTE + LÖSUNGSVORSCHLÄGE
+        if (!problems.isEmpty()) {
+            String report = renderProblemsReport();
+            System.out.println("\n" + report);
+            org.junit.jupiter.api.Assertions.fail("A00 Environment Check failed. See diagnostic report above.");
+        }
+        
+        System.out.println("✅ A00 Environment Check: Alle kritischen Validierungen bestanden");
     }
-  }
+    
+    private void checkFlywayLocations(io.smallrye.config.SmallRyeConfig config) {
+        var flyLoc = config.getConfigValue("quarkus.flyway.locations");
+        System.out.printf("DIAG[CFG] flyway.locations=%s (source=%s)%n", 
+                         flyLoc.getValue(), flyLoc.getConfigSourceName());
+        
+        if (!"classpath:db/migration".equals(flyLoc.getValue())) {
+            problems.add("DIAG[CFG-001] flyway.locations = " + flyLoc.getValue() + 
+                        " (source=" + flyLoc.getConfigSourceName() + ") – erwartet classpath:db/migration.\n" +
+                        "→ Entferne CLI-Override in CI oder setze Profil korrekt (-Pcore-tests).");
+        }
+    }
+    
+    private void checkDevServices(io.smallrye.config.SmallRyeConfig config) {
+        var devServices = config.getConfigValue("quarkus.datasource.devservices.enabled");
+        System.out.printf("DIAG[CFG] devservices.enabled=%s (source=%s)%n", 
+                         devServices.getValue(), devServices.getConfigSourceName());
+        
+        if ("true".equalsIgnoreCase(devServices.getValue())) {
+            problems.add("DIAG[DEV-001] DevServices aktiv in CI.\n" +
+                        "→ quarkus.datasource.devservices.enabled=false setzen.");
+        }
+    }
+    
+    private void checkDatabaseGeneration(io.smallrye.config.SmallRyeConfig config) {
+        var dbGen = config.getConfigValue("quarkus.hibernate-orm.database.generation");
+        System.out.printf("DIAG[CFG] hibernate-orm.database.generation=%s (source=%s)%n", 
+                         dbGen.getValue(), dbGen.getConfigSourceName());
+    }
+    
+    private void logDatabaseFingerprint(Statement statement) throws SQLException {
+        System.out.println("\n=== DATABASE FINGERPRINT ===");
+        
+        // Database Metadaten
+        try (var rs = statement.executeQuery(
+            "SELECT current_database(), current_schema(), current_user, version()")) {
+            if (rs.next()) {
+                System.out.printf("Database: %s | Schema: %s | User: %s%n", 
+                                 rs.getString(1), rs.getString(2), rs.getString(3));
+                System.out.printf("PostgreSQL: %s%n", rs.getString(4).split(" ")[0]);
+            }
+        }
+    }
+    
+    private void checkCleanStart(Statement statement) throws SQLException {
+        // Check if customers table exists first
+        try (var rs = statement.executeQuery(
+                "SELECT COUNT(*) FROM information_schema.tables " +
+                "WHERE table_schema = 'public' AND table_name = 'customers'")) {
+            if (rs.next() && rs.getInt(1) == 0) {
+                System.out.printf("DIAG[DB] customers table does not exist yet (OK for initial migration)%n");
+                return;
+            }
+        }
+        
+        // Table exists, check count
+        long customerCount = scalarLong(statement, "SELECT COUNT(*) FROM customers");
+        System.out.printf("DIAG[DB] customers at start: %d%n", customerCount);
+        
+        if (customerCount != 0) {
+            problems.add("DIAG[DB-001] Startzustand nicht leer: customers=" + customerCount + ".\n" +
+                        "→ Schema-Reset im CI fehlt / Rollback deaktiviert / Test ohne Builder.");
+        }
+    }
+    
+    private void logNonEmptyTables(Statement statement) throws SQLException {
+        System.out.println("\n=== NON-EMPTY TABLES (Top 10) ===");
+        
+        String[] tables = {"customers", "customer_contacts", "opportunities", "app_user"};
+        for (String table : tables) {
+            try {
+                // Check if table exists first
+                try (var rs = statement.executeQuery(
+                        "SELECT COUNT(*) FROM information_schema.tables " +
+                        "WHERE table_schema = 'public' AND table_name = '" + table + "'")) {
+                    if (rs.next() && rs.getInt(1) == 0) {
+                        System.out.printf("? %s: not created yet%n", table);
+                        continue;
+                    }
+                }
+                
+                long count = scalarLong(statement, "SELECT COUNT(*) FROM " + table);
+                if (count > 0) {
+                    System.out.printf("⚠️  %s: %d rows%n", table, count);
+                }
+            } catch (SQLException e) {
+                System.out.printf("? %s: not accessible (%s)%n", table, e.getMessage());
+            }
+        }
+    }
+    
+    private void logFlywayHistory(Statement statement) throws SQLException {
+        System.out.println("\n=== FLYWAY HISTORY (Top 5) ===");
+        
+        try {
+            // Check if flyway table exists
+            try (var rs = statement.executeQuery(
+                    "SELECT COUNT(*) FROM information_schema.tables " +
+                    "WHERE table_schema = 'public' AND table_name = 'flyway_schema_history'")) {
+                if (rs.next() && rs.getInt(1) == 0) {
+                    System.out.println("Flyway history not available yet");
+                    return;
+                }
+            }
+            
+            try (var rs = statement.executeQuery(
+                "SELECT version, description, success FROM flyway_schema_history " +
+                "ORDER BY installed_rank DESC LIMIT 5")) {
+                
+                while (rs.next()) {
+                    String status = rs.getBoolean(3) ? "✅" : "❌";
+                    System.out.printf("%s V%s: %s%n", status, rs.getString(1), rs.getString(2));
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Flyway history not available: " + e.getMessage());
+        }
+    }
+    
+    private void logRunIdPrefixes(Statement statement) throws SQLException {
+        System.out.println("\n=== RUN-ID CORRELATION ===");
+        
+        try {
+            // Check if customers table exists
+            try (var rs = statement.executeQuery(
+                    "SELECT COUNT(*) FROM information_schema.tables " +
+                    "WHERE table_schema = 'public' AND table_name = 'customers'")) {
+                if (rs.next() && rs.getInt(1) == 0) {
+                    System.out.println("Customers table not created yet");
+                    return;
+                }
+            }
+            
+            try (var rs = statement.executeQuery(
+                "SELECT DISTINCT SUBSTRING(customer_number FROM 'KD-TEST-([^-]+)') as run_id " +
+                "FROM customers WHERE customer_number LIKE 'KD-TEST-%'")) {
+                
+                List<String> runIds = new ArrayList<>();
+                while (rs.next()) {
+                    String runId = rs.getString(1);
+                    if (runId != null) runIds.add(runId);
+                }
+                
+                if (!runIds.isEmpty()) {
+                    System.out.printf("Found test data from runs: %s%n", String.join(", ", runIds));
+                    problems.add("DIAG[DATA-001] Test data remains from previous runs: " + String.join(", ", runIds) + 
+                               "\n→ Schema-Reset failed or Builder missing isTestData=true");
+                } else {
+                    System.out.println("No test data remains found");
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Run-ID correlation not available: " + e.getMessage());
+        }
+    }
+    
+    private void writeGitHubSummaryIfPresent() {
+        String githubSummary = System.getenv("GITHUB_STEP_SUMMARY");
+        if (githubSummary != null && !problems.isEmpty()) {
+            try (var writer = new java.io.FileWriter(githubSummary, true)) {
+                writer.write("\n## 🚨 A00 Environment Diagnostics\n\n");
+                for (String problem : problems) {
+                    writer.write("- " + problem.replace("\n→", "\n  - **Fix:** ") + "\n\n");
+                }
+            } catch (Exception e) {
+                System.out.println("Could not write GitHub summary: " + e.getMessage());
+            }
+        }
+    }
+    
+    private String renderProblemsReport() {
+        StringBuilder report = new StringBuilder();
+        report.append("\n🚨 A00 ENVIRONMENT PROBLEMS FOUND:\n");
+        report.append("=".repeat(50)).append("\n");
+        
+        for (int i = 0; i < problems.size(); i++) {
+            report.append(String.format("%d) %s%n%n", i + 1, problems.get(i)));
+        }
+        
+        report.append("💡 FIX ALL ISSUES ABOVE BEFORE PROCEEDING WITH TESTS\n");
+        return report.toString();
+    }
+    
+    private long scalarLong(Statement statement, String sql) throws SQLException {
+        try (var rs = statement.executeQuery(sql)) {
+            return rs.next() ? rs.getLong(1) : 0;
+        }
+    }
 }

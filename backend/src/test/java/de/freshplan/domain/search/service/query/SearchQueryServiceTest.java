@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
+import org.junit.jupiter.api.Tag;
 /**
  * Comprehensive tests for SearchQueryService (CQRS Query Service).
  *
@@ -37,7 +37,7 @@ import org.junit.jupiter.api.Test;
  * read-only) 4. Flexible Verification (atLeastOnce() instead of exact times())
  */
 @QuarkusTest
-class SearchQueryServiceTest {
+@Tag("core")class SearchQueryServiceTest {
 
   @Inject SearchQueryService searchQueryService;
   @Inject CustomerBuilder customerBuilder;

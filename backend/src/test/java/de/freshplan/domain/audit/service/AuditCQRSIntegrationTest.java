@@ -24,7 +24,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
+import org.junit.jupiter.api.Tag;
 /**
  * Integration Test for Audit Service CQRS Implementation.
  *
@@ -39,7 +39,7 @@ import org.junit.jupiter.api.Test;
  * @since Phase 14.3 - Feature Flag Switching Tests
  */
 @QuarkusTest
-@TestProfile(AuditCQRSTestProfile.class)
+@Tag("migrate")@TestProfile(AuditCQRSTestProfile.class)
 @TestSecurity(
     user = "testuser",
     roles = {"admin"})

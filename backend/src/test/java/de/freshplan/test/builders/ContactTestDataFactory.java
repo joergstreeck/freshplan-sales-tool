@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Test data factory for CustomerContact entities. Provides builder pattern for creating test
@@ -13,8 +14,12 @@ import java.util.UUID;
  *
  * @author Claude
  * @since Migration Phase 4 - Quick Wins (Fixed)
+ * @since Phase 2B - Enhanced with collision-free email generation
  */
 public class ContactTestDataFactory {
+
+  // KOLLISIONSFREIE ID-GENERIERUNG - Thread-Safe & CI-kompatibel
+  private static final AtomicLong CONTACT_SEQ = new AtomicLong();
 
   /** Create a new builder instance. */
   public static Builder builder() {
@@ -42,9 +47,28 @@ public class ContactTestDataFactory {
 
     // Audit fields
     private LocalDateTime createdAt = LocalDateTime.now();
-    private String createdBy = "test";
+    private String createdBy = "test-system";
     private LocalDateTime updatedAt = LocalDateTime.now();
-    private String updatedBy = "test";
+    private String updatedBy = "test-system";
+
+    /**
+     * Generiert eindeutige Email für Contact-Tests.
+     * Format: contact.{RUN_ID}.{SEQ}@test.example.com
+     */
+    private static String generateUniqueEmail() {
+      String runId = System.getProperty("test.run.id", 
+          System.getenv().getOrDefault("GITHUB_RUN_ID", "LOCAL"));
+      long seq = CONTACT_SEQ.incrementAndGet();
+      return "contact." + runId + "." + seq + "@test.example.com";
+    }
+
+    /**
+     * Builder-Konstruktor mit Default-Werten
+     */
+    public Builder() {
+      // Setze Default unique email bei Erstellung
+      this.email = generateUniqueEmail();
+    }
 
     /**
      * Set the customer for this contact.
@@ -272,10 +296,8 @@ public class ContactTestDataFactory {
       contact.setFirstName(firstName);
       contact.setLastName(lastName);
 
-      // Generate email if not set
-      if (email == null) {
-        email = (firstName + "." + lastName + "@test.example.com").toLowerCase();
-      }
+      // Email ist bereits im Konstruktor gesetzt worden (unique)
+      // Nur überschreiben wenn explizit NULL gesetzt wurde
       contact.setEmail(email);
 
       contact.setPhone(phone);
@@ -290,6 +312,9 @@ public class ContactTestDataFactory {
       contact.setNotes(notes);
       contact.setReportsTo(reportsTo);
 
+      // WICHTIG: Contact inherits test data status from customer wenn möglich
+      setTestDataFlagIfExists(contact, customer);
+
       // Set audit fields
       contact.setCreatedAt(createdAt);
       contact.setCreatedBy(createdBy);
@@ -300,7 +325,29 @@ public class ContactTestDataFactory {
     }
 
     /**
+     * Setzt isTestData auf Contact falls das Feld existiert.
+     * Contact erbt den Test-Status vom Customer.
+     */
+    private void setTestDataFlagIfExists(CustomerContact contact, Customer customer) {
+      try {
+        // Prüfe ob CustomerContact.setIsTestData existiert
+        java.lang.reflect.Method setter = contact.getClass().getMethod("setIsTestData", Boolean.class);
+        // Übernehme isTestData vom Customer falls vorhanden
+        if (customer != null && customer.getIsTestData() != null) {
+          setter.invoke(contact, customer.getIsTestData());
+        } else {
+          // Fallback: Setze auf true für Tests
+          setter.invoke(contact, true);
+        }
+      } catch (Exception e) {
+        // Field doesn't exist - that's ok, CustomerContact hat kein isTestData
+        // Kein Logging nötig, da erwartetes Verhalten
+      }
+    }
+
+    /**
      * Create a mock customer for unit tests that don't need persistence.
+     * Nutzt eindeutige IDs und isTestData=true.
      *
      * @return A mock customer entity with test data
      */
@@ -308,13 +355,45 @@ public class ContactTestDataFactory {
       Customer mockCustomer = new Customer();
       mockCustomer.setId(UUID.randomUUID());
       mockCustomer.setCompanyName("[TEST] Mock Customer for Contact");
-      mockCustomer.setCustomerNumber("TEST-" + UUID.randomUUID().toString().substring(0, 8));
-      mockCustomer.setIsTestData(true);
+      
+      // Eindeutige Customer Number für Contact-Tests
+      String runId = System.getProperty("test.run.id", 
+          System.getenv().getOrDefault("GITHUB_RUN_ID", "LOCAL"));
+      mockCustomer.setCustomerNumber("TEST-MOCK-" + runId + "-" + UUID.randomUUID().toString().substring(0, 8));
+      mockCustomer.setIsTestData(true); // KRITISCH für Cleanup
+      
+      // Audit-Felder
       mockCustomer.setCreatedAt(LocalDateTime.now());
-      mockCustomer.setCreatedBy("test");
+      mockCustomer.setCreatedBy("test-system");
       mockCustomer.setUpdatedAt(LocalDateTime.now());
-      mockCustomer.setUpdatedBy("test");
+      mockCustomer.setUpdatedBy("test-system");
+      
       return mockCustomer;
+    }
+
+    /**
+     * Build and persist contact with customer.
+     * Erstellt auch Customer falls nötig.
+     * 
+     * @param customerRepo The CustomerRepository for customer persistence
+     * @param em The EntityManager for contact persistence
+     * @return The persisted contact entity
+     */
+    public CustomerContact buildAndPersist(
+        de.freshplan.domain.customer.repository.CustomerRepository customerRepo,
+        jakarta.persistence.EntityManager em) {
+      CustomerContact contact = build();
+      
+      // Customer persistieren falls nicht schon gespeichert
+      if (contact.getCustomer() != null && contact.getCustomer().getId() == null) {
+        customerRepo.persistAndFlush(contact.getCustomer());
+      }
+      
+      // Contact persistieren
+      em.persist(contact);
+      em.flush();
+      
+      return contact;
     }
   }
 }

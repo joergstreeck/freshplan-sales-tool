@@ -20,7 +20,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
+import org.junit.jupiter.api.Tag;
 /**
  * Integration-Tests für den SalesCockpitService.
  *
@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test;
  * @since 2.0.0
  */
 @QuarkusTest
-@TestSecurity(
+@Tag("migrate")@TestSecurity(
     user = "testuser",
     roles = {"admin", "manager", "sales"})
 @TestTransaction

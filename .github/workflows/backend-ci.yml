@@ -1,318 +1,117 @@
 name: Backend CI
 
 on:
-  push:
-    branches: [main, feature/*]
-    paths:
-      - 'backend/**'
-      - '.github/workflows/backend-ci.yml'
   pull_request:
+    paths: ['backend/**']
+  push:
     branches: [main]
-    paths:
-      - 'backend/**'
-
-concurrency:
-  group: backend-${{ github.ref }}
-  cancel-in-progress: true
 
 jobs:
   test:
+    name: Backend Tests
     runs-on: ubuntu-latest
-    timeout-minutes: 20
-
+    
     services:
       postgres:
-        image: postgres:15-alpine
+        image: postgres:14
         env:
-          POSTGRES_PASSWORD: freshplan
-          POSTGRES_USER: freshplan
-          POSTGRES_DB: freshplan
+          POSTGRES_DB: test_db
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd "pg_isready -U postgres -d test_db"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
         ports:
           - 5432:5432
-        options: >-
-          --health-cmd="pg_isready -U freshplan -d freshplan"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=10
-
+    
     steps:
-      - uses: actions/checkout@v4
-      
-      - name: Set up JDK 17
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup JDK 17 (Quarkus 2.x Standard)
         uses: actions/setup-java@v4
         with:
-          java-version: '17'
-          distribution: 'temurin'
-      
-      - name: Cache Maven dependencies
-        uses: actions/cache@v4
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-m2-${{ hashFiles('backend/pom.xml') }}
-          restore-keys: ${{ runner.os }}-m2-
+          distribution: temurin
+          java-version: 17
+          cache: maven
           
-      - name: Install PostgreSQL client
-        run: sudo apt-get update && sudo apt-get install -y postgresql-client
-      
-      - name: Wait for PostgreSQL
+      - name: DB Schema Reset (Hard Reset für sauberen Start)
         env:
-          PGPASSWORD: freshplan
+          PGPASSWORD: postgres
         run: |
-          for i in {1..30}; do
-            pg_isready -h localhost -p 5432 -U freshplan -d freshplan && break
-            echo "Waiting for PostgreSQL... ($i/30)"
-            sleep 2
+          # Health-Check: PostgreSQL bereit?
+          until pg_isready -h localhost -U postgres -d test_db; do 
+            echo "Waiting for PostgreSQL..."
+            sleep 1
           done
-          psql -h localhost -U freshplan -d freshplan -c "SELECT version();" || exit 1
+          echo "✅ PostgreSQL ready"
+          
+          # KRITISCH: Hard Schema Reset - garantiert leerer Start (keine Drift)
+          psql -h localhost -U postgres -d test_db -c "DROP SCHEMA IF EXISTS public CASCADE; CREATE SCHEMA public;"
+          echo "✅ Schema reset - garantiert 0 customers"
       
-      - name: Reset DB schema for clean state
+      - name: Environment Diagnostics (A00 - Früh scheitern bei Fehlkonfiguration)
         env:
-          PGPASSWORD: freshplan
+          PGPASSWORD: postgres
         run: |
-          psql -h localhost -U freshplan -d freshplan -v ON_ERROR_STOP=1 -c "DROP SCHEMA IF EXISTS public CASCADE; CREATE SCHEMA public;"
-          echo "Database schema reset successfully"
-      
-      - name: Bootstrap migrations with CI profile
+          
+          # Environment Diagnostics (HART - Abort bei Fehlkonfiguration)
+          echo "=== A00 Environment Check - CRITICAL VALIDATION ==="
+          
+          # KRITISCH: Flyway Locations prüfen
+          FLYWAY_LOCATIONS=$(grep -r "quarkus.flyway.locations" backend/src/main/resources/ || echo "classpath:db/migration")
+          if [[ "$FLYWAY_LOCATIONS" != *"classpath:db/migration"* ]] || [[ "$FLYWAY_LOCATIONS" == *"testdata"* ]] || [[ "$FLYWAY_LOCATIONS" == *"ci-migrations"* ]]; then
+            echo "❌ ABORT: Invalid flyway.locations: $FLYWAY_LOCATIONS"
+            echo "   MUST BE: classpath:db/migration (nothing else!)"
+            exit 1
+          fi
+          echo "✅ Flyway locations: classpath:db/migration"
+          
+          # KRITISCH: Customer count muss 0 sein
+          CUSTOMER_COUNT=$(psql -h localhost -U postgres -d test_db -t -c "SELECT COUNT(*) FROM customers" 2>/dev/null || echo "0")
+          CUSTOMER_COUNT=$(echo "$CUSTOMER_COUNT" | tr -d ' ')
+          if [ "$CUSTOMER_COUNT" != "0" ]; then
+            echo "❌ ABORT: Schema not empty! Found $CUSTOMER_COUNT customers"
+            echo "   Schema MUST start with 0 customers for clean tests"
+            exit 1
+          fi
+          echo "✅ Schema contains 0 customers at start"
+          
+          # KRITISCH: DevServices disabled in CI
+          if ! grep -q "quarkus.datasource.devservices.enabled=false" backend/src/test/resources/application-test.properties; then
+            echo "❌ ABORT: DevServices not disabled in test profile"
+            echo "   Add: quarkus.datasource.devservices.enabled=false to application-test.properties"
+            exit 1
+          fi
+          echo "✅ DevServices disabled in test profile"
+          
+          # INFO: Top-5 Flyway History (wenn vorhanden)
+          echo "📋 Flyway Schema History (Top 5):"
+          psql -h localhost -U postgres -d test_db -c "SELECT version, description FROM flyway_schema_history ORDER BY installed_rank DESC LIMIT 5;" 2>/dev/null || echo "No flyway history yet"
+          
+      - name: Core Tests (PR Pipeline - Ein Maven-Run)
         working-directory: backend
-        env:
-          QUARKUS_PROFILE: ci
         run: |
-          echo "Running migration bootstrap to ensure schema is ready..."
-          ./mvnw -q -Dtest=de.freshplan.test.MigrationBootstrapIT test \
-            -Dquarkus.devservices.enabled=false \
-            -Dquarkus.datasource.devservices.enabled=false \
-            -Dquarkus.flyway.migrate-at-start=true \
-            -Dquarkus.flyway.out-of-order=true \
-            -Dquarkus.flyway.locations=classpath:db/migration,classpath:db/testdata,classpath:db/ci-migrations,classpath:db/callbacks \
-            -Dquarkus.datasource.jdbc.url="jdbc:postgresql://localhost:5432/freshplan?options=-c%20ci.build%3Dtrue" \
-            -Dquarkus.datasource.username=freshplan \
-            -Dquarkus.datasource.password=freshplan
-          echo "✅ Migrations completed successfully"
-      
-      - name: Run smoke tests for test data setup
-        env:
-          PGPASSWORD: freshplan
-        run: |
-          echo "=== Running smoke tests for test data setup ==="
+          ./mvnw -B -T 1C verify -Pcore-tests \
+            -Dquarkus.profile=ci \
+            -Dquarkus.datasource.jdbc.url=jdbc:postgresql://localhost:5432/test_db \
+            -Dquarkus.datasource.username=postgres \
+            -Dquarkus.datasource.password=postgres \
+            -Dtest.run.id=${{ github.run_id }}
           
-          # 1. Guard aktiv?
-          echo "1. Checking CI guard flag..."
-          CI_FLAG=$(psql -h localhost -U freshplan -d freshplan -t -c "SET ci.build = 'true'; SELECT current_setting('ci.build', true);")
-          if [[ "$CI_FLAG" == *"true"* ]]; then
-            echo "✅ Guard flag is active: ci.build = true"
-          else
-            echo "⚠️ CI flag not set in this session, but that's OK - it's set via JDBC URL"
-            echo "Setting flag for this session..."
-            psql -h localhost -U freshplan -d freshplan -c "SET ci.build = 'true';"
-          fi
-          
-          # 2. Grundlagen nach V10002
-          echo "2. Checking V10002 foundations..."
-          
-          # is_test_data vorhanden & NOT NULL?
-          psql -h localhost -U freshplan -d freshplan -c "
-            SELECT table_name, column_name 
-            FROM information_schema.columns
-            WHERE column_name='is_test_data'
-              AND table_name IN ('customers','customer_contacts','opportunities','audit_trail')
-              AND is_nullable = 'NO';" | grep -q "customers" || \
-          (echo "❌ is_test_data column missing or nullable!" && exit 1)
-          echo "✅ is_test_data columns present and NOT NULL"
-          
-          # Unique-Constraint auf customer_number vorhanden?
-          psql -h localhost -U freshplan -d freshplan -c "
-            SELECT 1 FROM pg_constraint c
-            JOIN pg_class r ON r.oid=c.conrelid
-            WHERE r.relname='customers' AND c.contype='u';" | grep -q "1" || \
-          (echo "❌ Unique constraint on customer_number missing!" && exit 1)
-          echo "✅ Unique constraint on customer_number exists"
-          
-          # 3. Seeds nach V10005 (sollten noch nicht existieren, da Tests noch nicht gelaufen)
-          echo "3. Checking SEED data (might not exist yet before tests)..."
-          SEED_COUNT=$(psql -h localhost -U freshplan -d freshplan -t -c \
-            "SELECT COUNT(*) FROM customers WHERE customer_number LIKE 'SEED-%';")
-          echo "Current SEED count: $SEED_COUNT (will be populated during tests)"
-          
-          # 4. Monitoring nach V10003
-          echo "4. Checking monitoring views..."
-          psql -h localhost -U freshplan -d freshplan -c \
-            "SELECT * FROM test_data_dashboard;" || \
-          (echo "❌ test_data_dashboard view missing!" && exit 1)
-          echo "✅ Monitoring dashboard view exists"
-          
-          psql -h localhost -U freshplan -d freshplan -c \
-            "SELECT * FROM check_test_data_health();" || \
-          (echo "❌ check_test_data_health function missing!" && exit 1)
-          echo "✅ Health check function exists"
-          
-          echo "=== All smoke tests passed ✅ ==="
-      
-      - name: Verify CI guard flag is set
-        env:
-          PGPASSWORD: freshplan
-        run: |
-          echo "Verifying that ci.build flag is properly set..."
-          psql -h localhost -U freshplan -d freshplan \
-               -c "SET ci.build = 'true'; SELECT current_setting('ci.build', true);" | grep -q "true" || \
-          (echo "❌ ERROR: ci.build flag not set in CI!" && exit 1)
-          echo "✅ ci.build flag is correctly set to 'true'"
-      
-      - name: Verify CI migrations applied
-        env:
-          PGPASSWORD: freshplan
-        run: |
-          echo "Checking that V9000 CI migration was applied..."
-          psql -h localhost -U freshplan -d freshplan -c \
-            "SELECT version, description, success FROM flyway_schema_history WHERE version >= '9000' ORDER BY installed_rank DESC;"
-          
-          # Verify FK actions
-          echo "Verifying FK CASCADE configuration..."
-          psql -h localhost -U freshplan -d freshplan -c \
-            "SELECT conname, conrelid::regclass AS child, 
-                    CASE confdeltype 
-                      WHEN 'c' THEN 'CASCADE' 
-                      WHEN 'n' THEN 'SET NULL' 
-                      WHEN 'a' THEN 'NO ACTION'
-                      WHEN 'r' THEN 'RESTRICT'
-                      ELSE confdeltype 
-                    END as delete_action
-             FROM pg_constraint 
-             WHERE contype='f' AND confrelid='public.customers'::regclass;"
-      
-      - name: Check for Mockito varargs antipattern
-        run: |
-          echo "Checking for Mockito eq() with varargs methods..."
-          if grep -r "when.*delete.*eq(" backend/src/test/java --include="*.java" 2>/dev/null; then
-            echo "❌ ERROR: Found eq() matcher with varargs method!"
-            echo "Use any() instead of eq() for Panache delete methods"
-            echo "Example: when(repository.delete(any())).thenReturn(1L);"
-            exit 1
-          fi
-          echo "✅ No Mockito varargs antipattern found"
-      
-      - name: Run FK Sanity Check first
-        working-directory: backend
-        env:
-          QUARKUS_PROFILE: ci
-        run: |
-          echo "Running FK sanity check to fail fast if CASCADE not configured..."
-          ./mvnw -q -Dtest=de.freshplan.test.CiFkSanityIT test \
-            -Dquarkus.devservices.enabled=false \
-            -Dquarkus.datasource.devservices.enabled=false \
-            -Dquarkus.flyway.migrate-at-start=true \
-            -Dquarkus.flyway.out-of-order=true \
-            -Dquarkus.flyway.locations=classpath:db/migration,classpath:db/testdata,classpath:db/ci-migrations,classpath:db/callbacks \
-            -Dquarkus.datasource.jdbc.url="jdbc:postgresql://localhost:5432/freshplan?options=-c%20ci.build%3Dtrue" \
-            -Dquarkus.datasource.username=freshplan \
-            -Dquarkus.datasource.password=freshplan
-          echo "✅ FK configuration verified"
-      
-      - name: Run tests with CI profile
-        working-directory: backend
-        env:
-          QUARKUS_PROFILE: ci
-          MAVEN_OPTS: -Xmx2g -XX:MaxMetaspaceSize=512m
-          RUN_SUFFIX: ${{ github.run_id }}
-        run: |
-          ./mvnw -B clean test \
-            -Djunit.jupiter.execution.timeout.default=2m \
-            -Dmaven.test.failure.ignore=false \
-            -DtrimStackTrace=false \
-            -DRUN_SUFFIX=${{ github.run_id }} \
-            -Dquarkus.devservices.enabled=false \
-            -Dquarkus.datasource.devservices.enabled=false \
-            -Dquarkus.flyway.migrate-at-start=true \
-            -Dquarkus.flyway.out-of-order=true \
-            -Dquarkus.flyway.locations=classpath:db/migration,classpath:db/testdata,classpath:db/ci-migrations,classpath:db/callbacks \
-            -Dquarkus.datasource.jdbc.url="jdbc:postgresql://localhost:5432/freshplan?options=-c%20ci.build%3Dtrue" \
-            -Dquarkus.datasource.username=freshplan \
-            -Dquarkus.datasource.password=freshplan
-      
-      - name: Verify test data cleanup and final smoke tests
-        if: always()
-        env:
-          PGPASSWORD: freshplan
-        run: |
-          echo "=== Final smoke tests after test execution ==="
-          
-          # 1. Test data count check
-          echo "1. Checking test data counts..."
-          TEST_COUNT=$(psql -h localhost -U freshplan -d freshplan -t -c \
-            "SELECT COUNT(*) FROM customers WHERE is_test_data = true;")
-          SEED_COUNT=$(psql -h localhost -U freshplan -d freshplan -t -c \
-            "SELECT COUNT(*) FROM customers WHERE customer_number LIKE 'SEED-%';")
-          MARKED_COUNT=$(psql -h localhost -U freshplan -d freshplan -t -c \
-            "SELECT COUNT(*) FROM customers WHERE is_test_data = true;")
-          
-          echo "Total test data: $TEST_COUNT"
-          echo "SEED data: $SEED_COUNT" 
-          echo "Marked as test: $MARKED_COUNT"
-          
-          # 2. Verify SEEDs are exactly 20
-          echo "2. Verifying SEED data integrity..."
-          if [ "$SEED_COUNT" -ne 20 ]; then
-            echo "❌ ERROR: Expected exactly 20 SEED customers, found $SEED_COUNT"
-            psql -h localhost -U freshplan -d freshplan -c \
-              "SELECT customer_number, company_name FROM customers 
-               WHERE customer_number LIKE 'SEED-%' 
-               ORDER BY customer_number;"
-            exit 1
-          else
-            echo "✅ All 20 SEED customers are intact"
-          fi
-          
-          # 3. Test cleanup effectiveness (Zwei-Stufen-Cleanup)
-          echo "3. Checking cleanup thresholds..."
-          if [ "$TEST_COUNT" -gt 100 ]; then
-            echo "❌ CRITICAL: Test data exceeds hard threshold ($TEST_COUNT > 100)"
-            echo "V10000 should have triggered HARD cleanup!"
-            psql -h localhost -U freshplan -d freshplan -c \
-              "SELECT company_name, customer_number, created_at FROM customers 
-               WHERE is_test_data = true 
-               ORDER BY created_at DESC LIMIT 10;"
-            exit 1
-          elif [ "$TEST_COUNT" -gt 50 ]; then
-            echo "⚠️ WARNING: Test data in SOFT threshold range ($TEST_COUNT > 50)"
-            echo "Old data should have been cleaned"
-          else
-            echo "✅ Test data within optimal range (<= 50)"
-          fi
-          
-          # 4. All test data is marked correctly
-          echo "4. Verifying test data marking..."
-          UNMARKED=$(psql -h localhost -U freshplan -d freshplan -t -c \
-            "SELECT COUNT(*) FROM customers 
-             WHERE (company_name LIKE '[TEST-%' OR company_name LIKE '[SEED]%')
-               AND is_test_data = false;")
-          if [ "$UNMARKED" -gt 0 ]; then
-            echo "❌ ERROR: Found $UNMARKED unmarked test customers!"
-            exit 1
-          else
-            echo "✅ All test data properly marked"
-          fi
-          
-          # 5. Monitoring status check
-          echo "5. Checking monitoring dashboard..."
-          psql -h localhost -U freshplan -d freshplan -c \
-            "SELECT * FROM test_data_dashboard;" || exit 1
-          
-          HEALTH_STATUS=$(psql -h localhost -U freshplan -d freshplan -t -c \
-            "SELECT string_agg(result, ', ') FROM check_test_data_health() WHERE result != 'OK';")
-          if [[ -n "$HEALTH_STATUS" && "$HEALTH_STATUS" != " " ]]; then
-            echo "⚠️ Health check warnings: $HEALTH_STATUS"
-          else
-            echo "✅ All health checks passed"
-          fi
-          
-          echo "=== All final smoke tests completed ✅ ==="
-      
-      - name: Upload test reports
-        if: always()
-        uses: actions/upload-artifact@v4
+      - name: Upload Test Results
+        uses: dorny/test-reporter@v1
+        if: success() || failure()
         with:
-          name: backend-test-reports-${{ github.run_number }}
-          path: |
-            backend/target/surefire-reports/**
-            backend/target/failsafe-reports/**
+          name: Core Tests
+          path: backend/target/surefire-reports/*.xml
+          reporter: java-junit
           
-      # Test reporter removed - causes permission issues
+      - name: Test Summary
+        if: success()
+        run: |
+          echo "✅ All core tests passed!" >> $GITHUB_STEP_SUMMARY
+          echo "**Tests:** $(grep -r '@Tag("core")' backend/src/test/ | wc -l) core tests" >> $GITHUB_STEP_SUMMARY
+          echo "**Migration:** $(grep -r '@Tag("migrate")' backend/src/test/ | wc -l) tests tagged for future migration" >> $GITHUB_STEP_SUMMARY

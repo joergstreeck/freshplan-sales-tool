@@ -25,7 +25,7 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
+import org.junit.jupiter.api.Tag;
 /**
  * Integration Test for CustomerTimelineService CQRS Implementation.
  *
@@ -40,7 +40,7 @@ import org.junit.jupiter.api.Test;
  * @since Phase 14.3 - Feature Flag Switching Tests
  */
 @QuarkusTest
-@TestProfile(TimelineCQRSTestProfile.class)
+@Tag("migrate")@TestProfile(TimelineCQRSTestProfile.class)
 @TestSecurity(
     user = "testuser",
     roles = {"admin", "manager", "sales"})

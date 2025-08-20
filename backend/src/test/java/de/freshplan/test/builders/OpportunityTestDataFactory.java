@@ -7,6 +7,7 @@ import de.freshplan.domain.user.entity.User;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Test data factory for Opportunity entities. Provides builder pattern for creating test
@@ -14,8 +15,12 @@ import java.time.LocalDateTime;
  *
  * @author Claude
  * @since Migration Phase 4
+ * @since Phase 2B - Enhanced with unique name generation and audit fields
  */
 public class OpportunityTestDataFactory {
+
+  // KOLLISIONSFREIE ID-GENERIERUNG - Thread-Safe & CI-kompatibel
+  private static final AtomicLong OPP_SEQ = new AtomicLong();
 
   /** Create a new builder instance. */
   public static Builder builder() {
@@ -24,7 +29,7 @@ public class OpportunityTestDataFactory {
 
   public static class Builder {
     // Default values
-    private String name = "Test Opportunity";
+    private String name;
     private String description;
     private OpportunityStage stage = OpportunityStage.NEW_LEAD;
     private Customer customer;
@@ -40,6 +45,30 @@ public class OpportunityTestDataFactory {
     private String lossReason;
     private BigDecimal actualValue;
     private LocalDate actualCloseDate;
+
+    /**
+     * Generiert eindeutige Opportunity-Namen für Tests.
+     * Format: TEST Opportunity {RUN_ID}-{SEQ}
+     */
+    private static String generateUniqueName() {
+      String runId = System.getProperty("test.run.id", 
+          System.getenv().getOrDefault("GITHUB_RUN_ID", "LOCAL"));
+      long seq = OPP_SEQ.incrementAndGet();
+      return "TEST Opportunity " + runId + "-" + String.format("%03d", seq);
+    }
+
+    /**
+     * Builder-Konstruktor mit intelligenten Defaults
+     */
+    public Builder() {
+      this.name = generateUniqueName();
+      this.stage = OpportunityStage.NEW_LEAD;
+      this.expectedValue = BigDecimal.valueOf(10000);
+      this.probability = 25; // Standard für NEW_LEAD
+      this.expectedCloseDate = LocalDate.now().plusDays(30);
+      this.source = "TEST";
+      this.description = "Test opportunity created for automated testing";
+    }
 
     /** Set the opportunity name. */
     public Builder withName(String name) {
@@ -143,6 +172,11 @@ public class OpportunityTestDataFactory {
      * @return The built opportunity entity
      */
     public Opportunity build() {
+      // Create mock assignedTo user if not provided
+      if (assignedTo == null) {
+        assignedTo = createMockUser();
+      }
+      
       // Use constructor for required fields
       Opportunity opportunity = new Opportunity(name, stage, assignedTo);
 
@@ -157,6 +191,12 @@ public class OpportunityTestDataFactory {
         opportunity.setProbability(probability);
       }
 
+      // Test-Data-Flag setzen falls Feld existiert
+      setTestDataFlagIfExists(opportunity);
+
+      // Audit-Felder für Tests setzen falls vorhanden
+      setAuditFieldsIfExists(opportunity);
+
       // Fields that don't exist in Opportunity entity - commented out
       // opportunity.setSource(source);
       // opportunity.setCompetitorInfo(competitorInfo);
@@ -168,6 +208,73 @@ public class OpportunityTestDataFactory {
       // opportunity.setActualCloseDate(actualCloseDate);
 
       return opportunity;
+    }
+
+    /**
+     * Setzt isTestData=true falls das Feld existiert.
+     * Failsafe approach für optionales Feld.
+     */
+    private void setTestDataFlagIfExists(Opportunity opportunity) {
+      try {
+        java.lang.reflect.Method setter = opportunity.getClass().getMethod("setIsTestData", Boolean.class);
+        setter.invoke(opportunity, true);
+      } catch (Exception e) {
+        // Field doesn't exist - that's ok
+        // Opportunity hat wahrscheinlich kein isTestData Feld
+      }
+    }
+
+    /**
+     * Setzt Audit-Felder falls sie existieren.
+     * Failsafe approach für optionale Felder.
+     */
+    private void setAuditFieldsIfExists(Opportunity opportunity) {
+      LocalDateTime now = LocalDateTime.now();
+      String testSystem = "test-system";
+      
+      try {
+        // createdAt
+        java.lang.reflect.Method setCreatedAt = opportunity.getClass().getMethod("setCreatedAt", LocalDateTime.class);
+        setCreatedAt.invoke(opportunity, now);
+      } catch (Exception e) {
+        // Field doesn't exist - ok
+      }
+      
+      try {
+        // createdBy
+        java.lang.reflect.Method setCreatedBy = opportunity.getClass().getMethod("setCreatedBy", String.class);
+        setCreatedBy.invoke(opportunity, testSystem);
+      } catch (Exception e) {
+        // Field doesn't exist - ok
+      }
+      
+      try {
+        // updatedAt
+        java.lang.reflect.Method setUpdatedAt = opportunity.getClass().getMethod("setUpdatedAt", LocalDateTime.class);
+        setUpdatedAt.invoke(opportunity, now);
+      } catch (Exception e) {
+        // Field doesn't exist - ok
+      }
+      
+      try {
+        // updatedBy
+        java.lang.reflect.Method setUpdatedBy = opportunity.getClass().getMethod("setUpdatedBy", String.class);
+        setUpdatedBy.invoke(opportunity, testSystem);
+      } catch (Exception e) {
+        // Field doesn't exist - ok
+      }
+    }
+
+    /**
+     * Create a mock user for opportunities that need an assignedTo user.
+     */
+    private User createMockUser() {
+      // Nutze UserTestDataFactory für konsistente Test-User
+      return UserTestDataFactory.builder()
+          .withUsername("opp-test-user")
+          .withFirstName("Opportunity")
+          .withLastName("TestUser")
+          .build();
     }
 
     /** Build a minimal test opportunity. Convenience method for common test case. */

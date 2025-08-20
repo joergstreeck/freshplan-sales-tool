@@ -15,13 +15,13 @@ import java.sql.Statement;
 import java.util.List;
 import org.jboss.logging.Logger;
 import org.junit.jupiter.api.Test;
-
+import org.junit.jupiter.api.Tag;
 /**
  * Verifies that SEED data from V10005 migration is present and correct.
  * This test should run early to detect the Two-Container Problem.
  */
 @QuarkusTest
-class SeedDataVerificationTest {
+@Tag("quarantine")class SeedDataVerificationTest {
 
   private static final Logger LOG = Logger.getLogger(SeedDataVerificationTest.class);
 

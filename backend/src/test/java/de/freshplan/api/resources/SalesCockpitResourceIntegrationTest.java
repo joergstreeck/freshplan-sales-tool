@@ -7,7 +7,7 @@ import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.security.TestSecurity;
 import jakarta.ws.rs.core.MediaType;
 import org.junit.jupiter.api.Test;
-
+import org.junit.jupiter.api.Tag;
 /**
  * Integration-Tests für die SalesCockpitResource.
  *
@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test;
  * @since 2.0.0
  */
 @QuarkusTest
-@TestSecurity(
+@Tag("migrate")@TestSecurity(
     user = "testuser",
     roles = {"admin", "manager", "sales"})
 class SalesCockpitResourceIntegrationTest {

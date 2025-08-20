@@ -12,14 +12,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
-
+import org.junit.jupiter.api.Tag;
 /**
  * Analysiert ALLE Test-Dateien auf Test-Isolation-Probleme
  *
  * <p>Devise: Sicherheit geht vor Schnelligkeit!
  */
 @QuarkusTest
-public class TestIsolationAnalysisTest {
+@Tag("quarantine")public class TestIsolationAnalysisTest {
 
   @Inject EntityManager em;
 

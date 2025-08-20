@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
-
+import org.junit.jupiter.api.Tag;
 /**
  * Detaillierte Analyse der Test-Daten-Pollution in der Datenbank.
  *
@@ -21,7 +21,7 @@ import org.junit.jupiter.api.Test;
  * Schnelligkeit.
  */
 @QuarkusTest
-public class TestDataPollutionAnalysisTest {
+@Tag("quarantine")public class TestDataPollutionAnalysisTest {
 
   @Inject CustomerRepository customerRepository;
   @Inject OpportunityRepository opportunityRepository;

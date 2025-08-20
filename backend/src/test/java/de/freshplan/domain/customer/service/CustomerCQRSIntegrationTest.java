@@ -21,7 +21,7 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
+import org.junit.jupiter.api.Tag;
 /**
  * CRITICAL Integration Test for Customer CQRS Implementation.
  *
@@ -36,7 +36,7 @@ import org.junit.jupiter.api.Test;
  * @since Phase 14 - Integration Tests
  */
 @QuarkusTest
-@TestProfile(CustomerCQRSTestProfile.class)
+@Tag("core")@TestProfile(CustomerCQRSTestProfile.class)
 @TestSecurity(
     user = "testuser",
     roles = {"admin", "manager", "sales"})

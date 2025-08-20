@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
+import org.junit.jupiter.api.Tag;import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
 /**
@@ -29,7 +29,7 @@ import org.mockito.Mockito;
  * @since Phase 13 CQRS Migration
  */
 @QuarkusTest
-class ContactEventCaptureCommandServiceTest {
+@Tag("migrate")class ContactEventCaptureCommandServiceTest {
 
   @Inject ContactEventCaptureCommandService commandService;
 

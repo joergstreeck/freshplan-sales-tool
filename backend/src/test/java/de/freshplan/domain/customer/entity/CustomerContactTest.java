@@ -15,7 +15,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-
+import org.junit.jupiter.api.Tag;
 /**
  * Unit tests for CustomerContact entity. Tests role management, hierarchy support, and business
  * logic.
@@ -25,7 +25,7 @@ import org.junit.jupiter.api.Test;
  * @since Migration Phase 4 - Quick Wins
  */
 @QuarkusTest
-@DisplayName("CustomerContact Entity Tests")
+@Tag("migrate")@DisplayName("CustomerContact Entity Tests")
 class CustomerContactTest {
 
   @Inject CustomerBuilder customerBuilder;

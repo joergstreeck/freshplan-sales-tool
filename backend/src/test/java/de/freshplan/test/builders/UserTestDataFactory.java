@@ -3,6 +3,7 @@ package de.freshplan.test.builders;
 import de.freshplan.domain.user.entity.User;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Test data factory for User entities. Provides builder pattern for creating test users without
@@ -10,8 +11,12 @@ import java.util.List;
  *
  * @author Claude
  * @since Migration Phase 4 - Quick Wins
+ * @since Phase 2A - Enhanced with collision-free ID generation and isTestData flag
  */
 public class UserTestDataFactory {
+
+  // KOLLISIONSFREIE ID-GENERIERUNG - Thread-Safe & CI-kompatibel
+  private static final AtomicLong SEQ = new AtomicLong();
 
   /** Create a new builder instance. */
   public static Builder builder() {
@@ -25,7 +30,36 @@ public class UserTestDataFactory {
     private String lastName = "User";
     private String email;
     private boolean enabled = true;
+    private boolean isTestData = true; // PFLICHT für alle Test-User
     private List<String> roles = new ArrayList<>();
+
+    /**
+     * Run-ID für eindeutige Test-Identifikation.
+     * Nutzt test.run.id (CI) -> GITHUB_RUN_ID (Fallback) -> "LOCAL"
+     */
+    private static String runId() {
+      return System.getProperty("test.run.id",
+          System.getenv().getOrDefault("GITHUB_RUN_ID", "LOCAL"));
+    }
+
+    /**
+     * Generiert eindeutige User-Identifiers basierend auf Run-ID.
+     * Verhindert Kollisionen bei parallelen Tests.
+     */
+    private void generateUniqueIdentifiers() {
+      String runId = runId();
+      long sequence = SEQ.incrementAndGet();
+      
+      // Email immer unique generieren
+      if (email == null) {
+        email = "test." + runId + "." + sequence + "@test.example.com";
+      }
+      
+      // Username unique machen falls Default verwendet
+      if ("testuser".equals(username)) {
+        username = "testuser_" + runId + "_" + sequence;
+      }
+    }
 
     /**
      * Set the username.
@@ -92,6 +126,19 @@ public class UserTestDataFactory {
     }
 
     /**
+     * Mark as test data (always true for test users).
+     * Note: This is always true regardless of what you set here.
+     *
+     * @param isTestData ignored - always true
+     * @return This builder
+     */
+    public Builder asTestData(boolean isTestData) {
+      // Always true for test users - parameter ignored
+      this.isTestData = true;
+      return this;
+    }
+
+    /**
      * Add a role.
      *
      * @param role Role to add
@@ -120,10 +167,8 @@ public class UserTestDataFactory {
      * @return The built user entity
      */
     public User build() {
-      // Generate email if not set
-      if (email == null && username != null) {
-        email = (username + "@freshplan.de").toLowerCase();
-      }
+      // Generiere eindeutige Identifiers falls nötig
+      generateUniqueIdentifiers();
 
       // Use constructor with parameters
       User user =
@@ -131,7 +176,10 @@ public class UserTestDataFactory {
               username != null ? username : "testuser",
               firstName != null ? firstName : "Test",
               lastName != null ? lastName : "User",
-              email != null ? email : "testuser@freshplan.de");
+              email != null ? email : "testuser@test.example.com");
+
+      // KRITISCH: Immer als Test-User markieren
+      user.setIsTestData(true);
 
       // Set additional fields if available
       if (!roles.isEmpty()) {

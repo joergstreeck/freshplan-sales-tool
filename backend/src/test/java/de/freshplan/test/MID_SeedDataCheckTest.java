@@ -6,13 +6,13 @@ import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
-
+import org.junit.jupiter.api.Tag;
 /**
  * Mid-run check for SEED data to identify when they disappear.
  * This test runs in the middle of the test suite alphabetically.
  */
 @QuarkusTest
-public class MID_SeedDataCheckTest {
+@Tag("quarantine")public class MID_SeedDataCheckTest {
 
   @Inject CustomerRepository customerRepository;
   @Inject EntityManager em;

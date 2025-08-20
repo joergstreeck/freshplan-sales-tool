@@ -4,14 +4,14 @@ import io.agroal.api.AgroalDataSource;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import org.junit.jupiter.api.Test;
-import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.jupiter.api.Tag;import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Smoke test to verify SEED data is present after migrations.
  * Runs early in test suite (A01) to catch issues immediately.
  */
 @QuarkusTest
-public class A01_SeedSmokeTest {
+@Tag("migrate")public class A01_SeedSmokeTest {
   
   @Inject 
   AgroalDataSource ds;

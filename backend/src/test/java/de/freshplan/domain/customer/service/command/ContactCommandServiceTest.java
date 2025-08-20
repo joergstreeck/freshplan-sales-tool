@@ -25,13 +25,13 @@ import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
+import org.junit.jupiter.api.Tag;
 /**
  * Unit tests for ContactCommandService. Verifies that the service behaves EXACTLY like
  * ContactService for command operations.
  */
 @QuarkusTest
-class ContactCommandServiceTest {
+@Tag("core")class ContactCommandServiceTest {
 
   @Inject ContactCommandService commandService;
 

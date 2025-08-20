@@ -27,11 +27,11 @@ import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockedStatic;
+import org.junit.jupiter.api.Tag;import org.mockito.MockedStatic;
 
 /** Unit tests for UserCommandService. Tests all command operations with mocked dependencies. */
 @QuarkusTest
-class UserCommandServiceTest {
+@Tag("core")class UserCommandServiceTest {
 
   @Inject UserCommandService commandService;
 

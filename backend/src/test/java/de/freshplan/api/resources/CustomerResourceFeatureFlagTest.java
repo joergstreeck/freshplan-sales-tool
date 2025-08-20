@@ -17,7 +17,7 @@ import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
+import org.junit.jupiter.api.Tag;import org.mockito.Mockito;
 
 /**
  * Feature flag tests for CustomerResource. Verifies that the correct service is called based on the
@@ -27,7 +27,7 @@ import org.mockito.Mockito;
  * flag and per-use-case flags.
  */
 @QuarkusTest
-@TestSecurity(
+@Tag("migrate")@TestSecurity(
     user = "testuser",
     roles = {"admin", "manager", "sales"})
 @DisplayName("CustomerResource Feature Flag Tests")

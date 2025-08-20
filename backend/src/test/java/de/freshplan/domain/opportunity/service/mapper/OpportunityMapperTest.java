@@ -18,7 +18,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-
+import org.junit.jupiter.api.Tag;
 /**
  * Unit Tests für OpportunityMapper - DTO Mapping
  *
@@ -29,7 +29,7 @@ import org.junit.jupiter.api.Test;
  * @since 2.0.0
  */
 @QuarkusTest
-public class OpportunityMapperTest {
+@Tag("core")public class OpportunityMapperTest {
 
   @Inject OpportunityMapper opportunityMapper;
 

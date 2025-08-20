@@ -21,7 +21,7 @@ import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
+import org.junit.jupiter.api.Tag;
 /**
  * Integration Tests für Phase 12.3 - HelpSystemResource mit CQRS
  *
@@ -32,7 +32,7 @@ import org.junit.jupiter.api.Test;
  * Error Handling und Validation - Feature Flag Kompatibilität
  */
 @QuarkusTest
-@TestProfile(HelpSystemResourceIntegrationTest.CQRSTestProfile.class)
+@Tag("migrate")@TestProfile(HelpSystemResourceIntegrationTest.CQRSTestProfile.class)
 @DisplayName("Phase 12.3: HelpSystemResource CQRS Integration Tests")
 class HelpSystemResourceIntegrationTest {
 

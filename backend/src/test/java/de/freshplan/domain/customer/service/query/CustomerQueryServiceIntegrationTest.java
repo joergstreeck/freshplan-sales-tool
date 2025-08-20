@@ -21,7 +21,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
-
+import org.junit.jupiter.api.Tag;
 /**
  * Integration tests for CustomerQueryService.
  *
@@ -30,7 +30,7 @@ import org.junit.jupiter.api.Test;
  * switching via feature flag.
  */
 @QuarkusTest
-class CustomerQueryServiceIntegrationTest {
+@Tag("core")class CustomerQueryServiceIntegrationTest {
 
   @Inject CustomerQueryService queryService;
 

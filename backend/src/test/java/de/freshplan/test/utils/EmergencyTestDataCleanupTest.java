@@ -11,7 +11,7 @@ import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import org.jboss.logging.Logger;
 import org.junit.jupiter.api.Test;
-
+import org.junit.jupiter.api.Tag;
 /**
  * Emergency test to analyze and clean up test data pollution.
  *
@@ -21,7 +21,7 @@ import org.junit.jupiter.api.Test;
  * @since Phase 14.3 - Test Data Management Emergency
  */
 @QuarkusTest
-@TestTransaction // CI-Fix: Rollback nach Test für Database Growth Check
+@Tag("quarantine")@TestTransaction // CI-Fix: Rollback nach Test für Database Growth Check
 public class EmergencyTestDataCleanupTest {
 
   private static final Logger LOG = Logger.getLogger(EmergencyTestDataCleanupTest.class);

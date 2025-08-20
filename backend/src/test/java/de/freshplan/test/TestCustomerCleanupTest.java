@@ -11,14 +11,14 @@ import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import java.util.List;
 import org.junit.jupiter.api.Test;
-
+import org.junit.jupiter.api.Tag;
 /**
  * Bereinigt die Test-Kunden sicher von 1090 auf 74
  *
  * <p>WICHTIG: Nur Test-Kunden löschen, Original-Daten behalten!
  */
 @QuarkusTest
-public class TestCustomerCleanupTest {
+@Tag("quarantine")public class TestCustomerCleanupTest {
 
   @Inject EntityManager em;
 

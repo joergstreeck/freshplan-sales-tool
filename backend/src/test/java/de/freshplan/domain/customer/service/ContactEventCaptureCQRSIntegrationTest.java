@@ -29,7 +29,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
+import org.junit.jupiter.api.Tag;
 /**
  * Integration Test for ContactEventCaptureService CQRS Implementation.
  *
@@ -44,7 +44,7 @@ import org.junit.jupiter.api.Test;
  * @since Phase 14.3 - Feature Flag Switching Tests
  */
 @QuarkusTest
-@TestProfile(ContactEventCaptureCQRSTestProfile.class)
+@Tag("migrate")@TestProfile(ContactEventCaptureCQRSTestProfile.class)
 @TestSecurity(
     user = "testuser",
     roles = {"admin", "sales"})

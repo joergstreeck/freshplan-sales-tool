@@ -31,7 +31,7 @@ import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
+import org.junit.jupiter.api.Tag;import org.mockito.ArgumentCaptor;
 
 /**
  * Mock-basierte Unit Tests für OpportunityService
@@ -39,7 +39,7 @@ import org.mockito.ArgumentCaptor;
  * <p>Diese vereinfachte Version testet die Core Business Logic ohne echte Datenbankzugriffe.
  */
 @QuarkusTest
-@TestSecurity(
+@Tag("core")@TestSecurity(
     user = "testuser",
     roles = {"admin", "manager", "sales"})
 @DisplayName("OpportunityService Tests (Mock-based)")

@@ -8,10 +8,10 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import org.jboss.logging.Logger;
 import org.junit.jupiter.api.Test;
-
+import org.junit.jupiter.api.Tag;
 /** Simple test to verify SEED data exists. */
 @QuarkusTest
-class SimpleSeedTest {
+@Tag("quarantine")class SimpleSeedTest {
 
   private static final Logger LOG = Logger.getLogger(SimpleSeedTest.class);
 

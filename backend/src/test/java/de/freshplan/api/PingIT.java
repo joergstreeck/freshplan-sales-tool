@@ -1,5 +1,6 @@
 package de.freshplan.api;
 
+import org.junit.jupiter.api.Tag;
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 
 /**
@@ -11,7 +12,7 @@ import io.quarkus.test.junit.QuarkusIntegrationTest;
  * <p>All tests from PingResourceTest are inherited and run against the full application stack.
  */
 @QuarkusIntegrationTest
-class PingIT extends PingResourceTest {
+@Tag("migrate")class PingIT extends PingResourceTest {
   // All tests inherited from PingResourceTest
   // They will run with real database and containers
 }

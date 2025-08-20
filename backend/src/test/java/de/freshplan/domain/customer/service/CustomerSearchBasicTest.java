@@ -15,14 +15,14 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
+import org.junit.jupiter.api.Tag;
 /**
  * Integration tests for basic search functionality of CustomerSearchService.
  *
  * <p>Tests basic search operations without filters, global search, and empty results.
  */
 @QuarkusTest
-@DisplayName("CustomerSearchService - Basic Search Tests")
+@Tag("migrate")@DisplayName("CustomerSearchService - Basic Search Tests")
 class CustomerSearchBasicTest {
 
   @Inject CustomerSearchService searchService;

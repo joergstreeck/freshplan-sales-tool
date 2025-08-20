@@ -10,7 +10,7 @@ import jakarta.persistence.EntityManager;
 import java.util.List;
 import org.jboss.logging.Logger;
 import org.junit.jupiter.api.Test;
-
+import org.junit.jupiter.api.Tag;
 /**
  * Direct database cleanup to remove ALL test customers.
  *
@@ -18,7 +18,7 @@ import org.junit.jupiter.api.Test;
  * @since Emergency Cleanup
  */
 @QuarkusTest
-@TestTransaction // CI-Fix: Rollback nach Test für Database Growth Check
+@Tag("quarantine")@TestTransaction // CI-Fix: Rollback nach Test für Database Growth Check
 public class DirectDatabaseCleanupTest {
 
   private static final Logger LOG = Logger.getLogger(DirectDatabaseCleanupTest.class);

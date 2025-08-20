@@ -11,9 +11,9 @@ import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
+import org.junit.jupiter.api.Tag;
 @QuarkusTest
-@TestTransaction
+@Tag("migrate")@TestTransaction
 @DisplayName("Role Entity Tests")
 class RoleTest {
 

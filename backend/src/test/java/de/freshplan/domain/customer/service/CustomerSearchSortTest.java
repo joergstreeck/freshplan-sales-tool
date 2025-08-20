@@ -14,14 +14,14 @@ import java.math.BigDecimal;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
+import org.junit.jupiter.api.Tag;
 /**
  * Integration tests for sorting functionality of CustomerSearchService.
  *
  * <p>Tests custom sort criteria, multiple sort fields, and sort direction handling.
  */
 @QuarkusTest
-@DisplayName("CustomerSearchService - Sort Tests")
+@Tag("migrate")@DisplayName("CustomerSearchService - Sort Tests")
 class CustomerSearchSortTest {
 
   @Inject CustomerSearchService searchService;
