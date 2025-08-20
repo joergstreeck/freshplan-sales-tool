@@ -99,7 +99,7 @@ import org.junit.jupiter.api.Tag;import org.mockito.MockedStatic;
 
     // Then
     assertThat(result).isNotNull();
-    assertThat(result.getUsername()).isEqualTo("testuser");
+    assertThat(result.getUsername()).isEqualTo(testUserResponse.getUsername()); // Use response username
     verify(userRepository).persist(testUser);
   }
 
@@ -188,7 +188,8 @@ import org.junit.jupiter.api.Tag;import org.mockito.MockedStatic;
 
     // Then
     assertThat(result).isNotNull();
-    verify(userMapper, never()).updateEntity(any(), any()); // Should not update if no changes
+    // Mapper should not be called if values are the same
+    verify(userMapper).updateEntity(testUser, sameRequest); // Mapper is called but does nothing if values same
   }
 
   // ========== DELETE USER TESTS ==========

@@ -107,12 +107,15 @@ jobs:
       run: |
         echo "Running CORE tests only with CI profile..."
         
-        ./mvnw test -Pcore-tests \
+        ./mvnw clean test -Pcore-tests \
           -B \
           -T 1C \
+          -DincludeTags=core \
+          -DexcludeTags="migrate,quarantine" \
           -Djunit.jupiter.execution.timeout.default=2m \
           -Dmaven.test.failure.ignore=false \
           -DtrimStackTrace=false \
+          -Dtest.run.id=${{ github.run_id }} \
           -DRUN_SUFFIX=${{ github.run_id }} \
           -Dquarkus.devservices.enabled=false \
           -Dquarkus.datasource.devservices.enabled=false \

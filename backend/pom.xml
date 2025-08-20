@@ -299,20 +299,23 @@
     <!-- Core-Suite für PRs (Production Pipeline) -->
     <profile>
       <id>core-tests</id>
-      <properties>
-        <!-- Nur stabile Tests, keine quarantine -->
-        <junit.jupiter.tags>core &amp; !quarantine</junit.jupiter.tags>
-      </properties>
       <build>
         <plugins>
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-surefire-plugin</artifactId>
+            <version>3.2.5</version>
             <configuration>
+              <!-- Nur Core-Tests ausführen -->
+              <groups>core</groups>
+              <!-- Sicherheitshalber ausschließen -->
+              <excludedGroups>migrate,quarantine</excludedGroups>
+              <!-- Für saubere Fehlersuche -->
+              <trimStackTrace>false</trimStackTrace>
+              <!-- JUnit Platform Properties -->
               <properties>
                 <configurationParameters>
                   junit.jupiter.testinstance.lifecycle.default=per_method
-                  junit.jupiter.tags=${junit.jupiter.tags}
                 </configurationParameters>
               </properties>
             </configuration>
@@ -324,20 +327,23 @@
     <!-- Migration-Suite für Nightly (Non-blocking) -->
     <profile>
       <id>migrate-tests</id>
-      <properties>
-        <!-- Tests in Migration + bekannt problematische -->
-        <junit.jupiter.tags>migrate | quarantine</junit.jupiter.tags>
-      </properties>
       <build>
         <plugins>
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-surefire-plugin</artifactId>
+            <version>3.2.5</version>
             <configuration>
+              <!-- Tests in Migration + bekannt problematische -->
+              <groups>migrate,quarantine</groups>
+              <!-- Core-Tests ausschließen -->
+              <excludedGroups>core</excludedGroups>
+              <!-- Für saubere Fehlersuche -->
+              <trimStackTrace>false</trimStackTrace>
+              <!-- JUnit Platform Properties -->
               <properties>
                 <configurationParameters>
                   junit.jupiter.testinstance.lifecycle.default=per_method
-                  junit.jupiter.tags=${junit.jupiter.tags}
                 </configurationParameters>
               </properties>
             </configuration>

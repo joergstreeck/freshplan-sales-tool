@@ -49,15 +49,25 @@ public class UserTestDataFactory {
     private void generateUniqueIdentifiers() {
       String runId = runId();
       long sequence = SEQ.incrementAndGet();
+      String uniqueSuffix = runId + "_" + sequence;
       
-      // Email immer unique generieren
+      // Email IMMER unique machen - auch wenn explizit gesetzt
+      // Füge suffix hinzu um Kollisionen zu vermeiden
       if (email == null) {
-        email = "test." + runId + "." + sequence + "@test.example.com";
+        email = "test." + uniqueSuffix + "@test.example.com";
+      } else if (!email.contains(uniqueSuffix)) {
+        // Explizit gesetzte Email auch unique machen
+        String localPart = email.substring(0, email.indexOf('@'));
+        String domain = email.substring(email.indexOf('@'));
+        email = localPart + "." + uniqueSuffix + domain;
       }
       
       // Username unique machen falls Default verwendet
       if ("testuser".equals(username)) {
-        username = "testuser_" + runId + "_" + sequence;
+        username = "testuser_" + uniqueSuffix;
+      } else if (!username.contains(uniqueSuffix)) {
+        // Explizit gesetzten Username auch unique machen
+        username = username + "_" + uniqueSuffix;
       }
     }
 

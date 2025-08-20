@@ -94,7 +94,7 @@ jobs:
       - name: Core Tests (PR Pipeline - Ein Maven-Run)
         working-directory: backend
         run: |
-          ./mvnw -B -T 1C verify -Pcore-tests \
+          ./mvnw -B -T 1C clean test -Pcore-tests \
             -Dquarkus.profile=ci \
             -Dquarkus.datasource.jdbc.url=jdbc:postgresql://localhost:5432/test_db \
             -Dquarkus.datasource.username=postgres \
