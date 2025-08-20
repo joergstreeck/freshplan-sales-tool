@@ -6,7 +6,10 @@ import de.freshplan.domain.opportunity.service.dto.CreateOpportunityRequest;
 import de.freshplan.domain.opportunity.service.dto.OpportunityResponse;
 import de.freshplan.domain.opportunity.service.dto.PipelineOverviewResponse;
 import de.freshplan.domain.opportunity.service.dto.UpdateOpportunityRequest;
+import de.freshplan.infrastructure.security.SecurityAudit;
 import io.quarkus.panache.common.Page;
+import jakarta.annotation.security.PermitAll;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
@@ -29,7 +32,7 @@ import org.slf4j.LoggerFactory;
 @Path("/api/opportunities")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-// @Authenticated // Temporarily disabled for integration tests
+@SecurityAudit
 public class OpportunityResource {
 
   private static final Logger logger = LoggerFactory.getLogger(OpportunityResource.class);
@@ -46,7 +49,7 @@ public class OpportunityResource {
    * <p>POST /api/opportunities
    */
   @POST
-  // @RolesAllowed({"admin", "manager", "sales"})
+  @RolesAllowed({"admin", "manager", "sales"})
   public Response createOpportunity(@Valid CreateOpportunityRequest request) {
     logger.info("Creating opportunity: {}", request.getName());
 
@@ -60,7 +63,7 @@ public class OpportunityResource {
    * <p>GET /api/opportunities?page=0&size=20
    */
   @GET
-  // @RolesAllowed({"admin", "manager", "sales"})
+  @RolesAllowed({"admin", "manager", "sales"})
   public Response getAllOpportunities(
       @QueryParam("page") @DefaultValue("0") int page,
       @QueryParam("size") @DefaultValue("20") int size) {
@@ -78,7 +81,7 @@ public class OpportunityResource {
    */
   @GET
   @Path("/{id}")
-  // @RolesAllowed({"admin", "manager", "sales"})
+  @RolesAllowed({"admin", "manager", "sales"})
   public Response getOpportunity(@PathParam("id") UUID id) {
     logger.debug("Fetching opportunity: {}", id);
 
@@ -93,7 +96,7 @@ public class OpportunityResource {
    */
   @PUT
   @Path("/{id}")
-  // @RolesAllowed({"admin", "manager", "sales"})
+  @RolesAllowed({"admin", "manager", "sales"})
   public Response updateOpportunity(
       @PathParam("id") UUID id, @Valid UpdateOpportunityRequest request) {
     logger.info("Updating opportunity: {}", id);
@@ -109,7 +112,7 @@ public class OpportunityResource {
    */
   @DELETE
   @Path("/{id}")
-  // @RolesAllowed({"admin", "manager"})
+  @RolesAllowed({"admin", "manager"})
   public Response deleteOpportunity(@PathParam("id") UUID id) {
     logger.info("Deleting opportunity: {}", id);
 
@@ -130,7 +133,7 @@ public class OpportunityResource {
    */
   @PUT
   @Path("/{id}/stage/{stage}")
-  // @RolesAllowed({"admin", "manager", "sales"})
+  @RolesAllowed({"admin", "manager", "sales"})
   public Response changeStage(
       @PathParam("id") UUID id,
       @PathParam("stage") OpportunityStage stage,
@@ -148,7 +151,7 @@ public class OpportunityResource {
    */
   @GET
   @Path("/stage/{stage}")
-  // @RolesAllowed({"admin", "manager", "sales"})
+  @RolesAllowed({"admin", "manager", "sales"})
   public Response getOpportunitiesByStage(@PathParam("stage") OpportunityStage stage) {
     logger.debug("Fetching opportunities for stage: {}", stage);
 
@@ -167,7 +170,7 @@ public class OpportunityResource {
    */
   @GET
   @Path("/pipeline/overview")
-  // @RolesAllowed({"admin", "manager", "sales"})
+  @RolesAllowed({"admin", "manager", "sales"})
   public Response getPipelineOverview() {
     logger.debug("Generating pipeline overview");
 
@@ -182,7 +185,7 @@ public class OpportunityResource {
    */
   @GET
   @Path("/assigned/{userId}")
-  // @RolesAllowed({"admin", "manager", "sales"})
+  @RolesAllowed({"admin", "manager", "sales"})
   public Response getOpportunitiesByAssignedTo(@PathParam("userId") UUID userId) {
     logger.debug("Fetching opportunities assigned to user: {}", userId);
 
@@ -201,7 +204,7 @@ public class OpportunityResource {
    */
   @POST
   @Path("/{id}/activities")
-  // @RolesAllowed({"admin", "manager", "sales"})
+  @RolesAllowed({"admin", "manager", "sales"})
   public Response addActivity(
       @PathParam("id") UUID id,
       @QueryParam("type") String activityType,
@@ -226,6 +229,7 @@ public class OpportunityResource {
    */
   @GET
   @Path("/health")
+  @PermitAll
   public Response health() {
     return Response.ok("Opportunity API is healthy").build();
   }

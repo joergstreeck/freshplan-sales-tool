@@ -3,8 +3,10 @@ package de.freshplan.domain.user.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import de.freshplan.domain.user.entity.User;
+import de.freshplan.test.builders.UserTestDataFactory;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.security.TestSecurity;
+import io.quarkus.test.TestTransaction;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
@@ -13,7 +15,7 @@ import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
+import org.junit.jupiter.api.Tag;
 /**
  * Integration tests for UserRepository.
  *
@@ -24,6 +26,8 @@ import org.junit.jupiter.api.Test;
  * @since 2.0.0
  */
 @QuarkusTest
+@TestTransaction
+@Tag("core")
 @TestSecurity(
     user = "testuser",
     roles = {"admin", "manager", "sales"})
@@ -34,7 +38,6 @@ class UserRepositoryTest {
   @Inject EntityManager entityManager;
 
   @BeforeEach
-  @Transactional
   void setUp() {
     // Clear any existing data in correct order (children first!)
     // Delete opportunity_activities first (child table)
@@ -48,7 +51,6 @@ class UserRepositoryTest {
   }
 
   @Test
-  @Transactional
   void testFindByUsername_ExistingUser_ShouldReturn() {
     // Given
     User user = createAndPersistUser("john.doe", "John", "Doe", "john.doe@freshplan.de");
@@ -229,7 +231,13 @@ class UserRepositoryTest {
   @Transactional
   void testPersistAndFlush_ShouldGenerateId() {
     // Given
-    User newUser = new User("new.user", "New", "User", "new.user@freshplan.de");
+    User newUser =
+        UserTestDataFactory.builder()
+            .withUsername("new.user")
+            .withFirstName("New")
+            .withLastName("User")
+            .withEmail("new.user@freshplan.de")
+            .build();
 
     // When
     userRepository.persist(newUser);
@@ -311,7 +319,13 @@ class UserRepositoryTest {
 
   private User createAndPersistUser(
       String username, String firstName, String lastName, String email) {
-    User user = new User(username, firstName, lastName, email);
+    User user =
+        UserTestDataFactory.builder()
+            .withUsername(username)
+            .withFirstName(firstName)
+            .withLastName(lastName)
+            .withEmail(email)
+            .build();
     userRepository.persist(user);
     userRepository.flush();
 

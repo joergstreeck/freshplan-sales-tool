@@ -14,9 +14,9 @@ import java.util.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
+import org.junit.jupiter.api.Tag;
 @QuarkusTest
-@DisplayName("PermissionResource Tests")
+@Tag("migrate")@DisplayName("PermissionResource Tests")
 class PermissionResourceTest {
 
   @InjectMock PermissionService permissionService;

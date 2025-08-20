@@ -1,0 +1,2 @@
+# Global test resource manager to ensure single database container
+de.freshplan.test.GlobalTestResourceManager

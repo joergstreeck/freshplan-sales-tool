@@ -182,8 +182,14 @@ public class ContactRepository implements PanacheRepositoryBase<CustomerContact,
     // First, unset all primary flags for this customer
     update("isPrimary = false where customer.id = ?1", customerId);
 
+    // Flush to ensure the update is executed
+    flush();
+
     // Then set the new primary contact
     update("isPrimary = true where id = ?1 and customer.id = ?2", contactId, customerId);
+
+    // Flush again to ensure changes are persisted
+    flush();
   }
 
   /**

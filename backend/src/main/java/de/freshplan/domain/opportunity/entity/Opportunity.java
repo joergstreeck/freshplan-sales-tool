@@ -3,6 +3,8 @@ package de.freshplan.domain.opportunity.entity;
 import de.freshplan.domain.customer.entity.Customer;
 import de.freshplan.domain.user.entity.User;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -45,12 +47,15 @@ public class Opportunity {
   private User assignedTo;
 
   @Column(name = "expected_value", precision = 19, scale = 2)
+  @Min(value = 0, message = "Expected value must not be negative")
   private BigDecimal expectedValue;
 
   @Column(name = "expected_close_date")
   private LocalDate expectedCloseDate;
 
   @Column(name = "probability")
+  @Min(value = 0, message = "Probability must not be negative")
+  @Max(value = 100, message = "Probability must not exceed 100")
   private Integer probability;
 
   @Column(name = "description", columnDefinition = "TEXT")

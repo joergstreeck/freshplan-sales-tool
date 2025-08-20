@@ -3,6 +3,10 @@ package de.freshplan.domain.customer.entity;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
+import de.freshplan.test.builders.ContactTestDataFactory;
+import de.freshplan.test.builders.CustomerBuilder;
+import io.quarkus.test.junit.QuarkusTest;
+import jakarta.inject.Inject;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -11,28 +15,43 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-
+import org.junit.jupiter.api.Tag;
 /**
  * Unit tests for CustomerContact entity. Tests role management, hierarchy support, and business
  * logic.
+ *
+ * <p>Now uses TestDataBuilder pattern for creating test data.
+ *
+ * @since Migration Phase 4 - Quick Wins
  */
-@DisplayName("CustomerContact Entity Tests")
+@QuarkusTest
+@Tag("migrate")@DisplayName("CustomerContact Entity Tests")
 class CustomerContactTest {
+
+  @Inject CustomerBuilder customerBuilder;
+
+  // testRunId für Test-Isolation
+  private final String testRunId = UUID.randomUUID().toString().substring(0, 8);
 
   private CustomerContact contact;
   private Customer customer;
 
   @BeforeEach
   void setUp() {
-    customer = new Customer();
-    customer.setCompanyName("Test Company");
+    // Verwende Builder statt direkte Konstruktoren
+    customer =
+        customerBuilder
+            .withCompanyName("[TEST] Test Company " + testRunId)
+            .build(); // Nur build(), nicht persist() für Unit Tests
 
-    contact = new CustomerContact();
-    contact.setId(UUID.randomUUID());
-    contact.setCustomer(customer);
-    contact.setFirstName("Max");
-    contact.setLastName("Mustermann");
-    contact.setEmail("max.mustermann@test.com");
+    contact =
+        ContactTestDataFactory.builder()
+            .forCustomer(customer)
+            .withFirstName("Max")
+            .withLastName("Mustermann")
+            .withEmail("max.mustermann@test.com")
+            .withGeneratedId()
+            .build(); // Nur build() für Entity-Tests
   }
 
   @Nested
@@ -141,22 +160,32 @@ class CustomerContactTest {
 
     @BeforeEach
     void setUpHierarchy() {
-      supervisor = new CustomerContact();
-      supervisor.setId(UUID.randomUUID());
-      supervisor.setFirstName("Big");
-      supervisor.setLastName("Boss");
+      // Verwende Builder für die Hierarchie-Erstellung
+      supervisor =
+          ContactTestDataFactory.builder()
+              .forCustomer(customer)
+              .withFirstName("Big")
+              .withLastName("Boss")
+              .withGeneratedId()
+              .build();
 
-      manager = new CustomerContact();
-      manager.setId(UUID.randomUUID());
-      manager.setFirstName("Middle");
-      manager.setLastName("Manager");
-      manager.setReportsTo(supervisor);
+      manager =
+          ContactTestDataFactory.builder()
+              .forCustomer(customer)
+              .withFirstName("Middle")
+              .withLastName("Manager")
+              .withReportsTo(supervisor)
+              .withGeneratedId()
+              .build();
 
-      employee = new CustomerContact();
-      employee.setId(UUID.randomUUID());
-      employee.setFirstName("Regular");
-      employee.setLastName("Employee");
-      employee.setReportsTo(manager);
+      employee =
+          ContactTestDataFactory.builder()
+              .forCustomer(customer)
+              .withFirstName("Regular")
+              .withLastName("Employee")
+              .withReportsTo(manager)
+              .withGeneratedId()
+              .build();
     }
 
     @Test
@@ -183,8 +212,13 @@ class CustomerContactTest {
     @Test
     @DisplayName("Should handle null reports-to")
     void shouldHandleNullReportsTo() {
-      CustomerContact independent = new CustomerContact();
-      independent.setId(UUID.randomUUID());
+      CustomerContact independent =
+          ContactTestDataFactory.builder()
+              .forCustomer(customer)
+              .withFirstName("Independent")
+              .withLastName("Worker")
+              .withGeneratedId()
+              .build();
 
       assertThat(independent.isSubordinateOf(supervisor)).isFalse();
     }
@@ -238,21 +272,36 @@ class CustomerContactTest {
     @Test
     @DisplayName("Should be active by default")
     void shouldBeActiveByDefault() {
-      CustomerContact newContact = new CustomerContact();
+      CustomerContact newContact =
+          ContactTestDataFactory.builder()
+              .forCustomer(customer)
+              .withFirstName("Default")
+              .withLastName("Contact")
+              .build();
       assertThat(newContact.getIsActive()).isTrue();
     }
 
     @Test
     @DisplayName("Should not be primary by default")
     void shouldNotBePrimaryByDefault() {
-      CustomerContact newContact = new CustomerContact();
+      CustomerContact newContact =
+          ContactTestDataFactory.builder()
+              .forCustomer(customer)
+              .withFirstName("Default")
+              .withLastName("Contact")
+              .build();
       assertThat(newContact.getIsPrimary()).isFalse();
     }
 
     @Test
     @DisplayName("Should not be decision maker by default")
     void shouldNotBeDecisionMakerByDefault() {
-      CustomerContact newContact = new CustomerContact();
+      CustomerContact newContact =
+          ContactTestDataFactory.builder()
+              .forCustomer(customer)
+              .withFirstName("Default")
+              .withLastName("Contact")
+              .build();
       assertThat(newContact.getIsDecisionMaker()).isFalse();
     }
 
@@ -274,7 +323,12 @@ class CustomerContactTest {
     @Test
     @DisplayName("Should have DE as default language preference")
     void shouldHaveDEAsDefaultLanguagePreference() {
-      CustomerContact newContact = new CustomerContact();
+      CustomerContact newContact =
+          ContactTestDataFactory.builder()
+              .forCustomer(customer)
+              .withFirstName("German")
+              .withLastName("Contact")
+              .build();
       assertThat(newContact.getLanguagePreference()).isEqualTo("DE");
     }
 
@@ -361,14 +415,19 @@ class CustomerContactTest {
     @DisplayName("Should require customer association")
     void shouldRequireCustomerAssociation() {
       assertThat(contact.getCustomer()).isNotNull();
-      assertThat(contact.getCustomer().getCompanyName()).isEqualTo("Test Company");
+      assertThat(contact.getCustomer().getCompanyName()).contains("Test Company");
     }
 
     @Test
     @DisplayName("Should have unique ID")
     void shouldHaveUniqueId() {
-      CustomerContact contact2 = new CustomerContact();
-      contact2.setId(UUID.randomUUID());
+      CustomerContact contact2 =
+          ContactTestDataFactory.builder()
+              .forCustomer(customer)
+              .withFirstName("Another")
+              .withLastName("Contact")
+              .withGeneratedId()
+              .build();
 
       assertThat(contact.getId()).isNotNull();
       assertThat(contact2.getId()).isNotNull();

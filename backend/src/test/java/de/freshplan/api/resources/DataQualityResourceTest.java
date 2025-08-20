@@ -7,9 +7,9 @@ import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.security.TestSecurity;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.Test;
-
+import org.junit.jupiter.api.Tag;
 @QuarkusTest
-public class DataQualityResourceTest {
+@Tag("migrate")public class DataQualityResourceTest {
 
   @Test
   @TestSecurity(

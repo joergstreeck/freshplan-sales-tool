@@ -1,0 +1,54 @@
+# CI-specific configuration
+quarkus:
+  datasource:
+    db-kind: postgresql
+    jdbc:
+      url: jdbc:postgresql://localhost:5432/freshplan
+    username: freshplan
+    password: freshplan
+    devservices:
+      enabled: false
+      
+  flyway:
+    migrate-at-start: true
+    out-of-order: true
+    repair-at-start: true
+    locations: 
+      - classpath:db/migration
+      - classpath:db/testdata
+      - classpath:db/ci-migrations  # CI-spezifische Migrations für Cleanup
+    
+  hibernate-orm:
+    database:
+      generation: validate
+    log:
+      sql: false
+      
+  oidc:
+    enabled: false
+    
+  security:
+    auth:
+      enabled-in-dev-mode: false
+
+# FreshPlan specific settings für CI
+freshplan:
+  seed:
+    enabled: true  # Seeds für Tests erforderlich
+    
+  features:
+    cqrs:
+      enabled: false  # CQRS noch nicht aktiv
+      
+  test:
+    cleanup:
+      enabled: true  # Automatisches Cleanup nach Tests
+      strategy: rollback  # Strategie: rollback oder delete
+      
+# Test-spezifische Settings für CI
+test:
+  database:
+    cleanup:
+      after-each: true  # Nach jedem Test aufräumen
+      truncate-tables: false  # Nicht truncate (wegen FKs)
+      use-transactions: true  # Transaktionen für Rollback

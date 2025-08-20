@@ -2,6 +2,7 @@ package de.freshplan.test;
 
 import de.freshplan.domain.user.entity.User;
 import de.freshplan.domain.user.repository.UserRepository;
+import de.freshplan.test.builders.UserTestDataFactory;
 import io.quarkus.arc.profile.IfBuildProfile;
 import io.quarkus.runtime.StartupEvent;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -22,28 +23,21 @@ public class TestDataInitializer {
 
   @Inject UserRepository userRepository;
 
-  @Transactional
-  void onStart(@Observes StartupEvent ev) {
-    LOG.info("Initializing test data...");
-
-    // Check if we already have users
-    if (userRepository.count() > 0) {
-      LOG.info("Test users already exist, skipping initialization");
-      return;
-    }
-
-    // Create test users for tests
-    createUser("testuser", "Test", "User", "testuser@test.com", "admin", "manager", "sales");
-    createUser("admin", "Admin", "User", "admin@test.com", "admin");
-    createUser("manager", "Manager", "User", "manager@test.com", "manager");
-    createUser("sales", "Sales", "User", "sales@test.com", "sales");
-
-    LOG.info("Test data initialized successfully");
-  }
+  // DISABLED: In SEED-free setup, tests must create their own data
+  // @Transactional
+  // void onStart(@Observes StartupEvent ev) {
+  //   LOG.info("DISABLED: TestDataInitializer - Tests must use TestDataFactory");
+  // }
 
   private void createUser(
       String username, String firstName, String lastName, String email, String... roles) {
-    User user = new User(username, firstName, lastName, email);
+    User user =
+        UserTestDataFactory.builder()
+            .withUsername(username)
+            .withFirstName(firstName)
+            .withLastName(lastName)
+            .withEmail(email)
+            .build();
     user.setRoles(Arrays.asList(roles));
     userRepository.persist(user);
     LOG.infof("Created test user: %s with roles: %s", username, String.join(", ", roles));

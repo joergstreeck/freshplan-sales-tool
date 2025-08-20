@@ -9,13 +9,13 @@ import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.security.TestSecurity;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.Test;
-
+import org.junit.jupiter.api.Tag;
 /**
  * Basic integration tests for CustomerSearchResource. These tests verify that the endpoint is
  * accessible and returns valid responses.
  */
 @QuarkusTest
-@TestHTTPEndpoint(CustomerSearchResource.class)
+@Tag("migrate")@TestHTTPEndpoint(CustomerSearchResource.class)
 @TestSecurity(
     user = "testuser",
     roles = {"user", "admin"})

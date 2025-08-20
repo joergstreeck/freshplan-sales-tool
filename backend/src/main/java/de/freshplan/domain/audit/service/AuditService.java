@@ -2,15 +2,20 @@ package de.freshplan.domain.audit.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import de.freshplan.domain.audit.dto.ComplianceAlertDto;
 import de.freshplan.domain.audit.entity.AuditEntry;
 import de.freshplan.domain.audit.entity.AuditEventType;
 import de.freshplan.domain.audit.entity.AuditSource;
 import de.freshplan.domain.audit.repository.AuditRepository;
+import de.freshplan.domain.audit.service.command.AuditCommandService;
 import de.freshplan.domain.audit.service.dto.AuditContext;
+import de.freshplan.domain.audit.service.query.AuditQueryService;
+import de.freshplan.domain.export.service.dto.ExportRequest;
 import de.freshplan.shared.util.SecurityUtils;
 import io.quarkus.runtime.Startup;
 import io.vertx.core.http.HttpServerRequest;
 import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Event;
 import jakarta.enterprise.event.Observes;
@@ -25,10 +30,15 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Stream;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.logging.Logger;
 
 /**
  * Enterprise-grade Audit Service with async processing and integrity verification
+ *
+ * <p>FACADE PATTERN: Dieser Service fungiert als Facade für die CQRS-aufgeteilten Services. Mit
+ * Feature Flag kann zwischen Legacy-Implementierung und CQRS umgeschaltet werden.
  *
  * <p>Features: - Async audit logging to prevent performance impact - Cryptographic hash chaining
  * for tamper detection - Automatic context enrichment - Event-driven architecture support -
@@ -55,6 +65,15 @@ public class AuditService {
 
   @Inject Instance<HttpServerRequest> httpRequestInstance;
 
+  // CQRS Services (NEU)
+  @Inject AuditCommandService commandService;
+
+  @Inject AuditQueryService queryService;
+
+  // Feature Flag für CQRS
+  @ConfigProperty(name = "features.cqrs.enabled", defaultValue = "false")
+  boolean cqrsEnabled;
+
   private ExecutorService auditExecutor;
   private volatile String lastGlobalHash = null;
 
@@ -75,6 +94,30 @@ public class AuditService {
         "Audit Service initialized with %d async threads", configuration.getAsyncThreadPoolSize());
   }
 
+  @PreDestroy
+  void cleanup() {
+    if (auditExecutor != null) {
+      log.info("Shutting down audit executor service...");
+      auditExecutor.shutdown();
+      try {
+        // Wait for existing tasks to complete
+        if (!auditExecutor.awaitTermination(10, java.util.concurrent.TimeUnit.SECONDS)) {
+          log.warn("Audit executor did not terminate in time, forcing shutdown");
+          auditExecutor.shutdownNow();
+          // Wait a bit for tasks to respond to cancellation
+          if (!auditExecutor.awaitTermination(5, java.util.concurrent.TimeUnit.SECONDS)) {
+            log.error("Audit executor did not terminate after forced shutdown");
+          }
+        }
+        log.info("Audit executor service shut down successfully");
+      } catch (InterruptedException e) {
+        log.error("Interrupted while shutting down audit executor", e);
+        auditExecutor.shutdownNow();
+        Thread.currentThread().interrupt();
+      }
+    }
+  }
+
   /** Log an audit event asynchronously */
   public CompletableFuture<UUID> logAsync(
       AuditEventType eventType,
@@ -83,6 +126,11 @@ public class AuditService {
       Object oldValue,
       Object newValue,
       String reason) {
+
+    if (cqrsEnabled) {
+      log.debugf("CQRS mode: delegating to AuditCommandService");
+      return commandService.logAsync(eventType, entityType, entityId, oldValue, newValue, reason);
+    }
 
     return logAsync(
         AuditContext.builder()
@@ -97,6 +145,10 @@ public class AuditService {
 
   /** Log an audit event with full context asynchronously */
   public CompletableFuture<UUID> logAsync(AuditContext context) {
+    if (cqrsEnabled) {
+      log.debugf("CQRS mode: delegating to AuditCommandService");
+      return commandService.logAsync(context);
+    }
     // Capture request context before async execution
     final var capturedContext = captureCurrentContext(context);
 
@@ -117,6 +169,10 @@ public class AuditService {
   @Transactional(Transactional.TxType.REQUIRES_NEW)
   @jakarta.enterprise.context.control.ActivateRequestContext
   public UUID logSync(AuditContext context) {
+    if (cqrsEnabled) {
+      log.debugf("CQRS mode: delegating to AuditCommandService");
+      return commandService.logSync(context);
+    }
     try {
       // Build audit entry
       AuditEntry entry = buildAuditEntry(context);
@@ -154,6 +210,10 @@ public class AuditService {
   /** Log a security event (always synchronous for immediate recording) */
   @Transactional(Transactional.TxType.REQUIRES_NEW)
   public UUID logSecurityEvent(AuditEventType eventType, String details) {
+    if (cqrsEnabled) {
+      log.debugf("CQRS mode: delegating to AuditCommandService");
+      return commandService.logSecurityEvent(eventType, details);
+    }
     return logSync(
         AuditContext.builder()
             .eventType(eventType)
@@ -167,6 +227,10 @@ public class AuditService {
   /** Log an export event for compliance tracking */
   @Transactional(Transactional.TxType.REQUIRES_NEW)
   public UUID logExport(String exportType, Map<String, Object> parameters) {
+    if (cqrsEnabled) {
+      log.debugf("CQRS mode: delegating to AuditCommandService");
+      return commandService.logExport(exportType, parameters);
+    }
     return logSync(
         AuditContext.builder()
             .eventType(AuditEventType.DATA_EXPORT_STARTED)
@@ -423,7 +487,69 @@ public class AuditService {
 
   /** Handle audit events from CDI event bus */
   public void onApplicationEvent(@Observes AuditableApplicationEvent event) {
+    if (cqrsEnabled) {
+      commandService.onApplicationEvent(event);
+      return;
+    }
     logAsync(event.toAuditContext());
+  }
+
+  // =====================================
+  // QUERY OPERATIONS (NEU für CQRS)
+  // =====================================
+
+  /** Find audit entries by entity Delegiert an AuditQueryService */
+  public List<AuditEntry> findByEntity(String entityType, UUID entityId) {
+    if (cqrsEnabled) {
+      return queryService.findByEntity(entityType, entityId);
+    }
+    // Legacy: direkt vom Repository
+    return auditRepository.findByEntity(entityType, entityId);
+  }
+
+  /** Find audit entries by entity with pagination Delegiert an AuditQueryService */
+  public List<AuditEntry> findByEntity(String entityType, UUID entityId, int page, int size) {
+    if (cqrsEnabled) {
+      return queryService.findByEntity(entityType, entityId, page, size);
+    }
+    // Legacy: direkt vom Repository
+    return auditRepository.findByEntity(entityType, entityId, page, size);
+  }
+
+  /** Get dashboard metrics for Admin UI Delegiert an AuditQueryService */
+  public AuditRepository.DashboardMetrics getDashboardMetrics() {
+    if (cqrsEnabled) {
+      return queryService.getDashboardMetrics();
+    }
+    // Legacy: direkt vom Repository
+    return auditRepository.getDashboardMetrics();
+  }
+
+  /** Get compliance alerts Delegiert an AuditQueryService */
+  public List<ComplianceAlertDto> getComplianceAlerts() {
+    if (cqrsEnabled) {
+      return queryService.getComplianceAlerts();
+    }
+    // Legacy: direkt vom Repository
+    return auditRepository.getComplianceAlerts();
+  }
+
+  /** Find audit entries by filters for export Delegiert an AuditQueryService */
+  public List<AuditEntry> findByFilters(ExportRequest request) {
+    if (cqrsEnabled) {
+      return queryService.findByFilters(request);
+    }
+    // Legacy: direkt vom Repository
+    return auditRepository.findByFilters(request);
+  }
+
+  /** Stream audit entries for export (memory-efficient) Delegiert an AuditQueryService */
+  public Stream<AuditEntry> streamForExport(AuditRepository.AuditSearchCriteria criteria) {
+    if (cqrsEnabled) {
+      return queryService.streamForExport(criteria);
+    }
+    // Legacy: direkt vom Repository
+    return auditRepository.streamForExport(criteria);
   }
 
   /** Audit service configuration */

@@ -6,6 +6,7 @@ import static org.hamcrest.Matchers.*;
 import de.freshplan.domain.user.entity.User;
 import de.freshplan.domain.user.repository.UserRepository;
 import de.freshplan.domain.user.service.dto.UpdateUserRolesRequest;
+import de.freshplan.test.builders.UserTestDataFactory;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.security.TestSecurity;
 import io.restassured.http.ContentType;
@@ -15,7 +16,7 @@ import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
+import org.junit.jupiter.api.Tag;
 /**
  * Integration tests for user roles endpoint.
  *
@@ -23,7 +24,7 @@ import org.junit.jupiter.api.Test;
  * @since 2.0.0
  */
 @QuarkusTest
-class UserRolesIT {
+@Tag("migrate")class UserRolesIT {
 
   @Inject UserRepository userRepository;
 
@@ -35,7 +36,13 @@ class UserRolesIT {
     // Clean up and create test user
     userRepository.deleteAll();
 
-    testUser = new User("john.doe", "John", "Doe", "john.doe@example.com");
+    testUser =
+        UserTestDataFactory.builder()
+            .withUsername("john.doe")
+            .withFirstName("John")
+            .withLastName("Doe")
+            .withEmail("john.doe@example.com")
+            .build();
     userRepository.persist(testUser);
     userRepository.flush();
   }

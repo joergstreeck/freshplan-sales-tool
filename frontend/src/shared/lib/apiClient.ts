@@ -1,7 +1,10 @@
 // Shared API client with base configuration
 import type { ApiError } from '../../types/api';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+// In development, use relative URL to work with Vite proxy
+// In production, use the environment variable
+const API_URL = import.meta.env.VITE_API_URL || 
+  (import.meta.env.DEV ? '' : 'http://localhost:8080');
 
 interface ApiResponse<T = unknown> {
   data: T;

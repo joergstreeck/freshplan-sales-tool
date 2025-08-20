@@ -1,5 +1,6 @@
 package de.freshplan.test;
 
+import org.junit.jupiter.api.Tag;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
 
@@ -8,7 +9,7 @@ import io.quarkus.test.junit.TestProfile;
  * endpoints without dealing with authentication while maintaining security in production.
  */
 @QuarkusTest
-@TestProfile(SecurityDisabledTestProfile.class)
+@Tag("migrate")@TestProfile(SecurityDisabledTestProfile.class)
 public abstract class BaseIntegrationTest {
 
   // Common test setup can be added here if needed

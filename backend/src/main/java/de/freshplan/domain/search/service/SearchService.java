@@ -10,6 +10,7 @@ import de.freshplan.domain.search.service.dto.CustomerSearchDto;
 import de.freshplan.domain.search.service.dto.QueryType;
 import de.freshplan.domain.search.service.dto.SearchResult;
 import de.freshplan.domain.search.service.dto.SearchResults;
+import de.freshplan.domain.search.service.query.SearchQueryService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -19,19 +20,31 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.logging.Logger;
 
 /**
- * Service for universal search functionality across multiple entities. Provides intelligent query
- * analysis, parallel search, and relevance scoring.
+ * CQRS Facade for universal search functionality across multiple entities.
  *
- * @since FC-005 PR4
+ * <p>This service acts as a facade that routes search requests to either the new CQRS-based
+ * SearchQueryService or the legacy implementation, controlled by feature flag.
+ *
+ * <p>Since SearchService is read-only (no write operations), only a QueryService is needed.
+ *
+ * @since Phase 10 CQRS Migration
  */
 @ApplicationScoped
 @Transactional
 public class SearchService {
 
   private static final Logger LOG = Logger.getLogger(SearchService.class);
+
+  // Feature flag for CQRS migration
+  @ConfigProperty(name = "features.cqrs.enabled", defaultValue = "false")
+  boolean cqrsEnabled;
+
+  // CQRS Services
+  @Inject SearchQueryService queryService;
 
   // Regex patterns for query type detection
   private static final Pattern EMAIL_PATTERN =
@@ -46,6 +59,8 @@ public class SearchService {
   /**
    * Performs universal search across customers and contacts.
    *
+   * <p>Routes to CQRS SearchQueryService if enabled, otherwise uses legacy implementation.
+   *
    * @param query The search query
    * @param includeContacts Whether to include contacts
    * @param includeInactive Whether to include inactive customers
@@ -53,6 +68,43 @@ public class SearchService {
    * @return Combined search results
    */
   public SearchResults universalSearch(
+      String query, boolean includeContacts, boolean includeInactive, int limit) {
+
+    if (cqrsEnabled) {
+      LOG.debugf("CQRS enabled - delegating universalSearch to SearchQueryService");
+      return queryService.universalSearch(query, includeContacts, includeInactive, limit);
+    }
+
+    // Legacy implementation (preserved for fallback)
+    LOG.debugf("CQRS disabled - using legacy universalSearch implementation");
+    return legacyUniversalSearch(query, includeContacts, includeInactive, limit);
+  }
+
+  /**
+   * Quick search for autocomplete functionality. Returns minimal data for performance.
+   *
+   * <p>Routes to CQRS SearchQueryService if enabled, otherwise uses legacy implementation.
+   *
+   * @param query The search query
+   * @param limit Maximum results
+   * @return Lightweight search results
+   */
+  public SearchResults quickSearch(String query, int limit) {
+    if (cqrsEnabled) {
+      LOG.debugf("CQRS enabled - delegating quickSearch to SearchQueryService");
+      return queryService.quickSearch(query, limit);
+    }
+
+    // Legacy implementation (preserved for fallback)
+    LOG.debugf("CQRS disabled - using legacy quickSearch implementation");
+    return legacyQuickSearch(query, limit);
+  }
+
+  // =================== LEGACY IMPLEMENTATIONS ===================
+  // Preserved for fallback when CQRS is disabled
+
+  /** Legacy implementation of universalSearch (preserved for fallback). */
+  private SearchResults legacyUniversalSearch(
       String query, boolean includeContacts, boolean includeInactive, int limit) {
 
     long startTime = System.currentTimeMillis();
@@ -85,14 +137,8 @@ public class SearchService {
         .build();
   }
 
-  /**
-   * Quick search for autocomplete functionality. Returns minimal data for performance.
-   *
-   * @param query The search query
-   * @param limit Maximum results
-   * @return Lightweight search results
-   */
-  public SearchResults quickSearch(String query, int limit) {
+  /** Legacy implementation of quickSearch (preserved for fallback). */
+  private SearchResults legacyQuickSearch(String query, int limit) {
     long startTime = System.currentTimeMillis();
 
     // Quick search only in customer names and numbers
@@ -109,7 +155,6 @@ public class SearchService {
                   dto.setCustomerNumber(customer.getCustomerNumber());
                   dto.setStatus(
                       customer.getStatus() != null ? customer.getStatus().toString() : null);
-                  // Customer entity doesn't have email/phone directly
 
                   return SearchResult.builder()
                       .type("customer")
@@ -131,7 +176,7 @@ public class SearchService {
         .build();
   }
 
-  /** Searches for customers based on query and type. */
+  /** Legacy helper: Searches for customers based on query and type. */
   private List<SearchResult> searchCustomers(
       String query, QueryType queryType, boolean includeInactive, int limit) {
 
@@ -199,10 +244,7 @@ public class SearchService {
         .collect(Collectors.toList());
   }
 
-  /**
-   * Searches for contacts based on query and type. Uses extended search methods for hybrid
-   * solution.
-   */
+  /** Legacy helper: Searches for contacts based on query and type. */
   private List<SearchResult> searchContacts(String query, QueryType queryType, int limit) {
 
     List<CustomerContact> contacts;
@@ -269,7 +311,7 @@ public class SearchService {
         .collect(Collectors.toList());
   }
 
-  /** Detects the type of query based on pattern matching. */
+  /** Legacy helper: Detects the type of query based on pattern matching. */
   private QueryType detectQueryType(String query) {
     if (query == null || query.trim().isEmpty()) {
       return QueryType.TEXT;
@@ -292,7 +334,7 @@ public class SearchService {
     return QueryType.TEXT;
   }
 
-  /** Calculates relevance score for customer results. Higher score = more relevant. */
+  /** Legacy helper: Calculates relevance score for customer results. */
   private int calculateRelevanceScore(Customer customer, String query, QueryType queryType) {
     int score = 0;
     String lowerQuery = query.toLowerCase();
@@ -332,7 +374,7 @@ public class SearchService {
     return score;
   }
 
-  /** Calculates relevance score for contact results. */
+  /** Legacy helper: Calculates relevance score for contact results. */
   private int calculateContactRelevanceScore(
       CustomerContact contact, String query, QueryType queryType) {
     int score = 0;

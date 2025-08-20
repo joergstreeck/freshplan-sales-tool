@@ -17,12 +17,12 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-
+import org.junit.jupiter.api.Tag;
 /**
  * Security tests for UserResource endpoints. Tests admin-only access and role management security.
  */
 @QuarkusTest
-@TestProfile(SecurityDisabledTestProfile.class)
+@Tag("migrate")@TestProfile(SecurityDisabledTestProfile.class)
 @Disabled("Tests need proper endpoint implementation")
 class UserResourceSecurityTest {
 

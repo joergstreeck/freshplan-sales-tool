@@ -6,10 +6,15 @@ on:
   push:
     branches: [main]
 
+concurrency:
+  group: integration-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   backend-integration:
     name: Backend Integration Tests
     runs-on: ubuntu-latest
+    timeout-minutes: 25
     defaults:
       run:
         working-directory: ./backend
@@ -24,10 +29,10 @@ jobs:
           POSTGRES_USER: freshplan
           POSTGRES_PASSWORD: freshplan
         options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
+          --health-cmd="pg_isready -U freshplan -d freshplan"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
     
     steps:
       - uses: actions/checkout@v4
@@ -97,10 +102,10 @@ jobs:
           POSTGRES_USER: freshplan
           POSTGRES_PASSWORD: freshplan
         options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
+          --health-cmd="pg_isready -U freshplan -d freshplan"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
     
     steps:
       - uses: actions/checkout@v4
@@ -136,43 +141,39 @@ jobs:
       
       - name: Start Backend (background)
         run: |
+          # Use CI profile for stable configuration
+          export QUARKUS_PROFILE=ci
+          
           # First ensure it's compiled
           mvn -B compile
-          # Then start in dev mode with test profile and more logging
+          
+          # Start backend with CI profile
           mvn -B quarkus:dev \
             -Dquarkus.http.host=0.0.0.0 \
-            -Dquarkus.datasource.devservices.enabled=false \
-            -Dquarkus.datasource.jdbc.url=jdbc:postgresql://localhost:5432/freshplan \
-            -Dquarkus.datasource.username=freshplan \
-            -Dquarkus.datasource.password=freshplan \
-            -Dquarkus.oidc.enabled=false \
-            -Dquarkus.security.users.embedded.enabled=true \
-            -Dquarkus.security.users.embedded.plain-text=true \
-            -Dquarkus.security.users.embedded.users.test=test \
-            -Dquarkus.security.users.embedded.roles.test=user \
-            -Dquarkus.analytics.disabled=true \
-            -Dquarkus.http.cors=true \
-            -Dquarkus.http.cors.origins=http://localhost:4173,http://localhost:5173 \
-            -Dquarkus.http.cors.methods=GET,POST,PUT,DELETE,OPTIONS \
-            -Dquarkus.http.cors.headers=accept,authorization,content-type \
-            -Dquarkus.flyway.migrate-at-start=true \
-            -Dquarkus.flyway.clean-at-start=false \
-            -Dquarkus.flyway.repair-at-start=false \
-            -Dquarkus.flyway.validate-on-migrate=false \
-            -Dquarkus.log.level=INFO \
-            -Dquarkus.hibernate-orm.log.sql=false \
             > backend.log 2>&1 &
-          # Give backend PID
+            
+          # Store PID
           BACKEND_PID=$!
           echo "Backend started with PID: $BACKEND_PID"
-          # Give it more time to start (including Flyway migrations)
-          sleep 60
-          # Show last 100 lines of log for debugging
+          
+          # Wait for backend to be ready
+          echo "Waiting for backend to start..."
+          for i in {1..30}; do
+            if curl -f http://localhost:8080/q/health/ready 2>/dev/null; then
+              echo "Backend is ready!"
+              break
+            fi
+            echo "Attempt $i/30: Backend not ready yet..."
+            sleep 2
+          done
+          
+          # Show startup log for debugging
           echo "=== Backend startup log ==="
-          tail -n 100 backend.log || true
+          tail -n 50 backend.log || true
         working-directory: ./backend
         shell: bash
         env:
+          QUARKUS_PROFILE: ci
           KEYCLOAK_CLIENT_SECRET: secret
           QUARKUS_DATASOURCE_JDBC_URL: jdbc:postgresql://localhost:5432/freshplan
           QUARKUS_OIDC_ENABLED: false

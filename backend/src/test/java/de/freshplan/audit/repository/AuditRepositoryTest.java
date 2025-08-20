@@ -12,9 +12,9 @@ import java.util.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
+import org.junit.jupiter.api.Tag;
 @QuarkusTest
-@TestTransaction
+@Tag("migrate")@TestTransaction
 @DisplayName("AuditRepository Tests")
 class AuditRepositoryTest {
 

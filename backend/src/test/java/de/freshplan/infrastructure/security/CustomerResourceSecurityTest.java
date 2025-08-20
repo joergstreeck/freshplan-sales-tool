@@ -16,13 +16,13 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-
+import org.junit.jupiter.api.Tag;
 /**
  * Security tests for CustomerResource endpoints. Tests RBAC implementation and security
  * annotations.
  */
 @QuarkusTest
-@TestProfile(SecurityDisabledTestProfile.class)
+@Tag("migrate")@TestProfile(SecurityDisabledTestProfile.class)
 @Disabled("Tests need proper endpoint implementation and test data setup")
 class CustomerResourceSecurityTest {
 
@@ -420,14 +420,14 @@ class CustomerResourceSecurityTest {
   // Helper methods
   private CreateCustomerRequest createValidCustomerRequest() {
     return CreateCustomerRequest.builder()
-        .companyName("Test Company Security " + UUID.randomUUID().toString().substring(0, 8))
+        .companyName("[TEST] Test Company Security " + UUID.randomUUID().toString().substring(0, 8))
         .customerType(de.freshplan.domain.customer.entity.CustomerType.NEUKUNDE)
         .build();
   }
 
   private UpdateCustomerRequest createValidUpdateRequest() {
     return UpdateCustomerRequest.builder()
-        .companyName("Updated Test Company " + UUID.randomUUID().toString().substring(0, 8))
+        .companyName("[TEST] Updated Test Company " + UUID.randomUUID().toString().substring(0, 8))
         .build();
   }
 

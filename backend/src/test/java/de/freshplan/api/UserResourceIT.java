@@ -10,6 +10,7 @@ import de.freshplan.domain.user.entity.User;
 import de.freshplan.domain.user.repository.UserRepository;
 import de.freshplan.domain.user.service.dto.CreateUserRequest;
 import de.freshplan.domain.user.service.dto.UpdateUserRequest;
+import de.freshplan.test.builders.UserTestDataFactory;
 import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.security.TestSecurity;
@@ -20,7 +21,7 @@ import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.Tag;import org.junit.jupiter.api.TestMethodOrder;
 
 /**
  * Integration tests for UserResource REST API.
@@ -32,7 +33,7 @@ import org.junit.jupiter.api.TestMethodOrder;
  * @since 2.0.0
  */
 @QuarkusTest
-@TestHTTPEndpoint(UserResource.class)
+@Tag("migrate")@TestHTTPEndpoint(UserResource.class)
 @TestMethodOrder(OrderAnnotation.class)
 class UserResourceIT {
 
@@ -337,8 +338,12 @@ class UserResourceIT {
   User createAndPersistUser() {
     String uniqueId = System.currentTimeMillis() + "_" + Thread.currentThread().getId();
     User user =
-        new User(
-            "test.user." + uniqueId, "Test", "User", "test.user." + uniqueId + "@freshplan.de");
+        UserTestDataFactory.builder()
+            .withUsername("test.user." + uniqueId)
+            .withFirstName("Test")
+            .withLastName("User")
+            .withEmail("test.user." + uniqueId + "@freshplan.de")
+            .build();
     userRepository.persist(user);
     return user;
   }

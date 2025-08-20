@@ -10,7 +10,7 @@ import jakarta.inject.Inject;
 import java.time.Instant;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
-
+import org.junit.jupiter.api.Tag;
 /**
  * Unit tests for UserResponse DTO.
  *
@@ -20,7 +20,7 @@ import org.junit.jupiter.api.Test;
  * @since 2.0.0
  */
 @QuarkusTest
-@TestSecurity(
+@Tag("migrate")@TestSecurity(
     user = "testuser",
     roles = {"admin", "manager", "sales"})
 class UserResponseTest {

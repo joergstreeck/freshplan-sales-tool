@@ -3,11 +3,15 @@ package de.freshplan.domain.help.service;
 import de.freshplan.domain.help.entity.HelpContent;
 import de.freshplan.domain.help.entity.HelpType;
 import de.freshplan.domain.help.entity.UserLevel;
+import de.freshplan.domain.help.events.HelpContentViewedEvent;
 import de.freshplan.domain.help.repository.HelpContentRepository;
+import de.freshplan.domain.help.service.command.HelpContentCommandService;
 import de.freshplan.domain.help.service.dto.HelpAnalytics;
 import de.freshplan.domain.help.service.dto.HelpRequest;
 import de.freshplan.domain.help.service.dto.HelpResponse;
 import de.freshplan.domain.help.service.dto.UserStruggle;
+import de.freshplan.domain.help.service.query.HelpContentQueryService;
+import de.freshplan.infrastructure.events.EventBus;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -15,14 +19,22 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Service für Help Content Management
+ * FACADE Service für Help Content Management - CQRS Migration mit Feature Flag
+ *
+ * <p>Dieses Service agiert als Facade während der CQRS-Migration und delegiert an die neuen Command
+ * und Query Services basierend auf dem Feature Flag.
  *
  * <p>Zentrale Business Logic für: - Kontextuelle Hilfe-Bereitstellung - User Struggle Detection -
  * Hilfe-Analytics und Feedback - Adaptive Help Delivery
+ *
+ * <p>Part of Phase 12.2 CQRS migration.
+ *
+ * @since Phase 12.2 CQRS Migration
  */
 @ApplicationScoped
 @Transactional
@@ -30,6 +42,16 @@ public class HelpContentService {
 
   private static final Logger LOG = LoggerFactory.getLogger(HelpContentService.class);
 
+  @ConfigProperty(name = "features.cqrs.enabled", defaultValue = "false")
+  boolean cqrsEnabled;
+
+  @Inject HelpContentCommandService commandService;
+
+  @Inject HelpContentQueryService queryService;
+
+  @Inject EventBus eventBus;
+
+  // Legacy Dependencies (when CQRS disabled)
   @Inject HelpContentRepository helpRepository;
 
   @Inject UserStruggleDetectionService struggleDetectionService;
@@ -38,6 +60,38 @@ public class HelpContentService {
 
   /** Holt die beste Hilfe für eine Feature-Anfrage */
   public HelpResponse getHelpForFeature(HelpRequest request) {
+    if (cqrsEnabled) {
+      LOG.debug("Using CQRS Event-Driven implementation for help content delivery");
+
+      // EVENT-DRIVEN APPROACH: Pure Query + Async Event for Side Effects
+
+      // 1. Get help content (Pure Query - no side effects)
+      HelpResponse helpResponse = queryService.getHelpForFeature(request);
+
+      // 2. Publish event for side effects (asynchronous)
+      if (helpResponse.id() != null) {
+        UserStruggle struggle =
+            struggleDetectionService.detectStruggle(
+                request.userId(), request.feature(), request.context());
+
+        HelpContentViewedEvent event =
+            HelpContentViewedEvent.create(helpResponse.id(), request, struggle);
+
+        // Publish asynchronously - no blocking, no transaction coupling
+        eventBus.publishAsync(event);
+
+        LOG.debug(
+            "Published HelpContentViewedEvent for content: {} by user: {}",
+            helpResponse.id(),
+            request.userId());
+      }
+
+      return helpResponse;
+    }
+
+    LOG.debug("Using legacy implementation for help content delivery");
+
+    // Legacy implementation (exakte Kopie des Original-Codes)
     LOG.debug(
         "Getting help for feature: {} (user: {}, level: {})",
         request.feature(),
@@ -209,10 +263,28 @@ public class HelpContentService {
     };
   }
 
+  /** Helper method to create a minimal HelpContent object from HelpResponse for analytics. */
+  private HelpContent createContentFromResponse(HelpResponse response) {
+    // Create a minimal HelpContent object for analytics tracking
+    // This is only used in CQRS mode when we need to pass a HelpContent to analytics
+    HelpContent content = new HelpContent();
+    content.id = response.id();
+    content.feature = response.feature();
+    content.title = response.title();
+    content.helpType = response.type();
+    content.viewCount = response.viewCount();
+    return content;
+  }
+
   /** Registriert User Feedback für Hilfe-Inhalt */
   @Transactional
   public void recordFeedback(
       UUID helpId, String userId, boolean helpful, Integer timeSpent, String comment) {
+    if (cqrsEnabled) {
+      LOG.debug("Using CQRS implementation for feedback recording");
+      commandService.recordFeedback(helpId, userId, helpful, timeSpent, comment);
+      return;
+    }
     LOG.debug(
         "Recording feedback for help {}: helpful={}, timeSpent={}", helpId, helpful, timeSpent);
 
@@ -239,6 +311,10 @@ public class HelpContentService {
   /** Sucht in Hilfe-Inhalten */
   public List<HelpResponse> searchHelp(
       String searchTerm, String userLevel, List<String> userRoles) {
+    if (cqrsEnabled) {
+      LOG.debug("Using CQRS implementation for help content search");
+      return queryService.searchHelp(searchTerm, userLevel, userRoles);
+    }
     LOG.debug("Searching help content for: '{}' (level: {})", searchTerm, userLevel);
 
     List<HelpContent> results = helpRepository.searchContent(searchTerm, userLevel, userRoles);
@@ -261,6 +337,10 @@ public class HelpContentService {
 
   /** Holt Analytics für Help System */
   public HelpAnalytics getAnalytics() {
+    if (cqrsEnabled) {
+      LOG.debug("Using CQRS implementation for analytics");
+      return queryService.getAnalytics();
+    }
     return analyticsService.getOverallAnalytics();
   }
 
@@ -276,6 +356,19 @@ public class HelpContentService {
       UserLevel userLevel,
       List<String> roles,
       String createdBy) {
+    if (cqrsEnabled) {
+      LOG.debug("Using CQRS implementation for content creation");
+      return commandService.createOrUpdateHelpContent(
+          feature,
+          type,
+          title,
+          shortContent,
+          mediumContent,
+          detailedContent,
+          userLevel,
+          roles,
+          createdBy);
+    }
 
     LOG.info("Creating help content: {} - {} ({})", feature, title, type);
 
@@ -300,6 +393,11 @@ public class HelpContentService {
   /** Aktiviert/Deaktiviert Hilfe-Inhalt */
   @Transactional
   public void toggleHelpContent(UUID helpId, boolean active, String updatedBy) {
+    if (cqrsEnabled) {
+      LOG.debug("Using CQRS implementation for content toggle");
+      commandService.toggleHelpContent(helpId, active, updatedBy);
+      return;
+    }
     Optional<HelpContent> contentOpt = helpRepository.findByIdOptional(helpId);
     if (contentOpt.isEmpty()) {
       throw new IllegalArgumentException("Help content not found: " + helpId);
@@ -318,6 +416,10 @@ public class HelpContentService {
 
   /** Holt Feature Coverage Report */
   public List<String> getFeatureCoverageGaps() {
+    if (cqrsEnabled) {
+      LOG.debug("Using CQRS implementation for coverage gaps analysis");
+      return queryService.getFeatureCoverageGaps();
+    }
     List<String> allFeatures = helpRepository.getFeaturesWithHelp();
     List<String> tooltipGaps = helpRepository.getFeaturesWithoutType(HelpType.TOOLTIP);
     List<String> tourGaps = helpRepository.getFeaturesWithoutType(HelpType.TOUR);

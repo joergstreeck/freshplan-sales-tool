@@ -4,18 +4,22 @@ import static org.assertj.core.api.Assertions.*;
 
 import de.freshplan.domain.customer.entity.Customer;
 import de.freshplan.domain.user.entity.User;
+import de.freshplan.test.builders.CustomerBuilder;
+import de.freshplan.test.builders.OpportunityBuilder;
+import de.freshplan.test.builders.UserBuilder;
 import io.quarkus.test.junit.QuarkusTest;
+import jakarta.inject.Inject;
 import java.math.BigDecimal;
+import java.util.UUID;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.api.Tag;import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.mockito.Mockito;
 
 /**
  * Umfassende Tests für OpportunityStage Business Rules
@@ -23,11 +27,20 @@ import org.mockito.Mockito;
  * <p>Tests decken ab: - Stage Transitions (Valid/Invalid) - Default Probability Calculations -
  * Business Rule Validations - Stage Workflow Logic - Edge Cases
  *
+ * <p>Now uses TestDataBuilder pattern instead of mocks.
+ *
  * @author FreshPlan Team
- * @since 2.0.0
+ * @since 2.0.0 - Updated in Migration Phase 4
  */
 @QuarkusTest
-public class OpportunityStageTest {
+@Tag("core")public class OpportunityStageTest {
+
+  @Inject CustomerBuilder customerBuilder;
+  @Inject OpportunityBuilder opportunityBuilder;
+  @Inject UserBuilder userBuilder;
+
+  // testRunId für Test-Isolation
+  private final String testRunId = UUID.randomUUID().toString().substring(0, 8);
 
   private Opportunity testOpportunity;
   private Customer testCustomer;
@@ -35,25 +48,32 @@ public class OpportunityStageTest {
 
   @BeforeEach
   void setUp() {
-    // Create mock entities since they have protected constructors
-    testCustomer = Mockito.mock(Customer.class);
-    Mockito.when(testCustomer.getCompanyName()).thenReturn("Test Company");
+    // Verwende Builder statt Mocks
+    testCustomer =
+        customerBuilder
+            .withCompanyName("[TEST] Test Company " + testRunId)
+            .build(); // Nur build() für Entity-Tests
 
-    testUser = Mockito.mock(User.class);
-    Mockito.when(testUser.getUsername()).thenReturn("testuser");
-    Mockito.when(testUser.getFirstName()).thenReturn("Test");
-    Mockito.when(testUser.getLastName()).thenReturn("User");
+    testUser =
+        userBuilder
+            .withUsername("testuser_" + testRunId)
+            .withFirstName("Test")
+            .withLastName("User")
+            .build(); // Nur build() für Entity-Tests
 
-    // Create test opportunity
-    testOpportunity = new Opportunity();
-    testOpportunity.setName("Test Opportunity");
-    testOpportunity.setCustomer(testCustomer);
-    testOpportunity.setAssignedTo(testUser);
-    testOpportunity.setExpectedValue(BigDecimal.valueOf(10000));
-    testOpportunity.setStage(OpportunityStage.NEW_LEAD);
+    // Create test opportunity mit Builder
+    testOpportunity =
+        opportunityBuilder
+            .forCustomer(testCustomer)
+            .withName("Test Opportunity " + testRunId)
+            .assignedTo(testUser)
+            .withExpectedValue(10000)
+            .inStage(OpportunityStage.NEW_LEAD)
+            .build(); // Nur build() für Entity-Tests
   }
 
   @Nested
+  @Tag("core")
   @DisplayName("Stage Transition Tests")
   class StageTransitionTests {
 
@@ -132,12 +152,14 @@ public class OpportunityStageTest {
 
       // Test CLOSED_LOST → any other state should not work
       // Reset to a non-closed state first
-      testOpportunity = new Opportunity();
-      testOpportunity.setName("Test Opportunity");
-      testOpportunity.setCustomer(testCustomer);
-      testOpportunity.setAssignedTo(testUser);
-      testOpportunity.setExpectedValue(BigDecimal.valueOf(10000));
-      testOpportunity.setStage(OpportunityStage.NEW_LEAD);
+      testOpportunity =
+          opportunityBuilder
+              .forCustomer(testCustomer)
+              .withName("Test Opportunity Reset " + testRunId)
+              .assignedTo(testUser)
+              .withExpectedValue(10000)
+              .inStage(OpportunityStage.NEW_LEAD)
+              .build();
 
       testOpportunity.changeStage(OpportunityStage.CLOSED_LOST);
       originalStageChangedAt = testOpportunity.getStageChangedAt();
@@ -183,6 +205,7 @@ public class OpportunityStageTest {
   }
 
   @Nested
+  @Tag("core")
   @DisplayName("Default Probability Tests")
   class DefaultProbabilityTests {
 
@@ -237,6 +260,7 @@ public class OpportunityStageTest {
   }
 
   @Nested
+  @Tag("core")
   @DisplayName("Stage Enum Tests")
   class StageEnumTests {
 
@@ -275,6 +299,7 @@ public class OpportunityStageTest {
   }
 
   @Nested
+  @Tag("core")
   @DisplayName("Business Rule Tests")
   class BusinessRuleTests {
 
@@ -305,12 +330,14 @@ public class OpportunityStageTest {
       assertThat(testOpportunity.isClosedOpportunity()).isTrue();
 
       // Reset to a non-closed state before changing to CLOSED_LOST
-      testOpportunity = new Opportunity();
-      testOpportunity.setName("Test Opportunity");
-      testOpportunity.setCustomer(testCustomer);
-      testOpportunity.setAssignedTo(testUser);
-      testOpportunity.setExpectedValue(BigDecimal.valueOf(10000));
-      testOpportunity.setStage(OpportunityStage.NEW_LEAD);
+      testOpportunity =
+          opportunityBuilder
+              .forCustomer(testCustomer)
+              .withName("Test Opportunity Lost " + testRunId)
+              .assignedTo(testUser)
+              .withExpectedValue(10000)
+              .inStage(OpportunityStage.NEW_LEAD)
+              .build();
 
       testOpportunity.changeStage(OpportunityStage.CLOSED_LOST);
       assertThat(testOpportunity.isWonOpportunity()).isFalse();
@@ -318,12 +345,14 @@ public class OpportunityStageTest {
       assertThat(testOpportunity.isClosedOpportunity()).isTrue();
 
       // Reset again for NEW_LEAD test
-      testOpportunity = new Opportunity();
-      testOpportunity.setName("Test Opportunity");
-      testOpportunity.setCustomer(testCustomer);
-      testOpportunity.setAssignedTo(testUser);
-      testOpportunity.setExpectedValue(BigDecimal.valueOf(10000));
-      testOpportunity.setStage(OpportunityStage.NEW_LEAD);
+      testOpportunity =
+          opportunityBuilder
+              .forCustomer(testCustomer)
+              .withName("Test Opportunity New " + testRunId)
+              .assignedTo(testUser)
+              .withExpectedValue(10000)
+              .inStage(OpportunityStage.NEW_LEAD)
+              .build();
 
       assertThat(testOpportunity.isWonOpportunity()).isFalse();
       assertThat(testOpportunity.isLostOpportunity()).isFalse();
@@ -363,6 +392,7 @@ public class OpportunityStageTest {
   }
 
   @Nested
+  @Tag("core")
   @DisplayName("Stage Workflow Tests")
   class StageWorkflowTests {
 
@@ -420,6 +450,7 @@ public class OpportunityStageTest {
   }
 
   @Nested
+  @Tag("core")
   @DisplayName("RENEWAL Stage Tests")
   class RenewalStageTests {
 

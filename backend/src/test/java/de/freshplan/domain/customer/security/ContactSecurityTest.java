@@ -3,6 +3,7 @@ package de.freshplan.domain.customer.security;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import de.freshplan.domain.customer.entity.CustomerContact;
+import de.freshplan.test.builders.ContactTestDataFactory;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -12,13 +13,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-
+import org.junit.jupiter.api.Tag;
 /**
  * Security tests for CustomerContact entity. Tests input validation, SQL injection prevention, XSS
  * protection, and access control.
  */
 @DisplayName("Contact Security Tests")
-public class ContactSecurityTest {
+@Tag("migrate")public class ContactSecurityTest {
 
   private Validator validator;
   private CustomerContact contact;
@@ -26,7 +27,7 @@ public class ContactSecurityTest {
   @BeforeEach
   void setUp() {
     validator = Validation.buildDefaultValidatorFactory().getValidator();
-    contact = new CustomerContact();
+    contact = ContactTestDataFactory.builder().build();
   }
 
   @Nested
@@ -222,13 +223,11 @@ public class ContactSecurityTest {
     @Test
     @DisplayName("Should prevent circular hierarchy")
     void shouldPreventCircularHierarchy() {
-      CustomerContact contact1 = new CustomerContact();
+      CustomerContact contact1 = ContactTestDataFactory.builder().withFirstName("Contact1").build();
       contact1.setId(UUID.randomUUID());
-      contact1.setFirstName("Contact1");
 
-      CustomerContact contact2 = new CustomerContact();
+      CustomerContact contact2 = ContactTestDataFactory.builder().withFirstName("Contact2").build();
       contact2.setId(UUID.randomUUID());
-      contact2.setFirstName("Contact2");
 
       // Setup: contact1 reports to contact2
       contact1.setReportsTo(contact2);

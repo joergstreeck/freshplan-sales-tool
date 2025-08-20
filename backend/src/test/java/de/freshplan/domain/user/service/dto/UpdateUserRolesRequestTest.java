@@ -10,14 +10,14 @@ import java.util.List;
 import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
+import org.junit.jupiter.api.Tag;
 /**
  * Unit tests for UpdateUserRolesRequest DTO.
  *
  * @author FreshPlan Team
  * @since 2.0.0
  */
-class UpdateUserRolesRequestTest {
+@Tag("migrate")class UpdateUserRolesRequestTest {
 
   private Validator validator;
 

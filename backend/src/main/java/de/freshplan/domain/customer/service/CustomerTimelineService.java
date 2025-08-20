@@ -6,6 +6,8 @@ import de.freshplan.domain.customer.repository.CustomerTimelineRepository;
 import de.freshplan.domain.customer.service.dto.timeline.*;
 import de.freshplan.domain.customer.service.exception.CustomerNotFoundException;
 import de.freshplan.domain.customer.service.mapper.CustomerTimelineMapper;
+import de.freshplan.domain.customer.service.timeline.command.TimelineCommandService;
+import de.freshplan.domain.customer.service.timeline.query.TimelineQueryService;
 import io.quarkus.panache.common.Page;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -15,11 +17,16 @@ import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.logging.Logger;
 
 /**
  * Service for managing customer timeline events. Handles creation, retrieval, and management of
  * customer interaction history.
+ *
+ * <p>As part of the CQRS refactoring (PR #5), this service now acts as a Facade that delegates to
+ * separate Command and Query services based on a feature flag. This ensures backward compatibility
+ * while allowing gradual migration to CQRS pattern.
  *
  * @author FreshPlan Team
  * @since 2.0.0
@@ -33,6 +40,14 @@ public class CustomerTimelineService {
   private final CustomerTimelineRepository timelineRepository;
   private final CustomerRepository customerRepository;
   private final CustomerTimelineMapper timelineMapper;
+
+  // CQRS Services (NEW for PR #5)
+  @Inject TimelineCommandService commandService;
+  @Inject TimelineQueryService queryService;
+
+  // Feature flag for CQRS pattern
+  @ConfigProperty(name = "features.cqrs.enabled", defaultValue = "false")
+  boolean cqrsEnabled;
 
   @Inject
   public CustomerTimelineService(
@@ -48,6 +63,12 @@ public class CustomerTimelineService {
   public TimelineEventResponse createEvent(
       @NotNull UUID customerId, @Valid @NotNull CreateTimelineEventRequest request) {
 
+    if (cqrsEnabled) {
+      LOG.debugf("Using CQRS CommandService for createEvent");
+      return commandService.createEvent(customerId, request);
+    }
+
+    // Legacy implementation below
     LOG.infof("Creating timeline event for customer %s: %s", customerId, request.getEventType());
 
     // Verify customer exists - in same transaction for consistency
@@ -110,6 +131,12 @@ public class CustomerTimelineService {
   public TimelineEventResponse createNote(
       @NotNull UUID customerId, @Valid @NotNull CreateNoteRequest request) {
 
+    if (cqrsEnabled) {
+      LOG.debugf("Using CQRS CommandService for createNote");
+      return commandService.createNote(customerId, request);
+    }
+
+    // Legacy implementation below
     LOG.infof("Creating note for customer %s", customerId);
 
     Customer customer =
@@ -135,6 +162,12 @@ public class CustomerTimelineService {
   public TimelineEventResponse createCommunication(
       @NotNull UUID customerId, @Valid @NotNull CreateCommunicationRequest request) {
 
+    if (cqrsEnabled) {
+      LOG.debugf("Using CQRS CommandService for createCommunication");
+      return commandService.createCommunication(customerId, request);
+    }
+
+    // Legacy implementation below
     LOG.infof(
         "Creating communication event for customer %s via %s", customerId, request.getChannel());
 
@@ -171,6 +204,12 @@ public class CustomerTimelineService {
   public TimelineListResponse getCustomerTimeline(
       @NotNull UUID customerId, int page, int size, String category, String search) {
 
+    if (cqrsEnabled) {
+      LOG.debugf("Using CQRS QueryService for getCustomerTimeline");
+      return queryService.getCustomerTimeline(customerId, page, size, category, search);
+    }
+
+    // Legacy implementation below
     // Enforce maximum page size for performance
     int maxSize = 100;
     int actualSize = Math.min(size, maxSize);
@@ -216,6 +255,12 @@ public class CustomerTimelineService {
 
   /** Gets timeline events requiring follow-up. */
   public List<TimelineEventResponse> getFollowUpEvents(@NotNull UUID customerId) {
+    if (cqrsEnabled) {
+      LOG.debugf("Using CQRS QueryService for getFollowUpEvents");
+      return queryService.getFollowUpEvents(customerId);
+    }
+
+    // Legacy implementation below
     LOG.debugf("Getting follow-up events for customer %s", customerId);
 
     List<CustomerTimelineEvent> events = timelineRepository.findRequiringFollowUp(customerId);
@@ -225,6 +270,12 @@ public class CustomerTimelineService {
 
   /** Gets overdue follow-up events. */
   public List<TimelineEventResponse> getOverdueFollowUps(@NotNull UUID customerId) {
+    if (cqrsEnabled) {
+      LOG.debugf("Using CQRS QueryService for getOverdueFollowUps");
+      return queryService.getOverdueFollowUps(customerId);
+    }
+
+    // Legacy implementation below
     LOG.debugf("Getting overdue follow-ups for customer %s", customerId);
 
     List<CustomerTimelineEvent> events = timelineRepository.findOverdueFollowUps(customerId);
@@ -235,6 +286,12 @@ public class CustomerTimelineService {
   /** Gets recent communication history. */
   public List<TimelineEventResponse> getRecentCommunications(@NotNull UUID customerId, int days) {
 
+    if (cqrsEnabled) {
+      LOG.debugf("Using CQRS QueryService for getRecentCommunications");
+      return queryService.getRecentCommunications(customerId, days);
+    }
+
+    // Legacy implementation below
     LOG.debugf("Getting recent communications for customer %s (last %d days)", customerId, days);
 
     List<CustomerTimelineEvent> events =
@@ -246,6 +303,13 @@ public class CustomerTimelineService {
   /** Marks a follow-up as completed. */
   public void completeFollowUp(@NotNull UUID eventId, @NotNull String completedBy) {
 
+    if (cqrsEnabled) {
+      LOG.debugf("Using CQRS CommandService for completeFollowUp");
+      commandService.completeFollowUp(eventId, completedBy);
+      return;
+    }
+
+    // Legacy implementation below
     LOG.infof("Completing follow-up for event %s by %s", eventId, completedBy);
 
     timelineRepository.completeFollowUp(eventId, completedBy);
@@ -255,6 +319,12 @@ public class CustomerTimelineService {
   public TimelineEventResponse updateEvent(
       @NotNull UUID eventId, @Valid @NotNull UpdateTimelineEventRequest request) {
 
+    if (cqrsEnabled) {
+      LOG.debugf("Using CQRS CommandService for updateEvent");
+      return commandService.updateEvent(eventId, request);
+    }
+
+    // Legacy implementation below
     LOG.infof("Updating timeline event %s", eventId);
 
     CustomerTimelineEvent event =
@@ -289,6 +359,13 @@ public class CustomerTimelineService {
 
   /** Soft deletes a timeline event. */
   public void deleteEvent(@NotNull UUID eventId, @NotNull String deletedBy) {
+    if (cqrsEnabled) {
+      LOG.debugf("Using CQRS CommandService for deleteEvent");
+      commandService.deleteEvent(eventId, deletedBy);
+      return;
+    }
+
+    // Legacy implementation below
     LOG.infof("Soft deleting timeline event %s by %s", eventId, deletedBy);
 
     timelineRepository.softDelete(eventId, deletedBy);
@@ -296,6 +373,12 @@ public class CustomerTimelineService {
 
   /** Gets timeline summary statistics. */
   public TimelineSummaryResponse getTimelineSummary(@NotNull UUID customerId) {
+    if (cqrsEnabled) {
+      LOG.debugf("Using CQRS QueryService for getTimelineSummary");
+      return queryService.getTimelineSummary(customerId);
+    }
+
+    // Legacy implementation below
     LOG.debugf("Getting timeline summary for customer %s", customerId);
 
     CustomerTimelineRepository.TimelineSummary summary =
@@ -316,6 +399,13 @@ public class CustomerTimelineService {
       @NotNull String description,
       @NotNull String performedBy) {
 
+    if (cqrsEnabled) {
+      LOG.debugf("Using CQRS CommandService for createSystemEvent");
+      commandService.createSystemEvent(customer, eventType, description, performedBy);
+      return;
+    }
+
+    // Legacy implementation below
     LOG.debugf("Creating system event for customer %s: %s", customer.getId(), eventType);
 
     CustomerTimelineEvent event =

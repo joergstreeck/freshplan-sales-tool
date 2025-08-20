@@ -16,13 +16,13 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-
+import org.junit.jupiter.api.Tag;
 /**
  * Integration tests for Role-Based Access Control (RBAC) across the entire application. Tests the
  * interaction between different roles and their access permissions.
  */
 @QuarkusTest
-@TestProfile(SecurityDisabledTestProfile.class)
+@Tag("migrate")@TestProfile(SecurityDisabledTestProfile.class)
 @Disabled("Tests need proper endpoint implementation and test infrastructure")
 class RoleBasedAccessIntegrationTest {
 
