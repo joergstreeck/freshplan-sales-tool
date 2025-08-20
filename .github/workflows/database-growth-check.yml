@@ -65,13 +65,11 @@ jobs:
       run: |
         echo "Running Flyway migrations directly..."
         ./mvnw -q flyway:migrate \
-          -Dquarkus.profile=ci \
-          -Dquarkus.datasource.jdbc.url="jdbc:postgresql://localhost:5432/freshplan" \
-          -Dquarkus.datasource.username=freshplan \
-          -Dquarkus.datasource.password=freshplan \
-          -Dquarkus.flyway.migrate-at-start=false \
-          -Dquarkus.flyway.out-of-order=true \
-          -Dquarkus.flyway.locations=classpath:db/migration
+          -Dflyway.url="jdbc:postgresql://localhost:5432/freshplan" \
+          -Dflyway.user=freshplan \
+          -Dflyway.password=freshplan \
+          -Dflyway.locations=classpath:db/migration \
+          -Dflyway.outOfOrder=true
         echo "✅ Migrations completed successfully"
     
     - name: Verify CI migrations applied
