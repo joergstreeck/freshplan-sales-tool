@@ -33,10 +33,10 @@ repos:
         pass_filenames: false
         stages: [commit]
         
-      # Block SEED references in new code
+      # Block SEED references in new code (word boundaries to avoid false positives)
       - id: no-seed-references
-        name: Block new SEED references
-        entry: bash -c 'if git diff --cached | grep -i "+.*seed"; then echo "❌ New SEED reference found! SEED strategy has been removed."; exit 1; fi'
+        name: Block new SEED test data references
+        entry: bash -c 'if git diff --cached | grep -E "\+.*(\\bSEED\\b|\\[SEED\\]|SEED[-_]|seed_data|seedCustomer)"; then echo "❌ New SEED reference found! SEED strategy has been removed. Use TestDataBuilder pattern instead."; exit 1; fi'
         language: system
         pass_filenames: false
         stages: [commit]
