@@ -64,28 +64,55 @@ jobs:
         PGPASSWORD: freshplan
       run: |
         echo "Running Flyway migrations directly..."
-        ./mvnw -q flyway:migrate \
+        echo "Checking Maven and Java setup..."
+        ./mvnw --version
+        
+        echo "Running Flyway migration..."
+        ./mvnw flyway:migrate \
           -Dflyway.url="jdbc:postgresql://localhost:5432/freshplan" \
           -Dflyway.user=freshplan \
           -Dflyway.password=freshplan \
           -Dflyway.locations=classpath:db/migration \
-          -Dflyway.outOfOrder=true
-        echo "✅ Migrations completed successfully"
+          -Dflyway.outOfOrder=true || {
+            echo "❌ Flyway migration failed! Checking database connection..."
+            psql -h localhost -U freshplan -d freshplan -c "SELECT version();"
+            exit 1
+          }
+        
+        # Verify that migrations actually created tables
+        TABLE_COUNT=$(psql -h localhost -U freshplan -d freshplan -tAc "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = 'public' AND table_type = 'BASE TABLE';")
+        echo "Tables created: $TABLE_COUNT"
+        if [ "$TABLE_COUNT" -eq "0" ]; then
+          echo "❌ ERROR: No tables created after migration!"
+          exit 1
+        fi
+        echo "✅ Migrations completed successfully - $TABLE_COUNT tables created"
     
     - name: Verify CI migrations applied
       env:
         PGPASSWORD: freshplan
       run: |
-        echo "Checking that V9000 CI migration was applied..."
-        psql -h localhost -U freshplan -d freshplan -c \
-          "SELECT version, description FROM flyway_schema_history WHERE version >= '9000' ORDER BY installed_rank DESC LIMIT 5;"
+        # First check if flyway_schema_history exists
+        if psql -h localhost -U freshplan -d freshplan -tAc "SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'flyway_schema_history');" | grep -q 't'; then
+          echo "Checking migration history..."
+          psql -h localhost -U freshplan -d freshplan -c \
+            "SELECT version, description FROM flyway_schema_history ORDER BY installed_rank DESC LIMIT 5;"
+        else
+          echo "❌ ERROR: flyway_schema_history table not found - migrations did not run!"
+          exit 1
+        fi
         
-        # Check FK configuration
-        echo "Verifying FK CASCADE configuration..."
-        FK_COUNT=$(psql -h localhost -U freshplan -d freshplan -tAc \
-          "SELECT COUNT(*) FROM pg_constraint 
-           WHERE contype='f' AND confrelid='public.customers'::regclass AND confdeltype='c'")
-        echo "Found $FK_COUNT CASCADE FKs to customers table"
+        # Check if customers table exists before checking FKs
+        if psql -h localhost -U freshplan -d freshplan -tAc "SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'customers');" | grep -q 't'; then
+          echo "Verifying FK CASCADE configuration..."
+          FK_COUNT=$(psql -h localhost -U freshplan -d freshplan -tAc \
+            "SELECT COUNT(*) FROM pg_constraint 
+             WHERE contype='f' AND confrelid='public.customers'::regclass AND confdeltype='c'")
+          echo "Found $FK_COUNT CASCADE FKs to customers table"
+        else
+          echo "❌ ERROR: customers table not found!"
+          exit 1
+        fi
     
     - name: Count customers BEFORE tests
       env:
