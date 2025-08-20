@@ -188,8 +188,10 @@ import org.junit.jupiter.api.Tag;import org.mockito.MockedStatic;
 
     // Then
     assertThat(result).isNotNull();
-    // Mapper should not be called if values are the same
-    verify(userMapper).updateEntity(testUser, sameRequest); // Mapper is called but does nothing if values same
+    // When no changes are detected, updateEntity should NOT be called
+    verify(userMapper, never()).updateEntity(any(), any());
+    // But toResponse should be called to return the unchanged user
+    verify(userMapper).toResponse(testUser);
   }
 
   // ========== DELETE USER TESTS ==========
