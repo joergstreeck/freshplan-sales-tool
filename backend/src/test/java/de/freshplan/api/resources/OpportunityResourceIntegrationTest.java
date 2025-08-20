@@ -87,6 +87,7 @@ import org.junit.jupiter.params.provider.ValueSource;
   }
 
   @Nested
+  @Tag("core")
   @DisplayName("GET /api/opportunities - List Opportunities")
   class ListOpportunitiesTests {
 
@@ -170,6 +171,7 @@ import org.junit.jupiter.params.provider.ValueSource;
   }
 
   @Nested
+  @Tag("core")
   @DisplayName("GET /api/opportunities/{id} - Get Single Opportunity")
   class GetSingleOpportunityTests {
 
@@ -235,6 +237,7 @@ import org.junit.jupiter.params.provider.ValueSource;
   }
 
   @Nested
+  @Tag("core")
   @DisplayName("POST /api/opportunities - Create Opportunity")
   class CreateOpportunityTests {
 
@@ -412,6 +415,7 @@ import org.junit.jupiter.params.provider.ValueSource;
   }
 
   @Nested
+  @Tag("core")
   @DisplayName("PUT /api/opportunities/{id} - Update Opportunity")
   class UpdateOpportunityTests {
 
@@ -494,6 +498,7 @@ import org.junit.jupiter.params.provider.ValueSource;
   }
 
   @Nested
+  @Tag("core")
   @DisplayName("DELETE /api/opportunities/{id} - Delete Opportunity")
   class DeleteOpportunityTests {
 
@@ -537,6 +542,7 @@ import org.junit.jupiter.params.provider.ValueSource;
   }
 
   @Nested
+  @Tag("core")
   @DisplayName("PUT /api/opportunities/{id}/stage - Change Stage")
   class ChangeStageTests {
 
@@ -604,6 +610,7 @@ import org.junit.jupiter.params.provider.ValueSource;
   }
 
   @Nested
+  @Tag("core")
   @DisplayName("GET /api/opportunities/pipeline/overview - Pipeline Overview")
   class PipelineOverviewTests {
 
@@ -632,6 +639,7 @@ import org.junit.jupiter.params.provider.ValueSource;
   }
 
   @Nested
+  @Tag("core")
   @DisplayName("Content-Type and Error Handling")
   class ContentTypeAndErrorTests {
 

@@ -83,6 +83,7 @@ import org.junit.jupiter.api.Tag;
   }
 
   @Nested
+  @Tag("core")
   @DisplayName("toResponse - Entity zu DTO Mapping")
   class ToResponseTests {
 
@@ -225,6 +226,7 @@ import org.junit.jupiter.api.Tag;
   }
 
   @Nested
+  @Tag("core")
   @DisplayName("Stage Mapping Tests")
   class StageMappingTests {
 
@@ -258,6 +260,7 @@ import org.junit.jupiter.api.Tag;
   }
 
   @Nested
+  @Tag("core")
   @DisplayName("Value Object Mapping Tests")
   class ValueObjectMappingTests {
 
@@ -321,6 +324,7 @@ import org.junit.jupiter.api.Tag;
   }
 
   @Nested
+  @Tag("core")
   @DisplayName("Data Consistency Tests")
   class DataConsistencyTests {
 
@@ -369,6 +373,7 @@ import org.junit.jupiter.api.Tag;
   }
 
   @Nested
+  @Tag("core")
   @DisplayName("Performance and Isolation Tests")
   class PerformanceAndIsolationTests {
 

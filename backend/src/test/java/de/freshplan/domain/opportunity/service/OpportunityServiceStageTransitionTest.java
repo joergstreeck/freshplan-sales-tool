@@ -78,6 +78,7 @@ public class OpportunityServiceStageTransitionTest {
   }
 
   @Nested
+  @Tag("core")
   @DisplayName("Valid Stage Transition Tests")
   class ValidStageTransitionTests {
 
@@ -207,6 +208,7 @@ public class OpportunityServiceStageTransitionTest {
   }
 
   @Nested
+  @Tag("core")
   @DisplayName("Invalid Stage Transition Tests")
   class InvalidStageTransitionTests {
 
@@ -270,6 +272,7 @@ public class OpportunityServiceStageTransitionTest {
   }
 
   @Nested
+  @Tag("core")
   @DisplayName("Stage Transition Business Rules")
   class StageTransitionBusinessRules {
 
@@ -386,6 +389,7 @@ public class OpportunityServiceStageTransitionTest {
   }
 
   @Nested
+  @Tag("core")
   @DisplayName("Complex Stage Transition Scenarios")
   class ComplexStageTransitionScenarios {
 

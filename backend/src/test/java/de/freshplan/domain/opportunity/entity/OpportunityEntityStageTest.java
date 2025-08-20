@@ -53,6 +53,7 @@ import org.junit.jupiter.params.provider.MethodSource;
   }
 
   @Nested
+  @Tag("core")
   @DisplayName("Valid Stage Transition Tests")
   class ValidStageTransitionTests {
 
@@ -156,6 +157,7 @@ import org.junit.jupiter.params.provider.MethodSource;
   }
 
   @Nested
+  @Tag("core")
   @DisplayName("Invalid Stage Transition Tests")
   class InvalidStageTransitionTests {
 
@@ -193,6 +195,7 @@ import org.junit.jupiter.params.provider.MethodSource;
   }
 
   @Nested
+  @Tag("core")
   @DisplayName("Stage Transition Business Rules")
   class StageTransitionBusinessRules {
 
@@ -247,6 +250,7 @@ import org.junit.jupiter.params.provider.MethodSource;
   }
 
   @Nested
+  @Tag("core")
   @DisplayName("Edge Cases and Boundary Tests")
   class EdgeCaseTests {
 

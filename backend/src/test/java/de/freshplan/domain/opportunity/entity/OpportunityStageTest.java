@@ -73,6 +73,7 @@ import org.junit.jupiter.params.provider.MethodSource;
   }
 
   @Nested
+  @Tag("core")
   @DisplayName("Stage Transition Tests")
   class StageTransitionTests {
 
@@ -204,6 +205,7 @@ import org.junit.jupiter.params.provider.MethodSource;
   }
 
   @Nested
+  @Tag("core")
   @DisplayName("Default Probability Tests")
   class DefaultProbabilityTests {
 
@@ -258,6 +260,7 @@ import org.junit.jupiter.params.provider.MethodSource;
   }
 
   @Nested
+  @Tag("core")
   @DisplayName("Stage Enum Tests")
   class StageEnumTests {
 
@@ -296,6 +299,7 @@ import org.junit.jupiter.params.provider.MethodSource;
   }
 
   @Nested
+  @Tag("core")
   @DisplayName("Business Rule Tests")
   class BusinessRuleTests {
 
@@ -388,6 +392,7 @@ import org.junit.jupiter.params.provider.MethodSource;
   }
 
   @Nested
+  @Tag("core")
   @DisplayName("Stage Workflow Tests")
   class StageWorkflowTests {
 
@@ -445,6 +450,7 @@ import org.junit.jupiter.params.provider.MethodSource;
   }
 
   @Nested
+  @Tag("core")
   @DisplayName("RENEWAL Stage Tests")
   class RenewalStageTests {
 
