@@ -101,7 +101,7 @@ import org.junit.jupiter.api.Tag;
       assertThat(response.getCustomerId()).isEqualTo(testCustomer.getId());
       assertThat(response.getCustomerName()).isEqualTo("Test Company Ltd.");
       assertThat(response.getAssignedToId()).isEqualTo(testUser.getId());
-      assertThat(response.getAssignedToName()).isEqualTo("testuser");
+      assertThat(response.getAssignedToName()).isEqualTo(testUser.getUsername());
       assertThat(response.getExpectedValue()).isEqualTo(BigDecimal.valueOf(25000));
       assertThat(response.getExpectedCloseDate()).isEqualTo(LocalDate.of(2025, 12, 31));
       assertThat(response.getProbability()).isEqualTo(75);

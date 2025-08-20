@@ -32,9 +32,11 @@ import org.junit.jupiter.api.Tag;
  * @since 2.0.0
  */
 @QuarkusTest
-@Tag("core")@TestSecurity(
+@Tag("core")
+@TestSecurity(
     user = "testuser",
     roles = {"admin", "manager", "sales"})
+@io.quarkus.test.TestTransaction
 public class OpportunityDatabaseIntegrationTest {
 
   @Inject OpportunityRepository opportunityRepository;
@@ -50,7 +52,6 @@ public class OpportunityDatabaseIntegrationTest {
   @Inject EntityManager entityManager;
 
   @Test
-  @Transactional
   @DisplayName("Valid opportunity creation and persistence should work")
   void createAndPersistOpportunity_shouldWork() {
     // Given - Create test data
@@ -86,7 +87,6 @@ public class OpportunityDatabaseIntegrationTest {
   }
 
   @Test
-  @Transactional
   @DisplayName("Repository findById should return correct opportunity")
   void repositoryFindById_shouldReturnCorrectOpportunity() {
     // Given
@@ -125,7 +125,6 @@ public class OpportunityDatabaseIntegrationTest {
   }
 
   @Test
-  @Transactional
   @DisplayName("Repository count should reflect persisted opportunities")
   void repositoryCount_shouldReflectPersistedOpportunities() {
     // Given
@@ -160,7 +159,6 @@ public class OpportunityDatabaseIntegrationTest {
   }
 
   @Test
-  @Transactional
   @DisplayName("Opportunity with negative expected value should NOT be allowed")
   void opportunityWithNegativeValue_shouldNotBeAllowed() {
     // Given
@@ -191,7 +189,6 @@ public class OpportunityDatabaseIntegrationTest {
   }
 
   @Test
-  @Transactional
   @DisplayName("All opportunity stages should be persistable")
   void allOpportunityStages_shouldBePersistable() {
     // Given
@@ -244,18 +241,22 @@ public class OpportunityDatabaseIntegrationTest {
     return customer;
   }
 
-  /** Helper method to get or create a test user */
+  /** Helper method to get or create a test user with unique identifier */
   private User getOrCreateTestUser() {
+    // Generate unique user for each test to avoid collisions
+    String uniqueId = UUID.randomUUID().toString().substring(0, 8);
+    String username = "testuser_" + uniqueId;
+    
     return userRepository
-        .findByUsername("testuser")
+        .findByUsername(username)
         .orElseGet(
             () -> {
               User user =
                   UserTestDataFactory.builder()
-                      .withUsername("testuser")
+                      .withUsername(username)
                       .withFirstName("Test")
                       .withLastName("User")
-                      .withEmail("testuser@freshplan.de")
+                      .withEmail("testuser_" + uniqueId + "@freshplan.de")
                       .build();
               user.addRole("admin");
               user.enable();

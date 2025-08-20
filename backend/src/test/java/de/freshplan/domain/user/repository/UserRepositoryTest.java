@@ -6,6 +6,7 @@ import de.freshplan.domain.user.entity.User;
 import de.freshplan.test.builders.UserTestDataFactory;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.security.TestSecurity;
+import io.quarkus.test.TestTransaction;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
@@ -25,7 +26,9 @@ import org.junit.jupiter.api.Tag;
  * @since 2.0.0
  */
 @QuarkusTest
-@Tag("core")@TestSecurity(
+@TestTransaction
+@Tag("core")
+@TestSecurity(
     user = "testuser",
     roles = {"admin", "manager", "sales"})
 class UserRepositoryTest {
@@ -35,7 +38,6 @@ class UserRepositoryTest {
   @Inject EntityManager entityManager;
 
   @BeforeEach
-  @Transactional
   void setUp() {
     // Clear any existing data in correct order (children first!)
     // Delete opportunity_activities first (child table)
@@ -49,7 +51,6 @@ class UserRepositoryTest {
   }
 
   @Test
-  @Transactional
   void testFindByUsername_ExistingUser_ShouldReturn() {
     // Given
     User user = createAndPersistUser("john.doe", "John", "Doe", "john.doe@freshplan.de");

@@ -50,7 +50,7 @@ public class OpportunityRepositoryBasicTest {
   void findByStage_shouldReturnCorrectOpportunities() {
     // Given
     Customer testCustomer = createTestCustomer("Basic Test Company");
-    User testUser = getOrCreateTestUser("testuser");
+    User testUser = getOrCreateTestUser("testuser_" + UUID.randomUUID().toString().substring(0, 8));
 
     Opportunity newLead1 =
         createTestOpportunity("New Lead 1", OpportunityStage.NEW_LEAD, testUser, testCustomer);
@@ -83,7 +83,7 @@ public class OpportunityRepositoryBasicTest {
     // Given
     Customer customer1 = createTestCustomer("Customer One");
     Customer customer2 = createTestCustomer("Customer Two");
-    User testUser = getOrCreateTestUser("testuser");
+    User testUser = getOrCreateTestUser("testuser_" + UUID.randomUUID().toString().substring(0, 8));
 
     Opportunity opp1 =
         createTestOpportunity("Opp for Customer 1", OpportunityStage.NEW_LEAD, testUser, customer1);
@@ -122,7 +122,7 @@ public class OpportunityRepositoryBasicTest {
     long initialClosedWonCount = opportunityRepository.count("stage", OpportunityStage.CLOSED_WON);
 
     Customer testCustomer = createTestCustomer("Count Test Company");
-    User testUser = getOrCreateTestUser("testuser");
+    User testUser = getOrCreateTestUser("testuser_" + UUID.randomUUID().toString().substring(0, 8));
 
     // Create 3 NEW_LEAD, 2 QUALIFICATION, 1 PROPOSAL
     createTestOpportunity("Lead 1", OpportunityStage.NEW_LEAD, testUser, testCustomer);
@@ -151,7 +151,7 @@ public class OpportunityRepositoryBasicTest {
   void findActiveOpportunities_shouldExcludeClosedOpportunities() {
     // Given
     Customer testCustomer = createTestCustomer("Active Test Company");
-    User testUser = getOrCreateTestUser("testuser");
+    User testUser = getOrCreateTestUser("testuser_" + UUID.randomUUID().toString().substring(0, 8));
 
     Opportunity active1 =
         createTestOpportunity("Active 1", OpportunityStage.NEW_LEAD, testUser, testCustomer);
@@ -184,7 +184,7 @@ public class OpportunityRepositoryBasicTest {
     // Given
     Customer customer1 = createTestCustomer("Delete Test Customer 1");
     Customer customer2 = createTestCustomer("Delete Test Customer 2");
-    User testUser = getOrCreateTestUser("testuser");
+    User testUser = getOrCreateTestUser("testuser_" + UUID.randomUUID().toString().substring(0, 8));
 
     createTestOpportunity("Opp 1 for Customer 1", OpportunityStage.NEW_LEAD, testUser, customer1);
     createTestOpportunity("Opp 2 for Customer 1", OpportunityStage.PROPOSAL, testUser, customer1);

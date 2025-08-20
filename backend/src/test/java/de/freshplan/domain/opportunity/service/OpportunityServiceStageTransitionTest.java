@@ -44,9 +44,11 @@ import org.junit.jupiter.params.provider.MethodSource;
  * @since 2.0.0
  */
 @QuarkusTest
-@Tag("core")@TestSecurity(
+@Tag("core")
+@TestSecurity(
     user = "testuser",
     roles = {"admin", "manager", "sales"})
+@io.quarkus.test.TestTransaction
 public class OpportunityServiceStageTransitionTest {
 
   @Inject OpportunityService opportunityService;
@@ -69,23 +71,22 @@ public class OpportunityServiceStageTransitionTest {
   private User testUser;
 
   @BeforeEach
-  @Transactional
   void setUp() {
-    // Clean up existing test data in correct order (children first!)
-    // Delete opportunity_activities first (child table)
-    entityManager.createQuery("DELETE FROM OpportunityActivity").executeUpdate();
-    // Then delete opportunities (parent table)
-    opportunityRepository.deleteAll();
-
     // Create test customer
     testCustomer = getOrCreateCustomer("Test Company", "test@example.com");
 
-    // Get test user that was created by TestDataInitializer
-    testUser = userRepository.find("username", "testuser").firstResult();
-    if (testUser == null) {
-      throw new IllegalStateException(
-          "Test user 'testuser' not found. TestDataInitializer should have created it.");
-    }
+    // Create and persist test user (will be rolled back with @TestTransaction)
+    String uniqueId = UUID.randomUUID().toString().substring(0, 8);
+    testUser = de.freshplan.test.builders.UserTestDataFactory.builder()
+        .withUsername("testuser_" + uniqueId)
+        .withFirstName("Test")
+        .withLastName("User")
+        .withEmail("testuser_" + uniqueId + "@freshplan.de")
+        .build();
+    testUser.enable();
+    testUser.addRole("admin");
+    userRepository.persist(testUser);
+    userRepository.flush();
   }
 
   @Nested

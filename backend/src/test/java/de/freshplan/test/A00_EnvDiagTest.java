@@ -5,15 +5,21 @@ import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
 import java.util.*;
 import java.sql.*;
 
 /**
  * A00 Smart Environment Diagnostics - sammelt ALLE Abweichungen und erklärt Root-Causes.
  * Statt beim ersten Fehler zu stoppen, sammelt A00 komplette Problemübersicht.
+ * 
+ * WICHTIG: Dieser Test MUSS als ERSTER laufen (daher A00 Präfix)!
  */
 @QuarkusTest
 @Tag("core")
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class A00_EnvDiagTest {
     
     @Inject 
@@ -22,6 +28,7 @@ class A00_EnvDiagTest {
     private final List<String> problems = new ArrayList<>();
     
     @Test
+    @Order(1)
     void verifyEnvironment() throws Exception {
         var config = (io.smallrye.config.SmallRyeConfig) org.eclipse.microprofile.config.ConfigProvider.getConfig();
         

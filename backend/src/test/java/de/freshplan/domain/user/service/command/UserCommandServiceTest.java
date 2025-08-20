@@ -171,14 +171,17 @@ import org.junit.jupiter.api.Tag;import org.mockito.MockedStatic;
   @Test
   void updateUser_withNoChanges_shouldNotUpdate() {
     // Given
+    String actualUsername = testUser.getUsername(); // Get the actual username from the builder
+    String actualEmail = testUser.getEmail(); // Get the actual email from the builder
+    
     when(userRepository.findByIdOptional(testUserId)).thenReturn(Optional.of(testUser));
-    when(userRepository.existsByUsernameExcluding("testuser", testUserId)).thenReturn(false);
-    when(userRepository.existsByEmailExcluding("test@example.com", testUserId)).thenReturn(false);
+    when(userRepository.existsByUsernameExcluding(actualUsername, testUserId)).thenReturn(false);
+    when(userRepository.existsByEmailExcluding(actualEmail, testUserId)).thenReturn(false);
     when(userMapper.toResponse(testUser)).thenReturn(testUserResponse);
 
     // Create an update request with same values (username, firstName, lastName, email, enabled)
     UpdateUserRequest sameRequest =
-        new UpdateUserRequest("testuser", "Test", "User", "test@example.com", true);
+        new UpdateUserRequest(actualUsername, "Test", "User", actualEmail, true);
 
     // When
     UserResponse result = commandService.updateUser(testUserId, sameRequest);
