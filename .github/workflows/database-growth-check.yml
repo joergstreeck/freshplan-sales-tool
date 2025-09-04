@@ -76,8 +76,10 @@ jobs:
           -Dflyway.url="jdbc:postgresql://localhost:5432/freshplan" \
           -Dflyway.user=freshplan \
           -Dflyway.password=freshplan \
-          -Dflyway.locations=classpath:db/migration \
+          -Dflyway.locations=filesystem:src/main/resources/db/migration \
           -Dflyway.outOfOrder=true \
+          -Dflyway.baselineOnMigrate=true \
+          -Dflyway.baselineVersion=0 \
           -Dflyway.validateOnMigrate=false || {
             echo "❌ Flyway migration failed! Checking database connection..."
             psql -h localhost -U freshplan -d freshplan -c "SELECT version();"
