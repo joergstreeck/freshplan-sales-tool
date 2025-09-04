@@ -74,12 +74,13 @@ jobs:
           echo "✅ Schema reset complete - tests will handle migrations"
           
           # KRITISCH: DevServices disabled in CI
-          if ! grep -q "quarkus.datasource.devservices.enabled=false" backend/src/test/resources/application-test.properties; then
-            echo "❌ ABORT: DevServices not disabled in test profile"
-            echo "   Add: quarkus.datasource.devservices.enabled=false to application-test.properties"
+          # Check the CI profile since we use -Dquarkus.profile=ci
+          if ! grep -q "quarkus.datasource.devservices.enabled=false" backend/src/test/resources/application-ci.properties; then
+            echo "❌ ABORT: DevServices not disabled in CI profile"
+            echo "   Add: quarkus.datasource.devservices.enabled=false to application-ci.properties"
             exit 1
           fi
-          echo "✅ DevServices disabled in test profile"
+          echo "✅ DevServices disabled in CI profile"
           
           # INFO: Flyway will run during test execution
           echo "📋 Flyway migrations will be executed by tests"
