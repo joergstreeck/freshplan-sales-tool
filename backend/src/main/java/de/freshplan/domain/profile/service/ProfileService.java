@@ -3,12 +3,14 @@ package de.freshplan.domain.profile.service;
 // REMOVED: import com.itextpdf.html2pdf.HtmlConverter; - Using HTML-based solution instead
 import de.freshplan.domain.profile.entity.Profile;
 import de.freshplan.domain.profile.repository.ProfileRepository;
+import de.freshplan.domain.profile.service.command.ProfileCommandService;
 import de.freshplan.domain.profile.service.dto.CreateProfileRequest;
 import de.freshplan.domain.profile.service.dto.ProfileResponse;
 import de.freshplan.domain.profile.service.dto.UpdateProfileRequest;
 import de.freshplan.domain.profile.service.exception.DuplicateProfileException;
 import de.freshplan.domain.profile.service.exception.ProfileNotFoundException;
 import de.freshplan.domain.profile.service.mapper.ProfileMapper;
+import de.freshplan.domain.profile.service.query.ProfileQueryService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -17,10 +19,15 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.logging.Logger;
 
 /**
  * Service layer for Profile management operations.
+ *
+ * <p>CQRS REFACTORING: This service now acts as a facade that delegates to ProfileCommandService
+ * (write operations) and ProfileQueryService (read operations) based on the feature flag
+ * 'features.cqrs.enabled'.
  *
  * @author FreshPlan Team
  * @since 1.0.0
@@ -35,6 +42,14 @@ public class ProfileService {
 
   @Inject ProfileMapper profileMapper;
 
+  // CQRS Services
+  @Inject ProfileCommandService commandService;
+  @Inject ProfileQueryService queryService;
+
+  // Feature flag for CQRS migration
+  @ConfigProperty(name = "features.cqrs.enabled", defaultValue = "false")
+  boolean cqrsEnabled;
+
   /**
    * Create a new profile.
    *
@@ -43,6 +58,12 @@ public class ProfileService {
    * @throws DuplicateProfileException if profile already exists
    */
   public ProfileResponse createProfile(CreateProfileRequest request) {
+    if (cqrsEnabled) {
+      LOG.debug("CQRS enabled - delegating to ProfileCommandService");
+      return commandService.createProfile(request);
+    }
+
+    // Legacy implementation
     // Defensive validation
     if (request == null) {
       throw new IllegalArgumentException("CreateProfileRequest cannot be null");
@@ -82,6 +103,12 @@ public class ProfileService {
    * @throws ProfileNotFoundException if not found
    */
   public ProfileResponse getProfile(UUID id) {
+    if (cqrsEnabled) {
+      LOG.debug("CQRS enabled - delegating to ProfileQueryService");
+      return queryService.getProfile(id);
+    }
+
+    // Legacy implementation
     // Defensive validation
     if (id == null) {
       throw new IllegalArgumentException("Profile ID cannot be null");
@@ -102,6 +129,12 @@ public class ProfileService {
    * @throws ProfileNotFoundException if not found
    */
   public ProfileResponse getProfileByCustomerId(String customerId) {
+    if (cqrsEnabled) {
+      LOG.debug("CQRS enabled - delegating to ProfileQueryService");
+      return queryService.getProfileByCustomerId(customerId);
+    }
+
+    // Legacy implementation
     // Defensive validation
     if (customerId == null || customerId.trim().isEmpty()) {
       throw new IllegalArgumentException("Customer ID cannot be null or empty");
@@ -125,6 +158,12 @@ public class ProfileService {
    * @throws ProfileNotFoundException if not found
    */
   public ProfileResponse updateProfile(UUID id, UpdateProfileRequest request) {
+    if (cqrsEnabled) {
+      LOG.debug("CQRS enabled - delegating to ProfileCommandService");
+      return commandService.updateProfile(id, request);
+    }
+
+    // Legacy implementation
     // Defensive validation
     if (id == null) {
       throw new IllegalArgumentException("Profile ID cannot be null");
@@ -156,6 +195,13 @@ public class ProfileService {
    * @throws ProfileNotFoundException if not found
    */
   public void deleteProfile(UUID id) {
+    if (cqrsEnabled) {
+      LOG.debug("CQRS enabled - delegating to ProfileCommandService");
+      commandService.deleteProfile(id);
+      return;
+    }
+
+    // Legacy implementation
     // Defensive validation
     if (id == null) {
       throw new IllegalArgumentException("Profile ID cannot be null");
@@ -175,6 +221,12 @@ public class ProfileService {
    * @return list of all profile responses
    */
   public List<ProfileResponse> getAllProfiles() {
+    if (cqrsEnabled) {
+      LOG.debug("CQRS enabled - delegating to ProfileQueryService");
+      return queryService.getAllProfiles();
+    }
+
+    // Legacy implementation
     LOG.debug("Retrieving all profiles");
     List<ProfileResponse> profiles =
         profileRepository.listAll().stream()
@@ -191,6 +243,12 @@ public class ProfileService {
    * @return true if exists, false otherwise
    */
   public boolean profileExists(String customerId) {
+    if (cqrsEnabled) {
+      LOG.debug("CQRS enabled - delegating to ProfileQueryService");
+      return queryService.profileExists(customerId);
+    }
+
+    // Legacy implementation
     // Defensive validation
     if (customerId == null || customerId.trim().isEmpty()) {
       throw new IllegalArgumentException("Customer ID cannot be null or empty");
@@ -209,6 +267,12 @@ public class ProfileService {
    * @throws ProfileNotFoundException if not found
    */
   public String exportProfileAsHtml(UUID id) {
+    if (cqrsEnabled) {
+      LOG.debug("CQRS enabled - delegating to ProfileQueryService");
+      return queryService.exportProfileAsHtml(id);
+    }
+
+    // Legacy implementation
     // Defensive validation
     if (id == null) {
       throw new IllegalArgumentException("Profile ID cannot be null");

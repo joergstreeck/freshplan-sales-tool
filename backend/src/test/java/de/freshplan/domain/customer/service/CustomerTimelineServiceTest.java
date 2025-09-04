@@ -11,6 +11,7 @@ import de.freshplan.domain.customer.repository.CustomerTimelineRepository;
 import de.freshplan.domain.customer.service.dto.timeline.*;
 import de.freshplan.domain.customer.service.exception.CustomerNotFoundException;
 import de.freshplan.domain.customer.service.mapper.CustomerTimelineMapper;
+import de.freshplan.test.builders.CustomerBuilder;
 import io.quarkus.panache.common.Page;
 import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
@@ -23,7 +24,7 @@ import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
+import org.junit.jupiter.api.Tag;import org.mockito.ArgumentCaptor;
 
 /**
  * Unit tests for CustomerTimelineService.
@@ -32,7 +33,7 @@ import org.mockito.ArgumentCaptor;
  * @since 2.0.0
  */
 @QuarkusTest
-@TestSecurity(
+@Tag("migrate")@TestSecurity(
     user = "testuser",
     roles = {"admin", "manager", "sales"})
 class CustomerTimelineServiceTest {
@@ -45,6 +46,8 @@ class CustomerTimelineServiceTest {
 
   @InjectMock CustomerTimelineMapper timelineMapper;
 
+  @Inject CustomerBuilder customerBuilder;
+
   private UUID customerId;
   private Customer customer;
   private CustomerTimelineEvent timelineEvent;
@@ -54,10 +57,10 @@ class CustomerTimelineServiceTest {
   void setUp() {
     customerId = UUID.randomUUID();
 
-    customer = new Customer();
+    customer = customerBuilder.withCompanyName("Test Company").build();
     customer.setId(customerId);
     customer.setCustomerNumber("CUST001");
-    customer.setCompanyName("Test Company");
+    customer.setCompanyName("Test Company"); // Override to remove [TEST-xxx] prefix
 
     timelineEvent = new CustomerTimelineEvent();
     timelineEvent.setId(UUID.randomUUID());

@@ -1,0 +1,14 @@
+freshplan:
+  seed:
+    enabled: true  # Seeds für Tests erforderlich
+  test:
+    isolation: true
+
+quarkus:
+  datasource:
+    db-kind: postgresql
+  flyway:
+    clean-at-start: true      # saubere Tests (CI setzt DB ohnehin neu auf)
+    out-of-order: true
+    migrate-at-start: true
+    locations: "classpath:db/migration,classpath:db/testdata,classpath:db/ci-migrations"

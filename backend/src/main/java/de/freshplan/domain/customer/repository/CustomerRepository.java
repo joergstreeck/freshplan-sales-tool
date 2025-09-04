@@ -87,7 +87,7 @@ public class CustomerRepository implements PanacheRepositoryBase<Customer, UUID>
 
   /** Find customers by customer number (prefix search). */
   public List<Customer> findByCustomerNumberLike(String pattern, int limit) {
-    return find("isDeleted = false AND customerNumber like ?1", pattern).page(0, limit).list();
+    return find("isDeleted = false AND customerNumber LIKE ?1", pattern).page(0, limit).list();
   }
 
   // ========== EXPORT QUERIES ==========
@@ -100,14 +100,26 @@ public class CustomerRepository implements PanacheRepositoryBase<Customer, UUID>
       query.append(" AND status IN ?1");
       if (industry != null) {
         query.append(" AND industry = ?2");
-        return find(query.toString(), status, industry).list();
+        try {
+          Industry industryEnum = Industry.valueOf(industry);
+          return find(query.toString(), status, industryEnum).list();
+        } catch (IllegalArgumentException e) {
+          // Invalid industry - return empty list
+          return List.of();
+        }
       }
       return find(query.toString(), status).list();
     }
 
     if (industry != null) {
       query.append(" AND industry = ?1");
-      return find(query.toString(), industry).list();
+      try {
+        Industry industryEnum = Industry.valueOf(industry);
+        return find(query.toString(), industryEnum).list();
+      } catch (IllegalArgumentException e) {
+        // Invalid industry - return empty list
+        return List.of();
+      }
     }
 
     return find(query.toString()).list();
@@ -121,14 +133,26 @@ public class CustomerRepository implements PanacheRepositoryBase<Customer, UUID>
       query.append(" AND status IN ?1");
       if (industry != null) {
         query.append(" AND industry = ?2");
-        return find(query.toString(), status, industry).page(Page.of(page, size)).list();
+        try {
+          Industry industryEnum = Industry.valueOf(industry);
+          return find(query.toString(), status, industryEnum).page(Page.of(page, size)).list();
+        } catch (IllegalArgumentException e) {
+          // Invalid industry - return empty list
+          return List.of();
+        }
       }
       return find(query.toString(), status).page(Page.of(page, size)).list();
     }
 
     if (industry != null) {
       query.append(" AND industry = ?1");
-      return find(query.toString(), industry).page(Page.of(page, size)).list();
+      try {
+        Industry industryEnum = Industry.valueOf(industry);
+        return find(query.toString(), industryEnum).page(Page.of(page, size)).list();
+      } catch (IllegalArgumentException e) {
+        // Invalid industry - return empty list
+        return List.of();
+      }
     }
 
     return find(query.toString()).page(Page.of(page, size)).list();
@@ -298,24 +322,21 @@ public class CustomerRepository implements PanacheRepositoryBase<Customer, UUID>
   // ========== DUPLICATE DETECTION ==========
 
   /**
-   * Find potential duplicates by company name similarity. Uses LIKE-based search instead of
-   * similarity() due to missing pg_trgm.
+   * Find potential duplicates by company name similarity. Uses exact match after normalization.
+   * Special handling for [TEST] prefix in test data.
    */
   public List<Customer> findPotentialDuplicates(String companyName) {
     if (companyName == null || companyName.isBlank()) {
       return List.of();
     }
 
-    // Simple LIKE-based duplicate detection
-    String searchPattern = "%" + companyName.toLowerCase() + "%";
-
+    // Only check for exact duplicates (case-insensitive)
+    // Don't do fuzzy matching or prefix removal - it causes too many false positives
     return find(
             """
                 isDeleted = false
-                AND LOWER(companyName) LIKE ?1
-                AND companyName != ?2
+                AND LOWER(companyName) = LOWER(?1)
                 """,
-            searchPattern,
             companyName)
         .list();
   }
@@ -388,5 +409,24 @@ public class CustomerRepository implements PanacheRepositoryBase<Customer, UUID>
             .getSingleResult();
 
     return result != null ? (Integer) result : null;
+  }
+
+  // ========== TEST DATA CLEANUP ==========
+
+  /**
+   * Delete all test data.
+   * Only deletes:
+   * - Customers with is_test_data = true
+   * - Customers with customer_number LIKE 'KD-TEST-%'
+   * - Customers with company_name LIKE '[TEST%'
+   * 
+   * @return Number of customers deleted
+   */
+  public long deleteAllTestData() {
+    return delete("""
+        isTestData = true 
+        OR customerNumber LIKE 'KD-TEST-%' 
+        OR companyName LIKE '[TEST%'
+        """);
   }
 }

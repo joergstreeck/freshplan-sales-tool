@@ -1,6 +1,7 @@
 package de.freshplan.domain.cockpit.service;
 
 import de.freshplan.domain.cockpit.service.dto.*;
+import de.freshplan.domain.cockpit.service.query.SalesCockpitQueryService;
 import de.freshplan.domain.customer.entity.Customer;
 import de.freshplan.domain.customer.entity.CustomerStatus;
 import de.freshplan.domain.customer.repository.CustomerRepository;
@@ -20,12 +21,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 /**
- * Service layer für das Sales Cockpit Dashboard.
+ * Service layer für das Sales Cockpit Dashboard - NOW A FACADE.
  *
- * <p>Aggregiert Daten aus verschiedenen Services und bereitet sie optimiert für die Cockpit-Ansicht
- * auf.
+ * <p>This service acts as a Facade for backward compatibility during CQRS migration. It delegates
+ * to SalesCockpitQueryService when CQRS is enabled.
+ *
+ * <p>NOTE: @Transactional is kept for legacy code path compatibility.
  *
  * @author FreshPlan Team
  * @since 2.0.0
@@ -49,6 +53,13 @@ public class SalesCockpitService {
   /** Test-User-ID für Entwicklung - umgeht User-Validierung */
   private static final UUID TEST_USER_ID = UUID.fromString("00000000-0000-0000-0000-000000000000");
 
+  // CQRS Services (NEW for PR #5)
+  @Inject SalesCockpitQueryService queryService;
+
+  // Feature flag for CQRS pattern
+  @ConfigProperty(name = "features.cqrs.enabled", defaultValue = "false")
+  boolean cqrsEnabled;
+
   private final CustomerRepository customerRepository;
   private final UserRepository userRepository;
 
@@ -61,11 +72,19 @@ public class SalesCockpitService {
   /**
    * Lädt alle Dashboard-Daten für einen bestimmten Benutzer.
    *
+   * <p>FACADE METHOD: Delegates to QueryService when CQRS is enabled.
+   *
    * @param userId Die ID des Benutzers
    * @return Aggregierte Dashboard-Daten
    * @throws IllegalArgumentException wenn userId null ist oder User nicht gefunden wird
    */
   public SalesCockpitDashboard getDashboardData(UUID userId) {
+    // CQRS: Delegate to query service
+    if (cqrsEnabled) {
+      return queryService.getDashboardData(userId);
+    }
+
+    // LEGACY: Original implementation below
     // Input validation
     if (userId == null) {
       throw new IllegalArgumentException("User ID must not be null");
@@ -306,12 +325,20 @@ public class SalesCockpitService {
   /**
    * Lädt Dashboard-Daten für die Entwicklungsumgebung.
    *
+   * <p>FACADE METHOD: Delegates to QueryService when CQRS is enabled.
+   *
    * <p>Diese Methode nutzt echte Daten aus der Datenbank und umgeht die User-Validierung. Sie ist
    * nur in der Entwicklungsumgebung verfügbar.
    *
    * @return Dashboard-Daten mit echten Statistiken für Entwicklung
    */
   public SalesCockpitDashboard getDevDashboardData() {
+    // CQRS: Delegate to query service
+    if (cqrsEnabled) {
+      return queryService.getDevDashboardData();
+    }
+
+    // LEGACY: Original implementation below
     SalesCockpitDashboard dashboard = new SalesCockpitDashboard();
 
     // Verwende echte Daten für Statistiken (falls vorhanden)

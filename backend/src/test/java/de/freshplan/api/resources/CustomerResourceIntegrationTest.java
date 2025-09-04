@@ -11,6 +11,7 @@ import de.freshplan.domain.customer.entity.Industry;
 import de.freshplan.domain.customer.service.dto.*;
 import de.freshplan.test.BaseIntegrationTest;
 import de.freshplan.test.TestcontainersProfile;
+import de.freshplan.test.builders.CustomerBuilder;
 import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
@@ -18,12 +19,13 @@ import io.quarkus.test.security.TestSecurity;
 import io.restassured.RestAssured;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
+import jakarta.inject.Inject;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
+import org.junit.jupiter.api.Tag;
 /**
  * Integration Tests für CustomerResource REST API.
  *
@@ -34,7 +36,7 @@ import org.junit.jupiter.api.Test;
  * @since 2.0.0
  */
 @QuarkusTest
-@TestSecurity(
+@Tag("core")@TestSecurity(
     user = "testuser",
     roles = {"admin", "manager", "sales"})
 @TestProfile(TestcontainersProfile.class)
@@ -42,6 +44,8 @@ import org.junit.jupiter.api.Test;
 public class CustomerResourceIntegrationTest extends BaseIntegrationTest {
 
   private static final String BASE_PATH = "/api/customers";
+
+  @Inject CustomerBuilder customerBuilder;
 
   @BeforeEach
   void setUp() {
@@ -52,7 +56,12 @@ public class CustomerResourceIntegrationTest extends BaseIntegrationTest {
 
   @Test
   void createCustomer_withValidData_shouldReturn201() {
-    CreateCustomerRequest request = createValidCustomerRequest();
+    CreateCustomerRequest request =
+        customerBuilder
+            .withCompanyName("[TEST] Test Company GmbH")
+            .asEnterprise()
+            .inIndustry(Industry.HOTEL)
+            .buildCreateRequest();
 
     CustomerResponse response =
         given()
@@ -102,7 +111,7 @@ public class CustomerResourceIntegrationTest extends BaseIntegrationTest {
   @Test
   void getCustomer_withValidId_shouldReturn200() {
     // First create a customer
-    CustomerResponse created = createTestCustomer();
+    CustomerResponse created = createTestCustomerViaAPI("[TEST] Customer for Get");
 
     CustomerResponse response =
         given()
@@ -132,7 +141,7 @@ public class CustomerResourceIntegrationTest extends BaseIntegrationTest {
   @Test
   void updateCustomer_withValidData_shouldReturn200() {
     // First create a customer
-    CustomerResponse created = createTestCustomer();
+    CustomerResponse created = createTestCustomerViaAPI("[TEST] Customer for Update");
 
     UpdateCustomerRequest updateRequest =
         UpdateCustomerRequest.builder()
@@ -161,7 +170,7 @@ public class CustomerResourceIntegrationTest extends BaseIntegrationTest {
   @Test
   void deleteCustomer_shouldReturn204() {
     // First create a customer
-    CustomerResponse created = createTestCustomer();
+    CustomerResponse created = createTestCustomerViaAPI("[TEST] Customer for Delete");
 
     given()
         .queryParam("reason", "Test deletion")
@@ -177,7 +186,7 @@ public class CustomerResourceIntegrationTest extends BaseIntegrationTest {
   @Test
   void restoreCustomer_shouldReturn200() {
     // First create and delete a customer
-    CustomerResponse created = createTestCustomer();
+    CustomerResponse created = createTestCustomerViaAPI("[TEST] Customer for Restore");
 
     given()
         .queryParam("reason", "Test deletion")
@@ -205,9 +214,9 @@ public class CustomerResourceIntegrationTest extends BaseIntegrationTest {
   @Test
   void getAllCustomers_withPagination_shouldReturn200() {
     // Create multiple customers with unique names to avoid conflicts
-    String testPrefix = "TestPagination_" + UUID.randomUUID().toString();
+    String testPrefix = "[TEST] Pagination_" + UUID.randomUUID().toString();
     for (int i = 0; i < 5; i++) {
-      createTestCustomer(testPrefix + "_Company_" + i);
+      createTestCustomerViaAPI(testPrefix + "_Company_" + i);
     }
 
     CustomerListResponse response =
@@ -239,8 +248,8 @@ public class CustomerResourceIntegrationTest extends BaseIntegrationTest {
   @Test
   void getAllCustomers_withStatusFilter_shouldReturnFiltered() {
     // Create customers with unique names
-    String testPrefix = "TestStatusFilter_" + UUID.randomUUID().toString();
-    CustomerResponse lead = createTestCustomer(testPrefix + "_Company");
+    String testPrefix = "[TEST] StatusFilter_" + UUID.randomUUID().toString();
+    CustomerResponse lead = createTestCustomerViaAPI(testPrefix + "_Company");
 
     // Update one to AKTIV status
     changeCustomerStatus(lead.id(), CustomerStatus.AKTIV);
@@ -283,10 +292,10 @@ public class CustomerResourceIntegrationTest extends BaseIntegrationTest {
     long baselineCount = baseline.totalCustomers();
 
     // Create test data with unique names
-    String testPrefix = "TestDashboard_" + UUID.randomUUID().toString();
-    createTestCustomer(testPrefix + "_Company_1");
-    createTestCustomer(testPrefix + "_Company_2");
-    createTestCustomer(testPrefix + "_Company_3");
+    String testPrefix = "[TEST] Dashboard_" + UUID.randomUUID().toString();
+    createTestCustomerViaAPI(testPrefix + "_Company_1");
+    createTestCustomerViaAPI(testPrefix + "_Company_2");
+    createTestCustomerViaAPI(testPrefix + "_Company_3");
 
     CustomerDashboardResponse response =
         given()
@@ -312,8 +321,8 @@ public class CustomerResourceIntegrationTest extends BaseIntegrationTest {
   @Test
   void getCustomersAtRisk_shouldReturnRiskCustomers() {
     // Create a customer with unique name
-    String testPrefix = "TestRisk_" + UUID.randomUUID().toString();
-    CustomerResponse created = createTestCustomer(testPrefix + "_Company");
+    String testPrefix = "[TEST] Risk_" + UUID.randomUUID().toString();
+    CustomerResponse created = createTestCustomerViaAPI(testPrefix + "_Company");
 
     // We need to test risk assessment endpoint
     CustomerListResponse response =
@@ -338,7 +347,7 @@ public class CustomerResourceIntegrationTest extends BaseIntegrationTest {
   @Test
   void getCustomerHierarchy_shouldReturnHierarchyTree() {
     // Create parent customer
-    CustomerResponse parent = createTestCustomer("Parent Company");
+    CustomerResponse parent = createTestCustomerViaAPI("[TEST] Parent Company");
 
     CustomerResponse hierarchy =
         given()
@@ -356,9 +365,10 @@ public class CustomerResourceIntegrationTest extends BaseIntegrationTest {
 
   @Test
   void addChildCustomer_shouldLinkCustomers() {
-    // Create parent and child
-    CustomerResponse parent = createTestCustomer("Parent Company");
-    CustomerResponse child = createTestCustomer("Child Company");
+    // Create parent and child with unique names
+    String uniqueSuffix = UUID.randomUUID().toString().substring(0, 8);
+    CustomerResponse parent = createTestCustomerViaAPI("[TEST] Parent Company " + uniqueSuffix);
+    CustomerResponse child = createTestCustomerViaAPI("[TEST] Child Company " + uniqueSuffix);
 
     AddChildCustomerRequest request = new AddChildCustomerRequest(UUID.fromString(child.id()));
 
@@ -381,11 +391,13 @@ public class CustomerResourceIntegrationTest extends BaseIntegrationTest {
 
   @Test
   void checkDuplicates_shouldReturnPotentialDuplicates() {
-    // Create customers with similar names
-    createTestCustomer("ABC Company GmbH");
-    createTestCustomer("ABC Company AG");
+    // Create customer first
+    String uniqueSuffix = UUID.randomUUID().toString().substring(0, 8);
+    String companyName = "[TEST] ABC Company GmbH " + uniqueSuffix;
+    createTestCustomerViaAPI(companyName);
 
-    CheckDuplicatesRequest request = new CheckDuplicatesRequest("ABC Company");
+    // Now check for duplicates - should find the one we just created
+    CheckDuplicatesRequest request = new CheckDuplicatesRequest(companyName);
 
     List<CustomerResponse> duplicates =
         given()
@@ -398,15 +410,16 @@ public class CustomerResourceIntegrationTest extends BaseIntegrationTest {
             .extract()
             .as(new TypeRef<List<CustomerResponse>>() {});
 
-    assertTrue(duplicates.size() >= 2);
-    assertTrue(duplicates.stream().allMatch(c -> c.companyName().contains("ABC Company")));
+    // Should find exactly 1 with this unique name
+    assertEquals(1, duplicates.size());
+    assertEquals(companyName, duplicates.get(0).companyName());
   }
 
   @Test
   void mergeCustomers_shouldCombineCustomers() {
     // Create two customers
-    CustomerResponse target = createTestCustomer("Target Company");
-    CustomerResponse source = createTestCustomer("Source Company");
+    CustomerResponse target = createTestCustomerViaAPI("[TEST] Target Company");
+    CustomerResponse source = createTestCustomerViaAPI("[TEST] Source Company");
 
     MergeCustomersRequest request = new MergeCustomersRequest(UUID.fromString(source.id()));
 
@@ -430,7 +443,7 @@ public class CustomerResourceIntegrationTest extends BaseIntegrationTest {
   @Test
   void changeCustomerStatus_shouldUpdateStatus() {
     // Create customer
-    CustomerResponse customer = createTestCustomer();
+    CustomerResponse customer = createTestCustomerViaAPI("[TEST] Customer for Status Change");
     assertEquals(CustomerStatus.LEAD, customer.status());
 
     ChangeStatusRequest request = new ChangeStatusRequest(CustomerStatus.AKTIV);
@@ -453,7 +466,7 @@ public class CustomerResourceIntegrationTest extends BaseIntegrationTest {
 
   private CreateCustomerRequest createValidCustomerRequest() {
     return new CreateCustomerRequest(
-        "Test Company GmbH", // companyName
+        "[TEST] Test Company GmbH", // companyName
         "Test Trading Name", // tradingName
         "GmbH", // legalForm
         CustomerType.UNTERNEHMEN, // customerType
@@ -473,11 +486,7 @@ public class CustomerResourceIntegrationTest extends BaseIntegrationTest {
         );
   }
 
-  private CustomerResponse createTestCustomer() {
-    return createTestCustomer("Test Company GmbH");
-  }
-
-  private CustomerResponse createTestCustomer(String companyName) {
+  private CustomerResponse createTestCustomerViaAPI(String companyName) {
     CreateCustomerRequest request =
         new CreateCustomerRequest(
             companyName, // companyName

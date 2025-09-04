@@ -3,6 +3,8 @@ package de.freshplan.domain.testdata.service;
 import de.freshplan.domain.customer.entity.*;
 import de.freshplan.domain.customer.repository.CustomerRepository;
 import de.freshplan.domain.customer.repository.CustomerTimelineRepository;
+import de.freshplan.domain.testdata.service.command.TestDataCommandService;
+import de.freshplan.domain.testdata.service.query.TestDataQueryService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -10,17 +12,29 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.logging.Logger;
 
 /**
  * Service for managing test data in the development environment. Provides clean seeding and removal
  * of test data.
+ *
+ * <p>CQRS Refactoring: This service now acts as a facade that delegates to Command and Query
+ * services based on a feature flag. When cqrs.enabled=true, it uses the new split services. When
+ * false, it falls back to the legacy implementation.
  */
 @ApplicationScoped
 public class TestDataService {
 
   private static final Logger LOG = Logger.getLogger(TestDataService.class);
   private static final String TEST_USER = "test-data-seeder";
+
+  @ConfigProperty(name = "features.cqrs.enabled", defaultValue = "false")
+  boolean cqrsEnabled;
+
+  @Inject TestDataCommandService commandService;
+
+  @Inject TestDataQueryService queryService;
 
   @Inject CustomerRepository customerRepository;
 
@@ -32,6 +46,12 @@ public class TestDataService {
    */
   @Transactional
   public SeedResult seedTestData() {
+    if (cqrsEnabled) {
+      LOG.debugf("CQRS enabled - delegating seedTestData to TestDataCommandService");
+      return commandService.seedTestData();
+    }
+
+    // Legacy implementation
     LOG.info("Starting test data seeding...");
 
     List<Customer> createdCustomers = new ArrayList<>();
@@ -161,6 +181,12 @@ public class TestDataService {
   /** Removes all test data from the database. */
   @Transactional
   public CleanupResult cleanTestData() {
+    if (cqrsEnabled) {
+      LOG.debugf("CQRS enabled - delegating cleanTestData to TestDataCommandService");
+      return commandService.cleanTestData();
+    }
+
+    // Legacy implementation
     LOG.info("Starting test data cleanup...");
 
     try {
@@ -184,6 +210,12 @@ public class TestDataService {
 
   /** Counts existing test data in the database. */
   public TestDataStats getTestDataStats() {
+    if (cqrsEnabled) {
+      LOG.debugf("CQRS enabled - delegating getTestDataStats to TestDataQueryService");
+      return queryService.getTestDataStats();
+    }
+
+    // Legacy implementation
     long customerCount = customerRepository.count("isTestData", true);
     long eventCount = timelineRepository.count("isTestData", true);
 
@@ -196,6 +228,12 @@ public class TestDataService {
    */
   @Transactional
   public CleanupResult cleanOldTestData() {
+    if (cqrsEnabled) {
+      LOG.debugf("CQRS enabled - delegating cleanOldTestData to TestDataCommandService");
+      return commandService.cleanOldTestData();
+    }
+
+    // Legacy implementation
     LOG.info("Starting old test data cleanup...");
 
     try {
@@ -285,6 +323,12 @@ public class TestDataService {
    */
   @Transactional
   public SeedResult seedAdditionalTestData() {
+    if (cqrsEnabled) {
+      LOG.debugf("CQRS enabled - delegating seedAdditionalTestData to TestDataCommandService");
+      return commandService.seedAdditionalTestData();
+    }
+
+    // Legacy implementation
     LOG.info("Seeding additional 14 test customers to reach 58 total...");
 
     List<Customer> createdCustomers = new ArrayList<>();
@@ -353,6 +397,12 @@ public class TestDataService {
    */
   @Transactional
   public SeedResult seedComprehensiveTestData() {
+    if (cqrsEnabled) {
+      LOG.debugf("CQRS enabled - delegating seedComprehensiveTestData to TestDataCommandService");
+      return commandService.seedComprehensiveTestData();
+    }
+
+    // Legacy implementation
     LOG.info("🧪 Starting comprehensive edge-case test data seeding...");
 
     List<Customer> createdCustomers = new ArrayList<>();

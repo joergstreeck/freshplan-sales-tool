@@ -12,19 +12,20 @@ import de.freshplan.domain.customer.repository.CustomerRepository;
 import de.freshplan.domain.customer.service.dto.ContactInteractionDTO;
 import de.freshplan.domain.customer.service.dto.DataQualityMetricsDTO;
 import de.freshplan.domain.customer.service.dto.WarmthScoreDTO;
+import de.freshplan.test.builders.ContactBuilder;
+import de.freshplan.test.builders.CustomerBuilder;
 import io.quarkus.panache.common.Page;
+import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
+import org.junit.jupiter.api.Tag;
 @QuarkusTest
-@DisplayName("Contact Interaction Service Integration Tests")
+@Tag("migrate")@DisplayName("Contact Interaction Service Integration Tests")
 class ContactInteractionServiceIT {
 
   @Inject ContactInteractionService contactInteractionService;
@@ -35,21 +36,21 @@ class ContactInteractionServiceIT {
 
   @Inject ContactInteractionRepository interactionRepository;
 
+  @Inject CustomerBuilder customerBuilder;
+
+  @Inject ContactBuilder contactBuilder;
+
   private UUID testCustomerId;
   private UUID testContactId;
   private CustomerContact testContact;
 
-  @BeforeEach
-  @Transactional
-  void setUp() {
-    // Clean slate for each test
-    interactionRepository.deleteAll();
-    contactRepository.deleteAll();
-    customerRepository.deleteAll();
+  private void setupTestData() {
+    // Create test customer using CustomerBuilder
+    Customer testCustomer = customerBuilder.withCompanyName("Test Company GmbH").build();
 
-    // Create test customer
-    Customer testCustomer = new Customer();
-    testCustomer.setCompanyName("Test Company GmbH");
+    // Override specific fields to maintain test requirements
+    testCustomer.setCompanyName(
+        "Test Company GmbH"); // Override to use exact name without [TEST-xxx] prefix
     testCustomer.setCustomerNumber("TEST-001");
     testCustomer.setCreatedBy("test-user");
     testCustomer.setUpdatedBy("test-user");
@@ -63,23 +64,23 @@ class ContactInteractionServiceIT {
     customerRepository.persist(testCustomer);
     testCustomerId = testCustomer.getId();
 
-    // Create test contact
-    testContact = new CustomerContact();
-    testContact.setFirstName("Max");
-    testContact.setLastName("Mustermann");
-    testContact.setEmail("max@company.com");
-    testContact.setCreatedBy("test-user");
-    testContact.setUpdatedBy("test-user");
-    testContact.setCustomer(testCustomer);
-    // Note: updatedAt is set automatically by @UpdateTimestamp
-    contactRepository.persist(testContact);
+    // Create test contact using ContactBuilder
+    testContact =
+        contactBuilder
+            .forCustomer(testCustomer)
+            .withFirstName("Max")
+            .withLastName("Mustermann")
+            .withEmail("max@company.com")
+            .persist();
     testContactId = testContact.getId();
   }
 
   @Test
+  @TestTransaction
   @DisplayName("Should create interaction and update contact intelligence data")
-  @Transactional
   void shouldCreateInteractionAndUpdateContact() {
+    // Setup test data
+    setupTestData();
     // Arrange
     ContactInteractionDTO dto =
         ContactInteractionDTO.builder()
@@ -111,9 +112,11 @@ class ContactInteractionServiceIT {
   }
 
   @Test
+  @TestTransaction
   @DisplayName("Should calculate warmth score with multiple interaction factors")
-  @Transactional
   void shouldCalculateWarmthScoreWithMultipleFactors() {
+    // Setup test data
+    setupTestData();
     // Arrange - Create diverse interactions
     createInteraction(InteractionType.EMAIL, 0.9, 90, -5); // Recent, positive
     createInteraction(InteractionType.EMAIL, 0.8, 85, -10); // Recent response
@@ -138,9 +141,11 @@ class ContactInteractionServiceIT {
   }
 
   @Test
+  @TestTransaction
   @DisplayName("Should handle low data scenario with appropriate confidence")
-  @Transactional
   void shouldHandleLowDataScenario() {
+    // Setup test data
+    setupTestData();
     // Arrange - Only one interaction
     createInteraction(InteractionType.NOTE, 0.5, 60, -1);
 
@@ -165,8 +170,11 @@ class ContactInteractionServiceIT {
   }
 
   @Test
+  @TestTransaction
   @DisplayName("Should calculate data quality metrics accurately")
   void shouldCalculateDataQualityMetricsAccurately() {
+    // Setup test data
+    setupTestData();
     // Arrange - Create additional contacts and interactions
     CustomerContact contact2 = createAdditionalContact("Anna", "Schmidt");
     CustomerContact contact3 = createAdditionalContact("Peter", "Müller");
@@ -207,9 +215,11 @@ class ContactInteractionServiceIT {
   }
 
   @Test
+  @TestTransaction
   @DisplayName("Should track data freshness categories correctly")
-  @Transactional
   void shouldTrackDataFreshnessCorrectly() {
+    // Setup test data
+    setupTestData();
     // NOTE: Due to @UpdateTimestamp on Contact.updatedAt, we cannot test aging categories in this
     // integration test
     // as Hibernate automatically overwrites updatedAt with current time. This test verifies the
@@ -259,9 +269,11 @@ class ContactInteractionServiceIT {
   }
 
   @Test
+  @TestTransaction
   @DisplayName("Should get interactions for contact chronologically")
-  @Transactional
   void shouldGetInteractionsChronologically() {
+    // Setup test data
+    setupTestData();
     // Arrange - Create interactions at different times
     LocalDateTime now = LocalDateTime.now();
     createInteractionAtTime(InteractionType.EMAIL, "First", now.minusDays(3));
@@ -285,9 +297,11 @@ class ContactInteractionServiceIT {
   }
 
   @Test
+  @TestTransaction
   @DisplayName("Should record different interaction types correctly")
-  @Transactional
   void shouldRecordDifferentInteractionTypes() {
+    // Setup test data
+    setupTestData();
     // Test note recording
     ContactInteractionDTO note =
         contactInteractionService.recordNote(testContactId, "Test note content", "test-user");
@@ -334,14 +348,210 @@ class ContactInteractionServiceIT {
     assertEquals("Productive meeting", meeting.getSummary());
   }
 
+  @Test
+  @TestTransaction
+  @DisplayName("Should handle CQRS mode correctly when enabled")
+  void shouldHandleCQRSModeWhenEnabled() {
+    // Setup test data
+    setupTestData();
+
+    // Given - Assuming CQRS is enabled via feature flag
+    ContactInteractionDTO dto =
+        ContactInteractionDTO.builder()
+            .contactId(testContactId)
+            .type(InteractionType.EMAIL)
+            .subject("CQRS Test")
+            .summary("Testing CQRS pattern")
+            .sentimentScore(0.75)
+            .engagementScore(80)
+            .timestamp(LocalDateTime.now())
+            .build();
+
+    // When - Create via command side
+    ContactInteractionDTO created = contactInteractionService.createInteraction(dto);
+
+    // Then - Query side should reflect the change
+    assertNotNull(created.getId());
+
+    // Verify via query side
+    List<ContactInteractionDTO> interactions =
+        contactInteractionService.getInteractionsByContact(testContactId, Page.of(0, 10));
+
+    assertTrue(interactions.stream().anyMatch(i -> "CQRS Test".equals(i.getSubject())));
+
+    // Verify event was potentially published (if event bus exists)
+    // This would be verified through event store or audit log
+  }
+
+  @Test
+  @TestTransaction
+  @DisplayName("Should handle concurrent interaction updates correctly")
+  void shouldHandleConcurrentInteractionUpdates() {
+    // Setup test data
+    setupTestData();
+
+    // Create multiple interactions rapidly
+    for (int i = 0; i < 5; i++) {
+      ContactInteractionDTO dto =
+          ContactInteractionDTO.builder()
+              .contactId(testContactId)
+              .type(InteractionType.EMAIL)
+              .subject("Concurrent Test " + i)
+              .summary("Testing concurrent updates")
+              .sentimentScore(0.5 + (i * 0.1))
+              .engagementScore(60 + (i * 5))
+              .timestamp(LocalDateTime.now().minusMinutes(i))
+              .build();
+
+      contactInteractionService.createInteraction(dto);
+    }
+
+    // Verify all interactions were created
+    List<ContactInteractionDTO> interactions =
+        contactInteractionService.getInteractionsByContact(testContactId, Page.of(0, 10));
+    assertEquals(5, interactions.size());
+
+    // Verify contact statistics are correct
+    CustomerContact contact = contactRepository.findById(testContactId);
+    assertEquals(5, contact.getInteractionCount());
+    assertNotNull(contact.getLastInteractionDate());
+  }
+
+  @Test
+  @TestTransaction
+  @DisplayName("Should calculate engagement trends over time")
+  void shouldCalculateEngagementTrends() {
+    // Setup test data
+    setupTestData();
+
+    // Create interactions with varying engagement over time
+    LocalDateTime baseTime = LocalDateTime.now().minusDays(30);
+
+    // Low engagement initially
+    for (int i = 0; i < 3; i++) {
+      createInteractionAtTime(InteractionType.EMAIL, "Low engagement " + i, baseTime.plusDays(i));
+    }
+
+    // High engagement recently
+    for (int i = 20; i < 30; i++) {
+      ContactInteractionDTO dto =
+          ContactInteractionDTO.builder()
+              .contactId(testContactId)
+              .type(InteractionType.MEETING)
+              .subject("High engagement " + i)
+              .summary("Very engaged discussion")
+              .sentimentScore(0.9)
+              .engagementScore(95)
+              .timestamp(baseTime.plusDays(i))
+              .build();
+      contactInteractionService.createInteraction(dto);
+    }
+
+    // Calculate warmth score
+    WarmthScoreDTO warmth = contactInteractionService.calculateWarmthScore(testContactId);
+
+    // Should show positive trend (trend can be any non-null value indicating analysis)
+    assertNotNull(warmth.getTrend());
+    // Verify warmth score exists and is reasonable
+    assertTrue(warmth.getWarmthScore() >= 0 && warmth.getWarmthScore() <= 100);
+    // High recent engagement should lead to higher score
+    assertTrue(warmth.getWarmthScore() > 50);
+  }
+
+  @Test
+  @TestTransaction
+  @DisplayName("Should handle invalid contact ID gracefully")
+  void shouldHandleInvalidContactIdGracefully() {
+    // Setup test data
+    setupTestData();
+
+    UUID invalidId = UUID.randomUUID();
+
+    // Try to create interaction for non-existent contact
+    ContactInteractionDTO dto =
+        ContactInteractionDTO.builder()
+            .contactId(invalidId)
+            .type(InteractionType.EMAIL)
+            .subject("Invalid Contact Test")
+            .timestamp(LocalDateTime.now())
+            .build();
+
+    // Should throw appropriate exception
+    assertThrows(
+        Exception.class,
+        () -> {
+          contactInteractionService.createInteraction(dto);
+        });
+
+    // Try to get warmth score for non-existent contact - should also throw
+    assertThrows(
+        Exception.class,
+        () -> {
+          contactInteractionService.calculateWarmthScore(invalidId);
+        });
+  }
+
+  @Test
+  @TestTransaction
+  @DisplayName("Should properly categorize interaction outcomes")
+  void shouldCategorizeInteractionOutcomes() {
+    // Setup test data
+    setupTestData();
+
+    // Create interactions with different outcomes
+    String[] positiveOutcomes = {"DEAL_WON", "POSITIVE", "SUCCESS", "APPROVED"};
+    String[] negativeOutcomes = {"DEAL_LOST", "NEGATIVE", "FAILED", "REJECTED"};
+    String[] neutralOutcomes = {"PENDING", "NEUTRAL", "DEFERRED", "UNKNOWN"};
+
+    for (String outcome : positiveOutcomes) {
+      createInteractionWithOutcome(outcome, 0.8);
+    }
+
+    for (String outcome : negativeOutcomes) {
+      createInteractionWithOutcome(outcome, 0.2);
+    }
+
+    for (String outcome : neutralOutcomes) {
+      createInteractionWithOutcome(outcome, 0.5);
+    }
+
+    // Get all interactions
+    List<ContactInteractionDTO> interactions =
+        contactInteractionService.getInteractionsByContact(testContactId, Page.of(0, 20));
+
+    // Verify all were created
+    assertEquals(
+        positiveOutcomes.length + negativeOutcomes.length + neutralOutcomes.length,
+        interactions.size());
+
+    // Calculate warmth score should consider outcomes
+    WarmthScoreDTO warmth = contactInteractionService.calculateWarmthScore(testContactId);
+    assertNotNull(warmth);
+
+    // With mixed outcomes, score should exist and be in valid range
+    assertTrue(warmth.getWarmthScore() >= 0 && warmth.getWarmthScore() <= 100);
+  }
+
+  private void createInteractionWithOutcome(String outcome, double sentiment) {
+    ContactInteractionDTO dto =
+        ContactInteractionDTO.builder()
+            .contactId(testContactId)
+            .type(InteractionType.EMAIL)
+            .subject("Outcome test: " + outcome)
+            .outcome(outcome)
+            .sentimentScore(sentiment)
+            .engagementScore((int) (sentiment * 100))
+            .timestamp(LocalDateTime.now())
+            .build();
+    contactInteractionService.createInteraction(dto);
+  }
+
   // Helper methods
-  @Transactional
   protected void createInteraction(
       InteractionType type, double sentiment, int engagement, int daysAgo) {
     createInteractionForContact(testContactId, type, sentiment, engagement, daysAgo);
   }
 
-  @Transactional
   protected void createInteractionForContact(
       UUID contactId, InteractionType type, double sentiment, int engagement, int daysAgo) {
     CustomerContact contact = contactRepository.findById(contactId);
@@ -364,7 +574,6 @@ class ContactInteractionServiceIT {
     contactRepository.persist(contact);
   }
 
-  @Transactional
   protected void createInteractionAtTime(
       InteractionType type, String subject, LocalDateTime timestamp) {
     ContactInteraction interaction =
@@ -381,16 +590,15 @@ class ContactInteractionServiceIT {
     interactionRepository.persist(interaction);
   }
 
-  @Transactional
   protected CustomerContact createAdditionalContact(String firstName, String lastName) {
     Customer customer = customerRepository.findById(testCustomerId);
-    CustomerContact contact = new CustomerContact();
-    contact.setFirstName(firstName);
-    contact.setLastName(lastName);
-    contact.setEmail(firstName.toLowerCase() + "@company.com");
-    contact.setCustomer(customer);
-    // Note: updatedAt is set automatically by @UpdateTimestamp
-    contactRepository.persist(contact);
+    CustomerContact contact =
+        contactBuilder
+            .forCustomer(customer)
+            .withFirstName(firstName)
+            .withLastName(lastName)
+            .withEmail(firstName.toLowerCase() + "@company.com")
+            .persist();
     return contact;
   }
 }

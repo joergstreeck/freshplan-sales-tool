@@ -11,12 +11,13 @@ import de.freshplan.domain.user.service.dto.UserResponse;
 import de.freshplan.domain.user.service.exception.InvalidRoleException;
 import de.freshplan.domain.user.service.exception.UserNotFoundException;
 import de.freshplan.domain.user.service.mapper.UserMapper;
+import de.freshplan.test.builders.UserTestDataFactory;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.Tag;import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -28,7 +29,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
  * @since 2.0.0
  */
 @ExtendWith(MockitoExtension.class)
-class UserServiceRolesTest {
+@Tag("core")class UserServiceRolesTest {
 
   @Mock private UserRepository userRepository;
 
@@ -42,7 +43,13 @@ class UserServiceRolesTest {
   @BeforeEach
   void setUp() {
     userId = UUID.randomUUID();
-    testUser = new User("john.doe", "John", "Doe", "john.doe@example.com");
+    testUser =
+        UserTestDataFactory.builder()
+            .withUsername("john.doe")
+            .withFirstName("John")
+            .withLastName("Doe")
+            .withEmail("john.doe@example.com")
+            .build();
     // Use reflection to set the ID (since it's generated)
     try {
       var idField = User.class.getDeclaredField("id");

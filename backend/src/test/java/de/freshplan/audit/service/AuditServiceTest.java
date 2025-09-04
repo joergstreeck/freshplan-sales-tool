@@ -19,10 +19,10 @@ import java.util.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
+import org.junit.jupiter.api.Tag;import org.mockito.ArgumentCaptor;
 
 @QuarkusTest
-@DisplayName("AuditService Tests")
+@Tag("migrate")@DisplayName("AuditService Tests")
 class AuditServiceTest {
 
   @Inject AuditService auditService;

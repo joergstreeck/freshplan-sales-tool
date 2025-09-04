@@ -12,13 +12,13 @@ import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-
+import org.junit.jupiter.api.Tag;
 /**
  * Integration tests for SecurityContextProvider.AuthenticationDetails. These tests actually call
  * the builder and methods to increase coverage.
  */
 @QuarkusTest
-@TestProfile(SecurityDisabledTestProfile.class)
+@Tag("migrate")@TestProfile(SecurityDisabledTestProfile.class)
 class SecurityContextProviderIntegrationTest {
 
   @Inject SecurityContextProvider securityContextProvider;

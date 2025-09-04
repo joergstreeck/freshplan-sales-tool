@@ -11,13 +11,13 @@ import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
-
+import org.junit.jupiter.api.Tag;
 /**
  * Minimal service test to verify update functionality. Part of the green-path strategy to get CI
  * working.
  */
 @QuarkusTest
-class UserServiceUpdateIT {
+@Tag("migrate")class UserServiceUpdateIT {
 
   @Inject UserService svc;
 

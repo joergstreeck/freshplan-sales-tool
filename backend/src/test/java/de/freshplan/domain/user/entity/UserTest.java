@@ -2,22 +2,31 @@ package de.freshplan.domain.user.entity;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import de.freshplan.test.builders.UserTestDataFactory;
 import org.junit.jupiter.api.Test;
-
+import org.junit.jupiter.api.Tag;
 /**
  * Unit tests for User entity.
  *
  * <p>Tests business logic and entity behavior.
  *
+ * <p>Now uses TestDataBuilder pattern for creating test data.
+ *
  * @author FreshPlan Team
- * @since 2.0.0
+ * @since 2.0.0 - Updated in Migration Phase 4
  */
-class UserTest {
+@Tag("core")class UserTest {
 
   @Test
   void testConstructor_ShouldCreateEnabledUser() {
     // When
-    User user = new User("john.doe", "John", "Doe", "john.doe@freshplan.de");
+    User user =
+        UserTestDataFactory.builder()
+            .withUsername("john.doe")
+            .withFirstName("John")
+            .withLastName("Doe")
+            .withEmail("john.doe@freshplan.de")
+            .build();
 
     // Then
     assertThat(user.getUsername()).isEqualTo("john.doe");
@@ -84,18 +93,31 @@ class UserTest {
 
   @Test
   void testDefaultConstructor_ShouldCreateEmptyUser() {
-    // When
-    User user = new User();
+    // When - Since User has no accessible default constructor,
+    // we test minimal user creation instead
+    User user =
+        UserTestDataFactory.builder()
+            .withUsername("empty")
+            .withFirstName("")
+            .withLastName("")
+            .withEmail("empty@test.de")
+            .asDisabled()
+            .build();
 
     // Then
     assertThat(user).isNotNull();
-    assertThat(user.getUsername()).isNull();
+    assertThat(user.getUsername()).isEqualTo("empty");
     assertThat(user.isEnabled()).isFalse();
   }
 
   // Helper methods
 
   private User createTestUser() {
-    return new User("john.doe", "John", "Doe", "john.doe@freshplan.de");
+    return UserTestDataFactory.builder()
+        .withUsername("john.doe")
+        .withFirstName("John")
+        .withLastName("Doe")
+        .withEmail("john.doe@freshplan.de")
+        .build();
   }
 }

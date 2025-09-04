@@ -8,6 +8,7 @@ import de.freshplan.domain.customer.entity.*;
 import de.freshplan.domain.customer.repository.CustomerRepository;
 import de.freshplan.domain.customer.repository.CustomerTimelineRepository;
 import de.freshplan.domain.customer.service.dto.timeline.*;
+import de.freshplan.test.builders.CustomerBuilder;
 import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.security.TestSecurity;
@@ -19,7 +20,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
+import org.junit.jupiter.api.Tag;
 /**
  * Integration tests for CustomerTimelineResource.
  *
@@ -27,12 +28,14 @@ import org.junit.jupiter.api.Test;
  * @since 2.0.0
  */
 @QuarkusTest
-@TestHTTPEndpoint(CustomerTimelineResource.class)
+@Tag("migrate")@TestHTTPEndpoint(CustomerTimelineResource.class)
 class CustomerTimelineResourceIT {
 
   @Inject CustomerRepository customerRepository;
 
   @Inject CustomerTimelineRepository timelineRepository;
+
+  @Inject CustomerBuilder customerBuilder;
 
   @BeforeEach
   @Transactional
@@ -44,14 +47,16 @@ class CustomerTimelineResourceIT {
 
   @Transactional
   UUID createTestCustomerInTransaction() {
-    Customer customer = new Customer();
+    Customer customer =
+        customerBuilder
+            .withCompanyName("[TEST] Integration Test Company")
+            .withStatus(CustomerStatus.AKTIV)
+            .withType(CustomerType.UNTERNEHMEN)
+            .withIndustry(Industry.SONSTIGE)
+            .build();
     customer.setCustomerNumber("IT-TEST-001");
-    customer.setCompanyName("Integration Test Company");
-    customer.setStatus(CustomerStatus.AKTIV);
-    customer.setCustomerType(CustomerType.UNTERNEHMEN);
-    customer.setIndustry(Industry.SONSTIGE);
-    customer.setCreatedAt(LocalDateTime.now());
-    customer.setCreatedBy("test");
+    customer.setCompanyName("[TEST] Integration Test Company"); // Keep [TEST] prefix
+    customer.setIsTestData(true); // Mark as test data
     customerRepository.persist(customer);
     return customer.getId();
   }

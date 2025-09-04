@@ -51,6 +51,9 @@ public class User extends PanacheEntityBase {
   @Column(nullable = false)
   private boolean enabled = false;
 
+  @Column(name = "is_test_data", nullable = false)
+  private boolean isTestData = false;
+
   @Column(name = "created_at", nullable = false, updatable = false)
   private Instant createdAt;
 
@@ -155,6 +158,14 @@ public class User extends PanacheEntityBase {
 
   public boolean isEnabled() {
     return enabled;
+  }
+
+  public boolean isTestData() {
+    return isTestData;
+  }
+
+  public void setIsTestData(boolean isTestData) {
+    this.isTestData = isTestData;
   }
 
   public Instant getCreatedAt() {

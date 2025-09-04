@@ -381,10 +381,9 @@ public final class CustomerResponseBuilder {
         // Business Model - NEW for Sprint 2
         primaryFinancing,
         painPoints,
-        
+
         // Contact Information
         contactsCount,
-        
         createdAt,
         createdBy,
         updatedAt,

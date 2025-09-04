@@ -13,6 +13,9 @@ import de.freshplan.domain.opportunity.service.dto.CreateOpportunityRequest;
 import de.freshplan.domain.opportunity.service.dto.UpdateOpportunityRequest;
 import de.freshplan.domain.user.entity.User;
 import de.freshplan.domain.user.repository.UserRepository;
+import de.freshplan.test.builders.CustomerBuilder;
+import de.freshplan.test.builders.OpportunityBuilder;
+import de.freshplan.test.builders.UserTestDataFactory;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.security.TestSecurity;
 import io.restassured.http.ContentType;
@@ -27,7 +30,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.api.Tag;import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 /**
@@ -40,7 +43,7 @@ import org.junit.jupiter.params.provider.ValueSource;
  * @since 2.0.0
  */
 @QuarkusTest
-public class OpportunityResourceIntegrationTest {
+@Tag("core")public class OpportunityResourceIntegrationTest {
 
   @Inject OpportunityRepository opportunityRepository;
 
@@ -49,6 +52,10 @@ public class OpportunityResourceIntegrationTest {
   @Inject UserRepository userRepository;
 
   @Inject EntityManager entityManager;
+
+  @Inject CustomerBuilder customerBuilder;
+
+  @Inject OpportunityBuilder opportunityBuilder;
 
   private Customer testCustomer;
   private User testUser;
@@ -66,14 +73,21 @@ public class OpportunityResourceIntegrationTest {
     // Get or create test user for CI environment
     testUser = userRepository.find("username", "testuser").firstResult();
     if (testUser == null) {
-      // Create a test user if none exists (happens in CI)
-      testUser = new User("testuser", "Test", "User", "testuser@test.com");
+      // Create a test user if none exists (happens in CI) using TestDataFactory
+      testUser =
+          UserTestDataFactory.builder()
+              .withUsername("testuser")
+              .withFirstName("Test")
+              .withLastName("User")
+              .withEmail("testuser@test.com")
+              .build();
       testUser.setRoles(Arrays.asList("admin", "manager", "sales"));
       userRepository.persist(testUser);
     }
   }
 
   @Nested
+  @Tag("core")
   @DisplayName("GET /api/opportunities - List Opportunities")
   class ListOpportunitiesTests {
 
@@ -157,6 +171,7 @@ public class OpportunityResourceIntegrationTest {
   }
 
   @Nested
+  @Tag("core")
   @DisplayName("GET /api/opportunities/{id} - Get Single Opportunity")
   class GetSingleOpportunityTests {
 
@@ -178,7 +193,10 @@ public class OpportunityResourceIntegrationTest {
           .statusCode(200)
           .contentType(ContentType.JSON)
           .body("id", equalTo(opportunity.getId().toString()))
-          .body("name", equalTo("Test Opportunity"))
+          .body(
+              "name",
+              containsString(
+                  "Test Opportunity")) // Changed to containsString to handle [TEST] prefix
           .body("stage", equalTo("PROPOSAL"))
           .body("probability", equalTo(60)); // Default for PROPOSAL
     }
@@ -219,6 +237,7 @@ public class OpportunityResourceIntegrationTest {
   }
 
   @Nested
+  @Tag("core")
   @DisplayName("POST /api/opportunities - Create Opportunity")
   class CreateOpportunityTests {
 
@@ -396,6 +415,7 @@ public class OpportunityResourceIntegrationTest {
   }
 
   @Nested
+  @Tag("core")
   @DisplayName("PUT /api/opportunities/{id} - Update Opportunity")
   class UpdateOpportunityTests {
 
@@ -478,6 +498,7 @@ public class OpportunityResourceIntegrationTest {
   }
 
   @Nested
+  @Tag("core")
   @DisplayName("DELETE /api/opportunities/{id} - Delete Opportunity")
   class DeleteOpportunityTests {
 
@@ -521,6 +542,7 @@ public class OpportunityResourceIntegrationTest {
   }
 
   @Nested
+  @Tag("core")
   @DisplayName("PUT /api/opportunities/{id}/stage - Change Stage")
   class ChangeStageTests {
 
@@ -588,6 +610,7 @@ public class OpportunityResourceIntegrationTest {
   }
 
   @Nested
+  @Tag("core")
   @DisplayName("GET /api/opportunities/pipeline/overview - Pipeline Overview")
   class PipelineOverviewTests {
 
@@ -616,6 +639,7 @@ public class OpportunityResourceIntegrationTest {
   }
 
   @Nested
+  @Tag("core")
   @DisplayName("Content-Type and Error Handling")
   class ContentTypeAndErrorTests {
 
@@ -681,16 +705,13 @@ public class OpportunityResourceIntegrationTest {
       return existingCustomer;
     }
 
-    // Create minimal test customer with all required fields
-    var customer = new Customer();
-    customer.setCompanyName(companyName);
+    // Create test customer using CustomerBuilder
+    var customer = customerBuilder.withCompanyName(companyName).build();
 
-    // Set required NOT NULL fields to avoid constraint violations
-    customer.setCustomerNumber("TEST-" + System.currentTimeMillis()); // Unique customer number
+    // Override to use exact company name without [TEST-xxx] prefix
+    customer.setCompanyName(companyName);
+    customer.setCustomerNumber("TEST-" + System.currentTimeMillis()); // Keep unique customer number
     customer.setIsTestData(true); // Mark as test data
-    customer.setIsDeleted(false); // Not deleted
-    customer.setCreatedAt(java.time.LocalDateTime.now()); // Set created timestamp
-    customer.setCreatedBy("test-system"); // Set created by
 
     customerRepository.persist(customer);
     return customer;
@@ -710,9 +731,13 @@ public class OpportunityResourceIntegrationTest {
 
   @Transactional
   Opportunity createTestOpportunity(String name, OpportunityStage stage) {
-    var opportunity = new Opportunity(name, stage, testUser);
-    opportunity.setCustomer(testCustomer);
-    opportunityRepository.persist(opportunity);
+    var opportunity =
+        opportunityBuilder
+            .withName(name)
+            .inStage(stage)
+            .assignedTo(testUser)
+            .forCustomer(testCustomer)
+            .persist();
     return opportunity;
   }
 

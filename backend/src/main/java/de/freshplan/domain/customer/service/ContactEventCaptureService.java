@@ -1,6 +1,7 @@
 package de.freshplan.domain.customer.service;
 
 import de.freshplan.domain.customer.entity.ContactInteraction.InteractionType;
+import de.freshplan.domain.customer.service.command.ContactEventCaptureCommandService;
 import de.freshplan.domain.customer.service.dto.ContactInteractionDTO;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Event;
@@ -8,23 +9,50 @@ import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
 import java.time.LocalDateTime;
 import java.util.UUID;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.logging.Logger;
 
 /**
- * Service for automatically capturing user actions as contact interactions. Part of the Data
- * Strategy Intelligence feature.
+ * CQRS Facade for contact event capture functionality.
+ *
+ * <p>This service acts as a facade that routes capture requests to either the new CQRS-based
+ * ContactEventCaptureCommandService or the legacy implementation, controlled by feature flag.
+ *
+ * <p>Since ContactEventCaptureService is write-only (no read operations), only a CommandService is
+ * needed.
+ *
+ * @author FreshPlan Team
+ * @since 2.0.0 (CQRS migration: Phase 13)
  */
 @ApplicationScoped
 public class ContactEventCaptureService {
 
   private static final Logger LOG = Logger.getLogger(ContactEventCaptureService.class);
 
+  // Feature flag for CQRS migration
+  @ConfigProperty(name = "features.cqrs.enabled", defaultValue = "false")
+  boolean cqrsEnabled;
+
+  // CQRS Services
+  @Inject ContactEventCaptureCommandService commandService;
+
+  // Legacy dependencies
   @Inject ContactInteractionService interactionService;
 
   @Inject Event<ContactInteractionCaptured> interactionCapturedEvent;
 
-  /** Capture when a contact is viewed */
+  /**
+   * Capture when a contact is viewed. Routes to CQRS CommandService when enabled, otherwise uses
+   * legacy implementation.
+   */
   public void captureContactView(UUID contactId, String userId) {
+    if (cqrsEnabled) {
+      LOG.debugf("CQRS enabled - delegating captureContactView to CommandService");
+      commandService.captureContactView(contactId, userId);
+      return;
+    }
+
+    // Legacy implementation
     LOG.debugf("Capturing contact view for %s by user %s", contactId, userId);
 
     // We don't create an interaction for every view, but track it for analytics
@@ -33,8 +61,18 @@ public class ContactEventCaptureService {
         new ContactInteractionCaptured(contactId, "VIEW", userId, LocalDateTime.now()));
   }
 
-  /** Capture when contact details are updated */
+  /**
+   * Capture when contact details are updated. Routes to CQRS CommandService when enabled, otherwise
+   * uses legacy implementation.
+   */
   public void captureContactUpdate(UUID contactId, String userId, String fieldUpdated) {
+    if (cqrsEnabled) {
+      LOG.debugf("CQRS enabled - delegating captureContactUpdate to CommandService");
+      commandService.captureContactUpdate(contactId, userId, fieldUpdated);
+      return;
+    }
+
+    // Legacy implementation
     LOG.infof(
         "Capturing contact update for %s by user %s - field: %s", contactId, userId, fieldUpdated);
 
@@ -57,8 +95,18 @@ public class ContactEventCaptureService {
     }
   }
 
-  /** Capture email sent to contact */
+  /**
+   * Capture email sent to contact. Routes to CQRS CommandService when enabled, otherwise uses
+   * legacy implementation.
+   */
   public void captureEmailSent(UUID contactId, String userId, String subject, String content) {
+    if (cqrsEnabled) {
+      LOG.debugf("CQRS enabled - delegating captureEmailSent to CommandService");
+      commandService.captureEmailSent(contactId, userId, subject, content);
+      return;
+    }
+
+    // Legacy implementation
     LOG.infof("Capturing email sent to %s by user %s", contactId, userId);
 
     ContactInteractionDTO interaction =
@@ -82,9 +130,19 @@ public class ContactEventCaptureService {
     }
   }
 
-  /** Capture phone call logged */
+  /**
+   * Capture phone call logged. Routes to CQRS CommandService when enabled, otherwise uses legacy
+   * implementation.
+   */
   public void capturePhoneCall(
       UUID contactId, String userId, Integer durationMinutes, String outcome, String notes) {
+    if (cqrsEnabled) {
+      LOG.debugf("CQRS enabled - delegating capturePhoneCall to CommandService");
+      commandService.capturePhoneCall(contactId, userId, durationMinutes, outcome, notes);
+      return;
+    }
+
+    // Legacy implementation
     LOG.infof(
         "Capturing phone call to %s by user %s - duration: %d min",
         contactId, userId, durationMinutes);
@@ -113,9 +171,19 @@ public class ContactEventCaptureService {
     }
   }
 
-  /** Capture meeting scheduled */
+  /**
+   * Capture meeting scheduled. Routes to CQRS CommandService when enabled, otherwise uses legacy
+   * implementation.
+   */
   public void captureMeetingScheduled(
       UUID contactId, String userId, LocalDateTime meetingDate, String agenda) {
+    if (cqrsEnabled) {
+      LOG.debugf("CQRS enabled - delegating captureMeetingScheduled to CommandService");
+      commandService.captureMeetingScheduled(contactId, userId, meetingDate, agenda);
+      return;
+    }
+
+    // Legacy implementation
     LOG.infof("Capturing meeting scheduled with %s by user %s", contactId, userId);
 
     ContactInteractionDTO interaction =
@@ -139,9 +207,19 @@ public class ContactEventCaptureService {
     }
   }
 
-  /** Capture document shared */
+  /**
+   * Capture document shared. Routes to CQRS CommandService when enabled, otherwise uses legacy
+   * implementation.
+   */
   public void captureDocumentShared(
       UUID contactId, String userId, String documentName, String documentType) {
+    if (cqrsEnabled) {
+      LOG.debugf("CQRS enabled - delegating captureDocumentShared to CommandService");
+      commandService.captureDocumentShared(contactId, userId, documentName, documentType);
+      return;
+    }
+
+    // Legacy implementation
     LOG.infof(
         "Capturing document shared with %s by user %s - doc: %s", contactId, userId, documentName);
 
@@ -164,9 +242,19 @@ public class ContactEventCaptureService {
     }
   }
 
-  /** Capture task created for contact */
+  /**
+   * Capture task created for contact. Routes to CQRS CommandService when enabled, otherwise uses
+   * legacy implementation.
+   */
   public void captureTaskCreated(
       UUID contactId, String userId, String taskDescription, LocalDateTime dueDate) {
+    if (cqrsEnabled) {
+      LOG.debugf("CQRS enabled - delegating captureTaskCreated to CommandService");
+      commandService.captureTaskCreated(contactId, userId, taskDescription, dueDate);
+      return;
+    }
+
+    // Legacy implementation
     LOG.infof("Capturing task created for %s by user %s", contactId, userId);
 
     ContactInteractionDTO interaction =
@@ -189,8 +277,21 @@ public class ContactEventCaptureService {
     }
   }
 
-  /** Listen for domain events and capture interactions */
+  /**
+   * Listen for domain events and capture interactions. Routes to CQRS CommandService when enabled,
+   * otherwise uses legacy implementation.
+   *
+   * <p>IMPORTANT: When CQRS is enabled, this method delegates to avoid duplicate event handling.
+   */
   public void onContactEvent(@Observes ContactDomainEvent event) {
+    if (cqrsEnabled) {
+      // When CQRS is enabled, the CommandService handles events directly
+      // We don't delegate here to avoid duplicate processing
+      LOG.debugf("CQRS enabled - event handling is managed by CommandService");
+      return;
+    }
+
+    // Legacy implementation
     LOG.debugf("Received contact domain event: %s", event.getEventType());
 
     switch (event.getEventType()) {

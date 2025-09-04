@@ -14,13 +14,13 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-
+import org.junit.jupiter.api.Tag;
 /**
  * Integration tests for the complete login flow and authentication scenarios. Tests the interaction
  * between security components, token validation, and API access.
  */
 @QuarkusTest
-@TestProfile(SecurityDisabledTestProfile.class)
+@Tag("migrate")@TestProfile(SecurityDisabledTestProfile.class)
 @Disabled("Tests need proper endpoint implementation")
 class LoginFlowIntegrationTest {
 

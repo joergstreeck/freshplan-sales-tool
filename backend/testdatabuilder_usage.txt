@@ -1,0 +1,2 @@
+src/test/java/de/freshplan/domain/customer/service/ContactServiceCQRSIntegrationTest.java
+src/test/java/de/freshplan/domain/opportunity/service/command/OpportunityCommandServiceTest.java

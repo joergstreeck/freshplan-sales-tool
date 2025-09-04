@@ -1,0 +1,59 @@
+repos:
+  - repo: local
+    hooks:
+      # Block dangerous DELETE patterns (SQL & JPQL - Enhanced)
+      - id: dangerous-delete-patterns
+        name: Block unfiltered DELETE/TRUNCATE (SQL & JPQL Enhanced)
+        entry: bash -c 'files=$(git diff --cached --name-only --diff-filter=ACMR | grep -E "\.(java|kt|sql)$" || true); bad=0; for f in $files; do 
+          # SQL DELETE patterns
+          if grep -Eiq "DELETE\s+FROM\s+customers(?!.*(is_test_data|KD-TEST|TEST))" "$f"; then 
+            echo "❌ SQL DELETE ohne Test-Filter in $f:$(grep -n -i "DELETE.*FROM.*customers" "$f" | head -1 | cut -d: -f1)"; 
+            bad=1; 
+          fi; 
+          # JPQL DELETE patterns (erweitert für alle Fälle)
+          if grep -Eiq "DELETE\s+FROM\s+Customer(?!.*WHERE.*?(isTestData|KD-TEST|TEST))" "$f"; then 
+            echo "❌ JPQL DELETE ohne WHERE/Test-Filter in $f:$(grep -n -i "DELETE.*FROM.*Customer" "$f" | head -1 | cut -d: -f1)"; 
+            bad=1; 
+          fi; 
+          # TRUNCATE generell verboten im Testcode
+          if grep -Eiq "\bTRUNCATE\b" "$f"; then 
+            echo "❌ TRUNCATE gefunden in $f:$(grep -n -i "TRUNCATE" "$f" | head -1 | cut -d: -f1)"; 
+            bad=1; 
+          fi; 
+        done; exit $bad'
+        language: system
+        pass_filenames: false
+        stages: [commit]
+        
+      # Ensure new tests are tagged (Klassen-Level)
+      - id: test-tagging
+        name: Ensure new test classes have @Tag annotation
+        entry: bash -c 'for file in $(git diff --cached --name-only --diff-filter=A | grep "Test\.java$\|IT\.java$"); do if [ -f "$file" ] && ! grep -q "@Tag(" "$file"; then echo "❌ New test $file missing @Tag annotation! Add @Tag(\"core\"), @Tag(\"migrate\"), or @Tag(\"quarantine\")"; exit 1; fi; done'
+        language: system
+        pass_filenames: false
+        stages: [commit]
+        
+      # Block SEED references in new code (word boundaries to avoid false positives)
+      - id: no-seed-references
+        name: Block new SEED test data references
+        entry: bash -c 'if git diff --cached | grep -E "\+.*(\\bSEED\\b|\\[SEED\\]|SEED[-_]|seed_data|seedCustomer)"; then echo "❌ New SEED reference found! SEED strategy has been removed. Use TestDataBuilder pattern instead."; exit 1; fi'
+        language: system
+        pass_filenames: false
+        stages: [commit]
+        
+      # Enforce isTestData=true in builders (Warning only)
+      - id: test-data-flag
+        name: Ensure test builders set isTestData=true
+        entry: bash -c 'for file in $(git diff --cached --name-only | grep "TestDataFactory\|Builder" | grep "\.java$"); do if [ -f "$file" ] && grep -q "\.build()" "$file" && ! grep -q "setIsTestData(true)" "$file"; then echo "⚠️  Builder $file should set isTestData=true"; fi; done'
+        language: system
+        pass_filenames: false
+        stages: [commit]
+        always_run: false  # Warning only
+        
+      # Flyway location validation
+      - id: flyway-location-check
+        name: Ensure flyway.locations is SEED-free
+        entry: bash -c 'if git diff --cached | grep -E "\+.*flyway\.locations.*testdata|ci-migrations"; then echo "❌ SEED-flyway locations found! Use only classpath:db/migration"; exit 1; fi'
+        language: system
+        pass_filenames: false
+        stages: [commit]

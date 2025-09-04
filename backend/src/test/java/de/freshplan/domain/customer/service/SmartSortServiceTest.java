@@ -9,10 +9,10 @@ import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import java.util.List;
 import org.junit.jupiter.api.Test;
-
+import org.junit.jupiter.api.Tag;
 /** Tests for SmartSortService functionality. */
 @QuarkusTest
-class SmartSortServiceTest {
+@Tag("migrate")class SmartSortServiceTest {
 
   @Inject SmartSortService smartSortService;
 

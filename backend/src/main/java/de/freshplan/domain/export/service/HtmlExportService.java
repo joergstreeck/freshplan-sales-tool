@@ -4,34 +4,56 @@ import de.freshplan.domain.customer.entity.Customer;
 import de.freshplan.domain.customer.entity.CustomerContact;
 import de.freshplan.domain.customer.repository.CustomerRepository;
 import de.freshplan.domain.export.service.dto.ExportRequest;
+import de.freshplan.domain.export.service.query.HtmlExportQueryService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.logging.Logger;
 
 /**
- * Service for generating HTML exports that can be printed to PDF This is a robust alternative to
- * iTextPDF that works reliably in all environments
+ * CQRS Facade for HTML export functionality.
+ *
+ * <p>This service acts as a facade that routes export requests to either the new CQRS-based
+ * HtmlExportQueryService or the legacy implementation, controlled by feature flag.
+ *
+ * <p>Since HtmlExportService is read-only (no write operations), only a QueryService is needed.
+ * Note: @Transactional was removed as this is a read-only service.
  *
  * @author FreshPlan Team
- * @since 2.0.0
+ * @since 2.0.0 (CQRS migration: Phase 13)
  */
 @ApplicationScoped
-@Transactional
 public class HtmlExportService {
 
   private static final Logger log = Logger.getLogger(HtmlExportService.class);
 
+  // Feature flag for CQRS migration
+  @ConfigProperty(name = "features.cqrs.enabled", defaultValue = "false")
+  boolean cqrsEnabled;
+
+  // CQRS Services
+  @Inject HtmlExportQueryService queryService;
+
+  // Legacy dependencies
   @Inject CustomerRepository customerRepository;
 
   /**
-   * Generate HTML report for customers that can be printed to PDF This is a robust solution that
-   * works without external PDF libraries
+   * Generate HTML report for customers that can be printed to PDF. Routes to CQRS QueryService when
+   * enabled, otherwise uses legacy implementation.
+   *
+   * @param request Export parameters (filters)
+   * @return Complete HTML document as string
    */
   public String generateCustomersHtml(ExportRequest request) {
+    if (cqrsEnabled) {
+      log.debug("Using CQRS QueryService for HTML export");
+      return queryService.generateCustomersHtml(request);
+    }
+
+    // Legacy implementation
     log.info("Generating HTML report for customers");
 
     StringBuilder html = new StringBuilder();

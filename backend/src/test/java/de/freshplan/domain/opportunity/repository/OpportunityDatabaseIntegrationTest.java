@@ -8,6 +8,9 @@ import de.freshplan.domain.opportunity.entity.Opportunity;
 import de.freshplan.domain.opportunity.entity.OpportunityStage;
 import de.freshplan.domain.user.entity.User;
 import de.freshplan.domain.user.repository.UserRepository;
+import de.freshplan.test.builders.CustomerBuilder;
+import de.freshplan.test.builders.OpportunityBuilder;
+import de.freshplan.test.builders.UserTestDataFactory;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.security.TestSecurity;
 import jakarta.inject.Inject;
@@ -18,7 +21,7 @@ import java.time.LocalDate;
 import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
+import org.junit.jupiter.api.Tag;
 /**
  * Database Integration Tests für Opportunity Entity
  *
@@ -29,9 +32,11 @@ import org.junit.jupiter.api.Test;
  * @since 2.0.0
  */
 @QuarkusTest
+@Tag("core")
 @TestSecurity(
     user = "testuser",
     roles = {"admin", "manager", "sales"})
+@io.quarkus.test.TestTransaction
 public class OpportunityDatabaseIntegrationTest {
 
   @Inject OpportunityRepository opportunityRepository;
@@ -40,10 +45,13 @@ public class OpportunityDatabaseIntegrationTest {
 
   @Inject UserRepository userRepository;
 
+  @Inject CustomerBuilder customerBuilder;
+
+  @Inject OpportunityBuilder opportunityBuilder;
+
   @Inject EntityManager entityManager;
 
   @Test
-  @Transactional
   @DisplayName("Valid opportunity creation and persistence should work")
   void createAndPersistOpportunity_shouldWork() {
     // Given - Create test data
@@ -51,15 +59,17 @@ public class OpportunityDatabaseIntegrationTest {
         createTestCustomer("CUST-DB-" + UUID.randomUUID().toString().substring(0, 8));
     User testUser = getOrCreateTestUser();
 
-    Opportunity opportunity = new Opportunity();
-    opportunity.setName("DB Integration Test Opportunity");
-    opportunity.setDescription("Testing database integration");
-    opportunity.setExpectedValue(new BigDecimal("15000.00"));
-    opportunity.setProbability(75);
-    opportunity.setStage(OpportunityStage.PROPOSAL);
-    opportunity.setExpectedCloseDate(LocalDate.now().plusDays(45));
-    opportunity.setCustomer(testCustomer);
-    opportunity.setAssignedTo(testUser);
+    Opportunity opportunity =
+        opportunityBuilder
+            .withName("DB Integration Test Opportunity")
+            .withDescription("Testing database integration")
+            .withExpectedValue(new BigDecimal("15000.00"))
+            .withProbability(75)
+            .inStage(OpportunityStage.PROPOSAL)
+            .withExpectedCloseDate(LocalDate.now().plusDays(45))
+            .forCustomer(testCustomer)
+            .assignedTo(testUser)
+            .build();
 
     // When
     opportunityRepository.persist(opportunity);
@@ -77,7 +87,6 @@ public class OpportunityDatabaseIntegrationTest {
   }
 
   @Test
-  @Transactional
   @DisplayName("Repository findById should return correct opportunity")
   void repositoryFindById_shouldReturnCorrectOpportunity() {
     // Given
@@ -85,15 +94,17 @@ public class OpportunityDatabaseIntegrationTest {
         createTestCustomer("CUST-FIND-" + UUID.randomUUID().toString().substring(0, 8));
     User testUser = getOrCreateTestUser();
 
-    Opportunity opportunity = new Opportunity();
-    opportunity.setName("Find Test Opportunity");
-    opportunity.setDescription("Testing repository find operations");
-    opportunity.setExpectedValue(new BigDecimal("8000.00"));
-    opportunity.setStage(OpportunityStage.QUALIFICATION); // Dies setzt probability auf 25
-    opportunity.setProbability(60); // Manuell überschreiben nach Stage
-    opportunity.setExpectedCloseDate(LocalDate.now().plusDays(30));
-    opportunity.setCustomer(testCustomer);
-    opportunity.setAssignedTo(testUser);
+    Opportunity opportunity =
+        opportunityBuilder
+            .withName("Find Test Opportunity")
+            .withDescription("Testing repository find operations")
+            .withExpectedValue(new BigDecimal("8000.00"))
+            .inStage(OpportunityStage.QUALIFICATION)
+            .withProbability(60) // Manuell überschreiben nach Stage
+            .withExpectedCloseDate(LocalDate.now().plusDays(30))
+            .forCustomer(testCustomer)
+            .assignedTo(testUser)
+            .build();
 
     opportunityRepository.persist(opportunity);
     entityManager.flush();
@@ -104,7 +115,8 @@ public class OpportunityDatabaseIntegrationTest {
 
     // Then
     assertThat(found).isNotNull();
-    assertThat(found.getName()).isEqualTo("Find Test Opportunity");
+    assertThat(found.getName())
+        .contains("Find Test Opportunity"); // Builder adds [TEST] prefix and suffix
     assertThat(found.getExpectedValue()).isEqualTo(new BigDecimal("8000.00"));
     assertThat(found.getProbability()).isEqualTo(60);
     assertThat(found.getStage()).isEqualTo(OpportunityStage.QUALIFICATION);
@@ -113,7 +125,6 @@ public class OpportunityDatabaseIntegrationTest {
   }
 
   @Test
-  @Transactional
   @DisplayName("Repository count should reflect persisted opportunities")
   void repositoryCount_shouldReflectPersistedOpportunities() {
     // Given
@@ -125,15 +136,17 @@ public class OpportunityDatabaseIntegrationTest {
 
     // Create multiple opportunities
     for (int i = 0; i < 3; i++) {
-      Opportunity opportunity = new Opportunity();
-      opportunity.setName("Count Test Opportunity " + i);
-      opportunity.setDescription("Testing count operations");
-      opportunity.setExpectedValue(new BigDecimal("5000.00"));
-      opportunity.setProbability(40);
-      opportunity.setStage(OpportunityStage.NEW_LEAD);
-      opportunity.setExpectedCloseDate(LocalDate.now().plusDays(20));
-      opportunity.setCustomer(testCustomer);
-      opportunity.setAssignedTo(testUser);
+      Opportunity opportunity =
+          opportunityBuilder
+              .withName("Count Test Opportunity " + i)
+              .withDescription("Testing count operations")
+              .withExpectedValue(new BigDecimal("5000.00"))
+              .withProbability(40)
+              .inStage(OpportunityStage.NEW_LEAD)
+              .withExpectedCloseDate(LocalDate.now().plusDays(20))
+              .forCustomer(testCustomer)
+              .assignedTo(testUser)
+              .build();
       opportunityRepository.persist(opportunity);
     }
     entityManager.flush();
@@ -146,38 +159,36 @@ public class OpportunityDatabaseIntegrationTest {
   }
 
   @Test
-  @Transactional
-  @DisplayName("Opportunity with negative expected value should be allowed")
-  void opportunityWithNegativeValue_shouldBeAllowed() {
+  @DisplayName("Opportunity with negative expected value should NOT be allowed")
+  void opportunityWithNegativeValue_shouldNotBeAllowed() {
     // Given
     Customer testCustomer =
         createTestCustomer("CUST-NEG-" + UUID.randomUUID().toString().substring(0, 8));
     User testUser = getOrCreateTestUser();
 
-    Opportunity opportunity = new Opportunity();
-    opportunity.setName("Negative Value Test");
-    opportunity.setDescription("Testing negative expected values");
-    opportunity.setExpectedValue(new BigDecimal("-2500.00")); // Negative value
-    opportunity.setProbability(25);
-    opportunity.setStage(OpportunityStage.CLOSED_LOST);
-    opportunity.setExpectedCloseDate(LocalDate.now().plusDays(10));
-    opportunity.setCustomer(testCustomer);
-    opportunity.setAssignedTo(testUser);
+    Opportunity opportunity =
+        opportunityBuilder
+            .withName("Negative Value Test")
+            .withDescription("Testing negative expected values")
+            .withExpectedValue(new BigDecimal("-2500.00")) // Negative value
+            .withProbability(25)
+            .inStage(OpportunityStage.CLOSED_LOST)
+            .withExpectedCloseDate(LocalDate.now().plusDays(10))
+            .forCustomer(testCustomer)
+            .assignedTo(testUser)
+            .build();
 
-    // When/Then - Should not throw exception
-    assertThatCode(
+    // When/Then - Should throw exception due to Bean Validation constraint
+    assertThatThrownBy(
             () -> {
               opportunityRepository.persist(opportunity);
               entityManager.flush();
             })
-        .doesNotThrowAnyException();
-
-    // Verify value is persisted correctly
-    assertThat(opportunity.getExpectedValue()).isEqualTo(new BigDecimal("-2500.00"));
+        .isInstanceOf(jakarta.validation.ConstraintViolationException.class)
+        .hasMessageContaining("Expected value must not be negative");
   }
 
   @Test
-  @Transactional
   @DisplayName("All opportunity stages should be persistable")
   void allOpportunityStages_shouldBePersistable() {
     // Given
@@ -191,15 +202,17 @@ public class OpportunityDatabaseIntegrationTest {
     for (int i = 0; i < allStages.length; i++) {
       OpportunityStage stage = allStages[i];
 
-      Opportunity opportunity = new Opportunity();
-      opportunity.setName("Stage Test " + stage.name());
-      opportunity.setDescription("Testing stage: " + stage);
-      opportunity.setExpectedValue(new BigDecimal("1000.00"));
-      opportunity.setProbability(50);
-      opportunity.setStage(stage);
-      opportunity.setExpectedCloseDate(LocalDate.now().plusDays(15));
-      opportunity.setCustomer(testCustomer);
-      opportunity.setAssignedTo(testUser);
+      Opportunity opportunity =
+          opportunityBuilder
+              .withName("Stage Test " + stage.name())
+              .withDescription("Testing stage: " + stage)
+              .withExpectedValue(new BigDecimal("1000.00"))
+              .withProbability(50)
+              .inStage(stage)
+              .withExpectedCloseDate(LocalDate.now().plusDays(15))
+              .forCustomer(testCustomer)
+              .assignedTo(testUser)
+              .build();
 
       // Should not throw exception
       assertThatCode(
@@ -216,23 +229,35 @@ public class OpportunityDatabaseIntegrationTest {
 
   /** Helper method to create a test customer with unique customer number */
   private Customer createTestCustomer(String customerNumber) {
-    Customer customer = new Customer();
-    customer.setCompanyName("Test Company " + customerNumber);
+    Customer customer =
+        customerBuilder.withCompanyName("[TEST] Test Company " + customerNumber).build();
+
+    // Keep exact company name and customer number
+    customer.setCompanyName("[TEST] Test Company " + customerNumber);
     customer.setCustomerNumber(customerNumber);
     customer.setIsTestData(true);
-    customer.setIsDeleted(false);
-    customer.setCreatedBy("testuser");
+
     customerRepository.persist(customer);
     return customer;
   }
 
-  /** Helper method to get or create a test user */
+  /** Helper method to get or create a test user with unique identifier */
   private User getOrCreateTestUser() {
+    // Generate unique user for each test to avoid collisions
+    String uniqueId = UUID.randomUUID().toString().substring(0, 8);
+    String username = "testuser_" + uniqueId;
+    
     return userRepository
-        .findByUsername("testuser")
+        .findByUsername(username)
         .orElseGet(
             () -> {
-              User user = new User("testuser", "Test", "User", "testuser@freshplan.de");
+              User user =
+                  UserTestDataFactory.builder()
+                      .withUsername(username)
+                      .withFirstName("Test")
+                      .withLastName("User")
+                      .withEmail("testuser_" + uniqueId + "@freshplan.de")
+                      .build();
               user.addRole("admin");
               user.enable();
               userRepository.persist(user);

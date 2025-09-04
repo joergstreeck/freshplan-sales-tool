@@ -7,6 +7,8 @@ import static org.mockito.Mockito.when;
 import de.freshplan.domain.customer.entity.*;
 import de.freshplan.domain.customer.repository.CustomerRepository;
 import de.freshplan.domain.customer.service.dto.*;
+import de.freshplan.test.TestDataBuilder;
+import de.freshplan.test.builders.CustomerBuilder;
 import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.security.TestSecurity;
@@ -18,7 +20,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-
+import org.junit.jupiter.api.Tag;
 /**
  * Comprehensive unit tests for CustomerMapper. Tests all mapping operations between entities and
  * DTOs.
@@ -27,7 +29,7 @@ import org.junit.jupiter.api.Test;
  * @since 2.0.0
  */
 @QuarkusTest
-@TestSecurity(
+@Tag("migrate")@TestSecurity(
     user = "testuser",
     roles = {"admin", "manager", "sales"})
 @DisplayName("CustomerMapper Tests")
@@ -37,6 +39,8 @@ class CustomerMapperTest {
 
   @InjectMock CustomerRepository customerRepository;
 
+  @Inject CustomerBuilder customerBuilder;
+
   private Customer testCustomer;
   private CreateCustomerRequest createRequest;
   private UpdateCustomerRequest updateRequest;
@@ -44,50 +48,55 @@ class CustomerMapperTest {
   @BeforeEach
   void setUp() {
     // Setup mock parent customer for parent reference tests
-    Customer mockParentCustomer = new Customer();
+    Customer mockParentCustomer =
+        customerBuilder.withCompanyName("Parent Company").withStatus(CustomerStatus.AKTIV).build();
     mockParentCustomer.setId(UUID.fromString("54b985b7-8bb0-4a8d-bd0c-fefd24bc1255"));
     mockParentCustomer.setCompanyName("Parent Company");
     mockParentCustomer.setCustomerType(CustomerType.UNTERNEHMEN);
     mockParentCustomer.setHierarchyType(CustomerHierarchyType.STANDALONE);
-    mockParentCustomer.setStatus(CustomerStatus.AKTIV);
-    mockParentCustomer.setIsDeleted(false);
 
     // Mock parent customer repository calls
     when(customerRepository.findByIdActive(any(UUID.class)))
         .thenReturn(Optional.of(mockParentCustomer));
 
-    // Create test customer entity
-    testCustomer = new Customer();
+    // Create test customer entity using CustomerBuilder
+    testCustomer =
+        customerBuilder
+            .withCompanyName("Test Hotel GmbH")
+            .withIndustry(Industry.HOTEL)
+            .withClassification(Classification.A_KUNDE)
+            .withStatus(CustomerStatus.AKTIV)
+            .withExpectedAnnualVolume(new BigDecimal("50000.00"))
+            .withPaymentTerms(PaymentTerms.NETTO_30)
+            .withCreditLimit(new BigDecimal("10000.00"))
+            .withDeliveryCondition(DeliveryCondition.STANDARD)
+            .build();
+
+    // Override specific fields not supported by builder
     testCustomer.setId(UUID.randomUUID());
-    testCustomer.setCustomerNumber("KD-2025-00001");
+    testCustomer.setCustomerNumber(TestDataBuilder.uniqueCustomerNumber());
     testCustomer.setCompanyName("Test Hotel GmbH");
     testCustomer.setTradingName("Hotel Test");
     testCustomer.setLegalForm("GmbH");
     testCustomer.setCustomerType(CustomerType.UNTERNEHMEN);
-    testCustomer.setIndustry(Industry.HOTEL);
-    testCustomer.setClassification(Classification.A_KUNDE);
     testCustomer.setHierarchyType(CustomerHierarchyType.STANDALONE);
-    testCustomer.setStatus(CustomerStatus.AKTIV);
     testCustomer.setLifecycleStage(CustomerLifecycleStage.GROWTH);
-    testCustomer.setExpectedAnnualVolume(new BigDecimal("50000.00"));
     testCustomer.setActualAnnualVolume(new BigDecimal("45000.00"));
-    testCustomer.setPaymentTerms(PaymentTerms.NETTO_30);
-    testCustomer.setCreditLimit(new BigDecimal("10000.00"));
-    testCustomer.setDeliveryCondition(DeliveryCondition.STANDARD);
     testCustomer.setRiskScore(25);
     testCustomer.setLastContactDate(LocalDateTime.now().minusDays(15));
     testCustomer.setNextFollowUpDate(LocalDateTime.now().plusDays(30));
-    testCustomer.setIsDeleted(false);
     testCustomer.setCreatedAt(LocalDateTime.now().minusDays(30));
     testCustomer.setCreatedBy("test-user");
     testCustomer.setUpdatedAt(LocalDateTime.now().minusDays(5));
     testCustomer.setUpdatedBy("update-user");
 
-    // Add some child customers
-    Customer childCustomer = new Customer();
+    // Add some child customers using CustomerBuilder
+    Customer childCustomer =
+        customerBuilder.withCompanyName("Child Hotel").withStatus(CustomerStatus.AKTIV).build();
     childCustomer.setId(UUID.randomUUID());
-    childCustomer.setCustomerNumber("KD-2025-00002");
+    childCustomer.setCustomerNumber(TestDataBuilder.uniqueCustomerNumber());
     childCustomer.setCompanyName("Child Hotel");
+    childCustomer.setCustomerType(CustomerType.UNTERNEHMEN);
     childCustomer.setParentCustomer(testCustomer);
     testCustomer.getChildCustomers().add(childCustomer);
 
@@ -219,18 +228,18 @@ class CustomerMapperTest {
       assertThat(result.paymentTerms()).isNull();
       assertThat(result.creditLimit()).isNull();
       assertThat(result.deliveryCondition()).isNull();
-      
+
       // Risk fields are included in minimal response
       assertThat(result.riskScore()).isEqualTo(testCustomer.getRiskScore());
       assertThat(result.atRisk()).isEqualTo(testCustomer.isAtRisk());
-      
+
       // lastContactDate is NOT null in minimal response - it's needed for filters
       assertThat(result.lastContactDate()).isEqualTo(testCustomer.getLastContactDate());
       assertThat(result.nextFollowUpDate()).isNull();
-      
+
       // Contact Information (added after Sprint 2)
       assertThat(result.contactsCount()).isEqualTo(0); // testCustomer has no contacts
-      
+
       assertThat(result.createdBy()).isNull();
       assertThat(result.updatedAt()).isNull();
       assertThat(result.updatedBy()).isNull();
@@ -242,16 +251,20 @@ class CustomerMapperTest {
     @Test
     @DisplayName("Should handle null values gracefully")
     void toResponse_withNullValues_shouldHandleGracefully() {
-      // Given
-      Customer customerWithNulls = new Customer();
+      // Given - using CustomerBuilder for minimal entity
+      Customer customerWithNulls =
+          customerBuilder
+              .withCompanyName("Minimal Company")
+              .withStatus(CustomerStatus.LEAD)
+              .build();
       customerWithNulls.setId(UUID.randomUUID());
       customerWithNulls.setCustomerNumber("KD-2025-99999");
       customerWithNulls.setCompanyName("Minimal Company");
       customerWithNulls.setCustomerType(CustomerType.UNTERNEHMEN);
-      customerWithNulls.setStatus(CustomerStatus.LEAD);
-      customerWithNulls.setLifecycleStage(CustomerLifecycleStage.ACQUISITION);
       customerWithNulls.setHierarchyType(CustomerHierarchyType.STANDALONE);
-      customerWithNulls.setIsDeleted(false);
+      customerWithNulls.setLifecycleStage(CustomerLifecycleStage.ACQUISITION);
+      customerWithNulls.setIndustry(null); // Override default HOTEL from builder
+      customerWithNulls.setExpectedAnnualVolume(null); // Override default from builder
       customerWithNulls.setCreatedAt(LocalDateTime.now());
       customerWithNulls.setCreatedBy("test-user");
       // All other fields are null
@@ -369,16 +382,18 @@ class CustomerMapperTest {
     @Test
     @DisplayName("Should update entity from update request")
     void updateEntity_withUpdateRequest_shouldUpdateAllFields() {
-      // Given
-      Customer originalCustomer = new Customer();
+      // Given - using CustomerBuilder
+      Customer originalCustomer =
+          customerBuilder
+              .withCompanyName("Original Company")
+              .withStatus(CustomerStatus.LEAD)
+              .build();
       originalCustomer.setId(UUID.randomUUID());
       originalCustomer.setCustomerNumber("KD-2025-00008");
       originalCustomer.setCompanyName("Original Company");
-      originalCustomer.setStatus(CustomerStatus.LEAD);
+      originalCustomer.setHierarchyType(CustomerHierarchyType.STANDALONE);
       originalCustomer.setCreatedAt(LocalDateTime.now().minusDays(10));
       originalCustomer.setCreatedBy("original-user");
-      originalCustomer.setHierarchyType(
-          CustomerHierarchyType.STANDALONE); // Set initial hierarchy type
 
       // When
       customerMapper.updateEntity(originalCustomer, updateRequest, "updated-user");
@@ -422,11 +437,11 @@ class CustomerMapperTest {
     @Test
     @DisplayName("Should handle null values in update request")
     void updateEntity_withNullValues_shouldHandleGracefully() {
-      // Given
-      Customer originalCustomer = new Customer();
+      // Given - using CustomerBuilder
+      Customer originalCustomer =
+          customerBuilder.withCompanyName("Original Company").withIndustry(Industry.HOTEL).build();
       originalCustomer.setCompanyName("Original Company");
       originalCustomer.setTradingName("Original Trading");
-      originalCustomer.setIndustry(Industry.HOTEL);
 
       UpdateCustomerRequest nullUpdateRequest =
           new UpdateCustomerRequest(
@@ -514,16 +529,18 @@ class CustomerMapperTest {
     @Test
     @DisplayName("Should handle empty collections")
     void mapEmptyCollections_shouldHandleGracefully() {
-      // Given
-      Customer customerWithEmptyCollections = new Customer();
+      // Given - using CustomerBuilder
+      Customer customerWithEmptyCollections =
+          customerBuilder
+              .withCompanyName("Empty Collections Company")
+              .withStatus(CustomerStatus.LEAD)
+              .build();
       customerWithEmptyCollections.setId(UUID.randomUUID());
       customerWithEmptyCollections.setCustomerNumber("KD-2025-00999");
       customerWithEmptyCollections.setCompanyName("Empty Collections Company");
       customerWithEmptyCollections.setCustomerType(CustomerType.UNTERNEHMEN);
-      customerWithEmptyCollections.setStatus(CustomerStatus.LEAD);
-      customerWithEmptyCollections.setLifecycleStage(CustomerLifecycleStage.ACQUISITION);
       customerWithEmptyCollections.setHierarchyType(CustomerHierarchyType.STANDALONE);
-      customerWithEmptyCollections.setIsDeleted(false);
+      customerWithEmptyCollections.setLifecycleStage(CustomerLifecycleStage.ACQUISITION);
       customerWithEmptyCollections.setCreatedAt(LocalDateTime.now());
       customerWithEmptyCollections.setCreatedBy("test-user");
       // Collections are initialized as empty
@@ -567,25 +584,32 @@ class CustomerMapperTest {
     @Test
     @DisplayName("Should handle large collections efficiently")
     void mapLargeCollections_shouldPerformWell() {
-      // Given
-      Customer customerWithManyChildren = new Customer();
+      // Given - using CustomerBuilder
+      Customer customerWithManyChildren =
+          customerBuilder
+              .withCompanyName("Company with Many Children")
+              .withStatus(CustomerStatus.AKTIV)
+              .build();
       customerWithManyChildren.setId(UUID.randomUUID());
       customerWithManyChildren.setCustomerNumber("KD-2025-LARGE");
       customerWithManyChildren.setCompanyName("Company with Many Children");
       customerWithManyChildren.setCustomerType(CustomerType.UNTERNEHMEN);
-      customerWithManyChildren.setStatus(CustomerStatus.AKTIV);
-      customerWithManyChildren.setLifecycleStage(CustomerLifecycleStage.GROWTH);
       customerWithManyChildren.setHierarchyType(CustomerHierarchyType.HEADQUARTER);
-      customerWithManyChildren.setIsDeleted(false);
+      customerWithManyChildren.setLifecycleStage(CustomerLifecycleStage.GROWTH);
       customerWithManyChildren.setCreatedAt(LocalDateTime.now());
       customerWithManyChildren.setCreatedBy("test-user");
 
-      // Add many child customers
+      // Add many child customers using CustomerBuilder
       for (int i = 0; i < 100; i++) {
-        Customer child = new Customer();
+        Customer child =
+            customerBuilder
+                .withCompanyName("Child Company " + i)
+                .withStatus(CustomerStatus.AKTIV)
+                .build();
         child.setId(UUID.randomUUID());
         child.setCustomerNumber("KD-2025-CHILD-" + i);
         child.setCompanyName("Child Company " + i);
+        child.setCustomerType(CustomerType.UNTERNEHMEN);
         child.setParentCustomer(customerWithManyChildren);
         customerWithManyChildren.getChildCustomers().add(child);
       }

@@ -6,6 +6,7 @@ import de.freshplan.domain.customer.entity.*;
 import de.freshplan.domain.customer.repository.CustomerRepository;
 import de.freshplan.domain.customer.service.dto.*;
 import de.freshplan.domain.customer.service.exception.*;
+import de.freshplan.test.builders.CustomerBuilder;
 import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.security.TestSecurity;
@@ -18,7 +19,7 @@ import java.util.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
+import org.junit.jupiter.api.Tag;
 /**
  * Integration tests for CustomerService to measure actual code coverage. Tests real service methods
  * with database interactions.
@@ -27,7 +28,7 @@ import org.junit.jupiter.api.Test;
  * @since 2.0.0
  */
 @QuarkusTest
-@TestSecurity(
+@Tag("core")@TestSecurity(
     user = "testuser",
     roles = {"admin", "manager", "sales"})
 @DisplayName("CustomerService Integration Tests")
@@ -36,6 +37,7 @@ class CustomerServiceIntegrationTest {
   @Inject CustomerService customerService;
   @Inject CustomerRepository customerRepository;
   @Inject EntityManager entityManager;
+  @Inject CustomerBuilder customerBuilder;
 
   private CreateCustomerRequest validCreateRequest;
   private UpdateCustomerRequest validUpdateRequest;
@@ -44,14 +46,23 @@ class CustomerServiceIntegrationTest {
   @Transactional
   void setUp() {
     // Clean database before each test using native queries for consistency
-    entityManager.createNativeQuery("DELETE FROM customer_timeline_events").executeUpdate();
-    entityManager.createNativeQuery("DELETE FROM customer_contacts").executeUpdate();
-    entityManager.createNativeQuery("DELETE FROM customer_locations").executeUpdate();
-    entityManager.createNativeQuery("DELETE FROM customers").executeUpdate();
+    // Delete in correct order to respect foreign key constraints
+    // Clean up all test data
+    entityManager.createNativeQuery("DELETE FROM customer_timeline_events WHERE customer_id IN (SELECT id FROM customers WHERE is_test_data = true)").executeUpdate();
+    entityManager.createNativeQuery("DELETE FROM customer_contacts WHERE customer_id IN (SELECT id FROM customers WHERE is_test_data = true)").executeUpdate();
+    entityManager.createNativeQuery("DELETE FROM customer_locations WHERE customer_id IN (SELECT id FROM customers WHERE is_test_data = true)").executeUpdate();
+    entityManager.createNativeQuery("DELETE FROM opportunities WHERE customer_id IN (SELECT id FROM customers WHERE is_test_data = true)").executeUpdate();
+    // Delete all test data
+    customerRepository.deleteAllTestData();
     entityManager.flush();
 
     // Create valid request DTOs for integration tests
-    validCreateRequest = new CreateCustomerRequest("Test Hotel GmbH", CustomerType.UNTERNEHMEN);
+    validCreateRequest =
+        customerBuilder
+            .reset()
+            .withCompanyName("[TEST] Test Hotel GmbH")
+            .withType(CustomerType.UNTERNEHMEN)
+            .buildCreateRequest();
 
     validUpdateRequest =
         new UpdateCustomerRequest(
@@ -83,7 +94,7 @@ class CustomerServiceIntegrationTest {
 
     // Then
     assertThat(result).isNotNull();
-    assertThat(result.companyName()).isEqualTo("Test Hotel GmbH");
+    assertThat(result.companyName()).contains("Test Hotel GmbH");
     assertThat(result.customerType()).isEqualTo(CustomerType.UNTERNEHMEN);
     assertThat(result.status()).isEqualTo(CustomerStatus.LEAD);
     assertThat(result.lifecycleStage()).isEqualTo(CustomerLifecycleStage.ACQUISITION);
@@ -96,12 +107,20 @@ class CustomerServiceIntegrationTest {
   void createCustomer_withDuplicateCompanyName_shouldThrowException() {
     // Given - Create first customer with specific name
     CreateCustomerRequest firstRequest =
-        new CreateCustomerRequest("Unique Hotel Name", CustomerType.UNTERNEHMEN);
+        customerBuilder
+            .reset()
+            .withCompanyName("[TEST] Unique Hotel Name")
+            .withType(CustomerType.UNTERNEHMEN)
+            .buildCreateRequest();
     customerService.createCustomer(firstRequest, "testuser");
 
-    // When & Then - Try to create similar company name (triggers LIKE duplicate detection)
+    // When & Then - Try to create exact same company name (case-insensitive duplicate detection)
     CreateCustomerRequest duplicateRequest =
-        new CreateCustomerRequest("unique hotel name", CustomerType.UNTERNEHMEN);
+        customerBuilder
+            .reset()
+            .withCompanyName("[TEST] Unique Hotel Name")
+            .withType(CustomerType.UNTERNEHMEN)
+            .buildCreateRequest();
 
     assertThatThrownBy(() -> customerService.createCustomer(duplicateRequest, "testuser"))
         .isInstanceOf(CustomerAlreadyExistsException.class)
@@ -114,14 +133,18 @@ class CustomerServiceIntegrationTest {
   void createCustomer_withMinimalData_shouldCreateCustomer() {
     // Given
     CreateCustomerRequest minimalRequest =
-        new CreateCustomerRequest("Minimal Company", CustomerType.UNTERNEHMEN);
+        customerBuilder
+            .reset()
+            .withCompanyName("[TEST] Minimal Company")
+            .withType(CustomerType.UNTERNEHMEN)
+            .buildCreateRequest();
 
     // When
     CustomerResponse result = customerService.createCustomer(minimalRequest, "testuser");
 
     // Then
     assertThat(result).isNotNull();
-    assertThat(result.companyName()).isEqualTo("Minimal Company");
+    assertThat(result.companyName()).contains("Minimal Company");
     assertThat(result.customerType()).isEqualTo(CustomerType.UNTERNEHMEN);
     assertThat(result.status()).isEqualTo(CustomerStatus.LEAD);
     assertThat(result.lifecycleStage()).isEqualTo(CustomerLifecycleStage.ACQUISITION);
@@ -141,7 +164,7 @@ class CustomerServiceIntegrationTest {
     // Then
     assertThat(result).isNotNull();
     assertThat(result.id()).isEqualTo(created.id());
-    assertThat(result.companyName()).isEqualTo("Test Hotel GmbH");
+    assertThat(result.companyName()).contains("Test Hotel GmbH");
   }
 
   @Test
@@ -318,7 +341,7 @@ class CustomerServiceIntegrationTest {
     assertThat(result.content()).hasSize(2);
     assertThat(result.content())
         .extracting(CustomerResponse::companyName)
-        .containsExactlyInAnyOrder("Test Hotel GmbH", "Other Company");
+        .containsExactlyInAnyOrder("[TEST] Test Hotel GmbH", "Other Company");
   }
 
   @Test

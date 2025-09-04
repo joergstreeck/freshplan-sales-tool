@@ -10,14 +10,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
+import org.junit.jupiter.api.Tag;import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 /**
  * Unit tests for CurrentUserProducer class. Tests CDI producer methods for current user
  * information.
  */
-class CurrentUserProducerTest {
+@Tag("migrate")class CurrentUserProducerTest {
 
   private CurrentUserProducer currentUserProducer;
 
