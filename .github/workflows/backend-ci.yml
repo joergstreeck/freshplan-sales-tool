@@ -93,6 +93,8 @@ jobs:
             -Dquarkus.datasource.jdbc.url=jdbc:postgresql://localhost:5432/test_db \
             -Dquarkus.datasource.username=postgres \
             -Dquarkus.datasource.password=postgres \
+            -Dquarkus.flyway.migrate-at-start=true \
+            -Dquarkus.flyway.locations=classpath:db/migration \
             -Dtest.run.id=${{ github.run_id }}
           
       - name: Upload Test Results
