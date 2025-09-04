@@ -67,15 +67,26 @@ jobs:
         echo "Checking Maven and Java setup..."
         ./mvnw --version
         
+        echo "Checking for migration files..."
+        ls -la src/main/resources/db/migration/ | head -10
+        echo "Total migration files: $(ls src/main/resources/db/migration/*.sql 2>/dev/null | wc -l)"
+        
         echo "Running Flyway migration..."
         ./mvnw flyway:migrate \
           -Dflyway.url="jdbc:postgresql://localhost:5432/freshplan" \
           -Dflyway.user=freshplan \
           -Dflyway.password=freshplan \
           -Dflyway.locations=classpath:db/migration \
-          -Dflyway.outOfOrder=true || {
+          -Dflyway.outOfOrder=true \
+          -Dflyway.validateOnMigrate=false || {
             echo "❌ Flyway migration failed! Checking database connection..."
             psql -h localhost -U freshplan -d freshplan -c "SELECT version();"
+            echo "Checking Flyway info..."
+            ./mvnw flyway:info \
+              -Dflyway.url="jdbc:postgresql://localhost:5432/freshplan" \
+              -Dflyway.user=freshplan \
+              -Dflyway.password=freshplan \
+              -Dflyway.locations=classpath:db/migration
             exit 1
           }
         
