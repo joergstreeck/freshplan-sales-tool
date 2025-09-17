@@ -84,7 +84,7 @@ export const HeaderV2: React.FC<HeaderV2Props> = ({ onMenuClick, showMenuIcon = 
 
   const handleSettingsClick = () => {
     handleMenuClose();
-    navigate('/einstellungen');
+    navigate('/settings');
   };
 
   const handleSearchClear = () => {

@@ -170,22 +170,19 @@ export const AppProviders = ({ children: mainChildren }: AppProvidersProps) => {
                           <Route path="/customers/new" element={<CustomersPageV2 openWizard={true} />} />
                           <Route path="/customers/:customerId" element={<CustomerDetailPage />} />
                           <Route path="/customers-old" element={<CustomersPage />} />
-                          {/* Deutscher Alias für Kundenliste */}
-                          <Route path="/kundenmanagement/liste" element={<CustomersPageV2 />} />
+                          {/* Customer Management Routes */}
+                          <Route path="/customer-management" element={<KundenmanagementDashboard />} />
                           <Route
-                            path="/kundenmanagement/neu"
-                            element={<CustomersPageV2 openWizard={true} />}
-                          />
-                          <Route
-                            path="/kundenmanagement/opportunities"
+                            path="/customer-management/opportunities"
                             element={<OpportunityPipelinePage />}
                           />
+                          <Route path="/customer-management/activities" element={<Placeholders.Aktivitaeten />} />
                           <Route path="/calculator-v2" element={<CalculatorPageV2 />} />
                           <Route path="/legacy-tool" element={<LegacyToolPage />} />
 
                           {/* Help Center Routes */}
-                          <Route path="/hilfe" element={<HilfeDashboard />} />
-                          <Route path="/hilfe/*" element={<HelpCenterPage />} />
+                          <Route path="/help" element={<HilfeDashboard />} />
+                          <Route path="/help/*" element={<HelpCenterPage />} />
 
                           {/* Admin Routes - Protected by Role */}
                           <Route
@@ -228,47 +225,44 @@ export const AppProviders = ({ children: mainChildren }: AppProvidersProps) => {
 
                           {/* Placeholder Pages für leere Menüpunkte */}
 
-                          {/* Neukundengewinnung - mit eigenem Dashboard */}
-                          <Route path="/neukundengewinnung" element={<NeukundengewinnungDashboard />} />
-                          <Route path="/neukundengewinnung/posteingang" element={<Placeholders.EmailPosteingang />} />
-                          <Route path="/neukundengewinnung/leads" element={<Placeholders.LeadErfassung />} />
-                          <Route path="/neukundengewinnung/kampagnen" element={<Placeholders.Kampagnen />} />
+                          {/* Lead Generation - with own Dashboard */}
+                          <Route path="/lead-generation" element={<NeukundengewinnungDashboard />} />
+                          <Route path="/lead-generation/inbox" element={<Placeholders.EmailPosteingang />} />
+                          <Route path="/lead-generation/leads" element={<Placeholders.LeadErfassung />} />
+                          <Route path="/lead-generation/campaigns" element={<Placeholders.Kampagnen />} />
 
-                          {/* Kundenmanagement - mit eigenem Dashboard */}
-                          <Route path="/kundenmanagement" element={<KundenmanagementDashboard />} />
-                          <Route path="/kundenmanagement/aktivitaeten" element={<Placeholders.Aktivitaeten />} />
 
-                          {/* Berichte - mit eigenem Dashboard */}
-                          <Route path="/berichte" element={<AuswertungenDashboard />} />
-                          <Route path="/berichte/umsatz" element={<Placeholders.UmsatzBericht />} />
-                          <Route path="/berichte/kunden" element={<Placeholders.KundenAnalyse />} />
-                          <Route path="/berichte/aktivitaeten" element={<Placeholders.AktivitaetsberBerichte />} />
+                          {/* Reports - with own Dashboard */}
+                          <Route path="/reports" element={<AuswertungenDashboard />} />
+                          <Route path="/reports/revenue" element={<Placeholders.UmsatzBericht />} />
+                          <Route path="/reports/customers" element={<Placeholders.KundenAnalyse />} />
+                          <Route path="/reports/activities" element={<Placeholders.AktivitaetsberBerichte />} />
 
-                          {/* Kommunikation - mit eigenem Dashboard */}
-                          <Route path="/kommunikation" element={<KommunikationDashboard />} />
-                          <Route path="/kommunikation/chat" element={<Placeholders.TeamChat />} />
-                          <Route path="/kommunikation/ankuendigungen" element={<Placeholders.Ankuendigungen />} />
-                          <Route path="/kommunikation/notizen" element={<Placeholders.Notizen />} />
-                          <Route path="/kommunikation/nachrichten" element={<Placeholders.InterneNachrichten />} />
+                          {/* Communication - with own Dashboard */}
+                          <Route path="/communication" element={<KommunikationDashboard />} />
+                          <Route path="/communication/chat" element={<Placeholders.TeamChat />} />
+                          <Route path="/communication/announcements" element={<Placeholders.Ankuendigungen />} />
+                          <Route path="/communication/notes" element={<Placeholders.Notizen />} />
+                          <Route path="/communication/messages" element={<Placeholders.InterneNachrichten />} />
 
-                          {/* Einstellungen - mit eigenem Dashboard */}
-                          <Route path="/einstellungen" element={<EinstellungenDashboard />} />
-                          <Route path="/einstellungen/profil" element={<Placeholders.MeinProfil />} />
-                          <Route path="/einstellungen/benachrichtigungen" element={<Placeholders.Benachrichtigungen />} />
-                          <Route path="/einstellungen/darstellung" element={<Placeholders.Darstellung />} />
-                          <Route path="/einstellungen/sicherheit" element={<Placeholders.Sicherheit />} />
+                          {/* Settings - with own Dashboard */}
+                          <Route path="/settings" element={<EinstellungenDashboard />} />
+                          <Route path="/settings/profile" element={<Placeholders.MeinProfil />} />
+                          <Route path="/settings/notifications" element={<Placeholders.Benachrichtigungen />} />
+                          <Route path="/settings/appearance" element={<Placeholders.Darstellung />} />
+                          <Route path="/settings/security" element={<Placeholders.Sicherheit />} />
 
-                          {/* Hilfe - verwendet HelpCenterPage */}
-                          <Route path="/hilfe/erste-schritte" element={<Placeholders.ErsteSchritte />} />
-                          <Route path="/hilfe/handbuecher" element={<Placeholders.Handbuecher />} />
-                          <Route path="/hilfe/videos" element={<Placeholders.VideoTutorials />} />
-                          <Route path="/hilfe/faq" element={<Placeholders.FAQ />} />
-                          <Route path="/hilfe/support" element={<Placeholders.Support />} />
+                          {/* Help - uses HelpCenterPage */}
+                          <Route path="/help/getting-started" element={<Placeholders.ErsteSchritte />} />
+                          <Route path="/help/manuals" element={<Placeholders.Handbuecher />} />
+                          <Route path="/help/videos" element={<Placeholders.VideoTutorials />} />
+                          <Route path="/help/faq" element={<Placeholders.FAQ />} />
+                          <Route path="/help/support" element={<Placeholders.Support />} />
 
                           {/* Admin - mit neuem Dashboard */}
                           <Route path="/admin" element={<AdminDashboard />} />
                           <Route path="/admin/system" element={<SystemDashboard />} />
-                          <Route path="/admin/integrationen" element={<IntegrationsDashboard />} />
+                          <Route path="/admin/integrations" element={<IntegrationsDashboard />} />
                           <Route path="/admin/help" element={<HelpConfigDashboard />} />
                           <Route
                             path="/admin/settings"
@@ -303,9 +297,9 @@ export const AppProviders = ({ children: mainChildren }: AppProvidersProps) => {
                             }
                           />
 
-                          {/* Admin Integrationen */}
+                          {/* Admin Integrations */}
                           <Route
-                            path="/admin/integrationen/ki"
+                            path="/admin/integrations/ai"
                             element={
                               <ProtectedRoute allowedRoles={['admin']}>
                                 <Placeholders.KIAnbindungen />
@@ -313,7 +307,7 @@ export const AppProviders = ({ children: mainChildren }: AppProvidersProps) => {
                             }
                           />
                           <Route
-                            path="/admin/integrationen/xentral"
+                            path="/admin/integrations/xentral"
                             element={
                               <ProtectedRoute allowedRoles={['admin']}>
                                 <Placeholders.XentralIntegration />
@@ -321,7 +315,7 @@ export const AppProviders = ({ children: mainChildren }: AppProvidersProps) => {
                             }
                           />
                           <Route
-                            path="/admin/integrationen/email"
+                            path="/admin/integrations/email"
                             element={
                               <ProtectedRoute allowedRoles={['admin']}>
                                 <Placeholders.EmailServices />
@@ -329,7 +323,7 @@ export const AppProviders = ({ children: mainChildren }: AppProvidersProps) => {
                             }
                           />
                           <Route
-                            path="/admin/integrationen/payment"
+                            path="/admin/integrations/payment"
                             element={
                               <ProtectedRoute allowedRoles={['admin']}>
                                 <Placeholders.PaymentProvider />
@@ -337,7 +331,7 @@ export const AppProviders = ({ children: mainChildren }: AppProvidersProps) => {
                             }
                           />
                           <Route
-                            path="/admin/integrationen/webhooks"
+                            path="/admin/integrations/webhooks"
                             element={
                               <ProtectedRoute allowedRoles={['admin']}>
                                 <Placeholders.Webhooks />
@@ -345,7 +339,7 @@ export const AppProviders = ({ children: mainChildren }: AppProvidersProps) => {
                             }
                           />
                           <Route
-                            path="/admin/integrationen/neu"
+                            path="/admin/integrations/new"
                             element={
                               <ProtectedRoute allowedRoles={['admin']}>
                                 <Placeholders.NeueIntegration />
@@ -402,7 +396,14 @@ export const AppProviders = ({ children: mainChildren }: AppProvidersProps) => {
                           {/* Redirect alte URLs auf neue */}
                           <Route path="/calculator" element={<Navigate to="/calculator-v2" replace />} />
                           <Route path="/kunden" element={<Navigate to="/customers" replace />} />
-                          <Route path="/verkaufschancen" element={<Navigate to="/kundenmanagement/opportunities" replace />} />
+                          <Route path="/verkaufschancen" element={<Navigate to="/customer-management/opportunities" replace />} />
+                          {/* Redirects für alte deutsche URLs */}
+                          <Route path="/neukundengewinnung" element={<Navigate to="/lead-generation" replace />} />
+                          <Route path="/kundenmanagement" element={<Navigate to="/customer-management" replace />} />
+                          <Route path="/berichte" element={<Navigate to="/reports" replace />} />
+                          <Route path="/kommunikation" element={<Navigate to="/communication" replace />} />
+                          <Route path="/einstellungen" element={<Navigate to="/settings" replace />} />
+                          <Route path="/hilfe" element={<Navigate to="/help" replace />} />
 
                           {/* System-Alias-Routen */}
                           <Route path="/system" element={<Navigate to="/admin" replace />} />
