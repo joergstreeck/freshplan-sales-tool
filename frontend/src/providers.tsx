@@ -206,8 +206,17 @@ export const AppProviders = ({ children: mainChildren }: AppProvidersProps) => {
                           <Route path="/berichte/kunden" element={<Placeholders.KundenAnalyse />} />
                           <Route path="/berichte/aktivitaeten" element={<Placeholders.AktivitaetsberBerichte />} />
 
+                          {/* Kommunikation */}
+                          <Route path="/kommunikation/chat" element={<Placeholders.TeamChat />} />
+                          <Route path="/kommunikation/ankuendigungen" element={<Placeholders.Ankuendigungen />} />
+                          <Route path="/kommunikation/notizen" element={<Placeholders.Notizen />} />
+                          <Route path="/kommunikation/nachrichten" element={<Placeholders.InterneNachrichten />} />
+
                           {/* Einstellungen */}
-                          <Route path="/einstellungen" element={<Placeholders.Einstellungen />} />
+                          <Route path="/einstellungen/profil" element={<Placeholders.MeinProfil />} />
+                          <Route path="/einstellungen/benachrichtigungen" element={<Placeholders.Benachrichtigungen />} />
+                          <Route path="/einstellungen/darstellung" element={<Placeholders.Darstellung />} />
+                          <Route path="/einstellungen/sicherheit" element={<Placeholders.Sicherheit />} />
 
                           {/* Hilfe */}
                           <Route path="/hilfe/erste-schritte" element={<Placeholders.ErsteSchritte />} />
@@ -230,6 +239,72 @@ export const AppProviders = ({ children: mainChildren }: AppProvidersProps) => {
                             element={
                               <ProtectedRoute allowedRoles={['admin']}>
                                 <Placeholders.SystemLogs />
+                              </ProtectedRoute>
+                            }
+                          />
+                          <Route
+                            path="/admin/system/performance"
+                            element={
+                              <ProtectedRoute allowedRoles={['admin']}>
+                                <Placeholders.Performance />
+                              </ProtectedRoute>
+                            }
+                          />
+                          <Route
+                            path="/admin/system/backup"
+                            element={
+                              <ProtectedRoute allowedRoles={['admin']}>
+                                <Placeholders.BackupRecovery />
+                              </ProtectedRoute>
+                            }
+                          />
+
+                          {/* Admin Integrationen */}
+                          <Route
+                            path="/admin/integrationen/ki"
+                            element={
+                              <ProtectedRoute allowedRoles={['admin']}>
+                                <Placeholders.KIAnbindungen />
+                              </ProtectedRoute>
+                            }
+                          />
+                          <Route
+                            path="/admin/integrationen/xentral"
+                            element={
+                              <ProtectedRoute allowedRoles={['admin']}>
+                                <Placeholders.XentralIntegration />
+                              </ProtectedRoute>
+                            }
+                          />
+                          <Route
+                            path="/admin/integrationen/email"
+                            element={
+                              <ProtectedRoute allowedRoles={['admin']}>
+                                <Placeholders.EmailServices />
+                              </ProtectedRoute>
+                            }
+                          />
+                          <Route
+                            path="/admin/integrationen/payment"
+                            element={
+                              <ProtectedRoute allowedRoles={['admin']}>
+                                <Placeholders.PaymentProvider />
+                              </ProtectedRoute>
+                            }
+                          />
+                          <Route
+                            path="/admin/integrationen/webhooks"
+                            element={
+                              <ProtectedRoute allowedRoles={['admin']}>
+                                <Placeholders.Webhooks />
+                              </ProtectedRoute>
+                            }
+                          />
+                          <Route
+                            path="/admin/integrationen/neu"
+                            element={
+                              <ProtectedRoute allowedRoles={['admin']}>
+                                <Placeholders.NeueIntegration />
                               </ProtectedRoute>
                             }
                           />

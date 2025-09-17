@@ -7,6 +7,8 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import ApiIcon from '@mui/icons-material/Api';
 import BugReportIcon from '@mui/icons-material/BugReport';
+import ChatIcon from '@mui/icons-material/Chat';
+import IntegrationInstructionsIcon from '@mui/icons-material/IntegrationInstructions';
 // import SecurityIcon from '@mui/icons-material/Security'; // Not used currently
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 
@@ -108,11 +110,54 @@ export const navigationConfig: NavigationItemType[] = [
     ],
   },
   {
+    id: 'kommunikation',
+    label: 'Kommunikation',
+    icon: ChatIcon,
+    path: '/kommunikation',
+    subItems: [
+      {
+        label: '💬 Team-Chat',
+        path: '/kommunikation/chat',
+      },
+      {
+        label: '📢 Ankündigungen',
+        path: '/kommunikation/ankuendigungen',
+      },
+      {
+        label: '📋 Notizen',
+        path: '/kommunikation/notizen',
+      },
+      {
+        label: '📧 Interne Nachrichten',
+        path: '/kommunikation/nachrichten',
+      },
+    ],
+  },
+  {
     id: 'einstellungen',
     label: 'Einstellungen',
     icon: SettingsIcon,
     path: '/einstellungen',
     permissions: ['settings.view'],
+    subItems: [
+      {
+        label: '👤 Mein Profil',
+        path: '/einstellungen/profil',
+      },
+      {
+        label: '🔔 Benachrichtigungen',
+        path: '/einstellungen/benachrichtigungen',
+      },
+      {
+        label: '🎨 Darstellung',
+        path: '/einstellungen/darstellung',
+      },
+      {
+        label: '🔐 Sicherheit',
+        path: '/einstellungen/sicherheit',
+        tooltip: 'Passwort ändern, 2FA, Session-Management',
+      },
+    ],
   },
   {
     id: 'hilfe',
@@ -175,8 +220,52 @@ export const navigationConfig: NavigationItemType[] = [
             permissions: ['admin.view'],
           },
           {
-            label: 'Einstellungen',
-            path: '/admin/settings',
+            label: 'Performance',
+            path: '/admin/system/performance',
+            permissions: ['admin.view'],
+          },
+          {
+            label: 'Backup & Recovery',
+            path: '/admin/system/backup',
+            permissions: ['admin.view'],
+          },
+        ],
+      },
+      {
+        label: '🔌 Integrationen',
+        path: '/admin/integrationen',
+        permissions: ['admin.view'],
+        subItems: [
+          {
+            label: '🤖 KI-Anbindungen',
+            path: '/admin/integrationen/ki',
+            permissions: ['admin.view'],
+            tooltip: 'ChatGPT, Claude, andere KI-Services',
+          },
+          {
+            label: '📦 Xentral',
+            path: '/admin/integrationen/xentral',
+            permissions: ['admin.view'],
+          },
+          {
+            label: '📧 E-Mail Services',
+            path: '/admin/integrationen/email',
+            permissions: ['admin.view'],
+            tooltip: 'SMTP, Outlook, Gmail Integration',
+          },
+          {
+            label: '💳 Payment Provider',
+            path: '/admin/integrationen/payment',
+            permissions: ['admin.view'],
+          },
+          {
+            label: '🔄 Webhooks',
+            path: '/admin/integrationen/webhooks',
+            permissions: ['admin.view'],
+          },
+          {
+            label: '➕ Neue Integration',
+            path: '/admin/integrationen/neu',
             permissions: ['admin.view'],
           },
         ],

@@ -295,3 +295,7 @@ export const Support = () => (
     icon={<SupportAgentIcon sx={{ fontSize: 80, color: '#94C456' }} />}
   />
 );
+
+// Re-export from other files
+export * from './kommunikation';
+export * from './integrationen';
