@@ -1,9 +1,11 @@
 // Users management page
-import { UserTable } from '../features/users/UserTable';
-import { UserForm } from '../features/users/UserForm';
+import { Box, Dialog, DialogContent, IconButton } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
+import { UserTableMUI } from '../features/users/UserTableMUI';
+import { UserFormMUI } from '../features/users/UserFormMUI';
 import { useUser } from '../features/users/userQueries';
 import { useUserStore } from '../features/users/userStore';
-import { AuthenticatedLayout } from '../components/layout/AuthenticatedLayout';
+import { MainLayoutV2 } from '../components/layout/MainLayoutV2';
 
 export const UsersPage = () => {
   const { isCreateModalOpen, isEditModalOpen, selectedUserId, closeCreateModal, closeEditModal } =
@@ -19,40 +21,81 @@ export const UsersPage = () => {
   };
 
   return (
-    <AuthenticatedLayout>
-      <div className="min-h-screen bg-background p-8">
-        <div className="mx-auto max-w-7xl space-y-8">
-          {/* Main content */}
-          {!isCreateModalOpen && !isEditModalOpen && <UserTable />}
+    <MainLayoutV2>
+      <Box sx={{ p: 3 }}>
+        {/* Main content - Always show table */}
+        <UserTableMUI />
 
-          {/* Create user form */}
-          {isCreateModalOpen && (
-            <div className="flex justify-center">
-              <UserForm onSuccess={handleFormSuccess} onCancel={closeCreateModal} />
-            </div>
-          )}
+        {/* Create user dialog */}
+        <Dialog
+          open={isCreateModalOpen}
+          onClose={closeCreateModal}
+          maxWidth="md"
+          fullWidth
+          PaperProps={{
+            sx: {
+              borderRadius: 2,
+              maxHeight: '90vh',
+            },
+          }}
+        >
+          <IconButton
+            aria-label="close"
+            onClick={closeCreateModal}
+            sx={{
+              position: 'absolute',
+              right: 8,
+              top: 8,
+              color: (theme) => theme.palette.grey[500],
+            }}
+          >
+            <CloseIcon />
+          </IconButton>
+          <DialogContent sx={{ p: 4 }}>
+            <UserFormMUI onSuccess={handleFormSuccess} onCancel={closeCreateModal} />
+          </DialogContent>
+        </Dialog>
 
-          {/* Edit user form */}
-          {isEditModalOpen && selectedUser && (
-            <div className="flex justify-center">
-              <UserForm
+        {/* Edit user dialog */}
+        <Dialog
+          open={isEditModalOpen}
+          onClose={closeEditModal}
+          maxWidth="md"
+          fullWidth
+          PaperProps={{
+            sx: {
+              borderRadius: 2,
+              maxHeight: '90vh',
+            },
+          }}
+        >
+          <IconButton
+            aria-label="close"
+            onClick={closeEditModal}
+            sx={{
+              position: 'absolute',
+              right: 8,
+              top: 8,
+              color: (theme) => theme.palette.grey[500],
+            }}
+          >
+            <CloseIcon />
+          </IconButton>
+          <DialogContent sx={{ p: 4 }}>
+            {selectedUser ? (
+              <UserFormMUI
                 user={selectedUser}
                 onSuccess={handleFormSuccess}
                 onCancel={closeEditModal}
               />
-            </div>
-          )}
-
-          {/* Loading state for edit mode */}
-          {isEditModalOpen && !selectedUser && selectedUserId && (
-            <div className="flex justify-center">
-              <div className="p-8">
-                <p>Lade Benutzerdaten...</p>
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-    </AuthenticatedLayout>
+            ) : (
+              <Box sx={{ textAlign: 'center', p: 4 }}>
+                Lade Benutzerdaten...
+              </Box>
+            )}
+          </DialogContent>
+        </Dialog>
+      </Box>
+    </MainLayoutV2>
   );
 };

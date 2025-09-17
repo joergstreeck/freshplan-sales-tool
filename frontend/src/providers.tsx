@@ -147,12 +147,16 @@ export const AppProviders = ({ children: mainChildren }: AppProvidersProps) => {
                               </ProtectedRoute>
                             }
                           />
+                          {/* Admin User Management */}
+                          <Route 
+                            path="/admin/users" 
+                            element={
+                              <ProtectedRoute allowedRoles={['admin']}>
+                                <UsersPage />
+                              </ProtectedRoute>
+                            } 
+                          />
                           {/* Weitere Admin-Seiten können hier hinzugefügt werden:
-                        <Route path="/admin/users" element={
-                          <ProtectedRoute allowedRoles={['admin']}>
-                            <UserManagementPage />
-                          </ProtectedRoute>
-                        } />
                         <Route path="/admin/settings" element={
                           <ProtectedRoute allowedRoles={['admin']}>
                             <SystemSettingsPage />

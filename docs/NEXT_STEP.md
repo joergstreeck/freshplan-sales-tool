@@ -7,15 +7,17 @@
 
 ## 🎯 JETZT GERADE:
 
-**PHASE 0, 1 & 2 ABGESCHLOSSEN - BEREIT FÜR PHASE 3 (UMBAU)**
+**FRONTEND ROUTING-VERBESSERUNGEN IN ARBEIT**
 
-**Stand 17.08.2025 19:00:**
-- ✅ **Phase 0 komplett:** Alle Migrationen V10000-V10005 implementiert
-- ✅ **Phase 1 komplett:** Alle alten Initializers bereits entfernt
-- ✅ **Phase 2 komplett:** TestDataBuilder mit allen Builders implementiert!
-- ✅ **CI-Pipeline verbessert:** Smoke-Tests an zwei Stellen
-- ✅ **Team-Feedback adressiert:** Alle kritischen Punkte behoben
-- ⚡ **NÄCHSTER SCHRITT:** Phase 3 - Tests migrieren zu TestDataBuilder!
+**Stand 17.09.2025 12:15:**
+- ✅ **PR #86 & #91 gemerged:** TestDataBuilder & CQRS erfolgreich integriert
+- ✅ **CI komplett grün:** Alle Workflows stabil
+- 🔄 **Feature-Branch offen:** `feature/routing-improvements`
+- ✅ **Benutzerverwaltung gefixt:** Route `/admin/users` mit MainLayoutV2 und MUI
+- ⚡ **NÄCHSTE OPTIONEN:**
+  1. Feature-Branch mergen (3 Dateien geändert)
+  2. Weitere Routing-Fixes im gleichen Branch
+  3. Konsistenz der Pfade prüfen (deutsch vs. englisch)
 
 **System-Status:**
 - ✅ **Migrationen:** V10000-V10005 vollständig implementiert
