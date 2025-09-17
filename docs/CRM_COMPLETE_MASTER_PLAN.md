@@ -1,8 +1,9 @@
 # 🚀 CRM COMPLETE MASTER PLAN V4 (FINAL) - Das Sales Command Center
 
-**Version:** 4.0
-**Datum:** 06.07.2025
+**Version:** 4.1
+**Datum:** 17.09.2025
 **Status:** VERBINDLICH - Dies ist unsere einzige Wahrheit und ersetzt alle vorherigen Pläne.
+**Letzte Aktualisierung:** Navigation-Struktur und Implementierungsstatus hinzugefügt
 
 ---
 
@@ -114,11 +115,102 @@ CockpitView.tsx (Hauptcontainer)
 * **Spalte 3: Aktions-Center (Der Arbeitsbereich):**
     * Hier findet die kontextbezogene Arbeit statt.
     * Bietet einen **geführten Prozess** je nach Kundenstatus (z.B. Neukunden-Akquise).
-    * Funktionen wie **Bonitätsprüfung**, **Rabattrechner** und **Angebotserstellung** sind als logische Schritte in diesen Prozess integriert.
+    * Funktionen wie **Bonitätsprüfung**, **~~Rabattrechner~~** [VERALTET - Neue Rabattlogik ab 01.10.2025] und **Angebotserstellung** sind als logische Schritte in diesen Prozess integriert.
+    * **NEU ab 01.10.2025:** Jahresumsatz-basierte Rabattstufen statt Bestellwert-Kalkulator (siehe `/docs/business/rabattlogik_2025_NEU.md`)
     * Ermöglicht das direkte **Schreiben von E-Mails** und die Dokumentation aller Aktivitäten.
     * **Wiederverwendung:** 85% aus customer/activities Modulen
 
 **Details:** Siehe `/docs/features/FC-002-M3-cockpit.md`
+
+---
+
+## 📱 Aktuelle Navigation & Implementierungsstatus (Stand: 17.09.2025)
+
+### Navigation-Struktur mit Implementierungsstatus
+
+**✅ = Funktional | ⏳ = Placeholder | 🔄 = In Entwicklung**
+
+```
+📍 Mein Cockpit ✅
+├── 📧 Neukundengewinnung
+│   ├── E-Mail Posteingang ⏳
+│   ├── Lead-Erfassung ⏳
+│   └── Kampagnen ⏳
+├── 👥 Kundenmanagement
+│   ├── Alle Kunden ✅
+│   ├── Neuer Kunde ✅ (Modal)
+│   ├── Verkaufschancen ✅
+│   └── Aktivitäten ⏳
+├── 📊 Auswertungen
+│   ├── Umsatzübersicht ⏳
+│   ├── Kundenanalyse ⏳
+│   └── Aktivitätsbericht ⏳
+├── 💬 Kommunikation
+│   ├── Team-Chat ⏳
+│   ├── Ankündigungen ⏳
+│   ├── Notizen ⏳
+│   └── Interne Nachrichten ⏳
+├── ⚙️ Einstellungen
+│   ├── Mein Profil ⏳
+│   ├── Benachrichtigungen ⏳
+│   ├── Darstellung ⏳
+│   └── Sicherheit ⏳
+├── ❓ Hilfe & Support
+│   ├── Erste Schritte ⏳
+│   ├── Handbücher ⏳
+│   ├── Video-Tutorials ⏳
+│   ├── Häufige Fragen ⏳
+│   └── Support kontaktieren ⏳
+└── 🔐 Administrator
+    ├── Audit Dashboard ✅
+    ├── Benutzerverwaltung ✅
+    ├── System
+    │   ├── API Status ✅
+    │   ├── System-Logs ⏳
+    │   ├── Performance ⏳
+    │   └── Backup & Recovery ⏳
+    ├── Integration
+    │   ├── KI-Anbindungen ⏳
+    │   ├── Xentral ⏳
+    │   ├── E-Mail Service ⏳
+    │   ├── Payment Provider ⏳
+    │   ├── Webhooks ⏳
+    │   └── + Neue Integration ⏳
+    ├── Hilfe-Konfiguration
+    │   ├── Hilfe-System Demo ✅
+    │   ├── Tooltips verwalten ⏳
+    │   ├── Touren erstellen ⏳
+    │   └── Analytics ⏳
+    └── Compliance Reports ⏳
+```
+
+### 📈 Implementierungs-Fortschritt
+
+**Gesamtfortschritt: 8 von 42 Features (19%) vollständig implementiert**
+
+#### ✅ Fertige Module:
+1. **Mein Cockpit** - Vollständiges Dashboard mit 3-Spalten-Layout
+2. **Alle Kunden** - Liste mit Suche, Filter und Sortierung
+3. **Neuer Kunde** - Modal-Dialog mit Wizard
+4. **Verkaufschancen** - Pipeline-Management
+5. **Audit Dashboard** - Vollständige Audit-Trail-Funktionalität
+6. **Benutzerverwaltung** - User-CRUD mit Rollen
+7. **API Status** - System-Health-Monitoring
+8. **Hilfe-System Demo** - Kontextsensitive Hilfe
+
+#### 🔄 In Entwicklung:
+- E-Mail Posteingang (FC-003)
+- Aktivitäten-Timeline
+- Umsatzübersicht mit neuer Rabattlogik
+
+#### 📋 Placeholder-Status:
+Alle anderen 34 Features zeigen informative Placeholder-Seiten mit:
+- Beschreibung der geplanten Funktionalität
+- Erwartetes Release-Datum
+- Liste der kommenden Features
+- Freshfoodz CI-konforme Darstellung
+
+**Detaillierte Übersicht:** `/docs/SIDEBAR_STRUKTUR_2025.md`
 
 ---
 

@@ -91,7 +91,7 @@ export const useHelpStore = create<HelpState>()(
           });
           state.loading = false;
         });
-      } catch (_error) { void _error;
+      } catch (error) {
         set(state => {
           state.error = error instanceof Error ? error.message : 'Failed to load help content';
           state.loading = false;

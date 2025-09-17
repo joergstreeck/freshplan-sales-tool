@@ -1,6 +1,83 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`MiniAuditTimeline - Snapshot Tests > should match snapshot - all action types > all-action-types 1`] = `
+<span
+  class="MuiTypography-root MuiTypography-caption css-1frpshr-MuiTypography-root"
+>
+  Keine Änderungshistorie verfügbar
+</span>
+`;
+
+exports[`MiniAuditTimeline - Snapshot Tests > should match snapshot - compact mode (default) > compact-mode 1`] = `
+<span
+  class="MuiTypography-root MuiTypography-caption css-1frpshr-MuiTypography-root"
+>
+  Keine Änderungshistorie verfügbar
+</span>
+`;
+
+exports[`MiniAuditTimeline - Snapshot Tests > should match snapshot - dark mode > dark-mode 1`] = `
+<span
+  class="MuiTypography-root MuiTypography-caption css-1px7uz0-MuiTypography-root"
+>
+  Keine Änderungshistorie verfügbar
+</span>
+`;
+
+exports[`MiniAuditTimeline - Snapshot Tests > should match snapshot - different entity types > contact-entity 1`] = `
+<span
+  class="MuiTypography-root MuiTypography-caption css-1frpshr-MuiTypography-root"
+>
+  Keine Änderungshistorie verfügbar
+</span>
+`;
+
 exports[`MiniAuditTimeline - Snapshot Tests > should match snapshot - empty state > empty-state 1`] = `
+<span
+  class="MuiTypography-root MuiTypography-caption css-1frpshr-MuiTypography-root"
+>
+  Keine Änderungshistorie verfügbar
+</span>
+`;
+
+exports[`MiniAuditTimeline - Snapshot Tests > should match snapshot - error state > error-state 1`] = `
+<div
+  class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation0 MuiAlert-root MuiAlert-colorError MuiAlert-standardError MuiAlert-standard css-1h5lil8-MuiPaper-root-MuiAlert-root"
+  role="alert"
+  style="--Paper-shadow: none;"
+>
+  <div
+    class="MuiAlert-icon css-vab54s-MuiAlert-icon"
+  >
+    <svg
+      aria-hidden="true"
+      class="MuiSvgIcon-root MuiSvgIcon-fontSizeInherit css-1ckov0h-MuiSvgIcon-root"
+      data-testid="ErrorOutlineIcon"
+      focusable="false"
+      viewBox="0 0 24 24"
+    >
+      <path
+        d="M11 15h2v2h-2zm0-8h2v6h-2zm.99-5C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"
+      />
+    </svg>
+  </div>
+  <div
+    class="MuiAlert-message css-zioonp-MuiAlert-message"
+  >
+    Audit-Historie konnte nicht geladen werden
+  </div>
+</div>
+`;
+
+exports[`MiniAuditTimeline - Snapshot Tests > should match snapshot - expanded mode > expanded-mode 1`] = `
+<span
+  class="MuiTypography-root MuiTypography-caption css-1frpshr-MuiTypography-root"
+>
+  Keine Änderungshistorie verfügbar
+</span>
+`;
+
+exports[`MiniAuditTimeline - Snapshot Tests > should match snapshot - limited entries > limited-entries 1`] = `
 <span
   class="MuiTypography-root MuiTypography-caption css-1frpshr-MuiTypography-root"
 >
@@ -17,4 +94,20 @@ exports[`MiniAuditTimeline - Snapshot Tests > should match snapshot - loading st
     style="width: 80%; height: 20px;"
   />
 </div>
+`;
+
+exports[`MiniAuditTimeline - Snapshot Tests > should match snapshot - with details > with-details 1`] = `
+<span
+  class="MuiTypography-root MuiTypography-caption css-1frpshr-MuiTypography-root"
+>
+  Keine Änderungshistorie verfügbar
+</span>
+`;
+
+exports[`MiniAuditTimeline - Snapshot Tests > should match snapshot - with show more button > with-show-more 1`] = `
+<span
+  class="MuiTypography-root MuiTypography-caption css-1frpshr-MuiTypography-root"
+>
+  Keine Änderungshistorie verfügbar
+</span>
 `;

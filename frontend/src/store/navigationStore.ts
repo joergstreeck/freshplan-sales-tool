@@ -12,6 +12,7 @@ interface NavigationState {
   // Actions
   setActiveMenu: (menuId: string) => void;
   toggleSubmenu: (menuId: string) => void;
+  openSubmenu: (menuId: string) => void;
   closeAllSubmenus: () => void;
   toggleSidebar: () => void;
   addToRecentlyVisited: (path: string) => void;
@@ -31,13 +32,12 @@ export const useNavigationStore = create<NavigationState>()(
       setActiveMenu: menuId => set({ activeMenuId: menuId }),
 
       toggleSubmenu: menuId =>
-        set(state => {
-          // Accordion behavior: close if clicking the same menu, otherwise open new one
-          // This ensures only one submenu is open at a time
-          return {
-            expandedMenuId: state.expandedMenuId === menuId ? null : menuId,
-          };
-        }),
+        set(state => ({
+          // Simple accordion behavior: close if same menu, otherwise open new one
+          expandedMenuId: state.expandedMenuId === menuId ? null : menuId,
+        })),
+
+      openSubmenu: menuId => set({ expandedMenuId: menuId }),
 
       closeAllSubmenus: () => set({ expandedMenuId: null }),
 
@@ -63,11 +63,11 @@ export const useNavigationStore = create<NavigationState>()(
         })),
     }),
     {
-      name: 'navigation-storage',
+      name: 'navigation-storage-v2', // Version bump to clear old state
       partialize: state => ({
         isCollapsed: state.isCollapsed,
         favorites: state.favorites,
-        expandedMenuId: state.expandedMenuId, // Persist expanded menu state
+        // NEVER persist expandedMenuId - always start fresh
       }),
     }
   )

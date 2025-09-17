@@ -1,4 +1,11 @@
-# FreshPlan Geschäftsbedingungen - Zusammenfassung
+# ⚠️ VERALTET - NEUE RABATTLOGIK AB 01.10.2025
+
+**WICHTIG: Dieses Dokument beschreibt das ALTE Rabattsystem!**
+**Für die NEUE Rabattlogik siehe: `/docs/business/rabattlogik_2025_NEU.md`**
+
+---
+
+# FreshPlan Geschäftsbedingungen - Zusammenfassung (ALT - Bis 30.09.2025)
 
 ## 1. FreshPlan Rabattsystem für Endkunden
 
@@ -52,7 +59,7 @@ Für Kunden mit mehreren Standorten (z.B. Hotel- oder Klinikgruppen):
 - Frühbucherrabatt: +2%
 - **Gesamtrabatt: 10%**
 
-## 2. FreshPlan-Partnerschaftsvereinbarung
+## 2. ~~FreshPlan-Partnerschaftsvereinbarung~~ [ENTFÄLLT AB 01.10.2025]
 
 ### 2.1 Grundlegendes
 
@@ -112,6 +119,7 @@ Eine Bestellung, die die Mindestvoraussetzungen für Rabatte erfüllt (z.B. Mind
    - Unter 10 Tagen: Kein Frühbucherrabatt
    - Ab 30 Tagen: Maximaler Frühbucherrabatt von 3%
 
-4. **Vertragsbindung:**
-   - FreshPlan-Rabatte nur mit aktiver Partnerschaftsvereinbarung
-   - Keine Abnahmeverpflichtung, aber Zielvolumen als Orientierung
+4. **~~Vertragsbindung:~~** [ENTFÄLLT AB 01.10.2025]
+   - ~~FreshPlan-Rabatte nur mit aktiver Partnerschaftsvereinbarung~~
+   - ~~Keine Abnahmeverpflichtung, aber Zielvolumen als Orientierung~~
+   - **NEU AB 01.10.2025: Nur noch AGBs, keine Partnerschaftsvereinbarung mehr nötig**

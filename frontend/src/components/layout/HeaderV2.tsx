@@ -84,7 +84,7 @@ export const HeaderV2: React.FC<HeaderV2Props> = ({ onMenuClick, showMenuIcon = 
 
   const handleSettingsClick = () => {
     handleMenuClose();
-    navigate('/einstellungen');
+    navigate('/settings');
   };
 
   const handleSearchClear = () => {
@@ -173,11 +173,11 @@ export const HeaderV2: React.FC<HeaderV2Props> = ({ onMenuClick, showMenuIcon = 
           <Box sx={{ mr: 'auto', display: 'flex', alignItems: 'center' }}>
             {/* Desktop: Volles Logo */}
             <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
-              <Logo variant="full" height={40} onClick={() => navigate('/')} />
+              <Logo variant="full" height={40} onClick={() => navigate('/cockpit')} />
             </Box>
             {/* Mobile: Icon Logo */}
             <Box sx={{ display: { xs: 'block', sm: 'none' } }}>
-              <Logo variant="icon" height={32} onClick={() => navigate('/')} />
+              <Logo variant="icon" height={32} onClick={() => navigate('/cockpit')} />
             </Box>
           </Box>
 

@@ -110,7 +110,7 @@ function App() {
                   <p className="card-text">Moderne Benutzerverwaltung mit Rollen und Rechten</p>
                   <div className="card-button-wrapper">
                     <Button asChild>
-                      <Link to="/users">Benutzerverwaltung öffnen</Link>
+                      <Link to="/admin/users">Benutzerverwaltung öffnen</Link>
                     </Button>
                   </div>
                 </div>

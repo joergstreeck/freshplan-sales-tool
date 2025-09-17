@@ -4,6 +4,11 @@ import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import PeopleIcon from '@mui/icons-material/People';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 import SettingsIcon from '@mui/icons-material/Settings';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+import ApiIcon from '@mui/icons-material/Api';
+import BugReportIcon from '@mui/icons-material/BugReport';
+import ChatIcon from '@mui/icons-material/Chat';
+import IntegrationInstructionsIcon from '@mui/icons-material/IntegrationInstructions';
 // import SecurityIcon from '@mui/icons-material/Security'; // Not used currently
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 
@@ -15,6 +20,7 @@ interface NavigationSubItem {
   permissions?: string[];
   disabled?: boolean; // NEU für disabled items
   tooltip?: string; // NEU für Erklärung
+  subItems?: NavigationSubItem[]; // NEU für verschachtelte Menüs
 }
 
 interface NavigationItemType {
@@ -23,6 +29,7 @@ interface NavigationItemType {
   icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
   path: string;
   permissions?: string[];
+  hasOwnPage?: boolean; // NEU: Gibt an, ob Hauptmenüpunkt eine eigene Seite hat
   subItems?: NavigationSubItem[];
 }
 
@@ -38,22 +45,21 @@ export const navigationConfig: NavigationItemType[] = [
     id: 'neukundengewinnung',
     label: 'Neukundengewinnung',
     icon: PersonAddIcon,
-    path: '/neukundengewinnung',
+    path: '/lead-generation',
     permissions: ['customers.create'],
+    hasOwnPage: true, // NEU: Hat eigenes Dashboard
     subItems: [
       {
         label: 'E-Mail Posteingang',
-        path: '/neukundengewinnung/posteingang',
+        path: '/lead-generation/inbox',
       },
       {
         label: 'Lead-Erfassung',
-        path: '/neukundengewinnung/leads',
-        disabled: true, // Sprint 2: Noch nicht implementiert
-        tooltip: 'Verfügbar in Phase 2 (FC-020 Lead Management)',
+        path: '/lead-generation/leads',
       },
       {
         label: 'Kampagnen',
-        path: '/neukundengewinnung/kampagnen',
+        path: '/lead-generation/campaigns',
       },
     ],
   },
@@ -61,24 +67,21 @@ export const navigationConfig: NavigationItemType[] = [
     id: 'kundenmanagement',
     label: 'Kundenmanagement',
     icon: PeopleIcon,
-    path: '/kundenmanagement',
+    path: '/customer-management',
     permissions: ['customers.view'],
+    hasOwnPage: true, // NEU: Hat eigenes Dashboard
     subItems: [
       {
         label: 'Alle Kunden',
         path: '/customers', // Angepasst an tatsächliche Route
       },
       {
-        label: 'Neuer Kunde', // NEU für Sprint 2!
-        action: 'OPEN_CUSTOMER_WIZARD', // Triggert Modal statt Navigation
-      },
-      {
         label: 'Verkaufschancen',
-        path: '/kundenmanagement/opportunities', // Korrigierter Pfad zur tatsächlichen Route
+        path: '/customer-management/opportunities', // Korrigierter Pfad zur tatsächlichen Route
       },
       {
         label: 'Aktivitäten',
-        path: '/kundenmanagement/aktivitaeten',
+        path: '/customer-management/activities',
       },
     ],
   },
@@ -86,20 +89,46 @@ export const navigationConfig: NavigationItemType[] = [
     id: 'berichte',
     label: 'Auswertungen',
     icon: AssessmentIcon,
-    path: '/berichte',
+    path: '/reports',
     permissions: ['reports.view'],
+    hasOwnPage: true, // NEU: Hat eigenes Dashboard
     subItems: [
       {
         label: 'Umsatzübersicht',
-        path: '/berichte/umsatz',
+        path: '/reports/revenue',
       },
       {
         label: 'Kundenanalyse',
-        path: '/berichte/kunden',
+        path: '/reports/customers',
       },
       {
         label: 'Aktivitätsberichte',
-        path: '/berichte/aktivitaeten',
+        path: '/reports/activities',
+      },
+    ],
+  },
+  {
+    id: 'kommunikation',
+    label: 'Kommunikation',
+    icon: ChatIcon,
+    path: '/communication',
+    hasOwnPage: true, // NEU: Hat eigenes Dashboard
+    subItems: [
+      {
+        label: 'Team-Chat',
+        path: '/communication/chat',
+      },
+      {
+        label: 'Ankündigungen',
+        path: '/communication/announcements',
+      },
+      {
+        label: 'Notizen',
+        path: '/communication/notes',
+      },
+      {
+        label: 'Interne Nachrichten',
+        path: '/communication/messages',
       },
     ],
   },
@@ -107,8 +136,57 @@ export const navigationConfig: NavigationItemType[] = [
     id: 'einstellungen',
     label: 'Einstellungen',
     icon: SettingsIcon,
-    path: '/einstellungen',
+    path: '/settings',
     permissions: ['settings.view'],
+    hasOwnPage: true, // NEU: Hat eigenes Dashboard
+    subItems: [
+      {
+        label: 'Mein Profil',
+        path: '/settings/profile',
+      },
+      {
+        label: 'Benachrichtigungen',
+        path: '/settings/notifications',
+      },
+      {
+        label: 'Darstellung',
+        path: '/settings/appearance',
+      },
+      {
+        label: 'Sicherheit',
+        path: '/settings/security',
+        tooltip: 'Passwort ändern, 2FA, Session-Management',
+      },
+    ],
+  },
+  {
+    id: 'hilfe',
+    label: 'Hilfe & Support',
+    icon: HelpOutlineIcon,
+    path: '/help',
+    hasOwnPage: true, // NEU: Hat eigenes Dashboard
+    subItems: [
+      {
+        label: 'Erste Schritte',
+        path: '/help/getting-started',
+      },
+      {
+        label: 'Handbücher',
+        path: '/help/manuals',
+      },
+      {
+        label: 'Video-Tutorials',
+        path: '/help/videos',
+      },
+      {
+        label: 'Häufige Fragen',
+        path: '/help/faq',
+      },
+      {
+        label: 'Support kontaktieren',
+        path: '/help/support',
+      },
+    ],
   },
   {
     id: 'admin',
@@ -116,6 +194,7 @@ export const navigationConfig: NavigationItemType[] = [
     icon: AdminPanelSettingsIcon,
     path: '/admin',
     permissions: ['admin.view', 'auditor.view'],
+    hasOwnPage: true, // NEU: Zeigt an, dass dieser Hauptmenüpunkt eine eigene Seite hat
     subItems: [
       {
         label: 'Audit Dashboard',
@@ -128,9 +207,100 @@ export const navigationConfig: NavigationItemType[] = [
         permissions: ['admin.view'],
       },
       {
-        label: 'System-Einstellungen',
-        path: '/admin/settings',
+        label: 'System',
+        path: '/admin/system',
         permissions: ['admin.view'],
+        hasOwnPage: true, // NEU: Hat eigenes Dashboard
+        subItems: [
+          {
+            label: 'API Status',
+            path: '/admin/system/api-test',
+            permissions: ['admin.view'],
+          },
+          {
+            label: 'System-Logs',
+            path: '/admin/system/logs',
+            permissions: ['admin.view'],
+          },
+          {
+            label: 'Performance',
+            path: '/admin/system/performance',
+            permissions: ['admin.view'],
+          },
+          {
+            label: 'Backup & Recovery',
+            path: '/admin/system/backup',
+            permissions: ['admin.view'],
+          },
+        ],
+      },
+      {
+        label: 'Integrationen',
+        path: '/admin/integrations',
+        permissions: ['admin.view'],
+        hasOwnPage: true, // NEU: Hat eigenes Dashboard
+        subItems: [
+          {
+            label: 'KI-Anbindungen',
+            path: '/admin/integrations/ai',
+            permissions: ['admin.view'],
+            tooltip: 'ChatGPT, Claude, andere KI-Services',
+          },
+          {
+            label: 'Xentral',
+            path: '/admin/integrations/xentral',
+            permissions: ['admin.view'],
+          },
+          {
+            label: 'E-Mail Services',
+            path: '/admin/integrations/email',
+            permissions: ['admin.view'],
+            tooltip: 'SMTP, Outlook, Gmail Integration',
+          },
+          {
+            label: 'Payment Provider',
+            path: '/admin/integrations/payment',
+            permissions: ['admin.view'],
+          },
+          {
+            label: 'Webhooks',
+            path: '/admin/integrations/webhooks',
+            permissions: ['admin.view'],
+          },
+          {
+            label: 'Neue Integration',
+            path: '/admin/integrations/new',
+            permissions: ['admin.view'],
+          },
+        ],
+      },
+      {
+        label: 'Hilfe-Konfiguration',
+        path: '/admin/help',
+        permissions: ['admin.view'],
+        hasOwnPage: true, // NEU: Hat eigenes Dashboard
+        subItems: [
+          {
+            label: 'Hilfe-System Demo',
+            path: '/admin/help/demo',
+            permissions: ['admin.view'],
+          },
+          {
+            label: 'Tooltips verwalten',
+            path: '/admin/help/tooltips',
+            permissions: ['admin.view'],
+          },
+          {
+            label: 'Touren erstellen',
+            path: '/admin/help/tours',
+            permissions: ['admin.view'],
+          },
+          {
+            label: 'Analytics',
+            path: '/admin/help/analytics',
+            permissions: ['admin.view'],
+          },
+        ],
       },
       {
         label: 'Compliance Reports',

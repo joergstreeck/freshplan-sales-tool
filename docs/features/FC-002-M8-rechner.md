@@ -1,11 +1,25 @@
-# FC-002-M8: Rechner (Calculator)
+# FC-002-M8: Rechner (Calculator) - ⚠️ VERALTET
 
-**Modul:** M8  
-**Feature:** FC-002  
-**Status:** 🔍 Analyse durchgeführt (NEU)  
-**Geschätzter Aufwand:** Backend: 0.5 Tage | Frontend: 1.5 Tage  
-**Abhängigkeit:** Keine  
-**Letztes Update:** 09.07.2025 - Kompakte Analyse durchgeführt
+**Modul:** M8
+**Feature:** FC-002
+**Status:** ⚠️ **OBSOLET - Neue Rabattlogik ab 01.10.2025**
+**Geschätzter Aufwand:** ~~Backend: 0.5 Tage | Frontend: 1.5 Tage~~ **NICHT MEHR RELEVANT**
+**Abhängigkeit:** Keine
+**Letztes Update:** 17.09.2025 - Als VERALTET markiert
+
+## ⚠️ WICHTIGER HINWEIS
+
+**Dieses Modul beschreibt den ALTEN Calculator, der nicht mehr verwendet wird!**
+
+Die Rabattlogik wurde komplett überarbeitet:
+- **ALT (bis 30.09.2025):** Bestellwert-basierte Rabatte mit Vorlaufzeit
+- **NEU (ab 01.10.2025):** Jahresumsatz-basierte Rabattstufen
+
+**Aktuelle Rabattlogik siehe:** `/docs/business/rabattlogik_2025_NEU.md`
+
+---
+
+**Der folgende Inhalt ist nur noch zur Dokumentation des alten Systems:**
 
 ## 📊 Kompakte Modul-Analyse
 

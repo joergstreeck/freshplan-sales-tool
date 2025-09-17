@@ -71,7 +71,7 @@ export function SmartContactCardTest() {
       </Typography>
 
       <Grid container spacing={3}>
-        <Grid item xs={12} md={6} lg={4}>
+        <Grid size={{ xs: 12, md: 6, lg: 4 }}>
           <Box>
             <Typography variant="h6" gutterBottom>
               Mit Audit Trail (für Admin/Manager/Auditor)
@@ -90,7 +90,7 @@ export function SmartContactCardTest() {
           </Box>
         </Grid>
 
-        <Grid item xs={12} md={6} lg={4}>
+        <Grid size={{ xs: 12, md: 6, lg: 4 }}>
           <Box>
             <Typography variant="h6" gutterBottom>
               Ohne Audit Trail

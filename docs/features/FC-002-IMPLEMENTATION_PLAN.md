@@ -1,8 +1,9 @@
 # 🚀 FC-002 Master-Implementierungsplan
 
-**Feature:** FC-002 - UI/UX-Neuausrichtung & Prozessorientierung  
-**Erstellt:** 09.07.2025  
-**Status:** ✅ Finalisiert  
+**Feature:** FC-002 - UI/UX-Neuausrichtung & Prozessorientierung
+**Erstellt:** 09.07.2025
+**Aktualisiert:** 17.09.2025 - Implementierungsstatus ergänzt
+**Status:** 🚀 In Implementierung (19% abgeschlossen)
 **Geschätzter Gesamtaufwand:** 35-40 Personentage  
 
 ## 📋 Executive Summary
@@ -14,18 +15,27 @@ Dieser Plan definiert die optimale Implementierungsreihenfolge für alle 8 Modul
 
 ## 🎯 Implementierungs-Reihenfolge
 
-### Prioritäts-Matrix
+### Prioritäts-Matrix mit Status (Stand: 17.09.2025)
 
-| Prio | Modul | Aufwand | Impact | Abhängigkeiten | Begründung |
-|------|-------|---------|--------|----------------|------------|
-| 1 | M1 - Hauptnavigation | 2 Tage | HOCH | Keine | Basis für alle anderen Module |
-| 2 | M7 - Einstellungen | 3 Tage | HOCH | M1 | Quick Win - Backend ready, User-Basis |
-| 3 | M3 - Cockpit | 3 Tage | SEHR HOCH | M1, FC-001 | Kern-UI für tägliche Arbeit |
-| 4 | M2 - Quick-Create | 2 Tage | MITTEL | M1 | Globale Funktionalität |
-| 5 | M5 - Kundenmanagement | 12 Tage | SEHR HOCH | M1, M2 | Größtes Modul, kritisch für Business |
-| 6 | M8 - Rechner | 2 Tage | MITTEL | M1 | Kann parallel laufen |
-| 7 | M4 - Neukundengewinnung | 5 Tage | MITTEL | M1, M5 | Baut auf Kundenmanagement auf |
-| 8 | M6 - Berichte | 5 Tage | NIEDRIG | Alle | Benötigt Daten aus anderen Modulen |
+| Prio | Modul | Aufwand | Impact | Status | Begründung |
+|------|-------|---------|--------|--------|------------|
+| 1 | M1 - Hauptnavigation | 2 Tage | HOCH | ✅ FERTIG | Basis für alle anderen Module |
+| 2 | M7 - Einstellungen | 3 Tage | HOCH | ⏳ Placeholder | Quick Win - Backend ready, User-Basis |
+| 3 | M3 - Cockpit | 3 Tage | SEHR HOCH | ✅ FERTIG | Kern-UI für tägliche Arbeit |
+| 4 | M2 - Quick-Create | 2 Tage | MITTEL | ✅ Teil-fertig | Neuer Kunde Modal implementiert |
+| 5 | M5 - Kundenmanagement | 12 Tage | SEHR HOCH | ✅ Teil-fertig | Kundenliste & Verkaufschancen fertig |
+| 6 | M8 - ~~Rechner~~ | ~~2 Tage~~ | ~~MITTEL~~ | ❌ OBSOLET | Neue Rabattlogik ab 01.10.2025 |
+| 7 | M4 - Neukundengewinnung | 5 Tage | MITTEL | ⏳ Placeholder | Baut auf Kundenmanagement auf |
+| 8 | M6 - Berichte | 5 Tage | NIEDRIG | ⏳ Placeholder | Benötigt Daten aus anderen Modulen |
+
+### ✅ Bereits implementierte Features:
+- **Mein Cockpit** - Dashboard mit 3-Spalten-Layout
+- **Sidebar-Navigation** - Vollständig mit allen Menüpunkten
+- **Alle Kunden** - Liste mit Suche und Filter
+- **Neuer Kunde** - Modal-Dialog
+- **Verkaufschancen** - Pipeline-Management
+- **Admin-Module** - Audit, Benutzerverwaltung, API Status
+- **Hilfe-System Demo** - Kontextsensitive Hilfe
 
 ## 🏁 Meilensteine
 
