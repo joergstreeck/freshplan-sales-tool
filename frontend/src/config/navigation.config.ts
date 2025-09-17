@@ -4,6 +4,9 @@ import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import PeopleIcon from '@mui/icons-material/People';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 import SettingsIcon from '@mui/icons-material/Settings';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+import ApiIcon from '@mui/icons-material/Api';
+import BugReportIcon from '@mui/icons-material/BugReport';
 // import SecurityIcon from '@mui/icons-material/Security'; // Not used currently
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 
@@ -111,6 +114,34 @@ export const navigationConfig: NavigationItemType[] = [
     permissions: ['settings.view'],
   },
   {
+    id: 'hilfe',
+    label: 'Hilfe & Support',
+    icon: HelpOutlineIcon,
+    path: '/hilfe',
+    subItems: [
+      {
+        label: '🚀 Erste Schritte',
+        path: '/hilfe/erste-schritte',
+      },
+      {
+        label: '📖 Handbücher',
+        path: '/hilfe/handbuecher',
+      },
+      {
+        label: '🎥 Video-Tutorials',
+        path: '/hilfe/videos',
+      },
+      {
+        label: '❓ Häufige Fragen',
+        path: '/hilfe/faq',
+      },
+      {
+        label: '💬 Support kontaktieren',
+        path: '/hilfe/support',
+      },
+    ],
+  },
+  {
     id: 'admin',
     label: 'Administration',
     icon: AdminPanelSettingsIcon,
@@ -128,9 +159,53 @@ export const navigationConfig: NavigationItemType[] = [
         permissions: ['admin.view'],
       },
       {
-        label: 'System-Einstellungen',
-        path: '/admin/settings',
+        label: '🔧 System',
+        path: '/admin/system',
         permissions: ['admin.view'],
+        subItems: [
+          {
+            label: 'API Status',
+            path: '/admin/system/api-test',
+            permissions: ['admin.view'],
+          },
+          {
+            label: 'System-Logs',
+            path: '/admin/system/logs',
+            permissions: ['admin.view'],
+          },
+          {
+            label: 'Einstellungen',
+            path: '/admin/settings',
+            permissions: ['admin.view'],
+          },
+        ],
+      },
+      {
+        label: '📚 Hilfe-Konfiguration',
+        path: '/admin/help',
+        permissions: ['admin.view'],
+        subItems: [
+          {
+            label: 'Hilfe-System Demo',
+            path: '/admin/help/demo',
+            permissions: ['admin.view'],
+          },
+          {
+            label: 'Tooltips verwalten',
+            path: '/admin/help/tooltips',
+            permissions: ['admin.view'],
+          },
+          {
+            label: 'Touren erstellen',
+            path: '/admin/help/tours',
+            permissions: ['admin.view'],
+          },
+          {
+            label: 'Analytics',
+            path: '/admin/help/analytics',
+            permissions: ['admin.view'],
+          },
+        ],
       },
       {
         label: 'Compliance Reports',

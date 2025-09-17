@@ -58,6 +58,9 @@ const TestAuditTimeline = lazy(() => import('./pages/TestAuditTimeline'));
 const LazyLoadingDemo = lazy(() =>
   import('./pages/LazyLoadingDemo').then(m => ({ default: m.LazyLoadingDemo }))
 );
+const HelpCenterPage = lazy(() =>
+  import('./pages/HelpCenterPage').then(m => ({ default: m.HelpCenterPage }))
+);
 
 // Loading component for lazy loaded pages
 const PageLoader = () => (
@@ -136,7 +139,10 @@ export const AppProviders = ({ children: mainChildren }: AppProvidersProps) => {
                           />
                           <Route path="/calculator-v2" element={<CalculatorPageV2 />} />
                           <Route path="/legacy-tool" element={<LegacyToolPage />} />
-                          <Route path="/help-demo" element={<HelpSystemDemoPage />} />
+
+                          {/* Help Center Routes */}
+                          <Route path="/hilfe" element={<HelpCenterPage />} />
+                          <Route path="/hilfe/*" element={<HelpCenterPage />} />
 
                           {/* Admin Routes - Protected by Role */}
                           <Route
@@ -148,14 +154,35 @@ export const AppProviders = ({ children: mainChildren }: AppProvidersProps) => {
                             }
                           />
                           {/* Admin User Management */}
-                          <Route 
-                            path="/admin/users" 
+                          <Route
+                            path="/admin/users"
                             element={
                               <ProtectedRoute allowedRoles={['admin']}>
                                 <UsersPage />
                               </ProtectedRoute>
-                            } 
+                            }
                           />
+
+                          {/* Admin System Routes */}
+                          <Route
+                            path="/admin/system/api-test"
+                            element={
+                              <ProtectedRoute allowedRoles={['admin']}>
+                                <IntegrationTestPage />
+                              </ProtectedRoute>
+                            }
+                          />
+
+                          {/* Admin Help Configuration */}
+                          <Route
+                            path="/admin/help/demo"
+                            element={
+                              <ProtectedRoute allowedRoles={['admin']}>
+                                <HelpSystemDemoPage />
+                              </ProtectedRoute>
+                            }
+                          />
+
                           {/* Weitere Admin-Seiten können hier hinzugefügt werden:
                         <Route path="/admin/settings" element={
                           <ProtectedRoute allowedRoles={['admin']}>
