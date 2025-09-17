@@ -111,7 +111,7 @@ export const KeyboardShortcutsHelp: React.FC = () => {
         PaperProps={{
           sx: {
             borderRadius: 2,
-            border: '2px solid #94C456',
+            border: `2px solid ${theme.palette.success.main}`,
           },
         }}
       >
@@ -137,11 +137,11 @@ export const KeyboardShortcutsHelp: React.FC = () => {
           <TableContainer component={Paper} elevation={0}>
             <Table>
               <TableHead>
-                <TableRow sx={{ backgroundColor: '#F5F5F5' }}>
-                  <TableCell sx={{ fontWeight: 600, color: '#004F7B' }}>
+                <TableRow sx={{ backgroundColor: theme.palette.grey[100] }}>
+                  <TableCell sx={{ fontWeight: 600, color: theme.palette.primary.main }}>
                     Tastenkombination
                   </TableCell>
-                  <TableCell sx={{ fontWeight: 600, color: '#004F7B' }}>
+                  <TableCell sx={{ fontWeight: 600, color: theme.palette.primary.main }}>
                     Aktion
                   </TableCell>
                 </TableRow>
@@ -175,8 +175,8 @@ export const KeyboardShortcutsHelp: React.FC = () => {
                               size="small"
                               sx={{
                                 height: 24,
-                                backgroundColor: '#F0F0F0',
-                                border: '1px solid #D0D0D0',
+                                backgroundColor: theme.palette.grey[200],
+                                border: `1px solid ${theme.palette.divider}`,
                                 borderRadius: 1,
                                 fontFamily: 'monospace',
                                 fontSize: '0.875rem',
@@ -196,8 +196,8 @@ export const KeyboardShortcutsHelp: React.FC = () => {
           </TableContainer>
 
           {/* Additional Tips */}
-          <Box sx={{ p: 2, backgroundColor: '#F9F9F9', borderTop: '1px solid #E0E0E0' }}>
-            <Typography variant="subtitle2" sx={{ mb: 1, color: '#004F7B' }}>
+          <Box sx={{ p: 2, backgroundColor: theme.palette.grey[50], borderTop: `1px solid ${theme.palette.divider}` }}>
+            <Typography variant="subtitle2" sx={{ mb: 1, color: theme.palette.primary.main }}>
               💡 Tipps:
             </Typography>
             <Typography variant="body2" sx={{ mb: 0.5 }}>
@@ -212,7 +212,7 @@ export const KeyboardShortcutsHelp: React.FC = () => {
           </Box>
         </DialogContent>
 
-        <DialogActions sx={{ p: 2, backgroundColor: '#F5F5F5' }}>
+        <DialogActions sx={{ p: 2, backgroundColor: theme.palette.grey[100] }}>
           <Button
             onClick={handleClose}
             variant="contained"

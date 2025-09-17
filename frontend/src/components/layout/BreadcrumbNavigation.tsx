@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import { Breadcrumbs, Link, Typography, Box } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 import { NavigateNext as NavigateNextIcon, Home as HomeIcon } from '@mui/icons-material';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { navigationConfig } from '@/config/navigation.config';
@@ -18,6 +19,7 @@ interface BreadcrumbItem {
 export const BreadcrumbNavigation: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const theme = useTheme();
 
   // Pre-compute path map for O(1) lookups
   const pathMap = useMemo(
@@ -85,7 +87,7 @@ export const BreadcrumbNavigation: React.FC = () => {
       }}
     >
       <Breadcrumbs
-        separator={<NavigateNextIcon fontSize="small" sx={{ color: '#94C456' }} />}
+        separator={<NavigateNextIcon fontSize="small" sx={{ color: theme.palette.success.main }} />}
         sx={{
           '& .MuiBreadcrumbs-ol': {
             flexWrap: 'nowrap',
@@ -94,7 +96,7 @@ export const BreadcrumbNavigation: React.FC = () => {
               height: 4,
             },
             '&::-webkit-scrollbar-thumb': {
-              backgroundColor: '#94C456',
+              backgroundColor: theme.palette.success.main,
               borderRadius: 2,
             },
           },
@@ -110,7 +112,7 @@ export const BreadcrumbNavigation: React.FC = () => {
                 sx={{
                   display: 'flex',
                   alignItems: 'center',
-                  color: '#004F7B',
+                  color: theme.palette.primary.main,
                   fontWeight: 500,
                   fontSize: '0.875rem',
                 }}
@@ -135,7 +137,7 @@ export const BreadcrumbNavigation: React.FC = () => {
                 fontSize: '0.875rem',
                 '&:hover': {
                   textDecoration: 'underline',
-                  color: '#94C456',
+                  color: theme.palette.success.main,
                 },
               }}
             >

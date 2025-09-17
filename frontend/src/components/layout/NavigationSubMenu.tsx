@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { List, ListItemButton, ListItemText, Tooltip, Collapse, Box } from '@mui/material';
+import { useTheme, alpha } from '@mui/material/styles';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
@@ -23,6 +24,7 @@ interface NavigationSubMenuProps {
 
 export const NavigationSubMenu: React.FC<NavigationSubMenuProps> = ({ items, onItemClick }) => {
   const location = useLocation();
+  const theme = useTheme();
 
   // Auto-expand nested menus that contain the current path
   const getInitialExpandedItems = (): string[] => {
@@ -137,17 +139,17 @@ export const NavigationSubMenu: React.FC<NavigationSubMenuProps> = ({ items, onI
           position: 'relative',
           opacity: isDisabled ? 0.5 : 1,
           cursor: isDisabled ? 'not-allowed' : 'pointer',
-          borderLeft: depth > 1 ? '2px solid rgba(148, 196, 86, 0.1)' : 'none',
+          borderLeft: depth > 1 ? `2px solid ${alpha(theme.palette.success.main, 0.1)}` : 'none',
           '&:hover': {
-            backgroundColor: isDisabled ? 'transparent' : 'rgba(148, 196, 86, 0.08)',
+            backgroundColor: isDisabled ? 'transparent' : alpha(theme.palette.success.main, 0.08),
           },
           '&.Mui-selected': {
-            backgroundColor: 'rgba(148, 196, 86, 0.12)',
+            backgroundColor: alpha(theme.palette.success.main, 0.12),
             '&:hover': {
-              backgroundColor: 'rgba(148, 196, 86, 0.18)',
+              backgroundColor: alpha(theme.palette.success.main, 0.18),
             },
             '& .MuiListItemText-primary': {
-              color: '#94C456',
+              color: theme.palette.success.main,
               fontWeight: 600,
             },
           },
@@ -160,7 +162,7 @@ export const NavigationSubMenu: React.FC<NavigationSubMenuProps> = ({ items, onI
             width: 4,
             height: 4,
             borderRadius: '50%',
-            backgroundColor: isActive ? '#94C456' : '#94C456',
+            backgroundColor: theme.palette.success.main,
             opacity: isActive ? 1 : 0.4,
           },
         }}
@@ -172,7 +174,7 @@ export const NavigationSubMenu: React.FC<NavigationSubMenuProps> = ({ items, onI
             sx: {
               fontWeight: isActive ? 600 : 400,
               fontSize: depth === 1 ? '0.875rem' : '0.813rem',
-              color: isActive ? '#94C456' : '#004F7B',
+              color: isActive ? theme.palette.success.main : theme.palette.primary.main,
             },
           }}
         />

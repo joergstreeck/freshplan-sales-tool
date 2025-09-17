@@ -33,9 +33,10 @@ export const useLazySubMenu = ({ items = [], isExpanded, preload = false }: UseL
   const loadTimeoutRef = useRef<NodeJS.Timeout>();
   const cacheRef = useRef<SubMenuItem[]>(items);
 
+  // Update cache and reset loaded state when items prop changes
   useEffect(() => {
-    // Update cache when items change
     cacheRef.current = items;
+    setLoadedItems(null); // Reset to force reload with new items
   }, [items]);
 
   useEffect(() => {
@@ -62,7 +63,7 @@ export const useLazySubMenu = ({ items = [], isExpanded, preload = false }: UseL
         clearTimeout(timeoutId);
       }
     };
-  }, [isExpanded, preload]); // Removed loadedItems from dependencies to prevent infinite loop
+  }, [isExpanded, preload, loadedItems]); // loadedItems is safe now with proper reset on items change
 
   // Preload on hover for better UX
   const preloadItems = useCallback(() => {
