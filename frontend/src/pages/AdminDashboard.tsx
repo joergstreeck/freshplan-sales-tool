@@ -152,7 +152,7 @@ export function AdminDashboard() {
           </Typography>
           <Grid container spacing={3}>
             {quickAccessCards.map((card) => (
-              <Grid key={card.title} item xs={12} md={4}>
+              <Grid key={card.title} size={{ xs: 12, md: 4 }}>
                 <Card
                   sx={{
                     height: '100%',
@@ -239,7 +239,7 @@ export function AdminDashboard() {
           </Typography>
           <Grid container spacing={3}>
             {categoryCards.map((category) => (
-              <Grid key={category.id} item xs={12}>
+              <Grid key={category.id} size={12}>
                 <Paper
                   sx={{
                     p: 3,
