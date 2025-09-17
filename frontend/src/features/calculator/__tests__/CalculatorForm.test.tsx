@@ -141,7 +141,6 @@ describe('CalculatorForm', () => {
   });
 
   it('should handle API errors gracefully', async () => {
-    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     vi.mocked(calculatorApi.calculate).mockRejectedValueOnce(new Error('API Error'));
 
     renderWithQueryClient(<CalculatorForm />);
@@ -150,12 +149,10 @@ describe('CalculatorForm', () => {
     await userEvent.click(calculateButton);
 
     await waitFor(() => {
-      // Since the error is caught and only logged in dev mode,
-      // we check that console.error was called
-      expect(consoleErrorSpy).toHaveBeenCalledWith('Calculation failed:', expect.any(Error));
+      // Check that error message is displayed in the UI
+      expect(screen.getByText(/fehler bei der berechnung/i)).toBeInTheDocument();
+      expect(screen.getByText(/api error/i)).toBeInTheDocument();
     });
-
-    consoleErrorSpy.mockRestore();
   });
 
   it('should disable button during calculation', async () => {

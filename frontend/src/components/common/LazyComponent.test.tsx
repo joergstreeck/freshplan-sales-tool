@@ -65,6 +65,13 @@ describe('LazyComponent', () => {
     global.IntersectionObserver =
       MockIntersectionObserver as unknown as typeof IntersectionObserver;
     mockInView = false; // Reset to not in view by default
+
+    // Reset mock implementation
+    vi.mocked(useInView).mockImplementation(() => ({
+      ref: mockRef,
+      inView: mockInView,
+      entry: undefined,
+    }));
   });
 
   afterEach(() => {
@@ -189,10 +196,10 @@ describe('LazyComponent', () => {
 
       const { rerender } = render(
         <>
-          <LazyComponent fallback={<div>Loading 1...</div>}>
+          <LazyComponent placeholder={<div>Loading 1...</div>}>
             <TestComponent1 />
           </LazyComponent>
-          <LazyComponent fallback={<div>Loading 2...</div>}>
+          <LazyComponent placeholder={<div>Loading 2...</div>}>
             <TestComponent2 />
           </LazyComponent>
         </>
@@ -207,10 +214,10 @@ describe('LazyComponent', () => {
       callCount = 0; // Reset for rerender
       rerender(
         <>
-          <LazyComponent fallback={<div>Loading 1...</div>}>
+          <LazyComponent placeholder={<div>Loading 1...</div>}>
             <TestComponent1 />
           </LazyComponent>
-          <LazyComponent fallback={<div>Loading 2...</div>}>
+          <LazyComponent placeholder={<div>Loading 2...</div>}>
             <TestComponent2 />
           </LazyComponent>
         </>
@@ -226,10 +233,10 @@ describe('LazyComponent', () => {
       callCount = 0; // Reset for rerender
       rerender(
         <>
-          <LazyComponent fallback={<div>Loading 1...</div>}>
+          <LazyComponent placeholder={<div>Loading 1...</div>}>
             <TestComponent1 />
           </LazyComponent>
-          <LazyComponent fallback={<div>Loading 2...</div>}>
+          <LazyComponent placeholder={<div>Loading 2...</div>}>
             <TestComponent2 />
           </LazyComponent>
         </>
@@ -271,6 +278,9 @@ describe('LazyComponent', () => {
 
   describe('Edge Cases', () => {
     it('should handle missing fallback prop', () => {
+      // Ensure component is not in view initially
+      mockInView = false;
+
       render(
         <LazyComponent>
           <TestComponent />
@@ -282,9 +292,12 @@ describe('LazyComponent', () => {
     });
 
     it('should handle null children', () => {
+      // Ensure component is not in view initially
+      mockInView = false;
+
       render(<LazyComponent fallback={fallback}>{null}</LazyComponent>);
 
-      // Should render placeholder initially
+      // Should render default CircularProgress (not fallback since no children)
       expect(screen.getByRole('progressbar')).toBeInTheDocument();
     });
 
@@ -292,6 +305,9 @@ describe('LazyComponent', () => {
       const ErrorComponent = () => {
         throw new Error('Test error');
       };
+
+      // Ensure component is not in view initially so ErrorComponent doesn't render
+      mockInView = false;
 
       // Suppress error output
       const consoleError = console.error;
@@ -388,6 +404,9 @@ describe('LazyComponent', () => {
     });
 
     it('should have proper container attributes', () => {
+      // Ensure component is not in view initially
+      mockInView = false;
+
       render(
         <LazyComponent fallback={fallback}>
           <TestComponent />
