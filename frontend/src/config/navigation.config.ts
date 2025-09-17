@@ -18,6 +18,7 @@ interface NavigationSubItem {
   permissions?: string[];
   disabled?: boolean; // NEU für disabled items
   tooltip?: string; // NEU für Erklärung
+  subItems?: NavigationSubItem[]; // NEU für verschachtelte Menüs
 }
 
 interface NavigationItemType {

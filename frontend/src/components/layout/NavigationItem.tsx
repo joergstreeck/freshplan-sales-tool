@@ -7,8 +7,12 @@ import { NavigationSubMenu } from './NavigationSubMenu';
 // Temporär: Direkte Type-Definition um Import-Probleme zu umgehen
 interface NavigationSubItem {
   label: string;
-  path: string;
+  path?: string;
+  action?: string;
   permissions?: string[];
+  disabled?: boolean;
+  tooltip?: string;
+  subItems?: NavigationSubItem[];
 }
 
 interface NavigationItemType {
@@ -26,7 +30,7 @@ interface NavigationItemProps {
   isExpanded: boolean;
   isCollapsed: boolean;
   onItemClick: () => void;
-  onSubItemClick: (path: string) => void;
+  onSubItemClick: (pathOrAction: string, isAction?: boolean) => void;
 }
 
 export const NavigationItem: React.FC<NavigationItemProps> = ({
