@@ -22,20 +22,22 @@ vi.mock('@/store/navigationStore', () => ({
 }));
 
 describe('useKeyboardNavigation', () => {
+  let unmountHook: () => void;
+
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
   afterEach(() => {
-    // Remove all event listeners
-    const events = ['keydown'];
-    events.forEach(event => {
-      window.removeEventListener(event, () => {});
-    });
+    // Cleanup hook if it exists
+    if (unmountHook) {
+      unmountHook();
+    }
   });
 
   it('should toggle sidebar with Ctrl+B', () => {
-    renderHook(() => useKeyboardNavigation());
+    const { unmount } = renderHook(() => useKeyboardNavigation());
+    unmountHook = unmount;
 
     const event = new KeyboardEvent('keydown', {
       key: 'b',
@@ -47,7 +49,8 @@ describe('useKeyboardNavigation', () => {
   });
 
   it('should navigate to dashboard with Alt+H', () => {
-    renderHook(() => useKeyboardNavigation());
+    const { unmount } = renderHook(() => useKeyboardNavigation());
+    unmountHook = unmount;
 
     const event = new KeyboardEvent('keydown', {
       key: 'h',
@@ -59,7 +62,8 @@ describe('useKeyboardNavigation', () => {
   });
 
   it('should navigate to customers with Alt+K', () => {
-    renderHook(() => useKeyboardNavigation());
+    const { unmount } = renderHook(() => useKeyboardNavigation());
+    unmountHook = unmount;
 
     const event = new KeyboardEvent('keydown', {
       key: 'k',
@@ -71,7 +75,8 @@ describe('useKeyboardNavigation', () => {
   });
 
   it('should navigate to orders with Alt+B', () => {
-    renderHook(() => useKeyboardNavigation());
+    const { unmount } = renderHook(() => useKeyboardNavigation());
+    unmountHook = unmount;
 
     const event = new KeyboardEvent('keydown', {
       key: 'b',
@@ -83,7 +88,8 @@ describe('useKeyboardNavigation', () => {
   });
 
   it('should navigate to calculator with Alt+R', () => {
-    renderHook(() => useKeyboardNavigation());
+    const { unmount } = renderHook(() => useKeyboardNavigation());
+    unmountHook = unmount;
 
     const event = new KeyboardEvent('keydown', {
       key: 'r',
@@ -95,7 +101,8 @@ describe('useKeyboardNavigation', () => {
   });
 
   it('should not trigger when typing in input field', () => {
-    renderHook(() => useKeyboardNavigation());
+    const { unmount } = renderHook(() => useKeyboardNavigation());
+    unmountHook = unmount;
 
     const input = document.createElement('input');
     document.body.appendChild(input);
@@ -114,7 +121,8 @@ describe('useKeyboardNavigation', () => {
   });
 
   it('should not trigger when typing in textarea', () => {
-    renderHook(() => useKeyboardNavigation());
+    const { unmount } = renderHook(() => useKeyboardNavigation());
+    unmountHook = unmount;
 
     const textarea = document.createElement('textarea');
     document.body.appendChild(textarea);
@@ -133,7 +141,8 @@ describe('useKeyboardNavigation', () => {
   });
 
   it('should not trigger when contentEditable is active', () => {
-    renderHook(() => useKeyboardNavigation());
+    const { unmount } = renderHook(() => useKeyboardNavigation());
+    unmountHook = unmount;
 
     const div = document.createElement('div');
     div.contentEditable = 'true';
@@ -153,7 +162,8 @@ describe('useKeyboardNavigation', () => {
   });
 
   it('should prevent default behavior for handled shortcuts', () => {
-    renderHook(() => useKeyboardNavigation());
+    const { unmount } = renderHook(() => useKeyboardNavigation());
+    unmountHook = unmount;
 
     const event = new KeyboardEvent('keydown', {
       key: 'b',
@@ -168,7 +178,8 @@ describe('useKeyboardNavigation', () => {
   });
 
   it('should not handle unregistered shortcuts', () => {
-    renderHook(() => useKeyboardNavigation());
+    const { unmount } = renderHook(() => useKeyboardNavigation());
+    unmountHook = unmount;
 
     const event = new KeyboardEvent('keydown', {
       key: 'x',

@@ -38,6 +38,37 @@ export const useKeyboardNavigation = () => {
           if (event.ctrlKey || event.metaKey) {
             event.preventDefault();
             toggleSidebar();
+          } else if (event.altKey) {
+            // Alt + B for Orders
+            event.preventDefault();
+            navigate('/orders');
+          }
+          break;
+
+        // Alt + H for Dashboard/Cockpit
+        case 'h':
+        case 'H':
+          if (event.altKey) {
+            event.preventDefault();
+            navigate('/cockpit');
+          }
+          break;
+
+        // Alt + K for Customers
+        case 'k':
+        case 'K':
+          if (event.altKey) {
+            event.preventDefault();
+            navigate('/customers');
+          }
+          break;
+
+        // Alt + R for Calculator
+        case 'r':
+        case 'R':
+          if (event.altKey) {
+            event.preventDefault();
+            navigate('/calculator');
           }
           break;
 
@@ -166,12 +197,16 @@ export const useKeyboardNavigation = () => {
 
 // Export keyboard shortcuts for documentation
 export const KEYBOARD_SHORTCUTS = {
-  'Ctrl/Cmd + B': 'Sidebar ein-/ausklappen',
+  'Ctrl + B': 'Sidebar ein-/ausblenden',
+  'Alt + H': 'Zum Dashboard wechseln',
+  'Alt + K': 'Zu Kunden wechseln',
+  'Alt + B': 'Zu Bestellungen wechseln',
+  'Alt + R': 'Zum Rechner wechseln',
   '↑/↓': 'Navigation nach oben/unten',
   '←/→': 'Submenü schließen/öffnen',
   'Enter': 'Zum aktiven Menüpunkt navigieren',
   'Escape': 'Alle Submenüs schließen',
-  'Ctrl/Cmd + 1-9': 'Schnelle Navigation zu Menüpunkt',
+  'Ctrl + 1-9': 'Schnelle Navigation zu Menüpunkt',
   '/': 'Suche fokussieren',
-  'Ctrl/Cmd + Home': 'Zum Cockpit',
+  'Ctrl + Home': 'Zum Cockpit',
 };
