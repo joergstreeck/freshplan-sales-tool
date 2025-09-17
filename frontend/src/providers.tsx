@@ -61,6 +61,15 @@ const LazyLoadingDemo = lazy(() =>
 const HelpCenterPage = lazy(() =>
   import('./pages/HelpCenterPage').then(m => ({ default: m.HelpCenterPage }))
 );
+const ApiStatusPage = lazy(() =>
+  import('./pages/ApiStatusPage').then(m => ({ default: m.ApiStatusPage }))
+);
+const HelpSystemDemoPageV2 = lazy(() =>
+  import('./pages/HelpSystemDemoPageV2').then(m => ({ default: m.HelpSystemDemoPageV2 }))
+);
+
+// Lazy load all placeholder pages
+import * as Placeholders from './pages/placeholders';
 
 // Loading component for lazy loaded pages
 const PageLoader = () => (
@@ -168,7 +177,7 @@ export const AppProviders = ({ children: mainChildren }: AppProvidersProps) => {
                             path="/admin/system/api-test"
                             element={
                               <ProtectedRoute allowedRoles={['admin']}>
-                                <IntegrationTestPage />
+                                <ApiStatusPage />
                               </ProtectedRoute>
                             }
                           />
@@ -178,18 +187,84 @@ export const AppProviders = ({ children: mainChildren }: AppProvidersProps) => {
                             path="/admin/help/demo"
                             element={
                               <ProtectedRoute allowedRoles={['admin']}>
-                                <HelpSystemDemoPage />
+                                <HelpSystemDemoPageV2 />
                               </ProtectedRoute>
                             }
                           />
 
-                          {/* Weitere Admin-Seiten können hier hinzugefügt werden:
-                        <Route path="/admin/settings" element={
-                          <ProtectedRoute allowedRoles={['admin']}>
-                            <SystemSettingsPage />
-                          </ProtectedRoute>
-                        } />
-                        */}
+                          {/* Placeholder Pages für leere Menüpunkte */}
+
+                          {/* Neukundengewinnung */}
+                          <Route path="/neukundengewinnung/posteingang" element={<Placeholders.EmailPosteingang />} />
+                          <Route path="/neukundengewinnung/kampagnen" element={<Placeholders.Kampagnen />} />
+
+                          {/* Kundenmanagement */}
+                          <Route path="/kundenmanagement/aktivitaeten" element={<Placeholders.Aktivitaeten />} />
+
+                          {/* Berichte */}
+                          <Route path="/berichte/umsatz" element={<Placeholders.UmsatzBericht />} />
+                          <Route path="/berichte/kunden" element={<Placeholders.KundenAnalyse />} />
+                          <Route path="/berichte/aktivitaeten" element={<Placeholders.AktivitaetsberBerichte />} />
+
+                          {/* Einstellungen */}
+                          <Route path="/einstellungen" element={<Placeholders.Einstellungen />} />
+
+                          {/* Hilfe */}
+                          <Route path="/hilfe/erste-schritte" element={<Placeholders.ErsteSchritte />} />
+                          <Route path="/hilfe/handbuecher" element={<Placeholders.Handbuecher />} />
+                          <Route path="/hilfe/videos" element={<Placeholders.VideoTutorials />} />
+                          <Route path="/hilfe/faq" element={<Placeholders.FAQ />} />
+                          <Route path="/hilfe/support" element={<Placeholders.Support />} />
+
+                          {/* Admin */}
+                          <Route
+                            path="/admin/settings"
+                            element={
+                              <ProtectedRoute allowedRoles={['admin']}>
+                                <Placeholders.AdminSettings />
+                              </ProtectedRoute>
+                            }
+                          />
+                          <Route
+                            path="/admin/system/logs"
+                            element={
+                              <ProtectedRoute allowedRoles={['admin']}>
+                                <Placeholders.SystemLogs />
+                              </ProtectedRoute>
+                            }
+                          />
+                          <Route
+                            path="/admin/reports"
+                            element={
+                              <ProtectedRoute allowedRoles={['admin', 'auditor', 'manager']}>
+                                <Placeholders.ComplianceReports />
+                              </ProtectedRoute>
+                            }
+                          />
+                          <Route
+                            path="/admin/help/tooltips"
+                            element={
+                              <ProtectedRoute allowedRoles={['admin']}>
+                                <Placeholders.TooltipsVerwalten />
+                              </ProtectedRoute>
+                            }
+                          />
+                          <Route
+                            path="/admin/help/tours"
+                            element={
+                              <ProtectedRoute allowedRoles={['admin']}>
+                                <Placeholders.TourenErstellen />
+                              </ProtectedRoute>
+                            }
+                          />
+                          <Route
+                            path="/admin/help/analytics"
+                            element={
+                              <ProtectedRoute allowedRoles={['admin']}>
+                                <Placeholders.HelpAnalytics />
+                              </ProtectedRoute>
+                            }
+                          />
 
                           {/* Login Bypass temporär reaktiviert - Auto-Login Problem */}
                           {isDevelopmentMode && (
