@@ -52,12 +52,19 @@ export const useKeyboardNavigation = () => {
 
   const handleKeyPress = useCallback(
     (event: KeyboardEvent) => {
+      // Input validation and security checks
+      if (!event || typeof event.key !== 'string') {
+        return;
+      }
+
       // Only handle if no input is focused
       const target = event.target as HTMLElement;
       if (
+        !target ||
         target.tagName === 'INPUT' ||
         target.tagName === 'TEXTAREA' ||
-        target.contentEditable === 'true'
+        target.contentEditable === 'true' ||
+        target.isContentEditable
       ) {
         return;
       }
@@ -186,16 +193,19 @@ export const useKeyboardNavigation = () => {
         }
 
         // Search with /
-        case '/':
+        case '/': {
           event.preventDefault();
-          // Focus search input if it exists
+          // Focus search input if it exists - using data attribute for security
           const searchInput = document.querySelector(
-            'input[placeholder*="Suche"]'
+            'input[data-search-input="true"]'
           ) as HTMLInputElement;
-          if (searchInput) {
+          if (searchInput &&
+              searchInput.type === 'search' &&
+              typeof searchInput.focus === 'function') {
             searchInput.focus();
           }
           break;
+        }
 
         // Home key to go to cockpit
         case 'Home':

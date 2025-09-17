@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useTheme } from '@mui/material/styles';
+import { getSecureBoolean, setSecureBoolean } from '@/utils/secureStorage';
 import {
   Dialog,
   DialogTitle,
@@ -30,13 +31,13 @@ export const KeyboardShortcutsHelp: React.FC = () => {
   const theme = useTheme();
   const [open, setOpen] = useState(false);
   const [hasSeenHelp, setHasSeenHelp] = useState(() => {
-    return localStorage.getItem('hasSeenKeyboardHelp') === 'true';
+    return getSecureBoolean('hasSeenKeyboardHelp', false);
   });
 
   const handleOpen = () => {
     setOpen(true);
     setHasSeenHelp(true);
-    localStorage.setItem('hasSeenKeyboardHelp', 'true');
+    setSecureBoolean('hasSeenKeyboardHelp', true);
   };
 
   const handleClose = () => {
