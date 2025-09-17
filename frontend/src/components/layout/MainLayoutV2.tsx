@@ -12,6 +12,8 @@ import React from 'react';
 import { Box, useMediaQuery, useTheme } from '@mui/material';
 import { SidebarNavigation } from './SidebarNavigation';
 import { HeaderV2 } from './HeaderV2';
+import { BreadcrumbNavigation } from './BreadcrumbNavigation';
+import { KeyboardShortcutsHelp } from './KeyboardShortcutsHelp';
 import { useNavigationStore } from '@/store/navigationStore';
 
 // Layout-Konstanten
@@ -84,6 +86,14 @@ export const MainLayoutV2: React.FC<MainLayoutV2Props> = ({
         {/* Header - Nimmt volle Breite des verbleibenden Raums */}
         {shouldShowHeader && <HeaderV2 showMenuIcon={isMobile} onMenuClick={toggleSidebar} />}
 
+        {/* Spacer für fixed Header */}
+        {shouldShowHeader && (
+          <Box sx={{ height: headerHeight, flexShrink: 0 }} />
+        )}
+
+        {/* Breadcrumb Navigation */}
+        {shouldShowHeader && <BreadcrumbNavigation />}
+
         {/* Main Content Area */}
         <Box
           component="main"
@@ -100,14 +110,6 @@ export const MainLayoutV2: React.FC<MainLayoutV2Props> = ({
             sx={{
               // Content-spezifisches Padding
               p: { xs: 2, sm: 3, md: 4 },
-              // Top-Padding für fixed Header
-              pt: shouldShowHeader
-                ? {
-                    xs: `${headerHeight + 16}px`,
-                    sm: `${headerHeight + 24}px`,
-                    md: `${headerHeight + 32}px`,
-                  }
-                : { xs: 2, sm: 3, md: 4 },
               // Maximale Breite für bessere Lesbarkeit auf großen Screens
               maxWidth: 'xl',
               mx: 'auto',
@@ -140,6 +142,9 @@ export const MainLayoutV2: React.FC<MainLayoutV2Props> = ({
           }}
         />
       )}
+
+      {/* Keyboard Shortcuts Help Button */}
+      <KeyboardShortcutsHelp />
     </Box>
   );
 };

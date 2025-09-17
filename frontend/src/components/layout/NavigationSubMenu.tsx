@@ -130,13 +130,14 @@ export const NavigationSubMenu: React.FC<NavigationSubMenuProps> = ({ items, onI
         selected={isActive}
         disabled={isDisabled}
         sx={{
-          pl: 5 + depth * 2,
-          py: 0.75,
+          pl: 6 + depth * 2.5, // Erhöhte Einrückung für bessere Hierarchie
+          py: 0.875, // Etwas mehr Padding für bessere Klickfläche
           borderRadius: 1,
           mb: 0.25,
           position: 'relative',
           opacity: isDisabled ? 0.5 : 1,
           cursor: isDisabled ? 'not-allowed' : 'pointer',
+          borderLeft: depth > 1 ? '2px solid rgba(148, 196, 86, 0.1)' : 'none',
           '&:hover': {
             backgroundColor: isDisabled ? 'transparent' : 'rgba(148, 196, 86, 0.08)',
           },

@@ -8,7 +8,7 @@ import { useNavigationStore } from '@/store/navigationStore';
 import { useAuthStore } from '@/store/authStore';
 import { NavigationItem } from './NavigationItem';
 import { navigationConfig } from '../../config/navigation.config';
-import { useNavigationShortcuts } from '@/hooks/useNavigationShortcuts';
+import { useKeyboardNavigation } from '@/hooks/useKeyboardNavigation';
 
 const DRAWER_WIDTH = 320; // Erhöht von 280px für bessere Textdarstellung
 const DRAWER_WIDTH_COLLAPSED = 64;
@@ -50,7 +50,7 @@ export const SidebarNavigation: React.FC = () => {
   } = useNavigationStore();
 
   // Keyboard shortcuts
-  useNavigationShortcuts();
+  useKeyboardNavigation();
 
   // Track visited pages
   useEffect(() => {
