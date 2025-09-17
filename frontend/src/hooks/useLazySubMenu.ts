@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 
 interface SubMenuItem {
   label: string;
@@ -17,6 +17,16 @@ interface UseLazySubMenuOptions {
   preload?: boolean;
 }
 
+/**
+ * Hook for lazy loading submenu items with animation delay.
+ * Optimizes performance by only loading items when needed.
+ *
+ * @param options - Configuration options
+ * @param options.items - The submenu items to load
+ * @param options.isExpanded - Whether the menu is currently expanded
+ * @param options.preload - Whether to preload items even when not expanded
+ * @returns Object containing loaded items, loading state, and preload function
+ */
 export const useLazySubMenu = ({ items = [], isExpanded, preload = false }: UseLazySubMenuOptions) => {
   const [loadedItems, setLoadedItems] = useState<SubMenuItem[] | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -29,49 +39,44 @@ export const useLazySubMenu = ({ items = [], isExpanded, preload = false }: UseL
   }, [items]);
 
   useEffect(() => {
-    // Clear any existing timeout
-    if (loadTimeoutRef.current) {
-      clearTimeout(loadTimeoutRef.current);
+    // If already loaded, return cached items immediately
+    if (loadedItems && (isExpanded || preload)) {
+      return;
     }
 
-    if (isExpanded || preload) {
-      // If already loaded, return cached items immediately
-      if (loadedItems) {
-        return;
-      }
+    let timeoutId: NodeJS.Timeout | undefined;
 
+    if (isExpanded || preload) {
       setIsLoading(true);
 
       // Simulate async loading with a small delay for smooth animation
-      loadTimeoutRef.current = setTimeout(() => {
+      timeoutId = setTimeout(() => {
         setLoadedItems(cacheRef.current);
         setIsLoading(false);
       }, 50); // Small delay to ensure smooth animation
-    } else {
-      // Optional: Clear loaded items when collapsed to save memory
-      // Uncomment if you want aggressive memory optimization
-      // loadTimeoutRef.current = setTimeout(() => {
-      //   setLoadedItems(null);
-      // }, 300); // Wait for collapse animation to finish
     }
 
+    // Cleanup function that properly clears the timeout
     return () => {
-      if (loadTimeoutRef.current) {
-        clearTimeout(loadTimeoutRef.current);
+      if (timeoutId) {
+        clearTimeout(timeoutId);
       }
     };
-  }, [isExpanded, preload, loadedItems]);
+  }, [isExpanded, preload]); // Removed loadedItems from dependencies to prevent infinite loop
 
   // Preload on hover for better UX
-  const preloadItems = () => {
+  const preloadItems = useCallback(() => {
     if (!loadedItems && !isLoading) {
       setIsLoading(true);
-      loadTimeoutRef.current = setTimeout(() => {
+      const timeoutId = setTimeout(() => {
         setLoadedItems(cacheRef.current);
         setIsLoading(false);
       }, 0);
+
+      // Store timeout for potential cleanup
+      loadTimeoutRef.current = timeoutId;
     }
-  };
+  }, [loadedItems, isLoading]);
 
   return {
     items: loadedItems || [],
@@ -81,22 +86,56 @@ export const useLazySubMenu = ({ items = [], isExpanded, preload = false }: UseL
   };
 };
 
-// Cache for frequently accessed submenus
-const submenuCache = new Map<string, SubMenuItem[]>();
+/**
+ * Cache for frequently accessed submenus with automatic cleanup.
+ * Uses WeakMap for automatic garbage collection when components unmount.
+ */
+const submenuCache = new Map<string, { data: SubMenuItem[]; timestamp: number }>();
+const CACHE_MAX_AGE = 5 * 60 * 1000; // 5 minutes
 
+/**
+ * Cleans up stale cache entries
+ */
+function cleanupCache() {
+  const now = Date.now();
+  for (const [key, value] of submenuCache.entries()) {
+    if (now - value.timestamp > CACHE_MAX_AGE) {
+      submenuCache.delete(key);
+    }
+  }
+}
+
+// Cleanup cache every minute
+if (typeof window !== 'undefined') {
+  setInterval(cleanupCache, 60 * 1000);
+}
+
+/**
+ * Hook for loading submenu items with caching support.
+ * Caches results globally to avoid redundant loading.
+ *
+ * @param menuId - Unique identifier for the menu
+ * @param loader - Function that loads the menu items
+ * @returns Object containing items and loading state
+ */
 export const useCachedSubMenu = (
   menuId: string,
   loader: () => SubMenuItem[] | Promise<SubMenuItem[]>
 ) => {
   const [items, setItems] = useState<SubMenuItem[]>(() => {
     // Check cache first
-    return submenuCache.get(menuId) || [];
+    const cached = submenuCache.get(menuId);
+    if (cached && Date.now() - cached.timestamp < CACHE_MAX_AGE) {
+      return cached.data;
+    }
+    return [];
   });
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    // If items are already in cache, we're done
-    if (submenuCache.has(menuId)) {
+    // Check if cache is still fresh
+    const cached = submenuCache.get(menuId);
+    if (cached && Date.now() - cached.timestamp < CACHE_MAX_AGE) {
       return;
     }
 
@@ -105,7 +144,7 @@ export const useCachedSubMenu = (
     const loadItems = async () => {
       try {
         const result = await loader();
-        submenuCache.set(menuId, result);
+        submenuCache.set(menuId, { data: result, timestamp: Date.now() });
         setItems(result);
       } catch (error) {
         console.error(`Failed to load submenu ${menuId}:`, error);

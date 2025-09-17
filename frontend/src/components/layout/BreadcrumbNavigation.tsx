@@ -1,8 +1,9 @@
 import React, { useMemo } from 'react';
-import { Breadcrumbs, Link, Typography, Box, Chip } from '@mui/material';
+import { Breadcrumbs, Link, Typography, Box } from '@mui/material';
 import { NavigateNext as NavigateNextIcon, Home as HomeIcon } from '@mui/icons-material';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { navigationConfig } from '@/config/navigation.config';
+import { createNavigationPathMap, formatPathSegment } from '@/utils/navigationHelpers';
 
 interface BreadcrumbItem {
   label: string;
@@ -10,9 +11,19 @@ interface BreadcrumbItem {
   icon?: React.ReactNode;
 }
 
+/**
+ * BreadcrumbNavigation component displays the current navigation path.
+ * Optimized with O(1) path lookups using a pre-computed path map.
+ */
 export const BreadcrumbNavigation: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
+
+  // Pre-compute path map for O(1) lookups
+  const pathMap = useMemo(
+    () => createNavigationPathMap(navigationConfig),
+    []
+  );
 
   const breadcrumbs = useMemo((): BreadcrumbItem[] => {
     const pathSegments = location.pathname.split('/').filter(Boolean);
@@ -25,57 +36,38 @@ export const BreadcrumbNavigation: React.FC = () => {
       icon: <HomeIcon sx={{ fontSize: 20, mr: 0.5 }} />,
     });
 
-    // Build breadcrumb trail from navigation config
+    // Build breadcrumb trail with O(1) lookups
     let currentPath = '';
-    pathSegments.forEach((segment, index) => {
+    pathSegments.forEach((segment) => {
       currentPath += `/${segment}`;
 
-      // Find matching navigation item
-      const navItem = navigationConfig.find(item =>
-        item.path === currentPath ||
-        item.subItems?.some(sub => sub.path === currentPath)
-      );
+      // O(1) lookup from pre-computed map
+      const navEntry = pathMap.get(currentPath);
 
-      if (navItem) {
-        // Check if it's a main item or sub-item
-        if (navItem.path === currentPath) {
+      if (navEntry) {
+        // Add parent if it's a sub-item and not already added
+        if (navEntry.parent && !items.some(item => item.path === navEntry.parent!.path)) {
           items.push({
-            label: navItem.label,
-            path: currentPath,
+            label: navEntry.parent.label,
+            path: navEntry.parent.path,
           });
-        } else {
-          // It's a sub-item
-          const subItem = navItem.subItems?.find(sub => sub.path === currentPath);
-          if (subItem) {
-            // Add parent if not already added
-            if (!items.some(item => item.path === navItem.path)) {
-              items.push({
-                label: navItem.label,
-                path: navItem.path,
-              });
-            }
-            items.push({
-              label: subItem.label,
-              path: currentPath,
-            });
-          }
         }
-      } else {
-        // For paths not in navigation (like /customers/123), create readable label
-        const label = segment
-          .split('-')
-          .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-          .join(' ');
 
         items.push({
-          label: label,
+          label: navEntry.item.label,
+          path: currentPath,
+        });
+      } else {
+        // For dynamic paths (like /customers/123), create readable label
+        items.push({
+          label: formatPathSegment(segment),
           path: currentPath,
         });
       }
     });
 
     return items;
-  }, [location.pathname]);
+  }, [location.pathname, pathMap]);
 
   // Immer anzeigen, auch auf der Startseite (für bessere Sichtbarkeit)
   // if (breadcrumbs.length <= 1) {

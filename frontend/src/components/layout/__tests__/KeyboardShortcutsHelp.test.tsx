@@ -108,7 +108,6 @@ describe('KeyboardShortcutsHelp', () => {
     render(<KeyboardShortcutsHelp />);
 
     const button = screen.getByRole('button');
-    const buttonStyle = window.getComputedStyle(button);
 
     // Button should have different color when seen
     expect(button).toBeInTheDocument();

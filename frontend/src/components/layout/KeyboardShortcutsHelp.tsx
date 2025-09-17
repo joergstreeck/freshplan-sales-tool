@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTheme } from '@mui/material/styles';
 import {
   Dialog,
   DialogTitle,
@@ -22,11 +23,11 @@ import {
 import {
   Keyboard as KeyboardIcon,
   Close as CloseIcon,
-  Help as HelpIcon,
 } from '@mui/icons-material';
 import { KEYBOARD_SHORTCUTS } from '@/hooks/useKeyboardNavigation';
 
 export const KeyboardShortcutsHelp: React.FC = () => {
+  const theme = useTheme();
   const [open, setOpen] = useState(false);
   const [hasSeenHelp, setHasSeenHelp] = useState(() => {
     return localStorage.getItem('hasSeenKeyboardHelp') === 'true';
@@ -77,10 +78,10 @@ export const KeyboardShortcutsHelp: React.FC = () => {
             top: 80, // Unter dem Header positioniert
             right: 32,
             zIndex: 1200, // Über dem Content aber unter Modals
-            backgroundColor: hasSeenHelp ? '#004F7B' : '#94C456',
-            color: 'white',
+            backgroundColor: hasSeenHelp ? theme.palette.primary.main : theme.palette.success.main,
+            color: theme.palette.common.white,
             '&:hover': {
-              backgroundColor: hasSeenHelp ? '#003A5C' : '#7BA347',
+              backgroundColor: hasSeenHelp ? theme.palette.primary.dark : theme.palette.success.dark,
             },
             animation: hasSeenHelp ? 'none' : 'pulse 2s infinite',
             '@keyframes pulse': {
@@ -118,8 +119,8 @@ export const KeyboardShortcutsHelp: React.FC = () => {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            backgroundColor: '#004F7B',
-            color: 'white',
+            backgroundColor: theme.palette.primary.main,
+            color: theme.palette.common.white,
           }}
         >
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -149,7 +150,7 @@ export const KeyboardShortcutsHelp: React.FC = () => {
                   <TableRow
                     key={key}
                     sx={{
-                      '&:hover': { backgroundColor: 'rgba(148, 196, 86, 0.05)' },
+                      '&:hover': { backgroundColor: theme.palette.action.hover },
                     }}
                   >
                     <TableCell>
@@ -215,8 +216,8 @@ export const KeyboardShortcutsHelp: React.FC = () => {
             onClick={handleClose}
             variant="contained"
             sx={{
-              backgroundColor: '#94C456',
-              '&:hover': { backgroundColor: '#7BA347' },
+              backgroundColor: theme.palette.success.main,
+              '&:hover': { backgroundColor: theme.palette.success.dark },
             }}
           >
             Verstanden

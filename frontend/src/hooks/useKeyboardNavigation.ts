@@ -1,8 +1,18 @@
-import { useEffect, useCallback } from 'react';
+import { useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useNavigationStore } from '@/store/navigationStore';
 import { navigationConfig } from '@/config/navigation.config';
 
+/**
+ * Hook for keyboard navigation in the application.
+ * Provides keyboard shortcuts for common navigation actions.
+ *
+ * Performance optimized with:
+ * - Stable event handler using refs to avoid re-renders
+ * - Minimal dependencies for useCallback
+ *
+ * @returns Object containing active menu ID and collapsed state
+ */
 export const useKeyboardNavigation = () => {
   const navigate = useNavigate();
   const {
@@ -16,6 +26,30 @@ export const useKeyboardNavigation = () => {
     isCollapsed,
   } = useNavigationStore();
 
+  // Stable refs to avoid re-creating handleKeyPress
+  const navigationStoreRef = useRef({
+    activeMenuId,
+    expandedMenuId,
+    setActiveMenu,
+    toggleSubmenu,
+    openSubmenu,
+    closeAllSubmenus,
+    toggleSidebar,
+  });
+
+  // Update ref when store values change
+  useEffect(() => {
+    navigationStoreRef.current = {
+      activeMenuId,
+      expandedMenuId,
+      setActiveMenu,
+      toggleSubmenu,
+      openSubmenu,
+      closeAllSubmenus,
+      toggleSidebar,
+    };
+  }, [activeMenuId, expandedMenuId, setActiveMenu, toggleSubmenu, openSubmenu, closeAllSubmenus, toggleSidebar]);
+
   const handleKeyPress = useCallback(
     (event: KeyboardEvent) => {
       // Only handle if no input is focused
@@ -28,8 +62,9 @@ export const useKeyboardNavigation = () => {
         return;
       }
 
-      const activeItem = navigationConfig.find(item => item.id === activeMenuId);
-      const currentIndex = navigationConfig.findIndex(item => item.id === activeMenuId);
+      const store = navigationStoreRef.current;
+      const activeItem = navigationConfig.find(item => item.id === store.activeMenuId);
+      const currentIndex = navigationConfig.findIndex(item => item.id === store.activeMenuId);
 
       switch (event.key) {
         // Toggle sidebar with Ctrl/Cmd + B
@@ -37,7 +72,7 @@ export const useKeyboardNavigation = () => {
         case 'B':
           if (event.ctrlKey || event.metaKey) {
             event.preventDefault();
-            toggleSidebar();
+            store.toggleSidebar();
           } else if (event.altKey) {
             // Alt + B for Orders
             event.preventDefault();
@@ -77,7 +112,7 @@ export const useKeyboardNavigation = () => {
           event.preventDefault();
           if (currentIndex > 0) {
             const prevItem = navigationConfig[currentIndex - 1];
-            setActiveMenu(prevItem.id);
+            store.setActiveMenu(prevItem.id);
             navigate(prevItem.path);
           }
           break;
@@ -87,7 +122,7 @@ export const useKeyboardNavigation = () => {
           event.preventDefault();
           if (currentIndex < navigationConfig.length - 1) {
             const nextItem = navigationConfig[currentIndex + 1];
-            setActiveMenu(nextItem.id);
+            store.setActiveMenu(nextItem.id);
             navigate(nextItem.path);
           }
           break;
@@ -97,7 +132,7 @@ export const useKeyboardNavigation = () => {
           event.preventDefault();
           if (activeItem?.subItems && activeItem.subItems.length > 0) {
             if (expandedMenuId !== activeMenuId) {
-              openSubmenu(activeMenuId);
+              store.openSubmenu(store.activeMenuId);
             }
           }
           break;
@@ -106,7 +141,7 @@ export const useKeyboardNavigation = () => {
         case 'ArrowLeft':
           event.preventDefault();
           if (expandedMenuId === activeMenuId) {
-            closeAllSubmenus();
+            store.closeAllSubmenus();
           }
           break;
 
@@ -117,7 +152,7 @@ export const useKeyboardNavigation = () => {
             if (activeItem.hasOwnPage || !activeItem.subItems) {
               navigate(activeItem.path);
             } else if (activeItem.subItems) {
-              toggleSubmenu(activeItem.id);
+              store.toggleSubmenu(activeItem.id);
             }
           }
           break;
@@ -137,17 +172,18 @@ export const useKeyboardNavigation = () => {
         case '6':
         case '7':
         case '8':
-        case '9':
+        case '9': {
           if (event.ctrlKey || event.metaKey) {
             event.preventDefault();
             const index = parseInt(event.key) - 1;
             if (index < navigationConfig.length) {
               const item = navigationConfig[index];
-              setActiveMenu(item.id);
+              store.setActiveMenu(item.id);
               navigate(item.path);
             }
           }
           break;
+        }
 
         // Search with /
         case '/':
@@ -170,16 +206,7 @@ export const useKeyboardNavigation = () => {
           break;
       }
     },
-    [
-      activeMenuId,
-      expandedMenuId,
-      navigate,
-      setActiveMenu,
-      toggleSubmenu,
-      openSubmenu,
-      closeAllSubmenus,
-      toggleSidebar,
-    ]
+    [navigate] // Only depend on navigate, store values are in ref
   );
 
   useEffect(() => {
