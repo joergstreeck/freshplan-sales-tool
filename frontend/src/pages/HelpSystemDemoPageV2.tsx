@@ -134,7 +134,7 @@ export const HelpSystemDemoPageV2: React.FC = () => {
             System-Einstellungen
           </Typography>
           <Grid container spacing={3}>
-            <Grid item xs={12} md={4}>
+            <Grid size={{ xs: 12, md: 4 }}>
               <FormControlLabel
                 control={
                   <Switch
@@ -153,7 +153,7 @@ export const HelpSystemDemoPageV2: React.FC = () => {
                 label="Tooltips aktiviert"
               />
             </Grid>
-            <Grid item xs={12} md={4}>
+            <Grid size={{ xs: 12, md: 4 }}>
               <FormControlLabel
                 control={
                   <Switch
@@ -172,7 +172,7 @@ export const HelpSystemDemoPageV2: React.FC = () => {
                 label="Proaktive Hilfe"
               />
             </Grid>
-            <Grid item xs={12} md={4}>
+            <Grid size={{ xs: 12, md: 4 }}>
               <Chip
                 label="Analytics Aktiv"
                 color="success"
@@ -188,7 +188,7 @@ export const HelpSystemDemoPageV2: React.FC = () => {
         </Typography>
         <Grid container spacing={3} sx={{ mb: 4 }}>
           {features.map((feature, index) => (
-            <Grid item xs={12} md={6} key={index}>
+            <Grid size={{ xs: 12, md: 6 }} key={index}>
               <Card sx={{ height: '100%' }}>
                 <CardContent>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
@@ -217,7 +217,7 @@ export const HelpSystemDemoPageV2: React.FC = () => {
             Test-Aktionen
           </Typography>
           <Grid container spacing={2}>
-            <Grid item xs={12} md={4}>
+            <Grid size={{ xs: 12, md: 4 }}>
               <Button
                 fullWidth
                 variant="contained"
@@ -234,7 +234,7 @@ export const HelpSystemDemoPageV2: React.FC = () => {
               </Button>
               {tourRunning && <LinearProgress sx={{ mt: 1 }} />}
             </Grid>
-            <Grid item xs={12} md={4}>
+            <Grid size={{ xs: 12, md: 4 }}>
               <Button
                 fullWidth
                 variant="outlined"
@@ -252,7 +252,7 @@ export const HelpSystemDemoPageV2: React.FC = () => {
                 Struggle simulieren
               </Button>
             </Grid>
-            <Grid item xs={12} md={4}>
+            <Grid size={{ xs: 12, md: 4 }}>
               <Button
                 fullWidth
                 variant="outlined"
@@ -280,7 +280,7 @@ export const HelpSystemDemoPageV2: React.FC = () => {
           </Typography>
           <Grid container spacing={3}>
             {analyticsData.map((item, index) => (
-              <Grid item xs={6} md={3} key={index}>
+              <Grid size={{ xs: 6, md: 3 }} key={index}>
                 <Card sx={{ textAlign: 'center' }}>
                   <CardContent>
                     <Typography variant="h3" sx={{ color: '#94C456', fontFamily: 'Antonio, sans-serif' }}>

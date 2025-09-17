@@ -109,7 +109,7 @@ export const HelpCenterPage: React.FC = () => {
 
           <Grid container spacing={3}>
             {Object.entries(helpSections).map(([key, sec]) => (
-              <Grid item xs={12} md={6} key={key}>
+              <Grid size={{ xs: 12, md: 6 }} key={key}>
                 <Card
                   sx={{
                     height: '100%',
@@ -176,7 +176,7 @@ export const HelpCenterPage: React.FC = () => {
 
           {currentSection === 'support' && section.contactInfo ? (
             <Grid container spacing={3}>
-              <Grid item xs={12} md={6}>
+              <Grid size={{ xs: 12, md: 6 }}>
                 <Paper sx={{ p: 3 }}>
                   <Typography variant="h6" sx={{ mb: 2 }}>
                     Kontaktmöglichkeiten
@@ -203,7 +203,7 @@ export const HelpCenterPage: React.FC = () => {
                   </List>
                 </Paper>
               </Grid>
-              <Grid item xs={12} md={6}>
+              <Grid size={{ xs: 12, md: 6 }}>
                 <Paper sx={{ p: 3 }}>
                   <Typography variant="h6" sx={{ mb: 2 }}>
                     Schnelle Hilfe

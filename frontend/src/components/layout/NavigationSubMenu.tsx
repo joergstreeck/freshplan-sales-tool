@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { List, ListItemButton, ListItemText, Tooltip, Collapse, Box } from '@mui/material';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
@@ -12,6 +12,7 @@ interface NavigationSubItem {
   permissions?: string[];
   disabled?: boolean;
   tooltip?: string;
+  hasOwnPage?: boolean; // NEU für Dashboards mit Untermenüs
   subItems?: NavigationSubItem[]; // NEU für verschachtelte Menüs
 }
 
@@ -22,13 +23,81 @@ interface NavigationSubMenuProps {
 
 export const NavigationSubMenu: React.FC<NavigationSubMenuProps> = ({ items, onItemClick }) => {
   const location = useLocation();
-  const [expandedItems, setExpandedItems] = useState<string[]>([]);
+
+  // Auto-expand nested menus that contain the current path
+  const getInitialExpandedItems = (): string[] => {
+    const expanded: string[] = [];
+    const currentPath = location.pathname;
+
+    const checkItem = (item: NavigationSubItem) => {
+      // If the item has a path that matches the current path AND has subitems
+      // it should be expanded (for dashboards with submenus)
+      if (item.hasOwnPage && item.path && currentPath === item.path && item.subItems) {
+        expanded.push(item.label);
+      }
+
+      if (item.subItems) {
+        // Check if any sub-item matches the current path
+        const hasActiveSubItem = item.subItems.some(subItem => {
+          if (subItem.path && currentPath.startsWith(subItem.path)) {
+            return true;
+          }
+          if (subItem.subItems) {
+            return checkItem(subItem);
+          }
+          return false;
+        });
+
+        if (hasActiveSubItem) {
+          expanded.push(item.label);
+        }
+      }
+    };
+
+    items.forEach(checkItem);
+    return expanded;
+  };
+
+  const [expandedItems, setExpandedItems] = useState<string[]>(getInitialExpandedItems);
+
+  // Update expanded items when location changes
+  useEffect(() => {
+    const currentPath = location.pathname;
+    const newExpanded: string[] = [];
+
+    // Check each item to see if it should be expanded
+    items.forEach(item => {
+      // If we navigated to this item's dashboard, expand it
+      if (item.hasOwnPage && item.path === currentPath && item.subItems) {
+        newExpanded.push(item.label);
+      }
+
+      // Also check for nested paths
+      if (item.subItems) {
+        const hasActiveSubItem = item.subItems.some(subItem =>
+          subItem.path && currentPath.startsWith(subItem.path)
+        );
+        if (hasActiveSubItem) {
+          newExpanded.push(item.label);
+        }
+      }
+    });
+
+    // Always set the expanded items based on current path
+    setExpandedItems(newExpanded);
+  }, [location.pathname, items]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const toggleExpanded = (itemLabel: string) => {
     setExpandedItems(prev =>
       prev.includes(itemLabel)
         ? prev.filter(i => i !== itemLabel)
         : [...prev, itemLabel]
+    );
+  };
+
+  const ensureExpanded = (itemLabel: string) => {
+    setExpandedItems(prev =>
+      prev.includes(itemLabel) ? prev : [...prev, itemLabel]
     );
   };
 
@@ -44,7 +113,12 @@ export const NavigationSubMenu: React.FC<NavigationSubMenuProps> = ({ items, onI
         key={key}
         onClick={() => {
           if (!isDisabled) {
-            if (hasSubItems) {
+            if (hasSubItems && item.hasOwnPage && item.path) {
+              // Has both submenu AND own page - navigate and ensure expanded
+              onItemClick(item.path, false);
+              ensureExpanded(item.label);
+            } else if (hasSubItems) {
+              // Only has submenu - toggle
               toggleExpanded(item.label);
             } else if (item.action) {
               onItemClick(item.action, true);

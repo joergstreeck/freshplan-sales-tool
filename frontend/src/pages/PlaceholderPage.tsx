@@ -96,7 +96,7 @@ export const PlaceholderPage: React.FC<PlaceholderPageProps> = ({
             </Typography>
             <Grid container spacing={3} sx={{ mb: 4 }}>
               {features.map((feature, index) => (
-                <Grid item xs={12} md={4} key={index}>
+                <Grid size={{ xs: 12, md: 4 }} key={index}>
                   <Card sx={{ height: '100%', textAlign: 'center' }}>
                     <CardContent>
                       <RocketLaunchIcon sx={{ fontSize: 40, color: '#94C456', mb: 1 }} />

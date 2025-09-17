@@ -12,6 +12,7 @@ interface NavigationSubItem {
   permissions?: string[];
   disabled?: boolean;
   tooltip?: string;
+  hasOwnPage?: boolean;
   subItems?: NavigationSubItem[];
 }
 

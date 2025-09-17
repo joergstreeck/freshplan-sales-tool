@@ -184,7 +184,7 @@ export function ApiStatusPage() {
 
         {/* System Health Overview */}
         <Grid container spacing={3} sx={{ mb: 4 }}>
-          <Grid item xs={12} md={3}>
+          <Grid size={{ xs: 12, md: 3 }}>
             <Card>
               <CardContent>
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
@@ -202,7 +202,7 @@ export function ApiStatusPage() {
               </CardContent>
             </Card>
           </Grid>
-          <Grid item xs={12} md={3}>
+          <Grid size={{ xs: 12, md: 3 }}>
             <Card>
               <CardContent>
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
@@ -220,7 +220,7 @@ export function ApiStatusPage() {
               </CardContent>
             </Card>
           </Grid>
-          <Grid item xs={12} md={3}>
+          <Grid size={{ xs: 12, md: 3 }}>
             <Card>
               <CardContent>
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
@@ -238,7 +238,7 @@ export function ApiStatusPage() {
               </CardContent>
             </Card>
           </Grid>
-          <Grid item xs={12} md={3}>
+          <Grid size={{ xs: 12, md: 3 }}>
             <Card>
               <CardContent>
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
@@ -290,23 +290,23 @@ export function ApiStatusPage() {
                     </ListItemIcon>
                     <ListItemText
                       primary={
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                          <Typography variant="body1" fontWeight="medium">
+                        <Typography component="div" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                          <Box component="span" sx={{ fontWeight: 'medium' }}>
                             {endpoint.name}
-                          </Typography>
+                          </Box>
                           <Chip
                             label={endpoint.method}
                             size="small"
                             variant="outlined"
                             color="primary"
                           />
-                        </Box>
+                        </Typography>
                       }
                       secondary={
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mt: 0.5 }}>
-                          <Typography variant="caption" color="text.secondary">
+                        <Typography component="div" sx={{ display: 'flex', alignItems: 'center', gap: 2, mt: 0.5 }}>
+                          <Box component="span" sx={{ fontSize: '0.75rem', color: 'text.secondary' }}>
                             {endpoint.endpoint}
-                          </Typography>
+                          </Box>
                           {result?.responseTime && (
                             <Chip
                               icon={<SpeedIcon />}
@@ -316,14 +316,17 @@ export function ApiStatusPage() {
                             />
                           )}
                           {result?.message && (
-                            <Typography
-                              variant="caption"
-                              color={result.status === 'error' ? 'error' : 'text.secondary'}
+                            <Box
+                              component="span"
+                              sx={{
+                                fontSize: '0.75rem',
+                                color: result.status === 'error' ? 'error.main' : 'text.secondary'
+                              }}
                             >
                               {result.message}
-                            </Typography>
+                            </Box>
                           )}
-                        </Box>
+                        </Typography>
                       }
                     />
                   </ListItem>

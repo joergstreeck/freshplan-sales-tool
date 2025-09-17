@@ -19,6 +19,15 @@ import QuizIcon from '@mui/icons-material/Quiz';
 import SupportAgentIcon from '@mui/icons-material/SupportAgent';
 import SchoolIcon from '@mui/icons-material/School';
 import HelpIcon from '@mui/icons-material/Help';
+import PersonAddIcon from '@mui/icons-material/PersonAdd';
+import AccountTreeIcon from '@mui/icons-material/AccountTree';
+import NotificationsIcon from '@mui/icons-material/Notifications';
+import PaletteIcon from '@mui/icons-material/Palette';
+import SecurityIcon from '@mui/icons-material/Security';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import BackupIcon from '@mui/icons-material/Backup';
+import SpeedIcon from '@mui/icons-material/Speed';
+import DashboardIcon from '@mui/icons-material/Dashboard';
 
 // Neukundengewinnung
 export const EmailPosteingang = () => (
@@ -48,6 +57,38 @@ export const Kampagnen = () => (
       'Performance-Tracking',
     ]}
     icon={<CampaignIcon sx={{ fontSize: 80, color: '#94C456' }} />}
+  />
+);
+
+export const LeadErfassung = () => (
+  <PlaceholderPage
+    title="Lead-Erfassung"
+    subtitle="Erfassen und qualifizieren Sie neue Leads"
+    description="Strukturierte Lead-Erfassung mit automatischer Qualifizierung."
+    expectedDate="Q2 2025"
+    features={[
+      'Lead-Formular',
+      'Automatische Qualifizierung',
+      'Lead-Scoring',
+      'Integration mit CRM-Prozessen',
+    ]}
+    icon={<PersonAddIcon sx={{ fontSize: 80, color: '#94C456' }} />}
+  />
+);
+
+export const Verkaufschancen = () => (
+  <PlaceholderPage
+    title="Verkaufschancen"
+    subtitle="Verwalten Sie Ihre Sales Pipeline"
+    description="Behalten Sie alle Verkaufschancen im Blick und optimieren Sie Ihre Abschlussrate."
+    expectedDate="Q1 2025"
+    features={[
+      'Pipeline-Übersicht',
+      'Opportunity-Management',
+      'Forecast-Berichte',
+      'Automatische Nachfass-Erinnerungen',
+    ]}
+    icon={<AccountTreeIcon sx={{ fontSize: 80, color: '#94C456' }} />}
   />
 );
 
@@ -293,6 +334,120 @@ export const Support = () => (
       'Telefon-Support',
     ]}
     icon={<SupportAgentIcon sx={{ fontSize: 80, color: '#94C456' }} />}
+  />
+);
+
+// Weitere Einstellungen
+export const MeinProfil = () => (
+  <PlaceholderPage
+    title="Mein Profil"
+    subtitle="Verwalten Sie Ihre persönlichen Informationen"
+    description="Bearbeiten Sie Ihr Profil, Passwort und persönliche Einstellungen."
+    expectedDate="Q1 2025"
+    features={[
+      'Profil-Bearbeitung',
+      'Avatar-Upload',
+      'Passwort-Verwaltung',
+      'Zwei-Faktor-Authentifizierung',
+    ]}
+    icon={<AccountCircleIcon sx={{ fontSize: 80, color: '#004F7B' }} />}
+  />
+);
+
+export const Benachrichtigungen = () => (
+  <PlaceholderPage
+    title="Benachrichtigungen"
+    subtitle="Steuern Sie, wie und wann Sie informiert werden"
+    description="Konfigurieren Sie E-Mail-, Push- und In-App-Benachrichtigungen."
+    expectedDate="Q1 2025"
+    features={[
+      'Benachrichtigungs-Typen',
+      'Zeitplanung',
+      'Kanal-Präferenzen',
+      'Stummschaltung',
+    ]}
+    icon={<NotificationsIcon sx={{ fontSize: 80, color: '#004F7B' }} />}
+  />
+);
+
+export const Darstellung = () => (
+  <PlaceholderPage
+    title="Darstellung"
+    subtitle="Passen Sie das Erscheinungsbild an"
+    description="Themes, Layouts und visuelle Präferenzen nach Ihrem Geschmack."
+    expectedDate="Q2 2025"
+    features={[
+      'Dark/Light Mode',
+      'Farbschema-Anpassung',
+      'Layout-Optionen',
+      'Schriftgröße',
+    ]}
+    icon={<PaletteIcon sx={{ fontSize: 80, color: '#94C456' }} />}
+  />
+);
+
+export const Sicherheit = () => (
+  <PlaceholderPage
+    title="Sicherheit"
+    subtitle="Schützen Sie Ihr Konto"
+    description="Erweiterte Sicherheitseinstellungen und Zugriffskontrolle."
+    expectedDate="Q1 2025"
+    features={[
+      'Login-Historie',
+      'Aktive Sitzungen',
+      'API-Schlüssel',
+      'Berechtigungen',
+    ]}
+    icon={<SecurityIcon sx={{ fontSize: 80, color: '#004F7B' }} />}
+  />
+);
+
+// Admin-spezifische Placeholders
+export const Performance = () => (
+  <PlaceholderPage
+    title="Performance-Monitoring"
+    subtitle="System-Performance im Blick"
+    description="Überwachen Sie Ladezeiten, Ressourcennutzung und Engpässe."
+    expectedDate="Q2 2025"
+    features={[
+      'Real-time Metriken',
+      'Performance-Trends',
+      'Bottleneck-Analyse',
+      'Optimierungs-Vorschläge',
+    ]}
+    icon={<SpeedIcon sx={{ fontSize: 80, color: '#004F7B' }} />}
+  />
+);
+
+export const BackupRecovery = () => (
+  <PlaceholderPage
+    title="Backup & Recovery"
+    subtitle="Datensicherung und Wiederherstellung"
+    description="Verwalten Sie Backups und Disaster Recovery Prozesse."
+    expectedDate="Q2 2025"
+    features={[
+      'Automatische Backups',
+      'Manuelle Snapshots',
+      'Recovery-Points',
+      'Disaster Recovery Plan',
+    ]}
+    icon={<BackupIcon sx={{ fontSize: 80, color: '#004F7B' }} />}
+  />
+);
+
+export const SystemVerwaltung = () => (
+  <PlaceholderPage
+    title="System-Verwaltung"
+    subtitle="Zentrale Systemadministration"
+    description="Verwalten Sie alle wichtigen Systemkomponenten an einem Ort."
+    expectedDate="Q2 2025"
+    features={[
+      'Service-Status',
+      'Konfiguration',
+      'Wartungsmodus',
+      'System-Updates',
+    ]}
+    icon={<DashboardIcon sx={{ fontSize: 80, color: '#004F7B' }} />}
   />
 );
 

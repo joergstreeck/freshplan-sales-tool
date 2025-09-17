@@ -43,6 +43,7 @@ export const SidebarNavigation: React.FC = () => {
     isCollapsed,
     setActiveMenu,
     toggleSubmenu,
+    openSubmenu,
     closeAllSubmenus,
     toggleSidebar,
     addToRecentlyVisited,
@@ -56,38 +57,61 @@ export const SidebarNavigation: React.FC = () => {
     addToRecentlyVisited(location.pathname);
   }, [location.pathname, addToRecentlyVisited]);
 
-  // Auto-set active menu based on current URL
+  // Set active menu based on current path
   useEffect(() => {
     const currentPath = location.pathname;
 
-    // Find matching navigation item (including sub-items)
+    // Find matching navigation item for highlighting
     const matchingItem = navigationConfig.find(item => {
-      // Direct path match
-      if (currentPath.startsWith(item.path)) {
-        return true;
-      }
-
-      // Sub-item path match
+      // Check sub-items first for more specific match
       if (item.subItems) {
-        return item.subItems.some(subItem => currentPath.startsWith(subItem.path));
+        const hasSubMatch = item.subItems.some(subItem => {
+          return subItem.path && currentPath.startsWith(subItem.path);
+        });
+        if (hasSubMatch) return true;
       }
 
-      return false;
+      // Direct path match
+      return currentPath.startsWith(item.path);
     });
 
     if (matchingItem) {
-      // Always set the active menu to ensure correct highlighting
+      // Set the active menu for highlighting
       setActiveMenu(matchingItem.id);
 
-      // Check if we're on a sub-page
-      const isOnSubPage = matchingItem.subItems?.some(sub => currentPath.startsWith(sub.path));
-
-      // Auto-expand submenu if on a sub-page and not already expanded
-      if (isOnSubPage && expandedMenuId !== matchingItem.id) {
-        toggleSubmenu(matchingItem.id);
+      // If this item has a dashboard page and subItems, ensure it's expanded
+      if (matchingItem.hasOwnPage && matchingItem.subItems && matchingItem.subItems.length > 0) {
+        // Auto-expand if we're on the dashboard page
+        if (currentPath === matchingItem.path || currentPath.startsWith(matchingItem.path + '/')) {
+          // Use setTimeout to ensure the state update happens after render
+          setTimeout(() => {
+            openSubmenu(matchingItem.id);
+          }, 0);
+        }
       }
     }
-  }, [location.pathname, expandedMenuId, setActiveMenu, toggleSubmenu]);
+  }, [location.pathname, setActiveMenu, openSubmenu]);
+
+  // Auto-expand menu on initial page load only
+  useEffect(() => {
+    const currentPath = location.pathname;
+
+    // Find if we're on a submenu page
+    const matchingItem = navigationConfig.find(item => {
+      if (item.subItems) {
+        return item.subItems.some(subItem => {
+          return subItem.path && currentPath === subItem.path;
+        });
+      }
+      return false;
+    });
+
+    if (matchingItem && !expandedMenuId) {
+      // Only expand on initial load when no menu is expanded yet
+      toggleSubmenu(matchingItem.id);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Empty dependency - run only once on mount
 
   // Filter navigation items based on permissions
   const visibleItems = navigationConfig.filter(
@@ -155,12 +179,23 @@ export const SidebarNavigation: React.FC = () => {
             isExpanded={expandedMenuId === item.id}
             isCollapsed={isCollapsed}
             onItemClick={() => {
-              setActiveMenu(item.id);
-              if (!item.subItems) {
-                // Navigate to the page and close any open submenus
+              if (!item.subItems || item.subItems.length === 0) {
+                // No submenu - navigate directly
+                setActiveMenu(item.id);
                 navigate(item.path);
                 closeAllSubmenus();
+              } else if (item.hasOwnPage) {
+                // Has submenu BUT also has its own page
+                setActiveMenu(item.id);
+
+                // ALWAYS open the submenu immediately
+                openSubmenu(item.id);
+
+                // Then navigate
+                navigate(item.path);
               } else {
+                // Has submenu, no own page - just toggle submenu
+                setActiveMenu(item.id);
                 toggleSubmenu(item.id);
               }
             }}
@@ -172,9 +207,10 @@ export const SidebarNavigation: React.FC = () => {
                   window.dispatchEvent(new CustomEvent('freshplan:new-customer'));
                 }
               } else {
-                // Navigate to path
+                // Navigate to path but keep submenu open
                 navigate(pathOrAction);
                 setActiveMenu(item.id);
+                // Keep the current submenu expanded - don't close it
               }
             }}
           />

@@ -2,7 +2,7 @@
 import { ReactNode, lazy, Suspense } from 'react';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider, CssBaseline, CircularProgress, Box } from '@mui/material';
 import { CacheProvider } from '@emotion/react';
 import { Toaster } from 'react-hot-toast';
@@ -64,8 +64,42 @@ const HelpCenterPage = lazy(() =>
 const ApiStatusPage = lazy(() =>
   import('./pages/ApiStatusPage').then(m => ({ default: m.ApiStatusPage }))
 );
+const NotFoundPage = lazy(() =>
+  import('./pages/NotFoundPage').then(m => ({ default: m.NotFoundPage }))
+);
+const AdminDashboard = lazy(() =>
+  import('./pages/AdminDashboard').then(m => ({ default: m.AdminDashboard }))
+);
+const SystemDashboard = lazy(() =>
+  import('./pages/admin/SystemDashboard').then(m => ({ default: m.SystemDashboard }))
+);
+const IntegrationsDashboard = lazy(() =>
+  import('./pages/admin/IntegrationsDashboard').then(m => ({ default: m.IntegrationsDashboard }))
+);
+const HelpConfigDashboard = lazy(() =>
+  import('./pages/admin/HelpConfigDashboard').then(m => ({ default: m.HelpConfigDashboard }))
+);
 const HelpSystemDemoPageV2 = lazy(() =>
   import('./pages/HelpSystemDemoPageV2').then(m => ({ default: m.HelpSystemDemoPageV2 }))
+);
+// Dashboards für Hauptmenüpunkte
+const NeukundengewinnungDashboard = lazy(() =>
+  import('./pages/NeukundengewinnungDashboard').then(m => ({ default: m.NeukundengewinnungDashboard }))
+);
+const KundenmanagementDashboard = lazy(() =>
+  import('./pages/KundenmanagementDashboard').then(m => ({ default: m.KundenmanagementDashboard }))
+);
+const AuswertungenDashboard = lazy(() =>
+  import('./pages/AuswertungenDashboard').then(m => ({ default: m.AuswertungenDashboard }))
+);
+const KommunikationDashboard = lazy(() =>
+  import('./pages/KommunikationDashboard').then(m => ({ default: m.KommunikationDashboard }))
+);
+const EinstellungenDashboard = lazy(() =>
+  import('./pages/EinstellungenDashboard').then(m => ({ default: m.EinstellungenDashboard }))
+);
+const HilfeDashboard = lazy(() =>
+  import('./pages/HilfeDashboard').then(m => ({ default: m.HilfeDashboard }))
 );
 
 // Lazy load all placeholder pages
@@ -132,7 +166,6 @@ export const AppProviders = ({ children: mainChildren }: AppProvidersProps) => {
                           <Route path="/cockpit" element={<CockpitPage />} />
                           <Route path="/cockpit-v2" element={<CockpitPageV2 />} />
                           <Route path="/users" element={<UsersPage />} />
-                          <Route path="/einstellungen" element={<SettingsPage />} />
                           <Route path="/customers" element={<CustomersPageV2 />} />
                           <Route path="/customers/:customerId" element={<CustomerDetailPage />} />
                           <Route path="/customers-old" element={<CustomersPage />} />
@@ -150,7 +183,7 @@ export const AppProviders = ({ children: mainChildren }: AppProvidersProps) => {
                           <Route path="/legacy-tool" element={<LegacyToolPage />} />
 
                           {/* Help Center Routes */}
-                          <Route path="/hilfe" element={<HelpCenterPage />} />
+                          <Route path="/hilfe" element={<HilfeDashboard />} />
                           <Route path="/hilfe/*" element={<HelpCenterPage />} />
 
                           {/* Admin Routes - Protected by Role */}
@@ -194,38 +227,48 @@ export const AppProviders = ({ children: mainChildren }: AppProvidersProps) => {
 
                           {/* Placeholder Pages für leere Menüpunkte */}
 
-                          {/* Neukundengewinnung */}
+                          {/* Neukundengewinnung - mit eigenem Dashboard */}
+                          <Route path="/neukundengewinnung" element={<NeukundengewinnungDashboard />} />
                           <Route path="/neukundengewinnung/posteingang" element={<Placeholders.EmailPosteingang />} />
+                          <Route path="/neukundengewinnung/leads" element={<Placeholders.LeadErfassung />} />
                           <Route path="/neukundengewinnung/kampagnen" element={<Placeholders.Kampagnen />} />
 
-                          {/* Kundenmanagement */}
+                          {/* Kundenmanagement - mit eigenem Dashboard */}
+                          <Route path="/kundenmanagement" element={<KundenmanagementDashboard />} />
                           <Route path="/kundenmanagement/aktivitaeten" element={<Placeholders.Aktivitaeten />} />
 
-                          {/* Berichte */}
+                          {/* Berichte - mit eigenem Dashboard */}
+                          <Route path="/berichte" element={<AuswertungenDashboard />} />
                           <Route path="/berichte/umsatz" element={<Placeholders.UmsatzBericht />} />
                           <Route path="/berichte/kunden" element={<Placeholders.KundenAnalyse />} />
                           <Route path="/berichte/aktivitaeten" element={<Placeholders.AktivitaetsberBerichte />} />
 
-                          {/* Kommunikation */}
+                          {/* Kommunikation - mit eigenem Dashboard */}
+                          <Route path="/kommunikation" element={<KommunikationDashboard />} />
                           <Route path="/kommunikation/chat" element={<Placeholders.TeamChat />} />
                           <Route path="/kommunikation/ankuendigungen" element={<Placeholders.Ankuendigungen />} />
                           <Route path="/kommunikation/notizen" element={<Placeholders.Notizen />} />
                           <Route path="/kommunikation/nachrichten" element={<Placeholders.InterneNachrichten />} />
 
-                          {/* Einstellungen */}
+                          {/* Einstellungen - mit eigenem Dashboard */}
+                          <Route path="/einstellungen" element={<EinstellungenDashboard />} />
                           <Route path="/einstellungen/profil" element={<Placeholders.MeinProfil />} />
                           <Route path="/einstellungen/benachrichtigungen" element={<Placeholders.Benachrichtigungen />} />
                           <Route path="/einstellungen/darstellung" element={<Placeholders.Darstellung />} />
                           <Route path="/einstellungen/sicherheit" element={<Placeholders.Sicherheit />} />
 
-                          {/* Hilfe */}
+                          {/* Hilfe - verwendet HelpCenterPage */}
                           <Route path="/hilfe/erste-schritte" element={<Placeholders.ErsteSchritte />} />
                           <Route path="/hilfe/handbuecher" element={<Placeholders.Handbuecher />} />
                           <Route path="/hilfe/videos" element={<Placeholders.VideoTutorials />} />
                           <Route path="/hilfe/faq" element={<Placeholders.FAQ />} />
                           <Route path="/hilfe/support" element={<Placeholders.Support />} />
 
-                          {/* Admin */}
+                          {/* Admin - mit neuem Dashboard */}
+                          <Route path="/admin" element={<AdminDashboard />} />
+                          <Route path="/admin/system" element={<SystemDashboard />} />
+                          <Route path="/admin/integrationen" element={<IntegrationsDashboard />} />
+                          <Route path="/admin/help" element={<HelpConfigDashboard />} />
                           <Route
                             path="/admin/settings"
                             element={
@@ -354,6 +397,19 @@ export const AppProviders = ({ children: mainChildren }: AppProvidersProps) => {
                           {isDevelopmentMode && (
                             <Route path="/lazy-loading-demo" element={<LazyLoadingDemo />} />
                           )}
+
+                          {/* Redirect alte URLs auf neue */}
+                          <Route path="/calculator" element={<Navigate to="/calculator-v2" replace />} />
+                          <Route path="/kunden" element={<Navigate to="/customers" replace />} />
+                          <Route path="/verkaufschancen" element={<Navigate to="/kundenmanagement/opportunities" replace />} />
+
+                          {/* System-Alias-Routen */}
+                          <Route path="/system" element={<Navigate to="/admin" replace />} />
+                          <Route path="/system/api-status" element={<Navigate to="/admin/system/api-test" replace />} />
+                          <Route path="/system/help" element={<Navigate to="/admin/help/demo" replace />} />
+
+                          {/* 404 Fallback - muss am Ende stehen */}
+                          <Route path="*" element={<NotFoundPage />} />
                         </Routes>
                       </Suspense>
                     )}
