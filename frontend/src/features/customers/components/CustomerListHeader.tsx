@@ -1,20 +1,26 @@
 import { Box, Typography, Button, Chip } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { UniversalExportButton } from '../../../components/export';
 
 interface CustomerListHeaderProps {
   totalCount: number;
-  onAddCustomer: () => void;
+  onAddCustomer?: () => void;
 }
 
 export function CustomerListHeader({ totalCount, onAddCustomer }: CustomerListHeaderProps) {
+  const navigate = useNavigate();
+
+  // Default to navigation if no onAddCustomer provided
+  const handleAddCustomer = onAddCustomer || (() => navigate('/customers/new'));
+
   // Listen for global shortcut event
   useEffect(() => {
-    const handler = () => onAddCustomer();
+    const handler = () => handleAddCustomer();
     window.addEventListener('freshplan:new-customer', handler);
     return () => window.removeEventListener('freshplan:new-customer', handler);
-  }, [onAddCustomer]);
+  }, [handleAddCustomer]);
 
   return (
     <Box
@@ -49,7 +55,7 @@ export function CustomerListHeader({ totalCount, onAddCustomer }: CustomerListHe
         <Button
           variant="contained"
           startIcon={<AddIcon />}
-          onClick={onAddCustomer}
+          onClick={handleAddCustomer}
           sx={{
             bgcolor: '#94C456', // Freshfoodz Grün
             '&:hover': {

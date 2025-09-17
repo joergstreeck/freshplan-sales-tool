@@ -316,7 +316,7 @@ export function CustomersPageV2({ openWizard = false }: CustomersPageV2Props) {
         {/* Header mit Button - immer sichtbar */}
         <CustomerListHeader
           totalCount={customers.length}
-          onAddCustomer={activeTab === 0 ? () => setWizardOpen(true) : undefined}
+          // Navigation to /customers/new is handled inside CustomerListHeader
         />
 
         {/* Tab Navigation */}

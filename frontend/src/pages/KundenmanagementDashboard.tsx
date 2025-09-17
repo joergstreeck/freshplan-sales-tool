@@ -55,15 +55,6 @@ export function KundenmanagementDashboard() {
       color: '#004F7B',
     },
     {
-      title: 'Neuer Kunde',
-      description: 'Legen Sie einen neuen Kunden an',
-      icon: <PersonAddIcon sx={{ fontSize: 48, color: '#94C456' }} />,
-      action: 'OPEN_CUSTOMER_WIZARD',
-      stats: 'Wizard',
-      badge: 'Quick',
-      color: '#94C456',
-    },
-    {
       title: 'Verkaufschancen',
       description: 'Verfolgen Sie aktive Opportunities',
       icon: <TrendingUpIcon sx={{ fontSize: 48, color: '#FFA726' }} />,
@@ -110,21 +101,35 @@ export function KundenmanagementDashboard() {
     <MainLayoutV2>
       <Container maxWidth="xl" sx={{ py: 4 }}>
         {/* Header */}
-        <Box sx={{ mb: 4 }}>
-          <Typography
-            variant="h3"
+        <Box sx={{ mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+          <Box>
+            <Typography
+              variant="h3"
+              sx={{
+                mb: 1,
+                fontFamily: 'Antonio, sans-serif',
+                fontWeight: 'bold',
+                color: '#004F7B',
+              }}
+            >
+              Kundenmanagement
+            </Typography>
+            <Typography variant="body1" color="text.secondary">
+              Zentrale Verwaltung Ihrer Kunden, Opportunities und Aktivitäten
+            </Typography>
+          </Box>
+          <Button
+            variant="contained"
+            startIcon={<PersonAddIcon />}
             sx={{
-              mb: 1,
-              fontFamily: 'Antonio, sans-serif',
+              backgroundColor: '#94C456',
+              '&:hover': { backgroundColor: '#7BA347' },
               fontWeight: 'bold',
-              color: '#004F7B',
             }}
+            onClick={() => navigate('/customers/new')}
           >
-            Kundenmanagement
-          </Typography>
-          <Typography variant="body1" color="text.secondary">
-            Zentrale Verwaltung Ihrer Kunden, Opportunities und Aktivitäten
-          </Typography>
+            Neuer Kunde
+          </Button>
         </Box>
 
         {/* KPI Cards */}
@@ -212,9 +217,7 @@ export function KundenmanagementDashboard() {
                       },
                     }}
                     onClick={() => {
-                      if (tool.action === 'OPEN_CUSTOMER_WIZARD') {
-                        window.dispatchEvent(new CustomEvent('freshplan:new-customer'));
-                      } else if (tool.path) {
+                      if (tool.path) {
                         navigate(tool.path);
                       }
                     }}

@@ -76,10 +76,6 @@ export const navigationConfig: NavigationItemType[] = [
         path: '/customers', // Angepasst an tatsächliche Route
       },
       {
-        label: 'Neuer Kunde', // NEU für Sprint 2!
-        action: 'OPEN_CUSTOMER_WIZARD', // Triggert Modal statt Navigation
-      },
-      {
         label: 'Verkaufschancen',
         path: '/kundenmanagement/opportunities', // Korrigierter Pfad zur tatsächlichen Route
       },

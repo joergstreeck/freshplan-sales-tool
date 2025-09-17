@@ -167,6 +167,7 @@ export const AppProviders = ({ children: mainChildren }: AppProvidersProps) => {
                           <Route path="/cockpit-v2" element={<CockpitPageV2 />} />
                           <Route path="/users" element={<UsersPage />} />
                           <Route path="/customers" element={<CustomersPageV2 />} />
+                          <Route path="/customers/new" element={<CustomersPageV2 openWizard={true} />} />
                           <Route path="/customers/:customerId" element={<CustomerDetailPage />} />
                           <Route path="/customers-old" element={<CustomersPage />} />
                           {/* Deutscher Alias für Kundenliste */}
