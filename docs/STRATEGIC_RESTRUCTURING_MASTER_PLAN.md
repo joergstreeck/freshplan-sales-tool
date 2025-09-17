@@ -1,36 +1,46 @@
-# 🎯 Strategic Documentation Restructuring - Master Plan
+# 🚀 Strategic Documentation Restructuring - Foundation-First Plan
 
 **Erstellt:** 2025-09-17
-**Ziel:** Enterprise-Level Feature-Dokumentation basierend auf Sidebar-Struktur
-**Status:** Phase 0 - Planung
+**Kontext:** Pre-Production Development Environment
+**Strategie:** Foundation-First Development Excellence
+**Status:** Phase 0 - Foundation Planning
 
 ## 📋 Executive Summary
 
-Komplette Neustrukturierung aller Projekt-Dokumentationen zur sidebar-basierten, feature-zentrierten Organisation. Ziel ist eine Claude-optimierte Wissensbasis, die redundante Planungen eliminiert und Enterprise-Level Entwicklung ermöglicht.
+Development-focused Neustrukturierung aller Projekt-Dokumentationen mit Foundation-First Approach. Da das Tool noch nicht in Produktion ist, optimieren wir für perfekte Entwickler-Experience und technische Exzellenz statt Business-ROI.
 
-## 🎯 Strategische Ziele
+## 🎯 Development-First Ziele
 
-1. **Sidebar-driven Documentation**: Alle Docs folgen der neuen Sidebar-Struktur
-2. **Feature-zentriert**: Frontend + Backend Planungen pro Feature vereint
-3. **Claude-optimiert**: Neue Claude-Sessions können sofort produktiv arbeiten
-4. **Redundanz-frei**: Alte, widersprüchliche Planungen eliminiert
-5. **Enterprise-ready**: Vollständige Spezifikationen mit Code-Beschreibungen
+1. **Foundation Excellence**: Perfekte Component-Library + API-Standards
+2. **Development Experience**: Optimale DX für maximale Produktivität
+3. **Quality-First**: Testing + Performance von Tag 1
+4. **Scalable Architecture**: Moderne Patterns für Wachstum
+5. **Claude-optimiert**: Development-focused Dokumentation
 
-## 📊 Projektumfang
+## 📊 Foundation-First Umfang
 
-### Sidebar-Struktur (6 Hauptbereiche, 24+ Features):
+### Development-Prioritäten:
 ```
-1. Mein Cockpit (1 Feature)
-2. Neukundengewinnung (3 Features)
-3. Kundenmanagement (4 Features)
-4. Auswertungen (3 Features)
-5. Kommunikation (4 Features)
-6. Einstellungen (4 Features)
-7. Hilfe & Support (5 Features)
-8. Administration (8+ Features)
+Phase 1: Foundation Excellence (4-6 Sessions)
+├── Component-Library Setup
+├── API-Foundation & Standards
+├── Navigation-System Enhancement
+└── Testing-Framework Excellence
+
+Phase 2: Core Features MVP (6-8 Sessions)
+├── Lead-Management-System
+├── Customer-Management-Excellence
+├── Dashboard-System
+└── Analytics Foundation
+
+Phase 3: Advanced Features (8-10 Sessions)
+├── Communication-System
+├── Advanced-Analytics
+├── Integration-Framework
+└── Performance-Optimization
 ```
 
-**Geschätzte Komplexität:** 6+ Monate Entwicklungszeit bei Full-Scope
+**Geschätzte Komplexität:** 3-4 Monate für Production-Ready System
 
 ## 🚀 Phasen-Strategie
 
