@@ -9,6 +9,7 @@
 | Plan | Status | Owner | Timeline | Effort | Priorität |
 |------|--------|-------|----------|---------|-----------|
 | [Test Debt Recovery](./TEST_DEBT_RECOVERY_PLAN.md) | 🔴 Critical | QA + Dev Team | Q4 2025 → Q1 2026 | L | 🔥 Kritisch |
+| [Mock Replacement Strategy](./MOCK_REPLACEMENT_STRATEGY_PLAN.md) | ✅ Foundation Ready | Dev + QA Team | Q4 2025 → Q1 2026 | M | 🔥 Hoch |
 | [SmartLayout Migration](./SMARTLAYOUT_MIGRATION_PLAN.md) | 🔄 In Progress | Frontend Team | Q4 2025 → Q1 2026 | M | 🔥 Hoch |
 | [CQRS Migration](./CQRS_MIGRATION_PLAN.md) | 🟡 Review | Backend Team | Q4 2025 → Q2 2026 | L | 🟠 Medium |
 | [Performance Optimization](./PERFORMANCE_OPTIMIZATION_PLAN.md) | 🟡 Review | Performance Team | Q4 2025 → Q2 2026 | M | 🟠 Medium |
@@ -20,12 +21,17 @@
 ## 🎯 **INFRASTRUKTUR-ROADMAP 2025-2026**
 
 ### **Q4 2025 (Aktuell)**
-**Focus:** Frontend Layout-Modernisierung + Backend Performance-Foundation
+**Focus:** Frontend Layout-Modernisierung + Backend Performance-Foundation + Mock-Elimination
 
 - ✅ **SmartLayout Migration - Phase 1** (Woche 1-4)
   - SmartLayout Core Implementation
   - Content-Type-Detection-Logic
   - Pilot mit 5 kritischen Seiten
+
+- ✅ **Mock Replacement Strategy - Phase 1** (Woche 1-2)
+  - TestDataBuilder-System Assessment (bereits implementiert)
+  - Frontend-Mock-Identification und Replacement-Planning
+  - Koordination mit Test Debt Recovery
 
 - 🟡 **CQRS Migration - Foundation** (Woche 1-8)
   - Command/Query-Handler-Infrastructure
@@ -33,12 +39,17 @@
   - Feature-Flag-basierte Migration
 
 ### **Q1 2026**
-**Focus:** Full SmartLayout Rollout + CQRS Customer-Domain
+**Focus:** Full SmartLayout Rollout + CQRS Customer-Domain + Mock-Free Environment
 
 - 🔄 **SmartLayout Migration - Phases 2-4**
   - Vollständige Migration aller 23 Komponenten
   - Performance-Optimierungen
   - MainLayoutV2 Removal
+
+- 🔄 **Mock Replacement Strategy - Phases 2-4**
+  - Frontend-Mock-Replacement (Neukundengewinnung, Cockpit)
+  - Test-Mock-Elimination parallel zu Test Debt Recovery
+  - Mock-Free-Development-Environment etablieren
 
 - 🔄 **CQRS Migration - Customer-Domain**
   - CustomerReadModel Implementation
