@@ -18,7 +18,7 @@
 - Code validieren (grep/find/ls)
 - Two-Pass Review bei Milestones
 - Dokumentieren in `/docs/claude-work/daily-work/`
-- FC-Status in `/docs/features/` aktualisieren!
+- FC-Status in `/docs/planung/features/` aktualisieren!
 
 ### 4️⃣ Problemlösung
 - Analysieren → Dokumentieren → Lösungen vorschlagen

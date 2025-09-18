@@ -66,7 +66,7 @@ if [ -f ".current-focus" ]; then
     echo -e "${GREEN}📍 Letzter Fokus gefunden:${NC}"
     if [ "$MODULE" != "null" ]; then
         echo "   Feature: $FEATURE-$MODULE"
-        echo "   Modul-Dokument: docs/features/$FEATURE-$MODULE-*.md ⭐"
+        echo "   Modul-Dokument: docs/planung/features/$FEATURE-$MODULE-*.md ⭐"
     else
         echo "   Feature: $FEATURE"
     fi
@@ -90,7 +90,7 @@ fi
 # Step 5: Find latest handover
 echo "5️⃣  Latest Handover Document"
 echo "---------------------------"
-LATEST_HANDOVER=$(find docs/claude-work/daily-work -name "*HANDOVER*.md" -type f -print0 | xargs -0 ls -t | head -1)
+LATEST_HANDOVER=$(find docs/planung/claude-work/daily-work -name "*HANDOVER*.md" -type f -print0 | xargs -0 ls -t | head -1)
 if [ -n "$LATEST_HANDOVER" ]; then
     echo -e "${GREEN}Found: $LATEST_HANDOVER${NC}"
     echo ""

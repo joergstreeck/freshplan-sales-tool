@@ -58,7 +58,7 @@ fi
 
 # Prüfe ob eine Übergabe-Datei von heute existiert
 TODAY=$(date +%Y-%m-%d)
-HANDOVER_DIR="docs/claude-work/daily-work/$TODAY"
+HANDOVER_DIR="docs/planung/claude-work/daily-work/$TODAY"
 LATEST_HANDOVER=""
 
 if [ -d "$HANDOVER_DIR" ]; then
@@ -182,7 +182,7 @@ fi
 
 # Show the spoke document if it exists
 if [ "$NEW_MODULE" != "null" ]; then
-    SPOKE=$(find docs/features -name "${NEW_FEATURE}-${NEW_MODULE}*.md" 2>/dev/null | head -1)
+    SPOKE=$(find docs/planung/features -name "${NEW_FEATURE}-${NEW_MODULE}*.md" 2>/dev/null | head -1)
     if [ -n "$SPOKE" ]; then
         echo ""
         echo -e "${GREEN}📋 Spoke-Dokument:${NC} $SPOKE"

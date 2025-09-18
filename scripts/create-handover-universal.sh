@@ -46,7 +46,7 @@ DATE=$(date +"%Y-%m-%d")
 TIME=$(date +"%H:%M")
 
 # Handover-Verzeichnis
-HANDOVER_DIR="$PROJECT_ROOT/docs/claude-work/daily-work/$DATE"
+HANDOVER_DIR="$PROJECT_ROOT/docs/planung/claude-work/daily-work/$DATE"
 mkdir -p "$HANDOVER_DIR"
 
 # Handover-Datei

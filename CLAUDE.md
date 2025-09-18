@@ -10,7 +10,7 @@
 2. **SPRACHE:** IMMER Deutsch - auch bei kurzen Antworten, Status-Updates, Zusammenfassungen!
 3. **GRÜNDLICHKEIT:** Gründlichkeit geht VOR Schnelligkeit - keine Quick-Fixes ohne Dokumentation
 4. **TESTS:** KEINE Implementierung ohne Tests (Unit ≥80%, Integration, Browser-Tests)
-5. **DOKUMENTATION:** Strukturiert ablegen in `docs/claude-work/` mit Datum + Kategorie
+5. **DOKUMENTATION:** Strukturiert ablegen in `docs/planung/claude-work/` mit Datum + Kategorie
 6. **CODE-REVIEW:** Nach JEDEM bedeutenden Abschnitt + Two-Pass Review durchführen
 7. **ARCHITEKTUR:** Strikte Trennung - Backend: domain/api/infrastructure, Frontend: features/components
 8. **ZEILENLÄNGE:** Max. 80-100 Zeichen - nutze Umbrüche und Hilfsvariablen
@@ -71,7 +71,7 @@
 ### 🔍 Quick Reference - Direkt zu den Details:
 - [🚑 Debug Cookbook - Komplette Troubleshooting-Referenz](./docs/guides/DEBUG_COOKBOOK.md) **NEU!**
 - [📚 TypeScript Import Type Guide](./docs/guides/TYPESCRIPT_IMPORT_TYPE_GUIDE.md) **NEU!**
-- [🔍 Debug Session: Import Type Marathon](./docs/claude-work/daily-work/2025-07-27/2025-07-27_DEBUG_typescript-import-type-marathon.md)
+- [🔍 Debug Session: Import Type Marathon](./docs/planung/claude-work/daily-work/2025-07-27/2025-07-27_DEBUG_typescript-import-type-marathon.md)
 - [0. Grundlegende Arbeitsphilosophie](#0-grundlegende-arbeitsphilosophie)
 - [0.1 Best Practices und Architektur](#01-best-practices-und-architektur-standards)
 - [0.10 Code-Review-Regel](#010-code-review-regel-gründliche-überprüfung-bei-jedem-bedeutenden-abschnitt)
@@ -1116,7 +1116,7 @@ git add -u && git commit -m "chore: apply Spotless formatting"
 - ✅ Konsistenter Code automatisch
 - ✅ Bessere Software durch strategischen Fokus
 
-**Details:** Siehe `/docs/claude-work/daily-work/2025-07-06/2025-07-06_PROCESS_two-pass-review-neu.md`
+**Details:** Siehe `/docs/planung/claude-work/daily-work/2025-07-06/2025-07-06_PROCESS_two-pass-review-neu.md`
 
 ## 1. Projektübersicht und Ziele
 
@@ -1341,16 +1341,21 @@ Bei JEDER Übergabe MÜSSEN alle aktiven Feature-Konzepte (FC-XXX) auf ihren akt
 ### Ablagestruktur:
 ```
 docs/
-├── features/                    # Technische Feature-Konzepte (FC-XXX)
-├── templates/                   # Wiederverwendbare Templates
-├── claude-work/
-│   ├── daily-work/YYYY-MM-DD/  # Tägliche Arbeit
-│   ├── implementations/         # Umgesetzte Features
-│   ├── reviews/                 # Code-Reviews
-│   ├── proposals/               # Vorschläge
-│   ├── maintenance/             # Wartungsarbeiten
-│   └── learning/                # Erkenntnisse
-└── adr/                         # Architecture Decision Records
+├── planung/                     # NEUE Struktur - alles unter planung/
+│   ├── features/                # Technische Feature-Konzepte (FC-XXX)
+│   ├── vorlagen/                # Wiederverwendbare Templates
+│   ├── grundlagen/              # Foundation-Dokumente
+│   ├── claude-work/
+│   │   ├── daily-work/YYYY-MM-DD/  # Tägliche Arbeit
+│   │   ├── implementations/         # Umgesetzte Features
+│   │   ├── reviews/                 # Code-Reviews
+│   │   ├── proposals/               # Vorschläge
+│   │   ├── maintenance/             # Wartungsarbeiten
+│   │   └── learning/                # Erkenntnisse
+│   ├── architektur/             # Architecture Decision Records
+│   └── archiv/                  # Historische Dokumente
+├── guides/                      # Aktuelle Guides
+└── assets/                      # Bilder und Ressourcen
 ```
 
 ### Namenskonvention:
