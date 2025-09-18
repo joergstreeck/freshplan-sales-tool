@@ -23,6 +23,12 @@ Backend Tests (❓ ANALYSE LÄUFT):
 ├── 🚨 Problem: CI-Umgebung verhindert vollständige Analyse
 └── 📋 Status: Needs Keycloak + DB cleanup for accurate count
 
+E2E Tests (✅ INTEGRIERT):
+├── 🔧 Framework: Playwright mit Keycloak-Integration
+├── 📋 Konfiguration: playwright.config.ts (CI-optimiert)
+├── 🚀 Quick Start: ./scripts/start-keycloak.sh && ./scripts/run-e2e-tests.sh
+└── 🎯 Scope: Komplette Security-Integration
+
 KORRIGIERTE EINSCHÄTZUNG:
 - Frontend: ~1.024 Tests (deutlich mehr als geschätzt!)
 - Backend: Schätzung >>1.000 Tests (muss verifiziert werden)

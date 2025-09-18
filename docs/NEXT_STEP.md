@@ -7,64 +7,57 @@
 
 ## 🎯 JETZT GERADE:
 
-**INFRASTRUKTUR-PLANUNGSEXTRAKTION ABGESCHLOSSEN**
+**DUALE DOKUMENTATIONS-STRATEGIE ERFOLGREICH IMPLEMENTIERT**
 
-**Stand 18.09.2025 13:51:**
-- ✅ **Dokumentations-Bereinigung:** /docs komplett aufgeräumt, 138 Backup-Files archiviert
-- ✅ **8 Infrastructure Plans extrahiert:** Nach PLANUNGSMETHODIK aus grundlagen/ → infrastruktur/
-- ✅ **PLANUNGSMETHODIK umgesetzt:** Atomare Pläne, Executive Summaries, 4-Phasen-Struktur
-- ✅ **Master Index erstellt:** Zentrale Koordination aller Infrastructure-Pläne
-- ✅ **Cross-References aktualisiert:** Scripts + Dokumentation nutzen neue Struktur
-- ✅ **Claude-Optimization:** Automatische Dokumentation in `/docs/planung/claude-work/`
-- 🔄 **Feature-Branch offen:** `feature/routing-improvements`
-- ✅ **ABGESCHLOSSEN:** CRM_COMPLETE_MASTER_PLAN_V5.md kompakt refactoriert nach PLANUNGSMETHODIK
-- ⚡ **NÄCHSTER SCHRITT:** Phase 3 UMBAU - Tests zu TestDataBuilder migrieren
+**Stand 18.09.2025 17:05:**
+- ✅ **Dokumentations-Bereinigung:** Massive Cleanup mit 1248 geänderten Dateien
+- ✅ **Master Plan V5:** Kompaktiert von 291 auf 180 Zeilen (38% Reduktion)
+- ✅ **Context-Dokument:** CRM_SYSTEM_CONTEXT.md (400+ Zeilen) für Feature-Diskussionen erstellt
+- ✅ **Strukturreform:** Nach `/docs/planung/` verschoben, archiviert in `/archiv/`
+- ✅ **Kritische Links:** Weiterleitung-Dokumente für Pre-commit-Hook-Compliance
+- ✅ **400+ Backup-Files:** Bereinigt und archiviert
+- ✅ **PLANUNGSMETHODIK:** Vollständig befolgt mit atomaren Dokumenten
+- 🔄 **Feature-Branch offen:** `feature/documentation-restructuring`
 
 **System-Status:**
-- ✅ **Migrationen:** V10000-V10005 vollständig implementiert
-- ✅ **CI-Guards:** ci.build Flag überall korrekt
-- ✅ **Dokumentation:** Vollständig aktualisiert
-- ✅ **TestDataBuilder:** Vollständig implementiert mit allen Builders!
+- ✅ **Commit:** afc2c15b0 - Duale Dokumentations-Strategie implementiert
+- ✅ **Migration:** V225 ist die nächste freie Nummer
+- ✅ **Dokumentation:** Vollständig restructuriert und optimiert
+- ✅ **Strategische Foundation:** Bereit für Technical Concepts
 
 ### 🚨 NÄCHSTER SCHRITT FÜR NEUEN CLAUDE:
 
-**PHASE 3: UMBAU - Tests zu TestDataBuilder migrieren**
+**COCKPIT TECHNICAL CONCEPT ERSTELLEN**
+
+**Warum Cockpit zuerst:**
+1. **Priority #1** laut Master Plan V5 (Q4 2025, Woche 1-2)
+2. **Diskussion prepared** in PLANNING_DISKUSSION.md verfügbar
+3. **Code-Analyse ready** in README.md dokumentiert
+4. **Foundation fertig** - Master Plan V5 + Context-Dokument einsatzbereit
 
 ```bash
-# 1. Status prüfen:
-# TestDataBuilder EXISTIERT bereits in:
-ls -la backend/src/main/java/de/freshplan/test/
-ls -la backend/src/main/java/de/freshplan/test/builders/
+# 1. Cockpit-Diskussion studieren:
+cat /docs/planung/features-neu/01_mein-cockpit/PLANNING_DISKUSSION.md
 
-# 2. Betroffene Tests identifizieren:
-grep -r "new Customer()" backend/src/test/java --include="*.java" | wc -l
-# Ca. 233 Stellen müssen migriert werden
+# 2. Code-Analyse lesen:
+cat /docs/planung/features-neu/01_mein-cockpit/README.md
 
-# 3. Migration starten mit:
-# - Für Unit-Tests: testDataBuilder.customer().build()
-# - Für Integration-Tests: testDataBuilder.customer().persist()
+# 3. Technical Concept erstellen:
+# /docs/planung/features-neu/01_mein-cockpit/technical-concept.md
+# Nach PLANUNGSMETHODIK (300-400 Zeilen, Executive Summary, 4 Phasen)
+
+# 4. Alternative: Feature-Diskussion mit andere KI über CRM_SYSTEM_CONTEXT.md
 ```
 
-**✅ Bereits implementierte Features:**
-- `build()` - Nur Objekt-Erstellung (für Unit-Tests) ✅
-- `persist()` - Mit DB-Persistierung (für Integration-Tests) ✅
-- Automatische is_test_data=true Markierung ✅
-- Unique IDs mit Timestamp + Counter + Thread-ID ✅
-- Vordefinierte Szenarien (asPremium(), asRisk(), etc.) ✅
-- PermissionHelperPg für race-safe Permission-Erstellung ✅
+**🎯 STRATEGIC ADVANTAGE:**
+Die duale Strategie ist jetzt einsatzbereit:
+- **Master Plan V5** → Für Claude-Planungsarbeit
+- **CRM_SYSTEM_CONTEXT.md** → Für andere KI-Feature-Diskussionen
 
 ### ⚠️ KRITISCHE HINWEISE:
-- **Nächste Migration:** V225 (V224 ist die höchste)
-- **PermissionHelperPg** bereits vorbereitet in src/main/java/de/freshplan/test/helpers/
-- **233 Test-Stellen** müssen später migriert werden
-- **@ApplicationScoped** für CDI-Injection verwenden
-
-### 📊 TODO-Status:
-1. **testdata-1** (✅ completed): TestDataBuilder mit build()/persist() implementiert
-2. **testdata-2** (✅ completed): PermissionHelperPg fertiggestellt und getestet  
-3. **testdata-3** (🔄 pending): Tests zu TestDataBuilder migrieren (233 Stellen)
-4. **testdata-4** (🔄 pending): CI Pipeline grün bekommen
-5. **testdata-5** (🔄 pending): Performance-Verbesserung validieren (>30%)
+- **Nächste Migration:** V225 (korrekt ermittelt via Script)
+- **Branch:** feature/documentation-restructuring (ready to merge)
+- **Duale Strategie:** Vollständig implementiert und getestet
 
 ---
 

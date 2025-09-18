@@ -152,14 +152,14 @@
 ## 🎯 Aktuelle Sprint-Woche: Q4 2025, Woche 1
 
 ### 🔥 Nächste 3 konkrete Aktionen:
-1. **01_mein-cockpit:** Technical Concept erstellen nach AI-Diskussion
-2. **Test Debt Recovery:** Starten (kritische Infrastruktur-Blockade)
-3. **FC-005 Customer Management:** Field-Based Architecture finalisieren
+1. **01_mein-cockpit:** Technical Concept erstellen (bereit mit PLANNING_DISKUSSION.md)
+2. **Trigger-Texte V3.0:** ✅ **ABGESCHLOSSEN** - Vollständig implementiert
+3. **Feature-Diskussion:** Mit anderen KIs über CRM_SYSTEM_CONTEXT.md möglich
 
 ### ⚠️ Aktuelle Blocker:
-- **Test Debt Recovery** blockiert Feature-Velocity → höchste Priorität
-- **SmartLayout Performance-Gains** benötigt für CRM User-Experience
-- **M8 Calculator** Integration fehlt für ActionCenter
+- **Dokumentations-Strategie:** ✅ **GELÖST** - Duale Strategie implementiert
+- **Compact-Problem:** ✅ **UMGANGEN** - Robust Handover System etabliert
+- **M8 Calculator** Integration fehlt für ActionCenter (bleibt)
 
 ## 🎯 Critical Success Metrics
 
@@ -192,7 +192,29 @@ CRM Master Plan V5 kompakt refactoriert nach PLANUNGSMETHODIK. Infrastructure-Ko
 **Master-Plan-Integration:**
 Einziger strategischer Master Plan. Alle Infrastructure-Pläne über Master Index koordiniert. Feature-Development folgt Sidebar-Navigation mit Technical Concepts als einzige Detail-Referenz.
 
+## 🚑 Debug & Troubleshooting (für Claude)
+
+### 📋 Foundation-Dokumente:
+- **[Debug Cookbook](./grundlagen/DEBUG_COOKBOOK.md)** - Symptom-basierte Problemlösung
+- **[TypeScript Guide](./grundlagen/TYPESCRIPT_IMPORT_TYPE_GUIDE.md)** - Import Type Probleme
+- **[CI Debugging Lessons](./grundlagen/CI_DEBUGGING_LESSONS_LEARNED.md)** - Systematische Debug-Methodik
+- **[Code Review Standard](./grundlagen/CODE_REVIEW_STANDARD.md)** - Qualitätssicherung
+- **[Coding Standards](./grundlagen/CODING_STANDARDS.md)** - Komplette Code-Rules
+- **[Database Migration Guide](./grundlagen/DATABASE_MIGRATION_GUIDE.md)** - Migration-Regeln & Registry
+- **[Testing Guide](./grundlagen/TESTING_GUIDE.md)** - Vollständige Test-Strategie (E2E + Playwright)
+- **[Keycloak Setup](./grundlagen/KEYCLOAK_SETUP.md)** - Authentication Setup
+
+### 🔄 Workflow-Dokumente:
+- **[CI Debugging Strategy](./workflows/CI_DEBUGGING_STRATEGY.md)** - CI-Methodik
+- **[ESLint Cleanup](./workflows/ESLINT_CLEANUP_SAFE_APPROACH.md)** - Maintenance
+
+### ⚡ Quick-Troubleshooting:
+- **Frontend Issues:** White Screen, Failed to fetch → Debug Cookbook
+- **Backend Issues:** 401 Unauthorized, No Test Data → Debug Cookbook
+- **CI Issues:** HTTP 500, Race Conditions → CI Debugging Lessons
+- **TypeScript:** Import Errors → TypeScript Guide
+
 ---
 **📋 Dokument-Zweck:** Kompakte Planungsübersicht für Claude
 **🔗 Für Feature-Diskussionen:** → [CRM System Context](./CRM_SYSTEM_CONTEXT.md)
-**🔄 Letzte Aktualisierung:** 2025-09-18 - Kompaktierung + Duale Strategie
+**🔄 Letzte Aktualisierung:** 2025-09-18 - Debug-Guides konsolidiert

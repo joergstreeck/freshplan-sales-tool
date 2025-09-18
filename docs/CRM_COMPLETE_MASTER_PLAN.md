@@ -1,28 +1,15 @@
-# ⬇️ DOKUMENTATION VERSCHOBEN
+# 🔄 Dokumentation verschoben
 
-**❗ HINWEIS:** Diese Datei wurde im Rahmen der dualen Dokumentations-Strategie verschoben.
+**Diese Datei wurde verschoben zu:**
+`/docs/planung/CRM_COMPLETE_MASTER_PLAN_V5.md`
 
-## 📍 Neue Standorte:
+**Grund:** Strukturelle Neuorganisation der Dokumentation - alle Planungsdokumente sind jetzt unter `/docs/planung/` konsolidiert.
 
-### **Für tägliche Claude-Planung:**
-➡️ **[CRM Master Plan V5](./planung/CRM_COMPLETE_MASTER_PLAN_V5.md)** (kompakt, 180 Zeilen)
-- Status, Timeline, Dependencies
-- Konkrete nächste Schritte
-- Aktuelle Sprint-Informationen
-
-### **Für Feature-Diskussionen mit anderen KIs:**
-➡️ **[CRM System Context](./planung/CRM_SYSTEM_CONTEXT.md)** (umfangreich, 400+ Zeilen)
-- System-Philosophie und Architektur
-- User Journeys und Business Processes
-- Vollständiger Kontext für Diskussionen
-
-## 🎯 Warum die Aufteilung?
-
-**Problem:** Ein Dokument für zwei verschiedene Zielgruppen führte zu Überladung
-**Lösung:** Duale Strategie nach PLANUNGSMETHODIK
-
-- **Master Plan V5:** Fokussiert auf tägliche Planung (Claude)
-- **System Context:** Vollständiger Kontext für Feature-Diskussionen (andere KIs)
+**Neue Struktur:**
+- Master Plan V5: `/docs/planung/CRM_COMPLETE_MASTER_PLAN_V5.md`
+- Context Dokument: `/docs/planung/CRM_SYSTEM_CONTEXT.md`
+- Feature-Konzepte: `/docs/planung/features-neu/`
+- Grundlagen: `/docs/planung/grundlagen/`
 
 ---
-**🔄 Diese Weiterleitung bleibt bestehen, damit kritische Dokumentations-Links funktionieren**
+*Automatisch erstellt am 2025-09-18 zur Pre-commit-Hook-Compliance*

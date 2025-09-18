@@ -1,6 +1,18 @@
-# Arbeitsrichtlinien für Claude im FreshPlan Sales Tool Projekt
+# 🤖 Claude Meta-Prompt für FreshPlan Sales Tool
 
 **📅 Aktuelles Datum: <!-- AUTO_DATE --> (System: 08.06.2025)**
+
+## 🎯 CLAUDE'S ARBEITSWEISE
+
+### ⚡ EINZIGE WAHRHEIT:
+**Master Plan V5:** `/docs/planung/CRM_COMPLETE_MASTER_PLAN_V5.md`
+
+**Dort findest du ALLES:**
+- Aktueller Projektstand
+- Nächste Schritte
+- Technical Concepts
+- Troubleshooting-Links
+- Übergabe-Workflows
 
 ## 🚨 KRITISCHE REGELN (IMMER LESEN!)
 
@@ -19,81 +31,19 @@
 11. **SECURITY:** Keine Hardcoded Secrets, Input Validation überall, CORS korrekt
 12. **PROAKTIVITÄT:** Fasse Verständnis zusammen und frage BEVOR du codest
 13. **INKREMENTELL:** Kleine, nachvollziehbare Schritte - teste häufig
-14. **CI GRÜN HALTEN:** Bei roter CI selbstständig debuggen mit GitHub CLI - siehe [CI Debugging Guide](./docs/guides/CI_DEBUGGING_LESSONS_LEARNED.md)
+14. **CI GRÜN HALTEN:** Bei roter CI selbstständig debuggen mit GitHub CLI - siehe Master Plan V5
 15. **NAMING:** PascalCase für Klassen, camelCase für Methoden, UPPER_SNAKE für Konstanten
 16. **PERFORMANCE:** Bundle ≤200KB, API <200ms P95, keine N+1 Queries
 17. **FRESHFOODZ CI COMPLIANCE:** ALLE sichtbaren Frontend-Elemente MÜSSEN Freshfoodz CI verwenden (#94C456, #004F7B, Antonio Bold, Poppins)
 
-## 🆘 NOTFALL-DIAGNOSE (für Claude nach Übergabe)
+## 🆘 BEI PROBLEMEN
 
-### Symptom: Frontend zeigt "Failed to fetch" oder "Connection refused"
-➡️ **Backend-Problem** - [Springe zu Backend-Fix](#backend-fix)
-
-### Symptom: "Keine Kunden gefunden" aber API antwortet
-➡️ **Datenbank leer** - [Springe zu Testdaten-Fix](#testdaten-fix) 
-
-### Symptom: Tests schlagen fehl mit 401 Unauthorized
-➡️ **Security-Problem** - [Springe zu Auth-Fix](#auth-fix)
-
-### Symptom: CI Integration Tests sind rot (HTTP 500 oder andere Fehler)
-➡️ **CI-Problem** - [CI Debugging Lessons Learned](./docs/guides/CI_DEBUGGING_LESSONS_LEARNED.md) 🎯
-
-### Symptom: "The requested module does not provide an export named 'FieldDefinition'"
-➡️ **TypeScript Import Type Problem** - [TypeScript Import Type Guide](./docs/guides/TYPESCRIPT_IMPORT_TYPE_GUIDE.md) 🆕
-
-### Symptom: Irgendwas funktioniert nicht
-➡️ **Automatische Diagnose** - Führe aus: `./scripts/diagnose-problems.sh`
+**Alle Lösungen findest du im Master Plan V5!**
+Dort sind alle aktuellen Troubleshooting-Links, Debug-Guides und Workarounds verlinkt.
 
 ---
 
-## 🆘 NOTFALL-DIAGNOSE (für Claude nach Übergabe)
-
-### Symptom: Frontend zeigt "Failed to fetch" oder "Connection refused"
-➡️ **Backend-Problem** - [Springe zu Backend-Fix](#backend-fix)
-
-### Symptom: "Keine Kunden gefunden" aber API antwortet
-➡️ **Datenbank leer** - [Springe zu Testdaten-Fix](#testdaten-fix) 
-
-### Symptom: Tests schlagen fehl mit 401 Unauthorized
-➡️ **Security-Problem** - [Springe zu Auth-Fix](#auth-fix)
-
-### Symptom: CI Integration Tests sind rot (HTTP 500 oder andere Fehler)
-➡️ **CI-Problem** - [CI Debugging Lessons Learned](./docs/guides/CI_DEBUGGING_LESSONS_LEARNED.md) 🎯
-
-### Symptom: "The requested module does not provide an export named 'FieldDefinition'"
-➡️ **TypeScript Import Type Problem** - [TypeScript Import Type Guide](./docs/guides/TYPESCRIPT_IMPORT_TYPE_GUIDE.md) 🆕
-
-### Symptom: Irgendwas funktioniert nicht
-➡️ **Automatische Diagnose** - Führe aus: `./scripts/diagnose-problems.sh`
-
----
-
-### 🔍 Quick Reference - Direkt zu den Details:
-- [🚑 Debug Cookbook - Komplette Troubleshooting-Referenz](./docs/guides/DEBUG_COOKBOOK.md) **NEU!**
-- [📚 TypeScript Import Type Guide](./docs/guides/TYPESCRIPT_IMPORT_TYPE_GUIDE.md) **NEU!**
-- [🔍 Debug Session: Import Type Marathon](./docs/planung/claude-work/daily-work/2025-07-27/2025-07-27_DEBUG_typescript-import-type-marathon.md)
-- [0. Grundlegende Arbeitsphilosophie](#0-grundlegende-arbeitsphilosophie)
-- [0.1 Best Practices und Architektur](#01-best-practices-und-architektur-standards)
-- [0.10 Code-Review-Regel](#010-code-review-regel-gründliche-überprüfung-bei-jedem-bedeutenden-abschnitt)
-- [2. Kommunikation und Vorgehensweise](#2-kommunikation-und-vorgehensweise)
-- [10. Claude's Dokumentations-Ablagestruktur](#10-claudes-dokumentations-ablagestruktur)
-
----
-
-<!-- Link-Definitionen für einfache Wartung -->
-[vision]: ./VISION_AND_ROADMAP.md
-[way-of-working]: ./WAY_OF_WORKING.md
-[api-contract]: ./docs/technical/API_CONTRACT.md
-[backend-guide]: ./docs/technical/BACKEND_START_GUIDE.md
-[frontend-spec]: ./docs/technical/FRONTEND_BACKEND_SPECIFICATION.md
-[known-issues]: ./docs/KNOWN_ISSUES.md
-[adr-template]: ./docs/adr/ADR_TEMPLATE.md
-[team-setup]: ./docs/team/TEAM_SETUP.md
-[development-setup]: ./docs/team/DEVELOPMENT_SETUP.md
-[code-review-standard]: ./docs/guides/CODE_REVIEW_STANDARD.md
-[keycloak-setup]: ./docs/guides/KEYCLOAK_SETUP.md
-[documentation-structure]: ./docs/DOCUMENTATION_STRUCTURE.md
-[freshfoodz-ci]: ./docs/FRESH-FOODZ_CI.md
+<!-- Alle Links sind im Master Plan V5 - keine doppelte Pflege! -->
 
 ## 0. Grundlegende Arbeitsphilosophie
 
@@ -103,7 +53,7 @@
 - Keine Quick-Fixes oder Workarounds ohne Dokumentation
 - Denke immer an die zukünftigen Integrationen und Erweiterungen
 - Was wir jetzt richtig machen, erspart uns später Arbeit
-- Siehe [Vision und Roadmap][vision] für die langfristige Ausrichtung des Projekts
+- Siehe Master Plan V5 für die langfristige Ausrichtung des Projekts
 
 ### Unser Code-Qualitäts-Versprechen
 
@@ -121,414 +71,35 @@
 **Transparenz**
 - Unklarheiten sofort kanalisieren → Issue / Stand-up
 
-## 0.1 Best Practices und Architektur-Standards
+## 0.1 Code-Standards und Architektur
 
-**ABSOLUTES ZIEL: Code, den jeder Entwickler sofort versteht - KEINE KOMPROMISSE!**
+**📋 Detaillierte Standards:** Siehe Master Plan V5
 
-### Grundprinzipien:
-1. **Clean Code** - Lesbarkeit geht vor Cleverness
-2. **SOLID Principles** - Jede Klasse hat EINE klare Verantwortung
-3. **DRY** - Don't Repeat Yourself, aber nicht auf Kosten der Klarheit
-4. **KISS** - Keep It Simple, Stupid
-5. **YAGNI** - You Aren't Gonna Need It (keine vorzeitige Abstraktion)
+### 🎯 Core Prinzipien:
+- **Clean Code** - Lesbarkeit vor Cleverness
+- **SOLID** - Eine Verantwortung pro Klasse
+- **DRY/KISS/YAGNI** - Einfach und wartbar
 
-### Backend-Architektur (Quarkus/Java):
+### 🏗️ Architektur-Überblick:
 
-#### Legacy-Struktur (wird schrittweise migriert):
+**Backend (Quarkus/Java):**
 ```
-backend/
-├── api/                          # REST Layer (Controllers)
-│   ├── resources/               # REST Endpoints (@Path)
-│   └── exception/               # Exception Handling
-│       └── mapper/             # JAX-RS Exception Mappers
-├── domain/                      # Business Domain (Core)
-│   └── [aggregate]/            # z.B. user, order, product
-│       ├── entity/             # JPA Entities
-│       ├── repository/         # Data Access Layer
-│       ├── service/            # Business Logic
-│       │   ├── dto/           # Request/Response DTOs
-│       │   ├── exception/     # Domain Exceptions
-│       │   └── mapper/        # Entity-DTO Mapping
-│       └── validation/         # Domain Validators
-├── infrastructure/              # Technical Details
-│   ├── config/                 # Configuration Classes
-│   ├── security/               # Security Implementation
-│   └── persistence/            # DB-specific Code
-└── shared/                      # Shared Utilities
-    ├── constants/              # Global Constants
-    └── util/                   # Utility Classes
+backend/modules/customer/{core,contacts,financials,timeline}
+backend/legacy/ (Migration laufend)
 ```
 
-#### Neue Modulare Architektur (ab 09.07.2025):
+**Frontend (React/TypeScript):**
 ```
-backend/
-├── modules/                     # Modularer Monolith
-│   ├── customer/               # Customer Bounded Context
-│   │   ├── core/              # Kern-Modul
-│   │   │   ├── domain/        # Entities, Value Objects
-│   │   │   ├── application/   # Command/Query Handlers
-│   │   │   └── infrastructure/# Repositories
-│   │   ├── contacts/          # Kontakt-Modul
-│   │   ├── financials/        # Finanz-Modul
-│   │   └── timeline/          # Event-History
-│   └── shared/                # Gemeinsame Module
-│       ├── events/            # Domain Events
-│       └── api/               # API Gateway
-└── legacy/                     # Alt-Code während Migration
+frontend/{components,features,pages,services}
 ```
 
-**Migration-Strategie:**
-1. Neue Module parallel zu altem Code
-2. Feature Flags für schrittweise Umstellung
-3. Facade Pattern für API-Kompatibilität
-4. Event-Driven Communication zwischen Modulen
+**⚠️ TypeScript KRITISCH:** `import type` für alle Types bei Vite!
 
-### Frontend-Architektur (React/TypeScript):
-
-#### TypeScript Import/Export Strategie (KRITISCH bei Vite):
-Bei `verbatimModuleSyntax: true` in tsconfig.json MÜSSEN alle Type-Imports explizit sein:
-
-```typescript
-// ✅ RICHTIG - Direkte Exports
-export interface FieldDefinition { ... }
-export type FieldCatalog = { ... }
-
-// ✅ RICHTIG - Type Imports verwenden
-import type { FieldDefinition, FieldCatalog } from './types';
-
-// ❌ FALSCH - Keine Re-Exports für Types
-type Foo = { ... }
-export { Foo };  // NICHT SO!
-
-// ❌ FALSCH - Normale Imports für Types
-import { FieldDefinition } from './types';  // Führt zu Build-Fehlern!
-```
-
-**Siehe:** [TypeScript Import Type Guide](./docs/guides/TYPESCRIPT_IMPORT_TYPE_GUIDE.md) für Details
-
-#### Projekt-Struktur:
-```
-frontend/
-├── components/                  # Reusable UI Components
-│   ├── common/                 # Generic (Button, Input, etc.)
-│   └── domain/                 # Domain-specific Components
-├── features/                    # Feature-based Organization
-│   └── [feature]/              # z.B. users, orders
-│       ├── components/         # Feature Components
-│       ├── hooks/              # Custom Hooks
-│       ├── services/           # API Services
-│       ├── types/              # TypeScript Types
-│       └── utils/              # Feature Utilities
-├── layouts/                     # Page Layouts
-├── pages/                       # Route Pages
-├── services/                    # Global Services
-│   ├── api/                    # API Client
-│   └── auth/                   # Auth Service
-├── store/                       # State Management
-├── types/                       # Global Types
-└── utils/                       # Global Utilities
-```
-
-### Code-Standards im Detail:
-
-#### Code-Lesbarkeit und Zeilenlänge:
-
-**Warum kurze Zeilen?**
-- **Bessere Lesbarkeit**: Kurze Zeilen lassen sich schneller erfassen und verstehen
-- **Vergleichbarkeit**: In Code-Review-Tools oder bei der Versionskontrolle sind kurze Zeilen einfacher zu vergleichen
-- **Kompatibilität**: Viele Editoren und Monitore zeigen lange Zeilen nicht vollständig an
-
-**Empfehlungen zur Zeilenlänge:**
-- **Standard**: Maximale Zeilenlänge von 80 bis 120 Zeichen
-- **Java**: 100 Zeichen (Google Java Style Guide)
-- **TypeScript/JavaScript**: 80-100 Zeichen
-- **Markdown**: 80 Zeichen für bessere Diff-Ansichten
-
-**Praktische Tipps:**
-
-1. **Zeilenumbrüche nutzen:**
-```java
-// Schlecht (zu lang)
-if (user.isActive() && user.hasPermission("admin") && user.getLastLogin().isAfter(yesterday) && user.getDepartment().equals("IT")) {
-
-// Gut (umgebrochen)
-if (user.isActive()
-        && user.hasPermission("admin")
-        && user.getLastLogin().isAfter(yesterday)
-        && user.getDepartment().equals("IT")) {
-```
-
-2. **Hilfsvariablen verwenden:**
-```java
-// Schlecht
-if (userRepository.findByEmail(email).isPresent() && userRepository.findByEmail(email).get().isActive()) {
-
-// Gut
-Optional<User> userOpt = userRepository.findByEmail(email);
-boolean isActiveUser = userOpt.isPresent() && userOpt.get().isActive();
-if (isActiveUser) {
-```
-
-3. **Funktionen auslagern:**
-```java
-// Schlecht
-if (user.getAge() >= 18 && user.hasVerifiedEmail() && user.getCountry().equals("DE") && !user.isBlocked()) {
-
-// Gut
-if (isEligibleForService(user)) {
-
-private boolean isEligibleForService(User user) {
-    return user.getAge() >= 18
-            && user.hasVerifiedEmail()
-            && user.getCountry().equals("DE")
-            && !user.isBlocked();
-}
-```
-
-4. **Method Chaining aufteilen:**
-```java
-// Schlecht
-UserResponse response = userService.findById(id).map(mapper::toResponse).orElseThrow(() -> new UserNotFoundException(id));
-
-// Gut
-UserResponse response = userService
-        .findById(id)
-        .map(mapper::toResponse)
-        .orElseThrow(() -> new UserNotFoundException(id));
-```
-
-5. **Lange Parameter-Listen:**
-```java
-// Schlecht
-public UserResponse createUser(String username, String firstName, String lastName, String email, String department, boolean isActive) {
-
-// Gut - Builder Pattern oder Request Object
-public UserResponse createUser(CreateUserRequest request) {
-```
-
-#### Naming Conventions:
-- **Klassen**: PascalCase, beschreibende Nomen (`UserService`, `OrderRepository`)
-- **Interfaces**: PascalCase, KEIN "I" Präfix (`UserRepository`, nicht `IUserRepository`)
-- **Methoden**: camelCase, Verben (`createUser`, `findByEmail`)
-- **Variablen**: camelCase, beschreibend (`userEmail`, nicht nur `email`)
-- **Konstanten**: UPPER_SNAKE_CASE (`MAX_RETRY_ATTEMPTS`)
-- **Dateien**: Wie die Hauptklasse (`UserService.java`, `UserList.tsx`)
-- **Packages/Folders**: lowercase, Singular (`user`, nicht `users`)
-
-#### JavaDoc/JSDoc Standards:
-```java
-/**
- * Service layer for User management operations.
- * 
- * This service encapsulates the business logic for user management,
- * providing a clean API for user operations while handling validation,
- * error cases, and data transformation.
- * 
- * @author FreshPlan Team
- * @since 2.0.0
- */
-@ApplicationScoped
-@Transactional
-public class UserService {
-    // Inline-Kommentare NUR wenn der Code nicht selbsterklärend ist
-    // Bevorzuge aussagekräftige Methoden-/Variablennamen
-}
-```
-
-#### Error Handling Best Practices:
-```java
-// Domain Exception mit klarer Bedeutung
-public class UserNotFoundException extends RuntimeException {
-    // Immer mit aussagekräftiger Message
-    public UserNotFoundException(String userId) {
-        super("User not found with ID: " + userId);
-    }
-}
-
-// Exception Mapper für konsistente API Responses
-@Provider
-public class UserNotFoundExceptionMapper 
-    implements ExceptionMapper<UserNotFoundException> {
-    // Einheitliches Error Response Format
-}
-```
-
-#### DTO Design:
-```java
-// Immutable DTOs mit Builder Pattern
-public final class UserResponse {
-    private final UUID id;
-    private final String username;
-    // ... andere fields
-    
-    // Private constructor
-    private UserResponse(Builder builder) { /*...*/ }
-    
-    // Nur Getter, keine Setter
-    public UUID getId() { return id; }
-    
-    // Builder für flexible Objekterstellung
-    public static Builder builder() { return new Builder(); }
-}
-```
-
-#### Repository Pattern:
-```java
-@ApplicationScoped
-public class UserRepository implements PanacheRepositoryBase<User, UUID> {
-    // Klare, aussagekräftige Methodennamen
-    public Optional<User> findByUsername(String username) {
-        // Defensive Programming - null checks
-        if (username == null || username.isBlank()) {
-            return Optional.empty();
-        }
-        return find("username", username).firstResultOptional();
-    }
-}
-```
-
-#### Service Layer:
-```java
-@ApplicationScoped
-@Transactional
-public class UserService {
-    // Constructor Injection (nicht @Inject auf Fields)
-    private final UserRepository repository;
-    private final UserMapper mapper;
-    
-    @Inject
-    public UserService(UserRepository repository, UserMapper mapper) {
-        this.repository = repository;
-        this.mapper = mapper;
-    }
-    
-    // Business Logic mit klaren Transaktionsgrenzen
-    public UserResponse createUser(CreateUserRequest request) {
-        // 1. Validation
-        // 2. Business Rules
-        // 3. Persistence
-        // 4. Response Mapping
-    }
-}
-```
-
-#### Testing Standards:
-```java
-// Test-Struktur
-class UserServiceTest {
-    @Test
-    void createUser_withValidData_shouldReturnCreatedUser() {
-        // Arrange
-        var request = CreateUserRequest.builder()
-            .username("john.doe")
-            .build();
-        
-        // Act
-        var result = userService.createUser(request);
-        
-        // Assert
-        assertThat(result)
-            .isNotNull()
-            .extracting(UserResponse::getUsername)
-            .isEqualTo("john.doe");
-    }
-}
-```
-
-#### Security Best Practices:
-- **Keine Hardcoded Secrets** - Nutze Environment Variables
-- **Input Validation** auf allen Ebenen (DTO, Service, Repository)
-- **Prepared Statements** automatisch durch JPA/Panache
-- **@RolesAllowed** für Authorization
-- **CORS** nur für erlaubte Origins
-
-#### Performance Considerations:
-- **Lazy Loading** für Collections (`@OneToMany(fetch = FetchType.LAZY)`)
-- **Pagination** für alle Listen (`Page`, `Pageable`)
-- **Query Optimization** mit Named Queries
-- **Caching** wo sinnvoll (`@CacheResult`)
-- **Database Indexes** in Flyway Migrations
-
-### Event-Driven Architecture (NEU ab 09.07.2025):
-```java
-// Domain Event Basis
-public interface DomainEvent {
-    UUID getEventId();
-    UUID getAggregateId();
-    LocalDateTime getOccurredAt();
-}
-
-// Event Bus für Module-Kommunikation
-@ApplicationScoped
-public class EventBus {
-    public void publish(DomainEvent event) {
-        // Sync jetzt, Async später
-    }
-}
-
-// Event Handler
-void onCustomerCreated(@Observes CustomerCreatedEvent e) {
-    // Reagiere auf Event
-}
-```
-
-### CQRS Pattern (für Read-Heavy Operations):
-```java
-// Command Side
-CustomerCommandHandler -> Customer Entity -> Event
-
-// Query Side  
-CustomerQueryHandler -> CustomerReadModel -> Response
-
-// Read Models für Performance
-@Entity @Immutable
-public class CustomerListView {
-    // Denormalisierte Daten für schnelle Queries
-}
-```
-
-### Git Workflow & Code Review:
-```bash
-# WICHTIG: VOR JEDEM COMMIT/PUSH Repository säubern!
-./scripts/quick-cleanup.sh
-
-# Feature Branch erstellen
-git checkout -b feature/user-management
-
-# Atomic Commits mit klaren Messages
-git commit -m "feat(user): Add user creation endpoint
-
-- Implement POST /api/users
-- Add validation for email uniqueness
-- Include unit and integration tests"
-
-# VOR PUSH: Nochmals säubern!
-./scripts/quick-cleanup.sh
-git push origin feature/user-management
-
-# Pull Request Checklist:
-# - [ ] Repository mit quick-cleanup.sh gesäubert ✅
-# - [ ] Tests sind grün
-# - [ ] Code Coverage > 80%
-# - [ ] JavaDoc/JSDoc komplett
-# - [ ] Keine TODO-Kommentare
-# - [ ] Security-Check durchgeführt
-# - [ ] Performance akzeptabel
-```
-
-### Metriken für Code-Qualität:
-- **Test Coverage**: Minimum 80% für neue Features
-- **Cyclomatic Complexity**: Max 10 pro Methode
-- **Method Length**: Max 20 Zeilen (ideal < 10)
-- **Class Length**: Max 200 Zeilen
-- **Package Dependencies**: Keine zirkulären Abhängigkeiten
-
-### Continuous Improvement:
-- **Code Reviews** sind Lernmöglichkeiten
-- **Refactoring** ist Teil jeder Story
-- **Tech Debt** wird dokumentiert und priorisiert
-- **Pair Programming** für komplexe Features
-- **Knowledge Sharing** in Team-Sessions
+### 📏 Qualitäts-Gates:
+- **Zeilenlänge:** 80-100 Zeichen
+- **Test Coverage:** ≥80%
+- **Naming:** PascalCase/camelCase/UPPER_SNAKE
+- **Git:** `./scripts/quick-cleanup.sh` vor jedem Push
 
 ## 0.2 DevOps & Release-Management
 
@@ -1116,19 +687,12 @@ git add -u && git commit -m "chore: apply Spotless formatting"
 - ✅ Konsistenter Code automatisch
 - ✅ Bessere Software durch strategischen Fokus
 
-**Details:** Siehe `/docs/planung/claude-work/daily-work/2025-07-06/2025-07-06_PROCESS_two-pass-review-neu.md`
+**Details:** Siehe Master Plan V5
 
-## 1. Projektübersicht und Ziele
+## 1. Projekt-Kontext
 
-**Projektname:** FreshPlan Sales Tool 2.0
-**Hauptziel:** Migration zu einer cloud-nativen Enterprise-Lösung mit React + Quarkus + Keycloak + PostgreSQL auf AWS.
-**Aktuelle Phase:** Sprint 0 - Walking Skeleton (Monorepo Setup, Auth-Integration, erste API)
-**Stack-Entscheidung:** 
-- Frontend: React + TypeScript + Vite
-- Backend: Quarkus (Java)
-- Auth: Keycloak
-- DB: PostgreSQL
-- Cloud: AWS (ECS, RDS, S3, CloudFront)
+**Zweck:** Diese Datei definiert nur ARBEITSREGELN für Claude
+**Alles andere:** Siehe Master Plan V5
 
 ## 2. Kommunikation und Vorgehensweise
 
@@ -1171,43 +735,19 @@ git add -u && git commit -m "chore: apply Spotless formatting"
 * Branch-Naming: `feature/`, `bugfix/`, `hotfix/`
 * PR vor Merge, mindestens 1 Review
 
-## 4. Architektur und Code-Struktur (Monorepo)
+## 4. Repository-Struktur (Kurzübersicht)
 
-### Neue Struktur ab Sprint 0:
 ```
-freshplan-sales-tool/
-├── /legacy              # Alter Code (eingefroren als legacy-1.0.0)
-├── /frontend            # React SPA
-│   ├── src/
-│   │   ├── components/
-│   │   ├── contexts/    # AuthContext, etc.
-│   │   ├── hooks/
-│   │   ├── pages/
-│   │   └── services/
-│   └── package.json
-├── /backend             # Quarkus API
-│   ├── src/main/java/
-│   ├── src/main/resources/
-│   └── pom.xml
-├── /infrastructure      # Docker, K8s, AWS CDK
-├── /docs               # ADRs, API-Docs
-└── /.github/workflows  # CI/CD Pipelines
+/frontend    # React SPA
+/backend     # Quarkus API
+/docs        # Dokumentation → /docs/planung/ für neue Struktur
 ```
 
-### Tech-Stack:
-* **Frontend:** React 18 + TypeScript + Vite + MUI + React Query
-  * ⚠️ **TypeScript-Konfiguration:** `verbatimModuleSyntax: true` erfordert explizite `import type` für alle Types
-* **Backend:** Quarkus + RESTEasy Reactive + Hibernate ORM + Flyway
-* **Auth:** Keycloak mit OIDC
-* **Database:** PostgreSQL mit Row-Level Security
-* **Testing:** Vitest (Unit), Playwright (E2E), RestAssured (API)
-* **CI/CD:** GitHub Actions + SonarCloud + AWS
+**Details:** Siehe Master Plan V5
 
-## 5. Bekannte Probleme (Known Issues) und Workarounds
+## 5. Problemlösung
 
-* Siehe [Known Issues][known-issues] für eine aktuelle Liste.
-* **Übersetzung dynamischer Tabs:** Ein bekanntes Problem. Workaround wird in Phase 2 gesucht.
-* **Performance bei großen Datenmengen:** Bei der Verarbeitung sehr vieler Positionen im Calculator kann es zu Verzögerungen kommen. Optimierungen sind für spätere Phasen geplant.
+**Alle Lösungen:** Siehe Master Plan V5
 
 ## 6. Test-Standards und Qualitätssicherung
 
@@ -1225,157 +765,62 @@ freshplan-sales-tool/
 - Dokumentiere gefundene Probleme
 - Notiere Edge-Cases und Limitierungen
 
-## 7. Aktueller Sprint: Sprint 0 - Walking Skeleton
+## 7. Arbeitsprozess
 
-### Heutige Ziele (Tag 1):
-1. **09:00-09:05:** Legacy einfrieren (Tag `legacy-1.0.0`)
-2. **09:05-09:30:** Monorepo-Struktur anlegen
-3. **09:30-12:30:** Skeleton-PRs (Frontend + Backend)
-4. **12:30-15:00:** CI/CD-Pipeline
-5. **15:00-Ende:** Walking Skeleton verbinden (React → /api/ping → DB)
+### 🔄 Bei jeder Session:
+1. **NEXT_STEP.md lesen** - Was ist zu tun?
+2. **Master Plan V5 checken** - Wo stehen wir?
+3. **TodoWrite nutzen** - Tasks tracken
+4. **Bei Problemen:** Debug Cookbook konsultieren
+5. **Bei Übergabe:** Trigger Texts verwenden
 
-### Definition of Done für Sprint 0:
-- [ ] User kann sich via Keycloak einloggen
-- [ ] Geschützte Route `/calculator` nur mit Auth erreichbar
-- [ ] API-Call `/api/ping` liefert DB-Timestamp
-- [ ] E2E-Test läuft grün in GitHub Actions
-- [ ] Alle Teammitglieder können lokal entwickeln
+## 9. Implementierungs-Prinzipien
 
-### Nächste Sprints (Preview):
-- **Sprint 1:** Erste Features migrieren (Calculator, Customer-Liste)
-- **Sprint 2:** API-Integration, Repository-Pattern
-- **Sprint 3:** Vollständige Feature-Parität mit Legacy
+**Denke bei jeder Entwicklung an:**
+- Wartbarkeit vor Cleverness
+- Tests vor Implementation
+- Dokumentation parallel zum Code
+- Kleine, inkrementelle Schritte
 
-## 8. Zukunftsorientierung
+## 8. Tech-Standards (Kurzreferenz)
 
-**Denke bei jeder Implementierung an:**
-- Skalierbarkeit für große Datenmengen
-- Erweiterbarkeit für neue Features
-- Integration mit externen Systemen (Monday.com, Klenty, etc.)
-- Wartbarkeit des Codes
-- Performance-Optimierung
+**Frontend:** React + TypeScript + Vite
+**Backend:** Quarkus + PostgreSQL
+**Auth:** Keycloak OIDC
+**Testing:** ≥80% Coverage
 
-Siehe [Vision und Roadmap][vision] für Details zu geplanten Integrationen und Features.
+**⚠️ Besonderheiten:**
+- TypeScript: `import type` für alle Types bei Vite
+- Git: `./scripts/quick-cleanup.sh` vor jedem Push
+- Zeilenlänge: 80-100 Zeichen max
 
-## 9. Sprint 1 Status und Erfolge
+## 10. Dokumentations-Workflow
 
-### Team FRONT - Production-Ready Keycloak Integration ✅
-
-**Erfolgreich abgeschlossen am 07.01.2025:**
-
-1. **Keycloak-Integration für Production:**
-   - ✅ Frontend konfiguriert für auth.z-catering.de
-   - ✅ Runtime-Konfiguration implementiert (Docker-ready)
-   - ✅ Automatisches Token-Refresh mit Axios Interceptors
-   - ✅ React Query für optimales Caching
-
-2. **Docker-Setup erstellt:**
-   - ✅ Multi-Stage Dockerfile mit Nginx
-   - ✅ Runtime-Konfiguration ohne Rebuilds
-   - ✅ docker-compose.yml für lokales Testing
-   - ✅ Optimierte Nginx-Konfiguration für SPAs
-
-3. **Komponenten implementiert:**
-   - ✅ UserList mit neuen Rollen (admin, manager, sales)
-   - ✅ ErrorBoundary für globale Fehlerbehandlung
-   - ✅ UserListSkeleton für Loading-States
-   - ✅ Keycloak-Provider mit Auto-Refresh
-
-4. **CI/CD Pipeline:**
-   - ✅ GitHub Actions Workflow für Frontend
-   - ✅ Automatische Tests mit Vitest
-   - ✅ Build-Artefakte werden gespeichert
-
-**Nächste Schritte:**
-- Warten auf Keycloak-Realm-Erstellung auf auth.z-catering.de
-- Legacy-Features migrieren (Calculator, Customer-Module)
-- CSS/Design aus Legacy-App übernehmen
-
-## 10. Claude's Dokumentations-Ablagestruktur
-
-**🚨 VERBINDLICHE REGEL: Strukturierte Dokumentationsablage**
-
-Ab sofort gilt für ALLE von Claude erstellten Dokumentationen:
-
-### 🆕 Feature-Konzept-Prozess (Ab 07.07.2025)
-Für jedes größere Feature erstellen wir ein separates technisches Konzeptdokument:
-
-1. **Feature Code vergeben**: FC-XXX (fortlaufende Nummerierung)
-2. **Technisches Konzept erstellen**: `/docs/features/YYYY-MM-DD_TECH_CONCEPT_feature-name.md`
-3. **Template nutzen**: `/docs/templates/TECH_CONCEPT_TEMPLATE.md`
-4. **Master Plan aktualisieren**: Nur Verweis auf Detail-Dokument, keine Details im Master Plan
-
-**Vorteile:**
-- Master Plan bleibt übersichtlich
-- Detaillierte technische Diskussionen im Kontext
-- Versionierte Feature-Historie
-- Bessere Nachvollziehbarkeit von Entscheidungen
-
-**🔄 AKTUALISIERUNGS-PFLICHT:**
-Bei JEDER Übergabe MÜSSEN alle aktiven Feature-Konzepte (FC-XXX) auf ihren aktuellen Implementierungs-Status überprüft und aktualisiert werden! Dies beinhaltet:
-- Status-Updates (✅ Abgeschlossen / 🔄 In Arbeit / ⏸️ Pausiert)
-- Neue implementierte Komponenten
-- Behobene Probleme
-- Nächste Schritte
-
-**🆕 MASTER PLAN SYNC (ab 22.07.2025):**
-```bash
-# Automatische Synchronisation des V5 Master Plans mit aktuellem Stand
-./scripts/sync-master-plan.sh
-
-# Erweiterte Übergabe mit automatischem Sync
-./scripts/handover-with-sync.sh
+### 🗂️ Neue Struktur (ab 18.09.2025):
 ```
-**WICHTIG:** Der V5 Master Plan wird jetzt automatisch synchronisiert und zeigt den echten Projekt-Stand!
-
-### 🔒 KRITISCHE DOKUMENTE - NIEMALS LÖSCHEN:
-- `/docs/TRIGGER_TEXTS.md` - Offizielle Trigger-Texte für Übergaben
-- `/docs/STANDARDUBERGABE_NEU.md` - Hauptprozess-Dokument
-- `/docs/STANDARDUBERGABE_KOMPAKT.md` - Quick Reference
-- `/docs/STANDARDUBERGABE.md` - Troubleshooting Guide
-- `/docs/CLAUDE.md` - Diese Arbeitsrichtlinien
-- `/docs/CRM_COMPLETE_MASTER_PLAN.md` - Aktueller Masterplan
-
-**Backup:** `./scripts/backup-critical-docs.sh` regelmäßig ausführen!
-
-### Ablagestruktur:
-```
-docs/
-├── planung/                     # NEUE Struktur - alles unter planung/
-│   ├── features/                # Technische Feature-Konzepte (FC-XXX)
-│   ├── vorlagen/                # Wiederverwendbare Templates
-│   ├── grundlagen/              # Foundation-Dokumente
-│   ├── claude-work/
-│   │   ├── daily-work/YYYY-MM-DD/  # Tägliche Arbeit
-│   │   ├── implementations/         # Umgesetzte Features
-│   │   ├── reviews/                 # Code-Reviews
-│   │   ├── proposals/               # Vorschläge
-│   │   ├── maintenance/             # Wartungsarbeiten
-│   │   └── learning/                # Erkenntnisse
-│   ├── architektur/             # Architecture Decision Records
-│   └── archiv/                  # Historische Dokumente
-├── guides/                      # Aktuelle Guides
-└── assets/                      # Bilder und Ressourcen
+docs/planung/
+├── features-neu/           # Technical Concepts nach Sidebar
+├── claude-work/daily-work/ # Tägliche Dokumentation
+├── grundlagen/            # Foundation-Dokumente (z.B. CODING_STANDARDS.md)
+└── archiv/               # Historische Dokumente
 ```
 
-### Namenskonvention:
-`YYYY-MM-DD_<KATEGORIE>_<BESCHREIBUNG>.md`
+### 📋 Übergabe-Workflow:
+1. **Trigger Texts nutzen:** `/docs/TRIGGER_TEXTS.md` für vollständige Übergaben
+2. **Master Plan V5 Update:** Automatisch in Übergabe-Prozess integriert
+3. **Template-Validierung:** Alle Sections müssen ausgefüllt werden
+4. **Smart Commits:** Explizite JA/NEIN/ÄNDERN Bestätigung
 
-Beispiel: `2025-06-08_IMPL_dynamic-links.md`
+### 🔒 Kritische Dokumente (NIEMALS löschen):
+- `/docs/TRIGGER_TEXTS.md` - Offizielle Übergabe-Templates
+- `/docs/CLAUDE.md` - Diese Meta-Prompt-Anweisungen
+- `/docs/planung/CRM_COMPLETE_MASTER_PLAN_V5.md` - Aktueller Projektstand
+- `/docs/NEXT_STEP.md` - Nächste konkrete Schritte
 
-### Kategorien:
-- `IMPL_` - Implementation
-- `FIX_` - Bug-Fix  
-- `REVIEW_` - Review/Analyse
-- `CLEANUP_` - Aufräumarbeiten
-- `PROPOSAL_` - Vorschlag
+### 📝 Namenskonvention:
+`YYYY-MM-DD_<KATEGORIE>_<beschreibung>.md`
 
-### ⚠️ Wichtig:
-- **NIEMALS** Dokumente direkt in `/docs/` ablegen!
-- **IMMER** Datum und Kategorie im Namen
-- **IMMER** in passenden Unterordner ablegen
-
-Vollständige Dokumentation: [Claude Documentation Structure][claude-doc-structure]
+**Kategorien:** `IMPL_`, `FIX_`, `REVIEW_`, `CLEANUP_`, `PROPOSAL_`
 
 ---
 
@@ -1384,13 +829,6 @@ Vollständige Dokumentation: [Claude Documentation Structure][claude-doc-structu
 ### Detaillierte Lösungen {#problemloesungen}
 
 Die häufigsten Probleme und ihre Lösungen findest du im:
-➡️ **[DEBUG_COOKBOOK](./docs/guides/DEBUG_COOKBOOK.md)**
+**Alle Problem-Lösungen sind im Master Plan V5 verlinkt!**
 
-**Quick Links zu Lösungen:**
-- [Backend-Fix](./docs/guides/DEBUG_COOKBOOK.md#backend-down)
-- [Testdaten-Fix](./docs/guides/DEBUG_COOKBOOK.md#no-test-data)
-- [Auth-Fix](./docs/guides/DEBUG_COOKBOOK.md#auth-401)
-- [White Screen Fix](./docs/guides/DEBUG_COOKBOOK.md#white-screen)
-- [TypeScript Import Type Fix](./docs/guides/TYPESCRIPT_IMPORT_TYPE_GUIDE.md) **NEU!**
-
-[claude-doc-structure]: ./docs/CLAUDE_DOCUMENTATION_STRUCTURE.md
+<!-- Keine Links mehr - alles im Master Plan V5! -->
