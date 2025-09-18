@@ -1,0 +1,44 @@
+groups:
+  - name: crm-email
+    rules:
+      - alert: EmailIdleStall
+        expr: max_over_time(email_imap_idle_seconds[5m]) > 120
+        for: 5m
+        labels: { severity: warning }
+        annotations:
+          summary: "IMAP IDLE Stalled"
+          description: "Keine neuen Events seit >120s"
+
+      - alert: OutboxFailureSpike
+        expr: (sum(rate(email_outbox_failed_total[10m])) / sum(rate(email_outbox_total[10m]))) * 100 > 10
+        for: 10m
+        labels: { severity: critical }
+        annotations:
+          summary: "Outbox Failures >10% (10m)"
+          description: "Zustellfehler im Outbox-Dispatcher überschreiten 10%"
+
+      - alert: BounceRateHigh
+        expr: (sum(rate(email_bounce_total[1h])) / sum(rate(email_sent_total[1h]))) * 100 > 5
+        for: 15m
+        labels: { severity: warning }
+        annotations:
+          summary: "Bounce-Rate >5% (1h)"
+          description: "Prüfe SPF/DKIM/DMARC oder Empfängerlisten"
+
+  - name: crm-api
+    rules:
+      - alert: ApiLatencyP95High
+        expr: histogram_quantile(0.95, sum(rate(http_server_requests_seconds_bucket[5m])) by (le, route)) > 0.2
+        for: 10m
+        labels: { severity: warning }
+        annotations:
+          summary: "API P95 >200ms"
+          description: "Route {{ $labels.route }} überschreitet P95 200ms"
+
+      - alert: WsDisconnectsSpike
+        expr: rate(ws_client_disconnects_total[5m]) > 5
+        for: 5m
+        labels: { severity: warning }
+        annotations:
+          summary: "WS Disconnects hoch"
+          description: "WebSocket-Verbindungen instabil"

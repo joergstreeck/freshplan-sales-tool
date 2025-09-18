@@ -97,13 +97,13 @@ PARTNER-CHANNEL (Lieferanten, Händler, Wiederverkäufer):
 - **Planning:** [Finale Roadmap](./features-neu/02_neukundengewinnung/diskussionen/2025-09-18_finale-entwicklungsroadmap.md) | [KI Production-Specs](./features-neu/02_neukundengewinnung/diskussionen/2025-09-18_finale-ki-specs-bewertung.md)
 
 **email-posteingang/** [Technical Concept](./features-neu/02_neukundengewinnung/email-posteingang/technical-concept.md)
-- **Status:** 🔄 Ready für Technical Concept | **Timeline:** Phase 1 (Woche 1-12) | **Dependencies:** all.inkl Integration
+- **Status:** ✅ Technical Concept abgeschlossen, KI-Production-Specs integriert | **Timeline:** Phase 1 (Woche 1-12) | **Dependencies:** all.inkl Integration
 
 **lead-erfassung/** [Technical Concept](./features-neu/02_neukundengewinnung/lead-erfassung/technical-concept.md)
-- **Status:** 🔄 Ready für Technical Concept | **Timeline:** Phase 1 (Woche 1-12) | **Dependencies:** Handelsvertretervertrag-Compliance
+- **Status:** ✅ Technical Concept abgeschlossen, Handelsvertretervertrag-konform | **Timeline:** Phase 1 (Woche 1-12) | **Dependencies:** UserLeadSettings Entity
 
 **kampagnen/** [Technical Concept](./features-neu/02_neukundengewinnung/kampagnen/technical-concept.md)
-- **Status:** 🔄 Ready für Technical Concept | **Timeline:** Phase 2 (Woche 13-20) | **Dependencies:** A/B-Testing + Attribution
+- **Status:** ✅ Technical Concept abgeschlossen, Multi-Touch-Attribution | **Timeline:** Phase 2 (Woche 13-20) | **Dependencies:** Email+Lead Foundation
 
 #### **03_kundenmanagement**
 **alle-kunden/** [Technical Concept](./features-neu/03_kundenmanagement/alle-kunden/technical-concept.md)

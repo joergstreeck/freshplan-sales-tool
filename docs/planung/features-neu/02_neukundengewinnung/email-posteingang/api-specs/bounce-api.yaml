@@ -1,0 +1,201 @@
+openapi: 3.1.0
+info:
+  title: Email Bounce API
+  description: Bounce-Ereignis-Verarbeitung für Deliverability-Monitoring
+  version: 1.0.0
+servers:
+  - url: https://api.example.com
+security:
+  - bearerAuth: []
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  parameters:
+    CorrelationId:
+      name: X-Correlation-Id
+      in: header
+      required: false
+      schema: { type: string, format: uuid }
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: false
+      description: Für sichere Wiederholungen bei Bounce-Verarbeitung
+      schema: { type: string, format: uuid }
+  schemas:
+    BounceIn:
+      type: object
+      required: [ type, recipient, occurredAt ]
+      additionalProperties: false
+      properties:
+        type: { type: string, enum: [HARD, SOFT] }
+        reason: { type: string, description: "Human-readable Bounce-Grund" }
+        smtpCode: { type: string, nullable: true, description: "SMTP-Response-Code" }
+        provider: { type: string, example: "all-inkl", description: "E-Mail-Provider" }
+        messageId: { type: string, description: "Message‑ID aus Header oder Provider" }
+        threadId: { type: string, format: uuid, nullable: true, description: "Zugehöriger Email-Thread" }
+        recipient: { type: string, format: email }
+        occurredAt: { type: string, format: date-time }
+    BounceProcessed:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        type: { type: string, enum: [HARD, SOFT] }
+        recipient: { type: string, format: email }
+        processed: { type: boolean }
+        suppressionApplied: { type: boolean, description: "Wurde Empfänger auf Suppression-Liste gesetzt" }
+        createdAt: { type: string, format: date-time }
+    BounceStats:
+      type: object
+      properties:
+        last24Hours:
+          type: object
+          properties:
+            total: { type: integer }
+            hard: { type: integer }
+            soft: { type: integer }
+            bounceRatePercent: { type: number }
+        last7Days:
+          type: object
+          properties:
+            total: { type: integer }
+            hard: { type: integer }
+            soft: { type: integer }
+            bounceRatePercent: { type: number }
+        topBounceReasons:
+          type: array
+          items:
+            type: object
+            properties:
+              reason: { type: string }
+              count: { type: integer }
+              percentage: { type: number }
+paths:
+  /email/bounce:
+    post:
+      summary: Bounce‑Ereignis einliefern
+      description: |
+        Nimmt Bounce-Ereignisse aus Log‑Parsing oder Provider‑Webhooks entgegen.
+        Idempotent via `Idempotency-Key` empfohlen für sichere Wiederholungen.
+
+        **Bounce-Types:**
+        - HARD: Permanente Fehler (User unknown, Domain not found)
+        - SOFT: Temporäre Fehler (Mailbox full, Temporary failure)
+      security: [ { bearerAuth: [] } ]
+      parameters:
+        - $ref: '#/components/parameters/CorrelationId'
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/BounceIn' }
+            examples:
+              hard_bounce:
+                summary: Hard Bounce - User Unknown
+                value:
+                  type: HARD
+                  reason: "550 5.1.1 User unknown"
+                  smtpCode: "550"
+                  provider: "all-inkl"
+                  messageId: "<campaign-123-user456@mail.example>"
+                  threadId: "thr_789"
+                  recipient: "nonexistent@company.com"
+                  occurredAt: "2025-09-18T08:10:00Z"
+              soft_bounce:
+                summary: Soft Bounce - Temporary Failure
+                value:
+                  type: SOFT
+                  reason: "451 4.7.1 Try again later"
+                  smtpCode: "451"
+                  provider: "all-inkl"
+                  messageId: "<followup-456-user789@mail.example>"
+                  recipient: "busy@company.com"
+                  occurredAt: "2025-09-18T08:12:00Z"
+              provider_webhook:
+                summary: Provider-Webhook ohne SMTP-Code
+                value:
+                  type: HARD
+                  reason: "Domain not found"
+                  smtpCode: null
+                  provider: "all-inkl"
+                  messageId: "<auto-234-lead123@mail.example>"
+                  threadId: null
+                  recipient: "test@invalid-domain.xyz"
+                  occurredAt: "2025-09-18T08:05:00Z"
+      responses:
+        '202':
+          description: Bounce-Ereignis akzeptiert und wird verarbeitet
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/BounceProcessed' }
+              examples:
+                processed:
+                  value:
+                    id: "bounce_123"
+                    type: "HARD"
+                    recipient: "nonexistent@company.com"
+                    processed: true
+                    suppressionApplied: true
+                    createdAt: "2025-09-18T08:10:15Z"
+        '409':
+          description: Duplikat (Idempotency‑Key bereits verarbeitet)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error: { type: string }
+                  existingBounceId: { type: string, format: uuid }
+              example:
+                error: "Bounce already processed"
+                existingBounceId: "bounce_123"
+        '400':
+          description: Ungültige Bounce-Daten
+        '401':
+          description: Nicht authentifiziert
+        '403':
+          description: Keine Berechtigung für Bounce-Verarbeitung
+  /email/bounce/stats:
+    get:
+      summary: Bounce-Statistiken
+      description: Bounce-Rate-Übersicht für Deliverability-Monitoring
+      security: [ { bearerAuth: [] } ]
+      parameters:
+        - $ref: '#/components/parameters/CorrelationId'
+        - name: provider
+          in: query
+          description: Filter nach Email-Provider
+          schema: { type: string }
+      responses:
+        '200':
+          description: Bounce-Statistiken erfolgreich abgerufen
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/BounceStats' }
+              examples:
+                current_stats:
+                  value:
+                    last24Hours:
+                      total: 23
+                      hard: 15
+                      soft: 8
+                      bounceRatePercent: 2.8
+                    last7Days:
+                      total: 89
+                      hard: 56
+                      soft: 33
+                      bounceRatePercent: 3.1
+                    topBounceReasons:
+                      - reason: "550 5.1.1 User unknown"
+                        count: 12
+                        percentage: 52.2
+                      - reason: "451 4.7.1 Try again later"
+                        count: 6
+                        percentage: 26.1
+                      - reason: "550 5.7.1 Message rejected"
+                        count: 3
+                        percentage: 13.0

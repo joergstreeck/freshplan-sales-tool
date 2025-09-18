@@ -1,0 +1,99 @@
+app:
+  env: production
+  tenant: org-123
+
+security:
+  auth:
+    type: keycloak
+    jwksUrl: https://id.example.com/realms/crm/protocol/openid-connect/certs
+    audience: crm-api
+    requiredRoles:
+      - ROLE_AGENT
+      - ROLE_MANAGER
+  cors:
+    allowedOrigins: ["https://crm.example.com"]
+    allowedMethods: ["GET","POST","PUT","PATCH","DELETE","OPTIONS"]
+    allowedHeaders: ["Authorization","Content-Type","X-Correlation-Id","Idempotency-Key"]
+
+email:
+  provider: all-inkl
+  imap:
+    host: imap.example.tld
+    port: 993
+    tls: true
+    truststorePath: /etc/ssl/keystores/allinkl-truststore.p12
+    truststorePasswordRef: vault://secrets/email/truststore-password
+    idleKeepaliveSeconds: 540   # 9 Minuten
+    maxConcurrentConnections: 3
+    fetchBatchSize: 100
+    connectTimeoutMs: 10000
+    readTimeoutMs: 20000
+  smtp:
+    host: smtp.example.tld
+    port: 465
+    tls: true
+    truststorePath: /etc/ssl/keystores/allinkl-truststore.p12
+    truststorePasswordRef: vault://secrets/email/truststore-password
+    rateLimit:
+      perMinute: 60
+      perHour: 240
+    connectTimeoutMs: 10000
+    writeTimeoutMs: 20000
+  outbox:
+    dispatcherIntervalSeconds: 10
+    maxInFlight: 20
+    retryBackoff:
+      baseMs: 2000
+      maxMs: 600000      # 10 Minuten
+      multiplier: 2.0
+      jitterPct: 30
+    deadLetterAfterAttempts: 8
+  bounce:
+    enableEndpoint: true
+    hardCodes: ["550","551","552","553","554"]
+    softCodes: ["421","450","451","452","471","472"]
+
+monitoring:
+  health:
+    synthetic:
+      imapIntervalMinutes: 5
+      smtpIntervalMinutes: 15
+      kasIntervalMinutes: 60
+  thresholds:
+    idleStallSeconds: 120
+    folderLagSeconds: 60
+    outboxFailedPctWarn: 5
+    outboxFailedPctCrit: 10
+    bounceRatePctWarn: 2
+    bounceRatePctCrit: 5
+
+websocket:
+  endpoint: /ws
+  heartbeatSeconds: 30
+  topics:
+    - lead.*
+    - email.thread.updated
+    - mention.created
+
+jobs:
+  leadReminderCron: "0 3 * * *"        # täglich 03:00
+  leadGraceCron:    "0 4 * * *"        # täglich 04:00
+  retentionCron:    "0 2 * * 0"        # wöchentlich So 02:00
+
+otel:
+  exporter: grpc
+  endpoint: http://otel-collector:4317
+  serviceName: crm-api
+
+server:
+  requestIdHeader: X-Correlation-Id
+  rateLimit:
+    enabled: true
+    windowSeconds: 60
+    maxRequestsPerWindow: 600
+
+logging:
+  level:
+    root: INFO
+    crm.email: DEBUG
+    crm.leads: DEBUG

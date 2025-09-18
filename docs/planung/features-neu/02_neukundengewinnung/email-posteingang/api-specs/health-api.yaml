@@ -1,0 +1,99 @@
+openapi: 3.1.0
+info:
+  title: Email Health API
+  description: Health-Status für IMAP/SMTP/KAS-Monitoring
+  version: 1.0.0
+servers:
+  - url: https://api.example.com
+security:
+  - bearerAuth: []
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  parameters:
+    CorrelationId:
+      name: X-Correlation-Id
+      in: header
+      required: false
+      schema: { type: string, format: uuid }
+  schemas:
+    HealthStatus:
+      type: object
+      additionalProperties: false
+      properties:
+        ok: { type: boolean }
+        imap:
+          type: object
+          properties:
+            ok: { type: boolean }
+            lastCheck: { type: string, format: date-time }
+            latencyMs: { type: integer }
+            backlogMessages: { type: integer, description: "Ungelesene/ungeholte Mails" }
+        smtp:
+          type: object
+          properties:
+            ok: { type: boolean }
+            lastCheck: { type: string, format: date-time }
+            latencyMs: { type: integer }
+            rateLimitPerHour: { type: integer }
+            lastBounceRatePct: { type: number }
+        kas:
+          type: object
+          properties:
+            ok: { type: boolean }
+            lastCheck: { type: string, format: date-time }
+            quotaUsedPct: { type: number }
+        idleKeepaliveSeconds: { type: integer }
+        folderLagSeconds: { type: integer, description: "Δ zwischen Server‑Zeit und letzter verarbeiteter Mail" }
+paths:
+  /email/accounts/{id}/health:
+    get:
+      summary: Health‑Status IMAP/SMTP/KAS
+      description: Liefert umfassenden Health-Status für alle Email-Provider-Komponenten
+      security: [ { bearerAuth: [] } ]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Email-Account-ID
+          schema: { type: string, format: uuid }
+        - $ref: '#/components/parameters/CorrelationId'
+      responses:
+        '200':
+          description: Health-Status erfolgreich abgerufen
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/HealthStatus' }
+              examples:
+                healthy:
+                  summary: Alle Systeme funktional
+                  value:
+                    ok: true
+                    imap: { ok: true, lastCheck: "2025-09-18T08:00:00Z", latencyMs: 85, backlogMessages: 0 }
+                    smtp: { ok: true, lastCheck: "2025-09-18T08:00:00Z", latencyMs: 120, rateLimitPerHour: 240, lastBounceRatePct: 0.8 }
+                    kas: { ok: true, lastCheck: "2025-09-18T07:59:00Z", quotaUsedPct: 61.2 }
+                    idleKeepaliveSeconds: 540
+                    folderLagSeconds: 3
+                degraded:
+                  summary: SMTP-Probleme erkannt
+                  value:
+                    ok: false
+                    imap: { ok: true, lastCheck: "2025-09-18T08:00:00Z", latencyMs: 85, backlogMessages: 0 }
+                    smtp: { ok: false, lastCheck: "2025-09-18T08:00:00Z", latencyMs: 2500, rateLimitPerHour: 240, lastBounceRatePct: 8.2 }
+                    kas: { ok: true, lastCheck: "2025-09-18T07:59:00Z", quotaUsedPct: 61.2 }
+                    idleKeepaliveSeconds: 540
+                    folderLagSeconds: 3
+        '503':
+          description: Kritische Systeme gestört
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/HealthStatus' }
+        '401':
+          description: Nicht authentifiziert
+        '403':
+          description: Keine Berechtigung für Health-Monitoring
+        '404':
+          description: Email-Account nicht gefunden

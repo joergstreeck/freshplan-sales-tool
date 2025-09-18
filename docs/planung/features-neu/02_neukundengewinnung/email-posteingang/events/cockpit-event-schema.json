@@ -1,0 +1,138 @@
+{
+  "eventSchemas": {
+    "lead.status.changed": {
+      "type": "object",
+      "required": ["type", "version", "id", "time", "tenantId", "source", "data"],
+      "properties": {
+        "type": { "const": "lead.status.changed" },
+        "version": { "const": "1.0" },
+        "id": { "type": "string", "format": "uuid" },
+        "time": { "type": "string", "format": "date-time" },
+        "tenantId": { "type": "string" },
+        "correlationId": { "type": "string", "format": "uuid" },
+        "source": { "const": "crm.leads" },
+        "actor": {
+          "type": "object",
+          "properties": {
+            "type": { "enum": ["system", "user"] },
+            "id": { "type": "string" }
+          }
+        },
+        "data": {
+          "type": "object",
+          "required": ["leadId", "oldStatus", "newStatus"],
+          "properties": {
+            "leadId": { "type": "string" },
+            "oldStatus": { "enum": ["REGISTERED", "ACTIVE", "REMINDER_SENT", "GRACE_PERIOD", "EXPIRED", "EXTENDED", "STOP_CLOCK"] },
+            "newStatus": { "enum": ["REGISTERED", "ACTIVE", "REMINDER_SENT", "GRACE_PERIOD", "EXPIRED", "EXTENDED", "STOP_CLOCK"] },
+            "reason": { "type": "string" },
+            "protectionUntil": { "type": "string", "format": "date-time" },
+            "graceUntil": { "type": "string", "format": "date-time", "nullable": true },
+            "stopClockActive": { "type": "boolean" }
+          }
+        }
+      },
+      "example": {
+        "type": "lead.status.changed",
+        "version": "1.0",
+        "id": "evt-3f2a6b6e-1c6e-4c6f-9f6c-8b1c1f5c1e21",
+        "time": "2025-09-18T08:15:00Z",
+        "tenantId": "org-123",
+        "correlationId": "f6a6f1aa-9a2d-4b9b-8f3c-5b7a0c9a9e2e",
+        "source": "crm.leads",
+        "actor": { "type": "system", "id": "scheduler" },
+        "data": {
+          "leadId": "lead_123",
+          "oldStatus": "ACTIVE",
+          "newStatus": "REMINDER_SENT",
+          "reason": "no_activity_60d",
+          "protectionUntil": "2026-03-18T00:00:00Z",
+          "graceUntil": null,
+          "stopClockActive": false
+        }
+      }
+    },
+    "email.thread.updated": {
+      "type": "object",
+      "required": ["type", "version", "id", "time", "tenantId", "source", "data"],
+      "properties": {
+        "type": { "const": "email.thread.updated" },
+        "version": { "const": "1.0" },
+        "id": { "type": "string", "format": "uuid" },
+        "time": { "type": "string", "format": "date-time" },
+        "tenantId": { "type": "string" },
+        "correlationId": { "type": "string", "format": "uuid" },
+        "source": { "const": "crm.email" },
+        "actor": {
+          "type": "object",
+          "properties": {
+            "type": { "enum": ["system", "user"] },
+            "id": { "type": "string" }
+          }
+        },
+        "data": {
+          "type": "object",
+          "required": ["threadId", "change"],
+          "properties": {
+            "threadId": { "type": "string" },
+            "change": { "enum": ["CLASSIFIED", "ASSIGNED", "REPLIED", "ARCHIVED"] },
+            "classification": { "enum": ["LEAD_SIGNAL", "CUSTOMER_SUPPORT", "SALES_OPPORTUNITY", "SPAM"] },
+            "assigneeUserId": { "type": "string" },
+            "lastMessageAt": { "type": "string", "format": "date-time" },
+            "matched": {
+              "type": "object",
+              "properties": {
+                "leadId": { "type": "string", "nullable": true },
+                "customerId": { "type": "string", "nullable": true }
+              }
+            }
+          }
+        }
+      },
+      "example": {
+        "type": "email.thread.updated",
+        "version": "1.0",
+        "id": "evt-9e0c0c5b-0a1f-4bf1-9b1b-1a2c3d4e5f6a",
+        "time": "2025-09-18T08:16:00Z",
+        "tenantId": "org-123",
+        "correlationId": "c84d6c2f-6f28-4a47-9c3a-7c3a4f1d8a2b",
+        "source": "crm.email",
+        "actor": { "type": "user", "id": "u_42" },
+        "data": {
+          "threadId": "thr_1",
+          "change": "CLASSIFIED",
+          "classification": "LEAD_SIGNAL",
+          "assigneeUserId": "u_42",
+          "lastMessageAt": "2025-09-18T08:15:52Z",
+          "matched": { "leadId": "lead_123", "customerId": null }
+        }
+      }
+    }
+  },
+  "additionalEvents": [
+    "lead.created",
+    "lead.reminder_due",
+    "lead.protection_expired",
+    "mention.created",
+    "email.received"
+  ],
+  "topics": {
+    "websocket": [
+      "lead.status.changed",
+      "lead.created",
+      "lead.reminder_due",
+      "lead.protection_expired",
+      "email.thread.updated",
+      "email.received",
+      "mention.created"
+    ]
+  },
+  "transport": {
+    "websocket": {
+      "endpoint": "/ws",
+      "subscriptionFormat": "?topics=lead.*,email.thread.updated,mention.created",
+      "heartbeatSeconds": 30,
+      "deduplication": "Frontend dedupliziert per event.id"
+    }
+  }
+}
