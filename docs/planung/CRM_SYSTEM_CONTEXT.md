@@ -6,10 +6,47 @@
 
 ## 🎯 Executive Summary
 
-**Mission:** Entwicklung eines intelligenten Sales Command Centers für proaktive Vertriebsunterstützung
-**Problem:** Fragmentierte Vertriebsprozesse, manuelle Workflows, fehlende Insights zwischen verschiedenen Tools und Systemen
-**Solution:** Integrierte CRM-Plattform mit Field-Based Architecture und Event-Driven Communication
-**Impact:** 3x schnellere Leads, 2x höhere Conversion, vollständige Sales-Process-Automation
+**Mission:** Entwicklung eines intelligenten Sales Command Centers für B2B-Gastronomy-Vertrieb mit Cook&Fresh® Convenience-Food-Produkten
+**Problem:** Fragmentierte Vertriebsprozesse, manuelle Workflows, fehlende Insights für komplexe B2B-Beratungsverkäufe in der Gastronomie-Branche
+**Solution:** Integrierte CRM-Plattform mit Field-Based Architecture und Event-Driven Communication speziell für FreshFoodz Gastronomy-Sales
+**Impact:** 3x schnellere Lead-Qualifizierung, 2x höhere Conversion durch ROI-basierte Beratung, vollständige Sales-Process-Automation
+
+## 🍽️ FreshFoodz Business-Kontext (B2B-Gastronomy)
+
+**Unser Geschäftsmodell:**
+- **Produkt:** Cook&Fresh® Convenience-Food mit patentierter Konservierungstechnologie
+- **Haltbarkeit:** Bis 40 Tage ohne künstliche Konservierungsstoffe
+- **Zielgruppe:** Hotels, Restaurants, Betriebsgastronomie, Vending-Konzepte
+- **Verkaufsansatz:** "Genussberater" - individuelle ROI-basierte Beratung statt Standard-Produktverkauf
+
+**Sales-Prozess-Besonderheiten:**
+```yaml
+Klassischer B2B-Produktvertrieb (nicht SaaS!):
+1. Lead-Qualifizierung → Restaurant-Typ, Größe, Küchen-Konzept, aktuelle Herausforderungen
+2. Bedarf-Analyse → Personal-Situation, Food-Waste-Probleme, Qualitäts-Anforderungen
+3. ROI-Demonstration → Kosteneinsparungs-Kalkulation (Personal, Waste, Zeit, Qualität)
+4. Produkt-Sampling → Gratis Produktkatalog + individuell zusammengestellte Sample-Boxes
+5. Test-Phase → Kunde testet Cook&Fresh® Produkte im echten Gastronomy-Betrieb (2-4 Wochen)
+6. Feedback-Analyse → Welche Produkte funktionieren? Anpassungen nötig?
+7. Individuelles Angebot → Basierend auf erfolgreich getesteten Produkten + Volumen-Kalkulation
+8. Verhandlung → Mengenrabatte, Lieferkonditionen, Zahlungsbedingungen
+9. Abschluss → Langfristige Lieferverträge (oft 12-24 Monate)
+10. Account-Management → Upselling neuer Produkte, Cross-Selling an weitere Standorte
+```
+
+**Verkaufs-Zyklen sind LANG (3-6 Monate):**
+- Gastronomie-Entscheidungen sind risikobehaftet (Menu-Qualität beeinflusst Gast-Zufriedenheit)
+- Test-Phasen erforderlich bevor Commitment
+- Oft Multiple Decision-Maker (Küchenchef, Geschäftsführer, Einkauf)
+- Saisonale Faktoren (Weihnachts-Menu vs. Sommer-Terrasse)
+
+**CRM-Anforderungen für Gastronomy-Sales:**
+- **ROI-Kalkulation:** Tool für Kosteneinsparungs-Analyse (Personal/Waste/Zeit) statt einfache Preislisten
+- **Produkt-Matching:** Intelligentes Matching - welche Cook&Fresh® Produkte passen zum Restaurant-Konzept?
+- **Sample-Management:** Tracking von versendeten Produktkatalogen und individuellen Test-Boxen
+- **Follow-up-Zyklen:** Systematische Verfolgung langer Entscheidungsprozesse mit Multiple Touchpoints
+- **Account-Management:** Bestehende Kunden für Upselling (neue Produkte) und Cross-Selling (weitere Standorte) betreuen
+- **Saisonales CRM:** Berücksichtigung saisonaler Menu-Zyklen und Gastronomy-Besonderheiten
 
 ## 🏗️ System-Philosophie: Die 3 Kernprinzipien
 
@@ -118,20 +155,27 @@ Von Tag 1 auf Wachstum, Performance und Qualität ausgelegt. API-First, <200ms R
 
 ## 👥 Zielgruppen & User Journeys
 
-### **Primary User: Sales Representative**
-**Tägliche Hauptaufgaben:**
-1. **Lead-Bearbeitung:** E-Mails triagieren → Leads qualifizieren → erste Kontaktaufnahme
-2. **Kunden-Follow-up:** Offene Verkaufschancen verfolgen → Termine vereinbaren → Angebote erstellen
-3. **Pipeline-Management:** Deals voranbringen → Abschlüsse realisieren → Cross-/Upselling identifizieren
+### **Primary User: Sales Representative ("Genussberater")**
+**Tägliche Hauptaufgaben für Gastronomy-Sales:**
+1. **Lead-Qualifizierung:** E-Mails triagieren → Restaurant-Profile analysieren → Erstkontakt mit BANT-Kriterien
+2. **ROI-Beratung:** Kosteneinsparungs-Potentiale kalkulieren → Sample-Boxen konfigurieren → individuelle Lösungen entwickeln
+3. **Test-Phase-Management:** Sample-Feedback einholen → Produkt-Anpassungen → Follow-up-Zyklen systematisch verfolgen
+4. **Account-Development:** Bestehende Kunden für neue Produkte/Standorte entwickeln → saisonale Menu-Zyklen nutzen
 
-**Typischer Workflow:**
+**Typischer Gastronomy-Sales Workflow:**
 ```
-09:00 Cockpit öffnen → Alarme prüfen → E-Mails bearbeiten
-10:00 Prioritäre Kunden kontaktieren → Termine vereinbaren
-11:00 Verkaufschancen aktualisieren → Angebote vorbereiten
-14:00 Follow-ups abarbeiten → Notizen dokumentieren
-16:00 Pipeline-Review → morgige Aufgaben planen
+09:00 Cockpit öffnen → Sample-Feedback auswerten → Test-Phasen-Status prüfen
+10:00 Restaurant-Entscheider kontaktieren → ROI-Kalkulationen erstellen
+11:00 Produkt-Matching für Interessenten → Sample-Boxen zusammenstellen
+14:00 Langfristige Follow-ups (3-6 Monate Zyklen) → Saisonale Opportunities identifizieren
+16:00 Account-Pipeline reviewen → Multiple Decision-Maker koordinieren
 ```
+
+**Gastronomy-Sales Besonderheiten:**
+- **Beratungsintensiv:** Jeder Kunde braucht individuelle ROI-Analyse statt Standard-Pitch
+- **Produktexperte:** Muss 200+ Cook&Fresh® Produkte kennen und Restaurant-Konzepten zuordnen können
+- **Langfristige Beziehungen:** 3-6 Monate Sales-Cycle, dann oft mehrjährige Lieferverträge
+- **Saisonale Expertise:** Weihnachts-Menu, Sommer-Terrasse, Event-Catering berücksichtigen
 
 ### **Secondary User: Sales Manager**
 **Wöchentliche Hauptaufgaben:**
@@ -207,23 +251,31 @@ integrations (id, name, type, config, status, created_at)
 
 ## 🔄 Business Process Flows
 
-### **Lead-to-Customer Journey**
+### **Gastronomy Lead-to-Customer Journey**
 ```
-1. Lead-Eingang (E-Mail/Web/Import)
+1. Lead-Eingang (E-Mail/Web/Messe/Referral)
    ↓
-2. Lead-Qualifizierung (BANT-Kriterien)
+2. Restaurant-Profiling (Typ, Größe, Konzept, aktuelle Herausforderungen)
    ↓
-3. Kunde-Anlage (Daten-Übernahme + Vervollständigung)
+3. BANT-Qualifizierung + Entscheider-Mapping (Küchenchef/GF/Einkauf)
    ↓
-4. Verkaufschance-Erstellung (Pipeline-Eintrag)
+4. ROI-Beratungsgespräch (Kosteneinsparungs-Potentiale analysieren)
    ↓
-5. Opportunity-Verfolgung (Aktivitäten + Follow-ups)
+5. Produkt-Matching (Cook&Fresh® Portfolio → Restaurant-Bedarf)
    ↓
-6. Angebot-Erstellung (Calculator-Integration)
+6. Sample-Box-Konfiguration (Individuelle Test-Produkte zusammenstellen)
    ↓
-7. Deal-Abschluss (Won/Lost + Dokumentation)
+7. Test-Phase-Begleitung (2-4 Wochen, Feedback sammeln)
    ↓
-8. Customer-Onboarding (Übergabe an Delivery)
+8. Feedback-Analyse + Produkt-Anpassung
+   ↓
+9. Individuelles Angebot (Basierend auf erfolgreichen Tests)
+   ↓
+10. Verhandlung (Mengen, Konditionen, Liefertermine)
+    ↓
+11. Vertrags-Abschluss (Langfristige Liefervereinbarung)
+    ↓
+12. Onboarding + Account-Management (Upselling/Cross-Selling)
 ```
 
 ### **Daily Sales Activities**

@@ -268,6 +268,65 @@ Ein Dashboard kann verschiedene Update-Strategien haben:
 
 **Strategische Frage:** Welche Reihenfolge passt besser zur Projekt-Timeline und den verfügbaren Ressourcen?
 
+---
+
+## 🤖 **DISKUSSIONSBEITRAG: ChatGPT (2025-09-18)**
+
+**Eingereicht:** 2025-09-18 via Jörg
+**Umfang:** Umfassende Architektur-Empfehlung + konkrete Implementierungs-Roadmap
+
+### **Kernempfehlungen:**
+
+#### **1. Cockpit-Philosophie: Hybrid "Command Center"**
+- Häufige Micro-Actions direkt im Cockpit (Notiz, Aufgabe, Stage-Wechsel, Angebot erstellen)
+- Komplexe Workflows per Deep-Link in Fachmodule
+- **Begründung:** Reduziert Klicks ohne Architektur-Verkomplizierung
+
+#### **2. Layout-Struktur: 3-Spalten + Gespeicherte Ansichten**
+- **Spalte 1:** "Mein Tag" (25-30%) - Alerts, Tasks, Team-Updates
+- **Spalte 2:** "Fokusliste" (40-50%) - Priorisierte Kunden mit Filtern
+- **Spalte 3:** "Aktions-Center" (25-30%) - Details + Quick-Actions + Timeline
+- **Innovation:** Gespeicherte Ansichten statt freie Widget-Layouts
+- **Begründung:** Einheitlich aber individuell nutzbar
+
+#### **3. Update-Strategie: Smart Real-Time**
+- **Baseline:** 30s Auto-Refresh (bestätigt)
+- **Live:** Neue Leads + @Mentions via WebSocket
+- **Geplant:** KPIs, Dashboard-Metriken
+- **On-Demand:** Bei User-Interaktion
+
+#### **4. Technischer Ansatz: SalesCockpitV2 + Best-of-Components**
+- SalesCockpitV2 als Shell (unsere Entscheidung bestätigt)
+- MUI-Komponenten gezielt portieren (DataGridPro, Drawer, SpeedDial)
+- Legacy CSS nur "bridgen", parallel Refactor
+
+#### **5. KPI-Definition konkretisiert:**
+- **Header-KPIs:** Tagesumsatz, Pipeline-Coverage, SLA Lead-Response-Time, Stuck Deals, Data-Quality-Score
+- **Performance-Budgets:** P95 <200ms API, <2s Initial Load
+- **Success-Metrics:** Messbare Outcomes definiert
+
+### **Roadmap-Vorschlag:**
+```
+Phase 0: API-Contracts & Thin Slices (1-2 Sprints)
+Phase 1: Cockpit Core (2-3 Sprints)
+Phase 2: Hybrid-Actions & Smart-Updates (2 Sprints)
+Phase 3: Gespeicherte Ansichten & A/B-Tests (fortlaufend)
+```
+
+### **Konkrete Arbeitsaufträge:**
+- Define "häufige Aktionen" (Product Owner)
+- KPI-Definition & SQL-Skizzen (BI/Backend)
+- API-Contracts versionieren (Backend)
+- UI-Spike: DataGridPro mit 10k-Zeilen-Test (Frontend)
+- Smart-Update-PoC: WebSocket-Integration (Platform)
+
+### **Anmerkungen zu Migration V3 & M8:**
+**ChatGPT Limitation:** Hatte keinen Zugang zu aktueller Infrastruktur-Planung
+- Erwähnt M8 Calculator als "veraltet" aber ohne Details der neuen Planung
+- V3 Migration erwähnt aber keine Integration in Roadmap
+
+---
+
 ## 🤖 Claude Planning Notes
 
 **Context für AI-Diskussion:** Diese Entscheidungen bestimmen die gesamte Cockpit-Architektur und beeinflussen alle anderen Module. Das Cockpit ist der zentrale Hub des Systems - seine Entscheidungen werden zur Referenz für alle anderen Feature-Integrationen.

@@ -8,10 +8,51 @@
 
 ## 🎯 Executive Summary (für Claude)
 
-**Mission:** Entwicklung eines intelligenten Sales Command Centers für proaktive Vertriebsunterstützung
-**Problem:** Fragmentierte Vertriebsprozesse, manuelle Workflows, fehlende Insights
-**Solution:** Integrierte CRM-Plattform mit Field-Based Architecture und Event-Driven Communication
-**Impact:** 3x schnellere Leads, 2x höhere Conversion, vollständige Sales-Process-Automation
+**Mission:** Entwicklung eines intelligenten Sales Command Centers für B2B-Gastronomy-Vertrieb mit Convenience-Food-Produkten
+**Problem:** Fragmentierte Vertriebsprozesse, manuelle Workflows, fehlende Insights für komplexe B2B-Beratungsverkäufe
+**Solution:** Integrierte CRM-Plattform mit Field-Based Architecture und Event-Driven Communication speziell für FreshFoodz Gastronomy-Sales
+**Impact:** 3x schnellere Lead-Qualifizierung, 2x höhere Conversion durch ROI-basierte Beratung, vollständige Sales-Process-Automation
+
+## 🍽️ FreshFoodz Business-Kontext (B2B-Gastronomy)
+
+**Unser Geschäftsmodell:**
+- **Produkt:** Cook&Fresh® Convenience-Food mit patentierter Konservierungstechnologie
+- **Haltbarkeit:** Bis 40 Tage ohne künstliche Konservierungsstoffe
+- **Zielgruppen:** Multi-Channel B2B-Vertrieb
+  - **Direktkunden:** Restaurants, Hotels, Betriebsgastronomie, Vending-Betreiber
+  - **Partner-Channel:** Lieferanten, Händler, Wiederverkäufer (B2B2B)
+- **Verkaufsansatz:** "Genussberater" - kanal-spezifische ROI-basierte Beratung
+
+**Sales-Prozess-Besonderheiten (Multi-Channel):**
+```yaml
+DIREKTKUNDEN (Restaurants, Hotels, Betriebsgastronomie, Vending):
+1. Lead-Qualifizierung → Betriebstyp, Größe, Konzept, Entscheidungsstruktur
+2. Bedarf-Analyse → Setup, Personal, aktuelle Herausforderungen, Volumen
+3. ROI-Demonstration → Kosteneinsparung vs. Investition (kanal-spezifisch)
+4. Produkt-Sampling → Gratis Produktkatalog + individualisierte Sample-Boxes
+5. Test-Phase → Kunde testet im echten Betrieb (2-4 Wochen)
+6. Individuelles Angebot → Basierend auf Produktmix und Volumen
+7. Verhandlung → Mengenrabatte, Lieferkonditionen, Service-Level
+8. Abschluss → Langfristige Lieferverträge + Account-Management
+
+PARTNER-CHANNEL (Lieferanten, Händler, Wiederverkäufer):
+1. Partner-Qualifizierung → Kundenbasis, Vertriebskapazität, Markt-Coverage
+2. Portfolio-Analyse → Wie passt Cook&Fresh® in deren Sortiment?
+3. Margin-Struktur → Partnerkonditionen, Support-Level, Incentives
+4. Pilot-Programm → Test mit ausgewählten End-Kunden
+5. Rollout-Planung → Schrittweise Expansion, Marketing-Support
+6. Partner-Enablement → Training, Sales-Tools, Produkt-Schulungen
+7. Performance-Tracking → Umsatz-Ziele, Market-Penetration
+8. Strategic Partnership → Langfristige Kooperation, exklusive Gebiete
+```
+
+**CRM-Anforderungen für Multi-Channel-Sales:**
+- **Channel-Management:** Direktkunden vs. Partner-Channel mit verschiedenen Prozessen
+- **ROI-Kalkulation:** Kanal-spezifische Berechnungen (Restaurant vs. Hotel vs. Partner-Margin)
+- **Produkt-Matching:** 200+ Cook&Fresh® Produkte für verschiedene Betriebstypen
+- **Sample-Management:** Tracking für End-Kunden UND Partner-Demos
+- **Partner-Enablement:** Tools und Materialien für Wiederverkäufer
+- **Territory-Management:** Gebietsschutz und Konflikt-Vermeidung zwischen Kanälen
 
 ## 🗺️ Sidebar-Navigation & Feature-Struktur
 
@@ -45,8 +86,9 @@
 ### **Q4 2025: Foundation & Core Features**
 
 #### **01_mein-cockpit** [Technical Concept](./features-neu/01_mein-cockpit/technical-concept.md)
-- **Status:** 🔄 SalesCockpitV2 vorhanden, Migration zu neuer Struktur
-- **Timeline:** Woche 1-2 | **Dependencies:** Infrastructure cleanup, Sidebar-Integration
+- **Status:** ✅ Technical Concept abgeschlossen, bereit für Implementation Phase 1
+- **Timeline:** 6-8 Wochen (Phase 1: 2-3 Wochen) | **Dependencies:** ChannelType Entity, ROI-Calculator
+- **Code-Basis:** SalesCockpitV2.tsx Production-Ready, Backend CQRS optimiert (19/19 Tests)
 
 #### **02_neukundengewinnung**
 **email-posteingang/** [Technical Concept](./features-neu/02_neukundengewinnung/email-posteingang/technical-concept.md)
@@ -152,7 +194,7 @@
 ## 🎯 Aktuelle Sprint-Woche: Q4 2025, Woche 1
 
 ### 🔥 Nächste 3 konkrete Aktionen:
-1. **01_mein-cockpit:** Technical Concept erstellen (bereit mit PLANNING_DISKUSSION.md)
+1. **01_mein-cockpit:** ✅ Technical Concept abgeschlossen → Phase 1 Implementation starten
 2. **Trigger-Texte V3.0:** ✅ **ABGESCHLOSSEN** - Vollständig implementiert
 3. **Feature-Diskussion:** Mit anderen KIs über CRM_SYSTEM_CONTEXT.md möglich
 
@@ -179,7 +221,7 @@
 CRM Master Plan V5 kompakt refactoriert nach PLANUNGSMETHODIK. Infrastructure-Koordination über Master Index etabliert, Feature-Development mit klarer Q4 2025 → Q2 2026 Timeline. Sidebar-basierte Feature-Struktur implementiert.
 
 **Nächste strategische Aktionen:**
-1. 01_mein-cockpit: Technical Concept erstellen nach AI-Diskussion
+1. 01_mein-cockpit: ✅ Technical Concept abgeschlossen → ChannelType Entity erweitern für Phase 1
 2. Test Debt Recovery starten (kritische Infrastruktur-Blockade)
 3. FC-005 Customer Management: Field-Based Architecture finalisieren
 

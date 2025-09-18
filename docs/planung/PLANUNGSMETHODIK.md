@@ -333,10 +333,45 @@ Jeder Bereich hat einen Master Index:
 - **Bei Problemen:** Anti-Patterns identifizieren und dokumentieren
 - **Bei Übergaben:** Claude Handover Sections aktualisieren
 
-## 📂 **DOKUMENTATIONS-STRATEGIE: Chaos vermeiden**
+## 📂 **DOKUMENTATIONS-STRATEGIE: Hybrid-Ansatz für Planung vs. Zukunft**
+
+### **Problem:** Manche Features sind sofort planbar, andere visionär
+### **Lösung:** 4-Ebenen-Strategie mit klarer Kategorisierung
+
+#### **🆕 NEUE REGEL: Planung vs. Zukunft trennen (seit 18.09.2025)**
+
+### **Kategorisierung-Matrix:**
+```yaml
+Sofort planbar (technical-concept.md):
+  - ✅ Technisch machbar (4-8 Wochen Aufwand)
+  - ✅ Business-Requirements klar
+  - ✅ Dependencies verfügbar
+  - ✅ Ressourcen allokierbar
+
+Zukunftsvision (/zukunft/):
+  - 🔮 Business-Logik unklar
+  - 🔮 Dependencies unsicher (andere Module erst)
+  - 🔮 Aufwand >8 Wochen oder unschätzbar
+  - 🔮 "Nice-to-have" ohne Business-Pressure
+```
+
+### **Praktisches Beispiel - Cockpit:**
+```yaml
+Technical Concept:
+  - ChannelType + Multi-Channel-Filter (✅ 2-3 Wochen)
+  - ROI-Calculator-Modal (✅ 2 Wochen)
+  - FreshFoodz-Header-KPIs (✅ 1 Woche)
+
+Zukunft-Verzeichnis:
+  - Seasonal Opportunities (🔮 Business-Logik unklar)
+  - Advanced ROI Features (🔮 nach MVP evaluieren)
+  - Partner Performance Tracking (🔮 Dependencies fehlen)
+```
+
+## 📂 **DOKUMENTATIONS-STRATEGIE: 4-Ebenen-System**
 
 ### **Problem:** Ohne klare Regeln entstehen wieder zu viele überlappende Dokumente
-### **Lösung:** 3-Ebenen-Strategie mit minimaler Redundanz
+### **Lösung:** 4-Ebenen-Strategie mit minimaler Redundanz
 
 ### **Ebene 1: CRM Master Plan V5 (Strategisch & Kompakt)**
 **Zweck:** Überblick, Timeline, Business-Ziele
@@ -362,18 +397,28 @@ Jeder Bereich hat einen Master Index:
 - Begründungen für Architektur-Entscheidungen
 - User-Stories, Workflow-Beschreibungen
 
-### **Ebene 3: Diskussions-Archiv**
-**Zweck:** Entscheidungshistorie dokumentieren
+### **Ebene 3: Diskussions-Archiv + Zukunft**
+**Zweck:** Entscheidungshistorie + visionäre Features dokumentieren
 ```
 01_mein-cockpit/
-├── technical-concept.md          ← Claude-optimiert
-├── implementation-guide.md       ← Menschenlesbar
+├── technical-concept.md          ← Claude-optimiert (✅ Sofort planbar)
+├── implementation-guide.md       ← Menschenlesbar (optional)
 ├── diskussionen/                 ← Entscheidungshistorie
 │   ├── 2025-09-18_ai-consultation.md
-│   ├── 2025-09-20_team-meeting.md
+│   ├── 2025-09-18_freshfoodz-gap-analyse.md
 │   └── decisions-summary.md
+├── zukunft/                      ← 🔮 Visionäre Features
+│   ├── seasonal-opportunities.md
+│   ├── advanced-roi-features.md
+│   └── partner-performance-tracking.md
 └── README.md                     ← Überblick + Navigation
 ```
+
+#### **🆕 Zukunft-Verzeichnis Regeln:**
+- **Zweck:** Features mit unklaren Business-Requirements
+- **Kriterien:** >8 Wochen Aufwand ODER Dependencies fehlen
+- **Review:** Quarterly überprüfen ob → technical-concept.md
+- **Format:** Gleich wie technical-concept.md aber mit 🔮 Status
 
 ### **Update-Regeln:**
 - **Master Plan:** Status + Timeline bei Sprint-Ende

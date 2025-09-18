@@ -1,119 +1,100 @@
-# 🏠 Mein Cockpit - Dashboard & Insights Module
+# 🏠 Mein Cockpit - FreshFoodz Sales Dashboard
 
-**📊 Modul Status:** 🟢 Code vorhanden, Migration erforderlich
+**📊 Status:** ✅ Technical Concept erstellt - Ready für Implementation
 **🎯 Owner:** Development Team + Product Team
-**📱 Sidebar Position:** Mein Cockpit (Hauptbereich, Position 1)
-**🔗 Related Modules:** 02_neukundengewinnung, 03_kundenmanagement, 04_auswertungen
+**📱 Position:** Hauptmodul (Cockpit = Herzstück des CRM)
+**🔗 Dependencies:** 02_neukundengewinnung, 03_kundenmanagement
 
-## 🎯 Modul-Übersicht
+---
 
-Das Cockpit ist die zentrale Schaltzentrale für Vertriebsmitarbeiter. Es bietet eine 3-Spalten-Ansicht mit tagesaktuellen Insights, priorisierten Kundenlisten und kontextbezogenen Aktionen. Das Herzstück für produktive, geführte Verkaufsprozesse.
+## 🎯 **Was ist das Cockpit?**
 
-## 🔍 ANALYSE-ERGEBNISSE (Phase 1 ✅)
+**Das zentrale Multi-Channel-B2B-Dashboard für FreshFoodz Cook&Fresh® Genussberater.**
 
-### 📋 Was haben wir bereits?
+3-Spalten-Layout für produktive Verkaufsprozesse:
+- **Spalte 1:** Genussberater-Tag (Sample-Tests, ROI-Termine, FreshFoodz-KPIs)
+- **Spalte 2:** Multi-Channel-Pipeline (Direct/Partner-Filter, Account-Übersicht)
+- **Spalte 3:** Account-Intelligence (ROI-Calculator, Channel-Info, Quick Actions)
 
-**✅ Frontend-Code (sehr umfangreich):**
-```
-frontend/src/features/cockpit/
-├── components/ (18 Dateien!)
-│   ├── SalesCockpit.tsx + SalesCockpitMUI.tsx + SalesCockpitV2.tsx
-│   ├── MyDayColumn.tsx + MyDayColumnMUI.tsx
-│   ├── FocusListColumn.tsx + FocusListColumnMUI.tsx
-│   ├── ActionCenterColumn.tsx + ActionCenterColumnMUI.tsx
-│   ├── CockpitHeader.tsx + DashboardStats.tsx
-│   ├── ActivityTimeline.tsx + ErrorBoundary.tsx
-│   └── layout/ (ResizablePanels vermutlich)
-├── hooks/useSalesCockpit.ts
-├── data/mockData.ts
-└── types/salesCockpit.ts
-```
+---
 
-**✅ Backend-API (vollständig implementiert):**
-```
-backend/src/main/java/de/freshplan/domain/cockpit/
-└── service/
-    ├── SalesCockpitService.java
-    ├── SalesCockpitQueryService.java
-    └── dto/ (5 DTOs: DashboardStatistics, Task, Alert, etc.)
-```
+## ✅ **Aktueller Stand (Code-Analyse 18.09.2025):**
 
-**✅ Dokumentation (sehr detailliert):**
-- `FC-002-M3-cockpit.md` (559 Zeilen!) - Umfassende Spezifikation
-- Multiple Test-Suites implementiert
-- Migration-Strategie bereits entwickelt
-- MUI-Migration teilweise erfolgt
+### **🚀 Production-Ready Basis:**
+- **SalesCockpitV2.tsx:** 3-Spalten MUI-Layout funktional
+- **ResizablePanels:** Professional drag-and-drop mit localStorage
+- **Backend CQRS:** SalesCockpitQueryService optimiert (19/19 Tests grün)
+- **Industry-Enum:** HOTEL, RESTAURANT, CATERING, KANTINE = 1:1 FreshFoodz-Match
 
-### 🏆 Stärken des bestehenden Codes
+### **🔧 FreshFoodz-Gap (4-5 Wochen Aufwand):**
+- **Multi-Channel:** Keine ChannelType (DIRECT/PARTNER) Unterscheidung
+- **ROI-Calculator:** Komplett fehlend (Legacy unbrauchbar)
+- **Sample-Management:** Keine Cook&Fresh®-spezifischen Workflows
+- **FreshFoodz-KPIs:** Generische CRM-Metriken statt Gastronomy-Sales
 
-1. **Vollständige 3-Spalten-Vision implementiert** ✅
-2. **Keyboard-Navigation (Alt+1/2/3)** ✅
-3. **Backend-API mit aggregierten Daten** ✅
-4. **Mobile-Responsive mit activeColumn State** ✅
-5. **React Query Integration** ✅
-6. **Umfassende Test-Coverage** ✅
-7. **Teilweise MUI-Migration** ✅
+---
 
-### ⚠️ Herausforderungen (Technical Debt)
+## 📋 **Dokumentation:**
 
-1. **Code-Duplikation:** 3 Versionen (Original, MUI, V2)
-2. **CSS-Legacy:** Mix aus CSS + MUI
-3. **Mock-Daten-Abhängigkeit:** Triage-Inbox nur mit Mocks
-4. **Fehlende Navigation-Integration:** Nicht in Sidebar eingebunden
+### **📖 Haupt-Planung:**
+- **[technical-concept.md](./technical-concept.md)** ← **MAIN DOCUMENT** (4-Phasen-Roadmap)
 
-## 🗂️ Submodule
+### **💬 Entscheidungshistorie:**
+- **[diskussionen/](./diskussionen/)** ← ChatGPT + Claude Strategiediskussionen
+- **[freshfoodz-gap-analyse.md](./diskussionen/2025-09-18_freshfoodz-gap-analyse.md)** ← Code vs. Business-Anforderungen
 
-- **dashboard-core/**: 3-Spalten-Layout + Koordination (SalesCockpit Migration)
-- **kpi-widgets/**: Dashboard-Statistiken (DashboardStats Migration)
-- **recent-activities/**: Activity Timeline (bereits vorhanden)
-- **quick-actions/**: Schnellaktionen + Context Menu
+### **🔮 Visionäre Features:**
+- **[zukunft/](./zukunft/)** ← Features mit unklaren Business-Requirements
+- **[seasonal-opportunities.md](./zukunft/seasonal-opportunities.md)** ← Saisonale Lead-Detection
+- **[advanced-roi-features.md](./zukunft/advanced-roi-features.md)** ← Erweiterte ROI-Kalkulationen
+- **[partner-performance-tracking.md](./zukunft/partner-performance-tracking.md)** ← Partner-Channel-Performance
 
-## 🔗 Dependencies
+---
 
-### Frontend Components
-- **SalesCockpit.tsx** → CockpitView.tsx (Basis für dashboard-core)
-- **MyDayColumn.tsx** → MeinTag.tsx (mit MUI, ohne Mocks)
-- **FocusListColumn.tsx** → Integration mit 03_kundenmanagement
-- **ActionCenterColumn.tsx** → ContextActions mit Calculator-Integration
+## 🛠️ **Implementation-Roadmap:**
 
-### Backend Services
-- **SalesCockpitService** (bereits produktiv, aggregierte Daten)
-- **SalesCockpitQueryService** (CQRS-Pattern implementiert)
-- **DashboardStatistics, Tasks, Alerts** (DTOs vorhanden)
+### **Phase 1: Multi-Channel Foundation (2-3 Wochen)**
+- Customer Entity um ChannelType erweitern
+- FocusListColumnMUI um Direct/Partner-Filter
+- MyDayColumnMUI für FreshFoodz-KPIs anpassen
 
-### External APIs
-- Aggregierter `/api/dashboard` Endpoint (implementiert)
-- React Query mit 30s Auto-Refresh (implementiert)
-- Local Storage für Layout-Präferenzen (implementiert)
+### **Phase 2: ROI-Calculator Integration (2 Wochen)**
+- ROI-Calculator-Modal entwickeln
+- Integration in ActionCenterColumnMUI
+- Cook&Fresh®-spezifische ROI-Logik
 
-## 🚀 Quick Start für Entwickler
+### **Phase 3: Advanced Dashboard-Features (1-2 Wochen)**
+- Channel-Intelligence erweitern
+- Performance-Optimierung
+- Integration zu anderen Modulen
 
-1. **Frontend-Demo:** `npm run dev` → `/cockpit-v2` (Proof of Concept läuft)
-2. **Backend-API:** `GET /api/dashboard` → Vollständige Daten
-3. **Tests:** `npm test cockpit` → 13 Tests implementiert
-4. **Migration-Status:** MUI-Komponenten in *MUI.tsx verfügbar
-5. **Integration:** Sidebar-Navigation muss angebunden werden
+### **Phase 4: Production-Ready (1 Woche)**
+- Testing, Polish, Performance-Tuning
+- SmartLayout-Pilot-Integration
 
-## 🤖 Claude Notes
+**Gesamtaufwand:** 6-8 Wochen (50% Einsparung durch solide Basis!)
 
-- **Reifer Code:** Cockpit ist das am weitesten entwickelte Modul!
-- **Migration Ready:** MUI-Versionen existieren, müssen konsolidiert werden
-- **API Ready:** Backend vollständig implementiert mit CQRS
-- **3-Phasen-Plan:** Migration-Strategie bereits dokumentiert
-- **Quick Win:** Kann mit 2-3 Tagen Migration in neue Struktur integriert werden
-- **Critical Path:** Cockpit ist Foundation für alle anderen Module
+---
 
-## 🔄 NÄCHSTE SCHRITTE (Phase 2: Konsolidierung)
+## 🚀 **Warum das Cockpit das Herzstück ist:**
 
-### Sofortige Aktionen
-1. **Code-Konsolidierung:** 3 Versionen zu einer finalen Version
-2. **Sidebar-Integration:** Route + Navigation einbinden
-3. **Mock-Daten entfernen:** Echte API-Integration
-4. **Clean-Architecture:** MUI + TypeScript strict mode
+### **Strategische Bedeutung:**
+- **Zentrale Schaltzentrale** für alle FreshFoodz Genussberater
+- **Multi-Channel-Koordination** (Direct Sales + Partner Channel)
+- **ROI-Beratungstools** für Cook&Fresh® Produktverkauf
+- **Performance-Dashboard** für Gastronomy-Sales-KPIs
 
-### Dependencies für Full-Feature
-- **Calculator-Integration** (M8) für ActionCenter
-- **Customer-Management** (FC-005) für Kundendetails
-- **Settings-Integration** (M7) für Layout-Präferenzen
+### **Technische Basis:**
+- **90% Infrastructure bereits da** → Fokus auf Geschäftslogik!
+- **Backend CQRS optimiert** → Performance bereits gelöst
+- **3-Spalten-Layout perfekt** für FreshFoodz Genussberater-Workflow
 
-**Das Cockpit ist unser stärkstes Asset - mit der richtigen Konsolidierung haben wir in 2-3 Tagen ein produktionsreifes Dashboard! 🚀**
+---
+
+## 🔗 **Nächste Schritte:**
+
+1. **Phase 1 starten:** ChannelType + Multi-Channel-Filter implementieren
+2. **Business-Alignment:** ROI-Calculator-Requirements mit Jörg finalisieren
+3. **Integration-Planning:** 02_neukundengewinnung + 03_kundenmanagement koordinieren
+
+**Das Cockpit wird zum FreshFoodz Cook&Fresh® Sales Command Center! 🍃🚀**
