@@ -90,15 +90,20 @@ PARTNER-CHANNEL (Lieferanten, Händler, Wiederverkäufer):
 - **Timeline:** 6-8 Wochen (Phase 1: 2-3 Wochen) | **Dependencies:** ChannelType Entity, ROI-Calculator
 - **Code-Basis:** SalesCockpitV2.tsx Production-Ready, Backend CQRS optimiert (19/19 Tests)
 
-#### **02_neukundengewinnung**
+#### **02_neukundengewinnung** [Complete Module Planning](./features-neu/02_neukundengewinnung/)
+- **Status:** ✅ Complete Planning abgeschlossen, Production-Ready Specs vorhanden
+- **Timeline:** 20-24 Wochen Complete Module Development (Phase 1: 12w, Phase 2: 8w, Phase 3: 4w)
+- **Dependencies:** all.inkl Mail-Provider, UserLeadSettings Entity
+- **Planning:** [Finale Roadmap](./features-neu/02_neukundengewinnung/diskussionen/2025-09-18_finale-entwicklungsroadmap.md) | [KI Production-Specs](./features-neu/02_neukundengewinnung/diskussionen/2025-09-18_finale-ki-specs-bewertung.md)
+
 **email-posteingang/** [Technical Concept](./features-neu/02_neukundengewinnung/email-posteingang/technical-concept.md)
-- **Status:** 📋 Geplant (FC-003 Migration) | **Timeline:** Woche 3-4 | **Dependencies:** E-Mail Service Integration
+- **Status:** 🔄 Ready für Technical Concept | **Timeline:** Phase 1 (Woche 1-12) | **Dependencies:** all.inkl Integration
 
 **lead-erfassung/** [Technical Concept](./features-neu/02_neukundengewinnung/lead-erfassung/technical-concept.md)
-- **Status:** 📋 Geplant | **Timeline:** Woche 5-6 | **Dependencies:** Customer Entity Foundation
+- **Status:** 🔄 Ready für Technical Concept | **Timeline:** Phase 1 (Woche 1-12) | **Dependencies:** Handelsvertretervertrag-Compliance
 
 **kampagnen/** [Technical Concept](./features-neu/02_neukundengewinnung/kampagnen/technical-concept.md)
-- **Status:** 📋 Geplant | **Timeline:** Q1 2026 | **Dependencies:** E-Mail Integration
+- **Status:** 🔄 Ready für Technical Concept | **Timeline:** Phase 2 (Woche 13-20) | **Dependencies:** A/B-Testing + Attribution
 
 #### **03_kundenmanagement**
 **alle-kunden/** [Technical Concept](./features-neu/03_kundenmanagement/alle-kunden/technical-concept.md)
