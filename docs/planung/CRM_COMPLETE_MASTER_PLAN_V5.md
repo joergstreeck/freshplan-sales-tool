@@ -105,18 +105,22 @@ PARTNER-CHANNEL (Lieferanten, Händler, Wiederverkäufer):
 **kampagnen/** [Technical Concept](./features-neu/02_neukundengewinnung/kampagnen/technical-concept.md)
 - **Status:** ✅ Technical Concept abgeschlossen, Multi-Touch-Attribution | **Timeline:** Phase 2 (Woche 13-20) | **Dependencies:** Email+Lead Foundation
 
-#### **03_kundenmanagement**
-**alle-kunden/** [Technical Concept](./features-neu/03_kundenmanagement/alle-kunden/technical-concept.md)
-- **Status:** 🔄 FC-005 Customer Management in Migration | **Timeline:** Woche 1-3 | **Dependencies:** Field-Based Architecture
+#### **03_kundenmanagement** [Vollständige Analyse](./features-neu/03_kundenmanagement/analyse/)
+**🏛️ Enterprise CRM-Platform Status:** ✅ Production-Ready (534 Code-Dateien analysiert)
 
-**neuer-kunde/** [Technical Concept](./features-neu/03_kundenmanagement/neuer-kunde/technical-concept.md)
-- **Status:** ✅ Grundfunktion vorhanden | **Timeline:** Woche 4-5 (Enhancement) | **Dependencies:** Customer Form Validation
+**customer-management/** Dashboard-Hub (Route: `/customer-management`)
+- **Status:** ✅ Production-Ready (389 LOC) | **Timeline:** Wartung | **Issues:** 🔴 Dashboard-Bug (falsche Route-Pfade)
 
-**verkaufschancen/** [Technical Concept](./features-neu/03_kundenmanagement/verkaufschancen/technical-concept.md)
-- **Status:** ✅ M4 Pipeline funktional | **Timeline:** Woche 2-3 (Cockpit-Integration) | **Dependencies:** Cockpit Spalte 2 Integration
+**customers/** Enterprise Customer-Liste (Route: `/customers` → `/customer-management/customers`)
+- **Status:** ✅ Production-Ready (400+276 LOC) | **Timeline:** Route-Migration | **Dependencies:** Routen-Konsolidierung
 
-**aktivitaeten/** [Technical Concept](./features-neu/03_kundenmanagement/aktivitaeten/technical-concept.md)
-- **Status:** 📋 Geplant (FC-013 Migration) | **Timeline:** Woche 6-8 | **Dependencies:** Activity Notes System
+**opportunities/** Kanban-Pipeline (Route: `/customer-management/opportunities`)
+- **Status:** ✅ Production-Ready (799 LOC Drag&Drop) | **Timeline:** Integration-Tests | **Dependencies:** Dashboard-Bug-Fix
+
+**activities/** Activity-Timeline (Route: `/customer-management/activities`)
+- **Status:** 🔴 Navigation vorhanden, kein Code | **Timeline:** Woche 6-8 | **Dependencies:** Activity-Implementation
+
+**🚨 Kritische Gaps:** Field-Backend-Mismatch (Frontend field-ready, Backend entity-based)
 
 #### **08_administration**
 **audit-dashboard/** [Technical Concept](./features-neu/08_administration/audit-dashboard/technical-concept.md)
