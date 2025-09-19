@@ -4,6 +4,21 @@
 **🎯 Zielgruppe:** KIs für qualitative Feature-Diskussionen und Architektur-Entscheidungen
 **🔗 Planungs-Übersicht:** → [CRM Master Plan V5](./CRM_COMPLETE_MASTER_PLAN_V5.md) (kompakte Planung)
 
+## 📚 **Foundation Standards (für KI-Diskussionen)**
+
+### 🎯 **Technical Standards:**
+- **[Design System](./grundlagen/DESIGN_SYSTEM.md)** - FreshFoodz CI (#94C456 Grün, #004F7B Blau, Antonio Bold, Material-UI v5+)
+- **[API Standards](./grundlagen/API_STANDARDS.md)** - OpenAPI 3.1, RBAC-Patterns, Error-Handling-Standards
+- **[Coding Standards](./grundlagen/CODING_STANDARDS.md)** - TypeScript import type, PascalCase, 80-100 chars max
+- **[Security Guidelines](./grundlagen/SECURITY_GUIDELINES.md)** - ABAC Territory-Scoping, Audit-Trail, JWT-Claims
+- **[Performance Standards](./grundlagen/PERFORMANCE_STANDARDS.md)** - P95 <200ms API, Bundle <500KB, Coverage >90%
+- **[Testing Standards](./grundlagen/TESTING_GUIDE.md)** - Given-When-Then BDD, 80% Coverage, Integration-Tests
+
+### 🏗️ **Architecture Principles:**
+- **[Component Library](./grundlagen/COMPONENT_LIBRARY.md)** - Reusable UI-Components mit FreshFoodz-Theme
+- **[Business Logic Standards](./grundlagen/BUSINESS_LOGIC_STANDARDS.md)** - Domain-Logic-Patterns für B2B-Food-Vertrieb
+- **[Development Workflow](./grundlagen/DEVELOPMENT_WORKFLOW.md)** - Git-Flow, PR-Process, CI/CD-Pipeline
+
 ## 🎯 Executive Summary
 
 **Mission:** Entwicklung eines intelligenten Sales Command Centers für B2B-Convenience-Food-Vertrieb mit Cook&Fresh® Produkten an Gastronomiebetriebe

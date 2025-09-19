@@ -155,6 +155,14 @@
 - **Testing-Suite:** → [Postman Collection](../artefakte/testing/CRM_CustomerManagement.postman_collection.json)
 - **Operations-Guide:** → [Deploy-README](../artefakte/README_customer-management_deploy.md)
 
+### **Foundation Knowledge:**
+- **Design Standards:** → [../../grundlagen/DESIGN_SYSTEM.md](../../grundlagen/DESIGN_SYSTEM.md)
+- **API Standards:** → [../../grundlagen/API_STANDARDS.md](../../grundlagen/API_STANDARDS.md)
+- **Coding Standards:** → [../../grundlagen/CODING_STANDARDS.md](../../grundlagen/CODING_STANDARDS.md)
+- **Security Guidelines:** → [../../grundlagen/SECURITY_GUIDELINES.md](../../grundlagen/SECURITY_GUIDELINES.md)
+- **Performance Standards:** → [../../grundlagen/PERFORMANCE_STANDARDS.md](../../grundlagen/PERFORMANCE_STANDARDS.md)
+- **Testing Guide:** → [../../grundlagen/TESTING_GUIDE.md](../../grundlagen/TESTING_GUIDE.md)
+
 ### **Strategic Foundation:**
 - **Platform-Analyse:** → [Vollständige Codebase-Analyse](../analyse/)
 - **KI-Diskussion:** → [Strategische Platform-Optimierung](../diskussionen/2025-09-19_KI-DISKUSSION_STRATEGISCHE_PLATFORM_OPTIMIERUNG.md)

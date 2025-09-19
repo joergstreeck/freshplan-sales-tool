@@ -246,16 +246,27 @@ CRM Master Plan V5 kompakt refactoriert nach PLANUNGSMETHODIK. Infrastructure-Ko
 **Master-Plan-Integration:**
 Einziger strategischer Master Plan. Alle Infrastructure-Pläne über Master Index koordiniert. Feature-Development folgt Sidebar-Navigation mit Technical Concepts als einzige Detail-Referenz.
 
-## 🚑 Debug & Troubleshooting (für Claude)
+## 📚 Foundation Knowledge (für Claude)
 
-### 📋 Foundation-Dokumente:
+### 🎯 **Core Standards - IMMER ZUERST LESEN:**
+- **[Design System](./grundlagen/DESIGN_SYSTEM.md)** - FreshFoodz CI (#94C456, #004F7B, Antonio Bold, Material-UI v5+)
+- **[API Standards](./grundlagen/API_STANDARDS.md)** - OpenAPI 3.1, RBAC-Patterns, Error-Handling
+- **[Coding Standards](./grundlagen/CODING_STANDARDS.md)** - TypeScript import type, PascalCase, 80-100 chars
+- **[Security Guidelines](./grundlagen/SECURITY_GUIDELINES.md)** - ABAC, Territory-Scoping, Audit-Trail
+- **[Performance Standards](./grundlagen/PERFORMANCE_STANDARDS.md)** - P95 <200ms, Bundle <500KB, Coverage >90%
+- **[Testing Guide](./grundlagen/TESTING_GUIDE.md)** - Given-When-Then, 80% Coverage, Integration-Tests
+
+### 🛠️ **Development & Quality:**
+- **[Component Library](./grundlagen/COMPONENT_LIBRARY.md)** - Reusable UI-Components
+- **[Development Workflow](./grundlagen/DEVELOPMENT_WORKFLOW.md)** - Git-Flow, PR-Process, CI/CD
+- **[Code Review Standard](./grundlagen/CODE_REVIEW_STANDARD.md)** - Qualitätssicherung
+- **[Database Migration Guide](./grundlagen/DATABASE_MIGRATION_GUIDE.md)** - Migration-Regeln & Registry
+- **[Business Logic Standards](./grundlagen/BUSINESS_LOGIC_STANDARDS.md)** - Domain-Logic-Patterns
+
+### 🚑 **Debug & Troubleshooting:**
 - **[Debug Cookbook](./grundlagen/DEBUG_COOKBOOK.md)** - Symptom-basierte Problemlösung
 - **[TypeScript Guide](./grundlagen/TYPESCRIPT_IMPORT_TYPE_GUIDE.md)** - Import Type Probleme
 - **[CI Debugging Lessons](./grundlagen/CI_DEBUGGING_LESSONS_LEARNED.md)** - Systematische Debug-Methodik
-- **[Code Review Standard](./grundlagen/CODE_REVIEW_STANDARD.md)** - Qualitätssicherung
-- **[Coding Standards](./grundlagen/CODING_STANDARDS.md)** - Komplette Code-Rules
-- **[Database Migration Guide](./grundlagen/DATABASE_MIGRATION_GUIDE.md)** - Migration-Regeln & Registry
-- **[Testing Guide](./grundlagen/TESTING_GUIDE.md)** - Vollständige Test-Strategie (E2E + Playwright)
 - **[Keycloak Setup](./grundlagen/KEYCLOAK_SETUP.md)** - Authentication Setup
 
 ### 🔄 Workflow-Dokumente:
