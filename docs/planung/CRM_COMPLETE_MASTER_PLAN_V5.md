@@ -1,10 +1,11 @@
 # 🚀 CRM Master Plan V5 - Sales Command Center (Kompakt)
 
-**📊 Plan Status:** 🔄 In Progress
+**📊 Plan Status:** 🔄 In Progress - Foundation Standards Update Required
 **🎯 Owner:** Development Team + Product Team
 **⏱️ Timeline:** Q4 2025 → Q2 2026
 **🔧 Effort:** L (Large - Multi-Sprint Project)
 **📋 Kontext:** → [CRM System Context](./CRM_SYSTEM_CONTEXT.md) (für Feature-Diskussionen)
+**🚨 URGENT:** Foundation Standards Compliance für Module 02 & 03 (KI-Anfragen bereit)
 
 ## 🎯 Executive Summary (für Claude)
 
@@ -91,9 +92,10 @@ PARTNER-CHANNEL (Lieferanten, Händler, Wiederverkäufer):
 - **Code-Basis:** SalesCockpitV2.tsx Production-Ready, Backend CQRS optimiert (19/19 Tests)
 
 #### **02_neukundengewinnung** [Complete Module Planning](./features-neu/02_neukundengewinnung/)
-- **Status:** ✅ Complete Planning abgeschlossen, Production-Ready Specs vorhanden
+- **Status:** 🚨 **Foundation Standards Update Required** (aktuell ~55% → Ziel 92%)
 - **Timeline:** 20-24 Wochen Complete Module Development (Phase 1: 12w, Phase 2: 8w, Phase 3: 4w)
 - **Dependencies:** all.inkl Mail-Provider, UserLeadSettings Entity
+- **🎯 URGENT:** [Foundation Standards Compliance Request](./features-neu/02_neukundengewinnung/diskussionen/2025-09-19_FOUNDATION_STANDARDS_COMPLIANCE_REQUEST.md) | [Reference Bundle](./features-neu/02_neukundengewinnung/diskussionen/2025-09-19_FOUNDATION_STANDARDS_REFERENCE_BUNDLE.md)
 - **Planning:** [Finale Roadmap](./features-neu/02_neukundengewinnung/diskussionen/2025-09-18_finale-entwicklungsroadmap.md) | [KI Production-Specs](./features-neu/02_neukundengewinnung/diskussionen/2025-09-18_finale-ki-specs-bewertung.md)
 
 **email-posteingang/** [Technical Concept](./features-neu/02_neukundengewinnung/email-posteingang/technical-concept.md)
@@ -106,10 +108,13 @@ PARTNER-CHANNEL (Lieferanten, Händler, Wiederverkäufer):
 - **Status:** ✅ Technical Concept abgeschlossen, Multi-Touch-Attribution | **Timeline:** Phase 2 (Woche 13-20) | **Dependencies:** Email+Lead Foundation
 
 #### **03_kundenmanagement** [Technical Concept](./features-neu/03_kundenmanagement/technical-concept.md) | [KI-Diskussion](./features-neu/03_kundenmanagement/diskussionen/)
-**🏛️ Enterprise CRM-Platform Status:** ✅ Production-Ready + 📋 Platform-Optimierung geplant
+**🏛️ Enterprise CRM-Platform Status:** ✅ Production-Ready + 🚨 **Foundation Standards Update Required**
 
 **Platform-Optimierung** [Artefakte](./features-neu/03_kundenmanagement/artefakte/)
-- **Status:** ✅ Technical Concept abgeschlossen, 13 KI-Production-Specs integriert | **Timeline:** Phase 1 Implementation-Ready | **Dependencies:** Field-Backend-Bridge + Sample-Management
+- **Status:** 🚨 **Foundation Standards Update Required** (aktuell ~55% → Ziel 92%)
+- **Timeline:** Phase 1 Implementation-Ready nach Foundation Standards Update
+- **🎯 URGENT:** [Foundation Standards Compliance Request](./features-neu/03_kundenmanagement/diskussionen/2025-09-19_FOUNDATION_STANDARDS_COMPLIANCE_REQUEST.md) | [Reference Bundle](./features-neu/03_kundenmanagement/diskussionen/2025-09-19_FOUNDATION_STANDARDS_REFERENCE_BUNDLE.md)
+- **Dependencies:** Field-Backend-Bridge + Sample-Management
 
 **customer-management/** Dashboard-Hub (Route: `/customer-management`)
 - **Status:** ✅ Production-Ready (389 LOC) + "Neuer Kunde" Button | **Timeline:** Wartung | **Issues:** 🔴 Dashboard-Bug (falsche Route-Pfade)
