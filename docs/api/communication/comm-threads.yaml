@@ -1,0 +1,86 @@
+openapi: 3.1.0
+info: { title: Communication Threads API, version: 1.0.0 }
+servers: [ { url: https://api.example.com } ]
+security: [ { bearerAuth: [] } ]
+components:
+  securitySchemes: { bearerAuth: { type: http, scheme: bearer, bearerFormat: JWT } }
+  schemas:
+    ThreadItem:
+      type: object
+      required: [id, subject, lastMessageAt, unreadCount, territory, channel]
+      properties:
+        id: { type: string, format: uuid }
+        customerId: { type: string, format: uuid }
+        subject: { type: string }
+        territory: { type: string }
+        channel: { type: string, enum: [EMAIL, PHONE, MEETING, NOTE] }
+        participants: { type: array, items: { type: string, format: email } }
+        lastMessageAt: { type: string, format: date-time }
+        unreadCount: { type: integer, minimum: 0 }
+        etag: { type: string }
+    ThreadPage:
+      type: object
+      properties:
+        items: { type: array, items: { $ref: '#/components/schemas/ThreadItem' } }
+        nextCursor: { type: string, nullable: true }
+  responses:
+    BadRequest: { $ref: './comm-common-errors.yaml#/components/responses/BadRequest' }
+    Forbidden:  { $ref: './comm-common-errors.yaml#/components/responses/Forbidden' }
+    Conflict:   { $ref: './comm-common-errors.yaml#/components/responses/Conflict' }
+    Precond:    { $ref: './comm-common-errors.yaml#/components/responses/Precond' }
+paths:
+  /api/comm/threads:
+    get:
+      summary: List threads with filtering (ABAC scoped)
+      parameters:
+        - { name: q, in: query, schema: { type: string }, description: "search in subject/participants" }
+        - { name: customerId, in: query, schema: { type: string, format: uuid } }
+        - { name: unread, in: query, schema: { type: boolean } }
+        - { name: channel, in: query, schema: { type: string, enum: [EMAIL, PHONE, MEETING, NOTE] } }
+        - { name: from, in: query, schema: { type: string, format: date-time } }
+        - { name: to, in: query, schema: { type: string, format: date-time } }
+        - { name: limit, in: query, schema: { type: integer, default: 50, minimum: 1, maximum: 200 } }
+        - { name: cursor, in: query, schema: { type: string } }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/ThreadPage' } } } }
+        '403': { $ref: '#/components/responses/Forbidden' }
+    post:
+      summary: Create new thread (shell) – mainly for manual flows
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [customerId, subject, channel]
+              properties:
+                customerId: { type: string, format: uuid }
+                subject: { type: string, maxLength: 250 }
+                channel: { type: string, enum: [EMAIL, PHONE, MEETING, NOTE] }
+                participants: { type: array, items: { type: string, format: email } }
+      responses:
+        '201': { description: Created }
+        '400': { $ref: '#/components/responses/BadRequest' }
+  /api/comm/threads/{id}/reply:
+    post:
+      summary: Reply to thread (ETag/If-Match required for concurrency)
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string, format: uuid } }
+        - { name: If-Match, in: header, required: true, schema: { type: string }, description: "ETag from ThreadItem.etag" }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [bodyText]
+              properties:
+                bodyText: { type: string }
+                cc: { type: array, items: { type: string, format: email } }
+                attachments:
+                  type: array
+                  items: { type: object, properties: { name: {type: string}, url: {type: string, format: uri} } }
+      responses:
+        '202': { description: Accepted (enqueued to outbox)" }
+        '412': { $ref: '#/components/responses/Precond' }
+        '400': { $ref: '#/components/responses/BadRequest' }

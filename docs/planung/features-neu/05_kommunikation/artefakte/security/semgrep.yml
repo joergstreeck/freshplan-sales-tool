@@ -1,0 +1,384 @@
+# Semgrep Security Rules - OWASP Top 10 Complete
+# Enterprise Security Configuration für Modul 05 Kommunikation
+
+rules:
+  # ===== A01: Broken Access Control =====
+  - id: abac-territory-validation
+    languages: [java]
+    severity: ERROR
+    message: Territory-based access control validation missing
+    pattern-either:
+      - pattern: |
+          @GET
+          public $RET $METHOD(...) {
+            ...
+            !<... $TERRITORY_CHECK ...>
+            ...
+          }
+      - pattern: |
+          repository.$METHOD(...)
+          ...
+          !<... scopeContext.getTerritories() ...>
+    fix-regex:
+      regex: '(repository\.\w+\([^)]*)\)'
+      replacement: '\1, scopeContext.getTerritories())'
+
+  - id: missing-auth-annotation
+    languages: [java]
+    severity: ERROR
+    message: REST endpoint without @RolesAllowed annotation
+    pattern: |
+      @$HTTP_METHOD
+      public $RET $METHOD(...) {
+        ...
+      }
+    pattern-not: |
+      @RolesAllowed(...)
+      @$HTTP_METHOD
+      public $RET $METHOD(...) {
+        ...
+      }
+    metavariable-regex:
+      metavariable: $HTTP_METHOD
+      regex: '(GET|POST|PUT|DELETE|PATCH)'
+
+  # ===== A02: Cryptographic Failures =====
+  - id: hardcoded-credentials
+    languages: [java]
+    severity: ERROR
+    message: Hardcoded credentials detected
+    pattern-either:
+      - pattern: |
+          String $PASSWORD = "...";
+      - pattern: |
+          password = "..."
+      - pattern: |
+          api_key = "..."
+      - pattern: |
+          secret = "..."
+    pattern-not: |
+      String $VAR = System.getenv(...)
+
+  - id: weak-encryption
+    languages: [java]
+    severity: WARNING
+    message: Weak encryption algorithm detected (use AES-256-GCM)
+    pattern-either:
+      - pattern: Cipher.getInstance("DES")
+      - pattern: Cipher.getInstance("3DES")
+      - pattern: MessageDigest.getInstance("MD5")
+      - pattern: MessageDigest.getInstance("SHA1")
+
+  # ===== A03: Injection =====
+  - id: sql-injection-jdbc
+    languages: [java]
+    severity: ERROR
+    message: SQL injection vulnerability - use prepared statements
+    pattern: |
+      Statement $STMT = $CONN.createStatement();
+      ...
+      $STMT.execute($SQL + $USER_INPUT);
+
+  - id: jpql-injection
+    languages: [java]
+    severity: ERROR
+    message: JPQL injection risk - use named parameters
+    pattern: |
+      em.createQuery("... " + $USER_INPUT + " ...")
+
+  - id: email-header-injection
+    languages: [java]
+    severity: WARNING
+    message: Email header injection risk in communication module
+    pattern: |
+      $MESSAGE.setHeader($HEADER, $USER_INPUT)
+    pattern-not: |
+      $MESSAGE.setHeader($HEADER, sanitize($USER_INPUT))
+
+  # ===== A04: Insecure Design =====
+  - id: missing-rate-limiting
+    languages: [java]
+    severity: WARNING
+    message: API endpoint without rate limiting
+    pattern: |
+      @$HTTP_METHOD
+      @Path("...")
+      public $RET $METHOD(...) {
+        ...
+      }
+    pattern-not: |
+      @RateLimited
+      @$HTTP_METHOD
+      @Path("...")
+      public $RET $METHOD(...) {
+        ...
+      }
+
+  - id: missing-sla-validation
+    languages: [java]
+    severity: WARNING
+    message: SLA rules not validated before processing
+    pattern: |
+      slaEngine.onSampleDelivered(...)
+    pattern-not: |
+      if (rules.validate(...)) {
+        slaEngine.onSampleDelivered(...)
+      }
+
+  # ===== A05: Security Misconfiguration =====
+  - id: cors-wildcard
+    languages: [java]
+    severity: ERROR
+    message: CORS wildcard origin is insecure
+    pattern: |
+      @CrossOrigin(origins = "*")
+
+  - id: verbose-error-messages
+    languages: [java]
+    severity: WARNING
+    message: Verbose error messages may leak sensitive information
+    pattern: |
+      catch (Exception $E) {
+        ...
+        return Response.status(...).entity($E.getMessage())...
+      }
+    fix: |
+      catch (Exception $E) {
+        log.error("Error occurred", $E);
+        return Response.status(...).entity("An error occurred")...
+      }
+
+  # ===== A06: Vulnerable and Outdated Components =====
+  - id: vulnerable-dependency
+    languages: [yaml]
+    severity: WARNING
+    message: Check for vulnerable dependencies in pom.xml
+    paths:
+      include:
+        - pom.xml
+    pattern-either:
+      - pattern: |
+          <version>$VERSION</version>
+    metavariable-regex:
+      metavariable: $VERSION
+      regex: '^\d+\.\d+\.\d+$'
+    message: Use dependency-check-maven plugin to scan for vulnerabilities
+
+  # ===== A07: Identification and Authentication Failures =====
+  - id: jwt-signature-verification
+    languages: [java]
+    severity: ERROR
+    message: JWT signature verification missing
+    pattern: |
+      Jwts.parser()
+        ...
+        .parse($TOKEN)
+    pattern-not: |
+      Jwts.parser()
+        ...
+        .setSigningKey(...)
+        ...
+        .parse($TOKEN)
+
+  - id: session-fixation
+    languages: [java]
+    severity: WARNING
+    message: Session should be invalidated on login
+    pattern: |
+      @POST
+      @Path("/login")
+      public $RET login(...) {
+        ...
+        !<... session.invalidate() ...>
+        ...
+      }
+
+  # ===== A08: Software and Data Integrity Failures =====
+  - id: missing-etag-validation
+    languages: [java]
+    severity: ERROR
+    message: ETag validation missing for concurrent updates
+    pattern: |
+      @PUT
+      public Response $METHOD(...) {
+        ...
+        !<... ifMatch ...>
+        ...
+      }
+
+  - id: unsigned-webhook
+    languages: [java]
+    severity: ERROR
+    message: Webhook signature verification missing
+    pattern: |
+      @POST
+      @Path("/webhook")
+      public $RET $METHOD(@Context HttpHeaders headers, ...) {
+        ...
+        !<... verifySignature ...>
+        ...
+      }
+
+  # ===== A09: Security Logging and Monitoring Failures =====
+  - id: missing-audit-log
+    languages: [java]
+    severity: WARNING
+    message: Critical operation without audit logging
+    pattern-either:
+      - pattern: |
+          @DELETE
+          public $RET $METHOD(...) {
+            ...
+            !<... auditLog ...>
+            ...
+          }
+      - pattern: |
+          @RolesAllowed("admin")
+          public $RET $METHOD(...) {
+            ...
+            !<... auditLog ...>
+            ...
+          }
+
+  - id: sensitive-data-logging
+    languages: [java]
+    severity: ERROR
+    message: Sensitive data should not be logged
+    pattern-either:
+      - pattern: log.$METHOD("... password: " + $PASSWORD)
+      - pattern: log.$METHOD("... token: " + $TOKEN)
+      - pattern: log.$METHOD("... api_key: " + $KEY)
+
+  # ===== A10: Server-Side Request Forgery (SSRF) =====
+  - id: ssrf-vulnerability
+    languages: [java]
+    severity: ERROR
+    message: SSRF vulnerability - validate URLs before making requests
+    pattern: |
+      new URL($USER_INPUT).$METHOD()
+    pattern-not: |
+      if (isAllowedUrl($USER_INPUT)) {
+        new URL($USER_INPUT).$METHOD()
+      }
+
+  # ===== Communication Module Specific =====
+  - id: email-outbox-retry-limit
+    languages: [java]
+    severity: WARNING
+    message: Email outbox should have retry limit
+    pattern: |
+      class EmailOutboxProcessor {
+        ...
+        !<... MAX_RETRIES ...>
+        ...
+      }
+
+  - id: bounce-event-validation
+    languages: [java]
+    severity: WARNING
+    message: Bounce events should be validated before processing
+    pattern: |
+      onBounceEvent($EVENT) {
+        ...
+        !<... validateBounceSignature($EVENT) ...>
+        ...
+      }
+
+  - id: thread-access-control
+    languages: [java]
+    severity: ERROR
+    message: Thread access control validation missing
+    pattern: |
+      getThread($THREAD_ID) {
+        ...
+        !<... checkThreadAccess($THREAD_ID, $USER) ...>
+        ...
+      }
+
+  # ===== ABAC/Territory Specific =====
+  - id: territory-escape-attack
+    languages: [java]
+    severity: ERROR
+    message: Territory parameter not sanitized - SQL injection risk
+    pattern: |
+      String territory = $REQUEST.getParameter("territory");
+      ...
+      query.setParameter("territory", territory);
+    pattern-not: |
+      String territory = sanitizeTerritory($REQUEST.getParameter("territory"));
+
+  - id: rls-bypass-attempt
+    languages: [sql]
+    severity: ERROR
+    message: RLS policies can be bypassed with this pattern
+    pattern: |
+      CREATE OR REPLACE FUNCTION $FUNC
+      ...
+      SECURITY DEFINER
+      ...
+    pattern-not: |
+      CREATE OR REPLACE FUNCTION $FUNC
+      ...
+      SECURITY DEFINER
+      ...
+      -- RLS explicitly checked
+
+  # ===== DSGVO Compliance =====
+  - id: personal-data-retention
+    languages: [java]
+    severity: WARNING
+    message: Personal data retention policy not enforced
+    pattern: |
+      class $ENTITY {
+        ...
+        String email;
+        ...
+        !<... @DataRetention ...>
+        ...
+      }
+
+  - id: data-anonymization-missing
+    languages: [java]
+    severity: WARNING
+    message: Personal data exported without anonymization
+    pattern: |
+      export($DATA) {
+        ...
+        $DATA.getEmail()
+        ...
+        !<... anonymize ...>
+        ...
+      }
+
+# Custom test patterns for Communication Module
+test-patterns:
+  - name: test-abac-validation
+    test: |
+      // Should trigger: Missing territory check
+      @GET
+      public List<Thread> getThreads() {
+        return repository.findAll();
+      }
+
+  - name: test-jwt-validation
+    test: |
+      // Should trigger: JWT without signature verification
+      String token = request.getHeader("Authorization");
+      Claims claims = Jwts.parser().parse(token);
+
+  - name: test-sql-injection
+    test: |
+      // Should trigger: SQL injection risk
+      String query = "SELECT * FROM threads WHERE territory = '" + userTerritory + "'";
+      em.createQuery(query);
+
+# Severity levels configuration
+severity-levels:
+  ERROR:
+    action: block-pr
+    notify: security-team
+  WARNING:
+    action: comment-pr
+    notify: dev-team
+  INFO:
+    action: log-only

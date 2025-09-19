@@ -1,0 +1,12 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: comm
+resources:
+  - ../../base
+images:
+  - name: ghcr.io/owner/freshplan-comm-backend
+    newName: ghcr.io/{{ github.repository_owner }}/freshplan-comm-backend
+    newTag: latest
+  - name: ghcr.io/owner/freshplan-comm-frontend
+    newName: ghcr.io/{{ github.repository_owner }}/freshplan-comm-frontend
+    newTag: latest
