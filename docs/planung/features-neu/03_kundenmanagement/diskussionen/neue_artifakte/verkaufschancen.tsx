@@ -1,0 +1,2 @@
+import React from 'react'; import OpportunityDashboard from '../components/customer/OpportunityDashboard';
+export default function VerkaufschancenRoute(){ const kpis={roiPipeline:0,demoToClosePct:0,seasonalOpen:0}; return <OpportunityDashboard kpis={kpis}/>; }

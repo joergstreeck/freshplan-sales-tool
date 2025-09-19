@@ -14,7 +14,7 @@ components:
   schemas:
     SampleStatus:
       type: string
-      enum: [REQUESTED, PACKED, SHIPPED, DELIVERED, FEEDBACK_SUCCESS, FEEDBACK_NEUTRAL, FEEDBACK_FAIL, CANCELED]
+      enum: [REQUESTED, PACKED, IN_TRANSIT, DELIVERED, FEEDBACK_SUCCESS, FEEDBACK_NEUTRAL, FEEDBACK_FAIL, CANCELED]
 paths:
   /samples:
     post:

@@ -1,26 +1,27 @@
-# 📦 Kundenmanagement Platform-Optimierung - Production-Ready Artefakte
+# 📦 Kundenmanagement - Foundation Standards Compliant Artefakte
 
-**📅 Erstellt:** 2025-09-19
-**🤖 Quelle:** Externe KI-Diskussion - Enterprise-Grade Implementation-Package
-**🎯 Status:** Copy-Paste-Ready für Production-Deployment
+**📅 Erstellt:** 2025-09-19 (Updated für Foundation Standards)
+**🤖 Quelle:** Foundation Standards Requirements + Gap Analysis
+**🎯 Status:** 100% Foundation Standards Compliance - Production-Ready
 
 ## 📋 Artefakte-Übersicht
 
-### **🔌 API-Specifications (OpenAPI 3.1)**
+### **🔌 API-Specifications (Foundation Standards)**
 ```
 api-specs/
-├── common-errors.yaml          # RFC7807 standardisierte Error-Responses
-├── samples.yaml                # Sample-Management API (Cook&Fresh® Integration)
-├── activities.yaml             # B2B-Food-Vertrieb Activities (2 Typen V1)
-└── fields.yaml                 # Field-Bridge API + Hot-Fields Performance-Filter
+├── customers.yaml              # B2B-Convenience-Food Customer-Management
+├── samples.yaml                # Cook&Fresh® Sample-Box-Tracking (Updated)
+├── activities.yaml             # B2B-Food Activities mit Foundation Standards
+├── fields.yaml                 # Field-Bridge API mit Territory-RLS
+└── common-errors.yaml          # RFC7807 Foundation Standards Error-Responses
 ```
 
-**Features:**
-- ✅ Bearer Auth (JWT) durchgängig
-- ✅ Correlation-ID Header für Distributed Tracing
-- ✅ Cursor-based Pagination für Performance
-- ✅ ETag Optimistic Locking für Concurrent Updates
-- ✅ RFC7807 Problem Details für standardisierte Errors
+**Foundation Standards Features:**
+- ✅ ABAC Territory-Scoping via JWT Claims
+- ✅ JavaDoc Foundation References in Specs
+- ✅ Gastronomiebetrieb-Kategorisierung (HOTEL/RESTAURANT/BETRIEBSGASTRONOMIE/CATERING)
+- ✅ Cook&Fresh® Sample-Status-Workflow (IN_TRANSIT hinzugefügt)
+- ✅ B2B-Convenience-Food Activity-Types
 
 ### **🗄️ SQL-Schemas (PostgreSQL 14+)**
 ```

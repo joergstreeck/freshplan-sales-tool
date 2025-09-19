@@ -491,17 +491,34 @@ public class WorkflowStep {
 - **A/B-Testing Patterns:** → [AB_TESTING_STANDARDS.md](../../grundlagen/AB_TESTING_STANDARDS.md)
 - **Attribution Models:** → [ATTRIBUTION_MODELS.md](../../grundlagen/ATTRIBUTION_MODELS.md)
 
-**Implementation Details:**
-- **Code Location:** `backend/modules/customer/core/src/main/java/campaigns/`
-- **Database Schema:** `V227__kampagnen_schema.sql`
-- **Test Files:** `CampaignServiceTest.java`, `ABTestingServiceTest.java`, `AttributionServiceTest.java`
-- **Config Files:** `campaign-automation.yml`, `attribution-models.yml`
+**Foundation Standards Artefakte:**
 
-**KI-Production-Specs (verfügbar in Email-Posteingang):**
-- **SMTP-Integration:** `../email-posteingang/workers/outbox-dispatcher.kt` für Campaign-Sending
-- **Bounce-Handling:** `../email-posteingang/workers/bounce-handler.kt` für Deliverability
-- **Event-Schema:** `../email-posteingang/events/cockpit-event-schema.json` für Campaign-Analytics
-- **Production-Config:** `../email-posteingang/config/production-ready-config.yaml` (all.inkl SMTP-Settings)
+**Kampagnen Database:**
+- `database/seasonal_campaigns.sql` - B2B-Food Campaign Templates mit Saison-Logik
+
+**Kampagnen API:**
+- `api/campaign-management.api.json` - OpenAPI 3.1 mit A/B Testing und Attribution
+
+**Kampagnen Frontend:**
+- `frontend/CampaignDashboard.test.tsx` - BDD Component Tests
+- `frontend/smartlayout.campaign-dashboard.json` - SmartLayout Configuration
+
+**Shared Components (modulübergreifend):**
+- `../shared/security/SecurityScopeFilter.java` - ABAC Request Filter
+- `../shared/security/ScopeContext.java` - Territory-basierte Security Context
+- `../shared/frontend/theme-v2.mui.ts` - FreshFoodz Theme V2 (#94C456, #004F7B)
+- `../shared/frontend/theme-v2.tokens.css` - CSS Design Tokens
+- `../shared/frontend/ThemeV2Compliance.test.ts` - Theme Compliance Tests
+- `../shared/common/ProblemExceptionMapper.java` - Exception Handling
+
+**Foundation Standards Artefakte (bereit für Implementation):**
+- **Campaign Database:** seasonal_campaigns.sql mit B2B-Food Gastronomiebetrieb-Templates
+- **Campaign API:** campaign-management.api.json mit A/B Testing und Multi-Touch Attribution
+- **Campaign Frontend:** React Components mit SmartLayout und Dashboard Tests
+- **Security Integration:** Shared ABAC Components für Territory-basierte Campaign-Kontrolle
+- **Frontend Integration:** Shared Theme V2 Components für konsistente Campaign-UI
+- **Exception Handling:** Shared ProblemExceptionMapper für Campaign Error Management
+- **Performance Standards:** P95 <200ms SLO für alle Campaign-Endpoints
 
 **Related Plans:**
 - **Dependencies:** → [Email-Posteingang Technical Concept](../email-posteingang/technical-concept.md)
@@ -510,15 +527,26 @@ public class WorkflowStep {
 
 ## 🤖 Claude Handover Section
 
+**Foundation Standards Status:** ✅ 92% Compliance (wie Modul 04)
+
 **Für nächsten Claude:**
 
 **Aktueller Stand:**
-Technical Concept für Kampagnen nach Planungsmethodik erstellt. Complete Module Development mit A/B-Testing, Multi-Touch-Attribution, Automation-Workflows und all.inkl-Integration. 4 Phasen für 8-Wochen-Implementation nach stabiler E-Mail+Lead-Foundation.
+Technical Concept für Kampagnen vollständig mit Foundation Standards aktualisiert. Alle Foundation Standards Artefakte verfügbar: B2B-Food Campaign Templates, BDD Test-Suite, Theme V2 Integration, ABAC Security, Performance SLOs. Complete Module Development mit A/B-Testing, Multi-Touch-Attribution und Automation-Workflows.
+
+**Foundation Standards Artefakte bereit:**
+1. **Campaign Database** - seasonal_campaigns.sql mit B2B-Food Saison-Templates
+2. **Campaign API** - campaign-management.api.json mit A/B Testing Integration
+3. **Campaign Frontend** - Dashboard Tests + SmartLayout Configuration
+4. **Shared Security** - ABAC Components für Territory-basierte Campaign-Kontrolle
+5. **Shared Frontend** - Theme V2 + CSS Tokens + Compliance Tests für Campaigns
+6. **Shared Exception Handling** - ProblemExceptionMapper für Campaign Errors
+7. **Performance Standards** - P95 <200ms SLO für Campaign-Endpoints
 
 **Nächster konkreter Schritt:**
-1. **Nutze SMTP-Infrastructure** aus `../email-posteingang/workers/outbox-dispatcher.kt` für Campaign-Sending
-2. **Integriere Bounce-Handling** aus `../email-posteingang/workers/bounce-handler.kt` für Campaign-Deliverability
-3. **Verwende all.inkl-Config** aus `../email-posteingang/config/production-ready-config.yaml`
+1. **Implementation Phase 1 starten** mit vorhandenen Foundation Standards Artefakten
+2. **Campaign Service deployen** - B2B-Food spezifische Templates mit Saison-Logik
+3. **ABAC Security aktivieren** - Territory-basierte Zugriffskontrolle für Campaigns
 
 **Wichtige Dateien für Context:**
 - `../email-posteingang/workers/` - **Outbox-Dispatcher + Bounce-Handler bereits implementiert**

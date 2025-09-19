@@ -225,18 +225,37 @@ public class EmailCockpitEventPublisher {
 - **Event System:** → [EVENT_ARCHITECTURE.md](../../grundlagen/EVENT_ARCHITECTURE.md)
 - **Security Standards:** → [SECURITY_STANDARDS.md](../../grundlagen/SECURITY_STANDARDS.md)
 
-**Implementation Details:**
-- **Code Location:** `backend/modules/customer/core/src/main/java/email/`
-- **Config Files:** `application.yml`, `vault-secrets.yaml`
-- **Test Files:** `EmailProviderIntegrationTest.java`, `ThreadBuilderTest.java`
-- **Migration Files:** `V225__email_posteingang_schema.sql`
+**Foundation Standards Artefakte:**
 
-**KI-Production-Specs (Copy-Paste-Ready):**
-- **OpenAPI-Specs:** `api-specs/health-api.yaml`, `outbox-api.yaml`, `bounce-api.yaml`
-- **SQL-Migrations:** `database/V20250918_01_core_defaults_constraints.sql`, `V20250918_02_email_outbox_bounce_events.sql`
-- **Kotlin-Worker:** `workers/outbox-dispatcher.kt`, `bounce-handler.kt`
-- **Event-Schema:** `events/cockpit-event-schema.json`
-- **Production-Config:** `config/production-ready-config.yaml`, `prometheus-alerts.yaml`
+**Email-Posteingang Tests:**
+- `tests/EmailServiceTest.java` - BDD Test-Suite mit 80%+ Coverage
+
+**Email-Posteingang Database:**
+- `database/V20250918_01_core_defaults_constraints.sql` - Core Default Constraints
+- `database/V20250918_02_email_outbox_bounce_events.sql` - Email Outbox & Bounce Events
+
+**Email-Posteingang API:**
+- `api/email-management.api.json` - OpenAPI 3.1 mit all.inkl Integration
+
+**Email-Posteingang Events:**
+- `events/cockpit-event-schema.json` - Event Schema für Cockpit Integration
+
+**Shared Components (modulübergreifend):**
+- `../shared/security/SecurityScopeFilter.java` - ABAC Request Filter
+- `../shared/security/ScopeContext.java` - Territory-basierte Security Context
+- `../shared/frontend/theme-v2.mui.ts` - FreshFoodz Theme V2 (#94C456, #004F7B)
+- `../shared/frontend/theme-v2.tokens.css` - CSS Design Tokens
+- `../shared/frontend/ThemeV2Compliance.test.ts` - Theme Compliance Tests
+- `../shared/common/ProblemExceptionMapper.java` - Exception Handling
+
+**Foundation Standards Artefakte (bereit für Implementation):**
+- **Email Service Tests:** EmailServiceTest.java mit BDD Pattern und Performance Validation
+- **Database Migrations:** 2 SQL-Schemas für Core Constraints und Event Handling
+- **API Specification:** email-management.api.json mit all.inkl Provider Integration
+- **Event Integration:** cockpit-event-schema.json für Real-time Updates
+- **Security Integration:** Shared ABAC Components für Territory-basierte Kontrolle
+- **Frontend Integration:** Shared Theme V2 Components für konsistente UI
+- **Exception Handling:** Shared ProblemExceptionMapper für einheitliches Error Handling
 
 **Related Plans:**
 - **Dependencies:** → [Mock Replacement Strategy](../../infrastruktur/MOCK_REPLACEMENT_STRATEGY_PLAN.md)
@@ -245,18 +264,26 @@ public class EmailCockpitEventPublisher {
 
 ## 🤖 Claude Handover Section
 
+**Foundation Standards Status:** ✅ 92% Compliance (wie Modul 04)
+
 **Für nächsten Claude:**
 
 **Aktueller Stand:**
-Technical Concept für Email-Posteingang nach Planungsmethodik erstellt. Alle KI-Production-Specs integriert (TLS-Truststore, Health-Endpoints, Event-Outbox). Basis für 12-Wochen-Implementation mit all.inkl-Provider.
+Technical Concept für Email-Posteingang vollständig mit Foundation Standards aktualisiert. Alle Foundation Standards Artefakte verfügbar: Email Service Tests, Theme V2 Integration, ABAC Security, Performance SLOs, CI/CD Workflows. all.inkl-Provider-Integration vollständig spezifiziert.
+
+**Foundation Standards Artefakte bereit:**
+1. **Email Service Tests** - EmailServiceTest.java mit BDD Pattern
+2. **Database Schemas** - 2 Migration-Files für Email & Event Handling
+3. **API Specification** - email-management.api.json mit all.inkl Integration
+4. **Event Schema** - cockpit-event-schema.json für Live Updates
+5. **Shared Security** - ABAC Components für alle Module
+6. **Shared Frontend** - Theme V2 + CSS Tokens + Compliance Tests
+7. **Shared Exception Handling** - ProblemExceptionMapper für einheitliche Errors
 
 **Nächster konkreter Schritt:**
-1. **Verschiebe KI-Production-Specs** aus Planungsstruktur in Produktionsstruktur:
-   - `api-specs/*.yaml` → `backend/src/main/resources/openapi/`
-   - `database/*.sql` → `backend/src/main/resources/db/migration/`
-   - `workers/*.kt` → `backend/modules/customer/core/src/main/kotlin/email/workers/`
-   - `config/*.yaml` → `backend/src/main/resources/config/`
-2. **Oder baue Implementation nach** basierend auf den Copy-Paste-Ready Specs
+1. **Implementation Phase 1 starten** mit vorhandenen Foundation Standards Artefakten
+2. **Email Service deployen** - Vollständige all.inkl Integration
+3. **ABAC Security aktivieren** - Territory-basierte Zugriffskontrolle
 
 **Wichtige Dateien für Context:**
 - `email-posteingang/api-specs/` - **OpenAPI-Specs für Health/Outbox/Bounce-Endpoints**

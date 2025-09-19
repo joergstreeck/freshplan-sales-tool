@@ -1,0 +1,363 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Lead Management API - Foundation Standards Compliant",
+    "version": "1.1.0",
+    "description": "Enterprise-grade Lead Management API with ABAC security and Foundation Standards compliance for B2B food industry workflows",
+    "contact": {
+      "name": "Backend Team",
+      "url": "https://docs.freshplan.de/api/leads"
+    },
+    "license": {
+      "name": "FreshPlan Enterprise License"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.freshplan.de/v1",
+      "description": "Production server"
+    },
+    {
+      "url": "https://api-staging.freshplan.de/v1",
+      "description": "Staging server"
+    }
+  ],
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "Keycloak OIDC JWT token with territory-based ABAC claims"
+      }
+    },
+    "schemas": {
+      "LeadCreateRequest": {
+        "type": "object",
+        "required": ["name", "territory"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 200,
+            "pattern": "^[a-zA-Z0-9\\s\\-\\.äöüÄÖÜß]+$",
+            "description": "Company name for B2B food industry leads",
+            "example": "Restaurant Zur Alten Post"
+          },
+          "territory": {
+            "type": "string",
+            "enum": ["nord", "sued", "ost", "west", "BER", "HAM", "MUC"],
+            "description": "Territory assignment for ABAC access control",
+            "example": "BER"
+          },
+          "contactEmail": {
+            "type": "string",
+            "format": "email",
+            "description": "Primary contact email for lead communication",
+            "example": "info@restaurant-post.de"
+          },
+          "phone": {
+            "type": "string",
+            "pattern": "^\\+?[1-9]\\d{1,14}$",
+            "description": "Contact phone number (international format)",
+            "example": "+49 30 12345678"
+          },
+          "industry": {
+            "type": "string",
+            "enum": ["restaurant", "hotel", "catering", "cafe", "kantine", "gastro_chain"],
+            "description": "B2B food industry categorization",
+            "example": "restaurant"
+          }
+        }
+      },
+      "LeadResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique lead identifier",
+            "example": "550e8400-e29b-41d4-a716-446655440000"
+          },
+          "name": {
+            "type": "string",
+            "description": "Company name",
+            "example": "Restaurant Zur Alten Post"
+          },
+          "territory": {
+            "type": "string",
+            "description": "Territory assignment",
+            "example": "BER"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["NEW", "QUALIFIED", "CONTACTED", "PROPOSAL_SENT", "WON", "LOST"],
+            "description": "Lead status in sales pipeline",
+            "example": "NEW"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Lead creation timestamp (ISO 8601)",
+            "example": "2025-09-19T10:30:00Z"
+          }
+        }
+      },
+      "LeadSearchRequest": {
+        "type": "object",
+        "properties": {
+          "territory": {
+            "type": "string",
+            "description": "Filter by territory (ABAC enforced)"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["NEW", "QUALIFIED", "CONTACTED", "PROPOSAL_SENT", "WON", "LOST"],
+            "description": "Filter by lead status"
+          },
+          "industry": {
+            "type": "string",
+            "enum": ["restaurant", "hotel", "catering", "cafe", "kantine", "gastro_chain"],
+            "description": "Filter by B2B food industry type"
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100,
+            "default": 20,
+            "description": "Maximum number of results (performance optimization)"
+          },
+          "offset": {
+            "type": "integer",
+            "minimum": 0,
+            "default": 0,
+            "description": "Pagination offset"
+          }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "description": "Error type identifier"
+          },
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Error occurrence timestamp"
+          }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/api/leads": {
+      "post": {
+        "summary": "Create new lead with ABAC territory validation",
+        "description": "Creates a new B2B food industry lead with territory-based access control validation. Follows Foundation Standards for performance (P95 <200ms) and security (ABAC pattern).",
+        "tags": ["Lead Management"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LeadCreateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Lead created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LeadResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Territory access denied (ABAC enforcement)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Search leads with ABAC territory filtering",
+        "description": "Retrieves leads with territory-based access control (ABAC) and performance optimization (P95 <200ms SLO). Results are automatically filtered by user's territory claims.",
+        "tags": ["Lead Management"],
+        "parameters": [
+          {
+            "name": "territory",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filter by territory (automatically enforced via ABAC)"
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": ["NEW", "QUALIFIED", "CONTACTED", "PROPOSAL_SENT", "WON", "LOST"]
+            },
+            "description": "Filter by lead status"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            },
+            "description": "Maximum results (performance optimization)"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0
+            },
+            "description": "Pagination offset"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Leads retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/LeadResponse"
+                      }
+                    },
+                    "total": {
+                      "type": "integer",
+                      "description": "Total number of leads (ABAC filtered)"
+                    },
+                    "limit": {
+                      "type": "integer",
+                      "description": "Applied limit"
+                    },
+                    "offset": {
+                      "type": "integer",
+                      "description": "Applied offset"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid query parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/leads/{id}": {
+      "get": {
+        "summary": "Get lead by ID with ABAC validation",
+        "description": "Retrieves a specific lead by ID with territory-based access control (ABAC) validation. Follows Foundation Standards for performance and security.",
+        "tags": ["Lead Management"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Lead unique identifier"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lead retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LeadResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Territory access denied (ABAC enforcement)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Lead not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "x-foundation-standards": {
+    "design-system": "FreshFoodz Theme V2 - #94C456 primary, #004F7B secondary",
+    "security": "ABAC pattern with territory-based JWT claims",
+    "performance": "P95 <200ms SLO for all endpoints",
+    "testing": "80%+ coverage with BDD Given-When-Then pattern",
+    "documentation": "Foundation Standards references in all components"
+  },
+  "x-b2b-food-features": {
+    "industry-categories": ["restaurant", "hotel", "catering", "cafe", "kantine", "gastro_chain"],
+    "territory-mapping": "Regional B2B food distribution territories",
+    "cook-fresh-integration": "Ready for product sample campaign integration"
+  }
+}

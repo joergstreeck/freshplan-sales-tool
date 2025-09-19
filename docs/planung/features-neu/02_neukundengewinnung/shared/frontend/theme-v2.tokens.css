@@ -1,0 +1,47 @@
+/* Design System V2 – FreshFoodz CI (nicht hardcoden!) */
+:root {
+  --color-primary-50:  #EDF6E5;
+  --color-primary-100: #D8EEC7;
+  --color-primary-200: #C4E6A8;
+  --color-primary-300: #AFDE8A;
+  --color-primary-400: #9BD66B;
+  --color-primary-500: #94C456; /* Primärgrün */
+  --color-primary-600: #7CAA48;
+  --color-primary-700: #648F3B;
+  --color-primary-800: #4C752D;
+  --color-primary-900: #345B1F;
+
+  --color-secondary-50:  #E1ECF2;
+  --color-secondary-100: #C4DAE6;
+  --color-secondary-200: #8AB4CC;
+  --color-secondary-300: #5A95B7;
+  --color-secondary-400: #2C759F;
+  --color-secondary-500: #004F7B; /* Dunkelblau */
+  --color-secondary-600: #00496F;
+  --color-secondary-700: #003B59;
+  --color-secondary-800: #002D43;
+  --color-secondary-900: #001E2C;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.06);
+  --shadow-md: 0 4px 10px rgba(0,0,0,0.08);
+  --shadow-lg: 0 10px 24px rgba(0,0,0,0.12);
+
+  --font-sans: 'Poppins', system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, 'Helvetica Neue', Arial, 'Noto Sans', 'Apple Color Emoji', 'Segoe UI Emoji';
+  --font-display: 'Antonio', var(--font-sans);
+
+  --focus-ring: 0 0 0 3px rgba(148,196,86,0.6);
+}
+
+/* Focus sichtbar (WCAG 2.1 AA) */
+:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+/* Buttons */
+.button-primary {
+  background: var(--color-secondary-500);
+  color: #fff;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+}

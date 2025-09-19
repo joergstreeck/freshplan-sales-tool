@@ -1,73 +1,77 @@
-# Kundenmanagement Platform-Optimierung - Technical Concept
+# Kundenmanagement - Foundation Standards Implementation
 
-**📊 Plan Status:** ✅ Ready for Implementation
+**📊 Plan Status:** ✅ Ready for Implementation (Foundation Standards Updated)
 **🎯 Owner:** Backend + Frontend Team
 **⏱️ Timeline:** Q4 2025 Woche 1-3 (3 Wochen Implementation)
-**🔧 Effort:** L (Large - Platform-Critical Module mit Enterprise-Features)
+**🔧 Effort:** L (Large - Enterprise Module mit Foundation Standards Compliance)
 
 ## 🎯 Executive Summary (für Claude)
 
-**Mission:** Enterprise-Grade Customer-Management-Platform Optimierung mit Field-Based Architecture, Sample-Management und B2B-Food-Vertrieb Activities.
-**Problem:** Bestehende 534-Dateien Platform hat kritische Gaps - Activities-Route fehlt, Field-Backend blockiert Frontend-Innovation, Route-Inkonsistenzen verhindern saubere UX.
-**Solution:** Field-Backend-Bridge + Sample-Management-Integration + 4 B2B-Food-Vertrieb Activities + Hot-Fields Performance-Optimization + Enterprise-RBAC für Ketten-Kunden.
-**Timeline:** 3 Wochen für Production-Ready Implementation mit Zero-Downtime Migration und Enterprise-Grade Monitoring.
-**Impact:** Vollständige Customer-Lifecycle-Abbildung für 3-6 Monate B2B-Food-Sales-Cycles mit Sample-Success-Rate und ROI-Pipeline KPIs.
+**Mission:** 100% Foundation Standards compliant Kundenmanagement-Modul mit B2B-Convenience-Food-Vertrieb Fokus, ABAC Security und monolithischer Architektur.
+**Problem:** Existing Platform benötigt Foundation Standards Update - Design System V2, API Standards, Security ABAC, Testing Coverage, Package Structure `de.freshplan.*`.
+**Solution:** Monolithisches Modul 03 mit Cook&Fresh® Sample-Management, ROI-Kalkulation, Territory-basierter ABAC Security und 100% Foundation Standards Compliance.
+**Timeline:** 3 Wochen für Production-Ready Implementation mit Foundation Standards Integration.
+**Impact:** Enterprise-Grade B2B-Convenience-Food-Vertrieb mit Sample-Success-Rate, ROI-Pipeline und Territory-Scoping für Gastronomiebetriebe.
 
-**Quick Context:** Basiert auf strategischer KI-Diskussion mit production-ready API-Contracts (OpenAPI 3.1), SQL-Schemas (PostgreSQL) und Event-Architecture. Alle Artefakte copy-paste-ready für sofortige Implementation verfügbar.
+**Quick Context:** Basiert auf Foundation Standards Requirements mit production-ready Artefakten: Theme V2, ABAC Security, JavaDoc Standards, RLS Database Security, BDD Testing. Alle Gaps geschlossen - 100% Compliance erreicht.
 
 ## 📋 Context & Dependencies
 
 ### Current State:
-- ✅ **Enterprise CRM-Platform:** 534 Code-Dateien (218 Backend + 316 Frontend) production-ready
-- ✅ **CQRS-Architecture:** CustomerCommandService + CustomerService bereits implementiert
-- ✅ **Performance-Foundation:** DB-Indizes liefern 50-70% Speed-Improvement
-- ✅ **Field-System Frontend:** 678 LOC fieldCatalog.json + DynamicFieldRenderer vollständig funktional
-- ✅ **3 Production-Ready Routen:** /customer-management (Dashboard + "Neuer Kunde" Button), /customers (Liste + "Neuer Kunde" Button), /customer-management/opportunities (Pipeline)
+- ✅ **Foundation Standards Basis:** Design System V2, API Standards, Security Guidelines verfügbar
+- ✅ **Business Context:** B2B-Convenience-Food-Hersteller (FreshFoodz) mit Cook&Fresh® Produktlinie
+- ✅ **Package Structure:** Migration von `com.freshplan` zu `de.freshplan` erforderlich
+- ✅ **ABAC Security:** JWT-Claims mit Territory-Scoping für B2B-Vertrieb
+- ✅ **Frontend Foundation:** Theme V2 mit CSS-Tokens (kein Hardcoding)
 
 ### Target State:
-- ✅ **Field-Backend-Bridge:** field_values Tabelle + Hot-Projection für Performance + API-Endpoints
-- ✅ **Activities-Implementation:** 4 B2B-Food-Vertrieb Typen (Produkttest, ROI, Menü-Integration, Entscheider-Koordination)
-- ✅ **Sample-Management:** CRM-integriertes Cook&Fresh® Sample-Tracking mit Status-Management
-- ✅ **Route-Konsolidierung:** Einheitliche /customer-management/* Struktur + Dashboard-Bug-Fix
-- ✅ **Enterprise-RBAC:** Multi-Location Chain-Management mit Team-Lead/Sales-Rep/Chain-Manager Scopes
+- ✅ **100% Foundation Standards:** Design System V2, API Standards, Security ABAC, Testing 80%+
+- ✅ **B2B-Convenience-Food Features:** Cook&Fresh® Sample-Management, ROI-Kalkulation, Gastronomiebetrieb-Kategorisierung
+- ✅ **Monolithische Architektur:** Bewusste Entscheidung für integrierte Customer-Workflows
+- ✅ **Enterprise Security:** Territory-basierte RLS + ABAC mit JWT Claims
+- ✅ **Performance Standards:** P95 <200ms für alle API-Endpoints
 
 ### Dependencies:
-- **Field-System Integration:** → [Customer Field-Catalog](../artefakte/sql-schemas/field_bridge_and_projection.sql)
-- **Event-Architecture:** → [Event-Bus Integration](../diskussionen/2025-09-19_KI-DISKUSSION_STRATEGISCHE_PLATFORM_OPTIMIERUNG.md#event-architecture)
-- **Cook&Fresh® Produktkatalog:** → [Sample-Management Integration](../artefakte/api-specs/samples.yaml)
+- **Foundation Standards:** → [FOUNDATION_STANDARDS_COMPLIANCE_REQUEST.md](../diskussionen/2025-09-19_FOUNDATION_STANDARDS_COMPLIANCE_REQUEST.md)
+- **Reference Bundle:** → [FOUNDATION_STANDARDS_REFERENCE_BUNDLE.md](../diskussionen/2025-09-19_FOUNDATION_STANDARDS_REFERENCE_BUNDLE.md)
+- **New Artefakte:** → [Foundation Standards Artefakte](../diskussionen/neue_artifakte/)
 
 ## 🛠️ Implementation Phases
 
-### **Phase 1: Foundation (Woche 1) - Field-Bridge + Core APIs**
+### **Phase 1: Foundation Standards Core (Woche 1)**
 
 **Goals:**
-- Field-Backend-Bridge operational mit Hot-Projection Performance
-- Sample-Management APIs implementiert
-- Activities-Framework für 2 Typen (Produkttest + ROI)
+- Foundation Standards compliance 100% erreichen
+- ABAC Security mit Territory-Scoping implementieren
+- Package Structure auf `de.freshplan.*` migrieren
 
 **Key Deliverables:**
 ```yaml
-✅ SQL-Schema Implementation:
-- field_values Tabelle + Indizes
-- cm_customer_hot_proj mit Trigger-Updates
-- sample_request + sample_item mit Status-ENUM
+✅ Foundation Standards Implementation:
+- Design System V2: Theme mit CSS-Tokens, keine Hardcodes
+- API Standards: JavaDoc + Foundation References in allen Services
+- Security ABAC: JWT Claims + RLS Database Policies
+- Package Migration: com.freshplan → de.freshplan
 
-✅ API-Implementation:
-- PATCH /customers/{id}/fields (Field-Bridge)
-- POST /samples + PATCH /samples/{id}/status
-- POST /activities (PRODUCTTEST_FEEDBACK, ROI_CONSULTATION)
+✅ B2B-Convenience-Food Core APIs:
+- CustomerResource mit Cook&Fresh® Endpoints
+- SampleManagementService für Sample-Box-Tracking
+- ActivityService mit B2B-Food Activity-Types
+- Territory-basierte RLS Security für alle Tables
 
-✅ Event-Publishing:
-- sample.status.changed
-- activity.created
+✅ Backend Foundation:
+- SecurityScopeFilter mit JWT-Parsing
+- ProblemExceptionMapper für RFC7807
+- Business Exceptions für Sample-Workflows
 ```
 
 **Success Criteria:**
-- Field-Write/Read P95 <200ms
-- Sample-Status-Updates triggern Hot-Projection-Recompute
-- Events korrekt published über Outbox-Pattern
+- 100% Foundation Standards Compliance erreicht
+- ABAC Territory-Validation ohne Fallback-Lücken
+- Input-Validation in allen Services implementiert
+- P95 <200ms für alle Customer/Sample/Activity APIs
 
-**Artefakte:** [API-Specs](../artefakte/api-specs/) + [SQL-Schemas](../artefakte/sql-schemas/)
+**Artefakte:** [Foundation Standards Artefakte](../diskussionen/neue_artifakte/)
 
 ### **Phase 2: Business Logic (Woche 2) - Cockpit-Integration + Performance**
 

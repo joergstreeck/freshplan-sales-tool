@@ -1,0 +1,2 @@
+import React from 'react'; import ActivityTimeline from '../components/customer/ActivityTimeline';
+export default function AktivitaetenRoute(){ const events=[] as any; return <ActivityTimeline events={events}/>; }

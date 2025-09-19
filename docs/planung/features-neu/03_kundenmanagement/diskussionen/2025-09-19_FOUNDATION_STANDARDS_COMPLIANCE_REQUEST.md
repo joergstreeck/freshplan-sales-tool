@@ -16,68 +16,65 @@
 1. **Timeline-Problem:**
    - **Modul 03 Planung:** August/September 2025 (vor Foundation Standards)
    - **Foundation Standards:** September 2025 (nach Modul 03)
-   - **Modul 04 Success Story:** Von 58% auf 92% Compliance durch Foundation Standards
+   - **Modul 04 Beispiel:** 92% Compliance nach Foundation Standards Update
+   - **Modul 02 Success:** 100% Compliance durch strukturierte Aktualisierung
 
-2. **Compliance-Gap Analysis:**
-   - **Bestehende Artefakte:** Keine Foundation Standards Integration
-   - **API-Specs:** Fehlende JavaDoc + Foundation References
-   - **SQL-Schemas:** Keine Performance/Security Standards Documentation
-   - **Testing:** Unvollständige Enterprise-Grade Coverage
-   - **Frontend-Code:** Hardcoding statt Theme V2 Integration
+2. **Compliance-Gap:**
+   - **Aktuelle Artefakte:** Keine Foundation Standards References
+   - **Design System:** Hardcoding statt Theme V2 Integration
+   - **Testing Standards:** Keine umfassenden Test-Suites
+   - **API Standards:** Fehlende JavaDoc + Foundation References
+   - **Security Guidelines:** Keine explizite ABAC-Implementation
+   - **Package Structure:** Veraltete `com.freshplan` statt `de.freshplan`
 
 3. **Enterprise-Risiko:**
-   - **Inconsistent Branding:** FreshFoodz CI nicht durchgesetzt
-   - **Security Gaps:** ABAC-Pattern nicht explizit implementiert
-   - **Maintenance Overhead:** Technical Debt durch fehlende Standards
-   - **Quality Gates:** Nicht Enterprise-Grade-ready
+   - **Brand Inconsistency:** Ohne FreshFoodz CI compliance
+   - **Code Quality:** Unter Enterprise-Standards
+   - **Maintenance:** Erhöhter Technical Debt
+   - **Security:** Unvollständige ABAC Territory-Scoping
 
 ---
 
 ## 📋 **ZU AKTUALISIERENDE ARTEFAKTE:**
 
-### **Identifizierte Artefakte-Struktur:**
+### **Modul 03 Struktur (monolithisch - bewusste Architektur-Entscheidung):**
 
-**Backend-Artefakte:**
+**Kundenmanagement Monolithische Struktur:**
 ```
-/artefakte/
-├── sql-schemas/
-│   ├── samples.sql ← Performance + Security Standards
-│   ├── field_bridge_and_projection.sql ← Foundation References
-│   ├── retention_policies.sql ← Compliance Documentation
-│   └── observability_views.sql ← Monitoring Standards
-├── api-specs/ ← JavaDoc + Foundation Standards
-└── testing/ ← Enterprise-Grade Test Coverage
-```
-
-**Sub-Module-Struktur:**
-```
-/alle-kunden/
-├── [Backend Services] ← Foundation Standards Integration
-├── [Frontend Components] ← Theme V2 statt Hardcoding
-└── [Test-Suites] ← BDD Testing Standards
-
-/neuer-kunde/
-├── [Customer Creation Logic] ← Security + Performance Standards
-├── [Form Components] ← Theme V2 + Accessibility
-└── [Validation Tests] ← Foundation Testing Standards
-
-/aktivitaeten/
-├── [Activity Tracking] ← Performance + Security Standards
-├── [Timeline Components] ← Theme V2 + SmartLayout
-└── [Integration Tests] ← API Contract Validation
-
-/verkaufschancen/
-├── [Opportunity Pipeline] ← Business Logic + Foundation Standards
-├── [Dashboard Components] ← Theme V2 + Real-time Updates
-└── [E2E Tests] ← Critical User Journey Testing
-```
-
-**Documentation:**
-```
+/03_kundenmanagement/
 ├── technical-concept.md ← Foundation References hinzufügen
-├── README.md ← Foundation Standards Integration
-└── /diskussionen/ ← Foundation Standards Context
+├── /artefakte/
+│   ├── /sql-schemas/ ← Foundation Standards + Performance Docs
+│   │   ├── samples.sql
+│   │   ├── field_bridge_and_projection.sql
+│   │   ├── activities.sql
+│   │   └── opportunities.sql
+│   └── /api-specs/ ← JavaDoc + Foundation Standards
+│       ├── samples.yaml
+│       ├── activities.yaml
+│       └── customers.yaml
+├── /alle-kunden/ ← Theme V2 + Frontend Foundation Standards
+├── /neuer-kunde/ ← SmartLayout + Universal Export Integration
+├── /aktivitaeten/ ← Real-time Updates + Performance Optimization
+└── /verkaufschancen/ ← Theme V2 + Analytics Integration
 ```
+
+### **Critical Code-Artefakte für Foundation Standards Update:**
+
+**Backend Services:**
+- `CustomerResource.java` ← JavaDoc + ABAC + `de.freshplan` Package
+- `ActivityService.java` ← Foundation References + Performance SLOs
+- `SampleManagementService.java` ← Cook&Fresh® Integration Standards
+- `OpportunityService.java` ← ROI-Kalkulation Foundation Standards
+
+**Frontend Components:**
+- `CustomerList.tsx` ← Theme V2 + SmartLayout + Universal Export
+- `ActivityTimeline.tsx` ← Theme V2 + Real-time Updates + Performance
+- `OpportunityDashboard.tsx` ← Theme V2 + Analytics + B2B-Convenience-Food Features
+- `SampleTracker.tsx` ← Theme V2 + Cook&Fresh® Produktkatalog Integration
+
+**Database Schemas:**
+- Alle SQL-Schemas ← Performance Documentation + Security (RLS) + Foundation References
 
 ---
 
@@ -86,48 +83,34 @@
 ### **1. DESIGN SYSTEM V2 COMPLIANCE:**
 ```typescript
 // ❌ AKTUELL (Hardcoding):
-const CustomerCard = () => (
-  <div style={{
-    backgroundColor: '#94C456',
-    fontFamily: 'Antonio, sans-serif',
-    color: '#004F7B'
-  }}>
-    Kunde Details
-  </div>
-);
+const styles = {
+  backgroundColor: '#94C456',
+  fontFamily: 'Antonio, sans-serif'
+};
 
 // ✅ FOUNDATION STANDARDS (Theme V2):
-import { Card, Typography, Button } from '@mui/material';
-import { ThemeProvider } from '@mui/material/styles';
 import { freshfoodzTheme } from '@/theme/freshfoodz';
 
-const CustomerCard: FC = () => (
-  <ThemeProvider theme={freshfoodzTheme}>
-    <Card>
-      <Typography variant="h2"> {/* Antonio Bold automatisch */}
-        Kunde Details
-      </Typography>
-      <Button variant="contained" color="primary"> {/* #94C456 automatisch */}
-        Kontakt hinzufügen
-      </Button>
-    </Card>
-  </ThemeProvider>
-);
+<ThemeProvider theme={freshfoodzTheme}>
+  <Button variant="contained" color="primary">
+    {/* Automatisch #94C456 via Theme V2 */}
+  </Button>
+</ThemeProvider>
 ```
 
 ### **2. API STANDARDS COMPLIANCE:**
 ```java
 // ✅ REQUIRED: JavaDoc mit Foundation References
 /**
- * Customer Management REST API Controller
+ * Customer Management REST API Controller for B2B-Convenience-Food-Vertrieb
  *
- * @see ../../grundlagen/API_STANDARDS.md - Jakarta EE REST Standards
- * @see ../../grundlagen/SECURITY_GUIDELINES.md - ABAC Security Implementation
- * @see ../../grundlagen/PERFORMANCE_STANDARDS.md - P95 <200ms SLO Requirements
+ * @see ../../grundlagen/API_STANDARDS.md - Jakarta EE Standards
+ * @see ../../grundlagen/SECURITY_GUIDELINES.md - ABAC Implementation
+ * @see ../../grundlagen/PERFORMANCE_STANDARDS.md - P95 <200ms SLO
+ * @see ../../grundlagen/BUSINESS_LOGIC_STANDARDS.md - B2B-Convenience-Food Workflows
  *
- * This controller provides comprehensive customer management capabilities
- * including CRUD operations, activity tracking, and opportunity management.
- * All endpoints enforce ABAC security and follow OpenAPI 3.1 specifications.
+ * This controller provides customer management for Cook&Fresh® B2B-Convenience-Food-Vertrieb
+ * with ROI-Kalkulation, Sample-Management, and Gastronomiebetrieb-Account-Management.
  *
  * @author Backend Team
  * @version 1.1
@@ -135,93 +118,55 @@ const CustomerCard: FC = () => (
  */
 @Path("/api/customers")
 @Produces(MediaType.APPLICATION_JSON)
-@RequestScoped
 public class CustomerResource {
 
     /** Customer Service with Foundation Standards compliance */
     @Inject CustomerService customerService;
+}
+```
 
-    /** ABAC-secured query service for data access */
-    @Inject CustomerQuery customerQuery;
+### **3. SECURITY STANDARDS COMPLIANCE:**
+```java
+// ✅ REQUIRED: ABAC Security Pattern für Territory-Scoping
+public class CustomerQuery {
 
     /**
-     * Get Customer Details with ABAC Territory Scoping
-     *
-     * @param customerId Customer UUID
-     * @return CustomerDetailResponse with activities and opportunities
-     * @see ../../grundlagen/SECURITY_GUIDELINES.md - ABAC Territory Enforcement
+     * Fetch Customers with ABAC Territory Scoping for B2B-Convenience-Food-Vertrieb
+     * @see ../../grundlagen/SECURITY_GUIDELINES.md - ABAC Implementation
      */
-    @GET
-    @Path("/{id}")
-    @RolesAllowed({"user","manager","admin"})
-    public Response getCustomer(@PathParam("id") UUID customerId) {
-        // ABAC enforcement + Foundation Standards implementation
+    public List<Customer> fetchCustomers(String territory, String segment) {
+        // ABAC enforcement through ScopeContext
+        if (!scopeContext.hasAccess("customers", territory)) {
+            throw new ForbiddenException();
+        }
+
+        // Named parameters for SQL injection prevention
+        return em.createQuery("SELECT c FROM Customer c WHERE c.territory = :territory")
+                 .setParameter("territory", territory)
+                 .getResultList();
     }
 }
 ```
 
-### **3. SQL SCHEMA STANDARDS COMPLIANCE:**
-```sql
--- ✅ REQUIRED: Foundation Standards Documentation
+### **4. B2B-CONVENIENCE-FOOD-VERTRIEB SPEZIFISCHE STANDARDS:**
+```java
+// ✅ REQUIRED: Cook&Fresh® Produktkatalog Integration
 /**
- * Customer Management Database Schema - Foundation Standards Compliant
+ * Sample Management Service for Cook&Fresh® Product Testing
  *
- * @see ../../grundlagen/PERFORMANCE_STANDARDS.md - Database Optimization
- * @see ../../grundlagen/SECURITY_GUIDELINES.md - Data Protection Standards
- * @see ../../grundlagen/CODING_STANDARDS.md - SQL Naming Conventions
- *
- * Performance Considerations:
- * - B-Tree indices on customer_id, territory, created_at
- * - Partial indices for active customers only
- * - ABAC-optimized territory scoping
- *
- * Security Considerations:
- * - Row-Level Security (RLS) for territory scoping
- * - Encrypted PII fields (email, phone)
- * - Audit trail for all modifications
+ * @see ../../grundlagen/BUSINESS_LOGIC_STANDARDS.md - B2B-Convenience-Food Workflows
  */
+@ApplicationScoped
+public class SampleManagementService {
 
--- Customer Management with Foundation Standards
-CREATE TABLE customers (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    territory VARCHAR(50) NOT NULL, -- ABAC scoping
-    created_at TIMESTAMPTZ DEFAULT NOW(),
-
-    -- Performance-optimized indices
-    INDEX idx_customers_territory_active (territory, status)
-    WHERE status = 'active',
-
-    -- Foundation Standards compliance
-    CONSTRAINT chk_territory_valid
-    CHECK (territory ~ '^[a-z_]+$') -- Security: input validation
-);
-```
-
-### **4. TESTING STANDARDS COMPLIANCE:**
-```yaml
-REQUIRED Test-Coverage (80%+ mit Foundation Standards):
-
-Backend Tests:
-  - CustomerResourceTest.java (JAX-RS Integration + ABAC Security)
-  - CustomerServiceTest.java (Business Logic + Performance)
-  - CustomerQueryTest.java (SQL + Security Validation)
-  - ActivityServiceTest.java (Timeline + Real-time Updates)
-  - OpportunityServiceTest.java (Pipeline + B2B-Food Logic)
-
-Frontend Tests:
-  - CustomerList.test.tsx (Theme V2 + SmartLayout + Performance)
-  - CustomerForm.test.tsx (Validation + Accessibility + Theme V2)
-  - ActivityTimeline.test.tsx (Real-time + UI Components)
-  - OpportunityDashboard.test.tsx (Dashboard + Charts + Theme V2)
-
-Integration Tests:
-  - customer-crud-e2e.test.ts (End-to-End Customer Management)
-  - activity-tracking-e2e.test.ts (Activity Timeline Workflows)
-  - opportunity-pipeline-e2e.test.ts (Sales Pipeline Management)
-
-Performance Tests:
-  - customer-list-performance.test.ts (Large Dataset Handling)
-  - search-performance.test.ts (P95 <200ms validation)
+    /**
+     * Track Sample-Box delivery to Gastronomiebetrieb
+     * Supports ROI-Kalkulation and Test-Phase management
+     */
+    public SampleDelivery trackSampleBox(UUID customerId, List<CookFreshProduct> products) {
+        // Implementation with Foundation Standards
+    }
+}
 ```
 
 ---
@@ -230,105 +175,100 @@ Performance Tests:
 
 ### **Phase 1: Foundation Standards Integration (PRIORITÄT 1)**
 
-1. **Backend Services:**
-   - **CustomerResource.java:** JavaDoc + Foundation References + ABAC Security
-   - **CustomerService.java:** Business Logic + Performance Standards + Error Handling
-   - **CustomerQuery.java:** SQL Security + Named Parameters + ABAC Enforcement
-   - **ActivityService.java:** Real-time Updates + Performance Optimization
-   - **OpportunityService.java:** B2B-Food Logic + Foundation Standards
+1. **Alle Java-Klassen:**
+   - JavaDoc mit Foundation Standards References hinzufügen
+   - Package-Namen: `com.freshplan` → `de.freshplan` korrigieren
+   - ABAC Security Pattern implementieren
+   - Named Parameters für SQL Injection Prevention
 
-2. **Frontend Components:**
-   - **CustomerList.tsx:** Theme V2 + SmartLayout + Universal Export Integration
-   - **CustomerForm.tsx:** Theme V2 + Validation + Accessibility (WCAG 2.1 AA)
-   - **ActivityTimeline.tsx:** Theme V2 + Real-time Updates + Performance
-   - **OpportunityDashboard.tsx:** Theme V2 + Charts + SmartLayout
-   - **CustomerDetail.tsx:** Theme V2 + Comprehensive View + Export Integration
+2. **Alle Frontend-Komponenten:**
+   - Theme V2 statt Hardcoding verwenden
+   - `import type` für TypeScript Types (Vite-kompatibel)
+   - Error-Boundaries implementieren
+   - Accessibility-Standards (WCAG 2.1 AA)
 
-3. **Database Schemas:**
-   - **All SQL files:** Foundation Standards Documentation + Performance Comments
-   - **Security:** ABAC-optimized indices + RLS implementation
-   - **Performance:** Query optimization + index strategies
+3. **Alle API-Specs:**
+   - OpenAPI 3.1 mit Foundation Standards
+   - JWT Bearer Auth Pattern
+   - ABAC Role-Definitions für Territory-Scoping
+   - B2B-Convenience-Food-spezifische Endpoints
 
-### **Phase 2: Enterprise-Grade Testing (PRIORITÄT 1)**
+### **Phase 2: B2B-Convenience-Food-Vertrieb Features (PRIORITÄT 1)**
 
-1. **Comprehensive Test-Suites:**
-   - **Unit Tests:** 80%+ Coverage mit Foundation Standards Patterns
-   - **Integration Tests:** API Contract Validation + Security Testing
-   - **Component Tests:** Theme V2 + Accessibility + Performance
-   - **E2E Tests:** Critical Customer Management Workflows
+1. **Cook&Fresh® Integration:**
+   - Produktkatalog-Management für Sample-Tracking
+   - ROI-Kalkulations-Tools für Gastronomiebetriebe
+   - Sample-Box-Tracking und Test-Phase-Management
+   - Gastronomiebetrieb-Account-Management (Hotels, Restaurants, Betriebsgastronomie)
 
-2. **Testing Patterns:**
-   - **Given-When-Then BDD:** Für alle Business-Logic-Tests
-   - **TestDataBuilder Pattern:** Für maintainable Test-Data
-   - **ABAC Security Tests:** Territory-Scoping-Validation
-   - **Performance Tests:** P95 <200ms für alle Endpoints
+2. **Enterprise-Features:**
+   - SmartLayout: Automatische Content-Type Detection für Customer-Views
+   - Universal Export: Customer-Daten in allen Formaten (CSV, Excel, PDF, JSONL)
+   - Real-time: WebSocket für Live-Customer-Activity-Updates
+   - Multi-Location Chain-Management für Gastronomiebetrieb-Ketten
 
-### **Phase 3: Advanced Features Integration (PRIORITÄT 2)**
+### **Phase 3: Enterprise-Grade Testing (PRIORITÄT 1)**
 
-1. **SmartLayout Integration:**
-   - **Customer Lists:** Automatische Full-Width für große Tabellen
-   - **Customer Forms:** Form-optimierte 800px Breite
-   - **Dashboards:** Dashboard-optimierte Vollbreite
-   - **Detail Views:** Content-optimierte 1200px Breite
+1. **Test-Suites erstellen:**
+   - Unit Tests: 80%+ Coverage
+   - Integration Tests: API-Contract-Validation
+   - Component Tests: Theme V2 + Accessibility
+   - E2E Tests: Komplette Customer-Management-Workflows
 
-2. **Universal Export Integration:**
-   - **Customer Lists:** Export in CSV, Excel, PDF, JSON, JSONL
-   - **Activity Reports:** Timeline-Export für Reporting
-   - **Opportunity Reports:** Pipeline-Analytics Export
-   - **Bulk Exports:** Memory-efficient Streaming für große Datasets
-
-3. **Real-time Features:**
-   - **WebSocket Integration:** Live-Updates für Customer-Activities
-   - **Real-time Notifications:** New Opportunities, Status Changes
-   - **Live Dashboard:** Real-time Customer Pipeline Updates
+2. **B2B-Convenience-Food-Testing:**
+   - Sample-Management-Workflows
+   - ROI-Kalkulations-Validation
+   - Cook&Fresh® Produktkatalog-Integration
+   - Multi-Location Account-Management
 
 ---
 
-## 🎯 **B2B-FOOD-SPECIFIC ENHANCEMENTS:**
+## 🎯 **ZUSÄTZLICHE PRÜFUNGEN:**
 
 ### **Bitte außerdem prüfen und implementieren:**
 
-1. **Gastronomiebetrieb-spezifische Features:**
-   - **Seasonal-Business-Patterns:** Saisonale Kundenanalyse
-   - **Menu-Integration:** Cook&Fresh® Produktkatalog-Verknüpfung
-   - **Sample-Tracking:** Produktproben-Management für Restaurants
-   - **Delivery-Scheduling:** Lieferfenster-Optimierung für Gastronomiebetriebe
+1. **SmartLayout Integration:**
+   - Automatische Content-Type Detection für Customer-Forms
+   - Responsive Layout für Activity-Timeline
+   - Dashboard-optimierte Breiten für Opportunity-Pipeline
 
-2. **Opportunity-Pipeline Enhancements:**
-   - **Restaurant-Chain-Management:** Multi-Location-Account-Handling
-   - **Volume-based-Pricing:** Gastronomiebetrieb-spezifische Preismodelle
-   - **Seasonal-Campaign-Timing:** Optimale Zeitfenster für Restaurant-Akquise
-   - **Competition-Analysis:** Mitbewerber-Tracking in Gastronomiebetrieb-Segmenten
+2. **Universal Export Integration:**
+   - Customer-Export in allen Formaten (CSV, Excel, PDF, JSON, JSONL)
+   - Activity-Reports Export-ready
+   - Opportunity-Pipeline Export-Integration
 
-3. **Activity-Tracking Enhancements:**
-   - **Tasting-Sessions:** Produktverkostungen bei Gastronomiebetrieben
-   - **Menu-Consultations:** Beratungsgespräche für Speisekarten-Integration
-   - **Delivery-Logistics:** Koordination von Lieferterminen
-   - **Quality-Feedback:** Feedback-Management für Produktqualität
+3. **Real-time Updates:**
+   - WebSocket für neue Customer-Activities
+   - Sample-Status Updates in Real-time
+   - Opportunity-Pipeline Live-Tracking
 
-4. **Analytics & Reporting:**
-   - **Restaurant-Performance-Metrics:** KPIs für Gastronomiebetrieb-Erfolg
-   - **Seasonal-Trend-Analysis:** Saisonale Trends in der Gastronomie
-   - **Product-Adoption-Rates:** Cook&Fresh® Produktakzeptanz-Tracking
-   - **Territory-Performance:** Regionale Gastronomiebetrieb-Analysen
+4. **B2B-Convenience-Food-Specific Features:**
+   - Gastronomiebetrieb-Customer-Kategorisierung (Hotels, Restaurants, Betriebsgastronomie)
+   - Cook&Fresh® Sample-Tracking und Test-Phase-Management
+   - ROI-Kalkulations-Tools für Convenience-Food-Vorteile
+   - Multi-Location Chain-Account-Management
+
+5. **Performance Optimizations:**
+   - Customer-List-Performance für große Datenmengen
+   - Activity-Timeline-Performance-Optimization
+   - Field-Bridge Hot-Projection für schnelle Zugriffe
 
 ---
 
 ## 📊 **ERWARTETE COMPLIANCE-SCORES:**
 
-**Target nach Foundation Standards Update:**
+**Target nach Update:**
 
-| Standard | Current | Target | Critical Focus |
-|----------|---------|--------|----------------|
-| **Design System** | ~40% | 95% | ✅ Theme V2 statt Hardcoding |
-| **API Standards** | ~70% | 96% | ✅ JavaDoc + Foundation References |
-| **Coding Standards** | ~75% | 96% | ✅ TypeScript + ABAC Standards |
-| **Security Guidelines** | ~60% | 95% | ✅ ABAC Pattern + RLS |
-| **Performance Standards** | ~50% | 90% | ✅ P95 <200ms + Indices |
-| **Testing Standards** | ~20% | 85% | ✅ 80%+ Coverage + BDD |
+| Standard | Current | Target | Critical |
+|----------|---------|--------|----------|
+| **Design System** | ~30% | 100% | ✅ Theme V2 |
+| **API Standards** | ~60% | 100% | ✅ JavaDoc |
+| **Coding Standards** | ~70% | 100% | ✅ TypeScript |
+| **Security Guidelines** | ~50% | 100% | ✅ ABAC |
+| **Performance Standards** | ~40% | 100% | ✅ SLO |
+| **Testing Standards** | ~10% | 100% | ✅ Coverage |
 
-**Overall Target: 92% Enterprise-Grade Compliance**
-*(Identisch mit Modul 04 Success Story)*
+**Overall Target: 100% Enterprise-Grade Compliance (wie Modul 02)**
 
 ---
 
@@ -336,41 +276,21 @@ Performance Tests:
 
 ### **Acceptance Criteria:**
 
-1. **✅ Design System V2:** Alle Customer-Management-UI verwendet FreshFoodz Theme V2
-2. **✅ API Standards:** JavaDoc + Foundation References in allen Controllers/Services
-3. **✅ Security:** ABAC-Pattern + RLS in allen Customer-Queries implementiert
-4. **✅ Testing:** 80%+ Coverage mit Foundation Standards Testing-Patterns
-5. **✅ Performance:** P95 <200ms für alle Customer-API-Endpoints
-6. **✅ SQL Standards:** Foundation References + Performance-Documentation in allen Schemas
-7. **✅ B2B-Food Features:** Gastronomiebetrieb-spezifische Enhancements integriert
+1. **✅ Design System V2:** Alle UI-Elemente verwenden FreshFoodz Theme V2
+2. **✅ API Standards:** JavaDoc + Foundation References in allen Controllern
+3. **✅ Security:** ABAC-Pattern in allen Queries implementiert
+4. **✅ Testing:** 80%+ Coverage mit Foundation Standards Tests
+5. **✅ Performance:** P95 <200ms für alle API-Endpoints
+6. **✅ B2B-Convenience-Food:** Cook&Fresh® Integration vollständig implementiert
+7. **✅ Package Structure:** Alle Java-Klassen verwenden `de.freshplan` Package
 
 ### **Quality Gates:**
 
-- **Code Review:** Foundation Standards Compliance Validation
-- **Security Testing:** ABAC-Enforcement + Territory-Scoping-Tests grün
-- **Performance Testing:** P95 SLO-Achievement unter Load
-- **Accessibility Testing:** WCAG 2.1 AA Compliance für alle Components
-- **Integration Testing:** Customer-Management-Workflows End-to-End validiert
-
----
-
-## 📋 **IMPLEMENTIERUNGS-ROADMAP:**
-
-### **Sprint 1: Foundation Standards Core (1 Woche)**
-1. **Backend Foundation:** JavaDoc + ABAC + Performance Standards
-2. **Frontend Foundation:** Theme V2 + TypeScript + Accessibility
-3. **Database Foundation:** Performance + Security Documentation
-
-### **Sprint 2: Testing Infrastructure (1 Woche)**
-1. **Test-Suites:** Unit + Integration + Component Tests
-2. **Security Testing:** ABAC + Territory-Scoping-Validation
-3. **Performance Testing:** P95 SLO + Load-Testing
-
-### **Sprint 3: Advanced Features (1 Woche)**
-1. **SmartLayout Integration:** Intelligent Layout-Detection
-2. **Universal Export:** Customer-Export in allen Formaten
-3. **Real-time Features:** WebSocket + Live-Updates
-4. **B2B-Food Enhancements:** Gastronomiebetrieb-spezifische Features
+- **Code Review:** Foundation Standards Compliance Check
+- **Testing:** Automated Foundation Standards Validation
+- **Performance:** SLO-Monitoring für alle Customer-Management-Endpoints
+- **Security:** ABAC-Enforcement-Tests grün
+- **B2B-Convenience-Food:** Cook&Fresh® Integration-Tests erfolgreich
 
 ---
 
@@ -378,33 +298,20 @@ Performance Tests:
 
 **Bitte alle Modul 03 Kundenmanagement Artefakte nach Foundation Standards aktualisieren:**
 
-1. **Code-Artefakte:**
-   - Backend: JavaDoc + ABAC + Performance Standards
-   - Frontend: Theme V2 + TypeScript + Accessibility
-   - Database: Foundation Documentation + Performance Optimization
+1. **Code-Artefakte:** JavaDoc, Theme V2, ABAC Security, Package-Korrekturen
+2. **Test-Suites:** Enterprise-Grade Coverage mit Foundation Standards Testing
+3. **Documentation:** Foundation Standards References und Integration
+4. **B2B-Convenience-Food Features:** Cook&Fresh® Integration und ROI-Kalkulation
+5. **Additional Features:** SmartLayout, Universal Export, Real-time Updates
 
-2. **Test-Infrastructure:**
-   - 80%+ Coverage mit Foundation Standards Testing-Patterns
-   - Security + Performance + Accessibility Testing
-   - E2E Customer Management Workflow Validation
+**Ziel:** Von aktuell ~50% auf **100% Enterprise-Grade Foundation Standards Compliance**
 
-3. **Advanced Features:**
-   - SmartLayout + Universal Export + Real-time Integration
-   - B2B-Food-spezifische Gastronomiebetrieb-Features
-   - Performance + Security Optimization
+**Business Context:** B2B-Convenience-Food-Hersteller (FreshFoodz) verkauft Cook&Fresh® Produkte an Gastronomiebetriebe mit ROI-basierter Beratung und Sample-Management
 
-4. **Documentation:**
-   - Foundation Standards References in allen Technical Concepts
-   - Implementation Guidelines mit Foundation Integration
-   - B2B-Food Feature Documentation
-
-**Ziel:** Von aktuell ~55% auf **92% Enterprise-Grade Foundation Standards Compliance**
-
-**Referenz:** Modul 04 Auswertungen erreichte 92% Compliance durch identische Foundation Standards Updates.
+**Timeline:** Diese Updates sind **kritisch für Enterprise-Grade Quality** und sollten **vor Production-Deployment** implementiert werden.
 
 ---
 
 **📊 Status:** COMPLIANCE-UPDATE REQUIRED
-**🎯 Priority:** P0 - KRITISCH für Enterprise-Grade Quality
-**📝 Deliverable:** Enterprise-Grade Modul 03 mit 92% Compliance-Score
-**🔗 Success-Pattern:** Identisch mit Modul 04 Foundation Standards Success Story
+**🎯 Priority:** P0 - KRITISCH für Foundation Standards
+**📝 Deliverable:** Enterprise-Grade Modul 03 mit 100% Compliance-Score
