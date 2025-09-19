@@ -105,8 +105,11 @@ PARTNER-CHANNEL (Lieferanten, Händler, Wiederverkäufer):
 **kampagnen/** [Technical Concept](./features-neu/02_neukundengewinnung/kampagnen/technical-concept.md)
 - **Status:** ✅ Technical Concept abgeschlossen, Multi-Touch-Attribution | **Timeline:** Phase 2 (Woche 13-20) | **Dependencies:** Email+Lead Foundation
 
-#### **03_kundenmanagement** [Vollständige Analyse](./features-neu/03_kundenmanagement/analyse/)
-**🏛️ Enterprise CRM-Platform Status:** ✅ Production-Ready (534 Code-Dateien analysiert)
+#### **03_kundenmanagement** [Technical Concept](./features-neu/03_kundenmanagement/technical-concept.md) | [KI-Diskussion](./features-neu/03_kundenmanagement/diskussionen/)
+**🏛️ Enterprise CRM-Platform Status:** ✅ Production-Ready + 📋 Platform-Optimierung geplant
+
+**Platform-Optimierung** [Artefakte](./features-neu/03_kundenmanagement/artefakte/)
+- **Status:** ✅ Technical Concept abgeschlossen, 13 KI-Production-Specs integriert | **Timeline:** Phase 1 Implementation-Ready | **Dependencies:** Field-Backend-Bridge + Sample-Management
 
 **customer-management/** Dashboard-Hub (Route: `/customer-management`)
 - **Status:** ✅ Production-Ready (389 LOC) + "Neuer Kunde" Button | **Timeline:** Wartung | **Issues:** 🔴 Dashboard-Bug (falsche Route-Pfade)
