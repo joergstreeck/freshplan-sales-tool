@@ -1,0 +1,40 @@
+openapi: 3.1.0
+info: { title: ROI Calculator API (B2B-Food), version: 1.1.0 }
+servers: [ { url: https://api.example.com } ]
+security: [ { bearerAuth: [] } ]
+components:
+  securitySchemes: { bearerAuth: { type: http, scheme: bearer, bearerFormat: JWT } }
+  schemas:
+    ROICalcRequest:
+      type: object
+      required: [mealsPerDay, daysPerMonth, laborMinutesSavedPerMeal, laborCostPerHour, foodCostPerMeal, wasteReductionPct]
+      properties:
+        mealsPerDay: { type: integer, minimum: 1 }
+        daysPerMonth: { type: integer, minimum: 1, maximum: 31 }
+        laborMinutesSavedPerMeal: { type: number, minimum: 0 }
+        laborCostPerHour: { type: number, minimum: 0 }
+        foodCostPerMeal: { type: number, minimum: 0 }
+        wasteReductionPct: { type: number, minimum: 0, maximum: 100 }
+        channel: { type: string, enum: [DIRECT, PARTNER] }
+        investment: { type: number, minimum: 0, description: "Optional CAPEX for payback calculation" }
+    ROICalcResponse:
+      type: object
+      properties:
+        monthlyLaborSavings: { type: number }
+        monthlyWasteSavings: { type: number }
+        totalMonthlySavings: { type: number }
+        paybackMonths: { type: number, nullable: true }
+        assumptions:
+          type: object
+          properties: { partnerDiscountPct: { type: number }, directUpliftPct: { type: number } }
+paths:
+  /api/cockpit/roi/calc:
+    post:
+      summary: ROI calculation for Cook&Fresh® business case (with optional payback)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ROICalcRequest' }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/ROICalcResponse' } } } }

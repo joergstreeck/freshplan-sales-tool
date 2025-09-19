@@ -1,0 +1,21 @@
+openapi: 3.1.0
+info: { title: Cockpit Filters API, version: 1.0.0, description: Allowed filters for current user (ABAC) }
+servers: [ { url: https://api.example.com } ]
+security: [ { bearerAuth: [] } ]
+components:
+  securitySchemes: { bearerAuth: { type: http, scheme: bearer, bearerFormat: JWT } }
+  schemas:
+    FiltersResponse:
+      type: object
+      properties:
+        territories: { type: array, items: { type: string } }
+        channels:    { type: array, items: { type: string, enum: [DIRECT, PARTNER] } }
+  responses:
+    Forbidden:  { $ref: './common-errors.yaml#/components/responses/Forbidden' }
+paths:
+  /api/cockpit/filters:
+    get:
+      summary: Return allowed territories and channels for user
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/FiltersResponse' } } } }
+        '403': { $ref: '#/components/responses/Forbidden' }

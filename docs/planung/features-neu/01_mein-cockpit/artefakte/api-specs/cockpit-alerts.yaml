@@ -1,0 +1,23 @@
+openapi: 3.1.0
+info: { title: Cockpit Alerts API, version: 1.0.0 }
+servers: [ { url: https://api.example.com } ]
+security: [ { bearerAuth: [] } ]
+components:
+  securitySchemes: { bearerAuth: { type: http, scheme: bearer, bearerFormat: JWT } }
+  schemas:
+    AlertItem:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        kind: { type: string, enum: [STALE_KPI, AT_RISK, HARD_BOUNCE, WINDOW_OF_OPPORTUNITY] }
+        message: { type: string }
+        createdAt: { type: string, format: date-time }
+  responses:
+    Forbidden:  { $ref: './common-errors.yaml#/components/responses/Forbidden' }
+paths:
+  /api/cockpit/alerts:
+    get:
+      summary: List cockpit alerts for current ABAC scope
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { type: array, items: { $ref: '#/components/schemas/AlertItem' } } } } }
+        '403': { $ref: '#/components/responses/Forbidden' }

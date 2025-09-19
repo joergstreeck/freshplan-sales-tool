@@ -1,0 +1,37 @@
+openapi: 3.1.0
+info: { title: Cockpit Summary API, version: 1.0.0, description: Multi-Channel Sales Dashboard KPIs }
+servers: [ { url: https://api.example.com } ]
+security: [ { bearerAuth: [] } ]
+components:
+  securitySchemes: { bearerAuth: { type: http, scheme: bearer, bearerFormat: JWT } }
+  schemas:
+    Channel: { type: string, enum: [DIRECT, PARTNER] }
+    SummaryResponse:
+      type: object
+      required: [range, sampleSuccessRatePct, roiPipelineValue, partnerSharePct, channelMix, atRiskCustomers, updatedAt]
+      properties:
+        range: { type: string, enum: [7d,30d,90d] }
+        sampleSuccessRatePct: { type: number, minimum: 0, maximum: 100 }
+        roiPipelineValue: { type: number }
+        partnerSharePct: { type: number, minimum: 0, maximum: 100 }
+        channelMix:
+          type: object
+          properties:
+            DIRECT: { type: number, minimum: 0, maximum: 100 }
+            PARTNER: { type: number, minimum: 0, maximum: 100 }
+        atRiskCustomers: { type: integer, minimum: 0 }
+        updatedAt: { type: string, format: date-time }
+  responses:
+    BadRequest: { $ref: './common-errors.yaml#/components/responses/BadRequest' }
+    Forbidden:  { $ref: './common-errors.yaml#/components/responses/Forbidden' }
+paths:
+  /api/cockpit/summary:
+    get:
+      summary: Cockpit Summary KPIs (ABAC: territory + channel)
+      parameters:
+        - { name: range, in: query, schema: { type: string, enum: [7d,30d,90d], default: 30d } }
+        - { name: territory, in: query, schema: { type: string } }
+        - { name: channels, in: query, schema: { type: string, description: 'Comma-separated: DIRECT,PARTNER' } }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SummaryResponse' } } } }
+        '403': { $ref: '#/components/responses/Forbidden' }

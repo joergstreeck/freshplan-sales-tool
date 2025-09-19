@@ -1,0 +1,23 @@
+openapi: 3.1.0
+info: { title: Cockpit Channels API, version: 1.0.0 }
+servers: [ { url: https://api.example.com } ]
+security: [ { bearerAuth: [] } ]
+components:
+  securitySchemes: { bearerAuth: { type: http, scheme: bearer, bearerFormat: JWT } }
+  schemas:
+    ChannelMixResponse:
+      type: object
+      properties:
+        DIRECT: { type: number, minimum: 0, maximum: 100 }
+        PARTNER: { type: number, minimum: 0, maximum: 100 }
+  responses:
+    Forbidden:  { $ref: './common-errors.yaml#/components/responses/Forbidden' }
+paths:
+  /api/cockpit/channels/mix:
+    get:
+      summary: Channel Mix (DIRECT vs PARTNER) – ABAC scope applied
+      parameters:
+        - { name: range, in: query, schema: { type: string, enum: [7d,30d,90d], default: 30d } }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/ChannelMixResponse' } } } }
+        '403': { $ref: '#/components/responses/Forbidden' }
