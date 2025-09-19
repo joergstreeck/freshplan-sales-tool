@@ -350,6 +350,14 @@ interface EnhancedROICalculation {
 - `./artefakte/testing/roi_calculator_integration.test.js` - Integration Tests
 - `./artefakte/testing/cockpit_performance_test.js` - k6 Performance Tests
 
+> **🚀 MIGRATION HINWEIS für Production:**
+> Bei Production-Start müssen alle Tests aus `/docs/planung/features-neu/01_mein-cockpit/artefakte/testing/`
+> in die neue Enterprise Test-Struktur migriert werden:
+> - Unit Tests → `/backend/src/test/java/unit/cockpit/` bzw. `/frontend/src/tests/unit/cockpit/`
+> - Integration Tests → `/backend/src/test/java/integration/cockpit/` bzw. `/frontend/src/tests/integration/cockpit/`
+> - Performance Tests → `/backend/src/test/java/performance/cockpit/`
+> Siehe [TEST_STRUCTURE_PROPOSAL.md](../../features/TEST_STRUCTURE_PROPOSAL.md) für Details.
+
 #### **CI/CD (1 Datei)**
 - `./artefakte/ci-cd/cockpit-deployment.yml` - GitHub Actions Workflow
 

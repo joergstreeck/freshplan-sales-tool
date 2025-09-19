@@ -201,6 +201,14 @@ Phase 1 Implementation starten - ReportsResource.java deployen, SQL-Views ausrol
 - `artefakte/UniversalExportAdapter.java` - JSONL-Streaming für Data Science
 - `artefakte/ReportsQuery.java` - ABAC-sichere SQL-Implementations
 
+> **🚀 MIGRATION HINWEIS für Production:**
+> Bei Production-Start müssen alle Tests aus `/docs/planung/features-neu/04_auswertungen/artefakte/`
+> in die neue Enterprise Test-Struktur migriert werden:
+> - Unit Tests → `/backend/src/test/java/unit/reports/` bzw. `/frontend/src/tests/unit/reports/`
+> - Integration Tests → `/backend/src/test/java/integration/reports/`
+> - Performance Tests → `/backend/src/test/java/performance/reports/`
+> Siehe [TEST_STRUCTURE_PROPOSAL.md](../../features/TEST_STRUCTURE_PROPOSAL.md) für Details.
+
 **Offene Entscheidungen:**
 - Partner-Revenue-Quelle: commission_event vs. field_values.channel_type Fallback aktivieren?
 - WebSocket-Realtime-Tiefe: V1 Badge-Updates oder Full-Dashboard-Live-Updates?

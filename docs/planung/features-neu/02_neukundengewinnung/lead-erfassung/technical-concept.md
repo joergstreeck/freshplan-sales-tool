@@ -351,6 +351,16 @@ public class CommissionTracking {
 - Phase 3-4: Woche 7-12 (E-Mail-Integration + Provisions)
 - Production-Ready: Ende Woche 12
 
+## 📋 Test Migration Instructions
+
+> **🚀 MIGRATION HINWEIS für Production:**
+> Bei Production-Start müssen alle Tests aus `/docs/planung/features-neu/02_neukundengewinnung/`
+> in die neue Enterprise Test-Struktur migriert werden:
+> - Unit Tests → `/backend/src/test/java/unit/leads/` bzw. `/frontend/src/tests/unit/leads/`
+> - Integration Tests (z.B. `LeadRepositoryIntegrationTest.java`) → `/backend/src/test/java/integration/leads/`
+> - Performance Tests (z.B. `k6_lead_api_performance.js`) → `/backend/src/test/java/performance/leads/`
+> Siehe [TEST_STRUCTURE_PROPOSAL.md](../../../features/TEST_STRUCTURE_PROPOSAL.md) für Details.
+
 ## 🔗 Related Documentation
 
 **Foundation Knowledge:**

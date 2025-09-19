@@ -203,6 +203,14 @@ Implementation Phase 1 starten - SQL-Schema deployment + API-Controller generati
 - `artefakte/README.md` - Vollständiger Deployment & Operations Guide
 - `diskussionen/2025-09-19_KI-DISKUSSION_STRATEGISCHE_PLATFORM_OPTIMIERUNG.md` - Vollständige KI-Analyse
 
+> **🚀 MIGRATION HINWEIS für Production:**
+> Bei Production-Start müssen alle Tests aus `/docs/planung/features-neu/03_kundenmanagement/artefakte/testing/`
+> in die neue Enterprise Test-Struktur migriert werden:
+> - Unit Tests → `/backend/src/test/java/unit/customer/` bzw. `/frontend/src/tests/unit/customer/`
+> - Integration Tests → `/backend/src/test/java/integration/customer/`
+> - Performance Tests (z.B. `customers_load_test.js`) → `/backend/src/test/java/performance/customer/`
+> Siehe [TEST_STRUCTURE_PROPOSAL.md](../../features/TEST_STRUCTURE_PROPOSAL.md) für Details.
+
 **Offene Entscheidungen:**
 - Feature-Flags activation sequence für Rollout-Control
 - Grafana-Dashboard configuration für Observability-Views
