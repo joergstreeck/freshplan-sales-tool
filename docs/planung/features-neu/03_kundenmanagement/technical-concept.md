@@ -34,7 +34,7 @@
 ### Dependencies:
 - **Foundation Standards:** → [FOUNDATION_STANDARDS_COMPLIANCE_REQUEST.md](../diskussionen/2025-09-19_FOUNDATION_STANDARDS_COMPLIANCE_REQUEST.md)
 - **Reference Bundle:** → [FOUNDATION_STANDARDS_REFERENCE_BUNDLE.md](../diskussionen/2025-09-19_FOUNDATION_STANDARDS_REFERENCE_BUNDLE.md)
-- **New Artefakte:** → [Foundation Standards Artefakte](../diskussionen/neue_artifakte/)
+- **Production Artefakte:** → [Foundation Standards Artefakte](./artefakte/)
 
 ## 🛠️ Implementation Phases
 
@@ -71,7 +71,7 @@
 - Input-Validation in allen Services implementiert
 - P95 <200ms für alle Customer/Sample/Activity APIs
 
-**Artefakte:** [Foundation Standards Artefakte](../diskussionen/neue_artifakte/)
+**Artefakte:** [Foundation Standards Artefakte](./artefakte/)
 
 ### **Phase 2: Business Logic (Woche 2) - Cockpit-Integration + Performance**
 
@@ -154,10 +154,14 @@
 ## 🔗 Related Documentation
 
 ### **Production-Ready Artefakte:**
-- **API-Specifications:** → [OpenAPI 3.1 Specs](../artefakte/api-specs/) (samples.yaml, activities.yaml, fields.yaml, common-errors.yaml)
-- **Database-Schemas:** → [PostgreSQL Scripts](../artefakte/sql-schemas/) (field_bridge_and_projection.sql, samples.sql, observability_views.sql, retention_policies.sql)
-- **Testing-Suite:** → [Postman Collection](../artefakte/testing/CRM_CustomerManagement.postman_collection.json)
-- **Operations-Guide:** → [Deploy-README](../artefakte/README_customer-management_deploy.md)
+- **API-Specifications:** → [OpenAPI 3.1 Specs](./artefakte/api-specs/) (customers.yaml, samples.yaml, activities.yaml, fields.yaml, common-errors.yaml)
+- **Backend-Services:** → [Java/Quarkus Code](./artefakte/backend/) (CustomerResource.java, SampleManagementService.java, ActivityService.java, SecurityScopeFilter.java)
+- **Frontend-Components:** → [React/TypeScript + Theme](./artefakte/frontend/) (neuer-kunde.tsx, CustomerList.tsx, theme-v2.mui.ts, theme-v2.tokens.css)
+- **Database-Schemas:** → [PostgreSQL Scripts](./artefakte/sql-schemas/) (field_bridge_and_projection.sql, samples.sql, activities.sql, opportunities.sql)
+- **Testing-Suite:** → [Tests + Performance](./artefakte/testing/) (BDD Tests, ABAC Tests, K6 Performance-Tests, Coverage-Config)
+- **CI/CD-Pipeline:** → [GitHub Actions](./artefakte/ci/) (github-actions.yml)
+- **Documentation:** → [Compliance + Performance](./artefakte/docs/) (compliance_matrix.md, performance_budget.md)
+- **Operations-Guide:** → [Deployment & Operations Guide](./artefakte/README.md#deployment--operations-guide)
 
 ### **Foundation Knowledge:**
 - **Design Standards:** → [../../grundlagen/DESIGN_SYSTEM.md](../../grundlagen/DESIGN_SYSTEM.md)
@@ -189,8 +193,14 @@ Implementation Phase 1 starten - SQL-Schema deployment + API-Controller generati
 
 **Wichtige Dateien für Context:**
 - `artefakte/api-specs/samples.yaml` - Sample-Management API mit Cook&Fresh® Integration
+- `artefakte/backend/SampleManagementService.java` - Cook&Fresh® Sample-Tracking Implementation
+- `artefakte/frontend/neuer-kunde.tsx` - Customer-Creation-Form mit Theme V2
+- `artefakte/frontend/theme-v2.tokens.css` - Foundation Standards CSS-Tokens
 - `artefakte/sql-schemas/field_bridge_and_projection.sql` - Core Field-System + Hot-Projection
-- `artefakte/README_customer-management_deploy.md` - Zero-Downtime Migration-Guide
+- `artefakte/testing/performance/customers_load_test.js` - K6 Performance-Tests
+- `artefakte/ci/github-actions.yml` - CI/CD Pipeline für Modul 03
+- `artefakte/docs/compliance_matrix.md` - Foundation Standards Compliance-Matrix
+- `artefakte/README.md` - Vollständiger Deployment & Operations Guide
 - `diskussionen/2025-09-19_KI-DISKUSSION_STRATEGISCHE_PLATFORM_OPTIMIERUNG.md` - Vollständige KI-Analyse
 
 **Offene Entscheidungen:**
@@ -213,6 +223,6 @@ Implementation Phase 1 starten - SQL-Schema deployment + API-Controller generati
 - ✅ **Success Criteria:** Performance/Business/Technical Metrics
 - ✅ **Cross-Links:** 12+ Related Documents verlinkt
 - ✅ **Claude Handover:** Nächste Schritte + Context + Decisions klar
-- ✅ **Technical References:** Alle 13 Artefakte referenziert
+- ✅ **Technical References:** Alle 39 Artefakte referenziert in finaler Struktur
 - ✅ **Timeline:** Realistische 3-Wochen-Schätzung
 - ✅ **Owner:** Backend + Frontend Team ownership definiert

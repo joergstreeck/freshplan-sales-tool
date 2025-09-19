@@ -184,10 +184,15 @@ npm run test:customers
 **→ [technical-concept.md](./technical-concept.md)** - 3-Wochen Implementation-Plan
 
 ### **📦 Production-Ready Artefakte:**
-**→ [artefakte/](./artefakte/)** - 13 copy-paste-ready Deliverables:
-- 4x OpenAPI 3.1 Specs (samples, activities, fields, common-errors)
-- 4x PostgreSQL Scripts (field-bridge, samples, observability, retention)
-- 1x Postman Collection + Deploy-Guide + ZIP-Package
+**→ [artefakte/](./artefakte/)** - 39 copy-paste-ready Deliverables:
+- **API-Specs:** 5x OpenAPI 3.1 (customers, samples, activities, fields, common-errors)
+- **Backend:** 7x Java/Quarkus Services (CustomerResource, SampleManagementService, ActivityService, etc.)
+- **Frontend:** 10x React/TypeScript + Theme (neuer-kunde.tsx, CustomerList.tsx, theme-v2.tokens.css, etc.)
+- **Database:** 6x PostgreSQL Scripts (field-bridge, samples, activities, opportunities, observability, retention)
+- **Testing:** 6x Tests + Performance (BDD, ABAC, K6 Load-Tests, Coverage-Config)
+- **CI/CD:** 1x GitHub Actions Pipeline
+- **Documentation:** 3x Compliance + Performance Docs
+- **Operations:** Deploy-Guide mit Zero-Downtime Migration
 
 ### **🔥 Enterprise-Grade Quality:**
 - **API-Design:** RFC7807 Error-Handling, ETag Optimistic-Locking, Cursor-Pagination
