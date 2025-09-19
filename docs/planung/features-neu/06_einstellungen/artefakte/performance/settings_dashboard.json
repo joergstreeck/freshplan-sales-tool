@@ -1,0 +1,37 @@
+{
+  "title": "FreshPlan Settings \u2013 Performance & Quality",
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "GET /api/settings/effective p95",
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(http_server_requests_seconds_bucket{job=\"settings-backend\",route=\"/api/settings/effective\"}[5m])) by (le))",
+          "legendFormat": "p95"
+        }
+      ]
+    },
+    {
+      "type": "stat",
+      "title": "ETag hit rate",
+      "targets": [
+        {
+          "expr": "sum(rate(http_requests_etag_304_total{job=\"settings-backend\"}[5m])) / clamp_min(sum(rate(http_server_requests_seconds_count{job=\"settings-backend\",route=\"/api/settings/effective\"}[5m])),1)",
+          "legendFormat": "etag hits"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Schema validation violations",
+      "targets": [
+        {
+          "expr": "rate(settings_schema_violations_total{job=\"settings-backend\"}[5m])",
+          "legendFormat": "violations/s"
+        }
+      ]
+    }
+  ]
+}

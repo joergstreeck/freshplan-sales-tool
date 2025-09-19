@@ -1,0 +1,99 @@
+openapi: 3.1.0
+info:
+  title: FreshPlan Settings API
+  version: 1.0.0
+servers: [{ url: https://api.freshplan.example }]
+security: [ { bearerAuth: [] } ]
+components:
+  securitySchemes:
+    bearerAuth: { type: http, scheme: bearer, bearerFormat: JWT }
+  schemas:
+    Scope:
+      type: object
+      properties:
+        tenantId:   { type: string, format: uuid, nullable: true }
+        territory:  { type: string, nullable: true }
+        accountId:  { type: string, format: uuid, nullable: true }
+        contactRole:{ type: string, enum: [CHEF, BUYER], nullable: true }
+        contactId:  { type: string, format: uuid, nullable: true }
+        userId:     { type: string, format: uuid, nullable: true }
+    EffectiveSettings:
+      type: object
+      properties:
+        blob: { type: object, additionalProperties: true }
+        etag: { type: string }
+        computedAt: { type: string, format: date-time }
+    PatchOp:
+      type: object
+      required: [op, key]
+      properties:
+        op: { type: string, enum: [set, unset] }
+        key: { type: string }
+        scope: { $ref: "#/components/schemas/Scope" }
+        value: { description: Required for op=set. Must conform to registry schema., nullable: true }
+  responses:
+    Problem:
+      description: RFC7807 Problem
+      content:
+        application/problem+json:
+          schema:
+            type: object
+            required: [type, title, status]
+            properties:
+              type: { type: string }
+              title: { type: string }
+              status: { type: integer }
+              detail: { type: string }
+              errors:
+                type: array
+                items: { type: object, properties: { field: {type: string}, message: {type: string} } }
+paths:
+  /api/settings/effective:
+    get:
+      summary: Get effective settings (ETag support)
+      parameters:
+        - in: query; name: accountId; required: false; schema: { type: string, format: uuid }
+        - in: query; name: contactRole; required: false; schema: { type: string, enum: [CHEF, BUYER] }
+        - in: query; name: contactId; required: false; schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: OK
+          headers: { ETag: { description: ETag, schema: { type: string } } }
+          content: { application/json: { schema: { $ref: '#/components/schemas/EffectiveSettings' } } }
+        '304': { description: Not Modified }
+        '403': { $ref: '#/components/responses/Problem' }
+  /api/settings:
+    patch:
+      summary: Apply settings operations (set/unset)
+      requestBody:
+        required: true
+        content: { application/json: { schema: { type: array, items: { $ref: '#/components/schemas/PatchOp' } } } }
+      responses:
+        '200':
+          description: Updated effective
+          headers: { ETag: { description: New ETag, schema: { type: string } } }
+          content: { application/json: { schema: { $ref: '#/components/schemas/EffectiveSettings' } } }
+        '400': { $ref: '#/components/responses/Problem' }
+        '403': { $ref: '#/components/responses/Problem' }
+        '409': { $ref: '#/components/responses/Problem' }
+  /api/settings/keys:
+    get:
+      summary: List registry keys
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  required: [key, type, mergeStrategy, scope, version]
+                  properties:
+                    key: { type: string }
+                    type: { type: string, enum: [scalar, object, list] }
+                    mergeStrategy: { type: string, enum: [scalar, object, list] }
+                    scope: { type: array, items: { type: string } }
+                    description: { type: string }
+                    version: { type: integer }
+        '403': { $ref: '#/components/responses/Problem' }
