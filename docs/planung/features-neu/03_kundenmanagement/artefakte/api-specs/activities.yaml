@@ -1,0 +1,80 @@
+openapi: 3.1.0
+info: { title: Activities API, version: 1.0.0, description: "Typisierte Aktivitäten für B2B-Food-Sales" }
+servers: [ { url: "https://api.example.com" } ]
+security: [ { bearerAuth: [] } ]
+components:
+  securitySchemes:
+    bearerAuth: { type: http, scheme: bearer, bearerFormat: JWT }
+  parameters:
+    CorrelationId:
+      name: X-Correlation-Id
+      in: header
+      required: false
+      schema: { type: string, format: uuid }
+  schemas:
+    ActivityKind: { type: string, enum: [PRODUCTTEST_FEEDBACK, ROI_CONSULTATION] }
+    ActivityBase:
+      type: object
+      required: [customerId, kind]
+      properties:
+        customerId: { type: string, format: uuid }
+        kind: { $ref: "#/components/schemas/ActivityKind" }
+        occurredAt: { type: string, format: date-time }
+        note: { type: string }
+    ProducttestFeedback:
+      allOf:
+        - $ref: "#/components/schemas/ActivityBase"
+        - type: object
+          required: [sampleId, outcome]
+          properties:
+            sampleId: { type: string, format: uuid }
+            rating: { type: integer, minimum: 1, maximum: 5 }
+            outcome: { type: string, enum: [SUCCESS, NEUTRAL, FAIL] }
+            sensoricNotes: { type: string }
+            nextStep: { type: string }
+    RoiConsultation:
+      allOf:
+        - $ref: "#/components/schemas/ActivityBase"
+        - type: object
+          required: [roiScenarioId, commitmentLevel]
+          properties:
+            roiScenarioId: { type: string, format: uuid }
+            savingsPerMonth: { type: number }
+            commitmentLevel: { type: string, enum: [LOW, MID, HIGH] }
+paths:
+  /activities:
+    post:
+      tags: [Activities]
+      summary: Aktivität anlegen (typisiert)
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - $ref: "#/components/schemas/ProducttestFeedback"
+                - $ref: "#/components/schemas/RoiConsultation"
+      responses:
+        "201": { description: Erstellt }
+        "400": { $ref: "common-errors.yaml#/components/responses/BadRequest" }
+        "403": { $ref: "common-errors.yaml#/components/responses/Forbidden" }
+        "409": { $ref: "common-errors.yaml#/components/responses/Conflict" }
+        "429": { $ref: "common-errors.yaml#/components/responses/TooManyRequests" }
+  /customers/{id}/activities:
+    get:
+      tags: [Activities]
+      summary: Aktivitäten eines Kunden (Filter/Scroll)
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - { name: id, in: path, required: true, schema: { type: string, format: uuid } }
+        - { name: kind, in: query, schema: { $ref: "#/components/schemas/ActivityKind" } }
+        - { name: from, in: query, schema: { type: string, format: date-time } }
+        - { name: to, in: query, schema: { type: string, format: date-time } }
+        - { name: q, in: query, schema: { type: string } }
+        - { name: limit, in: query, schema: { type: integer, default: 50 } }
+        - { name: cursor, in: query, schema: { type: string } }
+      responses:
+        "200": { description: OK }
+        "403": { $ref: "common-errors.yaml#/components/responses/Forbidden" }

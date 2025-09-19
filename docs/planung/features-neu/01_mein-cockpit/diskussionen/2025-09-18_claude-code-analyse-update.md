@@ -21,7 +21,7 @@ Aktueller Calculator (Legacy):
 
 FreshFoodz Calculator (neu zu entwickeln):
 - businessType, staffingSituation, wastePercentage → ROI-basierte Beratung
-- Für Cook&Fresh® Gastronomy-Sales komplett anders
+- Für Cook&Fresh® B2B-Food-Vertrieb komplett anders
 ```
 
 **💡 NEUE EMPFEHLUNG:** Calculator als **Modal/Drawer** in Spalte 3, nicht als separate Spalte 4!

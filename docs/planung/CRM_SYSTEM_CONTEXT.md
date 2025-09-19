@@ -6,12 +6,12 @@
 
 ## 🎯 Executive Summary
 
-**Mission:** Entwicklung eines intelligenten Sales Command Centers für B2B-Gastronomy-Vertrieb mit Cook&Fresh® Convenience-Food-Produkten
-**Problem:** Fragmentierte Vertriebsprozesse, manuelle Workflows, fehlende Insights für komplexe B2B-Beratungsverkäufe in der Gastronomie-Branche
-**Solution:** Integrierte CRM-Plattform mit Field-Based Architecture und Event-Driven Communication speziell für FreshFoodz Gastronomy-Sales
+**Mission:** Entwicklung eines intelligenten Sales Command Centers für B2B-Convenience-Food-Vertrieb mit Cook&Fresh® Produkten an Gastronomiebetriebe
+**Problem:** Fragmentierte Vertriebsprozesse, manuelle Workflows, fehlende Insights für komplexe B2B-Beratungsverkäufe von Convenience-Food-Produkten
+**Solution:** Integrierte CRM-Plattform mit Field-Based Architecture und Event-Driven Communication speziell für Cook&Fresh® B2B-Food-Vertrieb
 **Impact:** 3x schnellere Lead-Qualifizierung, 2x höhere Conversion durch ROI-basierte Beratung, vollständige Sales-Process-Automation
 
-## 🍽️ FreshFoodz Business-Kontext (B2B-Gastronomy)
+## 🍽️ FreshFoodz Business-Kontext (B2B-Convenience-Food-Hersteller)
 
 **Unser Geschäftsmodell:**
 - **Produkt:** Cook&Fresh® Convenience-Food mit patentierter Konservierungstechnologie
@@ -40,7 +40,7 @@ Klassischer B2B-Produktvertrieb (nicht SaaS!):
 - Oft Multiple Decision-Maker (Küchenchef, Geschäftsführer, Einkauf)
 - Saisonale Faktoren (Weihnachts-Menu vs. Sommer-Terrasse)
 
-**CRM-Anforderungen für Gastronomy-Sales:**
+**CRM-Anforderungen für B2B-Food-Vertrieb:**
 - **ROI-Kalkulation:** Tool für Kosteneinsparungs-Analyse (Personal/Waste/Zeit) statt einfache Preislisten
 - **Produkt-Matching:** Intelligentes Matching - welche Cook&Fresh® Produkte passen zum Restaurant-Konzept?
 - **Sample-Management:** Tracking von versendeten Produktkatalogen und individuellen Test-Boxen
@@ -106,8 +106,7 @@ Von Tag 1 auf Wachstum, Performance und Qualität ausgelegt. API-First, <200ms R
 │   ├── lead-erfassung/           # Neue Leads manuell/automatisch
 │   └── kampagnen/                # E-Mail-Marketing & Follow-ups
 ├── 👥 Kundenmanagement            # CRM Core (M4 Pipeline)
-│   ├── alle-kunden/              # Kundenliste mit Filter/Suche
-│   ├── neuer-kunde/              # Kunden-Erfassung & Onboarding
+│   ├── alle-kunden/              # Kundenliste mit Filter/Suche + "Neuer Kunde" Button
 │   ├── verkaufschancen/          # Pipeline-Management (M4)
 │   └── aktivitaeten/             # Termine, Notizen, Follow-ups
 ├── 📊 Auswertungen               # Analytics & Reports
@@ -156,13 +155,13 @@ Von Tag 1 auf Wachstum, Performance und Qualität ausgelegt. API-First, <200ms R
 ## 👥 Zielgruppen & User Journeys
 
 ### **Primary User: Sales Representative ("Genussberater")**
-**Tägliche Hauptaufgaben für Gastronomy-Sales:**
+**Tägliche Hauptaufgaben für B2B-Food-Vertrieb:**
 1. **Lead-Qualifizierung:** E-Mails triagieren → Restaurant-Profile analysieren → Erstkontakt mit BANT-Kriterien
 2. **ROI-Beratung:** Kosteneinsparungs-Potentiale kalkulieren → Sample-Boxen konfigurieren → individuelle Lösungen entwickeln
 3. **Test-Phase-Management:** Sample-Feedback einholen → Produkt-Anpassungen → Follow-up-Zyklen systematisch verfolgen
 4. **Account-Development:** Bestehende Kunden für neue Produkte/Standorte entwickeln → saisonale Menu-Zyklen nutzen
 
-**Typischer Gastronomy-Sales Workflow:**
+**Typischer B2B-Food-Vertrieb Workflow:**
 ```
 09:00 Cockpit öffnen → Sample-Feedback auswerten → Test-Phasen-Status prüfen
 10:00 Restaurant-Entscheider kontaktieren → ROI-Kalkulationen erstellen
@@ -171,7 +170,7 @@ Von Tag 1 auf Wachstum, Performance und Qualität ausgelegt. API-First, <200ms R
 16:00 Account-Pipeline reviewen → Multiple Decision-Maker koordinieren
 ```
 
-**Gastronomy-Sales Besonderheiten:**
+**B2B-Food-Vertrieb Besonderheiten:**
 - **Beratungsintensiv:** Jeder Kunde braucht individuelle ROI-Analyse statt Standard-Pitch
 - **Produktexperte:** Muss 200+ Cook&Fresh® Produkte kennen und Restaurant-Konzepten zuordnen können
 - **Langfristige Beziehungen:** 3-6 Monate Sales-Cycle, dann oft mehrjährige Lieferverträge
@@ -251,7 +250,7 @@ integrations (id, name, type, config, status, created_at)
 
 ## 🔄 Business Process Flows
 
-### **Gastronomy Lead-to-Customer Journey**
+### **B2B-Food-Vertrieb Lead-to-Customer Journey**
 ```
 1. Lead-Eingang (E-Mail/Web/Messe/Referral)
    ↓

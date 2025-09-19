@@ -30,7 +30,7 @@
 - **Multi-Channel:** Keine ChannelType (DIRECT/PARTNER) Unterscheidung
 - **ROI-Calculator:** Komplett fehlend (Legacy unbrauchbar)
 - **Sample-Management:** Keine Cook&Fresh®-spezifischen Workflows
-- **FreshFoodz-KPIs:** Generische CRM-Metriken statt Gastronomy-Sales
+- **FreshFoodz-KPIs:** Generische CRM-Metriken statt B2B-Food-Vertrieb
 
 ---
 
@@ -82,7 +82,7 @@
 - **Zentrale Schaltzentrale** für alle FreshFoodz Genussberater
 - **Multi-Channel-Koordination** (Direct Sales + Partner Channel)
 - **ROI-Beratungstools** für Cook&Fresh® Produktverkauf
-- **Performance-Dashboard** für Gastronomy-Sales-KPIs
+- **Performance-Dashboard** für B2B-Food-Vertrieb-KPIs
 
 ### **Technische Basis:**
 - **90% Infrastructure bereits da** → Fokus auf Geschäftslogik!

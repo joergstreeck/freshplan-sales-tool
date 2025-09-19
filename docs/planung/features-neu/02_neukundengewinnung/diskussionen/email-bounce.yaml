@@ -1,0 +1,62 @@
+openapi: 3.1.0
+info:
+  title: Email Deliverability API
+  version: 1.0.0
+  description: Bounce-Einlass und Deliverability-Überwachung für SMTP all-inkl.
+servers:
+  - url: https://api.example.com
+tags:
+  - name: Deliverability
+security:
+  - bearerAuth: []
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  parameters:
+    CorrelationId:
+      name: X-Correlation-Id
+      in: header
+      required: false
+      schema: { type: string, format: uuid }
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: false
+      description: Für sichere Wiederholungen, dedupliziert serverseitig
+      schema: { type: string, format: uuid }
+  schemas:
+    BounceIn:
+      type: object
+      required: [ type, recipient, occurredAt ]
+      additionalProperties: false
+      properties:
+        type: { type: string, enum: [HARD, SOFT] }
+        reason: { type: string }
+        smtpCode: { type: string, nullable: true }
+        provider: { type: string, example: "all-inkl" }
+        messageId: { type: string, description: "Message-ID aus Header oder Provider" }
+        threadId: { type: string, format: uuid, nullable: true }
+        recipient: { type: string, format: email }
+        occurredAt: { type: string, format: date-time }
+paths:
+  /email/bounce:
+    post:
+      tags: [Deliverability]
+      summary: Bounce-Ereignis einliefern
+      description: >
+        Nimmt Bounces aus Log-Parsing oder Provider-Webhooks entgegen.
+        Idempotent via `Idempotency-Key` empfohlen.
+      parameters:
+        - $ref: '#/components/parameters/CorrelationId'
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/BounceIn' }
+      responses:
+        '202': { description: Akzeptiert }
+        '409': { description: Duplikat (Idempotency-Key bereits verarbeitet) }

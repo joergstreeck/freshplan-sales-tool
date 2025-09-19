@@ -19,7 +19,7 @@ Das Kundenmanagement ist das **Herzstück einer vollständigen Enterprise CRM-Pl
 #### **1. `/customer-management` - Dashboard Hub**
 - **Status:** ✅ Production-Ready
 - **Implementation:** `KundenmanagementDashboard.tsx`
-- **Features:** Tool-Cards Navigation, Permission-System, Modern UI
+- **Features:** Tool-Cards Navigation, Permission-System, Modern UI, "Neuer Kunde" Button
 
 #### **2. `/customers` - Enterprise Customer-Management**
 - **Status:** ✅ Production-Ready (400 LOC Main Page + 276 LOC Table)
@@ -27,6 +27,7 @@ Das Kundenmanagement ist das **Herzstück einer vollständigen Enterprise CRM-Pl
 - **Features:**
   - ✅ **Virtualized Table:** Performance für große Datenmengen
   - ✅ **Intelligent Filter Bar:** Erweiterte Suchfunktionen
+  - ✅ **"Neuer Kunde" Button:** Integrierte Customer-Creation (kein separater Sidebar-Link)
   - ✅ **Customer Onboarding Wizard:** Modal-basiertes System
   - ✅ **Data Hygiene Dashboard:** Intelligence für Datenqualität
   - ✅ **Role-based Security:** Verkäuferschutz implementiert
@@ -176,19 +177,26 @@ npm run test:customers
 3. **`FINALE_GAP_ANALYSE_VISION_VS_REALITÄT.md`** - Planning vs implementation gaps
 4. **`FOKUSSIERTE_CUSTOMER_MANAGEMENT_ROUTEN_ANALYSE.md`** - Route-specific analysis
 
-## 🚨 **Kritische Gaps & Next Steps:**
+## 🚀 **Ready for Implementation:**
 
-### **🔴 P0 - Critical (Blockiert Features):**
-1. **Field-Based Backend Implementation:** Frontend bereit, Backend blockiert
-2. **Activities Route:** Navigation da, Implementation fehlt komplett
+### **✅ Technical Concept verfügbar:**
+**→ [technical-concept.md](./technical-concept.md)** - 3-Wochen Implementation-Plan
 
-### **🟡 P1 - Important (Enhancement):**
-1. **Legacy Cleanup:** `/customer` vs `/customers` Route-Dualität
-2. **Performance Scaling:** Für 10k+ Customer optimieren
+### **📦 Production-Ready Artefakte:**
+**→ [artefakte/](./artefakte/)** - 13 copy-paste-ready Deliverables:
+- 4x OpenAPI 3.1 Specs (samples, activities, fields, common-errors)
+- 4x PostgreSQL Scripts (field-bridge, samples, observability, retention)
+- 1x Postman Collection + Deploy-Guide + ZIP-Package
 
-### **🟢 P2 - Nice-to-have:**
-1. **Cross-Route Integration:** Customer → Opportunity Navigation
-2. **Mobile Optimization:** React-Native-Ready Architecture
+### **🔥 Enterprise-Grade Quality:**
+- **API-Design:** RFC7807 Error-Handling, ETag Optimistic-Locking, Cursor-Pagination
+- **Database:** Hot-Projection Performance, Trigger-Updates, Strategic Indizes
+- **Operations:** Zero-Downtime Migration, Observability-Views, Data-Retention
+
+### **🎯 Implementation-Phases:**
+1. **Phase 1 (Woche 1):** Field-Bridge + Sample-Management + Activities-Framework
+2. **Phase 2 (Woche 2):** Cockpit-KPIs + Hot-Fields-Performance + RBAC-Scopes
+3. **Phase 3 (Woche 3):** Monitoring + Migration + Production-Resilience
 
 ## 🤖 Claude Notes
 

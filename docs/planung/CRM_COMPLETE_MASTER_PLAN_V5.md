@@ -8,12 +8,12 @@
 
 ## 🎯 Executive Summary (für Claude)
 
-**Mission:** Entwicklung eines intelligenten Sales Command Centers für B2B-Gastronomy-Vertrieb mit Convenience-Food-Produkten
-**Problem:** Fragmentierte Vertriebsprozesse, manuelle Workflows, fehlende Insights für komplexe B2B-Beratungsverkäufe
-**Solution:** Integrierte CRM-Plattform mit Field-Based Architecture und Event-Driven Communication speziell für FreshFoodz Gastronomy-Sales
+**Mission:** Entwicklung eines intelligenten Sales Command Centers für B2B-Convenience-Food-Vertrieb an Gastronomiebetriebe
+**Problem:** Fragmentierte Vertriebsprozesse, manuelle Workflows, fehlende Insights für komplexe B2B-Beratungsverkäufe von Convenience-Food-Produkten
+**Solution:** Integrierte CRM-Plattform mit Field-Based Architecture und Event-Driven Communication speziell für Cook&Fresh® B2B-Food-Vertrieb
 **Impact:** 3x schnellere Lead-Qualifizierung, 2x höhere Conversion durch ROI-basierte Beratung, vollständige Sales-Process-Automation
 
-## 🍽️ FreshFoodz Business-Kontext (B2B-Gastronomy)
+## 🍽️ FreshFoodz Business-Kontext (B2B-Convenience-Food-Hersteller)
 
 **Unser Geschäftsmodell:**
 - **Produkt:** Cook&Fresh® Convenience-Food mit patentierter Konservierungstechnologie
@@ -46,7 +46,7 @@ PARTNER-CHANNEL (Lieferanten, Händler, Wiederverkäufer):
 8. Strategic Partnership → Langfristige Kooperation, exklusive Gebiete
 ```
 
-**CRM-Anforderungen für Multi-Channel-Sales:**
+**CRM-Anforderungen für Multi-Channel B2B-Food-Vertrieb:**
 - **Channel-Management:** Direktkunden vs. Partner-Channel mit verschiedenen Prozessen
 - **ROI-Kalkulation:** Kanal-spezifische Berechnungen (Restaurant vs. Hotel vs. Partner-Margin)
 - **Produkt-Matching:** 200+ Cook&Fresh® Produkte für verschiedene Betriebstypen
@@ -109,10 +109,10 @@ PARTNER-CHANNEL (Lieferanten, Händler, Wiederverkäufer):
 **🏛️ Enterprise CRM-Platform Status:** ✅ Production-Ready (534 Code-Dateien analysiert)
 
 **customer-management/** Dashboard-Hub (Route: `/customer-management`)
-- **Status:** ✅ Production-Ready (389 LOC) | **Timeline:** Wartung | **Issues:** 🔴 Dashboard-Bug (falsche Route-Pfade)
+- **Status:** ✅ Production-Ready (389 LOC) + "Neuer Kunde" Button | **Timeline:** Wartung | **Issues:** 🔴 Dashboard-Bug (falsche Route-Pfade)
 
 **customers/** Enterprise Customer-Liste (Route: `/customers` → `/customer-management/customers`)
-- **Status:** ✅ Production-Ready (400+276 LOC) | **Timeline:** Route-Migration | **Dependencies:** Routen-Konsolidierung
+- **Status:** ✅ Production-Ready (400+276 LOC) + "Neuer Kunde" Button | **Timeline:** Route-Migration | **Dependencies:** Routen-Konsolidierung
 
 **opportunities/** Kanban-Pipeline (Route: `/customer-management/opportunities`)
 - **Status:** ✅ Production-Ready (799 LOC Drag&Drop) | **Timeline:** Integration-Tests | **Dependencies:** Dashboard-Bug-Fix

@@ -1,0 +1,71 @@
+openapi: 3.1.0
+info: { title: Customer Fields API, version: 1.0.0 }
+servers: [ { url: "https://api.example.com" } ]
+security: [ { bearerAuth: [] } ]
+components:
+  securitySchemes:
+    bearerAuth: { type: http, scheme: bearer, bearerFormat: JWT }
+  parameters:
+    CorrelationId:
+      name: X-Correlation-Id
+      in: header
+      required: false
+      schema: { type: string, format: uuid }
+paths:
+  /customers/{id}/fields:
+    get:
+      tags: [Fields]
+      security: [ { bearerAuth: [] } ]
+      summary: Alle dynamischen Felder lesen
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - { name: id, in: path, required: true, schema: { type: string, format: uuid } }
+      responses:
+        "200": { description: OK }
+        "403": { $ref: "common-errors.yaml#/components/responses/Forbidden" }
+    patch:
+      tags: [Fields]
+      security: [ { bearerAuth: [] } ]
+      summary: Dynamische Felder schreiben (Bulk)
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - { name: id, in: path, required: true, schema: { type: string, format: uuid } }
+        - { name: If-Match, in: header, required: false, schema: { type: string }, description: "ETag zur Konflikterkennung" }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+              example:
+                sample_status: "DELIVERED"
+                roi_potential: { bucket: "HIGH", value: 1800 }
+                current_supplier_contracts: { renewal_date: "2026-03-01", exclusivity: true }
+      responses:
+        "200": { description: Aktualisiert }
+        "400": { $ref: "common-errors.yaml#/components/responses/BadRequest" }
+        "403": { $ref: "common-errors.yaml#/components/responses/Forbidden" }
+        "409": { $ref: "common-errors.yaml#/components/responses/Conflict" }
+        "412": { $ref: "common-errors.yaml#/components/responses/BadRequest" }
+        "429": { $ref: "common-errors.yaml#/components/responses/TooManyRequests" }
+
+  /customers:
+    get:
+      tags: [Hot-Search]
+      security: [ { bearerAuth: [] } ]
+      summary: Kundenliste (Hot-Fields Filter)
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - { name: sample_status, in: query, schema: { type: string } }
+        - { name: roi_bucket, in: query, schema: { type: string, enum: [LOW, MID, HIGH] } }
+        - { name: season_from, in: query, schema: { type: string, format: date } }
+        - { name: season_to, in: query, schema: { type: string, format: date } }
+        - { name: renewal_before, in: query, schema: { type: string, format: date } }
+        - { name: exclusivity, in: query, schema: { type: boolean } }
+        - { name: decision_maker_count_min, in: query, schema: { type: integer } }
+        - { name: limit, in: query, schema: { type: integer, default: 50 } }
+        - { name: cursor, in: query, schema: { type: string } }
+      responses:
+        "200": { description: OK }
+        "403": { $ref: "common-errors.yaml#/components/responses/Forbidden" }

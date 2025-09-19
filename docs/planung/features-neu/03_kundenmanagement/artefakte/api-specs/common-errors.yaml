@@ -1,0 +1,44 @@
+openapi: 3.1.0
+info:
+  title: Common Error Components
+  version: 1.0.0
+components:
+  schemas:
+    Error:
+      type: object
+      required: [type, title, status]
+      properties:
+        type: { type: string, description: "Error category (RFC7807 type or app code)" }
+        title: { type: string }
+        status: { type: integer, minimum: 100, maximum: 599 }
+        detail: { type: string }
+        instance: { type: string, description: "Request identifier / path" }
+        errors:
+          type: array
+          description: "Optional field-level validation errors"
+          items:
+            type: object
+            properties:
+              field: { type: string }
+              message: { type: string }
+  responses:
+    BadRequest:
+      description: Bad Request
+      content:
+        application/problem+json:
+          schema: { $ref: "#/components/schemas/Error" }
+    Forbidden:
+      description: Forbidden
+      content:
+        application/problem+json:
+          schema: { $ref: "#/components/schemas/Error" }
+    Conflict:
+      description: Conflict
+      content:
+        application/problem+json:
+          schema: { $ref: "#/components/schemas/Error" }
+    TooManyRequests:
+      description: Too Many Requests
+      content:
+        application/problem+json:
+          schema: { $ref: "#/components/schemas/Error" }
