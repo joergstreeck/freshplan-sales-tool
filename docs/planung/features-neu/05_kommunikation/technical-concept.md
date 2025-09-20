@@ -328,7 +328,7 @@ Copy-paste-Text für externe KI ready um konkrete Implementation-Artefakte zu er
 - Cross-Module-Events: Integration mit Customer/Audit/Opportunity-Events
 
 **Kontext-Links:**
-- **Business-Context:** → [CRM System Context](../../CRM_SYSTEM_CONTEXT.md)
+- **Business-Context:** → [CRM AI Context Schnell](../../CRM_AI_CONTEXT_SCHNELL.md)
 - **Master Plan Integration:** → [CRM Master Plan V5](../../CRM_COMPLETE_MASTER_PLAN_V5.md)
 - **Hybrid-Synthese Basis:** → [Kritische Würdigung](./diskussionen/2025-09-19_KRITISCHE_WUERDIGUNG_EXTERNE_KI_ANTWORT.md)
 

@@ -4,7 +4,7 @@
 **🎯 Owner:** Development Team + Product Team
 **⏱️ Timeline:** Q4 2025 → Q2 2026
 **🔧 Effort:** L (Large - Multi-Sprint Project)
-**📋 Kontext:** → [CRM System Context](./CRM_SYSTEM_CONTEXT.md) (für Feature-Diskussionen)
+**📋 Kontext:** → [CRM AI Context Schnell](./CRM_AI_CONTEXT_SCHNELL.md) (für neue Claude-Instanzen)
 **✅ FOUNDATION STANDARDS COMPLETED:**
 - **Module 01 Cockpit:** 100% Foundation Standards, Enterprise Assessment A+ (95/100), 44 Production-Ready Artefakte
 - **Module 02 Neukundengewinnung:** 92%+ Foundation Standards, Artefakte implementiert (design-system, openapi, backend, frontend, sql, k6)
@@ -23,7 +23,10 @@
 
 **🏆 MILESTONE ERREICHT:** Alle Kern-Module (01, 02, 03, 04, 05, 06, 07) haben 92%+ Foundation Standards Compliance erreicht und sind bereit für Production Implementation. Enterprise-Grade Quality mit 200+ Production-Ready Artefakten verfügbar.
 
-**🆕 AKTUELL (20.09.2025):** Modul 07 Hilfe & Support KOMPLETT geplant - 9.2/10 Enterprise Ready mit einzigartiger CAR-Strategy (Calibrated Assistive Rollout). 25 AI-Artefakte strukturiert, 92% Copy-Paste-Ready für 2-Wochen-Sprint.
+**🆕 AKTUELL (21.09.2025):**
+- **Governance Infrastructure:** 10/10 Claude-Ready, Settings-MVP Pack (9.7/10) integriert, atomare Planung Standards etabliert
+- **Planungsmethodik:** Von 801 auf 252 Zeilen optimiert, garantiert 9+/10 Claude-Readiness für neue Module
+- **Integration-Modul:** Strategic Discussion vorbereitet, Enterprise Architecture Proposals ready (Evolutionary vs. Big Bang)
 
 ## 🍽️ FreshFoodz Business-Kontext (B2B-Convenience-Food-Hersteller)
 
@@ -232,7 +235,7 @@ PARTNER-CHANNEL (Lieferanten, Händler, Wiederverkäufer):
 ### 🔥 Nächste 3 konkrete Aktionen:
 1. **01_mein-cockpit:** ✅ Technical Concept abgeschlossen → Phase 1 Implementation starten
 2. **Trigger-Texte V3.0:** ✅ **ABGESCHLOSSEN** - Vollständig implementiert
-3. **Feature-Diskussion:** Mit anderen KIs über CRM_SYSTEM_CONTEXT.md möglich
+3. **Feature-Diskussion:** Mit anderen KIs über CRM_AI_CONTEXT_SCHNELL.md möglich
 
 ### ⚠️ Aktuelle Blocker:
 - **Dokumentations-Strategie:** ✅ **GELÖST** - Duale Strategie implementiert
@@ -305,5 +308,5 @@ Einziger strategischer Master Plan. Alle Infrastructure-Pläne über Master Inde
 
 ---
 **📋 Dokument-Zweck:** Kompakte Planungsübersicht für Claude
-**🔗 Für Feature-Diskussionen:** → [CRM System Context](./CRM_SYSTEM_CONTEXT.md)
+**🔗 Für KI-Instanzen:** → [CRM AI Context Schnell](./CRM_AI_CONTEXT_SCHNELL.md)
 **🔄 Letzte Aktualisierung:** 2025-09-19 - Foundation Standards COMPLETED für alle Kern-Module (01, 02, 03, 04, 05) mit Best-of-Both-Worlds Integration

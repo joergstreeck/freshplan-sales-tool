@@ -120,7 +120,7 @@ enum ChannelType {
 /** SecurityScopeFilter – Multi-Channel Territory-based ABAC Security
  * Foundation References:
  * - Security: /docs/planung/grundlagen/SECURITY_ABAC.md
- * - Multi-Channel: /docs/planung/CRM_SYSTEM_CONTEXT.md
+ * - Multi-Channel: /docs/planung/CRM_AI_CONTEXT_SCHNELL.md
  */
 package de.freshplan.cockpit.security;
 

@@ -174,7 +174,7 @@
 ### **Strategic Foundation:**
 - **Platform-Analyse:** → [Vollständige Codebase-Analyse](../analyse/)
 - **KI-Diskussion:** → [Strategische Platform-Optimierung](../diskussionen/2025-09-19_KI-DISKUSSION_STRATEGISCHE_PLATFORM_OPTIMIERUNG.md)
-- **Business-Context:** → [CRM System Context](../../CRM_SYSTEM_CONTEXT.md)
+- **Business-Context:** → [CRM AI Context Schnell](../../CRM_AI_CONTEXT_SCHNELL.md)
 
 ### **Cross-Module Integration:**
 - **Neukundengewinnung:** → [Lead→Customer Conversion Events](../../../02_neukundengewinnung/)
@@ -219,7 +219,7 @@ Implementation Phase 1 starten - SQL-Schema deployment + API-Controller generati
 **Kontext-Links:**
 - **Grundlagen:** → [Planungsmethodik](../../PLANUNGSMETHODIK.md)
 - **Dependencies:** → [Master Plan V5 Customer-Management Status](../../CRM_COMPLETE_MASTER_PLAN_V5.md#kundenmanagement)
-- **Enterprise-Context:** → [B2B-Convenience-Food-Hersteller Business-Model](../../CRM_SYSTEM_CONTEXT.md)
+- **Enterprise-Context:** → [B2B-Convenience-Food-Hersteller Business-Model](../../CRM_AI_CONTEXT_SCHNELL.md)
 
 ---
 

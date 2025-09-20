@@ -384,7 +384,7 @@ interface EnhancedROICalculation {
 
 **Foundation Knowledge:**
 - **Design Standards:** → [../../grundlagen/DESIGN_SYSTEM.md](../../grundlagen/DESIGN_SYSTEM.md)
-- **Multi-Channel-Konzept:** → [../../CRM_SYSTEM_CONTEXT.md](../../CRM_SYSTEM_CONTEXT.md)
+- **Multi-Channel-Konzept:** → [../../CRM_AI_CONTEXT_SCHNELL.md](../../CRM_AI_CONTEXT_SCHNELL.md)
 - **Performance Standards:** → [../../grundlagen/PERFORMANCE_STANDARDS.md](../../grundlagen/PERFORMANCE_STANDARDS.md)
 
 **Infrastructure Dependencies:**
@@ -431,4 +431,4 @@ Phase 1 starten - FreshFoodz-Domain-Transformation. Customer-Entity um ChannelTy
 **Kontext-Links:**
 - **Grundlagen:** → [PLANUNGSMETHODIK.md](../../PLANUNGSMETHODIK.md)
 - **Dependencies:** → [Infrastructure Master Index](../../infrastruktur/00_MASTER_INDEX.md)
-- **Business Context:** → [CRM_SYSTEM_CONTEXT.md](../../CRM_SYSTEM_CONTEXT.md)
+- **Business Context:** → [CRM_AI_CONTEXT_SCHNELL.md](../../CRM_AI_CONTEXT_SCHNELL.md)

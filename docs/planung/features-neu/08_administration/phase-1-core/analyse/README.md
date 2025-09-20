@@ -155,7 +155,7 @@ Impact: Enhanced User Experience
 
 - **Planung:** [/docs/planung/features-neu/08_administration/](../)
 - **Master Plan:** [CRM_COMPLETE_MASTER_PLAN_V5.md](/docs/planung/CRM_COMPLETE_MASTER_PLAN_V5.md)
-- **System Context:** [CRM_SYSTEM_CONTEXT.md](/docs/planung/CRM_SYSTEM_CONTEXT.md)
+- **System Context:** [CRM_AI_CONTEXT_SCHNELL.md](/docs/planung/CRM_AI_CONTEXT_SCHNELL.md)
 - **Security Foundation:** FC-008 (Referenced in Code)
 
 ---

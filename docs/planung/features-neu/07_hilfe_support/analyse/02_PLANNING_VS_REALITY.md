@@ -20,7 +20,7 @@
 
 ## 🗺️ Sidebar-Planung vs. Implementierung
 
-### Geplante Struktur (CRM_SYSTEM_CONTEXT.md):
+### Geplante Struktur (CRM_AI_CONTEXT_SCHNELL.md):
 ```typescript
 ├── 🆘 Hilfe & Support            # Help System
 │   ├── erste-schritte/           # Onboarding & Getting Started

@@ -7,7 +7,7 @@
 
 **Neue Struktur:**
 - Master Plan V5: `/docs/planung/CRM_COMPLETE_MASTER_PLAN_V5.md`
-- Context Dokument: `/docs/planung/CRM_SYSTEM_CONTEXT.md`
+- Context Dokument: `/docs/planung/CRM_AI_CONTEXT_SCHNELL.md`
 - Feature-Konzepte: `/docs/planung/features-neu/`
 - Grundlagen: `/docs/planung/grundlagen/`
 

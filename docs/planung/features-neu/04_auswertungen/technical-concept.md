@@ -220,6 +220,6 @@ Phase 1 Implementation starten - ReportsResource.java deployen, SQL-Views ausrol
 - Database-Index-Deployment mit Performance-Validation (1-2 Stunden)
 
 **Kontext-Links:**
-- **Business-Kontext:** → [CRM System Context](../../CRM_SYSTEM_CONTEXT.md) - FreshFoodz B2B-Food-Geschäftsmodell
+- **Business-Kontext:** → [CRM AI Context Schnell](../../CRM_AI_CONTEXT_SCHNELL.md) - FreshFoodz B2B-Food-Geschäftsmodell
 - **Master Plan Integration:** → [CRM Master Plan V5](../../CRM_COMPLETE_MASTER_PLAN_V5.md) - Strategic Roadmap Position
 - **Planungsmethodik:** → [Template-Compliance](../../PLANUNGSMETHODIK.md) - Structured Documentation-Standards

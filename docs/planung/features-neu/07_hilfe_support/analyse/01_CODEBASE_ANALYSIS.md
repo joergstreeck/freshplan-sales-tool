@@ -378,7 +378,7 @@ thirdOffer: { delay: 1000, modal: true, offerLiveHelp: true }
 
 ### Sidebar Integration
 
-**Erwartete Struktur (aus CRM_SYSTEM_CONTEXT.md):**
+**Erwartete Struktur (aus CRM_AI_CONTEXT_SCHNELL.md):**
 ```typescript
 ├── 🆘 Hilfe & Support            # Help System
 │   ├── erste-schritte/           # Onboarding & Getting Started

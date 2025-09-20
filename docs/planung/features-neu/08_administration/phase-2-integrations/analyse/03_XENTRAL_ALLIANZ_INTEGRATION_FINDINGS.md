@@ -247,7 +247,7 @@ Integration: REST API + Webhook für Status Updates
 
 ### **Geschäftsprozess-Integration:**
 ```yaml
-B2B-Food Vertriebsprozess (aus CRM_SYSTEM_CONTEXT.md):
+B2B-Food Vertriebsprozess (aus CRM_AI_CONTEXT_SCHNELL.md):
 1. Lead-Qualifizierung → Restaurant-Typ, Größe, Küchen-Konzept
 2. Bedarf-Analyse → Personal-Situation, Food-Waste-Probleme
 3. ROI-Demonstration → Kosteneinsparungs-Kalkulation

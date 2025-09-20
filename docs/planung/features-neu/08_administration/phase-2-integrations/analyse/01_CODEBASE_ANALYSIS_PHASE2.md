@@ -3,7 +3,7 @@
 **📅 Datum:** 2025-09-20
 **🎯 Zweck:** Detaillierte Analyse bestehender Admin-Implementierung für Phase 2 Planning
 **📊 Scope:** Integration-Framework + Help-System + Advanced System Tools
-**🔗 Basis:** [CRM System Context](../../../CRM_SYSTEM_CONTEXT.md) + bestehende Admin-Routen
+**🔗 Basis:** [CRM System Context](../../../CRM_AI_CONTEXT_SCHNELL.md) + bestehende Admin-Routen
 
 ## 🎯 Executive Summary
 
@@ -184,7 +184,7 @@ const statsOverview = [
 
 ## 📋 **Sidebar-Struktur vs. System Context Vergleich**
 
-### **Geplante Struktur (CRM_SYSTEM_CONTEXT.md:147-167)**
+### **Geplante Struktur (CRM_AI_CONTEXT_SCHNELL.md:147-167)**
 ```yaml
 🔐 Administration:
   ├── audit-dashboard/          # ✅ IMPLEMENTIERT

@@ -11,7 +11,7 @@
 **Thema:** Business Value und ROI-Potentiale für Auswertungen
 
 #### **Input-Dokumente für externe KI:**
-1. **Business-Kontext:** `/docs/planung/CRM_SYSTEM_CONTEXT.md`
+1. **Business-Kontext:** `/docs/planung/CRM_AI_CONTEXT_SCHNELL.md`
    - FreshFoodz B2B-Convenience-Food-Geschäftsmodell
    - Multi-Channel-Vertrieb (Direktkunden + Partner-Channel)
    - ROI-basierte Beratungsverkäufe
@@ -196,5 +196,5 @@ Performance Specifications:
 ---
 
 **📊 Status:** BEREIT FÜR KI-DISKUSSION
-**🔄 Nächster Schritt:** Externe KI-Session mit CRM_SYSTEM_CONTEXT.md starten
+**🔄 Nächster Schritt:** Externe KI-Session mit CRM_AI_CONTEXT_SCHNELL.md starten
 **📝 Follow-up:** Technical Concept Update nach Diskussion
