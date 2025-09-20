@@ -57,7 +57,7 @@ artefakte/
 ### Database - UNVERÄNDERT ✅
 | Datei | Status | Bewertung | Beschreibung |
 |-------|---------|-----------|--------------|
-| `V226__hybrid_settings.sql` | ✅ **Produktionsreif** | 10/10 | PostgreSQL Schema mit JSONB & RLS |
+| `VXXX__hybrid_settings.sql` | ✅ **Produktionsreif** | 10/10 | PostgreSQL Schema mit JSONB & RLS (Nummer via Scripts) |
 | `settings_notify.sql` | ✅ **Produktionsreif** | 10/10 | LISTEN/NOTIFY für Cache Invalidation |
 | `settings_registry_keys.json` | ✅ **Produktionsreif** | 10/10 | Schema Registry mit B2B-Food Logic |
 

@@ -360,7 +360,7 @@ public class ROICalculatorService {
 ### **🚨 Immediate Actions (Diese Woche):**
 
 1. **Field-Based Backend:** Start Implementation mit vorhandener CQRS-Architecture
-2. **UserLeadSettings Migration:** V226__create_user_lead_settings.sql
+2. **UserLeadSettings Migration:** VXXX__create_user_lead_settings.sql (Nummer via ./scripts/get-next-migration.sh ermitteln)
 3. **Legacy-Cleanup:** `/customer` vs `/customers` konsolidieren
 4. **TODO-Priorisierung:** 102 TODOs nach Business-Impact sortieren
 

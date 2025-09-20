@@ -1,0 +1,185 @@
+{
+  "keys": [
+    {
+      "key": "help.nudge.enabled",
+      "type": "scalar",
+      "mergeStrategy": "scalar",
+      "scope": [
+        "global",
+        "tenant",
+        "territory",
+        "user"
+      ],
+      "defaultValue": true,
+      "jsonSchema": {
+        "type": "boolean"
+      },
+      "description": "Master switch for nudges",
+      "version": 1
+    },
+    {
+      "key": "help.nudge.confidence.min",
+      "type": "scalar",
+      "mergeStrategy": "scalar",
+      "scope": [
+        "global",
+        "tenant",
+        "territory"
+      ],
+      "defaultValue": 0.7,
+      "jsonSchema": {
+        "type": "number",
+        "minimum": 0,
+        "maximum": 1
+      },
+      "description": "Minimum confidence for assistive nudges",
+      "version": 1
+    },
+    {
+      "key": "help.nudge.budget.session.base",
+      "type": "scalar",
+      "mergeStrategy": "scalar",
+      "scope": [
+        "global",
+        "tenant"
+      ],
+      "defaultValue": 2,
+      "jsonSchema": {
+        "type": "integer",
+        "minimum": 0
+      },
+      "description": "Base nudges per session",
+      "version": 1
+    },
+    {
+      "key": "help.nudge.budget.session.perHour",
+      "type": "scalar",
+      "mergeStrategy": "scalar",
+      "scope": [
+        "global",
+        "tenant"
+      ],
+      "defaultValue": 1,
+      "jsonSchema": {
+        "type": "integer",
+        "minimum": 0
+      },
+      "description": "Extra nudges per session hour",
+      "version": 1
+    },
+    {
+      "key": "help.nudge.budget.session.max",
+      "type": "scalar",
+      "mergeStrategy": "scalar",
+      "scope": [
+        "global",
+        "tenant"
+      ],
+      "defaultValue": 5,
+      "jsonSchema": {
+        "type": "integer",
+        "minimum": 1
+      },
+      "description": "Max nudges per session",
+      "version": 1
+    },
+    {
+      "key": "help.nudge.cooldown.sameTopic",
+      "type": "scalar",
+      "mergeStrategy": "scalar",
+      "scope": [
+        "global",
+        "tenant",
+        "territory"
+      ],
+      "defaultValue": "PT4H",
+      "jsonSchema": {
+        "type": "string",
+        "pattern": "^P(T.*)$"
+      },
+      "description": "ISO-8601 duration",
+      "version": 1
+    },
+    {
+      "key": "help.nudge.cooldown.sameSession",
+      "type": "scalar",
+      "mergeStrategy": "scalar",
+      "scope": [
+        "global",
+        "tenant"
+      ],
+      "defaultValue": "PT30M",
+      "jsonSchema": {
+        "type": "string",
+        "pattern": "^P(T.*)$"
+      },
+      "description": "ISO-8601 duration",
+      "version": 1
+    },
+    {
+      "key": "help.nudge.cooldown.globalUser",
+      "type": "scalar",
+      "mergeStrategy": "scalar",
+      "scope": [
+        "global",
+        "tenant"
+      ],
+      "defaultValue": "PT8H",
+      "jsonSchema": {
+        "type": "string",
+        "pattern": "^P(T.*)$"
+      },
+      "description": "ISO-8601 duration",
+      "version": 1
+    },
+    {
+      "key": "help.struggle.thresholds",
+      "type": "object",
+      "mergeStrategy": "object",
+      "scope": [
+        "global",
+        "tenant",
+        "territory"
+      ],
+      "defaultValue": {
+        "dwellSeconds": 45,
+        "backAndForth": 3,
+        "errorBurst": 3
+      },
+      "jsonSchema": {
+        "type": "object",
+        "properties": {
+          "dwellSeconds": {
+            "type": "integer"
+          },
+          "backAndForth": {
+            "type": "integer"
+          },
+          "errorBurst": {
+            "type": "integer"
+          }
+        },
+        "additionalProperties": false
+      },
+      "description": "Heuristic thresholds",
+      "version": 1
+    },
+    {
+      "key": "help.suggest.topN",
+      "type": "scalar",
+      "mergeStrategy": "scalar",
+      "scope": [
+        "global",
+        "tenant"
+      ],
+      "defaultValue": 3,
+      "jsonSchema": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 10
+      },
+      "description": "Default number of suggestions",
+      "version": 1
+    }
+  ]
+}

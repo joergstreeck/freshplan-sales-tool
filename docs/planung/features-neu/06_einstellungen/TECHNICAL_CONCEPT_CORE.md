@@ -91,7 +91,7 @@ Die Settings Core Engine ist das Herzstück des FreshPlan Einstellungs-Systems. 
 - **Cache Invalidation:** PostgreSQL LISTEN/NOTIFY
 - **Cache Warming:** Vorladen für kritische Einstellungen
 
-### 4. Database Design (`V226__hybrid_settings.sql`)
+### 4. Database Design (`VXXX__hybrid_settings.sql`)
 
 **Tabellen:**
 - `settings_store` - Kern Einstellungs-Tabelle mit JSONB + RLS
@@ -436,7 +436,7 @@ curl -X POST /api/admin/settings/cache/warm
 
 **Settings Database:**
 - `artefakte/database/settings_registry_keys.json` - Schema Registry mit B2B Logic
-- `artefakte/backend/sql/V226__hybrid_settings.sql` - PostgreSQL Schema + RLS
+- `artefakte/backend/sql/VXXX__hybrid_settings.sql` - PostgreSQL Schema + RLS (Nummer via ./scripts/get-next-migration.sh)
 - `artefakte/backend/sql/settings_notify.sql` - LISTEN/NOTIFY für Cache Invalidation
 
 **Settings Frontend:**

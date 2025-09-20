@@ -1,0 +1,57 @@
+{
+  "groups": [
+    {
+      "name": "help-go-no-go",
+      "rules": [
+        {
+          "alert": "LowNudgeAcceptance",
+          "expr": "sum(rate(help_nudges_accepted_total[15m])) / clamp_min(sum(rate(help_nudges_shown_total[15m])),1) < 0.2",
+          "for": "15m",
+          "labels": {
+            "severity": "warning"
+          },
+          "annotations": {
+            "summary": "Nudge acceptance below 20%",
+            "description": "Investigate CAR thresholds and content relevance"
+          }
+        },
+        {
+          "alert": "HighFalsePositive",
+          "expr": "sum(rate(help_nudges_false_positive_total[15m])) / clamp_min(sum(rate(help_nudges_shown_total[15m])),1) > 0.15",
+          "for": "15m",
+          "labels": {
+            "severity": "warning"
+          },
+          "annotations": {
+            "summary": "False positives above 15%",
+            "description": "Reduce intensity or increase confidence threshold"
+          }
+        },
+        {
+          "alert": "SlowTimeToHelpP95",
+          "expr": "histogram_quantile(0.95, sum(rate(help_time_to_help_seconds_bucket[15m])) by (le)) > 30",
+          "for": "15m",
+          "labels": {
+            "severity": "warning"
+          },
+          "annotations": {
+            "summary": "p95 time-to-help > 30s",
+            "description": "Check latency or content findability"
+          }
+        },
+        {
+          "alert": "LowSelfServeRate",
+          "expr": "sum(rate(help_self_serve_total[1h])) / clamp_min(sum(rate(help_sessions_total[1h])),1) < 0.15",
+          "for": "1h",
+          "labels": {
+            "severity": "warning"
+          },
+          "annotations": {
+            "summary": "Self-serve < 15%",
+            "description": "Improve KB or guided flows"
+          }
+        }
+      ]
+    }
+  ]
+}

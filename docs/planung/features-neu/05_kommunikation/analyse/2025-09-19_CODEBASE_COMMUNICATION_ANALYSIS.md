@@ -85,7 +85,7 @@ frontend/src/
 
 #### 1. **Audit-System (Perfekt für Communication-Events):**
 ```sql
--- Bereits implementiert in V211__create_audit_tables.sql
+-- Bereits implementiert in V211__create_audit_tables.sql (historisch deployed)
 CREATE TABLE audit_events (
     id UUID PRIMARY KEY,
     entity_type VARCHAR(100) NOT NULL,

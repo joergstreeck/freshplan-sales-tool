@@ -28,7 +28,7 @@
 
 ### 🗄️ **DATABASE LAYER**
 
-#### 1. `V226__hybrid_settings.sql` ⭐⭐⭐⭐⭐
+#### 1. `VXXX__hybrid_settings.sql` ⭐⭐⭐⭐⭐
 **Score: 10/10** - **PERFECT**
 
 **Stärken:**
@@ -290,7 +290,7 @@ Registry (Schema) → Store (Values) → Effective (Computed) → Cache (Perform
 ## 🎯 IMPLEMENTATION-EMPFEHLUNGEN
 
 ### **Phase 1: Core Backend (2 Tage)**
-1. ✅ SQL Migration V226 deployen
+1. ✅ SQL Migration VXXX deployen (Nummer via ./scripts/get-next-migration.sh ermitteln)
 2. ✅ Java Services copy-pasten
 3. ⚠️ **PATCH-Implementation ergänzen**
 4. ⚠️ **JSON Schema Validation** hinzufügen

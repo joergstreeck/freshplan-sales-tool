@@ -381,7 +381,7 @@ public class CommissionTracking {
 - `backend/LeadExportAdapter.java` - Universal Export Integration
 
 **Lead-Erfassung Database:**
-- `database/V225__create_lead_table.sql` - Performance-optimiertes Schema
+- `database/VXXX__create_lead_table.sql` - Performance-optimiertes Schema (Nummer via ./scripts/get-next-migration.sh)
 
 **Lead-Erfassung API:**
 - `api/lead-management.api.json` - OpenAPI 3.1 mit Foundation References
@@ -425,7 +425,7 @@ Technical Concept für Lead-Erfassung vollständig mit Foundation Standards aktu
 **Foundation Standards Artefakte bereit:**
 1. **Lead Backend Services** - 8 Java-Klassen mit Foundation Standards JavaDoc
 2. **Security Integration** - SecurityScopeFilter.java + ScopeContext.java für ABAC
-3. **Database Schema** - V225__create_lead_table.sql mit Performance-Optimierung
+3. **Database Schema** - VXXX__create_lead_table.sql mit Performance-Optimierung (Nummer via Scripts ermitteln)
 4. **API Specification** - lead-management.api.json (OpenAPI 3.1)
 5. **Frontend Integration** - Theme V2 + SmartLayout + CSS Design Tokens
 6. **Test Coverage** - 3 Test-Suiten (Unit, Integration, E2E) mit BDD Pattern

@@ -1,0 +1,54 @@
+{
+  "title": "FreshPlan Help & Support \u2013 CAR KPIs",
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "panels": [
+    {
+      "type": "stat",
+      "title": "Nudge Acceptance Rate",
+      "targets": [
+        {
+          "expr": "sum(rate(help_nudges_accepted_total[5m])) / clamp_min(sum(rate(help_nudges_shown_total[5m])),1)",
+          "legendFormat": "acceptance"
+        }
+      ]
+    },
+    {
+      "type": "stat",
+      "title": "Nudge False Positive Rate",
+      "targets": [
+        {
+          "expr": "sum(rate(help_nudges_false_positive_total[5m])) / clamp_min(sum(rate(help_nudges_shown_total[5m])),1)",
+          "legendFormat": "false positive"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Time to Help p95 (s)",
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(help_time_to_help_seconds_bucket[5m])) by (le))"
+        }
+      ]
+    },
+    {
+      "type": "stat",
+      "title": "Self\u2011Serve Rate",
+      "targets": [
+        {
+          "expr": "sum(rate(help_self_serve_total[5m])) / clamp_min(sum(rate(help_sessions_total[5m])),1)"
+        }
+      ]
+    },
+    {
+      "type": "stat",
+      "title": "Guided \u2192 Activity Conversion",
+      "targets": [
+        {
+          "expr": "sum(rate(help_guided_to_activity_total[5m])) / clamp_min(sum(rate(help_guided_started_total[5m])),1)"
+        }
+      ]
+    }
+  ]
+}

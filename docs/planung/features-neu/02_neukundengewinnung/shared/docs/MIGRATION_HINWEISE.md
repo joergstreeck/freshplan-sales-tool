@@ -17,21 +17,21 @@
 ### SCHRITT 2: Migration-File umbenennen
 ```bash
 # Von Template:
-V225__create_lead_table.sql
+VXXX__create_lead_table.sql
 
 # Zu aktueller Nummer (Beispiel):
-V237__create_lead_table.sql
+VYYY__create_lead_table.sql
 ```
 
 ### SCHRITT 3: File-Header anpassen
 ```sql
 -- VXXX: Create Lead Management Tables (NUMMER AKTUALISIEREN!)
 -- ↓ ÄNDERN ZU:
--- V237: Create Lead Management Tables
+-- VYYY: Create Lead Management Tables
 ```
 
 ## 📋 BETROFFENE DATEIEN:
-- `V225__create_lead_table.sql` → umbenennen
+- `VXXX__create_lead_table.sql` → zur Implementierungszeit mit korrekter Nummer umbenennen
 - `README_PATCH.md` → Anweisungen beachten
 - Alle Dokumentation → Migration-Nummer als variabel behandeln
 
