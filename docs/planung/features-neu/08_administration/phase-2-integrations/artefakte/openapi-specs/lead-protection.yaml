@@ -1,0 +1,143 @@
+openapi: 3.1.0
+info:
+  title: FreshPlan Lead Protection API
+  version: "1.0.0"
+servers:
+  - url: /api
+paths:
+  /leads/{id}/protection:
+    get:
+      summary: Get computed protection status for a lead
+      tags: [LeadProtection]
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - $ref: '#/components/parameters/LeadId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/LeadProtectionStatus' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+        '500': { $ref: '#/components/responses/Problem' }
+  /leads/{id}/holds:
+    post:
+      summary: Create a stop-the-clock hold interval for a lead
+      description: Requires owner in ACTIVE/GRACE. Enforced by ABAC/RLS.
+      tags: [LeadProtection]
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - $ref: '#/components/parameters/LeadId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/LeadHoldCreate' }
+      responses:
+        '201':
+          description: Created
+          headers:
+            Location: { description: Resource URL, schema: { type: string } }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/LeadHold' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+        '500': { $ref: '#/components/responses/Problem' }
+  /leads/{id}/holds/{holdId}:
+    delete:
+      summary: End a hold interval (set end_at = now)
+      tags: [LeadProtection]
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - $ref: '#/components/parameters/LeadId'
+        - $ref: '#/components/parameters/HoldId'
+      responses:
+        '204': { description: No Content }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+        '500': { $ref: '#/components/responses/Problem' }
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  parameters:
+    LeadId:
+      name: id
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+    HoldId:
+      name: holdId
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+  responses:
+    Problem:
+      description: RFC7807 problem
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+    BadRequest:
+      description: Validation error
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+    Forbidden:
+      description: Forbidden (ABAC/RLS)
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+    NotFound:
+      description: Not found
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+    Conflict:
+      description: Business rule conflict
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+  schemas:
+    Problem:
+      type: object
+      additionalProperties: true
+      properties:
+        type: { type: string }
+        title: { type: string }
+        status: { type: integer }
+        detail: { type: string }
+        instance: { type: string }
+    LeadHoldCreate:
+      type: object
+      required: [ reason, startAt ]
+      properties:
+        reason:
+          type: string
+          enum: [FFZ_PRICE_APPROVAL, FFZ_SAMPLE_DELAY, FFZ_SUPPLY_ISSUE, CUSTOMER_BLOCKED, OTHER]
+        startAt: { type: string, format: date-time }
+        endAt:   { type: string, format: date-time, nullable: true }
+    LeadHold:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        leadId: { type: string, format: uuid }
+        reason: { type: string }
+        startAt: { type: string, format: date-time }
+        endAt: { type: string, format: date-time, nullable: true }
+    LeadProtectionStatus:
+      type: object
+      properties:
+        status: { type: string, enum: [ACTIVE, GRACE, EXPIRED] }
+        assignedAt: { type: string, format: date-time }
+        lastQualActivityAt: { type: string, format: date-time }
+        reminderDueAt: { type: string, format: date-time }
+        graceUntil: { type: string, format: date-time }
+        validUntil: { type: string, format: date-time }

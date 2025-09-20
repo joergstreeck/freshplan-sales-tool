@@ -1,0 +1,169 @@
+openapi: 3.1.0
+info:
+  title: Admin Users API
+  version: 1.0.0
+servers:
+  - url: https://api.freshplan.example
+security:
+  - bearerAuth: []
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  responses:
+    Problem:
+      description: RFC7807 Problem
+      content:
+        application/problem+json:
+          schema:
+            type: object
+            required: [type, title, status]
+            properties:
+              type: { type: string }
+              title: { type: string }
+              status: { type: integer }
+              detail: { type: string }
+
+paths:
+  /api/admin/users:
+    get:
+      summary: List users with filters
+      parameters:
+        - in: query
+          name: q
+          schema: { type: string }
+        - in: query
+          name: orgId
+          schema: { type: string, format: uuid }
+        - in: query
+          name: territory
+          schema: { type: string }
+        - in: query
+          name: limit
+          schema: { type: integer, default: 50, minimum: 1, maximum: 200 }
+        - in: query
+          name: cursor
+          schema: { type: string }
+      responses:
+        '200':
+          description: OK
+          headers:
+            ETag: { schema: { type: string } }
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/User'
+                  nextCursor: { type: string, nullable: true }
+        '403': { $ref: '#/components/responses/Problem' }
+    post:
+      summary: Create a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/UserCreate' }
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/User' }
+        '400': { $ref: '#/components/responses/Problem' }
+  /api/admin/users/{id}:
+    get:
+      summary: Get user by id
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/User' } } } }
+        '404': { $ref: '#/components/responses/Problem' }
+    patch:
+      summary: Update user (partial)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/UserPatch' }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/User' } } } }
+        '400': { $ref: '#/components/responses/Problem' }
+        '404': { $ref: '#/components/responses/Problem' }
+  /api/admin/users/{id}/claims:
+    put:
+      summary: Replace user claims (territories, channels, orgId, scopes)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/UserClaims' }
+      responses:
+        '204': { description: No Content }
+  /api/admin/users/{id}/sync:
+    post:
+      summary: Trigger Keycloak sync for this user (async)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '202': { description: Accepted }
+components:
+  schemas:
+    User:
+      type: object
+      required: [id, email, roles]
+      properties:
+        id: { type: string, format: uuid }
+        email: { type: string, format: email }
+        name: { type: string }
+        roles: { type: array, items: { type: string, enum: [admin,security,ops,manager,rep,auditor] } }
+        orgId: { type: string, format: uuid, nullable: true }
+        territories: { type: array, items: { type: string } }
+        channels: { type: array, items: { type: string } }
+        scopes: { type: array, items: { type: string } }
+        disabled: { type: boolean }
+    UserCreate:
+      type: object
+      required: [email]
+      properties:
+        email: { type: string, format: email }
+        name: { type: string }
+        roles: { type: array, items: { type: string } }
+        orgId: { type: string, format: uuid, nullable: true }
+        territories: { type: array, items: { type: string } }
+        channels: { type: array, items: { type: string } }
+        scopes: { type: array, items: { type: string } }
+    UserPatch:
+      type: object
+      properties:
+        name: { type: string }
+        roles: { type: array, items: { type: string } }
+        disabled: { type: boolean }
+    UserClaims:
+      type: object
+      properties:
+        orgId: { type: string, format: uuid, nullable: true }
+        territories: { type: array, items: { type: string } }
+        channels: { type: array, items: { type: string } }
+        scopes: { type: array, items: { type: string } }

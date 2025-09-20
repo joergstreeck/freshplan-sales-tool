@@ -1,0 +1,85 @@
+openapi: 3.1.0
+info:
+  title: Admin Security API
+  version: 1.0.0
+servers:
+  - url: https://api.freshplan.example
+security:
+  - bearerAuth: []
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  responses:
+    Problem:
+      description: RFC7807 Problem
+      content:
+        application/problem+json:
+          schema:
+            type: object
+            required: [type, title, status]
+            properties:
+              type: { type: string }
+              title: { type: string }
+              status: { type: integer }
+              detail: { type: string }
+
+paths:
+  /api/admin/security/policies:
+    get:
+      summary: List active ABAC policies and RLS settings
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  policies: { type: array, items: { $ref: '#/components/schemas/Policy' } }
+                  rlsEnabled: { type: boolean }
+    post:
+      summary: Apply policy change (creates approval request if Tier1/2)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/PolicyChange' }
+      responses:
+        '202': { description: Accepted }
+  /api/admin/security/preview:
+    get:
+      summary: Preview ABAC outcome for a user
+      parameters:
+        - in: query
+          name: userId
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  territories: { type: array, items: { type: string } }
+                  channels: { type: array, items: { type: string } }
+                  orgId: { type: string, format: uuid, nullable: true }
+components:
+  schemas:
+    Policy:
+      type: object
+      properties:
+        key: { type: string }
+        value: { type: object, additionalProperties: true }
+        riskTier: { type: string, enum: [TIER1,TIER2,TIER3] }
+    PolicyChange:
+      type: object
+      required: [key, value]
+      properties:
+        key: { type: string }
+        value: { type: object, additionalProperties: true }
+        justification: { type: string }

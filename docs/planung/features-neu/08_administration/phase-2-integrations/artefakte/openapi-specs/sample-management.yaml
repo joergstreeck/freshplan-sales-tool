@@ -1,0 +1,168 @@
+openapi: 3.1.0
+info:
+  title: FreshPlan Sample Management API
+  version: "1.0.0"
+servers:
+  - url: /api
+paths:
+  /sample-boxes:
+    post:
+      summary: Create a Sample Box configuration
+      tags: [SampleManagement]
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/SampleBoxCreate' }
+      responses:
+        '201':
+          description: Created
+          headers: { Location: { schema: { type: string } } }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/SampleBox' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '409': { $ref: '#/components/responses/Conflict' }
+        '500': { $ref: '#/components/responses/Problem' }
+  /test-phases/{id}/feedback:
+    get:
+      summary: List feedback for a test phase (secured)
+      tags: [SampleManagement]
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items: { $ref: '#/components/schemas/ProductFeedback' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/Problem' }
+  /feedback/{token}:
+    post:
+      summary: Public feedback submission (token-based)
+      tags: [SampleFeedbackPublic]
+      security: []  # public
+      parameters:
+        - name: token
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/PublicFeedbackSubmit' }
+      responses:
+        '201':
+          description: Created
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '410':
+          description: Token expired or invalid
+          content:
+            application/problem+json:
+              schema: { $ref: '#/components/schemas/Problem' }
+        '500': { $ref: '#/components/responses/Problem' }
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  responses:
+    Problem:
+      description: RFC7807 problem
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+    BadRequest:
+      description: Validation
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+    Forbidden:
+      description: Forbidden
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+    NotFound:
+      description: Not found
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+    Conflict:
+      description: Conflict
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+  schemas:
+    Problem:
+      type: object
+      additionalProperties: true
+    SampleBoxCreate:
+      type: object
+      required: [ leadId, accountId, items ]
+      properties:
+        leadId: { type: string, format: uuid }
+        accountId: { type: string, format: uuid }
+        notes: { type: string }
+        items:
+          type: array
+          items:
+            type: object
+            required: [ sku, qty ]
+            properties:
+              sku: { type: string }
+              qty: { type: integer, minimum: 1 }
+    SampleBox:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        leadId: { type: string, format: uuid }
+        accountId: { type: string, format: uuid }
+        configuredAt: { type: string, format: date-time }
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              sku: { type: string }
+              qty: { type: integer }
+    ProductFeedback:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        contactId: { type: string, format: uuid, nullable: true }
+        sku: { type: string, nullable: true }
+        rating: { type: integer, minimum: 1, maximum: 5, nullable: true }
+        comment: { type: string, nullable: true }
+        source: { type: string, enum: [EMAIL, FORM, PHONE, VISIT] }
+        receivedAt: { type: string, format: date-time }
+    PublicFeedbackSubmit:
+      type: object
+      properties:
+        contact:
+          type: object
+          properties:
+            name: { type: string }
+            role: { type: string, enum: [CHEF, BUYER, GM, OTHER] }
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              sku: { type: string }
+              rating: { type: integer, minimum: 1, maximum: 5 }
+              comment: { type: string }

@@ -1,0 +1,32 @@
+{
+  "title": "Admin Operations",
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "Outbox Rate (msg/min)",
+      "targets": [
+        {
+          "expr": "freshplan_outbox_rate"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Outbox Backlog",
+      "targets": [
+        {
+          "expr": "freshplan_outbox_backlog"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Bounce Rate",
+      "targets": [
+        {
+          "expr": "freshplan_email_bounce_rate"
+        }
+      ]
+    }
+  ]
+}

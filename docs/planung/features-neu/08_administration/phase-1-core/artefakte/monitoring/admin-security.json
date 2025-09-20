@@ -1,0 +1,32 @@
+{
+  "title": "Admin Security",
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "ABAC Denials",
+      "targets": [
+        {
+          "expr": "rate(abac_denied_total[5m])"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Approvals Pending",
+      "targets": [
+        {
+          "expr": "sum(admin_approval_pending)"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "Recent Audit",
+      "targets": [
+        {
+          "expr": "admin_audit_recent"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,117 @@
+openapi: 3.1.0
+info:
+  title: FreshPlan Lead Collaboration API
+  version: "1.0.0"
+servers:
+  - url: /api
+paths:
+  /leads/{id}/collaborators:
+    get:
+      summary: List collaborators for a lead
+      tags: [LeadCollaboration]
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - $ref: '#/components/parameters/LeadId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items: { $ref: '#/components/schemas/Collaborator' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/Problem' }
+    post:
+      summary: Add collaborator to a lead
+      tags: [LeadCollaboration]
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - $ref: '#/components/parameters/LeadId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [ userId, role ]
+              properties:
+                userId: { type: string, format: uuid }
+                role:   { type: string, enum: [VIEW, ASSIST, NEGOTIATE] }
+      responses:
+        '201':
+          description: Created
+          headers: { Location: { schema: { type: string } } }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+        '500': { $ref: '#/components/responses/Problem' }
+  /leads/{id}/collaborators/{userId}:
+    delete:
+      summary: Remove collaborator
+      tags: [LeadCollaboration]
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - $ref: '#/components/parameters/LeadId'
+        - name: userId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '204': { description: No Content }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/Problem' }
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  parameters:
+    LeadId:
+      name: id
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+  responses:
+    Problem:
+      description: RFC7807 problem
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+    BadRequest:
+      description: Validation error
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+    Forbidden:
+      description: Forbidden (ABAC/RLS)
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+    NotFound:
+      description: Not found
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+    Conflict:
+      description: Business rule conflict
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+  schemas:
+    Problem:
+      type: object
+      additionalProperties: true
+    Collaborator:
+      type: object
+      properties:
+        userId: { type: string, format: uuid }
+        role:   { type: string, enum: [VIEW, ASSIST, NEGOTIATE] }
+        addedAt: { type: string, format: date-time }

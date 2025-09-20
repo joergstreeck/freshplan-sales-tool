@@ -1,0 +1,50 @@
+openapi: 3.1.0
+info:
+  title: Admin Monitoring API
+  version: 1.0.0
+servers:
+  - url: https://api.freshplan.example
+security:
+  - bearerAuth: []
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  responses:
+    Problem:
+      description: RFC7807 Problem
+      content:
+        application/problem+json:
+          schema:
+            type: object
+            required: [type, title, status]
+            properties:
+              type: { type: string }
+              title: { type: string }
+              status: { type: integer }
+              detail: { type: string }
+
+paths:
+  /api/admin/monitoring/overview:
+    get:
+      summary: Snapshot of core KPIs
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  apiP95Ms: { type: number }
+                  outboxLag: { type: integer }
+                  errorRate: { type: number }
+                  abacDenyRate: { type: number }
+                  auditEventsLastHour: { type: integer }
+  /api/admin/monitoring/health:
+    get:
+      summary: Liveness/readiness summary (aggregated)
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { type: object, additionalProperties: true } } } }
