@@ -1,0 +1,43 @@
+{
+  "title": "Performance ROI \u2013 FreshFoodz",
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "API p95 vs Conversion Rate",
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(http_server_requests_seconds_bucket{route=~\"/api/(leads|customers)\"}[5m])) by (le))",
+          "legendFormat": "p95"
+        },
+        {
+          "expr": "sum(rate(business_lead_converted_total[5m])) / sum(rate(business_lead_created_total[5m]))",
+          "legendFormat": "CR"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Cost per Lead vs LCP p75",
+      "targets": [
+        {
+          "expr": "avg(finops_cost_per_lead)",
+          "legendFormat": "CPL"
+        },
+        {
+          "expr": "histogram_quantile(0.75, sum(rate(web_vitals_lcp_bucket[5m])) by (le))",
+          "legendFormat": "LCP p75"
+        }
+      ]
+    },
+    {
+      "type": "stat",
+      "title": "Mobile Lead Form \u2013 p75 INP",
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.75, sum(rate(web_vitals_inp_bucket{route=\"/leads/new\"}[5m])) by (le))"
+        }
+      ]
+    }
+  ],
+  "schemaVersion": 36
+}

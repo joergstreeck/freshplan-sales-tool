@@ -1,0 +1,11 @@
+# application.properties (excerpt)
+quarkus.micrometer.binder.http-server.enabled=true
+quarkus.micrometer.export.prometheus.enabled=true
+quarkus.micrometer.binder.jvm=true
+quarkus.micrometer.binder.system=true
+
+# HTTP server naming for route labels
+quarkus.micrometer.binder.http-server.match-patterns=/api/.*,/health,.+
+
+# Custom timer example in code:
+# @Timed(value = "api_customers_list", description = "Customers list endpoint")
