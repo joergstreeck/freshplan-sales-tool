@@ -1,56 +1,63 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://schemas.freshplan.local/events/cloudevents-event-envelope.v1.json",
-  "title": "CloudEvents 1.0 Event Envelope Schema",
-  "description": "FreshPlan CloudEvents 1.0 compatible event envelope with extensions",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://freshplan.example/schemas/cloudevents-event-envelope.v1.json",
+  "title": "FreshPlan CloudEvents 1.0 Envelope",
   "type": "object",
+  "required": [
+    "id",
+    "type",
+    "source",
+    "specversion",
+    "time",
+    "datacontenttype",
+    "data"
+  ],
   "properties": {
     "id": {
       "type": "string",
-      "description": "Unique event identifier"
-    },
-    "time": {
-      "type": "string",
-      "format": "date-time",
-      "description": "Event timestamp in ISO 8601 format"
+      "minLength": 1
     },
     "type": {
       "type": "string",
-      "pattern": "^[a-z]+\\.[a-z]+\\.[a-z]+$",
-      "description": "Event type in domain.aggregate.event format",
-      "examples": ["sample.status.changed", "trial.phase.started", "credit.checked"]
+      "pattern": "^[a-z]+(\\.[a-z_]+)+$"
     },
     "source": {
       "type": "string",
-      "description": "Event source (module/service)"
+      "minLength": 1
     },
     "specversion": {
       "type": "string",
-      "const": "1.0",
-      "description": "CloudEvents specification version"
+      "const": "1.0"
+    },
+    "time": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "subject": {
+      "type": "string"
     },
     "datacontenttype": {
       "type": "string",
-      "const": "application/json",
-      "description": "Content type of the data attribute"
+      "const": "application/json"
+    },
+    "dataschema": {
+      "type": "string"
     },
     "correlationId": {
       "type": "string",
-      "description": "Correlation ID for request tracing"
+      "minLength": 1
     },
     "tenantId": {
       "type": "string",
-      "description": "Tenant identifier for multi-tenancy"
+      "minLength": 1
     },
     "orgId": {
       "type": "string",
-      "description": "Organization identifier"
+      "minLength": 1
     },
     "data": {
-      "type": "object",
-      "description": "Event-specific payload data"
+      "type": "object"
     }
   },
-  "required": ["id", "time", "type", "source", "specversion", "datacontenttype", "correlationId", "tenantId", "data"],
-  "additionalProperties": false
+  "additionalProperties": true
 }
