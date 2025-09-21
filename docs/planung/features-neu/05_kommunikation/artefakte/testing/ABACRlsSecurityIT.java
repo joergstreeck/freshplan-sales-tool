@@ -77,8 +77,9 @@ class ABACRlsSecurityIT {
   }
 
   @Test
-  void crossTerritoryMessageCreationIsForbidden() {
-    // Business-Logic: Cannot create messages for customers in other territories
+  void messageCreationForAnyCustomerIsAllowed() {
+    // FreshFoodz Reality: Territory = nur User-Assignment, KEIN Gebietsschutz!
+    // Berlin-User DARF München-Customer kontaktieren
     given()
       .header("X-Territories", "BER")
       .contentType("application/json")
@@ -91,6 +92,6 @@ class ABACRlsSecurityIT {
         }
         """)
       .when().post("/api/comm/messages")
-      .then().statusCode(anyOf(is(403), is(404))); // 403 if territory check, 404 if customer not found
+      .then().statusCode(anyOf(is(201), is(404))); // 201 if created, 404 if customer not found
   }
 }

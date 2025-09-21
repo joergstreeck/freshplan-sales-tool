@@ -30,7 +30,7 @@ interface PartnerPerformanceKPIs {
 ```typescript
 interface PartnerChannelView {
   partnerPerformanceRanking: PartnerRanking[];
-  territoryConflictDetection: TerritoryConflict[];
+  leadOverlapDetection: LeadOverlap[];         // User-Lead-Overlaps (nicht Territory-Conflicts)
   jointOpportunities: JointOpportunity[];       // Gemeinsame Großkunden
 }
 ```
@@ -55,11 +55,11 @@ Top Partner (Q4 2025)
 └── 🥉 Regional GmbH     │ €22k │ 76% Ziele │ 0 Konflikte
 ```
 
-### **Territory-Konflikt-Alerts:**
+### **User-Lead-Overlap-Alerts:**
 ```
-⚠️ Aktive Konflikte (2)
-├── Hotel Maritim: METRO vs. Direct (Hamburg)
-└── Restaurant Zeus: Partner A vs. Partner B (Berlin)
+⚠️ Lead-Overlaps (2)
+├── Hotel Maritim: Partner-User vs. Direct-User (Lead-Protection-Check)
+└── Restaurant Zeus: User A vs. User B (6M-Schutzfrist aktiv)
 ```
 
 ## ⚠️ Komplexe Abhängigkeiten
@@ -76,7 +76,7 @@ Top Partner (Q4 2025)
 
 ### **Business-Complexity:**
 - **Multi-Tier-Partners:** Distributoren → Händler → Endkunden
-- **Exclusive Territories:** Gebietsschutz-Regelungen
+- **User-Lead-Protection:** 6M+60T+10T Schutz pro registrierendem User
 - **Joint-Accounts:** Große Ketten mit mehreren Partnern
 
 ## 🚧 Blocker & Risiken
@@ -88,8 +88,8 @@ Top Partner (Q4 2025)
 
 ### **Business-Blocker:**
 1. **Partner-Agreements** müssen Data-Sharing erlauben
-2. **Territory-Rules** müssen klar definiert sein
-3. **Conflict-Resolution-Prozesse** müssen etabliert sein
+2. **User-Lead-Protection-Rules** müssen klar definiert sein
+3. **Lead-Overlap-Resolution-Prozesse** müssen etabliert sein
 
 ## 📋 Roadmap-Abhängigkeiten
 
@@ -112,7 +112,7 @@ Top Partner (Q4 2025)
 interface BasicPartnerInfo {
   isPartnerCustomer: boolean;
   partnerName?: string;
-  territoryConflict?: boolean;
+  leadConflict?: boolean;        // User-Lead-Overlap (nicht Territory-Conflict)
 }
 ```
 

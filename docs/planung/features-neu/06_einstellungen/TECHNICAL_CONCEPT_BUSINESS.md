@@ -25,7 +25,7 @@ Dieses Dokument beschreibt die business-spezifische Logik des FreshPlan Settings
 ### Territory-Management
 
 **Deutschland (EUR):**
-- **Besonderheiten:** Strenge Bio-Standards, HACCP-Compliance
+- **Besonderheiten:** EUR Currency, 19% MwSt, deutsche Sprachpräferenzen
 - **Seasonality:** Spargel-Saison (April-Juni), Oktoberfest (September-Oktober)
 - **SLA Standards:** T+3 für Samples, T+7 für Bulk-Orders
 

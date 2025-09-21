@@ -6,6 +6,7 @@ import de.freshplan.help.domain.FollowUpPlanRequest;
 import de.freshplan.help.domain.FollowUpPlanResponse;
 import de.freshplan.help.domain.RoiQuickCheckRequest;
 import de.freshplan.help.domain.RoiQuickCheckResponse;
+import de.freshplan.help.operations.UserLeadOperationsGuide;
 import de.freshplan.help.repo.HelpRepository;
 import de.freshplan.security.ScopeContext;
 import io.micrometer.core.instrument.MeterRegistry;
@@ -23,6 +24,7 @@ public class HelpService {
   @Inject HelpRepository repo;
   @Inject ScopeContext scope;
   @Inject MeterRegistry meter;
+  @Inject UserLeadOperationsGuide operationsGuide;
 
   // Simple in-memory limiter per (user, session) with TTL
   private final Map<String, Entry> budget = new ConcurrentHashMap<>();
@@ -56,6 +58,18 @@ public class HelpService {
 
     long t0 = System.nanoTime();
     try{
+      // Check if Operations-Guide can handle this query with high confidence
+      double operationsConfidence = operationsGuide.getConfidenceForQuery(context);
+      if (operationsConfidence >= minConfidence) {
+        // Return Operations-Guided response instead of database lookup
+        CARResponse operationsResponse = operationsGuide.handleQuery(context);
+        SuggestionDTO operationsSuggestion = convertCARResponseToSuggestion(operationsResponse, operationsConfidence);
+        e.used++;
+        meter.counter("help_nudges_shown_total", "type", "operations_guide").increment();
+        return java.util.List.of(operationsSuggestion);
+      }
+
+      // Default database-driven suggestions
       var rows = repo.rawSuggest(context, module, persona, territory, top);
       List<SuggestionDTO> out = new java.util.ArrayList<>();
       for (Object[] r : rows){
@@ -70,7 +84,7 @@ public class HelpService {
         out.add(s);
       }
       e.used++;
-      meter.counter("help_nudges_shown_total").increment(out.size());
+      meter.counter("help_nudges_shown_total", "type", "database_lookup").increment(out.size());
       return out;
     } finally {
       Timer.builder("help_suggest_seconds").register(meter).record(Duration.ofNanos(System.nanoTime() - t0));
@@ -105,6 +119,38 @@ public class HelpService {
     r.paybackMonths = Math.round(payback * 10.0) / 10.0;
     r.usedCalculator = "INTERNAL";
     return r;
+  }
+
+  private SuggestionDTO convertCARResponseToSuggestion(CARResponse carResponse, double confidence) {
+    HelpArticleDTO article = new HelpArticleDTO();
+    article.id = java.util.UUID.randomUUID();
+    article.slug = "operations-guide-" + carResponse.getTitle().toLowerCase().replaceAll("[^a-z0-9]+", "-");
+    article.module = "operations";
+    article.kind = "guided_operation";
+    article.title = carResponse.getTitle();
+    article.summary = carResponse.getQuickSummary();
+    article.locale = "de_DE";
+    article.territory = "ALL";
+    article.persona = "operations";
+
+    // Keywords basierend auf Operations-Context
+    article.keywords = java.util.List.of("user-lead-protection", "operations", "runbook", "state-machine", "reminder");
+
+    // CTA für Operations-Actions
+    HelpArticleDTO.Cta cta = new HelpArticleDTO.Cta();
+    cta.text = "Operations-Guide öffnen";
+    cta.url = "/hilfe/operations/user-lead-protection";
+    cta.style = "primary";
+    article.cta = cta;
+
+    SuggestionDTO suggestion = new SuggestionDTO();
+    suggestion.article = article;
+    suggestion.confidence = confidence;
+
+    // Store CARResponse for frontend access
+    suggestion.carResponse = carResponse;
+
+    return suggestion;
   }
 
   private javax.ws.rs.WebApplicationException problem(int status, String type, String detail){

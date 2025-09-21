@@ -361,7 +361,7 @@ Frage: "Gastronomy-spezifische Features"
 Frage: "Sales-Cycle-Integration"
   - Communication-Events in Opportunity-Pipeline integrieren?
   - Lead-to-Customer-Communication-Transition automatisieren?
-  - Territory-Conflict-Detection bei Communication erforderlich?
+  - User-Lead-Protection bei Communication beachten (kein Territory-Conflict)?
 ```
 
 ### **3. Foundation Standards Compliance:**

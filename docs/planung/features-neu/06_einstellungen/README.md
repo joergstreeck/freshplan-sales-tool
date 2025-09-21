@@ -70,7 +70,7 @@
 
 ### **2. B2B-Food Business Logic Implementation ✅ Completed**
 - **Multi-Contact-Rollen:** CHEF (Menu-Planung) + BUYER (Einkauf + Budgets)
-- **Territory-Management:** Deutschland (Bio-Standards + HACCP) + Schweiz (Premium-Pricing)
+- **Territory-Management:** Deutschland (EUR + 19% MwSt) + Schweiz (CHF + 7.7% MwSt)
 - **Seasonal Business-Rules:** Spargel-Saison + Oktoberfest + Weihnachts-Catering
 - **SLA-Integration:** T+3 Samples + T+7 Bulk-Orders + Auto-Approval-Thresholds
 
@@ -181,7 +181,7 @@ Settings-as-a-Service für Enterprise Platform:
 
 ### **🎯 B2B-Food Enterprise Business Value:**
 - **Multi-Contact-Efficiency:** CHEF + BUYER parallele Workflows für komplexe Gastronomiebetriebe
-- **Territory-Compliance:** Deutschland (Bio-Standards + HACCP) + Schweiz (Premium-Pricing)
+- **Territory-Configuration:** Deutschland (EUR + 19% MwSt) + Schweiz (CHF + 7.7% MwSt)
 - **Seasonal Business-Automation:** Spargel-Saison + Oktoberfest + Weihnachts-Catering Settings
 - **Performance-Excellence:** <50ms SLO für Enterprise-Scale + L1 Cache + PostgreSQL LISTEN/NOTIFY
 
@@ -212,7 +212,7 @@ Architecture: 5-Level Scope-Hierarchie + Merge-Engine
 - **Multi-Contact-Workflows:** CHEF (Menu-Planung) + BUYER (Einkauf) parallele Gastronomiebetrieb-Prozesse
 - **Territory-Management:** Deutschland vs. Schweiz Business-Rules + Seasonal Windows
 - **SLA-Automation:** T+3 Samples + T+7 Bulk-Orders + Auto-Approval-Thresholds
-- **Compliance-Ready:** Bio-Standards + HACCP + Premium-Pricing + Regional-Requirements
+- **Territory-Ready:** Multi-Currency (EUR/CHF) + Tax-Rates + Regional-Settings
 
 **Technical Innovation:**
 - **Best-of-Both Integration:** Optimierte Qualität aus externen + internen Development-Strategien
