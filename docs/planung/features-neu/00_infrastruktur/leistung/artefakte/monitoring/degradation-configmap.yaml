@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: perf-degradation-flags
+  namespace: prod
+data:
+  # read by app on boot / via settings overlay
+  LIVE_BADGES_INTERVAL_MS: "30000"   # was 5000
+  REALTIME_WS_ENABLED: "false"
+  CREDIT_PRECISION_MODE: "precheck-cache"
+  HEAVY_CHARTS_ENABLED: "false"

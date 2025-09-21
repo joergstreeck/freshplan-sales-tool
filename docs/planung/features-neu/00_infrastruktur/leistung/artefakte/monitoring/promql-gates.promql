@@ -1,0 +1,13 @@
+# PromQL – API p95 gates and regressions
+
+# p95 by route (5m window)
+histogram_quantile(0.95, sum(rate(http_server_requests_seconds_bucket{route=~"/api/(customers|leads|cockpit).*"}[5m])) by (le, route))
+
+# Regression detection: p95 today vs last 7d avg (simplified approximation)
+(
+  histogram_quantile(0.95, sum(rate(http_server_requests_seconds_bucket{route="/api/customers"}[5m])) by (le))
+)
+/
+(
+  histogram_quantile(0.95, sum(rate(http_server_requests_seconds_bucket{route="/api/customers"}[7d])) by (le))
+)
