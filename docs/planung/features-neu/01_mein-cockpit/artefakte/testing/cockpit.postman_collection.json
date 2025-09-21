@@ -1,0 +1,128 @@
+{
+  "info": {
+    "name": "Cockpit Foundation API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Summary",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer <token>"
+          }
+        ],
+        "url": {
+          "raw": "{{base}}/api/cockpit/summary?range=30d",
+          "host": [
+            "{{base}}"
+          ],
+          "path": [
+            "api",
+            "cockpit",
+            "summary"
+          ],
+          "query": [
+            {
+              "key": "range",
+              "value": "30d"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Filters",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer <token>"
+          }
+        ],
+        "url": {
+          "raw": "{{base}}/api/cockpit/filters",
+          "host": [
+            "{{base}}"
+          ],
+          "path": [
+            "api",
+            "cockpit",
+            "filters"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Channel Mix",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer <token>"
+          }
+        ],
+        "url": {
+          "raw": "{{base}}/api/cockpit/channels/mix?range=30d",
+          "host": [
+            "{{base}}"
+          ],
+          "path": [
+            "api",
+            "cockpit",
+            "channels",
+            "mix"
+          ],
+          "query": [
+            {
+              "key": "range",
+              "value": "30d"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "ROI Calc",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer <token>"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base}}/api/cockpit/roi/calc",
+          "host": [
+            "{{base}}"
+          ],
+          "path": [
+            "api",
+            "cockpit",
+            "roi",
+            "calc"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\"mealsPerDay\": 120, \"daysPerMonth\": 26, \"laborMinutesSavedPerMeal\": 2.5, \"laborCostPerHour\": 22, \"foodCostPerMeal\": 3.2, \"wasteReductionPct\": 8, \"channel\": \"DIRECT\"}"
+        }
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "base",
+      "value": "https://api.example.com"
+    }
+  ]
+}

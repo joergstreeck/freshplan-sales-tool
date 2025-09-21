@@ -1,0 +1,176 @@
+openapi: 3.1.0
+info:
+  title: Reports API
+  version: 1.1.0
+servers:
+  - url: https://api.example.com
+security: [ { bearerAuth: [] } ]
+components:
+  securitySchemes:
+    bearerAuth: { type: http, scheme: bearer, bearerFormat: JWT }
+  parameters:
+    CorrelationId:
+      name: X-Correlation-Id
+      in: header
+      required: false
+      schema: { type: string, format: uuid }
+  schemas:
+    SalesSummaryResponse:
+      type: object
+      required: [range, sampleSuccessRatePct, roiPipelineValue, partnerSharePct, atRiskCustomers, updatedAt]
+      properties:
+        range: { type: string, enum: [7d,30d,90d] }
+        sampleSuccessRatePct: { type: number, format: float, minimum: 0, maximum: 100 }
+        roiPipelineValue: { type: number }
+        partnerSharePct: { type: number, minimum: 0, maximum: 100 }
+        atRiskCustomers: { type: integer, minimum: 0 }
+        updatedAt: { type: string, format: date-time }
+    CustomerAnalyticsRow:
+      type: object
+      properties:
+        customerId: { type: string, format: uuid }
+        name: { type: string }
+        territory: { type: string }
+        sampleStatus: { type: string }
+        roiBucket: { type: string, enum: [LOW, MID, HIGH, null] }
+        roiValue: { type: number, nullable: true }
+        decisionMakerCount: { type: integer, nullable: true }
+        hasExecAlignment: { type: boolean, nullable: true }
+        seasonStart: { type: string, format: date, nullable: true }
+        seasonEnd: { type: string, format: date, nullable: true }
+        renewalDate: { type: string, format: date, nullable: true }
+        exclusivity: { type: boolean, nullable: true }
+    CustomerAnalyticsPage:
+      type: object
+      properties:
+        items:
+          type: array
+          items: { $ref: '#/components/schemas/CustomerAnalyticsRow' }
+        nextCursor: { type: string, nullable: true }
+    ActivityStatsResponse:
+      type: object
+      properties:
+        kind: { type: string, enum: [PRODUCTTEST_FEEDBACK, ROI_CONSULTATION] }
+        from: { type: string, format: date }
+        to: { type: string, format: date }
+        total: { type: integer }
+        byDay:
+          type: array
+          items:
+            type: object
+            properties:
+              day: { type: string, format: date }
+              count: { type: integer }
+    CostOverviewResponse:
+      type: object
+      properties:
+        range: { type: string, enum: [month, quarter, year] }
+        totals:
+          type: object
+          additionalProperties: { type: number }
+        breakdown:
+          type: array
+          items:
+            type: object
+            properties:
+              category: { type: string }
+              amount: { type: number }
+  responses:
+    BadRequest: { $ref: "../openapi/common-errors.yaml#/components/responses/BadRequest" }
+    Forbidden: { $ref: "../openapi/common-errors.yaml#/components/responses/Forbidden" }
+    Conflict: { $ref: "../openapi/common-errors.yaml#/components/responses/Conflict" }
+    TooMany: { $ref: "../openapi/common-errors.yaml#/components/responses/TooManyRequests" }
+paths:
+  /api/reports/sales-summary:
+    get:
+      tags: [Sales]
+      summary: Sales Summary KPIs
+      parameters:
+        - $ref: '#/components/parameters/CorrelationId'
+        - { name: range, in: query, schema: { type: string, enum: [7d,30d,90d], default: 30d } }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/SalesSummaryResponse' }
+        "400": { $ref: '#/components/responses/BadRequest' }
+        "403": { $ref: '#/components/responses/Forbidden' }
+        "429": { $ref: '#/components/responses/TooMany' }
+  /api/reports/customer-analytics:
+    get:
+      tags: [Customers]
+      summary: Kundenanalyse (Segmente/Filter)
+      parameters:
+        - $ref: '#/components/parameters/CorrelationId'
+        - { name: segment, in: query, schema: { type: string } }
+        - { name: territory, in: query, schema: { type: string } }
+        - { name: seasonFrom, in: query, schema: { type: string, format: date } }
+        - { name: seasonTo, in: query, schema: { type: string, format: date } }
+        - { name: renewalBefore, in: query, schema: { type: string, format: date } }
+        - { name: limit, in: query, schema: { type: integer, default: 100 } }
+        - { name: cursor, in: query, schema: { type: string } }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/CustomerAnalyticsPage' }
+        "400": { $ref: '#/components/responses/BadRequest' }
+        "403": { $ref: '#/components/responses/Forbidden' }
+        "429": { $ref: '#/components/responses/TooMany' }
+  /api/reports/activity-stats:
+    get:
+      tags: [Activities]
+      summary: Aktivitätsstatistiken
+      parameters:
+        - $ref: '#/components/parameters/CorrelationId'
+        - { name: kind, in: query, schema: { type: string, enum: [PRODUCTTEST_FEEDBACK, ROI_CONSULTATION] } }
+        - { name: from, in: query, schema: { type: string, format: date } }
+        - { name: to, in: query, schema: { type: string, format: date } }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ActivityStatsResponse' }
+        "400": { $ref: '#/components/responses/BadRequest' }
+        "403": { $ref: '#/components/responses/Forbidden' }
+        "429": { $ref: '#/components/responses/TooMany' }
+  /api/reports/cost-overview:
+    get:
+      tags: [Costs]
+      summary: Kostenübersicht (Service/Feature)
+      parameters:
+        - $ref: '#/components/parameters/CorrelationId'
+        - { name: range, in: query, schema: { type: string, enum: [month, quarter, year], default: month } }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/CostOverviewResponse' }
+        "400": { $ref: '#/components/responses/BadRequest' }
+        "403": { $ref: '#/components/responses/Forbidden' }
+        "429": { $ref: '#/components/responses/TooMany' }
+  /api/reports/export:
+    get:
+      tags: [Export]
+      summary: Report-Export (CSV/XLSX/PDF/JSON/HTML/JSONL)
+      parameters:
+        - $ref: '#/components/parameters/CorrelationId'
+        - { name: type, in: query, required: true, schema: { type: string, enum: [sales-summary, customer-analytics, activity-stats, cost-overview] } }
+        - { name: format, in: query, required: true, schema: { type: string, enum: [csv, xlsx, pdf, json, html, jsonl] } }
+        - { name: range, in: query, schema: { type: string } }
+        - { name: segment, in: query, schema: { type: string } }
+        - { name: territory, in: query, schema: { type: string } }
+      responses:
+        "200":
+          description: Datei/Stream
+          content:
+            application/octet-stream: {}
+            application/json: {}
+            application/x-ndjson: {}
+        "400": { $ref: '#/components/responses/BadRequest' }
+        "403": { $ref: '#/components/responses/Forbidden' }
+        "429": { $ref: '#/components/responses/TooMany' }

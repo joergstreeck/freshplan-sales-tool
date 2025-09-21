@@ -1,0 +1,68 @@
+
+# FreshPlan · Prometheus Alert Rules for CQRS Light Scaling
+# Apply with your Prometheus rule loader (ConfigMap or files.d).
+groups:
+- name: freshplan-scaling-core
+  rules:
+  - alert: APIQueriesP95High
+    expr: 1000 * histogram_quantile(0.95, sum(rate(http_server_requests_seconds_bucket{job="freshplan",app="api",workload="queries"}[5m])) by (le)) > 300
+    for: 15m
+    labels: { severity: warning }
+    annotations:
+      summary: "Queries p95 > 300ms"
+      detail: "Investigate projections/indices or pre-scale queries."
+  - alert: APICommandsP95High
+    expr: 1000 * histogram_quantile(0.95, sum(rate(http_server_requests_seconds_bucket{job="freshplan",app="api",workload="commands"}[5m])) by (le)) > 350
+    for: 15m
+    labels: { severity: warning }
+    annotations:
+      summary: "Commands p95 > 350ms"
+      detail: "Check DB locks, bulkhead limits, and write hotspots."
+  - alert: NotifyQueueHigh
+    expr: pg_notification_queue_usage{job="postgres"} > 0.7
+    for: 5m
+    labels: { severity: warning }
+    annotations:
+      summary: "PostgreSQL NOTIFY queue usage >70%"
+      runbook: "/docs/runbooks/runbook-seasonal.md#notify-queue-high"
+  - alert: OutboxLagHigh
+    expr: max(outbox_dispatch_lag_seconds) > 60
+    for: 10m
+    labels: { severity: warning }
+    annotations:
+      summary: "Outbox dispatch lag >60s"
+      runbook: "/docs/runbooks/runbook-seasonal.md#email-burst-management"
+
+- name: freshplan-territory-business
+  rules:
+  - alert: TerritoryQueriesP95High
+    expr: 1000 * histogram_quantile(0.95, sum(rate(http_server_requests_seconds_bucket{job="freshplan",app="api",workload="queries"}[5m])) by (le, territory)) > 320
+    for: 10m
+    labels: { severity: warning }
+    annotations:
+      summary: "Territory p95 > 320ms"
+      detail: "Affected territory: {{ $labels.territory }}"
+  - alert: CreditCheckBacklog
+    expr: freshplan_credit_check_inflight{provider=~".+"} > 25
+    for: 10m
+    labels: { severity: warning }
+    annotations:
+      summary: "Credit Check backlog high"
+      detail: "Provider: {{ $labels.provider }} inflight > 25"
+  - alert: CampaignBurstQueue
+    expr: freshplan_outbox_queue_depth{component="email"} > 500
+    for: 10m
+    labels: { severity: warning }
+    annotations:
+      summary: "Campaign outbox backlog >500"
+      detail: "Scale outbox-worker or throttle campaign batch size."
+
+- name: freshplan-cost-optimization
+  rules:
+  - alert: PreScaleWindowWithoutLoad
+    expr: (avg(rate(http_server_requests_seconds_count{job="freshplan",app="api"}[5m])) < 1) and on() (kube_deployment_status_replicas{deployment=~"freshplan-api-queries-.*"} >= 4)
+    for: 30m
+    labels: { severity: info }
+    annotations:
+      summary: "Pre-scale active without load"
+      action: "Consider lowering desiredReplicas in cron scaler for current window."

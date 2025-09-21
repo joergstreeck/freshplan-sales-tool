@@ -1,0 +1,25 @@
+name: module01-cockpit-advanced
+on: [push]
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: { distribution: 'temurin', java-version: '17' }
+      - run: ./mvnw -B -DskipITs test
+      - run: ./mvnw -B -Pcoverage verify
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: node --version
+      - run: npm ci
+      - run: npm run test:ci
+  performance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: k6 smoke
+        uses: grafana/k6-action@v0.3.1
+        with: { filename: k6/cockpit_performance.js }

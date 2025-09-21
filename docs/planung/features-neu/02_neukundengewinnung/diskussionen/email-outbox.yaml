@@ -1,0 +1,71 @@
+openapi: 3.1.0
+info:
+  title: Email Outbox API
+  version: 1.0.0
+  description: Monitoring- und Betriebs-API für den Outbox-Dispatcher (SMTP all-inkl).
+servers:
+  - url: https://api.example.com
+tags:
+  - name: Outbox
+security:
+  - bearerAuth: []
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  parameters:
+    CorrelationId:
+      name: X-Correlation-Id
+      in: header
+      required: false
+      schema: { type: string, format: uuid }
+  schemas:
+    OutboxItem:
+      type: object
+      additionalProperties: false
+      properties:
+        id: { type: string, format: uuid }
+        threadId: { type: string, format: uuid, nullable: true }
+        messageId: { type: string, nullable: true }
+        recipient: { type: string, format: email }
+        subject: { type: string }
+        status: { type: string, enum: [PENDING, SENDING, FAILED, SENT, DEAD] }
+        attempts: { type: integer, minimum: 0 }
+        nextAttemptAt: { type: string, format: date-time, nullable: true }
+        lastError: { type: string, nullable: true }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+    OutboxPage:
+      type: object
+      properties:
+        items:
+          type: array
+          items: { $ref: '#/components/schemas/OutboxItem' }
+        nextCursor: { type: string, nullable: true }
+paths:
+  /email/outbox:
+    get:
+      tags: [Outbox]
+      summary: Outbox-Monitoring
+      description: >
+        Liefert ausstehende, fehlgeschlagene oder versendete Nachrichten inkl. Retry-Status.
+        Für Betrieb, Debugging und Dashboarding.
+      parameters:
+        - $ref: '#/components/parameters/CorrelationId'
+        - name: status
+          in: query
+          schema: { type: string, enum: [pending, failed, sent, dead, all], default: pending }
+        - name: limit
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 200, default: 50 }
+        - name: cursor
+          in: query
+          schema: { type: string }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/OutboxPage' }

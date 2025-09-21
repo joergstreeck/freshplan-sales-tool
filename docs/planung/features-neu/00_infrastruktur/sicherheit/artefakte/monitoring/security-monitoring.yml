@@ -1,0 +1,278 @@
+# Security Monitoring Configuration für FreshFoodz B2B CRM
+# Prometheus + Grafana Dashboards für Security-Excellence
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: security-monitoring-config
+  namespace: freshplan-production
+data:
+  prometheus-security.yml: |
+    groups:
+      - name: freshplan-security-alerts
+        rules:
+          # RLS Performance Monitoring
+          - alert: RLSPerformanceDegradation
+            expr: histogram_quantile(0.95, rate(rls_query_duration_seconds_bucket[5m])) > 0.05
+            for: 2m
+            labels:
+              severity: warning
+              component: database
+              category: performance
+            annotations:
+              summary: "RLS Query Performance Degraded"
+              description: "RLS queries P95 latency is {{ $value }}s, exceeding 50ms threshold"
+              runbook: "https://docs.freshplan.com/runbooks/rls-performance"
+
+          # Security Access Violations
+          - alert: SecurityAccessViolation
+            expr: increase(security_access_denied_total[5m]) > 10
+            for: 1m
+            labels:
+              severity: critical
+              component: security
+              category: access-violation
+            annotations:
+              summary: "High Security Access Violations"
+              description: "{{ $value }} access violations in last 5 minutes"
+              runbook: "https://docs.freshplan.com/runbooks/security-violations"
+
+          # Territory Isolation Breach
+          - alert: TerritoryIsolationBreach
+            expr: increase(territory_cross_access_total[1m]) > 0
+            for: 0s
+            labels:
+              severity: critical
+              component: security
+              category: data-breach
+            annotations:
+              summary: "CRITICAL: Territory Isolation Breach Detected"
+              description: "User accessed data from different territory: {{ $labels.user_id }} → {{ $labels.target_territory }}"
+              runbook: "https://docs.freshplan.com/runbooks/territory-breach"
+
+          # Lead Protection Bypass
+          - alert: LeadProtectionBypass
+            expr: increase(lead_protection_bypass_total[1m]) > 0
+            for: 0s
+            labels:
+              severity: critical
+              component: security
+              category: data-breach
+            annotations:
+              summary: "CRITICAL: Lead Protection Bypass Detected"
+              description: "Unauthorized lead access: {{ $labels.user_id }} → {{ $labels.lead_id }}"
+              runbook: "https://docs.freshplan.com/runbooks/lead-protection-breach"
+
+          # Session Settings Failure
+          - alert: SessionSettingsFailure
+            expr: increase(session_settings_errors_total[5m]) > 5
+            for: 2m
+            labels:
+              severity: warning
+              component: backend
+              category: authentication
+            annotations:
+              summary: "Session Settings Configuration Errors"
+              description: "{{ $value }} session setting failures in last 5 minutes"
+              runbook: "https://docs.freshplan.com/runbooks/session-settings"
+
+          # Multi-Contact Security Violation
+          - alert: MultiContactSecurityViolation
+            expr: increase(contact_role_violation_total[5m]) > 3
+            for: 1m
+            labels:
+              severity: warning
+              component: security
+              category: authorization
+            annotations:
+              summary: "Multi-Contact Security Violations"
+              description: "{{ $value }} contact role violations: {{ $labels.role }} → {{ $labels.category }}"
+              runbook: "https://docs.freshplan.com/runbooks/contact-roles"
+
+          # GDPR Audit Trail Lag
+          - alert: GDPRAuditTrailLag
+            expr: audit_trail_lag_seconds > 10
+            for: 30s
+            labels:
+              severity: warning
+              component: audit
+              category: compliance
+            annotations:
+              summary: "GDPR Audit Trail Lagging"
+              description: "Audit trail lag is {{ $value }}s, exceeding 5s SLO"
+              runbook: "https://docs.freshplan.com/runbooks/audit-trail"
+
+          # Connection Pool Security
+          - alert: ConnectionPoolSecurityRisk
+            expr: rate(connection_pool_security_errors_total[5m]) > 0.01
+            for: 2m
+            labels:
+              severity: warning
+              component: database
+              category: security
+            annotations:
+              summary: "Connection Pool Security Configuration Issues"
+              description: "Connection pool security error rate: {{ $value }}/sec"
+              runbook: "https://docs.freshplan.com/runbooks/connection-pool"
+
+  grafana-security-dashboard.json: |
+    {
+      "dashboard": {
+        "title": "FreshPlan Security Excellence Dashboard",
+        "tags": ["security", "rls", "freshplan"],
+        "panels": [
+          {
+            "title": "RLS Performance Overview",
+            "type": "graph",
+            "targets": [
+              {
+                "expr": "histogram_quantile(0.95, rate(rls_query_duration_seconds_bucket[5m]))",
+                "legendFormat": "RLS P95 Latency"
+              },
+              {
+                "expr": "histogram_quantile(0.50, rate(rls_query_duration_seconds_bucket[5m]))",
+                "legendFormat": "RLS P50 Latency"
+              }
+            ],
+            "yAxes": [{"unit": "s", "max": 0.2}],
+            "thresholds": [{"value": 0.05, "color": "red"}]
+          },
+          {
+            "title": "Security Access Pattern",
+            "type": "graph",
+            "targets": [
+              {
+                "expr": "rate(security_access_allowed_total[5m])",
+                "legendFormat": "Allowed Access/sec"
+              },
+              {
+                "expr": "rate(security_access_denied_total[5m])",
+                "legendFormat": "Denied Access/sec"
+              }
+            ]
+          },
+          {
+            "title": "Territory Isolation Health",
+            "type": "stat",
+            "targets": [
+              {
+                "expr": "territory_isolation_integrity_ratio",
+                "legendFormat": "Territory Isolation %"
+              }
+            ],
+            "thresholds": [
+              {"value": 0.999, "color": "green"},
+              {"value": 0.99, "color": "yellow"},
+              {"value": 0, "color": "red"}
+            ]
+          },
+          {
+            "title": "Lead Protection Effectiveness",
+            "type": "piechart",
+            "targets": [
+              {
+                "expr": "sum by (outcome) (rate(lead_access_audit_total[5m]))",
+                "legendFormat": "{{ outcome }}"
+              }
+            ]
+          },
+          {
+            "title": "Multi-Contact Security Matrix",
+            "type": "heatmap",
+            "targets": [
+              {
+                "expr": "rate(contact_role_access_total[5m])",
+                "legendFormat": "{{ role }} → {{ category }}"
+              }
+            ]
+          },
+          {
+            "title": "Session Settings Health",
+            "type": "gauge",
+            "targets": [
+              {
+                "expr": "session_settings_success_ratio",
+                "legendFormat": "Success Rate"
+              }
+            ],
+            "thresholds": [
+              {"value": 0.99, "color": "green"},
+              {"value": 0.95, "color": "yellow"},
+              {"value": 0, "color": "red"}
+            ]
+          },
+          {
+            "title": "GDPR Compliance Metrics",
+            "type": "table",
+            "targets": [
+              {
+                "expr": "audit_trail_completeness_ratio",
+                "legendFormat": "Audit Completeness"
+              },
+              {
+                "expr": "avg(audit_trail_lag_seconds)",
+                "legendFormat": "Audit Lag (avg)"
+              },
+              {
+                "expr": "data_retention_compliance_ratio",
+                "legendFormat": "Retention Compliance"
+              }
+            ]
+          }
+        ]
+      }
+    }
+
+  security-promql-queries.promql: |
+    # Essential Security Monitoring Queries für FreshPlan
+
+    # RLS Performance Monitoring
+    histogram_quantile(0.95, rate(rls_query_duration_seconds_bucket[5m]))
+    histogram_quantile(0.50, rate(rls_query_duration_seconds_bucket[5m]))
+    rate(rls_query_total[5m])
+
+    # Security Access Patterns
+    rate(security_access_allowed_total[5m])
+    rate(security_access_denied_total[5m])
+    security_access_denied_total / (security_access_allowed_total + security_access_denied_total) * 100
+
+    # Territory Isolation Monitoring
+    territory_isolation_integrity_ratio
+    rate(territory_cross_access_total[5m])
+    sum by (territory) (rate(territory_access_total[5m]))
+
+    # Lead Protection Metrics
+    rate(lead_protection_bypass_total[5m])
+    rate(lead_access_audit_total[5m])
+    sum by (outcome) (rate(lead_access_audit_total[5m]))
+
+    # Multi-Contact Security
+    rate(contact_role_access_total[5m])
+    rate(contact_role_violation_total[5m])
+    sum by (role) (rate(contact_role_access_total[5m]))
+
+    # Session Security Health
+    session_settings_success_ratio
+    rate(session_settings_errors_total[5m])
+    connection_pool_security_health_ratio
+
+    # GDPR Compliance Monitoring
+    audit_trail_completeness_ratio
+    audit_trail_lag_seconds
+    data_retention_compliance_ratio
+    rate(gdpr_data_access_requests_total[5m])
+
+    # Performance vs Security Trade-offs
+    (rls_query_duration_seconds_sum / rls_query_duration_seconds_count) * 1000  # Average RLS overhead in ms
+    api_response_time_with_rls_seconds - api_response_time_without_rls_seconds   # RLS overhead
+    security_features_enabled_count / total_security_features_count * 100       # Security feature coverage
+
+    # Emergency Security Metrics
+    rate(security_emergency_override_total[5m])
+    rate(security_manual_intervention_total[5m])
+    security_incident_severity_gauge
+
+    # Business Impact Metrics
+    security_blocked_revenue_euros
+    security_compliance_cost_reduction_euros
+    security_incident_mttr_minutes

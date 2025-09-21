@@ -1,0 +1,18 @@
+{
+  "$schema": "https://smartlayout.schemas/v1.json",
+  "id": "lead-form",
+  "version": "2.0.0",
+  "theme": "theme-v2",
+  "sections": [
+    { "id": "basic", "title": "Basisdaten", "fields": [
+      {"key":"name","type":"text","label":"Name","required":true},
+      {"key":"territory","type":"select","label":"Gebiet","options":["BER","HH","NRW"]},
+      {"key":"channel_type","type":"select","label":"Kanal","options":["DIRECT","PARTNER"]}
+    ]},
+    { "id": "food", "title": "Gastronomie", "fields": [
+      {"key":"restaurant_type","type":"select","label":"Betriebstyp","options":["Restaurant","Hotel","Kantine"]},
+      {"key":"seasonal_menu_cycle","type":"daterange","label":"Saisonfenster"},
+      {"key":"kitchen_capacity","type":"number","label":"Küchenkapazität (Essen/Tag)"}
+    ]}
+  ]
+}

@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://freshplan.example/schemas/simple-event-payload.json",
+  "title": "FreshPlan CQRS Light Event Payload",
+  "description": "Simplified event structure for PostgreSQL LISTEN/NOTIFY (no CloudEvents overhead)",
+  "type": "object",
+  "required": [
+    "event_type",
+    "aggregate_id",
+    "payload",
+    "created_at"
+  ],
+  "properties": {
+    "event_type": {
+      "type": "string",
+      "description": "Domain event type (e.g., 'lead.created', 'customer.updated')",
+      "pattern": "^[a-z]+\\.[a-z]+$",
+      "examples": [
+        "lead.created",
+        "lead.assigned",
+        "customer.created",
+        "customer.updated",
+        "settings.changed"
+      ]
+    },
+    "aggregate_id": {
+      "type": "string",
+      "description": "ID of the affected aggregate (UUID)",
+      "format": "uuid"
+    },
+    "payload": {
+      "type": "object",
+      "description": "Event-specific data (keep <10KB for LISTEN/NOTIFY performance)"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the event occurred"
+    },
+    "user_id": {
+      "type": "string",
+      "description": "User who triggered the event (optional)"
+    },
+    "correlation_id": {
+      "type": "string",
+      "description": "For tracing related events (optional)"
+    }
+  },
+  "additionalProperties": false,
+  "examples": [
+    {
+      "event_type": "lead.created",
+      "aggregate_id": "550e8400-e29b-41d4-a716-446655440000",
+      "payload": {
+        "name": "Restaurant Sonnenschein",
+        "email": "info@sonnenschein.de",
+        "assigned_user": "user-123"
+      },
+      "created_at": "2025-09-21T10:30:00Z",
+      "user_id": "user-123"
+    }
+  ]
+}

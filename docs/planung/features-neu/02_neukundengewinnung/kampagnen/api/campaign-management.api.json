@@ -1,0 +1,433 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Campaign Management API - Foundation Standards Compliant",
+    "version": "1.1.0",
+    "description": "Enterprise-grade Campaign Management API with A/B testing, multi-touch attribution, Foundation Standards compliance, and B2B food industry seasonal campaigns",
+    "contact": {
+      "name": "Marketing Automation Team",
+      "url": "https://docs.freshplan.de/api/campaigns"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.freshplan.de/v1",
+      "description": "Production server"
+    }
+  ],
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "Keycloak OIDC JWT token with territory-based ABAC claims"
+      }
+    },
+    "schemas": {
+      "CampaignCreateRequest": {
+        "type": "object",
+        "required": ["name", "templateId", "audienceId", "territory"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 200,
+            "description": "Campaign name",
+            "example": "Herbst Gastro-Kampagne 2025"
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 1000,
+            "description": "Campaign description"
+          },
+          "templateId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Email template identifier"
+          },
+          "audienceId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Target audience identifier"
+          },
+          "territory": {
+            "type": "string",
+            "enum": ["nord", "sued", "ost", "west", "BER", "HAM", "MUC"],
+            "description": "Territory assignment for ABAC access control"
+          },
+          "scheduledAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Campaign send timestamp"
+          },
+          "abTestingEnabled": {
+            "type": "boolean",
+            "default": false,
+            "description": "Enable A/B testing"
+          },
+          "variantPercentage": {
+            "type": "number",
+            "minimum": 0.05,
+            "maximum": 0.5,
+            "description": "Percentage for variant group (A/B testing)"
+          },
+          "seasonType": {
+            "type": "string",
+            "enum": ["fruehling", "sommer", "herbst", "winter", "weihnachten", "ostern"],
+            "description": "B2B food industry seasonal campaign type"
+          }
+        }
+      },
+      "CampaignResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Campaign identifier"
+          },
+          "name": {
+            "type": "string",
+            "description": "Campaign name"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["DRAFT", "SCHEDULED", "SENDING", "COMPLETED", "PAUSED", "CANCELLED"],
+            "description": "Campaign status"
+          },
+          "territory": {
+            "type": "string",
+            "description": "Territory assignment"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Creation timestamp"
+          },
+          "scheduledAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Scheduled send time"
+          },
+          "sentAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Actual send time"
+          },
+          "estimatedRecipients": {
+            "type": "integer",
+            "description": "Estimated recipient count"
+          },
+          "abTestingEnabled": {
+            "type": "boolean",
+            "description": "A/B testing status"
+          },
+          "seasonType": {
+            "type": "string",
+            "description": "Seasonal campaign type"
+          }
+        }
+      },
+      "CampaignAnalytics": {
+        "type": "object",
+        "properties": {
+          "campaignId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Campaign identifier"
+          },
+          "sent": {
+            "type": "integer",
+            "description": "Total emails sent"
+          },
+          "delivered": {
+            "type": "integer",
+            "description": "Successfully delivered emails"
+          },
+          "opened": {
+            "type": "integer",
+            "description": "Emails opened by recipients"
+          },
+          "clicked": {
+            "type": "integer",
+            "description": "Emails with click-through"
+          },
+          "bounced": {
+            "type": "integer",
+            "description": "Bounced emails"
+          },
+          "openRate": {
+            "type": "number",
+            "description": "Open rate percentage (0-1)"
+          },
+          "clickRate": {
+            "type": "number",
+            "description": "Click-through rate percentage (0-1)"
+          },
+          "bounceRate": {
+            "type": "number",
+            "description": "Bounce rate percentage (0-1)"
+          },
+          "conversions": {
+            "type": "integer",
+            "description": "Lead conversions from campaign"
+          },
+          "conversionRate": {
+            "type": "number",
+            "description": "Conversion rate percentage (0-1)"
+          },
+          "abTestResults": {
+            "type": "object",
+            "properties": {
+              "isSignificant": {
+                "type": "boolean",
+                "description": "Statistical significance achieved"
+              },
+              "confidenceLevel": {
+                "type": "number",
+                "description": "Confidence level (0-1)"
+              },
+              "winner": {
+                "type": "string",
+                "enum": ["PRIMARY", "VARIANT", "NO_CLEAR_WINNER"],
+                "description": "A/B test winner"
+              },
+              "primaryStats": {
+                "$ref": "#/components/schemas/VariantStats"
+              },
+              "variantStats": {
+                "$ref": "#/components/schemas/VariantStats"
+              }
+            }
+          }
+        }
+      },
+      "VariantStats": {
+        "type": "object",
+        "properties": {
+          "sent": {
+            "type": "integer"
+          },
+          "opened": {
+            "type": "integer"
+          },
+          "clicked": {
+            "type": "integer"
+          },
+          "converted": {
+            "type": "integer"
+          },
+          "openRate": {
+            "type": "number"
+          },
+          "clickRate": {
+            "type": "number"
+          },
+          "conversionRate": {
+            "type": "number"
+          }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/api/campaigns": {
+      "post": {
+        "summary": "Create new campaign with ABAC territory validation",
+        "description": "Creates a new B2B food industry campaign with territory-based access control, seasonal templates, and optional A/B testing. Follows Foundation Standards for performance (P95 <200ms).",
+        "tags": ["Campaign Management"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CampaignCreateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Campaign created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CampaignResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Territory access denied (ABAC enforcement)"
+          }
+        }
+      },
+      "get": {
+        "summary": "Get campaigns with ABAC territory filtering",
+        "description": "Retrieves campaigns with territory-based access control and performance optimization",
+        "tags": ["Campaign Management"],
+        "parameters": [
+          {
+            "name": "territory",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filter by territory (ABAC enforced)"
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": ["DRAFT", "SCHEDULED", "SENDING", "COMPLETED", "PAUSED"]
+            },
+            "description": "Filter by campaign status"
+          },
+          {
+            "name": "seasonType",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": ["fruehling", "sommer", "herbst", "winter", "weihnachten", "ostern"]
+            },
+            "description": "Filter by seasonal campaign type"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Campaigns retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/CampaignResponse"
+                      }
+                    },
+                    "total": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/campaigns/{id}/analytics": {
+      "get": {
+        "summary": "Get campaign analytics with A/B test results",
+        "description": "Retrieves comprehensive campaign analytics including A/B test results, multi-touch attribution, and B2B food industry specific metrics",
+        "tags": ["Campaign Analytics"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Campaign identifier"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Analytics retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CampaignAnalytics"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Territory access denied (ABAC enforcement)"
+          },
+          "404": {
+            "description": "Campaign not found"
+          }
+        }
+      }
+    },
+    "/api/campaigns/{id}/send": {
+      "post": {
+        "summary": "Send campaign with all.inkl SMTP integration",
+        "description": "Triggers campaign sending with all.inkl SMTP integration, A/B testing variant assignment, and performance tracking",
+        "tags": ["Campaign Execution"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Campaign sending initiated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "estimatedSendTime": {
+                      "type": "string",
+                      "format": "date-time"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Territory access denied"
+          },
+          "409": {
+            "description": "Campaign already sent or in invalid state"
+          }
+        }
+      }
+    }
+  },
+  "x-foundation-standards": {
+    "design-system": "FreshFoodz Theme V2 - #94C456 primary, #004F7B secondary",
+    "security": "ABAC pattern with territory-based JWT claims",
+    "performance": "P95 <200ms SLO for all endpoints with all.inkl SMTP optimization",
+    "testing": "80%+ coverage with A/B testing statistical validation",
+    "ab-testing": "Chi-square statistical significance testing with confidence intervals"
+  },
+  "x-b2b-food-features": {
+    "seasonal-campaigns": ["fruehling", "sommer", "herbst", "winter", "weihnachten", "ostern"],
+    "industry-targeting": "Gastronomiebetrieb-specific campaign templates and timing",
+    "cook-fresh-integration": "Product sample campaign workflows with Cook&Fresh® branding",
+    "multi-touch-attribution": "Last-touch, first-touch, linear, and time-decay attribution models"
+  }
+}

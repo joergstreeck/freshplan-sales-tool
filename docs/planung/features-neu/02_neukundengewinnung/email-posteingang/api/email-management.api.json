@@ -1,0 +1,223 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Email Management API - Foundation Standards Compliant",
+    "version": "1.1.0",
+    "description": "Enterprise-grade Email Management API with all.inkl integration, Foundation Standards compliance, and B2B food industry thread management",
+    "contact": {
+      "name": "Integration Team",
+      "url": "https://docs.freshplan.de/api/email"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.freshplan.de/v1",
+      "description": "Production server"
+    }
+  ],
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "Keycloak OIDC JWT token with territory-based ABAC claims"
+      }
+    },
+    "schemas": {
+      "EmailThreadResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Email thread identifier"
+          },
+          "subject": {
+            "type": "string",
+            "description": "Thread subject line"
+          },
+          "participants": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "email"
+            },
+            "description": "Thread participants email addresses"
+          },
+          "messageCount": {
+            "type": "integer",
+            "description": "Total messages in thread"
+          },
+          "lastMessageAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp of last message"
+          },
+          "linkedLeadId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Associated lead ID (if applicable)"
+          },
+          "territory": {
+            "type": "string",
+            "description": "Territory assignment for ABAC access control"
+          }
+        }
+      },
+      "EmailMessage": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Message identifier"
+          },
+          "threadId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Parent thread identifier"
+          },
+          "messageId": {
+            "type": "string",
+            "description": "RFC 822 Message-ID header"
+          },
+          "from": {
+            "type": "string",
+            "format": "email",
+            "description": "Sender email address"
+          },
+          "to": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "email"
+            },
+            "description": "Recipient email addresses"
+          },
+          "subject": {
+            "type": "string",
+            "description": "Message subject"
+          },
+          "body": {
+            "type": "string",
+            "description": "Message body content"
+          },
+          "receivedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Message reception timestamp"
+          },
+          "isRead": {
+            "type": "boolean",
+            "description": "Read status flag"
+          }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/api/email/threads": {
+      "get": {
+        "summary": "Get email threads with ABAC territory filtering",
+        "description": "Retrieves email threads with territory-based access control and performance optimization (P95 <200ms SLO)",
+        "tags": ["Email Management"],
+        "parameters": [
+          {
+            "name": "territory",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filter by territory (ABAC enforced)"
+          },
+          {
+            "name": "linkedToLead",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            },
+            "description": "Filter threads linked to leads"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Email threads retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/EmailThreadResponse"
+                      }
+                    },
+                    "total": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/email/threads/{threadId}/messages": {
+      "get": {
+        "summary": "Get messages in email thread",
+        "description": "Retrieves all messages in a specific email thread with ABAC validation",
+        "tags": ["Email Management"],
+        "parameters": [
+          {
+            "name": "threadId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Messages retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EmailMessage"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "x-foundation-standards": {
+    "design-system": "FreshFoodz Theme V2 integration",
+    "security": "ABAC territory-based access control",
+    "performance": "P95 <200ms SLO with all.inkl IMAP optimization",
+    "integration": "all.inkl IMAP/SMTP provider with TLS security"
+  }
+}

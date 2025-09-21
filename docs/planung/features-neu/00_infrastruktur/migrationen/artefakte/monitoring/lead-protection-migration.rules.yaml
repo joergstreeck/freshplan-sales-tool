@@ -1,0 +1,17 @@
+groups:
+- name: lead-protection-migration
+  rules:
+  - alert: MigrationP95Regression
+    expr: histogram_quantile(0.95, sum(rate(http_server_requests_seconds_bucket{route=~"/api/(leads|activities).*"}[5m])) by (le)) > 0.15
+    for: 10m
+    labels: { severity: critical }
+    annotations:
+      summary: "API p95 Regression während Migration"
+      description: "p95 > 150ms über 10m – Auto-Rollback triggern."
+  - alert: DBDeadlocksDuringMigration
+    expr: increase(postgresql_deadlocks_total[5m]) > 0
+    for: 5m
+    labels: { severity: critical }
+    annotations:
+      summary: "Deadlocks erkannt"
+      description: "Deadlocks stiegen während Migration – prüfen/abbrechen."

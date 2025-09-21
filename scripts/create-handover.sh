@@ -110,7 +110,7 @@ main() {
         # Fallback: Create a minimal handover document
         DATE=$(date +"%Y-%m-%d")
         TIME=$(date +"%H-%M")
-        HANDOVER_DIR="docs/claude-work/daily-work/$DATE"
+        HANDOVER_DIR="docs/planung/claude-work/daily-work/$DATE"
         HANDOVER_FILE="$HANDOVER_DIR/${DATE}_HANDOVER_${TIME}.md"
         
         mkdir -p "$HANDOVER_DIR"

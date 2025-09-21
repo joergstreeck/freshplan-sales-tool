@@ -1,0 +1,128 @@
+openapi: 3.1.0
+info:
+  title: Admin Audit API
+  version: 1.0.0
+servers:
+  - url: https://api.freshplan.example
+security:
+  - bearerAuth: []
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  responses:
+    Problem:
+      description: RFC7807 Problem
+      content:
+        application/problem+json:
+          schema:
+            type: object
+            required: [type, title, status]
+            properties:
+              type: { type: string }
+              title: { type: string }
+              status: { type: integer }
+              detail: { type: string }
+
+paths:
+  /api/admin/audit/events:
+    get:
+      summary: Search audit events
+      parameters:
+        - in: query
+          name: q
+          schema: { type: string }
+        - in: query
+          name: from
+          schema: { type: string, format: date-time }
+        - in: query
+          name: to
+          schema: { type: string, format: date-time }
+        - in: query
+          name: resourceType
+          schema: { type: string }
+        - in: query
+          name: limit
+          schema: { type: integer, default: 50, minimum: 1, maximum: 200 }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items: { type: array, items: { $ref: '#/components/schemas/AuditEvent' } }
+  /api/admin/audit/export:
+    get:
+      summary: Stream audit events as JSONL
+      parameters:
+        - in: query
+          name: from
+          schema: { type: string, format: date-time }
+        - in: query
+          name: to
+          schema: { type: string, format: date-time }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/jsonlines:
+              schema: { type: string, description: "JSON Lines stream" }
+  /api/admin/audit/approvals:
+    get:
+      summary: List pending/scheduled approval requests
+      parameters:
+        - in: query
+          name: status
+          schema: { type: string, enum: [PENDING,SCHEDULED] }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { type: object, properties: { items: { type: array, items: { $ref: '#/components/schemas/Approval' } } } } } } }
+  /api/admin/audit/approvals/{id}/approve:
+    post:
+      summary: Approve and schedule/execute
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '204': { description: No Content }
+  /api/admin/audit/approvals/{id}/reject:
+    post:
+      summary: Reject approval request
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '204': { description: No Content }
+components:
+  schemas:
+    AuditEvent:
+      type: object
+      required: [id, action, resourceType, createdAt]
+      properties:
+        id: { type: string, format: uuid }
+        action: { type: string }
+        resourceType: { type: string }
+        resourceId: { type: string }
+        actorUserId: { type: string, format: uuid }
+        riskTier: { type: string, enum: [TIER1,TIER2,TIER3] }
+        createdAt: { type: string, format: date-time }
+        beforeJson: { type: object, additionalProperties: true }
+        afterJson: { type: object, additionalProperties: true }
+    Approval:
+      type: object
+      required: [id, riskTier, action, status]
+      properties:
+        id: { type: string, format: uuid }
+        riskTier: { type: string, enum: [TIER1,TIER2,TIER3] }
+        action: { type: string }
+        resourceType: { type: string }
+        resourceId: { type: string }
+        status: { type: string, enum: [PENDING,SCHEDULED,APPROVED,REJECTED,CANCELLED,EXECUTED,OVERRIDDEN] }
+        timeDelayUntil: { type: string, format: date-time, nullable: true }

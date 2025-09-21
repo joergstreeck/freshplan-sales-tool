@@ -1,0 +1,179 @@
+openapi: 3.1.0
+info:
+  title: Email Integration API
+  version: 1.0.0
+servers:
+  - url: https://api.example.com
+security:
+  - bearerAuth: []
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  parameters:
+    CorrelationId:
+      name: X-Correlation-Id
+      in: header
+      required: false
+      schema: { type: string, format: uuid }
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: false
+      description: Für sichere Wiederholungen (empfohlen bei POST /email/bounce)
+      schema: { type: string, format: uuid }
+  schemas:
+    HealthStatus:
+      type: object
+      additionalProperties: false
+      properties:
+        ok: { type: boolean }
+        imap:
+          type: object
+          properties:
+            ok: { type: boolean }
+            lastCheck: { type: string, format: date-time }
+            latencyMs: { type: integer }
+            backlogMessages: { type: integer, description: "Ungelesene/ungeholte Mails" }
+        smtp:
+          type: object
+          properties:
+            ok: { type: boolean }
+            lastCheck: { type: string, format: date-time }
+            latencyMs: { type: integer }
+            rateLimitPerHour: { type: integer }
+            lastBounceRatePct: { type: number }
+        kas:
+          type: object
+          properties:
+            ok: { type: boolean }
+            lastCheck: { type: string, format: date-time }
+            quotaUsedPct: { type: number }
+        idleKeepaliveSeconds: { type: integer }
+        folderLagSeconds: { type: integer, description: "Δ zwischen Server‑Zeit und letzter verarbeiteter Mail" }
+    OutboxItem:
+      type: object
+      additionalProperties: false
+      properties:
+        id: { type: string, format: uuid }
+        threadId: { type: string, format: uuid, nullable: true }
+        messageId: { type: string, nullable: true, description: "SMTP/Message‑ID, falls vergeben" }
+        recipient: { type: string, format: email }
+        subject: { type: string }
+        status: { type: string, enum: [PENDING, SENDING, FAILED, SENT, DEAD] }
+        attempts: { type: integer, minimum: 0 }
+        nextAttemptAt: { type: string, format: date-time, nullable: true }
+        lastError: { type: string, nullable: true }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+    OutboxPage:
+      type: object
+      properties:
+        items:
+          type: array
+          items: { $ref: '#/components/schemas/OutboxItem' }
+        nextCursor: { type: string, nullable: true }
+    BounceIn:
+      type: object
+      required: [ type, recipient, occurredAt ]
+      additionalProperties: false
+      properties:
+        type: { type: string, enum: [HARD, SOFT] }
+        reason: { type: string }
+        smtpCode: { type: string, nullable: true }
+        provider: { type: string, example: "all-inkl" }
+        messageId: { type: string, description: "Message‑ID aus Header oder Provider" }
+        threadId: { type: string, format: uuid, nullable: true }
+        recipient: { type: string, format: email }
+        occurredAt: { type: string, format: date-time }
+paths:
+  /email/accounts/{id}/health:
+    get:
+      summary: Health‑Status IMAP/SMTP/KAS
+      security: [ { bearerAuth: [] } ]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+        - $ref: '#/components/parameters/CorrelationId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/HealthStatus' }
+              examples:
+                ok:
+                  value:
+                    ok: true
+                    imap: { ok: true, lastCheck: "2025-09-18T08:00:00Z", latencyMs: 85, backlogMessages: 0 }
+                    smtp: { ok: true, lastCheck: "2025-09-18T08:00:00Z", latencyMs: 120, rateLimitPerHour: 240, lastBounceRatePct: 0.8 }
+                    kas: { ok: true, lastCheck: "2025-09-18T07:59:00Z", quotaUsedPct: 61.2 }
+                    idleKeepaliveSeconds: 540
+                    folderLagSeconds: 3
+        '503':
+          description: Teilfunktion gestört
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/HealthStatus' }
+  /email/outbox:
+    get:
+      summary: Outbox‑Monitoring
+      security: [ { bearerAuth: [] } ]
+      parameters:
+        - $ref: '#/components/parameters/CorrelationId'
+        - name: status
+          in: query
+          schema: { type: string, enum: [pending, failed, sent, dead, all], default: pending }
+        - name: limit
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 200, default: 50 }
+        - name: cursor
+          in: query
+          schema: { type: string }
+      responses:
+        '200':
+          description: Liste ausstehender/fehlgeschlagener Sendungen
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/OutboxPage' }
+  /email/bounce:
+    post:
+      summary: Bounce‑Ereignis einliefern (Deliverability)
+      description: >
+        Nimmt Bounces aus Log‑Parsing oder Provider‑Webhooks entgegen.
+        Idempotent via `Idempotency-Key` empfohlen.
+      security: [ { bearerAuth: [] } ]
+      parameters:
+        - $ref: '#/components/parameters/CorrelationId'
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/BounceIn' }
+            examples:
+              hard:
+                value:
+                  type: HARD
+                  reason: "550 5.1.1 User unknown"
+                  smtpCode: "550"
+                  provider: "all-inkl"
+                  messageId: "<abc@mail.example>"
+                  recipient: "user@domain.tld"
+                  occurredAt: "2025-09-18T08:10:00Z"
+              soft:
+                value:
+                  type: SOFT
+                  reason: "451 4.7.1 Try again later"
+                  smtpCode: "451"
+                  provider: "all-inkl"
+                  messageId: "<def@mail.example>"
+                  recipient: "busy@domain.tld"
+                  occurredAt: "2025-09-18T08:12:00Z"
+      responses:
+        '202': { description: Akzeptiert }
+        '409': { description: Duplikat (Idempotency‑Key bereits verarbeitet) }

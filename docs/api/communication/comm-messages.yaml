@@ -1,0 +1,31 @@
+openapi: 3.1.0
+info: { title: Communication Messages API, version: 1.0.0 }
+servers: [ { url: https://api.example.com } ]
+security: [ { bearerAuth: [] } ]
+components:
+  securitySchemes: { bearerAuth: { type: http, scheme: bearer, bearerFormat: JWT } }
+  responses:
+    BadRequest: { $ref: './comm-common-errors.yaml#/components/responses/BadRequest' }
+    Forbidden:  { $ref: './comm-common-errors.yaml#/components/responses/Forbidden' }
+paths:
+  /api/comm/messages:
+    post:
+      summary: Start a new email conversation (creates thread + first outbound message)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [customerId, subject, to, bodyText]
+              properties:
+                customerId: { type: string, format: uuid }
+                subject: { type: string, maxLength: 250 }
+                to: { type: array, items: { type: string, format: email }, minItems: 1 }
+                cc: { type: array, items: { type: string, format: email } }
+                bodyText: { type: string }
+                accountId: { type: string, format: uuid, description: "MailAccount to use for sending" }
+      responses:
+        '201': { description: Created }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '403': { $ref: '#/components/responses/Forbidden' }

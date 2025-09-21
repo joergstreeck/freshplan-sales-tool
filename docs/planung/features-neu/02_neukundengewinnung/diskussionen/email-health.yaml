@@ -1,0 +1,89 @@
+openapi: 3.1.0
+info:
+  title: Email Health API
+  version: 1.0.0
+  description: Health-Status der all-inkl-Integration (IMAP/SMTP/KAS), produktionsfähig.
+servers:
+  - url: https://api.example.com
+tags:
+  - name: Email Health
+security:
+  - bearerAuth: []
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  parameters:
+    CorrelationId:
+      name: X-Correlation-Id
+      in: header
+      required: false
+      schema: { type: string, format: uuid }
+  schemas:
+    HealthStatus:
+      type: object
+      additionalProperties: false
+      properties:
+        ok: { type: boolean }
+        imap:
+          type: object
+          additionalProperties: false
+          properties:
+            ok: { type: boolean }
+            lastCheck: { type: string, format: date-time }
+            latencyMs: { type: integer }
+            backlogMessages: { type: integer, description: "Ungelesene/ungeholte Mails" }
+        smtp:
+          type: object
+          additionalProperties: false
+          properties:
+            ok: { type: boolean }
+            lastCheck: { type: string, format: date-time }
+            latencyMs: { type: integer }
+            rateLimitPerHour: { type: integer }
+            lastBounceRatePct: { type: number }
+        kas:
+          type: object
+          additionalProperties: false
+          properties:
+            ok: { type: boolean }
+            lastCheck: { type: string, format: date-time }
+            quotaUsedPct: { type: number }
+        idleKeepaliveSeconds: { type: integer }
+        folderLagSeconds: { type: integer, description: "Δ zwischen Server-Zeit und letzter verarbeiteter Mail" }
+paths:
+  /email/accounts/{id}/health:
+    get:
+      tags: [Email Health]
+      summary: Health-Status IMAP/SMTP/KAS
+      description: >
+        Aggregierter Gesundheitszustand der all-inkl-Integration. Liefert Latenzen,
+        Quoten und Lag-Indikatoren. Für Synthetics geeignet.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+        - $ref: '#/components/parameters/CorrelationId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/HealthStatus' }
+              examples:
+                ok:
+                  value:
+                    ok: true
+                    imap: { ok: true, lastCheck: "2025-09-18T08:00:00Z", latencyMs: 85, backlogMessages: 0 }
+                    smtp: { ok: true, lastCheck: "2025-09-18T08:00:00Z", latencyMs: 120, rateLimitPerHour: 240, lastBounceRatePct: 0.8 }
+                    kas: { ok: true, lastCheck: "2025-09-18T07:59:00Z", quotaUsedPct: 61.2 }
+                    idleKeepaliveSeconds: 540
+                    folderLagSeconds: 3
+        '503':
+          description: Teilfunktion gestört
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/HealthStatus' }

@@ -1,0 +1,60 @@
+name: Admin Module CI
+on:
+  push: { paths: ['backend/**','frontend/**','sql/**','tests/**','monitoring/**'] }
+  pull_request:
+
+jobs:
+  build-backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup JDK
+        uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: '21' }
+      - name: Build & Test
+        run: |
+          ./mvnw -B -DskipITs=false test
+      - name: Enforce Coverage
+        run: |
+          ./mvnw jacoco:report
+          python3 - <<'PY'
+import xml.etree.ElementTree as ET
+r=ET.parse('target/site/jacoco/jacoco.xml').getroot()
+ct=sum(int(c.get('missed'))+int(c.get('covered')) for c in r.iter('counter') if c.get('type')=='LINE')
+cv=sum(int(c.get('covered')) for c in r.iter('counter') if c.get('type')=='LINE')
+rate=cv/max(ct,1)
+print('coverage',rate)
+import sys
+sys.exit(0 if rate>=0.85 else 1)
+PY
+  build-frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '20' }
+      - run: npm ci
+      - run: npm run lint && npm test -- --coverage --watchAll=false
+  perf-k6:
+    runs-on: ubuntu-latest
+    needs: [build-backend]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: grafana/k6-action@v0.3.1
+        with:
+          filename: tests/perf/admin-load-test.js
+          flags: --vus 10 --duration 30s
+  upload-artifacts:
+    runs-on: ubuntu-latest
+    needs: [build-backend, build-frontend]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/upload-artifact@v4
+        with:
+          name: admin-artifacts
+          path: |
+            backend/**
+            frontend/**
+            sql/**
+            monitoring/**
+            tests/**

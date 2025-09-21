@@ -1,0 +1,209 @@
+{
+  "keys": [
+    {
+      "key": "ui.theme",
+      "type": "scalar",
+      "mergeStrategy": "scalar",
+      "scope": [
+        "global",
+        "tenant",
+        "territory",
+        "user"
+      ],
+      "defaultValue": "light",
+      "jsonSchema": {
+        "type": "string",
+        "enum": [
+          "light",
+          "dark"
+        ]
+      },
+      "description": "System-wide theme (Theme V2 tokens)",
+      "version": 1
+    },
+    {
+      "key": "locale",
+      "type": "scalar",
+      "mergeStrategy": "scalar",
+      "scope": [
+        "global",
+        "tenant",
+        "territory",
+        "user"
+      ],
+      "defaultValue": "de-DE",
+      "jsonSchema": {
+        "type": "string",
+        "pattern": "^[a-z]{2}-[A-Z]{2}$"
+      },
+      "description": "Language/region for i18n",
+      "version": 1
+    },
+    {
+      "key": "currency",
+      "type": "scalar",
+      "mergeStrategy": "scalar",
+      "scope": [
+        "global",
+        "territory"
+      ],
+      "defaultValue": "EUR",
+      "jsonSchema": {
+        "type": "string",
+        "enum": [
+          "EUR",
+          "CHF"
+        ]
+      },
+      "description": "Currency per territory (DACH)",
+      "version": 1
+    },
+    {
+      "key": "notifications.channels",
+      "type": "object",
+      "mergeStrategy": "object",
+      "scope": [
+        "global",
+        "territory",
+        "account",
+        "contact_role",
+        "contact",
+        "user"
+      ],
+      "defaultValue": {
+        "email": true,
+        "phone": false,
+        "sms": false
+      },
+      "jsonSchema": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "boolean"
+          },
+          "phone": {
+            "type": "boolean"
+          },
+          "sms": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "description": "Preferred channels",
+      "version": 1
+    },
+    {
+      "key": "documents.format.preferred",
+      "type": "scalar",
+      "mergeStrategy": "scalar",
+      "scope": [
+        "global",
+        "account",
+        "contact_role",
+        "contact"
+      ],
+      "defaultValue": "PDF",
+      "jsonSchema": {
+        "type": "string",
+        "enum": [
+          "PDF",
+          "XLSX"
+        ]
+      },
+      "description": "BUYER often prefers XLSX",
+      "version": 1
+    },
+    {
+      "key": "sla.sample.followups",
+      "type": "list",
+      "mergeStrategy": "list",
+      "scope": [
+        "global",
+        "territory",
+        "account",
+        "contact_role",
+        "user"
+      ],
+      "defaultValue": [
+        "P3D",
+        "P7D"
+      ],
+      "jsonSchema": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "pattern": "^P\\d+[DWM]$"
+        }
+      },
+      "description": "Follow-up offsets after sample delivery",
+      "version": 1
+    },
+    {
+      "key": "sla.sample.requireMultiContact",
+      "type": "scalar",
+      "mergeStrategy": "scalar",
+      "scope": [
+        "global",
+        "account",
+        "contact_role",
+        "user"
+      ],
+      "defaultValue": true,
+      "jsonSchema": {
+        "type": "boolean"
+      },
+      "description": "Require CHEF + BUYER in sample follow-ups",
+      "version": 1
+    },
+    {
+      "key": "seasonal.windows",
+      "type": "list",
+      "mergeStrategy": "replace",
+      "scope": [
+        "global",
+        "territory",
+        "tenant"
+      ],
+      "defaultValue": [
+        {
+          "name": "Sommer",
+          "start": "06-01",
+          "end": "08-31"
+        },
+        {
+          "name": "Weihnachten",
+          "start": "11-15",
+          "end": "12-31"
+        }
+      ],
+      "jsonSchema": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": [
+            "name",
+            "start",
+            "end"
+          ],
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "start": {
+              "type": "string",
+              "pattern": "^\\d{2}-\\d{2}$"
+            },
+            "end": {
+              "type": "string",
+              "pattern": "^\\d{2}-\\d{2}$"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "description": "Seasonal campaign windows per territory",
+      "version": 1
+    }
+  ]
+}

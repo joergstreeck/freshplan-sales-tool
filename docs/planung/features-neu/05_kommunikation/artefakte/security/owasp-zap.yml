@@ -1,0 +1,344 @@
+# OWASP ZAP Configuration - Complete Security Testing
+# Enterprise Security Scanner für Modul 05 Kommunikation
+
+env:
+  contexts:
+    - name: "FreshPlan-Communication-API"
+      urls:
+        - "http://localhost:8080/api/comm/*"
+        - "http://localhost:8080/api/communication/*"
+      includePaths:
+        - "http://localhost:8080/api/comm/.*"
+        - "http://localhost:8080/api/communication/.*"
+      excludePaths:
+        - ".*\\.js"
+        - ".*\\.css"
+        - ".*\\.png"
+        - ".*\\.jpg"
+      authentication:
+        method: "jwt"
+        parameters:
+          loginUrl: "http://localhost:8080/auth/login"
+          loginRequestBody: '{"username": "{%username%}", "password": "{%password%}"}'
+          tokenPath: "$.access_token"
+          headerName: "Authorization"
+          headerPrefix: "Bearer "
+      users:
+        - name: "admin-user"
+          username: "admin@freshfoodz.de"
+          password: "${ZAP_ADMIN_PASSWORD}"
+          territories: ["BER", "MUC", "HAM"]
+        - name: "sales-user"
+          username: "sales@freshfoodz.de"
+          password: "${ZAP_SALES_PASSWORD}"
+          territories: ["BER"]
+        - name: "readonly-user"
+          username: "readonly@freshfoodz.de"
+          password: "${ZAP_READONLY_PASSWORD}"
+          territories: []
+
+  parameters:
+    failOnError: true
+    failOnWarning: false
+    progressToStdout: true
+
+jobs:
+  - type: spider
+    parameters:
+      context: "FreshPlan-Communication-API"
+      user: "admin-user"
+      url: "http://localhost:8080/api/comm"
+      maxDuration: 10
+      maxDepth: 10
+      maxChildren: 20
+      acceptCookies: true
+      handleODataParametersVisited: true
+      handleParameters: "USE_ALL"
+      maxParseSizeBytes: 5000000
+      parseComments: true
+      parseGit: false
+      parseRobotsTxt: true
+      parseSitemapXml: true
+      parseSVNEntries: false
+      postForm: true
+      processForm: true
+      requestWaitTime: 200
+      sendRefererHeader: true
+      threadCount: 5
+      userAgent: "Mozilla/5.0 ZAP/2.14.0"
+
+  # ABAC/Territory-specific Spider Rules
+  - type: spider
+    name: "territory-boundary-spider"
+    parameters:
+      context: "FreshPlan-Communication-API"
+      user: "sales-user"
+      url: "http://localhost:8080/api/comm/threads?territory=MUC"
+      # Should not be able to access Munich data with Berlin user
+      expectedFailure: true
+
+  - type: activeScan
+    parameters:
+      context: "FreshPlan-Communication-API"
+      user: "admin-user"
+      maxRuleDurationInMins: 10
+      maxScanDurationInMins: 120
+      policy: "communication-security-policy"
+      threadPerHost: 5
+      delayInMs: 200
+      handleAntiCSRFTokens: true
+
+  - type: passiveScan
+    parameters:
+      enableTags: true
+      disableAllRules: false
+
+rules:
+  # A01: Broken Access Control Tests
+  - id: 40003
+    name: "ABAC Territory Bypass"
+    enabled: true
+    strength: "HIGH"
+    threshold: "LOW"
+    custom:
+      - test: "X-Territories header manipulation"
+        payload: ["BER", "MUC", "HAM", "INVALID", "../..", "';--"]
+      - test: "Territory parameter pollution"
+        payload: ["territory=BER&territory=MUC", "territory[]=BER&territory[]=MUC"]
+
+  - id: 40004
+    name: "JWT Token Manipulation"
+    enabled: true
+    strength: "HIGH"
+    tests:
+      - "None algorithm attack"
+      - "Algorithm confusion"
+      - "Key confusion"
+      - "Expired token acceptance"
+      - "Invalid signature acceptance"
+
+  # A02: Cryptographic Failures
+  - id: 90011
+    name: "SSL/TLS Configuration"
+    enabled: true
+    tests:
+      - "Weak ciphers"
+      - "SSL v2/v3"
+      - "Missing HSTS"
+      - "Certificate validation"
+
+  # A03: Injection
+  - id: 40018
+    name: "SQL Injection - Communication Module"
+    enabled: true
+    strength: "HIGH"
+    customPayloads:
+      - "' OR territory='BER'--"
+      - "'; DROP TABLE communication_threads;--"
+      - "1' UNION SELECT * FROM communication_threads--"
+      - "${territory} OR 1=1"
+      - "BER' AND SLEEP(5)--"
+
+  - id: 40019
+    name: "JPQL Injection"
+    enabled: true
+    payloads:
+      - "' OR t.territory='BER'"
+      - "1 OR 1=1"
+      - "'; DELETE FROM Thread t"
+
+  - id: 40020
+    name: "Email Header Injection"
+    enabled: true
+    tests:
+      - "To: victim@example.com%0ACc: attacker@evil.com"
+      - "Subject: Test%0ABcc: attacker@evil.com"
+
+  # A04: Insecure Design
+  - id: 40021
+    name: "Rate Limiting Test"
+    enabled: true
+    tests:
+      - endpoint: "/api/comm/threads"
+        requestsPerMinute: 1000
+        expectedResponse: 429
+
+  - id: 40022
+    name: "SLA Engine Abuse"
+    enabled: true
+    tests:
+      - "Multiple sample deliveries"
+      - "Backdated deliveries"
+      - "Future-dated deliveries"
+
+  # A05: Security Misconfiguration
+  - id: 10015
+    name: "CORS Misconfiguration"
+    enabled: true
+    tests:
+      - origin: "http://evil.com"
+        expectedBlocked: true
+      - origin: "null"
+        expectedBlocked: true
+
+  - id: 10023
+    name: "Information Disclosure"
+    enabled: true
+    tests:
+      - "Stack traces in errors"
+      - "Database errors exposed"
+      - "Internal paths revealed"
+
+  # A07: Identification and Authentication Failures
+  - id: 10095
+    name: "Authentication Bypass"
+    enabled: true
+    tests:
+      - "Missing auth headers"
+      - "Invalid JWT format"
+      - "Expired tokens"
+      - "Token from different tenant"
+
+  - id: 10096
+    name: "Session Fixation"
+    enabled: true
+
+  # A08: Software and Data Integrity Failures
+  - id: 40023
+    name: "ETag Manipulation"
+    enabled: true
+    tests:
+      - header: "If-Match"
+        values: ["*", "W/\"123\"", "\"v999\"", ""]
+      - "Race condition testing"
+
+  - id: 40024
+    name: "Webhook Security"
+    enabled: true
+    endpoint: "/api/comm/webhook/bounce"
+    tests:
+      - "Missing signature"
+      - "Invalid signature"
+      - "Replay attack"
+
+  # A09: Security Logging and Monitoring Failures
+  - id: 40025
+    name: "Audit Log Bypass"
+    enabled: true
+    tests:
+      - "Rapid requests to avoid logging"
+      - "Malformed requests"
+
+  # A10: Server-Side Request Forgery (SSRF)
+  - id: 40026
+    name: "SSRF in Email Processing"
+    enabled: true
+    payloads:
+      - "http://169.254.169.254/latest/meta-data/"
+      - "http://localhost:8080/admin"
+      - "file:///etc/passwd"
+      - "gopher://localhost:8080/"
+
+  # Communication Module Specific Tests
+  - id: 50001
+    name: "Thread Access Control"
+    enabled: true
+    tests:
+      - description: "Access thread from different territory"
+        user: "sales-user"
+        endpoint: "/api/comm/threads/{thread_id}"
+        thread_territories: ["MUC", "HAM"]
+        expectedResponse: 403
+
+  - id: 50002
+    name: "Outbox Email Manipulation"
+    enabled: true
+    tests:
+      - "Modify recipient after creation"
+      - "Bypass retry limit"
+      - "Force immediate send"
+
+  - id: 50003
+    name: "Bounce Event Injection"
+    enabled: true
+    endpoint: "/api/comm/webhook/bounce"
+    tests:
+      - "Fake hard bounce"
+      - "Mass bounce injection"
+      - "Bounce for non-existent email"
+
+  # DSGVO Compliance Tests
+  - id: 60001
+    name: "Personal Data Exposure"
+    enabled: true
+    tests:
+      - "Email addresses in responses"
+      - "Phone numbers in logs"
+      - "Unencrypted personal data"
+
+  - id: 60002
+    name: "Data Retention Compliance"
+    enabled: true
+    tests:
+      - "Access deleted user data"
+      - "Export includes deleted data"
+
+# Alert Filters (to reduce false positives)
+alertFilters:
+  - ruleId: 10015  # CORS
+    url: "http://localhost:8080/health"
+    action: "IGNORE"
+
+  - ruleId: 10023  # Information Disclosure
+    parameter: "debug"
+    when: "development"
+    action: "IGNORE"
+
+# Reporting Configuration
+reporting:
+  template: "communication-security-report"
+  formats:
+    - html
+    - json
+    - junit
+  includePassedTests: false
+  includeConfidence: true
+  includeRisk: true
+  reportDir: "./security-reports"
+
+# Custom Scripts
+scripts:
+  - name: "territory-fuzzer"
+    type: "active"
+    file: "scripts/territory-fuzzer.js"
+
+  - name: "jwt-attacker"
+    type: "active"
+    file: "scripts/jwt-attacks.js"
+
+  - name: "sla-abuse-tester"
+    type: "active"
+    file: "scripts/sla-abuse.js"
+
+# Passive Scan Rules
+passiveScanRules:
+  - name: "Sensitive Data in Response"
+    pattern: "(password|token|api[_-]key|secret)"
+    severity: "HIGH"
+
+  - name: "Missing Security Headers"
+    headers:
+      - "X-Frame-Options"
+      - "X-Content-Type-Options"
+      - "X-XSS-Protection"
+      - "Strict-Transport-Security"
+      - "Content-Security-Policy"
+    severity: "MEDIUM"
+
+# Performance Settings
+performance:
+  maxThreadsPerHost: 5
+  maxAlertsPerRule: 20
+  maxBodySizeInBytesToScan: 1048576
+  maxDepth: 10
+  maxDuration: 7200  # 2 hours max

@@ -45,9 +45,9 @@ if [ -n "$MODULE" ] && [ "$MODULE" != "null" ]; then
     FOUND_DOCS=""
     
     # Prüfe zuerst die FC-XXX-BEZEICHNUNG Struktur (z.B. FC-005-CUSTOMER-MANAGEMENT)
-    if [ -d "docs/features" ]; then
+    if [ -d "docs/planung/features" ]; then
         # Suche nach Feature-spezifischen Ordnern
-        FEATURE_DOC=$(find docs/features -type d -name "${FEATURE}-*" 2>/dev/null | head -1)
+        FEATURE_DOC=$(find docs/planung/features -type d -name "${FEATURE}-*" 2>/dev/null | head -1)
         if [ -n "$FEATURE_DOC" ]; then
             # Suche nach sprint2 oder ähnlichen Unterordnern
             if [ -d "$FEATURE_DOC/sprint2" ] && [ -f "$FEATURE_DOC/sprint2/CONTACT_MANAGEMENT_VISION.md" ]; then
@@ -61,8 +61,8 @@ if [ -n "$MODULE" ] && [ "$MODULE" != "null" ]; then
     fi
     
     # Falls nicht gefunden, prüfe ACTIVE Ordner (falls existiert)
-    if [ -z "$FOUND_DOCS" ] && [ -d "docs/features/ACTIVE" ]; then
-        ACTIVE_DOC=$(find docs/features/ACTIVE -type d -name "*${MODULE_FOLDER}*" 2>/dev/null | head -1)
+    if [ -z "$FOUND_DOCS" ] && [ -d "docs/planung/features/ACTIVE" ]; then
+        ACTIVE_DOC=$(find docs/planung/features/ACTIVE -type d -name "*${MODULE_FOLDER}*" 2>/dev/null | head -1)
         if [ -n "$ACTIVE_DOC" ] && [ -f "$ACTIVE_DOC/README.md" ]; then
             FOUND_DOCS="$ACTIVE_DOC/README.md"
             echo -e "${GREEN}⭐ Aktives Modul-Dokument:${NC} $FOUND_DOCS"
@@ -70,8 +70,8 @@ if [ -n "$MODULE" ] && [ "$MODULE" != "null" ]; then
     fi
     
     # Falls nicht in ACTIVE, suche in PLANNED
-    if [ -z "$FOUND_DOCS" ] && [ -d "docs/features/PLANNED" ]; then
-        PLANNED_DOC=$(find docs/features/PLANNED -type d -name "*${MODULE_FOLDER}*" 2>/dev/null | head -1)
+    if [ -z "$FOUND_DOCS" ] && [ -d "docs/planung/features/PLANNED" ]; then
+        PLANNED_DOC=$(find docs/planung/features/PLANNED -type d -name "*${MODULE_FOLDER}*" 2>/dev/null | head -1)
         if [ -n "$PLANNED_DOC" ] && [ -f "$PLANNED_DOC/README.md" ]; then
             FOUND_DOCS="$PLANNED_DOC/README.md"
             echo -e "${YELLOW}📋 Geplantes Modul-Dokument:${NC} $FOUND_DOCS"
@@ -79,9 +79,9 @@ if [ -n "$MODULE" ] && [ "$MODULE" != "null" ]; then
     fi
     
     # Falls immer noch nicht gefunden, suche nach Feature-Code in allen Dokumenten
-    if [ -z "$FOUND_DOCS" ] && [ -d "docs/features" ]; then
+    if [ -z "$FOUND_DOCS" ] && [ -d "docs/planung/features" ]; then
         # Suche nach Dateien die das Feature enthalten
-        FEATURE_FILES=$(find docs/features -name "*.md" -type f | xargs grep -l "$FEATURE" 2>/dev/null | grep -E "(VISION|MASTER_PLAN|README)" | head -1)
+        FEATURE_FILES=$(find docs/planung/features -name "*.md" -type f | xargs grep -l "$FEATURE" 2>/dev/null | grep -E "(VISION|MASTER_PLAN|README)" | head -1)
         if [ -n "$FEATURE_FILES" ]; then
             FOUND_DOCS="$FEATURE_FILES"
             echo -e "${GREEN}⭐ Feature-Dokument gefunden:${NC} $FOUND_DOCS"
@@ -109,7 +109,7 @@ if [ -n "$MODULE" ] && [ "$MODULE" != "null" ]; then
         echo -e "${YELLOW}⚠️  Kein Modul-Dokument gefunden${NC}"
         echo ""
         echo "Mögliche Gründe:"
-        echo "1. Modul-Ordner existiert nicht in docs/features/ACTIVE/"
+        echo "1. Modul-Ordner existiert nicht in docs/planung/features/ACTIVE/"
         echo "2. README.md fehlt im Modul-Ordner"
         echo "3. Modul-Name in .current-focus stimmt nicht mit Ordnername überein"
     fi

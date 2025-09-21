@@ -1,0 +1,126 @@
+openapi: 3.1.0
+info:
+  title: Admin Operations API
+  version: 1.0.0
+servers:
+  - url: https://api.freshplan.example
+security:
+  - bearerAuth: []
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  responses:
+    Problem:
+      description: RFC7807 Problem
+      content:
+        application/problem+json:
+          schema:
+            type: object
+            required: [type, title, status]
+            properties:
+              type: { type: string }
+              title: { type: string }
+              status: { type: integer }
+              detail: { type: string }
+
+paths:
+  /api/admin/ops/smtp:
+    get:
+      summary: Get SMTP config
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/SmtpConfig' } } } }
+    put:
+      summary: Update SMTP config (Tier1 action)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/SmtpConfig' }
+      responses:
+        '202': { description: Accepted }
+  /api/admin/ops/outbox:
+    get:
+      summary: Get outbox status and limits
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/OutboxStatus' } } } }
+  /api/admin/ops/outbox/pause:
+    post:
+      summary: Pause outbox (Tier3)
+      responses:
+        '204': { description: No Content }
+  /api/admin/ops/outbox/resume:
+    post:
+      summary: Resume outbox (Tier3)
+      responses:
+        '204': { description: No Content }
+  /api/admin/ops/outbox/rate:
+    post:
+      summary: Set outbox rate per minute (Tier2 if > threshold)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: object, properties: { ratePerMin: { type: integer, minimum: 0 } } }
+      responses:
+        '202': { description: Accepted }
+  /api/admin/ops/dsar/requests:
+    get:
+      summary: List DSAR requests
+      parameters:
+        - in: query
+          name: status
+          schema: { type: string, enum: [QUEUED,PROCESSING,DONE,FAILED,CANCELLED] }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { type: object, properties: { items: { type: array, items: { $ref: '#/components/schemas/DsarRequest' } } } } } } }
+  /api/admin/ops/dsar/export:
+    post:
+      summary: Queue DSAR export
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: object, required: [subjectId], properties: { subjectId: { type: string, format: uuid }, justification: { type: string } } }
+      responses:
+        '202': { description: Accepted }
+  /api/admin/ops/dsar/delete:
+    post:
+      summary: Queue DSAR delete/anonymize
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: object, required: [subjectId], properties: { subjectId: { type: string, format: uuid }, justification: { type: string } } }
+      responses:
+        '202': { description: Accepted }
+components:
+  schemas:
+    SmtpConfig:
+      type: object
+      required: [host, port, tlsMode]
+      properties:
+        host: { type: string }
+        port: { type: integer }
+        username: { type: string }
+        passwordRef: { type: string }
+        tlsMode: { type: string, enum: [STARTTLS, TLS, NONE] }
+        truststoreRef: { type: string }
+    OutboxStatus:
+      type: object
+      properties:
+        paused: { type: boolean }
+        ratePerMin: { type: integer }
+        backlog: { type: integer }
+        lastError: { type: string }
+    DsarRequest:
+      type: object
+      required: [id, reqType, status, subjectId]
+      properties:
+        id: { type: string, format: uuid }
+        subjectId: { type: string, format: uuid }
+        reqType: { type: string, enum: [EXPORT, DELETE] }
+        status: { type: string, enum: [QUEUED,PROCESSING,DONE,FAILED,CANCELLED] }
+        resultUrl: { type: string, nullable: true }
+        errorMessage: { type: string, nullable: true }

@@ -1,0 +1,7 @@
+# Minimal Semgrep policy focusing on OWASP Top 10 for Java/TS
+rules:
+  - id: no-eval
+    patterns: [pattern: eval(...)]
+    message: "Avoid eval"
+    languages: [javascript, typescript]
+    severity: ERROR

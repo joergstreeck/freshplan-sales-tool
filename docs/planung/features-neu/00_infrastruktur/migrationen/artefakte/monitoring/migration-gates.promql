@@ -1,0 +1,11 @@
+# monitoring/promql/migration-gates.promql
+
+# p95 API Gates für Lead-geschützte Pfade (anpassen an tatsächliche Routen)
+histogram_quantile(0.95, sum(rate(http_server_requests_seconds_bucket{route=~"/api/(leads|activities).*"}[5m])) by (le,route))
+
+# Deadlocks/Langläufer
+increase(postgresql_locks_waiting_total[5m]) > 0
+increase(postgresql_deadlocks_total[5m]) > 0
+
+# Access Check Erfolg/Fehler (exponiert von App z. B. counters)
+sum(rate(lead_access_assert_allow_total[5m])) / (sum(rate(lead_access_assert_allow_total[5m])) + sum(rate(lead_access_assert_deny_total[5m])))

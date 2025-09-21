@@ -1,0 +1,38 @@
+openapi: 3.1.0
+info: { title: Leads API (Foundation V2), version: 1.0.0 }
+servers: [ { url: https://api.example.com } ]
+security: [ { bearerAuth: [] } ]
+components:
+  securitySchemes:
+    bearerAuth: { type: http, scheme: bearer, bearerFormat: JWT }
+  responses:
+    BadRequest: { $ref: ../openapi/common-errors.yaml#/components/responses/BadRequest }
+    Forbidden: { $ref: ../openapi/common-errors.yaml#/components/responses/Forbidden }
+    Conflict: { $ref: ../openapi/common-errors.yaml#/components/responses/Conflict }
+    TooMany: { $ref: ../openapi/common-errors.yaml#/components/responses/TooManyRequests }
+paths:
+  /api/leads:
+    get:
+      summary: Leads suchen (ABAC & Named Params)
+      parameters:
+        - { name: q, in: query, schema: { type: string } }
+        - { name: status, in: query, schema: { type: string, enum: [NEW, ACTIVE, WON, LOST] } }
+        - { name: territory, in: query, schema: { type: string } }
+        - { name: limit, in: query, schema: { type: integer, default: 50 } }
+        - { name: cursor, in: query, schema: { type: string } }
+      responses: { "200": { description: OK }, "403": { $ref: "#/components/responses/Forbidden" } }
+    post:
+      summary: Lead anlegen (Design System V2 konforme Validierung)
+      responses: { "201": { description: Erstellt }, "400": { $ref: "#/components/responses/BadRequest" } }
+  /api/leads/export:
+    get:
+      summary: Universal Export (CSV, XLSX, PDF, JSON, JSONL)
+      parameters:
+        - { name: format, in: query, required: true, schema: { type: string, enum: [csv,xlsx,pdf,json,jsonl] } }
+      responses:
+        "200": { description: Datei/Stream }
+        "403": { $ref: "#/components/responses/Forbidden" }
+  /ws/leads:
+    get:
+      summary: WebSocket Upgrade – neue Leads, Email-Status, Campaign-Performance
+      responses: { "101": { description: Switch to WebSocket } }

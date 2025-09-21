@@ -1,0 +1,57 @@
+{
+  "title": "FreshPlan Communication \u2013 API & Queue",
+  "timezone": "browser",
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "HTTP p95 latency by route",
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(http_server_requests_seconds_bucket{job=\"comm-backend\"}[5m])) by (le, route))",
+          "legendFormat": "{{route}}"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "HTTP 5xx error rate",
+      "targets": [
+        {
+          "expr": "sum(rate(http_server_requests_seconds_count{job=\"comm-backend\",status=~\"5..\"}[5m])) / sum(rate(http_server_requests_seconds_count{job=\"comm-backend\"}[5m]))",
+          "legendFormat": "5xx rate"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Outbox backlog",
+      "targets": [
+        {
+          "expr": "sum(outbox_emails_pending{job=\"comm-backend\"})",
+          "legendFormat": "pending"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "RLS denies",
+      "targets": [
+        {
+          "expr": "rate(app_rls_denies_total{job=\"comm-backend\"}[5m])",
+          "legendFormat": "RLS denies/s"
+        }
+      ]
+    },
+    {
+      "type": "stat",
+      "title": "Bounce rate (last 1h)",
+      "targets": [
+        {
+          "expr": "sum(rate(email_bounce_events_total{job=\"comm-backend\"}[1h])) / clamp_min(sum(rate(communication_messages_sent_total{job=\"comm-backend\"}[1h])),1)",
+          "legendFormat": "bounce rate"
+        }
+      ]
+    }
+  ],
+  "schemaVersion": 39
+}

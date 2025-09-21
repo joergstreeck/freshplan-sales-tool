@@ -1,0 +1,73 @@
+# Kong Gateway Policy Bundle
+# Source: External Enterprise AI Integration-Pack
+# Content: OIDC, CORS, RateLimits per Tenant-Header, Idempotency/If-Match Enforcer via pre-function, Logging
+
+# PLACEHOLDER - Replace with actual Kong configuration from external AI download:
+# gateway/kong/policy-bundle.yaml
+
+# Kong Policy Configuration:
+# - OIDC (Keycloak Integration)
+# - Rate-Limiting Advanced per Tenant-Header
+# - Pre-function Plugin für Idempotency-Key + If-Match Enforcement
+# - Access-Logging für Complete Audit-Trail
+# - CORS Multi-Origin Support
+
+# Usage: Kong via decK declarative configuration
+# Command: deck sync -s kong-policy-bundle.yaml
+
+# Note: Requires Kong plugins:
+# - openid-connect
+# - rate-limiting-advanced
+# - pre-function
+# - cors
+# - request-transformer
+
+_format_version: "3.0"
+
+services:
+  - name: freshplan-api
+    url: http://backend:8080
+    plugins:
+      - name: openid-connect
+        config:
+          issuer: "https://keycloak.freshplan.local/realms/freshplan"
+          client_id: "freshplan-api"
+
+      - name: rate-limiting-advanced
+        config:
+          limit: [100]
+          window_size: [60]
+          identifier: header
+          header_name: "X-Tenant-Id"
+
+      - name: pre-function
+        config:
+          access: |
+            -- Enforce Idempotency-Key for write operations
+            local method = kong.request.get_method()
+            if method == "POST" or method == "PUT" or method == "PATCH" then
+              local idempotency_key = kong.request.get_header("Idempotency-Key")
+              if not idempotency_key then
+                return kong.response.exit(400, {message = "Idempotency-Key header required for write operations"})
+              end
+            end
+
+            -- Enforce If-Match for updates
+            if method == "PUT" or method == "PATCH" then
+              local if_match = kong.request.get_header("If-Match")
+              if not if_match then
+                return kong.response.exit(428, {message = "If-Match header required for updates"})
+              end
+            end
+
+            -- Set Correlation-ID if missing
+            local correlation_id = kong.request.get_header("X-Correlation-Id")
+            if not correlation_id then
+              kong.service.request.set_header("X-Correlation-Id", kong.tools.uuid.uuid())
+            end
+
+routes:
+  - name: api-routes
+    service: freshplan-api
+    paths: ["/api"]
+    strip_path: true

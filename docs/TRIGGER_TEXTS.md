@@ -2,13 +2,13 @@
 
 **WICHTIG: Diese Datei enthält die offiziellen Trigger-Texte. NIEMALS löschen oder überschreiben!**
 
-**Version:** 2.9  
-**Letzte Aktualisierung:** 08.08.2025  
-**Neues Feature:** Alle Scripts mit absoluten Pfaden - funktionieren IMMER aus JEDEM Verzeichnis
+**Version:** 3.1
+**Letzte Aktualisierung:** 18.09.2025
+**Bugfix Update:** Konkrete Git-Commit-Anfrage + Vollständige Template-Validierung + Erweiterte Fehler-Prävention
 
 ---
 
-## 📝 TEIL 1: Übergabe erstellen (vor Komprimierung)
+## 📝 TEIL 1: Vollständige Übergabe erstellen (vor Komprimierung)
 
 ```
 Erstelle eine vollständige Übergabe für die nächste Session.
@@ -46,26 +46,67 @@ Erstelle eine vollständige Übergabe für die nächste Session.
   # Das Script zeigt automatisch die Migration-Nummer prominent an
   # Bei Fehler wurde Nummer bereits in Schritt 2 ermittelt
 
-  SCHRITT 4: Template ausfüllen
+  SCHRITT 4: Template VOLLSTÄNDIG ausfüllen
 
   Die Übergabe wurde erstellt in:
-  docs/claude-work/daily-work/YYYY-MM-DD/
+  docs/planung/claude-work/daily-work/YYYY-MM-DD/
 
-  Fülle aus:
-  1. TODO-Status (aus TodoRead)
-  2. MIGRATION-NUMMER (aus Schritt 2) ⚠️ KRITISCH
-  3. Was wurde gemacht? (git diff --stat)
-  4. Bekannte Probleme
-  5. NEXT_STEP.md Update
+  PFLICHT-FELDER ausfüllen:
+  1. TODO-Status (aus TodoRead) ✅ BEREITS GEMACHT
+  2. MIGRATION-NUMMER (aus Schritt 2) ⚠️ KRITISCH - in Handover korrigieren!
+  3. "Was wurde gemacht?" - mit konkreten git diff Statistiken
+  4. "Bekannte Probleme" - alle aufgetretenen Issues dokumentieren
+  5. "Nächster Schritt" - konkret formulieren
 
-  SCHRITT 5: Validierung
+  TEMPLATE-STRUKTUR prüfen:
+  - Ist "Was wurde gemacht" Section vorhanden?
+  - Sind "Bekannte Probleme" dokumentiert?
+  - Ist der "Nächste Schritt" konkret formuliert?
+
+  SCHRITT 5: Master Plan V5 Status-Update (🆕 WICHTIG!)
+
+  Prüfe und aktualisiere: /docs/planung/CRM_COMPLETE_MASTER_PLAN_V5.md
+
+  - Feature-Status aktualisieren: 📋 Geplant → 🔄 In Progress → ✅ Abgeschlossen
+  - Timeline-Änderungen dokumentieren
+  - Neue Blocker/Dependencies eintragen
+  - Fortschritts-Notizen hinzufügen
+  - Aktuelle Sprint-Woche anpassen
+
+  SCHRITT 6: Strukturelle Dokumentation (🆕 NEUE ARCHITEKTUR!)
+
+  Prüfe relevante Updates:
+  - Technical Concepts in /docs/planung/features-neu/ aktualisiert?
+  - Infrastructure-Pläne in /docs/planung/infrastruktur/ betroffen?
+  - Neue Architektur-Entscheidungen dokumentieren?
+
+  SCHRITT 7: Git-Commit KONKRET ANFRAGEN (🆕 SMART!)
+
+  1. Git-Status prüfen: `git status`
+  2. Commit-Message formulieren (vollständig mit Beschreibung)
+  3. DIREKTE FRAGE stellen:
+     "Soll ich die geänderten Dateien committen?
+
+     git add [dateien]
+     git commit -m "[message]"
+
+     ⚠️ WARTE AUF DEINE BESTÄTIGUNG:
+     - JA → Ich führe den Commit aus
+     - NEIN → Git-Status bleibt unverändert
+     - ÄNDERN → Du sagst mir was geändert werden soll"
+
+  4. NUR bei "JA" committen - NIEMALS ohne explizite Erlaubnis!
+
+  SCHRITT 8: Finale Validierung
 
   - Alle TODOs dokumentiert?
   - MIGRATION-NUMMER in Übergabe? ⚠️ KRITISCH
-  - NEXT_STEP.md aktuell?
-  - Git-Status sauber?
+  - Master Plan V5 aktuell?
+  - NEXT_STEP.md mit konkreten nächsten Schritten?
+  - Git-Status sauber oder Commit vorbereitet?
+  - Strukturelle Updates vollständig?
 
-  FERTIG! Übergabe komplett.
+  FERTIG! Vollständige Übergabe komplett.
 ```
 
 ---
@@ -107,11 +148,13 @@ Lese alles gründlich durch und befolge strict die Standardübergabe.
   # Prüft Services, startet PostgreSQL, zeigt Status
   # Bei Fehler: cat docs/NEXT_STEP.md
 
-  4. Pflichtlektüre
+  4. Pflichtlektüre (🆕 NEUE STRUKTUR!)
 
-  1. /docs/CLAUDE.md
-  2. Letzte Übergabe in /docs/claude-work/daily-work/
-  3. /docs/STANDARDUERGABE_NEU.md (falls Details fehlen)
+  1. /docs/CLAUDE.md (Arbeitsrichtlinien)
+  2. Letzte Übergabe in /docs/planung/claude-work/daily-work/
+  3. /docs/NEXT_STEP.md (Aktueller Stand & nächste Schritte)
+  4. /docs/planung/CRM_COMPLETE_MASTER_PLAN_V5.md (Standard-Context)
+  5. /docs/STANDARDUBERGABE_NEU.md (falls Details fehlen)
 
   5. TODOs laden
 
@@ -145,25 +188,45 @@ Feature-Branch checkout → ./scripts/robust-session-start.sh → WORKFLOW-VERBO
 
 ---
 
-## 📋 CHECKLISTE für Übergabe
+## 📋 ERWEITERTE CHECKLISTE für Vollständige Übergabe
 
+### ✅ Standard-Schritte (bewährt):
 - [ ] TodoRead ausgeführt und dokumentiert?
-- [ ] Migration-Nummer geprüft und notiert?
+- [ ] Migration-Nummer geprüft und notiert? ⚠️ KRITISCH
 - [ ] Handover-Script erfolgreich ausgeführt?
 - [ ] Template vollständig ausgefüllt?
-- [ ] NEXT_STEP.md aktualisiert?
 - [ ] Git-Status sauber?
-- [ ] V5 Master Plan synchronisiert?
+
+### 🆕 Neue Struktur-Updates:
+- [ ] Master Plan V5 Feature-Status aktualisiert?
+- [ ] Sprint-Woche und Timeline angepasst?
+- [ ] NEXT_STEP.md mit konkreten nächsten Schritten?
+- [ ] Technical Concepts (falls bearbeitet) aktualisiert?
+- [ ] Infrastructure-Pläne (falls relevant) gepflegt?
+
+### 🔄 Smart-Features (V3.0):
+- [ ] Template vollständig: "Was gemacht" + "Bekannte Probleme" ausgefüllt?
+- [ ] Git-Commit konkret gefragt (nicht nur vorgeschlagen)?
+- [ ] User-Antwort abgewartet: JA/NEIN/ÄNDERN?
+- [ ] Strukturelle Dokumentation geprüft?
+- [ ] TODO-Zentralisierung in NEXT_STEP.md?
 
 ---
 
 ## ⚠️ HÄUFIGE FEHLER VERMEIDEN
 
+### Standard-Regeln:
 1. **NIEMALS** alte Migration-Nummern wiederverwenden
 2. **IMMER** auf Feature-Branch arbeiten
 3. **NIE** direkt auf main committen
 4. **WARTEN** auf "ARBEITSSTART" vor Implementierung
-5. **DOKUMENTIEREN** aller TODOs in Übergabe
+
+### V3.0 Spezifische Fehler:
+5. **Template-Unvollständigkeit:** "Was gemacht" und "Bekannte Probleme" vergessen
+6. **Commit-Vorschlag statt Frage:** Nicht fragen sondern nur vorschlagen
+7. **Migration-Nummer-Inkonsistenz:** Script-Output vs. tatsächliche Nummer
+8. **Handover-Pfad falsch:** docs/claude-work/ statt docs/planung/claude-work/
+9. **Master Plan V5 nicht aktualisiert:** Status-Updates vergessen
 
 ---
 

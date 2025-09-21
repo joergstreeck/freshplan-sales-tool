@@ -1,0 +1,28 @@
+{
+  "size-limit": [
+    {
+      "path": "dist/assets/app.*.js",
+      "limit": "200 KB"
+    },
+    {
+      "path": "dist/assets/chunk-*.js",
+      "limit": "120 KB"
+    },
+    {
+      "path": "dist/assets/vendor.*.js",
+      "limit": "180 KB"
+    },
+    {
+      "path": "dist/assets/*.css",
+      "limit": "80 KB"
+    }
+  ],
+  "scripts": {
+    "size": "size-limit",
+    "prebuild": "npm run size || true"
+  },
+  "devDependencies": {
+    "size-limit": "^11.0.0",
+    "@size-limit/file": "^11.0.0"
+  }
+}

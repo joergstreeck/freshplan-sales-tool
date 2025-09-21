@@ -14,7 +14,7 @@ Für die tatsächliche Verwendung im Frontend:
 
 - **Web-App:** `/public/freshplan-logo.png`
 - **Logo-Komponente:** `/frontend/src/components/common/Logo.tsx`
-- **Guidelines:** `/docs/design/LOGO_GUIDELINES.md`
+- **Guidelines:** `/docs/grundlagen/DESIGN_SYSTEM.md`
 
 ## ⚠️ Wichtig
 

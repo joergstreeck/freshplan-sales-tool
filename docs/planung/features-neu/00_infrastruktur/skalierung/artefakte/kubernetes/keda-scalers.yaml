@@ -1,0 +1,234 @@
+
+# FreshPlan · KEDA Scalers (CQRS Light, Territory-aware)
+# Apply with: kubectl apply -f keda-scalers.yaml
+# Requirements: KEDA installed, Prometheus reachable, Deployments exist:
+#   freshplan-api-queries-{de|ch|at}, freshplan-api-commands-{de|ch|at}, freshplan-outbox-worker
+# Notes:
+# - Cron pre-scales for seasonal windows (Oktoberfest/Weihnachten/Spargel)
+# - Prometheus scalers for dynamic RPS/p95-based autoscaling
+# - Keep minReplicaCount low off-peak; Cron raises floor in peak windows
+---
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: api-queries-de
+  labels:
+    app: freshplan
+    workload: queries
+    territory: DE
+spec:
+  scaleTargetRef:
+    name: freshplan-api-queries-de
+  cooldownPeriod: 180    # seconds
+  minReplicaCount: 2
+  maxReplicaCount: 12
+  triggers:
+  # Seasonal pre-scale: Sep-Dec (Oktoberfest/Weihnachten) workdays 08:00-20:00 CET
+  - type: cron
+    metadata:
+      timezone: Europe/Berlin
+      start: "0 8 * 9-12 *"
+      end:   "0 20 * 9-12 *"
+      desiredReplicas: "6"
+  # Spargel-Saison: Apr-Jun (BW focus) 07:00-18:00
+  - type: cron
+    metadata:
+      timezone: Europe/Berlin
+      start: "0 7 * 4-6 *"
+      end:   "0 18 * 4-6 *"
+      desiredReplicas: "4"
+  # Dynamic: RPS-based autoscaling from Prometheus (territory=DE)
+  - type: prometheus
+    metadata:
+      serverAddress: http://prometheus.monitoring:9090
+      metricName: http_rps_api_queries_de
+      threshold: "80" # desired RPS per replica
+      query: |
+        sum(rate(http_server_requests_seconds_count{job="freshplan",app="api",workload="queries",territory="DE",method="GET"}[2m]))
+  # Dynamic: p95 latency guard (scale up if p95 > 200ms)
+  - type: prometheus
+    metadata:
+      serverAddress: http://prometheus.monitoring:9090
+      metricName: http_p95_ms_api_queries_de
+      threshold: "200"
+      query: |
+        1000 * histogram_quantile(0.95, sum(rate(http_server_requests_seconds_bucket{job="freshplan",app="api",workload="queries",territory="DE",method="GET"}[2m])) by (le))
+---
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: api-queries-ch
+  labels:
+    app: freshplan
+    workload: queries
+    territory: CH
+spec:
+  scaleTargetRef:
+    name: freshplan-api-queries-ch
+  cooldownPeriod: 180
+  minReplicaCount: 1
+  maxReplicaCount: 8
+  triggers:
+  - type: cron
+    metadata:
+      timezone: Europe/Zurich
+      start: "0 8 * 9-12 *"
+      end:   "0 20 * 9-12 *"
+      desiredReplicas: "4"
+  - type: prometheus
+    metadata:
+      serverAddress: http://prometheus.monitoring:9090
+      metricName: http_rps_api_queries_ch
+      threshold: "60"
+      query: |
+        sum(rate(http_server_requests_seconds_count{job="freshplan",app="api",workload="queries",territory="CH",method="GET"}[2m]))
+  - type: prometheus
+    metadata:
+      serverAddress: http://prometheus.monitoring:9090
+      metricName: http_p95_ms_api_queries_ch
+      threshold: "220"
+      query: |
+        1000 * histogram_quantile(0.95, sum(rate(http_server_requests_seconds_bucket{job="freshplan",app="api",workload="queries",territory="CH",method="GET"}[2m])) by (le))
+---
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: api-queries-at
+  labels:
+    app: freshplan
+    workload: queries
+    territory: AT
+spec:
+  scaleTargetRef:
+    name: freshplan-api-queries-at
+  cooldownPeriod: 180
+  minReplicaCount: 1
+  maxReplicaCount: 6
+  triggers:
+  - type: cron
+    metadata:
+      timezone: Europe/Vienna
+      start: "0 8 * 9-12 *"
+      end:   "0 20 * 9-12 *"
+      desiredReplicas: "3"
+  - type: prometheus
+    metadata:
+      serverAddress: http://prometheus.monitoring:9090
+      metricName: http_rps_api_queries_at
+      threshold: "40"
+      query: |
+        sum(rate(http_server_requests_seconds_count{job="freshplan",app="api",workload="queries",territory="AT",method="GET"}[2m]))
+---
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: api-commands-de
+  labels:
+    app: freshplan
+    workload: commands
+    territory: DE
+spec:
+  scaleTargetRef:
+    name: freshplan-api-commands-de
+  cooldownPeriod: 240
+  minReplicaCount: 1
+  maxReplicaCount: 8
+  triggers:
+  # Burst pre-scale at campaign starts (Sep-Dec) shorter window
+  - type: cron
+    metadata:
+      timezone: Europe/Berlin
+      start: "0 9 * 9-12 *"
+      end:   "0 17 * 9-12 *"
+      desiredReplicas: "4"
+  - type: prometheus
+    metadata:
+      serverAddress: http://prometheus.monitoring:9090
+      metricName: http_rps_api_commands_de
+      threshold: "30"
+      query: |
+        sum(rate(http_server_requests_seconds_count{job="freshplan",app="api",workload="commands",territory="DE",method=~"POST|PUT|PATCH|DELETE"}[2m]))
+  - type: prometheus
+    metadata:
+      serverAddress: http://prometheus.monitoring:9090
+      metricName: http_p95_ms_api_commands_de
+      threshold: "250"
+      query: |
+        1000 * histogram_quantile(0.95, sum(rate(http_server_requests_seconds_bucket{job="freshplan",app="api",workload="commands",territory="DE",method=~"POST|PUT|PATCH|DELETE"}[2m])) by (le))
+---
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: api-commands-ch
+  labels:
+    app: freshplan
+    workload: commands
+    territory: CH
+spec:
+  scaleTargetRef:
+    name: freshplan-api-commands-ch
+  cooldownPeriod: 240
+  minReplicaCount: 1
+  maxReplicaCount: 6
+  triggers:
+  - type: prometheus
+    metadata:
+      serverAddress: http://prometheus.monitoring:9090
+      metricName: http_rps_api_commands_ch
+      threshold: "20"
+      query: |
+        sum(rate(http_server_requests_seconds_count{job="freshplan",app="api",workload="commands",territory="CH",method=~"POST|PUT|PATCH|DELETE"}[2m]))
+---
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: api-commands-at
+  labels:
+    app: freshplan
+    workload: commands
+    territory: AT
+spec:
+  scaleTargetRef:
+    name: freshplan-api-commands-at
+  cooldownPeriod: 240
+  minReplicaCount: 1
+  maxReplicaCount: 4
+  triggers:
+  - type: prometheus
+    metadata:
+      serverAddress: http://prometheus.monitoring:9090
+      metricName: http_rps_api_commands_at
+      threshold: "15"
+      query: |
+        sum(rate(http_server_requests_seconds_count{job="freshplan",app="api",workload="commands",territory="AT",method=~"POST|PUT|PATCH|DELETE"}[2m]))
+---
+# Outbox Worker (email campaigns / bursts), scale on queue depth & lag
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: outbox-worker
+  labels:
+    app: freshplan
+    workload: worker
+    component: outbox
+spec:
+  scaleTargetRef:
+    name: freshplan-outbox-worker
+  cooldownPeriod: 120
+  minReplicaCount: 1
+  maxReplicaCount: 10
+  triggers:
+  - type: prometheus
+    metadata:
+      serverAddress: http://prometheus.monitoring:9090
+      metricName: outbox_queue_depth
+      threshold: "100" # desired messages per replica
+      query: |
+        max(freshplan_outbox_queue_depth{component="email"})
+  - type: prometheus
+    metadata:
+      serverAddress: http://prometheus.monitoring:9090
+      metricName: outbox_dispatch_lag_seconds
+      threshold: "30"
+      query: |
+        max(outbox_dispatch_lag_seconds)

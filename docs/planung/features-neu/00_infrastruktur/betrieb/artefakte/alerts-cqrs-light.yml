@@ -1,0 +1,83 @@
+# CQRS Light Monitoring Alerts für 5-50 Benutzer
+# Simplified Prometheus Alert-Rules ohne Over-Engineering
+
+groups:
+  - name: cqrs_light_operations
+    interval: 30s
+    rules:
+      # Basic Service Health
+      - alert: ServiceDown
+        expr: up{job="freshplan-api"} == 0
+        for: 5m
+        labels:
+          severity: critical
+          team: backend
+        annotations:
+          summary: "FreshPlan API ist down"
+          description: "Service {{ $labels.instance }} ist seit 5 Minuten nicht erreichbar"
+
+      # CQRS Light Performance
+      - alert: SlowQueries
+        expr: http_request_duration_seconds{quantile="0.95"} > 0.2
+        for: 10m
+        labels:
+          severity: warning
+          team: backend
+        annotations:
+          summary: "CQRS Light Queries langsamer als 200ms P95"
+          description: "Performance degradiert: {{ $value }}s P95 response time"
+
+      # PostgreSQL LISTEN/NOTIFY Health
+      - alert: EventBacklogHigh
+        expr: pg_stat_event_backlog > 100
+        for: 5m
+        labels:
+          severity: warning
+          team: backend
+        annotations:
+          summary: "LISTEN/NOTIFY Event-Backlog >100"
+          description: "{{ $value }} unprocessed events - Query-Services möglicherweise überlastet"
+
+      # Database Connections (für 5-50 Benutzer)
+      - alert: DatabaseConnectionsHigh
+        expr: pg_stat_database_numbackends{datname="freshplan"} > 50
+        for: 5m
+        labels:
+          severity: warning
+          team: backend
+        annotations:
+          summary: "Database Connections >50 (ungewöhnlich für interne Nutzung)"
+          description: "{{ $value }} connections - prüfe auf Connection-Leaks"
+
+      # PostgreSQL NOTIFY Queue Monitoring (externe KI Empfehlung)
+      - alert: NotifyQueueHigh
+        expr: pg_notification_queue_usage{job="postgres"} > 0.7
+        for: 5m
+        labels:
+          severity: warning
+          team: backend
+        annotations:
+          summary: "PostgreSQL NOTIFY Queue >70% ausgelastet"
+          description: "Queue usage: {{ $value | humanizePercentage }} - Events werden möglicherweise nicht schnell genug verarbeitet"
+
+      # User-Lead-Protection
+      - alert: LeadProtectionRemindersBacklog
+        expr: lead_reminders_pending > 20
+        for: 15m
+        labels:
+          severity: warning
+          team: sales-ops
+        annotations:
+          summary: "{{ $value }} Lead-Protection Reminders ausstehend"
+          description: "Reminder-Service möglicherweise gestört"
+
+      # Simple Disk Space Alert
+      - alert: DiskSpaceLow
+        expr: node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"} < 0.1
+        for: 5m
+        labels:
+          severity: critical
+          team: devops
+        annotations:
+          summary: "Disk Space <10%"
+          description: "Nur noch {{ $value | humanizePercentage }} frei"

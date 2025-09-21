@@ -1,0 +1,50 @@
+{
+  "title": "Admin Overview",
+  "panels": [
+    {
+      "type": "stat",
+      "title": "API p95 (ms)",
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(http_server_requests_seconds_bucket{job=\"backend\"}[5m])) by (le)) * 1000"
+        }
+      ]
+    },
+    {
+      "type": "stat",
+      "title": "ABAC Deny Rate",
+      "targets": [
+        {
+          "expr": "rate(abac_denied_total[5m])"
+        }
+      ]
+    },
+    {
+      "type": "stat",
+      "title": "Audit Events / min",
+      "targets": [
+        {
+          "expr": "rate(admin_audit_total[5m])"
+        }
+      ]
+    },
+    {
+      "type": "stat",
+      "title": "Outbox Lag",
+      "targets": [
+        {
+          "expr": "freshplan_outbox_backlog"
+        }
+      ]
+    },
+    {
+      "type": "stat",
+      "title": "Error Rate",
+      "targets": [
+        {
+          "expr": "rate(http_server_requests_seconds_count{status=~\"5..\"}[5m])"
+        }
+      ]
+    }
+  ]
+}

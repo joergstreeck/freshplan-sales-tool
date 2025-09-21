@@ -1,0 +1,11 @@
+{
+  "$schema": "https://smartlayout.schemas/v1.json",
+  "id": "campaign-dashboard",
+  "version": "2.0.0",
+  "theme": "theme-v2",
+  "widgets": [
+    {"type":"kpi","id":"roi-pipeline","title":"ROI-Pipeline","source":"/api/reports/sales-summary"},
+    {"type":"kpi","id":"sample-success","title":"Sample Success","source":"/api/reports/sales-summary"},
+    {"type":"table","id":"at-risk","title":"At Risk","source":"/api/reports/customer-analytics?segment=at-risk"}
+  ]
+}

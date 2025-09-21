@@ -81,7 +81,7 @@ Dieses Dokument ist deine **HAUPTANLEITUNG** für effiziente und nachvollziehbar
 ### 2. Orientierung (Beginn der Arbeit)
 **Pflicht-Lektüre in DIESER Reihenfolge:**
 1. `/docs/CLAUDE.md` - Arbeitsrichtlinien und Standards
-2. Letzte Übergabe in `/docs/claude-work/daily-work/YYYY-MM-DD/`
+2. Letzte Übergabe in `/docs/planung/claude-work/daily-work/YYYY-MM-DD/`
 3. `/docs/CRM_COMPLETE_MASTER_PLAN.md` - Aktueller Masterplan
 
 **Dann Status abgleichen:**
@@ -125,11 +125,11 @@ echo -e "\033[1;31m🚨 NÄCHSTE FREIE MIGRATION: V121\033[0m"
   grep -r "TODO" backend/src --include="*.java" | wc -l
   ls -la backend/src/main/resources/db/migration/
   ```
-- **Dokumentiere** wichtige Entscheidungen in `/docs/claude-work/daily-work/YYYY-MM-DD/`
+- **Dokumentiere** wichtige Entscheidungen in `/docs/planung/claude-work/daily-work/YYYY-MM-DD/`
 - **Feature-Konzepte** für größere Features erstellen:
   - Feature Code vergeben (FC-XXX)
-  - Template nutzen: `/docs/templates/TECH_CONCEPT_TEMPLATE.md`
-  - In `/docs/features/` ablegen
+  - Template nutzen: `/docs/planung/vorlagen/TECH_CONCEPT_TEMPLATE.md`
+  - In `/docs/planung/features/` ablegen
   - Master Plan nur mit Verweis aktualisieren
   - **WICHTIG**: Bei jeder Übergabe den Implementierungs-Status in der FC-Datei aktualisieren!
 - **Two-Pass-Review** nach jedem signifikanten Schritt (siehe CLAUDE.md Abschnitt 0.10)
@@ -138,7 +138,7 @@ echo -e "\033[1;31m🚨 NÄCHSTE FREIE MIGRATION: V121\033[0m"
 **PFLICHT bei jeder signifikanten Änderung:**
 - Erstelle IMMER ein Change Log VOR der Implementierung
 - Format: `YYYY-MM-DD_CHANGE_LOG_<feature-name>.md`
-- Nutze das Template: `cp docs/templates/CHANGE_LOG_TEMPLATE.md docs/claude-work/daily-work/$(date +%Y-%m-%d)/`
+- Nutze das Template: `cp docs/planung/vorlagen/CHANGE_LOG_TEMPLATE.md docs/planung/claude-work/daily-work/$(date +%Y-%m-%d)/`
 - Dokumentiere Vorher/Nachher-Zustand mit Screenshots/Logs
 - Verlinke das Change Log in der Übergabe
 
@@ -157,8 +157,8 @@ echo -e "\033[1;31m🚨 NÄCHSTE FREIE MIGRATION: V121\033[0m"
 2. **Dokumentiere** strukturiert:
    ```bash
    # Kopiere Template für Problem-Analyse:
-   cp docs/templates/PROBLEM_ANALYSIS_TEMPLATE.md \
-      docs/claude-work/daily-work/$(date +%Y-%m-%d)/PROBLEM_$(date +%H%M).md
+   cp docs/planung/vorlagen/PROBLEM_ANALYSIS_TEMPLATE.md \
+      docs/planung/claude-work/daily-work/$(date +%Y-%m-%d)/PROBLEM_$(date +%H%M).md
    ```
 3. **Schlage** 2-3 konkrete Lösungswege vor
 4. **Halte dich** an die "Wenn du nicht weiterkommst"-Regeln im CLAUDE.md
@@ -196,7 +196,7 @@ echo -e "\033[1;31m🚨 NÄCHSTE FREIE MIGRATION: V121\033[0m"
 
 ## 📝 CHANGE LOGS DIESER SESSION
 - [ ] Change Log erstellt für: [Feature-Name]
-  - Link: `/docs/claude-work/daily-work/YYYY-MM-DD/YYYY-MM-DD_CHANGE_LOG_feature.md`
+  - Link: `/docs/planung/claude-work/daily-work/YYYY-MM-DD/YYYY-MM-DD_CHANGE_LOG_feature.md`
 - [ ] Weitere Change Logs: [Liste weitere wenn vorhanden]
 
 ## 📑 FEATURE-KONZEPTE STATUS-UPDATE
@@ -277,7 +277,7 @@ TodoRead
 ```
 
 #### Speicherort für Übergaben:
-`/docs/claude-work/daily-work/YYYY-MM-DD/YYYY-MM-DD_HANDOVER_HH-MM.md`
+`/docs/planung/claude-work/daily-work/YYYY-MM-DD/YYYY-MM-DD_HANDOVER_HH-MM.md`
 
 #### Wichtige Regeln für Übergaben:
 - **VERIFIZIERE** erst den echten Code-Stand (keine Annahmen!)

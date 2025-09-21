@@ -1,0 +1,268 @@
+{
+  "info": {
+    "name": "CRM Customer Management",
+    "_postman_id": "7e0c3c2b-56c0-4f12-bc70-1b6f7c2a0001",
+    "description": "Customer Management APIs: Samples, Activities, Fields, plus common errors",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://api.example.com"
+    },
+    {
+      "key": "token",
+      "value": "{{YOUR_JWT}}"
+    },
+    {
+      "key": "customerId",
+      "value": "00000000-0000-0000-0000-000000000001"
+    },
+    {
+      "key": "sampleId",
+      "value": "00000000-0000-0000-0000-000000000002"
+    }
+  ],
+  "item": [
+    {
+      "name": "Samples - Create",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/samples",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "samples"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"customerId\": \"{{customerId}}\",\n  \"kitId\": \"CF-BASIS-5\",\n  \"items\": [\n    {\n      \"sku\": \"CF-101\",\n      \"quantity\": 1\n    },\n    {\n      \"sku\": \"CF-205\",\n      \"quantity\": 2\n    }\n  ],\n  \"deliveryDate\": \"2025-10-01\",\n  \"deliveryAddress\": \"Musterstr. 1, 10117 Berlin\",\n  \"contactEmail\": \"chef@example.com\",\n  \"notes\": \"Bitte gek\\u00fchlt liefern\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Samples - List",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/samples?customerId={{customerId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "samples"
+          ],
+          "query": [
+            {
+              "key": "customerId",
+              "value": "{{customerId}}"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Samples - Update Status",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/samples/{{sampleId}}/status",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "samples",
+            "{{sampleId}}",
+            "status"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"newStatus\": \"DELIVERED\",\n  \"eventAt\": \"2025-10-02T09:00:00Z\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Activities - Create PRODUCTTEST_FEEDBACK",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/activities",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "activities"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"customerId\": \"{{customerId}}\",\n  \"kind\": \"PRODUCTTEST_FEEDBACK\",\n  \"sampleId\": \"{{sampleId}}\",\n  \"rating\": 5,\n  \"outcome\": \"SUCCESS\",\n  \"sensoricNotes\": \"Sehr gute Konsistenz\",\n  \"occurredAt\": \"2025-10-05T10:00:00Z\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Activities - Create ROI_CONSULTATION",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/activities",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "activities"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"customerId\": \"{{customerId}}\",\n  \"kind\": \"ROI_CONSULTATION\",\n  \"roiScenarioId\": \"11111111-1111-1111-1111-111111111111\",\n  \"savingsPerMonth\": 1200,\n  \"commitmentLevel\": \"MID\",\n  \"occurredAt\": \"2025-10-06T09:30:00Z\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Activities - List by Customer",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/customers/{{customerId}}/activities?kind=PRODUCTTEST_FEEDBACK&limit=50",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "customers",
+            "{{customerId}}",
+            "activities"
+          ],
+          "query": [
+            {
+              "key": "kind",
+              "value": "PRODUCTTEST_FEEDBACK"
+            },
+            {
+              "key": "limit",
+              "value": "50"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Fields - Bulk Patch",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/customers/{{customerId}}/fields",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "customers",
+            "{{customerId}}",
+            "fields"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"roi_potential\": {\n    \"bucket\": \"HIGH\",\n    \"value\": 1800\n  },\n  \"current_supplier_contracts\": {\n    \"renewal_date\": \"2026-03-01\",\n    \"exclusivity\": true\n  }\n}"
+        }
+      }
+    },
+    {
+      "name": "Customers - Hot-Search",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/customers?roi_bucket=HIGH&renewal_before=2026-06-01",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "customers"
+          ],
+          "query": [
+            {
+              "key": "roi_bucket",
+              "value": "HIGH"
+            },
+            {
+              "key": "renewal_before",
+              "value": "2026-06-01"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

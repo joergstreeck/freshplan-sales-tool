@@ -1,0 +1,10 @@
+# SLA Rules – B2B Convenience Food (Cook&Fresh®)
+rules:
+  sample_delivered:
+    followups:
+      - offset: P3D   # T+3
+        template: "Wie war der Produkttest? Gibt es erstes Feedback?"
+      - offset: P7D   # T+7
+        template: "Kurzer Check-in: ROI-Fragen oder Menü-Integration offen?"
+    escalateIfNoReplyAfter: P10D
+    requireMultiContact: true  # Küchenchef + Einkauf validieren

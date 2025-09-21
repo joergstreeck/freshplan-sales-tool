@@ -1,0 +1,112 @@
+openapi: 3.1.0
+info:
+  title: Reports API
+  version: 1.0.0
+  description: >
+    Reporting-Endpoints für Sales-, Kunden-, Aktivitäts- und Kosten-Analytics.
+    Enthält Export-Schnittstelle inkl. JSON Lines (jsonl) für Data Science.
+servers:
+  - url: https://api.example.com
+security: [ { bearerAuth: [] } ]
+components:
+  securitySchemes:
+    bearerAuth: { type: http, scheme: bearer, bearerFormat: JWT }
+  parameters:
+    CorrelationId:
+      name: X-Correlation-Id
+      in: header
+      required: false
+      schema: { type: string, format: uuid }
+  responses:
+    BadRequest: { $ref: "../openapi/common-errors.yaml#/components/responses/BadRequest" }
+    Forbidden: { $ref: "../openapi/common-errors.yaml#/components/responses/Forbidden" }
+    Conflict: { $ref: "../openapi/common-errors.yaml#/components/responses/Conflict" }
+    TooMany: { $ref: "../openapi/common-errors.yaml#/components/responses/TooManyRequests" }
+paths:
+  /api/reports/sales-summary:
+    get:
+      tags: [Sales]
+      summary: Sales Summary KPIs
+      parameters:
+        - $ref: '#/components/parameters/CorrelationId'
+        - { name: range, in: query, schema: { type: string, enum: [7d,30d,90d], default: 30d } }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  sampleSuccessRate: { type: number, format: float }
+                  roiPipeline: { type: number }
+                  partnerSharePct: { type: number }
+                  atRiskCustomers: { type: integer }
+        "400": { $ref: '#/components/responses/BadRequest' }
+        "403": { $ref: '#/components/responses/Forbidden' }
+        "429": { $ref: '#/components/responses/TooMany' }
+  /api/reports/customer-analytics:
+    get:
+      tags: [Customers]
+      summary: Kundenanalyse (Segmente/Filter)
+      parameters:
+        - $ref: '#/components/parameters/CorrelationId'
+        - { name: segment, in: query, schema: { type: string } }
+        - { name: territory, in: query, schema: { type: string } }
+        - { name: seasonFrom, in: query, schema: { type: string, format: date } }
+        - { name: seasonTo, in: query, schema: { type: string, format: date } }
+        - { name: renewalBefore, in: query, schema: { type: string, format: date } }
+        - { name: limit, in: query, schema: { type: integer, default: 100 } }
+        - { name: cursor, in: query, schema: { type: string } }
+      responses:
+        "200": { description: OK }
+        "400": { $ref: '#/components/responses/BadRequest' }
+        "403": { $ref: '#/components/responses/Forbidden' }
+        "429": { $ref: '#/components/responses/TooMany' }
+  /api/reports/activity-stats:
+    get:
+      tags: [Activities]
+      summary: Aktivitätsstatistiken
+      parameters:
+        - $ref: '#/components/parameters/CorrelationId'
+        - { name: kind, in: query, schema: { type: string, enum: [PRODUCTTEST_FEEDBACK, ROI_CONSULTATION] } }
+        - { name: from, in: query, schema: { type: string, format: date } }
+        - { name: to, in: query, schema: { type: string, format: date } }
+      responses:
+        "200": { description: OK }
+        "400": { $ref: '#/components/responses/BadRequest' }
+        "403": { $ref: '#/components/responses/Forbidden' }
+        "429": { $ref: '#/components/responses/TooMany' }
+  /api/reports/cost-overview:
+    get:
+      tags: [Costs]
+      summary: Kostenübersicht (Service/Feature)
+      parameters:
+        - $ref: '#/components/parameters/CorrelationId'
+        - { name: range, in: query, schema: { type: string, enum: [month, quarter, year], default: month } }
+      responses:
+        "200": { description: OK }
+        "400": { $ref: '#/components/responses/BadRequest' }
+        "403": { $ref: '#/components/responses/Forbidden' }
+        "429": { $ref: '#/components/responses/TooMany' }
+  /api/reports/export:
+    get:
+      tags: [Export]
+      summary: Report-Export (CSV/XLSX/PDF/JSON/HTML/JSONL)
+      parameters:
+        - $ref: '#/components/parameters/CorrelationId'
+        - { name: type, in: query, required: true, schema: { type: string, enum: [sales-summary, customer-analytics, activity-stats, cost-overview] } }
+        - { name: format, in: query, required: true, schema: { type: string, enum: [csv, xlsx, pdf, json, html, jsonl] } }
+        - { name: range, in: query, schema: { type: string } }
+        - { name: segment, in: query, schema: { type: string } }
+        - { name: territory, in: query, schema: { type: string } }
+      responses:
+        "200":
+          description: Datei/Stream
+          content:
+            application/octet-stream: {}
+            application/json: {}
+            application/x-ndjson: {}
+        "400": { $ref: '#/components/responses/BadRequest' }
+        "403": { $ref: '#/components/responses/Forbidden' }
+        "429": { $ref: '#/components/responses/TooMany' }

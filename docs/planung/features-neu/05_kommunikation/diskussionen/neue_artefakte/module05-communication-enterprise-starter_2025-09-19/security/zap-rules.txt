@@ -1,0 +1,2 @@
+# Allow missing CSP for dev env only
+10038 IGNORE

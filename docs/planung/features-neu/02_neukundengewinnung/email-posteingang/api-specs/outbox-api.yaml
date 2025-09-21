@@ -1,0 +1,145 @@
+openapi: 3.1.0
+info:
+  title: Email Outbox API
+  description: Monitoring und Management der Email-Outbox-Queue
+  version: 1.0.0
+servers:
+  - url: https://api.example.com
+security:
+  - bearerAuth: []
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  parameters:
+    CorrelationId:
+      name: X-Correlation-Id
+      in: header
+      required: false
+      schema: { type: string, format: uuid }
+  schemas:
+    OutboxItem:
+      type: object
+      additionalProperties: false
+      properties:
+        id: { type: string, format: uuid }
+        threadId: { type: string, format: uuid, nullable: true }
+        messageId: { type: string, nullable: true, description: "SMTP/Message‑ID, falls vergeben" }
+        recipient: { type: string, format: email }
+        subject: { type: string }
+        status: { type: string, enum: [PENDING, SENDING, FAILED, SENT, DEAD] }
+        attempts: { type: integer, minimum: 0 }
+        nextAttemptAt: { type: string, format: date-time, nullable: true }
+        lastError: { type: string, nullable: true }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+    OutboxPage:
+      type: object
+      properties:
+        items:
+          type: array
+          items: { $ref: '#/components/schemas/OutboxItem' }
+        nextCursor: { type: string, nullable: true }
+        totalCount: { type: integer, description: "Gesamtanzahl für aktuellen Filter" }
+    OutboxStats:
+      type: object
+      properties:
+        pending: { type: integer }
+        sending: { type: integer }
+        failed: { type: integer }
+        sent: { type: integer }
+        dead: { type: integer }
+        avgRetryDelayMinutes: { type: number }
+paths:
+  /email/outbox:
+    get:
+      summary: Outbox‑Monitoring
+      description: Liste ausstehender/fehlgeschlagener Email-Sendungen mit Cursor-basierter Pagination
+      security: [ { bearerAuth: [] } ]
+      parameters:
+        - $ref: '#/components/parameters/CorrelationId'
+        - name: status
+          in: query
+          description: Filter nach Outbox-Status
+          schema: { type: string, enum: [pending, sending, failed, sent, dead, all], default: pending }
+        - name: limit
+          in: query
+          description: Anzahl Items pro Seite
+          schema: { type: integer, minimum: 1, maximum: 200, default: 50 }
+        - name: cursor
+          in: query
+          description: Cursor für Pagination
+          schema: { type: string }
+        - name: recipient
+          in: query
+          description: Filter nach Empfänger-Email
+          schema: { type: string, format: email }
+      responses:
+        '200':
+          description: Outbox-Items erfolgreich abgerufen
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/OutboxPage' }
+              examples:
+                pending_items:
+                  summary: Ausstehende Sendungen
+                  value:
+                    items:
+                      - id: "outbox_123"
+                        threadId: "thr_456"
+                        messageId: null
+                        recipient: "prospect@company.com"
+                        subject: "Ihr Angebot für Frischprodukte"
+                        status: "PENDING"
+                        attempts: 0
+                        nextAttemptAt: "2025-09-18T08:30:00Z"
+                        lastError: null
+                        createdAt: "2025-09-18T08:15:00Z"
+                        updatedAt: "2025-09-18T08:15:00Z"
+                    nextCursor: "cursor_abc123"
+                    totalCount: 42
+                failed_items:
+                  summary: Fehlgeschlagene Sendungen
+                  value:
+                    items:
+                      - id: "outbox_789"
+                        threadId: "thr_101"
+                        messageId: null
+                        recipient: "invalid@nonexistent.tld"
+                        subject: "Follow-up Anfrage"
+                        status: "FAILED"
+                        attempts: 3
+                        nextAttemptAt: "2025-09-18T09:15:00Z"
+                        lastError: "550 5.1.1 User unknown"
+                        createdAt: "2025-09-18T07:30:00Z"
+                        updatedAt: "2025-09-18T08:45:00Z"
+                    nextCursor: null
+                    totalCount: 5
+        '401':
+          description: Nicht authentifiziert
+        '403':
+          description: Keine Berechtigung für Outbox-Monitoring
+  /email/outbox/stats:
+    get:
+      summary: Outbox-Statistiken
+      description: Zusammenfassung der Outbox-Status für Dashboard-Anzeige
+      security: [ { bearerAuth: [] } ]
+      parameters:
+        - $ref: '#/components/parameters/CorrelationId'
+      responses:
+        '200':
+          description: Outbox-Statistiken erfolgreich abgerufen
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/OutboxStats' }
+              examples:
+                current_stats:
+                  value:
+                    pending: 42
+                    sending: 3
+                    failed: 5
+                    sent: 1247
+                    dead: 2
+                    avgRetryDelayMinutes: 8.5

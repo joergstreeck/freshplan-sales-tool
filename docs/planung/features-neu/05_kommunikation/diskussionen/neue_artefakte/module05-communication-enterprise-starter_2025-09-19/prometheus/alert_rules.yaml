@@ -1,0 +1,57 @@
+{
+  "groups": [
+    {
+      "name": "communication-slo",
+      "rules": [
+        {
+          "alert": "HighLatencyP95",
+          "expr": "histogram_quantile(0.95, sum(rate(http_server_requests_seconds_bucket{job=\"comm-backend\"}[5m])) by (le)) > 0.2",
+          "for": "5m",
+          "labels": {
+            "severity": "page"
+          },
+          "annotations": {
+            "summary": "P95 latency >200ms",
+            "runbook": "docs/runbook.md#latency"
+          }
+        },
+        {
+          "alert": "HighErrorRate",
+          "expr": "sum(rate(http_server_requests_seconds_count{job=\"comm-backend\",status=~\"5..\"}[5m])) / sum(rate(http_server_requests_seconds_count{job=\"comm-backend\"}[5m])) > 0.01",
+          "for": "10m",
+          "labels": {
+            "severity": "page"
+          },
+          "annotations": {
+            "summary": "HTTP 5xx rate >1%",
+            "runbook": "docs/runbook.md#error-rate"
+          }
+        },
+        {
+          "alert": "OutboxBacklogHigh",
+          "expr": "sum(outbox_emails_pending{job=\"comm-backend\"}) > 200",
+          "for": "10m",
+          "labels": {
+            "severity": "warn"
+          },
+          "annotations": {
+            "summary": "Outbox backlog >200",
+            "runbook": "docs/runbook.md#outbox"
+          }
+        },
+        {
+          "alert": "BounceRateHigh",
+          "expr": "sum(rate(email_bounce_events_total{job=\"comm-backend\"}[30m])) / clamp_min(sum(rate(communication_messages_sent_total{job=\"comm-backend\"}[30m])),1) > 0.05",
+          "for": "30m",
+          "labels": {
+            "severity": "warn"
+          },
+          "annotations": {
+            "summary": "Bounce rate >5%",
+            "runbook": "docs/runbook.md#bounce"
+          }
+        }
+      ]
+    }
+  ]
+}
