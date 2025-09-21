@@ -56,9 +56,9 @@ Nur Owner; Collaborators erlauben vorbereitende Schritte (Angebot, Notizen).
 Nicht-Owner mit belegbarer Aktivität erzeugt Challenge → Team-Lead entscheidet.
 
 ## Integration Points
-- **Settings:** [SETTINGS_REGISTRY_COMPLETE.md](../../governance/artefakte/SETTINGS_REGISTRY_COMPLETE.md) (lead.protection.*, ai.*, credit.*)
+- **Settings:** [SETTINGS_REGISTRY_COMPLETE.md](../../verwaltung/artefakte/SETTINGS_REGISTRY_COMPLETE.md) (lead.protection.*, ai.*, credit.*)
 - **Events:** [EVENT_CATALOG.md](../../integration/artefakte/EVENT_CATALOG.md) (lead.protection.reminder, lead.protection.expired)
-- **Operations:** [OPERATIONS_RUNBOOK.md](../../operations/artefakte/OPERATIONS_RUNBOOK.md) (Ownership-Konflikte, Expiry-Wellen)
+- **Operations:** [OPERATIONS_RUNBOOK.md](../../betrieb/artefakte/OPERATIONS_RUNBOOK.md) (Ownership-Konflikte, Expiry-Wellen)
 
 ## Troubleshooting
 

@@ -33,7 +33,7 @@
 
 ### Dependencies:
 - ✅ [PostgreSQL Database](../../database/) - Ready
-- ✅ [Keycloak OIDC](../../security/) - JWT Claims verfügbar
+- ✅ [Keycloak OIDC](../../sicherheit/) - JWT Claims verfügbar
 - ✅ [Quarkus Backend](../../../../backend/) - CDI + REST ready
 - 🔄 [Module 06](../../../06_einstellungen/) - BLOCKED, wartet auf Settings Registry
 

@@ -4,13 +4,13 @@
 - **SQL Templates**
   - `sql/templates/settings_registry_core.sql` – Registry/Store/Effective Tabellen, RLS, NOTIFY, Seeds
 - **Java/Quarkus**
-  - `backend/java/de/freshplan/governance/settings/SettingsPrincipal.java`
-  - `backend/java/de/freshplan/governance/settings/JsonMerge.java`
-  - `backend/java/de/freshplan/governance/settings/JsonSchemaValidator.java`
-  - `backend/java/de/freshplan/governance/settings/SettingsService.java` (ETag, L1-Cache, Validation, Metrics)
-  - `backend/java/de/freshplan/governance/settings/SettingsResource.java` (GET /api/settings/effective, PATCH /api/settings)
-  - `backend/java/de/freshplan/governance/settings/SettingsNotifyListener.java` (LISTEN/NOTIFY Cache-Bust)
-  - `backend/java/de/freshplan/governance/settings/RegistryOrConfig.java` (Read-through Adapter)
+  - `backend/java/de/freshplan/verwaltung/settings/SettingsPrincipal.java`
+  - `backend/java/de/freshplan/verwaltung/settings/JsonMerge.java`
+  - `backend/java/de/freshplan/verwaltung/settings/JsonSchemaValidator.java`
+  - `backend/java/de/freshplan/verwaltung/settings/SettingsService.java` (ETag, L1-Cache, Validation, Metrics)
+  - `backend/java/de/freshplan/verwaltung/settings/SettingsResource.java` (GET /api/settings/effective, PATCH /api/settings)
+  - `backend/java/de/freshplan/verwaltung/settings/SettingsNotifyListener.java` (LISTEN/NOTIFY Cache-Bust)
+  - `backend/java/de/freshplan/verwaltung/settings/RegistryOrConfig.java` (Read-through Adapter)
 
 ## Quarkus/Maven Hinweise (pom.xml)
 Abhängigkeiten (Beispiele):

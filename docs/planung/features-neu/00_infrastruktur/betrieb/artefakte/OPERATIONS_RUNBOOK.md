@@ -66,6 +66,6 @@ Status: Final
 - k6 Peak-Profil erneut ausführen; Alerts überwachen.
 
 ## Integration Points
-- **SLO:** [PERFORMANCE_SLO_CATALOG.md](../../performance/artefakte/PERFORMANCE_SLO_CATALOG.md)
+- **SLO:** [PERFORMANCE_SLO_CATALOG.md](../../leistung/artefakte/PERFORMANCE_SLO_CATALOG.md)
 - **Events:** [EVENT_CATALOG.md](../../integration/artefakte/EVENT_CATALOG.md)
-- **Settings:** [SETTINGS_REGISTRY_COMPLETE.md](../../governance/artefakte/SETTINGS_REGISTRY_COMPLETE.md)
+- **Settings:** [SETTINGS_REGISTRY_COMPLETE.md](../../verwaltung/artefakte/SETTINGS_REGISTRY_COMPLETE.md)

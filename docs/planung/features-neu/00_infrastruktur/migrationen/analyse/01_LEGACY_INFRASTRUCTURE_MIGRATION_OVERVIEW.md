@@ -8,7 +8,7 @@
 
 ### **🗄️ MIGRATIONS Mini-Modul**
 **Legacy-Quelle:** `/docs/planung/infrastruktur/`
-**Neues Ziel:** `/docs/planung/features-neu/00_infrastruktur/migrations/analyse/`
+**Neues Ziel:** `/docs/planung/features-neu/00_infrastruktur/migrationen/analyse/`
 
 ```yaml
 Migrierte Dokumente:
@@ -21,7 +21,7 @@ Migrierte Dokumente:
 ```
 
 ### **🔐 SECURITY Mini-Modul**
-**Neues Ziel:** `/docs/planung/features-neu/00_infrastruktur/security/analyse/`
+**Neues Ziel:** `/docs/planung/features-neu/00_infrastruktur/sicherheit/analyse/`
 
 ```yaml
 Migrierte Dokumente:
@@ -31,7 +31,7 @@ Migrierte Dokumente:
 ```
 
 ### **⚡ PERFORMANCE Mini-Modul**
-**Neues Ziel:** `/docs/planung/features-neu/00_infrastruktur/performance/analyse/`
+**Neues Ziel:** `/docs/planung/features-neu/00_infrastruktur/leistung/analyse/`
 
 ```yaml
 Migrierte Dokumente:
@@ -45,7 +45,7 @@ Migrierte Dokumente:
 ```
 
 ### **🛠️ OPERATIONS Mini-Modul**
-**Neues Ziel:** `/docs/planung/features-neu/00_infrastruktur/operations/analyse/`
+**Neues Ziel:** `/docs/planung/features-neu/00_infrastruktur/betrieb/analyse/`
 
 ```yaml
 Migrierte Dokumente:
@@ -73,7 +73,7 @@ Migrierte Dokumente:
 ```
 
 ### **📋 GOVERNANCE Mini-Modul**
-**Neues Ziel:** `/docs/planung/features-neu/00_infrastruktur/governance/analyse/`
+**Neues Ziel:** `/docs/planung/features-neu/00_infrastruktur/verwaltung/analyse/`
 
 ```yaml
 Migrierte Dokumente:

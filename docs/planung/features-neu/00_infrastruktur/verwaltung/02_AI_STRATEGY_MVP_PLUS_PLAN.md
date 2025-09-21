@@ -180,7 +180,7 @@ public class AIProviderService {
 
 **Cost Management:**
 - → [Performance Standards](../../../../grundlagen/PERFORMANCE_STANDARDS.md)
-- → [Budget Approval Workflows](../../operations/artefakte/OPERATIONS_RUNBOOK.md)
+- → [Budget Approval Workflows](../../betrieb/artefakte/OPERATIONS_RUNBOOK.md)
 
 ## 🤖 Claude Handover Section
 

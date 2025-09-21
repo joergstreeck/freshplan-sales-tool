@@ -58,7 +58,7 @@ Status: Final
 - Merge-Strategien beachten (replace, merge, append).
 
 ## Integration Points
-- **Security:** [SECURITY_MODEL_FINAL.md](../../security/artefakte/SECURITY_MODEL_FINAL.md)
+- **Security:** [SECURITY_MODEL_FINAL.md](../../sicherheit/artefakte/SECURITY_MODEL_FINAL.md)
 - **SLOs/Events/Ops:** Querverweise beachten.
 
 ## Troubleshooting

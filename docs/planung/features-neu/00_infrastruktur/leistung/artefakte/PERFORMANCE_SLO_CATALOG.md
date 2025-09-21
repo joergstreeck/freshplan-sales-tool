@@ -69,8 +69,8 @@ dlq_size{provider}
 
 ## Integration Points
 - **Events:** [EVENT_CATALOG.md](../../integration/artefakte/EVENT_CATALOG.md) (credit.checked)
-- **Ops:** [OPERATIONS_RUNBOOK.md](../../operations/artefakte/OPERATIONS_RUNBOOK.md)
-- **Settings:** [SETTINGS_REGISTRY_COMPLETE.md](../../governance/artefakte/SETTINGS_REGISTRY_COMPLETE.md) (credit.*)
+- **Ops:** [OPERATIONS_RUNBOOK.md](../../betrieb/artefakte/OPERATIONS_RUNBOOK.md)
+- **Settings:** [SETTINGS_REGISTRY_COMPLETE.md](../../verwaltung/artefakte/SETTINGS_REGISTRY_COMPLETE.md) (credit.*)
 
 ## Troubleshooting
 

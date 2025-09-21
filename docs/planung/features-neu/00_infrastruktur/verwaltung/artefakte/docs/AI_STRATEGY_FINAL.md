@@ -42,7 +42,7 @@ else:
 
 ## Integration Points
 - **Settings:** [SETTINGS_REGISTRY_COMPLETE.md](./SETTINGS_REGISTRY_COMPLETE.md) (ai.*)
-- **Ops:** [OPERATIONS_RUNBOOK.md](../../operations/artefakte/OPERATIONS_RUNBOOK.md)
+- **Ops:** [OPERATIONS_RUNBOOK.md](../../betrieb/artefakte/OPERATIONS_RUNBOOK.md)
 - **Events:** [EVENT_CATALOG.md](../../integration/artefakte/EVENT_CATALOG.md) (ai.usage.* optional)
 
 ## Troubleshooting

@@ -53,9 +53,9 @@ Status: Final
 - **Subscriber:** Cockpit KPIs, Auswertungen, Admin-Monitoring
 
 ## Integration Points
-- **SLOs:** [PERFORMANCE_SLO_CATALOG.md](../../performance/artefakte/PERFORMANCE_SLO_CATALOG.md)
-- **Settings:** [SETTINGS_REGISTRY_COMPLETE.md](../../governance/artefakte/SETTINGS_REGISTRY_COMPLETE.md)
-- **Ops:** [OPERATIONS_RUNBOOK.md](../../operations/artefakte/OPERATIONS_RUNBOOK.md)
+- **SLOs:** [PERFORMANCE_SLO_CATALOG.md](../../leistung/artefakte/PERFORMANCE_SLO_CATALOG.md)
+- **Settings:** [SETTINGS_REGISTRY_COMPLETE.md](../../verwaltung/artefakte/SETTINGS_REGISTRY_COMPLETE.md)
+- **Ops:** [OPERATIONS_RUNBOOK.md](../../betrieb/artefakte/OPERATIONS_RUNBOOK.md)
 
 ## Troubleshooting
 
