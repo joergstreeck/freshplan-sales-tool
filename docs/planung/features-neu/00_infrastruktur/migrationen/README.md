@@ -33,7 +33,7 @@
 ## 🏗️ **MIGRATION FOUNDATION STRUCTURE**
 
 ```
-migrations/
+migrationen/
 ├── 📋 README.md                          # Diese Übersicht
 ├── 📋 technical-concept.md               # Migration Architecture + Patterns
 ├── 📊 analyse/                           # Migration Codebase Analysis

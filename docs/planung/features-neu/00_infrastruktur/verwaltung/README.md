@@ -11,7 +11,7 @@
 ## 📁 Projektstruktur-Übersicht
 
 ```
-governance/
+verwaltung/
 ├── README.md                           # 👈 Diese Übersicht (Navigation Hub)
 ├── technical-concept.md                # 🔍 Architektur-Übersicht + Gesamtstrategie
 ├── 01_SETTINGS_REGISTRY_MVP_PLAN.md    # 💎 Settings MVP (4-6 Wochen, 9.7/10 Ready)

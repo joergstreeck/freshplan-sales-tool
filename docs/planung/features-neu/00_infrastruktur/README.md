@@ -12,25 +12,25 @@
 00_infrastruktur/
 ├── 📋 README.md                           # Diese Übersicht
 ├── 📋 INFRASTRUCTURE_ROADMAP.md           # Strategic Timeline + Priority Matrix
-├── 🏗️ migrations/                         # P0 - Database Migration Strategy
+├── 🏗️ migrationen/                        # P0 - Database Migration Strategy
 │   ├── README.md                          # Migration-specific Overview
 │   ├── technical-concept.md               # Migration Architecture + Patterns
 │   ├── analyse/                           # Migration Codebase Analysis
 │   ├── diskussionen/                      # Migration Strategy Decisions
 │   └── artefakte/                         # Migration Templates + Scripts
-├── 🏗️ security/                           # P0 - ABAC/RLS Security Model
+├── 🏗️ sicherheit/                         # P0 - ABAC/RLS Security Model
 │   ├── README.md                          # Security-specific Overview
 │   ├── technical-concept.md               # ABAC/RLS Architecture + Policies
 │   ├── analyse/                           # Security Current State Analysis
 │   ├── diskussionen/                      # Security Architecture Decisions
 │   └── artefakte/                         # ABAC Policies + Security Templates
-├── 🏗️ performance/                        # P1 - SLO + Monitoring Framework
+├── 🏗️ leistung/                           # P1 - SLO + Monitoring Framework
 │   ├── README.md                          # Performance-specific Overview
 │   ├── technical-concept.md               # SLO Architecture + Monitoring
 │   ├── analyse/                           # Performance Gap Analysis
 │   ├── diskussionen/                      # SLO Strategy Decisions
 │   └── artefakte/                         # SLO Definitions + k6 Templates
-├── 🏗️ operations/                         # P1 - Runbooks + Incident Response
+├── 🏗️ betrieb/                            # P1 - Runbooks + Incident Response
 │   ├── README.md                          # Operations-specific Overview
 │   ├── technical-concept.md               # Operations Architecture + Processes
 │   ├── analyse/                           # Operations Readiness Analysis
@@ -42,13 +42,13 @@
 │   ├── analyse/                           # Integration Landscape Analysis
 │   ├── diskussionen/                      # Integration Strategy Decisions
 │   └── artefakte/                         # Event Schemas + Integration Templates
-├── 🏗️ governance/                         # P3 - Data + AI Governance
+├── 🏗️ verwaltung/                         # P3 - Data + AI Governance
 │   ├── README.md                          # Governance-specific Overview
 │   ├── technical-concept.md               # Data + AI Governance Framework
 │   ├── analyse/                           # Governance Gap Analysis
 │   ├── diskussionen/                      # Governance Policy Decisions
 │   └── artefakte/                         # Governance Policies + Compliance
-└── 🏗️ scaling/                            # P4 - Horizontal Scale + Multi-Region
+└── 🏗️ skalierung/                         # P4 - Horizontal Scale + Multi-Region
     ├── README.md                          # Scaling-specific Overview
     ├── technical-concept.md               # Scale-out Architecture + Patterns
     ├── analyse/                           # Scaling Bottleneck Analysis
@@ -75,12 +75,12 @@
 ### **P0 - CRITICAL (Active Development - Q4 2025)**
 🔥 **Production Blockers - Must be resolved before any Module goes live**
 
-- **[migrations](./migrations/)** - Database Migration Strategy + Schema Standards
+- **[migrationen](./migrationen/)** - Database Migration Strategy + Schema Standards
   - **Status:** 🔄 In Development
   - **Critical for:** Alle Module 01-08 Database Changes
   - **Timeline:** Q4 2025 (vor Production-Deployment)
 
-- **[security](./security/)** - ABAC/RLS Security Model + Territory-Scoping
+- **[sicherheit](./sicherheit/)** - ABAC/RLS Security Model + Territory-Scoping
   - **Status:** 🔄 In Development
   - **Critical for:** Lead-Protection + Multi-Territory + Compliance
   - **Timeline:** Q4 2025 (vor Production-Deployment)
@@ -88,12 +88,12 @@
 ### **P1 - HIGH (Next Phase - Q1 2026)**
 ⚠️ **Operations Excellence - Required for Enterprise-Scale**
 
-- **[performance](./performance/)** - SLO Catalog + Monitoring Framework
+- **[leistung](./leistung/)** - SLO Catalog + Monitoring Framework
   - **Status:** 📋 Planned
   - **Critical for:** 1000+ concurrent users + Enterprise SLAs
   - **Timeline:** Q1 2026
 
-- **[operations](./operations/)** - Runbooks + Incident Response + Backup Strategy
+- **[betrieb](./betrieb/)** - Runbooks + Incident Response + Backup Strategy
   - **Status:** 📋 Planned
   - **Critical for:** 24/7 Operations + Business Continuity
   - **Timeline:** Q1 2026
@@ -109,7 +109,7 @@
 ### **P3 - STRATEGIC (Governance Phase - Q3 2026)**
 📋 **Long-term Excellence - Required for Enterprise Compliance**
 
-- **[governance](./governance/)** - Data Classification + AI Governance + GDPR Compliance
+- **[verwaltung](./verwaltung/)** - Data Classification + AI Governance + GDPR Compliance
   - **Status:** 📋 Planned
   - **Critical for:** Enterprise Compliance + AI Ethics + Data Retention
   - **Timeline:** Q3 2026
@@ -117,7 +117,7 @@
 ### **P4 - FUTURE (Scale Phase - Q4 2026)**
 🚀 **Hypergrowth Preparation - Required for Market Expansion**
 
-- **[scaling](./scaling/)** - Horizontal Scale + Multi-Region + Performance Engineering
+- **[skalierung](./skalierung/)** - Horizontal Scale + Multi-Region + Performance Engineering
   - **Status:** 📋 Planned
   - **Critical for:** >1000 concurrent users + Geographic Expansion + Market Growth
   - **Timeline:** Q4 2026
@@ -127,14 +127,14 @@
 ### **✅ INFRASTRUCTURE FOUNDATION INITIATED**
 
 **Current Active Areas:**
-- **migrations:** Migration Strategy Development + Database Standards Definition
-- **security:** ABAC/RLS Model Finalization + Territory-Scoping Implementation
+- **migrationen:** Migration Strategy Development + Database Standards Definition
+- **sicherheit:** ABAC/RLS Model Finalization + Territory-Scoping Implementation
 
 **Next Steps:**
 1. **Migration Analysis:** Existing Database Patterns + Schema Standards Assessment
 2. **Security Analysis:** Current ABAC/RLS Implementation + Territory Access Review
 3. **External KI Discussion:** Infrastructure Architecture Strategy Session
-4. **Technical Concepts:** Detailed Architecture Documentation for migrations + security
+4. **Technical Concepts:** Detailed Architecture Documentation for migrationen + sicherheit
 
 ### **🔗 Cross-Module Infrastructure Dependencies:**
 ```yaml

@@ -33,7 +33,7 @@
 ## 🏗️ **SECURITY FOUNDATION STRUCTURE**
 
 ```
-security/
+sicherheit/
 ├── 📋 README.md                          # Diese Übersicht
 ├── 📋 technical-concept.md               # ABAC/RLS Security Architecture
 ├── 📊 analyse/                           # Security Current State Analysis

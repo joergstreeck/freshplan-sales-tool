@@ -22,7 +22,7 @@
 **Timeline:** Okt-Dez 2025 (3 Monate)
 **Business Impact:** 🔥 **Production Blocker** - Ohne diese keine Go-Live möglich
 
-#### **migrations (Database Foundation)**
+#### **migrationen (Database Foundation)**
 ```yaml
 Scope: Database Migration Strategy + Schema Standards + Performance Patterns
 Business Value: Alle Module 01-08 können Database Changes sicher deployen
@@ -35,7 +35,7 @@ Timeline: Okt 2025 (4 Wochen)
 Dependencies: Module 01-08 Technical Concepts completed
 ```
 
-#### **security (ABAC/RLS Foundation)**
+#### **sicherheit (ABAC/RLS Foundation)**
 ```yaml
 Scope: ABAC/RLS Security Model + Territory-Scoping + Lead-Protection + Audit
 Business Value: Enterprise-Security + Multi-Territory + Compliance-Ready
@@ -52,7 +52,7 @@ Dependencies: Module 02/03 Lead-Protection Requirements finalized
 **Timeline:** Jan-März 2026 (3 Monate)
 **Business Impact:** ⚠️ **Enterprise-Excellence** - Required für 24/7 Operations
 
-#### **performance (SLO + Monitoring Framework)**
+#### **leistung (SLO + Monitoring Framework)**
 ```yaml
 Scope: SLO Catalog + Monitoring Stack + Performance Engineering + Load Testing
 Business Value: 1000+ concurrent users + Enterprise-SLAs + Proactive Performance
@@ -65,7 +65,7 @@ Timeline: Jan-Feb 2026 (6 Wochen)
 Dependencies: Phase 1 Infrastructure stable
 ```
 
-#### **operations (Runbooks + Incident Response)**
+#### **betrieb (Runbooks + Incident Response)**
 ```yaml
 Scope: Operations Runbooks + Incident Response + Backup Strategy + Business Continuity
 Business Value: 24/7 Operations + Disaster Recovery + Business Continuity
@@ -75,7 +75,7 @@ Success Criteria:
   - On-call Rotation + Escalation Matrix established
   - Business Continuity Plan operational
 Timeline: Feb-März 2026 (6 Wochen)
-Dependencies: performance Monitoring operational
+Dependencies: leistung Monitoring operational
 ```
 
 ### **Phase 3: Integration (Q2 2026) - P2 MEDIUM**
@@ -99,7 +99,7 @@ Dependencies: Module 01-08 Event Requirements finalized
 **Timeline:** Jul-Sep 2026 (3 Monate)
 **Business Impact:** 📋 **Long-term Excellence** - Required für Enterprise Compliance
 
-#### **governance (Data + AI Governance)**
+#### **verwaltung (Data + AI Governance)**
 ```yaml
 Scope: Data Classification + AI Governance + GDPR Compliance + Ethics Framework
 Business Value: Enterprise Compliance + AI Ethics + Data Retention + Regulatory Readiness
@@ -116,12 +116,12 @@ Dependencies: AI Features (Module 07 CAR-Strategy) operational
 **Timeline:** Okt-Dez 2026 (3 Monate)
 **Business Impact:** 🚀 **Hypergrowth Preparation** - Required für Market Expansion
 
-#### **scaling (Horizontal Scale + Multi-Region)**
+#### **skalierung (Horizontal Scale + Multi-Region)**
 ```yaml
 Scope: Horizontal Scaling + Multi-Region + Performance Engineering + Geographic Expansion
 Business Value: >1000 concurrent users + Geographic Market Expansion + Hypergrowth Ready
 Success Criteria:
-  - Auto-scaling Infrastructure operational
+  - Auto-skalierung Infrastructure operational
   - Multi-Region Deployment capability
   - CDN + Caching Strategy optimized
   - Geographic Load Distribution established
@@ -134,12 +134,12 @@ Dependencies: Phase 1-4 Infrastructure stable + Business Growth validated
 ### **Team Allocation Matrix:**
 ```yaml
 Q4 2025 (Phase 1 - Foundation):
-  DevOps Lead: 100% (migrations + security)
+  DevOps Lead: 100% (migrationen + sicherheit)
   Security Specialist: 50% (ABAC/RLS + Territory-Scoping)
   Database Architect: 50% (Migration Strategy + Performance)
 
 Q1 2026 (Phase 2 - Operations):
-  DevOps Lead: 100% (performance + operations)
+  DevOps Lead: 100% (leistung + betrieb)
   Site Reliability Engineer: 100% (Monitoring + Incident Response)
   Performance Engineer: 50% (Load Testing + Optimization)
 
@@ -154,7 +154,7 @@ Q3 2026 (Phase 4 - Governance):
   Legal Advisor: 25% (Regulatory Requirements)
 
 Q4 2026 (Phase 5 - Scale):
-  Cloud Architect: 100% (Multi-Region + Auto-scaling)
+  Cloud Architect: 100% (Multi-Region + Auto-skalierung)
   Performance Engineer: 100% (Scale Testing + Optimization)
   DevOps Lead: 50% (Infrastructure Scaling)
 ```
@@ -214,7 +214,7 @@ Total Infrastructure Budget: €415,000 over 12 months
 ### **Phase 5 Success Criteria:**
 - ✅ >1000 concurrent users supported
 - ✅ Multi-Region deployment operational
-- ✅ Auto-scaling responding to load within 2 minutes
+- ✅ Auto-skalierung responding to load within 2 minutes
 - ✅ Geographic Load Distribution optimized
 
 ## ⚠️ **RISK MATRIX & MITIGATION**
@@ -238,7 +238,7 @@ Impact: High (Enterprise deals at risk)
 Mitigation:
   - Early load testing in Phase 1
   - Performance architecture review
-  - Horizontal scaling preparation
+  - Horizontal skalierung preparation
 ```
 
 ### **Low Risk - Medium Impact:**
@@ -256,21 +256,21 @@ Mitigation:
 
 ### **Infrastructure → Business Modules:**
 ```yaml
-migrations → ALL Modules: Database schema changes
-security → Module 02/03: Lead-Protection + Multi-Contact
-performance → Module 01/04: Dashboard + Analytics performance
-operations → ALL Modules: Production deployment readiness
+migrationen → ALL Modules: Database schema changes
+sicherheit → Module 02/03: Lead-Protection + Multi-Contact
+leistung → Module 01/04: Dashboard + Analytics leistung
+betrieb → ALL Modules: Production deployment readiness
 integration → Module 02/05/08: External system connections
-governance → Module 07: AI features compliance
-scaling → ALL Modules: Enterprise-scale support
+verwaltung → Module 07: AI features compliance
+skalierung → ALL Modules: Enterprise-scale support
 ```
 
 ### **Business Modules → Infrastructure:**
 ```yaml
 Module 01-08 Technical Concepts → Phase 1 Requirements
-Module 02/03 Lead-Protection → security Implementation
-Module 07 CAR-Strategy → governance AI policies
-Module 08 Administration → operations Integration
+Module 02/03 Lead-Protection → sicherheit Implementation
+Module 07 CAR-Strategy → verwaltung AI policies
+Module 08 Administration → betrieb Integration
 ```
 
 ## 📋 **DELIVERABLES TIMELINE**
@@ -300,7 +300,7 @@ Module 08 Administration → operations Integration
 - [ ] Data Retention + Anonymization Policies
 
 ### **Q4 2026 Deliverables:**
-- [ ] Multi-Region Infrastructure + Auto-scaling
+- [ ] Multi-Region Infrastructure + Auto-skalierung
 - [ ] CDN + Caching Strategy + Performance Optimization
 - [ ] Geographic Load Distribution + Latency Optimization
 - [ ] Hypergrowth Infrastructure Readiness

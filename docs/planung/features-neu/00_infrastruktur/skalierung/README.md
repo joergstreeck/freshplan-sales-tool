@@ -1,4 +1,4 @@
-# 🏗️ Infrastructure operations - [Status: Planned]
+# 🏗️ Infrastructure scaling - [Status: Planned]
 
 **📅 Letzte Aktualisierung:** 2025-09-20
 **🎯 Status:** 📋 PLANNED (P2-P4 - Future Development)
@@ -7,11 +7,11 @@
 
 ## 🎯 **PLACEHOLDER - FUTURE DEVELOPMENT**
 
-This mini-module will be developed after P0 Foundation (migrations + security) is completed.
+This mini-module will be developed after P0 Foundation (migrationen + sicherheit) is completed.
 
 **Target Timeline:** See [INFRASTRUCTURE_ROADMAP.md](../INFRASTRUCTURE_ROADMAP.md) for detailed planning.
 
-**Current Focus:** Complete P0 Foundation first (migrations + security)
+**Current Focus:** Complete P0 Foundation first (migrationen + sicherheit)
 
 ---
 

@@ -179,7 +179,7 @@
 - [Foundation Integration Guide](artefakte/docs/FOUNDATION_INTEGRATION_GUIDE.md) - Settings-Registry + EVENT_CATALOG
 
 ### **Foundation Dependencies:**
-- [Settings-Registry](../governance/README.md) - Dynamic Configuration Management
+- [Settings-Registry](../verwaltung/README.md) - Dynamic Configuration Management
 - [EVENT_CATALOG.md](artefakte/docs/EVENT_CATALOG.md) - Domain-Events Catalog
 - [API_STANDARDS.md](../../../grundlagen/API_STANDARDS.md) - REST API Standards
 
