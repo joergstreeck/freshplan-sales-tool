@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "trial.phase.ended data",
+  "type": "object",
+  "required": [
+    "trialId",
+    "customerId",
+    "leadId",
+    "endedAt",
+    "outcome"
+  ],
+  "properties": {
+    "trialId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "leadId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "customerId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "endedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "outcome": {
+      "type": "string",
+      "enum": [
+        "SUCCESS",
+        "PARTIAL",
+        "FAILURE"
+      ]
+    },
+    "adoptedSkus": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "rejectedSkus": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "roi": {
+      "type": "object",
+      "properties": {
+        "laborSavingsPct": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "wasteReductionPct": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    }
+  },
+  "additionalProperties": false
+}

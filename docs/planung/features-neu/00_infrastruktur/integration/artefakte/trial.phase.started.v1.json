@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "trial.phase.started data",
+  "type": "object",
+  "required": [
+    "trialId",
+    "customerId",
+    "leadId",
+    "startedAt",
+    "products"
+  ],
+  "properties": {
+    "trialId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "leadId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "customerId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "locationId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "startedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "durationDays": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 60
+    },
+    "products": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "sku"
+        ],
+        "properties": {
+          "sku": {
+            "type": "string"
+          },
+          "qty": {
+            "type": "number",
+            "minimum": 0
+          },
+          "unit": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false
+}

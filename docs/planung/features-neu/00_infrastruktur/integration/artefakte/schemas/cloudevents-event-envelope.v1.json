@@ -1,0 +1,56 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://schemas.freshplan.local/events/cloudevents-event-envelope.v1.json",
+  "title": "CloudEvents 1.0 Event Envelope Schema",
+  "description": "FreshPlan CloudEvents 1.0 compatible event envelope with extensions",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique event identifier"
+    },
+    "time": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Event timestamp in ISO 8601 format"
+    },
+    "type": {
+      "type": "string",
+      "pattern": "^[a-z]+\\.[a-z]+\\.[a-z]+$",
+      "description": "Event type in domain.aggregate.event format",
+      "examples": ["sample.status.changed", "trial.phase.started", "credit.checked"]
+    },
+    "source": {
+      "type": "string",
+      "description": "Event source (module/service)"
+    },
+    "specversion": {
+      "type": "string",
+      "const": "1.0",
+      "description": "CloudEvents specification version"
+    },
+    "datacontenttype": {
+      "type": "string",
+      "const": "application/json",
+      "description": "Content type of the data attribute"
+    },
+    "correlationId": {
+      "type": "string",
+      "description": "Correlation ID for request tracing"
+    },
+    "tenantId": {
+      "type": "string",
+      "description": "Tenant identifier for multi-tenancy"
+    },
+    "orgId": {
+      "type": "string",
+      "description": "Organization identifier"
+    },
+    "data": {
+      "type": "object",
+      "description": "Event-specific payload data"
+    }
+  },
+  "required": ["id", "time", "type", "source", "specversion", "datacontenttype", "correlationId", "tenantId", "data"],
+  "additionalProperties": false
+}

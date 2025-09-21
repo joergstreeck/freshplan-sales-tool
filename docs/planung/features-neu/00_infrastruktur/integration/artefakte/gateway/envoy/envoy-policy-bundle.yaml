@@ -1,0 +1,111 @@
+# Envoy Gateway Policy Bundle
+# Source: External Enterprise AI Integration-Pack
+# Content: Lua-Header-Enforcer für Idempotency/If-Match, CORS-Filter, Router
+
+# PLACEHOLDER - Replace with actual Envoy configuration from external AI download:
+# gateway/envoy/policy-bundle.yaml
+
+# Envoy Policy Configuration:
+# - Lua-Filter für Idempotency-Key + If-Match Enforcement
+# - CORS-Filter für Multi-Origin Support + Preflight
+# - Auto-Correlation-ID Generation falls Header fehlt
+# - Router für Route-Matching + Backend-Clusters
+
+static_resources:
+  listeners:
+  - name: listener_0
+    address:
+      socket_address:
+        protocol: TCP
+        address: 0.0.0.0
+        port_value: 8080
+    filter_chains:
+    - filters:
+      - name: envoy.filters.network.http_connection_manager
+        typed_config:
+          "@type": type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
+          scheme_header_transformation:
+            scheme_to_overwrite: https
+          stat_prefix: ingress_http
+          access_log:
+          - name: envoy.access_loggers.stdout
+            typed_config:
+              "@type": type.googleapis.com/envoy.extensions.access_loggers.stream.v3.StdoutAccessLog
+          http_filters:
+          # CORS Filter
+          - name: envoy.filters.http.cors
+            typed_config:
+              "@type": type.googleapis.com/envoy.extensions.filters.http.cors.v3.Cors
+
+          # Lua Filter for Header Enforcement
+          - name: envoy.filters.http.lua
+            typed_config:
+              "@type": type.googleapis.com/envoy.extensions.filters.http.lua.v3.Lua
+              inline_code: |
+                function envoy_on_request(request_handle)
+                  local method = request_handle:headers():get(":method")
+
+                  -- Enforce Idempotency-Key for write operations
+                  if method == "POST" or method == "PUT" or method == "PATCH" then
+                    local idempotency_key = request_handle:headers():get("idempotency-key")
+                    if not idempotency_key then
+                      request_handle:respond({[":status"] = "400"}, '{"message": "Idempotency-Key header required for write operations"}')
+                      return
+                    end
+                  end
+
+                  -- Enforce If-Match for updates
+                  if method == "PUT" or method == "PATCH" then
+                    local if_match = request_handle:headers():get("if-match")
+                    if not if_match then
+                      request_handle:respond({[":status"] = "428"}, '{"message": "If-Match header required for updates"}')
+                      return
+                    end
+                  end
+
+                  -- Set Correlation-ID if missing
+                  local correlation_id = request_handle:headers():get("x-correlation-id")
+                  if not correlation_id then
+                    request_handle:headers():add("x-correlation-id", request_handle:headers():get("x-request-id"))
+                  end
+                end
+
+          # Router (must be last)
+          - name: envoy.filters.http.router
+            typed_config:
+              "@type": type.googleapis.com/envoy.extensions.filters.http.router.v3.Router
+
+          route_config:
+            name: local_route
+            virtual_hosts:
+            - name: local_service
+              domains: ["*"]
+              cors:
+                allow_origin_string_match:
+                - prefix: "*"
+                allow_methods: GET, PUT, DELETE, POST, OPTIONS
+                allow_headers: keep-alive,user-agent,cache-control,content-type,content-transfer-encoding,x-accept-content-transfer-encoding,x-accept-response-streaming,x-user-agent,x-grpc-web,grpc-timeout,authorization,x-correlation-id,idempotency-key,if-match,x-tenant-id,x-org-id
+                max_age: "1728000"
+                expose_headers: grpc-status,grpc-message,x-correlation-id,etag
+              routes:
+              - match:
+                  prefix: "/api"
+                route:
+                  cluster: freshplan_backend
+                  prefix_rewrite: "/"
+
+  clusters:
+  - name: freshplan_backend
+    connect_timeout: 30s
+    type: LOGICAL_DNS
+    http2_protocol_options: {}
+    lb_policy: ROUND_ROBIN
+    load_assignment:
+      cluster_name: freshplan_backend
+      endpoints:
+      - lb_endpoints:
+        - endpoint:
+            address:
+              socket_address:
+                address: backend
+                port_value: 8080

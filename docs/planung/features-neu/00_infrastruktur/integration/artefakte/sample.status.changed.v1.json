@@ -1,0 +1,84 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "sample.status.changed data",
+  "type": "object",
+  "required": [
+    "sampleId",
+    "leadId",
+    "customerId",
+    "previousStatus",
+    "status",
+    "changedAt"
+  ],
+  "properties": {
+    "sampleId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "leadId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "customerId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "locationId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "previousStatus": {
+      "type": "string",
+      "enum": [
+        "CONFIGURED",
+        "SHIPPED",
+        "DELIVERED",
+        "FEEDBACK_PENDING",
+        "COMPLETED",
+        "FAILED"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "CONFIGURED",
+        "SHIPPED",
+        "DELIVERED",
+        "FEEDBACK_PENDING",
+        "COMPLETED",
+        "FAILED"
+      ]
+    },
+    "changedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "shipment": {
+      "type": "object",
+      "properties": {
+        "carrier": {
+          "type": "string"
+        },
+        "trackingNo": {
+          "type": "string"
+        }
+      }
+    },
+    "delivery": {
+      "type": "object",
+      "properties": {
+        "deliveredAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "receivedBy": {
+          "type": "string"
+        }
+      }
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false
+}
