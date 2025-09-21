@@ -21,8 +21,9 @@
 - **Module 00 Sicherheit:** ✅ COMPLETE - ABAC + RLS Security Model + Multi-Territory Support + External AI Excellence (9.8/10) + 13 Production-Ready Artefakte
 - **Module 00 Integration:** ✅ COMPLETE - CQRS Light Architecture (LISTEN/NOTIFY + One-Database) + Gateway-Policies + Cost-Efficient für interne Tools
 - **Module 00 Betrieb:** ✅ COMPLETE - CQRS Light Operations (Cost-Efficient für 5-50 Benutzer) + User-Lead-Protection + Simple Monitoring + Module 07 Help-Integration
+- **Module 00 Skalierung:** ✅ COMPLETE - Territory + Seasonal-aware Autoscaling (98% Production-Ready) + B2B-Food Business-Intelligence + External AI Excellence (9.8/10) + 5 Copy-Paste-Ready Artefakte
 
-**🚨 NEXT:** Production Implementation Phase - Vollständige Planungsphase abgeschlossen mit 300+ Production-Ready Artefakten
+**🚨 NEXT:** Production Implementation Phase - Vollständige Planungsphase abgeschlossen mit 310+ Production-Ready Artefakten
 
 **🚀 STRATEGIC DECISION (21.09.2025):** CQRS Light Migration-First Strategy confirmed - CQRS Light Foundation (1-2 Wochen Q4 2025) → Business-Module (Q1 2026) für kosteneffiziente interne Performance + Zero Doppelarbeit
 
@@ -39,7 +40,7 @@
 - **Governance Infrastructure:** 10/10 Claude-Ready, Settings-MVP Pack (9.7/10) integriert, atomare Planung Standards etabliert
 - **Planungsmethodik:** Von 801 auf 252 Zeilen optimiert, garantiert 9+/10 Claude-Readiness für neue Module
 - **Module 01-08:** ✅ **ALLE BUSINESS-MODULE COMPLETE** - Foundation Standards + Enterprise-Grade Artefakte
-- **Module 00 Infrastructure:** ✅ **ALLE INFRASTRUCTURE-MODULE COMPLETE** - Sicherheit + Integration (CQRS Light) + Betrieb (Cost-Efficient) mit External AI Excellence
+- **Module 00 Infrastructure:** ✅ **ALLE INFRASTRUCTURE-MODULE COMPLETE** - Sicherheit + Integration (CQRS Light) + Betrieb (Cost-Efficient) + Skalierung (Territory + Seasonal-aware) mit External AI Excellence
 - **🚀 CQRS Light Migration-First Strategy:** Strategic Analysis complete - CQRS Light Foundation (1-2 Wochen) vor Business-Module spart 4-6 Wochen Doppelarbeit + kosteneffiziente Performance für interne Nutzung
 
 ## 🍽️ FreshFoodz Business-Kontext (B2B-Convenience-Food-Hersteller)
@@ -108,6 +109,7 @@ PARTNER-CHANNEL (Lieferanten, Händler, Wiederverkäufer):
 | [SmartLayout Migration](./infrastruktur/SMARTLAYOUT_MIGRATION_PLAN.md) | 🔄 In Progress | UI Performance +50% |
 | [CQRS Migration](./infrastruktur/CQRS_MIGRATION_PLAN.md) | 🟡 Review | Read-Performance +200% |
 | [Performance Module](./features-neu/00_infrastruktur/leistung/README.md) | ✅ **COMPLETE** | <200KB Bundle + <100ms API Excellence |
+| [Scaling Module](./features-neu/00_infrastruktur/skalierung/README.md) | ✅ **COMPLETE** | Territory + Seasonal-aware Autoscaling |
 
 **Infrastructure-Koordination:** [Infrastructure Master Index](./infrastruktur/00_MASTER_INDEX.md)
 
@@ -297,6 +299,7 @@ Einziger strategischer Master Plan. Alle Infrastructure-Pläne über Master Inde
 - **[Security Guidelines](./grundlagen/SECURITY_GUIDELINES.md)** - ABAC, Territory-Scoping, Audit-Trail
 - **[Performance Standards](./grundlagen/PERFORMANCE_STANDARDS.md)** - P95 <200ms, Bundle <500KB, Coverage >90%
 - **[Performance Module](./features-neu/00_infrastruktur/leistung/README.md)** - ✅ COMPLETE: <200KB Bundle + <100ms API Excellence (9.8/10)
+- **[Scaling Module](./features-neu/00_infrastruktur/skalierung/README.md)** - ✅ COMPLETE: Territory + Seasonal-aware Autoscaling (9.8/10)
 - **[Testing Guide](./grundlagen/TESTING_GUIDE.md)** - Given-When-Then, 80% Coverage, Integration-Tests
 
 ### 🛠️ **Development & Quality:**

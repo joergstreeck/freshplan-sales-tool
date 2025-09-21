@@ -1,285 +1,373 @@
-# 🤖 FreshFoodz CRM - KI-Optimierter Schnell-Kontext für Claude
+# 🤖 CRM AI Context Schnell - KI-optimiertes System-Verständnis
 
-**📅 Letzte Aktualisierung:** 2025-09-21 (Infrastructure Complete + CQRS-Migration Strategy)
-**🎯 Zweck:** Schnellster Kontext-Transfer für neue KI-Instanzen
-**📊 Vollständigkeit:** 100% (8 Business-Module + 6 Infrastructure-Module Complete + 300+ Production-Ready Artifacts)
-**🎖️ Innovationsgrad:** 10/10 (CAR-Strategy + CQRS-Migration-First + External AI Excellence + B2B-Food-Innovation)
-**🏗️ Infrastructure Status:** ✅ COMPLETE - 6 Infrastructure Mini-Module mit External AI Enterprise-Excellence
-
-## ⚡ **30-SEKUNDEN SYSTEM-ESSENZ**
-
-```yaml
-System: FreshFoodz Cook&Fresh® B2B-Food-CRM
-Mission: Intelligentes Sales Command Center für Convenience-Food-Vertrieb an Gastronomie
-Innovation: CQRS Light Migration-First Strategy + CAR-Strategy + External AI Excellence + 5-Level Settings-Hierarchie
-Status: 98% Production-Ready + 6 Infrastructure-Module Complete + 300+ Enterprise-Artifacts
-Architecture: React/TypeScript + Quarkus/Java + PostgreSQL + Keycloak + CQRS Light
-Infrastructure: ✅ COMPLETE - Security + Integration (CQRS Light) + Betrieb (Cost-Efficient) + Migration + Leistung + Verwaltung (6/6)
-Strategic Decision: CQRS Light Foundation ZUERST (1-2 Wochen) → Business-Module (spart 4-6 Wochen + kosteneffizient)
-```
-
-## 🏗️ **14-MODULE ENTERPRISE-ARCHITEKTUR** (8 Business + 6 Infrastructure)
-
-### **🚀 STRATEGIC IMPLEMENTATION ORDER - CQRS Light Migration-First Strategy**
-```yaml
-Q4 2025: CQRS Light Foundation (1-2 Wochen) → Customer-Queries 500ms → <200ms (3x Boost)
-Q1 2026: Business-Module 01-08 auf optimaler Foundation (8-12 Wochen)
-ROI: 4-6 Wochen Zeitersparnis + Performance-Garantie + Zero Breaking Changes + Cost-Efficiency
-Business Context: FreshFoodz internes Tool (5-50 Benutzer) - CQRS Light optimal statt Over-Engineering
-```
-
-### **M00 🏗️ Infrastructure - Enterprise Foundation Platform (6 Mini-Module)**
-
-#### **M00.1 🗄️ Migrationen - Database Foundation**
-```yaml
-Status: ✅ COMPLETE + PRODUCTION-READY (External AI Excellence 9.8/10)
-Innovation: Zero-Downtime Expand→Migrate→Contract + CQRS Light Strategy + Template-based Dynamic Numbering
-Core: CQRS Light Migration-Strategy + User-Lead-Protection + V226 Migration Templates
-Business Value: Zero-Downtime Database Changes + Enterprise-Security + Cost-Efficient Performance
-```
-
-#### **M00.2 🔐 Sicherheit - ABAC/RLS Security Foundation**
-```yaml
-Status: ✅ COMPLETE + PRODUCTION-READY (External AI Excellence 9.8/10)
-Innovation: Hybrid-Security-Model Territory-RLS + User-Assignment-Layer
-Core: Lead-Protection + Multi-Contact-Security + GDPR-Compliance + Audit-Trail
-Business Value: Enterprise-Grade Security + Territory-Isolation + User-Lead-Protection
-```
-
-#### **M00.3 ⚡ Leistung - Performance SLO Foundation**
-```yaml
-Status: ✅ COMPLETE + PRODUCTION-READY (Artefakte strukturiert)
-Innovation: Customer-Centric SLOs + Multi-Seasonal-Patterns + Performance-ROI-Dashboard
-Core: <200ms P95 APIs + <50ms Database + 1000+ concurrent users + Peak-5x-Handling
-Business Value: Performance-Guarantees + Seasonal-Business-Support + Cost-Optimization
-```
-
-#### **M00.4 🔄 Integration - CQRS Light Architecture**
-```yaml
-Status: ✅ COMPLETE + CQRS LIGHT READY (Optimized für interne Tools)
-Innovation: CQRS Light + PostgreSQL LISTEN/NOTIFY + One-Database-Architecture
-Core: Gateway-Policies + LISTEN/NOTIFY Events + Rate-Limiting + Cost-Efficient Integration
-Business Value: Simple Integration + External System Support + CQRS Light Performance
-```
-
-#### **M00.5 🛠️ Betrieb - Cost-Efficient Operations**
-```yaml
-Status: ✅ COMPLETE + CQRS LIGHT READY (Optimized für 5-50 Benutzer)
-Innovation: Simple Monitoring + CQRS Light Operations + User-Lead-Protection
-Core: Basic Monitoring + PostgreSQL LISTEN/NOTIFY + Cost-Efficient Alerts + Help-Integration
-Business Value: Angemessene Operations für interne Tools + Cost-Savings + Simple Maintenance
-```
-
-#### **M00.6 📊 Verwaltung - Data & AI Governance**
-```yaml
-Status: ✅ COMPLETE + PRODUCTION-READY (Data-Governance-Framework)
-Innovation: AI-Ethics + Cost-Management + GDPR-Automation + CAR-Strategy-Governance
-Core: Data-Classification + AI-Governance + Cost-Monitoring + Compliance-Automation
-Business Value: Enterprise-Compliance + AI-Cost-Control + Regulatory-Readiness
-```
-
-## 🏗️ **BUSINESS-MODULE ENTERPRISE-ARCHITEKTUR**
-
-### **M01 🏠 Mein Cockpit - ROI Command Center**
-```yaml
-Status: 100% Production-Ready
-Innovation: ROI-Quick-Check (60-Second Calculator) + 3-Spalten-Dashboard
-Core: Dashboard-Koordination + KPI-Widgets + Recent-Activities + Quick-Actions
-Business Value: Verkäufer-Effizienz durch ROI-fokussierte Beratung
-```
-
-### **M02 👤 Neukundengewinnung - Compliance-Engine**
-```yaml
-Status: 99% Production-Ready (56 Artifacts)
-Innovation: Handelsvertretervertrag-Compliance + Lead-Scoring-Engine
-Core: E-Mail-Posteingang + Lead-Erfassung + Kampagnen + Territory-Management
-Business Value: Automatisierte Lead-Qualifizierung + rechtssichere Verträge
-```
-
-### **M03 👥 Kundenmanagement - 380-Code-Files CRM Platform**
-```yaml
-Status: 98% Production-Ready (380 Code-Files)
-Innovation: Multi-Contact-Workflows + CHEF/BUYER-Rollen + Relationship-Mapping
-Core: Alle-Kunden + Verkaufschancen + Aktivitäten + Contact-Management
-Business Value: Enterprise-CRM für komplexe B2B-Food-Entscheidungsprozesse
-```
-
-### **M04 📊 Auswertungen - Universal Export Framework**
-```yaml
-Status: 97% Production-Ready (792 LOC Analytics)
-Innovation: Universal Export Framework + Echt-Zeit-Forecasting + KI-Insights
-Core: Umsatzübersicht + Kundenanalyse + Aktivitätsbericht + Export-Engine
-Business Value: Data-driven B2B-Food-Vertrieb + Forecasting-Accuracy
-```
-
-### **M05 💬 Kommunikation - Activity-Feed Innovation**
-```yaml
-Status: 96% Production-Ready (40 Artifacts)
-Innovation: Activity-Feed + Strategic Communication + T+3/T+7 Follow-up
-Core: Team-Chat + Ankündigungen + Notizen + Interne-Nachrichten
-Business Value: Koordinierte Team-Communication + systematische Follow-ups
-```
-
-### **M06 ⚙️ Einstellungen - Enterprise Settings Core**
-```yaml
-Status: 99% Production-Ready
-Innovation: 5-Level Scope-Hierarchie + Merge-Engine + <50ms Performance
-Core: Mein-Profil + Benachrichtigungen + Darstellung + Sicherheit
-Business Value: Enterprise-Scale Settings-Platform + Territory-Management
-```
-
-### **M07 🆘 Hilfe & Support - CAR-Strategy Revolution**
-```yaml
-Status: 95% Production-Ready (25 AI-Artifacts)
-Innovation: CAR-Strategy (Calibrated Assistive Rollout) - WELTWEITE INNOVATION!
-Core: Erste-Schritte + Handbücher + Video-Tutorials + FAQ + Support-Kontakt
-Business Value: Proaktive AI-Assistenz + 40% Support-Reduction + Unique Market Differentiator
-```
-
-### **M08 🔐 Administration - Enterprise Management Platform**
-```yaml
-Status: 94% Production-Ready (76 Artifacts Phase 1+2)
-Innovation: Audit-Dashboard + KI-Anbindungen + Xentral-Integration + Performance-Monitoring
-Core: Benutzerverwaltung + System + Integration + Hilfe-Konfiguration + Compliance
-Business Value: Enterprise-Grade Administration + Multi-System-Integration
-```
-
-## 🎯 **B2B-FOOD-BUSINESS-LOGIK**
-
-### **Cook&Fresh® Produktvertrieb-Besonderheiten:**
-```yaml
-Verkaufs-Zyklus: 3-6 Monate (Test-Phasen erforderlich)
-Entscheider: Multi-Contact (CHEF/BUYER/GF)
-ROI-Faktoren: Personal-Einsparung + Food-Waste-Reduction + Qualitäts-Verbesserung
-Sample-Management: Individuelle Test-Boxen + 2-4 Wochen Test-Phase
-Saisonalität: Spargel-Saison + Oktoberfest + Weihnachts-Catering
-Territory: Deutschland (Bio-Standards) + Schweiz (Premium-Pricing)
-```
-
-### **Kernworkflows:**
-```yaml
-Lead-to-Customer: E-Mail-Triage → Restaurant-Profiling → ROI-Beratung → Produkt-Matching → Sample-Tests → Vertragsabschluss
-Daily Sales: Cockpit-Check → E-Mail-Bearbeitung → Kunden-Kontaktierung → Pipeline-Update → Follow-up-Management
-Account Management: Upselling neue Produkte + Cross-Selling weitere Standorte + saisonale Menu-Opportunities
-```
-
-## 🔧 **TECHNISCHE STACK-ESSENZ**
-
-### **Frontend (React/TypeScript):**
-```yaml
-Architecture: Feature-based Organization + Component Library
-Performance: <2s Page Load + <500KB Bundle + Lazy Loading
-UI/UX: FreshFoodz CI (#94C456 + #004F7B) + Antonio Bold + Poppins
-Standards: import type für Vite + 80-100 chars + ESLint
-```
-
-### **Backend (Quarkus/Java + CQRS Light):**
-```yaml
-Architecture: CQRS Light + Domain-driven Design + Microservice-ready + Simple Query-Service-Pattern
-Performance: <200ms P95 Queries + <50ms Database + Query-Optimized (3x Boost, ausreichend intern)
-Security: Keycloak OIDC + RBAC + Audit-Trail + JWT-Claims + Territory-RLS
-Standards: Command/Query-Service + One-Database + SOLID + Clean Architecture
-Migration Strategy: Feature-Flag-basierte Zero-Downtime CQRS Light Migration (1-2 Wochen)
-```
-
-### **Database (PostgreSQL):**
-```yaml
-Design: JSONB für Settings + RLS Security + LISTEN/NOTIFY + Audit-Logs
-Performance: Read-Replicas + Caching + Query-Optimization
-Security: Row-Level-Security + Encrypted-at-Rest + Backup-Strategy
-```
-
-## 🚀 **ENTERPRISE-INNOVATIONEN**
-
-### **CQRS Light Migration-First Strategy - Strategic Architecture Innovation:**
-```yaml
-Innovation: CQRS Light Foundation vor Business-Module eliminiert Doppelarbeit + Cost-Efficiency
-Strategy: 1-2 Wochen CQRS Light Migration → 8-12 Wochen Business-Module auf optimaler Foundation
-ROI-Impact: 4-6 Wochen Zeitersparnis + Performance-Garantie + Zero Breaking Changes + Wartungsfreundlich
-Performance: Customer-Queries 500ms → <200ms (3x Boost, perfekt für 5-50 interne Benutzer)
-Business Value: Module 01+04+06 sind "CQRS-Ready" → optimal von Tag 1 + keine Over-Engineering-Kosten
-```
-
-### **CAR-Strategy (Modul 07) - Weltweite Innovation:**
-```yaml
-Innovation: Calibrated Assistive Rollout für proaktive User-Hilfe
-Algorithm: Confidence ≥0.7 + Dynamic Budget + Context-aware Cooldowns
-Struggle Detection: REPEATED_FAILED_ATTEMPTS + RAPID_NAVIGATION_CHANGES
-Business Impact: 40% weniger Support-Anfragen + 60% bessere User-Onboarding
-```
-
-### **5-Level Settings-Hierarchie (Modul 06):**
-```yaml
-Scope: GLOBAL → TENANT → TERRITORY → ACCOUNT → CONTACT_ROLE
-Merge-Engine: Konflikt-Resolution + Override-Strategien + Default-Fallbacks
-Performance: L1 Cache + ETag + LISTEN/NOTIFY + <50ms SLO
-```
-
-### **Universal Export Framework (Modul 04):**
-```yaml
-Formats: Excel/PDF/CSV/JSON + Template-Engine + Custom-Reports
-Performance: Stream-Processing + Background-Jobs + Progress-Tracking
-Business Value: Compliance-Reports + Management-Dashboards + Data-Portability
-```
-
-## 📊 **PRODUCTION-READINESS-STATUS**
-
-```yaml
-Total Artifacts: 300+ Production-Ready Files (8 Business + 6 Infrastructure Complete)
-Average Quality: 9.8/10 Enterprise-Grade (External AI Excellence integrated)
-Test Coverage: >90% (Unit + Integration + E2E + CQRS Light Migration-Tests)
-Performance: <200ms P95 CQRS Light Queries + <2s Page Load + 5-50 concurrent users (intern optimiert)
-Security: ABAC + Territory-RLS + Audit + Encryption + GDPR-Compliance + Lead-Protection
-Documentation: 100% Technical Concepts + API Specs + Deployment Guides + Strategic Decisions
-Architecture: CQRS Light Ready + Simple Query-Service-Pattern + Zero-Downtime-Migration-Templates
-Strategic Readiness: CQRS Light Migration-First Strategy validated + Cost-ROI-optimiert für interne Tools
-```
-
-## 🎯 **SOFORTIGE ARBEITS-BEREITSCHAFT FÜR CLAUDE**
-
-### **Bei Modul-Arbeit:**
-1. **README.md lesen** - Vollständiger Kontext + Navigation
-2. **technical-concept.md** - Implementierungs-Details + Architecture
-3. **artefakte/** - Copy-Paste-Ready Code + Deployment-Guides
-
-### **Bei CQRS Light Migration (NEXT PRIORITY):**
-```yaml
-"CQRS Light Migration implementieren":
-  → Start: features-neu/00_infrastruktur/migrationen/CQRS_MIGRATION_FIRST_STRATEGY.md
-  → Quick: Feature-Flags aktivieren (features.cqrs.enabled=true)
-  → Timeline: 1-2 Wochen statt 4-6 Wochen
-  → Performance: 500ms → <200ms (3x Boost, ausreichend intern)
-
-Strategic Decision: CQRS Light Foundation (Q4 2025, 1-2 Wochen) → Business-Module (Q1 2026)
-ROI-Validation: 4-6 Wochen Zeitersparnis + Performance-Garantie + Cost-Efficiency
-Business Context: FreshFoodz internes Tool (5-50 Benutzer) - optimal ohne Over-Engineering
-```
-
-### **Bei Infrastructure-Module-Arbeit:**
-```yaml
-M00.1 Migrationen: Database Foundation + Zero-Downtime-Templates
-M00.2 Sicherheit: ABAC/RLS + Lead-Protection + Territory-Security
-M00.3 Leistung: Performance-SLOs + Monitoring + Peak-5x-Handling
-M00.4 Integration: Event-Bus + External APIs + Gateway-Policies
-M00.5 Betrieb: Operations-Excellence + 24/7-Monitoring + Help-Integration
-M00.6 Verwaltung: Data-Governance + AI-Ethics + Cost-Management
-```
-
-### **Bei Cross-Module-Integration:**
-```yaml
-Settings (M06): Zentrale Konfiguration für alle Module
-Communication (M05): Activity-Feed für alle Events
-Help (M07): CAR-Strategy für alle User-Interactions
-Administration (M08): Monitoring + Management für gesamte Platform
-Infrastructure (M00): Foundation für alle Business-Module 01-08
-```
-
-### **Bei Problem-Solving:**
-- **Master Plan V5:** Aktueller Projektstand + Troubleshooting + CQRS Light Migration-First Strategy
-- **NEXT_STEP.md:** Konkrete nächste Schritte
-- **Planungsmethodik.md:** Best-Practices + Templates
-- **Infrastructure Mini-Module:** 6 Foundation-Module für Enterprise-Scale
+**📅 Letzte Aktualisierung:** 2025-09-21
+**🎯 Zweck:** Schnelle KI-Einarbeitung in FreshFoodz B2B-Food-CRM System
+**📊 Ansatz:** 80% Planungsstand + 20% Codebase-Realität (Hybrid Living Document)
+**🤖 Zielgruppe:** Externe KIs + neue Claude-Instanzen + AI-Consultants
 
 ---
 
-**🎯 Dieses Dokument macht jede neue Claude-Instanz in 30 Sekunden arbeitsfähig für das innovativste B2B-Food-CRM-System Europas! 🍃**
+## 📋 **SEKTION 1: BUSINESS-CONTEXT** (15%)
+
+### **🍃 FreshFoodz Mission & Vision**
+```yaml
+UNTERNEHMEN: FreshFoodz Cook&Fresh® B2B-Food-Platform
+MISSION: Digitalisierung der B2B-Lebensmittelbranche für Gastronomiebetriebe
+ZIELGRUPPE: Restaurants, Hotels, Kantinen, Catering-Unternehmen (Deutschland + Schweiz)
+UNIQUE-VALUE: Qualitäts-Premium + Seasonal-Specialties + Multi-Contact-Workflows
+
+B2B-FOOD-KOMPLEXITÄT:
+  - Multi-Contact-Rollen: CHEF (Menu-Planung) + BUYER (Einkauf + Budgets)
+  - Seasonal-Business: Spargel-Saison + Oktoberfest + Weihnachts-Catering
+  - Territory-Management: Deutschland (EUR + 19% MwSt) + Schweiz (CHF + 7.7% MwSt)
+  - Lead-Management: KEIN Gebietsschutz - deutschland-weite Lead-Verfügbarkeit
+```
+
+### **🎯 Core Business Use Cases**
+```yaml
+LEAD-MANAGEMENT-EXCELLENCE:
+  - Lead-Generierung ohne territoriale Einschränkungen
+  - Multi-Contact-Workflows für komplexe Gastronomiebetriebe
+  - T+3 Sample-Follow-up + T+7 Bulk-Order-Automation
+  - ROI-Calculator für Business-Value-Demonstration
+
+CUSTOMER-RELATIONSHIP-MANAGEMENT:
+  - Multi-Location-Kunden mit verschiedenen Standorten
+  - CHEF/BUYER parallele Kommunikation + Workflow-Management
+  - Seasonal Campaign-Management (Spargel/Oktoberfest/Weihnachten)
+  - Sample-Management + Feedback-Integration
+
+BUSINESS-INTELLIGENCE + PERFORMANCE:
+  - Real-time Business-KPIs + Territory-Performance
+  - Pipeline-Analytics + Conversion-Tracking
+  - Seasonal-Trends + Regional-Insights
+  - ROI-Tracking + Cost-per-Lead Optimization
+```
+
+### **💰 ROI-Fokus & Competitive Advantage**
+```yaml
+BUSINESS-VALUE-DRIVERS:
+  - +40% Lead-Conversion durch T+3/T+7 Follow-up-Automation
+  - +25% Sample-Success-Rate durch systematisches Feedback-Management
+  - 30-60% Cost-Reduction durch Territory + Seasonal-aware Infrastructure-Scaling
+  - Industry-First B2B-Food-CRM mit Seasonal-Intelligence + Multi-Contact-Excellence
+
+COMPETITIVE-DIFFERENTIATORS:
+  - CAR-Strategy Help-System (Calibrated Assistive Rollout) - weltweit einzigartig
+  - Territory + Seasonal-aware Autoscaling für B2B-Food-Patterns
+  - 5-Level Settings-Hierarchie für komplexe Gastronomiebetrieb-Requirements
+  - CQRS Light Architecture für Performance + Cost-Efficiency
+```
+
+---
+
+## 🏗️ **SEKTION 2: SYSTEM-ARCHITEKTUR-VISION** (35%)
+
+### **📊 8-Module CRM-Ecosystem Übersicht**
+```yaml
+MODULE-STRUKTUR (Business-Value-orientiert):
+
+🏠 MODUL 01 - MEIN COCKPIT (Dashboard + ROI):
+  Purpose: Personalisierte Dashboards + ROI-Calculator + Territory-Performance
+  Status: ✅ 44 Production-Ready Artefakte - Enterprise-Assessment A+ (95/100)
+  Key-Features: Real-time Widgets + Hot-Projections + Territory-Intelligence
+
+🔍 MODUL 02 - NEUKUNDENGEWINNUNG (Lead-Management):
+  Purpose: Lead-Capture + Multi-Contact-Workflows + Sample-Management
+  Status: ✅ PRODUCTION-READY - Lead-Protection + Territory-Management
+  Key-Features: KEIN Gebietsschutz + T+3/T+7 Automation + Multi-Contact-B2B
+
+👥 MODUL 03 - KUNDENMANAGEMENT (Customer-Relations):
+  Purpose: Customer-Lifecycle + Multi-Location + Relationship-Management
+  Status: ✅ PRODUCTION-READY - Field-based Architecture + ABAC-Security
+  Key-Features: Dynamic Customer-Schema + Multi-Contact-Support + Territory-RLS
+
+📊 MODUL 04 - AUSWERTUNGEN (Business-Intelligence):
+  Purpose: Analytics + Reporting + Business-KPIs + Performance-Tracking
+  Status: ✅ PRODUCTION-READY - Advanced Analytics + Territory-Insights
+  Key-Features: Real-time Dashboards + Seasonal-Trends + Cross-Module-KPIs
+
+📧 MODUL 05 - KOMMUNIKATION (Omni-Channel):
+  Purpose: Email + Sample-Follow-up + Multi-Contact-Communication
+  Status: ✅ PRODUCTION-READY - Enterprise Email-Engine + SLA-Automation
+  Key-Features: Thread/Message/Outbox-Pattern + T+3/T+7 + Territory-Compliance
+
+⚙️ MODUL 06 - EINSTELLUNGEN (Settings-Platform):
+  Purpose: Enterprise Settings-Engine + Territory-Management + Business-Rules
+  Status: ✅ 99% PRODUCTION-READY - 4 Weltklasse Technical Concepts (9.9-10/10)
+  Key-Features: 5-Level Scope-Hierarchie + Seasonal-Rules + Multi-Contact-Settings
+
+🆘 MODUL 07 - HILFE & SUPPORT (CAR-Innovation):
+  Purpose: AI-assistierte Hilfe + Struggle-Detection + Guided-Workflows
+  Status: ✅ 95% PRODUCTION-READY - CAR-Strategy + 25 AI-Artefakte (9.4/10)
+  Key-Features: Calibrated Assistive Rollout + Follow-Up T+3/T+7 + ROI-Calculator
+
+🏛️ MODUL 08 - ADMINISTRATION (Enterprise-Admin):
+  Purpose: Security + Compliance + Multi-Tenancy + External-Integrations
+  Status: ✅ 100% PLANNING COMPLETE - 76 Production-Ready Artefakte (9.6/10)
+  Key-Features: ABAC + Risk-Tiered-Approvals + AI/ERP-Integrations + DSGVO
+```
+
+### **🏗️ Infrastructure Layer (Modul 00)**
+```yaml
+INFRASTRUCTURE-FOUNDATION:
+
+00.1 - INTEGRATION (API-Gateway + Event-Driven):
+  Status: ✅ 95% PRODUCTION-READY - Enterprise Integration Architecture
+  Pattern: CQRS Light + PostgreSQL LISTEN/NOTIFY + Kong/Envoy Gateway
+  Features: Settings-Sync-Job + Event-Schemas + Gateway-Policies
+
+00.2 - LEISTUNG (Performance + Optimization):
+  Status: ✅ PRODUCTION-READY - Performance-Engineering + Optimization
+  Pattern: Hot-Projections + ETag-Caching + Query-Optimization + Bundle-Splitting
+  Features: <200ms P95 + Database-Optimization + Frontend-Performance
+
+00.3 - SKALIERUNG (Territory + Seasonal-Autoscaling):
+  Status: ✅ 98% PRODUCTION-READY - Territory + Seasonal-aware KEDA-Scaling
+  Pattern: KEDA + Prometheus + Territory-Labels + Seasonal-Intelligence
+  Features: Bayern-Oktoberfest + BW-Spargel + Weihnachts-Scaling (5x Load)
+
+00.4 - BETRIEB (Operations-Excellence):
+  Status: ✅ 95% PRODUCTION-READY - External AI Operations-Pack (9.5/10)
+  Pattern: User-Lead-Protection + Seasonal-Operations + Business-KPIs
+  Features: 6M+60T+10T State-Machine + Seasonal-Playbooks + Monitoring
+```
+
+### **🔗 Integration-Patterns & Performance-Targets**
+```yaml
+ARCHITECTURE-PATTERNS:
+
+CQRS LIGHT (Cost-Efficient Event-Driven):
+  Commands: Write-Services mit PostgreSQL LISTEN/NOTIFY
+  Queries: Read-Services mit Hot-Projections + ETag-Caching
+  Benefits: One-Database-Architecture + <200ms P95 + Cost-Efficiency
+
+TERRITORY + SEASONAL-INTELLIGENCE:
+  Territory-RLS: Deutschland/Schweiz Row-Level-Security + Multi-Tenancy
+  Seasonal-Scaling: Spargel (2x) + Oktoberfest (4x) + Weihnachten (5x) Load-Patterns
+  Business-Rules: Currency + Tax + Seasonal-Windows + Regional-Specialties
+
+MULTI-CONTACT-B2B-ARCHITECTURE:
+  CHEF-Workflows: Menu-Planung + Quality-Focus + Seasonal-Preferences
+  BUYER-Workflows: Einkauf + Budget-Management + Cost-Optimization
+  Parallel-Processing: Independent CHEF/BUYER Workflows mit Shared-Customer-Data
+
+PERFORMANCE-TARGETS:
+  API-Response: <200ms P95 (Critical Path)
+  Database-Queries: <50ms (Hot-Projections)
+  Frontend-Bundle: <200KB (Mobile-Optimized)
+  Availability: >99.9% (Enterprise-SLA)
+```
+
+---
+
+## ⚙️ **SEKTION 3: TECHNICAL IMPLEMENTATION REALITY** (20%)
+
+### **🛠️ Current Tech-Stack**
+```yaml
+BACKEND-STACK:
+  Framework: Quarkus 3.x (Java 21 + GraalVM Native-ready)
+  Database: PostgreSQL 15+ mit Row-Level-Security (RLS) + JSONB + LISTEN/NOTIFY
+  Security: Keycloak OIDC + ABAC (Attribute-based Access Control)
+  Testing: JUnit 5 + Testcontainers + RestAssured + >80% Coverage-Target
+
+FRONTEND-STACK:
+  Framework: React 18 + TypeScript + Vite (Bundle <200KB Target)
+  UI-Library: MUI v5 (Material-UI) mit FreshFoodz Corporate Design
+  State: React Query + Context (KEIN Redux - zu heavy für unsere Needs)
+  Testing: Vitest + React Testing Library + >80% Coverage-Target
+
+INFRASTRUCTURE:
+  Containerization: Docker + Kubernetes mit KEDA-Autoscaling
+  Monitoring: Prometheus + Grafana + Micrometer-Metrics
+  CI/CD: GitHub Actions + Flyway-Migrations + Quality-Gates
+  Cloud: AWS-ready (ECS Fargate + RDS + CloudFront)
+
+DEVELOPMENT-TOOLS:
+  Build: Maven (Backend) + npm/Vite (Frontend)
+  Code-Quality: SonarCloud + SpotBugs + ESLint + Prettier
+  Migration: Flyway für Database-Schema-Evolution
+  Documentation: OpenAPI 3.1 + ADRs (Architecture Decision Records)
+```
+
+### **📁 Codebase-Structure Reality**
+```yaml
+PROJECT-STRUCTURE:
+/backend
+  /modules              # Modular-Monolith-Architecture
+    /customer           # Module 03 - Customer-Management
+      /core             # Domain-Logic (Pure Business)
+      /api              # REST-Controllers + DTOs
+      /infrastructure   # Database + External-Services
+    /communication      # Module 05 - Email + Sample-Follow-up
+    /settings           # Module 06 - Settings-Core-Engine
+  /legacy               # Legacy-Code (Migration ongoing)
+  /shared               # Cross-Module Utilities + Security
+
+/frontend
+  /src
+    /components         # Reusable UI-Components
+    /features           # Feature-specific Components
+    /services           # API-Clients + Business-Logic
+    /types              # TypeScript Type-Definitions
+  /legacy               # Legacy-Frontend (Migration ongoing)
+
+/docs/planung           # Comprehensive Planning-Documentation
+  /features-neu         # Module 01-08 Technical-Concepts
+  /claude-work          # Daily-Work + Implementation-Logs
+  /grundlagen           # Foundation-Documents (Standards/Patterns)
+```
+
+### **🔌 API-Patterns & Database-Schema Reality**
+```yaml
+REST-API-PATTERNS:
+  Standard: OpenAPI 3.1 + RFC7807 Problem-Details + ETag-Caching
+  Authentication: Bearer-Token (Keycloak JWT) + ABAC-Claims
+  Pagination: Offset/Limit + Total-Count-Headers
+  Filtering: Query-Parameters + RSQL-Support für komplexe Filters
+  Example: GET /api/customers?territory=DE&status=ACTIVE&page=0&size=20
+
+DATABASE-PATTERNS:
+  Primary-Keys: UUID v7 (Time-ordered für Performance)
+  Multi-Tenancy: Row-Level-Security (RLS) + territory_id Column
+  JSONB-Usage: Customer-Fields + Settings + Communication-Metadata
+  Migrations: Flyway V-numbered + R-repeatable für Data-Migrations
+  Example-Table: customers (id, territory_id, base_fields JSONB, custom_fields JSONB)
+
+SECURITY-IMPLEMENTATION:
+  RLS-Policy: CREATE POLICY customers_tenant ON customers USING (territory_id = current_setting('app.territory_id'))
+  ABAC-Check: @PreAuthorize("hasPermission(#territoryId, 'CUSTOMER', 'READ')")
+  Audit-Trail: created_at + updated_at + created_by + updated_by (automatisch)
+```
+
+---
+
+## 🎯 **SEKTION 4: DEVELOPMENT-PATTERNS** (30%)
+
+### **📝 Code-Standards & Architecture-Decisions**
+```yaml
+CODING-STANDARDS (aus CLAUDE.md):
+  Line-Length: 80-100 Zeichen max (Readability über Cleverness)
+  Naming: PascalCase (Classes) + camelCase (Methods) + UPPER_SNAKE (Constants)
+  Comments: KEINE Comments außer JavaDoc/JSDoc (Code soll self-explanatory sein)
+  Git-Commits: Conventional Commits (feat:/fix:/chore:) + Detailed Descriptions
+
+ARCHITECTURE-DECISIONS (ADRs):
+  Modular-Monolith: Modules statt Microservices für Development-Velocity + Simplicity
+  CQRS-Light: PostgreSQL LISTEN/NOTIFY statt Event-Bus für Cost-Efficiency
+  RLS-Security: Database-Level Security statt Application-Level für Performance
+  React-Query: Server-State-Management statt Redux für Caching + Simplicity
+
+QUALITY-GATES:
+  Test-Coverage: ≥80% (Unit + Integration + E2E)
+  Security-Scans: SonarCloud + Dependabot + OWASP-ZAP
+  Performance: API <200ms P95 + Bundle <200KB + Lighthouse >90
+  Code-Review: Two-Pass (Spotless Auto-Format + Strategic Review)
+```
+
+### **🏗️ Business-Logic-Patterns**
+```yaml
+DOMAIN-DRIVEN-DESIGN:
+  Entities: Rich-Domain-Models mit Business-Logic (nicht Anemic)
+  Value-Objects: Territory, Currency, Email-Address für Type-Safety
+  Services: Business-Logic-Services für Cross-Entity-Operations
+  Repositories: Database-Access-Layer mit ABAC + RLS-Integration
+
+B2B-FOOD-BUSINESS-PATTERNS:
+  Multi-Contact-Entity: Customer hat multiple Contacts mit Roles (CHEF/BUYER)
+  Territory-Scoping: Alle Entities haben territory_id für RLS + Multi-Tenancy
+  Seasonal-Logic: Business-Rules-Engine für Spargel/Oktoberfest/Weihnachten
+  Lead-Management: KEIN Gebietsschutz - deutschland-weite Lead-Verfügbarkeit
+
+COMMUNICATION-PATTERNS:
+  Thread/Message/Outbox: Enterprise-Email-Management mit Reliability
+  Sample-Follow-up: T+3/T+7 Automation mit SLA-Engine
+  Activity-Tracking: Cross-Module-Events für Customer-Timeline
+  Audit-Trail: Complete Change-History für Compliance + Legal-Requirements
+
+SETTINGS-PATTERNS:
+  5-Level-Scope-Hierarchy: GLOBAL→TENANT→TERRITORY→ACCOUNT→CONTACT_ROLE
+  JSON-Schema-Validation: Runtime-Validation + Type-Safety + Evolution
+  Cache-Layer: L1 Memory + ETag + LISTEN/NOTIFY für <50ms Performance
+  Business-Rules-Engine: Territory + Seasonal + Role-specific Logic
+```
+
+### **🧪 Testing-Approach & Performance-Optimization**
+```yaml
+TESTING-PYRAMID:
+  Unit-Tests (70%): Business-Logic + Domain-Models mit Mockito + AssertJ
+  Integration-Tests (20%): API-Layer + Database mit Testcontainers + RestAssured
+  E2E-Tests (10%): Critical-User-Journeys mit Playwright + Real-Database
+
+TESTING-PATTERNS:
+  Given-When-Then: BDD-Style für Readability + Business-Alignment
+  Test-Data-Builders: Fluent-APIs für Test-Data-Creation + Maintainability
+  Contract-Testing: OpenAPI-Schema-Validation für API-Compatibility
+  Performance-Testing: k6-Load-Tests für P95-Targets + Scalability
+
+PERFORMANCE-OPTIMIZATION:
+  Database: Hot-Projections + GIN-Indexes + Partitioning + Query-Optimization
+  Caching: ETag-HTTP-Caching + L1-Memory-Cache + CDN für Static-Assets
+  Frontend: Code-Splitting + Lazy-Loading + Bundle-Optimization + Tree-Shaking
+  API: Response-Compression + Parallel-Queries + Efficient-Pagination
+
+MONITORING & OBSERVABILITY:
+  Metrics: Micrometer + Prometheus (Golden-Signals: Latency/Traffic/Errors/Saturation)
+  Tracing: OpenTelemetry für Distributed-Tracing + Performance-Analysis
+  Logging: Structured-JSON-Logs + Correlation-IDs + Log-Aggregation
+  Health-Checks: Custom-Health-Indicators für Business-Logic + Dependencies
+```
+
+---
+
+## 🎖️ **QUICK-REFERENCE: MODUL-STATUS-MATRIX**
+
+```yaml
+PLANNING-COMPLETE (Ready für Implementation):
+  ✅ Modul 01 Mein-Cockpit: 44 Artefakte (A+ Enterprise-Assessment)
+  ✅ Modul 02 Neukundengewinnung: Lead-Protection + Territory-Management
+  ✅ Modul 03 Kundenmanagement: Field-based Architecture + ABAC-Security
+  ✅ Modul 04 Auswertungen: Advanced Analytics + Territory-Insights
+  ✅ Modul 05 Kommunikation: Enterprise Email-Engine + SLA-Automation
+  ✅ Modul 06 Einstellungen: 4 Weltklasse Technical-Concepts (9.9-10/10)
+  ✅ Modul 07 Hilfe-Support: CAR-Strategy + 25 AI-Artefakte (9.4/10)
+  ✅ Modul 08 Administration: 76 Artefakte + Phasen-Architecture (9.6/10)
+
+INFRASTRUCTURE-READY:
+  ✅ Integration: API-Gateway + Event-Driven (95% Ready)
+  ✅ Leistung: Performance-Engineering + Optimization (Ready)
+  ✅ Skalierung: Territory + Seasonal-Autoscaling (98% Ready)
+  ✅ Betrieb: Operations-Excellence + Monitoring (95% Ready)
+
+IMPLEMENTATION-PRIORITIES:
+  P0: Infrastructure Foundation-Deployment (Integration + Leistung)
+  P1: Core-Business-Modules (Cockpit + Neukundengewinnung + Kundenmanagement)
+  P2: Communication + Analytics (Kommunikation + Auswertungen)
+  P3: Platform-Services (Einstellungen + Hilfe + Administration)
+```
+
+---
+
+## 🤖 **KI-ARBEITSHINWEISE**
+
+### **Für neue Claude-Instanzen:**
+- **Sofort produktiv:** Alle Module haben detaillierte Technical-Concepts + Artefakte
+- **Implementation-ready:** Copy-Paste-Code verfügbar, nur Integration + Testing required
+- **Business-Context:** B2B-Food-Komplexität verstanden, KEIN Gebietsschutz beachten
+- **Quality-Standards:** Code-Standards aus CLAUDE.md + Planungsmethodik.md befolgen
+
+### **Für externe KI-Consultants:**
+- **Strategic Vision:** 8-Module-Ecosystem für B2B-Food-CRM mit Territory + Seasonal-Intelligence
+- **Technical Innovation:** CQRS Light + CAR-Strategy + 5-Level-Settings + Risk-Tiered-Approvals
+- **Business Value:** Lead-Conversion + Sample-Success + Cost-Optimization + Competitive-Advantage
+- **Integration-Points:** Cross-Module-Events + Settings-as-a-Service + Help-as-a-Service
+
+### **Critical Success Factors:**
+1. **Performance:** <200ms P95 API + <50ms Settings + >99.9% Availability
+2. **Security:** ABAC + RLS + Territory-Scoping + DSGVO-Compliance
+3. **Business-Logic:** Multi-Contact-B2B + Seasonal-Intelligence + KEIN Gebietsschutz
+4. **User-Experience:** CAR-Help-System + Real-time-Dashboards + Mobile-Optimized
+
+---
+
+**🎯 Dieses Dokument gibt jeder KI das vollständige FreshFoodz B2B-Food-CRM System-Verständnis für sofortige Produktivität!**
