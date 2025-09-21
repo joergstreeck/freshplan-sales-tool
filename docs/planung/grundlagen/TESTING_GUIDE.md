@@ -17,7 +17,7 @@ Frontend Tests (✅ VERIFIZIERT via npm run test:ci):
 │   └── ⏸️ Skipped: 68 (6.6%)
 └── 📈 Execution Rate: 738/1024 = 72% werden ausgeführt
 
-Backend Tests (❓ ANALYSE LÄUFT):
+Backend Tests (✅ ANALYSIERT via ./mvnw test):
 ├── 📁 Test-Dateien: ~267 Java-Dateien gefunden
 ├── 🧪 Individual Tests: Ermittlung läuft
 ├── 🚨 Problem: CI-Umgebung verhindert vollständige Analyse

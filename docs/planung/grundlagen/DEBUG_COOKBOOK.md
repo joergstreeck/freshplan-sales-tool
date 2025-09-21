@@ -2,7 +2,7 @@
 
 **Zweck:** Zentrale Sammlung aller Debug-Lösungen für wiederkehrende Probleme  
 **Zielgruppe:** Claude-Sessions und Entwickler  
-**Letzte Aktualisierung:** 27.07.2025
+**Letzte Aktualisierung:** 2025-09-21
 
 ---
 

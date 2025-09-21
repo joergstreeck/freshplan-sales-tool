@@ -12,6 +12,7 @@
 03_kundenmanagement/
 ├── 📋 README.md                           # Diese Übersicht
 ├── 📋 technical-concept.md                # 3-Wochen Implementation-Plan
+├── 🔮 ZUKUNFTS_MODULE_CODEBASIS_ANALYSE.md # Codebasis vs. ZUKUNFTS-MODULE Analysis
 ├── 📊 analyse/                            # Vollständige Platform-Analysen
 │   ├── VOLLSTÄNDIGE_CODEBASE_ANALYSE_KUNDENMANAGEMENT.md
 │   ├── MEGA_ENTERPRISE_PLATFORM_ANALYSE.md
@@ -30,7 +31,12 @@
 ├── 🏗️ alle-kunden/                        # Legacy-Route: Customer-List Implementation
 ├── 🎯 verkaufschancen/                     # Legacy-Route: Opportunity-Pipeline
 ├── 📝 aktivitaeten/                       # Legacy-Route: Activity-Timeline
-└── ➕ neuer-kunde/                         # Legacy-Route: Customer-Creation
+├── ➕ neuer-kunde/                         # Legacy-Route: Customer-Creation
+└── 🔮 zukunft/                            # ZUKUNFTS-MODULE Placeholders (6-18 Monate)
+    ├── alle-kunden/README_ZUKUNFT.md      # Customer Intelligence Features
+    ├── verkaufschancen/README_ZUKUNFT.md  # Sales-Intelligence Features
+    ├── aktivitaeten/README_ZUKUNFT.md     # Workflow-Automation Features
+    └── neuer-kunde/README_ZUKUNFT.md      # Onboarding-Excellence Features
 ```
 
 ## 🎯 **EXECUTIVE SUMMARY**
@@ -100,8 +106,9 @@ Benefits: Zero-Downtime Field-Changes + Business-Agility
 
 ### **🚀 Quick Start:**
 1. **[technical-concept.md](./technical-concept.md)** ← **3-WOCHEN IMPLEMENTATION-PLAN** (Foundation Standards)
-2. **[artefakte/README.md](./artefakte/README.md)** ← **39 PRODUCTION-READY DELIVERABLES** (Deploy-Guide)
-3. **[analyse/FINALE_GAP_ANALYSE_VISION_VS_REALITÄT.md](./analyse/FINALE_GAP_ANALYSE_VISION_VS_REALITÄT.md)** ← **Planning vs. Implementation Status**
+2. **[ZUKUNFTS_MODULE_CODEBASIS_ANALYSE.md](./ZUKUNFTS_MODULE_CODEBASIS_ANALYSE.md)** ← **QUICK-WINS & ROADMAP** (Foundation vs. Future Features)
+3. **[artefakte/README.md](./artefakte/README.md)** ← **39 PRODUCTION-READY DELIVERABLES** (Deploy-Guide)
+4. **[analyse/FINALE_GAP_ANALYSE_VISION_VS_REALITÄT.md](./analyse/FINALE_GAP_ANALYSE_VISION_VS_REALITÄT.md)** ← **Planning vs. Implementation Status**
 
 ### **📁 Enterprise CRM Implementation:**
 - **[artefakte/](./artefakte/)** ← **39 Production-Ready Artefakte**
@@ -127,6 +134,13 @@ Benefits: Zero-Downtime Field-Changes + Business-Agility
 - **[verkaufschancen/](./verkaufschancen/)** ← Opportunity-Pipeline (799 LOC Drag & Drop Kanban)
 - **[aktivitaeten/](./aktivitaeten/)** ← Activity-Timeline (Route geplant, Code Outstanding)
 - **[neuer-kunde/](./neuer-kunde/)** ← Customer-Creation (Modal-based Wizard)
+
+### **🔮 ZUKUNFTS-MODULE (6-18 Monate Roadmap):**
+- **[zukunft/](./zukunft/)** ← Future Features Placeholders
+  - **[zukunft/alle-kunden/README_ZUKUNFT.md](./zukunft/alle-kunden/README_ZUKUNFT.md)** ← Customer Intelligence & Advanced-Management
+  - **[zukunft/verkaufschancen/README_ZUKUNFT.md](./zukunft/verkaufschancen/README_ZUKUNFT.md)** ← Sales-Intelligence & Pipeline-Automation
+  - **[zukunft/aktivitaeten/README_ZUKUNFT.md](./zukunft/aktivitaeten/README_ZUKUNFT.md)** ← Workflow-Automation & Activity-Intelligence
+  - **[zukunft/neuer-kunde/README_ZUKUNFT.md](./zukunft/neuer-kunde/README_ZUKUNFT.md)** ← Onboarding-Excellence & Customer-Lifecycle
 
 ## 🚀 **CURRENT STATUS & ENTERPRISE METRICS**
 

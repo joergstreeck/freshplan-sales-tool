@@ -5,6 +5,13 @@
 **📊 Ansatz:** 80% Planungsstand + 20% Codebase-Realität (Hybrid Living Document)
 **🤖 Zielgruppe:** Externe KIs + neue Claude-Instanzen + AI-Consultants
 
+> **🏗️ Architecture Flags (Stand: 2025-09-21)**
+> - **CQRS Light aktiv** (`features.cqrs.enabled=true`), **eine Datenbank**, getrennte Command/Query-Services
+> - **Events:** **PostgreSQL LISTEN/NOTIFY + Simple JSON Payload (v1)**, kein Event-Bus/CloudEvents
+> - **Security:** Territory = **RLS-Datenraum** (DE/CH/AT), **Lead-Protection = userbasiertes Ownership**
+> - **Settings-Registry (Hybrid JSONB + Registry)** produktiv, ETag + LISTEN/NOTIFY Cache-Invalidation
+> - **Scale:** **5-50 Nutzer** mit saisonalen Peaks, **internes Tool**, kosteneffiziente Architektur
+
 ---
 
 ## 📋 **SEKTION 1: BUSINESS-CONTEXT** (15%)
@@ -132,6 +139,34 @@ INFRASTRUCTURE-FOUNDATION:
   Pattern: User-Lead-Protection + Seasonal-Operations + Business-KPIs
   Features: 6M+60T+10T State-Machine + Seasonal-Playbooks + Monitoring
 ```
+
+### **📊 SLOs (Normal/Peak)**
+- **API p95:** <200ms normal, <300-500ms Peak (saisonale Spitzen)
+- **UI TTI:** <2s normal, <3s Peak
+- **Settings Cache:** <50ms bei 5-50 concurrent users
+- **Database Queries:** <100ms P95, Hot-Projections für Business-KPIs
+- **Availability:** >99.5% (internes Tool, planned maintenance OK)
+
+### **🔒 Security-Invarianten**
+1. **Territory ist Datenraum** (RLS), kein Gebietsschutz
+2. **Lead-Protection ist userbasiertes Ownership** (+ Reminder-Pipeline 60d→+10d)
+3. **ABAC ergänzt RLS** (z.B. Kollaboratoren, Manager-Override mit Audit)
+
+**Policy-Skizze (vereinfacht):**
+- READ: User sieht Leads nur im eigenen Territory (RLS)
+- EDIT: nur Owner oder Kollaborator; Manager mit `override=true` → Audit-Eintrag
+
+### **🔄 Ende-zu-Ende Business-Flows**
+
+**Flow: Lead → Sample → Trial → Order**
+1. Lead QUALIFIED → SampleBox konfiguriert → `sample.status.changed=SHIPPED`
+2. DELIVERY → Trial 2-4 Wochen, Feedback protokolliert → ROI aktualisiert
+3. Erfolgreiche Produkte → Order an ERP, Pipeline auf CONVERTED
+
+**Flow: Lead-Protection Reminder**
+1. T+60 ohne Aktivität → Reminder (Activity-Kinds QUALIFIED_CALL/ROI_PRESENTATION/SAMPLE_FEEDBACK zählen)
+2. T+10 Grace → bei keiner Aktivität → Schutz erlischt automatisch
+3. Stop-the-Clock bei FreshFoodz-Gründen (Hold gesetzt)
 
 ### **🔗 Integration-Patterns & Performance-Targets**
 ```yaml
@@ -361,6 +396,20 @@ IMPLEMENTATION-PRIORITIES:
 - **Technical Innovation:** CQRS Light + CAR-Strategy + 5-Level-Settings + Risk-Tiered-Approvals
 - **Business Value:** Lead-Conversion + Sample-Success + Cost-Optimization + Competitive-Advantage
 - **Integration-Points:** Cross-Module-Events + Settings-as-a-Service + Help-as-a-Service
+
+## 📚 **Cross-References (Living Documentation)**
+
+**Siehe auch (SoT-Pack Integration):**
+- **[TECHNICAL_CONCEPT_CORE.md](./features-neu/06_einstellungen/TECHNICAL_CONCEPT_CORE.md)** - Settings Core Engine + Scope-Hierarchie
+- **[TECHNICAL_CONCEPT_BUSINESS.md](./features-neu/06_einstellungen/TECHNICAL_CONCEPT_BUSINESS.md)** - B2B-Food Business Logic + Multi-Contact
+- **[technical-concept.md](./features-neu/00_infrastruktur/skalierung/technical-concept.md)** - Territory + Seasonal-aware Autoscaling
+- **[CRM_COMPLETE_MASTER_PLAN_V5.md](./CRM_COMPLETE_MASTER_PLAN_V5.md)** - Aktueller Projektstand + Implementation-Timeline
+- **[Module-Analysis.md](./Module-Analysis.md)** - Vollständige Modul-Status-Übersicht + Production-Ready Assessment
+
+**Wichtige Architektur-Leitlinien für neue KIs:**
+✅ **DO:** LISTEN/NOTIFY für Events, RLS für Security, userbasiertes Ownership
+✅ **DO:** Territory als Datenraum behandeln, KEIN Gebietsschutz implementieren
+✅ **DO:** 5-50 Nutzer-Scale, kosteneffiziente Architektur
 
 ### **Critical Success Factors:**
 1. **Performance:** <200ms P95 API + <50ms Settings + >99.9% Availability

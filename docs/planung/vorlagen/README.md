@@ -118,7 +118,7 @@ const styles = {
 
 ### **Archivierte Templates:**
 ```
-docs/archiv/alte-templates/
+docs/planung/archiv/alte-templates/
 ├── TECH_CONCEPT_TEMPLATE_ORIGINAL.md  # Alte Version
 └── FEATURE_TEMPLATE_NEW.md            # Erste neue Version
 ```
@@ -150,10 +150,10 @@ docs/archiv/alte-templates/
 
 ## 🔗 **Related Documentation**
 
-- [Foundation Documentation](../grundlagen/README.md)
-- [Feature Documentation](../features/README.md)
-- [Architecture Decision Records](../adr/README.md)
-- [Development Guidelines](../CLAUDE.md)
+- [Foundation Documentation](../grundlagen/)
+- [Feature Documentation](../features-neu/)
+- [Architecture Decision Records](../grundlagen/architektur/)
+- [Development Guidelines](../../CLAUDE.md)
 
 ---
 
