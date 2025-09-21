@@ -150,7 +150,7 @@ Infrastructure-as-a-Service für Business-Module:
 ```
 
 ### **🎯 B2B-Food Infrastructure Requirements:**
-- **Multi-Territory Support:** Deutschland (Bio-Standards + HACCP) + Schweiz (Premium-Pricing)
+- **Multi-Territory Support:** Deutschland (EUR + 19% MwSt) + Schweiz (CHF + 7.7% MwSt)
 - **Seasonal Peak Handling:** Spargel-Saison + Oktoberfest + Weihnachts-Catering (5x normal load)
 - **Lead-Protection Compliance:** Territory-based Access + Handelsvertretervertrag-Konformität
 - **Enterprise Security:** ABAC + RLS + Audit Trail + GDPR + Multi-Contact-Workflows
@@ -181,7 +181,7 @@ Operations Excellence:
 - **Seasonal Scaling:** Infrastructure für 5x Peak-Load während Saison-Events
 - **Lead-Protection Compliance:** Territory-based Security für Handelsvertretervertrag-Konformität
 - **Enterprise Security:** ABAC + RLS für komplexe Multi-Contact + Multi-Territory Workflows
-- **Regulatory Compliance:** GDPR + Bio-Standards + HACCP + Premium-Pricing Support
+- **Regulatory Compliance:** GDPR + Multi-Currency + Tax-Rate-Support
 
 **Technical Innovation:**
 - **Thematic Mini-Modules:** Sequentielle Infrastructure-Development für optimale Resource-Allocation

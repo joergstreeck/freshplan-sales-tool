@@ -53,10 +53,10 @@ sicherheit/
 ## 🎯 **SECURITY CHALLENGES FÜR B2B-FOOD-CRM**
 
 ### **Business-Specific Security Requirements:**
-- **Lead-Protection:** Territory-based Ownership + Time-Windows (6M/60T/10T Grace)
+- **Lead-Protection:** User-based Ownership + Time-Windows (6M/60T/10T Grace) - KEIN Territory-Schutz!
 - **Multi-Contact Security:** CHEF (Menu-Focus) vs. BUYER (Budget-Focus) vs. GF (Strategy-Focus)
-- **Territory-Compliance:** Deutschland (Bio-Standards) vs. Schweiz (Premium-Pricing) Rules
-- **Handelsvertretervertrag:** Legal Compliance für Territory-based Commission Protection
+- **Territory-Assignment:** Deutschland/Schweiz nur für User-Zuordnung - KEINE Access-Restrictions
+- **Handelsvertretervertrag:** Legal Compliance für User-based Commission Protection
 
 ### **Technical Security Challenges:**
 - **Performance:** ABAC + RLS bei 1000+ concurrent users + Sub-200ms SLOs
@@ -73,9 +73,9 @@ Current State (External KI identified):
   - Basic ABAC rules (needs finalization)
 
 Target State (Production-Ready):
-  - Lead-Ownership + Time-Window Protection
+  - Lead-Ownership + Time-Window Protection (User-based)
   - Multi-Contact Role-based Access Control
-  - Territory-Scoping für Deutschland + Schweiz
+  - Territory-Assignment für Deutschland + Schweiz (nur User-Zuordnung)
   - Complete Audit Trail + GDPR Compliance
 ```
 
@@ -96,8 +96,8 @@ Target State (Production-Ready):
 ### **Security-Critical Module Dependencies:**
 ```yaml
 Module 02 (Neukundengewinnung):
-  - Lead-Protection: Territory-based Ownership + Time-Windows
-  - E-Mail-Triage: Automatic Territory Assignment + Conflict Detection
+  - Lead-Protection: User-based Ownership + Time-Windows (6M/60T/10T)
+  - E-Mail-Triage: Automatic User Assignment (KEIN Territory-Conflict-Detection)
 
 Module 03 (Kundenmanagement):
   - Multi-Contact Security: CHEF/BUYER/GF Role-based Data Access

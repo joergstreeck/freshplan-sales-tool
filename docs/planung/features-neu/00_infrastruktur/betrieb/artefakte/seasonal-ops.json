@@ -1,0 +1,92 @@
+{
+  "title": "Seasonal Operations \u2013 FreshFoodz",
+  "timezone": "browser",
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "p95 Latency (critical routes)",
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{route=~\"/api/(credit|activities|orders).*\"}[5m])) by (le,route))",
+          "legendFormat": "{{route}}"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Outbox Lag & DLQ",
+      "targets": [
+        {
+          "expr": "avg(outbox_lag_seconds)",
+          "legendFormat": "lag"
+        },
+        {
+          "expr": "sum(dlq_size)",
+          "legendFormat": "dlq"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Reminder Due vs Sent",
+      "targets": [
+        {
+          "expr": "rate(lead_reminder_due_total[5m])",
+          "legendFormat": "due"
+        },
+        {
+          "expr": "rate(lead_reminder_sent_total[5m])",
+          "legendFormat": "sent"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Expiries & Reactivations",
+      "targets": [
+        {
+          "expr": "rate(lead_protection_expired_total[5m])",
+          "legendFormat": "expired"
+        },
+        {
+          "expr": "rate(lead_protection_reactivated_total[5m])",
+          "legendFormat": "reactivated"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Capacity Utilization vs HPA",
+      "targets": [
+        {
+          "expr": "avg(node_cpu_utilization)",
+          "legendFormat": "cpu"
+        },
+        {
+          "expr": "avg(container_memory_working_set_bytes)",
+          "legendFormat": "mem"
+        },
+        {
+          "expr": "avg(kube_deployment_status_replicas)",
+          "legendFormat": "replicas"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Cost per Lead / Order",
+      "targets": [
+        {
+          "expr": "avg(finops_cost_per_lead)",
+          "legendFormat": "CPL"
+        },
+        {
+          "expr": "avg(finops_cost_per_order)",
+          "legendFormat": "CPO"
+        }
+      ]
+    }
+  ],
+  "schemaVersion": 36,
+  "version": 1
+}

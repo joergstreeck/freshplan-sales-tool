@@ -1,0 +1,47 @@
+# monitoring/prometheus/alerts-user-lead.yml
+groups:
+- name: user-lead-protection
+  rules:
+  - alert: LeadProtectionReminderSLA
+    expr: sum(increase(lead_reminder_sent_total[1h])) < sum(increase(lead_reminder_due_total[1h]))
+    for: 15m
+    labels: { severity: warning }
+    annotations:
+      summary: "Reminder SLA droht verletzt zu werden"
+      description: "Gesendete Reminders < fällige Reminders im letzten 1h-Fenster."
+
+  - alert: LeadProtectionExpiriesSpike
+    expr: increase(lead_protection_expired_total[1h]) > 50
+    for: 10m
+    labels: { severity: critical }
+    annotations:
+      summary: "Ungewöhnlich viele Expiries"
+      description: "Mehr als 50 Expiries in 60 Minuten."
+
+- name: seasonal-ops
+  rules:
+  - alert: PeakReadLatencyHigh
+    expr: histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{route=~"/api/(credit|activities|orders).*"}[5m])) by (le,route)) > 0.35
+    for: 10m
+    labels: { severity: warning }
+    annotations:
+      summary: "p95 Latenz hoch (Peak)"
+      description: "p95 > 350ms über 10m auf kritischen Routen."
+
+  - alert: OutboxLagHigh
+    expr: avg(outbox_lag_seconds[5m]) > 3
+    for: 10m
+    labels: { severity: warning }
+    annotations:
+      summary: "Outbox Lag hoch"
+      description: "Durchschnittlicher Outbox Lag > 3s über 10m."
+
+- name: business-metrics
+  rules:
+  - alert: SampleRequestSuccessDrop
+    expr: (rate(sample_request_success_total[30m]) / (rate(sample_request_total[30m]) + 1e-9)) < 0.85
+    for: 30m
+    labels: { severity: warning }
+    annotations:
+      summary: "Sample-Success-Rate fällt unter 85%"
+      description: "Über 30m zusammengesetzt."

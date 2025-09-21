@@ -13,7 +13,7 @@
 ### **Business Drivers:**
 - **Production-Readiness:** Module 01-08 benötigen stabile Infrastructure für Go-Live
 - **Enterprise-Scale:** 1000+ concurrent users + Multi-Territory + Seasonal Peak-Handling
-- **Compliance-Requirements:** GDPR + Bio-Standards + HACCP + Handelsvertretervertrag
+- **Compliance-Requirements:** GDPR + Multi-Currency + Handelsvertretervertrag
 - **Competitive Advantage:** Sub-200ms Performance + 99.9% Uptime + AI-powered Features
 
 ## 📊 **PRIORITY MATRIX & TIMELINE**
@@ -38,7 +38,7 @@ Dependencies: Module 01-08 Technical Concepts completed
 #### **sicherheit (ABAC/RLS Foundation)**
 ```yaml
 Scope: ABAC/RLS Security Model + Territory-Scoping + Lead-Protection + Audit
-Business Value: Enterprise-Security + Multi-Territory + Compliance-Ready
+Business Value: Enterprise-Security + Multi-Territory + User-Lead-Protection
 Success Criteria:
   - ABAC Territory-Scoping finalized (Deutschland + Schweiz)
   - Lead-Protection RLS policies implemented
