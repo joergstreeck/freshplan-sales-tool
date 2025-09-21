@@ -9,13 +9,13 @@
 
 **Mission:** Enterprise-Grade React Frontend für Settings mit Performance-Optimierung und TypeScript-Excellence
 
-**Problem:** Modul 06 benötigt hochperformante Settings-UI mit Role-based Interface, Territory-spezifische Validierung und <100ms Response-Zeit
+**Problem:** Modul 06 benötigt hochperformante Settings-UI mit Role-based Interface, Territory-spezifische Validierung und <200ms Response-Zeit (CQRS Light)
 
 **Solution:** React-Hook-basierte Settings-Components mit TypeScript + Performance-Monitoring + WCAG 2.1 AA + Theme V2
 
 **Timeline:** 6-8h von Settings-Components bis Production-Deployment mit Performance-Budget
 
-**Impact:** World-Class Settings-UX + <100ms Interaktion + Territory-optimierte User-Experience + Type-Safety
+**Impact:** World-Class Settings-UX + <200ms Interaktion (CQRS Light) + Territory-optimierte User-Experience + Type-Safety
 
 ## 📋 Context & Dependencies
 
@@ -27,7 +27,7 @@
 
 ### Target State:
 - 🎯 **Settings-Components:** Role-based UI für CHEF/BUYER + Territory-Awareness
-- 🎯 **Performance-Excellence:** <100ms Interactions + Lazy-Loading + Virtual-Scrolling
+- 🎯 **Performance-Excellence:** <200ms Interactions (CQRS Light P95) + Lazy-Loading + Virtual-Scrolling
 - 🎯 **TypeScript-Safety:** 100% Type-Coverage + Schema-Validation Integration
 - 🎯 **Accessibility:** WCAG 2.1 AA + Screen-Reader + Keyboard-Navigation
 - 🎯 **UX-Intelligence:** Context-aware Validation + Smart-Defaults + Progressive-Disclosure
@@ -137,7 +137,7 @@
 
 ### Phase 2: Performance-Optimierung + User-Experience (2-3h)
 
-**Goal:** <100ms Interactions mit Lazy-Loading, Smart-Caching und Progressive-Enhancement
+**Goal:** <200ms Interactions (CQRS Light) mit Lazy-Loading, Smart-Caching und Progressive-Enhancement
 
 **Actions:**
 1. **Performance-optimierte Settings-Loading:**
@@ -212,7 +212,7 @@
    };
    ```
 
-**Success Criteria:** <100ms Response-Time + Lazy-Loading active + Optimistic-Updates functional
+**Success Criteria:** <200ms Response-Time (CQRS Light P95) + Lazy-Loading active + Optimistic-Updates functional
 
 ### Phase 3: Accessibility + Production-Polish (1-2h)
 
@@ -336,7 +336,7 @@
 
 ### **Immediate Success (6-8h):**
 1. **React-Components:** Role-based Settings-UI für CHEF/BUYER operational
-2. **Performance:** <100ms Response-Time + Lazy-Loading + Optimistic-Updates
+2. **Performance:** <200ms Response-Time (CQRS Light P95) + Lazy-Loading + Optimistic-Updates
 3. **TypeScript:** 100% Type-Coverage + Schema-Validation integration
 4. **Accessibility:** WCAG 2.1 AA + Screen-Reader + Keyboard-Navigation
 5. **UX-Excellence:** Progressive-Disclosure + Smart-Caching + Territory-Awareness
@@ -344,11 +344,11 @@
 ### **Business Success (1-2 Wochen):**
 1. **User-Adoption:** Settings-Nutzung +40% durch bessere UX
 2. **Error-Reduction:** User-Input-Errors -60% durch Territory-Validation
-3. **Performance-KPIs:** Page-Load <500ms + Interaction <100ms
+3. **Performance-KPIs:** Page-Load <500ms + Interaction <200ms (CQRS Light)
 4. **Accessibility-Compliance:** 100% WCAG 2.1 AA für Enterprise-Anforderungen
 
 ### **Technical Excellence:**
-- **Performance-Budget:** <100ms Interactions + <500ms Page-Load maintained
+- **Performance-Budget:** <200ms Interactions (CQRS Light) + <500ms Page-Load maintained
 - **Type-Safety:** 100% TypeScript Coverage + Runtime-Schema-Validation
 - **Code-Quality:** ≥80% Test-Coverage + Accessibility-Tests
 - **Component-Reusability:** Settings-Components für alle 8 Module verwendbar
@@ -388,10 +388,10 @@ cd ../artefakte/frontend/
 - **Frontend UX-Excellence:** React-Components mit TypeScript + Performance + Accessibility
 - **Timeline:** 6-8h für Complete Enterprise-Grade Settings-Frontend
 - **Dependencies:** Settings Core Engine + B2B-Food Business Logic ready
-- **Business-Value:** <100ms Interactions + Territory-optimierte UX + WCAG 2.1 AA
+- **Business-Value:** <200ms Interactions (CQRS Light) + Territory-optimierte UX + WCAG 2.1 AA
 
 ### **Key Success-Factors:**
-- **Performance-Budget:** <100ms Interactions kritisch für Settings-UX
+- **Performance-Budget:** <200ms Interactions (CQRS Light P95) optimal für Settings-UX
 - **Type-Safety:** 100% TypeScript Coverage für Enterprise-Reliability
 - **Role-Awareness:** CHEF vs. BUYER UI-Differentiation
 - **Territory-Intelligence:** Deutschland/Schweiz-spezifische Validation + UX

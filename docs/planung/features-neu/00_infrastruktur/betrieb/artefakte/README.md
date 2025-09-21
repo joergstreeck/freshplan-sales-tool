@@ -1,16 +1,18 @@
-# FreshFoodz Operations Pack (Corrected Reality)
+# FreshFoodz Operations Pack (CQRS Light Optimized)
 
 **Last Updated:** 2025-09-21
+**Architecture:** CQRS Light für 5-50 interne Benutzer
 
 Dieses Paket liefert **copy‑paste‑fertige** Artefakte für:
-1) **User‑Lead‑Excellence** (State Machine, Holds, Reminder/Grace, Provision‑Validation)  
-2) **Seasonal‑B2B‑Food** (Playbooks für 3×/4×/5×, Pre‑Provisioning Calculator)  
-3) **Monitoring Strategy** (PromQL Alerts, KPIs, Grafana Dashboard, k6 Skeleton)
+1) **User‑Lead‑Protection** (State Machine mit PostgreSQL LISTEN/NOTIFY)
+2) **Simple Monitoring** (Basic Monitoring für interne Tools, keine War-Rooms)
+3) **CQRS Light Operations** (One-Database-Architecture, <200ms P95)
 
-Sie sind **kompatibel** mit eurer Foundation (Settings‑Registry, Event‑Catalog, API‑Standards) und berücksichtigen die **korrigierten Annahmen**:
-- **Kein Territory‑Schutz**, rein **userbasierte** Lead‑Protection
-- **Stop‑Clock Holds** pausieren Timer
-- **Bio/HACCP** außerhalb CRM‑Ops
-- **DE/CH** als getrennte Business Units mit minimaler CRM‑Territory‑Logik
+Sie sind **optimiert für CQRS Light** und berücksichtigen:
+- **One-Database-Architecture** mit PostgreSQL LISTEN/NOTIFY
+- **5-50 interne Benutzer** statt 1000+ Enterprise-Scale
+- **Cost-Efficient Monitoring** ohne Over-Engineering
+- **<200ms P95 Performance** durch CQRS Light Query-Services
+- **Kein Event-Bus** - LISTEN/NOTIFY ist ausreichend
 
 Siehe Verzeichnisse: `docs/runbooks`, `docs/playbooks`, `sql`, `monitoring`, `testing`.

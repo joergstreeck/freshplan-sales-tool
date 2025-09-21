@@ -1,0 +1,87 @@
+# Kong Rate-Limiting für CQRS Light (5-50 interne Benutzer)
+# Basierend auf externer KI Empfehlung
+
+plugins:
+  # Global Rate-Limiting (20 RPS für alle Benutzer zusammen)
+  - name: rate-limiting
+    config:
+      minute: 1200  # 20 RPS * 60 = 1200 requests/minute
+      hour: 72000   # 20 RPS * 3600 = 72000 requests/hour
+      policy: redis # Use Redis for distributed rate limiting
+      fault_tolerant: true
+      redis_host: redis
+      redis_port: 6379
+      redis_database: 0
+
+  # Per-User Rate-Limiting für Write-Operations
+  - name: rate-limiting-advanced
+    config:
+      limit:
+        - 300 per minute by consumer  # 5 RPS per user for writes
+      namespace: write_operations
+      strategy: redis
+      sync_rate: 10
+      route:
+        - methods: ["POST", "PUT", "DELETE", "PATCH"]
+
+  # Relaxed limits for Read-Operations (CQRS Light Query-Services)
+  - name: rate-limiting-advanced
+    config:
+      limit:
+        - 600 per minute by consumer  # 10 RPS per user for reads
+      namespace: read_operations
+      strategy: redis
+      sync_rate: 10
+      route:
+        - methods: ["GET"]
+
+  # Request Size Limiting (8KB für LISTEN/NOTIFY Events)
+  - name: request-size-limiting
+    config:
+      allowed_payload_size: 8  # 8KB max (PostgreSQL NOTIFY limit)
+      size_unit: kilobytes
+      require_content_length: false
+
+  # Timeout Configuration für interne Tools
+  - name: request-transformer
+    config:
+      add:
+        headers:
+          X-Upstream-Timeout: "5000"  # 5 seconds timeout (ausreichend für CQRS Light)
+
+# Service-specific overrides for critical endpoints
+services:
+  - name: settings-service
+    plugins:
+      - name: rate-limiting
+        config:
+          second: 50  # Settings can be accessed more frequently
+          policy: local  # Use local policy for settings cache
+
+  - name: lead-service
+    routes:
+      - name: lead-create
+        methods: ["POST"]
+        paths: ["/api/leads"]
+        plugins:
+          - name: rate-limiting
+            config:
+              minute: 60  # Max 1 lead per second per user
+              policy: redis
+
+# Headers for CQRS Light Event Correlation
+  - name: request-transformer
+    config:
+      add:
+        headers:
+          X-Correlation-Id: "$(uuid)"
+          X-Territory: "$(headers.X-Territory)"
+          X-Org-Id: "$(headers.X-Org-Id)"
+
+# Response headers for caching (CQRS Light Query-Services)
+  - name: response-transformer
+    config:
+      add:
+        headers:
+          Cache-Control: "private, max-age=10"  # 10 seconds cache for query results
+          X-CQRS-Light: "true"

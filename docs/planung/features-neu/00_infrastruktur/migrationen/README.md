@@ -19,18 +19,39 @@
 - **Performance-SLOs:** <200ms P95 APIs + <50ms Database + <30min Migration-Execution
 - **Seasonal-Awareness:** Blackout-Periods + Auto-Rollback + Business-Calendar-Integration
 
-## 📋 **AKTUELLE PRIORITÄTEN**
+## 📋 **STRATEGISCHE IMPLEMENTATION-REIHENFOLGE**
 
-### **✅ P0 - CRITICAL (COMPLETE)**
+### **🚀 CRITICAL STRATEGIC DECISION (2025-09-21)**
+**✅ CQRS LIGHT MIGRATION-FIRST STRATEGY CONFIRMED:** Production Implementation Reihenfolge für interne Tools optimiert
+
+**Business Context:** FreshFoodz internes Tool (5-50 Benutzer) - CQRS Light statt Full-CQRS für optimale Kosten-Performance-Balance.
+
+**Begründung:** Module 01+04+06 sind "CQRS-Ready" und warten auf CQRS Light Aktivierung. Business-Module zuerst = 4-6 Wochen Doppelarbeit + Performance-Probleme.
+
+**Timeline-Optimierung:**
+- **Q4 2025:** CQRS Light Foundation (1-2 Wochen) → Customer-Queries 500ms → <200ms (3x Boost)
+- **Q1 2026:** Business-Module 01-08 auf optimaler Foundation (8-12 Wochen)
+- **Net Benefit:** 2-4 Wochen Zeitersparnis + Performance-Garantie + Cost-Efficiency + Zero Breaking Changes
+
+→ **[CQRS Migration-First Strategy](./CQRS_MIGRATION_FIRST_STRATEGY.md)** - Vollständige strategic Analysis + ROI-Validation
+
+### **✅ P0 - FOUNDATION (COMPLETE)**
 - ✅ **External AI Strategy-Discussion:** 9.6/10 Enterprise-Migration-Expertise erhalten
 - ✅ **Migration Templates:** 9.8/10 World-class Templates mit VXXX-Placeholders
 - ✅ **Zero-Downtime Patterns:** Expand→Migrate→Contract Production-Ready
 - ✅ **Enterprise-Security:** RLS fail-closed + User-Lead-Protection Templates
+- ✅ **Strategic Analysis:** Migration-First vs. Module-First Strategy complete
 
-### **🔄 P1 - HIGH (Q1 2026)**
-- [ ] **Business-Module Integration:** User-Lead-Protection für Module 02+03
-- [ ] **Template-Deployment:** V226 Migration mit External AI Templates
-- [ ] **Performance-Validation:** <50ms P95 für Lead-Access-Checks
+### **🔄 P1 - CQRS LIGHT FOUNDATION (Q4 2025 - NEXT)**
+- [ ] **Feature-Flag-Aktivierung:** CQRS Light für alle Module (1-2 Wochen statt 4-6)
+- [ ] **Query-Performance-Tuning:** 500ms → <200ms Performance-Optimierung (3x Boost)
+- [ ] **Load-Testing intern:** Testing mit 5-50 Benutzern statt 1000+
+- [ ] **Index-Optimierung:** Bestehende Services optimieren (ohne Event-Bus/Separate DB)
+
+### **🔄 P2 - BUSINESS-MODULE IMPLEMENTATION (Q1 2026)**
+- [ ] **Module 01+04+06:** Infrastructure-Module auf optimaler CQRS Light Foundation
+- [ ] **Module 02+03:** Core-Business-Module mit Sub-200ms Performance (ausreichend intern)
+- [ ] **Module 05+07+08:** Communication+Admin-Module mit CQRS Light Architecture
 
 ## 🏗️ **MIGRATION FOUNDATION STRUCTURE**
 
@@ -93,6 +114,13 @@ migrationen/
 
 ### **🎯 Quick Decision Matrix (für neue Claude):**
 ```yaml
+"Was ist die richtige Implementation-Reihenfolge?":
+  → Start: CQRS_MIGRATION_FIRST_STRATEGY.md (Strategic Analysis + ROI-Validation)
+
+"Ich soll CQRS-Migration implementieren":
+  → Start: analyse/02_CQRS_MIGRATION_ANALYSIS.md (Technical Implementation Details)
+  → Templates: artefakte/ (Zero-Downtime Migration-Scripts)
+
 "Ich brauche sofort Production-Ready Migration-Code":
   → Start: artefakte/README.md (Copy-Paste Deployment Templates)
 
@@ -102,8 +130,8 @@ migrationen/
 "Ich soll User-Lead-Protection implementieren":
   → Start: artefakte/sql/VXXX__user_lead_protection_foundation.sql (Enterprise-Template)
 
-"Ich arbeite an Database-Performance-Optimierung":
-  → Dependencies: analyse/02_CQRS_MIGRATION_ANALYSIS.md (Read/Write-Model Strategy)
+"Business-Module warten auf CQRS-Performance":
+  → Dependencies: CQRS_MIGRATION_FIRST_STRATEGY.md (Why Migration-First)
 ```
 
 ### **📊 Current Status & Next Steps:**

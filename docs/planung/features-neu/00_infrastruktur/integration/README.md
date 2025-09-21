@@ -57,18 +57,20 @@
 
 ## 🎯 EXECUTIVE SUMMARY
 
-**Mission:** World-Class Enterprise Integration Architecture für FreshPlan B2B-Food-Platform - Hybrid-Approach mit API-Gateway + Event-Driven Backend
+**Mission:** Cost-Efficient CQRS Light Integration Architecture für FreshPlan B2B-Food-Platform - API-Gateway + PostgreSQL LISTEN/NOTIFY für interne Tools
 
 **Problem:** 8-Module-Ecosystem benötigt Production-Ready Integration Infrastructure:
 - **API-Gateway:** OIDC + Rate-Limiting + Idempotency + Multi-Tenancy
-- **Event-Driven Communication:** PostgreSQL LISTEN/NOTIFY → Event-Bus Migration (Zero-Downtime)
+- **Event-Driven Communication:** PostgreSQL LISTEN/NOTIFY für CQRS Light (One-Database-Architecture)
 - **Settings-Registry Integration:** Gateway-Policies dynamisch aus Settings-Registry synchronisieren
+- **CQRS Light Optimized:** Keine Event-Bus Migration nötig - PostgreSQL LISTEN/NOTIFY ausreichend
 
 **Solution:**
-- 🏛️ **Hybrid Integration Architecture:** External AI validated (9.2/10) - API Gateway für Sync + Events für Async
+- 🏛️ **CQRS Light Integration Architecture:** API Gateway für Sync + PostgreSQL LISTEN/NOTIFY für Async
 - 🔧 **Settings-Sync-Job:** Quarkus-kompatible Java-Implementation für Gateway-Policy-Synchronisation
-- 📊 **Production-Ready Event-Schemas:** 6 CloudEvents 1.0 Schemas für B2B-Food-Domain
+- 📊 **PostgreSQL Event-Patterns:** LISTEN/NOTIFY mit JSON-Payloads für Cross-Module-Events
 - 🛠️ **Gateway-Policies:** Kong + Envoy Production-Configurations mit Complete OIDC + Rate-Limiting
+- ⚡ **Performance-Optimized:** <200ms P95 durch One-Database-Architecture + LISTEN/NOTIFY
 
 ## 📁 QUICK START
 
@@ -112,26 +114,24 @@
 
 ## 🚀 CURRENT STATUS & DEPENDENCIES
 
-### ✅ **COMPLETED (Strategic Planning + Atomare Pläne Complete):**
-- **External AI Enterprise-Diskussion:** 9.2/10 Integration-Strategy + 9.9/10 Add-On Pack
-- **Atomare Implementation-Pläne:** 5 fokussierte Pläne (300-400 Zeilen) gemäß Planungsmethodik
-- **Production-Ready Artefakte:** Settings-Sync-Job + Gateway-Policies + Event-Schemas + Documentation
-- **Hybrid-Architecture Validation:** API-Gateway + Event-Driven Backend Strategy confirmed
-- **Foundation-Integration-Design:** Settings-Registry → Gateway-Policies + EVENT_CATALOG enhancement
+### ✅ **COMPLETED (Strategic Planning + CQRS Light Optimization):**
+- **CQRS Light Strategy:** PostgreSQL LISTEN/NOTIFY statt Event-Bus für Cost-Efficiency
+- **Atomare Implementation-Pläne:** 3 fokussierte Pläne (LISTEN/NOTIFY-optimized)
+- **Production-Ready Artefakte:** Settings-Sync-Job + Gateway-Policies + LISTEN/NOTIFY-Patterns
+- **One-Database Architecture:** API-Gateway + PostgreSQL LISTEN/NOTIFY für CQRS Light
+- **Foundation-Integration-Design:** Settings-Registry → Gateway-Policies + LISTEN/NOTIFY-Events
 
-### 🔄 **READY FOR IMPLEMENTATION (21-27 Stunden Gesamt-Timeline):**
-- **Phase 1:** Settings-Sync-Job Implementation (6-8h) - Quarkus Service + Testing + Production-Deployment
-- **Phase 2:** Gateway-Policies Deployment (4-6h) - Kong + Envoy + OIDC + Rate-Limiting + Multi-Tenancy
-- **Phase 3:** Event-Schemas Integration (4-5h) - CloudEvents + JSON-Schema + CI-Pipeline + Cross-Module
-- **Phase 4:** Foundation Enhancement (3-4h) - Settings + Events + API Standards + Cross-Module-Integration
-- **Phase 5:** Operations & Monitoring (4-5h) - Prometheus + Grafana + Alerts + SRE-Runbooks
+### 🔄 **READY FOR IMPLEMENTATION (12-16 Stunden CQRS Light Timeline):**
+- **Phase 1:** Settings-Sync-Job Implementation (4-6h) - Quarkus Service + Testing
+- **Phase 2:** Gateway-Policies Deployment (3-4h) - Kong + Envoy + OIDC + Rate-Limiting
+- **Phase 3:** LISTEN/NOTIFY Event-Patterns (3-4h) - PostgreSQL + JSON-Payloads + Cross-Module
+- **Phase 4:** Operations & Monitoring (2-3h) - Simplified monitoring für One-Database
 
-### 📋 **IMPLEMENTATION-REIHENFOLGE (optimierte Dependencies):**
-1. **Settings-Sync-Job** → Foundation für Gateway-Policies (6-8h)
-2. **Gateway-Policies** → OIDC + Rate-Limiting operational (4-6h)
-3. **Event-Schemas** → Cross-Module-Events standardisiert (4-5h)
-4. **Foundation-Enhancement** → Cross-Module-Integration ready (3-4h)
-5. **Operations-Monitoring** → Production-Excellence (4-5h)
+### 📋 **IMPLEMENTATION-REIHENFOLGE (CQRS Light Optimized):**
+1. **Settings-Sync-Job** → Foundation für Gateway-Policies (4-6h)
+2. **Gateway-Policies** → OIDC + Rate-Limiting operational (3-4h)
+3. **LISTEN/NOTIFY-Patterns** → Cross-Module-Events via PostgreSQL (3-4h)
+4. **Operations-Monitoring** → Simplified monitoring (2-3h)
 
 ## 🔗 **DEPENDENCIES & TIMELINE**
 
@@ -143,7 +143,7 @@
 ### **Cross-Module Integration:**
 - **Module 01-08:** Alle Module können Integration-Standards sofort nutzen
 - **API_STANDARDS.md:** Enhancement mit Idempotency + ETag + Correlation-ID Standards
-- **CloudEvents Migration:** Existing PostgreSQL LISTEN/NOTIFY → Event-Bus (Roadmap vorhanden)
+- **CQRS Light Optimization:** PostgreSQL LISTEN/NOTIFY bleibt primäre Event-Solution (Cost-Efficient für 5-50 Benutzer)
 
 ## 🎖️ **QUALITY ASSESSMENT**
 

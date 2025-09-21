@@ -9,20 +9,20 @@
 
 **Mission:** World-Class Enterprise Integration Architecture für FreshPlan B2B-Food-Platform implementieren
 
-**Problem:** 8-Module-Ecosystem (Cockpit, Neukundengewinnung, Kundenmanagement, Auswertungen, Kommunikation, Einstellungen, Hilfe, Administration) benötigt Production-Ready Integration Infrastructure:
+**Problem:** 8-Module-Ecosystem (Cockpit, Neukundengewinnung, Kundenmanagement, Auswertungen, Kommunikation, Einstellungen, Hilfe, Administration) benötigt CQRS Light Integration Infrastructure:
 - **Sync Communication:** API-Gateway mit OIDC + Rate-Limiting + Idempotency + Multi-Tenancy
-- **Async Communication:** Event-Driven Backend mit CloudEvents 1.0 + B2B-Food-Domain-Events
+- **Async Communication:** PostgreSQL LISTEN/NOTIFY für CQRS Light (One-Database-Architecture)
 - **Configuration Management:** Settings-Registry → Gateway-Policies Dynamic Synchronisation
-- **Migration Strategy:** PostgreSQL LISTEN/NOTIFY → Event-Bus (Zero-Downtime)
+- **Performance Target:** <200ms P95 durch vereinfachte One-Database-Architektur
 
-**Solution:** Hybrid Integration Architecture (External AI validated 9.2/10):
+**Solution:** CQRS Light Integration Architecture (Cost-Efficient für interne Tools):
 - **API-Gateway Layer:** Kong/Envoy mit dynamischen Policies aus Settings-Registry
-- **Event-Driven Layer:** CloudEvents 1.0 mit B2B-Food-Domain-Extensions
-- **Foundation Integration:** Seamless Settings-Registry + EVENT_CATALOG enhancement
+- **Event-Driven Layer:** PostgreSQL LISTEN/NOTIFY mit JSON-Payloads (kein Event-Bus)
+- **Foundation Integration:** Settings-Registry + LISTEN/NOTIFY-Event-Patterns
 
-**Timeline:** 4-6 Stunden von Current State zu Production-Deployment
+**Timeline:** 3-4 Stunden von Current State zu CQRS Light Production-Deployment
 
-**Impact:** Alle 8 Module können Enterprise-Grade Integration Standards sofort nutzen + Foundation für zukünftige Event-Bus Migration
+**Impact:** Alle 8 Module können CQRS Light Integration Standards sofort nutzen + Cost-Efficient One-Database-Architecture
 
 ## 📋 Context & Dependencies
 
@@ -35,10 +35,10 @@
 
 ### Target State:
 - 🎯 **Dynamic Gateway-Policies:** Kong/Envoy konfiguriert via Settings-Registry (Tenant/Org-spezifisch)
-- 🎯 **CloudEvents 1.0 Integration:** Standardisierte Event-Schemas für B2B-Food-Domain
+- 🎯 **LISTEN/NOTIFY Events:** PostgreSQL-basierte Events mit JSON-Payloads für CQRS Light
 - 🎯 **Settings-Sync-Job:** Quarkus-Service synchronisiert Settings → Gateway-Policies automatisch
-- 🎯 **Foundation Enhanced:** EVENT_CATALOG.md + API_STANDARDS.md mit Integration-Standards
-- 🎯 **Migration-Ready:** LISTEN/NOTIFY → Event-Bus Roadmap implementiert
+- 🎯 **Foundation Enhanced:** LISTEN/NOTIFY-Patterns + API_STANDARDS.md mit Integration-Standards
+- 🎯 **Performance-Optimized:** <200ms P95 durch One-Database-Architecture
 
 ### Dependencies:
 - **Settings-Registry API:** ✅ Verfügbar (dynamische Tenant/Org-Konfiguration)
@@ -51,12 +51,11 @@
 
 **Strategic Change:** Integration-Planung wurde in 5 atomare Implementation-Pläne aufgeteilt für maximale Claude-Readiness (Planungsmethodik-konform):
 
-### Atomare Implementation-Pläne (21-27 Stunden Gesamt):
-1. **Settings-Sync-Job Implementation** (6-8h) - [→ Detailplan](implementation-plans/01_SETTINGS_SYNC_JOB_IMPLEMENTATION_PLAN.md)
-2. **Gateway-Policies Deployment** (4-6h) - [→ Detailplan](implementation-plans/02_GATEWAY_POLICIES_DEPLOYMENT_PLAN.md)
-3. **Event-Schemas Integration** (4-5h) - [→ Detailplan](implementation-plans/03_EVENT_SCHEMAS_INTEGRATION_PLAN.md)
-4. **Foundation Enhancement** (3-4h) - [→ Detailplan](implementation-plans/04_FOUNDATION_ENHANCEMENT_PLAN.md)
-5. **Operations & Monitoring** (4-5h) - [→ Detailplan](implementation-plans/05_OPERATIONS_MONITORING_PLAN.md)
+### CQRS Light Implementation-Pläne (12-16 Stunden Gesamt):
+1. **Settings-Sync-Job Implementation** (4-6h) - Vereinfacht für CQRS Light
+2. **Gateway-Policies Deployment** (3-4h) - Kong + Envoy OIDC + Rate-Limiting
+3. **LISTEN/NOTIFY Event-Patterns** (3-4h) - PostgreSQL Events statt CloudEvents
+4. **Operations & Monitoring** (2-3h) - Simplified monitoring für One-Database
 
 ### Warum Atomare Planung?
 - **Claude-Optimierung:** 5x 300-400 Zeilen statt 1x 1500+ Zeilen
@@ -165,19 +164,19 @@
 
 ## ✅ Success Metrics
 
-### **Immediate Success (Phase 1-3 = 4-6 Stunden):**
+### **Immediate Success (CQRS Light = 3-4 Stunden):**
 1. **Settings-Sync-Job Functional:** Gateway-Policies dynamisch aus Settings-Registry synchronisiert
 2. **Gateway-Policies Operational:** Kong + Envoy mit OIDC + Rate-Limiting + Idempotency live
-3. **Foundation Enhanced:** EVENT_CATALOG.md + API_STANDARDS.md mit Integration-Standards
-4. **Event-Schema Validation:** CI-Pipeline mit CloudEvents 1.0 Schema-Validation
-5. **Cross-Module Ready:** Alle 8 Module können Integration-Standards sofort nutzen
+3. **LISTEN/NOTIFY Enhanced:** PostgreSQL Event-Patterns mit JSON-Payloads implementiert
+4. **Performance Validated:** <200ms P95 durch One-Database-Architecture bestätigt
+5. **Cross-Module Ready:** Alle 8 Module können CQRS Light Standards sofort nutzen
 
-### **Strategic Success (4-6 Wochen):**
-1. **Event-Bus Migration:** Zero-Downtime Migration von LISTEN/NOTIFY zu Event-Bus
+### **Strategic Success (2-3 Wochen):**
+1. **CQRS Light Optimization:** PostgreSQL LISTEN/NOTIFY als primäre Event-Solution etabliert
 2. **Multi-Tenancy Operational:** Gateway-Policies pro Tenant/Org dynamisch konfiguriert
-3. **Monitoring Excellence:** Complete Observability für Integration-Layer mit SLOs
-4. **Developer Experience:** Copy-paste Integration-Standards für neue Module/Features
-5. **Enterprise Compliance:** World-Class B2B-Food-Platform Integration Architecture
+3. **Monitoring Excellence:** Simplified Observability für One-Database-Architecture
+4. **Developer Experience:** Copy-paste CQRS Light Standards für neue Module/Features
+5. **Cost-Efficient Architecture:** Wartbare B2B-Food-Platform ohne Over-Engineering
 
 ### **External Validation:**
 - **Integration-Strategy:** 9.2/10 (External AI) - Hybrid-Approach perfekt für 8-Module-Ecosystem

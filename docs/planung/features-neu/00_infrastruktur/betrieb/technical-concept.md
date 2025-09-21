@@ -9,18 +9,18 @@
 
 ## 🎯 **Executive Summary (für Claude)**
 
-**Mission:** Enterprise-Grade Operations-Excellence für FreshFoodz B2B-Food-CRM mit User-Lead-Protection + Seasonal-Scaling + Business-KPI-Monitoring
+**Mission:** Cost-Efficient Operations-Excellence für FreshFoodz B2B-Food-CRM (internes Tool) mit User-Lead-Protection + CQRS Light Monitoring + Business-KPI-Tracking
 
-**Problem:** Infrastructure Module 01-08 benötigen Operations-Foundation für Q1 2026 Production-Deployment bei 1000+ concurrent users mit Seasonal-Peaks (3x/4x/5x Load) und User-Lead-Protection-Compliance
+**Problem:** Infrastructure Module 01-08 benötigen Operations-Foundation für Q1 2026 Production-Deployment bei 5-50 internen Benutzern mit CQRS Light Architecture und User-Lead-Protection-Compliance
 
 **Solution:**
-- **User-Lead-Operations:** 6M+60T+10T State-Machine mit Stop-Clock + Production-Runbooks (External AI Excellence)
-- **Seasonal-B2B-Food-Operations:** Spargel/Oktoberfest/Weihnachts-Playbooks mit Pre-Provisioning-Calculator
-- **Monitoring-Excellence:** Business-KPI-driven Alerts + Cost-per-Lead-Analytics + Production-SLOs
+- **User-Lead-Operations:** 6M+60T+10T State-Machine mit PostgreSQL LISTEN/NOTIFY (CQRS Light)
+- **Simplified Seasonal-Operations:** Basic Load-Monitoring für interne Nutzung (5-50 Benutzer)
+- **Cost-Efficient Monitoring:** Essential Business-KPIs + PostgreSQL-basierte Alerts (One-Database)
 
-**Timeline:** 4 Atomare Implementation-Pläne à 6-8h parallel execution → Production-Ready in 3-4 Wochen
+**Timeline:** 3 Vereinfachte Implementation-Pläne à 3-4h CQRS Light execution → Production-Ready in 1-2 Wochen
 
-**Impact:** FreshFoodz-CRM wird enterprise-grade operations-ready mit korrigierter User-Lead-Protection und validated External AI Excellence (9.5/10 Quality)
+**Impact:** FreshFoodz-CRM wird cost-efficient operations-ready mit User-Lead-Protection und CQRS Light Architecture für interne Nutzung
 
 ---
 
@@ -34,10 +34,10 @@
 - ✅ **Strategic Foundation:** External AI Consultation completed mit präziser Scope-Korrektur
 
 ### **Target State:**
-- 🎯 **Enterprise-Grade Operations:** Production-SLOs + 24/7-Monitoring + Business-KPI-Alerts
-- 🎯 **Seasonal-Readiness:** Automated Pre-Provisioning für Spargel(3x)/Oktoberfest(4x)/Weihnachten(5x)
-- 🎯 **User-Lead-Excellence:** 100% SLA-Compliance + Stop-Clock-Management + Reminder-Automation
-- 🎯 **Cost-Optimization:** Cost-per-Lead-Analytics + Differentiated RTO/RPO (Lead <1h, Archive <24h)
+- 🎯 **Cost-Efficient Operations:** Essential SLOs + Basic Monitoring + Business-KPI-Alerts
+- 🎯 **Simplified Seasonal-Management:** Basic Load-Monitoring für interne Nutzung (5-50 Benutzer)
+- 🎯 **User-Lead-Excellence:** State-Machine + LISTEN/NOTIFY + Reminder-Automation via CQRS Light
+- 🎯 **CQRS Light Optimization:** PostgreSQL-basierte Alerts + One-Database-Architecture
 - 🎯 **Integration-Ready:** Seamless Module 02 + Module 07 Help-System Integration
 
 ### **Dependencies:**
@@ -50,41 +50,33 @@
 
 ## 🛠️ **Implementation Strategy - Hybrid Approach**
 
-### **Phase 1: User-Lead-Protection Operations (Week 1-2)**
-**Goal:** 6M+60T+10T State-Machine + Stop-Clock + Production-Runbooks deployment
-**Atomarer Plan:** → `implementation-plans/01_USER_LEAD_OPERATIONS_PLAN.md` (6-8h)
+### **Phase 1: User-Lead-Protection Operations (Week 1)**
+**Goal:** 6M+60T+10T State-Machine + LISTEN/NOTIFY + Basic Runbooks deployment
+**CQRS Light Plan:** → Vereinfachter Plan (3-4h)
 **Key Actions:**
-- SQL-Views `v_user_lead_protection.sql` + `monitoring_user_lead.sql` deployment
-- Hold-Management + Reminder-Pipeline mit Quarkus-Scheduler Integration
-- Production-Runbook integration in Module 07 Help-System (CAR-Strategy)
-**Success Criteria:** User-Lead-SLA <1h + Reminder-Pipeline 100% idempotent
+- SQL-Views `v_user_lead_protection.sql` + PostgreSQL LISTEN/NOTIFY Events
+- Hold-Management via State-Machine + CQRS Light Query-Service Integration
+- Basic Runbook integration in Module 07 Help-System
+**Success Criteria:** User-Lead-State via LISTEN/NOTIFY + <200ms P95 Queries
 
-### **Phase 2: Seasonal Operations Excellence (Week 2-3)**
-**Goal:** 3x/4x/5x B2B-Food-Peak-Management mit Pre-Provisioning
-**Atomarer Plan:** → `implementation-plans/02_SEASONAL_OPERATIONS_PLAN.md` (4-6h)
+### **Phase 2: Simplified Monitoring (Week 1-2)**
+**Goal:** Basic Load-Monitoring für interne Nutzung (5-50 Benutzer)
+**CQRS Light Plan:** → Vereinfachter Plan (2-3h)
 **Key Actions:**
-- Spargel/Oktoberfest/Weihnachts-Playbooks mit T-Meilenstein-Integration
-- Pre-Provisioning-Calculator deployment + Capacity-Planning-Automation
-- War-Room-Procedures + Peak-Load-Testing mit k6-Simulation
-**Success Criteria:** Automated 5x-Peak-Handling + Pre-Provisioning <30min Setup
+- Basic PostgreSQL Performance-Monitoring + LISTEN/NOTIFY Event-Tracking
+- Essential Business-KPIs via One-Database-Queries
+- Simple Alert-Setup für kritische User-Lead-Protection Events
+**Success Criteria:** Basic Monitoring operational + <200ms P95 maintained
 
-### **Phase 3: Monitoring & Business-KPIs (Week 3-4)**
-**Goal:** Enterprise-Grade Monitoring + Cost-per-Lead-Analytics
-**Atomarer Plan:** → `implementation-plans/03_MONITORING_EXCELLENCE_PLAN.md` (4-5h)
+### **Phase 3: Integration & Go-Live (Week 2)**
+**Goal:** CQRS Light Integration + Production-Deployment
+**CQRS Light Plan:** → Vereinfachter Plan (2-3h)
 **Key Actions:**
-- Prometheus-Alerts + Grafana-Dashboard deployment (Business-KPI-focused)
-- Cost-per-Lead-Analytics + FinOps-Integration mit Sample-Success-Rate-Tracking
-- Production-SLOs + Differentiated RTO/RPO für Lead-Protection vs Archive
-**Success Criteria:** Business-KPI-Dashboard live + Cost-Analytics automated
+- Module 02 Lead-Protection-Integration via CQRS Light Query-Service
+- Module 07 Help-System Basic Runbook-Integration
+- Production-Deployment + Basic Team-Training
+**Success Criteria:** 100% Module-Integration + CQRS Light Operations-Ready
 
-### **Phase 4: Integration & Go-Live (Week 4)**
-**Goal:** Cross-Module Integration + Production-Deployment
-**Atomarer Plan:** → `implementation-plans/04_INTEGRATION_DEPLOYMENT_PLAN.md` (3-4h)
-**Key Actions:**
-- Module 02 Lead-Protection-Integration + Event-Schema-Validation
-- Module 07 Help-System CAR-Strategy Runbook-Integration
-- Production-Deployment + Go-Live-Checkpoints + Team-Training
-**Success Criteria:** 100% Module-Integration + Operations-Team-Ready
 
 ---
 
@@ -109,10 +101,10 @@ SELECT
 FROM leads l LEFT JOIN effective_hold eh USING (lead_id, user_id);
 ```
 
-### **Seasonal-Operations Strategy:**
-- **Spargel (April-Juni):** 3x Load + Marketing-Campaign-Synchronization
-- **Oktoberfest (September):** 4x Load + Event-Catering-Focus + War-Room-Activation
-- **Weihnachten (November-Dezember):** 5x Load + Max-Capacity + Premium-SLA
+### **Simplified Operations Strategy:**
+- **Business-Hours:** Standard Load für 5-50 interne Benutzer
+- **Peak-Periods:** Basic Monitoring für saisonale Aktivitäten
+- **CQRS Light Optimization:** <200ms P95 durch One-Database-Architecture
 
 ### **Business-KPI Excellence:**
 - **Lead-Protection-SLA:** Due >= Sent innerhalb 60m (Prometheus: `lead_reminder_due_total` vs `lead_reminder_sent_total`)
@@ -123,11 +115,11 @@ FROM leads l LEFT JOIN effective_hold eh USING (lead_id, user_id);
 
 ## ✅ **Success Metrics**
 
-### **Operations Excellence (Quantified):**
-- **User-Lead-SLA:** <1h für Protection-State-Updates (vs <24h Archive)
-- **Seasonal-Peak-Readiness:** 5x Load automated handling ohne Manual-Intervention
-- **Business-KPI-Coverage:** Sample-Success + Event-Catering-SLA + Cost-per-Lead live
-- **Integration-Quality:** Module 02 + Module 07 seamless cross-module operations
+### **Operations Excellence (CQRS Light Optimized):**
+- **User-Lead-SLA:** <200ms P95 für Protection-State-Queries via CQRS Light
+- **Internal-Tool-Readiness:** Optimized für 5-50 Benutzer ohne Over-Engineering
+- **Business-KPI-Coverage:** Essential KPIs via PostgreSQL One-Database-Queries
+- **Integration-Quality:** Module 02 + Module 07 seamless CQRS Light integration
 
 ### **External AI Quality-Validation (9.5/10):**
 - **SQL-Excellence:** CTE-based Hold-Calculation + Idempotent-Patterns (10/10)

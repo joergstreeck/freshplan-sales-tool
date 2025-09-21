@@ -43,10 +43,8 @@ class CommunicationIntegrationTest {
             .withInitScript("sql-schemas/communication_core.sql")
             .withCommand("postgres", "-c", "max_connections=200");
 
-    @Container
-    static KafkaContainer kafka = new KafkaContainer(
-            DockerImageName.parse("confluentinc/cp-kafka:7.5.0"))
-            .withEnv("KAFKA_AUTO_CREATE_TOPICS_ENABLE", "true");
+    // CQRS Light: PostgreSQL LISTEN/NOTIFY statt Kafka
+    // Keine zusätzlichen Container nötig - nutze vorhandene PostgreSQL-Instanz
 
     @Container
     static MockSMTPContainer smtp = new MockSMTPContainer();
@@ -437,58 +435,68 @@ class CommunicationIntegrationTest {
     }
 
     @Nested
-    @DisplayName("Event Bus Integration")
-    class EventBusIntegration {
+    @DisplayName("CQRS Light Event Integration")
+    class CQRSLightEventIntegration {
 
         @Test
         @Order(11)
-        @DisplayName("Should publish thread events to Kafka")
-        void shouldPublishThreadEventsToKafka() throws Exception {
-            // Create Kafka consumer
-            KafkaConsumer<String, String> consumer = createKafkaConsumer();
-            consumer.subscribe(List.of("communication.threads"));
+        @DisplayName("Should publish thread events via PostgreSQL LISTEN/NOTIFY")
+        void shouldPublishThreadEventsViaListenNotify() throws Exception {
+            // CQRS Light: Use PostgreSQL LISTEN/NOTIFY
+            String eventReceived = null;
 
-            // Create thread (should trigger event)
-            Thread thread = createTestThread();
-            em.persist(thread);
-            em.flush();
+            // Setup listener for CQRS Light events
+            try (var connection = em.unwrap(java.sql.Connection.class)) {
+                // Start listening
+                connection.createStatement().execute("LISTEN domain_events");
 
-            // Poll for event
-            ConsumerRecords<String, String> records = consumer.poll(
-                java.time.Duration.ofSeconds(5));
+                // Create thread (should trigger NOTIFY event)
+                Thread thread = createTestThread();
+                em.persist(thread);
+                em.flush();
 
-            assertThat(records.count()).isGreaterThan(0);
+                // Poll for notification (CQRS Light <200ms P95)
+                org.postgresql.PGConnection pgConnection = connection.unwrap(org.postgresql.PGConnection.class);
+                org.postgresql.PGNotification[] notifications = pgConnection.getNotifications(2000); // 2 seconds timeout
 
-            ConsumerRecord<String, String> record = records.iterator().next();
-            assertThat(record.key()).isEqualTo(thread.getId());
-            assertThat(record.value()).contains("\"event\":\"thread.created\"");
-            assertThat(record.value()).contains(testCustomerId);
+                assertThat(notifications).isNotEmpty();
+                assertThat(notifications[0].getName()).isEqualTo("domain_events");
 
-            consumer.close();
+                String payload = notifications[0].getParameter();
+                assertThat(payload).contains("\"event_type\":\"thread.created\"");
+                assertThat(payload).contains(testCustomerId);
+
+                // Verify CQRS Light performance <200ms P95
+                // In production, this would be monitored via Prometheus
+            }
         }
 
         @Test
         @Order(12)
-        @DisplayName("Should consume cross-module events")
-        void shouldConsumeCrossModuleEvents() throws Exception {
-            // Publish sample delivered event from Module 02
-            KafkaProducer<String, String> producer = createKafkaProducer();
-
+        @DisplayName("Should consume cross-module events via LISTEN/NOTIFY")
+        void shouldConsumeCrossModuleEventsViaCQRSLight() throws Exception {
+            // CQRS Light: Publish event via PostgreSQL NOTIFY
             String event = """
                 {
-                    "event": "sample.delivered",
-                    "customerId": "%s",
-                    "territory": "%s",
-                    "deliveredAt": "%s",
-                    "products": ["Gulasch", "Bolognese"]
+                    "event_type": "sample.delivered",
+                    "aggregate_id": "%s",
+                    "payload": {
+                        "territory": "%s",
+                        "deliveredAt": "%s",
+                        "products": ["Gulasch", "Bolognese"]
+                    }
                 }
                 """.formatted(testCustomerId, TEST_TERRITORY, OffsetDateTime.now());
 
-            producer.send(new ProducerRecord<>("samples.events", testCustomerId, event));
-            producer.flush();
+            // Emit event via LISTEN/NOTIFY (CQRS Light pattern)
+            em.createNativeQuery("""
+                SELECT pg_notify('domain_events', :event)
+                """)
+                .setParameter("event", event)
+                .getSingleResult();
 
-            // Wait for processing
-            Thread.sleep(2000);
+            // Wait for processing (CQRS Light target <200ms P95)
+            Thread.sleep(500);
 
             // Verify SLA tasks created
             List<SLATask> tasks = em.createQuery(
@@ -499,7 +507,8 @@ class CommunicationIntegrationTest {
             assertThat(tasks).isNotEmpty();
             assertThat(tasks).anyMatch(t -> t.getType().equals("sample_follow_up"));
 
-            producer.close();
+            // Verify performance <200ms P95 for CQRS Light
+            // Production monitoring via Prometheus alerts-cqrs-light.yml
         }
     }
 
@@ -699,22 +708,24 @@ class CommunicationIntegrationTest {
             .getString("id");
     }
 
-    KafkaConsumer<String, String> createKafkaConsumer() {
-        Properties props = new Properties();
-        props.put("bootstrap.servers", kafka.getBootstrapServers());
-        props.put("group.id", "test-group");
-        props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-        props.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-        props.put("auto.offset.reset", "earliest");
-        return new KafkaConsumer<>(props);
+    // CQRS Light: Helper-Methoden für PostgreSQL LISTEN/NOTIFY
+    // Keine Kafka Producer/Consumer nötig
+
+    void publishCQRSLightEvent(String eventType, String aggregateId, String payload) {
+        em.createNativeQuery("""
+            SELECT pg_notify('domain_events', :event)
+            """)
+            .setParameter("event", String.format(
+                "{\"event_type\":\"%s\",\"aggregate_id\":\"%s\",\"payload\":%s}",
+                eventType, aggregateId, payload))
+            .getSingleResult();
     }
 
-    KafkaProducer<String, String> createKafkaProducer() {
-        Properties props = new Properties();
-        props.put("bootstrap.servers", kafka.getBootstrapServers());
-        props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-        props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-        return new KafkaProducer<>(props);
+    // Performance-Helper für CQRS Light <200ms P95 Validation
+    void assertCQRSLightPerformance(long startTime) {
+        long duration = System.currentTimeMillis() - startTime;
+        assertThat(duration).as("CQRS Light performance should be <200ms P95")
+            .isLessThan(200); // CQRS Light target for internal tools
     }
 }
 
