@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS communication_threads (
   customer_id uuid NOT NULL,
   territory text NOT NULL,
   channel comm_channel NOT NULL DEFAULT 'EMAIL',
-  subject text NOT NULL,
+  subject text,
   participant_set_id uuid REFERENCES participant_set(id) ON DELETE SET NULL,
   last_message_at timestamptz NOT NULL DEFAULT now(),
   unread_count int NOT NULL DEFAULT 0,
@@ -53,7 +53,7 @@ CREATE TABLE IF NOT EXISTS outbox_emails (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   message_id uuid NOT NULL REFERENCES communication_messages(id) ON DELETE CASCADE,
   rate_bucket text, -- e.g. recipient domain
-  status text NOT NULL DEFAULT 'PENDING', -- PENDING|SENDING|SENT|FAILED
+  status text NOT NULL DEFAULT 'PENDING', -- TODO: Use ENUM in production: CREATE TYPE outbox_status AS ENUM ('PENDING','SENDING','SENT','FAILED')
   retry_count int NOT NULL DEFAULT 0,
   next_attempt_at timestamptz NOT NULL DEFAULT now(),
   locked_by text,
@@ -94,7 +94,7 @@ CREATE TABLE IF NOT EXISTS sla_task (
   territory text NOT NULL,
   rule_key text NOT NULL,
   due_at timestamptz NOT NULL,
-  status text NOT NULL DEFAULT 'PENDING', -- PENDING|DONE|CANCELED
+  status text NOT NULL DEFAULT 'PENDING', -- TODO: Use ENUM in production: CREATE TYPE sla_status AS ENUM ('PENDING','DONE','CANCELED')
   created_at timestamptz NOT NULL DEFAULT now(),
   updated_at timestamptz NOT NULL DEFAULT now()
 );
