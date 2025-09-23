@@ -80,6 +80,7 @@
 - **ADR-0003:** Settings-Registry Hybrid JSONB + Registry → `/docs/planung/adr/ADR-0003-settings-registry-hybrid.md`
 - **ADR-0004:** Territory = RLS-Datenraum, Lead-Protection = User-based → `/docs/planung/adr/ADR-0004-territory-rls-vs-lead-ownership.md`
 - **ADR-0005:** Nginx+OIDC Gateway statt Kong/Envoy → `/docs/planung/adr/ADR-0005-nginx-oidc-gateway.md`
+- **ADR-0006:** Mock-Governance (Business-Logic mock-frei) → `/docs/planung/adr/ADR-0006-mock-governance.md`
 
 ### **ADR-0001: CQRS Light statt Full-CQRS (21.09.2025)**
 **Kontext:** Performance für 5-50 interne Nutzer mit Budget-Constraints
@@ -92,13 +93,17 @@
 <!-- MP5:SESSION_LOG:START -->
 - 2025-09-23 17:45 — System Infrastructure: V3.2 Auto-Compact-System vollständig implementiert (COMPACT_CONTRACT v2 + MP5-Anker + Trigger-Updates), Migration: V225, Tests: OK
 - 2025-09-23 18:20 — System Infrastructure: V3.3 Branch-Gate Implementation abgeschlossen (Workflow-Lücke geschlossen, aktives Angebot statt passives Warten), Migration: V225, Tests: OK
+- 2025-09-23 18:45 — Emergency Handover: 3 kritische V3.3 Verbesserungen identifiziert (main-commit-warning, Branch-Gate Prominenz, Feature-Branch Schutz), Migration: V225, Tests: OK
+- 2025-09-23 19:00 — System Optimization: Trigger-Reihenfolge optimiert (Handover-First Strategy) + Context-Management definiert, Migration: V225, Tests: OK
+- 2025-09-23 20:15 — Governance Implementation: Mock-Governance ADR-0006 + Standards/Snippets implementiert + TRIGGER_SPRINT_1_1 erweitert, Migration: V225, Tests: OK
+- 2025-09-23 20:30 — SAFE MODE Handover: Mock-Governance Implementation COMPLETE + Handover 17:51 erstellt, Migration: V225, Status: Ready für Sprint 1.1
 <!-- MP5:SESSION_LOG:END -->
 
 ## Next Steps
 <!-- MP5:NEXT_STEPS:START -->
-- V3.3 Branch-Gate System live testen (erste Session mit aktivem Angebot)
-- TRIGGER_SPRINT_1_1.md ausführen (CQRS Foundation starten)
-- create-feature-branch.sh Script implementieren für standardisierte Branch-Namen
+- Mock-Governance live implementieren (ESLint/CI-Guard/Dev-Seeds setup)
+- TRIGGER_SPRINT_1_1.md ausführen (CQRS Foundation + Mock-Governance parallel)
+- Frontend Mock-Elimination nach CQRS-API-Foundation (Sprint 1.2)
 <!-- MP5:NEXT_STEPS:END -->
 
 ## Risks
@@ -108,7 +113,7 @@
 
 ## Decisions
 <!-- MP5:DECISIONS:START -->
-<!-- Relevante Entscheidungen + Verweis auf ADR-XXXX -->
+- 2025-09-23 — ADR-0006 angenommen: Mock-Governance (Business-Logic mock-frei, Ausnahmen Tests/Stories; Dev-Seeds statt UI-Mocks)
 <!-- MP5:DECISIONS:END -->
 
 ### **ADR-0002: PostgreSQL LISTEN/NOTIFY statt Event-Bus (18.09.2025)**

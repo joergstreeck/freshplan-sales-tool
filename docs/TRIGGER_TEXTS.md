@@ -2,9 +2,9 @@
 
 **WICHTIG: Diese Datei enthält die offiziellen Trigger-Texte. NIEMALS löschen oder überschreiben!**
 
-**Version:** 3.3
+**Version:** 3.7
 **Letzte Aktualisierung:** 23.09.2025
-**Branch-Gate Update:** Auto-Compact-Prävention + MP5-Härtung + Branch-Gate mit aktivem Angebot + Workflow-Lücke geschlossen
+**Handover-First Update:** Sofortige vollständige Übergabe + 2 kurze Nachträge + Commit-Gate in Teil 2
 
 ---
 

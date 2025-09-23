@@ -1,0 +1,31 @@
+name: Docs Guard
+on: [pull_request, push]
+
+jobs:
+  docs-guard:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Stamp CLAUDE.md date
+        run: |
+          bash scripts/update-claude-date.sh
+          if ! git diff --exit-code CLAUDE.md; then
+            git add CLAUDE.md
+            echo "✅ CLAUDE.md date stamped"
+          fi
+
+      - name: Enforce CLAUDE.md length
+        run: bash scripts/lint-claude-length.sh
+
+      - name: Block hardcoded migration numbers
+        run: bash scripts/deny-hardcoded-migrations.sh
+
+      - name: Validate all scripts exist
+        run: |
+          if [ ! -f scripts/get-next-migration.sh ]; then
+            echo "❌ scripts/get-next-migration.sh missing!"
+            exit 1
+          fi
+          echo "✅ All required scripts exist"
