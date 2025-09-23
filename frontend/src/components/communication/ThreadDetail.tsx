@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Paper, Typography, Divider, Alert } from '@mui/material';
+import { Box, Typography, Divider, Alert } from '@mui/material';
 import ReplyComposer from './ReplyComposer';
 import type { ThreadItem } from '../../types/communication';
 

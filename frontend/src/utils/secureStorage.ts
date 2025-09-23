@@ -98,7 +98,7 @@ const ALLOWED_KEYS = [
  * @returns Whether the key is allowed
  */
 export function isAllowedKey(key: string): boolean {
-  return ALLOWED_KEYS.includes(key as any);
+  return ALLOWED_KEYS.includes(key as keyof typeof ALLOWED_KEYS);
 }
 
 /**

@@ -32,11 +32,11 @@ describe('BreadcrumbNavigation', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    (useNavigate as any).mockReturnValue(mockNavigate);
+    (useNavigate as jest.Mock).mockReturnValue(mockNavigate);
   });
 
   it('should render home/cockpit as first breadcrumb', () => {
-    (useLocation as any).mockReturnValue({ pathname: '/dashboard' });
+    (useLocation as jest.Mock).mockReturnValue({ pathname: '/dashboard' });
 
     render(<BreadcrumbNavigation />);
 
@@ -44,7 +44,7 @@ describe('BreadcrumbNavigation', () => {
   });
 
   it('should build breadcrumb trail from path', () => {
-    (useLocation as any).mockReturnValue({ pathname: '/dashboard/reports' });
+    (useLocation as jest.Mock).mockReturnValue({ pathname: '/dashboard/reports' });
 
     render(<BreadcrumbNavigation />);
 
@@ -54,7 +54,7 @@ describe('BreadcrumbNavigation', () => {
   });
 
   it('should navigate when clicking breadcrumb link', () => {
-    (useLocation as any).mockReturnValue({ pathname: '/dashboard/reports' });
+    (useLocation as jest.Mock).mockReturnValue({ pathname: '/dashboard/reports' });
 
     render(<BreadcrumbNavigation />);
 
@@ -65,7 +65,7 @@ describe('BreadcrumbNavigation', () => {
   });
 
   it('should not make last breadcrumb clickable', () => {
-    (useLocation as any).mockReturnValue({ pathname: '/dashboard/reports' });
+    (useLocation as jest.Mock).mockReturnValue({ pathname: '/dashboard/reports' });
 
     render(<BreadcrumbNavigation />);
 
@@ -75,7 +75,7 @@ describe('BreadcrumbNavigation', () => {
   });
 
   it('should handle paths not in navigation config', () => {
-    (useLocation as any).mockReturnValue({ pathname: '/unknown/path' });
+    (useLocation as jest.Mock).mockReturnValue({ pathname: '/unknown/path' });
 
     render(<BreadcrumbNavigation />);
 
@@ -85,7 +85,7 @@ describe('BreadcrumbNavigation', () => {
   });
 
   it('should capitalize and format unknown segments', () => {
-    (useLocation as any).mockReturnValue({ pathname: '/customer-details/123' });
+    (useLocation as jest.Mock).mockReturnValue({ pathname: '/customer-details/123' });
 
     render(<BreadcrumbNavigation />);
 

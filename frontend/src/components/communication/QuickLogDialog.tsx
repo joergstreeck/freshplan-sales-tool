@@ -1,7 +1,13 @@
 import React, { useState } from 'react';
 import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Button, MenuItem } from '@mui/material';
 
-export default function QuickLogDialog({ open, onClose, onSubmit }:{ open:boolean; onClose:()=>void; onSubmit:(payload:any)=>Promise<void> }){
+interface QuickLogPayload {
+  type: 'CALL' | 'MEETING';
+  summary: string;
+  occurredAt: string;
+}
+
+export default function QuickLogDialog({ open, onClose, onSubmit }:{ open:boolean; onClose:()=>void; onSubmit:(payload:QuickLogPayload)=>Promise<void> }){
   const [type,setType]=useState<'CALL'|'MEETING'>('CALL');
   const [summary,setSummary]=useState('');
   const [occurredAt,setOccurredAt]=useState(new Date().toISOString());
@@ -10,7 +16,7 @@ export default function QuickLogDialog({ open, onClose, onSubmit }:{ open:boolea
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
       <DialogTitle>Quick Log</DialogTitle>
       <DialogContent sx={{ display:'grid', gap:2, mt:1 }}>
-        <TextField select label="Typ" value={type} onChange={(e)=>setType(e.target.value as any)}>
+        <TextField select label="Typ" value={type} onChange={(e)=>setType(e.target.value as 'CALL' | 'MEETING')}>
           <MenuItem value="CALL">Anruf</MenuItem>
           <MenuItem value="MEETING">Meeting</MenuItem>
         </TextField>

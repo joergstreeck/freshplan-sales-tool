@@ -228,7 +228,7 @@ export function MyDayColumn() {
           {showTriageInbox && (
             <div className="triage-list">
               {/* TODO: Replace with real triage items from API */}
-              {[].map((item: any) => (
+              {[].map((item: unknown) => (
                 <div key={item.id} className="triage-item">
                   <div className="triage-header">
                     <span className="triage-from">{item.from}</span>

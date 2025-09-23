@@ -36,18 +36,18 @@ const CockpitPage = lazy(() =>
 const CockpitPageV2 = lazy(() =>
   import('./pages/CockpitPageV2').then(m => ({ default: m.CockpitPageV2 }))
 );
-const SettingsPage = lazy(() =>
-  import('./pages/SettingsPage').then(m => ({ default: m.SettingsPage }))
-);
+// const SettingsPage = lazy(() =>
+//   import('./pages/SettingsPage').then(m => ({ default: m.SettingsPage }))
+// );
 const CalculatorPageV2 = lazy(() =>
   import('./pages/CalculatorPageV2').then(m => ({ default: m.CalculatorPageV2 }))
 );
 const OpportunityPipelinePage = lazy(() =>
   import('./pages/OpportunityPipelinePage').then(m => ({ default: m.OpportunityPipelinePage }))
 );
-const HelpSystemDemoPage = lazy(() =>
-  import('./pages/HelpSystemDemoPage').then(m => ({ default: m.HelpSystemDemoPage }))
-);
+// const HelpSystemDemoPage = lazy(() =>
+//   import('./pages/HelpSystemDemoPage').then(m => ({ default: m.HelpSystemDemoPage }))
+// );
 const AuditAdminPage = lazy(() =>
   import('./pages/admin/AuditAdminPage').then(m => ({ default: m.AuditAdminPage }))
 );

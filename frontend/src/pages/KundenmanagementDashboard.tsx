@@ -10,7 +10,6 @@ import {
   Paper,
   Chip,
   Avatar,
-  AvatarGroup,
   IconButton,
   List,
   ListItem,

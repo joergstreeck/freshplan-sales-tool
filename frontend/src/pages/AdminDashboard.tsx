@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React from 'react';
 import {
   Box,
   Container,
@@ -9,8 +9,6 @@ import {
   Button,
   Chip,
   Paper,
-  IconButton,
-  Tooltip,
   Divider,
 } from '@mui/material';
 import Grid from '@mui/material/Grid';
@@ -22,13 +20,9 @@ import DashboardIcon from '@mui/icons-material/Dashboard';
 import PeopleIcon from '@mui/icons-material/People';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 import ApiIcon from '@mui/icons-material/Api';
-import StorageIcon from '@mui/icons-material/Storage';
-import SpeedIcon from '@mui/icons-material/Speed';
-import BackupIcon from '@mui/icons-material/Backup';
 import IntegrationInstructionsIcon from '@mui/icons-material/IntegrationInstructions';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 
 interface QuickAccessCard {
   title: string;
@@ -50,7 +44,7 @@ interface CategoryCard {
 
 export function AdminDashboard() {
   const navigate = useNavigate();
-  const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
+  // const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
 
   const quickAccessCards: QuickAccessCard[] = [
     {

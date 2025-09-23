@@ -25,8 +25,6 @@ import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import CampaignIcon from '@mui/icons-material/Campaign';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import ScheduleIcon from '@mui/icons-material/Schedule';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import PendingIcon from '@mui/icons-material/Pending';
 
 interface LeadCard {
   title: string;

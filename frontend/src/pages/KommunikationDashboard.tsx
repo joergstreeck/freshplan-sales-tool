@@ -1,4 +1,4 @@
-import { Box, Container, Typography, Card, CardContent, CardActions, Button, Paper, Chip, Badge } from '@mui/material';
+import { Box, Container, Typography, Card, CardContent, CardActions, Button, Chip, Badge } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
 import { MainLayoutV2 } from '../components/layout/MainLayoutV2';

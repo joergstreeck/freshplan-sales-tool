@@ -345,7 +345,7 @@ export function MyDayColumnMUI() {
             <Collapse in={showTriageInbox}>
               <Stack spacing={1}>
                 {/* TODO: Replace with real triage items from API */}
-                {[].map((item: any) => (
+                {[].map((item: unknown) => (
                   <Card key={item.id}>
                     <CardContent sx={{ py: 1.5, '&:last-child': { pb: 1.5 } }}>
                       <Box

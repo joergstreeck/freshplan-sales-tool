@@ -2,7 +2,6 @@ import { Box, Container, Typography, Card, CardContent, CardActions, Button, Pap
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
 import { MainLayoutV2 } from '../components/layout/MainLayoutV2';
-import AssessmentIcon from '@mui/icons-material/Assessment';
 import PieChartIcon from '@mui/icons-material/PieChart';
 import TimelineIcon from '@mui/icons-material/Timeline';
 import BarChartIcon from '@mui/icons-material/BarChart';

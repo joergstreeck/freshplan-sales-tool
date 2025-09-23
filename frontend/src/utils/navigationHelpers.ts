@@ -55,7 +55,7 @@ export const CACHE_TTL = 15 * 60 * 1000; // 15 minutes cache TTL
  * @param func - Function to debounce
  * @param wait - Delay in milliseconds
  */
-export function debounce<T extends (...args: any[]) => any>(
+export function debounce<T extends (...args: unknown[]) => unknown>(
   func: T,
   wait: number
 ): (...args: Parameters<T>) => void {

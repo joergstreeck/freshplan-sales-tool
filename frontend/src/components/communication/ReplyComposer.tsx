@@ -9,7 +9,7 @@ export default function ReplyComposer({ thread, onError, onSent }:{ thread: Thre
   async function send(){
     setBusy(true); onError('');
     try{ await sendReply(thread.id, thread.etag, text); setText(''); onSent(); }
-    catch(e:any){ onError(e.message); }
+    catch(e:unknown){ onError(e instanceof Error ? e.message : 'Ein Fehler ist aufgetreten'); }
     finally{ setBusy(false); }
   }
   return (

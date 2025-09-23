@@ -216,7 +216,7 @@ export const useKeyboardNavigation = () => {
           break;
       }
     },
-    [navigate] // Only depend on navigate, store values are in ref
+    [navigate, activeMenuId, closeAllSubmenus, expandedMenuId] // Only depend on navigate, store values are in ref
   );
 
   useEffect(() => {

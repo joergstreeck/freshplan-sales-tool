@@ -8,7 +8,6 @@ import {
   Typography,
   FormControl,
   FormLabel,
-  FormGroup,
   FormControlLabel,
   Checkbox,
   Switch,
