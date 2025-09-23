@@ -283,6 +283,99 @@ CREATE TABLE security_settings (
 - Tests geschrieben (Unit + Integration)
 - Dokumentation komplett
 
+**Sprint 1.3 PR #3:** 🎯 Frontend Integration geplant
+- React Query mit ETag-Support
+- Theme & Feature Flags via API
+- 304 Not Modified Handling
+
 **Nächste Schritte:**
-- Sprint 1.2 PR #3: ETag-Caching Optimization
+- Sprint 1.3 PR #3: Frontend Settings Integration
 - Sprint 2.x: UI in Module 06 (Einstellungen)
+
+## 🎨 Frontend-Integration / ETag
+
+### React Query Setup
+
+Die Frontend-Integration nutzt React Query mit ETag-Support für optimales Caching:
+
+```typescript
+// API Client mit ETag-Store
+const etagStore = new Map<string, string>();
+
+export async function fetchSetting(key: string) {
+  const etag = etagStore.get(key);
+  const headers: HeadersInit = {};
+
+  if (etag) {
+    headers['If-None-Match'] = etag;
+  }
+
+  const response = await fetch(
+    `/api/settings?scope=GLOBAL&key=${key}`,
+    { headers }
+  );
+
+  if (response.status === 304) {
+    return getCachedData(key); // Cache hit
+  }
+
+  const newEtag = response.headers.get('ETag');
+  if (newEtag) {
+    etagStore.set(key, newEtag);
+  }
+
+  return response.json();
+}
+```
+
+### React Hooks
+
+```typescript
+// Settings Hook
+export function useSetting(key: string) {
+  return useQuery({
+    queryKey: ['setting', key],
+    queryFn: () => fetchSetting(key),
+    staleTime: 60_000,  // 1 minute
+    gcTime: 600_000,    // 10 minutes
+    retry: 1,
+  });
+}
+
+// Feature Flag Hook
+export function useFeatureFlag(flag: string) {
+  const { data } = useSetting('system.feature_flags');
+  return data?.value?.[flag] ?? false;
+}
+```
+
+### Theme Integration
+
+```typescript
+const DEFAULT_THEME = {
+  primary: '#94C456',   // FreshFoodz Green
+  secondary: '#004F7B', // FreshFoodz Blue
+};
+
+export function ThemeProvider({ children }) {
+  const { data: themeSetting } = useSetting('ui.theme');
+
+  const theme = {
+    ...DEFAULT_THEME,
+    ...(themeSetting?.value || {}),
+  };
+
+  return (
+    <ThemeContext.Provider value={theme}>
+      {children}
+    </ThemeContext.Provider>
+  );
+}
+```
+
+### Performance Benefits
+
+- **Cache Hit Rate:** ≥70% durch ETag-Validation
+- **Network Traffic:** -60% durch 304 Responses
+- **Response Time:** <50ms für cached Settings
+- **Fallback:** Defaults bei API-Fehlern

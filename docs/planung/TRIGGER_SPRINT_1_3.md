@@ -1,4 +1,4 @@
-# 🚀 VERBINDLICH: SPRINT 1.3 SECURITY GATES + CI HARDENING - SYSTEMATISCHE UMSETZUNG [DONE]
+# 🚀 VERBINDLICH: SPRINT 1.3 SECURITY GATES + CI HARDENING - SYSTEMATISCHE UMSETZUNG [IN PROGRESS]
 
 ## ⚠️ WICHTIGE QUALITÄTSREGELN - VOLLSTÄNDIG BEFOLGEN!
 
@@ -52,10 +52,11 @@ MIGRATION=$(./scripts/get-next-migration.sh | tail -1)
 ## 🎯 IMPLEMENTIERUNGS-AUFTRAG
 
 **SPRINT:** Sprint 1.3: Security Gates + CI Hardening
-**PR-BRANCH-1:** feature/sprint-1-3-security-gates-enforcement-FP-231
+**PR-BRANCH-1:** feature/sprint-1-3-security-gates-enforcement-FP-231 [✅ MERGED as PR #97]
 **PR-BRANCH-2:** feature/sprint-1-3-foundation-integration-testing-FP-232
+**PR-BRANCH-3:** feature/sprint-1-3-frontend-settings-integration-FP-233
 **MODULE:** CI/CD Pipeline + Foundation Integration
-**GESCHÄTZTE ARBEITSZEIT:** 4-6 Stunden (2 PRs)
+**GESCHÄTZTE ARBEITSZEIT:** 6-8 Stunden (3 PRs)
 
 **SECURITY GATES bedeutet:**
 - 5 Security-Contract-Tests als Required GitHub Checks
@@ -224,4 +225,116 @@ FOUNDATION-FIRST STRATEGY erfolgreich - Business-Module können auf optimaler Pe
 - Module 03 Kundenmanagement: Ready (Territory ✅)
 - Module 05 Kommunikation: Wartet auf Security-Gate Validation
 
-Arbeite systematisch PR #1 dann PR #2 für Foundation-Completion!
+## 🆕 SCHRITT 3: FRONTEND SETTINGS INTEGRATION (PR #3)
+
+**3.1 BRANCH ERSTELLEN:**
+```bash
+git checkout main && git pull
+git checkout -b feature/sprint-1-3-frontend-settings-integration-FP-233
+```
+
+**3.2 ZIEL:**
+Settings Registry im Frontend nutzen (React Query + ETag/304), um Theme & Feature-Flags aus security_settings zu beziehen.
+HTTP-Last senken (304), sauberes Caching etablieren, End-to-End zeigen.
+
+**3.3 SCOPE:**
+Kein Over-Engineering: nur zwei Keys als Referenz-Implementierung
+- `ui.theme` (GLOBAL → { primary: "#94C456", secondary: "#004F7B" })
+- `system.feature_flags` (GLOBAL → { "experimental": false })
+
+**3.4 IMPLEMENTIERUNG:**
+
+**API-Client: Conditional Requests**
+```typescript
+// frontend/src/lib/settings/api.ts
+const etagStore = new Map<string, string>();
+
+export async function fetchSetting(key: string) {
+  const etag = etagStore.get(key);
+  const headers: HeadersInit = {};
+
+  if (etag) {
+    headers['If-None-Match'] = etag;
+  }
+
+  const response = await fetch(
+    `/api/settings?scope=GLOBAL&key=${key}`,
+    { headers }
+  );
+
+  if (response.status === 304) {
+    // Cache hit - return cached data
+    return getCachedData(key);
+  }
+
+  const newEtag = response.headers.get('ETag');
+  if (newEtag) {
+    etagStore.set(key, newEtag);
+  }
+
+  return response.json();
+}
+```
+
+**React Query Hooks:**
+```typescript
+// frontend/src/lib/settings/hooks.ts
+export function useSetting(key: string) {
+  return useQuery({
+    queryKey: ['setting', key],
+    queryFn: () => fetchSetting(key),
+    staleTime: 60_000,  // 1 minute
+    gcTime: 600_000,    // 10 minutes
+    retry: 1,
+  });
+}
+
+export function useFeatureFlag(flag: string) {
+  const { data } = useSetting('system.feature_flags');
+  return data?.value?.[flag] ?? false;
+}
+```
+
+**Theme-Wiring:**
+```typescript
+// frontend/src/theme/ThemeProvider.tsx
+const DEFAULT_THEME = {
+  primary: '#94C456',
+  secondary: '#004F7B',
+};
+
+export function ThemeProvider({ children }) {
+  const { data: themeSetting } = useSetting('ui.theme');
+
+  const theme = {
+    ...DEFAULT_THEME,
+    ...(themeSetting?.value || {}),
+  };
+
+  return (
+    <ThemeContext.Provider value={theme}>
+      {children}
+    </ThemeContext.Provider>
+  );
+}
+```
+
+**3.5 TESTS:**
+- Dev: zweimaliger GET liefert beim zweiten Mal 304 (DevTools/Network)
+- Theme-Switch per API → ETag ändert sich → neuer Wert nach Reload
+- Feature Flag Toggle funktioniert
+- Fallback bei API-Fehler auf Defaults
+
+**3.6 AKZEPTANZKRITERIEN:**
+- [ ] ui.theme & system.feature_flags werden über API geladen (kein Mock/Hardcoding)
+- [ ] ETag wird gesendet (If-None-Match) und 304 korrekt behandelt
+- [ ] Fallback bei API-Fehlern/404 auf Defaults
+- [ ] CI grün, ESLint „no mocks in business paths" bleibt grün
+- [ ] Kurze Doku: SETTINGS_REGISTRY.md → Abschnitt „Frontend-Integration / ETag"
+
+**PR-TITEL:**
+```
+feat(settings): Sprint 1.3 PR #3 – Frontend Settings Integration with ETag/304 (FP-233)
+```
+
+Arbeite systematisch PR #1 [✅ DONE] dann PR #2 dann PR #3 für Foundation-Completion!
