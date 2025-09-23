@@ -99,23 +99,27 @@
 - 2025-09-23 20:30 — SAFE MODE Handover: Mock-Governance Implementation COMPLETE + Handover 17:51 erstellt, Migration: V225, Status: Ready für Sprint 1.1
 - 2025-09-23 18:45 — Sprint 1.1 Complete: CQRS Light Foundation operational + PR #94 mit Review-Fixes, Migration: V225, Tests: OK
 - 2025-09-23 19:40 — Sprint 1.1 MERGED: PR #94 erfolgreich in main + alle KI-Reviews umgesetzt + Sprint 3 Backlog erstellt, Migration: V226, Tests: OK
+- 2025-09-23 21:00 — Sprint 1.2 PR #1 MERGED: Security Context Foundation (V227) + Code Review Fixes + Follow-Up dokumentiert, Migration: V227, Tests: OK
 <!-- MP5:SESSION_LOG:END -->
 
 ## Next Steps
 <!-- MP5:NEXT_STEPS:START -->
-- Sprint 1.2 bereit: Security + Foundation (ABAC/RLS + Settings Registry) - TRIGGER_SPRINT_1_2.md
-- Migration V227 verfügbar für neue DB-Arbeiten
-- Sprint 3 Backlog dokumentiert mit 7 Follow-up Items aus Sprint 1.1
+- Sprint 1.2 PR #2: Settings Registry (V228) implementieren - existierende Tabelle nutzen
+- Sprint 1.2 PR #3: ETag-Caching nach Settings Registry
+- Migration V228 verfügbar für neue DB-Arbeiten
+- Sprint 2.x: DbContext Pattern für RLS-wirksame Queries (siehe SECURITY_FOUNDATION_FOLLOW_UP.md)
 <!-- MP5:NEXT_STEPS:END -->
 
 ## Risks
 <!-- MP5:RISKS:START -->
-<!-- Identifizierte Risiken inkl. Mitigation/Owner -->
+- GUC-Context auf falscher Connection (RLS unwirksam) - Mitigation: DbContext Pattern in Sprint 2.x
+- Settings Registry Duplikation - Mitigation: Existierende security_settings Tabelle nutzen
 <!-- MP5:RISKS:END -->
 
 ## Decisions
 <!-- MP5:DECISIONS:START -->
 - 2025-09-23 — ADR-0006 angenommen: Mock-Governance (Business-Logic mock-frei, Ausnahmen Tests/Stories; Dev-Seeds statt UI-Mocks)
+- 2025-09-23 — Security Foundation minimalistisch (ohne Business-Dependencies) - RLS-Policies später pro Modul
 <!-- MP5:DECISIONS:END -->
 
 ### **ADR-0002: PostgreSQL LISTEN/NOTIFY statt Event-Bus (18.09.2025)**
