@@ -234,6 +234,11 @@ export function useMyDay() {
 **Risiko: False Positives im CI-Guard**
 - **Mitigation:** Ausnahme-Globs synchron mit Ordnerstruktur halten
 
+**Dev-Seeds SLOs**
+- Idempotent (wiederholtes Ausführen erzeugt keine Duplikate)
+- Transaktional (alles oder nichts)
+- Profil-Guard: nur im `dev`-Profil aktiv (niemals `prod`)
+
 **Risiko: Dev-Seeds versehentlich in Prod**
 - **Mitigation:** Profile-Check + CI-Guard gegen dev-migration in application.properties
 

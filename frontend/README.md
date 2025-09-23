@@ -16,6 +16,11 @@ Frontend-Anwendung für die FreshPlan 2.0 Enterprise Sales Platform.
 - **React Testing Library** - Component Testing
 - **Keycloak JS** - Authentication (coming soon)
 
+### Governance
+- ESLint blockt Mock-Imports in Business-Pfaden (`src/{app,features,lib,hooks,store}`).
+- Ausnahmen: Tests/Stories/Fixtures.
+- Pre-commit via husky/lint-staged lintet nur geänderte Dateien.
+
 ### Getting Started
 
 ```bash

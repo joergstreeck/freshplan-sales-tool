@@ -20,13 +20,31 @@ export default tseslint.config(
     rules: {
       ...reactHooks.configs.recommended.rules,
       'react-refresh/only-export-components': 'off', // Too noisy for CI, dev-only issue
-      '@typescript-eslint/no-unused-vars': ['error', { 
+      '@typescript-eslint/no-unused-vars': ['error', {
         argsIgnorePattern: '^_',
-        varsIgnorePattern: '^_' 
+        varsIgnorePattern: '^_'
       }],
       '@typescript-eslint/no-explicit-any': 'error',
       'react-hooks/exhaustive-deps': 'error',
       'react-hooks/rules-of-hooks': 'error'
     },
   },
+  // Mock-Governance: Business-Logic mock-frei
+  {
+    files: [
+      'src/app/**/*.{ts,tsx}',
+      'src/features/**/*.{ts,tsx}',
+      'src/lib/**/*.{ts,tsx}',
+      'src/hooks/**/*.{ts,tsx}',
+      'src/store/**/*.{ts,tsx}',
+    ],
+    rules: {
+      'no-restricted-imports': ['error', {
+        patterns: [
+          // Nur projektinterne Mock-Pfade verbieten
+          { group: ['**/data/mock*', '**/__mocks__/**', '**/mocks/**'], message: 'Mocks in Business-Logic verboten.' }
+        ]
+      }]
+    }
+  }
 )
