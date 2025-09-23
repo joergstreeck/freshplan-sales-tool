@@ -136,8 +136,50 @@ AS $$
 $$;
 
 -- ============================================================================
+-- BASE TABLES PREPARATION
+-- ============================================================================
+
+-- Ensure leads table has required columns
+DO $$
+BEGIN
+    -- Add territory column if not exists
+    IF NOT EXISTS (
+        SELECT 1 FROM information_schema.columns
+        WHERE table_name = 'leads' AND column_name = 'territory'
+    ) THEN
+        ALTER TABLE leads ADD COLUMN territory text DEFAULT 'DE';
+        UPDATE leads SET territory = 'DE' WHERE territory IS NULL;
+        ALTER TABLE leads ALTER COLUMN territory SET NOT NULL;
+        ALTER TABLE leads ADD CONSTRAINT chk_leads_territory CHECK (territory IN ('DE', 'CH'));
+    END IF;
+
+    -- Add org_id column if not exists
+    IF NOT EXISTS (
+        SELECT 1 FROM information_schema.columns
+        WHERE table_name = 'leads' AND column_name = 'org_id'
+    ) THEN
+        ALTER TABLE leads ADD COLUMN org_id text DEFAULT 'freshfoodz';
+        UPDATE leads SET org_id = 'freshfoodz' WHERE org_id IS NULL;
+        ALTER TABLE leads ALTER COLUMN org_id SET NOT NULL;
+    END IF;
+END $$;
+
+-- ============================================================================
 -- OWNERSHIP & COLLABORATION FUNCTIONS
 -- ============================================================================
+
+-- Create user_lead_assignments table if not exists
+CREATE TABLE IF NOT EXISTS user_lead_assignments (
+    lead_id uuid NOT NULL,
+    user_id uuid NOT NULL,
+    territory text NOT NULL,
+    assigned_at timestamptz DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (lead_id, user_id, territory),
+    FOREIGN KEY (lead_id) REFERENCES leads(id) ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_user_lead_assignments_user
+ON user_lead_assignments(user_id, territory);
 
 -- Check if user owns a lead
 CREATE OR REPLACE FUNCTION is_lead_owner(p_lead_id uuid)
@@ -502,16 +544,7 @@ BEGIN
         SELECT 1 FROM information_schema.tables
         WHERE table_name = 'user_lead_assignments'
     ) THEN
-        RAISE WARNING 'Table user_lead_assignments does not exist - creating minimal version';
-
-        CREATE TABLE user_lead_assignments (
-            lead_id uuid NOT NULL,
-            user_id uuid NOT NULL,
-            territory text NOT NULL,
-            assigned_at timestamptz DEFAULT CURRENT_TIMESTAMP,
-            PRIMARY KEY (lead_id, user_id, territory),
-            FOREIGN KEY (lead_id) REFERENCES leads(id) ON DELETE CASCADE
-        );
+        RAISE WARNING 'Table user_lead_assignments should have been created earlier in this migration';
     END IF;
 END $$;
 
