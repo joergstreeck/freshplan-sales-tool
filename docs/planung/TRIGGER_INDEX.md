@@ -11,9 +11,11 @@
 
 ### **PHASE 1: FOUNDATION (3 Sprints)**
 ```yaml
-✅ TRIGGER_SPRINT_1_1.md - CQRS Light Foundation (97% Compliance)
+✅ TRIGGER_SPRINT_1_1.md - CQRS Light Foundation + Mock-Governance (97% Compliance)
    - PostgreSQL LISTEN/NOTIFY + Event-Schema
+   - Mock-Governance Setup (ESLint/CI/Dev-Seeds) parallel zu CQRS
    - Migration-Check + 4-Gate-System + Compliance-Checkpoints
+   - Pflichtlektüre zusätzlich: features-neu/00_infrastruktur/standards/03_MOCK_GOVERNANCE.md
    - 4-6h, 1 PR (FP-225)
 
 ✅ TRIGGER_SPRINT_1_2.md - Security + Foundation

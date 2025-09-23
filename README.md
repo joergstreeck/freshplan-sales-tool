@@ -24,6 +24,21 @@ Mehr Details: [Vision & Roadmap](./VISION_AND_ROADMAP.md) | [Master Plan V4](./d
 - **Auth**: Keycloak (OIDC)
 - **Cloud**: AWS (ECS, RDS, CloudFront)
 
+## Mock-Governance (Business-Logic mock-frei)
+- Business-Pfade: `frontend/src/{app,features,lib,hooks,store}` dürfen keine Mocks importieren.
+- Ausnahmen: Tests/Stories/Fixtures.
+- CI „mock-guard" blockt PRs bei Verstößen.
+- Dev-Seeds: lokale Daten via Flyway `db/dev-migration` (nur `dev`-Profil).
+
+**Schnellstart**
+```bash
+# Frontend (ESLint + Husky)
+cd frontend && npm i && npx husky install
+
+# Backend (Dev-Seeds)
+# quarkus:dev lädt db/migration + db/dev-migration im dev-Profil
+```
+
 ### Monorepo Structure
 ```
 freshplan-sales-tool/

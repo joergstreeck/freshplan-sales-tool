@@ -3,7 +3,7 @@
 **📊 Status:** ✅ Ready for Implementation
 **🎯 Owner:** Development Team
 **⏱️ Timeline:** Sprint 1.1 (Setup) → Sprint 1.2 (Cockpit Ent-Mocking)
-**🔗 ADR:** [ADR-0006](../../adr/ADR-0006-mock-governance.md)
+**🔗 ADR:** [ADR-0006](../../../adr/ADR-0006-mock-governance.md)
 
 ## 🎯 Ziel
 
