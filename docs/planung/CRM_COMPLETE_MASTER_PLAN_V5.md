@@ -102,21 +102,24 @@
 - 2025-09-23 21:00 — Sprint 1.2 PR #1 MERGED: Security Context Foundation (V227) + Code Review Fixes + Follow-Up dokumentiert, Migration: V227, Tests: OK
 - 2025-09-23 22:30 — Sprint 1.3 PR #97 READY: Security Gates Enforcement (FP-231) + CORS-Trennung + Security Headers + CI-Hardening, alle Checks grün, wartet auf Review
 - 2025-09-23 22:45 — Sprint 1.3 MERGED: PR #97 erfolgreich in main + bash arithmetic fixes + Follow-up Issue #98 erstellt, Migration: V227, Tests: OK
+- 2025-09-24 00:11 — Sprint 1.2 PR #2 COMPLETE: Settings Registry mit ETag Support (V228+V10010+V10011) + Production-Ready Enhancements + PR #99 gemerged, Migration: V228, Tests: OK
 <!-- MP5:SESSION_LOG:END -->
 
 ## Next Steps
 <!-- MP5:NEXT_STEPS:START -->
-- Sprint 1.2 PR #2: Settings Registry (V228) implementieren - existierende Tabelle nutzen
-- Sprint 1.2 PR #3: ETag-Caching nach Settings Registry
-- Migration V228 verfügbar für neue DB-Arbeiten
+- Sprint 1.2 PR #3: ETag-Caching Optimization implementieren
+- Sprint 1.3 PR #3: Security Gates Phase 2 starten (Integration Testing Framework)
 - Sprint 2.x: DbContext Pattern für RLS-wirksame Queries (siehe SECURITY_FOUNDATION_FOLLOW_UP.md)
+- Frontend: Settings API mit ETag-Support integrieren (React Query Setup)
 - Follow-up Issue #98: Optionaler CI-Job für Backend Header/CORS Tests (low priority)
+- Migration V229 verfügbar für neue DB-Arbeiten
 <!-- MP5:NEXT_STEPS:END -->
 
 ## Risks
 <!-- MP5:RISKS:START -->
 - GUC-Context auf falscher Connection (RLS unwirksam) - Mitigation: DbContext Pattern in Sprint 2.x
-- Settings Registry Duplikation - Mitigation: Existierende security_settings Tabelle nutzen
+- Zwei Dev-Server laufen parallel (Bash IDs: 64b7dc, 1db55e) - Mitigation: Beim nächsten Start bereinigen
+- NEXT_STEP.md veraltet (Stand 11.08.2025) - Mitigation: In nächster Session aktualisieren
 <!-- MP5:RISKS:END -->
 
 ## Decisions
@@ -124,6 +127,7 @@
 - 2025-09-23 — ADR-0006 angenommen: Mock-Governance (Business-Logic mock-frei, Ausnahmen Tests/Stories; Dev-Seeds statt UI-Mocks)
 - 2025-09-23 — Security Foundation minimalistisch (ohne Business-Dependencies) - RLS-Policies später pro Modul
 - 2025-09-23 — Sprint 1.3 Security Gates erfolgreich implementiert - PR Template, Security Contract Tests, Fail-Closed Verification operativ
+- 2025-09-24 — Settings Registry Production-Ready: Race Condition Prevention + 304 Support + Strict Create implementiert nach KI-Review
 <!-- MP5:DECISIONS:END -->
 
 ### **ADR-0002: PostgreSQL LISTEN/NOTIFY statt Event-Bus (18.09.2025)**
