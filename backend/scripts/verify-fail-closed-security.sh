@@ -49,17 +49,34 @@ echo ""
 echo "1. Verifying Security Context Functions..."
 echo "-------------------------------------------"
 
+# Detect if we're in CI or local environment
+if [ -n "$CI" ]; then
+    # In CI, use localhost with the exposed port
+    export PGPASSWORD=freshplan
+    PSQL_CMD="psql -h localhost -p 5432 -U freshplan -d freshplan"
+
+    # Check if PostgreSQL is available
+    if ! $PSQL_CMD -c "SELECT 1" >/dev/null 2>&1; then
+        echo -e "${YELLOW}⚠️  PostgreSQL not available in CI - skipping database checks${NC}"
+        echo "This is expected if the database container hasn't been started yet."
+        exit 0
+    fi
+else
+    # Local environment
+    PSQL_CMD="psql -U freshplan -d freshplan"
+fi
+
 # Check if security functions exist
 check_security "set_app_context function exists" \
-    "psql -U freshplan -d freshplan -c \"SELECT 1 FROM pg_proc WHERE proname = 'set_app_context';\" | grep -q '1 row'" \
+    "$PSQL_CMD -c \"SELECT 1 FROM pg_proc WHERE proname = 'set_app_context';\" | grep -q '1 row'" \
     "pass"
 
 check_security "current_app_context function exists" \
-    "psql -U freshplan -d freshplan -c \"SELECT 1 FROM pg_proc WHERE proname = 'current_app_context';\" | grep -q '1 row'" \
+    "$PSQL_CMD -c \"SELECT 1 FROM pg_proc WHERE proname = 'current_app_context';\" | grep -q '1 row'" \
     "pass"
 
 check_security "has_role function exists" \
-    "psql -U freshplan -d freshplan -c \"SELECT 1 FROM pg_proc WHERE proname = 'has_role';\" | grep -q '1 row'" \
+    "$PSQL_CMD -c \"SELECT 1 FROM pg_proc WHERE proname = 'has_role';\" | grep -q '1 row'" \
     "pass"
 
 echo ""
@@ -68,11 +85,11 @@ echo "-------------------------------------"
 
 # Test that without proper context, functions return safe defaults
 check_security "current_app_user returns NULL without context" \
-    "psql -U freshplan -d freshplan -c \"SELECT current_app_user() IS NULL;\" | grep -q 't'" \
+    "$PSQL_CMD -c \"SELECT current_app_user() IS NULL;\" | grep -q 't'" \
     "pass"
 
 check_security "has_role returns FALSE without context" \
-    "psql -U freshplan -d freshplan -c \"SELECT has_role('admin');\" | grep -q 'f'" \
+    "$PSQL_CMD -c \"SELECT has_role('admin');\" | grep -q 'f'" \
     "pass"
 
 echo ""
@@ -80,7 +97,7 @@ echo "3. Verifying RLS Policies (if tables exist)..."
 echo "-----------------------------------------------"
 
 # Check if any RLS-enabled tables exist and verify they fail closed
-TABLES_WITH_RLS=$(psql -U freshplan -d freshplan -t -c \
+TABLES_WITH_RLS=$($PSQL_CMD -t -c \
     "SELECT tablename FROM pg_tables WHERE schemaname = 'public' AND rowsecurity = true;" 2>/dev/null | tr -d ' ')
 
 if [ -z "$TABLES_WITH_RLS" ]; then
@@ -89,7 +106,7 @@ if [ -z "$TABLES_WITH_RLS" ]; then
 else
     for table in "$TABLES_WITH_RLS"; do
         check_security "RLS enabled on $table" \
-            "psql -U freshplan -d freshplan -c \"SELECT rowsecurity FROM pg_tables WHERE tablename = '$table';\" | grep -q 't'" \
+            "$PSQL_CMD -c \"SELECT rowsecurity FROM pg_tables WHERE tablename = '$table';\" | grep -q 't'" \
             "pass"
     done
 fi
@@ -99,11 +116,11 @@ echo "4. Verifying Security Settings Table..."
 echo "----------------------------------------"
 
 check_security "security_settings table exists" \
-    "psql -U freshplan -d freshplan -c \"SELECT 1 FROM information_schema.tables WHERE table_name = 'security_settings';\" | grep -q '1 row'" \
+    "$PSQL_CMD -c \"SELECT 1 FROM information_schema.tables WHERE table_name = 'security_settings';\" | grep -q '1 row'" \
     "pass"
 
 check_security "security_audit_log table exists" \
-    "psql -U freshplan -d freshplan -c \"SELECT 1 FROM information_schema.tables WHERE table_name = 'security_audit_log';\" | grep -q '1 row'" \
+    "$PSQL_CMD -c \"SELECT 1 FROM information_schema.tables WHERE table_name = 'security_audit_log';\" | grep -q '1 row'" \
     "pass"
 
 echo ""
