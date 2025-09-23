@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS domain_events (
     -- published flag removed: LISTEN/NOTIFY is synchronous, no polling needed
 
     -- Performance-Indizes
-    CONSTRAINT chk_event_type CHECK (event_type ~ '^[a-z]+\.[a-z]+$'),
+    CONSTRAINT chk_event_type CHECK (event_type ~ '^[a-z][a-z0-9_-]*(\.[a-z][a-z0-9_-]*)+$'),
     CONSTRAINT chk_payload_size CHECK (pg_column_size(payload) < 7900) -- 7.9KB limit für PostgreSQL NOTIFY (max 8KB)
 );
 
