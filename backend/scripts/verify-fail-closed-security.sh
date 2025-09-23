@@ -127,9 +127,10 @@ echo ""
 echo "5. Verifying Application Security Headers..."
 echo "--------------------------------------------"
 
-# Start the application if not running
+# Check if backend is running (in CI it might not be)
 if ! curl -s http://localhost:8080/q/health > /dev/null 2>&1; then
     echo -e "${YELLOW}⚠️  Backend not running on port 8080, skipping header checks${NC}"
+    echo -e "${YELLOW}    This is expected in CI environment where backend is tested separately${NC}"
     ((WARNINGS++))
 else
     # Check security headers
@@ -184,19 +185,26 @@ echo "Security Verification Summary:"
 echo "================================================"
 
 if [ $ERRORS -eq 0 ]; then
-    echo -e "${GREEN}✅ All security checks PASSED!${NC}"
+    echo -e "${GREEN}✅ All critical security checks PASSED!${NC}"
     echo -e "${GREEN}✅ System correctly implements fail-closed security.${NC}"
+
+    if [ $WARNINGS -gt 0 ]; then
+        echo -e "${YELLOW}⚠️  $WARNINGS warnings detected (non-critical).${NC}"
+        echo -e "${YELLOW}    Warnings do not affect the security gate status.${NC}"
+    fi
+
+    echo ""
+    echo -e "${GREEN}Fail-closed principle verified for Sprint 1.3 Security Gates.${NC}"
+    exit 0
 else
-    echo -e "${RED}❌ $ERRORS security checks FAILED!${NC}"
+    echo -e "${RED}❌ $ERRORS critical security checks FAILED!${NC}"
     echo -e "${RED}❌ Security policies may not be failing closed properly.${NC}"
+
+    if [ $WARNINGS -gt 0 ]; then
+        echo -e "${YELLOW}⚠️  Additionally, $WARNINGS warnings detected.${NC}"
+    fi
+
+    echo ""
+    echo -e "${RED}Security gate FAILED - critical issues must be fixed.${NC}"
+    exit 1
 fi
-
-if [ $WARNINGS -gt 0 ]; then
-    echo -e "${YELLOW}⚠️  $WARNINGS warnings detected (non-critical).${NC}"
-fi
-
-echo ""
-echo "Fail-closed principle verified for Sprint 1.3 Security Gates."
-
-# Exit with error if any checks failed
-exit $ERRORS
