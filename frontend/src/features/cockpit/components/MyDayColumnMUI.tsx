@@ -34,7 +34,7 @@ import InfoIcon from '@mui/icons-material/Info';
 import { useCockpitStore } from '../../../store/cockpitStore';
 import { useAuth } from '../../../hooks/useAuth';
 import { useDashboardData } from '../hooks/useSalesCockpit';
-import { mockTriageItems, mockTasks } from '../data/mockData';
+// Mock data imports removed - should use real data from API
 import type { DashboardTask, DashboardAlert } from '../types/salesCockpit';
 import type { PriorityTask } from '../types';
 
@@ -180,7 +180,7 @@ export function MyDayColumnMUI() {
           completed: false,
         }))
       : isError || !dashboardData
-        ? mockTasks
+        ? []
         : [];
 
   return (
@@ -325,7 +325,7 @@ export function MyDayColumnMUI() {
               }}
             >
               <Typography variant="subtitle1" sx={{ fontWeight: 'medium' }}>
-                Posteingang ({mockTriageItems.length})
+                Posteingang (0)
               </Typography>
               <IconButton
                 size="small"
@@ -344,7 +344,8 @@ export function MyDayColumnMUI() {
 
             <Collapse in={showTriageInbox}>
               <Stack spacing={1}>
-                {mockTriageItems.map(item => (
+                {/* TODO: Replace with real triage items from API */}
+                {[].map((item: any) => (
                   <Card key={item.id}>
                     <CardContent sx={{ py: 1.5, '&:last-child': { pb: 1.5 } }}>
                       <Box

@@ -9,7 +9,7 @@ import { useEffect } from 'react';
 import { useCockpitStore } from '../../../store/cockpitStore';
 import { useAuth } from '../../../hooks/useAuth';
 import { useDashboardData } from '../hooks/useSalesCockpit';
-import { mockTriageItems, mockTasks } from '../data/mockData';
+// Mock data imports removed - should use real data from API
 import type { DashboardTask, DashboardAlert } from '../types/salesCockpit';
 import type { PriorityTask } from '../types';
 // CSS import removed - migrating to MUI sx props
@@ -131,9 +131,7 @@ export function MyDayColumn() {
           dueDate: task.dueDate ? new Date(task.dueDate) : undefined,
           completed: false,
         }))
-      : isError || !dashboardData
-        ? mockTasks
-        : [];
+      : [];
 
   return (
     <div className="my-day-column">
@@ -203,7 +201,7 @@ export function MyDayColumn() {
         {/* Triage-Inbox - Vorerst Mock-Daten */}
         <section className="triage-section">
           <div className="section-header">
-            <h3 className="section-title">Triage-Inbox ({mockTriageItems.length})</h3>
+            <h3 className="section-title">Triage-Inbox (0)</h3>
             <button
               className="btn-icon"
               onClick={toggleTriageInbox}
@@ -229,7 +227,8 @@ export function MyDayColumn() {
 
           {showTriageInbox && (
             <div className="triage-list">
-              {mockTriageItems.map(item => (
+              {/* TODO: Replace with real triage items from API */}
+              {[].map((item: any) => (
                 <div key={item.id} className="triage-item">
                   <div className="triage-header">
                     <span className="triage-from">{item.from}</span>
