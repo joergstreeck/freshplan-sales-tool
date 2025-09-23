@@ -33,14 +33,14 @@ check_security() {
             echo -e "${GREEN}✅ PASSED${NC}"
         else
             echo -e "${RED}❌ FAILED - Should have failed but passed${NC}"
-            ((ERRORS++))
+            ERRORS=$((ERRORS + 1))
         fi
     else
         if [ "$expected_result" = "fail" ]; then
             echo -e "${GREEN}✅ PASSED (correctly failed)${NC}"
         else
             echo -e "${RED}❌ FAILED - Should have passed but failed${NC}"
-            ((ERRORS++))
+            ERRORS=$((ERRORS + 1))
         fi
     fi
 }
@@ -102,7 +102,7 @@ TABLES_WITH_RLS=$($PSQL_CMD -t -c \
 
 if [ -z "$TABLES_WITH_RLS" ]; then
     echo -e "${YELLOW}⚠️  No tables with RLS enabled yet (expected in Sprint 1.x)${NC}"
-    ((WARNINGS++))
+    WARNINGS=$((WARNINGS + 1))
 else
     for table in "$TABLES_WITH_RLS"; do
         check_security "RLS enabled on $table" \
@@ -128,11 +128,7 @@ echo "5. Verifying Application Security Headers..."
 echo "--------------------------------------------"
 
 # Check if backend is running (in CI it might not be)
-if ! curl -s http://localhost:8080/q/health > /dev/null 2>&1; then
-    echo -e "${YELLOW}⚠️  Backend not running on port 8080, skipping header checks${NC}"
-    echo -e "${YELLOW}    This is expected in CI environment where backend is tested separately${NC}"
-    ((WARNINGS++))
-else
+if curl -s http://localhost:8080/q/health > /dev/null 2>&1; then
     # Check security headers
     HEADERS=$(curl -sI http://localhost:8080/q/health)
 
@@ -151,6 +147,10 @@ else
     check_security "Content-Security-Policy header present" \
         "echo \"$HEADERS\" | grep -q 'Content-Security-Policy'" \
         "pass"
+else
+    echo -e "${YELLOW}⚠️  Backend not running on port 8080, skipping header checks${NC}"
+    echo -e "${YELLOW}    This is expected in CI environment where backend is tested separately${NC}"
+    WARNINGS=$((WARNINGS + 1))
 fi
 
 echo ""
@@ -177,6 +177,9 @@ if curl -s http://localhost:8080/q/health > /dev/null 2>&1; then
     check_security "CORS blocks unauthorized origins" \
         "echo \"$CORS_FAIL\" | grep -q 'Access-Control-Allow-Origin: http://malicious.com'" \
         "fail"
+else
+    echo -e "${YELLOW}⚠️  Backend not running on port 8080, skipping CORS checks${NC}"
+    WARNINGS=$((WARNINGS + 1))
 fi
 
 echo ""
