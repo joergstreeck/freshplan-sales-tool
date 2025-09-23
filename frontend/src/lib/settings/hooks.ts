@@ -74,8 +74,9 @@ export function useFeatureFlag(
 } {
   const { data, isLoading, error } = useSetting('system.feature_flags', 'GLOBAL');
 
-  // Extract the flag value from the settings response
-  const isEnabled = data?.value?.[flag] ?? defaultValue;
+  // Extract the flag value with type checking
+  const flagValue = data?.value?.[flag];
+  const isEnabled = typeof flagValue === 'boolean' ? flagValue : defaultValue;
 
   return {
     isEnabled,
@@ -105,9 +106,19 @@ export function useThemeSettings(): {
     secondary: '#004F7B', // FreshFoodz Blue
   };
 
+  // Type-safe theme merging
+  const remoteTheme = data?.value || {};
   const theme = {
     ...DEFAULT_THEME,
-    ...(data?.value || {}),
+    primary: typeof remoteTheme.primary === 'string' ? remoteTheme.primary : DEFAULT_THEME.primary,
+    secondary: typeof remoteTheme.secondary === 'string' ? remoteTheme.secondary : DEFAULT_THEME.secondary,
+    // Include any additional properties from remote
+    ...Object.entries(remoteTheme).reduce((acc, [key, value]) => {
+      if (key !== 'primary' && key !== 'secondary') {
+        acc[key] = value;
+      }
+      return acc;
+    }, {} as Record<string, unknown>),
   };
 
   return {
@@ -162,7 +173,8 @@ export function useFeatureFlags(
   const flagStates: Record<string, boolean> = {};
 
   for (const flag of flags) {
-    flagStates[flag] = data?.value?.[flag] ?? defaults[flag] ?? false;
+    const flagValue = data?.value?.[flag];
+    flagStates[flag] = typeof flagValue === 'boolean' ? flagValue : (defaults[flag] ?? false);
   }
 
   return {

@@ -7,7 +7,7 @@
  */
 
 import React, { useMemo } from 'react';
-import { ThemeProvider as MuiThemeProvider, createTheme } from '@mui/material/styles';
+import { ThemeProvider as MuiThemeProvider, createTheme, alpha } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { useThemeSettings } from '@/lib/settings/hooks';
 
@@ -26,13 +26,9 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
 
   // Create theme with settings overrides
   const theme = useMemo(() => {
-    // FreshFoodz default colors (fail-closed approach)
-    const DEFAULT_PRIMARY = '#94C456';   // FreshFoodz Green
-    const DEFAULT_SECONDARY = '#004F7B'; // FreshFoodz Blue
-
-    // Merge settings with defaults
-    const primary = themeSettings?.primary || DEFAULT_PRIMARY;
-    const secondary = themeSettings?.secondary || DEFAULT_SECONDARY;
+    // Theme settings already include defaults from the useThemeSettings hook
+    const primary = themeSettings?.primary || '#94C456';   // FreshFoodz Green
+    const secondary = themeSettings?.secondary || '#004F7B'; // FreshFoodz Blue
 
     // Log theme source for debugging
     if (!isLoading) {
@@ -48,13 +44,13 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
         mode: 'light',
         primary: {
           main: primary,
-          light: primary + '33', // 20% opacity
+          light: alpha(primary, 0.2), // 20% opacity using MUI alpha
           dark: primary,
           contrastText: '#ffffff',
         },
         secondary: {
           main: secondary,
-          light: secondary + '33', // 20% opacity
+          light: alpha(secondary, 0.2), // 20% opacity using MUI alpha
           dark: secondary,
           contrastText: '#ffffff',
         },

@@ -96,9 +96,10 @@ export async function fetchSetting(
       return data;
     }
 
-    // Log unexpected status codes
-    console.error(`[Settings] Unexpected status ${response.status} for ${cacheKey}`);
-    return null;
+    // Throw error for unexpected status codes to trigger retry
+    const errorMsg = `[Settings] Unexpected status ${response.status} for ${cacheKey}`;
+    console.error(errorMsg);
+    throw new Error(errorMsg);
 
   } catch (error) {
     console.error('[Settings] Fetch error:', error);
@@ -120,7 +121,16 @@ export async function resolveSetting(
     contactRole?: string;
   }
 ): Promise<SettingResponse | null> {
-  const cacheKey = `resolve:${key}:${JSON.stringify(context || {})}`;
+  // Create stable cache key by sorting context keys
+  const sortedContext = context ?
+    Object.keys(context).sort().reduce((acc, key) => {
+      if (context[key as keyof typeof context] !== undefined) {
+        acc[key] = context[key as keyof typeof context];
+      }
+      return acc;
+    }, {} as any) : {};
+
+  const cacheKey = `resolve:${key}:${JSON.stringify(sortedContext)}`;
   const etag = etagStore.get(cacheKey);
 
   const headers: HeadersInit = {
