@@ -16,6 +16,11 @@ Enterprise-grade backend for the FreshPlan 2.0 Sales Platform.
 - **Keycloak OIDC** - Authentication & Authorization
 - **SmallRye OpenAPI** - API documentation
 
+### Dev-Seeds
+- Flyway lädt `db/migration` + `db/dev-migration` nur im `dev`-Profil.
+- Seeds sind idempotent & transaktional; niemals in `prod` aktiv.
+- Start: `./mvnw quarkus:dev` (lädt Seeds automatisch im dev-Profil).
+
 ### Prerequisites
 
 1. **Docker** (for local infrastructure)
