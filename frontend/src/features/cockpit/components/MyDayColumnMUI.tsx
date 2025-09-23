@@ -160,14 +160,14 @@ export function MyDayColumnMUI() {
     );
   }
 
-  // Extract data from BFF response or use mock data as fallback
+  // Extract data from BFF response
   const bffTasks = dashboardData?.todaysTasks || [];
   const alerts = dashboardData?.alerts || [];
   const todaysAlerts = alerts.filter(
     alert => new Date(alert.createdAt).toDateString() === new Date().toDateString()
   );
 
-  // Use mock tasks if there's an error or no data
+  // Use empty array if there's an error or no data
   const tasks: PriorityTask[] =
     bffTasks.length > 0
       ? bffTasks.map(task => ({
