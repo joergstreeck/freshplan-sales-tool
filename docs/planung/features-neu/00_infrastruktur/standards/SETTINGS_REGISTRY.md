@@ -177,7 +177,7 @@ Response:
 ```sql
 CREATE TABLE security_settings (
   id UUID PRIMARY KEY,
-  scope settings_scope NOT NULL,  -- ENUM
+  scope TEXT NOT NULL,             -- ENUM as TEXT ('GLOBAL', 'TENANT', ...)
   scope_id TEXT,
   key TEXT NOT NULL,
   value JSONB NOT NULL,

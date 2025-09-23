@@ -110,7 +110,7 @@ public class SettingsService {
      * Throws 412 Precondition Failed if ETag doesn't match.
      */
     @Transactional
-    public Setting updateSettingWithEtag(UUID id, JsonObject value, String ifMatch, String userId) {
+    public Setting updateSettingWithEtag(UUID id, JsonObject value, JsonObject metadata, String ifMatch, String userId) {
         LOG.infof("Updating setting with ETag: id=%s, ifMatch=%s", id, ifMatch);
 
         Setting setting = Setting.findById(id);
@@ -118,8 +118,17 @@ public class SettingsService {
             throw new WebApplicationException("Setting not found", Response.Status.NOT_FOUND);
         }
 
+        // If-Match header is required for updates to prevent lost updates
+        if (ifMatch == null || ifMatch.isBlank()) {
+            LOG.warnf("Missing If-Match header for setting %s", id);
+            throw new WebApplicationException(
+                "If-Match header is required for updates",
+                428 // Precondition Required
+            );
+        }
+
         // Check ETag for optimistic locking
-        if (ifMatch != null && !setting.matchesEtag(ifMatch)) {
+        if (!setting.matchesEtag(ifMatch)) {
             LOG.warnf("ETag mismatch for setting %s: expected=%s, actual=%s",
                      id, ifMatch, setting.etag);
             throw new WebApplicationException(
@@ -130,6 +139,9 @@ public class SettingsService {
 
         // Update the setting
         setting.value = value;
+        if (metadata != null) {
+            setting.metadata = metadata;
+        }
         setting.updatedBy = userId;
         // Note: updated_at, version, and etag are set by DB triggers
 

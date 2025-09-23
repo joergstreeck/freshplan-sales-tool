@@ -19,26 +19,18 @@ ALTER TABLE security_settings
 ALTER TABLE security_settings
   ADD COLUMN IF NOT EXISTS metadata JSONB DEFAULT '{}';
 
--- 4) Update function to auto-generate ETags on changes
-CREATE OR REPLACE FUNCTION generate_etag()
-RETURNS TEXT AS $$
-BEGIN
-  -- Generate ETag based on MD5 of value + version + timestamp
-  RETURN md5(
-    COALESCE(NEW.value::text, '') ||
-    COALESCE(NEW.version::text, '') ||
-    COALESCE(extract(epoch from NEW.updated_at)::text, '')
-  );
-END;
-$$ LANGUAGE plpgsql;
-
--- 5) Trigger to auto-update ETag and version on changes
+-- 4) Trigger to auto-update ETag and version on changes
 CREATE OR REPLACE FUNCTION update_settings_etag()
 RETURNS TRIGGER AS $$
 BEGIN
   NEW.updated_at = NOW();
   NEW.version = COALESCE(OLD.version, 0) + 1;
-  NEW.etag = generate_etag();
+  -- Generate ETag based on MD5 of value + version + timestamp
+  NEW.etag = md5(
+    COALESCE(NEW.value::text, '') ||
+    COALESCE(NEW.version::text, '') ||
+    COALESCE(extract(epoch from NEW.updated_at)::text, '')
+  );
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
@@ -49,7 +41,7 @@ CREATE TRIGGER trg_update_settings_etag
   FOR EACH ROW
   EXECUTE FUNCTION update_settings_etag();
 
--- 6) Trigger for initial ETag on insert
+-- 5) Trigger for initial ETag on insert
 CREATE OR REPLACE FUNCTION insert_settings_etag()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -68,16 +60,16 @@ CREATE TRIGGER trg_insert_settings_etag
   FOR EACH ROW
   EXECUTE FUNCTION insert_settings_etag();
 
--- 7) Index for ETag-based queries (for If-None-Match headers)
+-- 6) Index for ETag-based queries (for If-None-Match headers)
 CREATE INDEX IF NOT EXISTS idx_security_settings_etag
   ON security_settings(etag)
   WHERE etag IS NOT NULL;
 
--- 8) Performance index for scope hierarchy queries
+-- 7) Performance index for scope hierarchy queries
 CREATE INDEX IF NOT EXISTS idx_security_settings_hierarchy
   ON security_settings(scope, scope_id, key, version DESC);
 
--- 9) Function for hierarchical settings resolution
+-- 8) Function for hierarchical settings resolution
 -- Resolves settings from most specific to least specific scope
 CREATE OR REPLACE FUNCTION resolve_setting(
   p_key TEXT,
@@ -122,7 +114,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- 10) Notification for cache invalidation
+-- 9) Notification for cache invalidation
 CREATE OR REPLACE FUNCTION notify_settings_change()
 RETURNS TRIGGER AS $$
 DECLARE
@@ -148,7 +140,7 @@ CREATE TRIGGER trg_notify_settings_change
   FOR EACH ROW
   EXECUTE FUNCTION notify_settings_change();
 
--- 11) Helper view for commonly accessed settings
+-- 10) Helper view for commonly accessed settings
 CREATE OR REPLACE VIEW v_active_settings AS
 SELECT
   s.scope,
@@ -170,7 +162,7 @@ WHERE s.value->>'active' = 'true'
        AND (s2.value->>'active' = 'false' OR s2.value->>'enabled' = 'false')
    );
 
--- 12) Default global settings for initial setup
+-- 11) Default global settings for initial setup
 INSERT INTO security_settings (scope, scope_id, key, value, metadata, created_by)
 VALUES
   ('GLOBAL', NULL, 'system.feature_flags',

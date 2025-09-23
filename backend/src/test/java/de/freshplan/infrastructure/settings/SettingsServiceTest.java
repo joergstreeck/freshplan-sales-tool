@@ -42,6 +42,7 @@ class SettingsServiceTest {
         Setting.delete("key", "setting2");
         Setting.delete("key", "setting3");
         Setting.delete("key", "tax.config");
+        Setting.delete("key", "hierarchical.test");
     }
 
     @Test
@@ -142,7 +143,7 @@ class SettingsServiceTest {
         // When - Update with correct ETag
         JsonObject updatedValue = new JsonObject().put("count", 2);
         Setting updated = settingsService.updateSettingWithEtag(
-            id, updatedValue, originalEtag, TEST_USER
+            id, updatedValue, null, originalEtag, TEST_USER
         );
 
         // Then
@@ -150,11 +151,18 @@ class SettingsServiceTest {
         assertEquals(2, updated.version);
         assertEquals(2, updated.value.getInteger("count"));
 
-        // When/Then - Update with wrong ETag should fail
+        // When/Then - Update with wrong ETag should fail (412)
         JsonObject failedValue = new JsonObject().put("count", 3);
-        assertThrows(WebApplicationException.class, () ->
-            settingsService.updateSettingWithEtag(id, failedValue, originalEtag, TEST_USER)
+        WebApplicationException ex412 = assertThrows(WebApplicationException.class, () ->
+            settingsService.updateSettingWithEtag(id, failedValue, null, originalEtag, TEST_USER)
         );
+        assertEquals(412, ex412.getResponse().getStatus());
+
+        // When/Then - Update without ETag should fail (428 Precondition Required)
+        WebApplicationException ex428 = assertThrows(WebApplicationException.class, () ->
+            settingsService.updateSettingWithEtag(id, failedValue, null, null, TEST_USER)
+        );
+        assertEquals(428, ex428.getResponse().getStatus());
     }
 
     @Test

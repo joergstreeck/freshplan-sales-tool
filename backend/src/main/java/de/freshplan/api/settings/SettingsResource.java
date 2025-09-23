@@ -21,7 +21,6 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import org.jboss.logging.Logger;
 
 import java.net.URI;
-import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -130,14 +129,7 @@ public class SettingsResource {
         Optional<Setting> setting = settingsService.resolveSetting(key, context);
 
         if (setting.isEmpty()) {
-            // Try global scope as fallback
-            Optional<Setting> global = settingsService.getSetting(
-                SettingsScope.GLOBAL, null, key
-            );
-            if (global.isEmpty()) {
-                return Response.status(Response.Status.NOT_FOUND).build();
-            }
-            setting = global;
+            return Response.status(Response.Status.NOT_FOUND).build();
         }
 
         Setting s = setting.get();
@@ -167,6 +159,8 @@ public class SettingsResource {
     @Operation(summary = "Update a setting", description = "Updates a setting with optimistic locking")
     @APIResponses({
         @APIResponse(responseCode = "200", description = "Setting updated"),
+        @APIResponse(responseCode = "404", description = "Setting not found"),
+        @APIResponse(responseCode = "428", description = "Precondition Required (If-Match header missing)"),
         @APIResponse(responseCode = "412", description = "Precondition Failed (ETag mismatch)"),
         @APIResponse(responseCode = "409", description = "Conflict (concurrent modification)")
     })
@@ -182,7 +176,7 @@ public class SettingsResource {
 
         try {
             Setting updated = settingsService.updateSettingWithEtag(
-                id, update.value, ifMatch, userId
+                id, update.value, update.metadata, ifMatch, userId
             );
 
             SettingDto dto = SettingDto.from(updated);
