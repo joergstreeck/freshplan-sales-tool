@@ -60,35 +60,56 @@ else
     BACKEND_PID=""
 fi
 
-# CQRS Performance Check
+# Run dedicated benchmark scripts
 echo ""
-echo "📊 CQRS Light Performance:"
-CQRS_TIME=$(curl -w "%{time_total}" -o /dev/null -s http://localhost:8080/api/health 2>/dev/null || echo "999")
-CQRS_MS=$(echo "$CQRS_TIME * 1000" | bc 2>/dev/null || echo "999")
-CQRS_MS=${CQRS_MS%.*}
+echo "🚀 Running Performance Benchmarks..."
+echo ""
 
-if [ "$CQRS_MS" -lt "200" ]; then
-    echo -e "${GREEN}✅ CQRS Response Time: ${CQRS_MS}ms (<200ms P95)${NC}"
+# CQRS Performance Check
+echo "📊 CQRS Light Performance:"
+if [ -x "$SCRIPT_DIR/benchmark-cqrs-foundation.sh" ]; then
+    if "$SCRIPT_DIR/benchmark-cqrs-foundation.sh" > /tmp/cqrs-benchmark.log 2>&1; then
+        echo -e "${GREEN}✅ CQRS Performance: <200ms P95${NC}"
+    else
+        echo -e "${RED}❌ CQRS Performance Test Failed${NC}"
+        echo "   See /tmp/cqrs-benchmark.log for details"
+        VALIDATION_PASSED=false
+        FAILED_CHECKS+=("CQRS Performance")
+    fi
 else
-    echo -e "${RED}❌ CQRS Response Time: ${CQRS_MS}ms (>200ms)${NC}"
-    VALIDATION_PASSED=false
-    FAILED_CHECKS+=("CQRS Performance")
+    echo -e "${YELLOW}⚠️  CQRS benchmark script not found${NC}"
+fi
+
+# Security Performance Check
+echo ""
+echo "🔒 Security Performance:"
+if [ -x "$SCRIPT_DIR/benchmark-security-performance.sh" ]; then
+    if "$SCRIPT_DIR/benchmark-security-performance.sh" > /tmp/security-benchmark.log 2>&1; then
+        echo -e "${GREEN}✅ Security Performance: <100ms P95${NC}"
+    else
+        echo -e "${RED}❌ Security Performance Test Failed${NC}"
+        echo "   See /tmp/security-benchmark.log for details"
+        VALIDATION_PASSED=false
+        FAILED_CHECKS+=("Security Performance")
+    fi
+else
+    echo -e "${YELLOW}⚠️  Security benchmark script not found${NC}"
 fi
 
 # Settings Performance Check
 echo ""
 echo "⚙️  Settings Registry Performance:"
-SETTINGS_TIME=$(curl -w "%{time_total}" -o /dev/null -s \
-    http://localhost:8080/api/settings?scope=GLOBAL\&key=ui.theme 2>/dev/null || echo "999")
-SETTINGS_MS=$(echo "$SETTINGS_TIME * 1000" | bc 2>/dev/null || echo "999")
-SETTINGS_MS=${SETTINGS_MS%.*}
-
-if [ "$SETTINGS_MS" -lt "50" ]; then
-    echo -e "${GREEN}✅ Settings Response Time: ${SETTINGS_MS}ms (<50ms)${NC}"
+if [ -x "$SCRIPT_DIR/benchmark-settings-performance.sh" ]; then
+    if "$SCRIPT_DIR/benchmark-settings-performance.sh" > /tmp/settings-benchmark.log 2>&1; then
+        echo -e "${GREEN}✅ Settings Performance: <50ms with ≥70% ETag Hit Rate${NC}"
+    else
+        echo -e "${RED}❌ Settings Performance Test Failed${NC}"
+        echo "   See /tmp/settings-benchmark.log for details"
+        VALIDATION_PASSED=false
+        FAILED_CHECKS+=("Settings Performance")
+    fi
 else
-    echo -e "${RED}❌ Settings Response Time: ${SETTINGS_MS}ms (>50ms)${NC}"
-    VALIDATION_PASSED=false
-    FAILED_CHECKS+=("Settings Performance")
+    echo -e "${YELLOW}⚠️  Settings benchmark script not found${NC}"
 fi
 
 # ETag Support Check

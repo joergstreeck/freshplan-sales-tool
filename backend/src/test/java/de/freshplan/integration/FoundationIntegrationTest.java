@@ -12,6 +12,10 @@ import org.junit.jupiter.api.Order;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.Matchers.lessThan;
@@ -36,33 +40,48 @@ public class FoundationIntegrationTest {
         // Warm up
         for (int i = 0; i < 5; i++) {
             given()
+                .contentType("application/json")
+                .body(Json.createObjectBuilder()
+                    .add("eventType", "WARMUP_EVENT")
+                    .add("aggregateId", "warmup-" + i)
+                    .add("payload", Json.createObjectBuilder().add("test", true))
+                    .build().toString())
                 .when()
-                .get("/api/health")
+                .post("/api/events")
                 .then()
-                .statusCode(200);
+                .statusCode(anyOf(is(200), is(201), is(202)));
         }
 
         // Measure performance
-        long totalTime = 0;
+        List<Long> responseTimes = new ArrayList<>();
         int iterations = 100;
 
         for (int i = 0; i < iterations; i++) {
             long start = System.currentTimeMillis();
 
             given()
+                .contentType("application/json")
+                .body(Json.createObjectBuilder()
+                    .add("eventType", "TEST_EVENT")
+                    .add("aggregateId", "test-" + i)
+                    .add("payload", Json.createObjectBuilder().add("test", true))
+                    .build().toString())
                 .when()
-                .get("/api/health")
+                .post("/api/events")
                 .then()
-                .statusCode(200);
+                .statusCode(anyOf(is(200), is(201), is(202)));
 
-            totalTime += (System.currentTimeMillis() - start);
+            responseTimes.add(System.currentTimeMillis() - start);
         }
 
-        long avgTime = totalTime / iterations;
+        // Calculate P95
+        Collections.sort(responseTimes);
+        int p95Index = (int) Math.ceil(iterations * 0.95) - 1;
+        long p95Time = responseTimes.get(p95Index);
 
-        // Assert average response time < 200ms
-        assertTrue(avgTime < 200,
-            "CQRS average response time " + avgTime + "ms exceeds 200ms target");
+        // Assert P95 response time < 200ms
+        assertTrue(p95Time < 200,
+            "CQRS P95 response time " + p95Time + "ms exceeds 200ms target");
     }
 
     @Test
@@ -158,17 +177,17 @@ public class FoundationIntegrationTest {
         // Test that protected endpoints require authentication
         given()
             .when()
-            .get("/api/secure/test")
+            .get("/api/settings")
             .then()
-            .statusCode(anyOf(is(401), is(404))); // Unauthorized or not found
+            .statusCode(401); // Unauthorized
 
         // Test with mock token (should be accepted in test mode)
         given()
             .header("Authorization", "Bearer test-token")
             .when()
-            .get("/api/secure/test")
+            .get("/api/settings")
             .then()
-            .statusCode(anyOf(is(200), is(404))); // OK or not found
+            .statusCode(anyOf(is(200), is(204))); // OK or No Content
     }
 
     @Test
@@ -179,14 +198,16 @@ public class FoundationIntegrationTest {
         for (int i = 0; i < 5; i++) {
             given()
                 .header("Authorization", "Bearer test-token")
+                .queryParam("scope", "GLOBAL")
+                .queryParam("key", "test.perf")
                 .when()
-                .get("/api/health")
+                .get("/api/settings")
                 .then()
-                .statusCode(200);
+                .statusCode(anyOf(is(200), is(404)));
         }
 
         // Measure performance with auth
-        long totalTime = 0;
+        List<Long> responseTimes = new ArrayList<>();
         int iterations = 100;
 
         for (int i = 0; i < iterations; i++) {
@@ -194,19 +215,24 @@ public class FoundationIntegrationTest {
 
             given()
                 .header("Authorization", "Bearer test-token")
+                .queryParam("scope", "GLOBAL")
+                .queryParam("key", "test.perf")
                 .when()
-                .get("/api/health")
+                .get("/api/settings")
                 .then()
-                .statusCode(200);
+                .statusCode(anyOf(is(200), is(404)));
 
-            totalTime += (System.currentTimeMillis() - start);
+            responseTimes.add(System.currentTimeMillis() - start);
         }
 
-        long avgTime = totalTime / iterations;
+        // Calculate P95
+        Collections.sort(responseTimes);
+        int p95Index = (int) Math.ceil(iterations * 0.95) - 1;
+        long p95Time = responseTimes.get(p95Index);
 
-        // Assert average response time < 100ms with auth
-        assertTrue(avgTime < 100,
-            "Security average response time " + avgTime + "ms exceeds 100ms target");
+        // Assert P95 response time < 100ms with auth
+        assertTrue(p95Time < 100,
+            "Security P95 response time " + p95Time + "ms exceeds 100ms target");
     }
 
     @Test
@@ -226,7 +252,7 @@ public class FoundationIntegrationTest {
             .when()
             .post("/api/events")
             .then()
-            .statusCode(anyOf(is(200), is(201), is(202), is(404)));
+            .statusCode(anyOf(is(200), is(201), is(202)));
     }
 
     @Test
