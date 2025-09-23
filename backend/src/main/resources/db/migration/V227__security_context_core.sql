@@ -76,7 +76,8 @@ CREATE OR REPLACE FUNCTION has_role(p_role TEXT) RETURNS BOOLEAN AS $$
 DECLARE
   v_roles TEXT := current_setting('app.roles', true);
 BEGIN
-  RETURN COALESCE(position(p_role in COALESCE(v_roles,'')) > 0, FALSE);
+  -- Use string_to_array to avoid partial matches (e.g., 'user' in 'super-user')
+  RETURN p_role = ANY(string_to_array(COALESCE(v_roles, ''), ','));
 END;
 $$ LANGUAGE plpgsql;
 

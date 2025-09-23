@@ -9,6 +9,7 @@ import jakarta.ws.rs.Priorities;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerRequestFilter;
 import jakarta.ws.rs.ext.Provider;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.jboss.logging.Logger;
 
@@ -43,6 +44,12 @@ public class SessionSettingsFilter implements ContainerRequestFilter {
     @Inject
     DataSource dataSource;
 
+    @ConfigProperty(name = "app.default.org-id", defaultValue = "freshfoodz")
+    String defaultOrgId;
+
+    @ConfigProperty(name = "app.default.territory", defaultValue = "DE")
+    String defaultTerritory;
+
     @Override
     public void filter(ContainerRequestContext requestContext) {
         // Skip für anonyme Requests und System-Endpoints
@@ -53,8 +60,8 @@ public class SessionSettingsFilter implements ContainerRequestFilter {
 
         // Extract user information from security context
         String userId = extractUserId();
-        String orgId = extractClaim("org_id", "freshfoodz");
-        String territory = extractClaim("territory", "DE");
+        String orgId = extractClaim("org_id", defaultOrgId);
+        String territory = extractClaim("territory", defaultTerritory);
         String roles = String.join(",", identity.getRoles());
 
         LOG.debugf("Setting app context: user=%s, org=%s, territory=%s, roles=%s",
@@ -77,7 +84,12 @@ public class SessionSettingsFilter implements ContainerRequestFilter {
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             // User ID can be null for some system operations
             if (userId != null && !userId.isEmpty()) {
-                ps.setObject(1, UUID.fromString(userId));
+                try {
+                    ps.setObject(1, UUID.fromString(userId));
+                } catch (IllegalArgumentException e) {
+                    LOG.warnf("Invalid UUID format for userId: %s. Setting app context userId to NULL.", userId);
+                    ps.setNull(1, java.sql.Types.OTHER);
+                }
             } else {
                 ps.setNull(1, java.sql.Types.OTHER);
             }
