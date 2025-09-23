@@ -9,15 +9,17 @@ import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Tag;import org.mockito.Mock;
+import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 /**
  * Unit tests for CurrentUserProducer class. Tests CDI producer methods for current user
  * information.
  */
-@Tag("migrate")class CurrentUserProducerTest {
+@Tag("migrate")
+class CurrentUserProducerTest {
 
   private CurrentUserProducer currentUserProducer;
 

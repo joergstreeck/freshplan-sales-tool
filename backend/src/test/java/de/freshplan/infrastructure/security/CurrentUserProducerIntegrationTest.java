@@ -9,14 +9,16 @@ import jakarta.inject.Inject;
 import java.util.Set;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
 /**
  * Integration tests for CurrentUserProducer. These tests use the real CDI container to test the
  * actual producer methods.
  */
 @QuarkusTest
-@Tag("migrate")@TestProfile(SecurityDisabledTestProfile.class)
+@Tag("migrate")
+@TestProfile(SecurityDisabledTestProfile.class)
 class CurrentUserProducerIntegrationTest {
 
   @Inject CurrentUserProducer currentUserProducer;

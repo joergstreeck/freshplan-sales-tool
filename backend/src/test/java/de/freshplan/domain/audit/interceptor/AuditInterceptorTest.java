@@ -16,8 +16,9 @@ import jakarta.inject.Inject;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Tag;import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentCaptor;
 
 /**
  * Unit tests for AuditInterceptor
@@ -26,7 +27,8 @@ import org.junit.jupiter.api.Tag;import org.mockito.ArgumentCaptor;
  * @since 2.0.0
  */
 @QuarkusTest
-@Tag("migrate")class AuditInterceptorTest {
+@Tag("migrate")
+class AuditInterceptorTest {
 
   @Inject TestService testService;
 

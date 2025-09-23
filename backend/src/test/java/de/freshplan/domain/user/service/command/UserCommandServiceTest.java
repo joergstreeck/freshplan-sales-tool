@@ -26,12 +26,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Tag;import org.mockito.MockedStatic;
+import org.mockito.MockedStatic;
 
 /** Unit tests for UserCommandService. Tests all command operations with mocked dependencies. */
 @QuarkusTest
-@Tag("core")class UserCommandServiceTest {
+@Tag("core")
+class UserCommandServiceTest {
 
   @Inject UserCommandService commandService;
 
@@ -99,7 +101,8 @@ import org.junit.jupiter.api.Tag;import org.mockito.MockedStatic;
 
     // Then
     assertThat(result).isNotNull();
-    assertThat(result.getUsername()).isEqualTo(testUserResponse.getUsername()); // Use response username
+    assertThat(result.getUsername())
+        .isEqualTo(testUserResponse.getUsername()); // Use response username
     verify(userRepository).persist(testUser);
   }
 
@@ -173,7 +176,7 @@ import org.junit.jupiter.api.Tag;import org.mockito.MockedStatic;
     // Given
     String actualUsername = testUser.getUsername(); // Get the actual username from the builder
     String actualEmail = testUser.getEmail(); // Get the actual email from the builder
-    
+
     when(userRepository.findByIdOptional(testUserId)).thenReturn(Optional.of(testUser));
     when(userRepository.existsByUsernameExcluding(actualUsername, testUserId)).thenReturn(false);
     when(userRepository.existsByEmailExcluding(actualEmail, testUserId)).thenReturn(false);

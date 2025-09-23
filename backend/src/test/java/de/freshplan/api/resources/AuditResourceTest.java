@@ -22,8 +22,9 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
 /**
  * REST API tests for AuditResource
  *
@@ -31,7 +32,8 @@ import org.junit.jupiter.api.Tag;
  * @since 2.0.0
  */
 @QuarkusTest
-@Tag("migrate")@TestHTTPEndpoint(AuditResource.class)
+@Tag("migrate")
+@TestHTTPEndpoint(AuditResource.class)
 class AuditResourceTest {
 
   @InjectMock AuditRepository auditRepository;

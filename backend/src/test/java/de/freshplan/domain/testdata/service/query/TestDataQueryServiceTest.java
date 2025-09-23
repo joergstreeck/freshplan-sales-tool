@@ -11,8 +11,9 @@ import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
 /**
  * Tests for TestDataQueryService - the simplest QueryService in all CQRS phases. Only 1 query
  * method to test!
@@ -23,7 +24,8 @@ import org.junit.jupiter.api.Tag;
  * <p>Note: PanacheQuery-Mocking and FK-Safe Cleanup not needed for simple count queries.
  */
 @QuarkusTest
-@Tag("migrate")class TestDataQueryServiceTest {
+@Tag("migrate")
+class TestDataQueryServiceTest {
 
   @Inject TestDataQueryService queryService;
 

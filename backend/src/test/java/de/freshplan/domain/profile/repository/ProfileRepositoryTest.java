@@ -10,10 +10,12 @@ import jakarta.inject.Inject;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
 @QuarkusTest
-@Tag("migrate")@TestSecurity(
+@Tag("migrate")
+@TestSecurity(
     user = "testuser",
     roles = {"admin", "manager", "sales"})
 class ProfileRepositoryTest {

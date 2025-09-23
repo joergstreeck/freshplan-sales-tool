@@ -20,8 +20,9 @@ import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
 /**
  * Basic Repository Operations Tests für OpportunityRepository
  *
@@ -32,7 +33,8 @@ import org.junit.jupiter.api.Tag;
  * @since 2.0.0
  */
 @QuarkusTest
-@Tag("migrate")@TestSecurity(
+@Tag("migrate")
+@TestSecurity(
     user = "testuser",
     roles = {"admin", "manager", "sales"})
 @DisplayName("Opportunity Repository - Basic Operations")

@@ -9,11 +9,13 @@ import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
 /** KRITISCH: Bereinigung der 1090 Test-Kunden mit Foreign Key Beachtung */
 @QuarkusTest
-@Tag("quarantine")@TestTransaction // CI-Fix: Rollback nach Test für Database Growth Check
+@Tag("quarantine")
+@TestTransaction // CI-Fix: Rollback nach Test für Database Growth Check
 public class DatabaseDeepCleanupTest {
 
   @Inject EntityManager em;

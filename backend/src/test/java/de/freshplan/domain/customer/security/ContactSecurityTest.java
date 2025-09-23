@@ -12,14 +12,16 @@ import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
 /**
  * Security tests for CustomerContact entity. Tests input validation, SQL injection prevention, XSS
  * protection, and access control.
  */
 @DisplayName("Contact Security Tests")
-@Tag("migrate")public class ContactSecurityTest {
+@Tag("migrate")
+public class ContactSecurityTest {
 
   private Validator validator;
   private CustomerContact contact;

@@ -14,8 +14,9 @@ import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
 /**
  * Tests for validating Customer Search result accuracy and correctness.
  *
@@ -23,7 +24,8 @@ import org.junit.jupiter.api.Tag;
  * and contain accurate data.
  */
 @QuarkusTest
-@Tag("migrate")@TestSecurity(
+@Tag("migrate")
+@TestSecurity(
     user = "testuser",
     roles = {"admin", "manager", "sales"})
 class CustomerSearchResultValidationTest {

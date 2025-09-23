@@ -6,8 +6,9 @@ import static org.hamcrest.Matchers.*;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.security.TestSecurity;
 import jakarta.ws.rs.core.MediaType;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
 /**
  * Integration-Tests für die SalesCockpitResource.
  *
@@ -15,7 +16,8 @@ import org.junit.jupiter.api.Tag;
  * @since 2.0.0
  */
 @QuarkusTest
-@Tag("migrate")@TestSecurity(
+@Tag("migrate")
+@TestSecurity(
     user = "testuser",
     roles = {"admin", "manager", "sales"})
 class SalesCockpitResourceIntegrationTest {

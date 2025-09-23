@@ -7,11 +7,13 @@ import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.security.TestSecurity;
 import io.restassured.http.ContentType;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
 /** Tests for CustomerSearchResource SmartSort functionality. */
 @QuarkusTest
-@Tag("migrate")@TestHTTPEndpoint(CustomerSearchResource.class)
+@Tag("migrate")
+@TestHTTPEndpoint(CustomerSearchResource.class)
 @TestSecurity(
     user = "testuser",
     roles = {"admin", "sales"})

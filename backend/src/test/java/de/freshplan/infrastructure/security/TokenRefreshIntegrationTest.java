@@ -15,15 +15,17 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Tag;import org.junit.jupiter.api.Timeout;
+import org.junit.jupiter.api.Timeout;
 
 /**
  * Integration tests for token refresh mechanisms and token lifecycle management. Tests the behavior
  * of tokens over time and refresh scenarios.
  */
 @QuarkusTest
-@Tag("migrate")@TestProfile(SecurityDisabledTestProfile.class)
+@Tag("migrate")
+@TestProfile(SecurityDisabledTestProfile.class)
 class TokenRefreshIntegrationTest {
 
   @Inject SecurityContextProvider securityContext;

@@ -87,7 +87,7 @@ export const NavigationSubMenu: React.FC<NavigationSubMenuProps> = ({ items, onI
 
     // Always set the expanded items based on current path
     setExpandedItems(newExpanded);
-  }, [location.pathname, items]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [location.pathname, items]);  
 
   const toggleExpanded = (itemLabel: string) => {
     setExpandedItems(prev =>

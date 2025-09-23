@@ -2,287 +2,264 @@ package de.freshplan.infrastructure.settings;
 
 import io.vertx.core.json.JsonObject;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.OptimisticLockException;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Response;
-import org.jboss.logging.Logger;
-
-import jakarta.inject.Inject;
-import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import org.jboss.logging.Logger;
 
 /**
- * Service for Settings Registry management (Sprint 1.2 PR #2).
- * Provides hierarchical settings resolution with ETag caching support.
+ * Service for Settings Registry management (Sprint 1.2 PR #2). Provides hierarchical settings
+ * resolution with ETag caching support.
  */
 @ApplicationScoped
 public class SettingsService {
 
-    private static final Logger LOG = Logger.getLogger(SettingsService.class);
+  private static final Logger LOG = Logger.getLogger(SettingsService.class);
 
-    @Inject
-    EntityManager em;
+  @Inject EntityManager em;
 
-    /**
-     * Retrieves a setting by scope, scope ID, and key.
-     * TODO: Add caching support with quarkus-cache extension.
-     */
-    public Optional<Setting> getSetting(SettingsScope scope, String scopeId, String key) {
-        LOG.debugf("Retrieving setting: scope=%s, scopeId=%s, key=%s", scope, scopeId, key);
+  /**
+   * Retrieves a setting by scope, scope ID, and key. TODO: Add caching support with quarkus-cache
+   * extension.
+   */
+  public Optional<Setting> getSetting(SettingsScope scope, String scopeId, String key) {
+    LOG.debugf("Retrieving setting: scope=%s, scopeId=%s, key=%s", scope, scopeId, key);
 
-        Setting setting = Setting.findByScopeAndKey(scope, scopeId, key);
-        return Optional.ofNullable(setting);
-    }
+    Setting setting = Setting.findByScopeAndKey(scope, scopeId, key);
+    return Optional.ofNullable(setting);
+  }
 
-    /**
-     * Resolves a setting hierarchically, returning the most specific value.
-     * Priority: CONTACT_ROLE > ACCOUNT > TERRITORY > TENANT > GLOBAL
-     */
-    public Optional<Setting> resolveSetting(String key, SettingsContext context) {
-        LOG.debugf("Resolving setting hierarchically: key=%s, context=%s", key, context);
+  /**
+   * Resolves a setting hierarchically, returning the most specific value. Priority: CONTACT_ROLE >
+   * ACCOUNT > TERRITORY > TENANT > GLOBAL
+   */
+  public Optional<Setting> resolveSetting(String key, SettingsContext context) {
+    LOG.debugf("Resolving setting hierarchically: key=%s, context=%s", key, context);
 
-        Setting setting = Setting.resolveHierarchical(
+    Setting setting =
+        Setting.resolveHierarchical(
             key,
             context.tenantId(),
             context.territory(),
             context.accountId(),
-            context.contactRole()
-        );
+            context.contactRole());
 
-        return Optional.ofNullable(setting);
+    return Optional.ofNullable(setting);
+  }
+
+  /** Creates or updates a setting. TODO: Add cache invalidation with quarkus-cache extension. */
+  @Transactional
+  public Setting saveSetting(
+      SettingsScope scope,
+      String scopeId,
+      String key,
+      JsonObject value,
+      JsonObject metadata,
+      String userId) {
+    LOG.infof("Saving setting: scope=%s, scopeId=%s, key=%s", scope, scopeId, key);
+
+    Setting setting = Setting.findByScopeAndKey(scope, scopeId, key);
+
+    if (setting == null) {
+      // Create new setting
+      setting = new Setting();
+      setting.scope = scope;
+      setting.scopeId = scopeId;
+      setting.key = key;
+      setting.value = value;
+      setting.metadata = metadata != null ? metadata : new JsonObject();
+      setting.createdBy = userId;
+      // Note: created_at, version, and etag are set by DB triggers
+      setting.persist();
+
+      // Flush to trigger DB operations and refresh to get generated values
+      em.flush();
+      em.refresh(setting);
+
+      LOG.infof(
+          "Created new setting with ID: %s, ETag: %s, Version: %d",
+          setting.id, setting.etag, setting.version);
+    } else {
+      // Update existing setting
+      setting.value = value;
+      if (metadata != null) {
+        setting.metadata = metadata;
+      }
+      setting.updatedBy = userId;
+      // Note: updated_at, version, and etag are set by DB triggers
+
+      // Flush to trigger DB operations and refresh to get updated values
+      em.flush();
+      em.refresh(setting);
+
+      LOG.infof(
+          "Updated setting with ID: %s, ETag: %s, Version: %d",
+          setting.id, setting.etag, setting.version);
     }
 
-    /**
-     * Creates or updates a setting.
-     * TODO: Add cache invalidation with quarkus-cache extension.
-     */
-    @Transactional
-    public Setting saveSetting(SettingsScope scope, String scopeId, String key,
-                              JsonObject value, JsonObject metadata, String userId) {
-        LOG.infof("Saving setting: scope=%s, scopeId=%s, key=%s", scope, scopeId, key);
+    return setting;
+  }
 
-        Setting setting = Setting.findByScopeAndKey(scope, scopeId, key);
+  /** Creates a new setting strictly (no upsert). Throws 409 Conflict if setting already exists. */
+  @Transactional
+  public Setting createSettingStrict(
+      SettingsScope scope,
+      String scopeId,
+      String key,
+      JsonObject value,
+      JsonObject metadata,
+      String userId) {
+    LOG.infof("Creating setting (strict): scope=%s, scopeId=%s, key=%s", scope, scopeId, key);
 
-        if (setting == null) {
-            // Create new setting
-            setting = new Setting();
-            setting.scope = scope;
-            setting.scopeId = scopeId;
-            setting.key = key;
-            setting.value = value;
-            setting.metadata = metadata != null ? metadata : new JsonObject();
-            setting.createdBy = userId;
-            // Note: created_at, version, and etag are set by DB triggers
-            setting.persist();
-
-            // Flush to trigger DB operations and refresh to get generated values
-            em.flush();
-            em.refresh(setting);
-
-            LOG.infof("Created new setting with ID: %s, ETag: %s, Version: %d",
-                     setting.id, setting.etag, setting.version);
-        } else {
-            // Update existing setting
-            setting.value = value;
-            if (metadata != null) {
-                setting.metadata = metadata;
-            }
-            setting.updatedBy = userId;
-            // Note: updated_at, version, and etag are set by DB triggers
-
-            // Flush to trigger DB operations and refresh to get updated values
-            em.flush();
-            em.refresh(setting);
-
-            LOG.infof("Updated setting with ID: %s, ETag: %s, Version: %d",
-                     setting.id, setting.etag, setting.version);
-        }
-
-        return setting;
+    // Check if already exists
+    Setting existing = Setting.findByScopeAndKey(scope, scopeId, key);
+    if (existing != null) {
+      LOG.warnf("Setting already exists: scope=%s, scopeId=%s, key=%s", scope, scopeId, key);
+      throw new WebApplicationException("Setting already exists", Response.Status.CONFLICT);
     }
 
-    /**
-     * Creates a new setting strictly (no upsert).
-     * Throws 409 Conflict if setting already exists.
-     */
-    @Transactional
-    public Setting createSettingStrict(SettingsScope scope, String scopeId, String key,
-                                      JsonObject value, JsonObject metadata, String userId) {
-        LOG.infof("Creating setting (strict): scope=%s, scopeId=%s, key=%s", scope, scopeId, key);
+    // Create new setting
+    Setting setting = new Setting();
+    setting.scope = scope;
+    setting.scopeId = scopeId;
+    setting.key = key;
+    setting.value = value != null ? value : new JsonObject();
+    setting.metadata = metadata != null ? metadata : new JsonObject();
+    setting.createdBy = userId;
+    // Note: created_at, version, and etag are set by DB triggers
 
-        // Check if already exists
-        Setting existing = Setting.findByScopeAndKey(scope, scopeId, key);
-        if (existing != null) {
-            LOG.warnf("Setting already exists: scope=%s, scopeId=%s, key=%s", scope, scopeId, key);
-            throw new WebApplicationException(
-                "Setting already exists",
-                Response.Status.CONFLICT
-            );
-        }
+    try {
+      setting.persist();
+      em.flush();
+      em.refresh(setting);
 
-        // Create new setting
-        Setting setting = new Setting();
-        setting.scope = scope;
-        setting.scopeId = scopeId;
-        setting.key = key;
-        setting.value = value != null ? value : new JsonObject();
-        setting.metadata = metadata != null ? metadata : new JsonObject();
-        setting.createdBy = userId;
-        // Note: created_at, version, and etag are set by DB triggers
+      LOG.infof(
+          "Created new setting with ID: %s, ETag: %s, Version: %d",
+          setting.id, setting.etag, setting.version);
+      return setting;
+    } catch (Exception e) {
+      // Handle unique constraint violation
+      if (e.getCause() != null
+          && (e.getCause().getMessage().contains("uq_security_settings")
+              || e.getCause().getMessage().contains("duplicate key"))) {
+        LOG.warnf(
+            "Unique constraint violation for setting: scope=%s, scopeId=%s, key=%s",
+            scope, scopeId, key);
+        throw new WebApplicationException("Setting already exists", Response.Status.CONFLICT);
+      }
+      throw e;
+    }
+  }
 
-        try {
-            setting.persist();
-            em.flush();
-            em.refresh(setting);
+  /**
+   * Updates a setting with optimistic locking using ETag. Throws 412 Precondition Failed if ETag
+   * doesn't match.
+   */
+  @Transactional
+  public Setting updateSettingWithEtag(
+      UUID id, JsonObject value, JsonObject metadata, String ifMatch, String userId) {
+    LOG.infof("Updating setting with ETag: id=%s, ifMatch=%s", id, ifMatch);
 
-            LOG.infof("Created new setting with ID: %s, ETag: %s, Version: %d",
-                     setting.id, setting.etag, setting.version);
-            return setting;
-        } catch (Exception e) {
-            // Handle unique constraint violation
-            if (e.getCause() != null &&
-                (e.getCause().getMessage().contains("uq_security_settings") ||
-                 e.getCause().getMessage().contains("duplicate key"))) {
-                LOG.warnf("Unique constraint violation for setting: scope=%s, scopeId=%s, key=%s",
-                         scope, scopeId, key);
-                throw new WebApplicationException(
-                    "Setting already exists",
-                    Response.Status.CONFLICT
-                );
-            }
-            throw e;
-        }
+    Setting setting = Setting.findById(id);
+    if (setting == null) {
+      throw new WebApplicationException("Setting not found", Response.Status.NOT_FOUND);
     }
 
-    /**
-     * Updates a setting with optimistic locking using ETag.
-     * Throws 412 Precondition Failed if ETag doesn't match.
-     */
-    @Transactional
-    public Setting updateSettingWithEtag(UUID id, JsonObject value, JsonObject metadata, String ifMatch, String userId) {
-        LOG.infof("Updating setting with ETag: id=%s, ifMatch=%s", id, ifMatch);
-
-        Setting setting = Setting.findById(id);
-        if (setting == null) {
-            throw new WebApplicationException("Setting not found", Response.Status.NOT_FOUND);
-        }
-
-        // If-Match header is required for updates to prevent lost updates
-        if (ifMatch == null || ifMatch.isBlank()) {
-            LOG.warnf("Missing If-Match header for setting %s", id);
-            throw new WebApplicationException(
-                "If-Match header is required for updates",
-                428 // Precondition Required
-            );
-        }
-
-        // Check ETag for optimistic locking
-        if (!setting.matchesEtag(ifMatch)) {
-            LOG.warnf("ETag mismatch for setting %s: expected=%s, actual=%s",
-                     id, ifMatch, setting.etag);
-            throw new WebApplicationException(
-                "Precondition failed: ETag mismatch",
-                Response.Status.PRECONDITION_FAILED
-            );
-        }
-
-        // Update the setting
-        setting.value = value;
-        if (metadata != null) {
-            setting.metadata = metadata;
-        }
-        setting.updatedBy = userId;
-        // Note: updated_at, version, and etag are set by DB triggers
-
-        // Flush to trigger DB operations and refresh to get updated values
-        em.flush();
-        em.refresh(setting);
-
-        LOG.infof("Successfully updated setting %s to version %d, new ETag: %s",
-                 id, setting.version, setting.etag);
-        return setting;
+    // If-Match header is required for updates to prevent lost updates
+    if (ifMatch == null || ifMatch.isBlank()) {
+      LOG.warnf("Missing If-Match header for setting %s", id);
+      throw new WebApplicationException(
+          "If-Match header is required for updates", 428 // Precondition Required
+          );
     }
 
-    /**
-     * Deletes a setting.
-     * TODO: Add cache invalidation with quarkus-cache extension.
-     */
-    @Transactional
-    public boolean deleteSetting(UUID id) {
-        LOG.infof("Deleting setting: id=%s", id);
-
-        Setting setting = Setting.findById(id);
-        if (setting != null) {
-            setting.delete();
-            LOG.infof("Deleted setting with ID: %s", id);
-            return true;
-        }
-        return false;
+    // Check ETag for optimistic locking
+    if (!setting.matchesEtag(ifMatch)) {
+      LOG.warnf("ETag mismatch for setting %s: expected=%s, actual=%s", id, ifMatch, setting.etag);
+      throw new WebApplicationException(
+          "Precondition failed: ETag mismatch", Response.Status.PRECONDITION_FAILED);
     }
 
-    /**
-     * Checks if a setting exists and hasn't been modified.
-     * Used for HTTP conditional requests (If-None-Match).
-     */
-    public boolean checkEtag(UUID id, String etag) {
-        Setting setting = Setting.findById(id);
-        return setting != null && setting.matchesEtag(etag);
+    // Update the setting
+    setting.value = value;
+    if (metadata != null) {
+      setting.metadata = metadata;
+    }
+    setting.updatedBy = userId;
+    // Note: updated_at, version, and etag are set by DB triggers
+
+    // Flush to trigger DB operations and refresh to get updated values
+    em.flush();
+    em.refresh(setting);
+
+    LOG.infof(
+        "Successfully updated setting %s to version %d, new ETag: %s",
+        id, setting.version, setting.etag);
+    return setting;
+  }
+
+  /** Deletes a setting. TODO: Add cache invalidation with quarkus-cache extension. */
+  @Transactional
+  public boolean deleteSetting(UUID id) {
+    LOG.infof("Deleting setting: id=%s", id);
+
+    Setting setting = Setting.findById(id);
+    if (setting != null) {
+      setting.delete();
+      LOG.infof("Deleted setting with ID: %s", id);
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * Checks if a setting exists and hasn't been modified. Used for HTTP conditional requests
+   * (If-None-Match).
+   */
+  public boolean checkEtag(UUID id, String etag) {
+    Setting setting = Setting.findById(id);
+    return setting != null && setting.matchesEtag(etag);
+  }
+
+  /** Lists all settings for a given scope. */
+  public List<Setting> listSettings(SettingsScope scope, String scopeId) {
+    LOG.debugf("Listing settings: scope=%s, scopeId=%s", scope, scopeId);
+
+    if (scopeId != null) {
+      return Setting.find("scope = ?1 and scopeId = ?2", scope, scopeId).list();
+    } else {
+      return Setting.find("scope = ?1 and scopeId is null", scope).list();
+    }
+  }
+
+  /** Gets cache statistics for monitoring. */
+  public CacheStats getCacheStats() {
+    // This would integrate with actual cache metrics
+    // For now, return placeholder stats
+    return new CacheStats(70.0, 0.95, 120);
+  }
+
+  /** Context for hierarchical settings resolution. */
+  public record SettingsContext(
+      String tenantId, String territory, String accountId, String contactRole) {
+    public static SettingsContext global() {
+      return new SettingsContext(null, null, null, null);
     }
 
-    /**
-     * Lists all settings for a given scope.
-     */
-    public List<Setting> listSettings(SettingsScope scope, String scopeId) {
-        LOG.debugf("Listing settings: scope=%s, scopeId=%s", scope, scopeId);
-
-        if (scopeId != null) {
-            return Setting.find("scope = ?1 and scopeId = ?2", scope, scopeId).list();
-        } else {
-            return Setting.find("scope = ?1 and scopeId is null", scope).list();
-        }
+    public static SettingsContext tenant(String tenantId) {
+      return new SettingsContext(tenantId, null, null, null);
     }
 
-    /**
-     * Gets cache statistics for monitoring.
-     */
-    public CacheStats getCacheStats() {
-        // This would integrate with actual cache metrics
-        // For now, return placeholder stats
-        return new CacheStats(70.0, 0.95, 120);
+    public static SettingsContext territory(String tenantId, String territory) {
+      return new SettingsContext(tenantId, territory, null, null);
     }
+  }
 
-    /**
-     * Context for hierarchical settings resolution.
-     */
-    public record SettingsContext(
-        String tenantId,
-        String territory,
-        String accountId,
-        String contactRole
-    ) {
-        public static SettingsContext global() {
-            return new SettingsContext(null, null, null, null);
-        }
-
-        public static SettingsContext tenant(String tenantId) {
-            return new SettingsContext(tenantId, null, null, null);
-        }
-
-        public static SettingsContext territory(String tenantId, String territory) {
-            return new SettingsContext(tenantId, territory, null, null);
-        }
-    }
-
-    /**
-     * Cache statistics for monitoring.
-     */
-    public record CacheStats(
-        double hitRate,
-        double availability,
-        long avgResponseTimeMs
-    ) {}
+  /** Cache statistics for monitoring. */
+  public record CacheStats(double hitRate, double availability, long avgResponseTimeMs) {}
 }

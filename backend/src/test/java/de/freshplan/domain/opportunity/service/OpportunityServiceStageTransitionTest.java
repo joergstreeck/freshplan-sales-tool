@@ -27,8 +27,9 @@ import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Tag;import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -199,10 +200,12 @@ public class OpportunityServiceStageTransitionTest {
                 assertThat(updated.getStage()).isEqualTo(OpportunityStage.PROPOSAL);
                 assertThat(updated.getProbability()).isEqualTo(60);
                 // Allow for small timing differences (nanoseconds) in CI environment
-                // Check that timestamps are close (within 1 second as no-op might still touch timestamp)
+                // Check that timestamps are close (within 1 second as no-op might still touch
+                // timestamp)
                 var timeDifference =
                     Duration.between(originalTimestamp, updated.getStageChangedAt()).abs();
-                assertThat(timeDifference).isLessThan(Duration.ofSeconds(1)); // No significant change
+                assertThat(timeDifference)
+                    .isLessThan(Duration.ofSeconds(1)); // No significant change
               });
     }
   }
@@ -558,21 +561,22 @@ public class OpportunityServiceStageTransitionTest {
     if (testCustomer == null) {
       testCustomer = getOrCreateCustomer("Test Company", "test@example.com");
     }
-    
+
     if (testUser == null) {
       // Create and persist test user
-      testUser = de.freshplan.test.builders.UserTestDataFactory.builder()
-          .withUsername("stagetest")
-          .withFirstName("Test")
-          .withLastName("User")
-          .withEmail("stagetest@freshplan.de")
-          .build();
+      testUser =
+          de.freshplan.test.builders.UserTestDataFactory.builder()
+              .withUsername("stagetest")
+              .withFirstName("Test")
+              .withLastName("User")
+              .withEmail("stagetest@freshplan.de")
+              .build();
       testUser.enable();
       testUser.addRole("admin");
       userRepository.persist(testUser);
       userRepository.flush();
     }
-    
+
     var opportunity =
         opportunityBuilder
             .withName(name)
@@ -580,10 +584,10 @@ public class OpportunityServiceStageTransitionTest {
             .forCustomer(testCustomer)
             .assignedTo(testUser)
             .persist();
-    
+
     // Make sure the opportunity has an ID
     assertThat(opportunity.getId()).as("Opportunity ID should be set after persist").isNotNull();
-    
+
     return opportunity;
   }
 }

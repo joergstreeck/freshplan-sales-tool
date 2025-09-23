@@ -13,8 +13,9 @@ import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
 import jakarta.inject.Inject;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
 /**
  * Integration tests for TestDataService CQRS facade pattern.
  *
@@ -25,7 +26,8 @@ import org.junit.jupiter.api.Tag;
  * <p>Applied Test-Fixing Patterns: 2. Mockito Matcher-Consistency 4. Flexible Verification
  */
 @QuarkusTest
-@Tag("migrate")@TestProfile(TestDataServiceCQRSTestProfile.class)
+@Tag("migrate")
+@TestProfile(TestDataServiceCQRSTestProfile.class)
 class TestDataServiceCQRSIntegrationTest {
 
   @Inject TestDataService testDataService;

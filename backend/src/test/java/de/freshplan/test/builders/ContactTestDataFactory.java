@@ -52,19 +52,16 @@ public class ContactTestDataFactory {
     private String updatedBy = "test-system";
 
     /**
-     * Generiert eindeutige Email für Contact-Tests.
-     * Format: contact.{RUN_ID}.{SEQ}@test.example.com
+     * Generiert eindeutige Email für Contact-Tests. Format: contact.{RUN_ID}.{SEQ}@test.example.com
      */
     private static String generateUniqueEmail() {
-      String runId = System.getProperty("test.run.id", 
-          System.getenv().getOrDefault("GITHUB_RUN_ID", "LOCAL"));
+      String runId =
+          System.getProperty("test.run.id", System.getenv().getOrDefault("GITHUB_RUN_ID", "LOCAL"));
       long seq = CONTACT_SEQ.incrementAndGet();
       return "contact." + runId + "." + seq + "@test.example.com";
     }
 
-    /**
-     * Builder-Konstruktor mit Default-Werten
-     */
+    /** Builder-Konstruktor mit Default-Werten */
     public Builder() {
       // Setze Default unique email bei Erstellung
       this.email = generateUniqueEmail();
@@ -325,13 +322,14 @@ public class ContactTestDataFactory {
     }
 
     /**
-     * Setzt isTestData auf Contact falls das Feld existiert.
-     * Contact erbt den Test-Status vom Customer.
+     * Setzt isTestData auf Contact falls das Feld existiert. Contact erbt den Test-Status vom
+     * Customer.
      */
     private void setTestDataFlagIfExists(CustomerContact contact, Customer customer) {
       try {
         // Prüfe ob CustomerContact.setIsTestData existiert
-        java.lang.reflect.Method setter = contact.getClass().getMethod("setIsTestData", Boolean.class);
+        java.lang.reflect.Method setter =
+            contact.getClass().getMethod("setIsTestData", Boolean.class);
         // Übernehme isTestData vom Customer falls vorhanden
         if (customer != null && customer.getIsTestData() != null) {
           setter.invoke(contact, customer.getIsTestData());
@@ -346,8 +344,8 @@ public class ContactTestDataFactory {
     }
 
     /**
-     * Create a mock customer for unit tests that don't need persistence.
-     * Nutzt eindeutige IDs und isTestData=true.
+     * Create a mock customer for unit tests that don't need persistence. Nutzt eindeutige IDs und
+     * isTestData=true.
      *
      * @return A mock customer entity with test data
      */
@@ -355,26 +353,26 @@ public class ContactTestDataFactory {
       Customer mockCustomer = new Customer();
       mockCustomer.setId(UUID.randomUUID());
       mockCustomer.setCompanyName("[TEST] Mock Customer for Contact");
-      
+
       // Eindeutige Customer Number für Contact-Tests
-      String runId = System.getProperty("test.run.id", 
-          System.getenv().getOrDefault("GITHUB_RUN_ID", "LOCAL"));
-      mockCustomer.setCustomerNumber("TEST-MOCK-" + runId + "-" + UUID.randomUUID().toString().substring(0, 8));
+      String runId =
+          System.getProperty("test.run.id", System.getenv().getOrDefault("GITHUB_RUN_ID", "LOCAL"));
+      mockCustomer.setCustomerNumber(
+          "TEST-MOCK-" + runId + "-" + UUID.randomUUID().toString().substring(0, 8));
       mockCustomer.setIsTestData(true); // KRITISCH für Cleanup
-      
+
       // Audit-Felder
       mockCustomer.setCreatedAt(LocalDateTime.now());
       mockCustomer.setCreatedBy("test-system");
       mockCustomer.setUpdatedAt(LocalDateTime.now());
       mockCustomer.setUpdatedBy("test-system");
-      
+
       return mockCustomer;
     }
 
     /**
-     * Build and persist contact with customer.
-     * Erstellt auch Customer falls nötig.
-     * 
+     * Build and persist contact with customer. Erstellt auch Customer falls nötig.
+     *
      * @param customerRepo The CustomerRepository for customer persistence
      * @param em The EntityManager for contact persistence
      * @return The persisted contact entity
@@ -383,16 +381,16 @@ public class ContactTestDataFactory {
         de.freshplan.domain.customer.repository.CustomerRepository customerRepo,
         jakarta.persistence.EntityManager em) {
       CustomerContact contact = build();
-      
+
       // Customer persistieren falls nicht schon gespeichert
       if (contact.getCustomer() != null && contact.getCustomer().getId() == null) {
         customerRepo.persistAndFlush(contact.getCustomer());
       }
-      
+
       // Contact persistieren
       em.persist(contact);
       em.flush();
-      
+
       return contact;
     }
   }

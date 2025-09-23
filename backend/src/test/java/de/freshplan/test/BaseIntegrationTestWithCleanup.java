@@ -9,8 +9,9 @@ import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import org.jboss.logging.Logger;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Tag;import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
+
 /**
  * Base class for integration tests with proper setup and FK-safe teardown.
  *
@@ -19,7 +20,8 @@ import org.junit.jupiter.api.Tag;
  *
  * <p>Usage: Extend this class and use the helper methods for test data creation.
  */
-@Tag("quarantine")public abstract class BaseIntegrationTestWithCleanup {
+@Tag("quarantine")
+public abstract class BaseIntegrationTestWithCleanup {
 
   private static final Logger LOG = Logger.getLogger(BaseIntegrationTestWithCleanup.class);
 

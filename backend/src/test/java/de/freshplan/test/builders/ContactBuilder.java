@@ -25,11 +25,9 @@ import java.util.UUID;
 @ApplicationScoped
 public class ContactBuilder {
 
-  @Inject
-  CustomerRepository customerRepository;
-  
-  @Inject
-  EntityManager entityManager;
+  @Inject CustomerRepository customerRepository;
+
+  @Inject EntityManager entityManager;
 
   // Repository wird nur bei persist() verwendet, daher lazy loading
   private ContactRepository getContactRepository() {
@@ -298,25 +296,26 @@ public class ContactBuilder {
   }
 
   /**
-   * Create contact with auto-generated test customer.
-   * Für Integration-Tests mit echter Database.
+   * Create contact with auto-generated test customer. Für Integration-Tests mit echter Database.
    *
    * @return The persisted contact entity with new customer
    */
   @Transactional
   public CustomerContact createTestContact() {
     // Customer erstellen und persistieren
-    Customer customer = CustomerTestDataFactory.builder()
-        .withCompanyName("[TEST] Auto-Generated Customer for Contact")
-        .build();
+    Customer customer =
+        CustomerTestDataFactory.builder()
+            .withCompanyName("[TEST] Auto-Generated Customer for Contact")
+            .build();
     customerRepository.persistAndFlush(customer);
-    
+
     // Contact erstellen und persistieren
-    CustomerContact contact = ContactTestDataFactory.builder()
-        .forCustomer(customer)
-        .withEmail("auto.contact." + System.currentTimeMillis() + "@test.com")
-        .build();
-    
+    CustomerContact contact =
+        ContactTestDataFactory.builder()
+            .forCustomer(customer)
+            .withEmail("auto.contact." + System.currentTimeMillis() + "@test.com")
+            .build();
+
     // Contact persistieren
     ContactRepository contactRepo = getContactRepository();
     if (contactRepo != null) {
@@ -326,24 +325,29 @@ public class ContactBuilder {
       entityManager.persist(contact);
       entityManager.flush();
     }
-    
+
     return contact;
   }
 
   /**
-   * Create contact for existing customer.
-   * Für Tests die bereits einen Customer haben.
+   * Create contact for existing customer. Für Tests die bereits einen Customer haben.
    *
    * @param customer The existing customer entity
    * @return The persisted contact entity
    */
   @Transactional
   public CustomerContact createContactForCustomer(Customer customer) {
-    CustomerContact contact = ContactTestDataFactory.builder()
-        .forCustomer(customer)
-        .withEmail("contact." + customer.getCustomerNumber() + "." + System.currentTimeMillis() + "@test.com")
-        .build();
-    
+    CustomerContact contact =
+        ContactTestDataFactory.builder()
+            .forCustomer(customer)
+            .withEmail(
+                "contact."
+                    + customer.getCustomerNumber()
+                    + "."
+                    + System.currentTimeMillis()
+                    + "@test.com")
+            .build();
+
     ContactRepository contactRepo = getContactRepository();
     if (contactRepo != null) {
       contactRepo.persistAndFlush(contact);
@@ -352,7 +356,7 @@ public class ContactBuilder {
       entityManager.persist(contact);
       entityManager.flush();
     }
-    
+
     return contact;
   }
 

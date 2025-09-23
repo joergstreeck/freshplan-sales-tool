@@ -11,8 +11,9 @@ import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
 /**
  * Integration tests for complex filter combinations in CustomerSearchResource.
  *
@@ -20,7 +21,8 @@ import org.junit.jupiter.api.Tag;
  * search results.
  */
 @QuarkusTest
-@Tag("migrate")@TestSecurity(
+@Tag("migrate")
+@TestSecurity(
     user = "testuser",
     roles = {"admin", "manager", "sales"})
 class CustomerSearchFilterCombinationTest {

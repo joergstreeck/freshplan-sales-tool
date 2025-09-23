@@ -74,7 +74,7 @@ export function ApiStatusPage() {
 
     for (const endpoint of endpoints) {
       const startTime = Date.now();
-      let result: TestResult = {
+      const result: TestResult = {
         endpoint: endpoint.name,
         status: 'pending',
         timestamp: new Date().toISOString(),

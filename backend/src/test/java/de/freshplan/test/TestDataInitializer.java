@@ -4,11 +4,8 @@ import de.freshplan.domain.user.entity.User;
 import de.freshplan.domain.user.repository.UserRepository;
 import de.freshplan.test.builders.UserTestDataFactory;
 import io.quarkus.arc.profile.IfBuildProfile;
-import io.quarkus.runtime.StartupEvent;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
 import java.util.Arrays;
 import org.jboss.logging.Logger;
 

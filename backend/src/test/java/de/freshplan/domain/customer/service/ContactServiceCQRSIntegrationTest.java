@@ -12,8 +12,9 @@ import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
 import jakarta.inject.Inject;
 import java.util.List;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
 /**
  * Integration tests for ContactService CQRS implementation. Tests the complete flow with both
  * legacy and CQRS modes.
@@ -22,7 +23,8 @@ import org.junit.jupiter.api.Tag;
  * implementation or the new CQRS pattern.
  */
 @QuarkusTest
-@Tag("migrate")@TestProfile(ContactServiceCQRSIntegrationTest.CQRSTestProfile.class)
+@Tag("migrate")
+@TestProfile(ContactServiceCQRSIntegrationTest.CQRSTestProfile.class)
 class ContactServiceCQRSIntegrationTest extends BaseIntegrationTestWithCleanup {
 
   @Inject ContactService contactService;

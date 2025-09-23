@@ -10,10 +10,12 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
 @QuarkusTest
-@Tag("migrate")@TestTransaction
+@Tag("migrate")
+@TestTransaction
 @DisplayName("Role Entity Tests")
 class RoleTest {
 

@@ -21,8 +21,9 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
 /**
  * Integration test that verifies CustomerCommandService behaves EXACTLY like CustomerService for
  * the same inputs.
@@ -30,7 +31,8 @@ import org.junit.jupiter.api.Tag;
  * <p>This is critical for safe switching via feature flag.
  */
 @QuarkusTest
-@Tag("core")class CustomerCommandServiceIntegrationTest {
+@Tag("core")
+class CustomerCommandServiceIntegrationTest {
 
   @Inject CustomerService originalService;
 

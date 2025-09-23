@@ -18,8 +18,9 @@ import java.time.LocalDateTime;
 import java.util.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
 /**
  * Integration tests for CustomerService to measure actual code coverage. Tests real service methods
  * with database interactions.
@@ -28,7 +29,8 @@ import org.junit.jupiter.api.Tag;
  * @since 2.0.0
  */
 @QuarkusTest
-@Tag("core")@TestSecurity(
+@Tag("core")
+@TestSecurity(
     user = "testuser",
     roles = {"admin", "manager", "sales"})
 @DisplayName("CustomerService Integration Tests")
@@ -48,10 +50,22 @@ class CustomerServiceIntegrationTest {
     // Clean database before each test using native queries for consistency
     // Delete in correct order to respect foreign key constraints
     // Clean up all test data
-    entityManager.createNativeQuery("DELETE FROM customer_timeline_events WHERE customer_id IN (SELECT id FROM customers WHERE is_test_data = true)").executeUpdate();
-    entityManager.createNativeQuery("DELETE FROM customer_contacts WHERE customer_id IN (SELECT id FROM customers WHERE is_test_data = true)").executeUpdate();
-    entityManager.createNativeQuery("DELETE FROM customer_locations WHERE customer_id IN (SELECT id FROM customers WHERE is_test_data = true)").executeUpdate();
-    entityManager.createNativeQuery("DELETE FROM opportunities WHERE customer_id IN (SELECT id FROM customers WHERE is_test_data = true)").executeUpdate();
+    entityManager
+        .createNativeQuery(
+            "DELETE FROM customer_timeline_events WHERE customer_id IN (SELECT id FROM customers WHERE is_test_data = true)")
+        .executeUpdate();
+    entityManager
+        .createNativeQuery(
+            "DELETE FROM customer_contacts WHERE customer_id IN (SELECT id FROM customers WHERE is_test_data = true)")
+        .executeUpdate();
+    entityManager
+        .createNativeQuery(
+            "DELETE FROM customer_locations WHERE customer_id IN (SELECT id FROM customers WHERE is_test_data = true)")
+        .executeUpdate();
+    entityManager
+        .createNativeQuery(
+            "DELETE FROM opportunities WHERE customer_id IN (SELECT id FROM customers WHERE is_test_data = true)")
+        .executeUpdate();
     // Delete all test data
     customerRepository.deleteAllTestData();
     entityManager.flush();

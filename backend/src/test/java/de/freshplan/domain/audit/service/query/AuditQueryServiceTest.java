@@ -13,8 +13,9 @@ import java.time.Instant;
 import java.util.*;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Tag;import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -29,7 +30,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
  * @since 2.0.0
  */
 @ExtendWith(MockitoExtension.class)
-@Tag("migrate")class AuditQueryServiceTest {
+@Tag("migrate")
+class AuditQueryServiceTest {
 
   @Mock private AuditRepository auditRepository;
 

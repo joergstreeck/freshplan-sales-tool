@@ -414,18 +414,16 @@ public class CustomerRepository implements PanacheRepositoryBase<Customer, UUID>
   // ========== TEST DATA CLEANUP ==========
 
   /**
-   * Delete all test data.
-   * Only deletes:
-   * - Customers with is_test_data = true
-   * - Customers with customer_number LIKE 'KD-TEST-%'
-   * - Customers with company_name LIKE '[TEST%'
-   * 
+   * Delete all test data. Only deletes: - Customers with is_test_data = true - Customers with
+   * customer_number LIKE 'KD-TEST-%' - Customers with company_name LIKE '[TEST%'
+   *
    * @return Number of customers deleted
    */
   public long deleteAllTestData() {
-    return delete("""
-        isTestData = true 
-        OR customerNumber LIKE 'KD-TEST-%' 
+    return delete(
+        """
+        isTestData = true
+        OR customerNumber LIKE 'KD-TEST-%'
         OR companyName LIKE '[TEST%'
         """);
   }

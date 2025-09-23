@@ -17,8 +17,9 @@ import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Tag;import org.mockito.Mock;
+import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 /**
@@ -26,7 +27,8 @@ import org.mockito.MockitoAnnotations;
  * handling, and audit functionality.
  */
 @QuarkusTest
-@Tag("migrate")@TestProfile(SecurityDisabledTestProfile.class)
+@Tag("migrate")
+@TestProfile(SecurityDisabledTestProfile.class)
 class SecurityContextProviderTest {
 
   @Inject SecurityContextProvider securityContextProvider;

@@ -21,8 +21,9 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
 /**
  * Integration tests for OpportunityService without mocks.
  *
@@ -33,7 +34,8 @@ import org.junit.jupiter.api.Tag;
  * @since 2.0.0
  */
 @QuarkusTest
-@Tag("core")@TestSecurity(
+@Tag("core")
+@TestSecurity(
     user = "integrationtest",
     roles = {"admin", "sales"})
 @DisplayName("OpportunityService Integration Tests (ohne Mocks)")

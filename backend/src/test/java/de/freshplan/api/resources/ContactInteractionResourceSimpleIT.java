@@ -6,10 +6,12 @@ import static org.hamcrest.Matchers.*;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
 @QuarkusTest
-@Tag("migrate")@DisplayName("Contact Interaction Resource Simple Integration Tests")
+@Tag("migrate")
+@DisplayName("Contact Interaction Resource Simple Integration Tests")
 class ContactInteractionResourceSimpleIT {
 
   @Test

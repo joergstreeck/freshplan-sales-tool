@@ -46,20 +46,15 @@ public class OpportunityTestDataFactory {
     private BigDecimal actualValue;
     private LocalDate actualCloseDate;
 
-    /**
-     * Generiert eindeutige Opportunity-Namen für Tests.
-     * Format: TEST Opportunity {RUN_ID}-{SEQ}
-     */
+    /** Generiert eindeutige Opportunity-Namen für Tests. Format: TEST Opportunity {RUN_ID}-{SEQ} */
     private static String generateUniqueName() {
-      String runId = System.getProperty("test.run.id", 
-          System.getenv().getOrDefault("GITHUB_RUN_ID", "LOCAL"));
+      String runId =
+          System.getProperty("test.run.id", System.getenv().getOrDefault("GITHUB_RUN_ID", "LOCAL"));
       long seq = OPP_SEQ.incrementAndGet();
       return "TEST Opportunity " + runId + "-" + String.format("%03d", seq);
     }
 
-    /**
-     * Builder-Konstruktor mit intelligenten Defaults
-     */
+    /** Builder-Konstruktor mit intelligenten Defaults */
     public Builder() {
       this.name = generateUniqueName();
       this.stage = OpportunityStage.NEW_LEAD;
@@ -176,7 +171,7 @@ public class OpportunityTestDataFactory {
       if (assignedTo == null) {
         assignedTo = createMockUser();
       }
-      
+
       // Use constructor for required fields
       Opportunity opportunity = new Opportunity(name, stage, assignedTo);
 
@@ -210,13 +205,11 @@ public class OpportunityTestDataFactory {
       return opportunity;
     }
 
-    /**
-     * Setzt isTestData=true falls das Feld existiert.
-     * Failsafe approach für optionales Feld.
-     */
+    /** Setzt isTestData=true falls das Feld existiert. Failsafe approach für optionales Feld. */
     private void setTestDataFlagIfExists(Opportunity opportunity) {
       try {
-        java.lang.reflect.Method setter = opportunity.getClass().getMethod("setIsTestData", Boolean.class);
+        java.lang.reflect.Method setter =
+            opportunity.getClass().getMethod("setIsTestData", Boolean.class);
         setter.invoke(opportunity, true);
       } catch (Exception e) {
         // Field doesn't exist - that's ok
@@ -224,50 +217,49 @@ public class OpportunityTestDataFactory {
       }
     }
 
-    /**
-     * Setzt Audit-Felder falls sie existieren.
-     * Failsafe approach für optionale Felder.
-     */
+    /** Setzt Audit-Felder falls sie existieren. Failsafe approach für optionale Felder. */
     private void setAuditFieldsIfExists(Opportunity opportunity) {
       LocalDateTime now = LocalDateTime.now();
       String testSystem = "test-system";
-      
+
       try {
         // createdAt
-        java.lang.reflect.Method setCreatedAt = opportunity.getClass().getMethod("setCreatedAt", LocalDateTime.class);
+        java.lang.reflect.Method setCreatedAt =
+            opportunity.getClass().getMethod("setCreatedAt", LocalDateTime.class);
         setCreatedAt.invoke(opportunity, now);
       } catch (Exception e) {
         // Field doesn't exist - ok
       }
-      
+
       try {
         // createdBy
-        java.lang.reflect.Method setCreatedBy = opportunity.getClass().getMethod("setCreatedBy", String.class);
+        java.lang.reflect.Method setCreatedBy =
+            opportunity.getClass().getMethod("setCreatedBy", String.class);
         setCreatedBy.invoke(opportunity, testSystem);
       } catch (Exception e) {
         // Field doesn't exist - ok
       }
-      
+
       try {
         // updatedAt
-        java.lang.reflect.Method setUpdatedAt = opportunity.getClass().getMethod("setUpdatedAt", LocalDateTime.class);
+        java.lang.reflect.Method setUpdatedAt =
+            opportunity.getClass().getMethod("setUpdatedAt", LocalDateTime.class);
         setUpdatedAt.invoke(opportunity, now);
       } catch (Exception e) {
         // Field doesn't exist - ok
       }
-      
+
       try {
         // updatedBy
-        java.lang.reflect.Method setUpdatedBy = opportunity.getClass().getMethod("setUpdatedBy", String.class);
+        java.lang.reflect.Method setUpdatedBy =
+            opportunity.getClass().getMethod("setUpdatedBy", String.class);
         setUpdatedBy.invoke(opportunity, testSystem);
       } catch (Exception e) {
         // Field doesn't exist - ok
       }
     }
 
-    /**
-     * Create a mock user for opportunities that need an assignedTo user.
-     */
+    /** Create a mock user for opportunities that need an assignedTo user. */
     private User createMockUser() {
       // Nutze UserTestDataFactory für konsistente Test-User
       return UserTestDataFactory.builder()

@@ -4,11 +4,13 @@ import de.freshplan.domain.customer.repository.CustomerRepository;
 import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
 /** Simple test for CI/CD database growth monitoring */
 @QuarkusTest
-@Tag("quarantine")@TestTransaction // CI-Fix: Rollback nach Test für Database Growth Check
+@Tag("quarantine")
+@TestTransaction // CI-Fix: Rollback nach Test für Database Growth Check
 public class DatabaseAnalysisTest {
 
   @Inject CustomerRepository customerRepository;

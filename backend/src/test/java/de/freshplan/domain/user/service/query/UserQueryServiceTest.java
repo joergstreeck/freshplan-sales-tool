@@ -21,14 +21,16 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
 /**
  * Unit tests for UserQueryService. Tests all query operations with mocked dependencies. IMPORTANT:
  * Verifies that NO write operations are performed.
  */
 @QuarkusTest
-@Tag("core")class UserQueryServiceTest {
+@Tag("core")
+class UserQueryServiceTest {
 
   @Inject UserQueryService queryService;
 

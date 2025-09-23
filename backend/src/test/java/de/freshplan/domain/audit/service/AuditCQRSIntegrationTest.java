@@ -23,8 +23,9 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
 /**
  * Integration Test for Audit Service CQRS Implementation.
  *
@@ -39,7 +40,8 @@ import org.junit.jupiter.api.Tag;
  * @since Phase 14.3 - Feature Flag Switching Tests
  */
 @QuarkusTest
-@Tag("migrate")@TestProfile(AuditCQRSTestProfile.class)
+@Tag("migrate")
+@TestProfile(AuditCQRSTestProfile.class)
 @TestSecurity(
     user = "testuser",
     roles = {"admin"})

@@ -7,11 +7,13 @@ import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import org.jboss.logging.Logger;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
 /** Simple test to verify SEED data exists. */
 @QuarkusTest
-@Tag("quarantine")class SimpleSeedTest {
+@Tag("quarantine")
+class SimpleSeedTest {
 
   private static final Logger LOG = Logger.getLogger(SimpleSeedTest.class);
 
@@ -44,7 +46,7 @@ import org.junit.jupiter.api.Tag;
     if (!seedCustomers.isEmpty()) {
       assertThat(seedCustomers)
           .as("All SEED customers should be protected from cleanup (is_test_data=false)")
-          .allMatch(c -> Boolean.FALSE.equals(c.getIsTestData()))  // FALSE to protect from cleanup!
+          .allMatch(c -> Boolean.FALSE.equals(c.getIsTestData())) // FALSE to protect from cleanup!
           .allMatch(c -> c.getCompanyName().startsWith("[SEED]"));
     } else {
       LOG.info("No SEED customers found - this is expected after TestDataBuilder migration");

@@ -6,8 +6,9 @@ import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import java.util.List;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
 /**
  * CRITICAL: This test MUST run FIRST to capture database pollution!
  *
@@ -15,7 +16,8 @@ import org.junit.jupiter.api.Tag;
  * tests are creating customers without proper test data markers.
  */
 @QuarkusTest
-@Tag("quarantine")public class AAA_EarlyBirdDebugTest {
+@Tag("quarantine")
+public class AAA_EarlyBirdDebugTest {
 
   @Inject CustomerRepository customerRepository;
 

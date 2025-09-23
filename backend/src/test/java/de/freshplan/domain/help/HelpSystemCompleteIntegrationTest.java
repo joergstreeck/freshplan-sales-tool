@@ -34,8 +34,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
 /**
  * Complete End-to-End Integration Test für Phase 12.4
  *
@@ -47,7 +48,8 @@ import org.junit.jupiter.api.Tag;
  * Event-Driven Systems.
  */
 @QuarkusTest
-@Tag("migrate")@TestProfile(HelpSystemCompleteIntegrationTest.CQRSTestProfile.class)
+@Tag("migrate")
+@TestProfile(HelpSystemCompleteIntegrationTest.CQRSTestProfile.class)
 @DisplayName("Phase 12.4: Complete Help System E2E Integration Tests")
 public class HelpSystemCompleteIntegrationTest {
 

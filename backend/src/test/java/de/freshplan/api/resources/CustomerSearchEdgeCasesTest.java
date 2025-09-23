@@ -11,8 +11,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
 /**
  * Edge case tests for CustomerSearchResource.
  *
@@ -20,7 +21,8 @@ import org.junit.jupiter.api.Tag;
  * characters, null values, and other edge cases gracefully.
  */
 @QuarkusTest
-@Tag("migrate")@TestSecurity(
+@Tag("migrate")
+@TestSecurity(
     user = "testuser",
     roles = {"admin", "manager", "sales"})
 class CustomerSearchEdgeCasesTest {

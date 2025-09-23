@@ -8,8 +8,9 @@ import io.quarkus.test.security.TestSecurity;
 import jakarta.inject.Inject;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
 /**
  * Integration Tests für RENEWAL Stage Business Logic im OpportunityService
  *
@@ -17,7 +18,8 @@ import org.junit.jupiter.api.Tag;
  * Kanban-Spalte (RENEWAL Stage).
  */
 @QuarkusTest
-@Tag("migrate")@TestSecurity(
+@Tag("migrate")
+@TestSecurity(
     user = "testuser",
     roles = {"admin", "manager", "sales"})
 class OpportunityRenewalServiceTest {

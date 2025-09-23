@@ -6,13 +6,15 @@ import de.freshplan.domain.opportunity.repository.OpportunityRepository;
 import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
 /**
  * DEBUG TEST for CI - Shows exact database state Named with CI_ prefix to run early alphabetically
  */
 @QuarkusTest
-@Tag("quarantine")public class CI_DatabaseStateDebugTest {
+@Tag("quarantine")
+public class CI_DatabaseStateDebugTest {
 
   @Inject CustomerRepository customerRepository;
   @Inject OpportunityRepository opportunityRepository;

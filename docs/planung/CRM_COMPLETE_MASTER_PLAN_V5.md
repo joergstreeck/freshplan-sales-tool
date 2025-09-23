@@ -103,13 +103,14 @@
 - 2025-09-23 22:30 — Sprint 1.3 PR #97 READY: Security Gates Enforcement (FP-231) + CORS-Trennung + Security Headers + CI-Hardening, alle Checks grün, wartet auf Review
 - 2025-09-23 22:45 — Sprint 1.3 MERGED: PR #97 erfolgreich in main + bash arithmetic fixes + Follow-up Issue #98 erstellt, Migration: V227, Tests: OK
 - 2025-09-24 00:39 — Sprint 1.3 PR #3 COMPLETE: Frontend Settings Integration mit ETag/304 (PR #100) + Settings Registry gemerged (PR #99), Migration: n/a, Tests: OK
+- 2025-09-24 01:29 — Sprint 1.3 PR #2 SUBMITTED: Integration Testing Framework (PR #101) + Code Review Fixes umgesetzt, Migration: n/a, Tests: OK
 <!-- MP5:SESSION_LOG:END -->
 
 ## Next Steps
 <!-- MP5:NEXT_STEPS:START -->
-- Sprint 1.3 PR #3: Review abwarten (PR #100 Frontend Settings Integration)
-- Sprint 1.3 PR #2: Integration Testing Framework implementieren (FP-232)
-- Sprint 2.x: DbContext Pattern für RLS-wirksame Queries
+- Sprint 1.3 PR #2: Review abwarten (PR #101 Integration Testing Framework)
+- Nach PR #101 Merge: Phase 1 Foundation COMPLETE ✅
+- Sprint 2.1: Neukundengewinnung starten (TRIGGER_SPRINT_2_1.md)
 - Frontend: Lint-Fehler in Legacy-Code beheben (58 errors)
 - Migration V229 verfügbar für neue DB-Arbeiten
 <!-- MP5:NEXT_STEPS:END -->

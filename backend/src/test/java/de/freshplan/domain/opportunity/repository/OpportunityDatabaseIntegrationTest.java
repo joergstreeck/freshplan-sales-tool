@@ -15,13 +15,13 @@ import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.security.TestSecurity;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
-import jakarta.transaction.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
 /**
  * Database Integration Tests für Opportunity Entity
  *
@@ -246,7 +246,7 @@ public class OpportunityDatabaseIntegrationTest {
     // Generate unique user for each test to avoid collisions
     String uniqueId = UUID.randomUUID().toString().substring(0, 8);
     String username = "testuser_" + uniqueId;
-    
+
     return userRepository
         .findByUsername(username)
         .orElseGet(
