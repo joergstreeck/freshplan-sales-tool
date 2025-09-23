@@ -1,0 +1,131 @@
+name: PR Pipeline (Fast)
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths-ignore:
+      - 'docs/**'
+      - '*.md'
+      - '.gitignore'
+
+jobs:
+  quick-validation:
+    name: Quick PR Validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      # Backend Checks
+      - name: Backend Format Check (Spotless)
+        run: |
+          cd backend
+          ./mvnw spotless:check
+
+      - name: Backend Critical Unit Tests
+        run: |
+          cd backend
+          ./mvnw test -Dtest="*SecurityTest,*SettingsTest,*CQRSTest" -DfailIfNoTests=false
+
+      # Frontend Checks
+      - name: Frontend Lint & Format
+        run: |
+          cd frontend
+          npm ci
+          npm run lint
+          npm run format:check
+
+      - name: Frontend Critical Tests
+        run: |
+          cd frontend
+          npm run test -- --run --reporter=verbose \
+            src/lib/settings/*.test.ts \
+            src/security/*.test.ts
+
+      # Performance Smoke Test
+      - name: Performance Smoke Test (<200ms P95)
+        run: |
+          cd backend
+          ./mvnw quarkus:dev -Dquarkus.http.port=8082 &
+          sleep 30
+
+          # Simple k6 smoke test
+          cat > k6-smoke.js << 'EOF'
+          import http from 'k6/http';
+          import { check } from 'k6';
+          import { Rate } from 'k6/metrics';
+
+          const failureRate = new Rate('failed_requests');
+
+          export const options = {
+            stages: [
+              { duration: '10s', target: 5 },
+              { duration: '20s', target: 5 },
+            ],
+            thresholds: {
+              http_req_duration: ['p(95)<200'],
+              failed_requests: ['rate<0.1'],
+            },
+          };
+
+          export default function () {
+            const res = http.get('http://localhost:8082/api/health');
+            const success = check(res, {
+              'status is 200': (r) => r.status === 200,
+              'response time < 200ms': (r) => r.timings.duration < 200,
+            });
+            failureRate.add(!success);
+          }
+          EOF
+
+          npx k6 run --quiet k6-smoke.js || (pkill -f quarkus && exit 1)
+          pkill -f quarkus
+
+      # Security Contract Tests
+      - name: Security Contract Tests
+        run: |
+          cd backend
+          ./mvnw test -Dtest="SecurityContractTest" -DfailIfNoTests=false
+
+      # Bundle Size Check
+      - name: Bundle Size Regression Check
+        run: |
+          cd frontend
+          npm run build
+
+          # Check bundle size
+          MAX_SIZE=204800  # 200KB in bytes
+          BUNDLE_SIZE=$(find dist/assets -name "*.js" -exec stat -f%z {} \; | awk '{s+=$1} END {print s}')
+
+          echo "Bundle size: $BUNDLE_SIZE bytes (max: $MAX_SIZE)"
+          if [ "$BUNDLE_SIZE" -gt "$MAX_SIZE" ]; then
+            echo "❌ Bundle size exceeded limit!"
+            exit 1
+          fi
+
+  pr-status:
+    name: PR Validation Complete
+    needs: [quick-validation]
+    runs-on: ubuntu-latest
+    if: success()
+
+    steps:
+      - name: Report Success
+        run: |
+          echo "✅ PR Quick Validation Passed"
+          echo "Time: $(date)"
+          echo "All critical checks passed in <10 minutes"

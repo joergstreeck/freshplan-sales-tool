@@ -102,16 +102,15 @@
 - 2025-09-23 21:00 — Sprint 1.2 PR #1 MERGED: Security Context Foundation (V227) + Code Review Fixes + Follow-Up dokumentiert, Migration: V227, Tests: OK
 - 2025-09-23 22:30 — Sprint 1.3 PR #97 READY: Security Gates Enforcement (FP-231) + CORS-Trennung + Security Headers + CI-Hardening, alle Checks grün, wartet auf Review
 - 2025-09-23 22:45 — Sprint 1.3 MERGED: PR #97 erfolgreich in main + bash arithmetic fixes + Follow-up Issue #98 erstellt, Migration: V227, Tests: OK
-- 2025-09-24 00:11 — Sprint 1.2 PR #2 COMPLETE: Settings Registry mit ETag Support (V228+V10010+V10011) + Production-Ready Enhancements + PR #99 gemerged, Migration: V228, Tests: OK
+- 2025-09-24 00:39 — Sprint 1.3 PR #3 COMPLETE: Frontend Settings Integration mit ETag/304 (PR #100) + Settings Registry gemerged (PR #99), Migration: n/a, Tests: OK
 <!-- MP5:SESSION_LOG:END -->
 
 ## Next Steps
 <!-- MP5:NEXT_STEPS:START -->
-- Sprint 1.2 PR #3: ETag-Caching Optimization implementieren
-- Sprint 1.3 PR #3: Security Gates Phase 2 starten (Integration Testing Framework)
-- Sprint 2.x: DbContext Pattern für RLS-wirksame Queries (siehe SECURITY_FOUNDATION_FOLLOW_UP.md)
-- Frontend: Settings API mit ETag-Support integrieren (React Query Setup)
-- Follow-up Issue #98: Optionaler CI-Job für Backend Header/CORS Tests (low priority)
+- Sprint 1.3 PR #3: Review abwarten (PR #100 Frontend Settings Integration)
+- Sprint 1.3 PR #2: Integration Testing Framework implementieren (FP-232)
+- Sprint 2.x: DbContext Pattern für RLS-wirksame Queries
+- Frontend: Lint-Fehler in Legacy-Code beheben (58 errors)
 - Migration V229 verfügbar für neue DB-Arbeiten
 <!-- MP5:NEXT_STEPS:END -->
 
