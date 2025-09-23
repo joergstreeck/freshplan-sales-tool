@@ -96,6 +96,7 @@ public class SecurityContractTest {
                 ps = conn.prepareStatement("DELETE FROM demo_security_items WHERE id = ?");
                 ps.setObject(1, itemId);
                 ps.execute();
+                ps.close();
             }
 
             // Test has_role function exists (may return false in test env)
@@ -168,9 +169,10 @@ public class SecurityContractTest {
                     "Collaborator should see items in same territory");
 
                 // Clean up
-                conn.createStatement().execute(
-                    "DELETE FROM demo_security_items WHERE id = '" + itemId + "'"
-                );
+                ps = conn.prepareStatement("DELETE FROM demo_security_items WHERE id = ?");
+                ps.setObject(1, itemId);
+                ps.execute();
+                ps.close();
             }
         }
     }
@@ -283,9 +285,10 @@ public class SecurityContractTest {
                     "Query should work (found " + count + " items, RLS enforcement comes in Sprint 2.x)");
 
                 // Clean up
-                conn.createStatement().execute(
-                    "DELETE FROM demo_security_items WHERE id = '" + chItemId + "'"
-                );
+                ps = conn.prepareStatement("DELETE FROM demo_security_items WHERE id = ?");
+                ps.setObject(1, chItemId);
+                ps.execute();
+                ps.close();
             }
         }
     }

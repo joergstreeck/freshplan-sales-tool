@@ -87,7 +87,7 @@ if [ -z "$TABLES_WITH_RLS" ]; then
     echo -e "${YELLOW}⚠️  No tables with RLS enabled yet (expected in Sprint 1.x)${NC}"
     ((WARNINGS++))
 else
-    for table in $TABLES_WITH_RLS; do
+    for table in "$TABLES_WITH_RLS"; do
         check_security "RLS enabled on $table" \
             "psql -U freshplan -d freshplan -c \"SELECT rowsecurity FROM pg_tables WHERE tablename = '$table';\" | grep -q 't'" \
             "pass"
@@ -119,19 +119,19 @@ else
     HEADERS=$(curl -sI http://localhost:8080/q/health)
 
     check_security "X-Content-Type-Options header present" \
-        "echo '$HEADERS' | grep -q 'X-Content-Type-Options: nosniff'" \
+        "echo \"$HEADERS\" | grep -q 'X-Content-Type-Options: nosniff'" \
         "pass"
 
     check_security "Referrer-Policy header present" \
-        "echo '$HEADERS' | grep -q 'Referrer-Policy'" \
+        "echo \"$HEADERS\" | grep -q 'Referrer-Policy'" \
         "pass"
 
     check_security "X-Frame-Options header present" \
-        "echo '$HEADERS' | grep -q 'X-Frame-Options'" \
+        "echo \"$HEADERS\" | grep -q 'X-Frame-Options'" \
         "pass"
 
     check_security "Content-Security-Policy header present" \
-        "echo '$HEADERS' | grep -q 'Content-Security-Policy'" \
+        "echo \"$HEADERS\" | grep -q 'Content-Security-Policy'" \
         "pass"
 fi
 
@@ -147,7 +147,7 @@ if curl -s http://localhost:8080/q/health > /dev/null 2>&1; then
         http://localhost:8080/api/customers 2>/dev/null)
 
     check_security "CORS allows localhost:5173 in dev" \
-        "echo '$CORS_RESPONSE' | grep -q 'Access-Control-Allow-Origin'" \
+        "echo \"$CORS_RESPONSE\" | grep -q 'Access-Control-Allow-Origin'" \
         "pass"
 
     # Test unauthorized origin should fail
@@ -157,7 +157,7 @@ if curl -s http://localhost:8080/q/health > /dev/null 2>&1; then
         http://localhost:8080/api/customers 2>/dev/null)
 
     check_security "CORS blocks unauthorized origins" \
-        "echo '$CORS_FAIL' | grep -q 'Access-Control-Allow-Origin: http://malicious.com'" \
+        "echo \"$CORS_FAIL\" | grep -q 'Access-Control-Allow-Origin: http://malicious.com'" \
         "fail"
 fi
 

@@ -6,7 +6,6 @@ import jakarta.ws.rs.container.ContainerResponseContext;
 import jakarta.ws.rs.container.ContainerResponseFilter;
 import jakarta.ws.rs.ext.Provider;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
-import io.quarkus.arc.profile.IfBuildProfile;
 
 import java.io.IOException;
 
@@ -52,14 +51,14 @@ public class SecurityHeadersFilter implements ContainerResponseFilter {
 
         // Content Security Policy - conservative default
         // Can be refined later via Settings Registry
-        headers.putSingle("Content-Security-Policy",
-            "default-src 'self'; " +
-            "img-src 'self' data: https:; " +
-            "script-src 'self'; " +
-            "style-src 'self' 'unsafe-inline'; " +
-            "font-src 'self' data:; " +
-            "connect-src 'self'; " +
-            "frame-ancestors 'none'");
+        headers.putSingle("Content-Security-Policy", """
+            default-src 'self'; \
+            img-src 'self' data: https:; \
+            script-src 'self'; \
+            style-src 'self' 'unsafe-inline'; \
+            font-src 'self' data:; \
+            connect-src 'self'; \
+            frame-ancestors 'none'""".replaceAll("\\s+", " ").trim());
 
         // HSTS only in production and over HTTPS
         if (hstsEnabled && isProdProfile() && isHttpsRequest(requestContext)) {
