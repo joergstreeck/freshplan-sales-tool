@@ -4,6 +4,12 @@
 -- Scale: 5-50 interne Benutzer
 
 -- =====================================================
+-- 0. EXTENSIONS CHECK
+-- =====================================================
+-- Ensure UUID generation is available
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
+-- =====================================================
 -- 1. EVENT STORE TABLE
 -- =====================================================
 CREATE TABLE IF NOT EXISTS domain_events (
@@ -21,7 +27,7 @@ CREATE TABLE IF NOT EXISTS domain_events (
 
     -- Performance-Indizes
     CONSTRAINT chk_event_type CHECK (event_type ~ '^[a-z]+\.[a-z]+$'),
-    CONSTRAINT chk_payload_size CHECK (pg_column_size(payload) < 10240) -- 10KB limit für LISTEN/NOTIFY
+    CONSTRAINT chk_payload_size CHECK (pg_column_size(payload) < 7900) -- 7.9KB limit für PostgreSQL NOTIFY (max 8KB)
 );
 
 -- Indizes für Query-Performance
@@ -29,6 +35,11 @@ CREATE INDEX idx_domain_events_aggregate ON domain_events(aggregate_type, aggreg
 CREATE INDEX idx_domain_events_created ON domain_events(created_at DESC);
 -- unpublished index removed: not needed with synchronous LISTEN/NOTIFY
 CREATE INDEX idx_domain_events_correlation ON domain_events(correlation_id) WHERE correlation_id IS NOT NULL;
+
+-- Idempotenz-Schutz: Verhindert doppelte Events bei Retries
+CREATE UNIQUE INDEX idx_domain_events_causation_unique
+    ON domain_events(causation_id)
+    WHERE causation_id IS NOT NULL;
 
 -- =====================================================
 -- 2. COMMAND HANDLERS REGISTRY
@@ -79,6 +90,7 @@ RETURNS TRIGGER AS $$
 DECLARE
     channel_name TEXT;
     event_payload TEXT;
+    payload_size INTEGER;
 BEGIN
     -- Channel basierend auf aggregate_type
     channel_name := 'cqrs_' || LOWER(NEW.aggregate_type);
@@ -93,6 +105,21 @@ BEGIN
         'user_id', NEW.user_id,
         'correlation_id', NEW.correlation_id
     )::text;
+
+    -- Check payload size (PostgreSQL NOTIFY limit is 8000 bytes)
+    payload_size := octet_length(event_payload);
+    IF payload_size > 7900 THEN
+        -- If payload too large, send only pointer
+        RAISE WARNING 'Event payload too large (% bytes), sending pointer only', payload_size;
+        event_payload := json_build_object(
+            'id', NEW.id,
+            'event_type', NEW.event_type,
+            'aggregate_id', NEW.aggregate_id,
+            'aggregate_type', NEW.aggregate_type,
+            'created_at', NEW.created_at,
+            'large_payload', true
+        )::text;
+    END IF;
 
     -- Notify auf spezifischem Channel
     PERFORM pg_notify(channel_name, event_payload);

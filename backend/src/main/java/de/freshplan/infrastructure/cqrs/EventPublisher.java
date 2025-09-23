@@ -31,7 +31,7 @@ public class EventPublisher {
     @ConfigProperty(name = "cqrs.events.enabled", defaultValue = "true")
     boolean eventsEnabled;
 
-    @ConfigProperty(name = "cqrs.events.max-payload-size", defaultValue = "10240")
+    @ConfigProperty(name = "cqrs.events.max-payload-size", defaultValue = "7900")
     int maxPayloadSize;
 
     /**
@@ -114,11 +114,11 @@ public class EventPublisher {
             throw new IllegalArgumentException("Event payload is required");
         }
 
-        // Check payload size (10KB limit for LISTEN/NOTIFY performance)
+        // Check payload size (7900 bytes limit for PostgreSQL NOTIFY - max is 8KB)
         int payloadSize = event.getPayload().encode().getBytes().length;
         if (payloadSize > maxPayloadSize) {
             throw new IllegalArgumentException(
-                String.format("Payload size %d exceeds maximum %d bytes",
+                String.format("Payload size %d exceeds maximum %d bytes (PostgreSQL NOTIFY limit)",
                     payloadSize, maxPayloadSize));
         }
     }
