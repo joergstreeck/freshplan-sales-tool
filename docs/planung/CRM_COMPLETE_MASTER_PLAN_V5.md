@@ -110,6 +110,7 @@
 - Sprint 1.2 PR #3: ETag-Caching nach Settings Registry
 - Migration V228 verfügbar für neue DB-Arbeiten
 - Sprint 2.x: DbContext Pattern für RLS-wirksame Queries (siehe SECURITY_FOUNDATION_FOLLOW_UP.md)
+- Follow-up Issue #98: Optionaler CI-Job für Backend Header/CORS Tests (low priority)
 <!-- MP5:NEXT_STEPS:END -->
 
 ## Risks
@@ -122,6 +123,7 @@
 <!-- MP5:DECISIONS:START -->
 - 2025-09-23 — ADR-0006 angenommen: Mock-Governance (Business-Logic mock-frei, Ausnahmen Tests/Stories; Dev-Seeds statt UI-Mocks)
 - 2025-09-23 — Security Foundation minimalistisch (ohne Business-Dependencies) - RLS-Policies später pro Modul
+- 2025-09-23 — Sprint 1.3 Security Gates erfolgreich implementiert - PR Template, Security Contract Tests, Fail-Closed Verification operativ
 <!-- MP5:DECISIONS:END -->
 
 ### **ADR-0002: PostgreSQL LISTEN/NOTIFY statt Event-Bus (18.09.2025)**
