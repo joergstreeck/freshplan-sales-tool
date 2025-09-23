@@ -149,6 +149,43 @@ public class SettingsResource {
     }
 
     /**
+     * Gets a setting by ID.
+     */
+    @GET
+    @Path("/{id}")
+    @Operation(summary = "Get setting by ID", description = "Retrieves a specific setting by its ID")
+    @APIResponses({
+        @APIResponse(responseCode = "200", description = "Setting found"),
+        @APIResponse(responseCode = "304", description = "Not Modified (ETag matched)"),
+        @APIResponse(responseCode = "404", description = "Setting not found")
+    })
+    public Response getSettingById(
+        @PathParam("id") UUID id,
+        @HeaderParam(IF_NONE_MATCH_HEADER) String ifNoneMatch
+    ) {
+        LOG.infof("GET setting by ID: id=%s, ifNoneMatch=%s", id, ifNoneMatch);
+
+        Setting setting = Setting.findById(id);
+        if (setting == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+
+        // Check ETag for conditional request
+        if (ifNoneMatch != null && setting.matchesEtag(ifNoneMatch)) {
+            return Response.notModified()
+                .header(ETAG_HEADER, setting.etag)
+                .cacheControl(getCacheControl())
+                .build();
+        }
+
+        SettingDto dto = SettingDto.from(setting);
+        return Response.ok(dto)
+            .header(ETAG_HEADER, setting.etag)
+            .cacheControl(getCacheControl())
+            .build();
+    }
+
+    /**
      * Creates or updates a setting.
      * Uses If-Match header for optimistic locking on updates.
      */
@@ -205,32 +242,28 @@ public class SettingsResource {
     public Response createSetting(SettingCreateDto create, @Context UriInfo uriInfo) {
         LOG.infof("POST setting: scope=%s, key=%s", create.scope, create.key);
 
-        // Check if already exists
-        Optional<Setting> existing = settingsService.getSetting(
-            create.scope, create.scopeId, create.key
-        );
-
-        if (existing.isPresent()) {
-            return Response.status(Response.Status.CONFLICT)
-                .entity("Setting already exists")
-                .build();
-        }
-
         String userId = securityContext.getUserPrincipal().getName();
-        Setting created = settingsService.saveSetting(
-            create.scope, create.scopeId, create.key,
-            create.value, create.metadata, userId
-        );
 
-        URI location = uriInfo.getAbsolutePathBuilder()
-            .path(created.id.toString())
-            .build();
+        // Use strict create to avoid race conditions
+        try {
+            Setting created = settingsService.createSettingStrict(
+                create.scope, create.scopeId, create.key,
+                create.value, create.metadata, userId
+            );
 
-        SettingDto dto = SettingDto.from(created);
-        return Response.created(location)
-            .entity(dto)
-            .header(ETAG_HEADER, created.etag)
-            .build();
+            URI location = uriInfo.getAbsolutePathBuilder()
+                .path(created.id.toString())
+                .build();
+
+            SettingDto dto = SettingDto.from(created);
+            return Response.created(location)
+                .entity(dto)
+                .header(ETAG_HEADER, created.etag)
+                .build();
+        } catch (WebApplicationException e) {
+            // Re-throw to maintain proper error response
+            throw e;
+        }
     }
 
     /**

@@ -106,6 +106,59 @@ public class SettingsService {
     }
 
     /**
+     * Creates a new setting strictly (no upsert).
+     * Throws 409 Conflict if setting already exists.
+     */
+    @Transactional
+    public Setting createSettingStrict(SettingsScope scope, String scopeId, String key,
+                                      JsonObject value, JsonObject metadata, String userId) {
+        LOG.infof("Creating setting (strict): scope=%s, scopeId=%s, key=%s", scope, scopeId, key);
+
+        // Check if already exists
+        Setting existing = Setting.findByScopeAndKey(scope, scopeId, key);
+        if (existing != null) {
+            LOG.warnf("Setting already exists: scope=%s, scopeId=%s, key=%s", scope, scopeId, key);
+            throw new WebApplicationException(
+                "Setting already exists",
+                Response.Status.CONFLICT
+            );
+        }
+
+        // Create new setting
+        Setting setting = new Setting();
+        setting.scope = scope;
+        setting.scopeId = scopeId;
+        setting.key = key;
+        setting.value = value != null ? value : new JsonObject();
+        setting.metadata = metadata != null ? metadata : new JsonObject();
+        setting.createdBy = userId;
+        // Note: created_at, version, and etag are set by DB triggers
+
+        try {
+            setting.persist();
+            em.flush();
+            em.refresh(setting);
+
+            LOG.infof("Created new setting with ID: %s, ETag: %s, Version: %d",
+                     setting.id, setting.etag, setting.version);
+            return setting;
+        } catch (Exception e) {
+            // Handle unique constraint violation
+            if (e.getCause() != null &&
+                (e.getCause().getMessage().contains("uq_security_settings") ||
+                 e.getCause().getMessage().contains("duplicate key"))) {
+                LOG.warnf("Unique constraint violation for setting: scope=%s, scopeId=%s, key=%s",
+                         scope, scopeId, key);
+                throw new WebApplicationException(
+                    "Setting already exists",
+                    Response.Status.CONFLICT
+                );
+            }
+            throw e;
+        }
+    }
+
+    /**
      * Updates a setting with optimistic locking using ETag.
      * Throws 412 Precondition Failed if ETag doesn't match.
      */

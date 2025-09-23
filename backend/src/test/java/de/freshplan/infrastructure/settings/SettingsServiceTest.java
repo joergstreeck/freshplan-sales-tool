@@ -272,6 +272,37 @@ class SettingsServiceTest {
     }
 
     @Test
+    @DisplayName("Should prevent race condition on create")
+    @Transactional
+    void testCreateRaceCondition() {
+        // Given
+        JsonObject value = new JsonObject().put("test", "race");
+
+        // When - Create first setting
+        Setting first = settingsService.createSettingStrict(
+            SettingsScope.GLOBAL, null, "race.test",
+            value, null, TEST_USER
+        );
+
+        // Then - First creation succeeds
+        assertNotNull(first);
+        assertNotNull(first.id);
+        assertNotNull(first.etag);
+
+        // When/Then - Second creation with same key should fail
+        WebApplicationException ex = assertThrows(WebApplicationException.class, () ->
+            settingsService.createSettingStrict(
+                SettingsScope.GLOBAL, null, "race.test",
+                value, null, TEST_USER
+            )
+        );
+        assertEquals(409, ex.getResponse().getStatus());
+
+        // Cleanup
+        first.delete();
+    }
+
+    @Test
     @DisplayName("Should get cache statistics")
     void testCacheStats() {
         // When
