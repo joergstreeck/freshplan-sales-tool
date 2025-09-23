@@ -2,9 +2,9 @@
 
 **WICHTIG: Diese Datei enthält die offiziellen Trigger-Texte. NIEMALS löschen oder überschreiben!**
 
-**Version:** 3.1
-**Letzte Aktualisierung:** 18.09.2025
-**Bugfix Update:** Konkrete Git-Commit-Anfrage + Vollständige Template-Validierung + Erweiterte Fehler-Prävention
+**Version:** 3.2
+**Letzte Aktualisierung:** 23.09.2025
+**Major Update:** Auto-Compact-Prävention + MP5-Härtung + Migration-Fallback-Filter + COMPACT_CONTRACT Integration
 
 ---
 
@@ -17,6 +17,11 @@ Erstelle eine vollständige Übergabe für die nächste Session.
 
   ## ⚠️ KRITISCH: Führe NUR diese Schritte aus, dann STOPPE!
 
+  ### SCHRITT 0: Context-Frühwarnung (Auto-Compact-Prävention)
+  - Wenn diese Antwort > ~500 Wörter geworden wäre ODER ein großer Meilenstein (z.B. Datei/Test/Feature) gerade abgeschlossen wurde:
+    → Sofort **MP5 QUICK UPDATE** erzeugen (Format siehe CLAUDE.md)
+    → Danach mit SCHRITT 1 fortfahren
+
   ### SCHRITT 1: TODO-Status sichern
   ```bash
   TodoRead
@@ -25,16 +30,17 @@ Erstelle eine vollständige Übergabe für die nächste Session.
 
   SCHRITT 2: MIGRATION-CHECK (🚨 PFLICHT bei DB-Arbeit!)
 
+  Primäres Script (immer verwenden):
   /Users/joergstreeck/freshplan-sales-tool/scripts/get-next-migration.sh
+  # Ausgabe MUSS dem Muster V[0-9]+ entsprechen (z.B. V226)
   # Diese Nummer IMMER in Übergabe notieren!
   # NIEMALS alte Nummern wiederverwenden!
 
-  # Fallback bei Script-Fehler:
-  ls -la backend/src/main/resources/db/migration/ | tail -3
-  # Manuell nächste V-Nummer berechnen
+  # Fallback bei Script-Fehler (Templates ausblenden):
+  ls -la backend/src/main/resources/db/migration/ | grep -v 'VXXX__' | tail -3
+  # Nächste freie Produktions-Nummer manuell bestimmen
 
   SCHRITT 3: Universelles Handover-Script
-
   /Users/joergstreeck/freshplan-sales-tool/scripts/create-handover.sh
   # ABSOLUTER PFAD - funktioniert IMMER aus JEDEM Verzeichnis!
   # Wählt automatisch das beste verfügbare Script:
@@ -43,8 +49,16 @@ Erstelle eine vollständige Übergabe für die nächste Session.
   # - create-handover-improved.sh (verbesserte Version)
   # - Minimales Fallback-Template wenn nötig
 
-  # Das Script zeigt automatisch die Migration-Nummer prominent an
-  # Bei Fehler wurde Nummer bereits in Schritt 2 ermittelt
+  SCHRITT 3b: MP5-Update JETZT erzwingen (Compact-Contract)
+
+  Erzeuge SOFORT ein MP5 QUICK UPDATE (Format siehe CLAUDE.md) und füge es in
+  /docs/planung/CRM_COMPLETE_MASTER_PLAN_V5.md ein über die Anker:
+  - <!-- MP5:SESSION_LOG:START --> ... <!-- MP5:SESSION_LOG:END -->
+  - <!-- MP5:NEXT_STEPS:START --> ... <!-- MP5:NEXT_STEPS:END -->
+  - <!-- MP5:RISKS:START --> ... <!-- MP5:RISKS:END -->
+  - <!-- MP5:DECISIONS:START --> ... <!-- MP5:DECISIONS:END -->
+
+  Falls Dateischreiben nicht möglich: Quick Update in die Übergabe unter "MP5 UPDATE PENDING"
 
   SCHRITT 4: Template VOLLSTÄNDIG ausfüllen
 
@@ -102,11 +116,20 @@ Erstelle eine vollständige Übergabe für die nächste Session.
   - Alle TODOs dokumentiert?
   - MIGRATION-NUMMER in Übergabe? ⚠️ KRITISCH
   - Master Plan V5 aktuell?
-  - NEXT_STEP.md mit konkreten nächsten Schritten?
+  - TRIGGER_INDEX.md Workflow befolgt?
   - Git-Status sauber oder Commit vorbereitet?
   - Strukturelle Updates vollständig?
 
   FERTIG! Vollständige Übergabe komplett.
+
+  ## 🚨 EMERGENCY HANDOVER (Auto-Compact)
+  Falls Auto-Compact ohne Trigger passierte, dokumentiere mindestens:
+  - Code Changes (kurz): Dateien/Module & Ergebnis
+  - Tests: OK/Broken
+  - Migration: VXXX (falls relevant)
+  - Next Steps: 1-2 konkrete Punkte
+  - Hinweis: "MP5 QUICK UPDATE bitte jetzt anwenden"
+  - Optional: Pfad zur Detail-Doku in docs/planung/claude-work/daily-work/YYYY-MM-DD/
 ```
 
 ---
@@ -135,26 +158,33 @@ Lese alles gründlich durch und befolge strict die Standardübergabe.
 
   2. MIGRATION-CHECK (🚨 PFLICHT bei DB-Arbeit!)
 
+  Primär:
   /Users/joergstreeck/freshplan-sales-tool/scripts/get-next-migration.sh
-  # Diese Nummer IMMER verwenden!
+  # Ausgabe MUSS V[0-9]+ sein (z.B. V226)
+  # Diese Nummer für heutige DB-Arbeit verwenden!
 
-  # Fallback bei Script-Fehler:
-  ls -la backend/src/main/resources/db/migration/ | tail -3
+  # Fallback (Templates ausblenden):
+  ls -la backend/src/main/resources/db/migration/ | grep -v 'VXXX__' | tail -3
 
   3. System-Start
 
   /Users/joergstreeck/freshplan-sales-tool/scripts/robust-session-start.sh
   # ABSOLUTER PFAD - funktioniert aus JEDEM Verzeichnis!
   # Prüft Services, startet PostgreSQL, zeigt Status
-  # Bei Fehler: cat docs/NEXT_STEP.md
+  # Bei Fehler: TRIGGER_INDEX.md Workflow befolgen
 
   4. Pflichtlektüre (🆕 NEUE STRUKTUR!)
 
-  1. /docs/CLAUDE.md (Arbeitsrichtlinien)
+  1. /CLAUDE.md (Arbeitsrichtlinien)
   2. Letzte Übergabe in /docs/planung/claude-work/daily-work/
-  3. /docs/NEXT_STEP.md (Aktueller Stand & nächste Schritte)
+  3. /docs/planung/TRIGGER_INDEX.md (Sprint-Workflow & 7-Dokumente-Reihenfolge)
   4. /docs/planung/CRM_COMPLETE_MASTER_PLAN_V5.md (Standard-Context)
   5. /docs/STANDARDUBERGABE_NEU.md (falls Details fehlen)
+
+  ### MP5-Priorität (Pflicht)
+  - Öffne die letzte Übergabe (heute)
+  - Falls ein Block "MP5 UPDATE PENDING" vorhanden ist: ZUERST MP5 aktualisieren
+  - Danach KEINE neuen Dokumente erzeugen - nur MP5 pflegen
 
   5. TODOs laden
 
@@ -166,8 +196,13 @@ Lese alles gründlich durch und befolge strict die Standardübergabe.
   - Branch: [name]
   - TODOs: [X offen]
   - Migration: [VXXX] ⚠️ BESTÄTIGT
-  - Nächster Schritt: [aus NEXT_STEP.md]
+  - Nächster Schritt: [aus TRIGGER_INDEX.md]
   - ⛔ WARTE AUF ARBEITSSTART
+
+  ## 📌 Compact-Kontrolle während der Arbeit
+  - Bei ~70% Context FÜHRE /checkpoint aus (MP5 QUICK UPDATE)
+  - Nach jedem großen Meilenstein (Feature/Tests/Datei): /checkpoint
+  - Bei Session-Abschluss: /finalize → MP5 Update + keine neuen Files
 
   ⛔ STOPP! WARTE AUF "ARBEITSSTART"!
 ```
@@ -183,7 +218,7 @@ Lese alles gründlich durch und befolge strict die Standardübergabe.
 
 **Teil 2:**
 ```
-Feature-Branch checkout → ./scripts/robust-session-start.sh → WORKFLOW-VERBOT verstehen → MIGRATION-CHECK (bei DB-Arbeit!) → Docs lesen → ./scripts/get-active-module.sh → ⛔ STOPP: Status melden und auf "ARBEITSSTART" warten!
+Feature-Branch checkout → ./scripts/robust-session-start.sh → MIGRATION-CHECK (Templates filtern!) → MP5-Priorität prüfen → Docs lesen → /checkpoint-Pattern verstehen → ⛔ STOPP: Status melden und auf "ARBEITSSTART" warten!
 ```
 
 ---
@@ -200,16 +235,19 @@ Feature-Branch checkout → ./scripts/robust-session-start.sh → WORKFLOW-VERBO
 ### 🆕 Neue Struktur-Updates:
 - [ ] Master Plan V5 Feature-Status aktualisiert?
 - [ ] Sprint-Woche und Timeline angepasst?
-- [ ] NEXT_STEP.md mit konkreten nächsten Schritten?
+- [ ] TRIGGER_INDEX.md Workflow befolgt?
 - [ ] Technical Concepts (falls bearbeitet) aktualisiert?
 - [ ] Infrastructure-Pläne (falls relevant) gepflegt?
 
-### 🔄 Smart-Features (V3.0):
+### 🔄 Smart-Features (V3.2):
 - [ ] Template vollständig: "Was gemacht" + "Bekannte Probleme" ausgefüllt?
 - [ ] Git-Commit konkret gefragt (nicht nur vorgeschlagen)?
 - [ ] User-Antwort abgewartet: JA/NEIN/ÄNDERN?
 - [ ] Strukturelle Dokumentation geprüft?
-- [ ] TODO-Zentralisierung in NEXT_STEP.md?
+- [ ] TODO-Dokumentation in Übergabe vollständig?
+- [ ] MP5 QUICK UPDATE erzwungen (Schritt 3b)?
+- [ ] Context-Frühwarnung beachtet (Schritt 0)?
+- [ ] Emergency Handover Pattern verfügbar?
 
 ---
 
@@ -221,18 +259,23 @@ Feature-Branch checkout → ./scripts/robust-session-start.sh → WORKFLOW-VERBO
 3. **NIE** direkt auf main committen
 4. **WARTEN** auf "ARBEITSSTART" vor Implementierung
 
-### V3.0 Spezifische Fehler:
+### V3.2 Spezifische Fehler:
 5. **Template-Unvollständigkeit:** "Was gemacht" und "Bekannte Probleme" vergessen
 6. **Commit-Vorschlag statt Frage:** Nicht fragen sondern nur vorschlagen
 7. **Migration-Nummer-Inkonsistenz:** Script-Output vs. tatsächliche Nummer
 8. **Handover-Pfad falsch:** docs/claude-work/ statt docs/planung/claude-work/
 9. **Master Plan V5 nicht aktualisiert:** Status-Updates vergessen
+10. **Context-Frühwarnung ignoriert:** Kein /checkpoint bei 70% Context
+11. **MP5-Update vergessen:** Schritt 3b übersprungen
+12. **VXXX-Filter vergessen:** Templates im Migration-Fallback angezeigt
+13. **Auto-Compact unvorbereitet:** Emergency Handover Pattern nicht angewandt
 
 ---
 
 ## 📜 ARCHIV
 
 Vorherige Versionen:
+- v3.1: NEXT_STEP.md entfernt + TRIGGER_INDEX.md Workflow
 - v2.7: `/docs/TRIGGER_TEXTS_v2.7_archived.md` (handover-with-sync.sh Version)
 - v2.6: Erste Version mit MIGRATION-CHECK als Pflichtschritt
 

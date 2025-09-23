@@ -1,31 +1,142 @@
 # 🚀 CRM Master Plan V5 - Sales Command Center (Kompakt)
 
-**📊 Plan Status:** ✅ PLANNING COMPLETE - Alle Module 01-08 + Infrastructure (Verwaltung, Integration, Betrieb) COMPLETE, Ready for Production Implementation
+**🚀 START HIER (Pflicht-Lesefolge für neue Claude-Instanzen):**
+1. **`/CLAUDE.md`** - Meta-Arbeitsregeln + Quick-Start
+2. **`/docs/planung/TRIGGER_INDEX.md`** - Sprint-Trigger + 7-Dokumente-Reihenfolge
+3. **`/docs/planung/CRM_AI_CONTEXT_SCHNELL.md`** - Business-Kontext
+4. **`/docs/planung/PRODUCTION_ROADMAP_2025.md`** - Roadmap + Task-Klassen
+
+**📊 Plan Status:** ✅ PLANNING COMPLETE – Implementation pending (CQRS-First)
+**🔎 Status-Legende:** ✅ Planning COMPLETE · 🟡 In Progress · 🔄 Review · 🚫 Replaced
+**📐 Definition of Done (DoD):** siehe Abschnitt „Foundation DoD & SLOs"
+**📋 Architecture Decision Records (ADR):** siehe Abschnitt „ADR-Log"
 **🎯 Owner:** Development Team + Product Team
 **⏱️ Timeline:** Q4 2025 → Q2 2026
 **🔧 Effort:** L (Large - Multi-Sprint Project)
-**📋 Kontext:** → [CRM AI Context Schnell](./CRM_AI_CONTEXT_SCHNELL.md) (für neue Claude-Instanzen)
 **✅ PLANNING PHASE COMPLETE - ALLE MODULE:**
 
 **🎯 BUSINESS MODULES (01-08):**
-- **Module 01 Cockpit:** ✅ COMPLETE - 100% Foundation Standards, Enterprise Assessment A+ (95/100), 44 Production-Ready Artefakte
-- **Module 02 Neukundengewinnung:** ✅ COMPLETE - 92%+ Foundation Standards, Artefakte implementiert (design-system, openapi, backend, frontend, sql, k6)
-- **Module 03 Kundenmanagement:** ✅ COMPLETE - 100% Foundation Standards, Enterprise-Level Implementation (39 Production-Ready Artefakte)
-- **Module 04 Auswertungen:** ✅ COMPLETE - 97% Production-Ready, Gap-Closure PERFECT (9.7/10), 12 Copy-Paste-Ready Implementation-Files
-- **Module 05 Kommunikation:** ✅ COMPLETE - BEST-OF-BOTH-WORLDS (9.2/10 Enterprise-Ready), 41 Production-Ready Artefakte, Shared Email-Core + B2B-Food SLA-Engine
-- **Module 06 Einstellungen:** ✅ COMPLETE - ENTERPRISE ASSESSMENT (94/100 Score A-), Settings-Engine mit Scope-Hierarchie + Merge-Engine + ABAC Security
-- **Module 07 Hilfe & Support:** ✅ COMPLETE - CAR-Strategy Help-System + Operations-Integration + Guided Operations
-- **Module 08 Verwaltung:** ✅ COMPLETE - User Management + Permissions + System Administration
+- **Module 01 Cockpit:** ✅ Planning COMPLETE – Implementation pending (100% Foundation Standards, 44 Production-Ready Artefakte)
+- **Module 02 Neukundengewinnung:** ✅ Planning COMPLETE – Implementation pending (92%+ Foundation Standards, Artefakte ready)
+- **Module 03 Kundenmanagement:** ✅ Planning COMPLETE – Implementation pending (100% Foundation Standards, 39 Production-Ready Artefakte)
+- **Module 04 Auswertungen:** ✅ Planning COMPLETE – Implementation pending (97% Production-Ready, 12 Implementation-Files)
+- **Module 05 Kommunikation:** ✅ Planning COMPLETE – Implementation pending (Enterprise-Ready, 41 Production-Ready Artefakte)
+- **Module 06 Einstellungen:** ✅ Planning COMPLETE – Implementation pending (Enterprise Assessment A-, Settings-Engine + ABAC Security)
+- **Module 07 Hilfe & Support:** ✅ Planning COMPLETE – Implementation pending (CAR-Strategy Help-System + Operations-Integration)
+- **Module 08 Verwaltung:** ✅ Planning COMPLETE – Implementation pending (User Management + Permissions + System Administration)
 
 **🏗️ INFRASTRUCTURE MODULES (00):**
-- **Module 00 Sicherheit:** ✅ COMPLETE - ABAC + RLS Security Model + Multi-Territory Support + External AI Excellence (9.8/10) + 13 Production-Ready Artefakte
-- **Module 00 Integration:** ✅ COMPLETE - CQRS Light Architecture (LISTEN/NOTIFY + One-Database) + Gateway-Policies + Cost-Efficient für interne Tools
-- **Module 00 Betrieb:** ✅ COMPLETE - CQRS Light Operations (Cost-Efficient für 5-50 Benutzer) + User-Lead-Protection + Simple Monitoring + Module 07 Help-Integration
-- **Module 00 Skalierung:** ✅ COMPLETE - Territory + Seasonal-aware Autoscaling (98% Production-Ready) + B2B-Food Business-Intelligence + External AI Excellence (9.8/10) + 5 Copy-Paste-Ready Artefakte
+- **Module 00 Sicherheit:** ✅ Planning COMPLETE – Implementation pending (ABAC + RLS Security Model + Multi-Territory Support, 13 Artefakte)
+- **Module 00 Integration:** ✅ Planning COMPLETE – Implementation pending (CQRS Light Architecture + Gateway minimal)
+- **Module 00 Betrieb:** ✅ Planning COMPLETE – Implementation pending (CQRS Light Operations für 5-50 Benutzer + Simple Monitoring)
+- **Module 00 Skalierung:** ✅ Planning COMPLETE – Implementation pending (Territory + Seasonal-aware Autoscaling, 5 Copy-Paste-Ready Artefakte)
 
 **🚨 NEXT:** Production Implementation Phase - Vollständige Planungsphase abgeschlossen mit 310+ Production-Ready Artefakten
 
+**📋 LATEST UPDATE (22.09.2025):** ✅ EXTERNE KI-VALIDIERUNG COMPLETE - Alle kritischen Trigger-Text-Inkonsistenzen behoben (Performance 200ms, Gateway minimal, PR-Zählung 35, Migration dynamisch) → Claude-Compliance 70% → 97%+ erwartet
+
 **🚀 STRATEGIC DECISION (21.09.2025):** CQRS Light Migration-First Strategy confirmed - CQRS Light Foundation (1-2 Wochen Q4 2025) → Business-Module (Q1 2026) für kosteneffiziente interne Performance + Zero Doppelarbeit
+
+## 📐 Foundation DoD & SLOs
+
+### **CQRS Light Foundation (messbare DoD):**
+- **Performance:** `api_request_p95_ms < 200` (PromQL: `histogram_quantile(0.95, rate(http_server_requests_seconds_bucket[5m]))`)
+- **Event System:** `listen_notify_lag_ms < 10000`, Event-Payload JSON-Schema validiert
+- **Testing:** k6 Performance-Baseline grün (`k6_scenario_success_rate >= 0.95`), Unit-Tests ≥85%
+- **Monitoring:** Distributed Tracing aktiv, Query-Performance-Dashboards operational
+
+### **Security (ABAC + RLS v2) (messbare DoD):**
+- **Access Control:** `security_contract_tests_passed = 1` (Owner/Non-Owner/Kollaborator/Manager-Override)
+- **Territory Management:** `rls_policies_active = 1` für DE/CH/AT Datenräume
+- **Audit Trail:** `audit_events_logged_count > 0` für kritische Operations
+- **Lead Protection:** `lead_ownership_violations = 0` (6M + 60T + 10T Stop-Clock)
+
+### **Settings-Registry Hybrid (messbare DoD):**
+- **Performance:** `etag_hit_rate_pct >= 70`, `settings_fetch_p95_ms < 50`
+- **Validation:** `json_schema_validation_active = 1` für alle Setting-Types
+- **Cache:** `listen_notify_invalidation_success_rate >= 0.95`, Cache-Consistency-Tests grün
+- **Scope:** `settings_hierarchy_functional = 1` (User/Tenant/Global), Merge-Engine operational
+
+### **SLO-Kernwerte (CI-verdrahtbar mit PromQL):**
+- **API Performance:** `api_request_p95_ms < 200` (normal), `< 500` (Peak/Seasonal)
+  ```promql
+  # Normal: histogram_quantile(0.95, sum(rate(http_server_requests_seconds_bucket{route!~".*health.*"}[5m])) by (le))
+  # Peak: histogram_quantile(0.95, sum(rate(http_server_requests_seconds_bucket{route!~".*health.*"}[5m])) by (le))
+  ```
+- **Frontend Performance:** `bundle_size_bytes < 200000`, `web_vitals_lcp_p75_ms < 2500` (normal), `< 3000` (Peak)
+- **Business Logic:** `lead_access_check_p95_ms < 50` (normal), `< 100` (Peak), `roi_calculator_p95_ms < 100` (normal), `< 200` (Peak)
+  ```promql
+  # Lead-Access: histogram_quantile(0.95, sum(rate(http_server_requests_seconds_bucket{operation="leadAccess"}[5m])) by (le))
+  # ROI-Calculator: histogram_quantile(0.95, sum(rate(http_server_requests_seconds_bucket{operation="roiCalculator"}[5m])) by (le))
+  ```
+- **Infrastructure:** `etag_hit_rate_pct >= 70` (normal), `>= 60` (Peak), `listen_notify_lag_ms < 10000`
+
+## 📋 ADR-Index (Architecture Decision Records)
+
+**Zentrale Architektur-Entscheidungen mit verlinkten Dokumenten:**
+
+- **ADR-0001:** CQRS Light statt Full-CQRS → `/docs/planung/adr/ADR-0001-cqrs-light.md`
+- **ADR-0002:** PostgreSQL LISTEN/NOTIFY statt Event-Bus → `/docs/planung/adr/ADR-0002-listen-notify-over-eventbus.md`
+- **ADR-0003:** Settings-Registry Hybrid JSONB + Registry → `/docs/planung/adr/ADR-0003-settings-registry-hybrid.md`
+- **ADR-0004:** Territory = RLS-Datenraum, Lead-Protection = User-based → `/docs/planung/adr/ADR-0004-territory-rls-vs-lead-ownership.md`
+- **ADR-0005:** Nginx+OIDC Gateway statt Kong/Envoy → `/docs/planung/adr/ADR-0005-nginx-oidc-gateway.md`
+
+### **ADR-0001: CQRS Light statt Full-CQRS (21.09.2025)**
+**Kontext:** Performance für 5-50 interne Nutzer mit Budget-Constraints
+**Entscheidung:** CQRS Light mit einer DB + LISTEN/NOTIFY statt Event-Bus
+**Begründung:** Kosteneffizient, <200ms Performance ausreichend, einfache Wartung
+**Konsequenzen:** Eventuelle Skalierung >100 Nutzer erfordert Event-Bus-Migration
+**Details:** → `/docs/planung/adr/ADR-0001-cqrs-light.md`
+
+## Session Log
+<!-- MP5:SESSION_LOG:START -->
+- 2025-09-23 17:45 — System Infrastructure: V3.2 Auto-Compact-System vollständig implementiert (COMPACT_CONTRACT v2 + MP5-Anker + Trigger-Updates), Migration: V225, Tests: OK
+<!-- MP5:SESSION_LOG:END -->
+
+## Next Steps
+<!-- MP5:NEXT_STEPS:START -->
+- V3.2 Auto-Compact-System in der Praxis testen
+- Erste Session mit neuen Trigger-Texten durchführen
+- Optional: Pre-commit Guard implementieren falls Bedarf
+<!-- MP5:NEXT_STEPS:END -->
+
+## Risks
+<!-- MP5:RISKS:START -->
+<!-- Identifizierte Risiken inkl. Mitigation/Owner -->
+<!-- MP5:RISKS:END -->
+
+## Decisions
+<!-- MP5:DECISIONS:START -->
+<!-- Relevante Entscheidungen + Verweis auf ADR-XXXX -->
+<!-- MP5:DECISIONS:END -->
+
+### **ADR-0002: PostgreSQL LISTEN/NOTIFY statt Event-Bus (18.09.2025)**
+**Kontext:** Event-System für Settings-Invalidation + Cross-Module-Communication
+**Entscheidung:** Postgres LISTEN/NOTIFY mit JSON-Payload, kein CloudEvents/Kafka
+**Begründung:** Minimale Infrastruktur, bereits vorhandene DB-Expertise
+**Konsequenzen:** Event-System auf Single-DB limitiert, aber ausreichend für Scope
+**Details:** → `/docs/planung/adr/ADR-0002-listen-notify-over-eventbus.md`
+
+### **ADR-0003: Settings-Registry Hybrid JSONB + Registry (15.09.2025)**
+**Kontext:** User/Tenant/Global Settings mit Performance + Typisierung
+**Entscheidung:** JSONB Storage + Type-Registry + ETag-Caching
+**Begründung:** Flexibilität + Performance + Entwicklerfreundlichkeit
+**Konsequenzen:** Leichte Komplexität, aber optimale Balance für unseren Use-Case
+**Details:** → `/docs/planung/adr/ADR-0003-settings-registry-hybrid.md`
+
+### **ADR-0004: Territory = RLS-Datenraum, Lead-Protection = User-based (12.09.2025)**
+**Kontext:** Gebietsschutz-Missverständnis vs. tatsächliche Anforderungen
+**Entscheidung:** Territory als Datenraum (DE/CH/AT), Lead-Protection user-basiert
+**Begründung:** Klarere Trennung, flexiblere Lead-Workflows ohne Gebiets-Constraints
+**Konsequenzen:** Dokumentation muss Territory-Begriff präzise definieren
+**Details:** → `/docs/planung/adr/ADR-0004-territory-rls-vs-lead-ownership.md`
+
+### **ADR-0005: Nginx+OIDC Gateway statt Kong/Envoy (10.09.2025)**
+**Kontext:** API Gateway für Authentication + Rate-Limiting
+**Entscheidung:** Minimales Nginx+OIDC Setup, Kong/Envoy als optional/später
+**Begründung:** YAGNI für internes Tool, Budget-effizient, schnelle Implementation
+**Konsequenzen:** Advanced Gateway-Features (Tracing, Analytics) später nachrüstbar
+**Details:** → `/docs/planung/adr/ADR-0005-nginx-oidc-gateway.md`
 
 ## 🎯 Executive Summary (für Claude)
 
@@ -83,6 +194,32 @@ PARTNER-CHANNEL (Lieferanten, Händler, Wiederverkäufer):
 - **Sample-Management:** Tracking für End-Kunden UND Partner-Demos
 - **Partner-Enablement:** Tools und Materialien für Wiederverkäufer
 - **Territory-Management:** Gebietsschutz und Konflikt-Vermeidung zwischen Kanälen
+
+## ⚙️ Arbeitsmodus & PR-Hygiene
+
+### **Team-Setup: Jörg + Claude (sequenziell)**
+- **Branch-Schema:** `feature/[module]-[sub-feature]-[component]-FP-XXX`
+- **PR-Größen:** <50 Files, <2000 Lines, Build <15min
+- **Coverage-Gates:** ≥80% PR-weise + keine Verschlechterung; Modul-Ziel ≥85%
+- **Sprint-Zyklus:** Ein Sub-Feature inkl. Backend+Frontend+Tests → Merge → Nächstes
+
+### **Migration-Workflow (kritisch):**
+```bash
+# NIEMALS Migration-Nummern hardcoden!
+MIGRATION=$(./scripts/get-next-migration.sh | tail -1)
+# Fallback: ls -la backend/src/main/resources/db/migration/ | tail -3
+```
+
+### **CI-Auto-Fix-Grenzen:**
+- **NUR Feature-Branches** (niemals main!)
+- **Required Reviews bleiben** bestehen
+- **Token-Scope minimal** (read:repo, write:packages falls nötig)
+
+### **Trigger-Workflow (jede Session):**
+1. **`/docs/planung/TRIGGER_INDEX.md` lesen** (7-Dokumente-Reihenfolge)
+2. **Master Plan V5 checken** (aktueller Stand)
+3. **Migration-Check** mit Script ausführen
+4. **TodoWrite** für systematisches Task-Tracking
 
 ## 🗺️ Sidebar-Navigation & Feature-Struktur
 
@@ -327,5 +464,5 @@ Einziger strategischer Master Plan. Alle Infrastructure-Pläne über Master Inde
 
 ---
 **📋 Dokument-Zweck:** Kompakte Planungsübersicht für Claude
-**🔗 Für KI-Instanzen:** → [CRM AI Context Schnell](./CRM_AI_CONTEXT_SCHNELL.md)
+**🔗 Für KI-Instanzen:** → [CRM AI Context Schnell](/docs/planung/CRM_AI_CONTEXT_SCHNELL.md)
 **🔄 Letzte Aktualisierung:** 2025-09-19 - Foundation Standards COMPLETED für alle Kern-Module (01, 02, 03, 04, 05) mit Best-of-Both-Worlds Integration
