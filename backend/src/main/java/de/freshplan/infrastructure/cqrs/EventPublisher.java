@@ -72,14 +72,17 @@ public class EventPublisher {
                     LOG.infof("Event published: %s [%s] for aggregate %s",
                         event.getEventType(), eventId, event.getAggregateId());
                     return eventId;
+                } else {
+                    throw new EventPublishException(
+                        "Failed to retrieve event ID after publishing: " + event.getEventType(), null);
                 }
             }
+        } catch (EventPublishException e) {
+            throw e;
         } catch (Exception e) {
             LOG.error("Failed to publish event: " + event.getEventType(), e);
-            throw new EventPublishException("Failed to publish event", e);
+            throw new EventPublishException("Failed to publish event: " + event.getEventType(), e);
         }
-
-        return null;
     }
 
     /**

@@ -110,16 +110,10 @@ public class EventSubscriber {
         listenerConnection = dataSource.getConnection();
         listenerConnection.setAutoCommit(true);
 
-        // Subscribe to default channels
+        // Subscribe to all configured channels
         for (String channel : defaultChannels.split(",")) {
             subscribeToChannel(channel.trim());
         }
-
-        // Subscribe to module-specific channels
-        subscribeToChannel("cqrs_lead");
-        subscribeToChannel("cqrs_customer");
-        subscribeToChannel("cqrs_communication");
-        subscribeToChannel("cqrs_cockpit");
 
         running = true;
 

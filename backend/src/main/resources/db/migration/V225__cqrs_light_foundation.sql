@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS domain_events (
     correlation_id UUID,
     causation_id UUID,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    published BOOLEAN DEFAULT FALSE,
+    -- published flag removed: LISTEN/NOTIFY is synchronous, no polling needed
 
     -- Performance-Indizes
     CONSTRAINT chk_event_type CHECK (event_type ~ '^[a-z]+\.[a-z]+$'),
@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS domain_events (
 -- Indizes für Query-Performance
 CREATE INDEX idx_domain_events_aggregate ON domain_events(aggregate_type, aggregate_id);
 CREATE INDEX idx_domain_events_created ON domain_events(created_at DESC);
-CREATE INDEX idx_domain_events_unpublished ON domain_events(published) WHERE NOT published;
+-- unpublished index removed: not needed with synchronous LISTEN/NOTIFY
 CREATE INDEX idx_domain_events_correlation ON domain_events(correlation_id) WHERE correlation_id IS NOT NULL;
 
 -- =====================================================
@@ -100,8 +100,7 @@ BEGIN
     -- Auch auf globalem Channel für Dashboard/Monitoring
     PERFORM pg_notify('cqrs_all_events', event_payload);
 
-    -- Mark as published
-    NEW.published := TRUE;
+    -- No published flag needed with synchronous LISTEN/NOTIFY
 
     RETURN NEW;
 END;
@@ -199,18 +198,17 @@ RETURNS TABLE(
     details JSONB
 ) AS $$
 BEGIN
-    -- Check 1: Unpublished Events
+    -- Check 1: Recent Events Count
     RETURN QUERY
     SELECT
-        'unpublished_events'::VARCHAR,
+        'recent_events'::VARCHAR,
         CASE
-            WHEN COUNT(*) = 0 THEN 'healthy'::VARCHAR
-            WHEN COUNT(*) < 10 THEN 'warning'::VARCHAR
-            ELSE 'critical'::VARCHAR
+            WHEN COUNT(*) > 0 THEN 'healthy'::VARCHAR
+            ELSE 'warning'::VARCHAR
         END,
         json_build_object('count', COUNT(*))::JSONB
     FROM domain_events
-    WHERE NOT published;
+    WHERE created_at > NOW() - INTERVAL '5 minutes';
 
     -- Check 2: Event Publishing Latency
     RETURN QUERY
