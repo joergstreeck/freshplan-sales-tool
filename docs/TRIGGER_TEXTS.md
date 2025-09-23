@@ -2,9 +2,9 @@
 
 **WICHTIG: Diese Datei enthält die offiziellen Trigger-Texte. NIEMALS löschen oder überschreiben!**
 
-**Version:** 3.2
+**Version:** 3.3
 **Letzte Aktualisierung:** 23.09.2025
-**Major Update:** Auto-Compact-Prävention + MP5-Härtung + Migration-Fallback-Filter + COMPACT_CONTRACT Integration
+**Branch-Gate Update:** Auto-Compact-Prävention + MP5-Härtung + Branch-Gate mit aktivem Angebot + Workflow-Lücke geschlossen
 
 ---
 
@@ -59,6 +59,8 @@ Erstelle eine vollständige Übergabe für die nächste Session.
   - <!-- MP5:DECISIONS:START --> ... <!-- MP5:DECISIONS:END -->
 
   Falls Dateischreiben nicht möglich: Quick Update in die Übergabe unter "MP5 UPDATE PENDING"
+
+  ⚠️ HINWEIS: Falls SCHRITT 0 bereits MP5 QUICK UPDATE erzeugt hat, wird SCHRITT 3b als erledigt markiert.
 
   SCHRITT 4: Template VOLLSTÄNDIG ausfüllen
 
@@ -148,13 +150,27 @@ Lese alles gründlich durch und befolge strict die Standardübergabe.
 
   ### SCHNELL-CHECK (3 Min):
 
-  #### 1. Branch Check
+  #### 1. Branch Gate (MUSS)
   ```bash
   git branch --show-current
   /Users/joergstreeck/freshplan-sales-tool/scripts/get-current-feature-branch.sh
+  ```
 
-  # Falls kein Feature-Branch:
-  git checkout -b feature/fc-XXX-[description]
+  **Wenn Branch ≠ main → OK, weiter mit Schritt 2.**
+
+  **Wenn Branch = main → NICHT eigenmächtig arbeiten.**
+  **Biete aktiv an (nur eines auswählen, auf Antwort warten):**
+
+  **Option A – Feature-Branch jetzt anlegen**
+  Vorschlag (an Sprint angepasst):
+  • feature/s1-1-cqrs-listen-notify-setup (für TRIGGER_SPRINT_1_1)
+  • feature/s1-1-cqrs-command-service
+  • feature/s1-1-cqrs-query-service
+
+  **Option B – Sprint-Trigger starten**
+  • "Soll ich docs/planung/TRIGGER_SPRINT_1_1.md jetzt ausführen?"
+
+  ⚠️ Ohne Bestätigung KEIN Branch-Wechsel und KEINE Arbeit starten.
 
   2. MIGRATION-CHECK (🚨 PFLICHT bei DB-Arbeit!)
 
@@ -183,7 +199,7 @@ Lese alles gründlich durch und befolge strict die Standardübergabe.
 
   ### MP5-Priorität (Pflicht)
   - Öffne die letzte Übergabe (heute)
-  - Falls ein Block "MP5 UPDATE PENDING" vorhanden ist: ZUERST MP5 aktualisieren
+  - Falls ein Block "MP5 UPDATE PENDING" vorhanden ist: ZUERST MP5 aktualisieren, DANN erst Sprint starten
   - Danach KEINE neuen Dokumente erzeugen - nur MP5 pflegen
 
   5. TODOs laden
@@ -218,7 +234,7 @@ Lese alles gründlich durch und befolge strict die Standardübergabe.
 
 **Teil 2:**
 ```
-Feature-Branch checkout → ./scripts/robust-session-start.sh → MIGRATION-CHECK (Templates filtern!) → MP5-Priorität prüfen → Docs lesen → /checkpoint-Pattern verstehen → ⛔ STOPP: Status melden und auf "ARBEITSSTART" warten!
+Branch-Gate (aktives Angebot) → ./scripts/robust-session-start.sh → MIGRATION-CHECK (Templates filtern!) → MP5-Priorität prüfen → Docs lesen → /checkpoint-Pattern verstehen → ⛔ STOPP: Status melden und auf "ARBEITSSTART" warten!
 ```
 
 ---
@@ -239,7 +255,7 @@ Feature-Branch checkout → ./scripts/robust-session-start.sh → MIGRATION-CHEC
 - [ ] Technical Concepts (falls bearbeitet) aktualisiert?
 - [ ] Infrastructure-Pläne (falls relevant) gepflegt?
 
-### 🔄 Smart-Features (V3.2):
+### 🔄 Smart-Features (V3.3):
 - [ ] Template vollständig: "Was gemacht" + "Bekannte Probleme" ausgefüllt?
 - [ ] Git-Commit konkret gefragt (nicht nur vorgeschlagen)?
 - [ ] User-Antwort abgewartet: JA/NEIN/ÄNDERN?
@@ -248,6 +264,8 @@ Feature-Branch checkout → ./scripts/robust-session-start.sh → MIGRATION-CHEC
 - [ ] MP5 QUICK UPDATE erzwungen (Schritt 3b)?
 - [ ] Context-Frühwarnung beachtet (Schritt 0)?
 - [ ] Emergency Handover Pattern verfügbar?
+- [ ] Branch-Gate mit aktivem Angebot (bei main Branch)?
+- [ ] Sprint-Integration angeboten (Option B)?
 
 ---
 
@@ -259,7 +277,7 @@ Feature-Branch checkout → ./scripts/robust-session-start.sh → MIGRATION-CHEC
 3. **NIE** direkt auf main committen
 4. **WARTEN** auf "ARBEITSSTART" vor Implementierung
 
-### V3.2 Spezifische Fehler:
+### V3.3 Spezifische Fehler:
 5. **Template-Unvollständigkeit:** "Was gemacht" und "Bekannte Probleme" vergessen
 6. **Commit-Vorschlag statt Frage:** Nicht fragen sondern nur vorschlagen
 7. **Migration-Nummer-Inkonsistenz:** Script-Output vs. tatsächliche Nummer
@@ -269,12 +287,15 @@ Feature-Branch checkout → ./scripts/robust-session-start.sh → MIGRATION-CHEC
 11. **MP5-Update vergessen:** Schritt 3b übersprungen
 12. **VXXX-Filter vergessen:** Templates im Migration-Fallback angezeigt
 13. **Auto-Compact unvorbereitet:** Emergency Handover Pattern nicht angewandt
+14. **Branch-Gate ignoriert:** Auf main arbeiten ohne Angebot zu machen
+15. **Passives Warten:** Kein aktives Angebot bei main Branch
 
 ---
 
 ## 📜 ARCHIV
 
 Vorherige Versionen:
+- v3.2: Auto-Compact-Prävention + MP5-Härtung + Migration-Fallback-Filter
 - v3.1: NEXT_STEP.md entfernt + TRIGGER_INDEX.md Workflow
 - v2.7: `/docs/TRIGGER_TEXTS_v2.7_archived.md` (handover-with-sync.sh Version)
 - v2.6: Erste Version mit MIGRATION-CHECK als Pflichtschritt
