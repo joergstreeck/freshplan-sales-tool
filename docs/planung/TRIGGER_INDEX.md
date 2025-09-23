@@ -22,7 +22,7 @@
    - ABAC/RLS + Settings Registry
    - 6-8h, 2 PRs (FP-228, FP-229)
 
-✅ TRIGGER_SPRINT_1_3.md - Security Gates + CI
+✅ TRIGGER_SPRINT_1_3.md - Security Gates + CI [DONE]
    - Required PR-Checks + Foundation Validation
    - 4-6h, 2 PRs (FP-231, FP-232)
 ```
