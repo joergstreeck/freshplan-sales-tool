@@ -13,4 +13,58 @@ export function CustomerListHeader({ totalCount, onAddCustomer }: CustomerListHe
   const navigate = useNavigate();
 
   // Default to navigation if no onAddCustomer provided
-  const handleAddCustomer = React.useMemo(() => onAddCustomer || (() => console.log("Add customer")), [onAddCustomer]);
+  const handleAddCustomer = React.useMemo(
+    () => onAddCustomer || (() => navigate('/customers/new')),
+    [onAddCustomer, navigate]
+  );
+
+  useEffect(() => {
+    // Track page view
+    console.log('Customer list viewed');
+  }, []);
+
+  return (
+    <Box
+      sx={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        mb: 3,
+        flexWrap: 'wrap',
+        gap: 2
+      }}
+    >
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+        <Typography variant="h4" component="h1">
+          Kunden
+        </Typography>
+        <Chip
+          label={`${totalCount} gesamt`}
+          color="primary"
+          size="small"
+        />
+      </Box>
+
+      <Box sx={{ display: 'flex', gap: 2 }}>
+        <UniversalExportButton
+          entity="customer"
+          filters={{}}
+          variant="outlined"
+        />
+        <Button
+          variant="contained"
+          startIcon={<AddIcon />}
+          onClick={handleAddCustomer}
+          sx={{
+            bgcolor: '#94C456',
+            '&:hover': {
+              bgcolor: '#7BA345'
+            }
+          }}
+        >
+          Neuer Kunde
+        </Button>
+      </Box>
+    </Box>
+  );
+}

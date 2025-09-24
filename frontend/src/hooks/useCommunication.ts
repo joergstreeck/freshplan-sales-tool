@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { getJSON, postJSON } from '../lib/apiClient';
-import type { ThreadItem, ThreadPage } from '../types/communication';
+import type { ThreadPage } from '../types/communication';
 
 export function useThreads(params:{ q?:string; customerId?:string; unread?:boolean; channel?:'EMAIL'|'PHONE'|'MEETING'|'NOTE'}){
   const [data,setData]=useState<ThreadPage>({items:[]}); const [loading,setLoading]=useState(true); const [error,setError]=useState<string|null>(null);
