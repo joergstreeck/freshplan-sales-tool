@@ -20,7 +20,17 @@ import { httpClient } from '../../../../lib/apiClient';
 
 import { OpportunityCard } from './OpportunityCard';
 import { KanbanColumn } from './KanbanColumn';
-import { initialOpportunities, ACTIVE_STAGES, CLOSED_STAGES } from './mockData';
+
+// Stage constants - should be fetched from backend config in production
+const ACTIVE_STAGES = [
+  OpportunityStage.NEW,
+  OpportunityStage.QUALIFIED,
+  OpportunityStage.MEETING,
+  OpportunityStage.PROPOSAL,
+  OpportunityStage.NEGOTIATION,
+];
+
+const CLOSED_STAGES = [OpportunityStage.WON, OpportunityStage.LOST];
 
 const componentLogger = logger.child('KanbanBoardDndKit');
 
@@ -52,7 +62,7 @@ interface PipelineStats {
 export const KanbanBoardDndKit: React.FC = React.memo(() => {
   const theme = useTheme();
   const errorHandler = useErrorHandler('KanbanBoardDndKit');
-  const [opportunities, setOpportunities] = useState<Opportunity[]>(initialOpportunities);
+  const [opportunities, setOpportunities] = useState<Opportunity[]>([]);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [animatingIds, setAnimatingIds] = useState<Set<string>>(new Set());
 
@@ -79,7 +89,7 @@ export const KanbanBoardDndKit: React.FC = React.memo(() => {
           setOpportunities(apiOpportunities);
         }
       } catch {
-        // Keep using initialOpportunities as fallback
+        // Fallback to empty array if API fails
         // Error is silently handled - opportunities will remain as initial mock data
       }
     };
