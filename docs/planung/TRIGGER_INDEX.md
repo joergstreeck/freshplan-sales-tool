@@ -9,29 +9,32 @@
 
 ## 🗺️ ALLE TRIGGER-TEXTS ÜBERSICHT
 
-### **PHASE 1: FOUNDATION (3 Sprints)**
+### **PHASE 1: FOUNDATION (3 Sprints) - ✅ COMPLETE**
 ```yaml
-✅ TRIGGER_SPRINT_1_1.md - CQRS Light Foundation + Mock-Governance (97% Compliance)
+✅ TRIGGER_SPRINT_1_1.md - CQRS Light Foundation [PR #94 MERGED]
    - PostgreSQL LISTEN/NOTIFY + Event-Schema
-   - Mock-Governance Setup (ESLint/CI/Dev-Seeds) parallel zu CQRS
-   - Migration-Check + 4-Gate-System + Compliance-Checkpoints
-   - Pflichtlektüre zusätzlich: features-neu/00_infrastruktur/standards/03_MOCK_GOVERNANCE.md
-   - 4-6h, 1 PR (FP-225)
+   - Mock-Governance Setup (ESLint/CI/Dev-Seeds)
+   - Migration V225-227 deployed
+   - Status: ✅ COMPLETE
 
-✅ TRIGGER_SPRINT_1_2.md - Security + Foundation
+✅ TRIGGER_SPRINT_1_2.md - Security + Foundation [PR #95-96 MERGED]
    - ABAC/RLS + Settings Registry
-   - 6-8h, 2 PRs (FP-228, FP-229)
+   - Security Context operational
+   - Status: ✅ COMPLETE
 
-✅ TRIGGER_SPRINT_1_3.md - Security Gates + CI [DONE]
-   - Required PR-Checks + Foundation Validation
-   - 4-6h, 2 PRs (FP-231, FP-232)
+✅ TRIGGER_SPRINT_1_3.md - Security Gates + CI [PR #97-101 MERGED]
+   - CI Pipeline Split (PR <10min, Nightly ~30min)
+   - P95 Performance Benchmarks
+   - ETag Hit-Rate ≥70% achieved
+   - Status: ✅ COMPLETE - Phase 1 abgeschlossen!
 ```
 
-### **PHASE 2: CORE BUSINESS (5 Sprints)**
+### **PHASE 2: CORE BUSINESS (5 Sprints) - 🚀 STARTING**
 ```yaml
-✅ TRIGGER_SPRINT_2_1.md - Neukundengewinnung
+🚀 TRIGGER_SPRINT_2_1.md - Neukundengewinnung [PR #102 IN PROGRESS]
    - Lead-Management ohne Gebietsschutz
    - 8-10h, 4 PRs (FP-233 bis FP-236)
+   - Status: 🚀 STARTING NOW
 
 ✅ TRIGGER_SPRINT_2_2.md - Kundenmanagement
    - Field-based Customer Architecture

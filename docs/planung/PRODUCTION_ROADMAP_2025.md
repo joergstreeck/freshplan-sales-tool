@@ -10,13 +10,13 @@
 ## 🎯 CLAUDE QUICK-START (für neue Claude-Instanzen)
 
 **🚨 AKTUELLER STATUS:**
-- **Phase:** 1.1 Foundation - CQRS Light Foundation
-- **Next Action:** `feature/00-migrationen-listen-notify-setup-FP-225`
-- **Progress:** 0/35 PRs completed - 0% done
-- **Blockers:** None - Ready to start
-- **Active Branch:** None (create first feature branch)
-- **Foundation Status:** ✅ 300+ Production-Ready Artefakte verfügbar
-- **Critical Dependency:** CQRS Light Migration MUSS vor Business-Modulen erfolgen
+- **Phase:** ✅ Phase 1 COMPLETE | 🚀 Phase 2 STARTING
+- **Next Action:** Sprint 2.1 - Module 02 Neukundengewinnung (PR #102)
+- **Progress:** 8/35 PRs completed - 23% done
+- **Blockers:** None - Foundation complete, ready for business modules
+- **Active Branch:** main (Phase 1 merged)
+- **Foundation Status:** ✅ COMPLETE - CQRS/Security/Settings/CI operational
+- **Performance:** ✅ P95 <200ms achieved with ETag ≥70% Hit-Rate
 
 **🔗 WICHTIGE REFERENZEN:**
 - **Arbeitsregeln:** [CLAUDE.md](./CLAUDE.md)
@@ -55,22 +55,29 @@ echo "Nächste Migration: $MIGRATION"
 
 ## 📊 LIVE PROGRESS DASHBOARD
 
-### 📋 **Phase 1: Foundation (3 Wochen)**
+### ✅ **Phase 1: Foundation (3 Wochen) - COMPLETE**
+```
+Progress: ██████████ 100% (3/3 Sprints COMPLETE)
+
+Sprint 1.1: CQRS Light Foundation     ✅ PR #94 MERGED → FP-225 bis FP-227
+Sprint 1.2: Security + Foundation     ✅ PR #95-96 MERGED → Security Context
+Sprint 1.3: Security Gates + CI       ✅ PR #97-101 MERGED → CI/Testing/P95
+
+🎯 Achievements:
+- CQRS Light: P95 <200ms operational
+- Security: Gates + Context + Headers
+- Settings: Registry mit ETag ≥70% Hit-Rate
+- CI: Pipeline Split (PR <10min, Nightly ~30min)
+- Testing: Integration Framework mit P95-Metriken
+```
+
+### 🚀 **Phase 2: Core Business (7.5 Wochen) - IN PROGRESS**
 ```
 Progress: ░░░░░░░░░░ 0% (0/5 Sprints)
 
-Sprint 1.1: CQRS Light Foundation     📋 Ready → FP-225 bis FP-227
-Sprint 1.2: Security + Foundation     🔒 Blocked → Wartet auf 1.1
-Sprint 1.3: Security Gates + CI       🔒 Blocked → Wartet auf 1.2
-```
-
-### 📋 **Phase 2: Core Business (7.5 Wochen) - KORRIGIERTE REIHENFOLGE**
-```
-Progress: ░░░░░░░░░░ 0% (0/5 Sprints)
-
-Sprint 2.1: 02 Neukundengewinnung     🟡 Planning → 44 Artefakte verfügbar
-Sprint 2.2: 03 Kundenmanagement      🟡 Planning → 39 Artefakte verfügbar
-Sprint 2.3: 05 Kommunikation         🟡 Planning → Nach Security-Gate!
+Sprint 2.1: 02 Neukundengewinnung     🚀 STARTING NOW → PR #102 (Lead-CQRS)
+Sprint 2.2: 03 Kundenmanagement      📋 Ready → 39 Artefakte verfügbar
+Sprint 2.3: 05 Kommunikation         📋 Ready → Security-Gate ✅ erfüllt!
 Sprint 2.4: 01 Cockpit               🟡 Planning → CQRS-optimiert
 Sprint 2.5: 06 Einstellungen         🟡 Planning → Settings Foundation
 ```
@@ -84,7 +91,7 @@ Sprint 3.2: 07+08 Hilfe + Admin      🟡 Planning → CAR-Strategy + User Mgmt
 Sprint 3.3: Final Integration        🟡 Planning → Kong/Envoy Policies
 ```
 
-**🎯 GESAMT-FORTSCHRITT: 0/35 PRs ✅ | 0/15 Wochen | ETA: 2025-05-15**
+**🎯 GESAMT-FORTSCHRITT: 8/35 PRs ✅ | 3/15 Wochen | ETA: 2025-05-15**
 
 ---
 
