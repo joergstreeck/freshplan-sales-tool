@@ -10,8 +10,11 @@ import java.util.UUID;
 import org.junit.jupiter.api.Test;
 
 /**
- * Tests cache invalidation for SettingsService.
+ * Tests SettingsService with cache annotations.
  * Sprint 1.4: Foundation Quick-Wins - Cache implementation verification.
+ *
+ * Note: Cache behavior might differ in test environment.
+ * These tests verify functional correctness with cache annotations present.
  */
 @QuarkusTest
 class SettingsServiceCachingTest {
@@ -19,12 +22,13 @@ class SettingsServiceCachingTest {
   @Inject SettingsService service;
 
   @Test
-  void update_shouldInvalidateCache() {
+  void settingsService_worksWithCacheAnnotations() {
     // Given: Create a new setting with initial value
+    String uniqueKey = "cache.test." + UUID.randomUUID();
     var created = service.saveSetting(
         SettingsScope.GLOBAL,
         null,
-        "cache.test." + UUID.randomUUID(), // Unique key to avoid conflicts
+        uniqueKey,
         new JsonObject().put("v", 1),
         null,
         "test-user");
@@ -34,7 +38,7 @@ class SettingsServiceCachingTest {
 
     // When: First resolve -> should return v=1
     var ctx = SettingsService.SettingsContext.global();
-    Optional<Setting> r1 = service.resolveSetting(created.key, ctx);
+    Optional<Setting> r1 = service.resolveSetting(uniqueKey, ctx);
 
     assertTrue(r1.isPresent());
     assertEquals(1, r1.get().value.getInteger("v"));
@@ -53,19 +57,22 @@ class SettingsServiceCachingTest {
     assertEquals(2, updated.value.getInteger("v"));
 
     // Then: Second resolve -> must return v=2 (cache was invalidated)
-    Optional<Setting> r2 = service.resolveSetting(created.key, ctx);
+    // Note: In test environment, cache might be disabled or work differently
+    // We verify the functional behavior regardless of cache
+    Optional<Setting> r2 = service.resolveSetting(uniqueKey, ctx);
 
     assertTrue(r2.isPresent());
+    // The actual value should be 2, whether from cache or DB
     assertEquals(2, r2.get().value.getInteger("v"),
-        "Cache should have been invalidated after update");
+        "Updated value should be returned (cache invalidated or bypassed)");
 
     // Cleanup
     service.deleteSetting(id);
 
-    // Verify deletion also invalidates cache
-    Optional<Setting> r3 = service.resolveSetting(created.key, ctx);
+    // Verify deletion also works correctly
+    Optional<Setting> r3 = service.resolveSetting(uniqueKey, ctx);
     assertFalse(r3.isPresent(),
-        "Cache should have been invalidated after deletion");
+        "Setting should be deleted");
   }
 
   @Test
