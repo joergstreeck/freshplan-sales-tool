@@ -115,15 +115,16 @@
 
 ## Next Steps
 <!-- MP5:NEXT_STEPS:START -->
-- ✅ **Phase 1 Foundation COMPLETE** (PR #101 gemerged)
-- 🚀 **Sprint 2.1 START:** Module 02 Neukundengewinnung
-  - Lead-Erfassung CQRS-Integration (PR #102)
+- ✅ **Phase 1 Foundation COMPLETE** (PR #101 gemerged, 2025-09-24)
+- 🚀 **Sprint 2.1 READY:** Module 02 Neukundengewinnung
+  - Lead-Erfassung CQRS-Integration (PR #102 vorbereiten)
   - Lead-Journey Frontend Foundation
   - Analytics Dashboard Struktur
-- Sprint 2.2: Lead-Journey Implementation
-- Sprint 2.3: Lead-Analytics & Reporting
-- Parallel: Frontend Lint-Cleanup (separater PR)
-- Migration V229 verfügbar für neue DB-Arbeiten
+  - TRIGGER_SPRINT_2_1.md befolgen
+- Sprint 2.2: Lead-Journey Implementation (nach 2.1)
+- Sprint 2.3: Lead-Analytics & Reporting (nach 2.2)
+- Parallel: Frontend Lint-Cleanup (52 Legacy Errors)
+- Migration V229+ verfügbar für neue DB-Arbeiten
 <!-- MP5:NEXT_STEPS:END -->
 
 ## Risks
