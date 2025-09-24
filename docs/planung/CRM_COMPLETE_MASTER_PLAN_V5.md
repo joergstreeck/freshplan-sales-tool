@@ -117,20 +117,21 @@
 
 ## Next Steps
 <!-- MP5:NEXT_STEPS:START -->
-- 🔄 **Sprint 1.4 Foundation Quick-Wins** (PR #102 in Arbeit, 2025-09-24)
-  - Quarkus-Cache für Settings-Service implementieren
-  - Prod-Config Härtung (defaultOrgId/defaultTerritory)
-  - Cache-Invalidierung bei Writes
-  - Nach Abschluss: Phase 1 100% COMPLETE
-- 🚀 **Sprint 2.1 READY:** Module 02 Neukundengewinnung
-  - Lead-Erfassung CQRS-Integration (PR #102 vorbereiten)
-  - Lead-Journey Frontend Foundation
-  - Analytics Dashboard Struktur
-  - TRIGGER_SPRINT_2_1.md befolgen
-- Sprint 2.2: Lead-Journey Implementation (nach 2.1)
-- Sprint 2.3: Lead-Analytics & Reporting (nach 2.2)
-- Parallel: Frontend Lint-Cleanup (52 Legacy Errors)
-- Migration V229+ verfügbar für neue DB-Arbeiten
+- ✅ **Sprint 2.1 PR #1 COMPLETE:** Territory Management (PR #103 gemerged, 2025-09-25)
+  - Territory ohne Gebietsschutz implementiert
+  - UserLeadSettingsService mit Thread-Safety
+  - Migration V229-V231 deployed
+  - 8 Tests, 100% Service Coverage
+- 🚀 **Sprint 2.1 PR #2 READY:** Lead Endpoints & Queries
+  - GET /api/leads (Pagination & Filtering)
+  - POST /api/leads (Lead-Erfassung)
+  - PATCH /api/leads/{id} (Status-Updates)
+  - Lead Protection System (6/60/10 Regel)
+  - Stop-the-Clock Feature
+- Sprint 2.1 PR #3: Lead UI Components (nach PR #2)
+- Sprint 2.2: Kundenmanagement Integration (nach 2.1)
+- Migration V232 als nächste verfügbar
+- Parallel: performUniversalSearch Frontend-Bug (niedrige Priorität)
 <!-- MP5:NEXT_STEPS:END -->
 
 ## Risks
@@ -142,10 +143,12 @@
 
 ## Decisions
 <!-- MP5:DECISIONS:START -->
+- 2025-09-25 — Territory ohne Gebietsschutz bestätigt: Lead-Protection rein user-basiert (ADR-0004 implementiert)
+- 2025-09-25 — Service-Pattern für Thread-Safety: Statische DB-Methoden durch CDI-Services ersetzt
+- 2025-09-25 — ElementCollection erfordert Join-Tabellen: V231 Migration als Standard-Pattern
+- 2025-09-24 — Settings Registry Production-Ready: Race Condition Prevention + 304 Support + Strict Create implementiert nach KI-Review
 - 2025-09-23 — ADR-0006 angenommen: Mock-Governance (Business-Logic mock-frei, Ausnahmen Tests/Stories; Dev-Seeds statt UI-Mocks)
 - 2025-09-23 — Security Foundation minimalistisch (ohne Business-Dependencies) - RLS-Policies später pro Modul
-- 2025-09-23 — Sprint 1.3 Security Gates erfolgreich implementiert - PR Template, Security Contract Tests, Fail-Closed Verification operativ
-- 2025-09-24 — Settings Registry Production-Ready: Race Condition Prevention + 304 Support + Strict Create implementiert nach KI-Review
 <!-- MP5:DECISIONS:END -->
 
 ### **ADR-0002: PostgreSQL LISTEN/NOTIFY statt Event-Bus (18.09.2025)**
