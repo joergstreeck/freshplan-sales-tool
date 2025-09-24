@@ -7,7 +7,6 @@
  * - kanban/KanbanBoardDndKit.tsx (main board component - 408 lines)
  * - kanban/OpportunityCard.tsx (card component - 271 lines)
  * - kanban/KanbanColumn.tsx (column component - 110 lines)
- * - kanban/mockData.ts (mock data - 89 lines)
  *
  * This is a re-export for backward compatibility.
  */
