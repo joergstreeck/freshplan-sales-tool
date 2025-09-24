@@ -100,3 +100,27 @@ USING (
 - **Lead-Protection:** `lead_ownership_violations = 0` in Contract-Tests
 - **Audit-Trail:** Territoriale Datenzugriffe geloggt
 - **Documentation:** Glossar mit Territory vs Lead-Protection Definition
+
+## Sprint 2.1 Implementation Update (2025-09-25)
+
+### Umgesetzte Entscheidungen:
+- **Territory ohne Gebietsschutz:** Implementiert in V229 Migration
+- **UserLeadSettingsService:** Thread-sicherer Service statt statischer Methoden
+- **ElementCollection Tables:** V231 Migration für Join-Tabellen
+- **Dev/Prod Trennung:** Flyway Locations strikt getrennt
+
+### Implementierte Tabellen:
+- `territories`: Currency, Tax, Business Rules
+- `leads`: User-based Protection implementiert
+- `user_lead_settings`: Präferenzen ohne geografische Restriktion
+- `lead_activities`: Activity Tracking für Protection-Rules
+
+### Bestätigte Trade-offs:
+- ✅ Keine geografische Lead-Exklusivität - bewusst akzeptiert
+- ✅ Protection rein user-basiert - funktioniert wie geplant
+- ✅ Territory nur für Currency/Tax - vereinfacht Business Logic
+- ✅ ETag/Cache-Semantik klar definiert
+
+### Referenz:
+- PR #103: Territory Management Implementation
+- Migration V229-V231: Vollständige Umsetzung

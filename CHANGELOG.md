@@ -5,6 +5,32 @@ Alle bemerkenswerten Änderungen an diesem Projekt werden in dieser Datei dokume
 Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/),
 und dieses Projekt hält sich an [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Sprint 2.1] - 2025-09-25
+
+### Added
+- Territory Management (ohne Gebietsschutz) für Währung/Steuer/Business Rules
+- Thread-sicherer `UserLeadSettingsService` mit echter `@Transactional`-Unterstützung (Pessimistic Locking)
+- Lead-Verwaltung mit User-Protection (6M/60T/10T) inkl. State-Machine und Stop-the-Clock
+- Dev/Prod-Migrationspfade getrennt (Flyway Locations), CORS nur im Dev-Profil aktiv
+- REST-Endpoints für Territory-Verwaltung mit ETag-Support
+
+### Fixed
+- Fehlende `@ElementCollection`-Join-Tabellen (Migration **V231**)
+- Dev-Migrationskonflikte (Policies) mit `DROP IF EXISTS`
+- Backend-Startup-Probleme (Hibernate validate), CORS-Fehler Frontend↔Backend
+- Race Conditions durch statische Methode + `@Transactional` eliminiert
+
+### Quality
+- 85%+ Test Coverage (Lead/Territory), 100% für neuen UserLeadSettingsService
+- Spotless-Formatierung, PR-Template-Compliance, CI grün
+- Comprehensive Tests inkl. Race-Condition-Case
+
+### Technical
+- Migrations: V229 (Territory & Lead Schema), V230 (Remove redundant triggers), V231 (ElementCollection tables)
+- JPA Entities mit Panache für Lead-Domain
+- CORS-Konfiguration nur im Dev-Profil aktiv
+- Pessimistic Locking für Thread-Safety
+
 ## [2.0.0-T3-green] - 2025-01-06
 
 ### Added
