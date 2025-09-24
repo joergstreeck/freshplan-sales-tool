@@ -34,7 +34,8 @@ export function CalculatorForm() {
 
       setResult(result);
       addToHistory(data, result, selectedScenario || undefined);
-    } catch (_error) { void _error;
+    } catch (_error) {
+      void _error;
       if (import.meta.env.DEV) {
         // Development mode check
       }

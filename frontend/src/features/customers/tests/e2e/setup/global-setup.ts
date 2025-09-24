@@ -15,25 +15,25 @@ async function globalSetup(config: FullConfig) {
     const response = await fetch(`${baseURL}/api/health`);
     if (!response.ok) {
       // Server not healthy
-    } else { 
+    } else {
       void 0;
     }
   } catch (_error) {
-        void _error;    // Server not reachable
+    void _error; // Server not reachable
   }
 
   // Setup test data if needed
   try {
     await seedTestData(baseURL);
   } catch (_error) {
-        void _error;    // Test data seeding failed
+    void _error; // Test data seeding failed
   }
 
   // Setup authentication state for tests that need it
   try {
     await setupAuthState(config);
   } catch (_error) {
-        void _error;    // Auth setup failed
+    void _error; // Auth setup failed
   }
 }
 
@@ -105,7 +105,7 @@ async function setupAuthState(config: FullConfig) {
       await context.storageState({ path: './e2e-auth-state.json' });
     }
   } catch {
-      // Error ignored intentionally
+    // Error ignored intentionally
   } finally {
     await browser.close();
   }

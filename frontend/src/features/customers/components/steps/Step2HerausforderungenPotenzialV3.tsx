@@ -18,7 +18,6 @@ import { RevenueExpectationSectionV2 } from '../sections/RevenueExpectationSecti
 import { AdditionalBusinessSection } from '../sections/AdditionalBusinessSection';
 import { isFieldDefinition } from '../../types/field.types';
 
-
 // Pain Point Solutions Mapping (unverändert)
 const PAIN_POINT_SOLUTIONS = {
   hasStaffingIssues: {

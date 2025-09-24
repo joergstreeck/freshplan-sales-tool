@@ -9,15 +9,17 @@ import jakarta.validation.ValidatorFactory;
 import java.util.List;
 import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
 /**
  * Unit tests for UpdateUserRolesRequest DTO.
  *
  * @author FreshPlan Team
  * @since 2.0.0
  */
-@Tag("migrate")class UpdateUserRolesRequestTest {
+@Tag("migrate")
+class UpdateUserRolesRequestTest {
 
   private Validator validator;
 

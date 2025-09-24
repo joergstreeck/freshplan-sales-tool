@@ -25,8 +25,6 @@ import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import CampaignIcon from '@mui/icons-material/Campaign';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import ScheduleIcon from '@mui/icons-material/Schedule';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import PendingIcon from '@mui/icons-material/Pending';
 
 interface LeadCard {
   title: string;
@@ -96,10 +94,14 @@ export function NeukundengewinnungDashboard() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'new': return '#94C456';
-      case 'qualified': return '#29B6F6';
-      case 'contacted': return '#FFA726';
-      default: return '#757575';
+      case 'new':
+        return '#94C456';
+      case 'qualified':
+        return '#29B6F6';
+      case 'contacted':
+        return '#FFA726';
+      default:
+        return '#757575';
     }
   };
 
@@ -185,7 +187,7 @@ export function NeukundengewinnungDashboard() {
           {/* Tool Cards */}
           <Grid size={{ xs: 12, lg: 8 }}>
             <Grid container spacing={3}>
-              {leadTools.map((tool) => (
+              {leadTools.map(tool => (
                 <Grid key={tool.title} size={{ xs: 12, md: 6, lg: 4 }}>
                   <Card
                     sx={{
@@ -231,9 +233,18 @@ export function NeukundengewinnungDashboard() {
                       >
                         {tool.description}
                       </Typography>
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                        }}
+                      >
                         <Box>
-                          <Typography variant="h6" sx={{ color: tool.stats.trend === 'up' ? '#94C456' : '#004F7B' }}>
+                          <Typography
+                            variant="h6"
+                            sx={{ color: tool.stats.trend === 'up' ? '#94C456' : '#004F7B' }}
+                          >
                             {tool.stats.primary}
                           </Typography>
                           {tool.stats.secondary && (
@@ -243,7 +254,9 @@ export function NeukundengewinnungDashboard() {
                           )}
                         </Box>
                         {tool.stats.trend && (
-                          <TrendingUpIcon sx={{ color: tool.stats.trend === 'up' ? '#94C456' : '#757575' }} />
+                          <TrendingUpIcon
+                            sx={{ color: tool.stats.trend === 'up' ? '#94C456' : '#757575' }}
+                          />
                         )}
                       </Box>
                     </CardContent>
@@ -259,36 +272,83 @@ export function NeukundengewinnungDashboard() {
               {/* Lead Funnel */}
               <Grid size={{ xs: 12, lg: 12 }}>
                 <Paper sx={{ p: 3 }}>
-                  <Typography variant="h6" sx={{ mb: 2, fontFamily: 'Antonio, sans-serif', color: '#004F7B' }}>
+                  <Typography
+                    variant="h6"
+                    sx={{ mb: 2, fontFamily: 'Antonio, sans-serif', color: '#004F7B' }}
+                  >
                     Lead Funnel
                   </Typography>
                   <Box sx={{ mb: 2 }}>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                       <Typography variant="body2">Anfragen</Typography>
-                      <Typography variant="body2" fontWeight="bold">234</Typography>
+                      <Typography variant="body2" fontWeight="bold">
+                        234
+                      </Typography>
                     </Box>
-                    <LinearProgress variant="determinate" value={100} sx={{ height: 8, borderRadius: 1, backgroundColor: '#e0e0e0', '& .MuiLinearProgress-bar': { backgroundColor: '#94C456' } }} />
+                    <LinearProgress
+                      variant="determinate"
+                      value={100}
+                      sx={{
+                        height: 8,
+                        borderRadius: 1,
+                        backgroundColor: '#e0e0e0',
+                        '& .MuiLinearProgress-bar': { backgroundColor: '#94C456' },
+                      }}
+                    />
                   </Box>
                   <Box sx={{ mb: 2 }}>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                       <Typography variant="body2">Qualifiziert</Typography>
-                      <Typography variant="body2" fontWeight="bold">142</Typography>
+                      <Typography variant="body2" fontWeight="bold">
+                        142
+                      </Typography>
                     </Box>
-                    <LinearProgress variant="determinate" value={60} sx={{ height: 8, borderRadius: 1, backgroundColor: '#e0e0e0', '& .MuiLinearProgress-bar': { backgroundColor: '#29B6F6' } }} />
+                    <LinearProgress
+                      variant="determinate"
+                      value={60}
+                      sx={{
+                        height: 8,
+                        borderRadius: 1,
+                        backgroundColor: '#e0e0e0',
+                        '& .MuiLinearProgress-bar': { backgroundColor: '#29B6F6' },
+                      }}
+                    />
                   </Box>
                   <Box sx={{ mb: 2 }}>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                       <Typography variant="body2">Opportunity</Typography>
-                      <Typography variant="body2" fontWeight="bold">67</Typography>
+                      <Typography variant="body2" fontWeight="bold">
+                        67
+                      </Typography>
                     </Box>
-                    <LinearProgress variant="determinate" value={28} sx={{ height: 8, borderRadius: 1, backgroundColor: '#e0e0e0', '& .MuiLinearProgress-bar': { backgroundColor: '#FFA726' } }} />
+                    <LinearProgress
+                      variant="determinate"
+                      value={28}
+                      sx={{
+                        height: 8,
+                        borderRadius: 1,
+                        backgroundColor: '#e0e0e0',
+                        '& .MuiLinearProgress-bar': { backgroundColor: '#FFA726' },
+                      }}
+                    />
                   </Box>
                   <Box>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
                       <Typography variant="body2">Gewonnen</Typography>
-                      <Typography variant="body2" fontWeight="bold">23</Typography>
+                      <Typography variant="body2" fontWeight="bold">
+                        23
+                      </Typography>
                     </Box>
-                    <LinearProgress variant="determinate" value={10} sx={{ height: 8, borderRadius: 1, backgroundColor: '#e0e0e0', '& .MuiLinearProgress-bar': { backgroundColor: '#004F7B' } }} />
+                    <LinearProgress
+                      variant="determinate"
+                      value={10}
+                      sx={{
+                        height: 8,
+                        borderRadius: 1,
+                        backgroundColor: '#e0e0e0',
+                        '& .MuiLinearProgress-bar': { backgroundColor: '#004F7B' },
+                      }}
+                    />
                   </Box>
                 </Paper>
               </Grid>
@@ -299,7 +359,10 @@ export function NeukundengewinnungDashboard() {
           <Grid size={{ xs: 12, lg: 4 }}>
             {/* Recent Leads */}
             <Paper sx={{ p: 3, mb: 3 }}>
-              <Typography variant="h6" sx={{ mb: 2, fontFamily: 'Antonio, sans-serif', color: '#004F7B' }}>
+              <Typography
+                variant="h6"
+                sx={{ mb: 2, fontFamily: 'Antonio, sans-serif', color: '#004F7B' }}
+              >
                 Neue Leads
               </Typography>
               <List>
@@ -307,19 +370,25 @@ export function NeukundengewinnungDashboard() {
                   <ListItem key={index} sx={{ px: 0 }}>
                     <ListItemAvatar>
                       <Avatar sx={{ bgcolor: getStatusColor(lead.status) }}>
-                        {lead.name.split(' ').map(n => n[0]).join('')}
+                        {lead.name
+                          .split(' ')
+                          .map(n => n[0])
+                          .join('')}
                       </Avatar>
                     </ListItemAvatar>
-                    <ListItemText
-                      primary={lead.name}
-                      secondary={lead.company}
-                    />
+                    <ListItemText primary={lead.name} secondary={lead.company} />
                     <Box sx={{ textAlign: 'right' }}>
                       <Typography variant="caption" color="text.secondary">
                         {lead.time}
                       </Typography>
                       <Chip
-                        label={lead.status === 'new' ? 'Neu' : lead.status === 'qualified' ? 'Qualifiziert' : 'Kontaktiert'}
+                        label={
+                          lead.status === 'new'
+                            ? 'Neu'
+                            : lead.status === 'qualified'
+                              ? 'Qualifiziert'
+                              : 'Kontaktiert'
+                        }
                         size="small"
                         sx={{
                           display: 'block',
@@ -339,7 +408,10 @@ export function NeukundengewinnungDashboard() {
 
             {/* Upcoming Actions */}
             <Paper sx={{ p: 3 }}>
-              <Typography variant="h6" sx={{ mb: 2, fontFamily: 'Antonio, sans-serif', color: '#004F7B' }}>
+              <Typography
+                variant="h6"
+                sx={{ mb: 2, fontFamily: 'Antonio, sans-serif', color: '#004F7B' }}
+              >
                 Anstehende Aktionen
               </Typography>
               <List>
@@ -350,17 +422,22 @@ export function NeukundengewinnungDashboard() {
                         <ScheduleIcon sx={{ color: '#004F7B' }} />
                       </Avatar>
                     </ListItemAvatar>
-                    <ListItemText
-                      primary={action.action}
-                      secondary={action.contact}
-                    />
+                    <ListItemText primary={action.action} secondary={action.contact} />
                     <Typography variant="body2" sx={{ color: '#94C456', fontWeight: 'medium' }}>
                       {action.time}
                     </Typography>
                   </ListItem>
                 ))}
               </List>
-              <Button fullWidth variant="contained" sx={{ mt: 2, backgroundColor: '#94C456', '&:hover': { backgroundColor: '#7BA347' } }}>
+              <Button
+                fullWidth
+                variant="contained"
+                sx={{
+                  mt: 2,
+                  backgroundColor: '#94C456',
+                  '&:hover': { backgroundColor: '#7BA347' },
+                }}
+              >
                 Neue Aktion planen
               </Button>
             </Paper>

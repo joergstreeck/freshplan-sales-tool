@@ -19,8 +19,9 @@ import java.util.ArrayList;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Tag;import org.mockito.Mockito;
+import org.mockito.Mockito;
 
 /**
  * Integration tests for SalesCockpit CQRS implementation.
@@ -32,7 +33,8 @@ import org.junit.jupiter.api.Tag;import org.mockito.Mockito;
  * @since 2.0.0
  */
 @QuarkusTest
-@Tag("migrate")@Disabled("Mock injection issues need to be fixed - mocks return null")
+@Tag("migrate")
+@Disabled("Mock injection issues need to be fixed - mocks return null")
 class SalesCockpitCQRSIntegrationTest {
 
   @Inject SalesCockpitService salesCockpitService;

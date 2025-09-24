@@ -17,6 +17,7 @@ Diese Validation-Schicht bietet ein umfassendes, typsicheres Validierungssystem 
 ## 🏗️ Architektur
 
 ### Validierungs-Struktur
+
 ```
 validation/
 ├── baseSchemas.ts          # Wiederverwendbare Basis-Validierungen
@@ -30,6 +31,7 @@ validation/
 ```
 
 ### Schema-Hierarchie
+
 ```
 Base Schemas (Atomic)
     ↓
@@ -45,9 +47,9 @@ Form Validation (UI Layer)
 ### 1. Basis-Validierung mit vordefinierten Schemas
 
 ```typescript
-import { 
-  useFormValidation, 
-  EntityType 
+import {
+  useFormValidation,
+  EntityType
 } from '@/features/customers/validation';
 
 // In Customer Form Component
@@ -79,7 +81,7 @@ const { form, errors } = useFormValidation({
   fields: customerFields,
   isDraft: true, // Erlaubt partielle Daten
   realtimeValidation: true,
-  validationDelay: 500 // Debounce 500ms
+  validationDelay: 500, // Debounce 500ms
 });
 ```
 
@@ -94,7 +96,7 @@ const { validateStep, canProceed } = useStepValidation(currentStep);
 
 const handleNext = async () => {
   const { isValid, errors } = await validateStep();
-  
+
   if (!isValid) {
     // Zeige Fehler an
     errors.forEach((message, field) => {
@@ -102,7 +104,7 @@ const handleNext = async () => {
     });
     return;
   }
-  
+
   // Weiter zum nächsten Schritt
   nextStep();
 };
@@ -114,10 +116,7 @@ const handleNext = async () => {
 import { validateCustomerCrossFields } from '../validation';
 
 // Validiere Geschäftsregeln
-const validationResult = validateCustomerCrossFields(
-  customerData,
-  locations.length
-);
+const validationResult = validateCustomerCrossFields(customerData, locations.length);
 
 if (!validationResult.isValid) {
   // Zeige Fehler
@@ -137,6 +136,7 @@ if (validationResult.warnings) {
 ## 📚 Validierungs-Regeln
 
 ### Deutsche Standards
+
 - **PLZ:** Genau 5 Ziffern (`/^[0-9]{5}$/`)
 - **Telefon:** 10-15 Ziffern, flexible Formatierung
 - **E-Mail:** Standard E-Mail mit Lowercase-Normalisierung
@@ -145,20 +145,24 @@ if (validationResult.warnings) {
 ### Geschäftsregeln
 
 #### Hotels
+
 - 5-Sterne Hotels: Min. 50 Zimmer
 - Sterne-Kategorie: Pflichtfeld
 - Restaurant-Kapazität: Abhängig von Sterne-Kategorie
 
 #### Krankenhäuser
+
 - Universitätskliniken: Min. 300 Betten
 - Mindestens eine Abteilung
 - Notaufnahme-Flag beeinflusst andere Felder
 
 #### Ketten-Kunden
+
 - Sollten mehrere Standorte haben
 - Hauptstandort sollte vollständige Adresse haben
 
 ### Adress-Validierung
+
 - Wenn ein Adressfeld ausgefüllt → Alle müssen ausgefüllt sein
 - Hauptstandort benötigt vollständige Adresse
 - PLZ-Validierung gegen deutsche Standards
@@ -166,6 +170,7 @@ if (validationResult.warnings) {
 ## 🚀 Performance-Optimierungen
 
 ### 1. Schema Caching
+
 ```typescript
 // schemaBuilder.ts
 private schemaCache = new Map<string, z.ZodType<any>>();
@@ -174,20 +179,23 @@ private schemaCache = new Map<string, z.ZodType<any>>();
 ```
 
 ### 2. Debounced Validation
+
 ```typescript
 // Real-time Validierung mit Debouncing
 const { validateField } = useFormValidation({
   realtimeValidation: true,
-  validationDelay: 300 // 300ms delay
+  validationDelay: 300, // 300ms delay
 });
 ```
 
 ### 3. Lazy Schema Building
+
 Schemas werden nur gebaut wenn benötigt, nicht bei jedem Render.
 
 ## 🧪 Testing
 
 ### Unit Tests für Schemas
+
 ```typescript
 describe('Customer Schemas', () => {
   it('should validate hotel requirements', () => {
@@ -196,9 +204,9 @@ describe('Customer Schemas', () => {
       industry: 'hotel',
       chainCustomer: 'nein',
       starRating: '5',
-      roomCount: 100
+      roomCount: 100,
     };
-    
+
     const result = getCustomerSchema('hotel').safeParse(hotelData);
     expect(result.success).toBe(true);
   });
@@ -206,16 +214,17 @@ describe('Customer Schemas', () => {
 ```
 
 ### Integration Tests
+
 ```typescript
 describe('Form Validation Hook', () => {
   it('should validate draft incrementally', async () => {
-    const { result } = renderHook(() => 
-      useFormValidation({ 
+    const { result } = renderHook(() =>
+      useFormValidation({
         entityType: EntityType.CUSTOMER,
-        isDraft: true 
+        isDraft: true,
       })
     );
-    
+
     // Nur companyName ist required für drafts
     const isValid = await result.current.validateAll();
     expect(isValid).toBe(false);
@@ -232,19 +241,19 @@ graph TD
     B -->|Text| C[Text Validation]
     B -->|Number| D[Number Validation]
     B -->|Select| E[Enum Validation]
-    
+
     C --> F[Pattern Check]
     D --> G[Range Check]
     E --> H[Option Check]
-    
+
     F --> I[Cross-Field Rules]
     G --> I
     H --> I
-    
+
     I --> J{Valid?}
     J -->|Yes| K[Update Form State]
     J -->|No| L[Show Error]
-    
+
     K --> M[Enable Submit]
     L --> N[Disable Submit]
 ```
@@ -252,16 +261,14 @@ graph TD
 ## 🔗 Integration Points
 
 ### Mit Zustand Store
+
 ```typescript
 // Validation errors werden im Store gespeichert
-const { 
-  validationErrors,
-  setValidationError,
-  clearValidationError 
-} = useCustomerOnboardingStore();
+const { validationErrors, setValidationError, clearValidationError } = useCustomerOnboardingStore();
 ```
 
 ### Mit API Services
+
 ```typescript
 // Async Validation gegen Backend
 const checkCompanyNameUnique = async (name: string) => {
@@ -271,6 +278,7 @@ const checkCompanyNameUnique = async (name: string) => {
 ```
 
 ### Mit Field Renderer
+
 ```typescript
 // Field Components bekommen Validation State
 <DynamicFieldRenderer

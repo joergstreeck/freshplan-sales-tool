@@ -323,7 +323,8 @@ class Logger {
         },
         body: JSON.stringify({ entries }),
       });
-    } catch (_error) { void _error;
+    } catch (_error) {
+      void _error;
       // Re-add to buffer on failure
       this.buffer.unshift(...entries);
     }

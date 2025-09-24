@@ -136,7 +136,9 @@ export const UserActivityPanel: React.FC<UserActivityPanelProps> = ({ dateRange:
                   fullWidth
                   placeholder="Benutzer suchen..."
                   value={searchTerm}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    setSearchTerm(e.target.value)
+                  }
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">

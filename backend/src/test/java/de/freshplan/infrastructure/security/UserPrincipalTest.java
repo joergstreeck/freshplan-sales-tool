@@ -5,10 +5,12 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.Set;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
 /** Unit tests for UserPrincipal class. Tests the builder pattern, getters, and immutability. */
-@Tag("migrate")class UserPrincipalTest {
+@Tag("migrate")
+class UserPrincipalTest {
 
   @Nested
   @DisplayName("Builder Pattern Tests")

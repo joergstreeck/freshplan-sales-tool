@@ -8,11 +8,13 @@ import io.quarkus.panache.common.Sort;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import java.util.List;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
 /** Tests for SmartSortService functionality. */
 @QuarkusTest
-@Tag("migrate")class SmartSortServiceTest {
+@Tag("migrate")
+class SmartSortServiceTest {
 
   @Inject SmartSortService smartSortService;
 

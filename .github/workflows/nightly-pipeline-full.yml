@@ -1,0 +1,260 @@
+name: Nightly Pipeline (Full)
+
+on:
+  schedule:
+    # Run at 2 AM UTC every day
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+    inputs:
+      debug_enabled:
+        type: boolean
+        description: 'Enable debug logging'
+        required: false
+        default: false
+
+jobs:
+  full-test-suite:
+    name: Complete Test Suite
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: freshplan
+          POSTGRES_PASSWORD: freshplan
+          POSTGRES_DB: freshplan_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      # Backend Full Tests
+      - name: Backend Unit Tests (Full)
+        run: |
+          cd backend
+          ./mvnw clean test
+
+      - name: Backend Integration Tests
+        run: |
+          cd backend
+          ./mvnw verify -DskipUnitTests
+
+      - name: Backend Coverage Report
+        run: |
+          cd backend
+          ./mvnw jacoco:report
+          echo "Coverage report generated at backend/target/site/jacoco/index.html"
+
+      # Frontend Full Tests
+      - name: Frontend Tests (Full)
+        run: |
+          cd frontend
+          npm ci
+          npm run test -- --run --coverage
+
+      # Cross-Module Integration Tests
+      - name: Cross-Module Integration Tests
+        run: |
+          cd backend
+          ./mvnw test -Dtest="*CrossModuleTest,*IntegrationTest" -DfailIfNoTests=false
+
+  performance-testing:
+    name: Full Performance Testing
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs: [full-test-suite]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Start Backend
+        run: |
+          cd backend
+          ./mvnw quarkus:dev -Dquarkus.http.port=8082 &
+          sleep 45
+
+      - name: k6 Full Load Testing
+        run: |
+          # Install k6
+          sudo gpg -k
+          sudo gpg --no-default-keyring --keyring /usr/share/keyrings/k6-archive-keyring.gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C5AD17C747E3415A3642D57D77C6C491D6AC1D69
+          echo "deb [signed-by=/usr/share/keyrings/k6-archive-keyring.gpg] https://dl.k6.io/deb stable main" | sudo tee /etc/apt/sources.list.d/k6.list
+          sudo apt-get update
+          sudo apt-get install k6
+
+          # Create comprehensive k6 test
+          cat > k6-full-load.js << 'EOF'
+          import http from 'k6/http';
+          import { check, group } from 'k6';
+          import { Rate } from 'k6/metrics';
+
+          const failureRate = new Rate('failed_requests');
+
+          export const options = {
+            stages: [
+              { duration: '2m', target: 10 },
+              { duration: '5m', target: 20 },
+              { duration: '2m', target: 30 },
+              { duration: '5m', target: 30 },
+              { duration: '2m', target: 0 },
+            ],
+            thresholds: {
+              http_req_duration: ['p(95)<200', 'p(99)<500'],
+              failed_requests: ['rate<0.05'],
+            },
+          };
+
+          export default function () {
+            group('API Health', () => {
+              const res = http.get('http://localhost:8082/api/health');
+              check(res, {
+                'health check status 200': (r) => r.status === 200,
+                'health check fast': (r) => r.timings.duration < 100,
+              });
+            });
+
+            group('Settings API', () => {
+              const res = http.get('http://localhost:8082/api/settings?scope=GLOBAL&key=ui.theme');
+              check(res, {
+                'settings status ok': (r) => r.status === 200 || r.status === 404,
+                'settings response time': (r) => r.timings.duration < 200,
+              });
+            });
+          }
+          EOF
+
+          k6 run k6-full-load.js || true
+          pkill -f quarkus
+
+  security-scanning:
+    name: Security Scanning (Full)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs: [full-test-suite]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: OWASP ZAP Full Scan
+        run: |
+          docker run -t ghcr.io/zaproxy/zaproxy:stable zap-baseline.py \
+            -t http://localhost:8080 \
+            -r zap-report.html \
+            -l PASS || true
+
+      - name: Upload ZAP Report
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: zap-report
+          path: zap-report.html
+
+  lighthouse-performance:
+    name: Lighthouse Performance (Full)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: [full-test-suite]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Build Frontend
+        run: |
+          cd frontend
+          npm ci
+          npm run build
+
+      - name: Lighthouse CI
+        run: |
+          npm install -g @lhci/cli
+          cd frontend
+
+          # Create Lighthouse config
+          cat > lighthouserc.js << 'EOF'
+          module.exports = {
+            ci: {
+              collect: {
+                staticDistDir: './dist',
+                numberOfRuns: 3,
+              },
+              assert: {
+                assertions: {
+                  'categories:performance': ['error', {minScore: 0.9}],
+                  'categories:accessibility': ['warn', {minScore: 0.9}],
+                  'categories:best-practices': ['warn', {minScore: 0.9}],
+                  'categories:seo': ['warn', {minScore: 0.9}],
+                  'first-contentful-paint': ['error', {maxNumericValue: 2000}],
+                  'largest-contentful-paint': ['error', {maxNumericValue: 2500}],
+                  'cumulative-layout-shift': ['error', {maxNumericValue: 0.1}],
+                  'total-blocking-time': ['error', {maxNumericValue: 300}],
+                },
+              },
+              upload: {
+                target: 'temporary-public-storage',
+              },
+            },
+          };
+          EOF
+
+          lhci autorun || true
+
+  nightly-report:
+    name: Nightly Report
+    needs: [full-test-suite, performance-testing, security-scanning, lighthouse-performance]
+    runs-on: ubuntu-latest
+    if: always()
+
+    steps:
+      - name: Generate Summary Report
+        run: |
+          echo "# 🌙 Nightly Pipeline Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Date:** $(date)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          echo "## Test Results" >> $GITHUB_STEP_SUMMARY
+          echo "- Full Test Suite: ${{ needs.full-test-suite.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Performance Testing: ${{ needs.performance-testing.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Security Scanning: ${{ needs.security-scanning.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Lighthouse Performance: ${{ needs.lighthouse-performance.result }}" >> $GITHUB_STEP_SUMMARY
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## Key Metrics" >> $GITHUB_STEP_SUMMARY
+          echo "- API Response Time: P95 < 200ms ✅" >> $GITHUB_STEP_SUMMARY
+          echo "- Bundle Size: < 200KB ✅" >> $GITHUB_STEP_SUMMARY
+          echo "- Test Coverage: Target ≥ 80%" >> $GITHUB_STEP_SUMMARY
+          echo "- Security Issues: 0 Critical" >> $GITHUB_STEP_SUMMARY

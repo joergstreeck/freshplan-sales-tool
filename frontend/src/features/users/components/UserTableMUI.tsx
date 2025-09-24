@@ -60,14 +60,18 @@ export const UserTableMUI = () => {
     if (window.confirm(`Benutzer "${user.username}" wirklich löschen?`)) {
       try {
         await deleteUser.mutateAsync(user.id);
-      } catch (_error) { void _error;}
+      } catch (_error) {
+        void _error;
+      }
     }
   };
 
   const handleToggleStatus = async (user: User) => {
     try {
       await toggleUserStatus.mutateAsync({ userId: user.id, active: !user.active });
-    } catch (_error) { void _error;}
+    } catch (_error) {
+      void _error;
+    }
   };
 
   const getRoleChipColor = (role: string): 'error' | 'warning' | 'info' | 'success' => {

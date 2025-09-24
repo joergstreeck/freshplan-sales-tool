@@ -23,8 +23,9 @@ import java.util.Map;
 import java.util.UUID;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
 /**
  * Integration Test für Phase 12.2 - HelpContentService Event-Driven CQRS
  *
@@ -33,7 +34,8 @@ import org.junit.jupiter.api.Tag;
  * Performance und Reliability
  */
 @QuarkusTest
-@Tag("core")@TestProfile(HelpContentCQRSIntegrationTest.CQRSTestProfile.class)
+@Tag("core")
+@TestProfile(HelpContentCQRSIntegrationTest.CQRSTestProfile.class)
 @DisplayName("Phase 12.2: HelpContentService Event-Driven CQRS Integration")
 class HelpContentCQRSIntegrationTest {
 

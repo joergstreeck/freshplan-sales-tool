@@ -8,7 +8,7 @@ vi.mock('react-window', () => ({
     // Convert height to string with px if it's a number
     const heightStyle = typeof height === 'number' ? `${height}px` : height;
     const widthStyle = typeof width === 'number' ? `${width}px` : width;
-    
+
     return (
       <div data-testid="virtual-list" style={{ height: heightStyle, width: widthStyle }}>
         {Array.from({ length: Math.min(itemCount, 10) }).map((_, index) => (
@@ -74,17 +74,17 @@ describe('VirtualizedCustomerTable', () => {
 
   it('should handle different heights', () => {
     const { container } = render(<VirtualizedCustomerTable {...defaultProps} height={800} />);
-    
+
     const lists = container.querySelectorAll('[data-testid="virtual-list"]');
     expect(lists.length).toBeGreaterThan(0);
-    
+
     // Check if the first list element exists
     const firstList = lists[0];
     expect(firstList).toBeDefined();
-    
+
     // Get the style attribute
     const inlineStyle = firstList.getAttribute('style');
-    
+
     // Since our mock sets the style with height, we should check for it
     // The mock converts number height to string with px
     if (inlineStyle) {

@@ -46,7 +46,9 @@ export const UserTable = () => {
     if (window.confirm(`Benutzer "${user.username}" wirklich löschen?`)) {
       try {
         await deleteUser.mutateAsync(user.id);
-      } catch (_error) { void _error;}
+      } catch (_error) {
+        void _error;
+      }
     }
   };
 
@@ -56,7 +58,9 @@ export const UserTable = () => {
         id: user.id,
         enabled: !user.enabled,
       });
-    } catch (_error) { void _error;}
+    } catch (_error) {
+      void _error;
+    }
   };
 
   if (error) {
@@ -93,7 +97,9 @@ export const UserTable = () => {
               placeholder="Benutzer suchen..."
               value={searchInput}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchInput(e.target.value)}
-              onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => e.key === 'Enter' && handleSearch()}
+              onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) =>
+                e.key === 'Enter' && handleSearch()
+              }
               className="max-w-sm"
             />
             <Button onClick={handleSearch} variant="outline">

@@ -28,9 +28,7 @@ const queryClient = new QueryClient({
 const renderWithProviders = (component: React.ReactElement) => {
   return render(
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider theme={testTheme}>
-        {component}
-      </ThemeProvider>
+      <ThemeProvider theme={testTheme}>{component}</ThemeProvider>
     </QueryClientProvider>
   );
 };
@@ -63,14 +61,14 @@ describe('KanbanBoardDndKit', () => {
 
   it('should render the pipeline overview', () => {
     renderWithProviders(<KanbanBoardDndKit />);
-    
+
     // Check if pipeline overview is rendered
     expect(screen.getByText('Pipeline Übersicht')).toBeInTheDocument();
   });
 
   it('should display pipeline statistics', () => {
     renderWithProviders(<KanbanBoardDndKit />);
-    
+
     // Check for statistic sections
     expect(screen.getByText('Aktive Opportunities')).toBeInTheDocument();
     // Use getAllByText since "Gewonnen" appears multiple times
@@ -84,7 +82,7 @@ describe('KanbanBoardDndKit', () => {
 
   it('should render kanban columns for opportunities', () => {
     renderWithProviders(<KanbanBoardDndKit />);
-    
+
     // The component should render stage columns
     // These are defined in the component's OpportunityStage enum
     expect(screen.getByText(/Lead/i)).toBeInTheDocument();
@@ -92,7 +90,7 @@ describe('KanbanBoardDndKit', () => {
 
   it('should handle loading state', () => {
     renderWithProviders(<KanbanBoardDndKit />);
-    
+
     // Component should handle loading gracefully
     // Even if no opportunities are loaded, the structure should be present
     expect(screen.getByText('Pipeline Übersicht')).toBeInTheDocument();
@@ -100,7 +98,7 @@ describe('KanbanBoardDndKit', () => {
 
   it('should display formatted currency values', () => {
     renderWithProviders(<KanbanBoardDndKit />);
-    
+
     // Check that currency is formatted (the component uses formatCurrency)
     // The initial data includes formatted values
     const currencyElements = screen.getAllByText(/€/);
@@ -109,7 +107,7 @@ describe('KanbanBoardDndKit', () => {
 
   it('should have proper theme integration', () => {
     const { container } = renderWithProviders(<KanbanBoardDndKit />);
-    
+
     // Check if MUI Paper component is rendered (component uses Paper)
     const paperElement = container.querySelector('.MuiPaper-root');
     expect(paperElement).toBeInTheDocument();
@@ -117,7 +115,7 @@ describe('KanbanBoardDndKit', () => {
 
   it('should render with drag and drop context', () => {
     renderWithProviders(<KanbanBoardDndKit />);
-    
+
     // The component uses DndContext internally
     // We can verify it renders without errors
     expect(screen.getByText('Pipeline Übersicht')).toBeInTheDocument();

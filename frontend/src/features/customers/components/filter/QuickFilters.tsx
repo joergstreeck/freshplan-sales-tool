@@ -1,18 +1,15 @@
 /**
  * Quick Filters Component
- * 
+ *
  * Predefined filter presets for common customer queries
- * 
+ *
  * @module QuickFilters
  * @since FC-005 PR4
  */
 
 import React from 'react';
 import { Stack, Chip } from '@mui/material';
-import {
-  CheckCircle as ActiveIcon,
-  Cancel as InactiveIcon,
-} from '@mui/icons-material';
+import { CheckCircle as ActiveIcon, Cancel as InactiveIcon } from '@mui/icons-material';
 import { useTheme } from '@mui/material/styles';
 
 import type { FilterConfig } from '../../types/filter.types';
@@ -61,8 +58,8 @@ export function QuickFilters({ activeQuickFilters, onToggleQuickFilter }: QuickF
           color={activeQuickFilters.includes(qf.id) ? 'primary' : 'default'}
           variant={activeQuickFilters.includes(qf.id) ? 'filled' : 'outlined'}
           sx={{
-            borderColor: activeQuickFilters.includes(qf.id) 
-              ? theme.palette.primary.main 
+            borderColor: activeQuickFilters.includes(qf.id)
+              ? theme.palette.primary.main
               : theme.palette.divider,
             '&:hover': {
               borderColor: theme.palette.primary.main,

@@ -5,13 +5,15 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.Set;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
 /**
  * Integration tests for UserPrincipal class. These tests call the actual UserPrincipal methods to
  * increase coverage.
  */
-@Tag("migrate")class UserPrincipalIntegrationTest {
+@Tag("migrate")
+class UserPrincipalIntegrationTest {
 
   @Nested
   @DisplayName("Builder and Creation Tests")

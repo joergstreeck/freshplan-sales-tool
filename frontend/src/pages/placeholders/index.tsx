@@ -10,7 +10,6 @@ import ArticleIcon from '@mui/icons-material/Article';
 import EditNoteIcon from '@mui/icons-material/EditNote';
 import RouteIcon from '@mui/icons-material/Route';
 import InsightsIcon from '@mui/icons-material/Insights';
-import LeaderboardIcon from '@mui/icons-material/Leaderboard';
 import GroupIcon from '@mui/icons-material/Group';
 import LocalActivityIcon from '@mui/icons-material/LocalActivity';
 import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
@@ -18,7 +17,6 @@ import VideoLibraryIcon from '@mui/icons-material/VideoLibrary';
 import QuizIcon from '@mui/icons-material/Quiz';
 import SupportAgentIcon from '@mui/icons-material/SupportAgent';
 import SchoolIcon from '@mui/icons-material/School';
-import HelpIcon from '@mui/icons-material/Help';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import AccountTreeIcon from '@mui/icons-material/AccountTree';
 import NotificationsIcon from '@mui/icons-material/Notifications';
@@ -51,11 +49,7 @@ export const Kampagnen = () => (
     subtitle="Planen und verwalten Sie Ihre Marketing-Kampagnen"
     description="Erstellen Sie zielgerichtete Kampagnen für maximale Neukundengewinnung."
     expectedDate="Q2 2025"
-    features={[
-      'Kampagnen-Designer',
-      'E-Mail-Templates',
-      'Performance-Tracking',
-    ]}
+    features={['Kampagnen-Designer', 'E-Mail-Templates', 'Performance-Tracking']}
     icon={<CampaignIcon sx={{ fontSize: 80, color: '#94C456' }} />}
   />
 );
@@ -99,11 +93,7 @@ export const Aktivitaeten = () => (
     subtitle="Behalten Sie alle Kundeninteraktionen im Blick"
     description="Vollständige Historie aller Aktivitäten und Interaktionen mit Ihren Kunden."
     expectedDate="Q1 2025"
-    features={[
-      'Aktivitäts-Timeline',
-      'Automatische Erfassung',
-      'Filter und Suche',
-    ]}
+    features={['Aktivitäts-Timeline', 'Automatische Erfassung', 'Filter und Suche']}
     icon={<LocalActivityIcon sx={{ fontSize: 80, color: '#94C456' }} />}
   />
 );
@@ -115,11 +105,7 @@ export const UmsatzBericht = () => (
     subtitle="Detaillierte Umsatzanalysen und Prognosen"
     description="Verstehen Sie Ihre Umsatzentwicklung mit interaktiven Dashboards."
     expectedDate="Q2 2025"
-    features={[
-      'Umsatz-Dashboards',
-      'Trend-Analysen',
-      'Prognose-Tools',
-    ]}
+    features={['Umsatz-Dashboards', 'Trend-Analysen', 'Prognose-Tools']}
     icon={<TrendingUpIcon sx={{ fontSize: 80, color: '#94C456' }} />}
   />
 );
@@ -130,11 +116,7 @@ export const KundenAnalyse = () => (
     subtitle="Tiefgreifende Einblicke in Ihre Kundenbasis"
     description="Verstehen Sie Ihre Kunden besser durch datengetriebene Analysen."
     expectedDate="Q2 2025"
-    features={[
-      'Kundensegmentierung',
-      'Verhaltensanalysen',
-      'Churn-Prognosen',
-    ]}
+    features={['Kundensegmentierung', 'Verhaltensanalysen', 'Churn-Prognosen']}
     icon={<GroupIcon sx={{ fontSize: 80, color: '#94C456' }} />}
   />
 );
@@ -145,11 +127,7 @@ export const AktivitaetsberBerichte = () => (
     subtitle="Messen Sie die Effektivität Ihrer Vertriebsaktivitäten"
     description="Detaillierte Berichte über alle Vertriebsaktivitäten und deren Erfolg."
     expectedDate="Q2 2025"
-    features={[
-      'Aktivitäts-Metriken',
-      'Team-Performance',
-      'Conversion-Analysen',
-    ]}
+    features={['Aktivitäts-Metriken', 'Team-Performance', 'Conversion-Analysen']}
     icon={<AssessmentIcon sx={{ fontSize: 80, color: '#94C456' }} />}
   />
 );
@@ -161,11 +139,7 @@ export const Einstellungen = () => (
     subtitle="Passen Sie FreshPlan an Ihre Bedürfnisse an"
     description="Konfigurieren Sie Systemeinstellungen, Benachrichtigungen und mehr."
     expectedDate="Q1 2025"
-    features={[
-      'Persönliche Einstellungen',
-      'Benachrichtigungen',
-      'Integrationen',
-    ]}
+    features={['Persönliche Einstellungen', 'Benachrichtigungen', 'Integrationen']}
     icon={<SettingsIcon sx={{ fontSize: 80, color: '#94C456' }} />}
   />
 );
@@ -177,11 +151,7 @@ export const AdminSettings = () => (
     subtitle="Globale Systemkonfiguration für Administratoren"
     description="Verwalten Sie systemweite Einstellungen und Konfigurationen."
     expectedDate="Q2 2025"
-    features={[
-      'Globale Konfiguration',
-      'Sicherheitseinstellungen',
-      'Backup-Management',
-    ]}
+    features={['Globale Konfiguration', 'Sicherheitseinstellungen', 'Backup-Management']}
     icon={<SettingsIcon sx={{ fontSize: 80, color: '#004F7B' }} />}
   />
 );
@@ -192,11 +162,7 @@ export const SystemLogs = () => (
     subtitle="Überwachen Sie alle Systemaktivitäten"
     description="Echtzeit-Logs und historische Systemereignisse für Troubleshooting."
     expectedDate="Q2 2025"
-    features={[
-      'Echtzeit-Logs',
-      'Log-Filterung',
-      'Export-Funktionen',
-    ]}
+    features={['Echtzeit-Logs', 'Log-Filterung', 'Export-Funktionen']}
     icon={<StorageIcon sx={{ fontSize: 80, color: '#004F7B' }} />}
   />
 );
@@ -207,11 +173,7 @@ export const ComplianceReports = () => (
     subtitle="Erfüllen Sie alle regulatorischen Anforderungen"
     description="Automatische Generierung von Compliance- und Audit-Berichten."
     expectedDate="Q3 2025"
-    features={[
-      'DSGVO-Berichte',
-      'Audit-Trails',
-      'Automatische Reports',
-    ]}
+    features={['DSGVO-Berichte', 'Audit-Trails', 'Automatische Reports']}
     icon={<ArticleIcon sx={{ fontSize: 80, color: '#004F7B' }} />}
   />
 );
@@ -222,11 +184,7 @@ export const TooltipsVerwalten = () => (
     subtitle="Konfigurieren Sie kontextuelle Hilfe-Tooltips"
     description="Erstellen und bearbeiten Sie Tooltips für bessere Benutzerführung."
     expectedDate="Q2 2025"
-    features={[
-      'Tooltip-Editor',
-      'Kontext-Regeln',
-      'A/B-Testing',
-    ]}
+    features={['Tooltip-Editor', 'Kontext-Regeln', 'A/B-Testing']}
     icon={<EditNoteIcon sx={{ fontSize: 80, color: '#94C456' }} />}
   />
 );
@@ -237,11 +195,7 @@ export const TourenErstellen = () => (
     subtitle="Gestalten Sie interaktive Produkttouren"
     description="Führen Sie neue Benutzer mit geführten Touren durch die Anwendung."
     expectedDate="Q2 2025"
-    features={[
-      'Tour-Designer',
-      'Schritt-für-Schritt Editor',
-      'Benutzer-Segmentierung',
-    ]}
+    features={['Tour-Designer', 'Schritt-für-Schritt Editor', 'Benutzer-Segmentierung']}
     icon={<RouteIcon sx={{ fontSize: 80, color: '#94C456' }} />}
   />
 );
@@ -252,11 +206,7 @@ export const HelpAnalytics = () => (
     subtitle="Verstehen Sie, wie Benutzer das Hilfe-System nutzen"
     description="Detaillierte Analysen zur Nutzung und Effektivität des Hilfe-Systems."
     expectedDate="Q3 2025"
-    features={[
-      'Nutzungs-Statistiken',
-      'Effektivitäts-Metriken',
-      'Verbesserungs-Vorschläge',
-    ]}
+    features={['Nutzungs-Statistiken', 'Effektivitäts-Metriken', 'Verbesserungs-Vorschläge']}
     icon={<InsightsIcon sx={{ fontSize: 80, color: '#94C456' }} />}
   />
 );
@@ -268,11 +218,7 @@ export const ErsteSchritte = () => (
     subtitle="Der perfekte Start mit FreshPlan"
     description="Schritt-für-Schritt Anleitungen für einen erfolgreichen Start."
     expectedDate="Verfügbar"
-    features={[
-      'Quick-Start Guide',
-      'Video-Tutorials',
-      'Best Practices',
-    ]}
+    features={['Quick-Start Guide', 'Video-Tutorials', 'Best Practices']}
     icon={<SchoolIcon sx={{ fontSize: 80, color: '#94C456' }} />}
   />
 );
@@ -283,11 +229,7 @@ export const Handbuecher = () => (
     subtitle="Umfassende Dokumentation aller Funktionen"
     description="Detaillierte Anleitungen und Referenzmaterial für alle FreshPlan-Features."
     expectedDate="Kontinuierlich erweitert"
-    features={[
-      'Feature-Dokumentation',
-      'Use-Case Beispiele',
-      'Troubleshooting Guides',
-    ]}
+    features={['Feature-Dokumentation', 'Use-Case Beispiele', 'Troubleshooting Guides']}
     icon={<LibraryBooksIcon sx={{ fontSize: 80, color: '#004F7B' }} />}
   />
 );
@@ -298,11 +240,7 @@ export const VideoTutorials = () => (
     subtitle="Lernen Sie FreshPlan visuell kennen"
     description="Professionelle Video-Anleitungen für effizientes Arbeiten."
     expectedDate="Q1 2025"
-    features={[
-      'Grundlagen-Videos',
-      'Feature-Deep-Dives',
-      'Tips & Tricks',
-    ]}
+    features={['Grundlagen-Videos', 'Feature-Deep-Dives', 'Tips & Tricks']}
     icon={<VideoLibraryIcon sx={{ fontSize: 80, color: '#94C456' }} />}
   />
 );
@@ -313,11 +251,7 @@ export const FAQ = () => (
     subtitle="Schnelle Antworten auf häufige Fragen"
     description="Finden Sie Antworten auf die am häufigsten gestellten Fragen."
     expectedDate="Verfügbar"
-    features={[
-      'Kategorisierte FAQs',
-      'Suchfunktion',
-      'Community-Antworten',
-    ]}
+    features={['Kategorisierte FAQs', 'Suchfunktion', 'Community-Antworten']}
     icon={<QuizIcon sx={{ fontSize: 80, color: '#004F7B' }} />}
   />
 );
@@ -328,11 +262,7 @@ export const Support = () => (
     subtitle="Wir sind für Sie da"
     description="Erreichen Sie unser Support-Team für persönliche Unterstützung."
     expectedDate="Verfügbar"
-    features={[
-      'Ticket-System',
-      'Live-Chat',
-      'Telefon-Support',
-    ]}
+    features={['Ticket-System', 'Live-Chat', 'Telefon-Support']}
     icon={<SupportAgentIcon sx={{ fontSize: 80, color: '#94C456' }} />}
   />
 );
@@ -360,12 +290,7 @@ export const Benachrichtigungen = () => (
     subtitle="Steuern Sie, wie und wann Sie informiert werden"
     description="Konfigurieren Sie E-Mail-, Push- und In-App-Benachrichtigungen."
     expectedDate="Q1 2025"
-    features={[
-      'Benachrichtigungs-Typen',
-      'Zeitplanung',
-      'Kanal-Präferenzen',
-      'Stummschaltung',
-    ]}
+    features={['Benachrichtigungs-Typen', 'Zeitplanung', 'Kanal-Präferenzen', 'Stummschaltung']}
     icon={<NotificationsIcon sx={{ fontSize: 80, color: '#004F7B' }} />}
   />
 );
@@ -376,12 +301,7 @@ export const Darstellung = () => (
     subtitle="Passen Sie das Erscheinungsbild an"
     description="Themes, Layouts und visuelle Präferenzen nach Ihrem Geschmack."
     expectedDate="Q2 2025"
-    features={[
-      'Dark/Light Mode',
-      'Farbschema-Anpassung',
-      'Layout-Optionen',
-      'Schriftgröße',
-    ]}
+    features={['Dark/Light Mode', 'Farbschema-Anpassung', 'Layout-Optionen', 'Schriftgröße']}
     icon={<PaletteIcon sx={{ fontSize: 80, color: '#94C456' }} />}
   />
 );
@@ -392,12 +312,7 @@ export const Sicherheit = () => (
     subtitle="Schützen Sie Ihr Konto"
     description="Erweiterte Sicherheitseinstellungen und Zugriffskontrolle."
     expectedDate="Q1 2025"
-    features={[
-      'Login-Historie',
-      'Aktive Sitzungen',
-      'API-Schlüssel',
-      'Berechtigungen',
-    ]}
+    features={['Login-Historie', 'Aktive Sitzungen', 'API-Schlüssel', 'Berechtigungen']}
     icon={<SecurityIcon sx={{ fontSize: 80, color: '#004F7B' }} />}
   />
 );
@@ -441,12 +356,7 @@ export const SystemVerwaltung = () => (
     subtitle="Zentrale Systemadministration"
     description="Verwalten Sie alle wichtigen Systemkomponenten an einem Ort."
     expectedDate="Q2 2025"
-    features={[
-      'Service-Status',
-      'Konfiguration',
-      'Wartungsmodus',
-      'System-Updates',
-    ]}
+    features={['Service-Status', 'Konfiguration', 'Wartungsmodus', 'System-Updates']}
     icon={<DashboardIcon sx={{ fontSize: 80, color: '#004F7B' }} />}
   />
 );

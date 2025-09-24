@@ -21,8 +21,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
 /**
  * Unit tests for ContactQueryService. Verifies that the service behaves EXACTLY like ContactService
  * for query operations. Note: No @Transactional annotation should be present on query methods!
@@ -32,7 +33,8 @@ import org.junit.jupiter.api.Tag;
  * @since Migration Phase 4
  */
 @QuarkusTest
-@Tag("core")class ContactQueryServiceTest {
+@Tag("core")
+class ContactQueryServiceTest {
 
   @Inject ContactQueryService queryService;
   @Inject CustomerBuilder customerBuilder;

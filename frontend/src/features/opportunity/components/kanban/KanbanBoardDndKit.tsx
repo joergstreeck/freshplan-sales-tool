@@ -20,7 +20,17 @@ import { httpClient } from '../../../../lib/apiClient';
 
 import { OpportunityCard } from './OpportunityCard';
 import { KanbanColumn } from './KanbanColumn';
-import { initialOpportunities, ACTIVE_STAGES, CLOSED_STAGES } from './mockData';
+
+// Stage constants - should be fetched from backend config in production
+const ACTIVE_STAGES = [
+  OpportunityStage.NEW,
+  OpportunityStage.QUALIFIED,
+  OpportunityStage.MEETING,
+  OpportunityStage.PROPOSAL,
+  OpportunityStage.NEGOTIATION,
+];
+
+const CLOSED_STAGES = [OpportunityStage.WON, OpportunityStage.LOST];
 
 const componentLogger = logger.child('KanbanBoardDndKit');
 
@@ -32,7 +42,7 @@ const DRAG_OFFSET_X = CARD_WIDTH; // Horizontale Korrektur für Cursor-Position
 
 // Vertikaler Offset: Kompensiert Browser-Unterschiede beim Drag-Start
 // Chrome/Edge: 30px, Firefox: 25px, Safari: 35px - wir nehmen den Mittelwert
-// const DRAG_OFFSET_Y = 30; // Currently unused, kept for future drag improvements 
+// const DRAG_OFFSET_Y = 30; // Currently unused, kept for future drag improvements
 
 // Browser-Detection für feinere Anpassungen (falls nötig)
 const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
@@ -52,7 +62,7 @@ interface PipelineStats {
 export const KanbanBoardDndKit: React.FC = React.memo(() => {
   const theme = useTheme();
   const errorHandler = useErrorHandler('KanbanBoardDndKit');
-  const [opportunities, setOpportunities] = useState<Opportunity[]>(initialOpportunities);
+  const [opportunities, setOpportunities] = useState<Opportunity[]>([]);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [animatingIds, setAnimatingIds] = useState<Set<string>>(new Set());
 
@@ -79,7 +89,7 @@ export const KanbanBoardDndKit: React.FC = React.memo(() => {
           setOpportunities(apiOpportunities);
         }
       } catch {
-        // Keep using initialOpportunities as fallback
+        // Fallback to empty array if API fails
         // Error is silently handled - opportunities will remain as initial mock data
       }
     };
@@ -312,91 +322,64 @@ export const KanbanBoardDndKit: React.FC = React.memo(() => {
     <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column', p: 2 }}>
       {/* Pipeline Statistics Header */}
       <Paper sx={{ p: 3, mb: 2, bgcolor: theme.palette.background.default, borderRadius: 2 }}>
-        <Typography
-          variant="h4"
-          sx={{ mb: 3 }}
-        >
+        <Typography variant="h4" sx={{ mb: 3 }}>
           Pipeline Übersicht
         </Typography>
         <Stack direction="row" spacing={4} flexWrap="wrap">
           <Box>
-            <Typography 
-              variant="body2" 
+            <Typography
+              variant="body2"
               color="textSecondary"
               sx={{ mb: 0.5, fontWeight: 'medium' }}
             >
               Aktive Opportunities
             </Typography>
-            <Typography 
-              variant="h3" 
-              color="primary"
-            >
+            <Typography variant="h3" color="primary">
               {pipelineStats.totalActive}
             </Typography>
-            <Typography 
-              variant="h6" 
-              color="textSecondary"
-              sx={{ mt: 0.5 }}
-            >
+            <Typography variant="h6" color="textSecondary" sx={{ mt: 0.5 }}>
               {formatCurrency(pipelineStats.activeValue)}
             </Typography>
           </Box>
           <Box>
-            <Typography 
-              variant="body2" 
+            <Typography
+              variant="body2"
               color="textSecondary"
               sx={{ mb: 0.5, fontWeight: 'medium' }}
             >
               Gewonnen
             </Typography>
-            <Typography 
-              variant="h3" 
-              sx={{ color: theme.palette.status.won }}
-            >
+            <Typography variant="h3" sx={{ color: theme.palette.status.won }}>
               {pipelineStats.totalWon}
             </Typography>
-            <Typography 
-              variant="h6" 
-              color="textSecondary"
-              sx={{ mt: 0.5 }}
-            >
+            <Typography variant="h6" color="textSecondary" sx={{ mt: 0.5 }}>
               {formatCurrency(pipelineStats.wonValue)}
             </Typography>
           </Box>
           <Box>
-            <Typography 
-              variant="body2" 
+            <Typography
+              variant="body2"
               color="textSecondary"
               sx={{ mb: 0.5, fontWeight: 'medium' }}
             >
               Verloren
             </Typography>
-            <Typography 
-              variant="h3" 
-              sx={{ color: theme.palette.status.lost }}
-            >
+            <Typography variant="h3" sx={{ color: theme.palette.status.lost }}>
               {pipelineStats.totalLost}
             </Typography>
-            <Typography 
-              variant="h6" 
-              color="textSecondary"
-              sx={{ mt: 0.5 }}
-            >
+            <Typography variant="h6" color="textSecondary" sx={{ mt: 0.5 }}>
               {formatCurrency(pipelineStats.lostValue)}
             </Typography>
           </Box>
           <Box>
-            <Typography 
-              variant="body2" 
+            <Typography
+              variant="body2"
               color="textSecondary"
               sx={{ mb: 0.5, fontWeight: 'medium' }}
             >
               Conversion Rate
             </Typography>
-            <Typography 
-              variant="h3" 
-              sx={{ color: theme.palette.primary.main }}
-            >
+            <Typography variant="h3" sx={{ color: theme.palette.primary.main }}>
               {(pipelineStats.conversionRate * 100).toFixed(0)}%
             </Typography>
           </Box>

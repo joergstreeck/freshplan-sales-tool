@@ -3,8 +3,8 @@ import type { ApiError } from '../../types/api';
 
 // In development, use relative URL to work with Vite proxy
 // In production, use the environment variable
-const API_URL = import.meta.env.VITE_API_URL || 
-  (import.meta.env.DEV ? '' : 'http://localhost:8080');
+const API_URL =
+  import.meta.env.VITE_API_URL || (import.meta.env.DEV ? '' : 'http://localhost:8080');
 
 interface ApiResponse<T = unknown> {
   data: T;
@@ -63,7 +63,8 @@ class ApiClient {
         status: response.status,
         statusText: response.statusText,
       };
-    } catch (_error) { void _error;
+    } catch (_error) {
+      void _error;
       if (error instanceof Error && 'code' in error) {
         throw error; // Re-throw our custom ApiError
       }

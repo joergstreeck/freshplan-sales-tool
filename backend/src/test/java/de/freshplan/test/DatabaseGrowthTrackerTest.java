@@ -6,13 +6,15 @@ import jakarta.inject.Inject;
 import java.util.*;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.Tag;
+
 /**
  * Database Growth Tracker - Zeigt welche Tests Daten hinterlassen
  *
  * <p>Dieser Test läuft zwischen anderen Tests und protokolliert Änderungen
  */
 @QuarkusTest
-@Tag("quarantine")@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@Tag("quarantine")
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class DatabaseGrowthTrackerTest {
 
   @Inject CustomerRepository customerRepository;

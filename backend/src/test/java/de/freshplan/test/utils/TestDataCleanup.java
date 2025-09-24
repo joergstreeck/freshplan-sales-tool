@@ -1,6 +1,5 @@
 package de.freshplan.test.utils;
 
-import org.junit.jupiter.api.Tag;
 import de.freshplan.domain.customer.repository.ContactInteractionRepository;
 import de.freshplan.domain.customer.repository.ContactRepository;
 import de.freshplan.domain.customer.repository.CustomerRepository;
@@ -9,6 +8,7 @@ import io.quarkus.narayana.jta.QuarkusTransaction;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.jboss.logging.Logger;
+import org.junit.jupiter.api.Tag;
 
 /**
  * Utility class for cleaning up test data after integration tests.
@@ -20,7 +20,8 @@ import org.jboss.logging.Logger;
  * @since Phase 14.3 - Test Data Management
  */
 @ApplicationScoped
-@Tag("quarantine")public class TestDataCleanup {
+@Tag("quarantine")
+public class TestDataCleanup {
 
   private static final Logger LOG = Logger.getLogger(TestDataCleanup.class);
 

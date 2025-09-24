@@ -34,23 +34,23 @@ public class UserTestDataFactory {
     private List<String> roles = new ArrayList<>();
 
     /**
-     * Run-ID für eindeutige Test-Identifikation.
-     * Nutzt test.run.id (CI) -> GITHUB_RUN_ID (Fallback) -> "LOCAL"
+     * Run-ID für eindeutige Test-Identifikation. Nutzt test.run.id (CI) -> GITHUB_RUN_ID (Fallback)
+     * -> "LOCAL"
      */
     private static String runId() {
-      return System.getProperty("test.run.id",
-          System.getenv().getOrDefault("GITHUB_RUN_ID", "LOCAL"));
+      return System.getProperty(
+          "test.run.id", System.getenv().getOrDefault("GITHUB_RUN_ID", "LOCAL"));
     }
 
     /**
-     * Generiert eindeutige User-Identifiers basierend auf Run-ID.
-     * Verhindert Kollisionen bei parallelen Tests.
+     * Generiert eindeutige User-Identifiers basierend auf Run-ID. Verhindert Kollisionen bei
+     * parallelen Tests.
      */
     private void generateUniqueIdentifiers() {
       String runId = runId();
       long sequence = SEQ.incrementAndGet();
       String uniqueSuffix = runId + "_" + sequence;
-      
+
       // Email IMMER unique machen - auch wenn explizit gesetzt
       // Füge suffix hinzu um Kollisionen zu vermeiden
       if (email == null) {
@@ -61,7 +61,7 @@ public class UserTestDataFactory {
         String domain = email.substring(email.indexOf('@'));
         email = localPart + "." + uniqueSuffix + domain;
       }
-      
+
       // Username unique machen falls Default verwendet
       if ("testuser".equals(username)) {
         username = "testuser_" + uniqueSuffix;
@@ -136,8 +136,8 @@ public class UserTestDataFactory {
     }
 
     /**
-     * Mark as test data (always true for test users).
-     * Note: This is always true regardless of what you set here.
+     * Mark as test data (always true for test users). Note: This is always true regardless of what
+     * you set here.
      *
      * @param isTestData ignored - always true
      * @return This builder

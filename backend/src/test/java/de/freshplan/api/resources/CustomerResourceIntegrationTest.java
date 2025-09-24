@@ -24,8 +24,9 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
 /**
  * Integration Tests für CustomerResource REST API.
  *
@@ -36,7 +37,8 @@ import org.junit.jupiter.api.Tag;
  * @since 2.0.0
  */
 @QuarkusTest
-@Tag("core")@TestSecurity(
+@Tag("core")
+@TestSecurity(
     user = "testuser",
     roles = {"admin", "manager", "sales"})
 @TestProfile(TestcontainersProfile.class)

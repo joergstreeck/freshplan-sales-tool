@@ -52,7 +52,7 @@ export const useAutoSave = (options: UseAutoSaveOptions = {}): UseAutoSaveResult
       try {
         await saveAsDraft();
       } catch (_error) {
-        void _error;        // Ignore save errors silently
+        void _error; // Ignore save errors silently
       }
     }, delay);
 

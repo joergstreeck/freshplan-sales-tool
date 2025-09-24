@@ -10,8 +10,9 @@ import de.freshplan.test.builders.UserTestDataFactory;
 import java.time.Instant;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
 /**
  * Unit tests for UserMapper.
  *
@@ -23,7 +24,8 @@ import org.junit.jupiter.api.Tag;
  * @author FreshPlan Team
  * @since 2.0.0 - Updated in Migration Phase 4
  */
-@Tag("core")class UserMapperTest {
+@Tag("core")
+class UserMapperTest {
 
   private UserMapper mapper;
 

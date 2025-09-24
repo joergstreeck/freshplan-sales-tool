@@ -5,10 +5,7 @@ import PeopleIcon from '@mui/icons-material/People';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 import SettingsIcon from '@mui/icons-material/Settings';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
-import ApiIcon from '@mui/icons-material/Api';
-import BugReportIcon from '@mui/icons-material/BugReport';
 import ChatIcon from '@mui/icons-material/Chat';
-import IntegrationInstructionsIcon from '@mui/icons-material/IntegrationInstructions';
 // import SecurityIcon from '@mui/icons-material/Security'; // Not used currently
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 

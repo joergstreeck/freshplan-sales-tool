@@ -192,37 +192,36 @@ export const useAuditAdminStore = create<AuditAdminState>()(
         fetchDashboardData: async _dateRange => {
           set({ isLoading: true, error: null });
           try {
-            // In production, these would be real API calls
-            const mockStats: AuditDashboardStats = {
-              totalEvents: 15234,
-              criticalEvents: 23,
-              dsgvoRelevantEvents: 456,
-              activeUsers: 89,
-              complianceScore: 92.5,
-              openSecurityAlerts: 2,
+            // TODO: Implement real API call
+            // const stats = await auditApi.getDashboardStats(dateRange);
+            // For now, return empty stats until API is ready
+            const stats: AuditDashboardStats = {
+              totalEvents: 0,
+              criticalEvents: 0,
+              dsgvoRelevantEvents: 0,
+              activeUsers: 0,
+              complianceScore: 0,
+              openSecurityAlerts: 0,
               integrityValid: true,
-              averageResponseTime: 145,
+              averageResponseTime: 0,
               eventsByType: {
-                CREATE: 4567,
-                UPDATE: 6789,
-                DELETE: 234,
-                READ: 3456,
-                LOGIN: 234,
-                EXPORT: 34,
+                CREATE: 0,
+                UPDATE: 0,
+                DELETE: 0,
+                READ: 0,
+                LOGIN: 0,
+                EXPORT: 0,
               },
-              topUsersByActivity: [
-                { userId: 'user-1', userName: 'Max Mustermann', activityCount: 234, role: 'admin' },
-                { userId: 'user-2', userName: 'Anna Schmidt', activityCount: 189, role: 'manager' },
-                { userId: 'user-3', userName: 'Peter Weber', activityCount: 156, role: 'sales' },
-              ],
+              topUsersByActivity: [],
             };
 
             set({
-              dashboardStats: mockStats,
+              dashboardStats: stats,
               isLoading: false,
             });
           } catch (_error) {
-            const errorMessage = _error instanceof Error ? _error.message : 'Failed to fetch dashboard data';
+            const errorMessage =
+              _error instanceof Error ? _error.message : 'Failed to fetch dashboard data';
             set({
               error: errorMessage,
               isLoading: false,
@@ -233,7 +232,9 @@ export const useAuditAdminStore = create<AuditAdminState>()(
         // Fetch Activity Heatmap
         fetchActivityHeatmap: async (__dateRange, granularity) => {
           try {
-            // Mock heatmap data
+            // TODO: Implement real API call
+            // const heatmapData = await auditApi.getActivityHeatmap(dateRange, granularity);
+            // For now, return empty heatmap until API is ready
             const dataPoints = [];
             const startDate = dateRange.from;
 
@@ -268,25 +269,10 @@ export const useAuditAdminStore = create<AuditAdminState>()(
         // Fetch Suspicious Activities
         fetchSuspiciousActivities: async () => {
           try {
-            // Mock suspicious activities
-            const activities: SuspiciousActivity[] = [
-              {
-                id: 'susp-1',
-                type: 'UNUSUAL_TIME',
-                description: 'Bulk operation at 03:45 AM',
-                severity: 'MEDIUM',
-                detectedAt: new Date(),
-                acknowledged: false,
-              },
-              {
-                id: 'susp-2',
-                type: 'RAPID_EXPORTS',
-                description: '15 exports in 5 minutes by user-45',
-                severity: 'HIGH',
-                detectedAt: new Date(),
-                acknowledged: false,
-              },
-            ];
+            // TODO: Implement real API call
+            // const activities = await auditApi.getSuspiciousActivities();
+            // For now, return empty array until API is ready
+            const activities: SuspiciousActivity[] = [];
 
             set({ suspiciousActivities: activities });
           } catch (_error) {
@@ -300,7 +286,7 @@ export const useAuditAdminStore = create<AuditAdminState>()(
         // Fetch User Profile
         fetchUserProfile: async (userId, __dateRange) => {
           try {
-            // Mock user profile
+            // TODO: Implement real API call for user profile
             const profile: UserAuditProfile = {
               userId,
               userName: 'Max Mustermann',
@@ -371,9 +357,11 @@ export const useAuditAdminStore = create<AuditAdminState>()(
           set({ isLoading: true });
           try {
             // In production, this would generate a real report
-            const mockData = new Blob(['Mock Report Data'], { type: 'application/pdf' });
+            const reportData = new Blob(['Report generation not yet implemented'], {
+              type: 'application/pdf',
+            });
             const result: ReportResult = {
-              data: mockData,
+              data: reportData,
               filename: `audit-report-${config.format}-${new Date().toISOString()}.${config.format}`,
               generatedAt: new Date(),
             };

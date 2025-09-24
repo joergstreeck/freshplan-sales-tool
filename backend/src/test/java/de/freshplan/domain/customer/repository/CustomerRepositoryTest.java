@@ -16,14 +16,16 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
 /**
  * Comprehensive test suite for CustomerRepository. Tests all repository methods including soft
  * delete support, search functionality, hierarchy management, and specialized queries.
  */
 @QuarkusTest
-@Tag("core")class CustomerRepositoryTest {
+@Tag("core")
+class CustomerRepositoryTest {
 
   @Inject CustomerRepository repository;
 
@@ -536,7 +538,8 @@ import org.junit.jupiter.api.Tag;
     Customer similarCustomer1 = createTestCustomer("Test Company GmbH");
     repository.persist(similarCustomer1);
 
-    Customer similarCustomer2 = createTestCustomer("Test Company GmbH"); // Same name - exact duplicate
+    Customer similarCustomer2 =
+        createTestCustomer("Test Company GmbH"); // Same name - exact duplicate
     repository.persist(similarCustomer2);
     em.flush();
 

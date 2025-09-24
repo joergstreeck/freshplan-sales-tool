@@ -1,8 +1,8 @@
 /**
  * Column Manager Drawer Component
- * 
+ *
  * Manages visible columns and their order in the customer list
- * 
+ *
  * @module ColumnManagerDrawer
  * @since FC-005 PR4
  */
@@ -76,7 +76,7 @@ export function ColumnManagerDrawer({
             // Prüfe ob es noch bewegliche Spalten vor/nach dieser gibt
             const canMoveUp = !column.locked && index > 0;
             const canMoveDown = !column.locked && index < columns.length - 1;
-            
+
             return (
               <ListItem key={column.id}>
                 <ListItemText

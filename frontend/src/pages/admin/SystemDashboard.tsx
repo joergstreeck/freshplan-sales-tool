@@ -126,10 +126,7 @@ export function SystemDashboard() {
     <MainLayoutV2>
       <Container maxWidth="xl" sx={{ py: 4 }}>
         {/* Breadcrumbs */}
-        <Breadcrumbs
-          separator={<NavigateNextIcon fontSize="small" />}
-          sx={{ mb: 3 }}
-        >
+        <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} sx={{ mb: 3 }}>
           <Link
             component="button"
             variant="body1"
@@ -232,7 +229,7 @@ export function SystemDashboard() {
 
         {/* Tool Cards */}
         <Grid container spacing={3}>
-          {systemTools.map((tool) => (
+          {systemTools.map(tool => (
             <Grid key={tool.title} size={{ xs: 12, md: 6 }}>
               <Card
                 sx={{
@@ -252,7 +249,13 @@ export function SystemDashboard() {
                     <Box sx={{ ml: 'auto', display: 'flex', alignItems: 'center', gap: 1 }}>
                       {getStatusIcon(tool.status)}
                       <Chip
-                        label={tool.status === 'online' ? 'Online' : tool.status === 'warning' ? 'Warning' : 'Offline'}
+                        label={
+                          tool.status === 'online'
+                            ? 'Online'
+                            : tool.status === 'warning'
+                              ? 'Warning'
+                              : 'Offline'
+                        }
                         size="small"
                         sx={{
                           backgroundColor: getStatusColor(tool.status),
@@ -273,31 +276,28 @@ export function SystemDashboard() {
                     {tool.title}
                   </Typography>
 
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    sx={{ mb: 3, minHeight: 40 }}
-                  >
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 3, minHeight: 40 }}>
                     {tool.description}
                   </Typography>
 
                   {tool.metrics && (
                     <Box sx={{ mb: 2 }}>
                       <Grid container spacing={2}>
-                        {tool.metrics.map((metric) => (
+                        {tool.metrics.map(metric => (
                           <Grid key={metric.label} size={4}>
-                            <Typography
-                              variant="caption"
-                              color="text.secondary"
-                              display="block"
-                            >
+                            <Typography variant="caption" color="text.secondary" display="block">
                               {metric.label}
                             </Typography>
                             <Typography
                               variant="body1"
                               sx={{
                                 fontWeight: 'medium',
-                                color: metric.trend === 'up' ? '#94C456' : metric.trend === 'down' ? '#EF5350' : 'inherit',
+                                color:
+                                  metric.trend === 'up'
+                                    ? '#94C456'
+                                    : metric.trend === 'down'
+                                      ? '#EF5350'
+                                      : 'inherit',
                               }}
                             >
                               {metric.value}

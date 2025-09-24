@@ -3,7 +3,7 @@
  *
  * Advanced filtering interface for customer list with universal search,
  * multi-criteria filters, column management, and export capabilities.
- * 
+ *
  * This component has been refactored into smaller, more manageable pieces:
  * - FilterDrawer: Advanced filter options drawer
  * - ColumnManagerDrawer: Column visibility and order management
@@ -181,11 +181,11 @@ export function IntelligentFilterBar({
       // Arbeite direkt mit tableColumns aus dem Store
       const sortedTableColumns = [...tableColumns].sort((a, b) => a.order - b.order);
       const currentIndex = sortedTableColumns.findIndex(col => col.field === columnId);
-      
+
       if (currentIndex === -1) return;
 
       const newIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
-      
+
       // Check bounds
       if (newIndex < 0 || newIndex >= sortedTableColumns.length) return;
 
@@ -266,7 +266,7 @@ export function IntelligentFilterBar({
   const handleSearch = useCallback(
     (value: string) => {
       setSearchTerm(value);
-      
+
       if (!value) {
         setShowSearchResults(false);
         clearResults();
@@ -293,7 +293,7 @@ export function IntelligentFilterBar({
   const toggleQuickFilter = useCallback(
     (quickFilter: QuickFilter) => {
       const isActive = activeQuickFilters.includes(quickFilter.id);
-      
+
       if (isActive) {
         // Remove filter
         setActiveQuickFilters(prev => prev.filter(id => id !== quickFilter.id));
@@ -389,7 +389,7 @@ export function IntelligentFilterBar({
   const activeFilterCount = useMemo(() => {
     let count = 0;
     const filters = activeFilters;
-    
+
     if (filters.status?.length) count++;
     if (filters.industry?.length) count++;
     if (filters.location?.length) count++;
@@ -398,7 +398,7 @@ export function IntelligentFilterBar({
     if (filters.lastContactDays) count++;
     if (filters.tags?.length) count++;
     if (filters.revenueRange) count++;
-    
+
     return count;
   }, [activeFilters]);
 
@@ -460,10 +460,8 @@ export function IntelligentFilterBar({
           <Tooltip title="Sortierung">
             <Button
               variant="outlined"
-              startIcon={
-                currentSort.direction === 'asc' ? <ArrowUpIcon /> : <ArrowDownIcon />
-              }
-              onClick={(e) => setSortMenuAnchor(e.currentTarget)}
+              startIcon={currentSort.direction === 'asc' ? <ArrowUpIcon /> : <ArrowDownIcon />}
+              onClick={e => setSortMenuAnchor(e.currentTarget)}
               sx={{ minWidth: 120 }}
             >
               Sortieren
@@ -576,17 +574,21 @@ export function IntelligentFilterBar({
           Umsatz {currentSort.field === 'revenue' && (currentSort.direction === 'asc' ? '↑' : '↓')}
         </MenuItem>
         <MenuItem onClick={() => handleSort('riskLevel')}>
-          Risiko {currentSort.field === 'riskLevel' && (currentSort.direction === 'asc' ? '↑' : '↓')}
+          Risiko{' '}
+          {currentSort.field === 'riskLevel' && (currentSort.direction === 'asc' ? '↑' : '↓')}
         </MenuItem>
         <MenuItem onClick={() => handleSort('lastContact')}>
-          Letzter Kontakt {currentSort.field === 'lastContact' && (currentSort.direction === 'asc' ? '↑' : '↓')}
+          Letzter Kontakt{' '}
+          {currentSort.field === 'lastContact' && (currentSort.direction === 'asc' ? '↑' : '↓')}
         </MenuItem>
         <Divider />
         <MenuItem onClick={() => handleSort('created')}>
-          Erstellt {currentSort.field === 'created' && (currentSort.direction === 'asc' ? '↑' : '↓')}
+          Erstellt{' '}
+          {currentSort.field === 'created' && (currentSort.direction === 'asc' ? '↑' : '↓')}
         </MenuItem>
         <MenuItem onClick={() => handleSort('modified')}>
-          Geändert {currentSort.field === 'modified' && (currentSort.direction === 'asc' ? '↑' : '↓')}
+          Geändert{' '}
+          {currentSort.field === 'modified' && (currentSort.direction === 'asc' ? '↑' : '↓')}
         </MenuItem>
       </Menu>
     </Box>

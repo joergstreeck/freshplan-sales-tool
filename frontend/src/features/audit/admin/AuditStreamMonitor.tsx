@@ -236,7 +236,9 @@ export const AuditStreamMonitor: React.FC<AuditStreamMonitorProps> = ({
               control={
                 <Switch
                   checked={showOnlyCritical}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setShowOnlyCritical(e.target.checked)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    setShowOnlyCritical(e.target.checked)
+                  }
                   size="small"
                 />
               }

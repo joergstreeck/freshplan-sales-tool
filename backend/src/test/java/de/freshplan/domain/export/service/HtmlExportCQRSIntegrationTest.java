@@ -22,8 +22,9 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.logging.Logger;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
 /**
  * FIXED Integration Test for HtmlExportService CQRS Implementation.
  *
@@ -34,7 +35,8 @@ import org.junit.jupiter.api.Tag;
  * @since Test-Pollution Fix
  */
 @QuarkusTest
-@Tag("migrate")@TestProfile(HtmlExportCQRSTestProfile.class)
+@Tag("migrate")
+@TestProfile(HtmlExportCQRSTestProfile.class)
 @TestSecurity(
     user = "testuser",
     roles = {"admin", "manager"})

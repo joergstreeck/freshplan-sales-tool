@@ -21,39 +21,43 @@ public class CustomerTestDataFactory {
 
   // KOLLISIONSFREIE ID-GENERIERUNG - Thread-Safe & CI-kompatibel
   private static final AtomicLong SEQ = new AtomicLong();
-  
+
   /**
-   * Run-ID für eindeutige Test-Identifikation.
-   * Nutzt test.run.id (CI) -> GITHUB_RUN_ID (Fallback) -> "LOCAL"
+   * Run-ID für eindeutige Test-Identifikation. Nutzt test.run.id (CI) -> GITHUB_RUN_ID (Fallback)
+   * -> "LOCAL"
    */
-  private static String runId() { 
-    return System.getProperty("test.run.id", 
-           System.getenv().getOrDefault("GITHUB_RUN_ID", "LOCAL")); 
+  private static String runId() {
+    return System.getProperty(
+        "test.run.id", System.getenv().getOrDefault("GITHUB_RUN_ID", "LOCAL"));
   }
-  
+
   /**
-   * Generiert eindeutige Kundennummer: KD-TEST-{RUN_ID}-{SEQ}
-   * Format erlaubt Spurensuche bei CI-Problemen.
+   * Generiert eindeutige Kundennummer: KD-TEST-{RUN_ID}-{SEQ} Format erlaubt Spurensuche bei
+   * CI-Problemen.
    */
-  private static String nextNumber() { 
-    return "KD-TEST-" + runId() + "-" + String.format("%05d", SEQ.incrementAndGet()); 
+  private static String nextNumber() {
+    return "KD-TEST-" + runId() + "-" + String.format("%05d", SEQ.incrementAndGet());
   }
-  
-  /**
-   * Realistische Firmennamen statt "Test Company".
-   * Präfix [TEST] für eindeutige Markierung.
-   */
+
+  /** Realistische Firmennamen statt "Test Company". Präfix [TEST] für eindeutige Markierung. */
   private static String generateCompanyName() {
     String[] prefixes = {"[TEST]", "[TEST-DATA]"};
     String[] companies = {
-      "Müller GmbH", "Schmidt AG", "Weber & Co", "Fischer Solutions", 
-      "Becker Industries", "Koch Logistics", "Richter Consulting",
-      "Hoffmann Group", "Schulz Systems", "Wagner Analytics"
+      "Müller GmbH",
+      "Schmidt AG",
+      "Weber & Co",
+      "Fischer Solutions",
+      "Becker Industries",
+      "Koch Logistics",
+      "Richter Consulting",
+      "Hoffmann Group",
+      "Schulz Systems",
+      "Wagner Analytics"
     };
-    
+
     // Pseudo-Random basierend auf nanoTime für Variety
-    String prefix = prefixes[(int)(System.nanoTime() % prefixes.length)];
-    String company = companies[(int)(System.nanoTime() % companies.length)];
+    String prefix = prefixes[(int) (System.nanoTime() % prefixes.length)];
+    String company = companies[(int) (System.nanoTime() % companies.length)];
     return prefix + " " + company;
   }
 
@@ -287,7 +291,7 @@ public class CustomerTestDataFactory {
       if (customerNumber == null) {
         customerNumber = nextNumber();
       }
-      
+
       Customer customer = new Customer();
 
       // Set all fields
@@ -313,11 +317,14 @@ public class CustomerTestDataFactory {
       // customer.setNotes(notes);
       customer.setLastContactDate(lastContactDate);
       // customer.setNextContactDate(nextContactDate);
-      
+
       // Realistische Defaults für Tests
       customer.setRiskScore(riskScore != null ? riskScore : 2); // Low-Risk Default
       // customer.setExpectedMonthlyVolume(expectedMonthlyVolume);
-      customer.setExpectedAnnualVolume(expectedAnnualVolume != null ? expectedAnnualVolume : BigDecimal.valueOf(50000)); // 50k€ Default
+      customer.setExpectedAnnualVolume(
+          expectedAnnualVolume != null
+              ? expectedAnnualVolume
+              : BigDecimal.valueOf(50000)); // 50k€ Default
       // customer.setContractStartDate(contractStartDate);
       // customer.setContractEndDate(contractEndDate);
       // customer.setResponsibleSales(responsibleSales);
@@ -341,13 +348,13 @@ public class CustomerTestDataFactory {
     }
 
     /**
-     * Build and persist to database.
-     * Für Integration-Tests mit Repository-Injection.
-     * 
+     * Build and persist to database. Für Integration-Tests mit Repository-Injection.
+     *
      * @param repository The CustomerRepository to use for persistence
      * @return The persisted customer entity
      */
-    public Customer buildAndPersist(de.freshplan.domain.customer.repository.CustomerRepository repository) {
+    public Customer buildAndPersist(
+        de.freshplan.domain.customer.repository.CustomerRepository repository) {
       Customer customer = build();
       repository.persistAndFlush(customer);
       return customer;

@@ -36,8 +36,9 @@ import java.util.Arrays;
 import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Tag;import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentCaptor;
 
 /**
  * Unit Tests für OpportunityCommandService
@@ -46,7 +47,8 @@ import org.junit.jupiter.api.Tag;import org.mockito.ArgumentCaptor;
  * originalen OpportunityService aufweist.
  */
 @QuarkusTest
-@Tag("core")class OpportunityCommandServiceTest {
+@Tag("core")
+class OpportunityCommandServiceTest {
 
   @Inject OpportunityCommandService commandService;
 

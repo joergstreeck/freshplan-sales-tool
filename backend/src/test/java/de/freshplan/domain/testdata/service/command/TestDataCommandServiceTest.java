@@ -15,8 +15,9 @@ import jakarta.inject.Inject;
 import java.math.BigDecimal;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Tag;import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentCaptor;
 
 /**
  * Tests for TestDataCommandService using the established test patterns from previous CQRS phases.
@@ -26,7 +27,8 @@ import org.junit.jupiter.api.Tag;import org.mockito.ArgumentCaptor;
  * order) 4. Flexible Verification (atLeastOnce() instead of exact times())
  */
 @QuarkusTest
-@Tag("migrate")class TestDataCommandServiceTest {
+@Tag("migrate")
+class TestDataCommandServiceTest {
 
   @Inject TestDataCommandService commandService;
 

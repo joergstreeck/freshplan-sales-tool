@@ -14,8 +14,9 @@ import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Tag;import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -30,7 +31,8 @@ import org.junit.jupiter.params.provider.MethodSource;
  * @since 2.0.0
  */
 @DisplayName("Opportunity Entity Stage Transition Tests")
-@Tag("core")public class OpportunityEntityStageTest {
+@Tag("core")
+public class OpportunityEntityStageTest {
 
   private Customer testCustomer;
   private User testUser;

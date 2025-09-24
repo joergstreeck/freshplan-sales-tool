@@ -12,14 +12,16 @@ import jakarta.persistence.Query;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
 /**
  * SEHR DETAILLIERTE Analyse der Datenbank-Situation Bevor wir irgendetwas löschen, verstehen wir
  * GENAU was los ist!
  */
 @QuarkusTest
-@Tag("quarantine")public class DetailedDatabaseAnalysisTest {
+@Tag("quarantine")
+public class DetailedDatabaseAnalysisTest {
 
   @Inject EntityManager em;
 

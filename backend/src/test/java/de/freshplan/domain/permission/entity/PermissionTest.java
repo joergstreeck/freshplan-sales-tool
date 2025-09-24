@@ -7,10 +7,12 @@ import jakarta.transaction.Transactional;
 import java.time.Instant;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
 @QuarkusTest
-@Tag("migrate")@DisplayName("Permission Entity Tests")
+@Tag("migrate")
+@DisplayName("Permission Entity Tests")
 class PermissionTest {
 
   // ===== Constructor Tests =====

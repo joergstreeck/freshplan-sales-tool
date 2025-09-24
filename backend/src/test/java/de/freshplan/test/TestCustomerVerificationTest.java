@@ -7,11 +7,13 @@ import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import org.jboss.logging.Logger;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
 /** Verifiziert, dass die Test-Kunden korrekt erstellt wurden. */
 @QuarkusTest
-@Tag("quarantine")@TestTransaction // CI-Fix: Rollback nach Test für Database Growth Check
+@Tag("quarantine")
+@TestTransaction // CI-Fix: Rollback nach Test für Database Growth Check
 public class TestCustomerVerificationTest {
 
   private static final Logger LOG = Logger.getLogger(TestCustomerVerificationTest.class);

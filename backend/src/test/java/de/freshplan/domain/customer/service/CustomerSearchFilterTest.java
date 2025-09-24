@@ -15,8 +15,9 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
 /**
  * Integration tests for filter functionality of CustomerSearchService.
  *
@@ -24,7 +25,8 @@ import org.junit.jupiter.api.Tag;
  * filters.
  */
 @QuarkusTest
-@Tag("migrate")@DisplayName("CustomerSearchService - Filter Tests")
+@Tag("migrate")
+@DisplayName("CustomerSearchService - Filter Tests")
 class CustomerSearchFilterTest {
 
   @Inject CustomerSearchService searchService;

@@ -241,7 +241,9 @@ export const ContactGridContainer: React.FC<ContactGridContainerProps> = ({
               select
               label="Entscheidungsebene"
               value={filterDecisionLevel}
-              onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setFilterDecisionLevel(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
+                setFilterDecisionLevel(e.target.value)
+              }
               size="small"
               sx={{ minWidth: 200 }}
             >
@@ -257,7 +259,9 @@ export const ContactGridContainer: React.FC<ContactGridContainerProps> = ({
               select
               label="Sortierung"
               value={sortBy}
-              onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setSortBy(e.target.value as 'name' | 'warmth' | 'recent')}
+              onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
+                setSortBy(e.target.value as 'name' | 'warmth' | 'recent')
+              }
               size="small"
               sx={{ minWidth: 150 }}
             >

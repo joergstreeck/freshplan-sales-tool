@@ -27,10 +27,12 @@ import java.util.UUID;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
 @QuarkusTest
-@Tag("migrate")@DisplayName("Contact Interaction Resource Integration Tests")
+@Tag("migrate")
+@DisplayName("Contact Interaction Resource Integration Tests")
 class ContactInteractionResourceIT {
 
   @Inject CustomerRepository customerRepository;

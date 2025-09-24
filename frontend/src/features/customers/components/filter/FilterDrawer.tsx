@@ -1,8 +1,8 @@
 /**
  * Filter Drawer Component
- * 
+ *
  * Advanced filter options drawer for customer list
- * 
+ *
  * @module FilterDrawer
  * @since FC-005 PR4
  */
@@ -80,10 +80,11 @@ export function FilterDrawer({
           <FormLabel>Status</FormLabel>
           <FormGroup>
             {Object.values(CustomerStatus)
-              .filter(status => 
-                status !== CustomerStatus.LEAD && 
-                status !== CustomerStatus.PROSPECT && 
-                status !== CustomerStatus.RISIKO
+              .filter(
+                status =>
+                  status !== CustomerStatus.LEAD &&
+                  status !== CustomerStatus.PROSPECT &&
+                  status !== CustomerStatus.RISIKO
               )
               .map(status => (
                 <FormControlLabel
@@ -193,24 +194,27 @@ export function FilterDrawer({
             Erwarteter Jahresumsatz
             {filters.revenueRange?.min || filters.revenueRange?.max ? (
               <Typography variant="caption" color="primary" sx={{ ml: 1 }}>
-                {filters.revenueRange?.min ? `${(filters.revenueRange.min / 1000).toFixed(0)}k` : '0'} - 
-                {filters.revenueRange?.max ? ` ${(filters.revenueRange.max / 1000).toFixed(0)}k` : ' Max'} €
+                {filters.revenueRange?.min
+                  ? `${(filters.revenueRange.min / 1000).toFixed(0)}k`
+                  : '0'}{' '}
+                -
+                {filters.revenueRange?.max
+                  ? ` ${(filters.revenueRange.max / 1000).toFixed(0)}k`
+                  : ' Max'}{' '}
+                €
               </Typography>
             ) : null}
           </FormLabel>
           <Slider
-            value={[
-              filters.revenueRange?.min || 0,
-              filters.revenueRange?.max || 500000
-            ]}
+            value={[filters.revenueRange?.min || 0, filters.revenueRange?.max || 500000]}
             onChange={(_, value) => {
               const [min, max] = value as number[];
-              onFiltersChange({ 
-                ...filters, 
-                revenueRange: { 
-                  min: min === 0 ? null : min, 
-                  max: max === 500000 ? null : max 
-                }
+              onFiltersChange({
+                ...filters,
+                revenueRange: {
+                  min: min === 0 ? null : min,
+                  max: max === 500000 ? null : max,
+                },
               });
             }}
             min={0}
@@ -223,7 +227,7 @@ export function FilterDrawer({
               { value: 500000, label: '500k+' },
             ]}
             valueLabelDisplay="auto"
-            valueLabelFormat={(value) => `${(value / 1000).toFixed(0)}k €`}
+            valueLabelFormat={value => `${(value / 1000).toFixed(0)}k €`}
           />
         </FormControl>
 
@@ -255,15 +259,15 @@ export function FilterDrawer({
           <Button variant="outlined" fullWidth onClick={onClear}>
             Zurücksetzen
           </Button>
-          <Button 
-            variant="contained" 
-            fullWidth 
+          <Button
+            variant="contained"
+            fullWidth
             onClick={onApply}
-            sx={{ 
+            sx={{
               bgcolor: theme.palette.primary.main,
               '&:hover': {
                 bgcolor: theme.palette.primary.dark,
-              }
+              },
             }}
           >
             Anwenden

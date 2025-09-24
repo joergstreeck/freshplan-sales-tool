@@ -46,7 +46,7 @@ export const UsersPage = () => {
               position: 'absolute',
               right: 8,
               top: 8,
-              color: (theme) => theme.palette.grey[500],
+              color: theme => theme.palette.grey[500],
             }}
           >
             <CloseIcon />
@@ -76,7 +76,7 @@ export const UsersPage = () => {
               position: 'absolute',
               right: 8,
               top: 8,
-              color: (theme) => theme.palette.grey[500],
+              color: theme => theme.palette.grey[500],
             }}
           >
             <CloseIcon />
@@ -89,9 +89,7 @@ export const UsersPage = () => {
                 onCancel={closeEditModal}
               />
             ) : (
-              <Box sx={{ textAlign: 'center', p: 4 }}>
-                Lade Benutzerdaten...
-              </Box>
+              <Box sx={{ textAlign: 'center', p: 4 }}>Lade Benutzerdaten...</Box>
             )}
           </DialogContent>
         </Dialog>

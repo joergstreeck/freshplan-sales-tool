@@ -7,15 +7,15 @@
   --color-primary-light: #e8f5dc; /* Helles Grün */
   --color-secondary: #004f7b; /* FreshPlan Dunkelblau */
   --color-secondary-light: #e6f2f8; /* Helles Blau */
-  
+
   /* Freshfoodz CI Hover States */
   --color-primary-hover: #7ba942; /* Dunkleres Grün für Hover */
   --color-secondary-hover: #003a5a; /* Dunkleres Blau für Hover */
 
   /* Status Colors - Freshfoodz CI Konform */
   --color-success: var(--color-primary); /* Nutze Freshfoodz Grün */
-  --color-warning: #FFC107; /* Accessibility-konform, Orange */
-  --color-danger: #DC3545; /* Accessibility-konform, Rot */
+  --color-warning: #ffc107; /* Accessibility-konform, Orange */
+  --color-danger: #dc3545; /* Accessibility-konform, Rot */
   --color-info: var(--color-secondary); /* Nutze Freshfoodz Blau */
 
   /* Neutrals */
@@ -29,10 +29,10 @@
   /* Typography - Freshfoodz CI Konform */
   --font-heading: 'Antonio', system-ui, sans-serif;
   --font-body: 'Poppins', system-ui, sans-serif;
-  
+
   /* Freshfoodz CI Typografie Aliases */
-  --font-display: var(--font-heading);  /* Antonio für Headlines */
-  --font-sans: var(--font-body);        /* Poppins für Body */
+  --font-display: var(--font-heading); /* Antonio für Headlines */
+  --font-sans: var(--font-body); /* Poppins für Body */
 
   /* Font Sizes */
   --font-size-xs: 0.75rem;
@@ -93,7 +93,6 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-
 
 /* Reset and Base Styles */
 * {

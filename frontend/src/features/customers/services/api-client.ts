@@ -82,7 +82,8 @@ export class ApiClient {
       }
 
       return await response.json();
-    } catch (_error) { void _error;
+    } catch (_error) {
+      void _error;
       clearTimeout(timeoutId);
       this.abortControllers.delete(requestKey);
 

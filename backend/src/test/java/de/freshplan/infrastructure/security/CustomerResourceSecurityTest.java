@@ -15,14 +15,16 @@ import java.util.UUID;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
 /**
  * Security tests for CustomerResource endpoints. Tests RBAC implementation and security
  * annotations.
  */
 @QuarkusTest
-@Tag("migrate")@TestProfile(SecurityDisabledTestProfile.class)
+@Tag("migrate")
+@TestProfile(SecurityDisabledTestProfile.class)
 @Disabled("Tests need proper endpoint implementation and test data setup")
 class CustomerResourceSecurityTest {
 

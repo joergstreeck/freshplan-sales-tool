@@ -14,8 +14,9 @@ import java.util.UUID;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Tag;import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
 
 /**
@@ -25,7 +26,8 @@ import org.junit.jupiter.api.parallel.ExecutionMode;
  * Formate, Status Codes und Business Logic Integration.
  */
 @QuarkusTest
-@Tag("migrate")@TestSecurity(
+@Tag("migrate")
+@TestSecurity(
     user = "ci-test-user",
     roles = {"admin", "manager", "sales"})
 @Execution(ExecutionMode.SAME_THREAD)

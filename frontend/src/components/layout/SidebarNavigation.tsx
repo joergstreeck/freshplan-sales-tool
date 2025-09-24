@@ -110,7 +110,7 @@ export const SidebarNavigation: React.FC = () => {
       // Only expand on initial load when no menu is expanded yet
       toggleSubmenu(matchingItem.id);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Empty dependency - run only once on mount
 
   // Filter navigation items based on permissions

@@ -1,8 +1,8 @@
 /**
  * Filter Components Module
- * 
+ *
  * Export all filter-related components
- * 
+ *
  * @module filter
  * @since FC-005 PR4
  */

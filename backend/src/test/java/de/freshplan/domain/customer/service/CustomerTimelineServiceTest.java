@@ -23,8 +23,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Tag;import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentCaptor;
 
 /**
  * Unit tests for CustomerTimelineService.
@@ -33,7 +34,8 @@ import org.junit.jupiter.api.Tag;import org.mockito.ArgumentCaptor;
  * @since 2.0.0
  */
 @QuarkusTest
-@Tag("migrate")@TestSecurity(
+@Tag("migrate")
+@TestSecurity(
     user = "testuser",
     roles = {"admin", "manager", "sales"})
 class CustomerTimelineServiceTest {

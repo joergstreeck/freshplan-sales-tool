@@ -1,8 +1,18 @@
-import { Box, Container, Typography, Card, CardContent, CardActions, Button, Paper, Chip, LinearProgress } from '@mui/material';
+import {
+  Box,
+  Container,
+  Typography,
+  Card,
+  CardContent,
+  CardActions,
+  Button,
+  Paper,
+  Chip,
+  LinearProgress,
+} from '@mui/material';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
 import { MainLayoutV2 } from '../components/layout/MainLayoutV2';
-import AssessmentIcon from '@mui/icons-material/Assessment';
 import PieChartIcon from '@mui/icons-material/PieChart';
 import TimelineIcon from '@mui/icons-material/Timeline';
 import BarChartIcon from '@mui/icons-material/BarChart';
@@ -52,7 +62,10 @@ export function AuswertungenDashboard() {
     <MainLayoutV2>
       <Container maxWidth="xl" sx={{ py: 4 }}>
         <Box sx={{ mb: 4 }}>
-          <Typography variant="h3" sx={{ mb: 1, fontFamily: 'Antonio, sans-serif', fontWeight: 'bold', color: '#004F7B' }}>
+          <Typography
+            variant="h3"
+            sx={{ mb: 1, fontFamily: 'Antonio, sans-serif', fontWeight: 'bold', color: '#004F7B' }}
+          >
             Auswertungen & Berichte
           </Typography>
           <Typography variant="body1" color="text.secondary">
@@ -61,7 +74,7 @@ export function AuswertungenDashboard() {
         </Box>
 
         <Grid container spacing={3}>
-          {reports.map((report) => (
+          {reports.map(report => (
             <Grid key={report.title} size={{ xs: 12, md: 4 }}>
               <Card
                 sx={{
@@ -75,22 +88,46 @@ export function AuswertungenDashboard() {
                 onClick={() => navigate(report.path)}
               >
                 <CardContent sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-                  <Box sx={{ textAlign: 'center', mb: 3 }}>
-                    {report.icon}
-                  </Box>
-                  <Typography variant="h5" sx={{ mb: 1, fontFamily: 'Antonio, sans-serif', color: '#004F7B', textAlign: 'center' }}>
+                  <Box sx={{ textAlign: 'center', mb: 3 }}>{report.icon}</Box>
+                  <Typography
+                    variant="h5"
+                    sx={{
+                      mb: 1,
+                      fontFamily: 'Antonio, sans-serif',
+                      color: '#004F7B',
+                      textAlign: 'center',
+                    }}
+                  >
                     {report.title}
                   </Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{ mb: 3, textAlign: 'center', minHeight: 40 }}>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{ mb: 3, textAlign: 'center', minHeight: 40 }}
+                  >
                     {report.description}
                   </Typography>
                   <Box sx={{ mt: 'auto' }}>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', mb: 1 }}>
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'baseline',
+                        mb: 1,
+                      }}
+                    >
                       <Box>
-                        <Typography variant="h4" sx={{ color: '#004F7B', fontWeight: 'bold', display: 'inline' }}>
+                        <Typography
+                          variant="h4"
+                          sx={{ color: '#004F7B', fontWeight: 'bold', display: 'inline' }}
+                        >
                           {report.stats}
                         </Typography>
-                        <Typography variant="body2" color="text.secondary" sx={{ ml: 1, display: 'inline' }}>
+                        <Typography
+                          variant="body2"
+                          color="text.secondary"
+                          sx={{ ml: 1, display: 'inline' }}
+                        >
                           {report.label}
                         </Typography>
                       </Box>
@@ -117,13 +154,21 @@ export function AuswertungenDashboard() {
                         },
                       }}
                     />
-                    <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 0.5, textAlign: 'right' }}>
+                    <Typography
+                      variant="caption"
+                      color="text.secondary"
+                      sx={{ display: 'block', mt: 0.5, textAlign: 'right' }}
+                    >
                       {report.progress}% zum Ziel
                     </Typography>
                   </Box>
                 </CardContent>
                 <CardActions sx={{ px: 2, pb: 2 }}>
-                  <Button fullWidth variant="contained" sx={{ backgroundColor: '#94C456', '&:hover': { backgroundColor: '#7BA347' } }}>
+                  <Button
+                    fullWidth
+                    variant="contained"
+                    sx={{ backgroundColor: '#94C456', '&:hover': { backgroundColor: '#7BA347' } }}
+                  >
                     Bericht öffnen
                   </Button>
                 </CardActions>
@@ -139,26 +184,42 @@ export function AuswertungenDashboard() {
           <Grid container spacing={2}>
             <Grid size={{ xs: 12, sm: 6, md: 3 }}>
               <Box sx={{ textAlign: 'center' }}>
-                <Typography variant="h4" sx={{ color: '#94C456', fontWeight: 'bold' }}>+23%</Typography>
-                <Typography variant="body2" color="text.secondary">Umsatzwachstum</Typography>
+                <Typography variant="h4" sx={{ color: '#94C456', fontWeight: 'bold' }}>
+                  +23%
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Umsatzwachstum
+                </Typography>
               </Box>
             </Grid>
             <Grid size={{ xs: 12, sm: 6, md: 3 }}>
               <Box sx={{ textAlign: 'center' }}>
-                <Typography variant="h4" sx={{ color: '#004F7B', fontWeight: 'bold' }}>89%</Typography>
-                <Typography variant="body2" color="text.secondary">Kundenzufriedenheit</Typography>
+                <Typography variant="h4" sx={{ color: '#004F7B', fontWeight: 'bold' }}>
+                  89%
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Kundenzufriedenheit
+                </Typography>
               </Box>
             </Grid>
             <Grid size={{ xs: 12, sm: 6, md: 3 }}>
               <Box sx={{ textAlign: 'center' }}>
-                <Typography variant="h4" sx={{ color: '#FFA726', fontWeight: 'bold' }}>4.2</Typography>
-                <Typography variant="body2" color="text.secondary">Avg. Aktivitäten/Tag</Typography>
+                <Typography variant="h4" sx={{ color: '#FFA726', fontWeight: 'bold' }}>
+                  4.2
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Avg. Aktivitäten/Tag
+                </Typography>
               </Box>
             </Grid>
             <Grid size={{ xs: 12, sm: 6, md: 3 }}>
               <Box sx={{ textAlign: 'center' }}>
-                <Typography variant="h4" sx={{ color: '#29B6F6', fontWeight: 'bold' }}>15min</Typography>
-                <Typography variant="body2" color="text.secondary">Avg. Response Zeit</Typography>
+                <Typography variant="h4" sx={{ color: '#29B6F6', fontWeight: 'bold' }}>
+                  15min
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Avg. Response Zeit
+                </Typography>
               </Box>
             </Grid>
           </Grid>

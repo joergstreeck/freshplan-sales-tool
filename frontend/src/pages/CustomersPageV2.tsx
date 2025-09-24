@@ -130,7 +130,7 @@ export function CustomersPageV2({ openWizard = false }: CustomersPageV2Props) {
           }
           return filterConfig.riskLevel?.includes(riskLevel);
         }
-        
+
         // No riskScore = exclude from risk filter (we don't calculate from lastContactDate anymore)
         return false;
       });
@@ -149,7 +149,7 @@ export function CustomersPageV2({ openWizard = false }: CustomersPageV2Props) {
       filtered = filtered.filter(customer => {
         // Only consider customers with lastContactDate
         if (!customer.lastContactDate) return false;
-        
+
         const daysSinceContact = Math.floor(
           (Date.now() - new Date(customer.lastContactDate).getTime()) / (1000 * 60 * 60 * 24)
         );
@@ -164,13 +164,13 @@ export function CustomersPageV2({ openWizard = false }: CustomersPageV2Props) {
         if (customer.expectedAnnualVolume === null || customer.expectedAnnualVolume === undefined) {
           return false;
         }
-        
+
         const revenue = customer.expectedAnnualVolume;
         const { min, max } = filterConfig.revenueRange || {};
-        
+
         if (min !== null && min !== undefined && revenue < min) return false;
         if (max !== null && max !== undefined && revenue > max) return false;
-        
+
         return true;
       });
     }
@@ -254,7 +254,8 @@ export function CustomersPageV2({ openWizard = false }: CustomersPageV2Props) {
 
         toast.success(`Export als ${format.toUpperCase()} erfolgreich!`);
       }
-    } catch (_error) { void _error;
+    } catch (_error) {
+      void _error;
       toast.error('Export fehlgeschlagen');
     }
   };
@@ -271,7 +272,8 @@ export function CustomersPageV2({ openWizard = false }: CustomersPageV2Props) {
           context: { customer, user },
         });
         taskId = tasks[0]?.id;
-      } catch (_error) { void _error;
+      } catch (_error) {
+        void _error;
         // Nicht blockierend - Customer wurde trotzdem angelegt
       }
     }

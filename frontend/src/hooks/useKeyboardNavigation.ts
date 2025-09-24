@@ -48,7 +48,15 @@ export const useKeyboardNavigation = () => {
       closeAllSubmenus,
       toggleSidebar,
     };
-  }, [activeMenuId, expandedMenuId, setActiveMenu, toggleSubmenu, openSubmenu, closeAllSubmenus, toggleSidebar]);
+  }, [
+    activeMenuId,
+    expandedMenuId,
+    setActiveMenu,
+    toggleSubmenu,
+    openSubmenu,
+    closeAllSubmenus,
+    toggleSidebar,
+  ]);
 
   const handleKeyPress = useCallback(
     (event: KeyboardEvent) => {
@@ -199,9 +207,11 @@ export const useKeyboardNavigation = () => {
           const searchInput = document.querySelector(
             'input[data-search-input="true"]'
           ) as HTMLInputElement;
-          if (searchInput &&
-              searchInput.type === 'search' &&
-              typeof searchInput.focus === 'function') {
+          if (
+            searchInput &&
+            searchInput.type === 'search' &&
+            typeof searchInput.focus === 'function'
+          ) {
             searchInput.focus();
           }
           break;
@@ -216,7 +226,7 @@ export const useKeyboardNavigation = () => {
           break;
       }
     },
-    [navigate] // Only depend on navigate, store values are in ref
+    [navigate, activeMenuId, closeAllSubmenus, expandedMenuId] // Only depend on navigate, store values are in ref
   );
 
   useEffect(() => {
@@ -241,8 +251,8 @@ export const KEYBOARD_SHORTCUTS = {
   'Alt + R': 'Zum Rechner wechseln',
   '↑/↓': 'Navigation nach oben/unten',
   '←/→': 'Submenü schließen/öffnen',
-  'Enter': 'Zum aktiven Menüpunkt navigieren',
-  'Escape': 'Alle Submenüs schließen',
+  Enter: 'Zum aktiven Menüpunkt navigieren',
+  Escape: 'Alle Submenüs schließen',
   'Ctrl + 1-9': 'Schnelle Navigation zu Menüpunkt',
   '/': 'Suche fokussieren',
   'Ctrl + Home': 'Zum Cockpit',

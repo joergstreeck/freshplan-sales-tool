@@ -13,8 +13,9 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
 /**
  * Integration tests for AuditRepository
  *
@@ -22,7 +23,8 @@ import org.junit.jupiter.api.Tag;
  * @since 2.0.0
  */
 @QuarkusTest
-@Tag("migrate")class AuditRepositoryTest {
+@Tag("migrate")
+class AuditRepositoryTest {
 
   @Inject AuditRepository auditRepository;
 

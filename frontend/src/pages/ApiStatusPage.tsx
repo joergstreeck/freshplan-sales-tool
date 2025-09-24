@@ -16,8 +16,6 @@ import {
   ListItemIcon,
   ListItemText,
   Divider,
-  IconButton,
-  Tooltip,
 } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ErrorIcon from '@mui/icons-material/Error';
@@ -74,7 +72,7 @@ export function ApiStatusPage() {
 
     for (const endpoint of endpoints) {
       const startTime = Date.now();
-      let result: TestResult = {
+      const result: TestResult = {
         endpoint: endpoint.name,
         status: 'pending',
         timestamp: new Date().toISOString(),
@@ -118,9 +116,8 @@ export function ApiStatusPage() {
     // Update System Health basierend auf Ergebnissen
     const hasErrors = results.some(r => r.status === 'error');
     const avgResponseTime =
-      results
-        .filter(r => r.responseTime)
-        .reduce((acc, r) => acc + (r.responseTime || 0), 0) / results.length;
+      results.filter(r => r.responseTime).reduce((acc, r) => acc + (r.responseTime || 0), 0) /
+      results.length;
 
     setSystemHealth({
       database: hasErrors ? 'degraded' : 'healthy',
@@ -260,7 +257,9 @@ export function ApiStatusPage() {
 
         {/* API Endpoint Tests */}
         <Paper sx={{ p: 3, mb: 3 }}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+          <Box
+            sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}
+          >
             <Typography variant="h5" sx={{ fontFamily: 'Antonio, sans-serif' }}>
               API Endpoint Tests
             </Typography>
@@ -290,7 +289,10 @@ export function ApiStatusPage() {
                     </ListItemIcon>
                     <ListItemText
                       primary={
-                        <Typography component="div" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <Typography
+                          component="div"
+                          sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
+                        >
                           <Box component="span" sx={{ fontWeight: 'medium' }}>
                             {endpoint.name}
                           </Box>
@@ -303,8 +305,14 @@ export function ApiStatusPage() {
                         </Typography>
                       }
                       secondary={
-                        <Typography component="div" sx={{ display: 'flex', alignItems: 'center', gap: 2, mt: 0.5 }}>
-                          <Box component="span" sx={{ fontSize: '0.75rem', color: 'text.secondary' }}>
+                        <Typography
+                          component="div"
+                          sx={{ display: 'flex', alignItems: 'center', gap: 2, mt: 0.5 }}
+                        >
+                          <Box
+                            component="span"
+                            sx={{ fontSize: '0.75rem', color: 'text.secondary' }}
+                          >
                             {endpoint.endpoint}
                           </Box>
                           {result?.responseTime && (
@@ -320,7 +328,7 @@ export function ApiStatusPage() {
                               component="span"
                               sx={{
                                 fontSize: '0.75rem',
-                                color: result.status === 'error' ? 'error.main' : 'text.secondary'
+                                color: result.status === 'error' ? 'error.main' : 'text.secondary',
                               }}
                             >
                               {result.message}
@@ -340,7 +348,8 @@ export function ApiStatusPage() {
         {/* Additional Information */}
         {!token && (
           <Alert severity="warning" sx={{ mb: 3 }}>
-            Nicht authentifiziert. Bitte melden Sie sich an, um alle API-Tests durchführen zu können.
+            Nicht authentifiziert. Bitte melden Sie sich an, um alle API-Tests durchführen zu
+            können.
           </Alert>
         )}
 

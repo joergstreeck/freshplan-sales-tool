@@ -124,7 +124,10 @@ export const contactApi = {
    * Get contact activity timeline
    * Returns all interactions with a contact
    */
-  getContactTimeline: async (customerId: string, contactId: string): Promise<ContactInteractionDTO[]> => {
+  getContactTimeline: async (
+    customerId: string,
+    contactId: string
+  ): Promise<ContactInteractionDTO[]> => {
     const response = await apiClient.get(`/customers/${customerId}/contacts/${contactId}/timeline`);
     return response.data;
   },

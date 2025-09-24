@@ -20,8 +20,9 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
 /**
  * Integration tests for CustomerQueryService.
  *
@@ -30,7 +31,8 @@ import org.junit.jupiter.api.Tag;
  * switching via feature flag.
  */
 @QuarkusTest
-@Tag("core")class CustomerQueryServiceIntegrationTest {
+@Tag("core")
+class CustomerQueryServiceIntegrationTest {
 
   @Inject CustomerQueryService queryService;
 

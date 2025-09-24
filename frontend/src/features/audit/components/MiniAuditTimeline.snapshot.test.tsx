@@ -257,7 +257,9 @@ describe('MiniAuditTimeline - Snapshot Tests', () => {
     });
 
     await waitFor(() => {
-      expect(renderResult.container.textContent).toContain('Audit-Historie konnte nicht geladen werden');
+      expect(renderResult.container.textContent).toContain(
+        'Audit-Historie konnte nicht geladen werden'
+      );
     });
 
     expect(renderResult.container.firstChild).toMatchSnapshot('error-state');

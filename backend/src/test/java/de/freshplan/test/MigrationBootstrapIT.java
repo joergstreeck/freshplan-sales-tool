@@ -1,8 +1,9 @@
 package de.freshplan.test;
 
 import io.quarkus.test.junit.QuarkusTest;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
 /**
  * Bootstrap test to ensure database migrations run before actual tests.
  *
@@ -13,7 +14,8 @@ import org.junit.jupiter.api.Tag;
  * @since 2025-08-16
  */
 @QuarkusTest
-@Tag("migrate")class MigrationBootstrapIT {
+@Tag("migrate")
+class MigrationBootstrapIT {
 
   /**
    * Empty test that just verifies Quarkus context starts successfully. This triggers Flyway

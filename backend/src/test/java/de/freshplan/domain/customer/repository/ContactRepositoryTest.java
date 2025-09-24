@@ -11,14 +11,16 @@ import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import java.util.List;
 import java.util.Optional;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
 /**
  * Unit tests for ContactRepository. Tests multi-contact support, primary contact handling, and
  * location-based queries.
  */
 @QuarkusTest
-@Tag("core")class ContactRepositoryTest {
+@Tag("core")
+class ContactRepositoryTest {
 
   @Inject ContactRepository contactRepository;
 

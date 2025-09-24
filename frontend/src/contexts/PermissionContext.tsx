@@ -50,10 +50,11 @@ export const PermissionProvider: React.FC<PermissionProviderProps> = ({ children
       const userPermissions = response.data.permissions || [];
 
       setPermissions(new Set(userPermissions));
-    } catch (_error) { void _error;
+    } catch (_error) {
+      void _error;
       // Log errors in development only
       if (import.meta.env.DEV) {
-      // Development mode check
+        // Development mode check
       }
       setPermissions(new Set());
     } finally {

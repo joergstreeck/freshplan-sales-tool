@@ -1,6 +1,6 @@
 /**
  * Constants and translations for the Intelligent Filter Bar
- * 
+ *
  * @module constants
  * @since FC-005 PR4
  */

@@ -13,8 +13,9 @@ import java.time.Instant;
 import java.util.Map;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
 /**
  * Test for Dashboard Metrics functionality in AuditRepository
  *
@@ -22,7 +23,8 @@ import org.junit.jupiter.api.Tag;
  * @since 2.0.0
  */
 @QuarkusTest
-@Tag("migrate")class AuditRepositoryDashboardTest {
+@Tag("migrate")
+class AuditRepositoryDashboardTest {
 
   @Inject AuditRepository auditRepository;
 

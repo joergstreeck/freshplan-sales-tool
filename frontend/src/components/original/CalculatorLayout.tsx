@@ -108,7 +108,9 @@ export function CalculatorLayout({ leftContent, rightContent }: CalculatorLayout
                     type="checkbox"
                     className="checkbox"
                     checked={pickup}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPickup(e.target.checked)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      setPickup(e.target.checked)
+                    }
                   />
                   <span>
                     {t('checkboxes.pickup', { minValue: formatCurrency(5000, currentLanguage) })}

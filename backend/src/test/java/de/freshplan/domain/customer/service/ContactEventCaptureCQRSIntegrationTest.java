@@ -28,8 +28,9 @@ import org.jboss.logging.Logger;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
 /**
  * Integration Test for ContactEventCaptureService CQRS Implementation.
  *
@@ -44,7 +45,8 @@ import org.junit.jupiter.api.Tag;
  * @since Phase 14.3 - Feature Flag Switching Tests
  */
 @QuarkusTest
-@Tag("migrate")@TestProfile(ContactEventCaptureCQRSTestProfile.class)
+@Tag("migrate")
+@TestProfile(ContactEventCaptureCQRSTestProfile.class)
 @TestSecurity(
     user = "testuser",
     roles = {"admin", "sales"})
@@ -349,19 +351,21 @@ class ContactEventCaptureCQRSIntegrationTest {
                           .list();
 
                   // Log interactions for debugging
-                  LOG.infof("Found %d EVENT interactions for contact %s", interactions.size(), testContactId);
-                  interactions.forEach(i -> {
-                    LOG.infof("Interaction: nextActionDate=%s, summary=%s", 
-                              i.getNextActionDate(), i.getSummary());
-                  });
-                  
+                  LOG.infof(
+                      "Found %d EVENT interactions for contact %s",
+                      interactions.size(), testContactId);
+                  interactions.forEach(
+                      i -> {
+                        LOG.infof(
+                            "Interaction: nextActionDate=%s, summary=%s",
+                            i.getNextActionDate(), i.getSummary());
+                      });
+
                   // Check if any interaction matches our criteria
-                  // Be less strict about the exact matching since dates might have timezone/nanosecond differences
+                  // Be less strict about the exact matching since dates might have
+                  // timezone/nanosecond differences
                   return interactions.stream()
-                      .anyMatch(
-                          i ->
-                              i.getSummary() != null
-                                  && i.getSummary().equals(agenda));
+                      .anyMatch(i -> i.getSummary() != null && i.getSummary().equals(agenda));
                 });
 
     assertThat(eventInteractionCreated).as("Should have created an event interaction").isTrue();

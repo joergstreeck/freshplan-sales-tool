@@ -26,9 +26,9 @@ export function useSetting(
   return useQuery<SettingResponse | null, Error>({
     queryKey: ['setting', scope, scopeId, key],
     queryFn: () => fetchSetting(key, scope, scopeId),
-    staleTime: 60_000,    // Consider data fresh for 1 minute
-    gcTime: 600_000,      // Keep in cache for 10 minutes
-    retry: 1,             // Retry once on failure
+    staleTime: 60_000, // Consider data fresh for 1 minute
+    gcTime: 600_000, // Keep in cache for 10 minutes
+    retry: 1, // Retry once on failure
     ...options,
   });
 }
@@ -53,9 +53,9 @@ export function useResolvedSetting(
   return useQuery<SettingResponse | null, Error>({
     queryKey: ['setting', 'resolve', key, context],
     queryFn: () => resolveSetting(key, context),
-    staleTime: 60_000,    // Consider data fresh for 1 minute
-    gcTime: 600_000,      // Keep in cache for 10 minutes
-    retry: 1,             // Retry once on failure
+    staleTime: 60_000, // Consider data fresh for 1 minute
+    gcTime: 600_000, // Keep in cache for 10 minutes
+    retry: 1, // Retry once on failure
     ...options,
   });
 }
@@ -102,7 +102,7 @@ export function useThemeSettings(): {
 
   // FreshFoodz brand colors as defaults
   const DEFAULT_THEME = {
-    primary: '#94C456',   // FreshFoodz Green
+    primary: '#94C456', // FreshFoodz Green
     secondary: '#004F7B', // FreshFoodz Blue
   };
 
@@ -111,14 +111,18 @@ export function useThemeSettings(): {
   const theme = {
     ...DEFAULT_THEME,
     primary: typeof remoteTheme.primary === 'string' ? remoteTheme.primary : DEFAULT_THEME.primary,
-    secondary: typeof remoteTheme.secondary === 'string' ? remoteTheme.secondary : DEFAULT_THEME.secondary,
+    secondary:
+      typeof remoteTheme.secondary === 'string' ? remoteTheme.secondary : DEFAULT_THEME.secondary,
     // Include any additional properties from remote
-    ...Object.entries(remoteTheme).reduce((acc, [key, value]) => {
-      if (key !== 'primary' && key !== 'secondary') {
-        acc[key] = value;
-      }
-      return acc;
-    }, {} as Record<string, unknown>),
+    ...Object.entries(remoteTheme).reduce(
+      (acc, [key, value]) => {
+        if (key !== 'primary' && key !== 'secondary') {
+          acc[key] = value;
+        }
+        return acc;
+      },
+      {} as Record<string, unknown>
+    ),
   };
 
   return {
@@ -187,6 +191,4 @@ export function useFeatureFlags(
 /**
  * Export all hooks for convenience
  */
-export {
-  type SettingResponse,
-} from './api';
+export { type SettingResponse } from './api';

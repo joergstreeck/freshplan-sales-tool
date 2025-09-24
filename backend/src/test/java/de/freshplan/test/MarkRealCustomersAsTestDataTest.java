@@ -8,8 +8,9 @@ import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import java.util.List;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
 /**
  * Markiert die verbleibenden 41 "echten" Kunden als Test-Daten, damit sie eindeutig von produktiven
  * Daten unterscheidbar sind.
@@ -17,7 +18,8 @@ import org.junit.jupiter.api.Tag;
  * <p>Diese Kunden sind keine produktiven Daten, sondern Teil der Test-Umgebung.
  */
 @QuarkusTest
-@Tag("quarantine")@TestTransaction // CI-Fix: Rollback nach Test für Database Growth Check
+@Tag("quarantine")
+@TestTransaction // CI-Fix: Rollback nach Test für Database Growth Check
 public class MarkRealCustomersAsTestDataTest {
 
   @Inject EntityManager em;

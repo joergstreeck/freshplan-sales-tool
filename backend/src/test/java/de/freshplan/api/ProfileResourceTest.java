@@ -19,10 +19,12 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
 @QuarkusTest
-@Tag("migrate")@TestSecurity(authorizationEnabled = false)
+@Tag("migrate")
+@TestSecurity(authorizationEnabled = false)
 class ProfileResourceTest {
 
   @InjectMock ProfileService profileService;

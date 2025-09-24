@@ -19,8 +19,9 @@ import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
 /**
  * Integration tests for CustomerTimelineResource.
  *
@@ -28,7 +29,8 @@ import org.junit.jupiter.api.Tag;
  * @since 2.0.0
  */
 @QuarkusTest
-@Tag("migrate")@TestHTTPEndpoint(CustomerTimelineResource.class)
+@Tag("migrate")
+@TestHTTPEndpoint(CustomerTimelineResource.class)
 class CustomerTimelineResourceIT {
 
   @Inject CustomerRepository customerRepository;

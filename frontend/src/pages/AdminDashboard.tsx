@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React from 'react';
 import {
   Box,
   Container,
@@ -9,8 +9,6 @@ import {
   Button,
   Chip,
   Paper,
-  IconButton,
-  Tooltip,
   Divider,
 } from '@mui/material';
 import Grid from '@mui/material/Grid';
@@ -22,13 +20,9 @@ import DashboardIcon from '@mui/icons-material/Dashboard';
 import PeopleIcon from '@mui/icons-material/People';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 import ApiIcon from '@mui/icons-material/Api';
-import StorageIcon from '@mui/icons-material/Storage';
-import SpeedIcon from '@mui/icons-material/Speed';
-import BackupIcon from '@mui/icons-material/Backup';
 import IntegrationInstructionsIcon from '@mui/icons-material/IntegrationInstructions';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 
 interface QuickAccessCard {
   title: string;
@@ -50,7 +44,7 @@ interface CategoryCard {
 
 export function AdminDashboard() {
   const navigate = useNavigate();
-  const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
+  // const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
 
   const quickAccessCards: QuickAccessCard[] = [
     {
@@ -151,7 +145,7 @@ export function AdminDashboard() {
             Schnellzugriff
           </Typography>
           <Grid container spacing={3}>
-            {quickAccessCards.map((card) => (
+            {quickAccessCards.map(card => (
               <Grid key={card.title} size={{ xs: 12, md: 4 }}>
                 <Card
                   sx={{
@@ -209,11 +203,7 @@ export function AdminDashboard() {
                     )}
                   </CardContent>
                   <CardActions sx={{ px: 2, pb: 2 }}>
-                    <Button
-                      size="small"
-                      endIcon={<ArrowForwardIcon />}
-                      sx={{ color: '#004F7B' }}
-                    >
+                    <Button size="small" endIcon={<ArrowForwardIcon />} sx={{ color: '#004F7B' }}>
                       Öffnen
                     </Button>
                   </CardActions>
@@ -238,7 +228,7 @@ export function AdminDashboard() {
             Kategorien
           </Typography>
           <Grid container spacing={3}>
-            {categoryCards.map((category) => (
+            {categoryCards.map(category => (
               <Grid key={category.id} size={12}>
                 <Paper
                   sx={{
@@ -271,7 +261,7 @@ export function AdminDashboard() {
                           {category.description}
                         </Typography>
                         <Box sx={{ mt: 1, display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-                          {category.items.slice(0, 3).map((item) => (
+                          {category.items.slice(0, 3).map(item => (
                             <Chip
                               key={item}
                               label={item}
@@ -304,7 +294,7 @@ export function AdminDashboard() {
                           backgroundColor: '#94C456',
                           '&:hover': { backgroundColor: '#7BA347' },
                         }}
-                        onClick={(e) => {
+                        onClick={e => {
                           e.stopPropagation();
                           handleCategoryClick(category.id);
                         }}
@@ -340,11 +330,7 @@ export function AdminDashboard() {
               size="small"
               sx={{ backgroundColor: '#94C456', color: 'white' }}
             />
-            <Chip
-              label="DB: OK"
-              size="small"
-              sx={{ backgroundColor: '#94C456', color: 'white' }}
-            />
+            <Chip label="DB: OK" size="small" sx={{ backgroundColor: '#94C456', color: 'white' }} />
             <Chip
               label="Auth: OK"
               size="small"

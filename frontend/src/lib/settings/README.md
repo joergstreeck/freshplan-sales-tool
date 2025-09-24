@@ -24,11 +24,7 @@ function MyComponent() {
 
   if (isLoading) return <div>Loading theme...</div>;
 
-  return (
-    <div style={{ color: theme.primary }}>
-      FreshFoodz themed content
-    </div>
-  );
+  return <div style={{ color: theme.primary }}>FreshFoodz themed content</div>;
 }
 ```
 
@@ -91,6 +87,7 @@ npx eslint src/lib/settings
 ## Configuration
 
 The module uses these default cache settings:
+
 - **staleTime**: 60 seconds
 - **gcTime**: 10 minutes
 - **retry**: 1 attempt

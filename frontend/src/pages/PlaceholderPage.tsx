@@ -1,14 +1,5 @@
 import React from 'react';
-import {
-  Container,
-  Typography,
-  Box,
-  Paper,
-  Button,
-  Grid,
-  Card,
-  CardContent,
-} from '@mui/material';
+import { Container, Typography, Box, Paper, Button, Grid, Card, CardContent } from '@mui/material';
 import ConstructionIcon from '@mui/icons-material/Construction';
 import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
 import InfoIcon from '@mui/icons-material/Info';
@@ -124,8 +115,8 @@ export const PlaceholderPage: React.FC<PlaceholderPageProps> = ({
                 Möchten Sie benachrichtigt werden?
               </Typography>
               <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                Wir informieren Sie gerne, sobald diese Funktion verfügbar ist.
-                Wenden Sie sich an Ihren Administrator oder schauen Sie regelmäßig hier vorbei.
+                Wir informieren Sie gerne, sobald diese Funktion verfügbar ist. Wenden Sie sich an
+                Ihren Administrator oder schauen Sie regelmäßig hier vorbei.
               </Typography>
               <Button
                 variant="outlined"

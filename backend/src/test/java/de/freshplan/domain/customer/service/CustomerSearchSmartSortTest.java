@@ -14,15 +14,17 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
 /**
  * Integration tests for SmartSort functionality of CustomerSearchService.
  *
  * <p>Tests intelligent sorting strategies like SALES_PRIORITY, RISK_MITIGATION, etc.
  */
 @QuarkusTest
-@Tag("migrate")@DisplayName("CustomerSearchService - SmartSort Tests")
+@Tag("migrate")
+@DisplayName("CustomerSearchService - SmartSort Tests")
 class CustomerSearchSmartSortTest {
 
   @Inject CustomerSearchService searchService;
