@@ -98,6 +98,7 @@
 - 2025-09-23 20:15 — Governance Implementation: Mock-Governance ADR-0006 + Standards/Snippets implementiert + TRIGGER_SPRINT_1_1 erweitert, Migration: V225, Tests: OK
 - 2025-09-23 20:30 — SAFE MODE Handover: Mock-Governance Implementation COMPLETE + Handover 17:51 erstellt, Migration: V225, Status: Ready für Sprint 1.1
 - 2025-09-23 18:45 — Sprint 1.1 Complete: CQRS Light Foundation operational + PR #94 mit Review-Fixes, Migration: V225, Tests: OK
+- 2025-09-25 00:55 — Sprint 2.1 PR #1: Territory Management ERFOLGREICH GEMERGED (PR #103) + Race Condition Fix via UserLeadSettingsService + ElementCollection Tables (V231), Migration: V231, Tests: ✅ All GREEN
 - 2025-09-24 22:15 — Sprint 1.4 Complete: Foundation Quick-Wins (Cache + Prod-Config) + PR #102 merged, Phase 1: 100% COMPLETE
 - 2025-09-23 19:40 — Sprint 1.1 MERGED: PR #94 erfolgreich in main + alle KI-Reviews umgesetzt + Sprint 3 Backlog erstellt, Migration: V226, Tests: OK
 - 2025-09-23 21:00 — Sprint 1.2 PR #1 MERGED: Security Context Foundation (V227) + Code Review Fixes + Follow-Up dokumentiert, Migration: V227, Tests: OK
