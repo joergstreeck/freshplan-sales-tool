@@ -23,8 +23,7 @@ public class Lead extends PanacheEntityBase {
   public Long id;
 
   // Basic lead information
-  @NotNull
-  @Size(max = 255)
+  @NotNull @Size(max = 255)
   @Column(name = "company_name", nullable = false)
   public String companyName;
 
@@ -53,13 +52,11 @@ public class Lead extends PanacheEntityBase {
   @Size(max = 100)
   public String city;
 
-  @NotNull
-  @Size(max = 2)
+  @NotNull @Size(max = 2)
   @Column(name = "country_code", nullable = false)
   public String countryCode = "DE";
 
-  @NotNull
-  @ManyToOne(fetch = FetchType.LAZY)
+  @NotNull @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "territory_id", nullable = false)
   public Territory territory;
 
@@ -82,13 +79,11 @@ public class Lead extends PanacheEntityBase {
   public BigDecimal estimatedVolume;
 
   // Lead status and ownership
-  @NotNull
-  @Enumerated(EnumType.STRING)
+  @NotNull @Enumerated(EnumType.STRING)
   @Column(nullable = false, length = 30)
   public LeadStatus status = LeadStatus.REGISTERED;
 
-  @NotNull
-  @Size(max = 50)
+  @NotNull @Size(max = 50)
   @Column(name = "owner_user_id", nullable = false)
   public String ownerUserId;
 
@@ -151,8 +146,7 @@ public class Lead extends PanacheEntityBase {
   @Column(name = "updated_at", nullable = false)
   public LocalDateTime updatedAt = LocalDateTime.now();
 
-  @NotNull
-  @Size(max = 50)
+  @NotNull @Size(max = 50)
   @Column(name = "created_by", nullable = false)
   public String createdBy;
 

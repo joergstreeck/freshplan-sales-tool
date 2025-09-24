@@ -21,8 +21,7 @@ public class UserLeadSettings extends PanacheEntityBase {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   public Long id;
 
-  @NotNull
-  @Size(max = 50)
+  @NotNull @Size(max = 50)
   @Column(name = "user_id", nullable = false, unique = true)
   public String userId;
 

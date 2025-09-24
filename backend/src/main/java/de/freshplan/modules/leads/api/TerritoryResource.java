@@ -18,7 +18,9 @@ import org.jboss.logging.Logger;
 @Path("/api/territories")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-@Tag(name = "Territories", description = "Territory management for currency, tax and business rules")
+@Tag(
+    name = "Territories",
+    description = "Territory management for currency, tax and business rules")
 public class TerritoryResource {
 
   private static final Logger LOG = Logger.getLogger(TerritoryResource.class);
@@ -34,7 +36,9 @@ public class TerritoryResource {
 
   @GET
   @Path("/{code}")
-  @Operation(summary = "Get territory by code", description = "Returns a specific territory by code")
+  @Operation(
+      summary = "Get territory by code",
+      description = "Returns a specific territory by code")
   public Response getTerritory(@PathParam("code") String code) {
     LOG.debugf("Getting territory: %s", code);
     Territory territory = territoryService.getTerritory(code);

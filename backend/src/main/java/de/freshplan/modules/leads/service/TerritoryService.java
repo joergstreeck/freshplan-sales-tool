@@ -15,16 +15,12 @@ public class TerritoryService {
 
   private static final Logger LOG = Logger.getLogger(TerritoryService.class);
 
-  /**
-   * Get all territories.
-   */
+  /** Get all territories. */
   public List<Territory> getAllTerritories() {
     return Territory.listAll();
   }
 
-  /**
-   * Get territory by code.
-   */
+  /** Get territory by code. */
   public Territory getTerritory(String code) {
     Territory territory = Territory.findByCode(code);
     if (territory == null) {
@@ -34,9 +30,7 @@ public class TerritoryService {
     return territory;
   }
 
-  /**
-   * Determine territory based on country code.
-   */
+  /** Determine territory based on country code. */
   public Territory determineTerritory(String countryCode) {
     if ("CH".equals(countryCode)) {
       return getTerritory("CH");
@@ -45,9 +39,7 @@ public class TerritoryService {
     return getTerritory("DE");
   }
 
-  /**
-   * Initialize default territories if not present.
-   */
+  /** Initialize default territories if not present. */
   @Transactional
   public void initializeDefaultTerritories() {
     if (Territory.count() == 0) {
@@ -63,8 +55,7 @@ public class TerritoryService {
       de.languageCode = "de-DE";
       de.businessRules.put("invoicing", "monthly");
       de.businessRules.put("payment_terms", 30);
-      de.businessRules.put(
-          "delivery_zones", java.util.List.of("north", "south", "east", "west"));
+      de.businessRules.put("delivery_zones", java.util.List.of("north", "south", "east", "west"));
       de.persist();
 
       // Switzerland

@@ -21,27 +21,22 @@ public class Territory extends PanacheEntityBase {
   @Column(name = "id", length = 10)
   public String id;
 
-  @NotNull
-  @Size(max = 100)
+  @NotNull @Size(max = 100)
   @Column(name = "name", nullable = false, length = 100)
   public String name;
 
-  @NotNull
-  @Size(max = 2)
+  @NotNull @Size(max = 2)
   @Column(name = "country_code", nullable = false, length = 2)
   public String countryCode;
 
-  @NotNull
-  @Size(max = 3)
+  @NotNull @Size(max = 3)
   @Column(name = "currency_code", nullable = false, length = 3)
   public String currencyCode;
 
-  @NotNull
-  @Column(name = "tax_rate", nullable = false, precision = 5, scale = 2)
+  @NotNull @Column(name = "tax_rate", nullable = false, precision = 5, scale = 2)
   public BigDecimal taxRate;
 
-  @NotNull
-  @Size(max = 5)
+  @NotNull @Size(max = 5)
   @Column(name = "language_code", nullable = false, length = 5)
   public String languageCode;
 
@@ -68,16 +63,12 @@ public class Territory extends PanacheEntityBase {
     return "CH".equals(id);
   }
 
-  /**
-   * Get formatted tax rate for display (e.g. "19.00%" for Germany).
-   */
+  /** Get formatted tax rate for display (e.g. "19.00%" for Germany). */
   public String getFormattedTaxRate() {
     return taxRate.setScale(2, java.math.RoundingMode.HALF_UP) + "%";
   }
 
-  /**
-   * Get payment terms from business rules.
-   */
+  /** Get payment terms from business rules. */
   public Integer getPaymentTerms() {
     if (businessRules != null && businessRules.containsKey("payment_terms")) {
       return businessRules.getInteger("payment_terms");

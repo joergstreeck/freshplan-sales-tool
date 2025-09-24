@@ -19,18 +19,15 @@ public class LeadActivity extends PanacheEntityBase {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   public Long id;
 
-  @NotNull
-  @ManyToOne(fetch = FetchType.LAZY)
+  @NotNull @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "lead_id", nullable = false)
   public Lead lead;
 
-  @NotNull
-  @Size(max = 50)
+  @NotNull @Size(max = 50)
   @Column(name = "user_id", nullable = false)
   public String userId;
 
-  @NotNull
-  @Enumerated(EnumType.STRING)
+  @NotNull @Enumerated(EnumType.STRING)
   @Column(name = "activity_type", nullable = false, length = 50)
   public ActivityType activityType;
 
