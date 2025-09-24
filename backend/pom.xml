@@ -41,6 +41,11 @@
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-hibernate-orm-panache</artifactId>
     </dependency>
+    <!-- Phase-1 Quick Win: Settings caching (Sprint 1.4) -->
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-cache</artifactId>
+    </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-jdbc-postgresql</artifactId>
