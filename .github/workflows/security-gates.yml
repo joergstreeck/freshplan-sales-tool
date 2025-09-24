@@ -129,6 +129,10 @@ jobs:
 
       - name: Start Backend
         working-directory: backend
+        env:
+          DB_URL: jdbc:postgresql://localhost:5432/freshplan
+          DB_USER: freshplan
+          DB_PASSWORD: freshplan
         run: |
           java -jar target/quarkus-app/quarkus-run.jar &
           sleep 20
