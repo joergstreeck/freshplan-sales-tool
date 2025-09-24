@@ -19,6 +19,12 @@ CREATE TABLE IF NOT EXISTS demo_security_items (
 -- RLS aktivieren
 ALTER TABLE demo_security_items ENABLE ROW LEVEL SECURITY;
 
+-- Drop existing policies if they exist
+DROP POLICY IF EXISTS p_demo_items_select ON demo_security_items;
+DROP POLICY IF EXISTS p_demo_items_insert ON demo_security_items;
+DROP POLICY IF EXISTS p_demo_items_update ON demo_security_items;
+DROP POLICY IF EXISTS p_demo_items_delete ON demo_security_items;
+
 -- Select-Policy: gleiche org + (owner oder gleiche territory oder public)
 CREATE POLICY p_demo_items_select ON demo_security_items
   FOR SELECT
