@@ -9,7 +9,7 @@
 
 ## 🗺️ ALLE TRIGGER-TEXTS ÜBERSICHT
 
-### **PHASE 1: FOUNDATION (3 Sprints) - ✅ COMPLETE**
+### **PHASE 1: FOUNDATION (4 Sprints) - 🔄 FINAL OPTIMIZATION**
 ```yaml
 ✅ TRIGGER_SPRINT_1_1.md - CQRS Light Foundation [PR #94 MERGED]
    - PostgreSQL LISTEN/NOTIFY + Event-Schema
@@ -26,7 +26,13 @@
    - CI Pipeline Split (PR <10min, Nightly ~30min)
    - P95 Performance Benchmarks
    - ETag Hit-Rate ≥70% achieved
-   - Status: ✅ COMPLETE - Phase 1 abgeschlossen!
+   - Status: ✅ COMPLETE
+
+🚀 TRIGGER_SPRINT_1_4.md - Foundation Quick-Wins [PR #102 IN PROGRESS]
+   - Quarkus-Cache für Settings-Service
+   - Prod-Config Härtung
+   - Cache-Invalidierung bei Writes
+   - Status: 🚀 STARTING NOW - Phase 1 finale Optimierung
 
 📊 **Phase 1 Performance Report:** [phase-1-foundation-benchmark-2025-09-24.md](../performance/phase-1-foundation-benchmark-2025-09-24.md)
 ```
