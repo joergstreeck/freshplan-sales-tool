@@ -111,6 +111,7 @@ public class SettingsService {
   }
 
   /** Creates a new setting strictly (no upsert). Throws 409 Conflict if setting already exists. */
+  @CacheInvalidateAll(cacheName = CACHE_NAME)
   @Transactional
   public Setting createSettingStrict(
       SettingsScope scope,
