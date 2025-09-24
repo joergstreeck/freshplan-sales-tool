@@ -69,6 +69,8 @@ Sprint 1.3: Security Gates + CI       ✅ PR #97-101 MERGED → CI/Testing/P95
 - Settings: Registry mit ETag ≥70% Hit-Rate
 - CI: Pipeline Split (PR <10min, Nightly ~30min)
 - Testing: Integration Framework mit P95-Metriken
+
+📊 Performance Report: [phase-1-foundation-benchmark-2025-09-24.md](../performance/phase-1-foundation-benchmark-2025-09-24.md)
 ```
 
 ### 🚀 **Phase 2: Core Business (7.5 Wochen) - IN PROGRESS**
