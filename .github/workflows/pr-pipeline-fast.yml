@@ -57,13 +57,29 @@ jobs:
             src/security/*.test.ts
 
       # Performance Smoke Test
-      - name: Performance Smoke Test (<200ms P95)
+      - name: Start Backend for Performance Test
         run: |
           cd backend
-          ./mvnw quarkus:dev -Dquarkus.http.port=8082 &
-          sleep 30
+          ./mvnw -q -DskipTests \
+            -Dquarkus.http.host=0.0.0.0 \
+            -Dquarkus.http.port=8082 \
+            quarkus:dev &
+          echo $! > quarkus.pid
 
-          # Simple k6 smoke test
+      - name: Wait for Backend Readiness
+        run: |
+          set -e
+          for i in {1..90}; do
+            if curl -sf http://localhost:8082/q/health > /dev/null 2>&1; then
+              echo "Backend is UP after $i attempts"
+              break
+            fi
+            echo "Waiting for backend... (attempt $i/90)"
+            sleep 2
+          done
+
+      - name: Create k6 Test Script
+        run: |
           cat > k6-smoke.js << 'EOF'
           import http from 'k6/http';
           import { check } from 'k6';
@@ -82,18 +98,33 @@ jobs:
             },
           };
 
+          const BASE_URL = __ENV.BASE_URL || 'http://localhost:8082';
+
           export default function () {
-            const res = http.get('http://localhost:8082/api/health');
+            const res = http.get(`${BASE_URL}/q/health`);
             const success = check(res, {
               'status is 200': (r) => r.status === 200,
               'response time < 200ms': (r) => r.timings.duration < 200,
+              'body contains UP': (r) => r.body && r.body.includes('"status":"UP"')
             });
             failureRate.add(!success);
           }
           EOF
 
-          npx k6 run --quiet k6-smoke.js || (pkill -f quarkus && exit 1)
-          pkill -f quarkus
+      - name: Performance Smoke Test (<200ms P95)
+        uses: grafana/k6-action@v0.2.0
+        with:
+          filename: k6-smoke.js
+        env:
+          BASE_URL: http://localhost:8082
+
+      - name: Cleanup Backend
+        if: always()
+        run: |
+          if [ -f backend/quarkus.pid ]; then
+            kill $(cat backend/quarkus.pid) || true
+          fi
+          pkill -f quarkus || true
 
       # Security Contract Tests
       - name: Security Contract Tests
