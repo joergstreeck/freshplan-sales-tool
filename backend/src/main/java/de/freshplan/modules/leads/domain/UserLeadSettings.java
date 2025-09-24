@@ -2,7 +2,6 @@ package de.freshplan.modules.leads.domain;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
-import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.math.BigDecimal;
@@ -101,16 +100,18 @@ public class UserLeadSettings extends PanacheEntityBase {
   }
 
   /**
-   * @deprecated Use {@link de.freshplan.modules.leads.service.UserLeadSettingsService#getOrCreateForUser(String)}
-   *             instead. This static method cannot properly handle transactions and may cause race conditions.
+   * @deprecated Use {@link
+   *     de.freshplan.modules.leads.service.UserLeadSettingsService#getOrCreateForUser(String)}
+   *     instead. This static method cannot properly handle transactions and may cause race
+   *     conditions.
    * @param userId the user ID
    * @return UserLeadSettings (throws exception to force migration)
    */
   @Deprecated(since = "Sprint 2.1", forRemoval = true)
   public static UserLeadSettings getOrCreateForUser(String userId) {
     throw new UnsupportedOperationException(
-        "Use UserLeadSettingsService#getOrCreateForUser instead. " +
-        "Static method cannot handle transactions properly.");
+        "Use UserLeadSettingsService#getOrCreateForUser instead. "
+            + "Static method cannot handle transactions properly.");
   }
 
   @PrePersist

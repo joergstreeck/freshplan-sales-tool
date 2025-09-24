@@ -8,9 +8,9 @@ import jakarta.transaction.Transactional;
 import org.jboss.logging.Logger;
 
 /**
- * Service for managing UserLeadSettings with proper transaction handling.
- * Replaces the static method in UserLeadSettings to ensure thread-safety
- * and proper CDI proxy support for @Transactional.
+ * Service for managing UserLeadSettings with proper transaction handling. Replaces the static
+ * method in UserLeadSettings to ensure thread-safety and proper CDI proxy support
+ * for @Transactional.
  */
 @ApplicationScoped
 public class UserLeadSettingsService {
@@ -18,8 +18,8 @@ public class UserLeadSettingsService {
   private static final Logger LOG = Logger.getLogger(UserLeadSettingsService.class);
 
   /**
-   * Get or create UserLeadSettings for a user with proper transaction handling.
-   * Uses pessimistic locking to prevent race conditions.
+   * Get or create UserLeadSettings for a user with proper transaction handling. Uses pessimistic
+   * locking to prevent race conditions.
    *
    * @param userId the user ID
    * @return existing or newly created settings
@@ -27,9 +27,10 @@ public class UserLeadSettingsService {
   @Transactional
   public UserLeadSettings getOrCreateForUser(String userId) {
     // Try to find existing settings with pessimistic lock to prevent concurrent creation
-    UserLeadSettings existing = UserLeadSettings.find("userId", userId)
-        .withLock(LockModeType.PESSIMISTIC_WRITE)
-        .firstResult();
+    UserLeadSettings existing =
+        UserLeadSettings.find("userId", userId)
+            .withLock(LockModeType.PESSIMISTIC_WRITE)
+            .firstResult();
 
     if (existing != null) {
       LOG.debugf("Found existing UserLeadSettings for user: %s", userId);
@@ -71,9 +72,10 @@ public class UserLeadSettingsService {
    */
   @Transactional
   public UserLeadSettings updateSettings(String userId, UserLeadSettings settings) {
-    UserLeadSettings existing = UserLeadSettings.find("userId", userId)
-        .withLock(LockModeType.PESSIMISTIC_WRITE)
-        .firstResult();
+    UserLeadSettings existing =
+        UserLeadSettings.find("userId", userId)
+            .withLock(LockModeType.PESSIMISTIC_WRITE)
+            .firstResult();
 
     if (existing == null) {
       throw new IllegalArgumentException("UserLeadSettings not found for user: " + userId);
