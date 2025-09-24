@@ -10,11 +10,11 @@ import java.util.UUID;
 import org.junit.jupiter.api.Test;
 
 /**
- * Tests SettingsService with cache annotations.
- * Sprint 1.4: Foundation Quick-Wins - Cache implementation verification.
+ * Tests SettingsService with cache annotations. Sprint 1.4: Foundation Quick-Wins - Cache
+ * implementation verification.
  *
- * Note: Cache behavior might differ in test environment.
- * These tests verify functional correctness with cache annotations present.
+ * <p>Note: Cache behavior might differ in test environment. These tests verify functional
+ * correctness with cache annotations present.
  */
 @QuarkusTest
 class SettingsServiceCachingTest {
@@ -25,13 +25,9 @@ class SettingsServiceCachingTest {
   void settingsService_worksWithCacheAnnotations() {
     // Given: Create a new setting with initial value
     String uniqueKey = "cache.test." + UUID.randomUUID();
-    var created = service.saveSetting(
-        SettingsScope.GLOBAL,
-        null,
-        uniqueKey,
-        new JsonObject().put("v", 1),
-        null,
-        "test-user");
+    var created =
+        service.saveSetting(
+            SettingsScope.GLOBAL, null, uniqueKey, new JsonObject().put("v", 1), null, "test-user");
 
     assertNotNull(created);
     assertEquals(1, created.value.getInteger("v"));
@@ -46,12 +42,8 @@ class SettingsServiceCachingTest {
     // And: Update the setting with ETag
     UUID id = created.id;
     String etag = created.etag;
-    var updated = service.updateSettingWithEtag(
-        id,
-        new JsonObject().put("v", 2),
-        null,
-        etag,
-        "test-user-2");
+    var updated =
+        service.updateSettingWithEtag(id, new JsonObject().put("v", 2), null, etag, "test-user-2");
 
     assertNotNull(updated);
     assertEquals(2, updated.value.getInteger("v"));
@@ -63,7 +55,9 @@ class SettingsServiceCachingTest {
 
     assertTrue(r2.isPresent());
     // The actual value should be 2, whether from cache or DB
-    assertEquals(2, r2.get().value.getInteger("v"),
+    assertEquals(
+        2,
+        r2.get().value.getInteger("v"),
         "Updated value should be returned (cache invalidated or bypassed)");
 
     // Cleanup
@@ -71,20 +65,20 @@ class SettingsServiceCachingTest {
 
     // Verify deletion also works correctly
     Optional<Setting> r3 = service.resolveSetting(uniqueKey, ctx);
-    assertFalse(r3.isPresent(),
-        "Setting should be deleted");
+    assertFalse(r3.isPresent(), "Setting should be deleted");
   }
 
   @Test
   void getSetting_shouldBeCached() {
     // Given: Create a setting
-    var created = service.saveSetting(
-        SettingsScope.GLOBAL,
-        null,
-        "cache.test.get." + UUID.randomUUID(),
-        new JsonObject().put("value", "cached"),
-        null,
-        "test-user");
+    var created =
+        service.saveSetting(
+            SettingsScope.GLOBAL,
+            null,
+            "cache.test.get." + UUID.randomUUID(),
+            new JsonObject().put("value", "cached"),
+            null,
+            "test-user");
 
     // When: Get the setting multiple times
     Optional<Setting> first = service.getSetting(SettingsScope.GLOBAL, null, created.key);

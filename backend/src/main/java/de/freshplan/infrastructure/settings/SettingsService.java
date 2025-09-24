@@ -26,9 +26,7 @@ public class SettingsService {
 
   @Inject EntityManager em;
 
-  /**
-   * Retrieves a setting by scope, scope ID, and key. Sprint 1.4: Added caching support.
-   */
+  /** Retrieves a setting by scope, scope ID, and key. Sprint 1.4: Added caching support. */
   @CacheResult(cacheName = CACHE_NAME)
   public Optional<Setting> getSetting(SettingsScope scope, String scopeId, String key) {
     LOG.debugf("Retrieving setting: scope=%s, scopeId=%s, key=%s", scope, scopeId, key);
