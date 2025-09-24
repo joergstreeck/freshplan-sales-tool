@@ -46,7 +46,9 @@ export const KanbanColumn: React.FC<KanbanColumnProps> = React.memo(
           maxWidth: { xs: 350, sm: 450 },
           p: { xs: 1.5, sm: 2 },
           bgcolor: isOver ? 'rgba(148, 196, 86, 0.1)' : config.bgColor,
-          border: isOver ? `2px solid ${theme.palette.primary.main}` : '1px solid rgba(0, 0, 0, 0.12)',
+          border: isOver
+            ? `2px solid ${theme.palette.primary.main}`
+            : '1px solid rgba(0, 0, 0, 0.12)',
           borderRadius: 2,
           transition: 'all 0.2s ease',
         }}

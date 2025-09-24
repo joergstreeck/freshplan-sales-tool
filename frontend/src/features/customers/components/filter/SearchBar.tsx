@@ -1,22 +1,15 @@
 /**
  * Search Bar Component
- * 
+ *
  * Universal search input with debouncing and results dropdown
- * 
+ *
  * @module SearchBar
  * @since FC-005 PR4
  */
 
 import React, { forwardRef } from 'react';
-import {
-  TextField,
-  InputAdornment,
-  IconButton,
-} from '@mui/material';
-import {
-  Search as SearchIcon,
-  Clear as ClearIcon,
-} from '@mui/icons-material';
+import { TextField, InputAdornment, IconButton } from '@mui/material';
+import { Search as SearchIcon, Clear as ClearIcon } from '@mui/icons-material';
 import { useTheme } from '@mui/material/styles';
 
 interface SearchBarProps {
@@ -35,7 +28,7 @@ export const SearchBar = forwardRef<HTMLInputElement, SearchBarProps>(
       onChange,
       onClear,
       onFocus,
-      placeholder = "Suche nach Firma, Kundennummer, Kontakten...",
+      placeholder = 'Suche nach Firma, Kundennummer, Kontakten...',
       loading = false,
     },
     ref

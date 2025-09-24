@@ -314,7 +314,9 @@ export function EntityAuditTimeline({
             size="small"
             label="Ereignistyp"
             value={filterType}
-            onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setFilterType(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
+              setFilterType(e.target.value)
+            }
             sx={{ minWidth: 200 }}
           >
             <MenuItem value="all">Alle Ereignisse</MenuItem>

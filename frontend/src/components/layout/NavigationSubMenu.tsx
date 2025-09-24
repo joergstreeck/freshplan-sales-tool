@@ -76,8 +76,8 @@ export const NavigationSubMenu: React.FC<NavigationSubMenuProps> = ({ items, onI
 
       // Also check for nested paths
       if (item.subItems) {
-        const hasActiveSubItem = item.subItems.some(subItem =>
-          subItem.path && currentPath.startsWith(subItem.path)
+        const hasActiveSubItem = item.subItems.some(
+          subItem => subItem.path && currentPath.startsWith(subItem.path)
         );
         if (hasActiveSubItem) {
           newExpanded.push(item.label);
@@ -87,20 +87,16 @@ export const NavigationSubMenu: React.FC<NavigationSubMenuProps> = ({ items, onI
 
     // Always set the expanded items based on current path
     setExpandedItems(newExpanded);
-  }, [location.pathname, items]);  
+  }, [location.pathname, items]);
 
   const toggleExpanded = (itemLabel: string) => {
     setExpandedItems(prev =>
-      prev.includes(itemLabel)
-        ? prev.filter(i => i !== itemLabel)
-        : [...prev, itemLabel]
+      prev.includes(itemLabel) ? prev.filter(i => i !== itemLabel) : [...prev, itemLabel]
     );
   };
 
   const ensureExpanded = (itemLabel: string) => {
-    setExpandedItems(prev =>
-      prev.includes(itemLabel) ? prev : [...prev, itemLabel]
-    );
+    setExpandedItems(prev => (prev.includes(itemLabel) ? prev : [...prev, itemLabel]));
   };
 
   const renderSubItem = (item: NavigationSubItem, depth = 1): React.ReactNode => {
@@ -190,13 +186,14 @@ export const NavigationSubMenu: React.FC<NavigationSubMenuProps> = ({ items, onI
       </ListItemButton>
     );
 
-    const wrappedButton = isDisabled && item.tooltip ? (
-      <Tooltip key={key} title={item.tooltip} placement="right">
-        <span>{button}</span>
-      </Tooltip>
-    ) : (
-      button
-    );
+    const wrappedButton =
+      isDisabled && item.tooltip ? (
+        <Tooltip key={key} title={item.tooltip} placement="right">
+          <span>{button}</span>
+        </Tooltip>
+      ) : (
+        button
+      );
 
     return (
       <React.Fragment key={key}>

@@ -215,6 +215,8 @@ export interface FieldCatalog {
  * @param field - Field to check
  * @returns True if field is not null/undefined
  */
-export function isFieldDefinition(field: FieldDefinition | null | undefined): field is FieldDefinition {
+export function isFieldDefinition(
+  field: FieldDefinition | null | undefined
+): field is FieldDefinition {
   return field !== null && field !== undefined;
 }

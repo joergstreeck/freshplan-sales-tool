@@ -160,7 +160,9 @@ const BatchAddDialog: React.FC<BatchAddDialogProps> = ({
                   <TextField
                     size="small"
                     value={location.name}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange(index, 'name', e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      handleChange(index, 'name', e.target.value)
+                    }
                     placeholder="z.B. Station 2A"
                     fullWidth
                   />
@@ -169,7 +171,9 @@ const BatchAddDialog: React.FC<BatchAddDialogProps> = ({
                   <Select
                     size="small"
                     value={location.category}
-                    onChange={(e: SelectChangeEvent) => handleChange(index, 'category', e.target.value)}
+                    onChange={(e: SelectChangeEvent) =>
+                      handleChange(index, 'category', e.target.value)
+                    }
                     fullWidth
                   >
                     {Object.entries(categoryLabels).map(([value, label]) => (
@@ -183,7 +187,9 @@ const BatchAddDialog: React.FC<BatchAddDialogProps> = ({
                   <TextField
                     size="small"
                     value={location.floor || ''}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange(index, 'floor', e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      handleChange(index, 'floor', e.target.value)
+                    }
                     placeholder="z.B. 1. OG"
                   />
                 </TableCell>

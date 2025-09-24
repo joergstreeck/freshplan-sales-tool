@@ -36,7 +36,7 @@ const helpSections = {
       { title: 'Angebot erstellen', content: 'Ihr erstes Angebot in 5 Minuten' },
     ],
   },
-  'handbuecher': {
+  handbuecher: {
     title: '📖 Handbücher',
     icon: <MenuBookIcon sx={{ fontSize: 40, color: '#004F7B' }} />,
     description: 'Detaillierte Anleitungen',
@@ -48,7 +48,7 @@ const helpSections = {
       { title: 'Systemeinstellungen', content: 'FreshPlan an Ihre Bedürfnisse anpassen' },
     ],
   },
-  'videos': {
+  videos: {
     title: '🎥 Video-Tutorials',
     icon: <VideoLibraryIcon sx={{ fontSize: 40, color: '#94C456' }} />,
     description: 'Lernen mit Videos',
@@ -59,7 +59,7 @@ const helpSections = {
       { title: 'Reporting Masterclass', content: 'Berichte wie ein Profi', duration: '15:30' },
     ],
   },
-  'faq': {
+  faq: {
     title: '❓ Häufige Fragen',
     icon: <HelpOutlineIcon sx={{ fontSize: 40, color: '#004F7B' }} />,
     description: 'Antworten auf häufige Fragen',
@@ -71,7 +71,7 @@ const helpSections = {
       { title: 'Wie exportiere ich Berichte?', category: 'Export' },
     ],
   },
-  'support': {
+  support: {
     title: '💬 Support kontaktieren',
     icon: <SupportAgentIcon sx={{ fontSize: 40, color: '#94C456' }} />,
     description: 'Wir helfen Ihnen gerne',
@@ -133,11 +133,7 @@ export const HelpCenterPage: React.FC = () => {
                     </Typography>
                   </CardContent>
                   <CardActions>
-                    <Button
-                      size="small"
-                      endIcon={<ArrowForwardIcon />}
-                      sx={{ color: '#94C456' }}
-                    >
+                    <Button size="small" endIcon={<ArrowForwardIcon />} sx={{ color: '#94C456' }}>
                       Öffnen
                     </Button>
                   </CardActions>
@@ -182,22 +178,13 @@ export const HelpCenterPage: React.FC = () => {
                   </Typography>
                   <List>
                     <ListItem>
-                      <ListItemText
-                        primary="E-Mail"
-                        secondary={section.contactInfo.email}
-                      />
+                      <ListItemText primary="E-Mail" secondary={section.contactInfo.email} />
                     </ListItem>
                     <ListItem>
-                      <ListItemText
-                        primary="Telefon"
-                        secondary={section.contactInfo.phone}
-                      />
+                      <ListItemText primary="Telefon" secondary={section.contactInfo.phone} />
                     </ListItem>
                     <ListItem>
-                      <ListItemText
-                        primary="Servicezeiten"
-                        secondary={section.contactInfo.hours}
-                      />
+                      <ListItemText primary="Servicezeiten" secondary={section.contactInfo.hours} />
                     </ListItem>
                   </List>
                 </Paper>
@@ -241,8 +228,8 @@ export const HelpCenterPage: React.FC = () => {
                         'duration' in item
                           ? `Dauer: ${item.duration}`
                           : 'category' in item
-                          ? `Kategorie: ${item.category}`
-                          : item.content
+                            ? `Kategorie: ${item.category}`
+                            : item.content
                       }
                     />
                   </ListItem>

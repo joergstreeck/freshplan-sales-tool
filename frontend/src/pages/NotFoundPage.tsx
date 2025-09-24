@@ -22,7 +22,7 @@ export function NotFoundPage() {
           }}
         >
           <ErrorOutlineIcon sx={{ fontSize: 100, color: '#94C456' }} />
-          
+
           <Typography
             variant="h1"
             sx={{
@@ -47,8 +47,8 @@ export function NotFoundPage() {
           </Typography>
 
           <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
-            Die angeforderte Seite existiert leider nicht.
-            Möglicherweise wurde sie verschoben oder entfernt.
+            Die angeforderte Seite existiert leider nicht. Möglicherweise wurde sie verschoben oder
+            entfernt.
           </Typography>
 
           <Box sx={{ display: 'flex', gap: 2 }}>
@@ -63,7 +63,7 @@ export function NotFoundPage() {
             >
               Zur Startseite
             </Button>
-            
+
             <Button
               variant="outlined"
               onClick={() => navigate(-1)}

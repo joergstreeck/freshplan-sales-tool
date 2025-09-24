@@ -21,10 +21,7 @@ import {
   Box,
   Chip,
 } from '@mui/material';
-import {
-  Keyboard as KeyboardIcon,
-  Close as CloseIcon,
-} from '@mui/icons-material';
+import { Keyboard as KeyboardIcon, Close as CloseIcon } from '@mui/icons-material';
 import { KEYBOARD_SHORTCUTS } from '@/hooks/useKeyboardNavigation';
 
 export const KeyboardShortcutsHelp: React.FC = () => {
@@ -82,7 +79,9 @@ export const KeyboardShortcutsHelp: React.FC = () => {
             backgroundColor: hasSeenHelp ? theme.palette.primary.main : theme.palette.success.main,
             color: theme.palette.common.white,
             '&:hover': {
-              backgroundColor: hasSeenHelp ? theme.palette.primary.dark : theme.palette.success.dark,
+              backgroundColor: hasSeenHelp
+                ? theme.palette.primary.dark
+                : theme.palette.success.dark,
             },
             animation: hasSeenHelp ? 'none' : 'pulse 2s infinite',
             '@keyframes pulse': {
@@ -159,11 +158,7 @@ export const KeyboardShortcutsHelp: React.FC = () => {
                         {key.split(' ').map((part, index) => {
                           if (part === '+') {
                             return (
-                              <Typography
-                                key={index}
-                                variant="body2"
-                                sx={{ px: 0.5 }}
-                              >
+                              <Typography key={index} variant="body2" sx={{ px: 0.5 }}>
                                 +
                               </Typography>
                             );
@@ -196,7 +191,13 @@ export const KeyboardShortcutsHelp: React.FC = () => {
           </TableContainer>
 
           {/* Additional Tips */}
-          <Box sx={{ p: 2, backgroundColor: theme.palette.grey[50], borderTop: `1px solid ${theme.palette.divider}` }}>
+          <Box
+            sx={{
+              p: 2,
+              backgroundColor: theme.palette.grey[50],
+              borderTop: `1px solid ${theme.palette.divider}`,
+            }}
+          >
             <Typography variant="subtitle2" sx={{ mb: 1, color: theme.palette.primary.main }}>
               💡 Tipps:
             </Typography>
@@ -204,7 +205,8 @@ export const KeyboardShortcutsHelp: React.FC = () => {
               • Die Shortcuts funktionieren nur, wenn kein Eingabefeld aktiv ist
             </Typography>
             <Typography variant="body2" sx={{ mb: 0.5 }}>
-              • Nutze <strong>Tab</strong> und <strong>Shift+Tab</strong> für die Standard-Navigation
+              • Nutze <strong>Tab</strong> und <strong>Shift+Tab</strong> für die
+              Standard-Navigation
             </Typography>
             <Typography variant="body2">
               • Diese Hilfe öffnet sich mit <strong>Shift + ?</strong>

@@ -31,26 +31,18 @@ export function CustomerListHeader({ totalCount, onAddCustomer }: CustomerListHe
         alignItems: 'center',
         mb: 3,
         flexWrap: 'wrap',
-        gap: 2
+        gap: 2,
       }}
     >
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
         <Typography variant="h4" component="h1">
           Kunden
         </Typography>
-        <Chip
-          label={`${totalCount} gesamt`}
-          color="primary"
-          size="small"
-        />
+        <Chip label={`${totalCount} gesamt`} color="primary" size="small" />
       </Box>
 
       <Box sx={{ display: 'flex', gap: 2 }}>
-        <UniversalExportButton
-          entity="customer"
-          filters={{}}
-          variant="outlined"
-        />
+        <UniversalExportButton entity="customer" filters={{}} variant="outlined" />
         <Button
           variant="contained"
           startIcon={<AddIcon />}
@@ -58,8 +50,8 @@ export function CustomerListHeader({ totalCount, onAddCustomer }: CustomerListHe
           sx={{
             bgcolor: '#94C456',
             '&:hover': {
-              bgcolor: '#7BA345'
-            }
+              bgcolor: '#7BA345',
+            },
           }}
         >
           Neuer Kunde

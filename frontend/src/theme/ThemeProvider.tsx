@@ -27,7 +27,7 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
   // Create theme with settings overrides
   const theme = useMemo(() => {
     // Theme settings already include defaults from the useThemeSettings hook
-    const primary = themeSettings?.primary || '#94C456';   // FreshFoodz Green
+    const primary = themeSettings?.primary || '#94C456'; // FreshFoodz Green
     const secondary = themeSettings?.secondary || '#004F7B'; // FreshFoodz Blue
 
     // Log theme source for debugging

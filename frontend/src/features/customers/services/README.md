@@ -17,6 +17,7 @@ Diese Service-Schicht bildet die Brücke zwischen Frontend und Backend für das 
 ## 🏗️ Architektur
 
 ### Service-Struktur
+
 ```
 services/
 ├── api-client.ts        # Basis HTTP Client mit Retry & Error Handling
@@ -29,6 +30,7 @@ services/
 ```
 
 ### API Client Features
+
 - **Automatic Retry**: Bei 5xx Errors mit exponential backoff
 - **Request Cancellation**: Abort Controller für alle Requests
 - **Timeout Handling**: Konfigurierbares Timeout pro Request
@@ -40,18 +42,18 @@ services/
 ### 1. Customer Draft Management
 
 ```typescript
-import { 
-  useCreateCustomerDraft, 
+import {
+  useCreateCustomerDraft,
   useUpdateCustomerDraft,
-  useFinalizeCustomerDraft 
+  useFinalizeCustomerDraft,
 } from '@/features/customers/services';
 
 // In Component
 const { mutate: createDraft } = useCreateCustomerDraft({
-  onSuccess: (draft) => {
+  onSuccess: draft => {
     console.log('Draft created:', draft.id);
     navigate(`/customers/new/${draft.id}`);
-  }
+  },
 });
 
 // Draft aktualisieren
@@ -60,16 +62,16 @@ const { mutate: updateDraft } = useUpdateCustomerDraft();
 const handleFieldChange = (fieldValues: Record<string, any>) => {
   updateDraft({
     draftId: currentDraftId,
-    data: { fieldValues }
+    data: { fieldValues },
   });
 };
 
 // Draft finalisieren
 const { mutate: finalizeDraft } = useFinalizeCustomerDraft({
-  onSuccess: (customer) => {
+  onSuccess: customer => {
     toast.success('Kunde erfolgreich angelegt!');
     navigate(`/customers/${customer.id}`);
-  }
+  },
 });
 ```
 
@@ -83,7 +85,7 @@ const { data, isLoading } = useSearchCustomers({
   searchTerm: 'Fresh',
   status: CustomerStatus.ACTIVE,
   page: 0,
-  size: 20
+  size: 20,
 });
 
 // Einzelnen Kunden laden
@@ -118,18 +120,20 @@ const { data: locations } = useCustomerLocations(customerId);
 const { mutate: createLocation } = useCreateLocation({
   onSuccess: () => {
     queryClient.invalidateQueries(['locations', 'customer', customerId]);
-  }
+  },
 });
 ```
 
 ## 🔧 Konfiguration
 
 ### Environment Variables
+
 ```env
 VITE_API_URL=http://localhost:8080  # Backend URL
 ```
 
 ### Request Defaults
+
 ```typescript
 // Standard Retry: 2 Versuche bei 5xx Errors
 // Standard Timeout: 30 Sekunden
@@ -137,24 +141,26 @@ VITE_API_URL=http://localhost:8080  # Backend URL
 
 customerApi.searchCustomers(params, {
   retry: 3,
-  timeout: 60000 // 1 Minute
+  timeout: 60000, // 1 Minute
 });
 ```
 
 ## 📊 Error Handling
 
 ### Standardisierte Error-Struktur
+
 ```typescript
 interface ApiError {
-  status: number;              // HTTP Status Code
-  code: string;               // Machine-readable code
-  message: string;            // User-friendly message
+  status: number; // HTTP Status Code
+  code: string; // Machine-readable code
+  message: string; // User-friendly message
   fieldErrors?: Record<string, string[]>; // Validation errors
   timestamp: string;
 }
 ```
 
 ### Error Handling in Components
+
 ```typescript
 const { mutate, error } = useUpdateCustomer();
 
@@ -174,56 +180,59 @@ if (error) {
 ## 🚀 Performance Optimierungen
 
 ### 1. Request Caching (React Query)
+
 - Customer Details: 1 Minute
 - Field Definitions: 5 Minuten
 - Search Results: 1 Minute
 - Statistics: 5 Minuten
 
 ### 2. Optimistic Updates
+
 ```typescript
 const { mutate } = useUpdateCustomer({
   onMutate: async ({ customerId, fieldValues }) => {
     // Cancel in-flight queries
     await queryClient.cancelQueries(['customers', 'detail', customerId]);
-    
+
     // Snapshot previous value
     const previous = queryClient.getQueryData(['customers', 'detail', customerId]);
-    
+
     // Optimistically update
     queryClient.setQueryData(['customers', 'detail', customerId], old => ({
       ...old,
-      fieldValues: { ...old.fieldValues, ...fieldValues }
+      fieldValues: { ...old.fieldValues, ...fieldValues },
     }));
-    
+
     return { previous };
   },
   onError: (err, variables, context) => {
     // Rollback on error
-    queryClient.setQueryData(
-      ['customers', 'detail', variables.customerId],
-      context.previous
-    );
-  }
+    queryClient.setQueryData(['customers', 'detail', variables.customerId], context.previous);
+  },
 });
 ```
 
 ### 3. Request Deduplication
+
 React Query dedupliziert automatisch identische Requests innerhalb des staleTime-Fensters.
 
 ## 🧪 Testing
 
 ### Mock API für Tests
+
 ```typescript
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 
 const server = setupServer(
   rest.post('/api/customers/drafts', (req, res, ctx) => {
-    return res(ctx.json({
-      id: 'draft-123',
-      status: 'DRAFT',
-      fieldValues: {}
-    }));
+    return res(
+      ctx.json({
+        id: 'draft-123',
+        status: 'DRAFT',
+        fieldValues: {},
+      })
+    );
   })
 );
 
@@ -253,6 +262,7 @@ afterAll(() => server.close());
 - [ ] E2E Tests
 
 **Nächste Schritte:**
+
 1. Unit Tests für alle Services schreiben
 2. MSW Mocks für Development einrichten
 3. Performance Monitoring einbauen

@@ -143,7 +143,8 @@ describe.skip('Contact Components Performance', () => {
     const end = performance.now();
     const renderTime = end - start;
 
-    if (process.env.DEBUG_PERF) console.log(`Rendered contact with large data in ${renderTime.toFixed(2)}ms`);
+    if (process.env.DEBUG_PERF)
+      console.log(`Rendered contact with large data in ${renderTime.toFixed(2)}ms`);
     expect(renderTime).toBeLessThan(50);
   });
 
@@ -166,7 +167,8 @@ describe.skip('Contact Components Performance', () => {
     const end = performance.now();
     const loadTime = end - start;
 
-    if (process.env.DEBUG_PERF) console.log(`Loaded page of ${PAGE_SIZE} contacts in ${loadTime.toFixed(2)}ms`);
+    if (process.env.DEBUG_PERF)
+      console.log(`Loaded page of ${PAGE_SIZE} contacts in ${loadTime.toFixed(2)}ms`);
     expect(loadTime).toBeLessThan(20);
     expect(firstPage).toHaveLength(PAGE_SIZE);
   });
@@ -197,7 +199,8 @@ describe.skip('Contact Components Performance', () => {
     const end = performance.now();
     const searchTime = end - start;
 
-    if (process.env.DEBUG_PERF) console.log(`Processed ${searches.length} search queries in ${searchTime.toFixed(2)}ms`);
+    if (process.env.DEBUG_PERF)
+      console.log(`Processed ${searches.length} search queries in ${searchTime.toFixed(2)}ms`);
     expect(searchTime).toBeLessThan(10);
 
     // With proper debouncing, should be called less than the number of searches
@@ -225,7 +228,8 @@ describe.skip('Contact Components Performance', () => {
     const end = performance.now();
     const bulkUpdateTime = end - start;
 
-    if (process.env.DEBUG_PERF) console.log(`Bulk updated 50 contacts in ${bulkUpdateTime.toFixed(2)}ms`);
+    if (process.env.DEBUG_PERF)
+      console.log(`Bulk updated 50 contacts in ${bulkUpdateTime.toFixed(2)}ms`);
     expect(bulkUpdateTime).toBeLessThan(100);
   });
 
@@ -248,7 +252,8 @@ describe.skip('Contact Components Performance', () => {
     const end = performance.now();
     const lazyLoadTime = end - start;
 
-    if (process.env.DEBUG_PERF) console.log(`Lazy loaded 10 contact summaries in ${lazyLoadTime.toFixed(2)}ms`);
+    if (process.env.DEBUG_PERF)
+      console.log(`Lazy loaded 10 contact summaries in ${lazyLoadTime.toFixed(2)}ms`);
     expect(lazyLoadTime).toBeLessThan(5);
   });
 
@@ -283,7 +288,8 @@ describe.skip('Contact Components Performance', () => {
     const end = performance.now();
     const scrollSimulationTime = end - start;
 
-    if (process.env.DEBUG_PERF) console.log(`Simulated virtual scrolling in ${scrollSimulationTime.toFixed(2)}ms`);
+    if (process.env.DEBUG_PERF)
+      console.log(`Simulated virtual scrolling in ${scrollSimulationTime.toFixed(2)}ms`);
     expect(scrollSimulationTime).toBeLessThan(10);
   });
 

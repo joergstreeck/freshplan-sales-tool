@@ -71,10 +71,8 @@ describe('FilterDrawer', () => {
 
     // Find the close icon button
     const closeButtons = screen.getAllByRole('button');
-    const closeButton = closeButtons.find(btn => 
-      btn.querySelector('[data-testid="CloseIcon"]')
-    );
-    
+    const closeButton = closeButtons.find(btn => btn.querySelector('[data-testid="CloseIcon"]'));
+
     if (closeButton) {
       fireEvent.click(closeButton);
       expect(mockOnClose).toHaveBeenCalled();

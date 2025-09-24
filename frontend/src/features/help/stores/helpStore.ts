@@ -104,7 +104,8 @@ export const useHelpStore = create<HelpState>()(
       try {
         const results = await helpApi.searchHelp(query);
         return results;
-      } catch (_error) { void _error;
+      } catch (_error) {
+        void _error;
         return [];
       }
     },
@@ -129,7 +130,9 @@ export const useHelpStore = create<HelpState>()(
             }
           }
         });
-      } catch (_error) { void _error;}
+      } catch (_error) {
+        void _error;
+      }
     },
 
     // Track view
@@ -144,7 +147,9 @@ export const useHelpStore = create<HelpState>()(
             content.viewCount++;
           }
         });
-      } catch (_error) { void _error;}
+      } catch (_error) {
+        void _error;
+      }
     },
 
     // Load analytics
@@ -154,7 +159,9 @@ export const useHelpStore = create<HelpState>()(
         set(state => {
           state.analytics = analytics;
         });
-      } catch (_error) { void _error;}
+      } catch (_error) {
+        void _error;
+      }
     },
 
     // UI Actions
@@ -265,7 +272,9 @@ export const useHelpStore = create<HelpState>()(
           type: struggle.type,
           context: struggle.context,
         });
-      } catch (_error) { void _error;}
+      } catch (_error) {
+        void _error;
+      }
     },
 
     clearStruggles: () => {

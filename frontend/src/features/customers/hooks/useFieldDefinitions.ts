@@ -90,7 +90,8 @@ export const useFieldDefinitions = (): UseFieldDefinitionsResult => {
       setFieldDefinitions(customerFields, locationFields);
 
       setIsLoading(false);
-    } catch (_err) { void _err;
+    } catch (_err) {
+      void _err;
       setError(err as Error);
       setIsLoading(false);
     }

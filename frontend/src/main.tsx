@@ -47,7 +47,8 @@ async function enableMocking() {
       // Backend available: Using real API
       return;
     }
-  } catch (_error) { void _error;
+  } catch (_error) {
+    void _error;
     // Backend not available, starting MSW mock server
     // Backend not available, starting MSW
   }

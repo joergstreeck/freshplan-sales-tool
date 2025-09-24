@@ -33,7 +33,7 @@ export function createNavigationPathMap(
         if (subItem.path) {
           pathMap.set(subItem.path, {
             item: subItemWithPath,
-            parent: parentItem
+            parent: parentItem,
           });
         }
       });

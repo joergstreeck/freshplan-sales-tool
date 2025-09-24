@@ -117,7 +117,7 @@ export const UserFormMUI = ({ user, onSuccess, onCancel }: UserFormProps) => {
   const handleRoleToggle = (role: string) => {
     const currentRoles = watchedRoles;
     const updatedRoles = currentRoles.includes(role)
-      ? currentRoles.filter((r) => r !== role)
+      ? currentRoles.filter(r => r !== role)
       : [...currentRoles, role];
 
     if (updatedRoles.length > 0) {
@@ -248,7 +248,7 @@ export const UserFormMUI = ({ user, onSuccess, onCancel }: UserFormProps) => {
             Rollen zuweisen *
           </FormLabel>
           <Grid container spacing={1}>
-            {getAllRoles().map((role) => (
+            {getAllRoles().map(role => (
               <Grid item xs={12} sm={6} key={role}>
                 <FormControlLabel
                   control={

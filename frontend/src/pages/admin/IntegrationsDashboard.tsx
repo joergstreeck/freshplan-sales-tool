@@ -134,7 +134,9 @@ export function IntegrationsDashboard() {
       case 'disconnected':
         return <ErrorIcon sx={{ fontSize: 20, color: '#EF5350' }} />;
       case 'syncing':
-        return <SyncIcon sx={{ fontSize: 20, color: '#29B6F6', animation: 'spin 2s linear infinite' }} />;
+        return (
+          <SyncIcon sx={{ fontSize: 20, color: '#29B6F6', animation: 'spin 2s linear infinite' }} />
+        );
       default:
         return null;
     }
@@ -177,10 +179,7 @@ export function IntegrationsDashboard() {
     <MainLayoutV2>
       <Container maxWidth="xl" sx={{ py: 4 }}>
         {/* Breadcrumbs */}
-        <Breadcrumbs
-          separator={<NavigateNextIcon fontSize="small" />}
-          sx={{ mb: 3 }}
-        >
+        <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} sx={{ mb: 3 }}>
           <Link
             component="button"
             variant="body1"
@@ -283,14 +282,15 @@ export function IntegrationsDashboard() {
         {integrations.some(i => i.status === 'warning') && (
           <Alert severity="warning" sx={{ mb: 3 }}>
             <Typography variant="body2">
-              <strong>Achtung:</strong> Eine oder mehrere Integrationen benötigen Ihre Aufmerksamkeit.
+              <strong>Achtung:</strong> Eine oder mehrere Integrationen benötigen Ihre
+              Aufmerksamkeit.
             </Typography>
           </Alert>
         )}
 
         {/* Integration Cards */}
         <Grid container spacing={3}>
-          {integrations.map((integration) => (
+          {integrations.map(integration => (
             <Grid key={integration.id} size={{ xs: 12, md: 6, lg: 4 }}>
               <Card
                 sx={{
@@ -338,11 +338,7 @@ export function IntegrationsDashboard() {
                     {integration.title}
                   </Typography>
 
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    sx={{ mb: 2, minHeight: 40 }}
-                  >
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 2, minHeight: 40 }}>
                     {integration.description}
                   </Typography>
 
@@ -364,9 +360,7 @@ export function IntegrationsDashboard() {
                           <Typography variant="caption" color="text.secondary">
                             Letzte Sync
                           </Typography>
-                          <Typography variant="body2">
-                            {integration.lastSync}
-                          </Typography>
+                          <Typography variant="body2">{integration.lastSync}</Typography>
                         </Box>
                         {integration.dataPoints !== undefined && (
                           <Box>
@@ -406,7 +400,8 @@ export function IntegrationsDashboard() {
                       borderColor: '#94C456',
                       color: integration.id === 'new' ? '#94C456' : 'white',
                       '&:hover': {
-                        backgroundColor: integration.id === 'new' ? 'rgba(148, 196, 86, 0.1)' : '#7BA347',
+                        backgroundColor:
+                          integration.id === 'new' ? 'rgba(148, 196, 86, 0.1)' : '#7BA347',
                       },
                     }}
                   >

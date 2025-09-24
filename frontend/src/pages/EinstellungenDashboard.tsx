@@ -1,5 +1,18 @@
 import React from 'react';
-import { Box, Container, Typography, Card, CardContent, CardActions, Button, List, ListItem, ListItemIcon, ListItemText, Divider } from '@mui/material';
+import {
+  Box,
+  Container,
+  Typography,
+  Card,
+  CardContent,
+  CardActions,
+  Button,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Divider,
+} from '@mui/material';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
 import { MainLayoutV2 } from '../components/layout/MainLayoutV2';
@@ -56,7 +69,10 @@ export function EinstellungenDashboard() {
     <MainLayoutV2>
       <Container maxWidth="xl" sx={{ py: 4 }}>
         <Box sx={{ mb: 4 }}>
-          <Typography variant="h3" sx={{ mb: 1, fontFamily: 'Antonio, sans-serif', fontWeight: 'bold', color: '#004F7B' }}>
+          <Typography
+            variant="h3"
+            sx={{ mb: 1, fontFamily: 'Antonio, sans-serif', fontWeight: 'bold', color: '#004F7B' }}
+          >
             Einstellungen
           </Typography>
           <Typography variant="body1" color="text.secondary">
@@ -68,7 +84,7 @@ export function EinstellungenDashboard() {
           {/* Main Settings */}
           <Grid size={{ xs: 12, lg: 8 }}>
             <Grid container spacing={3}>
-              {mainSettings.map((setting) => (
+              {mainSettings.map(setting => (
                 <Grid key={setting.title} size={{ xs: 12, md: 6 }}>
                   <Card
                     sx={{
@@ -84,15 +100,22 @@ export function EinstellungenDashboard() {
                         {setting.icon}
                         <ArrowForwardIosIcon sx={{ ml: 'auto', color: '#757575' }} />
                       </Box>
-                      <Typography variant="h6" sx={{ mb: 1, fontFamily: 'Antonio, sans-serif', color: '#004F7B' }}>
+                      <Typography
+                        variant="h6"
+                        sx={{ mb: 1, fontFamily: 'Antonio, sans-serif', color: '#004F7B' }}
+                      >
                         {setting.title}
                       </Typography>
                       <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
                         {setting.description}
                       </Typography>
                       <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-                        {setting.items.map((item) => (
-                          <Typography key={item} variant="caption" sx={{ px: 1, py: 0.5, backgroundColor: '#f5f5f5', borderRadius: 1 }}>
+                        {setting.items.map(item => (
+                          <Typography
+                            key={item}
+                            variant="caption"
+                            sx={{ px: 1, py: 0.5, backgroundColor: '#f5f5f5', borderRadius: 1 }}
+                          >
                             {item}
                           </Typography>
                         ))}
@@ -113,7 +136,10 @@ export function EinstellungenDashboard() {
           <Grid size={{ xs: 12, lg: 4 }}>
             <Card>
               <CardContent>
-                <Typography variant="h6" sx={{ mb: 2, fontFamily: 'Antonio, sans-serif', color: '#004F7B' }}>
+                <Typography
+                  variant="h6"
+                  sx={{ mb: 2, fontFamily: 'Antonio, sans-serif', color: '#004F7B' }}
+                >
                   Schnelleinstellungen
                 </Typography>
                 <List>

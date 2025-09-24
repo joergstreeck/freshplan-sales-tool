@@ -11,30 +11,36 @@ Die Step-Komponenten bilden den mehrstufigen Onboarding-Prozess für neue Kunden
 ## 🏗️ Step-Struktur
 
 ### 1. CustomerDataStep
+
 **Zweck:** Erfassung der Kundenstammdaten  
 **Trigger:** Immer angezeigt (Schritt 1)
 
 **Features:**
+
 - Dynamische Felder basierend auf Field Catalog
 - Industry-spezifische Felder
 - Real-time Validation
 - Chain Customer Trigger für weitere Steps
 
-### 2. LocationsStep  
+### 2. LocationsStep
+
 **Zweck:** Verwaltung von Standorten für Ketten-Kunden  
 **Trigger:** Nur wenn `chainCustomer === 'ja'`
 
 **Features:**
+
 - Mehrere Standorte verwalten
 - Industry-spezifische Standort-Felder
 - Drag & Drop Sortierung (geplant)
 - Mindestens 1 Standort erforderlich
 
 ### 3. DetailedLocationsStep
+
 **Zweck:** Erfassung von Detail-Standorten innerhalb der Hauptstandorte  
 **Trigger:** Optional nach LocationsStep
 
 **Features:**
+
 - Batch-Import für schnelle Erfassung
 - Industry-spezifische Templates
 - Kategorisierung (Restaurant, Station, etc.)
@@ -44,10 +50,10 @@ Die Step-Komponenten bilden den mehrstufigen Onboarding-Prozess für neue Kunden
 ## 🔧 Verwendung im Wizard
 
 ```typescript
-import { 
-  CustomerDataStep, 
-  LocationsStep, 
-  DetailedLocationsStep 
+import {
+  CustomerDataStep,
+  LocationsStep,
+  DetailedLocationsStep,
 } from '@/features/customers/components/steps';
 
 // In CustomerOnboardingWizard
@@ -55,18 +61,18 @@ const steps = [
   {
     label: 'Kundendaten',
     component: CustomerDataStep,
-    isVisible: true
+    isVisible: true,
   },
   {
     label: 'Standorte',
     component: LocationsStep,
-    isVisible: customerData.chainCustomer === 'ja'
+    isVisible: customerData.chainCustomer === 'ja',
   },
   {
     label: 'Detail-Standorte',
     component: DetailedLocationsStep,
-    isVisible: customerData.chainCustomer === 'ja' && locations.length > 0
-  }
+    isVisible: customerData.chainCustomer === 'ja' && locations.length > 0,
+  },
 ];
 ```
 
@@ -75,6 +81,7 @@ const steps = [
 ### Industry Templates
 
 **Hotel:**
+
 - Restaurant Haupthaus
 - Frühstücksraum
 - Bar/Lounge
@@ -82,6 +89,7 @@ const steps = [
 - Bankett/Konferenz
 
 **Krankenhaus:**
+
 - Cafeteria Haupteingang
 - Personalrestaurant
 - Stationen (1A, 1B, 2A, etc.)
@@ -89,6 +97,7 @@ const steps = [
 - Kiosk
 
 **Seniorenresidenz:**
+
 - Speisesaal
 - Wohnbereiche
 - Demenzbereich
@@ -96,15 +105,15 @@ const steps = [
 
 ### Kategorien
 
-| Kategorie | Icon | Verwendung |
-|-----------|------|------------|
-| restaurant | 🍽️ | Hauptrestaurants, Speisesäle |
-| cafeteria | ☕ | Cafeterien, Bistros |
-| kiosk | 🏪 | Kleine Verkaufsstellen |
-| station | 🏥 | Krankenhaus-Stationen, Wohnbereiche |
-| kitchen | 👨‍🍳 | Küchen, Produktionsbereiche |
-| storage | 📦 | Lager, Vorratsräume |
-| other | 📍 | Sonstige Bereiche |
+| Kategorie  | Icon | Verwendung                          |
+| ---------- | ---- | ----------------------------------- |
+| restaurant | 🍽️   | Hauptrestaurants, Speisesäle        |
+| cafeteria  | ☕   | Cafeterien, Bistros                 |
+| kiosk      | 🏪   | Kleine Verkaufsstellen              |
+| station    | 🏥   | Krankenhaus-Stationen, Wohnbereiche |
+| kitchen    | 👨‍🍳   | Küchen, Produktionsbereiche         |
+| storage    | 📦   | Lager, Vorratsräume                 |
+| other      | 📍   | Sonstige Bereiche                   |
 
 ### Batch-Add Dialog
 
@@ -112,10 +121,10 @@ Ermöglicht schnelle Erfassung mehrerer Detail-Standorte:
 
 ```typescript
 interface BatchAddFields {
-  name: string;        // Pflichtfeld
-  category: string;    // Pflichtfeld
-  floor?: string;      // Optional (z.B. "1. OG")
-  capacity?: number;   // Optional (Sitzplätze/Betten)
+  name: string; // Pflichtfeld
+  category: string; // Pflichtfeld
+  floor?: string; // Optional (z.B. "1. OG")
+  capacity?: number; // Optional (Sitzplätze/Betten)
 }
 ```
 
@@ -129,7 +138,7 @@ const {
   addDetailedLocation,
   updateDetailedLocation,
   removeDetailedLocation,
-  addBatchDetailedLocations
+  addBatchDetailedLocations,
 } = useCustomerOnboardingStore();
 ```
 

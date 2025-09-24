@@ -29,7 +29,6 @@
 #### Primärfarben
 
 - **FreshFoodz Blau**: `#004F7B` (Primäre Markenfarbe)
-
   - Verwendung: Überschriften, wichtige UI-Elemente, Links
   - RGB: 0, 79, 123
   - Bedeutung: Vertrauen, Professionalität
@@ -66,7 +65,6 @@
 #### Schriftarten
 
 - **Headline-Font**: `Antonio` (Google Fonts)
-
   - Gewichte: 400, 500, 600, 700
   - Verwendung: Alle Überschriften (h1-h6), Logo-Text
   - Charakter: Modern, kraftvoll, aufmerksamkeitsstark

@@ -15,7 +15,7 @@ async function globalTeardown(config: FullConfig) {
   try {
     await cleanupTestData(baseURL);
   } catch (_error) {
-        void _error;    // Cleanup failed, continue
+    void _error; // Cleanup failed, continue
   }
 
   // Clean up auth state file
@@ -25,14 +25,14 @@ async function globalTeardown(config: FullConfig) {
       fs.unlinkSync(authStatePath);
     }
   } catch (_error) {
-        void _error;    // Cleanup failed, continue
+    void _error; // Cleanup failed, continue
   }
 
   // Generate test summary
   try {
     await generateTestSummary();
   } catch (_error) {
-        void _error;    // Cleanup failed, continue
+    void _error; // Cleanup failed, continue
   }
 }
 
@@ -134,7 +134,8 @@ async function generateTestSummary() {
 
                 if (t.status === 'passed') {
                   summary.browsers[project].passed++;
-                } else { void 0;
+                } else {
+                  void 0;
                   summary.browsers[project].failed++;
                 }
               });
@@ -179,7 +180,7 @@ ${summary.failed === 0 ? '🎉 **ALLE TESTS ERFOLGREICH**' : `⚠️ **${summary
 
     fs.writeFileSync('../../../../../test-results/e2e-summary.md', readableSummary);
   } catch (_error) {
-        void _error;    // Cleanup failed, continue
+    void _error; // Cleanup failed, continue
   }
 }
 

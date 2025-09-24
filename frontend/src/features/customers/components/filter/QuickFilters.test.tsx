@@ -11,24 +11,14 @@ describe('QuickFilters', () => {
   });
 
   it('should render all quick filter chips', () => {
-    render(
-      <QuickFilters
-        activeQuickFilters={[]}
-        onToggleQuickFilter={mockOnToggleQuickFilter}
-      />
-    );
+    render(<QuickFilters activeQuickFilters={[]} onToggleQuickFilter={mockOnToggleQuickFilter} />);
 
     expect(screen.getByText('Aktive Kunden')).toBeInTheDocument();
     expect(screen.getByText('Inaktive Kunden')).toBeInTheDocument();
   });
 
   it('should only show Active and Inactive filters', () => {
-    render(
-      <QuickFilters
-        activeQuickFilters={[]}
-        onToggleQuickFilter={mockOnToggleQuickFilter}
-      />
-    );
+    render(<QuickFilters activeQuickFilters={[]} onToggleQuickFilter={mockOnToggleQuickFilter} />);
 
     // Should only have 2 filters
     const chips = screen.getAllByRole('button');
@@ -43,10 +33,7 @@ describe('QuickFilters', () => {
 
   it('should highlight active filters', () => {
     render(
-      <QuickFilters
-        activeQuickFilters={['active']}
-        onToggleQuickFilter={mockOnToggleQuickFilter}
-      />
+      <QuickFilters activeQuickFilters={['active']} onToggleQuickFilter={mockOnToggleQuickFilter} />
     );
 
     const activeChip = screen.getByText('Aktive Kunden').closest('div');
@@ -61,12 +48,7 @@ describe('QuickFilters', () => {
   });
 
   it('should call onToggleQuickFilter when chip is clicked', () => {
-    render(
-      <QuickFilters
-        activeQuickFilters={[]}
-        onToggleQuickFilter={mockOnToggleQuickFilter}
-      />
-    );
+    render(<QuickFilters activeQuickFilters={[]} onToggleQuickFilter={mockOnToggleQuickFilter} />);
 
     const activeCustomersChip = screen.getByText('Aktive Kunden');
     fireEvent.click(activeCustomersChip);
@@ -75,28 +57,22 @@ describe('QuickFilters', () => {
       expect.objectContaining({
         id: 'active',
         label: 'Aktive Kunden',
-        filter: { status: [CustomerStatus.AKTIV] }
+        filter: { status: [CustomerStatus.AKTIV] },
       })
     );
   });
 
   it('should toggle multiple filters independently', () => {
     const { rerender } = render(
-      <QuickFilters
-        activeQuickFilters={[]}
-        onToggleQuickFilter={mockOnToggleQuickFilter}
-      />
+      <QuickFilters activeQuickFilters={[]} onToggleQuickFilter={mockOnToggleQuickFilter} />
     );
 
     // Click active filter
     fireEvent.click(screen.getByText('Aktive Kunden'));
-    
+
     // Rerender with active filter selected
     rerender(
-      <QuickFilters
-        activeQuickFilters={['active']}
-        onToggleQuickFilter={mockOnToggleQuickFilter}
-      />
+      <QuickFilters activeQuickFilters={['active']} onToggleQuickFilter={mockOnToggleQuickFilter} />
     );
 
     // Click inactive filter
@@ -107,7 +83,7 @@ describe('QuickFilters', () => {
       expect.objectContaining({
         id: 'inactive',
         label: 'Inaktive Kunden',
-        filter: { status: [CustomerStatus.INAKTIV] }
+        filter: { status: [CustomerStatus.INAKTIV] },
       })
     );
   });
@@ -115,7 +91,7 @@ describe('QuickFilters', () => {
   it('should use correct CustomerStatus enum values', () => {
     // Verify that QUICK_FILTERS uses the correct enum values
     expect(QUICK_FILTERS).toHaveLength(2);
-    
+
     expect(QUICK_FILTERS[0]).toEqual({
       id: 'active',
       label: 'Aktive Kunden',

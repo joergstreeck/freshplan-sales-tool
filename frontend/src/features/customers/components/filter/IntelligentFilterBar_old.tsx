@@ -3,7 +3,7 @@
  *
  * Advanced filtering interface for customer list with universal search,
  * multi-criteria filters, column management, and export capabilities.
- * 
+ *
  * This component has been refactored into smaller, more manageable pieces:
  * - FilterDrawer: Advanced filter options drawer
  * - ColumnManagerDrawer: Column visibility and order management
@@ -565,7 +565,11 @@ export function IntelligentFilterBar({
           <Tooltip
             title={`Sortiert nach: ${columns.find(c => c.id === sortConfig.field)?.label} (${sortConfig.direction === 'asc' ? '↑' : '↓'})`}
           >
-            <IconButton onClick={(e: React.MouseEvent<HTMLButtonElement>) => setSortMenuAnchor(e.currentTarget)}>
+            <IconButton
+              onClick={(e: React.MouseEvent<HTMLButtonElement>) =>
+                setSortMenuAnchor(e.currentTarget)
+              }
+            >
               <SortIcon />
             </IconButton>
           </Tooltip>

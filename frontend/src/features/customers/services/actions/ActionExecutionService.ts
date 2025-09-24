@@ -57,7 +57,8 @@ export class ActionExecutionService {
         timestamp: new Date(),
         message: `${action.label} erfolgreich ausgeführt`,
       };
-    } catch (_error) { void _error;
+    } catch (_error) {
+      void _error;
       // Queue for retry if offline
       if (!navigator.onLine) {
         await offlineQueueService.queueAction(action, contact);
@@ -329,7 +330,8 @@ END:VCALENDAR`;
     try {
       await navigator.clipboard.writeText(phoneNumber);
       alert(`Telefonnummer ${phoneNumber} wurde in die Zwischenablage kopiert`);
-    } catch (_error) { void _error;
+    } catch (_error) {
+      void _error;
       alert(`Telefonnummer: ${phoneNumber}`);
     }
   }

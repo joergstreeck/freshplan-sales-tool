@@ -47,7 +47,7 @@ export const UserTable = () => {
       try {
         await deleteUser.mutateAsync(user.id);
       } catch (_error) {
-        void _error;        // Delete failed, error already handled by mutation
+        void _error; // Delete failed, error already handled by mutation
       }
     }
   };
@@ -98,7 +98,9 @@ export const UserTable = () => {
               placeholder="Benutzer suchen..."
               value={searchInput}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchInput(e.target.value)}
-              onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => e.key === 'Enter' && handleSearch()}
+              onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) =>
+                e.key === 'Enter' && handleSearch()
+              }
               className="max-w-sm"
             />
             <Button onClick={handleSearch} variant="outline">

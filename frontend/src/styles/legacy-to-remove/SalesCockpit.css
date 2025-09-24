@@ -62,20 +62,20 @@
     grid-template-columns: 100vw 100vw 100vw;
     overflow-x: hidden;
   }
-  
+
   /* Position columns based on active state */
   .cockpit-columns:has(.column-my-day.active) {
     transform: translateX(0);
   }
-  
+
   .cockpit-columns:has(.column-focus-list.active) {
     transform: translateX(-100vw);
   }
-  
+
   .cockpit-columns:has(.column-action-center.active) {
     transform: translateX(-200vw);
   }
-  
+
   .mobile-nav-hints {
     display: none;
   }
@@ -90,7 +90,7 @@
     grid-template-columns: 300px 1fr;
     gap: 0;
   }
-  
+
   /* Hide action center on tablet, show as overlay when active */
   .column-action-center {
     position: absolute;
@@ -102,11 +102,11 @@
     transition: transform var(--duration-300) var(--ease-out);
     z-index: var(--z-10);
   }
-  
+
   .column-action-center.active {
     transform: translateX(0);
   }
-  
+
   /* Always show my-day on tablet */
   .column-my-day {
     display: block !important;
@@ -122,7 +122,7 @@
     grid-template-columns: minmax(280px, 320px) minmax(400px, 1fr) minmax(400px, 640px);
     gap: 0;
   }
-  
+
   /* Compact mode adjustments */
   .compact-mode .cockpit-columns {
     grid-template-columns: 240px 1fr 480px;
@@ -159,7 +159,7 @@
   .cockpit-column:hover {
     box-shadow: var(--shadow-sm);
   }
-  
+
   .cockpit-column.active {
     box-shadow: var(--shadow-md);
     z-index: var(--z-10);

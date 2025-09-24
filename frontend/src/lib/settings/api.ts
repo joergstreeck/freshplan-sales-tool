@@ -33,7 +33,7 @@ export async function getSetting(
       key,
       scope,
       ...(context?.userId && { userId: context.userId }),
-      ...(context?.tenantId && { tenantId: context.tenantId })
+      ...(context?.tenantId && { tenantId: context.tenantId }),
     });
 
     const response = await getJSON<Setting>(`/api/settings?${params}`);
@@ -53,8 +53,8 @@ export async function saveSetting(setting: Setting): Promise<Setting> {
   if (setting.etag) {
     return await putJSON<Setting>('/api/settings', setting, {
       headers: {
-        'If-Match': setting.etag
-      }
+        'If-Match': setting.etag,
+      },
     });
   }
   return await postJSON<Setting>('/api/settings', setting);
@@ -72,7 +72,7 @@ export async function getSettings(
     pattern,
     ...(scope && { scope }),
     ...(context?.userId && { userId: context.userId }),
-    ...(context?.tenantId && { tenantId: context.tenantId })
+    ...(context?.tenantId && { tenantId: context.tenantId }),
   });
 
   return await getJSON<Setting[]>(`/api/settings/search?${params}`);
@@ -87,14 +87,17 @@ export function getSettingQueryKey(
   context?: SettingsContext
 ): (string | SettingsContext | undefined)[] {
   // Sort context keys for stable cache key
-  const sortedContext = context ?
-    Object.keys(context).sort().reduce((acc, key) => {
-      const contextKey = key as keyof SettingsContext;
-      if (context[contextKey] !== undefined) {
-        (acc as Record<string, unknown>)[key] = context[contextKey];
-      }
-      return acc;
-    }, {} as SettingsContext) : undefined;
+  const sortedContext = context
+    ? Object.keys(context)
+        .sort()
+        .reduce((acc, key) => {
+          const contextKey = key as keyof SettingsContext;
+          if (context[contextKey] !== undefined) {
+            (acc as Record<string, unknown>)[key] = context[contextKey];
+          }
+          return acc;
+        }, {} as SettingsContext)
+    : undefined;
 
   return ['setting', key, scope, sortedContext];
 }
@@ -102,10 +105,7 @@ export function getSettingQueryKey(
 /**
  * Check if a feature flag is enabled
  */
-export async function isFeatureEnabled(
-  flag: string,
-  context?: SettingsContext
-): Promise<boolean> {
+export async function isFeatureEnabled(flag: string, context?: SettingsContext): Promise<boolean> {
   const setting = await getSetting(`feature.${flag}`, 'GLOBAL', context);
   return setting?.value?.enabled === true;
 }
@@ -128,7 +128,7 @@ function getDefaultTheme(): Record<string, unknown> {
     mode: 'light',
     primaryColor: '#94C456',
     secondaryColor: '#004F7B',
-    fontFamily: 'Poppins, sans-serif'
+    fontFamily: 'Poppins, sans-serif',
   };
 }
 

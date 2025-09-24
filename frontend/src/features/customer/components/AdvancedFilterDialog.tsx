@@ -223,7 +223,9 @@ export const AdvancedFilterDialog: React.FC<AdvancedFilterDialogProps> = ({ open
               <Select
                 multiple
                 value={filters.industry}
-                onChange={(e: SelectChangeEvent<Industry[]>) => setFilters({ ...filters, industry: e.target.value as Industry[] })}
+                onChange={(e: SelectChangeEvent<Industry[]>) =>
+                  setFilters({ ...filters, industry: e.target.value as Industry[] })
+                }
                 renderValue={selected => (
                   <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                     {selected.map(value => (

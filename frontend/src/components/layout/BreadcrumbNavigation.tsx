@@ -22,10 +22,7 @@ export const BreadcrumbNavigation: React.FC = () => {
   const theme = useTheme();
 
   // Pre-compute path map for O(1) lookups
-  const pathMap = useMemo(
-    () => createNavigationPathMap(navigationConfig),
-    []
-  );
+  const pathMap = useMemo(() => createNavigationPathMap(navigationConfig), []);
 
   const breadcrumbs = useMemo((): BreadcrumbItem[] => {
     const pathSegments = location.pathname.split('/').filter(Boolean);
@@ -40,7 +37,7 @@ export const BreadcrumbNavigation: React.FC = () => {
 
     // Build breadcrumb trail with O(1) lookups
     let currentPath = '';
-    pathSegments.forEach((segment) => {
+    pathSegments.forEach(segment => {
       currentPath += `/${segment}`;
 
       // O(1) lookup from pre-computed map

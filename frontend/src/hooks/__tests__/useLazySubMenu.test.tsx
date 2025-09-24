@@ -164,9 +164,7 @@ describe('useCachedSubMenu', () => {
       { label: 'Cached Item 2', path: '/cached2' },
     ]);
 
-    const { result } = renderHook(() =>
-      useCachedSubMenu('test-menu', mockLoader)
-    );
+    const { result } = renderHook(() => useCachedSubMenu('test-menu', mockLoader));
 
     expect(result.current.isLoading).toBe(true);
 
@@ -180,22 +178,16 @@ describe('useCachedSubMenu', () => {
   });
 
   it('should use cached items on subsequent renders', async () => {
-    const mockLoader = vi.fn(() => [
-      { label: 'Cached Item', path: '/cached' },
-    ]);
+    const mockLoader = vi.fn(() => [{ label: 'Cached Item', path: '/cached' }]);
 
-    const { result: result1 } = renderHook(() =>
-      useCachedSubMenu('test-menu-2', mockLoader)
-    );
+    const { result: result1 } = renderHook(() => useCachedSubMenu('test-menu-2', mockLoader));
 
     await waitFor(() => {
       expect(result1.current.isLoading).toBe(false);
     });
 
     // Second hook with same menuId should use cache
-    const { result: result2 } = renderHook(() =>
-      useCachedSubMenu('test-menu-2', mockLoader)
-    );
+    const { result: result2 } = renderHook(() => useCachedSubMenu('test-menu-2', mockLoader));
 
     expect(result2.current.isLoading).toBe(false);
     expect(result2.current.items).toEqual(result1.current.items);
@@ -208,9 +200,7 @@ describe('useCachedSubMenu', () => {
       return [{ label: 'Async Item', path: '/async' }];
     });
 
-    const { result } = renderHook(() =>
-      useCachedSubMenu('async-menu', mockAsyncLoader)
-    );
+    const { result } = renderHook(() => useCachedSubMenu('async-menu', mockAsyncLoader));
 
     expect(result.current.isLoading).toBe(true);
 
@@ -226,9 +216,7 @@ describe('useCachedSubMenu', () => {
       throw new Error('Load failed');
     });
 
-    const { result } = renderHook(() =>
-      useCachedSubMenu('error-menu', mockErrorLoader)
-    );
+    const { result } = renderHook(() => useCachedSubMenu('error-menu', mockErrorLoader));
 
     await waitFor(() => {
       expect(result.current.isLoading).toBe(false);

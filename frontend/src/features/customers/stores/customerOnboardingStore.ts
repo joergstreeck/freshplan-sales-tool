@@ -352,7 +352,8 @@ export const useCustomerOnboardingStore = create<CustomerOnboardingState>()(
               draft.validationErrors[fieldKey] = result.error || `${field.label} ist ungültig`;
             }
           });
-        } catch (_error) { void _error;
+        } catch (_error) {
+          void _error;
           // Fallback for unexpected errors (respecting Enterprise Flexibility Philosophy)
           set(draft => {
             draft.validationErrors[fieldKey] = `${field.label} konnte nicht validiert werden`;
@@ -411,7 +412,8 @@ export const useCustomerOnboardingStore = create<CustomerOnboardingState>()(
           });
 
           return validationErrors.size === 0;
-        } catch (_error) { void _error;
+        } catch (_error) {
+          void _error;
           // Fallback for unexpected errors (Enterprise Flexibility Philosophy)
 
           // Basic fallback validation

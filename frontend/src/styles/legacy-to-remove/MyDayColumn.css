@@ -104,17 +104,17 @@
 }
 
 .alert-item.alert-info {
-  background: linear-gradient(135deg, var(--color-secondary-light) 0%, #D1E9FC 100%);
+  background: linear-gradient(135deg, var(--color-secondary-light) 0%, #d1e9fc 100%);
   border-color: var(--color-secondary);
 }
 
 .alert-item.alert-warning {
-  background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
   border-color: var(--color-warning);
 }
 
 .alert-item.alert-danger {
-  background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+  background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
   border-color: var(--color-danger);
 }
 
@@ -277,7 +277,7 @@
 
 .triage-item {
   padding: var(--space-4);
-  background: linear-gradient(135deg, var(--color-secondary-light) 0%, #D1E9FC 100%);
+  background: linear-gradient(135deg, var(--color-secondary-light) 0%, #d1e9fc 100%);
   border: 2px solid var(--color-secondary);
   border-radius: var(--radius-lg);
   transition: all var(--duration-150) var(--ease-out);

@@ -222,7 +222,8 @@ export const useAuditAdminStore = create<AuditAdminState>()(
               isLoading: false,
             });
           } catch (_error) {
-            const errorMessage = _error instanceof Error ? _error.message : 'Failed to fetch dashboard data';
+            const errorMessage =
+              _error instanceof Error ? _error.message : 'Failed to fetch dashboard data';
             set({
               error: errorMessage,
               isLoading: false,

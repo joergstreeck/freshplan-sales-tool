@@ -85,12 +85,7 @@ export function getSecureString(
 /**
  * List of allowed localStorage keys for additional security
  */
-const ALLOWED_KEYS = [
-  'hasSeenKeyboardHelp',
-  'theme',
-  'language',
-  'sidebarCollapsed',
-] as const;
+const ALLOWED_KEYS = ['hasSeenKeyboardHelp', 'theme', 'language', 'sidebarCollapsed'] as const;
 
 /**
  * Validate that a localStorage key is in the allowlist

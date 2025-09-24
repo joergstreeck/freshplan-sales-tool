@@ -16,11 +16,7 @@ export const TeamChat = () => (
     subtitle="Echtzeitkommunikation mit Ihrem Team"
     description="Bleiben Sie mit Ihrem Team in Kontakt - direkt in FreshPlan."
     expectedDate="Q2 2025"
-    features={[
-      'Echtzeit-Messaging',
-      'Team-Channels',
-      'Datei-Sharing',
-    ]}
+    features={['Echtzeit-Messaging', 'Team-Channels', 'Datei-Sharing']}
     icon={<ChatIcon sx={{ fontSize: 80, color: '#94C456' }} />}
   />
 );
@@ -31,11 +27,7 @@ export const Ankuendigungen = () => (
     subtitle="Wichtige Mitteilungen an das gesamte Team"
     description="Teilen Sie wichtige Updates und Neuigkeiten mit allen Mitarbeitern."
     expectedDate="Q1 2025"
-    features={[
-      'Unternehmens-News',
-      'Prioritäts-Markierungen',
-      'Lesebestätigungen',
-    ]}
+    features={['Unternehmens-News', 'Prioritäts-Markierungen', 'Lesebestätigungen']}
     icon={<AnnouncementIcon sx={{ fontSize: 80, color: '#94C456' }} />}
   />
 );
@@ -46,11 +38,7 @@ export const Notizen = () => (
     subtitle="Persönliche und geteilte Notizen verwalten"
     description="Halten Sie Ideen fest und teilen Sie Notizen mit Kollegen."
     expectedDate="Q2 2025"
-    features={[
-      'Rich-Text Editor',
-      'Notiz-Kategorien',
-      'Team-Notizen',
-    ]}
+    features={['Rich-Text Editor', 'Notiz-Kategorien', 'Team-Notizen']}
     icon={<NotesIcon sx={{ fontSize: 80, color: '#94C456' }} />}
   />
 );
@@ -61,11 +49,7 @@ export const InterneNachrichten = () => (
     subtitle="Direktnachrichten zwischen Teammitgliedern"
     description="Privater Nachrichtenaustausch innerhalb Ihres Teams."
     expectedDate="Q2 2025"
-    features={[
-      'Direkt-Nachrichten',
-      'Gruppen-Nachrichten',
-      'Nachrichtenverlauf',
-    ]}
+    features={['Direkt-Nachrichten', 'Gruppen-Nachrichten', 'Nachrichtenverlauf']}
     icon={<MailIcon sx={{ fontSize: 80, color: '#94C456' }} />}
   />
 );
@@ -77,11 +61,7 @@ export const MeinProfil = () => (
     subtitle="Verwalten Sie Ihre persönlichen Informationen"
     description="Aktualisieren Sie Ihr Profil, Kontaktdaten und Präferenzen."
     expectedDate="Q1 2025"
-    features={[
-      'Profil-Informationen',
-      'Avatar-Upload',
-      'Kontaktdaten',
-    ]}
+    features={['Profil-Informationen', 'Avatar-Upload', 'Kontaktdaten']}
     icon={<PersonIcon sx={{ fontSize: 80, color: '#004F7B' }} />}
   />
 );
@@ -92,11 +72,7 @@ export const Benachrichtigungen = () => (
     subtitle="Steuern Sie, worüber Sie informiert werden"
     description="Personalisieren Sie Ihre Benachrichtigungseinstellungen."
     expectedDate="Q1 2025"
-    features={[
-      'E-Mail-Benachrichtigungen',
-      'In-App Notifications',
-      'Push-Nachrichten',
-    ]}
+    features={['E-Mail-Benachrichtigungen', 'In-App Notifications', 'Push-Nachrichten']}
     icon={<NotificationsIcon sx={{ fontSize: 80, color: '#004F7B' }} />}
   />
 );
@@ -107,11 +83,7 @@ export const Darstellung = () => (
     subtitle="Passen Sie das Aussehen von FreshPlan an"
     description="Themes, Layouts und visuelle Präferenzen anpassen."
     expectedDate="Q2 2025"
-    features={[
-      'Dark Mode',
-      'Farbschemas',
-      'Schriftgrößen',
-    ]}
+    features={['Dark Mode', 'Farbschemas', 'Schriftgrößen']}
     icon={<PaletteIcon sx={{ fontSize: 80, color: '#004F7B' }} />}
   />
 );
@@ -122,11 +94,7 @@ export const Sicherheit = () => (
     subtitle="Schützen Sie Ihr Konto mit erweiterten Sicherheitsoptionen"
     description="Verwalten Sie Passwörter, Zwei-Faktor-Authentifizierung und aktive Sessions."
     expectedDate="Q1 2025"
-    features={[
-      'Passwort ändern',
-      'Zwei-Faktor-Authentifizierung',
-      'Session-Verwaltung',
-    ]}
+    features={['Passwort ändern', 'Zwei-Faktor-Authentifizierung', 'Session-Verwaltung']}
     icon={<SecurityIcon sx={{ fontSize: 80, color: '#004F7B' }} />}
   />
 );

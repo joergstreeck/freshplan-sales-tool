@@ -15,12 +15,12 @@ export const SortableOpportunityCard: React.FC<SortableOpportunityCardProps> = (
   onQuickAction,
   isAnimating = false,
 }) => {
-  const { 
-    attributes, 
-    listeners, 
-    setNodeRef, 
-    transform, 
-    transition, 
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
     isDragging,
     setActivatorNodeRef,
   } = useSortable({
@@ -42,7 +42,11 @@ export const SortableOpportunityCard: React.FC<SortableOpportunityCardProps> = (
   return (
     <div ref={setNodeRef} style={style}>
       <div ref={setActivatorNodeRef} {...attributes} {...listeners}>
-        <OpportunityCard opportunity={opportunity} onQuickAction={onQuickAction} showActions={true} />
+        <OpportunityCard
+          opportunity={opportunity}
+          onQuickAction={onQuickAction}
+          showActions={true}
+        />
       </div>
     </div>
   );

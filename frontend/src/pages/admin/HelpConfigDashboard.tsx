@@ -95,7 +95,8 @@ export function HelpConfigDashboard() {
     {
       id: 'analytics',
       title: 'Analytics',
-      description: 'Analysieren Sie die Nutzung von Hilfe-Features und identifizieren Sie Problembereiche',
+      description:
+        'Analysieren Sie die Nutzung von Hilfe-Features und identifizieren Sie Problembereiche',
       icon: <AnalyticsIcon sx={{ fontSize: 48, color: '#004F7B' }} />,
       path: '/admin/help/analytics',
       stats: {
@@ -143,10 +144,7 @@ export function HelpConfigDashboard() {
     <MainLayoutV2>
       <Container maxWidth="xl" sx={{ py: 4 }}>
         {/* Breadcrumbs */}
-        <Breadcrumbs
-          separator={<NavigateNextIcon fontSize="small" />}
-          sx={{ mb: 3 }}
-        >
+        <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} sx={{ mb: 3 }}>
           <Link
             component="button"
             variant="body1"
@@ -245,7 +243,7 @@ export function HelpConfigDashboard() {
           Hauptfunktionen
         </Typography>
         <Grid container spacing={3} sx={{ mb: 4 }}>
-          {helpTools.map((tool) => (
+          {helpTools.map(tool => (
             <Grid key={tool.id} size={{ xs: 12, md: 6 }}>
               <Card
                 sx={{
@@ -264,7 +262,7 @@ export function HelpConfigDashboard() {
                     {tool.icon}
                     {tool.badges && (
                       <Box sx={{ ml: 'auto', display: 'flex', gap: 1 }}>
-                        {tool.badges.map((badge) => (
+                        {tool.badges.map(badge => (
                           <Chip
                             key={badge}
                             label={badge}
@@ -290,11 +288,7 @@ export function HelpConfigDashboard() {
                     {tool.title}
                   </Typography>
 
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    sx={{ mb: 3, minHeight: 40 }}
-                  >
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 3, minHeight: 40 }}>
                     {tool.description}
                   </Typography>
 
@@ -321,7 +315,10 @@ export function HelpConfigDashboard() {
                           Genutzt von
                         </Typography>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                          <AvatarGroup max={3} sx={{ '& .MuiAvatar-root': { width: 24, height: 24 } }}>
+                          <AvatarGroup
+                            max={3}
+                            sx={{ '& .MuiAvatar-root': { width: 24, height: 24 } }}
+                          >
                             <Avatar sx={{ width: 24, height: 24 }} />
                             <Avatar sx={{ width: 24, height: 24 }} />
                             <Avatar sx={{ width: 24, height: 24 }} />
@@ -336,9 +333,7 @@ export function HelpConfigDashboard() {
                       <Typography variant="caption" color="text.secondary">
                         Aktualisiert
                       </Typography>
-                      <Typography variant="body2">
-                        {tool.lastUpdated}
-                      </Typography>
+                      <Typography variant="body2">{tool.lastUpdated}</Typography>
                     </Box>
                   </Stack>
                 </CardContent>
@@ -372,7 +367,7 @@ export function HelpConfigDashboard() {
           Weitere Ressourcen
         </Typography>
         <Grid container spacing={2}>
-          {additionalResources.map((resource) => (
+          {additionalResources.map(resource => (
             <Grid key={resource.id} size={{ xs: 12, sm: 6, md: 3 }}>
               <Paper
                 sx={{
@@ -396,7 +391,11 @@ export function HelpConfigDashboard() {
                     </Typography>
                   </Box>
                 </Box>
-                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 1 }}>
+                <Typography
+                  variant="caption"
+                  color="text.secondary"
+                  sx={{ display: 'block', mt: 1 }}
+                >
                   Aktualisiert: {resource.updated}
                 </Typography>
               </Paper>
@@ -417,8 +416,8 @@ export function HelpConfigDashboard() {
             Tipp: Proaktive Hilfe aktivieren
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            Aktivieren Sie proaktive Hilfehinweise, um Nutzer automatisch bei häufigen Problemen zu unterstützen.
-            Dies reduziert Support-Anfragen um durchschnittlich 40%.
+            Aktivieren Sie proaktive Hilfehinweise, um Nutzer automatisch bei häufigen Problemen zu
+            unterstützen. Dies reduziert Support-Anfragen um durchschnittlich 40%.
           </Typography>
           <Button
             variant="text"

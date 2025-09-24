@@ -235,17 +235,16 @@ describe('PR4 Enterprise Test Suite', () => {
       await waitFor(() => {
         expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
       });
-      
+
       // Component should show some content after loading
       const container = screen.getByTestId('mini-audit-timeline');
       expect(container).toBeInTheDocument();
     });
 
     it('works in compact mode', async () => {
-      const { container } = render(
-        <MiniAuditTimeline {...auditProps} compact={true} />,
-        { wrapper: createWrapper() }
-      );
+      const { container } = render(<MiniAuditTimeline {...auditProps} compact={true} />, {
+        wrapper: createWrapper(),
+      });
 
       await waitFor(() => {
         const accordion = container.querySelector('.MuiAccordion-root');
@@ -254,10 +253,9 @@ describe('PR4 Enterprise Test Suite', () => {
     });
 
     it('works in full mode', async () => {
-      const { container } = render(
-        <MiniAuditTimeline {...auditProps} compact={false} />,
-        { wrapper: createWrapper() }
-      );
+      const { container } = render(<MiniAuditTimeline {...auditProps} compact={false} />, {
+        wrapper: createWrapper(),
+      });
 
       await waitFor(() => {
         const timeline = container.querySelector('.MuiTimeline-root');

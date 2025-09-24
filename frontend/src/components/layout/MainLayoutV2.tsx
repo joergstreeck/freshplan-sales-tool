@@ -87,9 +87,7 @@ export const MainLayoutV2: React.FC<MainLayoutV2Props> = ({
         {shouldShowHeader && <HeaderV2 showMenuIcon={isMobile} onMenuClick={toggleSidebar} />}
 
         {/* Spacer für fixed Header */}
-        {shouldShowHeader && (
-          <Box sx={{ height: headerHeight, flexShrink: 0 }} />
-        )}
+        {shouldShowHeader && <Box sx={{ height: headerHeight, flexShrink: 0 }} />}
 
         {/* Breadcrumb Navigation */}
         {shouldShowHeader && <BreadcrumbNavigation />}

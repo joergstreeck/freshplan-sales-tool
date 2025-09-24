@@ -76,7 +76,8 @@ export function useOpportunities(filters?: PipelineFilters, enabled = true) {
         );
 
         return frontendOpportunities;
-      } catch (_error) { void _error;
+      } catch (_error) {
+        void _error;
         logger.error('Failed to fetch opportunities:', error);
         throw error;
       }
@@ -107,7 +108,8 @@ export function useOpportunity(id: string, enabled = true) {
       try {
         const backendOpportunity = await opportunityApi.getById(id);
         return mapBackendToFrontend(backendOpportunity);
-      } catch (_error) { void _error;
+      } catch (_error) {
+        void _error;
         logger.error(`Failed to fetch opportunity ${id}:`, error);
         throw error;
       }
@@ -133,7 +135,8 @@ export function useCreateOpportunity() {
         const frontendOpportunity = mapBackendToFrontend(backendOpportunity);
         logger.info(`Opportunity created: ${frontendOpportunity.name} (${frontendOpportunity.id})`);
         return frontendOpportunity;
-      } catch (_error) { void _error;
+      } catch (_error) {
+        void _error;
         logger.error('Failed to create opportunity:', error);
         throw error;
       }
@@ -161,7 +164,8 @@ export function useUpdateOpportunity() {
         const frontendOpportunity = mapBackendToFrontend(backendOpportunity);
         logger.info(`Opportunity updated: ${frontendOpportunity.name} (${id})`);
         return frontendOpportunity;
-      } catch (_error) { void _error;
+      } catch (_error) {
+        void _error;
         logger.error(`Failed to update opportunity ${id}:`, error);
         throw error;
       }
@@ -191,7 +195,8 @@ export function useChangeOpportunityStage() {
         const frontendOpportunity = mapBackendToFrontend(backendOpportunity);
         logger.info(`Opportunity stage changed: ${frontendOpportunity.name} → ${request.newStage}`);
         return frontendOpportunity;
-      } catch (_error) { void _error;
+      } catch (_error) {
+        void _error;
         logger.error(`Failed to change stage for opportunity ${id}:`, error);
         throw error;
       }
@@ -220,7 +225,8 @@ export function useDeleteOpportunity() {
         await opportunityApi.delete(id);
         logger.info(`Opportunity deleted: ${id}`);
         return id;
-      } catch (_error) { void _error;
+      } catch (_error) {
+        void _error;
         logger.error(`Failed to delete opportunity ${id}:`, error);
         throw error;
       }
@@ -250,7 +256,8 @@ export function usePipelineOverview(filters?: PipelineFilters, enabled = true) {
         const overview = await opportunityApi.getPipelineOverview(filters);
         logger.info('Pipeline overview loaded successfully');
         return overview;
-      } catch (_error) { void _error;
+      } catch (_error) {
+        void _error;
         logger.error('Failed to fetch pipeline overview:', error);
         throw error;
       }

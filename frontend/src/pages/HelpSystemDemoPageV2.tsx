@@ -131,7 +131,7 @@ export const HelpSystemDemoPageV2: React.FC = () => {
                 control={
                   <Switch
                     checked={tooltipsEnabled}
-                    onChange={(e) => setTooltipsEnabled(e.target.checked)}
+                    onChange={e => setTooltipsEnabled(e.target.checked)}
                     sx={{
                       '& .MuiSwitch-switchBase.Mui-checked': {
                         color: '#94C456',
@@ -150,7 +150,7 @@ export const HelpSystemDemoPageV2: React.FC = () => {
                 control={
                   <Switch
                     checked={proactiveHelpEnabled}
-                    onChange={(e) => setProactiveHelpEnabled(e.target.checked)}
+                    onChange={e => setProactiveHelpEnabled(e.target.checked)}
                     sx={{
                       '& .MuiSwitch-switchBase.Mui-checked': {
                         color: '#94C456',
@@ -165,11 +165,7 @@ export const HelpSystemDemoPageV2: React.FC = () => {
               />
             </Grid>
             <Grid size={{ xs: 12, md: 4 }}>
-              <Chip
-                label="Analytics Aktiv"
-                color="success"
-                icon={<CheckCircleIcon />}
-              />
+              <Chip label="Analytics Aktiv" color="success" icon={<CheckCircleIcon />} />
             </Grid>
           </Grid>
         </Paper>
@@ -275,7 +271,10 @@ export const HelpSystemDemoPageV2: React.FC = () => {
               <Grid size={{ xs: 6, md: 3 }} key={index}>
                 <Card sx={{ textAlign: 'center' }}>
                   <CardContent>
-                    <Typography variant="h3" sx={{ color: '#94C456', fontFamily: 'Antonio, sans-serif' }}>
+                    <Typography
+                      variant="h3"
+                      sx={{ color: '#94C456', fontFamily: 'Antonio, sans-serif' }}
+                    >
                       {item.value}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
@@ -298,15 +297,16 @@ export const HelpSystemDemoPageV2: React.FC = () => {
               title="Dies ist ein Beispiel-Tooltip"
               content="Tooltips können zusätzliche Informationen und Kontext zu UI-Elementen bereitstellen."
             >
-              <Button variant="contained" sx={{ backgroundColor: '#94C456', '&:hover': { backgroundColor: '#7BA347' } }}>
+              <Button
+                variant="contained"
+                sx={{ backgroundColor: '#94C456', '&:hover': { backgroundColor: '#7BA347' } }}
+              >
                 Hover für Tooltip
               </Button>
             </HelpTooltip>
 
             <Tooltip title="Standard Material-UI Tooltip">
-              <Button variant="outlined">
-                Standard Tooltip
-              </Button>
+              <Button variant="outlined">Standard Tooltip</Button>
             </Tooltip>
 
             <Button
@@ -322,7 +322,8 @@ export const HelpSystemDemoPageV2: React.FC = () => {
           </Box>
 
           <Alert severity="info" sx={{ mt: 3 }}>
-            Das Hilfe-System passt sich automatisch an das Nutzerverhalten an und bietet kontextuelle Unterstützung genau dann, wenn sie benötigt wird.
+            Das Hilfe-System passt sich automatisch an das Nutzerverhalten an und bietet
+            kontextuelle Unterstützung genau dann, wenn sie benötigt wird.
           </Alert>
         </Paper>
       </Container>

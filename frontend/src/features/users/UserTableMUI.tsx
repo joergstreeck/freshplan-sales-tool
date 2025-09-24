@@ -139,8 +139,8 @@ export const UserTableMUI = () => {
             size="small"
             placeholder="Benutzer suchen (Name, E-Mail, Benutzername)..."
             value={searchInput}
-            onChange={(e) => setSearchInput(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+            onChange={e => setSearchInput(e.target.value)}
+            onKeyDown={e => e.key === 'Enter' && handleSearch()}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
@@ -218,7 +218,7 @@ export const UserTableMUI = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {users.map((user) => (
+                {users.map(user => (
                   <TableRow
                     key={user.id}
                     sx={{
@@ -242,7 +242,7 @@ export const UserTableMUI = () => {
                     </TableCell>
                     <TableCell>
                       <Stack direction="row" spacing={0.5} flexWrap="wrap" useFlexGap>
-                        {user.roles.map((role) => (
+                        {user.roles.map(role => (
                           <Chip
                             key={role}
                             label={roleLabels[role] || role}
@@ -290,7 +290,11 @@ export const UserTableMUI = () => {
                             disabled={toggleUserStatus.isPending}
                             color={user.enabled ? 'error' : 'success'}
                           >
-                            {user.enabled ? <BlockIcon fontSize="small" /> : <CheckCircleIcon fontSize="small" />}
+                            {user.enabled ? (
+                              <BlockIcon fontSize="small" />
+                            ) : (
+                              <CheckCircleIcon fontSize="small" />
+                            )}
                           </IconButton>
                         </Tooltip>
                         <Tooltip title="Löschen">

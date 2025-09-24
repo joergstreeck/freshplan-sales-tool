@@ -16,9 +16,7 @@ vi.mock('@/config/navigation.config', () => ({
     {
       label: 'Dashboard',
       path: '/dashboard',
-      subItems: [
-        { label: 'Reports', path: '/dashboard/reports' },
-      ],
+      subItems: [{ label: 'Reports', path: '/dashboard/reports' }],
     },
     {
       label: 'Customers',

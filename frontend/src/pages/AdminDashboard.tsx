@@ -145,7 +145,7 @@ export function AdminDashboard() {
             Schnellzugriff
           </Typography>
           <Grid container spacing={3}>
-            {quickAccessCards.map((card) => (
+            {quickAccessCards.map(card => (
               <Grid key={card.title} size={{ xs: 12, md: 4 }}>
                 <Card
                   sx={{
@@ -203,11 +203,7 @@ export function AdminDashboard() {
                     )}
                   </CardContent>
                   <CardActions sx={{ px: 2, pb: 2 }}>
-                    <Button
-                      size="small"
-                      endIcon={<ArrowForwardIcon />}
-                      sx={{ color: '#004F7B' }}
-                    >
+                    <Button size="small" endIcon={<ArrowForwardIcon />} sx={{ color: '#004F7B' }}>
                       Öffnen
                     </Button>
                   </CardActions>
@@ -232,7 +228,7 @@ export function AdminDashboard() {
             Kategorien
           </Typography>
           <Grid container spacing={3}>
-            {categoryCards.map((category) => (
+            {categoryCards.map(category => (
               <Grid key={category.id} size={12}>
                 <Paper
                   sx={{
@@ -265,7 +261,7 @@ export function AdminDashboard() {
                           {category.description}
                         </Typography>
                         <Box sx={{ mt: 1, display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-                          {category.items.slice(0, 3).map((item) => (
+                          {category.items.slice(0, 3).map(item => (
                             <Chip
                               key={item}
                               label={item}
@@ -298,7 +294,7 @@ export function AdminDashboard() {
                           backgroundColor: '#94C456',
                           '&:hover': { backgroundColor: '#7BA347' },
                         }}
-                        onClick={(e) => {
+                        onClick={e => {
                           e.stopPropagation();
                           handleCategoryClick(category.id);
                         }}
@@ -334,11 +330,7 @@ export function AdminDashboard() {
               size="small"
               sx={{ backgroundColor: '#94C456', color: 'white' }}
             />
-            <Chip
-              label="DB: OK"
-              size="small"
-              sx={{ backgroundColor: '#94C456', color: 'white' }}
-            />
+            <Chip label="DB: OK" size="small" sx={{ backgroundColor: '#94C456', color: 'white' }} />
             <Chip
               label="Auth: OK"
               size="small"

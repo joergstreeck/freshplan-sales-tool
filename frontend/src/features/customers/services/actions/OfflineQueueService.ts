@@ -62,7 +62,7 @@ class OfflineQueueService {
       try {
         await (self.registration as unknown).sync.register('sync-contact-actions');
       } catch (_error) {
-        void _error;        // Background sync not available
+        void _error; // Background sync not available
       }
     }
   }
@@ -88,13 +88,15 @@ class OfflineQueueService {
         this.removeFromQueue(item.id);
         this.notifySuccess(item);
       } catch (_error) {
-        void _error;        item.retryCount++;
+        void _error;
+        item.retryCount++;
 
         if (item.retryCount >= item.maxRetries) {
           // Max retries reached, remove and notify
           this.removeFromQueue(item.id);
           this.notifyFailed(item);
-        } else { void 0;
+        } else {
+          void 0;
           // Update retry count and try again later
           this.updateQueueItem(item);
           setTimeout(() => this.processQueue(), this.RETRY_DELAY);
@@ -120,7 +122,8 @@ class OfflineQueueService {
         timestamp: new Date(item.timestamp),
       }));
     } catch (_error) {
-        void _error;      return [];
+      void _error;
+      return [];
     }
   }
 

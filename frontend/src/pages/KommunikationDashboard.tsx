@@ -1,4 +1,14 @@
-import { Box, Container, Typography, Card, CardContent, CardActions, Button, Chip, Badge } from '@mui/material';
+import {
+  Box,
+  Container,
+  Typography,
+  Card,
+  CardContent,
+  CardActions,
+  Button,
+  Chip,
+  Badge,
+} from '@mui/material';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
 import { MainLayoutV2 } from '../components/layout/MainLayoutV2';
@@ -47,7 +57,10 @@ export function KommunikationDashboard() {
     <MainLayoutV2>
       <Container maxWidth="xl" sx={{ py: 4 }}>
         <Box sx={{ mb: 4 }}>
-          <Typography variant="h3" sx={{ mb: 1, fontFamily: 'Antonio, sans-serif', fontWeight: 'bold', color: '#004F7B' }}>
+          <Typography
+            variant="h3"
+            sx={{ mb: 1, fontFamily: 'Antonio, sans-serif', fontWeight: 'bold', color: '#004F7B' }}
+          >
             Kommunikation & Zusammenarbeit
           </Typography>
           <Typography variant="body1" color="text.secondary">
@@ -56,7 +69,7 @@ export function KommunikationDashboard() {
         </Box>
 
         <Grid container spacing={3}>
-          {tools.map((tool) => (
+          {tools.map(tool => (
             <Grid key={tool.title} size={{ xs: 12, sm: 6, md: 3 }}>
               <Card
                 sx={{
@@ -77,7 +90,10 @@ export function KommunikationDashboard() {
                       tool.icon
                     )}
                   </Box>
-                  <Typography variant="h6" sx={{ mt: 2, mb: 1, fontFamily: 'Antonio, sans-serif', color: '#004F7B' }}>
+                  <Typography
+                    variant="h6"
+                    sx={{ mt: 2, mb: 1, fontFamily: 'Antonio, sans-serif', color: '#004F7B' }}
+                  >
                     {tool.title}
                   </Typography>
                   <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>

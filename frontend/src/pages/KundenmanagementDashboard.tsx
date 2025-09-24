@@ -88,11 +88,16 @@ export function KundenmanagementDashboard() {
 
   const getActivityIcon = (type: string) => {
     switch (type) {
-      case 'call': return '📞';
-      case 'meeting': return '🤝';
-      case 'email': return '✉️';
-      case 'deal': return '💰';
-      default: return '📅';
+      case 'call':
+        return '📞';
+      case 'meeting':
+        return '🤝';
+      case 'email':
+        return '✉️';
+      case 'deal':
+        return '💰';
+      default:
+        return '📅';
     }
   };
 
@@ -100,7 +105,9 @@ export function KundenmanagementDashboard() {
     <MainLayoutV2>
       <Container maxWidth="xl" sx={{ py: 4 }}>
         {/* Header */}
-        <Box sx={{ mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        <Box
+          sx={{ mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}
+        >
           <Box>
             <Typography
               variant="h3"
@@ -203,7 +210,7 @@ export function KundenmanagementDashboard() {
           {/* Tool Cards */}
           <Grid size={{ xs: 12, lg: 8 }}>
             <Grid container spacing={3}>
-              {customerTools.map((tool) => (
+              {customerTools.map(tool => (
                 <Grid key={tool.title} size={{ xs: 12, sm: 6 }}>
                   <Card
                     sx={{
@@ -248,7 +255,11 @@ export function KundenmanagementDashboard() {
                       </Typography>
                     </CardContent>
                     <CardActions>
-                      <Button fullWidth variant="contained" sx={{ backgroundColor: tool.color, '&:hover': { opacity: 0.9 } }}>
+                      <Button
+                        fullWidth
+                        variant="contained"
+                        sx={{ backgroundColor: tool.color, '&:hover': { opacity: 0.9 } }}
+                      >
                         {tool.action ? 'Wizard starten' : 'Öffnen'}
                       </Button>
                     </CardActions>
@@ -259,8 +270,18 @@ export function KundenmanagementDashboard() {
 
             {/* Top Customers */}
             <Paper sx={{ p: 3, mt: 3 }}>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                <Typography variant="h6" sx={{ fontFamily: 'Antonio, sans-serif', color: '#004F7B' }}>
+              <Box
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  mb: 2,
+                }}
+              >
+                <Typography
+                  variant="h6"
+                  sx={{ fontFamily: 'Antonio, sans-serif', color: '#004F7B' }}
+                >
                   Top Kunden nach Umsatz
                 </Typography>
                 <Button size="small" sx={{ color: '#94C456' }}>
@@ -272,22 +293,36 @@ export function KundenmanagementDashboard() {
                   <React.Fragment key={customer.name}>
                     <ListItem sx={{ px: 0 }}>
                       <Box sx={{ display: 'flex', alignItems: 'center', mr: 2 }}>
-                        <Typography variant="h6" sx={{ color: '#94C456', fontWeight: 'bold', minWidth: 20 }}>
+                        <Typography
+                          variant="h6"
+                          sx={{ color: '#94C456', fontWeight: 'bold', minWidth: 20 }}
+                        >
                           {index + 1}
                         </Typography>
-                        <StarIcon sx={{ fontSize: 20, color: index === 0 ? '#FFD700' : '#e0e0e0', ml: 1 }} />
+                        <StarIcon
+                          sx={{ fontSize: 20, color: index === 0 ? '#FFD700' : '#e0e0e0', ml: 1 }}
+                        />
                       </Box>
                       <ListItemText
                         primary={customer.name}
                         secondary={`Jahresumsatz: ${customer.revenue}`}
                       />
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        {customer.trend === 'up' && <ArrowUpwardIcon sx={{ fontSize: 16, color: '#94C456' }} />}
-                        {customer.trend === 'down' && <ArrowDownwardIcon sx={{ fontSize: 16, color: '#ef5350' }} />}
+                        {customer.trend === 'up' && (
+                          <ArrowUpwardIcon sx={{ fontSize: 16, color: '#94C456' }} />
+                        )}
+                        {customer.trend === 'down' && (
+                          <ArrowDownwardIcon sx={{ fontSize: 16, color: '#ef5350' }} />
+                        )}
                         <Typography
                           variant="body2"
                           sx={{
-                            color: customer.trend === 'up' ? '#94C456' : customer.trend === 'down' ? '#ef5350' : '#757575',
+                            color:
+                              customer.trend === 'up'
+                                ? '#94C456'
+                                : customer.trend === 'down'
+                                  ? '#ef5350'
+                                  : '#757575',
                             fontWeight: 'medium',
                           }}
                         >
@@ -309,7 +344,10 @@ export function KundenmanagementDashboard() {
           <Grid size={{ xs: 12, lg: 4 }}>
             {/* Quick Stats */}
             <Paper sx={{ p: 3, mb: 3 }}>
-              <Typography variant="h6" sx={{ mb: 2, fontFamily: 'Antonio, sans-serif', color: '#004F7B' }}>
+              <Typography
+                variant="h6"
+                sx={{ mb: 2, fontFamily: 'Antonio, sans-serif', color: '#004F7B' }}
+              >
                 Quick Stats
               </Typography>
               <Grid container spacing={2}>
@@ -358,26 +396,28 @@ export function KundenmanagementDashboard() {
 
             {/* Recent Activities */}
             <Paper sx={{ p: 3 }}>
-              <Typography variant="h6" sx={{ mb: 2, fontFamily: 'Antonio, sans-serif', color: '#004F7B' }}>
+              <Typography
+                variant="h6"
+                sx={{ mb: 2, fontFamily: 'Antonio, sans-serif', color: '#004F7B' }}
+              >
                 Letzte Aktivitäten
               </Typography>
               <List>
                 {recentActivities.map((activity, index) => (
                   <ListItem key={index} sx={{ px: 0 }}>
-                    <Box sx={{ mr: 2, fontSize: 24 }}>
-                      {getActivityIcon(activity.type)}
-                    </Box>
-                    <ListItemText
-                      primary={activity.customer}
-                      secondary={activity.time}
-                    />
+                    <Box sx={{ mr: 2, fontSize: 24 }}>{getActivityIcon(activity.type)}</Box>
+                    <ListItemText primary={activity.customer} secondary={activity.time} />
                     <Avatar sx={{ width: 32, height: 32, fontSize: 12, bgcolor: '#94C456' }}>
                       {activity.user}
                     </Avatar>
                   </ListItem>
                 ))}
               </List>
-              <Button fullWidth variant="outlined" sx={{ mt: 2, borderColor: '#94C456', color: '#94C456' }}>
+              <Button
+                fullWidth
+                variant="outlined"
+                sx={{ mt: 2, borderColor: '#94C456', color: '#94C456' }}
+              >
                 Alle Aktivitäten
               </Button>
             </Paper>

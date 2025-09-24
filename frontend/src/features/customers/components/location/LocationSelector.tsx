@@ -136,7 +136,9 @@ export const LocationSelector: React.FC<LocationSelectorProps> = ({
           control={
             <Checkbox
               checked={applyToAll}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => onApplyToAllChange(e.target.checked)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                onApplyToAllChange(e.target.checked)
+              }
               color="primary"
             />
           }

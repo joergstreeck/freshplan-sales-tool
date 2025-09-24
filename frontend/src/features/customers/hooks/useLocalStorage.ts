@@ -24,7 +24,8 @@ export function useLocalStorage<T>(
       const item = window.localStorage.getItem(key);
       return item ? JSON.parse(item) : initialValue;
     } catch (_error) {
-        void _error;      return initialValue;
+      void _error;
+      return initialValue;
     }
   });
 
@@ -51,7 +52,7 @@ export function useLocalStorage<T>(
           })
         );
       } catch (_error) {
-        void _error;        // Ignore localStorage errors
+        void _error; // Ignore localStorage errors
       }
     },
     [key, storedValue]
@@ -64,8 +65,8 @@ export function useLocalStorage<T>(
         try {
           setStoredValue(JSON.parse(e.newValue));
         } catch (_error) {
-        void _error;        // Ignore localStorage errors
-      }
+          void _error; // Ignore localStorage errors
+        }
       }
     };
 

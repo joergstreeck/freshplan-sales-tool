@@ -27,7 +27,11 @@ interface UseLazySubMenuOptions {
  * @param options.preload - Whether to preload items even when not expanded
  * @returns Object containing loaded items, loading state, and preload function
  */
-export const useLazySubMenu = ({ items = [], isExpanded, preload = false }: UseLazySubMenuOptions) => {
+export const useLazySubMenu = ({
+  items = [],
+  isExpanded,
+  preload = false,
+}: UseLazySubMenuOptions) => {
   const [loadedItems, setLoadedItems] = useState<SubMenuItem[] | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const loadTimeoutRef = useRef<NodeJS.Timeout>();
