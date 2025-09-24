@@ -45,10 +45,10 @@ public class Territory extends PanacheEntityBase {
   public JsonObject businessRules = new JsonObject();
 
   @Column(name = "created_at", nullable = false)
-  public LocalDateTime createdAt = LocalDateTime.now();
+  public LocalDateTime createdAt;
 
   @Column(name = "updated_at", nullable = false)
-  public LocalDateTime updatedAt = LocalDateTime.now();
+  public LocalDateTime updatedAt;
 
   // Helper methods
   public static Territory findByCode(String code) {
@@ -78,8 +78,9 @@ public class Territory extends PanacheEntityBase {
 
   @PrePersist
   protected void onCreate() {
-    createdAt = LocalDateTime.now();
-    updatedAt = LocalDateTime.now();
+    LocalDateTime now = LocalDateTime.now();
+    createdAt = now;
+    updatedAt = now;
   }
 
   @PreUpdate

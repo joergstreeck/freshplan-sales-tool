@@ -42,9 +42,7 @@ public class TerritoryResource {
   public Response getTerritory(@PathParam("code") String code) {
     LOG.debugf("Getting territory: %s", code);
     Territory territory = territoryService.getTerritory(code);
-    if (territory == null) {
-      return Response.status(Response.Status.NOT_FOUND).build();
-    }
+    // Service always returns a territory (defaults to DE), never null
     return Response.ok(territory).build();
   }
 

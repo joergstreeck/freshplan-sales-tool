@@ -8,7 +8,9 @@ import jakarta.validation.constraints.Size;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Lead entity with user-based protection (NO geographical protection). Sprint 2.1: Leads are
@@ -90,7 +92,7 @@ public class Lead extends PanacheEntityBase {
   @ElementCollection
   @CollectionTable(name = "lead_collaborators", joinColumns = @JoinColumn(name = "lead_id"))
   @Column(name = "user_id")
-  public List<String> collaboratorUserIds = new ArrayList<>();
+  public Set<String> collaboratorUserIds = new HashSet<>();
 
   // State machine timestamps
   @Column(name = "registered_at", nullable = false)

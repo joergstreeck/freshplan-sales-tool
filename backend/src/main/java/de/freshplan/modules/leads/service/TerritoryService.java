@@ -35,6 +35,11 @@ public class TerritoryService {
     if ("CH".equals(countryCode)) {
       return getTerritory("CH");
     }
+    if ("AT".equals(countryCode)) {
+      // TODO: Add AT territory when configured in initializeDefaultTerritories
+      LOG.infof("Austria (AT) territory requested but not yet configured, defaulting to DE");
+      return getTerritory("DE");
+    }
     // Default to Germany for all other cases
     return getTerritory("DE");
   }

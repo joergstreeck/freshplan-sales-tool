@@ -2,6 +2,7 @@ package de.freshplan.modules.leads.domain;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
+import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.math.BigDecimal;
@@ -71,10 +72,10 @@ public class UserLeadSettings extends PanacheEntityBase {
   public boolean pushNotifications = false;
 
   @Column(name = "created_at", nullable = false)
-  public LocalDateTime createdAt = LocalDateTime.now();
+  public LocalDateTime createdAt;
 
   @Column(name = "updated_at", nullable = false)
-  public LocalDateTime updatedAt = LocalDateTime.now();
+  public LocalDateTime updatedAt;
 
   // Business methods
   public boolean hasPreferredTerritory(String territoryId) {
@@ -99,12 +100,13 @@ public class UserLeadSettings extends PanacheEntityBase {
     return find("userId", userId).firstResult();
   }
 
+  @Transactional
   public static UserLeadSettings getOrCreateForUser(String userId) {
     UserLeadSettings settings = findByUserId(userId);
     if (settings == null) {
       settings = new UserLeadSettings();
       settings.userId = userId;
-      settings.preferredTerritories.add("DE"); // Default to Germany
+      // Default territory is added in @PrePersist
       settings.persist();
     }
     return settings;
