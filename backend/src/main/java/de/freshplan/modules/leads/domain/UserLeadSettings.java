@@ -100,16 +100,17 @@ public class UserLeadSettings extends PanacheEntityBase {
     return find("userId", userId).firstResult();
   }
 
-  @Transactional
+  /**
+   * @deprecated Use {@link de.freshplan.modules.leads.service.UserLeadSettingsService#getOrCreateForUser(String)}
+   *             instead. This static method cannot properly handle transactions and may cause race conditions.
+   * @param userId the user ID
+   * @return UserLeadSettings (throws exception to force migration)
+   */
+  @Deprecated(since = "Sprint 2.1", forRemoval = true)
   public static UserLeadSettings getOrCreateForUser(String userId) {
-    UserLeadSettings settings = findByUserId(userId);
-    if (settings == null) {
-      settings = new UserLeadSettings();
-      settings.userId = userId;
-      // Default territory is added in @PrePersist
-      settings.persist();
-    }
-    return settings;
+    throw new UnsupportedOperationException(
+        "Use UserLeadSettingsService#getOrCreateForUser instead. " +
+        "Static method cannot handle transactions properly.");
   }
 
   @PrePersist
