@@ -120,8 +120,35 @@ echo "📊 Running Settings Benchmark with ETag testing..."
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
 if command -v k6 &> /dev/null; then
-    k6 run /tmp/benchmark-settings.js
+    k6 run --summary-export=/tmp/k6-settings-summary.json /tmp/benchmark-settings.js
     BENCHMARK_RESULT=$?
+
+    # Parse P95 and ETag hit rate from k6 summary
+    if [ -f /tmp/k6-settings-summary.json ] && command -v jq &> /dev/null; then
+        P95_TIME=$(jq -r '.metrics.settings_latency.p95 // .metrics.http_req_duration.p95 // 0' /tmp/k6-settings-summary.json)
+        P95_TIME_MS=$(echo "scale=2; $P95_TIME" | bc)
+
+        CACHE_HITS=$(jq -r '.metrics.etag_cache_hits.values.count // 0' /tmp/k6-settings-summary.json)
+        TOTAL_REQUESTS=$(jq -r '.metrics.total_requests.values.count // 0' /tmp/k6-settings-summary.json)
+
+        if [ "$TOTAL_REQUESTS" -gt 0 ]; then
+            HIT_RATE=$(echo "scale=2; $CACHE_HITS * 100 / $TOTAL_REQUESTS" | bc)
+        else
+            HIT_RATE=0
+        fi
+
+        echo ""
+        echo "📊 Performance Summary:"
+        echo "  P95 Response Time: ${P95_TIME_MS}ms (Target: <50ms)"
+        echo "  ETag Hit Rate: ${HIT_RATE}% (Target: ≥70%)"
+
+        if (( $(echo "$P95_TIME_MS < 50" | bc -l) )) && (( $(echo "$HIT_RATE >= 70" | bc -l) )); then
+            echo "✅ All performance targets met!"
+        else
+            echo "❌ Performance targets not fully met"
+            BENCHMARK_RESULT=1
+        fi
+    fi
 else
     echo "⚠️ k6 not installed. Using curl for basic benchmark..."
 
@@ -152,17 +179,24 @@ else
         BENCHMARK_RESULT=1
     fi
 
-    # Basic performance test
-    TOTAL_TIME=0
+    # Basic performance test with P95 and hit rate
+    TIMES=()
+    CACHE_HITS=0
     COUNT=100
 
     echo "Running performance test..."
     for i in $(seq 1 $COUNT); do
-        TIME=$(curl -w "%{time_total}" -o /dev/null -s \
+        STATUS_TIME=$(curl -w "%{http_code}:%{time_total}" -o /dev/null -s \
             -H "If-None-Match: $ETAG" \
             http://localhost:8080/api/settings?scope=GLOBAL\&key=ui.theme)
-        TIME_MS=$(echo "$TIME * 1000" | bc)
-        TOTAL_TIME=$(echo "$TOTAL_TIME + $TIME_MS" | bc)
+        STATUS=$(echo "$STATUS_TIME" | cut -d: -f1)
+        TIME=$(echo "$STATUS_TIME" | cut -d: -f2)
+        TIME_MS=$(echo "$TIME * 1000" | bc | cut -d. -f1)
+        TIMES+=($TIME_MS)
+
+        if [ "$STATUS" = "304" ]; then
+            ((CACHE_HITS++))
+        fi
 
         if [ $((i % 10)) -eq 0 ]; then
             echo -n "."
@@ -170,13 +204,21 @@ else
     done
     echo ""
 
-    AVG_TIME=$(echo "scale=2; $TOTAL_TIME / $COUNT" | bc)
-    echo "Average response time: ${AVG_TIME}ms"
+    # Calculate P95
+    IFS=$'\n' SORTED=($(sort -n <<<"${TIMES[*]}"))
+    P95_INDEX=$(( (COUNT * 95) / 100 ))
+    P95_TIME=${SORTED[$P95_INDEX]}
 
-    if (( $(echo "$AVG_TIME < 50" | bc -l) )); then
-        echo "✅ Performance target met: <50ms"
+    # Calculate hit rate
+    HIT_RATE=$(echo "scale=2; $CACHE_HITS * 100 / $COUNT" | bc)
+
+    echo "P95 response time: ${P95_TIME}ms"
+    echo "ETag hit rate: ${HIT_RATE}%"
+
+    if [ "$P95_TIME" -lt 50 ] && (( $(echo "$HIT_RATE >= 70" | bc -l) )); then
+        echo "✅ All performance targets met!"
     else
-        echo "❌ Performance target not met: ${AVG_TIME}ms > 50ms"
+        echo "❌ Performance targets not fully met"
         BENCHMARK_RESULT=1
     fi
 fi
@@ -202,7 +244,8 @@ cat > "$PROJECT_ROOT/docs/performance/settings-benchmark-$(date +%Y%m%d).md" << 
 - ✅ 304 Response Time: <20ms
 
 ### Measured Performance
-- Average Response Time: ${AVG_TIME:-N/A}ms
+- P95 Response Time: ${P95_TIME:-${P95_TIME_MS:-N/A}}ms
+- ETag Hit Rate: ${HIT_RATE:-N/A}%
 - ETag Support: ${ETAG:+Enabled}${ETAG:-Not Found}
 - Test Duration: 3 minutes
 - Virtual Users: 20 peak
@@ -229,7 +272,7 @@ if [ ! -z "$BACKEND_PID" ]; then
     kill $BACKEND_PID 2>/dev/null || true
 fi
 
-rm -f /tmp/benchmark-settings.js
+rm -f /tmp/benchmark-settings.js /tmp/k6-settings-summary.json
 
 echo ""
 echo "✅ Settings Performance Benchmark Complete"

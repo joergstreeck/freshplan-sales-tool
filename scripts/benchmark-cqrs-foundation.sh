@@ -92,19 +92,32 @@ echo "📊 Running CQRS Benchmark..."
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
 if command -v k6 &> /dev/null; then
-    k6 run /tmp/benchmark-cqrs.js
+    k6 run --summary-export=/tmp/k6-summary.json /tmp/benchmark-cqrs.js
     BENCHMARK_RESULT=$?
+
+    # Parse P95 from k6 summary
+    if [ -f /tmp/k6-summary.json ] && command -v jq &> /dev/null; then
+        P95_TIME=$(jq -r '.metrics.cqrs_latency.p95 // .metrics.http_req_duration.p95 // 0' /tmp/k6-summary.json)
+        P95_TIME_MS=$(echo "scale=2; $P95_TIME" | bc)
+        echo "P95 response time: ${P95_TIME_MS}ms"
+
+        if (( $(echo "$P95_TIME_MS < 200" | bc -l) )); then
+            echo "✅ Performance target met: P95 <200ms"
+        else
+            echo "❌ Performance target not met: P95 ${P95_TIME_MS}ms > 200ms"
+        fi
+    fi
 else
     echo "⚠️ k6 not installed. Using curl for basic benchmark..."
 
-    # Fallback: Simple curl-based benchmark
-    TOTAL_TIME=0
+    # Fallback: Simple curl-based benchmark with P95
+    TIMES=()
     COUNT=100
 
     for i in $(seq 1 $COUNT); do
-        TIME=$(curl -w "%{time_total}" -o /dev/null -s http://localhost:8080/api/health)
-        TIME_MS=$(echo "$TIME * 1000" | bc)
-        TOTAL_TIME=$(echo "$TOTAL_TIME + $TIME_MS" | bc)
+        TIME=$(curl -w "%{time_total}" -o /dev/null -s http://localhost:8080/api/events?limit=10)
+        TIME_MS=$(echo "$TIME * 1000" | bc | cut -d. -f1)
+        TIMES+=($TIME_MS)
 
         if [ $((i % 10)) -eq 0 ]; then
             echo -n "."
@@ -112,14 +125,18 @@ else
     done
     echo ""
 
-    AVG_TIME=$(echo "scale=2; $TOTAL_TIME / $COUNT" | bc)
-    echo "Average response time: ${AVG_TIME}ms"
+    # Sort times and calculate P95
+    IFS=$'\n' SORTED=($(sort -n <<<"${TIMES[*]}"))
+    P95_INDEX=$(( (COUNT * 95) / 100 ))
+    P95_TIME=${SORTED[$P95_INDEX]}
 
-    if (( $(echo "$AVG_TIME < 200" | bc -l) )); then
-        echo "✅ Performance target met: <200ms"
+    echo "P95 response time: ${P95_TIME}ms"
+
+    if [ "$P95_TIME" -lt 200 ]; then
+        echo "✅ Performance target met: P95 <200ms"
         BENCHMARK_RESULT=0
     else
-        echo "❌ Performance target not met: ${AVG_TIME}ms > 200ms"
+        echo "❌ Performance target not met: P95 ${P95_TIME}ms > 200ms"
         BENCHMARK_RESULT=1
     fi
 fi
@@ -142,7 +159,7 @@ cat > "$PROJECT_ROOT/docs/performance/cqrs-benchmark-$(date +%Y%m%d).md" << EOF
 - ✅ Overall API: <200ms P95
 
 ### Measured Performance
-- Average Response Time: ${AVG_TIME:-N/A}ms
+- P95 Response Time: ${P95_TIME:-N/A}ms
 - Test Duration: 2 minutes
 - Virtual Users: 20 peak
 
@@ -161,7 +178,7 @@ if [ ! -z "$BACKEND_PID" ]; then
     kill $BACKEND_PID 2>/dev/null || true
 fi
 
-rm -f /tmp/benchmark-cqrs.js
+rm -f /tmp/benchmark-cqrs.js /tmp/k6-summary.json
 
 echo ""
 echo "✅ CQRS Foundation Benchmark Complete"

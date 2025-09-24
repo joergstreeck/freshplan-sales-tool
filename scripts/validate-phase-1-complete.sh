@@ -25,26 +25,6 @@ echo ""
 VALIDATION_PASSED=true
 FAILED_CHECKS=()
 
-# Function to check a validation
-check_validation() {
-    local name=$1
-    local command=$2
-    local target=$3
-    local result
-
-    echo -n "Checking $name... "
-
-    if eval "$command"; then
-        echo -e "${GREEN}✅ PASSED${NC} $target"
-        return 0
-    else
-        echo -e "${RED}❌ FAILED${NC}"
-        VALIDATION_PASSED=false
-        FAILED_CHECKS+=("$name")
-        return 1
-    fi
-}
-
 echo "═══════════════════════════════════════════════════════════════"
 echo "1️⃣  FOUNDATION PERFORMANCE VALIDATION"
 echo "═══════════════════════════════════════════════════════════════"
