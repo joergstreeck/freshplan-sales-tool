@@ -272,8 +272,7 @@ export const useAuditAdminStore = create<AuditAdminState>()(
             // TODO: Implement real API call
             // const activities = await auditApi.getSuspiciousActivities();
             // For now, return empty array until API is ready
-            const activities: SuspiciousActivity[] = [
-            ];
+            const activities: SuspiciousActivity[] = [];
 
             set({ suspiciousActivities: activities });
           } catch (_error) {
@@ -358,7 +357,9 @@ export const useAuditAdminStore = create<AuditAdminState>()(
           set({ isLoading: true });
           try {
             // In production, this would generate a real report
-            const reportData = new Blob(['Report generation not yet implemented'], { type: 'application/pdf' });
+            const reportData = new Blob(['Report generation not yet implemented'], {
+              type: 'application/pdf',
+            });
             const result: ReportResult = {
               data: reportData,
               filename: `audit-report-${config.format}-${new Date().toISOString()}.${config.format}`,
