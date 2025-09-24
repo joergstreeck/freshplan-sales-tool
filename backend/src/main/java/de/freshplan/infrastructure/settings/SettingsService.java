@@ -1,5 +1,7 @@
 package de.freshplan.infrastructure.settings;
 
+import io.quarkus.cache.CacheInvalidateAll;
+import io.quarkus.cache.CacheResult;
 import io.vertx.core.json.JsonObject;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -20,13 +22,14 @@ import org.jboss.logging.Logger;
 public class SettingsService {
 
   private static final Logger LOG = Logger.getLogger(SettingsService.class);
+  private static final String CACHE_NAME = "settings-cache";
 
   @Inject EntityManager em;
 
   /**
-   * Retrieves a setting by scope, scope ID, and key. TODO: Add caching support with quarkus-cache
-   * extension.
+   * Retrieves a setting by scope, scope ID, and key. Sprint 1.4: Added caching support.
    */
+  @CacheResult(cacheName = CACHE_NAME)
   public Optional<Setting> getSetting(SettingsScope scope, String scopeId, String key) {
     LOG.debugf("Retrieving setting: scope=%s, scopeId=%s, key=%s", scope, scopeId, key);
 
@@ -36,8 +39,9 @@ public class SettingsService {
 
   /**
    * Resolves a setting hierarchically, returning the most specific value. Priority: CONTACT_ROLE >
-   * ACCOUNT > TERRITORY > TENANT > GLOBAL
+   * ACCOUNT > TERRITORY > TENANT > GLOBAL. Sprint 1.4: Added caching.
    */
+  @CacheResult(cacheName = CACHE_NAME)
   public Optional<Setting> resolveSetting(String key, SettingsContext context) {
     LOG.debugf("Resolving setting hierarchically: key=%s, context=%s", key, context);
 
@@ -52,7 +56,8 @@ public class SettingsService {
     return Optional.ofNullable(setting);
   }
 
-  /** Creates or updates a setting. TODO: Add cache invalidation with quarkus-cache extension. */
+  /** Creates or updates a setting. Sprint 1.4: Added cache invalidation. */
+  @CacheInvalidateAll(cacheName = CACHE_NAME)
   @Transactional
   public Setting saveSetting(
       SettingsScope scope,
@@ -158,8 +163,9 @@ public class SettingsService {
 
   /**
    * Updates a setting with optimistic locking using ETag. Throws 412 Precondition Failed if ETag
-   * doesn't match.
+   * doesn't match. Sprint 1.4: Added cache invalidation.
    */
+  @CacheInvalidateAll(cacheName = CACHE_NAME)
   @Transactional
   public Setting updateSettingWithEtag(
       UUID id, JsonObject value, JsonObject metadata, String ifMatch, String userId) {
@@ -203,7 +209,8 @@ public class SettingsService {
     return setting;
   }
 
-  /** Deletes a setting. TODO: Add cache invalidation with quarkus-cache extension. */
+  /** Deletes a setting. Sprint 1.4: Added cache invalidation. */
+  @CacheInvalidateAll(cacheName = CACHE_NAME)
   @Transactional
   public boolean deleteSetting(UUID id) {
     LOG.infof("Deleting setting: id=%s", id);
@@ -226,7 +233,8 @@ public class SettingsService {
     return setting != null && setting.matchesEtag(etag);
   }
 
-  /** Lists all settings for a given scope. */
+  /** Lists all settings for a given scope. Sprint 1.4: Added caching. */
+  @CacheResult(cacheName = CACHE_NAME)
   public List<Setting> listSettings(SettingsScope scope, String scopeId) {
     LOG.debugf("Listing settings: scope=%s, scopeId=%s", scope, scopeId);
 
