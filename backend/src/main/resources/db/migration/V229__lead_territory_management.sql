@@ -133,6 +133,25 @@ CREATE INDEX idx_leads_last_activity ON leads(last_activity_at);
 CREATE INDEX idx_lead_activities_lead ON lead_activities(lead_id, activity_date);
 CREATE INDEX idx_lead_activities_user ON lead_activities(user_id, activity_date);
 
+-- Collaborators table for @ElementCollection in Lead entity
+CREATE TABLE lead_collaborators (
+    lead_id BIGINT NOT NULL REFERENCES leads(id) ON DELETE CASCADE,
+    user_id VARCHAR(50) NOT NULL,
+    PRIMARY KEY (lead_id, user_id)
+);
+
+-- Preferred territories table for @ElementCollection in UserLeadSettings
+CREATE TABLE user_preferred_territories (
+    user_settings_id BIGINT NOT NULL REFERENCES user_lead_settings(id) ON DELETE CASCADE,
+    territory_id VARCHAR(10) NOT NULL,
+    PRIMARY KEY (user_settings_id, territory_id)
+);
+
+-- Indices for ElementCollections
+CREATE INDEX idx_lead_collaborators_lead ON lead_collaborators(lead_id);
+CREATE INDEX idx_lead_collaborators_user ON lead_collaborators(user_id);
+CREATE INDEX idx_user_pref_territories ON user_preferred_territories(user_settings_id);
+
 -- Check constraints
 ALTER TABLE leads ADD CONSTRAINT chk_lead_status
     CHECK (status IN ('REGISTERED', 'ACTIVE', 'REMINDER_SENT', 'GRACE_PERIOD', 'EXPIRED', 'EXTENDED', 'STOP_CLOCK'));
