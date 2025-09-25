@@ -18,6 +18,7 @@ BEGIN
         SELECT 1
         FROM information_schema.routines
         WHERE routine_name = 'check_rls_context'
+          AND routine_schema = 'public'
     ) THEN
         -- Rechte sind bereits durch V242 und V243 vergeben
         -- Nichts zu tun - idempotent

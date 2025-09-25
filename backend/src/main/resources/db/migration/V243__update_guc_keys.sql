@@ -74,6 +74,6 @@ END $$;
 DO $$
 BEGIN
     IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'freshplan') THEN
-        EXECUTE 'GRANT EXECUTE ON FUNCTION check_rls_context() TO freshplan';
+        EXECUTE 'GRANT EXECUTE ON FUNCTION public.check_rls_context() TO freshplan';
     END IF;
 END $$;
