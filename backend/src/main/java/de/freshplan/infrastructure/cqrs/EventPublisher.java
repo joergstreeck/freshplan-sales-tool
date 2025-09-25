@@ -1,5 +1,6 @@
 package de.freshplan.infrastructure.cqrs;
 
+import de.freshplan.infrastructure.security.RlsContext;
 import io.quarkus.runtime.Startup;
 import io.vertx.core.json.JsonObject;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -36,6 +37,7 @@ public class EventPublisher {
    * LISTEN/NOTIFY trigger
    */
   @Transactional
+  @RlsContext
   public UUID publishEvent(DomainEvent event) {
     if (!eventsEnabled) {
       LOG.debug("CQRS events disabled, skipping event: " + event.getEventType());

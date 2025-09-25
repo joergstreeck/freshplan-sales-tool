@@ -1,7 +1,9 @@
 package de.freshplan.infrastructure.cqrs;
 
+import de.freshplan.infrastructure.security.AppGuc;
 import io.quarkus.runtime.ShutdownEvent;
 import io.quarkus.runtime.StartupEvent;
+import io.quarkus.security.identity.SecurityIdentity;
 import io.vertx.core.json.JsonObject;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Event;
@@ -33,6 +35,8 @@ public class EventSubscriber {
   @Inject DataSource dataSource;
 
   @Inject Event<EventNotification> eventBus;
+
+  @Inject SecurityIdentity securityIdentity;
 
   @ConfigProperty(name = "cqrs.subscriber.enabled", defaultValue = "true")
   boolean subscriberEnabled;
@@ -95,6 +99,10 @@ public class EventSubscriber {
     // Create dedicated connection for LISTEN/NOTIFY
     listenerConnection = dataSource.getConnection();
     listenerConnection.setAutoCommit(true);
+
+    // Set RLS context for the listener connection
+    // This is a special case - listener runs in background thread
+    setRlsContextForListenerConnection();
 
     // Subscribe to all configured channels
     for (String channel : defaultChannels.split(",")) {
@@ -196,6 +204,25 @@ public class EventSubscriber {
   private void recordEventProcessed(String eventType) {
     // TODO: Integrate with monitoring system
     LOG.tracef("Event processed: %s", eventType);
+  }
+
+  /** Sets RLS context for the listener connection */
+  private void setRlsContextForListenerConnection() {
+    try (Statement stmt = listenerConnection.createStatement()) {
+      // Set system-level context for event listener
+      // This connection is long-lived and processes events from all territories
+      if (!securityIdentity.isAnonymous()) {
+        String user = securityIdentity.getPrincipal().getName();
+        stmt.execute(AppGuc.CURRENT_USER.setConfigSql(user));
+      }
+
+      // Set admin role for event processing (needs to see all events)
+      stmt.execute(AppGuc.CURRENT_ROLE.setConfigSql("system"));
+
+      LOG.debug("RLS context set for event listener connection");
+    } catch (Exception e) {
+      LOG.warn("Failed to set RLS context for listener connection", e);
+    }
   }
 
   /** Event notification for CDI event bus */
