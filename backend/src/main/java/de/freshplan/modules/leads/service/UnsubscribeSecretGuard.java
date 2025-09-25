@@ -28,11 +28,12 @@ public class UnsubscribeSecretGuard {
 
   @PostConstruct
   void verifySecretConfiguration() {
-    // CI, test, und dev sind alle Non-Production
+    // NUR prod und production sind Production-Profile
+    // ALLES andere (ci, test, dev, etc.) ist Non-Production
     boolean isProduction = "prod".equals(profile) || "production".equals(profile);
-    boolean isCIEnvironment =
-        "ci".equals(profile) || "test".equals(profile) || "dev".equals(profile);
     String secret = tokenSecret.orElse("");
+
+    LOG.info("UnsubscribeSecretGuard starting - Profile: " + profile);
 
     // In Production: Erzwinge konfiguriertes Secret
     if (isProduction) {
@@ -53,24 +54,19 @@ public class UnsubscribeSecretGuard {
       }
 
       LOG.info("✅ Unsubscribe token secret properly configured for production");
-    } else if (isCIEnvironment) {
-      // CI/Test/Dev: Explizit als Non-Production erkannt
+    } else {
+      // Alle anderen Profile (ci, test, dev, etc.) sind Non-Production
       LOG.info(
-          "✅ Running in CI/Test/Dev environment (profile: "
+          "✅ Running in non-production environment (profile: "
               + profile
               + ") - skipping secret validation");
+
       if (secret.isEmpty()) {
         LOG.debug("No token secret configured, using development fallback (ok for non-prod)");
       } else if (secret.equals(DEV_SECRET)) {
         LOG.debug("Using development token secret (ok for non-prod)");
       } else if (secret.length() < 32) {
         LOG.debug("Token secret is weak (<32 chars) in non-prod environment");
-      }
-    } else {
-      // Unbekanntes Profil - Sicherheitshalber als Non-Production behandeln
-      LOG.warn("Unknown profile: " + profile + " - treating as non-production");
-      if (secret.isEmpty()) {
-        LOG.debug("No token secret configured, using development fallback");
       }
     }
   }
