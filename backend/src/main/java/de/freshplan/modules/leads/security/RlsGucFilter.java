@@ -12,6 +12,7 @@ import jakarta.ws.rs.container.ContainerResponseFilter;
 import jakarta.ws.rs.core.SecurityContext;
 import jakarta.ws.rs.ext.Provider;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.Statement;
 import org.jboss.logging.Logger;
 
@@ -40,17 +41,18 @@ public class RlsGucFilter implements ContainerRequestFilter, ContainerResponseFi
 
     String role = determineRole();
 
-    // Set GUCs for this request's database session
+    // Set GUCs for this request's database session using PreparedStatement for security
     try (Connection conn = dataSource.getConnection();
-         Statement stmt = conn.createStatement()) {
+         PreparedStatement ps = conn.prepareStatement("SELECT set_config(?, ?, true)")) {
 
-      // Escape single quotes to prevent SQL injection
-      String escapedUser = user.replace("'", "''");
+      // Use set_config function with PreparedStatement to prevent SQL injection
+      ps.setString(1, "app.current_user");
+      ps.setString(2, user);
+      ps.execute();
 
-      // Set LOCAL variables that are valid for this transaction only
-      // Use proper PostgreSQL syntax for custom configuration parameters
-      stmt.execute("SET LOCAL \"app.current_user\" = '" + escapedUser + "'");
-      stmt.execute("SET LOCAL \"app.current_role\" = '" + role + "'");
+      ps.setString(1, "app.current_role");
+      ps.setString(2, role);
+      ps.execute();
 
       LOG.debugf("RLS context set for user: %s, role: %s", user, role);
 

@@ -14,12 +14,14 @@ DROP POLICY IF EXISTS leads_delete_policy ON leads;
 CREATE POLICY leads_select_policy ON leads
 FOR SELECT
 USING (
-    -- Owner can see their own leads
-    owner_user_id = current_setting('app.current_user', true)
-    -- Collaborators can see leads they're assigned to
-    OR current_setting('app.current_user', true) = ANY(collaborator_user_ids)
-    -- Managers and admins can see all leads
-    OR current_setting('app.current_role', true) IN ('MANAGER', 'ADMIN')
+    (
+        -- Owner can see their own leads
+        owner_user_id = current_setting('app.current_user', true)
+        -- Collaborators can see leads they're assigned to
+        OR current_setting('app.current_user', true) = ANY(collaborator_user_ids)
+        -- Managers and admins can see all leads
+        OR current_setting('app.current_role', true) IN ('MANAGER', 'ADMIN')
+    )
     -- Deleted leads are hidden from non-admins
     AND (status != 'DELETED' OR current_setting('app.current_role', true) = 'ADMIN')
 );

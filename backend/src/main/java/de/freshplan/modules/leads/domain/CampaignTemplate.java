@@ -101,32 +101,36 @@ public class CampaignTemplate extends PanacheEntityBase {
 
   /**
    * Get personalized content by replacing variables.
+   * Uses efficient single-pass regex replacement.
    *
    * @param data variable data for replacement
    * @return personalized HTML content
    */
   public String getPersonalizedContent(Map<String, String> data) {
-    String content = htmlContent;
-    for (Map.Entry<String, String> entry : data.entrySet()) {
-      String placeholder = "{{" + entry.getKey() + "}}";
-      content = content.replace(placeholder, entry.getValue());
+    if (this.htmlContent == null || data == null) {
+      return this.htmlContent;
     }
-    return content;
+    // Single-pass replacement using regex matcher
+    return VARIABLE_PATTERN.matcher(this.htmlContent).replaceAll(match ->
+        data.getOrDefault(match.group(1), match.group(0))
+    );
   }
 
   /**
    * Get personalized subject.
+   * Uses efficient single-pass regex replacement.
    *
    * @param data variable data for replacement
    * @return personalized subject
    */
   public String getPersonalizedSubject(Map<String, String> data) {
-    String subjectLine = subject;
-    for (Map.Entry<String, String> entry : data.entrySet()) {
-      String placeholder = "{{" + entry.getKey() + "}}";
-      subjectLine = subjectLine.replace(placeholder, entry.getValue());
+    if (this.subject == null || data == null) {
+      return this.subject;
     }
-    return subjectLine;
+    // Single-pass replacement using regex matcher
+    return VARIABLE_PATTERN.matcher(this.subject).replaceAll(match ->
+        data.getOrDefault(match.group(1), match.group(0))
+    );
   }
 
   /** Extract variables from template content. */

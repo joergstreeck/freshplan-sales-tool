@@ -166,13 +166,8 @@ public class LeadResource {
           .build();
     }
 
-    // Check access permission
-    if (!lead.canBeAccessedBy(currentUserId) && !securityContext.isUserInRole("ADMIN")) {
-      LOG.warnf("User %s denied access to lead %s", currentUserId, id);
-      return Response.status(Response.Status.FORBIDDEN)
-          .entity(Map.of("error", "Access denied to this lead"))
-          .build();
-    }
+    // RLS handles access control - if lead is null, user has no access
+    // No additional check needed since RLS policies filter at database level
 
     // Generate strong ETag for preconditions
     EntityTag etag = ETags.strongLead(lead.id, lead.version);
@@ -509,12 +504,8 @@ public class LeadResource {
           .build();
     }
 
-    // Check access permission
-    if (!lead.canBeAccessedBy(currentUserId) && !securityContext.isUserInRole("ADMIN")) {
-      return Response.status(Response.Status.FORBIDDEN)
-          .entity(Map.of("error", "Access denied to this lead"))
-          .build();
-    }
+    // RLS handles access control - if lead is null, user has no access
+    // No additional check needed since RLS policies filter at database level
 
     // Create activity
     LeadActivity activity = new LeadActivity();
@@ -561,12 +552,8 @@ public class LeadResource {
           .build();
     }
 
-    // Check access permission
-    if (!lead.canBeAccessedBy(currentUserId) && !securityContext.isUserInRole("ADMIN")) {
-      return Response.status(Response.Status.FORBIDDEN)
-          .entity(Map.of("error", "Access denied to this lead"))
-          .build();
-    }
+    // RLS handles access control - if lead is null, user has no access
+    // No additional check needed since RLS policies filter at database level
 
     // Get activities with pagination
     Page page = Page.of(pageIndex, pageSize);

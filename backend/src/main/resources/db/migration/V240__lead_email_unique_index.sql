@@ -1,17 +1,11 @@
--- V240: Lead email deduplication unique index
--- Sprint 2.1: Verhindert doppelte Emails bei aktiven Leads
--- Der partielle Index ignoriert DELETED Status für Soft-Delete Support
+-- V240: Lead email deduplication cleanup
+-- Sprint 2.1: Entfernt redundanten Index (bereits in V234 vorhanden)
+-- Dieser Migration ist ein No-Op, da der Index idx_leads_email_normalized
+-- bereits in V234__lead_dod_requirements.sql erstellt wurde
 
--- Partieller Unique-Index auf email_normalized (ignoriert DELETED Leads)
-CREATE UNIQUE INDEX IF NOT EXISTS ux_leads_email_norm_active
-ON leads(email_normalized)
-WHERE status != 'DELETED'
-  AND email_normalized IS NOT NULL;
+-- Hinweis: Der Index idx_leads_email_normalized mit WHERE-Klausel für
+-- email_normalized IS NOT NULL AND status != 'DELETED' existiert bereits
+-- aus Migration V234 und muss nicht dupliziert werden.
 
--- Index für Performance bei Email-Lookups
-CREATE INDEX IF NOT EXISTS idx_leads_email_normalized
-ON leads(email_normalized)
-WHERE email_normalized IS NOT NULL;
-
-COMMENT ON INDEX ux_leads_email_norm_active IS 'Unique constraint für aktive Leads - erlaubt Soft-Delete';
-COMMENT ON INDEX idx_leads_email_normalized IS 'Performance-Index für Email-Deduplikation';
+-- Diese Migration wird beibehalten für Migrations-Kontinuität,
+-- führt aber keine Änderungen durch.
