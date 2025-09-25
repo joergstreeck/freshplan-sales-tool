@@ -50,12 +50,8 @@ public class LeadService {
       lead.persist();
 
       // Create activity
-      LeadActivity activity = new LeadActivity();
-      activity.lead = lead;
-      activity.userId = "SYSTEM";
-      activity.activityType = ActivityType.REMINDER_SENT;
-      activity.description = "60-day reminder sent - no activity detected";
-      activity.persist();
+      createActivity(lead, "SYSTEM", ActivityType.REMINDER_SENT,
+          "60-day reminder sent - no activity detected");
 
       LOG.infof("Sent reminder for lead %s (owner: %s)", lead.id, lead.ownerUserId);
       count++;
@@ -88,12 +84,8 @@ public class LeadService {
       lead.persist();
 
       // Create activity
-      LeadActivity activity = new LeadActivity();
-      activity.lead = lead;
-      activity.userId = "SYSTEM";
-      activity.activityType = ActivityType.GRACE_PERIOD_STARTED;
-      activity.description = "10-day grace period started";
-      activity.persist();
+      createActivity(lead, "SYSTEM", ActivityType.GRACE_PERIOD_STARTED,
+          "10-day grace period started");
 
       LOG.infof("Lead %s entered grace period (owner: %s)", lead.id, lead.ownerUserId);
       count++;
@@ -124,12 +116,8 @@ public class LeadService {
       lead.expiredAt = LocalDateTime.now();
       lead.persist();
 
-      LeadActivity activity = new LeadActivity();
-      activity.lead = lead;
-      activity.userId = "SYSTEM";
-      activity.activityType = ActivityType.EXPIRED;
-      activity.description = "Lead expired after 6 months of protection";
-      activity.persist();
+      createActivity(lead, "SYSTEM", ActivityType.EXPIRED,
+          "Lead expired after 6 months of protection");
 
       LOG.infof("Lead %s expired after 6 months (owner: %s)", lead.id, lead.ownerUserId);
       count++;
@@ -150,12 +138,8 @@ public class LeadService {
       lead.expiredAt = LocalDateTime.now();
       lead.persist();
 
-      LeadActivity activity = new LeadActivity();
-      activity.lead = lead;
-      activity.userId = "SYSTEM";
-      activity.activityType = ActivityType.EXPIRED;
-      activity.description = "Lead expired after grace period ended";
-      activity.persist();
+      createActivity(lead, "SYSTEM", ActivityType.EXPIRED,
+          "Lead expired after grace period ended");
 
       LOG.infof("Lead %s expired after grace period (owner: %s)", lead.id, lead.ownerUserId);
       count++;
@@ -176,12 +160,8 @@ public class LeadService {
       lead.lastActivityAt = LocalDateTime.now();
       lead.persist();
 
-      LeadActivity activity = new LeadActivity();
-      activity.lead = lead;
-      activity.userId = "SYSTEM";
-      activity.activityType = ActivityType.REACTIVATED;
-      activity.description = "Lead reactivated due to new activity";
-      activity.persist();
+      createActivity(lead, "SYSTEM", ActivityType.REACTIVATED,
+          "Lead reactivated due to new activity");
 
       LOG.infof("Lead %s reactivated due to activity", lead.id);
     }
@@ -248,6 +228,23 @@ public class LeadService {
     stats.expiringSoonLeads = getExpiringLeads(userId, 7).size();
 
     return stats;
+  }
+
+  /**
+   * Create and persist a lead activity. Extracted method to follow DRY principle.
+   *
+   * @param lead the lead to attach the activity to
+   * @param userId the user creating the activity (or "SYSTEM")
+   * @param type the type of activity
+   * @param description the activity description
+   */
+  private void createActivity(Lead lead, String userId, ActivityType type, String description) {
+    LeadActivity activity = new LeadActivity();
+    activity.lead = lead;
+    activity.userId = userId;
+    activity.activityType = type;
+    activity.description = description;
+    activity.persist();
   }
 
   /**

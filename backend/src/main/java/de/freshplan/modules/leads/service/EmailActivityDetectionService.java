@@ -117,16 +117,22 @@ public class EmailActivityDetectionService {
     List<LeadMatch> matches = new ArrayList<>();
     Set<Long> matchedLeadIds = new HashSet<>();  // For O(1) duplicate checking
 
-    // Strategy 1: Exact email match
-    List<Lead> exactEmailMatches = Lead.find("email", senderEmail).list();
-    exactEmailMatches.forEach(lead -> {
-      matches.add(new LeadMatch(lead, 1.0, "email"));
-      matchedLeadIds.add(lead.id);
-    });
+    // Normalize email for matching
+    String normalizedEmail = Lead.normalizeEmail(senderEmail);
 
-    // Strategy 2: Domain match (e.g., @restaurant.de)
+    // Strategy 1: Exact email match using normalized field (more efficient)
+    if (normalizedEmail != null) {
+      List<Lead> exactEmailMatches = Lead.find("emailNormalized", normalizedEmail).list();
+      exactEmailMatches.forEach(lead -> {
+        matches.add(new LeadMatch(lead, 1.0, "email"));
+        matchedLeadIds.add(lead.id);
+      });
+    }
+
+    // Strategy 2: Domain match using normalized field (more efficient)
     if (companyDomain != null && !companyDomain.isEmpty()) {
-      List<Lead> domainMatches = Lead.find("email like ?1", "%@" + companyDomain).list();
+      String normalizedDomain = companyDomain.toLowerCase();
+      List<Lead> domainMatches = Lead.find("emailNormalized like ?1", "%@" + normalizedDomain).list();
       domainMatches.forEach(
           lead -> {
             if (!matchedLeadIds.contains(lead.id)) {

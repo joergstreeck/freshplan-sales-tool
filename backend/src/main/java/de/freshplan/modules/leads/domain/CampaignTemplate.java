@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 /**
  * Campaign template entity for future campaign management. Sprint 2.1: Foundation for Phase 3
@@ -19,6 +20,9 @@ import java.util.Map;
 @Entity
 @Table(name = "campaign_templates")
 public class CampaignTemplate extends PanacheEntityBase {
+
+  /** Cached regex pattern for variable extraction (performance optimization) */
+  private static final Pattern VARIABLE_PATTERN = Pattern.compile("\\{\\{([^}]+)\\}\\}");
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -47,6 +51,7 @@ public class CampaignTemplate extends PanacheEntityBase {
   /** Template variables for personalization */
   @Column(columnDefinition = "jsonb")
   @Convert(converter = JsonObjectConverter.class)
+  @org.hibernate.annotations.JdbcTypeCode(org.hibernate.type.SqlTypes.JSON)
   public JsonObject variables = new JsonObject();
 
   /** Template type for different campaign purposes */
@@ -127,19 +132,16 @@ public class CampaignTemplate extends PanacheEntityBase {
   /** Extract variables from template content. */
   public Map<String, String> extractVariables() {
     Map<String, String> vars = new HashMap<>();
-    // Simple regex to find {{variable}} patterns
-    String pattern = "\\{\\{([^}]+)\\}\\}";
-    java.util.regex.Pattern p = java.util.regex.Pattern.compile(pattern);
 
-    // Check in subject
-    java.util.regex.Matcher m = p.matcher(subject);
+    // Check in subject using cached pattern
+    java.util.regex.Matcher m = VARIABLE_PATTERN.matcher(subject);
     while (m.find()) {
       vars.put(m.group(1), "");
     }
 
-    // Check in HTML content
+    // Check in HTML content using cached pattern
     if (htmlContent != null) {
-      m = p.matcher(htmlContent);
+      m = VARIABLE_PATTERN.matcher(htmlContent);
       while (m.find()) {
         vars.put(m.group(1), "");
       }

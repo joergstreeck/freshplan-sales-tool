@@ -156,11 +156,21 @@ class LeadResourceTest {
   void testUpdateLeadStatus() {
     Long leadId = createTestLead("user1");
 
+    // First fetch the lead to get the ETag
+    String etag = given()
+        .when()
+        .get("/{id}", leadId)
+        .then()
+        .statusCode(200)
+        .extract()
+        .header("ETag");
+
     Map<String, Object> updateRequest = new HashMap<>();
     updateRequest.put("status", "ACTIVE");
 
     given()
         .contentType(ContentType.JSON)
+        .header("If-Match", etag)
         .body(updateRequest)
         .when()
         .patch("/{id}", leadId)
@@ -179,12 +189,22 @@ class LeadResourceTest {
     // First enable stop clock permission for user
     setupUserSettings("user1", true);
 
+    // Fetch the lead to get the ETag
+    String etag = given()
+        .when()
+        .get("/{id}", leadId)
+        .then()
+        .statusCode(200)
+        .extract()
+        .header("ETag");
+
     Map<String, Object> stopClockRequest = new HashMap<>();
     stopClockRequest.put("stopClock", true);
     stopClockRequest.put("stopReason", "Customer requested pause during vacation");
 
     given()
         .contentType(ContentType.JSON)
+        .header("If-Match", etag)
         .body(stopClockRequest)
         .when()
         .patch("/{id}", leadId)
@@ -231,11 +251,21 @@ class LeadResourceTest {
   void testManageCollaborators() {
     Long leadId = createTestLead("user1");
 
+    // Fetch the lead to get the ETag
+    String etag = given()
+        .when()
+        .get("/{id}", leadId)
+        .then()
+        .statusCode(200)
+        .extract()
+        .header("ETag");
+
     Map<String, Object> collaboratorRequest = new HashMap<>();
     collaboratorRequest.put("addCollaborators", new String[] {"user2", "user3"});
 
     given()
         .contentType(ContentType.JSON)
+        .header("If-Match", etag)
         .body(collaboratorRequest)
         .when()
         .patch("/{id}", leadId)

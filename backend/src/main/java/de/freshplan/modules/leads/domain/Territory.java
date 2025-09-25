@@ -42,6 +42,7 @@ public class Territory extends PanacheEntityBase {
 
   @Column(name = "business_rules", columnDefinition = "jsonb")
   @Convert(converter = JsonObjectConverter.class)
+  @org.hibernate.annotations.JdbcTypeCode(org.hibernate.type.SqlTypes.JSON)
   public JsonObject businessRules = new JsonObject();
 
   @Column(name = "active", nullable = false)

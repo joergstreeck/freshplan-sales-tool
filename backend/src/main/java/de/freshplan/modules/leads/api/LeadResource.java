@@ -190,7 +190,7 @@ public class LeadResource {
     lead.street = request.street;
     lead.postalCode = request.postalCode;
     lead.city = request.city;
-    lead.countryCode = request.countryCode != null ? request.countryCode : "DE";
+    lead.countryCode = request.countryCode;
 
     // Set territory based on country (for currency/tax rules only)
     Territory territory = Territory.findByCountryCode(lead.countryCode);

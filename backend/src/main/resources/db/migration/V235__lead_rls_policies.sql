@@ -59,8 +59,15 @@ USING (
     OR current_setting('app.current_role', true) = 'ADMIN'
 );
 
--- Grant necessary permissions
-GRANT SELECT, INSERT, UPDATE, DELETE ON leads TO application_user;
+-- Grant necessary permissions (only if role exists)
+-- Note: This would normally be handled by infrastructure setup
+-- For test environment, we skip this if role doesn't exist
+DO $$
+BEGIN
+    IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'application_user') THEN
+        GRANT SELECT, INSERT, UPDATE, DELETE ON leads TO application_user;
+    END IF;
+END $$;
 
 -- Create index for RLS performance
 CREATE INDEX IF NOT EXISTS idx_leads_owner_collaborators

@@ -22,7 +22,7 @@ public class PaginatedResponse<T> {
     this.page = page;
     this.size = size;
     this.total = total;
-    this.totalPages = (total + size - 1) / size;
+    this.totalPages = size > 0 ? (total + size - 1) / size : 0;
   }
 
   // Getters and setters
