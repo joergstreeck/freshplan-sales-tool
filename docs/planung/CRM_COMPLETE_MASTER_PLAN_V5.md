@@ -115,24 +115,25 @@
   - Foundation Validation Script finalisiert
   - **Phase 1 Foundation 🔄 FINAL OPTIMIZATION** - Sprint 1.4 Quick-Wins läuft
   - **📊 Performance Report:** [phase-1-foundation-benchmark-2025-09-24.md](../performance/phase-1-foundation-benchmark-2025-09-24.md)
+- 2025-09-25 03:10 — Sprint 2.1 PR #2 Implementation: Lead Endpoints & Queries mit Code Review Fixes
+  - Lead REST API vollständig implementiert (CRUD + Activities + Collaborators)
+  - Protection System mit 6/60/10 Regel + Stop-the-Clock Feature
+  - Advanced Features aus Artefakten integriert: Email Activity Detection, Campaign Templates, FreshFoodz CI
+  - Code Review Fixes: Exception Handling, Test Isolation, Performance-Optimierung
+  - Migrations: V232 (campaign_templates), V233 (territories.active)
+  - Tests: LeadResourceSimpleTest ✅ GREEN, Integration Tests pending JWT-Fix
 <!-- MP5:SESSION_LOG:END -->
 
 ## Next Steps
 <!-- MP5:NEXT_STEPS:START -->
-- ✅ **Sprint 2.1 PR #1 COMPLETE:** Territory Management (PR #103 gemerged, 2025-09-25)
-  - Territory ohne Gebietsschutz implementiert
-  - UserLeadSettingsService mit Thread-Safety
-  - Migration V229-V231 deployed
-  - 8 Tests, 100% Service Coverage
-- 🚀 **Sprint 2.1 PR #2 READY:** Lead Endpoints & Queries
-  - GET /api/leads (Pagination & Filtering)
-  - POST /api/leads (Lead-Erfassung)
-  - PATCH /api/leads/{id} (Status-Updates)
-  - Lead Protection System (6/60/10 Regel)
-  - Stop-the-Clock Feature
-- Sprint 2.1 PR #3: Lead UI Components (nach PR #2)
+- 🔄 **Sprint 2.1 PR #2 IN PROGRESS:** Lead Endpoints vollständig implementiert, Tests ausstehend
+  - JWT-Mock für LeadResourceTest fixen (SecurityContext statt JWT injection)
+  - Integration Tests fertigstellen
+  - PR #104 erstellen in Deutsch mit PR Template Compliance
+  - Migration V232-V233 bereits deployed
+- Sprint 2.1 PR #3: Lead UI Components (nach PR #2 Merge)
 - Sprint 2.2: Kundenmanagement Integration (nach 2.1)
-- Migration V232 als nächste verfügbar
+- Migration V234 als nächste verfügbar
 - Parallel: performUniversalSearch Frontend-Bug (niedrige Priorität)
 <!-- MP5:NEXT_STEPS:END -->
 

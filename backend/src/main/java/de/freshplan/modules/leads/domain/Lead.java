@@ -37,6 +37,10 @@ public class Lead extends PanacheEntityBase {
   @Size(max = 255)
   public String email;
 
+  @Size(max = 320)
+  @Column(name = "email_normalized")
+  public String emailNormalized;
+
   @Size(max = 50)
   public String phone;
 
@@ -156,6 +160,11 @@ public class Lead extends PanacheEntityBase {
   @Column(name = "updated_by")
   public String updatedBy;
 
+  // Optimistic Locking
+  @Version
+  @Column(name = "version", nullable = false)
+  public long version;
+
   // Relationships
   @OneToMany(mappedBy = "lead", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
   public List<LeadActivity> activities = new ArrayList<>();
@@ -193,6 +202,17 @@ public class Lead extends PanacheEntityBase {
 
   public void removeCollaborator(String userId) {
     collaboratorUserIds.remove(userId);
+  }
+
+  /**
+   * Normalize email for deduplication.
+   * Converts to lowercase and trims whitespace.
+   */
+  public static String normalizeEmail(String email) {
+    if (email == null || email.isBlank()) {
+      return null;
+    }
+    return email.toLowerCase().trim();
   }
 
   // Static finder methods

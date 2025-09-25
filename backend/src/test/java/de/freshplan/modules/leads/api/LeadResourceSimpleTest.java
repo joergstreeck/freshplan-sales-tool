@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import de.freshplan.modules.leads.domain.LeadStatus;
 import de.freshplan.modules.leads.service.LeadProtectionService;
 import de.freshplan.modules.leads.service.LeadService;
-import de.freshplan.modules.leads.service.UserLeadSettingsService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

@@ -21,7 +21,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.eclipse.microprofile.jwt.JsonWebToken;
+import java.util.Set;
 import org.jboss.logging.Logger;
 
 /**
@@ -36,7 +36,7 @@ public class LeadResource {
 
   private static final Logger LOG = Logger.getLogger(LeadResource.class);
 
-  @Inject JsonWebToken jwt;
+  @Context SecurityContext securityContext;
 
   @Inject LeadService leadService;
 
@@ -46,6 +46,12 @@ public class LeadResource {
 
   @Context UriInfo uriInfo;
 
+  // Sort field whitelist for security and stability
+  private static final Set<String> ALLOWED_SORT_FIELDS = Set.of(
+      "createdAt", "updatedAt", "companyName", "status",
+      "estimatedVolume", "city", "registeredAt", "lastActivityAt"
+  );
+
   /**
    * GET /api/leads - List leads with pagination and filtering. Leads are available nationwide, no
    * geographical restrictions.
@@ -53,7 +59,7 @@ public class LeadResource {
   @GET
   public Response listLeads(
       @QueryParam("status") LeadStatus status,
-      @QueryParam("territoryId") Long territoryId,
+      @QueryParam("territoryId") String territoryId,
       @QueryParam("ownerUserId") String ownerUserId,
       @QueryParam("search") String search,
       @QueryParam("page") @DefaultValue("0") int pageIndex,
@@ -61,7 +67,7 @@ public class LeadResource {
       @QueryParam("sort") @DefaultValue("createdAt") String sortField,
       @QueryParam("direction") @DefaultValue("DESC") String sortDirection) {
 
-    String currentUserId = jwt.getSubject();
+    String currentUserId = securityContext.getUserPrincipal().getName();
     LOG.infof(
         "User %s listing leads - status: %s, territory: %s, owner: %s",
         currentUserId, status, territoryId, ownerUserId);
@@ -93,36 +99,39 @@ public class LeadResource {
     }
 
     // For non-admin users: show only leads they own or collaborate on
-    if (!jwt.getGroups().contains("ADMIN")) {
+    if (!securityContext.isUserInRole("ADMIN")) {
       query.append(" and (ownerUserId = :currentUser or :currentUser in elements(collaboratorUserIds))");
       params.put("currentUser", currentUserId);
     }
 
-    // Execute query with pagination
-    Sort sort = Sort.by(sortField, Sort.Direction.valueOf(sortDirection.toUpperCase()));
+    // Execute query with pagination using safe sort
+    Sort sort = safeSort(sortField, sortDirection);
     Page page = Page.of(pageIndex, pageSize);
 
     List<Lead> leads = Lead.find(query.toString(), sort, params).page(page).list();
     long total = Lead.count(query.toString(), params);
 
-    // Build response with pagination metadata
-    Map<String, Object> response = new HashMap<>();
-    response.put("data", leads);
-    response.put("page", pageIndex);
-    response.put("size", pageSize);
-    response.put("total", total);
-    response.put("totalPages", (total + pageSize - 1) / pageSize);
+    // Build type-safe paginated response
+    PaginatedResponse<Lead> response = PaginatedResponse.<Lead>builder()
+        .data(leads)
+        .page(pageIndex)
+        .size(pageSize)
+        .total(total)
+        .build();
 
     return Response.ok(response).build();
   }
 
   /**
-   * GET /api/leads/{id} - Get lead by ID. Access control: owner, collaborators, or admin.
+   * GET /api/leads/{id} - Get lead by ID with ETag support (304 Not Modified).
+   * Access control: owner, collaborators, or admin.
    */
   @GET
   @Path("/{id}")
-  public Response getLead(@PathParam("id") Long id) {
-    String currentUserId = jwt.getSubject();
+  public Response getLead(
+      @PathParam("id") Long id,
+      @HeaderParam("If-None-Match") String ifNoneMatch) {
+    String currentUserId = securityContext.getUserPrincipal().getName();
     Lead lead = Lead.findById(id);
 
     if (lead == null) {
@@ -132,14 +141,20 @@ public class LeadResource {
     }
 
     // Check access permission
-    if (!lead.canBeAccessedBy(currentUserId) && !jwt.getGroups().contains("ADMIN")) {
+    if (!lead.canBeAccessedBy(currentUserId) && !securityContext.isUserInRole("ADMIN")) {
       LOG.warnf("User %s denied access to lead %s", currentUserId, id);
       return Response.status(Response.Status.FORBIDDEN)
           .entity(Map.of("error", "Access denied to this lead"))
           .build();
     }
 
-    return Response.ok(lead).build();
+    // Generate ETag and check for 304
+    String etag = ETags.weakLead(lead.id, lead.version);
+    if (etag.equals(ifNoneMatch)) {
+      return Response.status(Response.Status.NOT_MODIFIED).tag(etag).build();
+    }
+
+    return Response.ok(lead).tag(etag).build();
   }
 
   /**
@@ -149,14 +164,27 @@ public class LeadResource {
   @POST
   @Transactional
   public Response createLead(@Valid LeadCreateRequest request) {
-    String currentUserId = jwt.getSubject();
+    String currentUserId = securityContext.getUserPrincipal().getName();
     LOG.infof("User %s creating new lead for company: %s", currentUserId, request.companyName);
+
+    // Check for email duplicate
+    String normalizedEmail = Lead.normalizeEmail(request.email);
+    if (normalizedEmail != null) {
+      Long duplicateCount = Lead.count("emailNormalized = ?1 and status != ?2",
+          normalizedEmail, LeadStatus.DELETED);
+      if (duplicateCount > 0) {
+        return Response.status(Response.Status.CONFLICT)
+            .entity(Map.of("error", "Email already exists for another lead"))
+            .build();
+      }
+    }
 
     // Create new lead
     Lead lead = new Lead();
     lead.companyName = request.companyName;
     lead.contactPerson = request.contactPerson;
     lead.email = request.email;
+    lead.emailNormalized = normalizedEmail;
     lead.phone = request.phone;
     lead.website = request.website;
     lead.street = request.street;
@@ -210,14 +238,26 @@ public class LeadResource {
   }
 
   /**
-   * PATCH /api/leads/{id} - Update lead (partial update). Supports status transitions and
-   * stop-the-clock feature.
+   * PATCH /api/leads/{id} - Update lead with optimistic locking (If-Match required).
+   * Returns 428 if If-Match missing, 412 if version conflict.
+   * Supports status transitions and stop-the-clock feature.
    */
   @PATCH
   @Path("/{id}")
   @Transactional
-  public Response updateLead(@PathParam("id") Long id, LeadUpdateRequest request) {
-    String currentUserId = jwt.getSubject();
+  public Response updateLead(
+      @PathParam("id") Long id,
+      @HeaderParam("If-Match") String ifMatch,
+      LeadUpdateRequest request) {
+
+    // Require If-Match header for optimistic locking
+    if (ifMatch == null || ifMatch.isEmpty()) {
+      return Response.status(428) // Precondition Required
+          .entity(Map.of("error", "Missing If-Match header for optimistic locking"))
+          .build();
+    }
+
+    String currentUserId = securityContext.getUserPrincipal().getName();
     Lead lead = Lead.findById(id);
 
     if (lead == null) {
@@ -227,7 +267,7 @@ public class LeadResource {
     }
 
     // Check permission - only owner or admin can update
-    boolean isAdmin = jwt.getGroups().contains("ADMIN");
+    boolean isAdmin = securityContext.isUserInRole("ADMIN");
     boolean isOwner = lead.ownerUserId.equals(currentUserId);
 
     if (!isOwner && !isAdmin) {
@@ -237,10 +277,34 @@ public class LeadResource {
           .build();
     }
 
+    // Check ETag matches current version
+    String currentEtag = ETags.weakLead(lead.id, lead.version);
+    if (!ifMatch.equals(currentEtag)) {
+      return Response.status(Response.Status.PRECONDITION_FAILED)
+          .entity(Map.of(
+              "error", "Version conflict - resource has been modified",
+              "currentETag", currentEtag))
+          .build();
+    }
+
     // Update basic fields if provided
     if (request.companyName != null) lead.companyName = request.companyName;
     if (request.contactPerson != null) lead.contactPerson = request.contactPerson;
-    if (request.email != null) lead.email = request.email;
+    if (request.email != null) {
+      String newNormalizedEmail = Lead.normalizeEmail(request.email);
+      // Check for duplicate if email is changing
+      if (newNormalizedEmail != null && !newNormalizedEmail.equals(lead.emailNormalized)) {
+        Long duplicateCount = Lead.count("emailNormalized = ?1 and id != ?2 and status != ?3",
+            newNormalizedEmail, lead.id, LeadStatus.DELETED);
+        if (duplicateCount > 0) {
+          return Response.status(Response.Status.CONFLICT)
+              .entity(Map.of("error", "Email already exists for another lead"))
+              .build();
+        }
+      }
+      lead.email = request.email;
+      lead.emailNormalized = newNormalizedEmail;
+    }
     if (request.phone != null) lead.phone = request.phone;
     if (request.website != null) lead.website = request.website;
     if (request.street != null) lead.street = request.street;
@@ -326,7 +390,8 @@ public class LeadResource {
     lead.persist();
 
     LOG.infof("Updated lead %s by user %s", id, currentUserId);
-    return Response.ok(lead).build();
+    // Return with new ETag after version bump
+    return Response.ok(lead).tag(ETags.weakLead(lead.id, lead.version)).build();
   }
 
   /**
@@ -337,7 +402,7 @@ public class LeadResource {
   @Path("/{id}")
   @Transactional
   public Response deleteLead(@PathParam("id") Long id) {
-    String currentUserId = jwt.getSubject();
+    String currentUserId = securityContext.getUserPrincipal().getName();
     Lead lead = Lead.findById(id);
 
     if (lead == null) {
@@ -347,7 +412,7 @@ public class LeadResource {
     }
 
     // Check permission
-    boolean isAdmin = jwt.getGroups().contains("ADMIN");
+    boolean isAdmin = securityContext.isUserInRole("ADMIN");
     boolean isOwner = lead.ownerUserId.equals(currentUserId);
 
     if (!isOwner && !isAdmin) {
@@ -381,7 +446,7 @@ public class LeadResource {
   @Path("/{id}/activities")
   @Transactional
   public Response addActivity(@PathParam("id") Long id, @Valid ActivityRequest request) {
-    String currentUserId = jwt.getSubject();
+    String currentUserId = securityContext.getUserPrincipal().getName();
     Lead lead = Lead.findById(id);
 
     if (lead == null) {
@@ -391,7 +456,7 @@ public class LeadResource {
     }
 
     // Check access permission
-    if (!lead.canBeAccessedBy(currentUserId) && !jwt.getGroups().contains("ADMIN")) {
+    if (!lead.canBeAccessedBy(currentUserId) && !securityContext.isUserInRole("ADMIN")) {
       return Response.status(Response.Status.FORBIDDEN)
           .entity(Map.of("error", "Access denied to this lead"))
           .build();
@@ -401,7 +466,16 @@ public class LeadResource {
     LeadActivity activity = new LeadActivity();
     activity.lead = lead;
     activity.userId = currentUserId;
-    activity.activityType = ActivityType.valueOf(request.activityType);
+
+    // Validate and convert activity type
+    try {
+      activity.activityType = ActivityType.valueOf(request.activityType.toUpperCase());
+    } catch (IllegalArgumentException e) {
+      return Response.status(Response.Status.BAD_REQUEST)
+          .entity(Map.of("error", "Invalid activity type: " + request.activityType))
+          .build();
+    }
+
     activity.description = request.description;
     activity.persist();
 
@@ -423,7 +497,7 @@ public class LeadResource {
       @QueryParam("page") @DefaultValue("0") int pageIndex,
       @QueryParam("size") @DefaultValue("50") int pageSize) {
 
-    String currentUserId = jwt.getSubject();
+    String currentUserId = securityContext.getUserPrincipal().getName();
     Lead lead = Lead.findById(id);
 
     if (lead == null) {
@@ -433,7 +507,7 @@ public class LeadResource {
     }
 
     // Check access permission
-    if (!lead.canBeAccessedBy(currentUserId) && !jwt.getGroups().contains("ADMIN")) {
+    if (!lead.canBeAccessedBy(currentUserId) && !securityContext.isUserInRole("ADMIN")) {
       return Response.status(Response.Status.FORBIDDEN)
           .entity(Map.of("error", "Access denied to this lead"))
           .build();
@@ -445,12 +519,23 @@ public class LeadResource {
         LeadActivity.find("lead", Sort.descending("createdAt"), lead).page(page).list();
     long total = LeadActivity.count("lead", lead);
 
-    Map<String, Object> response = new HashMap<>();
-    response.put("data", activities);
-    response.put("page", pageIndex);
-    response.put("size", pageSize);
-    response.put("total", total);
+    PaginatedResponse<LeadActivity> response = PaginatedResponse.<LeadActivity>builder()
+        .data(activities)
+        .page(pageIndex)
+        .size(pageSize)
+        .total(total)
+        .build();
 
     return Response.ok(response).build();
+  }
+
+  /**
+   * Create safe Sort object with field whitelist validation.
+   * Falls back to createdAt DESC if field not allowed.
+   */
+  private Sort safeSort(String field, String direction) {
+    String safeField = ALLOWED_SORT_FIELDS.contains(field) ? field : "createdAt";
+    boolean descending = "DESC".equalsIgnoreCase(direction);
+    return descending ? Sort.descending(safeField) : Sort.ascending(safeField);
   }
 }

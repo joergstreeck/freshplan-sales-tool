@@ -37,11 +37,11 @@ public class CampaignTemplate extends PanacheEntityBase {
   public String subject;
 
   /** HTML email content with FreshFoodz CI compliance */
-  @Column(columnDefinition = "TEXT")
+  @Column(name = "html_content", columnDefinition = "TEXT")
   public String htmlContent;
 
   /** Plain text fallback */
-  @Column(columnDefinition = "TEXT")
+  @Column(name = "text_content", columnDefinition = "TEXT")
   public String textContent;
 
   /** Template variables for personalization */
@@ -51,7 +51,7 @@ public class CampaignTemplate extends PanacheEntityBase {
 
   /** Template type for different campaign purposes */
   @Enumerated(EnumType.STRING)
-  @Column(length = 50)
+  @Column(name = "template_type", length = 50)
   public TemplateType templateType = TemplateType.STANDARD;
 
   /** FreshFoodz CI color scheme */
@@ -74,10 +74,10 @@ public class CampaignTemplate extends PanacheEntityBase {
 
   /** Metadata */
   @Column(name = "created_at", nullable = false)
-  public LocalDateTime createdAt = LocalDateTime.now();
+  public LocalDateTime createdAt;
 
   @Column(name = "updated_at", nullable = false)
-  public LocalDateTime updatedAt = LocalDateTime.now();
+  public LocalDateTime updatedAt;
 
   @Size(max = 50)
   @Column(name = "created_by")

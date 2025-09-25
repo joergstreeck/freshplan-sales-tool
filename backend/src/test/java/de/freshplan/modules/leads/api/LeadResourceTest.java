@@ -3,6 +3,8 @@ package de.freshplan.modules.leads.api;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.*;
 
 import de.freshplan.modules.leads.domain.Lead;
@@ -28,13 +30,9 @@ import org.junit.jupiter.api.*;
  */
 @QuarkusTest
 @TestHTTPEndpoint(LeadResource.class)
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class LeadResourceTest {
 
   @Inject EntityManager em;
-
-  private Long testLeadId;
-  private String testTerritoryId;
 
   @BeforeEach
   @Transactional
@@ -44,7 +42,12 @@ class LeadResourceTest {
     em.createQuery("DELETE FROM Lead").executeUpdate();
     em.createQuery("DELETE FROM UserLeadSettings").executeUpdate();
 
-    // Create test territory if not exists
+    // Ensure test territory exists
+    ensureTestTerritoryExists();
+  }
+
+  @Transactional
+  void ensureTestTerritoryExists() {
     Territory territory = Territory.find("countryCode", "DE").firstResult();
     if (territory == null) {
       territory = new Territory();
@@ -57,11 +60,9 @@ class LeadResourceTest {
       territory.active = true;
       territory.persist();
     }
-    testTerritoryId = territory.id;
   }
 
   @Test
-  @Order(1)
   @TestSecurity(user = "user1", roles = {"USER"})
   @DisplayName("Should create new lead with user as owner")
   void testCreateLead() {
@@ -79,7 +80,7 @@ class LeadResourceTest {
     leadRequest.put("employeeCount", 15);
     leadRequest.put("estimatedVolume", 50000);
 
-    testLeadId =
+    Long leadId =
         given()
             .contentType(ContentType.JSON)
             .body(leadRequest)
@@ -96,11 +97,10 @@ class LeadResourceTest {
             .extract()
             .path("id");
 
-    assertNotNull(testLeadId);
+    assertNotNull(leadId);
   }
 
   @Test
-  @Order(2)
   @TestSecurity(user = "user1", roles = {"USER"})
   @DisplayName("Should list leads for owner")
   void testListLeadsAsOwner() {
@@ -118,7 +118,6 @@ class LeadResourceTest {
   }
 
   @Test
-  @Order(3)
   @TestSecurity(user = "user2", roles = {"USER"})
   @DisplayName("Should not list leads of other users")
   void testListLeadsAsNonOwner() {
@@ -135,7 +134,6 @@ class LeadResourceTest {
   }
 
   @Test
-  @Order(4)
   @TestSecurity(user = "admin", roles = {"ADMIN"})
   @DisplayName("Admin should see all leads")
   void testListLeadsAsAdmin() {
@@ -153,7 +151,6 @@ class LeadResourceTest {
   }
 
   @Test
-  @Order(5)
   @TestSecurity(user = "user1", roles = {"USER"})
   @DisplayName("Should update lead status with state machine validation")
   void testUpdateLeadStatus() {
@@ -174,7 +171,6 @@ class LeadResourceTest {
   }
 
   @Test
-  @Order(6)
   @TestSecurity(user = "user1", roles = {"USER"})
   @DisplayName("Should implement stop-the-clock feature")
   void testStopTheClockFeature() {
@@ -200,7 +196,6 @@ class LeadResourceTest {
   }
 
   @Test
-  @Order(7)
   @TestSecurity(user = "user1", roles = {"USER"})
   @DisplayName("Should add activity and update lastActivityAt")
   void testAddActivity() {
@@ -231,7 +226,6 @@ class LeadResourceTest {
   }
 
   @Test
-  @Order(8)
   @TestSecurity(user = "user1", roles = {"USER"})
   @DisplayName("Should manage collaborators")
   void testManageCollaborators() {
@@ -251,7 +245,6 @@ class LeadResourceTest {
   }
 
   @Test
-  @Order(9)
   @TestSecurity(user = "user2", roles = {"USER"})
   @DisplayName("Collaborator should access lead")
   void testCollaboratorAccess() {
@@ -270,7 +263,6 @@ class LeadResourceTest {
   }
 
   @Test
-  @Order(10)
   @TestSecurity(user = "user1", roles = {"USER"})
   @DisplayName("Should filter leads by status")
   void testFilterByStatus() {
@@ -290,7 +282,6 @@ class LeadResourceTest {
   }
 
   @Test
-  @Order(11)
   @TestSecurity(user = "user1", roles = {"USER"})
   @DisplayName("Should search leads by company name")
   void testSearchLeads() {
@@ -308,7 +299,6 @@ class LeadResourceTest {
   }
 
   @Test
-  @Order(12)
   @TestSecurity(user = "user1", roles = {"USER"})
   @DisplayName("Should handle pagination")
   void testPagination() {
@@ -332,7 +322,6 @@ class LeadResourceTest {
   }
 
   @Test
-  @Order(13)
   @TestSecurity(user = "user1", roles = {"USER"})
   @DisplayName("Should soft delete lead")
   void testDeleteLead() {
@@ -352,7 +341,7 @@ class LeadResourceTest {
     lead.companyName = "Test Company";
     lead.ownerUserId = ownerUserId;
     lead.status = LeadStatus.REGISTERED;
-    lead.territory = Territory.findById(testTerritoryId);
+    lead.territory = Territory.find("countryCode", "DE").firstResult();
     lead.countryCode = "DE";
     lead.createdBy = ownerUserId;
     lead.persist();
@@ -365,7 +354,7 @@ class LeadResourceTest {
     lead.companyName = companyName;
     lead.ownerUserId = ownerUserId;
     lead.status = LeadStatus.REGISTERED;
-    lead.territory = Territory.findById(testTerritoryId);
+    lead.territory = Territory.find("countryCode", "DE").firstResult();
     lead.countryCode = "DE";
     lead.createdBy = ownerUserId;
     lead.persist();

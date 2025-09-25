@@ -115,18 +115,23 @@ public class EmailActivityDetectionService {
   public List<LeadMatch> findMatchingLeads(
       String senderEmail, String senderName, String companyDomain) {
     List<LeadMatch> matches = new ArrayList<>();
+    Set<Long> matchedLeadIds = new HashSet<>();  // For O(1) duplicate checking
 
     // Strategy 1: Exact email match
     List<Lead> exactEmailMatches = Lead.find("email", senderEmail).list();
-    exactEmailMatches.forEach(lead -> matches.add(new LeadMatch(lead, 1.0, "email")));
+    exactEmailMatches.forEach(lead -> {
+      matches.add(new LeadMatch(lead, 1.0, "email"));
+      matchedLeadIds.add(lead.id);
+    });
 
     // Strategy 2: Domain match (e.g., @restaurant.de)
     if (companyDomain != null && !companyDomain.isEmpty()) {
-      List<Lead> domainMatches = Lead.find("email like ?1", "%" + companyDomain).list();
+      List<Lead> domainMatches = Lead.find("email like ?1", "%@" + companyDomain).list();
       domainMatches.forEach(
           lead -> {
-            if (!containsLead(matches, lead)) {
+            if (!matchedLeadIds.contains(lead.id)) {
               matches.add(new LeadMatch(lead, 0.8, "domain"));
+              matchedLeadIds.add(lead.id);
             }
           });
     }
@@ -136,8 +141,9 @@ public class EmailActivityDetectionService {
       List<Lead> nameMatches = Lead.find("contactPerson like ?1", "%" + senderName + "%").list();
       nameMatches.forEach(
           lead -> {
-            if (!containsLead(matches, lead)) {
+            if (!matchedLeadIds.contains(lead.id)) {
               matches.add(new LeadMatch(lead, 0.6, "name"));
+              matchedLeadIds.add(lead.id);
             }
           });
     }
@@ -195,10 +201,6 @@ public class EmailActivityDetectionService {
       }
     }
     return matches > 0 ? (double) matches / patterns.size() : 0;
-  }
-
-  private boolean containsLead(List<LeadMatch> matches, Lead lead) {
-    return matches.stream().anyMatch(m -> m.lead.id.equals(lead.id));
   }
 
   private String truncateContent(String content, int maxLength) {

@@ -209,29 +209,42 @@ public class LeadService {
 
   /**
    * Get lead statistics for a user. Used for dashboard widgets.
+   * Optimized version using single query with aggregation.
    */
   public LeadStatistics getStatistics(String userId) {
     LeadStatistics stats = new LeadStatistics();
 
-    // Total leads owned
-    stats.totalLeads = Lead.count("ownerUserId = ?1 and status != ?2", userId, LeadStatus.DELETED);
+    // Single query to get all statistics
+    @SuppressWarnings("unchecked")
+    List<Object[]> results = em.createQuery(
+        "SELECT "
+            + "COUNT(l) as total, "
+            + "SUM(CASE WHEN l.status = :active THEN 1 ELSE 0 END) as active, "
+            + "SUM(CASE WHEN l.status = :reminder THEN 1 ELSE 0 END) as reminder, "
+            + "SUM(CASE WHEN l.status = :grace THEN 1 ELSE 0 END) as grace, "
+            + "SUM(CASE WHEN l.status = :expired THEN 1 ELSE 0 END) as expired, "
+            + "SUM(CASE WHEN l.clockStoppedAt IS NOT NULL THEN 1 ELSE 0 END) as clockStopped "
+            + "FROM Lead l "
+            + "WHERE l.ownerUserId = :userId AND l.status != :deleted")
+        .setParameter("userId", userId)
+        .setParameter("active", LeadStatus.ACTIVE)
+        .setParameter("reminder", LeadStatus.REMINDER)
+        .setParameter("grace", LeadStatus.GRACE_PERIOD)
+        .setParameter("expired", LeadStatus.EXPIRED)
+        .setParameter("deleted", LeadStatus.DELETED)
+        .getResultList();
 
-    // Active leads
-    stats.activeLeads = Lead.count("ownerUserId = ?1 and status = ?2", userId, LeadStatus.ACTIVE);
+    if (!results.isEmpty() && results.get(0) != null) {
+      Object[] row = results.get(0);
+      stats.totalLeads = ((Number) row[0]).longValue();
+      stats.activeLeads = ((Number) row[1]).longValue();
+      stats.reminderLeads = ((Number) row[2]).longValue();
+      stats.gracePeriodLeads = ((Number) row[3]).longValue();
+      stats.expiredLeads = ((Number) row[4]).longValue();
+      stats.clockStoppedLeads = ((Number) row[5]).longValue();
+    }
 
-    // Leads in reminder status
-    stats.reminderLeads = Lead.count("ownerUserId = ?1 and status = ?2", userId, LeadStatus.REMINDER);
-
-    // Leads in grace period
-    stats.gracePeriodLeads = Lead.count("ownerUserId = ?1 and status = ?2", userId, LeadStatus.GRACE_PERIOD);
-
-    // Expired leads
-    stats.expiredLeads = Lead.count("ownerUserId = ?1 and status = ?2", userId, LeadStatus.EXPIRED);
-
-    // Clock stopped leads
-    stats.clockStoppedLeads = Lead.count("ownerUserId = ?1 and clockStoppedAt is not null", userId);
-
-    // Leads expiring soon (within 7 days)
+    // Leads expiring soon still needs separate query due to complex logic
     stats.expiringSoonLeads = getExpiringLeads(userId, 7).size();
 
     return stats;

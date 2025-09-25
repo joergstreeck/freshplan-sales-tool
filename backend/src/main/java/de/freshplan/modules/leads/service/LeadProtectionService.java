@@ -144,7 +144,7 @@ public class LeadProtectionService {
         return 0; // Should transition now
 
       case REMINDER:
-        // Calculate days until grace period (60 days after reminder)
+        // Calculate days until grace period (10 days after reminder)
         if (lead.reminderSentAt != null) {
           LocalDateTime graceDate = lead.reminderSentAt.plusDays(lead.protectionDays10);
           if (now.isBefore(graceDate)) {
