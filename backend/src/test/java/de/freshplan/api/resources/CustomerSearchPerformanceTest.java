@@ -11,7 +11,6 @@ import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
-import java.lang.management.MemoryUsage;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -44,8 +43,8 @@ class CustomerSearchPerformanceTest {
   private static final int REQUESTS_PER_USER = 5;
 
   /**
-   * Force garbage collection and wait for it to complete.
-   * Used to establish stable memory baselines.
+   * Force garbage collection and wait for it to complete. Used to establish stable memory
+   * baselines.
    */
   static void forceGcAndWait() throws InterruptedException {
     System.gc();
@@ -56,8 +55,8 @@ class CustomerSearchPerformanceTest {
   }
 
   /**
-   * Warm up the JVM before performance tests.
-   * This eliminates cold start effects from classloading and JIT compilation.
+   * Warm up the JVM before performance tests. This eliminates cold start effects from classloading
+   * and JIT compilation.
    */
   @BeforeAll
   static void warmup() throws InterruptedException {
@@ -430,6 +429,12 @@ class CustomerSearchPerformanceTest {
       user = "testuser",
       roles = {"admin", "manager", "sales"})
   class MemoryResourceTests {
+
+    @BeforeAll
+    static void warmupNested() throws InterruptedException {
+      // Call the outer class warmup to ensure consistent test conditions
+      CustomerSearchPerformanceTest.warmup();
+    }
 
     @Test
     @DisplayName("Search should not cause excessive memory usage")

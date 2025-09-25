@@ -51,10 +51,13 @@ public class UnsubscribeSecretGuard {
 
       LOG.info("✅ Unsubscribe token secret properly configured for production");
     } else {
-      // Development/Test: Warnung bei fehlendem Secret
-      if (secret.isEmpty() || secret.equals(DEV_SECRET)) {
-        LOG.warn(
-            "⚠️ Using development token secret. Configure freshplan.unsubscribe.token.secret for production!");
+      // Development/Test: Only warn, don't fail
+      if (secret.isEmpty()) {
+        LOG.debug("No token secret configured, using development fallback (ok for non-prod)");
+      } else if (secret.equals(DEV_SECRET)) {
+        LOG.debug("Using development token secret (ok for non-prod)");
+      } else if (secret.length() < 32) {
+        LOG.warn("Token secret is weak (<32 chars) in non-prod environment");
       }
     }
   }
