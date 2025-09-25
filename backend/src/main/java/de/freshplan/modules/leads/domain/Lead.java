@@ -1,6 +1,7 @@
 package de.freshplan.modules.leads.domain;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
+import io.vertx.core.json.JsonObject;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
@@ -159,6 +160,25 @@ public class Lead extends PanacheEntityBase {
   @Size(max = 50)
   @Column(name = "updated_by")
   public String updatedBy;
+
+  // Follow-up Tracking (Sprint 2.1 - FP-235)
+  @Column(name = "last_followup_at")
+  public LocalDateTime lastFollowupAt;
+
+  @Column(name = "followup_count", nullable = false)
+  public Integer followupCount = 0;
+
+  @Column(name = "t3_followup_sent", nullable = false)
+  public Boolean t3FollowupSent = false;
+
+  @Column(name = "t7_followup_sent", nullable = false)
+  public Boolean t7FollowupSent = false;
+
+  // Flexible metadata storage (JSONB)
+  @Column(columnDefinition = "jsonb")
+  @Convert(converter = JsonObjectConverter.class)
+  @org.hibernate.annotations.JdbcTypeCode(org.hibernate.type.SqlTypes.JSON)
+  public JsonObject metadata = new JsonObject();
 
   // Optimistic Locking
   @Version

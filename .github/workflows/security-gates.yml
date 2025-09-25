@@ -127,16 +127,33 @@ jobs:
         working-directory: backend
         run: ./mvnw package -DskipTests
 
+
       - name: Start Backend
         working-directory: backend
         env:
           DB_URL: jdbc:postgresql://localhost:5432/freshplan
           DB_USER: freshplan
           DB_PASSWORD: freshplan
+          QUARKUS_PROFILE: ci
         run: |
-          java -jar target/quarkus-app/quarkus-run.jar &
-          sleep 20
-          curl -f http://localhost:8080/q/health || exit 1
+          java -Xms256m -Xmx512m \
+            -Dquarkus.profile=ci \
+            -jar target/quarkus-app/quarkus-run.jar &
+
+          # Wait for startup
+          for i in {1..30}; do
+            sleep 2
+            if curl -f http://localhost:8080/q/health 2>/dev/null; then
+              echo "Application started successfully"
+              break
+            fi
+          done
+
+          # Verify startup
+          if ! curl -f http://localhost:8080/q/health; then
+            echo "Application failed to start after 60 seconds"
+            exit 1
+          fi
 
       - name: Run k6 Smoke Test
         run: |

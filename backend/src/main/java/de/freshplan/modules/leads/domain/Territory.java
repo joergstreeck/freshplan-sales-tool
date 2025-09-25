@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import org.jboss.logging.Logger;
 
 /**
  * Territory configuration for currency, tax and business rules. Sprint 2.1: NO geographical
@@ -15,6 +16,8 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "territories")
 public class Territory extends PanacheEntityBase {
+
+  private static final Logger LOG = Logger.getLogger(Territory.class);
 
   @Id
   @Size(max = 10)
@@ -54,6 +57,17 @@ public class Territory extends PanacheEntityBase {
   @Column(name = "updated_at", nullable = false)
   public LocalDateTime updatedAt;
 
+  // Simplified field names for easier access
+  @Transient
+  public String code() {
+    return id;
+  }
+
+  @Transient
+  public String currency() {
+    return currencyCode;
+  }
+
   // Helper methods
   public static Territory findByCode(String code) {
     return find("id", code).firstResult();
@@ -61,6 +75,36 @@ public class Territory extends PanacheEntityBase {
 
   public static Territory findByCountryCode(String countryCode) {
     return find("countryCode", countryCode).firstResult();
+  }
+
+  /**
+   * Returns the default territory (Germany) from database. WARNING: If no territory exists in DB,
+   * returns a transient instance. Callers must ensure the instance is persisted if needed.
+   *
+   * @return Territory instance for Germany (may be transient if DB is empty)
+   */
+  public static Territory getDefault() {
+    // Deutschland als Default Territory
+    Territory defaultTerritory = findByCode("DE");
+    if (defaultTerritory == null) {
+      // Return transient territory wenn DB leer ist
+      // Caller is responsible for persisting if needed
+      // This avoids transaction issues in static context
+      defaultTerritory = new Territory();
+      defaultTerritory.id = "DE";
+      defaultTerritory.name = "Deutschland";
+      defaultTerritory.countryCode = "DE";
+      defaultTerritory.currencyCode = "EUR";
+      defaultTerritory.taxRate = new BigDecimal("19.00");
+      defaultTerritory.languageCode = "de-DE";
+      defaultTerritory.active = true;
+
+      // Log warning to alert about transient instance
+      LOG.warn(
+          "Territory 'DE' not found in database, returning transient instance. "
+              + "Ensure it's persisted before using with other entities.");
+    }
+    return defaultTerritory;
   }
 
   public boolean isGermany() {
