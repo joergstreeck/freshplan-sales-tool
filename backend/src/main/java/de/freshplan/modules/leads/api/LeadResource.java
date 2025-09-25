@@ -5,6 +5,7 @@ import de.freshplan.modules.leads.domain.Lead;
 import de.freshplan.modules.leads.domain.LeadActivity;
 import de.freshplan.modules.leads.domain.LeadStatus;
 import de.freshplan.modules.leads.domain.Territory;
+import de.freshplan.modules.leads.security.RlsContext;
 import de.freshplan.modules.leads.service.LeadProtectionService;
 import de.freshplan.modules.leads.service.LeadService;
 import de.freshplan.modules.leads.service.UserLeadSettingsService;
@@ -30,9 +31,13 @@ import org.jboss.logging.Logger;
 /**
  * REST API for Lead Management. Implements user-based lead protection (NO geographical protection).
  * Territory is only used for business rules (currency/tax).
+ *
+ * <p>Uses @RlsContext to ensure PostgreSQL GUCs are set on the same connection as Hibernate
+ * queries.
  */
 @Path("/api/leads")
 @RolesAllowed({"USER", "MANAGER", "ADMIN"})
+@RlsContext // Ensures GUCs are set on correct connection
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class LeadResource {

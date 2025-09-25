@@ -10,20 +10,21 @@ import jakarta.ws.rs.container.ContainerRequestFilter;
 import jakarta.ws.rs.container.ContainerResponseContext;
 import jakarta.ws.rs.container.ContainerResponseFilter;
 import jakarta.ws.rs.core.SecurityContext;
-import jakarta.ws.rs.ext.Provider;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import org.jboss.logging.Logger;
 
 /**
- * Request filter that sets PostgreSQL GUC (Grand Unified Configuration) variables for Row Level
- * Security (RLS) policies.
+ * DEPRECATED: Replaced by RlsContextInterceptor for proper connection affinity.
  *
- * <p>Sprint 2.1: Ensures fail-closed security by setting user context for every request. The GUCs
- * are used by RLS policies to determine access rights.
+ * <p>This filter set GUCs on a separate connection which could lead to RLS policies not being
+ * enforced. Use @RlsContext annotation with RlsContextInterceptor instead.
+ *
+ * @deprecated Use {@link RlsContextInterceptor} with {@link RlsContext} annotation
  */
-@Provider
-@Priority(Priorities.AUTHENTICATION + 1) // Run after authentication
+@Deprecated(since = "Sprint 2.1", forRemoval = true)
+// @Provider - DISABLED to prevent double GUC setting
+@Priority(Priorities.AUTHENTICATION + 1)
 @ApplicationScoped
 public class RlsGucFilter implements ContainerRequestFilter, ContainerResponseFilter {
 
