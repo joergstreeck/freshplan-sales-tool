@@ -98,6 +98,7 @@
 - 2025-09-23 19:00 — System Optimization: Trigger-Reihenfolge optimiert (Handover-First Strategy) + Context-Management definiert, Migration: V225, Tests: OK
 - 2025-09-23 20:15 — Governance Implementation: Mock-Governance ADR-0006 + Standards/Snippets implementiert + TRIGGER_SPRINT_1_1 erweitert, Migration: V225, Tests: OK
 - 2025-09-23 20:30 — SAFE MODE Handover: Mock-Governance Implementation COMPLETE + Handover 17:51 erstellt, Migration: V225, Status: Ready für Sprint 1.1
+- 2025-09-25 20:30 — Security Retrofit: Sprint 1.5 + 1.6 RLS Connection Affinity Fix + Module Adoption (PR #106, #107 MERGED), Migration: V242/V243, Tests: OK
 - 2025-09-23 18:45 — Sprint 1.1 Complete: CQRS Light Foundation operational + PR #94 mit Review-Fixes, Migration: V225, Tests: OK
 - 2025-09-25 11:45 — Infrastruktur-Doku Update: Sprint 1.1-1.4 Status in alle /infrastruktur Dokumente eingepflegt, Phase 1 zu 100% COMPLETE (PR #102), Tests: OK
 - 2025-09-25 02:00 — Territory-Klarstellung: PR #103 Impact dokumentiert - Territory ≠ Gebietsschutz! 8 Module korrigiert (Territory nur für Currency/Tax), Migration: n/a, Tests: OK
@@ -139,18 +140,24 @@
   - Tests: RlsConnectionAffinityTest ✅, RlsRoleConsistencyTest ✅
   - Gemini Review: "Exzellent und äußerst wichtig"
   - **Security Impact: Verhindert Datenleaks zwischen Territories/Tenants**
-- 2025-09-25 20:45 — **Sprint 1.6 GEPLANT:** RLS Adoption in Modulen - GAP-Analyse + CI-Guard
-  - GAP-Analyse: 33+ Services ohne @RlsContext identifiziert (5 in Modul 02 blockieren Sprint 2.1)
-  - TRIGGER_SPRINT_1_6.md erstellt für systematische Module-Migration
-  - CI-Guard Pattern entwickelt (FP-arm Heuristik für @Transactional + DB ohne @RlsContext)
-  - ADR-0007 erstellt für RLS Connection Affinity Pattern
-  - Phase 1 auf 6 Sprints erweitert (83% complete)
+- 2025-09-25 20:45 — **Sprint 1.6 MERGED:** RLS Module Adoption - 5 kritische Services gesichert (PR #107)
+  - GAP-Analyse: 33+ Services ohne @RlsContext identifiziert
+  - Modul 02: 5 kritische Services mit @RlsContext annotiert (Sprint 2.1 kann fortgesetzt werden)
+  - CI-Guard implementiert: tools/rls-guard.sh mit FP-armer Heuristik
+  - RLS-Badge in allen 8 Modulen dokumentiert
+  - ADR-0007 RLS Connection Affinity Pattern dokumentiert
+  - Tests: Alle kritischen Checks grün, PR Template fix applied
 <!-- MP5:SESSION_LOG:END -->
 
 ## Next Steps
 <!-- MP5:NEXT_STEPS:START -->
-- **🚀 Sprint 1.6:** RLS Module Adoption (P0 - blockiert Sprint 2.1)
-  - Modul 02: 5 Services mit @RlsContext annotieren
+- **🚀 Sprint 2.1 fortsetzen:** Lead-Verwaltung mit User-Protection implementieren
+  - Lead-Endpoints vollständig testen und integrieren
+  - User-Protection 6M/60T/10T mit Stop-the-Clock fertigstellen
+- **Follow-up RLS Migration:** Weitere Module mit @RlsContext absichern
+  - FP-273: Modul 03 Customer Services (10 Services)
+  - FP-274: Domain Services (15+ Services)
+- **CI-Guard überwachen:** RLS Compliance bei neuen PRs sicherstellen
   - CI-Guard implementieren und aktivieren
   - RLS-Badge in alle Module 01-08 einfügen
 - Sprint 2.1: Kann erst nach Sprint 1.6 fortfahren

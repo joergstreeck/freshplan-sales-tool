@@ -10,12 +10,12 @@
 ## 🎯 CLAUDE QUICK-START (für neue Claude-Instanzen)
 
 **🚨 AKTUELLER STATUS:**
-- **Phase:** 🔧 Phase 1 FINAL SPRINT | ⏸️ Phase 2 BLOCKED
-- **Next Action:** Sprint 1.6 - RLS Module Adoption (PR #107)
-- **Progress:** 10/37 PRs completed - 27% done
-- **Blockers:** Modul 02 braucht @RlsContext vor Sprint 2.1 Fortsetzung
-- **Active Branch:** main (Phase 1 merged)
-- **Foundation Status:** ✅ COMPLETE - CQRS/Security/Settings/CI operational
+- **Phase:** ✅ Phase 1 COMPLETE | 🚀 Phase 2 READY
+- **Next Action:** Sprint 2.1 fortsetzen - Lead-Verwaltung mit User-Protection
+- **Progress:** 11/37 PRs completed - 30% done
+- **Blockers:** ✅ RESOLVED - Modul 02 hat @RlsContext (PR #107 merged)
+- **Active Branch:** main (Sprint 1.5 + 1.6 merged)
+- **Foundation Status:** ✅ COMPLETE - CQRS/Security/Settings/CI/RLS operational
 - **Performance:** ✅ P95 <200ms achieved with ETag ≥70% Hit-Rate
 
 **🔗 WICHTIGE REFERENZEN:**
@@ -55,16 +55,16 @@ echo "Nächste Migration: $MIGRATION"
 
 ## 📊 LIVE PROGRESS DASHBOARD
 
-### 🔄 **Phase 1: Foundation (3.5 Wochen) - 🔧 FINAL SPRINT**
+### 🔄 **Phase 1: Foundation (3.5 Wochen) - ✅ COMPLETE**
 ```
-Progress: █████████░ 83% (5/6 Sprints COMPLETE)
+Progress: ██████████ 100% (6/6 Sprints COMPLETE)
 
 Sprint 1.1: CQRS Light Foundation     ✅ PR #94 MERGED → FP-225 bis FP-227
 Sprint 1.2: Security + Foundation     ✅ PR #95-96 MERGED → Security Context
 Sprint 1.3: Security Gates + CI       ✅ PR #97-101 MERGED → CI/Testing/P95
 Sprint 1.4: Foundation Quick-Wins     ✅ PR #102 MERGED → Cache + Prod-Config
 Sprint 1.5: Security Retrofit 🔒      ✅ PR #106 MERGED → RLS Connection Affinity
-Sprint 1.6: RLS Module Adoption       🚀 READY → Modul 02 Fix + CI-Guard
+Sprint 1.6: RLS Module Adoption       ✅ PR #107 MERGED → Modul 02 Fix + CI-Guard
 
 🎯 Achievements:
 - CQRS Light: P95 <200ms operational
@@ -78,12 +78,12 @@ Sprint 1.6: RLS Module Adoption       🚀 READY → Modul 02 Fix + CI-Guard
 🔒 Security Update: [SECURITY_UPDATE_SPRINT_1_5.md](./SECURITY_UPDATE_SPRINT_1_5.md)
 ```
 
-### 🚀 **Phase 2: Core Business (7.5 Wochen) - BLOCKED**
+### 🚀 **Phase 2: Core Business (7.5 Wochen) - IN PROGRESS**
 ```
-Progress: ░░░░░░░░░░ 0% (0/5 Sprints)
+Progress: █░░░░░░░░░ 10% (0.5/5 Sprints)
 
-Sprint 2.1: 02 Neukundengewinnung     ⏸️ BLOCKED → Wartet auf Sprint 1.6
-Sprint 2.2: 03 Kundenmanagement      📋 Ready → 39 Artefakte verfügbar
+Sprint 2.1: 02 Neukundengewinnung     🔧 IN PROGRESS → PR #103 (Territory) merged
+Sprint 2.2: 03 Kundenmanagement      📋 Ready → 39 Artefakte + RLS Migration needed
 Sprint 2.3: 05 Kommunikation         📋 Ready → Security-Gate ✅ erfüllt!
 Sprint 2.4: 01 Cockpit               🟡 Planning → CQRS-optimiert
 Sprint 2.5: 06 Einstellungen         🟡 Planning → Settings Foundation
