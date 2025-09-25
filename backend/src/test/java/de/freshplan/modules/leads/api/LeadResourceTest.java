@@ -80,7 +80,7 @@ class LeadResourceTest {
     leadRequest.put("employeeCount", 15);
     leadRequest.put("estimatedVolume", 50000);
 
-    Long leadId =
+    Integer leadIdInt =
         given()
             .contentType(ContentType.JSON)
             .body(leadRequest)
@@ -96,6 +96,8 @@ class LeadResourceTest {
             .body("territory.countryCode", is("DE"))
             .extract()
             .path("id");
+
+    Long leadId = leadIdInt.longValue();
 
     assertNotNull(leadId);
   }

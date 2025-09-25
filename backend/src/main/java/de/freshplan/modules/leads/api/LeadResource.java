@@ -484,7 +484,8 @@ public class LeadResource {
     lead.persist();
 
     LOG.infof("Added activity to lead %s by user %s", id, currentUserId);
-    return Response.ok(activity).build();
+    // Return DTO to avoid lazy loading issues
+    return Response.ok(LeadActivityDTO.from(activity)).build();
   }
 
   /**
