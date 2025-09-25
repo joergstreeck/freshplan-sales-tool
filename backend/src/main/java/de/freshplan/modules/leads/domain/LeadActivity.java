@@ -32,15 +32,13 @@ public class LeadActivity extends PanacheEntityBase {
   public ActivityType activityType;
 
   // Alternative field names for compatibility
-  @Transient
-  public ActivityType type;
+  @Transient public ActivityType type;
 
   @Column(name = "activity_date", nullable = false)
   public LocalDateTime activityDate = LocalDateTime.now();
 
   // Alternative field name for compatibility
-  @Transient
-  public LocalDateTime occurredAt;
+  @Transient public LocalDateTime occurredAt;
 
   @Column(columnDefinition = "TEXT")
   public String description;

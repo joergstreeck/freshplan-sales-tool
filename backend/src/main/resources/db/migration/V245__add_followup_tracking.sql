@@ -33,124 +33,134 @@ CREATE INDEX IF NOT EXISTS idx_lead_activity_followup
     ON lead_activities(lead_id, activity_date)
     WHERE metadata->>'followup_type' IS NOT NULL;
 
--- Sample Template für T+3 Follow-up
-INSERT INTO campaign_templates (
-    name,
-    description,
-    subject,
-    html_content,
-    text_content,
-    template_type,
-    active,
-    created_at,
-    updated_at,
-    created_by
-) VALUES (
-    'T+3 Sample Follow-up',
-    'Automatisches Follow-up nach 3 Tagen mit Sample-Angebot',
-    'Gratis Produktproben für {{lead.company}} - Cook&Fresh® entdecken',
-    '<html>
-    <body style="font-family: Arial, sans-serif; color: #333;">
-        <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
-            <h2 style="color: #94C456;">Entdecken Sie Cook&Fresh® - Gratis Produktproben!</h2>
-            <p>Guten Tag {{lead.contactPerson}},</p>
-            <p>vielen Dank für Ihr Interesse an FreshFoodz Cook&Fresh®!</p>
-            <p>Wir möchten Ihnen gerne unsere Premium-Qualität zeigen und haben ein spezielles Angebot für {{lead.company}}:</p>
-            <ul style="color: #004F7B;">
-                <li>Gratis Produktkatalog mit über 500 Artikeln</li>
-                <li>Kostenlose Sample-Box: {{sample.products}}</li>
-                <li>Persönliche Beratung durch Ihren Ansprechpartner</li>
-            </ul>
-            <p>Als {{lead.company}} im Bereich Gastronomie profitieren Sie von:</p>
-            <ul>
-                <li>Tagesfrischer Lieferung</li>
-                <li>{{territory.name}}-spezifische Preise in {{territory.currency}}</li>
-                <li>Flexible Bestellmengen ohne Mindestbestellwert für Samples</li>
-            </ul>
-            <div style="margin: 30px 0; text-align: center;">
-                <a href="https://freshfoodz.de/sample-request?lead={{lead.id}}"
-                   style="background-color: #94C456; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block;">
-                   Jetzt Gratis-Proben anfordern
-                </a>
-            </div>
-            <p>Bei Fragen stehe ich Ihnen gerne zur Verfügung.</p>
-            <p>Mit freundlichen Grüßen<br>Ihr FreshFoodz Team</p>
-            <hr style="border: none; border-top: 1px solid #ddd; margin: 30px 0;">
-            <p style="font-size: 12px; color: #666;">
-                {{footer.legal}}<br>
-                <a href="{{unsubscribe.url}}">Newsletter abbestellen</a>
-            </p>
-        </div>
-    </body>
-    </html>',
-    'Entdecken Sie Cook&Fresh® - Gratis Produktproben für {{lead.company}}!',
-    'SAMPLE_REQUEST',
-    true,
-    NOW(),
-    NOW(),
-    'SYSTEM'
-) ON CONFLICT (name) DO NOTHING;
+-- Sample Template für T+3 Follow-up (nur wenn noch nicht existiert)
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM campaign_templates WHERE name = 'T+3 Sample Follow-up') THEN
+        INSERT INTO campaign_templates (
+            name,
+            description,
+            subject,
+            html_content,
+            text_content,
+            template_type,
+            active,
+            created_at,
+            updated_at,
+            created_by
+        ) VALUES (
+            'T+3 Sample Follow-up',
+            'Automatisches Follow-up nach 3 Tagen mit Sample-Angebot',
+            'Gratis Produktproben für {{lead.company}} - Cook&Fresh® entdecken',
+            '<html>
+            <body style="font-family: Arial, sans-serif; color: #333;">
+                <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+                    <h2 style="color: #94C456;">Entdecken Sie Cook&Fresh® - Gratis Produktproben!</h2>
+                    <p>Guten Tag {{lead.contactPerson}},</p>
+                    <p>vielen Dank für Ihr Interesse an FreshFoodz Cook&Fresh®!</p>
+                    <p>Wir möchten Ihnen gerne unsere Premium-Qualität zeigen und haben ein spezielles Angebot für {{lead.company}}:</p>
+                    <ul style="color: #004F7B;">
+                        <li>Gratis Produktkatalog mit über 500 Artikeln</li>
+                        <li>Kostenlose Sample-Box: {{sample.products}}</li>
+                        <li>Persönliche Beratung durch Ihren Ansprechpartner</li>
+                    </ul>
+                    <p>Als {{lead.company}} im Bereich Gastronomie profitieren Sie von:</p>
+                    <ul>
+                        <li>Tagesfrischer Lieferung</li>
+                        <li>{{territory.name}}-spezifische Preise in {{territory.currency}}</li>
+                        <li>Flexible Bestellmengen ohne Mindestbestellwert für Samples</li>
+                    </ul>
+                    <div style="margin: 30px 0; text-align: center;">
+                        <a href="https://freshfoodz.de/sample-request?lead={{lead.id}}"
+                           style="background-color: #94C456; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block;">
+                           Jetzt Gratis-Proben anfordern
+                        </a>
+                    </div>
+                    <p>Bei Fragen stehe ich Ihnen gerne zur Verfügung.</p>
+                    <p>Mit freundlichen Grüßen<br>Ihr FreshFoodz Team</p>
+                    <hr style="border: none; border-top: 1px solid #ddd; margin: 30px 0;">
+                    <p style="font-size: 12px; color: #666;">
+                        {{footer.legal}}<br>
+                        <a href="{{unsubscribe.url}}">Newsletter abbestellen</a>
+                    </p>
+                </div>
+            </body>
+            </html>',
+            'Entdecken Sie Cook&Fresh® - Gratis Produktproben für {{lead.company}}!',
+            'SAMPLE_REQUEST',
+            true,
+            NOW(),
+            NOW(),
+            'SYSTEM'
+        );
+    END IF;
+END $$;
 
--- Sample Template für T+7 Follow-up
-INSERT INTO campaign_templates (
-    name,
-    description,
-    subject,
-    html_content,
-    text_content,
-    template_type,
-    active,
-    created_at,
-    updated_at,
-    created_by
-) VALUES (
-    'T+7 Bulk Order Follow-up',
-    'Automatisches Follow-up nach 7 Tagen mit Mengenrabatt',
-    '{{bulk.discount}}% Rabatt für {{lead.company}} - Jetzt Großbestellung sichern!',
-    '<html>
-    <body style="font-family: Arial, sans-serif; color: #333;">
-        <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
-            <h2 style="color: #004F7B;">Exklusives Angebot: {{bulk.discount}}% Mengenrabatt!</h2>
-            <p>Guten Tag {{lead.contactPerson}},</p>
-            <p>als Dankeschön für Ihr Interesse an FreshFoodz Cook&Fresh® haben wir ein besonderes Angebot für {{lead.company}}:</p>
-            <div style="background-color: #f5f5f5; padding: 20px; border-left: 4px solid #94C456; margin: 20px 0;">
-                <h3 style="color: #94C456; margin-top: 0;">Ihr Vorteil:</h3>
-                <ul style="margin: 0; padding-left: 20px;">
-                    <li><strong>{{bulk.discount}}% Rabatt</strong> auf Ihre erste Großbestellung</li>
-                    <li>Gültig ab nur <strong>{{bulk.minimum}} {{territory.currency}}</strong> Bestellwert</li>
-                    <li>Kostenlose Lieferung inklusive</li>
-                    <li>Persönliche Betreuung durch Ihren Account Manager</li>
-                </ul>
-            </div>
-            <p>Dieses Angebot ist speziell auf Ihren Bedarf als Gastronomiebetrieb zugeschnitten:</p>
-            <ul>
-                <li>Premium-Qualität zu Großhandelspreisen</li>
-                <li>Flexible Lieferzeiten (täglich 5-11 Uhr)</li>
-                <li>{{territory.taxRate}}% MwSt ({{territory.name}})</li>
-            </ul>
-            <div style="margin: 30px 0; text-align: center;">
-                <a href="https://freshfoodz.de/bulk-order?lead={{lead.id}}&discount={{bulk.discount}}"
-                   style="background-color: #004F7B; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block;">
-                   Jetzt {{bulk.discount}}% Rabatt sichern
-                </a>
-            </div>
-            <p><strong>Angebot gültig bis: 14 Tage ab Erhalt dieser E-Mail</strong></p>
-            <p>Mit freundlichen Grüßen<br>Ihr FreshFoodz Team</p>
-            <hr style="border: none; border-top: 1px solid #ddd; margin: 30px 0;">
-            <p style="font-size: 12px; color: #666;">
-                {{footer.legal}}<br>
-                <a href="{{unsubscribe.url}}">Newsletter abbestellen</a>
-            </p>
-        </div>
-    </body>
-    </html>',
-    'Exklusives Angebot: {{bulk.discount}}% Mengenrabatt für {{lead.company}}!',
-    'FOLLOW_UP',
-    true,
-    NOW(),
-    NOW(),
-    'SYSTEM'
-) ON CONFLICT (name) DO NOTHING;
+-- Sample Template für T+7 Follow-up (nur wenn noch nicht existiert)
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM campaign_templates WHERE name = 'T+7 Bulk Order Follow-up') THEN
+        INSERT INTO campaign_templates (
+            name,
+            description,
+            subject,
+            html_content,
+            text_content,
+            template_type,
+            active,
+            created_at,
+            updated_at,
+            created_by
+        ) VALUES (
+            'T+7 Bulk Order Follow-up',
+            'Automatisches Follow-up nach 7 Tagen mit Mengenrabatt',
+            '{{bulk.discount}}% Rabatt für {{lead.company}} - Jetzt Großbestellung sichern!',
+            '<html>
+            <body style="font-family: Arial, sans-serif; color: #333;">
+                <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+                    <h2 style="color: #004F7B;">Exklusives Angebot: {{bulk.discount}}% Mengenrabatt!</h2>
+                    <p>Guten Tag {{lead.contactPerson}},</p>
+                    <p>als Dankeschön für Ihr Interesse an FreshFoodz Cook&Fresh® haben wir ein besonderes Angebot für {{lead.company}}:</p>
+                    <div style="background-color: #f5f5f5; padding: 20px; border-left: 4px solid #94C456; margin: 20px 0;">
+                        <h3 style="color: #94C456; margin-top: 0;">Ihr Vorteil:</h3>
+                        <ul style="margin: 0; padding-left: 20px;">
+                            <li><strong>{{bulk.discount}}% Rabatt</strong> auf Ihre erste Großbestellung</li>
+                            <li>Gültig ab nur <strong>{{bulk.minimum}} {{territory.currency}}</strong> Bestellwert</li>
+                            <li>Kostenlose Lieferung inklusive</li>
+                            <li>Persönliche Betreuung durch Ihren Account Manager</li>
+                        </ul>
+                    </div>
+                    <p>Dieses Angebot ist speziell auf Ihren Bedarf als Gastronomiebetrieb zugeschnitten:</p>
+                    <ul>
+                        <li>Premium-Qualität zu Großhandelspreisen</li>
+                        <li>Flexible Lieferzeiten (täglich 5-11 Uhr)</li>
+                        <li>{{territory.taxRate}}% MwSt ({{territory.name}})</li>
+                    </ul>
+                    <div style="margin: 30px 0; text-align: center;">
+                        <a href="https://freshfoodz.de/bulk-order?lead={{lead.id}}&discount={{bulk.discount}}"
+                           style="background-color: #004F7B; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block;">
+                           Jetzt {{bulk.discount}}% Rabatt sichern
+                        </a>
+                    </div>
+                    <p><strong>Angebot gültig bis: 14 Tage ab Erhalt dieser E-Mail</strong></p>
+                    <p>Mit freundlichen Grüßen<br>Ihr FreshFoodz Team</p>
+                    <hr style="border: none; border-top: 1px solid #ddd; margin: 30px 0;">
+                    <p style="font-size: 12px; color: #666;">
+                        {{footer.legal}}<br>
+                        <a href="{{unsubscribe.url}}">Newsletter abbestellen</a>
+                    </p>
+                </div>
+            </body>
+            </html>',
+            'Exklusives Angebot: {{bulk.discount}}% Mengenrabatt für {{lead.company}}!',
+            'FOLLOW_UP',
+            true,
+            NOW(),
+            NOW(),
+            'SYSTEM'
+        );
+    END IF;
+END $$;
 
 -- Dokumentation
 COMMENT ON COLUMN leads.last_followup_at IS 'Zeitpunkt des letzten automatisierten Follow-ups';
