@@ -8,10 +8,10 @@ package de.freshplan.infrastructure.security;
  * data based on user, role, tenant, and territory.
  */
 public enum AppGuc {
-  CURRENT_USER("app.current_user"),
-  CURRENT_ROLE("app.current_role"),
+  CURRENT_USER("app.user_context"),
+  CURRENT_ROLE("app.role_context"),
   TENANT_ID("app.tenant_id"),
-  CURRENT_TERRITORY("app.current_territory");
+  CURRENT_TERRITORY("app.territory_context");
 
   private final String key;
 
@@ -25,7 +25,7 @@ public enum AppGuc {
 
   /** SQL to set a GUC value on the current connection. */
   public String setConfigSql(String value) {
-    if (value == null) {
+    if (value == null || value.isEmpty()) {
       return String.format("SET LOCAL %s = ''", key);
     }
     return String.format("SET LOCAL %s = '%s'", key, value.replace("'", "''"));
@@ -42,7 +42,7 @@ public enum AppGuc {
    * beyond a single transaction.
    */
   public String setSessionConfigSql(String value) {
-    if (value == null) {
+    if (value == null || value.isEmpty()) {
       return String.format("SET %s = ''", key);
     }
     return String.format("SET %s = '%s'", key, value.replace("'", "''"));

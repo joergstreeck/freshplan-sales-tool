@@ -3,15 +3,34 @@
 -- This is a critical security enhancement to prevent data leakage
 
 -- Update existing RLS policies to fail-closed pattern
--- Pattern: current_setting('app.current_user', true) IS NOT NULL AND ...
+-- Pattern: current_setting('app.user_context', true) IS NOT NULL AND ...
 
--- 1. Update leads RLS policy to fail-closed
-ALTER POLICY leads_owner_policy ON leads
+-- 1. Update leads RLS policies to fail-closed
+-- Update SELECT policy
+ALTER POLICY leads_select_policy ON leads
 USING (
-    current_setting('app.current_user', true) IS NOT NULL AND (
-        owner_user_id = current_setting('app.current_user', true) OR
-        current_setting('app.current_user', true) = ANY(collaborator_user_ids) OR
-        current_setting('app.current_role', true) IN ('ADMIN', 'SYSTEM')
+    current_setting('app.user_context', true) IS NOT NULL AND (
+        owner_user_id = current_setting('app.user_context', true) OR
+        current_setting('app.user_context', true) = ANY(collaborator_user_ids) OR
+        current_setting('app.role_context', true) IN ('ADMIN', 'SYSTEM', 'MANAGER')
+    )
+);
+
+-- Update UPDATE policy
+ALTER POLICY leads_update_policy ON leads
+USING (
+    current_setting('app.user_context', true) IS NOT NULL AND (
+        owner_user_id = current_setting('app.user_context', true) OR
+        current_setting('app.role_context', true) IN ('ADMIN', 'SYSTEM')
+    )
+);
+
+-- Update DELETE policy
+ALTER POLICY leads_delete_policy ON leads
+USING (
+    current_setting('app.user_context', true) IS NOT NULL AND (
+        owner_user_id = current_setting('app.user_context', true) OR
+        current_setting('app.role_context', true) IN ('ADMIN', 'SYSTEM')
     )
 );
 
@@ -25,14 +44,14 @@ BEGIN
     ) THEN
         ALTER POLICY lead_activities_access_policy ON lead_activities
         USING (
-            current_setting('app.current_user', true) IS NOT NULL AND (
+            current_setting('app.user_context', true) IS NOT NULL AND (
                 EXISTS (
                     SELECT 1 FROM leads
                     WHERE leads.id = lead_activities.lead_id
                     AND (
-                        leads.owner_user_id = current_setting('app.current_user', true) OR
-                        current_setting('app.current_user', true) = ANY(leads.collaborator_user_ids) OR
-                        current_setting('app.current_role', true) IN ('ADMIN', 'SYSTEM')
+                        leads.owner_user_id = current_setting('app.user_context', true) OR
+                        current_setting('app.user_context', true) = ANY(leads.collaborator_user_ids) OR
+                        current_setting('app.role_context', true) IN ('ADMIN', 'SYSTEM')
                     )
                 )
             )
@@ -40,89 +59,28 @@ BEGIN
     END IF;
 END $$;
 
--- 3. Create fail-closed policy for settings table
-DO $$
-BEGIN
-    -- Drop existing policy if it exists
-    DROP POLICY IF EXISTS settings_territory_policy ON settings;
-
-    -- Create new fail-closed policy
-    CREATE POLICY settings_territory_policy ON settings
-    FOR ALL
-    USING (
-        current_setting('app.current_territory', true) IS NOT NULL AND (
-            territory IS NULL OR
-            territory = current_setting('app.current_territory', true) OR
-            current_setting('app.current_role', true) IN ('ADMIN', 'SYSTEM')
-        )
-    )
-    WITH CHECK (
-        current_setting('app.current_territory', true) IS NOT NULL AND (
-            territory IS NULL OR
-            territory = current_setting('app.current_territory', true) OR
-            current_setting('app.current_role', true) IN ('ADMIN', 'SYSTEM')
-        )
-    );
-END $$;
-
--- 4. Create fail-closed policy for territories table
-DO $$
-BEGIN
-    -- Enable RLS on territories if not already enabled
-    ALTER TABLE territories ENABLE ROW LEVEL SECURITY;
-
-    -- Drop existing policy if it exists
-    DROP POLICY IF EXISTS territories_access_policy ON territories;
-
-    -- Create new fail-closed policy
-    CREATE POLICY territories_access_policy ON territories
-    FOR SELECT
-    USING (
-        current_setting('app.current_territory', true) IS NOT NULL AND (
-            code = current_setting('app.current_territory', true) OR
-            current_setting('app.current_role', true) IN ('ADMIN', 'SYSTEM') OR
-            active = true  -- All users can see active territories
-        )
-    );
-END $$;
-
--- 5. Create multi-tenant dedupe index (idempotent)
-CREATE INDEX IF NOT EXISTS idx_leads_tenant_email
-ON leads(tenant_id, email)
-WHERE tenant_id IS NOT NULL;
-
-CREATE INDEX IF NOT EXISTS idx_settings_tenant_key
-ON settings(tenant_id, key)
-WHERE tenant_id IS NOT NULL;
-
--- 6. Add healthcheck function for RLS validation
+-- 3. Create helper function to check RLS context
 CREATE OR REPLACE FUNCTION check_rls_context()
 RETURNS TABLE (
-    user_context text,
-    role_context text,
-    tenant_context text,
-    territory_context text,
-    rls_active boolean
-) AS $$
+    user_context TEXT,
+    role_context TEXT,
+    tenant_context TEXT,
+    territory_context TEXT,
+    policies_active BOOLEAN
+)
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
 BEGIN
     RETURN QUERY
     SELECT
-        current_setting('app.current_user', true) as user_context,
-        current_setting('app.current_role', true) as role_context,
-        current_setting('app.tenant_id', true) as tenant_context,
-        current_setting('app.current_territory', true) as territory_context,
-        EXISTS (
-            SELECT 1 FROM pg_policies
-            WHERE schemaname = 'public'
-            AND tablename IN ('leads', 'settings', 'territories')
-        ) as rls_active;
+        current_setting('app.user_context', true)::TEXT,
+        current_setting('app.role_context', true)::TEXT,
+        current_setting('app.tenant_id', true)::TEXT,
+        current_setting('app.territory_context', true)::TEXT,
+        EXISTS(SELECT 1 FROM pg_policies WHERE tablename = 'leads')::BOOLEAN;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$;
 
--- Grant execute permission to application user
+-- Grant execute to application role
 GRANT EXECUTE ON FUNCTION check_rls_context() TO freshplan;
-
--- Add comment for documentation
-COMMENT ON FUNCTION check_rls_context() IS
-'Healthcheck function to validate RLS context and policy status.
-Used by monitoring to ensure RLS is properly configured.';
