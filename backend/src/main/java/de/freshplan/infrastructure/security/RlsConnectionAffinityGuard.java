@@ -9,6 +9,7 @@ import jakarta.interceptor.Interceptor;
 import jakarta.interceptor.InvocationContext;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
+import jakarta.transaction.TransactionSynchronizationRegistry;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.logging.Logger;
 
@@ -34,6 +35,8 @@ public class RlsConnectionAffinityGuard {
 
   @Inject SecurityIdentity securityIdentity;
 
+  @Inject TransactionSynchronizationRegistry tsr;
+
   @ConfigProperty(name = "security.rls.interceptor.enabled", defaultValue = "true")
   boolean rlsEnabled;
 
@@ -45,6 +48,15 @@ public class RlsConnectionAffinityGuard {
     if (!rlsEnabled) {
       LOG.debug("RLS interceptor disabled, proceeding without context");
       return context.proceed();
+    }
+
+    // Verify we have an active transaction (critical for RLS safety)
+    if (tsr.getTransactionKey() == null) {
+      String error = "No active transaction for RLS context (fail-closed).";
+      LOG.error(error);
+      if (failClosed) {
+        throw new IllegalStateException(error);
+      }
     }
 
     // Check if method is transactional
@@ -121,20 +133,31 @@ public class RlsConnectionAffinityGuard {
         "Setting RLS context: user=%s, role=%s, tenant=%s, territory=%s",
         user, role, tenant, territory);
 
-    // Use SET LOCAL to ensure variables are transaction-scoped
-    // This ensures they are automatically cleared at transaction end
+    // Use set_config with parameters for safety (transaction-scoped)
     if (user != null) {
-      em.createNativeQuery(AppGuc.CURRENT_USER.setConfigSql(user)).executeUpdate();
+      em.createNativeQuery(AppGuc.CURRENT_USER.setLocalConfigSql())
+          .setParameter(1, AppGuc.CURRENT_USER.getKey())
+          .setParameter(2, user)
+          .getSingleResult();
     }
     if (role != null) {
       // Always uppercase roles for consistency with RLS policies
-      em.createNativeQuery(AppGuc.CURRENT_ROLE.setConfigSql(role.toUpperCase())).executeUpdate();
+      em.createNativeQuery(AppGuc.CURRENT_ROLE.setLocalConfigSql())
+          .setParameter(1, AppGuc.CURRENT_ROLE.getKey())
+          .setParameter(2, role.toUpperCase())
+          .getSingleResult();
     }
     if (tenant != null) {
-      em.createNativeQuery(AppGuc.TENANT_ID.setConfigSql(tenant)).executeUpdate();
+      em.createNativeQuery(AppGuc.TENANT_ID.setLocalConfigSql())
+          .setParameter(1, AppGuc.TENANT_ID.getKey())
+          .setParameter(2, tenant)
+          .getSingleResult();
     }
     if (territory != null) {
-      em.createNativeQuery(AppGuc.CURRENT_TERRITORY.setConfigSql(territory)).executeUpdate();
+      em.createNativeQuery(AppGuc.CURRENT_TERRITORY.setLocalConfigSql())
+          .setParameter(1, AppGuc.CURRENT_TERRITORY.getKey())
+          .setParameter(2, territory)
+          .getSingleResult();
     }
 
     // Verify GUCs are set (only in debug mode)

@@ -23,7 +23,16 @@ public enum AppGuc {
     return key;
   }
 
-  /** SQL to set a GUC value on the current connection. */
+  /**
+   * Returns SQL for setting GUC value using set_config (transaction-scoped).
+   * Use with prepared statement parameters for safety.
+   */
+  public String setLocalConfigSql() {
+    return "SELECT set_config(?, ?, true)"; // true = transaction-local
+  }
+
+  /** @deprecated Use setLocalConfigSql() with parameters instead */
+  @Deprecated
   public String setConfigSql(String value) {
     if (value == null || value.isEmpty()) {
       return String.format("SET LOCAL %s = ''", key);
@@ -37,10 +46,15 @@ public enum AppGuc {
   }
 
   /**
-   * SQL to set a GUC value at session level (for long-lived connections). Unlike setConfigSql which
-   * uses SET LOCAL (transaction-scoped), this uses SET (session-scoped) for connections that live
-   * beyond a single transaction.
+   * Returns SQL for setting GUC value using set_config (session-scoped).
+   * Use with prepared statement parameters for safety.
    */
+  public String setSessionConfigSql() {
+    return "SELECT set_config(?, ?, false)"; // false = session-level
+  }
+
+  /** @deprecated Use setSessionConfigSql() with parameters instead */
+  @Deprecated
   public String setSessionConfigSql(String value) {
     if (value == null || value.isEmpty()) {
       return String.format("SET %s = ''", key);

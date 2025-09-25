@@ -4,7 +4,10 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+import de.freshplan.test.profiles.DisableEventSubscriberProfile;
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.junit.QuarkusTestProfile;
+import io.quarkus.test.junit.TestProfile;
 import io.quarkus.test.junit.mockito.InjectMock;
 import jakarta.inject.Inject;
 import java.sql.Connection;
@@ -20,6 +23,7 @@ import org.junit.jupiter.api.Test;
  * connection failures and reconnects.
  */
 @QuarkusTest
+@TestProfile(DisableEventSubscriberProfile.class)
 public class EventSubscriberReconnectTest {
 
   @Inject EventSubscriber eventSubscriber;

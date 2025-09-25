@@ -47,6 +47,9 @@ public class EventSubscriber {
   @ConfigProperty(name = "cqrs.subscriber.channels", defaultValue = "cqrs_all_events")
   String defaultChannels;
 
+  @ConfigProperty(name = "security.rls.system-user", defaultValue = "events-bus@freshplan")
+  String systemUser;
+
   private final Map<String, Consumer<JsonObject>> handlers = new ConcurrentHashMap<>();
   private ScheduledExecutorService executor;
   private Connection listenerConnection;
@@ -206,19 +209,24 @@ public class EventSubscriber {
 
   /** Sets RLS context for the listener connection */
   private void setRlsContextForListenerConnection() {
-    try (Statement stmt = listenerConnection.createStatement()) {
+    try {
       // Set session-level context for event listener
       // This connection is long-lived and processes events from all territories
-      // IMPORTANT: Using setSessionConfigSql (SET) instead of setConfigSql (SET LOCAL)
-      // because this connection has autoCommit=true and lives beyond transactions
+      // Using set_config with parameters for safety (session-scoped)
 
-      // Use configured system user instead of SecurityIdentity (which may be anonymous in
-      // background)
-      String systemUser = System.getProperty("security.rls.system-user", "events-bus@freshplan");
-      stmt.execute(AppGuc.CURRENT_USER.setSessionConfigSql(systemUser));
+      // Set system user from configuration
+      try (var ps = listenerConnection.prepareStatement(AppGuc.CURRENT_USER.setSessionConfigSql())) {
+        ps.setString(1, AppGuc.CURRENT_USER.getKey());
+        ps.setString(2, systemUser);
+        ps.execute();
+      }
 
       // Set system role for event processing (needs to see all events)
-      stmt.execute(AppGuc.CURRENT_ROLE.setSessionConfigSql("SYSTEM"));
+      try (var ps = listenerConnection.prepareStatement(AppGuc.CURRENT_ROLE.setSessionConfigSql())) {
+        ps.setString(1, AppGuc.CURRENT_ROLE.getKey());
+        ps.setString(2, "SYSTEM");
+        ps.execute();
+      }
 
       LOG.debugf("RLS context set for event listener: user=%s, role=SYSTEM", systemUser);
     } catch (Exception e) {
