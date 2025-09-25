@@ -156,9 +156,11 @@ jobs:
           DB_URL: jdbc:postgresql://localhost:5432/freshplan
           DB_USER: freshplan
           DB_PASSWORD: freshplan
+          QUARKUS_PROFILE: ci
         run: |
           echo "Starting backend with verbose logging..."
           java -Xms256m -Xmx512m \
+            -Dquarkus.profile=ci \
             -Dquarkus.log.level=DEBUG \
             -Dquarkus.log.category."io.quarkus".level=DEBUG \
             -Dquarkus.log.category."de.freshplan".level=DEBUG \
