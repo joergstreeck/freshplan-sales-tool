@@ -5,6 +5,25 @@ Alle bemerkenswerten Änderungen an diesem Projekt werden in dieser Datei dokume
 Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/),
 und dieses Projekt hält sich an [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Sprint 1.6] - 2025-09-25
+
+### Added
+- RLS Module Adoption: @RlsContext CDI-Interceptor für alle DB-Services
+- CI-Guard für RLS-Compliance (tools/rls-guard.sh)
+- RLS-Badge in allen Module 01-08 Technical Concepts
+- ADR-0007 für RLS Connection Affinity Pattern
+- RLS_COMPLIANCE_CHECKLIST.md für Migration Guide
+
+### Fixed
+- Modul 02 Services ohne @RlsContext (P0 - blockierte Sprint 2.1)
+- 5 Lead-Services mit @RlsContext annotiert
+- GAP-Analysis dokumentiert 33+ Services ohne RLS-Schutz
+
+### Security
+- Alle transaktionalen DB-Methoden in Modul 02 jetzt mit @RlsContext
+- Fail-closed Security Pattern durchgängig implementiert
+- Connection Affinity garantiert für GUC-Variablen
+
 ## [Sprint 2.1] - 2025-09-25
 
 ### Added
