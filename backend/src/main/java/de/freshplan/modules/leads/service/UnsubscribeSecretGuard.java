@@ -56,7 +56,7 @@ public class UnsubscribeSecretGuard {
     } else if (isCIEnvironment) {
       // CI/Test/Dev: Explizit als Non-Production erkannt
       LOG.info(
-          "Running in CI/Test/Dev environment (profile: "
+          "✅ Running in CI/Test/Dev environment (profile: "
               + profile
               + ") - skipping secret validation");
       if (secret.isEmpty()) {
