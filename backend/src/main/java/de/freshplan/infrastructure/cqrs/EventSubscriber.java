@@ -212,7 +212,8 @@ public class EventSubscriber {
       // IMPORTANT: Using setSessionConfigSql (SET) instead of setConfigSql (SET LOCAL)
       // because this connection has autoCommit=true and lives beyond transactions
 
-      // Use configured system user instead of SecurityIdentity (which may be anonymous in background)
+      // Use configured system user instead of SecurityIdentity (which may be anonymous in
+      // background)
       String systemUser = System.getProperty("security.rls.system-user", "events-bus@freshplan");
       stmt.execute(AppGuc.CURRENT_USER.setSessionConfigSql(systemUser));
 
@@ -256,7 +257,9 @@ public class EventSubscriber {
   /** Ensures the connection is healthy, reconnects if needed */
   private void ensureConnectionHealthy() {
     try {
-      if (listenerConnection == null || listenerConnection.isClosed() || !listenerConnection.isValid(5)) {
+      if (listenerConnection == null
+          || listenerConnection.isClosed()
+          || !listenerConnection.isValid(5)) {
         LOG.warn("Listener connection unhealthy, reconnecting...");
         establishListenerConnection();
       }
@@ -279,7 +282,8 @@ public class EventSubscriber {
     while (running && retryCount < maxRetries) {
       try {
         Thread.sleep(retryDelay);
-        LOG.infof("Attempting to reconnect event listener (attempt %d/%d)", retryCount + 1, maxRetries);
+        LOG.infof(
+            "Attempting to reconnect event listener (attempt %d/%d)", retryCount + 1, maxRetries);
         establishListenerConnection();
         LOG.info("Event listener reconnected successfully");
         return;

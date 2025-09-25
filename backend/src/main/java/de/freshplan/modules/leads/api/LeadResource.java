@@ -1,11 +1,11 @@
 package de.freshplan.modules.leads.api;
 
+import de.freshplan.infrastructure.security.RlsContext;
 import de.freshplan.modules.leads.domain.ActivityType;
 import de.freshplan.modules.leads.domain.Lead;
 import de.freshplan.modules.leads.domain.LeadActivity;
 import de.freshplan.modules.leads.domain.LeadStatus;
 import de.freshplan.modules.leads.domain.Territory;
-import de.freshplan.infrastructure.security.RlsContext;
 import de.freshplan.modules.leads.service.LeadProtectionService;
 import de.freshplan.modules.leads.service.LeadService;
 import de.freshplan.modules.leads.service.UserLeadSettingsService;
