@@ -3,6 +3,7 @@ package de.freshplan.modules.leads.domain;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import io.vertx.core.json.JsonObject;
 import jakarta.persistence.*;
+import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.math.BigDecimal;
@@ -74,11 +75,19 @@ public class Territory extends PanacheEntityBase {
     return find("countryCode", countryCode).firstResult();
   }
 
+  /**
+   * Returns the default territory (Germany) from database or creates and persists it.
+   *
+   * @return persisted Territory instance for Germany
+   * @throws IllegalStateException if territory cannot be created/persisted
+   */
+  @Transactional
   public static Territory getDefault() {
     // Deutschland als Default Territory
     Territory defaultTerritory = findByCode("DE");
     if (defaultTerritory == null) {
-      // Fallback Territory wenn DB leer ist
+      // Create and persist default territory wenn DB leer ist
+      // This ensures the returned object is always managed/persisted
       defaultTerritory = new Territory();
       defaultTerritory.id = "DE";
       defaultTerritory.name = "Deutschland";
@@ -87,6 +96,10 @@ public class Territory extends PanacheEntityBase {
       defaultTerritory.taxRate = new BigDecimal("19.00");
       defaultTerritory.languageCode = "de-DE";
       defaultTerritory.active = true;
+
+      // Persist to avoid TransientPropertyValueException
+      defaultTerritory.persist();
+      defaultTerritory.flush(); // Ensure it's immediately available
     }
     return defaultTerritory;
   }

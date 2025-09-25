@@ -12,9 +12,11 @@ import jakarta.transaction.Transactional;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.logging.Logger;
 
@@ -34,6 +36,13 @@ public class FollowUpAutomationService {
   private static final int T3_DAYS = 3;
   private static final int T7_DAYS = 7;
   private static final String SYSTEM_USER_ID = "SYSTEM";
+
+  // Dynamically generated from ActivityType enum to avoid maintenance issues
+  // Uses the isMeaningfulContact() flag from the enum itself
+  private static final List<ActivityType> MEANINGFUL_ACTIVITY_TYPES =
+      Arrays.stream(ActivityType.values())
+          .filter(ActivityType::isMeaningfulContact)
+          .collect(Collectors.toList());
 
   @Inject EntityManager em;
 
@@ -185,25 +194,33 @@ public class FollowUpAutomationService {
     for (Lead lead : eligibleLeads) {
       try {
         // Atomares Flag-Setzen für Idempotenz (verhindert Doppelversand)
-        String statusUpdate =
-            !hasRecentMeaningfulActivity(lead, T7_DAYS)
-                ? ", l.status = 'REMINDER', l.reminderSentAt = :now"
-                : "";
-
+        // Zwei separate Queries statt String-Concatenation (Gemini Review Fix)
         int updated =
             em.createQuery(
                     """
             UPDATE Lead l
             SET l.t7FollowupSent = true,
                 l.lastFollowupAt = :now,
-                l.followupCount = l.followupCount + 1"""
-                        + statusUpdate
-                        + """
+                l.followupCount = l.followupCount + 1
             WHERE l.id = :id AND l.t7FollowupSent = false
             """)
                 .setParameter("id", lead.id)
                 .setParameter("now", now)
                 .executeUpdate();
+
+        // Separates Status-Update wenn keine kürzliche Aktivität
+        if (updated > 0 && !hasRecentMeaningfulActivity(lead, T7_DAYS)) {
+          em.createQuery(
+                  """
+              UPDATE Lead l
+              SET l.status = 'REMINDER',
+                  l.reminderSentAt = :now
+              WHERE l.id = :id
+              """)
+              .setParameter("id", lead.id)
+              .setParameter("now", now)
+              .executeUpdate();
+        }
 
         if (updated == 0) {
           // Bereits verarbeitet (Race Condition) - idempotent überspringen
@@ -267,7 +284,6 @@ public class FollowUpAutomationService {
   }
 
   /** Findet Leads die für Follow-up fällig sind Berücksichtigt Stop-the-Clock Perioden */
-  @SuppressWarnings("unchecked")
   private List<Lead> findLeadsForFollowUp(LocalDateTime threshold, int daysAfterCreation) {
     String jpql =
         """
@@ -290,14 +306,7 @@ public class FollowUpAutomationService {
     return em.createQuery(jpql, Lead.class)
         .setParameter("activeStatuses", List.of(LeadStatus.REGISTERED, LeadStatus.ACTIVE))
         .setParameter("threshold", threshold)
-        .setParameter(
-            "meaningfulTypes",
-            List.of(
-                ActivityType.EMAIL,
-                ActivityType.CALL,
-                ActivityType.MEETING,
-                ActivityType.SAMPLE_SENT,
-                ActivityType.ORDER))
+        .setParameter("meaningfulTypes", MEANINGFUL_ACTIVITY_TYPES)
         .setParameter("recentActivity", recentActivity)
         .setMaxResults(batchSize) // Konfigurierbare Batch-Size
         .getResultList();
@@ -318,14 +327,7 @@ public class FollowUpAutomationService {
     Long count =
         em.createQuery(jpql, Long.class)
             .setParameter("lead", lead)
-            .setParameter(
-                "meaningfulTypes",
-                List.of(
-                    ActivityType.EMAIL,
-                    ActivityType.CALL,
-                    ActivityType.MEETING,
-                    ActivityType.SAMPLE_SENT,
-                    ActivityType.ORDER))
+            .setParameter("meaningfulTypes", MEANINGFUL_ACTIVITY_TYPES)
             .setParameter("since", since)
             .getSingleResult();
 

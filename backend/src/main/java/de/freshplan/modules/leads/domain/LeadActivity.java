@@ -78,20 +78,30 @@ public class LeadActivity extends PanacheEntityBase {
     return activity;
   }
 
-  // Compatibility getters/setters
+  // TODO: Remove after Q1 2026 - Backwards compatibility for old field names
+  // These transient fields and methods maintain compatibility with legacy code
+  // that still uses 'type' and 'occurredAt' instead of the new field names
+  // 'activityType' and 'activityDate'. All new code should use the new names.
+  // Migration plan: 1) Update all references in Q4 2025, 2) Remove in Q1 2026
+
+  // Compatibility getters/setters - DEPRECATED
+  @Deprecated(forRemoval = true, since = "Sprint 2.1")
   public ActivityType getType() {
     return activityType;
   }
 
+  @Deprecated(forRemoval = true, since = "Sprint 2.1")
   public void setType(ActivityType type) {
     this.activityType = type;
     this.type = type;
   }
 
+  @Deprecated(forRemoval = true, since = "Sprint 2.1")
   public LocalDateTime getOccurredAt() {
     return activityDate;
   }
 
+  @Deprecated(forRemoval = true, since = "Sprint 2.1")
   public void setOccurredAt(LocalDateTime occurredAt) {
     this.activityDate = occurredAt;
     this.occurredAt = occurredAt;
