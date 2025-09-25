@@ -9,7 +9,7 @@
 
 ## 🗺️ ALLE TRIGGER-TEXTS ÜBERSICHT
 
-### **PHASE 1: FOUNDATION (6 Sprints) - 🔄 EXTENDED**
+### **PHASE 1: FOUNDATION (6 Sprints) - ✅ COMPLETE**
 ```yaml
 ✅ TRIGGER_SPRINT_1_1.md - CQRS Light Foundation [PR #94 MERGED]
    - PostgreSQL LISTEN/NOTIFY + Event-Schema
@@ -41,22 +41,22 @@
    - Gemini Review: "Exzellent und äußerst wichtig"
    - Status: ✅ COMPLETE (25.09.2025, 18:42 Uhr)
 
-🚀 TRIGGER_SPRINT_1_6.md - RLS Adoption in Modulen [READY]
-   - Modul 02 Services mit @RlsContext (P0 - blockiert Sprint 2.1)
-   - CI-Guard für RLS-Compliance
-   - RLS-Badge in allen Modulen (Zero-Redundancy)
-   - Status: 🚀 READY TO START
+✅ TRIGGER_SPRINT_1_6.md - RLS Adoption in Modulen [PR #107 MERGED]
+   - Modul 02 Services mit @RlsContext (P0 - Sprint 2.1 entblockt)
+   - CI-Guard für RLS-Compliance implementiert
+   - RLS-Badge in allen 8 Modulen dokumentiert
+   - Status: ✅ COMPLETE (25.09.2025, 20:24 Uhr)
 
 📊 **Phase 1 Performance Report:** [phase-1-foundation-benchmark-2025-09-24.md](../performance/phase-1-foundation-benchmark-2025-09-24.md)
 🔒 **Security Update:** [SECURITY_UPDATE_SPRINT_1_5.md](./SECURITY_UPDATE_SPRINT_1_5.md)
 ```
 
-### **PHASE 2: CORE BUSINESS (5 Sprints) - 🚀 STARTING**
+### **PHASE 2: CORE BUSINESS (5 Sprints) - 🔧 IN PROGRESS**
 ```yaml
-🚀 TRIGGER_SPRINT_2_1.md - Neukundengewinnung [PR #102 IN PROGRESS]
+🔧 TRIGGER_SPRINT_2_1.md - Neukundengewinnung [PR #103 MERGED, PR #105 PENDING]
    - Lead-Management ohne Gebietsschutz
    - 8-10h, 4 PRs (FP-233 bis FP-236)
-   - Status: 🚀 STARTING NOW
+   - Status: 🔧 IN PROGRESS (Territory Management merged)
 
 ✅ TRIGGER_SPRINT_2_2.md - Kundenmanagement
    - Field-based Customer Architecture
