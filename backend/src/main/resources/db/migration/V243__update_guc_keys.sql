@@ -69,4 +69,11 @@ END $$;
 
 -- 3. Function check_rls_context already created in V242
 -- with the correct new GUC keys. No update needed here.
--- GRANT already handled in V242, no duplicate needed.
+
+-- Grant execute to application role (if it exists)
+DO $$
+BEGIN
+    IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'freshplan') THEN
+        EXECUTE 'GRANT EXECUTE ON FUNCTION public.check_rls_context() TO freshplan';
+    END IF;
+END $$;
