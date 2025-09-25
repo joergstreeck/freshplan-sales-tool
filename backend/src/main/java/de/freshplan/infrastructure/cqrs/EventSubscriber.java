@@ -209,17 +209,19 @@ public class EventSubscriber {
   /** Sets RLS context for the listener connection */
   private void setRlsContextForListenerConnection() {
     try (Statement stmt = listenerConnection.createStatement()) {
-      // Set system-level context for event listener
+      // Set session-level context for event listener
       // This connection is long-lived and processes events from all territories
+      // IMPORTANT: Using setSessionConfigSql (SET) instead of setConfigSql (SET LOCAL)
+      // because this connection has autoCommit=true and lives beyond transactions
       if (!securityIdentity.isAnonymous()) {
         String user = securityIdentity.getPrincipal().getName();
-        stmt.execute(AppGuc.CURRENT_USER.setConfigSql(user));
+        stmt.execute(AppGuc.CURRENT_USER.setSessionConfigSql(user));
       }
 
-      // Set admin role for event processing (needs to see all events)
-      stmt.execute(AppGuc.CURRENT_ROLE.setConfigSql("system"));
+      // Set system role for event processing (needs to see all events)
+      stmt.execute(AppGuc.CURRENT_ROLE.setSessionConfigSql("system"));
 
-      LOG.debug("RLS context set for event listener connection");
+      LOG.debug("RLS context set for event listener connection (session-level)");
     } catch (Exception e) {
       LOG.warn("Failed to set RLS context for listener connection", e);
     }

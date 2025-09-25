@@ -104,13 +104,15 @@ public class RlsConnectionAffinityGuard {
 
     private String extractTenantId() {
         // Extract from JWT claim or request context
-        // TODO: Implement based on your multi-tenancy strategy
+        // TODO: FP-263 - Implement multi-tenancy JWT claim extraction (Sprint 2.x)
+        // For now, returns null which triggers fail-closed behavior
         return securityIdentity.getAttribute("tenant_id");
     }
 
     private String extractTerritory() {
         // Extract from JWT claim or user settings
-        // TODO: Implement based on your territory management
+        // TODO: FP-264 - Implement territory extraction from UserSettings or JWT (Sprint 2.x)
+        // For now, returns null which triggers fail-closed behavior
         return securityIdentity.getAttribute("territory");
     }
 

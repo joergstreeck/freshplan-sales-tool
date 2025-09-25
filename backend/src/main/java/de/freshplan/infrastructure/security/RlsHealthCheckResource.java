@@ -53,13 +53,17 @@ public class RlsHealthCheckResource {
             health.put("rls_policies_active", contextResult[4]);
 
             // Check connection pool stats
+            // Note: Standard DB users can only see their own sessions,
+            // so we filter by current database for more accurate results
             Long activeConnections = (Long) em.createNativeQuery(
-                "SELECT count(*) FROM pg_stat_activity WHERE state = 'active'"
+                "SELECT count(*) FROM pg_stat_activity WHERE state = 'active' AND datname = current_database()"
             ).getSingleResult();
 
             Long idleConnections = (Long) em.createNativeQuery(
-                "SELECT count(*) FROM pg_stat_activity WHERE state = 'idle'"
+                "SELECT count(*) FROM pg_stat_activity WHERE state = 'idle' AND datname = current_database()"
             ).getSingleResult();
+
+            // TODO: FP-266 - Replace with Agroal datasource metrics for better reliability
 
             health.put("active_connections", activeConnections);
             health.put("idle_connections", idleConnections);
@@ -92,6 +96,12 @@ public class RlsHealthCheckResource {
         }
     }
 
+    /**
+     * Metrics endpoint for RLS monitoring.
+     * TODO: FP-265 - Implement proper metrics collection in Sprint 2.x
+     * Currently disabled to avoid shipping stub code to production.
+     */
+    /*
     @GET
     @Path("/metrics")
     @Produces(MediaType.APPLICATION_JSON)
@@ -101,16 +111,16 @@ public class RlsHealthCheckResource {
 
         try {
             // GUC set operations count (would need to be tracked in interceptor)
-            metrics.put("guc_set_operations", 0L); // TODO: Implement counter in interceptor
+            metrics.put("guc_set_operations", 0L); // TODO: FP-265 - Implement counter in interceptor
 
             // Failed RLS checks (would need to be tracked)
-            metrics.put("rls_failures", 0L); // TODO: Implement counter
+            metrics.put("rls_failures", 0L); // TODO: FP-265 - Implement counter
 
             // Average GUC setup time
-            metrics.put("avg_guc_setup_ms", 5L); // TODO: Measure actual time
+            metrics.put("avg_guc_setup_ms", 5L); // TODO: FP-265 - Measure actual time
 
             // Connection affinity violations
-            metrics.put("affinity_violations", 0L); // TODO: Track violations
+            metrics.put("affinity_violations", 0L); // TODO: FP-265 - Track violations
 
             return Response.ok(metrics).build();
 
@@ -121,4 +131,5 @@ public class RlsHealthCheckResource {
                           .build();
         }
     }
+    */
 }
