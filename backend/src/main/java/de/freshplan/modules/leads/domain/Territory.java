@@ -54,6 +54,17 @@ public class Territory extends PanacheEntityBase {
   @Column(name = "updated_at", nullable = false)
   public LocalDateTime updatedAt;
 
+  // Simplified field names for easier access
+  @Transient
+  public String code() {
+    return id;
+  }
+
+  @Transient
+  public String currency() {
+    return currencyCode;
+  }
+
   // Helper methods
   public static Territory findByCode(String code) {
     return find("id", code).firstResult();
@@ -61,6 +72,23 @@ public class Territory extends PanacheEntityBase {
 
   public static Territory findByCountryCode(String countryCode) {
     return find("countryCode", countryCode).firstResult();
+  }
+
+  public static Territory getDefault() {
+    // Deutschland als Default Territory
+    Territory defaultTerritory = findByCode("DE");
+    if (defaultTerritory == null) {
+      // Fallback Territory wenn DB leer ist
+      defaultTerritory = new Territory();
+      defaultTerritory.id = "DE";
+      defaultTerritory.name = "Deutschland";
+      defaultTerritory.countryCode = "DE";
+      defaultTerritory.currencyCode = "EUR";
+      defaultTerritory.taxRate = new BigDecimal("19.00");
+      defaultTerritory.languageCode = "de-DE";
+      defaultTerritory.active = true;
+    }
+    return defaultTerritory;
   }
 
   public boolean isGermany() {

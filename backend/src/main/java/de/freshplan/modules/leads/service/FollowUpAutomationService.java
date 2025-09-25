@@ -2,7 +2,7 @@ package de.freshplan.modules.leads.service;
 
 import de.freshplan.infrastructure.security.RlsContext;
 import de.freshplan.modules.leads.domain.*;
-import io.quarkus.scheduler.Scheduled;
+import de.freshplan.modules.leads.events.FollowUpProcessedEvent;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Event;
 import jakarta.inject.Inject;
@@ -61,10 +61,10 @@ public class FollowUpAutomationService {
     }
 
     /**
-     * Stündlicher Check für fällige Follow-ups
-     * Läuft jede Stunde zur vollen Stunde
+     * Check für fällige Follow-ups
+     * TODO: Scheduled über Quarkus Scheduler Extension aktivieren
+     * Alternativ: Manuell über REST-Endpoint oder externen Scheduler aufrufen
      */
-    @Scheduled(cron = "0 0 * * * ?")
     @Transactional
     @RlsContext
     public void processScheduledFollowUps() {
@@ -312,11 +312,10 @@ public class FollowUpAutomationService {
     private void createFollowUpActivity(Lead lead, String activityCode, String description) {
         LeadActivity activity = new LeadActivity();
         activity.lead = lead;
-        activity.type = ActivityType.NOTE; // Follow-ups als NOTE tracken
+        activity.setType(ActivityType.NOTE); // Follow-ups als NOTE tracken
         activity.userId = SYSTEM_USER_ID;
         activity.description = description;
-        activity.occurredAt = LocalDateTime.now();
-        activity.metadata = new HashMap<>();
+        activity.setOccurredAt(LocalDateTime.now(clock));
         activity.metadata.put("followup_type", activityCode);
         activity.metadata.put("automated", "true");
         activity.persist();
@@ -329,7 +328,7 @@ public class FollowUpAutomationService {
         Map<String, String> data = new HashMap<>();
 
         // Lead-Daten
-        data.put("lead.company", java.util.Objects.toString(lead.company, ""));
+        data.put("lead.company", java.util.Objects.toString(lead.companyName, ""));
         data.put("lead.contactPerson", java.util.Objects.toString(lead.contactPerson, ""));
         data.put("lead.email", java.util.Objects.toString(lead.email, ""));
         data.put("lead.phone", java.util.Objects.toString(lead.phone, ""));
@@ -338,7 +337,7 @@ public class FollowUpAutomationService {
         Territory territory = lead.territory;
         if (territory != null) {
             data.put("territory.name", territory.name);
-            data.put("territory.currency", territory.currency);
+            data.put("territory.currency", territory.currencyCode);
             data.put("territory.taxRate", String.valueOf(territory.taxRate));
         }
 

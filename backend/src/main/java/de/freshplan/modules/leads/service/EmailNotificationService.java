@@ -126,7 +126,7 @@ public class EmailNotificationService {
             territory = Territory.getDefault(); // Deutschland als Default
         }
 
-        String footer = switch (territory.code) {
+        String footer = switch (territory.id) {
             case "DE" -> """
                 FreshFoodz Cook&Fresh® GmbH
                 Musterstraße 123, 80333 München
@@ -147,7 +147,7 @@ public class EmailNotificationService {
 
         templateData.put("footer.legal", footer);
         templateData.put("footer.territory", territory.name);
-        templateData.put("footer.currency", territory.currency);
+        templateData.put("footer.currency", territory.currencyCode);
     }
 
     /**
