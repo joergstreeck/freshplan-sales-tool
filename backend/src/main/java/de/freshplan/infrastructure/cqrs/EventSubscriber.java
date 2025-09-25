@@ -50,6 +50,12 @@ public class EventSubscriber {
   @ConfigProperty(name = "security.rls.system-user", defaultValue = "events-bus@freshplan")
   String systemUser;
 
+  @ConfigProperty(name = "cqrs.subscriber.reconnect.max-retries", defaultValue = "3")
+  int maxRetries;
+
+  @ConfigProperty(name = "cqrs.subscriber.reconnect.initial-delay-ms", defaultValue = "1000")
+  long initialRetryDelay;
+
   private final Map<String, Consumer<JsonObject>> handlers = new ConcurrentHashMap<>();
   private ScheduledExecutorService executor;
   private Connection listenerConnection;
@@ -286,8 +292,7 @@ public class EventSubscriber {
     }
 
     int retryCount = 0;
-    int maxRetries = 3;
-    long retryDelay = 1000; // Start with 1 second
+    long retryDelay = initialRetryDelay;
 
     while (running && retryCount < maxRetries) {
       try {

@@ -59,7 +59,6 @@ public class UniversalExportService {
    * @param format Target export format
    * @return Export result
    */
-  @Transactional
   @RlsContext
   public ExportResult export(List<?> data, ExportConfig config, ExportFormat format) {
     log.infof(
@@ -109,7 +108,6 @@ public class UniversalExportService {
    * @param format Target export format
    * @return JAX-RS Response ready to send to client
    */
-  @Transactional
   @RlsContext
   public Response exportAsResponse(List<?> data, ExportConfig config, ExportFormat format) {
     ExportResult result = export(data, config, format);

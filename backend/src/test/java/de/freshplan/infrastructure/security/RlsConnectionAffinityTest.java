@@ -82,7 +82,7 @@ public class RlsConnectionAffinityTest {
   @Test
   @TestSecurity(user = "user-de", roles = "user")
   @Transactional
-  void testTerritoryIsolation() {
+  void testUserCanAccessLeadsFromAllTerritories() {
     // Note: Lead system allows nationwide access
     // Territory is used for business rules, not access control
     // This test verifies that users can see their own leads from all territories

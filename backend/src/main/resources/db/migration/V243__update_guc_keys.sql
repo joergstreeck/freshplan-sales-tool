@@ -67,28 +67,8 @@ BEGIN
     END IF;
 END $$;
 
--- 3. Update check_rls_context function to use new keys
-CREATE OR REPLACE FUNCTION check_rls_context()
-RETURNS TABLE (
-    user_context TEXT,
-    role_context TEXT,
-    tenant_context TEXT,
-    territory_context TEXT,
-    policies_active BOOLEAN
-)
-LANGUAGE plpgsql
-SECURITY DEFINER
-AS $$
-BEGIN
-    RETURN QUERY
-    SELECT
-        current_setting('app.user_context', true)::TEXT,
-        current_setting('app.role_context', true)::TEXT,
-        current_setting('app.tenant_id', true)::TEXT,
-        current_setting('app.territory_context', true)::TEXT,
-        EXISTS(SELECT 1 FROM pg_policies WHERE tablename = 'leads')::BOOLEAN;
-END;
-$$;
+-- 3. Function check_rls_context already created in V242
+-- with the correct new GUC keys. No update needed here.
 
 -- Grant execute to application role (if it exists)
 DO $$

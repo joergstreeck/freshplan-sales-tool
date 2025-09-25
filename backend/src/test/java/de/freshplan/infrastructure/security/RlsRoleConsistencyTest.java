@@ -27,9 +27,11 @@ public class RlsRoleConsistencyTest {
     String[] expectedRoles = {"ADMIN", "ADMIN", "ADMIN", "USER", "USER", "MANAGER", "MANAGER"};
 
     for (int i = 0; i < testRoles.length; i++) {
-      // Set role using AppGuc
-      em.createNativeQuery(AppGuc.CURRENT_ROLE.setConfigSql(testRoles[i].toUpperCase()))
-          .executeUpdate();
+      // Set role using AppGuc with safe parametrized query
+      em.createNativeQuery(AppGuc.CURRENT_ROLE.setLocalConfigSql())
+          .setParameter(1, AppGuc.CURRENT_ROLE.getKey())
+          .setParameter(2, testRoles[i].toUpperCase())
+          .getSingleResult();
 
       // Verify it's stored in uppercase
       String storedRole =
@@ -47,8 +49,14 @@ public class RlsRoleConsistencyTest {
   @Transactional
   public void testPrivilegedRolesInPolicies(String role) {
     // Test that ADMIN and SYSTEM roles have elevated access
-    em.createNativeQuery(AppGuc.CURRENT_USER.setConfigSql("test-user")).executeUpdate();
-    em.createNativeQuery(AppGuc.CURRENT_ROLE.setConfigSql(role)).executeUpdate();
+    em.createNativeQuery(AppGuc.CURRENT_USER.setLocalConfigSql())
+        .setParameter(1, AppGuc.CURRENT_USER.getKey())
+        .setParameter(2, "test-user")
+        .getSingleResult();
+    em.createNativeQuery(AppGuc.CURRENT_ROLE.setLocalConfigSql())
+        .setParameter(1, AppGuc.CURRENT_ROLE.getKey())
+        .setParameter(2, role)
+        .getSingleResult();
 
     // Verify role is set correctly
     String currentRole =
@@ -75,8 +83,11 @@ public class RlsRoleConsistencyTest {
       // Simulate what the interceptor does
       String normalizedRole = role.toUpperCase();
 
-      // Set the normalized role
-      em.createNativeQuery(AppGuc.CURRENT_ROLE.setConfigSql(normalizedRole)).executeUpdate();
+      // Set the normalized role using safe parametrized query
+      em.createNativeQuery(AppGuc.CURRENT_ROLE.setLocalConfigSql())
+          .setParameter(1, AppGuc.CURRENT_ROLE.getKey())
+          .setParameter(2, normalizedRole)
+          .getSingleResult();
 
       // Verify it's uppercase
       String storedRole =
@@ -91,8 +102,14 @@ public class RlsRoleConsistencyTest {
   @Transactional
   public void testSystemRoleHasFullAccess() {
     // Test that SYSTEM role bypasses normal RLS restrictions
-    em.createNativeQuery(AppGuc.CURRENT_USER.setConfigSql("system-process")).executeUpdate();
-    em.createNativeQuery(AppGuc.CURRENT_ROLE.setConfigSql("SYSTEM")).executeUpdate();
+    em.createNativeQuery(AppGuc.CURRENT_USER.setLocalConfigSql())
+        .setParameter(1, AppGuc.CURRENT_USER.getKey())
+        .setParameter(2, "system-process")
+        .getSingleResult();
+    em.createNativeQuery(AppGuc.CURRENT_ROLE.setLocalConfigSql())
+        .setParameter(1, AppGuc.CURRENT_ROLE.getKey())
+        .setParameter(2, "SYSTEM")
+        .getSingleResult();
 
     // SYSTEM role should see all data (this is a conceptual test)
     // In real implementation, you'd test against actual tables with RLS
@@ -106,7 +123,10 @@ public class RlsRoleConsistencyTest {
   @Transactional
   public void testInvalidRoleHandling() {
     // Test that invalid or null roles are handled gracefully
-    em.createNativeQuery(AppGuc.CURRENT_ROLE.setConfigSql("")).executeUpdate();
+    em.createNativeQuery(AppGuc.CURRENT_ROLE.setLocalConfigSql())
+        .setParameter(1, AppGuc.CURRENT_ROLE.getKey())
+        .setParameter(2, "")
+        .getSingleResult();
 
     String role =
         (String) em.createNativeQuery(AppGuc.CURRENT_ROLE.getConfigSql()).getSingleResult();
