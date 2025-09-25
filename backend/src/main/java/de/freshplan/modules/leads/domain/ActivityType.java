@@ -11,7 +11,15 @@ public enum ActivityType {
   SAMPLE_SENT(true, true),
   ORDER(true, true),
   NOTE(false, false),
-  STATUS_CHANGE(false, false);
+  STATUS_CHANGE(false, false),
+  CREATED(false, false),
+  DELETED(false, false),
+  REMINDER_SENT(false, false),
+  GRACE_PERIOD_STARTED(false, false),
+  EXPIRED(false, false),
+  REACTIVATED(false, true),
+  CLOCK_STOPPED(false, false),
+  CLOCK_RESUMED(false, false);
 
   private final boolean meaningfulContact;
   private final boolean resetsTimer;
