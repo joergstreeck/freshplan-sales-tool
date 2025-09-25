@@ -151,10 +151,10 @@ public class LeadResource {
     // Generate ETag and check for 304
     String etag = ETags.weakLead(lead.id, lead.version);
     if (etag.equals(ifNoneMatch)) {
-      return Response.status(Response.Status.NOT_MODIFIED).tag(etag).build();
+      return Response.status(Response.Status.NOT_MODIFIED).header("ETag", etag).build();
     }
 
-    return Response.ok(lead).tag(etag).build();
+    return Response.ok(lead).header("ETag", etag).build();
   }
 
   /**
@@ -391,7 +391,7 @@ public class LeadResource {
 
     LOG.infof("Updated lead %s by user %s", id, currentUserId);
     // Return with new ETag after version bump
-    return Response.ok(lead).tag(ETags.weakLead(lead.id, lead.version)).build();
+    return Response.ok(lead).header("ETag", ETags.weakLead(lead.id, lead.version)).build();
   }
 
   /**

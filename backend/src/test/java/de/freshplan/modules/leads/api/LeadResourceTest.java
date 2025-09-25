@@ -167,6 +167,9 @@ class LeadResourceTest {
         .extract()
         .header("ETag");
 
+    assertNotNull("ETag should not be null", etag);
+    System.out.println("Got ETag: " + etag);
+
     Map<String, Object> updateRequest = new HashMap<>();
     updateRequest.put("status", "ACTIVE");
 
@@ -236,7 +239,8 @@ class LeadResourceTest {
         .statusCode(200)
         .body("activityType", is("CALL"))
         .body("description", is("Initial contact call with customer"))
-        .body("userId", is("user1"));
+        .body("userId", is("user1"))
+        .body("leadId", is(leadId.intValue())); // DTO returns leadId instead of full lead object
 
     // Verify lastActivityAt was updated
     given()
@@ -376,7 +380,12 @@ class LeadResourceTest {
     lead.territory = Territory.find("countryCode", "DE").firstResult();
     lead.countryCode = "DE";
     lead.createdBy = ownerUserId;
+    // Don't set version manually - let JPA handle it
     lead.persist();
+    lead.flush(); // Ensure version is set
+    // Reload to get the version
+    lead = Lead.findById(lead.id);
+    System.out.println("Created lead with version: " + lead.version);
     return lead.id;
   }
 
@@ -389,7 +398,9 @@ class LeadResourceTest {
     lead.territory = Territory.find("countryCode", "DE").firstResult();
     lead.countryCode = "DE";
     lead.createdBy = ownerUserId;
+    // Don't set version manually - let JPA handle it
     lead.persist();
+    lead.flush(); // Ensure version is set
     return lead.id;
   }
 
