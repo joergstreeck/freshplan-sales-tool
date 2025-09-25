@@ -127,28 +127,6 @@ jobs:
         working-directory: backend
         run: ./mvnw package -DskipTests
 
-      - name: Debug Environment
-        if: always()
-        working-directory: backend
-        run: |
-          echo "=== CI Debug Information ==="
-          echo "Java Version:"
-          java -version
-          echo ""
-          echo "Memory Info:"
-          free -m 2>/dev/null || echo "free command not available"
-          echo ""
-          echo "Disk Space:"
-          df -h .
-          echo ""
-          echo "Environment Variables:"
-          env | grep -E "(DB_|JAVA|MAVEN|QUARKUS)" | sort || true
-          echo ""
-          echo "Migration Files:"
-          ls -la src/main/resources/db/migration/ | tail -10 || echo "No migrations found"
-          echo ""
-          echo "Target Directory:"
-          ls -la target/ | head -10 || echo "No target directory"
 
       - name: Start Backend
         working-directory: backend
@@ -158,47 +136,22 @@ jobs:
           DB_PASSWORD: freshplan
           QUARKUS_PROFILE: ci
         run: |
-          echo "Starting backend with verbose logging..."
           java -Xms256m -Xmx512m \
             -Dquarkus.profile=ci \
-            -Dquarkus.log.level=DEBUG \
-            -Dquarkus.log.category."io.quarkus".level=DEBUG \
-            -Dquarkus.log.category."de.freshplan".level=DEBUG \
-            -Dquarkus.log.category."org.flywaydb".level=DEBUG \
-            -jar target/quarkus-app/quarkus-run.jar > startup.log 2>&1 &
+            -jar target/quarkus-app/quarkus-run.jar &
 
-          APP_PID=$!
-          echo "Application started with PID: $APP_PID"
-
-          # Wait for startup with detailed logging
+          # Wait for startup
           for i in {1..30}; do
             sleep 2
             if curl -f http://localhost:8080/q/health 2>/dev/null; then
-              echo "✅ Application started successfully after $((i*2)) seconds"
+              echo "Application started successfully"
               break
-            fi
-            echo "Attempt $i/30: Waiting for application..."
-
-            # Show some log output while waiting
-            if [ $i -eq 10 ] || [ $i -eq 20 ]; then
-              echo "=== Current log tail ==="
-              tail -20 startup.log 2>/dev/null || true
-              echo "======================="
             fi
           done
 
-          # Final health check
+          # Verify startup
           if ! curl -f http://localhost:8080/q/health; then
-            echo "❌ Application failed to start after 60 seconds!"
-            echo ""
-            echo "=== FULL STARTUP LOG ==="
-            cat startup.log || echo "No startup log found"
-            echo ""
-            echo "=== PROCESS STATUS ==="
-            ps aux | grep java || true
-            echo ""
-            echo "=== NETWORK LISTENERS ==="
-            netstat -tulpn 2>/dev/null | grep LISTEN || ss -tulpn 2>/dev/null | grep LISTEN || true
+            echo "Application failed to start after 60 seconds"
             exit 1
           fi
 
