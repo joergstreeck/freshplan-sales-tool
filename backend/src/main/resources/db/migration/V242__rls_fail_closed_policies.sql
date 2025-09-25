@@ -11,7 +11,7 @@ USING (
     current_setting('app.current_user', true) IS NOT NULL AND (
         owner_user_id = current_setting('app.current_user', true) OR
         current_setting('app.current_user', true) = ANY(collaborator_user_ids) OR
-        current_setting('app.current_role', true) = 'admin'
+        current_setting('app.current_role', true) IN ('ADMIN', 'SYSTEM')
     )
 );
 
@@ -32,7 +32,7 @@ BEGIN
                     AND (
                         leads.owner_user_id = current_setting('app.current_user', true) OR
                         current_setting('app.current_user', true) = ANY(leads.collaborator_user_ids) OR
-                        current_setting('app.current_role', true) = 'admin'
+                        current_setting('app.current_role', true) IN ('ADMIN', 'SYSTEM')
                     )
                 )
             )
@@ -53,14 +53,14 @@ BEGIN
         current_setting('app.current_territory', true) IS NOT NULL AND (
             territory IS NULL OR
             territory = current_setting('app.current_territory', true) OR
-            current_setting('app.current_role', true) = 'admin'
+            current_setting('app.current_role', true) IN ('ADMIN', 'SYSTEM')
         )
     )
     WITH CHECK (
         current_setting('app.current_territory', true) IS NOT NULL AND (
             territory IS NULL OR
             territory = current_setting('app.current_territory', true) OR
-            current_setting('app.current_role', true) = 'admin'
+            current_setting('app.current_role', true) IN ('ADMIN', 'SYSTEM')
         )
     );
 END $$;
@@ -80,7 +80,7 @@ BEGIN
     USING (
         current_setting('app.current_territory', true) IS NOT NULL AND (
             code = current_setting('app.current_territory', true) OR
-            current_setting('app.current_role', true) = 'admin' OR
+            current_setting('app.current_role', true) IN ('ADMIN', 'SYSTEM') OR
             active = true  -- All users can see active territories
         )
     );

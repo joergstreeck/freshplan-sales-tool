@@ -51,6 +51,8 @@ public class EventSubscriber {
   private ScheduledExecutorService executor;
   private Connection listenerConnection;
   private volatile boolean running = false;
+  private volatile long lastConnectionCheck = 0;
+  private static final long CONNECTION_CHECK_INTERVAL = 60000; // 1 minute
 
   /** Starts the event subscriber on application startup */
   void onStart(@Observes StartupEvent ev) {
@@ -96,19 +98,7 @@ public class EventSubscriber {
 
   /** Starts listening for PostgreSQL notifications */
   private void startListening() throws Exception {
-    // Create dedicated connection for LISTEN/NOTIFY
-    listenerConnection = dataSource.getConnection();
-    listenerConnection.setAutoCommit(true);
-
-    // Set RLS context for the listener connection
-    // This is a special case - listener runs in background thread
-    setRlsContextForListenerConnection();
-
-    // Subscribe to all configured channels
-    for (String channel : defaultChannels.split(",")) {
-      subscribeToChannel(channel.trim());
-    }
-
+    establishListenerConnection();
     running = true;
 
     // Start polling for notifications
@@ -156,6 +146,13 @@ public class EventSubscriber {
     }
 
     try {
+      // Check connection health periodically
+      long now = System.currentTimeMillis();
+      if (now - lastConnectionCheck > CONNECTION_CHECK_INTERVAL) {
+        ensureConnectionHealthy();
+        lastConnectionCheck = now;
+      }
+
       PGConnection pgConn = listenerConnection.unwrap(PGConnection.class);
       PGNotification[] notifications = pgConn.getNotifications();
 
@@ -165,7 +162,8 @@ public class EventSubscriber {
         }
       }
     } catch (Exception e) {
-      LOG.error("Error polling notifications", e);
+      LOG.error("Error polling notifications, attempting reconnect", e);
+      handleConnectionError();
     }
   }
 
@@ -213,18 +211,87 @@ public class EventSubscriber {
       // This connection is long-lived and processes events from all territories
       // IMPORTANT: Using setSessionConfigSql (SET) instead of setConfigSql (SET LOCAL)
       // because this connection has autoCommit=true and lives beyond transactions
-      if (!securityIdentity.isAnonymous()) {
-        String user = securityIdentity.getPrincipal().getName();
-        stmt.execute(AppGuc.CURRENT_USER.setSessionConfigSql(user));
-      }
+
+      // Use configured system user instead of SecurityIdentity (which may be anonymous in background)
+      String systemUser = System.getProperty("security.rls.system-user", "events-bus@freshplan");
+      stmt.execute(AppGuc.CURRENT_USER.setSessionConfigSql(systemUser));
 
       // Set system role for event processing (needs to see all events)
-      stmt.execute(AppGuc.CURRENT_ROLE.setSessionConfigSql("system"));
+      stmt.execute(AppGuc.CURRENT_ROLE.setSessionConfigSql("SYSTEM"));
 
-      LOG.debug("RLS context set for event listener connection (session-level)");
+      LOG.debugf("RLS context set for event listener: user=%s, role=SYSTEM", systemUser);
     } catch (Exception e) {
-      LOG.warn("Failed to set RLS context for listener connection", e);
+      LOG.error("Failed to set RLS context for listener connection", e);
+      throw new RuntimeException("Cannot establish secure event listener", e);
     }
+  }
+
+  /** Establishes or re-establishes the listener connection */
+  private void establishListenerConnection() throws Exception {
+    // Close existing connection if any
+    if (listenerConnection != null && !listenerConnection.isClosed()) {
+      try {
+        listenerConnection.close();
+      } catch (Exception e) {
+        LOG.debug("Error closing old connection", e);
+      }
+    }
+
+    // Create new connection
+    listenerConnection = dataSource.getConnection();
+    listenerConnection.setAutoCommit(true);
+
+    // Set RLS context - MUST succeed or we fail
+    setRlsContextForListenerConnection();
+
+    // Re-subscribe to all channels
+    for (String channel : defaultChannels.split(",")) {
+      subscribeToChannel(channel.trim());
+    }
+
+    lastConnectionCheck = System.currentTimeMillis();
+    LOG.info("Event listener connection established successfully");
+  }
+
+  /** Ensures the connection is healthy, reconnects if needed */
+  private void ensureConnectionHealthy() {
+    try {
+      if (listenerConnection == null || listenerConnection.isClosed() || !listenerConnection.isValid(5)) {
+        LOG.warn("Listener connection unhealthy, reconnecting...");
+        establishListenerConnection();
+      }
+    } catch (Exception e) {
+      LOG.error("Connection health check failed", e);
+      handleConnectionError();
+    }
+  }
+
+  /** Handles connection errors by attempting to reconnect */
+  private void handleConnectionError() {
+    if (!running) {
+      return;
+    }
+
+    int retryCount = 0;
+    int maxRetries = 3;
+    long retryDelay = 1000; // Start with 1 second
+
+    while (running && retryCount < maxRetries) {
+      try {
+        Thread.sleep(retryDelay);
+        LOG.infof("Attempting to reconnect event listener (attempt %d/%d)", retryCount + 1, maxRetries);
+        establishListenerConnection();
+        LOG.info("Event listener reconnected successfully");
+        return;
+      } catch (Exception e) {
+        retryCount++;
+        retryDelay *= 2; // Exponential backoff
+        LOG.errorf("Reconnection attempt %d failed: %s", retryCount, e.getMessage());
+      }
+    }
+
+    LOG.error("Failed to reconnect after " + maxRetries + " attempts. Event listener disabled.");
+    running = false;
   }
 
   /** Event notification for CDI event bus */
