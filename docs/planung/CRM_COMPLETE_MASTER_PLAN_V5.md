@@ -81,6 +81,7 @@
 - **ADR-0004:** Territory = RLS-Datenraum, Lead-Protection = User-based → `/docs/planung/adr/ADR-0004-territory-rls-vs-lead-ownership.md`
 - **ADR-0005:** Nginx+OIDC Gateway statt Kong/Envoy → `/docs/planung/adr/ADR-0005-nginx-oidc-gateway.md`
 - **ADR-0006:** Mock-Governance (Business-Logic mock-frei) → `/docs/planung/adr/ADR-0006-mock-governance.md`
+- **ADR-0007:** RLS Connection Affinity Pattern → `/docs/planung/adr/ADR-0007-rls-connection-affinity.md`
 
 ### **ADR-0001: CQRS Light statt Full-CQRS (21.09.2025)**
 **Kontext:** Performance für 5-50 interne Nutzer mit Budget-Constraints
@@ -129,33 +130,55 @@
   - PanacheQuery Fix für 400 Bad Request Fehler
   - Migrations: V240 (email_unique_index), V241 (activity_type_constraint mit CLOCK_*)
   - Tests: LeadResourceTest 13/13 ✅ GREEN (100% Pass Rate)
+- 2025-09-25 18:42 — **Sprint 1.5 MERGED:** Security Retrofit - RLS Connection Affinity (PR #106) **KRITISCHER SECURITY FIX**
+  - CDI Interceptor Pattern mit @RlsContext für garantierte Connection Affinity
+  - Fail-closed RLS Policies + RlsBootstrapGuard für Production Safety
+  - GUC-Keys umbenannt (keine PostgreSQL reserved words): app.user_context, app.role_context
+  - EventSubscriber mit session-scoped GUCs + konfigurierbare Reconnect-Logic
+  - Migrations: V242 (fail_closed_policies), V243 (update_guc_keys)
+  - Tests: RlsConnectionAffinityTest ✅, RlsRoleConsistencyTest ✅
+  - Gemini Review: "Exzellent und äußerst wichtig"
+  - **Security Impact: Verhindert Datenleaks zwischen Territories/Tenants**
+- 2025-09-25 20:45 — **Sprint 1.6 GEPLANT:** RLS Adoption in Modulen - GAP-Analyse + CI-Guard
+  - GAP-Analyse: 33+ Services ohne @RlsContext identifiziert (5 in Modul 02 blockieren Sprint 2.1)
+  - TRIGGER_SPRINT_1_6.md erstellt für systematische Module-Migration
+  - CI-Guard Pattern entwickelt (FP-arm Heuristik für @Transactional + DB ohne @RlsContext)
+  - ADR-0007 erstellt für RLS Connection Affinity Pattern
+  - Phase 1 auf 6 Sprints erweitert (83% complete)
 <!-- MP5:SESSION_LOG:END -->
 
 ## Next Steps
 <!-- MP5:NEXT_STEPS:START -->
-- ✅ **Sprint 2.1 PR #105 COMPLETE:** Lead Endpoints fertig mit 13/13 Tests grün
-  - PR #105 dokumentieren und Review anfordern
-  - Sprint 2.1 PR #3: Lead UI Components (nach PR #105 Merge)
-- Sprint 2.2: Kundenmanagement Integration (nach 2.1)
-- Migration V242 als nächste verfügbar (V240-V241 deployed)
-- Parallel: performUniversalSearch Frontend-Bug (niedrige Priorität)
+- **🚀 Sprint 1.6:** RLS Module Adoption (P0 - blockiert Sprint 2.1)
+  - Modul 02: 5 Services mit @RlsContext annotieren
+  - CI-Guard implementieren und aktivieren
+  - RLS-Badge in alle Module 01-08 einfügen
+- Sprint 2.1: Kann erst nach Sprint 1.6 fortfahren
+- Follow-up Tickets:
+  - FP-272: Modul 02 Services annotieren (P0)
+  - FP-273: Modul 03 Migration planen (P1)
+  - FP-274: CI-Rule für @RlsContext (P1)
+  - FP-275: Import/Batch RLS-sicher machen (P1)
+  - FP-276: Monitoring via Agroal/Micrometer (P2)
 <!-- MP5:NEXT_STEPS:END -->
 
 ## Risks
 <!-- MP5:RISKS:START -->
-- GUC-Context auf falscher Connection (RLS unwirksam) - Mitigation: DbContext Pattern in Sprint 2.x
+- ✅ ~~GUC-Context auf falscher Connection~~ - BEHOBEN durch Sprint 1.5 Connection Affinity
+- **Sprint 2.1 blockiert:** Modul 02 Services ohne @RlsContext - Mitigation: Sprint 1.6 mit P0
+- 33+ Services ohne RLS-Schutz - Mitigation: Systematische Migration via Sprint 1.6
 - Zwei Dev-Server laufen parallel (Bash IDs: 64b7dc, 1db55e) - Mitigation: Beim nächsten Start bereinigen
-- NEXT_STEP.md veraltet (Stand 11.08.2025) - Mitigation: In nächster Session aktualisieren
 <!-- MP5:RISKS:END -->
 
 ## Decisions
 <!-- MP5:DECISIONS:START -->
-- 2025-09-25 — Territory ohne Gebietsschutz bestätigt: Lead-Protection rein user-basiert (ADR-0004 implementiert)
+- 2025-09-25 — ADR-0007: RLS Connection Affinity Pattern für alle Module verbindlich
+- 2025-09-25 — Sprint 1.6 eingefügt: Module-Migration zu @RlsContext vor Phase 2
+- 2025-09-25 — CI-Guard Pattern: Heuristik statt Regex für FP-arme Prüfung
+- 2025-09-25 — Territory ohne Gebietsschutz bestätigt: Lead-Protection rein user-basiert (ADR-0004)
 - 2025-09-25 — Service-Pattern für Thread-Safety: Statische DB-Methoden durch CDI-Services ersetzt
-- 2025-09-25 — ElementCollection erfordert Join-Tabellen: V231 Migration als Standard-Pattern
-- 2025-09-24 — Settings Registry Production-Ready: Race Condition Prevention + 304 Support + Strict Create implementiert nach KI-Review
-- 2025-09-23 — ADR-0006 angenommen: Mock-Governance (Business-Logic mock-frei, Ausnahmen Tests/Stories; Dev-Seeds statt UI-Mocks)
-- 2025-09-23 — Security Foundation minimalistisch (ohne Business-Dependencies) - RLS-Policies später pro Modul
+- 2025-09-24 — Settings Registry Production-Ready: Race Condition Prevention + 304 Support
+- 2025-09-23 — ADR-0006 angenommen: Mock-Governance (Business-Logic mock-frei)
 <!-- MP5:DECISIONS:END -->
 
 ### **ADR-0002: PostgreSQL LISTEN/NOTIFY statt Event-Bus (18.09.2025)**
