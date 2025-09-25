@@ -215,14 +215,16 @@ public class EventSubscriber {
       // Using set_config with parameters for safety (session-scoped)
 
       // Set system user from configuration
-      try (var ps = listenerConnection.prepareStatement(AppGuc.CURRENT_USER.setSessionConfigSql())) {
+      try (var ps =
+          listenerConnection.prepareStatement(AppGuc.CURRENT_USER.setSessionConfigSql())) {
         ps.setString(1, AppGuc.CURRENT_USER.getKey());
         ps.setString(2, systemUser);
         ps.execute();
       }
 
       // Set system role for event processing (needs to see all events)
-      try (var ps = listenerConnection.prepareStatement(AppGuc.CURRENT_ROLE.setSessionConfigSql())) {
+      try (var ps =
+          listenerConnection.prepareStatement(AppGuc.CURRENT_ROLE.setSessionConfigSql())) {
         ps.setString(1, AppGuc.CURRENT_ROLE.getKey());
         ps.setString(2, "SYSTEM");
         ps.execute();

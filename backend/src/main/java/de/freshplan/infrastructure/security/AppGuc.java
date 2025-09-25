@@ -24,14 +24,16 @@ public enum AppGuc {
   }
 
   /**
-   * Returns SQL for setting GUC value using set_config (transaction-scoped).
-   * Use with prepared statement parameters for safety.
+   * Returns SQL for setting GUC value using set_config (transaction-scoped). Use with prepared
+   * statement parameters for safety.
    */
   public String setLocalConfigSql() {
     return "SELECT set_config(?, ?, true)"; // true = transaction-local
   }
 
-  /** @deprecated Use setLocalConfigSql() with parameters instead */
+  /**
+   * @deprecated Use setLocalConfigSql() with parameters instead
+   */
   @Deprecated
   public String setConfigSql(String value) {
     if (value == null || value.isEmpty()) {
@@ -46,14 +48,16 @@ public enum AppGuc {
   }
 
   /**
-   * Returns SQL for setting GUC value using set_config (session-scoped).
-   * Use with prepared statement parameters for safety.
+   * Returns SQL for setting GUC value using set_config (session-scoped). Use with prepared
+   * statement parameters for safety.
    */
   public String setSessionConfigSql() {
     return "SELECT set_config(?, ?, false)"; // false = session-level
   }
 
-  /** @deprecated Use setSessionConfigSql() with parameters instead */
+  /**
+   * @deprecated Use setSessionConfigSql() with parameters instead
+   */
   @Deprecated
   public String setSessionConfigSql(String value) {
     if (value == null || value.isEmpty()) {

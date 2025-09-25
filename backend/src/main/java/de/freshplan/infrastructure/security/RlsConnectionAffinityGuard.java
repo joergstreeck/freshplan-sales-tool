@@ -8,8 +8,8 @@ import jakarta.interceptor.AroundInvoke;
 import jakarta.interceptor.Interceptor;
 import jakarta.interceptor.InvocationContext;
 import jakarta.persistence.EntityManager;
-import jakarta.transaction.Transactional;
 import jakarta.transaction.TransactionSynchronizationRegistry;
+import jakarta.transaction.Transactional;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.logging.Logger;
 
