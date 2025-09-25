@@ -284,7 +284,8 @@ public class FollowUpAutomationService {
             ORDER BY l.registeredAt ASC
             """;
 
-    LocalDateTime recentActivity = LocalDateTime.now().minus(daysAfterCreation, ChronoUnit.DAYS);
+    LocalDateTime recentActivity =
+        LocalDateTime.now(clock).minus(daysAfterCreation, ChronoUnit.DAYS);
 
     return em.createQuery(jpql, Lead.class)
         .setParameter("activeStatuses", List.of(LeadStatus.REGISTERED, LeadStatus.ACTIVE))
@@ -304,7 +305,7 @@ public class FollowUpAutomationService {
 
   /** Prüft ob Lead kürzliche meaningful Aktivität hatte */
   private boolean hasRecentMeaningfulActivity(Lead lead, int daysBack) {
-    LocalDateTime since = LocalDateTime.now().minus(daysBack, ChronoUnit.DAYS);
+    LocalDateTime since = LocalDateTime.now(clock).minus(daysBack, ChronoUnit.DAYS);
 
     String jpql =
         """

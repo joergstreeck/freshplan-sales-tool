@@ -193,10 +193,10 @@ public class EmailNotificationService {
 
       return encodedPayload + "." + signature;
 
-    } catch (Exception e) {
+    } catch (java.security.NoSuchAlgorithmException | java.security.InvalidKeyException e) {
       LOG.error("Failed to generate secure token", e);
-      // Fallback: Verwende zufälligen UUID als Token
-      return java.util.UUID.randomUUID().toString();
+      // Re-throw exception to prevent sending email with insecure token
+      throw new RuntimeException("Could not generate secure token for unsubscribe link", e);
     }
   }
 
