@@ -24,11 +24,8 @@ CREATE INDEX IF NOT EXISTS idx_lead_followup_eligibility
     ON leads(registered_at, t3_followup_sent, t7_followup_sent)
     WHERE status IN ('REGISTERED', 'ACTIVE');
 
--- Erweitere lead_activities für Follow-up Metadata
-ALTER TABLE lead_activities
-    ADD COLUMN IF NOT EXISTS followup_metadata JSONB;
-
--- Index für Follow-up Activity Queries
+-- Nutze bestehende metadata Spalte für Follow-up Tracking (keine neue Spalte)
+-- Index für Follow-up Activity Queries auf bestehende metadata Spalte
 CREATE INDEX IF NOT EXISTS idx_lead_activity_followup
     ON lead_activities(lead_id, activity_date)
     WHERE metadata->>'followup_type' IS NOT NULL;
@@ -167,7 +164,7 @@ COMMENT ON COLUMN leads.last_followup_at IS 'Zeitpunkt des letzten automatisiert
 COMMENT ON COLUMN leads.followup_count IS 'Anzahl gesendeter automatisierter Follow-ups';
 COMMENT ON COLUMN leads.t3_followup_sent IS 'Flag ob T+3 Sample Follow-up bereits gesendet wurde';
 COMMENT ON COLUMN leads.t7_followup_sent IS 'Flag ob T+7 Bulk Order Follow-up bereits gesendet wurde';
-COMMENT ON COLUMN lead_activities.followup_metadata IS 'Metadata für Follow-up Tracking (followup_type, template_id, etc.)';
+-- Metadata wird in bestehender metadata Spalte gespeichert (kein separates followup_metadata)
 
 -- Performance-Hinweis: Die Indizes sind optimiert für die häufigsten Follow-up Queries:
 -- 1. Finde Leads die für T+3 oder T+7 Follow-up qualifiziert sind

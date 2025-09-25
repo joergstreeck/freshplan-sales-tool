@@ -31,6 +31,8 @@ public class EmailNotificationService {
 
   @Inject EmailProviderService emailProvider; // Abstraction für SendGrid/SES
 
+  @Inject UnsubscribeSecretGuard secretGuard;
+
   /**
    * Sendet Campaign-Email mit Template und personalisierten Daten
    *
@@ -170,15 +172,8 @@ public class EmailNotificationService {
       String nonce = java.util.UUID.randomUUID().toString();
       String payload = String.format("%s:%d:%s", leadId, timestamp, nonce);
 
-      // HMAC-SHA256 Signierung
-      // In Produktion: Secret aus sicherer Config laden
-      String secret = System.getenv("UNSUBSCRIBE_TOKEN_SECRET");
-      if (secret == null || secret.isEmpty()) {
-        // Fallback für Development - NICHT in Produktion verwenden!
-        secret = "dev-secret-change-in-production";
-        LOG.warn(
-            "Using development token secret - configure UNSUBSCRIBE_TOKEN_SECRET for production");
-      }
+      // HMAC-SHA256 Signierung mit Guard-verifiziertem Secret
+      String secret = secretGuard.getTokenSecret();
 
       javax.crypto.Mac mac = javax.crypto.Mac.getInstance("HmacSHA256");
       javax.crypto.spec.SecretKeySpec secretKey =

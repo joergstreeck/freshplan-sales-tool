@@ -3,6 +3,7 @@ package de.freshplan.modules.leads.service;
 import de.freshplan.infrastructure.security.RlsContext;
 import de.freshplan.modules.leads.domain.*;
 import de.freshplan.modules.leads.events.FollowUpProcessedEvent;
+import io.quarkus.scheduler.Scheduled;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Event;
 import jakarta.inject.Inject;
@@ -14,6 +15,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.logging.Logger;
 
 /**
@@ -43,6 +45,12 @@ public class FollowUpAutomationService {
 
   @Inject Event<FollowUpProcessedEvent> followUpEvent;
 
+  @ConfigProperty(name = "freshplan.followup.enabled", defaultValue = "false")
+  boolean followUpEnabled;
+
+  @ConfigProperty(name = "freshplan.followup.batchSize", defaultValue = "200")
+  int batchSize;
+
   // Clock für testbare Zeit-Logik
   private Clock clock = Clock.systemDefaultZone();
 
@@ -52,12 +60,17 @@ public class FollowUpAutomationService {
   }
 
   /**
-   * Check für fällige Follow-ups TODO: Scheduled über Quarkus Scheduler Extension aktivieren
-   * Alternativ: Manuell über REST-Endpoint oder externen Scheduler aufrufen
+   * Scheduled Check für fällige Follow-ups
+   * Läuft täglich um Mitternacht (konfigurierbar über freshplan.followup.cron)
    */
+  @Scheduled(cron = "{freshplan.followup.cron:0 0 * * * ?}")
   @Transactional
   @RlsContext
   public void processScheduledFollowUps() {
+    if (!followUpEnabled) {
+      LOG.debug("Follow-up automation is disabled");
+      return;
+    }
     LocalDateTime now = LocalDateTime.now(clock);
     LOG.infof("Starting T+3/T+7 follow-up automation at %s", now);
 
@@ -92,8 +105,21 @@ public class FollowUpAutomationService {
     int processed = 0;
     for (Lead lead : eligibleLeads) {
       try {
-        // Prüfe ob bereits T+3 Follow-up gesendet wurde über DB-Flag
-        if (Boolean.TRUE.equals(lead.t3FollowupSent)) {
+        // Atomares Flag-Setzen für Idempotenz (verhindert Doppelversand)
+        int updated = em.createQuery("""
+            UPDATE Lead l
+            SET l.t3FollowupSent = true,
+                l.lastFollowupAt = :now,
+                l.followupCount = l.followupCount + 1
+            WHERE l.id = :id AND l.t3FollowupSent = false
+            """)
+            .setParameter("id", lead.id)
+            .setParameter("now", now)
+            .executeUpdate();
+
+        if (updated == 0) {
+          // Bereits verarbeitet (Race Condition) - idempotent überspringen
+          LOG.debugf("Lead %s already has T+3 follow-up, skipping", lead.id);
           continue;
         }
 
@@ -102,7 +128,16 @@ public class FollowUpAutomationService {
             CampaignTemplate.findActiveByType(CampaignTemplate.TemplateType.SAMPLE_REQUEST);
 
         if (template == null) {
-          LOG.warn("No active SAMPLE_REQUEST template found, skipping T+3 follow-up");
+          LOG.warn("No active SAMPLE_REQUEST template found, reverting T+3 flag");
+          // Revert Flag bei fehlendem Template
+          em.createQuery("""
+              UPDATE Lead l
+              SET l.t3FollowupSent = false,
+                  l.followupCount = l.followupCount - 1
+              WHERE l.id = :id
+              """)
+              .setParameter("id", lead.id)
+              .executeUpdate();
           continue;
         }
 
@@ -118,12 +153,6 @@ public class FollowUpAutomationService {
           // Erstelle Activity für Tracking
           createFollowUpActivity(
               lead, "T3_FOLLOWUP", "T+3 Sample follow-up sent - Gratis Produktkatalog + Box");
-
-          // Setze Follow-up Flags
-          lead.t3FollowupSent = true;
-          lead.lastFollowupAt = now;
-          lead.followupCount = lead.followupCount + 1;
-          lead.persist();
 
           // Update Template-Statistiken
           template.timesUsed++;
@@ -152,8 +181,25 @@ public class FollowUpAutomationService {
     int processed = 0;
     for (Lead lead : eligibleLeads) {
       try {
-        // Prüfe ob bereits T+7 Follow-up gesendet wurde über DB-Flag
-        if (Boolean.TRUE.equals(lead.t7FollowupSent)) {
+        // Atomares Flag-Setzen für Idempotenz (verhindert Doppelversand)
+        String statusUpdate = !hasRecentMeaningfulActivity(lead, T7_DAYS)
+            ? ", l.status = 'REMINDER', l.reminderSentAt = :now"
+            : "";
+
+        int updated = em.createQuery("""
+            UPDATE Lead l
+            SET l.t7FollowupSent = true,
+                l.lastFollowupAt = :now,
+                l.followupCount = l.followupCount + 1""" + statusUpdate + """
+            WHERE l.id = :id AND l.t7FollowupSent = false
+            """)
+            .setParameter("id", lead.id)
+            .setParameter("now", now)
+            .executeUpdate();
+
+        if (updated == 0) {
+          // Bereits verarbeitet (Race Condition) - idempotent überspringen
+          LOG.debugf("Lead %s already has T+7 follow-up, skipping", lead.id);
           continue;
         }
 
@@ -162,7 +208,16 @@ public class FollowUpAutomationService {
             CampaignTemplate.findActiveByType(CampaignTemplate.TemplateType.FOLLOW_UP);
 
         if (template == null) {
-          LOG.warn("No active FOLLOW_UP template found, skipping T+7 follow-up");
+          LOG.warn("No active FOLLOW_UP template found, reverting T+7 flag");
+          // Revert Flag bei fehlendem Template
+          em.createQuery("""
+              UPDATE Lead l
+              SET l.t7FollowupSent = false,
+                  l.followupCount = l.followupCount - 1
+              WHERE l.id = :id
+              """)
+              .setParameter("id", lead.id)
+              .executeUpdate();
           continue;
         }
 
@@ -183,19 +238,6 @@ public class FollowUpAutomationService {
               String.format(
                   "T+7 Bulk order follow-up sent - %s%% Rabatt ab %s€",
                   getBulkDiscount(lead), getBulkMinimumOrder(lead)));
-
-          // Setze Follow-up Flags
-          lead.t7FollowupSent = true;
-          lead.lastFollowupAt = now;
-          lead.followupCount = lead.followupCount + 1;
-
-          // Update Lead-Status wenn keine Response
-          if (!hasRecentMeaningfulActivity(lead, T7_DAYS)) {
-            lead.status = LeadStatus.REMINDER;
-            lead.reminderSentAt = now;
-          }
-
-          lead.persist();
           LOG.infof("Lead %s moved to REMINDER status after T+7", lead.id);
 
           // Update Template-Statistiken
@@ -247,7 +289,7 @@ public class FollowUpAutomationService {
                 ActivityType.SAMPLE_SENT,
                 ActivityType.ORDER))
         .setParameter("recentActivity", recentActivity)
-        .setMaxResults(100) // Batch-Verarbeitung für Performance
+        .setMaxResults(batchSize) // Konfigurierbare Batch-Size
         .getResultList();
   }
 
