@@ -10,7 +10,7 @@ import org.jboss.logging.Logger;
  * JPA Converter for JsonObject to JSONB column mapping. Sprint 2.1: Used for business rules and
  * metadata storage.
  */
-@Converter
+@Converter(autoApply = false)
 public class JsonObjectConverter implements AttributeConverter<JsonObject, String> {
 
   private static final Logger LOG = Logger.getLogger(JsonObjectConverter.class);

@@ -11,11 +11,20 @@ public enum LeadStatus {
   /** Lead has meaningful contact and is actively worked on */
   ACTIVE,
 
-  /** 60 days without activity - reminder sent to owner */
-  REMINDER_SENT,
+  /** 60 days without activity - reminder sent to owner (renamed for consistency) */
+  REMINDER,
 
   /** After reminder period - 10 day grace period */
   GRACE_PERIOD,
+
+  /** Lead has been qualified as a real opportunity */
+  QUALIFIED,
+
+  /** Lead has been converted to a customer */
+  CONVERTED,
+
+  /** Lead was lost (not converted) */
+  LOST,
 
   /** Lead protection expired - can be reassigned */
   EXPIRED,
@@ -23,6 +32,6 @@ public enum LeadStatus {
   /** Lead protection extended by management */
   EXTENDED,
 
-  /** Clock stopped due to FreshFoodz delays */
-  STOP_CLOCK
+  /** Soft delete - lead is archived */
+  DELETED
 }

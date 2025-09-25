@@ -42,7 +42,11 @@ public class Territory extends PanacheEntityBase {
 
   @Column(name = "business_rules", columnDefinition = "jsonb")
   @Convert(converter = JsonObjectConverter.class)
+  @org.hibernate.annotations.JdbcTypeCode(org.hibernate.type.SqlTypes.JSON)
   public JsonObject businessRules = new JsonObject();
+
+  @Column(name = "active", nullable = false)
+  public boolean active = true;
 
   @Column(name = "created_at", nullable = false)
   public LocalDateTime createdAt;
@@ -53,6 +57,10 @@ public class Territory extends PanacheEntityBase {
   // Helper methods
   public static Territory findByCode(String code) {
     return find("id", code).firstResult();
+  }
+
+  public static Territory findByCountryCode(String countryCode) {
+    return find("countryCode", countryCode).firstResult();
   }
 
   public boolean isGermany() {

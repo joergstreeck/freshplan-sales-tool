@@ -39,6 +39,7 @@ public class LeadActivity extends PanacheEntityBase {
 
   @Column(columnDefinition = "jsonb")
   @Convert(converter = JsonObjectConverter.class)
+  @org.hibernate.annotations.JdbcTypeCode(org.hibernate.type.SqlTypes.JSON)
   public JsonObject metadata = new JsonObject();
 
   @Column(name = "is_meaningful_contact")

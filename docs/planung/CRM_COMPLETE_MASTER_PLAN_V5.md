@@ -115,24 +115,29 @@
   - Foundation Validation Script finalisiert
   - **Phase 1 Foundation 🔄 FINAL OPTIMIZATION** - Sprint 1.4 Quick-Wins läuft
   - **📊 Performance Report:** [phase-1-foundation-benchmark-2025-09-24.md](../performance/phase-1-foundation-benchmark-2025-09-24.md)
+- 2025-09-25 03:10 — Sprint 2.1 PR #2 Implementation: Lead Endpoints & Queries mit Code Review Fixes
+  - Lead REST API vollständig implementiert (CRUD + Activities + Collaborators)
+  - Protection System mit 6/60/10 Regel + Stop-the-Clock Feature
+  - Advanced Features aus Artefakten integriert: Email Activity Detection, Campaign Templates, FreshFoodz CI
+  - Code Review Fixes: Exception Handling, Test Isolation, Performance-Optimierung
+  - Migrations: V232 (campaign_templates), V233 (territories.active)
+  - Tests: LeadResourceSimpleTest ✅ GREEN, Integration Tests pending JWT-Fix
+- 2025-09-25 12:08 — Sprint 2.1 PR #105: Lead Endpoints Finalisierung mit HTTP-Semantics & Security Fixes
+  - Strong ETags implementiert statt Weak ETags (HTTP Spec Compliance)
+  - LeadDTO eingeführt gegen LazyInitializationException
+  - RlsGucFilter für fail-closed Security mit PostgreSQL GUCs implementiert
+  - PanacheQuery Fix für 400 Bad Request Fehler
+  - Migrations: V240 (email_unique_index), V241 (activity_type_constraint mit CLOCK_*)
+  - Tests: LeadResourceTest 13/13 ✅ GREEN (100% Pass Rate)
 <!-- MP5:SESSION_LOG:END -->
 
 ## Next Steps
 <!-- MP5:NEXT_STEPS:START -->
-- ✅ **Sprint 2.1 PR #1 COMPLETE:** Territory Management (PR #103 gemerged, 2025-09-25)
-  - Territory ohne Gebietsschutz implementiert
-  - UserLeadSettingsService mit Thread-Safety
-  - Migration V229-V231 deployed
-  - 8 Tests, 100% Service Coverage
-- 🚀 **Sprint 2.1 PR #2 READY:** Lead Endpoints & Queries
-  - GET /api/leads (Pagination & Filtering)
-  - POST /api/leads (Lead-Erfassung)
-  - PATCH /api/leads/{id} (Status-Updates)
-  - Lead Protection System (6/60/10 Regel)
-  - Stop-the-Clock Feature
-- Sprint 2.1 PR #3: Lead UI Components (nach PR #2)
+- ✅ **Sprint 2.1 PR #105 COMPLETE:** Lead Endpoints fertig mit 13/13 Tests grün
+  - PR #105 dokumentieren und Review anfordern
+  - Sprint 2.1 PR #3: Lead UI Components (nach PR #105 Merge)
 - Sprint 2.2: Kundenmanagement Integration (nach 2.1)
-- Migration V232 als nächste verfügbar
+- Migration V242 als nächste verfügbar (V240-V241 deployed)
 - Parallel: performUniversalSearch Frontend-Bug (niedrige Priorität)
 <!-- MP5:NEXT_STEPS:END -->
 
