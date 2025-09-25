@@ -60,8 +60,8 @@ public class FollowUpAutomationService {
   }
 
   /**
-   * Scheduled Check für fällige Follow-ups
-   * Läuft täglich um Mitternacht (konfigurierbar über freshplan.followup.cron)
+   * Scheduled Check für fällige Follow-ups Läuft täglich um Mitternacht (konfigurierbar über
+   * freshplan.followup.cron)
    */
   @Scheduled(cron = "{freshplan.followup.cron:0 0 * * * ?}")
   @Transactional
@@ -106,16 +106,18 @@ public class FollowUpAutomationService {
     for (Lead lead : eligibleLeads) {
       try {
         // Atomares Flag-Setzen für Idempotenz (verhindert Doppelversand)
-        int updated = em.createQuery("""
+        int updated =
+            em.createQuery(
+                    """
             UPDATE Lead l
             SET l.t3FollowupSent = true,
                 l.lastFollowupAt = :now,
                 l.followupCount = l.followupCount + 1
             WHERE l.id = :id AND l.t3FollowupSent = false
             """)
-            .setParameter("id", lead.id)
-            .setParameter("now", now)
-            .executeUpdate();
+                .setParameter("id", lead.id)
+                .setParameter("now", now)
+                .executeUpdate();
 
         if (updated == 0) {
           // Bereits verarbeitet (Race Condition) - idempotent überspringen
@@ -130,7 +132,8 @@ public class FollowUpAutomationService {
         if (template == null) {
           LOG.warn("No active SAMPLE_REQUEST template found, reverting T+3 flag");
           // Revert Flag bei fehlendem Template
-          em.createQuery("""
+          em.createQuery(
+                  """
               UPDATE Lead l
               SET l.t3FollowupSent = false,
                   l.followupCount = l.followupCount - 1
@@ -182,20 +185,25 @@ public class FollowUpAutomationService {
     for (Lead lead : eligibleLeads) {
       try {
         // Atomares Flag-Setzen für Idempotenz (verhindert Doppelversand)
-        String statusUpdate = !hasRecentMeaningfulActivity(lead, T7_DAYS)
-            ? ", l.status = 'REMINDER', l.reminderSentAt = :now"
-            : "";
+        String statusUpdate =
+            !hasRecentMeaningfulActivity(lead, T7_DAYS)
+                ? ", l.status = 'REMINDER', l.reminderSentAt = :now"
+                : "";
 
-        int updated = em.createQuery("""
+        int updated =
+            em.createQuery(
+                    """
             UPDATE Lead l
             SET l.t7FollowupSent = true,
                 l.lastFollowupAt = :now,
-                l.followupCount = l.followupCount + 1""" + statusUpdate + """
+                l.followupCount = l.followupCount + 1"""
+                        + statusUpdate
+                        + """
             WHERE l.id = :id AND l.t7FollowupSent = false
             """)
-            .setParameter("id", lead.id)
-            .setParameter("now", now)
-            .executeUpdate();
+                .setParameter("id", lead.id)
+                .setParameter("now", now)
+                .executeUpdate();
 
         if (updated == 0) {
           // Bereits verarbeitet (Race Condition) - idempotent überspringen
@@ -210,7 +218,8 @@ public class FollowUpAutomationService {
         if (template == null) {
           LOG.warn("No active FOLLOW_UP template found, reverting T+7 flag");
           // Revert Flag bei fehlendem Template
-          em.createQuery("""
+          em.createQuery(
+                  """
               UPDATE Lead l
               SET l.t7FollowupSent = false,
                   l.followupCount = l.followupCount - 1
