@@ -159,12 +159,23 @@ BEGIN
     END IF;
 END $$;
 
--- Dokumentation
-COMMENT ON COLUMN leads.last_followup_at IS 'Zeitpunkt des letzten automatisierten Follow-ups';
-COMMENT ON COLUMN leads.followup_count IS 'Anzahl gesendeter automatisierter Follow-ups';
-COMMENT ON COLUMN leads.t3_followup_sent IS 'Flag ob T+3 Sample Follow-up bereits gesendet wurde';
-COMMENT ON COLUMN leads.t7_followup_sent IS 'Flag ob T+7 Bulk Order Follow-up bereits gesendet wurde';
--- Metadata wird in bestehender metadata Spalte gespeichert (kein separates followup_metadata)
+-- Dokumentation (Kommentare sind idempotent - überschreiben existierende)
+DO $$
+BEGIN
+    -- Only add comments if columns exist
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='leads' AND column_name='last_followup_at') THEN
+        COMMENT ON COLUMN leads.last_followup_at IS 'Zeitpunkt des letzten automatisierten Follow-ups';
+    END IF;
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='leads' AND column_name='followup_count') THEN
+        COMMENT ON COLUMN leads.followup_count IS 'Anzahl gesendeter automatisierter Follow-ups';
+    END IF;
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='leads' AND column_name='t3_followup_sent') THEN
+        COMMENT ON COLUMN leads.t3_followup_sent IS 'Flag ob T+3 Sample Follow-up bereits gesendet wurde';
+    END IF;
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='leads' AND column_name='t7_followup_sent') THEN
+        COMMENT ON COLUMN leads.t7_followup_sent IS 'Flag ob T+7 Bulk Order Follow-up bereits gesendet wurde';
+    END IF;
+END $$;
 
 -- Performance-Hinweis: Die Indizes sind optimiert für die häufigsten Follow-up Queries:
 -- 1. Finde Leads die für T+3 oder T+7 Follow-up qualifiziert sind
