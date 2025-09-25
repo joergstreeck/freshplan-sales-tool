@@ -258,12 +258,7 @@ public class LeadResource {
     lead.persist();
 
     // Create initial activity
-    LeadActivity activity = new LeadActivity();
-    activity.lead = lead;
-    activity.userId = currentUserId;
-    activity.activityType = ActivityType.CREATED;
-    activity.description = "Lead created";
-    activity.persist();
+    createAndPersistActivity(lead, currentUserId, ActivityType.CREATED, "Lead created");
 
     LOG.infof("Created lead %s for user %s", lead.id, currentUserId);
 
@@ -368,12 +363,11 @@ public class LeadResource {
       lead.lastActivityAt = LocalDateTime.now();
 
       // Log status change activity
-      LeadActivity activity = new LeadActivity();
-      activity.lead = lead;
-      activity.userId = currentUserId;
-      activity.activityType = ActivityType.STATUS_CHANGE;
-      activity.description = "Status changed from " + oldStatus + " to " + updateRequest.status;
-      activity.persist();
+      createAndPersistActivity(
+          lead,
+          currentUserId,
+          ActivityType.STATUS_CHANGE,
+          "Status changed from " + oldStatus + " to " + updateRequest.status);
 
       // Handle special status transitions
       if (updateRequest.status == LeadStatus.GRACE_PERIOD) {
@@ -392,24 +386,18 @@ public class LeadResource {
         lead.stopApprovedBy = currentUserId;
 
         // Log clock stop activity
-        LeadActivity activity = new LeadActivity();
-        activity.lead = lead;
-        activity.userId = currentUserId;
-        activity.activityType = ActivityType.CLOCK_STOPPED;
-        activity.description = "Clock stopped: " + updateRequest.stopReason;
-        activity.persist();
+        createAndPersistActivity(
+            lead,
+            currentUserId,
+            ActivityType.CLOCK_STOPPED,
+            "Clock stopped: " + updateRequest.stopReason);
       } else if (!updateRequest.stopClock && lead.clockStoppedAt != null) {
         // Resume clock
         lead.clockStoppedAt = null;
         lead.stopReason = null;
         lead.stopApprovedBy = null;
 
-        LeadActivity activity = new LeadActivity();
-        activity.lead = lead;
-        activity.userId = currentUserId;
-        activity.activityType = ActivityType.CLOCK_RESUMED;
-        activity.description = "Clock resumed";
-        activity.persist();
+        createAndPersistActivity(lead, currentUserId, ActivityType.CLOCK_RESUMED, "Clock resumed");
       }
     }
 
@@ -484,12 +472,7 @@ public class LeadResource {
     lead.persist();
 
     // Log deletion activity
-    LeadActivity activity = new LeadActivity();
-    activity.lead = lead;
-    activity.userId = currentUserId;
-    activity.activityType = ActivityType.DELETED;
-    activity.description = "Lead deleted";
-    activity.persist();
+    createAndPersistActivity(lead, currentUserId, ActivityType.DELETED, "Lead deleted");
 
     LOG.infof("Deleted lead %s by user %s", id, currentUserId);
 
@@ -518,22 +501,19 @@ public class LeadResource {
     // RLS handles access control - if lead is null, user has no access
     // No additional check needed since RLS policies filter at database level
 
-    // Create activity
-    LeadActivity activity = new LeadActivity();
-    activity.lead = lead;
-    activity.userId = currentUserId;
-
     // Validate and convert activity type
+    ActivityType activityType;
     try {
-      activity.activityType = ActivityType.valueOf(request.activityType.toUpperCase());
+      activityType = ActivityType.valueOf(request.activityType.toUpperCase());
     } catch (IllegalArgumentException e) {
       return Response.status(Response.Status.BAD_REQUEST)
           .entity(Map.of("error", "Invalid activity type: " + request.activityType))
           .build();
     }
 
-    activity.description = request.description;
-    activity.persist();
+    // Create activity using helper method
+    LeadActivity activity =
+        createAndPersistActivity(lead, currentUserId, activityType, request.description);
 
     // Update lead's last activity timestamp (important for protection system)
     lead.lastActivityAt = LocalDateTime.now();
@@ -593,5 +573,26 @@ public class LeadResource {
     String safeField = ALLOWED_SORT_FIELDS.contains(field) ? field : "createdAt";
     boolean descending = "DESC".equalsIgnoreCase(direction);
     return descending ? Sort.descending(safeField) : Sort.ascending(safeField);
+  }
+
+  /**
+   * Helper method to create and persist activity entries. Reduces code duplication and ensures
+   * consistent activity logging across all lead operations.
+   *
+   * @param lead The lead entity
+   * @param userId The user performing the action
+   * @param type The activity type
+   * @param description The activity description
+   * @return The persisted activity
+   */
+  private LeadActivity createAndPersistActivity(
+      Lead lead, String userId, ActivityType type, String description) {
+    LeadActivity activity = new LeadActivity();
+    activity.lead = lead;
+    activity.userId = userId;
+    activity.activityType = type;
+    activity.description = description;
+    activity.persist();
+    return activity;
   }
 }
