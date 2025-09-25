@@ -89,3 +89,11 @@ BEGIN
         EXISTS(SELECT 1 FROM pg_policies WHERE tablename = 'leads')::BOOLEAN;
 END;
 $$;
+
+-- Grant execute to application role (if it exists)
+DO $$
+BEGIN
+    IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'freshplan') THEN
+        EXECUTE 'GRANT EXECUTE ON FUNCTION check_rls_context() TO freshplan';
+    END IF;
+END $$;

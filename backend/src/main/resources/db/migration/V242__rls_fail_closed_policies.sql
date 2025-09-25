@@ -82,5 +82,10 @@ BEGIN
 END;
 $$;
 
--- Grant execute to application role
-GRANT EXECUTE ON FUNCTION check_rls_context() TO freshplan;
+-- Grant execute to application role (if it exists)
+DO $$
+BEGIN
+    IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'freshplan') THEN
+        EXECUTE 'GRANT EXECUTE ON FUNCTION check_rls_context() TO freshplan';
+    END IF;
+END $$;
