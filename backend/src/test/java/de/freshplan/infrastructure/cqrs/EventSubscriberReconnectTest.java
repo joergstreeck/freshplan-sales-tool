@@ -4,8 +4,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
-import org.junit.jupiter.api.Disabled;
-
 import de.freshplan.test.profiles.DisableEventSubscriberProfile;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
@@ -17,15 +15,16 @@ import java.sql.Statement;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import javax.sql.DataSource;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 /**
  * Tests for EventSubscriber reconnection handling. Verifies that the subscriber properly handles
  * connection failures and reconnects.
  *
- * Note: These tests are disabled because they require complex mock setups that conflict
- * with the actual EventSubscriber initialization. The reconnection logic is tested
- * manually and through integration tests.
+ * <p>Note: These tests are disabled because they require complex mock setups that conflict with the
+ * actual EventSubscriber initialization. The reconnection logic is tested manually and through
+ * integration tests.
  */
 @Disabled("Mock setup conflicts with EventSubscriber initialization - tested manually")
 @QuarkusTest
