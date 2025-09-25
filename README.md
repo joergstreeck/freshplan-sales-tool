@@ -24,10 +24,12 @@ Mehr Details: [Vision & Roadmap](./VISION_AND_ROADMAP.md) | [Master Plan V5](./d
 - **Sprint 1.6:** RLS Module Adoption (PR #107) ✅
 - **Performance:** P95 <200ms erreicht mit ETag ≥70% Hit-Rate
 
-### Phase 2: Core Business 🔧 IN PROGRESS (20%)
-- **Sprint 2.1:** ✅ Neukundengewinnung CORE COMPLETE (PR #103, #105)
-  - Territory Management + Lead REST API mit User-Protection
-  - Import/Export (FP-235) und Analytics (FP-236) deferred
+### Phase 2: Core Business 🔧 IN PROGRESS (10%)
+- **Sprint 2.1:** 🔧 Neukundengewinnung 50% COMPLETE (PR #103, #105)
+  - ✅ FP-233: Territory Management (PR #103)
+  - ✅ FP-234: Lead-Capture-System (PR #105)
+  - ❌ FP-235: Follow-up Automation (T+3/T+7) - OFFEN
+  - ❌ FP-236: Security-Integration (ABAC/RLS) - OFFEN
 - **Sprint 2.2:** 🔜 Kundenmanagement (nächster Sprint)
 - **Sprint 2.3-2.5:** Kommunikation, Cockpit, Einstellungen
 

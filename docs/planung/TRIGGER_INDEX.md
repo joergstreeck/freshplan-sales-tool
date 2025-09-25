@@ -53,10 +53,10 @@
 
 ### **PHASE 2: CORE BUSINESS (5 Sprints) - 🔧 IN PROGRESS**
 ```yaml
-✅ TRIGGER_SPRINT_2_1.md - Neukundengewinnung [PR #103, #105 MERGED]
+🔧 TRIGGER_SPRINT_2_1.md - Neukundengewinnung [PR #103, #105 MERGED, 2 OFFEN]
    - Lead-Management ohne Gebietsschutz
-   - 8-10h, 2/4 PRs complete (FP-233, FP-234 done)
-   - Status: ✅ CORE COMPLETE (Import/Analytics deferred)
+   - 8-10h, 2/4 PRs complete (FP-233 Territory ✅, FP-234 Capture ✅)
+   - Status: 🔧 50% COMPLETE (FP-235 Follow-up, FP-236 Security noch offen)
 
 ✅ TRIGGER_SPRINT_2_2.md - Kundenmanagement
    - Field-based Customer Architecture

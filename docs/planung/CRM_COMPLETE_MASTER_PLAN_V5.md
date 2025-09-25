@@ -151,23 +151,23 @@
   - Kritischer Production Blocker behoben (V243 Original wiederhergestellt)
   - V244 als idempotente Dokumentation hinzugefügt
   - Schema-Qualifizierung für Robustheit implementiert
-- 2025-09-25 21:30 — **Sprint 2.1 COMPLETE:** Lead-Management Core Features (PR #103, #105 MERGED)
-  - Territory Management ohne Gebietsschutz (PR #103)
-  - Lead REST API mit User-Protection 6/60/10 + Stop-the-Clock (PR #105)
-  - Strong ETags, RLS, LeadDTO Pattern implementiert
+- 2025-09-25 21:30 — **Sprint 2.1 PARTIAL:** Lead-Management 50% (PR #103, #105 MERGED)
+  - FP-233: Territory Management ohne Gebietsschutz ✅ (PR #103)
+  - FP-234: Lead-Capture-System ✅ (PR #105 - Lead REST API mit User-Protection)
+  - FP-235: Follow-up Automation (T+3/T+7) ❌ OFFEN
+  - FP-236: Security-Integration (ABAC/RLS Tests) ❌ OFFEN
   - 13/13 Tests grün, Migrations V232-V241 deployed
-  - FP-235 (Import/Export) und FP-236 (Analytics) auf Sprint 2.2 verschoben
 <!-- MP5:SESSION_LOG:END -->
 
 ## Next Steps
 <!-- MP5:NEXT_STEPS:START -->
-- **🚀 Sprint 2.2 starten:** Kundenmanagement implementieren
+- **🚀 Sprint 2.1 vervollständigen:** Verbleibende 2 PRs
+  - FP-235: Follow-up Automation (T+3/T+7 Sample-Management)
+  - FP-236: Security-Integration (ABAC/RLS Contract Tests)
+- **Dann Sprint 2.2:** Kundenmanagement
   - Field-based Customer Architecture mit 39 Artefakten
   - RLS Migration für Customer Services (FP-273)
   - 10-12h, 5 PRs geplant (FP-237 bis FP-241)
-- **Sprint 2.1 Deferred Features:** Bei Kapazität nachliefern
-  - FP-235: Lead Import/Export (CSV/Excel)
-  - FP-236: Lead Analytics Dashboard
 - **Follow-up RLS Migration:** Domain Services
   - FP-274: 15+ Domain Services mit @RlsContext
   - CI-Guard implementieren und aktivieren
