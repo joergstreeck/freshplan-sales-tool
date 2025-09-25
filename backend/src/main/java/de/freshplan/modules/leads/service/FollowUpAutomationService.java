@@ -69,10 +69,12 @@ public class FollowUpAutomationService {
   }
 
   /**
-   * Scheduled Check für fällige Follow-ups Läuft täglich um Mitternacht (konfigurierbar über
-   * freshplan.followup.cron)
+   * Scheduled Check für fällige Follow-ups Läuft täglich um 9 Uhr morgens (konfigurierbar über
+   * freshplan.followup.cron) concurrentExecution.SKIP verhindert parallele Läufe
    */
-  @Scheduled(cron = "{freshplan.followup.cron:0 0 * * * ?}")
+  @Scheduled(
+      cron = "{freshplan.followup.cron:0 0 9 * * ?}",
+      concurrentExecution = Scheduled.ConcurrentExecution.SKIP)
   @Transactional
   @RlsContext
   public void processScheduledFollowUps() {
@@ -180,6 +182,12 @@ public class FollowUpAutomationService {
       }
     }
 
+    // Clear entity cache nach Bulk-Updates für frische Entities im nächsten Durchlauf
+    if (processed > 0) {
+      em.flush();
+      em.clear();
+    }
+
     return processed;
   }
 
@@ -278,6 +286,12 @@ public class FollowUpAutomationService {
       } catch (Exception e) {
         LOG.errorf(e, "Failed to process T+7 follow-up for lead %s", lead.id);
       }
+    }
+
+    // Clear entity cache nach Bulk-Updates für frische Entities im nächsten Durchlauf
+    if (processed > 0) {
+      em.flush();
+      em.clear();
     }
 
     return processed;

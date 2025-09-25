@@ -3,11 +3,11 @@ package de.freshplan.modules.leads.domain;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import io.vertx.core.json.JsonObject;
 import jakarta.persistence.*;
-import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import org.jboss.logging.Logger;
 
 /**
  * Territory configuration for currency, tax and business rules. Sprint 2.1: NO geographical
@@ -16,6 +16,8 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "territories")
 public class Territory extends PanacheEntityBase {
+
+  private static final Logger LOG = Logger.getLogger(Territory.class);
 
   @Id
   @Size(max = 10)
@@ -76,18 +78,18 @@ public class Territory extends PanacheEntityBase {
   }
 
   /**
-   * Returns the default territory (Germany) from database or creates and persists it.
+   * Returns the default territory (Germany) from database. WARNING: If no territory exists in DB,
+   * returns a transient instance. Callers must ensure the instance is persisted if needed.
    *
-   * @return persisted Territory instance for Germany
-   * @throws IllegalStateException if territory cannot be created/persisted
+   * @return Territory instance for Germany (may be transient if DB is empty)
    */
-  @Transactional
   public static Territory getDefault() {
     // Deutschland als Default Territory
     Territory defaultTerritory = findByCode("DE");
     if (defaultTerritory == null) {
-      // Create and persist default territory wenn DB leer ist
-      // This ensures the returned object is always managed/persisted
+      // Return transient territory wenn DB leer ist
+      // Caller is responsible for persisting if needed
+      // This avoids transaction issues in static context
       defaultTerritory = new Territory();
       defaultTerritory.id = "DE";
       defaultTerritory.name = "Deutschland";
@@ -97,9 +99,10 @@ public class Territory extends PanacheEntityBase {
       defaultTerritory.languageCode = "de-DE";
       defaultTerritory.active = true;
 
-      // Persist to avoid TransientPropertyValueException
-      defaultTerritory.persist();
-      defaultTerritory.flush(); // Ensure it's immediately available
+      // Log warning to alert about transient instance
+      LOG.warn(
+          "Territory 'DE' not found in database, returning transient instance. "
+              + "Ensure it's persisted before using with other entities.");
     }
     return defaultTerritory;
   }
