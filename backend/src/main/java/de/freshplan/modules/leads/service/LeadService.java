@@ -1,5 +1,6 @@
 package de.freshplan.modules.leads.service;
 
+import de.freshplan.infrastructure.security.RlsContext;
 import de.freshplan.modules.leads.domain.ActivityType;
 import de.freshplan.modules.leads.domain.Lead;
 import de.freshplan.modules.leads.domain.LeadActivity;
@@ -29,6 +30,7 @@ public class LeadService {
    * Process leads that need reminders (60-day rule). Transitions leads from ACTIVE to REMINDER
    * status.
    */
+  @RlsContext
   @Transactional
   public int processReminders() {
     LocalDateTime cutoffDate = LocalDateTime.now().minusDays(60);
@@ -67,6 +69,7 @@ public class LeadService {
    * Process leads entering grace period (10-day rule after reminder). Transitions from REMINDER to
    * GRACE_PERIOD.
    */
+  @RlsContext
   @Transactional
   public int processGracePeriod() {
     LocalDateTime cutoffDate = LocalDateTime.now().minusDays(10);
@@ -98,6 +101,7 @@ public class LeadService {
   }
 
   /** Process expired leads (after 6 months or grace period ends). Transitions to EXPIRED status. */
+  @RlsContext
   @Transactional
   public int processExpirations() {
     int count = 0;
@@ -149,6 +153,7 @@ public class LeadService {
   }
 
   /** Reactivate lead when activity is recorded. Resets reminder and grace period timestamps. */
+  @RlsContext
   @Transactional
   public void reactivateLead(Lead lead) {
     if (lead.status == LeadStatus.REMINDER || lead.status == LeadStatus.GRACE_PERIOD) {

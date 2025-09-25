@@ -1,5 +1,6 @@
 package de.freshplan.modules.leads.service;
 
+import de.freshplan.infrastructure.security.RlsContext;
 import de.freshplan.modules.leads.domain.UserLeadSettings;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.LockModeType;
@@ -24,6 +25,7 @@ public class UserLeadSettingsService {
    * @param userId the user ID
    * @return existing or newly created settings
    */
+  @RlsContext
   @Transactional
   public UserLeadSettings getOrCreateForUser(String userId) {
     // Try to find existing settings with pessimistic lock to prevent concurrent creation
@@ -70,6 +72,7 @@ public class UserLeadSettingsService {
    * @param settings the settings to update
    * @return updated settings
    */
+  @RlsContext
   @Transactional
   public UserLeadSettings updateSettings(String userId, UserLeadSettings settings) {
     UserLeadSettings existing =
@@ -107,6 +110,7 @@ public class UserLeadSettingsService {
    * @param userId the user ID
    * @return true if deleted, false if not found
    */
+  @RlsContext
   @Transactional
   public boolean deleteSettings(String userId) {
     long deleted = UserLeadSettings.delete("userId", userId);

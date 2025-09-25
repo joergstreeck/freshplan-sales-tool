@@ -1,5 +1,6 @@
 package de.freshplan.modules.leads.service;
 
+import de.freshplan.infrastructure.security.RlsContext;
 import de.freshplan.modules.leads.domain.ActivityType;
 import de.freshplan.modules.leads.domain.Lead;
 import de.freshplan.modules.leads.domain.LeadActivity;
@@ -172,6 +173,7 @@ public class EmailActivityDetectionService {
    * @param confidence the detection confidence
    * @return created lead activity
    */
+  @RlsContext
   @Transactional
   public LeadActivity createEmailActivity(
       Lead lead, ActivityType activityType, String emailContent, double confidence) {
