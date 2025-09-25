@@ -14,7 +14,7 @@ import org.mockito.ArgumentCaptor;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
-import java.util.HashMap;
+import java.math.BigDecimal;
 import java.util.Map;
 import java.util.UUID;
 
@@ -58,16 +58,16 @@ class FollowUpAutomationServiceTest {
 
         // Create test territory
         testTerritory = new Territory();
-        testTerritory.code = "DE";
+        testTerritory.id = "DE";
         testTerritory.name = "Deutschland";
-        testTerritory.currency = "EUR";
-        testTerritory.taxRate = 19.0;
+        testTerritory.currencyCode = "EUR";
+        testTerritory.taxRate = new java.math.BigDecimal("19.00");
         testTerritory.active = true;
         em.persist(testTerritory);
 
         // Create test lead
         testLead = new Lead();
-        testLead.company = "Test Restaurant GmbH";
+        testLead.companyName = "Test Restaurant GmbH";
         testLead.contactPerson = "Max Mustermann";
         testLead.email = "max@restaurant.de";
         testLead.phone = "+49 89 123456";
@@ -75,7 +75,7 @@ class FollowUpAutomationServiceTest {
         testLead.ownerUserId = UUID.randomUUID().toString();
         testLead.territory = testTerritory;
         testLead.registeredAt = LocalDateTime.now().minusDays(4); // 4 days old for T+3 test
-        testLead.metadata = new HashMap<>();
+        testLead.metadata = new io.vertx.core.json.JsonObject();
         testLead.metadata.put("businessType", "RESTAURANT");
         em.persist(testLead);
 
@@ -330,7 +330,7 @@ class FollowUpAutomationServiceTest {
         verify(followUpEvent).fire(eventCaptor.capture());
 
         FollowUpProcessedEvent event = eventCaptor.getValue();
-        assertNotNull(event.getProcessedAt());
+        assertNotNull(event.processedAt());
         assertTrue(event.getTotalCount() >= 0);
     }
 }

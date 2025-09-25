@@ -5,32 +5,32 @@
 --
 -- Business Value: +40% Lead-Conversion durch systematische Follow-up Automation
 
--- Erweitere lead Tabelle um Follow-up Tracking
-ALTER TABLE lead ADD COLUMN IF NOT EXISTS last_followup_at TIMESTAMP;
-ALTER TABLE lead ADD COLUMN IF NOT EXISTS followup_count INTEGER DEFAULT 0;
-ALTER TABLE lead ADD COLUMN IF NOT EXISTS t3_followup_sent BOOLEAN DEFAULT FALSE;
-ALTER TABLE lead ADD COLUMN IF NOT EXISTS t7_followup_sent BOOLEAN DEFAULT FALSE;
+-- Erweitere leads Tabelle um Follow-up Tracking
+ALTER TABLE leads ADD COLUMN IF NOT EXISTS last_followup_at TIMESTAMP;
+ALTER TABLE leads ADD COLUMN IF NOT EXISTS followup_count INTEGER DEFAULT 0;
+ALTER TABLE leads ADD COLUMN IF NOT EXISTS t3_followup_sent BOOLEAN DEFAULT FALSE;
+ALTER TABLE leads ADD COLUMN IF NOT EXISTS t7_followup_sent BOOLEAN DEFAULT FALSE;
 
 -- Flexible metadata storage (JSONB) für DSGVO-Consent und Business-Type
-ALTER TABLE lead ADD COLUMN IF NOT EXISTS metadata JSONB DEFAULT '{}'::jsonb;
+ALTER TABLE leads ADD COLUMN IF NOT EXISTS metadata JSONB DEFAULT '{}'::jsonb;
 
 -- Index für effiziente Follow-up Queries
 CREATE INDEX IF NOT EXISTS idx_lead_followup_tracking
-    ON lead(status, registered_at, last_followup_at)
+    ON leads(status, registered_at, last_followup_at)
     WHERE clock_stopped_at IS NULL;
 
 -- Index für T+3/T+7 Eligibility Checks
 CREATE INDEX IF NOT EXISTS idx_lead_followup_eligibility
-    ON lead(registered_at, t3_followup_sent, t7_followup_sent)
+    ON leads(registered_at, t3_followup_sent, t7_followup_sent)
     WHERE status IN ('REGISTERED', 'ACTIVE');
 
--- Erweitere lead_activity für Follow-up Metadata
-ALTER TABLE lead_activity
+-- Erweitere lead_activities für Follow-up Metadata
+ALTER TABLE lead_activities
     ADD COLUMN IF NOT EXISTS followup_metadata JSONB;
 
 -- Index für Follow-up Activity Queries
 CREATE INDEX IF NOT EXISTS idx_lead_activity_followup
-    ON lead_activity(lead_id, occurred_at)
+    ON lead_activities(lead_id, activity_date)
     WHERE metadata->>'followup_type' IS NOT NULL;
 
 -- Sample Template für T+3 Follow-up
@@ -153,11 +153,11 @@ INSERT INTO campaign_templates (
 ) ON CONFLICT (name) DO NOTHING;
 
 -- Dokumentation
-COMMENT ON COLUMN lead.last_followup_at IS 'Zeitpunkt des letzten automatisierten Follow-ups';
-COMMENT ON COLUMN lead.followup_count IS 'Anzahl gesendeter automatisierter Follow-ups';
-COMMENT ON COLUMN lead.t3_followup_sent IS 'Flag ob T+3 Sample Follow-up bereits gesendet wurde';
-COMMENT ON COLUMN lead.t7_followup_sent IS 'Flag ob T+7 Bulk Order Follow-up bereits gesendet wurde';
-COMMENT ON COLUMN lead_activity.followup_metadata IS 'Metadata für Follow-up Tracking (followup_type, template_id, etc.)';
+COMMENT ON COLUMN leads.last_followup_at IS 'Zeitpunkt des letzten automatisierten Follow-ups';
+COMMENT ON COLUMN leads.followup_count IS 'Anzahl gesendeter automatisierter Follow-ups';
+COMMENT ON COLUMN leads.t3_followup_sent IS 'Flag ob T+3 Sample Follow-up bereits gesendet wurde';
+COMMENT ON COLUMN leads.t7_followup_sent IS 'Flag ob T+7 Bulk Order Follow-up bereits gesendet wurde';
+COMMENT ON COLUMN lead_activities.followup_metadata IS 'Metadata für Follow-up Tracking (followup_type, template_id, etc.)';
 
 -- Performance-Hinweis: Die Indizes sind optimiert für die häufigsten Follow-up Queries:
 -- 1. Finde Leads die für T+3 oder T+7 Follow-up qualifiziert sind
