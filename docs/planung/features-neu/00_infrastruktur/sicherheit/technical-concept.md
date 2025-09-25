@@ -23,6 +23,7 @@
 - **Basic Protection:** HTTPS + CORS + Input Validation + SQL Injection Prevention
 - **Audit Framework:** @SecurityAuditInterceptor bereits vorhanden
 - **External AI Excellence:** 9.6/10 Security-Architecture + 9.8/10 Implementation-Artefakte
+- **RLS Connection Affinity:** ✅ Sprint 1.5 implementiert mit @RlsContext CDI Interceptor (PR #106)
 
 ### Target State:
 - **Hybrid Security-Model:** Territory-RLS + User-Assignment-Layer für Lead-Protection
@@ -35,6 +36,8 @@
 → [SECURITY_GUIDELINES.md](../../../grundlagen/SECURITY_GUIDELINES.md) - Bestehende Security-Foundation
 → [Keycloak Setup](../../../grundlagen/KEYCLOAK_SETUP.md) - OIDC-Configuration
 → [Database Standards](../../../grundlagen/DATABASE_STANDARDS.md) - RLS-Performance-Guidelines
+→ [ADR-0007](../../../adr/ADR-0007-rls-connection-affinity.md) - RLS Connection Affinity Pattern
+→ [SECURITY_UPDATE_SPRINT_1_5.md](../../../SECURITY_UPDATE_SPRINT_1_5.md) - Sprint 1.5 Migration Guide
 
 ## 🛠️ Implementation Phases
 
@@ -59,9 +62,9 @@
 ### Phase 2: Production Implementation (Q1 2026)
 **Goal:** Security-Templates für konkrete Business-Module implementieren
 **Actions:**
+- [x] **RLS Connection Affinity:** @RlsContext CDI Interceptor (Sprint 1.5 ✅)
 - [ ] **Keycloak-Claims-Mapping:** org_id, territory, scopes, contact_roles Claims
-- [ ] **RLS v2 Migration:** V227 Database-Migration mit Territory + User-Assignment
-- [ ] **SessionSettingsFilter Integration:** Connection-Pool-Safe Claims → PostgreSQL
+- [ ] **Module Migration:** Alle Services mit @RlsContext annotieren
 - [ ] **SecurityContractTests CI-Gate:** Automated Security-Regression-Prevention
 
 **Success Criteria:**

@@ -1,5 +1,8 @@
 # Auswertungen & Reports - Technical Concept
 
+> **RLS-Status (Sprint 1.6):** ✅ @RlsContext CDI-Interceptor verpflichtend
+> 🔎 Details: [ADR-0007](../../adr/ADR-0007-rls-connection-affinity.md) · [Security Update](../../SECURITY_UPDATE_SPRINT_1_5.md)
+
 **📊 Plan Status:** ✅ Ready for Implementation
 **🎯 Owner:** Backend + Frontend Team
 **⏱️ Timeline:** Q4 2025 Woche 4-6 (2-3 Wochen Implementation)

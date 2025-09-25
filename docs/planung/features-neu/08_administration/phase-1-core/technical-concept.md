@@ -1,5 +1,8 @@
 # Administration Module - Technical Concept
 
+> **RLS-Status (Sprint 1.6):** ✅ @RlsContext CDI-Interceptor verpflichtend
+> 🔎 Details: [ADR-0007](../../adr/ADR-0007-rls-connection-affinity.md) · [Security Update](../../SECURITY_UPDATE_SPRINT_1_5.md)
+
 **📊 Plan Status:** 🔵 Draft
 **🎯 Owner:** Development Team
 **⏱️ Timeline:** 2025-09-23 → 2025-10-07 (2 Wochen)

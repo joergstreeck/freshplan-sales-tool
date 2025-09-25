@@ -1,5 +1,8 @@
 # 🎯 Neukundengewinnung - Technical Concept (Strategic Overview)
 
+> **RLS-Status (Sprint 1.6):** ✅ @RlsContext CDI-Interceptor verpflichtend
+> 🔎 Details: [ADR-0007](../../adr/ADR-0007-rls-connection-affinity.md) · [Security Update](../../SECURITY_UPDATE_SPRINT_1_5.md)
+
 **📊 Plan Status:** 🚀 IMPLEMENTATION ACTIVE - Sprint 2.1 in Progress
 **🎯 Owner:** Neukundengewinnung Team + Cross-Module-Integration
 **⏱️ Timeline:** 2025-09-25 → 2025-10-15 (Sprint 2.1-2.3)
