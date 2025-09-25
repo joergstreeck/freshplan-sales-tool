@@ -1,0 +1,34 @@
+name: RLS Guard
+on:
+  pull_request:
+    paths:
+      - '**/*.java'
+      - 'backend/tools/rls-guard.sh'
+      - '.github/workflows/ci-rls-guard.yml'
+
+jobs:
+  rls-guard:
+    runs-on: ubuntu-latest
+    name: Check RLS Compliance
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run RLS Guard
+        working-directory: backend
+        run: |
+          bash tools/rls-guard.sh || {
+            echo "::error::Found transactional DB methods without @RlsContext annotation"
+            exit 1
+          }
+
+      - name: Comment on PR if failed
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '❌ **RLS Guard Failed**\n\nFound services with `@Transactional` + DB access but missing `@RlsContext`.\n\nPlease add `@RlsContext` annotation to transactional methods with DB operations.\n\nSee: [ADR-0007](docs/planung/adr/ADR-0007-rls-connection-affinity.md)'
+            })

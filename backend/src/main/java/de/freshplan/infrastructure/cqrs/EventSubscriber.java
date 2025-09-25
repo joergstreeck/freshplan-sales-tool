@@ -302,6 +302,10 @@ public class EventSubscriber {
         establishListenerConnection();
         LOG.info("Event listener reconnected successfully");
         return;
+      } catch (InterruptedException ie) {
+        LOG.warn("Reconnection attempt interrupted, stopping listener.", ie);
+        Thread.currentThread().interrupt();
+        break; // Exit the loop
       } catch (Exception e) {
         retryCount++;
         retryDelay *= 2; // Exponential backoff

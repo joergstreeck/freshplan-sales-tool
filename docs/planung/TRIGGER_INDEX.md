@@ -9,7 +9,7 @@
 
 ## 🗺️ ALLE TRIGGER-TEXTS ÜBERSICHT
 
-### **PHASE 1: FOUNDATION (4 Sprints) - 🔄 FINAL OPTIMIZATION**
+### **PHASE 1: FOUNDATION (6 Sprints) - 🔄 EXTENDED**
 ```yaml
 ✅ TRIGGER_SPRINT_1_1.md - CQRS Light Foundation [PR #94 MERGED]
    - PostgreSQL LISTEN/NOTIFY + Event-Schema
@@ -28,13 +28,27 @@
    - ETag Hit-Rate ≥70% achieved
    - Status: ✅ COMPLETE
 
-🚀 TRIGGER_SPRINT_1_4.md - Foundation Quick-Wins [PR #102 IN PROGRESS]
+✅ TRIGGER_SPRINT_1_4.md - Foundation Quick-Wins [PR #102 MERGED]
    - Quarkus-Cache für Settings-Service
    - Prod-Config Härtung
    - Cache-Invalidierung bei Writes
-   - Status: 🚀 STARTING NOW - Phase 1 finale Optimierung
+   - Status: ✅ COMPLETE
+
+✅ TRIGGER_SPRINT_1_5.md - Security Retrofit [PR #106 MERGED] 🔒
+   - RLS Connection Affinity (KRITISCHER SECURITY FIX)
+   - CDI Interceptor Pattern mit @RlsContext
+   - Migrations V242-243 (fail-closed policies)
+   - Gemini Review: "Exzellent und äußerst wichtig"
+   - Status: ✅ COMPLETE (25.09.2025, 18:42 Uhr)
+
+🚀 TRIGGER_SPRINT_1_6.md - RLS Adoption in Modulen [READY]
+   - Modul 02 Services mit @RlsContext (P0 - blockiert Sprint 2.1)
+   - CI-Guard für RLS-Compliance
+   - RLS-Badge in allen Modulen (Zero-Redundancy)
+   - Status: 🚀 READY TO START
 
 📊 **Phase 1 Performance Report:** [phase-1-foundation-benchmark-2025-09-24.md](../performance/phase-1-foundation-benchmark-2025-09-24.md)
+🔒 **Security Update:** [SECURITY_UPDATE_SPRINT_1_5.md](./SECURITY_UPDATE_SPRINT_1_5.md)
 ```
 
 ### **PHASE 2: CORE BUSINESS (5 Sprints) - 🚀 STARTING**

@@ -1,5 +1,6 @@
 package de.freshplan.modules.leads.service;
 
+import de.freshplan.infrastructure.security.RlsContext;
 import de.freshplan.modules.leads.domain.Territory;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
@@ -45,6 +46,7 @@ public class TerritoryService {
   }
 
   /** Initialize default territories if not present. */
+  @RlsContext
   @Transactional
   public void initializeDefaultTerritories() {
     if (Territory.count() == 0) {

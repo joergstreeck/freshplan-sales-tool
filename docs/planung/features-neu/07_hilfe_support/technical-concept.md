@@ -1,5 +1,8 @@
 # Modul 07 Hilfe & Support - Technical Concept
 
+> **RLS-Status (Sprint 1.6):** ✅ @RlsContext CDI-Interceptor verpflichtend
+> 🔎 Details: [ADR-0007](../../adr/ADR-0007-rls-connection-affinity.md) · [Security Update](../../SECURITY_UPDATE_SPRINT_1_5.md)
+
 **📊 Plan Status:** ✅ Approved - Ready for Implementation
 **🎯 Owner:** Development Team
 **⏱️ Timeline:** 2025-09-20 → 2025-10-04 (2 Wochen)
