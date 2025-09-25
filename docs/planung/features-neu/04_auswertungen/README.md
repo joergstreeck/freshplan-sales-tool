@@ -73,7 +73,7 @@
 
 ### **4. B2B-Food-Analytics Spezialisierung ✅ Ready**
 - **Cook&Fresh® KPIs:** Sample-Success-Rate + ROI-Pipeline + Performance-Tracking
-- **Gastronomiebetriebe-Reports:** Territory-basierte Analytics + Partner-vs-Direct-Mix
+- **Gastronomiebetriebe-Reports:** User-basierte Analytics + Partner-vs-Direct-Mix (Territory für Aggregation nach EUR/CHF)
 - **Data Science Integration:** JSONL-Export für >100k Records + Memory-efficient Streaming
 - **Production-Deployment:** 2-3 Wochen Timeline für Enterprise-Analytics-Platform
 
@@ -155,7 +155,7 @@ Analytics Hub für alle Module:
 
 ### **🎯 B2B-Food-Analytics Business Value:**
 - **Cook&Fresh® KPIs:** Sample-Success-Rate + ROI-Pipeline + Performance-Tracking
-- **Gastronomiebetriebe-Reports:** Territory-basierte Analytics + Partner-vs-Direct-Mix
+- **Gastronomiebetriebe-Reports:** User-basierte Analytics + Partner-vs-Direct-Mix (Territory für Aggregation nach EUR/CHF)
 - **Data Science Ready:** JSONL-Export für >100k Records + Memory-efficient Streaming
 - **Real-time Monitoring:** WebSocket Live-KPIs + Polling-Fallback für Business-Intelligence
 

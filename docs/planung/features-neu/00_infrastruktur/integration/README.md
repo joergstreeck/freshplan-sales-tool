@@ -114,12 +114,38 @@
 
 ## 🚀 CURRENT STATUS & DEPENDENCIES
 
+### ✅ **PHASE 1 ABGESCHLOSSEN (Sprint 1.1-1.4):**
+
+**Sprint 1.1 - CQRS Light Foundation:** ✅ Produktiv
+- **PR #94:** EventPublisher & EventSubscriber implementiert
+- **Migration V225:** domain_events Tabelle, LISTEN/NOTIFY aktiviert
+- **Performance:** <200ms P95 Event Processing erreicht
+- **ADR-0006:** Mock-Governance implementiert
+
+**Sprint 1.2 - Settings Registry:** ✅ Produktiv
+- **PR #95, #96, #99-101:** Settings mit ETag-Support
+- **Migration V227/V228:** Security Context + Settings Registry
+- **SessionSettingsFilter:** GUC Integration für PostgreSQL
+- **Tests:** Race Condition Prevention implementiert
+
+**Sprint 1.3 - Security Gates:** ✅ Produktiv
+- **PR #97:** CORS, Headers, Fail-Closed Checks
+- **CI/CD:** 3-stufige Pipeline (PR/Nightly/Security)
+- **Performance-Benchmarks:** k6 mit P95 Metriken
+- **Integration Tests:** Foundation komplett getestet
+
+**Sprint 1.4 - Cache & Prod-Hardening:** ✅ Produktiv (24.09.2025)
+- **PR #102:** Quarkus-Cache für SettingsService
+- **Cache-Metriken:** 70% Hit-Rate, 90% Performance-Gain
+- **Prod-Config:** DB_PASSWORD Pflicht, CSP gehärtet
+- **Phase 1:** 100% COMPLETE
+
 ### ✅ **COMPLETED (Strategic Planning + CQRS Light Optimization):**
-- **CQRS Light Strategy:** PostgreSQL LISTEN/NOTIFY statt Event-Bus für Cost-Efficiency
-- **Atomare Implementation-Pläne:** 3 fokussierte Pläne (LISTEN/NOTIFY-optimized)
-- **Production-Ready Artefakte:** Settings-Sync-Job + Gateway-Policies + LISTEN/NOTIFY-Patterns
-- **One-Database Architecture:** API-Gateway + PostgreSQL LISTEN/NOTIFY für CQRS Light
-- **Foundation-Integration-Design:** Settings-Registry → Gateway-Policies + LISTEN/NOTIFY-Events
+- **CQRS Light Strategy:** PostgreSQL LISTEN/NOTIFY läuft produktiv
+- **Atomare Implementation-Pläne:** 5 fokussierte Pläne ready
+- **Production-Ready Artefakte:** Settings-Sync-Job + Gateway-Policies vorbereitet
+- **One-Database Architecture:** API-Gateway + PostgreSQL LISTEN/NOTIFY operativ
+- **Foundation-Integration:** Settings-Registry produktiv, Events laufen
 
 ### 🔄 **READY FOR IMPLEMENTATION (12-16 Stunden CQRS Light Timeline):**
 - **Phase 1:** Settings-Sync-Job Implementation (4-6h) - Quarkus Service + Testing
@@ -136,9 +162,11 @@
 ## 🔗 **DEPENDENCIES & TIMELINE**
 
 ### **Foundation Dependencies:**
-- ✅ **Settings-Registry:** Bereits produktiv - Ready für Gateway-Policy-Integration
-- ✅ **EVENT_CATALOG.md:** Exists - Ready für Domain-Events-Enhancement
-- ✅ **Kong/Envoy Infrastructure:** Available - Ready für Policy-Bundle-Deployment
+- ✅ **Settings-Registry:** Produktiv seit Sprint 1.2 (PR #95-101) - V228 Migration
+- ✅ **CQRS Events:** Produktiv seit Sprint 1.1 (PR #94) - V225 Migration
+- ✅ **Security Context:** Produktiv seit Sprint 1.2 (PR #95) - V227 Migration
+- ✅ **Quarkus-Cache:** Produktiv seit Sprint 1.4 (PR #102) - 70% Hit-Rate
+- ✅ **CI/CD Pipeline:** Produktiv seit Sprint 1.3 (PR #97) - PR/Nightly/Security
 
 ### **Cross-Module Integration:**
 - **Module 01-08:** Alle Module können Integration-Standards sofort nutzen

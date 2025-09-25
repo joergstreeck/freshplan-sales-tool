@@ -98,6 +98,8 @@
 - 2025-09-23 20:15 — Governance Implementation: Mock-Governance ADR-0006 + Standards/Snippets implementiert + TRIGGER_SPRINT_1_1 erweitert, Migration: V225, Tests: OK
 - 2025-09-23 20:30 — SAFE MODE Handover: Mock-Governance Implementation COMPLETE + Handover 17:51 erstellt, Migration: V225, Status: Ready für Sprint 1.1
 - 2025-09-23 18:45 — Sprint 1.1 Complete: CQRS Light Foundation operational + PR #94 mit Review-Fixes, Migration: V225, Tests: OK
+- 2025-09-25 11:45 — Infrastruktur-Doku Update: Sprint 1.1-1.4 Status in alle /infrastruktur Dokumente eingepflegt, Phase 1 zu 100% COMPLETE (PR #102), Tests: OK
+- 2025-09-25 02:00 — Territory-Klarstellung: PR #103 Impact dokumentiert - Territory ≠ Gebietsschutz! 8 Module korrigiert (Territory nur für Currency/Tax), Migration: n/a, Tests: OK
 - 2025-09-25 00:55 — Sprint 2.1 PR #1: Territory Management ERFOLGREICH GEMERGED (PR #103) + Race Condition Fix via UserLeadSettingsService + ElementCollection Tables (V231), Migration: V231, Tests: ✅ All GREEN
 - 2025-09-24 22:15 — Sprint 1.4 Complete: Foundation Quick-Wins (Cache + Prod-Config) + PR #102 merged, Phase 1: 100% COMPLETE
 - 2025-09-23 19:40 — Sprint 1.1 MERGED: PR #94 erfolgreich in main + alle KI-Reviews umgesetzt + Sprint 3 Backlog erstellt, Migration: V226, Tests: OK
@@ -436,6 +438,14 @@ MIGRATION=$(./scripts/get-next-migration.sh | tail -1)
 - **Dokumentations-Strategie:** ✅ **GELÖST** - Duale Strategie implementiert
 - **Compact-Problem:** ✅ **UMGANGEN** - Robust Handover System etabliert
 - **M8 Calculator** Integration fehlt für ActionCenter (bleibt)
+
+## Next Steps
+<!-- MP5:NEXT_STEPS:START -->
+- Sprint 2.1 PR #2: Lead Endpoints implementieren (User-basierte Protection)
+- Sprint 2.1 PR #3: Lead UI Components (Territory nur für Currency/Tax Display)
+- Frontend Bundle-Optimierung von 750KB auf <200KB angehen
+- Legacy-Docs: Territory-Missverständnisse in älteren Dokumenten korrigieren
+<!-- MP5:NEXT_STEPS:END -->
 
 ## 🎯 Critical Success Metrics
 

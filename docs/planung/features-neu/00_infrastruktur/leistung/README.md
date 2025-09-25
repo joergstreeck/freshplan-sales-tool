@@ -109,17 +109,36 @@
 
 ## 🚀 **CURRENT STATUS & DEPENDENCIES**
 
-### ✅ **COMPLETED (PRODUCTION-READY):**
-- **Strategic Planning:** Performance-Architecture mit External AI Excellence (9.8/10)
-- **25 Production-Artefakte:** Copy-Paste-Ready Implementation (Frontend + Backend + SQL + Testing + Monitoring + Docs)
-- **External AI Integration:** World-Class Performance-Patterns (9.7/10 Quality-Score)
-- **FreshFoodz-Reality-Alignment:** User-basierte Lead-Protection + Seasonal-Business perfekt
-- **Business-Integration:** Performance-ROI + Field-Sales-Mobile + Device-Class-Optimization
+### ✅ **PHASE 1 ABGESCHLOSSEN (Sprint 1.1-1.4):**
 
-### 🔄 **READY FOR IMPLEMENTATION:**
-- **Phase 1 (Tag 1-3):** Bundle-Size-Gates + Code-Splitting → Start-Route <200KB
-- **Phase 2 (Tag 4-8):** ETag + Hot-Projections + PgBouncer → API <100ms
-- **Phase 3 (Tag 9-12):** RUM + Seasonal-Scaling → Business-ROI-Dashboard
+**Sprint 1.1 - CQRS Performance:** ✅ Produktiv
+- **PR #94:** EventPublisher mit <200ms P95 erreicht
+- **Migration V225:** domain_events optimiert für Performance
+- **Tests:** Event Processing Performance validiert
+
+**Sprint 1.3 - Performance Benchmarks:** ✅ Produktiv
+- **PR #97:** k6-Benchmarks in CI integriert
+- **Nightly Pipeline:** Performance-Tests mit P95 Metriken
+- **JSON-Summary:** Automatische Reports unter docs/performance/
+- **Curl-Fallback:** Für lokale Tests verfügbar
+
+**Sprint 1.4 - Cache Optimization:** ✅ Produktiv (24.09.2025)
+- **PR #102:** Quarkus-Cache implementiert
+- **Cache-Metriken:** 70% Hit-Rate, 90% Performance-Verbesserung (50ms → 5ms)
+- **TTL:** 5min mit max 5000 Entries
+- **Bundle Size:** Frontend aktuell bei ~750KB (Optimierung geplant)
+
+### ✅ **COMPLETED (Strategic Planning):**
+- **Performance-Architecture:** External AI Excellence (9.8/10)
+- **25 Production-Artefakte:** Copy-Paste-Ready Implementation vorbereitet
+- **FreshFoodz-Alignment:** Seasonal-Business + Field-Sales optimiert
+- **Business-Integration:** Performance-ROI Dashboard designed
+
+### 🎯 **PHASE 2 TARGETS (Sprint 2.x):**
+- **Bundle Optimization:** Von 750KB auf <200KB durch Code-Splitting
+- **API Performance:** Von aktuell 50ms (cached) auf stabil <100ms P95
+- **Seasonal Scaling:** 3x/4x/5x Peaks für Spargel/Oktoberfest/Weihnachten
+- **RUM Integration:** Performance-ROI Dashboard für Business-Metriken
 
 ### 📋 **DEPENDENCIES:**
 - **Infrastructure Foundation:** ✅ COMPLETE (Module 00 Sicherheit + Integration + Betrieb)

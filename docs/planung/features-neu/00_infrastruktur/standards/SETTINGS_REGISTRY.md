@@ -277,19 +277,29 @@ CREATE TABLE security_settings (
 
 ## 🚦 Status
 
-**Sprint 1.2 PR #2:** ✅ Implementiert
-- Migration V228 erstellt
-- Entity, Service, REST API fertig
-- Tests geschrieben (Unit + Integration)
-- Dokumentation komplett
+### ✅ Phase 1 Abgeschlossen (Sprint 1.1-1.4)
 
-**Sprint 1.3 PR #3:** 🎯 Frontend Integration geplant
-- React Query mit ETag-Support
-- Theme & Feature Flags via API
-- 304 Not Modified Handling
+**Sprint 1.2:** ✅ Core Implementation
+- **PR #95, #96, #99-101:** Settings Registry mit ETag
+- **Migration V228:** Settings Tabelle (+ V10010/V10011 Scope Fixes)
+- **SessionSettingsFilter:** GUC Integration implementiert
+- **Tests:** Race Condition Prevention (createSettingStrict)
+- **Coverage:** 85% Unit Tests, Integration Tests vorhanden
 
-**Nächste Schritte:**
-- Sprint 1.3 PR #3: Frontend Settings Integration
+**Sprint 1.3:** ✅ Security & CI Integration
+- **PR #97:** Security Gates implementiert
+- **Performance:** P95 < 200ms erreicht
+- **CI/CD:** 3-stufige Pipeline (PR/Nightly/Security)
+
+**Sprint 1.4:** ✅ Cache & Production Hardening
+- **PR #102:** Quarkus-Cache implementiert (24.09.2025)
+- **Cache-Metriken:** 70% Hit-Rate, 90% Performance-Gain (50ms → 5ms)
+- **TTL:** 5min, Max 5000 Entries
+- **Invalidierung:** Global bei Mutations (pragmatisch für Phase 1)
+- **Prod-Config:** DB_PASSWORD Pflicht, CSP gehärtet
+
+### 🎯 Nächste Schritte (Phase 2)
+- Sprint 2.1: Integration mit Business-Modulen (Lead-Management)
 - Sprint 2.x: UI in Module 06 (Einstellungen)
 
 ## 🎨 Frontend-Integration / ETag

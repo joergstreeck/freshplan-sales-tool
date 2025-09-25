@@ -1,6 +1,6 @@
 # 🏛️ Modul 08 Administration - Vollständige Planungsdokumentation
 
-**📅 Letzte Aktualisierung:** 2025-09-20
+**📅 Letzte Aktualisierung:** 2025-09-25
 **🎯 Status:** ✅ PHASE 1 COMPLETE + PHASE 2 FULLY PLANNED (Enterprise Core + Business Extensions)
 **📊 Vollständigkeit:** 100% (2 Phasen + 76 Production-Ready Artefakte + Shared Resources)
 **🎖️ Qualitätsscore:** 9.6/10 (Enterprise Administration Platform mit Phasen-Excellence)
@@ -59,7 +59,9 @@
 ## 🎯 **PROJEKTMEILENSTEINE**
 
 ### **1. Enterprise Core Foundation (Phase 1) ✅ Completed**
-- **ABAC Security:** Fail-closed Territory/Org-Scoping + Risk-Tiered Approvals (TIER1/2/3)
+- **ABAC Security:** Fail-closed User-basierte Scoping + Risk-Tiered Approvals (TIER1/2/3)
+  - **Update Sprint 2.1:** Territory nur für Currency/Tax (PR #103), kein geografischer Gebietsschutz
+  - **Lead Protection:** User-basiert mit 6/60/10 Regel, nicht Territory-basiert
 - **Operations & Compliance:** SMTP Rate Limiting + DSGVO Workflows + Enhanced Audit
 - **Monitoring & Core Tools:** 5 Core Admin KPIs + Grafana Dashboards + CI/CD Pipeline
 - **50 Production-Ready Artefakte:** SQL + Backend + Frontend + Monitoring (9.2/10 Quality)
@@ -67,7 +69,8 @@
 ### **2. Business Extensions Development (Phase 2) ✅ Fully Planned**
 - **External Integrations:** AI/ML Services + ERP Integration (Xentral/SAP/DATEV) + Payment Providers
 - **Help System Configuration:** Content Management + Tour Builder + Analytics Integration
-- **Lead Protection System:** 6M+60T+Stop-the-Clock Business Logic + Sample Management
+- **Lead Protection System:** User-basiert (nicht Territory) 6M+60T+Stop-the-Clock + UserLeadSettings (PR #103)
+- **Territory Management:** Nur Currency/Tax/Business Rules (EUR/CHF, 19%/7.7% MwSt)
 - **26 Integration Artefakte:** External Services + Customer Portal + API Documentation (9.6/10 Quality)
 
 ### **3. Phasen-Architecture Implementation ✅ Completed**

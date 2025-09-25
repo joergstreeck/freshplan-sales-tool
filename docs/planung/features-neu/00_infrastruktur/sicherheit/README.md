@@ -1,6 +1,6 @@
 # 🔐 Infrastructure Security - ABAC/RLS Foundation Platform
 
-**📅 Letzte Aktualisierung:** 2025-09-21
+**📅 Letzte Aktualisierung:** 2025-09-25
 **🎯 Status:** ✅ COMPLETE + PRODUCTION-READY (External AI Excellence)
 **📊 Vollständigkeit:** 100% (13 Artefakte strukturiert nach Technologie-Layern)
 **🎖️ Qualitätsscore:** 9.8/10 (External AI Enterprise-Security-Excellence)
@@ -20,21 +20,46 @@
 
 ## 📋 **IMPLEMENTATION STATUS**
 
-### **✅ COMPLETED (Q4 2025)**
+### **✅ PHASE 1 ABGESCHLOSSEN (Sprint 1.1-1.4)**
+
+**Sprint 1.2 - Security Foundation:** ✅ Produktiv
+- **PR #95:** Security Context Core implementiert
+- **Migration V227:** set_app_context, current_user_context Functions
+- **SessionSettingsFilter:** PostgreSQL GUC Integration
+- **Connection-Pool-Safety:** Hibernate Session#doWork Pattern
+
+**Sprint 1.3 - Security Gates:** ✅ Produktiv
+- **PR #97:** CORS, Headers, Fail-Closed Checks implementiert
+- **CI Security Pipeline:** security-gates.yml aktiv
+- **Fail-Closed Prinzip:** Alle Security-Checks standardmäßig deny
+- **Performance:** Security-Checks <10ms Overhead
+
+**Sprint 1.4 - Production Hardening:** ✅ Produktiv (24.09.2025)
+- **PR #102:** Prod-Config gehärtet
+- **CSP verschärft:** Keine unsafe-inline mehr
+- **DB_PASSWORD:** Pflicht in Production
+- **X-XSS-Protection:** Entfernt (deprecated)
+
+### **✅ COMPLETED (Strategic Planning)**
 - ✅ **External AI Security-Excellence:** World-class Implementation erhalten (9.8/10)
-- ✅ **ABAC/RLS Architecture:** Hybrid-Security-Model implementiert
+- ✅ **ABAC/RLS Architecture:** Hybrid-Security-Model designed
 - ✅ **Lead-Protection Framework:** User-basierte Ownership + Collaborators Model
 - ✅ **Multi-Contact Security:** GF/Buyer/Chef-Hierarchy mit granularer Visibility
-- ✅ **Connection-Pool-Safety:** SessionSettingsFilter mit Hibernate Session#doWork
-- ✅ **GDPR-Compliance:** Complete Audit-Trail + automatische 7-Jahre-Retention
+- ✅ **GDPR-Compliance:** Complete Audit-Trail Design
 - ✅ **Performance-Excellence:** STABLE-Functions für <50ms P95 Lead-Access
-- ✅ **Production-Ready Artefakte:** 13 Copy-Paste-Ready Komponenten strukturiert (Backend + Frontend + SQL + Testing + Monitoring + Docs)
+- ✅ **Production-Ready Artefakte:** 13 Copy-Paste-Ready Komponenten vorbereitet
 
-### **🔄 NEXT STEPS (Q1 2026)**
-- [ ] **Production Deployment:** Phase 2 Implementation per technical-concept.md
-- [ ] **Keycloak Claims-Mapping:** org_id, territory, scopes, contact_roles Configuration
-- [ ] **RLS v2 Migration:** V227 Database-Migration Production-Deployment
-- [ ] **Security Contract Tests:** CI-Gate Integration für Regression-Prevention
+### **🎯 PHASE 2 STATUS & NEXT STEPS**
+#### ✅ Sprint 2.1 COMPLETE (PR #103):
+- **Lead-Protection:** User-basiert mit 6/60/10 Regel implementiert
+- **UserLeadSettings:** Thread-safe Service mit Pessimistic Locking
+- **Territory-Klarstellung:** Nur für Currency/Tax, kein Gebietsschutz
+- **Migrationen:** V229-V231 produktiv deployed
+
+#### ⏳ Noch ausstehend:
+- [ ] **RLS Policies:** Weitere Business-Tabellen (customers)
+- [ ] **Keycloak Integration:** Claims-Mapping für org_id, scopes
+- [ ] **Security Contract Tests:** Regression-Prevention in CI
 
 ## 🏗️ **SECURITY FOUNDATION STRUCTURE**
 
@@ -62,13 +87,15 @@ sicherheit/
 
 ### **Business-Specific Security Requirements:**
 - **Lead-Protection:** User-based Ownership + Time-Windows (6M/60T/10T Grace) - KEIN Territory-Schutz!
+  - ✅ **Sprint 2.1 Update:** PR #103 bestätigt User-basierte Protection (UserLeadSettings)
+  - Territory dient NUR für Currency/Tax (EUR/CHF, 19%/7.7%), NICHT für Zugriffskontrolle
 - **Multi-Contact Security:** CHEF (Menu-Focus) vs. BUYER (Budget-Focus) vs. GF (Strategy-Focus)
-- **Territory-Assignment:** Deutschland/Schweiz nur für User-Zuordnung - KEINE Access-Restrictions
+- **Territory-Assignment:** Deutschland/Schweiz nur für Business Rules - KEINE geografischen Access-Restrictions
 - **Handelsvertretervertrag:** Legal Compliance für User-based Commission Protection
 
 ### **Technical Security Challenges:**
 - **Performance:** ABAC + RLS bei 1000+ concurrent users + Sub-200ms SLOs
-- **Complexity:** Multi-dimensional Access (Territory + Role + Ownership + Time)
+- **Complexity:** Multi-dimensional Access (User + Role + Ownership + Time)
 - **Auditability:** Complete Security Event Trail für Compliance + Legal Requirements
 - **Scalability:** Security Rules müssen mit Business Growth skalieren
 
@@ -76,14 +103,15 @@ sicherheit/
 
 ### **Security Model Evolution:**
 ```yaml
-Current State (External KI identified):
-  - Territory-based Access (partially implemented)
-  - Basic ABAC rules (needs finalization)
+Current State (Sprint 2.1 PR #103 COMPLETE):
+  - User-based Access implementiert (NICHT Territory-based!)
+  - UserLeadSettings mit Thread-Safety (V229-V231 Migrationen)
+  - ABAC rules aus Sprint 1.2 aktiv
 
 Target State (Production-Ready):
-  - Lead-Ownership + Time-Window Protection (User-based)
+  - Lead-Ownership + Time-Window Protection (User-based) ✅
   - Multi-Contact Role-based Access Control
-  - Territory-Assignment für Deutschland + Schweiz (nur User-Zuordnung)
+  - Territory NUR für Business Rules (Currency/Tax) ✅
   - Complete Audit Trail + GDPR Compliance
 ```
 
@@ -94,8 +122,9 @@ Target State (Production-Ready):
 4. **Audit Trail + Compliance** (Week 4-6)
 
 ### **Success Criteria:**
-- ✅ ABAC Territory-Scoping operational (Deutschland + Schweiz)
-- ✅ Lead-Protection RLS policies protecting Territory-based Ownership
+- ✅ ABAC User-based Scoping operational (Sprint 2.1 implementiert)
+- ✅ Lead-Protection RLS policies protecting User-based Ownership (NICHT Territory!)
+- ✅ Territory nur für Business Logic (Currency EUR/CHF, Tax 19%/7.7%)
 - ✅ Multi-Contact Access-Control validated (CHEF/BUYER/GF)
 - ✅ Complete Audit Trail capturing all Security Events + GDPR compliant
 

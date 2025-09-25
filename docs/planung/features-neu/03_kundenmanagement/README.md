@@ -1,6 +1,6 @@
 # 👥 Modul 03 Kundenmanagement - Vollständige Planungsdokumentation
 
-**📅 Letzte Aktualisierung:** 2025-09-20
+**📅 Letzte Aktualisierung:** 2025-09-25
 **🎯 Status:** ✅ ENTERPRISE-LEVEL PRODUCTION-READY (100% Foundation Standards)
 **📊 Vollständigkeit:** 100% (Technical Concept + 39 Production-Ready Artefakte + Enterprise Platform)
 **🎖️ Qualitätsscore:** 9.8/10 (Enterprise CRM Core mit 380 Code-Dateien)
@@ -50,15 +50,16 @@
 - **Enterprise Customer-List:** 676 LOC Hauptkomponente mit Virtualization + Intelligent Filtering
 - **Opportunity Pipeline:** 799 LOC Drag & Drop Kanban (NEW_LEAD → CLOSED_WON)
 - **Sample-Management:** Cook&Fresh® Produktproben-Workflows mit ROI-Tracking
-- **ABAC Security:** Territory-basierte Zugriffskontrolle mit Verkäuferschutz
+- **ABAC Security:** User-basierte Zugriffskontrolle mit Lead-Protection (Territory nur für Currency/Tax)
 
 ## 🎯 **PROJEKTMEILENSTEINE**
 
 ### **1. Foundation Standards Migration ✅ Completed**
 - **100% Compliance:** Design System V2 + ABAC Security + API Standards
 - **Package Migration:** Von `com.freshplan` zu `de.freshplan` erfolgreich
-- **Security Implementation:** Territory-basierte ABAC mit JWT-Claims
+- **Security Implementation:** User-basierte ABAC mit JWT-Claims (Sprint 2.1 Update: Territory ohne Gebietsschutz)
 - **Testing Standards:** 80%+ Coverage + BDD + Performance Tests
+- **Territory Clarification:** Nach PR #103 - Territory nur für Currency (EUR/CHF), Tax (19%/7.7%), keine geografische Zuordnung
 
 ### **2. Enterprise CRM Core Development ✅ Completed**
 - **Customer Dashboard:** Production-Ready Hub mit Tool-Cards Navigation
@@ -69,7 +70,7 @@
 ### **3. B2B-Convenience-Food Spezialisierung ✅ Completed**
 - **Cook&Fresh® Sample-Management:** Produktproben-Workflows implementiert
 - **ROI-Kalkulation:** B2B-Food-spezifische Investment-Berechnungen
-- **Gastronomiebetrieb-Kategorisierung:** Territory + Channel-Management
+- **Gastronomiebetrieb-Kategorisierung:** User-Assignment + Channel-Management (Territory für Business Rules)
 - **Performance-Optimierung:** 50-70% Speed-Improvement durch intelligente DB-Indizes
 
 ### **4. Production-Ready Implementation ✅ Ready**
