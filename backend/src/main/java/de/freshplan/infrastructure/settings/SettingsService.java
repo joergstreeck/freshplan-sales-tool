@@ -1,5 +1,6 @@
 package de.freshplan.infrastructure.settings;
 
+import de.freshplan.infrastructure.security.RlsContext;
 import io.quarkus.cache.CacheInvalidateAll;
 import io.quarkus.cache.CacheResult;
 import io.vertx.core.json.JsonObject;
@@ -28,6 +29,8 @@ public class SettingsService {
 
   /** Retrieves a setting by scope, scope ID, and key. Sprint 1.4: Added caching support. */
   @CacheResult(cacheName = CACHE_NAME)
+  @Transactional
+  @RlsContext
   public Optional<Setting> getSetting(SettingsScope scope, String scopeId, String key) {
     LOG.debugf("Retrieving setting: scope=%s, scopeId=%s, key=%s", scope, scopeId, key);
 
@@ -40,6 +43,8 @@ public class SettingsService {
    * ACCOUNT > TERRITORY > TENANT > GLOBAL. Sprint 1.4: Added caching.
    */
   @CacheResult(cacheName = CACHE_NAME)
+  @Transactional
+  @RlsContext
   public Optional<Setting> resolveSetting(String key, SettingsContext context) {
     LOG.debugf("Resolving setting hierarchically: key=%s, context=%s", key, context);
 
@@ -57,6 +62,7 @@ public class SettingsService {
   /** Creates or updates a setting. Sprint 1.4: Added cache invalidation. */
   @CacheInvalidateAll(cacheName = CACHE_NAME)
   @Transactional
+  @RlsContext
   public Setting saveSetting(
       SettingsScope scope,
       String scopeId,
@@ -111,6 +117,7 @@ public class SettingsService {
   /** Creates a new setting strictly (no upsert). Throws 409 Conflict if setting already exists. */
   @CacheInvalidateAll(cacheName = CACHE_NAME)
   @Transactional
+  @RlsContext
   public Setting createSettingStrict(
       SettingsScope scope,
       String scopeId,
@@ -166,6 +173,7 @@ public class SettingsService {
    */
   @CacheInvalidateAll(cacheName = CACHE_NAME)
   @Transactional
+  @RlsContext
   public Setting updateSettingWithEtag(
       UUID id, JsonObject value, JsonObject metadata, String ifMatch, String userId) {
     LOG.infof("Updating setting with ETag: id=%s, ifMatch=%s", id, ifMatch);
@@ -211,6 +219,7 @@ public class SettingsService {
   /** Deletes a setting. Sprint 1.4: Added cache invalidation. */
   @CacheInvalidateAll(cacheName = CACHE_NAME)
   @Transactional
+  @RlsContext
   public boolean deleteSetting(UUID id) {
     LOG.infof("Deleting setting: id=%s", id);
 
@@ -227,6 +236,8 @@ public class SettingsService {
    * Checks if a setting exists and hasn't been modified. Used for HTTP conditional requests
    * (If-None-Match).
    */
+  @Transactional
+  @RlsContext
   public boolean checkEtag(UUID id, String etag) {
     Setting setting = Setting.findById(id);
     return setting != null && setting.matchesEtag(etag);
@@ -234,6 +245,8 @@ public class SettingsService {
 
   /** Lists all settings for a given scope. Sprint 1.4: Added caching. */
   @CacheResult(cacheName = CACHE_NAME)
+  @Transactional
+  @RlsContext
   public List<Setting> listSettings(SettingsScope scope, String scopeId) {
     LOG.debugf("Listing settings: scope=%s, scopeId=%s", scope, scopeId);
 

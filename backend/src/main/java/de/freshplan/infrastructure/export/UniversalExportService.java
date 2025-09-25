@@ -1,6 +1,7 @@
 package de.freshplan.infrastructure.export;
 
 import de.freshplan.infrastructure.export.strategies.*;
+import de.freshplan.infrastructure.security.RlsContext;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -58,6 +59,7 @@ public class UniversalExportService {
    * @param format Target export format
    * @return Export result
    */
+  @RlsContext
   public ExportResult export(List<?> data, ExportConfig config, ExportFormat format) {
     log.infof(
         "Starting export: format=%s, records=%d, title=%s", format, data.size(), config.getTitle());
@@ -106,6 +108,7 @@ public class UniversalExportService {
    * @param format Target export format
    * @return JAX-RS Response ready to send to client
    */
+  @RlsContext
   public Response exportAsResponse(List<?> data, ExportConfig config, ExportFormat format) {
     ExportResult result = export(data, config, format);
 

@@ -1,7 +1,9 @@
 package de.freshplan.infrastructure.cqrs;
 
+import de.freshplan.infrastructure.security.AppGuc;
 import io.quarkus.runtime.ShutdownEvent;
 import io.quarkus.runtime.StartupEvent;
+import io.quarkus.security.identity.SecurityIdentity;
 import io.vertx.core.json.JsonObject;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Event;
@@ -34,6 +36,8 @@ public class EventSubscriber {
 
   @Inject Event<EventNotification> eventBus;
 
+  @Inject SecurityIdentity securityIdentity;
+
   @ConfigProperty(name = "cqrs.subscriber.enabled", defaultValue = "true")
   boolean subscriberEnabled;
 
@@ -43,10 +47,21 @@ public class EventSubscriber {
   @ConfigProperty(name = "cqrs.subscriber.channels", defaultValue = "cqrs_all_events")
   String defaultChannels;
 
+  @ConfigProperty(name = "security.rls.system-user", defaultValue = "events-bus@freshplan")
+  String systemUser;
+
+  @ConfigProperty(name = "cqrs.subscriber.reconnect.max-retries", defaultValue = "3")
+  int maxRetries;
+
+  @ConfigProperty(name = "cqrs.subscriber.reconnect.initial-delay-ms", defaultValue = "1000")
+  long initialRetryDelay;
+
   private final Map<String, Consumer<JsonObject>> handlers = new ConcurrentHashMap<>();
   private ScheduledExecutorService executor;
   private Connection listenerConnection;
   private volatile boolean running = false;
+  private volatile long lastConnectionCheck = 0;
+  private static final long CONNECTION_CHECK_INTERVAL = 60000; // 1 minute
 
   /** Starts the event subscriber on application startup */
   void onStart(@Observes StartupEvent ev) {
@@ -92,15 +107,7 @@ public class EventSubscriber {
 
   /** Starts listening for PostgreSQL notifications */
   private void startListening() throws Exception {
-    // Create dedicated connection for LISTEN/NOTIFY
-    listenerConnection = dataSource.getConnection();
-    listenerConnection.setAutoCommit(true);
-
-    // Subscribe to all configured channels
-    for (String channel : defaultChannels.split(",")) {
-      subscribeToChannel(channel.trim());
-    }
-
+    establishListenerConnection();
     running = true;
 
     // Start polling for notifications
@@ -148,6 +155,13 @@ public class EventSubscriber {
     }
 
     try {
+      // Check connection health periodically
+      long now = System.currentTimeMillis();
+      if (now - lastConnectionCheck > CONNECTION_CHECK_INTERVAL) {
+        ensureConnectionHealthy();
+        lastConnectionCheck = now;
+      }
+
       PGConnection pgConn = listenerConnection.unwrap(PGConnection.class);
       PGNotification[] notifications = pgConn.getNotifications();
 
@@ -157,7 +171,8 @@ public class EventSubscriber {
         }
       }
     } catch (Exception e) {
-      LOG.error("Error polling notifications", e);
+      LOG.error("Error polling notifications, attempting reconnect", e);
+      handleConnectionError();
     }
   }
 
@@ -196,6 +211,106 @@ public class EventSubscriber {
   private void recordEventProcessed(String eventType) {
     // TODO: Integrate with monitoring system
     LOG.tracef("Event processed: %s", eventType);
+  }
+
+  /** Sets RLS context for the listener connection */
+  private void setRlsContextForListenerConnection() {
+    try {
+      // Set session-level context for event listener
+      // This connection is long-lived and processes events from all territories
+      // Using set_config with parameters for safety (session-scoped)
+
+      // Set system user from configuration
+      try (var ps =
+          listenerConnection.prepareStatement(AppGuc.CURRENT_USER.setSessionConfigSql())) {
+        ps.setString(1, AppGuc.CURRENT_USER.getKey());
+        ps.setString(2, systemUser);
+        ps.execute();
+      }
+
+      // Set system role for event processing (needs to see all events)
+      try (var ps =
+          listenerConnection.prepareStatement(AppGuc.CURRENT_ROLE.setSessionConfigSql())) {
+        ps.setString(1, AppGuc.CURRENT_ROLE.getKey());
+        ps.setString(2, "SYSTEM");
+        ps.execute();
+      }
+
+      LOG.debugf("RLS context set for event listener: user=%s, role=SYSTEM", systemUser);
+    } catch (Exception e) {
+      LOG.error("Failed to set RLS context for listener connection", e);
+      throw new RuntimeException("Cannot establish secure event listener", e);
+    }
+  }
+
+  /** Establishes or re-establishes the listener connection */
+  private void establishListenerConnection() throws Exception {
+    // Close existing connection if any
+    if (listenerConnection != null && !listenerConnection.isClosed()) {
+      try {
+        listenerConnection.close();
+      } catch (Exception e) {
+        LOG.debug("Error closing old connection", e);
+      }
+    }
+
+    // Create new connection
+    listenerConnection = dataSource.getConnection();
+    listenerConnection.setAutoCommit(true);
+
+    // Set RLS context - MUST succeed or we fail
+    setRlsContextForListenerConnection();
+
+    // Re-subscribe to all channels
+    for (String channel : defaultChannels.split(",")) {
+      subscribeToChannel(channel.trim());
+    }
+
+    lastConnectionCheck = System.currentTimeMillis();
+    LOG.info("Event listener connection established successfully");
+  }
+
+  /** Ensures the connection is healthy, reconnects if needed */
+  private void ensureConnectionHealthy() {
+    try {
+      if (listenerConnection == null
+          || listenerConnection.isClosed()
+          || !listenerConnection.isValid(5)) {
+        LOG.warn("Listener connection unhealthy, reconnecting...");
+        establishListenerConnection();
+      }
+    } catch (Exception e) {
+      LOG.error("Connection health check failed", e);
+      handleConnectionError();
+    }
+  }
+
+  /** Handles connection errors by attempting to reconnect */
+  private void handleConnectionError() {
+    if (!running) {
+      return;
+    }
+
+    int retryCount = 0;
+    long retryDelay = initialRetryDelay;
+
+    while (running && retryCount < maxRetries) {
+      try {
+        Thread.sleep(retryDelay);
+        LOG.infof(
+            "Attempting to reconnect event listener (attempt %d/%d)", retryCount + 1, maxRetries);
+        establishListenerConnection();
+        LOG.info("Event listener reconnected successfully");
+        return;
+      } catch (Exception e) {
+        retryCount++;
+        retryDelay *= 2; // Exponential backoff
+        LOG.errorf("Reconnection attempt %d failed: %s", retryCount, e.getMessage());
+      }
+    }
+
+    LOG.error("Failed to reconnect after " + maxRetries + " attempts. Event listener disabled.");
+    running = false;
   }
 
   /** Event notification for CDI event bus */
