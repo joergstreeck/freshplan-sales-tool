@@ -1,6 +1,6 @@
 # 🚀 FreshPlan Sales Command Center
 
-**📅 Aktuelles Datum: <!-- AUTO_DATE --> (System: 06.07.2025)**
+**📅 Aktuelles Datum: 25.09.2025**
 
 > **"Wir bauen ein intelligentes Sales Command Center, das unsere Vertriebsmitarbeiter lieben, weil es ihnen proaktiv die Informationen, Insights und geführten Prozesse liefert, die sie brauchen, um erfolgreich zu sein."**
 
@@ -14,13 +14,30 @@ Wir entwickeln nicht nur ein CRM, sondern ein **Sales Command Center** - eine re
 - **Spalte 2: Fokus-Liste** - Dynamische Kundenlisten mit Enterprise-Features
 - **Spalte 3: Aktions-Center** - Geführte Prozesse für maximale Effizienz
 
-Mehr Details: [Vision & Roadmap](./VISION_AND_ROADMAP.md) | [Master Plan V4](./docs/CRM_COMPLETE_MASTER_PLAN.md)
+Mehr Details: [Vision & Roadmap](./VISION_AND_ROADMAP.md) | [Master Plan V5](./docs/planung/CRM_COMPLETE_MASTER_PLAN_V5.md) | [Production Roadmap](./docs/planung/PRODUCTION_ROADMAP_2025.md)
+
+## 📊 Projekt-Status
+
+### Phase 1: Foundation ✅ COMPLETE (100%)
+- **Sprint 1.1-1.4:** CQRS Light, Security, Settings, CI/CD ✅
+- **Sprint 1.5:** RLS Connection Affinity Security Fix (PR #106) ✅
+- **Sprint 1.6:** RLS Module Adoption (PR #107) ✅
+- **Performance:** P95 <200ms erreicht mit ETag ≥70% Hit-Rate
+
+### Phase 2: Core Business 🔧 IN PROGRESS (10%)
+- **Sprint 2.1:** Neukundengewinnung - Lead-Management läuft
+- **Sprint 2.2-2.5:** Kundenmanagement, Kommunikation, Cockpit, Einstellungen
+
+### Aktuelle PRs: 11/37 merged (30% gesamt)
+
+Details: [Production Roadmap 2025](./docs/planung/PRODUCTION_ROADMAP_2025.md)
 
 ## 🏗️ Architektur & Technologie
 
 ### Tech Stack
 - **Frontend**: React 18 + TypeScript + Vite + Zustand + React Query
 - **Backend**: Quarkus + PostgreSQL + Testcontainers
+- **Security**: Row-Level Security (RLS) + @RlsContext CDI Interceptor + Fail-closed Pattern
 - **Auth**: Keycloak (OIDC)
 - **Cloud**: AWS (ECS, RDS, CloudFront)
 
