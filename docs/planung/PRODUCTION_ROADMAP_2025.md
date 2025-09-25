@@ -10,13 +10,13 @@
 ## 🎯 CLAUDE QUICK-START (für neue Claude-Instanzen)
 
 **🚨 AKTUELLER STATUS:**
-- **Phase:** ✅ Phase 1 COMPLETE | 🚀 Phase 2 READY
-- **Next Action:** Sprint 2.1 fortsetzen - Lead-Verwaltung mit User-Protection
-- **Progress:** 11/37 PRs completed - 30% done
-- **Blockers:** ✅ RESOLVED - Modul 02 hat @RlsContext (PR #107 merged)
-- **Active Branch:** main (Sprint 1.5 + 1.6 merged)
+- **Phase:** ✅ Phase 1 COMPLETE | 🚀 Phase 2 IN PROGRESS
+- **Next Action:** Sprint 2.2 - Kundenmanagement starten
+- **Progress:** 13/37 PRs completed - 35% done
+- **Blockers:** KEINE - Sprint 2.1 Core Features complete
+- **Active Branch:** main (Sprint 2.1 PRs #103, #105, #108 merged)
 - **Foundation Status:** ✅ COMPLETE - CQRS/Security/Settings/CI/RLS operational
-- **Performance:** ✅ P95 <200ms achieved with ETag ≥70% Hit-Rate
+- **Performance:** ✅ P95 <200ms + Lead API mit ETags operational
 
 **🔗 WICHTIGE REFERENZEN:**
 - **Arbeitsregeln:** [CLAUDE.md](./CLAUDE.md)
@@ -80,9 +80,9 @@ Sprint 1.6: RLS Module Adoption       ✅ PR #107 MERGED → Modul 02 Fix + CI-G
 
 ### 🚀 **Phase 2: Core Business (7.5 Wochen) - IN PROGRESS**
 ```
-Progress: █░░░░░░░░░ 10% (0.5/5 Sprints)
+Progress: ██░░░░░░░░ 20% (1/5 Sprints)
 
-Sprint 2.1: 02 Neukundengewinnung     🔧 IN PROGRESS → PR #103 (Territory) merged
+Sprint 2.1: 02 Neukundengewinnung     ✅ CORE COMPLETE → PR #103, #105 merged (Lead API + Territory)
 Sprint 2.2: 03 Kundenmanagement      📋 Ready → 39 Artefakte + RLS Migration needed
 Sprint 2.3: 05 Kommunikation         📋 Ready → Security-Gate ✅ erfüllt!
 Sprint 2.4: 01 Cockpit               🟡 Planning → CQRS-optimiert
