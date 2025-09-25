@@ -5,8 +5,8 @@ import de.freshplan.modules.leads.domain.LeadActivity;
 import java.time.LocalDateTime;
 
 /**
- * DTO for LeadActivity to avoid lazy loading issues.
- * Sprint 2.1: Safe serialization without lazy-loaded entities.
+ * DTO for LeadActivity to avoid lazy loading issues. Sprint 2.1: Safe serialization without
+ * lazy-loaded entities.
  */
 public class LeadActivityDTO {
   public Long id;

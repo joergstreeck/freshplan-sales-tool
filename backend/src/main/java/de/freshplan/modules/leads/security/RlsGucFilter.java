@@ -13,15 +13,14 @@ import jakarta.ws.rs.core.SecurityContext;
 import jakarta.ws.rs.ext.Provider;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.Statement;
 import org.jboss.logging.Logger;
 
 /**
- * Request filter that sets PostgreSQL GUC (Grand Unified Configuration) variables
- * for Row Level Security (RLS) policies.
+ * Request filter that sets PostgreSQL GUC (Grand Unified Configuration) variables for Row Level
+ * Security (RLS) policies.
  *
- * Sprint 2.1: Ensures fail-closed security by setting user context for every request.
- * The GUCs are used by RLS policies to determine access rights.
+ * <p>Sprint 2.1: Ensures fail-closed security by setting user context for every request. The GUCs
+ * are used by RLS policies to determine access rights.
  */
 @Provider
 @Priority(Priorities.AUTHENTICATION + 1) // Run after authentication
@@ -35,15 +34,16 @@ public class RlsGucFilter implements ContainerRequestFilter, ContainerResponseFi
 
   @Override
   public void filter(ContainerRequestContext requestContext) {
-    String user = securityContext.getUserPrincipal() != null
-        ? securityContext.getUserPrincipal().getName()
-        : "anonymous";
+    String user =
+        securityContext.getUserPrincipal() != null
+            ? securityContext.getUserPrincipal().getName()
+            : "anonymous";
 
     String role = determineRole();
 
     // Set GUCs for this request's database session using PreparedStatement for security
     try (Connection conn = dataSource.getConnection();
-         PreparedStatement ps = conn.prepareStatement("SELECT set_config(?, ?, true)")) {
+        PreparedStatement ps = conn.prepareStatement("SELECT set_config(?, ?, true)")) {
 
       // Use set_config function with PreparedStatement to prevent SQL injection
       ps.setString(1, "app.current_user");
@@ -68,8 +68,8 @@ public class RlsGucFilter implements ContainerRequestFilter, ContainerResponseFi
   }
 
   @Override
-  public void filter(ContainerRequestContext requestContext,
-                     ContainerResponseContext responseContext) {
+  public void filter(
+      ContainerRequestContext requestContext, ContainerResponseContext responseContext) {
     // Optional: Log RLS context used for debugging
     String user = (String) requestContext.getProperty("rls.user");
     String role = (String) requestContext.getProperty("rls.role");

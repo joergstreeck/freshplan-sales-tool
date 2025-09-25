@@ -13,8 +13,8 @@ import java.util.List;
 import org.jboss.logging.Logger;
 
 /**
- * Service for lead management operations. Handles lead lifecycle, state transitions, and
- * protection system logic.
+ * Service for lead management operations. Handles lead lifecycle, state transitions, and protection
+ * system logic.
  */
 @ApplicationScoped
 public class LeadService {
@@ -50,7 +50,10 @@ public class LeadService {
       lead.persist();
 
       // Create activity
-      createActivity(lead, "SYSTEM", ActivityType.REMINDER_SENT,
+      createActivity(
+          lead,
+          "SYSTEM",
+          ActivityType.REMINDER_SENT,
           "60-day reminder sent - no activity detected");
 
       LOG.infof("Sent reminder for lead %s (owner: %s)", lead.id, lead.ownerUserId);
@@ -84,8 +87,8 @@ public class LeadService {
       lead.persist();
 
       // Create activity
-      createActivity(lead, "SYSTEM", ActivityType.GRACE_PERIOD_STARTED,
-          "10-day grace period started");
+      createActivity(
+          lead, "SYSTEM", ActivityType.GRACE_PERIOD_STARTED, "10-day grace period started");
 
       LOG.infof("Lead %s entered grace period (owner: %s)", lead.id, lead.ownerUserId);
       count++;
@@ -94,9 +97,7 @@ public class LeadService {
     return count;
   }
 
-  /**
-   * Process expired leads (after 6 months or grace period ends). Transitions to EXPIRED status.
-   */
+  /** Process expired leads (after 6 months or grace period ends). Transitions to EXPIRED status. */
   @Transactional
   public int processExpirations() {
     int count = 0;
@@ -116,8 +117,8 @@ public class LeadService {
       lead.expiredAt = LocalDateTime.now();
       lead.persist();
 
-      createActivity(lead, "SYSTEM", ActivityType.EXPIRED,
-          "Lead expired after 6 months of protection");
+      createActivity(
+          lead, "SYSTEM", ActivityType.EXPIRED, "Lead expired after 6 months of protection");
 
       LOG.infof("Lead %s expired after 6 months (owner: %s)", lead.id, lead.ownerUserId);
       count++;
@@ -138,8 +139,7 @@ public class LeadService {
       lead.expiredAt = LocalDateTime.now();
       lead.persist();
 
-      createActivity(lead, "SYSTEM", ActivityType.EXPIRED,
-          "Lead expired after grace period ended");
+      createActivity(lead, "SYSTEM", ActivityType.EXPIRED, "Lead expired after grace period ended");
 
       LOG.infof("Lead %s expired after grace period (owner: %s)", lead.id, lead.ownerUserId);
       count++;
@@ -148,9 +148,7 @@ public class LeadService {
     return count;
   }
 
-  /**
-   * Reactivate lead when activity is recorded. Resets reminder and grace period timestamps.
-   */
+  /** Reactivate lead when activity is recorded. Resets reminder and grace period timestamps. */
   @Transactional
   public void reactivateLead(Lead lead) {
     if (lead.status == LeadStatus.REMINDER || lead.status == LeadStatus.GRACE_PERIOD) {
@@ -160,16 +158,15 @@ public class LeadService {
       lead.lastActivityAt = LocalDateTime.now();
       lead.persist();
 
-      createActivity(lead, "SYSTEM", ActivityType.REACTIVATED,
-          "Lead reactivated due to new activity");
+      createActivity(
+          lead, "SYSTEM", ActivityType.REACTIVATED, "Lead reactivated due to new activity");
 
       LOG.infof("Lead %s reactivated due to activity", lead.id);
     }
   }
 
   /**
-   * Check if lead protection is about to expire and send warning. Used for dashboard
-   * notifications.
+   * Check if lead protection is about to expire and send warning. Used for dashboard notifications.
    */
   public List<Lead> getExpiringLeads(String userId, int daysBeforeExpiry) {
     LocalDateTime expiryWarningDate = LocalDateTime.now().plusDays(daysBeforeExpiry);
@@ -188,31 +185,32 @@ public class LeadService {
   }
 
   /**
-   * Get lead statistics for a user. Used for dashboard widgets.
-   * Optimized version using single query with aggregation.
+   * Get lead statistics for a user. Used for dashboard widgets. Optimized version using single
+   * query with aggregation.
    */
   public LeadStatistics getStatistics(String userId) {
     LeadStatistics stats = new LeadStatistics();
 
     // Single query to get all statistics
     @SuppressWarnings("unchecked")
-    List<Object[]> results = em.createQuery(
-        "SELECT "
-            + "COUNT(l) as total, "
-            + "SUM(CASE WHEN l.status = :active THEN 1 ELSE 0 END) as active, "
-            + "SUM(CASE WHEN l.status = :reminder THEN 1 ELSE 0 END) as reminder, "
-            + "SUM(CASE WHEN l.status = :grace THEN 1 ELSE 0 END) as grace, "
-            + "SUM(CASE WHEN l.status = :expired THEN 1 ELSE 0 END) as expired, "
-            + "SUM(CASE WHEN l.clockStoppedAt IS NOT NULL THEN 1 ELSE 0 END) as clockStopped "
-            + "FROM Lead l "
-            + "WHERE l.ownerUserId = :userId AND l.status != :deleted")
-        .setParameter("userId", userId)
-        .setParameter("active", LeadStatus.ACTIVE)
-        .setParameter("reminder", LeadStatus.REMINDER)
-        .setParameter("grace", LeadStatus.GRACE_PERIOD)
-        .setParameter("expired", LeadStatus.EXPIRED)
-        .setParameter("deleted", LeadStatus.DELETED)
-        .getResultList();
+    List<Object[]> results =
+        em.createQuery(
+                "SELECT "
+                    + "COUNT(l) as total, "
+                    + "SUM(CASE WHEN l.status = :active THEN 1 ELSE 0 END) as active, "
+                    + "SUM(CASE WHEN l.status = :reminder THEN 1 ELSE 0 END) as reminder, "
+                    + "SUM(CASE WHEN l.status = :grace THEN 1 ELSE 0 END) as grace, "
+                    + "SUM(CASE WHEN l.status = :expired THEN 1 ELSE 0 END) as expired, "
+                    + "SUM(CASE WHEN l.clockStoppedAt IS NOT NULL THEN 1 ELSE 0 END) as clockStopped "
+                    + "FROM Lead l "
+                    + "WHERE l.ownerUserId = :userId AND l.status != :deleted")
+            .setParameter("userId", userId)
+            .setParameter("active", LeadStatus.ACTIVE)
+            .setParameter("reminder", LeadStatus.REMINDER)
+            .setParameter("grace", LeadStatus.GRACE_PERIOD)
+            .setParameter("expired", LeadStatus.EXPIRED)
+            .setParameter("deleted", LeadStatus.DELETED)
+            .getResultList();
 
     if (!results.isEmpty() && results.get(0) != null) {
       Object[] row = results.get(0);
@@ -247,9 +245,7 @@ public class LeadService {
     activity.persist();
   }
 
-  /**
-   * Statistics DTO for lead dashboard.
-   */
+  /** Statistics DTO for lead dashboard. */
   public static class LeadStatistics {
     public long totalLeads;
     public long activeLeads;

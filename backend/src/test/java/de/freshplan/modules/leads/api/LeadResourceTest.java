@@ -2,9 +2,9 @@ package de.freshplan.modules.leads.api;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.*;
 
 import de.freshplan.modules.leads.domain.Lead;
@@ -19,7 +19,6 @@ import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.*;
@@ -63,7 +62,9 @@ class LeadResourceTest {
   }
 
   @Test
-  @TestSecurity(user = "user1", roles = {"USER"})
+  @TestSecurity(
+      user = "user1",
+      roles = {"USER"})
   @DisplayName("Should create new lead with user as owner")
   void testCreateLead() {
     Map<String, Object> leadRequest = new HashMap<>();
@@ -103,7 +104,9 @@ class LeadResourceTest {
   }
 
   @Test
-  @TestSecurity(user = "user1", roles = {"USER"})
+  @TestSecurity(
+      user = "user1",
+      roles = {"USER"})
   @DisplayName("Should list leads for owner")
   void testListLeadsAsOwner() {
     // Create test lead first
@@ -120,52 +123,41 @@ class LeadResourceTest {
   }
 
   @Test
-  @TestSecurity(user = "user2", roles = {"USER"})
+  @TestSecurity(
+      user = "user2",
+      roles = {"USER"})
   @DisplayName("Should not list leads of other users")
   void testListLeadsAsNonOwner() {
     // Create lead owned by user1
     createTestLead("user1");
 
-    given()
-        .when()
-        .get()
-        .then()
-        .statusCode(200)
-        .body("data", hasSize(0))
-        .body("total", is(0));
+    given().when().get().then().statusCode(200).body("data", hasSize(0)).body("total", is(0));
   }
 
   @Test
-  @TestSecurity(user = "admin", roles = {"ADMIN"})
+  @TestSecurity(
+      user = "admin",
+      roles = {"ADMIN"})
   @DisplayName("Admin should see all leads")
   void testListLeadsAsAdmin() {
     // Create leads for different users
     createTestLead("user1");
     createTestLead("user2");
 
-    given()
-        .when()
-        .get()
-        .then()
-        .statusCode(200)
-        .body("data", hasSize(2))
-        .body("total", is(2));
+    given().when().get().then().statusCode(200).body("data", hasSize(2)).body("total", is(2));
   }
 
   @Test
-  @TestSecurity(user = "user1", roles = {"USER"})
+  @TestSecurity(
+      user = "user1",
+      roles = {"USER"})
   @DisplayName("Should update lead status with state machine validation")
   void testUpdateLeadStatus() {
     Long leadId = createTestLead("user1");
 
     // First fetch the lead to get the ETag (now returns strong ETag without W/ prefix)
-    String etag = given()
-        .when()
-        .get("/{id}", leadId)
-        .then()
-        .statusCode(200)
-        .extract()
-        .header("ETag");
+    String etag =
+        given().when().get("/{id}", leadId).then().statusCode(200).extract().header("ETag");
 
     assertNotNull("ETag should not be null", etag);
     // Strong ETags are quoted but don't have W/ prefix
@@ -188,7 +180,9 @@ class LeadResourceTest {
   }
 
   @Test
-  @TestSecurity(user = "user1", roles = {"USER"})
+  @TestSecurity(
+      user = "user1",
+      roles = {"USER"})
   @DisplayName("Should implement stop-the-clock feature")
   void testStopTheClockFeature() {
     Long leadId = createTestLead("user1");
@@ -197,13 +191,8 @@ class LeadResourceTest {
     setupUserSettings("user1", true);
 
     // Fetch the lead to get the strong ETag
-    String etag = given()
-        .when()
-        .get("/{id}", leadId)
-        .then()
-        .statusCode(200)
-        .extract()
-        .header("ETag");
+    String etag =
+        given().when().get("/{id}", leadId).then().statusCode(200).extract().header("ETag");
 
     assertNotNull("ETag should not be null", etag);
 
@@ -225,7 +214,9 @@ class LeadResourceTest {
   }
 
   @Test
-  @TestSecurity(user = "user1", roles = {"USER"})
+  @TestSecurity(
+      user = "user1",
+      roles = {"USER"})
   @DisplayName("Should add activity and update lastActivityAt")
   void testAddActivity() {
     Long leadId = createTestLead("user1");
@@ -256,19 +247,16 @@ class LeadResourceTest {
   }
 
   @Test
-  @TestSecurity(user = "user1", roles = {"USER"})
+  @TestSecurity(
+      user = "user1",
+      roles = {"USER"})
   @DisplayName("Should manage collaborators")
   void testManageCollaborators() {
     Long leadId = createTestLead("user1");
 
     // Fetch the lead to get the strong ETag
-    String etag = given()
-        .when()
-        .get("/{id}", leadId)
-        .then()
-        .statusCode(200)
-        .extract()
-        .header("ETag");
+    String etag =
+        given().when().get("/{id}", leadId).then().statusCode(200).extract().header("ETag");
 
     assertNotNull("ETag should not be null", etag);
 
@@ -287,7 +275,9 @@ class LeadResourceTest {
   }
 
   @Test
-  @TestSecurity(user = "user2", roles = {"USER"})
+  @TestSecurity(
+      user = "user2",
+      roles = {"USER"})
   @DisplayName("Collaborator should access lead")
   void testCollaboratorAccess() {
     Long leadId = createTestLead("user1");
@@ -296,16 +286,13 @@ class LeadResourceTest {
     addCollaborator(leadId, "user2");
 
     // Now user2 should be able to access the lead
-    given()
-        .when()
-        .get("/{id}", leadId)
-        .then()
-        .statusCode(200)
-        .body("id", is(leadId.intValue()));
+    given().when().get("/{id}", leadId).then().statusCode(200).body("id", is(leadId.intValue()));
   }
 
   @Test
-  @TestSecurity(user = "user1", roles = {"USER"})
+  @TestSecurity(
+      user = "user1",
+      roles = {"USER"})
   @DisplayName("Should filter leads by status")
   void testFilterByStatus() {
     // Create leads with different statuses
@@ -324,7 +311,9 @@ class LeadResourceTest {
   }
 
   @Test
-  @TestSecurity(user = "user1", roles = {"USER"})
+  @TestSecurity(
+      user = "user1",
+      roles = {"USER"})
   @DisplayName("Should search leads by company name")
   void testSearchLeads() {
     createTestLeadWithName("user1", "Restaurant Berlin");
@@ -341,7 +330,9 @@ class LeadResourceTest {
   }
 
   @Test
-  @TestSecurity(user = "user1", roles = {"USER"})
+  @TestSecurity(
+      user = "user1",
+      roles = {"USER"})
   @DisplayName("Should handle pagination")
   void testPagination() {
     // Create multiple leads
@@ -364,29 +355,21 @@ class LeadResourceTest {
   }
 
   @Test
-  @TestSecurity(user = "user1", roles = {"USER"})
+  @TestSecurity(
+      user = "user1",
+      roles = {"USER"})
   @DisplayName("Should soft delete lead with If-Match header")
   void testDeleteLead() {
     Long leadId = createTestLead("user1");
 
     // Fetch the lead to get the ETag for safe deletion
-    String etag = given()
-        .when()
-        .get("/{id}", leadId)
-        .then()
-        .statusCode(200)
-        .extract()
-        .header("ETag");
+    String etag =
+        given().when().get("/{id}", leadId).then().statusCode(200).extract().header("ETag");
 
     assertNotNull("ETag should not be null", etag);
 
     // Delete with If-Match header
-    given()
-        .header("If-Match", etag)
-        .when()
-        .delete("/{id}", leadId)
-        .then()
-        .statusCode(204);
+    given().header("If-Match", etag).when().delete("/{id}", leadId).then().statusCode(204);
 
     // Verify lead is soft deleted (status = DELETED)
     Lead deletedLead = Lead.findById(leadId);

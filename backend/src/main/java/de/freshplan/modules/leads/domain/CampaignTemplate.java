@@ -100,8 +100,7 @@ public class CampaignTemplate extends PanacheEntityBase {
   }
 
   /**
-   * Get personalized content by replacing variables.
-   * Uses efficient single-pass regex replacement.
+   * Get personalized content by replacing variables. Uses efficient single-pass regex replacement.
    *
    * @param data variable data for replacement
    * @return personalized HTML content
@@ -111,14 +110,13 @@ public class CampaignTemplate extends PanacheEntityBase {
       return this.htmlContent;
     }
     // Single-pass replacement using regex matcher
-    return VARIABLE_PATTERN.matcher(this.htmlContent).replaceAll(match ->
-        data.getOrDefault(match.group(1), match.group(0))
-    );
+    return VARIABLE_PATTERN
+        .matcher(this.htmlContent)
+        .replaceAll(match -> data.getOrDefault(match.group(1), match.group(0)));
   }
 
   /**
-   * Get personalized subject.
-   * Uses efficient single-pass regex replacement.
+   * Get personalized subject. Uses efficient single-pass regex replacement.
    *
    * @param data variable data for replacement
    * @return personalized subject
@@ -128,9 +126,9 @@ public class CampaignTemplate extends PanacheEntityBase {
       return this.subject;
     }
     // Single-pass replacement using regex matcher
-    return VARIABLE_PATTERN.matcher(this.subject).replaceAll(match ->
-        data.getOrDefault(match.group(1), match.group(0))
-    );
+    return VARIABLE_PATTERN
+        .matcher(this.subject)
+        .replaceAll(match -> data.getOrDefault(match.group(1), match.group(0)));
   }
 
   /** Extract variables from template content. */

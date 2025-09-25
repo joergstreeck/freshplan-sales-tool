@@ -28,8 +28,8 @@ import java.util.stream.Collectors;
 import org.jboss.logging.Logger;
 
 /**
- * REST API for Lead Management. Implements user-based lead protection (NO geographical
- * protection). Territory is only used for business rules (currency/tax).
+ * REST API for Lead Management. Implements user-based lead protection (NO geographical protection).
+ * Territory is only used for business rules (currency/tax).
  */
 @Path("/api/leads")
 @RolesAllowed({"USER", "MANAGER", "ADMIN"})
@@ -52,10 +52,16 @@ public class LeadResource {
   @Context Request request;
 
   // Sort field whitelist for security and stability
-  private static final Set<String> ALLOWED_SORT_FIELDS = Set.of(
-      "createdAt", "updatedAt", "companyName", "status",
-      "estimatedVolume", "city", "registeredAt", "lastActivityAt"
-  );
+  private static final Set<String> ALLOWED_SORT_FIELDS =
+      Set.of(
+          "createdAt",
+          "updatedAt",
+          "companyName",
+          "status",
+          "estimatedVolume",
+          "city",
+          "registeredAt",
+          "lastActivityAt");
 
   /**
    * GET /api/leads - List leads with pagination and filtering. Leads are available nationwide, no
@@ -106,7 +112,8 @@ public class LeadResource {
 
     // For non-admin users: show only leads they own or collaborate on
     if (!securityContext.isUserInRole("ADMIN")) {
-      query.append(" and (ownerUserId = :currentUser or :currentUser in elements(collaboratorUserIds))");
+      query.append(
+          " and (ownerUserId = :currentUser or :currentUser in elements(collaboratorUserIds))");
       params.put("currentUser", currentUserId);
     }
 
@@ -121,21 +128,19 @@ public class LeadResource {
     long total = pq.count(); // Use the SAME query's count() method
 
     // Convert to DTOs within the transaction to avoid lazy loading issues
-    List<LeadDTO> items = entities.stream()
-        .map(LeadDTO::from)
-        .collect(Collectors.toList());
+    List<LeadDTO> items = entities.stream().map(LeadDTO::from).collect(Collectors.toList());
 
     // Build type-safe paginated response with DTOs
-    PaginatedResponse<LeadDTO> response = PaginatedResponse.<LeadDTO>builder()
-        .data(items)
-        .page(pageIndex)
-        .size(pageSize)
-        .total(total)
-        .build();
+    PaginatedResponse<LeadDTO> response =
+        PaginatedResponse.<LeadDTO>builder()
+            .data(items)
+            .page(pageIndex)
+            .size(pageSize)
+            .total(total)
+            .build();
 
     // Generate weak collection ETag for caching (If-None-Match support)
-    int hash = Objects.hash(total,
-        entities.stream().map(l -> l.version).reduce(0L, Long::sum));
+    int hash = Objects.hash(total, entities.stream().map(l -> l.version).reduce(0L, Long::sum));
     EntityTag collectionTag = ETags.weakList(hash);
 
     // Check for 304 Not Modified
@@ -148,15 +153,14 @@ public class LeadResource {
   }
 
   /**
-   * GET /api/leads/{id} - Get lead by ID with ETag support (304 Not Modified).
-   * Access control: owner, collaborators, or admin.
+   * GET /api/leads/{id} - Get lead by ID with ETag support (304 Not Modified). Access control:
+   * owner, collaborators, or admin.
    */
   @GET
   @Path("/{id}")
   @Transactional
   public Response getLead(
-      @PathParam("id") Long id,
-      @HeaderParam("If-None-Match") String ifNoneMatch) {
+      @PathParam("id") Long id, @HeaderParam("If-None-Match") String ifNoneMatch) {
     String currentUserId = securityContext.getUserPrincipal().getName();
     Lead lead = Lead.findById(id);
 
@@ -196,8 +200,8 @@ public class LeadResource {
     // Check for email duplicate
     String normalizedEmail = Lead.normalizeEmail(request.email);
     if (normalizedEmail != null) {
-      Long duplicateCount = Lead.count("emailNormalized = ?1 and status != ?2",
-          normalizedEmail, LeadStatus.DELETED);
+      Long duplicateCount =
+          Lead.count("emailNormalized = ?1 and status != ?2", normalizedEmail, LeadStatus.DELETED);
       if (duplicateCount > 0) {
         return Response.status(Response.Status.CONFLICT)
             .entity(Map.of("error", "Email already exists for another lead"))
@@ -266,9 +270,9 @@ public class LeadResource {
   }
 
   /**
-   * PATCH /api/leads/{id} - Update lead with optimistic locking (If-Match required).
-   * Returns 428 if If-Match missing, 412 if version conflict.
-   * Supports status transitions and stop-the-clock feature.
+   * PATCH /api/leads/{id} - Update lead with optimistic locking (If-Match required). Returns 428 if
+   * If-Match missing, 412 if version conflict. Supports status transitions and stop-the-clock
+   * feature.
    */
   @PATCH
   @Path("/{id}")
@@ -321,8 +325,12 @@ public class LeadResource {
       String newNormalizedEmail = Lead.normalizeEmail(updateRequest.email);
       // Check for duplicate if email is changing
       if (newNormalizedEmail != null && !newNormalizedEmail.equals(lead.emailNormalized)) {
-        Long duplicateCount = Lead.count("emailNormalized = ?1 and id != ?2 and status != ?3",
-            newNormalizedEmail, lead.id, LeadStatus.DELETED);
+        Long duplicateCount =
+            Lead.count(
+                "emailNormalized = ?1 and id != ?2 and status != ?3",
+                newNormalizedEmail,
+                lead.id,
+                LeadStatus.DELETED);
         if (duplicateCount > 0) {
           return Response.status(Response.Status.CONFLICT)
               .entity(Map.of("error", "Email already exists for another lead"))
@@ -425,15 +433,13 @@ public class LeadResource {
   }
 
   /**
-   * DELETE /api/leads/{id} - Delete lead (soft delete by setting status to DELETED). Only admin
-   * or owner can delete. Requires If-Match header for safe deletion.
+   * DELETE /api/leads/{id} - Delete lead (soft delete by setting status to DELETED). Only admin or
+   * owner can delete. Requires If-Match header for safe deletion.
    */
   @DELETE
   @Path("/{id}")
   @Transactional
-  public Response deleteLead(
-      @PathParam("id") Long id,
-      @HeaderParam("If-Match") String ifMatch) {
+  public Response deleteLead(@PathParam("id") Long id, @HeaderParam("If-Match") String ifMatch) {
 
     // Require If-Match header for safe deletion
     if (ifMatch == null || ifMatch.isEmpty()) {
@@ -533,9 +539,7 @@ public class LeadResource {
     return Response.ok(LeadActivityDTO.from(activity)).build();
   }
 
-  /**
-   * GET /api/leads/{id}/activities - Get activities for a lead.
-   */
+  /** GET /api/leads/{id}/activities - Get activities for a lead. */
   @GET
   @Path("/{id}/activities")
   public Response getActivities(
@@ -562,23 +566,23 @@ public class LeadResource {
     long total = LeadActivity.count("lead", lead);
 
     // Convert to DTOs to avoid lazy loading issues
-    List<LeadActivityDTO> dtos = activities.stream()
-        .map(LeadActivityDTO::from)
-        .collect(Collectors.toList());
+    List<LeadActivityDTO> dtos =
+        activities.stream().map(LeadActivityDTO::from).collect(Collectors.toList());
 
-    PaginatedResponse<LeadActivityDTO> response = PaginatedResponse.<LeadActivityDTO>builder()
-        .data(dtos)
-        .page(pageIndex)
-        .size(pageSize)
-        .total(total)
-        .build();
+    PaginatedResponse<LeadActivityDTO> response =
+        PaginatedResponse.<LeadActivityDTO>builder()
+            .data(dtos)
+            .page(pageIndex)
+            .size(pageSize)
+            .total(total)
+            .build();
 
     return Response.ok(response).build();
   }
 
   /**
-   * Create safe Sort object with field whitelist validation.
-   * Falls back to createdAt DESC if field not allowed.
+   * Create safe Sort object with field whitelist validation. Falls back to createdAt DESC if field
+   * not allowed.
    */
   private Sort safeSort(String field, String direction) {
     String safeField = ALLOWED_SORT_FIELDS.contains(field) ? field : "createdAt";

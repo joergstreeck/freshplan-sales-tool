@@ -3,8 +3,8 @@ package de.freshplan.modules.leads.api;
 import jakarta.ws.rs.core.EntityTag;
 
 /**
- * ETag generation utilities for optimistic concurrency control.
- * Uses STRONG ETags for If-Match (per HTTP spec) and WEAK ETags for If-None-Match.
+ * ETag generation utilities for optimistic concurrency control. Uses STRONG ETags for If-Match (per
+ * HTTP spec) and WEAK ETags for If-None-Match.
  */
 public final class ETags {
 
@@ -13,9 +13,8 @@ public final class ETags {
   }
 
   /**
-   * Generate STRONG ETag for a Lead entity.
-   * Format: "lead-{id}-{version}" (no W/ prefix)
-   * Used with If-Match for optimistic locking per HTTP spec.
+   * Generate STRONG ETag for a Lead entity. Format: "lead-{id}-{version}" (no W/ prefix) Used with
+   * If-Match for optimistic locking per HTTP spec.
    *
    * @param id the lead ID
    * @param version the entity version
@@ -27,8 +26,7 @@ public final class ETags {
   }
 
   /**
-   * Generate WEAK ETag for list results.
-   * Used with If-None-Match for caching.
+   * Generate WEAK ETag for list results. Used with If-None-Match for caching.
    *
    * @param hashCode hash of the result set
    * @return weak EntityTag for JAX-RS
@@ -39,8 +37,7 @@ public final class ETags {
   }
 
   /**
-   * Convert EntityTag to string representation.
-   * Handles both strong and weak ETags correctly.
+   * Convert EntityTag to string representation. Handles both strong and weak ETags correctly.
    *
    * @param tag the EntityTag
    * @return string representation with proper quotes
@@ -53,8 +50,7 @@ public final class ETags {
   }
 
   /**
-   * Parse string ETag to EntityTag object.
-   * Handles both strong and weak ETags.
+   * Parse string ETag to EntityTag object. Handles both strong and weak ETags.
    *
    * @param etag the ETag string
    * @return EntityTag object or null if invalid
@@ -79,6 +75,7 @@ public final class ETags {
 
   /**
    * Legacy method - kept for backward compatibility during migration.
+   *
    * @deprecated Use strongLead() instead
    */
   @Deprecated

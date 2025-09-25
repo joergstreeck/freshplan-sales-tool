@@ -21,14 +21,10 @@ public class LeadProtectionService {
   /**
    * Check if a status transition is valid according to the state machine.
    *
-   * Valid transitions:
-   * - REGISTERED → ACTIVE, QUALIFIED, EXPIRED, DELETED
-   * - ACTIVE → QUALIFIED, REMINDER, EXPIRED, DELETED
-   * - REMINDER → ACTIVE (via activity), GRACE_PERIOD, EXPIRED, DELETED
-   * - GRACE_PERIOD → ACTIVE (via activity), EXPIRED, DELETED
-   * - QUALIFIED → CONVERTED, LOST, DELETED
-   * - EXPIRED → ACTIVE (reactivation), DELETED
-   * - Any → DELETED (soft delete)
+   * <p>Valid transitions: - REGISTERED → ACTIVE, QUALIFIED, EXPIRED, DELETED - ACTIVE → QUALIFIED,
+   * REMINDER, EXPIRED, DELETED - REMINDER → ACTIVE (via activity), GRACE_PERIOD, EXPIRED, DELETED -
+   * GRACE_PERIOD → ACTIVE (via activity), EXPIRED, DELETED - QUALIFIED → CONVERTED, LOST, DELETED -
+   * EXPIRED → ACTIVE (reactivation), DELETED - Any → DELETED (soft delete)
    */
   public boolean canTransitionStatus(Lead lead, LeadStatus newStatus, String userId) {
     LeadStatus currentStatus = lead.status;
@@ -240,9 +236,7 @@ public class LeadProtectionService {
     return remainingDays >= 0 && remainingDays <= warningDays;
   }
 
-  /**
-   * Get protection status summary for a lead.
-   */
+  /** Get protection status summary for a lead. */
   public ProtectionStatus getProtectionStatus(Lead lead) {
     ProtectionStatus status = new ProtectionStatus();
     status.leadId = lead.id;
@@ -261,9 +255,7 @@ public class LeadProtectionService {
     return status;
   }
 
-  /**
-   * DTO for protection status information.
-   */
+  /** DTO for protection status information. */
   public static class ProtectionStatus {
     public Long leadId;
     public LeadStatus currentStatus;

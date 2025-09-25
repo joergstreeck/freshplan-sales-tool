@@ -8,9 +8,7 @@ import de.freshplan.modules.leads.service.LeadService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-/**
- * Simple unit tests for Lead API components.
- */
+/** Simple unit tests for Lead API components. */
 class LeadResourceSimpleTest {
 
   @Test

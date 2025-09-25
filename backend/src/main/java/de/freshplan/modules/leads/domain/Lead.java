@@ -204,10 +204,7 @@ public class Lead extends PanacheEntityBase {
     collaboratorUserIds.remove(userId);
   }
 
-  /**
-   * Normalize email for deduplication.
-   * Converts to lowercase and trims whitespace.
-   */
+  /** Normalize email for deduplication. Converts to lowercase and trims whitespace. */
   public static String normalizeEmail(String email) {
     if (email == null || email.isBlank()) {
       return null;

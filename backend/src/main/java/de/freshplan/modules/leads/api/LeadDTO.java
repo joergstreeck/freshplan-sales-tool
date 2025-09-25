@@ -7,20 +7,19 @@ import java.time.LocalDateTime;
 import java.util.Set;
 
 /**
- * DTO for Lead entity to avoid lazy loading issues.
- * Sprint 2.1: Safe serialization without lazy-loaded entities.
+ * DTO for Lead entity to avoid lazy loading issues. Sprint 2.1: Safe serialization without
+ * lazy-loaded entities.
  */
 public class LeadDTO {
 
-  /**
-   * Nested DTO for Territory information to match test expectations.
-   */
+  /** Nested DTO for Territory information to match test expectations. */
   public static class TerritoryInfo {
     public String id;
     public String name;
     public String countryCode;
     public String currencyCode;
   }
+
   public Long id;
   public Long version;
   public String companyName;
