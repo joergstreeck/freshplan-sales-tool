@@ -8,6 +8,7 @@ import de.freshplan.modules.leads.domain.Territory;
 import de.freshplan.modules.leads.service.LeadProtectionService;
 import de.freshplan.modules.leads.service.LeadService;
 import de.freshplan.modules.leads.service.UserLeadSettingsService;
+import io.quarkus.hibernate.orm.panache.PanacheQuery;
 import io.quarkus.panache.common.Page;
 import io.quarkus.panache.common.Sort;
 import jakarta.annotation.security.RolesAllowed;
@@ -21,7 +22,9 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.jboss.logging.Logger;
 
 /**
@@ -46,6 +49,8 @@ public class LeadResource {
 
   @Context UriInfo uriInfo;
 
+  @Context Request request;
+
   // Sort field whitelist for security and stability
   private static final Set<String> ALLOWED_SORT_FIELDS = Set.of(
       "createdAt", "updatedAt", "companyName", "status",
@@ -57,6 +62,7 @@ public class LeadResource {
    * geographical restrictions.
    */
   @GET
+  @Transactional
   public Response listLeads(
       @QueryParam("status") LeadStatus status,
       @QueryParam("territoryId") String territoryId,
@@ -108,18 +114,37 @@ public class LeadResource {
     Sort sort = safeSort(sortField, sortDirection);
     Page page = Page.of(pageIndex, pageSize);
 
-    List<Lead> leads = Lead.find(query.toString(), sort, params).page(page).list();
-    long total = Lead.count(query.toString(), params);
+    // Create ONE PanacheQuery and use it for both list() and count()
+    PanacheQuery<Lead> pq = Lead.find(query.toString(), sort, params).page(page);
 
-    // Build type-safe paginated response
-    PaginatedResponse<Lead> response = PaginatedResponse.<Lead>builder()
-        .data(leads)
+    List<Lead> entities = pq.list();
+    long total = pq.count(); // Use the SAME query's count() method
+
+    // Convert to DTOs within the transaction to avoid lazy loading issues
+    List<LeadDTO> items = entities.stream()
+        .map(LeadDTO::from)
+        .collect(Collectors.toList());
+
+    // Build type-safe paginated response with DTOs
+    PaginatedResponse<LeadDTO> response = PaginatedResponse.<LeadDTO>builder()
+        .data(items)
         .page(pageIndex)
         .size(pageSize)
         .total(total)
         .build();
 
-    return Response.ok(response).build();
+    // Generate weak collection ETag for caching (If-None-Match support)
+    int hash = Objects.hash(total,
+        entities.stream().map(l -> l.version).reduce(0L, Long::sum));
+    EntityTag collectionTag = ETags.weakList(hash);
+
+    // Check for 304 Not Modified
+    Response.ResponseBuilder preconditions = request.evaluatePreconditions(collectionTag);
+    if (preconditions != null) {
+      return preconditions.tag(collectionTag).build();
+    }
+
+    return Response.ok(response).tag(collectionTag).build();
   }
 
   /**
@@ -128,6 +153,7 @@ public class LeadResource {
    */
   @GET
   @Path("/{id}")
+  @Transactional
   public Response getLead(
       @PathParam("id") Long id,
       @HeaderParam("If-None-Match") String ifNoneMatch) {
@@ -148,13 +174,18 @@ public class LeadResource {
           .build();
     }
 
-    // Generate ETag and check for 304
-    String etag = ETags.weakLead(lead.id, lead.version);
-    if (etag.equals(ifNoneMatch)) {
-      return Response.status(Response.Status.NOT_MODIFIED).header("ETag", etag).build();
+    // Generate strong ETag for preconditions
+    EntityTag etag = ETags.strongLead(lead.id, lead.version);
+
+    // evaluatePreconditions handles If-None-Match (returns 304 if match)
+    Response.ResponseBuilder preconditions = request.evaluatePreconditions(etag);
+    if (preconditions != null) {
+      return preconditions.tag(etag).build();
     }
 
-    return Response.ok(lead).header("ETag", etag).build();
+    // Convert to DTO to avoid lazy loading issues
+    LeadDTO dto = LeadDTO.from(lead);
+    return Response.ok(dto).tag(etag).build();
   }
 
   /**
@@ -234,7 +265,9 @@ public class LeadResource {
 
     // Return created lead with location header
     URI location = uriInfo.getAbsolutePathBuilder().path(lead.id.toString()).build();
-    return Response.created(location).entity(lead).build();
+    // Return DTO to avoid lazy loading issues
+    LeadDTO dto = LeadDTO.from(lead);
+    return Response.created(location).entity(dto).build();
   }
 
   /**
@@ -248,7 +281,7 @@ public class LeadResource {
   public Response updateLead(
       @PathParam("id") Long id,
       @HeaderParam("If-Match") String ifMatch,
-      LeadUpdateRequest request) {
+      LeadUpdateRequest updateRequest) {
 
     // Require If-Match header for optimistic locking
     if (ifMatch == null || ifMatch.isEmpty()) {
@@ -277,21 +310,20 @@ public class LeadResource {
           .build();
     }
 
-    // Check ETag matches current version
-    String currentEtag = ETags.weakLead(lead.id, lead.version);
-    if (!ifMatch.equals(currentEtag)) {
-      return Response.status(Response.Status.PRECONDITION_FAILED)
-          .entity(Map.of(
-              "error", "Version conflict - resource has been modified",
-              "currentETag", currentEtag))
-          .build();
+    // Check ETag matches current version using strong comparison
+    EntityTag currentEtag = ETags.strongLead(lead.id, lead.version);
+
+    // evaluatePreconditions does strong comparison for If-Match (returns 412 on mismatch)
+    Response.ResponseBuilder preconditions = request.evaluatePreconditions(currentEtag);
+    if (preconditions != null) {
+      return preconditions.tag(currentEtag).build();
     }
 
     // Update basic fields if provided
-    if (request.companyName != null) lead.companyName = request.companyName;
-    if (request.contactPerson != null) lead.contactPerson = request.contactPerson;
-    if (request.email != null) {
-      String newNormalizedEmail = Lead.normalizeEmail(request.email);
+    if (updateRequest.companyName != null) lead.companyName = updateRequest.companyName;
+    if (updateRequest.contactPerson != null) lead.contactPerson = updateRequest.contactPerson;
+    if (updateRequest.email != null) {
+      String newNormalizedEmail = Lead.normalizeEmail(updateRequest.email);
       // Check for duplicate if email is changing
       if (newNormalizedEmail != null && !newNormalizedEmail.equals(lead.emailNormalized)) {
         Long duplicateCount = Lead.count("emailNormalized = ?1 and id != ?2 and status != ?3",
@@ -302,29 +334,29 @@ public class LeadResource {
               .build();
         }
       }
-      lead.email = request.email;
+      lead.email = updateRequest.email;
       lead.emailNormalized = newNormalizedEmail;
     }
-    if (request.phone != null) lead.phone = request.phone;
-    if (request.website != null) lead.website = request.website;
-    if (request.street != null) lead.street = request.street;
-    if (request.postalCode != null) lead.postalCode = request.postalCode;
-    if (request.city != null) lead.city = request.city;
-    if (request.businessType != null) lead.businessType = request.businessType;
-    if (request.kitchenSize != null) lead.kitchenSize = request.kitchenSize;
-    if (request.employeeCount != null) lead.employeeCount = request.employeeCount;
-    if (request.estimatedVolume != null) lead.estimatedVolume = request.estimatedVolume;
+    if (updateRequest.phone != null) lead.phone = updateRequest.phone;
+    if (updateRequest.website != null) lead.website = updateRequest.website;
+    if (updateRequest.street != null) lead.street = updateRequest.street;
+    if (updateRequest.postalCode != null) lead.postalCode = updateRequest.postalCode;
+    if (updateRequest.city != null) lead.city = updateRequest.city;
+    if (updateRequest.businessType != null) lead.businessType = updateRequest.businessType;
+    if (updateRequest.kitchenSize != null) lead.kitchenSize = updateRequest.kitchenSize;
+    if (updateRequest.employeeCount != null) lead.employeeCount = updateRequest.employeeCount;
+    if (updateRequest.estimatedVolume != null) lead.estimatedVolume = updateRequest.estimatedVolume;
 
     // Handle status change with state machine
-    if (request.status != null && request.status != lead.status) {
-      if (!protectionService.canTransitionStatus(lead, request.status, currentUserId)) {
+    if (updateRequest.status != null && updateRequest.status != lead.status) {
+      if (!protectionService.canTransitionStatus(lead, updateRequest.status, currentUserId)) {
         return Response.status(Response.Status.BAD_REQUEST)
             .entity(Map.of("error", "Invalid status transition"))
             .build();
       }
 
       LeadStatus oldStatus = lead.status;
-      lead.status = request.status;
+      lead.status = updateRequest.status;
       lead.lastActivityAt = LocalDateTime.now();
 
       // Log status change activity
@@ -332,23 +364,23 @@ public class LeadResource {
       activity.lead = lead;
       activity.userId = currentUserId;
       activity.activityType = ActivityType.STATUS_CHANGE;
-      activity.description = "Status changed from " + oldStatus + " to " + request.status;
+      activity.description = "Status changed from " + oldStatus + " to " + updateRequest.status;
       activity.persist();
 
       // Handle special status transitions
-      if (request.status == LeadStatus.GRACE_PERIOD) {
+      if (updateRequest.status == LeadStatus.GRACE_PERIOD) {
         lead.gracePeriodStartAt = LocalDateTime.now();
-      } else if (request.status == LeadStatus.EXPIRED) {
+      } else if (updateRequest.status == LeadStatus.EXPIRED) {
         lead.expiredAt = LocalDateTime.now();
       }
     }
 
     // Handle Stop-the-Clock feature
-    if (request.stopClock != null) {
+    if (updateRequest.stopClock != null) {
       var settings = settingsService.getOrCreateForUser(currentUserId);
-      if (request.stopClock && (settings.canStopClock || isAdmin)) {
+      if (updateRequest.stopClock && (settings.canStopClock || isAdmin)) {
         lead.clockStoppedAt = LocalDateTime.now();
-        lead.stopReason = request.stopReason;
+        lead.stopReason = updateRequest.stopReason;
         lead.stopApprovedBy = currentUserId;
 
         // Log clock stop activity
@@ -356,9 +388,9 @@ public class LeadResource {
         activity.lead = lead;
         activity.userId = currentUserId;
         activity.activityType = ActivityType.CLOCK_STOPPED;
-        activity.description = "Clock stopped: " + request.stopReason;
+        activity.description = "Clock stopped: " + updateRequest.stopReason;
         activity.persist();
-      } else if (!request.stopClock && lead.clockStoppedAt != null) {
+      } else if (!updateRequest.stopClock && lead.clockStoppedAt != null) {
         // Resume clock
         lead.clockStoppedAt = null;
         lead.stopReason = null;
@@ -374,14 +406,14 @@ public class LeadResource {
     }
 
     // Handle collaborator management
-    if (request.addCollaborators != null) {
-      for (String userId : request.addCollaborators) {
+    if (updateRequest.addCollaborators != null) {
+      for (String userId : updateRequest.addCollaborators) {
         lead.addCollaborator(userId);
       }
     }
 
-    if (request.removeCollaborators != null) {
-      for (String userId : request.removeCollaborators) {
+    if (updateRequest.removeCollaborators != null) {
+      for (String userId : updateRequest.removeCollaborators) {
         lead.removeCollaborator(userId);
       }
     }
@@ -390,18 +422,30 @@ public class LeadResource {
     lead.persist();
 
     LOG.infof("Updated lead %s by user %s", id, currentUserId);
-    // Return with new ETag after version bump
-    return Response.ok(lead).header("ETag", ETags.weakLead(lead.id, lead.version)).build();
+    // Return with new strong ETag after version bump
+    EntityTag newEtag = ETags.strongLead(lead.id, lead.version);
+    // Convert to DTO to avoid lazy loading issues
+    LeadDTO dto = LeadDTO.from(lead);
+    return Response.ok(dto).tag(newEtag).build();
   }
 
   /**
    * DELETE /api/leads/{id} - Delete lead (soft delete by setting status to DELETED). Only admin
-   * or owner can delete.
+   * or owner can delete. Requires If-Match header for safe deletion.
    */
   @DELETE
   @Path("/{id}")
   @Transactional
-  public Response deleteLead(@PathParam("id") Long id) {
+  public Response deleteLead(
+      @PathParam("id") Long id,
+      @HeaderParam("If-Match") String ifMatch) {
+
+    // Require If-Match header for safe deletion
+    if (ifMatch == null || ifMatch.isEmpty()) {
+      return Response.status(428) // Precondition Required
+          .entity(Map.of("error", "Missing If-Match header for safe deletion"))
+          .build();
+    }
     String currentUserId = securityContext.getUserPrincipal().getName();
     Lead lead = Lead.findById(id);
 
@@ -421,6 +465,13 @@ public class LeadResource {
           .build();
     }
 
+    // Check ETag for safe deletion
+    EntityTag currentEtag = ETags.strongLead(lead.id, lead.version);
+    Response.ResponseBuilder preconditions = request.evaluatePreconditions(currentEtag);
+    if (preconditions != null) {
+      return preconditions.tag(currentEtag).build();
+    }
+
     // Soft delete by setting status
     lead.status = LeadStatus.DELETED;
     lead.updatedBy = currentUserId;
@@ -435,7 +486,10 @@ public class LeadResource {
     activity.persist();
 
     LOG.infof("Deleted lead %s by user %s", id, currentUserId);
-    return Response.noContent().build();
+
+    // Return new ETag after deletion
+    EntityTag newEtag = ETags.strongLead(lead.id, lead.version);
+    return Response.noContent().tag(newEtag).build();
   }
 
   /**
@@ -520,8 +574,13 @@ public class LeadResource {
         LeadActivity.find("lead", Sort.descending("createdAt"), lead).page(page).list();
     long total = LeadActivity.count("lead", lead);
 
-    PaginatedResponse<LeadActivity> response = PaginatedResponse.<LeadActivity>builder()
-        .data(activities)
+    // Convert to DTOs to avoid lazy loading issues
+    List<LeadActivityDTO> dtos = activities.stream()
+        .map(LeadActivityDTO::from)
+        .collect(Collectors.toList());
+
+    PaginatedResponse<LeadActivityDTO> response = PaginatedResponse.<LeadActivityDTO>builder()
+        .data(dtos)
         .page(pageIndex)
         .size(pageSize)
         .total(total)

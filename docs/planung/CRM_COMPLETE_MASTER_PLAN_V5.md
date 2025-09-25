@@ -122,18 +122,22 @@
   - Code Review Fixes: Exception Handling, Test Isolation, Performance-Optimierung
   - Migrations: V232 (campaign_templates), V233 (territories.active)
   - Tests: LeadResourceSimpleTest ✅ GREEN, Integration Tests pending JWT-Fix
+- 2025-09-25 12:08 — Sprint 2.1 PR #105: Lead Endpoints Finalisierung mit HTTP-Semantics & Security Fixes
+  - Strong ETags implementiert statt Weak ETags (HTTP Spec Compliance)
+  - LeadDTO eingeführt gegen LazyInitializationException
+  - RlsGucFilter für fail-closed Security mit PostgreSQL GUCs implementiert
+  - PanacheQuery Fix für 400 Bad Request Fehler
+  - Migrations: V240 (email_unique_index), V241 (activity_type_constraint mit CLOCK_*)
+  - Tests: LeadResourceTest 13/13 ✅ GREEN (100% Pass Rate)
 <!-- MP5:SESSION_LOG:END -->
 
 ## Next Steps
 <!-- MP5:NEXT_STEPS:START -->
-- 🔄 **Sprint 2.1 PR #2 IN PROGRESS:** Lead Endpoints vollständig implementiert, Tests ausstehend
-  - JWT-Mock für LeadResourceTest fixen (SecurityContext statt JWT injection)
-  - Integration Tests fertigstellen
-  - PR #104 erstellen in Deutsch mit PR Template Compliance
-  - Migration V232-V233 bereits deployed
-- Sprint 2.1 PR #3: Lead UI Components (nach PR #2 Merge)
+- ✅ **Sprint 2.1 PR #105 COMPLETE:** Lead Endpoints fertig mit 13/13 Tests grün
+  - PR #105 dokumentieren und Review anfordern
+  - Sprint 2.1 PR #3: Lead UI Components (nach PR #105 Merge)
 - Sprint 2.2: Kundenmanagement Integration (nach 2.1)
-- Migration V234 als nächste verfügbar
+- Migration V242 als nächste verfügbar (V240-V241 deployed)
 - Parallel: performUniversalSearch Frontend-Bug (niedrige Priorität)
 <!-- MP5:NEXT_STEPS:END -->
 

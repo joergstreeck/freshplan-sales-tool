@@ -158,7 +158,7 @@ class LeadResourceTest {
   void testUpdateLeadStatus() {
     Long leadId = createTestLead("user1");
 
-    // First fetch the lead to get the ETag
+    // First fetch the lead to get the ETag (now returns strong ETag without W/ prefix)
     String etag = given()
         .when()
         .get("/{id}", leadId)
@@ -168,7 +168,9 @@ class LeadResourceTest {
         .header("ETag");
 
     assertNotNull("ETag should not be null", etag);
-    System.out.println("Got ETag: " + etag);
+    // Strong ETags are quoted but don't have W/ prefix
+    assertTrue(!etag.startsWith("W/"), "ETag should be strong (no W/ prefix)");
+    System.out.println("Got strong ETag: " + etag);
 
     Map<String, Object> updateRequest = new HashMap<>();
     updateRequest.put("status", "ACTIVE");
@@ -194,7 +196,7 @@ class LeadResourceTest {
     // First enable stop clock permission for user
     setupUserSettings("user1", true);
 
-    // Fetch the lead to get the ETag
+    // Fetch the lead to get the strong ETag
     String etag = given()
         .when()
         .get("/{id}", leadId)
@@ -202,6 +204,8 @@ class LeadResourceTest {
         .statusCode(200)
         .extract()
         .header("ETag");
+
+    assertNotNull("ETag should not be null", etag);
 
     Map<String, Object> stopClockRequest = new HashMap<>();
     stopClockRequest.put("stopClock", true);
@@ -257,7 +261,7 @@ class LeadResourceTest {
   void testManageCollaborators() {
     Long leadId = createTestLead("user1");
 
-    // Fetch the lead to get the ETag
+    // Fetch the lead to get the strong ETag
     String etag = given()
         .when()
         .get("/{id}", leadId)
@@ -265,6 +269,8 @@ class LeadResourceTest {
         .statusCode(200)
         .extract()
         .header("ETag");
+
+    assertNotNull("ETag should not be null", etag);
 
     Map<String, Object> collaboratorRequest = new HashMap<>();
     collaboratorRequest.put("addCollaborators", new String[] {"user2", "user3"});
@@ -359,11 +365,28 @@ class LeadResourceTest {
 
   @Test
   @TestSecurity(user = "user1", roles = {"USER"})
-  @DisplayName("Should soft delete lead")
+  @DisplayName("Should soft delete lead with If-Match header")
   void testDeleteLead() {
     Long leadId = createTestLead("user1");
 
-    given().when().delete("/{id}", leadId).then().statusCode(204);
+    // Fetch the lead to get the ETag for safe deletion
+    String etag = given()
+        .when()
+        .get("/{id}", leadId)
+        .then()
+        .statusCode(200)
+        .extract()
+        .header("ETag");
+
+    assertNotNull("ETag should not be null", etag);
+
+    // Delete with If-Match header
+    given()
+        .header("If-Match", etag)
+        .when()
+        .delete("/{id}", leadId)
+        .then()
+        .statusCode(204);
 
     // Verify lead is soft deleted (status = DELETED)
     Lead deletedLead = Lead.findById(leadId);

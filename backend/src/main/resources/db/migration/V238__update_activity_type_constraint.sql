@@ -15,6 +15,8 @@ ALTER TABLE lead_activities ADD CONSTRAINT chk_activity_type
         'STATUS_CHANGE', 'CREATED', 'UPDATED', 'DELETED',
         -- System activities
         'REMINDER_SENT', 'GRACE_PERIOD_STARTED', 'EXPIRED', 'REACTIVATED',
+        -- Stop-the-clock feature
+        'CLOCK_STOPPED', 'CLOCK_RESUMED',
         -- Import/Export
         'IMPORTED', 'EXPORTED'
     ));

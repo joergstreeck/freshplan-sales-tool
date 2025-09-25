@@ -1,8 +1,10 @@
 package de.freshplan.modules.leads.api;
 
+import jakarta.ws.rs.core.EntityTag;
+
 /**
  * ETag generation utilities for optimistic concurrency control.
- * Generates weak ETags based on entity ID and version.
+ * Uses STRONG ETags for If-Match (per HTTP spec) and WEAK ETags for If-None-Match.
  */
 public final class ETags {
 
@@ -11,51 +13,76 @@ public final class ETags {
   }
 
   /**
-   * Generate weak ETag for a Lead entity.
-   * Format: W/"lead-{id}-{version}"
+   * Generate STRONG ETag for a Lead entity.
+   * Format: "lead-{id}-{version}" (no W/ prefix)
+   * Used with If-Match for optimistic locking per HTTP spec.
    *
    * @param id the lead ID
    * @param version the entity version
-   * @return weak ETag string
+   * @return strong EntityTag for JAX-RS
    */
-  public static String weakLead(long id, long version) {
-    return "W/\"lead-%d-%d\"".formatted(id, version);
+  public static EntityTag strongLead(long id, long version) {
+    // Strong ETag (weak=false) required for If-Match per HTTP spec
+    return new EntityTag("lead-%d-%d".formatted(id, version), false);
   }
 
   /**
-   * Generate weak ETag for any entity type.
-   * Format: W/"{type}-{id}-{version}"
+   * Generate WEAK ETag for list results.
+   * Used with If-None-Match for caching.
    *
-   * @param type the entity type name
-   * @param id the entity ID
-   * @param version the entity version
-   * @return weak ETag string
+   * @param hashCode hash of the result set
+   * @return weak EntityTag for JAX-RS
    */
-  public static String weak(String type, long id, long version) {
-    return "W/\"%s-%d-%d\"".formatted(type.toLowerCase(), id, version);
+  public static EntityTag weakList(int hashCode) {
+    // Weak ETag for list results (If-None-Match only)
+    return new EntityTag("list-%d".formatted(hashCode), true);
   }
 
   /**
-   * Parse ETag to extract version.
-   * Returns -1 if ETag is invalid or cannot be parsed.
+   * Convert EntityTag to string representation.
+   * Handles both strong and weak ETags correctly.
+   *
+   * @param tag the EntityTag
+   * @return string representation with proper quotes
+   */
+  public static String toString(EntityTag tag) {
+    if (tag.isWeak()) {
+      return "W/\"%s\"".formatted(tag.getValue());
+    }
+    return "\"%s\"".formatted(tag.getValue());
+  }
+
+  /**
+   * Parse string ETag to EntityTag object.
+   * Handles both strong and weak ETags.
    *
    * @param etag the ETag string
-   * @return version number or -1 if invalid
+   * @return EntityTag object or null if invalid
    */
-  public static long parseVersion(String etag) {
-    if (etag == null || !etag.startsWith("W/\"") || !etag.endsWith("\"")) {
-      return -1;
+  public static EntityTag parse(String etag) {
+    if (etag == null) return null;
+
+    boolean weak = etag.startsWith("W/");
+    String value = etag;
+
+    if (weak) {
+      value = etag.substring(2); // Remove W/ prefix
     }
 
-    try {
-      String content = etag.substring(3, etag.length() - 1); // Remove W/" and trailing "
-      String[] parts = content.split("-");
-      if (parts.length >= 3) {
-        return Long.parseLong(parts[parts.length - 1]); // Last part is version
-      }
-    } catch (NumberFormatException e) {
-      // Invalid format
+    // Remove surrounding quotes
+    if (value.startsWith("\"") && value.endsWith("\"")) {
+      value = value.substring(1, value.length() - 1);
     }
-    return -1;
+
+    return new EntityTag(value, weak);
+  }
+
+  /**
+   * Legacy method - kept for backward compatibility during migration.
+   * @deprecated Use strongLead() instead
+   */
+  @Deprecated
+  public static String weakLead(long id, long version) {
+    return "W/\"lead-%d-%d\"".formatted(id, version);
   }
 }
