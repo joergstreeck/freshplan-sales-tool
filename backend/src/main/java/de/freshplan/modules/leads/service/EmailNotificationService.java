@@ -99,6 +99,9 @@ public class EmailNotificationService {
 
     /**
      * Prüft DSGVO-Consent für Email-Kommunikation
+     *
+     * DSGVO/GDPR-konform: Standardmäßig KEINE Einwilligung annehmen,
+     * nur wenn explizit als true in Metadaten gespeichert
      */
     private boolean hasEmailConsent(Lead lead) {
         // Check metadata für explicit consent
@@ -109,9 +112,10 @@ public class EmailNotificationService {
             }
         }
 
-        // Default: Assume consent wenn Email vorhanden (B2B-Kontext)
-        // In Produktion sollte dies explizit getrackt werden
-        return lead.email != null && !lead.email.isBlank();
+        // Default: NO consent unless explicitly given (DSGVO/GDPR compliance)
+        // This is a fail-safe approach - explicit opt-in required
+        LOG.debugf("Lead %s has no explicit email consent - email blocked", lead.id);
+        return false;
     }
 
     /**
@@ -156,13 +160,47 @@ public class EmailNotificationService {
     }
 
     /**
-     * Generiert sicheren Token für Unsubscribe-Links
+     * Generiert kryptographisch sicheren Token für Unsubscribe-Links
+     *
+     * Nutzt HMAC-SHA256 für Signierung um Manipulation zu verhindern
      */
     private String generateSecureToken(String leadId) {
-        // Simplified für Sprint 2.1
-        // In Produktion: JWT oder signierter Token
-        return java.util.Base64.getUrlEncoder()
-            .encodeToString((leadId + ":" + System.currentTimeMillis()).getBytes());
+        try {
+            // Payload: LeadID + Timestamp + Random Nonce
+            long timestamp = System.currentTimeMillis();
+            String nonce = java.util.UUID.randomUUID().toString();
+            String payload = String.format("%s:%d:%s", leadId, timestamp, nonce);
+
+            // HMAC-SHA256 Signierung
+            // In Produktion: Secret aus sicherer Config laden
+            String secret = System.getenv("UNSUBSCRIBE_TOKEN_SECRET");
+            if (secret == null || secret.isEmpty()) {
+                // Fallback für Development - NICHT in Produktion verwenden!
+                secret = "dev-secret-change-in-production";
+                LOG.warn("Using development token secret - configure UNSUBSCRIBE_TOKEN_SECRET for production");
+            }
+
+            javax.crypto.Mac mac = javax.crypto.Mac.getInstance("HmacSHA256");
+            javax.crypto.spec.SecretKeySpec secretKey = new javax.crypto.spec.SecretKeySpec(
+                secret.getBytes(java.nio.charset.StandardCharsets.UTF_8),
+                "HmacSHA256"
+            );
+            mac.init(secretKey);
+
+            byte[] hmacBytes = mac.doFinal(payload.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+            String signature = java.util.Base64.getUrlEncoder().withoutPadding().encodeToString(hmacBytes);
+
+            // Token Format: base64(payload).signature
+            String encodedPayload = java.util.Base64.getUrlEncoder().withoutPadding()
+                .encodeToString(payload.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+
+            return encodedPayload + "." + signature;
+
+        } catch (Exception e) {
+            LOG.error("Failed to generate secure token", e);
+            // Fallback: Verwende zufälligen UUID als Token
+            return java.util.UUID.randomUUID().toString();
+        }
     }
 
     /**

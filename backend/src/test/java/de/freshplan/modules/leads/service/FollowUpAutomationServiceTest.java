@@ -12,6 +12,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -222,21 +223,12 @@ class FollowUpAutomationServiceTest {
     @Test
     @Transactional
     void testNoDoubleFollowUp() {
-        // Given: Lead ist 4 Tage alt
+        // Given: Lead ist 4 Tage alt und hat bereits T+3 Follow-up erhalten
         testLead.registeredAt = LocalDateTime.now().minusDays(4);
+        testLead.t3FollowupSent = true; // Flag setzen statt Activity erstellen
+        testLead.lastFollowupAt = LocalDateTime.now().minusDays(1);
+        testLead.followupCount = 1;
         em.merge(testLead);
-
-        // Create existing T+3 follow-up activity
-        LeadActivity existingFollowUp = new LeadActivity();
-        existingFollowUp.lead = testLead;
-        existingFollowUp.type = ActivityType.NOTE;
-        existingFollowUp.userId = "SYSTEM";
-        existingFollowUp.description = "T3_FOLLOWUP already sent";
-        existingFollowUp.occurredAt = LocalDateTime.now().minusDays(1);
-        existingFollowUp.metadata = new HashMap<>();
-        existingFollowUp.metadata.put("followup_type", "T3_FOLLOWUP");
-        em.persist(existingFollowUp);
-        em.flush();
 
         // When: Follow-up Automation läuft
         followUpService.processScheduledFollowUps();
@@ -252,8 +244,15 @@ class FollowUpAutomationServiceTest {
     @Test
     @Transactional
     void testSeasonalSampleRecommendations() {
-        // Given: Lead im März (Spargel-Saison)
-        testLead.registeredAt = LocalDateTime.of(2025, 3, 15, 10, 0).minusDays(3);
+        // Given: Mock Clock auf März (Spargel-Saison) setzen
+        Clock fixedClock = Clock.fixed(
+            LocalDateTime.of(2025, 3, 18, 10, 0).toInstant(java.time.ZoneOffset.UTC),
+            java.time.ZoneOffset.UTC
+        );
+        followUpService.setClock(fixedClock);
+
+        // Lead ist 3+ Tage alt (relativ zur gemockten Zeit)
+        testLead.registeredAt = LocalDateTime.of(2025, 3, 15, 10, 0);
         em.merge(testLead);
 
         // Mock email service
@@ -268,6 +267,9 @@ class FollowUpAutomationServiceTest {
         Map<String, String> capturedData = dataCaptor.getValue();
         String samples = capturedData.get("sample.products");
         assertTrue(samples.contains("Spargel-Saison-Special"));
+
+        // Reset Clock
+        followUpService.setClock(Clock.systemDefaultZone());
     }
 
     @Test

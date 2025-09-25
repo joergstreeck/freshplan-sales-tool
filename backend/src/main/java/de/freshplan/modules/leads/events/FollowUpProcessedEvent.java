@@ -8,32 +8,17 @@ import java.time.LocalDateTime;
  *
  * Integration mit Cockpit-Module für Real-time Dashboard Updates
  */
-public class FollowUpProcessedEvent {
+public record FollowUpProcessedEvent(
+    int t3Count,
+    int t7Count,
+    LocalDateTime processedAt
+) {
 
-    private final int t3Count;
-    private final int t7Count;
-    private final LocalDateTime processedAt;
-
-    public FollowUpProcessedEvent(int t3Count, int t7Count, LocalDateTime processedAt) {
-        this.t3Count = t3Count;
-        this.t7Count = t7Count;
-        this.processedAt = processedAt;
-    }
-
-    public int getT3Count() {
-        return t3Count;
-    }
-
-    public int getT7Count() {
-        return t7Count;
-    }
-
+    /**
+     * Berechnet die Gesamtanzahl der verarbeiteten Follow-ups
+     */
     public int getTotalCount() {
         return t3Count + t7Count;
-    }
-
-    public LocalDateTime getProcessedAt() {
-        return processedAt;
     }
 
     @Override

@@ -11,6 +11,9 @@ ALTER TABLE lead ADD COLUMN IF NOT EXISTS followup_count INTEGER DEFAULT 0;
 ALTER TABLE lead ADD COLUMN IF NOT EXISTS t3_followup_sent BOOLEAN DEFAULT FALSE;
 ALTER TABLE lead ADD COLUMN IF NOT EXISTS t7_followup_sent BOOLEAN DEFAULT FALSE;
 
+-- Flexible metadata storage (JSONB) für DSGVO-Consent und Business-Type
+ALTER TABLE lead ADD COLUMN IF NOT EXISTS metadata JSONB DEFAULT '{}'::jsonb;
+
 -- Index für effiziente Follow-up Queries
 CREATE INDEX IF NOT EXISTS idx_lead_followup_tracking
     ON lead(status, registered_at, last_followup_at)

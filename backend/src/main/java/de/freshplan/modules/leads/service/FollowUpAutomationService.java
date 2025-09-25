@@ -10,6 +10,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import org.jboss.logging.Logger;
 
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
@@ -32,6 +33,7 @@ public class FollowUpAutomationService {
 
     private static final int T3_DAYS = 3;
     private static final int T7_DAYS = 7;
+    private static final String SYSTEM_USER_ID = "SYSTEM";
 
     @Inject
     EntityManager em;
@@ -48,6 +50,16 @@ public class FollowUpAutomationService {
     @Inject
     Event<FollowUpProcessedEvent> followUpEvent;
 
+    // Clock für testbare Zeit-Logik
+    private Clock clock = Clock.systemDefaultZone();
+
+    /**
+     * Setzt Clock für Tests (package-private für Test-Zugriff)
+     */
+    void setClock(Clock clock) {
+        this.clock = clock;
+    }
+
     /**
      * Stündlicher Check für fällige Follow-ups
      * Läuft jede Stunde zur vollen Stunde
@@ -56,7 +68,7 @@ public class FollowUpAutomationService {
     @Transactional
     @RlsContext
     public void processScheduledFollowUps() {
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now(clock);
         LOG.infof("Starting T+3/T+7 follow-up automation at %s", now);
 
         try {
@@ -92,8 +104,8 @@ public class FollowUpAutomationService {
         int processed = 0;
         for (Lead lead : eligibleLeads) {
             try {
-                // Prüfe ob bereits T+3 Follow-up gesendet wurde
-                if (hasFollowUpActivity(lead, "T3_FOLLOWUP")) {
+                // Prüfe ob bereits T+3 Follow-up gesendet wurde über DB-Flag
+                if (Boolean.TRUE.equals(lead.t3FollowupSent)) {
                     continue;
                 }
 
@@ -123,6 +135,12 @@ public class FollowUpAutomationService {
                     // Erstelle Activity für Tracking
                     createFollowUpActivity(lead, "T3_FOLLOWUP",
                         "T+3 Sample follow-up sent - Gratis Produktkatalog + Box");
+
+                    // Setze Follow-up Flags
+                    lead.t3FollowupSent = true;
+                    lead.lastFollowupAt = now;
+                    lead.followupCount = lead.followupCount + 1;
+                    lead.persist();
 
                     // Update Template-Statistiken
                     template.timesUsed++;
@@ -154,8 +172,8 @@ public class FollowUpAutomationService {
         int processed = 0;
         for (Lead lead : eligibleLeads) {
             try {
-                // Prüfe ob bereits T+7 Follow-up gesendet wurde
-                if (hasFollowUpActivity(lead, "T7_FOLLOWUP")) {
+                // Prüfe ob bereits T+7 Follow-up gesendet wurde über DB-Flag
+                if (Boolean.TRUE.equals(lead.t7FollowupSent)) {
                     continue;
                 }
 
@@ -188,13 +206,19 @@ public class FollowUpAutomationService {
                         String.format("T+7 Bulk order follow-up sent - %s%% Rabatt ab %s€",
                             getBulkDiscount(lead), getBulkMinimumOrder(lead)));
 
+                    // Setze Follow-up Flags
+                    lead.t7FollowupSent = true;
+                    lead.lastFollowupAt = now;
+                    lead.followupCount = lead.followupCount + 1;
+
                     // Update Lead-Status wenn keine Response
                     if (!hasRecentMeaningfulActivity(lead, T7_DAYS)) {
                         lead.status = LeadStatus.REMINDER;
                         lead.reminderSentAt = now;
-                        lead.persist();
-                        LOG.infof("Lead %s moved to REMINDER status after T+7", lead.id);
                     }
+
+                    lead.persist();
+                    LOG.infof("Lead %s moved to REMINDER status after T+7", lead.id);
 
                     // Update Template-Statistiken
                     template.timesUsed++;
@@ -253,23 +277,6 @@ public class FollowUpAutomationService {
                 .getResultList();
     }
 
-    /**
-     * Prüft ob Lead bereits ein bestimmtes Follow-up erhalten hat
-     */
-    private boolean hasFollowUpActivity(Lead lead, String followUpType) {
-        String jpql = """
-            SELECT COUNT(a) FROM LeadActivity a
-            WHERE a.lead = :lead
-            AND a.description LIKE :followUpPattern
-            """;
-
-        Long count = em.createQuery(jpql, Long.class)
-                .setParameter("lead", lead)
-                .setParameter("followUpPattern", "%" + followUpType + "%")
-                .getSingleResult();
-
-        return count > 0;
-    }
 
     /**
      * Prüft ob Lead kürzliche meaningful Aktivität hatte
@@ -306,7 +313,7 @@ public class FollowUpAutomationService {
         LeadActivity activity = new LeadActivity();
         activity.lead = lead;
         activity.type = ActivityType.NOTE; // Follow-ups als NOTE tracken
-        activity.userId = "SYSTEM";
+        activity.userId = SYSTEM_USER_ID;
         activity.description = description;
         activity.occurredAt = LocalDateTime.now();
         activity.metadata = new HashMap<>();
@@ -322,10 +329,10 @@ public class FollowUpAutomationService {
         Map<String, String> data = new HashMap<>();
 
         // Lead-Daten
-        data.put("lead.company", lead.company != null ? lead.company : "");
-        data.put("lead.contactPerson", lead.contactPerson != null ? lead.contactPerson : "");
-        data.put("lead.email", lead.email != null ? lead.email : "");
-        data.put("lead.phone", lead.phone != null ? lead.phone : "");
+        data.put("lead.company", java.util.Objects.toString(lead.company, ""));
+        data.put("lead.contactPerson", java.util.Objects.toString(lead.contactPerson, ""));
+        data.put("lead.email", java.util.Objects.toString(lead.email, ""));
+        data.put("lead.phone", java.util.Objects.toString(lead.phone, ""));
 
         // Territory-spezifische Daten
         Territory territory = lead.territory;
@@ -374,7 +381,7 @@ public class FollowUpAutomationService {
         }
 
         // Saisonale Specials
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now(clock);
         if (now.getMonthValue() >= 3 && now.getMonthValue() <= 5) {
             samples.append(", Spargel-Saison-Special");
         } else if (now.getMonthValue() >= 9 && now.getMonthValue() <= 10) {
