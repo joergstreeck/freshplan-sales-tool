@@ -81,6 +81,15 @@ public class DashboardEventListener {
             processDashboardUpdate(payload);
             eventsProcessed.incrementAndGet();
 
+            // Warn bei hoher Cache-Auslastung (alle 10k Events prüfen)
+            if (eventsProcessed.get() % 10_000 == 0) {
+                long cacheSize = processedEvents.estimatedSize();
+                if (cacheSize > 450_000) { // 90% von 500k
+                    Log.warnf("Dedupe cache approaching limit: %d / 500000 entries (%.1f%%)",
+                        cacheSize, (cacheSize / 5000.0));
+                }
+            }
+
             Log.debugf("Dashboard event processed: %s", idempotencyKey);
 
         } catch (Exception e) {

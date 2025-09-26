@@ -464,4 +464,17 @@ public class SalesCockpitQueryService {
     // TODO: Implementiere Cache-Invalidierung wenn Cache-Layer vorhanden
     // Aktuell: Kein Cache, direkte DB-Abfragen
   }
+
+  /**
+   * Invalidiert den Dashboard-Cache für einen User (String-basiert).
+   * Fallback für non-UUID User-IDs.
+   * Sprint 2.1.1 P1 - Robuste Cache-Invalidierung.
+   *
+   * @param userId User ID (als String) dessen Dashboard-Cache invalidiert werden soll
+   */
+  public void invalidateAllForUser(String userId) {
+    // TODO: Implementiere globale Cache-Invalidierung wenn Cache-Layer vorhanden
+    // Aktuell: Kein Cache, direkte DB-Abfragen
+    // Dies ist ein no-op, aber dokumentiert für spätere Cache-Implementierung
+  }
 }

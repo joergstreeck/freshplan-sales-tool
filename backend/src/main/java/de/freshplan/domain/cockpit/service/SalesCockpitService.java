@@ -644,7 +644,10 @@ public class SalesCockpitService {
     try {
       userUuid = UUID.fromString(userId);
     } catch (IllegalArgumentException e) {
-      Log.warnf("Invalid UUID format for userId: %s - cache not invalidated", userId);
+      Log.warnf("Invalid UUID for userId=%s - falling back to coarse invalidation", userId);
+      if (cqrsEnabled && queryService != null) {
+        queryService.invalidateAllForUser(userId);
+      }
       return;
     }
 

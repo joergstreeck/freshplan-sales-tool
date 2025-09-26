@@ -263,23 +263,30 @@ public class DashboardEventPublisher {
      * Für BATCH-Events: Zeitfenster auf Minute runden + User/Count-basiert.
      */
     private String generateIdempotencyKey(FollowUpProcessedEvent event) {
-        String leadId = event.leadId() != null ? event.leadId().toString() : "BATCH";
         String followUpType = event.followUpType() != null ? event.followUpType() : "UNKNOWN";
         String stamp;
+        String leadIdPart;
 
-        if ("BATCH".equals(leadId)) {
+        // BATCH-Erkennung über followUpType (robuster als leadId-Check)
+        if ("BATCH".equalsIgnoreCase(followUpType)) {
             // Für BATCH: Zeitfenster auf Minute runden + User + Counts für Stabilität
             LocalDateTime windowStart = event.processedAt() != null
                 ? event.processedAt().withSecond(0).withNano(0)
                 : LocalDateTime.MIN;
             stamp = windowStart + "|" + event.getUserId() + "|" + event.getT3Count() + "|" + event.getT7Count();
+
+            // Stabile Surrogate-UUID für BATCH-Events
+            leadIdPart = UUID.nameUUIDFromBytes(
+                ("BATCH|" + stamp).getBytes(StandardCharsets.UTF_8)
+            ).toString();
         } else {
             // Für einzelne Leads: Timestamp aus Event verwenden
             LocalDateTime when = event.processedAt() != null ? event.processedAt() : LocalDateTime.MIN;
             stamp = when.toString();
+            leadIdPart = event.leadId() != null ? event.leadId().toString() : "UNKNOWN";
         }
 
-        String composite = leadId + "|" + followUpType + "|" + stamp;
+        String composite = leadIdPart + "|" + followUpType + "|" + stamp;
         return UUID.nameUUIDFromBytes(composite.getBytes(StandardCharsets.UTF_8)).toString();
     }
 
