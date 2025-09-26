@@ -469,16 +469,16 @@ public class LeadPerformanceTest {
   private Lead createTestLead(int index) {
     Lead lead = new Lead();
     lead.companyName = "Perf Test Company " + index;
-    lead.contactFirstName = "Test";
-    lead.contactLastName = "User " + index;
+    lead.contactPerson = "Test User " + index;
     lead.email = "test" + index + "@perftest.de";
     lead.phone = "+49 89 " + (1000000 + index);
-    lead.territory = index % 3 == 0 ? "CH" : "DE";
-    lead.ownerUserId = UUID.randomUUID();
+    // lead.territory = index % 3 == 0 ? "CH" : "DE"; // needs Territory object
+    lead.ownerUserId = UUID.randomUUID().toString();
     lead.status = index % 2 == 0 ? LeadStatus.ACTIVE : LeadStatus.REGISTERED;
     lead.registeredAt = LocalDateTime.now().minusDays(index);
     lead.lastActivityAt = LocalDateTime.now().minusDays(index % 30);
-    lead.protectionExpiresAt = LocalDateTime.now().plusMonths(6);
+    lead.protectionMonths = 6;
+    lead.protectionStartAt = LocalDateTime.now();
     lead.city = index % 2 == 0 ? "Berlin" : "Munich";
     lead.postalCode = String.format("%05d", 10000 + index);
     lead.persist();

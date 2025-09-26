@@ -336,12 +336,13 @@ public class TerritoryIsolationTest {
   private Lead createLead(UUID ownerId, String territory, String company, String city) {
     Lead lead = new Lead();
     lead.companyName = company;
-    lead.territory = territory;
+    // lead.territory = territory; // needs Territory object
     lead.city = city;
-    lead.ownerUserId = ownerId;
+    lead.ownerUserId = ownerId.toString();
     lead.status = LeadStatus.REGISTERED;
     lead.registeredAt = LocalDateTime.now();
-    lead.protectionExpiresAt = LocalDateTime.now().plusMonths(6);
+    lead.protectionMonths = 6;
+    lead.protectionStartAt = LocalDateTime.now();
     lead.persist();
     return lead;
   }

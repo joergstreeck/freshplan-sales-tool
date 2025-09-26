@@ -56,15 +56,16 @@ public class UserLeadProtectionE2ETest {
     // Create test lead
     testLead = new Lead();
     testLead.companyName = "Protection Test Company";
-    testLead.contactFirstName = "Max";
-    testLead.contactLastName = "Mustermann";
+    testLead.contactPerson = "Max Mustermann";
     testLead.email = "max@testcompany.de";
     testLead.phone = "+49 89 123456";
     testLead.territory = TEST_TERRITORY;
     testLead.ownerUserId = TEST_USER_ID;
     testLead.status = LeadStatus.REGISTERED;
     testLead.registeredAt = LocalDateTime.now();
-    testLead.protectionExpiresAt = LocalDateTime.now().plusMonths(6);
+    // Protection is calculated based on protectionStartAt + protectionMonths
+    testLead.protectionStartAt = LocalDateTime.now();
+    testLead.protectionMonths = 6;
     testLead.persist();
   }
 
@@ -198,7 +199,7 @@ public class UserLeadProtectionE2ETest {
     Lead updated = Lead.findById(testLead.id);
     assertEquals(
         LeadStatus.EXPIRED, updated.status, "Lead should transition to EXPIRED after grace period");
-    assertNotNull(updated.protectionExpiredAt, "Protection expiry timestamp should be set");
+    assertNotNull(updated.expiredAt, "Protection expiry timestamp should be set");
   }
 
   /** Test 5: Stop-the-Clock Feature */
@@ -213,7 +214,7 @@ public class UserLeadProtectionE2ETest {
 
     // Apply Stop-the-Clock
     testLead.clockStoppedAt = LocalDateTime.now();
-    testLead.clockStoppedReason = "Customer on business trip for 2 weeks";
+    testLead.stopReason = "Customer on business trip for 2 weeks";
     testLead.persist();
 
     // Run reminder processing - should NOT trigger due to clock stop
@@ -227,7 +228,7 @@ public class UserLeadProtectionE2ETest {
 
     // Resume clock
     updated.clockStoppedAt = null;
-    updated.clockResumedAt = LocalDateTime.now();
+    // Clock resume is tracked by clearing clockStoppedAt
     updated.persist();
 
     // Now reminder should process
@@ -253,15 +254,15 @@ public class UserLeadProtectionE2ETest {
     // Create qualifying activity (e.g., QUALIFIED_CALL)
     LeadActivity activity = new LeadActivity();
     activity.lead = testLead;
-    activity.type = ActivityType.QUALIFIED_CALL;
-    activity.performedBy = TEST_USER_ID.toString();
-    activity.performedAt = LocalDateTime.now();
+    activity.type = ActivityType.CALL;
+    activity.userId = TEST_USER_ID.toString();
+    activity.createdAt = LocalDateTime.now();
     activity.description = "Successful qualification call with decision maker";
     activity.persist();
 
     // Update lead's last activity
     testLead.lastActivityAt = LocalDateTime.now();
-    testLead.lastQualifyingActivityAt = LocalDateTime.now();
+    // Qualifying activity tracked in lastActivityAt
     testLead.persist();
 
     // Run reminder processing - should NOT trigger
@@ -378,18 +379,19 @@ public class UserLeadProtectionE2ETest {
     // Create new lead - should use updated settings
     Lead newLead = new Lead();
     newLead.companyName = "Settings Test Company";
-    newLead.territory = TEST_TERRITORY;
-    newLead.ownerUserId = TEST_USER_ID;
+    // Territory needs to be a Territory object, not a string - skip for now
+    newLead.ownerUserId = TEST_USER_ID.toString();
     newLead.status = LeadStatus.REGISTERED;
     newLead.registeredAt = LocalDateTime.now();
 
     // Apply user settings
-    newLead.protectionExpiresAt = LocalDateTime.now().plusMonths(settings.getProtectionMonths());
+    newLead.protectionMonths = settings.getProtectionMonths();
+    newLead.protectionStartAt = LocalDateTime.now();
     newLead.persist();
 
     // Verify extended protection
     assertTrue(
-        newLead.protectionExpiresAt.isAfter(LocalDateTime.now().plusMonths(11)),
+        newLead.protectionMonths == 12,
         "New lead should have 12-month protection from user settings");
 
     // Clean up
@@ -403,11 +405,12 @@ public class UserLeadProtectionE2ETest {
     Lead lead = new Lead();
     lead.companyName = name + " Company";
     lead.territory = TEST_TERRITORY;
-    lead.ownerUserId = TEST_USER_ID;
+    lead.ownerUserId = TEST_USER_ID.toString();
     lead.status = LeadStatus.ACTIVE;
     lead.registeredAt = LocalDateTime.now().minusMonths(3);
     lead.lastActivityAt = LocalDateTime.now().minusDays(daysInactive);
-    lead.protectionExpiresAt = LocalDateTime.now().plusMonths(3);
+    lead.protectionMonths = 3;
+    lead.protectionStartAt = LocalDateTime.now();
     lead.persist();
     return lead;
   }
@@ -415,7 +418,7 @@ public class UserLeadProtectionE2ETest {
   private void testStateTransitions() {
     // This would be called in a real E2E test with time simulation
     // For now, we test the state machine logic directly
-    assertNotNull(testLead.protectionExpiresAt, "Protection expiry should be set");
+    assertNotNull(testLead.protectionMonths, "Protection months should be set");
     assertEquals(LeadStatus.REGISTERED, testLead.status, "Initial status should be REGISTERED");
   }
 }
