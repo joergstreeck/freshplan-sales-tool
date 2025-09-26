@@ -20,7 +20,13 @@
 
 ## 📋 Context & Dependencies
 
-### Current State - Code-Analyse 18.09.2025:
+### Current State - Code-Analyse 26.09.2025:
+
+#### 🔴 **P0 HOTFIX - Sprint 2.1.1:**
+- **Follow-up Dashboard Widget KRITISCH:** Integration für T+3/T+7 Metrics
+- **Real-time Updates via SSE/WebSocket:** Live Follow-up Status
+- **Konsolidierte PR #110:** Event Distribution + Widget + Metrics
+- **Details:** [TRIGGER_SPRINT_2_1_1.md](../../TRIGGER_SPRINT_2_1_1.md)
 
 #### ✅ **BEREITS IMPLEMENTIERT (Production-Ready):**
 - **SalesCockpitV2.tsx:** 3-Spalten MUI-Layout vollständig funktional auf MainLayoutV2
