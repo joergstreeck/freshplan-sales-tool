@@ -12,6 +12,7 @@ import de.freshplan.modules.leads.service.LeadService;
 import de.freshplan.modules.leads.service.FollowUpAutomationService;
 import de.freshplan.shared.constants.RiskManagementConstants;
 import de.freshplan.shared.constants.TimeConstants;
+import io.quarkus.logging.Log;
 import io.quarkus.panache.common.Page;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -635,12 +636,21 @@ public class SalesCockpitService {
    * Invalidiert den Dashboard-Cache für einen User.
    * Sprint 2.1.1 P0 HOTFIX - Ermöglicht Real-time Updates nach Lead-Events.
    *
-   * @param userId User ID dessen Dashboard-Cache invalidiert werden soll
+   * @param userId User ID (als String) dessen Dashboard-Cache invalidiert werden soll
    */
-  public void invalidateDashboardCache(UUID userId) {
+  public void invalidateDashboardCache(String userId) {
+    // Convert to UUID if valid, otherwise handle gracefully
+    UUID userUuid;
+    try {
+      userUuid = UUID.fromString(userId);
+    } catch (IllegalArgumentException e) {
+      Log.warnf("Invalid UUID format for userId: %s - cache not invalidated", userId);
+      return;
+    }
+
     // Cache-Invalidierung implementiert via CQRS Query Service
     if (cqrsEnabled && queryService != null) {
-      queryService.invalidateCache(userId);
+      queryService.invalidateCache(userUuid);
     }
     // Legacy: Kein Cache vorhanden, direkte DB-Abfragen
   }

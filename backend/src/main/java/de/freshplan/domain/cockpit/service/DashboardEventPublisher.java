@@ -4,6 +4,7 @@ import de.freshplan.infrastructure.pg.PgNotifySender;
 import de.freshplan.infrastructure.security.SecurityContextProvider;
 import de.freshplan.modules.leads.events.FollowUpProcessedEvent;
 import de.freshplan.modules.leads.events.LeadStatusChangeEvent;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import io.quarkus.logging.Log;
 import io.vertx.core.json.JsonObject;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -38,6 +39,9 @@ public class DashboardEventPublisher {
 
     @Inject
     Metrics metrics;
+
+    @ConfigProperty(name = "freshplan.security.allow-unauthenticated-publisher", defaultValue = "false")
+    boolean allowUnauthenticatedPublisher;
 
     private static final String DASHBOARD_CHANNEL = "dashboard_updates";
     private static final String METRICS_CHANNEL = "metrics_events";
@@ -256,15 +260,26 @@ public class DashboardEventPublisher {
 
     /**
      * Generiert deterministischen Idempotency-Key für Follow-ups.
-     * WICHTIG: Keine aktuelle Zeit verwenden - muss deterministisch sein!
+     * Für BATCH-Events: Zeitfenster auf Minute runden + User/Count-basiert.
      */
     private String generateIdempotencyKey(FollowUpProcessedEvent event) {
         String leadId = event.leadId() != null ? event.leadId().toString() : "BATCH";
         String followUpType = event.followUpType() != null ? event.followUpType() : "UNKNOWN";
-        // Verwende processedAt aus Event (ist im record fest gesetzt)
-        LocalDateTime when = event.processedAt() != null ? event.processedAt() : LocalDateTime.MIN;
+        String stamp;
 
-        String composite = leadId + "|" + followUpType + "|" + when;
+        if ("BATCH".equals(leadId)) {
+            // Für BATCH: Zeitfenster auf Minute runden + User + Counts für Stabilität
+            LocalDateTime windowStart = event.processedAt() != null
+                ? event.processedAt().withSecond(0).withNano(0)
+                : LocalDateTime.MIN;
+            stamp = windowStart + "|" + event.getUserId() + "|" + event.getT3Count() + "|" + event.getT7Count();
+        } else {
+            // Für einzelne Leads: Timestamp aus Event verwenden
+            LocalDateTime when = event.processedAt() != null ? event.processedAt() : LocalDateTime.MIN;
+            stamp = when.toString();
+        }
+
+        String composite = leadId + "|" + followUpType + "|" + stamp;
         return UUID.nameUUIDFromBytes(composite.getBytes(StandardCharsets.UTF_8)).toString();
     }
 
@@ -272,10 +287,9 @@ public class DashboardEventPublisher {
      * RBAC Check: Prüft ob User Events publizieren darf.
      */
     private boolean canPublishEvent(String userId) {
-        // Im Test-Modus oder wenn Security deaktiviert ist, alles erlauben
+        // Wenn nicht authentifiziert, nur erlauben wenn explizit konfiguriert
         if (!securityContext.isAuthenticated()) {
-            // Keine Authentication = Test-Modus, alles erlauben
-            return true;
+            return allowUnauthenticatedPublisher;
         }
 
         // Manager und Sales-Rollen dürfen publizieren

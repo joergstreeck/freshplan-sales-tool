@@ -187,12 +187,8 @@ public class DashboardEventListener {
     private void processLeadStatusChange(JsonObject data) {
         String userId = data.getString("userId");
         if (userId != null) {
-            try {
-                cockpitService.invalidateDashboardCache(UUID.fromString(userId));
-                Log.debugf("Dashboard cache invalidated for user: %s", userId);
-            } catch (IllegalArgumentException e) {
-                Log.warnf("Invalid userId format: %s", userId);
-            }
+            cockpitService.invalidateDashboardCache(userId);
+            Log.debugf("Dashboard cache invalidated for user: %s", userId);
         }
     }
 
@@ -202,17 +198,12 @@ public class DashboardEventListener {
     private void processFollowUpCompleted(JsonObject data) {
         String userId = data.getString("userId");
         if (userId != null) {
-            try {
-                cockpitService.invalidateDashboardCache(UUID.fromString(userId));
+            cockpitService.invalidateDashboardCache(userId);
 
-                // Optional: Trigger Widget-Refresh
-                Boolean success = data.getBoolean("success");
-                if (Boolean.TRUE.equals(success)) {
-                    Log.debugf("Follow-up success for user: %s", userId);
-                }
-
-            } catch (IllegalArgumentException e) {
-                Log.warnf("Invalid userId format: %s", userId);
+            // Optional: Trigger Widget-Refresh
+            Boolean success = data.getBoolean("success");
+            if (Boolean.TRUE.equals(success)) {
+                Log.debugf("Follow-up success for user: %s", userId);
             }
         }
     }

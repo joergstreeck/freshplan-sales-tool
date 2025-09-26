@@ -67,7 +67,7 @@ public class LeadEventHandler {
 
         try {
             // Dashboard Cache invalidieren für Real-time Updates
-            cockpitService.invalidateDashboardCache(UUID.fromString(event.userId()));
+            cockpitService.invalidateDashboardCache(event.userId());
 
             // Dashboard-Event wird via DashboardEventPublisher mit AFTER_COMMIT publiziert
             // Der DashboardEventPublisher observiert das gleiche Event und handled es korrekt
@@ -83,7 +83,7 @@ public class LeadEventHandler {
     private void updateDashboardStatistics(FollowUpProcessedEvent event) {
         // Dashboard-spezifische Statistiken werden lazy beim nächsten Abruf berechnet
         // Cache-Invalidierung reicht für Real-time Updates
-        cockpitService.invalidateDashboardCache(UUID.fromString(event.getUserId()));
+        cockpitService.invalidateDashboardCache(event.getUserId());
 
         Log.debugf("Dashboard statistics invalidated for user: %s", event.getUserId());
     }
