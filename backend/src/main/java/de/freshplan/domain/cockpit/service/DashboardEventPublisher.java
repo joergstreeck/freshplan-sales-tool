@@ -43,6 +43,7 @@ public class DashboardEventPublisher {
 
     private static final String DASHBOARD_CHANNEL = "dashboard_updates";
     private static final String METRICS_CHANNEL = "metrics_events";
+    private static final int MAX_NOTIFY_PAYLOAD_SIZE = 7680; // 7.5 KB Safety Limit (Postgres max ~8KB)
 
     /**
      * Verarbeitet Lead-Status-Änderungen mit AFTER_COMMIT.
@@ -58,6 +59,15 @@ public class DashboardEventPublisher {
 
         JsonObject payload = buildLeadStatusPayload(event);
         String idempotencyKey = event.getIdempotencyKey();
+
+        // TX-Guard: Prüfe ob aktive Transaktion vorhanden
+        if (!isInActiveTransaction()) {
+            Log.warnf("No active transaction for lead status change event - publishing synchronously");
+            metrics.incPublishedWithResult("lead_status_changed", "leads", "no_tx");
+            // Fail-safe: Synchron publizieren wenn keine TX
+            publishToDashboard(payload, idempotencyKey);
+            return;
+        }
 
         // AFTER_COMMIT Pattern - Event wird nur nach erfolgreicher Transaktion publiziert
         txRegistry.registerInterposedSynchronization(new Synchronization() {
@@ -91,6 +101,15 @@ public class DashboardEventPublisher {
 
         JsonObject payload = buildFollowUpPayload(event);
         String idempotencyKey = generateIdempotencyKey(event);
+
+        // TX-Guard: Prüfe ob aktive Transaktion vorhanden
+        if (!isInActiveTransaction()) {
+            Log.warnf("No active transaction for follow-up event - publishing synchronously");
+            metrics.incPublishedWithResult("followup_processed", "leads", "no_tx");
+            // Fail-safe: Synchron publizieren wenn keine TX
+            publishCrossModuleEvent(payload, idempotencyKey);
+            return;
+        }
 
         // AFTER_COMMIT für Ghost-Event Prevention
         txRegistry.registerInterposedSynchronization(new Synchronization() {
@@ -180,14 +199,33 @@ public class DashboardEventPublisher {
 
     /**
      * Robuste pg_notify Implementation via Hibernate Session.
-     * Einfacher und sicherer als komplexe Unwrap-Ketten.
+     * Prüft Payload-Größe gegen Postgres-Limit (~8KB).
      */
     private void notifyPg(String channel, String payload) {
+        // Payload-Guard: Postgres NOTIFY hat ~8KB Limit
+        String effectivePayload = payload;
+        if (payload.getBytes(StandardCharsets.UTF_8).length > MAX_NOTIFY_PAYLOAD_SIZE) {
+            Log.warnf("NOTIFY payload too large (%d bytes) for channel %s - truncating",
+                payload.getBytes(StandardCharsets.UTF_8).length, channel);
+
+            // Metrics: Event als truncated markieren
+            metrics.incPublishedWithResult("notification", "dashboard", "truncated");
+
+            // Kompaktieren: Nur Referenz-ID senden
+            JsonObject truncated = new JsonObject()
+                .put("id", UUID.randomUUID().toString())
+                .put("truncated", true)
+                .put("original_size", payload.length())
+                .put("message", "Payload exceeded 8KB limit - fetch details via API");
+            effectivePayload = truncated.encode();
+        }
+
+        final String finalPayload = effectivePayload;
         Session session = entityManager.unwrap(Session.class);
         session.doWork(connection -> {
             try (PreparedStatement ps = connection.prepareStatement("SELECT pg_notify(?, ?)")) {
                 ps.setString(1, channel);
-                ps.setString(2, payload);
+                ps.setString(2, finalPayload);
                 ps.execute();
             }
         });
@@ -244,5 +282,15 @@ public class DashboardEventPublisher {
         return securityContext.hasRole("MANAGER") ||
                securityContext.hasRole("SALES") ||
                securityContext.hasRole("ADMIN");
+    }
+
+    /**
+     * Prüft ob eine aktive Transaktion vorhanden ist.
+     */
+    private boolean isInActiveTransaction() {
+        // TransactionSynchronizationRegistry.getTransactionStatus() wirft kein SystemException
+        int status = txRegistry.getTransactionStatus();
+        return status == Status.STATUS_ACTIVE ||
+               status == Status.STATUS_MARKED_ROLLBACK;
     }
 }

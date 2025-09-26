@@ -26,23 +26,24 @@ public class Metrics {
 
     @PostConstruct
     void init() {
-        // Counter mit max 3 Labels (niedrige Kardinalität)
-        eventsPublished = Counter.builder("freshplan_events_published_total")
+        // Counter ohne _total (Micrometer fügt es automatisch hinzu)
+        eventsPublished = Counter.builder("freshplan_events_published")
             .description("Total events published")
             .tag("event_type", "dashboard")
             .tag("module", "cockpit")
             .tag("result", "success")
             .register(reg);
 
-        eventsConsumed = Counter.builder("freshplan_events_consumed_total")
+        eventsConsumed = Counter.builder("freshplan_events_consumed")
             .description("Total events consumed")
             .tag("event_type", "dashboard")
             .tag("module", "cockpit")
             .tag("result", "success")
             .register(reg);
 
-        eventLatency = Timer.builder("freshplan_event_latency_ms")
-            .description("Event processing latency")
+        // Timer ohne _ms (Prometheus zeigt automatisch _seconds)
+        eventLatency = Timer.builder("freshplan_event_latency")
+            .description("Event processing latency in seconds")
             .tag("event_type", "dashboard")
             .tag("path", "end_to_end")
             .publishPercentiles(0.5, 0.95, 0.99)
@@ -50,7 +51,7 @@ public class Metrics {
     }
 
     public void incPublished(String type, String module) {
-        reg.counter("freshplan_events_published_total",
+        reg.counter("freshplan_events_published",
             "event_type", type,
             "module", module,
             "result", "success")
@@ -58,15 +59,23 @@ public class Metrics {
     }
 
     public void incConsumed(String type, String module) {
-        reg.counter("freshplan_events_consumed_total",
+        reg.counter("freshplan_events_consumed",
             "event_type", type,
             "module", module,
             "result", "success")
             .increment();
     }
 
+    public void incPublishedWithResult(String type, String module, String result) {
+        reg.counter("freshplan_events_published",
+            "event_type", type,
+            "module", module,
+            "result", result)
+            .increment();
+    }
+
     public void observeLatency(String type, String path, Duration d) {
-        reg.timer("freshplan_event_latency_ms",
+        reg.timer("freshplan_event_latency",
             "event_type", type,
             "path", path)
             .record(d);
