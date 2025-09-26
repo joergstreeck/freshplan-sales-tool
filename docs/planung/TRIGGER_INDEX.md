@@ -59,7 +59,7 @@
    - Status: 🔧 75% COMPLETE (FP-236 Security noch offen)
 
 🔴 TRIGGER_SPRINT_2_1_1.md - HOTFIX Integration Gaps [P0 - CRITICAL]
-   - KONSOLIDIERT IN 1 PR #110 (Entscheidung 26.09.2025)
+   - KONSOLIDIERT IN 1 PR #111 (Entscheidung 26.09.2025, PR #110 ist FP-236)
    - Event Distribution + Dashboard Widget + Prometheus Metrics
    - Branch: feature/sprint-2-1-1-followup-integration-hotfix-FP-235-hotfix
    - Status: 🚨 PRODUCTION BLOCKER - 2-3 Tage

@@ -19,10 +19,11 @@ Nach erfolgreicher Implementation der T+3/T+7 Follow-up Automation (PR #109) wur
 - ✅ **Vorteil:** Atomare Deployment-Einheit
 - ✅ **Vorteil:** Reduzierte CI-Pipeline-Läufe
 
-**Konsolidierte PR #110: Follow-up Integration Hotfix**
+**Konsolidierte PR #111: Follow-up Integration Hotfix**
 - Branch: `feature/sprint-2-1-1-followup-integration-hotfix-FP-235-hotfix`
 - Umfasst: Event Distribution + Cockpit Widget + Prometheus Metrics
 - Effort: 2-3 PT kombiniert
+- **HINWEIS:** PR #110 ist FP-236 Security-Integration (nicht dieser Hotfix)
 
 ## 📊 KONKRETE UMSETZUNG IN EINER PR
 
