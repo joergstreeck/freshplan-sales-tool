@@ -1,6 +1,6 @@
 # 🚀 FreshPlan Sales Command Center
 
-**📅 Aktuelles Datum: 25.09.2025**
+**📅 Aktuelles Datum: 26.09.2025**
 
 > **"Wir bauen ein intelligentes Sales Command Center, das unsere Vertriebsmitarbeiter lieben, weil es ihnen proaktiv die Informationen, Insights und geführten Prozesse liefert, die sie brauchen, um erfolgreich zu sein."**
 
@@ -24,16 +24,17 @@ Mehr Details: [Vision & Roadmap](./VISION_AND_ROADMAP.md) | [Master Plan V5](./d
 - **Sprint 1.6:** RLS Module Adoption (PR #107) ✅
 - **Performance:** P95 <200ms erreicht mit ETag ≥70% Hit-Rate
 
-### Phase 2: Core Business 🔧 IN PROGRESS (10%)
-- **Sprint 2.1:** 🔧 Neukundengewinnung 50% COMPLETE (PR #103, #105)
+### Phase 2: Core Business 🔧 IN PROGRESS (15%)
+- **Sprint 2.1:** ✅ Neukundengewinnung 75% COMPLETE (PR #103, #105, #110)
   - ✅ FP-233: Territory Management (PR #103)
   - ✅ FP-234: Lead-Capture-System (PR #105)
+  - ✅ FP-236: Security-Integration ABAC/RLS (PR #110) - 23 Tests, P95 < 7ms!
   - ❌ FP-235: Follow-up Automation (T+3/T+7) - OFFEN
-  - ❌ FP-236: Security-Integration (ABAC/RLS) - OFFEN
+- **Sprint 2.1.1:** 🔜 P0 HOTFIX Integration Gaps (PR #111)
 - **Sprint 2.2:** 🔜 Kundenmanagement (nächster Sprint)
 - **Sprint 2.3-2.5:** Kommunikation, Cockpit, Einstellungen
 
-### Aktuelle PRs: 13/37 merged (35% gesamt)
+### Aktuelle PRs: 14/37 merged (38% gesamt)
 
 Details: [Production Roadmap 2025](./docs/planung/PRODUCTION_ROADMAP_2025.md)
 

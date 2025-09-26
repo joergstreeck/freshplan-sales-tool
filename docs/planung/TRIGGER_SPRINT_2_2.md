@@ -43,6 +43,14 @@ Analysiere: `./docs/planung/features-neu/03_kundenmanagement/artefakte/`
 - 39 Production-Ready Deliverables (EXCEPTIONAL Quality 10/10)
 - Field-based Architecture + ABAC Security + Testing 80%+
 
+**🎯 COPY-PASTE READY PATTERNS (aus PR #110):**
+- `./docs/planung/features-neu/02_neukundengewinnung/artefakte/SECURITY_TEST_PATTERN.md`
+  → Nutze für Customer-Security-Tests (@TestSecurity, Fail-Closed)
+- `./docs/planung/features-neu/02_neukundengewinnung/artefakte/PERFORMANCE_TEST_PATTERN.md`
+  → Nutze für Customer-API P95 Validation (measureP95(), assertP95())
+- `./docs/planung/features-neu/02_neukundengewinnung/artefakte/EVENT_SYSTEM_PATTERN.md`
+  → Nutze für CUSTOMER_CREATED/UPDATED Events
+
 ## 🔒 WICHTIG: MIGRATION-CHECK (IGNORIEREN RISIKOBEHAFTET!)
 
 **WICHTIG:** Jede DB-Änderung ohne Migration-Check kann zu Deployments-Problemen führen.

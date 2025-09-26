@@ -45,6 +45,15 @@ Analysiere: `./docs/planung/features-neu/08_administration/artefakte/`
 - Module 07: 25 AI-Artefakte CAR-Strategy (9.4/10)
 - Module 08: 76 Production-Ready Artefakte (9.6/10)
 
+**🎯 COPY-PASTE READY PATTERNS (aus PR #110):**
+- `./docs/planung/features-neu/02_neukundengewinnung/artefakte/SECURITY_TEST_PATTERN.md`
+  → KRITISCH für User-Management Security Tests
+  → Multi-Tenancy Access-Control Validation
+- `./docs/planung/features-neu/02_neukundengewinnung/artefakte/PERFORMANCE_TEST_PATTERN.md`
+  → Admin-Query Performance Validation
+- `./docs/planung/features-neu/02_neukundengewinnung/artefakte/EVENT_SYSTEM_PATTERN.md`
+  → Audit-Trail Events mit LISTEN/NOTIFY
+
 ## 🔒 WICHTIG: MIGRATION-CHECK (IGNORIEREN RISIKOBEHAFTET!)
 
 **WICHTIG:** Jede DB-Änderung ohne Migration-Check kann zu Deployments-Problemen führen.

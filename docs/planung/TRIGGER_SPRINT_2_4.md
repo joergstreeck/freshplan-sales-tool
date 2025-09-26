@@ -43,6 +43,14 @@ Analysiere: `./docs/planung/features-neu/01_mein-cockpit/artefakte/`
 - 44 Production-Ready Artefakte (Enterprise Assessment A+ 95/100)
 - ABAC Security + ROI-Calculator + Multi-Channel Dashboard
 
+**🎯 COPY-PASTE READY PATTERNS (aus PR #110):**
+- `./docs/planung/features-neu/02_neukundengewinnung/artefakte/EVENT_SYSTEM_PATTERN.md`
+  → Nutze für Dashboard-Widget-Updates (Real-time via LISTEN/NOTIFY)
+- `./docs/planung/features-neu/02_neukundengewinnung/artefakte/PERFORMANCE_TEST_PATTERN.md`
+  → Nutze für Dashboard-Query P95 < 200ms Validation
+- `./docs/planung/features-neu/02_neukundengewinnung/artefakte/SECURITY_TEST_PATTERN.md`
+  → Nutze für Dashboard-Access-Control Tests
+
 ## 🔒 WICHTIG: MIGRATION-CHECK (IGNORIEREN RISIKOBEHAFTET!)
 
 **WICHTIG:** Jede DB-Änderung ohne Migration-Check kann zu Deployments-Problemen führen.

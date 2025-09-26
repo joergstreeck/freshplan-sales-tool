@@ -43,6 +43,15 @@ Analysiere: `./docs/planung/features-neu/06_einstellungen/artefakte/`
 - 4 Weltklasse Technical Concepts (9.9-10/10)
 - Settings-Engine + 5-Level Scope-Hierarchie + ABAC Security
 
+**🎯 COPY-PASTE READY PATTERNS (aus PR #110):**
+- **ALLE 3 PATTERNS für Cross-Module-Integration nutzen:**
+  - `./docs/planung/features-neu/02_neukundengewinnung/artefakte/SECURITY_TEST_PATTERN.md`
+    → Settings-Access-Control Tests für alle Scope-Level
+  - `./docs/planung/features-neu/02_neukundengewinnung/artefakte/PERFORMANCE_TEST_PATTERN.md`
+    → Settings-Query P95 Validation (Cache-Hit-Rate ≥70%)
+  - `./docs/planung/features-neu/02_neukundengewinnung/artefakte/EVENT_SYSTEM_PATTERN.md`
+    → Settings-Change-Events für Cross-Module-Updates
+
 ## 🔒 WICHTIG: MIGRATION-CHECK (IGNORIEREN RISIKOBEHAFTET!)
 
 **WICHTIG:** Jede DB-Änderung ohne Migration-Check kann zu Deployments-Problemen führen.

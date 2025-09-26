@@ -39,6 +39,11 @@
 - **Foundation Standards:** → [FOUNDATION_STANDARDS_COMPLIANCE_REQUEST.md](../diskussionen/2025-09-19_FOUNDATION_STANDARDS_COMPLIANCE_REQUEST.md)
 - **Cross-Module-Integration:** → Customer-Management (Module 03), Audit-System, Event-Bus
 
+### 🎯 Copy-Paste Ready Patterns aus Modul 02:
+- **[Security Test Pattern](../02_neukundengewinnung/artefakte/SECURITY_TEST_PATTERN.md)** → Thread-Access-Control Tests
+- **[Performance Test Pattern](../02_neukundengewinnung/artefakte/PERFORMANCE_TEST_PATTERN.md)** → Message-Query P95 Validation
+- **[Event System Pattern](../02_neukundengewinnung/artefakte/EVENT_SYSTEM_PATTERN.md)** → Email-Send/Receive-Events mit LISTEN/NOTIFY
+
 ## 📦 **PRODUCTION-READY ARTEFAKTE**
 
 ### **Backend (Java/Quarkus) - 19 Dateien**

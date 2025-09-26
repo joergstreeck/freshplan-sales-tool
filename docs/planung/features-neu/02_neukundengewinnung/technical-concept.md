@@ -27,12 +27,20 @@
 
 ## 📋 Context & Strategic Architecture
 
-### Current State (2025-09-25 Update):
+### Current State (2025-09-26 Update):
 - ✅ **Sprint 2.1 PR #1 MERGED:** Territory Management ohne Gebietsschutz (PR #103)
   - Territory-Entity mit Currency/Tax/Business Rules
   - UserLeadSettingsService mit Thread-Safety (Race Condition Fix)
   - Lead/LeadActivity/UserLeadSettings Entities
   - Migration V229-V231 erfolgreich deployed
+- ✅ **Sprint 2.1 PR #2 MERGED:** Lead-Capture-System (PR #105)
+  - Lead REST API mit User-Protection
+  - Field-Validierung und Territory-Assignment
+- ✅ **Sprint 2.1 PR #3 MERGED:** Security-Integration (PR #110)
+  - ABAC/RLS mit 23 Security/Performance/Event-Tests
+  - PostgreSQL LISTEN/NOTIFY Event-System operational
+  - Performance P95 < 7ms validiert
+  - Deterministisches Idempotency-Key System
 - ✅ **Foundation Standards:** EVENT_CATALOG + API_STANDARDS + ABAC Security ready
 - ✅ **Legal Requirements:** Handelsvertretervertrag-Analyse complete (6/60/10-Regelung)
 - ✅ **Cross-Module APIs:** Alle 8 Module haben Integration-Ready Endpoints
@@ -95,6 +103,33 @@
 - **Output:** Seamless Integration mit allen 8 FreshPlan-Modulen
 - **Success Criteria:** Real-time Cross-Module-Updates + End-to-End-Testing + Integration-Health-Monitoring
 
+## 🔔 Event-System Implementation (PR #110 COMPLETE)
+
+### PostgreSQL LISTEN/NOTIFY Architecture
+- **LeadEventPublisher:** Publiziert Events via pg_notify() mit PreparedStatement
+- **CrossModuleEventListener:** ManagedExecutor mit blockierendem getNotifications(10000)
+- **AFTER_COMMIT Pattern:** TransactionSynchronizationRegistry garantiert keine Ghost-Events
+- **Idempotency:** UUID.nameUUIDFromBytes(leadId|oldStatus>newStatus|changedAt)
+
+### Event-Typen
+```java
+// Lead Status Changes
+LeadStatusChangeEvent {
+  leadId, companyName, oldStatus, newStatus,
+  changedBy, changedAt, territory, ownerUserId, idempotencyKey
+}
+
+// Cross-Module Events
+LEAD_CREATED, LEAD_STATUS_CHANGED, CUSTOMER_CREATED,
+EMAIL_SENT, CAMPAIGN_TRIGGERED
+```
+
+### Security-Test-Patterns (23 Tests)
+- **LeadSecurityBasicTest:** 6 Tests für positive Security-Szenarien
+- **LeadSecurityNegativeTest:** 6 Tests mit @TestSecurity für Fail-Closed
+- **LeadPerformanceValidationTest:** 5 Tests, alle < 7ms P95
+- **LeadEventIntegrationTest:** 6 Tests mit TestEventCollector
+
 ## ✅ Success Metrics & Timeline
 
 ### **Immediate Success (21-27h Total):**
@@ -117,6 +152,11 @@
 - **Foundation-Impact:** Standard-Templates beschleunigen alle 8 Module-Entwicklung
 
 ## 🔗 Related Documentation
+
+### **Implementation Artefakte (PR #110):**
+- **[Security Test Pattern](artefakte/SECURITY_TEST_PATTERN.md)** - 23 Tests mit @TestSecurity, Fail-Closed Validation
+- **[Performance Test Pattern](artefakte/PERFORMANCE_TEST_PATTERN.md)** - P95 Validation < 200ms mit Helper-Methoden
+- **[Event System Pattern](artefakte/EVENT_SYSTEM_PATTERN.md)** - PostgreSQL LISTEN/NOTIFY mit AFTER_COMMIT
 
 ### **Strategic Foundation:**
 - [Module Overview](README.md) - Complete Navigation + Quick Decision Matrix

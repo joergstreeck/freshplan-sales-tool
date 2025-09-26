@@ -43,6 +43,15 @@ Analysiere: `./docs/planung/features-neu/04_auswertungen/artefakte/`
 - 12 Copy-Paste-Ready Implementation-Files (97% Production-Ready)
 - JSONL-Streaming + ABAC-Security + WebSocket Real-time
 
+**🎯 COPY-PASTE READY PATTERNS (aus PR #110):**
+- `./docs/planung/features-neu/02_neukundengewinnung/artefakte/PERFORMANCE_TEST_PATTERN.md`
+  → KRITISCH für Analytics-Query P95 Validation (measureP95(), assertP95())
+  → Analytics-Queries müssen OLTP nicht beeinträchtigen
+- `./docs/planung/features-neu/02_neukundengewinnung/artefakte/SECURITY_TEST_PATTERN.md`
+  → Territory-Scoped Analytics Access-Control
+- `./docs/planung/features-neu/02_neukundengewinnung/artefakte/EVENT_SYSTEM_PATTERN.md`
+  → Real-time Analytics-Updates via LISTEN/NOTIFY
+
 ## 🚨 PHASE 3 ENHANCEMENT START
 
 **VORAUSSETZUNG:** Phase 2 Core Business MUSS complete sein!

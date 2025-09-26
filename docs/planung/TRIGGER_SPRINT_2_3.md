@@ -44,6 +44,14 @@ Analysiere: `./docs/planung/features-neu/05_kommunikation/artefakte/`
 - 41 Production-Ready Files
 - DevOps Excellence + Business Logic Perfektion
 
+**🎯 COPY-PASTE READY PATTERNS (aus PR #110):**
+- `./docs/planung/features-neu/02_neukundengewinnung/artefakte/EVENT_SYSTEM_PATTERN.md`
+  → Nutze für EMAIL_SENT/RECEIVED Events (LISTEN/NOTIFY mit AFTER_COMMIT)
+- `./docs/planung/features-neu/02_neukundengewinnung/artefakte/SECURITY_TEST_PATTERN.md`
+  → Nutze für Thread-Access-Control Tests (@TestSecurity)
+- `./docs/planung/features-neu/02_neukundengewinnung/artefakte/PERFORMANCE_TEST_PATTERN.md`
+  → Nutze für Message-Query P95 Validation
+
 ## 🔒 WICHTIG: SECURITY-GATE CHECKPOINT VALIDIERUNG
 
 **EMPFOHLENE FREIGABE-KRITERIEN (SOLLTEN ✅ SEIN):**
