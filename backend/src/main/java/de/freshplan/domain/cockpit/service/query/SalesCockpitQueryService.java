@@ -455,8 +455,8 @@ public class SalesCockpitQueryService {
   }
 
   /**
-   * Invalidiert den Dashboard-Cache für einen User.
-   * Sprint 2.1.1 P0 HOTFIX - Ermöglicht Real-time Updates nach Lead-Events.
+   * Invalidiert den Dashboard-Cache für einen User. Sprint 2.1.1 P0 HOTFIX - Ermöglicht Real-time
+   * Updates nach Lead-Events.
    *
    * @param userId User ID dessen Dashboard-Cache invalidiert werden soll
    */
@@ -466,9 +466,8 @@ public class SalesCockpitQueryService {
   }
 
   /**
-   * Invalidiert den Dashboard-Cache für einen User (String-basiert).
-   * Fallback für non-UUID User-IDs.
-   * Sprint 2.1.1 P1 - Robuste Cache-Invalidierung.
+   * Invalidiert den Dashboard-Cache für einen User (String-basiert). Fallback für non-UUID
+   * User-IDs. Sprint 2.1.1 P1 - Robuste Cache-Invalidierung.
    *
    * @param userId User ID (als String) dessen Dashboard-Cache invalidiert werden soll
    */

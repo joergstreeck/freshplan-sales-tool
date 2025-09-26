@@ -69,7 +69,10 @@ public class LeadEventPublisher {
           UUID.nameUUIDFromBytes(keySource.getBytes(StandardCharsets.UTF_8)).toString();
 
       // LeadStatusChangeEvent mit UUID statt Long
-      UUID leadUuid = lead.id != null ? UUID.nameUUIDFromBytes(lead.id.toString().getBytes()) : UUID.randomUUID();
+      UUID leadUuid =
+          lead.id != null
+              ? UUID.nameUUIDFromBytes(lead.id.toString().getBytes())
+              : UUID.randomUUID();
 
       LeadStatusChangeEvent event =
           new LeadStatusChangeEvent(

@@ -8,8 +8,8 @@ import de.freshplan.domain.customer.repository.CustomerRepository;
 import de.freshplan.domain.user.entity.User;
 import de.freshplan.domain.user.repository.UserRepository;
 import de.freshplan.domain.user.service.exception.UserNotFoundException;
-import de.freshplan.modules.leads.service.LeadService;
 import de.freshplan.modules.leads.service.FollowUpAutomationService;
+import de.freshplan.modules.leads.service.LeadService;
 import de.freshplan.shared.constants.RiskManagementConstants;
 import de.freshplan.shared.constants.TimeConstants;
 import io.quarkus.logging.Log;
@@ -567,8 +567,8 @@ public class SalesCockpitService {
   }
 
   /**
-   * Baut das Lead Widget für das Dashboard.
-   * Sprint 2.1.1 P0 HOTFIX - Integration von Lead-Statistiken ins Dashboard.
+   * Baut das Lead Widget für das Dashboard. Sprint 2.1.1 P0 HOTFIX - Integration von
+   * Lead-Statistiken ins Dashboard.
    *
    * @param userId User ID für Lead-Daten
    * @return LeadWidget mit aktuellen Lead-Statistiken und Follow-up Metriken
@@ -616,25 +616,21 @@ public class SalesCockpitService {
     return widget;
   }
 
-  /**
-   * Berechnet ausstehende T+3 Follow-ups.
-   */
+  /** Berechnet ausstehende T+3 Follow-ups. */
   private int calculatePendingT3Count(UUID userId) {
     // Temporär: Statischer Wert, wird später aus FollowUpAutomationService bezogen
     return 3;
   }
 
-  /**
-   * Berechnet ausstehende T+7 Follow-ups.
-   */
+  /** Berechnet ausstehende T+7 Follow-ups. */
   private int calculatePendingT7Count(UUID userId) {
     // Temporär: Statischer Wert, wird später aus FollowUpAutomationService bezogen
     return 5;
   }
 
   /**
-   * Invalidiert den Dashboard-Cache für einen User.
-   * Sprint 2.1.1 P0 HOTFIX - Ermöglicht Real-time Updates nach Lead-Events.
+   * Invalidiert den Dashboard-Cache für einen User. Sprint 2.1.1 P0 HOTFIX - Ermöglicht Real-time
+   * Updates nach Lead-Events.
    *
    * @param userId User ID (als String) dessen Dashboard-Cache invalidiert werden soll
    */
