@@ -16,7 +16,9 @@ import jakarta.transaction.Synchronization;
 import jakarta.transaction.TransactionSynchronizationRegistry;
 import jakarta.transaction.Status;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -106,11 +108,11 @@ public class DashboardEventPublisher {
      */
     @Transactional
     public void onFollowUpProcessed(@Observes FollowUpProcessedEvent event) {
-        Log.debugf("Preparing dashboard event for follow-up: %s", event.getLeadId());
+        Log.debugf("Preparing dashboard event for follow-up: %s", event.leadId());
 
         // RBAC Check
-        if (!canPublishEvent(event.getUserId(), "followup_processed")) {
-            Log.warnf("User %s not authorized to publish follow-up events", event.getUserId());
+        if (!canPublishEvent(event.userId(), "followup_processed")) {
+            Log.warnf("User %s not authorized to publish follow-up events", event.userId());
             return;
         }
 
@@ -153,7 +155,7 @@ public class DashboardEventPublisher {
                 .put("id", UUID.randomUUID().toString())
                 .put("source", "lead-management")
                 .put("type", "dashboard.lead_status_changed")
-                .put("time", LocalDateTime.now().toString())
+                .put("time", Instant.now().toString())
                 .put("idempotencyKey", idempotencyKey)
                 .put("data", payload);
 
@@ -176,7 +178,7 @@ public class DashboardEventPublisher {
                 .put("id", UUID.randomUUID().toString())
                 .put("source", "lead-management")
                 .put("type", "dashboard.followup_completed")
-                .put("time", LocalDateTime.now().toString())
+                .put("time", Instant.now().toString())
                 .put("idempotencyKey", idempotencyKey)
                 .put("data", payload);
 
@@ -201,7 +203,7 @@ public class DashboardEventPublisher {
                 .put("id", UUID.randomUUID().toString())
                 .put("source", "lead-management")
                 .put("type", "metrics.followup_tracked")
-                .put("time", LocalDateTime.now().toString())
+                .put("time", Instant.now().toString())
                 .put("idempotencyKey", idempotencyKey + "_metrics")
                 .put("data", payload);
 
@@ -273,14 +275,14 @@ public class DashboardEventPublisher {
      */
     private JsonObject buildFollowUpPayload(FollowUpProcessedEvent event) {
         return new JsonObject()
-            .put("leadId", event.getLeadId() != null ? event.getLeadId().toString() : "")
-            .put("followUpType", event.getFollowUpType())
-            .put("t3Count", event.getT3Count())
-            .put("t7Count", event.getT7Count())
-            .put("success", event.isSuccess())
-            .put("userId", event.getUserId())
+            .put("leadId", event.leadId() != null ? event.leadId().toString() : "")
+            .put("followUpType", event.followUpType())
+            .put("t3Count", event.t3Count())
+            .put("t7Count", event.t7Count())
+            .put("success", event.success())
+            .put("userId", event.userId())
             .put("processedAt", event.processedAt() != null ? event.processedAt().toString() : LocalDateTime.now().toString())
-            .put("responseTime", event.getResponseTime() != null ? event.getResponseTime() : "unknown");
+            .put("responseTime", event.responseTime() != null ? event.responseTime() : "unknown");
     }
 
     /**
@@ -295,10 +297,10 @@ public class DashboardEventPublisher {
         // BATCH-Erkennung über followUpType (robuster als leadId-Check)
         if ("BATCH".equalsIgnoreCase(followUpType)) {
             // Für BATCH: Zeitfenster auf Minute runden + User + Counts für Stabilität
-            LocalDateTime windowStart = event.processedAt() != null
-                ? event.processedAt().withSecond(0).withNano(0)
-                : LocalDateTime.MIN;
-            stamp = windowStart + "|" + event.getUserId() + "|" + event.getT3Count() + "|" + event.getT7Count();
+            LocalDateTime windowStart = Objects.requireNonNull(event.processedAt(),
+                "processedAt must not be null for BATCH events")
+                .withSecond(0).withNano(0);
+            stamp = windowStart + "|" + event.userId() + "|" + event.t3Count() + "|" + event.t7Count();
 
             // Stabile Surrogate-UUID für BATCH-Events
             leadIdPart = UUID.nameUUIDFromBytes(
@@ -306,9 +308,11 @@ public class DashboardEventPublisher {
             ).toString();
         } else {
             // Für einzelne Leads: Timestamp aus Event verwenden
-            LocalDateTime when = event.processedAt() != null ? event.processedAt() : LocalDateTime.MIN;
+            LocalDateTime when = Objects.requireNonNull(event.processedAt(),
+                "processedAt must not be null for follow-up events");
             stamp = when.toString();
-            leadIdPart = event.leadId() != null ? event.leadId().toString() : "UNKNOWN";
+            leadIdPart = Objects.requireNonNull(event.leadId(),
+                "leadId must not be null for non-BATCH follow-up events").toString();
         }
 
         String composite = leadIdPart + "|" + followUpType + "|" + stamp;

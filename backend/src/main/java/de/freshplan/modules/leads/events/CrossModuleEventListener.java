@@ -173,7 +173,7 @@ public class CrossModuleEventListener {
       // Log for activity timeline - mask PII (company name)
       Log.infof(
           "Lead status changed: ID %s (%s -> %s) by %s",
-          event.getLeadId(), event.getOldStatus(), event.getNewStatus(), event.getChangedBy());
+          event.leadId(), event.oldStatus(), event.newStatus(), event.userId());
 
       // Update activity timeline
       updateActivityTimeline(event);
@@ -206,7 +206,7 @@ public class CrossModuleEventListener {
     // For now, we log the timeline entry
     Log.infof(
         "Timeline Entry: Lead %s status changed from %s to %s at %s",
-        event.getLeadId(), event.getOldStatus(), event.getNewStatus(), event.getChangedAt());
+        event.leadId(), event.oldStatus(), event.newStatus(), event.changedAt());
   }
 
   // Event handlers for cross-module integration

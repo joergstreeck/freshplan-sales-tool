@@ -55,34 +55,8 @@ public record FollowUpProcessedEvent(
     return t3Count + t7Count;
   }
 
-  // Zusätzliche Getter-Methoden für LeadEventHandler Kompatibilität
-  public UUID getLeadId() {
-    return leadId;
-  }
-
-  public String getFollowUpType() {
-    return followUpType;
-  }
-
-  public int getT3Count() {
-    return t3Count;
-  }
-
-  public int getT7Count() {
-    return t7Count;
-  }
-
-  public boolean isSuccess() {
-    return success;
-  }
-
-  public String getUserId() {
-    return userId;
-  }
-
-  public String getResponseTime() {
-    return responseTime;
-  }
+  // Record-Klassen generieren automatisch Accessor-Methoden
+  // Die expliziten Getter wurden entfernt, da sie redundant sind
 
   @Override
   public String toString() {

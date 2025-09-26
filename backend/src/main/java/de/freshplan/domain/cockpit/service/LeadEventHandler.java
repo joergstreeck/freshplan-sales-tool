@@ -25,9 +25,6 @@ public class LeadEventHandler {
     SalesCockpitService cockpitService;
 
     @Inject
-    DashboardEventPublisher dashboardEventPublisher;
-
-    @Inject
     LeadService leadService;
 
     /**
@@ -37,7 +34,7 @@ public class LeadEventHandler {
      */
     @Transactional
     public void onFollowUpProcessed(@Observes FollowUpProcessedEvent event) {
-        Log.infof("Processing follow-up event for lead: %s", event.getLeadId());
+        Log.infof("Processing follow-up event for lead: %s", event.leadId());
 
         try {
             // Dashboard-Statistiken aktualisieren
@@ -50,7 +47,7 @@ public class LeadEventHandler {
             trackFollowUpMetrics(event);
 
         } catch (Exception e) {
-            Log.errorf(e, "Failed to process follow-up event for lead: %s", event.getLeadId());
+            Log.errorf(e, "Failed to process follow-up event for lead: %s", event.leadId());
             // Event wird nicht propagiert, um System-Stabilität zu gewährleisten
         }
     }
@@ -83,9 +80,9 @@ public class LeadEventHandler {
     private void updateDashboardStatistics(FollowUpProcessedEvent event) {
         // Dashboard-spezifische Statistiken werden lazy beim nächsten Abruf berechnet
         // Cache-Invalidierung reicht für Real-time Updates
-        cockpitService.invalidateDashboardCache(event.getUserId());
+        cockpitService.invalidateDashboardCache(event.userId());
 
-        Log.debugf("Dashboard statistics invalidated for user: %s", event.getUserId());
+        Log.debugf("Dashboard statistics invalidated for user: %s", event.userId());
     }
 
     // Dashboard-Updates werden jetzt via DashboardEventPublisher mit AFTER_COMMIT gehandled
@@ -95,6 +92,6 @@ public class LeadEventHandler {
      */
     private void trackFollowUpMetrics(FollowUpProcessedEvent event) {
         // Metrics werden via DashboardEventPublisher mit AFTER_COMMIT publiziert
-        Log.debugf("Metrics tracking delegated to DashboardEventPublisher for follow-up: %s", event.getFollowUpType());
+        Log.debugf("Metrics tracking delegated to DashboardEventPublisher for follow-up: %s", event.followUpType());
     }
 }

@@ -28,6 +28,11 @@ import java.util.concurrent.atomic.AtomicLong;
 @de.freshplan.infrastructure.security.RlsContext
 public class DashboardEventListener {
 
+    // Cache-Konfigurationskonstanten
+    private static final long MAX_DEDUPE_CACHE_SIZE = 500_000L;
+    private static final long CACHE_WARNING_THRESHOLD = 450_000L; // 90% von MAX_DEDUPE_CACHE_SIZE
+    private static final long CACHE_CHECK_INTERVAL = 10_000L;
+
     @Inject
     SalesCockpitService cockpitService;
 
@@ -39,7 +44,7 @@ public class DashboardEventListener {
 
     // Dedupe-Store: Caffeine mit 24h TTL, max 500k Einträge
     private final Cache<String, Boolean> processedEvents = Caffeine.newBuilder()
-        .maximumSize(500_000)
+        .maximumSize(MAX_DEDUPE_CACHE_SIZE)
         .expireAfterWrite(Duration.ofHours(24))
         .recordStats()
         .build();
@@ -99,11 +104,12 @@ public class DashboardEventListener {
             eventsProcessed.incrementAndGet();
 
             // Warn bei hoher Cache-Auslastung (alle 10k Events prüfen)
-            if (eventsProcessed.get() % 10_000 == 0) {
+            if (eventsProcessed.get() % CACHE_CHECK_INTERVAL == 0) {
                 long cacheSize = processedEvents.estimatedSize();
-                if (cacheSize > 450_000) { // 90% von 500k
-                    Log.warnf("Dedupe cache approaching limit: %d / 500000 entries (%.1f%%)",
-                        cacheSize, (cacheSize / 5000.0));
+                if (cacheSize > CACHE_WARNING_THRESHOLD) {
+                    double percentageUsed = (double) cacheSize / MAX_DEDUPE_CACHE_SIZE * 100.0;
+                    Log.warnf("Dedupe cache approaching limit: %d / %d entries (%.1f%%)",
+                        cacheSize, MAX_DEDUPE_CACHE_SIZE, percentageUsed);
                 }
             }
 
