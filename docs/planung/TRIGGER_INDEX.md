@@ -53,10 +53,18 @@
 
 ### **PHASE 2: CORE BUSINESS (5 Sprints) - 🔧 IN PROGRESS**
 ```yaml
-🔧 TRIGGER_SPRINT_2_1.md - Neukundengewinnung [PR #103, #105 MERGED, 2 OFFEN]
+🔧 TRIGGER_SPRINT_2_1.md - Neukundengewinnung [PR #109 MERGED, FP-236 OFFEN]
    - Lead-Management ohne Gebietsschutz
-   - 8-10h, 2/4 PRs complete (FP-233 Territory ✅, FP-234 Capture ✅)
-   - Status: 🔧 50% COMPLETE (FP-235 Follow-up, FP-236 Security noch offen)
+   - T+3/T+7 Follow-up Automation LIVE (FP-235 ✅)
+   - Status: 🔧 75% COMPLETE (FP-236 Security noch offen)
+
+🔴 TRIGGER_SPRINT_2_1_1.md - HOTFIX Integration Gaps [P0 - CRITICAL]
+   - KONSOLIDIERT IN 1 PR #110 (Entscheidung 26.09.2025)
+   - Event Distribution + Dashboard Widget + Prometheus Metrics
+   - Branch: feature/sprint-2-1-1-followup-integration-hotfix-FP-235-hotfix
+   - Status: 🚨 PRODUCTION BLOCKER - 2-3 Tage
+   - Atomares Deployment für alle P0 Gaps
+   - 📊 Integration Übersicht: [INTEGRATION_STATUS.md](./infrastruktur/INTEGRATION_STATUS.md)
 
 ✅ TRIGGER_SPRINT_2_2.md - Kundenmanagement
    - Field-based Customer Architecture

@@ -27,12 +27,15 @@
 
 ## 📋 Context & Strategic Architecture
 
-### Current State (2025-09-25 Update):
-- ✅ **Sprint 2.1 PR #1 MERGED:** Territory Management ohne Gebietsschutz (PR #103)
-  - Territory-Entity mit Currency/Tax/Business Rules
-  - UserLeadSettingsService mit Thread-Safety (Race Condition Fix)
-  - Lead/LeadActivity/UserLeadSettings Entities
-  - Migration V229-V231 erfolgreich deployed
+### Current State (2025-09-26 Update):
+- ✅ **Sprint 2.1 PR #109 MERGED:** T+3/T+7 Follow-up Automation LIVE
+  - FollowUpAutomationService mit Scheduler
+  - EmailNotificationService mit DSGVO-Compliance
+  - Migration V245-V246 erfolgreich deployed
+  - 75% Sprint 2.1 complete (FP-236 Security noch offen)
+- 🔴 **P0 HOTFIX KRITISCH:** Integration Gaps identifiziert
+  - Sprint 2.1.1: Konsolidierte PR #110 für Event Distribution + Dashboard + Metrics
+  - Details: [TRIGGER_SPRINT_2_1_1.md](../../TRIGGER_SPRINT_2_1_1.md)
 - ✅ **Foundation Standards:** EVENT_CATALOG + API_STANDARDS + ABAC Security ready
 - ✅ **Legal Requirements:** Handelsvertretervertrag-Analyse complete (6/60/10-Regelung)
 - ✅ **Cross-Module APIs:** Alle 8 Module haben Integration-Ready Endpoints
