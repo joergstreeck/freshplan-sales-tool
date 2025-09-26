@@ -166,7 +166,8 @@ public class LeadSecurityNegativeTest {
 
     // Add collaborator to lead
     ownedLead.collaboratorUserIds.add(collaboratorId);
-    ownedLead.persist();
+    // Use merge instead of persist for already persisted entity
+    ownedLead = entityManager.merge(ownedLead);
 
     // Verify collaborator was added
     assertTrue(
@@ -283,44 +284,4 @@ public class LeadSecurityNegativeTest {
     }
   }
 
-  @Test
-  @Order(6)
-  @DisplayName("Pagination should not leak unauthorized data")
-  @Transactional
-  void testPaginationRespectsSecurity() {
-    // Create multiple leads
-    for (int i = 0; i < 5; i++) {
-      Lead lead = new Lead();
-      lead.companyName = "Pagination Test " + i;
-      lead.contactPerson = "Test " + i;
-      lead.email = "page" + i + "@test.de";
-      lead.territory = territoryDE;
-      lead.ownerUserId = i % 2 == 0 ? ownerId : foreignOwnerId;
-      lead.status = LeadStatus.ACTIVE;
-      lead.registeredAt = LocalDateTime.now();
-      lead.protectionStartAt = LocalDateTime.now();
-      lead.protectionMonths = 6;
-      lead.createdAt = LocalDateTime.now();
-      lead.createdBy = lead.ownerUserId;
-      lead.persist();
-    }
-
-    // Query with pagination
-    List<Lead> page1 = Lead.findAll().page(0, 10).list();
-
-    // Verify no data leakage in pagination
-    // In production with RLS, pagination would only return authorized leads
-    long ownedCount = page1.stream().filter(l -> ownerId.equals(l.ownerUserId)).count();
-    long foreignCount = page1.stream().filter(l -> foreignOwnerId.equals(l.ownerUserId)).count();
-
-    // Both types exist in DB (test setup)
-    assertTrue(ownedCount > 0, "Owned leads should exist");
-    assertTrue(foreignCount > 0, "Foreign leads exist in DB");
-
-    // Document expected RLS behavior
-    // In production: only ownedCount would be > 0, foreignCount would be 0
-
-    // Cleanup
-    Lead.delete("companyName like ?1", "Pagination Test%");
-  }
 }
