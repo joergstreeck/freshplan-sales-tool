@@ -12,7 +12,7 @@ import jakarta.transaction.TransactionSynchronizationRegistry;
 import jakarta.transaction.Transactional;
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
-import java.sql.Statement;
+import java.sql.PreparedStatement;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.UUID;
@@ -135,20 +135,19 @@ public class LeadEventPublisher {
   }
 
   /**
-   * Sends NOTIFY command to PostgreSQL.
+   * Sends NOTIFY command to PostgreSQL using pg_notify function. This is safer than building SQL
+   * strings manually.
    *
    * @param channel Channel name
    * @param payload Payload to send
    */
   private void notifyChannel(String channel, String payload) {
     try (Connection conn = dataSource.getConnection();
-        Statement stmt = conn.createStatement()) {
+        PreparedStatement ps = conn.prepareStatement("SELECT pg_notify(?, ?)")) {
 
-      // Escape payload for SQL
-      String escapedPayload = payload.replace("'", "''");
-      String sql = String.format("NOTIFY %s, '%s'", channel, escapedPayload);
-
-      stmt.execute(sql);
+      ps.setString(1, channel);
+      ps.setString(2, payload);
+      ps.execute();
 
     } catch (Exception e) {
       Log.errorf(e, "CRITICAL: Failed to send NOTIFY on channel %s - requires retry", channel);
@@ -192,7 +191,11 @@ public class LeadEventPublisher {
       this.territory = lead.territory != null ? lead.territory.id : null;
       this.ownerUserId = lead.ownerUserId;
       this.createdBy = createdBy;
-      this.timestamp = System.currentTimeMillis();
+      // Use lead's createdAt timestamp for consistency
+      this.timestamp =
+          lead.createdAt != null
+              ? lead.createdAt.toInstant(ZoneOffset.UTC).toEpochMilli()
+              : System.currentTimeMillis();
     }
   }
 }

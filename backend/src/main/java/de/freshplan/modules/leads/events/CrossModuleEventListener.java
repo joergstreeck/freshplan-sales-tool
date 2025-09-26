@@ -3,16 +3,16 @@ package de.freshplan.modules.leads.events;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.quarkus.logging.Log;
+import io.quarkus.runtime.ShutdownEvent;
 import io.quarkus.runtime.StartupEvent;
+import jakarta.annotation.PreDestroy;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.Statement;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import javax.sql.DataSource;
+import org.eclipse.microprofile.context.ManagedExecutor;
 
 /**
  * Listener für Cross-Module Events über PostgreSQL LISTEN/NOTIFY.
@@ -32,24 +32,36 @@ public class CrossModuleEventListener {
 
   @Inject ObjectMapper objectMapper;
 
-  private ExecutorService executorService;
+  @Inject ManagedExecutor managedExecutor;
+
   private volatile boolean listening = false;
 
   /** Starts listening to PostgreSQL notifications on application startup. */
   void onStart(@Observes StartupEvent ev) {
-    executorService = Executors.newFixedThreadPool(2);
     startListening();
+  }
+
+  /** Stops listening on application shutdown. */
+  void onStop(@Observes ShutdownEvent ev) {
+    stopListening();
+  }
+
+  /** Cleanup on bean destruction. */
+  @PreDestroy
+  void cleanup() {
+    stopListening();
   }
 
   /** Starts the LISTEN threads for PostgreSQL notifications. */
   private void startListening() {
+    listening = true;
+
     // Listen for cross-module events
-    executorService.submit(() -> listenToChannel(CROSS_MODULE_CHANNEL));
+    managedExecutor.submit(() -> listenToChannel(CROSS_MODULE_CHANNEL));
 
     // Listen for lead status changes
-    executorService.submit(() -> listenToChannel(LEAD_STATUS_CHANNEL));
+    managedExecutor.submit(() -> listenToChannel(LEAD_STATUS_CHANNEL));
 
-    listening = true;
     Log.info("Started listening for PostgreSQL notifications");
   }
 
@@ -68,24 +80,18 @@ public class CrossModuleEventListener {
         Log.infof("Listening on channel: %s", channel);
 
         // Poll for notifications
-        while (listening) {
-          // Check for notifications (with timeout)
-          try (ResultSet rs = stmt.executeQuery("SELECT 1")) {
-            // This query is just to keep connection alive
-          }
+        org.postgresql.PGConnection pgConn = conn.unwrap(org.postgresql.PGConnection.class);
 
-          // Get notifications
-          org.postgresql.PGConnection pgConn = conn.unwrap(org.postgresql.PGConnection.class);
-          org.postgresql.PGNotification[] notifications = pgConn.getNotifications();
+        while (listening) {
+          // Get notifications, blocking for up to 10 seconds
+          // This is more efficient than polling with SELECT 1 and sleep
+          org.postgresql.PGNotification[] notifications = pgConn.getNotifications(10000);
 
           if (notifications != null) {
             for (org.postgresql.PGNotification notification : notifications) {
               processNotification(notification.getName(), notification.getParameter());
             }
           }
-
-          // Small delay to prevent CPU spinning
-          Thread.sleep(100);
         }
 
       } catch (Exception e) {
@@ -223,9 +229,7 @@ public class CrossModuleEventListener {
   /** Stops listening to PostgreSQL notifications. */
   public void stopListening() {
     listening = false;
-    if (executorService != null) {
-      executorService.shutdown();
-    }
+    // ManagedExecutor is managed by Quarkus, no need to shutdown manually
     Log.info("Stopped listening for PostgreSQL notifications");
   }
 }
