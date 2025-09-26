@@ -189,13 +189,39 @@ Lese alles gründlich durch und befolge strict die Standardübergabe.
   # Prüft Services, startet PostgreSQL, zeigt Status
   # Bei Fehler: TRIGGER_INDEX.md Workflow befolgen
 
-  4. Pflichtlektüre (🆕 NEUE STRUKTUR!)
+  4. Pflichtlektüre (🔒 GEHÄRTETE VALIDIERUNG!)
 
-  1. /CLAUDE.md (Arbeitsrichtlinien)
-  2. Letzte Übergabe in /docs/planung/claude-work/daily-work/
-  3. /docs/planung/TRIGGER_INDEX.md (Sprint-Workflow & 7-Dokumente-Reihenfolge)
-  4. /docs/planung/CRM_COMPLETE_MASTER_PLAN_V5.md (Standard-Context)
-  5. /docs/STANDARDUBERGABE_NEU.md (falls Details fehlen)
+  LIES JEDES DOKUMENT und ANTWORTE mit 3 SPEZIFISCHEN ANGABEN pro Datei:
+
+  📋 /CLAUDE.md
+  → Angabe 1: Welche Sprint-Version ist aktuell? (z.B. Sprint X.Y)
+  → Angabe 2: Welches Single Source of Truth Dokument wird genannt?
+  → Angabe 3: Wie heißt der aktive COMPACT_CONTRACT?
+
+  📋 Letzte Übergabe in /docs/planung/claude-work/daily-work/
+  → Angabe 1: Welche Migration-Nummer steht in der Übergabe? (VXXX)
+  → Angabe 2: Was war die letzte abgeschlossene Aufgabe?
+  → Angabe 3: Was ist der dokumentierte nächste Schritt?
+
+  📋 /docs/planung/TRIGGER_INDEX.md
+  → Angabe 1: Welche 7 Dokumente müssen in welcher Reihenfolge gelesen werden?
+  → Angabe 2: Welcher Sprint ist aktuell aktiv/pending?
+  → Angabe 3: Was ist die Definition von "TRIGGER FIRST"?
+
+  📋 /docs/planung/CRM_COMPLETE_MASTER_PLAN_V5.md
+  → Angabe 1: Welches Modul hat welchen Fortschritt? (Liste 3 Module)
+  → Angabe 2: Was steht im letzten SESSION_LOG Eintrag?
+  → Angabe 3: Was sind die aktuellen NEXT_STEPS?
+
+  📋 /docs/planung/PRODUCTION_ROADMAP_2025.md
+  → Angabe 1: Welche Woche/Sprint läuft aktuell?
+  → Angabe 2: Welche Features sind für diesen Sprint geplant?
+  → Angabe 3: Gibt es kritische Blocker oder Dependencies?
+
+  📋 /docs/STANDARDUBERGABE_NEU.md (optional - nur falls Details fehlen)
+  → Angabe 1: Welche kritischen Schritte definiert das Dokument?
+  → Angabe 2: Was ist der Unterschied zur kompakten Version?
+  → Angabe 3: Welche Validierungen sind Pflicht?
 
   ### MP5-Priorität (Pflicht)
   - Öffne die letzte Übergabe (heute)
