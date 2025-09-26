@@ -493,6 +493,47 @@ void shouldProcessEventOnlyOnce() {
 
 ---
 
+## Monitoring Metrics
+
+### Event Metrics (Micrometer-konform)
+```prometheus
+# Event publishing mit Result-Dimensionen
+freshplan_events_published{event_type, module, result="success|no_tx|truncated|denied|unauthenticated|failure"}
+freshplan_events_consumed{event_type, module, result="success|duplicate|denied"}
+freshplan_event_latency{event_type, path="publish_notify|notify_process"}
+
+# Cache Metrics (Gauges)
+freshplan_dedupe_cache_entries  # Aktuelle Anzahl Keys im Cache
+freshplan_dedupe_cache_hit_rate  # Hit-Rate (0.0 - 1.0)
+
+# Specific counters
+freshplan_followup_automated{type="t3|t7"}
+freshplan_dashboard_updates{update_type}
+```
+
+### Alerts Empfehlungen
+- `freshplan_events_published{result="denied"} > 0` - Unauthorized Attempts
+- `freshplan_events_published{result="truncated"} > Baseline` - Payload Size Issues
+- `freshplan_dedupe_cache_entries > 450000` - Cache Fast Voll (90%)
+- `freshplan_dedupe_cache_hit_rate < 0.5` - Cache Ineffizienz
+
+## Configuration
+
+### Production Config
+```properties
+# Security - Default geschlossen!
+freshplan.security.allow-unauthenticated-publisher=false
+freshplan.security.rls.enabled=true
+```
+
+### Test Config
+```properties
+# Tests erlauben unauthentifizierte Events
+%test.freshplan.security.allow-unauthenticated-publisher=true
+%test.quarkus.arc.selected-alternatives=de.freshplan.infrastructure.pg.TestPgNotifySender
+%test.freshplan.security.rls.enabled=false
+```
+
 ## 🔄 Migrations-Schritte + Rollback
 
 ### **Datenbank-Migrationen:**
@@ -508,31 +549,57 @@ void shouldProcessEventOnlyOnce() {
 - **ERWEITERN:** `FollowUpProcessedEvent` abwärtskompatibel (Legacy-Konstruktor vorhanden)
 
 **Event-Contract (JSON):**
+
+### Event Envelope (Korrigiert)
 ```json
-// LeadStatusChangeEvent (aus PR #110)
+// Dashboard Lead Status Changed Event
 {
-  "eventType": "lead.status_changed",
-  "aggregateId": "uuid",
-  "leadId": "uuid",
-  "companyName": "string",
-  "oldStatus": "REGISTERED|ACTIVE|...",
-  "newStatus": "REGISTERED|ACTIVE|...",
-  "changedBy": "userId",
-  "changedAt": "2025-09-26T20:00:00Z",
-  "territory": "DE|CH|AT",
-  "idempotencyKey": "deterministic-uuid"
+  "id": "uuid-v4",
+  "source": "lead-management",
+  "type": "dashboard.lead_status_changed",  // NICHT eventType!
+  "time": "2025-09-26T20:00:00Z",
+  "idempotencyKey": "deterministic-uuid-v5",
+  "data": {
+    "leadId": "uuid",
+    "companyName": "Fresh Foods GmbH",
+    "oldStatus": "REGISTERED",
+    "newStatus": "QUALIFIED",
+    "userId": "user-uuid",
+    "changedAt": "2025-09-26T20:00:00Z"
+  }
 }
 
-// FollowUpProcessedEvent (erweitert, abwärtskompatibel)
+// Dashboard Follow-up Completed Event
 {
-  "eventType": "lead.followup.processed",
-  "leadId": "uuid",           // NEU (optional für BATCH)
-  "followUpType": "T3|T7|BATCH",
-  "t3Count": 1,
-  "t7Count": 0,
-  "success": true,            // NEU
-  "userId": "string",         // NEU
-  "processedAt": "2025-09-26T20:00:00Z"
+  "id": "uuid-v4",
+  "source": "lead-management",
+  "type": "dashboard.followup_completed",
+  "time": "2025-09-26T20:00:00Z",
+  "idempotencyKey": "deterministic-uuid-v5",
+  "data": {
+    "leadId": "uuid",           // optional für BATCH
+    "followUpType": "T3|T7|BATCH",
+    "t3Count": 1,
+    "t7Count": 0,
+    "success": true,
+    "userId": "string",
+    "processedAt": "2025-09-26T20:00:00Z"
+  }
+}
+
+// Bei Truncation (>8KB):
+{
+  "id": "uuid-v4",
+  "source": "lead-management",
+  "type": "dashboard.followup_completed",
+  "time": "2025-09-26T20:00:00Z",
+  "idempotencyKey": "deterministic-uuid-v5",
+  "data": {
+    "truncated": true,
+    "reference": "deterministic-uuid-v5",
+    "original_size_bytes": 9234,
+    "hint": "payload >8KB, fetch details via API"
+  }
 }
 ```
 

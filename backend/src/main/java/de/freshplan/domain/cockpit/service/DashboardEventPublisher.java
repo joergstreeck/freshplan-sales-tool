@@ -66,7 +66,7 @@ public class DashboardEventPublisher {
         Log.debugf("Preparing dashboard event for lead status change: %s", event.leadId());
 
         // RBAC Check: Darf User dieses Event erzeugen?
-        if (!canPublishEvent(event.userId())) {
+        if (!canPublishEvent(event.userId(), "lead_status_changed")) {
             Log.warnf("User %s not authorized to publish lead events", event.userId());
             return;
         }
@@ -109,7 +109,7 @@ public class DashboardEventPublisher {
         Log.debugf("Preparing dashboard event for follow-up: %s", event.getLeadId());
 
         // RBAC Check
-        if (!canPublishEvent(event.getUserId())) {
+        if (!canPublishEvent(event.getUserId(), "followup_processed")) {
             Log.warnf("User %s not authorized to publish follow-up events", event.getUserId());
             return;
         }
@@ -217,6 +217,14 @@ public class DashboardEventPublisher {
      * Prüft Payload-Größe gegen Postgres-Limit (~8KB).
      */
     private void notifyPg(String channel, String payload) {
+        // Event-Typ extrahieren für Metriken
+        String eventType = "unknown";
+        try {
+            eventType = new JsonObject(payload).getString("type", "unknown");
+        } catch (Exception ignore) {
+            // Fallback to unknown
+        }
+
         // Payload-Guard: Postgres NOTIFY hat ~8KB Limit
         String effectivePayload = payload;
         int byteLen = payload.getBytes(StandardCharsets.UTF_8).length;
@@ -234,10 +242,16 @@ public class DashboardEventPublisher {
             envelope.put("data", truncatedData);
             effectivePayload = envelope.encode();
 
-            metrics.incPublishedWithResult("notification", "dashboard", "truncated");
+            metrics.incPublishedWithResult(eventType, "dashboard", "truncated");
         }
 
-        pgNotifySender.send(channel, effectivePayload);
+        // pg_notify mit Failure-Tracking
+        try {
+            pgNotifySender.send(channel, effectivePayload);
+        } catch (Exception e) {
+            metrics.incPublishedWithResult(eventType, "dashboard", "failure");
+            throw e;
+        }
     }
 
     /**
@@ -265,7 +279,7 @@ public class DashboardEventPublisher {
             .put("t7Count", event.getT7Count())
             .put("success", event.isSuccess())
             .put("userId", event.getUserId())
-            .put("processedAt", LocalDateTime.now().toString())
+            .put("processedAt", event.processedAt() != null ? event.processedAt().toString() : LocalDateTime.now().toString())
             .put("responseTime", event.getResponseTime() != null ? event.getResponseTime() : "unknown");
     }
 
@@ -304,16 +318,16 @@ public class DashboardEventPublisher {
     /**
      * RBAC Check: Prüft ob User Events publizieren darf.
      */
-    private boolean canPublishEvent(String userId) {
+    private boolean canPublishEvent(String userId, String eventType) {
         // Wenn nicht authentifiziert, nur erlauben wenn explizit konfiguriert
         if (!securityContext.isAuthenticated()) {
             if (!allowUnauthenticatedPublisher) {
-                metrics.incPublishedWithResult("notification", "dashboard", "denied");
+                metrics.incPublishedWithResult(eventType, "dashboard", "denied");
                 Log.warn("Publish denied (unauthenticated & not allowed)");
                 return false;
             }
             // Explizit erlaubt (z.B. im Test)
-            metrics.incPublishedWithResult("notification", "dashboard", "unauthenticated");
+            metrics.incPublishedWithResult(eventType, "dashboard", "unauthenticated");
             return true;
         }
 
@@ -323,7 +337,7 @@ public class DashboardEventPublisher {
                           securityContext.hasRole("ADMIN");
 
         if (!hasRole) {
-            metrics.incPublishedWithResult("notification", "dashboard", "denied");
+            metrics.incPublishedWithResult(eventType, "dashboard", "denied");
             Log.warnf("Publish denied for user %s (missing required role)", userId);
         }
 

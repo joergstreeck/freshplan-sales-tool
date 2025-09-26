@@ -6,6 +6,9 @@ import de.freshplan.infrastructure.cqrs.EventSubscriber.EventNotification;
 import de.freshplan.infrastructure.security.SecurityContextProvider;
 import io.quarkus.logging.Log;
 import io.vertx.core.json.JsonObject;
+import io.micrometer.core.instrument.Gauge;
+import io.micrometer.core.instrument.MeterRegistry;
+import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
@@ -31,6 +34,9 @@ public class DashboardEventListener {
     @Inject
     SecurityContextProvider securityContext;
 
+    @Inject
+    MeterRegistry meterRegistry;
+
     // Dedupe-Store: Caffeine mit 24h TTL, max 500k Einträge
     private final Cache<String, Boolean> processedEvents = Caffeine.newBuilder()
         .maximumSize(500_000)
@@ -43,6 +49,17 @@ public class DashboardEventListener {
     private final AtomicLong eventsProcessed = new AtomicLong(0);
     private final AtomicLong eventsDuplicated = new AtomicLong(0);
     private final AtomicLong eventsDenied = new AtomicLong(0);
+
+    @PostConstruct
+    void registerGauges() {
+        Gauge.builder("freshplan_dedupe_cache_entries", processedEvents, c -> c.estimatedSize())
+            .description("Number of keys in dashboard dedupe cache")
+            .register(meterRegistry);
+
+        Gauge.builder("freshplan_dedupe_cache_hit_rate", processedEvents, c -> c.stats().hitRate())
+            .description("Hit rate of dedupe cache (listener)")
+            .register(meterRegistry);
+    }
 
     /**
      * Verarbeitet Dashboard-Events von PostgreSQL NOTIFY.

@@ -10,7 +10,9 @@ import jakarta.transaction.UserTransaction;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -91,14 +93,15 @@ class DashboardBatchIdempotencyTest {
 
         Thread.sleep(500);
 
-        // Then: Zwei verschiedene Events sollten gesendet worden sein
-        assertThat(testSender.count())
+        // Then: Zwei verschiedene Follow-up Events sollten gesendet worden sein (ohne Metrics-Events)
+        List<TestPgNotifySender.Send> dashboardEvents = filterDashboardFollowupEvents(testSender.sent());
+        assertThat(dashboardEvents)
             .as("Zwei BATCH-Events über Minutengrenze sollten verschiedene Keys haben")
-            .isEqualTo(2);
+            .hasSize(2);
 
         // Verify different idempotency keys
-        var sent1 = testSender.sent().get(0);
-        var sent2 = testSender.sent().get(1);
+        var sent1 = dashboardEvents.get(0);
+        var sent2 = dashboardEvents.get(1);
 
         JsonObject envelope1 = new JsonObject(sent1.payload());
         JsonObject envelope2 = new JsonObject(sent2.payload());
@@ -122,8 +125,12 @@ class DashboardBatchIdempotencyTest {
         JsonObject data1 = envelope1.getJsonObject("data");
         JsonObject data2 = envelope2.getJsonObject("data");
 
-        assertThat(data1.getString("processedAt")).contains("14:59");
-        assertThat(data2.getString("processedAt")).contains("15:00");
+        // Check that timestamps correspond to the times we set
+        LocalDateTime processed1 = LocalDateTime.parse(data1.getString("processedAt"));
+        LocalDateTime processed2 = LocalDateTime.parse(data2.getString("processedAt"));
+
+        assertThat(processed1.getMinute()).isEqualTo(59);
+        assertThat(processed2.getMinute()).isEqualTo(0);
     }
 
     @Test
@@ -178,10 +185,11 @@ class DashboardBatchIdempotencyTest {
         Thread.sleep(500);
 
         // Then: Sollten gleiche Keys haben (da gleiche Minute + gleiche Counts)
-        assertThat(testSender.count()).isEqualTo(2);
+        List<TestPgNotifySender.Send> dashboardEvents = filterDashboardFollowupEvents(testSender.sent());
+        assertThat(dashboardEvents).hasSize(2);
 
-        var sent1 = testSender.sent().get(0);
-        var sent2 = testSender.sent().get(1);
+        var sent1 = dashboardEvents.get(0);
+        var sent2 = dashboardEvents.get(1);
 
         JsonObject envelope1 = new JsonObject(sent1.payload());
         JsonObject envelope2 = new JsonObject(sent2.payload());
@@ -245,10 +253,11 @@ class DashboardBatchIdempotencyTest {
         Thread.sleep(500);
 
         // Then: Verschiedene Keys wegen verschiedener Counts
-        assertThat(testSender.count()).isEqualTo(2);
+        List<TestPgNotifySender.Send> dashboardEvents = filterDashboardFollowupEvents(testSender.sent());
+        assertThat(dashboardEvents).hasSize(2);
 
-        var sent1 = testSender.sent().get(0);
-        var sent2 = testSender.sent().get(1);
+        var sent1 = dashboardEvents.get(0);
+        var sent2 = dashboardEvents.get(1);
 
         String key1 = new JsonObject(sent1.payload()).getString("idempotencyKey");
         String key2 = new JsonObject(sent2.payload()).getString("idempotencyKey");
@@ -256,5 +265,22 @@ class DashboardBatchIdempotencyTest {
         assertThat(key1)
             .as("Keys sollten sich unterscheiden bei verschiedenen Counts")
             .isNotEqualTo(key2);
+    }
+
+    /**
+     * Helper: Filtert nur dashboard.followup_completed Events (ohne metrics.followup_tracked).
+     */
+    private List<TestPgNotifySender.Send> filterDashboardFollowupEvents(List<TestPgNotifySender.Send> allEvents) {
+        return allEvents.stream()
+            .filter(send -> {
+                try {
+                    JsonObject envelope = new JsonObject(send.payload());
+                    String type = envelope.getString("type", "");
+                    return "dashboard.followup_completed".equals(type);
+                } catch (Exception e) {
+                    return false;
+                }
+            })
+            .collect(Collectors.toList());
     }
 }
