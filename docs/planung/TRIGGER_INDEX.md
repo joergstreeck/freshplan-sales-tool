@@ -61,12 +61,13 @@
      - [Security Test Pattern](features-neu/02_neukundengewinnung/artefakte/SECURITY_TEST_PATTERN.md)
      - [Performance Test Pattern](features-neu/02_neukundengewinnung/artefakte/PERFORMANCE_TEST_PATTERN.md)
      - [Event System Pattern](features-neu/02_neukundengewinnung/artefakte/EVENT_SYSTEM_PATTERN.md)
-   - Status: ✅ 75% COMPLETE (nur FP-235 Follow-up noch offen)
+   - Status: ✅ 100% COMPLETE (FP-235 in PR #111 abgeschlossen)
 
-🚧 TRIGGER_SPRINT_2_1_1.md - P0 HOTFIX Integration Gaps [PR #111]
+✅ TRIGGER_SPRINT_2_1_1.md - P0 HOTFIX Integration Gaps [PR #111 MERGED]
    - Event Distribution, Dashboard Widget, Metrics implementiert
    - Kritische Integration für Follow-up Automation
-   - Status: 🚧 IN PROGRESS - [Trigger-Dokument](./TRIGGER_SPRINT_2_1_1.md)
+   - FP-235: T+3/T+7 Follow-up Automation ✅ COMPLETE
+   - Status: ✅ COMPLETE (PR #111 merged 2025-09-26)
 
 ✅ TRIGGER_SPRINT_2_2.md - Kundenmanagement
    - Field-based Customer Architecture

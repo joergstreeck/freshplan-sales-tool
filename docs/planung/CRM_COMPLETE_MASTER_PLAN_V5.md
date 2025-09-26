@@ -38,11 +38,13 @@
 
 **📋 LATEST UPDATE (26.09.2025):**
 - ✅ **PR #110 MERGED:** FP-236 Security-Integration complete (23 Tests, P95 < 7ms, Gemini Review adressiert)
-- 🚧 **Sprint 2.1.1 IN PROGRESS:** P0 HOTFIX Integration Gaps - [TRIGGER_SPRINT_2_1_1.md](./TRIGGER_SPRINT_2_1_1.md)
-  - Event Distribution implementiert (LeadEventHandler)
-  - Dashboard Widget integriert (LeadWidget)
-  - Prometheus Metrics pending
-- 🚀 **Next:** Complete PR #111 → Sprint 2.2 Kundenmanagement
+- ✅ **PR #111 MERGED:** Sprint 2.1.1 P0 HOTFIX + FP-235 Follow-up Automation COMPLETE
+  - Event Distribution via LISTEN/NOTIFY mit AFTER_COMMIT Pattern
+  - Dashboard Widget mit T+3/T+7 Lead-Metriken operational
+  - Prometheus Metrics für Follow-up Performance Tracking
+  - RBAC/RLS mit konfigurierbarem Test-Bypass
+  - 25 Tests alle grün, Migration V250
+- 🚀 **Next:** Sprint 2.2 Kundenmanagement (FP-237 bis FP-241)
 
 **🚀 STRATEGIC DECISION (21.09.2025):** CQRS Light Migration-First Strategy confirmed - CQRS Light Foundation (1-2 Wochen Q4 2025) → Business-Module (Q1 2026) für kosteneffiziente interne Performance + Zero Doppelarbeit
 
@@ -178,8 +180,8 @@
 - 2025-09-25 21:30 — **Sprint 2.1 PARTIAL:** Lead-Management 50% (PR #103, #105 MERGED)
   - FP-233: Territory Management ohne Gebietsschutz ✅ (PR #103)
   - FP-234: Lead-Capture-System ✅ (PR #105 - Lead REST API mit User-Protection)
-  - FP-235: Follow-up Automation (T+3/T+7) ❌ OFFEN
-  - FP-236: Security-Integration (ABAC/RLS Tests) ❌ OFFEN
+  - FP-235: Follow-up Automation (T+3/T+7) ✅ COMPLETE (PR #111)
+  - FP-236: Security-Integration (ABAC/RLS Tests) ✅ COMPLETE (PR #110)
   - 13/13 Tests grün, Migrations V232-V241 deployed
 - 2025-09-26 18:45 — **Sprint 2.1 COMPLETE:** PR #110 FP-236 Security-Integration MERGED
   - 23 Security/Performance/Event-Tests implementiert (alle grün)
