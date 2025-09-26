@@ -238,6 +238,7 @@ public class DashboardEventListener {
      * Test-Helper: Direkte Event-Verarbeitung für Tests.
      * Public für Test-Zugriff aus anderen Packages.
      */
+    @Transactional
     public void handleEnvelopeForTest(String channel, JsonObject envelope) {
         // Simuliere EventNotification für Test
         EventNotification notification = new EventNotification(
@@ -251,6 +252,7 @@ public class DashboardEventListener {
     /**
      * Gibt Metriken zurück (für Monitoring).
      */
+    @Transactional
     public DashboardListenerMetrics getMetrics() {
         return new DashboardListenerMetrics(
             eventsReceived.get(),
