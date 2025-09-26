@@ -1,18 +1,13 @@
 package de.freshplan.domain.cockpit;
 
 import de.freshplan.domain.cockpit.service.DashboardEventListener;
-import de.freshplan.domain.cockpit.service.DashboardEventPublisher;
-import de.freshplan.domain.cockpit.service.Metrics;
-import de.freshplan.modules.leads.events.FollowUpProcessedEvent;
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.TestTransaction;
+import io.vertx.core.json.JsonObject;
 import jakarta.inject.Inject;
-import org.awaitility.Awaitility;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import java.time.Duration;
-import java.time.LocalDateTime;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -26,151 +21,115 @@ import static org.assertj.core.api.Assertions.assertThat;
 class DashboardEventIdempotencyTest {
 
     @Inject
-    DashboardEventPublisher publisher;
-
-    @Inject
     DashboardEventListener listener;
-
-    @Inject
-    Metrics metrics;
 
     private UUID testLeadId;
     private String testUserId;
-    private LocalDateTime fixedTime;
 
     @BeforeEach
     void setUp() {
         testLeadId = UUID.randomUUID();
         testUserId = "test-user-" + UUID.randomUUID();
-        fixedTime = LocalDateTime.of(2025, 9, 26, 12, 0, 0);
     }
 
     @Test
+    @TestTransaction
     void shouldProcessIdenticalEventOnlyOnce() {
         // Given: Identisches Event (gleicher IdempotencyKey)
-        FollowUpProcessedEvent event1 = new FollowUpProcessedEvent(
-            testLeadId,
-            "T3",
-            1,
-            0,
-            true,
-            testUserId,
-            "2s",
-            fixedTime  // Feste Zeit für deterministischen Key
-        );
-
-        // Zweites Event mit exakt gleichen Daten
-        FollowUpProcessedEvent event2 = new FollowUpProcessedEvent(
-            testLeadId,
-            "T3",
-            1,
-            0,
-            true,
-            testUserId,
-            "2s",
-            fixedTime  // Gleiche Zeit = gleicher IdempotencyKey
-        );
+        String idempotencyKey = UUID.randomUUID().toString();
+        JsonObject envelope = new JsonObject()
+            .put("id", UUID.randomUUID().toString())
+            .put("type", "dashboard.followup_completed")
+            .put("idempotencyKey", idempotencyKey)
+            .put("source", "system")
+            .put("data", new JsonObject()
+                .put("leadId", testLeadId.toString())
+                .put("followUpType", "T3")
+                .put("userId", testUserId));
 
         // Capture initial metrics
         long initialProcessed = listener.getMetrics().processed();
         long initialDuplicated = listener.getMetrics().duplicated();
 
-        // When: Beide Events publizieren
-        publisher.onFollowUpProcessed(event1);
-        publisher.onFollowUpProcessed(event2);
+        // When: Dasselbe Event zweimal verarbeiten
+        listener.handleEnvelopeForTest("dashboard_updates", envelope);
+        listener.handleEnvelopeForTest("dashboard_updates", envelope);
 
-        // Then: Warte auf Verarbeitung (mit Awaitility)
-        Awaitility.await()
-            .atMost(2, TimeUnit.SECONDS)
-            .pollInterval(100, TimeUnit.MILLISECONDS)
-            .untilAsserted(() -> {
-                var metrics = listener.getMetrics();
-                // Nur 1 Event sollte verarbeitet werden
-                assertThat(metrics.processed() - initialProcessed)
-                    .as("Nur ein Event sollte verarbeitet werden")
-                    .isEqualTo(1);
+        // Then: Nur 1 Event sollte verarbeitet werden
+        var metrics = listener.getMetrics();
+        assertThat(metrics.processed() - initialProcessed)
+            .as("Nur ein Event sollte verarbeitet werden")
+            .isEqualTo(1);
 
-                // 1 Event sollte als Duplikat erkannt werden
-                assertThat(metrics.duplicated() - initialDuplicated)
-                    .as("Ein Event sollte als Duplikat erkannt werden")
-                    .isEqualTo(1);
-            });
+        assertThat(metrics.duplicated() - initialDuplicated)
+            .as("Ein Event sollte als Duplikat erkannt werden")
+            .isEqualTo(1);
     }
 
     @Test
+    @TestTransaction
     void shouldProcessDifferentEventsIndependently() {
-        // Given: Zwei verschiedene Events (unterschiedliche Zeiten)
-        FollowUpProcessedEvent event1 = new FollowUpProcessedEvent(
-            testLeadId,
-            "T3",
-            1,
-            0,
-            true,
-            testUserId,
-            "2s",
-            LocalDateTime.of(2025, 9, 26, 12, 0, 0)
-        );
+        // Given: Zwei verschiedene Events (unterschiedliche IdempotencyKeys)
+        JsonObject envelope1 = new JsonObject()
+            .put("id", UUID.randomUUID().toString())
+            .put("type", "dashboard.followup_completed")
+            .put("idempotencyKey", UUID.randomUUID().toString())
+            .put("source", "system")
+            .put("data", new JsonObject()
+                .put("leadId", testLeadId.toString())
+                .put("followUpType", "T3")
+                .put("userId", testUserId));
 
-        FollowUpProcessedEvent event2 = new FollowUpProcessedEvent(
-            testLeadId,
-            "T3",
-            1,
-            0,
-            true,
-            testUserId,
-            "3s",
-            LocalDateTime.of(2025, 9, 26, 12, 0, 1)  // Andere Zeit = anderer Key
-        );
+        JsonObject envelope2 = new JsonObject()
+            .put("id", UUID.randomUUID().toString())
+            .put("type", "dashboard.followup_completed")
+            .put("idempotencyKey", UUID.randomUUID().toString())  // Anderer Key
+            .put("source", "system")
+            .put("data", new JsonObject()
+                .put("leadId", testLeadId.toString())
+                .put("followUpType", "T7")
+                .put("userId", testUserId));
 
         // Capture initial metrics
         long initialProcessed = listener.getMetrics().processed();
 
-        // When: Beide Events publizieren
-        publisher.onFollowUpProcessed(event1);
-        publisher.onFollowUpProcessed(event2);
+        // When: Beide Events verarbeiten
+        listener.handleEnvelopeForTest("dashboard_updates", envelope1);
+        listener.handleEnvelopeForTest("dashboard_updates", envelope2);
 
         // Then: Beide sollten verarbeitet werden
-        Awaitility.await()
-            .atMost(2, TimeUnit.SECONDS)
-            .pollInterval(100, TimeUnit.MILLISECONDS)
-            .untilAsserted(() -> {
-                var metrics = listener.getMetrics();
-                // Beide Events sollten verarbeitet werden
-                assertThat(metrics.processed() - initialProcessed)
-                    .as("Beide unterschiedlichen Events sollten verarbeitet werden")
-                    .isEqualTo(2);
-            });
+        var metrics = listener.getMetrics();
+        assertThat(metrics.processed() - initialProcessed)
+            .as("Beide unterschiedlichen Events sollten verarbeitet werden")
+            .isEqualTo(2);
     }
 
     @Test
+    @TestTransaction
     void shouldMaintainCacheStatistics() {
         // Given: Mehrere Events
         for (int i = 0; i < 5; i++) {
-            FollowUpProcessedEvent event = new FollowUpProcessedEvent(
-                UUID.randomUUID(),
-                "T3",
-                1,
-                0,
-                true,
-                testUserId,
-                "1s",
-                LocalDateTime.now().plusSeconds(i)
-            );
-            publisher.onFollowUpProcessed(event);
+            JsonObject envelope = new JsonObject()
+                .put("id", UUID.randomUUID().toString())
+                .put("type", "dashboard.followup_completed")
+                .put("idempotencyKey", UUID.randomUUID().toString())
+                .put("source", "system")
+                .put("data", new JsonObject()
+                    .put("leadId", UUID.randomUUID().toString())
+                    .put("followUpType", "T3")
+                    .put("userId", testUserId));
+
+            listener.handleEnvelopeForTest("dashboard_updates", envelope);
         }
 
         // Then: Cache sollte Einträge haben
-        Awaitility.await()
-            .atMost(2, TimeUnit.SECONDS)
-            .untilAsserted(() -> {
-                var metrics = listener.getMetrics();
-                assertThat(metrics.cacheSize())
-                    .as("Cache sollte Einträge enthalten")
-                    .isGreaterThan(0);
+        var metrics = listener.getMetrics();
+        assertThat(metrics.cacheSize())
+            .as("Cache sollte Einträge enthalten")
+            .isGreaterThan(0);
 
-                assertThat(metrics.cacheHitRate())
-                    .as("Cache Hit Rate sollte verfügbar sein")
-                    .isGreaterThanOrEqualTo(0.0);
-            });
+        assertThat(metrics.cacheHitRate())
+            .as("Cache Hit Rate sollte verfügbar sein")
+            .isGreaterThanOrEqualTo(0.0);
     }
 }

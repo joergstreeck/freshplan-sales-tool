@@ -1,13 +1,12 @@
 package de.freshplan.domain.cockpit;
 
 import de.freshplan.domain.cockpit.service.DashboardEventPublisher;
-import de.freshplan.domain.cockpit.service.Metrics;
+import de.freshplan.infrastructure.pg.TestPgNotifySender;
 import de.freshplan.modules.leads.events.LeadStatusChangeEvent;
 import de.freshplan.modules.leads.domain.LeadStatus;
-import io.micrometer.core.instrument.MeterRegistry;
 import io.quarkus.test.junit.QuarkusTest;
+import io.vertx.core.json.JsonObject;
 import jakarta.inject.Inject;
-import jakarta.transaction.TransactionManager;
 import jakarta.transaction.UserTransaction;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,7 +33,7 @@ class DashboardAfterCommitTest {
     UserTransaction userTransaction;
 
     @Inject
-    MeterRegistry meterRegistry;
+    TestPgNotifySender testSender;
 
     private UUID testLeadId;
     private String testUserId;
@@ -43,15 +42,13 @@ class DashboardAfterCommitTest {
     void setUp() {
         testLeadId = UUID.randomUUID();
         testUserId = "test-user-" + UUID.randomUUID();
+        testSender.clear();
     }
 
     @Test
     void shouldNotPublishEventOnRollback() throws Exception {
-        // Given: Counter vor dem Test
-        double initialPublished = meterRegistry.counter("freshplan_events_published",
-            "event_type", "lead_status_changed",
-            "module", "leads",
-            "result", "success").count();
+        // Given: Initial state
+        int initialSentCount = testSender.count();
 
         // When: Transaktion starten, Event publizieren, dann rollback
         userTransaction.begin();
@@ -79,23 +76,15 @@ class DashboardAfterCommitTest {
         // Then: Kein Event sollte publiziert worden sein
         Thread.sleep(500); // Kurz warten falls async
 
-        double afterRollback = meterRegistry.counter("freshplan_events_published",
-            "event_type", "lead_status_changed",
-            "module", "leads",
-            "result", "success").count();
-
-        assertThat(afterRollback)
+        assertThat(testSender.count())
             .as("Kein Event sollte nach Rollback publiziert werden")
-            .isEqualTo(initialPublished);
+            .isEqualTo(initialSentCount);
     }
 
     @Test
     void shouldPublishEventOnCommit() throws Exception {
-        // Given: Counter vor dem Test
-        double initialPublished = meterRegistry.counter("freshplan_events_published",
-            "event_type", "lead_status_changed",
-            "module", "leads",
-            "result", "success").count();
+        // Given: Initial state
+        int initialSentCount = testSender.count();
 
         // When: Transaktion starten, Event publizieren, dann commit
         userTransaction.begin();
@@ -124,24 +113,24 @@ class DashboardAfterCommitTest {
             .atMost(2, TimeUnit.SECONDS)
             .pollInterval(100, TimeUnit.MILLISECONDS)
             .untilAsserted(() -> {
-                double afterCommit = meterRegistry.counter("freshplan_events_published",
-                    "event_type", "lead_status_changed",
-                    "module", "leads",
-                    "result", "success").count();
-
-                assertThat(afterCommit)
+                assertThat(testSender.count())
                     .as("Ein Event sollte nach Commit publiziert werden")
-                    .isEqualTo(initialPublished + 1);
+                    .isEqualTo(initialSentCount + 1);
+
+                // Verify the event content
+                var sent = testSender.sent().get(0);
+                assertThat(sent.channel()).isEqualTo("dashboard_updates");
+
+                JsonObject envelope = new JsonObject(sent.payload());
+                assertThat(envelope.getString("type")).isEqualTo("dashboard.lead_status_changed");
+                assertThat(envelope.getString("idempotencyKey")).isNotNull();
             });
     }
 
     @Test
     void shouldHandleNoTransactionGracefully() {
-        // Given: Counter vor dem Test
-        double initialNoTx = meterRegistry.counter("freshplan_events_published",
-            "event_type", "lead_status_changed",
-            "module", "leads",
-            "result", "no_tx").count();
+        // Given: Initial state
+        int initialSentCount = testSender.count();
 
         // When: Event außerhalb einer Transaktion publizieren
         LeadStatusChangeEvent event = LeadStatusChangeEvent.of(
@@ -155,19 +144,18 @@ class DashboardAfterCommitTest {
 
         publisher.onLeadStatusChange(event);
 
-        // Then: Event sollte mit no_tx markiert worden sein
+        // Then: Event sollte sofort publiziert werden (no_tx Pfad)
         Awaitility.await()
             .atMost(1, TimeUnit.SECONDS)
             .pollInterval(100, TimeUnit.MILLISECONDS)
             .untilAsserted(() -> {
-                double afterNoTx = meterRegistry.counter("freshplan_events_published",
-                    "event_type", "lead_status_changed",
-                    "module", "leads",
-                    "result", "no_tx").count();
+                assertThat(testSender.count())
+                    .as("Event sollte ohne Transaktion sofort publiziert werden")
+                    .isEqualTo(initialSentCount + 1);
 
-                assertThat(afterNoTx)
-                    .as("Event sollte als no_tx markiert werden wenn keine Transaktion")
-                    .isEqualTo(initialNoTx + 1);
+                // Event wurde synchron publiziert
+                var sent = testSender.sent().get(0);
+                assertThat(sent.channel()).isEqualTo("dashboard_updates");
             });
     }
 }

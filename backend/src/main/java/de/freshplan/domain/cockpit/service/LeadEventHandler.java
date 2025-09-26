@@ -1,7 +1,6 @@
 package de.freshplan.domain.cockpit.service;
 
 import de.freshplan.domain.cockpit.service.SalesCockpitService;
-import de.freshplan.infrastructure.security.RlsContext;
 import de.freshplan.modules.leads.events.FollowUpProcessedEvent;
 import de.freshplan.modules.leads.events.LeadStatusChangeEvent;
 import de.freshplan.modules.leads.service.LeadService;
@@ -19,7 +18,7 @@ import java.util.UUID;
  * Sprint 2.1.1 P0 HOTFIX - Integration Gap zwischen Lead-Management und Dashboard
  */
 @ApplicationScoped
-@RlsContext
+@de.freshplan.infrastructure.security.RlsContext
 public class LeadEventHandler {
 
     @Inject

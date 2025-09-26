@@ -3,7 +3,6 @@ package de.freshplan.domain.cockpit.service;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import de.freshplan.infrastructure.cqrs.EventSubscriber.EventNotification;
-import de.freshplan.infrastructure.security.RlsContext;
 import de.freshplan.infrastructure.security.SecurityContextProvider;
 import io.quarkus.logging.Log;
 import io.vertx.core.json.JsonObject;
@@ -23,7 +22,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * Sprint 2.1.1 P0 HOTFIX - Idempotenz ohne AFTER_COMMIT in Listenern
  */
 @ApplicationScoped
-@RlsContext
+@de.freshplan.infrastructure.security.RlsContext
 public class DashboardEventListener {
 
     @Inject
@@ -216,6 +215,20 @@ public class DashboardEventListener {
                 Log.warnf("Invalid userId format: %s", userId);
             }
         }
+    }
+
+    /**
+     * Test-Helper: Direkte Event-Verarbeitung für Tests.
+     * Public für Test-Zugriff aus anderen Packages.
+     */
+    public void handleEnvelopeForTest(String channel, JsonObject envelope) {
+        // Simuliere EventNotification für Test
+        EventNotification notification = new EventNotification(
+            channel,
+            envelope.getString("type", "unknown"),
+            envelope
+        );
+        onDashboardEvent(notification);
     }
 
     /**
