@@ -7,6 +7,7 @@ import de.freshplan.modules.leads.events.LeadStatusChangeEvent;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import io.quarkus.logging.Log;
 import io.vertx.core.json.JsonObject;
+import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
@@ -46,6 +47,16 @@ public class DashboardEventPublisher {
     private static final String DASHBOARD_CHANNEL = "dashboard_updates";
     private static final String METRICS_CHANNEL = "metrics_events";
     private static final int MAX_NOTIFY_PAYLOAD_SIZE = 7680; // 7.5 KB Safety Limit (Postgres max ~8KB)
+
+    /**
+     * Warnung bei aktivem Security-Bypass beim Startup.
+     */
+    @PostConstruct
+    void logSecurityBypass() {
+        if (allowUnauthenticatedPublisher) {
+            Log.warn("⚠️ freshplan.security.allow-unauthenticated-publisher=true (intended only for tests!)");
+        }
+    }
 
     /**
      * Verarbeitet Lead-Status-Änderungen mit AFTER_COMMIT.
@@ -296,13 +307,27 @@ public class DashboardEventPublisher {
     private boolean canPublishEvent(String userId) {
         // Wenn nicht authentifiziert, nur erlauben wenn explizit konfiguriert
         if (!securityContext.isAuthenticated()) {
-            return allowUnauthenticatedPublisher;
+            if (!allowUnauthenticatedPublisher) {
+                metrics.incPublishedWithResult("notification", "dashboard", "denied");
+                Log.warn("Publish denied (unauthenticated & not allowed)");
+                return false;
+            }
+            // Explizit erlaubt (z.B. im Test)
+            metrics.incPublishedWithResult("notification", "dashboard", "unauthenticated");
+            return true;
         }
 
         // Manager und Sales-Rollen dürfen publizieren
-        return securityContext.hasRole("MANAGER") ||
-               securityContext.hasRole("SALES") ||
-               securityContext.hasRole("ADMIN");
+        boolean hasRole = securityContext.hasRole("MANAGER") ||
+                          securityContext.hasRole("SALES") ||
+                          securityContext.hasRole("ADMIN");
+
+        if (!hasRole) {
+            metrics.incPublishedWithResult("notification", "dashboard", "denied");
+            Log.warnf("Publish denied for user %s (missing required role)", userId);
+        }
+
+        return hasRole;
     }
 
     /**
