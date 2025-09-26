@@ -33,13 +33,14 @@ public class LeadStatusChangeEvent {
       String changedBy,
       String territory,
       String ownerUserId,
-      String idempotencyKey) {
+      String idempotencyKey,
+      LocalDateTime changedAt) {
     this.leadId = leadId;
     this.companyName = companyName;
     this.oldStatus = oldStatus;
     this.newStatus = newStatus;
     this.changedBy = changedBy;
-    this.changedAt = LocalDateTime.now();
+    this.changedAt = changedAt != null ? changedAt : LocalDateTime.now();
     this.territory = territory;
     this.ownerUserId = ownerUserId;
     this.idempotencyKey = idempotencyKey;

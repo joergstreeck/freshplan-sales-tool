@@ -10,8 +10,12 @@ import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.TransactionSynchronizationRegistry;
 import jakarta.transaction.Transactional;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.Statement;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.UUID;
 import javax.sql.DataSource;
 
 /**
@@ -48,9 +52,21 @@ public class LeadEventPublisher {
   public void publishStatusChange(
       Lead lead, LeadStatus oldStatus, LeadStatus newStatus, String changedBy) {
     try {
-      // Generate idempotency key for deduplication
+      // Use stable timestamp for idempotency
+      LocalDateTime changedAt =
+          lead.updatedAt != null ? lead.updatedAt : LocalDateTime.now(ZoneOffset.UTC);
+
+      // Generate deterministic idempotency key for reliable deduplication
+      String keySource =
+          lead.id
+              + "|"
+              + oldStatus
+              + ">"
+              + newStatus
+              + "|"
+              + changedAt.toInstant(ZoneOffset.UTC).toEpochMilli();
       String idempotencyKey =
-          String.format("%d:%s:%s:%d", lead.id, oldStatus, newStatus, System.currentTimeMillis());
+          UUID.nameUUIDFromBytes(keySource.getBytes(StandardCharsets.UTF_8)).toString();
 
       LeadStatusChangeEvent event =
           new LeadStatusChangeEvent(
@@ -61,7 +77,8 @@ public class LeadEventPublisher {
               changedBy,
               lead.territory != null ? lead.territory.id : null,
               lead.ownerUserId,
-              idempotencyKey);
+              idempotencyKey,
+              changedAt);
 
       String payload = objectMapper.writeValueAsString(event);
 

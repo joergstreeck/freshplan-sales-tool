@@ -11,7 +11,7 @@
 
 **🚨 AKTUELLER STATUS:**
 - **Phase:** ✅ Phase 1 COMPLETE | 🚀 Phase 2 IN PROGRESS
-- **Next Action:** Sprint 2.1.1 P0 HOTFIX implementieren → [INTEGRATION_STATUS](./infrastruktur/INTEGRATION_STATUS.md)
+- **Next Action:** Sprint 2.1.1 P0 HOTFIX implementieren (PR #111) → [INTEGRATION_STATUS](./infrastruktur/INTEGRATION_STATUS.md)
 - **Progress:** 13.75/37 PRs completed - 37% done (PR #109 merged)
 - **Blockers:** 🔴 P0 Integration Gaps - Event Distribution, Dashboard Widget, Metrics fehlen
 - **Active Branch:** feature/sprint-2-1-1-followup-integration-hotfix-FP-235-hotfix
@@ -83,7 +83,7 @@ Sprint 1.6: RLS Module Adoption       ✅ PR #107 MERGED → Modul 02 Fix + CI-G
 Progress: █░░░░░░░░░ 10% (0.5/5 Sprints)
 
 Sprint 2.1: 02 Neukundengewinnung     🔧 75% DONE → PR #109 merged, FP-236 Security offen
-Sprint 2.1.1: HOTFIX Integration     🔴 CRITICAL → [INTEGRATION_STATUS](./infrastruktur/INTEGRATION_STATUS.md)
+Sprint 2.1.1: HOTFIX Integration     🔴 CRITICAL → PR #111 (nicht #110!) → [INTEGRATION_STATUS](./infrastruktur/INTEGRATION_STATUS.md)
 Sprint 2.2: 03 Kundenmanagement      📋 Ready → 39 Artefakte + RLS Migration needed
 Sprint 2.3: 05 Kommunikation         📋 Ready → Security-Gate ✅ erfüllt!
 Sprint 2.4: 01 Cockpit               🟡 Planning → CQRS-optimiert

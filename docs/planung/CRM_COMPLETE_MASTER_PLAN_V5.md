@@ -34,8 +34,9 @@
 **🚨 NEXT:** Production Implementation Phase - Vollständige Planungsphase abgeschlossen mit 310+ Production-Ready Artefakten
 
 **📋 LATEST UPDATE (26.09.2025):**
-- 🔴 **P0 HOTFIX:** Sprint 2.1.1 Integration Gaps → [INTEGRATION_STATUS.md](./infrastruktur/INTEGRATION_STATUS.md)
-- ✅ **Konsolidierung:** 3 P0 Tasks in 1 PR #110 → [TRIGGER_SPRINT_2_1_1.md](./TRIGGER_SPRINT_2_1_1.md)
+- ✅ **FP-236 Security-Integration abgeschlossen:** → **PR #110**
+- 🔴 **P0 HOTFIX:** Sprint 2.1.1 Integration Gaps → **PR #111** (nicht #110!) → [INTEGRATION_STATUS.md](./infrastruktur/INTEGRATION_STATUS.md)
+- ✅ **Konsolidierung:** 3 P0 Tasks in 1 PR #111 → [TRIGGER_SPRINT_2_1_1.md](./TRIGGER_SPRINT_2_1_1.md)
 - ✅ **P1 Tasks:** In Sprint 2.2/2.3 integriert → [Details](./infrastruktur/INTEGRATION_STATUS.md#p1---important-tasks-sprint-22--23)
 
 **🚀 STRATEGIC DECISION (21.09.2025):** CQRS Light Migration-First Strategy confirmed - CQRS Light Foundation (1-2 Wochen Q4 2025) → Business-Module (Q1 2026) für kosteneffiziente interne Performance + Zero Doppelarbeit

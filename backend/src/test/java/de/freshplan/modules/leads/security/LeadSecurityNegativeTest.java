@@ -283,5 +283,4 @@ public class LeadSecurityNegativeTest {
       Lead.deleteById(expiredLead.id);
     }
   }
-
 }
