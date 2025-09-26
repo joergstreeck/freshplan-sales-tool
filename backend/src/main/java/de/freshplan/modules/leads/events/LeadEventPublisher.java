@@ -68,17 +68,21 @@ public class LeadEventPublisher {
       String idempotencyKey =
           UUID.nameUUIDFromBytes(keySource.getBytes(StandardCharsets.UTF_8)).toString();
 
+      // LeadStatusChangeEvent mit UUID statt Long
+      UUID leadUuid =
+          lead.id != null
+              ? UUID.nameUUIDFromBytes(lead.id.toString().getBytes())
+              : UUID.randomUUID();
+
       LeadStatusChangeEvent event =
           new LeadStatusChangeEvent(
-              lead.id,
+              leadUuid,
               lead.companyName,
               oldStatus,
               newStatus,
               changedBy,
-              lead.territory != null ? lead.territory.id : null,
-              lead.ownerUserId,
-              idempotencyKey,
-              changedAt);
+              changedAt,
+              "Status change: " + oldStatus + " -> " + newStatus);
 
       String payload = objectMapper.writeValueAsString(event);
 

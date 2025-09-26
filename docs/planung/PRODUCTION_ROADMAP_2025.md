@@ -11,12 +11,12 @@
 
 **🚨 AKTUELLER STATUS:**
 - **Phase:** ✅ Phase 1 COMPLETE | 🚀 Phase 2 IN PROGRESS
-- **Next Action:** Sprint 2.1.1 P0 HOTFIX implementieren (PR #111) → [INTEGRATION_STATUS](./infrastruktur/INTEGRATION_STATUS.md)
-- **Progress:** 13.75/37 PRs completed - 37% done (PR #109 merged)
-- **Blockers:** 🔴 P0 Integration Gaps - Event Distribution, Dashboard Widget, Metrics fehlen
+- **Current Sprint:** Sprint 2.1.1 P0 HOTFIX - [TRIGGER_SPRINT_2_1_1.md](./TRIGGER_SPRINT_2_1_1.md)
+- **Progress:** 14.5/37 PRs - 39% (PR #111 in progress - Integration Gaps)
+- **Blockers:** ⚠️ Sprint 2.2 blockiert bis PR #111 merged
 - **Active Branch:** feature/sprint-2-1-1-followup-integration-hotfix-FP-235-hotfix
 - **Foundation Status:** ✅ COMPLETE - CQRS/Security/Settings/CI/RLS operational
-- **Performance:** ✅ P95 <200ms + Lead API mit ETags operational
+- **Performance:** ✅ P95 <7ms (Lead-Module) + ETags operational
 
 **🔗 WICHTIGE REFERENZEN:**
 - **Arbeitsregeln:** [CLAUDE.md](./CLAUDE.md)
@@ -73,19 +73,25 @@ Sprint 1.6: RLS Module Adoption       ✅ PR #107 MERGED → Modul 02 Fix + CI-G
 - CI: Pipeline Split (PR <10min, Nightly ~30min)
 - Testing: Integration Framework mit P95-Metriken
 - RLS: Connection Affinity mit @RlsContext CDI Interceptor
+- **Production Patterns:** 3 Copy-Paste-Ready Patterns für alle Module
 
 📊 Performance Report: [phase-1-foundation-benchmark-2025-09-24.md](../performance/phase-1-foundation-benchmark-2025-09-24.md)
 🔒 Security Update: [SECURITY_UPDATE_SPRINT_1_5.md](./SECURITY_UPDATE_SPRINT_1_5.md)
+
+🎯 **Copy-Paste Ready Patterns (aus PR #110):**
+- [Security Test Pattern](features-neu/02_neukundengewinnung/artefakte/SECURITY_TEST_PATTERN.md) → Alle Module
+- [Performance Test Pattern](features-neu/02_neukundengewinnung/artefakte/PERFORMANCE_TEST_PATTERN.md) → P95 Validation
+- [Event System Pattern](features-neu/02_neukundengewinnung/artefakte/EVENT_SYSTEM_PATTERN.md) → **CQRS Light Backbone** für alle Module
 ```
 
 ### 🚀 **Phase 2: Core Business (7.5 Wochen) - IN PROGRESS**
 ```
 Progress: █░░░░░░░░░ 10% (0.5/5 Sprints)
 
-Sprint 2.1: 02 Neukundengewinnung     🔧 75% DONE → PR #109 merged, FP-236 Security offen
-Sprint 2.1.1: HOTFIX Integration     🔴 CRITICAL → PR #111 (nicht #110!) → [INTEGRATION_STATUS](./infrastruktur/INTEGRATION_STATUS.md)
-Sprint 2.2: 03 Kundenmanagement      📋 Ready → 39 Artefakte + RLS Migration needed
-Sprint 2.3: 05 Kommunikation         📋 Ready → Security-Gate ✅ erfüllt!
+Sprint 2.1: 02 Neukundengewinnung     ✅ 75% COMPLETE → PR #103, #105, #110 merged (nur FP-235 offen)
+                                      → 3 Production Patterns dokumentiert (Security/Performance/Events)
+Sprint 2.2: 03 Kundenmanagement      📋 Ready → 39 Artefakte + nutzt Security/Performance Patterns
+Sprint 2.3: 05 Kommunikation         📋 Ready → Security-Gate ✅ + nutzt Event-System Pattern
 Sprint 2.4: 01 Cockpit               🟡 Planning → CQRS-optimiert
 Sprint 2.5: 06 Einstellungen         🟡 Planning → Settings Foundation
 ```
@@ -108,6 +114,7 @@ Sprint 3.3: Final Integration        🟡 Planning → Kong/Envoy Policies
 ### **SPRINT 1.1: CQRS LIGHT FOUNDATION (Woche 1)** 📋
 
 **Ziel:** PostgreSQL LISTEN/NOTIFY + Command/Query-Pattern Implementation
+**🎯 Bildet CQRS Light Backbone:** Event System Pattern aus PR #110 ist die Basis für alle Module
 
 **PRs:**
 ```yaml

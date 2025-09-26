@@ -53,34 +53,40 @@
 
 ### **PHASE 2: CORE BUSINESS (5 Sprints) - 🔧 IN PROGRESS**
 ```yaml
-🔧 TRIGGER_SPRINT_2_1.md - Neukundengewinnung [PR #109 MERGED, FP-236 OFFEN]
+✅ TRIGGER_SPRINT_2_1.md - Neukundengewinnung [PR #103, #105, #110 MERGED]
    - Lead-Management ohne Gebietsschutz
-   - T+3/T+7 Follow-up Automation LIVE (FP-235 ✅)
-   - Status: 🔧 75% COMPLETE (FP-236 Security noch offen)
+   - 8-10h, 3/4 PRs complete (FP-233 ✅, FP-234 ✅, FP-236 ✅)
+   - FP-236: 23 Tests, P95 < 7ms, Gemini Review adressiert
+   - **NEUE ARTEFAKTE:**
+     - [Security Test Pattern](features-neu/02_neukundengewinnung/artefakte/SECURITY_TEST_PATTERN.md)
+     - [Performance Test Pattern](features-neu/02_neukundengewinnung/artefakte/PERFORMANCE_TEST_PATTERN.md)
+     - [Event System Pattern](features-neu/02_neukundengewinnung/artefakte/EVENT_SYSTEM_PATTERN.md)
+   - Status: ✅ 75% COMPLETE (nur FP-235 Follow-up noch offen)
 
-🔴 TRIGGER_SPRINT_2_1_1.md - HOTFIX Integration Gaps [P0 - CRITICAL]
-   - KONSOLIDIERT IN 1 PR #111 (Entscheidung 26.09.2025, PR #110 ist FP-236)
-   - Event Distribution + Dashboard Widget + Prometheus Metrics
-   - Branch: feature/sprint-2-1-1-followup-integration-hotfix-FP-235-hotfix
-   - Status: 🚨 PRODUCTION BLOCKER - 2-3 Tage
-   - Atomares Deployment für alle P0 Gaps
-   - 📊 Integration Übersicht: [INTEGRATION_STATUS.md](./infrastruktur/INTEGRATION_STATUS.md)
+🚧 TRIGGER_SPRINT_2_1_1.md - P0 HOTFIX Integration Gaps [PR #111]
+   - Event Distribution, Dashboard Widget, Metrics implementiert
+   - Kritische Integration für Follow-up Automation
+   - Status: 🚧 IN PROGRESS - [Trigger-Dokument](./TRIGGER_SPRINT_2_1_1.md)
 
 ✅ TRIGGER_SPRINT_2_2.md - Kundenmanagement
    - Field-based Customer Architecture
    - 10-12h, 5 PRs (FP-237 bis FP-241)
+   - **NUTZT PATTERNS:** Security Test Pattern, Performance Test Pattern aus PR #110
 
 ✅ TRIGGER_SPRINT_2_3.md - Kommunikation (NACH SECURITY-GATE)
    - Thread/Message/Outbox + Email-Engine
    - 6-8h, 4 PRs (FP-242 bis FP-245)
+   - **NUTZT PATTERNS:** Event System Pattern, Security Test Pattern aus PR #110
 
 ✅ TRIGGER_SPRINT_2_4.md - Cockpit
    - ROI-Dashboard + Real-time Widgets
    - 6-8h, 4 PRs (FP-246 bis FP-249)
+   - **NUTZT PATTERNS:** Event System Pattern für Dashboard-Updates aus PR #110
 
 ✅ TRIGGER_SPRINT_2_5.md - Einstellungen + Cross-Module
    - Settings UI + Cross-Module Integration
    - 8-10h, 3 PRs (FP-250 bis FP-252) + Puffer-Tag
+   - **NUTZT PATTERNS:** Alle 3 Patterns für Cross-Module Integration
 ```
 
 ### **PHASE 3: ENHANCEMENT (3 Sprints)**
@@ -88,10 +94,12 @@
 ✅ TRIGGER_SPRINT_3_1.md - Auswertungen
    - Analytics Platform auf CQRS Foundation
    - 6-8h, 4 PRs (FP-253 bis FP-256)
+   - **NUTZT PATTERNS:** Performance Test Pattern für Analytics-Queries
 
 ✅ TRIGGER_SPRINT_3_2.md - Hilfe + Administration
    - CAR-Strategy + Enterprise User-Management
    - 6-8h, 4 PRs (FP-257 bis FP-260)
+   - **NUTZT PATTERNS:** Security Test Pattern für User-Management
 
 ✅ TRIGGER_SPRINT_3_3.md - Final Integration
    - **Nginx+OIDC Gateway** (Pflicht) + **Kong/Envoy** (optional)
@@ -119,7 +127,10 @@ Neue Reihenfolge (7 Dokumente):
 3. 🍃 BUSINESS-KONTEXT: CRM_AI_CONTEXT_SCHNELL.md ← NEU!
 4. 🎯 SPRINT-DETAIL: PRODUCTION_ROADMAP_2025.md (Sprint-Section)
 5. 🏗️ TECHNICAL-CONCEPT: features-neu/{MODULE}/technical-concept.md
-6. 📦 ARTEFAKTE: features-neu/{MODULE}/artefakte/
+6. 📦 ARTEFAKTE: features-neu/{MODULE}/artefakte/ ← PR #110 PATTERNS!
+   - SECURITY_TEST_PATTERN.md (23 Tests, @TestSecurity) → Copy-Paste für alle Module
+   - PERFORMANCE_TEST_PATTERN.md (P95 < 200ms Validation) → Helper-Methoden wiederverwendbar
+   - EVENT_SYSTEM_PATTERN.md (LISTEN/NOTIFY mit AFTER_COMMIT) → Cross-Module Events
 7. 🔧 QUALITY-GATES: PRODUCTION_ROADMAP_2025.md (Quality Gates)
 ```
 

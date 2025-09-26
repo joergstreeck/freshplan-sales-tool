@@ -43,6 +43,11 @@
 - **Reference Bundle:** → [FOUNDATION_STANDARDS_REFERENCE_BUNDLE.md](../diskussionen/2025-09-19_FOUNDATION_STANDARDS_REFERENCE_BUNDLE.md)
 - **Production Artefakte:** → [Foundation Standards Artefakte](./artefakte/)
 
+### 🎯 Copy-Paste Ready Patterns aus Modul 02:
+- **[Security Test Pattern](../02_neukundengewinnung/artefakte/SECURITY_TEST_PATTERN.md)** → Direkt nutzbar für Customer-Security-Tests
+- **[Performance Test Pattern](../02_neukundengewinnung/artefakte/PERFORMANCE_TEST_PATTERN.md)** → P95 Validation für Customer-APIs
+- **[Event System Pattern](../02_neukundengewinnung/artefakte/EVENT_SYSTEM_PATTERN.md)** → Customer-Create/Update-Events
+
 ## 🛠️ Implementation Phases
 
 ### **Phase 1: Foundation Standards Core (Woche 1)**

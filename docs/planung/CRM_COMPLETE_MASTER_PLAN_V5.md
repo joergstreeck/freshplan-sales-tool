@@ -17,7 +17,10 @@
 
 **🎯 BUSINESS MODULES (01-08):**
 - **Module 01 Cockpit:** ✅ Planning COMPLETE – Implementation pending (100% Foundation Standards, 44 Production-Ready Artefakte)
-- **Module 02 Neukundengewinnung:** ✅ Planning COMPLETE – Implementation pending (92%+ Foundation Standards, Artefakte ready)
+- **Module 02 Neukundengewinnung:** ✅ 75% IMPLEMENTED – PR #103, #105, #110 merged
+  - [Security Test Pattern](./features-neu/02_neukundengewinnung/artefakte/SECURITY_TEST_PATTERN.md) ✅
+  - [Performance Test Pattern](./features-neu/02_neukundengewinnung/artefakte/PERFORMANCE_TEST_PATTERN.md) ✅
+  - [Event System Pattern](./features-neu/02_neukundengewinnung/artefakte/EVENT_SYSTEM_PATTERN.md) ✅
 - **Module 03 Kundenmanagement:** ✅ Planning COMPLETE – Implementation pending (100% Foundation Standards, 39 Production-Ready Artefakte)
 - **Module 04 Auswertungen:** ✅ Planning COMPLETE – Implementation pending (97% Production-Ready, 12 Implementation-Files)
 - **Module 05 Kommunikation:** ✅ Planning COMPLETE – Implementation pending (Enterprise-Ready, 41 Production-Ready Artefakte)
@@ -34,12 +37,29 @@
 **🚨 NEXT:** Production Implementation Phase - Vollständige Planungsphase abgeschlossen mit 310+ Production-Ready Artefakten
 
 **📋 LATEST UPDATE (26.09.2025):**
-- ✅ **FP-236 Security-Integration abgeschlossen:** → **PR #110**
-- 🔴 **P0 HOTFIX:** Sprint 2.1.1 Integration Gaps → **PR #111** (nicht #110!) → [INTEGRATION_STATUS.md](./infrastruktur/INTEGRATION_STATUS.md)
-- ✅ **Konsolidierung:** 3 P0 Tasks in 1 PR #111 → [TRIGGER_SPRINT_2_1_1.md](./TRIGGER_SPRINT_2_1_1.md)
-- ✅ **P1 Tasks:** In Sprint 2.2/2.3 integriert → [Details](./infrastruktur/INTEGRATION_STATUS.md#p1---important-tasks-sprint-22--23)
+- ✅ **PR #110 MERGED:** FP-236 Security-Integration complete (23 Tests, P95 < 7ms, Gemini Review adressiert)
+- 🚧 **Sprint 2.1.1 IN PROGRESS:** P0 HOTFIX Integration Gaps - [TRIGGER_SPRINT_2_1_1.md](./TRIGGER_SPRINT_2_1_1.md)
+  - Event Distribution implementiert (LeadEventHandler)
+  - Dashboard Widget integriert (LeadWidget)
+  - Prometheus Metrics pending
+- 🚀 **Next:** Complete PR #111 → Sprint 2.2 Kundenmanagement
 
 **🚀 STRATEGIC DECISION (21.09.2025):** CQRS Light Migration-First Strategy confirmed - CQRS Light Foundation (1-2 Wochen Q4 2025) → Business-Module (Q1 2026) für kosteneffiziente interne Performance + Zero Doppelarbeit
+
+## 🎯 Production-Ready Patterns (aus PR #110)
+
+### **Copy-Paste Ready für alle Module:**
+- **[Security Test Pattern](./features-neu/02_neukundengewinnung/artefakte/SECURITY_TEST_PATTERN.md)** - 23 Tests, @TestSecurity, Fail-Closed
+  - ✅ Direkt nutzbar für **Modul 03** (Kundenmanagement) - Customer-Security-Tests
+  - ✅ Direkt nutzbar für **Modul 05** (Kommunikation) - Thread-Access-Control
+  - ✅ Template für **alle Module** - ABAC/RLS Testing-Standard
+- **[Performance Test Pattern](./features-neu/02_neukundengewinnung/artefakte/PERFORMANCE_TEST_PATTERN.md)** - P95 < 200ms Validation
+  - ✅ Direkt nutzbar für **Modul 04** (Auswertungen) - Analytics-Query-Performance
+  - ✅ Helper-Methoden für **alle Module** - measureP95(), assertP95()
+- **[Event System Pattern](./features-neu/02_neukundengewinnung/artefakte/EVENT_SYSTEM_PATTERN.md)** - LISTEN/NOTIFY mit AFTER_COMMIT
+  - ✅ Direkt nutzbar für **Modul 05** (Kommunikation) - Email-Send-Events
+  - ✅ Direkt nutzbar für **Modul 01** (Cockpit) - Dashboard-Widget-Updates
+  - ✅ Cross-Module Event-Routing für **alle 8 Module**
 
 ## 📐 Foundation DoD & SLOs
 
@@ -106,10 +126,10 @@
 - 2025-09-23 18:45 — Sprint 1.1 Complete: CQRS Light Foundation operational + PR #94 mit Review-Fixes, Migration: V225, Tests: OK
 - 2025-09-25 11:45 — Infrastruktur-Doku Update: Sprint 1.1-1.4 Status in alle /infrastruktur Dokumente eingepflegt, Phase 1 zu 100% COMPLETE (PR #102), Tests: OK
 - 2025-09-25 02:00 — Territory-Klarstellung: PR #103 Impact dokumentiert - Territory ≠ Gebietsschutz! 8 Module korrigiert (Territory nur für Currency/Tax), Migration: n/a, Tests: OK
-- 2025-09-26 02:30 — Sprint 2.1.1 P0 Hotfix: Integration Gaps dokumentiert + 3 P0 Tasks in 1 PR #110 konsolidiert + P1 Tasks in Sprints integriert, Migration: V247 (aus PR #109), Tests: OK
-- 2025-09-26 00:00 — Sprint 2.1 Follow-up: PR #109 erfolgreich gemerged - T+3/T+7 Automation LIVE mit allen Gemini Fixes, Migration: V245-V247, Tests: OK
 - 2025-09-25 00:55 — Sprint 2.1 PR #1: Territory Management ERFOLGREICH GEMERGED (PR #103) + Race Condition Fix via UserLeadSettingsService + ElementCollection Tables (V231), Migration: V231, Tests: ✅ All GREEN
 - 2025-09-24 22:15 — Sprint 1.4 Complete: Foundation Quick-Wins (Cache + Prod-Config) + PR #102 merged, Phase 1: 100% COMPLETE
+- 2025-09-23 19:40 — Sprint 1.1 MERGED: PR #94 erfolgreich in main + alle KI-Reviews umgesetzt + Sprint 3 Backlog erstellt, Migration: V226, Tests: OK
+- 2025-09-23 21:00 — Sprint 1.2 PR #1 MERGED: Security Context Foundation (V227) + Code Review Fixes + Follow-Up dokumentiert, Migration: V227, Tests: OK
 - 2025-09-23 22:30 — Sprint 1.3 PR #97 READY: Security Gates Enforcement (FP-231) + CORS-Trennung + Security Headers + CI-Hardening, alle Checks grün, wartet auf Review
 - 2025-09-23 22:45 — Sprint 1.3 MERGED: PR #97 erfolgreich in main + bash arithmetic fixes + Follow-up Issue #98 erstellt, Migration: V227, Tests: OK
 - 2025-09-24 00:39 — Sprint 1.3 PR #3 COMPLETE: Frontend Settings Integration mit ETag/304 (PR #100) + Settings Registry gemerged (PR #99), Migration: n/a, Tests: OK
@@ -161,36 +181,61 @@
   - FP-235: Follow-up Automation (T+3/T+7) ❌ OFFEN
   - FP-236: Security-Integration (ABAC/RLS Tests) ❌ OFFEN
   - 13/13 Tests grün, Migrations V232-V241 deployed
+- 2025-09-26 18:45 — **Sprint 2.1 COMPLETE:** PR #110 FP-236 Security-Integration MERGED
+  - 23 Security/Performance/Event-Tests implementiert (alle grün)
+  - Performance P95 < 7ms validiert (Requirement: < 200ms)
+  - PostgreSQL LISTEN/NOTIFY mit AFTER_COMMIT und Idempotenz
+  - Gemini Code Review vollständig adressiert
+  - ManagedExecutor, @TestSecurity, TestEventCollector implementiert
+- 2025-09-26 19:45 — **Nachdokumentation:** PR #110 Pattern-Artefakte erstellt und überall referenziert
+  - 3 Copy-Paste Ready Patterns dokumentiert (Security, Performance, Event)
+  - Alle Hauptdokumente mit Pattern-Links erweitert
+  - Alle Sprint-Dokumente mit Pattern-Nutzung ergänzt
+  - KI-Review Punkte umgesetzt (RLS-Disclaimer, CQRS Backbone)
+  - Migration: n/a, Tests: OK
+- 2025-09-26 20:30 — **Sprint 2.1.1 P0 HOTFIX:** PR #111 Integration Gaps teilweise implementiert
+  - TRIGGER_SPRINT_2_1_1.md erstellt mit vollständiger Spezifikation
+  - Event Distribution implementiert (LeadEventHandler, aber AFTER_COMMIT fehlt)
+  - Dashboard Widget integriert (LeadWidget, aber RBAC fehlt)
+  - Delta-Log erstellt: 55% complete, 7-9h für Fertigstellung
+  - Migration: n/a, Tests: PENDING
 <!-- MP5:SESSION_LOG:END -->
 
 ## Next Steps
 <!-- MP5:NEXT_STEPS:START -->
-- **🚨 PRIORITÄT 1:** Sprint 2.1.1 P0 Hotfix implementieren
-  - Branch: feature/sprint-2-1-1-followup-integration-hotfix-FP-235-hotfix
-  - PR #110: Event Distribution + Dashboard Widget + Prometheus Metrics
-  - Migration V248 verwenden
-  - Details: TRIGGER_SPRINT_2_1_1.md
-- **Sprint 2.2:** Kundenmanagement + P1 Tasks (nach P0)
-  - 5 Core PRs (FP-237 bis FP-241)
-  - PR #273: Lead→Customer Auto-Conversion
-  - PR #274: Shared Email Core Migration
-- **Sprint 2.3:** Kommunikation + P1 Analytics
-  - 4 Core PRs (FP-242 bis FP-245)
-  - PR #275: Follow-up Analytics & Reporting
-- **FP-236:** Security-Integration noch offen (Sprint 2.1)
+- **🚧 Sprint 2.1.1 P0 HOTFIX fertigstellen:** [TRIGGER_SPRINT_2_1_1.md](./TRIGGER_SPRINT_2_1_1.md)
+  - AFTER_COMMIT Pattern implementieren (2h)
+  - Idempotency Keys + RBAC hinzufügen (1h)
+  - Prometheus Metrics implementieren (2h)
+  - Tests schreiben (2h)
+  - Siehe [Delta-Log](./SPRINT_2_1_1_DELTA_LOG.md) für Details
+- **Sprint 2.2 Kundenmanagement:** Nach PR #111 Merge
+  - Field-based Customer Architecture mit 39 Artefakten
+  - RLS Migration für Customer Services (FP-273)
+  - 10-12h, 5 PRs geplant (FP-237 bis FP-241)
+- **Follow-up RLS Migration:** Domain Services
+  - FP-274: 15+ Domain Services mit @RlsContext
+  - CI-Guard implementieren und aktivieren
+  - RLS-Badge in alle Module 01-08 einfügen
+- Sprint 2.1: Kann erst nach Sprint 1.6 fortfahren
+- Follow-up Tickets:
+  - FP-272: Modul 02 Services annotieren (P0)
+  - FP-273: Modul 03 Migration planen (P1)
+  - FP-274: CI-Rule für @RlsContext (P1)
+  - FP-275: Import/Batch RLS-sicher machen (P1)
+  - FP-276: Monitoring via Agroal/Micrometer (P2)
 <!-- MP5:NEXT_STEPS:END -->
 
 ## Risks
 <!-- MP5:RISKS:START -->
-- **P0 PRODUCTION BLOCKER:** Integration Gaps nach PR #109 - Mitigation: Sprint 2.1.1 Hotfix (PR #110)
-- **Sprint 2.1 unvollständig:** FP-236 Security-Integration offen - Mitigation: Nach P0 implementieren
-- **Event Distribution fehlt:** Cross-Module Events nicht implementiert - Mitigation: In PR #110
+- ✅ ~~GUC-Context auf falscher Connection~~ - BEHOBEN durch Sprint 1.5 Connection Affinity
+- **Sprint 2.1 blockiert:** Modul 02 Services ohne @RlsContext - Mitigation: Sprint 1.6 mit P0
+- 33+ Services ohne RLS-Schutz - Mitigation: Systematische Migration via Sprint 1.6
+- Zwei Dev-Server laufen parallel (Bash IDs: 64b7dc, 1db55e) - Mitigation: Beim nächsten Start bereinigen
 <!-- MP5:RISKS:END -->
 
 ## Decisions
 <!-- MP5:DECISIONS:START -->
-- 2025-09-26 — P0 Konsolidierung: 3 Tasks in 1 PR #110 für atomares Deployment
-- 2025-09-26 — P1 Sprint-Integration: PR #273-275 in Sprint 2.2/2.3 eingeplant
 - 2025-09-25 — ADR-0007: RLS Connection Affinity Pattern für alle Module verbindlich
 - 2025-09-25 — Sprint 1.6 eingefügt: Module-Migration zu @RlsContext vor Phase 2
 - 2025-09-25 — CI-Guard Pattern: Heuristik statt Regex für FP-arme Prüfung

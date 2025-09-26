@@ -45,6 +45,15 @@ Analysiere: `./docs/planung/features-neu/00_infrastruktur/betrieb/`
 - Performance-Benchmarks für alle Module
 - Go-Live Preparation + Rollback-Plans
 
+**🎯 COPY-PASTE READY PATTERNS (aus PR #110):**
+- **ALLE 3 PATTERNS für Final Validation nutzen:**
+  - `./docs/planung/features-neu/02_neukundengewinnung/artefakte/SECURITY_TEST_PATTERN.md`
+    → Final Security-Validation für alle Module
+  - `./docs/planung/features-neu/02_neukundengewinnung/artefakte/PERFORMANCE_TEST_PATTERN.md`
+    → Final P95 Performance-Benchmarks (alle Module < 200ms)
+  - `./docs/planung/features-neu/02_neukundengewinnung/artefakte/EVENT_SYSTEM_PATTERN.md`
+    → Final Event-System Integration-Tests
+
 ## 🏁 FINAL SPRINT - PRODUCTION-DEPLOYMENT VORBEREITUNG
 
 **VORAUSSETZUNG:** Alle 8 Module sollten operational sein!

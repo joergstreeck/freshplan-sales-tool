@@ -1,6 +1,6 @@
 # FreshPlan 2.0 - Backend (Quarkus)
 
-**📅 Aktuelles Datum: <!-- AUTO_DATE --> (System: 08.06.2025)**
+**📅 Aktuelles Datum: <!-- AUTO_DATE --> (System: 26.09.2025)**
 
 ## 🚀 Quarkus REST API
 

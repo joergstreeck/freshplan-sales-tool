@@ -17,6 +17,7 @@ public class SalesCockpitDashboard {
   private List<RiskCustomer> riskCustomers;
   private DashboardStatistics statistics;
   private List<DashboardAlert> alerts;
+  private LeadWidget leadWidget;
 
   public SalesCockpitDashboard() {}
 
@@ -50,5 +51,13 @@ public class SalesCockpitDashboard {
 
   public void setAlerts(List<DashboardAlert> alerts) {
     this.alerts = alerts;
+  }
+
+  public LeadWidget getLeadWidget() {
+    return leadWidget;
+  }
+
+  public void setLeadWidget(LeadWidget leadWidget) {
+    this.leadWidget = leadWidget;
   }
 }
