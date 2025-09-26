@@ -11,9 +11,9 @@
 
 **🚨 AKTUELLER STATUS:**
 - **Phase:** ✅ Phase 1 COMPLETE | 🚀 Phase 2 IN PROGRESS
-- **Next Action:** Sprint 2.1.1 P0 HOTFIX (PR #111) → Sprint 2.2 Kundenmanagement
-- **Progress:** 14/37 PRs completed - 38% done (PR #110 merged + Patterns dokumentiert!)
-- **Blockers:** FP-235 Follow-up Automation noch offen
+- **Current Sprint:** Sprint 2.1.1 P0 HOTFIX - [TRIGGER_SPRINT_2_1_1.md](./TRIGGER_SPRINT_2_1_1.md)
+- **Progress:** 14.5/37 PRs - 39% (PR #111 in progress - Integration Gaps)
+- **Blockers:** ⚠️ Sprint 2.2 blockiert bis PR #111 merged
 - **Active Branch:** feature/sprint-2-1-1-followup-integration-hotfix-FP-235-hotfix
 - **Foundation Status:** ✅ COMPLETE - CQRS/Security/Settings/CI/RLS operational
 - **Performance:** ✅ P95 <7ms (Lead-Module) + ETags operational

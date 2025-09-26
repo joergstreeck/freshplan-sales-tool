@@ -96,9 +96,13 @@ public class FollowUpAutomationService {
           "Follow-up automation completed: %d T+3 and %d T+7 follow-ups processed",
           t3Count, t7Count);
 
-      // Trigger Event für Cockpit-Integration
+      // Trigger Event für Cockpit-Integration (Sprint 2.1.1 P0 HOTFIX)
       if (t3Count > 0 || t7Count > 0) {
-        followUpEvent.fire(new FollowUpProcessedEvent(t3Count, t7Count, now));
+        // Erweiterte Event-Informationen für Dashboard Integration
+        FollowUpProcessedEvent event = FollowUpProcessedEvent.forBatch(
+            SYSTEM_USER_ID, t3Count, t7Count);
+        followUpEvent.fire(event);
+        LOG.debugf("Fired follow-up event to dashboard: T3=%d, T7=%d", t3Count, t7Count);
       }
 
     } catch (Exception e) {

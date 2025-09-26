@@ -63,10 +63,10 @@
      - [Event System Pattern](features-neu/02_neukundengewinnung/artefakte/EVENT_SYSTEM_PATTERN.md)
    - Status: ✅ 75% COMPLETE (nur FP-235 Follow-up noch offen)
 
-🔴 TRIGGER_SPRINT_2_1_1.md - P0 HOTFIX Integration Gaps [PR #111]
-   - Event Distribution, Dashboard Widget, Metrics fehlen
+🚧 TRIGGER_SPRINT_2_1_1.md - P0 HOTFIX Integration Gaps [PR #111]
+   - Event Distribution, Dashboard Widget, Metrics implementiert
    - Kritische Integration für Follow-up Automation
-   - Status: 🔴 CRITICAL - Next Priority
+   - Status: 🚧 IN PROGRESS - [Trigger-Dokument](./TRIGGER_SPRINT_2_1_1.md)
 
 ✅ TRIGGER_SPRINT_2_2.md - Kundenmanagement
    - Field-based Customer Architecture

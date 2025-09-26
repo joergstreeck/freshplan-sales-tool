@@ -38,8 +38,11 @@
 
 **📋 LATEST UPDATE (26.09.2025):**
 - ✅ **PR #110 MERGED:** FP-236 Security-Integration complete (23 Tests, P95 < 7ms, Gemini Review adressiert)
-- ✅ **Sprint 2.1 COMPLETE:** Lead-Management mit ABAC/RLS, Events (LISTEN/NOTIFY), Performance validiert
-- 🚀 **Next:** Sprint 2.1.1 P0 HOTFIX (PR #111) → Sprint 2.2 Kundenmanagement
+- 🚧 **Sprint 2.1.1 IN PROGRESS:** P0 HOTFIX Integration Gaps - [TRIGGER_SPRINT_2_1_1.md](./TRIGGER_SPRINT_2_1_1.md)
+  - Event Distribution implementiert (LeadEventHandler)
+  - Dashboard Widget integriert (LeadWidget)
+  - Prometheus Metrics pending
+- 🚀 **Next:** Complete PR #111 → Sprint 2.2 Kundenmanagement
 
 **🚀 STRATEGIC DECISION (21.09.2025):** CQRS Light Migration-First Strategy confirmed - CQRS Light Foundation (1-2 Wochen Q4 2025) → Business-Module (Q1 2026) für kosteneffiziente interne Performance + Zero Doppelarbeit
 
@@ -190,16 +193,23 @@
   - Alle Sprint-Dokumente mit Pattern-Nutzung ergänzt
   - KI-Review Punkte umgesetzt (RLS-Disclaimer, CQRS Backbone)
   - Migration: n/a, Tests: OK
+- 2025-09-26 20:30 — **Sprint 2.1.1 P0 HOTFIX:** PR #111 Integration Gaps teilweise implementiert
+  - TRIGGER_SPRINT_2_1_1.md erstellt mit vollständiger Spezifikation
+  - Event Distribution implementiert (LeadEventHandler, aber AFTER_COMMIT fehlt)
+  - Dashboard Widget integriert (LeadWidget, aber RBAC fehlt)
+  - Delta-Log erstellt: 55% complete, 7-9h für Fertigstellung
+  - Migration: n/a, Tests: PENDING
 <!-- MP5:SESSION_LOG:END -->
 
 ## Next Steps
 <!-- MP5:NEXT_STEPS:START -->
-- **🚀 Sprint 2.1.1 P0 HOTFIX:** PR #111 implementieren
-  - Integration Gaps beheben (Event Distribution, Dashboard Widget, Metrics)
-  - Siehe [INTEGRATION_STATUS.md](./infrastruktur/INTEGRATION_STATUS.md)
-- **Sprint 2.1 Finalisierung:** FP-235 Follow-up Automation
-  - T+3/T+7 Sample-Management implementieren
-- **Dann Sprint 2.2:** Kundenmanagement
+- **🚧 Sprint 2.1.1 P0 HOTFIX fertigstellen:** [TRIGGER_SPRINT_2_1_1.md](./TRIGGER_SPRINT_2_1_1.md)
+  - AFTER_COMMIT Pattern implementieren (2h)
+  - Idempotency Keys + RBAC hinzufügen (1h)
+  - Prometheus Metrics implementieren (2h)
+  - Tests schreiben (2h)
+  - Siehe [Delta-Log](./SPRINT_2_1_1_DELTA_LOG.md) für Details
+- **Sprint 2.2 Kundenmanagement:** Nach PR #111 Merge
   - Field-based Customer Architecture mit 39 Artefakten
   - RLS Migration für Customer Services (FP-273)
   - 10-12h, 5 PRs geplant (FP-237 bis FP-241)

@@ -453,4 +453,15 @@ public class SalesCockpitQueryService {
     alert.setActionLink(actionLink);
     return alert;
   }
+
+  /**
+   * Invalidiert den Dashboard-Cache für einen User.
+   * Sprint 2.1.1 P0 HOTFIX - Ermöglicht Real-time Updates nach Lead-Events.
+   *
+   * @param userId User ID dessen Dashboard-Cache invalidiert werden soll
+   */
+  public void invalidateCache(UUID userId) {
+    // TODO: Implementiere Cache-Invalidierung wenn Cache-Layer vorhanden
+    // Aktuell: Kein Cache, direkte DB-Abfragen
+  }
 }
