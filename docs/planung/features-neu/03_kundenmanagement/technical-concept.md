@@ -20,12 +20,16 @@
 
 ## 📋 Context & Dependencies
 
-### Current State:
+### Current State (26.09.2025 Update):
 - ✅ **Foundation Standards Basis:** Design System V2, API Standards, Security Guidelines verfügbar
 - ✅ **Business Context:** B2B-Convenience-Food-Hersteller (FreshFoodz) mit Cook&Fresh® Produktlinie
 - ✅ **Package Structure:** Migration von `com.freshplan` zu `de.freshplan` erforderlich
 - ✅ **ABAC Security:** JWT-Claims mit Territory-Scoping für B2B-Vertrieb
 - ✅ **Frontend Foundation:** Theme V2 mit CSS-Tokens (kein Hardcoding)
+- 🟡 **P1 Integration geplant (Sprint 2.2):**
+  - PR #273: Lead→Customer Auto-Conversion bei positivem Follow-up
+  - PR #274: Shared Email Core Migration
+  - Details: [PR_SKELETON_P1_4_AUTO_CONVERSION.md](./PR_SKELETON_P1_4_AUTO_CONVERSION.md)
 
 ### Target State:
 - ✅ **100% Foundation Standards:** Design System V2, API Standards, Security ABAC, Testing 80%+

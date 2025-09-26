@@ -20,12 +20,17 @@
 
 ## 📋 Context & Dependencies
 
-### Current State:
+### Current State (26.09.2025 Update):
 - ✅ **Modern Analytics-Foundation:** AuswertungenDashboard.tsx (169 LOC) + SalesCockpitService.java (559 LOC) production-ready
 - ✅ **Universal Export Framework:** Vollständig implementiert in Kundenliste mit CSV/Excel/PDF/JSON/HTML Support
 - ✅ **Performance-optimierte Backend-Services:** CostStatistics.java + Enterprise-Grade KPI-Aggregationen
 - ✅ **Route-Infrastructure:** /reports/* Backend-Routen definiert, Frontend-Dashboard vorhanden
 - ✅ **Legacy-Assets discovered:** FC-016 KPI-Tracking Konzepte 70% implementiert, FC-011 Analytics-APIs spezifiziert
+- 🟡 **P1 Analytics geplant (Sprint 2.3):**
+  - PR #275: Follow-up Analytics & Reporting
+  - Conversion Funnel Visualization
+  - Template Performance Comparison
+  - Details: [PR_SKELETON_P1_6_FOLLOWUP_ANALYTICS.md](./PR_SKELETON_P1_6_FOLLOWUP_ANALYTICS.md)
 
 ### Target State:
 - ✅ **Route-Harmonisierung:** Einheitlich /reports/* mit 301-Redirects von /berichte/*
