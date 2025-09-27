@@ -4,6 +4,11 @@ on:
     paths:
       - 'docs/planung/**'
       - '.github/workflows/docs-compliance.yml'
+
+permissions:
+  contents: read
+  pull-requests: write
+
 jobs:
   compliance:
     runs-on: ubuntu-latest
