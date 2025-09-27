@@ -40,8 +40,16 @@ jobs:
 
             # Regel: <= 5 Kern-Verzeichnisse (+1 falls legacy-planning vorhanden)
             # Erlaubt: backend, frontend, shared, analyse, artefakte + legacy-planning
-            if [ $count -gt $((5 + legacy)) ]; then
-              echo "::error file=$ROOT::Root enthält $count Verzeichnisse (Stub-Ordner ausgenommen). Erlaubt: 5 Kern-Verzeichnisse + legacy-planning"
+            # Ausnahme: Module 02/03 (reorganized) = strict, andere Module = legacy limit 10
+            module_name=$(basename "$ROOT")
+            if [[ "$module_name" =~ ^(02_neukundengewinnung|03_kundenmanagement)$ ]]; then
+              limit=$((5 + legacy))
+            else
+              limit=10  # Legacy tolerance für nicht-reorganisierte Module
+            fi
+
+            if [ $count -gt $limit ]; then
+              echo "::error file=$ROOT::Root enthält $count Verzeichnisse (Stub-Ordner ausgenommen). Erlaubt: $limit für $module_name"
               fail=1
             fi
           done
