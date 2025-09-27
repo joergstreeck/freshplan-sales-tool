@@ -1,3 +1,11 @@
+---
+module: "02_neukundengewinnung"
+doc_type: "technical_concept"
+status: "draft"
+owner: "team/architecture"
+updated: "2025-09-27"
+---
+
 # 🎯 Neukundengewinnung - Technical Concept (Master Overview)
 
 **Was umfasst dieses Dokument:** Strategische Gesamtübersicht für Modul 02 Neukundengewinnung. Für Feature-spezifische Details siehe [legacy-planning/](./legacy-planning/) (lead-erfassung/, email-posteingang/, kampagnen/).

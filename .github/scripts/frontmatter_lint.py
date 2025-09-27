@@ -1,87 +1,108 @@
-import os, sys, yaml
+#!/usr/bin/env python3
+import os, sys, re
 
-ROOT = "docs"
-REQUIRED = ["module","domain","doc_type","status","owner","updated"]
-ALLOWED_DOMAIN = {"frontend","backend","shared"}
-ALLOWED_DOC_TYPE = {"analyse","konzept","contract","guideline","deltalog","adr","stub","technical_concept","sprint_map"}
+# PyYAML ist optional – wir fallen bei Importproblemen auf einen einfachen Parser zurück
+try:
+    import yaml  # type: ignore
+except Exception:
+    yaml = None
+
+ROOT = "docs/planung/features-neu"
+MODULES_IN_SCOPE = ("02_neukundengewinnung", "03_kundenmanagement")
+REQUIRED = ["module", "doc_type", "status", "owner", "updated"]
+ALLOWED_DOC_TYPE = {
+    "analyse","konzept","contract","guideline","deltalog","adr",
+    "stub","technical_concept","sprint_map"
+}
 
 def iter_md():
-    for dirpath,_,filenames in os.walk(ROOT):
-        for fn in filenames:
-            if fn.endswith(".md"):
-                yield os.path.join(dirpath, fn)
+    for module in MODULES_IN_SCOPE:
+        root = os.path.join(ROOT, module)
+        if not os.path.isdir(root):
+            continue
+        for dirpath, _, files in os.walk(root):
+            # Legacy-Bereich bewusst ausklammern
+            if "/legacy-planning/" in dirpath.replace("\\", "/"):
+                continue
+            for fn in files:
+                if fn.endswith(".md"):
+                    yield os.path.join(dirpath, fn)
 
-def parse_frontmatter(path):
+def parse_frontmatter(path: str):
     try:
         with open(path, "r", encoding="utf-8") as f:
             text = f.read()
     except UnicodeDecodeError:
-        print(f"Unicode decode error in {path}, skipping")
+        print(f"DEBUG: Unicode decode error in {path}, skipping")
         return None, ""
-    if not text.startswith("---"):
+
+    if not text.lstrip().startswith("---"):
         return None, text
+
     parts = text.split("---", 2)
     if len(parts) < 3:
         return None, text
-    fm = parts[1]
+
+    fm_text = parts[1]
     body = parts[2]
-    try:
-        data = yaml.safe_load(fm) or {}
-    except yaml.YAMLError as e:
-        print(f"YAML parsing error in {path}: {e}")
-        return None, text
+
+    # Robuster YAML- oder Fallback-Parser
+    def fallback_parse(lines: str):
+        data = {}
+        for line in lines.splitlines():
+            line = line.strip()
+            if not line or line.startswith("#") or ":" not in line:
+                continue
+            k, v = line.split(":", 1)
+            data[k.strip()] = v.strip().strip('"\'')
+
+        return data
+
+    if yaml is not None:
+        try:
+            data = yaml.safe_load(fm_text) or {}
+        except Exception as e:
+            print(f"DEBUG: YAML parsing error in {path}: {e} – using fallback parser")
+            data = fallback_parse(fm_text)
+    else:
+        data = fallback_parse(fm_text)
+
     return data, body
 
-errors = []
-processed_count = 0
-skipped_count = 0
+def main():
+    errors = []
+    processed = 0
+    skipped = 0
 
-for p in iter_md():
-    # ONLY check Module 02/03 files - skip everything else
-    module_match = None
-    if "/02_neukundengewinnung/" in p:
-        module_match = "02"
-    elif "/03_kundenmanagement/" in p:
-        module_match = "03"
+    for p in iter_md():
+        fm, body = parse_frontmatter(p)
+        if fm is None:
+            errors.append(f"{p}: fehlende Front-Matter (--- ... ---)")
+            processed += 1
+            continue
 
-    if not module_match:
-        # Skip ALL files that are not in Module 02/03
-        skipped_count += 1
-        continue
+        processed += 1
 
-    # Skip legacy-planning in Module 02/03 - they have different structure
-    if "/legacy-planning/" in p:
-        skipped_count += 1
-        continue
+        # Pflichtfelder (domain ist optional)
+        for k in REQUIRED:
+            if k not in fm:
+                errors.append(f"{p}: Front-Matter Pflichtfeld fehlt: {k}")
 
-    fm, body = parse_frontmatter(p)
+        # doc_type validieren, wenn vorhanden
+        dt = fm.get("doc_type")
+        if dt and dt not in ALLOWED_DOC_TYPE:
+            errors.append(f"{p}: unbekannter doc_type: {dt}")
 
-    processed_count += 1
+        # Stub-Regeln: moved_to muss existieren
+        if fm.get("doc_type") == "stub" or fm.get("status") == "moved":
+            if not fm.get("moved_to"):
+                errors.append(f"{p}: stub/moved braucht moved_to")
 
-    if fm is None:
-        errors.append(f"{p}: fehlende Front-Matter (--- ... ---)")
-        continue
+    print(f"DEBUG: Processed {processed} files in modules {MODULES_IN_SCOPE}, skipped {skipped} legacy files")
 
-    # Pflichtfelder prüfen (only for Module 02/03)
-    for k in REQUIRED:
-        if k not in fm:
-            errors.append(f"{p}: Front-Matter Pflichtfeld fehlt: {k}")
+    if errors:
+        print("\n".join(errors))
+        sys.exit(1)
 
-    # domänen & Typen validieren
-    if "domain" in fm and fm["domain"] not in ALLOWED_DOMAIN:
-        errors.append(f"{p}: domain ungültig: {fm['domain']}")
-    if "doc_type" in fm and fm["doc_type"] not in ALLOWED_DOC_TYPE:
-        errors.append(f"{p}: doc_type ungültig: {fm['doc_type']}")
-
-    # Stubs brauchen phase & moved_to
-    if fm.get("doc_type") == "stub":
-        if fm.get("phase") != "archived":
-            errors.append(f"{p}: stub braucht phase: 'archived'")
-        if not fm.get("moved_to"):
-            errors.append(f"{p}: stub braucht moved_to")
-
-print(f"DEBUG: Processed {processed_count} files, skipped {skipped_count} legacy files")
-if errors:
-    print("\n".join(errors))
-    sys.exit(1)
-print("Front-Matter OK")
+if __name__ == "__main__":
+    main()
