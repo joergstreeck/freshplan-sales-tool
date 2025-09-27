@@ -76,7 +76,7 @@ jobs:
             -Djacoco.rule.minimum=${{ env.COVERAGE_THRESHOLD }}
 
       - name: Upload Coverage to Codecov
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
         with:
           files: ./backend/target/site/jacoco/jacoco.xml
           flags: backend-module02
@@ -85,7 +85,7 @@ jobs:
 
       - name: Archive Test Results
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: backend-test-results
           path: |
@@ -136,7 +136,7 @@ jobs:
             --branches ${{ env.COVERAGE_THRESHOLD }}
 
       - name: Upload Coverage to Codecov
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
         with:
           files: ./frontend/coverage/coverage-final.json
           flags: frontend-module02
@@ -145,7 +145,7 @@ jobs:
 
       - name: Archive Test Results
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: frontend-test-results
           path: |
@@ -170,7 +170,7 @@ jobs:
           severity: 'CRITICAL,HIGH'
 
       - name: Upload Trivy Results
-        uses: github/codeql-action/upload-sarif@v2
+        uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: 'trivy-results.sarif'
 
@@ -185,7 +185,7 @@ jobs:
             --enableExperimental
 
       - name: Upload OWASP Results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: owasp-dependency-check
           path: reports/
@@ -236,7 +236,7 @@ jobs:
           echo "✅ Performance threshold passed: P95 = ${P95}ms"
 
       - name: Upload Performance Results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: k6-performance-results
           path: |
