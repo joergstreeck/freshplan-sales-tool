@@ -5,7 +5,7 @@ doc_type: "stub"
 status: "moved"
 owner: "team/leads"
 updated: "2025-09-27"
-moved_to: "./_index.md"
+moved_to: "../_index.md"
 ---
 # ➡️ Verschoben
-Bitte nutze [_index.md](./_index.md) als Einstieg für Artefakte.
+Bitte nutze [_index.md](../_index.md) als Einstieg für Artefakte.
