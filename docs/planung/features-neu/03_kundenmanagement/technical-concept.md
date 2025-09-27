@@ -1,7 +1,14 @@
-# Kundenmanagement - Foundation Standards Implementation
+---
+module: "03_kundenmanagement"
+doc_type: "technical_concept"
+status: "draft"
+owner: "team/architecture"
+updated: "2025-09-27"
+---
 
-> **RLS-Status (Sprint 1.6):** ✅ @RlsContext CDI-Interceptor verpflichtend
-> 🔎 Details: [ADR-0007](../../adr/ADR-0007-rls-connection-affinity.md) · [Security Update](../../SECURITY_UPDATE_SPRINT_1_5.md)
+# 🏗️ Technical Concept - Modul 03 Kundenmanagement
+
+**📍 Navigation:** [_index.md](./_index.md) → technical-concept.md
 
 **📊 Plan Status:** ✅ Ready for Implementation (Foundation Standards Updated)
 **🎯 Owner:** Backend + Frontend Team
