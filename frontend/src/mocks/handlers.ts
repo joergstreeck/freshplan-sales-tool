@@ -140,7 +140,7 @@ export const handlers = [
   }),
 
   // Customer search endpoint
-  http.post('http://localhost:8080/api/customers/search', ({ request }) => {
+  http.post('http://localhost:8080/api/customers/search', () => {
     return HttpResponse.json({
       content: mockCustomers.slice(0, 3), // Return first 3 customers
       page: 0,
