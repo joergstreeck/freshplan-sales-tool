@@ -1,3 +1,11 @@
+---
+module: "03_kundenmanagement"
+doc_type: "guideline"
+status: "draft"
+owner: "team/architecture"
+updated: "2025-09-27"
+---
+
 # Foundation Compliance Matrix – Module 03 (UPDATED)
 
 | Bereich | Ziel | Status | Nachweis | Gaps Geschlossen |

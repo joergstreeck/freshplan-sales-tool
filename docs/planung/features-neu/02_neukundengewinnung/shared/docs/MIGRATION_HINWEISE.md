@@ -1,3 +1,11 @@
+---
+module: "02_neukundengewinnung"
+doc_type: "guideline"
+status: "draft"
+owner: "team/architecture"
+updated: "2025-09-27"
+---
+
 # ⚠️ MIGRATION-NUMMER-HINWEISE
 
 ## 🚨 KRITISCH: Variable Migration-Nummern

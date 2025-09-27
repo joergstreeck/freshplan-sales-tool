@@ -1,3 +1,11 @@
+---
+module: "03_kundenmanagement"
+doc_type: "analyse"
+status: "draft"
+owner: "team/architecture"
+updated: "2025-09-27"
+---
+
 # 🚀 FreshPlan Enterprise Platform - Mega-Analyse nach vollständiger Codebase-Durchsuchung
 
 **📊 Status:** ✅ Vollständige Enterprise-Platform analysiert

@@ -1,3 +1,11 @@
+---
+module: "02_neukundengewinnung"
+doc_type: "analyse"
+status: "archived"
+owner: "team/architecture"
+updated: "2025-09-27"
+---
+
 # 🔍 Code-Analyse: Neukundengewinnung - Status vs. Planung
 
 > **⚠️ Status:** OBSOLET seit 2025-09-27
