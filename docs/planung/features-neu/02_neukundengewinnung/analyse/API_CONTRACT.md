@@ -1,3 +1,11 @@
+---
+module: "02_neukundengewinnung"
+doc_type: "analyse"
+status: "draft"
+owner: "team/architecture"
+updated: "2025-09-27"
+---
+
 # API Contract: Lead-Management Frontend ↔ Backend
 
 **Sprint:** 2.1.2 – Frontend Research

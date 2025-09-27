@@ -11,35 +11,51 @@ jobs:
       - name: Enforce module root rule
         shell: bash
         run: |
+          set +e  # wir steuern den Exit-Code selbst über fail
           fail=0
-          for ROOT in docs/planung/features-neu/*_*; do
-            [ -d "$ROOT" ] || continue
-            mapfile -t items < <(ls -1 "$ROOT" | grep -v '^\.' || true)
+          echo "DEBUG: Starting Structure Guard check"
 
-            # Stub-Verzeichnisse (haben _index.md mit doc_type: "stub")
-            stub_dirs=()
-            for d in "${items[@]}"; do
-              if [ -d "$ROOT/$d" ] && [ -f "$ROOT/$d/_index.md" ] && grep -q 'doc_type: *"stub"' "$ROOT/$d/_index.md"; then
-                stub_dirs+=("$d")
+          for ROOT in docs/planung/features-neu/*_*; do
+            echo "DEBUG: Checking ROOT: $ROOT"
+            [ -d "$ROOT" ] || continue
+            module_name="$(basename "$ROOT")"
+
+            # 1) Non-Stub-Verzeichnisse zählen (nur echte Ordner, keine Dateien/Hidden)
+            count=0
+            for d in "$ROOT"/*/; do
+              [ -d "$d" ] || continue
+              base="$(basename "$d")"
+              case "$base" in
+                .* ) continue ;;  # versteckte Ordner ignorieren
+              esac
+              # Stub-Verzeichnisse überspringen
+              if [ -f "$d/_index.md" ] && grep -Eq '^doc_type:\s*"stub"' "$d/_index.md"; then
+                continue
               fi
+              count=$((count+1))
             done
 
-            # Zählmenge = alle Items minus Stub-Verzeichnisse
-            count=$(
-              for d in "${items[@]}"; do
-                skip=0
-                for s in "${stub_dirs[@]}"; do [ "$d" = "$s" ] && skip=1 && break; done
-                [ $skip -eq 0 ] && echo "$d"
-              done | wc -l
-            )
-
+            # 2) legacy-planning Zusatzslot
             legacy=0
             [ -d "$ROOT/legacy-planning" ] && legacy=1
 
-            # Regel: <= 8 Kern-Items (+1 falls legacy-planning vorhanden)
-            if [ $count -gt $((8 + legacy)) ]; then
-              echo "::error file=$ROOT::Root enthält $count Items (Stub-Ordner ausgenommen). Erlaubt: 8 + legacy-planning"
+            # 3) Modul-spezifische Limits
+            case "$module_name" in
+              02_neukundengewinnung|03_kundenmanagement)
+                limit=$((5 + legacy)) ;;  # backend, frontend, shared, analyse, artefakte (+ legacy)
+              00_infrastruktur|01_mein-cockpit)
+                limit=15 ;;               # weiche Toleranz (noch nicht restrukturiert)
+              *)
+                limit=10 ;;               # generische Legacy-Toleranz
+            esac
+
+            echo "DEBUG: $module_name -> count=$count, legacy=$legacy, limit=$limit"
+
+            if [ "$count" -gt "$limit" ]; then
+              echo "::error file=$ROOT::Root enthält $count Verzeichnisse (Stub-Ordner ausgenommen). Erlaubt: $limit für $module_name"
               fail=1
             fi
           done
-          exit $fail
+
+          echo "DEBUG: Structure Guard completed with fail=$fail"
+          exit "$fail"

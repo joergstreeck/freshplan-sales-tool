@@ -1,3 +1,11 @@
+---
+module: "02_neukundengewinnung"
+doc_type: "guideline"
+status: "archived"
+owner: "team/architecture"
+updated: "2025-09-27"
+---
+
 # 🚀 Module 02 Neukundengewinnung - Gap Closure Report
 
 **📅 Datum:** 2025-09-19

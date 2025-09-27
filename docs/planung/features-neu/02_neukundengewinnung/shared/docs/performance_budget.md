@@ -1,3 +1,11 @@
+---
+module: "02_neukundengewinnung"
+doc_type: "guideline"
+status: "draft"
+owner: "team/architecture"
+updated: "2025-09-27"
+---
+
 # Performance Budget – Modul 02 (Foundation V2)
 - API P95: < 200 ms (GET/POST /api/leads, /api/leads/export)
 - Email Batch: 1000 mails in < 2 s, Error < 0.5%

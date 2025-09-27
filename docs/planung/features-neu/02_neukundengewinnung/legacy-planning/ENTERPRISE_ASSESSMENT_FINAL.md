@@ -1,3 +1,11 @@
+---
+module: "02_neukundengewinnung"
+doc_type: "guideline"
+status: "archived"
+owner: "team/architecture"
+updated: "2025-09-27"
+---
+
 # 🏢 Enterprise Assessment: Modul 02 Neukundengewinnung - Final Evaluation
 
 **📅 Assessment Date:** 2025-09-19

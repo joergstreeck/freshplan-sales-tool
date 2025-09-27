@@ -2,6 +2,7 @@
 module: "03_kundenmanagement"
 doc_type: "sprint_map"
 status: "planned"
+owner: "team/leads"
 updated: "2025-09-27"
 ---
 

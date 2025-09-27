@@ -1,3 +1,11 @@
+---
+module: "02_neukundengewinnung"
+doc_type: "guideline"
+status: "draft"
+owner: "team/architecture"
+updated: "2025-09-27"
+---
+
 # Compliance Update – Modul 02 Fixes
 Stand: 2025-09-19
 
