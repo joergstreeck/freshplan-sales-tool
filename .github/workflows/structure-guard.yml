@@ -42,11 +42,14 @@ jobs:
             # Erlaubt: backend, frontend, shared, analyse, artefakte + legacy-planning
             # Ausnahme: Module 02/03 (reorganized) = strict, andere Module = legacy limit 10
             module_name=$(basename "$ROOT")
-            if [[ "$module_name" =~ ^(02_neukundengewinnung|03_kundenmanagement)$ ]]; then
-              limit=$((5 + legacy))
-            else
-              limit=10  # Legacy tolerance für nicht-reorganisierte Module
-            fi
+            case "$module_name" in
+              "02_neukundengewinnung"|"03_kundenmanagement")
+                limit=$((5 + legacy))
+                ;;
+              *)
+                limit=10  # Legacy tolerance für nicht-reorganisierte Module
+                ;;
+            esac
 
             if [ $count -gt $limit ]; then
               echo "::error file=$ROOT::Root enthält $count Verzeichnisse (Stub-Ordner ausgenommen). Erlaubt: $limit für $module_name"

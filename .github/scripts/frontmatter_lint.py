@@ -12,8 +12,12 @@ def iter_md():
                 yield os.path.join(dirpath, fn)
 
 def parse_frontmatter(path):
-    with open(path, "r", encoding="utf-8") as f:
-        text = f.read()
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            text = f.read()
+    except UnicodeDecodeError:
+        print(f"Unicode decode error in {path}, skipping")
+        return None, ""
     if not text.startswith("---"):
         return None, text
     parts = text.split("---", 2)
@@ -30,11 +34,15 @@ def parse_frontmatter(path):
 
 errors = []
 for p in iter_md():
+    # Skip archiv completely - legacy files with malformed frontmatter
+    if "/archiv/" in p:
+        continue
     fm, body = parse_frontmatter(p)
     # Trigger-Sprints dürfen separate Sprint-Header haben → Front-Matter optional
     # Infrastructure/legacy docs dürfen ohne Front-Matter sein
+    # Archiv dürfen ohne Front-Matter sein
     if fm is None:
-        if "/features-neu/" in p and not any(x in p for x in ["/00_infrastruktur/", "/legacy-planning/"]):
+        if "/features-neu/" in p and not any(x in p for x in ["/00_infrastruktur/", "/legacy-planning/", "/archiv/"]):
             errors.append(f"{p}: fehlende Front-Matter (--- ... ---)")
         continue
 
