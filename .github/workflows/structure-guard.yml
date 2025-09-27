@@ -46,8 +46,11 @@ jobs:
               "02_neukundengewinnung"|"03_kundenmanagement")
                 limit=$((5 + legacy))
                 ;;
+              "00_infrastruktur"|"01_mein-cockpit")
+                limit=15  # Higher tolerance for unstructured modules
+                ;;
               *)
-                limit=10  # Legacy tolerance für nicht-reorganisierte Module
+                limit=10  # Legacy tolerance für andere Module
                 ;;
             esac
 

@@ -33,9 +33,13 @@ def parse_frontmatter(path):
     return data, body
 
 errors = []
+processed_count = 0
+skipped_count = 0
+
 for p in iter_md():
     # Skip archiv completely - legacy files with malformed frontmatter
     if "/archiv/" in p:
+        skipped_count += 1
         continue
     fm, body = parse_frontmatter(p)
     # Only check Module 02/03 for Foundation Standards compliance
@@ -49,6 +53,7 @@ for p in iter_md():
 
         if not module_match:
             # Skip all other modules - they are legacy
+            skipped_count += 1
             continue
 
     # Check if trigger sprints (outside features-neu) - they can have minimal front-matter
@@ -58,12 +63,15 @@ for p in iter_md():
             errors.append(f"{p}: fehlende Front-Matter (--- ... ---)")
             continue
         # Skip detailed validation for trigger sprints
+        processed_count += 1
         continue
 
     if fm is None:
         errors.append(f"{p}: fehlende Front-Matter (--- ... ---)")
+        processed_count += 1
         continue
 
+    processed_count += 1
     # Pflichtfelder prüfen (only for Module 02/03)
     for k in REQUIRED:
         if k not in fm:
@@ -82,6 +90,7 @@ for p in iter_md():
         if not fm.get("moved_to"):
             errors.append(f"{p}: stub braucht moved_to")
 
+print(f"DEBUG: Processed {processed_count} files, skipped {skipped_count} legacy files")
 if errors:
     print("\n".join(errors))
     sys.exit(1)
