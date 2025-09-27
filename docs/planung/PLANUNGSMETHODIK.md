@@ -1,340 +1,196 @@
-# 📋 Planungsmethodik - Claude-Optimierte Dokumentation (Kompakt)
+---
+module: "shared"
+domain: "shared"
+doc_type: "guideline"
+status: "approved"
+owner: "team/leads"
+updated: "2025-09-27"
+---
 
-**📅 Erstellt:** 2025-09-21
-**🎯 Zweck:** Praxistaugliche Standards für Claude-freundliche Planungsdokumentation
-**📏 Länge:** <300 Zeilen (Claude-optimiert)
+# 📋 Planungsmethodik – Einstieg über Sprints, Arbeit in Modulen
+
+**Kurzfassung:**
+- **Einstieg immer über Sprints** (zentral unter `docs/planung/`).
+- **Konkrete Arbeit in Modulen** über Overlays: `backend/`, `frontend/`, `shared/`.
+- **Recherche & Muster** liegen in `analyse/` und `artefakte/`.
+- **Historie & Detailplanungen** werden nach `legacy-planning/` ausgelagert (mit Stubs abgesichert).
 
 ---
 
-## 🧠 **QUICK REFERENCE FÜR CLAUDE**
+## 1) Navigationsprinzip (für Menschen & KI)
 
-### **Sofort-Checkliste bei neuen Plänen:**
-- [ ] **Länge:** Max 300-400 Zeilen pro Dokument
-- [ ] **README.md:** Jedes Modul MUSS Navigation-Hub haben
-- [ ] **Executive Summary:** 3-4 Sätze What/Why/When/How
-- [ ] **Struktur:** Nach bewährtem Modul 01-08 Pattern
-- [ ] **Artefakte:** Technologie-Layer organisiert (backend/, sql/, docs/)
+1. **Sprint öffnen** (zentral, z. B. `TRIGGER_SPRINT_2_1.md`): Ziel, Arbeitsauftrag, PR‑Bezug.
+2. **SPRINT_MAP des Moduls**: Brücke vom Sprint zum Modul (keine Kopien, nur Links).
+3. **Modulstart (`_index.md`)**: kurzes **Status‑Dashboard** & klare Reihenfolge.
+4. **Overlays**: in `backend/`, `frontend/`, `shared/` arbeiten.
+5. **Nachschlagen**: `analyse/` (Research, API‑Contracts) & `artefakte/` (bewährte Patterns).
+6. **Historie**: `legacy-planning/` (alte Detailplanungen), mit **Stubs** an alten Pfaden.
+
+**Modul‑Blaupause (Struktur pro Modul `NN_modulname/`):**
+
+```
+NN_modulname/
+├── _index.md
+├── SPRINT_MAP.md
+├── backend/
+├── frontend/
+├── shared/
+├── analyse/
+├── artefakte/
+├── technical-concept.md          # Überblick (keine Feature-Details)
+└── legacy-planning/              # Historie/Detailplanungen (mit Stubs)
+```
 
 ---
 
-## 🏗️ **BEWÄHRTE MODUL-STRUKTUR (Module 01-08)**
+## 2) Sprints – der Startpunkt
 
-### **Standard Modul-Layout:**
-```
-XX_modul-name/
-├── README.md                    # Navigation-Hub (PFLICHT)
-├── technical-concept.md         # Haupt-Implementation-Plan
-├── analyse/                     # Codebase-Analysen
-├── diskussionen/               # Strategische KI-Diskussionen
-├── artefakte/                  # Production-Ready Implementation
-│   ├── README.md               # Copy-Paste Deployment-Guide
-│   ├── backend/                # Java/Quarkus Services
-│   ├── sql/                    # Database Schema + Migrations
-│   └── docs/                   # Strategy + SoT Documents
-└── zukunft/                    # Visionäre Features (optional)
+**Ort:**
+- **Alle Sprints bleiben** unter `docs/planung/` (z. B. `TRIGGER_SPRINT_2_1.md`, `TRIGGER_SPRINT_2_1_1.md`, …).
+- `TRIGGER_INDEX.md` bleibt zentrale Übersicht.
 
-KOMPLEXE MODULE (EMPFOHLEN für >4h Implementation):
-├── README.md                    # Navigation-Hub (PFLICHT)
-├── technical-concept.md         # Strategic Overview (208-300 Zeilen max)
-├── implementation-plans/        # 🎯 Atomare Implementation-Pläne (NEUE VORGABE)
-│   ├── 01_COMPONENT_A_PLAN.md   # Atomarer Plan 1 (6-8h, 300-400 Zeilen)
-│   ├── 02_COMPONENT_B_PLAN.md   # Atomarer Plan 2 (4-6h, 300-400 Zeilen)
-│   ├── 03_COMPONENT_C_PLAN.md   # Atomarer Plan 3 (4-5h, 300-400 Zeilen)
-│   └── 04_INTEGRATION_PLAN.md   # Cross-Component Integration (3-4h)
-├── artefakte/                   # Production-Ready Code + Configs
-└── diskussionen/               # Strategic AI-Diskussionen
-
-🎯 CLAUDE-VALIDATED: Atomare Pläne = +90% Produktivität vs. Monolithische Planung
+**Sprint‑Header (Pflicht, YAML am Dokumentanfang):**
+```yaml
+---
+sprint_id: "2.1.2"
+title: "Frontend Research – Modul 02"
+status: "complete"        # draft | in_progress | complete
+date_start: "2025-09-24"
+date_end: "2025-09-27"
+modules: ["02_neukundengewinnung"]
+entry_points:
+  - "features-neu/02_neukundengewinnung/SPRINT_MAP.md"
+  - "features-neu/02_neukundengewinnung/frontend/_index.md"
+pr_refs: ["#112"]
+updated: "2025-09-27"
+---
 ```
 
-### **README.md Template (Navigation-Hub):**
+**Arbeitsanweisung (Pflichtkasten, direkt unter dem Header):**
+
+> **🎯 Arbeitsanweisung – Reihenfolge**
+> 1. **SPRINT_MAP des Moduls öffnen**
+> 2. **Modul‑Start (_index.md) → Status prüfen**
+> 3. **Overlay wählen:** `backend/` oder `frontend/` (Cross‑Cutting: `shared/`)
+> 4. **Details:** `analyse/` (Research, Contracts)
+> 5. **Muster:** `artefakte/` (Patterns kopieren, wo sinnvoll)
+
+**Definition of Done (Sprint):**
+- [ ] **Ergebnis erreicht** (1–2 Sätze Beleg)
+- [ ] **Relevante Modul‑Docs aktualisiert** (`_index.md`, ggf. `analyse/`…)
+- [ ] **Link‑Check grün** (keine kaputten Links)
+- [ ] **Stubs gesetzt**, falls Pfade geändert wurden (mind. 2 Sprints bestehen lassen)
+
+---
+
+## 3) Modul‑Overlays (Backend, Frontend, Shared)
+
+- **`backend/`** – Server‑Logik, Persistenz, Events, Security.
+- **`frontend/`** – UI, Routen, Daten‑Fetching, State.
+- **`shared/`** – Standards & Contracts: Design‑Tokens, Event‑Envelope, Metriken, Security‑Policies.
+
+**Status‑Dashboard (Pflichtbestandteil im Modul‑`_index.md`):**
+
 ```markdown
-# 🎯 Modul XX Name - Vollständige Planungsdokumentation
-
-**📅 Letzte Aktualisierung:** YYYY-MM-DD
-**🎯 Status:** [PRODUCTION-READY/PLANNING/etc.] + Prozent
-**📊 Vollständigkeit:** X% (Technical Concept + Artefakte + Assessment)
-**🎖️ Qualitätsscore:** X.X/10 + Kategorisierung
-
-## 🏗️ PROJEKTSTRUKTUR-ÜBERSICHT
-[ASCII-Tree mit Kommentaren]
-
-## 🎯 EXECUTIVE SUMMARY
-**Mission:** [One sentence goal]
-**Problem:** [What we're solving]
-**Solution:** [How we solve it - 3 bullet points max]
-
-## 📁 QUICK START
-1. **Architecture verstehen:** → technical-concept.md (Gesamtstrategie)
-2. **Production-Ready Code:** → artefakte/ (Copy-Paste Implementation)
-3. **Strategic Decisions:** → diskussionen/ (YAML-dokumentierte Entscheidungen)
-
-## 🎯 QUICK DECISION MATRIX (für neue Claude)
-```yaml
-"Ich brauche sofort Production Code":
-  → Start: artefakte/README.md (Copy-Paste Deployment Guide)
-
-"Ich will das Gesamtbild verstehen":
-  → Start: technical-concept.md (Architecture + Dependencies)
-
-"Ich soll Feature X implementieren":
-  → Start: XX_FEATURE_PLAN.md (atomarer Plan falls >400 Zeilen)
-
-"Ich arbeite an Cross-Module Integration":
-  → Dependencies: README.md zeigt kritische Pfade
+**Status:**
+- Backend: ✅ Production (letzter Sprint z. B. 2.1/2.1.1)
+- Frontend: 📋 Research complete → Implementation next
+- Patterns: ✅ Copy‑Paste ready (z. B. 3 Artefakte)
+- Legacy: 📚 Archiviert (→ legacy-planning/)
 ```
 
-## 🚀 CURRENT STATUS & DEPENDENCIES
-- ✅ [Completed achievements]
-- 🔄 [In progress work - mit Dependencies]
-- 📋 [Planned next steps - mit Priorisierung]
-```
+**Root‑Ordnung (Guardrail):**
+Modul‑Root zeigt max. **8 Kern‑Items** (`_index.md`, `SPRINT_MAP.md`, `backend/`, `frontend/`, `shared/`, `analyse/`, `artefakte/`, `technical-concept.md`) + `legacy-planning/`.
+
+**Ausnahme:** **Stub‑Verzeichnisse** (2‑Sprint‑Retention) zählen nicht zu den 8 Kern‑Items. Sie sind temporär und sollten nicht für Navigation verwendet werden.
 
 ---
 
-## 🎯 **TECHNICAL CONCEPT STANDARDS**
+## 4) Dokument‑Standards (Front‑Matter, Breadcrumbs, Links)
 
-### **Atomare Dokument-Länge:**
+**Front‑Matter (Pflicht in jedem Doc):**
+
 ```yaml
-Ideal für Claude-Processing:
-  Executive Summary: 30-50 Zeilen
-  Main Content: 200-300 Zeilen
-  Cross-References: 20-30 Zeilen
-  TOTAL: 300-400 Zeilen maximum - KNACKIG MIT TIEFE
-
-ATOMARE PLANUNG (EMPFOHLEN bei komplexen Projekten):
-  Problem: Komplexe Module >500 Zeilen führen zu Claude-Überforderung
-  Lösung: IMMER aufteilen in atomare Implementation-Pläne - KNACKIG MIT TIEFE
-  Beispiel: 01_SETTINGS_SYNC_JOB_IMPLEMENTATION_PLAN.md (6-8h)
-           02_GATEWAY_POLICIES_DEPLOYMENT_PLAN.md (4-6h)
-           03_EVENT_SCHEMAS_INTEGRATION_PLAN.md (4-5h)
-
-  🎯 QUALITÄTSPRINZIP: KNACKIG MIT TIEFE bedeutet:
-  - Konzentriert auf das Wesentliche (keine Redundanz, keine Aufgeblasenheit)
-  - Trotzdem alle kritischen Details für Production-Implementation
-  - Code-Beispiele fokussiert auf Key-Patterns (nicht vollständige Klassen)
-  - Präzise Sprache ohne unnötige Erklärungen
-  - Jede Zeile muss implementierungs-relevant sein
-
-  🎯 CLAUDE-PRODUKTIVITÄTS-VORTEILE (validiert):
-  - Sofortige Handlungsfähigkeit (2-5min) vs Analysis-Paralysis (15-30min)
-  - Fokussierte Aufmerksamkeit (1 Konzept) vs Kognitive Überlastung (8+ Konzepte)
-  - Messbare Fortschritte vs vage Completion-Estimates
-  - Isolierte Fehlerbehandlung vs System-weite Verwirrung
-  - Team-Skalierbarkeit durch klare Plan-Abgrenzungen
-
-GOVERNANCE-OPTIMIERUNG (10/10 Claude-Ready Pattern):
-  - DEPENDENCY-KETTE: "START HIER" → "DANN" → "PARALLEL" klar markieren
-  - TIMELINE-KOORDINATION: Q4/Q1/Q2 mit Wochen-Nummern
-  - QUICK DECISION MATRIX: "Ich brauche X" → "Start: Y.md"
-  - ARTEFAKTE-CROSS-LINKS: Direkte Links zu backend/sql/docs/
-  - PHASE-STRUKTUR: Foundation (kritisch) → Enhancement (parallel)
+---
+module: "02_neukundengewinnung"     # NN_modulname oder "shared"
+domain: "frontend"                  # backend | frontend | shared
+doc_type: "analyse"                 # analyse | konzept | contract | guideline | deltalog | adr
+status: "approved"                  # draft | approved | obsoleted
+sprint: "2.1.2"                     # optional – wenn sprintbezogen
+owner: "team/leads"
+updated: "2025-09-27"
+---
 ```
 
-### **Technical Concept Template:**
+**Breadcrumb (Pflicht direkt nach H1):**
+
 ```markdown
-# [PLAN_NAME] - Implementation Plan
-
-**📊 Plan Status:** 🟢 Ready / 🟡 Review / 🔄 In Progress
-**🎯 Owner:** [Team/Person]
-**⏱️ Timeline:** [Start] → [End]
-**🔧 Effort:** [XS/S/M/L/XL]
-
-## 🎯 Executive Summary (für Claude)
-**Mission:** [What]
-**Problem:** [Why]
-**Solution:** [How]
-**Timeline:** [When]
-**Impact:** [What changes]
-
-## 📋 Context & Dependencies
-### Current State: [max 5 bullets]
-### Target State: [max 5 bullets]
-### Dependencies: → [Links]
-
-## 🛠️ Implementation Phases [2-4 phases max]
-### Phase 1: [Name] (Week 1-2)
-**Goal:** [Clear objective]
-**Actions:** [Specific tasks with success criteria]
-**Success Criteria:** [Measurable outcomes]
-
-## ✅ Success Metrics [3-5 measurable outcomes]
-## 🔗 Related Documentation [Links]
-## 🤖 Claude Handover Section
+**📍 Navigation:** Home → Planung → 02 Neukundengewinnung → Frontend → Analyse → API_CONTRACT
 ```
+
+**Link‑Regeln:**
+- Relative Pfade innerhalb von `docs/planung/`.
+- Keine GitHub‑URLs für interne Links.
+- Zentrale Sprints verlinken, niemals kopieren.
 
 ---
 
-## 📦 **ARTEFAKTE-ORGANISATION**
+## 5) Research & Patterns
 
-### **Technologie-Layer-Struktur:**
-```yaml
-artefakte/
-├── README.md              # Production-Ready Implementation Guide
-├── backend/               # Java/Quarkus Services
-├── frontend/              # React/TypeScript Components (optional)
-├── sql/                   # Database Schema + Migrations
-├── api/                   # OpenAPI Specifications (optional)
-├── testing/               # Unit + Integration Tests (optional)
-└── docs/                  # Strategy + SoT Documents
-```
-
-### **Production-Readiness-Levels:**
-```yaml
-90-100%: Copy-Paste → Production in 1-2 Tage
-80-89%:  Minor adjustments required (4-8 hours)
-70-79%:  Moderate implementation needed (1-2 Tage)
-<70%:    Major development required (>3 Tage)
-```
+- **`analyse/`** – Inventuren, API‑Contracts, Entscheidungsgrundlagen.
+- **`artefakte/`** – Bewährte Patterns (z. B. Security‑Tests, Performance‑Tests, Event‑System), copy‑paste‑fähig.
 
 ---
 
-## ✅ **QUALITÄTS-CHECKLISTE**
+## 6) Legacy‑Planungen & Stubs (Weiterleitungen)
 
-### **Vor Publish eines Plans:**
-- [ ] **Länge:** 300-400 Zeilen maximum - KNACKIG MIT TIEFE
-- [ ] **Navigation:** README.md als Entry-Point vorhanden
-- [ ] **Executive Summary:** 3-4 Sätze What/Why/When/How
-- [ ] **Dependencies:** Klar dokumentiert mit Links
-- [ ] **Phases:** 2-4 konkrete Phasen mit Actions
-- [ ] **Success Criteria:** Messbare Outcomes
-- [ ] **Claude Handover:** Nächster Schritt klar
-- [ ] **Qualität:** Jede Zeile implementierungs-relevant, keine Aufgeblasenheit
+**Zweck:** Alte/umfangreiche Inhalte sichtbar, aber nicht im Weg.
+
+**Ort:** `legacy-planning/`…
+
+**Stubs:** Am alten Pfad belassen (mindestens 2 Sprints), damit externe/alte Verweise nicht brechen.
+
+**Stub‑Template (minimal):**
+
+```markdown
+---
+status: "moved"
+moved_to: "./legacy-planning/lead-erfassung/technical-concept.md"
+updated: "2025-09-27"
+---
+
+# ➡️ Dokument verschoben
+
+**Neuer Pfad:** `./legacy-planning/lead-erfassung/technical-concept.md`
+**Grund:** Strukturvereinfachung (aktuelle Arbeit erfolgt in den Modul‑Overlays)
+```
+
+**Doppelungen vermeiden:**
+- **Modul‑Root:** `technical-concept.md` ist Überblick.
+- **Legacy‑Details** werden umbenannt (z. B. `LEAD_FEATURE_CONCEPT.md`, `EMAIL_FEATURE_CONCEPT.md`).
 
 ---
 
-## 🚫 **ANTI-PATTERNS VERMEIDEN**
+## 7) Guardrails (CI)
 
-### **Dokument-Struktur:**
-```yaml
-❌ PROBLEME:
-- Dokumente >500 Zeilen (Claude verliert Context)
-- Keine README.md Navigation
-- Vage Referenzen ohne Links
-- Duplikate mit (1), (2) Suffixen
-- Aufgebläht ohne Tiefe (redundante Erklärungen, vollständige Code-Klassen)
+- **Docs‑only Check** (bestehend) – verhindert Codeänderungen in Docs‑PRs.
+- **Link‑Check** – prüft Referenzen in `docs/**`.
+- **Structure‑Guard** – stellt sicher: Modul‑Root hat max. 8 Kern‑Items + `legacy-planning/`.
+- **Front‑Matter‑Lint** – prüft Pflichtfelder & gültige Werte in Markdown‑Front‑Matter.
 
-✅ LÖSUNGEN:
-- Atomare Dokumente <400 Zeilen - KNACKIG MIT TIEFE
-- Klare Navigation-Hierarchie
-- Konkrete Cross-References
-- Saubere Technologie-Layer-Organisation
-- Fokussierte Code-Beispiele (Key-Patterns statt vollständige Implementierungen)
-- Präzise Sprache ohne Füllwörter
-```
-
-### **Qualitäts-Standards:**
-```yaml
-❌ VERMEIDEN:
-- Code ohne Tests oder Documentation
-- Unvollständige API Specifications
-- Fehlende Production-Readiness Assessment
-- Broken Cross-References
-
-✅ SICHERSTELLEN:
-- >80% Test Coverage für neue Services
-- Complete OpenAPI 3.x Specifications
-- Klare Deployment Instructions
-- Functional Cross-Module Links
-```
+(Guardrails laufen als GitHub Actions und sichern Konsistenz über die Zeit.)
 
 ---
 
-## 📈 **SUCCESS-METRICS**
+## 8) Quick‑Start für neue Claude‑Instanzen
 
-### **Claude-Readiness-Kriterien:**
-```yaml
-Navigation (30%): README.md + ASCII-Tree + Clear Entry Points
-Strategic Context (25%): Mission/Problem/Solution + Business Value
-Implementation (25%): Production-Ready Artefakte + Deployment Guide
-Documentation (20%): Structured Docs + Cross-References + Handover
-```
-
-### **Bewährte Standards aus Modul-Optimierung 01-08:**
-```yaml
-Transformation Results (2025-09-21):
-  Average Claude-Readiness: 7.3/10 → 9.9/10 (+36% Improvement)
-  Navigation Problems: 4 Module ohne README.md → 0 Module
-  Quality Scores: Alle Module jetzt 9-10/10
-
-Key Success Patterns:
-  ASCII-Tree Struktur: 100% der Module nutzen structured overview
-  Executive Summary: Mission/Problem/Solution in allen Modulen
-  Quick Start Navigation: 1-2-3 Prioritäten für neue Claude-Instanzen
-  Production-Ready Artefakte: 90%+ Copy-Paste-Ready Status
-
-Spezielle Erkenntnisse:
-  Module ohne README.md: Neue Claude komplett verloren (6/10 → 10/10)
-  Excellent Content Hidden: Navigation löst 43% Readiness-Jump
-  Multi-Concepts verwirrend: Modul 06 hatte 3 Technical Concepts (→ klare Hierarchie)
-  Artefakte-Chaos: Technologie-Layer-Struktur löst Organisation-Problem
-
-ATOMARE PLANUNG VALIDATION (Integration-Modul + Neukundengewinnung 2025-09-21):
-  INTEGRATION-MODUL:
-    VORHER: 1x Technical-Concept (208 Zeilen) → Claude-Readiness 7/10
-    NACHHER: 5x Atomare Pläne (1500+ Zeilen) → Claude-Readiness 10/10
-
-  NEUKUNDENGEWINNUNG-MODUL:
-    VORHER: 3x Technical-Concepts (1321 Zeilen total) → Claude-Readiness 6/10
-    NACHHER: 5x Atomare Pläne (1629 Zeilen) → Claude-Readiness 10/10
-    QUALITÄT: KNACKIG MIT TIEFE - fokussierte Implementierungs-Guidance ohne Aufgeblasenheit
-
-  Quantified Claude-Performance-Gains:
-  - Time-to-First-Action: 15-30min → 2-5min (83% faster)
-  - Context-Switch-Overhead: Hoch → Niedrig (fokussiert)
-  - Error-Recovery-Time: 20-40min → 5-10min (75% faster)
-  - Progress-Messbarkeit: Subjektiv → Objektiv/präzise
-  - Team-Parallel-Capability: Schwierig → Einfach (Plan-isoliert)
-  - Qualitäts-Konsistenz: KNACKIG MIT TIEFE Standard etabliert
-```
-
-**Deployment-Velocity-Ziel:** <3 Tage von Planung zu Production
+1. **Sprint öffnen** → Arbeitsanweisung lesen.
+2. **SPRINT_MAP des Moduls** aufrufen.
+3. **Modul‑Start (`_index.md`)** → Status prüfen.
+4. **In `backend/` oder `frontend/` arbeiten**.
+5. **`analyse/` für Details, `artefakte/` für Muster**.
+6. **Historie in `legacy-planning/`**.
 
 ---
 
-## 🔄 **PRAKTISCHE UMSETZUNG**
-
-### **Neue Pläne erstellen (GARANTIERT 9+/10 Claude-Ready):**
-1. **README.md Navigation-Hub** (PFLICHT)
-   - ASCII-Tree Projektstruktur
-   - Executive Summary (Mission/Problem/Solution)
-   - Quick Decision Matrix für neue Claude
-   - Dependencies & Timeline-Koordination
-
-2. **Scope-Entscheidung treffen (NEUE VORGABE):**
-   - **Einfach:** technical-concept.md (300-400 Zeilen KNACKIG MIT TIEFE) + nur bei simplen Single-Feature-Modulen
-   - **Komplex (EMPFOHLEN):** Atomare Pläne (implementation-plans/ Directory)
-     → IMMER wenn: >2 Services ODER >4 Stunden Implementation ODER Cross-Module-Dependencies
-   - **Validierte Regel:** Zweifel? → Atomare Pläne wählen (Claude-Produktivität +90%)
-   - **Qualitätsprinzip:** KNACKIG MIT TIEFE in allen Plänen - keine Aufgeblasenheit
-   - Dependencies: "START HIER" → "DANN" → "PARALLEL" in jedem Plan klar markieren
-
-3. **Artefakte strukturieren:**
-   - Technologie-Layer (backend/, sql/, docs/)
-   - Production-Readiness-Assessment (90-100% = Copy-Paste)
-   - Cross-Links zu relevanten Implementation-Plänen
-
-4. **10/10 Claude-Optimierung:**
-   - Quick Decision Matrix implementieren
-   - Timeline-Koordination mit Wochen-Nummern
-   - Dependency-Kette klar markieren
-   - Artefakte-Cross-Links zu backend/sql/docs/
-
-### **Bestehende Pläne verbessern:**
-1. **Komplexität-Assessment:** >4h Implementation? → SOFORT Atomare Pläne erstellen
-2. **Länge prüfen:** >400 Zeilen? → Aufteilen in implementation-plans/ Directory
-3. **Qualität prüfen:** Aufgebläht? → KNACKIG MIT TIEFE umschreiben (fokussierte Code-Beispiele, präzise Sprache)
-4. **Navigation:** README.md fehlt? → Hinzufügen mit Quick Decision Matrix
-5. **Artefakte:** Unstrukturiert? → Nach Layer organisieren
-6. **Links:** Broken? → Reparieren
-7. **Claude-Readiness-Test:** Neue Claude-Simulation → <5min to action?
-
----
-
-**📋 Dieses Dokument ist ein Living Standard basierend auf praktischen Erfahrungen mit den erfolgreichen Modulen 01-08 + validierter Atomarer Planung.**
-
-**🎯 NEUE VORGABE: Atomare Planung für alle komplexen Module (>4h Implementation)**
-**Validiert:** +90% Claude-Produktivität durch fokussierte 300-400 Zeilen Implementation-Pläne KNACKIG MIT TIEFE
-
-**🔄 Letzte Aktualisierung:** 2025-09-21 (Integration + Neukundengewinnung Atomare Planung-Validation)
-**📏 Länge:** <340 Zeilen (Claude-optimiert mit KNACKIG MIT TIEFE Standard)
+**Letzte Aktualisierung:** 2025‑09‑27
