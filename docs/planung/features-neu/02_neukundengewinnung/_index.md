@@ -15,6 +15,18 @@ updated: "2025-09-27"
 **🎯 Status:** PRODUCTION-READY (Backend) + RESEARCH COMPLETE (Frontend)
 **📊 Vollständigkeit:** Backend 100%, Frontend Research 100%, Implementation MVP planned
 
+## ✅ Status (Kurzübersicht)
+- **Backend:** ✅ *Production* (Sprint 2.1 + 2.1.1)
+- **Frontend:** 📋 *Research complete* (Sprint 2.1.2) – bereit für Thin Vertical Slice
+- **Patterns:** ✅ *Copy‑Paste ready* (Security/Performance/Events)
+- **Legacy:** 📚 *Archiviert* → [legacy-planning/](./legacy-planning/)
+
+## 🚀 Start here (Reihenfolge)
+1) **Sprint‑Kontext:** [SPRINT_MAP.md](./SPRINT_MAP.md)
+2) **Domain‑Einstieg:** [backend/_index.md](./backend/_index.md) **oder** [frontend/_index.md](./frontend/_index.md)
+3) **Details bei Bedarf:** [analyse/](./analyse/)
+4) **Produktionsmuster:** [artefakte/](./artefakte/)
+
 ## 🎯 EXECUTIVE SUMMARY
 
 **Mission:** Lead-Management System mit Territory-Scoping und automatisierten T+3/T+7 Follow-ups

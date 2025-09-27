@@ -1,3 +1,15 @@
+---
+sprint_id: "2.1"
+module_focus: ["02_neukundengewinnung"]
+entry_points:
+  - "features-neu/02_neukundengewinnung/SPRINT_MAP.md"
+  - "features-neu/02_neukundengewinnung/backend/_index.md"
+  - "features-neu/02_neukundengewinnung/frontend/_index.md"
+  - "features-neu/02_neukundengewinnung/analyse/_index.md"
+  - "features-neu/02_neukundengewinnung/artefakte/"
+updated: "2025-09-27"
+---
+
 # ✅ ABGESCHLOSSEN: SPRINT 2.1 NEUKUNDENGEWINNUNG - ERFOLGREICH UMGESETZT
 
 **STATUS:** ✅ 100% COMPLETE (4/4 PRs merged + P0 HOTFIX)
@@ -8,6 +20,16 @@
 > - **Modul 02 – Sprint-Map:** `features-neu/02_neukundengewinnung/SPRINT_MAP.md`
 > - **Backend Status:** `features-neu/02_neukundengewinnung/backend/_index.md`
 > - **Frontend Research (Sprint 2.1.2):** `features-neu/02_neukundengewinnung/frontend/_index.md`
+
+> ### 🎯 Arbeitsanweisung (für Claude & neue Entwickler)
+> **Einstiegspunkte für Modul 02:**
+> 1. **Sprint-Map (Modulüberblick):** `features-neu/02_neukundengewinnung/SPRINT_MAP.md`
+> 2. **Backend-Overlay:** `features-neu/02_neukundengewinnung/backend/_index.md`
+> 3. **Frontend-Overlay:** `features-neu/02_neukundengewinnung/frontend/_index.md`
+> 4. **Research-Details (nur bei Bedarf):** `features-neu/02_neukundengewinnung/analyse/_index.md`
+> 5. **Produktionsmuster:** `features-neu/02_neukundengewinnung/artefakte/`
+>
+> **Wichtig:** *Stub‑Verzeichnisse im Modul‑Root ignorieren* (temporär, 2 Sprints). Aktuelle Inhalte beginnen immer bei den Overlays.
 
 ## ⚠️ WICHTIGE QUALITÄTSREGELN - VOLLSTÄNDIG BEFOLGEN!
 

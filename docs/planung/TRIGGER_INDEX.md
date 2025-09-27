@@ -5,6 +5,8 @@
 **✅ Status:** Production-Ready mit Migration-Check + CRM AI Context
 **🔄 Verbesserungen:** Migration-Script + Business-Kontext + Security-Gates
 
+Für Modul‑konkrete Navigation verweisen die Trigger auf die **SPRINT_MAP.md** im jeweiligen Modul.
+
 ---
 
 ## 🗺️ ALLE TRIGGER-TEXTS ÜBERSICHT
