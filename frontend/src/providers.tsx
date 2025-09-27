@@ -104,6 +104,9 @@ const HilfeDashboard = lazy(() =>
   import('./pages/HilfeDashboard').then(m => ({ default: m.HilfeDashboard }))
 );
 
+// Feature-flagged components
+const LeadsPage = lazy(() => import('./pages/LeadsPage'));
+
 // Lazy load all placeholder pages
 import * as Placeholders from './pages/placeholders';
 
@@ -121,6 +124,9 @@ interface AppProvidersProps {
 export const AppProviders = ({ children: mainChildren }: AppProvidersProps) => {
   // Only include login bypass in development mode
   const isDevelopmentMode = import.meta.env.DEV && import.meta.env.MODE !== 'production';
+
+  // Feature flags
+  const FEAT_LEADGEN = (import.meta.env.VITE_FEATURE_LEADGEN ?? 'false') === 'true';
 
   // Auth Provider wrapper - AuthProvider always depends on KeycloakContext
   const AuthWrapper = ({ children: authChildren }: { children: ReactNode }) => {
@@ -247,8 +253,12 @@ export const AppProviders = ({ children: mainChildren }: AppProvidersProps) => {
                           />
                           <Route
                             path="/lead-generation/leads"
-                            element={<Placeholders.LeadErfassung />}
+                            element={FEAT_LEADGEN ? <LeadsPage /> : <Placeholders.LeadErfassung />}
                           />
+                          {/* Feature-flagged standalone route */}
+                          {FEAT_LEADGEN && (
+                            <Route path="/leads" element={<LeadsPage />} />
+                          )}
                           <Route
                             path="/lead-generation/campaigns"
                             element={<Placeholders.Kampagnen />}
