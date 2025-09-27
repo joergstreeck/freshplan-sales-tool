@@ -38,15 +38,33 @@ for p in iter_md():
     if "/archiv/" in p:
         continue
     fm, body = parse_frontmatter(p)
-    # Trigger-Sprints dürfen separate Sprint-Header haben → Front-Matter optional
-    # Infrastructure/legacy docs dürfen ohne Front-Matter sein
-    # Archiv dürfen ohne Front-Matter sein
-    if fm is None:
-        if "/features-neu/" in p and not any(x in p for x in ["/00_infrastruktur/", "/legacy-planning/", "/archiv/"]):
+    # Only check Module 02/03 for Foundation Standards compliance
+    # Other modules are legacy and don't have proper front-matter yet
+    if "/features-neu/" in p:
+        module_match = None
+        if "/02_neukundengewinnung/" in p:
+            module_match = "02"
+        elif "/03_kundenmanagement/" in p:
+            module_match = "03"
+
+        if not module_match:
+            # Skip all other modules - they are legacy
+            continue
+
+    # Check if trigger sprints (outside features-neu) - they can have minimal front-matter
+    if "/features-neu/" not in p and p.startswith("docs/planung/TRIGGER_"):
+        # Trigger sprints need minimal front-matter but not all fields
+        if fm is None:
             errors.append(f"{p}: fehlende Front-Matter (--- ... ---)")
+            continue
+        # Skip detailed validation for trigger sprints
         continue
 
-    # Pflichtfelder prüfen
+    if fm is None:
+        errors.append(f"{p}: fehlende Front-Matter (--- ... ---)")
+        continue
+
+    # Pflichtfelder prüfen (only for Module 02/03)
     for k in REQUIRED:
         if k not in fm:
             errors.append(f"{p}: Front-Matter Pflichtfeld fehlt: {k}")

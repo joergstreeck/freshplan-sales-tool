@@ -51,6 +51,7 @@ jobs:
                 ;;
             esac
 
+            echo "DEBUG: $module_name has $count directories (limit: $limit)"
             if [ $count -gt $limit ]; then
               echo "::error file=$ROOT::Root enthält $count Verzeichnisse (Stub-Ordner ausgenommen). Erlaubt: $limit für $module_name"
               fail=1
