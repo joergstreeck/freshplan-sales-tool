@@ -1,0 +1,132 @@
+{
+  "analysis_date": "2025-09-27",
+  "analysis_time": "19:15",
+  "modules": {
+    "02_neukundengewinnung": {
+      "path": "docs/planung/features-neu/02_neukundengewinnung",
+      "root_dirs": [
+        "analyse",
+        "artefakte",
+        "backend",
+        "frontend",
+        "legacy-planning",
+        "shared"
+      ],
+      "stub_dirs": [
+        "diskussionen",
+        "email-posteingang",
+        "implementation-plans",
+        "kampagnen",
+        "lead-erfassung",
+        "postmortem",
+        "test-coverage",
+        "testing"
+      ],
+      "total_dirs": 14,
+      "real_dirs_count": 6,
+      "stub_dirs_count": 8,
+      "passes_8_items_rule": true,
+      "violations": [],
+      "compliance_issues": [
+        "Viele Stub-Verzeichnisse vorhanden (8), aber diese zählen nicht zur 8-Items-Regel"
+      ],
+      "improvements": [
+        "Korrekte Umsetzung der 8-Items-Regel mit nur 6 echten Verzeichnissen",
+        "Ordnungsgemäße Stub-Markierung in allen nicht-echten Verzeichnissen",
+        "Analyse-Dokumente korrekt in analyse/ abgelegt",
+        "Standard-Verzeichnisse (backend, frontend, shared) vorhanden"
+      ],
+      "compliance_score": "90%"
+    },
+    "03_kundenmanagement": {
+      "path": "docs/planung/features-neu/03_kundenmanagement",
+      "root_dirs": [
+        "analyse",
+        "artefakte",
+        "legacy-planning"
+      ],
+      "stub_dirs": [],
+      "total_dirs": 3,
+      "real_dirs_count": 3,
+      "stub_dirs_count": 0,
+      "passes_8_items_rule": true,
+      "violations": [
+        "Fehlende Standard-Verzeichnisse: backend, frontend, shared"
+      ],
+      "compliance_issues": [
+        "Unvollständige Modul-Struktur - nur 3 von 6 erwarteten Standard-Verzeichnissen",
+        "Keine Backend/Frontend-Struktur definiert"
+      ],
+      "improvements": [
+        "Korrekte Einhaltung der 8-Items-Regel mit nur 3 Verzeichnissen",
+        "Analyse-Dokumente ordnungsgemäß in analyse/ abgelegt",
+        "Keine Stub-Verzeichnisse - saubere Struktur"
+      ],
+      "compliance_score": "60%"
+    }
+  },
+  "cross_module_checks": {
+    "github_directories": {
+      "found": 0,
+      "violations": [],
+      "status": "compliant"
+    },
+    "pattern_files_with_frontmatter": {
+      "found": 0,
+      "missing_frontmatter": [],
+      "status": "no_pattern_files_found"
+    },
+    "analysis_document_placement": {
+      "module_02": {
+        "correct_placement": 6,
+        "incorrect_placement": 0,
+        "status": "compliant"
+      },
+      "module_03": {
+        "correct_placement": 5,
+        "incorrect_placement": 0,
+        "status": "compliant"
+      }
+    }
+  },
+  "summary": {
+    "total_modules": 2,
+    "compliant_modules": 1,
+    "partially_compliant_modules": 1,
+    "compliance_rate": "75%",
+    "key_improvements": [
+      "Modul 02: Erhebliche Verbesserung durch korrekte Stub-Implementierung",
+      "Modul 03: Saubere Struktur, aber unvollständig",
+      "Beide Module: Korrekte Einhaltung der 8-Items-Regel",
+      "Beide Module: Ordnungsgemäße Analyse-Dokument-Ablage",
+      "Keine .github-Verzeichnisse in Modulen (korrekt)"
+    ],
+    "remaining_issues": [
+      "Modul 03: Fehlende Standard-Verzeichnisse (backend, frontend, shared)",
+      "Modul 02: Hohe Anzahl an Stub-Verzeichnissen deutet auf Legacy-Ballast hin"
+    ],
+    "recommendations": [
+      "Modul 03: Backend/Frontend/Shared-Verzeichnisse anlegen oder als Stubs markieren",
+      "Modul 02: Legacy-Cleanup der Stub-Verzeichnisse in Erwägung ziehen",
+      "Beide Module: Pattern-Dateien mit korrektem Front-Matter ergänzen falls benötigt"
+    ]
+  },
+  "compliance_details": {
+    "8_items_rule": {
+      "module_02": "PASS - 6 echte Verzeichnisse",
+      "module_03": "PASS - 3 echte Verzeichnisse"
+    },
+    "standard_directories": {
+      "module_02": "PASS - backend, frontend, shared vorhanden",
+      "module_03": "FAIL - backend, frontend, shared fehlen"
+    },
+    "stub_implementation": {
+      "module_02": "EXCELLENT - Alle Stubs korrekt markiert",
+      "module_03": "N/A - Keine Stubs vorhanden"
+    },
+    "analysis_placement": {
+      "module_02": "PASS - Alle Dokumente in analyse/",
+      "module_03": "PASS - Alle Dokumente in analyse/"
+    }
+  }
+}

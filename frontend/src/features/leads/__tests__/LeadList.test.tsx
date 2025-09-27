@@ -3,6 +3,8 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { ThemeProvider, CssBaseline } from '@mui/material';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
+import { I18nextProvider } from 'react-i18next';
+import i18n from '../../../i18n';
 import LeadList from '../LeadList';
 import * as api from '../api';
 import freshfoodzTheme from '../../../theme/freshfoodz';
@@ -14,12 +16,14 @@ const mockApi = api as {
   createLead: ReturnType<typeof vi.fn>;
 };
 
-// Test wrapper with theme
+// Test wrapper with theme and i18n
 const Wrapper = ({ children }: { children: React.ReactNode }) => (
-  <ThemeProvider theme={freshfoodzTheme}>
-    <CssBaseline />
-    {children}
-  </ThemeProvider>
+  <I18nextProvider i18n={i18n}>
+    <ThemeProvider theme={freshfoodzTheme}>
+      <CssBaseline />
+      {children}
+    </ThemeProvider>
+  </I18nextProvider>
 );
 
 describe('LeadList', () => {
@@ -56,7 +60,7 @@ describe('LeadList', () => {
 
     await waitFor(() => {
       expect(screen.getByText(/keine leads vorhanden/i)).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: /ersten lead anlegen/i })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /create lead/i })).toBeInTheDocument();
     });
   });
 
@@ -84,10 +88,10 @@ describe('LeadList', () => {
     render(<LeadList />, { wrapper: Wrapper });
 
     await waitFor(() => {
-      expect(screen.getByRole('button', { name: /ersten lead anlegen/i })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /create lead/i })).toBeInTheDocument();
     });
 
-    await user.click(screen.getByRole('button', { name: /ersten lead anlegen/i }));
+    await user.click(screen.getByRole('button', { name: /create lead/i }));
 
     expect(screen.getByRole('dialog')).toBeInTheDocument();
     expect(screen.getByLabelText(/name/i)).toBeInTheDocument();
@@ -109,14 +113,14 @@ describe('LeadList', () => {
     });
 
     // Open create dialog
-    await user.click(screen.getByRole('button', { name: /ersten lead anlegen/i }));
+    await user.click(screen.getByRole('button', { name: /create lead/i }));
 
     // Fill form
     await user.type(screen.getByLabelText(/name/i), 'New Lead');
-    await user.type(screen.getByLabelText(/e.mail/i), 'new@example.com');
+    await user.type(screen.getByLabelText(/e.?mail/i), 'new@example.com');
 
     // Submit
-    await user.click(screen.getByRole('button', { name: /speichern/i }));
+    await user.click(screen.getByRole('button', { name: /create lead/i }));
 
     // Verify API calls
     expect(mockApi.createLead).toHaveBeenCalledWith({
