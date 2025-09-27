@@ -5,9 +5,9 @@
 **📊 Ansatz:** 80% Planungsstand + 20% Codebase-Realität (Hybrid Living Document)
 **🤖 Zielgruppe:** Externe KIs + neue Claude-Instanzen + AI-Consultants
 
-> **🏗️ Architecture Flags (Stand: 2025-09-21)**
+> **🏗️ Architecture Flags (Stand: 2025-09-27)**
 > - **CQRS Light aktiv** (`features.cqrs.enabled=true`), **eine Datenbank**, getrennte Command/Query-Services
-> - **Events:** **PostgreSQL LISTEN/NOTIFY + Simple JSON Payload (v1)**, kein Event-Bus/CloudEvents
+> - **Events:** **PostgreSQL LISTEN/NOTIFY mit Envelope v2** (siehe Event-Backbone unten)
 > - **Security:** Territory = **RLS-Datenraum** (DE/CH/AT), **Lead-Protection = userbasiertes Ownership**
 > - **Settings-Registry (Hybrid JSONB + Registry)** produktiv, ETag + LISTEN/NOTIFY Cache-Invalidation
 > - **Scale:** **5-50 Nutzer** mit saisonalen Peaks, **internes Tool**, kosteneffiziente Architektur
@@ -223,6 +223,44 @@ DEVELOPMENT-TOOLS:
   Code-Quality: SonarCloud + SpotBugs + ESLint + Prettier
   Migration: Flyway für Database-Schema-Evolution
   Documentation: OpenAPI 3.1 + ADRs (Architecture Decision Records)
+```
+
+### **🔔 Event-Backbone (aktuell, Stand 2025-09-27)**
+
+```yaml
+Transport: PostgreSQL LISTEN/NOTIFY
+Envelope v2 (CloudEvents-angelehnt):
+  Felder: id, source, type, time (UTC Instant), idempotencyKey, data
+  Types: dashboard.lead_status_changed, dashboard.followup_completed
+
+Idempotenz:
+  Nicht-Batch: benötigt leadId und processedAt
+  Key: UUID.v5 über (leadId|followUpType|processedAt)
+  Batch: followUpType=="BATCH" → Fenster = processedAt auf Minute gerundet
+  Stabiler Key: UUID.v5 über (userId|t3Count|t7Count|minute-window)
+
+8KB Guard:
+  Nur data wird bei Überschreitung ersetzt durch:
+  { truncated: true, reference: <idempotencyKey>, original_size_bytes: <n>, hint: "payload >8KB, fetch via API" }
+  Envelope bleibt erhalten
+
+RBAC:
+  Erlaubte Rollen: MANAGER | SALES | ADMIN
+  freshplan.security.allow-unauthenticated-publisher: false (Prod), in Tests explizit true
+  Metriken zählen: denied und unauthenticated
+
+Metriken (Micrometer/Prometheus):
+  freshplan_events_published{event_type,module,result}
+  freshplan_events_consumed{event_type,module,result}
+  freshplan_event_latency{event_type,path}
+  freshplan_dedupe_cache_entries
+  freshplan_dedupe_cache_hit_rate
+
+Implementation-Details:
+  Publisher: AFTER_COMMIT Pattern (nur in Publishern, nie in Listeners)
+  Listener: Caffeine Cache für Deduplizierung (500k entries, 24h TTL)
+  Channels: dashboard_updates, cross_module_events, settings_invalidated
+  Performance SLO: listen_notify_lag_ms < 10000
 ```
 
 ### **📁 Codebase-Structure Reality**

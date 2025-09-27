@@ -1,5 +1,14 @@
 # 🔍 Code-Analyse: Neukundengewinnung - Status vs. Planung
 
+> **⚠️ Status:** OBSOLET seit 2025-09-27
+>
+> **Ersetzt durch:**
+> - [`INVENTORY.md`](./INVENTORY.md) - Aktuelle Stack-Analyse & Gaps
+> - [`API_CONTRACT.md`](./API_CONTRACT.md) - Frontend-Backend Contract
+> - [`RESEARCH_ANSWERS.md`](./RESEARCH_ANSWERS.md) - Implementation-Fragen
+>
+> Dieses Dokument dokumentiert den Code-Stand vom 18.09.2025 (hauptsächlich Mocks).
+
 **📊 Analyse-Typ:** Code vs. Dokumentation Verification
 **🎯 Zweck:** Diskussionsgrundlage für weitere Planung
 **📅 Datum:** 2025-09-18

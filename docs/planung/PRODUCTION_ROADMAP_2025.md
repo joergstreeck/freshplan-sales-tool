@@ -11,10 +11,10 @@
 
 **🚨 AKTUELLER STATUS:**
 - **Phase:** ✅ Phase 1 COMPLETE | 🚀 Phase 2 IN PROGRESS
-- **Current Sprint:** Sprint 2.1.1 P0 HOTFIX - [TRIGGER_SPRINT_2_1_1.md](./TRIGGER_SPRINT_2_1_1.md)
-- **Progress:** 14.5/37 PRs - 39% (PR #111 in progress - Integration Gaps)
-- **Blockers:** ⚠️ Sprint 2.2 blockiert bis PR #111 merged
-- **Active Branch:** feature/sprint-2-1-1-followup-integration-hotfix-FP-235-hotfix
+- **Current Sprint:** Sprint 2.2 Kundenmanagement bereit (FP-237 bis FP-241)
+- **Progress:** 15/37 PRs - 40.5% (PR #111 merged - FP-235 COMPLETE)
+- **Blockers:** Keine - Sprint 2.2 kann starten
+- **Active Branch:** main (PR #111 merged)
 - **Foundation Status:** ✅ COMPLETE - CQRS/Security/Settings/CI/RLS operational
 - **Performance:** ✅ P95 <7ms (Lead-Module) + ETags operational
 
@@ -88,8 +88,9 @@ Sprint 1.6: RLS Module Adoption       ✅ PR #107 MERGED → Modul 02 Fix + CI-G
 ```
 Progress: █░░░░░░░░░ 10% (0.5/5 Sprints)
 
-Sprint 2.1: 02 Neukundengewinnung     ✅ 75% COMPLETE → PR #103, #105, #110 merged (nur FP-235 offen)
+Sprint 2.1: 02 Neukundengewinnung     ✅ 100% COMPLETE → PR #103, #105, #110, #111 merged (FP-235 ✅)
                                       → 3 Production Patterns dokumentiert (Security/Performance/Events)
+Sprint 2.1.2: Frontend Research       📋 In Progress → PR #112 (docs-only) - Research & Patterns für UI
 Sprint 2.2: 03 Kundenmanagement      📋 Ready → 39 Artefakte + nutzt Security/Performance Patterns
 Sprint 2.3: 05 Kommunikation         📋 Ready → Security-Gate ✅ + nutzt Event-System Pattern
 Sprint 2.4: 01 Cockpit               🟡 Planning → CQRS-optimiert
@@ -233,8 +234,11 @@ Day 18-19: feature/02-leads-capture-system-FP-234  📋
   ✅ Multi-Contact-Workflows (CHEF/BUYER)
   ✅ Integration mit Settings-Registry
 
-Day 20-21: feature/02-leads-follow-up-automation-FP-235  📋
-  ✅ T+3/T+7 Follow-up Automation
+Day 20-21: feature/02-leads-follow-up-automation-FP-235  ✅ COMPLETE (PR #111)
+  ✅ T+3/T+7 Follow-up Automation implementiert
+  ✅ Dashboard Widget Integration mit Lead-Metriken
+  ✅ Event Distribution via LISTEN/NOTIFY mit AFTER_COMMIT
+  ✅ Prometheus Metrics für Follow-up Tracking
   ✅ Sample-Management Integration
   ✅ ROI-Calculator für Lead-Qualification
 
@@ -246,9 +250,25 @@ Day 22: feature/02-leads-security-integration-FP-236  📋
 
 **Success Criteria:**
 - [ ] Lead-Management mit Territory-Scoping operational
-- [ ] T+3/T+7 Automation funktional
+- [x] T+3/T+7 Automation funktional ✅ (PR #111)
 - [ ] ABAC/RLS-Integration bestätigt
 - [ ] Performance <200ms P95 auf CQRS Foundation
+
+---
+
+### **SPRINT 2.1.2: FRONTEND RESEARCH (docs-only)** 📋
+
+**Ziel:** Strukturierte Frontend-Research für Modul 02 Neukundengewinnung
+
+**Deliverables:**
+- ✅ INVENTORY.md - Stack-Analyse & Gaps
+- ✅ API_CONTRACT.md - Event-System, RBAC, REST-Endpoints
+- ✅ RESEARCH_ANSWERS.md - 11 offene Fragen beantwortet
+- ✅ VALIDATED_FOUNDATION_PATTERNS.md - Konsolidierte Patterns aus grundlagen/ & infrastruktur/
+
+**Status:** Research abgeschlossen → PR #112 (Draft, docs-only)
+
+**Nächster Schritt:** Thin Vertical Slice mit Feature-Flag `VITE_FEATURE_LEADGEN`
 
 ---
 
