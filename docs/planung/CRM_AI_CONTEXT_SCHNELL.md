@@ -14,6 +14,16 @@
 
 ---
 
+## 🗺️ **MODUL-OVERLAYS (Schnellzugriff)**
+
+**Hybrid-Struktur:** Zentrale Sprints + Modulare Overlays für detaillierte Navigation
+
+- **Modul 02 Neukundengewinnung:** [features-neu/02_neukundengewinnung/_index.md](features-neu/02_neukundengewinnung/_index.md)
+- **AI-Startseite:** [START_HERE_FOR_AI.md](START_HERE_FOR_AI.md)
+- **Planungsmethodik:** [PLANUNGSMETHODIK.md](PLANUNGSMETHODIK.md)
+
+---
+
 ## 📋 **SEKTION 1: BUSINESS-CONTEXT** (15%)
 
 ### **🍃 FreshFoodz Mission & Vision**

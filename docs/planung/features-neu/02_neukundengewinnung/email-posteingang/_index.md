@@ -4,13 +4,13 @@ domain: "shared"
 doc_type: "stub"
 status: "moved"
 phase: "archived"
-moved_to: "../legacy-planning/email-posteingang/technical-concept.md"
+moved_to: "../legacy-planning/email-posteingang/"
 updated: "2025-09-27"
 ---
 
 # ➡️ Dokument verschoben
 
-**Neuer Pfad:** `../legacy-planning/email-posteingang/technical-concept.md`
+**Neuer Pfad:** `../legacy-planning/email-posteingang/`
 
 **Warum?** Strukturvereinfachung (Signal/Rauschen) für schnellere Claude‑Navigation.
 **Aktuelle Struktur:** [Zur Modul‑Übersicht](../_index.md)

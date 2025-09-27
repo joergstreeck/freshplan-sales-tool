@@ -6,6 +6,11 @@
 **🔴 Priorität:** CRITICAL - Production Blocker für Sprint 2.2
 **🏷️ PR:** #111 (feature/sprint-2-1-1-followup-integration-hotfix-FP-235-hotfix)
 
+> **📍 Siehe auch (Modul-Overlay):**
+> - **Modul 02 – Sprint-Map:** `features-neu/02_neukundengewinnung/SPRINT_MAP.md`
+> - **Event System Patterns:** `features-neu/02_neukundengewinnung/artefakte/EVENT_SYSTEM_PATTERN.md`
+> - **Performance Test Pattern:** `features-neu/02_neukundengewinnung/artefakte/PERFORMANCE_TEST_PATTERN.md`
+
 ---
 
 ## 🎯 Ziel
