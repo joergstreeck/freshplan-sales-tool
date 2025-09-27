@@ -17,6 +17,39 @@ updated: "2025-09-27"
 
 React-basiertes Lead-Management Frontend mit Real-time Dashboard, RBAC-Sichtbarkeiten und Event-getriebenem Update-System. Vollständige Research abgeschlossen, bereit für Thin Vertical Slice Implementation.
 
+## 🧭 Frontend Blueprint (Sprint 2.1.3 Ready)
+
+### **Routen**
+- `/leads` (V1): Liste + Create-Dialog (**Flag** `VITE_FEATURE_LEADGEN`)
+- `/leads/:id` (V2): Detail/Statuswechsel (Backlog)
+
+### **Datenflüsse**
+- GET `/api/leads` → `LeadList`
+- POST `/api/leads` → `LeadCreateDialog`
+- Fehleradapter: RFC7807 → { title, detail, fieldErrors? }
+
+### **State/Architektur**
+- Query‑Layer: einfacher Fetch‑Client (später Query‑Lib möglich)
+- UI‑State: lokaler Zustand (Dialog), leichte Store‑Schnittstelle vorbereiten
+- Realtime: Hook‑Platzhalter (später WebSocket)
+
+### **Theme/UX**
+- MUI Theme V2 Tokens
+- Leere Zustände, Skeletons, zugängliche Fehlermeldungen (WCAG 2.1 AA)
+
+### **Testing**
+- Vitest (Komponenten/Adapter), Playwright (Smoke)
+- Coverage ≥ 80% für neue Artefakte
+
+### **Telemetrie (später)**
+- Page‑Load, API‑Latenzen, Fehlerquote
+
+### **Backlog (geordnet)**
+1) Filter/Suche, Paging
+2) Statuswechsel‑UI (State Machine)
+3) Realtime (WS)
+4) Export/CSV, Column‑Customizer
+
 ## 📚 **Research-Dokumentation (Sprint 2.1.2)**
 
 ### **Vollständige Analyse:**

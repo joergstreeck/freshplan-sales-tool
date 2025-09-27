@@ -69,6 +69,13 @@ Für Modul‑konkrete Navigation verweisen die Trigger auf die **SPRINT_MAP.md**
      - [API_CONTRACT.md](features-neu/02_neukundengewinnung/analyse/API_CONTRACT.md)
    - Status: ✅ 100% COMPLETE (FP-235 in PR #111 abgeschlossen)
 
+⚙️ TRIGGER_SPRINT_2_1_3.md - Frontend Implementation (Lead-Management)
+   - Thin Vertical Slice: /leads Route + Create Dialog
+   - Feature-Flag: VITE_FEATURE_LEADGEN (default: off)
+   - MUI Theme V2 + RFC7807 Error Handling
+   - Coverage ≥80% für neue Frontend-Komponenten
+   - Status: 📋 PLANNED
+
 ✅ TRIGGER_SPRINT_2_1_1.md - P0 HOTFIX Integration Gaps [PR #111 MERGED]
    - Event Distribution, Dashboard Widget, Metrics implementiert
    - Kritische Integration für Follow-up Automation

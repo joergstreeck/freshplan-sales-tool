@@ -56,6 +56,20 @@ updated: "2025-09-27"
 
 ---
 
+### **Sprint 2.1.3 – Frontend Implementation (PLANNED)**
+**Zentral:** [TRIGGER_SPRINT_2_1_3.md](../../TRIGGER_SPRINT_2_1_3.md)
+**Status:** 📋 PLANNED
+**Scope:**
+- Thin Vertical Slice: `/leads` Route + `LeadCreateDialog`
+- Feature-Flag: `VITE_FEATURE_LEADGEN` (default: off)
+- MUI Theme V2 Integration + RFC7807 Error Handling
+- Tests: Vitest Unit + Playwright Smoke
+- Coverage ≥80% für neue Frontend-Komponenten
+
+**Dependencies:** PR #112 merge (Frontend Research)
+
+---
+
 ## 🔗 **Cross-Module Dependencies**
 
 ### **Infrastruktur-Sprints (relevant für Modul 02):**
@@ -81,6 +95,7 @@ Phase 2 (Frontend Research): Sprint 2.1.2
 Phase 3 (Frontend Implementation): Sprint 2.1.3 (geplant)
   Status: 📋 PLANNED
   Scope: Thin Vertical Slice mit Feature-Flag
+  Trigger: TRIGGER_SPRINT_2_1_3.md
   Dependencies: PR #112 merge
 ```
 
