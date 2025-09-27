@@ -12,8 +12,10 @@ updated: "2025-09-27"
 **📍 Navigation:** Home → Planung → 02 Neukundengewinnung → Verzeichnisstruktur-Analyse
 
 **📅 Erstellt:** 2025-09-27
-**🎯 Zweck:** Vollständige Bestandsaufnahme der aktuellen Modul-Struktur
-**📊 Status:** 42 Verzeichnisse, 107 Dateien analysiert
+**🎯 Zweck:** Vollständige Bestandsaufnahme der aktuellen Modul-Struktur nach Legacy-Split
+**📊 Status:** 51 Verzeichnisse, 122 Dateien analysiert
+
+**⚠️ Stub‑Verzeichnisse:** Temporär (2 Sprints), nur Redirects → bitte nicht browsen; Inhalte liegen in `legacy-planning/`.
 
 ---
 
@@ -336,10 +338,27 @@ updated: "2025-09-27"
 2. **Dual Navigation:** README.md + _index.md (Redirect möglich)
 3. **diskussionen/ Archivierung:** 16 historische Diskussionen (September 2025)
 
-### **📊 STATISTIKEN**
-- **Verzeichnisse:** 42 (8 Hybrid-Overlays, 34 Feature-/Support-Verzeichnisse)
-- **Dateien:** 107 (8 Hybrid-Docs, 3 Production-Patterns, 6 Research-Docs, ~90 Feature-Artefakte)
+### **📊 STATISTIKEN (nach Legacy-Split)**
+- **Verzeichnisse:** 51 (8 Kern-Items + legacy-planning + Stubs)
+- **Dateien:** 122 (Hybrid-Docs + Legacy-Archive + Production-Patterns)
 
 ---
 
-**🔄 Letzte Aktualisierung:** 2025-09-27 (Vollständige Struktur-Inventur nach Hybrid-Implementation)
+## 🧭 **WIE NAVIGIEREN? (für neue Claude-Instanzen)**
+
+**✅ EMPFOHLENER EINSTIEG:**
+1. **Sprint-Kontext:** Trigger → entry_points → `SPRINT_MAP.md`
+2. **Modul-Übersicht:** `_index.md` → Status-Dashboard + Start-Reihenfolge
+3. **Domain-Arbeit:** `backend/_index.md` ODER `frontend/_index.md` ODER `shared/_index.md`
+4. **Research bei Bedarf:** `analyse/_index.md`
+5. **Produktionsmuster:** `artefakte/`
+
+**❌ NICHT BROWSEN:**
+- Stub-Verzeichnisse (temporär, 2 Sprints): `lead-erfassung/`, `email-posteingang/`, `kampagnen/`, `diskussionen/`, `implementation-plans/`, `test-coverage/`, `testing/`, `postmortem/`
+- Legacy-Details: siehe `legacy-planning/` nur bei explizitem Bedarf
+
+**🎯 Einstieg immer Sprint → SPRINT_MAP → Overlays, NICHT über Stubs/Legacy.**
+
+---
+
+**🔄 Letzte Aktualisierung:** 2025-09-27 (Tree + Navigation nach Legacy-Split aktualisiert)
