@@ -9,6 +9,16 @@
 > - **Backend Status:** `features-neu/02_neukundengewinnung/backend/_index.md`
 > - **Frontend Research (Sprint 2.1.2):** `features-neu/02_neukundengewinnung/frontend/_index.md`
 
+> ### 🎯 Arbeitsanweisung (für Claude & neue Entwickler)
+> **Einstiegspunkte für Modul 02:**
+> 1. **Sprint-Map (Modulüberblick):** `features-neu/02_neukundengewinnung/SPRINT_MAP.md`
+> 2. **Backend-Overlay:** `features-neu/02_neukundengewinnung/backend/_index.md`
+> 3. **Frontend-Overlay:** `features-neu/02_neukundengewinnung/frontend/_index.md`
+> 4. **Research-Details (nur bei Bedarf):** `features-neu/02_neukundengewinnung/analyse/_index.md`
+> 5. **Produktionsmuster:** `features-neu/02_neukundengewinnung/artefakte/`
+>
+> **Wichtig:** *Stub‑Verzeichnisse im Modul‑Root ignorieren* (temporär, 2 Sprints). Aktuelle Inhalte beginnen immer bei den Overlays.
+
 ## ⚠️ WICHTIGE QUALITÄTSREGELN - VOLLSTÄNDIG BEFOLGEN!
 
 **HINWEIS:** Diese Anweisungen sind verbindlich für professionelle Umsetzung. Übersprungene Schritte führen zu:

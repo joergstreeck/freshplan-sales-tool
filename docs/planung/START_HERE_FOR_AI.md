@@ -50,6 +50,9 @@ docs/planung/
 ```
 
 ### **Modulare Overlays (dezentral)**
+
+**WICHTIG:** Module nie direkt browsen; immer über **Trigger‑Sprint → entry_points** oder **SPRINT_MAP.md** einsteigen.
+
 ```
 docs/planung/features-neu/NN_modulname/
 ├── _index.md                           # Modul-Einstieg
@@ -66,6 +69,8 @@ docs/planung/features-neu/NN_modulname/
     ├── _index.md                       # Cross-cutting Concerns
     └── contracts/                      # Kanonische Verträge
 ```
+
+**Stub-Ausnahme:** Temporäre Stub-Verzeichnisse (2 Sprints) nicht browsen. Sie verweisen auf `legacy-planning/`.
 
 ---
 
