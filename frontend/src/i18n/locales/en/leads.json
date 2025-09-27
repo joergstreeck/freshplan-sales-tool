@@ -1,0 +1,22 @@
+{
+  "title": "Leads",
+  "create": {
+    "button": "Create lead",
+    "dialogTitle": "Create lead",
+    "saving": "Saving...",
+    "cancel": "Cancel"
+  },
+  "form": {
+    "name": "Name",
+    "email": "Email"
+  },
+  "list": {
+    "empty": "No leads available."
+  },
+  "errors": {
+    "duplicateEmail": "A lead with this e-mail already exists.",
+    "nameRequired": "Name is required",
+    "nameMinLength": "Name must be at least 2 characters",
+    "emailInvalid": "Please enter a valid e-mail"
+  }
+}

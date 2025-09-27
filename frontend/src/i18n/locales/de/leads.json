@@ -1,0 +1,22 @@
+{
+  "title": "Leads",
+  "create": {
+    "button": "Lead anlegen",
+    "dialogTitle": "Lead anlegen",
+    "saving": "Speichern...",
+    "cancel": "Abbrechen"
+  },
+  "form": {
+    "name": "Name",
+    "email": "E-Mail"
+  },
+  "list": {
+    "empty": "Keine Leads vorhanden."
+  },
+  "errors": {
+    "duplicateEmail": "Es existiert bereits ein Lead mit dieser E-Mail.",
+    "nameRequired": "Name ist erforderlich",
+    "nameMinLength": "Name muss mindestens 2 Zeichen haben",
+    "emailInvalid": "Bitte eine gültige E-Mail eingeben"
+  }
+}

@@ -36,22 +36,8 @@ async function enableMocking() {
     return;
   }
 
-  // Check if backend is available with longer timeout for CI
-  try {
-    const response = await fetch('http://localhost:8080/api/ping', {
-      method: 'GET',
-      signal: AbortSignal.timeout(5000), // 5 second timeout for CI
-    });
-    if (response.ok) {
-      // Backend is available, using real API
-      // Backend available: Using real API
-      return;
-    }
-  } catch (_error) {
-    void _error;
-    // Backend not available, starting MSW mock server
-    // Backend not available, starting MSW
-  }
+  // For now, always use MSW in development when enabled
+  // TODO: Add backend detection when backend is implemented
 
   const { worker } = await import('./mocks/browser');
 

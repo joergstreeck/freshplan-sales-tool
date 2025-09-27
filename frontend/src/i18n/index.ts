@@ -10,6 +10,7 @@ import deNavigation from './locales/de/navigation.json';
 import deErrors from './locales/de/errors.json';
 import deLocations from './locales/de/locations.json';
 import deLocationDetails from './locales/de/locationDetails.json';
+import deLeads from './locales/de/leads.json';
 
 import enCommon from './locales/en/common.json';
 import enCalculator from './locales/en/calculator.json';
@@ -18,6 +19,7 @@ import enNavigation from './locales/en/navigation.json';
 import enErrors from './locales/en/errors.json';
 import enLocations from './locales/en/locations.json';
 import enLocationDetails from './locales/en/locationDetails.json';
+import enLeads from './locales/en/leads.json';
 
 i18n
   .use(LanguageDetector)
@@ -37,6 +39,7 @@ i18n
         errors: deErrors,
         locations: deLocations,
         locationDetails: deLocationDetails,
+        leads: deLeads,
       },
       en: {
         common: enCommon,
@@ -46,6 +49,7 @@ i18n
         errors: enErrors,
         locations: enLocations,
         locationDetails: enLocationDetails,
+        leads: enLeads,
       },
     },
     detection: {
