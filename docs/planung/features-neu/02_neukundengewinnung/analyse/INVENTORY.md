@@ -1,4 +1,16 @@
+---
+module: "02_neukundengewinnung"
+domain: "frontend"
+doc_type: "analyse"
+sprint: "2.1.2"
+status: "approved"
+owner: "team/leads"
+updated: "2025-09-27"
+---
+
 # Frontend-Inventur: Modul 02 Neukundengewinnung
+
+**📍 Navigation:** Home → Planung → 02 Neukundengewinnung → Frontend → Analyse → INVENTORY
 
 **Sprint:** 2.1.2 – Frontend Research
 **Erstellt:** 2025-09-27

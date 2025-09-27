@@ -14,7 +14,12 @@
 
 ## Kontext
 
-Diese ADRs dokumentieren wichtige Architekturentscheidungen für das FreshPlan Sales Tool. Sie folgen dem Format:
+Diese ADRs dokumentieren wichtige Architekturentscheidungen für das FreshPlan Sales Tool.
+
+> **🔎 Modul-Overlays:** Detaillierte Modul-Einstiege verweisen auf relevante ADRs.
+> Beispiel Modul 02 Neukundengewinnung → Backend: [features-neu/02_neukundengewinnung/backend/_index.md](../features-neu/02_neukundengewinnung/backend/_index.md)
+
+## ADR-Format Sie folgen dem Format:
 - **Status:** PROPOSED / ACCEPTED / DEPRECATED / SUPERSEDED / IMPLEMENTED
 - **Context:** Problemstellung
 - **Decision:** Gewählte Lösung

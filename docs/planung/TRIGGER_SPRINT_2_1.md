@@ -4,6 +4,11 @@
 **DATUM:** 26.09.2025
 **MERGED PRs:** #103 (FP-233), #105 (FP-234), #110 (FP-236), #111 (FP-235 + Integration)
 
+> **📍 Siehe auch (Modul-Overlay):**
+> - **Modul 02 – Sprint-Map:** `features-neu/02_neukundengewinnung/SPRINT_MAP.md`
+> - **Backend Status:** `features-neu/02_neukundengewinnung/backend/_index.md`
+> - **Frontend Research (Sprint 2.1.2):** `features-neu/02_neukundengewinnung/frontend/_index.md`
+
 ## ⚠️ WICHTIGE QUALITÄTSREGELN - VOLLSTÄNDIG BEFOLGEN!
 
 **HINWEIS:** Diese Anweisungen sind verbindlich für professionelle Umsetzung. Übersprungene Schritte führen zu:

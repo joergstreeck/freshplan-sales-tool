@@ -90,7 +90,8 @@ Progress: █░░░░░░░░░ 10% (0.5/5 Sprints)
 
 Sprint 2.1: 02 Neukundengewinnung     ✅ 100% COMPLETE → PR #103, #105, #110, #111 merged (FP-235 ✅)
                                       → 3 Production Patterns dokumentiert (Security/Performance/Events)
-Sprint 2.1.2: Frontend Research       📋 In Progress → PR #112 (docs-only) - Research & Patterns für UI
+Sprint 2.1.2: Frontend Research       ✅ Complete → PR #112 merged - Research & Patterns für UI
+                                     → [Modul 02 Sprint-Map](features-neu/02_neukundengewinnung/SPRINT_MAP.md)
 Sprint 2.2: 03 Kundenmanagement      📋 Ready → 39 Artefakte + nutzt Security/Performance Patterns
 Sprint 2.3: 05 Kommunikation         📋 Ready → Security-Gate ✅ + nutzt Event-System Pattern
 Sprint 2.4: 01 Cockpit               🟡 Planning → CQRS-optimiert

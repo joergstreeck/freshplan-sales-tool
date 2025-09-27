@@ -1,0 +1,19 @@
+name: Docs Link Check
+on:
+  pull_request:
+    paths:
+      - 'docs/**'
+jobs:
+  link-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: lycheeverse/lychee-action@v1
+        with:
+          args: >-
+            --verbose
+            --no-progress
+            --accept 200,429
+            docs/planung
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}

@@ -1,4 +1,16 @@
+---
+module: "02_neukundengewinnung"
+domain: "frontend"
+doc_type: "analyse"
+sprint: "2.1.2"
+status: "approved"
+owner: "team/leads"
+updated: "2025-09-27"
+---
+
 # Research Answers: Modul 02 Frontend
+
+**📍 Navigation:** Home → Planung → 02 Neukundengewinnung → Frontend → Analyse → RESEARCH_ANSWERS
 
 **Sprint:** 2.1.2 – Frontend Research
 **Erstellt:** 2025-09-27
