@@ -21,6 +21,9 @@
 }
 ```
 
+**PostgreSQL Channel:** `dashboard_updates`
+**Event Types:** `dashboard.lead_status_changed`, `dashboard.followup_completed`
+
 ### Dashboard Events
 
 #### 1. Lead Status Change Event
@@ -73,6 +76,11 @@
 if (event.data.truncated) {
   // Vollständige Daten via REST nachladen
   const fullData = await leadApi.getEvent(event.data.reference);
+  // UI: Badge "Details laden" + Retry-Action anzeigen
+  showTruncationBadge({
+    text: "Details aus Backend laden",
+    action: () => fetchFullData(event.data.reference)
+  });
 }
 ```
 
