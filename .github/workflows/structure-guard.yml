@@ -16,7 +16,7 @@ jobs:
           for ROOT in docs/planung/features-neu/*_*; do
             echo "DEBUG: Checking ROOT: $ROOT"
             [ -d "$ROOT" ] || continue
-            mapfile -t items < <(ls -1 "$ROOT" | grep -v '^\.' || true)
+            items=($(ls -1 "$ROOT" | grep -v '^\.' || true))
 
             # Stub-Verzeichnisse (haben _index.md mit doc_type: "stub")
             stub_dirs=()

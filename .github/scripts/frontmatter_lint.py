@@ -3,7 +3,7 @@ import os, sys, yaml
 ROOT = "docs"
 REQUIRED = ["module","domain","doc_type","status","owner","updated"]
 ALLOWED_DOMAIN = {"frontend","backend","shared"}
-ALLOWED_DOC_TYPE = {"analyse","konzept","contract","guideline","deltalog","adr","stub"}
+ALLOWED_DOC_TYPE = {"analyse","konzept","contract","guideline","deltalog","adr","stub","technical_concept","sprint_map"}
 
 def iter_md():
     for dirpath,_,filenames in os.walk(ROOT):
@@ -46,6 +46,11 @@ for p in iter_md():
 
     if not module_match:
         # Skip ALL files that are not in Module 02/03
+        skipped_count += 1
+        continue
+
+    # Skip legacy-planning in Module 02/03 - they have different structure
+    if "/legacy-planning/" in p:
         skipped_count += 1
         continue
 
