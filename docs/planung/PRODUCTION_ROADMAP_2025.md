@@ -90,6 +90,7 @@ Progress: █░░░░░░░░░ 10% (0.5/5 Sprints)
 
 Sprint 2.1: 02 Neukundengewinnung     ✅ 100% COMPLETE → PR #103, #105, #110, #111 merged (FP-235 ✅)
                                       → 3 Production Patterns dokumentiert (Security/Performance/Events)
+Sprint 2.1.2: Frontend Research       📋 In Progress → PR #112 (docs-only) - Research & Patterns für UI
 Sprint 2.2: 03 Kundenmanagement      📋 Ready → 39 Artefakte + nutzt Security/Performance Patterns
 Sprint 2.3: 05 Kommunikation         📋 Ready → Security-Gate ✅ + nutzt Event-System Pattern
 Sprint 2.4: 01 Cockpit               🟡 Planning → CQRS-optimiert
@@ -252,6 +253,22 @@ Day 22: feature/02-leads-security-integration-FP-236  📋
 - [x] T+3/T+7 Automation funktional ✅ (PR #111)
 - [ ] ABAC/RLS-Integration bestätigt
 - [ ] Performance <200ms P95 auf CQRS Foundation
+
+---
+
+### **SPRINT 2.1.2: FRONTEND RESEARCH (docs-only)** 📋
+
+**Ziel:** Strukturierte Frontend-Research für Modul 02 Neukundengewinnung
+
+**Deliverables:**
+- ✅ INVENTORY.md - Stack-Analyse & Gaps
+- ✅ API_CONTRACT.md - Event-System, RBAC, REST-Endpoints
+- ✅ RESEARCH_ANSWERS.md - 11 offene Fragen beantwortet
+- ✅ VALIDATED_FOUNDATION_PATTERNS.md - Konsolidierte Patterns aus grundlagen/ & infrastruktur/
+
+**Status:** Research abgeschlossen → PR #112 (Draft, docs-only)
+
+**Nächster Schritt:** Thin Vertical Slice mit Feature-Flag `VITE_FEATURE_LEADGEN`
 
 ---
 

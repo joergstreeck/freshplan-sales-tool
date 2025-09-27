@@ -61,7 +61,7 @@
      - [Security Test Pattern](features-neu/02_neukundengewinnung/artefakte/SECURITY_TEST_PATTERN.md)
      - [Performance Test Pattern](features-neu/02_neukundengewinnung/artefakte/PERFORMANCE_TEST_PATTERN.md)
      - [Event System Pattern](features-neu/02_neukundengewinnung/artefakte/EVENT_SYSTEM_PATTERN.md)
-   - **FRONTEND RESEARCH (Sprint 2.1.1):**
+   - **FRONTEND RESEARCH (Sprint 2.1.2):**
      - [Analyse-Übersicht](features-neu/02_neukundengewinnung/analyse/_index.md)
      - [INVENTORY.md](features-neu/02_neukundengewinnung/analyse/INVENTORY.md)
      - [API_CONTRACT.md](features-neu/02_neukundengewinnung/analyse/API_CONTRACT.md)

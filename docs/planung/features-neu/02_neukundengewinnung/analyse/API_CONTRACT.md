@@ -1,5 +1,6 @@
 # API Contract: Lead-Management Frontend ↔ Backend
 
+**Sprint:** 2.1.2 – Frontend Research
 **Erstellt:** 2025-09-27
 **Version:** 1.0.0
 **Status:** Production-Ready (basierend auf PR #111)

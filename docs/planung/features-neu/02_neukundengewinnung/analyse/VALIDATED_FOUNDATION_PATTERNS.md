@@ -1,5 +1,6 @@
 # 🔍 Validated Foundation Patterns für Modul 02 Frontend
 
+**Sprint:** 2.1.2 – Frontend Research
 **Erstellt:** 2025-09-27
 **Status:** Konsolidiert aus Grundlagen + Infrastruktur
 **Zweck:** Verbindliche Patterns für Lead-Management Frontend Implementation

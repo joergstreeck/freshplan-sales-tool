@@ -1,5 +1,6 @@
 # Analyse – Modul 02 Neukundengewinnung
 
+**Sprint:** 2.1.2 – Frontend Research (docs-only)
 **Zuletzt aktualisiert:** 2025-09-27
 **Status:** Research abgeschlossen, bereit für Implementation
 

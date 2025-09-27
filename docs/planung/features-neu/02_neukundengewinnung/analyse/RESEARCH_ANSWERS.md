@@ -1,5 +1,6 @@
 # Research Answers: Modul 02 Frontend
 
+**Sprint:** 2.1.2 – Frontend Research
 **Erstellt:** 2025-09-27
 **Zweck:** Antworten auf 11 offene Fragen vor Implementation
 

@@ -1,5 +1,6 @@
 # Frontend-Inventur: Modul 02 Neukundengewinnung
 
+**Sprint:** 2.1.2 – Frontend Research
 **Erstellt:** 2025-09-27
 **Status:** Inventur abgeschlossen
 **Zweck:** Stack-Analyse und Gap-Assessment für Lead-Management Frontend
