@@ -9,16 +9,9 @@ import {
   Alert,
   Box
 } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 import { createLead } from './api';
-
-// Problem type inline (wegen Vite Cache Issues)
-type Problem = {
-  type?: string;
-  title?: string;
-  detail?: string;
-  status?: number;
-  errors?: Record<string, string[]>
-};
+import type { Problem } from './types';
 
 interface LeadCreateDialogProps {
   open: boolean;
@@ -27,13 +20,38 @@ interface LeadCreateDialogProps {
 }
 
 export default function LeadCreateDialog({ open, onClose, onCreated }: LeadCreateDialogProps) {
+  const { t } = useTranslation('leads');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<Problem | null>(null);
 
+  // Get field-specific errors from RFC7807 Problem
+  const fieldErrors = error?.errors || {};
+
+  // Client-side validation
+  const validateForm = () => {
+    const errors: Record<string, string[]> = {};
+
+    if (!name.trim()) {
+      errors.name = [t('errors.nameRequired')];
+    } else if (name.trim().length < 2) {
+      errors.name = [t('errors.nameMinLength')];
+    }
+
+    if (email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+      errors.email = [t('errors.emailInvalid')];
+    }
+
+    return Object.keys(errors).length > 0 ? { errors } : null;
+  };
+
   const handleSave = async () => {
-    if (!name.trim()) return;
+    const validationError = validateForm();
+    if (validationError) {
+      setError({ ...validationError, status: 400, title: 'Validation Error' });
+      return;
+    }
 
     setSaving(true);
     setError(null);
@@ -67,42 +85,48 @@ export default function LeadCreateDialog({ open, onClose, onCreated }: LeadCreat
 
   return (
     <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
-      <DialogTitle>Lead anlegen</DialogTitle>
+      <DialogTitle>{t('create.dialogTitle')}</DialogTitle>
       <DialogContent>
-        {error && (
+        {error?.status === 409 && (
+          <Box mb={2}>
+            <Alert severity="warning">
+              {t('errors.duplicateEmail')}
+            </Alert>
+          </Box>
+        )}
+
+        {error && error.status !== 409 && (
           <Box mb={2}>
             <Alert severity="error">
               {error.title ?? 'Fehler'}
               {error.detail ? ` – ${error.detail}` : ''}
-              {error.errors && Object.entries(error.errors).map(([field, messages]) => (
-                <div key={field}>
-                  <strong>{field}:</strong> {messages.join(', ')}
-                </div>
-              ))}
             </Alert>
           </Box>
         )}
 
         <TextField
-          label="Name"
+          label={t('form.name')}
           value={name}
           onChange={e => setName(e.target.value)}
           fullWidth
           required
           margin="dense"
           disabled={saving}
-          error={!name.trim() && name.length > 0}
-          helperText={!name.trim() && name.length > 0 ? 'Name ist erforderlich' : ''}
+          inputProps={{ minLength: 2 }}
+          error={!!fieldErrors.name?.length}
+          helperText={fieldErrors.name?.[0] || ''}
         />
 
         <TextField
-          label="E‑Mail"
+          label={t('form.email')}
           type="email"
           value={email}
           onChange={e => setEmail(e.target.value)}
           fullWidth
           margin="dense"
           disabled={saving}
+          error={!!fieldErrors.email?.length}
+          helperText={fieldErrors.email?.[0] || ''}
         />
       </DialogContent>
 
@@ -115,7 +139,7 @@ export default function LeadCreateDialog({ open, onClose, onCreated }: LeadCreat
           variant="contained"
           disabled={saving || !name.trim()}
         >
-          {saving ? 'Speichern...' : 'Speichern'}
+          {saving ? 'Speichern...' : t('create.button')}
         </Button>
       </DialogActions>
     </Dialog>

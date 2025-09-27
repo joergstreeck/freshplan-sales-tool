@@ -93,7 +93,7 @@ const mockCustomers = [
 ];
 
 export const handlers = [
-  // Mock API endpoints
+  // Health/Ping - verhindert MSW-Passthrough-Errors im Dev
   http.get('http://localhost:8080/api/ping', () => {
     return HttpResponse.json({
       message: 'pong',
@@ -180,6 +180,21 @@ export const handlers = [
           }
         },
         { status: 400 }
+      );
+    }
+
+    // Check for duplicate email (case-insensitive)
+    const norm = (s?: string | null) => (s ?? '').trim().toLowerCase();
+    const isDup = newLead.email && mockLeads.some(l => norm(l.email) === norm(newLead.email));
+    if (isDup) {
+      return HttpResponse.json(
+        {
+          title: 'Duplicate lead',
+          status: 409,
+          detail: 'Lead mit dieser E-Mail existiert bereits.',
+          errors: { email: ['E-Mail ist bereits vergeben'] }
+        },
+        { status: 409 }
       );
     }
 

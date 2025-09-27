@@ -1,9 +1,4 @@
-export type Lead = {
-  id: string;
-  name: string;
-  email?: string;
-  createdAt?: string;
-};
+import type { Lead, Problem } from './types';
 
 const BASE = import.meta.env.VITE_API_URL ?? 'http://localhost:8080';
 
@@ -30,7 +25,7 @@ export async function createLead(payload: { name: string; email?: string }) {
       'Accept': 'application/json',
       ...authHeaders(),
     },
-    body: JSON.stringify(payload),
+    body: JSON.stringify({ ...payload, source: 'manual' }),
     credentials: 'include',
   });
   if (!res.ok) throw await toProblem(res);
@@ -38,14 +33,6 @@ export async function createLead(payload: { name: string; email?: string }) {
 }
 
 // RFC7807 Error Handling
-export type Problem = {
-  type?: string;
-  title?: string;
-  detail?: string;
-  status?: number;
-  errors?: Record<string, string[]>
-};
-
 export async function toProblem(res: Response): Promise<Problem> {
   try {
     return await res.json();

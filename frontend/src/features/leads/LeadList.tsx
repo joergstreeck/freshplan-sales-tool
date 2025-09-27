@@ -1,25 +1,12 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { listLeads } from './api';
-
-// Types inline (wegen Vite Cache Issues)
-type Lead = {
-  id: string;
-  name: string;
-  email?: string;
-  createdAt?: string;
-};
-
-type Problem = {
-  type?: string;
-  title?: string;
-  detail?: string;
-  status?: number;
-  errors?: Record<string, string[]>
-};
+import type { Lead, Problem } from './types';
 import { CircularProgress, Alert, Button, Box, Typography } from '@mui/material';
 import LeadCreateDialog from './LeadCreateDialog';
 
 export default function LeadList() {
+  const { t } = useTranslation('leads');
   const [data, setData] = useState<Lead[] | null>(null);
   const [error, setError] = useState<Problem | null>(null);
   const [open, setOpen] = useState(false);
@@ -73,7 +60,7 @@ export default function LeadList() {
           Lead-Management
         </Typography>
         <Button variant="contained" onClick={() => setOpen(true)}>
-          Lead anlegen
+          {t('create.button')}
         </Button>
       </Box>
 
@@ -83,7 +70,7 @@ export default function LeadList() {
             Keine Leads vorhanden.
           </Typography>
           <Button variant="contained" onClick={() => setOpen(true)}>
-            Ersten Lead anlegen
+            {t('create.button')}
           </Button>
         </Box>
       ) : (
