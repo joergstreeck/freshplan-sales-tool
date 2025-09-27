@@ -21,7 +21,11 @@ def parse_frontmatter(path):
         return None, text
     fm = parts[1]
     body = parts[2]
-    data = yaml.safe_load(fm) or {}
+    try:
+        data = yaml.safe_load(fm) or {}
+    except yaml.YAMLError as e:
+        print(f"YAML parsing error in {path}: {e}")
+        return None, text
     return data, body
 
 errors = []
