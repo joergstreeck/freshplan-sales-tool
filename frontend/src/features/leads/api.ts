@@ -10,7 +10,7 @@ function authHeaders() {
 
 export async function listLeads(): Promise<Lead[]> {
   const res = await fetch(`${BASE}/api/leads`, {
-    headers: { 'Accept': 'application/json', ...authHeaders() },
+    headers: { Accept: 'application/json', ...authHeaders() },
     credentials: 'include',
   });
   if (!res.ok) throw await toProblem(res);
@@ -22,7 +22,7 @@ export async function createLead(payload: { name: string; email?: string }) {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Accept': 'application/json',
+      Accept: 'application/json',
       ...authHeaders(),
     },
     body: JSON.stringify({ ...payload, source: 'manual' }),

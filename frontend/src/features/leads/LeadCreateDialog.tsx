@@ -7,7 +7,7 @@ import {
   TextField,
   Button,
   Alert,
-  Box
+  Box,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { createLead } from './api';
@@ -59,7 +59,7 @@ export default function LeadCreateDialog({ open, onClose, onCreated }: LeadCreat
     try {
       await createLead({
         name: name.trim(),
-        email: email.trim() || undefined
+        email: email.trim() || undefined,
       });
 
       // Reset form
@@ -89,9 +89,7 @@ export default function LeadCreateDialog({ open, onClose, onCreated }: LeadCreat
       <DialogContent>
         {error?.status === 409 && (
           <Box mb={2}>
-            <Alert severity="warning">
-              {t('errors.duplicateEmail')}
-            </Alert>
+            <Alert severity="warning">{t('errors.duplicateEmail')}</Alert>
           </Box>
         )}
 
@@ -134,11 +132,7 @@ export default function LeadCreateDialog({ open, onClose, onCreated }: LeadCreat
         <Button onClick={handleClose} disabled={saving}>
           {t('create.cancel')}
         </Button>
-        <Button
-          onClick={handleSave}
-          variant="contained"
-          disabled={saving || !name.trim()}
-        >
+        <Button onClick={handleSave} variant="contained" disabled={saving || !name.trim()}>
           {saving ? t('create.saving') : t('create.button')}
         </Button>
       </DialogActions>

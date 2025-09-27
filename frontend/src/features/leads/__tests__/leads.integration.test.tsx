@@ -21,9 +21,7 @@ const mockApi = api as {
 // Test wrapper with theme and i18n
 const TestWrapper = ({ children }: { children: React.ReactNode }) => (
   <I18nextProvider i18n={i18n}>
-    <ThemeProvider theme={freshfoodzTheme}>
-      {children}
-    </ThemeProvider>
+    <ThemeProvider theme={freshfoodzTheme}>{children}</ThemeProvider>
   </I18nextProvider>
 );
 
@@ -42,7 +40,12 @@ describe('Lead Management Integration Tests', () => {
 
     it('displays lead list when loaded', async () => {
       const mockLeads: Lead[] = [
-        { id: '1', name: 'Test Lead 1', email: 'lead1@test.com', createdAt: '2025-01-01T00:00:00Z' },
+        {
+          id: '1',
+          name: 'Test Lead 1',
+          email: 'lead1@test.com',
+          createdAt: '2025-01-01T00:00:00Z',
+        },
         { id: '2', name: 'Test Lead 2', email: null, createdAt: '2025-01-02T00:00:00Z' },
       ];
       mockApi.listLeads.mockResolvedValue(mockLeads);
@@ -60,7 +63,7 @@ describe('Lead Management Integration Tests', () => {
       const error: Problem = {
         title: 'Network Error',
         detail: 'Failed to fetch leads',
-        status: 500
+        status: 500,
       };
       mockApi.listLeads.mockRejectedValue(error);
 
@@ -127,7 +130,8 @@ describe('Lead Management Integration Tests', () => {
       await user.type(nameInput, 'Valid Name');
       await user.type(emailInput, 'invalid-email');
 
-      const dialogSaveButton = screen.getAllByRole('button', { name: /create lead/i })
+      const dialogSaveButton = screen
+        .getAllByRole('button', { name: /create lead/i })
         .find(btn => btn.closest('[role="dialog"]'));
 
       if (dialogSaveButton) {
@@ -147,7 +151,7 @@ describe('Lead Management Integration Tests', () => {
         title: 'Duplicate lead',
         status: 409,
         detail: 'Lead mit dieser E-Mail existiert bereits.',
-        errors: { email: ['E-Mail ist bereits vergeben'] }
+        errors: { email: ['E-Mail ist bereits vergeben'] },
       };
       mockApi.createLead.mockRejectedValue(duplicateError);
 
@@ -166,7 +170,8 @@ describe('Lead Management Integration Tests', () => {
       await user.type(nameInput, 'Duplicate Test');
       await user.type(emailInput, 'duplicate@example.com');
 
-      const dialogSaveButton = screen.getAllByRole('button', { name: /create lead/i })
+      const dialogSaveButton = screen
+        .getAllByRole('button', { name: /create lead/i })
         .find(btn => btn.closest('[role="dialog"]'));
 
       if (dialogSaveButton) {
@@ -176,9 +181,7 @@ describe('Lead Management Integration Tests', () => {
       // Should show duplicate warning
       await waitFor(() => {
         const alerts = screen.getAllByRole('alert');
-        const warningAlert = alerts.find(alert =>
-          alert.className?.includes('Warning')
-        );
+        const warningAlert = alerts.find(alert => alert.className?.includes('Warning'));
         expect(warningAlert).toBeInTheDocument();
       });
     });
@@ -191,7 +194,7 @@ describe('Lead Management Integration Tests', () => {
         id: '123',
         name: 'New Test Lead',
         email: 'new@example.com',
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
       };
       mockApi.createLead.mockResolvedValue(newLead);
       mockApi.listLeads.mockResolvedValueOnce([newLead]);
@@ -211,7 +214,8 @@ describe('Lead Management Integration Tests', () => {
       await user.type(nameInput, 'New Test Lead');
       await user.type(emailInput, 'new@example.com');
 
-      const dialogSaveButton = screen.getAllByRole('button', { name: /create lead/i })
+      const dialogSaveButton = screen
+        .getAllByRole('button', { name: /create lead/i })
         .find(btn => btn.closest('[role="dialog"]'));
 
       if (dialogSaveButton) {
@@ -222,7 +226,7 @@ describe('Lead Management Integration Tests', () => {
       await waitFor(() => {
         expect(mockApi.createLead).toHaveBeenCalledWith({
           name: 'New Test Lead',
-          email: 'new@example.com'
+          email: 'new@example.com',
         });
       });
 
@@ -240,7 +244,7 @@ describe('Lead Management Integration Tests', () => {
       mockApi.createLead.mockResolvedValue({
         id: '1',
         name: 'Test',
-        source: 'manual'
+        source: 'manual',
       } as Lead);
 
       render(<LeadList />, { wrapper: TestWrapper });
@@ -255,7 +259,8 @@ describe('Lead Management Integration Tests', () => {
       const nameInput = screen.getByLabelText(/name/i);
       await user.type(nameInput, 'Manual Entry Lead');
 
-      const dialogSaveButton = screen.getAllByRole('button', { name: /create lead/i })
+      const dialogSaveButton = screen
+        .getAllByRole('button', { name: /create lead/i })
         .find(btn => btn.closest('[role="dialog"]'));
 
       if (dialogSaveButton) {
@@ -280,8 +285,8 @@ describe('Lead Management Integration Tests', () => {
         status: 400,
         errors: {
           name: ['Name is too short'],
-          email: ['Email format is invalid']
-        }
+          email: ['Email format is invalid'],
+        },
       };
       mockApi.createLead.mockRejectedValue(validationError);
 
@@ -297,7 +302,8 @@ describe('Lead Management Integration Tests', () => {
       const nameInput = screen.getByLabelText(/name/i);
       await user.type(nameInput, 'X');
 
-      const dialogSaveButton = screen.getAllByRole('button', { name: /create lead/i })
+      const dialogSaveButton = screen
+        .getAllByRole('button', { name: /create lead/i })
         .find(btn => btn.closest('[role="dialog"]'));
 
       if (dialogSaveButton) {
@@ -306,8 +312,7 @@ describe('Lead Management Integration Tests', () => {
 
       await waitFor(() => {
         const nameField = screen.getByLabelText(/name/i).parentElement?.parentElement;
-        expect(nameField?.querySelector('.MuiFormHelperText-root'))
-          .toHaveTextContent(/too short/i);
+        expect(nameField?.querySelector('.MuiFormHelperText-root')).toHaveTextContent(/too short/i);
       });
     });
   });

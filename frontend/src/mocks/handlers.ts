@@ -93,14 +93,13 @@ const mockCustomers = [
 ];
 
 export const handlers = [
-
   // Sales Cockpit API endpoints
   http.get('http://localhost:8080/api/sales-cockpit/dashboard/dev', () => {
     return HttpResponse.json({
       totalLeads: 3,
       totalCustomers: 5,
       monthlyRevenue: 25000,
-      conversionRate: 15.2
+      conversionRate: 15.2,
     });
   }),
 
@@ -158,7 +157,7 @@ export const handlers = [
   }),
 
   http.post('http://localhost:8080/api/leads', async ({ request }) => {
-    const newLead = await request.json() as { name: string; email?: string };
+    const newLead = (await request.json()) as { name: string; email?: string };
 
     // Validate required fields
     if (!newLead.name?.trim()) {
@@ -168,8 +167,8 @@ export const handlers = [
           status: 400,
           detail: 'Name is required',
           errors: {
-            name: ['Name ist erforderlich']
-          }
+            name: ['Name ist erforderlich'],
+          },
         },
         { status: 400 }
       );
@@ -184,7 +183,7 @@ export const handlers = [
           title: 'Duplicate lead',
           status: 409,
           detail: 'Lead mit dieser E-Mail existiert bereits.',
-          errors: { email: ['E-Mail ist bereits vergeben'] }
+          errors: { email: ['E-Mail ist bereits vergeben'] },
         },
         { status: 409 }
       );

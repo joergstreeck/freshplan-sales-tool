@@ -26,7 +26,9 @@ export default function LeadList() {
     fetchLeads().then(() => {
       if (!mounted) return;
     });
-    return () => { mounted = false; };
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   const handleLeadCreated = () => {
@@ -76,14 +78,7 @@ export default function LeadList() {
       ) : (
         <Box>
           {data?.map(lead => (
-            <Box
-              key={lead.id}
-              p={2}
-              border={1}
-              borderColor="divider"
-              borderRadius={1}
-              mb={1}
-            >
+            <Box key={lead.id} p={2} border={1} borderColor="divider" borderRadius={1} mb={1}>
               <Typography variant="h6">{lead.name}</Typography>
               {lead.email && (
                 <Typography variant="body2" color="text.secondary">
@@ -100,11 +95,7 @@ export default function LeadList() {
         </Box>
       )}
 
-      <LeadCreateDialog
-        open={open}
-        onClose={() => setOpen(false)}
-        onCreated={handleLeadCreated}
-      />
+      <LeadCreateDialog open={open} onClose={() => setOpen(false)} onCreated={handleLeadCreated} />
     </Box>
   );
 }

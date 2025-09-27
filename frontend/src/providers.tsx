@@ -128,7 +128,6 @@ export const AppProviders = ({ children: mainChildren }: AppProvidersProps) => {
   // Feature flags
   const FEAT_LEADGEN = (import.meta.env.VITE_FEATURE_LEADGEN ?? 'false') === 'true';
 
-
   // Auth Provider wrapper - AuthProvider always depends on KeycloakContext
   const AuthWrapper = ({ children: authChildren }: { children: ReactNode }) => {
     return (
@@ -257,9 +256,7 @@ export const AppProviders = ({ children: mainChildren }: AppProvidersProps) => {
                             element={FEAT_LEADGEN ? <LeadsPage /> : <Placeholders.LeadErfassung />}
                           />
                           {/* Feature-flagged standalone route */}
-                          {FEAT_LEADGEN && (
-                            <Route path="/leads" element={<LeadsPage />} />
-                          )}
+                          {FEAT_LEADGEN && <Route path="/leads" element={<LeadsPage />} />}
                           <Route
                             path="/lead-generation/campaigns"
                             element={<Placeholders.Kampagnen />}

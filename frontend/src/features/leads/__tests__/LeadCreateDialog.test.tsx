@@ -273,7 +273,9 @@ describe('LeadCreateDialog', () => {
       // Should show field error
       await waitFor(() => {
         const emailField = screen.getByLabelText(/e.mail/i).parentElement?.parentElement;
-        expect(emailField?.querySelector('.MuiFormHelperText-root')).toHaveTextContent(/e.mail ist bereits vergeben/i);
+        expect(emailField?.querySelector('.MuiFormHelperText-root')).toHaveTextContent(
+          /e.mail ist bereits vergeben/i
+        );
       });
     });
   });

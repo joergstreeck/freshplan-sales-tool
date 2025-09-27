@@ -35,7 +35,7 @@ describe('Leads API', () => {
       const result = await listLeads();
 
       expect(mockFetch).toHaveBeenCalledWith('http://localhost:8080/api/leads', {
-        headers: { 'Accept': 'application/json' },
+        headers: { Accept: 'application/json' },
         credentials: 'include',
       });
       expect(result).toEqual(mockLeads);
@@ -53,8 +53,8 @@ describe('Leads API', () => {
 
       expect(mockFetch).toHaveBeenCalledWith('http://localhost:8080/api/leads', {
         headers: {
-          'Accept': 'application/json',
-          'Authorization': 'Bearer test-token',
+          Accept: 'application/json',
+          Authorization: 'Bearer test-token',
         },
         credentials: 'include',
       });
@@ -92,7 +92,7 @@ describe('Leads API', () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json',
+          Accept: 'application/json',
         },
         body: JSON.stringify(payload),
         credentials: 'include',
@@ -115,7 +115,7 @@ describe('Leads API', () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json',
+          Accept: 'application/json',
         },
         body: JSON.stringify(payload),
         credentials: 'include',
