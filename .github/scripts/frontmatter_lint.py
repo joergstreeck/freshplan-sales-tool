@@ -28,8 +28,9 @@ errors = []
 for p in iter_md():
     fm, body = parse_frontmatter(p)
     # Trigger-Sprints dürfen separate Sprint-Header haben → Front-Matter optional
+    # Infrastructure/legacy docs dürfen ohne Front-Matter sein
     if fm is None:
-        if "/features-neu/" in p:
+        if "/features-neu/" in p and not any(x in p for x in ["/00_infrastruktur/", "/legacy-planning/"]):
             errors.append(f"{p}: fehlende Front-Matter (--- ... ---)")
         continue
 
