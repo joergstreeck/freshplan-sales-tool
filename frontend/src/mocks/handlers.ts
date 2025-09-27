@@ -93,14 +93,6 @@ const mockCustomers = [
 ];
 
 export const handlers = [
-  // Health/Ping - verhindert MSW-Passthrough-Errors im Dev
-  http.get('http://localhost:8080/api/ping', () => {
-    return HttpResponse.json({
-      message: 'pong',
-      timestamp: new Date().toISOString(),
-      user: 'mock-user',
-    });
-  }),
 
   // Sales Cockpit API endpoints
   http.get('http://localhost:8080/api/sales-cockpit/dashboard/dev', () => {
