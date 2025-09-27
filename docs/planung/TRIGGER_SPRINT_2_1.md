@@ -1,3 +1,15 @@
+---
+sprint_id: "2.1"
+module_focus: ["02_neukundengewinnung"]
+entry_points:
+  - "features-neu/02_neukundengewinnung/SPRINT_MAP.md"
+  - "features-neu/02_neukundengewinnung/backend/_index.md"
+  - "features-neu/02_neukundengewinnung/frontend/_index.md"
+  - "features-neu/02_neukundengewinnung/analyse/_index.md"
+  - "features-neu/02_neukundengewinnung/artefakte/"
+updated: "2025-09-27"
+---
+
 # ✅ ABGESCHLOSSEN: SPRINT 2.1 NEUKUNDENGEWINNUNG - ERFOLGREICH UMGESETZT
 
 **STATUS:** ✅ 100% COMPLETE (4/4 PRs merged + P0 HOTFIX)
