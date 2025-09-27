@@ -2,11 +2,16 @@
   "title": "Leads",
   "create": {
     "button": "Create lead",
-    "dialogTitle": "Create lead"
+    "dialogTitle": "Create lead",
+    "saving": "Saving...",
+    "cancel": "Cancel"
   },
   "form": {
     "name": "Name",
     "email": "Email"
+  },
+  "list": {
+    "empty": "No leads available."
   },
   "errors": {
     "duplicateEmail": "A lead with this e-mail already exists.",

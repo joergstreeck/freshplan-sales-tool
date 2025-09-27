@@ -67,7 +67,7 @@ export default function LeadList() {
       {data && data.length === 0 ? (
         <Box textAlign="center" py={4}>
           <Typography variant="body1" color="text.secondary" mb={2}>
-            Keine Leads vorhanden.
+            {t('list.empty')}
           </Typography>
           <Button variant="contained" onClick={() => setOpen(true)}>
             {t('create.button')}

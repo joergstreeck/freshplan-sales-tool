@@ -132,14 +132,14 @@ export default function LeadCreateDialog({ open, onClose, onCreated }: LeadCreat
 
       <DialogActions>
         <Button onClick={handleClose} disabled={saving}>
-          Abbrechen
+          {t('create.cancel')}
         </Button>
         <Button
           onClick={handleSave}
           variant="contained"
           disabled={saving || !name.trim()}
         >
-          {saving ? 'Speichern...' : t('create.button')}
+          {saving ? t('create.saving') : t('create.button')}
         </Button>
       </DialogActions>
     </Dialog>
