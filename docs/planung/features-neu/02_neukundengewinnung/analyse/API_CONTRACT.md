@@ -1,16 +1,4 @@
----
-module: "02_neukundengewinnung"
-domain: "frontend"
-doc_type: "contract"
-sprint: "2.1.2"
-status: "approved"
-owner: "team/leads"
-updated: "2025-09-27"
----
-
 # API Contract: Lead-Management Frontend ↔ Backend
-
-**📍 Navigation:** Home → Planung → 02 Neukundengewinnung → Frontend → Analyse → API_CONTRACT
 
 **Sprint:** 2.1.2 – Frontend Research
 **Erstellt:** 2025-09-27

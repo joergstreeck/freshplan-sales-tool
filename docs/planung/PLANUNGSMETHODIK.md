@@ -102,6 +102,8 @@ updated: "2025-09-27"
 **Root‑Ordnung (Guardrail):**
 Modul‑Root zeigt max. **8 Kern‑Items** (`_index.md`, `SPRINT_MAP.md`, `backend/`, `frontend/`, `shared/`, `analyse/`, `artefakte/`, `technical-concept.md`) + `legacy-planning/`.
 
+**Ausnahme:** **Stub‑Verzeichnisse** (2‑Sprint‑Retention) zählen nicht zu den 8 Kern‑Items. Sie sind temporär und sollten nicht für Navigation verwendet werden.
+
 ---
 
 ## 4) Dokument‑Standards (Front‑Matter, Breadcrumbs, Links)

@@ -1,16 +1,4 @@
----
-module: "02_neukundengewinnung"
-domain: "frontend"
-doc_type: "guideline"
-sprint: "2.1.2"
-status: "approved"
-owner: "team/leads"
-updated: "2025-09-27"
----
-
 # 🔍 Validated Foundation Patterns für Modul 02 Frontend
-
-**📍 Navigation:** Home → Planung → 02 Neukundengewinnung → Frontend → Analyse → VALIDATED_FOUNDATION_PATTERNS
 
 **Sprint:** 2.1.2 – Frontend Research
 **Erstellt:** 2025-09-27
