@@ -128,6 +128,7 @@ export const AppProviders = ({ children: mainChildren }: AppProvidersProps) => {
   // Feature flags
   const FEAT_LEADGEN = (import.meta.env.VITE_FEATURE_LEADGEN ?? 'false') === 'true';
 
+
   // Auth Provider wrapper - AuthProvider always depends on KeycloakContext
   const AuthWrapper = ({ children: authChildren }: { children: ReactNode }) => {
     return (

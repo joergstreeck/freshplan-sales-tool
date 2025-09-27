@@ -9,7 +9,16 @@ import {
   Alert,
   Box
 } from '@mui/material';
-import { createLead, Problem } from './api';
+import { createLead } from './api';
+
+// Problem type inline (wegen Vite Cache Issues)
+type Problem = {
+  type?: string;
+  title?: string;
+  detail?: string;
+  status?: number;
+  errors?: Record<string, string[]>
+};
 
 interface LeadCreateDialogProps {
   open: boolean;

@@ -1,5 +1,21 @@
 import { useEffect, useState } from 'react';
-import { listLeads, Lead, Problem } from './api';
+import { listLeads } from './api';
+
+// Types inline (wegen Vite Cache Issues)
+type Lead = {
+  id: string;
+  name: string;
+  email?: string;
+  createdAt?: string;
+};
+
+type Problem = {
+  type?: string;
+  title?: string;
+  detail?: string;
+  status?: number;
+  errors?: Record<string, string[]>
+};
 import { CircularProgress, Alert, Button, Box, Typography } from '@mui/material';
 import LeadCreateDialog from './LeadCreateDialog';
 

@@ -5,7 +5,7 @@ export type Lead = {
   createdAt?: string;
 };
 
-const BASE = import.meta.env.VITE_API_BASE_URL ?? '';
+const BASE = import.meta.env.VITE_API_URL ?? 'http://localhost:8080';
 
 function authHeaders() {
   // Platzhalter: JWT aus bestehender App übernehmen, falls vorhanden
