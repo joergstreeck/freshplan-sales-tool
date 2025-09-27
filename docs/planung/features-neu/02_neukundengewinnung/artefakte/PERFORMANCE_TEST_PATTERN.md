@@ -1,3 +1,11 @@
+---
+module: "02_neukundengewinnung"
+domain: "shared"
+doc_type: "guideline"
+status: "approved"
+owner: "team/leads"
+updated: "2025-09-27"
+---
 # ⚡ Performance Test Pattern - P95 Validation
 
 **Status:** ✅ IMPLEMENTED (PR #110)
