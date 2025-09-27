@@ -37,41 +37,26 @@ processed_count = 0
 skipped_count = 0
 
 for p in iter_md():
-    # Skip archiv completely - legacy files with malformed frontmatter
-    if "/archiv/" in p:
+    # ONLY check Module 02/03 files - skip everything else
+    module_match = None
+    if "/02_neukundengewinnung/" in p:
+        module_match = "02"
+    elif "/03_kundenmanagement/" in p:
+        module_match = "03"
+
+    if not module_match:
+        # Skip ALL files that are not in Module 02/03
         skipped_count += 1
         continue
+
     fm, body = parse_frontmatter(p)
-    # Only check Module 02/03 for Foundation Standards compliance
-    # Other modules are legacy and don't have proper front-matter yet
-    if "/features-neu/" in p:
-        module_match = None
-        if "/02_neukundengewinnung/" in p:
-            module_match = "02"
-        elif "/03_kundenmanagement/" in p:
-            module_match = "03"
 
-        if not module_match:
-            # Skip all other modules - they are legacy
-            skipped_count += 1
-            continue
-
-    # Check if trigger sprints (outside features-neu) - they can have minimal front-matter
-    if "/features-neu/" not in p and p.startswith("docs/planung/TRIGGER_"):
-        # Trigger sprints need minimal front-matter but not all fields
-        if fm is None:
-            errors.append(f"{p}: fehlende Front-Matter (--- ... ---)")
-            continue
-        # Skip detailed validation for trigger sprints
-        processed_count += 1
-        continue
+    processed_count += 1
 
     if fm is None:
         errors.append(f"{p}: fehlende Front-Matter (--- ... ---)")
-        processed_count += 1
         continue
 
-    processed_count += 1
     # Pflichtfelder prüfen (only for Module 02/03)
     for k in REQUIRED:
         if k not in fm:

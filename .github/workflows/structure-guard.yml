@@ -12,7 +12,9 @@ jobs:
         shell: bash
         run: |
           fail=0
+          echo "DEBUG: Starting Structure Guard check"
           for ROOT in docs/planung/features-neu/*_*; do
+            echo "DEBUG: Checking ROOT: $ROOT"
             [ -d "$ROOT" ] || continue
             mapfile -t items < <(ls -1 "$ROOT" | grep -v '^\.' || true)
 
@@ -60,4 +62,5 @@ jobs:
               fail=1
             fi
           done
+          echo "DEBUG: Structure Guard completed with fail=$fail"
           exit $fail
