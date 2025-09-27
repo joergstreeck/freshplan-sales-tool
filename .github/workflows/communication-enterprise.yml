@@ -9,8 +9,8 @@ env:
   JAVA_VERSION: '17'
   NODE_VERSION: '20'
   REGISTRY: ghcr.io/${{ github.repository_owner }}
-  IMAGE_BACKEND: ${{ env.REGISTRY }}/freshplan-comm-backend
-  IMAGE_FRONTEND: ${{ env.REGISTRY }}/freshplan-comm-frontend
+  IMAGE_BACKEND: ghcr.io/${{ github.repository_owner }}/freshplan-comm-backend
+  IMAGE_FRONTEND: ghcr.io/${{ github.repository_owner }}/freshplan-comm-frontend
 
 jobs:
   backend:

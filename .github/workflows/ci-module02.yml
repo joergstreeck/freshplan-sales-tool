@@ -254,6 +254,7 @@ jobs:
           fetch-depth: 0  # Shallow clones should be disabled for better analysis
 
       - name: SonarCloud Scan
+        if: ${{ secrets.SONAR_TOKEN != '' }}
         uses: SonarSource/sonarcloud-github-action@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -349,6 +350,8 @@ jobs:
           # Code Quality
           if [ "${{ needs.code-quality.result }}" == "success" ]; then
             echo "✅ **Code Quality**: SonarCloud quality gate passed" >> $GITHUB_STEP_SUMMARY
+          elif [ "${{ needs.code-quality.result }}" == "skipped" ]; then
+            echo "⚠️ **Code Quality**: SonarCloud skipped (no SONAR_TOKEN)" >> $GITHUB_STEP_SUMMARY
           else
             echo "❌ **Code Quality**: Quality issues detected" >> $GITHUB_STEP_SUMMARY
           fi
@@ -373,5 +376,5 @@ jobs:
           needs.backend-tests.result == 'failure' ||
           needs.frontend-tests.result == 'failure' ||
           needs.security-scan.result == 'failure' ||
-          needs.code-quality.result == 'failure'
+          (needs.code-quality.result == 'failure' && needs.code-quality.result != 'skipped')
         run: exit 1

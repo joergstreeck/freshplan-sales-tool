@@ -24,21 +24,24 @@ jobs:
               fi
             done
 
-            # Zählmenge = alle Items minus Stub-Verzeichnisse
+            # Zählmenge = nur Verzeichnisse (minus Stubs), keine Dateien
             count=$(
               for d in "${items[@]}"; do
+                # Skip Stub-Verzeichnisse
                 skip=0
                 for s in "${stub_dirs[@]}"; do [ "$d" = "$s" ] && skip=1 && break; done
-                [ $skip -eq 0 ] && echo "$d"
+                # Nur Verzeichnisse zählen, keine Dateien
+                [ $skip -eq 0 ] && [ -d "$ROOT/$d" ] && echo "$d"
               done | wc -l
             )
 
             legacy=0
             [ -d "$ROOT/legacy-planning" ] && legacy=1
 
-            # Regel: <= 8 Kern-Items (+1 falls legacy-planning vorhanden)
-            if [ $count -gt $((8 + legacy)) ]; then
-              echo "::error file=$ROOT::Root enthält $count Items (Stub-Ordner ausgenommen). Erlaubt: 8 + legacy-planning"
+            # Regel: <= 5 Kern-Verzeichnisse (+1 falls legacy-planning vorhanden)
+            # Erlaubt: backend, frontend, shared, analyse, artefakte + legacy-planning
+            if [ $count -gt $((5 + legacy)) ]; then
+              echo "::error file=$ROOT::Root enthält $count Verzeichnisse (Stub-Ordner ausgenommen). Erlaubt: 5 Kern-Verzeichnisse + legacy-planning"
               fail=1
             fi
           done
