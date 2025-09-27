@@ -1,8 +1,8 @@
 ---
 sprint_id: "2.1.4"
 title: "Lead Deduplication & Data Quality – Phase 1"
-status: "draft"
-date_start: "2025-09-30"
+status: "in_progress"
+date_start: "2025-09-28"
 date_end: "2025-10-04"
 modules: ["02_neukundengewinnung"]
 entry_points:
@@ -10,7 +10,7 @@ entry_points:
   - "features-neu/02_neukundengewinnung/backend/_index.md"
   - "features-neu/02_neukundengewinnung/shared/adr/"
 pr_refs: []
-updated: "2025-09-27"
+updated: "2025-09-28"
 ---
 
 # Sprint 2.1.4 – Lead Deduplication & Data Quality (Phase 1)

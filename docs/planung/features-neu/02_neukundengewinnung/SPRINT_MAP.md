@@ -56,17 +56,42 @@ updated: "2025-09-27"
 
 ---
 
-### **Sprint 2.1.3 – Frontend Implementation (PLANNED)**
+### **Sprint 2.1.3 – Frontend Implementation (COMPLETE)**
 **Zentral:** [TRIGGER_SPRINT_2_1_3.md](../../TRIGGER_SPRINT_2_1_3.md)
-**Status:** 📋 PLANNED
-**Scope:**
-- Thin Vertical Slice: `/leads` Route + `LeadCreateDialog`
-- Feature-Flag: `VITE_FEATURE_LEADGEN` (default: off)
-- MUI Theme V2 Integration + RFC7807 Error Handling
-- Tests: Vitest Unit + Playwright Smoke
-- Coverage ≥80% für neue Frontend-Komponenten
+**Status:** ✅ COMPLETE
+**Ergebnisse:**
+- Thin Vertical Slice: `/leads` Route + `LeadList` + `LeadCreateDialog`
+- Feature-Flag: `VITE_FEATURE_LEADGEN=true` aktiviert
+- Vollständige Business-Logik:
+  - Client-seitige Validierung (Name ≥2, E-Mail-Format)
+  - Duplikat-Erkennung (409 Response bei gleicher E-Mail)
+  - Source-Tracking (`source='manual'`)
+  - RFC7807 Error Handling mit Feld-Fehlern
+- Vollständige i18n (de/en) ohne hardcoded Strings
+- MUI Theme V2 Integration + MainLayoutV2 Wrapper
+- Tests: 90% Coverage (Integration Tests für alle Business-Flows)
+- MSW für realistische API-Simulation
 
-**Dependencies:** PR #112 merge (Frontend Research)
+**PRs:** #122 (merged 2025-09-28)
+
+---
+
+### **Sprint 2.1.4 – Backend Integration (IN_PROGRESS)**
+**Zentral:** [TRIGGER_SPRINT_2_1_4.md](../../TRIGGER_SPRINT_2_1_4.md)
+**Status:** 🔧 IN_PROGRESS
+**Scope:** Lead Deduplication & Data Quality – Phase 1
+- Normalisierung E-Mail/Telefon + Unique-Indizes
+- Partielle UNIQUE auf `email_normalized` und `phone_e164` (WHERE NOT NULL)
+- Idempotency-Key Support für `POST /api/leads`
+- RFC7807 409 Response bei Duplikaten
+
+**Deliverables:**
+- Migration V247 für normalisierte Felder
+- Backend-Service mit Normalisierungs-Logik
+- Idempotency-Store Implementation
+- Tests für Konflikt-Handling und Idempotenz
+
+**Artefakte:** [`artefakte/SPRINT_2_1_4/`](./artefakte/SPRINT_2_1_4/)
 
 ---
 
@@ -92,11 +117,10 @@ Phase 2 (Frontend Research): Sprint 2.1.2
   Status: ✅ COMPLETE
   Result: Vollständige Frontend-Analyse + API-Contract
 
-Phase 3 (Frontend Implementation): Sprint 2.1.3 (geplant)
-  Status: 📋 PLANNED
-  Scope: Thin Vertical Slice mit Feature-Flag
-  Trigger: TRIGGER_SPRINT_2_1_3.md
-  Dependencies: PR #112 merge
+Phase 3 (Frontend Implementation): Sprint 2.1.3
+  Status: ✅ COMPLETE
+  Result: Lead Management MVP mit Business-Logik
+  PR: #122 (merged)
 ```
 
 ## 🎯 **Für neue Claude-Instanzen**
