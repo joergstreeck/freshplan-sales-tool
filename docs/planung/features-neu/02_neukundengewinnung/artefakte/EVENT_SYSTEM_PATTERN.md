@@ -1,3 +1,11 @@
+---
+module: "02_neukundengewinnung"
+domain: "shared"
+doc_type: "guideline"
+status: "approved"
+owner: "team/leads"
+updated: "2025-09-27"
+---
 # 🔔 Event System Pattern - PostgreSQL LISTEN/NOTIFY
 
 **Status:** ✅ IMPLEMENTED (PR #110)
