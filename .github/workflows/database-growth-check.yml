@@ -21,11 +21,11 @@ jobs:
         env:
           POSTGRES_USER: freshplan
           POSTGRES_PASSWORD: freshplan
-          POSTGRES_DB: freshplan
+          POSTGRES_DB: postgres
         ports:
           - 5432:5432
         options: >-
-          --health-cmd="pg_isready -U freshplan -d freshplan"
+          --health-cmd="pg_isready -U freshplan"
           --health-interval=10s
           --health-timeout=5s
           --health-retries=10
@@ -50,29 +50,27 @@ jobs:
     - name: Install PostgreSQL client
       run: sudo apt-get update && sudo apt-get install -y postgresql-client
     
-    - name: Reset DB schema for clean state
+    - name: Create fresh database for testing
       env:
         PGPASSWORD: freshplan
       run: |
-        echo "Testing database connection..."
-        psql -h localhost -U freshplan -d freshplan -c "SELECT current_database(), current_user, version();"
+        echo "Testing connection to postgres database..."
+        psql -h localhost -U freshplan -d postgres -c "SELECT current_database(), current_user, version();"
 
-        echo "Dropping all tables in public schema..."
-        psql -h localhost -U freshplan -d freshplan -c "DROP SCHEMA IF EXISTS public CASCADE;"
-        psql -h localhost -U freshplan -d freshplan -c "CREATE SCHEMA public;"
-        psql -h localhost -U freshplan -d freshplan -c "GRANT ALL ON SCHEMA public TO freshplan;"
-        psql -h localhost -U freshplan -d freshplan -c "GRANT ALL ON SCHEMA public TO public;"
+        echo "Dropping and recreating freshplan database..."
+        psql -h localhost -U freshplan -d postgres -c "DROP DATABASE IF EXISTS freshplan;"
+        psql -h localhost -U freshplan -d postgres -c "CREATE DATABASE freshplan WITH OWNER freshplan ENCODING 'UTF8';"
 
-        echo "Ensuring required extensions..."
+        echo "Ensuring required extensions in new database..."
         psql -h localhost -U freshplan -d freshplan -c "CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\";"
         psql -h localhost -U freshplan -d freshplan -c "CREATE EXTENSION IF NOT EXISTS pgcrypto;"
         psql -h localhost -U freshplan -d freshplan -c "CREATE EXTENSION IF NOT EXISTS unaccent;"
 
         echo "Verifying clean state..."
         psql -h localhost -U freshplan -d freshplan -c "\dt" || echo "No tables yet - good!"
-        psql -h localhost -U freshplan -d freshplan -c "\dx" || echo "Checking extensions..."
+        psql -h localhost -U freshplan -d freshplan -c "\dx" | head -10
 
-        echo "Database reset completed successfully"
+        echo "Database created successfully"
     
     - name: Apply database migrations
       working-directory: backend
@@ -91,15 +89,21 @@ jobs:
         ls -la src/main/resources/db/migration/ | head -10
         echo "Total migration files: $(ls src/main/resources/db/migration/*.sql 2>/dev/null | wc -l)"
 
+        echo "Running Flyway info to see pending migrations..."
+        ./mvnw flyway:info \
+          -Dflyway.url="jdbc:postgresql://localhost:5432/freshplan" \
+          -Dflyway.user=freshplan \
+          -Dflyway.password=freshplan \
+          -Dflyway.locations=classpath:db/migration
+
         echo "Running Flyway migration on clean database..."
-        # No need for baseline or clean since DB was just recreated
-        echo "Running actual migration..."
         ./mvnw flyway:migrate \
           -Dflyway.url="jdbc:postgresql://localhost:5432/freshplan" \
           -Dflyway.user=freshplan \
           -Dflyway.password=freshplan \
           -Dflyway.locations=classpath:db/migration \
-          -Dflyway.outOfOrder=true || {
+          -Dflyway.outOfOrder=true \
+          -Dflyway.cleanDisabled=false || {
             echo "❌ Flyway migration failed! Checking database connection..."
             psql -h localhost -U freshplan -d freshplan -c "SELECT version();"
             echo "Checking Flyway info..."
