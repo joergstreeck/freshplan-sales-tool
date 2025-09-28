@@ -3,6 +3,7 @@ package db.migration;
 import org.flywaydb.core.api.migration.BaseJavaMigration;
 import org.flywaydb.core.api.migration.Context;
 import java.sql.Statement;
+import java.sql.ResultSet;
 
 /**
  * Creates unique index CONCURRENTLY for zero-downtime deployment.
@@ -22,37 +23,32 @@ public class V248__CreateEmailUniqueIndexConcurrently extends BaseJavaMigration 
     public void migrate(Context context) throws Exception {
         try (Statement statement = context.getConnection().createStatement()) {
 
-            // First, check and drop the non-concurrent index if it exists
-            // (created by V247 in staging/dev environments)
-            statement.execute("""
-                DO $$
-                BEGIN
-                    IF EXISTS (
-                        SELECT 1 FROM pg_indexes
-                        WHERE schemaname = 'public'
-                        AND indexname = 'uq_leads_email_canonical'
-                    ) THEN
-                        DROP INDEX uq_leads_email_canonical;
-                    END IF;
-                END$$;
+            // Check if index already exists
+            ResultSet rs = statement.executeQuery("""
+                SELECT 1 FROM pg_indexes
+                WHERE schemaname = 'public'
+                AND indexname = 'uq_leads_email_canonical_v2'
                 """);
 
-            // Create the index CONCURRENTLY for zero-downtime
-            // This allows production traffic to continue uninterrupted
-            // NOTE: Single-tenant system, no tenant_id yet
-            statement.execute("""
-                CREATE UNIQUE INDEX CONCURRENTLY IF NOT EXISTS uq_leads_email_canonical
-                ON leads(email_normalized)
-                WHERE email_normalized IS NOT NULL
-                    AND is_canonical = true
-                    AND status != 'DELETED';
-                """);
+            boolean indexExists = rs.next();
+            rs.close();
 
-            // Add comment for documentation
-            statement.execute("""
-                COMMENT ON INDEX uq_leads_email_canonical IS
-                'Prevents duplicate canonical leads with same email (created CONCURRENTLY for zero-downtime)';
-                """);
+            if (!indexExists) {
+                // Create index CONCURRENTLY (only works outside transaction)
+                statement.execute("""
+                    CREATE UNIQUE INDEX CONCURRENTLY uq_leads_email_canonical_v2
+                    ON leads(email_normalized)
+                    WHERE email_normalized IS NOT NULL
+                        AND is_canonical = true
+                        AND status != 'DELETED'
+                    """);
+
+                // Add comment for documentation
+                statement.execute("""
+                    COMMENT ON INDEX uq_leads_email_canonical_v2 IS
+                    'Prevents duplicate canonical leads with same email (v2, created CONCURRENTLY for zero-downtime)';
+                    """);
+            }
         }
     }
 
