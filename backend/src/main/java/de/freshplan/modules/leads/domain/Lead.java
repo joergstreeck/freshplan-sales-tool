@@ -115,6 +115,10 @@ public class Lead extends PanacheEntityBase {
   @Column(name = "registered_at", nullable = false)
   public LocalDateTime registeredAt = LocalDateTime.now();
 
+  @Size(max = 250)
+  @Column(name = "registered_at_override_reason")
+  public String registeredAtOverrideReason;
+
   @Column(name = "last_activity_at")
   public LocalDateTime lastActivityAt;
 

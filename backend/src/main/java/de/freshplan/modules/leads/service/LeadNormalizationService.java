@@ -1,7 +1,7 @@
 package de.freshplan.modules.leads.service;
 
 import de.freshplan.modules.leads.domain.Lead;
-// LeadStatus import removed - using string literal for consistency with DB index
+import de.freshplan.modules.leads.domain.LeadStatus;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
@@ -156,25 +156,31 @@ public class LeadNormalizationService {
 
   /**
    * Generic duplicate check for normalized fields. Checks if a value exists in another canonical
-   * lead.
+   * lead. Uses EXISTS for better performance than COUNT.
    */
   private boolean isDuplicate(String fieldName, String value, Long excludeId) {
-    String query =
-        String.format(
-            "SELECT COUNT(l) FROM Lead l WHERE l.%s = :value "
-                + "AND l.isCanonical = true AND l.status != 'DELETED'",
-            fieldName);
+    StringBuilder queryBuilder =
+        new StringBuilder(
+            String.format(
+                "SELECT 1 FROM Lead l WHERE l.%s = :value "
+                    + "AND l.isCanonical = true AND l.status <> :deletedStatus",
+                fieldName));
 
     if (excludeId != null) {
-      query += " AND l.id != :excludeId";
+      queryBuilder.append(" AND l.id <> :excludeId");
     }
 
-    var typedQuery = entityManager.createQuery(query, Long.class).setParameter("value", value);
+    var typedQuery =
+        entityManager
+            .createQuery(queryBuilder.toString(), Integer.class)
+            .setParameter("value", value)
+            .setParameter("deletedStatus", LeadStatus.DELETED)
+            .setMaxResults(1);
 
     if (excludeId != null) {
       typedQuery.setParameter("excludeId", excludeId);
     }
 
-    return typedQuery.getSingleResult() > 0;
+    return !typedQuery.getResultList().isEmpty();
   }
 }
