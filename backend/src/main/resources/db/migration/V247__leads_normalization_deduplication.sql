@@ -76,7 +76,7 @@ CREATE TABLE IF NOT EXISTS idempotency_keys (
   response_body TEXT,
   created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
   expires_at TIMESTAMP WITH TIME ZONE NOT NULL,
-  UNIQUE(idempotency_key)
+  UNIQUE(tenant_id, idempotency_key)
 );
 
 CREATE INDEX IF NOT EXISTS idx_idempotency_keys_expires_at
@@ -107,12 +107,9 @@ COMMENT ON FUNCTION cleanup_expired_idempotency_keys() IS
 -- =====================================================
 -- 5. CREATE NEW INDICES (Non-conflicting names)
 -- =====================================================
--- Email unique index with new name to avoid conflicts
-CREATE UNIQUE INDEX IF NOT EXISTS uq_leads_email_canonical_v2
-  ON leads(email_normalized)
-  WHERE email_normalized IS NOT NULL
-    AND is_canonical = true
-    AND status != 'DELETED';
+-- Email unique index will be created by V248 with CONCURRENTLY option
+-- for zero-downtime deployment in production
+-- NOTE: V248 handles both test and production environments appropriately
 
 -- Company name + city index for fuzzy matching
 CREATE INDEX IF NOT EXISTS idx_leads_company_norm_city
