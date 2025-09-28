@@ -20,11 +20,11 @@ jobs:
       postgres:
         image: postgres:14
         env:
-          POSTGRES_DB: test_db
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: freshplan
+          POSTGRES_USER: freshplan
+          POSTGRES_PASSWORD: freshplan
         options: >-
-          --health-cmd "pg_isready -U postgres -d test_db"
+          --health-cmd "pg_isready -U freshplan -d freshplan"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 10
@@ -42,24 +42,26 @@ jobs:
           java-version: 17
           cache: maven
           
+      - name: Wait for PostgreSQL to be ready
+        run: |
+          for i in {1..30}; do
+            pg_isready -h localhost -p 5432 -U freshplan && echo "✅ PostgreSQL is ready" && exit 0
+            echo "⏳ Waiting for PostgreSQL... attempt $i/30"
+            sleep 2
+          done
+          echo "❌ PostgreSQL not ready after 60 seconds" && exit 1
+
       - name: DB Schema Reset (Hard Reset für sauberen Start)
         env:
-          PGPASSWORD: postgres
+          PGPASSWORD: freshplan
         run: |
-          # Health-Check: PostgreSQL bereit?
-          until pg_isready -h localhost -U postgres -d test_db; do 
-            echo "Waiting for PostgreSQL..."
-            sleep 1
-          done
-          echo "✅ PostgreSQL ready"
-          
           # KRITISCH: Hard Schema Reset - garantiert leerer Start (keine Drift)
-          psql -h localhost -U postgres -d test_db -c "DROP SCHEMA IF EXISTS public CASCADE; CREATE SCHEMA public;"
+          psql -h localhost -U freshplan -d freshplan -c "DROP SCHEMA IF EXISTS public CASCADE; CREATE SCHEMA public;"
           echo "✅ Schema reset - garantiert 0 customers"
       
       - name: Environment Diagnostics (A00 - Früh scheitern bei Fehlkonfiguration)
         env:
-          PGPASSWORD: postgres
+          PGPASSWORD: freshplan
         run: |
           
           # Environment Diagnostics (HART - Abort bei Fehlkonfiguration)
@@ -113,6 +115,39 @@ jobs:
           path: backend/target/surefire-reports/*.xml
           reporter: java-junit
           
+      - name: Check DB Invariants
+        if: always()
+        env:
+          PGPASSWORD: freshplan
+        run: |
+          echo "=== DB Invariant Checks ==="
+
+          echo "📊 Checking for duplicate customer_numbers..."
+          DUPLICATES=$(psql -h localhost -U freshplan -d freshplan -t -c \
+            "SELECT COUNT(*) FROM (SELECT customer_number FROM customers GROUP BY customer_number HAVING COUNT(*) > 1) AS dups" 2>/dev/null || echo "0")
+          if [ "$DUPLICATES" -gt 0 ]; then
+            echo "❌ Found $DUPLICATES duplicate customer_numbers:"
+            psql -h localhost -U freshplan -d freshplan -c \
+              "SELECT customer_number, COUNT(*) FROM customers GROUP BY customer_number HAVING COUNT(*) > 1"
+          else
+            echo "✅ No duplicate customer_numbers found"
+          fi
+
+          echo "📊 Checking for duplicate idempotency keys..."
+          if psql -h localhost -U freshplan -d freshplan -c "SELECT 1 FROM information_schema.tables WHERE table_name = 'idempotency_keys'" 2>/dev/null | grep -q 1; then
+            DUPLICATES=$(psql -h localhost -U freshplan -d freshplan -t -c \
+              "SELECT COUNT(*) FROM (SELECT key FROM idempotency_keys GROUP BY key HAVING COUNT(*) > 1) AS dups")
+            if [ "$DUPLICATES" -gt 0 ]; then
+              echo "❌ Found $DUPLICATES duplicate idempotency keys:"
+              psql -h localhost -U freshplan -d freshplan -c \
+                "SELECT key, COUNT(*) FROM idempotency_keys GROUP BY key HAVING COUNT(*) > 1"
+            else
+              echo "✅ No duplicate idempotency keys found"
+            fi
+          else
+            echo "ℹ️ No idempotency_keys table found (OK if not implemented yet)"
+          fi
+
       - name: Test Summary
         if: success()
         run: |

@@ -39,67 +39,68 @@ class FollowUpAutomationServiceTest {
   private CampaignTemplate followUpTemplate;
 
   @BeforeEach
-  @Transactional
   void setUp() {
-    // Clean up
-    em.createQuery("DELETE FROM LeadActivity").executeUpdate();
-    em.createQuery("DELETE FROM Lead").executeUpdate();
-    em.createQuery("DELETE FROM CampaignTemplate").executeUpdate();
-    em.createQuery("DELETE FROM Territory").executeUpdate();
+    TestTx.committed(() -> {
+      // Clean up
+      em.createQuery("DELETE FROM LeadActivity").executeUpdate();
+      em.createQuery("DELETE FROM Lead").executeUpdate();
+      em.createQuery("DELETE FROM CampaignTemplate").executeUpdate();
+      em.createQuery("DELETE FROM Territory").executeUpdate();
 
-    // Create test territory
-    testTerritory = new Territory();
-    testTerritory.id = "DE";
-    testTerritory.name = "Deutschland";
-    testTerritory.countryCode = "DE";
-    testTerritory.languageCode = "de";
-    testTerritory.currencyCode = "EUR";
-    testTerritory.taxRate = new java.math.BigDecimal("19.00");
-    testTerritory.active = true;
-    em.persist(testTerritory);
+      // Create test territory
+      testTerritory = new Territory();
+      testTerritory.id = "DE";
+      testTerritory.name = "Deutschland";
+      testTerritory.countryCode = "DE";
+      testTerritory.languageCode = "de";
+      testTerritory.currencyCode = "EUR";
+      testTerritory.taxRate = new java.math.BigDecimal("19.00");
+      testTerritory.active = true;
+      em.persist(testTerritory);
 
-    // Create test lead
-    testLead = new Lead();
-    testLead.companyName = "Test Restaurant GmbH";
-    testLead.contactPerson = "Max Mustermann";
-    testLead.email = "max@restaurant.de";
-    testLead.phone = "+49 89 123456";
-    testLead.status = LeadStatus.ACTIVE;
-    testLead.ownerUserId = UUID.randomUUID().toString();
-    testLead.createdBy = "test-user";
-    testLead.territory = testTerritory;
-    testLead.registeredAt = LocalDateTime.now().minusDays(4); // 4 days old for T+3 test
-    testLead.metadata = new io.vertx.core.json.JsonObject();
-    testLead.metadata.put("businessType", "RESTAURANT");
-    testLead.t3FollowupSent = false; // Ensure T+3 hasn't been sent
-    testLead.t7FollowupSent = false; // Ensure T+7 hasn't been sent
-    testLead.followupCount = 0;
-    testLead.clockStoppedAt = null; // Clock is not stopped
-    em.persist(testLead);
+      // Create test lead
+      testLead = new Lead();
+      testLead.companyName = "Test Restaurant GmbH";
+      testLead.contactPerson = "Max Mustermann";
+      testLead.email = "max@restaurant.de";
+      testLead.phone = "+49 89 123456";
+      testLead.status = LeadStatus.ACTIVE;
+      testLead.ownerUserId = UUID.randomUUID().toString();
+      testLead.createdBy = "test-user";
+      testLead.territory = testTerritory;
+      testLead.registeredAt = LocalDateTime.now().minusDays(4); // 4 days old for T+3 test
+      testLead.metadata = new io.vertx.core.json.JsonObject();
+      testLead.metadata.put("businessType", "RESTAURANT");
+      testLead.t3FollowupSent = false; // Ensure T+3 hasn't been sent
+      testLead.t7FollowupSent = false; // Ensure T+7 hasn't been sent
+      testLead.followupCount = 0;
+      testLead.clockStoppedAt = null; // Clock is not stopped
+      em.persist(testLead);
 
-    // Create sample template
-    sampleTemplate = new CampaignTemplate();
-    sampleTemplate.name = "T+3 Sample Follow-up";
-    sampleTemplate.subject = "Gratis Proben für {{lead.company}}";
-    sampleTemplate.htmlContent = "<p>Hallo {{lead.contactPerson}}</p>";
-    sampleTemplate.templateType = CampaignTemplate.TemplateType.SAMPLE_REQUEST;
-    sampleTemplate.active = true;
-    sampleTemplate.createdAt = LocalDateTime.now();
-    sampleTemplate.updatedAt = LocalDateTime.now();
-    em.persist(sampleTemplate);
+      // Create sample template
+      sampleTemplate = new CampaignTemplate();
+      sampleTemplate.name = "T+3 Sample Follow-up";
+      sampleTemplate.subject = "Gratis Proben für {{lead.company}}";
+      sampleTemplate.htmlContent = "<p>Hallo {{lead.contactPerson}}</p>";
+      sampleTemplate.templateType = CampaignTemplate.TemplateType.SAMPLE_REQUEST;
+      sampleTemplate.active = true;
+      sampleTemplate.createdAt = LocalDateTime.now();
+      sampleTemplate.updatedAt = LocalDateTime.now();
+      em.persist(sampleTemplate);
 
-    // Create follow-up template
-    followUpTemplate = new CampaignTemplate();
-    followUpTemplate.name = "T+7 Bulk Order Follow-up";
-    followUpTemplate.subject = "{{bulk.discount}}% Rabatt für {{lead.company}}";
-    followUpTemplate.htmlContent = "<p>Exklusives Angebot</p>";
-    followUpTemplate.templateType = CampaignTemplate.TemplateType.FOLLOW_UP;
-    followUpTemplate.active = true;
-    followUpTemplate.createdAt = LocalDateTime.now();
-    followUpTemplate.updatedAt = LocalDateTime.now();
-    em.persist(followUpTemplate);
+      // Create follow-up template
+      followUpTemplate = new CampaignTemplate();
+      followUpTemplate.name = "T+7 Bulk Order Follow-up";
+      followUpTemplate.subject = "{{bulk.discount}}% Rabatt für {{lead.company}}";
+      followUpTemplate.htmlContent = "<p>Exklusives Angebot</p>";
+      followUpTemplate.templateType = CampaignTemplate.TemplateType.FOLLOW_UP;
+      followUpTemplate.active = true;
+      followUpTemplate.createdAt = LocalDateTime.now();
+      followUpTemplate.updatedAt = LocalDateTime.now();
+      em.persist(followUpTemplate);
 
-    em.flush();
+      em.flush();
+    });
   }
 
   @Test
@@ -179,21 +180,22 @@ class FollowUpAutomationServiceTest {
   }
 
   @Test
-  @Transactional
   void testNoFollowUpForRecentActivity() {
     // Given: Lead hat kürzliche Aktivität
-    testLead.registeredAt = LocalDateTime.now().minusDays(4);
-    em.merge(testLead);
+    TestTx.committed(() -> {
+      testLead.registeredAt = LocalDateTime.now().minusDays(4);
+      testLead = em.merge(testLead);
 
-    // Create recent activity
-    LeadActivity recentActivity = new LeadActivity();
-    recentActivity.lead = testLead;
-    recentActivity.activityType = ActivityType.EMAIL;  // Use activityType not type (transient)
-    recentActivity.userId = "user123";
-    recentActivity.description = "Customer responded";
-    recentActivity.occurredAt = LocalDateTime.now().minusHours(12);
-    em.persist(recentActivity);
-    em.flush();
+      // Create recent activity
+      LeadActivity recentActivity = new LeadActivity();
+      recentActivity.lead = testLead;
+      recentActivity.activityType = ActivityType.EMAIL;  // Use activityType not type (transient)
+      recentActivity.userId = "user123";
+      recentActivity.description = "Customer responded";
+      recentActivity.occurredAt = LocalDateTime.now().minusHours(12);
+      em.persist(recentActivity);
+      em.flush();
+    });
 
     // When: Follow-up Automation läuft
     followUpService.processScheduledFollowUps();
@@ -204,12 +206,13 @@ class FollowUpAutomationServiceTest {
   }
 
   @Test
-  @Transactional
   void testNoFollowUpForStoppedClock() {
     // Given: Lead hat gestoppte Clock
-    testLead.registeredAt = LocalDateTime.now().minusDays(4);
-    testLead.clockStoppedAt = LocalDateTime.now().minusDays(1);
-    em.merge(testLead);
+    TestTx.committed(() -> {
+      testLead.registeredAt = LocalDateTime.now().minusDays(4);
+      testLead.clockStoppedAt = LocalDateTime.now().minusDays(1);
+      testLead = em.merge(testLead);
+    });
 
     // When: Follow-up Automation läuft
     followUpService.processScheduledFollowUps();
@@ -220,14 +223,15 @@ class FollowUpAutomationServiceTest {
   }
 
   @Test
-  @Transactional
   void testNoDoubleFollowUp() {
     // Given: Lead ist 4 Tage alt und hat bereits T+3 Follow-up erhalten
-    testLead.registeredAt = LocalDateTime.now().minusDays(4);
-    testLead.t3FollowupSent = true; // Flag setzen statt Activity erstellen
-    testLead.lastFollowupAt = LocalDateTime.now().minusDays(1);
-    testLead.followupCount = 1;
-    em.merge(testLead);
+    TestTx.committed(() -> {
+      testLead.registeredAt = LocalDateTime.now().minusDays(4);
+      testLead.t3FollowupSent = true; // Flag setzen statt Activity erstellen
+      testLead.lastFollowupAt = LocalDateTime.now().minusDays(1);
+      testLead.followupCount = 1;
+      testLead = em.merge(testLead);
+    });
 
     // When: Follow-up Automation läuft
     followUpService.processScheduledFollowUps();
@@ -278,17 +282,16 @@ class FollowUpAutomationServiceTest {
   }
 
   @Test
-  @Transactional
   void testBusinessTypeSpecificOffers() {
     // Test Hotel-specific discount
-    testLead.metadata.put("businessType", "HOTEL");
-    em.merge(testLead);
-
-    testLead.registeredAt = LocalDateTime.now().minusDays(7).minusHours(1);
-    testLead.status = LeadStatus.ACTIVE;
-    testLead.t7FollowupSent = false;
-    testLead = em.merge(testLead);
-    em.flush();
+    TestTx.committed(() -> {
+      testLead.metadata.put("businessType", "HOTEL");
+      testLead.registeredAt = LocalDateTime.now().minusDays(7).minusHours(1);
+      testLead.status = LeadStatus.ACTIVE;
+      testLead.t7FollowupSent = false;
+      testLead = em.merge(testLead);
+      em.flush();
+    });
 
     when(emailService.sendCampaignEmail(
             any(Lead.class), any(CampaignTemplate.class), any(Map.class)))
@@ -306,15 +309,16 @@ class FollowUpAutomationServiceTest {
   }
 
   @Test
-  @Transactional
   void testLeadStatusUpdateAfterT7() {
     // Given: Lead ohne Response nach T+7
-    testLead.registeredAt = LocalDateTime.now().minusDays(7).minusHours(1);
-    testLead.status = LeadStatus.ACTIVE;
-    testLead.t7FollowupSent = false;
-    testLead.t3FollowupSent = true; // T+3 was already sent
-    testLead = em.merge(testLead);
-    em.flush();
+    TestTx.committed(() -> {
+      testLead.registeredAt = LocalDateTime.now().minusDays(7).minusHours(1);
+      testLead.status = LeadStatus.ACTIVE;
+      testLead.t7FollowupSent = false;
+      testLead.t3FollowupSent = true; // T+3 was already sent
+      testLead = em.merge(testLead);
+      em.flush();
+    });
 
     when(emailService.sendCampaignEmail(
             any(Lead.class), any(CampaignTemplate.class), any(Map.class)))
@@ -332,7 +336,6 @@ class FollowUpAutomationServiceTest {
   }
 
   @Test
-  @Transactional
   void testFollowUpProcessingWithMultipleLeads() {
     // Given: Multiple leads for T+3 and T+7
     // Mock the results
