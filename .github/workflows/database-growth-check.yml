@@ -67,12 +67,24 @@ jobs:
         echo "Running Flyway migrations directly..."
         echo "Checking Maven and Java setup..."
         ./mvnw --version
-        
+
+        echo "Compiling project to ensure resources are available..."
+        ./mvnw compile -DskipTests
+
         echo "Checking for migration files..."
         ls -la src/main/resources/db/migration/ | head -10
         echo "Total migration files: $(ls src/main/resources/db/migration/*.sql 2>/dev/null | wc -l)"
-        
+
         echo "Running Flyway migration..."
+        echo "First, let's check what Flyway sees..."
+        ./mvnw flyway:info \
+          -Dflyway.url="jdbc:postgresql://localhost:5432/freshplan" \
+          -Dflyway.user=freshplan \
+          -Dflyway.password=freshplan \
+          -Dflyway.locations=classpath:db/migration \
+          -Dflyway.outOfOrder=true || echo "Info failed, continuing..."
+
+        echo "Now running actual migration..."
         ./mvnw flyway:migrate \
           -Dflyway.url="jdbc:postgresql://localhost:5432/freshplan" \
           -Dflyway.user=freshplan \
