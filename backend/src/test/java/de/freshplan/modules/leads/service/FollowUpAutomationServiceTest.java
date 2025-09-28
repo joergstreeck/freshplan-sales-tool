@@ -70,6 +70,10 @@ class FollowUpAutomationServiceTest {
     testLead.registeredAt = LocalDateTime.now().minusDays(4); // 4 days old for T+3 test
     testLead.metadata = new io.vertx.core.json.JsonObject();
     testLead.metadata.put("businessType", "RESTAURANT");
+    testLead.t3FollowupSent = false; // Ensure T+3 hasn't been sent
+    testLead.t7FollowupSent = false; // Ensure T+7 hasn't been sent
+    testLead.followupCount = 0;
+    testLead.clockStoppedAt = null; // Clock is not stopped
     em.persist(testLead);
 
     // Create sample template
@@ -292,7 +296,8 @@ class FollowUpAutomationServiceTest {
 
     // Then: Lead Status wird auf REMINDER gesetzt
     em.flush();
-    em.refresh(testLead);
+    // Reload lead from database instead of refresh
+    testLead = em.find(Lead.class, testLead.id);
     assertEquals(LeadStatus.REMINDER, testLead.status);
     assertNotNull(testLead.reminderSentAt);
   }

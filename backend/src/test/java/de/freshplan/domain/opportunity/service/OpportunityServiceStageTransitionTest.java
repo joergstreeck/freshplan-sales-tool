@@ -49,7 +49,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 @TestSecurity(
     user = "testuser",
     roles = {"admin", "manager", "sales"})
-@io.quarkus.test.TestTransaction
 public class OpportunityServiceStageTransitionTest {
 
   @Inject OpportunityService opportunityService;
@@ -583,15 +582,29 @@ public class OpportunityServiceStageTransitionTest {
     userRepository.persist(user);
     userRepository.flush(); // Critical: Ensure user is saved before creating opportunity
 
-    var opportunity =
-        opportunityBuilder
-            .withName(name)
-            .inStage(stage)
-            .forCustomer(customer)
-            .assignedTo(user)
-            .persist();
+    // Create opportunity manually to ensure it's properly persisted
+    var opportunity = new Opportunity();
+    opportunity.setName(name);
+    opportunity.setStage(stage);
+    opportunity.setProbability(stage.getDefaultProbability());
+    opportunity.setExpectedValue(java.math.BigDecimal.valueOf(10000));
+    opportunity.setExpectedCloseDate(java.time.LocalDate.now().plusDays(30));
+    opportunity.setDescription("Test opportunity for stage transition");
+    opportunity.setCustomer(customer);
+    opportunity.setAssignedTo(user);
 
-    // Make sure the opportunity has an ID
+    // Persist and flush to ensure it's in the database
+    opportunityRepository.persist(opportunity);
+    opportunityRepository.flush();
+
+    // Clear the entity manager cache to ensure we work with persisted state
+    entityManager.clear();
+
+    // Reload the opportunity to get the persisted version with all defaults set
+    opportunity = opportunityRepository.findById(opportunity.getId());
+
+    // Make sure the opportunity exists
+    assertThat(opportunity).as("Opportunity should be persisted and found").isNotNull();
     assertThat(opportunity.getId()).as("Opportunity ID should be set after persist").isNotNull();
 
     return opportunity;
