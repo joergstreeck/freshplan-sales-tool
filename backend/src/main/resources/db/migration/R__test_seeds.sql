@@ -20,7 +20,9 @@ BEGIN
         customer_number,
         company_name,
         created_at,
+        created_by,
         updated_at,
+        updated_by,
         status,
         is_test_data
       ) VALUES (
@@ -28,7 +30,9 @@ BEGIN
         'TEST-SEED-' || i,
         'Test Customer ' || i,
         NOW(),
+        'system',
         NOW(),
+        'system',
         'ACTIVE',
         true
       ) ON CONFLICT (customer_number) DO NOTHING;
