@@ -524,7 +524,6 @@ public class OpportunityServiceStageTransitionTest {
 
   // Helper methods
 
-  @Transactional
   Customer getOrCreateCustomer(String companyName, String email) {
     var existingCustomer = customerRepository.find("companyName", companyName).firstResult();
     if (existingCustomer != null) {
@@ -557,7 +556,6 @@ public class OpportunityServiceStageTransitionTest {
         "Cannot create User directly - use existing test users");
   }
 
-  @Transactional
   Opportunity createTestOpportunity(String name, OpportunityStage stage) {
     // Ensure test data is created if not already
     if (testCustomer == null) {
