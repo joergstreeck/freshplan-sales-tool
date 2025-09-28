@@ -108,3 +108,4 @@ public class IdempotencyRecord {
     public void setExpiresAt(Instant expiresAt) {
         this.expiresAt = expiresAt;
     }
+}

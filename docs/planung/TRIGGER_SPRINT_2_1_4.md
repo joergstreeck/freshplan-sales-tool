@@ -1,19 +1,25 @@
 ---
 sprint_id: "2.1.4"
 title: "Lead Deduplication & Data Quality – Phase 1"
+doc_type: "konzept"
 status: "in_progress"
+owner: "team/leads-backend"
 date_start: "2025-09-28"
 date_end: "2025-10-04"
 modules: ["02_neukundengewinnung"]
 entry_points:
-  - "features-neu/02_neukundengewinnung/SPRINT_MAP.md"
+  - "features-neu/02_neukundengewinnung/_index.md"
   - "features-neu/02_neukundengewinnung/backend/_index.md"
-  - "features-neu/02_neukundengewinnung/shared/adr/"
+  - "features-neu/02_neukundengewinnung/analysis/_index.md"
+  - "features-neu/02_neukundengewinnung/SPRINT_MAP.md"
+  - "features-neu/02_neukundengewinnung/artefakte/SPRINT_2_1_4/SUMMARY.md"
 pr_refs: []
 updated: "2025-09-28"
 ---
 
 # Sprint 2.1.4 – Lead Deduplication & Data Quality (Phase 1)
+
+**📍 Navigation:** Home → Planung → Sprint 2.1.4
 
 > **🎯 Arbeitsanweisung – Reihenfolge**
 > 1. **SPRINT_MAP des Moduls öffnen** → `features-neu/02_neukundengewinnung/SPRINT_MAP.md`

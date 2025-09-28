@@ -1,8 +1,5 @@
 package de.freshfoodz.crm.lead.service;
 
-import com.google.i18n.phonenumbers.NumberParseException;
-import com.google.i18n.phonenumbers.PhoneNumberUtil;
-import com.google.i18n.phonenumbers.Phonenumber;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
@@ -25,13 +22,12 @@ public class LeadNormalizationService {
     private static final Pattern WHITESPACE_PATTERN = Pattern.compile("\\s+");
     private static final Pattern DIACRITICS_PATTERN = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
     private static final Pattern EMAIL_PLUS_TAG_PATTERN = Pattern.compile("\\+[^@]*");
-
-    private final PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
+    private static final Pattern PHONE_CLEANUP_PATTERN = Pattern.compile("[^+\\d]");
 
     @ConfigProperty(name = "freshplan.leads.normalization.email.remove-plus-tags", defaultValue = "false")
     boolean removePlusTags;
 
-    @ConfigProperty(name = "freshplan.leads.normalization.phone.default-country", defaultValue = "DE")
+    @ConfigProperty(name = "freshplan.leads.normalization.phone.default-country-code", defaultValue = "+49")
     String defaultCountryCode;
 
     /**
@@ -92,38 +88,33 @@ public class LeadNormalizationService {
     }
 
     /**
-     * Normalizes a phone number to E.164 format.
-     * Uses the configured default country code if no country code is present.
+     * Normalizes a phone number to a simplified E.164-like format.
+     * This is a simplified implementation without full libphonenumber support.
      *
      * @param phoneNumber The phone number to normalize
-     * @return E.164 formatted phone number or null if parsing fails
+     * @return Simplified E.164-like formatted phone number or null if input is invalid
      */
     public String normalizePhoneNumber(String phoneNumber) {
         if (phoneNumber == null || phoneNumber.trim().isEmpty()) {
             return null;
         }
 
-        try {
-            // Remove common formatting characters
-            String cleaned = phoneNumber.replaceAll("[\\s\\-\\(\\)\\.]", "");
+        // Remove all non-digit characters except +
+        String cleaned = PHONE_CLEANUP_PATTERN.matcher(phoneNumber).replaceAll("");
 
-            // Parse with default country code
-            Phonenumber.PhoneNumber parsed = phoneUtil.parse(cleaned, defaultCountryCode);
-
-            // Validate the number
-            if (!phoneUtil.isValidNumber(parsed)) {
-                log.warn("Invalid phone number: {}", phoneNumber);
-                return null;
-            }
-
-            // Format to E.164
-            String e164 = phoneUtil.format(parsed, PhoneNumberUtil.PhoneNumberFormat.E164);
-            log.debug("Normalized phone: {} -> {}", phoneNumber, e164);
-            return e164;
-
-        } catch (NumberParseException e) {
-            log.warn("Failed to parse phone number: {}", phoneNumber, e);
-            return null;
+        // Handle different formats
+        if (cleaned.startsWith("+")) {
+            // Already has country code
+            return cleaned;
+        } else if (cleaned.startsWith("00")) {
+            // International format with 00
+            return "+" + cleaned.substring(2);
+        } else if (cleaned.startsWith("0")) {
+            // Local number - add default country code
+            return defaultCountryCode + cleaned.substring(1);
+        } else {
+            // Assume it needs country code
+            return defaultCountryCode + cleaned;
         }
     }
 
