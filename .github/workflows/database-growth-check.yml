@@ -99,28 +99,26 @@ jobs:
         echo "Checking Maven and Java setup..."
         ./mvnw --version
 
-        echo "Compiling project to ensure resources are available..."
-        ./mvnw compile -DskipTests
-
         echo "Checking for migration files..."
         ls -la src/main/resources/db/migration/ | head -10
         echo "Total migration files: $(ls src/main/resources/db/migration/*.sql 2>/dev/null | wc -l)"
 
-        echo "Running Flyway info to see pending migrations..."
-        ./mvnw flyway:info \
-          -Dflyway.url="jdbc:postgresql://localhost:5432/freshplan" \
-          -Dflyway.user=freshplan \
-          -Dflyway.password=freshplan \
-          -Dflyway.locations=classpath:db/migration
+        echo "First, let's test basic database connection..."
+        PGPASSWORD=freshplan psql -h localhost -p 5432 -U freshplan -d freshplan -c "SELECT 1;" || {
+          echo "Cannot connect to freshplan database!"
+          exit 1
+        }
 
-        echo "Running Flyway migration on clean database..."
+        echo "Running Flyway migration with filesystem location..."
         ./mvnw flyway:migrate \
           -Dflyway.url="jdbc:postgresql://localhost:5432/freshplan" \
           -Dflyway.user=freshplan \
           -Dflyway.password=freshplan \
-          -Dflyway.locations=classpath:db/migration \
+          -Dflyway.locations=filesystem:src/main/resources/db/migration \
           -Dflyway.outOfOrder=true \
-          -Dflyway.cleanDisabled=false || {
+          -Dflyway.cleanDisabled=false \
+          -Dflyway.baselineOnMigrate=false \
+          -Dflyway.validateOnMigrate=false || {
             echo "❌ Flyway migration failed! Checking database connection..."
             psql -h localhost -p 5432 -U freshplan -d freshplan -c "SELECT version();"
             echo "Checking Flyway info..."
@@ -128,31 +126,31 @@ jobs:
               -Dflyway.url="jdbc:postgresql://localhost:5432/freshplan" \
               -Dflyway.user=freshplan \
               -Dflyway.password=freshplan \
-              -Dflyway.locations=classpath:db/migration
+              -Dflyway.locations=filesystem:src/main/resources/db/migration
             exit 1
           }
         
         # Verify that migrations actually created tables
         echo "Checking if flyway_schema_history exists..."
-        if ! psql -h localhost -p 5432 -U freshplan -d freshplan -tAc "SELECT 1 FROM information_schema.tables WHERE table_name = 'flyway_schema_history';" | grep -q 1; then
+        if ! PGPASSWORD=freshplan psql -h localhost -p 5432 -U freshplan -d freshplan -tAc "SELECT 1 FROM information_schema.tables WHERE table_name = 'flyway_schema_history';" | grep -q 1; then
           echo "❌ ERROR: flyway_schema_history table not found - migrations did not run!"
           echo "Checking what tables exist..."
-          psql -h localhost -p 5432 -U freshplan -d freshplan -c "\dt"
+          PGPASSWORD=freshplan psql -h localhost -p 5432 -U freshplan -d freshplan -c "\dt"
           exit 1
         fi
 
         echo "Checking if customers table exists..."
-        if ! psql -h localhost -p 5432 -U freshplan -d freshplan -tAc "SELECT 1 FROM information_schema.tables WHERE table_name = 'customers';" | grep -q 1; then
+        if ! PGPASSWORD=freshplan psql -h localhost -p 5432 -U freshplan -d freshplan -tAc "SELECT 1 FROM information_schema.tables WHERE table_name = 'customers';" | grep -q 1; then
           echo "❌ ERROR: customers table not found - core migrations failed!"
           echo "Checking migration history..."
-          psql -h localhost -p 5432 -U freshplan -d freshplan -c "SELECT version, description, success FROM flyway_schema_history ORDER BY installed_rank DESC LIMIT 10;"
+          PGPASSWORD=freshplan psql -h localhost -p 5432 -U freshplan -d freshplan -c "SELECT version, description, success FROM flyway_schema_history ORDER BY installed_rank DESC LIMIT 10;"
           exit 1
         fi
 
-        TABLE_COUNT=$(psql -h localhost -p 5432 -U freshplan -d freshplan -tAc "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = 'public' AND table_type = 'BASE TABLE';")
+        TABLE_COUNT=$(PGPASSWORD=freshplan psql -h localhost -p 5432 -U freshplan -d freshplan -tAc "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = 'public' AND table_type = 'BASE TABLE';")
         echo "✅ Migrations completed successfully - $TABLE_COUNT tables created"
         echo "Latest migrations:"
-        psql -h localhost -p 5432 -U freshplan -d freshplan -c "SELECT version, description FROM flyway_schema_history ORDER BY installed_rank DESC LIMIT 5;"
+        PGPASSWORD=freshplan psql -h localhost -p 5432 -U freshplan -d freshplan -c "SELECT version, description FROM flyway_schema_history ORDER BY installed_rank DESC LIMIT 5;"
     
     - name: Verify CI migrations applied
       env:
