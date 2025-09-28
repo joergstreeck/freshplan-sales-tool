@@ -54,17 +54,23 @@ jobs:
       env:
         PGPASSWORD: freshplan
       run: |
-        echo "Dropping and recreating entire database..."
-        # Use freshplan user with superuser privileges from Docker service
-        psql -h localhost -U freshplan -d postgres -c "DROP DATABASE IF EXISTS freshplan;"
-        psql -h localhost -U freshplan -d postgres -c "CREATE DATABASE freshplan WITH OWNER freshplan;"
+        echo "Testing database connection..."
+        psql -h localhost -U freshplan -d freshplan -c "SELECT current_database(), current_user, version();"
+
+        echo "Dropping all tables in public schema..."
+        psql -h localhost -U freshplan -d freshplan -c "DROP SCHEMA IF EXISTS public CASCADE;"
+        psql -h localhost -U freshplan -d freshplan -c "CREATE SCHEMA public;"
+        psql -h localhost -U freshplan -d freshplan -c "GRANT ALL ON SCHEMA public TO freshplan;"
+        psql -h localhost -U freshplan -d freshplan -c "GRANT ALL ON SCHEMA public TO public;"
 
         echo "Ensuring required extensions..."
         psql -h localhost -U freshplan -d freshplan -c "CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\";"
         psql -h localhost -U freshplan -d freshplan -c "CREATE EXTENSION IF NOT EXISTS pgcrypto;"
+        psql -h localhost -U freshplan -d freshplan -c "CREATE EXTENSION IF NOT EXISTS unaccent;"
 
         echo "Verifying clean state..."
         psql -h localhost -U freshplan -d freshplan -c "\dt" || echo "No tables yet - good!"
+        psql -h localhost -U freshplan -d freshplan -c "\dx" || echo "Checking extensions..."
 
         echo "Database reset completed successfully"
     
@@ -106,13 +112,26 @@ jobs:
           }
         
         # Verify that migrations actually created tables
-        TABLE_COUNT=$(psql -h localhost -U freshplan -d freshplan -tAc "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = 'public' AND table_type = 'BASE TABLE';")
-        echo "Tables created: $TABLE_COUNT"
-        if [ "$TABLE_COUNT" -eq "0" ]; then
-          echo "❌ ERROR: No tables created after migration!"
+        echo "Checking if flyway_schema_history exists..."
+        if ! psql -h localhost -U freshplan -d freshplan -tAc "SELECT 1 FROM information_schema.tables WHERE table_name = 'flyway_schema_history';" | grep -q 1; then
+          echo "❌ ERROR: flyway_schema_history table not found - migrations did not run!"
+          echo "Checking what tables exist..."
+          psql -h localhost -U freshplan -d freshplan -c "\dt"
           exit 1
         fi
+
+        echo "Checking if customers table exists..."
+        if ! psql -h localhost -U freshplan -d freshplan -tAc "SELECT 1 FROM information_schema.tables WHERE table_name = 'customers';" | grep -q 1; then
+          echo "❌ ERROR: customers table not found - core migrations failed!"
+          echo "Checking migration history..."
+          psql -h localhost -U freshplan -d freshplan -c "SELECT version, description, success FROM flyway_schema_history ORDER BY installed_rank DESC LIMIT 10;"
+          exit 1
+        fi
+
+        TABLE_COUNT=$(psql -h localhost -U freshplan -d freshplan -tAc "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = 'public' AND table_type = 'BASE TABLE';")
         echo "✅ Migrations completed successfully - $TABLE_COUNT tables created"
+        echo "Latest migrations:"
+        psql -h localhost -U freshplan -d freshplan -c "SELECT version, description FROM flyway_schema_history ORDER BY installed_rank DESC LIMIT 5;"
     
     - name: Verify CI migrations applied
       env:
