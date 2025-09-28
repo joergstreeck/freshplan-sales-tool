@@ -562,7 +562,8 @@ public class OpportunityServiceStageTransitionTest {
 
     // Always create a fresh customer to ensure it exists in the current transaction
     var customer = customerBuilder.withCompanyName("Test Company " + uniqueSuffix).build();
-    customer.setCustomerNumber("TEST-" + uniqueSuffix);
+    // Customer number must be max 20 chars: "TEST-" (5) + 8 chars = 13 chars total
+    customer.setCustomerNumber("TEST-" + uniqueSuffix.substring(0, 8));
     customer.setIsTestData(true);
     customer.setCreatedBy("test-system");
     customerRepository.persist(customer);
