@@ -1,7 +1,10 @@
 ---
 module: "02_neukundengewinnung"
+domain: "shared"
 sprint: "2.1.3"
-doc_type: "links"
+doc_type: "guideline"
+status: "approved"
+owner: "team/leads"
 updated: "2025-09-28"
 ---
 

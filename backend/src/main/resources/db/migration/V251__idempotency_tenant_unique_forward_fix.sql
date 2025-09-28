@@ -10,7 +10,8 @@
 -- =====================================================
 
 -- Step A: Create the correct tenant-scoped unique index (needed for ON CONFLICT)
-CREATE UNIQUE INDEX CONCURRENTLY IF NOT EXISTS ui_idk_tenant_key
+-- NOTE: CONCURRENTLY cannot be used in migrations, will create without it
+CREATE UNIQUE INDEX IF NOT EXISTS ui_idk_tenant_key
   ON idempotency_keys(tenant_id, idempotency_key);
 
 -- Step B: Remove any old single-column uniqueness constraints/indexes
@@ -30,7 +31,7 @@ BEGIN
 
   IF idx_name IS NOT NULL THEN
     RAISE NOTICE 'Dropping old single-column unique index: %', idx_name;
-    EXECUTE format('DROP INDEX CONCURRENTLY IF EXISTS %I', idx_name);
+    EXECUTE format('DROP INDEX IF EXISTS %I', idx_name);
   END IF;
 
   -- 2) Find and drop any UNIQUE CONSTRAINT on just (idempotency_key)
@@ -63,5 +64,5 @@ BEGIN
 END $$;
 
 -- Add comments for documentation
-COMMENT ON CONSTRAINT idempotency_keys_tenant_key_unique ON idempotency_keys IS
+COMMENT ON INDEX ui_idk_tenant_key IS
   'Ensures idempotency keys are unique per tenant (multi-tenant isolation)';

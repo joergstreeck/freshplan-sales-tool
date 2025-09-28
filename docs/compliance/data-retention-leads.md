@@ -193,7 +193,49 @@ compliance_report_generated
 - API-Dokumentation
 - Audit-Trail
 
-## 9. Review & Updates
+## 9. Einfluss von Backdating auf Fristen
+
+### Backdating-Regelung
+- **Berechtigung:** Nur Admin/Manager dürfen `registered_at` backdaten
+- **Zweck:** Import von Altbeständen, dokumentierte Erstkontakte
+- **Schutzdauer:** 6 Monate werden **ab `registered_at`** berechnet
+- **Wichtig:** Backdating verschiebt Start **rückwirkend** – konform zum Vertrag (Registrierung/Erstkontakt)
+
+### Auswirkungen auf Retention
+- **Schutzfrist:** Beginnt mit `registered_at`, nicht `created_at`
+- **60-Tage-Aktivität:** Bleibt **unverändert** an `last_activity_at` gebunden
+- **Pseudonymisierung:** Erfolgt 60 Tage nach letzter Aktivität, unabhängig vom Backdating
+- **Warnung:** Backdating ist **kein** Mittel zur Verlängerung der Datenhaltung jenseits der vorgesehenen Schutz-/Aufbewahrungslogik
+
+### Audit-Trail
+```sql
+-- Jede Backdating-Operation wird protokolliert
+INSERT INTO audit_events (
+  event_type,
+  lead_id,
+  old_value,
+  new_value,
+  reason,
+  performed_by,
+  performed_at
+) VALUES (
+  'lead_registered_at_backdated',
+  :leadId,
+  :oldRegisteredAt,
+  :newRegisteredAt,
+  :reason,
+  :userId,
+  NOW()
+);
+```
+
+### Compliance-Anforderungen
+- **Dokumentationspflicht:** Grund für Backdating muss angegeben werden
+- **Audit-Vollständigkeit:** Wer/wann/warum wurde backdated
+- **Nachweisbarkeit:** Optional: Beleg-URL für Erstkontakt
+- **Keine Manipulation:** Backdating nur für berechtigte Zwecke (Import, dokumentierte Kontakte)
+
+## 10. Review & Updates
 
 - **Quarterly Review**: KPIs und Compliance-Score
 - **Annual Review**: Policy und Fristen
@@ -203,4 +245,4 @@ compliance_report_generated
 
 **Letzte Prüfung:** 2025-09-28
 **Nächste Review:** 2025-12-31
-**Version:** 1.0.0
+**Version:** 1.1.0

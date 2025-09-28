@@ -1,7 +1,10 @@
 ---
 module: "02_neukundengewinnung"
+domain: "shared"
 sprint: "2.1.3"
-doc_type: "test_summary"
+doc_type: "analyse"
+status: "approved"
+owner: "team/qa"
 updated: "2025-09-28"
 ---
 

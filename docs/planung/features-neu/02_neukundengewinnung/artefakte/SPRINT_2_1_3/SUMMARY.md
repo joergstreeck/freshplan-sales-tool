@@ -1,7 +1,8 @@
 ---
 module: "02_neukundengewinnung"
+domain: "shared"
 sprint: "2.1.3"
-doc_type: "artefakt"
+doc_type: "konzept"
 status: "approved"
 owner: "team/frontend"
 updated: "2025-09-28"

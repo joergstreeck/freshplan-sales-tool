@@ -42,6 +42,7 @@ Implementierung von Team-basierter Lead-Sichtbarkeit mit Row-Level-Security, Lea
 - Admin hat Vollzugriff (lead_admin_policy)
 - Transfer-Empfänger sieht pending Transfers
 - Session-Context mit user_id und role
+- **RLS-aware Tests: Backdating nur für MANAGER/ADMIN sichtbar & zulässig**
 
 ### 2. Lead-Transfer Workflow
 **Akzeptanzkriterien:**

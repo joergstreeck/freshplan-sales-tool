@@ -59,6 +59,17 @@ Wir implementieren ein 3-Stufen RBAC-Modell mit optionalem RLS-Layer:
 - **Delete**: Hard-Delete mit Audit
 - **Protection-Override**: Schutzfristen ändern
 - **Audit**: Vollzugriff auf Audit-Logs
+- **Backdating**: registered_at ändern mit Audit
+
+### Permission Matrix
+
+#### Backdating-spezifische Berechtigungen
+
+| Aktion                               | SALES | MANAGER | ADMIN |
+|--------------------------------------|:-----:|:-------:|:-----:|
+| Lead anlegen (Standard)              |  ✅   |   ✅    |  ✅   |
+| `registeredAt` beim CREATE setzen    |  ❌   |   ✅    |  ✅   |
+| `registeredAt` nachträglich ändern   |  ❌   |   ✅    |  ✅   |
 
 ### Permission Matrix
 

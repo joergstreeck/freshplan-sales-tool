@@ -74,7 +74,8 @@ public class IdempotencyService {
   @Transactional
   public boolean storeIdempotencyKey(
       String tenantId, String idempotencyKey, String requestBody, String responseBody) {
-    var result = upsertOrGetIdempotencyKey(tenantId, idempotencyKey, requestBody, responseBody, 200);
+    var result =
+        upsertOrGetIdempotencyKey(tenantId, idempotencyKey, requestBody, responseBody, 200);
     return result.isPresent() && result.get().body().equals(responseBody);
   }
 

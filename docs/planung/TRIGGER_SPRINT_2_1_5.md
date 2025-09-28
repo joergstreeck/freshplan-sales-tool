@@ -72,6 +72,10 @@ Implementierung der vertraglichen Lead-Schutz-Mechanismen (6 Monate, 60-Tage-Reg
 - POST/DELETE /lead-protection/{id}/stop-clock - Stop-the-Clock
 - DELETE /lead-protection/{id}/personal-data - DSGVO-Löschung
 - Retention-Jobs für automatische Pseudonymisierung
+- **PUT /api/leads/{id}/registered-at** (Admin/Manager)
+  - Validierung: nicht in Zukunft; Reason Pflicht
+  - Audit: `lead_registered_at_backdated`
+  - Folge: Recalc Schutz-/Aktivitätsfristen (falls Felder vorhanden)
 
 ## Technische Details
 

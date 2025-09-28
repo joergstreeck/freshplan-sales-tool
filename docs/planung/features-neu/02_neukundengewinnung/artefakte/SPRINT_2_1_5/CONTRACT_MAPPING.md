@@ -98,6 +98,7 @@ interface LeadStage1 extends LeadStage0 {
 | Klausel | Implementierung | Artefakt/Endpoint | Job/Timer | Audit-Event |
 |---------|----------------|-------------------|-----------|-------------|
 | §2(8)(a) Lead-Schutz 6 Monate | `protection_until = registered_at + INTERVAL '6 months'` | Trigger `create_lead_protection_on_insert` | - | `lead_protection_started` |
+| §2(8)(a) **Lead-Registrierung & Schutzbeginn** | **Backdating durch Admin/Manager** auf dokumentierten Erstkontakt; 6-Monate Schutz ab `registered_at` | **PUT /api/leads/{id}/registered-at** (Body: `registeredAt`, `reason`) | - | `lead_registered_at_backdated` |
 | §2(8)(b) 60-Tage-Aktivitätsstandard | `progress_deadline = last_progress_at + INTERVAL '60 days'` | Status-Check Job | Nightly Job | `lead_activity_logged` |
 | §2(8)(c) **Erinnerung + 10 Tage Nachfrist** | Reminder-Flow mit Statuswechsel zu `warning` → nach 10 Tagen zu `expired` | **POST /lead-protection/{id}/reminder** | Nightly Job + 10d Timer | `lead_protection_warning` → `lead_protection_expired` |
 | §2(8)(d) Stop-the-Clock | `stop_the_clock_start/end` mit Grund-Dokumentation | POST/DELETE /lead-protection/{id}/stop-clock | - | `lead_stop_clock_started/stopped` |
@@ -169,9 +170,15 @@ WHERE protection_status = 'expired'
   "stage": 0,
   "companyName": "Hotel Beispiel",
   "city": "Berlin",
-  "industry": "Hospitality"
+  "industry": "Hospitality",
+  "registeredAt": "2024-06-03T10:15:00Z"  // Optional - nur für Admin/Manager
 }
 ```
+
+**Validierung:**
+- Optionales Feld `registeredAt` wird **nur** beachtet, wenn Aufrufer Rolle ∈ {`admin`, `manager`} hat. Andernfalls wird es ignoriert.
+- Validierung: `registeredAt <= now() + 1min` (kleiner Buffer für Clock-Drift); bei Verstoß → `400`.
+- Idempotency: `Idempotency-Key` Header (24h TTL). Wiederholte identische Requests liefern **gleiche** Antwort (aus Store).
 
 **Responses:**
 
@@ -213,6 +220,57 @@ WHERE protection_status = 'expired'
   "instance": "/leads/uuid-existing"
 }
 ```
+
+### PUT /api/leads/{id}/registered-at
+
+**Rollen:** `admin`, `manager`
+
+**Request:**
+```json
+{
+  "registeredAt": "2024-06-03T10:15:00Z",
+  "reason": "Import Altbestand / Erstkontakt auf Messe",
+  "evidenceUrl": "https://crm.freshfoodz.de/docs/import-q2-2025.pdf"  // Optional
+}
+```
+
+**Responses:**
+
+#### 204 No Content
+Erfolgreich aktualisiert
+
+#### 400 Bad Request
+```json
+{
+  "type": "https://api.freshfoodz.de/problems/invalid-date",
+  "title": "Invalid Date",
+  "status": 400,
+  "detail": "registeredAt cannot be in the future"
+}
+```
+
+#### 403 Forbidden
+```json
+{
+  "type": "https://api.freshfoodz.de/problems/insufficient-permissions",
+  "title": "Insufficient Permissions",
+  "status": 403,
+  "detail": "Only managers and admins can backdate lead registration"
+}
+```
+
+#### 404 Not Found
+```json
+{
+  "type": "https://api.freshfoodz.de/problems/lead-not-found",
+  "title": "Lead Not Found",
+  "status": 404,
+  "detail": "Lead with ID 'uuid' not found"
+}
+```
+
+**Audit:**
+- Event `lead_registered_at_backdated` mit {leadId, oldRegisteredAt, newRegisteredAt, reason, setBy, setAt, evidenceUrl?}
 
 ## Audit Events
 

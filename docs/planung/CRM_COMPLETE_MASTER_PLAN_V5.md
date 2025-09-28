@@ -229,6 +229,8 @@
 
 ## Next Steps
 <!-- MP5:NEXT_STEPS:START -->
+- **Implement PUT /api/leads/{id}/registered-at** inkl. Audit & RBAC
+- **Idempotency: Konflikt-Pfad liefert gespeicherte Antwort** (UX-konform)
 - Sprint 2.1.5: Protection-Endpoints implementieren (Reminder, Extend, Stop-Clock)
 - Sprint 2.1.5: Retention-Jobs für Pseudonymisierung implementieren
 - Sprint 2.1.6: RLS-Policies gemäß ADR-003 umsetzen
@@ -245,6 +247,7 @@
 
 ## Decisions
 <!-- MP5:DECISIONS:START -->
+- 2025-09-28 — **Entscheidung: Backdating von `registered_at` für Admin/Manager** mit Audit-Reason eingeführt (konform §2(8)(a))
 - 2025-09-28 — ADR-003: Row-Level-Security für Lead-Management (proposed für Sprint 2.1.6)
 - 2025-09-28 — Scope-Änderung: Fuzzy-Matching von Sprint 2.1.5 zu 2.1.6 verschoben
 - 2025-09-28 — Data-Retention-Policy: 60-Tage-Pseudonymisierung für inaktive Leads

@@ -1,6 +1,8 @@
 ---
 module: "02_neukundengewinnung"
-doc_type: "roadmap"
+domain: "shared"
+doc_type: "konzept"
+status: "approved"
 owner: "team/leads"
 updated: "2025-09-28"
 ---
