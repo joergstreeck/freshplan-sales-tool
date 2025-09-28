@@ -93,8 +93,10 @@ jobs:
       - name: Core Tests (PR Pipeline - Ein Maven-Run)
         working-directory: backend
         run: |
-          ./mvnw -B -T 1C clean test \
-            -Dtest="A00_EnvDiagTest" \
+          ./mvnw -B clean test \
+            -Dtest="A00_EnvDiagTest,*Test" \
+            -DexcludedGroups="integration,slow" \
+            -DfailIfNoTests=false \
             -Dquarkus.profile=ci \
             -Dquarkus.datasource.jdbc.url=jdbc:postgresql://localhost:5432/test_db \
             -Dquarkus.datasource.username=postgres \
