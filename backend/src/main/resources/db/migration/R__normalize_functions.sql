@@ -7,14 +7,17 @@
 -- =====================================================
 -- EMAIL NORMALIZATION
 -- =====================================================
-CREATE OR REPLACE FUNCTION normalize_email(email_input TEXT)
+-- Drop and recreate to ensure consistent signature
+DROP FUNCTION IF EXISTS normalize_email(TEXT);
+
+CREATE OR REPLACE FUNCTION normalize_email(s TEXT)
 RETURNS VARCHAR AS $$
 BEGIN
-  IF email_input IS NULL OR TRIM(email_input) = '' THEN
+  IF s IS NULL OR TRIM(s) = '' THEN
     RETURN NULL;
   END IF;
   -- Simple normalization: lowercase, trim
-  RETURN LOWER(TRIM(email_input));
+  RETURN LOWER(TRIM(s));
 END;
 $$ LANGUAGE plpgsql IMMUTABLE;
 
@@ -24,15 +27,18 @@ COMMENT ON FUNCTION normalize_email IS
 -- =====================================================
 -- COMPANY NAME NORMALIZATION
 -- =====================================================
-CREATE OR REPLACE FUNCTION normalize_company_name(company_input TEXT)
+-- Drop and recreate to ensure consistent signature
+DROP FUNCTION IF EXISTS normalize_company_name(TEXT);
+
+CREATE OR REPLACE FUNCTION normalize_company_name(s TEXT)
 RETURNS TEXT AS $$
 BEGIN
-  IF company_input IS NULL OR TRIM(company_input) = '' THEN
+  IF s IS NULL OR TRIM(s) = '' THEN
     RETURN NULL;
   END IF;
   -- Remove diacritics, lowercase, normalize whitespace
   RETURN regexp_replace(
-    LOWER(unaccent(TRIM(company_input))),
+    LOWER(unaccent(TRIM(s))),
     '\s+', ' ', 'g'
   );
 END;
@@ -44,6 +50,9 @@ COMMENT ON FUNCTION normalize_company_name IS
 -- =====================================================
 -- PHONE NORMALIZATION (Simple E.164-like)
 -- =====================================================
+-- Drop and recreate to ensure consistent signature
+DROP FUNCTION IF EXISTS normalize_phone(TEXT, TEXT);
+
 CREATE OR REPLACE FUNCTION normalize_phone(phone_input TEXT, default_country_code TEXT DEFAULT '+49')
 RETURNS TEXT AS $$
 DECLARE

@@ -69,18 +69,41 @@ Für Modul‑konkrete Navigation verweisen die Trigger auf die **SPRINT_MAP.md**
      - [API_CONTRACT.md](features-neu/02_neukundengewinnung/analyse/API_CONTRACT.md)
    - Status: ✅ 100% COMPLETE (FP-235 in PR #111 abgeschlossen)
 
-⚙️ TRIGGER_SPRINT_2_1_3.md - Frontend Implementation (Lead-Management)
+✅ TRIGGER_SPRINT_2_1_3.md - Frontend Implementation (Lead-Management)
    - Thin Vertical Slice: /leads Route + Create Dialog
    - Feature-Flag: VITE_FEATURE_LEADGEN (default: off)
    - MUI Theme V2 + RFC7807 Error Handling
    - Coverage ≥80% für neue Frontend-Komponenten
-   - Status: 📋 PLANNED
+   - Status: ✅ COMPLETE (PR #122 merged)
 
 ✅ TRIGGER_SPRINT_2_1_1.md - P0 HOTFIX Integration Gaps [PR #111 MERGED]
    - Event Distribution, Dashboard Widget, Metrics implementiert
    - Kritische Integration für Follow-up Automation
    - FP-235: T+3/T+7 Follow-up Automation ✅ COMPLETE
    - Status: ✅ COMPLETE (PR #111 merged 2025-09-26)
+
+✅ TRIGGER_SPRINT_2_1_4.md - Lead Deduplication & Data Quality
+   - Normalisierung (Email/Phone) + Unique Indizes
+   - IdempotencyService für API-Resilienz (24h TTL)
+   - V247 + V250 Migrationen deployed
+   - 39 Tests (31 Normalization + 8 Idempotency) ✅
+   - Status: ✅ COMPLETE (Backend fertig)
+
+🔧 TRIGGER_SPRINT_2_1_5.md - Lead Protection & Progressive Profiling
+   - 6-Monats-Schutz + 60-Tage-Aktivitätsstandard
+   - Stop-the-Clock Mechanismus
+   - Progressive Profiling (Stage 0/1/2)
+   - Protection-Endpoints (Reminder, Extend, Stop-Clock)
+   - Data-Retention-Plan + Compliance
+   - Status: 🔧 IN PROGRESS
+
+📋 TRIGGER_SPRINT_2_1_6.md - Lead Transfer & Team Management
+   - Lead-Transfer zwischen Partnern
+   - Team-basierte Sichtbarkeit (RLS Phase 1)
+   - Fuzzy-Matching & Review-Flow (verschoben aus 2.1.5)
+   - Merge/Unmerge mit Identitätsgraph
+   - ADR-003 Row-Level-Security Design
+   - Status: 📋 PLANNED
 
 ✅ TRIGGER_SPRINT_2_2.md - Kundenmanagement
    - Field-based Customer Architecture

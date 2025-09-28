@@ -76,22 +76,72 @@ updated: "2025-09-27"
 
 ---
 
-### **Sprint 2.1.4 – Backend Integration (IN_PROGRESS)**
+### **Sprint 2.1.4 – Lead Deduplication & Data Quality (COMPLETE)**
 **Zentral:** [TRIGGER_SPRINT_2_1_4.md](../../TRIGGER_SPRINT_2_1_4.md)
-**Status:** 🔧 IN_PROGRESS
-**Scope:** Lead Deduplication & Data Quality – Phase 1
-- Normalisierung E-Mail/Telefon + Unique-Indizes
-- Partielle UNIQUE auf `email_normalized` und `phone_e164` (WHERE NOT NULL)
-- Idempotency-Key Support für `POST /api/leads`
-- RFC7807 409 Response bei Duplikaten
+**Status:** ✅ COMPLETE
+**Scope:** Lead Normalization & Deduplication – Phase 1
+**Ergebnisse:**
+- Normalisierung: E-Mail, Telefon (E.164), Firmennamen
+- Soft-Delete mit `is_canonical` Flag
+- Idempotency-Key Support für sichere Retries
+- Migration V247 (additive-only) + V248 (CONCURRENTLY Index)
+- Repeatable Migration R__normalize_functions.sql
 
 **Deliverables:**
-- Migration V247 für normalisierte Felder
-- Backend-Service mit Normalisierungs-Logik
-- Idempotency-Store Implementation
-- Tests für Konflikt-Handling und Idempotenz
+- Normalized Fields: `email_normalized`, `phone_e164`, `company_name_normalized`
+- Unique Constraints mit WHERE-Klauseln
+- Idempotency Store (24h TTL)
+- RFC7807 Problem Details für 409
 
 **Artefakte:** [`artefakte/SPRINT_2_1_4/`](./artefakte/SPRINT_2_1_4/)
+**PRs:** #123 (ready for review)
+
+---
+
+### **Sprint 2.1.5 – Lead Protection & Progressive Profiling (IN_PROGRESS)**
+**Zentral:** [TRIGGER_SPRINT_2_1_5.md](../../TRIGGER_SPRINT_2_1_5.md)
+**Status:** 🔧 IN_PROGRESS
+**Scope:** Vertragliche Lead-Schutz-Mechanismen + B2B Progressive Profiling
+
+**Sprint-Ziel:**
+- 6-Monats-Schutz gemäß Handelsvertretervertrag
+- 60-Tage-Aktivitätsstandard mit Warnsystem
+- Stop-the-Clock Mechanismus
+- Progressive Profiling (3 Stufen: Vormerkung/Registration/Qualifiziert)
+
+**Deliverables:**
+- Migration V249: `lead_protection` und `lead_activities` Tabellen
+- Migration V250: Protection Trigger und Status-Jobs
+- Frontend: LeadWizard, ProtectionBadge, ActivityTimeline
+- API: Enhanced POST /api/leads mit 201/202/409 Semantik
+- Protection-Endpoints: Reminder, Extend, Stop-Clock, Data-Deletion
+
+**Artefakte:** [`artefakte/SPRINT_2_1_5/`](./artefakte/SPRINT_2_1_5/)
+- ✅ CONTRACT_MAPPING.md
+- ✅ TEST_PLAN.md
+- ✅ RELEASE_NOTES.md
+- ✅ CHANGELOG.md
+- ✅ QA_CHECKLIST.md
+- ✅ OpenAPI Contract: [`analyse/api/leads.openapi.md`](./analyse/api/leads.openapi.md)
+- ✅ RBAC ADR: [`shared/adr/ADR-002-rbac-lead-protection.md`](./shared/adr/ADR-002-rbac-lead-protection.md)
+
+**Delta:** Scope geändert von "Matching & Review" zu "Protection & Progressive" (siehe DELTA_LOG_2_1_5.md)
+
+---
+
+### **Sprint 2.1.6 – Lead Transfer & Team Management (PLANNED)**
+**Status:** 📅 PLANNED (2025-10-12 - 2025-10-18)
+**Scope:** Lead-Übergabe, Team-Management, Merge/Unmerge
+
+**Geplante Features:**
+- Lead-Transfer zwischen Partnern mit Genehmigung
+- Quotenregelung für Teams
+- Fuzzy-Matching & Review-Flow (Scoring, Kandidatenliste, Merge/Reject/Create-New)
+- Merge/Unmerge mit Identitätsgraph
+- Audit-Historie für alle Transfers
+- Team-basierte Sichtbarkeit (RLS Phase 1)
+
+**Note:** Enthält Matching & Review Features (ursprünglich für 2.1.5 geplant)
 
 ---
 

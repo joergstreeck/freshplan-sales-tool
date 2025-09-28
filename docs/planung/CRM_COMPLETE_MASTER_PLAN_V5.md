@@ -213,21 +213,27 @@
   - Vollständige i18n (de/en), 90% Test-Coverage
   - Sprint-Dokumentation gemäß Planungsmethodik.md erstellt
   - Migration: n/a, Tests: OK
-- 2025-09-28 14:30 — **Sprint 2.1.4 Lead Deduplication:** Backend-Integration IN PROGRESS
+- 2025-09-28 14:30 — **Sprint 2.1.4 Lead Deduplication:** Backend-Integration COMPLETE
   - V247 Migration für Normalisierung und partielle UNIQUE Indizes erstellt
+  - V250 Migration für Idempotency unique constraint fix
   - LeadNormalizationService + IdempotencyService implementiert
-  - Comprehensive Tests für Normalisierung und Idempotenz
-  - ADR-002 für Deduplizierung dokumentiert
-  - Migration: V247, Tests: CREATED
+  - 39 Tests (8 Idempotency + 31 Normalisierung) alle grün
+  - Migration: V247+V250, Tests: OK
+- 2025-09-28 16:30 — **Sprint 2.1.5 Documentation:** Vertragliche Anforderungen dokumentiert
+  - CONTRACT_MAPPING.md mit vollständiger § 2(8) Abdeckung erweitert
+  - Data-Retention-Plan für DSGVO-Compliance erstellt (/docs/compliance/)
+  - ADR-003 für Row-Level-Security (RLS) dokumentiert
+  - OpenAPI Protection-Endpoints spezifiziert
+  - Migration: n/a, Tests: n/a
 <!-- MP5:SESSION_LOG:END -->
 
 ## Next Steps
 <!-- MP5:NEXT_STEPS:START -->
-- Sprint 2.1.4: Tests ausführen und CI/CD Pipeline grün bekommen
-- Sprint 2.1.4: LeadResource mit Idempotency-Header erweitern
-- Sprint 2.1.4: Integration-Tests für 409 Conflict Response
-- Sprint 2.1.5: Match-API & Review-Flow für erweiterte Duplikat-Behandlung
-- Sprint 2.1.6: Merge/Unmerge-Funktionalität mit Historie
+- Sprint 2.1.5: Protection-Endpoints implementieren (Reminder, Extend, Stop-Clock)
+- Sprint 2.1.5: Retention-Jobs für Pseudonymisierung implementieren
+- Sprint 2.1.6: RLS-Policies gemäß ADR-003 umsetzen
+- Sprint 2.1.6: Lead-Transfer-Flow mit Genehmigung implementieren
+- Sprint 2.1.6: Fuzzy-Matching & Review-Flow (verschoben aus 2.1.5)
 <!-- MP5:NEXT_STEPS:END -->
 
 ## Risks
@@ -239,6 +245,9 @@
 
 ## Decisions
 <!-- MP5:DECISIONS:START -->
+- 2025-09-28 — ADR-003: Row-Level-Security für Lead-Management (proposed für Sprint 2.1.6)
+- 2025-09-28 — Scope-Änderung: Fuzzy-Matching von Sprint 2.1.5 zu 2.1.6 verschoben
+- 2025-09-28 — Data-Retention-Policy: 60-Tage-Pseudonymisierung für inaktive Leads
 - 2025-09-25 — ADR-0007: RLS Connection Affinity Pattern für alle Module verbindlich
 - 2025-09-25 — Sprint 1.6 eingefügt: Module-Migration zu @RlsContext vor Phase 2
 - 2025-09-25 — CI-Guard Pattern: Heuristik statt Regex für FP-arme Prüfung
@@ -374,6 +383,16 @@ MIGRATION=$(./scripts/get-next-migration.sh | tail -1)
 ```
 
 **Feature-Module-Mapping:** [Sidebar-basierte Module](./features-neu/)
+
+## 📚 Wichtige Dokumentationen
+
+**Compliance & Security:**
+- [Data-Retention-Plan für Leads](/docs/compliance/data-retention-leads.md)
+- [ADR-002 RBAC Lead Protection](./features-neu/02_neukundengewinnung/shared/adr/ADR-002-rbac-lead-protection.md)
+- [ADR-003 Row-Level-Security](./features-neu/02_neukundengewinnung/shared/adr/ADR-003-rls-leads-row-level-security.md)
+
+**Sprint Artefakte:**
+- [Sprint 2.1.5 CONTRACT_MAPPING](./features-neu/02_neukundengewinnung/artefakte/SPRINT_2_1_5/CONTRACT_MAPPING.md)
 
 ## 🔗 Infrastruktur-Koordination
 

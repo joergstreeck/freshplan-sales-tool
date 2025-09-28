@@ -2,7 +2,7 @@
 sprint_id: "2.1.5"
 title: "Lead Protection & Progressive Profiling (B2B)"
 doc_type: "konzept"
-status: "draft"
+status: "in_progress"
 owner: "team/leads-backend"
 date_start: "2025-10-05"
 date_end: "2025-10-11"
@@ -27,6 +27,7 @@ updated: "2025-09-28"
 > 3. **Backend:** V249 Migration für Lead Protection
 > 4. **Frontend:** Progressive Profiling UI (3 Stufen)
 > 5. **Shared:** Vertragliche Anforderungen dokumentieren
+> 6. **Compliance:** Data-Retention-Plan umsetzen
 
 ## Sprint-Ziel
 
@@ -64,12 +65,13 @@ Implementierung der vertraglichen Lead-Schutz-Mechanismen (6 Monate, 60-Tage-Reg
 - Warning-Badge bei < 7 Tage bis Deadline
 - Stop-the-Clock Dialog mit Grund
 
-### 4. Fuzzy-Matching Review UI
+### 4. Protection Endpoints & Compliance
 **Akzeptanzkriterien:**
-- Bei 202-Response: Kandidatenliste anzeigen
-- Score-basierte Sortierung
-- Merge/Reject/Create-New Optionen
-- Audit-Trail für Entscheidungen
+- POST /lead-protection/{id}/reminder - Erinnerung + 10-Tage-Nachfrist
+- POST /lead-protection/{id}/extend - Verlängerung auf Antrag
+- POST/DELETE /lead-protection/{id}/stop-clock - Stop-the-Clock
+- DELETE /lead-protection/{id}/personal-data - DSGVO-Löschung
+- Retention-Jobs für automatische Pseudonymisierung
 
 ## Technische Details
 
@@ -101,15 +103,26 @@ POST /api/leads (Enhanced):
 
 Responses:
 - 201: Created (no duplicates)
-- 202: Soft duplicates found + candidates
-- 409: Hard duplicate exists
+- 409: Hard duplicate exists (email/phone normalized)
+```
+
+### Protection Endpoints:
+```json
+POST /lead-protection/{leadId}/reminder
+POST /lead-protection/{leadId}/extend
+  Body: {"reason": "string", "duration": "P30D"}
+POST /lead-protection/{leadId}/stop-clock
+  Body: {"reason": "waiting_for_freshfoodz"}
+DELETE /lead-protection/{leadId}/stop-clock
+DELETE /lead-protection/{leadId}/personal-data
 ```
 
 ### Frontend Components:
-- `LeadWizard.vue` - Progressive form
+- `LeadWizard.vue` - Progressive form (3 Stufen)
 - `LeadProtectionBadge.vue` - Status indicator
 - `ActivityTimeline.vue` - Progress tracking
-- `DuplicateReviewModal.vue` - Fuzzy match UI
+- `ExtensionRequestDialog.vue` - Verlängerungsantrag
+- `StopTheClockDialog.vue` - Pausierung mit Grund
 
 ## Definition of Done (Sprint)
 
@@ -117,7 +130,9 @@ Responses:
 - [ ] **Progressive UI (3 Stufen) implementiert**
 - [ ] **Activity Tracking funktioniert**
 - [ ] **60-Tage-Warning automatisiert**
-- [ ] **Fuzzy-Match Review UI fertig**
+- [ ] **Protection-Endpoints implementiert**
+- [ ] **Retention-Jobs konfiguriert**
+- [ ] **Compliance-Doku vollständig**
 - [ ] **Tests: Unit + Integration grün**
 - [ ] **Dokumentation: Contract-Mapping**
 
