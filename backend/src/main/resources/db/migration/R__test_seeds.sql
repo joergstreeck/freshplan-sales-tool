@@ -33,7 +33,7 @@ BEGIN
         'system',
         NOW(),
         'system',
-        'ACTIVE',
+        'AKTIV',
         true
       ) ON CONFLICT (customer_number) DO NOTHING;
     END LOOP;
