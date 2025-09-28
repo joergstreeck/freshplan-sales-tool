@@ -69,10 +69,7 @@ EOF
       run: |
         echo "Skipping explicit migration step - Tests will run Flyway with clean-at-start=true"
         echo "This avoids duplicate migration issues"
-    
-    # Skip verification steps since migrations run in tests
-    # The test itself will verify the database state
-    
+
     - name: Run core tests with CI profile
       working-directory: backend
       env:
