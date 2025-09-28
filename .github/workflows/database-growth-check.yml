@@ -10,9 +10,6 @@ concurrency:
   group: db-growth-${{ github.ref }}
   cancel-in-progress: true
 
-env:
-  ACTIONS_RUNNER_DEBUG: true
-  ACTIONS_STEP_DEBUG: true
 
 jobs:
   check-database-growth:
@@ -35,25 +32,8 @@ jobs:
           --health-retries=10
 
     steps:
-    - name: Debug - Workflow Started
-      run: |
-        echo "===================================="
-        echo "WORKFLOW STARTED SUCCESSFULLY"
-        echo "===================================="
-        echo "GitHub Run ID: ${{ github.run_id }}"
-        echo "GitHub Job: ${{ github.job }}"
-        echo "Runner OS: ${{ runner.os }}"
-        echo "Current directory: $(pwd)"
-
     - name: Checkout code
       uses: actions/checkout@v4
-
-    - name: Debug - Post Checkout
-      run: |
-        echo "===================================="
-        echo "CODE CHECKED OUT SUCCESSFULLY"
-        echo "===================================="
-        ls -la
 
     - name: Set up JDK 17
       uses: actions/setup-java@v4
@@ -69,64 +49,14 @@ jobs:
         restore-keys: ${{ runner.os }}-m2-
 
     - name: Install PostgreSQL client
-      run: |
-        echo "===================================="
-        echo "INSTALLING POSTGRESQL CLIENT"
-        echo "===================================="
-        sudo apt-get update && sudo apt-get install -y postgresql-client
-        echo "PostgreSQL client installed"
-        which psql
-        psql --version
+      run: sudo apt-get update && sudo apt-get install -y postgresql-client
 
-    - name: Wait for PostgreSQL to be ready
-      run: |
-        echo "Waiting for PostgreSQL service to be fully ready..."
-        for i in {1..60}; do
-          if pg_isready -h localhost -p 5432 -U freshplan; then
-            echo "PostgreSQL is accepting connections!"
-            # Additional check - can we actually connect?
-            if PGPASSWORD=freshplan psql -h localhost -p 5432 -U freshplan -d postgres -c "SELECT 1;" >/dev/null 2>&1; then
-              echo "PostgreSQL is fully ready and accepting queries!"
-              break
-            else
-              echo "PostgreSQL is up but not accepting queries yet..."
-            fi
-          fi
-          echo "Waiting for PostgreSQL... ($i/60)"
-          sleep 2
-        done
-
-        # Final verification
-        PGPASSWORD=freshplan psql -h localhost -p 5432 -U freshplan -d postgres -c "SELECT version();" || {
-          echo "ERROR: Cannot connect to PostgreSQL after 60 attempts!"
-          exit 1
-        }
-
-    - name: Setup database extensions
+    - name: Reset DB schema for clean state
       env:
         PGPASSWORD: freshplan
       run: |
-        echo "===================================="
-        echo "SETTING UP DATABASE"
-        echo "===================================="
-        echo "Testing connection to freshplan database..."
-        psql -h localhost -p 5432 -U freshplan -d freshplan -c "SELECT current_database(), current_user, version();"
-
-        echo "Ensuring required extensions..."
-        psql -h localhost -p 5432 -U freshplan -d freshplan -c "CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\";"
-        psql -h localhost -p 5432 -U freshplan -d freshplan -c "CREATE EXTENSION IF NOT EXISTS pgcrypto;"
-        psql -h localhost -p 5432 -U freshplan -d freshplan -c "CREATE EXTENSION IF NOT EXISTS unaccent;"
-
-        echo "Verifying clean state - should be no tables..."
-        TABLE_COUNT=$(psql -h localhost -p 5432 -U freshplan -d freshplan -tAc "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = 'public' AND table_type = 'BASE TABLE';")
-        if [ "$TABLE_COUNT" -ne "0" ]; then
-          echo "ERROR: Database not clean! Found $TABLE_COUNT tables"
-          psql -h localhost -p 5432 -U freshplan -d freshplan -c "\dt"
-          exit 1
-        fi
-        echo "✅ Database is clean - no tables exist"
-
-        echo "Database created and ready for migrations"
+        psql -h localhost -U freshplan -d freshplan -v ON_ERROR_STOP=1 -c "DROP SCHEMA IF EXISTS public CASCADE; CREATE SCHEMA public;"
+        echo "Database schema reset successfully"
     
     - name: Apply database migrations
       working-directory: backend
@@ -134,9 +64,6 @@ jobs:
         QUARKUS_PROFILE: ci
         PGPASSWORD: freshplan
       run: |
-        echo "========================================="
-        echo "STEP: Apply database migrations"
-        echo "========================================="
         echo "Running Flyway migrations directly..."
         echo "Checking Maven and Java setup..."
         ./mvnw --version
@@ -145,13 +72,7 @@ jobs:
         ls -la src/main/resources/db/migration/ | head -10
         echo "Total migration files: $(ls src/main/resources/db/migration/*.sql 2>/dev/null | wc -l)"
 
-        echo "First, let's test basic database connection..."
-        PGPASSWORD=freshplan psql -h localhost -p 5432 -U freshplan -d freshplan -c "SELECT 1;" || {
-          echo "Cannot connect to freshplan database!"
-          exit 1
-        }
-
-        echo "Running Flyway migration with filesystem location..."
+        echo "Running Flyway migration..."
         ./mvnw flyway:migrate \
           -Dflyway.url="jdbc:postgresql://localhost:5432/freshplan" \
           -Dflyway.user=freshplan \
@@ -160,39 +81,11 @@ jobs:
           -Dflyway.outOfOrder=true \
           -Dflyway.cleanDisabled=false \
           -Dflyway.baselineOnMigrate=false \
-          -Dflyway.validateOnMigrate=false || {
-            echo "❌ Flyway migration failed! Checking database connection..."
-            psql -h localhost -p 5432 -U freshplan -d freshplan -c "SELECT version();"
-            echo "Checking Flyway info..."
-            ./mvnw flyway:info \
-              -Dflyway.url="jdbc:postgresql://localhost:5432/freshplan" \
-              -Dflyway.user=freshplan \
-              -Dflyway.password=freshplan \
-              -Dflyway.locations=filesystem:src/main/resources/db/migration
-            exit 1
-          }
-        
-        # Verify that migrations actually created tables
-        echo "Checking if flyway_schema_history exists..."
-        if ! PGPASSWORD=freshplan psql -h localhost -p 5432 -U freshplan -d freshplan -tAc "SELECT 1 FROM information_schema.tables WHERE table_name = 'flyway_schema_history';" | grep -q 1; then
-          echo "❌ ERROR: flyway_schema_history table not found - migrations did not run!"
-          echo "Checking what tables exist..."
-          PGPASSWORD=freshplan psql -h localhost -p 5432 -U freshplan -d freshplan -c "\dt"
-          exit 1
-        fi
+          -Dflyway.validateOnMigrate=false
 
-        echo "Checking if customers table exists..."
-        if ! PGPASSWORD=freshplan psql -h localhost -p 5432 -U freshplan -d freshplan -tAc "SELECT 1 FROM information_schema.tables WHERE table_name = 'customers';" | grep -q 1; then
-          echo "❌ ERROR: customers table not found - core migrations failed!"
-          echo "Checking migration history..."
-          PGPASSWORD=freshplan psql -h localhost -p 5432 -U freshplan -d freshplan -c "SELECT version, description, success FROM flyway_schema_history ORDER BY installed_rank DESC LIMIT 10;"
-          exit 1
-        fi
-
+        # Simple verification
         TABLE_COUNT=$(PGPASSWORD=freshplan psql -h localhost -p 5432 -U freshplan -d freshplan -tAc "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = 'public' AND table_type = 'BASE TABLE';")
-        echo "✅ Migrations completed successfully - $TABLE_COUNT tables created"
-        echo "Latest migrations:"
-        PGPASSWORD=freshplan psql -h localhost -p 5432 -U freshplan -d freshplan -c "SELECT version, description FROM flyway_schema_history ORDER BY installed_rank DESC LIMIT 5;"
+        echo "✅ Migrations completed - $TABLE_COUNT tables created"
     
     - name: Verify CI migrations applied
       env:
