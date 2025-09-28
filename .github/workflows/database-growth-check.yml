@@ -55,6 +55,7 @@ jobs:
         PGPASSWORD: freshplan
       run: |
         psql -h localhost -U freshplan -d freshplan -v ON_ERROR_STOP=1 -c "DROP SCHEMA IF EXISTS public CASCADE; CREATE SCHEMA public;"
+        psql -h localhost -U freshplan -d freshplan -v ON_ERROR_STOP=1 -c "GRANT ALL ON SCHEMA public TO freshplan;"
         echo "Database schema reset successfully"
     
     - name: Apply database migrations
@@ -76,7 +77,7 @@ jobs:
           -Dflyway.url="jdbc:postgresql://localhost:5432/freshplan" \
           -Dflyway.user=freshplan \
           -Dflyway.password=freshplan \
-          -Dflyway.locations=filesystem:src/main/resources/db/migration \
+          -Dflyway.locations=classpath:db/migration \
           -Dflyway.outOfOrder=true \
           -Dflyway.baselineOnMigrate=true \
           -Dflyway.baselineVersion=0 \
