@@ -135,13 +135,13 @@ class A00_EnvDiagTest {
     long customerCount = scalarLong(statement, "SELECT COUNT(*) FROM customers");
     System.out.printf("DIAG[DB] customers at start: %d%n", customerCount);
 
-    // Accept exactly 20 seed customers from V10005 migration
-    if (customerCount != 0 && customerCount != 20) {
+    // Database should be empty at start (no seed data)
+    if (customerCount != 0) {
       problems.add(
-          "DIAG[DB-001] Unerwarteter Startzustand: customers="
+          "DIAG[DB-001] Startzustand nicht leer: customers="
               + customerCount
-              + " (erwartet: 0 oder 20 Seed-Kunden).\n"
-              + "→ Schema-Reset im CI fehlt / Rollback deaktiviert / Unerwartete Test-Daten.");
+              + ".\n"
+              + "→ Schema-Reset im CI fehlt / Rollback deaktiviert / Test ohne Builder.");
     }
   }
 

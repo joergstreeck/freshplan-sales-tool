@@ -73,7 +73,7 @@ public class OpportunityServiceStageTransitionTest {
 
   @BeforeEach
   void setUp() {
-    // Will be created lazily when needed
+    // Reset test data for each test to ensure isolation
     testCustomer = null;
     testUser = null;
   }
@@ -557,32 +557,35 @@ public class OpportunityServiceStageTransitionTest {
   }
 
   Opportunity createTestOpportunity(String name, OpportunityStage stage) {
-    // Ensure test data is created if not already
-    if (testCustomer == null) {
-      testCustomer = getOrCreateCustomer("Test Company", "test@example.com");
-    }
+    // Create fresh test data for each opportunity to ensure proper FK relationships
+    String uniqueSuffix = System.currentTimeMillis() + "_" + UUID.randomUUID().toString().substring(0, 8);
 
-    if (testUser == null) {
-      // Create and persist test user
-      testUser =
-          de.freshplan.test.builders.UserTestDataFactory.builder()
-              .withUsername("stagetest")
-              .withFirstName("Test")
-              .withLastName("User")
-              .withEmail("stagetest@freshplan.de")
-              .build();
-      testUser.enable();
-      testUser.addRole("admin");
-      userRepository.persist(testUser);
-      userRepository.flush();
-    }
+    // Always create a fresh customer to ensure it exists in the current transaction
+    var customer = customerBuilder.withCompanyName("Test Company " + uniqueSuffix).build();
+    customer.setCustomerNumber("TEST-" + uniqueSuffix);
+    customer.setIsTestData(true);
+    customer.setCreatedBy("test-system");
+    customerRepository.persist(customer);
+    customerRepository.flush(); // Critical: Ensure customer is saved before creating opportunity
+
+    // Always create a fresh user to ensure it exists in the current transaction
+    var user = de.freshplan.test.builders.UserTestDataFactory.builder()
+        .withUsername("stagetest-" + uniqueSuffix)
+        .withFirstName("Test")
+        .withLastName("User")
+        .withEmail("stagetest-" + uniqueSuffix + "@freshplan.de")
+        .build();
+    user.enable();
+    user.addRole("admin");
+    userRepository.persist(user);
+    userRepository.flush(); // Critical: Ensure user is saved before creating opportunity
 
     var opportunity =
         opportunityBuilder
             .withName(name)
             .inStage(stage)
-            .forCustomer(testCustomer)
-            .assignedTo(testUser)
+            .forCustomer(customer)
+            .assignedTo(user)
             .persist();
 
     // Make sure the opportunity has an ID
