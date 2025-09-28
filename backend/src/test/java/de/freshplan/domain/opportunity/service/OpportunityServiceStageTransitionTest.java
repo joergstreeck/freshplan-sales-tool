@@ -49,6 +49,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 @TestSecurity(
     user = "testuser",
     roles = {"admin", "manager", "sales"})
+@io.quarkus.test.TestTransaction
 public class OpportunityServiceStageTransitionTest {
 
   @Inject OpportunityService opportunityService;
@@ -597,14 +598,7 @@ public class OpportunityServiceStageTransitionTest {
     opportunityRepository.persist(opportunity);
     opportunityRepository.flush();
 
-    // Clear the entity manager cache to ensure we work with persisted state
-    entityManager.clear();
-
-    // Reload the opportunity to get the persisted version with all defaults set
-    opportunity = opportunityRepository.findById(opportunity.getId());
-
     // Make sure the opportunity exists
-    assertThat(opportunity).as("Opportunity should be persisted and found").isNotNull();
     assertThat(opportunity.getId()).as("Opportunity ID should be set after persist").isNotNull();
 
     return opportunity;

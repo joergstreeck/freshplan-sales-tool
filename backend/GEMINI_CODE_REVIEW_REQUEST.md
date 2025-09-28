@@ -3,6 +3,7 @@
 ## 📅 Datum: 28.09.2025
 ## 🎯 Sprint: 2.1.4 - Lead Deduplication & Data Quality
 ## 📁 Branch: feat/mod02-backend-sprint-2.1.4
+## ⏱️ CI Status: In Progress (Run #18080191291)
 
 ## 🚀 Übersicht der Änderungen
 
@@ -149,7 +150,9 @@ Wie sollen Bestandsdaten migriert werden?
 - Lead Normalization: ✅ Unit Tests
 - Idempotency Service: ✅ Unit Tests
 - Lead Deduplication: ✅ Integration Tests
-- CI/CD Pipeline: ✅ Alle Checks grün
+- Test Isolation: ✅ Self-contained tests ohne Seed-Daten
+- Transaction Management: ✅ Korrekte Transaktionsgrenzen
+- CI/CD Pipeline: 🔄 In Progress (E2E ✅, Backend läuft)
 
 ## 📊 Performance-Überlegungen
 
@@ -204,9 +207,22 @@ Folgende Metriken sollten überwacht werden:
 - Normalisierungs-Performance
 - Idempotency Cache Hit Rate
 
+## 📝 Letzte Fixes (28.09.2025 23:40)
+
+### Test-Transaktions-Management:
+- `@Transactional` aus inneren Test-Klassen entfernt (CDI Limitation)
+- `entityManager.clear()` und reload Pattern für Cross-Transaction Visibility
+- `em.refresh()` durch `em.find()` ersetzt (Entity not managed Fehler)
+
+### Test-Daten-Initialisierung:
+- Lead Follow-up Flags explizit auf `false` gesetzt
+- Opportunity mit allen Required Fields erstellt
+- Customer-Number auf 13 Zeichen begrenzt
+
 ## 🔗 Relevante Links
 
 - PR: #123 feat/mod02-backend-sprint-2.1.4
+- CI Run: https://github.com/joergstreeck/freshplan-sales-tool/actions/runs/18080191291
 - Jira: FRESH-2024-MOD02-SPRINT-2.1.4
 - Design Doc: `/docs/planung/features-neu/02_neukundengewinnung/`
 

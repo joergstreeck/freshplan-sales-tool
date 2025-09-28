@@ -75,8 +75,8 @@ class BuilderValidationTest {
 
     assertThat(user).isNotNull();
     assertThat(user.isTestData()).isTrue();
-    // Username gets a suffix added for uniqueness, so we check for prefix
+    // Username and email get a suffix added for uniqueness, so we check for prefix
     assertThat(user.getUsername()).startsWith("manual.user");
-    assertThat(user.getEmail()).isEqualTo("manual@test.com");
+    assertThat(user.getEmail()).startsWith("manual");
   }
 }

@@ -106,7 +106,10 @@ class FollowUpAutomationServiceTest {
   void testT3FollowUpProcessing() {
     // Given: Lead ist 3+ Tage alt ohne Aktivität
     testLead.registeredAt = LocalDateTime.now().minusDays(3).minusHours(1);
-    em.merge(testLead);
+    testLead.status = LeadStatus.ACTIVE; // Ensure status is ACTIVE
+    testLead.t3FollowupSent = false; // Ensure T+3 hasn't been sent
+    testLead = em.merge(testLead);
+    em.flush();
 
     // Mock email service
     when(emailService.sendCampaignEmail(
@@ -144,7 +147,11 @@ class FollowUpAutomationServiceTest {
   void testT7FollowUpProcessing() {
     // Given: Lead ist 7+ Tage alt ohne Aktivität
     testLead.registeredAt = LocalDateTime.now().minusDays(7).minusHours(1);
-    em.merge(testLead);
+    testLead.status = LeadStatus.ACTIVE; // Ensure status is ACTIVE
+    testLead.t7FollowupSent = false; // Ensure T+7 hasn't been sent
+    testLead.t3FollowupSent = true; // T+3 should have been sent already for T+7
+    testLead = em.merge(testLead);
+    em.flush();
 
     // Mock email service
     when(emailService.sendCampaignEmail(
@@ -240,15 +247,18 @@ class FollowUpAutomationServiceTest {
     em.merge(testLead);
 
     // Mock email service
-    ArgumentCaptor<Map> dataCaptor = ArgumentCaptor.forClass(Map.class);
     when(emailService.sendCampaignEmail(
-            any(Lead.class), any(CampaignTemplate.class), dataCaptor.capture()))
+            any(Lead.class), any(CampaignTemplate.class), any(Map.class)))
         .thenReturn(true);
 
     // When: Follow-up Automation läuft
     followUpService.processScheduledFollowUps();
 
-    // Then: Spargel-Special ist enthalten
+    // Then: Verify and capture arguments
+    ArgumentCaptor<Map> dataCaptor = ArgumentCaptor.forClass(Map.class);
+    verify(emailService, atLeastOnce())
+        .sendCampaignEmail(any(Lead.class), any(CampaignTemplate.class), dataCaptor.capture());
+
     Map<String, String> capturedData = dataCaptor.getValue();
     String samples = capturedData.get("sample.products");
     assertTrue(samples.contains("Spargel-Saison-Special"));
@@ -265,14 +275,20 @@ class FollowUpAutomationServiceTest {
     em.merge(testLead);
 
     testLead.registeredAt = LocalDateTime.now().minusDays(7).minusHours(1);
-    em.merge(testLead);
+    testLead.status = LeadStatus.ACTIVE;
+    testLead.t7FollowupSent = false;
+    testLead = em.merge(testLead);
+    em.flush();
 
-    ArgumentCaptor<Map> dataCaptor = ArgumentCaptor.forClass(Map.class);
     when(emailService.sendCampaignEmail(
-            any(Lead.class), any(CampaignTemplate.class), dataCaptor.capture()))
+            any(Lead.class), any(CampaignTemplate.class), any(Map.class)))
         .thenReturn(true);
 
     followUpService.processScheduledFollowUps();
+
+    ArgumentCaptor<Map> dataCaptor = ArgumentCaptor.forClass(Map.class);
+    verify(emailService, atLeastOnce())
+        .sendCampaignEmail(any(Lead.class), any(CampaignTemplate.class), dataCaptor.capture());
 
     Map<String, String> capturedData = dataCaptor.getValue();
     assertEquals("20", capturedData.get("bulk.discount")); // Hotel discount
@@ -285,7 +301,10 @@ class FollowUpAutomationServiceTest {
     // Given: Lead ohne Response nach T+7
     testLead.registeredAt = LocalDateTime.now().minusDays(7).minusHours(1);
     testLead.status = LeadStatus.ACTIVE;
-    em.merge(testLead);
+    testLead.t7FollowupSent = false;
+    testLead.t3FollowupSent = true; // T+3 was already sent
+    testLead = em.merge(testLead);
+    em.flush();
 
     when(emailService.sendCampaignEmail(
             any(Lead.class), any(CampaignTemplate.class), any(Map.class)))
