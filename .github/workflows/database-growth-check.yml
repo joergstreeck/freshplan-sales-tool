@@ -49,28 +49,45 @@ jobs:
 
     - name: Install PostgreSQL client
       run: sudo apt-get update && sudo apt-get install -y postgresql-client
-    
+
+    - name: Wait for PostgreSQL to be ready
+      run: |
+        for i in {1..30}; do
+          if pg_isready -h localhost -p 5432 -U freshplan; then
+            echo "PostgreSQL is ready!"
+            break
+          fi
+          echo "Waiting for PostgreSQL... ($i/30)"
+          sleep 1
+        done
+
     - name: Create fresh database for testing
       env:
         PGPASSWORD: freshplan
       run: |
         echo "Testing connection to postgres database..."
-        psql -h localhost -U freshplan -d postgres -c "SELECT current_database(), current_user, version();"
+        psql -h localhost -p 5432 -U freshplan -d postgres -c "SELECT current_database(), current_user, version();"
 
         echo "Dropping and recreating freshplan database..."
-        psql -h localhost -U freshplan -d postgres -c "DROP DATABASE IF EXISTS freshplan;"
-        psql -h localhost -U freshplan -d postgres -c "CREATE DATABASE freshplan WITH OWNER freshplan ENCODING 'UTF8';"
+        psql -h localhost -p 5432 -U freshplan -d postgres -c "DROP DATABASE IF EXISTS freshplan;"
+        psql -h localhost -p 5432 -U freshplan -d postgres -c "CREATE DATABASE freshplan WITH OWNER freshplan ENCODING 'UTF8';"
+
+        echo "Verifying database exists..."
+        psql -h localhost -p 5432 -U freshplan -d postgres -c "\l" | grep freshplan || {
+          echo "ERROR: Database freshplan was not created!"
+          exit 1
+        }
 
         echo "Ensuring required extensions in new database..."
-        psql -h localhost -U freshplan -d freshplan -c "CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\";"
-        psql -h localhost -U freshplan -d freshplan -c "CREATE EXTENSION IF NOT EXISTS pgcrypto;"
-        psql -h localhost -U freshplan -d freshplan -c "CREATE EXTENSION IF NOT EXISTS unaccent;"
+        psql -h localhost -p 5432 -U freshplan -d freshplan -c "CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\";"
+        psql -h localhost -p 5432 -U freshplan -d freshplan -c "CREATE EXTENSION IF NOT EXISTS pgcrypto;"
+        psql -h localhost -p 5432 -U freshplan -d freshplan -c "CREATE EXTENSION IF NOT EXISTS unaccent;"
 
         echo "Verifying clean state..."
-        psql -h localhost -U freshplan -d freshplan -c "\dt" || echo "No tables yet - good!"
-        psql -h localhost -U freshplan -d freshplan -c "\dx" | head -10
+        psql -h localhost -p 5432 -U freshplan -d freshplan -c "\dt" || echo "No tables yet - good!"
+        psql -h localhost -p 5432 -U freshplan -d freshplan -c "\dx" | head -10
 
-        echo "Database created successfully"
+        echo "Database created and ready for migrations"
     
     - name: Apply database migrations
       working-directory: backend
@@ -105,7 +122,7 @@ jobs:
           -Dflyway.outOfOrder=true \
           -Dflyway.cleanDisabled=false || {
             echo "❌ Flyway migration failed! Checking database connection..."
-            psql -h localhost -U freshplan -d freshplan -c "SELECT version();"
+            psql -h localhost -p 5432 -U freshplan -d freshplan -c "SELECT version();"
             echo "Checking Flyway info..."
             ./mvnw flyway:info \
               -Dflyway.url="jdbc:postgresql://localhost:5432/freshplan" \
@@ -117,25 +134,25 @@ jobs:
         
         # Verify that migrations actually created tables
         echo "Checking if flyway_schema_history exists..."
-        if ! psql -h localhost -U freshplan -d freshplan -tAc "SELECT 1 FROM information_schema.tables WHERE table_name = 'flyway_schema_history';" | grep -q 1; then
+        if ! psql -h localhost -p 5432 -U freshplan -d freshplan -tAc "SELECT 1 FROM information_schema.tables WHERE table_name = 'flyway_schema_history';" | grep -q 1; then
           echo "❌ ERROR: flyway_schema_history table not found - migrations did not run!"
           echo "Checking what tables exist..."
-          psql -h localhost -U freshplan -d freshplan -c "\dt"
+          psql -h localhost -p 5432 -U freshplan -d freshplan -c "\dt"
           exit 1
         fi
 
         echo "Checking if customers table exists..."
-        if ! psql -h localhost -U freshplan -d freshplan -tAc "SELECT 1 FROM information_schema.tables WHERE table_name = 'customers';" | grep -q 1; then
+        if ! psql -h localhost -p 5432 -U freshplan -d freshplan -tAc "SELECT 1 FROM information_schema.tables WHERE table_name = 'customers';" | grep -q 1; then
           echo "❌ ERROR: customers table not found - core migrations failed!"
           echo "Checking migration history..."
-          psql -h localhost -U freshplan -d freshplan -c "SELECT version, description, success FROM flyway_schema_history ORDER BY installed_rank DESC LIMIT 10;"
+          psql -h localhost -p 5432 -U freshplan -d freshplan -c "SELECT version, description, success FROM flyway_schema_history ORDER BY installed_rank DESC LIMIT 10;"
           exit 1
         fi
 
-        TABLE_COUNT=$(psql -h localhost -U freshplan -d freshplan -tAc "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = 'public' AND table_type = 'BASE TABLE';")
+        TABLE_COUNT=$(psql -h localhost -p 5432 -U freshplan -d freshplan -tAc "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = 'public' AND table_type = 'BASE TABLE';")
         echo "✅ Migrations completed successfully - $TABLE_COUNT tables created"
         echo "Latest migrations:"
-        psql -h localhost -U freshplan -d freshplan -c "SELECT version, description FROM flyway_schema_history ORDER BY installed_rank DESC LIMIT 5;"
+        psql -h localhost -p 5432 -U freshplan -d freshplan -c "SELECT version, description FROM flyway_schema_history ORDER BY installed_rank DESC LIMIT 5;"
     
     - name: Verify CI migrations applied
       env:
