@@ -118,6 +118,9 @@ jobs:
         QUARKUS_PROFILE: ci
         PGPASSWORD: freshplan
       run: |
+        echo "========================================="
+        echo "STEP: Apply database migrations"
+        echo "========================================="
         echo "Running Flyway migrations directly..."
         echo "Checking Maven and Java setup..."
         ./mvnw --version
@@ -220,6 +223,7 @@ jobs:
         echo "Running CORE tests only with CI profile..."
         
         # Run only A00 diagnostic test - minimal approach due to JUnit 5 issues
+        # IMPORTANT: Flyway already ran in previous step, don't run again!
         ./mvnw clean test \
           -B \
           -T 1C \
@@ -231,9 +235,7 @@ jobs:
           -DRUN_SUFFIX=${{ github.run_id }} \
           -Dquarkus.devservices.enabled=false \
           -Dquarkus.datasource.devservices.enabled=false \
-          -Dquarkus.flyway.migrate-at-start=true \
-          -Dquarkus.flyway.out-of-order=true \
-          -Dquarkus.flyway.locations=classpath:db/migration \
+          -Dquarkus.flyway.migrate-at-start=false \
           -Dquarkus.datasource.jdbc.url="jdbc:postgresql://localhost:5432/freshplan?options=-c%20ci.build%3Dtrue" \
           -Dquarkus.datasource.username=freshplan \
           -Dquarkus.datasource.password=freshplan
