@@ -6,10 +6,11 @@ import org.flywaydb.core.api.migration.BaseJavaMigration;
 import org.flywaydb.core.api.migration.Context;
 
 /**
- * Creates unique index CONCURRENTLY for zero-downtime deployment. This migration runs outside of a
+ * Creates unique indexes CONCURRENTLY for zero-downtime deployment. This migration runs outside of a
  * transaction to allow CONCURRENTLY.
  *
  * <p>Sprint 2.1.4: Lead Deduplication & Data Quality
+ * Creates indexes for email, phone, and company+city deduplication.
  */
 public class V248__CreateEmailUniqueIndexConcurrently extends BaseJavaMigration {
 
@@ -22,58 +23,160 @@ public class V248__CreateEmailUniqueIndexConcurrently extends BaseJavaMigration 
   @Override
   public void migrate(Context context) throws Exception {
     try (Statement statement = context.getConnection().createStatement()) {
+      // Simplified test detection - check application_name
+      boolean isTestMode = isTestEnvironment(statement);
 
-      // Check if index already exists
-      ResultSet rs =
-          statement.executeQuery(
-              """
-                SELECT 1 FROM pg_indexes
-                WHERE schemaname = 'public'
-                AND indexname = 'uq_leads_email_canonical_v2'
-                """);
+      // Create email unique index
+      createEmailIndex(statement, isTestMode);
 
-      boolean indexExists = rs.next();
-      rs.close();
+      // Create phone unique index
+      createPhoneIndex(statement, isTestMode);
 
-      if (!indexExists) {
-        // Simplified test detection - check application_name
-        boolean isTestMode = isTestEnvironment(statement);
+      // Create company+city unique index
+      createCompanyCityIndex(statement, isTestMode);
+    }
+  }
 
-        if (isTestMode) {
-          // In test mode: create index without CONCURRENTLY
-          statement.execute(
-              """
-                        CREATE UNIQUE INDEX IF NOT EXISTS uq_leads_email_canonical_v2
-                        ON leads(email_normalized)
-                        WHERE email_normalized IS NOT NULL
-                            AND is_canonical = true
-                            AND status != 'DELETED'
-                        """);
-        } else {
-          // In production: create index CONCURRENTLY
-          statement.execute(
-              """
-                        CREATE UNIQUE INDEX CONCURRENTLY uq_leads_email_canonical_v2
-                        ON leads(email_normalized)
-                        WHERE email_normalized IS NOT NULL
-                            AND is_canonical = true
-                            AND status != 'DELETED'
-                        """);
-        }
+  private void createEmailIndex(Statement statement, boolean isTestMode) throws Exception {
+    // Check if index already exists
+    ResultSet rs =
+        statement.executeQuery(
+            """
+              SELECT 1 FROM pg_indexes
+              WHERE schemaname = 'public'
+              AND indexname = 'uq_leads_email_canonical_v2'
+              """);
 
-        // Add comment for documentation
+    boolean indexExists = rs.next();
+    rs.close();
+
+    if (!indexExists) {
+      if (isTestMode) {
+        // In test mode: create index without CONCURRENTLY
         statement.execute(
             """
-                    COMMENT ON INDEX uq_leads_email_canonical_v2 IS
-                    'Prevents duplicate canonical leads with same email (v2, created CONCURRENTLY for zero-downtime in production)';
-                    """);
+              CREATE UNIQUE INDEX IF NOT EXISTS uq_leads_email_canonical_v2
+              ON leads(email_normalized)
+              WHERE email_normalized IS NOT NULL
+                  AND is_canonical = true
+                  AND status != 'DELETED'
+              """);
+      } else {
+        // In production: create index CONCURRENTLY
+        statement.execute(
+            """
+              CREATE UNIQUE INDEX CONCURRENTLY uq_leads_email_canonical_v2
+              ON leads(email_normalized)
+              WHERE email_normalized IS NOT NULL
+                  AND is_canonical = true
+                  AND status != 'DELETED'
+              """);
       }
+
+      // Add comment for documentation
+      statement.execute(
+          """
+            COMMENT ON INDEX uq_leads_email_canonical_v2 IS
+            'Prevents duplicate canonical leads with same email (v2, created CONCURRENTLY for zero-downtime in production)';
+            """);
+    }
+  }
+
+  private void createPhoneIndex(Statement statement, boolean isTestMode) throws Exception {
+    // Check if index already exists
+    ResultSet rs =
+        statement.executeQuery(
+            """
+              SELECT 1 FROM pg_indexes
+              WHERE schemaname = 'public'
+              AND indexname = 'ui_leads_phone_e164'
+              """);
+
+    boolean indexExists = rs.next();
+    rs.close();
+
+    if (!indexExists) {
+      if (isTestMode) {
+        // In test mode: create index without CONCURRENTLY
+        statement.execute(
+            """
+              CREATE UNIQUE INDEX IF NOT EXISTS ui_leads_phone_e164
+              ON leads(phone_e164)
+              WHERE phone_e164 IS NOT NULL
+                  AND is_canonical = true
+                  AND status != 'DELETED'
+              """);
+      } else {
+        // In production: create index CONCURRENTLY
+        statement.execute(
+            """
+              CREATE UNIQUE INDEX CONCURRENTLY ui_leads_phone_e164
+              ON leads(phone_e164)
+              WHERE phone_e164 IS NOT NULL
+                  AND is_canonical = true
+                  AND status != 'DELETED'
+              """);
+      }
+
+      // Add comment for documentation
+      statement.execute(
+          """
+            COMMENT ON INDEX ui_leads_phone_e164 IS
+            'Enforces unique phone numbers for canonical leads (excluding deleted)';
+            """);
+    }
+  }
+
+  private void createCompanyCityIndex(Statement statement, boolean isTestMode) throws Exception {
+    // Check if index already exists
+    ResultSet rs =
+        statement.executeQuery(
+            """
+              SELECT 1 FROM pg_indexes
+              WHERE schemaname = 'public'
+              AND indexname = 'ui_leads_company_city'
+              """);
+
+    boolean indexExists = rs.next();
+    rs.close();
+
+    if (!indexExists) {
+      if (isTestMode) {
+        // In test mode: create index without CONCURRENTLY
+        statement.execute(
+            """
+              CREATE UNIQUE INDEX IF NOT EXISTS ui_leads_company_city
+              ON leads(company_name_normalized, city)
+              WHERE company_name_normalized IS NOT NULL
+                  AND city IS NOT NULL
+                  AND is_canonical = true
+                  AND status != 'DELETED'
+              """);
+      } else {
+        // In production: create index CONCURRENTLY
+        statement.execute(
+            """
+              CREATE UNIQUE INDEX CONCURRENTLY ui_leads_company_city
+              ON leads(company_name_normalized, city)
+              WHERE company_name_normalized IS NOT NULL
+                  AND city IS NOT NULL
+                  AND is_canonical = true
+                  AND status != 'DELETED'
+              """);
+      }
+
+      // Add comment for documentation
+      statement.execute(
+          """
+            COMMENT ON INDEX ui_leads_company_city IS
+            'Enforces unique company+city combination for B2B leads (excluding deleted)';
+            """);
     }
   }
 
   @Override
   public String getDescription() {
-    return "Create unique email index CONCURRENTLY for zero-downtime deployment";
+    return "Create unique indexes (email, phone, company) CONCURRENTLY for zero-downtime deployment";
   }
 
   /**
