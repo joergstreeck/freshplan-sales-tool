@@ -558,7 +558,8 @@ public class OpportunityServiceStageTransitionTest {
 
   Opportunity createTestOpportunity(String name, OpportunityStage stage) {
     // Create fresh test data for each opportunity to ensure proper FK relationships
-    String uniqueSuffix = System.currentTimeMillis() + "_" + UUID.randomUUID().toString().substring(0, 8);
+    String uniqueSuffix =
+        System.currentTimeMillis() + "_" + UUID.randomUUID().toString().substring(0, 8);
 
     // Always create a fresh customer to ensure it exists in the current transaction
     var customer = customerBuilder.withCompanyName("Test Company " + uniqueSuffix).build();
@@ -570,12 +571,13 @@ public class OpportunityServiceStageTransitionTest {
     customerRepository.flush(); // Critical: Ensure customer is saved before creating opportunity
 
     // Always create a fresh user to ensure it exists in the current transaction
-    var user = de.freshplan.test.builders.UserTestDataFactory.builder()
-        .withUsername("stagetest-" + uniqueSuffix)
-        .withFirstName("Test")
-        .withLastName("User")
-        .withEmail("stagetest-" + uniqueSuffix + "@freshplan.de")
-        .build();
+    var user =
+        de.freshplan.test.builders.UserTestDataFactory.builder()
+            .withUsername("stagetest-" + uniqueSuffix)
+            .withFirstName("Test")
+            .withLastName("User")
+            .withEmail("stagetest-" + uniqueSuffix + "@freshplan.de")
+            .build();
     user.enable();
     user.addRole("admin");
     userRepository.persist(user);
