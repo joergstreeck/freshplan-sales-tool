@@ -172,7 +172,7 @@ class FollowUpAutomationServiceTest {
     // Create recent activity
     LeadActivity recentActivity = new LeadActivity();
     recentActivity.lead = testLead;
-    recentActivity.type = ActivityType.EMAIL;
+    recentActivity.activityType = ActivityType.EMAIL;  // Use activityType not type (transient)
     recentActivity.userId = "user123";
     recentActivity.description = "Customer responded";
     recentActivity.occurredAt = LocalDateTime.now().minusHours(12);

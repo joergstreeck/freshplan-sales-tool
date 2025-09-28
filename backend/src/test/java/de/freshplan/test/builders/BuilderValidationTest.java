@@ -75,7 +75,8 @@ class BuilderValidationTest {
 
     assertThat(user).isNotNull();
     assertThat(user.isTestData()).isTrue();
-    assertThat(user.getUsername()).isEqualTo("manual.user");
+    // Username gets a suffix added for uniqueness, so we check for prefix
+    assertThat(user.getUsername()).startsWith("manual.user");
     assertThat(user.getEmail()).isEqualTo("manual@test.com");
   }
 }
