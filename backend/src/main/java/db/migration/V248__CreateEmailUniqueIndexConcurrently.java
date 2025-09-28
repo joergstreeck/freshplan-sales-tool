@@ -180,10 +180,22 @@ public class V248__CreateEmailUniqueIndexConcurrently extends BaseJavaMigration 
   }
 
   /**
-   * Simplified test environment detection. Returns true if running in test context (Maven Surefire,
-   * JUnit, etc.)
+   * Enhanced test environment detection for CI and test contexts.
+   * Returns true if running in test context (CI, Maven Surefire, JUnit, etc.)
    */
   private boolean isTestEnvironment(Statement statement) {
+    // Check environment variables first (most reliable for CI)
+    String ci = System.getenv("CI");
+    String githubActions = System.getenv("GITHUB_ACTIONS");
+    String testProfile = System.getProperty("quarkus.profile");
+
+    // If we're in CI or test profile, don't use CONCURRENTLY
+    if ("true".equals(ci) || "true".equals(githubActions) ||
+        "test".equals(testProfile) || "ci".equals(testProfile)) {
+      return true;
+    }
+
+    // Check PostgreSQL application_name as fallback
     try {
       ResultSet rs = statement.executeQuery("SELECT current_setting('application_name', true)");
       if (rs.next()) {
@@ -191,13 +203,33 @@ public class V248__CreateEmailUniqueIndexConcurrently extends BaseJavaMigration 
         rs.close();
         if (appName != null && !appName.isEmpty()) {
           String lower = appName.toLowerCase();
-          return lower.contains("test") || lower.contains("surefire") || lower.contains("junit");
+          return lower.contains("test") || lower.contains("surefire") ||
+                 lower.contains("junit") || lower.contains("flyway");
         }
       }
       rs.close();
     } catch (Exception e) {
-      // If we can't determine, assume production for safety
+      // Log the error but continue
+      System.err.println("Warning: Could not check application_name: " + e.getMessage());
     }
-    return false;
+
+    // Check database name as last resort
+    try {
+      ResultSet rs = statement.executeQuery("SELECT current_database()");
+      if (rs.next()) {
+        String dbName = rs.getString(1);
+        rs.close();
+        if (dbName != null && dbName.toLowerCase().contains("test")) {
+          return true;
+        }
+      }
+    } catch (Exception e) {
+      // Log the error but continue
+      System.err.println("Warning: Could not check database name: " + e.getMessage());
+    }
+
+    // If we can't determine, assume test mode for safety (no CONCURRENTLY)
+    // This is safer than assuming production and hanging CI
+    return true;
   }
 }
