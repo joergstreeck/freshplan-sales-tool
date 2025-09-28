@@ -24,6 +24,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import java.util.stream.Stream;
+import de.freshplan.test.support.TestTx;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -49,7 +50,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 @TestSecurity(
     user = "testuser",
     roles = {"admin", "manager", "sales"})
-@io.quarkus.test.TestTransaction
 public class OpportunityServiceStageTransitionTest {
 
   @Inject OpportunityService opportunityService;
@@ -62,16 +62,17 @@ public class OpportunityServiceStageTransitionTest {
 
   @Inject EntityManager entityManager;
 
+  @Inject UserTransaction userTransaction;
+
   @Inject CustomerBuilder customerBuilder;
 
   @Inject OpportunityBuilder opportunityBuilder;
-
-  @Inject UserTransaction userTransaction;
 
   private Customer testCustomer;
   private User testUser;
 
   @BeforeEach
+  @Transactional
   void setUp() {
     // Reset test data for each test to ensure isolation
     testCustomer = null;
@@ -557,50 +558,50 @@ public class OpportunityServiceStageTransitionTest {
   }
 
   Opportunity createTestOpportunity(String name, OpportunityStage stage) {
-    // Create fresh test data for each opportunity to ensure proper FK relationships
-    String uniqueSuffix =
-        System.currentTimeMillis() + "_" + UUID.randomUUID().toString().substring(0, 8);
+    // Use TestTx to ensure data is committed and visible to services
+    return TestTx.committed(() -> {
+      // Create fresh test data for each opportunity to ensure proper FK relationships
+      String uniqueSuffix =
+          System.currentTimeMillis() + "_" + UUID.randomUUID().toString().substring(0, 8);
 
-    // Always create a fresh customer to ensure it exists in the current transaction
-    var customer = customerBuilder.withCompanyName("Test Company " + uniqueSuffix).build();
-    // Customer number must be max 20 chars: "TEST-" (5) + 8 chars = 13 chars total
-    customer.setCustomerNumber("TEST-" + uniqueSuffix.substring(0, 8));
-    customer.setIsTestData(true);
-    customer.setCreatedBy("test-system");
-    customerRepository.persist(customer);
-    customerRepository.flush(); // Critical: Ensure customer is saved before creating opportunity
+      // Always create a fresh customer to ensure it exists in the current transaction
+      var customer = customerBuilder.withCompanyName("Test Company " + uniqueSuffix).build();
+      // Customer number must be max 20 chars: "TEST-" (5) + 8 chars = 13 chars total
+      customer.setCustomerNumber("TEST-" + uniqueSuffix.substring(0, 8));
+      customer.setIsTestData(true);
+      customer.setCreatedBy("test-system");
+      customerRepository.persist(customer);
 
-    // Always create a fresh user to ensure it exists in the current transaction
-    var user =
-        de.freshplan.test.builders.UserTestDataFactory.builder()
-            .withUsername("stagetest-" + uniqueSuffix)
-            .withFirstName("Test")
-            .withLastName("User")
-            .withEmail("stagetest-" + uniqueSuffix + "@freshplan.de")
-            .build();
-    user.enable();
-    user.addRole("admin");
-    userRepository.persist(user);
-    userRepository.flush(); // Critical: Ensure user is saved before creating opportunity
+      // Always create a fresh user to ensure it exists in the current transaction
+      var user =
+          de.freshplan.test.builders.UserTestDataFactory.builder()
+              .withUsername("stagetest-" + uniqueSuffix)
+              .withFirstName("Test")
+              .withLastName("User")
+              .withEmail("stagetest-" + uniqueSuffix + "@freshplan.de")
+              .build();
+      user.enable();
+      user.addRole("admin");
+      userRepository.persist(user);
 
-    // Create opportunity manually to ensure it's properly persisted
-    var opportunity = new Opportunity();
-    opportunity.setName(name);
-    opportunity.setStage(stage);
-    opportunity.setProbability(stage.getDefaultProbability());
-    opportunity.setExpectedValue(java.math.BigDecimal.valueOf(10000));
-    opportunity.setExpectedCloseDate(java.time.LocalDate.now().plusDays(30));
-    opportunity.setDescription("Test opportunity for stage transition");
-    opportunity.setCustomer(customer);
-    opportunity.setAssignedTo(user);
+      // Create opportunity manually to ensure it's properly persisted
+      var opportunity = new Opportunity();
+      opportunity.setName(name);
+      opportunity.setStage(stage);
+      opportunity.setProbability(stage.getDefaultProbability());
+      opportunity.setExpectedValue(java.math.BigDecimal.valueOf(10000));
+      opportunity.setExpectedCloseDate(java.time.LocalDate.now().plusDays(30));
+      opportunity.setDescription("Test opportunity for stage transition");
+      opportunity.setCustomer(customer);
+      opportunity.setAssignedTo(user);
 
-    // Persist and flush to ensure it's in the database
-    opportunityRepository.persist(opportunity);
-    opportunityRepository.flush();
+      // Persist the opportunity
+      opportunityRepository.persist(opportunity);
 
-    // Make sure the opportunity exists
-    assertThat(opportunity.getId()).as("Opportunity ID should be set after persist").isNotNull();
+      // Make sure the opportunity exists
+      assertThat(opportunity.getId()).as("Opportunity ID should be set after persist").isNotNull();
 
-    return opportunity;
+      return opportunity;
+    });
   }
 }

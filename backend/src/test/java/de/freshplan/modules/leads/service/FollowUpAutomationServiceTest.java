@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import de.freshplan.modules.leads.domain.*;
+import de.freshplan.test.support.TestTx;
 import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
@@ -102,14 +103,16 @@ class FollowUpAutomationServiceTest {
   }
 
   @Test
-  @Transactional
   void testT3FollowUpProcessing() {
-    // Given: Lead ist 3+ Tage alt ohne Aktivität
-    testLead.registeredAt = LocalDateTime.now().minusDays(3).minusHours(1);
-    testLead.status = LeadStatus.ACTIVE; // Ensure status is ACTIVE
-    testLead.t3FollowupSent = false; // Ensure T+3 hasn't been sent
-    testLead = em.merge(testLead);
-    em.flush();
+    // Given: Lead ist 3+ Tage alt ohne Aktivität - committed in separate transaction
+    Long leadId = TestTx.committed(() -> {
+      testLead.registeredAt = LocalDateTime.now().minusDays(3).minusHours(1);
+      testLead.status = LeadStatus.ACTIVE; // Ensure status is ACTIVE
+      testLead.t3FollowupSent = false; // Ensure T+3 hasn't been sent
+      testLead.clockStoppedAt = null; // Clock is not stopped
+      testLead = em.merge(testLead);
+      return testLead.id;
+    });
 
     // Mock email service
     when(emailService.sendCampaignEmail(
@@ -143,15 +146,17 @@ class FollowUpAutomationServiceTest {
   }
 
   @Test
-  @Transactional
   void testT7FollowUpProcessing() {
-    // Given: Lead ist 7+ Tage alt ohne Aktivität
-    testLead.registeredAt = LocalDateTime.now().minusDays(7).minusHours(1);
-    testLead.status = LeadStatus.ACTIVE; // Ensure status is ACTIVE
-    testLead.t7FollowupSent = false; // Ensure T+7 hasn't been sent
-    testLead.t3FollowupSent = true; // T+3 should have been sent already for T+7
-    testLead = em.merge(testLead);
-    em.flush();
+    // Given: Lead ist 7+ Tage alt ohne Aktivität - committed in separate transaction
+    Long leadId = TestTx.committed(() -> {
+      testLead.registeredAt = LocalDateTime.now().minusDays(7).minusHours(1);
+      testLead.status = LeadStatus.ACTIVE; // Ensure status is ACTIVE
+      testLead.t7FollowupSent = false; // Ensure T+7 hasn't been sent
+      testLead.t3FollowupSent = true; // T+3 should have been sent already for T+7
+      testLead.clockStoppedAt = null; // Clock is not stopped
+      testLead = em.merge(testLead);
+      return testLead.id;
+    });
 
     // Mock email service
     when(emailService.sendCampaignEmail(
@@ -233,7 +238,6 @@ class FollowUpAutomationServiceTest {
   }
 
   @Test
-  @Transactional
   void testSeasonalSampleRecommendations() {
     // Given: Mock Clock auf März (Spargel-Saison) setzen
     Clock fixedClock =
@@ -242,9 +246,15 @@ class FollowUpAutomationServiceTest {
             java.time.ZoneOffset.UTC);
     followUpService.setClock(fixedClock);
 
-    // Lead ist 3+ Tage alt (relativ zur gemockten Zeit)
-    testLead.registeredAt = LocalDateTime.of(2025, 3, 15, 10, 0);
-    em.merge(testLead);
+    // Lead ist 3+ Tage alt (relativ zur gemockten Zeit) - committed
+    Long leadId = TestTx.committed(() -> {
+      testLead.registeredAt = LocalDateTime.of(2025, 3, 15, 10, 0);
+      testLead.status = LeadStatus.ACTIVE;
+      testLead.t3FollowupSent = false;
+      testLead.clockStoppedAt = null;
+      testLead = em.merge(testLead);
+      return testLead.id;
+    });
 
     // Mock email service
     when(emailService.sendCampaignEmail(
