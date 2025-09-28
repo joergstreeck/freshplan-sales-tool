@@ -52,14 +52,27 @@ jobs:
 
     - name: Wait for PostgreSQL to be ready
       run: |
-        for i in {1..30}; do
+        echo "Waiting for PostgreSQL service to be fully ready..."
+        for i in {1..60}; do
           if pg_isready -h localhost -p 5432 -U freshplan; then
-            echo "PostgreSQL is ready!"
-            break
+            echo "PostgreSQL is accepting connections!"
+            # Additional check - can we actually connect?
+            if PGPASSWORD=freshplan psql -h localhost -p 5432 -U freshplan -d postgres -c "SELECT 1;" >/dev/null 2>&1; then
+              echo "PostgreSQL is fully ready and accepting queries!"
+              break
+            else
+              echo "PostgreSQL is up but not accepting queries yet..."
+            fi
           fi
-          echo "Waiting for PostgreSQL... ($i/30)"
-          sleep 1
+          echo "Waiting for PostgreSQL... ($i/60)"
+          sleep 2
         done
+
+        # Final verification
+        PGPASSWORD=freshplan psql -h localhost -p 5432 -U freshplan -d postgres -c "SELECT version();" || {
+          echo "ERROR: Cannot connect to PostgreSQL after 60 attempts!"
+          exit 1
+        }
 
     - name: Create fresh database for testing
       env:
@@ -68,8 +81,13 @@ jobs:
         echo "Testing connection to postgres database..."
         psql -h localhost -p 5432 -U freshplan -d postgres -c "SELECT current_database(), current_user, version();"
 
+        echo "Force-dropping any existing connections to freshplan database..."
+        psql -h localhost -p 5432 -U freshplan -d postgres -c "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = 'freshplan' AND pid <> pg_backend_pid();" || true
+
         echo "Dropping and recreating freshplan database..."
-        psql -h localhost -p 5432 -U freshplan -d postgres -c "DROP DATABASE IF EXISTS freshplan;"
+        psql -h localhost -p 5432 -U freshplan -d postgres -c "DROP DATABASE IF EXISTS freshplan WITH (FORCE);" || psql -h localhost -p 5432 -U freshplan -d postgres -c "DROP DATABASE IF EXISTS freshplan;"
+
+        echo "Creating new freshplan database..."
         psql -h localhost -p 5432 -U freshplan -d postgres -c "CREATE DATABASE freshplan WITH OWNER freshplan ENCODING 'UTF8';"
 
         echo "Verifying database exists..."
@@ -83,9 +101,14 @@ jobs:
         psql -h localhost -p 5432 -U freshplan -d freshplan -c "CREATE EXTENSION IF NOT EXISTS pgcrypto;"
         psql -h localhost -p 5432 -U freshplan -d freshplan -c "CREATE EXTENSION IF NOT EXISTS unaccent;"
 
-        echo "Verifying clean state..."
-        psql -h localhost -p 5432 -U freshplan -d freshplan -c "\dt" || echo "No tables yet - good!"
-        psql -h localhost -p 5432 -U freshplan -d freshplan -c "\dx" | head -10
+        echo "Verifying clean state - should be no tables..."
+        TABLE_COUNT=$(psql -h localhost -p 5432 -U freshplan -d freshplan -tAc "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = 'public' AND table_type = 'BASE TABLE';")
+        if [ "$TABLE_COUNT" -ne "0" ]; then
+          echo "ERROR: Database not clean! Found $TABLE_COUNT tables"
+          psql -h localhost -p 5432 -U freshplan -d freshplan -c "\dt"
+          exit 1
+        fi
+        echo "✅ Database is clean - no tables exist"
 
         echo "Database created and ready for migrations"
     
