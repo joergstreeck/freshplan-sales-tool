@@ -119,6 +119,17 @@ public class Lead extends PanacheEntityBase {
   @Column(name = "registered_at_override_reason")
   public String registeredAtOverrideReason;
 
+  @Size(max = 100)
+  @Column(name = "registered_at_set_by")
+  public String registeredAtSetBy;
+
+  @Column(name = "registered_at_set_at")
+  public LocalDateTime registeredAtSetAt;
+
+  @Size(max = 20)
+  @Column(name = "registered_at_source")
+  public String registeredAtSource = "system";
+
   @Column(name = "last_activity_at")
   public LocalDateTime lastActivityAt;
 

@@ -156,13 +156,13 @@ public class LeadNormalizationService {
 
   /**
    * Generic duplicate check for normalized fields. Checks if a value exists in another canonical
-   * lead. Uses EXISTS for better performance than COUNT.
+   * lead. Uses SELECT l.id for portability and better performance than COUNT.
    */
   private boolean isDuplicate(String fieldName, String value, Long excludeId) {
     StringBuilder queryBuilder =
         new StringBuilder(
             String.format(
-                "SELECT 1 FROM Lead l WHERE l.%s = :value "
+                "SELECT l.id FROM Lead l WHERE l.%s = :value "
                     + "AND l.isCanonical = true AND l.status <> :deletedStatus",
                 fieldName));
 
@@ -172,7 +172,7 @@ public class LeadNormalizationService {
 
     var typedQuery =
         entityManager
-            .createQuery(queryBuilder.toString(), Integer.class)
+            .createQuery(queryBuilder.toString(), Long.class)
             .setParameter("value", value)
             .setParameter("deletedStatus", LeadStatus.DELETED)
             .setMaxResults(1);

@@ -7,14 +7,19 @@
 -- Date: 2025-09-28
 
 -- =====================================================
--- 1. Add registered_at column for accurate protection tracking
+-- 1. Add registered_at and audit columns for accurate protection tracking
 -- =====================================================
 ALTER TABLE leads
-  ADD COLUMN IF NOT EXISTS registered_at TIMESTAMPTZ NOT NULL DEFAULT NOW();
+  ADD COLUMN IF NOT EXISTS registered_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  ADD COLUMN IF NOT EXISTS registered_at_set_by VARCHAR(100),
+  ADD COLUMN IF NOT EXISTS registered_at_set_at TIMESTAMPTZ,
+  ADD COLUMN IF NOT EXISTS registered_at_source VARCHAR(20) DEFAULT 'system'
+    CHECK (registered_at_source IN ('system', 'manual', 'import', 'backdated'));
 
 -- Backfill existing leads with their creation timestamp
 UPDATE leads
-   SET registered_at = COALESCE(registered_at, created_at)
+   SET registered_at = COALESCE(registered_at, created_at),
+       registered_at_source = COALESCE(registered_at_source, 'system')
  WHERE registered_at IS NULL OR registered_at > created_at;
 
 -- =====================================================
@@ -52,7 +57,7 @@ UPDATE leads
    AND protection_start_at != registered_at;
 
 -- =====================================================
--- 5. Add audit column for backdating tracking
+-- 5. Add override reason column for backdating documentation
 -- =====================================================
 ALTER TABLE leads
   ADD COLUMN IF NOT EXISTS registered_at_override_reason TEXT;
@@ -65,6 +70,15 @@ COMMENT ON COLUMN leads.registered_at IS
 
 COMMENT ON COLUMN leads.registered_at_override_reason IS
   'Reason for backdating registered_at (e.g., "Q2 2025 import from legacy system")';
+
+COMMENT ON COLUMN leads.registered_at_set_by IS
+  'User who set/backdated the registered_at timestamp (for audit trail)';
+
+COMMENT ON COLUMN leads.registered_at_set_at IS
+  'Timestamp when registered_at was set/backdated (for audit trail)';
+
+COMMENT ON COLUMN leads.registered_at_source IS
+  'Source of registered_at: system (default), manual (UI), import (bulk), backdated (Admin/Manager)';
 
 COMMENT ON CONSTRAINT chk_leads_registered_at_not_future ON leads IS
   'Prevents registration dates in the future (with 1-minute buffer for clock drift)';

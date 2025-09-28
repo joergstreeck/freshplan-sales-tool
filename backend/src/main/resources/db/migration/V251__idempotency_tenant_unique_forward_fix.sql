@@ -8,35 +8,50 @@
 -- =====================================================
 -- Make uniqueness tenant-scoped (safe forward fix)
 -- =====================================================
+
+-- Step A: Create the correct tenant-scoped unique index (needed for ON CONFLICT)
+CREATE UNIQUE INDEX CONCURRENTLY IF NOT EXISTS ui_idk_tenant_key
+  ON idempotency_keys(tenant_id, idempotency_key);
+
+-- Step B: Remove any old single-column uniqueness constraints/indexes
 DO $$
+DECLARE
+  idx_name text;
+  con_name text;
 BEGIN
-  -- Add the correct tenant-scoped unique constraint if missing
-  IF NOT EXISTS (
-    SELECT 1 FROM pg_constraint
-    WHERE conname = 'idempotency_keys_tenant_key_unique'
-  ) THEN
-    -- First check if the table has the wrong single-column unique
-    IF EXISTS (
-      SELECT 1 FROM pg_constraint
-      WHERE conname = 'idempotency_keys_idempotency_key_key'
-        AND conrelid = 'idempotency_keys'::regclass
-    ) THEN
-      -- Drop the incorrect single-column constraint
-      ALTER TABLE idempotency_keys
-        DROP CONSTRAINT idempotency_keys_idempotency_key_key;
-    END IF;
+  -- 1) Find and drop any unique INDEX on just (idempotency_key)
+  SELECT i.indexname INTO idx_name
+  FROM pg_indexes i
+  WHERE i.tablename = 'idempotency_keys'
+    AND i.indexdef ILIKE '%UNIQUE INDEX%'
+    AND i.indexdef ILIKE '%(idempotency_key)%'
+    AND i.indexdef NOT ILIKE '%tenant_id%'
+  LIMIT 1;
 
-    -- Now add the correct multi-column unique constraint
-    ALTER TABLE idempotency_keys
-      ADD CONSTRAINT idempotency_keys_tenant_key_unique
-      UNIQUE (tenant_id, idempotency_key);
-
-    RAISE NOTICE 'Added tenant-scoped unique constraint to idempotency_keys';
-  ELSE
-    RAISE NOTICE 'Tenant-scoped unique constraint already exists';
+  IF idx_name IS NOT NULL THEN
+    RAISE NOTICE 'Dropping old single-column unique index: %', idx_name;
+    EXECUTE format('DROP INDEX CONCURRENTLY IF EXISTS %I', idx_name);
   END IF;
 
-  -- Ensure the expires_at index exists for cleanup performance
+  -- 2) Find and drop any UNIQUE CONSTRAINT on just (idempotency_key)
+  SELECT c.conname INTO con_name
+  FROM pg_constraint c
+  JOIN pg_class t ON t.oid = c.conrelid AND t.relname = 'idempotency_keys'
+  WHERE c.contype = 'u'
+    AND array_length(c.conkey, 1) = 1
+    AND EXISTS (
+      SELECT 1 FROM pg_attribute a
+      WHERE a.attrelid = c.conrelid
+        AND a.attnum = c.conkey[1]
+        AND a.attname = 'idempotency_key'
+    );
+
+  IF con_name IS NOT NULL THEN
+    RAISE NOTICE 'Dropping old single-column unique constraint: %', con_name;
+    EXECUTE format('ALTER TABLE idempotency_keys DROP CONSTRAINT %I', con_name);
+  END IF;
+
+  -- 3) Ensure the expires_at index exists for cleanup performance
   IF NOT EXISTS (
     SELECT 1 FROM pg_indexes
     WHERE indexname = 'idx_idempotency_keys_expires_at'
