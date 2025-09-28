@@ -56,13 +56,9 @@ jobs:
         PGPASSWORD: freshplan
       run: |
         echo "Resetting database schema to clean state..."
-        psql -h localhost -U freshplan -d freshplan -v ON_ERROR_STOP=1 <<EOF
-DROP SCHEMA IF EXISTS public CASCADE;
-CREATE SCHEMA public;
--- Required extensions for UUID generation
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-CREATE EXTENSION IF NOT EXISTS pgcrypto;
-EOF
+        psql -h localhost -U freshplan -d freshplan -v ON_ERROR_STOP=1 -c "DROP SCHEMA IF EXISTS public CASCADE; CREATE SCHEMA public;"
+        psql -h localhost -U freshplan -d freshplan -v ON_ERROR_STOP=1 -c "CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\";"
+        psql -h localhost -U freshplan -d freshplan -v ON_ERROR_STOP=1 -c "CREATE EXTENSION IF NOT EXISTS pgcrypto;"
         echo "Database schema reset successfully"
     
     - name: Skip explicit migrations - tests will handle it
