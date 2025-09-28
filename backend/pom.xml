@@ -194,7 +194,7 @@
           <argLine>${jacocoArgLine} -Duser.language=de -Duser.country=DE</argLine>
         </configuration>
         <executions>
-          <!-- Phase 1: Run parallel tests (excluding db-serial) -->
+          <!-- Phase 1: Run parallel tests (excluding db-serial) - JUnit 5 style -->
           <execution>
             <id>parallel-tests</id>
             <phase>test</phase>
@@ -202,7 +202,7 @@
               <goal>test</goal>
             </goals>
             <configuration>
-              <excludedGroups>db-serial</excludedGroups>
+              <excludeTags>db-serial</excludeTags>
               <parallel>classes</parallel>
               <useUnlimitedThreads>false</useUnlimitedThreads>
               <threadCount>4</threadCount>
@@ -210,7 +210,7 @@
               <reuseForks>true</reuseForks>
             </configuration>
           </execution>
-          <!-- Phase 2: Run serial DB tests (db-serial tag) -->
+          <!-- Phase 2: Run serial DB tests (db-serial tag) - JUnit 5 style -->
           <execution>
             <id>serial-db-tests</id>
             <phase>test</phase>
@@ -218,7 +218,7 @@
               <goal>test</goal>
             </goals>
             <configuration>
-              <groups>db-serial</groups>
+              <includeTags>db-serial</includeTags>
               <parallel>none</parallel>
               <forkCount>1</forkCount>
               <reuseForks>false</reuseForks>

@@ -122,19 +122,41 @@ jobs:
         run: |
           echo "=== DB Invariant Checks ==="
 
-          echo "📊 Checking for duplicate customer_numbers..."
-          DUPLICATES=$(psql -h localhost -U freshplan -d freshplan -t -c \
-            "SELECT COUNT(*) FROM (SELECT customer_number FROM customers GROUP BY customer_number HAVING COUNT(*) > 1) AS dups" 2>/dev/null || echo "0")
-          if [ "$DUPLICATES" -gt 0 ]; then
-            echo "❌ Found $DUPLICATES duplicate customer_numbers:"
-            psql -h localhost -U freshplan -d freshplan -c \
-              "SELECT customer_number, COUNT(*) FROM customers GROUP BY customer_number HAVING COUNT(*) > 1"
+          # First verify we're checking the right DB
+          echo "📍 Checking database: freshplan@localhost:5432"
+
+          # Check if customers table exists
+          if psql -h localhost -U freshplan -d freshplan -tAc "SELECT to_regclass('public.customers') IS NOT NULL" | grep -q 't'; then
+            echo "✅ Table 'customers' exists in CI-DB"
+
+            echo "📊 Checking for duplicate customer_numbers..."
+            DUPLICATES=$(psql -h localhost -U freshplan -d freshplan -t -c \
+              "SELECT COUNT(*) FROM (SELECT customer_number FROM customers GROUP BY customer_number HAVING COUNT(*) > 1) AS dups")
+            if [ "$DUPLICATES" -gt 0 ]; then
+              echo "❌ Found $DUPLICATES duplicate customer_numbers:"
+              psql -h localhost -U freshplan -d freshplan -c \
+                "SELECT customer_number, COUNT(*) FROM customers GROUP BY customer_number HAVING COUNT(*) > 1"
+            else
+              echo "✅ No duplicate customer_numbers found"
+            fi
           else
-            echo "✅ No duplicate customer_numbers found"
+            echo "⚠️ Table 'customers' does not exist in CI-DB"
+            echo "   Hint: Tests might have used DevServices instead of CI-DB"
+            echo "   Checking for DevServices indicators..."
+
+            # Check if there's any schema at all
+            TABLES=$(psql -h localhost -U freshplan -d freshplan -t -c \
+              "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = 'public'")
+            if [ "$TABLES" -eq 0 ]; then
+              echo "   ❌ No tables in public schema - DB is empty!"
+              echo "   CRITICAL: Tests did NOT use the CI database"
+            else
+              echo "   Found $TABLES tables in public schema"
+            fi
           fi
 
           echo "📊 Checking for duplicate idempotency keys..."
-          if psql -h localhost -U freshplan -d freshplan -c "SELECT 1 FROM information_schema.tables WHERE table_name = 'idempotency_keys'" 2>/dev/null | grep -q 1; then
+          if psql -h localhost -U freshplan -d freshplan -tAc "SELECT to_regclass('public.idempotency_keys') IS NOT NULL" | grep -q 't'; then
             DUPLICATES=$(psql -h localhost -U freshplan -d freshplan -t -c \
               "SELECT COUNT(*) FROM (SELECT key FROM idempotency_keys GROUP BY key HAVING COUNT(*) > 1) AS dups")
             if [ "$DUPLICATES" -gt 0 ]; then
