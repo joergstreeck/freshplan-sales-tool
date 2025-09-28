@@ -541,6 +541,7 @@ public class OpportunityServiceStageTransitionTest {
     customer.setCreatedBy("test-system"); // Set created by
 
     customerRepository.persist(customer);
+    customerRepository.flush(); // Ensure customer is saved before creating opportunities
     return customer;
   }
 
@@ -556,6 +557,7 @@ public class OpportunityServiceStageTransitionTest {
         "Cannot create User directly - use existing test users");
   }
 
+  @Transactional
   Opportunity createTestOpportunity(String name, OpportunityStage stage) {
     // Ensure test data is created if not already
     if (testCustomer == null) {
