@@ -60,11 +60,6 @@ jobs:
         psql -h localhost -U freshplan -d freshplan -v ON_ERROR_STOP=1 -c "CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\";"
         psql -h localhost -U freshplan -d freshplan -v ON_ERROR_STOP=1 -c "CREATE EXTENSION IF NOT EXISTS pgcrypto;"
         echo "Database schema reset successfully"
-    
-    - name: Skip explicit migrations - tests will handle it
-      run: |
-        echo "Skipping explicit migration step - Tests will run Flyway with clean-at-start=true"
-        echo "This avoids duplicate migration issues"
 
     - name: Run core tests with CI profile
       working-directory: backend

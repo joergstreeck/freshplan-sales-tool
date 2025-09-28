@@ -107,5 +107,15 @@ services:
 4. **Einfache Debug-Workflows helfen bei Diagnose**
 5. **GitHub Actions Silent Failures sind tückisch**
 
+### 8. Zurück zu funktionierendem Ansatz
+**Problem:** "relation/column already exists" Fehler
+**Analyse:**
+- Flyway clean-at-start=true verursacht Doppel-Migrations
+- Database Drop/Create funktioniert nicht (Active Connections)
+**Lösung:**
+- clean-at-start=false
+- Schema-Reset mit DROP SCHEMA CASCADE
+- V10005 seed migration deaktiviert (.disabled)
+
 ---
-Stand: 28.09.2025 17:15 - Warten auf CI-Run mit POSTGRES_DB: freshplan
+Stand: 28.09.2025 18:00 - Schema-Reset Ansatz mit deaktivierten Seeds
