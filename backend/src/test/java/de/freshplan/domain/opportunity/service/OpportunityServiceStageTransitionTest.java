@@ -536,7 +536,7 @@ public class OpportunityServiceStageTransitionTest {
 
     // Override specific fields to maintain test requirements
     customer.setCompanyName(companyName); // Override to use exact name without [TEST-xxx] prefix
-    customer.setCustomerNumber("TEST-" + System.currentTimeMillis()); // Unique customer number
+    customer.setCustomerNumber(de.freshplan.TestIds.uniqueCustomerNumber()); // Unique customer number
     customer.setIsTestData(true); // Mark as test data
     customer.setCreatedBy("test-system"); // Set created by
 
@@ -566,8 +566,8 @@ public class OpportunityServiceStageTransitionTest {
 
       // Always create a fresh customer to ensure it exists in the current transaction
       var customer = customerBuilder.withCompanyName("Test Company " + uniqueSuffix).build();
-      // Customer number must be max 20 chars: "TEST-" (5) + 8 chars = 13 chars total
-      customer.setCustomerNumber("TEST-" + uniqueSuffix.substring(0, 8));
+      // Use TestIds for guaranteed unique customer number
+      customer.setCustomerNumber(de.freshplan.TestIds.uniqueCustomerNumber());
       customer.setIsTestData(true);
       customer.setCreatedBy("test-system");
       customerRepository.persist(customer);

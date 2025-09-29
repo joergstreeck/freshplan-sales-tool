@@ -712,7 +712,7 @@ public class OpportunityResourceIntegrationTest {
 
     // Override to use exact company name without [TEST-xxx] prefix
     customer.setCompanyName(companyName);
-    customer.setCustomerNumber("TEST-" + System.currentTimeMillis()); // Keep unique customer number
+    customer.setCustomerNumber(de.freshplan.TestIds.uniqueCustomerNumber()); // Keep unique customer number
     customer.setIsTestData(true); // Mark as test data
 
     customerRepository.persist(customer);
