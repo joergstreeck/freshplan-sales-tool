@@ -116,12 +116,20 @@ public class FollowUpAutomationService {
     LocalDateTime t3Threshold = now.minus(T3_DAYS, ChronoUnit.DAYS);
 
     // Finde Leads die für T+3 Follow-up qualifiziert sind
-    List<Lead> eligibleLeads = findLeadsForFollowUp(t3Threshold, T3_DAYS);
-    LOG.infof("DEBUG: Found %d eligible leads for T+3 follow-up", eligibleLeads.size());
-    for (Lead l : eligibleLeads) {
-      LOG.infof("DEBUG: Eligible lead ID=%d, status=%s, registeredAt=%s, t3Sent=%s",
-                l.id, l.status, l.registeredAt, l.t3FollowupSent);
-    }
+    List<Lead> eligibleLeads = em.createQuery(
+        """
+        SELECT l FROM Lead l
+        WHERE l.status = 'ACTIVE'
+        AND l.registeredAt <= :threshold
+        AND l.clockStoppedAt IS NULL
+        AND l.t3FollowupSent = false
+        ORDER BY l.registeredAt ASC
+        """, Lead.class)
+        .setParameter("threshold", t3Threshold)
+        .setMaxResults(batchSize)
+        .getResultList();
+
+    LOG.infof("DEBUG: Found %d eligible leads for T+3 follow-up (threshold: %s)", eligibleLeads.size(), t3Threshold);
 
     int processed = 0;
     for (Lead lead : eligibleLeads) {
@@ -205,8 +213,23 @@ public class FollowUpAutomationService {
   private int processT7FollowUps(LocalDateTime now) {
     LocalDateTime t7Threshold = now.minus(T7_DAYS, ChronoUnit.DAYS);
 
-    // Finde Leads die für T+7 Follow-up qualifiziert sind
-    List<Lead> eligibleLeads = findLeadsForFollowUp(t7Threshold, T7_DAYS);
+    // Finde Leads die für T+7 Follow-up qualifiziert sind (T+3 muss bereits gesendet sein!)
+    // Kann nicht die generische findLeadsForFollowUp verwenden, da T+7 spezielle Bedingungen hat
+    List<Lead> eligibleLeads = em.createQuery(
+        """
+        SELECT l FROM Lead l
+        WHERE l.status = 'ACTIVE'
+        AND l.registeredAt <= :threshold
+        AND l.clockStoppedAt IS NULL
+        AND l.t3FollowupSent = true
+        AND l.t7FollowupSent = false
+        ORDER BY l.registeredAt ASC
+        """, Lead.class)
+        .setParameter("threshold", t7Threshold)
+        .setMaxResults(batchSize)
+        .getResultList();
+
+    LOG.infof("DEBUG: Found %d leads eligible for T+7 follow-up (threshold: %s)", eligibleLeads.size(), t7Threshold);
 
     int processed = 0;
     for (Lead lead : eligibleLeads) {
@@ -249,6 +272,7 @@ public class FollowUpAutomationService {
         // Erstelle personalisierte Bulk-Order-Campaign
         CampaignTemplate template =
             CampaignTemplate.findActiveByType(CampaignTemplate.TemplateType.FOLLOW_UP);
+        LOG.infof("DEBUG: Found template for T+7: %s", template != null ? template.name : "NULL");
 
         if (template == null) {
           LOG.warn("No active FOLLOW_UP template found, reverting T+7 flag");
@@ -275,6 +299,11 @@ public class FollowUpAutomationService {
         boolean sent = emailService.sendCampaignEmail(lead, template, templateData);
 
         if (sent) {
+          // Update lead status to REMINDER after T+7
+          lead.status = LeadStatus.REMINDER;
+          lead.reminderSentAt = now;
+          em.merge(lead);
+
           // Erstelle Activity für Tracking
           createFollowUpActivity(
               lead,
@@ -333,6 +362,12 @@ public class FollowUpAutomationService {
 
   /** Prüft ob Lead kürzliche meaningful Aktivität hatte */
   private boolean hasRecentMeaningfulActivity(Lead lead, int daysBack) {
+    // TEMPORARY: LeadActivity table does not exist yet
+    // Return false to always send follow-ups until activity tracking is implemented
+    // TODO: Re-enable when Sprint 2.x implements activity tracking
+    return false;  // Always send follow-ups for now
+
+    /* The code below will be re-enabled when LeadActivity table is created:
     LocalDateTime since = LocalDateTime.now(clock).minus(daysBack, ChronoUnit.DAYS);
 
     String jpql =
@@ -351,10 +386,17 @@ public class FollowUpAutomationService {
             .getSingleResult();
 
     return count > 0;
+    */
   }
 
   /** Erstellt Follow-up Activity für Tracking */
   private void createFollowUpActivity(Lead lead, String activityCode, String description) {
+    // TEMPORARY: LeadActivity table does not exist yet
+    // This method will create activities when the table is available
+    // TODO: Re-enable when Sprint 2.x implements activity tracking
+    LOG.debugf("Would create activity for lead %s: %s - %s", lead.id, activityCode, description);
+
+    /* The code below will be re-enabled when LeadActivity table is created:
     LeadActivity activity = new LeadActivity();
     activity.lead = lead;
     activity.setType(ActivityType.NOTE); // Follow-ups als NOTE tracken
@@ -364,6 +406,7 @@ public class FollowUpAutomationService {
     activity.metadata.put("followup_type", activityCode);
     activity.metadata.put("automated", "true");
     activity.persist();
+    */
   }
 
   /** Baut Template-Daten für Personalisierung */
