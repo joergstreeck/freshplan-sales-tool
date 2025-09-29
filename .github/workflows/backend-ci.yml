@@ -53,14 +53,16 @@ jobs:
           rm -rf ~/.m2/repository/io/quarkus/quarkus-test-common
           echo "✅ Maven cache cleaned"
 
-      - name: Pre-download Critical Dependencies
+      - name: Build Project without Tests
         working-directory: backend
-        timeout-minutes: 5  # Prevent hang on dependency download
+        timeout-minutes: 5  # Prevent hang on build
         run: |
-          echo "📦 Pre-downloading critical dependencies to avoid corruption..."
-          # Use timeout command to prevent infinite hang
-          timeout 300 ./mvnw -B dependency:resolve -DskipTests=true || echo "⚠️ Dependency download timed out or failed, continuing anyway"
-          echo "✅ Dependencies step completed"
+          echo "🏗️ Building project with DevServices disabled..."
+          ./mvnw -B clean compile \
+            -Dquarkus.devservices.enabled=false \
+            -Dquarkus.datasource.devservices.enabled=false \
+            -DskipTests=true
+          echo "✅ Build completed"
 
       - name: Wait for PostgreSQL to be ready
         run: |
@@ -127,13 +129,16 @@ jobs:
         working-directory: backend
         timeout-minutes: 20  # Prevent test hang
         run: |
-          # Using CI profile - all DB config in application-ci.properties
+          # Using CI profile with DevServices disabled at build time
           ./mvnw -B clean test \
             -Dtest="A00_EnvDiagTest,*Test" \
             -DexcludedGroups="integration,slow" \
             -DfailIfNoTests=false \
             -Dquarkus.profile=ci \
+            -Dquarkus.devservices.enabled=false \
+            -Dquarkus.datasource.devservices.enabled=false \
             -Dquarkus.test.hang-detection-timeout=60s \
+            -Dquarkus.test.continuous-testing=disabled \
             -Dtest.run.id=${{ github.run_id }}
           
       - name: Upload Test Results
