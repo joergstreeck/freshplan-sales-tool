@@ -41,6 +41,7 @@ class A00_EnvDiagTest {
     checkDatabaseGeneration(config);
 
     // 2) DB FINGERPRINT + STARTZUSTAND
+    logEffectiveJdbcUrl(); // Log the actual JDBC URL first
     try (var connection = dataSource.getConnection();
         var statement = connection.createStatement()) {
 
@@ -100,6 +101,23 @@ class A00_EnvDiagTest {
     System.out.printf(
         "DIAG[CFG] hibernate-orm.database.generation=%s (source=%s)%n",
         dbGen.getValue(), dbGen.getConfigSourceName());
+  }
+
+  private void logEffectiveJdbcUrl() {
+    try {
+      // Log the actual JDBC URL being used
+      String jdbcUrl = dataSource.getConfiguration().connectionPoolConfiguration()
+          .connectionFactoryConfiguration().jdbcUrl();
+      System.out.println("DIAG[DB] Effective JDBC URL: " + jdbcUrl);
+
+      // Verify it's the expected database
+      if (!jdbcUrl.contains("/freshplan")) {
+        problems.add("DIAG[DB-URL] JDBC URL does not contain /freshplan: " + jdbcUrl +
+                    "\n    FIX: Check application-ci.properties and ensure DevServices is disabled");
+      }
+    } catch (Exception e) {
+      System.out.println("DIAG[DB] Could not determine JDBC URL: " + e.getMessage());
+    }
   }
 
   private void logDatabaseFingerprint(Statement statement) throws SQLException {

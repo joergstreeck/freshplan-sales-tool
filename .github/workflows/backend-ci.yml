@@ -165,11 +165,11 @@ jobs:
           echo "📊 Checking for duplicate idempotency keys..."
           if psql -h localhost -U freshplan -d freshplan -tAc "SELECT to_regclass('public.idempotency_keys') IS NOT NULL" | grep -q 't'; then
             DUPLICATES=$(psql -h localhost -U freshplan -d freshplan -t -c \
-              "SELECT COUNT(*) FROM (SELECT key FROM idempotency_keys GROUP BY key HAVING COUNT(*) > 1) AS dups")
+              "SELECT COUNT(*) FROM (SELECT idempotency_key FROM idempotency_keys GROUP BY idempotency_key HAVING COUNT(*) > 1) AS dups")
             if [ "$DUPLICATES" -gt 0 ]; then
               echo "❌ Found $DUPLICATES duplicate idempotency keys:"
               psql -h localhost -U freshplan -d freshplan -c \
-                "SELECT key, COUNT(*) FROM idempotency_keys GROUP BY key HAVING COUNT(*) > 1"
+                "SELECT idempotency_key, COUNT(*) FROM idempotency_keys GROUP BY idempotency_key HAVING COUNT(*) > 1"
             else
               echo "✅ No duplicate idempotency keys found"
             fi

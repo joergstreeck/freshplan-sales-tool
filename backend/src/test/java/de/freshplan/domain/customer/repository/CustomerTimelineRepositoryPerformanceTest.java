@@ -54,7 +54,7 @@ class CustomerTimelineRepositoryPerformanceTest extends BaseIntegrationTest {
             .withIndustry(Industry.SONSTIGE)
             .build();
     // Override auto-generated values
-    customer.setCustomerNumber("PERF-TEST-001");
+    customer.setCustomerNumber(de.freshplan.TestIds.uniqueCustomerNumber());
     customer.setCompanyName("Performance Test Company"); // Remove [TEST-xxx] prefix
     customerRepository.persist(customer);
     testCustomerId = customer.getId();

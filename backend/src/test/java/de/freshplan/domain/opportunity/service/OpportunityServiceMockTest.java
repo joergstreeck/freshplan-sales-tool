@@ -81,7 +81,7 @@ public class OpportunityServiceMockTest {
     testCustomer = customerBuilder.withCompanyName("[TEST] Test Company GmbH").build();
     testCustomer.setId(customerId);
     testCustomer.setCompanyName("[TEST] Test Company GmbH"); // Keep [TEST] prefix
-    testCustomer.setCustomerNumber("TEST-001");
+    testCustomer.setCustomerNumber(de.freshplan.TestIds.uniqueCustomerNumber());
     testCustomer.setIsTestData(true); // Mark as test data
 
     // Create test user (mocked)

@@ -53,7 +53,7 @@ class ContactInteractionServiceIT {
     // Override specific fields to maintain test requirements
     testCustomer.setCompanyName(
         "Test Company GmbH"); // Override to use exact name without [TEST-xxx] prefix
-    testCustomer.setCustomerNumber("TEST-001");
+    testCustomer.setCustomerNumber(de.freshplan.TestIds.uniqueCustomerNumber());
     testCustomer.setCreatedBy("test-user");
     testCustomer.setUpdatedBy("test-user");
     // Set Sprint 2 fields to avoid NOT NULL constraint violations
