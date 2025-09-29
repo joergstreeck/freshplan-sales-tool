@@ -92,19 +92,26 @@ jobs:
           # INFO: Flyway will run during test execution
           echo "📋 Flyway migrations will be executed by tests"
           
+      - name: Sanity Check - DB Connection Verification
+        env:
+          PGPASSWORD: freshplan
+        run: |
+          echo "=== Verifying DB Connection ==="
+          psql -h localhost -U freshplan -d freshplan -c "SELECT current_user, current_database();" || exit 1
+          echo "✅ Connected as expected: freshplan@freshplan"
+
+          # Verify schema exists
+          psql -h localhost -U freshplan -d freshplan -c "SELECT COUNT(*) FROM information_schema.schemata WHERE schema_name = 'public';"
+
       - name: Core Tests (PR Pipeline - Ein Maven-Run)
         working-directory: backend
         run: |
+          # Using CI profile - all DB config in application-ci.properties
           ./mvnw -B clean test \
             -Dtest="A00_EnvDiagTest,*Test" \
             -DexcludedGroups="integration,slow" \
             -DfailIfNoTests=false \
             -Dquarkus.profile=ci \
-            -Dquarkus.datasource.jdbc.url=jdbc:postgresql://localhost:5432/test_db \
-            -Dquarkus.datasource.username=postgres \
-            -Dquarkus.datasource.password=postgres \
-            -Dquarkus.flyway.migrate-at-start=true \
-            -Dquarkus.flyway.locations=classpath:db/migration \
             -Dtest.run.id=${{ github.run_id }}
           
       - name: Upload Test Results
