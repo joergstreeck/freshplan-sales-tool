@@ -15,6 +15,7 @@ jobs:
   test:
     name: Backend Tests
     runs-on: ubuntu-latest
+    timeout-minutes: 30  # Kill job after 30 minutes to prevent infinite hangs
     
     services:
       postgres:
@@ -54,10 +55,12 @@ jobs:
 
       - name: Pre-download Critical Dependencies
         working-directory: backend
+        timeout-minutes: 5  # Prevent hang on dependency download
         run: |
           echo "📦 Pre-downloading critical dependencies to avoid corruption..."
-          ./mvnw -B dependency:go-offline -DskipTests=true || true
-          echo "✅ Dependencies downloaded"
+          # Use timeout command to prevent infinite hang
+          timeout 300 ./mvnw -B dependency:resolve -DskipTests=true || echo "⚠️ Dependency download timed out or failed, continuing anyway"
+          echo "✅ Dependencies step completed"
 
       - name: Wait for PostgreSQL to be ready
         run: |
@@ -122,6 +125,7 @@ jobs:
 
       - name: Core Tests (PR Pipeline - Ein Maven-Run)
         working-directory: backend
+        timeout-minutes: 20  # Prevent test hang
         run: |
           # Using CI profile - all DB config in application-ci.properties
           ./mvnw -B clean test \
@@ -129,6 +133,7 @@ jobs:
             -DexcludedGroups="integration,slow" \
             -DfailIfNoTests=false \
             -Dquarkus.profile=ci \
+            -Dquarkus.test.hang-detection-timeout=60s \
             -Dtest.run.id=${{ github.run_id }}
           
       - name: Upload Test Results
