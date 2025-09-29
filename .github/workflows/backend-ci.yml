@@ -41,7 +41,24 @@ jobs:
           distribution: temurin
           java-version: 17
           cache: maven
-          
+
+      - name: Clean Corrupted Maven Dependencies
+        run: |
+          echo "🧹 Cleaning potentially corrupted Maven dependencies..."
+          # Remove specific corrupted JARs that cause CI failures
+          rm -rf ~/.m2/repository/org/jboss/threads/jboss-threads/3.8.0.Final
+          # Also clean other common problem JARs
+          rm -rf ~/.m2/repository/io/quarkus/quarkus-junit5
+          rm -rf ~/.m2/repository/io/quarkus/quarkus-test-common
+          echo "✅ Maven cache cleaned"
+
+      - name: Pre-download Critical Dependencies
+        working-directory: backend
+        run: |
+          echo "📦 Pre-downloading critical dependencies to avoid corruption..."
+          ./mvnw -B dependency:go-offline -DskipTests=true || true
+          echo "✅ Dependencies downloaded"
+
       - name: Wait for PostgreSQL to be ready
         run: |
           for i in {1..30}; do
