@@ -12,6 +12,7 @@ import jakarta.inject.Inject;
 import java.sql.Connection;
 import java.sql.Statement;
 import javax.sql.DataSource;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.context.ManagedExecutor;
 
 /**
@@ -34,10 +35,17 @@ public class CrossModuleEventListener {
 
   @Inject ManagedExecutor managedExecutor;
 
+  @ConfigProperty(name = "freshplan.modules.leads.events.enabled", defaultValue = "true")
+  boolean eventsEnabled;
+
   private volatile boolean listening = false;
 
   /** Starts listening to PostgreSQL notifications on application startup. */
   void onStart(@Observes StartupEvent ev) {
+    if (!eventsEnabled) {
+      Log.info("CrossModuleEventListener disabled by configuration");
+      return;
+    }
     startListening();
   }
 
