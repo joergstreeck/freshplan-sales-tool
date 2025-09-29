@@ -13,11 +13,9 @@ import de.freshplan.domain.opportunity.service.dto.UpdateOpportunityRequest;
 import de.freshplan.domain.opportunity.service.exception.OpportunityNotFoundException;
 import de.freshplan.test.builders.CustomerBuilder;
 import de.freshplan.test.builders.OpportunityBuilder;
-import io.quarkus.arc.Unremovable;
 import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.security.TestSecurity;
-import io.quarkus.test.vertx.RunOnVertxContext;
 import jakarta.inject.Inject;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -222,7 +220,6 @@ class OpportunityServiceIntegrationTest {
 
   @Test
   @TestTransaction
-  @RunOnVertxContext  // Activates RequestScoped context
   @DisplayName("Should change opportunity stage and track activity")
   void changeStage_withValidTransition_shouldUpdateStageAndTrackActivity() {
     // Given - Create opportunity in NEW_LEAD stage
