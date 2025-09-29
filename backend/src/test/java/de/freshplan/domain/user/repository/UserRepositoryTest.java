@@ -27,7 +27,6 @@ import org.junit.jupiter.api.Test;
  * @since 2.0.0
  */
 @QuarkusTest
-@TestTransaction
 @Tag("core")
 @TestSecurity(
     user = "testuser",
@@ -39,19 +38,21 @@ class UserRepositoryTest {
   @Inject EntityManager entityManager;
 
   @BeforeEach
+  @Transactional
   void setUp() {
-    // Clear any existing data in correct order (children first!)
+    // Clear any existing test data in correct order (children first!)
     // Delete opportunity_activities first (child table)
     entityManager.createQuery("DELETE FROM OpportunityActivity").executeUpdate();
     // Then delete opportunities (parent table)
     opportunityRepository.deleteAll();
     opportunityRepository.flush();
-    // Finally delete users
-    userRepository.deleteAll();
-    userRepository.flush();
+    // Finally delete ALL users to ensure clean state
+    entityManager.createQuery("DELETE FROM User").executeUpdate();
+    entityManager.flush();
   }
 
   @Test
+  @Transactional
   void testFindByUsername_ExistingUser_ShouldReturn() {
     // Given
     User user = createAndPersistUser("john.doe", "John", "Doe", "john.doe@freshplan.de");
