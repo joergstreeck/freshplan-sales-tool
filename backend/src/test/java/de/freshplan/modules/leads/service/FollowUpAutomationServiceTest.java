@@ -309,6 +309,7 @@ class FollowUpAutomationServiceTest {
   }
 
   @Test
+  @Transactional
   void testLeadStatusUpdateAfterT7() {
     // Given: Lead ohne Response nach T+7
     TestTx.committed(() -> {

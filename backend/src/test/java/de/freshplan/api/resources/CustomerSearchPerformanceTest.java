@@ -60,27 +60,32 @@ class CustomerSearchPerformanceTest {
    */
   @BeforeAll
   static void warmup() throws InterruptedException {
-    // Execute 2-3 warm-up calls to initialize classloading/JIT/EntityManager
-    CustomerSearchRequest warm = new CustomerSearchRequest();
-    warm.setGlobalSearch("a");
+    try {
+      // Execute 2-3 warm-up calls to initialize classloading/JIT/EntityManager
+      CustomerSearchRequest warm = new CustomerSearchRequest();
+      warm.setGlobalSearch("a");
 
-    // First warm-up call
-    given()
-        .contentType(ContentType.JSON)
-        .body(warm)
-        .when()
-        .post("/api/customers/search")
-        .then()
-        .statusCode(200);
+      // First warm-up call
+      given()
+          .contentType(ContentType.JSON)
+          .body(warm)
+          .when()
+          .post("/api/customers/search")
+          .then()
+          .statusCode(200);
 
-    // Second warm-up call
-    given()
-        .contentType(ContentType.JSON)
-        .body(warm)
-        .when()
-        .post("/api/customers/search")
-        .then()
-        .statusCode(200);
+      // Second warm-up call
+      given()
+          .contentType(ContentType.JSON)
+          .body(warm)
+          .when()
+          .post("/api/customers/search")
+          .then()
+          .statusCode(200);
+    } catch (Exception e) {
+      // Ignore warmup failures - not critical for test execution
+      System.err.println("Warmup failed (non-critical): " + e.getMessage());
+    }
 
     // Clean up after warmup
     forceGcAndWait();

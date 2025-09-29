@@ -55,14 +55,15 @@ class UserRepositoryTest {
   void testFindByUsername_ExistingUser_ShouldReturn() {
     // Given
     User user = createAndPersistUser("john.doe", "John", "Doe", "john.doe@freshplan.de");
+    String actualUsername = user.getUsername(); // Use the actual username with suffix
 
     // When
-    Optional<User> found = userRepository.findByUsername("john.doe");
+    Optional<User> found = userRepository.findByUsername(actualUsername);
 
     // Then
     assertThat(found).isPresent();
-    assertThat(found.get().getUsername()).isEqualTo("john.doe");
-    assertThat(found.get().getEmail()).isEqualTo("john.doe@freshplan.de");
+    assertThat(found.get().getUsername()).isEqualTo(actualUsername);
+    assertThat(found.get().getEmail()).isEqualTo(user.getEmail()); // Use actual email with suffix
   }
 
   @Test
@@ -80,13 +81,14 @@ class UserRepositoryTest {
   void testFindByEmail_ExistingUser_ShouldReturn() {
     // Given
     User user = createAndPersistUser("john.doe", "John", "Doe", "john.doe@freshplan.de");
+    String actualEmail = user.getEmail(); // Use the actual email with suffix
 
     // When
-    Optional<User> found = userRepository.findByEmail("john.doe@freshplan.de");
+    Optional<User> found = userRepository.findByEmail(actualEmail);
 
     // Then
     assertThat(found).isPresent();
-    assertThat(found.get().getUsername()).isEqualTo("john.doe");
+    assertThat(found.get().getUsername()).isEqualTo(user.getUsername()); // Use actual username with suffix
   }
 
   @Test
@@ -103,10 +105,11 @@ class UserRepositoryTest {
   @Transactional
   void testExistsByUsername_ExistingUser_ShouldReturnTrue() {
     // Given
-    createAndPersistUser("john.doe", "John", "Doe", "john.doe@freshplan.de");
+    User user = createAndPersistUser("john.doe", "John", "Doe", "john.doe@freshplan.de");
+    String actualUsername = user.getUsername(); // Use the actual username with suffix
 
     // When
-    boolean exists = userRepository.existsByUsername("john.doe");
+    boolean exists = userRepository.existsByUsername(actualUsername);
 
     // Then
     assertThat(exists).isTrue();
@@ -126,10 +129,11 @@ class UserRepositoryTest {
   @Transactional
   void testExistsByEmail_ExistingUser_ShouldReturnTrue() {
     // Given
-    createAndPersistUser("john.doe", "John", "Doe", "john.doe@freshplan.de");
+    User user = createAndPersistUser("john.doe", "John", "Doe", "john.doe@freshplan.de");
+    String actualEmail = user.getEmail(); // Use the actual email with suffix
 
     // When
-    boolean exists = userRepository.existsByEmail("john.doe@freshplan.de");
+    boolean exists = userRepository.existsByEmail(actualEmail);
 
     // Then
     assertThat(exists).isTrue();
@@ -152,9 +156,10 @@ class UserRepositoryTest {
     User firstUser = createAndPersistUser("john.doe", "John", "Doe", "john.doe@freshplan.de");
     User anotherUser =
         createAndPersistUser("jane.smith", "Jane", "Smith", "jane.smith@freshplan.de");
+    String firstUserUsername = firstUser.getUsername(); // Use the actual username with suffix
 
     // When
-    boolean exists = userRepository.existsByUsernameAndIdNot("john.doe", anotherUser.getId());
+    boolean exists = userRepository.existsByUsernameAndIdNot(firstUserUsername, anotherUser.getId());
 
     // Then
     assertThat(exists).isTrue();
@@ -165,9 +170,10 @@ class UserRepositoryTest {
   void testExistsByUsernameAndIdNot_SameUser_ShouldReturnFalse() {
     // Given
     User user = createAndPersistUser("john.doe", "John", "Doe", "john.doe@freshplan.de");
+    String actualUsername = user.getUsername(); // Use the actual username with suffix
 
     // When
-    boolean exists = userRepository.existsByUsernameAndIdNot("john.doe", user.getId());
+    boolean exists = userRepository.existsByUsernameAndIdNot(actualUsername, user.getId());
 
     // Then
     assertThat(exists).isFalse();
@@ -180,10 +186,11 @@ class UserRepositoryTest {
     User firstUser = createAndPersistUser("john.doe", "John", "Doe", "john.doe@freshplan.de");
     User anotherUser =
         createAndPersistUser("jane.smith", "Jane", "Smith", "jane.smith@freshplan.de");
+    String firstUserEmail = firstUser.getEmail(); // Use the actual email with suffix
 
     // When
     boolean exists =
-        userRepository.existsByEmailAndIdNot("john.doe@freshplan.de", anotherUser.getId());
+        userRepository.existsByEmailAndIdNot(firstUserEmail, anotherUser.getId());
 
     // Then
     assertThat(exists).isTrue();
@@ -194,9 +201,10 @@ class UserRepositoryTest {
   void testExistsByEmailAndIdNot_SameUser_ShouldReturnFalse() {
     // Given
     User user = createAndPersistUser("john.doe", "John", "Doe", "john.doe@freshplan.de");
+    String actualEmail = user.getEmail(); // Use the actual email with suffix
 
     // When
-    boolean exists = userRepository.existsByEmailAndIdNot("john.doe@freshplan.de", user.getId());
+    boolean exists = userRepository.existsByEmailAndIdNot(actualEmail, user.getId());
 
     // Then
     assertThat(exists).isFalse();
@@ -225,7 +233,7 @@ class UserRepositoryTest {
     assertThat(activeUsers).hasSize(2); // john.doe + enabled.user
     assertThat(activeUsers)
         .extracting(User::getUsername)
-        .containsExactlyInAnyOrder("john.doe", "enabled.user");
+        .containsExactlyInAnyOrder(enabledUser1.getUsername(), enabledUser2.getUsername());
   }
 
   @Test

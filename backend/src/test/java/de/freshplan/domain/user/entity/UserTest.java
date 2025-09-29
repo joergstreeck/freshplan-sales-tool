@@ -30,11 +30,12 @@ class UserTest {
             .withEmail("john.doe@freshplan.de")
             .build();
 
-    // Then
-    assertThat(user.getUsername()).isEqualTo("john.doe");
+    // Then - Factory adds suffix to username and email
+    assertThat(user.getUsername()).startsWith("john.doe");
     assertThat(user.getFirstName()).isEqualTo("John");
     assertThat(user.getLastName()).isEqualTo("Doe");
-    assertThat(user.getEmail()).isEqualTo("john.doe@freshplan.de");
+    assertThat(user.getEmail()).startsWith("john.doe");
+    assertThat(user.getEmail()).contains("@freshplan.de");
     assertThat(user.isEnabled()).isTrue();
   }
 
@@ -106,15 +107,16 @@ class UserTest {
             .asDisabled()
             .build();
 
-    // Then
+    // Then - Factory adds suffix to username
     assertThat(user).isNotNull();
-    assertThat(user.getUsername()).isEqualTo("empty");
+    assertThat(user.getUsername()).startsWith("empty");
     assertThat(user.isEnabled()).isFalse();
   }
 
   // Helper methods
 
   private User createTestUser() {
+    // Note: Factory adds suffixes to username and email for uniqueness
     return UserTestDataFactory.builder()
         .withUsername("john.doe")
         .withFirstName("John")
