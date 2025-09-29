@@ -38,14 +38,27 @@ public class CrossModuleEventListener {
   @ConfigProperty(name = "freshplan.modules.leads.events.enabled", defaultValue = "true")
   boolean eventsEnabled;
 
+  @ConfigProperty(name = "freshplan.modules.cross.events.enabled", defaultValue = "true")
+  boolean crossEventsEnabled;
+
   private volatile boolean listening = false;
 
   /** Starts listening to PostgreSQL notifications on application startup. */
   void onStart(@Observes StartupEvent ev) {
-    if (!eventsEnabled) {
-      Log.info("CrossModuleEventListener disabled by configuration");
+    // Check multiple config flags for better control
+    if (!eventsEnabled || !crossEventsEnabled) {
+      Log.info("CrossModuleEventListener disabled by configuration (eventsEnabled="
+               + eventsEnabled + ", crossEventsEnabled=" + crossEventsEnabled + ")");
       return;
     }
+
+    // Also check for CI/Test environment
+    String profile = System.getProperty("quarkus.profile", "");
+    if ("ci".equals(profile) || "test".equals(profile)) {
+      Log.info("CrossModuleEventListener disabled in " + profile + " profile");
+      return;
+    }
+
     startListening();
   }
 
