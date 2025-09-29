@@ -60,6 +60,10 @@ class UserServiceRolesTest {
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
+
+    // DEFAULT MOCK SETUP - Ensure user is found by default
+    // Individual tests can override this for specific scenarios
+    when(userRepository.findByIdOptional(userId)).thenReturn(Optional.of(testUser));
   }
 
   @Test
@@ -68,7 +72,7 @@ class UserServiceRolesTest {
     UpdateUserRolesRequest request =
         UpdateUserRolesRequest.builder().roles(List.of("admin", "manager")).build();
 
-    when(userRepository.findByIdOptional(userId)).thenReturn(Optional.of(testUser));
+    // User mock already set in @BeforeEach
     when(userMapper.toResponse(testUser))
         .thenReturn(
             UserResponse.builder()
@@ -94,7 +98,7 @@ class UserServiceRolesTest {
     UpdateUserRolesRequest request =
         UpdateUserRolesRequest.builder().roles(List.of("ADMIN", "Manager", "SALES")).build();
 
-    when(userRepository.findByIdOptional(userId)).thenReturn(Optional.of(testUser));
+    // User mock already set in @BeforeEach
     when(userMapper.toResponse(testUser))
         .thenReturn(
             UserResponse.builder()
@@ -117,7 +121,7 @@ class UserServiceRolesTest {
     UpdateUserRolesRequest request =
         UpdateUserRolesRequest.builder().roles(List.of("admin", "invalid_role")).build();
 
-    when(userRepository.findByIdOptional(userId)).thenReturn(Optional.of(testUser));
+    // User mock already set in @BeforeEach
 
     // When & Then
     assertThatThrownBy(() -> userService.updateUserRoles(userId, request))
