@@ -107,18 +107,35 @@ class FollowUpAutomationServiceTest {
   void testT3FollowUpProcessing() {
     // Given: Lead ist 3+ Tage alt ohne Aktivität - committed in separate transaction
     Long leadId = TestTx.committed(() -> {
-      testLead.registeredAt = LocalDateTime.now().minusDays(3).minusHours(1);
-      testLead.status = LeadStatus.ACTIVE; // Ensure status is ACTIVE
-      testLead.t3FollowupSent = false; // Ensure T+3 hasn't been sent
-      testLead.clockStoppedAt = null; // Clock is not stopped
-      testLead = em.merge(testLead);
-      return testLead.id;
+      // Update the existing lead to be 3+ days old
+      em.createQuery("UPDATE Lead l SET l.registeredAt = :newDate WHERE l.id = :id")
+        .setParameter("newDate", LocalDateTime.now().minusDays(3).minusHours(1))
+        .setParameter("id", testLead.id)
+        .executeUpdate();
+      em.flush();
+
+      // Reload to get the updated version
+      Lead updated = em.find(Lead.class, testLead.id);
+      System.out.println("DEBUG: Updated lead to registeredAt=" + updated.registeredAt);
+      return updated.id;
     });
 
     // Mock email service
     when(emailService.sendCampaignEmail(
             any(Lead.class), any(CampaignTemplate.class), any(Map.class)))
         .thenReturn(true);
+
+    // Debug: Check what leads exist before processing
+    System.out.println("DEBUG: Looking for leads to process T+3...");
+    var allLeads = em.createQuery("SELECT l FROM Lead l", Lead.class).getResultList();
+    System.out.println("DEBUG: Total leads in DB: " + allLeads.size());
+    for (Lead l : allLeads) {
+      System.out.println("DEBUG: Lead ID=" + l.id +
+                        ", status=" + l.status +
+                        ", registeredAt=" + l.registeredAt +
+                        ", t3Sent=" + l.t3FollowupSent +
+                        ", clockStopped=" + l.clockStoppedAt);
+    }
 
     // When: Follow-up Automation läuft
     followUpService.processScheduledFollowUps();

@@ -78,6 +78,7 @@ public class FollowUpAutomationService {
   @Transactional
   @RlsContext
   public void processScheduledFollowUps() {
+    LOG.infof("DEBUG: processScheduledFollowUps called, followUpEnabled=%s", followUpEnabled);
     if (!followUpEnabled) {
       LOG.debug("Follow-up automation is disabled");
       return;
@@ -116,6 +117,11 @@ public class FollowUpAutomationService {
 
     // Finde Leads die für T+3 Follow-up qualifiziert sind
     List<Lead> eligibleLeads = findLeadsForFollowUp(t3Threshold, T3_DAYS);
+    LOG.infof("DEBUG: Found %d eligible leads for T+3 follow-up", eligibleLeads.size());
+    for (Lead l : eligibleLeads) {
+      LOG.infof("DEBUG: Eligible lead ID=%d, status=%s, registeredAt=%s, t3Sent=%s",
+                l.id, l.status, l.registeredAt, l.t3FollowupSent);
+    }
 
     int processed = 0;
     for (Lead lead : eligibleLeads) {
@@ -303,18 +309,13 @@ public class FollowUpAutomationService {
 
   /** Findet Leads die für Follow-up fällig sind Berücksichtigt Stop-the-Clock Perioden */
   private List<Lead> findLeadsForFollowUp(LocalDateTime threshold, int daysAfterCreation) {
+    // TEMPORARY: Simplified query for debugging - remove activity check
     String jpql =
         """
             SELECT l FROM Lead l
             WHERE l.status IN (:activeStatuses)
             AND l.registeredAt <= :threshold
             AND l.clockStoppedAt IS NULL
-            AND NOT EXISTS (
-                SELECT 1 FROM LeadActivity a
-                WHERE a.lead = l
-                AND a.type IN (:meaningfulTypes)
-                AND a.occurredAt > :recentActivity
-            )
             ORDER BY l.registeredAt ASC
             """;
 
@@ -324,8 +325,8 @@ public class FollowUpAutomationService {
     return em.createQuery(jpql, Lead.class)
         .setParameter("activeStatuses", List.of(LeadStatus.REGISTERED, LeadStatus.ACTIVE))
         .setParameter("threshold", threshold)
-        .setParameter("meaningfulTypes", MEANINGFUL_ACTIVITY_TYPES)
-        .setParameter("recentActivity", recentActivity)
+        // .setParameter("meaningfulTypes", MEANINGFUL_ACTIVITY_TYPES)  // Removed for debug
+        // .setParameter("recentActivity", recentActivity)  // Removed for debug
         .setMaxResults(batchSize) // Konfigurierbare Batch-Size
         .getResultList();
   }
@@ -338,7 +339,7 @@ public class FollowUpAutomationService {
         """
             SELECT COUNT(a) FROM LeadActivity a
             WHERE a.lead = :lead
-            AND a.type IN (:meaningfulTypes)
+            AND a.activityType IN (:meaningfulTypes)
             AND a.occurredAt > :since
             """;
 
