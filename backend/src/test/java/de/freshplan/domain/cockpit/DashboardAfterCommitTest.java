@@ -7,7 +7,8 @@ import de.freshplan.infrastructure.pg.TestPgNotifySender;
 import de.freshplan.modules.leads.domain.LeadStatus;
 import de.freshplan.modules.leads.events.LeadStatusChangeEvent;
 import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.TestTransaction;import io.vertx.core.json.JsonObject;
+import jakarta.enterprise.context.control.ActivateRequestContext;
+import io.vertx.core.json.JsonObject;
 import jakarta.inject.Inject;
 import jakarta.transaction.UserTransaction;
 import java.util.UUID;
@@ -23,7 +24,7 @@ import org.junit.jupiter.api.Test;
  * <p>Sprint 2.1.1 P0 HOTFIX - Ghost-Event Prevention
  */
 @QuarkusTest
-@TestTransaction  // Sprint 2.1.4: Fix ContextNotActiveException
+@ActivateRequestContext  // Sprint 2.1.4: Fix transaction collision with UserTransaction
 class DashboardAfterCommitTest {
 
   @Inject DashboardEventPublisher publisher;
