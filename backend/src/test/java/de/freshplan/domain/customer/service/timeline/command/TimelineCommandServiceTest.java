@@ -19,16 +19,18 @@ import org.junit.jupiter.api.Test;
 /**
  * Integration tests for TimelineCommandService.
  *
- * <p>Converted from Mockito unit tests to @QuarkusTest integration tests in Phase 4A.
- * Uses self-managed test data (entity.persist()) instead of mocks.
+ * <p>Converted from Mockito unit tests to @QuarkusTest integration tests in Phase 4A. Uses
+ * self-managed test data (entity.persist()) instead of mocks.
  *
  * <p>Verifies that all command operations work correctly with real database interactions.
+ *
+ * <p>IMPORTANT: @TestTransaction is applied per-method (not class-level) to ensure proper test
+ * isolation and rollback after each test.
  *
  * @author FreshPlan Team
  * @since 2.0.0
  */
 @QuarkusTest
-@TestTransaction
 @Tag("core")
 class TimelineCommandServiceTest {
 
@@ -37,8 +39,8 @@ class TimelineCommandServiceTest {
   @Inject CustomerTimelineRepository timelineRepository;
 
   /**
-   * Creates and persists a test customer within the test transaction.
-   * Must be called at the beginning of each test method.
+   * Creates and persists a test customer within the test transaction. Must be called at the
+   * beginning of each test method.
    */
   private Customer createAndPersistTestCustomer() {
     Customer testCustomer =
@@ -50,6 +52,7 @@ class TimelineCommandServiceTest {
     return testCustomer;
   }
 
+  @TestTransaction
   @Test
   void testCreateEvent_withValidRequest_shouldCreateTimelineEvent() {
     // Given - Create test customer within test transaction
@@ -93,6 +96,7 @@ class TimelineCommandServiceTest {
     assertEquals("important,follow-up", persistedEvent.getTags());
   }
 
+  @TestTransaction
   @Test
   void testCreateEvent_withCustomerNotFound_shouldThrowException() {
     // Given
@@ -111,6 +115,7 @@ class TimelineCommandServiceTest {
         });
   }
 
+  @TestTransaction
   @Test
   void testCreateNote_shouldCreateNoteEvent() {
     // Given - Create test customer within test transaction
@@ -140,6 +145,7 @@ class TimelineCommandServiceTest {
     assertEquals("testuser", persistedEvent.getPerformedBy());
   }
 
+  @TestTransaction
   @Test
   void testCreateCommunication_shouldCreateCommunicationEvent() {
     // Given - Create test customer within test transaction
@@ -174,8 +180,10 @@ class TimelineCommandServiceTest {
     assertTrue(persistedEvent.getRequiresFollowUp());
   }
 
+  @TestTransaction
   @Test
-  @org.junit.jupiter.api.Disabled("FIXME: Repository.update() in @TestTransaction doesn't reflect changes - needs investigation")
+  @org.junit.jupiter.api.Disabled(
+      "FIXME: Repository.update() in @TestTransaction doesn't reflect changes - needs investigation")
   void testCompleteFollowUp_shouldUpdateFollowUpStatus() {
     // Given - Create test customer within test transaction
     Customer testCustomer = createAndPersistTestCustomer();
@@ -200,12 +208,12 @@ class TimelineCommandServiceTest {
 
     // Then - Verify follow-up was completed
     // Note: Repository.update() commits directly, reload to see changes
-    CustomerTimelineEvent updatedEvent =
-        timelineRepository.find("id = ?1", eventId).firstResult();
+    CustomerTimelineEvent updatedEvent = timelineRepository.find("id = ?1", eventId).firstResult();
     assertNotNull(updatedEvent);
     assertTrue(updatedEvent.getFollowUpCompleted(), "Follow-up should be marked as completed");
   }
 
+  @TestTransaction
   @Test
   void testUpdateEvent_withValidRequest_shouldUpdateEvent() {
     // Given - Create test customer within test transaction
@@ -237,8 +245,7 @@ class TimelineCommandServiceTest {
     assertEquals("Updated Description", result.getDescription());
 
     // Verify updates were persisted
-    CustomerTimelineEvent updatedEvent =
-        timelineRepository.findByIdOptional(eventId).orElse(null);
+    CustomerTimelineEvent updatedEvent = timelineRepository.findByIdOptional(eventId).orElse(null);
     assertNotNull(updatedEvent);
     assertEquals("Updated Title", updatedEvent.getTitle());
     assertEquals("Updated Description", updatedEvent.getDescription());
@@ -248,6 +255,7 @@ class TimelineCommandServiceTest {
     assertEquals("testuser", updatedEvent.getUpdatedBy());
   }
 
+  @TestTransaction
   @Test
   void testUpdateEvent_withEventNotFound_shouldThrowException() {
     // Given
@@ -267,8 +275,10 @@ class TimelineCommandServiceTest {
     assertTrue(exception.getMessage().contains("Timeline event not found"));
   }
 
+  @TestTransaction
   @Test
-  @org.junit.jupiter.api.Disabled("FIXME: Repository.update() in @TestTransaction doesn't reflect changes - needs investigation")
+  @org.junit.jupiter.api.Disabled(
+      "FIXME: Repository.update() in @TestTransaction doesn't reflect changes - needs investigation")
   void testDeleteEvent_shouldSoftDeleteEvent() {
     // Given - Create test customer within test transaction
     Customer testCustomer = createAndPersistTestCustomer();
@@ -287,14 +297,14 @@ class TimelineCommandServiceTest {
 
     // Then - Verify soft delete
     // Note: Repository.update() commits directly, reload to see changes
-    CustomerTimelineEvent deletedEvent =
-        timelineRepository.find("id = ?1", eventId).firstResult();
+    CustomerTimelineEvent deletedEvent = timelineRepository.find("id = ?1", eventId).firstResult();
     assertNotNull(deletedEvent);
     assertTrue(deletedEvent.getIsDeleted(), "Event should be marked as deleted");
     assertEquals("testuser", deletedEvent.getDeletedBy());
     assertNotNull(deletedEvent.getDeletedAt());
   }
 
+  @TestTransaction
   @Test
   void testCreateSystemEvent_shouldCreateSystemEvent() {
     // Given - Create test customer within test transaction
