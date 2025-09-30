@@ -52,6 +52,9 @@ class TimelineCommandServiceTest {
 
   @BeforeEach
   void setUp() {
+    // Reset all mocks to avoid interference between tests
+    reset(timelineRepository, customerRepository, timelineMapper);
+
     testCustomerId = UUID.randomUUID();
 
     testCustomer =
@@ -96,7 +99,7 @@ class TimelineCommandServiceTest {
     request.setFollowUpDate(LocalDateTime.now().plusDays(7));
     request.setFollowUpNotes("Check customer satisfaction");
 
-    when(customerRepository.findByIdOptional(any(UUID.class))).thenReturn(Optional.of(testCustomer));
+    when(customerRepository.findByIdOptional(testCustomerId)).thenReturn(Optional.of(testCustomer));
     when(timelineMapper.toResponse(any(CustomerTimelineEvent.class))).thenReturn(testResponse);
 
     // When
@@ -151,7 +154,7 @@ class TimelineCommandServiceTest {
     request.setNote("Important customer note");
     request.setPerformedBy("testuser");
 
-    when(customerRepository.findByIdOptional(any(UUID.class))).thenReturn(Optional.of(testCustomer));
+    when(customerRepository.findByIdOptional(testCustomerId)).thenReturn(Optional.of(testCustomer));
     when(timelineMapper.toResponse(any(CustomerTimelineEvent.class))).thenReturn(testResponse);
 
     // When
@@ -187,7 +190,7 @@ class TimelineCommandServiceTest {
     request.setFollowUpDate(LocalDateTime.now().plusDays(3));
     request.setFollowUpNotes("Check response");
 
-    when(customerRepository.findByIdOptional(any(UUID.class))).thenReturn(Optional.of(testCustomer));
+    when(customerRepository.findByIdOptional(testCustomerId)).thenReturn(Optional.of(testCustomer));
     when(timelineMapper.toResponse(any(CustomerTimelineEvent.class))).thenReturn(testResponse);
 
     // When
