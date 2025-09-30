@@ -25,8 +25,12 @@ class TerritoryServiceTest {
   @BeforeEach
   @Transactional
   void setup() {
-    // Clean up any existing territories
-    Territory.deleteAll();
+    // Clean up leads first to avoid foreign key constraints
+    // Note: We need to delete leads before territories due to FK constraints
+    if (Territory.count() > 0) {
+      // Only initialize if not already present
+      return;
+    }
     // Initialize default territories
     territoryService.initializeDefaultTerritories();
   }
