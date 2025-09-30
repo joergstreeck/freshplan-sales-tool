@@ -45,7 +45,6 @@ class SecurityContextProviderTest {
   }
 
   @Nested
-  @TestTransaction  // Sprint 2.1.4: Nested classes need their own transaction context
   @DisplayName("Authentication Tests")
   class AuthenticationTests {
 
@@ -83,7 +82,6 @@ class SecurityContextProviderTest {
   }
 
   @Nested
-  @TestTransaction  // Sprint 2.1.4: Nested classes need their own transaction context
   @DisplayName("Role-Based Access Control Tests")
   class RoleBasedAccessControlTests {
 
@@ -163,7 +161,6 @@ class SecurityContextProviderTest {
   }
 
   @Nested
-  @TestTransaction  // Sprint 2.1.4: Nested classes need their own transaction context
   @DisplayName("User Information Extraction Tests")
   class UserInformationTests {
 
@@ -194,7 +191,6 @@ class SecurityContextProviderTest {
   }
 
   @Nested
-  @TestTransaction  // Sprint 2.1.4: Nested classes need their own transaction context
   @DisplayName("JWT Token Handling Tests")
   class JwtTokenTests {
 
@@ -224,7 +220,6 @@ class SecurityContextProviderTest {
   }
 
   @Nested
-  @TestTransaction  // Sprint 2.1.4: Nested classes need their own transaction context
   @DisplayName("JWT Mock Tests - Advanced Scenarios")
   class JwtMockTests {
 
@@ -416,7 +411,6 @@ class SecurityContextProviderTest {
   }
 
   @Nested
-  @TestTransaction  // Sprint 2.1.4: Nested classes need their own transaction context
   @DisplayName("Authentication Details Tests")
   class AuthenticationDetailsTests {
 
@@ -464,7 +458,6 @@ class SecurityContextProviderTest {
   }
 
   @Nested
-  @TestTransaction  // Sprint 2.1.4: Nested classes need their own transaction context
   @DisplayName("Builder Pattern Tests")
   class BuilderPatternTests {
 
@@ -513,7 +506,6 @@ class SecurityContextProviderTest {
   }
 
   @Nested
-  @TestTransaction  // Sprint 2.1.4: Nested classes need their own transaction context
   @DisplayName("Authentication Details Integration Tests")
   class AuthenticationDetailsIntegrationTests {
 
@@ -592,7 +584,6 @@ class SecurityContextProviderTest {
   }
 
   @Nested
-  @TestTransaction  // Sprint 2.1.4: Nested classes need their own transaction context
   @DisplayName("Edge Cases and Error Handling")
   class EdgeCasesTests {
 
