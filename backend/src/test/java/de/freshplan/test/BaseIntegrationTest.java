@@ -2,8 +2,8 @@ package de.freshplan.test;
 
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Tag;
 
 /**
  * Base class for integration tests that require security to be disabled. This allows testing API

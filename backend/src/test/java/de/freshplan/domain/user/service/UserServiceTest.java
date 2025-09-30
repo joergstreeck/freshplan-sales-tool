@@ -8,8 +8,6 @@ import static org.mockito.Mockito.*;
 
 import de.freshplan.domain.user.entity.User;
 import de.freshplan.domain.user.repository.UserRepository;
-import de.freshplan.domain.user.service.command.UserCommandService;
-import de.freshplan.domain.user.service.query.UserQueryService;
 import de.freshplan.domain.user.service.dto.CreateUserRequest;
 import de.freshplan.domain.user.service.dto.UpdateUserRequest;
 import de.freshplan.domain.user.service.dto.UserResponse;

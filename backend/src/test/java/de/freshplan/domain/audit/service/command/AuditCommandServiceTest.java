@@ -291,11 +291,12 @@ class AuditCommandServiceTest {
         .persist(any(AuditEntry.class));
 
     // When & Then
-    AuditService.AuditException exception = assertThrows(
-        AuditService.AuditException.class,
-        () -> {
-          commandService.logSync(testContext);
-        });
+    AuditService.AuditException exception =
+        assertThrows(
+            AuditService.AuditException.class,
+            () -> {
+              commandService.logSync(testContext);
+            });
 
     // Verify the exception contains expected message
     assertTrue(exception.getMessage().contains("Failed to log audit event"));

@@ -13,12 +13,12 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
-import org.junit.jupiter.api.Disabled;
 
 /**
  * Integration tests for token refresh mechanisms and token lifecycle management. Tests the behavior
@@ -276,11 +276,7 @@ class TokenRefreshIntegrationTest {
     void heavyLoad_shouldNotDegradeAuthPerformance() {
       // Warm-up requests
       for (int i = 0; i < 3; i++) {
-        given()
-            .when()
-            .get("/api/users/me")
-            .then()
-            .statusCode(Response.Status.OK.getStatusCode());
+        given().when().get("/api/users/me").then().statusCode(Response.Status.OK.getStatusCode());
       }
 
       // Now measure under load
@@ -305,8 +301,9 @@ class TokenRefreshIntegrationTest {
 
       assertTrue(
           totalTime < threshold,
-          String.format("20 requests should complete within %dms (CI=%s), took: %dms",
-                        threshold, isCI, totalTime));
+          String.format(
+              "20 requests should complete within %dms (CI=%s), took: %dms",
+              threshold, isCI, totalTime));
     }
   }
 
@@ -378,11 +375,7 @@ class TokenRefreshIntegrationTest {
     @DisplayName("Authentication should not significantly impact response time")
     void authentication_shouldNotImpactResponseTime() {
       // Warm-up request to initialize container/connection pool/caches
-      given()
-          .when()
-          .get("/api/users/me")
-          .then()
-          .statusCode(Response.Status.OK.getStatusCode());
+      given().when().get("/api/users/me").then().statusCode(Response.Status.OK.getStatusCode());
 
       // Now measure the actual performance
       long startTime = System.currentTimeMillis();
@@ -403,8 +396,9 @@ class TokenRefreshIntegrationTest {
 
       assertTrue(
           responseTime < threshold,
-          String.format("Authenticated request should complete within %dms (CI=%s), took: %dms",
-                        threshold, isCI, responseTime));
+          String.format(
+              "Authenticated request should complete within %dms (CI=%s), took: %dms",
+              threshold, isCI, responseTime));
     }
 
     @Test
@@ -435,8 +429,9 @@ class TokenRefreshIntegrationTest {
 
       assertTrue(
           averageTime < threshold,
-          String.format("Average response time should be < %dms (CI=%s), was: %dms",
-                        threshold, isCI, averageTime));
+          String.format(
+              "Average response time should be < %dms (CI=%s), was: %dms",
+              threshold, isCI, averageTime));
     }
   }
 }

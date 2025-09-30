@@ -17,9 +17,9 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Disabled;
 
 /**
  * Integration Test für CQRS-Implementation des OpportunityService

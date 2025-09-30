@@ -47,8 +47,12 @@ public class CrossModuleEventListener {
   void onStart(@Observes StartupEvent ev) {
     // Check multiple config flags for better control
     if (!eventsEnabled || !crossEventsEnabled) {
-      Log.info("CrossModuleEventListener disabled by configuration (eventsEnabled="
-               + eventsEnabled + ", crossEventsEnabled=" + crossEventsEnabled + ")");
+      Log.info(
+          "CrossModuleEventListener disabled by configuration (eventsEnabled="
+              + eventsEnabled
+              + ", crossEventsEnabled="
+              + crossEventsEnabled
+              + ")");
       return;
     }
 

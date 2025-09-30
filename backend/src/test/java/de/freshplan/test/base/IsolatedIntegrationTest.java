@@ -7,8 +7,8 @@ import jakarta.persistence.EntityManager;
 import org.jboss.logging.Logger;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Tag;
 
 /**
  * Basis-Klasse für ALLE Integration Tests mit vollständiger Isolation.

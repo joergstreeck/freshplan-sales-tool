@@ -27,13 +27,13 @@ import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.junit.jupiter.api.Disabled;
 
 /**
  * Umfassende Integration Tests für OpportunityResource - API Functionality
@@ -714,7 +714,8 @@ public class OpportunityResourceIntegrationTest {
 
     // Override to use exact company name without [TEST-xxx] prefix
     customer.setCompanyName(companyName);
-    customer.setCustomerNumber(de.freshplan.TestIds.uniqueCustomerNumber()); // Keep unique customer number
+    customer.setCustomerNumber(
+        de.freshplan.TestIds.uniqueCustomerNumber()); // Keep unique customer number
     customer.setIsTestData(true); // Mark as test data
 
     customerRepository.persist(customer);

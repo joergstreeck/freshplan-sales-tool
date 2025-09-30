@@ -116,20 +116,24 @@ public class FollowUpAutomationService {
     LocalDateTime t3Threshold = now.minus(T3_DAYS, ChronoUnit.DAYS);
 
     // Finde Leads die für T+3 Follow-up qualifiziert sind
-    List<Lead> eligibleLeads = em.createQuery(
-        """
+    List<Lead> eligibleLeads =
+        em.createQuery(
+                """
         SELECT l FROM Lead l
         WHERE l.status = 'ACTIVE'
         AND l.registeredAt <= :threshold
         AND l.clockStoppedAt IS NULL
         AND l.t3FollowupSent = false
         ORDER BY l.registeredAt ASC
-        """, Lead.class)
-        .setParameter("threshold", t3Threshold)
-        .setMaxResults(batchSize)
-        .getResultList();
+        """,
+                Lead.class)
+            .setParameter("threshold", t3Threshold)
+            .setMaxResults(batchSize)
+            .getResultList();
 
-    LOG.infof("DEBUG: Found %d eligible leads for T+3 follow-up (threshold: %s)", eligibleLeads.size(), t3Threshold);
+    LOG.infof(
+        "DEBUG: Found %d eligible leads for T+3 follow-up (threshold: %s)",
+        eligibleLeads.size(), t3Threshold);
 
     int processed = 0;
     for (Lead lead : eligibleLeads) {
@@ -215,8 +219,9 @@ public class FollowUpAutomationService {
 
     // Finde Leads die für T+7 Follow-up qualifiziert sind (T+3 muss bereits gesendet sein!)
     // Kann nicht die generische findLeadsForFollowUp verwenden, da T+7 spezielle Bedingungen hat
-    List<Lead> eligibleLeads = em.createQuery(
-        """
+    List<Lead> eligibleLeads =
+        em.createQuery(
+                """
         SELECT l FROM Lead l
         WHERE l.status = 'ACTIVE'
         AND l.registeredAt <= :threshold
@@ -224,12 +229,15 @@ public class FollowUpAutomationService {
         AND l.t3FollowupSent = true
         AND l.t7FollowupSent = false
         ORDER BY l.registeredAt ASC
-        """, Lead.class)
-        .setParameter("threshold", t7Threshold)
-        .setMaxResults(batchSize)
-        .getResultList();
+        """,
+                Lead.class)
+            .setParameter("threshold", t7Threshold)
+            .setMaxResults(batchSize)
+            .getResultList();
 
-    LOG.infof("DEBUG: Found %d leads eligible for T+7 follow-up (threshold: %s)", eligibleLeads.size(), t7Threshold);
+    LOG.infof(
+        "DEBUG: Found %d leads eligible for T+7 follow-up (threshold: %s)",
+        eligibleLeads.size(), t7Threshold);
 
     int processed = 0;
     for (Lead lead : eligibleLeads) {
@@ -365,7 +373,7 @@ public class FollowUpAutomationService {
     // TEMPORARY: LeadActivity table does not exist yet
     // Return false to always send follow-ups until activity tracking is implemented
     // TODO: Re-enable when Sprint 2.x implements activity tracking
-    return false;  // Always send follow-ups for now
+    return false; // Always send follow-ups for now
 
     /* The code below will be re-enabled when LeadActivity table is created:
     LocalDateTime since = LocalDateTime.now(clock).minus(daysBack, ChronoUnit.DAYS);

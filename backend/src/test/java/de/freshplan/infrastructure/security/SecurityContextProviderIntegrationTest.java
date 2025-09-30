@@ -9,11 +9,11 @@ import jakarta.inject.Inject;
 import java.time.Instant;
 import java.util.Set;
 import java.util.UUID;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Disabled;
 
 /**
  * Integration tests for SecurityContextProvider.AuthenticationDetails. These tests actually call

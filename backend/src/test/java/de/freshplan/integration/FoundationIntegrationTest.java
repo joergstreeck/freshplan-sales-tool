@@ -24,7 +24,9 @@ import org.junit.jupiter.api.TestMethodOrder;
 @Disabled("TEMPORARY: Sprint 2.1.4 CI Performance Fix")
 @TestMethodOrder(OrderAnnotation.class)
 @DisplayName("Foundation Integration Tests")
-@io.quarkus.test.security.TestSecurity(user = "test-user", roles = {"admin"})
+@io.quarkus.test.security.TestSecurity(
+    user = "test-user",
+    roles = {"admin"})
 public class FoundationIntegrationTest {
 
   private static String testETag;
@@ -295,11 +297,7 @@ public class FoundationIntegrationTest {
     }
 
     // 3. Security context available (with @TestSecurity, auth is automatic)
-    given()
-        .when()
-        .get("/api/health/auth")
-        .then()
-        .statusCode(anyOf(is(200), is(404)));
+    given().when().get("/api/health/auth").then().statusCode(anyOf(is(200), is(404)));
 
     // All foundation components validated
     assertTrue(true, "Foundation validation complete");

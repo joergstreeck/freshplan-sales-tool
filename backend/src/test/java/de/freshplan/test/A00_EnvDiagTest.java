@@ -106,14 +106,20 @@ class A00_EnvDiagTest {
   private void logEffectiveJdbcUrl() {
     try {
       // Log the actual JDBC URL being used
-      String jdbcUrl = dataSource.getConfiguration().connectionPoolConfiguration()
-          .connectionFactoryConfiguration().jdbcUrl();
+      String jdbcUrl =
+          dataSource
+              .getConfiguration()
+              .connectionPoolConfiguration()
+              .connectionFactoryConfiguration()
+              .jdbcUrl();
       System.out.println("DIAG[DB] Effective JDBC URL: " + jdbcUrl);
 
       // Verify it's the expected database
       if (!jdbcUrl.contains("/freshplan")) {
-        problems.add("DIAG[DB-URL] JDBC URL does not contain /freshplan: " + jdbcUrl +
-                    "\n    FIX: Check application-ci.properties and ensure DevServices is disabled");
+        problems.add(
+            "DIAG[DB-URL] JDBC URL does not contain /freshplan: "
+                + jdbcUrl
+                + "\n    FIX: Check application-ci.properties and ensure DevServices is disabled");
       }
     } catch (Exception e) {
       System.out.println("DIAG[DB] Could not determine JDBC URL: " + e.getMessage());
@@ -160,7 +166,8 @@ class A00_EnvDiagTest {
     // Log the state but don't fail
     if (customerCount > 0) {
       System.out.printf(
-          "DIAG[DB] Database contains %d customers (OK - other tests may have run)%n", customerCount);
+          "DIAG[DB] Database contains %d customers (OK - other tests may have run)%n",
+          customerCount);
     }
   }
 

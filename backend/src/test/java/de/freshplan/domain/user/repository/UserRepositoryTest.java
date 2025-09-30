@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import de.freshplan.domain.user.entity.User;
 import de.freshplan.test.builders.UserTestDataFactory;
-import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.security.TestSecurity;
 import jakarta.inject.Inject;
@@ -89,7 +88,8 @@ class UserRepositoryTest {
 
     // Then
     assertThat(found).isPresent();
-    assertThat(found.get().getUsername()).isEqualTo(user.getUsername()); // Use actual username with suffix
+    assertThat(found.get().getUsername())
+        .isEqualTo(user.getUsername()); // Use actual username with suffix
   }
 
   @Test
@@ -160,7 +160,8 @@ class UserRepositoryTest {
     String firstUserUsername = firstUser.getUsername(); // Use the actual username with suffix
 
     // When
-    boolean exists = userRepository.existsByUsernameAndIdNot(firstUserUsername, anotherUser.getId());
+    boolean exists =
+        userRepository.existsByUsernameAndIdNot(firstUserUsername, anotherUser.getId());
 
     // Then
     assertThat(exists).isTrue();
@@ -190,8 +191,7 @@ class UserRepositoryTest {
     String firstUserEmail = firstUser.getEmail(); // Use the actual email with suffix
 
     // When
-    boolean exists =
-        userRepository.existsByEmailAndIdNot(firstUserEmail, anotherUser.getId());
+    boolean exists = userRepository.existsByEmailAndIdNot(firstUserEmail, anotherUser.getId());
 
     // Then
     assertThat(exists).isTrue();
