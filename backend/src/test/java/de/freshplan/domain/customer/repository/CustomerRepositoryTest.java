@@ -36,9 +36,18 @@ class CustomerRepositoryTest {
 
   // Test data will be created in each test method for proper isolation
 
-  // Phase 5C Fix: Removed @BeforeEach and @AfterEach cleanup - @TestTransaction provides automatic
-  // rollback
-  // No manual cleanup needed!
+  @BeforeEach
+  void setupCleanDatabase() {
+    // Phase 5C Fix: Cleanup WITHOUT @Transactional to avoid deadlocks
+    // Runs in test's transaction context
+    em.createNativeQuery("DELETE FROM opportunity_activities").executeUpdate();
+    em.createNativeQuery("DELETE FROM opportunities").executeUpdate();
+    em.createQuery("DELETE FROM CustomerTimelineEvent").executeUpdate();
+    em.createQuery("DELETE FROM ContactInteraction").executeUpdate();
+    em.createQuery("DELETE FROM CustomerContact").executeUpdate();
+    em.createQuery("DELETE FROM Customer").executeUpdate();
+    em.flush();
+  }
 
   /**
    * Creates standard test data set for tests that need multiple customers. Returns a TestDataSet

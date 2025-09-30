@@ -32,7 +32,9 @@ class AuditRepositoryTest {
     testEntityId = UUID.randomUUID();
     testTime = LocalDateTime.now();
 
-    // Phase 5C Fix: Removed deleteAll() - @TestTransaction provides automatic rollback
+    // Phase 5C Fix: Cleanup WITHOUT @Transactional to avoid deadlocks
+    // Runs in test's transaction context (class has @TestTransaction)
+    auditRepository.deleteAll();
   }
 
   @Test
