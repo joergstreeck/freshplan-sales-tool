@@ -607,6 +607,9 @@ class CustomerRepositoryTest {
   @Test
   @TestTransaction
   void countAtRisk_shouldCountHighRiskCustomers() {
+    // Phase 5C: Count before to handle test data leakage
+    long countBefore = repository.countAtRisk(80);
+
     // Create high risk customer
     Customer highRiskCustomer = createTestCustomer("High Risk Company");
     highRiskCustomer.setRiskScore(85);
@@ -615,7 +618,8 @@ class CustomerRepositoryTest {
 
     long count = repository.countAtRisk(80);
 
-    assertThat(count).isEqualTo(1);
+    // Phase 5C: Relative assertion - created 1 new high-risk customer
+    assertThat(count).isEqualTo(countBefore + 1);
   }
 
   @Test
