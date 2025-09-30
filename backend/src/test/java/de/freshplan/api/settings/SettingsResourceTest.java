@@ -9,6 +9,7 @@ import de.freshplan.infrastructure.settings.SettingsService;
 import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.security.TestSecurity;
+import io.quarkus.test.TestTransaction;
 import io.restassured.http.ContentType;
 import io.vertx.core.json.JsonObject;
 import jakarta.inject.Inject;
@@ -23,6 +24,7 @@ import org.junit.jupiter.api.Test;
  */
 @QuarkusTest
 @TestHTTPEndpoint(SettingsResource.class)
+@TestTransaction
 @DisplayName("Settings REST API Tests")
 class SettingsResourceTest {
 
