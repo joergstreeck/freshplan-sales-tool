@@ -3,6 +3,7 @@ package de.freshplan.modules.leads.service;
 import static org.junit.jupiter.api.Assertions.*;
 
 import de.freshplan.modules.leads.domain.Territory;
+import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -13,8 +14,10 @@ import org.junit.jupiter.api.Test;
 /**
  * Tests for TerritoryService. Sprint 2.1: Validates territory management without geographical
  * protection.
+ * Sprint 2.1.4 Fix: Added @TestTransaction to fix ContextNotActiveException
  */
 @QuarkusTest
+@TestTransaction
 class TerritoryServiceTest {
 
   @Inject TerritoryService territoryService;

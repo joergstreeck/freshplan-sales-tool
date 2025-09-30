@@ -3,6 +3,7 @@ package de.freshplan.test;
 import de.freshplan.domain.customer.repository.CustomerRepository;
 import de.freshplan.domain.customer.repository.CustomerTimelineRepository;
 import de.freshplan.domain.opportunity.repository.OpportunityRepository;
+import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import org.junit.jupiter.api.MethodOrderer;
@@ -15,8 +16,10 @@ import org.junit.jupiter.api.TestMethodOrder;
  * CI Debug Test - Sammelt präzise Informationen über den Zustand der CI-Datenbank
  *
  * <p>WICHTIG: Dieser Test läuft ZUERST (Order 1) um den initialen Zustand zu erfassen!
+ * Sprint 2.1.4 Fix: Added @TestTransaction to fix ContextNotActiveException
  */
 @QuarkusTest
+@TestTransaction
 @Tag("quarantine")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class CIDebugTest {

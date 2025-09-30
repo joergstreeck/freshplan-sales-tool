@@ -11,6 +11,7 @@ import de.freshplan.modules.leads.domain.Lead;
 import de.freshplan.modules.leads.domain.LeadStatus;
 import de.freshplan.modules.leads.domain.Territory;
 import de.freshplan.modules.leads.domain.UserLeadSettings;
+import io.quarkus.test.TestTransaction;
 import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.security.TestSecurity;
@@ -26,8 +27,10 @@ import org.junit.jupiter.api.*;
 /**
  * Integration tests for Lead REST API. Tests user-based protection system and lead lifecycle
  * management.
+ * Sprint 2.1.4 Fix: Added @TestTransaction to fix ContextNotActiveException
  */
 @QuarkusTest
+@TestTransaction
 @TestHTTPEndpoint(LeadResource.class)
 class LeadResourceTest {
 

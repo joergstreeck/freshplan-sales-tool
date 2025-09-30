@@ -2,14 +2,18 @@ package de.freshplan.test;
 
 import de.freshplan.domain.customer.entity.Customer;
 import de.freshplan.domain.customer.repository.CustomerRepository;
+import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import java.util.List;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-/** Test Data Integrity Check - Findet inkonsistente Test-Daten */
+/** Test Data Integrity Check - Findet inkonsistente Test-Daten
+ * Sprint 2.1.4 Fix: Added @TestTransaction to fix ContextNotActiveException
+ */
 @QuarkusTest
+@TestTransaction
 @Tag("quarantine")
 public class TestDataIntegrityCheckTest {
 

@@ -2,6 +2,7 @@ package de.freshplan.modules.leads.service;
 
 import de.freshplan.modules.leads.domain.*;
 import de.freshplan.test.support.TestTx;
+import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
@@ -9,8 +10,11 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 
-/** Debug test to understand why follow-up service doesn't find leads */
+/** Debug test to understand why follow-up service doesn't find leads
+ * Sprint 2.1.4 Fix: Added @TestTransaction to fix ContextNotActiveException
+ */
 @QuarkusTest
+@TestTransaction
 class FollowUpDebugTest {
 
   @Inject EntityManager em;

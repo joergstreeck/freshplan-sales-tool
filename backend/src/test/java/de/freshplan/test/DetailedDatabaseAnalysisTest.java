@@ -5,6 +5,7 @@ import de.freshplan.domain.customer.repository.ContactInteractionRepository;
 import de.freshplan.domain.customer.repository.ContactRepository;
 import de.freshplan.domain.customer.repository.CustomerRepository;
 import de.freshplan.domain.opportunity.repository.OpportunityRepository;
+import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
@@ -18,8 +19,10 @@ import org.junit.jupiter.api.Test;
 /**
  * SEHR DETAILLIERTE Analyse der Datenbank-Situation Bevor wir irgendetwas löschen, verstehen wir
  * GENAU was los ist!
+ * Sprint 2.1.4 Fix: Added @TestTransaction to fix ContextNotActiveException
  */
 @QuarkusTest
+@TestTransaction
 @Tag("quarantine")
 public class DetailedDatabaseAnalysisTest {
 
