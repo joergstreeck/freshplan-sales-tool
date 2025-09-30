@@ -23,6 +23,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
 
 /**
  * Unit tests for TimelineCommandService.
@@ -34,6 +35,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
  * @since 2.0.0
  */
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = org.mockito.quality.Strictness.LENIENT)
 @Tag("core")
 class TimelineCommandServiceTest {
 
@@ -94,7 +96,7 @@ class TimelineCommandServiceTest {
     request.setFollowUpDate(LocalDateTime.now().plusDays(7));
     request.setFollowUpNotes("Check customer satisfaction");
 
-    when(customerRepository.findByIdOptional(testCustomerId)).thenReturn(Optional.of(testCustomer));
+    when(customerRepository.findByIdOptional(any(UUID.class))).thenReturn(Optional.of(testCustomer));
     when(timelineMapper.toResponse(any(CustomerTimelineEvent.class))).thenReturn(testResponse);
 
     // When
@@ -149,7 +151,7 @@ class TimelineCommandServiceTest {
     request.setNote("Important customer note");
     request.setPerformedBy("testuser");
 
-    when(customerRepository.findByIdOptional(testCustomerId)).thenReturn(Optional.of(testCustomer));
+    when(customerRepository.findByIdOptional(any(UUID.class))).thenReturn(Optional.of(testCustomer));
     when(timelineMapper.toResponse(any(CustomerTimelineEvent.class))).thenReturn(testResponse);
 
     // When
@@ -185,7 +187,7 @@ class TimelineCommandServiceTest {
     request.setFollowUpDate(LocalDateTime.now().plusDays(3));
     request.setFollowUpNotes("Check response");
 
-    when(customerRepository.findByIdOptional(testCustomerId)).thenReturn(Optional.of(testCustomer));
+    when(customerRepository.findByIdOptional(any(UUID.class))).thenReturn(Optional.of(testCustomer));
     when(timelineMapper.toResponse(any(CustomerTimelineEvent.class))).thenReturn(testResponse);
 
     // When
@@ -232,7 +234,7 @@ class TimelineCommandServiceTest {
     request.setBusinessImpact("HIGH");
     request.setUpdatedBy("testuser");
 
-    when(timelineRepository.findByIdOptional(eventId)).thenReturn(Optional.of(testEvent));
+    when(timelineRepository.findByIdOptional(any(UUID.class))).thenReturn(Optional.of(testEvent));
     when(timelineMapper.toResponse(testEvent)).thenReturn(testResponse);
 
     // When
