@@ -4,18 +4,33 @@
 **Branch:** `feat/mod02-backend-sprint-2.1.4`
 **Problem:** 91 fehlende Tests (36 Failures, 55 Errors) nach Sprint 2.1.4 Migration
 
-## 📊 Aktueller Stand (SHA: 6380ff4fe)
+## 📊 Aktueller Stand (SHA: 07deeab0f - Phase 5A Complete)
 
 ### ✅ ERFOLGE
-- **ContactsCountConsistencyTest:** ContextNotActive komplett behoben
-- **CDI Interceptor Problem:** @TestTransaction von Nested Classes entfernt (SecurityContextProviderTest)
-- **🎉 PHASE 1 KOMPLETT ERFOLGREICH:** Dashboard Tests Transaction Collision behoben
-  - **4 Dashboard Tests** auf @ActivateRequestContext umgestellt
-  - **Alle Transaction Collision Fehler (ARJUNA016051)** verschwunden
-  - **13 Dashboard Tests** laufen lokal und in CI durch
-  - **CI Run 18130657439:** Bestätigt - keine Dashboard-Fehler mehr
+- **🎉 PHASE 1:** Dashboard Tests Transaction Collision behoben (13 Tests)
+- **🎉 PHASE 2A:** SecurityContextProviderTest ContextNotActive Errors (8 Tests verschoben)
+- **🎉 PHASE 2B:** SalesCockpitQueryServiceTest UserNotFound behoben (4 Tests)
+- **🎉 PHASE 2C:** AuditServiceTest @ActivateRequestContext (5 Tests)
+- **🎉 PHASE 4A:** TimelineCommandServiceTest Mockito → @QuarkusTest (9 Tests)
+- **🎉 PHASE 4A FIX:** Test Isolation Fix (@TestTransaction per-method)
+- **🎉 PHASE 4B:** TimelineQueryServiceTest Mockito → @QuarkusTest (10 Tests)
+- **🎉 PHASE 4C:** UserServiceRolesTest Mockito → @QuarkusTest (6 Tests)
+- **🎉 PHASE 5A:** ContextNotActive in Nested Classes behoben
+  - SecurityContextProviderTest: 16 Tests verschoben, 12 Errors behoben
+  - OpportunityServiceStageTransitionTest: 1 Test verschoben, 1 Error behoben
 
-### ⚠️ VERBLEIBENDE PROBLEME (Phase 2-4)
+### 📊 CI-VERLAUF
+- **Start (Phase 1):** 91 Fehler (36 Failures + 55 Errors)
+- **Nach Phase 1:** 78 Fehler (43 Failures + 35 Errors) → -13 Errors ✅
+- **Nach Phase 4B+4C:** 42 Fehler (30 Failures + 12 Errors) → -36 Errors ✅
+- **Nach Phase 5A (erwartet):** 30 Fehler (30 Failures + 0 Errors) → -12 Errors ✅
+- **FORTSCHRITT:** 91 → 30 Fehler = **67% Reduktion** 🎉
+
+### ⚠️ VERBLEIBENDE 30 FEHLER (30 Failures + 0 Errors)
+1. **LeadResourceTest** - 11 Failures (Test Data Setup)
+2. **CustomerRepositoryTest** - 7 Failures (Repository-Logik)
+3. **SalesCockpitQueryServiceTest** - 6 Failures (Mock-Interferenz)
+4. **Andere** - 6 Failures (verschiedene Tests)
 
 ## 🎯 SYSTEMATISCHER DEBUG-PLAN
 
@@ -916,6 +931,149 @@ class UserServiceRolesTest {
 - **Merge-Fähig:** JA (100% oder nahezu)
 
 **EMPFEHLUNG:** Start mit **Phase 5A (Quick Wins)** → -14 Errors in 2-3h → Dann neu bewerten
+
+---
+
+## 🎉 PHASE 5A: QUICK WINS - COMPLETED
+
+**Status:** ✅ Completed
+**Commit:** 07deeab0f
+**Commits:** 07deeab0f (Phase 5A Implementation)
+**Local Test:** SUCCESS
+**CI Status:** Pending Validation
+
+### 🎯 ZIEL: ContextNotActive Errors in Nested Classes beheben
+
+**Betroffene Tests:**
+1. ✅ SecurityContextProviderTest (12 Errors)
+2. ✅ UserServiceRolesTest (1 Error - bereits in Phase 4C behoben)
+3. ✅ OpportunityServiceStageTransitionTest (1 Error)
+
+### ✅ PHASE 5A.1: SecurityContextProviderTest (12 Errors → 0)
+
+**Problem:** 12 ContextNotActive Errors in 4 Nested Classes
+- `AuthenticationTests` (4 Tests)
+- `RoleBasedAccessControlTests` (7 Tests)
+- `UserInformationTests` (4 Tests)
+- `JwtTokenTests` (1 Test)
+
+**Root Cause:** CDI-Regel - `@ActivateRequestContext` (Interceptor Binding) kann nicht auf Methoden in Nested Classes angewendet werden.
+
+**Lösung:** Tests aus Nested Classes in Hauptklasse verschieben
+
+**Implementierung:**
+```java
+// ❌ FALSCH - In Nested Class:
+@Nested
+class AuthenticationTests {
+  @Test
+  void shouldReturnTrueWhenAuthenticated() { // ❌ ContextNotActive
+    assertTrue(securityContextProvider.isAuthenticated());
+  }
+}
+
+// ✅ RICHTIG - In Hauptklasse:
+@Test
+@ActivateRequestContext  // ✅ Funktioniert nur in Hauptklasse
+@TestSecurity(user = "testuser", roles = {"admin", "manager"})
+void authentication_shouldReturnTrueWhenAuthenticated() {
+  assertTrue(securityContextProvider.isAuthenticated());
+}
+```
+
+**Durchgeführte Änderungen:**
+1. ✅ 16 Tests aus 4 Nested Classes verschoben
+2. ✅ `@ActivateRequestContext` auf jeden Test angewendet
+3. ✅ Tests mit Präfixen umbenannt (authentication_, rbac_, userInfo_, jwt_)
+4. ✅ Alte Nested Classes entfernt/dokumentiert
+5. ✅ Spotless Formatierung angewandt
+
+**Lokale Validierung:** Alle 59 Tests laufen erfolgreich ✅
+
+### ✅ PHASE 5A.2: UserServiceRolesTest (1 Error → 0)
+
+**Status:** ✅ Bereits in Phase 4C behoben
+**Problem:** CI-spezifischer Duplicate-Roles-Fehler
+**Lösung:** Test-Erwartung in Phase 4C bereits angepasst
+**Lokale Validierung:** 6 Tests, 0 Failures ✅
+
+### ✅ PHASE 5A.3: OpportunityServiceStageTransitionTest (1 Error → 0)
+
+**Problem:** 1 ContextNotActive Error in Nested Class `ComplexStageTransitionScenarios`
+- Test: `changeStage_multipleOpportunities_shouldHandleIndependently`
+
+**Root Cause:** Gleiche CDI-Regel wie SecurityContextProviderTest
+
+**Lösung:** Test aus Nested Class in Hauptklasse verschieben
+
+**Implementierung:**
+```java
+// ❌ FALSCH - In Nested Class:
+@Nested
+class ComplexStageTransitionScenarios {
+  @Test
+  void changeStage_multipleOpportunities_shouldHandleIndependently() {
+    var result = opportunityRepository.findById(opp1.getId()); // ❌ ContextNotActive
+  }
+}
+
+// ✅ RICHTIG - In Hauptklasse:
+@Test
+@ActivateRequestContext
+void complexScenarios_changeStage_multipleOpportunities_shouldHandleIndependently() {
+  var result = opportunityRepository.findById(opp1.getId()); // ✅ RequestContext aktiv
+}
+```
+
+**Durchgeführte Änderungen:**
+1. ✅ Import `@ActivateRequestContext` hinzugefügt
+2. ✅ Test aus Nested Class verschoben mit Präfix `complexScenarios_`
+3. ✅ `@ActivateRequestContext` auf Test angewendet
+4. ✅ Alter Test in Nested Class mit Kommentar ersetzt
+5. ✅ Spotless Formatierung angewandt
+
+**Lokale Validierung:** 42 Tests, 0 Failures ✅
+
+### 📊 PHASE 5A ZUSAMMENFASSUNG
+
+**Dateien geändert:**
+- `SecurityContextProviderTest.java` (16 Tests verschoben)
+- `OpportunityServiceStageTransitionTest.java` (1 Test verschoben)
+
+**Erwartete CI-Verbesserung:**
+- **SecurityContextProviderTest:** -12 Errors
+- **OpportunityServiceStageTransitionTest:** -1 Error
+- **UserServiceRolesTest:** -0 Errors (bereits in 4C behoben)
+- **Total:** -13 Errors
+
+**Fehler-Reduktion:**
+- **VOR:** Failures: 30, Errors: 12 = **42 Fehler**
+- **ERWARTET:** Failures: 30, Errors: 0 = **30 Fehler**
+- **VERBESSERUNG:** -12 Errors ✅
+
+**Lokale Validierung:**
+```bash
+./mvnw test -Dtest="SecurityContextProviderTest,UserServiceRolesTest,OpportunityServiceStageTransitionTest"
+```
+✅ Alle Tests erfolgreich
+
+**Key Learning für @QuarkusTest + Nested Classes:**
+- ❌ **NIEMALS** `@ActivateRequestContext` in Nested Classes verwenden
+- ✅ **IMMER** Tests mit RequestContext-Bedarf in Hauptklasse platzieren
+- ✅ Pattern: Test aus Nested Class verschieben + `@ActivateRequestContext` anwenden
+- ✅ Nested Classes nur für Tests verwenden, die KEINE CDI-Interceptor-Bindings benötigen
+
+**📊 VERBLEIBENDE 30 FEHLER (nach erfolgreicher CI-Validierung):**
+
+**Kategorien:**
+1. **CustomerRepositoryTest** - 7 Failures (Repository-Logik)
+2. **SalesCockpitQueryServiceTest** - 6 Failures (Mock-Interferenz)
+3. **LeadResourceTest** - 11 Failures (404 Test Data Missing)
+4. **Andere** - 6 Failures (verschiedene kleinere Tests)
+
+**NÄCHSTER SCHRITT:** Phase 5B (CustomerRepositoryTest + SalesCockpitQueryServiceTest)
+
+---
 
 **---HISTORISCH (bereits erfolgreich)---**
 **Phase 2B/2C Fixes - 9 Tests behoben:**
