@@ -23,6 +23,7 @@ import org.junit.jupiter.api.Test;
  * <p>Sprint 2.1.1 P1 - BATCH Event Key Robustheit
  */
 @QuarkusTest
+@TestTransaction  // Sprint 2.1.4: Fix ContextNotActiveException
 class DashboardBatchIdempotencyTest {
 
   @Inject DashboardEventPublisher publisher;

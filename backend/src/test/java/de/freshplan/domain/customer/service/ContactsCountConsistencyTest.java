@@ -22,6 +22,7 @@ import org.junit.jupiter.api.Test;
  */
 @QuarkusTest
 @Tag("migrate")
+@TestTransaction  // Sprint 2.1.4: Fix ContextNotActiveException
 public class ContactsCountConsistencyTest {
 
   @Inject CustomerRepository customerRepository;

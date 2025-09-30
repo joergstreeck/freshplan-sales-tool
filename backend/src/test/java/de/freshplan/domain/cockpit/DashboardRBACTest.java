@@ -7,7 +7,8 @@ import de.freshplan.infrastructure.pg.TestPgNotifySender;
 import de.freshplan.modules.leads.domain.LeadStatus;
 import de.freshplan.modules.leads.events.LeadStatusChangeEvent;
 import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.TestTransaction;import io.quarkus.test.junit.QuarkusTestProfile;
+import io.quarkus.test.TestTransaction;
+import io.quarkus.test.junit.QuarkusTestProfile;
 import io.quarkus.test.junit.TestProfile;
 import jakarta.inject.Inject;
 import jakarta.transaction.UserTransaction;
@@ -24,6 +25,7 @@ import org.junit.jupiter.api.Test;
  */
 @QuarkusTest
 @TestProfile(DashboardRBACTest.RBACDeniedProfile.class)
+@TestTransaction  // Sprint 2.1.4: Fix ContextNotActiveException
 class DashboardRBACTest {
 
   @Inject DashboardEventPublisher publisher;

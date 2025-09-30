@@ -23,6 +23,7 @@ import org.junit.jupiter.api.Test;
  * <p>Sprint 2.1.1 P0 HOTFIX - Ghost-Event Prevention
  */
 @QuarkusTest
+@TestTransaction  // Sprint 2.1.4: Fix ContextNotActiveException
 class DashboardAfterCommitTest {
 
   @Inject DashboardEventPublisher publisher;
