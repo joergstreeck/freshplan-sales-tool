@@ -520,11 +520,14 @@ class TimelineCommandServiceTest {
 - **Failures:** 37 → ~24
 - **Errors:** 24 → ~24 (oder weniger falls UserServiceRolesTest Errors sind)
 
-### 4A. **✅ TimelineCommandServiceTest - COMPLETED**
+### 4A. **✅ TimelineCommandServiceTest - COMPLETED + TEST ISOLATION FIX**
 
-**Status:** ✅ Completed
-**Commit:** TBD
+**Status:** ✅ Completed (inkl. Test Isolation Fix)
+**Commits:**
+- Phase 4A Implementation: 765f70b0c (Mockito → @QuarkusTest Konvertierung)
+- Phase 4A FIX: 2abefba82 (Test Isolation @TestTransaction Fix)
 **Local Test:** SUCCESS (9 tests, 0 failures, 0 errors, 2 skipped)
+**CI Status:** In Progress (Run 18139158193)
 
 **🎯 RESULTAT:**
 
@@ -576,6 +579,77 @@ class TimelineCommandServiceTest {
 - `testDeleteEvent_shouldSoftDeleteEvent` - Repository.update() Sichtbarkeitsproblem
 
 **Learning:** Repository-Bulk-Update-Methoden (`update()`) reflektieren Änderungen nicht in `@TestTransaction` ohne expliziten EntityManager-Flush. Für zukünftige Tests: Verwende `entity.persist()` statt Repository-Bulk-Updates.
+
+**🚨 KRITISCHES PROBLEM NACH PHASE 4A: TEST ISOLATION VIOLATION**
+
+**Problem erkannt (GitHub KI Analysis + CI Run 51621849724):**
+- **CustomerRepositoryTest:** 7 neue Failures - "Expected size: 3 but was: 7"
+- **AuditRepositoryTest:** 3 neue Failures
+- **SalesCockpitQueryServiceTest:** 6 Failures (Regression von Phase 2B)
+
+**ROOT CAUSE IDENTIFIZIERT:**
+```java
+// ❌ FALSCH - Class-Level @TestTransaction (Commit 765f70b0c):
+@QuarkusTest
+@TestTransaction  // ❌ EINE Transaktion für ALLE Tests
+@Tag("core")
+class TimelineCommandServiceTest {
+  // ... 9 Tests mit createAndPersistTestCustomer()
+}
+```
+
+**Problem:** Class-level @TestTransaction erzeugt EINE Transaktion für alle Tests:
+- 9 Tests × createAndPersistTestCustomer() = 9 Test-Kunden persistiert
+- **Kein Rollback zwischen Tests** → Daten leaken in andere Tests
+- CustomerRepositoryTest erwartete 3 Kunden, fand 7 (3 + 4 geleakte)
+
+**✅ FIX IMPLEMENTIERT (Commit 2abefba82):**
+```java
+// ✅ RICHTIG - Method-Level @TestTransaction:
+@QuarkusTest
+@Tag("core")
+class TimelineCommandServiceTest {
+
+  @TestTransaction  // ✅ Per-Method Transaktion mit Rollback
+  @Test
+  void testCreateEvent_withValidRequest_shouldCreateTimelineEvent() {
+    Customer testCustomer = createAndPersistTestCustomer();
+    // ... test implementation
+  }
+
+  @TestTransaction
+  @Test
+  void testCreateNote_shouldCreateNoteEvent() {
+    Customer testCustomer = createAndPersistTestCustomer();
+    // ... test implementation
+  }
+  // ... alle anderen Tests mit @TestTransaction
+}
+```
+
+**Lösung:**
+1. ✅ @TestTransaction von Class-Level entfernt
+2. ✅ @TestTransaction auf jede @Test-Methode einzeln angewandt
+3. ✅ Kommentar hinzugefügt: "IMPORTANT: @TestTransaction is applied per-method (not class-level) to ensure proper test isolation and rollback after each test."
+4. ✅ Spotless Formatierung angewandt
+5. ✅ Commit 2abefba82 gepusht
+
+**Erwartete Verbesserung:**
+- ✅ CustomerRepositoryTest: 7 Failures → 0 (keine Test-Daten-Leakage mehr)
+- ✅ AuditRepositoryTest: 3 Failures → 0 (falls durch Isolation verursacht)
+- ✅ SalesCockpitQueryServiceTest: 6 Failures → 0 (Regression behoben)
+- 🎯 **Gesamt:** Failures 38 → ~20-25 (Test Isolation behoben)
+
+**Lokale Validierung:**
+- TimelineCommandServiceTest allein: 9 tests, 0 failures ✅
+- Mit CustomerRepositoryTest: 52 tests, 8 failures (pre-existing, NICHT Isolation) ✅
+- Test Isolation funktioniert: Keine zusätzlichen Failures durch Leakage
+
+**Key Learning für @QuarkusTest Pattern:**
+- ❌ **NIEMALS** @TestTransaction auf Class-Level bei entity.persist()
+- ✅ **IMMER** @TestTransaction auf Method-Level für Test-Isolation
+- ✅ Jeder Test erhält eigene Transaktion mit automatischem Rollback
+- ✅ Pattern auch anwendbar auf andere Tests (z.B. TerritoryServiceTest bereits korrekt implementiert)
 
 **---HISTORISCH (bereits erfolgreich)---**
 **Phase 2B/2C Fixes - 9 Tests behoben:**
