@@ -11,11 +11,11 @@ import de.freshplan.modules.leads.domain.Lead;
 import de.freshplan.modules.leads.domain.LeadStatus;
 import de.freshplan.modules.leads.domain.Territory;
 import de.freshplan.modules.leads.domain.UserLeadSettings;
-import io.quarkus.test.TestTransaction;
 import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.security.TestSecurity;
 import io.restassured.http.ContentType;
+import jakarta.enterprise.context.control.ActivateRequestContext;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
@@ -26,10 +26,12 @@ import org.junit.jupiter.api.*;
 
 /**
  * Integration tests for Lead REST API. Tests user-based protection system and lead lifecycle
- * management. Sprint 2.1.4 Fix: Added @TestTransaction to fix ContextNotActiveException
+ * management.
+ *
+ * <p>Phase 5C Fix: Removed class-level @TestTransaction - REST tests need data visible to HTTP
+ * endpoints. Cleanup in @BeforeEach ensures test isolation.
  */
 @QuarkusTest
-@TestTransaction
 @TestHTTPEndpoint(LeadResource.class)
 class LeadResourceTest {
 
@@ -38,7 +40,7 @@ class LeadResourceTest {
   @BeforeEach
   @Transactional
   void setup() {
-    // Clean up test data
+    // Phase 5C Fix: Re-added cleanup for REST tests (no class-level @TestTransaction)
     em.createQuery("DELETE FROM LeadActivity").executeUpdate();
     em.createQuery("DELETE FROM Lead").executeUpdate();
     em.createQuery("DELETE FROM UserLeadSettings").executeUpdate();
@@ -357,6 +359,7 @@ class LeadResourceTest {
   }
 
   @Test
+  @ActivateRequestContext
   @TestSecurity(
       user = "user1",
       roles = {"USER"})

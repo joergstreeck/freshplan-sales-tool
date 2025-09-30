@@ -32,8 +32,7 @@ class AuditRepositoryTest {
     testEntityId = UUID.randomUUID();
     testTime = LocalDateTime.now();
 
-    // Clean up any existing data
-    auditRepository.deleteAll();
+    // Phase 5C Fix: Removed deleteAll() - @TestTransaction provides automatic rollback
   }
 
   @Test

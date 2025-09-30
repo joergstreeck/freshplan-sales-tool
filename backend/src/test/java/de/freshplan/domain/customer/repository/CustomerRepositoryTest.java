@@ -8,14 +8,11 @@ import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
-import jakarta.transaction.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
@@ -39,29 +36,9 @@ class CustomerRepositoryTest {
 
   // Test data will be created in each test method for proper isolation
 
-  @BeforeEach
-  @Transactional
-  void setupCleanDatabase() {
-    // Clean database before each test to ensure proper isolation
-    // Delete in correct order due to foreign key constraints
-    // Phase 5B.2: Delete all related entities first to avoid FK violations
-    em.createNativeQuery("DELETE FROM opportunity_activities").executeUpdate();
-    em.createNativeQuery("DELETE FROM opportunities").executeUpdate();
-    em.createQuery("DELETE FROM CustomerTimelineEvent").executeUpdate();
-    em.createQuery("DELETE FROM ContactInteraction").executeUpdate();
-    em.createQuery("DELETE FROM CustomerContact").executeUpdate();
-    em.createQuery("DELETE FROM Customer").executeUpdate();
-    em.flush();
-  }
-
-  @AfterEach
-  @Transactional
-  void cleanupTestData() {
-    // Delete only test customers (those with KD-TEST- prefix)
-    em.createQuery("DELETE FROM Customer c WHERE c.customerNumber LIKE 'KD-TEST-%'")
-        .executeUpdate();
-    em.flush();
-  }
+  // Phase 5C Fix: Removed @BeforeEach and @AfterEach cleanup - @TestTransaction provides automatic
+  // rollback
+  // No manual cleanup needed!
 
   /**
    * Creates standard test data set for tests that need multiple customers. Returns a TestDataSet
