@@ -23,10 +23,11 @@ import org.junit.jupiter.api.Test;
  * Verifies ETag headers, conditional requests, and optimistic locking with real HTTP calls.
  *
  * Unit tests for business logic are in SettingsResourceUnitTest.
+ *
+ * Sprint 2.1.4 Fix: Removed @TestTransaction from class level to fix test isolation issues
  */
 @QuarkusTest
 @TestHTTPEndpoint(SettingsResource.class)
-@TestTransaction
 @DisplayName("Settings REST API Integration Tests")
 class SettingsResourceIntegrationTest {
 
