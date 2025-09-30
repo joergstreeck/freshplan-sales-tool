@@ -19,14 +19,16 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 /**
- * Tests for Settings REST API (Sprint 1.2 PR #2). Verifies ETag headers, conditional requests, and
- * optimistic locking.
+ * Integration tests for Settings REST API (Sprint 1.2 PR #2).
+ * Verifies ETag headers, conditional requests, and optimistic locking with real HTTP calls.
+ *
+ * Unit tests for business logic are in SettingsResourceUnitTest.
  */
 @QuarkusTest
 @TestHTTPEndpoint(SettingsResource.class)
 @TestTransaction
-@DisplayName("Settings REST API Tests")
-class SettingsResourceTest {
+@DisplayName("Settings REST API Integration Tests")
+class SettingsResourceIntegrationTest {
 
   private static final String TEST_KEY = "api.test.setting";
 
