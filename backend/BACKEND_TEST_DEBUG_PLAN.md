@@ -44,13 +44,52 @@ import jakarta.enterprise.context.control.ActivateRequestContext;
 - ✅ **13 Dashboard Tests** laufen durch
 - ✅ **ARJUNA016051 Fehler** komplett verschwunden
 
-### 2. **🔄 PHASE 2: ContextNotActive + Entity Not Found Fehler (In Bearbeitung)**
-**Problem A:** ContextNotActive - Tests brauchen RequestContext für EntityManager
-**Problem B:** Tests erwarten User/Customer die seit Sprint 2.1.4 nicht mehr existieren
+### 2. **❌ PHASE 2A: FEHLGESCHLAGEN - Viel zu oberflächlich (Run 18131383572)**
+**Problem:** Ich fixte nur 2 Tests, aber CI zeigt VIELE weitere ContextNotActive Tests
+**Status:** ❌ **GESCHEITERT** - Muss komplett neu angehen
+
+**Root Cause:**
+- **Alter Run:** Nur 12 Tests (Debug-Subset) ✅
+- **Neuer Run:** Volle CI Test-Suite (der normale Zustand) ❌
+
+**ALLE ContextNotActive Tests gefunden:**
+- ❌ `SecurityContextProviderTest` (EdgeCasesTests, AuthenticationDetailsTests, JwtTokenTests)
+- ❌ `AuditServiceTest` (5 Methoden: testAuditWithFullContext, testHashChaining, testLogAsync_Success, testLogSync_Success, testSecurityEvent_AlwaysSync)
+- ✅ `ContactsCountDebugTest` → bereits gefixt
+- ✅ `AuditCQRSIntegrationTest` → bereits gefixt
+
+### 2B. **🔥 PHASE 2A FINALE ERKENNTNIS - BREAKTHROUGH!**
+**FINALE ERKENNTNISSE durch lokalen Test:**
+1. **❌ @ActivateRequestContext auf Nested Classes** → CDI-Fehler: "INNER class declares an interceptor binding but it must be ignored per CDI rules"
+2. **❌ @ActivateRequestContext auf einzelne Test-Methoden IN NESTED CLASSES** → FUNKTIONIERT NICHT! CDI-Problem bestätigt
+3. **✅ @TestTransaction für DB-Tests** → **FUNKTIONIERT PERFEKT! AuditServiceTest: 6 passing tests**
+4. **✅ NEUE LÖSUNG: Test-Methoden aus Nested Classes herausverschieben** → @ActivateRequestContext nur in Hauptklasse möglich
+
+**🎯 NÄCHSTE SCHRITTE PRIORISIERUNG:**
+1. **SOFORT:** SecurityContextProviderTest Refactoring (8 Test-Methoden aus Nested Classes verschieben)
+2. **DANN:** Phase 2B UserNotFound Fehler beheben
+3. **DANN:** Phase 3 + 4 Mockito Issues
+
+**Konkret identifizierte Test-Methoden (via Debug-Output):**
+- `EdgeCasesTests.shouldReturnEmptySetForRolesWhenNotAuthenticated:618` ← **Debug zeigte exakte Zeile!**
+- `EdgeCasesTests.shouldHandleMultipleRoleRequirementsCorrectly`
+- `EdgeCasesTests.shouldHandleEmptyRoleNameGracefully`
+- `AuthenticationDetailsTests.shouldReturnAnonymousDetailsWhenNotAuthenticated`
+- `AuthenticationDetailsTests.shouldReturnAuthenticatedDetailsWhenAuthenticated`
+- `JwtTokenTests.shouldReturnNullSessionIdWhenJwtNotAvailable`
+- `JwtTokenTests.shouldReturnNullJwtWhenInstanceUnsatisfied`
+- `JwtTokenTests.shouldReturnNullTokenExpirationWhenJwtNotAvailable`
+
+**NÄCHSTE SCHRITTE (AKTUALISIERT nach lokalem Test):**
+1. ✅ Import `@ActivateRequestContext` in SecurityContextProviderTest - IMPLEMENTIERT
+2. ❌ @ActivateRequestContext auf 8 Test-Methoden - SCHEITERT an CDI-Problem in Nested Classes
+3. **NEUE LÖSUNG:** SecurityContextProviderTest Refactoring (Methoden aus Nested Classes verschieben)
+4. ✅ AuditServiceTest: `@TestTransaction` auf Class-Level - BEREITS KORREKT IMPLEMENTIERT
+
+### 2B. **⏳ PHASE 2B: Entity Not Found Fehler (Wartet auf 2A)**
+**Problem:** Tests erwarten User/Customer die seit Sprint 2.1.4 nicht mehr existieren
 
 **Betroffene Tests (CI Run 18130657439):**
-- `ContactsCountDebugTest.findCustomersWithManyContacts` → ContextNotActive
-- `AuditCQRSIntegrationTest.getComplianceAlerts_inCQRSMode_shouldReturnAlerts` → ContextNotActive
 - `SalesCockpitQueryServiceTest.testAlerts_shouldGenerateOpportunityAlerts` → UserNotFound: `b81ceeed-0e09-4e7f-86a1-4f13bff77ad3`
 
 **Analyse:**
@@ -146,15 +185,21 @@ backend/
 
 ## 🚨 KRITISCHE ERKENNTNISSE
 
-1. **@TestTransaction vs @ActivateRequestContext:**
-   - Tests mit UserTransaction → @ActivateRequestContext verwenden
-   - Tests ohne eigene Transaktionen → @TestTransaction verwenden
+1. **🔥 DEBUG-OUTPUT WAR GOLDWERT:**
+   - **Maven Debug mit `-q` + Surefire Reports** zeigten exakte Fehlerursachen
+   - **CI-Log-Analyse mit `gh run view --log-failed`** identifizierte konkrete Test-Methoden
+   - **Ohne Debug-Outputs** hätten wir das CDI-Problem nicht so schnell erkannt
 
-2. **Sprint 2.1.4 Breaking Change:**
+2. **@TestTransaction vs @ActivateRequestContext:**
+   - **DB-Tests (EntityManager):** @TestTransaction auf Class-Level
+   - **Service-Tests (RequestScoped Beans):** @ActivateRequestContext auf Test-Methoden
+   - **❌ Niemals auf Nested Classes:** CDI-Interceptor-Binding-Fehler
+
+3. **Sprint 2.1.4 Breaking Change:**
    - Seed-Daten entfernt → Tests müssen eigene Daten erstellen
    - RLS Interceptor disabled in Tests (bereits konfiguriert)
 
-3. **Mockito Strict Mode:**
+4. **Mockito Strict Mode:**
    - Quarkus verwendet strict Mockito → Alle Stubbings müssen verwendet werden
    - lenient() für optionale Stubbings verwenden
 
