@@ -261,7 +261,28 @@ public class V248__CreateIndexConcurrently extends BaseJavaMigration {
 
 ---
 
-## 9) Quick‑Start für neue Claude‑Instanzen
+## 9) Test-Ablage-Strategie
+
+**Tests nach Verantwortlichkeit organisiert** (siehe `TEST_MIGRATION_PLAN.md` für Details):
+
+```
+backend/src/test/java/de/freshplan/
+├── api/            # REST-Tests (10% - leichtgewichtig mit Mocks)
+├── domain/         # Unit-Tests (70% - reines Mockito, KEIN @QuarkusTest)
+├── integration/    # Integration-Tests (20% - @QuarkusTest mit DB)
+├── infrastructure/ # Security/Infra-Tests
+├── modules/        # Modul-spezifische Tests
+├── test/           # Test-Infrastruktur (A00_EnvDiagTest, etc.)
+└── testsupport/    # Hilfs-Utilities
+```
+
+**Namenskonventionen:**
+- `A00_*` - Gatekeeper/Diagnose zuerst
+- `*Test.java` - Standard Tests
+- `*IntegrationTest.java` - Integration Tests
+- `ZZZ_*` - Final-Verification am Ende
+
+## 10) Quick‑Start für neue Claude‑Instanzen
 
 1. **Sprint öffnen** → Arbeitsanweisung lesen.
 2. **SPRINT_MAP des Moduls** aufrufen.
@@ -269,7 +290,8 @@ public class V248__CreateIndexConcurrently extends BaseJavaMigration {
 4. **In `backend/` oder `frontend/` arbeiten**.
 5. **`analyse/` für Details, `artefakte/` für Muster**.
 6. **Historie in `legacy-planning/`**.
+7. **Tests gemäß Ablage-Strategie** (siehe Abschnitt 9).
 
 ---
 
-**Letzte Aktualisierung:** 2025-09-28 (Härtungen nach Sprint 2.1.4 Review)
+**Letzte Aktualisierung:** 2025-09-30 (Test-Ablage-Strategie ergänzt)

@@ -33,33 +33,72 @@ updated: "2025-09-30"
 
 ## 📁 TEST-ABLAGE-STRATEGIE
 
-### Modul-basierte Test-Organisation
-Tests müssen nach Modulen organisiert werden, NICHT nach Domain-Objekten:
+### Etablierte Test-Struktur (Best Practice)
+Tests sind nach **Verantwortlichkeit** organisiert, nicht nach Modulen:
 
-**RICHTIG:**
+**KORREKTE ABLAGE:**
 ```
-src/test/java/de/freshplan/modules/
-├── leads/                    # Modul 02_neukundengewinnung
-│   ├── service/              # Lead-spezifische Services
-│   ├── api/                  # Lead REST Endpoints
-│   ├── security/             # Lead Security Tests
-│   └── events/               # Lead Event Tests
-├── customers/                # Modul 03_kundenmanagement
-└── opportunities/            # Modul 04_opportunity
+backend/src/test/java/de/freshplan/
+├── api/                      # REST-/Resource-Tests (leichtgewichtig)
+│   ├── resources/            # REST Endpoints
+│   └── settings/             # Settings API
+├── domain/                   # Domain Unit-Tests (Mocking, keine DB)
+│   ├── customer/service/     # Customer Business Logic
+│   ├── user/service/         # User Business Logic
+│   └── opportunity/service/  # Opportunity Business Logic
+├── integration/              # Integration-/CQRS-Tests (Quarkus, echte DB)
+│   ├── cqrs/                 # CQRS End-to-End
+│   └── scenarios/            # Cross-Module Szenarien
+├── infrastructure/           # Security/Infra-Tests (Filter, RBAC)
+├── modules/                  # Modul-spezifische Tests (z.B. Leads)
+│   └── leads/                # Modul 02_neukundengewinnung
+├── test/                     # Test-Infrastruktur & Basisklassen
+│   ├── A00_EnvDiagTest      # Gatekeeper/Diagnose
+│   └── DatabaseGrowthTracker # Test-Utilities
+└── testsupport/              # Hilfs-/Fixture-Utilities
 ```
 
-**FALSCH:**
-```
-src/test/java/de/freshplan/domain/
-├── customer/                 # NICHT modulspezifisch!
-├── lead/                     # NICHT modulspezifisch!
-└── opportunity/              # NICHT modulspezifisch!
-```
+### Test-Kategorisierung nach Best Practice
+1. **Unit Tests (70%)** - `de/freshplan/domain/...`
+   - Reines Mockito OHNE @QuarkusTest
+   - Business Logic isoliert testen
+   - Laufzeit: Millisekunden
+
+2. **Integration Tests (20%)** - `de/freshplan/integration/...`
+   - @QuarkusTest mit echter DB
+   - CQRS, Transaktionen, Events
+   - Laufzeit: Sekunden
+
+3. **API Tests (10%)** - `de/freshplan/api/...`
+   - Leichtgewichtig mit Mocks wo möglich
+   - REST-Contract Testing
+   - @QuarkusTest nur wenn unbedingt nötig
 
 ### Migration-Strategie für Tests
-1. **Neue Mockito-Tests** in korrekten Modul-Verzeichnissen anlegen
-2. **Alte @QuarkusTest** nach erfolgreicher Validierung löschen
-3. **Namenskonvention:** `*MockitoTest.java` für migrierte Tests
+1. **Identifiziere Test-Typ** (Unit/Integration/API)
+2. **Verschiebe in korrektes Verzeichnis** gemäß obiger Struktur
+3. **Refactoring auf Mockito** wo möglich (besonders domain/)
+4. **Suffix-Konvention:**
+   - `*Test.java` für normale Tests
+   - `*IntegrationTest.java` für Integration Tests
+   - `*MockitoTest.java` nur während Migration als Marker
+
+## 🔄 MIGRATIONS-STRATEGIE (NEU)
+
+### Parallele Test-Erstellung
+**WICHTIG:** Tests werden NEU geschrieben statt umgebaut!
+
+1. **Neue Mockito-Tests schreiben** mit Suffix `*MockitoTest.java`
+2. **Parallel testen** - beide Versionen laufen
+3. **Validieren** dass neue Tests gleiche Coverage haben
+4. **Alte Tests löschen** nach erfolgreicher Validierung
+5. **Umbenennen** von `*MockitoTest.java` zu `*Test.java`
+
+**Vorteile:**
+- Kein Risiko beim Refactoring
+- CI bleibt stabil während Migration
+- Einfacher Rollback möglich
+- Klarere Test-Struktur von Anfang an
 
 ## ✅ MIGRATIONS-CHECKLISTE
 
@@ -72,6 +111,7 @@ src/test/java/de/freshplan/domain/
 - [ ] **UserStruggleDetectionCQRSIntegrationTest** - Verdacht
 - [ ] **CurrentUserProducerTest** - Verdacht
 - [ ] **CurrentUserProducerIntegrationTest** - Verdacht
+- [x] **CustomerResourceFeatureFlagTest** - Neue Mockito-Version erstellt
 
 ### Phase 2: Service Layer Tests (Tag 2-3)
 **Ziel:** 50% der Tests auf Mocks umstellen
