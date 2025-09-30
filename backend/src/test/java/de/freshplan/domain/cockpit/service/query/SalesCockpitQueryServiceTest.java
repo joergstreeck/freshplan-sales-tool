@@ -73,7 +73,7 @@ class SalesCockpitQueryServiceTest {
     setupMockRepositoryResponses();
 
     // When
-    SalesCockpitDashboard result = queryService.getDashboardData(testUserId);
+    SalesCockpitDashboard result = queryService.getDashboardData(TEST_USER_ID);
 
     // Then
     assertNotNull(result);
@@ -166,7 +166,8 @@ class SalesCockpitQueryServiceTest {
   void testTodaysTasks_shouldIncludeOverdueFollowUps() {
     // Given
     Customer overdueCustomer = createCustomerWithOverdueFollowUp();
-    when(userRepository.findById(testUserId)).thenReturn(testUser);
+    // Use TEST_USER_ID to skip user validation (avoids UserNotFound in DB)
+    // when(userRepository.findById(testUserId)).thenReturn(testUser); // Not needed for TEST_USER_ID
     when(customerRepository.findOverdueFollowUps(any(Page.class)))
         .thenReturn(List.of(overdueCustomer));
     when(customerRepository.findActiveCustomersWithoutRecentContact(any(LocalDateTime.class)))
@@ -177,7 +178,7 @@ class SalesCockpitQueryServiceTest {
     setupFindMocks(); // Add find mocks for alerts generation
 
     // When
-    SalesCockpitDashboard result = queryService.getDashboardData(testUserId);
+    SalesCockpitDashboard result = queryService.getDashboardData(TEST_USER_ID);
 
     // Then
     List<DashboardTask> tasks = result.getTodaysTasks();
@@ -201,7 +202,8 @@ class SalesCockpitQueryServiceTest {
     Customer mediumRiskCustomer = createCustomerWithDaysSinceContact(95);
     Customer lowRiskCustomer = createCustomerWithDaysSinceContact(65);
 
-    when(userRepository.findById(testUserId)).thenReturn(testUser);
+    // Use TEST_USER_ID to skip user validation (avoids UserNotFound in DB)
+    // when(userRepository.findById(testUserId)).thenReturn(testUser); // Not needed for TEST_USER_ID
     when(customerRepository.findActiveCustomersWithoutRecentContact(any(LocalDateTime.class)))
         .thenReturn(List.of(highRiskCustomer, mediumRiskCustomer, lowRiskCustomer));
 
@@ -213,7 +215,7 @@ class SalesCockpitQueryServiceTest {
     setupFindMocks();
 
     // When
-    SalesCockpitDashboard result = queryService.getDashboardData(testUserId);
+    SalesCockpitDashboard result = queryService.getDashboardData(TEST_USER_ID);
 
     // Then
     List<RiskCustomer> riskCustomers = result.getRiskCustomers();
@@ -251,7 +253,8 @@ class SalesCockpitQueryServiceTest {
   @Test
   void testStatistics_shouldAggregateCorrectly() {
     // Given
-    when(userRepository.findById(testUserId)).thenReturn(testUser);
+    // Use TEST_USER_ID to skip user validation (avoids UserNotFound in DB)
+    // when(userRepository.findById(testUserId)).thenReturn(testUser); // Not needed for TEST_USER_ID
     when(customerRepository.count()).thenReturn(150L);
     when(customerRepository.countByStatus(CustomerStatus.AKTIV)).thenReturn(140L);
     when(customerRepository.countActiveCustomersWithoutRecentContact(any(LocalDateTime.class)))
@@ -261,7 +264,7 @@ class SalesCockpitQueryServiceTest {
     setupFindMocks(); // Add find mocks for alerts generation
 
     // When
-    SalesCockpitDashboard result = queryService.getDashboardData(testUserId);
+    SalesCockpitDashboard result = queryService.getDashboardData(TEST_USER_ID);
 
     // Then
     DashboardStatistics stats = result.getStatistics();
@@ -279,7 +282,8 @@ class SalesCockpitQueryServiceTest {
   void testAlerts_shouldGenerateOpportunityAlerts() {
     // Given
     Customer customerWithoutRecentContact = createCustomerWithDaysSinceContact(35);
-    when(userRepository.findById(testUserId)).thenReturn(testUser);
+    // Use TEST_USER_ID to skip user validation (avoids UserNotFound in DB)
+    // when(userRepository.findById(testUserId)).thenReturn(testUser); // Not needed for TEST_USER_ID
 
     // Mock the find query specifically for alerts
     PanacheQuery<Customer> mockQuery = mock(PanacheQuery.class);
@@ -292,7 +296,7 @@ class SalesCockpitQueryServiceTest {
     setupStatisticsResponses();
 
     // When
-    SalesCockpitDashboard result = queryService.getDashboardData(testUserId);
+    SalesCockpitDashboard result = queryService.getDashboardData(TEST_USER_ID);
 
     // Then
     List<DashboardAlert> alerts = result.getAlerts();

@@ -11,7 +11,9 @@ import de.freshplan.domain.audit.service.dto.AuditContext;
 import de.freshplan.shared.util.SecurityUtils;
 import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.TestTransaction;import io.quarkus.test.security.TestSecurity;
+import io.quarkus.test.TestTransaction;
+import io.quarkus.test.security.TestSecurity;
+import jakarta.enterprise.context.control.ActivateRequestContext;
 import jakarta.inject.Inject;
 import java.util.Map;
 import java.util.Optional;
@@ -29,6 +31,7 @@ import org.junit.jupiter.api.Test;
  */
 @QuarkusTest
 @Tag("migrate")
+@TestTransaction
 @TestSecurity(
     user = "testuser",
     roles = {"admin"})
@@ -56,6 +59,7 @@ class AuditServiceTest {
   }
 
   @Test
+  @ActivateRequestContext
   void testLogSync_Success() {
     // Given
     AuditContext context =
@@ -87,6 +91,7 @@ class AuditServiceTest {
   }
 
   @Test
+  @ActivateRequestContext
   void testLogAsync_Success() throws Exception {
     // Given
     AuditContext context =
@@ -117,6 +122,7 @@ class AuditServiceTest {
   }
 
   @Test
+  @ActivateRequestContext
   void testSecurityEvent_AlwaysSync() {
     // Given
     String securityDetails = "Unauthorized access attempt";
@@ -138,6 +144,7 @@ class AuditServiceTest {
   }
 
   @Test
+  @ActivateRequestContext
   void testAuditWithFullContext() {
     // Given
     AuditContext context =
@@ -172,6 +179,7 @@ class AuditServiceTest {
   }
 
   @Test
+  @ActivateRequestContext
   void testHashChaining() {
     // Given - Create a first entry to establish a previous hash
     AuditContext firstContext =
