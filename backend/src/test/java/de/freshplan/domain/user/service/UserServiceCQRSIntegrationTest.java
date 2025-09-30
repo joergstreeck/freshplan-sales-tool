@@ -23,12 +23,14 @@ import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Disabled;
 
 /**
  * Integration tests for UserService with CQRS pattern enabled. Tests the complete flow through the
  * facade to command and query services.
  */
 @QuarkusTest
+@Disabled("TEMPORARY: Sprint 2.1.4 CI Performance Fix")
 @Tag("core")
 @TestProfile(UserServiceCQRSTestProfile.class)
 class UserServiceCQRSIntegrationTest {

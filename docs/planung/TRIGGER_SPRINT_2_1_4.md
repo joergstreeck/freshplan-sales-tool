@@ -10,6 +10,7 @@ modules: ["02_neukundengewinnung"]
 entry_points:
   - "features-neu/02_neukundengewinnung/_index.md"
   - "features-neu/02_neukundengewinnung/backend/_index.md"
+  - "features-neu/02_neukundengewinnung/backend/TEST_MIGRATION_PLAN.md"  # KRITISCH: CI-Fix
   - "features-neu/02_neukundengewinnung/analysis/_index.md"
   - "features-neu/02_neukundengewinnung/SPRINT_MAP.md"
   - "features-neu/02_neukundengewinnung/artefakte/SPRINT_2_1_4/SUMMARY.md"
@@ -27,6 +28,12 @@ updated: "2025-09-28"
 > 3. **Backend-Overlay:** `backend/` für Normalisierung & Unique-Indizes
 > 4. **Shared für ADRs:** `shared/adr/` für Architekturentscheidungen
 > 5. **Artefakte:** DB-Migrationen in `backend/migrations/`
+
+## 🚨 KRITISCHES CI-PROBLEM ENTDECKT (30.09.2025)
+
+**Problem:** 164 von 171 Tests nutzen @QuarkusTest mit echter DB → 20+ Minuten CI-Timeout!
+**Lösung:** Test-Migrationsstrategie läuft parallel → siehe [`backend/TEST_MIGRATION_PLAN.md`](features-neu/02_neukundengewinnung/backend/TEST_MIGRATION_PLAN.md)
+**Impact:** CI blockiert alle PRs! Höchste Priorität!
 
 ## Sprint-Ziel
 

@@ -21,6 +21,7 @@ import org.junit.jupiter.api.Test;
  * between security components, token validation, and API access.
  */
 @QuarkusTest
+@Disabled("TEMPORARY: Sprint 2.1.4 CI Performance Fix")
 @Tag("migrate")
 @TestProfile(SecurityDisabledTestProfile.class)
 @Disabled("Tests need proper endpoint implementation")

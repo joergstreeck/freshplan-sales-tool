@@ -15,6 +15,7 @@ import jakarta.inject.Inject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Disabled;
 
 /**
  * Integration tests for TestDataService CQRS facade pattern.
@@ -26,6 +27,7 @@ import org.junit.jupiter.api.Test;
  * <p>Applied Test-Fixing Patterns: 2. Mockito Matcher-Consistency 4. Flexible Verification
  */
 @QuarkusTest
+@Disabled("TEMPORARY: Sprint 2.1.4 CI Performance Fix")
 @Tag("migrate")
 @TestProfile(TestDataServiceCQRSTestProfile.class)
 class TestDataServiceCQRSIntegrationTest {

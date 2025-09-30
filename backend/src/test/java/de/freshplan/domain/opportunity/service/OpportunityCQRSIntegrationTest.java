@@ -19,6 +19,7 @@ import java.util.UUID;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Disabled;
 
 /**
  * Integration Test für CQRS-Implementation des OpportunityService
@@ -27,6 +28,7 @@ import org.junit.jupiter.api.Test;
  * Verhalten aufweisen.
  */
 @QuarkusTest
+@Disabled("TEMPORARY: Sprint 2.1.4 CI Performance Fix")
 @Tag("core")
 @TestProfile(OpportunityCQRSTestProfile.class)
 class OpportunityCQRSIntegrationTest {

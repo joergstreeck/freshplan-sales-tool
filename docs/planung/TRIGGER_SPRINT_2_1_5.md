@@ -21,6 +21,10 @@ updated: "2025-09-28"
 
 **📍 Navigation:** Home → Planung → Sprint 2.1.5
 
+> **⚠️ TEST-STRATEGIE BEACHTEN!**
+> Tests MÜSSEN Mocks verwenden, NICHT @QuarkusTest mit echter DB!
+> Siehe: [`backend/TEST_MIGRATION_PLAN.md`](features-neu/02_neukundengewinnung/backend/TEST_MIGRATION_PLAN.md)
+>
 > **🎯 Arbeitsanweisung – Reihenfolge**
 > 1. **SPRINT_MAP des Moduls öffnen** → `features-neu/02_neukundengewinnung/SPRINT_MAP.md`
 > 2. **Modul-Start (_index.md) → Status prüfen**

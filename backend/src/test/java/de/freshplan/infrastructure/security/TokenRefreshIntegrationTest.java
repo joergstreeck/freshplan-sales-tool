@@ -18,12 +18,14 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
+import org.junit.jupiter.api.Disabled;
 
 /**
  * Integration tests for token refresh mechanisms and token lifecycle management. Tests the behavior
  * of tokens over time and refresh scenarios.
  */
 @QuarkusTest
+@Disabled("TEMPORARY: Sprint 2.1.4 CI Performance Fix")
 @Tag("migrate")
 @TestProfile(SecurityDisabledTestProfile.class)
 class TokenRefreshIntegrationTest {

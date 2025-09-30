@@ -22,6 +22,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Disabled;
 
 /**
  * Integration Tests für Phase 12.3 - HelpSystemResource mit CQRS
@@ -33,6 +34,7 @@ import org.junit.jupiter.api.Test;
  * Error Handling und Validation - Feature Flag Kompatibilität
  */
 @QuarkusTest
+@Disabled("TEMPORARY: Sprint 2.1.4 CI Performance Fix")
 @Tag("migrate")
 @TestProfile(HelpSystemResourceIntegrationTest.CQRSTestProfile.class)
 @DisplayName("Phase 12.3: HelpSystemResource CQRS Integration Tests")

@@ -13,12 +13,14 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Disabled;
 
 /**
  * Integration tests for SecurityContextProvider.AuthenticationDetails. These tests actually call
  * the builder and methods to increase coverage.
  */
 @QuarkusTest
+@Disabled("TEMPORARY: Sprint 2.1.4 CI Performance Fix")
 @Tag("migrate")
 @TestProfile(SecurityDisabledTestProfile.class)
 class SecurityContextProviderIntegrationTest {

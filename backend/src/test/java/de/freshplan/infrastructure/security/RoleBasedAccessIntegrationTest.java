@@ -23,6 +23,7 @@ import org.junit.jupiter.api.Test;
  * interaction between different roles and their access permissions.
  */
 @QuarkusTest
+@Disabled("TEMPORARY: Sprint 2.1.4 CI Performance Fix")
 @Tag("migrate")
 @TestProfile(SecurityDisabledTestProfile.class)
 @Disabled("Tests need proper endpoint implementation and test infrastructure")

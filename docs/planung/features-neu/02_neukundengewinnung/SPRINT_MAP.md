@@ -76,10 +76,15 @@ updated: "2025-09-27"
 
 ---
 
-### **Sprint 2.1.4 – Lead Deduplication & Data Quality (COMPLETE)**
+### **Sprint 2.1.4 – Lead Deduplication & Data Quality (IN_PROGRESS)**
 **Zentral:** [TRIGGER_SPRINT_2_1_4.md](../../TRIGGER_SPRINT_2_1_4.md)
-**Status:** ✅ COMPLETE
+**Status:** 🔧 IN_PROGRESS - CI-Fix läuft parallel
 **Scope:** Lead Normalization & Deduplication – Phase 1
+
+> **🚨 KRITISCHES CI-PROBLEM (30.09.2025)**
+> 164 von 171 Tests nutzen @QuarkusTest mit echter DB → 20+ Minuten Timeout!
+> **Lösung läuft:** [TEST_MIGRATION_PLAN.md](./backend/TEST_MIGRATION_PLAN.md)
+
 **Ergebnisse:**
 - Normalisierung: E-Mail, Telefon (E.164), Firmennamen
 - Soft-Delete mit `is_canonical` Flag
@@ -92,6 +97,7 @@ updated: "2025-09-27"
 - Unique Constraints mit WHERE-Klauseln
 - Idempotency Store (24h TTL)
 - RFC7807 Problem Details für 409
+- ⚠️ **TEST_MIGRATION_PLAN.md** - Systematische Umstellung auf Mocks
 
 **Artefakte:** [`artefakte/SPRINT_2_1_4/`](./artefakte/SPRINT_2_1_4/)
 **PRs:** #123 (ready for review)
@@ -102,6 +108,10 @@ updated: "2025-09-27"
 **Zentral:** [TRIGGER_SPRINT_2_1_5.md](../../TRIGGER_SPRINT_2_1_5.md)
 **Status:** 🔧 IN_PROGRESS
 **Scope:** Vertragliche Lead-Schutz-Mechanismen + B2B Progressive Profiling
+
+> **⚠️ TEST-STRATEGIE BEACHTEN!**
+> Tests MÜSSEN Mocks verwenden, NICHT @QuarkusTest mit echter DB!
+> Siehe: [backend/TEST_MIGRATION_PLAN.md](./backend/TEST_MIGRATION_PLAN.md)
 
 **Sprint-Ziel:**
 - 6-Monats-Schutz gemäß Handelsvertretervertrag
@@ -132,6 +142,10 @@ updated: "2025-09-27"
 ### **Sprint 2.1.6 – Lead Transfer & Team Management (PLANNED)**
 **Status:** 📅 PLANNED (2025-10-12 - 2025-10-18)
 **Scope:** Lead-Übergabe, Team-Management, Merge/Unmerge
+
+> **⚠️ TEST-STRATEGIE BEACHTEN!**
+> Tests MÜSSEN Mocks verwenden, NICHT @QuarkusTest mit echter DB!
+> Siehe: [backend/TEST_MIGRATION_PLAN.md](./backend/TEST_MIGRATION_PLAN.md)
 
 **Geplante Features:**
 - Lead-Transfer zwischen Partnern mit Genehmigung

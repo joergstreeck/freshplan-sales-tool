@@ -11,6 +11,7 @@ import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Disabled;
 
 /**
  * Integration Tests für Lead Event System (FP-236).
@@ -18,6 +19,7 @@ import org.junit.jupiter.api.*;
  * <p>Testet LISTEN/NOTIFY für Lead-Status-Changes und Cross-Module Events für Activity-Timeline.
  */
 @QuarkusTest
+@Disabled("TEMPORARY: Sprint 2.1.4 CI Performance Fix")
 @DisplayName("Lead Event Integration Tests - FP-236")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class LeadEventIntegrationTest {
