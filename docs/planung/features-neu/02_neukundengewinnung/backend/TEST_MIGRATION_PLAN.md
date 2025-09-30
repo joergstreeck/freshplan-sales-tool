@@ -291,7 +291,13 @@ grep -r "@QuarkusTest" src/test --include="*.java" | \
 - [x] **SettingsResourceTest** → **SettingsResourceIntegrationTest** (umbenannt)
   - Bleibt als Integration-Test (RestAssured benötigt @QuarkusTest)
 - [x] **UserServiceRolesTest** - Bereits reiner Mockito-Test! (0.9s)
+- [x] **LeadNormalizationServiceTest** → **Pure Mockito** ✅
+  - Alte Version: @QuarkusTest mit EntityManager (DB Setup)
+  - Neue Version: Pure Mockito mit Reflection
+  - **Performance-Gewinn: ~12s → < 1s**
+  - 39 Tests laufen alle grün
 - [ ] **UserServiceTest** - Zu komplex (API-Inkompatibilitäten)
+- [ ] **FollowUpAutomationServiceTest** - Nutzt TestTx.committed (echter DB Test)
 
 ### Erkenntnisse
 - Nicht alle Tests lassen sich einfach migrieren
