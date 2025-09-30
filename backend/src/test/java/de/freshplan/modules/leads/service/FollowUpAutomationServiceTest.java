@@ -7,6 +7,7 @@ import static org.mockito.Mockito.*;
 import de.freshplan.modules.leads.domain.*;
 import de.freshplan.test.support.TestTx;
 import io.quarkus.test.InjectMock;
+import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
@@ -23,8 +24,10 @@ import org.mockito.ArgumentCaptor;
  * Tests für T+3/T+7 Follow-up Automation Service
  *
  * <p>Sprint 2.1 - FP-235: Follow-up Automation Tests
+ * Sprint 2.1.4 Fix: Added @TestTransaction to fix ContextNotActiveException
  */
 @QuarkusTest
+@TestTransaction
 class FollowUpAutomationServiceTest {
 
   @Inject FollowUpAutomationService followUpService;
