@@ -4,58 +4,58 @@
 **Branch:** `feat/mod02-backend-sprint-2.1.4`
 **Problem:** 91 fehlende Tests (36 Failures, 55 Errors) nach Sprint 2.1.4 Migration
 
-## 📊 Aktueller Stand (SHA: e9946cba4)
+## 📊 Aktueller Stand (SHA: 6380ff4fe)
 
 ### ✅ ERFOLGE
 - **ContactsCountConsistencyTest:** ContextNotActive komplett behoben
 - **CDI Interceptor Problem:** @TestTransaction von Nested Classes entfernt (SecurityContextProviderTest)
+- **🎉 PHASE 1 KOMPLETT ERFOLGREICH:** Dashboard Tests Transaction Collision behoben
+  - **4 Dashboard Tests** auf @ActivateRequestContext umgestellt
+  - **Alle Transaction Collision Fehler (ARJUNA016051)** verschwunden
+  - **13 Dashboard Tests** laufen lokal und in CI durch
+  - **CI Run 18130657439:** Bestätigt - keine Dashboard-Fehler mehr
 
-### ⚠️ TEILWEISE BEHOBEN - NEUE PROBLEME
-- **Dashboard Tests:** ContextNotActive → Transaction Collision
-  **Ursache:** @TestTransaction + UserTransaction = doppelte Transaktion
-  **Status:** In Bearbeitung - Umstellung auf @ActivateRequestContext
-
-### ❌ UNGELÖSTE HAUPTPROBLEME
+### ⚠️ VERBLEIBENDE PROBLEME (Phase 2-4)
 
 ## 🎯 SYSTEMATISCHER DEBUG-PLAN
 
-### 1. **PRIO 1: Transaction Collision beheben**
-**Problem:** Dashboard Tests schlagen mit Transaction Collision fehl
-**Grund:** Tests verwenden UserTransaction + @TestTransaction = Konflikt
+### 1. **✅ PHASE 1 ERFOLGREICH: Transaction Collision behoben**
+**Problem:** Dashboard Tests schlugen mit Transaction Collision fehl
+**Grund:** Tests verwendeten UserTransaction + @TestTransaction = Konflikt
+**Status:** ✅ **KOMPLETT BEHOBEN** (CI Run 18130657439)
 
-**Betroffene Tests:**
-- `DashboardRBACTest`
-- `DashboardAfterCommitTest`
-- `DashboardBatchIdempotencyTest`
-- `DashboardTruncationTest`
+**Betroffene Tests:** ✅ Alle behoben
+- ✅ `DashboardRBACTest` + `DashboardRBACAllowedTest`
+- ✅ `DashboardAfterCommitTest`
+- ✅ `DashboardBatchIdempotencyTest`
+- ✅ `DashboardTruncationTest`
 
-**Lösung:**
+**Lösung angewandt:**
 ```java
-// ÄNDERN VON:
-@TestTransaction  // ❌ Verursacht Collision
+// GEÄNDERT VON:
+@TestTransaction  // ❌ Verursachte Collision
 // ZU:
 @ActivateRequestContext  // ✅ Nur RequestContext, keine Transaktion
 import jakarta.enterprise.context.control.ActivateRequestContext;
 ```
 
-**Kommandos:**
-```bash
-# Fix alle Dashboard Tests
-sed -i 's/@TestTransaction/@ActivateRequestContext/g' src/test/java/de/freshplan/domain/cockpit/Dashboard*Test.java
-# Import ersetzen
-sed -i 's/import io.quarkus.test.TestTransaction;/import jakarta.enterprise.context.control.ActivateRequestContext;/g' src/test/java/de/freshplan/domain/cockpit/Dashboard*Test.java
-```
+**Ergebnis:**
+- ✅ **0 Transaction Collision Fehler** in CI
+- ✅ **13 Dashboard Tests** laufen durch
+- ✅ **ARJUNA016051 Fehler** komplett verschwunden
 
-### 2. **PRIO 2: Entity Not Found Fehler (Testdaten)**
-**Problem:** Tests erwarten User/Customer die seit Sprint 2.1.4 nicht mehr existieren
+### 2. **🔄 PHASE 2: ContextNotActive + Entity Not Found Fehler (In Bearbeitung)**
+**Problem A:** ContextNotActive - Tests brauchen RequestContext für EntityManager
+**Problem B:** Tests erwarten User/Customer die seit Sprint 2.1.4 nicht mehr existieren
 
-**Betroffene Tests:**
-- `SalesCockpitQueryServiceTest` → UserNotFound
-- `TimelineCommandServiceTest` → CustomerNotFound
-- `TimelineQueryServiceTest` → CustomerNotFound
-- `UserServiceRolesTest` → UserNotFound
+**Betroffene Tests (CI Run 18130657439):**
+- `ContactsCountDebugTest.findCustomersWithManyContacts` → ContextNotActive
+- `AuditCQRSIntegrationTest.getComplianceAlerts_inCQRSMode_shouldReturnAlerts` → ContextNotActive
+- `SalesCockpitQueryServiceTest.testAlerts_shouldGenerateOpportunityAlerts` → UserNotFound: `b81ceeed-0e09-4e7f-86a1-4f13bff77ad3`
 
-**Analyse:** Sprint 2.1.4 entfernte Seed-Daten, Tests erstellen aber keine eigenen Testdaten
+**Analyse:**
+- **ContextNotActive:** Tests fehlt @TestTransaction für RequestContext
+- **UserNotFound:** Sprint 2.1.4 entfernte Seed-Daten, Tests erstellen keine eigenen Testdaten
 
 **Lösungsoptionen:**
 1. **Testdaten in @BeforeEach erstellen**

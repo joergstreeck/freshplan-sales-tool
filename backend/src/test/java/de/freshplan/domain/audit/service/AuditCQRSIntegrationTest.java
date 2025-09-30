@@ -42,6 +42,7 @@ import org.junit.jupiter.api.Test;
 @QuarkusTest
 @Tag("migrate")
 @TestProfile(AuditCQRSTestProfile.class)
+@TestTransaction  // Sprint 2.1.4: Fix ContextNotActiveException
 @TestSecurity(
     user = "testuser",
     roles = {"admin"})
