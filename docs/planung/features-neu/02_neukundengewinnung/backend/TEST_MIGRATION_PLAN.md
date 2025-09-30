@@ -288,7 +288,16 @@ grep -r "@QuarkusTest" src/test --include="*.java" | \
   - Neue Version: 10 Tests, 0.117s mit reinem Mockito (0 Errors)
   - **Performance-Gewinn: 107x schneller!**
   - Lösung: Reflection für final classes statt Mock-Probleme
-- [ ] SettingsResourceTest migrieren (als nächstes)
+- [x] **SettingsResourceTest** → **SettingsResourceIntegrationTest** (umbenannt)
+  - Bleibt als Integration-Test (RestAssured benötigt @QuarkusTest)
+- [x] **UserServiceRolesTest** - Bereits reiner Mockito-Test! (0.9s)
+- [ ] **UserServiceTest** - Zu komplex (API-Inkompatibilitäten)
+
+### Erkenntnisse
+- Nicht alle Tests lassen sich einfach migrieren
+- Integration-Tests mit RestAssured müssen @QuarkusTest bleiben
+- Viele Tests sind bereits als Mockito-Tests geschrieben
+- Focus auf die wirklichen Performance-Killer legen
 
 ### Tag 2
 - [ ] User Domain migriert
