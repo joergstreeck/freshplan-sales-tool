@@ -381,7 +381,8 @@ class CustomerRepositoryTest {
 
     var roots = repository.findRootCustomers(null);
 
-    // Phase 5C: Relative assertion - we created 2 new root customers (testCustomer and parentCustomer)
+    // Phase 5C: Relative assertion - we created 2 new root customers (testCustomer and
+    // parentCustomer)
     assertThat(roots).hasSize((int) (rootsBefore + 2));
     assertThat(roots).noneMatch(c -> c.getParentCustomer() != null);
   }
