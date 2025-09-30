@@ -7,7 +7,7 @@ import static org.hamcrest.Matchers.hasSize;
 
 import de.freshplan.domain.opportunity.service.dto.CreateOpportunityRequest;
 import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.TestTransaction;import io.quarkus.test.security.TestSecurity;
+import io.quarkus.test.security.TestSecurity;
 import io.restassured.http.ContentType;
 import java.math.BigDecimal;
 import java.util.UUID;

@@ -10,7 +10,7 @@ import de.freshplan.domain.help.entity.HelpType;
 import de.freshplan.domain.help.entity.UserLevel;
 import de.freshplan.domain.help.repository.HelpContentRepository;
 import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.TestTransaction;import io.quarkus.test.junit.TestProfile;
+import io.quarkus.test.junit.TestProfile;
 import io.restassured.http.ContentType;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;

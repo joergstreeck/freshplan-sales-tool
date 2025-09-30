@@ -18,8 +18,7 @@ import org.junit.jupiter.api.Test;
 
 /**
  * SEHR DETAILLIERTE Analyse der Datenbank-Situation Bevor wir irgendetwas löschen, verstehen wir
- * GENAU was los ist!
- * Sprint 2.1.4 Fix: Added @TestTransaction to fix ContextNotActiveException
+ * GENAU was los ist! Sprint 2.1.4 Fix: Added @TestTransaction to fix ContextNotActiveException
  */
 @QuarkusTest
 @TestTransaction

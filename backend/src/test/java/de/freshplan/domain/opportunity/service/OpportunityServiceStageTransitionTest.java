@@ -15,8 +15,9 @@ import de.freshplan.domain.user.repository.UserRepository;
 import de.freshplan.test.builders.CustomerBuilder;
 import de.freshplan.test.builders.OpportunityBuilder;
 import de.freshplan.test.support.TestTx;
+import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.TestTransaction;import io.quarkus.test.security.TestSecurity;
+import io.quarkus.test.security.TestSecurity;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
@@ -46,7 +47,7 @@ import org.junit.jupiter.params.provider.MethodSource;
  * @since 2.0.0
  */
 @QuarkusTest
-@TestTransaction  // Sprint 2.1.4 Fix: Add transaction context
+@TestTransaction // Sprint 2.1.4 Fix: Add transaction context
 @Tag("core")
 @TestSecurity(
     user = "testuser",

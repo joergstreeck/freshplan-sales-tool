@@ -14,13 +14,12 @@ import org.junit.jupiter.api.Test;
 
 /**
  * Tests for TerritoryService. Sprint 2.1: Validates territory management without geographical
- * protection.
- * Sprint 2.1.4 Fix: Added @TestTransaction to fix ContextNotActiveException
- * Note: We don't use @TestTransaction at class level because we need the territories to persist
- * across tests. Instead we use @Transactional on individual test methods.
+ * protection. Sprint 2.1.4 Fix: Added @TestTransaction to fix ContextNotActiveException Note: We
+ * don't use @TestTransaction at class level because we need the territories to persist across
+ * tests. Instead we use @Transactional on individual test methods.
  */
 @QuarkusTest
-@TestTransaction  // Sprint 2.1.4 Fix: Add transaction context for all test methods
+@TestTransaction // Sprint 2.1.4 Fix: Add transaction context for all test methods
 class TerritoryServiceTest {
 
   @Inject TerritoryService territoryService;
@@ -45,10 +44,11 @@ class TerritoryServiceTest {
       de.taxRate = new java.math.BigDecimal("19.00");
       de.languageCode = "de-DE";
       de.active = true;
-      de.businessRules = new io.vertx.core.json.JsonObject()
-          .put("invoicing", "monthly")
-          .put("payment_terms", 30)
-          .put("delivery_zones", List.of("north", "south", "east", "west"));
+      de.businessRules =
+          new io.vertx.core.json.JsonObject()
+              .put("invoicing", "monthly")
+              .put("payment_terms", 30)
+              .put("delivery_zones", List.of("north", "south", "east", "west"));
       de.persist();
     }
 
@@ -62,10 +62,11 @@ class TerritoryServiceTest {
       ch.taxRate = new java.math.BigDecimal("7.70");
       ch.languageCode = "de-CH";
       ch.active = true;
-      ch.businessRules = new io.vertx.core.json.JsonObject()
-          .put("invoicing", "monthly")
-          .put("payment_terms", 45)
-          .put("delivery_zones", List.of("zurich", "basel", "bern"));
+      ch.businessRules =
+          new io.vertx.core.json.JsonObject()
+              .put("invoicing", "monthly")
+              .put("payment_terms", 45)
+              .put("delivery_zones", List.of("zurich", "basel", "bern"));
       ch.persist();
     }
   }

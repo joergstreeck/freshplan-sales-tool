@@ -1,8 +1,8 @@
 package de.freshplan.test;
 
 import de.freshplan.domain.customer.repository.CustomerRepository;
-import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.TestTransaction;
+import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import java.util.*;
 import org.junit.jupiter.api.*;

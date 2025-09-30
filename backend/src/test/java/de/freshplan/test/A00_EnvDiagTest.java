@@ -2,7 +2,7 @@ package de.freshplan.test;
 
 import io.agroal.api.AgroalDataSource;
 import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.TestTransaction;import jakarta.inject.Inject;
+import jakarta.inject.Inject;
 import java.sql.*;
 import java.util.*;
 import org.junit.jupiter.api.MethodOrderer;

@@ -7,7 +7,7 @@ import de.freshplan.domain.customer.service.dto.CreateCustomerRequest;
 import de.freshplan.domain.customer.service.dto.UpdateCustomerRequest;
 import de.freshplan.test.SecurityDisabledTestProfile;
 import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.TestTransaction;import io.quarkus.test.junit.TestProfile;
+import io.quarkus.test.junit.TestProfile;
 import io.quarkus.test.security.TestSecurity;
 import io.restassured.http.ContentType;
 import jakarta.ws.rs.core.Response;

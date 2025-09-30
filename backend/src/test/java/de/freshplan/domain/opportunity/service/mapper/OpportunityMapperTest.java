@@ -10,7 +10,7 @@ import de.freshplan.test.builders.CustomerBuilder;
 import de.freshplan.test.builders.OpportunityBuilder;
 import de.freshplan.test.builders.UserTestDataFactory;
 import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.TestTransaction;import jakarta.inject.Inject;
+import jakarta.inject.Inject;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.UUID;

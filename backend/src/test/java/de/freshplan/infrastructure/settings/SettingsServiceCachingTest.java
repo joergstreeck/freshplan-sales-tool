@@ -3,7 +3,7 @@ package de.freshplan.infrastructure.settings;
 import static org.junit.jupiter.api.Assertions.*;
 
 import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.TestTransaction;import io.vertx.core.json.JsonObject;
+import io.vertx.core.json.JsonObject;
 import jakarta.inject.Inject;
 import java.util.Optional;
 import java.util.UUID;

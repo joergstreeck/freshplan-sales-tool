@@ -9,12 +9,10 @@ import de.freshplan.domain.customer.entity.Industry;
 import de.freshplan.domain.customer.service.dto.*;
 import de.freshplan.domain.customer.service.exception.CustomerNotFoundException;
 import de.freshplan.test.builders.CustomerBuilder;
-import io.quarkus.arc.profile.IfBuildProfile;
 import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
 import io.quarkus.test.security.TestSecurity;
-import io.smallrye.common.annotation.RunOnVirtualThread;
 import jakarta.enterprise.context.control.ActivateRequestContext;
 import jakarta.inject.Inject;
 import java.math.BigDecimal;
@@ -46,7 +44,7 @@ import org.junit.jupiter.api.Test;
     user = "testuser",
     roles = {"admin", "manager", "sales"})
 @TestTransaction
-@ActivateRequestContext  // Sprint 2.1.4 Fix: Activate RequestContext for Resource calls
+@ActivateRequestContext // Sprint 2.1.4 Fix: Activate RequestContext for Resource calls
 @DisplayName("Customer CQRS Integration Test")
 class CustomerCQRSIntegrationTest {
 

@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import de.freshplan.domain.user.repository.UserRepository;
 import de.freshplan.test.builders.UserTestDataFactory;
 import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.TestTransaction;import jakarta.inject.Inject;
+import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;

@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.within;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.TestTransaction;import io.quarkus.test.security.TestSecurity;
+import io.quarkus.test.security.TestSecurity;
 import jakarta.inject.Inject;
 import java.time.Instant;
 import java.util.UUID;

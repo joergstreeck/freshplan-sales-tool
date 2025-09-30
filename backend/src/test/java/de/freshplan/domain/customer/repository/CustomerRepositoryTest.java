@@ -25,7 +25,7 @@ import org.junit.jupiter.api.Test;
  */
 @QuarkusTest
 @Tag("core")
-@TestTransaction  // Sprint 2.1.4: Fix ContextNotActiveException
+@TestTransaction // Sprint 2.1.4: Fix ContextNotActiveException
 class CustomerRepositoryTest {
 
   @Inject CustomerRepository repository;

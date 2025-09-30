@@ -23,8 +23,8 @@ import org.mockito.ArgumentCaptor;
 /**
  * Tests für T+3/T+7 Follow-up Automation Service
  *
- * <p>Sprint 2.1 - FP-235: Follow-up Automation Tests
- * Sprint 2.1.4 Fix: Added @TestTransaction to fix ContextNotActiveException
+ * <p>Sprint 2.1 - FP-235: Follow-up Automation Tests Sprint 2.1.4 Fix: Added @TestTransaction to
+ * fix ContextNotActiveException
  */
 @QuarkusTest
 @TestTransaction

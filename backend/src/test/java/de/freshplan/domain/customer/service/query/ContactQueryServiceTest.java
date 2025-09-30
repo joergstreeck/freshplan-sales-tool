@@ -12,7 +12,7 @@ import de.freshplan.domain.customer.service.mapper.ContactMapper;
 import de.freshplan.test.builders.ContactTestDataFactory;
 import de.freshplan.test.builders.CustomerBuilder;
 import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.TestTransaction;import io.quarkus.test.junit.mockito.InjectMock;
+import io.quarkus.test.junit.mockito.InjectMock;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.NotFoundException;
 import java.util.Arrays;

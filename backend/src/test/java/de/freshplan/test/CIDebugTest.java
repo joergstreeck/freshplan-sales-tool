@@ -15,8 +15,8 @@ import org.junit.jupiter.api.TestMethodOrder;
 /**
  * CI Debug Test - Sammelt präzise Informationen über den Zustand der CI-Datenbank
  *
- * <p>WICHTIG: Dieser Test läuft ZUERST (Order 1) um den initialen Zustand zu erfassen!
- * Sprint 2.1.4 Fix: Added @TestTransaction to fix ContextNotActiveException
+ * <p>WICHTIG: Dieser Test läuft ZUERST (Order 1) um den initialen Zustand zu erfassen! Sprint 2.1.4
+ * Fix: Added @TestTransaction to fix ContextNotActiveException
  */
 @QuarkusTest
 @TestTransaction

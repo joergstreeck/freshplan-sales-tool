@@ -11,7 +11,7 @@ import de.freshplan.domain.audit.service.AuditService;
 import de.freshplan.domain.audit.service.dto.AuditContext;
 import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.TestTransaction;import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;

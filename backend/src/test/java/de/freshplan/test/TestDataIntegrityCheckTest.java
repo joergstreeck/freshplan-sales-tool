@@ -9,8 +9,9 @@ import java.util.List;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-/** Test Data Integrity Check - Findet inkonsistente Test-Daten
- * Sprint 2.1.4 Fix: Added @TestTransaction to fix ContextNotActiveException
+/**
+ * Test Data Integrity Check - Findet inkonsistente Test-Daten Sprint 2.1.4 Fix:
+ * Added @TestTransaction to fix ContextNotActiveException
  */
 @QuarkusTest
 @TestTransaction

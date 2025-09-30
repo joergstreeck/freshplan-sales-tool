@@ -21,7 +21,7 @@ import de.freshplan.test.builders.OpportunityTestDataFactory;
 import io.quarkus.security.identity.SecurityIdentity;
 import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.TestTransaction;import io.quarkus.test.security.TestSecurity;
+import io.quarkus.test.security.TestSecurity;
 import jakarta.inject.Inject;
 import java.math.BigDecimal;
 import java.security.Principal;

@@ -8,7 +8,7 @@ import de.freshplan.domain.permission.service.PermissionService;
 import de.freshplan.infrastructure.security.SecurityContextProvider;
 import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.TestTransaction;import io.quarkus.test.security.TestSecurity;
+import io.quarkus.test.security.TestSecurity;
 import io.restassured.http.ContentType;
 import java.util.*;
 import org.junit.jupiter.api.BeforeEach;

@@ -6,7 +6,7 @@ import static org.hamcrest.Matchers.lessThan;
 import static org.junit.jupiter.api.Assertions.*;
 
 import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.TestTransaction;import io.restassured.response.Response;
+import io.restassured.response.Response;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import java.util.ArrayList;

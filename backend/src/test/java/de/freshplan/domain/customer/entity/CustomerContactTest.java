@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import de.freshplan.test.builders.ContactTestDataFactory;
 import de.freshplan.test.builders.CustomerBuilder;
 import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.TestTransaction;import jakarta.inject.Inject;
+import jakarta.inject.Inject;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;

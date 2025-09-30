@@ -167,7 +167,8 @@ class SalesCockpitQueryServiceTest {
     // Given
     Customer overdueCustomer = createCustomerWithOverdueFollowUp();
     // Use TEST_USER_ID to skip user validation (avoids UserNotFound in DB)
-    // when(userRepository.findById(testUserId)).thenReturn(testUser); // Not needed for TEST_USER_ID
+    // when(userRepository.findById(testUserId)).thenReturn(testUser); // Not needed for
+    // TEST_USER_ID
     when(customerRepository.findOverdueFollowUps(any(Page.class)))
         .thenReturn(List.of(overdueCustomer));
     when(customerRepository.findActiveCustomersWithoutRecentContact(any(LocalDateTime.class)))
@@ -203,7 +204,8 @@ class SalesCockpitQueryServiceTest {
     Customer lowRiskCustomer = createCustomerWithDaysSinceContact(65);
 
     // Use TEST_USER_ID to skip user validation (avoids UserNotFound in DB)
-    // when(userRepository.findById(testUserId)).thenReturn(testUser); // Not needed for TEST_USER_ID
+    // when(userRepository.findById(testUserId)).thenReturn(testUser); // Not needed for
+    // TEST_USER_ID
     when(customerRepository.findActiveCustomersWithoutRecentContact(any(LocalDateTime.class)))
         .thenReturn(List.of(highRiskCustomer, mediumRiskCustomer, lowRiskCustomer));
 
@@ -254,7 +256,8 @@ class SalesCockpitQueryServiceTest {
   void testStatistics_shouldAggregateCorrectly() {
     // Given
     // Use TEST_USER_ID to skip user validation (avoids UserNotFound in DB)
-    // when(userRepository.findById(testUserId)).thenReturn(testUser); // Not needed for TEST_USER_ID
+    // when(userRepository.findById(testUserId)).thenReturn(testUser); // Not needed for
+    // TEST_USER_ID
     when(customerRepository.count()).thenReturn(150L);
     when(customerRepository.countByStatus(CustomerStatus.AKTIV)).thenReturn(140L);
     when(customerRepository.countActiveCustomersWithoutRecentContact(any(LocalDateTime.class)))
@@ -283,7 +286,8 @@ class SalesCockpitQueryServiceTest {
     // Given
     Customer customerWithoutRecentContact = createCustomerWithDaysSinceContact(35);
     // Use TEST_USER_ID to skip user validation (avoids UserNotFound in DB)
-    // when(userRepository.findById(testUserId)).thenReturn(testUser); // Not needed for TEST_USER_ID
+    // when(userRepository.findById(testUserId)).thenReturn(testUser); // Not needed for
+    // TEST_USER_ID
 
     // Mock the find query specifically for alerts
     PanacheQuery<Customer> mockQuery = mock(PanacheQuery.class);

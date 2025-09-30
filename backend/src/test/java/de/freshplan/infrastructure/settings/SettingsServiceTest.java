@@ -17,8 +17,8 @@ import org.junit.jupiter.api.Test;
 
 /**
  * Tests for Settings Registry Service (Sprint 1.2 PR #2). Verifies hierarchical resolution, ETag
- * support, and caching behavior.
- * Sprint 2.1.4 Fix: Added @TestTransaction to fix ContextNotActiveException
+ * support, and caching behavior. Sprint 2.1.4 Fix: Added @TestTransaction to fix
+ * ContextNotActiveException
  */
 @QuarkusTest
 @TestTransaction

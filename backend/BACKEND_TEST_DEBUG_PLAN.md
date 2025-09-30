@@ -261,9 +261,26 @@ when(timelineRepository.findByIdOptional(any(UUID.class))).thenReturn(Optional.o
 
 **PATTERN ERKANNT:** Mock-Konfiguration funktioniert **grundsätzlich**, aber **Service-Logik** erreicht Mock nicht
 
-### 3E. **🔍 PHASE 3C START - MOCK-DEBUG SYSTEMATISCH**
+### 3E. **🔍 PHASE 3C BREAKTHROUGH - MOCK-INTERFERENZ IDENTIFIZIERT**
 
-**COMMIT STATUS: 28b272231** - Phase 3A erfolgreich validiert
+**COMMIT STATUS: 6e5b3e649** - UUID-Mocks fixed, Mock-Interferenz Problem erkannt
+
+**🎆 CRITICAL BREAKTHROUGH:**
+- ✅ **ISOLATED TESTS FUNKTIONIEREN:** `testCreateSystemEvent` einzeln läuft perfekt durch
+- ⚠️ **MOCK-INTERFERENZ:** Wenn alle Tests zusammen laufen, konfundieren sich Mocks gegenseitig
+- 🎯 **ROOT CAUSE:** `any(UUID.class)` vs spezifische UUIDs - Mock-Prioritäten überschreiben sich
+
+**PROGRESS VALIDIERT:**
+1. **Service-Logik:** ✅ funktioniert korrekt
+2. **Repository-Calls:** ✅ werden ausgeführt
+3. **Mock-Konfiguration:** ✅ grundsätzlich richtig
+4. **Problem:** Mock-Reset und Isolation zwischen Tests
+
+**FIXES APPLIED:**
+- Changed `any(UUID.class)` back to `testCustomerId` for consistency
+- Added `reset(timelineRepository, customerRepository, timelineMapper)` in `@BeforeEach`
+
+**NEXT STRATEGY:** Test-spezifische Mock-Konfiguration statt globale Mocks
 
 ### 3. **PRIO 3: UnnecessaryStubbing (Mockito)**
 **Problem:** Mockito-Stubbings werden definiert aber nicht verwendet

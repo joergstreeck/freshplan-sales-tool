@@ -8,7 +8,7 @@ import de.freshplan.domain.user.service.dto.UpdateUserRequest;
 import de.freshplan.domain.user.service.dto.UpdateUserRolesRequest;
 import de.freshplan.test.SecurityDisabledTestProfile;
 import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.TestTransaction;import io.quarkus.test.junit.TestProfile;
+import io.quarkus.test.junit.TestProfile;
 import io.quarkus.test.security.TestSecurity;
 import io.restassured.http.ContentType;
 import jakarta.ws.rs.core.Response;

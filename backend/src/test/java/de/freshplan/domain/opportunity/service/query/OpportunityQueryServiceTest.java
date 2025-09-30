@@ -16,12 +16,6 @@ import de.freshplan.domain.user.repository.UserRepository;
 import de.freshplan.test.builders.OpportunityTestDataFactory;
 import de.freshplan.test.builders.UserTestDataFactory;
 import io.quarkus.panache.common.Page;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
@@ -30,11 +24,16 @@ import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 /**
- * Pure Mockito unit tests for OpportunityQueryService.
- * Sprint 2.1.4: Test Migration for CI Performance.
- * Uses LENIENT mode to avoid UnnecessaryStubbingException.
+ * Pure Mockito unit tests for OpportunityQueryService. Sprint 2.1.4: Test Migration for CI
+ * Performance. Uses LENIENT mode to avoid UnnecessaryStubbingException.
  *
  * <p>Diese Tests stellen sicher, dass der OpportunityQueryService nur lesende Operationen
  * durchführt und keine Transaktionen verwendet.
@@ -44,17 +43,13 @@ import org.junit.jupiter.api.Test;
 @Tag("core")
 class OpportunityQueryServiceTest {
 
-  @InjectMocks
-  OpportunityQueryService queryService;
+  @InjectMocks OpportunityQueryService queryService;
 
-  @Mock
-  OpportunityRepository opportunityRepository;
+  @Mock OpportunityRepository opportunityRepository;
 
-  @Mock
-  UserRepository userRepository;
+  @Mock UserRepository userRepository;
 
-  @Mock
-  OpportunityMapper opportunityMapper;
+  @Mock OpportunityMapper opportunityMapper;
 
   private User testUser;
   private Opportunity testOpportunity1;

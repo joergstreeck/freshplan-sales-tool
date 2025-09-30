@@ -26,12 +26,6 @@ import de.freshplan.test.TestDataBuilder;
 import de.freshplan.test.builders.OpportunityTestDataFactory;
 import de.freshplan.test.builders.UserTestDataFactory;
 import io.quarkus.security.identity.SecurityIdentity;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
 import java.math.BigDecimal;
 import java.security.Principal;
 import java.time.LocalDate;
@@ -41,12 +35,17 @@ import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 /**
- * Pure Mockito unit tests for OpportunityCommandService.
- * Sprint 2.1.4: Test Migration for CI Performance.
- * Uses LENIENT mode to avoid UnnecessaryStubbingException.
+ * Pure Mockito unit tests for OpportunityCommandService. Sprint 2.1.4: Test Migration for CI
+ * Performance. Uses LENIENT mode to avoid UnnecessaryStubbingException.
  *
  * <p>Diese Tests stellen sicher, dass der OpportunityCommandService identisches Verhalten zum
  * originalen OpportunityService aufweist.
@@ -56,26 +55,19 @@ import org.mockito.ArgumentCaptor;
 @Tag("core")
 class OpportunityCommandServiceTest {
 
-  @InjectMocks
-  OpportunityCommandService commandService;
+  @InjectMocks OpportunityCommandService commandService;
 
-  @Mock
-  OpportunityRepository opportunityRepository;
+  @Mock OpportunityRepository opportunityRepository;
 
-  @Mock
-  CustomerRepository customerRepository;
+  @Mock CustomerRepository customerRepository;
 
-  @Mock
-  UserRepository userRepository;
+  @Mock UserRepository userRepository;
 
-  @Mock
-  OpportunityMapper opportunityMapper;
+  @Mock OpportunityMapper opportunityMapper;
 
-  @Mock
-  SecurityIdentity securityIdentity;
+  @Mock SecurityIdentity securityIdentity;
 
-  @Mock
-  AuditService auditService;
+  @Mock AuditService auditService;
 
   private User testUser;
   private Customer testCustomer;

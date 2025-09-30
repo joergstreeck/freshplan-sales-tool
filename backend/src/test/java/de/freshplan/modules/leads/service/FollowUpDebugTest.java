@@ -10,8 +10,9 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 
-/** Debug test to understand why follow-up service doesn't find leads
- * Sprint 2.1.4 Fix: Added @TestTransaction to fix ContextNotActiveException
+/**
+ * Debug test to understand why follow-up service doesn't find leads Sprint 2.1.4 Fix:
+ * Added @TestTransaction to fix ContextNotActiveException
  */
 @QuarkusTest
 @TestTransaction

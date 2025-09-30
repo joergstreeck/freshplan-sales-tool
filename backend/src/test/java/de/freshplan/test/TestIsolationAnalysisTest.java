@@ -1,7 +1,7 @@
 package de.freshplan.test;
 
 import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.TestTransaction;import jakarta.inject.Inject;
+import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import java.io.IOException;
 import java.nio.file.Files;

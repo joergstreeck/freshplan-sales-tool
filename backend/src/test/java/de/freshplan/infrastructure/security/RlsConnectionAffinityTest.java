@@ -6,7 +6,7 @@ import de.freshplan.infrastructure.settings.Setting;
 import de.freshplan.infrastructure.settings.SettingsScope;
 import de.freshplan.infrastructure.settings.SettingsService;
 import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.TestTransaction;import io.quarkus.test.security.TestSecurity;
+import io.quarkus.test.security.TestSecurity;
 import io.vertx.core.json.JsonObject;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
@@ -19,7 +19,8 @@ import org.junit.jupiter.api.Test;
  * Test RLS Connection Affinity for infrastructure services. Verifies that GUC variables are
  * properly set on the same connection used for database operations.
  *
- * Sprint 2.1.4: Disabled because RLS interceptor is disabled in tests to fix ContextNotActiveException
+ * <p>Sprint 2.1.4: Disabled because RLS interceptor is disabled in tests to fix
+ * ContextNotActiveException
  */
 @QuarkusTest
 @Disabled("RLS interceptor disabled in tests - see Sprint 2.1.4 fix for ContextNotActiveException")

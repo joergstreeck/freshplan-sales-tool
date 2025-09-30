@@ -7,9 +7,9 @@ import de.freshplan.infrastructure.pg.TestPgNotifySender;
 import de.freshplan.modules.leads.domain.LeadStatus;
 import de.freshplan.modules.leads.events.LeadStatusChangeEvent;
 import io.quarkus.test.junit.QuarkusTest;
-import jakarta.enterprise.context.control.ActivateRequestContext;
 import io.quarkus.test.junit.QuarkusTestProfile;
 import io.quarkus.test.junit.TestProfile;
+import jakarta.enterprise.context.control.ActivateRequestContext;
 import jakarta.inject.Inject;
 import jakarta.transaction.UserTransaction;
 import java.util.Map;
@@ -25,7 +25,7 @@ import org.junit.jupiter.api.Test;
  */
 @QuarkusTest
 @TestProfile(DashboardRBACTest.RBACDeniedProfile.class)
-@ActivateRequestContext  // Sprint 2.1.4: Fix ContextNotActiveException without transaction collision
+@ActivateRequestContext // Sprint 2.1.4: Fix ContextNotActiveException without transaction collision
 class DashboardRBACTest {
 
   @Inject DashboardEventPublisher publisher;
@@ -94,7 +94,7 @@ class DashboardRBACTest {
 /** Positiv-Test für RBAC mit expliziter Erlaubnis. */
 @QuarkusTest
 @TestProfile(DashboardRBACAllowedTest.RBACAllowedProfile.class)
-@ActivateRequestContext  // Sprint 2.1.4: Fix transaction collision with UserTransaction
+@ActivateRequestContext // Sprint 2.1.4: Fix transaction collision with UserTransaction
 class DashboardRBACAllowedTest {
 
   @Inject DashboardEventPublisher publisher;

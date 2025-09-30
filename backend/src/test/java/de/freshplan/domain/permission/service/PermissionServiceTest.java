@@ -6,7 +6,7 @@ import static org.mockito.Mockito.*;
 import de.freshplan.infrastructure.security.SecurityContextProvider;
 import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.TestTransaction;import jakarta.inject.Inject;
+import jakarta.inject.Inject;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;

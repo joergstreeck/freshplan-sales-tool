@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import de.freshplan.test.SecurityDisabledTestProfile;
 import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.TestTransaction;import io.quarkus.test.junit.TestProfile;
+import io.quarkus.test.junit.TestProfile;
 import jakarta.inject.Inject;
 import java.util.Set;
 import org.junit.jupiter.api.Disabled;

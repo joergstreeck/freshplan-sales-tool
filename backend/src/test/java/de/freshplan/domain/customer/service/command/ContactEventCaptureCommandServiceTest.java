@@ -9,7 +9,7 @@ import de.freshplan.domain.customer.service.ContactInteractionService;
 import de.freshplan.domain.customer.service.dto.ContactInteractionDTO;
 import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.TestTransaction;import jakarta.inject.Inject;
+import jakarta.inject.Inject;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;

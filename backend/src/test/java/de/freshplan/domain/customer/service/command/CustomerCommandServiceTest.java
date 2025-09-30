@@ -18,7 +18,7 @@ import de.freshplan.domain.customer.service.exception.CustomerAlreadyExistsExcep
 import de.freshplan.domain.customer.service.mapper.CustomerMapper;
 import de.freshplan.test.builders.CustomerTestDataFactory;
 import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.TestTransaction;import io.quarkus.test.junit.mockito.InjectMock;
+import io.quarkus.test.junit.mockito.InjectMock;
 import jakarta.inject.Inject;
 import java.math.BigDecimal;
 import java.util.Collections;

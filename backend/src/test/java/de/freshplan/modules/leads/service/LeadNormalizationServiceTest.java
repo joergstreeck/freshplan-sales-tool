@@ -4,8 +4,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import de.freshplan.modules.leads.domain.Lead;
-import de.freshplan.modules.leads.domain.LeadStatus;
-import de.freshplan.modules.leads.domain.Territory;
 import jakarta.persistence.EntityManager;
 import java.lang.reflect.Field;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,16 +18,14 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 /**
- * Pure Mockito unit tests for LeadNormalizationService.
- * Sprint 2.1.4: Test Migration for CI Performance
- * Replaces @QuarkusTest version with pure unit testing.
+ * Pure Mockito unit tests for LeadNormalizationService. Sprint 2.1.4: Test Migration for CI
+ * Performance Replaces @QuarkusTest version with pure unit testing.
  */
 @ExtendWith(MockitoExtension.class)
 @DisplayName("LeadNormalizationService Unit Tests")
 class LeadNormalizationServiceTest {
 
-  @Mock
-  private EntityManager entityManager;
+  @Mock private EntityManager entityManager;
 
   private LeadNormalizationService normalizationService;
 
@@ -68,7 +64,8 @@ class LeadNormalizationServiceTest {
   @ParameterizedTest
   @CsvSource({
     "'FreshFoodz GmbH', 'freshfoodz'",
-    "'  Test Company AG  ', 'test company ag'",  // Normalization lowercases but doesn't strip uppercase AG
+    "'  Test Company AG  ', 'test company ag'", // Normalization lowercases but doesn't strip
+    // uppercase AG
     "'Example e.V.', 'example'",
     "'Firma GmbH & Co. KG', 'firma'",
     "'UPPERCASE GMBH', 'uppercase'",
@@ -105,7 +102,7 @@ class LeadNormalizationServiceTest {
 
   @ParameterizedTest
   @NullAndEmptySource
-  @ValueSource(strings = {"abc"})  // "123" becomes "+49123"
+  @ValueSource(strings = {"abc"}) // "123" becomes "+49123"
   @DisplayName("Should return null for invalid phone")
   void shouldReturnNullForInvalidPhone(String input) {
     assertNull(normalizationService.normalizePhone(input));
@@ -227,7 +224,7 @@ class LeadNormalizationServiceTest {
     assertEquals("test@example.com", lead.emailNormalized);
     assertNull(lead.phoneE164);
     assertNull(lead.companyNameNormalized);
-    assertEquals("invalid-url", lead.websiteDomain);  // Fallback extraction works
+    assertEquals("invalid-url", lead.websiteDomain); // Fallback extraction works
   }
 
   // ========== Duplicate Detection Tests ==========

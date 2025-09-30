@@ -26,8 +26,7 @@ import org.junit.jupiter.api.*;
 
 /**
  * Integration tests for Lead REST API. Tests user-based protection system and lead lifecycle
- * management.
- * Sprint 2.1.4 Fix: Added @TestTransaction to fix ContextNotActiveException
+ * management. Sprint 2.1.4 Fix: Added @TestTransaction to fix ContextNotActiveException
  */
 @QuarkusTest
 @TestTransaction

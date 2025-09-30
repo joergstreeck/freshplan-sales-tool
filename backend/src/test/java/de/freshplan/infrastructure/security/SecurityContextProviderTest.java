@@ -5,10 +5,10 @@ import static org.mockito.Mockito.*;
 
 import de.freshplan.test.SecurityDisabledTestProfile;
 import io.quarkus.security.identity.SecurityIdentity;
+import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
 import io.quarkus.test.security.TestSecurity;
-import io.quarkus.test.TestTransaction;
 import jakarta.enterprise.context.control.ActivateRequestContext;
 import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
@@ -31,7 +31,7 @@ import org.mockito.MockitoAnnotations;
 @QuarkusTest
 @Tag("migrate")
 @TestProfile(SecurityDisabledTestProfile.class)
-@TestTransaction  // Sprint 2.1.4 Fix: Provide transaction context which includes RequestContext
+@TestTransaction // Sprint 2.1.4 Fix: Provide transaction context which includes RequestContext
 class SecurityContextProviderTest {
 
   @Inject SecurityContextProvider securityContextProvider;
@@ -397,7 +397,6 @@ class SecurityContextProviderTest {
   @DisplayName("Authentication Details Tests")
   class AuthenticationDetailsTests {
 
-
     @Test
     @DisplayName("Should create anonymous details correctly")
     void shouldCreateAnonymousDetailsCorrectly() {
@@ -542,9 +541,7 @@ class SecurityContextProviderTest {
 
   @Nested
   @DisplayName("Edge Cases and Error Handling")
-  class EdgeCasesTests {
-
-  }
+  class EdgeCasesTests {}
 
   // Moved methods from nested classes that need @ActivateRequestContext annotation
   // due to CDI limitation with interceptor bindings on nested class methods

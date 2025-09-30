@@ -9,7 +9,6 @@ import de.freshplan.infrastructure.settings.SettingsService;
 import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.security.TestSecurity;
-import io.quarkus.test.TestTransaction;
 import io.restassured.http.ContentType;
 import io.vertx.core.json.JsonObject;
 import jakarta.inject.Inject;
@@ -19,12 +18,12 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 /**
- * Integration tests for Settings REST API (Sprint 1.2 PR #2).
- * Verifies ETag headers, conditional requests, and optimistic locking with real HTTP calls.
+ * Integration tests for Settings REST API (Sprint 1.2 PR #2). Verifies ETag headers, conditional
+ * requests, and optimistic locking with real HTTP calls.
  *
- * Unit tests for business logic are in SettingsResourceUnitTest.
+ * <p>Unit tests for business logic are in SettingsResourceUnitTest.
  *
- * Sprint 2.1.4 Fix: Removed @TestTransaction from class level to fix test isolation issues
+ * <p>Sprint 2.1.4 Fix: Removed @TestTransaction from class level to fix test isolation issues
  */
 @QuarkusTest
 @TestHTTPEndpoint(SettingsResource.class)

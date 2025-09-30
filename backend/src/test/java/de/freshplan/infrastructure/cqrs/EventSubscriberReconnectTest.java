@@ -6,7 +6,7 @@ import static org.mockito.Mockito.*;
 
 import de.freshplan.test.profiles.DisableEventSubscriberProfile;
 import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.TestTransaction;import io.quarkus.test.junit.TestProfile;
+import io.quarkus.test.junit.TestProfile;
 import io.quarkus.test.junit.mockito.InjectMock;
 import jakarta.inject.Inject;
 import java.sql.Connection;

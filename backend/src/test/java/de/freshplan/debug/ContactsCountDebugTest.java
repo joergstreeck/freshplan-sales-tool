@@ -8,8 +8,8 @@ import de.freshplan.domain.customer.repository.CustomerRepository;
 import de.freshplan.domain.customer.service.CustomerService;
 import de.freshplan.domain.customer.service.dto.CustomerResponse;
 import de.freshplan.domain.customer.service.query.CustomerQueryService;
-import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.TestTransaction;
+import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import java.util.List;
@@ -22,7 +22,7 @@ import org.junit.jupiter.api.Test;
  */
 @QuarkusTest
 @Tag("quarantine")
-@TestTransaction  // Sprint 2.1.4: Fix ContextNotActiveException
+@TestTransaction // Sprint 2.1.4: Fix ContextNotActiveException
 public class ContactsCountDebugTest {
 
   @Inject CustomerRepository customerRepository;

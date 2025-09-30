@@ -5,7 +5,7 @@ import de.freshplan.domain.customer.repository.CustomerRepository;
 import de.freshplan.domain.opportunity.repository.OpportunityRepository;
 import de.freshplan.domain.user.repository.UserRepository;
 import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.TestTransaction;import jakarta.inject.Inject;
+import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
