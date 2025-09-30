@@ -147,8 +147,8 @@ backend/src/test/java/de/freshplan/
 #### Opportunity Domain (12 Tests)
 - [ ] OpportunityServiceTest → Mockito
 - [ ] OpportunityServiceIntegrationTest → Mockito (war falsch benannt!)
-- [ ] OpportunityCommandServiceTest → Mockito
-- [ ] OpportunityQueryServiceTest → Mockito
+- [x] OpportunityCommandServiceTest → Mockito ✅ DONE (Sprint 2.1.4)
+- [ ] OpportunityQueryServiceTest → Mockito (NEXT)
 - [ ] OpportunityMapperTest → Plain JUnit
 - [ ] OpportunityRepositoryTest → BEHALTEN (DB Test)
 - [ ] Weitere Opportunity Tests...
@@ -296,22 +296,31 @@ grep -r "@QuarkusTest" src/test --include="*.java" | \
   - Neue Version: Pure Mockito mit Reflection
   - **Performance-Gewinn: ~12s → < 1s**
   - 39 Tests laufen alle grün
+- [x] **OpportunityCommandServiceTest** → **Pure Mockito** ✅
+  - Alte Version: @QuarkusTest mit DB und Repository
+  - Neue Version: Pure Mockito mit LENIENT mode
+  - **Performance-Gewinn: ~10-12s → < 1s**
+  - 15 Tests laufen alle grün
+  - Lösung: @MockitoSettings(strictness = Strictness.LENIENT) für flexible Stubs
 - [ ] **UserServiceTest** - Zu komplex (API-Inkompatibilitäten)
 - [ ] **FollowUpAutomationServiceTest** - Nutzt TestTx.committed (echter DB Test)
 
 ### Erkenntnisse Sprint 2.1.4
-- **2 Tests erfolgreich migriert** mit massiven Performance-Gewinnen
+- **3 Tests erfolgreich migriert** mit massiven Performance-Gewinnen
 - **Tests mit DB-Operationen** müssen @QuarkusTest bleiben:
   - Tests mit `Territory.deleteAll()`, `UserLeadSettings.deleteAll()`
   - Tests mit `@TestTransaction` oder `TestTx.committed()`
   - RestAssured API Tests
 - **Command/Query Service Tests** sind gute Kandidaten (nutzen oft @InjectMock)
 - **Reflection-Lösung** bewährt für final classes
-- **Performance-Gewinne:** 12x bis 107x schneller pro Test!
+- **Performance-Gewinne:** 10x bis 107x schneller pro Test!
+- **LENIENT Mode** bewährt sich für Tests mit vielen Mocks
 
-### Tag 2
-- [ ] User Domain migriert
-- [ ] Customer Domain gestartet
+### Tag 2 (01.10.2025)
+- [ ] OpportunityQueryServiceTest migrieren
+- [ ] UserCommandServiceTest migrieren
+- [ ] CustomerCommandServiceTest migrieren
+- [ ] ContactCommandServiceTest migrieren
 
 ### Tag 3
 - [ ] Customer Domain fertig
