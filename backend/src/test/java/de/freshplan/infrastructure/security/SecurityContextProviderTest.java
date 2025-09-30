@@ -196,27 +196,9 @@ class SecurityContextProviderTest {
   class JwtTokenTests {
 
     @Test
-    @DisplayName("Should return null token expiration when JWT not available")
-    void shouldReturnNullTokenExpirationWhenJwtNotAvailable() {
-      assertNull(securityContextProvider.getTokenExpiration());
-    }
-
-    @Test
     @DisplayName("Should return true for token expired when no JWT available")
     void shouldReturnTrueForTokenExpiredWhenNoJwt() {
       assertTrue(securityContextProvider.isTokenExpired(300));
-    }
-
-    @Test
-    @DisplayName("Should return null session ID when JWT not available")
-    void shouldReturnNullSessionIdWhenJwtNotAvailable() {
-      assertNull(securityContextProvider.getSessionId());
-    }
-
-    @Test
-    @DisplayName("Should return null JWT when instance is unsatisfied")
-    void shouldReturnNullJwtWhenInstanceUnsatisfied() {
-      assertNull(securityContextProvider.getJwt());
     }
   }
 
@@ -415,32 +397,6 @@ class SecurityContextProviderTest {
   @DisplayName("Authentication Details Tests")
   class AuthenticationDetailsTests {
 
-    @Test
-    @TestSecurity(
-        user = "testuser",
-        roles = {"admin", "manager"})
-    @DisplayName("Should return authenticated details when user is authenticated")
-    void shouldReturnAuthenticatedDetailsWhenAuthenticated() {
-      SecurityContextProvider.AuthenticationDetails details =
-          securityContextProvider.getAuthenticationDetails();
-
-      assertTrue(details.isAuthenticated());
-      assertEquals("testuser", details.getUsername());
-      assertEquals(2, details.getRoles().size());
-      assertTrue(details.getRoles().contains("admin"));
-      assertTrue(details.getRoles().contains("manager"));
-    }
-
-    @Test
-    @DisplayName("Should return anonymous details when user is not authenticated")
-    void shouldReturnAnonymousDetailsWhenNotAuthenticated() {
-      SecurityContextProvider.AuthenticationDetails details =
-          securityContextProvider.getAuthenticationDetails();
-
-      assertFalse(details.isAuthenticated());
-      assertNull(details.getUsername());
-      assertTrue(details.getRoles().isEmpty());
-    }
 
     @Test
     @DisplayName("Should create anonymous details correctly")
@@ -588,37 +544,94 @@ class SecurityContextProviderTest {
   @DisplayName("Edge Cases and Error Handling")
   class EdgeCasesTests {
 
-    @Test
-    @DisplayName("Should handle empty role name gracefully")
-    void shouldHandleEmptyRoleNameGracefully() {
-      assertFalse(securityContextProvider.hasRole(""));
-      assertFalse(securityContextProvider.hasRole(null));
-    }
+  }
 
-    @Test
-    @TestSecurity(
-        user = "testuser",
-        roles = {"admin"})
-    @DisplayName("Should handle multiple role requirements correctly")
-    void shouldHandleMultipleRoleRequirementsCorrectly() {
-      // User has admin role
-      assertDoesNotThrow(() -> securityContextProvider.requireAnyRole("admin", "manager", "sales"));
+  // Moved methods from nested classes that need @ActivateRequestContext annotation
+  // due to CDI limitation with interceptor bindings on nested class methods
 
-      // User doesn't have viewer role but has admin
-      assertDoesNotThrow(() -> securityContextProvider.requireAnyRole("viewer", "admin"));
+  @Test
+  @ActivateRequestContext
+  @DisplayName("Should return null token expiration when JWT not available")
+  void shouldReturnNullTokenExpirationWhenJwtNotAvailable() {
+    assertNull(securityContextProvider.getTokenExpiration());
+  }
 
-      // User doesn't have any of these roles
-      assertThrows(
-          SecurityException.class,
-          () -> securityContextProvider.requireAnyRole("viewer", "customer"));
-    }
+  @Test
+  @ActivateRequestContext
+  @DisplayName("Should return null session ID when JWT not available")
+  void shouldReturnNullSessionIdWhenJwtNotAvailable() {
+    assertNull(securityContextProvider.getSessionId());
+  }
 
-    @Test
-    @DisplayName("Should return empty set for roles when not authenticated")
-    void shouldReturnEmptySetForRolesWhenNotAuthenticated() {
-      Set<String> roles = securityContextProvider.getRoles();
-      assertNotNull(roles);
-      assertTrue(roles.isEmpty());
-    }
+  @Test
+  @ActivateRequestContext
+  @DisplayName("Should return null JWT when instance is unsatisfied")
+  void shouldReturnNullJwtWhenInstanceUnsatisfied() {
+    assertNull(securityContextProvider.getJwt());
+  }
+
+  @Test
+  @ActivateRequestContext
+  @TestSecurity(
+      user = "testuser",
+      roles = {"admin", "manager"})
+  @DisplayName("Should return authenticated details when user is authenticated")
+  void shouldReturnAuthenticatedDetailsWhenAuthenticated() {
+    SecurityContextProvider.AuthenticationDetails details =
+        securityContextProvider.getAuthenticationDetails();
+
+    assertTrue(details.isAuthenticated());
+    assertEquals("testuser", details.getUsername());
+    assertEquals(2, details.getRoles().size());
+    assertTrue(details.getRoles().contains("admin"));
+    assertTrue(details.getRoles().contains("manager"));
+  }
+
+  @Test
+  @ActivateRequestContext
+  @DisplayName("Should return anonymous details when user is not authenticated")
+  void shouldReturnAnonymousDetailsWhenNotAuthenticated() {
+    SecurityContextProvider.AuthenticationDetails details =
+        securityContextProvider.getAuthenticationDetails();
+
+    assertFalse(details.isAuthenticated());
+    assertNull(details.getUsername());
+    assertTrue(details.getRoles().isEmpty());
+  }
+
+  @Test
+  @ActivateRequestContext
+  @DisplayName("Should handle empty role name gracefully")
+  void shouldHandleEmptyRoleNameGracefully() {
+    assertFalse(securityContextProvider.hasRole(""));
+    assertFalse(securityContextProvider.hasRole(null));
+  }
+
+  @Test
+  @ActivateRequestContext
+  @TestSecurity(
+      user = "testuser",
+      roles = {"admin"})
+  @DisplayName("Should handle multiple role requirements correctly")
+  void shouldHandleMultipleRoleRequirementsCorrectly() {
+    // User has admin role
+    assertDoesNotThrow(() -> securityContextProvider.requireAnyRole("admin", "manager", "sales"));
+
+    // User doesn't have viewer role but has admin
+    assertDoesNotThrow(() -> securityContextProvider.requireAnyRole("viewer", "admin"));
+
+    // User doesn't have any of these roles
+    assertThrows(
+        SecurityException.class,
+        () -> securityContextProvider.requireAnyRole("viewer", "customer"));
+  }
+
+  @Test
+  @ActivateRequestContext
+  @DisplayName("Should return empty set for roles when not authenticated")
+  void shouldReturnEmptySetForRolesWhenNotAuthenticated() {
+    Set<String> roles = securityContextProvider.getRoles();
+    assertNotNull(roles);
+    assertTrue(roles.isEmpty());
   }
 }
