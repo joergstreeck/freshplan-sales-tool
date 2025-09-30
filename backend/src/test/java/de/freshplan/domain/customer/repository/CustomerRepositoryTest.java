@@ -44,6 +44,9 @@ class CustomerRepositoryTest {
   void setupCleanDatabase() {
     // Clean database before each test to ensure proper isolation
     // Delete in correct order due to foreign key constraints
+    // Phase 5B.2: Delete all related entities first to avoid FK violations
+    em.createNativeQuery("DELETE FROM opportunity_activities").executeUpdate();
+    em.createNativeQuery("DELETE FROM opportunities").executeUpdate();
     em.createQuery("DELETE FROM CustomerTimelineEvent").executeUpdate();
     em.createQuery("DELETE FROM ContactInteraction").executeUpdate();
     em.createQuery("DELETE FROM CustomerContact").executeUpdate();
