@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -38,9 +39,10 @@ class CustomerRepositoryTest {
   // Test data will be created in each test method for proper isolation
 
   @BeforeEach
+  @Transactional(Transactional.TxType.REQUIRES_NEW)
   void setupCleanDatabase() {
-    // Phase 5C Fix: Cleanup WITHOUT @Transactional to avoid deadlocks
-    // Runs in test's transaction context
+    // Phase 5C Fix: Separate transaction (REQUIRES_NEW) commits BEFORE test transaction
+    // This prevents test data leakage while avoiding deadlocks
     em.createNativeQuery("DELETE FROM opportunity_activities").executeUpdate();
     em.createNativeQuery("DELETE FROM opportunities").executeUpdate();
     em.createQuery("DELETE FROM CustomerTimelineEvent").executeUpdate();
