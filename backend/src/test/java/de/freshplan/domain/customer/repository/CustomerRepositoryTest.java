@@ -13,8 +13,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
-import jakarta.transaction.Transactional;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
@@ -36,21 +34,8 @@ class CustomerRepositoryTest {
   // Counter for unique customer numbers
   private static final AtomicInteger customerCounter = new AtomicInteger(1);
 
-  // Test data will be created in each test method for proper isolation
-
-  @BeforeEach
-  @Transactional(Transactional.TxType.REQUIRES_NEW)
-  void setupCleanDatabase() {
-    // Phase 5C Fix: Separate transaction (REQUIRES_NEW) commits BEFORE test transaction
-    // This prevents test data leakage while avoiding deadlocks
-    em.createNativeQuery("DELETE FROM opportunity_activities").executeUpdate();
-    em.createNativeQuery("DELETE FROM opportunities").executeUpdate();
-    em.createQuery("DELETE FROM CustomerTimelineEvent").executeUpdate();
-    em.createQuery("DELETE FROM ContactInteraction").executeUpdate();
-    em.createQuery("DELETE FROM CustomerContact").executeUpdate();
-    em.createQuery("DELETE FROM Customer").executeUpdate();
-    em.flush();
-  }
+  // Phase 5C Fix: No @BeforeEach cleanup - @TestTransaction provides automatic rollback
+  // Tests use relative assertions (before + X = after) to tolerate test data from other classes
 
   /**
    * Creates standard test data set for tests that need multiple customers. Returns a TestDataSet
@@ -381,11 +366,15 @@ class CustomerRepositoryTest {
   @Test
   @TestTransaction
   void findRootCustomers_shouldReturnCustomersWithoutParent() {
+    // Phase 5C: Count before to handle test data leakage
+    long rootsBefore = repository.findRootCustomers(null).size();
+
     TestDataSet data = createStandardTestData();
 
     var roots = repository.findRootCustomers(null);
 
-    assertThat(roots).hasSize(2); // testCustomer and parentCustomer
+    // Phase 5C: Relative assertion - we created 2 new root customers (testCustomer and parentCustomer)
+    assertThat(roots).hasSize((int) (rootsBefore + 2));
     assertThat(roots).noneMatch(c -> c.getParentCustomer() != null);
   }
 

@@ -7,7 +7,6 @@ import de.freshplan.audit.entity.AuditLog.*;
 import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.*;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,15 +27,13 @@ class AuditRepositoryTest {
   private LocalDateTime testTime;
 
   @BeforeEach
-  @Transactional(Transactional.TxType.REQUIRES_NEW)
   void setUp() {
     testUserId = UUID.randomUUID();
     testEntityId = UUID.randomUUID();
     testTime = LocalDateTime.now();
 
-    // Phase 5C Fix: Separate transaction (REQUIRES_NEW) commits BEFORE test transaction
-    // This prevents test data leakage while avoiding deadlocks
-    auditRepository.deleteAll();
+    // Phase 5C Fix: No cleanup - @TestTransaction provides automatic rollback
+    // AuditRepository tests are isolated enough - each test creates unique UUIDs
   }
 
   @Test
