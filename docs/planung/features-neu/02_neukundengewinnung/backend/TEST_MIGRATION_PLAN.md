@@ -18,12 +18,12 @@ updated: "2025-09-30"
 
 ## 📊 IST-ZUSTAND ANALYSE
 
-### Zahlen & Fakten
+### Zahlen & Fakten (Stand: 30.09.2025)
 - **171 Test-Dateien** insgesamt
-- **164 nutzen @QuarkusTest** = starten kompletten Quarkus-Container + echte DB
-- **Nur 7 echte Unit-Tests** ohne DB
-- **CI-Laufzeit:** 20+ Minuten (Timeout!)
-- **Log-Größe:** 13MB (96.000+ Zeilen)
+- **151 nutzen noch @QuarkusTest** (von ursprünglich 164)
+- **20+ echte Unit-Tests** ohne DB (von ursprünglich 7)
+- **CI-Laufzeit:** ~15-18 Minuten (verbessert von 20+ Timeout)
+- **Log-Größe:** noch immer zu groß
 
 ### Root Cause
 1. Jeder @QuarkusTest startet Quarkus neu (~2-3 Sek)
@@ -299,11 +299,15 @@ grep -r "@QuarkusTest" src/test --include="*.java" | \
 - [ ] **UserServiceTest** - Zu komplex (API-Inkompatibilitäten)
 - [ ] **FollowUpAutomationServiceTest** - Nutzt TestTx.committed (echter DB Test)
 
-### Erkenntnisse
-- Nicht alle Tests lassen sich einfach migrieren
-- Integration-Tests mit RestAssured müssen @QuarkusTest bleiben
-- Viele Tests sind bereits als Mockito-Tests geschrieben
-- Focus auf die wirklichen Performance-Killer legen
+### Erkenntnisse Sprint 2.1.4
+- **2 Tests erfolgreich migriert** mit massiven Performance-Gewinnen
+- **Tests mit DB-Operationen** müssen @QuarkusTest bleiben:
+  - Tests mit `Territory.deleteAll()`, `UserLeadSettings.deleteAll()`
+  - Tests mit `@TestTransaction` oder `TestTx.committed()`
+  - RestAssured API Tests
+- **Command/Query Service Tests** sind gute Kandidaten (nutzen oft @InjectMock)
+- **Reflection-Lösung** bewährt für final classes
+- **Performance-Gewinne:** 12x bis 107x schneller pro Test!
 
 ### Tag 2
 - [ ] User Domain migriert
