@@ -52,17 +52,22 @@ class TimelineCommandServiceTest {
 
   @BeforeEach
   void setUp() {
-    // Reset all mocks to avoid interference between tests
+    // DEEP RESET: Complete mock reinitialization to prevent interference
     reset(timelineRepository, customerRepository, timelineMapper);
 
+    // Generate fresh UUIDs for complete isolation
     testCustomerId = UUID.randomUUID();
 
+    // Create fresh test entities with new IDs
     testCustomer =
         CustomerTestDataFactory.builder()
             .withCompanyName("Test Company")
             .withCustomerNumber("KD-2025-00001")
             .build();
     testCustomer.setId(testCustomerId);
+
+    // Setup default mock behavior that ALL tests can rely on
+    when(customerRepository.findByIdOptional(testCustomerId)).thenReturn(Optional.of(testCustomer));
 
     testEvent = new CustomerTimelineEvent();
     testEvent.setId(UUID.randomUUID());
@@ -99,7 +104,7 @@ class TimelineCommandServiceTest {
     request.setFollowUpDate(LocalDateTime.now().plusDays(7));
     request.setFollowUpNotes("Check customer satisfaction");
 
-    when(customerRepository.findByIdOptional(testCustomerId)).thenReturn(Optional.of(testCustomer));
+    // Default mock from setup should be sufficient - only add mapper mock
     when(timelineMapper.toResponse(any(CustomerTimelineEvent.class))).thenReturn(testResponse);
 
     // When
@@ -154,7 +159,7 @@ class TimelineCommandServiceTest {
     request.setNote("Important customer note");
     request.setPerformedBy("testuser");
 
-    when(customerRepository.findByIdOptional(testCustomerId)).thenReturn(Optional.of(testCustomer));
+    // Default mock from setup should be sufficient - only add mapper mock
     when(timelineMapper.toResponse(any(CustomerTimelineEvent.class))).thenReturn(testResponse);
 
     // When
@@ -190,7 +195,7 @@ class TimelineCommandServiceTest {
     request.setFollowUpDate(LocalDateTime.now().plusDays(3));
     request.setFollowUpNotes("Check response");
 
-    when(customerRepository.findByIdOptional(testCustomerId)).thenReturn(Optional.of(testCustomer));
+    // Default mock from setup should be sufficient - only add mapper mock
     when(timelineMapper.toResponse(any(CustomerTimelineEvent.class))).thenReturn(testResponse);
 
     // When
