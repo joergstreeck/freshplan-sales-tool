@@ -196,6 +196,141 @@ class CustomerCQRSIntegrationTest {
 }
 ```
 
+## 📂 Test Organization Strategy
+
+### **Backend Test Structure (Responsibility-based):**
+```
+backend/src/test/java/de/freshplan/
+├── api/            # REST endpoint tests (10% - lightweight with mocks)
+│   ├── resources/  # REST controllers
+│   └── settings/   # Settings API tests
+├── domain/         # Business logic unit tests (70% - pure Mockito, NO @QuarkusTest)
+│   ├── customer/service/     # Customer domain tests
+│   ├── user/service/        # User domain tests
+│   └── opportunity/service/ # Opportunity domain tests
+├── integration/    # Integration tests (20% - @QuarkusTest with real DB)
+│   ├── cqrs/      # CQRS end-to-end tests
+│   └── scenarios/ # Cross-module test scenarios
+├── infrastructure/ # Technical infrastructure tests
+│   ├── security/  # Security filters, RBAC
+│   └── events/    # Event system tests
+├── modules/       # Module-specific tests (e.g., Leads module)
+│   └── leads/     # Module 02 specific tests
+├── test/          # Test infrastructure & base classes
+│   ├── A00_EnvDiagTest.java     # Environment diagnosis (runs first)
+│   └── DatabaseGrowthTracker.java # Test utilities
+└── testsupport/   # Shared test utilities and fixtures
+```
+
+### **Frontend Test Structure (Co-location first):**
+```
+frontend/
+├── src/                    # Application code with co-located tests
+│   ├── components/
+│   │   ├── Button.tsx
+│   │   └── Button.test.tsx    # Co-located unit test
+│   └── features/leads/
+│       ├── LeadList.tsx
+│       └── LeadList.test.tsx   # Co-located feature test
+├── tests/                  # Central tests & test infrastructure
+│   ├── app/               # Shell/Router/Layout tests
+│   ├── features/          # Cross-cutting feature tests
+│   ├── integration/       # MSW-based integration tests
+│   ├── infra/            # Security, i18n, Theme, ErrorBoundary
+│   ├── greenpath/        # Smoke/Happy-path flows
+│   ├── test/             # Test infra (setupTests.ts, A00_EnvDiag.test.ts)
+│   └── testsupport/      # Custom render, screen helpers, a11y utils
+└── e2e/                   # End-to-end tests
+    ├── specs/            # E2E test specifications
+    ├── fixtures/         # Test data
+    └── playwright.config.ts
+```
+
+### **Test Naming Conventions:**
+- `A00_*` - Gatekeeper/diagnosis tests (run first)
+- `*Test.[java|ts|tsx]` - Standard unit/component tests
+- `*IntegrationTest.*` - Integration tests with DB/API
+- `*MockitoTest.java` - Temporary marker during migration
+- `ZZZ_*` - Final verification tests (run last)
+
+### **Test Distribution Targets:**
+```yaml
+Backend:
+  Unit Tests (Mockito):     70%  # Fast, no container
+  Integration Tests:        20%  # @QuarkusTest with DB
+  API Tests (RestAssured):  10%  # Contract testing
+
+Frontend:
+  Unit/Component:          60%  # Co-located, fast
+  Integration (MSW):       30%  # Mock API responses
+  E2E (Playwright):        10%  # Critical paths only
+
+Performance Goals:
+  PR Pipeline:      < 5 minutes
+  Integration Suite: < 10 minutes
+  Full E2E:         < 20 minutes
+```
+
+### **Test Migration Strategy (Sprint 2.1.4):**
+```yaml
+Problem:
+  - 164 of 171 backend tests use @QuarkusTest
+  - CI timeout after 20+ minutes
+  - Tests fail with ContextNotActiveException
+
+Solution:
+  1. Write new Mockito test (parallel to old)
+  2. Validate same coverage
+  3. Delete old @QuarkusTest immediately
+  4. Rename if needed (*MockitoTest → *Test)
+
+Results so far:
+  CustomerResourceFeatureFlagTest:
+    Old: 12.56s with @QuarkusTest (12 errors)
+    New: 0.117s with pure Mockito (0 errors)
+    Performance gain: 107x faster!
+
+Migration Priority:
+  - Tests taking > 5 seconds
+  - Tests frequently failing
+  - Tests blocking CI builds
+```
+
+### **CI Test Execution Strategy:**
+```yaml
+Backend CI Split:
+  PR Tests (fast):
+    - mvn test -Dgroups="core"
+    - Pure Mockito tests only
+    - Target: < 5 minutes
+
+  Integration Tests:
+    - mvn test -Dgroups="integration"
+    - @QuarkusTest with DB
+    - Run on merge to main
+
+  Quarantine Tests:
+    - mvn test -Dgroups="quarantine"
+    - NEVER run automatically
+    - Manual execution only
+
+Frontend CI Split:
+  PR Tests (fast):
+    - npm run test:unit
+    - Co-located tests only
+    - Target: < 3-4 minutes
+
+  Integration Tests:
+    - npm run test:integration
+    - MSW-based tests
+    - Run on merge
+
+  E2E Tests:
+    - npm run test:e2e
+    - Playwright tests
+    - Nightly or on-demand
+```
+
 ## 🎪 Integration Testing
 
 ### **REST API Testing (RestAssured):**
