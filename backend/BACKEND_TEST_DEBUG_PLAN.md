@@ -23,14 +23,11 @@
 - **Start (Phase 1):** 91 Fehler (36 Failures + 55 Errors)
 - **Nach Phase 1:** 78 Fehler (43 Failures + 35 Errors) → -13 Errors ✅
 - **Nach Phase 4B+4C:** 42 Fehler (30 Failures + 12 Errors) → -36 Errors ✅
-- **Nach Phase 5A (erwartet):** 30 Fehler (30 Failures + 0 Errors) → -12 Errors ✅
-- **FORTSCHRITT:** 91 → 30 Fehler = **67% Reduktion** 🎉
+- **Nach Phase 5A:** **25 Fehler (24 Failures + 1 Error)** → **-17 Fehler** 🎉🎉🎉
+- **FORTSCHRITT:** 91 → 25 Fehler = **72,5% Reduktion** 🚀
 
-### ⚠️ VERBLEIBENDE 30 FEHLER (30 Failures + 0 Errors)
-1. **LeadResourceTest** - 11 Failures (Test Data Setup)
-2. **CustomerRepositoryTest** - 7 Failures (Repository-Logik)
-3. **SalesCockpitQueryServiceTest** - 6 Failures (Mock-Interferenz)
-4. **Andere** - 6 Failures (verschiedene Tests)
+### ⚠️ VERBLEIBENDE 25 FEHLER (24 Failures + 1 Error)
+**Zu analysieren - siehe Phase 5A Analysis unten**
 
 ## 🎯 SYSTEMATISCHER DEBUG-PLAN
 
@@ -936,11 +933,11 @@ class UserServiceRolesTest {
 
 ## 🎉 PHASE 5A: QUICK WINS - COMPLETED
 
-**Status:** ✅ Completed
-**Commit:** 07deeab0f
-**Commits:** 07deeab0f (Phase 5A Implementation)
+**Status:** ✅ Completed & CI Validated
+**Commits:** 07deeab0f (Phase 5A Implementation), ba9c18025 (Dokumentation)
 **Local Test:** SUCCESS
-**CI Status:** Pending Validation
+**CI Run:** 18141580875 (SUCCESS - BESSER ALS ERWARTET!)
+**CI Status:** ✅ **ÜBERRASCHUNGS-ERFOLG - 17 Fehler behoben statt 13!**
 
 ### 🎯 ZIEL: ContextNotActive Errors in Nested Classes beheben
 
@@ -1046,10 +1043,23 @@ void complexScenarios_changeStage_multipleOpportunities_shouldHandleIndependentl
 - **UserServiceRolesTest:** -0 Errors (bereits in 4C behoben)
 - **Total:** -13 Errors
 
-**Fehler-Reduktion:**
+**Erwartete Fehler-Reduktion:**
 - **VOR:** Failures: 30, Errors: 12 = **42 Fehler**
 - **ERWARTET:** Failures: 30, Errors: 0 = **30 Fehler**
-- **VERBESSERUNG:** -12 Errors ✅
+- **GEPLANT:** -12 Errors ✅
+
+**🎉 TATSÄCHLICHE CI-ERGEBNISSE (Run 18141580875):**
+```
+Tests run: 1711, Failures: 24, Errors: 1, Skipped: 208
+```
+
+**ERFOLG - BESSER ALS ERWARTET:**
+- **VOR:** Failures: 30, Errors: 12 = **42 Fehler**
+- **NACH:** Failures: 24, Errors: 1 = **25 Fehler**
+- **VERBESSERUNG:** **-6 Failures, -11 Errors = -17 Fehler total!** 🎉🎉🎉
+- **ÜBERRASCHUNG:** +6 Bonus-Failures behoben (vermutlich durch Test Isolation Effekte)
+
+**Erfolgsquote:** 130% (17 behoben statt 13 geplant) ✅
 
 **Lokale Validierung:**
 ```bash
@@ -1063,15 +1073,24 @@ void complexScenarios_changeStage_multipleOpportunities_shouldHandleIndependentl
 - ✅ Pattern: Test aus Nested Class verschieben + `@ActivateRequestContext` anwenden
 - ✅ Nested Classes nur für Tests verwenden, die KEINE CDI-Interceptor-Bindings benötigen
 
-**📊 VERBLEIBENDE 30 FEHLER (nach erfolgreicher CI-Validierung):**
+**📊 VERBLEIBENDE 25 FEHLER (TATSÄCHLICH):**
 
-**Kategorien:**
-1. **CustomerRepositoryTest** - 7 Failures (Repository-Logik)
-2. **SalesCockpitQueryServiceTest** - 6 Failures (Mock-Interferenz)
-3. **LeadResourceTest** - 11 Failures (404 Test Data Missing)
-4. **Andere** - 6 Failures (verschiedene kleinere Tests)
+**Gesamt-Fortschritt:**
+- **Start:** 91 Fehler (36 Failures + 55 Errors)
+- **Jetzt:** 25 Fehler (24 Failures + 1 Error)
+- **Reduktion:** **72,5%** 🎉🎉🎉
 
-**NÄCHSTER SCHRITT:** Phase 5B (CustomerRepositoryTest + SalesCockpitQueryServiceTest)
+**Verbleibende Fehler-Kategorien (zu analysieren):**
+1. **24 Failures** - vermutlich:
+   - CustomerRepositoryTest (~7 Failures?)
+   - SalesCockpitQueryServiceTest (~6 Failures?)
+   - LeadResourceTest (~11 Failures?)
+2. **1 Error** - unerwarteter einzelner Error (muss analysiert werden)
+
+**NÄCHSTE SCHRITTE:**
+1. ✅ Analyse des 1 verbleibenden Error
+2. ✅ Kategorisierung der 24 Failures
+3. ✅ Phase 5B Quick Wins starten
 
 ---
 
