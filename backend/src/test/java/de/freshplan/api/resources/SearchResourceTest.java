@@ -12,7 +12,7 @@ import de.freshplan.domain.search.service.dto.SearchResult;
 import de.freshplan.domain.search.service.dto.SearchResults;
 import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.security.TestSecurity;
+import io.quarkus.test.TestTransaction;import io.quarkus.test.security.TestSecurity;
 import jakarta.ws.rs.core.MediaType;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;

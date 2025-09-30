@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import de.freshplan.domain.customer.service.dto.*;
 import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.security.TestSecurity;
+import io.quarkus.test.TestTransaction;import io.quarkus.test.security.TestSecurity;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import java.lang.management.ManagementFactory;

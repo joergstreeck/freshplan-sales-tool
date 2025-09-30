@@ -14,7 +14,7 @@ import de.freshplan.domain.audit.service.AuditService;
 import io.quarkus.test.InjectMock;
 import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.security.TestSecurity;
+import io.quarkus.test.TestTransaction;import io.quarkus.test.security.TestSecurity;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.time.Instant;

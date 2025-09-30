@@ -11,7 +11,7 @@ import de.freshplan.test.TestDataBuilder;
 import de.freshplan.test.builders.CustomerBuilder;
 import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.security.TestSecurity;
+import io.quarkus.test.TestTransaction;import io.quarkus.test.security.TestSecurity;
 import jakarta.inject.Inject;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

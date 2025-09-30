@@ -3,7 +3,7 @@ package de.freshplan.greenpath;
 import static io.restassured.RestAssured.given;
 
 import io.quarkus.test.junit.QuarkusTest;
-import org.junit.jupiter.api.Tag;
+import io.quarkus.test.TestTransaction;import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 /**

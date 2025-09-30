@@ -6,7 +6,7 @@ import de.freshplan.domain.customer.service.SmartSortService.SmartSortStrategy;
 import de.freshplan.domain.customer.service.dto.SortCriteria;
 import io.quarkus.panache.common.Sort;
 import io.quarkus.test.junit.QuarkusTest;
-import jakarta.inject.Inject;
+import io.quarkus.test.TestTransaction;import jakarta.inject.Inject;
 import java.util.List;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;

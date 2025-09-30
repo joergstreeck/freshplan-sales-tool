@@ -2,7 +2,7 @@ package de.freshplan.test.base;
 
 import de.freshplan.test.builders.CustomerBuilder;
 import io.quarkus.test.junit.QuarkusTest;
-import jakarta.inject.Inject;
+import io.quarkus.test.TestTransaction;import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import org.jboss.logging.Logger;
 import org.junit.jupiter.api.AfterEach;

@@ -11,7 +11,7 @@ import de.freshplan.domain.audit.service.dto.AuditContext;
 import de.freshplan.shared.util.SecurityUtils;
 import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.security.TestSecurity;
+import io.quarkus.test.TestTransaction;import io.quarkus.test.security.TestSecurity;
 import jakarta.inject.Inject;
 import java.util.Map;
 import java.util.Optional;

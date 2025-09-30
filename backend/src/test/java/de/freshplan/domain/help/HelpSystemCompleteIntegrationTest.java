@@ -22,7 +22,7 @@ import de.freshplan.domain.help.service.query.UserStruggleDetectionQueryService;
 import de.freshplan.domain.help.test.HelpSystemTestHelper;
 import de.freshplan.infrastructure.events.EventBus;
 import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.junit.TestProfile;
+import io.quarkus.test.TestTransaction;import io.quarkus.test.junit.TestProfile;
 import io.restassured.http.ContentType;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;

@@ -1,7 +1,7 @@
 package de.freshplan.test;
 
 import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.junit.TestProfile;
+import io.quarkus.test.TestTransaction;import io.quarkus.test.junit.TestProfile;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 

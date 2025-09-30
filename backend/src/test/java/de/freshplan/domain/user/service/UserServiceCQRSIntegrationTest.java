@@ -12,7 +12,7 @@ import de.freshplan.domain.user.service.dto.UserResponse;
 import de.freshplan.domain.user.service.mapper.UserMapper;
 import de.freshplan.test.builders.UserTestDataFactory;
 import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.junit.TestProfile;
+import io.quarkus.test.TestTransaction;import io.quarkus.test.junit.TestProfile;
 import io.quarkus.test.junit.mockito.InjectMock;
 import jakarta.inject.Inject;
 import java.time.Instant;

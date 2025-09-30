@@ -16,7 +16,7 @@ import de.freshplan.test.builders.ContactTestDataFactory;
 import de.freshplan.test.builders.CustomerBuilder;
 import io.quarkus.narayana.jta.QuarkusTransaction;
 import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.junit.TestProfile;
+import io.quarkus.test.TestTransaction;import io.quarkus.test.junit.TestProfile;
 import io.quarkus.test.security.TestSecurity;
 import jakarta.inject.Inject;
 import java.math.BigDecimal;

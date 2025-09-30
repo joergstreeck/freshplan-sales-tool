@@ -6,7 +6,7 @@ import de.freshplan.modules.leads.domain.Lead;
 import de.freshplan.modules.leads.domain.LeadStatus;
 import de.freshplan.modules.leads.domain.Territory;
 import io.quarkus.test.junit.QuarkusTest;
-import jakarta.inject.Inject;
+import io.quarkus.test.TestTransaction;import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.UUID;

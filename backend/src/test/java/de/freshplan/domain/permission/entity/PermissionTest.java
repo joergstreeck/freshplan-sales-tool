@@ -3,7 +3,7 @@ package de.freshplan.domain.permission.entity;
 import static org.assertj.core.api.Assertions.*;
 
 import io.quarkus.test.junit.QuarkusTest;
-import jakarta.transaction.Transactional;
+import io.quarkus.test.TestTransaction;import jakarta.transaction.Transactional;
 import java.time.Instant;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;

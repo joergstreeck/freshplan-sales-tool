@@ -11,7 +11,7 @@ import de.freshplan.domain.customer.repository.CustomerTimelineRepository;
 import de.freshplan.domain.testdata.service.TestDataService;
 import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
-import jakarta.inject.Inject;
+import io.quarkus.test.TestTransaction;import jakarta.inject.Inject;
 import java.math.BigDecimal;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;

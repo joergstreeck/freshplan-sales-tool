@@ -6,7 +6,7 @@ import de.freshplan.domain.cockpit.service.DashboardEventPublisher;
 import de.freshplan.infrastructure.pg.TestPgNotifySender;
 import de.freshplan.modules.leads.events.FollowUpProcessedEvent;
 import io.quarkus.test.junit.QuarkusTest;
-import io.vertx.core.json.JsonObject;
+import io.quarkus.test.TestTransaction;import io.vertx.core.json.JsonObject;
 import jakarta.inject.Inject;
 import jakarta.transaction.UserTransaction;
 import java.time.LocalDateTime;

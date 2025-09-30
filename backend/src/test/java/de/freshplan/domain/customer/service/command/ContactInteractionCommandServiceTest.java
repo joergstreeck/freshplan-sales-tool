@@ -17,7 +17,7 @@ import de.freshplan.test.builders.ContactInteractionBuilder;
 import de.freshplan.test.builders.ContactTestDataFactory;
 import de.freshplan.test.builders.CustomerBuilder;
 import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.junit.mockito.InjectMock;
+import io.quarkus.test.TestTransaction;import io.quarkus.test.junit.mockito.InjectMock;
 import jakarta.inject.Inject;
 import java.time.LocalDateTime;
 import java.util.Arrays;

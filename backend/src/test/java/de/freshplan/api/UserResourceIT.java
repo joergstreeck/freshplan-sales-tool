@@ -13,7 +13,7 @@ import de.freshplan.domain.user.service.dto.UpdateUserRequest;
 import de.freshplan.test.builders.UserTestDataFactory;
 import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.security.TestSecurity;
+import io.quarkus.test.TestTransaction;import io.quarkus.test.security.TestSecurity;
 import io.restassured.http.ContentType;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;

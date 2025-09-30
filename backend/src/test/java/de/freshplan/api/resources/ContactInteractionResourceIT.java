@@ -19,7 +19,7 @@ import de.freshplan.domain.customer.service.dto.ContactInteractionDTO;
 import de.freshplan.domain.opportunity.repository.OpportunityRepository;
 import de.freshplan.test.builders.CustomerBuilder;
 import io.quarkus.test.junit.QuarkusTest;
-import io.restassured.http.ContentType;
+import io.quarkus.test.TestTransaction;import io.restassured.http.ContentType;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;

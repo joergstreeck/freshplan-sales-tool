@@ -10,7 +10,7 @@ import de.freshplan.audit.repository.AuditRepository;
 import io.quarkus.security.identity.SecurityIdentity;
 import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
-import io.vertx.core.http.HttpServerRequest;
+import io.quarkus.test.TestTransaction;import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.net.SocketAddress;
 import jakarta.inject.Inject;
 import java.security.Principal;

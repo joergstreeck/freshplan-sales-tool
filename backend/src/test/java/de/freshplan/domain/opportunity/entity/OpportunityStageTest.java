@@ -8,7 +8,7 @@ import de.freshplan.test.builders.CustomerBuilder;
 import de.freshplan.test.builders.OpportunityBuilder;
 import de.freshplan.test.builders.UserBuilder;
 import io.quarkus.test.junit.QuarkusTest;
-import jakarta.inject.Inject;
+import io.quarkus.test.TestTransaction;import jakarta.inject.Inject;
 import java.math.BigDecimal;
 import java.util.UUID;
 import java.util.stream.Stream;

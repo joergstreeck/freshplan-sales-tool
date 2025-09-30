@@ -6,7 +6,7 @@ import de.freshplan.infrastructure.settings.Setting;
 import de.freshplan.infrastructure.settings.SettingsScope;
 import de.freshplan.infrastructure.settings.SettingsService;
 import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.security.TestSecurity;
+import io.quarkus.test.TestTransaction;import io.quarkus.test.security.TestSecurity;
 import io.vertx.core.json.JsonObject;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;

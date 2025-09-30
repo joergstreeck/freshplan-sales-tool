@@ -6,7 +6,7 @@ import static org.assertj.core.api.Assertions.within;
 import de.freshplan.domain.calculator.service.dto.CalculatorRequest;
 import de.freshplan.domain.calculator.service.dto.CalculatorResponse;
 import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.security.TestSecurity;
+import io.quarkus.test.TestTransaction;import io.quarkus.test.security.TestSecurity;
 import jakarta.inject.Inject;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
