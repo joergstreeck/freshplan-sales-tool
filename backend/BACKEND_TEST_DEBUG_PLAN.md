@@ -789,22 +789,133 @@ class UserServiceRolesTest {
 - **Vor:** 55 Errors (35 Failures + 20 Errors)
 - **Erwartet:** 41 Errors (35 Failures + 6 Errors)
 
-**CI-Status:** ⏳ Warte auf Run für Commit 2d96474c3
+**CI-RESULTAT (Run 18140639162, Commit 2d96474c3):**
 
-**📋 NÄCHSTE SCHRITTE (Nach CI-Validierung):**
+**Tests run: 1711, Failures: 30, Errors: 12, Skipped: 208**
 
-**Phase 4+ (NEXT): Basierend auf CI-Ergebnis priorisieren**
-1. ⏳ **PRIO 1:** CI-Ergebnis analysieren und neue Fehlerverteilung dokumentieren
-2. ⏳ **PRIO 2:** SalesCockpitQueryServiceTest Regression (6 Failures) - Falls noch relevant
-3. ⏳ **PRIO 3:** CustomerRepositoryTest Analyse (7 Failures)
-4. ⏳ **PRIO 4:** SecurityContextProviderTest Nested Classes (16 Errors)
-5. ⏳ **PRIO 5:** LeadResourceTest Test Data Setup (11 Failures)
-6. ⏳ **PRIO 6:** OpportunityServiceStageTransitionTest (1 Error)
+**🎉 PHASE 4B+4C ERFOLGREICH VALIDIERT:**
+- **VOR:** Failures: 35, Errors: 20 = **55 Fehler**
+- **NACH:** Failures: 30, Errors: 12 = **42 Fehler**
+- **VERBESSERUNG:** -5 Failures, -8 Errors = **-13 Fehler** ✅
+- **ERFOLGSQUOTE:** 92% der erwarteten Verbesserung (-13 von -14)
 
-**Strategie:**
-- Nach CI-Run: Impact vs. Complexity Matrix erstellen
-- Fokus auf Tests mit hohem Impact (viele Errors) und niedriger Complexity
-- SalesCockpitQueryServiceTest (435 Zeilen) evtl. später, wenn einfachere Fixes erschöpft
+**✅ BESTÄTIGTE FIXES:**
+- TimelineQueryServiceTest: 9 Errors → 0 Errors ✅
+- UserServiceRolesTest: 5 Errors → 1 Error (4 behoben, 1 CI-spezifisch)
+
+**📊 VERBLEIBENDE 42 FEHLER (30 Failures + 12 Errors):**
+
+**Kategorien:**
+1. **SecurityContextProviderTest** - 12 Errors (Nested Classes ContextNotActive)
+2. **LeadResourceTest** - 11 Failures (404 Test Data Missing)
+3. **CustomerRepositoryTest** - 7 Failures (Repository-Logik)
+4. **SalesCockpitQueryServiceTest** - 6 Failures (Mock-Interferenz)
+5. **OpportunityServiceStageTransitionTest** - 1 Error
+6. **UserServiceRolesTest** - 1 Error (Duplicate Roles - CI-spezifisch)
+
+## 🎯 AKTIONSPLAN FÜR GRÜNE CI (42 → 0 Fehler)
+
+**Impact vs. Complexity Matrix:**
+
+### **QUICK WINS (High Impact, Low-Medium Complexity):**
+
+**1. SecurityContextProviderTest (12 Errors) - Phase 2A Pattern**
+- **Impact:** -12 Errors (29% der verbleibenden Fehler!)
+- **Complexity:** MEDIUM (Tests aus Nested Classes ziehen, wie Phase 2A)
+- **Lösung:** Tests mit @ActivateRequestContext aus Nested Classes in Hauptklasse verschieben
+- **Effort:** 1-2h
+- **Priorität:** ⭐⭐⭐ HÖCHSTE (größter einzelner Block)
+
+**2. UserServiceRolesTest (1 Error) - Quick Fix**
+- **Impact:** -1 Error
+- **Complexity:** LOW (CI-spezifisches Duplicate-Problem)
+- **Lösung:** Test-Erwartung anpassen oder Duplicate-Handling prüfen
+- **Effort:** 15min
+- **Priorität:** ⭐⭐⭐ SCHNELL
+
+**3. OpportunityServiceStageTransitionTest (1 Error) - Einzelfall**
+- **Impact:** -1 Error
+- **Complexity:** LOW-MEDIUM (Einzelner Test)
+- **Lösung:** Test analysieren und fixen
+- **Effort:** 30min
+- **Priorität:** ⭐⭐ QUICK WIN
+
+**Subtotal Quick Wins:** -14 Errors → **28 Fehler verbleibend**
+
+---
+
+### **MEDIUM EFFORT (Medium Impact, Medium-High Complexity):**
+
+**4. CustomerRepositoryTest (7 Failures) - Repository-Logik**
+- **Impact:** -7 Failures (17% der verbleibenden)
+- **Complexity:** MEDIUM-HIGH (Repository Query Logic)
+- **Lösung:** Tests analysieren - evtl. Test-Erwartungen vs. tatsächliche Repository-Implementierung
+- **Mögliche Ursachen:**
+  - Count-Queries zählen falsch (z.B. inkl. inactive Customers)
+  - Filter-Logik in Repository inkorrekt
+  - Test-Erwartungen veraltet
+- **Effort:** 2-3h
+- **Priorität:** ⭐⭐ WICHTIG
+
+**5. SalesCockpitQueryServiceTest (6 Failures) - Mock-Interferenz**
+- **Impact:** -6 Failures (14% der verbleibenden)
+- **Complexity:** HIGH (435 Zeilen, komplexe Mocks)
+- **Lösung:** Entweder:
+  - A) Vollständige @QuarkusTest Conversion (sauber, zeitaufwändig)
+  - B) Mock-Reset-Strategie verbessern (schneller, fragiler)
+- **Effort:** 3-4h (Option A) oder 1-2h (Option B)
+- **Priorität:** ⭐⭐ MEDIUM
+
+**Subtotal Medium Effort:** -13 Failures → **15 Fehler verbleibend**
+
+---
+
+### **HIGH EFFORT (Medium Impact, High Complexity):**
+
+**6. LeadResourceTest (11 Failures) - Test Data Setup**
+- **Impact:** -11 Failures (größter Einzelblock der Failures)
+- **Complexity:** HIGH (Sprint 2.1 Feature, komplexes Test Data Setup)
+- **Lösung:** Test Data Factory für Leads + Collaborators + Permissions
+- **Effort:** 3-5h
+- **Priorität:** ⭐ NICE-TO-HAVE (Sprint 2.1 Feature, nicht kritisch für Core)
+
+**Subtotal:** -11 Failures → **4 Fehler verbleibend** (nur noch CustomerRepo + SalesCockpit)
+
+---
+
+## 📋 EMPFOHLENE REIHENFOLGE FÜR GRÜNE CI:
+
+**Phase 5A: Quick Wins (Effort: ~2-3h, Impact: -14 Errors)**
+1. ✅ UserServiceRolesTest Duplicate-Fix (15min)
+2. ✅ OpportunityServiceStageTransitionTest (30min)
+3. ✅ SecurityContextProviderTest Nested Classes (1-2h)
+→ **Nach Phase 5A: 28 Fehler verbleibend**
+
+**Phase 5B: Medium Priority (Effort: ~3-5h, Impact: -13 Failures)**
+4. ✅ CustomerRepositoryTest Analyse & Fix (2-3h)
+5. ✅ SalesCockpitQueryServiceTest Mock-Fix oder Conversion (1-2h)
+→ **Nach Phase 5B: 15 Fehler verbleibend**
+
+**Phase 5C: Optional für 100% grün (Effort: 3-5h, Impact: -11 Failures)**
+6. ✅ LeadResourceTest Test Data Setup (3-5h)
+→ **Nach Phase 5C: 4 Fehler verbleibend (nur noch Edge Cases)**
+
+---
+
+## 🚀 SCHNELLSTER WEG ZU GRÜN:
+
+**Option A: "Good Enough to Merge" (Effort: ~5-8h)**
+- Phase 5A: Quick Wins (-14 Errors)
+- Phase 5B: Medium Priority (-13 Failures)
+- **Ergebnis:** 15 Fehler verbleibend (alle LeadResourceTest)
+- **Merge-Fähig:** JA (Core Features 97% grün, nur Sprint 2.1 Feature fehlt)
+
+**Option B: "100% Grün" (Effort: ~8-13h)**
+- Phase 5A + 5B + 5C
+- **Ergebnis:** ~0-4 Fehler verbleibend
+- **Merge-Fähig:** JA (100% oder nahezu)
+
+**EMPFEHLUNG:** Start mit **Phase 5A (Quick Wins)** → -14 Errors in 2-3h → Dann neu bewerten
 
 **---HISTORISCH (bereits erfolgreich)---**
 **Phase 2B/2C Fixes - 9 Tests behoben:**
