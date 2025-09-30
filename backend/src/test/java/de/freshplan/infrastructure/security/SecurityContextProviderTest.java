@@ -45,162 +45,173 @@ class SecurityContextProviderTest {
     MockitoAnnotations.openMocks(this);
   }
 
-  @Nested
-  @DisplayName("Authentication Tests")
-  class AuthenticationTests {
+  // ==================== Phase 5A: Authentication Tests (moved from Nested Class)
+  // ====================
 
-    @Test
-    @TestSecurity(
-        user = "testuser",
-        roles = {"admin", "manager"})
-    @DisplayName("Should return true when user is authenticated")
-    void shouldReturnTrueWhenAuthenticated() {
-      assertTrue(securityContextProvider.isAuthenticated());
-    }
-
-    @Test
-    @DisplayName("Should return false when user is anonymous")
-    void shouldReturnFalseWhenAnonymous() {
-      // In disabled security profile, user is anonymous by default
-      assertFalse(securityContextProvider.isAuthenticated());
-    }
-
-    @Test
-    @TestSecurity(user = "testuser")
-    @DisplayName("Should require authentication and pass when authenticated")
-    void shouldRequireAuthenticationAndPass() {
-      assertDoesNotThrow(() -> securityContextProvider.requireAuthentication());
-    }
-
-    @Test
-    @DisplayName("Should require authentication and throw when not authenticated")
-    void shouldRequireAuthenticationAndThrow() {
-      SecurityException exception =
-          assertThrows(
-              SecurityException.class, () -> securityContextProvider.requireAuthentication());
-      assertEquals("Authentication required", exception.getMessage());
-    }
+  @Test
+  @ActivateRequestContext
+  @TestSecurity(
+      user = "testuser",
+      roles = {"admin", "manager"})
+  @DisplayName("Should return true when user is authenticated")
+  void authentication_shouldReturnTrueWhenAuthenticated() {
+    assertTrue(securityContextProvider.isAuthenticated());
   }
 
-  @Nested
-  @DisplayName("Role-Based Access Control Tests")
-  class RoleBasedAccessControlTests {
-
-    @Test
-    @TestSecurity(
-        user = "admin",
-        roles = {"admin"})
-    @DisplayName("Should return true when user has required role")
-    void shouldReturnTrueWhenUserHasRole() {
-      assertTrue(securityContextProvider.hasRole("admin"));
-    }
-
-    @Test
-    @TestSecurity(
-        user = "manager",
-        roles = {"manager"})
-    @DisplayName("Should return false when user lacks required role")
-    void shouldReturnFalseWhenUserLacksRole() {
-      assertFalse(securityContextProvider.hasRole("admin"));
-    }
-
-    @Test
-    @TestSecurity(
-        user = "admin",
-        roles = {"admin"})
-    @DisplayName("Should require role and pass when user has role")
-    void shouldRequireRoleAndPass() {
-      assertDoesNotThrow(() -> securityContextProvider.requireRole("admin"));
-    }
-
-    @Test
-    @TestSecurity(
-        user = "manager",
-        roles = {"manager"})
-    @DisplayName("Should require role and throw when user lacks role")
-    void shouldRequireRoleAndThrow() {
-      SecurityException exception =
-          assertThrows(SecurityException.class, () -> securityContextProvider.requireRole("admin"));
-      assertEquals("Role 'admin' required", exception.getMessage());
-    }
-
-    @Test
-    @TestSecurity(
-        user = "manager",
-        roles = {"manager", "sales"})
-    @DisplayName("Should require any role and pass when user has one of required roles")
-    void shouldRequireAnyRoleAndPass() {
-      assertDoesNotThrow(() -> securityContextProvider.requireAnyRole("admin", "manager"));
-    }
-
-    @Test
-    @TestSecurity(
-        user = "viewer",
-        roles = {"viewer"})
-    @DisplayName("Should require any role and throw when user lacks all roles")
-    void shouldRequireAnyRoleAndThrow() {
-      SecurityException exception =
-          assertThrows(
-              SecurityException.class,
-              () -> securityContextProvider.requireAnyRole("admin", "manager"));
-      assertTrue(exception.getMessage().contains("One of roles"));
-      assertTrue(exception.getMessage().contains("required"));
-    }
-
-    @Test
-    @TestSecurity(
-        user = "manager",
-        roles = {"admin", "manager", "sales"})
-    @DisplayName("Should return correct roles set")
-    void shouldReturnCorrectRoles() {
-      Set<String> roles = securityContextProvider.getRoles();
-      assertEquals(3, roles.size());
-      assertTrue(roles.contains("admin"));
-      assertTrue(roles.contains("manager"));
-      assertTrue(roles.contains("sales"));
-    }
+  @Test
+  @ActivateRequestContext
+  @DisplayName("Should return false when user is anonymous")
+  void authentication_shouldReturnFalseWhenAnonymous() {
+    // In disabled security profile, user is anonymous by default
+    assertFalse(securityContextProvider.isAuthenticated());
   }
 
-  @Nested
-  @DisplayName("User Information Extraction Tests")
-  class UserInformationTests {
-
-    @Test
-    @TestSecurity(user = "testuser")
-    @DisplayName("Should return username from security identity")
-    void shouldReturnUsernameFromSecurityIdentity() {
-      assertEquals("testuser", securityContextProvider.getUsername());
-    }
-
-    @Test
-    @DisplayName("Should return null username when not authenticated")
-    void shouldReturnNullUsernameWhenNotAuthenticated() {
-      assertNull(securityContextProvider.getUsername());
-    }
-
-    @Test
-    @DisplayName("Should return null user ID when not authenticated")
-    void shouldReturnNullUserIdWhenNotAuthenticated() {
-      assertNull(securityContextProvider.getUserId());
-    }
-
-    @Test
-    @DisplayName("Should return null email when not authenticated")
-    void shouldReturnNullEmailWhenNotAuthenticated() {
-      assertNull(securityContextProvider.getEmail());
-    }
+  @Test
+  @ActivateRequestContext
+  @TestSecurity(user = "testuser")
+  @DisplayName("Should require authentication and pass when authenticated")
+  void authentication_shouldRequireAuthenticationAndPass() {
+    assertDoesNotThrow(() -> securityContextProvider.requireAuthentication());
   }
 
-  @Nested
-  @DisplayName("JWT Token Handling Tests")
-  class JwtTokenTests {
-
-    @Test
-    @DisplayName("Should return true for token expired when no JWT available")
-    void shouldReturnTrueForTokenExpiredWhenNoJwt() {
-      assertTrue(securityContextProvider.isTokenExpired(300));
-    }
+  @Test
+  @ActivateRequestContext
+  @DisplayName("Should require authentication and throw when not authenticated")
+  void authentication_shouldRequireAuthenticationAndThrow() {
+    SecurityException exception =
+        assertThrows(
+            SecurityException.class, () -> securityContextProvider.requireAuthentication());
+    assertEquals("Authentication required", exception.getMessage());
   }
+
+  // ==================== Phase 5A: Role-Based Access Control Tests (moved from Nested Class)
+  // ====================
+
+  @Test
+  @ActivateRequestContext
+  @TestSecurity(
+      user = "admin",
+      roles = {"admin"})
+  @DisplayName("Should return true when user has required role")
+  void rbac_shouldReturnTrueWhenUserHasRole() {
+    assertTrue(securityContextProvider.hasRole("admin"));
+  }
+
+  @Test
+  @ActivateRequestContext
+  @TestSecurity(
+      user = "manager",
+      roles = {"manager"})
+  @DisplayName("Should return false when user lacks required role")
+  void rbac_shouldReturnFalseWhenUserLacksRole() {
+    assertFalse(securityContextProvider.hasRole("admin"));
+  }
+
+  @Test
+  @ActivateRequestContext
+  @TestSecurity(
+      user = "admin",
+      roles = {"admin"})
+  @DisplayName("Should require role and pass when user has role")
+  void rbac_shouldRequireRoleAndPass() {
+    assertDoesNotThrow(() -> securityContextProvider.requireRole("admin"));
+  }
+
+  @Test
+  @ActivateRequestContext
+  @TestSecurity(
+      user = "manager",
+      roles = {"manager"})
+  @DisplayName("Should require role and throw when user lacks role")
+  void rbac_shouldRequireRoleAndThrow() {
+    SecurityException exception =
+        assertThrows(SecurityException.class, () -> securityContextProvider.requireRole("admin"));
+    assertEquals("Role 'admin' required", exception.getMessage());
+  }
+
+  @Test
+  @ActivateRequestContext
+  @TestSecurity(
+      user = "manager",
+      roles = {"manager", "sales"})
+  @DisplayName("Should require any role and pass when user has one of required roles")
+  void rbac_shouldRequireAnyRoleAndPass() {
+    assertDoesNotThrow(() -> securityContextProvider.requireAnyRole("admin", "manager"));
+  }
+
+  @Test
+  @ActivateRequestContext
+  @TestSecurity(
+      user = "viewer",
+      roles = {"viewer"})
+  @DisplayName("Should require any role and throw when user lacks all roles")
+  void rbac_shouldRequireAnyRoleAndThrow() {
+    SecurityException exception =
+        assertThrows(
+            SecurityException.class,
+            () -> securityContextProvider.requireAnyRole("admin", "manager"));
+    assertTrue(exception.getMessage().contains("One of roles"));
+    assertTrue(exception.getMessage().contains("required"));
+  }
+
+  @Test
+  @ActivateRequestContext
+  @TestSecurity(
+      user = "manager",
+      roles = {"admin", "manager", "sales"})
+  @DisplayName("Should return correct roles set")
+  void rbac_shouldReturnCorrectRoles() {
+    Set<String> roles = securityContextProvider.getRoles();
+    assertEquals(3, roles.size());
+    assertTrue(roles.contains("admin"));
+    assertTrue(roles.contains("manager"));
+    assertTrue(roles.contains("sales"));
+  }
+
+  // ==================== Phase 5A: User Information Tests (moved from Nested Class)
+  // ====================
+
+  @Test
+  @ActivateRequestContext
+  @TestSecurity(user = "testuser")
+  @DisplayName("Should return username from security identity")
+  void userInfo_shouldReturnUsernameFromSecurityIdentity() {
+    assertEquals("testuser", securityContextProvider.getUsername());
+  }
+
+  @Test
+  @ActivateRequestContext
+  @DisplayName("Should return null username when not authenticated")
+  void userInfo_shouldReturnNullUsernameWhenNotAuthenticated() {
+    assertNull(securityContextProvider.getUsername());
+  }
+
+  @Test
+  @ActivateRequestContext
+  @DisplayName("Should return null user ID when not authenticated")
+  void userInfo_shouldReturnNullUserIdWhenNotAuthenticated() {
+    assertNull(securityContextProvider.getUserId());
+  }
+
+  @Test
+  @ActivateRequestContext
+  @DisplayName("Should return null email when not authenticated")
+  void userInfo_shouldReturnNullEmailWhenNotAuthenticated() {
+    assertNull(securityContextProvider.getEmail());
+  }
+
+  // ==================== Phase 5A: JWT Token Tests (moved from Nested Class) ====================
+
+  @Test
+  @ActivateRequestContext
+  @DisplayName("Should return true for token expired when no JWT available")
+  void jwt_shouldReturnTrueForTokenExpiredWhenNoJwt() {
+    assertTrue(securityContextProvider.isTokenExpired(300));
+  }
+
+  // ==================== Original Nested Classes (kept for other tests) ====================
+  // Note: Authentication, RBAC, User Information, and JWT Token tests have been moved to main class
+  // with @ActivateRequestContext annotation to fix ContextNotActive errors.
 
   @Nested
   @DisplayName("JWT Mock Tests - Advanced Scenarios")

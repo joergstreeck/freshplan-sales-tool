@@ -18,6 +18,7 @@ import de.freshplan.test.support.TestTx;
 import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.security.TestSecurity;
+import jakarta.enterprise.context.control.ActivateRequestContext;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
@@ -494,35 +495,42 @@ public class OpportunityServiceStageTransitionTest {
               });
     }
 
-    @Test
-    @DisplayName("Should handle multiple opportunities with different transition patterns")
-    void changeStage_multipleOpportunities_shouldHandleIndependently() {
-      // Arrange
-      var opp1 = createTestOpportunity("Opportunity 1", OpportunityStage.NEW_LEAD);
-      var opp2 = createTestOpportunity("Opportunity 2", OpportunityStage.NEW_LEAD);
+    // NOTE: Test moved to main class as
+    // complexScenarios_changeStage_multipleOpportunities_shouldHandleIndependently()
+    // due to CDI limitation with @ActivateRequestContext in nested classes
+  }
 
-      // Act - Different transition patterns
-      var result1 =
-          opportunityService.changeStage(
-              opp1.getId(),
-              ChangeStageRequest.builder().stage(OpportunityStage.CLOSED_WON).build());
+  // ==================== Phase 5A: Tests moved from Nested Classes (CDI fix) ====================
 
-      var result2 =
-          opportunityService.changeStage(
-              opp2.getId(),
-              ChangeStageRequest.builder().stage(OpportunityStage.QUALIFICATION).build());
+  @Test
+  @ActivateRequestContext
+  @DisplayName(
+      "Should handle multiple opportunities with different transition patterns (moved from ComplexStageTransitionScenarios)")
+  void complexScenarios_changeStage_multipleOpportunities_shouldHandleIndependently() {
+    // Arrange
+    var opp1 = createTestOpportunity("Opportunity 1", OpportunityStage.NEW_LEAD);
+    var opp2 = createTestOpportunity("Opportunity 2", OpportunityStage.NEW_LEAD);
 
-      // Assert - Each opportunity maintains independent state
-      assertThat(result1.getStage()).isEqualTo(OpportunityStage.CLOSED_WON);
-      assertThat(result1.getProbability()).isEqualTo(100);
+    // Act - Different transition patterns
+    var result1 =
+        opportunityService.changeStage(
+            opp1.getId(), ChangeStageRequest.builder().stage(OpportunityStage.CLOSED_WON).build());
 
-      assertThat(result2.getStage()).isEqualTo(OpportunityStage.QUALIFICATION);
-      assertThat(result2.getProbability()).isEqualTo(25);
+    var result2 =
+        opportunityService.changeStage(
+            opp2.getId(),
+            ChangeStageRequest.builder().stage(OpportunityStage.QUALIFICATION).build());
 
-      // Verify independence - changing one doesn't affect the other
-      var result1Updated = opportunityRepository.findById(opp1.getId());
-      assertThat(result1Updated.getStage()).isEqualTo(OpportunityStage.CLOSED_WON);
-    }
+    // Assert - Each opportunity maintains independent state
+    assertThat(result1.getStage()).isEqualTo(OpportunityStage.CLOSED_WON);
+    assertThat(result1.getProbability()).isEqualTo(100);
+
+    assertThat(result2.getStage()).isEqualTo(OpportunityStage.QUALIFICATION);
+    assertThat(result2.getProbability()).isEqualTo(25);
+
+    // Verify independence - changing one doesn't affect the other
+    var result1Updated = opportunityRepository.findById(opp1.getId());
+    assertThat(result1Updated.getStage()).isEqualTo(OpportunityStage.CLOSED_WON);
   }
 
   // Helper methods
