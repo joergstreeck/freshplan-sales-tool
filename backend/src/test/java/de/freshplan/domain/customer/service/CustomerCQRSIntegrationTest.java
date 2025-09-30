@@ -2,17 +2,20 @@ package de.freshplan.domain.customer.service;
 
 import static org.assertj.core.api.Assertions.*;
 
-// import de.freshplan.api.resources.CustomerResource; // Not needed - using Service directly
+import de.freshplan.api.resources.CustomerResource;
 import de.freshplan.domain.customer.entity.CustomerStatus;
 import de.freshplan.domain.customer.entity.CustomerType;
 import de.freshplan.domain.customer.entity.Industry;
 import de.freshplan.domain.customer.service.dto.*;
 import de.freshplan.domain.customer.service.exception.CustomerNotFoundException;
 import de.freshplan.test.builders.CustomerBuilder;
+import io.quarkus.arc.profile.IfBuildProfile;
 import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
 import io.quarkus.test.security.TestSecurity;
+import io.smallrye.common.annotation.RunOnVirtualThread;
+import jakarta.enterprise.context.control.ActivateRequestContext;
 import jakarta.inject.Inject;
 import java.math.BigDecimal;
 import java.util.List;
@@ -43,12 +46,11 @@ import org.junit.jupiter.api.Test;
     user = "testuser",
     roles = {"admin", "manager", "sales"})
 @TestTransaction
+@ActivateRequestContext  // Sprint 2.1.4 Fix: Activate RequestContext for Resource calls
 @DisplayName("Customer CQRS Integration Test")
 class CustomerCQRSIntegrationTest {
 
-  // Sprint 2.1.4 Fix: Changed to inject Service instead of Resource to avoid ContextNotActiveException
-  // Resource requires RequestContext which is not available in tests without HTTP calls
-  @Inject CustomerService customerService;
+  @Inject CustomerResource customerResource; // Test via Resource to verify full stack
 
   @Inject CustomerBuilder customerBuilder;
 
@@ -88,7 +90,7 @@ class CustomerCQRSIntegrationTest {
   @TestTransaction
   void createCustomer_inCQRSMode_shouldCreateSuccessfully() {
     // When
-    var response = customerService.createCustomer(validCreateRequest);
+    var response = customerResource.createCustomer(validCreateRequest);
 
     // Then
     assertThat(response.getStatus()).isEqualTo(201); // Created
@@ -109,12 +111,12 @@ class CustomerCQRSIntegrationTest {
   @DisplayName("Create and retrieve customer should work end-to-end")
   void createAndRetrieve_inCQRSMode_shouldWorkEndToEnd() {
     // Create
-    var createResponse = customerService.createCustomer(validCreateRequest);
+    var createResponse = customerResource.createCustomer(validCreateRequest);
     CustomerResponse created = (CustomerResponse) createResponse.getEntity();
     UUID customerId = UUID.fromString(created.id());
 
     // Retrieve
-    var getResponse = customerService.getCustomer(customerId);
+    var getResponse = customerResource.getCustomer(customerId);
     CustomerResponse retrieved = (CustomerResponse) getResponse.getEntity();
 
     // Compare - should be identical
@@ -141,10 +143,10 @@ class CustomerCQRSIntegrationTest {
             .buildCreateRequest();
 
     // Create first customer
-    customerService.createCustomer(uniqueRequest);
+    customerResource.createCustomer(uniqueRequest);
 
     // Try to create duplicate with same name
-    assertThatThrownBy(() -> customerService.createCustomer(uniqueRequest))
+    assertThatThrownBy(() -> customerResource.createCustomer(uniqueRequest))
         .isInstanceOf(
             RuntimeException.class) // CustomerAlreadyExistsException wrapped in RuntimeException
         .hasMessageContaining("Customer with similar company name already exists");
@@ -158,7 +160,7 @@ class CustomerCQRSIntegrationTest {
   @TestTransaction
   void updateCustomer_inCQRSMode_shouldUpdateSuccessfully() {
     // Create customer first
-    var createResponse = customerService.createCustomer(validCreateRequest);
+    var createResponse = customerResource.createCustomer(validCreateRequest);
     CustomerResponse created = (CustomerResponse) createResponse.getEntity();
     UUID customerId = UUID.fromString(created.id());
 
@@ -170,14 +172,14 @@ class CustomerCQRSIntegrationTest {
             .build();
 
     // Update
-    var updateResponse = customerService.updateCustomer(customerId, updateRequest);
+    var updateResponse = customerResource.updateCustomer(customerId, updateRequest);
     CustomerResponse updated = (CustomerResponse) updateResponse.getEntity();
 
     // Verify
     assertThat(updated.companyName()).isEqualTo("Updated CQRS Company");
 
     // Retrieve again to confirm persistence
-    var getResponse = customerService.getCustomer(customerId);
+    var getResponse = customerResource.getCustomer(customerId);
     CustomerResponse retrieved = (CustomerResponse) getResponse.getEntity();
     assertThat(retrieved.companyName()).isEqualTo("Updated CQRS Company");
   }
@@ -191,18 +193,18 @@ class CustomerCQRSIntegrationTest {
   @DisplayName("Delete customer should soft delete with reason")
   void deleteCustomer_inCQRSMode_shouldSoftDelete() {
     // Create customer
-    var createResponse = customerService.createCustomer(validCreateRequest);
+    var createResponse = customerResource.createCustomer(validCreateRequest);
     CustomerResponse created = (CustomerResponse) createResponse.getEntity();
     UUID customerId = UUID.fromString(created.id());
 
     // Delete (soft delete) with reason
     String deleteReason = "Test deletion for CQRS integration test";
-    var deleteResponse = customerService.deleteCustomer(customerId, deleteReason);
+    var deleteResponse = customerResource.deleteCustomer(customerId, deleteReason);
     assertThat(deleteResponse.getStatus()).isEqualTo(204); // No Content
 
     // Try to retrieve - soft-deleted customers should NOT be retrievable
     // They should throw CustomerNotFoundException
-    assertThatThrownBy(() -> customerService.getCustomer(customerId))
+    assertThatThrownBy(() -> customerResource.getCustomer(customerId))
         .isInstanceOf(CustomerNotFoundException.class)
         .hasMessageContaining("Customer not found with ID: " + customerId);
   }
@@ -211,15 +213,15 @@ class CustomerCQRSIntegrationTest {
   @TestTransaction
   void restoreCustomer_inCQRSMode_shouldRestoreDeleted() {
     // Create customer
-    var createResponse = customerService.createCustomer(validCreateRequest);
+    var createResponse = customerResource.createCustomer(validCreateRequest);
     CustomerResponse created = (CustomerResponse) createResponse.getEntity();
     UUID customerId = UUID.fromString(created.id());
 
     // Delete with reason
-    customerService.deleteCustomer(customerId, "Test deletion before restore");
+    customerResource.deleteCustomer(customerId, "Test deletion before restore");
 
     // Restore
-    var restoreResponse = customerService.restoreCustomer(customerId);
+    var restoreResponse = customerResource.restoreCustomer(customerId);
     CustomerResponse restored = (CustomerResponse) restoreResponse.getEntity();
 
     // Verify restored
@@ -228,7 +230,7 @@ class CustomerCQRSIntegrationTest {
     assertThat(restored.companyName()).isEqualTo(created.companyName());
 
     // Should be retrievable again
-    var getResponse = customerService.getCustomer(customerId);
+    var getResponse = customerResource.getCustomer(customerId);
     CustomerResponse retrieved = (CustomerResponse) getResponse.getEntity();
     assertThat(retrieved).isNotNull();
     assertThat(retrieved.status()).isNotEqualTo(CustomerStatus.ARCHIVIERT);
@@ -245,7 +247,7 @@ class CustomerCQRSIntegrationTest {
     // Create a few customers first with unique names to avoid conflicts
     String uniqueSuffix = "_" + System.currentTimeMillis();
 
-    customerService.createCustomer(
+    customerResource.createCustomer(
         CreateCustomerRequest.builder()
             .companyName("CQRS Test Company 1" + uniqueSuffix)
             .customerType(CustomerType.UNTERNEHMEN)
@@ -253,7 +255,7 @@ class CustomerCQRSIntegrationTest {
             .expectedAnnualVolume(BigDecimal.ZERO)
             .build());
 
-    customerService.createCustomer(
+    customerResource.createCustomer(
         CreateCustomerRequest.builder()
             .companyName("CQRS Test Company 2" + uniqueSuffix)
             .customerType(CustomerType.INSTITUTION)
@@ -262,7 +264,7 @@ class CustomerCQRSIntegrationTest {
             .build());
 
     // Get all with proper parameters (page, size, status, industry)
-    var response = customerService.getAllCustomers(0, 10, null, null);
+    var response = customerResource.getAllCustomers(0, 10, null, null);
     assertThat(response.getStatus()).isEqualTo(200);
 
     CustomerListResponse listResponse = (CustomerListResponse) response.getEntity();
@@ -282,7 +284,7 @@ class CustomerCQRSIntegrationTest {
   @DisplayName("Get customers by status should filter correctly")
   void getCustomersByStatus_inCQRSMode_shouldFilterCorrectly() {
     // Create customers with different statuses (Note: can't set status in CreateRequest)
-    customerService.createCustomer(
+    customerResource.createCustomer(
         CreateCustomerRequest.builder()
             .companyName("Lead Customer")
             .customerType(CustomerType.NEUKUNDE)
@@ -290,7 +292,7 @@ class CustomerCQRSIntegrationTest {
             .expectedAnnualVolume(BigDecimal.ZERO)
             .build());
 
-    customerService.createCustomer(
+    customerResource.createCustomer(
         CreateCustomerRequest.builder()
             .companyName("Active Customer")
             .customerType(CustomerType.UNTERNEHMEN)
@@ -299,10 +301,10 @@ class CustomerCQRSIntegrationTest {
             .build());
 
     // Query by status using getAllCustomers with status filter
-    var leadResponse = customerService.getAllCustomers(0, 100, CustomerStatus.LEAD, null);
+    var leadResponse = customerResource.getAllCustomers(0, 100, CustomerStatus.LEAD, null);
     CustomerListResponse leadList = (CustomerListResponse) leadResponse.getEntity();
 
-    var activeResponse = customerService.getAllCustomers(0, 100, CustomerStatus.AKTIV, null);
+    var activeResponse = customerResource.getAllCustomers(0, 100, CustomerStatus.AKTIV, null);
     CustomerListResponse activeList = (CustomerListResponse) activeResponse.getEntity();
 
     // Verify filtering
@@ -326,7 +328,7 @@ class CustomerCQRSIntegrationTest {
     // Create customers with unique names to avoid duplicates
     String uniqueSuffix = "_" + System.currentTimeMillis();
 
-    customerService.createCustomer(
+    customerResource.createCustomer(
         CreateCustomerRequest.builder()
             .companyName("Low Risk Customer" + uniqueSuffix)
             .customerType(CustomerType.UNTERNEHMEN)
@@ -343,19 +345,19 @@ class CustomerCQRSIntegrationTest {
             .expectedAnnualVolume(BigDecimal.ZERO)
             .build();
 
-    var response = customerService.createCustomer(highRiskRequest);
+    var response = customerResource.createCustomer(highRiskRequest);
     CustomerResponse created = (CustomerResponse) response.getEntity();
     UUID customerId = UUID.fromString(created.id());
 
     // Update customer to be at risk (no riskScore field in UpdateRequest)
-    customerService.updateCustomer(
+    customerResource.updateCustomer(
         customerId,
         UpdateCustomerRequest.builder()
             .status(CustomerStatus.RISIKO) // Mark as at risk
             .build());
 
     // Get at-risk customers using the correct endpoint
-    var riskResponse = customerService.getCustomersAtRisk(70, 0, 100);
+    var riskResponse = customerResource.getCustomersAtRisk(70, 0, 100);
     CustomerListResponse atRiskList = (CustomerListResponse) riskResponse.getEntity();
 
     // Verify
@@ -377,7 +379,7 @@ class CustomerCQRSIntegrationTest {
   @DisplayName("Get dashboard data should return statistics")
   void getDashboardData_inCQRSMode_shouldReturnStatistics() {
     // Create test data
-    customerService.createCustomer(
+    customerResource.createCustomer(
         CreateCustomerRequest.builder()
             .companyName("Dashboard Test 1")
             .customerType(CustomerType.UNTERNEHMEN)
@@ -385,7 +387,7 @@ class CustomerCQRSIntegrationTest {
             .expectedAnnualVolume(new BigDecimal("50000"))
             .build());
 
-    customerService.createCustomer(
+    customerResource.createCustomer(
         CreateCustomerRequest.builder()
             .companyName("Dashboard Test 2")
             .customerType(CustomerType.NEUKUNDE)
@@ -394,7 +396,7 @@ class CustomerCQRSIntegrationTest {
             .build());
 
     // Get dashboard data
-    var dashboardResponse = customerService.getDashboardData();
+    var dashboardResponse = customerResource.getDashboardData();
     CustomerDashboardResponse dashboard = (CustomerDashboardResponse) dashboardResponse.getEntity();
 
     // Verify statistics
@@ -414,7 +416,7 @@ class CustomerCQRSIntegrationTest {
   void addChildCustomer_inCQRSMode_shouldCreateHierarchy() {
     // Create parent customer
     var parentResponse =
-        customerService.createCustomer(
+        customerResource.createCustomer(
             CreateCustomerRequest.builder()
                 .companyName("[TEST] Parent Company AG " + System.currentTimeMillis())
                 .customerType(CustomerType.UNTERNEHMEN)
@@ -424,7 +426,7 @@ class CustomerCQRSIntegrationTest {
 
     // Create child customer
     var childResponse =
-        customerService.createCustomer(
+        customerResource.createCustomer(
             CreateCustomerRequest.builder()
                 .companyName("[TEST] Child Company GmbH " + System.currentTimeMillis())
                 .customerType(CustomerType.UNTERNEHMEN)
@@ -434,11 +436,11 @@ class CustomerCQRSIntegrationTest {
 
     // Add child to parent
     AddChildCustomerRequest addChildRequest = new AddChildCustomerRequest(childId);
-    var addChildResponse = customerService.addChildCustomer(parentId, addChildRequest);
+    var addChildResponse = customerResource.addChildCustomer(parentId, addChildRequest);
     assertThat(addChildResponse.getStatus()).isEqualTo(200);
 
     // Get hierarchy
-    var hierarchyResponse = customerService.getCustomerHierarchy(parentId);
+    var hierarchyResponse = customerResource.getCustomerHierarchy(parentId);
     CustomerResponse hierarchy = (CustomerResponse) hierarchyResponse.getEntity();
 
     // Verify - the hierarchy is returned as a CustomerResponse with child relationships
@@ -458,7 +460,7 @@ class CustomerCQRSIntegrationTest {
   void batchUpdateRiskScores_inCQRSMode_shouldUpdateMultipleCustomers() {
     // Create customers
     var response1 =
-        customerService.createCustomer(
+        customerResource.createCustomer(
             CreateCustomerRequest.builder()
                 .companyName("Risk Test 1")
                 .customerType(CustomerType.UNTERNEHMEN)
@@ -468,7 +470,7 @@ class CustomerCQRSIntegrationTest {
     CustomerResponse customer1 = (CustomerResponse) response1.getEntity();
 
     var response2 =
-        customerService.createCustomer(
+        customerResource.createCustomer(
             CreateCustomerRequest.builder()
                 .companyName("Risk Test 2")
                 .customerType(CustomerType.NEUKUNDE)
@@ -478,20 +480,20 @@ class CustomerCQRSIntegrationTest {
     CustomerResponse customer2 = (CustomerResponse) response2.getEntity();
 
     // Update status to simulate risk (no riskScore field in UpdateRequest)
-    customerService.updateCustomer(
+    customerResource.updateCustomer(
         UUID.fromString(customer1.id()),
         UpdateCustomerRequest.builder()
             .status(CustomerStatus.AKTIV) // Low risk - active
             .build());
 
-    customerService.updateCustomer(
+    customerResource.updateCustomer(
         UUID.fromString(customer2.id()),
         UpdateCustomerRequest.builder()
             .status(CustomerStatus.RISIKO) // High risk
             .build());
 
     // Get all customers and verify risk scores updated
-    var listResponse = customerService.getAllCustomers(0, 100, null, null);
+    var listResponse = customerResource.getAllCustomers(0, 100, null, null);
     CustomerListResponse customers = (CustomerListResponse) listResponse.getEntity();
 
     // Verify status updates are reflected
@@ -509,7 +511,7 @@ class CustomerCQRSIntegrationTest {
     String uniqueSuffix = "_" + System.currentTimeMillis();
 
     var sourceResponse =
-        customerService.createCustomer(
+        customerResource.createCustomer(
             CreateCustomerRequest.builder()
                 .companyName("[TEST] Source Company" + uniqueSuffix)
                 .customerType(CustomerType.UNTERNEHMEN)
@@ -521,7 +523,7 @@ class CustomerCQRSIntegrationTest {
 
     // Create target customer with unique name
     var targetResponse =
-        customerService.createCustomer(
+        customerResource.createCustomer(
             CreateCustomerRequest.builder()
                 .companyName("[TEST] Target Company" + uniqueSuffix)
                 .customerType(CustomerType.UNTERNEHMEN)
@@ -533,16 +535,16 @@ class CustomerCQRSIntegrationTest {
 
     // Merge source into target
     MergeCustomersRequest mergeRequest = new MergeCustomersRequest(sourceId);
-    var mergeResponse = customerService.mergeCustomers(targetId, mergeRequest);
+    var mergeResponse = customerResource.mergeCustomers(targetId, mergeRequest);
     assertThat(mergeResponse.getStatus()).isEqualTo(200);
 
     // Source should be soft-deleted and not retrievable via normal API
-    assertThatThrownBy(() -> customerService.getCustomer(sourceId))
+    assertThatThrownBy(() -> customerResource.getCustomer(sourceId))
         .isInstanceOf(CustomerNotFoundException.class)
         .hasMessageContaining("Customer not found with ID: " + sourceId);
 
     // Target should have merged data and be retrievable
-    var checkTargetResponse = customerService.getCustomer(targetId);
+    var checkTargetResponse = customerResource.getCustomer(targetId);
     CustomerResponse merged = (CustomerResponse) checkTargetResponse.getEntity();
     assertThat(merged).isNotNull();
     assertThat(merged.id()).isEqualTo(targetId.toString());
@@ -554,17 +556,17 @@ class CustomerCQRSIntegrationTest {
   @DisplayName("Change customer status should update with validation")
   void changeStatus_inCQRSMode_shouldUpdateStatus() {
     // Create customer
-    var createResponse = customerService.createCustomer(validCreateRequest);
+    var createResponse = customerResource.createCustomer(validCreateRequest);
     CustomerResponse created = (CustomerResponse) createResponse.getEntity();
     UUID customerId = UUID.fromString(created.id());
 
     // Change status to AKTIV (not ACTIVE - that doesn't exist in enum)
     ChangeStatusRequest statusRequest = new ChangeStatusRequest(CustomerStatus.AKTIV);
-    var statusResponse = customerService.changeCustomerStatus(customerId, statusRequest);
+    var statusResponse = customerResource.changeCustomerStatus(customerId, statusRequest);
     assertThat(statusResponse.getStatus()).isEqualTo(200);
 
     // Verify status changed
-    var getResponse = customerService.getCustomer(customerId);
+    var getResponse = customerResource.getCustomer(customerId);
     CustomerResponse updated = (CustomerResponse) getResponse.getEntity();
     assertThat(updated.status()).isEqualTo(CustomerStatus.AKTIV);
   }
@@ -578,7 +580,7 @@ class CustomerCQRSIntegrationTest {
   @DisplayName("Check duplicates should find exact company names")
   void checkDuplicates_inCQRSMode_shouldFindSimilarNames() {
     // Create customer
-    customerService.createCustomer(
+    customerResource.createCustomer(
         CreateCustomerRequest.builder()
             .companyName("Duplicate Test Company")
             .customerType(CustomerType.UNTERNEHMEN)
@@ -588,7 +590,7 @@ class CustomerCQRSIntegrationTest {
 
     // Check for duplicates with exact name (duplicate detection now only finds exact matches)
     CheckDuplicatesRequest duplicatesRequest = new CheckDuplicatesRequest("Duplicate Test Company");
-    var duplicatesResponse = customerService.checkDuplicates(duplicatesRequest);
+    var duplicatesResponse = customerResource.checkDuplicates(duplicatesRequest);
 
     @SuppressWarnings("unchecked")
     List<CustomerResponse> duplicates = (List<CustomerResponse>) duplicatesResponse.getEntity();
@@ -607,7 +609,7 @@ class CustomerCQRSIntegrationTest {
     assertThat(cqrsEnabled).isTrue();
 
     // Create a customer and verify it works with CQRS enabled
-    var response = customerService.createCustomer(validCreateRequest);
+    var response = customerResource.createCustomer(validCreateRequest);
     assertThat(response.getStatus()).isEqualTo(201);
 
     // All operations should delegate to CQRS services
@@ -623,7 +625,7 @@ class CustomerCQRSIntegrationTest {
   @DisplayName("Get customers by industry should filter correctly")
   void getCustomersByIndustry_inCQRSMode_shouldFilterCorrectly() {
     // Create customers with different industries
-    customerService.createCustomer(
+    customerResource.createCustomer(
         CreateCustomerRequest.builder()
             .companyName("Healthcare Company")
             .customerType(CustomerType.UNTERNEHMEN)
@@ -631,7 +633,7 @@ class CustomerCQRSIntegrationTest {
             .expectedAnnualVolume(BigDecimal.ZERO)
             .build());
 
-    customerService.createCustomer(
+    customerResource.createCustomer(
         CreateCustomerRequest.builder()
             .companyName("Education Company")
             .customerType(CustomerType.INSTITUTION)
@@ -641,10 +643,10 @@ class CustomerCQRSIntegrationTest {
 
     // Query by industry
     var healthcareResponse =
-        customerService.getAllCustomers(0, 100, null, Industry.GESUNDHEITSWESEN);
+        customerResource.getAllCustomers(0, 100, null, Industry.GESUNDHEITSWESEN);
     CustomerListResponse healthcareList = (CustomerListResponse) healthcareResponse.getEntity();
 
-    var educationResponse = customerService.getAllCustomers(0, 100, null, Industry.BILDUNG);
+    var educationResponse = customerResource.getAllCustomers(0, 100, null, Industry.BILDUNG);
     CustomerListResponse educationList = (CustomerListResponse) educationResponse.getEntity();
 
     // Verify filtering
@@ -669,7 +671,7 @@ class CustomerCQRSIntegrationTest {
     String uniqueSuffix = "_" + System.currentTimeMillis();
 
     for (int i = 1; i <= 15; i++) {
-      customerService.createCustomer(
+      customerResource.createCustomer(
           CreateCustomerRequest.builder()
               .companyName("Pagination Test " + i + uniqueSuffix)
               .customerType(CustomerType.UNTERNEHMEN)
@@ -679,11 +681,11 @@ class CustomerCQRSIntegrationTest {
     }
 
     // Get first page
-    var page1Response = customerService.getAllCustomers(0, 5, null, null);
+    var page1Response = customerResource.getAllCustomers(0, 5, null, null);
     CustomerListResponse page1 = (CustomerListResponse) page1Response.getEntity();
 
     // Get second page
-    var page2Response = customerService.getAllCustomers(1, 5, null, null);
+    var page2Response = customerResource.getAllCustomers(1, 5, null, null);
     CustomerListResponse page2 = (CustomerListResponse) page2Response.getEntity();
 
     // Verify pagination
