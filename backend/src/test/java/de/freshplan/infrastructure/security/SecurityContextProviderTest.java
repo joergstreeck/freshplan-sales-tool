@@ -8,6 +8,7 @@ import io.quarkus.security.identity.SecurityIdentity;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
 import io.quarkus.test.security.TestSecurity;
+import io.quarkus.test.TestTransaction;
 import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
 import java.time.Instant;
@@ -29,6 +30,7 @@ import org.mockito.MockitoAnnotations;
 @QuarkusTest
 @Tag("migrate")
 @TestProfile(SecurityDisabledTestProfile.class)
+@TestTransaction  // Sprint 2.1.4 Fix: Provide transaction context which includes RequestContext
 class SecurityContextProviderTest {
 
   @Inject SecurityContextProvider securityContextProvider;

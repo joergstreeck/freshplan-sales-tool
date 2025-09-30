@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test;
  * across tests. Instead we use @Transactional on individual test methods.
  */
 @QuarkusTest
+@TestTransaction  // Sprint 2.1.4 Fix: Add transaction context for all test methods
 class TerritoryServiceTest {
 
   @Inject TerritoryService territoryService;
