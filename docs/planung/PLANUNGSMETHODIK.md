@@ -263,6 +263,8 @@ public class V248__CreateIndexConcurrently extends BaseJavaMigration {
 
 ## 9) Test-Ablage-Strategie
 
+### Backend-Tests
+
 **Tests nach Verantwortlichkeit organisiert** (siehe `TEST_MIGRATION_PLAN.md` für Details):
 
 ```
@@ -276,11 +278,60 @@ backend/src/test/java/de/freshplan/
 └── testsupport/    # Hilfs-Utilities
 ```
 
-**Namenskonventionen:**
+### Frontend-Tests
+
+**Co-Location first, zentrale Tests für Übergreifendes:**
+
+```
+frontend/
+├── src/                    # App-Code mit co-located Tests
+│   ├── components/
+│   │   ├── Button.tsx
+│   │   └── Button.test.tsx    # Co-located Unit-Test
+│   └── features/leads/
+│       ├── LeadList.tsx
+│       └── LeadList.test.tsx   # Co-located Feature-Test
+├── tests/                  # Zentrale Tests & Test-Infra
+│   ├── app/               # Shell/Router/Layout-Tests
+│   ├── features/          # Feature-übergreifende Tests
+│   ├── integration/       # MSW-gestützte Integrationsfälle
+│   ├── infra/            # Security, i18n, Theme, ErrorBoundary
+│   ├── greenpath/        # Smoke/Happy-Path Flows
+│   ├── test/             # Test-Infra (setupTests.ts, A00_EnvDiag.test.ts)
+│   └── testsupport/      # Utilities (custom render, helpers)
+└── e2e/                   # Playwright/Cypress E2E
+    ├── specs/
+    └── playwright.config.ts
+```
+
+### Gemeinsame Namenskonventionen
 - `A00_*` - Gatekeeper/Diagnose zuerst
-- `*Test.java` - Standard Tests
-- `*IntegrationTest.java` - Integration Tests
+- `*Test.[ts|tsx|java]` - Standard Tests
+- `*IntegrationTest.*` - Integration Tests
 - `ZZZ_*` - Final-Verification am Ende
+
+### Test-Werkzeuge & CI-Strategie
+
+**Backend:**
+- **Unit:** Mockito (70% - KEIN @QuarkusTest)
+- **Integration:** @QuarkusTest mit DB (20%)
+- **API:** RestAssured (10%)
+- **Ziel:** < 5 Minuten CI
+
+**Frontend:**
+- **Unit/Component:** Vitest + @testing-library/react
+- **Integration:** MSW (Mock Service Worker)
+- **E2E:** Playwright
+- **CI-Split:**
+  - PR: Co-located Tests (< 3-4 Min)
+  - Integration: MSW-Tests
+  - Nightly: E2E-Suite
+
+### Prinzipien
+- **Backend:** Tests nach Verantwortlichkeit, nicht nach Modulen
+- **Frontend:** Co-Location first, zentral nur für Übergreifendes
+- **Performance:** Mockito/MSW statt echte DB/API wo möglich
+- **Migration:** Neue Tests schreiben → validieren → alte löschen
 
 ## 10) Quick‑Start für neue Claude‑Instanzen
 
