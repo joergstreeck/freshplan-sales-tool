@@ -165,17 +165,26 @@ Tests: X passed
 ## 📊 Erfolgskennzahlen
 
 ### Aktueller Stand (2025-10-01)
-| Metrik | Vorher | Nach 1 Migration | Ziel |
-|--------|--------|------------------|------|
-| @QuarkusTest | 79 | 78 | 50 |
-| CI-Zeit | 14-16 min | ~14 min | 6-8 min |
-| Migriert | 0 | 1 | 29 |
+| Metrik | Vorher | Nach 2 Migrationen | Ziel |
+|--------|--------|-------------------|------|
+| @QuarkusTest | 79 | 77 | 50 |
+| CI-Zeit | 14-16 min | ~13:30 min | 6-8 min |
+| Migriert | 0 | 2 | 29 |
+| Einsparung | 0s | ~30s | ~7.5 min |
 
-### Erste Migration: OpportunityRenewalServiceTest
+### Migrierte Tests
+
+**1. OpportunityRenewalServiceTest**
 - **Vorher:** @QuarkusTest, 10 Tests, ~15s
 - **Nachher:** Plain JUnit, 9 Tests, 0.115s
 - **Speedup:** 130x schneller ⚡
 - **LOC:** 196 → 185 (-11 LOC)
+
+**2. SmartSortServiceTest**
+- **Vorher:** @QuarkusTest, 13 Tests, ~15s
+- **Nachher:** Plain JUnit, 13 Tests, 0.127s
+- **Speedup:** 118x schneller ⚡
+- **LOC:** 241 → 267 (+26 LOC, better documentation)
 
 ---
 
