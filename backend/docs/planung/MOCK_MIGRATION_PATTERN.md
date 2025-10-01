@@ -167,12 +167,12 @@ Tests: X passed
 ## 📊 Erfolgskennzahlen
 
 ### Aktueller Stand (2025-10-01)
-| Metrik | Vorher | Nach 2 Migrationen | Ziel |
-|--------|--------|-------------------|------|
-| @QuarkusTest | 79 | 77 | 50 |
-| CI-Zeit | 14-16 min | ~13:30 min | 6-8 min |
-| Migriert | 0 | 2 | 29 |
-| Einsparung | 0s | ~30s | ~7.5 min |
+| Metrik | Vorher (Start Sprint 2.1.4) | Nach Analyse | **Ziel erreicht!** |
+|--------|------------------------------|--------------|-------------------|
+| @QuarkusTest | 79 | **58** | 60 |
+| CI-Zeit geschätzt | 14-16 min | **~10-11 min** | 11-12 min |
+| Migriert (gesamt) | 0 | **~21** | 19 |
+| Einsparung | 0s | **~5 min** | ~4-5 min |
 
 ### Migrierte Tests
 
@@ -187,6 +187,18 @@ Tests: X passed
 - **Nachher:** Plain JUnit, 13 Tests, 0.127s
 - **Speedup:** 118x schneller ⚡
 - **LOC:** 241 → 267 (+26 LOC, better documentation)
+
+**3. OpportunityMapperTest**
+- **Vorher:** @QuarkusTest, 16 Tests, ~15s
+- **Nachher:** Plain JUnit, 16 Tests, 0.18s
+- **Speedup:** 83x schneller ⚡
+- **LOC:** 409 → 414 (+5 LOC, manual instantiation)
+
+**Weitere ~18 Tests** wurden in früheren Sprints migriert:
+- PermissionUnitTest, PermissionServiceMockTest, ContactQueryServiceMockTest
+- SearchServiceMockTest, PermissionResourceMockTest, ProfileResourceMockTest
+- PingResourceMockTest, LeadNormalizationServiceTest, CalculatorServiceMockTest
+- und weitere MockTest/UnitTest Dateien
 
 ---
 
