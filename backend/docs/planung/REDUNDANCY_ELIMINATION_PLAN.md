@@ -157,21 +157,27 @@ RESERVE:          21 Files Puffer
 - 🔵 EventPublisherTest (5 tests, 229 lines) - CQRS Events
 
 #### Lead Module Tests (9 Files)
-- 🔵 IdempotencyServiceTest (16 tests, 164 lines) - Idempotency Logic
-- 🔵 LeadNormalizationServiceTest (8 tests, 273 lines) - Normalization
-- 🔵 TerritoryServiceTest (9 tests, 157 lines) - Territory Logic
-- 🔵 UserLeadSettingsServiceTest (10 tests, 165 lines) - Settings
+- ✅ ANALYSIERT: IdempotencyServiceTest (16 tests, 164 lines) - Idempotency Logic mit DB ✅ KEEP
+- ⚪ LeadNormalizationServiceTest (8 tests, 273 lines) - **BEREITS MIGRIERT** zu MockitoExtension!
+- ✅ ANALYSIERT: TerritoryServiceTest (9 tests, 157 lines) - Territory Logic mit DB ✅ KEEP
+- ✅ ANALYSIERT: UserLeadSettingsServiceTest (10 tests, 165 lines) - Settings mit DB ✅ KEEP
 - ✅ ANALYSIERT: LeadSecurityBasicTest (7 tests, 244 lines) - Positive Security Cases
 - ✅ ANALYSIERT: LeadSecurityNegativeTest (8 tests, 318 lines) - Negative Security Cases
 **→ Komplementär, keine Duplikate**
 
 ### 🟡 UNKLAR - Weitere Analyse nötig (8 Files)
 
-#### Performance Tests (3 Files) - Sollten in eigenes Profil
+#### Performance Tests (3 Files) - ⚠️ SOFORT FIXEN!
 - ✅ ANALYSIERT: LeadPerformanceValidationTest (6 tests, 246 lines) - P95 <200ms Validation
-- ✅ ANALYSIERT: CustomerTimelineRepositoryPerformanceTest (9 tests, 197 lines) - Performance
-- ✅ ANALYSIERT: ContactPerformanceTest (17 tests, 372 lines) - Performance
-**→ Sollten @Tag("performance") haben und separates Profil**
+  - ❌ **FEHLT @Tag("performance")** - läuft bei jedem CI-Build!
+- ✅ ANALYSIERT: CustomerTimelineRepositoryPerformanceTest (9 tests, 197 lines) - N+1 Query Performance
+  - ❌ **Falsches @Tag("migrate")** statt @Tag("performance")
+- ✅ ANALYSIERT: ContactPerformanceTest (17 tests, 372 lines) - Bulk Operations, Concurrent Access
+  - ❌ **Falsches @Tag("migrate")** statt @Tag("performance")
+
+**→ PROBLEM:** +3-5 Minuten CI-Zeit pro Build!
+**→ LÖSUNG:** @Tag("performance") hinzufügen + Maven Profil konfigurieren
+**→ Details:** `/tmp/performance_tests_fix.md`
 
 #### Mock Tests (bereits migriert) (17 Files)
 - ⚪ CalculatorServiceMockTest (5 tests, 183 lines) - Bereits migriert
@@ -197,11 +203,16 @@ RESERVE:          21 Files Puffer
 
 ## 🎯 OPTIMIERUNGSPOTENZIAL
 
-### Sofort möglich:
-1. **Performance-Tests separates Profil** (3 Files)
-   - LeadPerformanceValidation, CustomerTimelineRepositoryPerformance, ContactPerformance
-   - Mit @Tag("performance") markieren
-   - Nicht in CI laufen lassen
+### ⚠️ SOFORT NÖTIG - Performance-Tests Fix:
+1. **Performance-Tests separates Profil** (3 Files) - **HÖCHSTE PRIORITÄT**
+   - LeadPerformanceValidation: @Tag("performance") hinzufügen (fehlt!)
+   - CustomerTimelineRepositoryPerformance: @Tag("migrate") → @Tag("performance") ändern
+   - ContactPerformance: @Tag("migrate") → @Tag("performance") ändern
+   - Maven Profil in pom.xml konfigurieren
+   - **Impact:** -3-5 Minuten CI-Zeit pro Build (-15-25%)
+   - **Details:** `/tmp/performance_tests_fix.md`
+
+### Mittelfristig möglich:
 
 2. **CustomerSearch Konsolidierung** (5 → 2 Files)
    - Merge Basic + Filter + Sort + SmartSort → CustomerSearchServiceTest
