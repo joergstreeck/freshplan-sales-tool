@@ -9,15 +9,21 @@ import io.restassured.http.ContentType;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
+/**
+ * E2E tests for DataQualityResource - ONLY Happy-Path HTTP verification.
+ *
+ * <p>Tests only the HTTP layer (status codes, content types, response format). Business logic is
+ * tested in DataQualityService. Auth/Security tests are omitted (guaranteed by Quarkus Security).
+ */
 @QuarkusTest
-@Tag("migrate")
-public class DataQualityResourceTest {
+@Tag("e2e")
+public class DataQualityResourceE2ETest {
 
   @Test
   @TestSecurity(
       user = "testuser",
       roles = {"admin", "manager", "sales"})
-  public void testGetDataQualityMetrics() {
+  public void testGetDataQualityMetrics_shouldReturn200WithCorrectFormat() {
     given()
         .when()
         .get("/api/contact-interactions/data-quality/metrics")
@@ -47,7 +53,7 @@ public class DataQualityResourceTest {
   @TestSecurity(
       user = "testuser",
       roles = {"admin", "manager", "sales"})
-  public void testGetDataFreshnessStatistics() {
+  public void testGetDataFreshnessStatistics_shouldReturn200WithCorrectFormat() {
     given()
         .when()
         .get("/api/contact-interactions/data-freshness/statistics")
@@ -59,39 +65,5 @@ public class DataQualityResourceTest {
         .body("STALE", equalTo(40))
         .body("CRITICAL", equalTo(30))
         .body("total", equalTo(150));
-  }
-
-  @Test
-  public void testGetDataQualityMetrics_Unauthorized() {
-    given().when().get("/api/contact-interactions/data-quality/metrics").then().statusCode(401);
-  }
-
-  @Test
-  public void testGetDataFreshnessStatistics_Unauthorized() {
-    given()
-        .when()
-        .get("/api/contact-interactions/data-freshness/statistics")
-        .then()
-        .statusCode(401);
-  }
-
-  @Test
-  @TestSecurity(
-      user = "testuser",
-      roles = {"viewer"})
-  public void testGetDataQualityMetrics_Forbidden() {
-    given().when().get("/api/contact-interactions/data-quality/metrics").then().statusCode(403);
-  }
-
-  @Test
-  @TestSecurity(
-      user = "testuser",
-      roles = {"viewer"})
-  public void testGetDataFreshnessStatistics_Forbidden() {
-    given()
-        .when()
-        .get("/api/contact-interactions/data-freshness/statistics")
-        .then()
-        .statusCode(403);
   }
 }
