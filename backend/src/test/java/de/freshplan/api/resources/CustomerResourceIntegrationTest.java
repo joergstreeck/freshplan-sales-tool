@@ -9,7 +9,7 @@ import de.freshplan.domain.customer.entity.CustomerStatus;
 import de.freshplan.domain.customer.entity.CustomerType;
 import de.freshplan.domain.customer.entity.Industry;
 import de.freshplan.domain.customer.service.dto.*;
-import de.freshplan.test.BaseIntegrationTest;
+import de.freshplan.test.utils.BaseIntegrationTest;
 import de.freshplan.test.TestcontainersProfile;
 import de.freshplan.test.builders.CustomerBuilder;
 import io.quarkus.test.TestTransaction;

@@ -3,7 +3,7 @@ package de.freshplan.domain.customer.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import de.freshplan.domain.customer.entity.*;
-import de.freshplan.test.BaseIntegrationTest;
+import de.freshplan.test.utils.BaseIntegrationTest;
 import de.freshplan.test.builders.CustomerBuilder;
 import io.quarkus.panache.common.Page;
 import io.quarkus.test.TestTransaction;
