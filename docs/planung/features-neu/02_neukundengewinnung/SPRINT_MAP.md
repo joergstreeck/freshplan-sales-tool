@@ -112,36 +112,38 @@ updated: "2025-09-27"
 
 ### **Sprint 2.1.5 – Lead Protection & Progressive Profiling (IN_PROGRESS)**
 **Zentral:** [TRIGGER_SPRINT_2_1_5.md](../../TRIGGER_SPRINT_2_1_5.md)
-**Status:** 🔧 IN_PROGRESS
+**Status:** 🔄 Backend Phase 1 COMPLETE (01.10.2025), Frontend Phase 2 ausstehend
 **Scope:** Vertragliche Lead-Schutz-Mechanismen + B2B Progressive Profiling
 
-> **⚠️ TEST-STRATEGIE BEACHTEN!**
-> Tests MÜSSEN Mocks verwenden, NICHT @QuarkusTest mit echter DB!
-> Siehe: [backend/TEST_MIGRATION_PLAN.md](./backend/TEST_MIGRATION_PLAN.md)
+**✅ Backend Complete:**
+- **ADR-004:** Inline-First Architecture (PLAN B statt separate lead_protection Tabelle)
+- **Migrations V255-V257:**
+  - V255: Progress Tracking + Stage (0=Vormerkung, 1=Registrierung, 2=Qualifiziert)
+  - V256: lead_activities augmentation (counts_as_progress, summary, outcome, next_action)
+  - V257: Functions + Trigger (calculate_protection_until, trg_update_progress_on_activity)
+- **Entities:** Lead.java (+3), LeadActivity.java (+6)
+- **Service:** LeadProtectionService (canTransitionStage, calculateProgressDeadline, needsProgressWarning)
+- **Tests:** 24 Unit Tests (0.845s, Pure Mockito, 100% passed)
 
-**Sprint-Ziel:**
-- 6-Monats-Schutz gemäß Handelsvertretervertrag
-- 60-Tage-Aktivitätsstandard mit Warnsystem
-- Stop-the-Clock Mechanismus
-- Progressive Profiling (3 Stufen: Vormerkung/Registration/Qualifiziert)
+**⏸️ Frontend ausstehend (Phase 2):**
+- LeadWizard.vue (3 Stufen)
+- LeadProtectionBadge.vue
+- ActivityTimeline.vue
 
-**Deliverables:**
-- Migration V249: `lead_protection` und `lead_activities` Tabellen
-- Migration V250: Protection Trigger und Status-Jobs
-- Frontend: LeadWizard, ProtectionBadge, ActivityTimeline
-- API: Enhanced POST /api/leads mit 201/202/409 Semantik
-- Protection-Endpoints: Reminder, Extend, Stop-Clock, Data-Deletion
+**📋 Verschoben auf Sprint 2.1.6:**
+- V258 lead_transfers Tabelle
+- PUT /api/leads/{id}/registered-at (Backdating)
+- Nightly Jobs (Warning/Expiry/Pseudonymisierung)
+- Vollständiger Fuzzy-Matching Algorithmus
 
 **Artefakte:** [`artefakte/SPRINT_2_1_5/`](./artefakte/SPRINT_2_1_5/)
-- ✅ CONTRACT_MAPPING.md
-- ✅ TEST_PLAN.md
-- ✅ RELEASE_NOTES.md
-- ✅ CHANGELOG.md
-- ✅ QA_CHECKLIST.md
-- ✅ OpenAPI Contract: [`analyse/api/leads.openapi.md`](./analyse/api/leads.openapi.md)
-- ✅ RBAC ADR: [`shared/adr/ADR-002-rbac-lead-protection.md`](./shared/adr/ADR-002-rbac-lead-protection.md)
+- ✅ [ADR-004-lead-protection-inline-first.md](./shared/adr/ADR-004-lead-protection-inline-first.md)
+- ✅ [DELTA_LOG_2_1_5.md](./artefakte/SPRINT_2_1_5/DELTA_LOG_2_1_5.md) (Implementierungs-Entscheidungen)
+- ✅ [CONTRACT_MAPPING.md](./artefakte/SPRINT_2_1_5/CONTRACT_MAPPING.md) (§3.2, §3.3)
+- ✅ [TEST_PLAN.md](./artefakte/SPRINT_2_1_5/TEST_PLAN.md) (Mock-First Strategie)
+- ✅ [SUMMARY.md](./artefakte/SPRINT_2_1_5/SUMMARY.md)
 
-**Delta:** Scope geändert von "Matching & Review" zu "Protection & Progressive" (siehe DELTA_LOG_2_1_5.md)
+**Delta:** Scope geändert von "Matching & Review" zu "Protection & Progressive", PLAN B (Inline-First) statt V249-Artefakt
 
 ---
 
