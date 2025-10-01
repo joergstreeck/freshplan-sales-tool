@@ -102,7 +102,43 @@ class CustomerServiceIntegrationTest {
 
 ## 🔧 Kritische Patterns
 
-### 1. Eindeutige Test-IDs (PFLICHT!)
+### 1. ValidatorFactory Performance (DTO-Tests)
+
+```java
+// ❌ LANGSAM: Factory-Erstellung in @BeforeEach (300ms pro Test!)
+private Validator validator;
+
+@BeforeEach
+void setUp() {
+    ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+    validator = factory.getValidator();
+}
+
+// ✅ SCHNELL: Shared Factory in @BeforeAll (~300ms für ALLE Tests)
+private static ValidatorFactory validatorFactory;
+private Validator validator;
+
+@BeforeAll
+static void setUpFactory() {
+    validatorFactory = Validation.buildDefaultValidatorFactory();
+}
+
+@BeforeEach
+void setUp() {
+    validator = validatorFactory.getValidator();
+}
+
+@AfterAll
+static void tearDownFactory() {
+    if (validatorFactory != null) {
+        validatorFactory.close();
+    }
+}
+```
+
+**Impact:** 22 Tests mit `@BeforeEach` Factory = 7.3s → mit `@BeforeAll` = 0.5s (14x schneller!)
+
+### 2. Eindeutige Test-IDs (PFLICHT!)
 
 ```java
 // ❌ NIEMALS statische IDs
@@ -124,7 +160,25 @@ public class TestIds {
 }
 ```
 
-### 2. Commit-Grenzen bei Transaktionen
+### 3. JUnit vs Maven Parallel Execution
+
+**Problem:** Maven Surefire `pom.xml` parallel settings werden ignoriert.
+
+**Ursache:** `src/test/resources/junit-platform.properties` überschreibt Maven-Konfiguration!
+
+```properties
+# ❌ BLOCKIERT Maven Surefire parallel execution
+junit.jupiter.execution.parallel.enabled=false
+junit.jupiter.execution.parallel.mode.default=same_thread
+
+# ✅ LÖSUNG: JUnit parallel config auskommentieren/entfernen
+# Lass Maven Surefire die Kontrolle (via pom.xml)
+# junit.jupiter.execution.parallel.enabled=true
+```
+
+**Impact:** Tests liefen 24 Minuten serial → 7 Minuten parallel (70% schneller!)
+
+### 4. Commit-Grenzen bei Transaktionen
 
 ```java
 // ❌ Problem: Service liest in neuer TX, sieht Daten nicht
@@ -166,7 +220,7 @@ public class TestTx {
 }
 ```
 
-### 3. Relative Assertions (Phase 5C Standard)
+### 5. Relative Assertions (Phase 5C Standard)
 
 ```java
 // ❌ Absolut - schlägt fehl bei Pollution
@@ -185,7 +239,7 @@ void testFindActive() {
 }
 ```
 
-### 4. Event-Listener deaktivieren (CI)
+### 6. Event-Listener deaktivieren (CI)
 
 **In `application.properties` (test/ci):**
 ```properties
@@ -288,6 +342,8 @@ quarkus.test.hang-detection-timeout=60s
 | Test sieht keine Daten | Commit-Grenze | `TestTx.committed(…)` wrapper |
 | Mock nicht aufgerufen | Feature-Flag/Pfad | Preconditions checken |
 | Tests hängen | Event-Listener aktiv | `freshplan.event.listener.enabled=false` |
+| Tests laufen serial trotz `pom.xml` | `junit-platform.properties` override | JUnit parallel config entfernen/auskommentieren |
+| DTO-Tests mit Validator zu langsam | `ValidatorFactory` in `@BeforeEach` | Factory nach `@BeforeAll` static verschieben |
 
 ---
 
