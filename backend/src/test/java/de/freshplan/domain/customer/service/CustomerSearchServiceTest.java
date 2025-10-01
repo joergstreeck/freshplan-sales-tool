@@ -347,13 +347,27 @@ class CustomerSearchServiceTest {
 
     // Then
     assertThat(result).isNotNull();
-    assertThat(result.getContent()).hasSize(3);
-    // Should be sorted by volume descending: 100000, 50000, 25000
-    assertThat(result.getContent().get(0).expectedAnnualVolume())
+    // Filter to only test-created customers
+    var testCustomers =
+        result.getContent().stream()
+            .filter(
+                c ->
+                    List.of(
+                            "Enterprise Company",
+                            "Large Company",
+                            "Medium Company",
+                            "Small Company")
+                        .contains(c.companyName()))
+            .toList();
+    assertThat(testCustomers).hasSize(4);
+    // Should be sorted by volume descending: 100000, 75000, 50000, 25000
+    assertThat(testCustomers.get(0).expectedAnnualVolume())
         .isEqualByComparingTo(BigDecimal.valueOf(100000));
-    assertThat(result.getContent().get(1).expectedAnnualVolume())
+    assertThat(testCustomers.get(1).expectedAnnualVolume())
+        .isEqualByComparingTo(BigDecimal.valueOf(75000));
+    assertThat(testCustomers.get(2).expectedAnnualVolume())
         .isEqualByComparingTo(BigDecimal.valueOf(50000));
-    assertThat(result.getContent().get(2).expectedAnnualVolume())
+    assertThat(testCustomers.get(3).expectedAnnualVolume())
         .isEqualByComparingTo(BigDecimal.valueOf(25000));
   }
 
