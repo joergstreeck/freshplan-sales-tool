@@ -79,7 +79,8 @@ COMMENT ON TABLE lead_activities IS
 -- ============================================================================
 
 -- Für Trigger V257: "Find latest activity WHERE counts_as_progress=true"
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_lead_activities_progress
+-- Note: CONCURRENTLY removed for Flyway compatibility (no mixed transactional/non-transactional)
+CREATE INDEX IF NOT EXISTS idx_lead_activities_progress
   ON lead_activities (lead_id, activity_date DESC)
   WHERE counts_as_progress = TRUE;
 
