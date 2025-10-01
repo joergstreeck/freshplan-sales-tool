@@ -11,11 +11,12 @@
 
 **🚨 AKTUELLER STATUS:**
 - **Phase:** ✅ Phase 1 COMPLETE | 🚀 Phase 2 IN PROGRESS
-- **Current Sprint:** Sprint 2.1.4 COMPLETE → 2.1.5 Protection & Progressive Profiling bereit
-- **Progress:** 10/36 PRs - 28% done (PR #123 merged)
+- **Current Sprint:** Sprint 2.1.5 Backend Phase 1 COMPLETE → Frontend Phase 2 ausstehend
+- **Progress:** 10/36 PRs - 28% done (PR #123 merged, Sprint 2.1.5 partial)
 - **Blockers:** Keine
 - **Foundation Status:** ✅ COMPLETE - CQRS/Security/Settings/CI/RLS operational
 - **Performance:** ✅ P95 <7ms (Lead-Module) + CI 24min → 7min (70% schneller) + Frontend 90% Test-Coverage
+- **Latest:** Sprint 2.1.5 Backend (V255-V257, ADR-004 Inline-First, 24 Unit Tests)
 
 **🔗 WICHTIGE REFERENZEN:**
 - **Arbeitsregeln:** [CLAUDE.md](./CLAUDE.md)
@@ -85,7 +86,7 @@ Sprint 1.6: RLS Module Adoption       ✅ PR #107 MERGED → Modul 02 Fix + CI-G
 
 ### 🚀 **Phase 2: Core Business (7.5 Wochen) - IN PROGRESS**
 ```
-Progress: ███░░░░░░░ 30% (2/5 Sprints + 2 Sub-Sprints)
+Progress: ███░░░░░░░ 35% (2.5/5 Sprints + 3 Sub-Sprints)
 
 Sprint 2.1: 02 Neukundengewinnung     ✅ 100% COMPLETE → PR #103, #105, #110, #111 merged (FP-235 ✅)
                                       → 3 Production Patterns dokumentiert (Security/Performance/Events)
@@ -94,7 +95,10 @@ Sprint 2.1.3: Frontend Lead Mgmt      ✅ COMPLETE → PR #122 merged - Lead Man
                                       → [Modul 02 Sprint-Map](features-neu/02_neukundengewinnung/SPRINT_MAP.md)
 Sprint 2.1.4: Lead Dedup & Quality    ✅ COMPLETE → PR #123 merged - Normalisierung, Idempotenz, CI 24min→7min
                                       → [Operations Runbook](../operations/lead-deduplication-runbook.md)
-Sprint 2.1.5: Protection & Profiling  📋 Ready → § 2(8) Handelsvertretervertrag + Progressive Profiling
+Sprint 2.1.5: Protection & Profiling  🔄 Backend Phase 1 COMPLETE → Frontend Phase 2 ausstehend
+                                      → V255-V257 (Progress Tracking + Stage), ADR-004 (Inline-First)
+                                      → 24 Unit Tests (0.845s, Pure Mockito, 100% passed)
+                                      → Features verschoben: V258, Backdating, Nightly Jobs, Fuzzy-Matching → Sprint 2.1.6
 Sprint 2.2: 03 Kundenmanagement       📋 Ready → 39 Artefakte + nutzt Security/Performance Patterns
 Sprint 2.3: 05 Kommunikation          📋 Ready → Security-Gate ✅ + nutzt Event-System Pattern
 Sprint 2.4: 01 Cockpit                🟡 Planning → CQRS-optimiert

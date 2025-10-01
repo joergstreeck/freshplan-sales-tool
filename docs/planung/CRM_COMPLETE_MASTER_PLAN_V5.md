@@ -36,21 +36,22 @@
 
 **🚨 NEXT:** Production Implementation Phase - Vollständige Planungsphase abgeschlossen mit 310+ Production-Ready Artefakten
 
-**📋 LATEST UPDATE (28.09.2025):**
-- ✅ **PR #122 MERGED:** Sprint 2.1.3 Frontend Lead Management MVP COMPLETE
-  - Lead-Liste und Lead-Erfassung mit vollständiger Business-Logik
-  - Client-seitige Validierung + Duplikat-Erkennung (409 Handling)
-  - RFC7807 Error Handling mit Feld-spezifischen Fehlern
-  - Vollständige i18n (de/en) ohne hardcoded Strings
-  - MSW für realistische API-Simulation
-  - 90% Test-Coverage, CI/CD komplett grün
-- ✅ **PR #111 MERGED:** Sprint 2.1.1 P0 HOTFIX + FP-235 Follow-up Automation COMPLETE
-  - Event Distribution via LISTEN/NOTIFY mit AFTER_COMMIT Pattern
-  - Dashboard Widget mit T+3/T+7 Lead-Metriken operational
-  - Prometheus Metrics für Follow-up Performance Tracking
-  - RBAC/RLS mit konfigurierbarem Test-Bypass
-  - 25 Tests alle grün, Migration V250
-- 🔧 **IN PROGRESS:** Sprint 2.1.4 Backend-Integration (V247 Migration, Normalization Service, Idempotency)
+**📋 LATEST UPDATE (01.10.2025):**
+- ✅ **PR #123 MERGED:** Sprint 2.1.4 Lead Deduplication & Data Quality COMPLETE
+  - Normalisierung: email (lowercase), phone (E.164), company (ohne Suffixe/Rechtsformen)
+  - Partielle UNIQUE Indizes (WHERE status != 'DELETED') für email/phone/company
+  - IdempotencyService: 24h TTL, SHA-256 Request-Hash, atomic INSERT … ON CONFLICT
+  - LeadNormalizationService mit 31 Tests (0.845s)
+  - CI Performance Breakthrough: 24min → 7min (70% schneller!)
+  - Test-Migration: @QuarkusTest ↓27% (8 DTO-Tests → Plain JUnit mit Mockito)
+  - Migrations: V247, V10012, V251-V254, R__normalize_functions.sql
+- 🔄 **IN PROGRESS:** Sprint 2.1.5 Backend Phase 1 COMPLETE, Frontend Phase 2 ausstehend
+  - ✅ Migrations V255-V257: Progress Tracking + Stage + Functions/Trigger
+  - ✅ Entities: Lead.java (+3), LeadActivity.java (+6)
+  - ✅ Service: LeadProtectionService mit Stage-Validierung + Progress-Deadlines
+  - ✅ Tests: 24 Unit Tests (0.845s, Pure Mockito, 100% passed)
+  - ✅ Dokumentation: ADR-004 (Inline-First), DELTA_LOG_2_1_5, TRIGGER_SPRINT_2_1_6
+  - ⏸️ Frontend: LeadWizard.vue, LeadProtectionBadge.vue, ActivityTimeline.vue
 
 **🚀 STRATEGIC DECISION (21.09.2025):** CQRS Light Migration-First Strategy confirmed - CQRS Light Foundation (1-2 Wochen Q4 2025) → Business-Module (Q1 2026) für kosteneffiziente interne Performance + Zero Doppelarbeit
 
@@ -231,16 +232,27 @@
   - ADR-003 für Row-Level-Security (RLS) dokumentiert
   - OpenAPI Protection-Endpoints spezifiziert
   - Migration: n/a, Tests: n/a
+- 2025-10-01 20:15 — **Sprint 2.1.5 Backend Phase 1 COMPLETE:** Lead Protection & Progressive Profiling
+  - ADR-004: Inline-First Architecture (PLAN B statt separate lead_protection Tabelle)
+  - Migrations V255-V257: Progress Tracking + Stage + Functions/Trigger
+  - Entities: Lead.java (+3 Felder), LeadActivity.java (+6 Felder)
+  - Service: LeadProtectionService mit 4 neuen Methoden (Stage-Validierung, Progress-Deadlines)
+  - Tests: 24 Unit Tests (0.845s, Pure Mockito, 100% passed)
+  - Dokumentation: DELTA_LOG_2_1_5, CONTRACT_MAPPING, TEST_PLAN, SUMMARY, TRIGGER_SPRINT_2_1_6
+  - Frontend Phase 2 ausstehend (LeadWizard.vue, LeadProtectionBadge.vue, ActivityTimeline.vue)
+  - Verschobene Features auf Sprint 2.1.6: V258 lead_transfers, Backdating, Nightly Jobs, Fuzzy-Matching
+  - Migration: V255-V257, Tests: OK
 <!-- MP5:SESSION_LOG:END -->
 
 ## Next Steps
 <!-- MP5:NEXT_STEPS:START -->
+- **Sprint 2.1.5 Frontend Phase 2:** LeadWizard.vue (3-Stufen Progressive Profiling), LeadProtectionBadge.vue, ActivityTimeline.vue
+- **Sprint 2.1.5 API-Erweiterung:** POST /api/leads mit Stage-Parameter Validierung
+- **Sprint 2.1.5 Integration Test (optional):** V257 Trigger-Test (trg_update_progress_on_activity)
+- **Sprint 2.1.6 Vorbereitung:** V258 lead_transfers Tabelle, Backdating-Endpoint, Nightly Jobs, Fuzzy-Matching
 - **Backfill-Job für historische Leads:** Normalisierung für bestehende Daten
-- **Monitoring:** Idempotency Key-Konflikte (409-Rate), Index-Bloat, Normalisierungs-Performance
+- **Monitoring:** Idempotency Key-Konflikte (409-Rate), Index-Bloat, Normalisierungs-Performance, Progress-Deadlines
 - **Production Index Build:** CONCURRENTLY-Indizes für email/phone/company (siehe Runbook)
-- **Idempotency Parallelitätstests:** Race Conditions bei gleichzeitigen Requests
-- Sprint 2.1.5: Protection-Endpoints implementieren (Reminder, Extend, Stop-Clock)
-- Sprint 2.1.5: Retention-Jobs für Pseudonymisierung implementieren
 - Sprint 2.1.6: RLS-Policies gemäß ADR-003 umsetzen
 - Sprint 2.1.6: Lead-Transfer-Flow mit Genehmigung implementieren
 - Sprint 2.1.6: Fuzzy-Matching & Review-Flow (verschoben aus 2.1.5)
