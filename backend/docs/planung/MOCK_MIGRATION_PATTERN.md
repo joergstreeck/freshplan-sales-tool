@@ -35,6 +35,8 @@
 - **Integration Tests** - Mehrere Services zusammen
 - **Transaction Tests** - `@TestTransaction` erforderlich
 - **Security Tests** - `@TestSecurity` erforderlich
+- **Tests mit DB-SELECT** - Auch Read-Only DB-Zugriff benötigt @QuarkusTest
+- **Tests mit @Inject DataSource** - Quarkus CDI erforderlich
 
 ---
 
@@ -207,22 +209,33 @@ Tests: X passed
 
 ## 🚀 Nächste Schritte
 
-### Batch 1: Enum/Logic Tests (geschätzt 5-8 Files)
-- SmartSortServiceTest (13 Tests, 0 persist)
-- Weitere Enum-Tests finden
-- **Impact:** ~90s CI-Zeit
+### ⚠️ Migration-Status Update (2025-10-01)
 
-### Batch 2: Service mit Mock (geschätzt 10-15 Files)
-- Services ohne persist() aber mit Dependencies
-- @InjectMock verwenden
-- **Impact:** ~180s CI-Zeit
+**Erkenntnisse nach Kandidaten-Analyse:**
+- Von 27 Tests mit "0 persist-Calls" sind bereits ~15 zu Plain JUnit/Mockito migriert
+- Verbleibende Tests mit "0 persist" benötigen trotzdem @QuarkusTest wegen:
+  - DB-SELECT Queries (z.B. SecurityContextTest, EventPublisherTest)
+  - `@Inject DataSource` oder andere Quarkus CDI
+  - `@TestSecurity` für Security-Tests
+  - Integration-Testing von Infra-Components
 
-### Batch 3: Optimierung (geschätzt 5-10 Files)
-- Grenzfälle prüfen
-- Komplexere Migrations-Patterns
-- **Impact:** ~100s CI-Zeit
+**Neue Strategie:**
+1. **Phase 2.2a: Restliche Plain-JUnit Kandidaten** (geschätzt 3-5 Files)
+   - Mapper-Tests prüfen (z.B. OpportunityMapperTest mit @Inject Builders)
+   - Enum/DTO Tests identifizieren
+   - **Impact:** ~45-75s CI-Zeit
 
-**Gesamt-Ziel:** 79 → 50 @QuarkusTest = **~7,5 min CI-Einsparung**
+2. **Phase 2.2b: @InjectMock Pattern** (geschätzt 8-12 Files)
+   - Services mit 1-10 persist-Calls + mockbare Dependencies
+   - @QuarkusTest + @InjectMock verwenden
+   - **Impact:** ~120-180s CI-Zeit
+
+3. **Phase 2.2c: Refactoring für Testbarkeit** (geschätzt 5-8 Files)
+   - Services mit vielen persist-Calls umstrukturieren
+   - Command/Query Separation verbessern
+   - **Impact:** ~75-120s CI-Zeit
+
+**Realistisches Ziel:** 79 → 60 @QuarkusTest = **~5 min CI-Einsparung**
 
 ---
 
