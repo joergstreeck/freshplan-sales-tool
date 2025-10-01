@@ -19,6 +19,10 @@ Lead Deduplication & Data Quality – Phase 1: Normalisierung, Soft-Deduplizieru
 ### **1. Datenbank-Migrationen**
 - **V247:** Normalisierungs-Spalten (`email_normalized`, `phone_e164`, `company_name_normalized`)
 - **V10012:** CI-only Indizes (non-CONCURRENTLY für schnelle Tests)
+  - **Migration-Historie:** Ursprünglich als V248 geplant, verschoben nach V10012 (Test/Dev-Range)
+  - **Grund:** V10xxx = Test-only Migrations, werden in Production übersprungen (flyway.ignoreMigrationPatterns)
+  - **Inhalt:** UNIQUE Indizes für email/phone/company ohne CONCURRENTLY (CI-Performance: table locks akzeptabel)
+  - **Production:** Manuelle INDEX CREATION mit CONCURRENTLY erforderlich (siehe Migration-Kommentare)
 - **V251-V254:** Idempotency-Fixes, Events `published` column, Registered-at backdating
 - **R__normalize_functions.sql:** Repeatable normalization functions (PostgreSQL)
 - **Partielle UNIQUE Indizes:** WHERE status != 'DELETED' für email/phone/company
@@ -48,10 +52,39 @@ Lead Deduplication & Data Quality – Phase 1: Normalisierung, Soft-Deduplizieru
 - `idempotency_hits_total` - Anzahl idempotente Wiederholungen
 - `normalization_errors_total{field}` - Fehler bei Normalisierung
 
+## 📝 Migration Notes
+
+### V248 → V10012 Verschiebung (Test/Dev-Range)
+
+**Ursprüngliche Planung:** V248__leads_unique_indexes_simple.sql
+
+**Finale Implementierung:** V10012__leads_unique_indexes_simple.sql
+
+**Begründung:**
+- **V10xxx Range = Test/Dev-only Migrations:** Werden in Production übersprungen via `flyway.ignoreMigrationPatterns=*:10*`
+- **CONCURRENTLY Problem:** UNIQUE Index-Creation ohne CONCURRENTLY sperrt Tabellen (akzeptabel in Test/CI, NICHT in Production)
+- **Production Strategy:** Manuelle Index-Creation mit CONCURRENTLY außerhalb Flyway (Zero-Downtime)
+
+**Auswirkungen:**
+- ✅ **CI/Test:** V10012 läuft automatisch, schnelle Index-Creation (~2s statt 30s+)
+- ✅ **Production:** V10012 wird übersprungen, DBA führt CONCURRENTLY Indizes manuell durch
+- ✅ **Flyway History:** Keine V248 Einträge in `flyway_schema_history` (nie existiert in finaler Form)
+
+**Referenz-Migration:**
+```sql
+-- V10012__leads_unique_indexes_simple.sql (Zeilen 1-11)
+-- ⚠️ WARNING: This migration is for DEV/TEST environments ONLY
+-- ⚠️ Creates UNIQUE indexes WITHOUT CONCURRENTLY which locks tables
+-- ⚠️ For PRODUCTION deployments:
+-- ⚠️   1. Skip this migration (add to flyway.ignoreMigrationPatterns)
+-- ⚠️   2. Use manual CONCURRENTLY index creation
+```
+
 ## 🔗 Verweise
 - **Trigger:** [TRIGGER_SPRINT_2_1_4.md](../../../../TRIGGER_SPRINT_2_1_4.md)
 - **Backend-Übersicht:** [backend/_index.md](../../backend/_index.md)
 - **ADR:** [ADR-002-normalization.md](../../shared/adr/ADR-002-normalization.md)
+- **V10012 Migration:** [V10012__leads_unique_indexes_simple.sql](../../../../../backend/src/main/resources/db/migration/V10012__leads_unique_indexes_simple.sql)
 
 ## ✅ Definition of Done
 - [x] Migration V247 erfolgreich ausgeführt (+ V10012, V251-V254)
