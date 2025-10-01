@@ -2,10 +2,10 @@
 module: "02_neukundengewinnung"
 domain: "shared"
 doc_type: "contract"
-status: "draft"
+status: "in_progress"
 sprint: "2.1.5"
 owner: "team/leads-backend"
-updated: "2025-09-28"
+updated: "2025-10-01"
 ---
 
 # Sprint 2.1.5 – Contract Mapping
@@ -19,15 +19,16 @@ updated: "2025-09-28"
 **Vertragstext:**
 > "Der Lead-Schutz beträgt 6 Monate ab Registrierung (Firma, Ort und zentraler Kontakt oder dokumentierter Erstkontakt)."
 
-**Implementation:**
+**Implementation (ADR-003: Inline-First Architecture):**
 ```sql
--- lead_protection.protection_until
-protection_until = registered_at + INTERVAL '6 months'
+-- leads.protection_start_at (bereits vorhanden in Lead.java)
+-- Berechnung: registered_at + protection_months * INTERVAL '1 month'
+-- Function: calculate_protection_until(registered_at, protection_months)
+-- Kein separates lead_protection table (siehe ADR-003)
 
--- Trigger bei Lead-Erstellung
-CREATE TRIGGER create_lead_protection_on_insert
-AFTER INSERT ON leads
-FOR EACH ROW EXECUTE FUNCTION create_lead_protection_trigger();
+-- Nutzung in LeadProtectionService.java:
+Duration protectionDuration = Duration.ofDays(lead.getProtectionMonths() * 30L);
+LocalDateTime protectionUntil = lead.getProtectionStartAt().plus(protectionDuration);
 ```
 
 ### Aktivitätsstandard (§3.3)
@@ -35,15 +36,21 @@ FOR EACH ROW EXECUTE FUNCTION create_lead_protection_trigger();
 **Vertragstext:**
 > "Aktivitätsstandard: belegbarer Fortschritt je 60 Tage"
 
-**Implementation:**
+**Implementation (V255-V256: Inline Fields + Trigger):**
 ```sql
--- lead_protection.progress_deadline
-progress_deadline = last_progress_at + INTERVAL '60 days'
+-- V255: Neue Felder in leads
+ALTER TABLE leads ADD COLUMN progress_warning_sent_at TIMESTAMPTZ NULL;
+ALTER TABLE leads ADD COLUMN progress_deadline TIMESTAMPTZ NULL;
 
--- Status-Übergang
-UPDATE lead_protection
-SET status = 'warning'
-WHERE progress_deadline < NOW() + INTERVAL '7 days'
+-- V256: lead_activities augmentation
+ALTER TABLE lead_activities ADD COLUMN counts_as_progress BOOLEAN DEFAULT FALSE;
+
+-- V257: Trigger update_progress_on_activity
+-- Bei INSERT/UPDATE lead_activities mit counts_as_progress=true:
+UPDATE leads
+SET progress_deadline = NOW() + INTERVAL '60 days',
+    last_activity_at = NEW.performed_at
+WHERE id = NEW.lead_id;
 ```
 
 ### Stop-the-Clock (§3.3.2)
@@ -51,18 +58,26 @@ WHERE progress_deadline < NOW() + INTERVAL '7 days'
 **Vertragstext:**
 > "Stop-the-Clock bei FreshFoodz-Zuarbeit/Sperrfristen"
 
-**Implementation:**
-```sql
--- lead_protection Felder
-stop_the_clock_reason TEXT  -- Pflichtfeld mit Grund
-stop_the_clock_start TIMESTAMP
-stop_the_clock_end TIMESTAMP
+**Implementation (Bestehende Felder in Lead.java):**
+```java
+// Lead.java - bereits vorhanden:
+@Column(name = "clock_stopped_at")
+private LocalDateTime clockStoppedAt;
 
--- Business Logic
-IF stop_the_clock_start IS NOT NULL
-  AND stop_the_clock_end IS NULL THEN
-  -- Deadline pausiert
-END IF
+@Column(name = "stop_reason", length = 500)
+private String stopReason;
+
+@Column(name = "stop_approved_by", length = 50)
+private String stopApprovedBy;
+
+// LeadProtectionService.java - Business Logic:
+public boolean canStopClock(Lead lead, String reason, String approvedBy) {
+    if (lead.getClockStoppedAt() != null) return false; // bereits gestoppt
+    lead.setClockStoppedAt(LocalDateTime.now());
+    lead.setStopReason(reason);
+    lead.setStopApprovedBy(approvedBy);
+    return true;
+}
 ```
 
 ### Datenminimierung (§5.1 DSGVO-Annex)
@@ -70,95 +85,98 @@ END IF
 **Vertragstext:**
 > "Vormerkung: nur Firma/Ort (optional Branche)"
 
-**Implementation:**
+**Implementation (V255: stage Feld + Business Logic):**
+```sql
+-- V255: Progressive Profiling Stage
+ALTER TABLE leads ADD COLUMN stage SMALLINT NOT NULL DEFAULT 0;
+ALTER TABLE leads ADD CONSTRAINT leads_stage_chk CHECK (stage BETWEEN 0 AND 2);
+
+COMMENT ON COLUMN leads.stage IS
+  'DSGVO Art.5: Progressive Profiling Stage (0=Vormerkung, 1=Registrierung, 2=Qualifiziert)';
+```
+
 ```typescript
-// Stage 0 - Vormerkung
+// Frontend: LeadWizard.vue - Stage 0 (Vormerkung)
 interface LeadStage0 {
+  stage: 0,
   companyName: string;  // PFLICHT
   city: string;         // PFLICHT
   industry?: string;    // OPTIONAL
   // KEINE personenbezogenen Daten!
 }
 
-// Stage 1 - Mit Kontakt
+// Stage 1 - Registrierung mit Kontakt
 interface LeadStage1 extends LeadStage0 {
+  stage: 1,
   contact?: {
     firstName?: string;
     lastName?: string;
     email?: string;
     phone?: string;
   };
-  source: 'manual' | 'partner' | 'marketing';
-  ownerUserId?: string;
+}
+
+// Stage 2 - Qualifiziert
+interface LeadStage2 extends LeadStage1 {
+  stage: 2,
+  vatId?: string;
+  expectedVolume?: number;
 }
 ```
 
 ## § 2(8) Abdeckung - Vollständige vertragliche Anforderungen
 
-| Klausel | Implementierung | Artefakt/Endpoint | Job/Timer | Audit-Event |
-|---------|----------------|-------------------|-----------|-------------|
-| §2(8)(a) Lead-Schutz 6 Monate | `protection_until = registered_at + INTERVAL '6 months'` | Trigger `create_lead_protection_on_insert` | - | `lead_protection_started` |
-| §2(8)(a) **Lead-Registrierung & Schutzbeginn** | **Backdating durch Admin/Manager** auf dokumentierten Erstkontakt; 6-Monate Schutz ab `registered_at` | **PUT /api/leads/{id}/registered-at** (Body: `registeredAt`, `reason`) | - | `lead_registered_at_backdated` |
-| §2(8)(b) 60-Tage-Aktivitätsstandard | `progress_deadline = last_progress_at + INTERVAL '60 days'` | Status-Check Job | Nightly Job | `lead_activity_logged` |
-| §2(8)(c) **Erinnerung + 10 Tage Nachfrist** | Reminder-Flow mit Statuswechsel zu `warning` → nach 10 Tagen zu `expired` | **POST /lead-protection/{id}/reminder** | Nightly Job + 10d Timer | `lead_protection_warning` → `lead_protection_expired` |
-| §2(8)(d) Stop-the-Clock | `stop_the_clock_start/end` mit Grund-Dokumentation | POST/DELETE /lead-protection/{id}/stop-clock | - | `lead_stop_clock_started/stopped` |
-| §2(8)(e) **Verlängerung auf Antrag** | Antrags- und Genehmigungsprozess mit Begründungspflicht | **POST /lead-protection/{id}/extend** + **PUT /lead-protection/extend/{requestId}** | Scheduler aktualisiert Schutzende | `lead_protection_extend_requested/approved/denied` |
-| §2(8)(f) Erfolgsprovision | Nicht Teil von Sprint 2.1.5 | - | - | - |
-| §2(8)(g) DSGVO-Minimierung | Progressive Profiling (Stage 0/1/2) implementiert | POST /api/leads mit stage-Parameter | - | `lead_stage_upgraded` |
-| §2(8)(h) Datenumfang & Weitergabe | Stufen-basierte Datenfelder definiert | Siehe Progressive Profiling unten | - | - |
-| §2(8)(i) **Löschung/Pseudonymisierung** | Retention-Plan + Pseudonymisierung nach 60 Tagen ohne Progress - [Details siehe Data-Retention-Plan](/docs/compliance/data-retention-leads.md) | **DELETE /lead-protection/{id}/personal-data** | Nightly Job + Report | `lead_personal_data_pseudonymized` |
+| Klausel | Implementierung | Artefakt/Endpoint | Sprint | Audit-Event |
+|---------|----------------|-------------------|--------|-------------|
+| §2(8)(a) Lead-Schutz 6 Monate | `leads.protection_start_at` + `protection_months` (bereits vorhanden in Lead.java) | `calculate_protection_until()` Function (V257) | 2.1.5 | `lead_protection_started` |
+| §2(8)(a) **Lead-Registrierung & Schutzbeginn** | Backdating durch Admin/Manager; Felder bereits vorhanden (`registered_at_override_reason`) | ⏸️ **PUT /api/leads/{id}/registered-at** (verschoben auf 2.1.6) | 2.1.6 | `lead_registered_at_backdated` |
+| §2(8)(b) 60-Tage-Aktivitätsstandard | `leads.progress_deadline` (V255) + Trigger (V257) bei `counts_as_progress=true` | V255-V257 Migrations | 2.1.5 | `lead_activity_logged` |
+| §2(8)(c) **Erinnerung + 10 Tage Nachfrist** | `leads.progress_warning_sent_at` (V255) + Nightly Job | Nightly Job (2.1.6) | 2.1.6 | `lead_protection_warning` |
+| §2(8)(d) Stop-the-Clock | `leads.clock_stopped_at`, `stop_reason`, `stop_approved_by` (bereits in Lead.java) | LeadProtectionService.canStopClock() | 2.1.5 | `lead_stop_clock_started` |
+| §2(8)(e) **Verlängerung auf Antrag** | Workflow mit Begründung und Genehmigung | ⏸️ Endpoints (verschoben auf 2.1.6) | 2.1.6 | `lead_protection_extend_requested` |
+| §2(8)(f) Erfolgsprovision | Nicht Teil Modul 02 | - | - | - |
+| §2(8)(g) DSGVO-Minimierung | `leads.stage` (0/1/2) - V255 | POST /api/leads mit stage-Parameter | 2.1.5 | `lead_stage_upgraded` |
+| §2(8)(h) Datenumfang & Weitergabe | Stage-basierte Validierung in LeadService | Frontend: LeadWizard.vue (3 Stufen) | 2.1.5 | - |
+| §2(8)(i) **Löschung/Pseudonymisierung** | Retention-Plan | ⏸️ Nightly Job + Endpoint (2.1.6) | 2.1.6 | `lead_personal_data_pseudonymized` |
 
 ### Detaillierte Prozessflows
 
-#### §2(8)(c) - Erinnerung + 10-Tage-Nachfrist
+#### §2(8)(c) - Erinnerung + 10-Tage-Nachfrist (⏸️ Sprint 2.1.6)
 
 **Prozessfluss:**
-1. **Tag 53**: System prüft `progress_deadline < NOW() + INTERVAL '7 days'`
-2. **Tag 60**: Automatische Erinnerung an Partner + Status = `warning`
-3. **Tag 60-70**: 10 Kalendertage Nachfrist läuft
-4. **Tag 70**: Ohne neue Aktivität → Status = `expired`, Lead-Schutz erlischt
-5. **Notification**: Email an Partner, Dashboard-Alert, Audit-Event
+1. **Tag 53**: Nightly Job prüft `leads.progress_deadline < NOW() + INTERVAL '7 days'`
+2. **Tag 60**: Automatische Erinnerung + `progress_warning_sent_at` gesetzt
+3. **Tag 60-70**: 10 Kalendertage Nachfrist
+4. **Tag 70**: Ohne neue Aktivität → Lead-Schutz erlischt
+5. **Notification**: Email, Dashboard-Alert, Audit-Event
 
-**UI/System-Events:**
-- Dashboard zeigt Warning-Badge ab Tag 53
-- Email-Reminder an Tag 60
-- Countdown-Timer in UI während Nachfrist
-- Auto-Expiry nach 10 Tagen ohne Aktion
+**Sprint 2.1.5 Scope:**
+- ✅ `leads.progress_warning_sent_at` Feld (V255)
+- ✅ `leads.progress_deadline` Berechnung (V257 Trigger)
+- ⏸️ Nightly Job für Warning/Expiry (2.1.6)
 
-#### §2(8)(e) - Verlängerung auf Antrag
+#### §2(8)(e) - Verlängerung auf Antrag (⏸️ Sprint 2.1.6)
 
 **Antragsweg:**
-1. Partner stellt Antrag über UI/API mit Begründung
+1. Partner stellt Antrag mit Begründung
 2. Admin/Manager erhält Benachrichtigung
-3. Entscheidung innerhalb 48h (SLA)
-4. Bei Genehmigung: `protection_until` wird aktualisiert
-5. Protokollierung in Audit-Trail
+3. Genehmigung aktualisiert `protection_months`
+4. Audit-Trail Protokollierung
 
-**Berechtigungen:**
-- Antragsteller: `sales` Role
-- Genehmiger: `manager` oder `admin` Role
-- Automatische Eskalation nach 48h an `admin`
+**Sprint 2.1.5 Scope:**
+- ✅ Bestehende Felder nutzbar (`protection_months` in Lead.java)
+- ⏸️ Workflow-Endpoints (2.1.6)
 
-#### §2(8)(i) - Löschung/Pseudonymisierung
+#### §2(8)(i) - Löschung/Pseudonymisierung (⏸️ Sprint 2.1.6)
 
 **Retention-Regeln:**
-- **Vormerkung ohne weitere Bearbeitung (60 Tage)**: Pseudonymisierung aller personenbezogenen Daten
-- **Nach Schutz-Ablauf**: Löschung/Pseudonymisierung gemäß Datenschutzrichtlinie
-- **Ausnahmen**: Gesetzliche Aufbewahrungsfristen, berechtigte Interessen
+- Vormerkung ohne Bearbeitung (60 Tage): Pseudonymisierung
+- Nach Schutz-Ablauf: Löschung gemäß DSGVO
+- Ausnahmen: Gesetzliche Aufbewahrungsfristen
 
-**Technische Umsetzung:**
-```sql
--- Pseudonymisierung
-UPDATE leads SET
-  contact_first_name = 'DELETED',
-  contact_last_name = 'DELETED',
-  contact_email = NULL,
-  contact_phone = NULL,
-  notes = 'Pseudonymisiert gem. §2(8)(i)',
-  pseudonymized_at = NOW()
-WHERE protection_status = 'expired'
-  AND last_activity_at < NOW() - INTERVAL '60 days';
-```
+**Sprint 2.1.5 Scope:**
+- ✅ Stage-basierte Datenfelder (V255)
+- ⏸️ Nightly Job für Pseudonymisierung (2.1.6)
 
 ## API Contract
 

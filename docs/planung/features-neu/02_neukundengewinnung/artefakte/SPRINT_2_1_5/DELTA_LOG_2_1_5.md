@@ -5,7 +5,7 @@ doc_type: "deltalog"
 status: "approved"
 sprint: "2.1.5"
 owner: "team/leads-backend"
-updated: "2025-09-28"
+updated: "2025-10-01"
 ---
 
 # Sprint 2.1.5 – Delta Log (Scope-Änderung)
@@ -132,6 +132,113 @@ Diese verweisen auf die neue Implementierung in Sprint 2.1.6.
 | Tech Lead | | 2025-09-28 | ✅ |
 | Scrum Master | | 2025-09-28 | ✅ |
 
+## Implementierungs-Entscheidungen (2025-10-01)
+
+### Architektur-Entscheidung: PLAN B (Inline-First)
+
+**Ursprünglich geplant (V249-Artefakt):**
+- Separate Tabelle `lead_protection` als Source of Truth
+- Komplexe Trigger-Synchronisation mit `leads`-Tabelle
+- 300+ Zeilen Migration mit lead_protection + lead_activities + lead_transfers
+
+**ENTSCHIEDEN:**
+- ✅ **Inline-Felder in `leads` bleiben Source of Truth**
+- ✅ Keine separate `lead_protection`-Tabelle in Sprint 2.1.5
+- ✅ V249-Artefakt wird aufgeteilt und angepasst (V255-V257)
+- ✅ Additive Migrations (ALTER TABLE only, kein DROP/CREATE)
+
+**Begründung:**
+- Lead-Entity hat bereits Protection-Felder (protectionStartAt, protectionMonths, etc.)
+- LeadProtectionService nutzt diese Felder aktiv
+- Vermeidung von Datenredundanz und Trigger-Komplexität
+- Einfacherer Scope für Sprint 2.1.5
+- Separate Tabelle kann in 2.1.6+ evaluiert werden (mit ADR)
+
+### Migrations-Struktur: V255-V257
+
+**V255: leads_protection_basics_and_stage.sql**
+- ALTER TABLE leads: progress_warning_sent_at, progress_deadline
+- ALTER TABLE leads: stage (0..2) für Progressive Profiling
+
+**V256: lead_activities_augment.sql**
+- ALTER TABLE lead_activities: counts_as_progress (DEFAULT FALSE - konservativ)
+- Neue Felder: summary, outcome, next_action, next_action_date, performed_by
+- Backfill performed_by aus user_id
+
+**V257: lead_progress_helpers_and_triggers.sql**
+- Functions: calculate_protection_until(), calculate_progress_deadline()
+- Trigger: update_progress_on_activity (bei counts_as_progress=true)
+
+**V258: NICHT IMPLEMENTIERT in Sprint 2.1.5**
+- lead_transfers Tabelle verschoben nach Sprint 2.1.6
+- Grund: Scope-Fokus auf Protection, nicht Transfer
+
+### Datentyp-Entscheidungen
+
+**lead_id:** BIGINT (nicht UUID)
+- Lead.id ist Long mit IDENTITY
+- Konsistent mit bestehendem Schema
+
+**performed_by:** VARCHAR(50) (nicht UUID)
+- User-IDs kommen von Keycloak (OIDC)
+- Keine users-Tabelle, kein FK
+- Konsistent mit owner_user_id, created_by
+
+**counts_as_progress:** DEFAULT FALSE (nicht TRUE)
+- Konservativ: Aktivitäten müssen explizit als Progress markiert werden
+- Konsistent mit is_meaningful_contact/resets_timer (beide FALSE)
+- Verhindert falsche Progress-Zählungen
+
+### Verschobene Features auf Sprint 2.1.6
+
+**Lead Transfers:**
+- Komplette lead_transfers Tabelle
+- Transfer-Endpoints
+- Approval-Workflow
+
+**Backdating Endpoint:**
+- PUT /api/leads/{id}/registered-at
+- Grund: Backend-Scope bereits groß
+- Felder existieren bereits (registeredAtOverrideReason, etc.)
+- Kann bei Bedarf in 2.1.6 nachgeholt werden
+
+**Fuzzy-Matching & Review:**
+- Kompletter Matching-Algorithmus
+- DuplicateReviewModal.vue
+- Merge/Unmerge Operations
+- Grund: Bereits im ursprünglichen DELTA_LOG auf 2.1.6 verschoben
+
+### Test-Strategie
+
+**Unit Tests (Mock-only):**
+- Stage-Regeln (Input → erwartete Stage)
+- Protection-Transitions (Business-Logik ohne DB)
+- Validierungen (Backdating, Activity-Regeln)
+
+**Integration Tests (gezielt):**
+- Trigger-Pfad: Insert lead_activities → Update leads
+- Migrations: V255-V257 erfolgreich
+- LIMIT: Nur kritische DB-Artefakte (Functions/Triggers)
+
+**CI-Pipeline:**
+- Schritt 1: mvn -Punit (schnell)
+- Schritt 2: mvn -Pintegration (klein & zielgerichtet)
+
+### Frontend-Scope
+
+**PHASE 1 (Sprint 2.1.5 - Backend First):**
+- Migrations V255-V257
+- Entity/Service Anpassungen
+- Tests (Unit + gezielte ITs)
+- API-Contracts aktualisieren
+
+**PHASE 2 (Sprint 2.1.5 - Frontend Parallel/Follow-up):**
+- LeadWizard (Stage 0/1/2)
+- ProtectionBadge (Status-Indikator)
+- ActivityTimeline (Progress-Tracking)
+
+**Entscheidung:** Backend zuerst fertigstellen, Frontend danach oder parallel
+
 ## References
 
 - Handelsvertretervertrag (§3.2, §3.3, §3.3.2)
@@ -139,3 +246,4 @@ Diese verweisen auf die neue Implementierung in Sprint 2.1.6.
 - Original Sprint Planning: TRIGGER_SPRINT_2_1_5.md (old version)
 - Updated Sprint Planning: TRIGGER_SPRINT_2_1_5.md (current)
 - Sprint 2.1.6 Planning: TRIGGER_SPRINT_2_1_6.md (upcoming)
+- V249-Artefakt: V249__lead_protection_tables.sql.sprint215 (Materiallager)

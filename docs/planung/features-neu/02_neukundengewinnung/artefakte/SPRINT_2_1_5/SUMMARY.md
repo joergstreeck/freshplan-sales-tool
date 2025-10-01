@@ -2,10 +2,10 @@
 module: "02_neukundengewinnung"
 domain: "shared"
 doc_type: "konzept"
-status: "draft"
+status: "in_progress"
 sprint: "2.1.5"
 owner: "team/leads-backend"
-updated: "2025-09-28"
+updated: "2025-10-01"
 ---
 
 # Sprint 2.1.5 – Artefakte Summary
@@ -18,12 +18,32 @@ Sprint 2.1.5 implementiert die **vertraglichen Lead-Schutz-Mechanismen** und **P
 
 ## Deliverables
 
-### Backend (V249, V250)
-- ✅ `lead_protection` Tabelle mit 6-Monats-Schutz
-- ✅ `lead_activities` für 60-Tage-Progress-Tracking
-- ✅ Stop-the-Clock Mechanismus
-- ✅ Automatische Status-Transitions (protected → warning → expired)
-- ✅ Helper-Funktionen für Deadlines
+### Architektur-Entscheidung (ADR-003)
+- ✅ **Inline-First Architecture**: Keine separate `lead_protection`-Tabelle
+- ✅ Bestehende Protection-Felder in `leads` bleiben Source of Truth
+- ✅ Additive Migrations (ALTER TABLE only, kein DROP/CREATE)
+- ✅ V249-Artefakt aufgeteilt in V255-V257
+
+### Backend (V255-V257)
+
+**V255: leads_protection_basics_and_stage.sql**
+- ⏸️ ALTER TABLE leads: progress_warning_sent_at, progress_deadline
+- ⏸️ ALTER TABLE leads: stage (0..2) für Progressive Profiling
+- ⏸️ Check Constraint: stage BETWEEN 0 AND 2
+
+**V256: lead_activities_augment.sql**
+- ⏸️ ALTER TABLE lead_activities: counts_as_progress (DEFAULT FALSE)
+- ⏸️ Neue Felder: summary, outcome, next_action, next_action_date, performed_by
+- ⏸️ Backfill performed_by aus user_id
+
+**V257: lead_progress_helpers_and_triggers.sql**
+- ⏸️ Function: calculate_protection_until(registered_at)
+- ⏸️ Function: calculate_progress_deadline(last_activity)
+- ⏸️ Trigger: update_progress_on_activity (bei counts_as_progress=true)
+
+**V258: NICHT IMPLEMENTIERT**
+- ❌ lead_transfers Tabelle → verschoben auf Sprint 2.1.6
+- ❌ Backdating Endpoint → verschoben auf Sprint 2.1.6
 
 ### Frontend Components
 - `LeadWizard.vue` - Progressive 3-Stufen-Form
