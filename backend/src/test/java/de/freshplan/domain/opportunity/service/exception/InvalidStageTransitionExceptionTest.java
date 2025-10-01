@@ -77,8 +77,7 @@ class InvalidStageTransitionExceptionTest {
   @DisplayName("Should handle null stages in custom message constructor")
   void constructor_withCustomMessage_shouldHaveNullStages() {
     // When
-    InvalidStageTransitionException exception =
-        new InvalidStageTransitionException("Test message");
+    InvalidStageTransitionException exception = new InvalidStageTransitionException("Test message");
 
     // Then
     assertThat(exception.getFromStage()).isNull();

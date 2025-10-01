@@ -9,8 +9,6 @@ import de.freshplan.domain.profile.service.ProfileService;
 import de.freshplan.domain.profile.service.dto.CreateProfileRequest;
 import de.freshplan.domain.profile.service.dto.ProfileResponse;
 import de.freshplan.domain.profile.service.dto.UpdateProfileRequest;
-import de.freshplan.domain.profile.service.exception.DuplicateProfileException;
-import de.freshplan.domain.profile.service.exception.ProfileNotFoundException;
 import de.freshplan.testsupport.TestIds;
 import jakarta.ws.rs.core.Response;
 import java.time.LocalDateTime;

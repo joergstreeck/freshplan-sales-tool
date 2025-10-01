@@ -53,9 +53,7 @@ class InvalidRoleExceptionTest {
     InvalidRoleException exception = new InvalidRoleException("");
 
     // Then
-    assertThat(exception.getMessage())
-        .contains("Invalid role: ''")
-        .contains("Allowed roles are:");
+    assertThat(exception.getMessage()).contains("Invalid role: ''").contains("Allowed roles are:");
   }
 
   @Test
