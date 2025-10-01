@@ -8,9 +8,9 @@ import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
 import java.util.Set;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -36,13 +36,11 @@ class ChangeStageRequestTest {
     validatorFactory = Validation.buildDefaultValidatorFactory();
   }
 
-  
   @BeforeEach
   void setUp() {
     validator = validatorFactory.getValidator();
   }
 
-  
   @AfterAll
   static void tearDownFactory() {
     if (validatorFactory != null) {
