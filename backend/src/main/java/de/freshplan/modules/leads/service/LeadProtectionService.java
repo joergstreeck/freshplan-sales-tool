@@ -283,8 +283,12 @@ public class LeadProtectionService {
    */
   public boolean canTransitionStage(int currentStage, int newStage) {
     // Stage range validation
-    if (currentStage < STAGE_MIN || currentStage > STAGE_MAX || newStage < STAGE_MIN || newStage > STAGE_MAX) {
-      LOG.errorf("Invalid stage values: current=%d, new=%d (valid range: %d-%d)",
+    if (currentStage < STAGE_MIN
+        || currentStage > STAGE_MAX
+        || newStage < STAGE_MIN
+        || newStage > STAGE_MAX) {
+      LOG.errorf(
+          "Invalid stage values: current=%d, new=%d (valid range: %d-%d)",
           currentStage, newStage, STAGE_MIN, STAGE_MAX);
       return false;
     }
@@ -302,7 +306,8 @@ public class LeadProtectionService {
 
     // No stage skipping (must go 0→1→2 sequentially)
     if (newStage - currentStage > 1) {
-      LOG.warnf("Cannot skip stages: %d → %d (use %d first)", currentStage, newStage, currentStage + 1);
+      LOG.warnf(
+          "Cannot skip stages: %d → %d (use %d first)", currentStage, newStage, currentStage + 1);
       return false;
     }
 
@@ -363,7 +368,8 @@ public class LeadProtectionService {
     }
 
     LocalDateTime now = LocalDateTime.now();
-    LocalDateTime warningThreshold = lead.progressDeadline.minusDays(PROGRESS_WARNING_DAYS_BEFORE_DEADLINE);
+    LocalDateTime warningThreshold =
+        lead.progressDeadline.minusDays(PROGRESS_WARNING_DAYS_BEFORE_DEADLINE);
 
     return now.isAfter(warningThreshold);
   }

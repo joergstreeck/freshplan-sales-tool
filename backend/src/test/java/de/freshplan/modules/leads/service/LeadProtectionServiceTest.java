@@ -6,7 +6,6 @@ import static org.mockito.Mockito.*;
 import de.freshplan.modules.leads.domain.Lead;
 import de.freshplan.modules.leads.domain.LeadStatus;
 import java.time.LocalDateTime;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Tag;
@@ -42,11 +41,11 @@ class LeadProtectionServiceTest {
 
     @ParameterizedTest
     @CsvSource({
-      "0, 1, true",  // Vormerkung → Registrierung (valid)
-      "1, 2, true",  // Registrierung → Qualifiziert (valid)
-      "0, 0, true",  // Same stage (no-op, valid)
-      "1, 1, true",  // Same stage (no-op, valid)
-      "2, 2, true"   // Same stage (no-op, valid)
+      "0, 1, true", // Vormerkung → Registrierung (valid)
+      "1, 2, true", // Registrierung → Qualifiziert (valid)
+      "0, 0, true", // Same stage (no-op, valid)
+      "1, 1, true", // Same stage (no-op, valid)
+      "2, 2, true" // Same stage (no-op, valid)
     })
     @DisplayName("Should allow valid stage transitions")
     void shouldAllowValidStageTransitions(int currentStage, int newStage, boolean expected) {
@@ -56,10 +55,10 @@ class LeadProtectionServiceTest {
 
     @ParameterizedTest
     @CsvSource({
-      "0, 2",  // Skip stage (0→2 invalid, must go through 1)
-      "1, 0",  // Downgrade (not allowed)
-      "2, 0",  // Downgrade (not allowed)
-      "2, 1"   // Downgrade (not allowed)
+      "0, 2", // Skip stage (0→2 invalid, must go through 1)
+      "1, 0", // Downgrade (not allowed)
+      "2, 0", // Downgrade (not allowed)
+      "2, 1" // Downgrade (not allowed)
     })
     @DisplayName("Should reject invalid stage transitions")
     void shouldRejectInvalidStageTransitions(int currentStage, int newStage) {
@@ -69,10 +68,10 @@ class LeadProtectionServiceTest {
 
     @ParameterizedTest
     @CsvSource({
-      "-1, 1",  // Invalid current stage
-      "0, -1",  // Invalid new stage
-      "3, 1",   // Current stage out of range
-      "0, 3"    // New stage out of range
+      "-1, 1", // Invalid current stage
+      "0, -1", // Invalid new stage
+      "3, 1", // Current stage out of range
+      "0, 3" // New stage out of range
     })
     @DisplayName("Should reject out-of-range stages")
     void shouldRejectOutOfRangeStages(int currentStage, int newStage) {

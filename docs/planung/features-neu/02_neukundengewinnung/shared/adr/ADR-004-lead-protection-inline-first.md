@@ -6,6 +6,7 @@ status: "accepted"
 sprint: "2.1.5"
 owner: "team/leads-backend"
 decision_date: "2025-10-01"
+updated: "2025-10-01"
 ---
 
 # ADR-004: Lead Protection Inline-First Architecture
