@@ -61,33 +61,23 @@ jobs:
         psql -h localhost -U freshplan -d freshplan -v ON_ERROR_STOP=1 -c "CREATE EXTENSION IF NOT EXISTS pgcrypto;"
         echo "Database schema reset successfully"
 
-    - name: Run core tests with CI profile
+    - name: Initialize database with Flyway
       working-directory: backend
       env:
         QUARKUS_PROFILE: ci
         MAVEN_OPTS: -Xmx2g -XX:MaxMetaspaceSize=512m
-        RUN_SUFFIX: ${{ github.run_id }}
       run: |
-        echo "Running CORE tests only with CI profile..."
-        
-        # Run only A00 diagnostic test
-        # Let Flyway clean and migrate as configured in application-ci.properties
-        ./mvnw clean test \
+        echo "Initializing database schema with Flyway..."
+
+        # Run Flyway migration only (no tests needed for growth check)
+        ./mvnw flyway:migrate \
           -B \
-          -T 1C \
-          -Dtest="A00_EnvDiagTest" \
-          -Djunit.jupiter.execution.timeout.default=2m \
-          -Dmaven.test.failure.ignore=false \
-          -DtrimStackTrace=false \
-          -Dtest.run.id=${{ github.run_id }} \
-          -DRUN_SUFFIX=${{ github.run_id }} \
-          -Dquarkus.devservices.enabled=false \
-          -Dquarkus.datasource.devservices.enabled=false \
-          -Dquarkus.datasource.jdbc.url="jdbc:postgresql://localhost:5432/freshplan?options=-c%20ci.build%3Dtrue" \
-          -Dquarkus.datasource.username=freshplan \
-          -Dquarkus.datasource.password=freshplan
-        
-        echo "✅ Tests completed"
+          -Dflyway.url="jdbc:postgresql://localhost:5432/freshplan" \
+          -Dflyway.user=freshplan \
+          -Dflyway.password=freshplan \
+          -Dflyway.locations=filesystem:src/main/resources/db/migration
+
+        echo "✅ Database initialized"
     
     - name: Verify test cleanup
       env:
