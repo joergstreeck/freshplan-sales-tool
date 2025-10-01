@@ -355,8 +355,8 @@ public class FollowUpAutomationService {
             AND NOT EXISTS (
                 SELECT 1 FROM LeadActivity a
                 WHERE a.lead = l
-                AND a.type IN (:meaningfulTypes)
-                AND a.occurredAt > :recentActivity
+                AND a.activityType IN (:meaningfulTypes)
+                AND a.activityDate > :recentActivity
             )
             ORDER BY l.registeredAt ASC
             """;
@@ -381,8 +381,8 @@ public class FollowUpAutomationService {
         """
             SELECT COUNT(a) FROM LeadActivity a
             WHERE a.lead = :lead
-            AND a.type IN (:meaningfulTypes)
-            AND a.occurredAt > :since
+            AND a.activityType IN (:meaningfulTypes)
+            AND a.activityDate > :since
             """;
 
     Long count =
