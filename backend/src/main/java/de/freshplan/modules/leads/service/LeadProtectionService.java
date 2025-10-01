@@ -255,6 +255,102 @@ public class LeadProtectionService {
     return status;
   }
 
+  // ============================================================================
+  // Sprint 2.1.5: Progressive Profiling & Progress Tracking
+  // ============================================================================
+
+  /**
+   * Validate stage transition for Progressive Profiling (Sprint 2.1.5).
+   *
+   * <p>Valid transitions: - 0 → 1 (Vormerkung → Registrierung) - 1 → 2 (Registrierung →
+   * Qualifiziert) - No stage skipping allowed (0 → 2 is invalid)
+   *
+   * @param currentStage current stage (0, 1, 2)
+   * @param newStage target stage (0, 1, 2)
+   * @return true if transition is valid
+   */
+  public boolean canTransitionStage(int currentStage, int newStage) {
+    // Stage range validation
+    if (currentStage < 0 || currentStage > 2 || newStage < 0 || newStage > 2) {
+      LOG.errorf("Invalid stage values: current=%d, new=%d", currentStage, newStage);
+      return false;
+    }
+
+    // Same stage is always allowed (no-op)
+    if (currentStage == newStage) {
+      return true;
+    }
+
+    // Only forward progression allowed
+    if (newStage < currentStage) {
+      LOG.warnf("Cannot downgrade stage from %d to %d", currentStage, newStage);
+      return false;
+    }
+
+    // No stage skipping (must go 0→1→2 sequentially)
+    if (newStage - currentStage > 1) {
+      LOG.warnf("Cannot skip stages: %d → %d (use %d first)", currentStage, newStage, currentStage + 1);
+      return false;
+    }
+
+    return true;
+  }
+
+  /**
+   * Calculate protection end date using V257 function logic (Sprint 2.1.5).
+   *
+   * <p>Implements: calculate_protection_until(registered_at, protection_months)
+   *
+   * @param lead the lead to calculate for
+   * @return protection end date
+   */
+  public LocalDateTime calculateProtectionUntil(Lead lead) {
+    // Use V257 function logic: registered_at + protection_months
+    return lead.registeredAt.plusMonths(lead.protectionMonths);
+  }
+
+  /**
+   * Calculate progress deadline using V257 function logic (Sprint 2.1.5).
+   *
+   * <p>Implements: calculate_progress_deadline(last_activity_at)
+   *
+   * <p>§3.3: 60-Tage-Aktivitätsstandard - belegbarer Fortschritt alle 60 Tage
+   *
+   * @param lastActivityAt last activity timestamp
+   * @return progress deadline (last_activity_at + 60 days)
+   */
+  public LocalDateTime calculateProgressDeadline(LocalDateTime lastActivityAt) {
+    if (lastActivityAt == null) {
+      LOG.warn("lastActivityAt is null, cannot calculate progress deadline");
+      return null;
+    }
+    // Use V257 function logic: last_activity_at + 60 days
+    return lastActivityAt.plusDays(60);
+  }
+
+  /**
+   * Check if progress deadline is approaching (Sprint 2.1.5).
+   *
+   * <p>§3.3: Warning at 53 days (7 days before deadline)
+   *
+   * @param lead the lead to check
+   * @return true if warning should be sent
+   */
+  public boolean needsProgressWarning(Lead lead) {
+    if (lead.progressDeadline == null) {
+      return false; // No deadline set
+    }
+
+    if (lead.progressWarningSentAt != null) {
+      return false; // Warning already sent
+    }
+
+    LocalDateTime now = LocalDateTime.now();
+    LocalDateTime warningThreshold = lead.progressDeadline.minusDays(7);
+
+    return now.isAfter(warningThreshold);
+  }
+
   /** DTO for protection status information. */
   public static class ProtectionStatus {
     public Long leadId;
