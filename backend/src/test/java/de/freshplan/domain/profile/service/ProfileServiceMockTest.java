@@ -12,30 +12,38 @@ import de.freshplan.domain.profile.service.dto.*;
 import de.freshplan.domain.profile.service.exception.DuplicateProfileException;
 import de.freshplan.domain.profile.service.exception.ProfileNotFoundException;
 import de.freshplan.domain.profile.service.mapper.ProfileMapper;
-import io.quarkus.test.InjectMock;
-import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.security.TestSecurity;
-import jakarta.inject.Inject;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-@QuarkusTest
-@Tag("migrate")
-@TestSecurity(
-    user = "testuser",
-    roles = {"admin", "manager", "sales"})
-class ProfileServiceTest {
+/**
+ * Mock-based tests for ProfileService (migrated from @QuarkusTest).
+ *
+ * <p>Sprint 2.1.4: Migriert von @QuarkusTest zu Mockito (~15s Ersparnis pro Run).
+ *
+ * <p>Testet CRUD-Operationen und Validation-Logik ohne DB-Zugriff.
+ *
+ * @see TEST_DEBUGGING_GUIDE.md
+ */
+@ExtendWith(MockitoExtension.class)
+@Tag("unit")
+@DisplayName("ProfileService Mock Tests")
+class ProfileServiceMockTest {
 
-  @Inject ProfileService profileService;
+  @Mock private ProfileRepository profileRepository;
 
-  @InjectMock ProfileRepository profileRepository;
+  @Mock private ProfileMapper profileMapper;
 
-  @InjectMock ProfileMapper profileMapper;
+  @InjectMocks private ProfileService profileService;
 
   private Profile testProfile;
   private ProfileResponse testProfileResponse;
