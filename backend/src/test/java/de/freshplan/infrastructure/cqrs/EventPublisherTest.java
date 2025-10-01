@@ -12,8 +12,8 @@ import java.sql.ResultSet;
 import java.util.UUID;
 import javax.sql.DataSource;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test class for CQRS Light Event Publisher Validates event publishing with <200ms performance

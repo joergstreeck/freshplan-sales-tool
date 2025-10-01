@@ -9,8 +9,8 @@ import io.vertx.core.json.JsonObject;
 import jakarta.inject.Inject;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test für Idempotenz der Event-Verarbeitung. Stellt sicher, dass doppelte Events nur einmal

@@ -15,8 +15,8 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test für AFTER_COMMIT Pattern. Stellt sicher, dass Events nur nach erfolgreicher Transaktion

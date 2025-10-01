@@ -408,7 +408,8 @@ class CustomerRepositoryTest {
     var result = repository.findAtRisk(70, null);
 
     assertThat(result).isNotEmpty();
-    assertThat(result).anyMatch(c -> c.getCompanyName().equals("High Risk Company") && c.getRiskScore() == 80);
+    assertThat(result)
+        .anyMatch(c -> c.getCompanyName().equals("High Risk Company") && c.getRiskScore() == 80);
   }
 
   @Test

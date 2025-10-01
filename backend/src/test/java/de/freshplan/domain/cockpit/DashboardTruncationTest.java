@@ -13,8 +13,8 @@ import jakarta.inject.Inject;
 import jakarta.transaction.UserTransaction;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test für NOTIFY Payload Truncation. Stellt sicher, dass große Payloads korrekt gekürzt werden.

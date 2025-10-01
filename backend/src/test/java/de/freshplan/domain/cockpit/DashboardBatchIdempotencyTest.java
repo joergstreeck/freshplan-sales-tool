@@ -15,8 +15,8 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test für BATCH-Event Idempotency-Key Stabilität. Verifiziert Minute-Boundary Handling und

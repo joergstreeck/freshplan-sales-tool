@@ -15,8 +15,8 @@ import jakarta.transaction.UserTransaction;
 import java.util.Map;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test für RBAC-Protection im Event-Publisher. Stellt sicher, dass unauthentifizierte Events nur
