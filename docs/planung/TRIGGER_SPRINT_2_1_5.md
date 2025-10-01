@@ -132,17 +132,51 @@ DELETE /lead-protection/{leadId}/personal-data
 - `ExtensionRequestDialog.vue` - Verlängerungsantrag
 - `StopTheClockDialog.vue` - Pausierung mit Grund
 
+## PR-Strategie (Backend/Frontend Split)
+
+**Phase 1: Backend (PR #124)** - Branch: `feature/mod02-sprint-2.1.5-lead-protection`
+- ✅ Migrations V255-V257 (Progress Tracking + Stage + Functions/Trigger)
+- ✅ Entities: Lead.java (+3), LeadActivity.java (+6)
+- ✅ Service: LeadProtectionService (Stage-Validierung, Progress-Deadlines)
+- ✅ Tests: 24 Unit Tests (0.845s, Pure Mockito, 100% passed)
+- ✅ Dokumentation: ADR-004, DELTA_LOG_2_1_5, CONTRACT_MAPPING, TEST_PLAN, SUMMARY
+- **Status:** READY FOR PR
+
+**Phase 2: Frontend (PR #125)** - Branch: `feature/mod02-sprint-2.1.5-frontend-progressive-profiling`
+- LeadWizard.vue (3-Stufen Progressive Profiling UI)
+- LeadProtectionBadge.vue (Status-Indicator)
+- ActivityTimeline.vue (Progress Tracking Display)
+- API-Integration: Enhanced POST /api/leads mit Stage-Validierung
+- Tests: Integration Tests für Progressive Profiling Flow
+- **Status:** PENDING
+
+**Verschoben auf Sprint 2.1.6:**
+- V258 lead_transfers Tabelle
+- PUT /api/leads/{id}/registered-at (Backdating Endpoint)
+- Nightly Jobs (Warning/Expiry/Pseudonymisierung)
+- Vollständiger Fuzzy-Matching Algorithmus + DuplicateReviewModal.vue
+
+**Begründung für Split:**
+- Konsistent mit Sprint 2.1.2/2.1.3 Pattern (Frontend/Backend getrennt)
+- Kleinere, fokussierte PRs (easier Review)
+- Backend kann schneller merged werden
+- Frontend kann parallel entwickelt werden
+
 ## Definition of Done (Sprint)
 
-- [ ] **V249 Migration deployed & tested**
+**Phase 1 (Backend - PR #124):**
+- [x] **V255-V257 Migrations deployed & tested**
+- [x] **Entity Updates (Lead.java, LeadActivity.java)**
+- [x] **Service Extensions (LeadProtectionService)**
+- [x] **Unit Tests grün (24 Tests, 100% passed)**
+- [x] **Dokumentation: ADR-004, DELTA_LOG, CONTRACT_MAPPING, TEST_PLAN**
+
+**Phase 2 (Frontend - PR #125):**
 - [ ] **Progressive UI (3 Stufen) implementiert**
-- [ ] **Activity Tracking funktioniert**
-- [ ] **60-Tage-Warning automatisiert**
-- [ ] **Protection-Endpoints implementiert**
-- [ ] **Retention-Jobs konfiguriert**
-- [ ] **Compliance-Doku vollständig**
-- [ ] **Tests: Unit + Integration grün**
-- [ ] **Dokumentation: Contract-Mapping**
+- [ ] **Activity Tracking UI funktioniert**
+- [ ] **Protection Status Badge implementiert**
+- [ ] **API-Integration mit Stage-Validierung**
+- [ ] **Tests: Integration Tests grün**
 
 ## Risiken & Mitigation
 

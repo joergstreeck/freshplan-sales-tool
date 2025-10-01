@@ -115,7 +115,10 @@ updated: "2025-09-27"
 **Status:** 🔄 Backend Phase 1 COMPLETE (01.10.2025), Frontend Phase 2 ausstehend
 **Scope:** Vertragliche Lead-Schutz-Mechanismen + B2B Progressive Profiling
 
-**✅ Backend Complete:**
+**✅ Backend Phase 1 COMPLETE (PR #124):**
+**Branch:** `feature/mod02-sprint-2.1.5-lead-protection`
+**Status:** READY FOR PR (01.10.2025)
+
 - **ADR-004:** Inline-First Architecture (PLAN B statt separate lead_protection Tabelle)
 - **Migrations V255-V257:**
   - V255: Progress Tracking + Stage (0=Vormerkung, 1=Registrierung, 2=Qualifiziert)
@@ -124,26 +127,32 @@ updated: "2025-09-27"
 - **Entities:** Lead.java (+3), LeadActivity.java (+6)
 - **Service:** LeadProtectionService (canTransitionStage, calculateProgressDeadline, needsProgressWarning)
 - **Tests:** 24 Unit Tests (0.845s, Pure Mockito, 100% passed)
+- **Dokumentation:** ADR-004, DELTA_LOG, CONTRACT_MAPPING, TEST_PLAN, SUMMARY, TRIGGER_2_1_6
 
-**⏸️ Frontend ausstehend (Phase 2):**
-- LeadWizard.vue (3 Stufen)
-- LeadProtectionBadge.vue
-- ActivityTimeline.vue
+**⏸️ Frontend Phase 2 (PR #125 - ausstehend):**
+**Branch:** `feature/mod02-sprint-2.1.5-frontend-progressive-profiling`
+**Status:** NOT STARTED
+
+- LeadWizard.vue (3-Stufen Progressive Profiling UI)
+- LeadProtectionBadge.vue (Status-Indicator)
+- ActivityTimeline.vue (Progress Tracking Display)
+- API-Integration: Enhanced POST /api/leads mit Stage-Validierung
+- Tests: Integration Tests für Progressive Profiling Flow
 
 **📋 Verschoben auf Sprint 2.1.6:**
 - V258 lead_transfers Tabelle
-- PUT /api/leads/{id}/registered-at (Backdating)
+- PUT /api/leads/{id}/registered-at (Backdating Endpoint)
 - Nightly Jobs (Warning/Expiry/Pseudonymisierung)
-- Vollständiger Fuzzy-Matching Algorithmus
+- Vollständiger Fuzzy-Matching Algorithmus + DuplicateReviewModal.vue
 
 **Artefakte:** [`artefakte/SPRINT_2_1_5/`](./artefakte/SPRINT_2_1_5/)
 - ✅ [ADR-004-lead-protection-inline-first.md](./shared/adr/ADR-004-lead-protection-inline-first.md)
-- ✅ [DELTA_LOG_2_1_5.md](./artefakte/SPRINT_2_1_5/DELTA_LOG_2_1_5.md) (Implementierungs-Entscheidungen)
+- ✅ [DELTA_LOG_2_1_5.md](./artefakte/SPRINT_2_1_5/DELTA_LOG_2_1_5.md) (Implementierungs-Entscheidungen + PR-Strategie)
 - ✅ [CONTRACT_MAPPING.md](./artefakte/SPRINT_2_1_5/CONTRACT_MAPPING.md) (§3.2, §3.3)
 - ✅ [TEST_PLAN.md](./artefakte/SPRINT_2_1_5/TEST_PLAN.md) (Mock-First Strategie)
-- ✅ [SUMMARY.md](./artefakte/SPRINT_2_1_5/SUMMARY.md)
+- ✅ [SUMMARY.md](./artefakte/SPRINT_2_1_5/SUMMARY.md) (PR-Strategie + Deliverables)
 
-**Delta:** Scope geändert von "Matching & Review" zu "Protection & Progressive", PLAN B (Inline-First) statt V249-Artefakt
+**Delta:** Scope geändert von "Matching & Review" zu "Protection & Progressive", PLAN B (Inline-First) statt V249-Artefakt, Backend/Frontend Split (PR #124/#125)
 
 ---
 

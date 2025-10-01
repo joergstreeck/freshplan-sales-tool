@@ -232,23 +232,29 @@
   - ADR-003 für Row-Level-Security (RLS) dokumentiert
   - OpenAPI Protection-Endpoints spezifiziert
   - Migration: n/a, Tests: n/a
-- 2025-10-01 20:15 — **Sprint 2.1.5 Backend Phase 1 COMPLETE:** Lead Protection & Progressive Profiling
+- 2025-10-01 20:15 — **Sprint 2.1.5 Backend Phase 1 COMPLETE (PR #124 READY):** Lead Protection & Progressive Profiling
+  - PR-Strategie: Backend/Frontend Split (konsistent mit Sprint 2.1.2/2.1.3 Pattern)
+  - Phase 1 (PR #124): Branch feature/mod02-sprint-2.1.5-lead-protection - READY FOR PR
+  - Phase 2 (PR #125): Branch feature/mod02-sprint-2.1.5-frontend-progressive-profiling - PENDING
   - ADR-004: Inline-First Architecture (PLAN B statt separate lead_protection Tabelle)
   - Migrations V255-V257: Progress Tracking + Stage + Functions/Trigger
   - Entities: Lead.java (+3 Felder), LeadActivity.java (+6 Felder)
   - Service: LeadProtectionService mit 4 neuen Methoden (Stage-Validierung, Progress-Deadlines)
   - Tests: 24 Unit Tests (0.845s, Pure Mockito, 100% passed)
-  - Dokumentation: DELTA_LOG_2_1_5, CONTRACT_MAPPING, TEST_PLAN, SUMMARY, TRIGGER_SPRINT_2_1_6
-  - Frontend Phase 2 ausstehend (LeadWizard.vue, LeadProtectionBadge.vue, ActivityTimeline.vue)
+  - Dokumentation: DELTA_LOG_2_1_5 (inkl. PR-Strategie), CONTRACT_MAPPING, TEST_PLAN, SUMMARY, TRIGGER_SPRINT_2_1_6
+  - Frontend Phase 2 ausstehend: LeadWizard.vue, LeadProtectionBadge.vue, ActivityTimeline.vue
   - Verschobene Features auf Sprint 2.1.6: V258 lead_transfers, Backdating, Nightly Jobs, Fuzzy-Matching
   - Migration: V255-V257, Tests: OK
 <!-- MP5:SESSION_LOG:END -->
 
 ## Next Steps
 <!-- MP5:NEXT_STEPS:START -->
-- **Sprint 2.1.5 Frontend Phase 2:** LeadWizard.vue (3-Stufen Progressive Profiling), LeadProtectionBadge.vue, ActivityTimeline.vue
-- **Sprint 2.1.5 API-Erweiterung:** POST /api/leads mit Stage-Parameter Validierung
-- **Sprint 2.1.5 Integration Test (optional):** V257 Trigger-Test (trg_update_progress_on_activity)
+- **Sprint 2.1.5 Backend Phase 1 (PR #124):** Push + PR erstellen für feature/mod02-sprint-2.1.5-lead-protection
+- **Sprint 2.1.5 Frontend Phase 2 (PR #125):** Branch feature/mod02-sprint-2.1.5-frontend-progressive-profiling
+  - LeadWizard.vue (3-Stufen Progressive Profiling UI)
+  - LeadProtectionBadge.vue (Status-Indicator)
+  - ActivityTimeline.vue (Progress Tracking Display)
+  - API-Integration: Enhanced POST /api/leads mit Stage-Validierung
 - **Sprint 2.1.6 Vorbereitung:** V258 lead_transfers Tabelle, Backdating-Endpoint, Nightly Jobs, Fuzzy-Matching
 - **Backfill-Job für historische Leads:** Normalisierung für bestehende Daten
 - **Monitoring:** Idempotency Key-Konflikte (409-Rate), Index-Bloat, Normalisierungs-Performance, Progress-Deadlines

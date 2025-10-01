@@ -225,13 +225,30 @@ Diese verweisen auf die neue Implementierung in Sprint 2.1.6.
 - Schritt 1: mvn -Punit (schnell)
 - Schritt 2: mvn -Pintegration (klein & zielgerichtet)
 
-### Frontend-Scope
+### PR-Strategie (Backend/Frontend Split)
 
-**PHASE 1 (Sprint 2.1.5 - Backend First):**
-- Migrations V255-V257
-- Entity/Service Anpassungen
-- Tests (Unit + gezielte ITs)
-- API-Contracts aktualisieren
+**PHASE 1: Backend (PR #124)** - Branch: `feature/mod02-sprint-2.1.5-lead-protection`
+- ✅ Migrations V255-V257 (Progress Tracking + Stage + Functions/Trigger)
+- ✅ Entities: Lead.java (+3), LeadActivity.java (+6)
+- ✅ Service: LeadProtectionService (Stage-Validierung, Progress-Deadlines)
+- ✅ Tests: 24 Unit Tests (0.845s, Pure Mockito, 100% passed)
+- ✅ Dokumentation: ADR-004, DELTA_LOG_2_1_5, CONTRACT_MAPPING, TEST_PLAN, SUMMARY
+- **Status:** COMPLETE (2025-10-01), READY FOR PR
+
+**PHASE 2: Frontend (PR #125)** - Branch: `feature/mod02-sprint-2.1.5-frontend-progressive-profiling`
+- LeadWizard.vue (3-Stufen Progressive Profiling UI)
+- LeadProtectionBadge.vue (Status-Indicator)
+- ActivityTimeline.vue (Progress Tracking Display)
+- API-Integration: Enhanced POST /api/leads mit Stage-Validierung
+- Tests: Integration Tests für Progressive Profiling Flow
+- **Status:** PENDING
+
+**Begründung für Split:**
+- Konsistent mit Sprint 2.1.2 (PR #112 Frontend Research) / 2.1.3 (PR #122 Frontend Impl) Pattern
+- Kleinere, fokussierte PRs (easier Review)
+- Backend kann schneller merged werden
+- Frontend kann parallel entwickelt werden
+- Unabhängige Testing/Deployment Cycles
 
 **PHASE 2 (Sprint 2.1.5 - Frontend Parallel/Follow-up):**
 - LeadWizard (Stage 0/1/2)
