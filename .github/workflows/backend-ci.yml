@@ -127,7 +127,7 @@ jobs:
 
       - name: Core Tests (PR Pipeline - Ein Maven-Run)
         working-directory: backend
-        timeout-minutes: 20  # Prevent test hang
+        timeout-minutes: 30  # Sprint 2.1.4: Erhöht wegen 153 @QuarkusTest (~20-28 Min)
         run: |
           # Using CI profile with DevServices disabled at build time
           ./mvnw -B clean test \
