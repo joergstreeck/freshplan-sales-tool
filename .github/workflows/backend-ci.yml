@@ -15,7 +15,7 @@ jobs:
   test:
     name: Backend Tests
     runs-on: ubuntu-22.04  # Pin to 22.04 - ubuntu-latest has runner stability issues
-    timeout-minutes: 15    # Reduced from 30: only 58 @QuarkusTest now (~6-10 min expected)
+    timeout-minutes: 25    # 77 @QuarkusTest × 40s boot = ~51 min serial, needs to stay within limits
     
     services:
       postgres:

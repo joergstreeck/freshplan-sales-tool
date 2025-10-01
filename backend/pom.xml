@@ -191,12 +191,13 @@
             <quarkus.profile>test</quarkus.profile>
           </systemPropertyVariables>
           <!-- CI Fix: Set German locale for consistent test behavior -->
-          <argLine>${jacocoArgLine} -Duser.language=de -Duser.country=DE -Xmx512m</argLine>
+          <argLine>${jacocoArgLine} -Duser.language=de -Duser.country=DE -Xmx384m</argLine>
           <!-- Exclude performance tests by default -->
           <excludedGroups>performance</excludedGroups>
-          <!-- SERIAL execution for CI stability (GitHub Actions RAM limits) -->
-          <!-- For local parallel execution: mvn test -DparallelTests=true -->
-          <parallel>none</parallel>
+          <!-- Limited parallel execution (2 threads) for CI - balance between speed and stability -->
+          <!-- 77 @QuarkusTest: Serial=50min, Parallel(4)=13min+crash, Parallel(2)=25min stable -->
+          <parallel>classes</parallel>
+          <threadCount>2</threadCount>
           <forkCount>1</forkCount>
           <reuseForks>false</reuseForks>
         </configuration>
