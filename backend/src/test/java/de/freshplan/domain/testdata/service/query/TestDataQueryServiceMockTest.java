@@ -7,40 +7,40 @@ import static org.mockito.Mockito.*;
 import de.freshplan.domain.customer.repository.CustomerRepository;
 import de.freshplan.domain.customer.repository.CustomerTimelineRepository;
 import de.freshplan.domain.testdata.service.TestDataService;
-import io.quarkus.test.InjectMock;
-import io.quarkus.test.junit.QuarkusTest;
-import jakarta.inject.Inject;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 /**
- * Tests for TestDataQueryService - the simplest QueryService in all CQRS phases. Only 1 query
- * method to test!
+ * Mock-based tests for TestDataQueryService (migrated from @QuarkusTest).
+ *
+ * <p>Sprint 2.1.4: Migriert von @QuarkusTest zu Mockito (~15s Ersparnis pro Run).
+ *
+ * <p>Testet CQRS Query-Operationen für TestData-Statistiken ohne DB-Zugriff.
  *
  * <p>Applied Test-Fixing Patterns: 2. Mockito Matcher-Consistency (all parameters as matchers) 4.
  * Flexible Verification (atLeastOnce() when appropriate)
  *
- * <p>Note: PanacheQuery-Mocking and FK-Safe Cleanup not needed for simple count queries.
+ * <p>Note: PanacheQuery-Mocking not needed for simple count queries.
+ *
+ * @see TEST_DEBUGGING_GUIDE.md
  */
-@QuarkusTest
-@Tag("migrate")
-class TestDataQueryServiceTest {
+@ExtendWith(MockitoExtension.class)
+@Tag("unit")
+@DisplayName("TestDataQueryService Mock Tests")
+class TestDataQueryServiceMockTest {
 
-  @Inject TestDataQueryService queryService;
+  @Mock private CustomerRepository customerRepository;
 
-  @InjectMock CustomerRepository customerRepository;
+  @Mock private CustomerTimelineRepository timelineRepository;
 
-  @InjectMock CustomerTimelineRepository timelineRepository;
-
-  @BeforeEach
-  void setUp() {
-    // Reset mocks for each test
-    reset(customerRepository, timelineRepository);
-  }
+  @InjectMocks private TestDataQueryService queryService;
 
   @Test
-  @org.junit.jupiter.api.Disabled("@InjectMock not working properly with Panache repositories")
   void getTestDataStats_shouldReturnCorrectCounts() {
     // Given - Pattern 2: Mockito Matcher-Consistency
     when(customerRepository.count(eq("isTestData"), eq(true))).thenReturn(58L);
@@ -73,7 +73,6 @@ class TestDataQueryServiceTest {
   }
 
   @Test
-  @org.junit.jupiter.api.Disabled("@InjectMock not working properly with Panache repositories")
   void getTestDataStats_withLargeCounts_shouldReturnCorrectValues() {
     // Given - Test large numbers
     when(customerRepository.count(eq("isTestData"), eq(true))).thenReturn(999999L);
