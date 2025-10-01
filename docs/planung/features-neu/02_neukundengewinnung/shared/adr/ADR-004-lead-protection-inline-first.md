@@ -8,9 +8,9 @@ owner: "team/leads-backend"
 decision_date: "2025-10-01"
 ---
 
-# ADR-003: Lead Protection Inline-First Architecture
+# ADR-004: Lead Protection Inline-First Architecture
 
-**📍 Navigation:** Home → Planung → 02 Neukundengewinnung → Shared → ADR → 003
+**📍 Navigation:** Home → Planung → 02 Neukundengewinnung → Shared → ADR → 004
 
 ## Status
 
@@ -256,4 +256,4 @@ COMMENT ON COLUMN leads.stage IS
 
 ---
 
-**Next ADR:** ADR-004 (Lead Protection Table Extraction - wenn benötigt in 2.1.6+)
+**Next ADR:** ADR-005 (Lead Protection Table Extraction - wenn benötigt in 2.1.6+)

@@ -141,11 +141,12 @@ Diese verweisen auf die neue Implementierung in Sprint 2.1.6.
 - Komplexe Trigger-Synchronisation mit `leads`-Tabelle
 - 300+ Zeilen Migration mit lead_protection + lead_activities + lead_transfers
 
-**ENTSCHIEDEN:**
+**ENTSCHIEDEN (ADR-004):**
 - ✅ **Inline-Felder in `leads` bleiben Source of Truth**
 - ✅ Keine separate `lead_protection`-Tabelle in Sprint 2.1.5
 - ✅ V249-Artefakt wird aufgeteilt und angepasst (V255-V257)
 - ✅ Additive Migrations (ALTER TABLE only, kein DROP/CREATE)
+- 📄 [ADR-004-lead-protection-inline-first.md](../../shared/adr/ADR-004-lead-protection-inline-first.md)
 
 **Begründung:**
 - Lead-Entity hat bereits Protection-Felder (protectionStartAt, protectionMonths, etc.)

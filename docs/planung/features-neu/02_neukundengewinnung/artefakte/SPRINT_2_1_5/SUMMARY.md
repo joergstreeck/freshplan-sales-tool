@@ -18,11 +18,12 @@ Sprint 2.1.5 implementiert die **vertraglichen Lead-Schutz-Mechanismen** und **P
 
 ## Deliverables
 
-### Architektur-Entscheidung (ADR-003)
+### Architektur-Entscheidung (ADR-004)
 - ✅ **Inline-First Architecture**: Keine separate `lead_protection`-Tabelle
 - ✅ Bestehende Protection-Felder in `leads` bleiben Source of Truth
 - ✅ Additive Migrations (ALTER TABLE only, kein DROP/CREATE)
 - ✅ V249-Artefakt aufgeteilt in V255-V257
+- 📄 [ADR-004-lead-protection-inline-first.md](../../shared/adr/ADR-004-lead-protection-inline-first.md)
 
 ### Backend (V255-V257)
 

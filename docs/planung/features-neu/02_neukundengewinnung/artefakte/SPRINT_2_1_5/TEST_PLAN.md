@@ -12,7 +12,7 @@ updated: "2025-10-01"
 
 **📍 Navigation:** Home → Planung → 02 Neukundengewinnung → Artefakte → Sprint 2.1.5 → Test Plan
 
-## Test-Strategie (gemäß ADR-003 & TEST_MIGRATION_PLAN.md)
+## Test-Strategie (gemäß ADR-004 & TEST_MIGRATION_PLAN.md)
 
 **Grundprinzip:** Mock-First für Business-Logik, Minimal Integration für DB-Artefakte
 
