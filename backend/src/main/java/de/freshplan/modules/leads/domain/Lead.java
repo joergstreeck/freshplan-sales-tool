@@ -179,7 +179,7 @@ public class Lead extends PanacheEntityBase {
 
   // Progressive Profiling Stage (Sprint 2.1.5 - V255)
   @Column(name = "stage", nullable = false)
-  public Integer stage = 0; // 0=Vormerkung, 1=Registrierung, 2=Qualifiziert
+  public Short stage = 0; // 0=Vormerkung, 1=Registrierung, 2=Qualifiziert
 
   // Metadata
   @Size(max = 100)
