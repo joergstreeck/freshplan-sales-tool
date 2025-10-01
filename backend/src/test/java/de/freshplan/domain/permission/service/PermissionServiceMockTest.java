@@ -4,30 +4,34 @@ import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import de.freshplan.infrastructure.security.SecurityContextProvider;
-import io.quarkus.test.InjectMock;
-import io.quarkus.test.junit.QuarkusTest;
-import jakarta.inject.Inject;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-@QuarkusTest
-@Tag("migrate")
-@DisplayName("PermissionService Tests")
-class PermissionServiceTest {
+/**
+ * Mock-based tests for PermissionService (migrated from @QuarkusTest).
+ *
+ * <p>Sprint 2.1.4: Migriert von @QuarkusTest zu Mockito (~15s Ersparnis pro Run).
+ *
+ * <p>Testet Role-based Permission Logic ohne DB-Zugriff.
+ *
+ * @see TEST_DEBUGGING_GUIDE.md
+ */
+@ExtendWith(MockitoExtension.class)
+@Tag("unit")
+@DisplayName("PermissionService Mock Tests")
+class PermissionServiceMockTest {
 
-  @Inject PermissionService permissionService;
+  @Mock private SecurityContextProvider securityProvider;
 
-  @InjectMock SecurityContextProvider securityProvider;
-
-  @BeforeEach
-  void setUp() {
-    reset(securityProvider);
-  }
+  @InjectMocks private PermissionService permissionService;
 
   // ===== hasPermission Tests =====
 
