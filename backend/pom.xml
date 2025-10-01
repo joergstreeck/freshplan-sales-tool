@@ -191,15 +191,14 @@
             <quarkus.profile>test</quarkus.profile>
           </systemPropertyVariables>
           <!-- CI Fix: Set German locale for consistent test behavior -->
-          <argLine>${jacocoArgLine} -Duser.language=de -Duser.country=DE -Xmx384m</argLine>
+          <argLine>${jacocoArgLine} -Duser.language=de -Duser.country=DE</argLine>
           <!-- Exclude performance tests by default -->
           <excludedGroups>performance</excludedGroups>
-          <!-- Limited parallel execution (2 threads) for CI - balance between speed and stability -->
-          <!-- 77 @QuarkusTest: Serial=50min, Parallel(4)=13min+crash, Parallel(2)=25min stable -->
+          <!-- Parallel execution for speed (can be overridden via CLI with -Dparallel=none) -->
           <parallel>classes</parallel>
-          <threadCount>2</threadCount>
+          <threadCount>4</threadCount>
           <forkCount>1</forkCount>
-          <reuseForks>false</reuseForks>
+          <reuseForks>true</reuseForks>
         </configuration>
       </plugin>
       <!-- JaCoCo Plugin für Code Coverage -->

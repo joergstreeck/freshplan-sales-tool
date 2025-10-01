@@ -15,7 +15,7 @@ jobs:
   test:
     name: Backend Tests
     runs-on: ubuntu-22.04  # Pin to 22.04 - ubuntu-latest has runner stability issues
-    timeout-minutes: 25    # 77 @QuarkusTest × 40s boot = ~51 min serial, needs to stay within limits
+    timeout-minutes: 25    # Safety margin for 58 @QuarkusTest with 2-thread parallelism
     
     services:
       postgres:
@@ -127,9 +127,10 @@ jobs:
 
       - name: Core Tests (PR Pipeline - Ein Maven-Run)
         working-directory: backend
-        timeout-minutes: 30  # Sprint 2.1.4: Erhöht wegen 153 @QuarkusTest (~20-28 Min)
+        timeout-minutes: 20  # 58 @QuarkusTest with limited parallelism
         run: |
           # Using CI profile with DevServices disabled at build time
+          # Limited to 2 parallel threads to avoid RAM exhaustion on GitHub runners
           ./mvnw -B clean test \
             -Dtest="A00_EnvDiagTest,*Test" \
             -DexcludedGroups="integration,slow" \
@@ -139,7 +140,9 @@ jobs:
             -Dquarkus.datasource.devservices.enabled=false \
             -Dquarkus.test.hang-detection-timeout=60s \
             -Dquarkus.test.continuous-testing=disabled \
-            -Dtest.run.id=${{ github.run_id }}
+            -Dtest.run.id=${{ github.run_id }} \
+            -DthreadCount=2 \
+            -DreuseForks=false
           
       - name: Upload Test Results
         uses: dorny/test-reporter@v1
