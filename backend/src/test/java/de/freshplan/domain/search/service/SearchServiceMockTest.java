@@ -15,37 +15,40 @@ import de.freshplan.domain.search.service.dto.SearchResult;
 import de.freshplan.domain.search.service.dto.SearchResults;
 import de.freshplan.test.builders.ContactTestDataFactory;
 import de.freshplan.test.builders.CustomerTestDataFactory;
-import io.quarkus.test.InjectMock;
-import io.quarkus.test.junit.QuarkusTest;
-import jakarta.inject.Inject;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 /**
- * Comprehensive tests for SearchService following established CQRS test patterns.
+ * Mock-based tests for SearchService (migrated from @QuarkusTest).
+ *
+ * <p>Sprint 2.1.4: Migriert von @QuarkusTest zu Mockito (~15s Ersparnis pro Run).
  *
  * <p>Test Coverage: - universalSearch() - complex multi-entity search - quickSearch() -
  * autocomplete functionality - Query type detection (EMAIL, PHONE, CUSTOMER_NUMBER, TEXT) -
  * Relevance scoring algorithms - Repository integration and error handling
  *
- * <p>Applied Test-Fixing Patterns from previous phases: 1. PanacheQuery-Mocking (if needed) 2.
- * Mockito Matcher-Consistency (all parameters as matchers) 3. Foreign Key-Safe Cleanup (not
- * applicable - read-only) 4. Flexible Verification (atLeastOnce() instead of exact times())
+ * @see TEST_DEBUGGING_GUIDE.md
  */
-@QuarkusTest
-@Tag("core")
-class SearchServiceTest {
+@ExtendWith(MockitoExtension.class)
+@Tag("unit")
+@DisplayName("SearchService Mock Tests")
+class SearchServiceMockTest {
 
-  @Inject SearchService searchService;
+  @Mock private CustomerRepository customerRepository;
 
-  @InjectMock CustomerRepository customerRepository;
+  @Mock private ContactRepository contactRepository;
 
-  @InjectMock ContactRepository contactRepository;
+  @InjectMocks private SearchService searchService;
 
   // Test data
   private Customer testCustomer1;
@@ -56,9 +59,6 @@ class SearchServiceTest {
 
   @BeforeEach
   void setUp() {
-    // Reset mocks
-    reset(customerRepository, contactRepository);
-
     // Create test customers
     testCustomer1 =
         createTestCustomer(
@@ -128,7 +128,6 @@ class SearchServiceTest {
     CustomerSearchDto customerDto = (CustomerSearchDto) customerResult.getData();
     assertThat(customerDto.getCompanyName()).isEqualTo("Bäckerei Schmidt GmbH");
 
-    // Pattern 4: Flexible Verification
     verify(customerRepository, atLeastOnce()).searchFullText(eq(query), eq(20));
     verify(contactRepository, atLeastOnce()).searchContactsFullText(eq(query), eq(20));
   }
