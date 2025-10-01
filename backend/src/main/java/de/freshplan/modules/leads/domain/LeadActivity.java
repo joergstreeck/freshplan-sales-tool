@@ -54,6 +54,29 @@ public class LeadActivity extends PanacheEntityBase {
   @Column(name = "resets_timer")
   public boolean resetsTimer = false;
 
+  // Progress Tracking (Sprint 2.1.5 - V256)
+  @Column(name = "counts_as_progress", nullable = false)
+  public boolean countsAsProgress = false;
+
+  @Size(max = 500)
+  @Column(name = "summary")
+  public String summary;
+
+  @Size(max = 50)
+  @Column(name = "outcome")
+  public String outcome;
+
+  @Size(max = 200)
+  @Column(name = "next_action")
+  public String nextAction;
+
+  @Column(name = "next_action_date")
+  public java.time.LocalDate nextActionDate;
+
+  @Size(max = 50)
+  @Column(name = "performed_by")
+  public String performedBy;
+
   @Column(name = "created_at", nullable = false)
   public LocalDateTime createdAt = LocalDateTime.now();
 

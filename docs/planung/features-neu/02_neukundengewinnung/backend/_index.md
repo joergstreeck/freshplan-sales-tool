@@ -13,6 +13,13 @@ updated: "2025-09-28"
 
 **Status:** 🔧 IN DEVELOPMENT (Sprint 2.1.4 in progress)
 
+> **⚠️ DATENBANK-MIGRATIONEN BEACHTEN!**
+> Vor Migration-Arbeit IMMER [`/docs/planung/MIGRATIONS.md`](../../../MIGRATIONS.md) lesen!
+> - Alle Migrations V1-V257 dokumentiert
+> - V10xxx Test/Dev-Range erklärt (Production Skip)
+> - CONCURRENTLY-Regeln für Production
+> - Nächste Nummer: `./scripts/get-next-migration.sh`
+
 ## 🎯 Executive Summary
 
 Lead-Management Backend mit PostgreSQL LISTEN/NOTIFY Event-System, Territory-Scoping und T+3/T+7 Follow-up Automation. Production-ready seit PR #111 (2025-09-26).

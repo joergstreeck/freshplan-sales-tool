@@ -39,17 +39,9 @@ Implementierung von Team-basierter Lead-Sichtbarkeit mit Row-Level-Security, Lea
 
 ## User Stories
 
-### 1. Row-Level-Security (RLS) Implementation
+### 1. Lead-Transfer Workflow (verschoben aus 2.1.5)
 **Akzeptanzkriterien:**
-- Owner kann eigene Leads sehen (lead_owner_policy)
-- Team-Mitglieder sehen Team-Leads (lead_team_policy)
-- Admin hat Vollzugriff (lead_admin_policy)
-- Transfer-Empfänger sieht pending Transfers
-- Session-Context mit user_id und role
-- **RLS-aware Tests: Backdating nur für MANAGER/ADMIN sichtbar & zulässig**
-
-### 2. Lead-Transfer Workflow
-**Akzeptanzkriterien:**
+- V258: lead_transfers Tabelle
 - Transfer-Request mit Begründung
 - Genehmigungsprozess (Manager/Admin)
 - 48h SLA für Entscheidung
@@ -57,15 +49,40 @@ Implementierung von Team-basierter Lead-Sichtbarkeit mit Row-Level-Security, Lea
 - Audit-Trail für alle Transfers
 - Email-Benachrichtigungen
 
-### 3. Fuzzy-Matching & Review (aus 2.1.5)
+### 2. Backdating Endpoint (verschoben aus 2.1.5)
 **Akzeptanzkriterien:**
-- Scoring-Algorithmus (Email, Phone, Company, Address)
+- PUT /api/leads/{id}/registered-at (Admin/Manager)
+- Validierung: nicht in Zukunft; Reason Pflicht
+- Audit: `lead_registered_at_backdated`
+- Felder bereits vorhanden: `registered_at_override_reason`, etc.
+- Recalc Protection-/Activity-Fristen
+
+### 3. Automated Jobs (verschoben aus 2.1.5)
+**Akzeptanzkriterien:**
+- Nightly Job: Progress Warning Check (Tag 53)
+- Nightly Job: Protection Expiry (Tag 70)
+- Nightly Job: Pseudonymisierung (60 Tage ohne Progress)
+- Email-Benachrichtigungen
+- Dashboard-Alerts
+
+### 4. Fuzzy-Matching & Review (verschoben aus 2.1.5)
+**Akzeptanzkriterien:**
+- Vollständiger Scoring-Algorithmus (Email, Phone, Company, Address)
 - Schwellwerte konfigurierbar (hard/soft duplicates)
 - 202 Response mit Kandidaten-Liste
+- DuplicateReviewModal.vue
 - Review-UI: Merge/Reject/Create-New
 - Merge-Historie mit Undo-Möglichkeit
 
-### 4. Team Management
+### 5. Row-Level-Security (RLS) Implementation (OPTIONAL)
+**Akzeptanzkriterien:**
+- Owner kann eigene Leads sehen (lead_owner_policy)
+- Team-Mitglieder sehen Team-Leads (lead_team_policy)
+- Admin hat Vollzugriff (lead_admin_policy)
+- Transfer-Empfänger sieht pending Transfers
+- Session-Context mit user_id und role
+
+### 6. Team Management (OPTIONAL)
 **Akzeptanzkriterien:**
 - Team CRUD Operations
 - Team-Member Assignment
@@ -75,26 +92,42 @@ Implementierung von Team-basierter Lead-Sichtbarkeit mit Row-Level-Security, Lea
 
 ## Technische Details
 
-### RLS Policies (PostgreSQL):
+### Lead Transfers (aus 2.1.5):
 ```sql
--- Migration V251: RLS Setup
-ALTER TABLE leads ADD COLUMN
-  owner_user_id UUID,
-  owner_team_id UUID,
-  visibility VARCHAR(20) DEFAULT 'private';
+-- V258: lead_transfers Tabelle
+CREATE TABLE lead_transfers (
+  id BIGSERIAL PRIMARY KEY,
+  lead_id BIGINT REFERENCES leads(id),
+  from_user_id VARCHAR(50) NOT NULL,
+  to_user_id VARCHAR(50) NOT NULL,
+  reason TEXT NOT NULL,
+  status VARCHAR(20) NOT NULL,  -- pending, approved, rejected
+  approved_by VARCHAR(50),
+  approved_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+```
 
-ALTER TABLE leads ENABLE ROW LEVEL SECURITY;
+### Backdating (aus 2.1.5):
+```java
+// PUT /api/leads/{id}/registered-at
+@RolesAllowed({"admin", "manager"})
+public void updateRegisteredAt(Long id, BackdatingRequest request) {
+  // Validate: not in future
+  // Update: registered_at + override_reason
+  // Recalc: protection_until, progress_deadline
+  // Audit: lead_registered_at_backdated
+}
+```
 
-CREATE POLICY lead_owner_policy ON leads
-  FOR ALL TO application_user
-  USING (owner_user_id = current_setting('app.current_user_id')::UUID);
-
-CREATE POLICY lead_team_policy ON leads
-  FOR SELECT TO application_user
-  USING (visibility = 'team' AND owner_team_id IN (
-    SELECT team_id FROM team_members
-    WHERE user_id = current_setting('app.current_user_id')::UUID
-  ));
+### Automated Jobs (aus 2.1.5):
+```java
+@Scheduled(cron = "0 0 1 * * ?")  // 1 AM daily
+void checkProgressWarnings() {
+  // Find leads: progress_deadline < NOW() + 7 days
+  // Set: progress_warning_sent_at
+  // Send: Email notification
+}
 ```
 
 ### Transfer API:

@@ -19,7 +19,7 @@ updated: "2025-10-01"
 **Vertragstext:**
 > "Der Lead-Schutz beträgt 6 Monate ab Registrierung (Firma, Ort und zentraler Kontakt oder dokumentierter Erstkontakt)."
 
-**Implementation (ADR-003: Inline-First Architecture):**
+**Implementation (ADR-004: Inline-First Architecture):**
 ```sql
 -- leads.protection_start_at (bereits vorhanden in Lead.java)
 -- Berechnung: registered_at + protection_months * INTERVAL '1 month'

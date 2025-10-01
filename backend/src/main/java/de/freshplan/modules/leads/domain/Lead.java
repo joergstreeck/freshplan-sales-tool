@@ -170,6 +170,17 @@ public class Lead extends PanacheEntityBase {
   @Column(name = "is_canonical", nullable = false)
   public Boolean isCanonical = true;
 
+  // Progress Tracking (Sprint 2.1.5 - V255)
+  @Column(name = "progress_warning_sent_at")
+  public LocalDateTime progressWarningSentAt;
+
+  @Column(name = "progress_deadline")
+  public LocalDateTime progressDeadline;
+
+  // Progressive Profiling Stage (Sprint 2.1.5 - V255)
+  @Column(name = "stage", nullable = false)
+  public Short stage = 0; // 0=Vormerkung, 1=Registrierung, 2=Qualifiziert
+
   // Metadata
   @Size(max = 100)
   public String source; // web/email/phone/event/partner
