@@ -7,6 +7,8 @@ import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
 import java.util.Set;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
@@ -25,12 +27,24 @@ import org.junit.jupiter.api.Test;
 @DisplayName("CreateUserRequest DTO Unit Tests")
 class CreateUserRequestTest {
 
+  private static ValidatorFactory validatorFactory;
   private Validator validator;
+
+  @BeforeAll
+  static void setUpFactory() {
+    validatorFactory = Validation.buildDefaultValidatorFactory();
+  }
 
   @BeforeEach
   void setUp() {
-    ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-    validator = factory.getValidator();
+    validator = validatorFactory.getValidator();
+  }
+
+  @AfterAll
+  static void tearDownFactory() {
+    if (validatorFactory != null) {
+      validatorFactory.close();
+    }
   }
 
   @Test
