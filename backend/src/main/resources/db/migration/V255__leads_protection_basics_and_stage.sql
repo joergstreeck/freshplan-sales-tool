@@ -46,7 +46,8 @@ COMMENT ON COLUMN leads.stage IS
 -- ============================================================================
 
 -- Für Nightly Job: "Find leads mit progress_deadline < NOW() + 7 days"
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_leads_progress_deadline
+-- Note: CONCURRENTLY removed for Flyway compatibility (no mixed transactional/non-transactional)
+CREATE INDEX IF NOT EXISTS idx_leads_progress_deadline
   ON leads (progress_deadline)
   WHERE progress_deadline IS NOT NULL;
 
@@ -57,7 +58,8 @@ COMMENT ON INDEX idx_leads_progress_deadline IS
 -- 4. Index für Stage-basierte Queries
 -- ============================================================================
 
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_leads_stage
+-- Note: CONCURRENTLY removed for Flyway compatibility (no mixed transactional/non-transactional)
+CREATE INDEX IF NOT EXISTS idx_leads_stage
   ON leads (stage);
 
 COMMENT ON INDEX idx_leads_stage IS
